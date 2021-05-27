@@ -28,8 +28,11 @@
 #define CBMMUCHFINDHITSGEM_H 1
 #include "CbmEvent.h"
 #include "CbmMuchDigi.h"
+
 #include "FairTask.h"
+
 #include "TString.h"
+
 #include <vector>
 //#include "CbmStsReco.h"
 
@@ -50,12 +53,8 @@ public:
   virtual void Exec(Option_t* opt);
   void ProcessData(CbmEvent*);
   void SetAlgorithm(Int_t iAlgorithm) { fAlgorithm = iAlgorithm; }
-  void SetThresholdRatio(Double_t thresholdRatio) {
-    fThresholdRatio = thresholdRatio;
-  }
-  void SetClusterSeparationTime(Double_t time) {
-    fClusterSeparationTime = time;
-  }
+  void SetThresholdRatio(Double_t thresholdRatio) { fThresholdRatio = thresholdRatio; }
+  void SetClusterSeparationTime(Double_t time) { fClusterSeparationTime = time; }
   // Removing SetDaq functionality as Cluster and Hit Finder algorithm is same for both the Time Based and Event Based mode.
   // void SetDaq(Bool_t daq)                         { fDaq = daq; }
   // Set functionality for accepting CbmMuchBeamTimeDigi generated from mCBM data.
@@ -65,24 +64,19 @@ private:
   virtual InitStatus Init();
   void FindClusters(CbmEvent*);
   void CreateCluster(CbmMuchPad* pad);
-  void ExecClusteringSimple(CbmMuchCluster* cluster,
-                            Int_t iCluster,
-                            CbmEvent* event);
-  void
-  ExecClusteringPeaks(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event);
+  void ExecClusteringSimple(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event);
+  void ExecClusteringPeaks(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event);
   void CreateHits(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event);
   TString fDigiFile;  // Digitization file
   Int_t fFlag;
-  Int_t fAlgorithm;  // Defines which algorithm to use
-  Double_t
-    fClusterSeparationTime;  // Minimum required time between two clusters
-  Double_t
-    fThresholdRatio;  // Charge threshold ratio relative to max cluster charge
-  Int_t fEvent;       // Event counter
-  Int_t fNofTimeslices;  // TimeSlice Counter
+  Int_t fAlgorithm;                 // Defines which algorithm to use
+  Double_t fClusterSeparationTime;  // Minimum required time between two clusters
+  Double_t fThresholdRatio;         // Charge threshold ratio relative to max cluster charge
+  Int_t fEvent;                     // Event counter
+  Int_t fNofTimeslices;             // TimeSlice Counter
   //TClonesArray* fDigis;                   		// Input array of CbmMuchDigi
-  CbmDigiManager* fDigiManager;  //! Interface to digi branch
-  TClonesArray* fEvents;         // Input array of CbmEvent after Event Building
+  CbmDigiManager* fDigiManager;                 //! Interface to digi branch
+  TClonesArray* fEvents;                        // Input array of CbmEvent after Event Building
   std::vector<Int_t> fClusterCharges;           //!
   std::vector<Bool_t> fLocalMax;                //!
   std::vector<CbmMuchPad*> fClusterPads;        //!

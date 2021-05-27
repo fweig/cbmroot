@@ -12,8 +12,7 @@
 using namespace std;
 
 // --- Default constructor
-CbmMCDataManager::CbmMCDataManager()
-  : CbmMCDataManager("MCDataManager", 0)
+CbmMCDataManager::CbmMCDataManager() : CbmMCDataManager("MCDataManager", 0)
 //  : FairTask("MCDataManager", 0), fLegacy(0), fFileList(), fActive(), fActiveObj(), fFriends()
 {
   fFileList.clear();
@@ -30,7 +29,8 @@ CbmMCDataManager::CbmMCDataManager(const char* name, Int_t legacy)
   , fFileList()
   , fActive()
   , fActiveObj()
-  , fFriends() {
+  , fFriends()
+{
   fFileList.clear();
   fActive.clear();
   fActiveObj.clear();
@@ -39,7 +39,8 @@ CbmMCDataManager::CbmMCDataManager(const char* name, Int_t legacy)
 
 
 // --- Destructor
-CbmMCDataManager::~CbmMCDataManager() {
+CbmMCDataManager::~CbmMCDataManager()
+{
   map<TString, CbmMCDataArray*>::const_iterator p;
   for (p = fActive.begin(); p != fActive.end(); ++p)
     delete p->second;
@@ -53,7 +54,8 @@ CbmMCDataManager::~CbmMCDataManager() {
 
 
 // --- Add an additional input file
-Int_t CbmMCDataManager::AddFile(const char* name) {
+Int_t CbmMCDataManager::AddFile(const char* name)
+{
   Int_t n = fFileList.size();
   fFileList.resize(n + 1);
   fFileList[n].clear();
@@ -63,7 +65,8 @@ Int_t CbmMCDataManager::AddFile(const char* name) {
 
 
 // --- Add a file to a given input chain
-Int_t CbmMCDataManager::AddFileToChain(const char* name, Int_t number) {
+Int_t CbmMCDataManager::AddFileToChain(const char* name, Int_t number)
+{
   Int_t i;
   Int_t n = fFileList.size();
 
@@ -80,7 +83,8 @@ Int_t CbmMCDataManager::AddFileToChain(const char* name, Int_t number) {
 
 
 // --- End of event action
-void CbmMCDataManager::FinishEvent() {
+void CbmMCDataManager::FinishEvent()
+{
   map<TString, CbmMCDataArray*>::const_iterator p;
   map<TString, CbmMCDataObject*>::const_iterator o;
 
@@ -92,7 +96,8 @@ void CbmMCDataManager::FinishEvent() {
 
 
 // --- Initialisation
-InitStatus CbmMCDataManager::Init() {
+InitStatus CbmMCDataManager::Init()
+{
   FairRootManager* fManager = FairRootManager::Instance();
   if (!fManager) return kFATAL;
 
@@ -103,7 +108,8 @@ InitStatus CbmMCDataManager::Init() {
 
 
 // --- Instantiate a data branch
-CbmMCDataArray* CbmMCDataManager::InitBranch(const char* brname) {
+CbmMCDataArray* CbmMCDataManager::InitBranch(const char* brname)
+{
   CbmMCDataArray* arr = nullptr;
   TString nm          = brname;
   map<Int_t, Int_t>::const_iterator p;
@@ -134,7 +140,8 @@ CbmMCDataArray* CbmMCDataManager::InitBranch(const char* brname) {
 }
 
 // --- Instantiate a data branch containing TObject
-CbmMCDataObject* CbmMCDataManager::GetObject(const char* brname) {
+CbmMCDataObject* CbmMCDataManager::GetObject(const char* brname)
+{
   CbmMCDataObject* arr;
   TString nm = brname;
   map<Int_t, Int_t>::const_iterator p;
@@ -148,7 +155,8 @@ CbmMCDataObject* CbmMCDataManager::GetObject(const char* brname) {
     for (p = fFriends.begin(); p != fFriends.end(); ++p) {
       arr->AddFriend(p->first, p->second);
     }
-  } else
+  }
+  else
     arr = new CbmMCDataObject(brname);
 
   fActiveObj[nm] = arr;

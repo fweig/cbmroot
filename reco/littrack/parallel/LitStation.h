@@ -8,15 +8,18 @@
 #ifndef LITSTATION_H_
 #define LITSTATION_H_
 
-#include "LitVirtualStation.h"
 #include <sstream>
 #include <vector>
+
+#include "LitVirtualStation.h"
 using std::ostream;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitStation
@@ -44,25 +47,21 @@ namespace lit {
     * \brief Add virtual station to detector layout.
     * \param[in] virtualStation Virtual station to be added.
     */
-      void AddVirtualStation(const LitVirtualStation<T>& virtualStation) {
-        fVirtualStations.push_back(virtualStation);
-      }
+      void AddVirtualStation(const LitVirtualStation<T>& virtualStation) { fVirtualStations.push_back(virtualStation); }
 
       /**
     * \brief Return number of virtual stations.
     * \return Number of virtual stations.
     */
-      unsigned char GetNofVirtualStations() const {
-        return fVirtualStations.size();
-      }
+      unsigned char GetNofVirtualStations() const { return fVirtualStations.size(); }
 
       /**
     * \brief Return virtual station by index.
     * \param[in] station Virtual station index.
     * \return Virtual station by index.
     */
-      const LitVirtualStation<T>&
-      GetVirtualStation(unsigned char virtualStation) const {
+      const LitVirtualStation<T>& GetVirtualStation(unsigned char virtualStation) const
+      {
         return fVirtualStations[virtualStation];
       }
 
@@ -70,11 +69,11 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
         ss << "LitVirtualStation:\n";
-        ss << "virtual stations: nofVirtualStations="
-           << (int) GetNofVirtualStations() << "\n";
+        ss << "virtual stations: nofVirtualStations=" << (int) GetNofVirtualStations() << "\n";
         for (unsigned char i = 0; i < GetNofVirtualStations(); i++) {
           ss << (int) i << " " << GetVirtualStation(i).ToString() << "\n";
         }
@@ -85,14 +84,14 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitStation& station) {
+      friend ostream& operator<<(ostream& strm, const LitStation& station)
+      {
         strm << station.ToString();
         return strm;
       }
 
     private:
-      vector<LitVirtualStation<T>>
-        fVirtualStations;  // List of virtual stations
+      vector<LitVirtualStation<T>> fVirtualStations;  // List of virtual stations
     } _fvecalignment;
 
     /**

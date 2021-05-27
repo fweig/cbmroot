@@ -15,15 +15,16 @@
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmEventStore::CbmEventStore(UInt_t eventId, Bool_t hasMatches)
-  : fEventId(eventId), fHasMatches(hasMatches) {
+CbmEventStore::CbmEventStore(UInt_t eventId, Bool_t hasMatches) : fEventId(eventId), fHasMatches(hasMatches)
+{
   //  fDigis = new TObjArray(ToIntegralType(ECbmModuleId::kNofSystems));
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Copy constructor   ----------------------------------------------
-CbmEventStore::CbmEventStore(const CbmEventStore& other) : TObject(other) {
+CbmEventStore::CbmEventStore(const CbmEventStore& other) : TObject(other)
+{
   fEventId    = other.fEventId;
   fHasMatches = other.fHasMatches;
   // TODO: Create new map with a copy of the original map
@@ -34,7 +35,8 @@ CbmEventStore::CbmEventStore(const CbmEventStore& other) : TObject(other) {
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmEventStore::~CbmEventStore() {
+CbmEventStore::~CbmEventStore()
+{
   for (auto system : fDigis) {
     delete system.second;
   }
@@ -44,7 +46,8 @@ CbmEventStore::~CbmEventStore() {
 
 
 // -----   Test for being empty   ------------------------------------------
-Bool_t CbmEventStore::IsEmpty() const {
+Bool_t CbmEventStore::IsEmpty() const
+{
   UInt_t nDigis = 0;
   for (auto system : fDigis) {
     auto* digis = dynamic_cast<CbmDigiContainer*>(system.second);
@@ -63,7 +66,8 @@ for ( Int_t system = 0; system < fDigis->GetEntriesFast(); system++) {
 
 
 // -----   Get number of data for a given system   -------------------------
-UInt_t CbmEventStore::GetNofDigis(ECbmModuleId system) const {
+UInt_t CbmEventStore::GetNofDigis(ECbmModuleId system) const
+{
   if (system >= ECbmModuleId::kNofSystems) return 0;
   auto* digis = dynamic_cast<CbmDigiContainer*>(fDigis.at(system));
   if (!digis) return 0;
@@ -73,7 +77,8 @@ UInt_t CbmEventStore::GetNofDigis(ECbmModuleId system) const {
 
 
 // -----   Match to MC event   ---------------------------------------------
-void CbmEventStore::MatchToMC(CbmMatch& result) const {
+void CbmEventStore::MatchToMC(CbmMatch& result) const
+{
   result.ClearLinks();
   if (!fHasMatches) return;
   for (auto system : fDigis) {
@@ -109,11 +114,11 @@ void CbmEventStore::MatchToMC(CbmMatch& result) const {
 
 
 // -----   String output   -------------------------------------------------
-std::string CbmEventStore::ToString() const {
+std::string CbmEventStore::ToString() const
+{
   std::stringstream ss;
   ss << "Event " << fEventId;
-  if (IsEmpty())
-    ss << " empty";
+  if (IsEmpty()) ss << " empty";
   else {
     ss << " Data: ";
     for (auto system : fDigis) {
@@ -122,8 +127,7 @@ std::string CbmEventStore::ToString() const {
       //       if ( fDigis->At(system) ) {
       //         auto vec = static_cast<CbmDigiContainer*>(fDigis->At(system));
       assert(vec);
-      ss << CbmModuleList::GetModuleNameCaps(system.first) << " "
-         << vec->GetNofDigis() << " ";
+      ss << CbmModuleList::GetModuleNameCaps(system.first) << " " << vec->GetNofDigis() << " ";
       //       } //? Digi vector present
     }  //# Systems
   }    //? Not empty

@@ -1,4 +1,5 @@
-void pl_ext_trk(Int_t iLev = 1) {
+void pl_ext_trk(Int_t iLev = 1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -26,7 +27,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -38,7 +40,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,7 +53,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -62,7 +66,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -74,7 +79,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -86,7 +92,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -98,7 +105,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -110,7 +118,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -118,9 +127,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Xoff");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -128,9 +136,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Yoff");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -138,9 +145,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Toff");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -152,7 +158,8 @@ void pl_ext_trk(Int_t iLev = 1) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -160,9 +167,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Xsig");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -170,9 +176,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Ysig");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -180,9 +185,8 @@ void pl_ext_trk(Int_t iLev = 1) {
   gROOT->cd();
   hname = Form("hExt_Tsig");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 

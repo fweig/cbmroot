@@ -15,7 +15,8 @@ CbmMvdHit::CbmMvdHit()
   , fClusterIndex(-1)
   , fIndexCentralX(-1)
   , fIndexCentralY(-1)
-  , fDetectorID(-1) {
+  , fDetectorID(-1)
+{
   SetTime(0.);
   SetTimeError(0.);
 }
@@ -23,19 +24,15 @@ CbmMvdHit::CbmMvdHit()
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdHit::CbmMvdHit(Int_t statNr,
-                     TVector3& pos,
-                     TVector3& dpos,
-                     Int_t indexCentralX,
-                     Int_t indexCentralY,
-                     Int_t clusterIndex,
-                     Int_t flag)
+CbmMvdHit::CbmMvdHit(Int_t statNr, TVector3& pos, TVector3& dpos, Int_t indexCentralX, Int_t indexCentralY,
+                     Int_t clusterIndex, Int_t flag)
   : CbmPixelHit(0, pos, dpos, 0., -1)
   , fFlag(flag)
   , fClusterIndex(clusterIndex)
   , fIndexCentralX(indexCentralX)
   , fIndexCentralY(indexCentralY)
-  , fDetectorID(-1) {
+  , fDetectorID(-1)
+{
   fDetectorID = DetectorId(statNr);
   SetTime(0.);
   SetTimeError(0.);
@@ -88,9 +85,10 @@ CbmMvdHit::~CbmMvdHit() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmMvdHit::Print(const Option_t* /*opt*/) const {
-  LOG(info) << "MvdHit in station " << GetStationNr() << " at (" << GetX()
-            << ", " << GetY() << ", " << GetZ() << ") cm";
+void CbmMvdHit::Print(const Option_t* /*opt*/) const
+{
+  LOG(info) << "MvdHit in station " << GetStationNr() << " at (" << GetX() << ", " << GetY() << ", " << GetZ()
+            << ") cm";
 }
 // -------------------------------------------------------------------------
 

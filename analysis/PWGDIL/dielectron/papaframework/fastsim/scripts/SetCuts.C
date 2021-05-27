@@ -3,7 +3,8 @@
    specific cuts and processes to g3 or g4 should be set in the g3Config.C or g4Config.C
 */
 
-void SetCuts() {
+void SetCuts()
+{
 
   gMC->SetProcess("PAIR", 1); /** pair production*/                   //1
   gMC->SetProcess("COMP", 0); /**Compton scattering*/                 //1

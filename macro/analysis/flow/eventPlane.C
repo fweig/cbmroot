@@ -19,15 +19,11 @@
 //         (if run on many event files in parallel, merge event plane task output files, for at least > 10 000 events
 //         -> to estimate correction factors to apply to the measured flow vn)
 
-void eventPlane(Double_t En    = 10,
-                Int_t nEvents  = 2,
-                Int_t fQcorr   = 0,
-                Int_t fBarcorr = 0) {
-  Int_t gen = 0;  // model
-  int mcreco =
-    1;  // STS EP method: use reco. tracks or MC tracks with >= 4 hits in STS
-  Double_t cutY_sub =
-    0.8;  // STS EP method: use (reco or MC) tracks with y < cutY_sub to decrease STS/PSD overlap
+void eventPlane(Double_t En = 10, Int_t nEvents = 2, Int_t fQcorr = 0, Int_t fBarcorr = 0)
+{
+  Int_t gen         = 0;    // model
+  int mcreco        = 1;    // STS EP method: use reco. tracks or MC tracks with >= 4 hits in STS
+  Double_t cutY_sub = 0.8;  // STS EP method: use (reco or MC) tracks with y < cutY_sub to decrease STS/PSD overlap
   int doFixStat =
     0;  // Binning method for EP flattening: fixed multiplicity intervals or fixed collision statistics intervals
 
@@ -43,8 +39,7 @@ void eventPlane(Double_t En    = 10,
 
   // === reco or MC
   TString smcreco = "";
-  if (mcreco == 1)
-    smcreco = "_RECOtracks";
+  if (mcreco == 1) smcreco = "_RECOtracks";
   else
     smcreco = "_MCtracks_ge4hitsSTS";
 
@@ -60,8 +55,7 @@ void eventPlane(Double_t En    = 10,
   if (fBarcorr == 1) sBarcorr = "_Barcorr_n8";
 
   TString sFlatBin = "";
-  if (doFixStat == 0)
-    sFlatBin = "_FlatBin_FixStep";
+  if (doFixStat == 0) sFlatBin = "_FlatBin_FixStep";
   else
     sFlatBin = "_FlatBin_FixStat";
   if (fQcorr != 1 && fBarcorr != 1) sFlatBin = "";
@@ -79,12 +73,10 @@ void eventPlane(Double_t En    = 10,
   // PSD coordinates (from Psdv1.cxx)
   TString PsdModCoord = dir + "psd_geo_xy_" + numEvt + "evt.txt";
   // Correction file
-  TString corrfilename = dir + "ana_1Mevt" + smcreco + scutY_sub + ".root";
-  TString corrfilename_Qcorr =
-    dir + "ana_1Mevt" + smcreco + scutY_sub + "_Qcorr" + sFlatBin + ".root";
+  TString corrfilename       = dir + "ana_1Mevt" + smcreco + scutY_sub + ".root";
+  TString corrfilename_Qcorr = dir + "ana_1Mevt" + smcreco + scutY_sub + "_Qcorr" + sFlatBin + ".root";
   // Output file
-  TString outfilename = dir + "ana_" + numEvt + "evt_" + smcreco + scutY_sub
-                        + sQcorr + sBarcorr + sFlatBin + ".root";
+  TString outfilename = dir + "ana_" + numEvt + "evt_" + smcreco + scutY_sub + sQcorr + sBarcorr + sFlatBin + ".root";
 
   //==================================
   FairRunAna* fRun = new FairRunAna();

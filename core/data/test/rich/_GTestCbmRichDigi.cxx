@@ -1,11 +1,11 @@
 #include "CbmRichDigi.h"
 
+#include "compareRichDigi.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareRichDigi.h"
-
-TEST(_GTestCbmRichDigi, CheckDefaultConstructor) {
+TEST(_GTestCbmRichDigi, CheckDefaultConstructor)
+{
   // Create object
   CbmRichDigi test;
 
@@ -16,7 +16,8 @@ TEST(_GTestCbmRichDigi, CheckDefaultConstructor) {
   compareRichDigiDataMembers(*test1, 0, ECbmModuleId::kRich, 0., -0.);
 }
 
-TEST(_GTestCbmRichDigi, CheckStandardConstructor) {
+TEST(_GTestCbmRichDigi, CheckStandardConstructor)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -27,7 +28,8 @@ TEST(_GTestCbmRichDigi, CheckStandardConstructor) {
   compareRichDigiDataMembers(*test1, 111, ECbmModuleId::kRich, 987654321., 23.);
 }
 
-TEST(_GTestCbmRichDigi, CheckCopyConstructor) {
+TEST(_GTestCbmRichDigi, CheckCopyConstructor)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -44,7 +46,8 @@ TEST(_GTestCbmRichDigi, CheckCopyConstructor) {
   compareRichDigiDataMembers(test, 111, ECbmModuleId::kRich, 987654321., 23.);
 }
 
-TEST(_GTestCbmRichDigi, CheckAssignmentOperator) {
+TEST(_GTestCbmRichDigi, CheckAssignmentOperator)
+{
 
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
@@ -63,7 +66,8 @@ TEST(_GTestCbmRichDigi, CheckAssignmentOperator) {
   compareRichDigiDataMembers(test, 111, ECbmModuleId::kRich, 987654321., 23.);
 }
 
-TEST(_GTestCbmRichDigi, CheckMoveConstructor) {
+TEST(_GTestCbmRichDigi, CheckMoveConstructor)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -79,7 +83,8 @@ TEST(_GTestCbmRichDigi, CheckMoveConstructor) {
   compareRichDigiDataMembers(test, 111, ECbmModuleId::kRich, 987654321., 23.);
 }
 
-TEST(_GTestCbmRichDigi, CheckAssignmentMoveConstructor) {
+TEST(_GTestCbmRichDigi, CheckAssignmentMoveConstructor)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -97,17 +102,18 @@ TEST(_GTestCbmRichDigi, CheckAssignmentMoveConstructor) {
 }
 
 
-TEST(_GTestCbmRichDigi, CheckToString) {
+TEST(_GTestCbmRichDigi, CheckToString)
+{
   // Create object
   CbmRichDigi test(12341234, 987654321., 23.);
 
-  compareRichDigiDataMembers(
-    test, 12341234, ECbmModuleId::kRich, 987654321., 23.);
+  compareRichDigiDataMembers(test, 12341234, ECbmModuleId::kRich, 987654321., 23.);
 
   EXPECT_STREQ("", test.ToString().c_str());
 }
 
-TEST(_GTestCbmRichDigi, CheckGetClassName) {
+TEST(_GTestCbmRichDigi, CheckGetClassName)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -116,7 +122,8 @@ TEST(_GTestCbmRichDigi, CheckGetClassName) {
   EXPECT_STREQ("CbmRichDigi", test.GetClassName());
 }
 
-TEST(_GTestCbmRichDigi, CheckSetTime) {
+TEST(_GTestCbmRichDigi, CheckSetTime)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -127,7 +134,8 @@ TEST(_GTestCbmRichDigi, CheckSetTime) {
   compareRichDigiDataMembers(test, 111, ECbmModuleId::kRich, 12345678., 23.);
 }
 
-TEST(_GTestCbmRichDigi, CheckSetAddress) {
+TEST(_GTestCbmRichDigi, CheckSetAddress)
+{
   // Create object
   CbmRichDigi test(111, 987654321., 23.);
 
@@ -135,6 +143,5 @@ TEST(_GTestCbmRichDigi, CheckSetAddress) {
 
   test.SetAddress(12341234);
 
-  compareRichDigiDataMembers(
-    test, 12341234, ECbmModuleId::kRich, 987654321., 23.);
+  compareRichDigiDataMembers(test, 12341234, ECbmModuleId::kRich, 987654321., 23.);
 }

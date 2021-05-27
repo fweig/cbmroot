@@ -50,12 +50,15 @@ CbmStsSetup::CbmStsSetup()
   , fSensors()
   , fModules()
   , fModuleVector()
-  , fStations() {}
+  , fStations()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Create station objects   ----------------------------------------
-Int_t CbmStsSetup::CreateStations() {
+Int_t CbmStsSetup::CreateStations()
+{
 
   // For old geometries: the station corresponds to the unit
   if (fHasStations) {
@@ -117,14 +120,13 @@ Int_t CbmStsSetup::CreateStations() {
   Double_t zPrevious = -999999;
   for (UInt_t iStation = 0; iStation < fStations.size(); iStation++) {
     if (fStations.find(iStation) == fStations.end()) {
-      LOG(error) << GetName() << ": Number of stations is " << fStations.size()
-                 << ", but station " << iStation << "is not present!";
+      LOG(error) << GetName() << ": Number of stations is " << fStations.size() << ", but station " << iStation
+                 << "is not present!";
       isOk = kFALSE;
     }  //? station present?
     if (fStations[iStation]->GetZ() <= zPrevious) {
       LOG(error) << GetName() << ": Disordered stations. Station " << iStation
-                 << " is at z = " << fStations[iStation]->GetZ()
-                 << "cm , previous is at z = " << zPrevious << " cm.";
+                 << " is at z = " << fStations[iStation]->GetZ() << "cm , previous is at z = " << zPrevious << " cm.";
       isOk = kFALSE;
     }  //? disordered in z
   }    //# stations
@@ -136,7 +138,8 @@ Int_t CbmStsSetup::CreateStations() {
 
 
 // -----   Get an element from the STS setup   -----------------------------
-CbmStsElement* CbmStsSetup::GetElement(Int_t address, Int_t level) {
+CbmStsElement* CbmStsSetup::GetElement(Int_t address, Int_t level)
+{
 
   // --- Check for initialisation
   if (!fAddress) LOG(fatal) << fName << ": not initialised!";
@@ -155,8 +158,7 @@ CbmStsElement* CbmStsSetup::GetElement(Int_t address, Int_t level) {
 
   CbmStsElement* element = this;
   for (Int_t iLevel = 1; iLevel <= level; iLevel++) {
-    element =
-      element->GetDaughter(CbmStsAddress::GetElementId(address, iLevel));
+    element = element->GetDaughter(CbmStsAddress::GetElementId(address, iLevel));
     assert(element);
   }
 
@@ -166,7 +168,8 @@ CbmStsElement* CbmStsSetup::GetElement(Int_t address, Int_t level) {
 
 
 // -----   Get hierarchy level name   ---------------------------------------
-const char* CbmStsSetup::GetLevelName(Int_t level) const {
+const char* CbmStsSetup::GetLevelName(Int_t level) const
+{
 
   // --- Catch legacy (setup with stations)
   if (fHasStations && level == kStsUnit) return "station";
@@ -186,7 +189,8 @@ const char* CbmStsSetup::GetLevelName(Int_t level) const {
 
 
 // -----   Get the station number from an address   ------------------------
-Int_t CbmStsSetup::GetStationNumber(Int_t address) {
+Int_t CbmStsSetup::GetStationNumber(Int_t address)
+{
 
   // In old, station-based geometries, the station equals the unit
   if (fHasStations) return CbmStsAddress::GetElementId(address, kStsUnit);
@@ -200,7 +204,8 @@ Int_t CbmStsSetup::GetStationNumber(Int_t address) {
 
 
 // -----   Initialisation   ------------------------------------------------
-Bool_t CbmStsSetup::Init(const char* geoFile) {
+Bool_t CbmStsSetup::Init(const char* geoFile)
+{
 
   // Prevent duplicate initialisation
   assert(!fIsInitialised);
@@ -226,8 +231,7 @@ Bool_t CbmStsSetup::Init(const char* geoFile) {
   for (Int_t iLevel = 1; iLevel <= kStsSensor; iLevel++) {
     TString name = GetLevelName(iLevel);
     name += "s";
-    LOG(info) << "     " << setw(12) << name << setw(5) << right
-              << GetNofElements(iLevel);
+    LOG(info) << "     " << setw(12) << name << setw(5) << right << GetNofElements(iLevel);
   }
 
   // --- Build the module and sensor maps
@@ -257,14 +261,12 @@ Bool_t CbmStsSetup::Init(const char* geoFile) {
       }      //# half-ladders in ladder
     }        //# ladders in unit
   }          //# units in system
-  LOG(info) << "Sensor in map: " << fSensors.size() << " in vector "
-            << fSensorVector.size();
+  LOG(info) << "Sensor in map: " << fSensors.size() << " in vector " << fSensorVector.size();
   assert(fSensors.size() == fSensorVector.size());
 
   // --- Create station objects
   Int_t nStations = CreateStations();
-  LOG(info) << GetName() << ": Setup contains " << nStations
-            << " stations objects.";
+  LOG(info) << GetName() << ": Setup contains " << nStations << " stations objects.";
   if (fair::Logger::Logging(fair::Severity::debug)) {
     auto it = fStations.begin();
     while (it != fStations.end()) {
@@ -275,11 +277,11 @@ Bool_t CbmStsSetup::Init(const char* geoFile) {
 
   // --- Consistency check
   if (GetNofSensors() != GetNofElements(kStsSensor))
-    LOG(fatal) << GetName() << ": inconsistent number of sensors! "
-               << GetNofElements(kStsSensor) << " " << GetNofSensors();
+    LOG(fatal) << GetName() << ": inconsistent number of sensors! " << GetNofElements(kStsSensor) << " "
+               << GetNofSensors();
   if (Int_t(fModules.size()) != GetNofElements(kStsModule))
-    LOG(fatal) << GetName() << ": inconsistent number of modules! "
-               << GetNofElements(kStsModule) << " " << fModules.size();
+    LOG(fatal) << GetName() << ": inconsistent number of modules! " << GetNofElements(kStsModule) << " "
+               << fModules.size();
 
   LOG(info) << "=========================================================="
             << "\n";
@@ -292,7 +294,8 @@ Bool_t CbmStsSetup::Init(const char* geoFile) {
 
 
 // -----   Singleton instance   --------------------------------------------
-CbmStsSetup* CbmStsSetup::Instance() {
+CbmStsSetup* CbmStsSetup::Instance()
+{
   if (!fgInstance) fgInstance = new CbmStsSetup();
   return fgInstance;
 }
@@ -300,7 +303,8 @@ CbmStsSetup* CbmStsSetup::Instance() {
 
 
 // -----   Print list of modules   -----------------------------------------
-void CbmStsSetup::ListModules() const {
+void CbmStsSetup::ListModules() const
+{
   for (auto it = fModules.begin(); it != fModules.end(); it++)
     LOG(info) << it->second->ToString();
 }
@@ -308,12 +312,12 @@ void CbmStsSetup::ListModules() const {
 
 
 // -----   Read geometry from TGeoManager   --------------------------------
-Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo) {
+Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo)
+{
 
   // --- Catch non-existence of GeoManager
   assert(geo);
-  LOG(info) << fName << ": Reading geometry from TGeoManager "
-            << geo->GetName();
+  LOG(info) << fName << ": Reading geometry from TGeoManager " << geo->GetName();
 
   // --- Get cave (top node)
   geo->CdTop();
@@ -342,24 +346,20 @@ Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo) {
   // --- Check for old geometry (with stations) or new geometry (with units)
   Bool_t hasStation = kFALSE;
   Bool_t hasUnit    = kFALSE;
-  for (Int_t iDaughter = 0; iDaughter < fNode->GetNode()->GetNdaughters();
-       iDaughter++) {
+  for (Int_t iDaughter = 0; iDaughter < fNode->GetNode()->GetNdaughters(); iDaughter++) {
     TString dName = fNode->GetNode()->GetDaughter(iDaughter)->GetName();
     if (dName.Contains("station", TString::kIgnoreCase)) hasStation = kTRUE;
     if (dName.Contains("unit", TString::kIgnoreCase)) hasUnit = kTRUE;
   }
-  if (hasUnit && (!hasStation))
-    fHasStations = kFALSE;
+  if (hasUnit && (!hasStation)) fHasStations = kFALSE;
   else if ((!hasUnit) && hasStation)
     fHasStations = kTRUE;
   else if (hasUnit && hasStation)
     LOG(fatal) << GetName() << ": geometry contains both units and stations!";
   else
-    LOG(fatal) << GetName()
-               << ": geometry contains neither units nor stations!";
+    LOG(fatal) << GetName() << ": geometry contains neither units nor stations!";
 
-  if (fHasStations)
-    LOG(warn) << GetName() << ": using old geometry (with stations)";
+  if (fHasStations) LOG(warn) << GetName() << ": using old geometry (with stations)";
 
   // --- Recursively initialise daughter elements
   InitDaughters();
@@ -370,7 +370,8 @@ Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo) {
 
 
 // -----   Read geometry from geometry file   ------------------------------
-Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
+Bool_t CbmStsSetup::ReadGeometry(const char* fileName)
+{
 
   LOG(info) << fName << ": Reading geometry from file " << fileName;
 
@@ -390,8 +391,7 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
   }
 
   // Create a new TGeoManager
-  TGeoManager* stsGeometry =
-    new TGeoManager("StsGeo", "STS stand-alone geometry");
+  TGeoManager* stsGeometry = new TGeoManager("StsGeo", "STS stand-alone geometry");
 
   // --- Get top volume from file
   TGeoVolume* topVolume = nullptr;
@@ -444,15 +444,12 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
 
   // --- Check for old geometry (with stations) or new geometry (with units)
   TString dName = fNode->GetNode()->GetDaughter(0)->GetName();
-  if (dName.Contains("station", TString::kIgnoreCase))
-    fHasStations = kTRUE;
+  if (dName.Contains("station", TString::kIgnoreCase)) fHasStations = kTRUE;
   else if (dName.Contains("unit", TString::kIgnoreCase))
     fHasStations = kFALSE;
   else
-    LOG(fatal) << GetName() << ": unknown geometry type; first level name is "
-               << dName;
-  if (fHasStations)
-    LOG(warn) << GetName() << ": using old geometry (with stations)";
+    LOG(fatal) << GetName() << ": unknown geometry type; first level name is " << dName;
+  if (fHasStations) LOG(warn) << GetName() << ": using old geometry (with stations)";
 
   // --- Recursively initialise daughter elements
   InitDaughters();
@@ -465,7 +462,8 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
 
 
 // -----   Set module parameters from parameter set   ----------------------
-UInt_t CbmStsSetup::SetModuleParameters(CbmStsParSetModule* params) {
+UInt_t CbmStsSetup::SetModuleParameters(CbmStsParSetModule* params)
+{
   UInt_t nModules = 0;
   for (auto& moduleIt : fModules) {
     UInt_t address = moduleIt.first;
@@ -480,7 +478,8 @@ UInt_t CbmStsSetup::SetModuleParameters(CbmStsParSetModule* params) {
 
 
 // -----   Set the sensor conditions from the parameter set   --------------
-UInt_t CbmStsSetup::SetSensorConditions(CbmStsParSetSensorCond* conds) {
+UInt_t CbmStsSetup::SetSensorConditions(CbmStsParSetSensorCond* conds)
+{
 
   UInt_t nSensors = 0;
   for (auto& sensorIt : fSensors) {
@@ -496,7 +495,8 @@ UInt_t CbmStsSetup::SetSensorConditions(CbmStsParSetSensorCond* conds) {
 
 
 // -----   Set the sensor parameters   -------------------------------------
-UInt_t CbmStsSetup::SetSensorParameters(CbmStsParSetSensor* parSet) {
+UInt_t CbmStsSetup::SetSensorParameters(CbmStsParSetSensor* parSet)
+{
   UInt_t nSensors = 0;
   for (auto& sensorIt : fSensors) {
     UInt_t address = sensorIt.first;

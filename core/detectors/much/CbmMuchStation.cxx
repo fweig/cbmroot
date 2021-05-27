@@ -25,7 +25,9 @@ CbmMuchStation::CbmMuchStation()
   , fModuleDesign(kFALSE)
   , fTubeRmin(0.)
   , fTubeRmax(0.)
-  , fTubeZ(0.) {}
+  , fTubeZ(0.)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -39,7 +41,9 @@ CbmMuchStation::CbmMuchStation(Int_t iStation, Double_t z)
   , fModuleDesign(kFALSE)
   , fTubeRmin(0.)
   , fTubeRmax(0.)
-  , fTubeZ(0.) {}
+  , fTubeZ(0.)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -52,7 +56,8 @@ void CbmMuchStation::AddLayer(CbmMuchLayer* layer) { fLayers.Add(layer); }
 
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchStation::GetTubeDz() const {
+Double_t CbmMuchStation::GetTubeDz() const
+{
   Double_t dzmax = 0;
 
   for (Int_t l = 0; l < GetNLayers(); l++) {

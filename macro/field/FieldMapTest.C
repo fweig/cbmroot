@@ -10,8 +10,8 @@
 //
 // --------------------------------------------------------------------------
 
-void FieldMapTest(TString fieldMap   = "field_v18a",
-                  Bool_t create_file = kFALSE) {
+void FieldMapTest(TString fieldMap = "field_v18a", Bool_t create_file = kFALSE)
+{
 
   // -------  Get magnetic field  -----------------------------------------
   // Somehow this information should be extracted from the map itself
@@ -116,8 +116,8 @@ void FieldMapTest(TString fieldMap   = "field_v18a",
 
     f->Write();
     f->Close();
-
-  } else {
+  }
+  else {
 
     Double_t targX_map = magField->GetPositionX();
     Double_t targY_map = magField->GetPositionY();
@@ -228,9 +228,8 @@ void FieldMapTest(TString fieldMap   = "field_v18a",
     if (nY != nY_map) test_ok = kFALSE;
     if (nZ != nZ_map) test_ok = kFALSE;
 
-    if (test_ok) {
-      cout << "Compared field information is ok." << endl;
-    } else {
+    if (test_ok) { cout << "Compared field information is ok." << endl; }
+    else {
       cout << "Compared field information differ." << endl;
     }
 
@@ -242,13 +241,12 @@ void FieldMapTest(TString fieldMap   = "field_v18a",
       bX_map = magField->GetBx(posX, posY, posZ) / 10.;
       bY_map = magField->GetBy(posX, posY, posZ) / 10.;
       bZ_map = magField->GetBz(posX, posY, posZ) / 10.;
-      if (bX == bX_map && bY == bY_map && bZ == bZ_map) {
-        compare_equal++;
-      } else if ((bX - bX_map) / bX_map < compare_range
-                 && (bY - bY_map) / bY_map < compare_range
-                 && (bZ - bZ_map) / bZ_map < compare_range) {
+      if (bX == bX_map && bY == bY_map && bZ == bZ_map) { compare_equal++; }
+      else if ((bX - bX_map) / bX_map < compare_range && (bY - bY_map) / bY_map < compare_range
+               && (bZ - bZ_map) / bZ_map < compare_range) {
         compare_in_range++;
-      } else {
+      }
+      else {
         compare_wrong++;
       }
     }
@@ -256,23 +254,20 @@ void FieldMapTest(TString fieldMap   = "field_v18a",
 
     f->Close();
 
-    if (compare_equal > 0) {
-      cout << compare_equal << " checked field values are equal." << endl;
-    }
+    if (compare_equal > 0) { cout << compare_equal << " checked field values are equal." << endl; }
     if (compare_in_range > 0) {
-      cout << compare_in_range << " checked field values are of by less then "
-           << compare_range * 100 << " %." << endl;
+      cout << compare_in_range << " checked field values are of by less then " << compare_range * 100 << " %." << endl;
     }
     if (compare_wrong > 0) {
-      cout << compare_wrong << " checked field values are of by more then "
-           << compare_range * 100 << " %." << endl;
+      cout << compare_wrong << " checked field values are of by more then " << compare_range * 100 << " %." << endl;
       test_ok = kFALSE;
     }
 
     if (test_ok) {
       cout << "Test Passed" << endl;
       cout << "All ok" << endl;
-    } else {
+    }
+    else {
       cout << "Test failed" << endl;
     }
   }

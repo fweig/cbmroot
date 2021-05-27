@@ -1,9 +1,6 @@
-void pl_cmp_CluRate(Int_t iNSt      = 3,
-                    Long_t iSet     = 900032500,
-                    Int_t iOpt      = 0,
-                    Double_t Tstart = 0.,
-                    Double_t Tend   = 10.,
-                    Int_t iMode     = 1) {
+void pl_cmp_CluRate(Int_t iNSt = 3, Long_t iSet = 900032500, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 10.,
+                    Int_t iMode = 1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -59,12 +56,8 @@ void pl_cmp_CluRate(Int_t iNSt      = 3,
 
     TString hname = "";
     switch (iOpt) {
-      case 0:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iType[iSt], iSm, iRp);
-        break;
-      case 1:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iType[iSt], iSm, iRp);
-        break;
+      case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iType[iSt], iSm, iRp); break;
+      case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iType[iSt], iSm, iRp); break;
     }
     h[iSt] = (TH1*) gROOT->FindObjectAny(hname);
     if (h[iSt] != NULL) {
@@ -87,13 +80,13 @@ void pl_cmp_CluRate(Int_t iNSt      = 3,
           h[iSt]->SetLineColor(iCol);
           h[iSt]->SetLineStyle(1);
           h[iSt]->SetMarkerColor(iCol);
-          if (iSt == 0)
-            h[iSt]->Draw("LPE");
+          if (iSt == 0) h[iSt]->Draw("LPE");
           else
             h[iSt]->Draw("LPEsame");
           break;
       }
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }
@@ -111,8 +104,7 @@ void pl_cmp_CluRate(Int_t iNSt      = 3,
     hrat1[iSt]->SetYTitle(Form("Ratio to %03d", iId_full[0]));
     hrat1[iSt]->SetMaximum(RatMax);
     hrat1[iSt]->SetMinimum(RatMin);
-    if (iSt == 1)
-      hrat1[iSt]->Draw("LPE");
+    if (iSt == 1) hrat1[iSt]->Draw("LPE");
     else
       hrat1[iSt]->Draw("LPEsame");
   }
@@ -130,8 +122,7 @@ void pl_cmp_CluRate(Int_t iNSt      = 3,
     hrat2[iSt]->SetMaximum(RatMax);
     hrat2[iSt]->SetMinimum(RatMin);
     gPad->SetLogy();
-    if (iSt == 2)
-      hrat2[iSt]->Draw("LPE");
+    if (iSt == 2) hrat2[iSt]->Draw("LPE");
     else
       hrat2[iSt]->Draw("LPEsame");
   }

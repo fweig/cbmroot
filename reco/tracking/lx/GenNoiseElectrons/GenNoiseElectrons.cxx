@@ -23,9 +23,12 @@ ClassImp(LxGenNoiseElectrons)
   , fTrdPoints(0)
   , fOutMCTracks(0)
   , fOutMuchPoints(0)
-  , fOutTrdPoints(0) {}
+  , fOutTrdPoints(0)
+{
+}
 
-LxGenNoiseElectrons::~LxGenNoiseElectrons() {
+LxGenNoiseElectrons::~LxGenNoiseElectrons()
+{
   delete fOutMCTracks;
   delete fOutMuchPoints;
   delete fOutTrdPoints;
@@ -34,7 +37,8 @@ LxGenNoiseElectrons::~LxGenNoiseElectrons() {
 static Double_t x_rmss[4][3];
 static Double_t y_rmss[4][3];
 
-static Double_t GetRMS(const char* name) {
+static Double_t GetRMS(const char* name)
+{
   Double_t result = -1.;
   char fileName[128];
   sprintf(fileName, "%s.root", name);
@@ -44,7 +48,7 @@ static Double_t GetRMS(const char* name) {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(fileName);
+  TFile* f = new TFile(fileName);
 
   if (!f->IsZombie()) {
     TH1F* h = static_cast<TH1F*>(f->Get(name));
@@ -62,7 +66,8 @@ static Double_t GetRMS(const char* name) {
   return result;
 }
 
-InitStatus LxGenNoiseElectrons::Init() {
+InitStatus LxGenNoiseElectrons::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (0 == ioman) LOG(fatal) << "No FairRootManager";
@@ -71,8 +76,7 @@ InitStatus LxGenNoiseElectrons::Init() {
   fMuchPoints = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
   fTrdPoints  = static_cast<TClonesArray*>(ioman->GetObject("TrdPoint"));
 
-  if (0 == fMCTracks || 0 == fMuchPoints || 0 == fTrdPoints)
-    LOG(fatal) << "No MC tracks or points";
+  if (0 == fMCTracks || 0 == fMuchPoints || 0 == fTrdPoints) LOG(fatal) << "No MC tracks or points";
 
   char name[128];
 
@@ -109,7 +113,8 @@ InitStatus LxGenNoiseElectrons::Init() {
   return kSUCCESS;
 }
 
-void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
+void LxGenNoiseElectrons::Exec(Option_t* /*opt*/)
+{
   fOutMCTracks->Delete();
   fOutMuchPoints->Delete();
   fOutTrdPoints->Delete();
@@ -118,8 +123,7 @@ void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
   TClonesArray& mctref = *fOutMCTracks;
 
   for (Int_t i = 0; i < nofMCTracks; ++i) {
-    const CbmMCTrack* mcTrack =
-      static_cast<const CbmMCTrack*>(fMCTracks->At(i));
+    const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->At(i));
     new (mctref[i]) CbmMCTrack(*mcTrack);
   }
 
@@ -127,8 +131,7 @@ void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
   TClonesArray& mpref = *fOutMuchPoints;
 
   for (Int_t i = 0; i < nofMuchPoints; ++i) {
-    const CbmMuchPoint* muchPoint =
-      static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
+    const CbmMuchPoint* muchPoint = static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
     new (mpref[i]) CbmMuchPoint(*muchPoint);
   }
 
@@ -136,20 +139,16 @@ void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
   TClonesArray& tpref = *fOutTrdPoints;
 
   for (Int_t i = 0; i < nofTrdPoints; ++i) {
-    const CbmTrdPoint* trdPoint =
-      static_cast<const CbmTrdPoint*>(fTrdPoints->At(i));
+    const CbmTrdPoint* trdPoint = static_cast<const CbmTrdPoint*>(fTrdPoints->At(i));
     new (tpref[i]) CbmTrdPoint(*trdPoint);
   }
 
   Int_t ind = nofMuchPoints;
 
   for (Int_t i = 0; i < nofMuchPoints; ++i) {
-    const CbmMuchPoint* pMuchPt =
-      static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
-    Int_t stationNumber =
-      CbmMuchGeoScheme::GetStationIndex(pMuchPt->GetDetectorId());
-    Int_t layerNumber =
-      CbmMuchGeoScheme::GetLayerIndex(pMuchPt->GetDetectorId());
+    const CbmMuchPoint* pMuchPt = static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
+    Int_t stationNumber         = CbmMuchGeoScheme::GetStationIndex(pMuchPt->GetDetectorId());
+    Int_t layerNumber           = CbmMuchGeoScheme::GetLayerIndex(pMuchPt->GetDetectorId());
 
     for (int j = 0; j < fNofNoiseE; ++j) {
       TVector3 posIn;
@@ -159,10 +158,8 @@ void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
       TVector3 posDelta = posOut - posIn;
 
       for (int k = 0; k < 20; ++k) {
-        TVector3 noiseDelta(
-          gRandom->Gaus(0, x_rmss[stationNumber][layerNumber]),
-          gRandom->Gaus(0, y_rmss[stationNumber][layerNumber]),
-          0);
+        TVector3 noiseDelta(gRandom->Gaus(0, x_rmss[stationNumber][layerNumber]),
+                            gRandom->Gaus(0, y_rmss[stationNumber][layerNumber]), 0);
         TVector3 newIn = posIn + noiseDelta;
         TGeoNode* node = gGeoManager->FindNode(newIn.X(), newIn.Y(), newIn.Z());
 
@@ -173,7 +170,7 @@ void LxGenNoiseElectrons::Exec(Option_t* /*opt*/) {
         if (!nodeName.Contains("active", TString::kIgnoreCase)) continue;
 
         TVector3 newOut = newIn + 0.5 * posDelta;
-        node = gGeoManager->FindNode(newOut.X(), newOut.Y(), newOut.Z());
+        node            = gGeoManager->FindNode(newOut.X(), newOut.Y(), newOut.Z());
 
         if (0 == node) continue;
 

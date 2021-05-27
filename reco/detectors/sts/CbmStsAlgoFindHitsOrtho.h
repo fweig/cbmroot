@@ -8,6 +8,7 @@
 
 
 #include <Rtypes.h>
+
 #include <cassert>
 
 class TGeoHMatrix;
@@ -68,18 +69,9 @@ public:
      ** @param matrix   Transformation matrix from local to global C.S.
      ** @return Number of created hits
      **/
-  Long64_t Exec(const std::vector<CbmStsCluster>& clustersF,
-                const std::vector<CbmStsCluster>& clustersB,
-                std::vector<CbmStsHit>& hits,
-                UInt_t address,
-                Double_t timeCutSig,
-                Double_t timeCutAbs,
-                UInt_t nStripsF,
-                UInt_t nStripsB,
-                Double_t pitchF,
-                Double_t pitchB,
-                Double_t lorentzF,
-                Double_t lorentzB,
+  Long64_t Exec(const std::vector<CbmStsCluster>& clustersF, const std::vector<CbmStsCluster>& clustersB,
+                std::vector<CbmStsHit>& hits, UInt_t address, Double_t timeCutSig, Double_t timeCutAbs, UInt_t nStripsF,
+                UInt_t nStripsB, Double_t pitchF, Double_t pitchB, Double_t lorentzF, Double_t lorentzB,
                 TGeoHMatrix* matrix);
 
 
@@ -97,17 +89,9 @@ private:
      ** @param du       Error in u coordinate (across strips front side) [cm]
      ** @param dv       Error in v coordinate (across strips back side) [cm]
      **/
-  void CreateHit(Double_t xLocal,
-                 Double_t yLocal,
-                 Double_t varX,
-                 Double_t varY,
-                 Double_t varXY,
-                 const CbmStsCluster& clusterF,
-                 const CbmStsCluster& clusterB,
-                 UInt_t indexF,
-                 UInt_t indexB,
-                 Double_t du = 0.,
-                 Double_t dv = 0.);
+  void CreateHit(Double_t xLocal, Double_t yLocal, Double_t varX, Double_t varY, Double_t varXY,
+                 const CbmStsCluster& clusterF, const CbmStsCluster& clusterB, UInt_t indexF, UInt_t indexB,
+                 Double_t du = 0., Double_t dv = 0.);
 
 
   /** Get the cluster position at the top edge of the sensor.
@@ -117,8 +101,7 @@ private:
      **
      ** A correction for the Lorentz shift is applied.
      **/
-  void
-  GetClusterPosition(Double_t ClusterCentre, Double_t& xCluster, Int_t& side);
+  void GetClusterPosition(Double_t ClusterCentre, Double_t& xCluster, Int_t& side);
 
 
   /** Get the side of the sensor from the module channel number
@@ -127,7 +110,8 @@ private:
      ** @param channel  Channel number
      ** @return Sensor side ( 0 = front, 1 = back)
      **/
-  Int_t GetSide(Double_t channel) const {
+  Int_t GetSide(Double_t channel) const
+  {
     assert(channel < fNofStripsF + fNofStripsB);
     return (channel < Double_t(fNofStripsF) ? 0 : 1);
   }
@@ -152,10 +136,7 @@ private:
      **
      ** For each intersection point, a hit is created.
      **/
-  Int_t IntersectClusters(const CbmStsCluster& clusterF,
-                          const CbmStsCluster& clusterB,
-                          UInt_t indexF,
-                          UInt_t indexB);
+  Int_t IntersectClusters(const CbmStsCluster& clusterF, const CbmStsCluster& clusterB, UInt_t indexF, UInt_t indexB);
 
 
   /** @brief Check whether a point (x,y) is inside the active area.

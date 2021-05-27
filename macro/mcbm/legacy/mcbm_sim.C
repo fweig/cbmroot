@@ -54,7 +54,8 @@ Int_t fieldSymType  = 0;
 TString defaultInputFile = "";
 
 //void mcbm_sim(Int_t nEvents = 20, const char* setup = "sis18_mcbm")
-void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm") {
+void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -99,13 +100,13 @@ void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm") {
   // created by the placement of the target.
   //
   TString targetElement    = "Gold";
-  Double_t targetThickness = 0.1;  // full thickness in cm
-  Double_t targetDiameter  = 0.5;  // diameter in cm
-  Double_t targetPosX      = 0.;   // target x position in global c.s. [cm]
-  Double_t targetPosY      = 0.;   // target y position in global c.s. [cm]
-  Double_t targetPosZ      = 0.;   // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;    // target rotation angle around the y axis [deg]
-  Double_t beamRotY   = -20.;  // beam rotation angle around the y axis [deg]
+  Double_t targetThickness = 0.1;   // full thickness in cm
+  Double_t targetDiameter  = 0.5;   // diameter in cm
+  Double_t targetPosX      = 0.;    // target x position in global c.s. [cm]
+  Double_t targetPosY      = 0.;    // target y position in global c.s. [cm]
+  Double_t targetPosZ      = 0.;    // target z position in global c.s. [cm]
+  Double_t targetRotY      = 0.;    // target rotation angle around the y axis [deg]
+  Double_t beamRotY        = -20.;  // beam rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -174,8 +175,7 @@ void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm") {
   }
 
   // --- Target
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   //  target->SetRotation(targetRotY);
   run->AddModule(target);
@@ -294,9 +294,7 @@ void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm") {
   CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   uniGen->SetEventPlane(0., 360.);
   primGen->AddGenerator(uniGen);
-  primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180.,
-                        0,
-                        0,
+  primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180., 0, 0,
                         0);  // set direction of beam to 30 degrees
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
@@ -375,9 +373,7 @@ void mcbm_sim(Int_t nEvents = 2, const char* setup = "sis18_mcbm") {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
   //  if (hasFairMonitor) {

@@ -10,11 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorTof(TString inFile           = "",
-                TString sHostname        = "localhost",
-                Int_t iServerRefreshRate = 100,
-                Int_t iServerHttpPort    = 8080,
-                TString sHistoFile       = "data/HistosMonitorTof.root") {
+void MonitorTof(TString inFile = "", TString sHostname = "localhost", Int_t iServerRefreshRate = 100,
+                Int_t iServerHttpPort = 8080, TString sHistoFile = "data/HistosMonitorTof.root")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = srcDir + "/input/";
   //  if( "" != inFile )
@@ -84,9 +82,7 @@ void MonitorTof(TString inFile           = "",
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }
@@ -118,8 +114,7 @@ void MonitorTof(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -129,8 +124,7 @@ void MonitorTof(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -1,4 +1,5 @@
-void fit_speed(Int_t nEvents = 10000) {
+void fit_speed(Int_t nEvents = 10000)
+{
   TString dir              = "/d/cbm02/andrey/std13_10mu/";
   TString mcFile           = dir + "mc.0000.root";
   TString globalTracksFile = dir + "global.tracks.ideal.0000.root";
@@ -25,8 +26,7 @@ void fit_speed(Int_t nEvents = 10000) {
   test->SetNofMuchHits(13);
   run->AddTask(test);
   // -------------------------------------------------------------------------
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir      = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString stsDigiFile = parDir + "/sts/sts_standard.digi.par";
   // -----  Parameter database   --------------------------------------------
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
@@ -51,8 +51,7 @@ void fit_speed(Int_t nEvents = 10000) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

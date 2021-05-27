@@ -56,9 +56,8 @@
   rtdb->setFirstInput(parIo);
 
   // Get geometry parameter container for PASSIVE and RICH
-  CbmGeoPassivePar* passSet =
-    (CbmGeoPassivePar*) rtdb->getContainer("CbmGeoPassivePar");
-  CbmGeoRichPar* richSet = (CbmGeoRichPar*) rtdb->getContainer("CbmGeoRichPar");
+  CbmGeoPassivePar* passSet = (CbmGeoPassivePar*) rtdb->getContainer("CbmGeoPassivePar");
+  CbmGeoRichPar* richSet    = (CbmGeoRichPar*) rtdb->getContainer("CbmGeoRichPar");
 
   // Init run and geometry
   cout << endl << "=====>  Initialising run..." << endl;
@@ -78,25 +77,25 @@
   if (!target) {
     cout << "Warning: target node not found!" << endl;
     targX = targY = targZ = 0.;
-  } else {
+  }
+  else {
     v1    = target->getLabTransform()->getTranslation();
     v2    = target->getCenterPosition().getTranslation();
     targX = v1.X() + v2.X();
     targY = v1.Y() + v2.Y();
     targZ = v1.Z() + v2.Z();
-    cout << "=====>  Target position ( " << targX << ", " << targY << ", "
-         << targZ << " ) cm" << endl;
+    cout << "=====>  Target position ( " << targX << ", " << targY << ", " << targZ << " ) cm" << endl;
   }
   fzref1 = targZ;
 
   TObjArray* richActNodes  = richSet->GetGeoSensitiveNodes();
   TObjArray* richPassNodes = richSet->GetGeoPassiveNodes();
-  FairGeoNode* richEnt =
-    (FairGeoNode*) richPassNodes->FindObject("rich1entrance");
+  FairGeoNode* richEnt     = (FairGeoNode*) richPassNodes->FindObject("rich1entrance");
   if (!richEnt) {
     cout << "Warning: RICH entrance node not found!" << endl;
     fzref2 = 200.;
-  } else {
+  }
+  else {
     v1     = richEnt->getLabTransform()->getTranslation();
     v2     = richEnt->getCenterPosition().getTranslation();
     fzref2 = v1.Z() + v2.Z();
@@ -106,7 +105,8 @@
   if (!richPm) {
     cout << "Warning: RICH PM node not found!" << endl;
     fzref3 = 200.;
-  } else {
+  }
+  else {
     v1     = richPm->getLabTransform()->getTranslation();
     v2     = richPm->getCenterPosition().getTranslation();
     fzref3 = v1.Z() + v2.Z();
@@ -120,8 +120,7 @@
   CbmField* field = run->GetField();
   field->Print();
   Int_t type = field->GetType();
-  if (type >= 1 && type <= 3)
-    const char* mapFile = ((CbmFieldMap*) field)->GetFileName();
+  if (type >= 1 && type <= 3) const char* mapFile = ((CbmFieldMap*) field)->GetFileName();
   // ----------------------------------------------------------------------
 
 
@@ -373,8 +372,7 @@
 
 
   TString fieldType = "";
-  if (type == 0)
-    fieldType = "Constant field";
+  if (type == 0) fieldType = "Constant field";
   else if (type == 1)
     fieldType = "Field map";
   else if (type == 2)
@@ -412,8 +410,7 @@
     sprintf(t1, "Centre position (%.2f, %.2f, %.2f) cm", xp, yp, zp);
     info->AddText(0.05, 0.3, t1);
     Double_t scale = ((CbmFieldMap*) field)->GetScale();
-    sprintf(
-      t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
+    sprintf(t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
     info->AddText(0.05, 0.1, t1);
   }
   info.Draw();

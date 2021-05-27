@@ -54,8 +54,7 @@ private:
   CbmVertex* fPrimVertex;
   CbmKFVertex fKFVertex;
 
-  std::vector<TH1*>
-    fHistoList_test2;  // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_test2;  // list of all histograms related to rich rings
 
 
   // arrays for CombinePhotons_STSonly()

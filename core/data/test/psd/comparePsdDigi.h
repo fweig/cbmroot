@@ -1,11 +1,8 @@
 #ifndef COMPAREPSDDIGI_H
 #define COMPAREPSDDIGI_H 1
 
-void comparePsdDigiDataMembers(CbmPsdDigi& test,
-                               Int_t address,
-                               ECbmModuleId systemid,
-                               Double_t time,
-                               Double_t edep) {
+void comparePsdDigiDataMembers(CbmPsdDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t edep)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};

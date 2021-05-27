@@ -12,12 +12,12 @@
 #ifndef CBMMUCHSTATION_H
 #define CBMMUCHSTATION_H 1
 
+#include "CbmMuchLayer.h"  // for CbmMuchLayer
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Double32_t
 #include <TObjArray.h>   // for TObjArray
 #include <TObject.h>     // for TObject
-
-#include "CbmMuchLayer.h"  // for CbmMuchLayer
 
 class CbmMuchStation : public TObject {
 public:
@@ -55,9 +55,7 @@ public:
   Double_t GetTubeZ() const { return fTubeZ; }
   Bool_t IsModuleDesign() const { return fModuleDesign; }
 
-  CbmMuchLayer* GetLayer(Int_t iLayer) const {
-    return (CbmMuchLayer*) fLayers.At(iLayer);
-  }
+  CbmMuchLayer* GetLayer(Int_t iLayer) const { return (CbmMuchLayer*) fLayers.At(iLayer); }
 
   /** Add one sector to the array **/
   void AddLayer(CbmMuchLayer* layer);
@@ -69,16 +67,15 @@ public:
   Double_t GetTubeDz() const;
 
 protected:
-  Int_t fDetectorId;  // Unique detector ID
-  Double32_t fZ;  // z position of station center (midplane) [cm] in global cs
-  TObjArray fLayers;  // Array of CbmMuchLayers
-  Double_t fRmin;     // Minimum radius of the station acceptance [cm]
-  Double_t fRmax;     // Maximum radius of the station acceptance [cm]
-  Bool_t
-    fModuleDesign;     // 1 - detailed module design, 0 - simple 1-module design
-  Double_t fTubeRmin;  // Station tube Rmin
-  Double_t fTubeRmax;  // Station tube Rmax
-  Double_t fTubeZ;     // Station tube z position relative to much cave
+  Int_t fDetectorId;     // Unique detector ID
+  Double32_t fZ;         // z position of station center (midplane) [cm] in global cs
+  TObjArray fLayers;     // Array of CbmMuchLayers
+  Double_t fRmin;        // Minimum radius of the station acceptance [cm]
+  Double_t fRmax;        // Maximum radius of the station acceptance [cm]
+  Bool_t fModuleDesign;  // 1 - detailed module design, 0 - simple 1-module design
+  Double_t fTubeRmin;    // Station tube Rmin
+  Double_t fTubeRmax;    // Station tube Rmax
+  Double_t fTubeZ;       // Station tube z position relative to much cave
   ClassDef(CbmMuchStation, 1);
 };
 #endif

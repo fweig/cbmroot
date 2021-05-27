@@ -1,5 +1,9 @@
 #include "CbmRichMCbmSEDisplay.h"
 
+#include "CbmRichHit.h"
+#include "CbmRichRing.h"
+#include "CbmTofTracklet.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TEllipse.h"
@@ -7,13 +11,8 @@
 #include "TLine.h"
 #include "TMarker.h"
 #include "TPad.h"
-#include <TBox.h>
-
-#include "CbmRichHit.h"
-#include "CbmRichRing.h"
-#include "CbmTofTracklet.h"
-
 #include "TSystem.h"
+#include <TBox.h>
 
 #include <sstream>
 #include <string>
@@ -29,7 +28,9 @@ CbmRichMCbmSEDisplay::CbmRichMCbmSEDisplay()
   , fNofDrawnEvents(0)
   , fMaxNofDrawnEvents(100)
   , fOutputDir("result")
-  , fHM(nullptr) {}
+  , fHM(nullptr)
+{
+}
 
 CbmRichMCbmSEDisplay::CbmRichMCbmSEDisplay(CbmHistManager* manager)
   : fRichHits(nullptr)
@@ -41,12 +42,13 @@ CbmRichMCbmSEDisplay::CbmRichMCbmSEDisplay(CbmHistManager* manager)
   , fNofDrawnEvents(0)
   , fMaxNofDrawnEvents(100)
   , fOutputDir("result")
-  , fHM(manager) {}
+  , fHM(manager)
+{
+}
 
 
-void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
-                                     std::vector<int>& ringIndx,
-                                     bool full = true) {
+void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev, std::vector<int>& ringIndx, bool full = true)
+{
 
   // ---- General Size of PMTs [cm] -------------------------------------------------
   double pmtWidth  = 5.20;
@@ -84,47 +86,26 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
   stringstream ss;
   ss << fFileName << "/CbmEvent" << fNofDrawnEvents;
   TCanvas* c = nullptr;
-  if (full == true) {
-    c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 600, 1250);
-  } else {
+  if (full == true) { c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 600, 1250); }
+  else {
     c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 800, 800);
   }
   c->SetGrid(true, true);
   TPad* pad_event = new TPad("pad_event", "event", 0, 0.20, 1, 1);
   TH2D* pad       = nullptr;
   if (full == true) {
-    pad = new TH2D(ss.str().c_str(),
-                   (ss.str() + ";X [cm];Y [cm]").c_str(),
-                   1,
-                   -18. + fXOffsetHisto + 6.225,
-                   5. + fXOffsetHisto + 6.225,
-                   1,
-                   -26.,
-                   26.);
-  } else {
-    pad = new TH2D(ss.str().c_str(),
-                   (ss.str() + ";X [cm];Y [cm]").c_str(),
-                   1,
-                   -15. + fXOffsetHisto + 6.225,
-                   10. + fXOffsetHisto + 6.225,
-                   1,
-                   -5.,
-                   20);
+    pad = new TH2D(ss.str().c_str(), (ss.str() + ";X [cm];Y [cm]").c_str(), 1, -18. + fXOffsetHisto + 6.225,
+                   5. + fXOffsetHisto + 6.225, 1, -26., 26.);
+  }
+  else {
+    pad = new TH2D(ss.str().c_str(), (ss.str() + ";X [cm];Y [cm]").c_str(), 1, -15. + fXOffsetHisto + 6.225,
+                   10. + fXOffsetHisto + 6.225, 1, -5., 20);
   }
 
-  TPad* pad_time        = new TPad("pad_time", "timeDist", 0, 0, 1, 0.20);
-  TH1D* timeDistRichHit = new TH1D(
-    (ss.str() + "timeDistRichHit").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
-  TH1D* timeDistRichHitToT = new TH1D((ss.str() + "timeDistRichHitToT").c_str(),
-                                      ";LE [ns];Entries",
-                                      200,
-                                      0.0,
-                                      200.);
-  TH1D* timeDistTofTrack   = new TH1D((ss.str() + "timeDistTofTrack").c_str(),
-                                    ";LE [ns];Entries",
-                                    200,
-                                    0.0,
-                                    200.);
+  TPad* pad_time           = new TPad("pad_time", "timeDist", 0, 0, 1, 0.20);
+  TH1D* timeDistRichHit    = new TH1D((ss.str() + "timeDistRichHit").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
+  TH1D* timeDistRichHitToT = new TH1D((ss.str() + "timeDistRichHitToT").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
+  TH1D* timeDistTofTrack   = new TH1D((ss.str() + "timeDistTofTrack").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
   pad_event->Draw();
   pad_time->Draw();
   pad_event->cd();
@@ -137,8 +118,7 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
       for (unsigned int y = 0; y < 9; ++y) {
         double pmtLeft = left + (pmtWidth + pmtGap) * x;
         double pmtTop  = top - (pmtHeight + pmtGap) * y;
-        TBox* box =
-          new TBox(pmtLeft, pmtTop, pmtLeft + pmtWidth, pmtTop - pmtHeight);
+        TBox* box      = new TBox(pmtLeft, pmtTop, pmtLeft + pmtWidth, pmtTop - pmtHeight);
         //box->SetFillColorAlpha(8,0.2);
         box->Draw();
 
@@ -153,10 +133,12 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
             if (pX == 0) {
               xStart = pmtLeft;
               xEnd   = pmtLeft + 0.625;
-            } else if (pX < 7) {
+            }
+            else if (pX < 7) {
               xStart = pmtLeft + 0.625 + 0.6 * (pX - 1);
               xEnd   = pmtLeft + 0.625 + 0.6 * (pX);
-            } else if (pX == 7) {
+            }
+            else if (pX == 7) {
               xStart = pmtLeft + 0.625 + 0.6 * 6;
               xEnd   = pmtLeft + 0.625 * 2 + 0.6 * 6;
             }
@@ -164,10 +146,12 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
             if (pY == 0) {
               yStart = pmtTop;
               yEnd   = pmtTop - 0.625;
-            } else if (pY < 7) {
+            }
+            else if (pY < 7) {
               yStart = pmtTop - 0.625 - 0.6 * (pY - 1);
               yEnd   = pmtTop - 0.625 - 0.6 * (pY);
-            } else if (pY == 7) {
+            }
+            else if (pY == 7) {
               yStart = pmtTop - 0.625 - 0.6 * 6;
               yEnd   = pmtTop - 0.625 * 2 - 0.6 * 6;
             }
@@ -217,7 +201,8 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
     if (doToT(hit)) {  // Good ToT selection
       hitDr->SetFillColor(kCyan);
       timeDistRichHitToT->Fill(hit->GetTime() - ev->GetStartTime());
-    } else {
+    }
+    else {
       hitDr->SetFillColor(kBlue);
     }
     hitZ += hit->GetZ();
@@ -229,12 +214,10 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
 
   // ---- Draw Rich Rings and Ring Hits --------------------------------------------
   for (unsigned int rings = 0; rings < ringIndx.size(); rings++) {
-    CbmRichRing* ring =
-      static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
+    CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
 
     //Draw Ring
-    TEllipse* circle =
-      new TEllipse(ring->GetCenterX(), ring->GetCenterY(), ring->GetRadius());
+    TEllipse* circle = new TEllipse(ring->GetCenterX(), ring->GetCenterY(), ring->GetRadius());
     circle->SetFillStyle(0);
     circle->SetLineWidth(3);
     circle->Draw();
@@ -249,7 +232,8 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
       TEllipse* hitDr = new TEllipse(hit->GetX(), hit->GetY(), .125);
       if (doToT(hit)) {  // Good ToT selection
         hitDr->SetFillColor(kMagenta);
-      } else {
+      }
+      else {
         hitDr->SetFillColor(kRed);
       }
       //hitZ += hit->GetZ();
@@ -263,13 +247,11 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev,
   // ---- Draw Tracks in RICH Plane ------------------------------------------------
   auto nofTofTracks = ev->GetNofData(ECbmDataType::kTofTrack);
   for (int j = 0; j < nofTofTracks; j++) {
-    auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, j);
-    CbmTofTracklet* track =
-      static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+    auto iTofTrack        = ev->GetIndex(ECbmDataType::kTofTrack, j);
+    CbmTofTracklet* track = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
     if (nullptr == track) continue;
     timeDistTofTrack->Fill(track->GetTime() - ev->GetStartTime());
-    TEllipse* hitDr =
-      new TEllipse(track->GetFitX(hitZ), track->GetFitY(hitZ), .25);
+    TEllipse* hitDr = new TEllipse(track->GetFitX(hitZ), track->GetFitY(hitZ), .25);
     hitDr->SetFillColor(kGreen);
     hitDr->Draw();
   }

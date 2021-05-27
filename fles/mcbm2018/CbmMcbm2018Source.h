@@ -8,6 +8,8 @@
 #ifndef CBMMCBM2018SOURCE_H
 #define CBMMCBM2018SOURCE_H
 
+#include "CbmDefs.h"
+
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 #include "TimesliceSource.hpp"
@@ -22,8 +24,6 @@
 #include <map>
 #include <memory>
 #include <unordered_set>
-
-#include "CbmDefs.h"
 
 class CbmMcbmUnpack;
 
@@ -56,15 +56,16 @@ public:
   void Close();
   void Reset();
 
-  void SetFileName(TString name) {
+  void SetFileName(TString name)
+  {
     fFileName = name;
     fInputFileList.Add(new TObjString(name));
   }
   void SetInputDir(TString name) { fDirName = name; }
   void SetHostName(TString name) { fHost = name; }
 
-  void
-  AddUnpacker(CbmMcbmUnpack* unpacker, Int_t flibId, ECbmModuleId /*detId*/) {
+  void AddUnpacker(CbmMcbmUnpack* unpacker, Int_t flibId, ECbmModuleId /*detId*/)
+  {
     fUnpackers.insert(std::pair<Int_t, CbmMcbmUnpack*>(flibId, unpacker));
   }
 
@@ -73,9 +74,7 @@ public:
   UInt_t GetTsCount() { return fTSCounter; }
   UInt_t GetNofTSSinceLastTS() { return fNofTSSinceLastTS; }
 
-  void SetDataReductionMuch(UInt_t uTsReduction = 15) {
-    fuTsReduction = uTsReduction;
-  }
+  void SetDataReductionMuch(UInt_t uTsReduction = 15) { fuTsReduction = uTsReduction; }
 
   void UnpackSingleSpill(Int_t uSpillIdx, UInt_t uSpillStart = 1)
   {
@@ -121,9 +120,8 @@ private:
 
   UInt_t fTSNumber;
   UInt_t fTSCounter;
-  ULong64_t fTSLength = 0;  // used for the creation of the TimesliceMetaData
-  ULong64_t fTSOverlappLength =
-    0;  // used for the creation of the TimesliceMetaData
+  ULong64_t fTSLength         = 0;  // used for the creation of the TimesliceMetaData
+  ULong64_t fTSOverlappLength = 0;  // used for the creation of the TimesliceMetaData
   TStopwatch fTimer;
 
   TH1I* fHistoMissedTS;         //!
@@ -152,8 +150,7 @@ private:
   Int_t FillBuffer();
 
   /// Output ClonesArray
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of meta-data is written to disk
+  Bool_t fbWriteOutput;  //! If ON the output TClonesArray of meta-data is written to disk
   TClonesArray* fTimeSliceMetaDataArray;
 
   ClassDef(CbmMcbm2018Source, 2)

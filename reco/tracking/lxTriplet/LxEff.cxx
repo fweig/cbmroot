@@ -1,7 +1,10 @@
 #include "LxEff.h"
-#include "Lx.h"
-#include <cmath>
+
 #include <set>
+
+#include <cmath>
+
+#include "Lx.h"
 
 //#define LXDRAW
 
@@ -16,8 +19,8 @@ using namespace std;
 LxEff::LxEff(LxFinderTriplet& owner) : finder(owner) {}
 
 #ifdef CLUSTER_MODE
-void LxEff::AnalyzeNotMatched(ofstream& out,
-                              list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
+void LxEff::AnalyzeNotMatched(ofstream& out, list<LxPoint*> hits[LXSTATIONS][LXLAYERS])
+{
   out << "AnalyzeNotMatched:" << endl;
 
   for (Int_t stNum = LXFIRSTSTATION; stNum < LXSTATIONS - 1; ++stNum) {
@@ -34,30 +37,19 @@ void LxEff::AnalyzeNotMatched(ofstream& out,
     Double_t minDtx = 1000;
     Double_t minDty = 1000;
 
-    for (list<LxPoint*>::iterator l0 = lHits[0].begin(); l0 != lHits[0].end();
-         ++l0) {
-      for (list<LxPoint*>::iterator l1 = lHits[1].begin(); l1 != lHits[1].end();
-           ++l1) {
-        for (list<LxPoint*>::iterator l2 = lHits[2].begin();
-             l2 != lHits[2].end();
-             ++l2) {
-          for (list<LxPoint*>::iterator r0 = rHits[0].begin();
-               r0 != rHits[0].end();
-               ++r0) {
-            for (list<LxPoint*>::iterator r1 = rHits[1].begin();
-                 r1 != rHits[1].end();
-                 ++r1) {
-              for (list<LxPoint*>::iterator r2 = rHits[2].begin();
-                   r2 != rHits[2].end();
-                   ++r2) {
+    for (list<LxPoint*>::iterator l0 = lHits[0].begin(); l0 != lHits[0].end(); ++l0) {
+      for (list<LxPoint*>::iterator l1 = lHits[1].begin(); l1 != lHits[1].end(); ++l1) {
+        for (list<LxPoint*>::iterator l2 = lHits[2].begin(); l2 != lHits[2].end(); ++l2) {
+          for (list<LxPoint*>::iterator r0 = rHits[0].begin(); r0 != rHits[0].end(); ++r0) {
+            for (list<LxPoint*>::iterator r1 = rHits[1].begin(); r1 != rHits[1].end(); ++r1) {
+              for (list<LxPoint*>::iterator r2 = rHits[2].begin(); r2 != rHits[2].end(); ++r2) {
                 LxPoint* lPoints[LXLAYERS]       = {*l0, *l1, *l2};
                 LxPoint* rPoints[LXLAYERS]       = {*r0, *r1, *r2};
                 LxRay* rays[LXLAYERS * LXLAYERS] = {};
 
                 for (Int_t i = 0; i < LXLAYERS; ++i) {
                   for (Int_t j = 0; j < LXLAYERS; ++j)
-                    rays[j * LXLAYERS + i] =
-                      new LxRay(rPoints[j], lPoints[i], j * LXLAYERS + i);
+                    rays[j * LXLAYERS + i] = new LxRay(rPoints[j], lPoints[i], j * LXLAYERS + i);
                 }
 
                 for (Int_t i = 0; i < LXLAYERS * LXLAYERS; ++i) {
@@ -109,32 +101,16 @@ void LxEff::AnalyzeNotMatched(ofstream& out,
       }
     }
 
-    out << 4.0
-               * sqrt(minDx * minDx
-                      + finder.caSpace.stations[stNum + 1]->clusterXLimit2)
-             - maxDx
-        << " "
-        << 4.0
-               * sqrt(minDy * minDy
-                      + finder.caSpace.stations[stNum + 1]->clusterYLimit2)
-             - maxDy
-        << " "
-        << 4.0
-               * sqrt(minDtx * minDtx
-                      + finder.caSpace.stations[stNum + 1]->clusterTxLimit2)
-             - maxDtx
-        << " "
-        << 4.0
-               * sqrt(minDty * minDty
-                      + finder.caSpace.stations[stNum + 1]->clusterTyLimit2)
-             - maxDty
-        << endl
+    out << 4.0 * sqrt(minDx * minDx + finder.caSpace.stations[stNum + 1]->clusterXLimit2) - maxDx << " "
+        << 4.0 * sqrt(minDy * minDy + finder.caSpace.stations[stNum + 1]->clusterYLimit2) - maxDy << " "
+        << 4.0 * sqrt(minDtx * minDtx + finder.caSpace.stations[stNum + 1]->clusterTxLimit2) - maxDtx << " "
+        << 4.0 * sqrt(minDty * minDty + finder.caSpace.stations[stNum + 1]->clusterTyLimit2) - maxDty << endl
         << endl;
   }
 }
 
-void LxEff::AnalyzeNotMatched2(ofstream& out,
-                               list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
+void LxEff::AnalyzeNotMatched2(ofstream& out, list<LxPoint*> hits[LXSTATIONS][LXLAYERS])
+{
   out << "AnalyzeNotMatched2:" << endl;
 
   for (Int_t stNum = LXFIRSTSTATION; stNum < LXSTATIONS - 1; ++stNum) {
@@ -145,22 +121,12 @@ void LxEff::AnalyzeNotMatched2(ofstream& out,
     Int_t maxOccupiedLevels    = 0;
     Int_t maxNumPointsWithRays = 0;
 
-    for (list<LxPoint*>::iterator l0 = lHits[0].begin(); l0 != lHits[0].end();
-         ++l0) {
-      for (list<LxPoint*>::iterator l1 = lHits[1].begin(); l1 != lHits[1].end();
-           ++l1) {
-        for (list<LxPoint*>::iterator l2 = lHits[2].begin();
-             l2 != lHits[2].end();
-             ++l2) {
-          for (list<LxPoint*>::iterator r0 = rHits[0].begin();
-               r0 != rHits[0].end();
-               ++r0) {
-            for (list<LxPoint*>::iterator r1 = rHits[1].begin();
-                 r1 != rHits[1].end();
-                 ++r1) {
-              for (list<LxPoint*>::iterator r2 = rHits[2].begin();
-                   r2 != rHits[2].end();
-                   ++r2) {
+    for (list<LxPoint*>::iterator l0 = lHits[0].begin(); l0 != lHits[0].end(); ++l0) {
+      for (list<LxPoint*>::iterator l1 = lHits[1].begin(); l1 != lHits[1].end(); ++l1) {
+        for (list<LxPoint*>::iterator l2 = lHits[2].begin(); l2 != lHits[2].end(); ++l2) {
+          for (list<LxPoint*>::iterator r0 = rHits[0].begin(); r0 != rHits[0].end(); ++r0) {
+            for (list<LxPoint*>::iterator r1 = rHits[1].begin(); r1 != rHits[1].end(); ++r1) {
+              for (list<LxPoint*>::iterator r2 = rHits[2].begin(); r2 != rHits[2].end(); ++r2) {
                 LxPoint* lPoints[LXLAYERS] = {*l0, *l1, *l2};
                 LxPoint* rPoints[LXLAYERS] = {*r0, *r1, *r2};
                 Int_t occupiedLevels       = 0;
@@ -174,9 +140,7 @@ void LxEff::AnalyzeNotMatched2(ofstream& out,
                   for (Int_t j = 0; j < LXLAYERS; ++j) {
                     LxPoint* lPoint = lPoints[j];
 
-                    for (list<LxRay*>::iterator k = rPoint->rays.begin();
-                         k != rPoint->rays.end();
-                         ++k) {
+                    for (list<LxRay*>::iterator k = rPoint->rays.begin(); k != rPoint->rays.end(); ++k) {
                       LxRay* ray = *k;
 
                       if (ray->end == lPoint) {
@@ -187,11 +151,9 @@ void LxEff::AnalyzeNotMatched2(ofstream& out,
                   }
                 }
 
-                if (occupiedLevels > maxOccupiedLevels)
-                  maxOccupiedLevels = occupiedLevels;
+                if (occupiedLevels > maxOccupiedLevels) maxOccupiedLevels = occupiedLevels;
 
-                if (numPointsWithRays > maxNumPointsWithRays)
-                  maxNumPointsWithRays = numPointsWithRays;
+                if (numPointsWithRays > maxNumPointsWithRays) maxNumPointsWithRays = numPointsWithRays;
               }
             }
           }
@@ -199,13 +161,13 @@ void LxEff::AnalyzeNotMatched2(ofstream& out,
       }
     }  // for (list<LxPoint*>::iterator l0 = lHits[0].begin(); l0 != lHits[0].end(); ++l0)
 
-    out << maxOccupiedLevels << " of occupied levels and "
-        << maxNumPointsWithRays << " points with rays" << endl
+    out << maxOccupiedLevels << " of occupied levels and " << maxNumPointsWithRays << " points with rays" << endl
         << endl;
   }
 }
 
-void LxEff::DumpNotMatchedMC(list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
+void LxEff::DumpNotMatchedMC(list<LxPoint*> hits[LXSTATIONS][LXLAYERS])
+{
   AnalyzeNotMatched(finder.incomplete_events, hits);
   AnalyzeNotMatched2(finder.incomplete_events, hits);
   finder.incomplete_events << "Dumping not matched MC track" << endl;
@@ -216,14 +178,11 @@ void LxEff::DumpNotMatchedMC(list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
     for (Int_t j = 0; j < LXLAYERS; ++j) {
       finder.incomplete_events << "L" << j << " ";
 
-      for (list<LxPoint*>::iterator k = hits[i][j].begin();
-           k != hits[i][j].end();
-           ++k) {
+      for (list<LxPoint*>::iterator k = hits[i][j].begin(); k != hits[i][j].end(); ++k) {
         LxPoint* point = *k;
         finder.incomplete_events << "[";
 
-        if (point->track)
-          finder.incomplete_events << "t";
+        if (point->track) finder.incomplete_events << "t";
         else {
           if (point->leftClusteredRay) finder.incomplete_events << "r";
 
@@ -245,16 +204,15 @@ void LxEff::DumpNotMatchedMC(list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
 }
 #endif  //CLUSTER_MODE
 
-void LxEff::AnalyzeNotMatchedMC(ofstream& out,
-                                list<LxPoint*> hits[LXSTATIONS][LXLAYERS]) {
+void LxEff::AnalyzeNotMatchedMC(ofstream& out, list<LxPoint*> hits[LXSTATIONS][LXLAYERS])
+{
   out << "Not matched MC track:" << endl;
   out << "All triplets:   ";
 
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
     Int_t tripletsCount = 0;
 
-    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end();
-         ++j) {
+    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end(); ++j) {
       LxPoint* point = *j;
       tripletsCount += point->triplets.size();
     }
@@ -267,28 +225,21 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
     Int_t trueTripletsCount = 0;
 
-    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end();
-         ++j) {
+    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end(); ++j) {
       LxPoint* point = *j;
 
-      for (list<LxTriplet*>::iterator k = point->triplets.begin();
-           k != point->triplets.end();
-           ++k) {
+      for (list<LxTriplet*>::iterator k = point->triplets.begin(); k != point->triplets.end(); ++k) {
         LxTriplet* triplet = *k;
         LxPoint* lPoint    = triplet->left;
         LxPoint* rPoint    = triplet->right;
         bool trueLPoint    = false;
         bool trueRPoint    = false;
 
-        for (list<LxPoint*>::iterator l = hits[i][0].begin();
-             l != hits[i][0].end();
-             ++l) {
+        for (list<LxPoint*>::iterator l = hits[i][0].begin(); l != hits[i][0].end(); ++l) {
           if (*l == lPoint) trueLPoint = true;
         }
 
-        for (list<LxPoint*>::iterator l = hits[i][2].begin();
-             l != hits[i][2].end();
-             ++l) {
+        for (list<LxPoint*>::iterator l = hits[i][2].begin(); l != hits[i][2].end(); ++l) {
           if (*l == rPoint) trueRPoint = true;
         }
 
@@ -304,35 +255,24 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
     out << "[";
 
-    if (0 == i)
-      out << " ";
+    if (0 == i) out << " ";
     else {
       set<LxTriplet*> neighbours;
 
-      for (list<LxPoint*>::iterator j = hits[i][1].begin();
-           j != hits[i][1].end();
-           ++j) {
+      for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end(); ++j) {
         LxPoint* rPoint = *j;
 
-        for (list<LxTriplet*>::iterator k = rPoint->triplets.begin();
-             k != rPoint->triplets.end();
-             ++k) {
+        for (list<LxTriplet*>::iterator k = rPoint->triplets.begin(); k != rPoint->triplets.end(); ++k) {
           LxTriplet* rTriplet = *k;
 
-          for (list<LxPoint*>::iterator l = hits[i - 1][1].begin();
-               l != hits[i - 1][1].end();
-               ++l) {
+          for (list<LxPoint*>::iterator l = hits[i - 1][1].begin(); l != hits[i - 1][1].end(); ++l) {
             LxPoint* lPoint = *l;
 
-            for (list<LxTriplet*>::iterator m = lPoint->triplets.begin();
-                 m != lPoint->triplets.end();
-                 ++m) {
+            for (list<LxTriplet*>::iterator m = lPoint->triplets.begin(); m != lPoint->triplets.end(); ++m) {
               LxTriplet* lTriplet = *m;
 
-              for (list<pair<LxTriplet*, Double_t>>::iterator n =
-                     rTriplet->neighbours.begin();
-                   n != rTriplet->neighbours.end();
-                   ++n) {
+              for (list<pair<LxTriplet*, Double_t>>::iterator n = rTriplet->neighbours.begin();
+                   n != rTriplet->neighbours.end(); ++n) {
                 pair<LxTriplet*, Double_t>& tc2 = *n;
 
                 if (tc2.first == lTriplet) neighbours.insert(lTriplet);
@@ -358,15 +298,12 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
   Double_t clDyDy2[LXSTATIONS] = {};
 
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
-    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end();
-         ++j) {
+    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end(); ++j) {
       LxPoint* cPoint = *j;
       Double_t cTx    = cPoint->x / cPoint->z;
       Double_t cTy    = cPoint->y / cPoint->z;
 
-      for (list<LxPoint*>::iterator k = hits[i][2].begin();
-           k != hits[i][2].end();
-           ++k) {
+      for (list<LxPoint*>::iterator k = hits[i][2].begin(); k != hits[i][2].end(); ++k) {
         LxPoint* rPoint   = *k;
         Double_t crDeltaZ = rPoint->z - cPoint->z;
         Double_t crTx     = (rPoint->x - cPoint->x) / crDeltaZ;
@@ -384,9 +321,7 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
           crDyDy2[i] = cPoint->dy * cPoint->dy + rPoint->dy * rPoint->dy;
         }
 
-        for (list<LxPoint*>::iterator l = hits[i][0].begin();
-             l != hits[i][0].end();
-             ++l) {
+        for (list<LxPoint*>::iterator l = hits[i][0].begin(); l != hits[i][0].end(); ++l) {
           LxPoint* lPoint   = *l;
           Double_t clDeltaZ = lPoint->z - cPoint->z;
           Double_t clDx     = abs(lPoint->x - cPoint->x - crTx * clDeltaZ);
@@ -394,14 +329,12 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
 
           if (maxClDx[i] < clDx) {
             maxClDx[i] = clDx;
-            clDxDx2[i] = lPoint->dx * lPoint->dx + cPoint->dx * cPoint->dx
-                         + rPoint->dx * rPoint->dx;
+            clDxDx2[i] = lPoint->dx * lPoint->dx + cPoint->dx * cPoint->dx + rPoint->dx * rPoint->dx;
           }
 
           if (maxClDy[i] < clDy) {
             maxClDy[i] = clDy;
-            clDyDy2[i] = lPoint->dy * lPoint->dy + cPoint->dy * cPoint->dy
-                         + rPoint->dy * rPoint->dy;
+            clDyDy2[i] = lPoint->dy * lPoint->dy + cPoint->dy * cPoint->dy + rPoint->dy * rPoint->dy;
           }
         }
       }
@@ -411,32 +344,22 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
   out << endl << "Triplet C-->R X dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS; ++i)
-    out << "["
-        << maxCrDx[i]
-             / sqrt(finder.caSpace.stations[i]->xDispRight2 + crDxDx2[i])
-        << "]";
+    out << "[" << maxCrDx[i] / sqrt(finder.caSpace.stations[i]->xDispRight2 + crDxDx2[i]) << "]";
 
   out << endl << "Triplet C-->R Y dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS; ++i)
-    out << "["
-        << maxCrDy[i]
-             / sqrt(finder.caSpace.stations[i]->yDispRight2 + crDyDy2[i])
-        << "]";
+    out << "[" << maxCrDy[i] / sqrt(finder.caSpace.stations[i]->yDispRight2 + crDyDy2[i]) << "]";
 
   out << endl << "Triplet C-->L X dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS; ++i)
-    out << "["
-        << maxClDx[i] / sqrt(finder.caSpace.stations[i]->xDispRL2 + clDxDx2[i])
-        << "]";
+    out << "[" << maxClDx[i] / sqrt(finder.caSpace.stations[i]->xDispRL2 + clDxDx2[i]) << "]";
 
   out << endl << "Triplet C-->L Y dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS; ++i)
-    out << "["
-        << maxClDy[i] / sqrt(finder.caSpace.stations[i]->yDispRL2 + clDyDy2[i])
-        << "]";
+    out << "[" << maxClDy[i] / sqrt(finder.caSpace.stations[i]->yDispRL2 + clDyDy2[i]) << "]";
 
   Double_t maxDx[LXSTATIONS - 1]   = {};
   Double_t dxDx2[LXSTATIONS - 1]   = {};
@@ -448,24 +371,17 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
   Double_t dtyDty2[LXSTATIONS - 1] = {};
 
   for (Int_t i = 1; i < LXSTATIONS; ++i) {
-    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end();
-         ++j) {
+    for (list<LxPoint*>::iterator j = hits[i][1].begin(); j != hits[i][1].end(); ++j) {
       LxPoint* rPoint = *j;
 
-      for (list<LxPoint*>::iterator k = hits[i - 1][1].begin();
-           k != hits[i - 1][1].end();
-           ++k) {
+      for (list<LxPoint*>::iterator k = hits[i - 1][1].begin(); k != hits[i - 1][1].end(); ++k) {
         LxPoint* lPoint = *k;
         Double_t deltaZ = lPoint->z - rPoint->z;
 
-        for (list<LxPoint*>::iterator l = hits[i][0].begin();
-             l != hits[i][0].end();
-             ++l) {
+        for (list<LxPoint*>::iterator l = hits[i][0].begin(); l != hits[i][0].end(); ++l) {
           LxPoint* rPoint0 = *l;
 
-          for (list<LxPoint*>::iterator m = hits[i][2].begin();
-               m != hits[i][2].end();
-               ++m) {
+          for (list<LxPoint*>::iterator m = hits[i][2].begin(); m != hits[i][2].end(); ++m) {
             LxPoint* rPoint2 = *m;
             Double_t rdz     = rPoint2->z - rPoint0->z;
             Double_t rdz2    = rdz * rdz;
@@ -477,11 +393,9 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
 #ifdef OUT_DISP_BY_TRIPLET_DIR
             Double_t dx = abs(lPoint->x - rPoint->x - rtx * deltaZ);
             Double_t dy = abs(lPoint->y - rPoint->y - rty * deltaZ);
-#else   //OUT_DISP_BY_TRIPLET_DIR
-            Double_t dx =
-              abs(lPoint->x - rPoint->x - deltaZ * rPoint->x / rPoint->z);
-            Double_t dy =
-              abs(lPoint->y - rPoint->y - deltaZ * rPoint->y / rPoint->z);
+#else  //OUT_DISP_BY_TRIPLET_DIR
+            Double_t dx = abs(lPoint->x - rPoint->x - deltaZ * rPoint->x / rPoint->z);
+            Double_t dy = abs(lPoint->y - rPoint->y - deltaZ * rPoint->y / rPoint->z);
 #endif  //OUT_DISP_BY_TRIPLET_DIR
 
             if (dx > maxDx[i - 1]) {
@@ -494,14 +408,10 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
               dyDy2[i - 1] = lPoint->dy2 + rPoint->dy2;
             }
 
-            for (list<LxPoint*>::iterator n = hits[i - 1][0].begin();
-                 n != hits[i - 1][0].end();
-                 ++n) {
+            for (list<LxPoint*>::iterator n = hits[i - 1][0].begin(); n != hits[i - 1][0].end(); ++n) {
               LxPoint* lPoint0 = *n;
 
-              for (list<LxPoint*>::iterator o = hits[i - 1][2].begin();
-                   o != hits[i - 1][2].end();
-                   ++o) {
+              for (list<LxPoint*>::iterator o = hits[i - 1][2].begin(); o != hits[i - 1][2].end(); ++o) {
                 LxPoint* lPoint2 = *o;
                 Double_t ldz     = lPoint2->z - lPoint0->z;
                 Double_t ldz2    = ldz * ldz;
@@ -534,54 +444,35 @@ void LxEff::AnalyzeNotMatchedMC(ofstream& out,
 
   for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
 #ifdef OUT_DISP_BY_TRIPLET_DIR
-    out << "["
-        << maxDx[i]
-             / sqrt(finder.caSpace.stations[i + 1]->xOutDispTriplet2 + dxDx2[i])
-        << "]";
-#else   //OUT_DISP_BY_TRIPLET_DIR
-    out << "["
-        << maxDx[i]
-             / sqrt(finder.caSpace.stations[i + 1]->xOutDispVertex2 + dxDx2[i])
-        << "]";
+    out << "[" << maxDx[i] / sqrt(finder.caSpace.stations[i + 1]->xOutDispTriplet2 + dxDx2[i]) << "]";
+#else  //OUT_DISP_BY_TRIPLET_DIR
+    out << "[" << maxDx[i] / sqrt(finder.caSpace.stations[i + 1]->xOutDispVertex2 + dxDx2[i]) << "]";
 #endif  //OUT_DISP_BY_TRIPLET_DIR
 
   out << endl << "Y dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
 #ifdef OUT_DISP_BY_TRIPLET_DIR
-    out << "["
-        << maxDy[i]
-             / sqrt(finder.caSpace.stations[i + 1]->yOutDispTriplet2 + dyDy2[i])
-        << "]";
-#else   //OUT_DISP_BY_TRIPLET_DIR
-    out << "["
-        << maxDy[i]
-             / sqrt(finder.caSpace.stations[i + 1]->yOutDispVertex2 + dyDy2[i])
-        << "]";
+    out << "[" << maxDy[i] / sqrt(finder.caSpace.stations[i + 1]->yOutDispTriplet2 + dyDy2[i]) << "]";
+#else  //OUT_DISP_BY_TRIPLET_DIR
+    out << "[" << maxDy[i] / sqrt(finder.caSpace.stations[i + 1]->yOutDispVertex2 + dyDy2[i]) << "]";
 #endif  //OUT_DISP_BY_TRIPLET_DIR
 
   out << endl << "Tx dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
-    out << "["
-        << maxDtx[i]
-             / sqrt(finder.caSpace.stations[i + 1]->txInterTripletBreak2
-                    + dtxDtx2[i])
-        << "]";
+    out << "[" << maxDtx[i] / sqrt(finder.caSpace.stations[i + 1]->txInterTripletBreak2 + dtxDtx2[i]) << "]";
 
   out << endl << "Ty dispersions: ";
 
   for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
-    out << "["
-        << maxDty[i]
-             / sqrt(finder.caSpace.stations[i + 1]->tyInterTripletBreak2
-                    + dtyDty2[i])
-        << "]";
+    out << "[" << maxDty[i] / sqrt(finder.caSpace.stations[i + 1]->tyInterTripletBreak2 + dtyDty2[i]) << "]";
 
   out << endl;
 }
 
-static Double_t InterLinesDist(LxTrack* track1, LxTrack* track2) {
+static Double_t InterLinesDist(LxTrack* track1, LxTrack* track2)
+{
   LxTriplet* triplet1 = track1->branches[0];
   LxPoint* point1     = triplet1->center;
   Double_t x1         = point1->x;
@@ -624,7 +515,8 @@ static Double_t InterLinesDist(LxTrack* track1, LxTrack* track2) {
   return interTrackDistance;
 }
 
-static Double_t RecoTrackChi2(LxTrack* recoTrack) {
+static Double_t RecoTrackChi2(LxTrack* recoTrack)
+{
   Double_t breakChi2 = 0;
 
   for (Int_t j = recoTrack->length - 1; j > 0; --j) {
@@ -632,11 +524,10 @@ static Double_t RecoTrackChi2(LxTrack* recoTrack) {
     LxTriplet* lTriplet = recoTrack->branches[j - 1];
 
     LxStation* station = rTriplet->center->layer->station;
-    breakChi2 +=
-      (lTriplet->tx - rTriplet->tx) * (lTriplet->tx - rTriplet->tx)
-        / (station->txInterTripletBreak2 + lTriplet->dtx2 + rTriplet->dtx2)
-      + (lTriplet->ty - rTriplet->ty) * (lTriplet->ty - rTriplet->ty)
-          / (station->tyInterTripletBreak2 + lTriplet->dty2 + rTriplet->dty2);
+    breakChi2 += (lTriplet->tx - rTriplet->tx) * (lTriplet->tx - rTriplet->tx)
+                   / (station->txInterTripletBreak2 + lTriplet->dtx2 + rTriplet->dtx2)
+                 + (lTriplet->ty - rTriplet->ty) * (lTriplet->ty - rTriplet->ty)
+                     / (station->tyInterTripletBreak2 + lTriplet->dty2 + rTriplet->dty2);
   }
 
   breakChi2 /= 2 * (recoTrack->length - 1);
@@ -644,7 +535,8 @@ static Double_t RecoTrackChi2(LxTrack* recoTrack) {
   return breakChi2;
 }
 
-void LxEff::CalcRecoEff(bool joinExt) {
+void LxEff::CalcRecoEff(bool joinExt)
+{
   Double_t result               = 0;
   static Int_t signalRecoTracks = 0;
   static Int_t signalMCTracks   = 0;
@@ -656,31 +548,21 @@ void LxEff::CalcRecoEff(bool joinExt) {
   bool hasPositiveMCTrack = false;
   bool hasNegativeMCTrack = false;
 
-  for (vector<LxMCTrack>::iterator i = finder.MCTracks.begin();
-       i != finder.MCTracks.end();
-       ++i) {
+  for (vector<LxMCTrack>::iterator i = finder.MCTracks.begin(); i != finder.MCTracks.end(); ++i) {
     LxMCTrack& mcTrack = *i;
     Int_t pdgCode      = mcTrack.pdg;
-    map<LxTrack*, Int_t>
-      recoTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
+    map<LxTrack*, Int_t> recoTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
     memset(mcTrack.hitsOnStations, 0, sizeof(mcTrack.hitsOnStations));
     bool isSignal = true;
     list<LxPoint*> mcTrackHits[LXSTATIONS][LXLAYERS];
 
-    for (vector<LxMCPoint*>::iterator j = mcTrack.Points.begin();
-         j != mcTrack.Points.end();
-         ++j) {
+    for (vector<LxMCPoint*>::iterator j = mcTrack.Points.begin(); j != mcTrack.Points.end(); ++j) {
       LxMCPoint* pMCPoint = *j;
 
-      for (list<LxPoint*>::iterator k = pMCPoint->lxPoints.begin();
-           k != pMCPoint->lxPoints.end();
-           ++k) {
-        LxPoint* point = *k;
-        mcTrack.hitsOnStations[point->layer->station->stationNumber]
-                              [point->layer->layerNumber] = true;
-        mcTrackHits[point->layer->station->stationNumber]
-                   [point->layer->layerNumber]
-                     .push_back(point);
+      for (list<LxPoint*>::iterator k = pMCPoint->lxPoints.begin(); k != pMCPoint->lxPoints.end(); ++k) {
+        LxPoint* point                                                                          = *k;
+        mcTrack.hitsOnStations[point->layer->station->stationNumber][point->layer->layerNumber] = true;
+        mcTrackHits[point->layer->station->stationNumber][point->layer->layerNumber].push_back(point);
         LxTrack* track = point->track;
 
         if (0 == track) continue;
@@ -691,8 +573,7 @@ void LxEff::CalcRecoEff(bool joinExt) {
 
         map<LxTrack*, int>::iterator l = recoTracks.find(track);
 
-        if (l != recoTracks.end())
-          ++(l->second);
+        if (l != recoTracks.end()) ++(l->second);
         else
           recoTracks[track] = 1;
       }
@@ -714,22 +595,21 @@ void LxEff::CalcRecoEff(bool joinExt) {
 
       if (hitsOnSt < 3) {
         if (j < finder.caSpace.stationsInAlgo) enoughHits = false;
-      } else
+      }
+      else
         ++mcTrack.stationsWithHits;
     }
 
     Double_t pt2 = mcTrack.px * mcTrack.px + mcTrack.py * mcTrack.py;
 
-    if (!enoughHits || mcTrack.mother_ID >= 0
-        || (pdgCode != 13 && pdgCode != -13)
+    if (!enoughHits || mcTrack.mother_ID >= 0 || (pdgCode != 13 && pdgCode != -13)
         || (finder.pPtCut && (mcTrack.p < 3.0 || pt2 < 1.0)))
       isSignal = false;
     else
       ++signalMCTracks;
 
     if (isSignal) {
-      if (-13 == pdgCode)
-        hasPositiveMCTrack = true;
+      if (-13 == pdgCode) hasPositiveMCTrack = true;
       else
         hasNegativeMCTrack = true;
     }
@@ -737,9 +617,7 @@ void LxEff::CalcRecoEff(bool joinExt) {
     LxTrack* matchTrack = 0;
     Int_t matchedPoints = 0;
 
-    for (map<LxTrack*, Int_t>::iterator j = recoTracks.begin();
-         j != recoTracks.end();
-         ++j) {
+    for (map<LxTrack*, Int_t>::iterator j = recoTracks.begin(); j != recoTracks.end(); ++j) {
       if (0 == matchTrack || matchedPoints < j->second) {
         matchTrack    = j->first;
         matchedPoints = j->second;
@@ -790,16 +668,15 @@ void LxEff::CalcRecoEff(bool joinExt) {
     if (!isSignal) continue;
 
 #ifdef CALC_LINK_WITH_STS_EFF
-    if (0 != matchTrack && matchedPoints >= 0.7 * numberOfMuchMCPoints)
-      matchTrack->mcTracks.push_back(&mcTrack);
+    if (0 != matchTrack && matchedPoints >= 0.7 * numberOfMuchMCPoints) matchTrack->mcTracks.push_back(&mcTrack);
 #endif  //CALC_LINK_WITH_STS_EFF
 
-    if (!joinExt)
-      ++signalRecoTracks;
+    if (!joinExt) ++signalRecoTracks;
     else {
       if (0 == matchTrack->externalTrack) {
         if (0 == mcTrack.externalTrack) ++signalRecoTracks;
-      } else if (matchTrack->externalTrack->track == mcTrack.externalTrack)
+      }
+      else if (matchTrack->externalTrack->track == mcTrack.externalTrack)
         ++signalRecoTracks;
     }
   }
@@ -812,17 +689,14 @@ void LxEff::CalcRecoEff(bool joinExt) {
   //finder.incomplete_events << finder.eventNumber << endl;
 #endif  //MAKE_EFF_CALC
 
-  cout << "LxEff::CalcRecoEff signal efficiency: " << result << "( "
-       << signalRecoTracks << " / " << signalMCTracks << " )" << endl;
-  cout << "LxEff::CalcRecoEff: zero-matched: " << mc2recoZeroMatched
-       << ", incomplete: " << mc2recoIncomplete << endl;
+  cout << "LxEff::CalcRecoEff signal efficiency: " << result << "( " << signalRecoTracks << " / " << signalMCTracks
+       << " )" << endl;
+  cout << "LxEff::CalcRecoEff: zero-matched: " << mc2recoZeroMatched << ", incomplete: " << mc2recoIncomplete << endl;
 
   bool hasPositiveTrack = false;
   bool hasNegativeTrack = false;
 
-  for (list<LxTrack*>::iterator i = finder.caSpace.tracks.begin();
-       i != finder.caSpace.tracks.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = finder.caSpace.tracks.begin(); i != finder.caSpace.tracks.end(); ++i) {
     LxTrack* recoTrack = *i;
 
     if (recoTrack->clone) continue;
@@ -835,17 +709,15 @@ void LxEff::CalcRecoEff(bool joinExt) {
     Double_t particleSign    = firstTriplet->tx - firstPoint->x / firstPoint->z;
     LxTriplet* secondTriplet = recoTrack->branches[1];
     LxPoint* secondPoint     = secondTriplet->center;
-    Double_t tx =
-      (secondPoint->x - firstPoint->x) / (secondPoint->z - firstPoint->z);
-    Double_t particleSign2 = tx - firstPoint->x / firstPoint->z;
+    Double_t tx              = (secondPoint->x - firstPoint->x) / (secondPoint->z - firstPoint->z);
+    Double_t particleSign2   = tx - firstPoint->x / firstPoint->z;
     //    Double_t yAtZ0 = firstPoint->y - firstTriplet->ty * firstPoint->z;
     //    Double_t breakChi2 = RecoTrackChi2(recoTrack);
 
     //if (-9 <= yAtZ0 && 9 >= yAtZ0)
     //if (breakChi2 <= 3)
     {
-      if (particleSign > 0 && particleSign2 > 0)
-        hasPositiveTrack = true;
+      if (particleSign > 0 && particleSign2 > 0) hasPositiveTrack = true;
       else if (particleSign < 0 && particleSign2 < 0)
         hasNegativeTrack = true;
     }
@@ -864,12 +736,11 @@ void LxEff::CalcRecoEff(bool joinExt) {
     if (hasPositiveTrack && hasNegativeTrack) ++numberOfTrueJpsi;
   }
 
-  cout << "LxEff::CalcRecoEff: number of J/Psi hypoteses " << numberOfJpsi
-       << endl;
+  cout << "LxEff::CalcRecoEff: number of J/Psi hypoteses " << numberOfJpsi << endl;
   result = 100 * numberOfTrueJpsi;
   result /= numberOfMCJpsi;
-  cout << "LxEff::CalcRecoEff: J/Psi efficiency " << result << " % ( "
-       << numberOfTrueJpsi << " / " << numberOfMCJpsi << " )" << endl;
+  cout << "LxEff::CalcRecoEff: J/Psi efficiency " << result << " % ( " << numberOfTrueJpsi << " / " << numberOfMCJpsi
+       << " )" << endl;
 
   return;
 
@@ -885,35 +756,28 @@ void LxEff::CalcRecoEff(bool joinExt) {
   static Int_t doesntHaveStsPart2             = 0;
   static Int_t unmatchedButHaveStsPart        = 0;
 
-  for (list<LxTrack*>::iterator i = finder.caSpace.tracks.begin();
-       i != finder.caSpace.tracks.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = finder.caSpace.tracks.begin(); i != finder.caSpace.tracks.end(); ++i) {
     //++recoTracks;
     LxTrack* recoTrack = *i;
 
     if (recoTrack->clone) continue;
 
-    map<LxMCTrack*, Int_t>
-      mcTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
+    map<LxMCTrack*, Int_t> mcTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
 
 #ifdef CLUSTER_MODE
     for (Int_t ii = 0; ii < recoTrack->length; ++ii) {
       LxRay* ray = recoTrack->rays[ii];
 
-      for (list<LxPoint*>::iterator j = ray->clusterPoints.begin();
-           j != ray->clusterPoints.end();
-           ++j) {
+      for (list<LxPoint*>::iterator j = ray->clusterPoints.begin(); j != ray->clusterPoints.end(); ++j) {
         LxPoint* recoPoint = *j;
-#else   //CLUSTER_MODE
+#else  //CLUSTER_MODE
     for (Int_t j = 0; j < finder.caSpace.stationsInAlgo * LXLAYERS; ++j) {
       LxPoint* recoPoint = recoTrack->points[j];
 #endif  //CLUSTER_MODE
 
         if (0 == recoPoint) continue;
 
-        for (list<LxMCPoint*>::iterator k = recoPoint->mcPoints.begin();
-             k != recoPoint->mcPoints.end();
-             ++k) {
+        for (list<LxMCPoint*>::iterator k = recoPoint->mcPoints.begin(); k != recoPoint->mcPoints.end(); ++k) {
           LxMCPoint* mcPoint = *k;
           LxMCTrack* mcTrack = mcPoint->track;
 
@@ -921,22 +785,19 @@ void LxEff::CalcRecoEff(bool joinExt) {
 
           map<LxMCTrack*, Int_t>::iterator mcIter = mcTracks.find(mcTrack);
 
-          if (mcIter == mcTracks.end())
-            mcTracks[mcTrack] = 1;
+          if (mcIter == mcTracks.end()) mcTracks[mcTrack] = 1;
           else
             ++(mcIter->second);
         }
 #ifdef CLUSTER_MODE
       }
 #endif  //CLUSTER_MODE
-    }   // for (Int_t j = 0; j < (LXSTATIONS - LXFIRSTSTATION) * LXLAYERS; ++j)
+    }  // for (Int_t j = 0; j < (LXSTATIONS - LXFIRSTSTATION) * LXLAYERS; ++j)
 
     LxMCTrack* bestMatch = 0;
     Int_t matchedPoints  = 0;
 
-    for (map<LxMCTrack*, Int_t>::iterator j = mcTracks.begin();
-         j != mcTracks.end();
-         ++j) {
+    for (map<LxMCTrack*, Int_t>::iterator j = mcTracks.begin(); j != mcTracks.end(); ++j) {
       if (0 == bestMatch || j->second > matchedPoints) {
         bestMatch     = j->first;
         matchedPoints = j->second;
@@ -960,8 +821,7 @@ void LxEff::CalcRecoEff(bool joinExt) {
 
     if (matchedPoints < 0.7 * finder.caSpace.stationsInAlgo * LXLAYERS) {
       ++notEnoughPoints;
-      cout << "This reconstructed track match with an MC track in only "
-           << matchedPoints << "points" << endl;
+      cout << "This reconstructed track match with an MC track in only " << matchedPoints << "points" << endl;
       unmatched = true;
     }
 
@@ -996,60 +856,55 @@ void LxEff::CalcRecoEff(bool joinExt) {
         if (hitsOnStation < 3) ++incompleteStations[j];
       }
 
-      cout << "The matched MC track has hits not on all stations. Only on: "
-           << bestMatch->stationsWithHits << endl;
+      cout << "The matched MC track has hits not on all stations. Only on: " << bestMatch->stationsWithHits << endl;
       unmatched = true;
     }
 
     if (0 == bestMatch->externalTrack) {
       ++doesntHaveStsPart;
 
-      if (unmatched)
-        ++doesntHaveStsPart1;
+      if (unmatched) ++doesntHaveStsPart1;
       else
         ++doesntHaveStsPart2;
     }
 
     if (!unmatched) {
-      if (!joinExt)
-        ++matchedMCTracks;
+      if (!joinExt) ++matchedMCTracks;
       else {
         if (0 == recoTrack->externalTrack) {
-          if (0 == bestMatch->externalTrack)
-            ++matchedMCTracks;
+          if (0 == bestMatch->externalTrack) ++matchedMCTracks;
           else
             cout << "LxEff::CalcRecoEff: STS track not found" << endl;
-        } else {
-          if (bestMatch->externalTrack == recoTrack->externalTrack->track)
-            ++matchedMCTracks;
+        }
+        else {
+          if (bestMatch->externalTrack == recoTrack->externalTrack->track) ++matchedMCTracks;
           else
             cout << "LxEff::CalcRecoEff: STS track determined wrongly" << endl;
         }
       }
-    } else if (0 != bestMatch->externalTrack)
+    }
+    else if (0 != bestMatch->externalTrack)
       ++unmatchedButHaveStsPart;
   }  // for (list<LxTrack*>::iterator i = finder.caSpace.tracks.begin(); i != finder.caSpace.tracks.end(); ++i)
 
   result = 100 * matchedMCTracks;
   result /= recoTracks;
-  cout << "LxEff::CalcRecoEff matching reconstucted efficiency: " << result
-       << "( " << matchedMCTracks << " / " << recoTracks << " )" << endl;
-  cout << "LxEff::CalcRecoEff 0-matched: " << completeleyUnmatched
-       << ", not enough points: " << notEnoughPoints
+  cout << "LxEff::CalcRecoEff matching reconstucted efficiency: " << result << "( " << matchedMCTracks << " / "
+       << recoTracks << " )" << endl;
+  cout << "LxEff::CalcRecoEff 0-matched: " << completeleyUnmatched << ", not enough points: " << notEnoughPoints
        << ", not enough stations: " << notEnoughStations << " : ";
 
   for (Int_t i = 0; i < finder.caSpace.stationsInAlgo; ++i)
     cout << "[" << incompleteStations[i] << "]";
 
   cout << endl;
-  cout << "LxEff::CalcRecoEff doesn't have an STS part: " << doesntHaveStsPart
-       << ", unmatched: " << doesntHaveStsPart1
+  cout << "LxEff::CalcRecoEff doesn't have an STS part: " << doesntHaveStsPart << ", unmatched: " << doesntHaveStsPart1
        << ", matched: " << doesntHaveStsPart2 << endl;
-  cout << "LxEff::CalcRecoEff unmatched but have an STS part: "
-       << unmatchedButHaveStsPart << endl;
+  cout << "LxEff::CalcRecoEff unmatched but have an STS part: " << unmatchedButHaveStsPart << endl;
 }  // void LxEff::CalcRecoEff(bool joinExt)
 
-void LxFinderTriplet::MatchRecoToMC() {
+void LxFinderTriplet::MatchRecoToMC()
+{
   static Int_t recoTracks    = 0;
   static Int_t matchedTracks = 0;
   LxTrack* positiveSignal    = 0;
@@ -1059,26 +914,21 @@ void LxFinderTriplet::MatchRecoToMC() {
   list<LxTrack*> positiveBgrs;
   list<LxTrack*> negativeBgrs;
 
-  for (list<LxTrack*>::iterator i = caSpace.tracks.begin();
-       i != caSpace.tracks.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = caSpace.tracks.begin(); i != caSpace.tracks.end(); ++i) {
     LxTrack* recoTrack = *i;
 
     if (recoTrack->clone) continue;
 
     ++recoTracks;
 
-    map<LxMCTrack*, Int_t>
-      mcTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
+    map<LxMCTrack*, Int_t> mcTracks;  // Mapped value is the number of common points in MC and reconstructed tracks.
 
     for (Int_t j = 0; j < caSpace.stationsInAlgo * LXLAYERS; ++j) {
       LxPoint* recoPoint = recoTrack->points[j];
 
       if (0 == recoPoint) continue;
 
-      for (list<LxMCPoint*>::iterator k = recoPoint->mcPoints.begin();
-           k != recoPoint->mcPoints.end();
-           ++k) {
+      for (list<LxMCPoint*>::iterator k = recoPoint->mcPoints.begin(); k != recoPoint->mcPoints.end(); ++k) {
         LxMCPoint* mcPoint = *k;
         LxMCTrack* mcTrack = mcPoint->track;
 
@@ -1086,8 +936,7 @@ void LxFinderTriplet::MatchRecoToMC() {
 
         map<LxMCTrack*, Int_t>::iterator mcIter = mcTracks.find(mcTrack);
 
-        if (mcIter == mcTracks.end())
-          mcTracks[mcTrack] = 1;
+        if (mcIter == mcTracks.end()) mcTracks[mcTrack] = 1;
         else
           ++(mcIter->second);
       }  // for (list<LxMCPoint*>::iterator k = recoPoint->mcPoints.begin(); k != recoPoint->mcPoints.end(); ++k)
@@ -1096,9 +945,7 @@ void LxFinderTriplet::MatchRecoToMC() {
     LxMCTrack* bestMatch = 0;
     Int_t matchedPoints  = 0;
 
-    for (map<LxMCTrack*, Int_t>::iterator j = mcTracks.begin();
-         j != mcTracks.end();
-         ++j) {
+    for (map<LxMCTrack*, Int_t>::iterator j = mcTracks.begin(); j != mcTracks.end(); ++j) {
       if (0 == bestMatch || j->second > matchedPoints) {
         bestMatch     = j->first;
         matchedPoints = j->second;
@@ -1111,15 +958,12 @@ void LxFinderTriplet::MatchRecoToMC() {
     Double_t yAtZ0           = firstPoint->y - firstTriplet->ty * firstPoint->z;
     LxTriplet* secondTriplet = recoTrack->branches[1];
     LxPoint* secondPoint     = secondTriplet->center;
-    Double_t yAtZ0_2         = firstPoint->y
-                       - firstPoint->z * (secondPoint->y - firstPoint->y)
-                           / (secondPoint->z - firstPoint->z);
+    Double_t yAtZ0_2 =
+      firstPoint->y - firstPoint->z * (secondPoint->y - firstPoint->y) / (secondPoint->z - firstPoint->z);
     Double_t breakChi2 = RecoTrackChi2(recoTrack);
 
-    if (0 == bestMatch
-        || matchedPoints < 0.7 * caSpace.stationsInAlgo * LXLAYERS) {
-      if (particleSign > 0)
-        positiveBgrs.push_back(recoTrack);
+    if (0 == bestMatch || matchedPoints < 0.7 * caSpace.stationsInAlgo * LXLAYERS) {
+      if (particleSign > 0) positiveBgrs.push_back(recoTrack);
       else if (particleSign < 0)
         negativeBgrs.push_back(recoTrack);
 
@@ -1132,12 +976,12 @@ void LxFinderTriplet::MatchRecoToMC() {
 
     ++matchedTracks;
 
-    if (0 > bestMatch->mother_ID
-        && (-13 == bestMatch->pdg || 13 == bestMatch->pdg)) {
+    if (0 > bestMatch->mother_ID && (-13 == bestMatch->pdg || 13 == bestMatch->pdg)) {
       if (particleSign > 0 && -13 == bestMatch->pdg) {
         positiveSignal = recoTrack;
         positiveDelta  = particleSign;
-      } else if (particleSign < 0 && 13 == bestMatch->pdg) {
+      }
+      else if (particleSign < 0 && 13 == bestMatch->pdg) {
         negativeSignal = recoTrack;
         negativeDelta  = particleSign;
       }
@@ -1145,9 +989,9 @@ void LxFinderTriplet::MatchRecoToMC() {
       signalYAtZ0->Fill(yAtZ0);
       signalYAtZ0_2->Fill(yAtZ0_2);
       signalChi2Histo->Fill(breakChi2);
-    } else {
-      if (particleSign > 0)
-        positiveBgrs.push_back(recoTrack);
+    }
+    else {
+      if (particleSign > 0) positiveBgrs.push_back(recoTrack);
       else if (particleSign < 0)
         negativeBgrs.push_back(recoTrack);
 
@@ -1159,12 +1003,11 @@ void LxFinderTriplet::MatchRecoToMC() {
 
   Double_t result = 100 * matchedTracks;
   result /= recoTracks;
-  cout << "LxFinderTriplet::MatchRecoToMC(): efficiency: " << result << " % ( "
-       << matchedTracks << " / " << recoTracks << " )" << endl;
+  cout << "LxFinderTriplet::MatchRecoToMC(): efficiency: " << result << " % ( " << matchedTracks << " / " << recoTracks
+       << " )" << endl;
 
   if (0 != positiveSignal && 0 != negativeSignal) {
-    signalInterTracksDistance->Fill(
-      InterLinesDist(positiveSignal, negativeSignal));
+    signalInterTracksDistance->Fill(InterLinesDist(positiveSignal, negativeSignal));
     signalSignDefect->Fill(positiveDelta + negativeDelta);
   }
 
@@ -1173,14 +1016,10 @@ void LxFinderTriplet::MatchRecoToMC() {
   Double_t bgrDist    = 10000;
   Double_t signDefect = 10000;
 
-  for (list<LxTrack*>::iterator i = positiveBgrs.begin();
-       i != positiveBgrs.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = positiveBgrs.begin(); i != positiveBgrs.end(); ++i) {
     LxTrack* track1 = *i;
 
-    for (list<LxTrack*>::iterator j = negativeBgrs.begin();
-         j != negativeBgrs.end();
-         ++j) {
+    for (list<LxTrack*>::iterator j = negativeBgrs.begin(); j != negativeBgrs.end(); ++j) {
       LxTrack* track2 = *j;
       Double_t dist   = InterLinesDist(track1, track2);
 
@@ -1192,13 +1031,11 @@ void LxFinderTriplet::MatchRecoToMC() {
 
       LxTriplet* firstTriplet1 = track1->branches[0];
       LxPoint* firstPoint1     = firstTriplet1->center;
-      Double_t particleSign1 =
-        firstTriplet1->tx - firstPoint1->x / firstPoint1->z;
+      Double_t particleSign1   = firstTriplet1->tx - firstPoint1->x / firstPoint1->z;
 
       LxTriplet* firstTriplet2 = track2->branches[0];
       LxPoint* firstPoint2     = firstTriplet2->center;
-      Double_t particleSign2 =
-        firstTriplet2->tx - firstPoint2->x / firstPoint2->z;
+      Double_t particleSign2   = firstTriplet2->tx - firstPoint2->x / firstPoint2->z;
 
       Double_t defect = particleSign1 + particleSign2;
 

@@ -11,10 +11,9 @@
 
 // TO CHECK in the code: IMPORTANT NOTE
 
-void run_sim_flow(Int_t nEvents         = 2,
-                  Int_t En              = 25,
-                  const char* setupName = "sis300_electron_flow",
-                  const char* inputFile = "") {
+void run_sim_flow(Int_t nEvents = 2, Int_t En = 25, const char* setupName = "sis300_electron_flow",
+                  const char* inputFile = "")
+{
   // The energy is needed in the setup file to define the field scale
   // and the psd position
   TString energy = Form("%i", En);
@@ -23,7 +22,7 @@ void run_sim_flow(Int_t nEvents         = 2,
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_sim";  // this macro's name for screen output
+  TString myName = "run_sim";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -59,7 +58,7 @@ void run_sim_flow(Int_t nEvents         = 2,
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -137,7 +136,8 @@ void run_sim_flow(Int_t nEvents         = 2,
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInputFile;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -164,8 +164,7 @@ void run_sim_flow(Int_t nEvents         = 2,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -203,8 +202,7 @@ void run_sim_flow(Int_t nEvents         = 2,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(-TMath::Pi(), TMath::Pi());
@@ -239,7 +237,8 @@ void run_sim_flow(Int_t nEvents         = 2,
     // IMPORTANT NOTE: event plane angle in [-pi, pi] by convention
     // rotation is done in FairPrimaryGenerator
     primGen->AddGenerator(urqmdGen);
-  } else {
+  }
+  else {
 
     Double_t bMom;
     if (En == 35) bMom = 35.926;
@@ -255,8 +254,7 @@ void run_sim_flow(Int_t nEvents         = 2,
     int pileup = 100;
     Nion       = nEvents * pileup;
 
-    FairIonGenerator* fIongen =
-      new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.);
+    FairIonGenerator* fIongen = new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.);
     primGen->AddGenerator(fIongen);
 
     nEvents = 1;
@@ -330,9 +328,7 @@ void run_sim_flow(Int_t nEvents         = 2,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

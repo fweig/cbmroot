@@ -54,15 +54,11 @@ public:
   Bool_t SetHistoFileNameSphCoordNorm(TString sFilenameIn);
   Bool_t SetHistoFileName(TString sFilenameIn);
 
-  void SetNormHistGenerationMode(Bool_t bModeIn = kTRUE) {
-    fbNormHistGenMode = bModeIn;
-  }
+  void SetNormHistGenerationMode(Bool_t bModeIn = kTRUE) { fbNormHistGenMode = bModeIn; }
 
   Bool_t SetWallPosZ(Double_t dWallPosCm = 1000);
 
-  void SetNbEventsHitsNbPlots(UInt_t uNbEvents) {
-    fuNbEventsForHitsNbPlots = uNbEvents;
-  }
+  void SetNbEventsHitsNbPlots(UInt_t uNbEvents) { fuNbEventsForHitsNbPlots = uNbEvents; }
 
 private:
   Bool_t CreateHistos();
@@ -87,14 +83,11 @@ private:
   CbmTofDetectorId* fTofId;
   CbmTofCell* fChannelInfo;
   Int_t iNbSmTot;
-  std::vector<Int_t>
-    fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
+  std::vector<Int_t> fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
   Int_t iNbRpcTot;
-  std::vector<std::vector<Int_t>>
-    fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
+  std::vector<std::vector<Int_t>> fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
   Int_t fiNbChTot;
-  std::vector<std::vector<std::vector<Int_t>>>
-    fvRpcChOffs;  // Offset in channel index for first channel of each RPC
+  std::vector<std::vector<std::vector<Int_t>>> fvRpcChOffs;  // Offset in channel index for first channel of each RPC
 
   // Parameters
   CbmTofDigiPar* fDigiPar;
@@ -102,20 +95,16 @@ private:
 
   FairMCEventHeader* fMCEventHeader;  // MC event header
   //      TClonesArray          * fStsPointsColl; // STS MC points
-  TClonesArray* fTofPointsColl;  // TOF MC points
-  TClonesArray* fMcTracksColl;   // MC tracks
-  TClonesArray* fTofDigisColl;   // TOF Digis
-  TClonesArray*
-    fTofDigiMatchPointsColl;  // Indices of MC original points for each digi (CbmMatch)
-  TClonesArray* fTofHitsColl;  // TOF hits
-  TClonesArray*
-    fTofDigiMatchColl;  // Indices of TOF Digis for each hit (CbmMatch)
-  TClonesArray*
-    fTofHitMatchColl;  // // Indices of MC original points for each hit with TOT weight (CbmMatch)
+  TClonesArray* fTofPointsColl;           // TOF MC points
+  TClonesArray* fMcTracksColl;            // MC tracks
+  TClonesArray* fTofDigisColl;            // TOF Digis
+  TClonesArray* fTofDigiMatchPointsColl;  // Indices of MC original points for each digi (CbmMatch)
+  TClonesArray* fTofHitsColl;             // TOF hits
+  TClonesArray* fTofDigiMatchColl;        // Indices of TOF Digis for each hit (CbmMatch)
+  TClonesArray* fTofHitMatchColl;         // // Indices of MC original points for each hit with TOT weight (CbmMatch)
   Bool_t fbHitProducerSource;
   TClonesArray* fRealTofPointsColl;  // Realistics TOF MC points
-  TClonesArray*
-    fRealTofMatchColl;  // Index of Realistics TOF MC points for each MC Point (CbmMatch)
+  TClonesArray* fRealTofMatchColl;   // Index of Realistics TOF MC points for each MC Point (CbmMatch)
   Bool_t fbRealPointAvail;
 
   // Histograms
@@ -140,21 +129,17 @@ private:
   TH1* fhNbDigisInHit;
   TProfile2D* fhNbDigisInHitMapXY;
   // Geometric Mapping
-  std::vector<TH2*>
-    fvhTrackAllStartZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH2*>
-    fvhTrackSecStartZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH3*>
-    fvhTrackAllStartXZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH2*> fvhTrackAllStartXZ;  // Track origin mapping, if TOF points
-  std::vector<TH2*> fvhTrackAllStartYZ;  // Track origin mapping, if TOF points
-  std::vector<TH3*>
-    fvhTofPntAllAngCent;  // Dependence of Tof Point position (angular) on centrality
-  TH2* fhTrackMapXY;   // Only when creating normalization histos
-  TH2* fhTrackMapXZ;   // Only when creating normalization histos
-  TH2* fhTrackMapYZ;   // Only when creating normalization histos
-  TH2* fhTrackMapAng;  // Only when creating normalization histos
-  TH2* fhTrackMapSph;  // Only when creating normalization histos
+  std::vector<TH2*> fvhTrackAllStartZCent;   // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH2*> fvhTrackSecStartZCent;   // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH3*> fvhTrackAllStartXZCent;  // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH2*> fvhTrackAllStartXZ;      // Track origin mapping, if TOF points
+  std::vector<TH2*> fvhTrackAllStartYZ;      // Track origin mapping, if TOF points
+  std::vector<TH3*> fvhTofPntAllAngCent;     // Dependence of Tof Point position (angular) on centrality
+  TH2* fhTrackMapXY;                         // Only when creating normalization histos
+  TH2* fhTrackMapXZ;                         // Only when creating normalization histos
+  TH2* fhTrackMapYZ;                         // Only when creating normalization histos
+  TH2* fhTrackMapAng;                        // Only when creating normalization histos
+  TH2* fhTrackMapSph;                        // Only when creating normalization histos
   TH2* fhPointMapXY;
   TH2* fhPointMapXZ;
   TH2* fhPointMapYZ;

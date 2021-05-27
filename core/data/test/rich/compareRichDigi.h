@@ -1,11 +1,8 @@
 #ifndef COMPARERICHDIGI_H
 #define COMPARERICHDIGI_H 1
 
-void compareRichDigiDataMembers(CbmRichDigi& test,
-                                Int_t address,
-                                ECbmModuleId systemid,
-                                Double_t time,
-                                Double_t tot) {
+void compareRichDigiDataMembers(CbmRichDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t tot)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};

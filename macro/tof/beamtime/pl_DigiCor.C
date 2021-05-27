@@ -1,4 +1,5 @@
-void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     //  h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -35,33 +37,34 @@ void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(3);
   gROOT->cd();
-  TString hname =
-    Form("tof_ty%d_sm%03d_rpc%03d_ch_left_hitsperevt", SmT, iSm, iRpc);
-  h2 = (TH2*) gROOT->FindObjectAny(hname);
+  TString hname = Form("tof_ty%d_sm%03d_rpc%03d_ch_left_hitsperevt", SmT, iSm, iRpc);
+  h2            = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(4);
   gROOT->cd();
-  TString hname =
-    Form("tof_ty%d_sm%03d_rpc%03d_ch_right_hitsperevt", SmT, iSm, iRpc);
-  h2 = (TH2*) gROOT->FindObjectAny(hname);
+  TString hname = Form("tof_ty%d_sm%03d_rpc%03d_ch_right_hitsperevt", SmT, iSm, iRpc);
+  h2            = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -73,7 +76,8 @@ void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     //h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -85,7 +89,8 @@ void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     //  h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -96,7 +101,8 @@ void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

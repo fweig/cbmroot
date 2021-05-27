@@ -10,9 +10,11 @@
 #include "CbmDefs.h"
 #include "CbmLitMCTrack.h"
 #include "CbmStsAddress.h"
-#include <assert.h>
+
 #include <iostream>
 #include <map>
+
+#include <assert.h>
 
 class TClonesArray;
 class FairMCPoint;
@@ -61,9 +63,9 @@ public:
      * \param[in] mcId MC index of track.
      * \return true if track exists in array.
      */
-  bool TrackExists(int mcEventId, int mcId) const {
-    return (fLitMCTracks.count(std::make_pair(mcEventId, mcId)) > 0) ? true
-                                                                     : false;
+  bool TrackExists(int mcEventId, int mcId) const
+  {
+    return (fLitMCTracks.count(std::make_pair(mcEventId, mcId)) > 0) ? true : false;
   }
 
   /**
@@ -71,7 +73,8 @@ public:
      * \param[in] mcId MC index of track.
      * \return MC track.
      */
-  const CbmLitMCTrack& GetTrack(int mcEventId, int mcId) const {
+  const CbmLitMCTrack& GetTrack(int mcEventId, int mcId) const
+  {
     assert(TrackExists(mcEventId, mcId));
     return fLitMCTracks.find(std::make_pair(mcEventId, mcId))->second;
   }
@@ -112,10 +115,7 @@ private:
      * \param[out] litPoint Pointer to output CbmLitMCPoint.
      * \param[in] refId Reference index of the MC point.
      */
-  void FairMCPointToLitMCPoint(const FairMCPoint* fairPoint,
-                               CbmLitMCPoint* litPoint,
-                               int eventId,
-                               int refId,
+  void FairMCPointToLitMCPoint(const FairMCPoint* fairPoint, CbmLitMCPoint* litPoint, int eventId, int refId,
                                int stationId);
 
   /**
@@ -124,22 +124,15 @@ private:
   void FillStationMaps(Int_t iEvent);
 
 
-  void
-  FairMCPointCoordinatesAndMomentumToLitMCPoint(const FairMCPoint* fairPoint,
-                                                CbmLitMCPoint* litPoint);
+  void FairMCPointCoordinatesAndMomentumToLitMCPoint(const FairMCPoint* fairPoint, CbmLitMCPoint* litPoint);
 
-  void MvdPointCoordinatesAndMomentumToLitMCPoint(const CbmMvdPoint* mvdPoint,
-                                                  CbmLitMCPoint* litPoint);
+  void MvdPointCoordinatesAndMomentumToLitMCPoint(const CbmMvdPoint* mvdPoint, CbmLitMCPoint* litPoint);
 
-  void StsPointCoordinatesAndMomentumToLitMCPoint(const CbmStsPoint* stsPoint,
-                                                  CbmLitMCPoint* litPoint);
+  void StsPointCoordinatesAndMomentumToLitMCPoint(const CbmStsPoint* stsPoint, CbmLitMCPoint* litPoint);
 
-  void TrdPointCoordinatesAndMomentumToLitMCPoint(const CbmTrdPoint* trdPoint,
-                                                  CbmLitMCPoint* litPoint);
+  void TrdPointCoordinatesAndMomentumToLitMCPoint(const CbmTrdPoint* trdPoint, CbmLitMCPoint* litPoint);
 
-  void
-  MuchPointCoordinatesAndMomentumToLitMCPoint(const CbmMuchPoint* muchPoint,
-                                              CbmLitMCPoint* litPoint);
+  void MuchPointCoordinatesAndMomentumToLitMCPoint(const CbmMuchPoint* muchPoint, CbmLitMCPoint* litPoint);
 
   CbmMCDataArray* fMCTracks;    // CbmMCTrack array
   CbmMCDataArray* fMvdPoints;   // CbmMvdPoint array

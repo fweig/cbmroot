@@ -1,5 +1,6 @@
 using namespace std;
-void draw_analysis_study() {
+void draw_analysis_study()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
 
@@ -13,8 +14,7 @@ void draw_analysis_study() {
   std::string fileName = "analysis." + energy + ".centr.all.root";
   Bool_t useMvd        = false;
 
-  std::string outputDir = "/Users/slebedev/Development/cbm/data/lmvm/feb13_new/"
-                          + energy + "/results_field/";
+  std::string outputDir = "/Users/slebedev/Development/cbm/data/lmvm/feb13_new/" + energy + "/results_field/";
   // std::string outputDir = "results/25gev/study/";
 
   /*  vector<string> files;
@@ -48,17 +48,13 @@ void draw_analysis_study() {
 
   vector<string> files;
   string dir = "/Users/slebedev/Development/cbm/data/lmvm/feb13_new/" + energy;
-  files.push_back(dir + "/0.7field/nomvd/rho0/" + "analysis." + energy
-                  + ".centr.all.root");
-  files.push_back(dir + "/1.0field/nomvd/rho0/" + "analysis." + energy
-                  + ".centr.all.root");
+  files.push_back(dir + "/0.7field/nomvd/rho0/" + "analysis." + energy + ".centr.all.root");
+  files.push_back(dir + "/1.0field/nomvd/rho0/" + "analysis." + energy + ".centr.all.root");
 
   vector<string> filesMean;
   string dir = "/Users/slebedev/Development/cbm/data/lmvm/feb13_new/" + energy;
-  filesMean.push_back(
-    string(dir + "/0.7field/nomvd/results_all/" + "mean_hist.root"));
-  filesMean.push_back(
-    string(dir + "/1.0field/nomvd/results_all/realpid/" + "mean_hist.root"));
+  filesMean.push_back(string(dir + "/0.7field/nomvd/results_all/" + "mean_hist.root"));
+  filesMean.push_back(string(dir + "/1.0field/nomvd/results_all/realpid/" + "mean_hist.root"));
 
   vector<string> studyNames;
   studyNames.push_back("70% B-field");

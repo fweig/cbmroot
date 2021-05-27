@@ -9,16 +9,19 @@
  */
 
 #include "CbmGeoMuch.h"
+
 #include "FairGeoNode.h"
 
-CbmGeoMuch::CbmGeoMuch() {
+CbmGeoMuch::CbmGeoMuch()
+{
   // Constructor
   fName      = "much";
   maxSectors = 0;
   maxModules = 1;  //99;
 }
 
-const char* CbmGeoMuch::getModuleName(Int_t m) {
+const char* CbmGeoMuch::getModuleName(Int_t m)
+{
   // Returns the module name of much number m
   //   if ( m < 0 ) {
   //   	cout <<"-E- CbmGeoMuch::getModuleName:: Module number "
@@ -35,7 +38,8 @@ const char* CbmGeoMuch::getModuleName(Int_t m) {
   return modName;
 }
 
-const char* CbmGeoMuch::getEleName(Int_t m) {
+const char* CbmGeoMuch::getEleName(Int_t m)
+{
   // Returns the element name of sts number m
   sprintf(eleName, "much%i", m + 1);
   return eleName;

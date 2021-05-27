@@ -1,11 +1,12 @@
 #include "L1Grid.h"
 
 #include "CbmL1Def.h"
+
 #include <algorithm>
-#include <string.h>
+#include <cstdio>
 
 #include <assert.h>
-#include <cstdio>
+#include <string.h>
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -18,7 +19,8 @@ using namespace std;
 /// uses binary expansion of copied volume for speed up
 template<typename T>
 
-inline void memset(T* dest, T i, size_t num) {
+inline void memset(T* dest, T i, size_t num)
+{
   const size_t tsize   = sizeof(T);
   unsigned int lastBin = 0;
   dest[0]              = i;
@@ -31,17 +33,10 @@ inline void memset(T* dest, T i, size_t num) {
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements,
-                            L1StsHit* hits,
-                            vector<THitI>* indicesBuf,
-                            THitI* indices,
-                            vector<L1StsHit>* hits2,
-                            vector<L1HitPoint>* pointsBuf,
-                            L1HitPoint* points,
-                            int& NHitsOnStation,
-                            char iS,
-                            L1Algo& Algo,
-                            const vector<unsigned char>* vSFlag) {
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI>* indicesBuf, THitI* indices,
+                            vector<L1StsHit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
+                            int& NHitsOnStation, char iS, L1Algo& Algo, const vector<unsigned char>* vSFlag)
+{
 
   fFirstHitInBin.assign(fN + 2, 0);
 
@@ -118,7 +113,8 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements,
 }
 
 
-void L1Grid::AllocateMemory(int NThreads) {
+void L1Grid::AllocateMemory(int NThreads)
+{
 
   fNThreads = NThreads * 1;
 
@@ -142,15 +138,9 @@ void L1Grid::AllocateMemory(int NThreads) {
 }
 
 
-void L1Grid::BuildBins(float yMin,
-                       float yMax,
-                       float zMin,
-                       float zMax,
-                       float tMin,
-                       float tMax,
-                       float sy,
-                       float sz,
-                       float st) {
+void L1Grid::BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz,
+                       float st)
+{
 
   fStepYInv = 1.f / sy;
   fStepZInv = 1.f / sz;
@@ -171,14 +161,9 @@ void L1Grid::BuildBins(float yMin,
 }
 
 
-void L1Grid::StoreHits(THitI nhits,
-                       const L1StsHit* hits,
-                       char iS,
-                       L1Algo& Algo,
-                       THitI n,
-                       L1StsHit* hitsBuf1,
-                       const L1StsHit* hits1,
-                       THitI* indices1) {
+void L1Grid::StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo, THitI n, L1StsHit* hitsBuf1,
+                       const L1StsHit* hits1, THitI* indices1)
+{
 
   fscal xs = 0;
   fscal ys = 0;

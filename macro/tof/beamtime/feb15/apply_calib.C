@@ -5,8 +5,8 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void apply_calib(Long64_t nEvents = 100000000,
-                 TString cFileId  = "CernSps05Mar0041") {
+void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CernSps05Mar0041")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -51,8 +51,7 @@ void apply_calib(Long64_t nEvents = 100000000,
   TString outFile = "./unpack_" + cOutfileId + ".out.root";
 
   FairLmdSource* source = new FairLmdSource();
-  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/02/cern/data/",
-                  Form("%s*.lmd", cFileId.Data()));
+  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/02/cern/data/", Form("%s*.lmd", cFileId.Data()));
 
   TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10, 1, 31, 0, 0);
   tofTrbDataUnpacker->SetInspection(kFALSE);

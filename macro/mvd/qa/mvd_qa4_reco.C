@@ -8,7 +8,8 @@
 // V. Friese   06/02/2007
 //
 // --------------------------------------------------------------------------
-void mvd_qa4_reco(const char* setup = "sis100_electron") {
+void mvd_qa4_reco(const char* setup = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -82,8 +83,7 @@ void mvd_qa4_reco(const char* setup = "sis100_electron") {
 
 
   // -----   MVD Clusterfinder   ---------------------------------------------
-  CbmMvdClusterfinder* mvdCluster =
-    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   fRun->AddTask(mvdCluster);
   // -------------------------------------------------------------------------
 

@@ -12,7 +12,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_digi(Int_t nEvents = 2) {
+void run_digi(Int_t nEvents = 2)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -26,8 +27,7 @@ void run_digi(Int_t nEvents = 2) {
   //  TString inFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.mc.root";
   // Parameter file
   //  TString parFile = "data/25agev.params.root";
-  TString parFile =
-    "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
+  TString parFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
   //  TString parFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.params.root";
 
   // Output file
@@ -78,13 +78,11 @@ void run_digi(Int_t nEvents = 2) {
   // =========================================================================
 
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf =
-    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   tofDigitizerBdf->SetInputFileName(
-    paramDir
-    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+    paramDir + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
   run->AddTask(tofDigitizerBdf);
 
 
@@ -93,8 +91,7 @@ void run_digi(Int_t nEvents = 2) {
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
   run->AddTask(tofSimpClust);

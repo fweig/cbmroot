@@ -14,27 +14,27 @@
 // Includes needed for IDE
 #if !defined(__CLING__)
 #include "CbmTransport.h"
+
 #include "FairSystemInfo.h"
+
 #include "TStopwatch.h"
 #endif
 
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
-void mcbm_transport_nh(
-  Int_t nEvents         = 10,
-  const char* setupName = "mcbm_beam_2021_03",
-  //                  const char* setupName = "mcbm_beam_2019_11",
-  //                  const char* setupName = "mcbm_beam_2019_03",
-  //                  const char* setupName = "sis18_mcbm_25deg_long",
-  const char* output    = "data/test",
-  const char* inputFile = "") {
+void mcbm_transport_nh(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2021_03",
+                       //                  const char* setupName = "mcbm_beam_2019_11",
+                       //                  const char* setupName = "mcbm_beam_2019_03",
+                       //                  const char* setupName = "sis18_mcbm_25deg_long",
+                       const char* output = "data/test", const char* inputFile = "")
+{
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("WARN");
   FairLogger::GetLogger()->SetLogVerbosityLevel("VERYHIGH");
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_transport";  // this macro's name for screen output
+  TString myName = "mcbm_transport";               // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -55,14 +55,11 @@ void mcbm_transport_nh(
   TString targetElement = "Gold";
   TString Output(output);
   if (!Output.Contains("auau")) {
-    if (Output.Contains("nini"))
-      targetElement = "Nickel";
+    if (Output.Contains("nini")) targetElement = "Nickel";
     else {
-      if (Output.Contains("lam")) {
-        std::cout << "Lambda signal simulation " << std::endl;
-      } else {
-        std::cout << "Collision system " << Output << " not known."
-                  << std::endl;
+      if (Output.Contains("lam")) { std::cout << "Lambda signal simulation " << std::endl; }
+      else {
+        std::cout << "Collision system " << Output << " not known." << std::endl;
         exit(1);
       }
     }
@@ -86,12 +83,10 @@ void mcbm_transport_nh(
   //  Double_t targetDiameter  = 0.5;    // diameter in cm
   //  Double_t targetRotY      = 25.;    // target rotation angle around the y axis [deg]
 
-  Double_t targetThickness =
-    0.025;  // mCBM thin gold target 0.25 mm = 0.025 cm thickness
-  Double_t targetDiameter = 1.5;  // mCBM target width 15 mm = 1.5 cm
+  Double_t targetThickness = 0.025;  // mCBM thin gold target 0.25 mm = 0.025 cm thickness
+  Double_t targetDiameter  = 1.5;    // mCBM target width 15 mm = 1.5 cm
   //  Double_t targetDiameter  = 0.1;      // set small target for window acceptance plots
-  Double_t targetRotY =
-    beamRotY;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY = beamRotY;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
@@ -105,8 +100,7 @@ void mcbm_transport_nh(
   TString shcmd = "rm -v " + parFile + " " + outFile + " " + geoFile;
   gSystem->Exec(shcmd.Data());
 
-  TString defaultInputFile =
-    srcDir + "/input/urqmd.agag.1.65gev.centr.00001.root";
+  TString defaultInputFile = srcDir + "/input/urqmd.agag.1.65gev.centr.00001.root";
   TString inFile;
 
   CbmTransport run;
@@ -119,29 +113,24 @@ void mcbm_transport_nh(
     pz          = cp.Atof();
     //std::cout<<"iL = "<<iL<<" "<<cp<<" "<<pz<<std::endl;
     //sscanf(cEbeam,"%lfgev",&pz);
-    std::cout << "simulate single lambda with pz = " << pz << " from "
-              << dataset << std::endl;
+    std::cout << "simulate single lambda with pz = " << pz << " from " << dataset << std::endl;
     //FairParticleGenerator *fPartGen= new FairParticleGenerator(3122, 1,0.0,0., pz, 0.,0.,0.); //lambda
     //  primGen->AddGenerator(fPartGen);
 
     SetTrack(&run, beamRotY, 3122, 0.0, 0.0, pz);
     std::cout << "-I- " << myName << ": Generate Lambda " << std::endl;
-  } else {
-    if (strcmp(inputFile, "") == 0)
-      inFile = defaultInputFile;
+  }
+  else {
+    if (strcmp(inputFile, "") == 0) inFile = defaultInputFile;
     else
       inFile = inputFile;
-    std::cout << "-I- " << myName << ": Using input file " << inFile
-              << std::endl;
+    std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
     run.AddInput(inFile);
   }
 
-  std::cout << "-I- " << myName << ": Using output file " << outFile
-            << std::endl;
-  std::cout << "-I- " << myName << ": Using parameter file " << parFile
-            << std::endl;
-  std::cout << "-I- " << myName << ": Using geometry file " << geoFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using output file " << outFile << std::endl;
+  std::cout << "-I- " << myName << ": Using parameter file " << parFile << std::endl;
+  std::cout << "-I- " << myName << ": Using geometry file " << geoFile << std::endl;
   // ------------------------------------------------------------------------
 
   // -----   Timer   --------------------------------------------------------
@@ -157,12 +146,7 @@ void mcbm_transport_nh(
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setupName);
   run.SetField(new CbmFieldConst());
-  run.SetTarget(targetElement,
-                targetThickness,
-                targetDiameter,
-                targetPosX,
-                targetPosY,
-                targetPosZ,
+  run.SetTarget(targetElement, targetThickness, targetDiameter, targetPosX, targetPosY, targetPosZ,
                 targetRotY * TMath::DegToRad());
   run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0., 0., 0.);
@@ -180,9 +164,7 @@ void mcbm_transport_nh(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -205,17 +187,12 @@ void mcbm_transport_nh(
 }
 
 
-void SetTrack(CbmTransport* run,
-              Double_t beamRotY,
-              Int_t pdgid,
-              Double_t x,
-              Double_t y,
-              Double_t z) {
+void SetTrack(CbmTransport* run, Double_t beamRotY, Int_t pdgid, Double_t x, Double_t y, Double_t z)
+{
   TVector3 v;
   v.SetXYZ(x, y, z);
   v.RotateY(-beamRotY * acos(-1.) / 180.);
   cout << "X " << v.X() << " Y " << v.Y() << " Z " << v.Z() << endl;
 
-  run->AddInput(new FairParticleGenerator(
-    pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
+  run->AddInput(new FairParticleGenerator(pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
 }

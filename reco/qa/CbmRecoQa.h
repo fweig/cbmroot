@@ -8,11 +8,12 @@
 
 #include "CbmMCDataManager.h"
 #include "CbmMCEventList.h"
+
 #include "FairRootManager.h"
 #include "FairTask.h"
+
 #include "TFile.h"
 #include "TH1.h"
-#include <string>
 
 #include <array>
 #include <string>
@@ -32,9 +33,8 @@ private:
   std::string outname;
 
 public:
-  CbmRecoQa(std::vector<std::pair<std::string, std::array<int, 4>>> decNames,
-            std::string outName = "test",
-            int verbose_l       = 0);
+  CbmRecoQa(std::vector<std::pair<std::string, std::array<int, 4>>> decNames, std::string outName = "test",
+            int verbose_l = 0);
   ~CbmRecoQa();
   static CbmRecoQa* instance;
   virtual InitStatus ReInit();

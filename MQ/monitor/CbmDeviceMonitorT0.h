@@ -8,9 +8,9 @@
 #ifndef CBMDEVICEMONITORT0_H_
 #define CBMDEVICEMONITORT0_H_
 
-#include "FairMQDevice.h"
-
 #include "Timeslice.hpp"
+
+#include "FairMQDevice.h"
 
 #include "Rtypes.h"
 #include "TMessage.h"
@@ -37,8 +37,7 @@ private:
   static const uint16_t kusSysId = 0x90;
 
   /// Control flags
-  Bool_t
-    fbIgnoreOverlapMs;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
+  Bool_t fbIgnoreOverlapMs;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
   Bool_t fbComponentsAddedToList = kFALSE;
 
   /// User settings parameters
@@ -90,9 +89,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

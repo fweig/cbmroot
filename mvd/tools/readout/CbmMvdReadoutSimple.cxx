@@ -6,11 +6,9 @@
 #include "CbmMvdReadoutSimple.h"
 
 #include "CbmMCTrack.h"
-#include "CbmMvdPoint.h"
-
 #include "CbmMvdDetector.h"
+#include "CbmMvdPoint.h"
 #include "CbmMvdSensor.h"
-
 #include "tools/CbmMvdGeoHandler.h"
 
 
@@ -31,8 +29,7 @@ using std::cout;
 using std::endl;
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdReadoutSimple::CbmMvdReadoutSimple()
-  : CbmMvdReadoutSimple::CbmMvdReadoutSimple("MvdReadoutSimple", 0) {}
+CbmMvdReadoutSimple::CbmMvdReadoutSimple() : CbmMvdReadoutSimple::CbmMvdReadoutSimple("MvdReadoutSimple", 0) {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -56,7 +53,9 @@ CbmMvdReadoutSimple::CbmMvdReadoutSimple(const char* name, Int_t iVerbose)
   , fMvdDataPerSuperRegion()
   , fMcPoints()
   , fListMCTracks()
-  , fEventNumber(0) {}
+  , fEventNumber(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -64,11 +63,12 @@ CbmMvdReadoutSimple::~CbmMvdReadoutSimple() { ; }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-InitStatus CbmMvdReadoutSimple::Init() {
+InitStatus CbmMvdReadoutSimple::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) { LOG(fatal) << "RootManager not instantised!"; }
 
-  fMcPoints = (TClonesArray*) ioman->GetObject("MvdPoint");  // PileUp Mc points
+  fMcPoints     = (TClonesArray*) ioman->GetObject("MvdPoint");  // PileUp Mc points
   fListMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
 
   if (!fMcPoints) LOG(fatal) << "Mvd Pile Up Mc array missing";
@@ -80,101 +80,62 @@ InitStatus CbmMvdReadoutSimple::Init() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutSimple::SetupHistograms() {
+void CbmMvdReadoutSimple::SetupHistograms()
+{
   for (Int_t i = 0; i < 63; i++) {
-    fMvdMCBank[i] =
-      new TH2F(Form("fMvdMCBank%d", i),
-               "Mvd mc distribution worst spot only delta electrons",
-               300,
-               -2,
-               0,
-               1500,
-               3.5,
-               0);
+    fMvdMCBank[i] = new TH2F(Form("fMvdMCBank%d", i), "Mvd mc distribution worst spot only delta electrons", 300, -2, 0,
+                             1500, 3.5, 0);
   }
 
-  fMvdMCHitsStations[0] = new TH2F(
-    "fMvdMCStation0", "Mvd mc distribution", 2, -2.5, -0.5, 3, -0.5, 2.5);
-  fMvdMCHitsStations[1] = new TH2F(
-    "fMvdMCStation1", "Mvd mc distribution", 4, -4.5, -0.5, 6, -0.5, 5.5);
-  fMvdMCHitsStations[2] = new TH2F(
-    "fMvdMCStation2", "Mvd mc distribution", 6, -7.5, -1.5, 9, -1.5, 7.5);
-  fMvdMCHitsStations[3] = new TH2F(
-    "fMvdMCStation3", "Mvd mc distribution", 8, -9.5, -1.5, 12, -1.5, 10.5);
+  fMvdMCHitsStations[0] = new TH2F("fMvdMCStation0", "Mvd mc distribution", 2, -2.5, -0.5, 3, -0.5, 2.5);
+  fMvdMCHitsStations[1] = new TH2F("fMvdMCStation1", "Mvd mc distribution", 4, -4.5, -0.5, 6, -0.5, 5.5);
+  fMvdMCHitsStations[2] = new TH2F("fMvdMCStation2", "Mvd mc distribution", 6, -7.5, -1.5, 9, -1.5, 7.5);
+  fMvdMCHitsStations[3] = new TH2F("fMvdMCStation3", "Mvd mc distribution", 8, -9.5, -1.5, 12, -1.5, 10.5);
 
-  fWordsPerRegion =
-    new TH1F("fWordsPerRegion", "Words send to a region", 65, 0, 64);
+  fWordsPerRegion = new TH1F("fWordsPerRegion", "Words send to a region", 65, 0, 64);
   fWordsPerRegion->GetXaxis()->SetTitle("Regionnumber");
   fWordsPerRegion->GetYaxis()->SetTitle("Average Entries per Region");
 
   fWordsPerRegion2 =
-    new TH2F("fWordsPerRegion2",
-             "Words send to a region, errors sigma of gauss fit",
-             64,
-             0,
-             63,
-             150,
-             0,
-             15);
+    new TH2F("fWordsPerRegion2", "Words send to a region, errors sigma of gauss fit", 64, 0, 63, 150, 0, 15);
   fWordsPerRegion2->GetXaxis()->SetTitle("Regionnumber");
   fWordsPerRegion2->GetYaxis()->SetTitle("Average Entries per Region");
 
-  fWordsPerWorstRegion = new TH1F(
-    "fWordsPerWorstRegion", "Most worst send to a region per Event", 65, 0, 64);
+  fWordsPerWorstRegion = new TH1F("fWordsPerWorstRegion", "Most worst send to a region per Event", 65, 0, 64);
   fWordsPerWorstRegion->GetXaxis()->SetTitle("words");
   fWordsPerWorstRegion->GetYaxis()->SetTitle("Entries");
 
-  fWordsPerSuperRegion = new TH1F(
-    "fWordsPerSuperRegion", "Words send to a super region", 1000, 0, 400);
+  fWordsPerSuperRegion = new TH1F("fWordsPerSuperRegion", "Words send to a super region", 1000, 0, 400);
   fWordsPerSuperRegion->GetXaxis()->SetTitle("words");
   fWordsPerSuperRegion->GetYaxis()->SetTitle("Entries");
 
-  fWorstSuperPerEvent = new TH1F("fWorstSuperRegion",
-                                 "Most words send to super region per Event",
-                                 1000,
-                                 0,
-                                 400);
+  fWorstSuperPerEvent = new TH1F("fWorstSuperRegion", "Most words send to super region per Event", 1000, 0, 400);
   fWorstSuperPerEvent->GetXaxis()->SetTitle("words");
   fWorstSuperPerEvent->GetYaxis()->SetTitle("Entries");
 
-  fMvdMCWorst = new TH2F(
-    "fMvdMCWorst", "Mvd mc distribution worst spot", 300, -2, 0, 1500, 3.5, 0);
+  fMvdMCWorst = new TH2F("fMvdMCWorst", "Mvd mc distribution worst spot", 300, -2, 0, 1500, 3.5, 0);
   fMvdMCWorst->GetYaxis()->SetTitle("y [cm]");
   fMvdMCWorst->GetXaxis()->SetTitle("x [cm]");
 
   fMvdMCWorstDelta =
-    new TH2F("fMvdMCWorstDelta",
-             "Mvd mc distribution worst spot only delta electrons",
-             300,
-             -2,
-             0,
-             1500,
-             3.5,
-             0);
+    new TH2F("fMvdMCWorstDelta", "Mvd mc distribution worst spot only delta electrons", 300, -2, 0, 1500, 3.5, 0);
   fMvdMCWorstDelta->GetYaxis()->SetTitle("y [cm]");
   fMvdMCWorstDelta->GetXaxis()->SetTitle("x [cm]");
 
-  fMvdDataLoadPerSensor =
-    new TH1I("fMvdDataLoadPerSensor", "Mvd Dataload per Sensor", 300, 0, 300);
+  fMvdDataLoadPerSensor = new TH1I("fMvdDataLoadPerSensor", "Mvd Dataload per Sensor", 300, 0, 300);
   fMvdDataLoadPerSensor->GetXaxis()->SetTitle("Sensor number");
   fMvdDataLoadPerSensor->GetYaxis()->SetTitle("Entries");
 
-  fMvdDataLoadHotSensor = new TH1I(
-    "fMvdDataLoadHotSensor", "Mvd Dataload in worst Sensor", 2000, 0, 2000);
+  fMvdDataLoadHotSensor = new TH1I("fMvdDataLoadHotSensor", "Mvd Dataload in worst Sensor", 2000, 0, 2000);
   fMvdDataLoadHotSensor->GetXaxis()->SetTitle("number of words");
   fMvdDataLoadHotSensor->GetYaxis()->SetTitle("Entries");
 
-  fMvdBankDist =
-    new TH2I("fMvdBankDist", "Avarage Hits per Region", 63, 0, 63, 50, 0, 50);
+  fMvdBankDist = new TH2I("fMvdBankDist", "Avarage Hits per Region", 63, 0, 63, 50, 0, 50);
   fMvdBankDist->GetXaxis()->SetTitle("Region number");
   fMvdBankDist->GetYaxis()->SetTitle("Entries");
 
   for (Int_t i = 0; i < 64; i++) {
-    fMvdDataPerRegion[i] = new TH1F(Form("fMvdDataPerRegion[%d]", i),
-                                    Form("Words send to region %d", i),
-                                    100,
-                                    0,
-                                    100);
+    fMvdDataPerRegion[i] = new TH1F(Form("fMvdDataPerRegion[%d]", i), Form("Words send to region %d", i), 100, 0, 100);
     fMvdDataPerRegion[i]->GetXaxis()->SetTitle("Words");
     fMvdDataPerRegion[i]->GetYaxis()->SetTitle("Entries");
   }
@@ -182,11 +143,7 @@ void CbmMvdReadoutSimple::SetupHistograms() {
 
   for (Int_t i = 0; i < 16; i++) {
     fMvdDataPerSuperRegion[i] =
-      new TH1F(Form("fMvdDataPerSuperRegion[%d]", i),
-               Form("Words send to superregion %d", i),
-               400,
-               0,
-               400);
+      new TH1F(Form("fMvdDataPerSuperRegion[%d]", i), Form("Words send to superregion %d", i), 400, 0, 400);
     fMvdDataPerSuperRegion[i]->GetXaxis()->SetTitle("Words");
     fMvdDataPerSuperRegion[i]->GetYaxis()->SetTitle("Entries");
   }
@@ -195,7 +152,8 @@ void CbmMvdReadoutSimple::SetupHistograms() {
 
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/) {
+void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/)
+{
   fEventNumber++;
 
   Float_t wordsPerRegion[64] = {0};
@@ -209,18 +167,16 @@ void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/) {
     fMvdDataLoadPerSensor->Fill(curPoint->GetStationNr(), 1.5);
 
     if (curPoint->GetZ() < 8) {
-      if (curPoint->GetX() > -1.93 && curPoint->GetX() <= -0.55
-          && curPoint->GetY() >= yPosMin && curPoint->GetY() <= yPosMax) {
+      if (curPoint->GetX() > -1.93 && curPoint->GetX() <= -0.55 && curPoint->GetY() >= yPosMin
+          && curPoint->GetY() <= yPosMax) {
         fMvdMCWorst->Fill(curPoint->GetX(), curPoint->GetY());
-        if (curPoint->GetTrackID() == -3)
-          fMvdMCWorstDelta->Fill(curPoint->GetX(), curPoint->GetY());
+        if (curPoint->GetTrackID() == -3) fMvdMCWorstDelta->Fill(curPoint->GetX(), curPoint->GetY());
         for (Int_t nRegion = 0; nRegion < 64; nRegion++) {
           if (curPoint->GetY() >= (yPosMin + (nRegion * 0.05))
               && curPoint->GetY() < (yPosMin + ((nRegion + 1) * 0.05))) {
             fMvdMCBank[nRegion]->Fill(curPoint->GetX(), curPoint->GetY());
             wordsPerRegion[nRegion] = wordsPerRegion[nRegion] + 1.5;
-            if (wordsPerRegion[nRegion] > 100)
-              LOG(info) << " Region " << nRegion << " has an overflow";
+            if (wordsPerRegion[nRegion] > 100) LOG(info) << " Region " << nRegion << " has an overflow";
             fWordsPerRegion->Fill(nRegion, 1.5);
             break;
           }
@@ -230,19 +186,21 @@ void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/) {
     if (curPoint->GetZ() < 8) {
       if (curPoint->GetX() < -0.5 && curPoint->GetY() > -0.5)
         fMvdMCHitsStations[0]->Fill(curPoint->GetX(), curPoint->GetY());
-    } else if (curPoint->GetZ() < 13) {
+    }
+    else if (curPoint->GetZ() < 13) {
       if (curPoint->GetX() < -0.5 && curPoint->GetY() > -1.5)
         fMvdMCHitsStations[1]->Fill(curPoint->GetX(), curPoint->GetY());
-    } else if (curPoint->GetZ() < 18) {
+    }
+    else if (curPoint->GetZ() < 18) {
       if (curPoint->GetX() < -1.5 && curPoint->GetY() > -1.5)
         fMvdMCHitsStations[2]->Fill(curPoint->GetX(), curPoint->GetY());
-    } else {
+    }
+    else {
       if (curPoint->GetX() < -1.5 && curPoint->GetY() > -1.5)
         fMvdMCHitsStations[3]->Fill(curPoint->GetX(), curPoint->GetY());
     }
   }
-  LOG(info) << "//--------------- New Event " << fEventNumber
-            << " -----------------------\\";
+  LOG(info) << "//--------------- New Event " << fEventNumber << " -----------------------\\";
 
   Int_t i               = 0;
   Int_t wordsInWorst    = 0;
@@ -253,21 +211,17 @@ void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/) {
     for (Int_t k = 0; k < 4; k++) {
       wordsPerSuper[supReg] += wordsPerRegion[i];
       fMvdDataPerRegion[i]->Fill(wordsPerRegion[i]);
-      if (wordsPerRegion[i] > wordsInWorstReg)
-        wordsInWorstReg = wordsPerRegion[i];
+      if (wordsPerRegion[i] > wordsInWorstReg) wordsInWorstReg = wordsPerRegion[i];
       LOG(debug) << "Words in Region " << i << ": " << wordsPerRegion[i];
       i++;
     }
 
-    LOG(debug) << " Words in super region " << supReg << ": "
-               << wordsPerSuper[supReg];
-    if (wordsPerSuper[supReg] > 400)
-      LOG(info) << "SuperRegion " << supReg << " has an overflow";
+    LOG(debug) << " Words in super region " << supReg << ": " << wordsPerSuper[supReg];
+    if (wordsPerSuper[supReg] > 400) LOG(info) << "SuperRegion " << supReg << " has an overflow";
     fWordsPerSuperRegion->Fill(wordsPerSuper[supReg]);
     fMvdDataPerSuperRegion[supReg]->Fill(wordsPerSuper[supReg]);
 
-    if (wordsPerSuper[supReg] > wordsInWorst)
-      wordsInWorst = wordsPerSuper[supReg];
+    if (wordsPerSuper[supReg] > wordsInWorst) wordsInWorst = wordsPerSuper[supReg];
 
     wordsTotal += wordsPerSuper[supReg];
   }
@@ -281,7 +235,8 @@ void CbmMvdReadoutSimple::Exec(Option_t* /*opt*/) {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutSimple::Finish() {
+void CbmMvdReadoutSimple::Finish()
+{
   foutFile->cd();
 
   Float_t scale = 1. / (Float_t) fEventNumber;
@@ -298,7 +253,8 @@ void CbmMvdReadoutSimple::Finish() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutSimple::WriteHistograms() {
+void CbmMvdReadoutSimple::WriteHistograms()
+{
 
   for (Int_t iPad = 0; iPad < 4; iPad++) {
     fMvdMCHitsStations[iPad]->Write();
@@ -323,8 +279,7 @@ void CbmMvdReadoutSimple::WriteHistograms() {
     Double_t param1 = func->GetParameter(1);
     Double_t param2 = func->GetParameter(2);
     Double_t chi2   = func->GetChisquare();
-    cout << " // - " << i << " -- param 0 = " << param0
-         << " -- param 1 = " << param1 << " -- param 2 = " << param2
+    cout << " // - " << i << " -- param 0 = " << param0 << " -- param 1 = " << param1 << " -- param 2 = " << param2
          << " -- chi2 = " << chi2 << endl;
     fWordsPerRegion2->Fill(i, param1);
     fWordsPerRegion2->SetBinError(i, 0, param1, param2);
@@ -338,7 +293,8 @@ void CbmMvdReadoutSimple::WriteHistograms() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutSimple::DrawHistograms() {
+void CbmMvdReadoutSimple::DrawHistograms()
+{
   TCanvas* mcCanvas1 = new TCanvas();
   mcCanvas1->Divide(2, 2);
   for (Int_t iPad = 0; iPad < 4; iPad++) {

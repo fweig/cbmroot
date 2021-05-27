@@ -19,7 +19,6 @@
 
 
 #include "CbmL1.h"
-
 #include "CbmStsTrackFinder.h"
 
 class TClonesArray;

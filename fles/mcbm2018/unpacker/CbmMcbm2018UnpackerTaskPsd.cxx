@@ -41,15 +41,15 @@ CbmMcbm2018UnpackerTaskPsd::CbmMcbm2018UnpackerTaskPsd(UInt_t /*uNbGdpb*/)
   , fbWriteOutput(kTRUE)
   , fuDigiMaskId(0x0001FFFF)
   , fulTsCounter(0)
-  , fUnpackerAlgo(nullptr) {
+  , fUnpackerAlgo(nullptr)
+{
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoPsd();
 }
 
-CbmMcbm2018UnpackerTaskPsd::~CbmMcbm2018UnpackerTaskPsd() {
-  delete fUnpackerAlgo;
-}
+CbmMcbm2018UnpackerTaskPsd::~CbmMcbm2018UnpackerTaskPsd() { delete fUnpackerAlgo; }
 
-Bool_t CbmMcbm2018UnpackerTaskPsd::Init() {
+Bool_t CbmMcbm2018UnpackerTaskPsd::Init()
+{
   LOG(info) << "CbmMcbm2018UnpackerTaskPsd::Init";
   LOG(info) << "Initializing mCBM PSD 2018 Unpacker";
 
@@ -63,7 +63,8 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::Init() {
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskPsd::SetParContainers() {
+void CbmMcbm2018UnpackerTaskPsd::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* fParCList = fUnpackerAlgo->GetParList();
@@ -73,12 +74,11 @@ void CbmMcbm2018UnpackerTaskPsd::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -87,12 +87,13 @@ void CbmMcbm2018UnpackerTaskPsd::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmMcbm2018UnpackerTaskPsd::InitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskPsd::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  CbmMcbm2018PsdPar* pUnpackPar = dynamic_cast<CbmMcbm2018PsdPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018PsdPar"));
+  CbmMcbm2018PsdPar* pUnpackPar =
+    dynamic_cast<CbmMcbm2018PsdPar*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018PsdPar"));
   if (nullptr == pUnpackPar) {
     LOG(error) << "Failed to obtain parameter container CbmMcbm2018PsdPar";
     return kFALSE;
@@ -113,33 +114,21 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::InitContainers() {
     /// Trigger histo creation on all associated algos
     initOK &= fUnpackerAlgo->CreateHistograms();
 
-    fhArraySize =
-      new TH1I("fhArraySize",
-               "Size of the Array VS TS index; TS index; Size [bytes]",
-               10000,
-               0.,
-               10000.);
+    fhArraySize = new TH1I("fhArraySize", "Size of the Array VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
     fhArrayCapacity =
-      new TH1I("fhArrayCapacity",
-               "Size of the Array VS TS index; TS index; Size [bytes]",
-               10000,
-               0.,
-               10000.);
+      new TH1I("fhArrayCapacity", "Size of the Array VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
 
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Register the histos in the HTTP server
     THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
     if (nullptr != server) {
       for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-        server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                         vHistos[uHisto].first);
+        server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
       }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-      server->RegisterCommand("/Reset_UnpPsd_Hist",
-                              "bMcbm2018UnpackerTaskPsdResetHistos=kTRUE");
+      server->RegisterCommand("/Reset_UnpPsd_Hist", "bMcbm2018UnpackerTaskPsdResetHistos=kTRUE");
       server->Restrict("/Reset_UnpPsd_Hist", "allow=admin");
 
       server->Register("/Array", fhArraySize);
@@ -152,20 +141,21 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskPsd::ReInitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskPsd::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fUnpackerAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmMcbm2018UnpackerTaskPsd::AddMsComponentToList(size_t component,
-                                                      UShort_t usDetectorId) {
+void CbmMcbm2018UnpackerTaskPsd::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts,
-                                            size_t /*component*/) {
+Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
 
   if (fbMonitorMode && bMcbm2018UnpackerTaskPsdResetHistos) {
     LOG(info) << "Reset PSD unpacker histos ";
@@ -174,8 +164,7 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts,
   }  // if( fbMonitorMode && bMcbm2018UnpackerTaskPsdResetHistos )
 
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
 
@@ -193,8 +182,7 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts,
    fhArraySize->Fill( fulTsCounter, fPsdDigiCloneArray->GetEntries()  );
    fhArrayCapacity->Fill( fulTsCounter, fPsdDigiCloneArray->Capacity()  );
 */
-  if (0 == fulTsCounter % 10000)
-    LOG(info) << "Processed " << fulTsCounter << "TS";
+  if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << "TS";
   fulTsCounter++;
 
   return kTRUE;
@@ -203,12 +191,12 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts,
 void CbmMcbm2018UnpackerTaskPsd::Reset() { fUnpackerAlgo->ClearVector(); }
 
 
-void CbmMcbm2018UnpackerTaskPsd::Finish() {
+void CbmMcbm2018UnpackerTaskPsd::Finish()
+{
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
   if (kTRUE == fbMonitorMode) {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
@@ -244,15 +232,9 @@ void CbmMcbm2018UnpackerTaskPsd::Finish() {
   }  // if( kTRUE == fbMonitorMode )
 }
 
-void CbmMcbm2018UnpackerTaskPsd::SetIgnoreOverlapMs(Bool_t bFlagIn) {
-  fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
-}
+void CbmMcbm2018UnpackerTaskPsd::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 
-void CbmMcbm2018UnpackerTaskPsd::SetTimeOffsetNs(Double_t dOffsetIn) {
-  fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
-}
-void CbmMcbm2018UnpackerTaskPsd::SetDiamondDpbIdx(UInt_t uIdx) {
-  fUnpackerAlgo->SetDiamondDpbIdx(uIdx);
-}
+void CbmMcbm2018UnpackerTaskPsd::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
+void CbmMcbm2018UnpackerTaskPsd::SetDiamondDpbIdx(UInt_t uIdx) { fUnpackerAlgo->SetDiamondDpbIdx(uIdx); }
 
 ClassImp(CbmMcbm2018UnpackerTaskPsd)

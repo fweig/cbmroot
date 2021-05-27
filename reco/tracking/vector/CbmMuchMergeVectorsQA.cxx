@@ -34,7 +34,9 @@ CbmMuchMergeVectorsQA::CbmMuchMergeVectorsQA()
   : FairTask("MuchMergeVectorsQA")
   , fGeoScheme(CbmMuchGeoScheme::Instance())
   , fStatFirst(-1)
-  , fNstat(0) {}
+  , fNstat(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -42,7 +44,8 @@ CbmMuchMergeVectorsQA::~CbmMuchMergeVectorsQA() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchMergeVectorsQA::Init() {
+InitStatus CbmMuchMergeVectorsQA::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -52,19 +55,17 @@ InitStatus CbmMuchMergeVectorsQA::Init() {
   //FairRun::Instance()->GetTask("CbmMuchFindHitsStraws");
   //if (hitFinder == NULL) Fatal("CbmMuchFindTracks::Init", "CbmMuchFindHitsStraws not run!");
 
-  fTracks   = static_cast<TClonesArray*>(ioman->GetObject("MuchVectorTrack"));
-  fVectors  = static_cast<TClonesArray*>(ioman->GetObject("MuchVector"));
-  fMCTracks = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
-  fPoints   = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
-  fHits     = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawHit"));
-  fHitsGem  = static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHit"));
-  fDigis    = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigi"));
-  fDigisGem = static_cast<TClonesArray*>(ioman->GetObject("MuchDigi"));
-  fDigiMatches =
-    static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigiMatch"));
-  fDigiMatchesGem =
-    static_cast<TClonesArray*>(ioman->GetObject("MuchDigiMatch"));
-  fClusters = static_cast<TClonesArray*>(ioman->GetObject("MuchCluster"));
+  fTracks         = static_cast<TClonesArray*>(ioman->GetObject("MuchVectorTrack"));
+  fVectors        = static_cast<TClonesArray*>(ioman->GetObject("MuchVector"));
+  fMCTracks       = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
+  fPoints         = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
+  fHits           = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawHit"));
+  fHitsGem        = static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHit"));
+  fDigis          = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigi"));
+  fDigisGem       = static_cast<TClonesArray*>(ioman->GetObject("MuchDigi"));
+  fDigiMatches    = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigiMatch"));
+  fDigiMatchesGem = static_cast<TClonesArray*>(ioman->GetObject("MuchDigiMatch"));
+  fClusters       = static_cast<TClonesArray*>(ioman->GetObject("MuchCluster"));
 
   // Get straw system configuration
   Int_t nSt = fGeoScheme->GetNStations();
@@ -107,7 +108,8 @@ void CbmMuchMergeVectorsQA::SetParContainers() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method BookHistos   -------------------------------------
-void CbmMuchMergeVectorsQA::BookHistos() {
+void CbmMuchMergeVectorsQA::BookHistos()
+{
   // Book histograms
 
   fhChi2mat = new TH1D*[fNstat + 2];
@@ -115,27 +117,22 @@ void CbmMuchMergeVectorsQA::BookHistos() {
   for (Int_t ist = 0; ist < fNstat; ++ist) {
     //Int_t stat = fStatFirst + ist;
     Int_t stat     = 1 + ist;
-    fhChi2mat[ist] = new TH1D(Form("hChi2mat%i", stat),
-                              Form("Chi2 of matching in station %i", stat),
-                              100,
-                              0,
-                              50);
+    fhChi2mat[ist] = new TH1D(Form("hChi2mat%i", stat), Form("Chi2 of matching in station %i", stat), 100, 0, 50);
   }
-  fhChi2mat[fNstat] =
-    new TH1D("hChi2mat", "Chi2 of matching in 2 stations", 100, 0, 100);
-  fhChi2mat[fNstat + 1] =
-    new TH1D("hChi2Abs", "Chi2 of 2 vector matching", 100, 0, 50);
-  fhSim       = new TH1D("hSim", "Number of reconstructable muons", 10, 0, 10);
-  fhRec       = new TH1D("hRec", "Number of reconstructed muons", 10, 0, 10);
-  fhMatchMult = new TH1D("hMatchMult", "Multiplicity of matching", 10, 0, 10);
-  fhMatchOver = new TH1D("hMatchOver", "Matching overlaps", 10, 0, 10);
-  fhOverlap   = new TH1D("hOverlap", "Matching overlap flag", 10, 0, 10);
-  fhSimRec = new TH2D("hSimRec", "Reco muons vs simulated", 4, 0, 4, 4, 0, 4);
+  fhChi2mat[fNstat]     = new TH1D("hChi2mat", "Chi2 of matching in 2 stations", 100, 0, 100);
+  fhChi2mat[fNstat + 1] = new TH1D("hChi2Abs", "Chi2 of 2 vector matching", 100, 0, 50);
+  fhSim                 = new TH1D("hSim", "Number of reconstructable muons", 10, 0, 10);
+  fhRec                 = new TH1D("hRec", "Number of reconstructed muons", 10, 0, 10);
+  fhMatchMult           = new TH1D("hMatchMult", "Multiplicity of matching", 10, 0, 10);
+  fhMatchOver           = new TH1D("hMatchOver", "Matching overlaps", 10, 0, 10);
+  fhOverlap             = new TH1D("hOverlap", "Matching overlap flag", 10, 0, 10);
+  fhSimRec              = new TH2D("hSimRec", "Reco muons vs simulated", 4, 0, 4, 4, 0, 4);
 }
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchMergeVectorsQA::Exec(Option_t* opt) {
+void CbmMuchMergeVectorsQA::Exec(Option_t* opt)
+{
   // Do all processing
 
   // Check efficiency
@@ -144,7 +141,8 @@ void CbmMuchMergeVectorsQA::Exec(Option_t* opt) {
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckMatch   -------------------------------------
-Bool_t CbmMuchMergeVectorsQA::CheckMatch(CbmMuchTrack* vec) {
+Bool_t CbmMuchMergeVectorsQA::CheckMatch(CbmMuchTrack* vec)
+{
   // Check matching quality of the vector
 
   /*
@@ -275,7 +273,8 @@ Bool_t CbmMuchMergeVectorsQA::CheckMatch(CbmMuchTrack* vec) {
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckEffic   -------------------------------------
-void CbmMuchMergeVectorsQA::CheckEffic() {
+void CbmMuchMergeVectorsQA::CheckEffic()
+{
   // Check efficiency of the vector reco
 
   // Find "reconstructable" vectors - having points in all straw doublets
@@ -291,8 +290,7 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
     Int_t id        = p->GetTrackID();
     if (id > 1) continue;
     //if (p->GetZ() < fZpos[0][0] - 2.0) continue;
-    Int_t ista =
-      fGeoScheme->GetStationIndex(p->GetDetectorId());  // - fStatFirst;
+    Int_t ista = fGeoScheme->GetStationIndex(p->GetDetectorId());  // - fStatFirst;
     Int_t lay  = fGeoScheme->GetLayerIndex(p->GetDetectorId());
     Int_t side = fGeoScheme->GetLayerSideIndex(p->GetDetectorId());
 
@@ -302,9 +300,7 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
     yp[ista][lay * 2 + side][id] = (p->GetYIn() + p->GetYOut()) / 2;
 
     if (!lstraws) {
-      if (fGeoScheme->GetModuleByDetId(p->GetDetectorId())->GetDetectorType()
-          == 2)
-        lstraws = kTRUE;
+      if (fGeoScheme->GetModuleByDetId(p->GetDetectorId())->GetDetectorType() == 2) lstraws = kTRUE;
     }
   }
 
@@ -365,17 +361,14 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
       Double_t c2[10] = {0.0}, c2tot = 0.0;
 
       for (Int_t ivec = 0; ivec < nvecs; ++ivec) {
-        if (track->GetHitType(ivec) != kMUCHSTRAWHIT)
-          continue;  // skip STS vector
-        CbmMuchTrack* vec =
-          (CbmMuchTrack*) fVectors->UncheckedAt(track->GetHitIndex(ivec));
-        Int_t nhits = vec->GetNofHits();
-        Int_t ista  = vec->GetUniqueID();
+        if (track->GetHitType(ivec) != kMUCHSTRAWHIT) continue;  // skip STS vector
+        CbmMuchTrack* vec = (CbmMuchTrack*) fVectors->UncheckedAt(track->GetHitIndex(ivec));
+        Int_t nhits       = vec->GetNofHits();
+        Int_t ista        = vec->GetUniqueID();
         //if (ivec == 0 && ista < 2 || ivec > 0 && ista == 2) continue; // only 2 last stations
 
         Int_t id = vec->GetFlag();
-        if (pluto && id != mu)
-          continue;  // !!! this is only for Pluto sample - exact ID match!!!
+        if (pluto && id != mu) continue;  // !!! this is only for Pluto sample - exact ID match!!!
         const FairTrackParam* params = vec->GetParamFirst();
         //cout << " Oops: " << ivec << " " << params->GetZ() << endl;
         Int_t nm               = 0;
@@ -387,14 +380,9 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
           Int_t lay   = fGeoScheme->GetLayerIndex(hit->GetAddress());
           Int_t side  = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
           Int_t plane = lay * 2 + side;
-          if (singlets[ista][mu].find(plane) == singlets[ista][mu].end())
-            continue;
-          Double_t x =
-            params->GetX()
-            + params->GetTx() * (fZpos[ista][plane] - params->GetZ());
-          Double_t y =
-            params->GetY()
-            + params->GetTy() * (fZpos[ista][plane] - params->GetZ());
+          if (singlets[ista][mu].find(plane) == singlets[ista][mu].end()) continue;
+          Double_t x  = params->GetX() + params->GetTx() * (fZpos[ista][plane] - params->GetZ());
+          Double_t y  = params->GetY() + params->GetTy() * (fZpos[ista][plane] - params->GetZ());
           Double_t dx = x - xp[ista][plane][mu];
           Double_t dy = y - yp[ista][plane][mu];
           c2[ista] += dx * dx / errx[ista] / errx[ista];
@@ -417,8 +405,7 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
         iMatch[mu] = itr;
       }
       //if (c2[0] < chi2cut && c2[1] < chi2cut && track->GetChiSq() < chi2cut * 2) ++nmatch;
-      if (c2[0] < chi2cut && c2[1] < chi2cut && c2[2] < chi2cut
-          && c2[3] < chi2cut && track->GetChiSq() < chi2cut * 4)
+      if (c2[0] < chi2cut && c2[1] < chi2cut && c2[2] < chi2cut && c2[3] < chi2cut && track->GetChiSq() < chi2cut * 4)
         ++nmatch;
       //cout << nvecs << " " << c2tot << endl;
     }  // for (Int_t itr = 0; itr < ntracks;
@@ -439,15 +426,15 @@ void CbmMuchMergeVectorsQA::CheckEffic() {
     for (Int_t ista = 0; ista < fNstat; ++ista)
       if (chi2[ista][mu] < chi2cut) ++nmatch;
     fhMatchMult->Fill(nmatch);
-  }  // for (Int_t mu = 0; mu < nMu;
-  if (iMatch[0] == iMatch[1] && iMatch[0] >= 0)
-    fhOverlap->Fill(1);  // the same track matches 2 muons
+  }                                                                  // for (Int_t mu = 0; mu < nMu;
+  if (iMatch[0] == iMatch[1] && iMatch[0] >= 0) fhOverlap->Fill(1);  // the same track matches 2 muons
   fhSimRec->Fill(nMuVec, nMuRec);
 }
 // -------------------------------------------------------------------------
 
 // -----   Public method Finish   ------------------------------------------
-void CbmMuchMergeVectorsQA::Finish() {
+void CbmMuchMergeVectorsQA::Finish()
+{
 
   TDirectory* dir0 = (TDirectory*) gROOT->FindObjectAny("muchQA");
   TDirectory* dir  = (TDirectory*) dir0->FindObjectAny("muchQA1");

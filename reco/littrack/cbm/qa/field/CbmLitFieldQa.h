@@ -9,6 +9,7 @@
 #define CBMLITFIELDQA_H_
 
 #include "FairTask.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -54,9 +55,7 @@ public:
   virtual void Finish();
 
   /* Setters */
-  void SetSliceZPosition(const vector<Double_t>& zPos) {
-    fZSlicePosition = zPos;
-  }
+  void SetSliceZPosition(const vector<Double_t>& zPos) { fZSlicePosition = zPos; }
   //    void SetAcceptanceAngleX(Double_t xangle) { fAcceptanceAngleX = xangle; }
   //    void SetAcceptanceAngleY(Double_t yangle) { fAcceptanceAngleY = yangle; }
   void SetNofBinsX(Int_t nofBinsX) { fNofBinsX = nofBinsX; }
@@ -96,20 +95,19 @@ private:
   vector<Double_t> fXSlicePosition;  // X coordinate of slice
   vector<Double_t> fYSlicePosition;  // Y coordinate of slice
 
-  Int_t fNofSlices;  // Number of slices along Z for field approximation
-                     //    Double_t fAcceptanceAngleX; // Acceptance angle for X
-                     //    Double_t fAcceptanceAngleY; // Acceptance angle for Y
-  Int_t fNofBinsX;   // Number of bins for X
-  Int_t fNofBinsY;   // Number of bins for Y
+  Int_t fNofSlices;             // Number of slices along Z for field approximation
+                                //    Double_t fAcceptanceAngleX; // Acceptance angle for X
+                                //    Double_t fAcceptanceAngleY; // Acceptance angle for Y
+  Int_t fNofBinsX;              // Number of bins for X
+  Int_t fNofBinsY;              // Number of bins for Y
   Double_t fMinZFieldIntegral;  // start Z position for field integral
   Double_t fMaxZFieldIntegral;  // end Z position for field integral
 
-  vector<Double_t> fAlongZAngles;  // Polar angles [grad]
-  vector<std::pair<Double_t, Double_t>>
-    fAlongZXY;      // XY position for plotting field along Z
-  Double_t fZMin;   // Minimum Z position [cm]
-  Double_t fZMax;   // Maximum Z position [cm]
-  Double_t fZStep;  // Step size [cm]
+  vector<Double_t> fAlongZAngles;                   // Polar angles [grad]
+  vector<std::pair<Double_t, Double_t>> fAlongZXY;  // XY position for plotting field along Z
+  Double_t fZMin;                                   // Minimum Z position [cm]
+  Double_t fZMax;                                   // Maximum Z position [cm]
+  Double_t fZStep;                                  // Step size [cm]
 
   CbmHistManager* fHM;  // Histogram manager
 

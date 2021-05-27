@@ -25,20 +25,18 @@ CbmMuchModuleGem::CbmMuchModuleGem() : CbmMuchModule(), fSectors() {}
 
 
 // -------------------------------------------------------------------------
-CbmMuchModuleGem::CbmMuchModuleGem(Int_t iStation,
-                                   Int_t iLayer,
-                                   Bool_t iSide,
-                                   Int_t iModule,
-                                   TVector3 position,
-                                   TVector3 size,
-                                   Double_t cutRadius)
+CbmMuchModuleGem::CbmMuchModuleGem(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position,
+                                   TVector3 size, Double_t cutRadius)
   : CbmMuchModule(iStation, iLayer, iSide, iModule, position, size, cutRadius)
-  , fSectors() {}
+  , fSectors()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Public method GetPads -------------------------------------------
-vector<CbmMuchPad*> CbmMuchModuleGem::GetPads() {
+vector<CbmMuchPad*> CbmMuchModuleGem::GetPads()
+{
   vector<CbmMuchPad*> pads;
   for (Int_t iSector = 0; iSector < GetNSectors(); ++iSector) {
     CbmMuchSector* sector = GetSectorByIndex(iSector);
@@ -55,7 +53,8 @@ vector<CbmMuchPad*> CbmMuchModuleGem::GetPads() {
 
 
 // -----   Public method GetNPads ------------------------------------------
-Int_t CbmMuchModuleGem::GetNPads() {
+Int_t CbmMuchModuleGem::GetNPads()
+{
   Int_t nChannels = 0;
   for (Int_t iSector = 0; iSector < GetNSectors(); ++iSector) {
     CbmMuchSector* sector = GetSectorByIndex(iSector);
@@ -68,7 +67,8 @@ Int_t CbmMuchModuleGem::GetNPads() {
 
 
 // -----   Public method GetSector   ---------------------------------------
-CbmMuchSector* CbmMuchModuleGem::GetSector(Int_t address) {
+CbmMuchSector* CbmMuchModuleGem::GetSector(Int_t address)
+{
   Int_t iSector = CbmMuchAddress::GetSectorIndex(address);
   return (CbmMuchSector*) fSectors[iSector];
 }
@@ -76,7 +76,8 @@ CbmMuchSector* CbmMuchModuleGem::GetSector(Int_t address) {
 
 
 // -----   Public method GetPad  -------------------------------------------
-CbmMuchPad* CbmMuchModuleGem::GetPad(Int_t address) {
+CbmMuchPad* CbmMuchModuleGem::GetPad(Int_t address)
+{
   CbmMuchSector* sector = GetSector(address);
   Int_t iChannel        = CbmMuchAddress::GetChannelIndex(address);
   return sector ? sector->GetPadByChannelIndex(iChannel) : nullptr;
@@ -85,7 +86,8 @@ CbmMuchPad* CbmMuchModuleGem::GetPad(Int_t address) {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchModuleGem::DrawModule(Color_t) {
+void CbmMuchModuleGem::DrawModule(Color_t)
+{
   for (UInt_t s = 0; s < fSectors.size(); s++) {
     //    CbmMuchSector* sector = (CbmMuchSector*) fSectors[s];
     // TODO
@@ -98,7 +100,8 @@ void CbmMuchModuleGem::DrawModule(Color_t) {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchModuleGem::DrawPads() {
+void CbmMuchModuleGem::DrawPads()
+{
   for (UInt_t s = 0; s < fSectors.size(); s++) {
     CbmMuchSector* sector = (CbmMuchSector*) fSectors[s];
     sector->DrawPads();
@@ -107,9 +110,8 @@ void CbmMuchModuleGem::DrawPads() {
 // -------------------------------------------------------------------------
 
 
-void CbmMuchModuleGem::SetPadFired(Int_t address,
-                                   Int_t digiIndex,
-                                   Int_t adcCharge) {
+void CbmMuchModuleGem::SetPadFired(Int_t address, Int_t digiIndex, Int_t adcCharge)
+{
   CbmMuchPad* pad = GetPad(address);
   if (pad) pad->SetFired(digiIndex, adcCharge);
 }

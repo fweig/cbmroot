@@ -2,6 +2,7 @@
 #define L1Filtration_h
 
 #include "CbmL1Def.h"
+
 #include "L1TrackPar.h"
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
@@ -10,7 +11,8 @@
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.) {
+inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -76,8 +78,8 @@ inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.) {
   T.C55 -= K5 * F5;
 }
 
-inline void
-L1Filter(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
+inline void L1Filter(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -143,8 +145,8 @@ L1Filter(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
   T.C55 -= K5 * F5;
 }
 
-inline void
-L1FilterNoField(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
+inline void L1FilterNoField(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -214,14 +216,9 @@ L1FilterNoField(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
   T.C55 -= K5 * F5;
 }
 
-inline void L1FilterChi2(const L1UMeasurementInfo& info,
-                         const fvec& x,
-                         const fvec& y,
-                         const fvec& C00,
-                         const fvec& C10,
-                         const fvec& C11,
-                         fvec& chi2,
-                         const fvec& u) {
+inline void L1FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00, const fvec& C10,
+                         const fvec& C11, fvec& chi2, const fvec& u)
+{
   fvec zeta, HCH;
   fvec F0, F1;
 
@@ -236,14 +233,9 @@ inline void L1FilterChi2(const L1UMeasurementInfo& info,
   chi2 += zeta * zeta / (info.sigma2 + HCH);
 }
 
-inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info,
-                                    fvec& x,
-                                    fvec& y,
-                                    fvec& C00,
-                                    fvec& C10,
-                                    fvec& C11,
-                                    fvec& chi2,
-                                    const fvec& u) {
+inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fvec& y, fvec& C00, fvec& C10, fvec& C11,
+                                    fvec& chi2, const fvec& u)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1;
   fvec K1;
@@ -270,13 +262,8 @@ inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info,
   C11 -= K1 * F1;
 }
 
-inline void L1FilterVtx(L1TrackPar& T,
-                        fvec x,
-                        fvec y,
-                        L1XYMeasurementInfo& info,
-                        fvec extrDx,
-                        fvec extrDy,
-                        fvec J[]) {
+inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, L1XYMeasurementInfo& info, fvec extrDx, fvec extrDy, fvec J[])
+{
   cnst TWO = 2.;
 
   fvec zeta0, zeta1, S00, S10, S11, si;
@@ -315,8 +302,7 @@ inline void L1FilterVtx(L1TrackPar& T,
   S10         = -si * S10;
   S11         = si * S00tmp;
 
-  T.chi2 +=
-    zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.chi2 += zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
   T.NDF += TWO;
 
   K00 = F00 * S00 + F01 * S10;
@@ -354,8 +340,8 @@ inline void L1FilterVtx(L1TrackPar& T,
 }
 
 
-inline void
-L1FilterXY(L1TrackPar& T, fvec x, fvec y, L1XYMeasurementInfo& info) {
+inline void L1FilterXY(L1TrackPar& T, fvec x, fvec y, L1XYMeasurementInfo& info)
+{
   cnst TWO = 2.;
 
   fvec zeta0, zeta1, S00, S10, S11, si;
@@ -387,8 +373,7 @@ L1FilterXY(L1TrackPar& T, fvec x, fvec y, L1XYMeasurementInfo& info) {
   S10         = -si * S10;
   S11         = si * S00tmp;
 
-  T.chi2 +=
-    zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.chi2 += zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
   T.NDF += TWO;
 
   K00 = F00 * S00 + F01 * S10;

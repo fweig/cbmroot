@@ -62,14 +62,12 @@ public:
   void ResetAllHistos();
   void SaveAllHistos(TString sFileName = "");
   void SaveHistos(TString sFileName = "");
-  void SetHistoFileName(TString sFileName = "data/SetupHistos.root") {
-    fsHistoFileFullname = sFileName;
-  }
+  void SetHistoFileName(TString sFileName = "data/SetupHistos.root") { fsHistoFileFullname = sFileName; }
 
-  void SetPrintMessage(Bool_t bPrintMessOn = kTRUE,
-                       stsxyter::MessagePrintMask ctrl =
-                         stsxyter::MessagePrintMask::msg_print_Hex
-                         | stsxyter::MessagePrintMask::msg_print_Human) {
+  void SetPrintMessage(Bool_t bPrintMessOn             = kTRUE,
+                       stsxyter::MessagePrintMask ctrl = stsxyter::MessagePrintMask::msg_print_Hex
+                                                         | stsxyter::MessagePrintMask::msg_print_Human)
+  {
     fbPrintMessages = bPrintMessOn;
     fPrintMessCtrl  = ctrl;
   }
@@ -82,8 +80,7 @@ public:
   void SetMuchMode(Bool_t bMuchMode = kTRUE) { fbMuchMode = bMuchMode; }
 
   //   void SetTimeBin( size_t uTimeBin );
-  void UseDaqBuffer(
-    Bool_t) {};  //Virtual function in Mother Class, Need to update accordingly. VS
+  void UseDaqBuffer(Bool_t) {};  //Virtual function in Mother Class, Need to update accordingly. VS
 
   /// => Quick and dirty hack for binning FW!!!
   void SetBinningFwFlag(Bool_t bEnable = kTRUE) { fbBinningFw = bEnable; }
@@ -97,18 +94,16 @@ private:
   Bool_t fbBinningFw = kFALSE;
 
   // FLES containers
-  std::vector<size_t> fvMsComponentsList;  //!
-  size_t fuNbCoreMsPerTs;                  //!
-  size_t fuNbOverMsPerTs;                  //!
-  Bool_t
-    fbIgnoreOverlapMs;  //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-                        // Unpacking and mapping
-  CbmMcbm2018MuchPar* fUnpackParMuch;  //!
-  UInt_t fuNrOfDpbs;                   //! Total number of STS DPBs in system
-  std::map<UInt_t, UInt_t>
-    fDpbIdIndexMap;  //! Map of DPB Identifier to DPB index
+  std::vector<size_t> fvMsComponentsList;   //!
+  size_t fuNbCoreMsPerTs;                   //!
+  size_t fuNbOverMsPerTs;                   //!
+  Bool_t fbIgnoreOverlapMs;                 //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+                                            // Unpacking and mapping
+  CbmMcbm2018MuchPar* fUnpackParMuch;       //!
+  UInt_t fuNrOfDpbs;                        //! Total number of STS DPBs in system
+  std::map<UInt_t, UInt_t> fDpbIdIndexMap;  //! Map of DPB Identifier to DPB index
   std::vector<std::vector<Bool_t>>
-    fvbCrobActiveFlag;  //! Array to hold the active flag for all CROBs, [ NbDpb ][ NbCrobPerDpb ]
+    fvbCrobActiveFlag;   //! Array to hold the active flag for all CROBs, [ NbDpb ][ NbCrobPerDpb ]
   UInt_t fuNbFebs;       //! Number of StsXyter ASICs
   UInt_t fuNbStsXyters;  //! Number of StsXyter ASICs
   //std::vector< std::vector< std::vector< Double_t > > > fvdFebAdcGain;  //! ADC gain in e-/b, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ]
@@ -130,34 +125,25 @@ private:
   ULong64_t fulCurrentMsIdx;
   /// Current data properties
   std::map<stsxyter::MessType, UInt_t> fmMsgCounter;
-  UInt_t
-    fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t
-    fuCurrDpbId;  //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t
-    fuCurrDpbIdx;  //! Index of the DPB from which the MS currently unpacked is coming
-  Int_t
-    fiRunStartDateTimeSec;  //! Start of run time since "epoch" in s, for the plots with date as X axis
-  Int_t fiBinSizeDatePlots;  //! Bin size in s for the plots with date as X axis
+  UInt_t fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
+  UInt_t fuCurrDpbId;           //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx;          //! Index of the DPB from which the MS currently unpacked is coming
+  Int_t fiRunStartDateTimeSec;  //! Start of run time since "epoch" in s, for the plots with date as X axis
+  Int_t fiBinSizeDatePlots;     //! Bin size in s for the plots with date as X axis
 
   /// Data format control
-  std::vector<ULong64_t> fvulCurrentTsMsb;   //! Current TS MSB for each DPB
-  std::vector<UInt_t> fvuCurrentTsMsbCycle;  //! Current TS MSB cycle for DPB
-  std::vector<UInt_t>
-    fvuInitialHeaderDone;  //! Flag set after seeing MS header in 1st MS for DPB
-  std::vector<UInt_t>
-    fvuInitialTsMsbCycleHeader;  //! TS MSB cycle from MS header in 1st MS for DPB
-  std::vector<UInt_t> fvuElinkLastTsHit;  //! TS from last hit for DPB
-                                          /// Hits comparison
-  std::vector<std::vector<ULong64_t>>
-    fvulChanLastHitTime;  //! Last hit time in bins for each Channel
+  std::vector<ULong64_t> fvulCurrentTsMsb;                  //! Current TS MSB for each DPB
+  std::vector<UInt_t> fvuCurrentTsMsbCycle;                 //! Current TS MSB cycle for DPB
+  std::vector<UInt_t> fvuInitialHeaderDone;                 //! Flag set after seeing MS header in 1st MS for DPB
+  std::vector<UInt_t> fvuInitialTsMsbCycleHeader;           //! TS MSB cycle from MS header in 1st MS for DPB
+  std::vector<UInt_t> fvuElinkLastTsHit;                    //! TS from last hit for DPB
+                                                            /// Hits comparison
+  std::vector<std::vector<ULong64_t>> fvulChanLastHitTime;  //! Last hit time in bins for each Channel
   //std::vector< std::vector< ULong64_t  > > fvdChanLastHitTime;    //! Last hit time in ns   for each Channel
-  std::vector<std::vector<Double_t>>
-    fvdChanLastHitTime;  //! Last hit time in ns   for each Channel
-  std::vector<Double_t> fvdPrevMsTime;  //! Header time of previous MS per link
-  std::vector<Double_t> fvdMsTime;      //! Header time of each MS
-  std::vector<std::vector<std::vector<UInt_t>>>
-    fvuChanNbHitsInMs;  //! Number of hits in each MS for each Channel
+  std::vector<std::vector<Double_t>> fvdChanLastHitTime;            //! Last hit time in ns   for each Channel
+  std::vector<Double_t> fvdPrevMsTime;                              //! Header time of previous MS per link
+  std::vector<Double_t> fvdMsTime;                                  //! Header time of each MS
+  std::vector<std::vector<std::vector<UInt_t>>> fvuChanNbHitsInMs;  //! Number of hits in each MS for each Channel
   std::vector<std::vector<std::vector<Double_t>>>
     fvdChanLastHitTimeInMs;  //! Last hit time in bins in each MS for each Channel
   std::vector<std::vector<std::vector<UShort_t>>>
@@ -165,14 +151,12 @@ private:
   //   std::vector< std::vector< std::multiset< stsxyter::FinalHit > > > fvmChanHitsInTs; //! All hits (time & ADC) in bins in last TS for each Channel
   /// Starting state book-keeping
   //Long64_t              fdStartTime;           /** Time of first valid hit (TS_MSB available), used as reference for evolution plots**/
-  Long64_t prevtime_new; /** previous time for consecutive hit time**/
-  Long64_t prevTime;     /** previous time for consecutive hit time**/
-  UInt_t prevAsic;       /** previous asic**/
-  UInt_t prevChan;       /** previous channel**/
-  Double_t
-    fdStartTime; /** Time of first valid hit (TS_MSB available), used as reference for evolution plots**/
-  Double_t
-    fdStartTimeMsSz; /** Time of first microslice, used as reference for evolution plots**/
+  Long64_t prevtime_new;    /** previous time for consecutive hit time**/
+  Long64_t prevTime;        /** previous time for consecutive hit time**/
+  UInt_t prevAsic;          /** previous asic**/
+  UInt_t prevChan;          /** previous channel**/
+  Double_t fdStartTime;     /** Time of first valid hit (TS_MSB available), used as reference for evolution plots**/
+  Double_t fdStartTimeMsSz; /** Time of first microslice, used as reference for evolution plots**/
   std::chrono::steady_clock::time_point
     ftStartTimeUnix; /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
@@ -266,15 +250,10 @@ private:
   // Methods later going into Algo
   Bool_t InitMuchParameters();
   void CreateHistograms();
-  Bool_t
-  ProcessMuchMs(const fles::Timeslice& ts, size_t uMsComp, UInt_t uMsIdx);
+  Bool_t ProcessMuchMs(const fles::Timeslice& ts, size_t uMsComp, UInt_t uMsIdx);
 
-  void FillHitInfo(stsxyter::Message mess,
-                   const UShort_t& usElinkIdx,
-                   const UInt_t& uAsicIdx,
-                   const UInt_t& uMsIdx);
-  void
-  FillTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx = 0, UInt_t uMsIdx = 0);
+  void FillHitInfo(stsxyter::Message mess, const UShort_t& usElinkIdx, const UInt_t& uAsicIdx, const UInt_t& uMsIdx);
+  void FillTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx = 0, UInt_t uMsIdx = 0);
   void FillEpochInfo(stsxyter::Message mess);
 
   void ResetMuchHistos();

@@ -3,11 +3,11 @@
 #define PRINT_WARNING "### WARNING:"
 #define PRINT_FATAL "FFF FATAL:"
 #define PRINT_INFO "    Info:"
-#define CRASH                                                                  \
-  {                                                                            \
-    ;                                                                          \
-    Int_t* a = nullptr;                                                        \
-    *a       = 0;                                                              \
+#define CRASH                                                                                                          \
+  {                                                                                                                    \
+    ;                                                                                                                  \
+    Int_t* a = nullptr;                                                                                                \
+    *a       = 0;                                                                                                      \
   }
 
 #define PLUTO_COMPOSITE 1000

@@ -2,7 +2,8 @@
 
 // Transform pair tdcId/ch into some unique ID [from 0 to 255]
 // Size of the matrix is fixed to 16*16
-UInt_t tdcAndChToID(UInt_t tdcId, UInt_t ch) {
+UInt_t tdcAndChToID(UInt_t tdcId, UInt_t ch)
+{
   UInt_t tdcN = 16;
   switch (tdcId) {
     case 10: tdcN = 0; break;
@@ -31,9 +32,9 @@ UInt_t tdcAndChToID(UInt_t tdcId, UInt_t ch) {
 // in the input data TDCp_chq_TDCr_chs
 // p/q code 'b' and r/s code 'a', so first comes reference and then measured channels
 
-void buildDeltaTable(TString filename       = "inputData.txt",
-                     TString alphasFilename = "alphas.root",
-                     TString picturesFolder = "pictures") {
+void buildDeltaTable(TString filename = "inputData.txt", TString alphasFilename = "alphas.root",
+                     TString picturesFolder = "pictures")
+{
   // Open input file
   FILE* inFile = fopen(filename.Data(), "r");
   if (!inFile) {
@@ -52,7 +53,7 @@ void buildDeltaTable(TString filename       = "inputData.txt",
   for (UInt_t b = 0; b < MATRIXSIZE - 1; b++) {
     for (UInt_t a = b + 1; a < MATRIXSIZE; a++) {
       histoName.Form("ID1_%d_ID2_%d", b, a);
-      hAlpha[b][a] = new TH1F(histoName, histoName, 600, -15., 15.);
+      hAlpha[b][a]              = new TH1F(histoName, histoName, 600, -15., 15.);
       alphaOriginalFilled[b][a] = kFALSE;
     }
   }
@@ -65,17 +66,8 @@ void buildDeltaTable(TString filename       = "inputData.txt",
   Float_t alphaOriginal[MATRIXSIZE][MATRIXSIZE];
   int getLineRes;
   do {
-    getLineRes = fscanf(inFile,
-                        "GOOD: %d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\n",
-                        &tdcId1,
-                        &ch1,
-                        &tdcId2,
-                        &ch2,
-                        &maxBinNum,
-                        &hmean,
-                        &hmax,
-                        &devia,
-                        &numOfEntriesInOriginalHisto);
+    getLineRes = fscanf(inFile, "GOOD: %d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\n", &tdcId1, &ch1, &tdcId2, &ch2, &maxBinNum,
+                        &hmean, &hmax, &devia, &numOfEntriesInOriginalHisto);
     //fprintf (stderr, "TDC %d ch %d TDC %d ch %d : %d %f %f %f - %d\n", tdcId1, ch1, tdcId2, ch2, maxBinNum, hmean, hmax, devia, numOfEntriesInOriginalHisto);
     refId                             = tdcAndChToID(tdcId1, ch1);
     mesId                             = tdcAndChToID(tdcId2, ch2);
@@ -95,15 +87,18 @@ void buildDeltaTable(TString filename       = "inputData.txt",
           if (alphaOriginalFilled[c][a] && alphaOriginalFilled[c][b]) {
             hAlpha[b][a]->Fill(alphaOriginal[c][a] - alphaOriginal[c][b]);
           }
-        } else if (c < a && c > b) {  // case 2
+        }
+        else if (c < a && c > b) {  // case 2
           if (alphaOriginalFilled[c][a] && alphaOriginalFilled[b][c]) {
             hAlpha[b][a]->Fill(alphaOriginal[c][a] + alphaOriginal[b][c]);
           }
-        } else if (c > a && c > b) {  // case 3
+        }
+        else if (c > a && c > b) {  // case 3
           if (alphaOriginalFilled[a][c] && alphaOriginalFilled[b][c]) {
             hAlpha[b][a]->Fill(-alphaOriginal[a][c] + alphaOriginal[b][c]);
           }
-        } else {
+        }
+        else {
         }
       }
     }
@@ -121,8 +116,7 @@ void buildDeltaTable(TString filename       = "inputData.txt",
       hNum->Fill(hAlpha[b][a]->GetEntries());
       hMean->Fill(hAlpha[b][a]->GetMean());
       hAlpha[b][a]->Write();
-      Double_t maxVal =
-        hAlpha[b][a]->GetBinCenter(hAlpha[b][a]->GetMaximumBin());
+      Double_t maxVal = hAlpha[b][a]->GetBinCenter(hAlpha[b][a]->GetMaximumBin());
       //printf ("%0.8f\t%0.8f\n", hAlpha[b][a]->GetMean(), hAlpha[b][a]->GetMean()); //TODO choose mean or max
       printf("%0.8f\t%0.8f\n", maxVal, maxVal);  //TODO choose mean or max
     }

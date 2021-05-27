@@ -10,13 +10,13 @@
 #ifndef CBMMUCHSEGMENTAUTO_H
 #define CBMMUCHSEGMENTAUTO_H 1
 
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TString.h>     // for TString
 
 #include <vector>  // for vector
-
-#include <FairTask.h>  // for FairTask, InitStatus
 
 class CbmGeoMuchPar;
 class CbmMuchLayerSide;
@@ -54,12 +54,10 @@ private:
   Int_t fNStations;
   TObjArray* fStations;
 
-  TString fDigiFileName;   // Digitization file
-  CbmGeoMuchPar* fGeoPar;  // Geometry parameters container
-  std::vector<Double_t>
-    fExp0;  // Fit parameters for EXP distribution for each station
-  std::vector<Double_t>
-    fExp1;  // Fit parameters for EXP distribution for each station
+  TString fDigiFileName;        // Digitization file
+  CbmGeoMuchPar* fGeoPar;       // Geometry parameters container
+  std::vector<Double_t> fExp0;  // Fit parameters for EXP distribution for each station
+  std::vector<Double_t> fExp1;  // Fit parameters for EXP distribution for each station
 
   std::vector<Double_t> fSigmaXmin;     // Minimum sigma in X [mm]
   std::vector<Double_t> fSigmaYmin;     // Minimum sigma in Y [mm]
@@ -73,8 +71,7 @@ private:
   /** Initialization **/
   void InitLayerSide(CbmMuchLayerSide* layerSide);
   void SegmentModule(CbmMuchModuleGem* module);
-  void SegmentSector(CbmMuchModuleGem* module,
-                     CbmMuchSectorRectangular* sector);
+  void SegmentSector(CbmMuchModuleGem* module, CbmMuchSectorRectangular* sector);
   Bool_t ShouldSegmentByX(CbmMuchSectorRectangular* sector);
   Bool_t ShouldSegmentByY(CbmMuchSectorRectangular* sector);
   Int_t IntersectsRad(CbmMuchSectorRectangular* sector, Double_t radius);

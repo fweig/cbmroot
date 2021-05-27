@@ -2,7 +2,6 @@
 
 
 //___________________________________________________________________
-CbmTrdParModGain::CbmTrdParModGain(const char* name, const char* title)
-  : CbmTrdParMod(name, title) {}
+CbmTrdParModGain::CbmTrdParModGain(const char* name, const char* title) : CbmTrdParMod(name, title) {}
 
 ClassImp(CbmTrdParModGain)

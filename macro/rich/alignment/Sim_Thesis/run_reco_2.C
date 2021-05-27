@@ -1,4 +1,5 @@
-void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
+void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
@@ -6,35 +7,36 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
   TString setupName = "";
-  if (geom == 0) {
-    setupName = "setup_align";
-  } else if (geom == 1) {
+  if (geom == 0) { setupName = "setup_align"; }
+  else if (geom == 1) {
     setupName = "setup_misalign_gauss_sigma_1";
-  } else if (geom == 2) {
+  }
+  else if (geom == 2) {
     setupName = "setup_misalign_gauss_sigma_2";
-  } else if (geom == 3) {
+  }
+  else if (geom == 3) {
     setupName = "setup_misalign_gauss_sigma_3";
-  } else if (geom == 4) {
+  }
+  else if (geom == 4) {
     setupName = "setup_misalign_gauss_sigma_5";
   }
 
   TString outDir = "";
-  if (geom == 0) {
-    outDir =
-      "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/Aligned/";
-  } else if (geom == 1) {
+  if (geom == 0) { outDir = "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/Aligned/"; }
+  else if (geom == 1) {
     outDir = "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/1mrad/";
-  } else if (geom == 2) {
+  }
+  else if (geom == 2) {
     outDir = "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/2mrad/";
-  } else if (geom == 3) {
+  }
+  else if (geom == 3) {
     outDir = "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/3mrad/";
-  } else if (geom == 4) {
+  }
+  else if (geom == 4) {
     outDir = "/data/Sim_Outputs/Sim_Thesis/Misalignment_Effect/Only_e_p/5mrad/";
   }
   TString outDir2 = outDir;
-  cout << endl
-       << "outDir & outDir2: " << outDir << " ; " << outDir2 << endl
-       << endl;
+  cout << endl << "outDir & outDir2: " << outDir << " ; " << outDir2 << endl << endl;
 
   TString parFile   = outDir + setupName + "_param.root";
   TString mcFile    = outDir + setupName + "_mc.root";
@@ -61,8 +63,7 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- setupFile: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- setupFile: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   //gInterpreter->ProcessLine(setupFunct);
@@ -71,8 +72,7 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
 
   CbmSetup* setup = CbmSetup::Instance();
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   //    TString geoTag;
   //
@@ -128,12 +128,10 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct_align()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully" << std::endl;
 
 
   CbmMatchRecoToMC* matchRecoToMc = new CbmMatchRecoToMC();
@@ -193,9 +191,7 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
   //run->AddTask(tofQa);
 
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -225,8 +221,7 @@ void run_reco_2(Int_t nEvents = 1000, Int_t input = 3, Int_t geom = 0) {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

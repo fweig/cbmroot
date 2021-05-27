@@ -20,7 +20,8 @@ class CbmTrdModuleSimR : public CbmTrdModuleSim {
 public:
   CbmTrdModuleSimR(Int_t mod, Int_t ly, Int_t rot);
   virtual ~CbmTrdModuleSimR() { ; }
-  void GetCounters(Int_t& nEl, Int_t& nLattice, Int_t& nOverThr) const {
+  void GetCounters(Int_t& nEl, Int_t& nLattice, Int_t& nOverThr) const
+  {
     nEl      = nofElectrons;
     nLattice = nofLatticeHits;
     nOverThr = nofPointsAboveThreshold;
@@ -41,7 +42,8 @@ public:
   void SetGamma(Double_t gamma) { fGamma = gamma; }
   void SetTriggerThreshold(Double_t minCharge) { fMinimumChargeTH = minCharge; }
   void SetPadPlaneScanArea(Int_t row);
-  void ResetCounters() {
+  void ResetCounters()
+  {
     nofElectrons            = 0;
     nofLatticeHits          = 0;
     nofPointsAboveThreshold = 0;
@@ -55,43 +57,21 @@ private:
   CbmTrdModuleSimR(const CbmTrdModuleSimR&);
 
   //pulsed mode
-  void AddDigitoPulseBuffer(Int_t address,
-                            Double_t reldrift,
-                            Double_t charge,
-                            Double_t chargeTR,
-                            Double_t time,
-                            Int_t trigger,
-                            Int_t epoints,
-                            Int_t ipoint);
-  std::vector<Double_t>
-  MakePulse(Double_t charge, std::vector<Double_t> pulse, Int_t address);
-  void AddToPulse(Int_t address,
-                  Double_t charge,
-                  Double_t reldrift,
-                  std::vector<Double_t> pulse);
+  void AddDigitoPulseBuffer(Int_t address, Double_t reldrift, Double_t charge, Double_t chargeTR, Double_t time,
+                            Int_t trigger, Int_t epoints, Int_t ipoint);
+  std::vector<Double_t> MakePulse(Double_t charge, std::vector<Double_t> pulse, Int_t address);
+  void AddToPulse(Int_t address, Double_t charge, Double_t reldrift, std::vector<Double_t> pulse);
   Bool_t CheckMulti(Int_t address, std::vector<Double_t> pulse);
   Int_t CheckTrigger(std::vector<Double_t> pulse);
   Double_t CalcResponse(Double_t t);
-  void ProcessPulseBuffer(Int_t address,
-                          Bool_t FNcall,
-                          Bool_t MultiCall,
-                          Bool_t down,
-                          Bool_t up);
+  void ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t MultiCall, Bool_t down, Bool_t up);
   Int_t GetMultiBin(std::vector<Double_t> pulse);
 
   //vintage EB
-  void AddDigi(Int_t address,
-               Double_t charge,
-               Double_t chargeTR,
-               Double_t time,
-               Int_t trigger);
+  void AddDigi(Int_t address, Double_t charge, Double_t chargeTR, Double_t time, Int_t trigger);
 
   //non pulsed TB mode
-  void AddDigitoBuffer(Int_t address,
-                       Double_t charge,
-                       Double_t chargeTR,
-                       Double_t time,
-                       Int_t trigger);
+  void AddDigitoBuffer(Int_t address, Double_t charge, Double_t chargeTR, Double_t time, Int_t trigger);
   void ProcessBuffer(Int_t address);
 
   //Buffer managment
@@ -99,24 +79,14 @@ private:
   void CleanUp(Bool_t EB);
 
   //general tools
-  Bool_t DistributeCharge(Double_t pointin[3],
-                          Double_t pointout[3],
-                          Double_t delta[3],
-                          Double_t pos[3],
-                          Int_t ipoints);
+  Bool_t DistributeCharge(Double_t pointin[3], Double_t pointout[3], Double_t delta[3], Double_t pos[3], Int_t ipoints);
   Double_t AddDrifttime(Double_t x, Double_t z);
   Double_t AddDrifttime(Int_t x);
   Double_t AddNoise(Double_t charge);
   Double_t GetStep(Double_t dist, Int_t roll);
-  std::pair<Int_t, std::vector<Double_t>>
-  GetTotalSteps(Double_t In[3], Double_t Out[3], Double_t dist);
+  std::pair<Int_t, std::vector<Double_t>> GetTotalSteps(Double_t In[3], Double_t Out[3], Double_t dist);
   Int_t AddNoiseADC();
-  Int_t AddCrosstalk(Double_t address,
-                     Int_t i,
-                     Int_t sec,
-                     Int_t row,
-                     Int_t col,
-                     Int_t ncols);
+  Int_t AddCrosstalk(Double_t address, Int_t i, Int_t sec, Int_t row, Int_t col, Int_t ncols);
   Double_t CalcPRF(Double_t x, Double_t W, Double_t h);
   void CheckTime(Int_t address);
   void NoiseTime(ULong64_t eventTime);
@@ -124,22 +94,16 @@ private:
   std::vector<Double_t> AddCorrelatedNoise(std::vector<Double_t> pulse);
 
   //general MC data usage - distributing MC charge over the pad plane
-  void ScanPadPlane(const Double_t* local_point,
-                    Double_t reldrift,
-                    Double_t clusterELoss,
-                    Double_t clusterELossTR,
-                    Int_t epoints,
-                    Int_t ipoint);
+  void ScanPadPlane(const Double_t* local_point, Double_t reldrift, Double_t clusterELoss, Double_t clusterELossTR,
+                    Int_t epoints, Int_t ipoint);
 
 
   //spadic response parameters
-  Double_t fCalibration =
-    35. / 1.1107 / 0.8 * 1.5;  // calibrating pulse height to MIP
-  Double_t fEReco =
-    0.;  // calibrating energy reconstruction to the amount and position of used samples of the pulse
-  Double_t fTau          = 120.0;  // peaking time of the pulse
-  Double_t fTriggerSlope = 12.0;   // trigger setting of the pulse
-  Int_t fRecoMode        = 2;      // mode for reconstruction samples
+  Double_t fCalibration = 35. / 1.1107 / 0.8 * 1.5;  // calibrating pulse height to MIP
+  Double_t fEReco = 0.;     // calibrating energy reconstruction to the amount and position of used samples of the pulse
+  Double_t fTau   = 120.0;  // peaking time of the pulse
+  Double_t fTriggerSlope = 12.0;  // trigger setting of the pulse
+  Int_t fRecoMode        = 2;     // mode for reconstruction samples
 
   //general globals
   Double_t fSigma_noise_keV;

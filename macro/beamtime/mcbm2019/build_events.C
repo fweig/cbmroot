@@ -1,7 +1,5 @@
-void build_events(TString fileName,
-                  UInt_t uRunId  = 0,
-                  Int_t nEvents  = 0,
-                  TString outDir = "data/") {
+void build_events(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir = "data/")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -71,7 +69,8 @@ void build_events(TString fileName,
   cout << "Starting run" << endl;
   if (0 == nEvents) {
     fRun->Run(0, 0);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nEvents);  // process  2000 Events
   }
   // ------------------------------------------------------------------------

@@ -69,30 +69,23 @@ CbmMvdSensor::CbmMvdSensor()
   , fSensorMap()
   , fPluginArray(new TObjArray(1))
   , fSensorStartTime(0.)
-  , initialized(kFALSE) {
-  cout << "-W- " << GetName()
-       << ": MVD-Sensor initialized without technical data.";
+  , initialized(kFALSE)
+{
+  cout << "-W- " << GetName() << ": MVD-Sensor initialized without technical data.";
   cout << " Assuming default sensor." << endl;
 
-  cout << "-W- " << GetName()
-       << ": MVD-Sensor initialized without geometry data. ";
+  cout << "-W- " << GetName() << ": MVD-Sensor initialized without geometry data. ";
   cout << " Must be added manually before using this class." << endl;
 
-  cout << "-W- " << GetName()
-       << ": MVD-Sensor initialized without valid start time. ";
+  cout << "-W- " << GetName() << ": MVD-Sensor initialized without valid start time. ";
   cout << " Must be added manually before using this class." << endl;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdSensor::CbmMvdSensor(const char* name,
-                           CbmMvdSensorDataSheet* dataSheet,
-                           TString volName,
-                           TString nodeName,
-                           Int_t stationNr,
-                           Int_t volumeId,
-                           Double_t sensorStartTime)
+CbmMvdSensor::CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, TString volName, TString nodeName,
+                           Int_t stationNr, Int_t volumeId, Double_t sensorStartTime)
   : TNamed(name, "")
   , fStationNr()
   , fSensorNr(stationNr)
@@ -122,7 +115,9 @@ CbmMvdSensor::CbmMvdSensor(const char* name,
   , fSensorMap()
   , fPluginArray(new TObjArray(1))
   , fSensorStartTime(sensorStartTime)
-  , initialized(kFALSE) {}
+  , initialized(kFALSE)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -130,39 +125,36 @@ CbmMvdSensor::CbmMvdSensor(const char* name,
 CbmMvdSensor::~CbmMvdSensor() { delete fSensorData; }
 // -------Setters -----------------------------------------------------
 
-void CbmMvdSensor::SetAlignment(TGeoHMatrix* alignmentMatrix) {
+void CbmMvdSensor::SetAlignment(TGeoHMatrix* alignmentMatrix)
+{
 
   if (fAlignmentCorr) { delete fAlignmentCorr; };
-  fAlignmentCorr =
-    (TGeoHMatrix*) alignmentMatrix->Clone(fNodeName + "_AlignmentData");
+  fAlignmentCorr = (TGeoHMatrix*) alignmentMatrix->Clone(fNodeName + "_AlignmentData");
 }
 
 
 // -------Initialization tools  -----------------------------------------------------
-void CbmMvdSensor::ReadSensorGeometry(TString nodeName) {
+void CbmMvdSensor::ReadSensorGeometry(TString nodeName)
+{
 
   LOG(debug1) << "-I- nodeName is " << nodeName;
 
-  if (fMCMatrix) {
-    delete fMCMatrix;
-  };  //delete local copy of the position information
+  if (fMCMatrix) { delete fMCMatrix; };  //delete local copy of the position information
 
   TGeoVolume* volume;
   gGeoManager->cd(nodeName);
   volume = gGeoManager->GetCurrentVolume();
   LOG(debug2) << "At volume: " << volume->GetName();
   fShape    = (TGeoBBox*) volume->GetShape();
-  fMCMatrix = (TGeoHMatrix*) (gGeoManager->GetCurrentMatrix())
-                ->Clone(nodeName + "_MC_Matrix");
+  fMCMatrix = (TGeoHMatrix*) (gGeoManager->GetCurrentMatrix())->Clone(nodeName + "_MC_Matrix");
   fMCMatrix->SetName(nodeName + "_MC_Matrix");
 
   Double_t first[3], last[3];
   PixelToLocal(0, 0, first);
   PixelToLocal(fSensorData->GetNPixelsX(), fSensorData->GetNPixelsY(), last);
   LOG(debug2) << "pixel 0,0 at: " << first[0] << ", " << first[1] << " Local";
-  LOG(debug2) << "pixel " << fSensorData->GetNPixelsX() << " "
-              << fSensorData->GetNPixelsY() << " at: " << last[0] << ", "
-              << last[1] << " Local";
+  LOG(debug2) << "pixel " << fSensorData->GetNPixelsX() << " " << fSensorData->GetNPixelsY() << " at: " << last[0]
+              << ", " << last[1] << " Local";
 
   Double_t* tempCoordinate;
 
@@ -179,12 +171,11 @@ void CbmMvdSensor::ReadSensorGeometry(TString nodeName) {
     }
     fRecoMatrix->SetTranslation(tempCoordinate);
     PixelToTop(0, 0, past);
-    LOG(debug2) << "shifted pixel 0,0 to: " << past[0] << ", " << past[1]
-                << " at z = " << past[2];
+    LOG(debug2) << "shifted pixel 0,0 to: " << past[0] << ", " << past[1] << " at z = " << past[2];
     LocalToTop(local, global);
-    LOG(debug2) << "shifted local center to: " << global[0] << ", " << global[1]
-                << " at z = " << global[2];
-  } else {
+    LOG(debug2) << "shifted local center to: " << global[0] << ", " << global[1] << " at z = " << global[2];
+  }
+  else {
     tempCoordinate = fRecoMatrix->GetTranslation();
   }
   if (!fAlignmentCorr) {
@@ -200,7 +191,8 @@ void CbmMvdSensor::ReadSensorGeometry(TString nodeName) {
 //-------------------------------------------------------------------
 
 //-------------------------------------------------------------------
-void CbmMvdSensor::Init() {
+void CbmMvdSensor::Init()
+{
 
   ReadSensorGeometry(fNodeName);
 
@@ -261,30 +253,29 @@ void CbmMvdSensor::Init() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::ShowDebugHistos() {
+void CbmMvdSensor::ShowDebugHistos()
+{
   //if(fDetectorID == 1537)
   {
     CbmMvdSensorPlugin* pluginLast;
-    pluginLast = (CbmMvdSensorPlugin*) fPluginArray->At(
-      fPluginArray->GetEntriesFast() - 1);
+    pluginLast = (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetEntriesFast() - 1);
     cout << endl
-         << "Set debug mode on Plugin " << fPluginArray->GetEntriesFast() - 1
-         << " at sensor " << GetName() << endl;
+         << "Set debug mode on Plugin " << fPluginArray->GetEntriesFast() - 1 << " at sensor " << GetName() << endl;
     pluginLast->ShowDebugHistos();
   }
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::SetProduceNoise() {
+void CbmMvdSensor::SetProduceNoise()
+{
   CbmMvdSensorPlugin* pluginFirst;
   // CbmMvdSensorFrameBuffer* framebuffer;
   CbmMvdSensorDigitizerTask* digitask;
 
   pluginFirst = (CbmMvdSensorPlugin*) fPluginArray->At(0);
-  if (pluginFirst->GetPluginType() == buffer) {
-    return;
-  } else if (pluginFirst->GetPluginType() == task) {
+  if (pluginFirst->GetPluginType() == buffer) { return; }
+  else if (pluginFirst->GetPluginType() == task) {
     TString digitizername = "CbmMvdSensorDigitizerTask";
 
     if (pluginFirst->ClassName() == digitizername) {
@@ -295,15 +286,16 @@ void CbmMvdSensor::SetProduceNoise() {
     else {
       LOG(fatal) << "Invalid input typ";
     }
-
-  } else {
+  }
+  else {
     cout << endl << "ERROR!! undefind plugin!" << endl;
   }
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::SendInput(CbmMvdPoint* point) {
+void CbmMvdSensor::SendInput(CbmMvdPoint* point)
+{
 
   CbmMvdSensorPlugin* pluginFirst;
 
@@ -315,8 +307,7 @@ void CbmMvdSensor::SendInput(CbmMvdPoint* point) {
     TString digitizername   = "CbmMvdSensorDigitizerTask";
     TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
 
-    if (pluginFirst->ClassName() == digitizername
-        || pluginFirst->ClassName() == digitizerTBname) {
+    if (pluginFirst->ClassName() == digitizername || pluginFirst->ClassName() == digitizerTBname) {
       digitask = (CbmMvdSensorTask*) fPluginArray->At(0);
       digitask->SetInput(point);
     }
@@ -324,8 +315,8 @@ void CbmMvdSensor::SendInput(CbmMvdPoint* point) {
     else {
       LOG(fatal) << "Invalid input typ";
     }
-
-  } else {
+  }
+  else {
     cout << endl << "ERROR!! undefind plugin!" << endl;
   }
 }
@@ -336,10 +327,10 @@ void CbmMvdSensor::SendInput(CbmMvdPoint* point) {
 void CbmMvdSensor::SendInputDigi(CbmMvdDigi* digi)  //for old CF
 {
   if (fHitPlugin != -1) {
-    CbmMvdSensorClusterfinderTask* clustertask =
-      (CbmMvdSensorClusterfinderTask*) fPluginArray->At(fClusterPlugin);
+    CbmMvdSensorClusterfinderTask* clustertask = (CbmMvdSensorClusterfinderTask*) fPluginArray->At(fClusterPlugin);
     clustertask->SetInputDigi(digi);
-  } else {
+  }
+  else {
     cout << endl << "Somthing seems fishy here" << endl;
   }
 }
@@ -350,10 +341,10 @@ void CbmMvdSensor::SendInputDigi(CbmMvdDigi* digi)  //for old CF
 void CbmMvdSensor::SendInputDigiToHit(CbmMvdDigi* digi)  //for DigiToHit
 {
   if (fHitPlugin != -1) {
-    CbmMvdSensorDigiToHitTask* digitohittask =
-      (CbmMvdSensorDigiToHitTask*) fPluginArray->At(fHitPlugin);
+    CbmMvdSensorDigiToHitTask* digitohittask = (CbmMvdSensorDigiToHitTask*) fPluginArray->At(fHitPlugin);
     digitohittask->SetInputDigi(digi);
-  } else {
+  }
+  else {
     cout << endl << "Somthing seems fishy here" << endl;
   }
 }
@@ -362,12 +353,13 @@ void CbmMvdSensor::SendInputDigiToHit(CbmMvdDigi* digi)  //for DigiToHit
 
 //not needed khun/*
 // -------------------------------------------------------------------------
-void CbmMvdSensor::SendInputCluster(CbmMvdCluster* cluster) {
+void CbmMvdSensor::SendInputCluster(CbmMvdCluster* cluster)
+{
   if (fHitPlugin != -1) {
-    CbmMvdSensorHitfinderTask* findertask =
-      (CbmMvdSensorHitfinderTask*) fPluginArray->At(fHitPlugin);
+    CbmMvdSensorHitfinderTask* findertask = (CbmMvdSensorHitfinderTask*) fPluginArray->At(fHitPlugin);
     findertask->SetInputCluster(cluster);
-  } else {
+  }
+  else {
     cout << endl << "Somthing seems fishy in SendInputCluster" << endl;
   }
 }
@@ -377,7 +369,8 @@ void CbmMvdSensor::SendInputCluster(CbmMvdCluster* cluster) {
 
 // -------------------------------------------------------------------------
 
-void CbmMvdSensor::ExecChain() {
+void CbmMvdSensor::ExecChain()
+{
 
   FairRunSim* run = FairRunSim::Instance();
   FairRunAna* ana = FairRunAna::Instance();
@@ -413,20 +406,20 @@ void CbmMvdSensor::ExecChain() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensor::Exec(UInt_t nPlugin) {
+void CbmMvdSensor::Exec(UInt_t nPlugin)
+{
   foutputDigis->Clear("C");
   foutputDigiMatch->Clear("C");
   foutputCluster->Clear("C");  //not needed khun
   foutputBuffer->Clear("C");
   UInt_t nPluginMax = fPluginArray->GetEntriesFast();
-  if (nPlugin > nPluginMax) {
-    Fatal(GetName(), " Error - Called non-existing plugin");
-  }
+  if (nPlugin > nPluginMax) { Fatal(GetName(), " Error - Called non-existing plugin"); }
   CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   plugin->Exec();
 }
 // -------------------------------------------------------------------------
-void CbmMvdSensor::ExecTo(UInt_t nPlugin) {
+void CbmMvdSensor::ExecTo(UInt_t nPlugin)
+{
   FairRunSim* run           = FairRunSim::Instance();
   FairPrimaryGenerator* gen = run->GetPrimaryGenerator();
   FairMCEventHeader* event  = gen->GetEvent();
@@ -453,14 +446,16 @@ void CbmMvdSensor::ExecTo(UInt_t nPlugin) {
         plugin->ExecChain();
       }
     }
-  } else {
+  }
+  else {
     cout << endl << "nPlugin to large" << endl;
   }
 }
 
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::ExecFrom(UInt_t nPlugin) {
+void CbmMvdSensor::ExecFrom(UInt_t nPlugin)
+{
   FairRunSim* run           = FairRunSim::Instance();
   FairPrimaryGenerator* gen = run->GetPrimaryGenerator();
   FairMCEventHeader* event  = gen->GetEvent();
@@ -482,36 +477,35 @@ void CbmMvdSensor::ExecFrom(UInt_t nPlugin) {
         plugin->ExecChain();
       }
     }
-  } else {
+  }
+  else {
     cout << endl << "nPlugin to large" << endl;
   }
 }
 
 // -------------------------------------------------------------------------
-TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const {
+TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
+{
 
-  if (nPlugin == fHitPlugin)
-    GetOutputBuffer();
+  if (nPlugin == fHitPlugin) GetOutputBuffer();
   else if (nPlugin == fDigiPlugin) {
-    CbmMvdSensorDigitizerTask* digiplugin =
-      (CbmMvdSensorDigitizerTask*) fPluginArray->At(nPlugin);
-    Int_t ArrayLength = digiplugin->GetOutputArray()->GetEntriesFast() - 1;
+    CbmMvdSensorDigitizerTask* digiplugin = (CbmMvdSensorDigitizerTask*) fPluginArray->At(nPlugin);
+    Int_t ArrayLength                     = digiplugin->GetOutputArray()->GetEntriesFast() - 1;
     if (ArrayLength >= 0) {
       foutputDigis->AbsorbObjects(digiplugin->GetOutputArray());
       foutputDigiMatch->AbsorbObjects(digiplugin->GetMatchArray());
       //cout << endl << "got digis " << foutputDigis->GetEntriesFast() << " and matches " << foutputDigiMatch->GetEntriesFast() << endl;
     }
     return (foutputDigis);
-  } else if (nPlugin == fClusterPlugin)  //khun not needed
+  }
+  else if (nPlugin == fClusterPlugin)  //khun not needed
   {
-    CbmMvdSensorClusterfinderTask* clusterplugin =
-      (CbmMvdSensorClusterfinderTask*) fPluginArray->At(nPlugin);
-    Int_t ArrayLength = clusterplugin->GetOutputArray()->GetEntriesFast() - 1;
-    if (ArrayLength >= 0)
-      foutputCluster->AbsorbObjects(
-        clusterplugin->GetOutputArray(), 0, ArrayLength);
+    CbmMvdSensorClusterfinderTask* clusterplugin = (CbmMvdSensorClusterfinderTask*) fPluginArray->At(nPlugin);
+    Int_t ArrayLength                            = clusterplugin->GetOutputArray()->GetEntriesFast() - 1;
+    if (ArrayLength >= 0) foutputCluster->AbsorbObjects(clusterplugin->GetOutputArray(), 0, ArrayLength);
     return (foutputCluster);
-  } else {
+  }
+  else {
     LOG(fatal) << "undefined plugin: " << nPlugin << " called";
   }
   return NULL;
@@ -519,18 +513,18 @@ TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const {
+Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const
+{
 
   GetOutputArray(nPlugin);  // make sure that the arrays are filled
 
-  if (nPlugin == fDigiPlugin) {
-    return (foutputDigis->GetEntriesFast() - 1);
-  }
+  if (nPlugin == fDigiPlugin) { return (foutputDigis->GetEntriesFast() - 1); }
   //not needed khun
   else if (nPlugin == fClusterPlugin)  // && (noCluster==kFALSE))
   {
     return (foutputCluster->GetEntriesFast() - 1);
-  } else if (nPlugin == fHitPlugin) {
+  }
+  else if (nPlugin == fHitPlugin) {
     return (foutputBuffer->GetEntriesFast() - 1);
   }
 
@@ -542,19 +536,16 @@ Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-TClonesArray* CbmMvdSensor::GetOutputMatch() const {
-
-  return (foutputDigiMatch);
-}
+TClonesArray* CbmMvdSensor::GetOutputMatch() const { return (foutputDigiMatch); }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-TClonesArray* CbmMvdSensor::GetOutputBuffer() const {
+TClonesArray* CbmMvdSensor::GetOutputBuffer() const
+{
 
 
-  CbmMvdSensorPlugin* plugin =
-    (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetLast());
+  CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetLast());
   foutputBuffer->AbsorbObjects(plugin->GetOutputArray());
   return (foutputBuffer);
 }
@@ -563,14 +554,13 @@ TClonesArray* CbmMvdSensor::GetOutputBuffer() const {
 
 // -----  Coordinate Transformations --------------------------------
 
-void CbmMvdSensor::LocalToTop(Double_t* local, Double_t* lab) {
-  fMCMatrix->LocalToMaster(local, lab);
-};
+void CbmMvdSensor::LocalToTop(Double_t* local, Double_t* lab) { fMCMatrix->LocalToMaster(local, lab); };
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::TopToLocal(Double_t* lab, Double_t* local) {
+void CbmMvdSensor::TopToLocal(Double_t* lab, Double_t* local)
+{
   fMCMatrix->MasterToLocal(lab, local);
   //cout << endl << "local 0 nach TopToLocal " << local[0] << endl;
   //cout << endl << "local 1 nach TopToLocal " << local[1] << endl;
@@ -579,9 +569,8 @@ void CbmMvdSensor::TopToLocal(Double_t* lab, Double_t* local) {
 
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::LocalToPixel(Double_t* local,
-                                Int_t& pixelNumberX,
-                                Int_t& pixelNumberY) {
+void CbmMvdSensor::LocalToPixel(Double_t* local, Int_t& pixelNumberX, Int_t& pixelNumberY)
+{
 
   //Compute position of the frame relativ to the border of the matrix
   //which contains the pixel (0/0)
@@ -600,9 +589,8 @@ void CbmMvdSensor::LocalToPixel(Double_t* local,
 
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::PixelToLocal(Int_t pixelNumberX,
-                                Int_t pixelNumberY,
-                                Double_t* local) {
+void CbmMvdSensor::PixelToLocal(Int_t pixelNumberX, Int_t pixelNumberY, Double_t* local)
+{
 
   //Compute distance from border of the pixel matrix
   //Ignore the direction of pixel numbering so far
@@ -621,18 +609,16 @@ void CbmMvdSensor::PixelToLocal(Int_t pixelNumberX,
 
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::PixelToTop(Int_t pixelNumberX,
-                              Int_t pixelNumberY,
-                              Double_t* lab) {
+void CbmMvdSensor::PixelToTop(Int_t pixelNumberX, Int_t pixelNumberY, Double_t* lab)
+{
   PixelToLocal(pixelNumberX, pixelNumberY, fTempCoordinate);
   LocalToTop(fTempCoordinate, lab);
 };
 // -------------------------------------------------------------------------
 
 
-void CbmMvdSensor::TopToPixel(Double_t* lab,
-                              Int_t& pixelNumberX,
-                              Int_t& pixelNumberY) {
+void CbmMvdSensor::TopToPixel(Double_t* lab, Int_t& pixelNumberX, Int_t& pixelNumberY)
+{
   TopToLocal(lab, fTempCoordinate);
   LocalToPixel(fTempCoordinate, pixelNumberX, pixelNumberY);
 };
@@ -640,21 +626,18 @@ void CbmMvdSensor::TopToPixel(Double_t* lab,
 
 
 // -------------------------------------------------------------------------
-Int_t CbmMvdSensor::GetFrameNumber(Int_t pixelNumberY,
-                                   Double_t absoluteTime) const {
+Int_t CbmMvdSensor::GetFrameNumber(Int_t pixelNumberY, Double_t absoluteTime) const
+{
 
 
   Double_t timeSinceStart = absoluteTime - fSensorStartTime;
 
-  Double_t timeInUnitsOfFrames =
-    timeSinceStart / fSensorData->GetIntegrationTime();
+  Double_t timeInUnitsOfFrames = timeSinceStart / fSensorData->GetIntegrationTime();
 
   // Get time substracting the full frames (140.3 -> 0.3)
-  Double_t timeSinceStartOfTheFrame =
-    timeInUnitsOfFrames - (Int_t) timeInUnitsOfFrames;
+  Double_t timeSinceStartOfTheFrame = timeInUnitsOfFrames - (Int_t) timeInUnitsOfFrames;
 
-  Int_t rowUnderReadout =
-    Int_t(fSensorData->GetNPixelsY() * timeSinceStartOfTheFrame);
+  Int_t rowUnderReadout = Int_t(fSensorData->GetNPixelsY() * timeSinceStartOfTheFrame);
 
 
   return (Int_t)(timeInUnitsOfFrames + (pixelNumberY < rowUnderReadout));
@@ -667,13 +650,13 @@ Int_t CbmMvdSensor::GetFrameNumber(Int_t pixelNumberY,
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Double_t CbmMvdSensor::GetReadoutTime(Double_t absoluteTime) const {
+Double_t CbmMvdSensor::GetReadoutTime(Double_t absoluteTime) const
+{
 
 
   Double_t timeSinceStart = absoluteTime - fSensorStartTime;
 
-  Double_t timeInUnitsOfFrames =
-    timeSinceStart / fSensorData->GetIntegrationTime();
+  Double_t timeInUnitsOfFrames = timeSinceStart / fSensorData->GetIntegrationTime();
 
   Int_t nextFrame = (Int_t)(timeInUnitsOfFrames + 1);
 
@@ -685,7 +668,8 @@ Double_t CbmMvdSensor::GetReadoutTime(Double_t absoluteTime) const {
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmMvdSensor::Print(Option_t* /*opt*/) const {
+void CbmMvdSensor::Print(Option_t* /*opt*/) const
+{
   cout << " --- " << GetName() << ", sensor name" << fVolName << endl;
   cout << " MC - ID: " << fVolumeId << endl;
   cout << "---------------------------------------------------------" << endl;
@@ -700,7 +684,8 @@ void CbmMvdSensor::Print(Option_t* /*opt*/) const {
 // -------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdSensor::Finish() {
+void CbmMvdSensor::Finish()
+{
   CbmMvdSensorPlugin* plugin;
   Int_t nPlugin = fPluginArray->GetEntriesFast();
   for (Int_t i = 0; i < nPlugin; i++) {

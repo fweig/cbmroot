@@ -83,29 +83,30 @@ CbmMcbm2018TofFeeThr::CbmMcbm2018TofFeeThr()
   , fvuGet4ToPadi()
   , fvuElinkToGet4()
   , fvuGet4ToElink()
-  , fvdPadiThrCodeToValue() {}
+  , fvdPadiThrCodeToValue()
+{
+}
 
 CbmMcbm2018TofFeeThr::~CbmMcbm2018TofFeeThr() {}
 
-Bool_t CbmMcbm2018TofFeeThr::Init() {
+Bool_t CbmMcbm2018TofFeeThr::Init()
+{
   LOG(info) << "Initializing Get4 monitor";
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL) {
-    LOG(fatal) << "No FairRootManager instance";
-  }  // if( ioman == NULL )
+  if (ioman == NULL) { LOG(fatal) << "No FairRootManager instance"; }  // if( ioman == NULL )
 
   return kTRUE;
 }
 
-void CbmMcbm2018TofFeeThr::SetParContainers() {
+void CbmMcbm2018TofFeeThr::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
-  fUnpackPar =
-    (CbmMcbm2018TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer(
-      "CbmMcbm2018TofPar"));
+  fUnpackPar = (CbmMcbm2018TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018TofPar"));
 }
 
-Bool_t CbmMcbm2018TofFeeThr::InitContainers() {
+Bool_t CbmMcbm2018TofFeeThr::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
   Bool_t initOK = ReInitContainers();
 
@@ -114,7 +115,8 @@ Bool_t CbmMcbm2018TofFeeThr::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
+Bool_t CbmMcbm2018TofFeeThr::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
@@ -145,8 +147,7 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   fuNrOfGbtx = fUnpackPar->GetNrOfGbtx();
@@ -157,8 +158,7 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
   fuCoreMs         = fuTotalMsNb - fuOverlapMsNb;
   fdMsSizeInNs     = fUnpackPar->GetSizeMsInNs();
   fdTsCoreSizeInNs = fdMsSizeInNs * fuCoreMs;
-  LOG(info) << "Timeslice parameters: " << fuTotalMsNb
-            << " MS per link, of which " << fuOverlapMsNb
+  LOG(info) << "Timeslice parameters: " << fuTotalMsNb << " MS per link, of which " << fuOverlapMsNb
             << " overlap MS, each MS is " << fdMsSizeInNs << " ns";
 
   /// TODO: move these constants somewhere shared, e.g the parameter file
@@ -177,14 +177,12 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
 */
   /// From NH files, for Fall 2018 detectors
   UInt_t uGet4topadi[32] = {4,  3,  2,  1,  // provided by Jochen
-                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15,
-                            14, 13, 20, 19, 18, 17, 24, 23, 22, 21,
-                            28, 27, 26, 25, 32, 31, 30, 29};
+                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15, 14, 13, 20, 19,
+                            18, 17, 24, 23, 22, 21, 28, 27, 26, 25, 32, 31, 30, 29};
 
   UInt_t uPaditoget4[32] = {4,  3,  2,  1,  // provided by Jochen
-                            12, 11, 10, 9,  20, 19, 18, 17, 28, 27,
-                            26, 25, 32, 31, 30, 29, 8,  7,  6,  5,
-                            16, 15, 14, 13, 24, 23, 22, 21};
+                            12, 11, 10, 9, 20, 19, 18, 17, 28, 27, 26, 25, 32, 31,
+                            30, 29, 8,  7, 6,  5,  16, 15, 14, 13, 24, 23, 22, 21};
 
   for (UInt_t uChan = 0; uChan < fuNrOfChannelsPerFee; ++uChan) {
     fvuPadiToGet4[uChan] = uPaditoget4[uChan] - 1;
@@ -195,14 +193,12 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
   /// TODO: move these constants somewhere shared, e.g the parameter file
   fvuElinkToGet4.resize(kuNbGet4PerGbtx);
   fvuGet4ToElink.resize(kuNbGet4PerGbtx);
-  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {
-    27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
-    10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
-    18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
-  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {
-    24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
-    13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
-    30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
+  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
+                                           10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
+                                           18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
+  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
+                                           13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
+                                           30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
 
   for (UInt_t uLinkAsic = 0; uLinkAsic < kuNbGet4PerGbtx; ++uLinkAsic) {
     fvuElinkToGet4[uLinkAsic] = kuElinkToGet4[uLinkAsic];
@@ -212,21 +208,17 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
   /// PADI threshold measures and extrapolated code to value map
   const UInt_t kuNbThrMeasPoints          = 65;
   UInt_t kuThrMeasCode[kuNbThrMeasPoints] = {
-    0x000, 0x010, 0x020, 0x030, 0x040, 0x050, 0x060, 0x070, 0x080, 0x090, 0x0A0,
-    0x0B0, 0x0C0, 0x0D0, 0x0E0, 0x0F0, 0x100, 0x110, 0x120, 0x130, 0x140, 0x150,
-    0x160, 0x170, 0x180, 0x190, 0x1A0, 0x1B0, 0x1C0, 0x1D0, 0x1E0, 0x1F0, 0x200,
-    0x210, 0x220, 0x230, 0x240, 0x250, 0x260, 0x270, 0x280, 0x290, 0x2A0, 0x2B0,
-    0x2C0, 0x2D0, 0x2E0, 0x2F0, 0x300, 0x310, 0x320, 0x330, 0x340, 0x350, 0x360,
-    0x370, 0x380, 0x390, 0x3A0, 0x3B0, 0x3C0, 0x3D0, 0x3E0, 0x3F0, 0x3FF};
+    0x000, 0x010, 0x020, 0x030, 0x040, 0x050, 0x060, 0x070, 0x080, 0x090, 0x0A0, 0x0B0, 0x0C0,
+    0x0D0, 0x0E0, 0x0F0, 0x100, 0x110, 0x120, 0x130, 0x140, 0x150, 0x160, 0x170, 0x180, 0x190,
+    0x1A0, 0x1B0, 0x1C0, 0x1D0, 0x1E0, 0x1F0, 0x200, 0x210, 0x220, 0x230, 0x240, 0x250, 0x260,
+    0x270, 0x280, 0x290, 0x2A0, 0x2B0, 0x2C0, 0x2D0, 0x2E0, 0x2F0, 0x300, 0x310, 0x320, 0x330,
+    0x340, 0x350, 0x360, 0x370, 0x380, 0x390, 0x3A0, 0x3B0, 0x3C0, 0x3D0, 0x3E0, 0x3F0, 0x3FF};
   Double_t kdThrMeasVal[kuNbThrMeasPoints] = {
-    -652.6, -631.2, -611.4, -590.6, -570.9, -550.0, -529.9, -509.4, -490.6,
-    -469.5, -449.3, -428.5, -408.5, -388.2, -367.8, -347.2, -329.2, -308.2,
-    -287.5, -266.8, -246.9, -226.0, -205.6, -185.0, -165.7, -144.9, -124.4,
-    -103.8, -83.4,  -62.9,  -42.4,  -21.2,  -5.3,   15.5,   36.2,   56.8,
-    77.3,   97.8,   118.4,  139.1,  158.7,  179.2,  199.7,  220.2,  240.8,
-    261.1,  281.7,  302.2,  321.3,  341.4,  362.0,  382.2,  402.9,  422.8,
-    443.4,  463.7,  483.7,  503.7,  524.1,  544.3,  565.0,  585.0,  605.5,
-    626.0,  646.1};
+    -652.6, -631.2, -611.4, -590.6, -570.9, -550.0, -529.9, -509.4, -490.6, -469.5, -449.3, -428.5, -408.5,
+    -388.2, -367.8, -347.2, -329.2, -308.2, -287.5, -266.8, -246.9, -226.0, -205.6, -185.0, -165.7, -144.9,
+    -124.4, -103.8, -83.4,  -62.9,  -42.4,  -21.2,  -5.3,   15.5,   36.2,   56.8,   77.3,   97.8,   118.4,
+    139.1,  158.7,  179.2,  199.7,  220.2,  240.8,  261.1,  281.7,  302.2,  321.3,  341.4,  362.0,  382.2,
+    402.9,  422.8,  443.4,  463.7,  483.7,  503.7,  524.1,  544.3,  565.0,  585.0,  605.5,  626.0,  646.1};
 
   fvdPadiThrCodeToValue.resize(0x3FF + 1, 0.0);
   for (UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint) {
@@ -234,26 +226,23 @@ Bool_t CbmMcbm2018TofFeeThr::ReInitContainers() {
 
     /// Linear extrapolation between measured points
     if (uPadiPoint + 1 < kuNbThrMeasPoints) {
-      UInt_t uNbSteps =
-        kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
-      Double_t dValStep =
-        (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
-      UInt_t uCode = kuThrMeasCode[uPadiPoint];
+      UInt_t uNbSteps   = kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
+      Double_t dValStep = (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
+      UInt_t uCode      = kuThrMeasCode[uPadiPoint];
       for (UInt_t uStep = 1; uStep < uNbSteps; ++uStep) {
         uCode++;
-        fvdPadiThrCodeToValue[uCode] =
-          kdThrMeasVal[uPadiPoint] + dValStep * uStep;
+        fvdPadiThrCodeToValue[uCode] = kdThrMeasVal[uPadiPoint] + dValStep * uStep;
       }  // for( UInt_t uStep = 1; uStep < uNbSteps; ++uStep)
     }    // if( uPadiPoint + 1 < kuNbThrMeasPoints )
-  }  // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
+  }      // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
 
 
   return kTRUE;
 }
 
 
-void CbmMcbm2018TofFeeThr::AddMsComponentToList(size_t component,
-                                                UShort_t /*usDetectorId*/) {
+void CbmMcbm2018TofFeeThr::AddMsComponentToList(size_t component, UShort_t /*usDetectorId*/)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -261,34 +250,28 @@ void CbmMcbm2018TofFeeThr::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 }
-void CbmMcbm2018TofFeeThr::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) {
+void CbmMcbm2018TofFeeThr::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
   fuNbCoreMsPerTs = uCoreMsNb;
   fuNbOverMsPerTs = uOverlapMsNb;
 
   //   UInt_t uNbMsTotal = fuNbCoreMsPerTs + fuNbOverMsPerTs;
 }
 
-void CbmMcbm2018TofFeeThr::CreateHistograms() {
+void CbmMcbm2018TofFeeThr::CreateHistograms()
+{
   LOG(info) << "create Histos for " << fuNrOfGdpbs << " gDPBs ";
 
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
 
-  fhGdpbAsicSpiCounts = new TH2I(
-    "hGdpbAsicSpiCounts",
-    "SPI messages count per GDPB and ASIC; ASIC Idx []; GDPB []; SPI msg[]",
-    fuNrOfGet4PerGdpb,
-    -0.5,
-    fuNrOfGet4PerGdpb - 0.5,
-    fuNrOfGdpbs,
-    -0.5,
-    fuNrOfGdpbs - 0.5);
+  fhGdpbAsicSpiCounts =
+    new TH2I("hGdpbAsicSpiCounts", "SPI messages count per GDPB and ASIC; ASIC Idx []; GDPB []; SPI msg[]",
+             fuNrOfGet4PerGdpb, -0.5, fuNrOfGet4PerGdpb - 0.5, fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5);
 
   if (server) {
     server->Register("/", fhGdpbAsicSpiCounts);
-    server->RegisterCommand("/Reset_All_eTOF",
-                            "bMcbm2018TofFeeThrResetHistos=kTRUE");
-    server->RegisterCommand("/Save_All_eTof",
-                            "bMcbm2018TofFeeThrSaveHistos=kTRUE");
+    server->RegisterCommand("/Reset_All_eTOF", "bMcbm2018TofFeeThrResetHistos=kTRUE");
+    server->RegisterCommand("/Save_All_eTof", "bMcbm2018TofFeeThrSaveHistos=kTRUE");
 
     server->Restrict("/Reset_All_eTof", "allow=admin");
     server->Restrict("/Save_All_eTof", "allow=admin");
@@ -297,8 +280,8 @@ void CbmMcbm2018TofFeeThr::CreateHistograms() {
   LOG(info) << "Leaving CreateHistograms";
 }
 
-Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
-                                      size_t component) {
+Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
   if (bMcbm2018TofFeeThrResetHistos) {
     LOG(info) << "Reset eTOF STAR histos ";
     ResetAllHistos();
@@ -311,8 +294,7 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
   }  // if( bSaveStsHistos )
 
 
-  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component)
-              << "microslices.";
+  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component) << "microslices.";
 
   /// Ignore overlap ms if flag set by user
   UInt_t uNbMsLoop = fuNbCoreMsPerTs;
@@ -328,8 +310,7 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
     fuCurrentMs = uMsIdx;
 
     if (0 == fulCurrentTsIndex && 0 == uMsIdx) {
-      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-           ++uMsCompIdx) {
+      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
         UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
         auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
         /*
@@ -346,23 +327,19 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
     }    // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
 
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       constexpr uint32_t kuBytesPerMessage = 8;
 
-      UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
-      auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
-      fiEquipmentId     = msDescriptor.eq_id;
-      fdMsIndex         = static_cast<double>(msDescriptor.idx);
-      fuCurrentMsSysId  = static_cast<unsigned int>(msDescriptor.sys_id);
-      const uint8_t* msContent =
-        reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
+      UInt_t uMsComp           = fvMsComponentsList[uMsCompIdx];
+      auto msDescriptor        = ts.descriptor(uMsComp, uMsIdx);
+      fiEquipmentId            = msDescriptor.eq_id;
+      fdMsIndex                = static_cast<double>(msDescriptor.idx);
+      fuCurrentMsSysId         = static_cast<unsigned int>(msDescriptor.sys_id);
+      const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
 
       uint32_t size = msDescriptor.size;
       //    fulLastMsIdx = msDescriptor.idx;
-      if (size > 0)
-        LOG(debug) << "Microslice: " << msDescriptor.idx
-                   << " has size: " << size;
+      if (size > 0) LOG(debug) << "Microslice: " << msDescriptor.idx << " has size: " << size;
 
       // If not integer number of message in input buffer, print warning/error
       if (0 != (size % kuBytesPerMessage))
@@ -370,8 +347,7 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
                    << "contain only complete nDPB messages!";
 
       // Compute the number of complete messages in the input microslice buffer
-      uint32_t uNbMessages =
-        (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
+      uint32_t uNbMessages = (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
 
       // Get the gDPB ID from the MS header
       fuGdpbId = fiEquipmentId;
@@ -379,8 +355,7 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
       /// Check if this gDPB ID was declared in parameter file and stop there if not
       auto it = fGdpbIdIndexMap.find(fuGdpbId);
       if (it == fGdpbIdIndexMap.end()) {
-        LOG(info)
-          << "---------------------------------------------------------------";
+        LOG(info) << "---------------------------------------------------------------";
         /*
              LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
              LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
@@ -391,10 +366,9 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
                                msDescriptor.size, msDescriptor.offset );
 */
         LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-        LOG(warning) << "Could not find the gDPB index for AFCK id 0x"
-                     << std::hex << fuGdpbId << std::dec << " in timeslice "
-                     << fulCurrentTsIndex << " in microslice " << fdMsIndex
-                     << " component " << uMsCompIdx << "\n"
+        LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuGdpbId << std::dec
+                     << " in timeslice " << fulCurrentTsIndex << " in microslice " << fdMsIndex << " component "
+                     << uMsCompIdx << "\n"
                      << "If valid this index has to be added in the TOF "
                         "parameter file in the RocIdArray field";
         continue;
@@ -424,10 +398,9 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
         if (0x90 == fuCurrentMsSysId) fuGet4Id = mess.getGdpbGenChipId();
         fuGet4Nr = (fuGdpbNr * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
-            && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id
-                       << " VS " << fuNrOfGet4PerGdpb << " set in parameters.";
+        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb
+                       << " set in parameters.";
 
         switch (messageType) {
           case gdpbv100::MSG_HIT:
@@ -442,13 +415,12 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
           case gdpbv100::MSG_STAR_TRI_C:
           case gdpbv100::MSG_STAR_TRI_D: break;
           default:
-            LOG(error) << "Message type " << std::hex << std::setw(2)
-                       << static_cast<uint16_t>(messageType)
+            LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                        << " not included in Get4 unpacker.";
         }  // switch( mess.getMessageType() )
       }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-  }    // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
+    }      // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+  }        // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
 
 
   fulCurrentTsIndex++;
@@ -456,7 +428,8 @@ Bool_t CbmMcbm2018TofFeeThr::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018TofFeeThr::PrintSlcInfo(gdpbv100::Message mess) {
+void CbmMcbm2018TofFeeThr::PrintSlcInfo(gdpbv100::Message mess)
+{
   if (fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find(fuGdpbId)) {
     UInt_t uChan = mess.getGdpbSlcChan();
     UInt_t uEdge = mess.getGdpbSlcEdge();
@@ -470,25 +443,20 @@ void CbmMcbm2018TofFeeThr::PrintSlcInfo(gdpbv100::Message mess) {
     /// Printout if SPI message!
     if (gdpbv100::GET4_32B_SLC_SPIREAD == uType) {
       fhGdpbAsicSpiCounts->Fill(fuGet4Id, fuGdpbNr);
-      LOG(info) << "GET4 Slow Control message, time "
-                << Form("%3.3f", dMessTime) << " s "
-                << " for board ID " << std::hex << std::setw(4) << fuGdpbId
-                << std::dec << "\n"
-                << " +++++++ > Chip = " << std::setw(3) << fuGet4Id
-                << ", Chan = " << std::setw(1) << uChan
-                << ", Edge = " << std::setw(1) << uEdge
-                << ", Type = " << std::setw(1) << mess.getGdpbSlcType() << ", "
-                << Form("channel  %1u,", (uData >> 10) & 0xF)
-                << Form("value 0x%03x ", uData & 0x3FF)
-                << Form("level %4.1f ", fvdPadiThrCodeToValue[uData & 0x3FF])
-                << Form("(Data = 0x%06x) ", uData);
+      LOG(info) << "GET4 Slow Control message, time " << Form("%3.3f", dMessTime) << " s "
+                << " for board ID " << std::hex << std::setw(4) << fuGdpbId << std::dec << "\n"
+                << " +++++++ > Chip = " << std::setw(3) << fuGet4Id << ", Chan = " << std::setw(1) << uChan
+                << ", Edge = " << std::setw(1) << uEdge << ", Type = " << std::setw(1) << mess.getGdpbSlcType() << ", "
+                << Form("channel  %1u,", (uData >> 10) & 0xF) << Form("value 0x%03x ", uData & 0x3FF)
+                << Form("level %4.1f ", fvdPadiThrCodeToValue[uData & 0x3FF]) << Form("(Data = 0x%06x) ", uData);
     }  // if( gdpbv100::GET4_32B_SLC_SPIREAD == uType )
   }
 }
 
 void CbmMcbm2018TofFeeThr::Reset() {}
 
-void CbmMcbm2018TofFeeThr::Finish() {
+void CbmMcbm2018TofFeeThr::Finish()
+{
   // Printout some stats on what was unpacked
   TString message_type;
   for (unsigned int i = 0; i < fviMsgCounter.size(); ++i) {
@@ -513,12 +481,13 @@ void CbmMcbm2018TofFeeThr::Finish() {
   //   SaveAllHistos();
 }
 
-void CbmMcbm2018TofFeeThr::SaveAllHistos(TString sFileName) {
+void CbmMcbm2018TofFeeThr::SaveAllHistos(TString sFileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* histoFile   = NULL;
+  TFile* histoFile = NULL;
   if ("" != sFileName) {
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
@@ -535,7 +504,8 @@ void CbmMcbm2018TofFeeThr::SaveAllHistos(TString sFileName) {
   gDirectory = oldDir;
 }
 
-void CbmMcbm2018TofFeeThr::ResetAllHistos() {
+void CbmMcbm2018TofFeeThr::ResetAllHistos()
+{
   LOG(info) << "Reseting all TOF histograms.";
   fhGdpbAsicSpiCounts->Reset();
 }

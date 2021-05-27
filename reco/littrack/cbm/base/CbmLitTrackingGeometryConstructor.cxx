@@ -5,10 +5,11 @@
  **/
 
 #include "base/CbmLitTrackingGeometryConstructor.h"
+
+#include "CbmHistManager.h"
 #include "CbmUtils.h"
 #include "base/CbmLitFieldGridCreator.h"
 
-#include "CbmHistManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 
@@ -44,37 +45,37 @@ CbmLitTrackingGeometryConstructor::CbmLitTrackingGeometryConstructor()
   , fNofMuchStations(-1)
   , fNofMvdStations(-1)
   , fNofStsStations(-1)
-  , fDet() {
+  , fDet()
+{
   fGeo = gGeoManager;
   fDet.DetermineSetup();
 }
 
 CbmLitTrackingGeometryConstructor::~CbmLitTrackingGeometryConstructor() {}
 
-CbmLitTrackingGeometryConstructor*
-CbmLitTrackingGeometryConstructor::Instance() {
+CbmLitTrackingGeometryConstructor* CbmLitTrackingGeometryConstructor::Instance()
+{
   static CbmLitTrackingGeometryConstructor instance;
   return &instance;
 }
 
-void CbmLitTrackingGeometryConstructor::GetMuchLayoutVec(
-  lit::parallel::LitDetectorLayoutVec& layout) {
+void CbmLitTrackingGeometryConstructor::GetMuchLayoutVec(lit::parallel::LitDetectorLayoutVec& layout)
+{
   GetMuchLayout(layout);
 }
 
-void CbmLitTrackingGeometryConstructor::GetMuchLayoutScal(
-  lit::parallel::LitDetectorLayoutScal& layout) {
+void CbmLitTrackingGeometryConstructor::GetMuchLayoutScal(lit::parallel::LitDetectorLayoutScal& layout)
+{
   GetMuchLayout(layout);
 }
 
 template<class T>
-void CbmLitTrackingGeometryConstructor::GetMuchLayout(
-  lit::parallel::LitDetectorLayout<T>& layout) {
+void CbmLitTrackingGeometryConstructor::GetMuchLayout(lit::parallel::LitDetectorLayout<T>& layout)
+{
   cout << "Getting MUCH layout for parallel version of tracking...\n";
 
   // Read file with TProfile2D containing silicon equivalent of the material
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir           = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString matBudgetFile    = parDir + "/littrack/much_v12b.silicon.root";
   TFile* oldFile           = gFile;
   TDirectory* oldDirectory = gDirectory;
@@ -88,8 +89,7 @@ void CbmLitTrackingGeometryConstructor::GetMuchLayout(
   TObjArray* nodes = gGeoManager->GetTopVolume()->GetNodes();
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node = (TGeoNode*) nodes->At(iNode);
-    if (TString(node->GetName())
-          .Contains("much", TString::kIgnoreCase)) {  // Top MUCH node
+    if (TString(node->GetName()).Contains("much", TString::kIgnoreCase)) {  // Top MUCH node
       much = node;
       break;
     }
@@ -98,30 +98,22 @@ void CbmLitTrackingGeometryConstructor::GetMuchLayout(
   TObjArray* muchNodes = much->GetNodes();
   Int_t currentStation = 0;
   Int_t currentLayer   = 0;
-  for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast();
-       iMuchNode++) {
-    const TGeoNode* muchNode =
-      static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
+  for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast(); iMuchNode++) {
+    const TGeoNode* muchNode = static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
 
     if (TString(muchNode->GetName()).Contains("station")) {
       TObjArray* layerNodes = muchNode->GetNodes();
 
-      for (Int_t iLayerNode = 0; iLayerNode < layerNodes->GetEntriesFast();
-           iLayerNode++) {
-        const TGeoNode* layer =
-          static_cast<const TGeoNode*>(layerNodes->At(iLayerNode));
+      for (Int_t iLayerNode = 0; iLayerNode < layerNodes->GetEntriesFast(); iLayerNode++) {
+        const TGeoNode* layer = static_cast<const TGeoNode*>(layerNodes->At(iLayerNode));
 
-        Double_t z = much->GetMatrix()->GetTranslation()[2]
-                     + muchNode->GetMatrix()->GetTranslation()[2]
+        Double_t z = much->GetMatrix()->GetTranslation()[2] + muchNode->GetMatrix()->GetTranslation()[2]
                      + layer->GetMatrix()->GetTranslation()[2];
 
         // Convert material for this station
         TProfile2D* profile =
-          (iLayerNode == 0)
-            ? hm.P2("hrl_ThicknessSilicon_MuchAbsorber_"
-                    + Cbm::ToString<Int_t>(currentStation) + "_P2")
-            : hm.P2("hrl_ThicknessSilicon_Much_"
-                    + Cbm::ToString<Int_t>(currentLayer) + "_P2");
+          (iLayerNode == 0) ? hm.P2("hrl_ThicknessSilicon_MuchAbsorber_" + Cbm::ToString<Int_t>(currentStation) + "_P2")
+                            : hm.P2("hrl_ThicknessSilicon_Much_" + Cbm::ToString<Int_t>(currentLayer) + "_P2");
         //profile->Rebin2D(200, 200);
         lit::parallel::LitMaterialGrid material;
         ConvertTProfile2DToLitMaterialGrid(profile, &material);
@@ -150,24 +142,23 @@ void CbmLitTrackingGeometryConstructor::GetMuchLayout(
   cout << "Finish getting MUCH layout for parallel version of tracking\n";
 }
 
-void CbmLitTrackingGeometryConstructor::GetTrdLayoutVec(
-  lit::parallel::LitDetectorLayoutVec& layout) {
+void CbmLitTrackingGeometryConstructor::GetTrdLayoutVec(lit::parallel::LitDetectorLayoutVec& layout)
+{
   GetTrdLayout(layout);
 }
 
-void CbmLitTrackingGeometryConstructor::GetTrdLayoutScal(
-  lit::parallel::LitDetectorLayoutScal& layout) {
+void CbmLitTrackingGeometryConstructor::GetTrdLayoutScal(lit::parallel::LitDetectorLayoutScal& layout)
+{
   GetTrdLayout(layout);
 }
 
 template<class T>
-void CbmLitTrackingGeometryConstructor::GetTrdLayout(
-  lit::parallel::LitDetectorLayout<T>& layout) {
+void CbmLitTrackingGeometryConstructor::GetTrdLayout(lit::parallel::LitDetectorLayout<T>& layout)
+{
   cout << "Getting TRD layout for parallel version of tracking...\n";
 
   // Read file with TProfile2D containing silicon equivalent of the material
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir           = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString matBudgetFile    = parDir + "/littrack/trd_v13p_3e.silicon.root";
   TFile* oldFile           = gFile;
   TDirectory* oldDirectory = gDirectory;
@@ -203,8 +194,7 @@ void CbmLitTrackingGeometryConstructor::GetTrdLayout(
   Int_t nofStations = GetNofTrdStations();
   for (Int_t iStation = 0; iStation < nofStations; iStation++) {
     // Convert material for this station
-    TProfile2D* profile = hm.P2("hrl_ThicknessSilicon_Trd_"
-                                + Cbm::ToString<Int_t>(iStation) + "_P2");
+    TProfile2D* profile = hm.P2("hrl_ThicknessSilicon_Trd_" + Cbm::ToString<Int_t>(iStation) + "_P2");
     //profile->Rebin2D(200, 200);
     lit::parallel::LitMaterialGrid material;
     ConvertTProfile2DToLitMaterialGrid(profile, &material);
@@ -227,12 +217,11 @@ void CbmLitTrackingGeometryConstructor::GetTrdLayout(
   cout << "Finish getting TRD layout for parallel version of tracking\n";
 }
 
-void CbmLitTrackingGeometryConstructor::GetRichMaterial(
-  lit::parallel::LitMaterialGrid* material) {
+void CbmLitTrackingGeometryConstructor::GetRichMaterial(lit::parallel::LitMaterialGrid* material)
+{
   if (!fDet.GetDet(ECbmModuleId::kRich)) return;
   // Read file with TProfile2D containing silicon equivalent of the material
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir           = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString matBudgetFile    = parDir + "/littrack/rich_v08a.silicon.root";
   TFile* oldFile           = gFile;
   TDirectory* oldDirectory = gDirectory;
@@ -250,10 +239,10 @@ void CbmLitTrackingGeometryConstructor::GetRichMaterial(
   delete file;
 }
 
-void CbmLitTrackingGeometryConstructor::ConvertTProfile2DToLitMaterialGrid(
-  const TProfile2D* profile,
-  lit::parallel::LitMaterialGrid* grid,
-  Double_t maximumValue) {
+void CbmLitTrackingGeometryConstructor::ConvertTProfile2DToLitMaterialGrid(const TProfile2D* profile,
+                                                                           lit::parallel::LitMaterialGrid* grid,
+                                                                           Double_t maximumValue)
+{
   //   Int_t nofBinsX = profile->GetNbinsX();
   //   Int_t nofBinsY = profile->GetNbinsY();
   //   vector<vector<fscal> >material(nofBinsX);
@@ -308,17 +297,16 @@ void CbmLitTrackingGeometryConstructor::ConvertTProfile2DToLitMaterialGrid(
   Double_t xmax = profile->GetXaxis()->GetBinUpEdge(maxShrinkBinX);
   Double_t ymin = profile->GetYaxis()->GetBinLowEdge(minShrinkBinY);
   Double_t ymax = profile->GetYaxis()->GetBinUpEdge(maxShrinkBinY);
-  grid->SetMaterial(
-    material, xmin, xmax, ymin, ymax, nofShrinkBinsX, nofShrinkBinsY);
+  grid->SetMaterial(material, xmin, xmax, ymin, ymax, nofShrinkBinsX, nofShrinkBinsY);
 }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofTrdStations() {
+Int_t CbmLitTrackingGeometryConstructor::GetNofTrdStations()
+{
   static Bool_t firstTime = true;
   if (firstTime) {
     Int_t layerCounter  = 0;
     TObjArray* topNodes = fGeo->GetTopNode()->GetNodes();
-    for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast();
-         iTopNode++) {
+    for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
       TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
       if (TString(topNode->GetName()).Contains("trd")) {
         TObjArray* layers = topNode->GetNodes();
@@ -334,7 +322,8 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofTrdStations() {
   return fNofTrdStations;
 }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofMuchStations() {
+Int_t CbmLitTrackingGeometryConstructor::GetNofMuchStations()
+{
   static Bool_t firstTime = true;
   if (firstTime) {
     fNofMuchStations = 0;
@@ -342,8 +331,7 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMuchStations() {
     TObjArray* nodes = gGeoManager->GetTopVolume()->GetNodes();
     for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
       TGeoNode* node = (TGeoNode*) nodes->At(iNode);
-      if (TString(node->GetName())
-            .Contains("much", TString::kIgnoreCase)) {  // Top MUCH node
+      if (TString(node->GetName()).Contains("much", TString::kIgnoreCase)) {  // Top MUCH node
         much = node;
         break;
       }
@@ -353,24 +341,20 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMuchStations() {
       return fNofMuchStations;
     }
     TObjArray* muchNodes = much->GetNodes();
-    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast();
-         iMuchNode++) {
-      const TGeoNode* muchNode =
-        static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
+    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast(); iMuchNode++) {
+      const TGeoNode* muchNode = static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
       if (TString(muchNode->GetName()).Contains("station")) {
         // old structure defined in ASCII geometry
         if (TString(muchNode->GetName()).Contains("muchstation")) {
           TObjArray* layerNodes = muchNode->GetNodes();
           fNofMuchStations += layerNodes->GetEntriesFast();
-        } else {
+        }
+        else {
           // New structure defined in ROOT geometry files
           TObjArray* muchSubNodes = muchNode->GetNodes();
-          for (Int_t iMuchSubNode = 0;
-               iMuchSubNode < muchSubNodes->GetEntriesFast();
-               iMuchSubNode++) {
-            const TGeoNode* muchSubNode =
-              static_cast<const TGeoNode*>(muchSubNodes->At(iMuchSubNode));
-            TObjArray* layerNodes = muchSubNode->GetNodes();
+          for (Int_t iMuchSubNode = 0; iMuchSubNode < muchSubNodes->GetEntriesFast(); iMuchSubNode++) {
+            const TGeoNode* muchSubNode = static_cast<const TGeoNode*>(muchSubNodes->At(iMuchSubNode));
+            TObjArray* layerNodes       = muchSubNode->GetNodes();
             fNofMuchStations += layerNodes->GetEntriesFast();
           }
         }
@@ -381,26 +365,23 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMuchStations() {
   return fNofMuchStations;
 }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofMuchAbsorbers() {
+Int_t CbmLitTrackingGeometryConstructor::GetNofMuchAbsorbers()
+{
   static Bool_t firstTime = true;
   if (firstTime) {
     fNofMuchAbsorbers    = 0;
-    const TGeoNode* much = static_cast<const TGeoNode*>(
-      fGeo->GetTopNode()->GetNodes()->FindObject("much_0"));
+    const TGeoNode* much = static_cast<const TGeoNode*>(fGeo->GetTopNode()->GetNodes()->FindObject("much_0"));
     if (NULL == much) {  // No MUCH detector return 0 stations
       firstTime = false;
       return fNofMuchAbsorbers;
     }
     TObjArray* muchNodes = much->GetNodes();
-    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast();
-         iMuchNode++) {
-      const TGeoNode* muchNode =
-        static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
+    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast(); iMuchNode++) {
+      const TGeoNode* muchNode = static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
       if (TString(muchNode->GetName()).Contains("absorber")) {
         // old structure defined in ASCII geometry
-        if (TString(muchNode->GetName()).Contains("muchabsorber")) {
-          fNofMuchAbsorbers++;
-        } else {
+        if (TString(muchNode->GetName()).Contains("muchabsorber")) { fNofMuchAbsorbers++; }
+        else {
           // New structure defined in ROOT geometry files
           TObjArray* muchSubNodes = muchNode->GetNodes();
           fNofMuchAbsorbers += muchSubNodes->GetEntriesFast();
@@ -412,11 +393,10 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMuchAbsorbers() {
   return fNofMuchAbsorbers;
 }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofMuchTrdStations() {
-  return GetNofMuchStations() + GetNofTrdStations();
-}
+Int_t CbmLitTrackingGeometryConstructor::GetNofMuchTrdStations() { return GetNofMuchStations() + GetNofTrdStations(); }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations() {
+Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations()
+{
   static Bool_t firstTime = true;
   if (firstTime) {
     fNofMvdStations   = 0;
@@ -425,11 +405,10 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations() {
       TObjArray* nodes = topNode->GetNodes();
       for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
         TGeoNode* node = (TGeoNode*) nodes->At(iNode);
-        if (TString(node->GetName()).Contains("mvdstation")) {
-          fNofMvdStations++;
-        }
+        if (TString(node->GetName()).Contains("mvdstation")) { fNofMvdStations++; }
       }
-    } else {
+    }
+    else {
       TObjArray* nodes = gGeoManager->GetTopNode()->GetNodes();
       for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
         TGeoNode* node   = (TGeoNode*) nodes->At(iNode);
@@ -444,8 +423,7 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations() {
             if (nodeName2.Contains("pipevac1")) {
               // check if there is a mvd in the pipevac
               TObjArray* nodes3 = node2->GetNodes();
-              for (Int_t iiiNode = 0; iiiNode < nodes3->GetEntriesFast();
-                   iiiNode++) {
+              for (Int_t iiiNode = 0; iiiNode < nodes3->GetEntriesFast(); iiiNode++) {
                 TGeoNode* node3   = (TGeoNode*) nodes3->At(iiiNode);
                 TString nodeName3 = node3->GetName();
                 nodeName3.ToLower();
@@ -455,8 +433,7 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations() {
                   // Fix for mvd_v14a.
                   // Count number of daughter nodes which contain MVDDo
                   TObjArray* nodes4 = node3->GetNodes();
-                  for (Int_t iiiiNode = 0; iiiiNode < nodes4->GetEntriesFast();
-                       iiiiNode++) {
+                  for (Int_t iiiiNode = 0; iiiiNode < nodes4->GetEntriesFast(); iiiiNode++) {
                     TGeoNode* node4   = (TGeoNode*) nodes4->At(iiiiNode);
                     TString nodeName4 = node4->GetName();
                     nodeName4.ToLower();
@@ -477,7 +454,8 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofMvdStations() {
   return fNofMvdStations;
 }
 
-Int_t CbmLitTrackingGeometryConstructor::GetNofStsStations() {
+Int_t CbmLitTrackingGeometryConstructor::GetNofStsStations()
+{
   static Bool_t firstTime = true;
   if (firstTime) {
     fNofStsStations  = 0;
@@ -494,43 +472,35 @@ Int_t CbmLitTrackingGeometryConstructor::GetNofStsStations() {
   return fNofStsStations;
 }
 
-Int_t CbmLitTrackingGeometryConstructor::ConvertMuchToAbsoluteStationNr(
-  Int_t station,
-  Int_t layer) {
+Int_t CbmLitTrackingGeometryConstructor::ConvertMuchToAbsoluteStationNr(Int_t station, Int_t layer)
+{
   static Bool_t firstTime = true;
   static vector<Int_t> sumOfLayers;
   if (firstTime) {
     fNofMuchStations     = 0;
-    const TGeoNode* much = static_cast<const TGeoNode*>(
-      fGeo->GetTopNode()->GetNodes()->FindObject("much_0"));
+    const TGeoNode* much = static_cast<const TGeoNode*>(fGeo->GetTopNode()->GetNodes()->FindObject("much_0"));
     if (NULL == much) {  // No MUCH detector return 0
       firstTime = false;
       return 0;
     }
     map<Int_t, Int_t> nofLayersPerStation;
     TObjArray* muchNodes = much->GetNodes();
-    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast();
-         iMuchNode++) {
-      const TGeoNode* muchNode =
-        static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
+    for (Int_t iMuchNode = 0; iMuchNode < muchNodes->GetEntriesFast(); iMuchNode++) {
+      const TGeoNode* muchNode = static_cast<const TGeoNode*>(muchNodes->At(iMuchNode));
       if (TString(muchNode->GetName()).Contains("station")) {
         // old structure defined in ASCII geometry
         if (TString(muchNode->GetName()).Contains("muchstation")) {
-          Int_t station =
-            std::atoi(string(muchNode->GetName() + 11, 2).c_str()) - 1;
+          Int_t station                = std::atoi(string(muchNode->GetName() + 11, 2).c_str()) - 1;
           TObjArray* layerNodes        = muchNode->GetNodes();
           nofLayersPerStation[station] = layerNodes->GetEntriesFast();
-        } else {
+        }
+        else {
           // New structure defined in ROOT geometry files
           TObjArray* muchSubNodes = muchNode->GetNodes();
-          for (Int_t iMuchSubNode = 0;
-               iMuchSubNode < muchSubNodes->GetEntriesFast();
-               iMuchSubNode++) {
-            const TGeoNode* muchSubNode =
-              static_cast<const TGeoNode*>(muchSubNodes->At(iMuchSubNode));
-            Int_t station =
-              std::atoi(string(muchSubNode->GetName() + 11, 2).c_str()) - 1;
-            TObjArray* layerNodes = muchSubNode->GetNodes();
+          for (Int_t iMuchSubNode = 0; iMuchSubNode < muchSubNodes->GetEntriesFast(); iMuchSubNode++) {
+            const TGeoNode* muchSubNode = static_cast<const TGeoNode*>(muchSubNodes->At(iMuchSubNode));
+            Int_t station               = std::atoi(string(muchSubNode->GetName() + 11, 2).c_str()) - 1;
+            TObjArray* layerNodes       = muchSubNode->GetNodes();
             nofLayersPerStation[station] += layerNodes->GetEntriesFast();
           }
         }
@@ -539,8 +509,7 @@ Int_t CbmLitTrackingGeometryConstructor::ConvertMuchToAbsoluteStationNr(
     map<Int_t, Int_t>::const_iterator it;
     Int_t sum = 0;
     sumOfLayers.push_back(0);
-    for (it = nofLayersPerStation.begin(); it != nofLayersPerStation.end();
-         it++) {
+    for (it = nofLayersPerStation.begin(); it != nofLayersPerStation.end(); it++) {
       sum += (*it).second;
       sumOfLayers.push_back(sum);
     }

@@ -5,7 +5,8 @@
 // for deatils see
 // https://root.cern.ch/download/doc/ROOTUsersGuideHTML/ch09s12.html
 
-void geom_sts(const int statid = 1, const char* ststag = "v17a") {
+void geom_sts(const int statid = 1, const char* ststag = "v17a")
+{
   TEveManager::Create();
 
   TFile::SetCacheFileDir(".");
@@ -18,8 +19,7 @@ void geom_sts(const int statid = 1, const char* ststag = "v17a") {
   TString pngstat = Form("sts_%s_station%02d.png", ststag, statid);
   std::cout << thestat << std::endl << std::endl;
 
-  gGeoManager =
-    gEve->GetGeometry("http://cbm.uni-muenster.de/sts/more/sts_v17a_geo.root");
+  gGeoManager = gEve->GetGeometry("http://cbm.uni-muenster.de/sts/more/sts_v17a_geo.root");
   //   gGeoManager->DefaultColors();
 
   //   TGeoNode* node1 = gGeoManager->GetTopVolume()->FindNode("sts_v17a_1");
@@ -67,10 +67,8 @@ void geom_sts(const int statid = 1, const char* ststag = "v17a") {
   //   stat8->SetVisLevel(6);
   //   gEve->AddGlobalElement(stat8);
 
-  TGeoVolume* top =
-    gGeoManager->GetTopVolume()->FindNode(thests.Data())->GetVolume();
-  TEveGeoTopNode* stat =
-    new TEveGeoTopNode(gGeoManager, top->FindNode(thestat.Data()));
+  TGeoVolume* top      = gGeoManager->GetTopVolume()->FindNode(thests.Data())->GetVolume();
+  TEveGeoTopNode* stat = new TEveGeoTopNode(gGeoManager, top->FindNode(thestat.Data()));
   stat->SetVisLevel(6);
   gEve->AddGlobalElement(stat);
 

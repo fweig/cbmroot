@@ -1,6 +1,7 @@
 
 #include "/home/pmd/daqsoft/cbmroot_trunk/beamtime/MuchRealSize.h"
-void MuchCreateMap() {
+void MuchCreateMap()
+{
 
   // FairLogger::GetLogger();
   // This code is for making MuchUnpackPar.par file with formating.
@@ -23,8 +24,7 @@ void MuchCreateMap() {
   cout << "  0  1  2  3   # Need to be replaced with actual nDPBs ids." << endl;
   cout << "NrOfFebs: Int_t 16" << endl;
   cout << "nFebsIdsArray: Int_t \\" << endl;
-  cout << " 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  #Id for the FEB"
-       << endl;
+  cout << " 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  #Id for the FEB" << endl;
   cout << "NrOfChannels: Int_t 2048" << endl;
   cout << "ChannelsToPadX: Int_t \\" << endl;
 
@@ -41,7 +41,8 @@ void MuchCreateMap() {
         if (xl[i][j] >= 0 && xl[i][j] < 10) cout << " ";
         cout << xl[i][j];
         CharacterCounter++;
-      } else {
+      }
+      else {
         cout << " \\" << endl;
         //cout << " \\"<<endl;
         LineCounter = 0;
@@ -69,7 +70,8 @@ void MuchCreateMap() {
         if (yl[i][j] >= 0 && yl[i][j] < 10) cout << " ";
         cout << yl[i][j];
         CharacterCounter++;
-      } else {
+      }
+      else {
         cout << " \\" << endl;
         //cout << " \\"<<endl;
         LineCounter = 0;

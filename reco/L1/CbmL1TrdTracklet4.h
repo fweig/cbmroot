@@ -2,6 +2,7 @@
 #define CBML1TRDTRACKLET4_H 1
 
 #include "TObject.h"
+
 #include <vector>
 
 class CbmL1TrdTracklet4 : public TObject {
@@ -57,18 +58,18 @@ public:
   std::vector<Int_t> vAccostRight;     //position of next tracklets in vector
 
   //compares two first (or two second) coordinates of two tracklets
-  inline static Bool_t compare1(CbmL1TrdTracklet4* tr1,
-                                CbmL1TrdTracklet4* tr2) {
+  inline static Bool_t compare1(CbmL1TrdTracklet4* tr1, CbmL1TrdTracklet4* tr2)
+  {
     return (tr1->GetCoord(0) < tr2->GetCoord(0));
   };
 
-  inline static Bool_t compare2(CbmL1TrdTracklet4* tr1,
-                                CbmL1TrdTracklet4* tr2) {
+  inline static Bool_t compare2(CbmL1TrdTracklet4* tr1, CbmL1TrdTracklet4* tr2)
+  {
     return (tr1->GetCoord(1) < tr2->GetCoord(1));
   };
 
-  inline static Bool_t Compare3S(CbmL1TrdTracklet4* tr1,
-                                 CbmL1TrdTracklet4* tr2) {
+  inline static Bool_t Compare3S(CbmL1TrdTracklet4* tr1, CbmL1TrdTracklet4* tr2)
+  {
     return (tr1->GetVal() > tr2->GetVal());
   };
 

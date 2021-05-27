@@ -5,13 +5,13 @@
 
 #include "CbmStsAlgoFindClusters.h"
 
-#include <cassert>
-#include <iostream>
-
 #include "CbmStsCluster.h"
 #include "CbmStsDigi.h"
 #include "CbmStsParAsic.h"
 #include "CbmStsParModule.h"
+
+#include <cassert>
+#include <iostream>
 
 using std::pair;
 using std::vector;
@@ -20,7 +20,8 @@ using InputData = CbmStsAlgoFindClusters::InputData;
 
 
 // ----- Search for a matching cluster for a given channel   ---------------
-Bool_t CbmStsAlgoFindClusters::CheckChannel(Short_t channel, Double_t time) {
+Bool_t CbmStsAlgoFindClusters::CheckChannel(Short_t channel, Double_t time)
+{
 
   // Neighbours of first or last channel without cross-connection
   if (channel == -1 || channel == fNofChannels) return kFALSE;
@@ -36,8 +37,7 @@ Bool_t CbmStsAlgoFindClusters::CheckChannel(Short_t channel, Double_t time) {
 
   // Time difference
   Double_t tResol = fModPar->GetParAsic(channel).GetTimeResol();
-  Double_t deltaT =
-    (fTimeCutAbs > 0. ? fTimeCutAbs : fTimeCutSig * 1.4142 * tResol);
+  Double_t deltaT = (fTimeCutAbs > 0. ? fTimeCutAbs : fTimeCutSig * 1.4142 * tResol);
 
   // Channel is active, but time is not matching: close cluster
   if (time - fStatus[channel].second > deltaT) {
@@ -52,15 +52,10 @@ Bool_t CbmStsAlgoFindClusters::CheckChannel(Short_t channel, Double_t time) {
 
 
 // -----   Algorithm execution   -------------------------------------------
-Long64_t CbmStsAlgoFindClusters::Exec(const vector<InputData>& input,
-                                      vector<CbmStsCluster>& output,
-                                      UInt_t address,
-                                      UShort_t nChannels,
-                                      UShort_t channelOffset,
-                                      Double_t timeCutSigma,
-                                      Double_t timeCutAbs,
-                                      Bool_t connectEdge,
-                                      const CbmStsParModule* modPar) {
+Long64_t CbmStsAlgoFindClusters::Exec(const vector<InputData>& input, vector<CbmStsCluster>& output, UInt_t address,
+                                      UShort_t nChannels, UShort_t channelOffset, Double_t timeCutSigma,
+                                      Double_t timeCutAbs, Bool_t connectEdge, const CbmStsParModule* modPar)
+{
 
   // --- Set parameters and output
   fAddress       = address;
@@ -98,7 +93,8 @@ Long64_t CbmStsAlgoFindClusters::Exec(const vector<InputData>& input,
 
 
 // -----   Close a cluster   -----------------------------------------------
-void CbmStsAlgoFindClusters::CreateCluster(UShort_t channel) {
+void CbmStsAlgoFindClusters::CreateCluster(UShort_t channel)
+{
 
   assert(channel < fNofChannels);
   if (!IsActive(channel)) return;
@@ -138,9 +134,8 @@ void CbmStsAlgoFindClusters::CreateCluster(UShort_t channel) {
 
 
 // -----   Process one digi   ----------------------------------------------
-Bool_t CbmStsAlgoFindClusters::ProcessDigi(UShort_t channel,
-                                           Double_t time,
-                                           Int_t index) {
+Bool_t CbmStsAlgoFindClusters::ProcessDigi(UShort_t channel, Double_t time, Int_t index)
+{
 
   // Assert channel number
   assert(channel < fNofChannels);

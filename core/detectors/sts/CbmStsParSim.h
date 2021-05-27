@@ -6,14 +6,14 @@
 #ifndef CBMSTSPARSIM_H
 #define CBMSTSPARSIM_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Bool_t, kTRUE, kFALSE
+#include "CbmStsDefs.h"  // for CbmStsELoss, CbmStsELoss::kUrban
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
-#include <string>  // for string
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Bool_t, kTRUE, kFALSE
 
-#include "CbmStsDefs.h"  // for CbmStsELoss, CbmStsELoss::kUrban
+#include <string>  // for string
 
 class FairParamList;
 
@@ -26,8 +26,7 @@ class CbmStsParSim : public FairParGenericSet {
 
 public:
   /** @brief Constructor **/
-  CbmStsParSim(const char* name    = "CbmStsParSim",
-               const char* title   = "STS parameters",
+  CbmStsParSim(const char* name = "CbmStsParSim", const char* title = "STS parameters",
                const char* context = "Default");
 
 
@@ -133,10 +132,8 @@ public:
      **
      ** Default is: all processes active; energy loss model is kELossUrban.
      **/
-  void SetProcesses(CbmStsELoss eLossModel,
-                    Bool_t useLorentzShift,
-                    Bool_t useDiffusion,
-                    Bool_t useCrossTalk) {
+  void SetProcesses(CbmStsELoss eLossModel, Bool_t useLorentzShift, Bool_t useDiffusion, Bool_t useCrossTalk)
+  {
     fELossModel   = eLossModel;
     fLorentzShift = useLorentzShift;
     fDiffusion    = useDiffusion;
@@ -154,8 +151,8 @@ private:
   Bool_t fLorentzShift    = kTRUE;                ///< Apply Lorentz shift
   Bool_t fDiffusion       = kTRUE;                ///< Apply diffusion
   Bool_t fCrossTalk       = kTRUE;                ///< Apply cross-talk
-  Bool_t fNoise           = kTRUE;   ///< Generate inter-event noise
-  Bool_t fOnlyPrimaries   = kFALSE;  ///< Process sonly primary tracks
+  Bool_t fNoise           = kTRUE;                ///< Generate inter-event noise
+  Bool_t fOnlyPrimaries   = kFALSE;               ///< Process sonly primary tracks
 
   ClassDef(CbmStsParSim, 1);
 };

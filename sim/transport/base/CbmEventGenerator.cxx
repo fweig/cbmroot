@@ -24,7 +24,8 @@ CbmEventGenerator::CbmEventGenerator()
   , fTarget()
   , fForceVertexInTarget(kTRUE)
   , fForceVertexAtZ(kFALSE)
-  , fVertexZ(0.) {
+  , fVertexZ(0.)
+{
   // Mother class members
   fName      = "EventGenerator";
   fBeamAngle = kTRUE;
@@ -38,7 +39,8 @@ CbmEventGenerator::~CbmEventGenerator() {}
 
 
 // -----   Force vertex at a given z position   ----------------------------
-void CbmEventGenerator::ForceVertexAtZ(Double_t zVertex) {
+void CbmEventGenerator::ForceVertexAtZ(Double_t zVertex)
+{
   fForceVertexAtZ      = kTRUE;
   fForceVertexInTarget = kFALSE;
   fVertexZ             = zVertex;
@@ -47,7 +49,8 @@ void CbmEventGenerator::ForceVertexAtZ(Double_t zVertex) {
 
 
 // -----   Generate the input event   --------------------------------------
-Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack) {
+Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack)
+{
 
   std::cout << std::endl;
   LOG(info) << GetName() << ": Generate event " << ++fEventNr;
@@ -80,8 +83,7 @@ Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack) {
     assert(generator);
     fMCIndexOffset = fNTracks;  // Number of tracks before call of generator
     if (!generator->ReadEvent(this)) {
-      LOG(info) << GetName() << ": ReadEvent failed for generator "
-                << generator->GetName();
+      LOG(info) << GetName() << ": ReadEvent failed for generator " << generator->GetName();
       return kFALSE;
     }
   }
@@ -96,12 +98,10 @@ Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack) {
   fEvent->SetRotZ(phiGen + fPhi);       // total event plane angle
 
   // Event info to screen
-  LOG(info) << GetName() << ": Event ID " << fEvent->GetEventID() << ", tracks "
-            << fNTracks << ", vertex (" << fVertex.X() << ", " << fVertex.Y()
-            << ", " << fVertex.Z() << ") cm";
-  LOG(info) << GetName() << ": Beam angle (" << fBeamAngleX << ", "
-            << fBeamAngleY << ") rad, event plane angle " << fPhi
-            << " rad (total " << fEvent->GetRotZ() << " rad)";
+  LOG(info) << GetName() << ": Event ID " << fEvent->GetEventID() << ", tracks " << fNTracks << ", vertex ("
+            << fVertex.X() << ", " << fVertex.Y() << ", " << fVertex.Z() << ") cm";
+  LOG(info) << GetName() << ": Beam angle (" << fBeamAngleX << ", " << fBeamAngleY << ") rad, event plane angle "
+            << fPhi << " rad (total " << fEvent->GetRotZ() << " rad)";
 
   // Update global track counter (who knows what it's good for ...)
   fTotPrim += fNTracks;
@@ -112,10 +112,10 @@ Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack) {
 
 
 // -----   Generate event vertex   -----------------------------------------
-void CbmEventGenerator::MakeVertex() {
+void CbmEventGenerator::MakeVertex()
+{
 
-  if (fForceVertexAtZ)
-    MakeVertexAtZ();
+  if (fForceVertexAtZ) MakeVertexAtZ();
   else if (fForceVertexInTarget && fTarget)
     MakeVertexInTarget();
   else
@@ -125,7 +125,8 @@ void CbmEventGenerator::MakeVertex() {
 
 
 // -----   Generate event vertex in the beam focal plane   -----------------
-void CbmEventGenerator::MakeVertexAtZ() {
+void CbmEventGenerator::MakeVertexAtZ()
+{
 
   std::unique_ptr<CbmBeam> beam;
   beam = fBeamProfile.GenerateBeam();
@@ -140,7 +141,8 @@ void CbmEventGenerator::MakeVertexAtZ() {
 
 
 // -----   Generate event vertex in the beam focal plane   -----------------
-void CbmEventGenerator::MakeVertexInFocalPlane() {
+void CbmEventGenerator::MakeVertexInFocalPlane()
+{
 
   std::unique_ptr<CbmBeam> beam;
   beam           = fBeamProfile.GenerateBeam();
@@ -153,7 +155,8 @@ void CbmEventGenerator::MakeVertexInFocalPlane() {
 
 
 // -----   Generate event vertex   -----------------------------------------
-void CbmEventGenerator::MakeVertexInTarget() {
+void CbmEventGenerator::MakeVertexInTarget()
+{
 
   assert(fTarget);
 
@@ -175,8 +178,7 @@ void CbmEventGenerator::MakeVertexInTarget() {
 
     // Abort if too many beam samples
     if (nSamples > 1000.)
-      LOG(fatal) << GetName() << ": Aborting after " << nSamples
-                 << " beam samplings. Adjust beam and target.";
+      LOG(fatal) << GetName() << ": Aborting after " << nSamples << " beam samplings. Adjust beam and target.";
 
     // Sample a beam trajectory
     beam = fBeamProfile.GenerateBeam();
@@ -194,8 +196,7 @@ void CbmEventGenerator::MakeVertexInTarget() {
 
   }  //? Beam not in target
 
-  LOG(debug) << beam->ToString() << ", generated after " << nSamples
-             << (nSamples > 1 ? " samplings: " : " sampling");
+  LOG(debug) << beam->ToString() << ", generated after " << nSamples << (nSamples > 1 ? " samplings: " : " sampling");
 
   // Sample a point between entry and exit of beam in target
   Double_t scale = 0.5;
@@ -211,14 +212,13 @@ void CbmEventGenerator::MakeVertexInTarget() {
 
 
 // -----   Info   ----------------------------------------------------------
-void CbmEventGenerator::Print(Option_t*) const {
+void CbmEventGenerator::Print(Option_t*) const
+{
 
   LOG(info) << fBeamProfile.ToString();
   if (fTarget) LOG(info) << fTarget->ToString();
   LOG(info) << "Vertex smearing along beam " << (fSmearVertexZ ? "ON" : "OFF");
-  if (fEventPlane)
-    LOG(info) << "Random event plane angle between " << fPhiMin << " and "
-              << fPhiMax << " rad";
+  if (fEventPlane) LOG(info) << "Random event plane angle between " << fPhiMin << " and " << fPhiMax << " rad";
   else
     LOG(info) << "Fixed event plane angle = 0";
   LOG(info) << "Number of generators " << fGenList->GetEntries();
@@ -230,21 +230,17 @@ void CbmEventGenerator::Print(Option_t*) const {
 
 
 // -----   Set beam angle   ------------------------------------------------
-void CbmEventGenerator::SetBeamAngle(Double_t meanThetaX,
-                                     Double_t meanThetaY,
-                                     Double_t sigmaThetaX,
-                                     Double_t sigmaThetaY) {
+void CbmEventGenerator::SetBeamAngle(Double_t meanThetaX, Double_t meanThetaY, Double_t sigmaThetaX,
+                                     Double_t sigmaThetaY)
+{
   fBeamProfile.SetAngle(meanThetaX, meanThetaY, sigmaThetaX, sigmaThetaY);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set beam position   ---------------------------------------------
-void CbmEventGenerator::SetBeamPosition(Double_t meanX,
-                                        Double_t meanY,
-                                        Double_t sigmaX,
-                                        Double_t sigmaY,
-                                        Double_t zF) {
+void CbmEventGenerator::SetBeamPosition(Double_t meanX, Double_t meanY, Double_t sigmaX, Double_t sigmaY, Double_t zF)
+{
   fBeamProfile.SetPosition(meanX, meanY, sigmaX, sigmaY, zF);
 }
 // -------------------------------------------------------------------------

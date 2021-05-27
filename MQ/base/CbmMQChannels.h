@@ -14,9 +14,7 @@ public:
   bool CheckChannels(FairMQDevice* device);
 
   std::vector<int> GetComponentsToSend() { return fComponentsToSend; }
-  std::vector<std::vector<std::string>> GetChannelsToSend() {
-    return fChannelsToSend;
-  }
+  std::vector<std::vector<std::string>> GetChannelsToSend() { return fChannelsToSend; }
 
 private:
   std::vector<std::string> fAllowedChannels {};

@@ -17,11 +17,10 @@
 #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
 //#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+#include "CbmDigiManager.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //khun
 #include "plugins/tasks/CbmMvdSensorTask.h"
 #include "tools/CbmMvdGeoHandler.h"
-
-#include "CbmDigiManager.h"
 
 /// includes from FairRoot
 #include <Logger.h>
@@ -44,9 +43,9 @@ CbmMvdDetector* CbmMvdDetector::fInstance = 0;
 CbmMvdSensorTyp CbmMvdDetector::fSensorTyp = CbmMvdSensorTyp::MIMOSIS;
 
 //_____________________________________________________________________________
-CbmMvdDetector* CbmMvdDetector::Instance() {
-  if (fInstance)
-    return fInstance;
+CbmMvdDetector* CbmMvdDetector::Instance()
+{
+  if (fInstance) return fInstance;
   else {
     fInstance                    = new CbmMvdDetector("A");
     CbmMvdGeoHandler* mvdHandler = new CbmMvdGeoHandler();
@@ -80,7 +79,8 @@ CbmMvdDetector::CbmMvdDetector()
   , initialized(kFALSE)
   , fFinished(kFALSE)
   , fName("")
-  , fParameter(nullptr) {
+  , fParameter(nullptr)
+{
 
   Fatal(GetName(), " - Do not use standard constructor");
 }
@@ -109,11 +109,11 @@ CbmMvdDetector::CbmMvdDetector(const char* name)
   , initialized(kFALSE)
   , fFinished(kFALSE)
   , fName(name)
-  , fParameter(nullptr) {
+  , fParameter(nullptr)
+{
 
-  if (fInstance) {
-    Fatal(GetName(), " - Error, singleton does already exist.");
-  } else {
+  if (fInstance) { Fatal(GetName(), " - Error, singleton does already exist."); }
+  else {
     fInstance = this;
   };
   fepsilon[0] = fepsilon[1] = fepsilon[2] = 0;
@@ -128,14 +128,9 @@ CbmMvdDetector::~CbmMvdDetector() {}
 
 // -------Setters -----------------------------------------------------
 
-void CbmMvdDetector::AddSensor(TString clearName,
-                               TString fullName,
-                               TString nodeName,
-                               CbmMvdSensorDataSheet* sensorData,
-                               Int_t sensorNr,
-                               Int_t volumeId,
-                               Double_t sensorStartTime,
-                               Int_t stationNr) {
+void CbmMvdDetector::AddSensor(TString clearName, TString fullName, TString nodeName, CbmMvdSensorDataSheet* sensorData,
+                               Int_t sensorNr, Int_t volumeId, Double_t sensorStartTime, Int_t stationNr)
+{
   /**
    *
    * new sensor is registered in sensor array
@@ -144,9 +139,7 @@ void CbmMvdDetector::AddSensor(TString clearName,
 
   TString myname;
 
-  if (fSensorArrayFilled) {
-    Fatal(GetName(), " - Error, must add all sensors before adding plugins.");
-  }
+  if (fSensorArrayFilled) { Fatal(GetName(), " - Error, must add all sensors before adding plugins."); }
 
 
   Int_t nSensors = fSensorArray->GetEntriesFast();
@@ -154,13 +147,8 @@ void CbmMvdDetector::AddSensor(TString clearName,
   myname = clearName;
   myname += nSensors;
 
-  new ((*fSensorArray)[nSensors]) CbmMvdSensor(myname,
-                                               sensorData,
-                                               fullName,
-                                               nodeName,
-                                               sensorNr,
-                                               volumeId,
-                                               sensorStartTime);
+  new ((*fSensorArray)[nSensors])
+    CbmMvdSensor(myname, sensorData, fullName, nodeName, sensorNr, volumeId, sensorStartTime);
   //CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, TString volName,
   //TString nodeName, Int_t stationNr, Int_t volumeId, Double_t sensorStartTime);
 
@@ -175,15 +163,15 @@ void CbmMvdDetector::AddSensor(TString clearName,
   misalignment[1] = ((2 * randArray[0]) - 1) * fepsilon[1];
   misalignment[2] = ((2 * randArray[0]) - 1) * fepsilon[2];
   sensor->SetMisalignment(misalignment);
-  LOG(debug1) << "new sensor " << myname
-              << " to detector added at station: " << stationNr;
+  LOG(debug1) << "new sensor " << myname << " to detector added at station: " << stationNr;
 }
 
 // ----------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
+void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
+{
   /**
  * if there is a new buffer or task typ you have to insert it here
  * or you can't use it.
@@ -209,15 +197,15 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
 
       if (plugin->ClassName() == digitizername) {
         CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
-        sensor = (CbmMvdSensor*) fSensorArray->At(i);
+        sensor                              = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(digiTask);
         sensor->SetDigiPlugin(fPluginCount);
 
         //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
-      } else if (plugin->ClassName() == digitizerTBname) {
-        CbmMvdSensorDigitizerTBTask* digiTask =
-          new CbmMvdSensorDigitizerTBTask();
-        sensor = (CbmMvdSensor*) fSensorArray->At(i);
+      }
+      else if (plugin->ClassName() == digitizerTBname) {
+        CbmMvdSensorDigitizerTBTask* digiTask = new CbmMvdSensorDigitizerTBTask();
+        sensor                                = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(digiTask);
         sensor->SetDigiPlugin(fPluginCount);
 
@@ -233,15 +221,15 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
 
       //Re-enable cluster and hit finder in addition to khun
       else if (plugin->ClassName() == clustername) {
-        CbmMvdSensorClusterfinderTask* clusterTask =
-          new CbmMvdSensorClusterfinderTask();
-        sensor = (CbmMvdSensor*) fSensorArray->At(i);
+        CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
+        sensor                                     = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(clusterTask);
         sensor->SetClusterPlugin(fPluginCount);
         // cout <<  "Adding Task CbmMvdSensorClusterfinderTask at Sensor " << sensor->GetName() << endl;
-      } else if (plugin->ClassName() == hitname) {
+      }
+      else if (plugin->ClassName() == hitname) {
         CbmMvdSensorHitfinderTask* hitTask = new CbmMvdSensorHitfinderTask();
-        sensor = (CbmMvdSensor*) fSensorArray->At(i);
+        sensor                             = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(hitTask);
         sensor->SetHitPlugin(fPluginCount);
         // cout <<  "Adding Task CbmMvdSensorHitfinderTask at Sensor " << sensor->GetName() << endl;
@@ -249,20 +237,19 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
       //end: re-enable cluster and hit finder in addition to khun
 
       else if (plugin->ClassName() == digitohitname) {
-        CbmMvdSensorDigiToHitTask* digitohitTask =
-          new CbmMvdSensorDigiToHitTask();
-        sensor = (CbmMvdSensor*) fSensorArray->At(i);
+        CbmMvdSensorDigiToHitTask* digitohitTask = new CbmMvdSensorDigiToHitTask();
+        sensor                                   = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(digitohitTask);
         sensor->SetHitPlugin(fPluginCount);
         // cout <<  "Adding Task CbmMvdSensorClusterfinderTask at Sensor " << sensor->GetName() << endl;
-      } else {
+      }
+      else {
         cout << endl << "task not included yet, adding standart task." << endl;
         CbmMvdSensorTask* task = new CbmMvdSensorTask();
         sensor                 = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(task);
       }
       //data parallelizm requires that each sensor get its own task object
-
     }
 
     else {
@@ -276,7 +263,8 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::Init() {
+void CbmMvdDetector::Init()
+{
 
   /**
    *
@@ -295,8 +283,7 @@ void CbmMvdDetector::Init() {
   }
 
   Int_t nSensors = fSensorArray->GetEntriesFast();
-  if (nSensors <= 0)
-    LOG(fatal) << "CbmMvdDetector could not load Sensors from Geometry!";
+  if (nSensors <= 0) LOG(fatal) << "CbmMvdDetector could not load Sensors from Geometry!";
   CbmMvdSensor* sensor;
 
   for (Int_t j = 0; j < nSensors; j++) {
@@ -311,7 +298,8 @@ void CbmMvdDetector::Init() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::ShowDebugHistos() {
+void CbmMvdDetector::ShowDebugHistos()
+{
 
   Int_t nSensors = fSensorArray->GetEntriesFast();
   CbmMvdSensor* sensor;
@@ -324,7 +312,8 @@ void CbmMvdDetector::ShowDebugHistos() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SetProduceNoise() {
+void CbmMvdDetector::SetProduceNoise()
+{
   Int_t nSensors = fSensorArray->GetEntriesFast();
   CbmMvdSensor* sensor;
 
@@ -336,7 +325,8 @@ void CbmMvdDetector::SetProduceNoise() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SendInput(TClonesArray* input) {
+void CbmMvdDetector::SendInput(TClonesArray* input)
+{
   /**
    *
    * Sending event to sensors,
@@ -363,15 +353,15 @@ void CbmMvdDetector::SendInput(TClonesArray* input) {
         send = true;
       }
     }
-    if (!send)
-      LOG(warn) << "Point not send to any sensor: " << point->GetDetectorID();
+    if (!send) LOG(warn) << "Point not send to any sensor: " << point->GetDetectorID();
   }
 }
 //-----------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan) {
+void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan)
+{
   /**
    *
    * Sending event to sensors,
@@ -395,9 +385,7 @@ void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan) {
     for (Int_t k = 0; k < nSensors; k++) {
       sensor = (CbmMvdSensor*) fSensorArray->At(k);
 
-      if (digi->GetDetectorId() == sensor->GetDetectorID()) {
-        sensor->SendInputDigi(digi);
-      }
+      if (digi->GetDetectorId() == sensor->GetDetectorID()) { sensor->SendInputDigi(digi); }
     }
   }
 }
@@ -405,7 +393,8 @@ void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan) {
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SendInputDigis(TClonesArray* digis) {
+void CbmMvdDetector::SendInputDigis(TClonesArray* digis)
+{
   /**
    *
    * Sending event to sensors,
@@ -427,16 +416,15 @@ void CbmMvdDetector::SendInputDigis(TClonesArray* digis) {
     for (Int_t k = 0; k < nSensors; k++) {
       sensor = (CbmMvdSensor*) fSensorArray->At(k);
 
-      if (digi->GetDetectorId() == sensor->GetDetectorID()) {
-        sensor->SendInputDigi(digi);
-      }
+      if (digi->GetDetectorId() == sensor->GetDetectorID()) { sensor->SendInputDigi(digi); }
     }
   }
 }
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis) {
+void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis)
+{
   /**
    *
    * Sending event to sensors,
@@ -457,9 +445,7 @@ void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis) {
     for (Int_t k = 0; k < nSensors; k++) {
       sensor = (CbmMvdSensor*) fSensorArray->At(k);
 
-      if (digi->GetDetectorId() == sensor->GetDetectorID()) {
-        sensor->SendInputDigiToHit(digi);
-      }
+      if (digi->GetDetectorId() == sensor->GetDetectorID()) { sensor->SendInputDigiToHit(digi); }
     }
   }
 }
@@ -467,7 +453,8 @@ void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis) {
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SendInputCluster(TClonesArray* clusters) {
+void CbmMvdDetector::SendInputCluster(TClonesArray* clusters)
+{
 
   /**
    *
@@ -497,7 +484,8 @@ void CbmMvdDetector::SendInputCluster(TClonesArray* clusters) {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::ExecChain() {
+void CbmMvdDetector::ExecChain()
+{
   /**
    *
    * method to execute plugin chain on sensors
@@ -525,7 +513,8 @@ void CbmMvdDetector::ExecChain() {
 
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::Exec(UInt_t nLevel) {
+void CbmMvdDetector::Exec(UInt_t nLevel)
+{
   /**
    *
    * execute spezific plugin on all sensors
@@ -550,7 +539,8 @@ void CbmMvdDetector::Exec(UInt_t nLevel) {
 
 //-----------------------------------------------------------------------
 
-void CbmMvdDetector::ExecFrom(UInt_t nLevel) {
+void CbmMvdDetector::ExecFrom(UInt_t nLevel)
+{
 
   /**
    *
@@ -574,7 +564,8 @@ void CbmMvdDetector::ExecFrom(UInt_t nLevel) {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-TClonesArray* CbmMvdDetector::GetCurrentEvent() {
+TClonesArray* CbmMvdDetector::GetCurrentEvent()
+{
 
   /**
    * Method used for debugging, Plugins have to hold there output until next call
@@ -593,7 +584,8 @@ TClonesArray* CbmMvdDetector::GetCurrentEvent() {
 
 //-----------------------------------------------------------------------
 
-TClonesArray* CbmMvdDetector::GetOutputHits() {
+TClonesArray* CbmMvdDetector::GetOutputHits()
+{
 
   /**
    * method used to write hits to hd
@@ -605,10 +597,7 @@ TClonesArray* CbmMvdDetector::GetOutputHits() {
     sensor       = (CbmMvdSensor*) fSensorArray->At(i);
     Int_t length = sensor->GetOutputArrayLen(sensor->GetHitPlugin());
     if (length >= 0) {
-      foutputHits->AbsorbObjects(sensor->GetOutputBuffer(),
-                                 0,
-                                 sensor->GetOutputBuffer()->GetEntriesFast()
-                                   - 1);
+      foutputHits->AbsorbObjects(sensor->GetOutputBuffer(), 0, sensor->GetOutputBuffer()->GetEntriesFast() - 1);
     }
   }
 
@@ -617,7 +606,8 @@ TClonesArray* CbmMvdDetector::GetOutputHits() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-TClonesArray* CbmMvdDetector::GetOutputDigis() {
+TClonesArray* CbmMvdDetector::GetOutputDigis()
+{
 
   /**
    * method used to write digis to hd
@@ -629,9 +619,7 @@ TClonesArray* CbmMvdDetector::GetOutputDigis() {
     sensor       = (CbmMvdSensor*) fSensorArray->At(i);
     fDigiPlugin  = sensor->GetDigiPlugin();
     Int_t length = sensor->GetOutputArrayLen(fDigiPlugin);
-    if (length >= 0) {
-      foutputDigis->AbsorbObjects(sensor->GetOutputArray(fDigiPlugin));
-    }
+    if (length >= 0) { foutputDigis->AbsorbObjects(sensor->GetOutputArray(fDigiPlugin)); }
   }
 
   return (foutputDigis);
@@ -639,7 +627,8 @@ TClonesArray* CbmMvdDetector::GetOutputDigis() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-TClonesArray* CbmMvdDetector::GetOutputDigiMatchs() {
+TClonesArray* CbmMvdDetector::GetOutputDigiMatchs()
+{
 
   /**
    * method used to write digiMatches to hd
@@ -658,7 +647,8 @@ TClonesArray* CbmMvdDetector::GetOutputDigiMatchs() {
 
 //-----------------------------------------------------------------------
 // khun /*
-TClonesArray* CbmMvdDetector::GetOutputCluster() {
+TClonesArray* CbmMvdDetector::GetOutputCluster()
+{
   /**
    * method used to write Cluster to hd
    */
@@ -668,9 +658,7 @@ TClonesArray* CbmMvdDetector::GetOutputCluster() {
     sensor         = (CbmMvdSensor*) fSensorArray->At(i);
     fClusterPlugin = sensor->GetClusterPlugin();
     Int_t length   = sensor->GetOutputArrayLen(fClusterPlugin);
-    if (length >= 0)
-      foutputCluster->AbsorbObjects(
-        sensor->GetOutputArray(fClusterPlugin), 0, length);  //khun
+    if (length >= 0) foutputCluster->AbsorbObjects(sensor->GetOutputArray(fClusterPlugin), 0, length);  //khun
   }
 
   return (foutputCluster);
@@ -682,7 +670,8 @@ TClonesArray* CbmMvdDetector::GetOutputCluster() {
 
 //-----------------------------------------------------------------------
 
-TClonesArray* CbmMvdDetector::GetOutputArray(Int_t nPlugin) {
+TClonesArray* CbmMvdDetector::GetOutputArray(Int_t nPlugin)
+{
 
   /**
    * method used to write processed events to hd
@@ -703,7 +692,8 @@ TClonesArray* CbmMvdDetector::GetOutputArray(Int_t nPlugin) {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::Finish() {
+void CbmMvdDetector::Finish()
+{
   if (!fFinished) {
     Int_t nSensors = fSensorArray->GetEntriesFast();
     CbmMvdSensor* sensor;

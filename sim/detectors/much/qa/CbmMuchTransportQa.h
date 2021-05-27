@@ -11,10 +11,12 @@
 #define CbmMuchTransportQa_H
 
 #include "FairTask.h"
+
 #include "TParameter.h"
 #include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TFolder.h>
+
 #include <vector>
 
 class CbmMCDataArray;
@@ -119,10 +121,8 @@ private:
   std::vector<TH1F*> fvFraction;   /// pointers to the above histos
 
   /// output pie charts
-  std::vector<CbmQaPie*>
-    fvMcPointPRatio;  /// MC point particle ratio pie charts [N stations]
-  std::vector<CbmQaPie*>
-    fvMcPointPrimRatio;  /// MC point particle ratio pie charts [N stations]
+  std::vector<CbmQaPie*> fvMcPointPRatio;     /// MC point particle ratio pie charts [N stations]
+  std::vector<CbmQaPie*> fvMcPointPrimRatio;  /// MC point particle ratio pie charts [N stations]
 
   // output canvaces with histogramm collections
   CbmQaCanvas* fCanvStationXY   = nullptr;

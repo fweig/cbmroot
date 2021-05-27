@@ -1,4 +1,5 @@
-void save_hst(TString cstr = "hst/default.hst.root") {
+void save_hst(TString cstr = "hst/default.hst.root")
+{
   TIter next(gDirectory->GetList());
   // Write histogramms to the file
   TFile* fHist = new TFile(cstr, "RECREATE");

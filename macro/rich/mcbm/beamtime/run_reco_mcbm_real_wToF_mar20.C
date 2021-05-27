@@ -1,14 +1,11 @@
-void run_reco_mcbm_real_wToF_mar20(
-  const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
-                           "macro/beamtime/mcbm2020/data",
-  const unsigned int runId = 831,  // used for the output folder
-  int nEvents              = 5000,
-  const int taskId         = 3) {
+void run_reco_mcbm_real_wToF_mar20(const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
+                                                            "macro/beamtime/mcbm2020/data",
+                                   const unsigned int runId = 831,  // used for the output folder
+                                   int nEvents = 5000, const int taskId = 3)
+{
   // -----   File names   --------------------------------------------------
-  const string& parFile =
-    Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
-  const string& digiFile =
-    Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
+  const string& parFile  = Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
+  const string& digiFile = Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
   const string& recoFile = Form("reco_mcbm_mar20_%d.root", runId);
   TString setup          = "mcbm_beam_2020_03";
   // -----------------------------------------------------------------------
@@ -82,16 +79,13 @@ void run_reco_mcbm_real_wToF_mar20(
 
   //TString TofFileFolder = Form("/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/%s",cFileId.Data());
   //    TString TofFileFolder = Form("/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2019/%s",cFileId.Data());
-  TString TofFileFolder =
-    Form("/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020/%s",
-         cCalId.Data());
+  TString TofFileFolder = Form("/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020/%s", cCalId.Data());
   //    TString setupFile = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
   //    TString setupFunct = "setup_" + geoSetup + "()";
   //    gROOT->LoadMacro(setupFile);
   //    gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
 
@@ -106,15 +100,13 @@ void run_reco_mcbm_real_wToF_mar20(
   TString geoFile;
   if (pSetup->IsActive(ECbmModuleId::kTof)) {
     pSetup->GetGeoTag(ECbmModuleId::kTof, geoTag);
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
 
     //TString geoFile = srcDir + "/geometry/tof/geofile_tof_" + geoTag + ".root";
-    geoFile     = srcDir + "/macro/mcbm/data/mcbm_beam_2020_03.geo.root";
-    TFile* fgeo = new TFile(geoFile);
+    geoFile             = srcDir + "/macro/mcbm/data/mcbm_beam_2020_03.geo.root";
+    TFile* fgeo         = new TFile(geoFile);
     TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
     if (NULL == geoMan) {
       cout << "<E> FAIRGeom not found in geoFile " << geoFile.Data() << endl;
@@ -160,8 +152,7 @@ void run_reco_mcbm_real_wToF_mar20(
 
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Using input file " << digiFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using input file " << digiFile << std::endl;
   // ------------------------------------------------------------------------
 
   // -----   FairRunAna   ---------------------------------------------------
@@ -209,33 +200,23 @@ void run_reco_mcbm_real_wToF_mar20(
   TString cFname;
   switch (iTofCluMode) {
     case 1: {
-      CbmTofEventClusterizer* tofCluster =
-        new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+      CbmTofEventClusterizer* tofCluster = new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
       //		cFname=Form("/%s_set%09d_%02d_%01dtofClust.hst.root",cCalId.Data(),iCalSet,calMode,calSel);
-      cFname = Form("/%s_set%09d_%02d_%01d_noWalk_tofClust.hst.root",
-                    cCalId.Data(),
-                    iCalSet,
-                    calMode,
-                    calSel);
+      cFname = Form("/%s_set%09d_%02d_%01d_noWalk_tofClust.hst.root", cCalId.Data(), iCalSet, calMode, calSel);
       tofCluster->SetCalParFileName(TofFileFolder + cFname);
       tofCluster->SetCalMode(calMode);
       tofCluster->SetCalSel(calSel);
-      tofCluster->SetCaldXdYMax(3.);  // geometrical matching window in cm
-      tofCluster->SetCalCluMulMax(
-        5.);  // Max Counter Cluster Multiplicity for filling calib histos
-      tofCluster->SetCalRpc(calSm);  // select detector for calibration update
-      tofCluster->SetTRefId(
-        RefSel);                   // reference trigger for offset calculation
-      tofCluster->SetTotMax(20.);  // Tot upper limit for walk corection
-      tofCluster->SetTotMin(
-        0.01);  //(12000.);  // Tot lower limit for walk correction
-      tofCluster->SetTotPreRange(
-        5.);  // effective lower Tot limit  in ns from peak position
-      tofCluster->SetTotMean(5.);       // Tot calibration target value in ns
-      tofCluster->SetMaxTimeDist(1.0);  // default cluster range in ns
-      tofCluster->SetDelTofMax(
-        15.);  // acceptance range for cluster distance in ns (!)
-      tofCluster->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+      tofCluster->SetCaldXdYMax(3.);              // geometrical matching window in cm
+      tofCluster->SetCalCluMulMax(5.);            // Max Counter Cluster Multiplicity for filling calib histos
+      tofCluster->SetCalRpc(calSm);               // select detector for calibration update
+      tofCluster->SetTRefId(RefSel);              // reference trigger for offset calculation
+      tofCluster->SetTotMax(20.);                 // Tot upper limit for walk corection
+      tofCluster->SetTotMin(0.01);                //(12000.);  // Tot lower limit for walk correction
+      tofCluster->SetTotPreRange(5.);             // effective lower Tot limit  in ns from peak position
+      tofCluster->SetTotMean(5.);                 // Tot calibration target value in ns
+      tofCluster->SetMaxTimeDist(1.0);            // default cluster range in ns
+      tofCluster->SetDelTofMax(15.);              // acceptance range for cluster distance in ns (!)
+      tofCluster->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
       tofCluster->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
       tofCluster->SetEnableAvWalk(kFALSE);
       //tofCluster->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -291,8 +272,7 @@ void run_reco_mcbm_real_wToF_mar20(
       tofCluster->SetSelRpc(iRefRpc);
 
       run->AddTask(tofCluster);
-      std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName()
-                << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
     } break;
 
     default: {
@@ -307,44 +287,37 @@ void run_reco_mcbm_real_wToF_mar20(
   Double_t beamWidthY = 0.1;
   switch (iTrackMode) {
     case 2: {
-      Int_t iGenCor        = 1;
-      Double_t dScalFac    = 1.;
-      Double_t dChi2Lim2   = 3.5;
-      TString cTrkFile     = Form("/%s_tofFindTracks.hst.root", cCalId.Data());
-      Int_t iTrackingSetup = 1;
+      Int_t iGenCor                     = 1;
+      Double_t dScalFac                 = 1.;
+      Double_t dChi2Lim2                = 3.5;
+      TString cTrkFile                  = Form("/%s_tofFindTracks.hst.root", cCalId.Data());
+      Int_t iTrackingSetup              = 1;
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
       tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
-      CbmTofFindTracks* tofFindTracks =
-        new CbmTofFindTracks("TOF Track Finder");
+      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
-      tofFindTracks->SetCorMode(
-        iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.041);  // target value for inverse velocity, > 0.033 ns/cm!
+      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+      tofFindTracks->SetTtTarg(0.041);     // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);            // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(
-        TofFileFolder + cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-      tofFindTracks->SetStationMaxHMul(
-        30);  // Max Hit Multiplicity in any used station
+      tofFindTracks->SetCalParFileName(TofFileFolder + cTrkFile);  // Tracker parameter value file name
+      tofFindTracks->SetBeamCounter(5, 0, 0);                      // default beam counter
+      tofFindTracks->SetStationMaxHMul(30);                        // Max Hit Multiplicity in any used station
 
 
-      tofFindTracks->SetT0MAX(dScalFac);  // in ns
-      tofFindTracks->SetSIGT(0.08);       // default in ns
-      tofFindTracks->SetSIGX(0.3);        // default in cm
-      tofFindTracks->SetSIGY(0.45);       // default in cm
-      tofFindTracks->SetSIGZ(0.05);       // default in cm
-      tofFindTracks->SetUseSigCalib(
-        kFALSE);  // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2
-                                * 2.);  // matching window in multiples of chi2
+      tofFindTracks->SetT0MAX(dScalFac);           // in ns
+      tofFindTracks->SetSIGT(0.08);                // default in ns
+      tofFindTracks->SetSIGX(0.3);                 // default in cm
+      tofFindTracks->SetSIGY(0.45);                // default in cm
+      tofFindTracks->SetSIGZ(0.05);                // default in cm
+      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
       tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
       Int_t iMinNofHits   = -1;
@@ -416,9 +389,8 @@ void run_reco_mcbm_real_wToF_mar20(
   // =========================================================================
 
   CbmRichMCbmQaReal* qaTask = new CbmRichMCbmQaReal();
-  if (taskId < 0) {
-    qaTask->SetOutputDir(Form("result_run%d", runId));
-  } else {
+  if (taskId < 0) { qaTask->SetOutputDir(Form("result_run%d", runId)); }
+  else {
     qaTask->SetOutputDir(Form("result_run%d_%05d", runId, taskId));
   }
   //    qaTask->DoRestrictToAcc();//restrict to mRICH MAR2019 in histFilling
@@ -433,9 +405,7 @@ void run_reco_mcbm_real_wToF_mar20(
 
 
   // -----  Parameter database   --------------------------------------------
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   Bool_t kParameterMerged    = kTRUE;
   FairParRootFileIo* parIo1  = new FairParRootFileIo(kParameterMerged);
@@ -466,9 +436,8 @@ void run_reco_mcbm_real_wToF_mar20(
   //--- House Keeping -------------------------------------------------------
   // print all important infos in a file
   std::ofstream outfile;
-  if (taskId < 0) {
-    outfile.open(Form("result_run%d/run_info.dat", runId));
-  } else {
+  if (taskId < 0) { outfile.open(Form("result_run%d/run_info.dat", runId)); }
+  else {
     outfile.open(Form("result_run%d_%05d/run_info.dat", runId, taskId));
   }
   // write inputted data into the file.
@@ -505,8 +474,7 @@ void run_reco_mcbm_real_wToF_mar20(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 
   // -----   Resource monitoring   ------------------------------------------
@@ -529,12 +497,12 @@ void run_reco_mcbm_real_wToF_mar20(
   //     }
 }
 
-void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE) {
+void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE)
+{
   cout << "save all histograms to file " << cstr.Data() << endl;
   TList* tList(NULL);
-  if (bROOT) {
-    tList = gROOT->GetList();
-  } else {
+  if (bROOT) { tList = gROOT->GetList(); }
+  else {
     tList = gDirectory->GetList();
   }
   TIter next(tList);
@@ -543,10 +511,7 @@ void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE) {
   {
     TObject* obj;
     while ((obj = (TObject*) next())) {
-      if (obj->InheritsFrom(TH1::Class())
-          || obj->InheritsFrom(TEfficiency::Class())) {
-        obj->Write();
-      }
+      if (obj->InheritsFrom(TH1::Class()) || obj->InheritsFrom(TEfficiency::Class())) { obj->Write(); }
     }
   }
   // fHist->ls();

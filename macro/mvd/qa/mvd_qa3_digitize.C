@@ -8,7 +8,8 @@
 // V. Friese   06/02/2007
 //
 // --------------------------------------------------------------------------
-void mvd_qa3_digitize(const char* setup = "sis100_electron") {
+void mvd_qa3_digitize(const char* setup = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -73,18 +74,15 @@ void mvd_qa3_digitize(const char* setup = "sis100_electron") {
   Int_t pileUpInMVD = 2;  // use 1 or higher
 
   digi->SetBgFileName(bgFile);
-  digi->SetBgBufferSize(
-    5);  //for simulation this buffer should contain > 2 * pileUpInMVD mBias events.
-    //default = few 100 (increase for high pile-up, reduce to limit memory consumption)
+  digi->SetBgBufferSize(5);  //for simulation this buffer should contain > 2 * pileUpInMVD mBias events.
+  //default = few 100 (increase for high pile-up, reduce to limit memory consumption)
   digi->SetPileUp(pileUpInMVD - 1);
 
 
   //--- Delta electrons -------
   digi->SetDeltaName(deltaFile);
-  digi->SetDeltaBufferSize(
-    50);  //for simulation, this buffer must contain at least pileUpInMVD*200 delta electrons
-  digi->SetDeltaEvents(
-    2);  //valid for QA-purposes only, use next line for simulations
+  digi->SetDeltaBufferSize(50);  //for simulation, this buffer must contain at least pileUpInMVD*200 delta electrons
+  digi->SetDeltaEvents(2);       //valid for QA-purposes only, use next line for simulations
   //digi->SetDeltaEvents(pileUpInMVD*100); // for simulation assumes 1% target
 
   //digi->ShowDebugHistograms();
@@ -113,8 +111,7 @@ void mvd_qa3_digitize(const char* setup = "sis100_electron") {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ---------------------------------------------------------------------------
 

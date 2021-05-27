@@ -18,7 +18,8 @@ CbmRichRingFitterEllipseMinuit::CbmRichRingFitterEllipseMinuit() {}
 
 CbmRichRingFitterEllipseMinuit::~CbmRichRingFitterEllipseMinuit() {}
 
-void CbmRichRingFitterEllipseMinuit::DoFit(CbmRichRingLight* ring) {
+void CbmRichRingFitterEllipseMinuit::DoFit(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
 
   if (nofHits <= 5) {
@@ -43,15 +44,13 @@ void CbmRichRingFitterEllipseMinuit::DoFit(CbmRichRingLight* ring) {
   CalcChi2(ring);
 }
 
-void CbmRichRingFitterEllipseMinuit::TransformToRichRing(
-  CbmRichRingLight* ring,
-  const vector<double>& fpar) {
+void CbmRichRingFitterEllipseMinuit::TransformToRichRing(CbmRichRingLight* ring, const vector<double>& fpar)
+{
   // calculate center of the ellipse
   double xc = (fpar[0] + fpar[2]) / 2.;
   double yc = (fpar[1] + fpar[3]) / 2.;
   // calculate length of b axes
-  double p1 = (fpar[0] - fpar[2]) * (fpar[0] - fpar[2])
-              + (fpar[1] - fpar[3]) * (fpar[1] - fpar[3]);
+  double p1 = (fpar[0] - fpar[2]) * (fpar[0] - fpar[2]) + (fpar[1] - fpar[3]) * (fpar[1] - fpar[3]);
   if (p1 < 0.) {
     ring->SetXYABP(-1., -1., -1., -1., -1.);
     ring->SetRadius(-1.);
@@ -80,8 +79,8 @@ void CbmRichRingFitterEllipseMinuit::TransformToRichRing(
   ring->SetRadius((b + fpar[4]) / 2.);
 }
 
-vector<double> CbmRichRingFitterEllipseMinuit::DoFit(const vector<double>& x,
-                                                     const vector<double>& y) {
+vector<double> CbmRichRingFitterEllipseMinuit::DoFit(const vector<double>& x, const vector<double>& y)
+{
 
   // Create initial starting values for parameters
   double xf1 = 0.;

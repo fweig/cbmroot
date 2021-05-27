@@ -1,17 +1,17 @@
-#include <Compute_distance.h>
 #include <iomanip>
 #include <vector>
+
+#include <Compute_distance.h>
 //#include <TH3D.h>
 
 /* Draw histograms of radius, dR, a, b and b over a, on a same canvass. */
 
-void Compute_distance(TString geom_nb = "", Int_t Flag = 0) {
+void Compute_distance(TString geom_nb = "", Int_t Flag = 0)
+{
   LoadLibs();
 
-  if (Flag == 0) {
-    TString outDir =
-      "/u/jbendar/Sim_Outputs/Ring_Track_VS_Position/Misaligned/";
-  } else if (Flag == 1) {
+  if (Flag == 0) { TString outDir = "/u/jbendar/Sim_Outputs/Ring_Track_VS_Position/Misaligned/"; }
+  else if (Flag == 1) {
     TString outDir = "/u/jbendar/Sim_Outputs/Ring_Track_VS_Position/Aligned/";
   }
   LoadSimFiles(geom_nb, outDir);
@@ -40,18 +40,13 @@ void Compute_distance(TString geom_nb = "", Int_t Flag = 0) {
     int nRings     = rings->GetEntriesFast();
     int nRingMatch = ringmatch->GetEntriesFast();
     cout << endl;
-    cout << "Event ID : " << iev + 1 << "; nb of total Hits = " << nHits
-         << endl;
+    cout << "Event ID : " << iev + 1 << "; nb of total Hits = " << nHits << endl;
 
     for (int ir = 0; ir < nRings; ir++) {
       CbmRichRing* ring = (CbmRichRing*) rings->At(ir);
       float radius      = ring->GetRadius();
-      if (radius <= 0. || radius > 10.) {
-        continue;
-      }  // With ideal finder --> many rings with radius -1
-      if (!(radius > 0)) {
-        continue;
-      }  // Test if radius is NAN - if(!(radius<=1. || radius>1.))
+      if (radius <= 0. || radius > 10.) { continue; }  // With ideal finder --> many rings with radius -1
+      if (!(radius > 0)) { continue; }                 // Test if radius is NAN - if(!(radius<=1. || radius>1.))
       //cout << "For ring number: " << ir << ", radius = " << radius << endl;
 
       //float aA = ring->GetAaxis();
@@ -75,11 +70,9 @@ void Compute_distance(TString geom_nb = "", Int_t Flag = 0) {
       FairTrackParam* pTrack = (FairTrackParam*) richProj->At(ringTrackID);
       double xTrack          = pTrack->GetX();
       double yTrack          = pTrack->GetY();
-      double dist            = TMath::Sqrt(TMath::Power(xTrack - CentX, 2)
-                                + TMath::Power(yTrack - CentY, 2));
+      double dist            = TMath::Sqrt(TMath::Power(xTrack - CentX, 2) + TMath::Power(yTrack - CentY, 2));
 
-      cout << "PMT position: [" << CentX << "; " << CentY
-           << "] and distance = " << dist << endl;
+      cout << "PMT position: [" << CentX << "; " << CentY << "] and distance = " << dist << endl;
       //sleep(3);
       H_distance->Fill(dist);
       cout << "---------- H_distance filled ----------" << endl;
@@ -133,7 +126,8 @@ void Compute_distance(TString geom_nb = "", Int_t Flag = 0) {
 // Functions
 // ------------------------------------------------------------------- //
 
-void LoadLibs() {
+void LoadLibs()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   //  basiclibs();
   gSystem->Load("libGeoBase");
@@ -158,7 +152,8 @@ void LoadLibs() {
 
 // ------------------------------------------------------------------- //
 
-void LoadSimFiles(TString geom_nb, TString outDir) {
+void LoadSimFiles(TString geom_nb, TString outDir)
+{
   //    TString ParFileTxt = outDir + "param." + geom_nb + ".root";
   //    TString McFileTxt = outDir + "mc." + geom_nb + ".root";
   //    TString RecoFileTxt = outDir + "reco." + geom_nb + ".root";
@@ -178,31 +173,30 @@ void LoadSimFiles(TString geom_nb, TString outDir) {
 
 // ------------------------------------------------------------------- //
 
-void PrepareHistos() {
+void PrepareHistos()
+{
   TString HistText1 = "Track-Ring Distance";
   H_distance        = new TH1D(HistText1, HistText1, 2001, 0, 5);
 
   TString HistText2 = "Track-Ring VS PMT position";
-  H_position =
-    new TH2D(HistText2, HistText2, 2001, -100., 100., 2001, -200., 200.);
+  H_position        = new TH2D(HistText2, HistText2, 2001, -100., 100., 2001, -200., 200.);
 
   cout << "Histos ready!" << endl;
 }
 
 // ------------------------------------------------------------------- //
 
-void WriteHistos(TString& outDir, Int_t Flag = 0) {
+void WriteHistos(TString& outDir, Int_t Flag = 0)
+{
   TString buff = "";
-  if (Flag = 0) {
-    buff = "Misaligned";
-  } else if (Flag = 1) {
+  if (Flag = 0) { buff = "Misaligned"; }
+  else if (Flag = 1) {
     buff = "Aligned";
   }
   TString HistosFile = outDir + "Ring-Track_Study" + buff + ".root";
   TFile* Histos      = new TFile(HistosFile, "RECREATE");
 
-  cout << endl
-       << "Writing Histograms in the following file: " << HistosFile << endl;
+  cout << endl << "Writing Histograms in the following file: " << HistosFile << endl;
 
   H_distance->Write();
   H_position->Write();

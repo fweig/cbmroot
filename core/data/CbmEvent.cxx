@@ -12,7 +12,8 @@
 
 
 // -----   Add data to event   ---------------------------------------------
-void CbmEvent::AddData(ECbmDataType type, UInt_t index) {
+void CbmEvent::AddData(ECbmDataType type, UInt_t index)
+{
 
   fIndexMap[type].push_back(index);
   fNofData++;
@@ -21,7 +22,8 @@ void CbmEvent::AddData(ECbmDataType type, UInt_t index) {
 
 
 // -----   Get a data index   ----------------------------------------------
-UInt_t CbmEvent::GetIndex(ECbmDataType type, UInt_t iData) {
+UInt_t CbmEvent::GetIndex(ECbmDataType type, UInt_t iData)
+{
 
   if (fIndexMap.find(type) == fIndexMap.end()) return -1;
   if (fIndexMap[type].size() <= iData) return -2;
@@ -31,10 +33,10 @@ UInt_t CbmEvent::GetIndex(ECbmDataType type, UInt_t iData) {
 
 
 // -----   Get number of data of a type in this event   --------------------
-Int_t CbmEvent::GetNofData(ECbmDataType type) const {
+Int_t CbmEvent::GetNofData(ECbmDataType type) const
+{
 
-  if (fIndexMap.find(type) == fIndexMap.end())
-    return -1;
+  if (fIndexMap.find(type) == fIndexMap.end()) return -1;
   else
     return fIndexMap.at(type).size();
 }
@@ -42,28 +44,22 @@ Int_t CbmEvent::GetNofData(ECbmDataType type) const {
 
 
 // -----   Set the vertex parameters   -------------------------------------
-void CbmEvent::SetVertex(Double_t x,
-                         Double_t y,
-                         Double_t z,
-                         Double_t chi2,
-                         Int_t ndf,
-                         Int_t nTracks,
-                         const TMatrixFSym& covMat) {
+void CbmEvent::SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
+                         const TMatrixFSym& covMat)
+{
   fVertex.SetVertex(x, y, z, chi2, ndf, nTracks, covMat);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   String output   -------------------------------------------------
-std::string CbmEvent::ToString() const {
+std::string CbmEvent::ToString() const
+{
   std::stringstream ss;
-  ss << "Event " << fNumber << " at t = " << fTimeStart
-     << " ns. Registered data types: " << fIndexMap.size()
-     << ", data objects: " << fNofData
-     << (nullptr != fMatch ? ", with matches" : ", without matches") << "\n";
+  ss << "Event " << fNumber << " at t = " << fTimeStart << " ns. Registered data types: " << fIndexMap.size()
+     << ", data objects: " << fNofData << (nullptr != fMatch ? ", with matches" : ", without matches") << "\n";
   for (auto it = fIndexMap.begin(); it != fIndexMap.end(); it++) {
-    ss << "          -- Data type " << it->first << ", number of data "
-       << it->second.size() << "\n";
+    ss << "          -- Data type " << it->first << ", number of data " << it->second.size() << "\n";
   }
   return ss.str();
 }

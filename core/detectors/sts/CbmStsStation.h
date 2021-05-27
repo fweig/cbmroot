@@ -38,9 +38,7 @@ public:
 		 ** @param title  Station type
 		 ** @param node   Pointer to corresponding TGeoPhysicalNode
 		 */
-  CbmStsStation(const char* name,
-                const char* title,
-                TGeoPhysicalNode* node = nullptr);
+  CbmStsStation(const char* name, const char* title, TGeoPhysicalNode* node = nullptr);
 
 
   /** Destructor **/
@@ -136,15 +134,15 @@ public:
 
 
 private:
-  Double_t fZ;          ///< z position of station [cm]
-  Double_t fXmin;       ///< minimal x coordinate [cm]
-  Double_t fXmax;       ///< maximal x coordinate [cm]
-  Double_t fYmin;       ///< minimal y coordinate [cm]
-  Double_t fYmax;       ///< maximal y coordinate [cm]
-  Double_t fSensorD;    ///< thickness of sensors [cm]
-  Double_t fSensorRot;  ///< Rotation of first sensor in global c.s. [rad]
-  Int_t fNofSensors;    ///< Number of sensors in station
-  Bool_t fDiffSensorD;  ///< Flag for different sensor thicknesses
+  Double_t fZ;                 ///< z position of station [cm]
+  Double_t fXmin;              ///< minimal x coordinate [cm]
+  Double_t fXmax;              ///< maximal x coordinate [cm]
+  Double_t fYmin;              ///< minimal y coordinate [cm]
+  Double_t fYmax;              ///< maximal y coordinate [cm]
+  Double_t fSensorD;           ///< thickness of sensors [cm]
+  Double_t fSensorRot;         ///< Rotation of first sensor in global c.s. [rad]
+  Int_t fNofSensors;           ///< Number of sensors in station
+  Bool_t fDiffSensorD;         ///< Flag for different sensor thicknesses
   CbmStsSensor* fFirstSensor;  ///< Pointer to first sensor
 
   TGeoPhysicalNode* fNode;               ///< Pointer to geometry

@@ -6,15 +6,16 @@
 #ifndef CBMMCEVENTLIST_H
 #define CBMMCEVENTLIST_H 1
 
+#include "CbmMCEventInfo.h"  // for CbmMCEventInfo
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for UInt_t, Bool_t, Double_t, Int_t, Option_t
 #include <TNamed.h>      // for TNamed
 
-#include <stddef.h>  // for size_t
-#include <string>    // for string
-#include <vector>    // for vector, vector<>::iterator
+#include <string>  // for string
+#include <vector>  // for vector, vector<>::iterator
 
-#include "CbmMCEventInfo.h"  // for CbmMCEventInfo
+#include <stddef.h>  // for size_t
 
 /* Implementation note (VF/180618):
  * Both indexed access (for loops over all MC events in a time slice)

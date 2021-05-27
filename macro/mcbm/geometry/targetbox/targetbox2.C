@@ -5,7 +5,8 @@
 // dimensions of core [-29.9 cm .. +15.2 cm]
 // dimensions of sections -38.0 cm | + 7.7 + 0.4 + 45.1 + 0.6 + 44.0 | +59.8 cm
 
-void targetbox2() {
+void targetbox2()
+{
   TCanvas* c = new TCanvas("c", "c", 0, 0, 600, 600);
   new TGeoManager("targetbox", "mCBM targetbox");
 
@@ -31,15 +32,13 @@ void targetbox2() {
   nlow[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nlow[2] = TMath::Cos(theta);
 
-  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
   nlow[0] = 0;
   nlow[1] = 0;
   nlow[2] = -1;
 
-  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
 
   //   theta = 20.*TMath::Pi()/180.;
@@ -52,8 +51,7 @@ void targetbox2() {
   nhi[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nhi[2] = TMath::Cos(theta);
 
-  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2]
-       << endl;
+  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2] << endl;
 
   // TGeoVolume *ctub = gGeoManager->MakeCtub("CTUB", med, 25, 27, 30, 200, 160, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
 
@@ -84,22 +82,10 @@ void targetbox2() {
   Double_t length20 = 45.1;
   Double_t offset20 = 29.9;
 
-  TGeoVolume* vpipe20 = gGeoManager->MakeCtub("pipe20",
-                                              med,
-                                              rmin20,
-                                              rmax20,
-                                              length20 / 2.,
-                                              angle1,
-                                              angle2,
-                                              nlow[0],
-                                              nlow[1],
-                                              nlow[2],
-                                              nhi[0],
-                                              nhi[1],
-                                              nhi[2]);
+  TGeoVolume* vpipe20 = gGeoManager->MakeCtub("pipe20", med, rmin20, rmax20, length20 / 2., angle1, angle2, nlow[0],
+                                              nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
   vpipe20->SetLineWidth(2);
-  TGeoTranslation* tra20 =
-    new TGeoTranslation("tra20", 0, 0, -offset20 + length20 / 2.);
+  TGeoTranslation* tra20 = new TGeoTranslation("tra20", 0, 0, -offset20 + length20 / 2.);
   top->AddNode(vpipe20, 1, tra20);
 
 
@@ -108,22 +94,10 @@ void targetbox2() {
   Double_t rmin21   = 15.9 / 2.;
   Double_t length21 = 0.4;
 
-  TGeoVolume* vwall21 = gGeoManager->MakeCtub("wall21",
-                                              med,
-                                              rmin21,
-                                              rmax21,
-                                              length21 / 2.,
-                                              angle1,
-                                              angle2,
-                                              0,
-                                              0,
-                                              -1,
-                                              0,
-                                              0,
-                                              1);
+  TGeoVolume* vwall21 =
+    gGeoManager->MakeCtub("wall21", med, rmin21, rmax21, length21 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   vwall21->SetLineWidth(2);
-  TGeoTranslation* tra21 =
-    new TGeoTranslation("tra21", 0, 0, -offset20 - length21 / 2.);
+  TGeoTranslation* tra21 = new TGeoTranslation("tra21", 0, 0, -offset20 - length21 / 2.);
   top->AddNode(vwall21, 1, tra21);
 
   // DE   // Hoehe                   35.56 cm
@@ -203,17 +177,8 @@ void targetbox2() {
   Double_t rmin22   = 5.4 / 2.;
   Double_t length22 = 0.6 / cos(25. * acos(-1.) / 180.);
 
-  TGeoCtub* cdown = new TGeoCtub(rmin22,
-                                 rmax22,
-                                 length22 / 2.,
-                                 angle1,
-                                 angle2,
-                                 -nhi[0],
-                                 -nhi[1],
-                                 -nhi[2],
-                                 nhi[0],
-                                 nhi[1],
-                                 nhi[2]);
+  TGeoCtub* cdown =
+    new TGeoCtub(rmin22, rmax22, length22 / 2., angle1, angle2, -nhi[0], -nhi[1], -nhi[2], nhi[0], nhi[1], nhi[2]);
   cdown->SetName("O");  // shapes need names too
 
   // kapton foil frame dimensions - inner dimensions - frame width
@@ -236,36 +201,28 @@ void targetbox2() {
 
   //   TGeoTranslation* tcut = new TGeoTranslation("tcut", -10.0, 0., 0.);
   //   TGeoCombiTrans*  tcut = new TGeoCombiTrans("tcut", -10.0, 0., 0., rot22);
-  TGeoCombiTrans* tcut = new TGeoCombiTrans("tcut",
-                                            cos(25. * acos(-1.) / 180.) * -10.0,
-                                            0.,
-                                            sin(25. * acos(-1.) / 180.) * -10.0,
-                                            rot22);
+  TGeoCombiTrans* tcut =
+    new TGeoCombiTrans("tcut", cos(25. * acos(-1.) / 180.) * -10.0, 0., sin(25. * acos(-1.) / 180.) * -10.0, rot22);
   tcut->RegisterYourself();
 
   Double_t fthick22 = 0.6;
   TGeoBBox* frame22 = new TGeoBBox(13.9 / 2., 12.4 / 2., fthick22 / 2.);
   frame22->SetName("F");  // shapes need names too
 
-  TGeoCombiTrans* tfra = new TGeoCombiTrans(
-    "tfra",
-    cos(25. * acos(-1.) / 180.) * -10.0
-      - sin(25. * acos(-1.) / 180.) * fthick22,
-    0.,
-    sin(25. * acos(-1.) / 180.) * -10.0 + cos(25. * acos(-1.) / 180.) * fthick22
-      - 0.0001,  // 0.0001 avoids optical error
-    rot22);
+  TGeoCombiTrans* tfra =
+    new TGeoCombiTrans("tfra", cos(25. * acos(-1.) / 180.) * -10.0 - sin(25. * acos(-1.) / 180.) * fthick22, 0.,
+                       sin(25. * acos(-1.) / 180.) * -10.0 + cos(25. * acos(-1.) / 180.) * fthick22
+                         - 0.0001,  // 0.0001 avoids optical error
+                       rot22);
   tfra->RegisterYourself();
 
   //   TGeoCompositeShape *compsha = new TGeoCompositeShape("compsha", "O - A:tcut");
   //   TGeoCompositeShape *compsha = new TGeoCompositeShape("compsha", "O + F:tfra");
-  TGeoCompositeShape* compsha =
-    new TGeoCompositeShape("compsha", "O + F:tfra - A:tcut");
+  TGeoCompositeShape* compsha = new TGeoCompositeShape("compsha", "O + F:tfra - A:tcut");
 
   TGeoVolume* vpipe22 = new TGeoVolume("wall22", compsha, med);
 
-  TGeoTranslation* tra22 =
-    new TGeoTranslation("tra22", 0, 0, -offset20 + length20 + length22 / 2.);
+  TGeoTranslation* tra22 = new TGeoTranslation("tra22", 0, 0, -offset20 + length20 + length22 / 2.);
   top->AddNode(vpipe22, 1, tra22);
 
   //   // test the thickness
@@ -282,19 +239,15 @@ void targetbox2() {
   rot23->RotateX(90.);
 
   // target tube
-  TGeoVolume* tube23 =
-    gGeoManager->MakeTube("shaft23", med, 10.4 / 2., 10.8 / 2., height23 / 2.);
+  TGeoVolume* tube23 = gGeoManager->MakeTube("shaft23", med, 10.4 / 2., 10.8 / 2., height23 / 2.);
   tube23->SetLineWidth(2);
-  TGeoCombiTrans* tra23 =
-    new TGeoCombiTrans("tra23", 0, 28.0 - height23 / 2., 0, rot23);
+  TGeoCombiTrans* tra23 = new TGeoCombiTrans("tra23", 0, 28.0 - height23 / 2., 0, rot23);
   top->AddNode(tube23, 1, tra23);
 
   // diamond tube
-  TGeoVolume* tube24 =
-    gGeoManager->MakeTube("shaft24", med, 10.4 / 2., 10.8 / 2., height23 / 2.);
+  TGeoVolume* tube24 = gGeoManager->MakeTube("shaft24", med, 10.4 / 2., 10.8 / 2., height23 / 2.);
   tube24->SetLineWidth(2);
-  TGeoCombiTrans* tra24 =
-    new TGeoCombiTrans("tra24", 0, 28.0 - height23 / 2., -20.0, rot23);
+  TGeoCombiTrans* tra24 = new TGeoCombiTrans("tra24", 0, 28.0 - height23 / 2., -20.0, rot23);
   top->AddNode(tube24, 1, tra24);
 
   //=======================================================================================
@@ -304,22 +257,10 @@ void targetbox2() {
   Double_t rmin10   = rmax10 - 0.2;
   Double_t length10 = 7.7 + length21;
 
-  TGeoVolume* vpipe10 = gGeoManager->MakeCtub("pipe10",
-                                              med,
-                                              rmin10,
-                                              rmax10,
-                                              length10 / 2.,
-                                              angle1,
-                                              angle2,
-                                              0,
-                                              0,
-                                              -1,
-                                              0,
-                                              0,
-                                              1);
+  TGeoVolume* vpipe10 =
+    gGeoManager->MakeCtub("pipe10", med, rmin10, rmax10, length10 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   vpipe10->SetLineWidth(2);
-  TGeoTranslation* tra10 =
-    new TGeoTranslation("tra10", 0, 0, -offset20 - length10 / 2.);
+  TGeoTranslation* tra10 = new TGeoTranslation("tra10", 0, 0, -offset20 - length10 / 2.);
   top->AddNode(vpipe10, 1, tra10);
 
 
@@ -333,22 +274,10 @@ void targetbox2() {
   Double_t rmin11   = rmax10;
   Double_t length11 = 1.8;
 
-  TGeoVolume* vfla11 = gGeoManager->MakeCtub("flange11",
-                                             med,
-                                             rmin11,
-                                             rmax11,
-                                             length11 / 2.,
-                                             angle1,
-                                             angle2,
-                                             0,
-                                             0,
-                                             -1,
-                                             0,
-                                             0,
-                                             1);
+  TGeoVolume* vfla11 =
+    gGeoManager->MakeCtub("flange11", med, rmin11, rmax11, length11 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   vfla11->SetLineWidth(2);
-  TGeoTranslation* tra11 =
-    new TGeoTranslation("tra11", 0, 0, -offset20 - length10 + length11 / 2.);
+  TGeoTranslation* tra11 = new TGeoTranslation("tra11", 0, 0, -offset20 - length10 + length11 / 2.);
   top->AddNode(vfla11, 1, tra11);
 
   //=======================================================================================
@@ -365,22 +294,10 @@ void targetbox2() {
   Double_t rmin30   = rmax30 - 0.2;
   Double_t length30 = 44.0 + 0.6;
 
-  TGeoVolume* vpipe30 = gGeoManager->MakeCtub("pipe30",
-                                              med,
-                                              rmin30,
-                                              rmax30,
-                                              length30 / 2.,
-                                              angle1,
-                                              angle2,
-                                              -nhi[0],
-                                              -nhi[1],
-                                              -nhi[2],
-                                              -nlow[0],
-                                              -nlow[1],
-                                              -nlow[2]);
+  TGeoVolume* vpipe30 = gGeoManager->MakeCtub("pipe30", med, rmin30, rmax30, length30 / 2., angle1, angle2, -nhi[0],
+                                              -nhi[1], -nhi[2], -nlow[0], -nlow[1], -nlow[2]);
   vpipe30->SetLineWidth(2);
-  TGeoTranslation* tra30 =
-    new TGeoTranslation("tra30", 0, 0, -offset20 + length20 + length30 / 2.);
+  TGeoTranslation* tra30 = new TGeoTranslation("tra30", 0, 0, -offset20 + length20 + length30 / 2.);
   top->AddNode(vpipe30, 1, tra30);
 
 
@@ -393,22 +310,10 @@ void targetbox2() {
   Double_t length40 = 1.8;
 
   // downstream flange
-  TGeoVolume* vfla31 = gGeoManager->MakeCtub("flange31",
-                                             med,
-                                             rmin40,
-                                             rmax40,
-                                             length40 / 2.,
-                                             angle1,
-                                             angle2,
-                                             0,
-                                             0,
-                                             -1,
-                                             0,
-                                             0,
-                                             1);
+  TGeoVolume* vfla31 =
+    gGeoManager->MakeCtub("flange31", med, rmin40, rmax40, length40 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   vfla31->SetLineWidth(2);
-  TGeoTranslation* fla31 = new TGeoTranslation(
-    "fla31", 0, 0, -offset20 + length20 + length30 - length40 / 2.);
+  TGeoTranslation* fla31 = new TGeoTranslation("fla31", 0, 0, -offset20 + length20 + length30 - length40 / 2.);
   top->AddNode(vfla31, 1, fla31);
 
   //=======================================================================================

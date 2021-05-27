@@ -1,8 +1,6 @@
-void ana_hits(Int_t nEvents = 10000000,
-              Int_t iSel    = 1,
-              Int_t iGenCor = 1,
-              char* cFileId = "MbsTrbSat1805",
-              Int_t iSet    = 0) {
+void ana_hits(Int_t nEvents = 10000000, Int_t iSel = 1, Int_t iGenCor = 1, char* cFileId = "MbsTrbSat1805",
+              Int_t iSet = 0)
+{
   Int_t iVerbose = 1;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -33,16 +31,15 @@ void ana_hits(Int_t nEvents = 10000000,
     TofGeo = "v14a_tsu";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -67,11 +64,9 @@ void ana_hits(Int_t nEvents = 10000000,
   TMbsMappingTof* tofMapping = new TMbsMappingTof("Tof Mapping", iVerbose);
   //   run->AddTask(tofMapping);
 
-  TString cAnaFile =
-    Form("%s_%1d_%02d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel);
+  TString cAnaFile = Form("%s_%1d_%02d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
   tofAnaTestbeam->SetCorMode(iGenCor);  // 1 - DTD4, 2 - X4, 3 - Y4, 4 - Texp
   tofAnaTestbeam->SetHitDistMin(30.);   // initialization
   tofAnaTestbeam->SetTOffD4(20000.);    // initialization
@@ -90,12 +85,11 @@ void ana_hits(Int_t nEvents = 10000000,
           tofAnaTestbeam->SetDYWidth(0.40);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetDut(3);      // Device under test
-          tofAnaTestbeam->SetMrpcRef(4);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetDut(3);        // Device under test
+          tofAnaTestbeam->SetMrpcRef(4);    // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
-        case 1:  // upper part of setup: Buc2013 - BucRef
+        case 1:                               // upper part of setup: Buc2013 - BucRef
           tofAnaTestbeam->SetTOffD4(12000.);  // initialization
           tofAnaTestbeam->SetDXMean(-0.04);
           tofAnaTestbeam->SetDYMean(0.);
@@ -104,18 +98,15 @@ void ana_hits(Int_t nEvents = 10000000,
           tofAnaTestbeam->SetDYWidth(0.45);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul4Max(2.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(5.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.2);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);                    // Time difference to additional diamond
-          tofAnaTestbeam->SetDut(6);  // Device under test
-          tofAnaTestbeam->SetMrpcRef(1);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(2.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(5.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.2);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
+          tofAnaTestbeam->SetDut(6);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(1);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(2);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         default:;
       }  // end of different subsets for Sat1805
@@ -132,18 +123,15 @@ void ana_hits(Int_t nEvents = 10000000,
           tofAnaTestbeam->SetDYWidth(0.40);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in HDRef - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.4);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);                    // Time difference to additional diamond
-          tofAnaTestbeam->SetDut(3);  // Device under test
-          tofAnaTestbeam->SetMrpcRef(4);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in HDRef - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.4);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
+          tofAnaTestbeam->SetDut(3);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(4);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(0);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         case 1:                                 // TSU pad
           tofAnaTestbeam->SetHitDistMin(27.5);  // initialization
@@ -156,18 +144,15 @@ void ana_hits(Int_t nEvents = 10000000,
           tofAnaTestbeam->SetDTWidth(90.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
           //	 tofAnaTestbeam->SetMul0Max(1.);  // Max Multiplicity in THU - Pad - RPC
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in BucRef - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(5.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.4);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);                    // Time difference to additional diamond
-          tofAnaTestbeam->SetDut(8);  // Device under test
-          tofAnaTestbeam->SetMrpcRef(1);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in BucRef - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(5.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.4);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
+          tofAnaTestbeam->SetDut(8);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(1);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(2);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         default:;
       }
@@ -184,141 +169,113 @@ void ana_hits(Int_t nEvents = 10000000,
       tofAnaTestbeam->SetMulDMax(10.);  // Max Multiplicity in Diamond
       tofAnaTestbeam->SetDut(2);        // Device under test
       tofAnaTestbeam->SetMrpcRef(4);    // Reference RPC
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
   }
   switch (iSet) {
     case 0:
       switch (iSel) {  // selection cuts
         case 0:
-          tofAnaTestbeam->SetMul4Max(10);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(
-            70.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            10.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(10.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(10);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);      // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(70.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(10.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(10.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);       // Time difference to additional diamond
           break;
         case 1:
-          tofAnaTestbeam->SetMul0Max(10);  // Max Multiplicity in dut - RPC
-          tofAnaTestbeam->SetMul4Max(1);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul0Max(10);    // Max Multiplicity in dut - RPC
+          tofAnaTestbeam->SetMul4Max(1);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 2:
-          tofAnaTestbeam->SetMul4Max(1);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(1);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
           break;
         case 3:
-          tofAnaTestbeam->SetMul4Max(1);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(4.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.3);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(1);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(4.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.3);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
           break;
         case 20:
-          tofAnaTestbeam->SetMul4Max(2);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(
-            70.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            1.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(2);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(70.);   // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(1.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 21:
-          tofAnaTestbeam->SetMul4Max(2);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(2);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 22:
-          tofAnaTestbeam->SetMul4Max(2);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(2);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
           break;
         case 23:
-          tofAnaTestbeam->SetMul4Max(2);   // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(4.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.3);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(2);     // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(4.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.3);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
           break;
         default:;
       }
       break;
-    case 1:                                // upper system
-      switch (iSel) {                      // selection cuts
-        case 0:                            // for optimization of corrections
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(
-            40.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+    case 1:                                  // upper system
+      switch (iSel) {                        // selection cuts
+        case 0:                              // for optimization of corrections
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(40.);   // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 1:
-          tofAnaTestbeam->SetMul0Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(5.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul0Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(5.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 2:
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(5.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.2);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(5.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.2);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
           break;
         case 3:
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(5.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.2);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(5.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.2);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
           break;
         default:;
       }

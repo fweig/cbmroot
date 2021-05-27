@@ -8,18 +8,21 @@
 #ifndef LITSCALTRACK_H_
 #define LITSCALTRACK_H_
 
-#include "LitScalPixelHit.h"
-#include "LitTrackParam.h"
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "LitScalPixelHit.h"
+#include "LitTrackParam.h"
 
 using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitScalTrack
@@ -44,7 +47,8 @@ namespace lit {
         , fNofMissingHits(0)
         , fPreviousTrackId(0)
         , fLastStationId(0)
-        , fIsGood(true) {
+        , fIsGood(true)
+      {
         fHits.reserve(30);
       }
 
@@ -79,9 +83,7 @@ namespace lit {
     * \param[in] index Index of the hit in track.
     * \return Pointer to hit.
     */
-      const LitScalPixelHit* GetHit(unsigned short index) const {
-        return fHits[index];
-      }
+      const LitScalPixelHit* GetHit(unsigned short index) const { return fHits[index]; }
 
       /**
     * \brief Returns first parameter of the track.
@@ -93,9 +95,7 @@ namespace lit {
     * \brief Sets first track parameter.
     * \param[in] param Reference to track parameter to be set.
     */
-      void SetParamFirst(const LitTrackParamScal& param) {
-        fParamFirst = param;
-      }
+      void SetParamFirst(const LitTrackParamScal& param) { fParamFirst = param; }
 
       /**
     * \brief Returns last parameter of the track.
@@ -149,9 +149,7 @@ namespace lit {
     * \brief Sets number of missing hits.
     * \param[in] nofMissingHits Number of missing hits to be set.
     */
-      void SetNofMissingHits(unsigned short nofMissingHits) {
-        fNofMissingHits = nofMissingHits;
-      }
+      void SetNofMissingHits(unsigned short nofMissingHits) { fNofMissingHits = nofMissingHits; }
 
       /**
     * \brief Returns last station ID.
@@ -163,17 +161,13 @@ namespace lit {
     * \brief Set last station ID.
     * \param[in] lastStationId Last station ID.
     */
-      void SetLastStationId(unsigned short lastStationId) {
-        fLastStationId = lastStationId;
-      }
+      void SetLastStationId(unsigned short lastStationId) { fLastStationId = lastStationId; }
 
       /**
     * \brief Increases number of missing hits by dNofMissingHits.
     * \param[in] dNofMissingHits Value of dNofMissingHits.
     */
-      void IncNofMissingHits(unsigned short dNofMissingHits = 1) {
-        fNofMissingHits += dNofMissingHits;
-      }
+      void IncNofMissingHits(unsigned short dNofMissingHits = 1) { fNofMissingHits += dNofMissingHits; }
 
       /**
     * \brief Return Previous track index.
@@ -185,9 +179,7 @@ namespace lit {
     * \brief Sets previous trackId.
     * \param previousTrackId Value of previous track index.
     */
-      void SetPreviousTrackId(unsigned short previousTrackId) {
-        fPreviousTrackId = previousTrackId;
-      }
+      void SetPreviousTrackId(unsigned short previousTrackId) { fPreviousTrackId = previousTrackId; }
 
       /**
     * \brief Returns true if track is good.
@@ -205,13 +197,12 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
-        ss << "LitTrack: nofHits=" << GetNofHits() << " chiSq=" << GetChiSq()
-           << " NDF=" << GetNDF() << " nofMissingHits=" << GetNofMissingHits()
-           << " previousTrackId=" << GetPreviousTrackId()
-           << " paramFirst=" << GetParamFirst()
-           << " paramLast=" << GetParamLast() << "\n";
+        ss << "LitTrack: nofHits=" << GetNofHits() << " chiSq=" << GetChiSq() << " NDF=" << GetNDF()
+           << " nofMissingHits=" << GetNofMissingHits() << " previousTrackId=" << GetPreviousTrackId()
+           << " paramFirst=" << GetParamFirst() << " paramLast=" << GetParamLast() << "\n";
         return ss.str();
       }
 
@@ -219,7 +210,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitScalTrack& track) {
+      friend ostream& operator<<(ostream& strm, const LitScalTrack& track)
+      {
         strm << track.ToString();
         return strm;
       }
@@ -248,13 +240,11 @@ namespace lit {
 * (chi-square / NDF) value.
 */
     class CompareLitScalTrackChiSqOverNdfLess :
-      public std::
-        binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
+      public std::binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
     public:
-      bool operator()(const LitScalTrack* track1,
-                      const LitScalTrack* track2) const {
-        return ((track1->GetChiSq() / track1->GetNDF())
-                < (track2->GetChiSq() / track2->GetNDF()));
+      bool operator()(const LitScalTrack* track1, const LitScalTrack* track2) const
+      {
+        return ((track1->GetChiSq() / track1->GetNDF()) < (track2->GetChiSq() / track2->GetNDF()));
       }
     };
 
@@ -269,12 +259,10 @@ namespace lit {
 * to sort in \a descending order \c LitScalTracks objects by a
 * number of hits.
 */
-    class CompareLitScalTrackNofHitsMore :
-      public std::
-        binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
+    class CompareLitScalTrackNofHitsMore : public std::binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
     public:
-      bool operator()(const LitScalTrack* track1,
-                      const LitScalTrack* track2) const {
+      bool operator()(const LitScalTrack* track1, const LitScalTrack* track2) const
+      {
         return track1->GetNofHits() > track2->GetNofHits();
       }
     };
@@ -291,11 +279,10 @@ namespace lit {
 * last station ID.
 */
     class CompareLitScalTrackLastStationIdMore :
-      public std::
-        binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
+      public std::binary_function<const LitScalTrack*, const LitScalTrack*, bool> {
     public:
-      bool operator()(const LitScalTrack* track1,
-                      const LitScalTrack* track2) const {
+      bool operator()(const LitScalTrack* track1, const LitScalTrack* track2) const
+      {
         return track1->GetLastStationId() > track2->GetLastStationId();
       }
     };

@@ -19,7 +19,8 @@
 
 ClassImp(CbmGeoSetupRepoProvider);
 
-namespace {  //anonymous namespace with helpers
+namespace
+{  //anonymous namespace with helpers
 
   /*
   /// helper structure to represent the svn file info
@@ -66,13 +67,12 @@ namespace {  //anonymous namespace with helpers
     {ECbmModuleId::kHodo, {"hodoGeoTag", "sts", "sts", "HODO"}},
 
     {ECbmModuleId::kShield, {"shieldGeoTag", "much", "shield", "SHIELD"}},
-    {ECbmModuleId::kPlatform,
-     {"platGeoTag", "passive", "platform", "PLATFORM"}},
+    {ECbmModuleId::kPlatform, {"platGeoTag", "passive", "platform", "PLATFORM"}},
   };
 
   /// Get files in the directory geven the search pattern
-  std::vector<std::string> ListDirectory(std::string path,
-                                         std::string searchPattern) {
+  std::vector<std::string> ListDirectory(std::string path, std::string searchPattern)
+  {
     TList* fileList = TSystemDirectory("", path.c_str()).GetListOfFiles();
 
     std::regex setupRegex(searchPattern);
@@ -81,8 +81,7 @@ namespace {  //anonymous namespace with helpers
     for (const auto&& file : *fileList) {
       std::string fileName = file->GetName();
 
-      if (std::regex_search(fileName, match, setupRegex))
-        result.push_back(match[1]);
+      if (std::regex_search(fileName, match, setupRegex)) result.push_back(match[1]);
     }
 
     delete fileList;
@@ -91,19 +90,22 @@ namespace {  //anonymous namespace with helpers
   }
 }  // end anonymous namespace
 
-std::vector<std::string> CbmGeoSetupRepoProvider::GetSetupTags() {
+std::vector<std::string> CbmGeoSetupRepoProvider::GetSetupTags()
+{
   std::string path = gSystem->Getenv("VMCWORKDIR");
   path += "/geometry/setup";
   return ListDirectory(path, R"(setup_(.*).C)");
 };
 
-std::vector<std::string> CbmGeoSetupRepoProvider::GetFieldTags() {
+std::vector<std::string> CbmGeoSetupRepoProvider::GetFieldTags()
+{
   std::string path = gSystem->Getenv("VMCWORKDIR");
   path += "/input";
   return ListDirectory(path, R"(field_(.*).root)");
 };
 
-std::vector<std::string> CbmGeoSetupRepoProvider::GetMediaTags() {
+std::vector<std::string> CbmGeoSetupRepoProvider::GetMediaTags()
+{
   std::string path = gSystem->Getenv("VMCWORKDIR");
   path += "/geometry/media";
   return ListDirectory(path, R"(media_(.*).geo)");
@@ -113,15 +115,13 @@ std::vector<std::string> CbmGeoSetupRepoProvider::GetMediaTags() {
 /// will be parsed for its content with regular expressions and information about
 /// modules, media and field will be extracted.
 /// revision is ignored
-CbmGeoSetup CbmGeoSetupRepoProvider::GetSetupByTag(std::string setupTag,
-                                                   std::string revision) {
+CbmGeoSetup CbmGeoSetupRepoProvider::GetSetupByTag(std::string setupTag, std::string revision)
+{
   if (fSetup.GetModuleMap().size()) {
-    LOG(warn) << "-W- LoadSetup " << setupTag << ": overwriting existing setup "
-              << fSetup.GetTag();
+    LOG(warn) << "-W- LoadSetup " << setupTag << ": overwriting existing setup " << fSetup.GetTag();
   }
 
-  LOG(info) << "Loading CbmGeoSetup from svn repository.\nSetup tag: "
-            << setupTag
+  LOG(info) << "Loading CbmGeoSetup from svn repository.\nSetup tag: " << setupTag
             << " Revision: " << (revision.empty() ? "latest" : revision);
 
   std::string base          = gSystem->Getenv("VMCWORKDIR");
@@ -130,56 +130,39 @@ CbmGeoSetup CbmGeoSetupRepoProvider::GetSetupByTag(std::string setupTag,
   std::string setupFilePath = base;
   setupFilePath += "/geometry/setup/setup_" + setupTag + ".C";
   std::ifstream setupFile(setupFilePath);
-  std::string fileContents((std::istreambuf_iterator<char>(setupFile)),
-                           std::istreambuf_iterator<char>());
+  std::string fileContents((std::istreambuf_iterator<char>(setupFile)), std::istreambuf_iterator<char>());
 
   // remove commented out-lines
   std::regex commentRegex("/[/]+.*");
   std::string replacementString {""};
-  fileContents =
-    std::regex_replace(fileContents, commentRegex, replacementString);
+  fileContents = std::regex_replace(fileContents, commentRegex, replacementString);
 
   // setup name
   std::smatch match;
-  std::regex_search(
-    fileContents, match, std::regex(R"(.*setup->SetTitle\(\"(\w+)\"\);)"));
+  std::regex_search(fileContents, match, std::regex(R"(.*setup->SetTitle\(\"(\w+)\"\);)"));
   std::string setupName = match[1];
 
   // field tag
-  std::regex_search(
-    fileContents, match, std::regex(R"(fieldTag\s+=\s+\"(\w+)\";)"));
+  std::regex_search(fileContents, match, std::regex(R"(fieldTag\s+=\s+\"(\w+)\";)"));
   std::string fieldTag      = match[1];
   std::string fieldFilePath = fieldDir + "field_" + fieldTag + ".root";
 
   // field origin x, y, z; field scale
   Double_t fieldX = 0., fieldY = 0., fieldZ = 40., fieldScale = 1.;
 
-  if (std::regex_search(
-        fileContents,
-        match,
-        std::regex(R"(fieldX\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
+  if (std::regex_search(fileContents, match, std::regex(R"(fieldX\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
     fieldX = std::stod(match[1]);
-  if (std::regex_search(
-        fileContents,
-        match,
-        std::regex(R"(fieldY\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
+  if (std::regex_search(fileContents, match, std::regex(R"(fieldY\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
     fieldY = std::stod(match[1]);
-  if (std::regex_search(
-        fileContents,
-        match,
-        std::regex(R"(fieldZ\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
+  if (std::regex_search(fileContents, match, std::regex(R"(fieldZ\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
     fieldZ = std::stod(match[1]);
-  if (std::regex_search(
-        fileContents,
-        match,
-        std::regex(R"(fieldScale\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
+  if (std::regex_search(fileContents, match, std::regex(R"(fieldScale\s+=\s+([-+]?(\d+)?(\.\d+)?(\.)?);)")))
     fieldScale = std::stod(match[1]);
 
   // media tag, if present
   std::string mediaTag;
   std::string mediaFilePath;
-  if (std::regex_search(
-        fileContents, match, std::regex(R"(mediaTag\s+=\s+\"(\w+)\";)"))) {
+  if (std::regex_search(fileContents, match, std::regex(R"(mediaTag\s+=\s+\"(\w+)\";)"))) {
     mediaTag      = match[1];
     mediaFilePath = geoDir + "media/media_" + mediaTag + ".geo";
   }
@@ -188,16 +171,12 @@ CbmGeoSetup CbmGeoSetupRepoProvider::GetSetupByTag(std::string setupTag,
   std::map<ECbmModuleId, CbmGeoSetupModule> moduleMap;
   for (auto detector : detectorMap) {
     //    std::regex tagRegex(R"(.*)" + detector.second.tag + R"(\s+=\s+\"([a-zA-Z_0-9:]+)\";)");
-    std::regex tagRegex(R"(.*)" + detector.second.tag
-                        + R"(\s+=\s+\"([\w:]+)\";)");
-    std::regex setModuleRegex(R"(.*SetModule\(.*)" + detector.second.tag
-                              + R"(\);)");
+    std::regex tagRegex(R"(.*)" + detector.second.tag + R"(\s+=\s+\"([\w:]+)\";)");
+    std::regex setModuleRegex(R"(.*SetModule\(.*)" + detector.second.tag + R"(\);)");
     std::string tag;
     bool added = false;
     if (std::regex_search(fileContents, match, tagRegex)) { tag = match[1]; }
-    if (std::regex_search(fileContents, match, setModuleRegex)) {
-      added = true;
-    }
+    if (std::regex_search(fileContents, match, setModuleRegex)) { added = true; }
 
     if (tag.size() && added) {
       ECbmModuleId moduleId = detector.first;
@@ -233,8 +212,8 @@ CbmGeoSetup CbmGeoSetupRepoProvider::GetSetupByTag(std::string setupTag,
   return setup;
 }
 
-CbmGeoSetupModule CbmGeoSetupRepoProvider::GetModuleByTag(ECbmModuleId moduleId,
-                                                          std::string tag) {
+CbmGeoSetupModule CbmGeoSetupRepoProvider::GetModuleByTag(ECbmModuleId moduleId, std::string tag)
+{
   std::string base   = gSystem->Getenv("VMCWORKDIR");
   std::string geoDir = base + "/geometry/";
 
@@ -248,11 +227,9 @@ CbmGeoSetupModule CbmGeoSetupRepoProvider::GetModuleByTag(ECbmModuleId moduleId,
   for (auto& string : _geom) {
 
     std::string geoFilePath =
-      geoDir + (detector.dir.size() ? detector.dir + "/" : detector.dir)
-      + detector.system + "_" + string + ".geo.root";
+      geoDir + (detector.dir.size() ? detector.dir + "/" : detector.dir) + detector.system + "_" + string + ".geo.root";
 
-    if (gSystem->AccessPathName(geoFilePath.c_str())
-        == kTRUE) {  // doesn't exist
+    if (gSystem->AccessPathName(geoFilePath.c_str()) == kTRUE) {  // doesn't exist
       geoFilePath.erase(geoFilePath.size() - 5);
       if (gSystem->AccessPathName(geoFilePath.c_str()) == kTRUE) {
         LOG(error) << "Geometry file not found for " << detector.system;
@@ -262,8 +239,7 @@ CbmGeoSetupModule CbmGeoSetupRepoProvider::GetModuleByTag(ECbmModuleId moduleId,
     //    info = GetRepoInfo(geoFilePath);
 
     // strip base path
-    if (geoFilePath.find(geoDir) != std::string::npos)
-      geoFilePath.replace(0, geoDir.size(), "");
+    if (geoFilePath.find(geoDir) != std::string::npos) geoFilePath.replace(0, geoDir.size(), "");
 
     full_file_path += geoFilePath;
     full_file_path += ":";
@@ -283,20 +259,19 @@ CbmGeoSetupModule CbmGeoSetupRepoProvider::GetModuleByTag(ECbmModuleId moduleId,
   return module;
 }
 
-CbmGeoSetupField CbmGeoSetupRepoProvider::GetFieldByTag(std::string tag) {
+CbmGeoSetupField CbmGeoSetupRepoProvider::GetFieldByTag(std::string tag)
+{
   std::string base     = std::string(gSystem->Getenv("VMCWORKDIR")) + "/";
   std::string fieldDir = base + "input/";
 
   std::string fieldFilePath = fieldDir + "field_" + tag + ".root";
 
-  if (gSystem->AccessPathName(fieldFilePath.c_str())
-      == kTRUE) {  // doesn't exist
+  if (gSystem->AccessPathName(fieldFilePath.c_str()) == kTRUE) {  // doesn't exist
     LOG(error) << "Field file not found for tag " << tag;
   }
 
   // strip base path
-  if (fieldFilePath.find(base) != std::string::npos)
-    fieldFilePath.replace(0, base.size(), "");
+  if (fieldFilePath.find(base) != std::string::npos) fieldFilePath.replace(0, base.size(), "");
 
   CbmGeoSetupField field = fSetup.GetField();
   field.SetTag(tag);
@@ -306,17 +281,16 @@ CbmGeoSetupField CbmGeoSetupRepoProvider::GetFieldByTag(std::string tag) {
   return field;
 }
 
-CbmGeoSetupMedia CbmGeoSetupRepoProvider::GetMediaByTag(std::string tag) {
+CbmGeoSetupMedia CbmGeoSetupRepoProvider::GetMediaByTag(std::string tag)
+{
   std::string base     = std::string(gSystem->Getenv("VMCWORKDIR")) + "/";
   std::string geoDir   = base + "geometry/";
   std::string mediaDir = base + "geometry/media/";
 
   std::string mediaFilePath = mediaDir + "media_" + tag + ".geo";
 
-  if (gSystem->AccessPathName(mediaFilePath.c_str())
-      == kTRUE) {  // doesn't exist
-    LOG(warn) << "Media file not found for tag "
-              << (tag.size() ? "(empty)" : tag) << " using default media.geo";
+  if (gSystem->AccessPathName(mediaFilePath.c_str()) == kTRUE) {  // doesn't exist
+    LOG(warn) << "Media file not found for tag " << (tag.size() ? "(empty)" : tag) << " using default media.geo";
 
     mediaFilePath = geoDir + "media.geo";
   }
@@ -324,8 +298,7 @@ CbmGeoSetupMedia CbmGeoSetupRepoProvider::GetMediaByTag(std::string tag) {
   //  RepoInfo info = GetRepoInfo(mediaFilePath);
 
   // strip base path
-  if (mediaFilePath.find(geoDir) != std::string::npos)
-    mediaFilePath.replace(0, geoDir.size(), "");
+  if (mediaFilePath.find(geoDir) != std::string::npos) mediaFilePath.replace(0, geoDir.size(), "");
 
   CbmGeoSetupMedia media = fSetup.GetMedia();
   media.SetTag(tag);
@@ -340,7 +313,7 @@ CbmGeoSetupMedia CbmGeoSetupRepoProvider::GetMediaByTag(std::string tag) {
 /// Loads setup from local repository by tag.
 /// See GetSetupByTag for actual implementation.
 /// revision is ignored
-void CbmGeoSetupRepoProvider::LoadSetup(std::string setupTag,
-                                        std::string revision) {
+void CbmGeoSetupRepoProvider::LoadSetup(std::string setupTag, std::string revision)
+{
   fSetup = GetSetupByTag(setupTag, revision);
 }

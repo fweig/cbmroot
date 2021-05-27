@@ -20,7 +20,7 @@ Bool_t mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
   /// FIXME: Re-enable clang formatting after parameters initial values setting
   /* clang-format on */
 
-  UInt_t uRunId     = 0;
+  UInt_t uRunId = 0;
 
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {

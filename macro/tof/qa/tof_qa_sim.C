@@ -49,10 +49,9 @@ Int_t fieldSymType  = 0;
 
 TString defaultInputFile = "";
 
-void tof_qa_sim(Int_t nEvents         = 2,
-                const char* setup     = "sis100_electron",
-                const char* geoOption = "",
-                Int_t iRandSeed       = 0) {
+void tof_qa_sim(Int_t nEvents = 2, const char* setup = "sis100_electron", const char* geoOption = "",
+                Int_t iRandSeed = 0)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -210,9 +209,8 @@ void tof_qa_sim(Int_t nEvents         = 2,
 
   // -----   Create magnetic field   ----------------------------------------
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -274,8 +272,7 @@ void tof_qa_sim(Int_t nEvents         = 2,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

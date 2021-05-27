@@ -12,11 +12,11 @@
 #ifndef CBMMUCHLAYER_H
 #define CBMMUCHLAYER_H 1
 
+#include "CbmMuchLayerSide.h"  // for CbmMuchLayerSide
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Double32_t
 #include <TObject.h>     // for TObject
-
-#include "CbmMuchLayerSide.h"  // for CbmMuchLayerSide
 
 class CbmMuchLayer : public TObject {
 
@@ -63,16 +63,15 @@ public:
   Double_t GetDz();
 
 protected:
-  Int_t fDetectorId;        // Unique detector ID
-  Double32_t fZ;            // z position of station center (midplane) [cm]
-  CbmMuchLayerSide fSideF;  // Front side of the layer
-  CbmMuchLayerSide fSideB;  // Back side of the layer
-  Double_t fSupportDx;      // Support half-width
-  Double_t fSupportDy;      // Support half-height
-  Double_t fSupportDz;      // Support half-thickness
-  Double_t
-    fZtoStationCenter;  // Relative position of the layer center with respect
-                        // to the station center
+  Int_t fDetectorId;           // Unique detector ID
+  Double32_t fZ;               // z position of station center (midplane) [cm]
+  CbmMuchLayerSide fSideF;     // Front side of the layer
+  CbmMuchLayerSide fSideB;     // Back side of the layer
+  Double_t fSupportDx;         // Support half-width
+  Double_t fSupportDy;         // Support half-height
+  Double_t fSupportDz;         // Support half-thickness
+  Double_t fZtoStationCenter;  // Relative position of the layer center with respect
+                               // to the station center
 
   ClassDef(CbmMuchLayer, 1);
 };

@@ -15,7 +15,9 @@
 #define LXTBMLTASK_H
 
 #include "CbmMCDataArray.h"
+
 #include "FairTask.h"
+
 #include "LxTBBinned2.h"
 
 class LxTBMLFinder : public FairTask {
@@ -24,22 +26,24 @@ public:
     LxTbBinnedPoint* points[NOF_STATIONS][NOF_LAYERS];
     scaltype chi2;
 
-    Chain(LxTbBinnedPoint* pts[NOF_STATIONS][NOF_LAYERS], scaltype Chi2)
-      : chi2(Chi2) {
+    Chain(LxTbBinnedPoint* pts[NOF_STATIONS][NOF_LAYERS], scaltype Chi2) : chi2(Chi2)
+    {
       for (int i = 0; i < NOF_STATIONS; ++i) {
         for (int j = 0; j < NOF_LAYERS; ++j)
           points[i][j] = new LxTbBinnedPoint(*pts[i][j]);
       }
     }
 
-    Chain(const Chain& origingal) : chi2(origingal.chi2) {
+    Chain(const Chain& origingal) : chi2(origingal.chi2)
+    {
       for (int i = 0; i < NOF_STATIONS; ++i) {
         for (int j = 0; j < NOF_LAYERS; ++j)
           points[i][j] = new LxTbBinnedPoint(*origingal.points[i][j]);
       }
     }
 
-    ~Chain() {
+    ~Chain()
+    {
       for (int i = 0; i < NOF_STATIONS; ++i) {
         for (int j = 0; j < NOF_LAYERS; ++j)
           delete points[i][j];
@@ -65,7 +69,8 @@ public:
     bool isSignal;
     bool isPos;
 
-    TrackDataHolder() : isSignal(false), isPos(false) {
+    TrackDataHolder() : isSignal(false), isPos(false)
+    {
       for (int i = 0; i < NOF_STATIONS; ++i) {
         for (int j = 0; j < NOF_LAYERS; ++j)
           pointInds[i][j] = -1;
@@ -79,7 +84,8 @@ public:
   void Exec(Option_t* opt);  // Overridden from FairTask
   void Finish();             // Overridden from FairTask
 
-  void SetEvByEv(bool v) {
+  void SetEvByEv(bool v)
+  {
     fIsEvByEv = v;
     fNofTBins = fIsEvByEv ? 5 : 1000;
   }

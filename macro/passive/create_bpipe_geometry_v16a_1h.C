@@ -27,6 +27,7 @@
 
 
 #include "TGeoManager.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -56,31 +57,19 @@ TString pipeName = "pipe_" + sVersion;
 #include "pipe_v16a_mvdsts100.h"
 // ----------------------------------------------------------------------------
 
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                      fstream* infoFile);
 
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                        fstream* infoFile);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
-                                   Bool_t bTrd  = kFALSE,
-                                   Bool_t bTof  = kFALSE,
-                                   Bool_t bEnd  = kFALSE,
-                                   Bool_t bWin  = kFALSE) {
+void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE, Bool_t bTrd = kFALSE, Bool_t bTof = kFALSE,
+                                   Bool_t bEnd = kFALSE, Bool_t bWin = kFALSE)
+{
   // -----   Define beam pipe sections   --------------------------------------
 
   /**** MVD and STS sections in common header file for all sis100 pipes ****/
@@ -120,8 +109,7 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   Double_t rout02[nSects02]; for(Int_t i=0; i<nSects02; i++) { rout02[i]=rin3[i]; }
 */
   /*************************************************************/
-  TString pipeNameMuch =
-    "pipe4 - MUCH section";  // First 2.5 then 3.0 from 1850 mm up to TRD
+  TString pipeNameMuch           = "pipe4 - MUCH section";  // First 2.5 then 3.0 from 1850 mm up to TRD
   const Int_t nSectsMuch         = 3;
   Double_t dZposMuch[nSectsMuch] = {1700., 1850., 3700.};  // mm
   Double_t dRoutMuch[nSectsMuch] = {74.2, 97., 193.9};     // mm
@@ -149,9 +137,8 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   /*************************************************************/
   TString pipeNameTrd          = "pipe5 - TRD section";
   const Int_t nSectsTrd        = 2;
-  Double_t dZposTrd[nSectsTrd] = {3700., 6700.};  // mm
-  Double_t dRoutTrd[nSectsTrd] = {
-    193.9, 288.00};  // mm, 3.0 deg inner opening in, detector fit out
+  Double_t dZposTrd[nSectsTrd] = {3700., 6700.};   // mm
+  Double_t dRoutTrd[nSectsTrd] = {193.9, 288.00};  // mm, 3.0 deg inner opening in, detector fit out
   Double_t dRinTrd[nSectsTrd];
   for (Int_t i = 0; i < nSectsTrd; i++) {
     dRinTrd[i] = dRoutTrd[i] - dPipeThickness;
@@ -177,8 +164,7 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   TString pipeNameTof          = "pipe6 - TOF section";
   const Int_t nSectsTof        = 3;
   Double_t dZposTof[nSectsTof] = {6700., 8250., 8800.};  // mm
-  Double_t dRoutTof[nSectsTof] = {
-    288.00, 212., 212.};  // mm, 2.5 deg start, TOF hole fit exit
+  Double_t dRoutTof[nSectsTof] = {288.00, 212., 212.};   // mm, 2.5 deg start, TOF hole fit exit
   Double_t dRinTof[nSectsTof];
   for (Int_t i = 0; i < nSectsTof; i++) {
     dRinTof[i] = dRoutTof[i] - dPipeThickness;
@@ -204,9 +190,8 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   TString pipeNameEnd          = "pipe7 - downstream section";
   const Int_t nSectsEnd        = 2;
   Double_t dZposEnd[nSectsEnd] = {dZposTof[nSectsTof - 1], 15000.};  // mm
-  Double_t dRoutEnd[nSectsEnd] = {
-    dRoutTof[nSectsTof - 1],
-    655.31};  // mm, TOF pipe fit at beg, 2.5 deg inner opening at end
+  Double_t dRoutEnd[nSectsEnd] = {dRoutTof[nSectsTof - 1],
+                                  655.31};  // mm, TOF pipe fit at beg, 2.5 deg inner opening at end
   Double_t dRinEnd[nSectsEnd];
   for (Int_t i = 0; i < nSectsEnd; i++) {
     dRinEnd[i] = dRoutEnd[i] - dPipeThickness;
@@ -230,14 +215,11 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
 
   /*************************************************************/
   // Straight window
-  TString pipeNameWinEnd =
-    "pipe8 - second window @ the end, h=0.2mm, R=600mm";  // iron !!!
+  TString pipeNameWinEnd             = "pipe8 - second window @ the end, h=0.2mm, R=600mm";  // iron !!!
   const Int_t nSectsWinEnd           = 2;
-  Double_t dZposWinEnd[nSectsWinEnd] = {dZposEnd[nSectsEnd - 1],
-                                        dZposEnd[nSectsEnd - 1] + 0.2};  // mm
-  Double_t dRoutWinEnd[nSectsWinEnd] = {dRoutEnd[nSectsEnd - 1],
-                                        dRoutEnd[nSectsEnd - 1]};  // mm
-  Double_t dRinWinEnd[nSectsWinEnd]  = {0., 0.};                   // mm
+  Double_t dZposWinEnd[nSectsWinEnd] = {dZposEnd[nSectsEnd - 1], dZposEnd[nSectsEnd - 1] + 0.2};  // mm
+  Double_t dRoutWinEnd[nSectsWinEnd] = {dRoutEnd[nSectsEnd - 1], dRoutEnd[nSectsEnd - 1]};        // mm
+  Double_t dRinWinEnd[nSectsWinEnd]  = {0., 0.};                                                  // mm
   if (kFALSE == bEnd) {
     // End section of beam pipe disabled, find which section is last and use its end radius for the window
     // If none is enabled, disable the end window
@@ -291,8 +273,7 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   fstream infoFile;
   fstream infoFileEmpty;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "SIS-100. Beam pipe geometry created with " + macrosname << endl
-           << endl;
+  infoFile << "SIS-100. Beam pipe geometry created with " + macrosname << endl << endl;
   infoFile << " pipe_v16a_1m = pipe for the SIS100 muon setups" << endl << endl;
   infoFile << " The beam pipe is composed of carbon with a thickness of 0.5 mm "
               "(0.4 mm is"
@@ -305,16 +286,10 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   infoFile << "   - second one of iron the end of the pipe with R600mm and "
               "0.2mm thickness."
            << endl;
-  infoFile
-    << " The STS section is composed of cylinder D(z=220-500mm)=36mm and cone"
-    << endl;
+  infoFile << " The STS section is composed of cylinder D(z=220-500mm)=36mm and cone" << endl;
   infoFile << " (z=500-1700mm). " << endl;
-  infoFile
-    << " All other sections of the beam pipe fit either the 2.5 degree standard"
-    << endl;
-  infoFile
-    << " limit or their respective detectors opening if less than 2.5 degree is"
-    << endl;
+  infoFile << " All other sections of the beam pipe fit either the 2.5 degree standard" << endl;
+  infoFile << " limit or their respective detectors opening if less than 2.5 degree is" << endl;
   infoFile << " available." << endl;
   infoFile << " The PSD section of the beam pipe is missing because it is "
               "planned that it "
@@ -376,54 +351,42 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
 
   // -----   Create sections  -------------------------------------------------
   infoFile << endl << "Beam pipe section: " << pipe1name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
 
-  TGeoVolume* pipe1 =
-    MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
+  TGeoVolume* pipe1 = MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
   pipe1->SetLineColor(kGray);
   pipe->AddNode(pipe1, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe2name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe2 =
-    MakePipe(2, nSects2, z2, rin2, rout2, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe2 = MakePipe(2, nSects2, z2, rin2, rout2, pipeMedium, &infoFile);
   pipe2->SetLineColor(kBlue);
   pipe->AddNode(pipe2, 0);
-  TGeoVolume* pipevac1 =
-    MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
+  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
   pipevac1->SetLineColor(kCyan);
   pipe->AddNode(pipevac1, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe3name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe3 =
-    MakePipe(3, nSects3, z3, rin3, rout3, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe3 = MakePipe(3, nSects3, z3, rin3, rout3, pipeMedium, &infoFile);
   pipe3->SetLineColor(kGreen);
   pipe->AddNode(pipe3, 0);
-  TGeoVolume* pipevac2 =
-    MakeVacuum(2, nSects02, z02, rin02, rout02, vacuum, &infoFile);
+  TGeoVolume* pipevac2 = MakeVacuum(2, nSects02, z02, rin02, rout02, vacuum, &infoFile);
   pipevac2->SetLineColor(kCyan);
   pipe->AddNode(pipevac2, 0);
 
   // Process MUCH pipe params
   if (0 < nSectsMuch && kTRUE == bMuch) {
     infoFile << endl << "Beam pipe section: " << pipeNameMuch << endl;
-    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-             << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-    TGeoVolume* pipeMuch = MakePipe(
-      5, nSectsMuch, dZposMuch, dRinMuch, dRoutMuch, pipeMedium, &infoFile);
+    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+             << "h,mm" << endl;
+    TGeoVolume* pipeMuch = MakePipe(5, nSectsMuch, dZposMuch, dRinMuch, dRoutMuch, pipeMedium, &infoFile);
     pipeMuch->SetLineColor(kGreen);
     pipe->AddNode(pipeMuch, 0);
-    TGeoVolume* pipeVacMuch = MakeVacuum(5,
-                                         nSectsVacMuch,
-                                         dZposVacMuch,
-                                         dRinVacMuch,
-                                         dRoutVacMuch,
-                                         vacuum,
-                                         &infoFile);
+    TGeoVolume* pipeVacMuch = MakeVacuum(5, nSectsVacMuch, dZposVacMuch, dRinVacMuch, dRoutVacMuch, vacuum, &infoFile);
     pipeVacMuch->SetLineColor(kCyan);
     pipe->AddNode(pipeVacMuch, 0);
   }  // if( 0 < nSectsMuch  && kTRUE == bMuch )
@@ -431,14 +394,12 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   // Process TRD pipe params
   if (0 < nSectsTrd && kTRUE == bTrd) {
     infoFile << endl << "Beam pipe section: " << pipeNameTrd << endl;
-    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-             << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-    TGeoVolume* pipeTrd = MakePipe(
-      5, nSectsTrd, dZposTrd, dRinTrd, dRoutTrd, pipeMedium, &infoFile);
+    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+             << "h,mm" << endl;
+    TGeoVolume* pipeTrd = MakePipe(5, nSectsTrd, dZposTrd, dRinTrd, dRoutTrd, pipeMedium, &infoFile);
     pipeTrd->SetLineColor(kGreen);
     pipe->AddNode(pipeTrd, 0);
-    TGeoVolume* pipeVacTrd = MakeVacuum(
-      5, nSectsVacTrd, dZposVacTrd, dRinVacTrd, dRoutVacTrd, vacuum, &infoFile);
+    TGeoVolume* pipeVacTrd = MakeVacuum(5, nSectsVacTrd, dZposVacTrd, dRinVacTrd, dRoutVacTrd, vacuum, &infoFile);
     pipeVacTrd->SetLineColor(kCyan);
     pipe->AddNode(pipeVacTrd, 0);
   }  // if( 0 < nSectsTrd  && kTRUE == bTrd )
@@ -446,14 +407,12 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   // Process TOF pipe params
   if (0 < nSectsTof && kTRUE == bTof) {
     infoFile << endl << "Beam pipe section: " << pipeNameTof << endl;
-    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-             << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-    TGeoVolume* pipeTof = MakePipe(
-      6, nSectsTof, dZposTof, dRinTof, dRoutTof, pipeMedium, &infoFile);
+    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+             << "h,mm" << endl;
+    TGeoVolume* pipeTof = MakePipe(6, nSectsTof, dZposTof, dRinTof, dRoutTof, pipeMedium, &infoFile);
     pipeTof->SetLineColor(kGreen);
     pipe->AddNode(pipeTof, 0);
-    TGeoVolume* pipeVacTof = MakeVacuum(
-      6, nSectsVacTof, dZposVacTof, dRinVacTof, dRoutVacTof, vacuum, &infoFile);
+    TGeoVolume* pipeVacTof = MakeVacuum(6, nSectsVacTof, dZposVacTof, dRinVacTof, dRoutVacTof, vacuum, &infoFile);
     pipeVacTof->SetLineColor(kCyan);
     pipe->AddNode(pipeVacTof, 0);
   }  // if( 0 < nSectsTof  && kTRUE == bTof )
@@ -461,27 +420,22 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   // Process downstream pipe params
   if (0 < nSectsEnd && kTRUE == bEnd) {
     infoFile << endl << "Beam pipe section: " << pipeNameEnd << endl;
-    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-             << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-    TGeoVolume* pipeEnd = MakePipe(
-      5, nSectsEnd, dZposEnd, dRinEnd, dRoutEnd, pipeMedium, &infoFile);
+    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+             << "h,mm" << endl;
+    TGeoVolume* pipeEnd = MakePipe(5, nSectsEnd, dZposEnd, dRinEnd, dRoutEnd, pipeMedium, &infoFile);
     pipeEnd->SetLineColor(kGreen);
     pipe->AddNode(pipeEnd, 0);
-    TGeoVolume* pipeVacEnd = MakeVacuum(
-      5, nSectsVacEnd, dZposVacEnd, dRinVacEnd, dRoutVacEnd, vacuum, &infoFile);
+    TGeoVolume* pipeVacEnd = MakeVacuum(5, nSectsVacEnd, dZposVacEnd, dRinVacEnd, dRoutVacEnd, vacuum, &infoFile);
     pipeVacEnd->SetLineColor(kCyan);
     pipe->AddNode(pipeVacEnd, 0);
   }  // if( 0 < nSectsEnd  && kTRUE == bEnd )
 
   // Process final window params
   if (0 < nSectsWinEnd && kTRUE == bWin) {
-    infoFile << endl
-             << "Beam pipe section: " << pipeNameWinEnd << ", material: iron"
-             << endl;
-    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-             << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-    TGeoVolume* pipeWinEnd = MakePipe(
-      8, nSectsWinEnd, dZposWinEnd, dRinWinEnd, dRoutWinEnd, iron, &infoFile);
+    infoFile << endl << "Beam pipe section: " << pipeNameWinEnd << ", material: iron" << endl;
+    infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+             << "h,mm" << endl;
+    TGeoVolume* pipeWinEnd = MakePipe(8, nSectsWinEnd, dZposWinEnd, dRinWinEnd, dRoutWinEnd, iron, &infoFile);
     pipeWinEnd->SetLineColor(kBlue);
     pipe->AddNode(pipeWinEnd, 0);
 
@@ -506,8 +460,7 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
   TFile* rootFile = new TFile(rootFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << rootFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << rootFileName << endl;
   rootFile->Close();
   infoFile.close();
 
@@ -522,21 +475,15 @@ void create_bpipe_geometry_v16a_1h(Bool_t bMuch = kFALSE,
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoPcon* MakeShape(Int_t nSects,
-                    char* name,
-                    Double_t* z,
-                    Double_t* rin,
-                    Double_t* rout,
-                    fstream* infoFile) {
+TGeoPcon* MakeShape(Int_t nSects, char* name, Double_t* z, Double_t* rin, Double_t* rout, fstream* infoFile)
+{
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(name, 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
-    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
-              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2) << z[iSect] << setw(10) << fixed
+              << setprecision(2) << rin[iSect] << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
               << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
@@ -546,22 +493,16 @@ TGeoPcon* MakeShape(Int_t nSects,
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
-                     fstream* infoFile) {
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                     fstream* infoFile)
+{
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
-    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
-              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2) << z[iSect] << setw(10) << fixed
+              << setprecision(2) << rin[iSect] << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
               << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
@@ -575,19 +516,14 @@ TGeoVolume* MakePipe(Int_t iPart,
 
 
 // =====   Make the volume for the vacuum inside the beam pipe   ==============
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
-                       fstream* infoFile) {
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                       fstream* infoFile)
+{
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
   }
 
   // ---> Volume

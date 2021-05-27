@@ -23,6 +23,7 @@
 
 // Includes from MUCH
 #include "CbmMuchDigitizeGem.h"
+
 #include "CbmMuchDigi.h"
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchModuleGemRadial.h"
@@ -49,6 +50,8 @@
 
 // Includes from Cbm
 #include "CbmMCTrack.h"
+
+#include "TCanvas.h"
 #include "TChain.h"
 #include "TDatabasePDG.h"
 #include "TFile.h"
@@ -57,7 +60,6 @@
 #include "TRandom.h"
 #include <TGeoManager.h>
 
-#include "TCanvas.h"
 #include <cassert>
 #include <cstring>
 #include <iomanip>
@@ -133,7 +135,8 @@ CbmMuchDigitizeGem::CbmMuchDigitizeGem()
   fPerPadNoiseRate(10e-9)
   , fGenerateElectronicsNoise(kFALSE)
   , fNoiseCharge(nullptr)
-  , fAddressCharge() {
+  , fAddressCharge()
+{
   fSigma[0] = new TF1("sigma_e", "pol6", -5, 10);
   fSigma[0]->SetParameters(sigma_e);
 
@@ -152,12 +155,9 @@ CbmMuchDigitizeGem::CbmMuchDigitizeGem()
   fMPV[2] = new TF1("mpv_p", "pol6", -5, 10);
   fMPV[2]->SetParameters(mpv_p);
   Reset();
-  fNoiseCharge = new TF1(
-    "Noise Charge",
-    "TMath::Gaus(x, [0], [1])",
-    fQThreshold,
-    fQMax
-      / 10);  //noise function to calculate charge for noise hit. mean=fQThreashold(10000),fQMax=500000
+  fNoiseCharge =
+    new TF1("Noise Charge", "TMath::Gaus(x, [0], [1])", fQThreshold,
+            fQMax / 10);  //noise function to calculate charge for noise hit. mean=fQThreashold(10000),fQMax=500000
 }
 // -------------------------------------------------------------------------
 
@@ -220,7 +220,8 @@ CbmMuchDigitizeGem::CbmMuchDigitizeGem(const char* digiFileName, Int_t flag)
   , fPerPadNoiseRate(10e-9)
   , fGenerateElectronicsNoise(kFALSE)
   , fNoiseCharge(nullptr)
-  , fAddressCharge() {
+  , fAddressCharge()
+{
   fSigma[0] = new TF1("sigma_e", "pol6", -5, 10);
   fSigma[0]->SetParameters(sigma_e);
 
@@ -239,18 +240,16 @@ CbmMuchDigitizeGem::CbmMuchDigitizeGem(const char* digiFileName, Int_t flag)
   fMPV[2] = new TF1("mpv_p", "pol6", -5, 10);
   fMPV[2]->SetParameters(mpv_p);
   Reset();
-  fNoiseCharge = new TF1(
-    "Noise Charge",
-    "TMath::Gaus(x, [0], [1])",
-    fQThreshold,
-    fQMax
-      / 10);  //noise function to calculate charge for noise hit. mean=fQThreashold(10000),fQMax=500000
+  fNoiseCharge =
+    new TF1("Noise Charge", "TMath::Gaus(x, [0], [1])", fQThreshold,
+            fQMax / 10);  //noise function to calculate charge for noise hit. mean=fQThreashold(10000),fQMax=500000
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuchDigitizeGem::~CbmMuchDigitizeGem() {
+CbmMuchDigitizeGem::~CbmMuchDigitizeGem()
+{
 
   delete fSigma[0];
   delete fSigma[1];
@@ -263,14 +262,16 @@ CbmMuchDigitizeGem::~CbmMuchDigitizeGem() {
 
 
 // -----   Private method Reset   -------------------------------------------
-void CbmMuchDigitizeGem::Reset() {
+void CbmMuchDigitizeGem::Reset()
+{
   fTimeDigiFirst = fTimeDigiLast = -1;
   fNofPoints = fNofSignals = fNofDigis = 0;
 }
 // -------------------------------------------------------------------------
 
 // -----   Setting Detector related parameters   -------------------------------------------
-void CbmMuchDigitizeGem::DetectorParameters(CbmMuchModule* module) {
+void CbmMuchDigitizeGem::DetectorParameters(CbmMuchModule* module)
+{
   Int_t DetectorType = module->GetDetectorType();
   //    cout<<" dec type "<<DetectorType<<endl;
   switch (DetectorType) {
@@ -284,24 +285,22 @@ void CbmMuchDigitizeGem::DetectorParameters(CbmMuchModule* module) {
       fMeanGasGain          = 5000;    // Mean gas gain = 5000 for GEM
       fDTime                = 3;
       fDeadPadsFrac         = 0;
-      fDriftVelocity        = 100;  // Drift Velocity = 100 um/ns
-      auto DriftVolumeWidth = module->GetSize().Z();  // Drift gap
-      fTotalDriftTime =
-        DriftVolumeWidth / fDriftVelocity * 10000;  // Drift time (ns)
+      fDriftVelocity        = 100;                                        // Drift Velocity = 100 um/ns
+      auto DriftVolumeWidth = module->GetSize().Z();                      // Drift gap
+      fTotalDriftTime       = DriftVolumeWidth / fDriftVelocity * 10000;  // Drift time (ns)
     } break;
-    case 4: {                   //For RPC
-      fNADCChannels  = 32;      // Total ADC Channels
-      fQMax          = 812500;  // Maximum charge = 130 fC for RPC
-      fQThreshold    = 187500;  // Minimum charge threshold = 30 fC for RPC
-      fMeanNoise     = 1500;    // mean noise
-      fSpotRadius    = 0.2;     // Spot radius = 2 mm for RPC
-      fMeanGasGain   = 3e4;     // Mean gas gain = 3e4 for RPC
-      fDTime         = 3;
-      fDeadPadsFrac  = 0;
-      fDriftVelocity = 120;  // Drift velocity = 120 um/ns
-      auto DriftVolumeWidth = module->GetSize().Z();  // Drift gap
-      fTotalDriftTime =
-        DriftVolumeWidth / fDriftVelocity * 10000;  // Drift time (ns)
+    case 4: {                          //For RPC
+      fNADCChannels         = 32;      // Total ADC Channels
+      fQMax                 = 812500;  // Maximum charge = 130 fC for RPC
+      fQThreshold           = 187500;  // Minimum charge threshold = 30 fC for RPC
+      fMeanNoise            = 1500;    // mean noise
+      fSpotRadius           = 0.2;     // Spot radius = 2 mm for RPC
+      fMeanGasGain          = 3e4;     // Mean gas gain = 3e4 for RPC
+      fDTime                = 3;
+      fDeadPadsFrac         = 0;
+      fDriftVelocity        = 120;                                        // Drift velocity = 120 um/ns
+      auto DriftVolumeWidth = module->GetSize().Z();                      // Drift gap
+      fTotalDriftTime       = DriftVolumeWidth / fDriftVelocity * 10000;  // Drift time (ns)
 
     } break;
   }
@@ -311,7 +310,8 @@ void CbmMuchDigitizeGem::DetectorParameters(CbmMuchModule* module) {
 
 
 // -----   Private method Init   -------------------------------------------
-InitStatus CbmMuchDigitizeGem::Init() {
+InitStatus CbmMuchDigitizeGem::Init()
+{
 
 
   // Screen output
@@ -339,9 +339,8 @@ InitStatus CbmMuchDigitizeGem::Init() {
   for (Int_t iNode = 0; iNode < cave->GetNdaughters(); iNode++) {
     TString name = cave->GetDaughter(iNode)->GetVolume()->GetName();
     if (name.Contains("much", TString::kIgnoreCase)) {
-      if (name.Contains("mcbm", TString::kIgnoreCase)) {
-        geoTag = TString(name(5, name.Length()));
-      } else {
+      if (name.Contains("mcbm", TString::kIgnoreCase)) { geoTag = TString(name(5, name.Length())); }
+      else {
         geoTag = TString(name(5, name.Length() - 5));
       }
       // geoTag = "v17b"; // modified ekata
@@ -354,26 +353,22 @@ InitStatus CbmMuchDigitizeGem::Init() {
 
   // Set the parameter file and the flag, if not done in constructor
   if (fDigiFile.IsNull()) {
-    if (geoTag.IsNull())
-      LOG(fatal)
-        << fName
-        << ": no parameter file specified and no MUCH node found in geometry!";
+    if (geoTag.IsNull()) LOG(fatal) << fName << ": no parameter file specified and no MUCH node found in geometry!";
     fDigiFile = gSystem->Getenv("VMCWORKDIR");
     // TODO: (VF) A better naming convention for the geometry tag and the
     // corresponding parameter file is surely desirable.
     if (geoTag.Contains("mcbm", TString::kIgnoreCase)) {
       fDigiFile += "/parameters/much/much_" + geoTag + "_digi_sector.root";
-    } else {
-      fDigiFile +=
-        "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+    }
+    else {
+      fDigiFile += "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
     }
     // fDigiFile ="/home/ekata/CbmRoot/AUG18/parameters/much/much_v17b_digi_sector.root";
 
     LOG(info) << fName << ": Using parameter file " << fDigiFile;
 
     fFlag = (geoTag.Contains("mcbm", TString::kIgnoreCase) ? 1 : 0);
-    LOG(info) << fName << ": Using flag " << fFlag
-              << (fFlag ? " (mcbm) " : "(standard)");
+    LOG(info) << fName << ": Using flag " << fFlag << (fFlag ? " (mcbm) " : "(standard)");
   }
 
 
@@ -381,10 +376,8 @@ InitStatus CbmMuchDigitizeGem::Init() {
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
-  TFile* file    = new TFile(fDigiFile);
-  if (!file->IsOpen())
-    LOG(fatal) << fName << ": parameter file " << fDigiFile
-               << " does not exist!";
+  TFile* file        = new TFile(fDigiFile);
+  if (!file->IsOpen()) LOG(fatal) << fName << ": parameter file " << fDigiFile << " does not exist!";
   TObjArray* stations = (TObjArray*) file->Get("stations");
   file->Close();
   file->Delete();
@@ -406,8 +399,7 @@ InitStatus CbmMuchDigitizeGem::Init() {
     if (side->GetNModules() <= 0) continue;
     CbmMuchModule* module = side->GetModule(0);
     //    if (module->GetDetectorType()!=4)continue;
-    if (module->GetDetectorType() != 3 && module->GetDetectorType() != 4)
-      continue;
+    if (module->GetDetectorType() != 3 && module->GetDetectorType() != 4) continue;
     DetectorParameters(module);
     //cout<<" dec type "<<module->GetDetectorType()<<" drift width "<<DriftVolumeWidth<<endl;
   }
@@ -477,7 +469,8 @@ InitStatus CbmMuchDigitizeGem::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchDigitizeGem::Exec(Option_t*) {
+void CbmMuchDigitizeGem::Exec(Option_t*)
+{
 
   // --- Start timer and reset counters
   fTimer.Start();
@@ -485,10 +478,8 @@ void CbmMuchDigitizeGem::Exec(Option_t*) {
 
   // --- Event number and time
   GetEventInfo();
-  LOG(debug) << GetName() << ": Processing event " << fCurrentEvent
-             << " from input " << fCurrentInput
-             << " at t = " << fCurrentEventTime << " ns with "
-             << fPoints->GetEntriesFast() << " MuchPoints ";
+  LOG(debug) << GetName() << ": Processing event " << fCurrentEvent << " from input " << fCurrentInput
+             << " at t = " << fCurrentEventTime << " ns with " << fPoints->GetEntriesFast() << " MuchPoints ";
 
   //ReadAndRegister(fCurrentEventTime);
 
@@ -507,28 +498,23 @@ void CbmMuchDigitizeGem::Exec(Option_t*) {
     fNofNoiseTot += nNoise;
     //noise->Fill(nNoise);
     LOG(info) << "+ " << setw(20) << GetName() << ": Generated  " << nNoise
-              << " noise signals from t = " << fPreviousEventTime << " ns to "
-              << fCurrentEventTime << " ns and " << fNofNoiseTot
-              << " total noise generated till now.";
-    LOG(debug3) << "+ " << setw(20) << GetName() << ": Generated  "
-                << fNofNoiseSignals
-                << " noise signals for this time slice from t = "
-                << fPreviousEventTime << " ns to " << fCurrentEventTime << "ns";
+              << " noise signals from t = " << fPreviousEventTime << " ns to " << fCurrentEventTime << " ns and "
+              << fNofNoiseTot << " total noise generated till now.";
+    LOG(debug3) << "+ " << setw(20) << GetName() << ": Generated  " << fNofNoiseSignals
+                << " noise signals for this time slice from t = " << fPreviousEventTime << " ns to "
+                << fCurrentEventTime << "ns";
     fPreviousEventTime = fCurrentEventTime;
   }
 
 
-  if (fEventMode)
-    ReadAndRegister(-1);
+  if (fEventMode) ReadAndRegister(-1);
   else
     ReadAndRegister(fCurrentEventTime);
 
   // --- Event log
-  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right
-            << fCurrentEvent << " at " << fixed << setprecision(3)
-            << fCurrentEventTime << " ns, points: " << fNofPoints
-            << ", signals: " << fNofSignals << ", digis: " << fNofDigis
-            << ". Exec time " << setprecision(6) << fTimer.RealTime() << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right << fCurrentEvent << " at " << fixed
+            << setprecision(3) << fCurrentEventTime << " ns, points: " << fNofPoints << ", signals: " << fNofSignals
+            << ", digis: " << fNofDigis << ". Exec time " << setprecision(6) << fTimer.RealTime() << " s.";
 
 
   fTimer.Stop();
@@ -542,15 +528,14 @@ void CbmMuchDigitizeGem::Exec(Option_t*) {
 
 
 //================================Generte Noise==============================================//
-Int_t CbmMuchDigitizeGem::GenerateNoise(Double_t t1, Double_t t2) {
-  LOG(debug) << "+ " << setw(20) << GetName() << ": Previous event time " << t1
-             << " Current event time " << t2 << " ns.";
+Int_t CbmMuchDigitizeGem::GenerateNoise(Double_t t1, Double_t t2)
+{
+  LOG(debug) << "+ " << setw(20) << GetName() << ": Previous event time " << t1 << " Current event time " << t2
+             << " ns.";
   if (t1 > t2) {
     LOG(debug) << "+ "
-               << ": Previous event time " << t1
-               << " is greater than Current event time " << t2
-               << ". No electronics noise signal generated for "
-               << fCurrentEvent << " event.";
+               << ": Previous event time " << t1 << " is greater than Current event time " << t2
+               << ". No electronics noise signal generated for " << fCurrentEvent << " event.";
     return 0;
   };
   Int_t numberofstations = fGeoScheme->GetNStations();
@@ -569,8 +554,7 @@ Int_t CbmMuchDigitizeGem::GenerateNoise(Double_t t1, Double_t t2) {
       auto FrontModuleNoise = 0;
       for (auto k = 0; k < numberofmodules; k++) {
         CbmMuchModuleGem* module = (CbmMuchModuleGem*) (side->GetModule(k));
-        if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-          continue;  ///modified for rpc
+        if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3) continue;  ///modified for rpc
         FrontModuleNoise += GenerateNoisePerModule(module, t1, t2);
       }
       side            = station->GetLayer(j)->GetSide(1);
@@ -579,16 +563,13 @@ Int_t CbmMuchDigitizeGem::GenerateNoise(Double_t t1, Double_t t2) {
       auto BackModuleNoise = 0;
       for (auto k = 0; k < numberofmodules; k++) {
         CbmMuchModuleGem* module = (CbmMuchModuleGem*) side->GetModule(k);
-        if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-          continue;  ///modified for rpc
+        if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3) continue;  ///modified for rpc
         BackModuleNoise += GenerateNoisePerModule(module, t1, t2);
       }
       LayerNoise += FrontModuleNoise + BackModuleNoise;
     }
-    LOG(debug1) << "+ " << setw(20) << GetName() << ": Generated  "
-                << LayerNoise << " noise signals in station " << i
-                << " from t = " << fPreviousEventTime << " ns to "
-                << fCurrentEventTime << " ns";
+    LOG(debug1) << "+ " << setw(20) << GetName() << ": Generated  " << LayerNoise << " noise signals in station " << i
+                << " from t = " << fPreviousEventTime << " ns to " << fCurrentEventTime << " ns";
     StationNoise += LayerNoise;
   }
   return StationNoise;
@@ -596,14 +577,12 @@ Int_t CbmMuchDigitizeGem::GenerateNoise(Double_t t1, Double_t t2) {
 
 //================================Generte Noise==============================================//
 
-Int_t CbmMuchDigitizeGem::GenerateNoisePerModule(CbmMuchModuleGem* module,
-                                                 Double_t t1,
-                                                 Double_t t2) {
+Int_t CbmMuchDigitizeGem::GenerateNoisePerModule(CbmMuchModuleGem* module, Double_t t1, Double_t t2)
+{
   auto NumberOfPad    = module->GetNPads();
   Double_t nNoiseMean = fPerPadNoiseRate * NumberOfPad * (t2 - t1);
   Int_t nNoise        = gRandom->Poisson(nNoiseMean);
-  LOG(debug) << "+ " << setw(20) << GetName()
-             << ": Number of noise signals : " << nNoise << " in one module. ";
+  LOG(debug) << "+ " << setw(20) << GetName() << ": Number of noise signals : " << nNoise << " in one module. ";
   for (Int_t iNoise = 0; iNoise <= nNoise; iNoise++) {
     Int_t padnumber    = Int_t(gRandom->Uniform(Double_t(NumberOfPad)));
     CbmMuchPad* pad    = module->GetPad(padnumber);
@@ -619,12 +598,11 @@ Int_t CbmMuchDigitizeGem::GenerateNoisePerModule(CbmMuchModuleGem* module,
 
 //=================Add a signal to the buffer=====================//
 
-void CbmMuchDigitizeGem::AddNoiseSignal(CbmMuchPad* pad,
-                                        Double_t time,
-                                        Double_t charge) {
+void CbmMuchDigitizeGem::AddNoiseSignal(CbmMuchPad* pad, Double_t time, Double_t charge)
+{
   assert(pad);
-  LOG(debug3) << GetName() << ": Receiving signal " << charge << " in channel "
-              << pad->GetAddress() << " at time " << time << "ns";
+  LOG(debug3) << GetName() << ": Receiving signal " << charge << " in channel " << pad->GetAddress() << " at time "
+              << time << "ns";
   //  LOG(debug) << GetName() << ": discarding signal in dead channel "
   //  << channel;
   //  return;
@@ -644,7 +622,8 @@ void CbmMuchDigitizeGem::AddNoiseSignal(CbmMuchPad* pad,
 
 // -------------------------------------------------------------------------
 //Read all the Signal from CbmMuchReadoutBuffer, convert the analog signal into the digital response  and register Output according to event by event mode and Time based mode.
-void CbmMuchDigitizeGem::ReadAndRegister(Long_t eventTime) {
+void CbmMuchDigitizeGem::ReadAndRegister(Long_t eventTime)
+{
   std::vector<CbmMuchSignal*> SignalList;
   //Event Time should be passed with the Call
   /*Double_t eventTime = -1.;
@@ -652,39 +631,27 @@ void CbmMuchDigitizeGem::ReadAndRegister(Long_t eventTime) {
     eventTime = FairRun::Instance()->GetEventHeader()->GetEventTime();
     }*/
 
-  Int_t ReadOutSignal =
-    CbmMuchReadoutBuffer::Instance()->ReadOutData(eventTime, SignalList);
-  LOG(debug) << GetName() << ": Number of Signals read out from Buffer "
-             << ReadOutSignal << " and SignalList contain " << SignalList.size()
-             << " entries.";
+  Int_t ReadOutSignal = CbmMuchReadoutBuffer::Instance()->ReadOutData(eventTime, SignalList);
+  LOG(debug) << GetName() << ": Number of Signals read out from Buffer " << ReadOutSignal << " and SignalList contain "
+             << SignalList.size() << " entries.";
 
-  for (std::vector<CbmMuchSignal*>::iterator LoopOver = SignalList.begin();
-       LoopOver != SignalList.end();
-       LoopOver++) {
-    CbmMuchDigi* digi = ConvertSignalToDigi(*LoopOver);
-    CbmMatch* digiMatch =
-      new CbmMatch(*(*LoopOver)->GetMatch());  // must be copied from signal
+  for (std::vector<CbmMuchSignal*>::iterator LoopOver = SignalList.begin(); LoopOver != SignalList.end(); LoopOver++) {
+    CbmMuchDigi* digi   = ConvertSignalToDigi(*LoopOver);
+    CbmMatch* digiMatch = new CbmMatch(*(*LoopOver)->GetMatch());  // must be copied from signal
     //assert(digi);
-    if (!digi) {
-      LOG(debug2) << GetName()
-                  << ": Digi not created as signal is below threshold.";
-    } else {
-      LOG(debug2) << GetName() << ": New digi: sector = "
-                  << CbmMuchAddress::GetSectorIndex(digi->GetAddress())
-                  << " channel= "
-                  << CbmMuchAddress::GetChannelIndex(digi->GetAddress());
+    if (!digi) { LOG(debug2) << GetName() << ": Digi not created as signal is below threshold."; }
+    else {
+      LOG(debug2) << GetName() << ": New digi: sector = " << CbmMuchAddress::GetSectorIndex(digi->GetAddress())
+                  << " channel= " << CbmMuchAddress::GetChannelIndex(digi->GetAddress());
 
       SendData(digi, digiMatch);
       fNofDigis++;
     }
   }
 
-  LOG(debug) << GetName() << ": " << fNofDigis
-             << (fNofDigis == 1 ? " digi " : " digis ")
-             << "created and sent to DAQ ";
+  LOG(debug) << GetName() << ": " << fNofDigis << (fNofDigis == 1 ? " digi " : " digis ") << "created and sent to DAQ ";
   if (fNofDigis)
-    LOG(debug) << "( from " << fixed << setprecision(3) << fTimeDigiFirst
-               << " ns to " << fTimeDigiLast << " ns )";
+    LOG(debug) << "( from " << fixed << setprecision(3) << fTimeDigiFirst << " ns to " << fTimeDigiLast << " ns )";
   LOG(debug);
 
   // After digis are created from signals the signals have to be removed
@@ -697,7 +664,8 @@ void CbmMuchDigitizeGem::ReadAndRegister(Long_t eventTime) {
 
 //Convert Signal into the Digi with appropriate methods.
 
-CbmMuchDigi* CbmMuchDigitizeGem::ConvertSignalToDigi(CbmMuchSignal* signal) {
+CbmMuchDigi* CbmMuchDigitizeGem::ConvertSignalToDigi(CbmMuchSignal* signal)
+{
 
   //Setting Parameters for RPC or GEM (10 lines)
   auto address            = signal->GetAddress();
@@ -729,11 +697,8 @@ CbmMuchDigi* CbmMuchDigitizeGem::ConvertSignalToDigi(CbmMuchSignal* signal) {
   //Charge in number of electrons, need to be converted in ADC value
   //    digi->SetAdc((signal->GetCharge())*fNADCChannels/fQMax);//Charge should be computed as per Electronics Response.
   Float_t adcValue;
-  adcValue = ((signal->GetCharge() - fQThreshold) * fNADCChannels)
-             / (fQMax - fQThreshold);
-  digi->SetAdc(
-    adcValue
-    + 1);  //Charge should be computed as per Electronics Response. *** modified by Ekata Nandy***
+  adcValue = ((signal->GetCharge() - fQThreshold) * fNADCChannels) / (fQMax - fQThreshold);
+  digi->SetAdc(adcValue + 1);  //Charge should be computed as per Electronics Response. *** modified by Ekata Nandy***
   // ADC channels number is 32.GEM & RPC has different charge threshold value and dynamic range, so SetAdc has been changed accordingly. ADC value starts from 1 to 32. ADC 0 has been excluded as it gives wrong x,y,t in Hit finder.@modified by Ekata Nandy
 
   //  cout<<" dynamic range "<<(fQMax -fQThreshold)<<" adc "<<digi->GetAdc()<<" channels "<<fNADCChannels<< "charge "<<signal->GetCharge()<<endl;
@@ -746,9 +711,8 @@ CbmMuchDigi* CbmMuchDigitizeGem::ConvertSignalToDigi(CbmMuchSignal* signal) {
 
 
   // Update times of first and last digi
-  fTimeDigiFirst =
-    fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(TimeStamp)) : TimeStamp;
-  fTimeDigiLast = TMath::Max(fTimeDigiLast, Double_t(TimeStamp));
+  fTimeDigiFirst = fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(TimeStamp)) : TimeStamp;
+  fTimeDigiLast  = TMath::Max(fTimeDigiLast, Double_t(TimeStamp));
 
   //	digi->SetPileUp();
   //	digi->SetDiffEvent();
@@ -757,14 +721,14 @@ CbmMuchDigi* CbmMuchDigitizeGem::ConvertSignalToDigi(CbmMuchSignal* signal) {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizeGem::Finish() {
+void CbmMuchDigitizeGem::Finish()
+{
 
 
   // --- In event-by-event mode, the analogue buffer should be empty.
   if (fEventMode) {
     if (CbmMuchReadoutBuffer::Instance()->GetNData()) {
-      LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData()
-                << " signals in readout buffer";
+      LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData() << " signals in readout buffer";
       LOG(fatal) << fName << ": Readout buffer is not empty at end of run "
                  << "in event-by-event mode!";
     }  //? non-empty buffer
@@ -775,15 +739,11 @@ void CbmMuchDigitizeGem::Finish() {
     std::cout << std::endl;
     LOG(info) << GetName() << ": Finish run";
     Reset();
-    LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData()
-              << " signals in readout buffer";
+    LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData() << " signals in readout buffer";
     ReadAndRegister(-1.);  // -1 means process all data
-    LOG(info) << setw(15) << GetName() << ": Finish, points " << fNofPoints
-              << ", signals: " << fNofSignals << ", digis: " << fNofDigis
-              << ". Exec time " << setprecision(6) << fTimer.RealTime()
-              << " s.";
-    LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData()
-              << " signals in readout buffer";
+    LOG(info) << setw(15) << GetName() << ": Finish, points " << fNofPoints << ", signals: " << fNofSignals
+              << ", digis: " << fNofDigis << ". Exec time " << setprecision(6) << fTimer.RealTime() << " s.";
+    LOG(info) << fName << ": " << CbmMuchReadoutBuffer::Instance()->GetNData() << " signals in readout buffer";
     fTimer.Stop();
     fNofPointsTot += fNofPoints;
     fNofSignalsTot += fNofSignals;
@@ -795,20 +755,16 @@ void CbmMuchDigitizeGem::Finish() {
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Events processed    : " << fNofEvents;
-  LOG(info) << "MuchPoint / event   : " << setprecision(1)
-            << fNofPointsTot / Double_t(fNofEvents);
-  LOG(info) << "MuchSignal / event  : "
-            << fNofSignalsTot / Double_t(fNofEvents);
+  LOG(info) << "MuchPoint / event   : " << setprecision(1) << fNofPointsTot / Double_t(fNofEvents);
+  LOG(info) << "MuchSignal / event  : " << fNofSignalsTot / Double_t(fNofEvents);
   //<< " / " << fNofSignalsBTot / Double_t(fNofEvents)
   LOG(info) << "MuchDigi / event    : " << fNofDigisTot / Double_t(fNofEvents);
-  LOG(info) << "Digis per point     : " << setprecision(6)
-            << fNofDigisTot / fNofPointsTot;
+  LOG(info) << "Digis per point     : " << setprecision(6) << fNofDigisTot / fNofPointsTot;
   LOG(info) << "Digis per signal    : " << fNofDigisTot / fNofSignalsTot;
   LOG(info) << "Noise digis / event : " << fNofNoiseTot / Double_t(fNofEvents);
   LOG(info) << "Noise fraction      : " << fNofNoiseTot / fNofDigisTot;
 
-  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fNofEvents)
-            << " s";
+  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fNofEvents) << " s";
   LOG(info) << "=====================================";
 
   /*
@@ -831,7 +787,8 @@ void CbmMuchDigitizeGem::Finish() {
 
 
 // ------- Private method ExecAdvanced -------------------------------------
-Bool_t CbmMuchDigitizeGem::ExecPoint(const CbmMuchPoint* point, Int_t iPoint) {
+Bool_t CbmMuchDigitizeGem::ExecPoint(const CbmMuchPoint* point, Int_t iPoint)
+{
 
   //std::cout<<" start execution "<<iPoint<<std::endl;
   TVector3 v1, v2, dv;
@@ -850,12 +807,11 @@ Bool_t CbmMuchDigitizeGem::ExecPoint(const CbmMuchPoint* point, Int_t iPoint) {
     TVector3 v      = 0.5 * (v1 + v2);
     CbmMuchPad* pad = 0;
     if (module->GetDetectorType() == 1) {
-      CbmMuchModuleGemRectangular* module1 =
-        (CbmMuchModuleGemRectangular*) module;
-      pad = module1->GetPad(v[0], v[1]);
+      CbmMuchModuleGemRectangular* module1 = (CbmMuchModuleGemRectangular*) module;
+      pad                                  = module1->GetPad(v[0], v[1]);
       if (pad) printf("x0=%f,y0=%f\n", pad->GetX(), pad->GetY());
-    } else if (module->GetDetectorType() == 3
-               || module->GetDetectorType() == 4) {
+    }
+    else if (module->GetDetectorType() == 3 || module->GetDetectorType() == 4) {
       CbmMuchModuleGemRadial* module3 = (CbmMuchModuleGemRadial*) module;
       pad                             = module3->GetPad(v[0], v[1]);
     }
@@ -865,8 +821,7 @@ Bool_t CbmMuchDigitizeGem::ExecPoint(const CbmMuchPoint* point, Int_t iPoint) {
   }
 
   // Start of advanced digitization
-  Int_t nElectrons =
-    Int_t(GetNPrimaryElectronsPerCm(point, detectortype) * dv.Mag());
+  Int_t nElectrons = Int_t(GetNPrimaryElectronsPerCm(point, detectortype) * dv.Mag());
   if (nElectrons < 0) return kFALSE;
   //cout<<" nElectrons "<<nElectrons<<endl;
   /*
@@ -882,8 +837,7 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
   Double_t time = point->GetTime();
 
   if (module->GetDetectorType() == 1) {
-    CbmMuchModuleGemRectangular* module1 =
-      (CbmMuchModuleGemRectangular*) module;
+    CbmMuchModuleGemRectangular* module1 = (CbmMuchModuleGemRectangular*) module;
     map<CbmMuchSector*, Int_t> firedSectors;
     for (Int_t i = 0; i < nElectrons; i++) {
       Double_t aL                              = gRandom->Rndm();
@@ -901,9 +855,7 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
       firedSectors[module1->GetSector(x1, y2)] = 0;
       firedSectors[module1->GetSector(x2, y1)] = 0;
       firedSectors[module1->GetSector(x2, y2)] = 0;
-      for (map<CbmMuchSector*, Int_t>::iterator it = firedSectors.begin();
-           it != firedSectors.end();
-           it++) {
+      for (map<CbmMuchSector*, Int_t>::iterator it = firedSectors.begin(); it != firedSectors.end(); it++) {
         CbmMuchSector* sector = (*it).first;
         if (!sector) continue;
         for (Int_t iPad = 0; iPad < sector->GetNChannels(); iPad++) {
@@ -931,21 +883,17 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
     fAddressCharge.clear();
     CbmMuchModuleGemRadial* module3 = (CbmMuchModuleGemRadial*) module;
     if (!module3) {
-      LOG(debug) << GetName() << ": Not Processing MCPoint " << iPoint
-                 << " because it is not on any GEM module.";
+      LOG(debug) << GetName() << ": Not Processing MCPoint " << iPoint << " because it is not on any GEM module.";
       return 1;
     }
-    CbmMuchSectorRadial* sFirst =
-      (CbmMuchSectorRadial*) module3->GetSectorByIndex(0);  //First sector
+    CbmMuchSectorRadial* sFirst = (CbmMuchSectorRadial*) module3->GetSectorByIndex(0);  //First sector
     if (!sFirst) {
-      LOG(debug) << GetName() << ": Not Processing MCPoint " << iPoint
-                 << " because it is on the module " << module3
+      LOG(debug) << GetName() << ": Not Processing MCPoint " << iPoint << " because it is on the module " << module3
                  << "  but not the first sector. " << sFirst;
       return 1;
     }
     CbmMuchSectorRadial* sLast =
-      (CbmMuchSectorRadial*) module3->GetSectorByIndex(module3->GetNSectors()
-                                                       - 1);  //Last sector
+      (CbmMuchSectorRadial*) module3->GetSectorByIndex(module3->GetNSectors() - 1);  //Last sector
 
     if (!sLast) {
       LOG(debug) << GetName() << ": Not Processing MCPoint " << iPoint
@@ -962,16 +910,14 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
     Double_t driftTime = -1;
     while (driftTime < 0) {
 
-      Double_t aL = gRandom->Gaus(
-        0.5, 0.133);  //Generting random number for calculating Drift Time.
+      Double_t aL = gRandom->Gaus(0.5, 0.133);  //Generting random number for calculating Drift Time.
       // cout<<"Det Type "<<detectortype<<"fTotalDriftTime "<<fTotalDriftTime<<endl;
       driftTime = (1 - aL) * fTotalDriftTime;
     }
 
-    for (Int_t i = 0; i < nElectrons;
-         i++) {  //Looping over all the primary electrons
+    for (Int_t i = 0; i < nElectrons; i++) {  //Looping over all the primary electrons
       Double_t RandomNumberForPrimaryElectronPosition = gRandom->Rndm();
-      TVector3 ve = v1 + dv * RandomNumberForPrimaryElectronPosition;
+      TVector3 ve                                     = v1 + dv * RandomNumberForPrimaryElectronPosition;
 
       //------------------------Added by O. Singh 11.12.2017 for mCbm-------------------------
       Double_t r = 0.0, phi = 0.0;
@@ -982,10 +928,8 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
         Double_t ZZ = ve.Z();
 
         //Transfotamation of MuChpoints to pads position
-        Double_t tX =
-          18.5;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
-        Double_t tY =
-          80.0;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
+        Double_t tX  = 18.5;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
+        Double_t tY  = 80.0;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
         Double_t nXX = XX - tX;
         Double_t nYY = YY - tY;
 
@@ -996,7 +940,8 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
         nVe.SetZ(nZZ);
         r   = nVe.Perp();
         phi = nVe.Phi();
-      } else {  //Cbm
+      }
+      else {  //Cbm
 
         r   = ve.Perp();
         phi = ve.Phi();
@@ -1008,33 +953,17 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
       Double_t phi1 = phi - fSpotRadius / r;
       Double_t phi2 = phi + fSpotRadius / r;
       // cout<<" fSpotRadius "<<fSpotRadius<<endl;
-      if (r1 < rMin
-          && r2 > rMin) {  //Adding charge to the pad which is on Lower Boundary
-        Status = AddCharge(sFirst,
-                           UInt_t(ne * (r2 - rMin) / (r2 - r1)),
-                           iPoint,
-                           time,
-                           driftTime,
-                           phi1,
-                           phi2);
+      if (r1 < rMin && r2 > rMin) {  //Adding charge to the pad which is on Lower Boundary
+        Status = AddCharge(sFirst, UInt_t(ne * (r2 - rMin) / (r2 - r1)), iPoint, time, driftTime, phi1, phi2);
         if (!Status)
-          LOG(debug) << GetName() << ": Processing MCPoint " << iPoint
-                     << " in which Primary Electron : " << i
+          LOG(debug) << GetName() << ": Processing MCPoint " << iPoint << " in which Primary Electron : " << i
                      << " not contributed charge. ";
         continue;
       }
-      if (r1 < rMax
-          && r2 > rMax) {  //Adding charge to the pad which is on Upper Boundary
-        Status = AddCharge(sLast,
-                           UInt_t(ne * (rMax - r1) / (r2 - r1)),
-                           iPoint,
-                           time,
-                           driftTime,
-                           phi1,
-                           phi2);
+      if (r1 < rMax && r2 > rMax) {  //Adding charge to the pad which is on Upper Boundary
+        Status = AddCharge(sLast, UInt_t(ne * (rMax - r1) / (r2 - r1)), iPoint, time, driftTime, phi1, phi2);
         if (!Status)
-          LOG(debug) << GetName() << ": Processing MCPoint " << iPoint
-                     << " in which Primary Electron : " << i
+          LOG(debug) << GetName() << ": Processing MCPoint " << iPoint << " in which Primary Electron : " << i
                      << " not contributed charge. ";
         continue;
       }
@@ -1048,42 +977,26 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
       if (s1 == s2) {
         Status = AddCharge(s1, ne, iPoint, time, driftTime, phi1, phi2);
         if (!Status)
-          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint
-                      << " in which Primary Electron : " << i
+          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint << " in which Primary Electron : " << i
                       << " not contributed charge. ";
-      } else {  //Adding praportionate charge to both the pad
-        Status = AddCharge(s1,
-                           UInt_t(ne * (s1->GetR2() - r1) / (r2 - r1)),
-                           iPoint,
-                           time,
-                           driftTime,
-                           phi1,
-                           phi2);
+      }
+      else {  //Adding praportionate charge to both the pad
+        Status = AddCharge(s1, UInt_t(ne * (s1->GetR2() - r1) / (r2 - r1)), iPoint, time, driftTime, phi1, phi2);
         if (!Status)
-          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint
-                      << " in which Primary Electron : " << i
+          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint << " in which Primary Electron : " << i
                       << " not contributed charge. ";
-        Status = AddCharge(s2,
-                           UInt_t(ne * (r2 - s2->GetR1()) / (r2 - r1)),
-                           iPoint,
-                           time,
-                           driftTime,
-                           phi1,
-                           phi2);
+        Status = AddCharge(s2, UInt_t(ne * (r2 - s2->GetR1()) / (r2 - r1)), iPoint, time, driftTime, phi1, phi2);
         if (!Status)
-          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint
-                      << " in which Primary Electron : " << i
+          LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint << " in which Primary Electron : " << i
                       << " not contributed charge. ";
       }
     }
 
     //Generate CbmMuchSignal for each entry of fAddressCharge and store in the CbmMuchReadoutBuffer
     if (!BufferSignals(iPoint, time, driftTime))
-      LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint
-                  << " nothing is buffered. ";
+      LOG(debug3) << GetName() << ": Processing MCPoint " << iPoint << " nothing is buffered. ";
     fAddressCharge.clear();
-    LOG(debug1) << GetName() << ": fAddressCharge size is "
-                << fAddressCharge.size() << " Cleared fAddressCharge. ";
+    LOG(debug1) << GetName() << ": fAddressCharge size is " << fAddressCharge.size() << " Cleared fAddressCharge. ";
   }
   // std::cout<<" Execution completed for point # "<<iPoint<<std::endl;
   return kTRUE;
@@ -1091,7 +1004,8 @@ hPriElAfterDriftpathrpc->Fill(nElectrons);}
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Int_t CbmMuchDigitizeGem::GasGain() {
+Int_t CbmMuchDigitizeGem::GasGain()
+{
   //cout<<" mean gain "<<fMeanGasGain<<endl;
   Double_t gasGain = -fMeanGasGain * TMath::Log(1 - gRandom->Rndm());
   if (gasGain < 0.) gasGain = 1e6;
@@ -1100,19 +1014,22 @@ Int_t CbmMuchDigitizeGem::GasGain() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchDigitizeGem::Sigma_n_e(Double_t Tkin, Double_t mass) {
+Double_t CbmMuchDigitizeGem::Sigma_n_e(Double_t Tkin, Double_t mass)
+{
   Double_t logT;
   if (mass < 0.1) {
     logT = log(Tkin * 0.511 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_e) logT = min_logT_e;
     return fSigma[0]->Eval(logT);
-  } else if (mass >= 0.1 && mass < 0.2) {
+  }
+  else if (mass >= 0.1 && mass < 0.2) {
     logT = log(Tkin * 105.658 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_mu) logT = min_logT_mu;
     return fSigma[1]->Eval(logT);
-  } else {
+  }
+  else {
     logT = log(Tkin * 938.272 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_p) logT = min_logT_p;
@@ -1122,19 +1039,22 @@ Double_t CbmMuchDigitizeGem::Sigma_n_e(Double_t Tkin, Double_t mass) {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchDigitizeGem::MPV_n_e(Double_t Tkin, Double_t mass) {
+Double_t CbmMuchDigitizeGem::MPV_n_e(Double_t Tkin, Double_t mass)
+{
   Double_t logT;
   if (mass < 0.1) {
     logT = log(Tkin * 0.511 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_e) logT = min_logT_e;
     return fMPV[0]->Eval(logT);
-  } else if (mass >= 0.1 && mass < 0.2) {
+  }
+  else if (mass >= 0.1 && mass < 0.2) {
     logT = log(Tkin * 105.658 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_mu) logT = min_logT_mu;
     return fMPV[1]->Eval(logT);
-  } else {
+  }
+  else {
     logT = log(Tkin * 938.272 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_p) logT = min_logT_p;
@@ -1145,9 +1065,8 @@ Double_t CbmMuchDigitizeGem::MPV_n_e(Double_t Tkin, Double_t mass) {
 
 
 // -------------------------------------------------------------------------
-Double_t
-CbmMuchDigitizeGem::GetNPrimaryElectronsPerCm(const CbmMuchPoint* point,
-                                              int detectortype) {
+Double_t CbmMuchDigitizeGem::GetNPrimaryElectronsPerCm(const CbmMuchPoint* point, int detectortype)
+{
   Int_t trackId = point->GetTrackID();
   //  Int_t eventId = point->GetEventID();
   if (trackId < 0) return -1;
@@ -1168,11 +1087,9 @@ CbmMuchDigitizeGem::GetNPrimaryElectronsPerCm(const CbmMuchPoint* point,
   Double_t m = particle->Mass();
   TLorentzVector p;
   p.SetXYZM(point->GetPx(), point->GetPy(), point->GetPz(), m);
-  Double_t Tkin = p.E() - m;  // kinetic energy of the particle
-  Double_t sigma =
-    CbmMuchDigitizeGem::Sigma_n_e(Tkin, m);  // sigma for Landau distribution
-  Double_t mpv = CbmMuchDigitizeGem::MPV_n_e(
-    Tkin, m);  // most probable value for Landau distr.
+  Double_t Tkin  = p.E() - m;                               // kinetic energy of the particle
+  Double_t sigma = CbmMuchDigitizeGem::Sigma_n_e(Tkin, m);  // sigma for Landau distribution
+  Double_t mpv   = CbmMuchDigitizeGem::MPV_n_e(Tkin, m);    // most probable value for Landau distr.
   Double_t n;
   Double_t mpvRpc =
     50.0;  // For RPC MPV and sigma is taken to produce final landau in accordance with experimental value
@@ -1182,16 +1099,14 @@ CbmMuchDigitizeGem::GetNPrimaryElectronsPerCm(const CbmMuchPoint* point,
   {
     n = gRandom->Landau(mpv, sigma);
     while (n > 5e4)
-      n = gRandom->Landau(
-        mpv, sigma);  // restrict Landau tail to increase performance
+      n = gRandom->Landau(mpv, sigma);  // restrict Landau tail to increase performance
     return m < 0.1 ? n / l_e : n / l_not_e;
   }
   if (detectortype == 4)  /// RPC
   {
     n = gRandom->Landau(mpvRpc, sigmaRpc);
     while (n > 5e4)
-      n = gRandom->Landau(
-        mpvRpc, sigmaRpc);  // restrict Landau tail to increase performance
+      n = gRandom->Landau(mpvRpc, sigmaRpc);  // restrict Landau tail to increase performance
     return n;
   }
   // for all other cases will return -1.
@@ -1199,13 +1114,9 @@ CbmMuchDigitizeGem::GetNPrimaryElectronsPerCm(const CbmMuchPoint* point,
 }
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
-Bool_t CbmMuchDigitizeGem::AddCharge(CbmMuchSectorRadial* s,
-                                     UInt_t ne,
-                                     Int_t /*iPoint*/,
-                                     Double_t /*time*/,
-                                     Double_t /*driftTime*/,
-                                     Double_t phi1,
-                                     Double_t phi2) {
+Bool_t CbmMuchDigitizeGem::AddCharge(CbmMuchSectorRadial* s, UInt_t ne, Int_t /*iPoint*/, Double_t /*time*/,
+                                     Double_t /*driftTime*/, Double_t phi1, Double_t phi2)
+{
   CbmMuchPadRadial* pad1 = s->GetPadByPhi(phi1);
   if (!pad1) return kFALSE;
   //assert(pad1); has to check if any pad address is NULL
@@ -1216,20 +1127,19 @@ Bool_t CbmMuchDigitizeGem::AddCharge(CbmMuchSectorRadial* s,
     UInt_t address = pad1->GetAddress();
     //Finding that if for the same address if already charge stored then add the charge.
     std::map<UInt_t, UInt_t>::iterator it = fAddressCharge.find(address);
-    if (it != fAddressCharge.end())
-      it->second = it->second + ne;
+    if (it != fAddressCharge.end()) it->second = it->second + ne;
     else
       fAddressCharge.insert(std::pair<UInt_t, UInt_t>(address, ne));
     //    AddChargePerMC(pad1,ne,iPoint,time,driftTime);
-  } else {
+  }
+  else {
     Double_t phi   = pad1 ? pad1->GetPhi2() : pad2 ? pad2->GetPhi1() : 0;
     UInt_t pad1_ne = UInt_t(ne * (phi - phi1) / (phi2 - phi1));
 
     UInt_t address = pad1->GetAddress();
     //Finding that if for the same address if already charge stored then add the charge.
     std::map<UInt_t, UInt_t>::iterator it = fAddressCharge.find(address);
-    if (it != fAddressCharge.end())
-      it->second = it->second + pad1_ne;
+    if (it != fAddressCharge.end()) it->second = it->second + pad1_ne;
     else
       fAddressCharge.insert(std::pair<UInt_t, UInt_t>(address, pad1_ne));
     //    AddChargePerMC(pad1,pad1_ne   ,iPoint,time,driftTime);
@@ -1239,8 +1149,7 @@ Bool_t CbmMuchDigitizeGem::AddCharge(CbmMuchSectorRadial* s,
     address = pad2->GetAddress();
     //Finding that if for the same address if already charge stored then add the charge.
     it = fAddressCharge.find(address);
-    if (it != fAddressCharge.end())
-      it->second = it->second + ne - pad1_ne;
+    if (it != fAddressCharge.end()) it->second = it->second + ne - pad1_ne;
     else
       fAddressCharge.insert(std::pair<UInt_t, UInt_t>(address, ne - pad1_ne));
     // AddChargePerMC(pad2,ne-pad1_ne,iPoint,time,driftTime);
@@ -1252,11 +1161,8 @@ Bool_t CbmMuchDigitizeGem::AddCharge(CbmMuchSectorRadial* s,
 
 // -------------------------------------------------------------------------
 //Will remove this AddCharge, only used for simple and Rectangular Geometry.
-void CbmMuchDigitizeGem::AddCharge(CbmMuchPad* pad,
-                                   UInt_t charge,
-                                   Int_t iPoint,
-                                   Double_t time,
-                                   Double_t driftTime) {
+void CbmMuchDigitizeGem::AddCharge(CbmMuchPad* pad, UInt_t charge, Int_t iPoint, Double_t time, Double_t driftTime)
+{
   if (!pad) return;
 
   Long_t AbsTime = fCurrentEventTime + time + driftTime;
@@ -1284,21 +1190,17 @@ void CbmMuchDigitizeGem::AddCharge(CbmMuchPad* pad,
 
 
 //----------------------------------------------------------
-Bool_t CbmMuchDigitizeGem::BufferSignals(Int_t iPoint,
-                                         Double_t time,
-                                         Double_t driftTime) {
+Bool_t CbmMuchDigitizeGem::BufferSignals(Int_t iPoint, Double_t time, Double_t driftTime)
+{
 
   if (!fAddressCharge.size()) {
-    LOG(debug2) << "Buffering MC Point " << iPoint
-                << " but fAddressCharge size is " << fAddressCharge.size()
+    LOG(debug2) << "Buffering MC Point " << iPoint << " but fAddressCharge size is " << fAddressCharge.size()
                 << "so nothing to Buffer for this MCPoint.";
     return kFALSE;
   }
   UInt_t AbsTime = fCurrentEventTime + time + driftTime;
-  LOG(debug2) << GetName() << ": Processing event " << fCurrentEvent
-              << " from input " << fCurrentInput
-              << " at t = " << fCurrentEventTime << " ns with "
-              << fPoints->GetEntriesFast() << " MuchPoints "
+  LOG(debug2) << GetName() << ": Processing event " << fCurrentEvent << " from input " << fCurrentInput
+              << " at t = " << fCurrentEventTime << " ns with " << fPoints->GetEntriesFast() << " MuchPoints "
               << " and Number of pad hit is " << fAddressCharge.size() << ".";
   //Loop on the fAddressCharge to store all the Signals into the CbmReadoutBuffer()
   //Generate one by one CbmMuchSignal from the fAddressCharge and store them into the CbmMuchReadoutBuffer.
@@ -1317,12 +1219,10 @@ Bool_t CbmMuchDigitizeGem::BufferSignals(Int_t iPoint,
     CbmMuchReadoutBuffer::Instance()->Fill(address, signal);
     //Increasing number of signal by one.
     fNofSignals++;
-    LOG(debug3)
-      << " Registered the CbmMuchSignal into the CbmMuchReadoutBuffer ";
+    LOG(debug3) << " Registered the CbmMuchSignal into the CbmMuchReadoutBuffer ";
   }
 
-  LOG(debug2) << GetName() << ": For MC Point " << iPoint << " buffered "
-              << fAddressCharge.size()
+  LOG(debug2) << GetName() << ": For MC Point " << iPoint << " buffered " << fAddressCharge.size()
               << " CbmMuchSignal into the CbmReadoutBuffer.";
   return kTRUE;
 }  //end of BufferSignals

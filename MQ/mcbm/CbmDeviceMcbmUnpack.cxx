@@ -6,24 +6,22 @@
  */
 
 #include "CbmDeviceMcbmUnpack.h"
-#include "CbmMQDefs.h"
 
 #include "CbmFlesCanvasTools.h"
+#include "CbmMQDefs.h"
 #include "CbmMcbm2018UnpackerAlgoMuch.h"
 #include "CbmMcbm2018UnpackerAlgoPsd.h"
 #include "CbmMcbm2018UnpackerAlgoRich.h"
 #include "CbmMcbm2018UnpackerAlgoSts.h"
 #include "CbmMcbm2018UnpackerAlgoTof.h"
 #include "CbmMcbm2018UnpackerAlgoTrdR.h"
-#include "TimesliceMetaData.h"
 
 #include "StorableTimeslice.hpp"
+#include "TimesliceMetaData.h"
 
-#include "BoostSerializer.h"
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
 #include "FairParGenericSet.h"
-#include "RootSerializer.h"
 
 #include "TCanvas.h"
 #include "TFile.h"
@@ -31,14 +29,16 @@
 #include "TList.h"
 #include "TNamed.h"
 
-#include <array>
-#include <iomanip>
-#include <string>
-
+#include "BoostSerializer.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
 
+#include <array>
+#include <iomanip>
 #include <stdexcept>
+#include <string>
+
+#include "RootSerializer.h"
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -47,7 +47,8 @@ using namespace std;
 
 Bool_t bMcbm2018MonitorTaskT0ResetHistos = kFALSE;
 
-CbmDeviceMcbmUnpack::CbmDeviceMcbmUnpack() {
+CbmDeviceMcbmUnpack::CbmDeviceMcbmUnpack()
+{
   fUnpAlgoSts  = new CbmMcbm2018UnpackerAlgoSts();
   fUnpAlgoMuch = new CbmMcbm2018UnpackerAlgoMuch();
   fUnpAlgoTrd  = new CbmMcbm2018UnpackerAlgoTrdR();
@@ -56,11 +57,12 @@ CbmDeviceMcbmUnpack::CbmDeviceMcbmUnpack() {
   fUnpAlgoPsd  = new CbmMcbm2018UnpackerAlgoPsd();
 }
 
-void CbmDeviceMcbmUnpack::InitTask() try {
+void CbmDeviceMcbmUnpack::InitTask()
+try {
   /// Read options from executable
   LOG(info) << "Init options for CbmDeviceMcbmUnpack.";
-  fbIgnoreOverlapMs = fConfig->GetValue<bool>("IgnOverMs");
-  fvsSetTimeOffs    = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
+  fbIgnoreOverlapMs       = fConfig->GetValue<bool>("IgnOverMs");
+  fvsSetTimeOffs          = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
   fsChannelNameDataInput  = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameDataOutput = fConfig->GetValue<std::string>("TsNameOut");
   /// TODO: option to set fuDigiMaskedIdT0 !!!!
@@ -81,40 +83,38 @@ void CbmDeviceMcbmUnpack::InitTask() try {
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
     if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
-      if (!IsChannelNameAllowed(entry.first))
-        throw InitTaskError("Channel name does not match.");
+      if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
       OnData(entry.first, &CbmDeviceMcbmUnpack::HandleData);
     }  // if( entry.first.find( "ts" )
   }    // for( auto const &entry : fChannels )
   InitContainers();
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceMcbmUnpack::IsChannelNameAllowed(std::string channelName) {
+bool CbmDeviceMcbmUnpack::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fsAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
     if (pos1 != std::string::npos) {
       const vector<std::string>::const_iterator pos =
         std::find(fsAllowedChannels.begin(), fsAllowedChannels.end(), entry);
-      const vector<std::string>::size_type idx =
-        pos - fsAllowedChannels.begin();
+      const vector<std::string>::size_type idx = pos - fsAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       return true;
     }  // if (pos1!=std::string::npos)
   }    // for(auto const &entry : fsAllowedChannels)
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
 }
 
-Bool_t CbmDeviceMcbmUnpack::InitContainers() {
+Bool_t CbmDeviceMcbmUnpack::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmDeviceMcbmUnpack.";
 
   if (kFALSE == InitParameters(fUnpAlgoSts->GetParList())) return kFALSE;
@@ -133,16 +133,13 @@ Bool_t CbmDeviceMcbmUnpack::InitContainers() {
   fUnpAlgoPsd->SetIgnoreOverlapMs(fbIgnoreOverlapMs);
 
   /// Load time offsets
-  for (std::vector<std::string>::iterator itStrOffs = fvsSetTimeOffs.begin();
-       itStrOffs != fvsSetTimeOffs.end();
+  for (std::vector<std::string>::iterator itStrOffs = fvsSetTimeOffs.begin(); itStrOffs != fvsSetTimeOffs.end();
        ++itStrOffs) {
     size_t charPosDel = (*itStrOffs).find(',');
     if (std::string::npos == charPosDel) {
-      LOG(info)
-        << "CbmDeviceMcbmUnpack::InitContainers => "
-        << "Trying to set trigger window with invalid option pattern, ignored! "
-        << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found "
-        << (*itStrOffs) << " )";
+      LOG(info) << "CbmDeviceMcbmUnpack::InitContainers => "
+                << "Trying to set trigger window with invalid option pattern, ignored! "
+                << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found " << (*itStrOffs) << " )";
     }  // if( std::string::npos == charPosDel )
 
     /// Detector Enum Tag
@@ -151,9 +148,7 @@ Bool_t CbmDeviceMcbmUnpack::InitContainers() {
     charPosDel++;
     Double_t dOffset = std::stod((*itStrOffs).substr(charPosDel));
 
-    if ("kSTS" == sSelDet) {
-      fUnpAlgoSts->SetTimeOffsetNs(dOffset);
-    }  // if( "kSTS"  == sSelDet )
+    if ("kSTS" == sSelDet) { fUnpAlgoSts->SetTimeOffsetNs(dOffset); }  // if( "kSTS"  == sSelDet )
     else if ("kMUCH" == sSelDet) {
       fUnpAlgoMuch->SetTimeOffsetNs(dOffset);
     }  // else if( "kMUCH" == sSelDet )
@@ -199,7 +194,8 @@ Bool_t CbmDeviceMcbmUnpack::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmDeviceMcbmUnpack::InitParameters(TList* fParCList) {
+Bool_t CbmDeviceMcbmUnpack::InitParameters(TList* fParCList)
+{
   for (int iparC = 0; iparC < fParCList->GetEntries(); iparC++) {
     FairParGenericSet* tempObj = (FairParGenericSet*) (fParCList->At(iparC));
     fParCList->Remove(tempObj);
@@ -209,8 +205,7 @@ Bool_t CbmDeviceMcbmUnpack::InitParameters(TList* fParCList) {
 
     // Her must come the proper Runid
     std::string message = paramName + ",111";
-    LOG(info) << "Requesting parameter container " << paramName
-              << ", sending message: " << message;
+    LOG(info) << "Requesting parameter container " << paramName << ", sending message: " << message;
 
     FairMQMessagePtr req(NewSimpleMessage(message));
     FairMQMessagePtr rep(NewMessage());
@@ -221,8 +216,7 @@ Bool_t CbmDeviceMcbmUnpack::InitParameters(TList* fParCList) {
       if (Receive(rep, "parameters") >= 0) {
         if (0 != rep->GetSize()) {
           CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
-          newObj =
-            static_cast<FairParGenericSet*>(tmsg.ReadObject(tmsg.GetClass()));
+          newObj = static_cast<FairParGenericSet*>(tmsg.ReadObject(tmsg.GetClass()));
           LOG(info) << "Received unpack parameter from the server:";
           newObj->print();
         }  // if( 0 !=  rep->GetSize() )
@@ -240,13 +234,12 @@ Bool_t CbmDeviceMcbmUnpack::InitParameters(TList* fParCList) {
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceMcbmUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/) {
+bool CbmDeviceMcbmUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/)
+{
   fulNumMessages++;
-  LOG(debug) << "Received message number " << fulNumMessages << " with size "
-             << msg->GetSize();
+  LOG(debug) << "Received message number " << fulNumMessages << " with size " << msg->GetSize();
 
-  if (0 == fulNumMessages % 10000)
-    LOG(info) << "Received " << fulNumMessages << " messages";
+  if (0 == fulNumMessages % 10000) LOG(info) << "Received " << fulNumMessages << " messages";
 
   std::string msgStr(static_cast<char*>(msg->GetData()), msg->GetSize());
   std::istringstream iss(msgStr);
@@ -263,14 +256,12 @@ bool CbmDeviceMcbmUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/) {
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsOverSizeInNs = fdMsSizeInNs * (fuNbOverMsPerTs);
     fdTsFullSizeInNs = fdTsCoreSizeInNs + fdTsOverSizeInNs;
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
   }  // if( -1.0 == fdTsCoreSizeInNs )
 
-  fTsMetaData = new TimesliceMetaData(
-    ts.descriptor(0, 0).idx, fdTsCoreSizeInNs, fdTsOverSizeInNs, ts.index());
+  fTsMetaData = new TimesliceMetaData(ts.descriptor(0, 0).idx, fdTsCoreSizeInNs, fdTsOverSizeInNs, ts.index());
 
   /// Process the Timeslice
   DoUnpack(ts, 0);
@@ -299,7 +290,8 @@ bool CbmDeviceMcbmUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/) {
   return true;
 }
 
-bool CbmDeviceMcbmUnpack::SendUnpData() {
+bool CbmDeviceMcbmUnpack::SendUnpData()
+{
 
   /// Prepare serialized versions of the TS Meta
   /*
@@ -425,7 +417,8 @@ bool CbmDeviceMcbmUnpack::SendUnpData() {
 }
 
 
-CbmDeviceMcbmUnpack::~CbmDeviceMcbmUnpack() {
+CbmDeviceMcbmUnpack::~CbmDeviceMcbmUnpack()
+{
   if (nullptr != fUnpAlgoSts) delete fUnpAlgoSts;
   if (nullptr != fUnpAlgoMuch) delete fUnpAlgoMuch;
   if (nullptr != fUnpAlgoTrd) delete fUnpAlgoTrd;
@@ -435,8 +428,8 @@ CbmDeviceMcbmUnpack::~CbmDeviceMcbmUnpack() {
 }
 
 
-Bool_t CbmDeviceMcbmUnpack::DoUnpack(const fles::Timeslice& ts,
-                                     size_t /*component*/) {
+Bool_t CbmDeviceMcbmUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   fulTsCounter++;
 
   if (kFALSE == fbComponentsAddedToList) {
@@ -477,44 +470,37 @@ Bool_t CbmDeviceMcbmUnpack::DoUnpack(const fles::Timeslice& ts,
   }  // if( kFALSE == fbComponentsAddedToList )
 
   if (kFALSE == fUnpAlgoSts->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in STS unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in STS unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoSts->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoMuch->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in MUCH unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in MUCH unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoMuch->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoTrd->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in TRD unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in TRD unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoTrd->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoTof->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in TOF unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in TOF unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoTof->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoRich->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in RICH unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in RICH unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoRich->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoPsd->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in PSD unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in PSD unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpAlgoPsd->ProcessTs( ts ) )
 
 
-  if (0 == fulTsCounter % 10000)
-    LOG(info) << "Processed " << fulTsCounter << " time slices";
+  if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << " time slices";
 
   return kTRUE;
 }

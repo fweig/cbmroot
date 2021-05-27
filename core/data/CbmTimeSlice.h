@@ -6,15 +6,15 @@
 #ifndef CBMTIMESLICE_H
 #define CBMTIMESLICE_H 1
 
+#include "CbmDefs.h"   // for ECbmModuleId
+#include "CbmMatch.h"  // for CbmMatch
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, kFALSE
 #include <TNamed.h>      // for TNamed
 
 #include <map>     // for map
 #include <string>  // for string
-
-#include "CbmDefs.h"   // for ECbmModuleId
-#include "CbmMatch.h"  // for CbmMatch
 
 // boost
 #include <boost/serialization/access.hpp>
@@ -30,7 +30,8 @@ class CbmTimeSlice : public TNamed {
 
 public:
   /** @brief Time-slice type enumerator **/
-  enum EType {
+  enum EType
+  {
     kRegular  = 0,  /// Regular time slice with fixed-size time interval
     kFlexible = 1,  /// Flexible time slice; no fixed time limits
     kEvent    = 2   /// Time slice representing one event; no fixed time limits
@@ -60,7 +61,8 @@ public:
      **
      ** The respective counter will be incremented.
      **/
-  void AddData(ECbmModuleId detector) {
+  void AddData(ECbmModuleId detector)
+  {
     fNofData[detector]++;
     fIsEmpty = kFALSE;
   }
@@ -176,8 +178,7 @@ public:
      ** Time of first and last data are updated.
      ** The match objects of the time slice is updated.
      **/
-  Bool_t
-  RegisterData(ECbmModuleId system, Double_t time, const CbmMatch& match);
+  Bool_t RegisterData(ECbmModuleId system, Double_t time, const CbmMatch& match);
 
 
   /** @brief Reset the time slice
@@ -208,7 +209,8 @@ public:
 
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fLength;
     ar& fIsEmpty;
   }

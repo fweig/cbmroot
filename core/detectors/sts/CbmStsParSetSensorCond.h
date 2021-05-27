@@ -7,15 +7,15 @@
 #ifndef CBMSTSPARSETSENSORCOND_H
 #define CBMSTSPARSETSENSORCOND_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, UInt_t, Bool_t, kFALSE
+#include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, UInt_t, Bool_t, kFALSE
+
 #include <map>     // for map
 #include <string>  // for string
-
-#include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
 
 class FairParamList;
 
@@ -35,8 +35,7 @@ public:
      ** @param title Parameter container factory name
      ** @param context  No idea
      **/
-  CbmStsParSetSensorCond(const char* name    = "CbmStsParSetSensorCond",
-                         const char* title   = "STS parameters",
+  CbmStsParSetSensorCond(const char* name = "CbmStsParSetSensorCond", const char* title = "STS parameters",
                          const char* context = "Default");
 
 
@@ -116,11 +115,7 @@ public:
      ** @param cCoupling   Coupling capacitance [pF]
      ** @param cInterstrip Inter-strip capacitance [pF]
      **/
-  void SetGlobalPar(Double_t vDep,
-                    Double_t vBias,
-                    Double_t temperature,
-                    Double_t cCoupling,
-                    Double_t cInterstrip);
+  void SetGlobalPar(Double_t vDep, Double_t vBias, Double_t temperature, Double_t cCoupling, Double_t cInterstrip);
 
 
   /** @brief Set global conditions (for all sensors)

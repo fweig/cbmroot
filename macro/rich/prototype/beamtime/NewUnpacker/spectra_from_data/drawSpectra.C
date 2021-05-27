@@ -1,6 +1,7 @@
 #define NUMOFLINES 46
 
-void drawSpectra(const char* filename) {
+void drawSpectra(const char* filename)
+{
   // Read the table from the file
   std::ifstream ifs;
   ifs.open(filename, std::ifstream::in);
@@ -8,9 +9,8 @@ void drawSpectra(const char* filename) {
   Double_t dr[NUMOFLINES][16];  // data rate for each channel
 
   for (int i = 0; i < NUMOFLINES; i++) {
-    ifs >> dr[i][0] >> dr[i][1] >> dr[i][2] >> dr[i][3] >> dr[i][4] >> dr[i][5]
-      >> dr[i][6] >> dr[i][7] >> dr[i][8] >> dr[i][9] >> dr[i][10] >> dr[i][11]
-      >> dr[i][12] >> dr[i][13] >> dr[i][14] >> dr[i][15];
+    ifs >> dr[i][0] >> dr[i][1] >> dr[i][2] >> dr[i][3] >> dr[i][4] >> dr[i][5] >> dr[i][6] >> dr[i][7] >> dr[i][8]
+      >> dr[i][9] >> dr[i][10] >> dr[i][11] >> dr[i][12] >> dr[i][13] >> dr[i][14] >> dr[i][15];
   }
   /*
 	for (int i=0; i<NUMOFLINES; i++) {

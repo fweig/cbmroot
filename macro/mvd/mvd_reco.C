@@ -12,7 +12,8 @@
 // --------------------------------------------------------------------------
 
 
-void mvd_reco(Int_t nEvents = 100, TString setup = "sis100_electron") {
+void mvd_reco(Int_t nEvents = 100, TString setup = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -99,8 +100,7 @@ void mvd_reco(Int_t nEvents = 100, TString setup = "sis100_electron") {
 
 
   // -----   MVD Clusterfinder   ---------------------------------------------
-  CbmMvdClusterfinder* mvdCluster =
-    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   fRun->AddTask(mvdCluster);
   // -------------------------------------------------------------------------
 

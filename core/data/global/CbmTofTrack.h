@@ -6,12 +6,12 @@
 #ifndef CBMTOFTRACK_H
 #define CBMTOFTRACK_H 1
 
+#include <FairTrackParam.h>  // for FairTrackParam
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Float_t, Double32_t
 #include <TMath.h>       // for Sqrt
 #include <TObject.h>     // for TObject
-
-#include <FairTrackParam.h>  // for FairTrackParam
 
 /** @class CbmTofTrack
  ** @brief Provides information on attaching a TofHit to a GlobalTrack
@@ -32,11 +32,7 @@ public:
 	 ** @param pidHypo      PID hypothesis for track extrapolation
 	 **/
 
-  CbmTofTrack(Int_t trackIndex,
-              Int_t hitIndex,
-              Double_t trackLength,
-              Float_t mass,
-              const FairTrackParam& trackPar,
+  CbmTofTrack(Int_t trackIndex, Int_t hitIndex, Double_t trackLength, Float_t mass, const FairTrackParam& trackPar,
               Int_t pidHypo)
     : TObject()
     , fGlbTrack(trackIndex)
@@ -45,7 +41,9 @@ public:
     , fTrackPar(trackPar)
     , fPidHypo(pidHypo)
     , fMass(mass)
-    , fDistance(0.) {}
+    , fDistance(0.)
+  {
+  }
 
 
   /**   Destructor   **/
@@ -61,14 +59,10 @@ public:
   Int_t GetTofHitIndex() const { return fTofHit; }
 
   /**  Error of track x coordinate at TOF  **/
-  Double_t GetTrackDx() const {
-    return TMath::Sqrt(fTrackPar.GetCovariance(1, 1));
-  }
+  Double_t GetTrackDx() const { return TMath::Sqrt(fTrackPar.GetCovariance(1, 1)); }
 
   /**  Error of track x coordinate at TOF  **/
-  Double_t GetTrackDy() const {
-    return TMath::Sqrt(fTrackPar.GetCovariance(2, 2));
-  }
+  Double_t GetTrackDy() const { return TMath::Sqrt(fTrackPar.GetCovariance(2, 2)); }
 
   /**  Index of global track **/
   Int_t GetTrackIndex() const { return fGlbTrack; }

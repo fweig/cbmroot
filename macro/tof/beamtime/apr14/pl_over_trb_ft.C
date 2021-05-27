@@ -1,4 +1,5 @@
-void pl_over_trb_ft(Int_t iBoard = 0) {
+void pl_over_trb_ft(Int_t iBoard = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -21,9 +22,8 @@ void pl_over_trb_ft(Int_t iBoard = 0) {
     gROOT->cd();
     TString hname = Form("tof_trb_ft_b%03d_ch%03d", iBoard, iCh);
     h1            = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw("");
-    } else {
+    if (h1 != NULL) { h1->Draw(""); }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

@@ -1,4 +1,5 @@
-void trd_elid_sim(Int_t nEvents = 200) {
+void trd_elid_sim(Int_t nEvents = 200)
+{
   Double_t minMomentum = 1.5;  //minimum momentum
   Double_t maxMomentum = 8.0;  //maximum momentum
   Double_t thetaMin    = 2.5;

@@ -74,24 +74,17 @@ public:
   TClonesArray* GetCurrentEvent();
   /** Initialisation */
 
-  void AddSensor(TString clearName,
-                 TString fullName,
-                 TString nodeName,
-                 CbmMvdSensorDataSheet* sensorData,
-                 Int_t sensorNr,
-                 Int_t volumeId,
-                 Double_t sensorStartTime,
-                 Int_t stationNr);
+  void AddSensor(TString clearName, TString fullName, TString nodeName, CbmMvdSensorDataSheet* sensorData,
+                 Int_t sensorNr, Int_t volumeId, Double_t sensorStartTime, Int_t stationNr);
   void AddPlugin(CbmMvdSensorPlugin* plugin);
   void BuildDebugHistograms() { ; };
   void Init();
-  void SetMisalignment(Float_t misalignment[3]) {
+  void SetMisalignment(Float_t misalignment[3])
+  {
     for (Int_t i = 0; i < 3; i++)
       fepsilon[i] = misalignment[i];
   };
-  void SetParameterFile(CbmMvdStationPar* parameter) {
-    fParameter = parameter;
-  };
+  void SetParameterFile(CbmMvdStationPar* parameter) { fParameter = parameter; };
   void ShowDebugHistos();
   /** Data Processing */
 
@@ -99,8 +92,7 @@ public:
   void ExecChain();          //Processes the full execution chain
   void Exec(UInt_t nLevel);  //Processes Element nLevel of the chain
   // void ExecTo(UInt_t nLevel){;}; // Processes Elements to a given Level of Plugins
-  void ExecFrom(
-    UInt_t nLevel);  //Preocesses Elements from a given level till the end
+  void ExecFrom(UInt_t nLevel);  //Preocesses Elements from a given level till the end
 
   /** Finish */
 
@@ -109,9 +101,7 @@ public:
 
   /** Accessors */
   CbmMvdStationPar* GetParameterFile() { return fParameter; };
-  CbmMvdSensor* GetSensor(UInt_t nSensor) {
-    return (CbmMvdSensor*) fSensorArray->At(nSensor);
-  };
+  CbmMvdSensor* GetSensor(UInt_t nSensor) { return (CbmMvdSensor*) fSensorArray->At(nSensor); };
   void PrintParameter() { fParameter->Print(); };
 
   void SetProduceNoise();

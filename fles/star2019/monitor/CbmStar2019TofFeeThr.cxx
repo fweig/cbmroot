@@ -81,29 +81,30 @@ CbmStar2019TofFeeThr::CbmStar2019TofFeeThr()
   , fvuPadiToGet4()
   , fvuGet4ToPadi()
   , fvuElinkToGet4()
-  , fvuGet4ToElink() {}
+  , fvuGet4ToElink()
+{
+}
 
 CbmStar2019TofFeeThr::~CbmStar2019TofFeeThr() {}
 
-Bool_t CbmStar2019TofFeeThr::Init() {
+Bool_t CbmStar2019TofFeeThr::Init()
+{
   LOG(info) << "Initializing Get4 monitor";
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL) {
-    LOG(fatal) << "No FairRootManager instance";
-  }  // if( ioman == NULL )
+  if (ioman == NULL) { LOG(fatal) << "No FairRootManager instance"; }  // if( ioman == NULL )
 
   return kTRUE;
 }
 
-void CbmStar2019TofFeeThr::SetParContainers() {
+void CbmStar2019TofFeeThr::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
-  fUnpackPar =
-    (CbmStar2019TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer(
-      "CbmStar2019TofPar"));
+  fUnpackPar = (CbmStar2019TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer("CbmStar2019TofPar"));
 }
 
-Bool_t CbmStar2019TofFeeThr::InitContainers() {
+Bool_t CbmStar2019TofFeeThr::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
   Bool_t initOK = ReInitContainers();
 
@@ -112,15 +113,15 @@ Bool_t CbmStar2019TofFeeThr::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
+Bool_t CbmStar2019TofFeeThr::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
   fuMinNbGdpb = fuNrOfGdpbs;
 
-  fuNrOfFeePerGdpb =
-    30;  /// Hardcode as not available in Star2019 parameter class!
+  fuNrOfFeePerGdpb = 30;  /// Hardcode as not available in Star2019 parameter class!
   LOG(info) << "Nr. of FEEs per Tof GDPB: " << fuNrOfFeePerGdpb;
 
   fuNrOfGet4PerFee = fUnpackPar->GetNrOfGet4PerFee();
@@ -144,8 +145,7 @@ Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   fuNrOfGbtx = fUnpackPar->GetNrOfGbtx();
@@ -154,8 +154,7 @@ Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
   fuCoreMs         = fuTotalMsNb - fuOverlapMsNb;
   fdMsSizeInNs     = fUnpackPar->GetSizeMsInNs();
   fdTsCoreSizeInNs = fdMsSizeInNs * fuCoreMs;
-  LOG(info) << "Timeslice parameters: " << fuTotalMsNb
-            << " MS per link, of which " << fuOverlapMsNb
+  LOG(info) << "Timeslice parameters: " << fuTotalMsNb << " MS per link, of which " << fuOverlapMsNb
             << " overlap MS, each MS is " << fdMsSizeInNs << " ns";
 
   /// TODO: move these constants somewhere shared, e.g the parameter file
@@ -174,14 +173,12 @@ Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
 */
   /// From NH files, for Fall 2018 detectors
   UInt_t uGet4topadi[32] = {4,  3,  2,  1,  // provided by Jochen
-                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15,
-                            14, 13, 20, 19, 18, 17, 24, 23, 22, 21,
-                            28, 27, 26, 25, 32, 31, 30, 29};
+                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15, 14, 13, 20, 19,
+                            18, 17, 24, 23, 22, 21, 28, 27, 26, 25, 32, 31, 30, 29};
 
   UInt_t uPaditoget4[32] = {4,  3,  2,  1,  // provided by Jochen
-                            12, 11, 10, 9,  20, 19, 18, 17, 28, 27,
-                            26, 25, 32, 31, 30, 29, 8,  7,  6,  5,
-                            16, 15, 14, 13, 24, 23, 22, 21};
+                            12, 11, 10, 9, 20, 19, 18, 17, 28, 27, 26, 25, 32, 31,
+                            30, 29, 8,  7, 6,  5,  16, 15, 14, 13, 24, 23, 22, 21};
 
   for (UInt_t uChan = 0; uChan < fuNrOfChannelsPerFee; ++uChan) {
     fvuPadiToGet4[uChan] = uPaditoget4[uChan] - 1;
@@ -192,14 +189,12 @@ Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
   /// TODO: move these constants somewhere shared, e.g the parameter file
   fvuElinkToGet4.resize(kuNbGet4PerGbtx);
   fvuGet4ToElink.resize(kuNbGet4PerGbtx);
-  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {
-    27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
-    10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
-    18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
-  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {
-    24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
-    13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
-    30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
+  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
+                                           10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
+                                           18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
+  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
+                                           13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
+                                           30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
 
   for (UInt_t uLinkAsic = 0; uLinkAsic < kuNbGet4PerGbtx; ++uLinkAsic) {
     fvuElinkToGet4[uLinkAsic] = kuElinkToGet4[uLinkAsic];
@@ -210,8 +205,8 @@ Bool_t CbmStar2019TofFeeThr::ReInitContainers() {
 }
 
 
-void CbmStar2019TofFeeThr::AddMsComponentToList(size_t component,
-                                                UShort_t usDetectorId) {
+void CbmStar2019TofFeeThr::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -219,34 +214,28 @@ void CbmStar2019TofFeeThr::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 }
-void CbmStar2019TofFeeThr::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) {
+void CbmStar2019TofFeeThr::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
   fuNbCoreMsPerTs = uCoreMsNb;
   fuNbOverMsPerTs = uOverlapMsNb;
 
   //   UInt_t uNbMsTotal = fuNbCoreMsPerTs + fuNbOverMsPerTs;
 }
 
-void CbmStar2019TofFeeThr::CreateHistograms() {
+void CbmStar2019TofFeeThr::CreateHistograms()
+{
   LOG(info) << "create Histos for " << fuNrOfGdpbs << " gDPBs ";
 
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
 
-  fhGdpbAsicSpiCounts = new TH2I(
-    "hGdpbAsicSpiCounts",
-    "SPI messages count per GDPB and ASIC; ASIC Idx []; GDPB []; SPI msg[]",
-    fuNrOfGet4PerGdpb,
-    -0.5,
-    fuNrOfGet4PerGdpb - 0.5,
-    fuNrOfGdpbs,
-    -0.5,
-    fuNrOfGdpbs - 0.5);
+  fhGdpbAsicSpiCounts =
+    new TH2I("hGdpbAsicSpiCounts", "SPI messages count per GDPB and ASIC; ASIC Idx []; GDPB []; SPI msg[]",
+             fuNrOfGet4PerGdpb, -0.5, fuNrOfGet4PerGdpb - 0.5, fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5);
 
   if (server) {
     server->Register("/", fhGdpbAsicSpiCounts);
-    server->RegisterCommand("/Reset_All_eTOF",
-                            "bStar2019TofFeeThrResetHistos=kTRUE");
-    server->RegisterCommand("/Save_All_eTof",
-                            "bStar2019TofFeeThrSaveHistos=kTRUE");
+    server->RegisterCommand("/Reset_All_eTOF", "bStar2019TofFeeThrResetHistos=kTRUE");
+    server->RegisterCommand("/Save_All_eTof", "bStar2019TofFeeThrSaveHistos=kTRUE");
 
     server->Restrict("/Reset_All_eTof", "allow=admin");
     server->Restrict("/Save_All_eTof", "allow=admin");
@@ -255,8 +244,8 @@ void CbmStar2019TofFeeThr::CreateHistograms() {
   LOG(info) << "Leaving CreateHistograms";
 }
 
-Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
-                                      size_t component) {
+Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
   if (bStar2019TofFeeThrResetHistos) {
     LOG(info) << "Reset eTOF STAR histos ";
     ResetAllHistos();
@@ -269,8 +258,7 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
   }  // if( bSaveStsHistos )
 
 
-  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component)
-              << "microslices.";
+  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component) << "microslices.";
 
   /// Ignore overlap ms if flag set by user
   UInt_t uNbMsLoop = fuNbCoreMsPerTs;
@@ -286,45 +274,32 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
     fuCurrentMs = uMsIdx;
 
     if (0 == fulCurrentTsIndex && 0 == uMsIdx) {
-      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-           ++uMsCompIdx) {
+      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
         UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
         auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
-        LOG(info)
-          << "hi hv eqid flag si sv idx/start        crc      size     offset";
+        LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
         LOG(info) << Form(
-          "%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
-          static_cast<unsigned int>(msDescriptor.hdr_id),
-          static_cast<unsigned int>(msDescriptor.hdr_ver),
-          msDescriptor.eq_id,
-          msDescriptor.flags,
-          static_cast<unsigned int>(msDescriptor.sys_id),
-          static_cast<unsigned int>(msDescriptor.sys_ver),
-          msDescriptor.idx,
-          msDescriptor.crc,
-          msDescriptor.size,
-          msDescriptor.offset);
+          "%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx", static_cast<unsigned int>(msDescriptor.hdr_id),
+          static_cast<unsigned int>(msDescriptor.hdr_ver), msDescriptor.eq_id, msDescriptor.flags,
+          static_cast<unsigned int>(msDescriptor.sys_id), static_cast<unsigned int>(msDescriptor.sys_ver),
+          msDescriptor.idx, msDescriptor.crc, msDescriptor.size, msDescriptor.offset);
       }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
     }    // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
 
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       constexpr uint32_t kuBytesPerMessage = 8;
 
-      UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
-      auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
-      fiEquipmentId     = msDescriptor.eq_id;
-      fdMsIndex         = static_cast<double>(msDescriptor.idx);
-      fuCurrentMsSysId  = static_cast<unsigned int>(msDescriptor.sys_id);
-      const uint8_t* msContent =
-        reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
+      UInt_t uMsComp           = fvMsComponentsList[uMsCompIdx];
+      auto msDescriptor        = ts.descriptor(uMsComp, uMsIdx);
+      fiEquipmentId            = msDescriptor.eq_id;
+      fdMsIndex                = static_cast<double>(msDescriptor.idx);
+      fuCurrentMsSysId         = static_cast<unsigned int>(msDescriptor.sys_id);
+      const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
 
       uint32_t size = msDescriptor.size;
       //    fulLastMsIdx = msDescriptor.idx;
-      if (size > 0)
-        LOG(debug) << "Microslice: " << msDescriptor.idx
-                   << " has size: " << size;
+      if (size > 0) LOG(debug) << "Microslice: " << msDescriptor.idx << " has size: " << size;
 
       // If not integer number of message in input buffer, print warning/error
       if (0 != (size % kuBytesPerMessage))
@@ -332,8 +307,7 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
                    << "contain only complete nDPB messages!";
 
       // Compute the number of complete messages in the input microslice buffer
-      uint32_t uNbMessages =
-        (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
+      uint32_t uNbMessages = (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
 
       // Get the gDPB ID from the MS header
       fuGdpbId = fiEquipmentId;
@@ -341,26 +315,16 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
       /// Check if this gDPB ID was declared in parameter file and stop there if not
       auto it = fGdpbIdIndexMap.find(fuGdpbId);
       if (it == fGdpbIdIndexMap.end()) {
-        LOG(info)
-          << "---------------------------------------------------------------";
-        LOG(info)
-          << "hi hv eqid flag si sv idx/start        crc      size     offset";
+        LOG(info) << "---------------------------------------------------------------";
+        LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
         LOG(info) << Form(
-          "%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
-          static_cast<unsigned int>(msDescriptor.hdr_id),
-          static_cast<unsigned int>(msDescriptor.hdr_ver),
-          msDescriptor.eq_id,
-          msDescriptor.flags,
-          static_cast<unsigned int>(msDescriptor.sys_id),
-          static_cast<unsigned int>(msDescriptor.sys_ver),
-          msDescriptor.idx,
-          msDescriptor.crc,
-          msDescriptor.size,
-          msDescriptor.offset);
-        LOG(warning) << "Could not find the gDPB index for AFCK id 0x"
-                     << std::hex << fuGdpbId << std::dec << " in timeslice "
-                     << fulCurrentTsIndex << " in microslice " << fdMsIndex
-                     << " component " << uMsCompIdx << "\n"
+          "%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx", static_cast<unsigned int>(msDescriptor.hdr_id),
+          static_cast<unsigned int>(msDescriptor.hdr_ver), msDescriptor.eq_id, msDescriptor.flags,
+          static_cast<unsigned int>(msDescriptor.sys_id), static_cast<unsigned int>(msDescriptor.sys_ver),
+          msDescriptor.idx, msDescriptor.crc, msDescriptor.size, msDescriptor.offset);
+        LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuGdpbId << std::dec
+                     << " in timeslice " << fulCurrentTsIndex << " in microslice " << fdMsIndex << " component "
+                     << uMsCompIdx << "\n"
                      << "If valid this index has to be added in the TOF "
                         "parameter file in the RocIdArray field";
         continue;
@@ -390,10 +354,9 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
         if (0x90 == fuCurrentMsSysId) fuGet4Id = mess.getGdpbGenChipId();
         fuGet4Nr = (fuGdpbNr * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
-            && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id
-                       << " VS " << fuNrOfGet4PerGdpb << " set in parameters.";
+        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb
+                       << " set in parameters.";
 
         switch (messageType) {
           case gdpbv100::MSG_HIT:
@@ -408,13 +371,12 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
           case gdpbv100::MSG_STAR_TRI_C:
           case gdpbv100::MSG_STAR_TRI_D: break;
           default:
-            LOG(error) << "Message type " << std::hex << std::setw(2)
-                       << static_cast<uint16_t>(messageType)
+            LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                        << " not included in Get4 unpacker.";
         }  // switch( mess.getMessageType() )
       }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-  }    // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
+    }      // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+  }        // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
 
 
   fulCurrentTsIndex++;
@@ -422,35 +384,26 @@ Bool_t CbmStar2019TofFeeThr::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmStar2019TofFeeThr::PrintSlcInfo(gdpbv100::Message mess) {
+void CbmStar2019TofFeeThr::PrintSlcInfo(gdpbv100::Message mess)
+{
   if (fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find(fuGdpbId)) {
     UInt_t uChan = mess.getGdpbSlcChan();
     UInt_t uEdge = mess.getGdpbSlcEdge();
     UInt_t uData = mess.getGdpbSlcData();
     UInt_t uType = mess.getGdpbSlcType();
 
-    Double_t dGdpbChId = fuGet4Id * fuNrOfChannelsPerGet4
-                         + mess.getGdpbSlcChan() + 0.5 * mess.getGdpbSlcEdge();
-    Double_t dFullChId = fuGet4Nr * fuNrOfChannelsPerGet4
-                         + mess.getGdpbSlcChan() + 0.5 * mess.getGdpbSlcEdge();
+    Double_t dGdpbChId = fuGet4Id * fuNrOfChannelsPerGet4 + mess.getGdpbSlcChan() + 0.5 * mess.getGdpbSlcEdge();
+    Double_t dFullChId = fuGet4Nr * fuNrOfChannelsPerGet4 + mess.getGdpbSlcChan() + 0.5 * mess.getGdpbSlcEdge();
     Double_t dMessTime = fdMsIndex * 1e-9;
 
     /// Printout if SPI message!
     if (gdpbv100::GET4_32B_SLC_SPIREAD == uType) {
       fhGdpbAsicSpiCounts->Fill(fuGet4Id, fuGdpbNr);
-      LOG(info) << "GET4 Slow Control message, time "
-                << Form("%3.3f", dMessTime) << " s "
-                << Form(" for board %02u (ID %04x, sector %2u)",
-                        fuGdpbNr,
-                        fuGdpbId,
-                        fuGdpbNr + 13)
-                << "\n"
-                << " +++++++ > Chip = " << std::setw(3) << fuGet4Id
-                << ", Chan = " << std::setw(1) << uChan
-                << ", Edge = " << std::setw(1) << uEdge
-                << ", Type = " << std::setw(1) << mess.getGdpbSlcType() << ", "
-                << Form("channel  %1u,", (uData >> 10) & 0xF)
-                << Form("value 0x%03x ", uData & 0x3FF)
+      LOG(info) << "GET4 Slow Control message, time " << Form("%3.3f", dMessTime) << " s "
+                << Form(" for board %02u (ID %04x, sector %2u)", fuGdpbNr, fuGdpbId, fuGdpbNr + 13) << "\n"
+                << " +++++++ > Chip = " << std::setw(3) << fuGet4Id << ", Chan = " << std::setw(1) << uChan
+                << ", Edge = " << std::setw(1) << uEdge << ", Type = " << std::setw(1) << mess.getGdpbSlcType() << ", "
+                << Form("channel  %1u,", (uData >> 10) & 0xF) << Form("value 0x%03x ", uData & 0x3FF)
                 << Form("(Data = 0x%06x)", uData);
     }  // if( gdpbv100::GET4_32B_SLC_SPIREAD == uType )
   }
@@ -458,7 +411,8 @@ void CbmStar2019TofFeeThr::PrintSlcInfo(gdpbv100::Message mess) {
 
 void CbmStar2019TofFeeThr::Reset() {}
 
-void CbmStar2019TofFeeThr::Finish() {
+void CbmStar2019TofFeeThr::Finish()
+{
   // Printout some stats on what was unpacked
   TString message_type;
   for (unsigned int i = 0; i < fviMsgCounter.size(); ++i) {
@@ -483,7 +437,8 @@ void CbmStar2019TofFeeThr::Finish() {
   //   SaveAllHistos();
 }
 
-void CbmStar2019TofFeeThr::SaveAllHistos(TString sFileName) {
+void CbmStar2019TofFeeThr::SaveAllHistos(TString sFileName)
+{
   TDirectory* oldDir = NULL;
   TFile* histoFile   = NULL;
   if ("" != sFileName) {
@@ -501,7 +456,8 @@ void CbmStar2019TofFeeThr::SaveAllHistos(TString sFileName) {
   }  // if( "" != sFileName )
 }
 
-void CbmStar2019TofFeeThr::ResetAllHistos() {
+void CbmStar2019TofFeeThr::ResetAllHistos()
+{
   LOG(info) << "Reseting all TOF histograms.";
   fhGdpbAsicSpiCounts->Reset();
 }

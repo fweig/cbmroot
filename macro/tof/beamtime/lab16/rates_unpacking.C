@@ -7,9 +7,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void rates_unpacking(TString sLmdFolder = "",
-                     TString sLmdName   = "",
-                     Int_t nEvents      = -1) {
+void rates_unpacking(TString sLmdFolder = "", TString sLmdName = "", Int_t nEvents = -1)
+{
   if ("" == sLmdName) {
     cout << "Empty LMD filename!!!" << endl;
     return;
@@ -123,10 +122,8 @@ void rates_unpacking(TString sLmdFolder = "",
   run->Finish();
 
   TString sMoveCmd = "mv tofMbs";
-  gSystem->Exec(sMoveCmd + "Cal.hst.root out/tofMbsCal_" + sLmdName
-                + ".hst.root");
-  gSystem->Exec(sMoveCmd + "Unp.hst.root out/tofMbsUnp_" + sLmdName
-                + ".hst.root");
+  gSystem->Exec(sMoveCmd + "Cal.hst.root out/tofMbsCal_" + sLmdName + ".hst.root");
+  gSystem->Exec(sMoveCmd + "Unp.hst.root out/tofMbsUnp_" + sLmdName + ".hst.root");
 
   //   delete run;
   return;

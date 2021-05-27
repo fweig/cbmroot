@@ -1,8 +1,8 @@
 
 
 void pl_TdcPlaCheck0703(
-  const TString& sTreeFile =
-    "unpack_CbmTofQa_02Jul1721_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root") {
+  const TString& sTreeFile = "unpack_CbmTofQa_02Jul1721_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root")
+{
   gStyle->SetOptStat("emruo");
   gStyle->SetOptFit(10001);
 
@@ -38,32 +38,14 @@ void pl_TdcPlaCheck0703(
 
   //Create Histograms
   gROOT->cd();
-  TH1D* hTdc02HitDist =
-    new TH1D("hTdc02HitDist ", "Hit distribution of TDC 02", 32, -0, 32);
-  TH1D* hTdc03HitDist =
-    new TH1D("hTdc03HitDist ", "Hit distribution of TDC 03", 32, -0, 32);
+  TH1D* hTdc02HitDist = new TH1D("hTdc02HitDist ", "Hit distribution of TDC 02", 32, -0, 32);
+  TH1D* hTdc03HitDist = new TH1D("hTdc03HitDist ", "Hit distribution of TDC 03", 32, -0, 32);
   TH1D* hPlaTimeDiff =
-    new TH1D("hPlaTimeDiff",
-             "Pla-time difference PLA0-PLA1 (first hit in channel)",
-             20000,
-             -10 * *6,
-             10 * *6);
-  TH2D* hPla0YPosTot = new TH2D("hPla0YPosTot",
-                                "Pla0: Time_L-Time_R vs Tot_L+Tot_R",
-                                20000,
-                                -10 * *5,
-                                10 * *5,
-                                2000,
-                                0,
-                                5000000);
-  TH2D* hPla1YPosTot = new TH2D("hPla1YPosTot",
-                                "Pla1: Time_L-Time_R vs Tot_L+Tot_R",
-                                20000,
-                                -10 * *5,
-                                10 * *5,
-                                2000,
-                                0,
-                                5000000);
+    new TH1D("hPlaTimeDiff", "Pla-time difference PLA0-PLA1 (first hit in channel)", 20000, -10 * *6, 10 * *6);
+  TH2D* hPla0YPosTot =
+    new TH2D("hPla0YPosTot", "Pla0: Time_L-Time_R vs Tot_L+Tot_R", 20000, -10 * *5, 10 * *5, 2000, 0, 5000000);
+  TH2D* hPla1YPosTot =
+    new TH2D("hPla1YPosTot", "Pla1: Time_L-Time_R vs Tot_L+Tot_R", 20000, -10 * *5, 10 * *5, 2000, 0, 5000000);
 
 
   cout << "Filling Histograms" << endl;
@@ -135,18 +117,15 @@ void pl_TdcPlaCheck0703(
 
     //------------------------------------------------------------------------
     if (bPla0Right && bPla0Left) {
-      hPla0YPosTot->Fill(((dPla0TimeLeft - dPla0TimeRight)),
-                         (dPla0TotLeft + dPla0TotRight));
+      hPla0YPosTot->Fill(((dPla0TimeLeft - dPla0TimeRight)), (dPla0TotLeft + dPla0TotRight));
     }
 
     if (bPla1Right && bPla1Left) {
-      hPla1YPosTot->Fill(((dPla1TimeLeft - dPla1TimeRight)),
-                         (dPla1TotLeft + dPla1TotRight));
+      hPla1YPosTot->Fill(((dPla1TimeLeft - dPla1TimeRight)), (dPla1TotLeft + dPla1TotRight));
     }
 
     if (bPla0Right && bPla0Left && bPla1Right && bPla1Left) {
-      hPlaTimeDiff->Fill(((dPla0TimeLeft + dPla0TimeRight) / 2)
-                         - ((dPla1TimeLeft + dPla1TimeRight) / 2));
+      hPlaTimeDiff->Fill(((dPla0TimeLeft + dPla0TimeRight) / 2) - ((dPla1TimeLeft + dPla1TimeRight) / 2));
     }
   }
   //------------------------------------------------------------------------------------------------
@@ -154,8 +133,7 @@ void pl_TdcPlaCheck0703(
   //Create Canvases
   gROOT->cd();
 
-  TCanvas* c1 =
-    new TCanvas("Tdc hit distribution", "Tdc hit distribution", 1680., 1000);
+  TCanvas* c1 = new TCanvas("Tdc hit distribution", "Tdc hit distribution", 1680., 1000);
   c1->SetFillColor(0);
   c1->Divide(1, 2);
   c1->SetGridx(0);
@@ -179,8 +157,7 @@ void pl_TdcPlaCheck0703(
   c1->Update();
 
 
-  TCanvas* c4 = new TCanvas(
-    "Full pla Time resolution", "Full pla Time resolution", 1680., 1000);
+  TCanvas* c4 = new TCanvas("Full pla Time resolution", "Full pla Time resolution", 1680., 1000);
   c4->SetFillColor(0);
   c4->Divide(1, 3);
   c4->SetGridx(0);

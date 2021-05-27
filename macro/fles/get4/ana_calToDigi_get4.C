@@ -6,10 +6,9 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void ana_calToDigi_get4(Int_t nEvents   = 10,
-                        TString sFileId = "Trb23Feb0930",
-                        Int_t calMode   = 1,
-                        Bool_t bGenCal  = kFALSE) {
+void ana_calToDigi_get4(Int_t nEvents = 10, TString sFileId = "Trb23Feb0930", Int_t calMode = 1,
+                        Bool_t bGenCal = kFALSE)
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 2;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -48,9 +47,8 @@ void ana_calToDigi_get4(Int_t nEvents   = 10,
   sOutfileId = sFileId;
   cout << " Output File tag " << sOutfileId << endl;
 
-  TString TofGeo = "v14c";
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TString TofGeo         = "v14c";
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
@@ -119,8 +117,8 @@ void ana_calToDigi_get4(Int_t nEvents   = 10,
     // =========================================================================
     // ===                     Cluster Building                              ===
     // =========================================================================
-    CbmTofTestBeamClusterizer* tofTestBeamClust = new CbmTofTestBeamClusterizer(
-      "TOF TestBeam Clusterizer", iVerbose, kFALSE);
+    CbmTofTestBeamClusterizer* tofTestBeamClust =
+      new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", iVerbose, kFALSE);
     //tofTestBeamClust->SetCalParFileName("MbsTrbBeamtofTestBeamClust.hst.root");
     Int_t calTrg    = -1;
     Int_t calSmType = 0;
@@ -130,8 +128,7 @@ void ana_calToDigi_get4(Int_t nEvents   = 10,
     tofTestBeamClust->SetCalSel(calTrg);
     tofTestBeamClust->SetCaldXdYMax(150.);  // geometrical matching window
     tofTestBeamClust->SetdTRefMax(500000.);
-    tofTestBeamClust->SetCalSmType(
-      calSmType);  // select detectors for walk correction
+    tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
     //tofTestBeamClust->SetTRefDetId(20486);        //0x00005006; big Diamond
     //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
     //tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
@@ -157,16 +154,14 @@ void ana_calToDigi_get4(Int_t nEvents   = 10,
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 2:  // time difference calibration
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbBeam02tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbBeam02tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 3:
         //   tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_01tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_03tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_03tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(200000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);         //in % of length
         break;
@@ -174,10 +169,7 @@ void ana_calToDigi_get4(Int_t nEvents   = 10,
         tofTestBeamClust->SetTRefDifMax(50000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);        //in % of length
         break;
-      default:
-        cout << "<E> Calib mode not implemented! stop execution of script"
-             << endl;
-        return;
+      default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
     }  // switch (calMode)
     run->AddTask(tofTestBeamClust);
     // ===                  End of Cluster Building                          ===

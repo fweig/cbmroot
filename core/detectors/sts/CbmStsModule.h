@@ -6,14 +6,14 @@
 #ifndef CBMSTSMODULE_H
 #define CBMSTSMODULE_H 1
 
+#include "CbmStsElement.h"    // for CbmStsElement
+#include "CbmStsParModule.h"  // for CbmStsParModule
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, UShort_t, Bool_t, Int_t, kTRUE
 #include <TString.h>     // for TString
 
 #include <string>  // for string
-
-#include "CbmStsElement.h"    // for CbmStsElement
-#include "CbmStsParModule.h"  // for CbmStsParModule
 
 class CbmStsParAsic;
 class TGeoPhysicalNode;
@@ -36,9 +36,7 @@ public:
      ** @param node     Geometry node
      ** @param mother   Mother element
      **/
-  CbmStsModule(UInt_t address         = 0,
-               TGeoPhysicalNode* node = nullptr,
-               CbmStsElement* mother  = nullptr);
+  CbmStsModule(UInt_t address = 0, TGeoPhysicalNode* node = nullptr, CbmStsElement* mother = nullptr);
 
 
   /** @brief Destructor **/

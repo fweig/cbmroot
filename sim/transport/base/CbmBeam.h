@@ -9,6 +9,7 @@
 
 #include "Rtypes.h"
 #include "TVector3.h"
+
 #include <string>
 
 
@@ -32,11 +33,7 @@ public:
 		 ** @param thetaX  Angle in x-z plane [rad]
 		 ** @param thetaY  Angle in y-z plane [rad]
 		 **/
-  CbmBeam(Double_t x      = 0.,
-          Double_t y      = 0.,
-          Double_t z      = 0.,
-          Double_t thetaX = 0.,
-          Double_t thetaY = 0.);
+  CbmBeam(Double_t x = 0., Double_t y = 0., Double_t z = 0., Double_t thetaX = 0., Double_t thetaY = 0.);
 
 
   /** @brief Destructor  **/
@@ -52,8 +49,7 @@ public:
 		 ** with a plane specified by an anchor point and a vector perpendicular
 		 ** to the plane. The latter need not be normalised.
 		 **/
-  TVector3 ExtrapolateToPlane(const TVector3& point,
-                              const TVector3& normal) const;
+  TVector3 ExtrapolateToPlane(const TVector3& point, const TVector3& normal) const;
 
 
   /** @brief Beam direction vector

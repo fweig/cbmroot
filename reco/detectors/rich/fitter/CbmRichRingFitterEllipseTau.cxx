@@ -91,7 +91,8 @@ CbmRichRingFitterEllipseTau::CbmRichRingFitterEllipseTau() {}
 
 CbmRichRingFitterEllipseTau::~CbmRichRingFitterEllipseTau() {}
 
-void CbmRichRingFitterEllipseTau::DoFit(CbmRichRingLight* ring) {
+void CbmRichRingFitterEllipseTau::DoFit(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
 
   if (nofHits <= 5) {
@@ -101,9 +102,7 @@ void CbmRichRingFitterEllipseTau::DoFit(CbmRichRingLight* ring) {
   }
 
   if (nofHits >= MAX_NOF_HITS_IN_RING) {
-    cout
-      << "-E- CbmRichRingFitterEllipseTau::DoFit(), too many hits in the ring:"
-      << nofHits << endl;
+    cout << "-E- CbmRichRingFitterEllipseTau::DoFit(), too many hits in the ring:" << nofHits << endl;
     ring->SetXYABP(-1., -1., -1., -1., -1.);
     ring->SetRadius(-1.);
     return;
@@ -121,7 +120,8 @@ void CbmRichRingFitterEllipseTau::DoFit(CbmRichRingLight* ring) {
   CalcChi2(ring);
 }
 
-void CbmRichRingFitterEllipseTau::Taubin() {
+void CbmRichRingFitterEllipseTau::Taubin()
+{
   //	TMatrixD PQ(5,5); // fPQ = P^(-1) * Q
 
   Inv5x5();
@@ -166,7 +166,8 @@ void CbmRichRingFitterEllipseTau::Taubin() {
   fAlgPar[5] = AlgParF;
 }
 
-void CbmRichRingFitterEllipseTau::InitMatrices(CbmRichRingLight* ring) {
+void CbmRichRingFitterEllipseTau::InitMatrices(CbmRichRingLight* ring)
+{
   const unsigned int numHits  = ring->GetNofHits();
   const unsigned int numHits2 = 2 * numHits;
   const unsigned int numHits3 = 3 * numHits;
@@ -228,7 +229,8 @@ void CbmRichRingFitterEllipseTau::InitMatrices(CbmRichRingLight* ring) {
   fQ[GM33] = fQ[GM44] = 1.;
 }
 
-void CbmRichRingFitterEllipseTau::TransformEllipse(CbmRichRingLight* ring) {
+void CbmRichRingFitterEllipseTau::TransformEllipse(CbmRichRingLight* ring)
+{
   double Pxx = fAlgPar[0];
   double Pxy = fAlgPar[1];
   double Pyy = fAlgPar[2];
@@ -245,7 +247,8 @@ void CbmRichRingFitterEllipseTau::TransformEllipse(CbmRichRingLight* ring) {
   if (fabs(Pxx - Pyy) > 0.1e-10) {
     alpha = atan(Pxy / (Pxx - Pyy));
     alpha = alpha / 2.0;
-  } else
+  }
+  else
     alpha = 1.57079633;
 
   cosa  = cos(alpha);
@@ -278,14 +281,14 @@ void CbmRichRingFitterEllipseTau::TransformEllipse(CbmRichRingLight* ring) {
     ring->SetBaxis(tmp);
 
     tmp = ring->GetPhi();
-    if (ring->GetPhi() <= 0)
-      ring->SetPhi(ring->GetPhi() + 1.57079633);
+    if (ring->GetPhi() <= 0) ring->SetPhi(ring->GetPhi() + 1.57079633);
     else
       ring->SetPhi(ring->GetPhi() - 1.57079633);
   }
 }
 
-void CbmRichRingFitterEllipseTau::Inv5x5() {
+void CbmRichRingFitterEllipseTau::Inv5x5()
+{
   // Find all NECESSARY 2x2 dets:  (30 of them)
   const double det2_23_01 = fP[GM20] * fP[GM31] - fP[GM21] * fP[GM30];
   const double det2_23_02 = fP[GM20] * fP[GM32] - fP[GM22] * fP[GM30];
@@ -319,168 +322,102 @@ void CbmRichRingFitterEllipseTau::Inv5x5() {
   const double det2_34_34 = fP[GM33] * fP[GM44] - fP[GM34] * fP[GM43];
 
   // Find all NECESSARY 3x3 dets:   (40 of them)
-  const double det3_123_012 =
-    fP[GM10] * det2_23_12 - fP[GM11] * det2_23_02 + fP[GM12] * det2_23_01;
-  const double det3_123_013 =
-    fP[GM10] * det2_23_13 - fP[GM11] * det2_23_03 + fP[GM13] * det2_23_01;
-  const double det3_123_014 =
-    fP[GM10] * det2_23_14 - fP[GM11] * det2_23_04 + fP[GM14] * det2_23_01;
-  const double det3_123_023 =
-    fP[GM10] * det2_23_23 - fP[GM12] * det2_23_03 + fP[GM13] * det2_23_02;
-  const double det3_123_024 =
-    fP[GM10] * det2_23_24 - fP[GM12] * det2_23_04 + fP[GM14] * det2_23_02;
-  const double det3_123_034 =
-    fP[GM10] * det2_23_34 - fP[GM13] * det2_23_04 + fP[GM14] * det2_23_03;
-  const double det3_123_123 =
-    fP[GM11] * det2_23_23 - fP[GM12] * det2_23_13 + fP[GM13] * det2_23_12;
-  const double det3_123_124 =
-    fP[GM11] * det2_23_24 - fP[GM12] * det2_23_14 + fP[GM14] * det2_23_12;
-  const double det3_123_134 =
-    fP[GM11] * det2_23_34 - fP[GM13] * det2_23_14 + fP[GM14] * det2_23_13;
-  const double det3_123_234 =
-    fP[GM12] * det2_23_34 - fP[GM13] * det2_23_24 + fP[GM14] * det2_23_23;
-  const double det3_124_012 =
-    fP[GM10] * det2_24_12 - fP[GM11] * det2_24_02 + fP[GM12] * det2_24_01;
-  const double det3_124_013 =
-    fP[GM10] * det2_24_13 - fP[GM11] * det2_24_03 + fP[GM13] * det2_24_01;
-  const double det3_124_014 =
-    fP[GM10] * det2_24_14 - fP[GM11] * det2_24_04 + fP[GM14] * det2_24_01;
-  const double det3_124_023 =
-    fP[GM10] * det2_24_23 - fP[GM12] * det2_24_03 + fP[GM13] * det2_24_02;
-  const double det3_124_024 =
-    fP[GM10] * det2_24_24 - fP[GM12] * det2_24_04 + fP[GM14] * det2_24_02;
-  const double det3_124_034 =
-    fP[GM10] * det2_24_34 - fP[GM13] * det2_24_04 + fP[GM14] * det2_24_03;
-  const double det3_124_123 =
-    fP[GM11] * det2_24_23 - fP[GM12] * det2_24_13 + fP[GM13] * det2_24_12;
-  const double det3_124_124 =
-    fP[GM11] * det2_24_24 - fP[GM12] * det2_24_14 + fP[GM14] * det2_24_12;
-  const double det3_124_134 =
-    fP[GM11] * det2_24_34 - fP[GM13] * det2_24_14 + fP[GM14] * det2_24_13;
-  const double det3_124_234 =
-    fP[GM12] * det2_24_34 - fP[GM13] * det2_24_24 + fP[GM14] * det2_24_23;
-  const double det3_134_012 =
-    fP[GM10] * det2_34_12 - fP[GM11] * det2_34_02 + fP[GM12] * det2_34_01;
-  const double det3_134_013 =
-    fP[GM10] * det2_34_13 - fP[GM11] * det2_34_03 + fP[GM13] * det2_34_01;
-  const double det3_134_014 =
-    fP[GM10] * det2_34_14 - fP[GM11] * det2_34_04 + fP[GM14] * det2_34_01;
-  const double det3_134_023 =
-    fP[GM10] * det2_34_23 - fP[GM12] * det2_34_03 + fP[GM13] * det2_34_02;
-  const double det3_134_024 =
-    fP[GM10] * det2_34_24 - fP[GM12] * det2_34_04 + fP[GM14] * det2_34_02;
-  const double det3_134_034 =
-    fP[GM10] * det2_34_34 - fP[GM13] * det2_34_04 + fP[GM14] * det2_34_03;
-  const double det3_134_123 =
-    fP[GM11] * det2_34_23 - fP[GM12] * det2_34_13 + fP[GM13] * det2_34_12;
-  const double det3_134_124 =
-    fP[GM11] * det2_34_24 - fP[GM12] * det2_34_14 + fP[GM14] * det2_34_12;
-  const double det3_134_134 =
-    fP[GM11] * det2_34_34 - fP[GM13] * det2_34_14 + fP[GM14] * det2_34_13;
-  const double det3_134_234 =
-    fP[GM12] * det2_34_34 - fP[GM13] * det2_34_24 + fP[GM14] * det2_34_23;
-  const double det3_234_012 =
-    fP[GM20] * det2_34_12 - fP[GM21] * det2_34_02 + fP[GM22] * det2_34_01;
-  const double det3_234_013 =
-    fP[GM20] * det2_34_13 - fP[GM21] * det2_34_03 + fP[GM23] * det2_34_01;
-  const double det3_234_014 =
-    fP[GM20] * det2_34_14 - fP[GM21] * det2_34_04 + fP[GM24] * det2_34_01;
-  const double det3_234_023 =
-    fP[GM20] * det2_34_23 - fP[GM22] * det2_34_03 + fP[GM23] * det2_34_02;
-  const double det3_234_024 =
-    fP[GM20] * det2_34_24 - fP[GM22] * det2_34_04 + fP[GM24] * det2_34_02;
-  const double det3_234_034 =
-    fP[GM20] * det2_34_34 - fP[GM23] * det2_34_04 + fP[GM24] * det2_34_03;
-  const double det3_234_123 =
-    fP[GM21] * det2_34_23 - fP[GM22] * det2_34_13 + fP[GM23] * det2_34_12;
-  const double det3_234_124 =
-    fP[GM21] * det2_34_24 - fP[GM22] * det2_34_14 + fP[GM24] * det2_34_12;
-  const double det3_234_134 =
-    fP[GM21] * det2_34_34 - fP[GM23] * det2_34_14 + fP[GM24] * det2_34_13;
-  const double det3_234_234 =
-    fP[GM22] * det2_34_34 - fP[GM23] * det2_34_24 + fP[GM24] * det2_34_23;
+  const double det3_123_012 = fP[GM10] * det2_23_12 - fP[GM11] * det2_23_02 + fP[GM12] * det2_23_01;
+  const double det3_123_013 = fP[GM10] * det2_23_13 - fP[GM11] * det2_23_03 + fP[GM13] * det2_23_01;
+  const double det3_123_014 = fP[GM10] * det2_23_14 - fP[GM11] * det2_23_04 + fP[GM14] * det2_23_01;
+  const double det3_123_023 = fP[GM10] * det2_23_23 - fP[GM12] * det2_23_03 + fP[GM13] * det2_23_02;
+  const double det3_123_024 = fP[GM10] * det2_23_24 - fP[GM12] * det2_23_04 + fP[GM14] * det2_23_02;
+  const double det3_123_034 = fP[GM10] * det2_23_34 - fP[GM13] * det2_23_04 + fP[GM14] * det2_23_03;
+  const double det3_123_123 = fP[GM11] * det2_23_23 - fP[GM12] * det2_23_13 + fP[GM13] * det2_23_12;
+  const double det3_123_124 = fP[GM11] * det2_23_24 - fP[GM12] * det2_23_14 + fP[GM14] * det2_23_12;
+  const double det3_123_134 = fP[GM11] * det2_23_34 - fP[GM13] * det2_23_14 + fP[GM14] * det2_23_13;
+  const double det3_123_234 = fP[GM12] * det2_23_34 - fP[GM13] * det2_23_24 + fP[GM14] * det2_23_23;
+  const double det3_124_012 = fP[GM10] * det2_24_12 - fP[GM11] * det2_24_02 + fP[GM12] * det2_24_01;
+  const double det3_124_013 = fP[GM10] * det2_24_13 - fP[GM11] * det2_24_03 + fP[GM13] * det2_24_01;
+  const double det3_124_014 = fP[GM10] * det2_24_14 - fP[GM11] * det2_24_04 + fP[GM14] * det2_24_01;
+  const double det3_124_023 = fP[GM10] * det2_24_23 - fP[GM12] * det2_24_03 + fP[GM13] * det2_24_02;
+  const double det3_124_024 = fP[GM10] * det2_24_24 - fP[GM12] * det2_24_04 + fP[GM14] * det2_24_02;
+  const double det3_124_034 = fP[GM10] * det2_24_34 - fP[GM13] * det2_24_04 + fP[GM14] * det2_24_03;
+  const double det3_124_123 = fP[GM11] * det2_24_23 - fP[GM12] * det2_24_13 + fP[GM13] * det2_24_12;
+  const double det3_124_124 = fP[GM11] * det2_24_24 - fP[GM12] * det2_24_14 + fP[GM14] * det2_24_12;
+  const double det3_124_134 = fP[GM11] * det2_24_34 - fP[GM13] * det2_24_14 + fP[GM14] * det2_24_13;
+  const double det3_124_234 = fP[GM12] * det2_24_34 - fP[GM13] * det2_24_24 + fP[GM14] * det2_24_23;
+  const double det3_134_012 = fP[GM10] * det2_34_12 - fP[GM11] * det2_34_02 + fP[GM12] * det2_34_01;
+  const double det3_134_013 = fP[GM10] * det2_34_13 - fP[GM11] * det2_34_03 + fP[GM13] * det2_34_01;
+  const double det3_134_014 = fP[GM10] * det2_34_14 - fP[GM11] * det2_34_04 + fP[GM14] * det2_34_01;
+  const double det3_134_023 = fP[GM10] * det2_34_23 - fP[GM12] * det2_34_03 + fP[GM13] * det2_34_02;
+  const double det3_134_024 = fP[GM10] * det2_34_24 - fP[GM12] * det2_34_04 + fP[GM14] * det2_34_02;
+  const double det3_134_034 = fP[GM10] * det2_34_34 - fP[GM13] * det2_34_04 + fP[GM14] * det2_34_03;
+  const double det3_134_123 = fP[GM11] * det2_34_23 - fP[GM12] * det2_34_13 + fP[GM13] * det2_34_12;
+  const double det3_134_124 = fP[GM11] * det2_34_24 - fP[GM12] * det2_34_14 + fP[GM14] * det2_34_12;
+  const double det3_134_134 = fP[GM11] * det2_34_34 - fP[GM13] * det2_34_14 + fP[GM14] * det2_34_13;
+  const double det3_134_234 = fP[GM12] * det2_34_34 - fP[GM13] * det2_34_24 + fP[GM14] * det2_34_23;
+  const double det3_234_012 = fP[GM20] * det2_34_12 - fP[GM21] * det2_34_02 + fP[GM22] * det2_34_01;
+  const double det3_234_013 = fP[GM20] * det2_34_13 - fP[GM21] * det2_34_03 + fP[GM23] * det2_34_01;
+  const double det3_234_014 = fP[GM20] * det2_34_14 - fP[GM21] * det2_34_04 + fP[GM24] * det2_34_01;
+  const double det3_234_023 = fP[GM20] * det2_34_23 - fP[GM22] * det2_34_03 + fP[GM23] * det2_34_02;
+  const double det3_234_024 = fP[GM20] * det2_34_24 - fP[GM22] * det2_34_04 + fP[GM24] * det2_34_02;
+  const double det3_234_034 = fP[GM20] * det2_34_34 - fP[GM23] * det2_34_04 + fP[GM24] * det2_34_03;
+  const double det3_234_123 = fP[GM21] * det2_34_23 - fP[GM22] * det2_34_13 + fP[GM23] * det2_34_12;
+  const double det3_234_124 = fP[GM21] * det2_34_24 - fP[GM22] * det2_34_14 + fP[GM24] * det2_34_12;
+  const double det3_234_134 = fP[GM21] * det2_34_34 - fP[GM23] * det2_34_14 + fP[GM24] * det2_34_13;
+  const double det3_234_234 = fP[GM22] * det2_34_34 - fP[GM23] * det2_34_24 + fP[GM24] * det2_34_23;
 
   // Find all NECESSARY 4x4 dets:   (25 of them)
   const double det4_0123_0123 =
-    fP[GM00] * det3_123_123 - fP[GM01] * det3_123_023 + fP[GM02] * det3_123_013
-    - fP[GM03] * det3_123_012;
+    fP[GM00] * det3_123_123 - fP[GM01] * det3_123_023 + fP[GM02] * det3_123_013 - fP[GM03] * det3_123_012;
   const double det4_0123_0124 =
-    fP[GM00] * det3_123_124 - fP[GM01] * det3_123_024 + fP[GM02] * det3_123_014
-    - fP[GM04] * det3_123_012;
+    fP[GM00] * det3_123_124 - fP[GM01] * det3_123_024 + fP[GM02] * det3_123_014 - fP[GM04] * det3_123_012;
   const double det4_0123_0134 =
-    fP[GM00] * det3_123_134 - fP[GM01] * det3_123_034 + fP[GM03] * det3_123_014
-    - fP[GM04] * det3_123_013;
+    fP[GM00] * det3_123_134 - fP[GM01] * det3_123_034 + fP[GM03] * det3_123_014 - fP[GM04] * det3_123_013;
   const double det4_0123_0234 =
-    fP[GM00] * det3_123_234 - fP[GM02] * det3_123_034 + fP[GM03] * det3_123_024
-    - fP[GM04] * det3_123_023;
+    fP[GM00] * det3_123_234 - fP[GM02] * det3_123_034 + fP[GM03] * det3_123_024 - fP[GM04] * det3_123_023;
   const double det4_0123_1234 =
-    fP[GM01] * det3_123_234 - fP[GM02] * det3_123_134 + fP[GM03] * det3_123_124
-    - fP[GM04] * det3_123_123;
+    fP[GM01] * det3_123_234 - fP[GM02] * det3_123_134 + fP[GM03] * det3_123_124 - fP[GM04] * det3_123_123;
   const double det4_0124_0123 =
-    fP[GM00] * det3_124_123 - fP[GM01] * det3_124_023 + fP[GM02] * det3_124_013
-    - fP[GM03] * det3_124_012;
+    fP[GM00] * det3_124_123 - fP[GM01] * det3_124_023 + fP[GM02] * det3_124_013 - fP[GM03] * det3_124_012;
   const double det4_0124_0124 =
-    fP[GM00] * det3_124_124 - fP[GM01] * det3_124_024 + fP[GM02] * det3_124_014
-    - fP[GM04] * det3_124_012;
+    fP[GM00] * det3_124_124 - fP[GM01] * det3_124_024 + fP[GM02] * det3_124_014 - fP[GM04] * det3_124_012;
   const double det4_0124_0134 =
-    fP[GM00] * det3_124_134 - fP[GM01] * det3_124_034 + fP[GM03] * det3_124_014
-    - fP[GM04] * det3_124_013;
+    fP[GM00] * det3_124_134 - fP[GM01] * det3_124_034 + fP[GM03] * det3_124_014 - fP[GM04] * det3_124_013;
   const double det4_0124_0234 =
-    fP[GM00] * det3_124_234 - fP[GM02] * det3_124_034 + fP[GM03] * det3_124_024
-    - fP[GM04] * det3_124_023;
+    fP[GM00] * det3_124_234 - fP[GM02] * det3_124_034 + fP[GM03] * det3_124_024 - fP[GM04] * det3_124_023;
   const double det4_0124_1234 =
-    fP[GM01] * det3_124_234 - fP[GM02] * det3_124_134 + fP[GM03] * det3_124_124
-    - fP[GM04] * det3_124_123;
+    fP[GM01] * det3_124_234 - fP[GM02] * det3_124_134 + fP[GM03] * det3_124_124 - fP[GM04] * det3_124_123;
   const double det4_0134_0123 =
-    fP[GM00] * det3_134_123 - fP[GM01] * det3_134_023 + fP[GM02] * det3_134_013
-    - fP[GM03] * det3_134_012;
+    fP[GM00] * det3_134_123 - fP[GM01] * det3_134_023 + fP[GM02] * det3_134_013 - fP[GM03] * det3_134_012;
   const double det4_0134_0124 =
-    fP[GM00] * det3_134_124 - fP[GM01] * det3_134_024 + fP[GM02] * det3_134_014
-    - fP[GM04] * det3_134_012;
+    fP[GM00] * det3_134_124 - fP[GM01] * det3_134_024 + fP[GM02] * det3_134_014 - fP[GM04] * det3_134_012;
   const double det4_0134_0134 =
-    fP[GM00] * det3_134_134 - fP[GM01] * det3_134_034 + fP[GM03] * det3_134_014
-    - fP[GM04] * det3_134_013;
+    fP[GM00] * det3_134_134 - fP[GM01] * det3_134_034 + fP[GM03] * det3_134_014 - fP[GM04] * det3_134_013;
   const double det4_0134_0234 =
-    fP[GM00] * det3_134_234 - fP[GM02] * det3_134_034 + fP[GM03] * det3_134_024
-    - fP[GM04] * det3_134_023;
+    fP[GM00] * det3_134_234 - fP[GM02] * det3_134_034 + fP[GM03] * det3_134_024 - fP[GM04] * det3_134_023;
   const double det4_0134_1234 =
-    fP[GM01] * det3_134_234 - fP[GM02] * det3_134_134 + fP[GM03] * det3_134_124
-    - fP[GM04] * det3_134_123;
+    fP[GM01] * det3_134_234 - fP[GM02] * det3_134_134 + fP[GM03] * det3_134_124 - fP[GM04] * det3_134_123;
   const double det4_0234_0123 =
-    fP[GM00] * det3_234_123 - fP[GM01] * det3_234_023 + fP[GM02] * det3_234_013
-    - fP[GM03] * det3_234_012;
+    fP[GM00] * det3_234_123 - fP[GM01] * det3_234_023 + fP[GM02] * det3_234_013 - fP[GM03] * det3_234_012;
   const double det4_0234_0124 =
-    fP[GM00] * det3_234_124 - fP[GM01] * det3_234_024 + fP[GM02] * det3_234_014
-    - fP[GM04] * det3_234_012;
+    fP[GM00] * det3_234_124 - fP[GM01] * det3_234_024 + fP[GM02] * det3_234_014 - fP[GM04] * det3_234_012;
   const double det4_0234_0134 =
-    fP[GM00] * det3_234_134 - fP[GM01] * det3_234_034 + fP[GM03] * det3_234_014
-    - fP[GM04] * det3_234_013;
+    fP[GM00] * det3_234_134 - fP[GM01] * det3_234_034 + fP[GM03] * det3_234_014 - fP[GM04] * det3_234_013;
   const double det4_0234_0234 =
-    fP[GM00] * det3_234_234 - fP[GM02] * det3_234_034 + fP[GM03] * det3_234_024
-    - fP[GM04] * det3_234_023;
+    fP[GM00] * det3_234_234 - fP[GM02] * det3_234_034 + fP[GM03] * det3_234_024 - fP[GM04] * det3_234_023;
   const double det4_0234_1234 =
-    fP[GM01] * det3_234_234 - fP[GM02] * det3_234_134 + fP[GM03] * det3_234_124
-    - fP[GM04] * det3_234_123;
+    fP[GM01] * det3_234_234 - fP[GM02] * det3_234_134 + fP[GM03] * det3_234_124 - fP[GM04] * det3_234_123;
   const double det4_1234_0123 =
-    fP[GM10] * det3_234_123 - fP[GM11] * det3_234_023 + fP[GM12] * det3_234_013
-    - fP[GM13] * det3_234_012;
+    fP[GM10] * det3_234_123 - fP[GM11] * det3_234_023 + fP[GM12] * det3_234_013 - fP[GM13] * det3_234_012;
   const double det4_1234_0124 =
-    fP[GM10] * det3_234_124 - fP[GM11] * det3_234_024 + fP[GM12] * det3_234_014
-    - fP[GM14] * det3_234_012;
+    fP[GM10] * det3_234_124 - fP[GM11] * det3_234_024 + fP[GM12] * det3_234_014 - fP[GM14] * det3_234_012;
   const double det4_1234_0134 =
-    fP[GM10] * det3_234_134 - fP[GM11] * det3_234_034 + fP[GM13] * det3_234_014
-    - fP[GM14] * det3_234_013;
+    fP[GM10] * det3_234_134 - fP[GM11] * det3_234_034 + fP[GM13] * det3_234_014 - fP[GM14] * det3_234_013;
   const double det4_1234_0234 =
-    fP[GM10] * det3_234_234 - fP[GM12] * det3_234_034 + fP[GM13] * det3_234_024
-    - fP[GM14] * det3_234_023;
+    fP[GM10] * det3_234_234 - fP[GM12] * det3_234_034 + fP[GM13] * det3_234_024 - fP[GM14] * det3_234_023;
   const double det4_1234_1234 =
-    fP[GM11] * det3_234_234 - fP[GM12] * det3_234_134 + fP[GM13] * det3_234_124
-    - fP[GM14] * det3_234_123;
+    fP[GM11] * det3_234_234 - fP[GM12] * det3_234_134 + fP[GM13] * det3_234_124 - fP[GM14] * det3_234_123;
 
   // Find the 5x5 det:
-  const double det = fP[GM00] * det4_1234_1234 - fP[GM01] * det4_1234_0234
-                     + fP[GM02] * det4_1234_0134 - fP[GM03] * det4_1234_0124
-                     + fP[GM04] * det4_1234_0123;
+  const double det = fP[GM00] * det4_1234_1234 - fP[GM01] * det4_1234_0234 + fP[GM02] * det4_1234_0134
+                     - fP[GM03] * det4_1234_0124 + fP[GM04] * det4_1234_0123;
   //	if (determ)
   //		*determ = det;
   //
@@ -522,24 +459,16 @@ void CbmRichRingFitterEllipseTau::Inv5x5() {
   fP[GM44] = det4_0123_0123 * oneOverDet;
 }
 
-void CbmRichRingFitterEllipseTau::AMultB(const double* const ap,
-                                         int na,
-                                         int ncolsa,
-                                         const double* const bp,
-                                         int nb,
-                                         int ncolsb,
-                                         double* cp) {
+void CbmRichRingFitterEllipseTau::AMultB(const double* const ap, int na, int ncolsa, const double* const bp, int nb,
+                                         int ncolsb, double* cp)
+{
   // Elementary routine to calculate matrix multiplication A*B
 
   const double* arp0 = ap;  // Pointer to  A[i,0];
   while (arp0 < ap + na) {
-    for (
-      const double* bcp = bp;
-      bcp
-      < bp + ncolsb;) {  // Pointer to the j-th column of B, Start bcp = B[0,0]
-      const double* arp =
-        arp0;  // Pointer to the i-th row of A, reset to A[i,0]
-      double cij = 0;
+    for (const double* bcp = bp; bcp < bp + ncolsb;) {  // Pointer to the j-th column of B, Start bcp = B[0,0]
+      const double* arp = arp0;                         // Pointer to the i-th row of A, reset to A[i,0]
+      double cij        = 0;
       while (bcp < bp + nb) {  // Scan the i-th row of A and
         cij += *arp++ * *bcp;  // the j-th col of B
         bcp += ncolsb;
@@ -551,15 +480,14 @@ void CbmRichRingFitterEllipseTau::AMultB(const double* const ap,
   }
 }
 
-#define ROTATE(a, i, j, k, l)                                                  \
-  g       = a[i][j];                                                           \
-  h       = a[k][l];                                                           \
-  a[i][j] = g - s * (h + g * tau);                                             \
+#define ROTATE(a, i, j, k, l)                                                                                          \
+  g       = a[i][j];                                                                                                   \
+  h       = a[k][l];                                                                                                   \
+  a[i][j] = g - s * (h + g * tau);                                                                                     \
   a[k][l] = h + s * (g - h * tau)
 #define MAXSWEEP 50
-void CbmRichRingFitterEllipseTau::Jacobi(double a[5][5],
-                                         double d[5],
-                                         double v[5][5]) {
+void CbmRichRingFitterEllipseTau::Jacobi(double a[5][5], double d[5], double v[5][5])
+{
   double tresh, theta, tau, t, sm, s, h, g, c;
 
   double b[5], z[5];
@@ -590,15 +518,13 @@ void CbmRichRingFitterEllipseTau::Jacobi(double a[5][5],
       for (iq = ip + 1; iq < 5; iq++) {
 
         g = 100. * fabs(a[ip][iq]);
-        if (i > 4 && (float) fabs(d[ip] + g) == (float) fabs(d[ip])
-            && (float) fabs(d[iq] + g) == (float) fabs(d[iq]))
+        if (i > 4 && (float) fabs(d[ip] + g) == (float) fabs(d[ip]) && (float) fabs(d[iq] + g) == (float) fabs(d[iq]))
           a[ip][iq] = 0.;
 
         else if (fabs(a[ip][iq]) > tresh) {
           h = d[ip] - d[iq];
 
-          if ((float) (fabs(h) + g) == (float) fabs(h))
-            t = a[ip][iq] / h;
+          if ((float) (fabs(h) + g) == (float) fabs(h)) t = a[ip][iq] / h;
           else {
             theta = 0.5 * h / a[ip][iq];
             t     = 1. / (fabs(theta) + sqrt(1. + theta * theta));
@@ -636,7 +562,8 @@ void CbmRichRingFitterEllipseTau::Jacobi(double a[5][5],
   }  //i rot
 }
 
-void CbmRichRingFitterEllipseTau::Eigsrt(double d[5], double v[5][5]) {
+void CbmRichRingFitterEllipseTau::Eigsrt(double d[5], double v[5][5])
+{
   double p;
   int i, k, j;
   for (i = 0; i < 5; i++) {

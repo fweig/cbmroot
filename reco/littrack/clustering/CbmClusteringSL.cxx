@@ -6,6 +6,7 @@
  */
 
 #include "CbmClusteringSL.h"
+
 #include "CbmClusteringGeometry.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchDigi.h"
@@ -28,15 +29,19 @@
 using std::cout;
 using std::endl;
 
-CbmClusteringSL::CbmClusteringSL()
-  : fS(NULL), fNumbersOfPads(NULL), fA1(NULL), fClusters(NULL) {
+CbmClusteringSL::CbmClusteringSL() : fS(NULL), fNumbersOfPads(NULL), fA1(NULL), fClusters(NULL)
+{
   fNofPads       = 0;
   fNofActivePads = 0;
   fNofClusters   = 0;
 }
 
 CbmClusteringSL::CbmClusteringSL(CbmClusteringGeometry* moduleGeo)
-  : fS(NULL), fNumbersOfPads(NULL), fA1(NULL), fClusters(NULL) {
+  : fS(NULL)
+  , fNumbersOfPads(NULL)
+  , fA1(NULL)
+  , fClusters(NULL)
+{
   //Initialization
   fNofPads       = moduleGeo->GetNPads();
   fNofActivePads = moduleGeo->GetAPadsNom();
@@ -47,8 +52,7 @@ CbmClusteringSL::CbmClusteringSL(CbmClusteringGeometry* moduleGeo)
   fNumbersOfPads = new Int_t[fNofPads];
   Int_t nom      = 0;
   for (Int_t iPad = 0; iPad < fNofPads; iPad++) {
-    fA1[iPad] =
-      moduleGeo->GetPadCharge(iPad);  //Filling primary array of charges
+    fA1[iPad]            = moduleGeo->GetPadCharge(iPad);  //Filling primary array of charges
     fS[iPad]             = 0;
     fNumbersOfPads[iPad] = 0;
     if (fA1[iPad] > 0) {
@@ -59,40 +63,38 @@ CbmClusteringSL::CbmClusteringSL(CbmClusteringGeometry* moduleGeo)
   }
 }
 
-CbmClusteringSL::~CbmClusteringSL() {
+CbmClusteringSL::~CbmClusteringSL()
+{
   delete[] fA1;
   delete[] fS;
   delete[] fNumbersOfPads;
   delete[] fClusters;
 }
 
-void CbmClusteringSL::SLRec1(CbmClusteringGeometry* moduleGeo,
-                             Int_t activePad) {
+void CbmClusteringSL::SLRec1(CbmClusteringGeometry* moduleGeo, Int_t activePad)
+{
   for (Int_t iPad = 0; iPad < moduleGeo->GetNeighborsNum(activePad); iPad++) {
     if (fS[moduleGeo->GetNeighbor(activePad, iPad)] == 1) {
-      fNumbersOfPads[moduleGeo->GetNeighbor(activePad, iPad)] =
-        fNumbersOfPads[activePad];
-      fS[moduleGeo->GetNeighbor(activePad, iPad)] = 0;
+      fNumbersOfPads[moduleGeo->GetNeighbor(activePad, iPad)] = fNumbersOfPads[activePad];
+      fS[moduleGeo->GetNeighbor(activePad, iPad)]             = 0;
       SLRec1(moduleGeo, moduleGeo->GetNeighbor(activePad, iPad));
     }
   }
 }
 
-void CbmClusteringSL::SLRec2(CbmClusteringGeometry* moduleGeo,
-                             Int_t activePad) {
-  for (Int_t iPad = 0; iPad < moduleGeo->GetGoodNeighborsNum(activePad);
-       iPad++) {
+void CbmClusteringSL::SLRec2(CbmClusteringGeometry* moduleGeo, Int_t activePad)
+{
+  for (Int_t iPad = 0; iPad < moduleGeo->GetGoodNeighborsNum(activePad); iPad++) {
     if (fS[moduleGeo->GetNeighbor(activePad, iPad)] == 1) {
-      fNumbersOfPads[moduleGeo->GetNeighbor(activePad, iPad)] =
-        fNumbersOfPads[activePad];
-      fS[moduleGeo->GetNeighbor(activePad, iPad)] = 0;
+      fNumbersOfPads[moduleGeo->GetNeighbor(activePad, iPad)] = fNumbersOfPads[activePad];
+      fS[moduleGeo->GetNeighbor(activePad, iPad)]             = 0;
       SLRec2(moduleGeo, moduleGeo->GetNeighbor(activePad, iPad));
     }
   }
 }
 
-void CbmClusteringSL::MainClusteringSL(CbmClusteringGeometry* moduleGeo,
-                                       Int_t algVersion) {
+void CbmClusteringSL::MainClusteringSL(CbmClusteringGeometry* moduleGeo, Int_t algVersion)
+{
   //algVersion == 1 -> all neighbors
   //algVersion == 2 -> only good neighbors
   //First step of clustering algorithm: Creating relationships between objects
@@ -130,18 +132,14 @@ void CbmClusteringSL::MainClusteringSL(CbmClusteringGeometry* moduleGeo,
       Int_t padInCluster = 0;
       for (Int_t nPad = 0; nPad < fNofPads; nPad++) {
 
-        if ((fNumbersOfPads[nPad] == Replase)
-            && (moduleGeo->GetPadCharge(nPad) > 0) && (fS[nPad] == 1)) {
+        if ((fNumbersOfPads[nPad] == Replase) && (moduleGeo->GetPadCharge(nPad) > 0) && (fS[nPad] == 1)) {
           fNumbersOfPads[nPad] = nomCl;
           fS[nPad]             = 0;
           //Filling clusters
-          fClusters[nomCl - 1].fX +=
-            (moduleGeo->GetX0(nPad) * moduleGeo->GetPadCharge(nPad));
-          fClusters[nomCl - 1].fY +=
-            (moduleGeo->GetY0(nPad) * moduleGeo->GetPadCharge(nPad));
+          fClusters[nomCl - 1].fX += (moduleGeo->GetX0(nPad) * moduleGeo->GetPadCharge(nPad));
+          fClusters[nomCl - 1].fY += (moduleGeo->GetY0(nPad) * moduleGeo->GetPadCharge(nPad));
           fClusters[nomCl - 1].fCharge += moduleGeo->GetPadCharge(nPad);
-          fClusters[nomCl - 1].fPadsInCluster.push_back(
-            moduleGeo->GetDigiNum(nPad));
+          fClusters[nomCl - 1].fPadsInCluster.push_back(moduleGeo->GetDigiNum(nPad));
           padInCluster++;
           fClusters[nomCl - 1].fNofPads = padInCluster;
         }
@@ -164,18 +162,8 @@ void CbmClusteringSL::MainClusteringSL(CbmClusteringGeometry* moduleGeo,
 {
 	return fClusters[iCluster].nofCluster;
 }*/
-Float_t CbmClusteringSL::GetX0(Int_t iCluster) {
-  return fClusters[iCluster].fX;
-}
-Float_t CbmClusteringSL::GetY0(Int_t iCluster) {
-  return fClusters[iCluster].fY;
-}
-UInt_t CbmClusteringSL::GetClCharge(Int_t iCluster) {
-  return fClusters[iCluster].fCharge;
-}
-Int_t CbmClusteringSL::GetNofPads(Int_t iCluster) {
-  return fClusters[iCluster].fNofPads;
-}
-Int_t CbmClusteringSL::GetPadInCluster(Int_t iCluster, Int_t iPad) {
-  return fClusters[iCluster].fPadsInCluster[iPad];
-}
+Float_t CbmClusteringSL::GetX0(Int_t iCluster) { return fClusters[iCluster].fX; }
+Float_t CbmClusteringSL::GetY0(Int_t iCluster) { return fClusters[iCluster].fY; }
+UInt_t CbmClusteringSL::GetClCharge(Int_t iCluster) { return fClusters[iCluster].fCharge; }
+Int_t CbmClusteringSL::GetNofPads(Int_t iCluster) { return fClusters[iCluster].fNofPads; }
+Int_t CbmClusteringSL::GetPadInCluster(Int_t iCluster, Int_t iPad) { return fClusters[iCluster].fPadsInCluster[iPad]; }

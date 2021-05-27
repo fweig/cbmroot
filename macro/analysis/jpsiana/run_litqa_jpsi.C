@@ -1,9 +1,9 @@
-void run_litqa_jpsi(Int_t nEvents = 1000) {
+void run_litqa_jpsi(Int_t nEvents = 1000)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   //gRandom->SetSeed(10);
 
@@ -17,16 +17,12 @@ void run_litqa_jpsi(Int_t nEvents = 1000) {
   //TString mcFile = "/Users/slebedev/Development/cbm/data/jpsi/mc.0001.root";
   //TString qaFile = "/Users/slebedev/Development/cbm/data/jpsi/litqa.0001.root";
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
-  TObjString trdDigiFile =
-    parDir + "/trd/trd_v14a_3e.digi.par";                      // TRD digi file
-  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";  // TOF digi file
+  TList* parFileList     = new TList();
+  TObjString stsDigiFile = parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
+  TObjString trdDigiFile = parDir + "/trd/trd_v14a_3e.digi.par";   // TRD digi file
+  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";      // TOF digi file
 
-  TString stsMatBudgetFileName =
-    parDir
-    + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
+  TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
 
   TString resultDir     = "results_litqa/";
   Double_t trdAnnCut    = 0.85;
@@ -46,7 +42,7 @@ void run_litqa_jpsi(Int_t nEvents = 1000) {
 
     stsMatBudgetFileName = TString(gSystem->Getenv("STS_MATERIAL_BUDGET_FILE"));
     trdAnnCut            = TString(gSystem->Getenv("TRD_ANN_CUT")).Atof();
-    minNofPointsTrd = TString(gSystem->Getenv("MIN_NOF_POINTS_TRD")).Atof();
+    minNofPointsTrd      = TString(gSystem->Getenv("MIN_NOF_POINTS_TRD")).Atof();
   }
 
   if (stsDigiFile.GetString() != "") parFileList->Add(&stsDigiFile);
@@ -140,8 +136,7 @@ void run_litqa_jpsi(Int_t nEvents = 1000) {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output QA file is " << qaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

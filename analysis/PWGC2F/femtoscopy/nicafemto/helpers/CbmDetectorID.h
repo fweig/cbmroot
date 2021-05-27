@@ -11,7 +11,8 @@
 
 #include "NicaDataFormat.h"
 
-namespace NicaCbmDetectorID {
+namespace NicaCbmDetectorID
+{
   const UInt_t kTOF  = NicaDetectorID::kTOF;
   const UInt_t kSTS  = NicaDetectorID::kSTS;
   const UInt_t kMVD  = 29641;
@@ -22,7 +23,8 @@ namespace NicaCbmDetectorID {
   const UInt_t kMUCH = 1065761;
 };  // namespace NicaCbmDetectorID
 
-enum class NicaCbmSetup {
+enum class NicaCbmSetup
+{
   kSis100Hadron   = 0,
   kSis100Electron = 1,
   kSis100Muon     = 2,

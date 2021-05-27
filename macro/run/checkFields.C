@@ -12,10 +12,9 @@
 //    .x checkFields.C ("FieldDipole",    0,150,0) - map     field, centre in Z= 0 sm, fixed z=150, 6 pads B(y),B(x)
 // ----------------------------------------------------------------------------------
 
-int checkFields(const char* field_basename = "field_v12a",
-                double field_Z_origin      = 0,
-                double fixed_coord         = 170,
-                int flag_yx_zx_z           = 0) {
+int checkFields(const char* field_basename = "field_v12a", double field_Z_origin = 0, double fixed_coord = 170,
+                int flag_yx_zx_z = 0)
+{
 
   TString fieldName = field_basename;
 
@@ -43,11 +42,11 @@ int checkFields(const char* field_basename = "field_v12a",
   //  field_v12a
   //  field_v12b
 
-  if (fieldName == "field_v12b") {
-    field = new CbmFieldMapSym3(field_basename);
-  } else if (fieldName == "field_v12a") {
+  if (fieldName == "field_v12b") { field = new CbmFieldMapSym3(field_basename); }
+  else if (fieldName == "field_v12a") {
     field = new CbmFieldMapSym2(field_basename);
-  } else {
+  }
+  else {
     cout << "=====> ERROR: Field map " << fieldName << " unknown!" << endl;
     exit(1);
   }
@@ -58,15 +57,8 @@ int checkFields(const char* field_basename = "field_v12a",
 
   field->SetPosition(0., 0., field_Z_origin);
 
-  sprintf(big_title,
-          "Map:    %s      Z_magnet_center = %.0f",
-          field_basename,
-          field_Z_origin);
-  sprintf(stored_pdf_filename,
-          "%s_1D_%s_%.0f_%.0f.pdf",
-          field_basename,
-          ext_add[flag_yx_zx_z].Data(),
-          field_Z_origin,
+  sprintf(big_title, "Map:    %s      Z_magnet_center = %.0f", field_basename, field_Z_origin);
+  sprintf(stored_pdf_filename, "%s_1D_%s_%.0f_%.0f.pdf", field_basename, ext_add[flag_yx_zx_z].Data(), field_Z_origin,
           fixed_coord);
 
   // ----------------------------------------------------------------------
@@ -112,7 +104,8 @@ int checkFields(const char* field_basename = "field_v12a",
       if (!j) {
         minx = fymin;
         maxx = fymax;
-      } else {
+      }
+      else {
         minx = fxmin;
         maxx = fxmax;
       }
@@ -124,17 +117,8 @@ int checkFields(const char* field_basename = "field_v12a",
           (h[k][i][j])->SetLineWidth(1 + (k < 2));
           (h[k][i][j])->SetStats(0);
         }
-        sprintf(name,
-                "hB%s (%s)   z=%.0f   %s=%d,%d,%d,%d,%d",
-                nnam[i].Data(),
-                nnam[1 - j].Data(),
-                z,
-                nnam[j].Data(),
-                xyz[0],
-                xyz[1],
-                xyz[2],
-                xyz[3],
-                xyz[4]);
+        sprintf(name, "hB%s (%s)   z=%.0f   %s=%d,%d,%d,%d,%d", nnam[i].Data(), nnam[1 - j].Data(), z, nnam[j].Data(),
+                xyz[0], xyz[1], xyz[2], xyz[3], xyz[4]);
         (h[0][i][j])->SetTitle(name);
       }
     }
@@ -170,7 +154,8 @@ int checkFields(const char* field_basename = "field_v12a",
         (h[k][2][1])->SetBinContent(ix + 1, BB[2] / 10.);
       }
     }
-  } else  // "zx" or "z"
+  }
+  else  // "zx" or "z"
   {
     y = fixed_coord;
     Int_t j1;
@@ -179,7 +164,8 @@ int checkFields(const char* field_basename = "field_v12a",
         minx = fzmin;
         maxx = fzmax;
         j1   = 0;
-      } else {
+      }
+      else {
         if (flag_yx_zx_z < 2)  // "zx"
         {
           minx = fxmin;
@@ -189,8 +175,7 @@ int checkFields(const char* field_basename = "field_v12a",
       }
       for (i = 0; i < 3; i++) {
         for (k = 0; k < 5; k++) {
-          if ((flag_yx_zx_z < 2) || (j == 0))
-            sprintf(name, "hB%s_%s%d", nnam[i].Data(), nnam[j1].Data(), xyz[k]);
+          if ((flag_yx_zx_z < 2) || (j == 0)) sprintf(name, "hB%s_%s%d", nnam[i].Data(), nnam[j1].Data(), xyz[k]);
           else
             sprintf(name, "hB_%d_%s%d", k, nnam[i].Data(), xyz[k]);
           h[k][i][j] = new TH1D(name, name, fnx, minx, maxx);
@@ -199,29 +184,11 @@ int checkFields(const char* field_basename = "field_v12a",
           (h[k][i][j])->SetStats(0);
         }
         if ((flag_yx_zx_z < 2) || (j == 0))
-          sprintf(name,
-                  "hB%s (%s)   y=%.0f   %s=%d,%d,%d,%d,%d",
-                  nnam[i].Data(),
-                  nnam[2 - j1].Data(),
-                  y,
-                  nnam[j1].Data(),
-                  xyz[0],
-                  xyz[1],
-                  xyz[2],
-                  xyz[3],
-                  xyz[4]);
+          sprintf(name, "hB%s (%s)   y=%.0f   %s=%d,%d,%d,%d,%d", nnam[i].Data(), nnam[2 - j1].Data(), y,
+                  nnam[j1].Data(), xyz[0], xyz[1], xyz[2], xyz[3], xyz[4]);
         else
-          sprintf(name,
-                  "|B%s| (%s)   y=%.0f   %s=%d,%d,%d,%d,%d",
-                  nnam1[i].Data(),
-                  nnam[2 - j1].Data(),
-                  y,
-                  nnam[j1].Data(),
-                  xyz[0],
-                  xyz[1],
-                  xyz[2],
-                  xyz[3],
-                  xyz[4]);
+          sprintf(name, "|B%s| (%s)   y=%.0f   %s=%d,%d,%d,%d,%d", nnam1[i].Data(), nnam[2 - j1].Data(), y,
+                  nnam[j1].Data(), xyz[0], xyz[1], xyz[2], xyz[3], xyz[4]);
         (h[0][i][j])->SetTitle(name);
       }
     }

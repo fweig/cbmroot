@@ -54,20 +54,12 @@ public:
 
   void SetOutFilename(TString sNameIn);
 
-  void SetReferenceDetector(ECbmModuleId refDetIn,
-                            std::string sNameIn,
-                            Double_t dTimeRangeBegIn = -1000.0,
-                            Double_t dTimeRangeEndIn = 1000.0,
-                            UInt_t uRangeNbBinsIn    = 320,
-                            UInt_t uChargeCutMinIn   = 0,
-                            UInt_t uChargeCutMaxIn   = 0);
-  void AddCheckDetector(ECbmModuleId detIn,
-                        std::string sNameIn,
-                        Double_t dTimeRangeBegIn = -1000.0,
-                        Double_t dTimeRangeEndIn = 1000.0,
-                        UInt_t uRangeNbBinsIn    = 320,
-                        UInt_t uChargeCutMinIn   = 0,
-                        UInt_t uChargeCutMaxIn   = 0);
+  void SetReferenceDetector(ECbmModuleId refDetIn, std::string sNameIn, Double_t dTimeRangeBegIn = -1000.0,
+                            Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
+                            UInt_t uChargeCutMaxIn = 0);
+  void AddCheckDetector(ECbmModuleId detIn, std::string sNameIn, Double_t dTimeRangeBegIn = -1000.0,
+                        Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
+                        UInt_t uChargeCutMaxIn = 0);
   void RemoveCheckDetector(ECbmModuleId detIn);
 
 private:

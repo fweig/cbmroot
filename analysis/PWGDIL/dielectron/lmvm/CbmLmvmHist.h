@@ -7,12 +7,19 @@
 /*
  * \brief Enumeration for different sources.
  */
-enum CbmLmvmSourceTypes { kSignal = 0, kBg = 1, kPi0 = 2, kGamma = 3 };
+enum CbmLmvmSourceTypes
+{
+  kSignal = 0,
+  kBg     = 1,
+  kPi0    = 2,
+  kGamma  = 3
+};
 
 /*
  * \brief Enumeration for analysis steps.
  */
-enum CbmLmvmAnalysisSteps {
+enum CbmLmvmAnalysisSteps
+{
   kMc       = 0,
   kAcc      = 1,
   kReco     = 2,
@@ -30,7 +37,8 @@ enum CbmLmvmAnalysisSteps {
 /*
  * \brief Enumeration for different sources of BG pairs
  */
-enum CbmLmvmBgPairSource {
+enum CbmLmvmBgPairSource
+{
   kGG = 0,  // gamma-gamma
   kPP = 1,  // pi0-pi0
   kOO = 2,  // other-other

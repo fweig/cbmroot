@@ -8,9 +8,9 @@
 #ifndef CbmMcbm2018MonitorTaskTofPulser_H
 #define CbmMcbm2018MonitorTaskTofPulser_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 #include "TString.h"
 
@@ -19,10 +19,8 @@ class CbmMcbm2018MonitorAlgoTofPulser;
 class CbmMcbm2018MonitorTaskTofPulser : public CbmMcbmUnpack {
 public:
   CbmMcbm2018MonitorTaskTofPulser();
-  CbmMcbm2018MonitorTaskTofPulser(const CbmMcbm2018MonitorTaskTofPulser&) =
-    delete;
-  CbmMcbm2018MonitorTaskTofPulser
-  operator=(const CbmMcbm2018MonitorTaskTofPulser&) = delete;
+  CbmMcbm2018MonitorTaskTofPulser(const CbmMcbm2018MonitorTaskTofPulser&) = delete;
+  CbmMcbm2018MonitorTaskTofPulser operator=(const CbmMcbm2018MonitorTaskTofPulser&) = delete;
   virtual ~CbmMcbm2018MonitorTaskTofPulser();
 
   virtual Bool_t Init();
@@ -45,15 +43,14 @@ public:
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   inline void SetHistoFilename(TString sNameIn) { fsHistoFileName = sNameIn; }
   inline void SetUpdateFreqTs(UInt_t uFreq = 100) { fuUpdateFreqTs = uFreq; }
-  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuPulserMinTot = uMin;
     fuPulserMaxTot = uMax;
   }
   inline void SetPulserChannel(UInt_t uChan) { fuPulserChannel = uChan; }
   inline void SetGdpbIndex(Int_t iGdpb = -1) { fiGdpbIndex = iGdpb; }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
 
 private:
   Bool_t SaveHistograms();

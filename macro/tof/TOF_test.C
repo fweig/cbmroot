@@ -2,12 +2,13 @@
 //Update 01/10/2012 nh
 // 08/10/2012 add sensitive gas gaps
 
-#include "math.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <string>
+
+#include "math.h"
 #define PI 3.14159265
 
 FILE* geof;
@@ -21,24 +22,11 @@ void TOFSMo(int, float, float, float, float);
 void TOFSMb(int, float, float, float, float);
 void TofPole(int, float, float, float);
 void TOFBox(int, float, float, float, float, float, float);
-int TOFRegion(int,
-              int,
-              float,
-              float,
-              float,
-              float,
-              float,
-              float,
-              char*,
-              int,
-              float,
-              float,
-              float,
-              float,
-              float&,
+int TOFRegion(int, int, float, float, float, float, float, float, char*, int, float, float, float, float, float&,
               float&);
 
-int main(void) {
+int main(void)
+{
   //----------Initialization---------------------------------------
   const char* c_str();
   float B_factor, Dgap = 0, Dplate = 0;
@@ -58,37 +46,26 @@ int main(void) {
 
   //Print Header for the info file
 
-  fprintf(
-    info,
-    " -------------------------------------------------------------------\n");
+  fprintf(info, " -------------------------------------------------------------------\n");
   fprintf(info, "    Tof Geometry : %s \n", geoname.c_str());
-  fprintf(
-    info,
-    " -------------------------------------------------------------------\n");
+  fprintf(info, " -------------------------------------------------------------------\n");
 
   //Print Header for the geometry file
 
-  fprintf(parf,
-          "####################################################################"
-          "#################\n");
-  fprintf(parf,
-          "# Geometry for the TOF detector                                     "
-          "                 \n");
-  fprintf(parf,
-          "# Format:                                                           "
-          "                 \n");
-  fprintf(parf,
-          "#                                                                   "
-          "                 \n");
-  fprintf(parf,
-          "# SMod Mod  Cell   smtype     X[mm]      Y[mm]     Z[mm]     Dx[mm] "
-          "   Dy[mm]       \n");
-  fprintf(parf,
-          "####################################################################"
-          "#################\n");
-  fprintf(parf,
-          "[TofGeoPar]                                                         "
-          "                 \n");
+  fprintf(parf, "####################################################################"
+                "#################\n");
+  fprintf(parf, "# Geometry for the TOF detector                                     "
+                "                 \n");
+  fprintf(parf, "# Format:                                                           "
+                "                 \n");
+  fprintf(parf, "#                                                                   "
+                "                 \n");
+  fprintf(parf, "# SMod Mod  Cell   smtype     X[mm]      Y[mm]     Z[mm]     Dx[mm] "
+                "   Dy[mm]       \n");
+  fprintf(parf, "####################################################################"
+                "#################\n");
+  fprintf(parf, "[TofGeoPar]                                                         "
+                "                 \n");
   fprintf(parf, "0\n");
 
   //----------RUN---------------------------------------
@@ -163,32 +140,16 @@ int main(void) {
         nStrip += 5 * 32;
         // 2. layer
         nSMo++;
-        TOFSMo(nSMo,
-               Dwall - i * DZwall + dzpos,
-               0.,
-               xpos + i * DXcol,
-               ypos - dypos / 2.);
+        TOFSMo(nSMo, Dwall - i * DZwall + dzpos, 0., xpos + i * DXcol, ypos - dypos / 2.);
         nStrip += 5 * 32;
         nSMo++;
-        TOFSMo(nSMo,
-               Dwall - i * DZwall + dzpos,
-               180.,
-               -xpos - i * DXcol,
-               ypos - dypos / 2.);
+        TOFSMo(nSMo, Dwall - i * DZwall + dzpos, 180., -xpos - i * DXcol, ypos - dypos / 2.);
         nStrip += 5 * 32;
         nSMo++;
-        TOFSMo(nSMo,
-               Dwall - i * DZwall + dzpos,
-               0.,
-               xpos + i * DXcol,
-               -ypos + dypos / 2.);
+        TOFSMo(nSMo, Dwall - i * DZwall + dzpos, 0., xpos + i * DXcol, -ypos + dypos / 2.);
         nStrip += 5 * 32;
         nSMo++;
-        TOFSMo(nSMo,
-               Dwall - i * DZwall + dzpos,
-               180.,
-               -xpos - i * DXcol,
-               -ypos + dypos / 2.);
+        TOFSMo(nSMo, Dwall - i * DZwall + dzpos, 180., -xpos - i * DXcol, -ypos + dypos / 2.);
         nStrip += 5 * 32;
       }
     }
@@ -225,32 +186,16 @@ int main(void) {
         nStrip += 3 * 52;
         // 2. layer
         nSMb++;
-        TOFSMb(nSMb,
-               Dwall - i * DZwall + dzpos,
-               0.,
-               xpos + i * DXcol,
-               ypos - dyposb / 2.);
+        TOFSMb(nSMb, Dwall - i * DZwall + dzpos, 0., xpos + i * DXcol, ypos - dyposb / 2.);
         nStrip += 3 * 52;
         nSMb++;
-        TOFSMb(nSMb,
-               Dwall - i * DZwall + dzpos,
-               180.,
-               -xpos - i * DXcol,
-               ypos - dyposb / 2.);
+        TOFSMb(nSMb, Dwall - i * DZwall + dzpos, 180., -xpos - i * DXcol, ypos - dyposb / 2.);
         nStrip += 3 * 52;
         nSMb++;
-        TOFSMb(nSMb,
-               Dwall - i * DZwall + dzpos,
-               0.,
-               xpos + i * DXcol,
-               -ypos + dyposb / 2.);
+        TOFSMb(nSMb, Dwall - i * DZwall + dzpos, 0., xpos + i * DXcol, -ypos + dyposb / 2.);
         nStrip += 3 * 52;
         nSMb++;
-        TOFSMb(nSMb,
-               Dwall - i * DZwall + dzpos,
-               180.,
-               -xpos - i * DXcol,
-               -ypos + dyposb / 2.);
+        TOFSMb(nSMb, Dwall - i * DZwall + dzpos, 180., -xpos - i * DXcol, -ypos + dyposb / 2.);
         nStrip += 3 * 52;
       }
     }
@@ -319,7 +264,8 @@ int main(void) {
 }
 
 //-------------------------------------------------------------------------------------
-void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
+void TOFSMs(int i, float Z, float phi, float xpos, float ypos)
+{
 
   //i   = index of the first box/tower
   //Z   = distance to the target
@@ -398,46 +344,14 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
     fprintf(geof, "tof1#%d \n", i);
     fprintf(geof, "BOX\n");
     fprintf(geof, "RPCgas_noact \n");
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, -(dy / 2 - width_aluy), dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), -(dy / 2 - width_aluy), dz / 2 - width_aluz);
     fprintf(geof, "\n");
     fprintf(geof, "%f %f %f \n", 0.0, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
@@ -461,10 +375,7 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, cdy / 2, cdz / 2);
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, -cdy / 2, cdz / 2);
         fprintf(geof, "\n");
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 zoff * dzoff);                        //position
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -486,10 +397,7 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, gdy / 2, gdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, -gdy / 2, gdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -509,10 +417,7 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, ggdy / 2, ggdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, -ggdy / 2, ggdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzposg + (k - 1) * dzpos);        //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -532,22 +437,17 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, ggdy / 2, ggdz / 2);
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, -ggdy / 2, ggdz / 2);
               fprintf(geof, "\n");
-              fprintf(geof,
-                      "%f %f %f \n",
-                      -ggdx / 2 + (l + 0.5) * gsdx,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", -ggdx / 2 + (l + 0.5) * gsdx, 0.0,
                       0.0);                                 //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
               fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
             }
-          } else {  //k>0
+          }
+          else {  //k>0
             fprintf(geof, "t1reg1gla#%d \n", k);
             fprintf(geof, "t1reg1mod#%d \n", j);
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -555,10 +455,7 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
             if (k < 9) {
               fprintf(geof, "t1reg1gap#%d \n", k);
               fprintf(geof, "t1reg1mod#%d \n", j);
-              fprintf(geof,
-                      "%f %f %f \n",
-                      0.0,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                       startzposg + (k - 1) * dzpos);        //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -572,16 +469,8 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
                   fprintf(parf,
                           "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t "
                           "%2.1f \t %2.1f \n",
-                          i,
-                          j,
-                          l,
-                          1,
-                          xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                            + (l + 0.5) * gsdx,
-                          ypos,
-                          Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                          gsdx,
-                          ggdy);
+                          i, j, l, 1, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                          Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
                 }
               }
             }
@@ -601,30 +490,23 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, dye / 2, dze / 2);
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, -dye / 2, dze / 2);
         fprintf(geof, "\n");
-        fprintf(
-          geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
         fprintf(geof, "t1pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", i);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
-                zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
-      } else {  //j>1
+      }
+      else {  //j>1
         fprintf(geof, "t%dreg%dmod#%d \n", i, i, j);
         fprintf(geof, "tof%dgas \n", i);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 zoff * dzoff);                        //position
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -638,39 +520,27 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
           fprintf(parf,
                   "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                   "%2.1f \n",
-                  i,
-                  j,
-                  l,
-                  1,
-                  xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                    + (l + 0.5) * gsdx,
-                  ypos,
-                  Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                  gsdx,
-                  ggdy);
+                  i, j, l, 1, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                  Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
         }
         fprintf(geof, "t1pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", i);
-        fprintf(
-          geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
         fprintf(geof, "t1pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", i);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
-                zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
       }
     }
-  } else {  //i>0
+  }
+  else {  //i>0
     fprintf(geof, "tof1#%d\n", i);
     fprintf(geof, "cave \n");
     fprintf(geof, "%f %f %f \n", xpos, ypos, Z);
@@ -687,23 +557,16 @@ void TOFSMs(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(parf,
                 "%d \t %d \t %d \t %2d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                 "%2.1f \n",
-                i,
-                j,
-                l,
-                1,
-                xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                  + (l + 0.5) * gsdx,
-                ypos,
-                Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                gsdx,
-                ggdy);
+                i, j, l, 1, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
       }
     }
   }
 }
 
 //-------------------------------------------------------------------------------------
-void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
+void TOFSMi(int i, float Z, float phi, float xpos, float ypos)
+{
 
   //i   = index of the first box/tower
   //Z   = distance to the target
@@ -782,46 +645,14 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
     fprintf(geof, "tof4#%d \n", i);
     fprintf(geof, "BOX\n");
     fprintf(geof, "RPCgas_noact \n");
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -dx / 2 + width_aluxr,
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            (dx / 2 - width_aluxl),
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, -(dy / 2 - width_aluy), dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -dx / 2 + width_aluxr, dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", (dx / 2 - width_aluxl), -(dy / 2 - width_aluy), dz / 2 - width_aluz);
     fprintf(geof, "\n");
     fprintf(geof, "%f %f %f \n", 0.0, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
@@ -845,10 +676,7 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, cdy / 2, cdz / 2);
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, -cdy / 2, cdz / 2);
         fprintf(geof, "\n");
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 zoff * dzoff);                        //position
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -870,10 +698,7 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, gdy / 2, gdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, -gdy / 2, gdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -893,10 +718,7 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, ggdy / 2, ggdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, -ggdy / 2, ggdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzposg + (k - 1) * dzpos);        //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -916,22 +738,17 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, ggdy / 2, ggdz / 2);
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, -ggdy / 2, ggdz / 2);
               fprintf(geof, "\n");
-              fprintf(geof,
-                      "%f %f %f \n",
-                      -ggdx / 2 + (l + 0.5) * gsdx,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", -ggdx / 2 + (l + 0.5) * gsdx, 0.0,
                       0.0);                                 //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
               fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
             }
-          } else {  //k>0
+          }
+          else {  //k>0
             fprintf(geof, "t4reg1gla#%d \n", k);
             fprintf(geof, "t4reg1mod#%d \n", j);
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -939,10 +756,7 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
             if (k < 9) {
               fprintf(geof, "t4reg1gap#%d \n", k);
               fprintf(geof, "t4reg1mod#%d \n", j);
-              fprintf(geof,
-                      "%f %f %f \n",
-                      0.0,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                       startzposg + (k - 1) * dzpos);        //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -956,16 +770,8 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
                   fprintf(parf,
                           "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t "
                           "%2.1f \t %2.1f \n",
-                          i,
-                          j,
-                          l,
-                          4,
-                          xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                            + (l + 0.5) * gsdx,
-                          ypos,
-                          Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                          gsdx,
-                          ggdy);
+                          i, j, l, 4, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                          Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
                 }
               }
             }
@@ -985,30 +791,23 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, dye / 2, dze / 2);
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, -dye / 2, dze / 2);
         fprintf(geof, "\n");
-        fprintf(
-          geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
         fprintf(geof, "t4pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", i);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
-                zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
-      } else {  //j>1
+      }
+      else {  //j>1
         fprintf(geof, "t%dreg%dmod#%d \n", 4, i, j);
         fprintf(geof, "tof%dgas \n", 4);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 zoff * dzoff);                        //position
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1022,39 +821,27 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
           fprintf(parf,
                   "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                   "%2.1f \n",
-                  i,
-                  j,
-                  l,
-                  4,
-                  xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                    + (l + 0.5) * gsdx,
-                  ypos,
-                  Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                  gsdx,
-                  ggdy);
+                  i, j, l, 4, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                  Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
         }
         fprintf(geof, "t4pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 4);
-        fprintf(
-          geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
         fprintf(geof, "t4pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 4);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
-                zoff * dzoff);
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele, zoff * dzoff);
         fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
         fprintf(geof, "//------------------------------------------ \n");
       }
     }
-  } else {  //i>0
+  }
+  else {  //i>0
     fprintf(geof, "tof4#%d\n", i);
     fprintf(geof, "cave \n");
     fprintf(geof, "%f %f %f \n", xpos, ypos, Z);
@@ -1071,22 +858,15 @@ void TOFSMi(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(parf,
                 "%d \t %d \t %d \t %2d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                 "%2.1f \n",
-                i,
-                j,
-                l,
-                4,
-                xpos + startxpos + (j - 1) * dxpos - ggdx / 2
-                  + (l + 0.5) * gsdx,
-                ypos,
-                Z + zoff * dzoff + startzposg + (k - 1) * dzpos,
-                gsdx,
-                ggdy);
+                i, j, l, 4, xpos + startxpos + (j - 1) * dxpos - ggdx / 2 + (l + 0.5) * gsdx, ypos,
+                Z + zoff * dzoff + startzposg + (k - 1) * dzpos, gsdx, ggdy);
       }
     }
   }
 }
 
-void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
+void TOFSMo(int i, float Z, float phi, float xpos, float ypos)
+{
 
   //i   = index of the first box/tower
   //Z   = distance to the target
@@ -1167,46 +947,14 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
     fprintf(geof, "tof2#%d \n", i);
     fprintf(geof, "BOX\n");
     fprintf(geof, "RPCgas_noact \n");
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), dz / 2 - width_aluz);
     fprintf(geof, "\n");
     fprintf(geof, "%f %f %f \n", gasoff, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
@@ -1230,10 +978,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, -cdy / 2, cdz / 2);
         fprintf(geof, "\n");
 
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1256,10 +1001,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, gdy / 2, gdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, -gdy / 2, gdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1279,10 +1021,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, ggdy / 2, ggdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, -ggdy / 2, ggdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzposg + (k - 1) * dzpos);        //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1302,22 +1041,17 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, ggdy / 2, ggdz / 2);
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, -ggdy / 2, ggdz / 2);
               fprintf(geof, "\n");
-              fprintf(geof,
-                      "%f %f %f \n",
-                      -ggdx / 2 + (l + 0.5) * gsdx,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", -ggdx / 2 + (l + 0.5) * gsdx, 0.0,
                       0.0);                                 //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
               fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
             }
-          } else {  //k>0
+          }
+          else {  //k>0
             fprintf(geof, "t2reg1gla#%d \n", k);
             fprintf(geof, "t2reg1mod#%d \n", j);
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1325,10 +1059,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
             if (k < 9) {
               fprintf(geof, "t2reg1gap#%d \n", k);
               fprintf(geof, "t2reg1mod#%d \n", j);
-              fprintf(geof,
-                      "%f %f %f \n",
-                      0.0,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                       startzposg + (k - 1) * dzpos);        //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1341,19 +1072,9 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
                   fprintf(parf,
                           "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t "
                           "%2.1f \t %2.1f \n",
-                          i,
-                          j,
-                          l,
-                          2,
-                          xpos
-                            + cph
-                                * (gasoff + startxpos + (j - 1) * dxpos
-                                   + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                          ypos,
-                          Z + startzposg + (k - 1) * dzpos
-                            - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                          gsdx,
-                          ggdy);
+                          i, j, l, 2,
+                          xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
+                          ypos, Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
                 }
               }
             }
@@ -1374,10 +1095,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, dye / 2, dze / 2);
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, -dye / 2, dze / 2);
         fprintf(geof, "\n");
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1386,22 +1104,17 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
 
         fprintf(geof, "t2pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 2);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", -sphi, 0.0, cphi);
         fprintf(geof, "//------------------------------------------ \n");
-      } else {  //j>1
+      }
+      else {  //j>1
         fprintf(geof, "t%dreg%dmod#%d \n", 2, 1, j);
         fprintf(geof, "tof%dgas \n", 2);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1415,27 +1128,14 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
           fprintf(parf,
                   "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                   "%2.1f \n",
-                  i,
-                  j,
-                  l,
-                  2,
-                  xpos
-                    + cph
-                        * (gasoff + startxpos + (j - 1) * dxpos
-                           + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                  ypos,
-                  Z + startzposg + (k - 1) * dzpos
-                    - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                  gsdx,
-                  ggdy);
+                  i, j, l, 2,
+                  xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)), ypos,
+                  Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
         }
 
         fprintf(geof, "t2pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 2);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1444,10 +1144,7 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
 
         fprintf(geof, "t2pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 2);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1455,7 +1152,8 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "//------------------------------------------ \n");
       }
     }
-  } else {  //i>0
+  }
+  else {  //i>0
     fprintf(geof, "tof2#%d\n", i);
     fprintf(geof, "cave \n");
     fprintf(geof, "%f %f %f \n", xpos, ypos, Z);
@@ -1470,19 +1168,8 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(parf,
                 "%d \t %d \t %d \t %2d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                 "%2.1f \n",
-                i,
-                j,
-                l,
-                2,
-                xpos
-                  + cph
-                      * (gasoff + startxpos + (j - 1) * dxpos
-                         + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                ypos,
-                Z + startzposg + (k - 1) * dzpos
-                  - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                gsdx,
-                ggdy);
+                i, j, l, 2, xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
+                ypos, Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
       }
     }
   }
@@ -1490,7 +1177,8 @@ void TOFSMo(int i, float Z, float phi, float xpos, float ypos) {
 
 
 //-------------------------------------------------------------------------------------
-void TofPole(int i, float Z, float phi, float xpos) {
+void TofPole(int i, float Z, float phi, float xpos)
+{
 
   //i   = index of the first box/tower
   //Z   = distance to the target
@@ -1540,53 +1228,22 @@ void TofPole(int i, float Z, float phi, float xpos) {
     fprintf(geof, "twa1pol#%d \n", i);
     fprintf(geof, "BOX\n");
     fprintf(geof, "air \n");
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), dz / 2 - width_aluz);
     fprintf(geof, "\n");
     fprintf(geof, "%f %f %f \n", 0.0, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
     fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
     fprintf(geof, "//------------------------------------------ \n");
-  } else {  //i>0
+  }
+  else {  //i>0
     fprintf(geof, "twa1pol#%d\n", i);
     fprintf(geof, "cave \n");
     fprintf(geof, "%f %f %f \n", xpos + cphi * (-dx / 2. - dxb / 2.), 0., Z);
@@ -1597,7 +1254,8 @@ void TofPole(int i, float Z, float phi, float xpos) {
   }
 }
 
-void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
+void TOFSMb(int i, float Z, float phi, float xpos, float ypos)
+{
 
   //i   = index of the first box/tower
   //Z   = distance to the target
@@ -1678,46 +1336,14 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
     fprintf(geof, "tof3#%d \n", i);
     fprintf(geof, "BOX\n");
     fprintf(geof, "RPCgas_noact \n");
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            -(dz / 2 - width_aluz));
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            dx / 2 - width_alux,
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            dy / 2 - width_aluy,
-            dz / 2 - width_aluz);
-    fprintf(geof,
-            "  %f  %f  %f \n",
-            -(dx / 2 - width_alux),
-            -(dy / 2 - width_aluy),
-            dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), -(dz / 2 - width_aluz));
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, -(dy / 2 - width_aluy), dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", dx / 2 - width_alux, dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), dy / 2 - width_aluy, dz / 2 - width_aluz);
+    fprintf(geof, "  %f  %f  %f \n", -(dx / 2 - width_alux), -(dy / 2 - width_aluy), dz / 2 - width_aluz);
     fprintf(geof, "\n");
     fprintf(geof, "%f %f %f \n", gasoff, 0.0, 0.0);
     fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);
@@ -1741,10 +1367,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -cdx / 2, -cdy / 2, cdz / 2);
         fprintf(geof, "\n");
 
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1767,10 +1390,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, gdy / 2, gdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -gdx / 2, -gdy / 2, gdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1790,10 +1410,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, ggdy / 2, ggdz / 2);
             fprintf(geof, "  %f  %f  %f \n", -ggdx / 2, -ggdy / 2, ggdz / 2);
             fprintf(geof, "\n");
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzposg + (k - 1) * dzpos);        //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1813,22 +1430,17 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, ggdy / 2, ggdz / 2);
               fprintf(geof, "  %f  %f  %f \n", -gsdx / 2, -ggdy / 2, ggdz / 2);
               fprintf(geof, "\n");
-              fprintf(geof,
-                      "%f %f %f \n",
-                      -ggdx / 2 + (l + 0.5) * gsdx,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", -ggdx / 2 + (l + 0.5) * gsdx, 0.0,
                       0.0);                                 //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
               fprintf(geof, "%f %f %f \n", 0.0, 0.0, 1.0);
             }
-          } else {  //k>0
+          }
+          else {  //k>0
             fprintf(geof, "t3reg1gla#%d \n", k);
             fprintf(geof, "t3reg1mod#%d \n", j);
-            fprintf(geof,
-                    "%f %f %f \n",
-                    0.0,
-                    0.0,
+            fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                     startzpos + (k - 1) * dzpos);         //position
             fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
             fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1836,10 +1448,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
             if (k < 9) {
               fprintf(geof, "t3reg1gap#%d \n", k);
               fprintf(geof, "t3reg1mod#%d \n", j);
-              fprintf(geof,
-                      "%f %f %f \n",
-                      0.0,
-                      0.0,
+              fprintf(geof, "%f %f %f \n", 0.0, 0.0,
                       startzposg + (k - 1) * dzpos);        //position
               fprintf(geof, "%f %f %f   ", 1.0, 0.0, 0.0);  //rotation matrix
               fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1852,19 +1461,9 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
                   fprintf(parf,
                           "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t "
                           "%2.1f \t %2.1f \n",
-                          i,
-                          j,
-                          l,
-                          3,
-                          xpos
-                            + cph
-                                * (gasoff + startxpos + (j - 1) * dxpos
-                                   + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                          ypos,
-                          Z + startzposg + (k - 1) * dzpos
-                            - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                          gsdx,
-                          ggdy);
+                          i, j, l, 3,
+                          xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
+                          ypos, Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
                 }
               }
             }
@@ -1885,10 +1484,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, dye / 2, dze / 2);
         fprintf(geof, "  %f  %f  %f \n", -dxe / 2, -dye / 2, dze / 2);
         fprintf(geof, "\n");
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1897,22 +1493,17 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
 
         fprintf(geof, "t3pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 3);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
         fprintf(geof, "%f %f %f \n", -sphi, 0.0, cphi);
         fprintf(geof, "//------------------------------------------ \n");
-      } else {  //j>1
+      }
+      else {  //j>1
         fprintf(geof, "t%dreg%dmod#%d \n", 3, 1, j);
         fprintf(geof, "tof%dgas \n", 3);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                0.0,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, 0.0,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1926,27 +1517,14 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
           fprintf(parf,
                   "%d \t %d \t %d \t %d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                   "%2.1f \n",
-                  i,
-                  j,
-                  l,
-                  3,
-                  xpos
-                    + cph
-                        * (gasoff + startxpos + (j - 1) * dxpos
-                           + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                  ypos,
-                  Z + startzposg + (k - 1) * dzpos
-                    - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                  gsdx,
-                  ggdy);
+                  i, j, l, 3,
+                  xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)), ypos,
+                  Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
         }
 
         fprintf(geof, "t3pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 3);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1955,10 +1533,7 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
 
         fprintf(geof, "t3pcb#%d \n", j);
         fprintf(geof, "tof%dgas \n", 3);
-        fprintf(geof,
-                "%f %f %f \n",
-                startxpos + (j - 1) * dxpos,
-                -yele,
+        fprintf(geof, "%f %f %f \n", startxpos + (j - 1) * dxpos, -yele,
                 0.);                                    //position
         fprintf(geof, "%f %f %f   ", cphi, 0.0, sphi);  //rotation matrix
         fprintf(geof, "%f %f %f   ", 0.0, 1.0, 0.0);
@@ -1966,7 +1541,8 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(geof, "//------------------------------------------ \n");
       }
     }
-  } else {  //i>0
+  }
+  else {  //i>0
     fprintf(geof, "tof3#%d\n", i);
     fprintf(geof, "cave \n");
     fprintf(geof, "%f %f %f \n", xpos, ypos, Z);
@@ -1981,19 +1557,8 @@ void TOFSMb(int i, float Z, float phi, float xpos, float ypos) {
         fprintf(parf,
                 "%d \t %d \t %d \t %2d \t %5.1f \t %5.1f \t %5.1f \t %2.1f \t "
                 "%2.1f \n",
-                i,
-                j,
-                l,
-                3,
-                xpos
-                  + cph
-                      * (gasoff + startxpos + (j - 1) * dxpos
-                         + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
-                ypos,
-                Z + startzposg + (k - 1) * dzpos
-                  - sphi * (-ggdx / 2 + (l + 0.5) * gsdx),
-                gsdx,
-                ggdy);
+                i, j, l, 3, xpos + cph * (gasoff + startxpos + (j - 1) * dxpos + cphi * (-ggdx / 2 + (l + 0.5) * gsdx)),
+                ypos, Z + startzposg + (k - 1) * dzpos - sphi * (-ggdx / 2 + (l + 0.5) * gsdx), gsdx, ggdy);
       }
     }
   }

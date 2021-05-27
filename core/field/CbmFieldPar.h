@@ -16,11 +16,11 @@
 #ifndef CBMFIELDPAR_H
 #define CBMFIELDPAR_H 1
 
+#include <FairParGenericSet.h>  // for FairParGenericSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
 #include <TString.h>     // for TString
-
-#include <FairParGenericSet.h>  // for FairParGenericSet
 
 class FairField;
 class FairParamList;
@@ -70,9 +70,7 @@ public:
   Double_t GetPositionZ() const { return fPosZ; }
   Double_t GetScale() const { return fScale; }
 
-  void GetDistortionFilename(TString& filename) {
-    filename = fDistortionFilename;
-  }
+  void GetDistortionFilename(TString& filename) { filename = fDistortionFilename; }
   void GetParentName(TString& parentname) { parentname = fParentName; }
   Int_t GetTypeOfParent() const { return fTypeOfParent; }
 

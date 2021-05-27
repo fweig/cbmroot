@@ -14,10 +14,12 @@
  *====================================================================
  */
 #include "CbmKFTrErrMCPoints.h"
+
 #include "CbmKF.h"
 #include "CbmMCTrack.h"
 #include "CbmStsAddress.h"
 #include "CbmStsSetup.h"
+
 #include <algorithm>
 
 using std::vector;
@@ -25,9 +27,16 @@ using std::vector;
 ClassImp(CbmKFTrErrMCPoints)
 
   CbmKFTrErrMCPoints::CbmKFTrErrMCPoints()
-  : StsArray(), MvdArray(), TofArray(), StsHitsArray(), MvdHitsArray() {}
+  : StsArray()
+  , MvdArray()
+  , TofArray()
+  , StsHitsArray()
+  , MvdHitsArray()
+{
+}
 
-int CbmKFTrErrMCPoints::GetNConsMCStations() {
+int CbmKFTrErrMCPoints::GetNConsMCStations()
+{
   if ((GetNMvdPoints() + GetNStsPoints()) < 1) return 0;
   // TODO get station number of the point using methods of the point class!
   float zStation[8] = {30., 40., 50., 60., 70., 80., 90., 100.};
@@ -39,10 +48,8 @@ int CbmKFTrErrMCPoints::GetNConsMCStations() {
   for (int iSts = 0; iSts < GetNStsPoints(); ++iSts) {
     int stNumber = -1;
     for (int iSt = 0; iSt < 8; iSt++)
-      if (TMath::Abs(zStation[iSt] - GetStsPoint(iSts)->GetZ()) < 2.5)
-        stNumber = iSt;
-    if (stNumber >= 0)
-      iStations.push_back(stNumber + CbmKF::Instance()->GetNMvdStations());
+      if (TMath::Abs(zStation[iSt] - GetStsPoint(iSts)->GetZ()) < 2.5) stNumber = iSt;
+    if (stNumber >= 0) iStations.push_back(stNumber + CbmKF::Instance()->GetNMvdStations());
   }
 
   std::sort(iStations.begin(), iStations.end());
@@ -55,7 +62,8 @@ int CbmKFTrErrMCPoints::GetNConsMCStations() {
     if ((iStations[iP] - iPrevSt) == 1) {
       nConsStations++;
       iPrevSt = iStations[iP];
-    } else if ((iStations[iP] - iPrevSt) > 1) {
+    }
+    else if ((iStations[iP] - iPrevSt) > 1) {
       if (nConsStations > nMaxConsStations) nMaxConsStations = nConsStations;
       nConsStations = 1;
       iPrevSt       = iStations[iP];
@@ -66,7 +74,8 @@ int CbmKFTrErrMCPoints::GetNConsMCStations() {
   return nMaxConsStations;
 }
 
-int CbmKFTrErrMCPoints::GetNConsHitStations() {
+int CbmKFTrErrMCPoints::GetNConsHitStations()
+{
   if ((GetNMvdHits() + GetNStsHits()) < 1) return 0;
   // TODO get station number of the point using methods of the point class!
   vector<int> iStations;
@@ -75,9 +84,8 @@ int CbmKFTrErrMCPoints::GetNConsHitStations() {
     //    std::cout << GetMvdHit(iMvd)->GetStationNr() << " " << GetMvdHit(iMvd)->GetZ() << std::endl;
   }
   for (int iSts = 0; iSts < GetNStsHits(); ++iSts)
-    iStations.push_back(
-      CbmStsSetup::Instance()->GetStationNumber(GetStsHit(iSts)->GetAddress())
-      - 1 + CbmKF::Instance()->GetNMvdStations());
+    iStations.push_back(CbmStsSetup::Instance()->GetStationNumber(GetStsHit(iSts)->GetAddress()) - 1
+                        + CbmKF::Instance()->GetNMvdStations());
 
   std::sort(iStations.begin(), iStations.end());
 
@@ -88,7 +96,8 @@ int CbmKFTrErrMCPoints::GetNConsHitStations() {
     if ((iStations[iP] - iPrevSt) == 1) {
       nConsStations++;
       iPrevSt = iStations[iP];
-    } else if ((iStations[iP] - iPrevSt) > 1) {
+    }
+    else if ((iStations[iP] - iPrevSt) > 1) {
       if (nConsStations > nMaxConsStations) nMaxConsStations = nConsStations;
       nConsStations = 1;
       iPrevSt       = iStations[iP];
@@ -99,7 +108,8 @@ int CbmKFTrErrMCPoints::GetNConsHitStations() {
   return nMaxConsStations;
 }
 
-int CbmKFTrErrMCPoints::GetNHitStations() {
+int CbmKFTrErrMCPoints::GetNHitStations()
+{
   if ((GetNMvdHits() + GetNStsHits()) < 1) return 0;
   // TODO get station number of the point using methods of the point class!
   vector<int> iStations;
@@ -108,9 +118,8 @@ int CbmKFTrErrMCPoints::GetNHitStations() {
     //    std::cout << GetMvdHit(iMvd)->GetStationNr() << " " << GetMvdHit(iMvd)->GetZ() << std::endl;
   }
   for (int iSts = 0; iSts < GetNStsHits(); ++iSts)
-    iStations.push_back(
-      CbmStsSetup::Instance()->GetStationNumber(GetStsHit(iSts)->GetAddress())
-      - 1 + CbmKF::Instance()->GetNMvdStations());
+    iStations.push_back(CbmStsSetup::Instance()->GetStationNumber(GetStsHit(iSts)->GetAddress()) - 1
+                        + CbmKF::Instance()->GetNMvdStations());
 
   std::sort(iStations.begin(), iStations.end());
 
@@ -126,7 +135,8 @@ int CbmKFTrErrMCPoints::GetNHitStations() {
   return nStations;
 }
 
-int CbmKFTrErrMCPoints::GetNMaxMCPointsOnStation() {
+int CbmKFTrErrMCPoints::GetNMaxMCPointsOnStation()
+{
   if ((GetNMvdPoints() + GetNStsPoints()) < 1) return 0;
   // TODO get station number of the point using methods of the point class!
   float zStation[8] = {30., 40., 50., 60., 70., 80., 90., 100.};
@@ -138,10 +148,8 @@ int CbmKFTrErrMCPoints::GetNMaxMCPointsOnStation() {
   for (int iSts = 0; iSts < GetNStsPoints(); ++iSts) {
     int stNumber = -1;
     for (int iSt = 0; iSt < 8; iSt++)
-      if (TMath::Abs(zStation[iSt] - GetStsPoint(iSts)->GetZ()) < 2.5)
-        stNumber = iSt;
-    if (stNumber >= 0)
-      iStations.push_back(stNumber + CbmKF::Instance()->GetNMvdStations());
+      if (TMath::Abs(zStation[iSt] - GetStsPoint(iSts)->GetZ()) < 2.5) stNumber = iSt;
+    if (stNumber >= 0) iStations.push_back(stNumber + CbmKF::Instance()->GetNMvdStations());
   }
 
   std::sort(iStations.begin(), iStations.end());
@@ -154,9 +162,9 @@ int CbmKFTrErrMCPoints::GetNMaxMCPointsOnStation() {
     if ((iStations[iP] - iPrevSt) == 0) {
       nMCPointsOnStation++;
       iPrevSt = iStations[iP];
-    } else {
-      if (nMCPointsOnStation > nMaxMCPointsOnStation)
-        nMaxMCPointsOnStation = nMCPointsOnStation;
+    }
+    else {
+      if (nMCPointsOnStation > nMaxMCPointsOnStation) nMaxMCPointsOnStation = nMCPointsOnStation;
       nMCPointsOnStation = 1;
       iPrevSt            = iStations[iP];
     }
@@ -165,21 +173,16 @@ int CbmKFTrErrMCPoints::GetNMaxMCPointsOnStation() {
   return nMaxMCPointsOnStation;
 }
 
-Bool_t CbmKFTrErrMCPoints::IsReconstructable(CbmMCTrack* mcTr,
-                                             int MinNStations,
-                                             int PerformanceMode,
-                                             float MinRecoMom) {
+Bool_t CbmKFTrErrMCPoints::IsReconstructable(CbmMCTrack* mcTr, int MinNStations, int PerformanceMode, float MinRecoMom)
+{
   Bool_t f = 1;
 
   // reject very slow tracks from analysis
   f &= (mcTr->GetP() > MinRecoMom);
   // detected at least in 4 stations
-  if (PerformanceMode == 3)
-    f &= (GetNConsMCStations() >= MinNStations);  // L1-MC
-  if (PerformanceMode == 2)
-    f &= (GetNHitStations() >= MinNStations);  // QA definition
-  if (PerformanceMode == 1)
-    f &= (GetNConsHitStations() >= MinNStations);  // L1 definition
+  if (PerformanceMode == 3) f &= (GetNConsMCStations() >= MinNStations);   // L1-MC
+  if (PerformanceMode == 2) f &= (GetNHitStations() >= MinNStations);      // QA definition
+  if (PerformanceMode == 1) f &= (GetNConsHitStations() >= MinNStations);  // L1 definition
 
   // maximul 4 layers for a station.
   f &= (GetNMaxMCPointsOnStation() <= 4);

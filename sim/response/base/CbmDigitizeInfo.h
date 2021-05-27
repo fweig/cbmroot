@@ -8,6 +8,7 @@
 #define CBMDIGITIZEINFO_H 1
 
 #include "CbmDigitizeBase.h"
+
 #include "TObject.h"
 #include "TString.h"
 
@@ -31,18 +32,16 @@ public:
      ** @param branch     Name of MCPoint branch as input
      ** @param digitizer  Pointer to digitizer instance
      **/
-  CbmDigitizeInfo(ECbmModuleId system,
-                  TString branch             = "",
-                  CbmDigitizeBase* digitizer = nullptr,
-                  Bool_t present             = kFALSE,
-                  Bool_t active              = kTRUE,
-                  Bool_t persistent          = kTRUE)
+  CbmDigitizeInfo(ECbmModuleId system, TString branch = "", CbmDigitizeBase* digitizer = nullptr,
+                  Bool_t present = kFALSE, Bool_t active = kTRUE, Bool_t persistent = kTRUE)
     : fSystem(system)
     , fBranch(branch)
     , fDigitizer(digitizer)
     , fPresent(present)
     , fActive(active)
-    , fPersistent(persistent) {}
+    , fPersistent(persistent)
+  {
+  }
 
 
   /** Destructor **/

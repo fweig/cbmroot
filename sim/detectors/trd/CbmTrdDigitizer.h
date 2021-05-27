@@ -16,6 +16,7 @@
 #include "CbmTrdCheckUtil.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdRawToDigiR.h"
+
 #include <map>
 
 class TClonesArray;
@@ -35,7 +36,8 @@ class CbmTrdModuleSim;
 
 class CbmTrdDigitizer : public CbmDigitize<CbmTrdDigi> {
 public:
-  enum CbmTrdSimDef {
+  enum CbmTrdSimDef
+  {
     kTime = 0,        ///< select Time based/Event by event simulations
     kNoise,           ///< switch noise digits generation
     kWeightDistance,  ///< use weighting distance for link generation
@@ -80,16 +82,11 @@ public:
   */
   virtual void Finish();
 
-  static void SetAddNoise(Bool_t set = kTRUE) {
-    set ? SETBIT(fConfig, kNoise) : CLRBIT(fConfig, kNoise);
-  }
-  static void SetUseFASP(Bool_t set = kTRUE) {
-    set ? SETBIT(fConfig, kFASP) : CLRBIT(fConfig, kFASP);
-  }
-  static void SetTimeBased(Bool_t set = kTRUE) {
-    set ? SETBIT(fConfig, kTime) : CLRBIT(fConfig, kTime);
-  }
-  static void SetWeightedDist(Bool_t set = kTRUE) {
+  static void SetAddNoise(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kNoise) : CLRBIT(fConfig, kNoise); }
+  static void SetUseFASP(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kFASP) : CLRBIT(fConfig, kFASP); }
+  static void SetTimeBased(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kTime) : CLRBIT(fConfig, kTime); }
+  static void SetWeightedDist(Bool_t set = kTRUE)
+  {
     set ? SETBIT(fConfig, kWeightDistance) : CLRBIT(fConfig, kWeightDistance);
   }
 
@@ -115,8 +112,7 @@ private:
   /** @brief Clear data arrays **/
   virtual void ResetArrays();
 
-  static Int_t
-    fConfig;  ///< Configuration map for the digitizer. See CbmTrdSimDef for details
+  static Int_t fConfig;  ///< Configuration map for the digitizer. See CbmTrdSimDef for details
 
   // event info
   Double_t fLastEventTime;  ///< time of last event [ns]
@@ -143,8 +139,7 @@ private:
   CbmTrdCheckUtil* fQA;
 
   //CbmTrdGeoHandler *fGeoHandler;///< helper to decript geoManager path into proper module type
-  std::map<Int_t, CbmTrdModuleSim*>
-    fModuleMap;  ///< list of modules being processed
+  std::map<Int_t, CbmTrdModuleSim*> fModuleMap;  ///< list of modules being processed
 
   // Temporary storage for digis.
   std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>> fDigiMap;

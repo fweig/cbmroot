@@ -7,31 +7,36 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmHelix.h"
+
 #include <TMath.h>
+
 #include <vector>
 // matrix x, y, tx,ty, qp, z
 FairField* CbmHelix::fgField = NULL;
 CbmHelix::CbmHelix() {}
 
-void CbmHelix::Build(const CbmGlobalTrack* tr) {
+void CbmHelix::Build(const CbmGlobalTrack* tr)
+{
   const FairTrackParam* parameters = tr->GetParamVertex();
   SetParameters(parameters);
 }
 
-void CbmHelix::Build(const CbmStsTrack* tr, Bool_t firstPoint) {
-  if (firstPoint) {
-    SetParameters(tr->GetParamFirst());
-  } else {
+void CbmHelix::Build(const CbmStsTrack* tr, Bool_t firstPoint)
+{
+  if (firstPoint) { SetParameters(tr->GetParamFirst()); }
+  else {
     SetParameters(tr->GetParamLast());
   }
 }
 
-TVector3 CbmHelix::Eval(Double_t z) {
+TVector3 CbmHelix::Eval(Double_t z)
+{
   Propagate(z);
   return TVector3(GetTrack()[0], GetTrack()[1], GetTrack()[5]);
 }
 
-TVector3 CbmHelix::Eval(Double_t z, TVector3& mom) {
+TVector3 CbmHelix::Eval(Double_t z, TVector3& mom)
+{
   Propagate(z);
   Double_t p  = (TMath::Abs(Qp()) > 1.e-4) ? 1. / TMath::Abs(Qp()) : 1.e4;
   Double_t pz = TMath::Sqrt(p * p / (Tx() * Tx() + Ty() * Ty() + 1));
@@ -41,7 +46,8 @@ TVector3 CbmHelix::Eval(Double_t z, TVector3& mom) {
   return TVector3(GetTrack()[0], GetTrack()[1], GetTrack()[5]);
 }
 
-void CbmHelix::SetParameters(const FairTrackParam* param) {
+void CbmHelix::SetParameters(const FairTrackParam* param)
+{
   fTb[0] = param->GetX();
   fTb[1] = param->GetY();
   fTb[2] = param->GetTx();
@@ -55,9 +61,8 @@ void CbmHelix::SetParameters(const FairTrackParam* param) {
     		*/
 }
 
-void CbmHelix::Build(const TVector3& pos,
-                     const TVector3& mom,
-                     Double_t charge) {
+void CbmHelix::Build(const TVector3& pos, const TVector3& mom, Double_t charge)
+{
   fTb[0]     = pos.X();
   fTb[1]     = pos.Y();
   Double_t p = mom.Mag();
@@ -69,7 +74,8 @@ void CbmHelix::Build(const TVector3& pos,
 
 CbmHelix::~CbmHelix() {}
 
-CbmHelix::CbmHelix(const CbmHelix& other) : TObject() {
+CbmHelix::CbmHelix(const CbmHelix& other) : TObject()
+{
   for (int i = 0; i < 6; i++) {
     fT[i]  = other.fT[i];
     fTb[i] = other.fTb[i];
@@ -80,7 +86,8 @@ CbmHelix::CbmHelix(const CbmHelix& other) : TObject() {
 	}*/
 }
 
-CbmHelix& CbmHelix::operator=(const CbmHelix& other) {
+CbmHelix& CbmHelix::operator=(const CbmHelix& other)
+{
   if (&other == this) return *this;
   for (int i = 0; i < 6; i++) {
     fT[i]  = other.fT[i];
@@ -91,7 +98,8 @@ CbmHelix& CbmHelix::operator=(const CbmHelix& other) {
   return *this;
 }
 
-Int_t CbmHelix::Propagate(Double_t z) {
+Int_t CbmHelix::Propagate(Double_t z)
+{
   Int_t fMethod = 1;
   Bool_t err    = 0;
   for (int i = 0; i < 6; i++) {
@@ -111,8 +119,7 @@ Int_t CbmHelix::Propagate(Double_t z) {
   while (!err && repeat) {
     const Double_t max_step = 5.;
     Double_t zzz;
-    if (fabs(fT[5] - zz) > max_step)
-      zzz = fT[5] + ((zz > fT[5]) ? max_step : -max_step);
+    if (fabs(fT[5] - zz) > max_step) zzz = fT[5] + ((zz > fT[5]) ? max_step : -max_step);
     else {
       zzz    = zz;
       repeat = 0;
@@ -136,7 +143,8 @@ Int_t CbmHelix::Propagate(Double_t z) {
   return err;
 }
 
-void CbmHelix::ExtrapolateLine(Double_t z_out) {
+void CbmHelix::ExtrapolateLine(Double_t z_out)
+{
   Double_t dz = z_out - fT[5];
 
   fT[0] += dz * fT[2];
@@ -161,7 +169,8 @@ void CbmHelix::ExtrapolateLine(Double_t z_out) {
 */
 }
 
-Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
+Int_t CbmHelix::ExtrapolateRK4(Double_t z_out)
+{
   const Double_t c_light = 0.000299792458;
 
   static Double_t a[4] = {0.0, 0.5, 0.5, 1.0};
@@ -191,17 +200,15 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k[step * 4 - 4 + i];
       }
     }
 
     Double_t point[3] = {x[0], x[1], z_in + a[step] * h};
     Double_t B[3];
-    if (fgField)
-      fgField->GetFieldValue(point, B);
+    if (fgField) fgField->GetFieldValue(point, B);
     else {
       B[0] = B[1] = B[2] = 0.;
     }
@@ -219,14 +226,12 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
     tx2ty2 *= hC;
     Double_t tx2ty2qp = tx2ty2 * Qp();
     Ax[step]          = (txty * B[0] + ty * B[2] - (1.0 + tx2) * B[1]) * tx2ty2;
-    Ay[step] = (-txty * B[1] - tx * B[2] + (1.0 + ty2) * B[0]) * tx2ty2;
+    Ay[step]          = (-txty * B[1] - tx * B[2] + (1.0 + ty2) * B[0]) * tx2ty2;
 
-    Ax_tx[step] =
-      Ax[step] * tx * I_tx2ty21 + (ty * B[0] - 2.0 * tx * B[1]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[0] - 2.0 * tx * B[1]) * tx2ty2qp;
     Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[0] + B[2]) * tx2ty2qp;
     Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[1] - B[2]) * tx2ty2qp;
-    Ay_ty[step] =
-      Ay[step] * ty * I_tx2ty21 + (-tx * B[1] + 2.0 * ty * B[0]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[1] + 2.0 * ty * B[0]) * tx2ty2qp;
 
     step4        = step * 4;
     k[step4]     = tx * h;
@@ -237,8 +242,7 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
   }  // end of Runge-Kutta steps
 
   for (i = 0; i < 4; ++i) {
-    fT[i] = x0[i] + c[0] * k[i] + c[1] * k[4 + i] + c[2] * k[8 + i]
-            + c[3] * k[12 + i];
+    fT[i] = x0[i] + c[0] * k[i] + c[1] * k[4 + i] + c[2] * k[8 + i] + c[3] * k[12 + i];
   }
   fT[5] = z_out;
   //
@@ -255,9 +259,8 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -272,8 +275,7 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
   Double_t J[25];
 
   for (i = 0; i < 4; ++i) {
-    J[20 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                + c[3] * k1[12 + i];
+    J[20 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
   J[24] = 1.;
   //
@@ -294,9 +296,8 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else if (i != 2) {
+      if (step == 0) { x[i] = x0[i]; }
+      else if (i != 2) {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -309,10 +310,7 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
   }  // end of Runge-Kutta steps for derivatives dx/dtx
 
   for (i = 0; i < 4; ++i) {
-    if (i != 2) {
-      J[10 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                  + c[3] * k1[12 + i];
-    }
+    if (i != 2) { J[10 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i]; }
   }
   //      end of derivatives dx/dtx
   J[12] = 1.0;
@@ -334,7 +332,8 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
     for (i = 0; i < 4; ++i) {
       if (step == 0) {
         x[i] = x0[i];  // ty fixed
-      } else if (i != 3) {
+      }
+      else if (i != 3) {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -347,8 +346,7 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
   }  // end of Runge-Kutta steps for derivatives dx/dty
 
   for (i = 0; i < 3; ++i) {
-    J[15 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                + c[3] * k1[12 + i];
+    J[15 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
   //      end of derivatives dx/dty
   J[18] = 1.;
@@ -381,7 +379,8 @@ Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
   return 0;
 }
 
-Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
+Int_t CbmHelix::ExtrapolateALight(Double_t z_out)
+{
   //
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
@@ -410,25 +409,19 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
   Double_t x = fT[2],  // tx !!
     y        = fT[3],  // ty !!
 
-    xx = x * x, xy = x * y, yy = y * y, x2 = x * 2, x4 = x * 4,
-           xx31 = xx * 3 + 1, xx159 = xx * 15 + 9, y2 = y * 2;
+    xx = x * x, xy = x * y, yy = y * y, x2 = x * 2, x4 = x * 4, xx31 = xx * 3 + 1, xx159 = xx * 15 + 9, y2 = y * 2;
 
-  Double_t Ax = xy, Ay = -xx - 1, Az = y, Ayy = x * (xx * 3 + 3), Ayz = -2 * xy,
-           Ayyy = -(15 * xx * xx + 18 * xx + 3),
+  Double_t Ax = xy, Ay = -xx - 1, Az = y, Ayy = x * (xx * 3 + 3), Ayz = -2 * xy, Ayyy = -(15 * xx * xx + 18 * xx + 3),
 
-           Ax_x = y, Ay_x = -x2, Az_x = 0, Ayy_x = 3 * xx31, Ayz_x = -y2,
-           Ayyy_x = -x4 * xx159,
+           Ax_x = y, Ay_x = -x2, Az_x = 0, Ayy_x = 3 * xx31, Ayz_x = -y2, Ayyy_x = -x4 * xx159,
 
            Ax_y = x, Ay_y = 0, Az_y = 1, Ayy_y = 0, Ayz_y = -x2, Ayyy_y = 0,
 
-           Bx = yy + 1, By = -xy, Bz = -x, Byy = y * xx31, Byz = 2 * xx + 1,
-           Byyy = -xy * xx159,
+           Bx = yy + 1, By = -xy, Bz = -x, Byy = y * xx31, Byz = 2 * xx + 1, Byyy = -xy * xx159,
 
-           Bx_x = 0, By_x = -y, Bz_x = -1, Byy_x = 6 * xy, Byz_x = x4,
-           Byyy_x = -y * (45 * xx + 9),
+           Bx_x = 0, By_x = -y, Bz_x = -1, Byy_x = 6 * xy, Byz_x = x4, Byyy_x = -y * (45 * xx + 9),
 
-           Bx_y = y2, By_y = -x, Bz_y = 0, Byy_y = xx31, Byz_y = 0,
-           Byyy_y = -x * xx159;
+           Bx_y = y2, By_y = -x, Bz_y = 0, Byy_y = xx31, Byz_y = 0, Byyy_y = -x * xx159;
 
   // end of coefficients calculation
 
@@ -436,8 +429,7 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
   if (t2 > 1.e4) return 1;
   Double_t t = sqrt(t2), h = Qp() * c_light, ht = h * t;
 
-  Double_t sx = 0, sy = 0, sz = 0, syy = 0, syz = 0, syyy = 0, Sx = 0, Sy = 0,
-           Sz = 0, Syy = 0, Syz = 0, Syyy = 0;
+  Double_t sx = 0, sy = 0, sz = 0, syy = 0, syz = 0, syyy = 0, Sx = 0, Sy = 0, Sz = 0, Syy = 0, Syz = 0, Syyy = 0;
 
   {  // get field integrals
 
@@ -501,16 +493,13 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
     syyy = syy * syy * syy / 1296;
     syy  = syy * syy / 72;
 
-    Syy = (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1])
-           + B[1][1] * (208 * B[1][1] + 16 * B[2][1]) + B[2][1] * (3 * B[2][1]))
+    Syy = (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1]) + B[1][1] * (208 * B[1][1] + 16 * B[2][1])
+           + B[2][1] * (3 * B[2][1]))
           * dz * dz * dz / 2520.;
     Syyy = (B[0][1]
-              * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1])
-                 + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
+              * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1]) + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
                  + B[2][1] * (19 * B[2][1]))
-            + B[1][1]
-                * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1])
-                   + B[2][1] * (62 * B[2][1]))
+            + B[1][1] * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1]) + B[2][1] * (62 * B[2][1]))
             + B[2][1] * B[2][1] * (3 * B[2][1]))
            * dz * dz * dz * dz / 90720.;
   }
@@ -518,34 +507,28 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
   Double_t
 
     sA1   = sx * Ax + sy * Ay + sz * Az,
-    sA1_x = sx * Ax_x + sy * Ay_x + sz * Az_x,
-    sA1_y = sx * Ax_y + sy * Ay_y + sz * Az_y,
+    sA1_x = sx * Ax_x + sy * Ay_x + sz * Az_x, sA1_y = sx * Ax_y + sy * Ay_y + sz * Az_y,
 
-    sB1   = sx * Bx + sy * By + sz * Bz,
-    sB1_x = sx * Bx_x + sy * By_x + sz * Bz_x,
+    sB1 = sx * Bx + sy * By + sz * Bz, sB1_x = sx * Bx_x + sy * By_x + sz * Bz_x,
     sB1_y = sx * Bx_y + sy * By_y + sz * Bz_y,
 
-    SA1   = Sx * Ax + Sy * Ay + Sz * Az,
-    SA1_x = Sx * Ax_x + Sy * Ay_x + Sz * Az_x,
+    SA1 = Sx * Ax + Sy * Ay + Sz * Az, SA1_x = Sx * Ax_x + Sy * Ay_x + Sz * Az_x,
     SA1_y = Sx * Ax_y + Sy * Ay_y + Sz * Az_y,
 
-    SB1   = Sx * Bx + Sy * By + Sz * Bz,
-    SB1_x = Sx * Bx_x + Sy * By_x + Sz * Bz_x,
+    SB1 = Sx * Bx + Sy * By + Sz * Bz, SB1_x = Sx * Bx_x + Sy * By_x + Sz * Bz_x,
     SB1_y = Sx * Bx_y + Sy * By_y + Sz * Bz_y,
 
-    sA2 = syy * Ayy + syz * Ayz, sA2_x = syy * Ayy_x + syz * Ayz_x,
-    sA2_y = syy * Ayy_y + syz * Ayz_y, sB2 = syy * Byy + syz * Byz,
-    sB2_x = syy * Byy_x + syz * Byz_x, sB2_y = syy * Byy_y + syz * Byz_y,
+    sA2 = syy * Ayy + syz * Ayz, sA2_x = syy * Ayy_x + syz * Ayz_x, sA2_y = syy * Ayy_y + syz * Ayz_y,
+    sB2 = syy * Byy + syz * Byz, sB2_x = syy * Byy_x + syz * Byz_x, sB2_y = syy * Byy_y + syz * Byz_y,
 
-    SA2 = Syy * Ayy + Syz * Ayz, SA2_x = Syy * Ayy_x + Syz * Ayz_x,
-    SA2_y = Syy * Ayy_y + Syz * Ayz_y, SB2 = Syy * Byy + Syz * Byz,
-    SB2_x = Syy * Byy_x + Syz * Byz_x, SB2_y = Syy * Byy_y + Syz * Byz_y,
+    SA2 = Syy * Ayy + Syz * Ayz, SA2_x = Syy * Ayy_x + Syz * Ayz_x, SA2_y = Syy * Ayy_y + Syz * Ayz_y,
+    SB2 = Syy * Byy + Syz * Byz, SB2_x = Syy * Byy_x + Syz * Byz_x, SB2_y = Syy * Byy_y + Syz * Byz_y,
 
-    sA3 = syyy * Ayyy, sA3_x = syyy * Ayyy_x, sA3_y = syyy * Ayyy_y,
-    sB3 = syyy * Byyy, sB3_x = syyy * Byyy_x, sB3_y = syyy * Byyy_y,
+    sA3 = syyy * Ayyy, sA3_x = syyy * Ayyy_x, sA3_y = syyy * Ayyy_y, sB3 = syyy * Byyy, sB3_x = syyy * Byyy_x,
+    sB3_y = syyy * Byyy_y,
 
-    SA3 = Syyy * Ayyy, SA3_x = Syyy * Ayyy_x, SA3_y = Syyy * Ayyy_y,
-    SB3 = Syyy * Byyy, SB3_x = Syyy * Byyy_x, SB3_y = Syyy * Byyy_y;
+    SA3 = Syyy * Ayyy, SA3_x = Syyy * Ayyy_x, SA3_y = Syyy * Ayyy_y, SB3 = Syyy * Byyy, SB3_x = Syyy * Byyy_x,
+    SB3_y = Syyy * Byyy_y;
 #ifdef SKIP_LOSSES
   fT[0] = fT[0] + x * dz + ht * (SA1 + ht * (SA2 + ht * SA3));
   fT[1] = fT[1] + y * dz + ht * (SB1 + ht * (SB2 + ht * SB3));
@@ -580,26 +563,18 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
 
   // derivatives '_tx
 
-  J[10] = dz + h * x * (1. / t * SA1 + h * (2 * SA2 + 3 * ht * SA3))
-          + ht * (SA1_x + ht * (SA2_x + ht * SA3_x));
-  J[11] = h * x * (1. / t * SB1 + h * (2 * SB2 + 3 * ht * SB3))
-          + ht * (SB1_x + ht * (SB2_x + ht * SB3_x));
-  J[12] = 1 + h * x * (1. / t * sA1 + h * (2 * sA2 + 3 * ht * sA3))
-          + ht * (sA1_x + ht * (sA2_x + ht * sA3_x));
-  J[13] = h * x * (1. / t * sB1 + h * (2 * sB2 + 3 * ht * sB3))
-          + ht * (sB1_x + ht * (sB2_x + ht * sB3_x));
+  J[10] = dz + h * x * (1. / t * SA1 + h * (2 * SA2 + 3 * ht * SA3)) + ht * (SA1_x + ht * (SA2_x + ht * SA3_x));
+  J[11] = h * x * (1. / t * SB1 + h * (2 * SB2 + 3 * ht * SB3)) + ht * (SB1_x + ht * (SB2_x + ht * SB3_x));
+  J[12] = 1 + h * x * (1. / t * sA1 + h * (2 * sA2 + 3 * ht * sA3)) + ht * (sA1_x + ht * (sA2_x + ht * sA3_x));
+  J[13] = h * x * (1. / t * sB1 + h * (2 * sB2 + 3 * ht * sB3)) + ht * (sB1_x + ht * (sB2_x + ht * sB3_x));
   J[14] = 0;
 
   // derivatives '_ty
 
-  J[15] = h * y * (1. / t * SA1 + h * (2 * SA2 + 3 * ht * SA3))
-          + ht * (SA1_y + ht * (SA2_y + ht * SA3_y));
-  J[16] = dz + h * y * (1. / t * SB1 + h * (2 * SB2 + 3 * ht * SB3))
-          + ht * (SB1_y + ht * (SB2_y + ht * SB3_y));
-  J[17] = h * y * (1. / t * sA1 + h * (2 * sA2 + 3 * ht * sA3))
-          + ht * (sA1_y + ht * (sA2_y + ht * sA3_y));
-  J[18] = 1 + h * y * (1. / t * sB1 + h * (2 * sB2 + 3 * ht * sB3))
-          + ht * (sB1_y + ht * (sB2_y + ht * sB3_y));
+  J[15] = h * y * (1. / t * SA1 + h * (2 * SA2 + 3 * ht * SA3)) + ht * (SA1_y + ht * (SA2_y + ht * SA3_y));
+  J[16] = dz + h * y * (1. / t * SB1 + h * (2 * SB2 + 3 * ht * SB3)) + ht * (SB1_y + ht * (SB2_y + ht * SB3_y));
+  J[17] = h * y * (1. / t * sA1 + h * (2 * sA2 + 3 * ht * sA3)) + ht * (sA1_y + ht * (sA2_y + ht * sA3_y));
+  J[18] = 1 + h * y * (1. / t * sB1 + h * (2 * sB2 + 3 * ht * sB3)) + ht * (sB1_y + ht * (sB2_y + ht * sB3_y));
   J[19] = 0;
 
   // derivatives '_qp
@@ -630,7 +605,8 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
   return 0;
 }
 
-void CbmHelix::multQtSQ(const Int_t /*N*/, Double_t /*Q*/[]) {
+void CbmHelix::multQtSQ(const Int_t /*N*/, Double_t /*Q*/[])
+{
   /*Double_t A[N * N];
 
 	  for( Int_t i=0, n=0; i<N; i++ ){

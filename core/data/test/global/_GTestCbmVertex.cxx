@@ -12,7 +12,8 @@
 
 #include "../compareVertex.h"
 
-TEST(_GTestCbmVertex, CheckDefaultConstructor) {
+TEST(_GTestCbmVertex, CheckDefaultConstructor)
+{
   CbmVertex test;
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
   {
@@ -21,7 +22,8 @@ TEST(_GTestCbmVertex, CheckDefaultConstructor) {
   }
 }
 
-TEST(_GTestCbmVertex, CheckStandardConstructor) {
+TEST(_GTestCbmVertex, CheckStandardConstructor)
+{
   CbmVertex test {"Vertex", "Vertex"};
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
   {
@@ -30,7 +32,8 @@ TEST(_GTestCbmVertex, CheckStandardConstructor) {
   }
 }
 
-TEST(_GTestCbmVertex, CheckConstructorAllArguments) {
+TEST(_GTestCbmVertex, CheckConstructorAllArguments)
+{
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;  // 0 1 2
   Cov(0, 1) = 1.;  // 1 3 4
@@ -82,7 +85,8 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments) {
   }
 }
 
-TEST(_GTestCbmVertex, CheckReset) {
+TEST(_GTestCbmVertex, CheckReset)
+{
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -109,7 +113,8 @@ TEST(_GTestCbmVertex, CheckReset) {
   }
 }
 
-TEST(_GTestCbmVertex, CheckGetPosition) {
+TEST(_GTestCbmVertex, CheckGetPosition)
+{
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -141,7 +146,8 @@ TEST(_GTestCbmVertex, CheckGetPosition) {
 }
 
 
-TEST(_GTestCbmVertex, CheckGetCovMatrix) {
+TEST(_GTestCbmVertex, CheckGetCovMatrix)
+{
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -177,7 +183,8 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix) {
 }
 
 
-TEST(_GTestCbmVertex, CheckSetVertex) {
+TEST(_GTestCbmVertex, CheckSetVertex)
+{
 
   CbmVertex test;
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
@@ -237,7 +244,8 @@ TEST(_GTestCbmVertex, CheckSetVertex) {
   }
 }
 
-TEST(_GTestCbmVertex, CheckPrint) {
+TEST(_GTestCbmVertex, CheckPrint)
+{
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;

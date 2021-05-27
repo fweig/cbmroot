@@ -3,6 +3,7 @@
 
 #include "CbmEvent.h"
 #include "CbmRichRingFinderHoughImpl.h"
+
 #include "FairTask.h"
 class TClonesArray;
 class CbmRichRing;

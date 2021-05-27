@@ -28,8 +28,7 @@ public:
   /**
     * \brief Constructor.
     */
-  LitScalStripHit()
-    : phiCos(0.), phiSin(0.), U(0.), Du(0.), stationId(0), refId(0), Z(0.) {}
+  LitScalStripHit() : phiCos(0.), phiSin(0.), U(0.), Du(0.), stationId(0), refId(0), Z(0.) {}
 
   /**
     * \brief Destructor.
@@ -40,11 +39,11 @@ public:
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-  string ToString() const {
+  string ToString() const
+  {
     stringstream ss;
-    ss << "LitScalStripHit: phiCos=" << phiCos << " phiSin=" << phiSin
-       << " U=" << U << " Du=" << Du << " planeId=" << (int) stationId
-       << " refId=" << refId << " Z=" << Z << "\n";
+    ss << "LitScalStripHit: phiCos=" << phiCos << " phiSin=" << phiSin << " U=" << U << " Du=" << Du
+       << " planeId=" << (int) stationId << " refId=" << refId << " Z=" << Z << "\n";
     return ss.str();
   }
 
@@ -52,7 +51,8 @@ public:
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-  friend ostream& operator<<(ostream& strm, const LitScalStripHit& hit) {
+  friend ostream& operator<<(ostream& strm, const LitScalStripHit& hit)
+  {
     strm << hit.ToString();
     return strm;
   }

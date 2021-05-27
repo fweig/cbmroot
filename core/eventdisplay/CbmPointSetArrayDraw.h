@@ -15,10 +15,10 @@
 #ifndef CBMPOINTSETARRAYDRAW_H
 #define CBMPOINTSETARRAYDRAW_H
 
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, kTRUE, Color_t, Opt...
-
-#include <FairTask.h>  // for FairTask, InitStatus
 
 class CbmPointSetArray;
 class FairEventManager;
@@ -39,11 +39,7 @@ public:
     *@param markerMode  how to mark points
     *@param iVerbose    Verbosity level
     **/
-  CbmPointSetArrayDraw(const char* name,
-                       Int_t colorMode,
-                       Int_t markerMode,
-                       Int_t iVerbose = 1,
-                       Bool_t render  = kTRUE);
+  CbmPointSetArrayDraw(const char* name, Int_t colorMode, Int_t markerMode, Int_t iVerbose = 1, Bool_t render = kTRUE);
 
   /** Destructor **/
   virtual ~CbmPointSetArrayDraw();
@@ -82,9 +78,9 @@ protected:
   TClonesArray* fPointList;         //Array containing list of hits
   FairEventManager* fEventManager;  //Pointer to Event Manager
   CbmPointSetArray*
-    fl;  //Pointer to CbmPointSetArray -> Cbm class for displaying array of Hit-sets -> TEvePointSetArray
-  Color_t fColor;        //Color of Hit-Markers
-  Style_t fStyle;        //Style of Hit-Markers
+    fl;            //Pointer to CbmPointSetArray -> Cbm class for displaying array of Hit-sets -> TEvePointSetArray
+  Color_t fColor;  //Color of Hit-Markers
+  Style_t fStyle;  //Style of Hit-Markers
   Double_t fTimeOffset;  //Time Offset on Hits to scale first hit to 0
   Double_t fTimeMax;     //Max Time of Hits in TofHit
   Int_t fColorMode;      //Int determining how points get color-coded

@@ -48,20 +48,18 @@ CbmRecoQa* CbmRecoQa::instance = 0;
  ** @param outName Name of the Outputfile
  ** @param verbose_l Verbosity Level of Output
  **/
-CbmRecoQa::CbmRecoQa(
-  std::vector<std::pair<std::string, std::array<int, 4>>> decNames,
-  std::string outName,
-  int verbose_l)
+CbmRecoQa::CbmRecoQa(std::vector<std::pair<std::string, std::array<int, 4>>> decNames, std::string outName,
+                     int verbose_l)
   : FairTask("CbmRecoQa")
   , pullresfile(nullptr)
   , verbosity(verbose_l)
   , detectors(decNames)
-  , hists(
-      std::vector<std::vector<TH1F*>>(detectors.size(), std::vector<TH1F*>(6)))
+  , hists(std::vector<std::vector<TH1F*>>(detectors.size(), std::vector<TH1F*>(6)))
   , eventList(nullptr)
   , fManager(nullptr)
   , mcManager(nullptr)
-  , outname(outName) {
+  , outname(outName)
+{
   if (!instance) { instance = this; };
 };
 
@@ -71,7 +69,8 @@ CbmRecoQa::~CbmRecoQa() {};
 // --- Init and Re-Init
 InitStatus CbmRecoQa::ReInit() { return kSUCCESS; };
 
-InitStatus CbmRecoQa::Init() {
+InitStatus CbmRecoQa::Init()
+{
 
   fManager  = FairRootManager::Instance();
   mcManager = (CbmMCDataManager*) fManager->GetObject("MCDataManager");
@@ -103,37 +102,13 @@ InitStatus CbmRecoQa::Init() {
     std::string resy    = decName + " Residual y";
     std::string rest    = decName + " Residual t";
 
-    TH1F* pullxHist = new TH1F(px.c_str(),
-                               pullx.c_str(),
-                               100,
-                               -1 * detectors[i].second[0],
-                               detectors[i].second[0]);
-    TH1F* pullyHist = new TH1F(py.c_str(),
-                               pully.c_str(),
-                               100,
-                               -1 * detectors[i].second[0],
-                               detectors[i].second[0]);
-    TH1F* pulltHist = new TH1F(pt.c_str(),
-                               pullt.c_str(),
-                               100,
-                               -1 * detectors[i].second[0],
-                               detectors[i].second[0]);
+    TH1F* pullxHist = new TH1F(px.c_str(), pullx.c_str(), 100, -1 * detectors[i].second[0], detectors[i].second[0]);
+    TH1F* pullyHist = new TH1F(py.c_str(), pully.c_str(), 100, -1 * detectors[i].second[0], detectors[i].second[0]);
+    TH1F* pulltHist = new TH1F(pt.c_str(), pullt.c_str(), 100, -1 * detectors[i].second[0], detectors[i].second[0]);
 
-    TH1F* residualxHist = new TH1F(rx.c_str(),
-                                   resx.c_str(),
-                                   100,
-                                   -1 * detectors[i].second[1],
-                                   detectors[i].second[1]);
-    TH1F* residualyHist = new TH1F(ry.c_str(),
-                                   resy.c_str(),
-                                   100,
-                                   -1 * detectors[i].second[2],
-                                   detectors[i].second[2]);
-    TH1F* residualtHist = new TH1F(rt.c_str(),
-                                   rest.c_str(),
-                                   100,
-                                   -1 * detectors[i].second[3],
-                                   detectors[i].second[3]);
+    TH1F* residualxHist = new TH1F(rx.c_str(), resx.c_str(), 100, -1 * detectors[i].second[1], detectors[i].second[1]);
+    TH1F* residualyHist = new TH1F(ry.c_str(), resy.c_str(), 100, -1 * detectors[i].second[2], detectors[i].second[2]);
+    TH1F* residualtHist = new TH1F(rt.c_str(), rest.c_str(), 100, -1 * detectors[i].second[3], detectors[i].second[3]);
 
     //    pullxHist->SetCanExtend(TH1::kAllAxes);
     //    pullyHist->SetCanExtend(TH1::kAllAxes);
@@ -156,8 +131,7 @@ InitStatus CbmRecoQa::Init() {
     hists[i][4] = residualyHist;
     hists[i][5] = residualtHist;
 
-    if (verbosity > 1)
-      LOG(info) << "CbmRecoQa Success Initiliasing Histograms for: " << decName;
+    if (verbosity > 1) LOG(info) << "CbmRecoQa Success Initiliasing Histograms for: " << decName;
   }
 
   return kSUCCESS;
@@ -165,7 +139,8 @@ InitStatus CbmRecoQa::Init() {
 
 // --- Finish Event
 // Record all Data for Detectors defined
-void CbmRecoQa::FinishEvent() {
+void CbmRecoQa::FinishEvent()
+{
 
   static int event = 0;
   LOG(info) << "CbmRecoQa for Event " << event++;
@@ -176,7 +151,8 @@ void CbmRecoQa::FinishEvent() {
 
 // --- Finish Task
 // Save Data in File
-void CbmRecoQa::FinishTask() {
+void CbmRecoQa::FinishTask()
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -189,8 +165,7 @@ void CbmRecoQa::FinishTask() {
     gDirectory->cd(detectors[i].first.c_str());
     for (unsigned int k = 0; k < hists[i].size(); k++) {
       if (verbosity > 2)
-        LOG(info) << "CbmRecoQa Histogramm " << hists[i][k]->GetName()
-                  << " Entries " << hists[i][k]->GetEntries();
+        LOG(info) << "CbmRecoQa Histogramm " << hists[i][k]->GetName() << " Entries " << hists[i][k]->GetEntries();
       if (hists[i][k]->GetEntries() > 0) hists[i][k]->Write();
     }
     gDirectory->cd("..");
@@ -204,7 +179,8 @@ void CbmRecoQa::FinishTask() {
 }
 
 // --- Write Data in Historgrams, depending on detectorw
-void CbmRecoQa::record(std::string decName, int decNum) {
+void CbmRecoQa::record(std::string decName, int decNum)
+{
 
   if (verbosity > 1) LOG(info) << "CbmRecoQa Record called for: " << decName;
 
@@ -221,9 +197,8 @@ void CbmRecoQa::record(std::string decName, int decNum) {
     listHits       = (TClonesArray*) (fManager->GetObject("StsHit"));
     listHitMatches = (TClonesArray*) (fManager->GetObject("StsHitMatch"));
     //    listClusters= (TClonesArray*)(fManager->GetObject("StsCluster")); (FU) unused
-    listClusterMatches =
-      (TClonesArray*) (fManager->GetObject("StsClusterMatch"));
-    listPoints = mcManager->InitBranch("StsPoint");
+    listClusterMatches = (TClonesArray*) (fManager->GetObject("StsClusterMatch"));
+    listPoints         = mcManager->InitBranch("StsPoint");
     if (listPoints == nullptr) { LOG(warn) << "No StsPoint data!"; }
 
 
@@ -234,9 +209,7 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 hitErr(.0, .0, .0);
 
       int nEnt = listHits->GetEntriesFast();
-      if (verbosity > 2)
-        LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
-                  << " Hit Entries";
+      if (verbosity > 2) LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt << " Hit Entries";
       for (int j = 0; j < nEnt; j++) {
 
         float bestWeight  = 0.f;
@@ -249,27 +222,23 @@ void CbmRecoQa::record(std::string decName, int decNum) {
 
         if (listClusterMatches) {
 
-          const CbmMatch* front_match = static_cast<const CbmMatch*>(
-            listClusterMatches->At(curr_hit->GetFrontClusterId()));
-          const CbmMatch* back_match = static_cast<const CbmMatch*>(
-            listClusterMatches->At(curr_hit->GetBackClusterId()));
+          const CbmMatch* front_match =
+            static_cast<const CbmMatch*>(listClusterMatches->At(curr_hit->GetFrontClusterId()));
+          const CbmMatch* back_match =
+            static_cast<const CbmMatch*>(listClusterMatches->At(curr_hit->GetBackClusterId()));
           CbmMatch curr_match;
           if (verbosity > 3)
-            LOG(info) << "Front Match: " << front_match->ToString()
-                      << " Back Match: " << back_match->ToString();
+            LOG(info) << "Front Match: " << front_match->ToString() << " Back Match: " << back_match->ToString();
 
-          for (int frontlink_c = 0; frontlink_c < front_match->GetNofLinks();
-               frontlink_c++) {
+          for (int frontlink_c = 0; frontlink_c < front_match->GetNofLinks(); frontlink_c++) {
 
             const CbmLink& frontLink = front_match->GetLink(frontlink_c);
 
-            for (int backlink_c = 0; backlink_c < back_match->GetNofLinks();
-                 backlink_c++) {
+            for (int backlink_c = 0; backlink_c < back_match->GetNofLinks(); backlink_c++) {
 
               const CbmLink& backLink = back_match->GetLink(backlink_c);
               if (verbosity > 3)
-                LOG(info) << "FrontLink: " << frontLink.ToString()
-                          << " BackLink: " << backLink.ToString();
+                LOG(info) << "FrontLink: " << frontLink.ToString() << " BackLink: " << backLink.ToString();
               if (frontLink == backLink) {
                 curr_match.AddLink(frontLink);
                 curr_match.AddLink(backLink);
@@ -291,13 +260,10 @@ void CbmRecoQa::record(std::string decName, int decNum) {
             }
           }
 
-          curr_point = (CbmStsPoint*) (listPoints->Get(
-            link.GetFile(), link.GetEntry(), link.GetIndex()));
+          curr_point = (CbmStsPoint*) (listPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex()));
 
           if (curr_point == 0) continue;
-          double mcTime =
-            curr_point->GetTime()
-            + eventList->GetEventTime(link.GetEntry(), link.GetFile());
+          double mcTime = curr_point->GetTime() + eventList->GetEventTime(link.GetEntry(), link.GetFile());
 
           curr_hit->Position(hitPos);
           curr_hit->PositionError(hitErr);
@@ -309,34 +275,30 @@ void CbmRecoQa::record(std::string decName, int decNum) {
           if (verbosity > 3) LOG(info) << "Calculated MCPos";
 
 
-          if (hitErr.X() != 0)
-            hists[decNum][0]->Fill((hitPos.X() - mcPos.X())
-                                   / curr_hit->GetDx());
-          if (hitErr.Y() != 0)
-            hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y())
-                                   / curr_hit->GetDy());
-          hists[decNum][2]->Fill((curr_hit->GetTime() - mcTime)
-                                 / curr_hit->GetTimeError());
+          if (hitErr.X() != 0) hists[decNum][0]->Fill((hitPos.X() - mcPos.X()) / curr_hit->GetDx());
+          if (hitErr.Y() != 0) hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y()) / curr_hit->GetDy());
+          hists[decNum][2]->Fill((curr_hit->GetTime() - mcTime) / curr_hit->GetTimeError());
 
           hists[decNum][3]->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
           hists[decNum][4]->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
           hists[decNum][5]->Fill(curr_hit->GetTime() - mcTime);
-        } else {
-          LOG(warn) << "CBMRECOQA WARNING :-- No Sts Cluster Matches found!"
-                    << std::endl;
+        }
+        else {
+          LOG(warn) << "CBMRECOQA WARNING :-- No Sts Cluster Matches found!" << std::endl;
         }
       }
-    } else {
+    }
+    else {
       LOG(warn) << "CBMRECOQA WARNING :-- NO Data for Reco QA found! "
                 << "Detector: " << decName << std::endl;
     }
-  } else if (decName == "mvd") {
+  }
+  else if (decName == "mvd") {
     listHits       = (TClonesArray*) (fManager->GetObject("MvdHit"));
     listHitMatches = (TClonesArray*) (fManager->GetObject("MvdHitMatch"));
     //listClusters= (TClonesArray*)(fManager->GetObject("MvdCluster"));
     //listClusterMatches = (TClonesArray*)(fManager->GetObject("MvdClusterMatch"));
-    TClonesArray* listMvdPoints =
-      (TClonesArray*) (fManager->GetObject("MvdPoint"));
+    TClonesArray* listMvdPoints = (TClonesArray*) (fManager->GetObject("MvdPoint"));
 
     if (listHits && listHitMatches) {
 
@@ -345,21 +307,18 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 hitErr(.0, .0, .0);
 
       int nEnt = listHits->GetEntriesFast();
-      if (verbosity > 2)
-        LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
-                  << " Hit Entries";
+      if (verbosity > 2) LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt << " Hit Entries";
       for (int j = 0; j < nEnt; j++) {
 
         //        float bestWeight = 0.f;
         //        float totalWeight = 0.f;
         int iMC = -1;
 
-        CbmMvdHit* curr_hit  = dynamic_cast<CbmMvdHit*>(listHits->At(j));
-        CbmMatch* curr_match = dynamic_cast<CbmMatch*>(listHitMatches->At(j));
+        CbmMvdHit* curr_hit     = dynamic_cast<CbmMvdHit*>(listHits->At(j));
+        CbmMatch* curr_match    = dynamic_cast<CbmMatch*>(listHitMatches->At(j));
         CbmMvdPoint* curr_point = 0;
 
-        if (curr_match->GetNofLinks() > 0)
-          iMC = curr_match->GetLink(0).GetIndex();
+        if (curr_match->GetNofLinks() > 0) iMC = curr_match->GetLink(0).GetIndex();
         if (iMC < 0) continue;
 
         curr_point = (CbmMvdPoint*) (listMvdPoints->At(iMC));
@@ -376,19 +335,19 @@ void CbmRecoQa::record(std::string decName, int decNum) {
         if (verbosity > 3) LOG(info) << "Calculated MCPos";
 
 
-        if (hitErr.X() != 0)
-          hists[decNum][0]->Fill((hitPos.X() - mcPos.X()) / curr_hit->GetDx());
-        if (hitErr.Y() != 0)
-          hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y()) / curr_hit->GetDy());
+        if (hitErr.X() != 0) hists[decNum][0]->Fill((hitPos.X() - mcPos.X()) / curr_hit->GetDx());
+        if (hitErr.Y() != 0) hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y()) / curr_hit->GetDy());
 
         hists[decNum][3]->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
         hists[decNum][4]->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
       }
-    } else {
+    }
+    else {
       LOG(warn) << "CBMRECOQA WARNING :-- NO Data for Reco QA found! "
                 << "Detector: " << decName << std::endl;
     }
-  } else if (decName == "much") {
+  }
+  else if (decName == "much") {
 
     listHits       = (TClonesArray*) (fManager->GetObject("MuchPixelHit"));
     listHitMatches = (TClonesArray*) (fManager->GetObject("MuchPixelHitMatch"));
@@ -402,9 +361,7 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 hitErr(.0, .0, .0);
 
       int nEnt = listHits->GetEntriesFast();
-      if (verbosity > 2)
-        LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
-                  << " Hit Entries";
+      if (verbosity > 2) LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt << " Hit Entries";
       for (int j = 0; j < nEnt; j++) {
 
         float bestWeight  = 0.f;
@@ -412,9 +369,8 @@ void CbmRecoQa::record(std::string decName, int decNum) {
         int iMC           = -1;
         CbmLink link;
 
-        CbmMuchPixelHit* curr_hit =
-          dynamic_cast<CbmMuchPixelHit*>(listHits->At(j));
-        CbmMatch* curr_match = dynamic_cast<CbmMatch*>(listHitMatches->At(j));
+        CbmMuchPixelHit* curr_hit = dynamic_cast<CbmMuchPixelHit*>(listHits->At(j));
+        CbmMatch* curr_match      = dynamic_cast<CbmMatch*>(listHitMatches->At(j));
 
         for (int iLink = 0; iLink < curr_match->GetNofLinks(); iLink++) {
           float tmpweight = curr_match->GetLink(iLink).GetWeight();
@@ -430,11 +386,8 @@ void CbmRecoQa::record(std::string decName, int decNum) {
 
         if (iMC < 0) continue;
 
-        CbmMuchPoint* curr_point = (CbmMuchPoint*) (listPoints->Get(
-          link.GetFile(), link.GetEntry(), link.GetEntry()));
-        double mcTime =
-          curr_point->GetTime()
-          + eventList->GetEventTime(link.GetEntry(), link.GetFile());
+        CbmMuchPoint* curr_point = (CbmMuchPoint*) (listPoints->Get(link.GetFile(), link.GetEntry(), link.GetEntry()));
+        double mcTime            = curr_point->GetTime() + eventList->GetEventTime(link.GetEntry(), link.GetFile());
         //LOG(info) << "Much Hit " << j << " Time: " << mcTime << " " << curr_hit->GetTime() << " " << curr_hit->GetTimeError();
 
         if (curr_point == 0) continue;
@@ -450,26 +403,22 @@ void CbmRecoQa::record(std::string decName, int decNum) {
 
         curr_hit->Position(hitPos);
 
-        if (hitErr.X() != 0)
-          hists[decNum][0]->Fill((hitPos.X() - mcPos.X()) / curr_hit->GetDx());
-        if (hitErr.Y() != 0)
-          hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y()) / curr_hit->GetDy());
-        if (hitErr.Y() != 0)
-          hists[decNum][2]->Fill(
-            ((curr_hit->GetTime() - mcTime) / curr_hit->GetTimeError()));
+        if (hitErr.X() != 0) hists[decNum][0]->Fill((hitPos.X() - mcPos.X()) / curr_hit->GetDx());
+        if (hitErr.Y() != 0) hists[decNum][1]->Fill((hitPos.Y() - mcPos.Y()) / curr_hit->GetDy());
+        if (hitErr.Y() != 0) hists[decNum][2]->Fill(((curr_hit->GetTime() - mcTime) / curr_hit->GetTimeError()));
 
         hists[decNum][3]->Fill((hitPos.X() - mcPos.X()));
         hists[decNum][4]->Fill((hitPos.Y() - mcPos.Y()));
         hists[decNum][5]->Fill(curr_hit->GetTime() - mcTime);
       }
-    } else {
+    }
+    else {
       LOG(warn) << "CBMRECOQA WARNING :-- NO Data for Reco QA found! "
                 << "Detector: " << decName << std::endl;
     }
-
-  } else {
-    LOG(warn) << "CBMRECOQA WARNING :--  NO matching Detector found ! "
-              << std::endl;
+  }
+  else {
+    LOG(warn) << "CBMRECOQA WARNING :--  NO matching Detector found ! " << std::endl;
   }
 }
 ClassImp(CbmRecoQa)

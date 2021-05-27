@@ -10,11 +10,8 @@
 flag =0 for sis 100 geometry
 flag = 1 for mini-cbm geometry
  */
-void much_seg_sector(TString mcFile      = "",
-                     TString inDigiFile  = "",
-                     TString outDigiFile = "",
-                     Int_t flag          = 0,
-                     TString setupName   = "much_test")
+void much_seg_sector(TString mcFile = "", TString inDigiFile = "", TString outDigiFile = "", Int_t flag = 0,
+                     TString setupName = "much_test")
 
 {
   // ========================================================================
@@ -53,8 +50,7 @@ void much_seg_sector(TString mcFile      = "",
   // ------------------------------------------------------------------------
 
   // -----  Segmentation task  ----------------------------------------------
-  CbmMuchSegmentSector* seg =
-    new CbmMuchSegmentSector(inDigiFile, outDigiFile, flag);
+  CbmMuchSegmentSector* seg = new CbmMuchSegmentSector(inDigiFile, outDigiFile, flag);
   // seg->DebugSwitchOn();
   fRun->AddTask(seg);
   // ------------------------------------------------------------------------

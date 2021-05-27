@@ -1,4 +1,5 @@
-void run_reco_5_correction(Int_t nEvents) {
+void run_reco_5_correction(Int_t nEvents)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
@@ -23,9 +24,8 @@ void run_reco_5_correction(Int_t nEvents) {
 
   if (script == "yes") {
     setupName    = TString(gSystem->Getenv("SETUP_NAME"));
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + TString(gSystem->Getenv("GEO_SETUP_FILE"));
-    outDir = TString(gSystem->Getenv("DIR"));
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+    outDir       = TString(gSystem->Getenv("DIR"));
 
     mcFile    = TString(gSystem->Getenv("MC_FILE"));
     parFile   = TString(gSystem->Getenv("PAR_FILE"));
@@ -39,8 +39,7 @@ void run_reco_5_correction(Int_t nEvents) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- setupFile: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- setupFile: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   //gInterpreter->ProcessLine(setupFunct);
@@ -49,8 +48,7 @@ void run_reco_5_correction(Int_t nEvents) {
 
   CbmSetup* setup = CbmSetup::Instance();
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   //    TString geoTag;
   //
@@ -106,16 +104,12 @@ void run_reco_5_correction(Int_t nEvents) {
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct_corr()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " executed successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " executed successfully" << std::endl;
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -145,8 +139,7 @@ void run_reco_5_correction(Int_t nEvents) {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

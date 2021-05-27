@@ -16,9 +16,9 @@ CbmLitCreateStandaloneData::CbmLitCreateStandaloneData() : fEventNo(0) {}
 
 CbmLitCreateStandaloneData::~CbmLitCreateStandaloneData() {}
 
-InitStatus CbmLitCreateStandaloneData::Init() {
-  std::cout << "-I- CbmLitCreateStandaloneData::Init Creating MUCH layout"
-            << std::endl;
+InitStatus CbmLitCreateStandaloneData::Init()
+{
+  std::cout << "-I- CbmLitCreateStandaloneData::Init Creating MUCH layout" << std::endl;
 
   // Save MUCH layout to text file
   //   CbmLitEnvironment* env = CbmLitEnvironment::Instance();
@@ -42,9 +42,7 @@ InitStatus CbmLitCreateStandaloneData::Init() {
 
   outfile.close();
 
-  std::cout
-    << "-I- CbmLitCreateStandaloneData::Init Finish creating MUCH layout"
-    << std::endl;
+  std::cout << "-I- CbmLitCreateStandaloneData::Init Finish creating MUCH layout" << std::endl;
   //
 
   //
@@ -66,15 +64,14 @@ InitStatus CbmLitCreateStandaloneData::Init() {
 
 void CbmLitCreateStandaloneData::SetParContainers() {}
 
-void CbmLitCreateStandaloneData::Exec(Option_t* opt) {
+void CbmLitCreateStandaloneData::Exec(Option_t* opt)
+{
   fSeedsFile << fEventNo << " " << fStsTracks->GetEntriesFast() << std::endl;
-  for (Int_t iStsTrack = 0; iStsTrack < fStsTracks->GetEntriesFast();
-       iStsTrack++) {
+  for (Int_t iStsTrack = 0; iStsTrack < fStsTracks->GetEntriesFast(); iStsTrack++) {
     CbmStsTrack* stsTrack     = (CbmStsTrack*) fStsTracks->At(iStsTrack);
     const FairTrackParam* par = stsTrack->GetParamLast();
-    fSeedsFile << par->GetX() << " " << par->GetY() << " " << par->GetZ() << " "
-               << par->GetTx() << " " << par->GetTy() << " " << par->GetQp()
-               << " ";
+    fSeedsFile << par->GetX() << " " << par->GetY() << " " << par->GetZ() << " " << par->GetTx() << " " << par->GetTy()
+               << " " << par->GetQp() << " ";
     double cov[15];
     par->CovMatrix(cov);
     for (unsigned int i = 0; i < 15; ++i) {
@@ -84,20 +81,18 @@ void CbmLitCreateStandaloneData::Exec(Option_t* opt) {
   }
 
   fHitsFile << fEventNo << " " << fMuchPixelHits->GetEntriesFast() << std::endl;
-  for (Int_t iMuchHit = 0; iMuchHit < fMuchPixelHits->GetEntriesFast();
-       iMuchHit++) {
+  for (Int_t iMuchHit = 0; iMuchHit < fMuchPixelHits->GetEntriesFast(); iMuchHit++) {
     CbmMuchPixelHit* muchHit = (CbmMuchPixelHit*) fMuchPixelHits->At(iMuchHit);
-    fHitsFile << muchHit->GetX() << " " << muchHit->GetY() << " "
-              << muchHit->GetZ() << " " << muchHit->GetDx() << " "
-              << muchHit->GetDy() << " " << muchHit->GetDxy() << " "
-              << (muchHit->GetPlaneId()) - 1 << " " << muchHit->GetRefId()
-              << std::endl;
+    fHitsFile << muchHit->GetX() << " " << muchHit->GetY() << " " << muchHit->GetZ() << " " << muchHit->GetDx() << " "
+              << muchHit->GetDy() << " " << muchHit->GetDxy() << " " << (muchHit->GetPlaneId()) - 1 << " "
+              << muchHit->GetRefId() << std::endl;
   }
 
   std::cout << "Event: " << fEventNo++ << std::endl;
 }
 
-void CbmLitCreateStandaloneData::Finish() {
+void CbmLitCreateStandaloneData::Finish()
+{
   fHitsFile.close();
   fSeedsFile.close();
 }

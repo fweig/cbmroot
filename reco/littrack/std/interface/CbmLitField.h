@@ -8,6 +8,7 @@
 #define CBMLITFIELD_H_
 
 #include "base/CbmLitFloat.h"
+
 #include <string>
 using std::string;
 
@@ -38,12 +39,7 @@ public:
     * \param[out] By Output By field value [kGauss].
     * \param[out] Bz Output Bz field value [kGauss].
     */
-  virtual void GetFieldValue(litfloat x,
-                             litfloat y,
-                             litfloat z,
-                             litfloat& Bx,
-                             litfloat& By,
-                             litfloat& Bz) const = 0;
+  virtual void GetFieldValue(litfloat x, litfloat y, litfloat z, litfloat& Bx, litfloat& By, litfloat& Bz) const = 0;
 
   /*
     * \brief Return string representation of class.

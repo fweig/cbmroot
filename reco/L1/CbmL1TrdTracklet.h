@@ -2,6 +2,7 @@
 #define CBML1TRDTRACKLET_H 1
 
 #include "TObject.h"
+
 #include <vector>
 
 class CbmL1TrdTracklet : public TObject {
@@ -27,7 +28,8 @@ public:
   inline void SetIsAlone(Bool_t isAlone) { fIsAlone = isAlone; };
   inline void SetIndex(Int_t index) { fIndex = index; };
   inline void SetCoord(Int_t ind, Double_t val) { fCoord[ind] = val; };
-  inline void SetPlanesID(Int_t A_ID, Int_t B_ID) {
+  inline void SetPlanesID(Int_t A_ID, Int_t B_ID)
+  {
     fID[0] = A_ID;
     fID[1] = B_ID;
   };
@@ -36,11 +38,13 @@ public:
   std::vector<Int_t> vAccostTracklet;
 
   //compares the first or second two coordinates of two tracklets
-  inline static Bool_t Compare1(CbmL1TrdTracklet* tr1, CbmL1TrdTracklet* tr2) {
+  inline static Bool_t Compare1(CbmL1TrdTracklet* tr1, CbmL1TrdTracklet* tr2)
+  {
     return (tr1->GetCoord(0) > tr2->GetCoord(0));
   };
 
-  inline static Bool_t Compare2(CbmL1TrdTracklet* tr1, CbmL1TrdTracklet* tr2) {
+  inline static Bool_t Compare2(CbmL1TrdTracklet* tr1, CbmL1TrdTracklet* tr2)
+  {
     return (tr1->GetCoord(1) > tr2->GetCoord(1));
   };
 

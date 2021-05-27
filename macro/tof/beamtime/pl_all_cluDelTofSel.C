@@ -1,7 +1,5 @@
-void pl_all_cluDelTofSel(Int_t iNch = 1,
-                         Int_t iSel = 0,
-                         Int_t SmT  = 0,
-                         Int_t iSm  = 0) {
+void pl_all_cluDelTofSel(Int_t iNch = 1, Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -53,9 +51,8 @@ void pl_all_cluDelTofSel(Int_t iNch = 1,
 
     TString hname = Form("cl_CorSmT%d_sm%03d_rpc000_DelTof", SmT, iSm, iSel);
     h1            = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw("same");
-    } else {
+    if (h1 != NULL) { h1->Draw("same"); }
+    else {
       cout << hname << " not found " << endl;
     }
   }

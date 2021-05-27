@@ -10,8 +10,8 @@
 //
 // --------------------------------------------------------------------------
 
-void create_digipar_root(TString geoName = "trd_v13q",
-                         Bool_t asicFASP = kTRUE) {
+void create_digipar_root(TString geoName = "trd_v13q", Bool_t asicFASP = kTRUE)
+{
   TString inFile   = "data/test.mc." + geoName + ".root";
   TString geoFile  = "geofile_" + geoName + ".root";
   TString outFile  = "data/test.esd." + geoName + ".root";
@@ -34,20 +34,16 @@ void create_digipar_root(TString geoName = "trd_v13q",
   rtdb->saveOutput();
   run->Init();
   rtdb->print();
-  CbmTrdParSetDigi* digiPar =
-    (CbmTrdParSetDigi*) rtdb->getContainer("CbmTrdParSetDigi");
+  CbmTrdParSetDigi* digiPar = (CbmTrdParSetDigi*) rtdb->getContainer("CbmTrdParSetDigi");
   digiPar->setChanged();
   digiPar->setInputVersion(run->GetRunId(), 1);
-  CbmTrdParSetAsic* asicPar =
-    (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");
+  CbmTrdParSetAsic* asicPar = (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");
   asicPar->setChanged();
   asicPar->setInputVersion(run->GetRunId(), 1);
-  CbmTrdParSetGas* gasPar =
-    (CbmTrdParSetGas*) rtdb->getContainer("CbmTrdParSetGas");
+  CbmTrdParSetGas* gasPar = (CbmTrdParSetGas*) rtdb->getContainer("CbmTrdParSetGas");
   gasPar->setChanged();
   gasPar->setInputVersion(run->GetRunId(), 1);
-  CbmTrdParSetGain* gainPar =
-    (CbmTrdParSetGain*) rtdb->getContainer("CbmTrdParSetGain");
+  CbmTrdParSetGain* gainPar = (CbmTrdParSetGain*) rtdb->getContainer("CbmTrdParSetGain");
   gainPar->setChanged();
   gainPar->setInputVersion(run->GetRunId(), 1);
   rtdb->print();

@@ -45,15 +45,8 @@ public:
    *@param nTracks   Number of tracks used for vertex fit
    *@param covMat    Covariance Matrix (symmetric, 3x3)
    **/
-  CbmVertex(const char* name,
-            const char* title,
-            Double_t x,
-            Double_t y,
-            Double_t z,
-            Double_t chi2,
-            Int_t ndf,
-            Int_t nTracks,
-            const TMatrixFSym& covMat);
+  CbmVertex(const char* name, const char* title, Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf,
+            Int_t nTracks, const TMatrixFSym& covMat);
 
 
   /** Destructor **/
@@ -89,12 +82,7 @@ public:
    *@param nTracks   Number of tracks used for vertex fit
    *@param covMat    Covariance Matrix (symmetric, 3x3)
    **/
-  void SetVertex(Double_t x,
-                 Double_t y,
-                 Double_t z,
-                 Double_t chi2,
-                 Int_t ndf,
-                 Int_t nTracks,
+  void SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
                  const TMatrixFSym& covMat);
 
 

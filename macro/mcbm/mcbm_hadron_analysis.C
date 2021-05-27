@@ -44,43 +44,31 @@ void mcbm_hadron_analysis(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03
 
   CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
   HadronAna->SetBeamMomentum(1.65);                        // beam momentum
-  HadronAna->SetDY(0.5);        // flow analysis exclusion window
-  HadronAna->SetRecSec(kTRUE);  // enable lambda reconstruction
+  HadronAna->SetDY(0.5);                                   // flow analysis exclusion window
+  HadronAna->SetRecSec(kTRUE);                             // enable lambda reconstruction
   Int_t parSet = 1;
   switch (parSet) {
-    case 0:  // with background
-      HadronAna->SetDistPrimLim(
-        1.2);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(
-        0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(
-        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(
-        0.5);                       // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
-      HadronAna->SetVLenMin(
-        5.);  // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(
-        25.);  // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
+    case 0:                             // with background
+      HadronAna->SetDistPrimLim(1.2);   // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(0.5);     // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);        // Max DCA for accepting pair
+      HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
+      HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
       break;
-    case 1:  // signal only, debugging
-      HadronAna->SetDistPrimLim(
-        0.5);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(
-        0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(
-        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(
-        0.4);                       // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.2);    // Max DCA for accepting pair
-      HadronAna->SetVLenMin(
-        5.);  // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(
-        25.);  // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
+    case 1:                             // signal only, debugging
+      HadronAna->SetDistPrimLim(0.5);   // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(0.4);     // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.2);        // Max DCA for accepting pair
+      HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
+      HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
       break;
   }
   fRun->AddTask(HadronAna);
@@ -103,9 +91,7 @@ void mcbm_hadron_analysis(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << OutFile << std::endl;
   std::cout << "Parameter file is " << ParFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
   // -----   Resource monitoring   ------------------------------------------

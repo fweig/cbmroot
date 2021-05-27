@@ -1,4 +1,5 @@
-void pl_eff_XY(Int_t iMode = 0) {
+void pl_eff_XY(Int_t iMode = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -38,7 +39,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     hs4->UseCurrentStyle();
     hs4->GetYaxis()->SetLabelSize(lsize);
     hs4->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -50,7 +52,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     hsS->UseCurrentStyle();
     hsS->GetYaxis()->SetLabelSize(lsize);
     hsS->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -63,7 +66,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     hs0->GetYaxis()->SetLabelSize(lsize);
     hs0->Draw("colz");
     Npredicted = hs0->GetEntries();
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -79,7 +83,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heff4->SetName("hXEffRef");
     heff4->SetTitle("Selection efficiency on reference counter");
     heff4->Divide(h2, hs4, 1., 1., "B");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -95,7 +100,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heffS->SetName("hXYEffSel2");
     heffS->SetTitle("Selection efficiency on Sel2 counter");
     heffS->Divide(h2, hsS, 1., 1., "B");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -114,8 +120,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heff0->Divide(h2, hs0, 1., 1., "B");
     Double_t dEff = Nfound / Npredicted * 100.;
     cout << "Integral Efficiency: " << Form("%3.1f", dEff) << " % " << endl;
-
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -125,7 +131,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heff4->UseCurrentStyle();
     heff4->GetYaxis()->SetLabelSize(lsize);
     heff4->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -135,7 +142,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heffS->UseCurrentStyle();
     heffS->GetYaxis()->SetLabelSize(lsize);
     heffS->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -145,7 +153,8 @@ void pl_eff_XY(Int_t iMode = 0) {
     heff0->UseCurrentStyle();
     heff0->GetYaxis()->SetLabelSize(lsize);
     heff0->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 }

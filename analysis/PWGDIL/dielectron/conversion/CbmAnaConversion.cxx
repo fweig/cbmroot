@@ -40,7 +40,9 @@
 #include "TH2D.h"
 #include "TH3.h"
 #include "TRandom3.h"
+
 #include <boost/assign/list_of.hpp>
+
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -239,63 +241,48 @@ CbmAnaConversion::CbmAnaConversion()
   , fAnaPhotons2(NULL)
   , fAnaRecoFull(NULL)
   , fAnaTest(NULL)
-  , fAnaTest2(NULL) {}
+  , fAnaTest2(NULL)
+{
+}
 
 CbmAnaConversion::~CbmAnaConversion() {}
 
-InitStatus CbmAnaConversion::Init() {
+InitStatus CbmAnaConversion::Init()
+{
   //timer_all.Reset();
   timer_all.Start();
 
   cout << "CbmAnaConversion::Init" << endl;
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmAnaConversion::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmAnaConversion::Init", "RootManager not instantised!"); }
 
   fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmAnaConversion::Init", "No RichPoint array!");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmAnaConversion::Init", "No RichPoint array!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmAnaConversion::Init", "No MCTrack array!");
-  }
+  if (NULL == fMcTracks) { Fatal("CbmAnaConversion::Init", "No MCTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmAnaConversion::Init", "No StsTrack array!");
-  }
+  if (NULL == fStsTracks) { Fatal("CbmAnaConversion::Init", "No StsTrack array!"); }
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fStsTrackMatches) {
-    Fatal("CbmAnaConversion::Init", "No StsTrackMatch array!");
-  }
+  if (NULL == fStsTrackMatches) { Fatal("CbmAnaConversion::Init", "No StsTrackMatch array!"); }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmAnaConversion::Init", "No GlobalTrack array!");
-  }
+  if (NULL == fGlobalTracks) { Fatal("CbmAnaConversion::Init", "No GlobalTrack array!"); }
 
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
   fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex."));
-  if (nullptr == fPrimVertex) {
-    fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex"));
-  }
+  if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex")); }
   if (nullptr == fPrimVertex) { LOG(fatal) << "No PrimaryVertex array!"; }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmAnaConversion::Init", "No RichRing array!");
-  }
+  if (NULL == fRichRings) { Fatal("CbmAnaConversion::Init", "No RichRing array!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmAnaConversion::Init", "No RichRingMatch array!");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmAnaConversion::Init", "No RichRingMatch array!"); }
 
   InitHistograms();
 
@@ -359,164 +346,61 @@ InitStatus CbmAnaConversion::Init() {
   return kSUCCESS;
 }
 
-void CbmAnaConversion::InitHistograms() {
+void CbmAnaConversion::InitHistograms()
+{
   fHistoList.clear();
   fHistoList_kfparticle.clear();
   fHistoList_furtherAnalyses.clear();
 
 
-  fhPdgCodes = new TH1D("fhPdfCodes", "fhPdgCodes;pdg code;#", 1000, 0, 1000);
-  fhNofElPrim =
-    new TH1D("fhNofElPrim", "fhNofElPrim;Nof prim El;Entries", 10., -0.5, 9.5);
-  fhNofElSec =
-    new TH1D("fhNofElSec", "fhNofElSec;Nof Sec El;Entries", 20., -0.5, 19.5);
-  fhNofElAll =
-    new TH1D("fhNofElAll", "fhNofElAll;Nof All El;Entries", 30., -0.5, 29.5);
-  fhNofPi0_perEvent = new TH1D("fhNofPi0_perEvent",
-                               "fhNofPi0_perEvent;Nof pi0;Entries",
-                               1000.,
-                               -0.5,
-                               999.5);
+  fhPdgCodes        = new TH1D("fhPdfCodes", "fhPdgCodes;pdg code;#", 1000, 0, 1000);
+  fhNofElPrim       = new TH1D("fhNofElPrim", "fhNofElPrim;Nof prim El;Entries", 10., -0.5, 9.5);
+  fhNofElSec        = new TH1D("fhNofElSec", "fhNofElSec;Nof Sec El;Entries", 20., -0.5, 19.5);
+  fhNofElAll        = new TH1D("fhNofElAll", "fhNofElAll;Nof All El;Entries", 30., -0.5, 29.5);
+  fhNofPi0_perEvent = new TH1D("fhNofPi0_perEvent", "fhNofPi0_perEvent;Nof pi0;Entries", 1000., -0.5, 999.5);
   fhNofPi0_perEvent_cut =
-    new TH1D("fhNofPi0_perEvent_cut",
-             "fhNofPi0_perEvent_cut (Z<10cm);Nof pi0;Entries",
-             800.,
-             -0.5,
-             799.5);
+    new TH1D("fhNofPi0_perEvent_cut", "fhNofPi0_perEvent_cut (Z<10cm);Nof pi0;Entries", 800., -0.5, 799.5);
   fhNofPi0_perEvent_cut2 =
-    new TH1D("fhNofPi0_perEvent_cut2",
-             "fhNofPi0_perEvent_cut2 (motherId = -1);Nof pi0;Entries",
-             800.,
-             -0.5,
-             799.5);
-  fhNofPi0_perEvent_cut3 =
-    new TH1D("fhNofPi0_perEvent_cut3",
-             "fhNofPi0_perEvent_cut3 (conversion before 70cm);Nof pi0;Entries",
-             100.,
-             -0.5,
-             99.5);
-  fhNofEta_perEvent = new TH1D(
-    "fhNofEta_perEvent", "fhNofEta_perEvent;Nof eta;Entries", 100., -0.5, 99.5);
+    new TH1D("fhNofPi0_perEvent_cut2", "fhNofPi0_perEvent_cut2 (motherId = -1);Nof pi0;Entries", 800., -0.5, 799.5);
+  fhNofPi0_perEvent_cut3 = new TH1D(
+    "fhNofPi0_perEvent_cut3", "fhNofPi0_perEvent_cut3 (conversion before 70cm);Nof pi0;Entries", 100., -0.5, 99.5);
+  fhNofEta_perEvent = new TH1D("fhNofEta_perEvent", "fhNofEta_perEvent;Nof eta;Entries", 100., -0.5, 99.5);
   fhNofEta_perEvent_cut =
-    new TH1D("fhNofEta_perEvent_cut",
-             "fhNofEta_perEvent_cut (Z<4cm);Nof eta;Entries",
-             100.,
-             -0.5,
-             99.5);
+    new TH1D("fhNofEta_perEvent_cut", "fhNofEta_perEvent_cut (Z<4cm);Nof eta;Entries", 100., -0.5, 99.5);
   fhNofEta_perEvent_cut2 =
-    new TH1D("fhNofEta_perEvent_cut2",
-             "fhNofEta_perEvent_cut2 (motherId = -1);Nof eta;Entries",
-             100.,
-             -0.5,
-             99.5);
-  fhPi0_z = new TH1D("fhPi0_z", "fhPi0_z;z in cm;Entries", 600., -0.5, 599.5);
-  fhPi0_z_cut =
-    new TH1D("fhPi0_z_cut", "fhPi0_z_cut;z in cm;Entries", 600., -0.5, 599.5);
-  fhPi0_pt =
-    new TH1D("fhPi0_pt", "fhPi0_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
-  fhPi0_pt_vs_rap    = new TH2D("fhPi0_pt_vs_rap",
-                             "fhPi0_pt_vs_rap;p_{t} in GeV/c; rapidity y",
-                             240,
-                             -2.,
-                             10.,
-                             270,
-                             -2.,
-                             7.);
-  fhPi0_theta        = new TH1D("fhPi0_theta",
-                         "fhPi0_theta;emission angle #theta in deg;Entries",
-                         180.,
-                         0.,
-                         180.);
-  fhPi0_theta_vs_rap = new TH2D("fhPi0_theta_vs_rap",
-                                "fhPi0_theta_vs_rap;theta in deg;rapidity y",
-                                180.,
-                                0.,
-                                180.,
-                                270,
-                                -2.,
-                                7.);
-  fhEta_pt =
-    new TH1D("fhEta_pt", "fhEta_pt;p_{t} in GeV;Entries", 200., 0., 10.);
-  fhEta_pt_vs_rap = new TH2D("fhEta_pt_vs_rap",
-                             "fhEta_pt_vs_rap;p_{t} in GeV; rapidity y",
-                             240,
-                             -2.,
-                             10.,
-                             270,
-                             -2.,
-                             7.);
-  fhEta_theta     = new TH1D("fhEta_theta",
-                         "fhEta_theta;emission angle #theta in deg;Entries",
-                         180.,
-                         0.,
-                         180.);
-  fhEta_theta_vs_rap =
-    new TH2D("fhEta_theta_vs_rap",
-             "fhEta_theta_vs_rap;emission angle #theta in deg;rapidity y",
-             180.,
-             0.,
-             180.,
-             270,
-             -2.,
-             7.);
-  fhRho_pt =
-    new TH1D("fhRho_pt", "fhRho_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
-  fhRho_pt_vs_rap = new TH2D("fhRho_pt_vs_rap",
-                             "fhRho_pt_vs_rap;p_{t} in GeV/c; rapidity y",
-                             240,
-                             -2.,
-                             10.,
-                             270,
-                             -2.,
-                             7.);
-  fhRho_theta     = new TH1D("fhRho_theta",
-                         "fhRho_theta;emission angle #theta in deg;Entries",
-                         180.,
-                         0.,
-                         180.);
-  fhRho_theta_vs_rap =
-    new TH2D("fhRho_theta_vs_rap",
-             "fhRho_theta_vs_rap;emission angle #theta in deg;rapidity y",
-             180.,
-             0.,
-             180.,
-             270,
-             -2.,
-             7.);
-  fhOmega_pt =
-    new TH1D("fhOmega_pt", "fhOmega_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
-  fhOmega_pt_vs_rap = new TH2D("fhOmega_pt_vs_rap",
-                               "fhOmega_pt_vs_rap;p_{t} in GeV; rapidity y",
-                               240,
-                               -2.,
-                               10.,
-                               270,
-                               -2.,
-                               7.);
-  fhOmega_theta     = new TH1D("fhOmega_theta",
-                           "fhOmega_theta;emission angle #theta in deg;Entries",
-                           180.,
-                           0.,
-                           180.);
+    new TH1D("fhNofEta_perEvent_cut2", "fhNofEta_perEvent_cut2 (motherId = -1);Nof eta;Entries", 100., -0.5, 99.5);
+  fhPi0_z     = new TH1D("fhPi0_z", "fhPi0_z;z in cm;Entries", 600., -0.5, 599.5);
+  fhPi0_z_cut = new TH1D("fhPi0_z_cut", "fhPi0_z_cut;z in cm;Entries", 600., -0.5, 599.5);
+  fhPi0_pt    = new TH1D("fhPi0_pt", "fhPi0_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
+  fhPi0_pt_vs_rap =
+    new TH2D("fhPi0_pt_vs_rap", "fhPi0_pt_vs_rap;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
+  fhPi0_theta = new TH1D("fhPi0_theta", "fhPi0_theta;emission angle #theta in deg;Entries", 180., 0., 180.);
+  fhPi0_theta_vs_rap =
+    new TH2D("fhPi0_theta_vs_rap", "fhPi0_theta_vs_rap;theta in deg;rapidity y", 180., 0., 180., 270, -2., 7.);
+  fhEta_pt = new TH1D("fhEta_pt", "fhEta_pt;p_{t} in GeV;Entries", 200., 0., 10.);
+  fhEta_pt_vs_rap =
+    new TH2D("fhEta_pt_vs_rap", "fhEta_pt_vs_rap;p_{t} in GeV; rapidity y", 240, -2., 10., 270, -2., 7.);
+  fhEta_theta        = new TH1D("fhEta_theta", "fhEta_theta;emission angle #theta in deg;Entries", 180., 0., 180.);
+  fhEta_theta_vs_rap = new TH2D("fhEta_theta_vs_rap", "fhEta_theta_vs_rap;emission angle #theta in deg;rapidity y",
+                                180., 0., 180., 270, -2., 7.);
+  fhRho_pt           = new TH1D("fhRho_pt", "fhRho_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
+  fhRho_pt_vs_rap =
+    new TH2D("fhRho_pt_vs_rap", "fhRho_pt_vs_rap;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
+  fhRho_theta        = new TH1D("fhRho_theta", "fhRho_theta;emission angle #theta in deg;Entries", 180., 0., 180.);
+  fhRho_theta_vs_rap = new TH2D("fhRho_theta_vs_rap", "fhRho_theta_vs_rap;emission angle #theta in deg;rapidity y",
+                                180., 0., 180., 270, -2., 7.);
+  fhOmega_pt         = new TH1D("fhOmega_pt", "fhOmega_pt;p_{t} in GeV/c;Entries", 200., 0., 10.);
+  fhOmega_pt_vs_rap =
+    new TH2D("fhOmega_pt_vs_rap", "fhOmega_pt_vs_rap;p_{t} in GeV; rapidity y", 240, -2., 10., 270, -2., 7.);
+  fhOmega_theta = new TH1D("fhOmega_theta", "fhOmega_theta;emission angle #theta in deg;Entries", 180., 0., 180.);
   fhOmega_theta_vs_rap =
-    new TH2D("fhOmega_theta_vs_rap",
-             "fhOmega_theta_vs_rap;emission angle #theta in deg;rapidity y",
-             180.,
-             0.,
-             180.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhOmega_theta_vs_rap", "fhOmega_theta_vs_rap;emission angle #theta in deg;rapidity y", 180., 0., 180.,
+             270, -2., 7.);
 
 
-  fhElectronSources = new TH1D(
-    "fhElectronSources", "fhElectronSources;Source;Entries", 6., 0., 6.);
-  fhElectronsFromPi0_z =
-    new TH1D("fhElectronsFromPi0_z",
-             "fhElectronsFromPi0_z (= pos. of gamma conversion);z [cm];Entries",
-             600.,
-             -0.5,
-             599.5);
+  fhElectronSources    = new TH1D("fhElectronSources", "fhElectronSources;Source;Entries", 6., 0., 6.);
+  fhElectronsFromPi0_z = new TH1D(
+    "fhElectronsFromPi0_z", "fhElectronsFromPi0_z (= pos. of gamma conversion);z [cm];Entries", 600., -0.5, 599.5);
   fHistoList.push_back(fhPdgCodes);
   fHistoList.push_back(fhNofPi0_perEvent);
   fHistoList.push_back(fhNofPi0_perEvent_cut);
@@ -554,109 +438,55 @@ void CbmAnaConversion::InitHistograms() {
   fhElectronSources->GetXaxis()->SetBinLabel(6, "gamma from eta");
 
 
-  fhNofTracks_mctrack = new TH1D(
-    "fhNofTracks_mctrack", "fhNofTracks_mctrack;nof;#", 1000., 0., 1000.);
+  fhNofTracks_mctrack = new TH1D("fhNofTracks_mctrack", "fhNofTracks_mctrack;nof;#", 1000., 0., 1000.);
   fHistoList.push_back(fhNofTracks_mctrack);
-  fhNofTracks_globaltrack = new TH1D("fhNofTracks_globaltrack",
-                                     "fhNofTracks_globaltrack;nof;#",
-                                     1000.,
-                                     0.,
-                                     1000.);
+  fhNofTracks_globaltrack = new TH1D("fhNofTracks_globaltrack", "fhNofTracks_globaltrack;nof;#", 1000., 0., 1000.);
   fHistoList.push_back(fhNofTracks_globaltrack);
 
 
   // for UrQMD events (invariant mass from pi0 -> gamma + gamma
-  fhInvariantMass_test =
-    new TH1D("fhInvariant", "fhInvariant;mass in GeV/c^{2}];#", 2000, 0., 2.);
-  fhInvariantMass_test2 =
-    new TH1D("fhInvariant2", "fhInvariant2;mass in GeV/c^{2}];#", 2000, 0., 2.);
-  fhInvariantMass_test3 =
-    new TH1D("fhInvariant3", "fhInvariant3;mass in GeV/c^{2}];#", 2000, 0., 2.);
+  fhInvariantMass_test  = new TH1D("fhInvariant", "fhInvariant;mass in GeV/c^{2}];#", 2000, 0., 2.);
+  fhInvariantMass_test2 = new TH1D("fhInvariant2", "fhInvariant2;mass in GeV/c^{2}];#", 2000, 0., 2.);
+  fhInvariantMass_test3 = new TH1D("fhInvariant3", "fhInvariant3;mass in GeV/c^{2}];#", 2000, 0., 2.);
   fHistoList.push_back(fhInvariantMass_test);
   fHistoList.push_back(fhInvariantMass_test2);
   fHistoList.push_back(fhInvariantMass_test3);
 
-  fhInvariantMassReco_test = new TH1D(
-    "fhInvariantReco", "fhInvariantReco;mass [GeV/c^2];#", 2000, 0., 2.);
-  fhInvariantMassReco_test2 = new TH1D(
-    "fhInvariantReco2", "fhInvariantReco2;mass [GeV/c^2];#", 2000, 0., 2.);
-  fhInvariantMassReco_test3 = new TH1D(
-    "fhInvariantReco3", "fhInvariantReco3;mass [GeV/c^2];#", 2000, 0., 2.);
+  fhInvariantMassReco_test  = new TH1D("fhInvariantReco", "fhInvariantReco;mass [GeV/c^2];#", 2000, 0., 2.);
+  fhInvariantMassReco_test2 = new TH1D("fhInvariantReco2", "fhInvariantReco2;mass [GeV/c^2];#", 2000, 0., 2.);
+  fhInvariantMassReco_test3 = new TH1D("fhInvariantReco3", "fhInvariantReco3;mass [GeV/c^2];#", 2000, 0., 2.);
   fHistoList.push_back(fhInvariantMassReco_test);
   fHistoList.push_back(fhInvariantMassReco_test2);
   fHistoList.push_back(fhInvariantMassReco_test3);
 
-  fhInvariantMassReco_pi0 = new TH1D("fhInvariantReco_pi0",
-                                     "fhInvariantReco_pi0;mass [GeV/c^2];#",
-                                     2000,
-                                     0.,
-                                     2.);
+  fhInvariantMassReco_pi0 = new TH1D("fhInvariantReco_pi0", "fhInvariantReco_pi0;mass [GeV/c^2];#", 2000, 0., 2.);
   fHistoList.push_back(fhInvariantMassReco_pi0);
 
 
   // for reconstructed tracks
-  fhMomentum_MCvsReco      = new TH2D("fhMomentum_MCvsReco",
-                                 "fhMomentum_MCvsReco;MC;Reco",
-                                 400,
-                                 0.,
-                                 40.,
-                                 400,
-                                 0.,
-                                 40.);
-  fhMomentum_MCvsReco_diff = new TH1D("fhMomentum_MCvsReco_diff",
-                                      "fhMomentum_MCvsReco_diff;(MC-Reco)/MC",
-                                      500,
-                                      -0.01,
-                                      4.);
+  fhMomentum_MCvsReco = new TH2D("fhMomentum_MCvsReco", "fhMomentum_MCvsReco;MC;Reco", 400, 0., 40., 400, 0., 40.);
+  fhMomentum_MCvsReco_diff =
+    new TH1D("fhMomentum_MCvsReco_diff", "fhMomentum_MCvsReco_diff;(MC-Reco)/MC", 500, -0.01, 4.);
   fHistoList.push_back(fhMomentum_MCvsReco);
   fHistoList.push_back(fhMomentum_MCvsReco_diff);
 
 
-  fhSearchGammas =
-    new TH1D("fhSearchGammas", "fhSearchGammas;mass;#", 100, -0.005, 0.995);
+  fhSearchGammas = new TH1D("fhSearchGammas", "fhSearchGammas;mass;#", 100, -0.005, 0.995);
   fHistoList.push_back(fhSearchGammas);
 
 
-  fhANN_output_electrons = new TH1D(
-    "fhANN_output_electrons", "fhANN_output_electrons;ann output", 400, -2, 2.);
-  fhANN_output_electrons2 = new TH1D("fhANN_output_electrons2",
-                                     "fhANN_output_electrons2;ann output",
-                                     400,
-                                     -2,
-                                     2.);
+  fhANN_output_electrons  = new TH1D("fhANN_output_electrons", "fhANN_output_electrons;ann output", 400, -2, 2.);
+  fhANN_output_electrons2 = new TH1D("fhANN_output_electrons2", "fhANN_output_electrons2;ann output", 400, -2, 2.);
   fhANN_output_electrons_chiCut =
-    new TH1D("fhANN_output_electrons_chiCut",
-             "fhANN_output_electrons_chiCut;ann output",
-             400,
-             -2,
-             2.);
+    new TH1D("fhANN_output_electrons_chiCut", "fhANN_output_electrons_chiCut;ann output", 400, -2, 2.);
   fhANN_output_electrons_vs_p =
-    new TH2D("fhANN_output_electrons_vs_p",
-             "fhANN_output_electrons_vs_p;momentum in GeV/c; ann output",
-             100,
-             0.,
-             10.,
-             400,
-             -2,
-             2.);
-  fhANN_output_else =
-    new TH1D("fhANN_output_else", "fhANN_output_else;ann output", 400, -2, 2.);
-  fhANN_output_else2 = new TH1D(
-    "fhANN_output_else2", "fhANN_output_else2;ann output", 400, -2, 2.);
-  fhANN_output_else_chiCut = new TH1D("fhANN_output_else_chiCut",
-                                      "fhANN_output_else_chiCut;ann output",
-                                      400,
-                                      -2,
-                                      2.);
-  fhANN_output_else_vs_p =
-    new TH2D("fhANN_output_else_vs_p",
-             "fhANN_output_else_vs_p;momentum in GeV/c; ann output",
-             100,
-             0.,
-             10.,
-             400,
-             -2,
-             2.);
+    new TH2D("fhANN_output_electrons_vs_p", "fhANN_output_electrons_vs_p;momentum in GeV/c; ann output", 100, 0., 10.,
+             400, -2, 2.);
+  fhANN_output_else        = new TH1D("fhANN_output_else", "fhANN_output_else;ann output", 400, -2, 2.);
+  fhANN_output_else2       = new TH1D("fhANN_output_else2", "fhANN_output_else2;ann output", 400, -2, 2.);
+  fhANN_output_else_chiCut = new TH1D("fhANN_output_else_chiCut", "fhANN_output_else_chiCut;ann output", 400, -2, 2.);
+  fhANN_output_else_vs_p   = new TH2D("fhANN_output_else_vs_p", "fhANN_output_else_vs_p;momentum in GeV/c; ann output",
+                                    100, 0., 10., 400, -2, 2.);
   fHistoList.push_back(fhANN_output_electrons);
   fHistoList.push_back(fhANN_output_electrons2);
   fHistoList.push_back(fhANN_output_electrons_chiCut);
@@ -669,25 +499,19 @@ void CbmAnaConversion::InitHistograms() {
 
   // #############################################
   // Histograms related to KFParticle results
-  fhPi0_NDaughters = new TH1D(
-    "fhPi0_NDaughters", "fhPi0_NDaughters;number of daughers;#", 4, 0.5, 4.5);
-  fhPi0Ratio = new TH1D("fhPi0Ratio", "fhPi0Ratio; ratio;#", 1000, 0., 0.02);
-  fhPi0_mass = new TH1D("fhPi0_mass", "fhPi0_mass;mass;#", 500, 0., 0.5);
+  fhPi0_NDaughters = new TH1D("fhPi0_NDaughters", "fhPi0_NDaughters;number of daughers;#", 4, 0.5, 4.5);
+  fhPi0Ratio       = new TH1D("fhPi0Ratio", "fhPi0Ratio; ratio;#", 1000, 0., 0.02);
+  fhPi0_mass       = new TH1D("fhPi0_mass", "fhPi0_mass;mass;#", 500, 0., 0.5);
   fHistoList_kfparticle.push_back(fhPi0_NDaughters);
   fHistoList_kfparticle.push_back(fhPi0Ratio);
   fHistoList_kfparticle.push_back(fhPi0_mass);
 
 
   fhNofElectrons_4epem =
-    new TH1D("fhNofElectrons_4epem",
-             "fhNofElectrons_4epem;number of electrons per event;#",
-             101,
-             -0.5,
-             100.5);
+    new TH1D("fhNofElectrons_4epem", "fhNofElectrons_4epem;number of electrons per event;#", 101, -0.5, 100.5);
   fHistoList.push_back(fhNofElectrons_4epem);
 
-  fhPi0_MC_occurence =
-    new TH1D("fhPi0_MC_occurence", "fhPi0_MC_occurence;;#", 20, 0, 20);
+  fhPi0_MC_occurence = new TH1D("fhPi0_MC_occurence", "fhPi0_MC_occurence;;#", 20, 0, 20);
   fHistoList_furtherAnalyses.push_back(fhPi0_MC_occurence);
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(1, "== -1: all pi0 from target");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(2, "all pi0 -> gg");
@@ -695,8 +519,7 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(4, "both conv before 70cm");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(5, "both conv in target");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(6, "...");
-  fhPi0_MC_occurence->GetXaxis()->SetBinLabel(7,
-                                              "!= -1: all pi0 not from target");
+  fhPi0_MC_occurence->GetXaxis()->SetBinLabel(7, "!= -1: all pi0 not from target");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(8, "all pi0 -> gg");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(9, "all g -> e+e-");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(10, "both conv before 70cm");
@@ -709,19 +532,16 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(17, "daughters == 4");
   fhPi0_MC_occurence->GetXaxis()->SetBinLabel(18, "daughters > 4");
 
-  fhPi0_MC_occurence2 =
-    new TH1D("fhPi0_MC_occurence2", "fhPi0_MC_occurence2;;#", 20, 0, 20);
+  fhPi0_MC_occurence2 = new TH1D("fhPi0_MC_occurence2", "fhPi0_MC_occurence2;;#", 20, 0, 20);
   fHistoList_furtherAnalyses.push_back(fhPi0_MC_occurence2);
-  fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(
-    1, "!= -1: all pi0 not from target");
+  fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(1, "!= -1: all pi0 not from target");
   fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(2, "all pi0 -> gg");
   fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(3, "all g -> e+e-");
   fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(4, "both conv before 70cm");
   fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(5, "both conv in target");
   fhPi0_MC_occurence2->GetXaxis()->SetBinLabel(6, "...");
 
-  fhPi0_Reco_occurence =
-    new TH1D("fhPi0_Reco_occurence", "fhPi0_Reco_occurence;;#", 16, 0, 16);
+  fhPi0_Reco_occurence = new TH1D("fhPi0_Reco_occurence", "fhPi0_Reco_occurence;;#", 16, 0, 16);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_occurence);
   fhPi0_Reco_occurence->GetXaxis()->SetBinLabel(1, "4 e from pi0 (not same)");
   fhPi0_Reco_occurence->GetXaxis()->SetBinLabel(2, "test");
@@ -740,8 +560,7 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_Reco_occurence->GetXaxis()->SetBinLabel(15, "richInd: ==4");
   fhPi0_Reco_occurence->GetXaxis()->SetBinLabel(16, "richInd: >4");
 
-  fhPi0_Reco_occurence2 =
-    new TH1D("fhPi0_Reco_occurence2", "fhPi0_Reco_occurence2;;#", 16, 0, 16);
+  fhPi0_Reco_occurence2 = new TH1D("fhPi0_Reco_occurence2", "fhPi0_Reco_occurence2;;#", 16, 0, 16);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_occurence2);
   fhPi0_Reco_occurence2->GetXaxis()->SetBinLabel(1, "4 e from pi0 (not same)");
   fhPi0_Reco_occurence2->GetXaxis()->SetBinLabel(2, "test");
@@ -761,77 +580,34 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_Reco_occurence2->GetXaxis()->SetBinLabel(16, "...");
 
 
-  fhPi0_Reco_angles =
-    new TH1D("fhPi0_Reco_angles", "fhPi0_Reco_angles;angle;#", 500, 0, 50);
+  fhPi0_Reco_angles = new TH1D("fhPi0_Reco_angles", "fhPi0_Reco_angles;angle;#", 500, 0, 50);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_angles);
-  fhPi0_Reco_chi =
-    new TH1D("fhPi0_Reco_chi", "fhPi0_Reco_chi;chi;#", 500, 0, 500);
+  fhPi0_Reco_chi = new TH1D("fhPi0_Reco_chi", "fhPi0_Reco_chi;chi;#", 500, 0, 500);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi);
-  fhPi0_Reco_ndf =
-    new TH1D("fhPi0_Reco_ndf", "fhPi0_Reco_ndf;ndf;#", 500, 0, 50);
+  fhPi0_Reco_ndf = new TH1D("fhPi0_Reco_ndf", "fhPi0_Reco_ndf;ndf;#", 500, 0, 50);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_ndf);
-  fhPi0_Reco_ndf_vs_chi = new TH2D("fhPi0_Reco_ndf_vs_chi",
-                                   "fhPi0_Reco_ndf_vs_chi;ndf;chi",
-                                   51,
-                                   -0.5,
-                                   50.5,
-                                   500,
-                                   0,
-                                   50);
+  fhPi0_Reco_ndf_vs_chi =
+    new TH2D("fhPi0_Reco_ndf_vs_chi", "fhPi0_Reco_ndf_vs_chi;ndf;chi", 51, -0.5, 50.5, 500, 0, 50);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_ndf_vs_chi);
-  fhPi0_Reco_ndf_vs_startvertex =
-    new TH2D("fhPi0_Reco_ndf_vs_startvertex",
-             "fhPi0_Reco_ndf_vs_startvertex;ndf;startvertex",
-             51,
-             -0.5,
-             50.5,
-             101,
-             -0.5,
-             100.5);
+  fhPi0_Reco_ndf_vs_startvertex = new TH2D(
+    "fhPi0_Reco_ndf_vs_startvertex", "fhPi0_Reco_ndf_vs_startvertex;ndf;startvertex", 51, -0.5, 50.5, 101, -0.5, 100.5);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_ndf_vs_startvertex);
-  fhPi0_Reco_startvertex_vs_chi =
-    new TH2D("fhPi0_Reco_startvertex_vs_chi",
-             "fhPi0_Reco_startvertex_vs_chi;startvertex;chi",
-             101,
-             -0.5,
-             100.5,
-             100,
-             0,
-             100);
+  fhPi0_Reco_startvertex_vs_chi = new TH2D(
+    "fhPi0_Reco_startvertex_vs_chi", "fhPi0_Reco_startvertex_vs_chi;startvertex;chi", 101, -0.5, 100.5, 100, 0, 100);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_startvertex_vs_chi);
   fhPi0_Reco_startvertex_vs_nofhits =
-    new TH2D("fhPi0_Reco_startvertex_vs_nofhits",
-             "fhPi0_Reco_startvertex_vs_nofhits;startvertex;nofhits",
-             101,
-             -0.5,
-             100.5,
-             21,
-             -0.5,
-             20.5);
+    new TH2D("fhPi0_Reco_startvertex_vs_nofhits", "fhPi0_Reco_startvertex_vs_nofhits;startvertex;nofhits", 101, -0.5,
+             100.5, 21, -0.5, 20.5);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_startvertex_vs_nofhits);
-  fhPi0_noRichInd_diffPhi = new TH1D("fhPi0_noRichInd_diffPhi",
-                                     "fhPi0_noRichInd_diffPhi;phi difference;#",
-                                     150,
-                                     0,
-                                     150);
+  fhPi0_noRichInd_diffPhi =
+    new TH1D("fhPi0_noRichInd_diffPhi", "fhPi0_noRichInd_diffPhi;phi difference;#", 150, 0, 150);
   fHistoList_furtherAnalyses.push_back(fhPi0_noRichInd_diffPhi);
   fhPi0_noRichInd_diffTheta =
-    new TH1D("fhPi0_noRichInd_diffTheta",
-             "fhPi0_noRichInd_diffTheta;theta difference;#",
-             150,
-             0,
-             150);
+    new TH1D("fhPi0_noRichInd_diffTheta", "fhPi0_noRichInd_diffTheta;theta difference;#", 150, 0, 150);
   fHistoList_furtherAnalyses.push_back(fhPi0_noRichInd_diffTheta);
 
   fhPi0_Reco_invmass_cases =
-    new TH2D("fhPi0_Reco_invmass_cases",
-             "fhPi0_Reco_invmass_cases;cases;invmass [GeV]",
-             6,
-             0,
-             6,
-             300,
-             0,
-             3);
+    new TH2D("fhPi0_Reco_invmass_cases", "fhPi0_Reco_invmass_cases;cases;invmass [GeV]", 6, 0, 6, 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_invmass_cases);
   fhPi0_Reco_invmass_cases->GetXaxis()->SetBinLabel(1, "..");
   fhPi0_Reco_invmass_cases->GetXaxis()->SetBinLabel(2, "no cuts");
@@ -840,14 +616,8 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_Reco_invmass_cases->GetXaxis()->SetBinLabel(5, "both");
   fhPi0_Reco_invmass_cases->GetXaxis()->SetBinLabel(6, "mc-true");
   fhPi0_Reco_noRichInd_invmass_cases =
-    new TH2D("fhPi0_Reco_noRichInd_invmass_cases",
-             "fhPi0_Reco_noRichInd_invmass_cases;cases;invmass in GeV^{2}",
-             11,
-             0,
-             11,
-             300,
-             0,
-             3);
+    new TH2D("fhPi0_Reco_noRichInd_invmass_cases", "fhPi0_Reco_noRichInd_invmass_cases;cases;invmass in GeV^{2}", 11, 0,
+             11, 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_invmass_cases);
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(1, "..");
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(2, "no cuts");
@@ -855,257 +625,124 @@ void CbmAnaConversion::InitHistograms() {
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(4, "only cuts");
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(5, "both");
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(6, "mc-true");
-  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(
-    7, "richInd-no cuts");
+  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(7, "richInd-no cuts");
   fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(8, "richInd-chi");
-  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(9,
-                                                              "richInd-cuts");
-  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(10,
-                                                              "richInd-both");
-  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(11,
-                                                              "richInd-mctrue");
+  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(9, "richInd-cuts");
+  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(10, "richInd-both");
+  fhPi0_Reco_noRichInd_invmass_cases->GetXaxis()->SetBinLabel(11, "richInd-mctrue");
 
-  fhPi0_Reco_invmass = new TH1D(
-    "fhPi0_Reco_invmass", "fhPi0_Reco_invmass;invmass [GeV];#", 300, 0, 3);
+  fhPi0_Reco_invmass = new TH1D("fhPi0_Reco_invmass", "fhPi0_Reco_invmass;invmass [GeV];#", 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_invmass);
-  fhPi0_Reco_invmass_mc = new TH1D("fhPi0_Reco_invmass_mc",
-                                   "fhPi0_Reco_invmass_mc;invmass_mc [GeV];#",
-                                   300,
-                                   0,
-                                   3);
+  fhPi0_Reco_invmass_mc = new TH1D("fhPi0_Reco_invmass_mc", "fhPi0_Reco_invmass_mc;invmass_mc [GeV];#", 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_invmass_mc);
   fhPi0_Reco_noRichInd_invmass =
-    new TH1D("fhPi0_Reco_noRichInd_invmass",
-             "fhPi0_Reco_noRichInd_invmass;invmass_noRichInd [GeV];#",
-             300,
-             0,
-             3);
+    new TH1D("fhPi0_Reco_noRichInd_invmass", "fhPi0_Reco_noRichInd_invmass;invmass_noRichInd [GeV];#", 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_invmass);
-  fhPi0_Reco_noRichInd_invmass_mc =
-    new TH1D("fhPi0_Reco_noRichInd_invmass_mc",
-             "fhPi0_Reco_noRichInd_invmass_mc;invmass_noRichInd_mc [GeV];#",
-             300,
-             0,
-             3);
+  fhPi0_Reco_noRichInd_invmass_mc = new TH1D("fhPi0_Reco_noRichInd_invmass_mc",
+                                             "fhPi0_Reco_noRichInd_invmass_mc;invmass_noRichInd_mc [GeV];#", 300, 0, 3);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_invmass_mc);
 
   fhPi0_Reco_noRichInd_ndf_vs_nofhits =
-    new TH2D("fhPi0_Reco_noRichInd_ndf_vs_nofhits",
-             "fhPi0_Reco_noRichInd_ndf_vs_nofhits;ndf;nofhits",
-             31,
-             -0.5,
-             30.5,
-             21,
-             -0.5,
-             20.5);
+    new TH2D("fhPi0_Reco_noRichInd_ndf_vs_nofhits", "fhPi0_Reco_noRichInd_ndf_vs_nofhits;ndf;nofhits", 31, -0.5, 30.5,
+             21, -0.5, 20.5);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_ndf_vs_nofhits);
-  fhPi0_Reco_ndf_vs_nofhits = new TH2D("fhPi0_Reco_ndf_vs_nofhits",
-                                       "fhPi0_Reco_ndf_vs_nofhits;ndf;nofhits",
-                                       31,
-                                       -0.5,
-                                       30.5,
-                                       21,
-                                       -0.5,
-                                       20.5);
+  fhPi0_Reco_ndf_vs_nofhits =
+    new TH2D("fhPi0_Reco_ndf_vs_nofhits", "fhPi0_Reco_ndf_vs_nofhits;ndf;nofhits", 31, -0.5, 30.5, 21, -0.5, 20.5);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_ndf_vs_nofhits);
   fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi =
-    new TH2D("fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi",
-             "fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi;ndf;nofhits",
-             31,
-             -0.5,
-             30.5,
-             21,
-             -0.5,
-             20.5);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi);
+    new TH2D("fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi", "fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi;ndf;nofhits",
+             31, -0.5, 30.5, 21, -0.5, 20.5);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_ndf_vs_nofhits_withChi);
   fhPi0_Reco_ndf_vs_nofhits_withChi =
-    new TH2D("fhPi0_Reco_ndf_vs_nofhits_withChi",
-             "fhPi0_Reco_ndf_vs_nofhits_withChi;ndf;nofhits",
-             31,
-             -0.5,
-             30.5,
-             21,
-             -0.5,
-             20.5);
+    new TH2D("fhPi0_Reco_ndf_vs_nofhits_withChi", "fhPi0_Reco_ndf_vs_nofhits_withChi;ndf;nofhits", 31, -0.5, 30.5, 21,
+             -0.5, 20.5);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_ndf_vs_nofhits_withChi);
 
 
   // ################################################
 
-  fhPi0_Reco_noRichInd_chi_vs_momentum =
-    new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum",
-             "fhPi0_Reco_noRichInd_chi_vs_momentum;momentum [GeV];#chi^{2} of "
-             "momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
+  fhPi0_Reco_noRichInd_chi_vs_momentum = new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum",
+                                                  "fhPi0_Reco_noRichInd_chi_vs_momentum;momentum [GeV];#chi^{2} of "
+                                                  "momentum fit",
+                                                  200, 0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_momentum);
-  fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0 =
-    new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0",
-             "fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0;momentum "
-             "[GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0);
+  fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0 = new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0",
+                                                           "fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0;momentum "
+                                                           "[GeV];#chi^{2} of momentum fit",
+                                                           200, 0., 10., 1000, 0., 100.);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0);
   fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target =
     new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target",
              "fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target;momentum "
              "[GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target);
-  fhPi0_Reco_noRichInd_chi_vs_momentum_eRest =
-    new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum_eRest",
-             "fhPi0_Reco_noRichInd_chi_vs_momentum_eRest;momentum "
-             "[GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_noRichInd_chi_vs_momentum_eRest);
+             200, 0., 10., 1000, 0., 100.);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target);
+  fhPi0_Reco_noRichInd_chi_vs_momentum_eRest = new TH2D("fhPi0_Reco_noRichInd_chi_vs_momentum_eRest",
+                                                        "fhPi0_Reco_noRichInd_chi_vs_momentum_eRest;momentum "
+                                                        "[GeV];#chi^{2} of momentum fit",
+                                                        200, 0., 10., 1000, 0., 100.);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_momentum_eRest);
 
   fhPi0_Reco_noRichInd_chi_vs_pt =
-    new TH2D("fhPi0_Reco_noRichInd_chi_vs_pt",
-             "fhPi0_Reco_noRichInd_chi_vs_pt;pt [GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
+    new TH2D("fhPi0_Reco_noRichInd_chi_vs_pt", "fhPi0_Reco_noRichInd_chi_vs_pt;pt [GeV];#chi^{2} of momentum fit", 200,
+             0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_pt);
-  fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0 = new TH2D(
-    "fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0",
-    "fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0;pt [GeV];#chi^{2} of momentum fit",
-    200,
-    0.,
-    10.,
-    1000,
-    0.,
-    100.);
+  fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0 =
+    new TH2D("fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0",
+             "fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0;pt [GeV];#chi^{2} of momentum fit", 200, 0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0);
   fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target =
     new TH2D("fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target",
              "fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target;pt [GeV];#chi^{2} "
              "of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target);
-  fhPi0_Reco_noRichInd_chi_vs_pt_eRest = new TH2D(
-    "fhPi0_Reco_noRichInd_chi_vs_pt_eRest",
-    "fhPi0_Reco_noRichInd_chi_vs_pt_eRest;pt [GeV];#chi^{2} of momentum fit",
-    200,
-    0.,
-    10.,
-    1000,
-    0.,
-    100.);
+             200, 0., 10., 1000, 0., 100.);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target);
+  fhPi0_Reco_noRichInd_chi_vs_pt_eRest =
+    new TH2D("fhPi0_Reco_noRichInd_chi_vs_pt_eRest",
+             "fhPi0_Reco_noRichInd_chi_vs_pt_eRest;pt [GeV];#chi^{2} of momentum fit", 200, 0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_noRichInd_chi_vs_pt_eRest);
 
 
   // ################################################
 
-  fhPi0_Reco_chi_vs_momentum = new TH2D(
-    "fhPi0_Reco_chi_vs_momentum",
-    "fhPi0_Reco_chi_vs_momentum;momentum [GeV];#chi^{2} of momentum fit",
-    200,
-    0.,
-    10.,
-    1000,
-    0.,
-    100.);
+  fhPi0_Reco_chi_vs_momentum =
+    new TH2D("fhPi0_Reco_chi_vs_momentum", "fhPi0_Reco_chi_vs_momentum;momentum [GeV];#chi^{2} of momentum fit", 200,
+             0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_momentum);
-  fhPi0_Reco_chi_vs_momentum_eFromPi0 =
-    new TH2D("fhPi0_Reco_chi_vs_momentum_eFromPi0",
-             "fhPi0_Reco_chi_vs_momentum_eFromPi0;momentum [GeV];#chi^{2} of "
-             "momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
+  fhPi0_Reco_chi_vs_momentum_eFromPi0 = new TH2D("fhPi0_Reco_chi_vs_momentum_eFromPi0",
+                                                 "fhPi0_Reco_chi_vs_momentum_eFromPi0;momentum [GeV];#chi^{2} of "
+                                                 "momentum fit",
+                                                 200, 0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_momentum_eFromPi0);
-  fhPi0_Reco_chi_vs_momentum_eFromPi0_Target =
-    new TH2D("fhPi0_Reco_chi_vs_momentum_eFromPi0_Target",
-             "fhPi0_Reco_chi_vs_momentum_eFromPi0_Target;momentum "
-             "[GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
-  fHistoList_furtherAnalyses.push_back(
-    fhPi0_Reco_chi_vs_momentum_eFromPi0_Target);
+  fhPi0_Reco_chi_vs_momentum_eFromPi0_Target = new TH2D("fhPi0_Reco_chi_vs_momentum_eFromPi0_Target",
+                                                        "fhPi0_Reco_chi_vs_momentum_eFromPi0_Target;momentum "
+                                                        "[GeV];#chi^{2} of momentum fit",
+                                                        200, 0., 10., 1000, 0., 100.);
+  fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_momentum_eFromPi0_Target);
 
-  fhPi0_Reco_chi_vs_pt =
-    new TH2D("fhPi0_Reco_chi_vs_pt",
-             "fhPi0_Reco_chi_vs_pt;pt [GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
+  fhPi0_Reco_chi_vs_pt = new TH2D("fhPi0_Reco_chi_vs_pt", "fhPi0_Reco_chi_vs_pt;pt [GeV];#chi^{2} of momentum fit", 200,
+                                  0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_pt);
   fhPi0_Reco_chi_vs_pt_eFromPi0 =
-    new TH2D("fhPi0_Reco_chi_vs_pt_eFromPi0",
-             "fhPi0_Reco_chi_vs_pt_eFromPi0;pt [GeV];#chi^{2} of momentum fit",
-             200,
-             0.,
-             10.,
-             1000,
-             0.,
-             100.);
+    new TH2D("fhPi0_Reco_chi_vs_pt_eFromPi0", "fhPi0_Reco_chi_vs_pt_eFromPi0;pt [GeV];#chi^{2} of momentum fit", 200,
+             0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_pt_eFromPi0);
-  fhPi0_Reco_chi_vs_pt_eFromPi0_Target = new TH2D(
-    "fhPi0_Reco_chi_vs_pt_eFromPi0_Target",
-    "fhPi0_Reco_chi_vs_pt_eFromPi0_Target;pt [GeV];#chi^{2} of momentum fit",
-    200,
-    0.,
-    10.,
-    1000,
-    0.,
-    100.);
+  fhPi0_Reco_chi_vs_pt_eFromPi0_Target =
+    new TH2D("fhPi0_Reco_chi_vs_pt_eFromPi0_Target",
+             "fhPi0_Reco_chi_vs_pt_eFromPi0_Target;pt [GeV];#chi^{2} of momentum fit", 200, 0., 10., 1000, 0., 100.);
   fHistoList_furtherAnalyses.push_back(fhPi0_Reco_chi_vs_pt_eFromPi0_Target);
 }
 
 
-void CbmAnaConversion::Exec(Option_t*) {
+void CbmAnaConversion::Exec(Option_t*)
+{
   timer_exec.Start();
   timer_all.Start();
 
 
-  cout
-    << "======================================================================="
-    << endl;
+  cout << "=======================================================================" << endl;
   cout << "========== CbmAnaConversion, event No. " << fEventNum << endl;
-  cout
-    << "======================================================================="
-    << endl;
+  cout << "=======================================================================" << endl;
 
   fEventNum++;
 
@@ -1155,9 +792,8 @@ void CbmAnaConversion::Exec(Option_t*) {
   int countEtaMC_cut             = 0;
   int countEtaMC_fromPrimary     = 0;
 
-  if (fPrimVertex != NULL) {
-    fKFVertex = CbmKFVertex(*fPrimVertex);
-  } else {
+  if (fPrimVertex != NULL) { fKFVertex = CbmKFVertex(*fPrimVertex); }
+  else {
     Fatal("CbmAnaConversion::Exec", "No PrimaryVertex array!");
   }
 
@@ -1199,14 +835,8 @@ void CbmAnaConversion::Exec(Option_t*) {
     fhPdgCodes->Fill(TMath::Abs(mctrack->GetPdgCode()));
 
     if (mctrack->GetMotherId() == -1) { countPrimPart++; }
-    if (mctrack->GetMotherId() == -1
-        && TMath::Abs(mctrack->GetPdgCode()) == 11) {
-      countPrimEl++;
-    }
-    if (mctrack->GetMotherId() != -1
-        && TMath::Abs(mctrack->GetPdgCode()) == 11) {
-      countSecEl++;
-    }
+    if (mctrack->GetMotherId() == -1 && TMath::Abs(mctrack->GetPdgCode()) == 11) { countPrimEl++; }
+    if (mctrack->GetMotherId() != -1 && TMath::Abs(mctrack->GetPdgCode()) == 11) { countSecEl++; }
     if (TMath::Abs(mctrack->GetPdgCode()) == 11) { countAllEl++; }
 
 
@@ -1231,8 +861,7 @@ void CbmAnaConversion::Exec(Option_t*) {
         fhPi0_pt->Fill(mctrack->GetPt());
         fhPi0_pt_vs_rap->Fill(mctrack->GetPt(), mctrack->GetRapidity());
         fhPi0_theta->Fill(momentum.Theta() * 180. / TMath::Pi());
-        fhPi0_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(),
-                                 mctrack->GetRapidity());
+        fhPi0_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(), mctrack->GetRapidity());
         fhPi0_z_cut->Fill(v.Z());
       }
 
@@ -1254,15 +883,13 @@ void CbmAnaConversion::Exec(Option_t*) {
         fhEta_pt->Fill(mctrack->GetPt());
         fhEta_pt_vs_rap->Fill(mctrack->GetPt(), mctrack->GetRapidity());
         fhEta_theta->Fill(momentum.Theta() * 180. / TMath::Pi());
-        fhEta_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(),
-                                 mctrack->GetRapidity());
+        fhEta_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(), mctrack->GetRapidity());
       }
     }
 
 
     if (TMath::Abs(mctrack->GetPdgCode()) == 113
-        || TMath::Abs(mctrack->GetPdgCode())
-             == 213) {  // particle is rho(770)^0 or rho^+/-
+        || TMath::Abs(mctrack->GetPdgCode()) == 213) {  // particle is rho(770)^0 or rho^+/-
       TVector3 v, momentum;
       mctrack->GetStartVertex(v);
       mctrack->GetMomentum(momentum);
@@ -1271,15 +898,13 @@ void CbmAnaConversion::Exec(Option_t*) {
       fhRho_pt->Fill(mctrack->GetPt());
       fhRho_pt_vs_rap->Fill(mctrack->GetPt(), mctrack->GetRapidity());
       fhRho_theta->Fill(momentum.Theta() * 180. / TMath::Pi());
-      fhRho_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(),
-                               mctrack->GetRapidity());
+      fhRho_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(), mctrack->GetRapidity());
       //}
     }
 
 
     if (TMath::Abs(mctrack->GetPdgCode()) == 223
-        || TMath::Abs(mctrack->GetPdgCode())
-             == 3334) {  // particle is omega(782)^0 or omega^+/-
+        || TMath::Abs(mctrack->GetPdgCode()) == 3334) {  // particle is omega(782)^0 or omega^+/-
       TVector3 v, momentum;
       mctrack->GetStartVertex(v);
       mctrack->GetMomentum(momentum);
@@ -1288,8 +913,7 @@ void CbmAnaConversion::Exec(Option_t*) {
       fhOmega_pt->Fill(mctrack->GetPt());
       fhOmega_pt_vs_rap->Fill(mctrack->GetPt(), mctrack->GetRapidity());
       fhOmega_theta->Fill(momentum.Theta() * 180. / TMath::Pi());
-      fhOmega_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(),
-                                 mctrack->GetRapidity());
+      fhOmega_theta_vs_rap->Fill(momentum.Theta() * 180. / TMath::Pi(), mctrack->GetRapidity());
       //}
     }
 
@@ -1299,10 +923,8 @@ void CbmAnaConversion::Exec(Option_t*) {
   }
 
 
-  cout << "CbmAnaConversion::Exec - Number of pi0 in MC sample: " << countPi0MC
-       << endl;
-  cout << "CbmAnaConversion::Exec - Number of pi0 from primary: "
-       << countPi0MC_fromPrimary << endl;
+  cout << "CbmAnaConversion::Exec - Number of pi0 in MC sample: " << countPi0MC << endl;
+  cout << "CbmAnaConversion::Exec - Number of pi0 from primary: " << countPi0MC_fromPrimary << endl;
   fhNofPi0_perEvent->Fill(countPi0MC);
   fhNofPi0_perEvent_cut->Fill(countPi0MC_cut);
   fhNofPi0_perEvent_cut2->Fill(countPi0MC_fromPrimary);
@@ -1356,8 +978,7 @@ void CbmAnaConversion::Exec(Option_t*) {
     if (stsInd < 0) continue;
     CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsInd);
     if (stsTrack == NULL) continue;
-    CbmTrackMatchNew* stsMatch =
-      (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
+    CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
     if (stsMatch == NULL) continue;
     if (stsMatch->GetNofLinks() <= 0) continue;
     int stsMcTrackId = stsMatch->GetMatchedLink().GetIndex();
@@ -1392,12 +1013,10 @@ void CbmAnaConversion::Exec(Option_t*) {
     vector<int> pidHypo_electron;
     pidHypo_electron.push_back(11);
     fPFFitter_electron.Fit(stsTracks_electron, pidHypo_electron);
-    fPFFitter_electron.GetChiToVertex(
-      stsTracks_electron, vField_electron, chiPrim_electron, fKFVertex, 3e6);
+    fPFFitter_electron.GetChiToVertex(stsTracks_electron, vField_electron, chiPrim_electron, fKFVertex, 3e6);
 
     TVector3 refittedMomentum_electron;
-    const FairTrackParam* vtxTrack_electron =
-      stsTracks_electron[0].GetParamFirst();
+    const FairTrackParam* vtxTrack_electron = stsTracks_electron[0].GetParamFirst();
     vtxTrack_electron->Momentum(refittedMomentum_electron);
     float result_chi_electron = chiPrim_electron[0];
     float result_ndf_electron = stsTracks_electron[0].GetNDF();
@@ -1413,10 +1032,8 @@ void CbmAnaConversion::Exec(Option_t*) {
     Double_t nofhits_sts = stsTrack->GetNofHits();
     fhPi0_Reco_startvertex_vs_nofhits->Fill(startvertexZ, nofhits_sts);
 
-    fhPi0_Reco_noRichInd_chi_vs_momentum->Fill(refittedMomentum_electron.Mag(),
-                                               result_chi_electron);
-    fhPi0_Reco_noRichInd_chi_vs_pt->Fill(refittedMomentum_electron.Perp(),
-                                         result_chi_electron);
+    fhPi0_Reco_noRichInd_chi_vs_momentum->Fill(refittedMomentum_electron.Mag(), result_chi_electron);
+    fhPi0_Reco_noRichInd_chi_vs_pt->Fill(refittedMomentum_electron.Perp(), result_chi_electron);
 
     fTestTracklist_noRichInd.push_back(mcTrack1);
     fTestTracklist_noRichInd_MCindex.push_back(stsMcTrackId);
@@ -1434,20 +1051,17 @@ void CbmAnaConversion::Exec(Option_t*) {
     Int_t pdg         = mcTrack1->GetPdgCode();
     CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(richInd));
     if (NULL != ring) {
-      Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(
-        iGTrack, refittedMomentum_electron.Mag());
+      Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(iGTrack, refittedMomentum_electron.Mag());
 
       if (TMath::Abs(pdg) == 11) {
         fhANN_output_electrons->Fill(ann);
-        if (result_chi_electron <= CbmAnaConversionCutSettings::CalcChiCut(
-              refittedMomentum_electron.Perp())) {
+        if (result_chi_electron <= CbmAnaConversionCutSettings::CalcChiCut(refittedMomentum_electron.Perp())) {
           fhANN_output_electrons_chiCut->Fill(ann);
         }
       }
       if (TMath::Abs(pdg) != 11) {
         fhANN_output_else->Fill(ann);
-        if (result_chi_electron <= CbmAnaConversionCutSettings::CalcChiCut(
-              refittedMomentum_electron.Perp())) {
+        if (result_chi_electron <= CbmAnaConversionCutSettings::CalcChiCut(refittedMomentum_electron.Perp())) {
           fhANN_output_else_chiCut->Fill(ann);
         }
       }
@@ -1462,28 +1076,21 @@ void CbmAnaConversion::Exec(Option_t*) {
     mcTrack1->GetMomentum(mcMomentumVec);
     Double_t mcMomentum = mcMomentumVec.Mag();
     fhMomentum_MCvsReco->Fill(mcMomentum, stsMomentum);
-    fhMomentum_MCvsReco_diff->Fill(TMath::Abs(mcMomentum - stsMomentum)
-                                   / mcMomentum);
+    fhMomentum_MCvsReco_diff->Fill(TMath::Abs(mcMomentum - stsMomentum) / mcMomentum);
 
-    TVector3
-      bothtogether;  // combination of measured (STS) momenta and MC momenta
+    TVector3 bothtogether;  // combination of measured (STS) momenta and MC momenta
     bothtogether.SetX(mcMomentumVec.X());
     bothtogether.SetY(stsMomentumVec.Y());
     bothtogether.SetZ(stsMomentumVec.Z());
 
 
     // Fill tracklists containing momenta from mc-true, measured in sts, refitted at primary
-    Bool_t isFilled = FillRecoTracklistEPEM(mcTrack1,
-                                            stsMomentumVec,
-                                            refittedMomentum,
-                                            stsMcTrackId,
-                                            result_chi,
-                                            iGTrack);
+    Bool_t isFilled =
+      FillRecoTracklistEPEM(mcTrack1, stsMomentumVec, refittedMomentum, stsMcTrackId, result_chi, iGTrack);
     if (isFilled) nofElectrons4epem++;
 
 
-    CbmTrackMatchNew* richMatch =
-      (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
+    CbmTrackMatchNew* richMatch = (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
     if (richMatch == NULL) continue;
     int richMcTrackId = richMatch->GetMatchedLink().GetIndex();
     if (richMcTrackId < 0) continue;
@@ -1496,12 +1103,10 @@ void CbmAnaConversion::Exec(Option_t*) {
     if (stsMcTrackId == richMcTrackId) {
       //CbmRichRing* ring = static_cast<CbmRichRing*> (fRichRings->At(richInd));
       if (NULL != ring) {
-        Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(
-          iGTrack, refittedMomentum_electron.Mag());
+        Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(iGTrack, refittedMomentum_electron.Mag());
         if (TMath::Abs(pdg) == 11) {
           fhANN_output_electrons2->Fill(ann);
-          fhANN_output_electrons_vs_p->Fill(refittedMomentum_electron.Mag(),
-                                            ann);
+          fhANN_output_electrons_vs_p->Fill(refittedMomentum_electron.Mag(), ann);
         }
         if (TMath::Abs(pdg) != 11) {
           fhANN_output_else2->Fill(ann);
@@ -1528,10 +1133,8 @@ void CbmAnaConversion::Exec(Option_t*) {
     fTestTracklist_ndf.push_back(result_ndf_electron);
     fTestTracklist_nofhits.push_back(nofhits_sts);
 
-    fhPi0_Reco_chi_vs_pt->Fill(refittedMomentum_electron.Perp(),
-                               result_chi_electron);
-    fhPi0_Reco_chi_vs_momentum->Fill(refittedMomentum_electron.Mag(),
-                                     result_chi_electron);
+    fhPi0_Reco_chi_vs_pt->Fill(refittedMomentum_electron.Perp(), result_chi_electron);
+    fhPi0_Reco_chi_vs_momentum->Fill(refittedMomentum_electron.Mag(), result_chi_electron);
   }
 
   AnalysePi0_Reco();
@@ -1544,12 +1147,8 @@ void CbmAnaConversion::Exec(Option_t*) {
   //	InvariantMassTestReco();
 
   if (DoReconstruction) {
-    fAnaReco->SetTracklistReco(fRecoTracklistEPEM,
-                               fRecoMomentum,
-                               fRecoRefittedMomentum,
-                               fRecoTracklistEPEM_id,
-                               fRecoTracklistEPEM_chi,
-                               fRecoTracklistEPEM_gtid);
+    fAnaReco->SetTracklistReco(fRecoTracklistEPEM, fRecoMomentum, fRecoRefittedMomentum, fRecoTracklistEPEM_id,
+                               fRecoTracklistEPEM_chi, fRecoTracklistEPEM_gtid);
     fAnaReco->InvariantMassTest_4epem();
     fAnaReco->CalculateInvMassWithFullRecoCuts();
   }
@@ -1570,7 +1169,8 @@ void CbmAnaConversion::Exec(Option_t*) {
 }
 
 
-void CbmAnaConversion::Finish() {
+void CbmAnaConversion::Finish()
+{
   timer_all.Start();
 
   cout << "\n\n############### CALLING FINISH ROUTINES... ############" << endl;
@@ -1619,20 +1219,14 @@ void CbmAnaConversion::Finish() {
   cout << endl;
   cout << "############### FINISHED MAIN TASK ##############" << endl;
   cout << "Particlecounter: " << particlecounter << endl;
-  cout << "Particlecounter (2 daughters): " << particlecounter_2daughters
-       << endl;
-  cout << "Particlecounter (3 daughters): " << particlecounter_3daughters
-       << endl;
-  cout << "Particlecounter (4 daughters): " << particlecounter_4daughters
-       << endl;
+  cout << "Particlecounter (2 daughters): " << particlecounter_2daughters << endl;
+  cout << "Particlecounter (3 daughters): " << particlecounter_3daughters << endl;
+  cout << "Particlecounter (4 daughters): " << particlecounter_4daughters << endl;
   cout << "Particlecounter_all: " << particlecounter_all << endl;
   cout << "#####################################" << endl;
-  cout << "Number of generated pi0 (all events): " << fNofGeneratedPi0_allEvents
-       << endl;
-  cout << "Number of reconstructed pi0 (all events): "
-       << fNofPi0_kfparticle_allEvents << "\t - fraction: "
-       << 1.0 * fNofPi0_kfparticle_allEvents / fNofGeneratedPi0_allEvents
-       << endl;
+  cout << "Number of generated pi0 (all events): " << fNofGeneratedPi0_allEvents << endl;
+  cout << "Number of reconstructed pi0 (all events): " << fNofPi0_kfparticle_allEvents
+       << "\t - fraction: " << 1.0 * fNofPi0_kfparticle_allEvents / fNofGeneratedPi0_allEvents << endl;
   cout << "#####################################" << endl;
   cout << "############### OVERALL TIMERS ###############" << endl;
   cout << std::fixed;
@@ -1641,8 +1235,7 @@ void CbmAnaConversion::Finish() {
   cout << "Exec time: " << fTime_exec << endl;
   cout << "MC time: " << fTime_mc << "\t RECO time: " << fTime_rec << endl;
   cout << "############### ############## ###############" << endl;
-  cout << "Number of events in fhNofPi0_perEvent histogram: "
-       << fhNofPi0_perEvent->GetEntries() << endl;
+  cout << "Number of events in fhNofPi0_perEvent histogram: " << fhNofPi0_perEvent->GetEntries() << endl;
   cout << "############### ############## ###############" << endl;
   // =========================================================================================================================
   // ============================================== END - FINISH function ====================================================
@@ -1650,7 +1243,8 @@ void CbmAnaConversion::Finish() {
 }
 
 
-void CbmAnaConversion::AnalyseElectrons(CbmMCTrack* mctrack) {
+void CbmAnaConversion::AnalyseElectrons(CbmMCTrack* mctrack)
+{
   int motherId = mctrack->GetMotherId();
   if (motherId == -1) return;
   CbmMCTrack* mother = (CbmMCTrack*) fMcTracks->At(motherId);
@@ -1676,8 +1270,7 @@ void CbmAnaConversion::AnalyseElectrons(CbmMCTrack* mctrack) {
   }
   if (mcMotherPdg == 111) fhElectronSources->Fill(1);
   if (mcMotherPdg == 221) fhElectronSources->Fill(2);
-  if (mcMotherPdg != 22 && mcMotherPdg != 111 && mcMotherPdg != 221)
-    fhElectronSources->Fill(3);
+  if (mcMotherPdg != 22 && mcMotherPdg != 111 && mcMotherPdg != 221) fhElectronSources->Fill(3);
 
   if (mcMotherPdg == 22) {
     TVector3 v;
@@ -1688,9 +1281,9 @@ void CbmAnaConversion::AnalyseElectrons(CbmMCTrack* mctrack) {
 }
 
 
-CbmLmvmKinematicParams
-CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP,
-                                           const CbmMCTrack* mctrackM) {
+CbmLmvmKinematicParams CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP,
+                                                                  const CbmMCTrack* mctrackM)
+{
   CbmLmvmKinematicParams params;
 
   TVector3 momP;  //momentum e+
@@ -1707,12 +1300,10 @@ CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP,
   Double_t energyPair = energyP + energyM;
   Double_t ptPair     = momPair.Perp();
   Double_t pzPair     = momPair.Pz();
-  Double_t yPair =
-    0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
-  Double_t anglePair = lorVecM.Angle(lorVecP.Vect());
-  Double_t theta     = 180. * anglePair / TMath::Pi();
-  Double_t minv =
-    2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(momM.Mag() * momP.Mag());
+  Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+  Double_t anglePair  = lorVecM.Angle(lorVecP.Vect());
+  Double_t theta      = 180. * anglePair / TMath::Pi();
+  Double_t minv       = 2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(momM.Mag() * momP.Mag());
 
   params.fMomentumMag = momPair.Mag();
   params.fPt          = ptPair;
@@ -1722,8 +1313,7 @@ CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP,
   return params;
 }
 
-Double_t CbmAnaConversion::Invmass_2gammas(const CbmMCTrack* mctrack1,
-                                           const CbmMCTrack* mctrack2)
+Double_t CbmAnaConversion::Invmass_2gammas(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2)
 // calculation of invariant mass from two gammas (m=0)
 {
   TVector3 mom1;
@@ -1741,8 +1331,7 @@ Double_t CbmAnaConversion::Invmass_2gammas(const CbmMCTrack* mctrack1,
 }
 
 
-Double_t CbmAnaConversion::Invmass_2particles(const CbmMCTrack* mctrack1,
-                                              const CbmMCTrack* mctrack2)
+Double_t CbmAnaConversion::Invmass_2particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2)
 // calculation of invariant mass from two electrons/positrons
 {
   TVector3 mom1;
@@ -1760,10 +1349,8 @@ Double_t CbmAnaConversion::Invmass_2particles(const CbmMCTrack* mctrack1,
 }
 
 
-Double_t CbmAnaConversion::Invmass_4particles(const CbmMCTrack* mctrack1,
-                                              const CbmMCTrack* mctrack2,
-                                              const CbmMCTrack* mctrack3,
-                                              const CbmMCTrack* mctrack4)
+Double_t CbmAnaConversion::Invmass_4particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2,
+                                              const CbmMCTrack* mctrack3, const CbmMCTrack* mctrack4)
 // calculation of invariant mass from four electrons/positrons
 {
   /*    TVector3 mom1;
@@ -1817,15 +1404,13 @@ Double_t CbmAnaConversion::Invmass_4particles(const CbmMCTrack* mctrack1,
 
   TLorentzVector sum;
   sum = lorVec1 + lorVec2 + lorVec3 + lorVec4;
-  cout << "mc: \t" << sum.Px() << " / " << sum.Py() << " / " << sum.Pz()
-       << " / " << sum.E() << "\t => mag = " << sum.Mag() << endl;
+  cout << "mc: \t" << sum.Px() << " / " << sum.Py() << " / " << sum.Pz() << " / " << sum.E()
+       << "\t => mag = " << sum.Mag() << endl;
   return sum.Mag();
 }
 
 
-Double_t CbmAnaConversion::Invmass_4particlesRECO(const TVector3 part1,
-                                                  const TVector3 part2,
-                                                  const TVector3 part3,
+Double_t CbmAnaConversion::Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                                   const TVector3 part4)
 // calculation of invariant mass from four electrons/positrons
 {
@@ -1899,15 +1484,15 @@ void CbmAnaConversion::FillMCTracklists(CbmMCTrack* mctrack, int)
 }
 
 
-void CbmAnaConversion::FillRecoTracklist(CbmMCTrack* mctrack) {
+void CbmAnaConversion::FillRecoTracklist(CbmMCTrack* mctrack)
+{
   if (TMath::Abs(mctrack->GetPdgCode()) == 11) {
     int motherId = mctrack->GetMotherId();
     if (motherId != -1) {
       CbmMCTrack* mother = (CbmMCTrack*) fMcTracks->At(motherId);
       int mcMotherPdg    = -1;
       if (NULL != mother) mcMotherPdg = mother->GetPdgCode();
-      if (mcMotherPdg == 111
-          || mcMotherPdg == 22) {  // pdg code 111 = pi0, 22 = gamma
+      if (mcMotherPdg == 111 || mcMotherPdg == 22) {  // pdg code 111 = pi0, 22 = gamma
         fRecoTracklist.push_back(mctrack);
         //	cout << "pdg " << mctrack->GetPdgCode() << "\t motherid " << motherId << endl;
         test++;
@@ -1917,12 +1502,9 @@ void CbmAnaConversion::FillRecoTracklist(CbmMCTrack* mctrack) {
 }
 
 
-Bool_t CbmAnaConversion::FillRecoTracklistEPEM(CbmMCTrack* mctrack,
-                                               TVector3 stsMomentum,
-                                               TVector3 refittedMom,
-                                               int i,
-                                               Double_t chi,
-                                               Int_t GlobalTrackId) {
+Bool_t CbmAnaConversion::FillRecoTracklistEPEM(CbmMCTrack* mctrack, TVector3 stsMomentum, TVector3 refittedMom, int i,
+                                               Double_t chi, Int_t GlobalTrackId)
+{
   Bool_t isFilled = false;
   if (TMath::Abs(mctrack->GetPdgCode()) == 11) {
     int motherId = mctrack->GetMotherId();
@@ -1940,7 +1522,8 @@ Bool_t CbmAnaConversion::FillRecoTracklistEPEM(CbmMCTrack* mctrack,
 }
 
 
-void CbmAnaConversion::CalculateInvMass_MC_2particles() {
+void CbmAnaConversion::CalculateInvMass_MC_2particles()
+{
   for (unsigned int i = 0; i < fMCTracklist_all.size(); i++) {
     for (unsigned int j = i + 1; j < fMCTracklist_all.size(); j++) {
       //			Double_t invmass = Invmass_2particles(fMCTracklist_all[i],fMCTracklist_all[j]);
@@ -1957,10 +1540,8 @@ void CbmAnaConversion::CalculateInvMass_MC_2particles() {
       //			if (NULL != mother_j) mcMotherPdg_j = mother_j->GetPdgCode();
 
       if (motherId_i == motherId_j
-          && ((fMCTracklist_all[i]->GetPdgCode() == 11
-               && fMCTracklist_all[j]->GetPdgCode() == -11)
-              || (fMCTracklist_all[i]->GetPdgCode() == -11
-                  && fMCTracklist_all[j]->GetPdgCode() == 11))) {
+          && ((fMCTracklist_all[i]->GetPdgCode() == 11 && fMCTracklist_all[j]->GetPdgCode() == -11)
+              || (fMCTracklist_all[i]->GetPdgCode() == -11 && fMCTracklist_all[j]->GetPdgCode() == 11))) {
         //	fhInvariantMass_MC_all->Fill(invmass);
         //cout << "e+e- decay detected! MotherId " << motherId_i << "\t invariant mass: " << invmass << endl;
 
@@ -1999,9 +1580,7 @@ void CbmAnaConversion::InvariantMassTest()
           //	cout << "gamma2 " << fMCTracklist[j]->GetPx() << "\t" << fMCTracklist[j]->GetPy() << "\t" << fMCTracklist[j]->GetPz() << endl;
         }
       }
-      if (vi.Z() == vj.Z() && vi.Y() == vj.Y() && vi.X() == vj.X()) {
-        fhInvariantMass_test3->Fill(invmass);
-      }
+      if (vi.Z() == vj.Z() && vi.Y() == vj.Y() && vi.X() == vj.X()) { fhInvariantMass_test3->Fill(invmass); }
       //}
     }
   }
@@ -2019,9 +1598,7 @@ void CbmAnaConversion::InvariantMassTestReco()
         for (unsigned int k = j + 1; k < fRecoTracklist.size(); k++) {
           for (unsigned int l = k + 1; l < fRecoTracklist.size(); l++) {
 
-            if (fRecoTracklist[i]->GetPdgCode()
-                  + fRecoTracklist[j]->GetPdgCode()
-                  + fRecoTracklist[k]->GetPdgCode()
+            if (fRecoTracklist[i]->GetPdgCode() + fRecoTracklist[j]->GetPdgCode() + fRecoTracklist[k]->GetPdgCode()
                   + fRecoTracklist[l]->GetPdgCode()
                 != 0)
               continue;
@@ -2084,12 +1661,9 @@ void CbmAnaConversion::InvariantMassTestReco()
             }
 
 
-            if (motherId1 == motherId2 && motherId2 == motherId3
-                && motherId3 == motherId4) {
-              Double_t invmass = Invmass_4particles(fRecoTracklist[i],
-                                                    fRecoTracklist[j],
-                                                    fRecoTracklist[k],
-                                                    fRecoTracklist[l]);
+            if (motherId1 == motherId2 && motherId2 == motherId3 && motherId3 == motherId4) {
+              Double_t invmass =
+                Invmass_4particles(fRecoTracklist[i], fRecoTracklist[j], fRecoTracklist[k], fRecoTracklist[l]);
               fhInvariantMassReco_pi0->Fill(invmass);
               //		cout << "Decay pi0 -> e+ e- e+ e- detected!" << endl;
             }
@@ -2102,19 +1676,14 @@ void CbmAnaConversion::InvariantMassTestReco()
             //	if(  ((motherId1 == motherId2 && motherId3 == motherId4) && (mcMotherPdg1 == 22 || mcMotherPdg1 == 111) && (mcMotherPdg3 == 22 || mcMotherPdg3 == 111))
             //	  || ((motherId1 == motherId3 && motherId2 == motherId4) && (mcMotherPdg1 == 22 || mcMotherPdg1 == 111) && (mcMotherPdg2 == 22 || mcMotherPdg2 == 111))
             //	  || ((motherId1 == motherId4 && motherId2 == motherId3) && (mcMotherPdg1 == 22 || mcMotherPdg1 == 111) && (mcMotherPdg2 == 22 || mcMotherPdg2 == 111))) {
-            if (((motherId1 == motherId2 && motherId3 == motherId4)
-                 && (mcMotherPdg1 == 22) && (mcMotherPdg3 == 22)
+            if (((motherId1 == motherId2 && motherId3 == motherId4) && (mcMotherPdg1 == 22) && (mcMotherPdg3 == 22)
                  && grandmotherId1 == grandmotherId3)
-                || ((motherId1 == motherId3 && motherId2 == motherId4)
-                    && (mcMotherPdg1 == 22) && (mcMotherPdg2 == 22)
+                || ((motherId1 == motherId3 && motherId2 == motherId4) && (mcMotherPdg1 == 22) && (mcMotherPdg2 == 22)
                     && grandmotherId1 == grandmotherId2)
-                || ((motherId1 == motherId4 && motherId2 == motherId3)
-                    && (mcMotherPdg1 == 22) && (mcMotherPdg2 == 22)
+                || ((motherId1 == motherId4 && motherId2 == motherId3) && (mcMotherPdg1 == 22) && (mcMotherPdg2 == 22)
                     && grandmotherId1 == grandmotherId2)) {
-              Double_t invmass = Invmass_4particles(fRecoTracklist[i],
-                                                    fRecoTracklist[j],
-                                                    fRecoTracklist[k],
-                                                    fRecoTracklist[l]);
+              Double_t invmass =
+                Invmass_4particles(fRecoTracklist[i], fRecoTracklist[j], fRecoTracklist[k], fRecoTracklist[l]);
               fhInvariantMassReco_pi0->Fill(invmass);
               //		cout << "Decay pi0 -> 2gamma -> e+ e-! \t MotherId " << motherId1 << "\t" << motherId2 << "\t" << motherId3 << "\t" << motherId4 <<
               //			 "\t GrandmotherId " << grandmotherId1 << "\t" << grandmotherId2 << "\t" << grandmotherId3 << "\t" << grandmotherId4 << endl;
@@ -2143,21 +1712,18 @@ void CbmAnaConversion::SetMode(int mode = 0)
 }
 
 
-void CbmAnaConversion::ReconstructGamma() {
+void CbmAnaConversion::ReconstructGamma()
+{
   if (fMCTracklist_all.size() >= 2) {
     for (unsigned int i = 0; i < fMCTracklist_all.size(); i++) {
       for (unsigned int j = i + 1; j < fMCTracklist_all.size(); j++) {
-        if (fMCTracklist_all[i]->GetPdgCode()
-              + fMCTracklist_all[j]->GetPdgCode()
-            != 0)
-          continue;
+        if (fMCTracklist_all[i]->GetPdgCode() + fMCTracklist_all[j]->GetPdgCode() != 0) continue;
 
         int motherId1 = fMCTracklist_all[i]->GetMotherId();
         int motherId2 = fMCTracklist_all[j]->GetMotherId();
 
         if (motherId1 == motherId2) {
-          Double_t invmass =
-            Invmass_2particles(fMCTracklist_all[i], fMCTracklist_all[j]);
+          Double_t invmass = Invmass_2particles(fMCTracklist_all[i], fMCTracklist_all[j]);
           fhSearchGammas->Fill(invmass);
         }
       }
@@ -2166,20 +1732,20 @@ void CbmAnaConversion::ReconstructGamma() {
 }
 
 
-void CbmAnaConversion::SetKF(CbmKFParticleFinder* kfparticle,
-                             CbmKFParticleFinderQA* kfparticleQA) {
+void CbmAnaConversion::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+{
 
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;
-  if (fKFparticle) {
-    cout << "kf works" << endl;
-  } else {
+  if (fKFparticle) { cout << "kf works" << endl; }
+  else {
     cout << "kf works not" << endl;
   }
 }
 
 
-Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid) {
+Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid)
+{
   Bool_t reconstructible = false;
   if (mctrack->GetMotherId() == -1) {
     fhPi0_MC_occurence->Fill(0);
@@ -2224,9 +1790,7 @@ Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid) {
         if (mctrack_switch == NULL) continue;
         Int_t motherID = mctrack_switch->GetMotherId();
         Int_t pdg      = mctrack_switch->GetPdgCode();
-        if (TMath::Abs(pdg) == 11
-            && (motherID == gammaDaughterIDs[0]
-                || motherID == gammaDaughterIDs[1])) {
+        if (TMath::Abs(pdg) == 11 && (motherID == gammaDaughterIDs[0] || motherID == gammaDaughterIDs[1])) {
           electronDaughters++;
           electronDaughterIDs.push_back(i);
 
@@ -2244,7 +1808,8 @@ Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid) {
       }
       if (electronDaughtersInTarget == 4) { fhPi0_MC_occurence->Fill(4); }
     }
-  } else {
+  }
+  else {
     fhPi0_MC_occurence2->Fill(0);
     Int_t daughters                   = 0;
     Int_t gammaDaughters              = 0;
@@ -2276,9 +1841,7 @@ Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid) {
         if (mctrack_switch == NULL) continue;
         Int_t motherID = mctrack_switch->GetMotherId();
         Int_t pdg      = mctrack_switch->GetPdgCode();
-        if (TMath::Abs(pdg) == 11
-            && (motherID == gammaDaughterIDs[0]
-                || motherID == gammaDaughterIDs[1])) {
+        if (TMath::Abs(pdg) == 11 && (motherID == gammaDaughterIDs[0] || motherID == gammaDaughterIDs[1])) {
           electronDaughters++;
           electronDaughterIDs.push_back(i);
 
@@ -2298,10 +1861,10 @@ Bool_t CbmAnaConversion::AnalysePi0_MC(CbmMCTrack* mctrack, int trackid) {
 }
 
 
-void CbmAnaConversion::AnalysePi0_Reco() {
+void CbmAnaConversion::AnalysePi0_Reco()
+{
   Int_t electrons = 0;
-  std::multimap<int, int>
-    electronPi0ID_map;  // contains all IDs of pi0, from which an electron has been detected
+  std::multimap<int, int> electronPi0ID_map;  // contains all IDs of pi0, from which an electron has been detected
   std::multimap<int, int> electronPi0ID_map_richInd;
 
   Int_t nof = fTestTracklist.size();
@@ -2316,8 +1879,7 @@ void CbmAnaConversion::AnalysePi0_Reco() {
       Int_t motherPdg     = mctrack_mother->GetPdgCode();
 
       if (motherPdg == 22 && grandmotherID != -1) {
-        CbmMCTrack* mctrack_grandmother =
-          (CbmMCTrack*) fMcTracks->At(grandmotherID);
+        CbmMCTrack* mctrack_grandmother = (CbmMCTrack*) fMcTracks->At(grandmotherID);
         if (mctrack_grandmother == NULL) continue;
         Int_t grandmotherPdg = mctrack_grandmother->GetPdgCode();
 
@@ -2325,39 +1887,30 @@ void CbmAnaConversion::AnalysePi0_Reco() {
           electrons++;
           electronPi0ID_map.insert(std::pair<int, int>(grandmotherID, i));
           if (!(fTestTracklist_richInd[i] < 0)) {
-            electronPi0ID_map_richInd.insert(
-              std::pair<int, int>(grandmotherID, i));
+            electronPi0ID_map_richInd.insert(std::pair<int, int>(grandmotherID, i));
           }
-          fhPi0_Reco_chi_vs_pt_eFromPi0->Fill(fTestTracklist_momentum[i].Perp(),
-                                              fTestTracklist_chi[i]);
-          fhPi0_Reco_chi_vs_momentum_eFromPi0->Fill(
-            fTestTracklist_momentum[i].Mag(), fTestTracklist_chi[i]);
+          fhPi0_Reco_chi_vs_pt_eFromPi0->Fill(fTestTracklist_momentum[i].Perp(), fTestTracklist_chi[i]);
+          fhPi0_Reco_chi_vs_momentum_eFromPi0->Fill(fTestTracklist_momentum[i].Mag(), fTestTracklist_chi[i]);
 
           TVector3 startvertex;
           fTestTracklist[i]->GetStartVertex(startvertex);
           if (startvertex.Z() < 1) {
-            fhPi0_Reco_chi_vs_pt_eFromPi0_Target->Fill(
-              fTestTracklist_momentum[i].Perp(), fTestTracklist_chi[i]);
-            fhPi0_Reco_chi_vs_momentum_eFromPi0_Target->Fill(
-              fTestTracklist_momentum[i].Mag(), fTestTracklist_chi[i]);
+            fhPi0_Reco_chi_vs_pt_eFromPi0_Target->Fill(fTestTracklist_momentum[i].Perp(), fTestTracklist_chi[i]);
+            fhPi0_Reco_chi_vs_momentum_eFromPi0_Target->Fill(fTestTracklist_momentum[i].Mag(), fTestTracklist_chi[i]);
           }
         }
       }
     }
   }
 
-  if (
-    electrons
-    >= 4) {  // at least 4 electrons from pi0 (NOT from the same one) have been detected
+  if (electrons >= 4) {  // at least 4 electrons from pi0 (NOT from the same one) have been detected
     fhPi0_Reco_occurence->Fill(0);
   }
 
 
   int samePi0counter = 0;
   int check          = 0;
-  for (std::map<int, int>::iterator it = electronPi0ID_map.begin();
-       it != electronPi0ID_map.end();
-       ++it) {
+  for (std::map<int, int>::iterator it = electronPi0ID_map.begin(); it != electronPi0ID_map.end(); ++it) {
     if (it == electronPi0ID_map.begin()) check = 1;
     if (it != electronPi0ID_map.begin()) {
       std::map<int, int>::iterator zwischen = it;
@@ -2370,7 +1923,8 @@ void CbmAnaConversion::AnalysePi0_Reco() {
           fhPi0_Reco_occurence->Fill(1);
           samePi0counter++;
         }
-      } else {
+      }
+      else {
         if (check == 1) fhPi0_Reco_occurence->Fill(2);
         if (check == 2) fhPi0_Reco_occurence->Fill(3);
         if (check == 3) fhPi0_Reco_occurence->Fill(4);
@@ -2384,14 +1938,11 @@ void CbmAnaConversion::AnalysePi0_Reco() {
           alt4--;
           std::map<int, int>::iterator alt5 = alt4;
           alt5--;
-          cout << "CbmAnaConversion: AnalysePi0_Reco: " << alt5->first << "/"
-               << zwischen->first << "/" << alt3->first << "/" << alt4->first
-               << endl;
-          cout << "CbmAnaConversion: AnalysePi0_Reco: " << alt5->second << "/"
-               << zwischen->second << "/" << alt3->second << "/" << alt4->second
-               << endl;
-          Bool_t IsWithinCuts = AnalysePi0_Reco_calc(
-            alt5->second, zwischen->second, alt3->second, alt4->second);
+          cout << "CbmAnaConversion: AnalysePi0_Reco: " << alt5->first << "/" << zwischen->first << "/" << alt3->first
+               << "/" << alt4->first << endl;
+          cout << "CbmAnaConversion: AnalysePi0_Reco: " << alt5->second << "/" << zwischen->second << "/"
+               << alt3->second << "/" << alt4->second << endl;
+          Bool_t IsWithinCuts = AnalysePi0_Reco_calc(alt5->second, zwischen->second, alt3->second, alt4->second);
 
           Double_t chi_e1 = fTestTracklist_chi[alt5->second];
           Double_t chi_e2 = fTestTracklist_chi[zwischen->second];
@@ -2400,17 +1951,12 @@ void CbmAnaConversion::AnalysePi0_Reco() {
 
 
           Double_t invmass =
-            Invmass_4particlesRECO(fTestTracklist_momentum[alt5->second],
-                                   fTestTracklist_momentum[zwischen->second],
-                                   fTestTracklist_momentum[alt3->second],
-                                   fTestTracklist_momentum[alt4->second]);
+            Invmass_4particlesRECO(fTestTracklist_momentum[alt5->second], fTestTracklist_momentum[zwischen->second],
+                                   fTestTracklist_momentum[alt3->second], fTestTracklist_momentum[alt4->second]);
           fhPi0_Reco_invmass->Fill(invmass);
           fhPi0_Reco_invmass_cases->Fill(1, invmass);
-          Double_t invmass_mc =
-            Invmass_4particles(fTestTracklist[alt5->second],
-                               fTestTracklist[zwischen->second],
-                               fTestTracklist[alt3->second],
-                               fTestTracklist[alt4->second]);
+          Double_t invmass_mc = Invmass_4particles(fTestTracklist[alt5->second], fTestTracklist[zwischen->second],
+                                                   fTestTracklist[alt3->second], fTestTracklist[alt4->second]);
           fhPi0_Reco_invmass_mc->Fill(invmass_mc);
           fhPi0_Reco_invmass_cases->Fill(5, invmass_mc);
 
@@ -2460,10 +2006,8 @@ void CbmAnaConversion::AnalysePi0_Reco() {
 
   int samePi0counter2 = 0;
   int check2          = 0;
-  cout << "CbmAnaConversion: RecoPi0: electronmapsize: "
-       << electronPi0ID_map_richInd.size() << endl;
-  for (std::map<int, int>::iterator it = electronPi0ID_map_richInd.begin();
-       it != electronPi0ID_map_richInd.end();
+  cout << "CbmAnaConversion: RecoPi0: electronmapsize: " << electronPi0ID_map_richInd.size() << endl;
+  for (std::map<int, int>::iterator it = electronPi0ID_map_richInd.begin(); it != electronPi0ID_map_richInd.end();
        ++it) {
     if (it == electronPi0ID_map_richInd.begin()) check = 1;
     if (it != electronPi0ID_map_richInd.begin()) {
@@ -2477,7 +2021,8 @@ void CbmAnaConversion::AnalysePi0_Reco() {
           //fhPi0_Reco_occurence->Fill(1);
           samePi0counter2++;
         }
-      } else {
+      }
+      else {
         if (check2 == 1) fhPi0_Reco_occurence->Fill(11);
         if (check2 == 2) fhPi0_Reco_occurence->Fill(12);
         if (check2 == 3) fhPi0_Reco_occurence->Fill(13);
@@ -2504,7 +2049,8 @@ void CbmAnaConversion::AnalysePi0_Reco() {
 }
 
 
-Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4) {
+Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4)
+{
   CbmMCTrack* mctrack_e1 = fTestTracklist[e1];
   CbmMCTrack* mctrack_e2 = fTestTracklist[e2];
   CbmMCTrack* mctrack_e3 = fTestTracklist[e3];
@@ -2539,12 +2085,10 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4) {
     Double_t anglePair2 = lorVec3.Angle(lorVec4.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
     fhPi0_Reco_angles->Fill(theta1);
     fhPi0_Reco_angles->Fill(theta2);
-    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/"
-         << theta2 << endl;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (motherID_e1 == motherID_e3 && motherID_e2 == motherID_e4) {
@@ -2554,12 +2098,10 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4) {
     Double_t anglePair2 = lorVec2.Angle(lorVec4.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
     fhPi0_Reco_angles->Fill(theta1);
     fhPi0_Reco_angles->Fill(theta2);
-    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/"
-         << theta2 << endl;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (motherID_e1 == motherID_e4 && motherID_e2 == motherID_e3) {
@@ -2569,12 +2111,10 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4) {
     Double_t anglePair2 = lorVec2.Angle(lorVec3.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
     fhPi0_Reco_angles->Fill(theta1);
     fhPi0_Reco_angles->Fill(theta2);
-    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/"
-         << theta2 << endl;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (IsWithinCuts == true) { fhPi0_Reco_occurence->Fill(8); }
@@ -2583,10 +2123,10 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_calc(int e1, int e2, int e3, int e4) {
 }
 
 
-void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
+void CbmAnaConversion::AnalysePi0_Reco_noRichInd()
+{
   Int_t electrons = 0;
-  std::multimap<int, int>
-    electronPi0ID_map;  // contains all IDs of pi0, from which an electron has been detected
+  std::multimap<int, int> electronPi0ID_map;  // contains all IDs of pi0, from which an electron has been detected
   std::multimap<int, int>
     electronPi0ID_map_richInd;  // contains all IDs of pi0, from which an electron has been detected
 
@@ -2602,8 +2142,7 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
       Int_t motherPdg     = mctrack_mother->GetPdgCode();
 
       if (motherPdg == 22 && grandmotherID != -1) {
-        CbmMCTrack* mctrack_grandmother =
-          (CbmMCTrack*) fMcTracks->At(grandmotherID);
+        CbmMCTrack* mctrack_grandmother = (CbmMCTrack*) fMcTracks->At(grandmotherID);
         if (mctrack_grandmother == NULL) continue;
         Int_t grandmotherPdg = mctrack_grandmother->GetPdgCode();
 
@@ -2611,56 +2150,46 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
           electrons++;
           electronPi0ID_map.insert(std::pair<int, int>(grandmotherID, i));
           if (!(fTestTracklist_noRichInd_richInd[i] < 0)) {
-            electronPi0ID_map_richInd.insert(
-              std::pair<int, int>(grandmotherID, i));
+            electronPi0ID_map_richInd.insert(std::pair<int, int>(grandmotherID, i));
           }
-          fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0->Fill(
-            fTestTracklist_noRichInd_momentum[i].Perp(),
-            fTestTracklist_noRichInd_chi[i]);
-          fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0->Fill(
-            fTestTracklist_noRichInd_momentum[i].Mag(),
-            fTestTracklist_noRichInd_chi[i]);
+          fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0->Fill(fTestTracklist_noRichInd_momentum[i].Perp(),
+                                                        fTestTracklist_noRichInd_chi[i]);
+          fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0->Fill(fTestTracklist_noRichInd_momentum[i].Mag(),
+                                                              fTestTracklist_noRichInd_chi[i]);
 
           TVector3 startvertex;
           fTestTracklist_noRichInd[i]->GetStartVertex(startvertex);
           if (startvertex.Z() < 1) {
-            fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target->Fill(
-              fTestTracklist_noRichInd_momentum[i].Perp(),
-              fTestTracklist_noRichInd_chi[i]);
-            fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target->Fill(
-              fTestTracklist_noRichInd_momentum[i].Mag(),
-              fTestTracklist_noRichInd_chi[i]);
+            fhPi0_Reco_noRichInd_chi_vs_pt_eFromPi0_Target->Fill(fTestTracklist_noRichInd_momentum[i].Perp(),
+                                                                 fTestTracklist_noRichInd_chi[i]);
+            fhPi0_Reco_noRichInd_chi_vs_momentum_eFromPi0_Target->Fill(fTestTracklist_noRichInd_momentum[i].Mag(),
+                                                                       fTestTracklist_noRichInd_chi[i]);
           }
-        } else {
-          fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(
-            fTestTracklist_noRichInd_momentum[i].Perp(),
-            fTestTracklist_noRichInd_chi[i]);
-          fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(
-            fTestTracklist_noRichInd_momentum[i].Mag(),
-            fTestTracklist_noRichInd_chi[i]);
         }
-      } else {
-        fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(
-          fTestTracklist_noRichInd_momentum[i].Perp(),
-          fTestTracklist_noRichInd_chi[i]);
-        fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(
-          fTestTracklist_noRichInd_momentum[i].Mag(),
-          fTestTracklist_noRichInd_chi[i]);
+        else {
+          fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Perp(),
+                                                     fTestTracklist_noRichInd_chi[i]);
+          fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Mag(),
+                                                           fTestTracklist_noRichInd_chi[i]);
+        }
       }
-    } else {
+      else {
+        fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Perp(),
+                                                   fTestTracklist_noRichInd_chi[i]);
+        fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Mag(),
+                                                         fTestTracklist_noRichInd_chi[i]);
+      }
+    }
+    else {
       if (TMath::Abs(pdg) != 11) continue;
-      fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(
-        fTestTracklist_noRichInd_momentum[i].Perp(),
-        fTestTracklist_noRichInd_chi[i]);
-      fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(
-        fTestTracklist_noRichInd_momentum[i].Mag(),
-        fTestTracklist_noRichInd_chi[i]);
+      fhPi0_Reco_noRichInd_chi_vs_pt_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Perp(),
+                                                 fTestTracklist_noRichInd_chi[i]);
+      fhPi0_Reco_noRichInd_chi_vs_momentum_eRest->Fill(fTestTracklist_noRichInd_momentum[i].Mag(),
+                                                       fTestTracklist_noRichInd_chi[i]);
     }
   }
 
-  if (
-    electrons
-    >= 4) {  // at least 4 electrons from pi0 (NOT from the same one) have been detected
+  if (electrons >= 4) {  // at least 4 electrons from pi0 (NOT from the same one) have been detected
     fhPi0_Reco_occurence2->Fill(0);
   }
 
@@ -2668,9 +2197,7 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
   int samePi0counter    = 0;
   int check             = 0;
   int check_withRichInd = 0;
-  for (std::map<int, int>::iterator it = electronPi0ID_map.begin();
-       it != electronPi0ID_map.end();
-       ++it) {
+  for (std::map<int, int>::iterator it = electronPi0ID_map.begin(); it != electronPi0ID_map.end(); ++it) {
     if (it == electronPi0ID_map.begin()) check = 1;
     if (it != electronPi0ID_map.begin()) {
       std::map<int, int>::iterator zwischen = it;
@@ -2683,10 +2210,9 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
           //fhPi0_Reco_occurence->Fill(1);
           samePi0counter++;
         }
-        if (fTestTracklist_noRichInd_richInd[it->second] >= 0) {
-          check_withRichInd++;
-        }
-      } else {
+        if (fTestTracklist_noRichInd_richInd[it->second] >= 0) { check_withRichInd++; }
+      }
+      else {
         if (check == 1) fhPi0_Reco_occurence2->Fill(2);
         if (check == 2) fhPi0_Reco_occurence2->Fill(3);
         if (check == 3) fhPi0_Reco_occurence2->Fill(4);
@@ -2700,14 +2226,12 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
           alt4--;
           std::map<int, int>::iterator alt5 = alt4;
           alt5--;
-          cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd: " << alt5->first
-               << "/" << zwischen->first << "/" << alt3->first << "/"
-               << alt4->first << endl;
-          cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd: "
-               << alt5->second << "/" << zwischen->second << "/" << alt3->second
-               << "/" << alt4->second << endl;
-          Bool_t IsWithinCuts = AnalysePi0_Reco_noRichInd_calc(
-            alt5->second, zwischen->second, alt3->second, alt4->second);
+          cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd: " << alt5->first << "/" << zwischen->first << "/"
+               << alt3->first << "/" << alt4->first << endl;
+          cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd: " << alt5->second << "/" << zwischen->second << "/"
+               << alt3->second << "/" << alt4->second << endl;
+          Bool_t IsWithinCuts =
+            AnalysePi0_Reco_noRichInd_calc(alt5->second, zwischen->second, alt3->second, alt4->second);
 
           Double_t chi_e1 = fTestTracklist_noRichInd_chi[alt5->second];
           Double_t chi_e2 = fTestTracklist_noRichInd_chi[zwischen->second];
@@ -2721,17 +2245,13 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
 
 
           Double_t invmass = Invmass_4particlesRECO(
-            fTestTracklist_noRichInd_momentum[alt5->second],
-            fTestTracklist_noRichInd_momentum[zwischen->second],
-            fTestTracklist_noRichInd_momentum[alt3->second],
-            fTestTracklist_noRichInd_momentum[alt4->second]);
+            fTestTracklist_noRichInd_momentum[alt5->second], fTestTracklist_noRichInd_momentum[zwischen->second],
+            fTestTracklist_noRichInd_momentum[alt3->second], fTestTracklist_noRichInd_momentum[alt4->second]);
           fhPi0_Reco_noRichInd_invmass->Fill(invmass);
           fhPi0_Reco_noRichInd_invmass_cases->Fill(1, invmass);
           Double_t invmass_mc =
-            Invmass_4particles(fTestTracklist_noRichInd[alt5->second],
-                               fTestTracklist_noRichInd[zwischen->second],
-                               fTestTracklist_noRichInd[alt3->second],
-                               fTestTracklist_noRichInd[alt4->second]);
+            Invmass_4particles(fTestTracklist_noRichInd[alt5->second], fTestTracklist_noRichInd[zwischen->second],
+                               fTestTracklist_noRichInd[alt3->second], fTestTracklist_noRichInd[alt4->second]);
           fhPi0_Reco_noRichInd_invmass_mc->Fill(invmass_mc);
           fhPi0_Reco_noRichInd_invmass_cases->Fill(5, invmass_mc);
 
@@ -2761,22 +2281,15 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
             }
           }
 
-          if (IsWithinCuts) {
-            fhPi0_Reco_noRichInd_invmass_cases->Fill(3, invmass);
-          }
+          if (IsWithinCuts) { fhPi0_Reco_noRichInd_invmass_cases->Fill(3, invmass); }
 
-          if (richInd_e1 >= 0 && richInd_e2 >= 0 && richInd_e3 >= 0
-              && richInd_e4 >= 0) {
+          if (richInd_e1 >= 0 && richInd_e2 >= 0 && richInd_e3 >= 0 && richInd_e4 >= 0) {
             fhPi0_Reco_noRichInd_invmass_cases->Fill(6, invmass);
             fhPi0_Reco_noRichInd_invmass_cases->Fill(10, invmass_mc);
-            if (IsWithinCuts) {
-              fhPi0_Reco_noRichInd_invmass_cases->Fill(8, invmass);
-            }
+            if (IsWithinCuts) { fhPi0_Reco_noRichInd_invmass_cases->Fill(8, invmass); }
             if (chi_e1 <= 3 && chi_e2 <= 3 && chi_e3 <= 3 && chi_e4 <= 3) {
               fhPi0_Reco_noRichInd_invmass_cases->Fill(7, invmass);
-              if (IsWithinCuts) {
-                fhPi0_Reco_noRichInd_invmass_cases->Fill(9, invmass);
-              }
+              if (IsWithinCuts) { fhPi0_Reco_noRichInd_invmass_cases->Fill(9, invmass); }
             }
           }
         }
@@ -2787,16 +2300,14 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
           for (int i = 0; i < check; i++) {
             TVector3 momentum_mc;
             fTestTracklist_noRichInd[temp->second]->GetMomentum(momentum_mc);
-            Double_t theta_mc = 180.0 * momentum_mc.Theta() / TMath::Pi();
-            Double_t phi_mc   = 180.0 * momentum_mc.Phi() / TMath::Pi();
-            TVector3 momentum_reco =
-              fTestTracklist_noRichInd_momentum[temp->second];
-            Double_t theta_reco = 180.0 * momentum_reco.Theta() / TMath::Pi();
-            Double_t phi_reco   = 180.0 * momentum_reco.Phi() / TMath::Pi();
-            cout << "(" << temp->first << "/" << temp->second << "/"
-                 << fTestTracklist_noRichInd_MCindex[temp->second] << "/"
-                 << momentum_reco.Mag() << "/" << theta_mc << "-" << phi_mc
-                 << "/" << theta_reco << "-" << phi_reco << ") \t";
+            Double_t theta_mc      = 180.0 * momentum_mc.Theta() / TMath::Pi();
+            Double_t phi_mc        = 180.0 * momentum_mc.Phi() / TMath::Pi();
+            TVector3 momentum_reco = fTestTracklist_noRichInd_momentum[temp->second];
+            Double_t theta_reco    = 180.0 * momentum_reco.Theta() / TMath::Pi();
+            Double_t phi_reco      = 180.0 * momentum_reco.Phi() / TMath::Pi();
+            cout << "(" << temp->first << "/" << temp->second << "/" << fTestTracklist_noRichInd_MCindex[temp->second]
+                 << "/" << momentum_reco.Mag() << "/" << theta_mc << "-" << phi_mc << "/" << theta_reco << "-"
+                 << phi_reco << ") \t";
             temp--;
             fhPi0_noRichInd_diffPhi->Fill(TMath::Abs(phi_mc - phi_reco));
             fhPi0_noRichInd_diffTheta->Fill(TMath::Abs(theta_mc - theta_reco));
@@ -2814,9 +2325,8 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
 
         // reset of check-parameters for next loop
         check = 1;
-        if (fTestTracklist_noRichInd_richInd[it->second] >= 0) {
-          check_withRichInd = 1;
-        } else {
+        if (fTestTracklist_noRichInd_richInd[it->second] >= 0) { check_withRichInd = 1; }
+        else {
           check_withRichInd = 0;
         }
       }
@@ -2829,10 +2339,8 @@ void CbmAnaConversion::AnalysePi0_Reco_noRichInd() {
 }
 
 
-Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1,
-                                                        int e2,
-                                                        int e3,
-                                                        int e4) {
+Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1, int e2, int e3, int e4)
+{
   CbmMCTrack* mctrack_e1 = fTestTracklist_noRichInd[e1];
   CbmMCTrack* mctrack_e2 = fTestTracklist_noRichInd[e2];
   CbmMCTrack* mctrack_e3 = fTestTracklist_noRichInd[e3];
@@ -2844,20 +2352,16 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1,
   Int_t motherID_e4 = mctrack_e4->GetMotherId();
 
 
-  Double_t energy1 =
-    TMath::Sqrt(fTestTracklist_noRichInd_momentum[e1].Mag2() + M2E);
+  Double_t energy1 = TMath::Sqrt(fTestTracklist_noRichInd_momentum[e1].Mag2() + M2E);
   TLorentzVector lorVec1(fTestTracklist_noRichInd_momentum[e1], energy1);
 
-  Double_t energy2 =
-    TMath::Sqrt(fTestTracklist_noRichInd_momentum[e2].Mag2() + M2E);
+  Double_t energy2 = TMath::Sqrt(fTestTracklist_noRichInd_momentum[e2].Mag2() + M2E);
   TLorentzVector lorVec2(fTestTracklist_noRichInd_momentum[e2], energy2);
 
-  Double_t energy3 =
-    TMath::Sqrt(fTestTracklist_noRichInd_momentum[e3].Mag2() + M2E);
+  Double_t energy3 = TMath::Sqrt(fTestTracklist_noRichInd_momentum[e3].Mag2() + M2E);
   TLorentzVector lorVec3(fTestTracklist_noRichInd_momentum[e3], energy3);
 
-  Double_t energy4 =
-    TMath::Sqrt(fTestTracklist_noRichInd_momentum[e4].Mag2() + M2E);
+  Double_t energy4 = TMath::Sqrt(fTestTracklist_noRichInd_momentum[e4].Mag2() + M2E);
   TLorentzVector lorVec4(fTestTracklist_noRichInd_momentum[e4], energy4);
 
 
@@ -2871,10 +2375,8 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1,
     Double_t anglePair2 = lorVec3.Angle(lorVec4.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
-    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1
-         << "/" << theta2 << endl;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (motherID_e1 == motherID_e3 && motherID_e2 == motherID_e4) {
@@ -2884,10 +2386,8 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1,
     Double_t anglePair2 = lorVec2.Angle(lorVec4.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
-    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1
-         << "/" << theta2 << endl;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (motherID_e1 == motherID_e4 && motherID_e2 == motherID_e3) {
@@ -2897,10 +2397,8 @@ Bool_t CbmAnaConversion::AnalysePi0_Reco_noRichInd_calc(int e1,
     Double_t anglePair2 = lorVec2.Angle(lorVec3.Vect());
     Double_t theta2     = 180. * anglePair2 / TMath::Pi();
 
-    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut)
-      IsWithinCuts = true;
-    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1
-         << "/" << theta2 << endl;
+    if (theta1 <= OpeningAngleCut && theta2 <= OpeningAngleCut) IsWithinCuts = true;
+    cout << "CbmAnaConversion: AnalysePi0_Reco_noRichInd_calc: " << theta1 << "/" << theta2 << endl;
   }
 
   if (IsWithinCuts == true) { fhPi0_Reco_occurence2->Fill(8); }

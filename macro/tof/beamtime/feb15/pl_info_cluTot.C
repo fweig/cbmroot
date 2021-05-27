@@ -1,4 +1,5 @@
-void pl_info_cluTot(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_info_cluTot(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_info_cluTot(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -45,7 +47,7 @@ void pl_info_cluTot(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
     Double_t Xstart = Xmax - XpreRange;
     Xstart          = (Double_t)(Int_t) Xstart;
     if (Xstart < 0) Xstart = 0;
-    cout << " slice " << i << " has max " << Ymax << " counts in bin " << iBmax
-         << " at TOT = " << Xmax << " => Xstart = " << Xstart << endl;
+    cout << " slice " << i << " has max " << Ymax << " counts in bin " << iBmax << " at TOT = " << Xmax
+         << " => Xstart = " << Xstart << endl;
   }
 }

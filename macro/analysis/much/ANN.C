@@ -8,12 +8,9 @@
 //
 //---------------------------------------------------
 
-void ANN(Int_t energy   = 8,
-         Int_t NofFiles = 1000,
-         TString dir    = "../../much/data/",
-         TString setup  = "sis100_muon_lmvm",
-         Int_t ntrain   = 300,
-         Int_t neurons  = 16) {
+void ANN(Int_t energy = 8, Int_t NofFiles = 1000, TString dir = "../../much/data/", TString setup = "sis100_muon_lmvm",
+         Int_t ntrain = 300, Int_t neurons = 16)
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -68,18 +65,9 @@ void ANN(Int_t energy   = 8,
   //--------------------------------------------------------
   for (int i = 0; i < 2; i++) {
     for (int k = 1; k < NofFiles + 1; k++) {
-      if (i == 0)
-        name.Form("%s/%s/%dgev/omega/%d/muons.ana.root",
-                  dir.Data(),
-                  setup.Data(),
-                  energy,
-                  k);
+      if (i == 0) name.Form("%s/%s/%dgev/omega/%d/muons.ana.root", dir.Data(), setup.Data(), energy, k);
       else
-        name.Form("%s/%s/%dgev/centr/%d/muons.ana.root",
-                  dir.Data(),
-                  setup.Data(),
-                  energy,
-                  k);
+        name.Form("%s/%s/%dgev/centr/%d/muons.ana.root", dir.Data(), setup.Data(), energy, k);
 
       TFile* f = new TFile(name);
       if (f->IsZombie() || f->GetNkeys() < 1 || f->TestBit(TFile::kRecovered)) {
@@ -87,8 +75,7 @@ void ANN(Int_t energy   = 8,
         continue;
       }
 
-      if (k % 100 == 0)
-        cout << "Input File " << k << " : " << f->GetName() << endl;
+      if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
       InputTree = (TTree*) f->Get("cbmsim");
       InputTree->SetBranchAddress("MuPlus", &MuPlus);
@@ -135,16 +122,14 @@ void ANN(Int_t energy   = 8,
           NofSTS  = mu_pl->GetNStsHits();
           NofMUCH = mu_pl->GetNMuchHits();
           NofTRD  = mu_pl->GetNTrdHits();
-          if (i == 0)
-            Signal->Fill();
+          if (i == 0) Signal->Fill();
           else
             Bg->Fill();
         }
         for (int jPart = 0; jPart < NofMinus; jPart++) {
           Bool_t trigger = kFALSE;
 
-          CbmAnaMuonCandidate* mu_mn =
-            (CbmAnaMuonCandidate*) MuMinus->At(jPart);
+          CbmAnaMuonCandidate* mu_mn = (CbmAnaMuonCandidate*) MuMinus->At(jPart);
 
           if ((i == 0 && mu_mn->GetTrueMu() == 1) || i == 1) trigger = kTRUE;
           if (!trigger) continue;
@@ -176,8 +161,7 @@ void ANN(Int_t energy   = 8,
           NofSTS  = mu_mn->GetNStsHits();
           NofMUCH = mu_mn->GetNMuchHits();
           NofTRD  = mu_mn->GetNTrdHits();
-          if (i == 0)
-            Signal->Fill();
+          if (i == 0) Signal->Fill();
           else
             Bg->Fill();
         }
@@ -216,8 +200,7 @@ void ANN(Int_t energy   = 8,
   name.Form("@P,@M,@Chi2Vertex,@Chi2STS,@Chi2MUCH,@Chi2TRD,@NofSTS,@NofMUCH,@"
             "NofTRD:%d:type",
             neurons);
-  TMultiLayerPerceptron* mlp =
-    new TMultiLayerPerceptron(name.Data(), simu, "Entry$%2");
+  TMultiLayerPerceptron* mlp = new TMultiLayerPerceptron(name.Data(), simu, "Entry$%2");
 
   mlp->Train(ntrain, "text,graph,update=10");
   name.Form("muid_ann_%d_%s_weights.txt", neurons, setup.Data());

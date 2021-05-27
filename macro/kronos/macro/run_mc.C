@@ -22,12 +22,13 @@
 // --------------------------------------------------------------------------
 
 
-void run_mc(TString inFile, TString setupName, Int_t nEvents = 10) {
+void run_mc(TString inFile, TString setupName, Int_t nEvents = 10)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_sim";  // this macro's name for screen output
+  TString myName = "run_sim";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ void run_mc(TString inFile, TString setupName, Int_t nEvents = 10) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -142,8 +143,7 @@ void run_mc(TString inFile, TString setupName, Int_t nEvents = 10) {
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -165,8 +165,7 @@ void run_mc(TString inFile, TString setupName, Int_t nEvents = 10) {
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -248,9 +247,7 @@ void run_mc(TString inFile, TString setupName, Int_t nEvents = 10) {
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

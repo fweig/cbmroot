@@ -16,12 +16,13 @@
 #ifndef CBMMVDSENSORFRAMEBUFFER_H
 #define CBMMVDSENSORFRAMEBUFFER_H 1
 
+#include "CbmMvdHit.h"
 #include "CbmMvdSensor.h"
 #include "CbmMvdSensorBuffer.h"
-#include "TObject.h"
-#include <iostream>
 
-#include "CbmMvdHit.h"
+#include "TObject.h"
+
+#include <iostream>
 
 class TClonesArray;
 class CbmMvdSensorDataSheet;
@@ -45,7 +46,8 @@ public:
   // Receives the current event from the buffer. The Event is defined by the functions
   // BuildTimeSlice or BuildMimosaFrame. The memory is not emtied, use Clear*-methods
   // to clear it explitly
-  TClonesArray* GetOutputArray() {
+  TClonesArray* GetOutputArray()
+  {
     SetPluginReady(false);
     return fOutputPoints;
   };
@@ -55,9 +57,9 @@ public:
 
   virtual void ExecChain();
   virtual void InitBuffer(CbmMvdSensor* mySensor);
-  virtual void BuildTimeSlice(Double_t /*tStart*/, Double_t /*tStop*/) {
-    std::cout << "Do not use " << GetName() << "::BuildTimeSlice()"
-              << std::endl;
+  virtual void BuildTimeSlice(Double_t /*tStart*/, Double_t /*tStop*/)
+  {
+    std::cout << "Do not use " << GetName() << "::BuildTimeSlice()" << std::endl;
   };
 
   /**BuildMimosaFrame: Provides a TClonesArray containing all points related to a frame.

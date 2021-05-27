@@ -44,20 +44,17 @@ public:
   /**
     * \brief Sort array of tracks by quality using number of hits and chi square.
     */
-  static LitStatus DoSortNofHits(TrackPtrIterator itBegin,
-                                 TrackPtrIterator itEnd);
+  static LitStatus DoSortNofHits(TrackPtrIterator itBegin, TrackPtrIterator itEnd);
 
   /**
     * \brief Sort array of tracks by quality using last station id and chi square.
     */
-  static LitStatus DoSortLastStation(TrackPtrIterator itBegin,
-                                     TrackPtrIterator itEnd);
+  static LitStatus DoSortLastStation(TrackPtrIterator itBegin, TrackPtrIterator itEnd);
 
   /**
     * \brief Sort array of tracks by quality using (chi square / NDF).
     */
-  static LitStatus DoSortChiSqOverNDF(TrackPtrIterator itBegin,
-                                      TrackPtrIterator itEnd);
+  static LitStatus DoSortChiSqOverNDF(TrackPtrIterator itBegin, TrackPtrIterator itEnd);
 };
 
 #endif /* CBMLITQUALITYSORT_H_ */

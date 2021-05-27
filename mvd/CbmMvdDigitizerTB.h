@@ -36,7 +36,8 @@ public:
   ~CbmMvdDigitizerTB();
 
   void Exec(Option_t* opt);
-  void SetMisalignment(Float_t misalignment[3]) {
+  void SetMisalignment(Float_t misalignment[3])
+  {
     for (Int_t i = 0; i < 3; i++)
       epsilon[i] = misalignment[i];
   }  // set the misalignment in cm

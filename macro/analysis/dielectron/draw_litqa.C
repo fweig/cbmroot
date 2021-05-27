@@ -1,8 +1,5 @@
-void draw_litqa(
-  const string& histRootFile =
-    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.all.root",
-  const string& resultDir =
-    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/inmed/")
+void draw_litqa(const string& histRootFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.all.root",
+                const string& resultDir    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/inmed/")
 
 {
   string outputDirTracking = resultDir + "results_litqa_tracking/";

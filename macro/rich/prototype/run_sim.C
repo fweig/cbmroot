@@ -1,10 +1,10 @@
-void run_sim(Int_t nEvents = 100000) {
+void run_sim(Int_t nEvents = 100000)
+{
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
   TString asciiInput = "/Users/slebedev/Development/cbm/data/simulations/"
                        "richprototype/epi.ascii.dat";
-  TString outDir =
-    "/Users/slebedev/Development/cbm/data/simulations/richprototype/";
+  TString outDir  = "/Users/slebedev/Development/cbm/data/simulations/richprototype/";
   TString outFile = outDir + "/mc.root";
   TString parFile = outDir + "/params.root";
 
@@ -87,8 +87,7 @@ void run_sim(Int_t nEvents = 100000) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

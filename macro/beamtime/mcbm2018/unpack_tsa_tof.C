@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_tsa_tof(TString inFile = "") {
+void unpack_tsa_tof(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -95,8 +96,7 @@ void unpack_tsa_tof(TString inFile = "") {
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -104,8 +104,7 @@ void unpack_tsa_tof(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_tof: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_tof: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_tof: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_tof: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

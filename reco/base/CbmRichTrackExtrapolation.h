@@ -60,9 +60,7 @@ public:
    *@param rTrack  pointer to global track
    *@param fZ      z-position for extrapolation [cm]
    **/
-  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray,
-                              Double_t fZ,
-                              TClonesArray* fTrackParamArray) = 0;
+  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray, Double_t fZ, TClonesArray* fTrackParamArray) = 0;
 
 
   /** Set verbosity 

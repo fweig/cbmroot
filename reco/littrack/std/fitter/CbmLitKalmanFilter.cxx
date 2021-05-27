@@ -10,11 +10,12 @@
 #include "data/CbmLitTrackParam.h"
 #include "utils/CbmLitMatrixMath.h"
 
-#include <cmath>
-#include <iostream>
-
 #include "TMath.h"
 #include "TMatrixD.h"
+
+#include <iostream>
+
+#include <cmath>
 
 litfloat CbmLitTrackParam::fSpeedOfLight = 1.e-7 * TMath::C();
 
@@ -22,29 +23,25 @@ CbmLitKalmanFilter::CbmLitKalmanFilter() {}
 
 CbmLitKalmanFilter::~CbmLitKalmanFilter() {}
 
-LitStatus CbmLitKalmanFilter::Update(const CbmLitTrackParam* parIn,
-                                     CbmLitTrackParam* parOut,
-                                     const CbmLitHit* hit,
-                                     litfloat& chiSq) {
+LitStatus CbmLitKalmanFilter::Update(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut, const CbmLitHit* hit,
+                                     litfloat& chiSq)
+{
   *parOut = *parIn;
   return Update(parOut, hit, chiSq);
 }
 
-LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
-                                     const CbmLitHit* hit,
-                                     litfloat& chiSq) {
+LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par, const CbmLitHit* hit, litfloat& chiSq)
+{
   LitStatus result = kLITSUCCESS;
-  if (hit->GetType() == kLITSTRIPHIT) {
-    result = Update(par, static_cast<const CbmLitStripHit*>(hit), chiSq);
-  } else if (hit->GetType() == kLITPIXELHIT) {
+  if (hit->GetType() == kLITSTRIPHIT) { result = Update(par, static_cast<const CbmLitStripHit*>(hit), chiSq); }
+  else if (hit->GetType() == kLITPIXELHIT) {
     result = Update(par, static_cast<const CbmLitPixelHit*>(hit), chiSq);
   }
   return result;
 }
 
-LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
-                                     const CbmLitPixelHit* hit,
-                                     litfloat& chiSq) {
+LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par, const CbmLitPixelHit* hit, litfloat& chiSq)
+{
   std::vector<litfloat> cIn = par->GetCovMatrix();
 
   static const litfloat ONE = 1., TWO = 2.;
@@ -62,11 +59,10 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
   // Calculate and inverse residual covariance matrix
   //litfloat t = ONE / (dxx * dyy + dxx * cIn[5] + dyy * cIn[0] + cIn[0] * cIn[5] -
   //dxy * dxy - TWO * dxy * cIn[1] - cIn[1] * cIn[1]);
-  litfloat t =
-    ONE
-    / ((cIn[0] + dxx) * ((cIn[6] + dyy) * (cIn[20] + dtt) - cIn[10] * cIn[10])
-       - (cIn[1] + dxy) * ((cIn[1] + dxy) * (cIn[20] + dtt) - cIn[5] * cIn[10])
-       + cIn[5] * ((cIn[1] + dxy) * cIn[10] - (cIn[6] + dyy) * cIn[5]));
+  litfloat t = ONE
+               / ((cIn[0] + dxx) * ((cIn[6] + dyy) * (cIn[20] + dtt) - cIn[10] * cIn[10])
+                  - (cIn[1] + dxy) * ((cIn[1] + dxy) * (cIn[20] + dtt) - cIn[5] * cIn[10])
+                  + cIn[5] * ((cIn[1] + dxy) * cIn[10] - (cIn[6] + dyy) * cIn[5]));
   //litfloat R00 = (dyy + cIn[5]) * t;
   //litfloat R01 = -(dxy + cIn[1]) * t;
   //litfloat R11 = (dxx + cIn[0]) * t;
@@ -75,8 +71,7 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
   litfloat R02 = ((cIn[1] + dxy) * cIn[10] - (cIn[6] + dyy) * cIn[5]) * t;
   litfloat R11 = ((cIn[0] + dxx) * (cIn[20] + dtt) - cIn[5] * cIn[5]) * t;
   litfloat R12 = ((cIn[1] + dxy) * cIn[5] - (cIn[0] + dxx) * cIn[10]) * t;
-  litfloat R22 =
-    ((cIn[0] + dxx) * (cIn[6] + dyy) - (cIn[1] + dxy) * (cIn[1] + dxy)) * t;
+  litfloat R22 = ((cIn[0] + dxx) * (cIn[6] + dyy) - (cIn[1] + dxy) * (cIn[1] + dxy)) * t;
 
   /*TMatrixD ResM(3, 3);
    ResM(0, 0) = dxx + cIn[0];
@@ -118,12 +113,7 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
   litfloat K52 = cIn[5] * R02 + cIn[10] * R12 + cIn[20] * R22;
 
   // Calculate filtered state vector
-  litfloat xOut[6] = {par->GetX(),
-                      par->GetY(),
-                      par->GetTx(),
-                      par->GetTy(),
-                      par->GetQp(),
-                      par->GetTime()};
+  litfloat xOut[6] = {par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp(), par->GetTime()};
   xOut[0] += K00 * dx + K01 * dy + K02 * dt;
   xOut[1] += K10 * dx + K11 * dy + K12 * dt;
   xOut[2] += K20 * dx + K21 * dy + K22 * dt;
@@ -184,28 +174,19 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
    chiSq = ((xmx * (dyy - C5) - ymy * (dxy - C1)) * xmx
             +(-xmx * (dxy - C1) + ymy * (dxx - C0)) * ymy) / norm +
       (hit->GetT() - par->GetTime()) * (hit->GetT() - par->GetTime()) / (hit->GetDt() * hit->GetDt() + cOut[20]);*/
-  litfloat norm =
-    (dxx - cOut[0]) * ((dyy - cOut[6]) * (dtt - cOut[20]) - cOut[10] * cOut[10])
-    + (dxy - cOut[1])
-        * (cOut[5] * cOut[10] - (dxy - cOut[1]) * (dtt - cOut[20]))
-    + cOut[5] * ((dxy - cOut[1]) * cOut[10] - (dyy - cOut[6]) * cOut[5]);
+  litfloat norm = (dxx - cOut[0]) * ((dyy - cOut[6]) * (dtt - cOut[20]) - cOut[10] * cOut[10])
+                  + (dxy - cOut[1]) * (cOut[5] * cOut[10] - (dxy - cOut[1]) * (dtt - cOut[20]))
+                  + cOut[5] * ((dxy - cOut[1]) * cOut[10] - (dyy - cOut[6]) * cOut[5]);
 
   if (norm == 0.) { norm = 1e-10; }
 
   // Mij is the (symmetric) inverse of the residual matrix
-  litfloat M00 =
-    ((dyy - cOut[6]) * (dtt - cOut[20]) - cOut[10] * cOut[10]) / norm;
-  litfloat M01 =
-    ((dxy - cOut[1]) * (dtt - cOut[20]) - cOut[5] * cOut[10]) / norm;
-  litfloat M02 =
-    ((dxy - cOut[1]) * cOut[10] - (dyy - cOut[6]) * cOut[5]) / norm;
-  litfloat M11 =
-    ((dxx - cOut[0]) * (dtt - cOut[20]) - cOut[5] * cOut[5]) / norm;
-  litfloat M12 =
-    ((dxx - cOut[0]) * cOut[10] - (dxy - cOut[1]) * cOut[5]) / norm;
-  litfloat M22 =
-    ((dxx - cOut[0]) * (dyy - cOut[6]) - (dxy - cOut[1]) * (dxy - cOut[1]))
-    / norm;
+  litfloat M00 = ((dyy - cOut[6]) * (dtt - cOut[20]) - cOut[10] * cOut[10]) / norm;
+  litfloat M01 = ((dxy - cOut[1]) * (dtt - cOut[20]) - cOut[5] * cOut[10]) / norm;
+  litfloat M02 = ((dxy - cOut[1]) * cOut[10] - (dyy - cOut[6]) * cOut[5]) / norm;
+  litfloat M11 = ((dxx - cOut[0]) * (dtt - cOut[20]) - cOut[5] * cOut[5]) / norm;
+  litfloat M12 = ((dxx - cOut[0]) * cOut[10] - (dxy - cOut[1]) * cOut[5]) / norm;
+  litfloat M22 = ((dxx - cOut[0]) * (dyy - cOut[6]) - (dxy - cOut[1]) * (dxy - cOut[1])) / norm;
   /*TMatrixD Chi2M(3, 3);
    Chi2M(0, 0) = dxx - cOut[0];
    Chi2M(0, 1) = dxy - cOut[1];
@@ -225,18 +206,15 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
    litfloat M12 = Chi2M(1, 2);
    litfloat M22 = Chi2M(2, 2);*/
 
-  chiSq = xmx * (xmx * M00 + ymy * M01 + tmt * M02)
-          + ymy * (xmx * M01 + ymy * M11 + tmt * M12)
+  chiSq = xmx * (xmx * M00 + ymy * M01 + tmt * M02) + ymy * (xmx * M01 + ymy * M11 + tmt * M12)
           + tmt * (xmx * M02 + ymy * M12 + tmt * M22);
 
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
-                                        const CbmLitPixelHit* hit,
-                                        litfloat& chiSq) {
-  litfloat xIn[5] = {
-    par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
+LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par, const CbmLitPixelHit* hit, litfloat& chiSq)
+{
+  litfloat xIn[5] = {par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
 
   std::vector<litfloat> cIn    = par->GetCovMatrix();
   std::vector<litfloat> cInInv = par->GetCovMatrix();
@@ -257,22 +235,15 @@ LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
   InvSym15(C1);
 
   std::vector<litfloat> t(5);
-  t[0] = cInInv[0] * par->GetX() + cInInv[1] * par->GetY()
-         + cInInv[2] * par->GetTx() + cInInv[3] * par->GetTy()
-         + cInInv[4] * par->GetQp()
-         + (dyy * hit->GetX() - dxy * hit->GetY()) / det;
-  t[1] = cInInv[1] * par->GetX() + cInInv[5] * par->GetY()
-         + cInInv[6] * par->GetTx() + cInInv[7] * par->GetTy()
-         + cInInv[8] * par->GetQp()
-         + (-dxy * hit->GetX() + dxx * hit->GetY()) / det;
-  t[2] = cInInv[2] * par->GetX() + cInInv[6] * par->GetY()
-         + cInInv[9] * par->GetTx() + cInInv[10] * par->GetTy()
+  t[0] = cInInv[0] * par->GetX() + cInInv[1] * par->GetY() + cInInv[2] * par->GetTx() + cInInv[3] * par->GetTy()
+         + cInInv[4] * par->GetQp() + (dyy * hit->GetX() - dxy * hit->GetY()) / det;
+  t[1] = cInInv[1] * par->GetX() + cInInv[5] * par->GetY() + cInInv[6] * par->GetTx() + cInInv[7] * par->GetTy()
+         + cInInv[8] * par->GetQp() + (-dxy * hit->GetX() + dxx * hit->GetY()) / det;
+  t[2] = cInInv[2] * par->GetX() + cInInv[6] * par->GetY() + cInInv[9] * par->GetTx() + cInInv[10] * par->GetTy()
          + cInInv[11] * par->GetQp();
-  t[3] = cInInv[3] * par->GetX() + cInInv[7] * par->GetY()
-         + cInInv[10] * par->GetTx() + cInInv[12] * par->GetTy()
+  t[3] = cInInv[3] * par->GetX() + cInInv[7] * par->GetY() + cInInv[10] * par->GetTx() + cInInv[12] * par->GetTy()
          + cInInv[13] * par->GetQp();
-  t[4] = cInInv[4] * par->GetX() + cInInv[8] * par->GetY()
-         + cInInv[11] * par->GetTx() + cInInv[13] * par->GetTy()
+  t[4] = cInInv[4] * par->GetX() + cInInv[8] * par->GetY() + cInInv[11] * par->GetTx() + cInInv[13] * par->GetTy()
          + cInInv[14] * par->GetQp();
 
   std::vector<litfloat> xOut(5);
@@ -294,31 +265,19 @@ LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
   litfloat dx4 = xOut[4] - xIn[4];
   litfloat xmx = hit->GetX() - par->GetX();
   litfloat ymy = hit->GetY() - par->GetY();
-  chiSq = ((xmx * dyy - ymy * dxy) * xmx + (-xmx * dxy + ymy * dxx) * ymy) / det
-          + (dx0 * cInInv[0] + dx1 * cInInv[1] + dx2 * cInInv[2]
-             + dx3 * cInInv[3] + dx4 * cInInv[4])
-              * dx0
-          + (dx0 * cInInv[1] + dx1 * cInInv[5] + dx2 * cInInv[6]
-             + dx3 * cInInv[7] + dx4 * cInInv[8])
-              * dx1
-          + (dx0 * cInInv[2] + dx1 * cInInv[6] + dx2 * cInInv[9]
-             + dx3 * cInInv[10] + dx4 * cInInv[11])
-              * dx2
-          + (dx0 * cInInv[3] + dx1 * cInInv[7] + dx2 * cInInv[10]
-             + dx3 * cInInv[12] + dx4 * cInInv[13])
-              * dx3
-          + (dx0 * cInInv[4] + dx1 * cInInv[8] + dx2 * cInInv[11]
-             + dx3 * cInInv[13] + dx4 * cInInv[14])
-              * dx4;
+  chiSq        = ((xmx * dyy - ymy * dxy) * xmx + (-xmx * dxy + ymy * dxx) * ymy) / det
+          + (dx0 * cInInv[0] + dx1 * cInInv[1] + dx2 * cInInv[2] + dx3 * cInInv[3] + dx4 * cInInv[4]) * dx0
+          + (dx0 * cInInv[1] + dx1 * cInInv[5] + dx2 * cInInv[6] + dx3 * cInInv[7] + dx4 * cInInv[8]) * dx1
+          + (dx0 * cInInv[2] + dx1 * cInInv[6] + dx2 * cInInv[9] + dx3 * cInInv[10] + dx4 * cInInv[11]) * dx2
+          + (dx0 * cInInv[3] + dx1 * cInInv[7] + dx2 * cInInv[10] + dx3 * cInInv[12] + dx4 * cInInv[13]) * dx3
+          + (dx0 * cInInv[4] + dx1 * cInInv[8] + dx2 * cInInv[11] + dx3 * cInInv[13] + dx4 * cInInv[14]) * dx4;
 
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
-                                     const CbmLitStripHit* hit,
-                                     litfloat& chiSq) {
-  litfloat xIn[5] = {
-    par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
+LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par, const CbmLitStripHit* hit, litfloat& chiSq)
+{
+  litfloat xIn[5]           = {par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
   std::vector<litfloat> cIn = par->GetCovMatrix();
 
   litfloat u          = hit->GetU();
@@ -330,8 +289,7 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
   litfloat phi2SinCos = 2 * phiCos * phiSin;
 
   // Inverted covariance matrix of predicted residual
-  litfloat R =
-    1. / (duu + cIn[0] * phiCosSq + phi2SinCos * cIn[1] + cIn[5] * phiSinSq);
+  litfloat R = 1. / (duu + cIn[0] * phiCosSq + phi2SinCos * cIn[1] + cIn[5] * phiSinSq);
 
   // Calculate Kalman gain matrix
   litfloat K0 = cIn[0] * phiCos + cIn[1] * phiSin;
@@ -391,18 +349,14 @@ LitStatus CbmLitKalmanFilter::Update(CbmLitTrackParam* par,
   litfloat ru = u - xOut[0] * phiCos - xOut[1] * phiSin;
 
   // Calculate chi-square
-  chiSq =
-    (ru * ru)
-    / (duu - phiCosSq * cOut[0] - phi2SinCos * cOut[1] - phiSinSq * cOut[5]);
+  chiSq = (ru * ru) / (duu - phiCosSq * cOut[0] - phi2SinCos * cOut[1] - phiSinSq * cOut[5]);
 
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
-                                        const CbmLitStripHit* hit,
-                                        litfloat& chiSq) {
-  litfloat xIn[5] = {
-    par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
+LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par, const CbmLitStripHit* hit, litfloat& chiSq)
+{
+  litfloat xIn[5] = {par->GetX(), par->GetY(), par->GetTx(), par->GetTy(), par->GetQp()};
 
   std::vector<litfloat> cIn    = par->GetCovMatrix();
   std::vector<litfloat> cInInv = par->GetCovMatrix();
@@ -422,20 +376,15 @@ LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
   InvSym15(C1);
 
   std::vector<litfloat> t(5);
-  t[0] = cInInv[0] * par->GetX() + cInInv[1] * par->GetY()
-         + cInInv[2] * par->GetTx() + cInInv[3] * par->GetTy()
+  t[0] = cInInv[0] * par->GetX() + cInInv[1] * par->GetY() + cInInv[2] * par->GetTx() + cInInv[3] * par->GetTy()
          + cInInv[4] * par->GetQp() + phiCos * hit->GetU() / duu;
-  t[1] = cInInv[1] * par->GetX() + cInInv[5] * par->GetY()
-         + cInInv[6] * par->GetTx() + cInInv[7] * par->GetTy()
+  t[1] = cInInv[1] * par->GetX() + cInInv[5] * par->GetY() + cInInv[6] * par->GetTx() + cInInv[7] * par->GetTy()
          + cInInv[8] * par->GetQp() + phiSin * hit->GetU() / duu;
-  t[2] = cInInv[2] * par->GetX() + cInInv[6] * par->GetY()
-         + cInInv[9] * par->GetTx() + cInInv[10] * par->GetTy()
+  t[2] = cInInv[2] * par->GetX() + cInInv[6] * par->GetY() + cInInv[9] * par->GetTx() + cInInv[10] * par->GetTy()
          + cInInv[11] * par->GetQp();
-  t[3] = cInInv[3] * par->GetX() + cInInv[7] * par->GetY()
-         + cInInv[10] * par->GetTx() + cInInv[12] * par->GetTy()
+  t[3] = cInInv[3] * par->GetX() + cInInv[7] * par->GetY() + cInInv[10] * par->GetTx() + cInInv[12] * par->GetTy()
          + cInInv[13] * par->GetQp();
-  t[4] = cInInv[4] * par->GetX() + cInInv[8] * par->GetY()
-         + cInInv[11] * par->GetTx() + cInInv[13] * par->GetTy()
+  t[4] = cInInv[4] * par->GetX() + cInInv[8] * par->GetY() + cInInv[11] * par->GetTx() + cInInv[13] * par->GetTy()
          + cInInv[14] * par->GetQp();
 
   std::vector<litfloat> xOut(5);
@@ -457,21 +406,11 @@ LitStatus CbmLitKalmanFilter::UpdateWMF(CbmLitTrackParam* par,
   litfloat dx3  = xOut[3] - xIn[3];
   litfloat dx4  = xOut[4] - xIn[4];
   chiSq         = zeta * zeta / duu
-          + (dx0 * cInInv[0] + dx1 * cInInv[1] + dx2 * cInInv[2]
-             + dx3 * cInInv[3] + dx4 * cInInv[4])
-              * dx0
-          + (dx0 * cInInv[1] + dx1 * cInInv[5] + dx2 * cInInv[6]
-             + dx3 * cInInv[7] + dx4 * cInInv[8])
-              * dx1
-          + (dx0 * cInInv[2] + dx1 * cInInv[6] + dx2 * cInInv[9]
-             + dx3 * cInInv[10] + dx4 * cInInv[11])
-              * dx2
-          + (dx0 * cInInv[3] + dx1 * cInInv[7] + dx2 * cInInv[10]
-             + dx3 * cInInv[12] + dx4 * cInInv[13])
-              * dx3
-          + (dx0 * cInInv[4] + dx1 * cInInv[8] + dx2 * cInInv[11]
-             + dx3 * cInInv[13] + dx4 * cInInv[14])
-              * dx4;
+          + (dx0 * cInInv[0] + dx1 * cInInv[1] + dx2 * cInInv[2] + dx3 * cInInv[3] + dx4 * cInInv[4]) * dx0
+          + (dx0 * cInInv[1] + dx1 * cInInv[5] + dx2 * cInInv[6] + dx3 * cInInv[7] + dx4 * cInInv[8]) * dx1
+          + (dx0 * cInInv[2] + dx1 * cInInv[6] + dx2 * cInInv[9] + dx3 * cInInv[10] + dx4 * cInInv[11]) * dx2
+          + (dx0 * cInInv[3] + dx1 * cInInv[7] + dx2 * cInInv[10] + dx3 * cInInv[12] + dx4 * cInInv[13]) * dx3
+          + (dx0 * cInInv[4] + dx1 * cInInv[8] + dx2 * cInInv[11] + dx3 * cInInv[13] + dx4 * cInInv[14]) * dx4;
 
   return kLITSUCCESS;
 }

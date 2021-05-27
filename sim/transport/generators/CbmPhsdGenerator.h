@@ -52,9 +52,7 @@ public:
      * @param fileNameBaryons The file name of baryons output (fort.300)
      * @param fileNameMesons The file name of mesons output (fort.301)
      **/
-  CbmPhsdGenerator(const char* fileNameInput,
-                   const char* fileNameBaryons,
-                   const char* fileNameMesons);
+  CbmPhsdGenerator(const char* fileNameInput, const char* fileNameBaryons, const char* fileNameMesons);
 
   /** Standard constructor for reading .dat PHSD output file.
      * @param fileNameDat The file name of .dat PHSD output file

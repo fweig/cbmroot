@@ -4,10 +4,9 @@
 // -------------------------------------------------------------------------
 #include "CbmShieldGenerator.h"
 
+#include "FairIon.h"
 #include "FairMCEventHeader.h"
 #include "FairPrimaryGenerator.h"
-
-#include "FairIon.h"
 #include "FairRunSim.h"
 
 #include "TDatabasePDG.h"
@@ -27,7 +26,9 @@ CbmShieldGenerator::CbmShieldGenerator()
   , fFileName(nullptr)
   , fPDG(nullptr)
   , fpartType(-1)
-  , fIonMap() {}
+  , fIonMap()
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -38,11 +39,11 @@ CbmShieldGenerator::CbmShieldGenerator(const char* fileName)
   , fFileName(fileName)
   , fPDG(TDatabasePDG::Instance())
   , fpartType(-1)
-  , fIonMap() {
+  , fIonMap()
+{
   cout << "-I- CbmShieldGenerator: Opening input file " << fileName << endl;
   fInputFile = new ifstream(fFileName);
-  if (!fInputFile->is_open())
-    Fatal("CbmShieldGenerator", "Cannot open input file.");
+  if (!fInputFile->is_open()) Fatal("CbmShieldGenerator", "Cannot open input file.");
   cout << "-I- CbmShieldGenerator: Looking for ions..." << endl;
   Int_t nIons = RegisterIons();
   cout << "-I- CbmShieldGenerator: " << nIons << " ions registered." << endl;
@@ -59,7 +60,8 @@ CbmShieldGenerator::~CbmShieldGenerator() { CloseInput(); }
 
 
 // -----   Public method ReadEvent   --------------------------------------
-Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
+Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
 
   // Check for input file
   if (!fInputFile->is_open()) {
@@ -89,8 +91,7 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
   // Read event header line from input file
   //*fInputFile >> eventId >> nTracks >> pBeam >> bx >> by;
-  *fInputFile >> eventId >> b >> bx >> by
-    >> nTracks;  //SELIM: update of SHIELD file structure
+  *fInputFile >> eventId >> b >> bx >> by >> nTracks;  //SELIM: update of SHIELD file structure
 
   // If end of input file is reached : close it and abort run
   if (fInputFile->eof()) {
@@ -100,9 +101,8 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
   }
 
 
-  cout << "-I- CbmShieldGenerator: Event " << eventId << ",  pBeam = " << pBeam
-       << "GeV, b = " << bx << " " << by << " fm, multiplicity " << nTracks
-       << endl;
+  cout << "-I- CbmShieldGenerator: Event " << eventId << ",  pBeam = " << pBeam << "GeV, b = " << bx << " " << by
+       << " fm, multiplicity " << nTracks << endl;
   TVector2 bb;
   bb.Set(bx, by);
 
@@ -122,8 +122,7 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
     // Read PID and momentum from file
     //*fInputFile >> iPid >> iMass >> iCharge >> px >> py >> pz;
-    *fInputFile >> pdgType >> iMass >> iCharge >> px >> py >> pz
-      >> etot;  //SELIM: update of SHIELD file structure
+    *fInputFile >> pdgType >> iMass >> iCharge >> px >> py >> pz >> etot;  //SELIM: update of SHIELD file structure
 
     // Case ion
     /*                       //SELIM
@@ -143,12 +142,9 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
     // Give track to PrimaryGenerator
 
-    if (fpartType == 1 && pdgType == 2112)
-      primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
-    if (fpartType == 2 && pdgType == 2212)
-      primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
-    if (fpartType == 3 && pdgType >= 1000000000)
-      primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
+    if (fpartType == 1 && pdgType == 2112) primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
+    if (fpartType == 2 && pdgType == 2212) primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
+    if (fpartType == 3 && pdgType >= 1000000000) primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
 
     if (fpartType == -1) primGen->AddTrack(pdgType, px, py, pz, 0., 0., 0.);
   }
@@ -160,11 +156,11 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
 
 // -----   Private method CloseInput   ------------------------------------
-void CbmShieldGenerator::CloseInput() {
+void CbmShieldGenerator::CloseInput()
+{
   if (fInputFile) {
     if (fInputFile->is_open()) {
-      cout << "-I- CbmShieldGenerator: Closing input file " << fFileName
-           << endl;
+      cout << "-I- CbmShieldGenerator: Closing input file " << fFileName << endl;
       fInputFile->close();
     }
     delete fInputFile;
@@ -175,7 +171,8 @@ void CbmShieldGenerator::CloseInput() {
 
 
 // -----   Private method RegisterIons   ----------------------------------
-Int_t CbmShieldGenerator::RegisterIons() {
+Int_t CbmShieldGenerator::RegisterIons()
+{
 
   cout << " CbmShieldGenerator::RegisterIons() start " << endl;
   Int_t nIons = 0;
@@ -191,16 +188,14 @@ Int_t CbmShieldGenerator::RegisterIons() {
   while (!fInputFile->eof()) {
 
     //*fInputFile >> eventId >> nTracks >> pBeam >> bx >>by;
-    *fInputFile >> eventId >> b >> bx >> by
-      >> nTracks;  //SELIM: update of SHIELD file structure
+    *fInputFile >> eventId >> b >> bx >> by >> nTracks;  //SELIM: update of SHIELD file structure
     if (fInputFile->eof()) continue;
     for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
       //*fInputFile >> iPid >> iMass >> iCharge >> px >> py >> pz;
-      *fInputFile >> pdgType >> iMass >> iCharge >> px >> py >> pz
-        >> etot;                 //SELIM: update of SHIELD file structure
-                                 //if ( iPid == 1000 ) { // ion
-      if (pdgType > 1000000000)  //SELIM
-      {                          // ion
+      *fInputFile >> pdgType >> iMass >> iCharge >> px >> py >> pz >> etot;  //SELIM: update of SHIELD file structure
+                                                                             //if ( iPid == 1000 ) { // ion
+      if (pdgType > 1000000000)                                              //SELIM
+      {                                                                      // ion
         char buffer[20];
         sprintf(buffer, "Ion_%d_%d", iMass, iCharge);
         TString ionName(buffer);

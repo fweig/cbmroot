@@ -13,8 +13,10 @@
 #ifndef CBMMVDSENSORTASK_H
 #define CBMMVDSENSORTASK_H 1
 
-#include "TObject.h"
 #include "plugins/CbmMvdSensorPlugin.h"
+
+#include "TObject.h"
+
 #include <iostream>
 
 
@@ -34,14 +36,10 @@ public:
   virtual ~CbmMvdSensorTask();
 
 
-  virtual void SendInputBuffer(TClonesArray* inputBuffer) {
-    fInputBuffer = inputBuffer;
-  };
+  virtual void SendInputBuffer(TClonesArray* inputBuffer) { fInputBuffer = inputBuffer; };
   virtual void SetInput(CbmMvdPoint*) { ; };
   virtual void SetInputDigi(CbmMvdDigi*) { ; };
-  virtual void CallBufferForInputData() {
-    ;
-  };  //See comment in ExecChain() in .cxx
+  virtual void CallBufferForInputData() { ; };  //See comment in ExecChain() in .cxx
   virtual TClonesArray* GetOutputArray() { return fOutputBuffer; };
 
   virtual void InitTask(CbmMvdSensor* mySensor) { fSensor = mySensor; };

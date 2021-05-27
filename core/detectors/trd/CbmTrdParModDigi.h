@@ -1,11 +1,11 @@
 #ifndef CBMTRDPARMODDIGI_H
 #define CBMTRDPARMODDIGI_H
 
+#include "CbmTrdParMod.h"  // for CbmTrdParMod
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TArrayD.h>     // for TArrayD
-
-#include "CbmTrdParMod.h"  // for CbmTrdParMod
 
 class CbmTrdPoint;
 class TVector3;
@@ -14,17 +14,8 @@ class TVector3;
 class CbmTrdParModDigi : public CbmTrdParMod {
 public:
   CbmTrdParModDigi();
-  CbmTrdParModDigi(Double_t x,
-                   Double_t y,
-                   Double_t z,
-                   Double_t sizex,
-                   Double_t sizey,
-                   Double_t sizez,
-                   Int_t nofSectors,
-                   Int_t orientation,
-                   const TArrayD& sectorSizeX,
-                   const TArrayD& sectorSizeY,
-                   const TArrayD& padSizeX,
+  CbmTrdParModDigi(Double_t x, Double_t y, Double_t z, Double_t sizex, Double_t sizey, Double_t sizez, Int_t nofSectors,
+                   Int_t orientation, const TArrayD& sectorSizeX, const TArrayD& sectorSizeY, const TArrayD& padSizeX,
                    const TArrayD& padSizeY);
   virtual ~CbmTrdParModDigi() { ; }
   Int_t GetNofColumns() const;
@@ -40,9 +31,7 @@ public:
   Double_t GetSectorSizeX(Int_t i) const { return fSectorSizeX.At(i); }
   Double_t GetSectorSizeY(Int_t i) const { return fSectorSizeY.At(i); }
 
-  Double_t GetAnodeWireToPadPlaneDistance() const {
-    return fAnodeWireToPadPlaneDistance;
-  }
+  Double_t GetAnodeWireToPadPlaneDistance() const { return fAnodeWireToPadPlaneDistance; }
   Double_t GetAnodeWireOffset() const { return fAnodeWireOffset; }
   Double_t GetAnodeWireSpacing() const { return fAnodeWireSpacing; }
 
@@ -58,50 +47,30 @@ public:
    **/
   Int_t GetSectorRow(Int_t growId, Int_t& srowId) const;
 
-  Bool_t GetPadInfo(const Double_t* local_point,
-                    Int_t& sectorId,
-                    Int_t& columnId,
-                    Int_t& rowId) const;
+  Bool_t GetPadInfo(const Double_t* local_point, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const;
 
-  void GetPadInfo(const CbmTrdPoint* trdPoint,
-                  Int_t& sectorId,
-                  Int_t& columnId,
-                  Int_t& rowId) const;
+  void GetPadInfo(const CbmTrdPoint* trdPoint, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const;
 
   // function for the pad position with the new address format for rectangular
   // modules
-  void GetPadPosition(const Int_t sector,
-                      const Int_t col,
-                      const Int_t row,
-                      TVector3& padPos,
+  void GetPadPosition(const Int_t sector, const Int_t col, const Int_t row, TVector3& padPos,
                       TVector3& padPosErr) const;
 
   // get pad position from channel number in CbmTrdDigi implementation of the
   // pad position
-  void GetPadPosition(const Int_t padAddress,
-                      bool isCbmTrdDigiAddress,
-                      TVector3& padPos,
-                      TVector3& padPosErr) const;
+  void GetPadPosition(const Int_t padAddress, bool isCbmTrdDigiAddress, TVector3& padPos, TVector3& padPosErr) const;
 
   // standard implementation of the pad position
-  void GetPadPosition(const Int_t padAddress,
-                      TVector3& padPos,
-                      TVector3& padPosErr) const;
+  void GetPadPosition(const Int_t padAddress, TVector3& padPos, TVector3& padPosErr) const;
 
   void GetPosition(
     // Int_t moduleAddress,
-    Int_t sectorId,
-    Int_t columnId,
-    Int_t rowId,
-    TVector3& padPos,
-    TVector3& padSize) const;
+    Int_t sectorId, Int_t columnId, Int_t rowId, TVector3& padPos, TVector3& padSize) const;
 
-  Int_t GetPadColumn(
-    const Int_t channelNumber) const;  // calculate the pad column based on
-                                       // the channeNumber as defined in the
-                                       // CbmTrdDigi
-  Int_t
-  GetPadRow(const Int_t channelNumber) const;  // calculate the pad row based on
+  Int_t GetPadColumn(const Int_t channelNumber) const;  // calculate the pad column based on
+                                                        // the channeNumber as defined in the
+                                                        // CbmTrdDigi
+  Int_t GetPadRow(const Int_t channelNumber) const;     // calculate the pad row based on
     // the channeNumber as defined in the
     // CbmTrdDigi
 
@@ -115,45 +84,32 @@ public:
   void Print(Option_t* opt = "") const;
 
   void ProjectPositionToNextAnodeWire(Double_t* local_point) const;
-  void SetAnodeWireToPadPlaneDistance(Double_t d) {
-    fAnodeWireToPadPlaneDistance = d;
-  }
+  void SetAnodeWireToPadPlaneDistance(Double_t d) { fAnodeWireToPadPlaneDistance = d; }
   void SetAnodeWireOffset(Double_t off) { fAnodeWireOffset = off; }
   void SetAnodeWireSpacing(Double_t dw) { fAnodeWireSpacing = dw; }
   void TransformHitError(TVector3& hitErr) const;
 
-  void TransformToLocalPad(const Double_t* local_point,
-                           Double_t& posX,
-                           Double_t& posY) const;
+  void TransformToLocalPad(const Double_t* local_point, Double_t& posX, Double_t& posY) const;
 
 private:
   CbmTrdParModDigi(const CbmTrdParModDigi& ref);
   const CbmTrdParModDigi& operator=(const CbmTrdParModDigi& ref);
 
   void GetModuleInformation(
-    /*Int_t moduleAddress, */ const Double_t* local_point,
-    Int_t& sectorId,
-    Int_t& columnId,
-    Int_t& rowId) const;
+    /*Int_t moduleAddress, */ const Double_t* local_point, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const;
 
-  void TransformToLocalCorner(const Double_t* local_point,
-                              Double_t& posX,
-                              Double_t& posY) const;
+  void TransformToLocalCorner(const Double_t* local_point, Double_t& posX, Double_t& posY) const;
 
-  void TransformToLocalSector(const Double_t* local_point,
-                              Double_t& posX,
-                              Double_t& posY) const;
+  void TransformToLocalSector(const Double_t* local_point, Double_t& posX, Double_t& posY) const;
 
   Int_t GetSector(const Double_t* local_point) const;
 
-  Int_t fNofSectors;  ///< number sectors for this module
-  Int_t
-    fOrientation;  ///< angle between long pad axis and y-axis in steps of 90
-                   ///deg [0..3]
-  Double_t fAnodeWireOffset;   ///< Anode Wire Offset [cm]
-  Double_t fAnodeWireSpacing;  ///< anode wire pitch [cm]
-  Double_t
-    fAnodeWireToPadPlaneDistance;  ///< Anode Wire to PadPlane Distance [cm]
+  Int_t fNofSectors;                      ///< number sectors for this module
+  Int_t fOrientation;                     ///< angle between long pad axis and y-axis in steps of 90
+                                          ///deg [0..3]
+  Double_t fAnodeWireOffset;              ///< Anode Wire Offset [cm]
+  Double_t fAnodeWireSpacing;             ///< anode wire pitch [cm]
+  Double_t fAnodeWireToPadPlaneDistance;  ///< Anode Wire to PadPlane Distance [cm]
 
   Double_t fX;            ///< center of module in global c.s. [cm]
   Double_t fY;            ///< center of module in global c.s. [cm]

@@ -79,8 +79,7 @@
   rtdb->setFirstInput(io1);
 
   // ---- define TestHits task to run ---------
-  CbmRichTestHits* tsim =
-    new CbmRichTestHits("RichTestHits", "RichTestHits", iVerbose);
+  CbmRichTestHits* tsim = new CbmRichTestHits("RichTestHits", "RichTestHits", iVerbose);
   fRun->AddTask(tsim);
 
   // -----   Intialise and run   --------------------------------------------
@@ -125,8 +124,7 @@
   c1->SetFillColor(10);
   c1->SetGrid(0, 0);
 
-  TPaveLabel* title = new TPaveLabel(
-    0.1, 0.92, 0.9, 0.98, "Test RICH HitProducer for file  " + hitFile);
+  TPaveLabel* title = new TPaveLabel(0.1, 0.92, 0.9, 0.98, "Test RICH HitProducer for file  " + hitFile);
   title->SetFillColor(10);
   title->SetLineStyle(1);
   title->Draw();

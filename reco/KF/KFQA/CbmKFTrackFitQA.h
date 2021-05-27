@@ -17,8 +17,7 @@
 #ifndef _CbmKFTrackFitQA_h_
 #define _CbmKFTrackFitQA_h_
 
-#include "FairTask.h"
-
+#include "CbmKFTrErrMCPoints.h"
 #include "CbmKFTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
@@ -30,7 +29,7 @@
 #include "CbmStsTrack.h"
 #include "CbmTrackMatch.h"
 
-#include "CbmKFTrErrMCPoints.h"
+#include "FairTask.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -47,14 +46,9 @@ public:
   void StsHitMatch();
   void FillHitHistos();
   void FillHistoAtParticleVertex(CbmMCTrack* track_mc, CbmKFTrack* track_kf);
-  void FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points,
-                             CbmMCTrack* track_mc,
-                             CbmKFTrack* track_kf);
+  void FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points, CbmMCTrack* track_mc, CbmKFTrack* track_kf);
   void KFWrite();
-  void FindBackTracks(CbmKFTrErrMCPoints* mc_points,
-                      CbmMCTrack* track_mc,
-                      CbmKFTrack* track_kf,
-                      int iEvent);
+  void FindBackTracks(CbmKFTrErrMCPoints* mc_points, CbmMCTrack* track_mc, CbmKFTrack* track_kf, int iEvent);
   void FindBackTracks();
   void Save();
 

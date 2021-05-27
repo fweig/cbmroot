@@ -1,14 +1,13 @@
 #include "CbmL1MuchFinder.h"
 
-#include "CbmL1MuchHit.h"
-#include "CbmL1MuchTrack.h"
-
 #include "CbmKF.h"
 #include "CbmKFHit.h"
 #include "CbmKFMaterial.h"
 #include "CbmKFMath.h"
 #include "CbmKFPixelMeasurement.h"
 #include "CbmKFTrackInterface.h"
+#include "CbmL1MuchHit.h"
+#include "CbmL1MuchTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchHit.h"
 #include "CbmMuchPoint.h"
@@ -17,6 +16,7 @@
 #include "CbmStsTrack.h"
 #include "CbmStsTrackMatch.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -24,9 +24,10 @@
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -35,8 +36,8 @@ using std::vector;
 
 ClassImp(CbmL1MuchFinder);
 
-CbmL1MuchFinder::CbmL1MuchFinder(const char* name, Int_t iVerbose)
-  : FairTask(name, iVerbose) {
+CbmL1MuchFinder::CbmL1MuchFinder(const char* name, Int_t iVerbose) : FairTask(name, iVerbose)
+{
   fTrackCollection = new TClonesArray("CbmMuchTrack", 100);
   histodir         = 0;
 }
@@ -46,24 +47,20 @@ CbmL1MuchFinder::~CbmL1MuchFinder() {}
 
 InitStatus CbmL1MuchFinder::Init() { return ReInit(); }
 
-InitStatus CbmL1MuchFinder::ReInit() {
-  fMuchPoints =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("MuchPoint");
-  fMuchHits = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchHit");
-  fStsTracks =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
-  fMCTracks = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
-  fSTSTrackMatch =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
+InitStatus CbmL1MuchFinder::ReInit()
+{
+  fMuchPoints    = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchPoint");
+  fMuchHits      = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchHit");
+  fStsTracks     = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
+  fMCTracks      = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
+  fSTSTrackMatch = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
   //fPrimVtx =  (CbmVertex *) FairRootManager::Instance() ->GetObject("PrimaryVertex");
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
-  fPrimVtx = dynamic_cast<CbmVertex*>(
-    FairRootManager::Instance()->GetObject("PrimaryVertex."));
+  fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex."));
   if (nullptr == fPrimVtx) {
-    fPrimVtx = dynamic_cast<CbmVertex*>(
-      FairRootManager::Instance()->GetObject("PrimaryVertex"));
+    fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex"));
   }
   if (nullptr == fPrimVtx) {
     Error("CbmL1MuchFinder::ReInit", "vertex not found!");
@@ -72,10 +69,7 @@ InitStatus CbmL1MuchFinder::ReInit() {
 
   fStsFitter.Init();
 
-  FairRootManager::Instance()->Register("MuchTrack",
-                                        "Much",
-                                        fTrackCollection,
-                                        IsOutputBranchPersistent("MuchTrack"));
+  FairRootManager::Instance()->Register("MuchTrack", "Much", fTrackCollection, IsOutputBranchPersistent("MuchTrack"));
 
   return kSUCCESS;
 }
@@ -84,7 +78,8 @@ void CbmL1MuchFinder::SetParContainers() {}
 
 void CbmL1MuchFinder::Finish() { Write(); }
 
-void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
+void CbmL1MuchFinder::Exec(Option_t* /*option*/)
+{
   const int MaxBranches = 50;
 
   static bool first_call_murec = 1;
@@ -100,8 +95,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
     TDirectory* curdir = gDirectory;
     histodir           = gDirectory->mkdir("MuRec");
     histodir->cd();
-    fhNBranches =
-      new TH1F("NBranches", "N Branches", MaxBranches, 0, MaxBranches);
+    fhNBranches = new TH1F("NBranches", "N Branches", MaxBranches, 0, MaxBranches);
     curdir->cd();
   }
 
@@ -160,13 +154,11 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
         double Zdet = CbmKF::Instance()->vMuchDetectors[ist].ZReference;
         tr.Extrapolate(Zdet);
         if (fabs(tr.T[4]) > 100.) tr.stopped = 1;
-        if (1. < 0.5 * fabs(tr.T[4]))
-          tr.stopped = 1;  // 0.5 GeV, stop transport
+        if (1. < 0.5 * fabs(tr.T[4])) tr.stopped = 1;  // 0.5 GeV, stop transport
         //if( tr.stopped ) cout<<"Sts track N "<<itr<<" stopped at Mu station "<<ist
         //<<" with mom="<<1./tr.T[4]<<endl;
         if (tr.stopped) continue;
-        if (CbmKF::Instance()->vMuchDetectors[ist].IsOutside(tr.T[0],
-                                                             tr.T[1])) {
+        if (CbmKF::Instance()->vMuchDetectors[ist].IsOutside(tr.T[0], tr.T[1])) {
           //cout<<" out ";
           tr.NMissedStations++;
           continue;
@@ -177,12 +169,9 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
           CbmL1MuchHit& h = vMuchHits[ih];
           if (h.iStation != ist) continue;
           if (0) {  // !!! Cut for the time of flight (ns)
-            double hl =
-              sqrt(h.FitPoint.x * h.FitPoint.x + h.FitPoint.y * h.FitPoint.y
-                   + h.FitPoint.z * h.FitPoint.z);
-            double hp = 1. / fabs(tr.T[4]);
-            double texp =
-              hl * sqrt(1. - 0.1057 * 0.1057 / (hp * hp)) / 29.9792458;  //ns
+            double hl   = sqrt(h.FitPoint.x * h.FitPoint.x + h.FitPoint.y * h.FitPoint.y + h.FitPoint.z * h.FitPoint.z);
+            double hp   = 1. / fabs(tr.T[4]);
+            double texp = hl * sqrt(1. - 0.1057 * 0.1057 / (hp * hp)) / 29.9792458;  //ns
             if (h.time - texp > 1.0) continue;
           }
           double dx   = tr.T[0] - h.FitPoint.x;
@@ -190,8 +179,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
           double c0   = tr.C[0] + h.FitPoint.V[0];
           double c1   = tr.C[1] + h.FitPoint.V[1];
           double c2   = tr.C[2] + h.FitPoint.V[2];
-          double chi2 = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2)
-                        / (c0 * c2 - c1 * c1);
+          double chi2 = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2) / (c0 * c2 - c1 * c1);
           if (chi2 <= 20.) NewHits.push_back(ih);
         }
         int nnew = NewHits.size();
@@ -211,15 +199,15 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
           tr.NHits++;
           double qp0 = tr.T[4];
           h.Filter(tr, 1, qp0);
-        } else
+        }
+        else
           tr.NMissed++;
       }
     }
     int bestbr = 0;
     for (int ibr = 1; ibr < NBranches; ibr++) {
       if ((Branches[ibr].NHits > Branches[bestbr].NHits)
-          || (Branches[ibr].NHits == Branches[bestbr].NHits)
-               && (Branches[ibr].chi2 < Branches[bestbr].chi2))
+          || (Branches[ibr].NHits == Branches[bestbr].NHits) && (Branches[ibr].chi2 < Branches[bestbr].chi2))
         bestbr = ibr;
     }
     vTracks.push_back(Branches[bestbr]);
@@ -261,8 +249,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
     }
     {
       new ((*fTrackCollection)[NOutTracks]) CbmMuchTrack();
-      CbmMuchTrack* MuchTrack =
-        (CbmMuchTrack*) fTrackCollection->At(NOutTracks++);
+      CbmMuchTrack* MuchTrack = (CbmMuchTrack*) fTrackCollection->At(NOutTracks++);
       MuchTrack->SetChi2(tr.GetRefChi2());
       MuchTrack->SetNDF(tr.GetRefNDF());
       FairTrackParam tp;
@@ -270,9 +257,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
       MuchTrack->SetMuchTrack(&tp);
       MuchTrack->SetStsTrackID(tr.StsID);
       int nh = 0;
-      for (vector<CbmL1MuchHit*>::iterator i = tr.vHits.begin();
-           i != tr.vHits.end();
-           i++) {
+      for (vector<CbmL1MuchHit*>::iterator i = tr.vHits.begin(); i != tr.vHits.end(); i++) {
         if (++nh > 30) break;
         MuchTrack->AddHitIndex((*i)->index);
       }
@@ -283,22 +268,21 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
       tr.vHits[ih]->busy = 1;
   }
 
-  if (EventCounter < 100 && EventCounter % 10 == 0
-      || EventCounter >= 100 && EventCounter % 100 == 0)
-    Write();
+  if (EventCounter < 100 && EventCounter % 10 == 0 || EventCounter >= 100 && EventCounter % 100 == 0) Write();
   //cout<<"end of MuRec"<<endl;
 }
 
 
-void CbmL1MuchFinder::Write() {
+void CbmL1MuchFinder::Write()
+{
   TFile HistoFile("MuRec.root", "RECREATE");
   writedir2current(histodir);
   HistoFile.Close();
 }
 
-void CbmL1MuchFinder::writedir2current(TObject* obj) {
-  if (!obj->IsFolder())
-    obj->Write();
+void CbmL1MuchFinder::writedir2current(TObject* obj)
+{
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur = gDirectory;
     TDirectory* sub = cur->mkdir(obj->GetName());

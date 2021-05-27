@@ -7,9 +7,12 @@
 #define CBMMCEVENTFILTER_H 1
 
 #include "CbmDefs.h"
+
 #include "FairMCApplication.h"
 #include "FairTask.h"
+
 #include "TClonesArray.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -55,9 +58,7 @@ public:
 		 ** In case cuts are defined for more than one data type,
 		 ** they are logically additive (each of them has to be passed).
 		 **/
-  void SetMinNofData(ECbmDataType type, Int_t value) {
-    fMinNofData[type] = value;
-  }
+  void SetMinNofData(ECbmDataType type, Int_t value) { fMinNofData[type] = value; }
 
 
 protected:
@@ -72,7 +73,8 @@ protected:
 		 ** @param type  CBM data type
 		 ** @return  Number of objects in array
 		 **/
-  Int_t GetNofData(ECbmDataType type) const {
+  Int_t GetNofData(ECbmDataType type) const
+  {
     return (fData.at(type) == nullptr ? 0 : fData.at(type)->GetEntriesFast());
   }
 

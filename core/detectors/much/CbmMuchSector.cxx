@@ -14,23 +14,22 @@ CbmMuchSector::CbmMuchSector() : fAddress(0), fNChannels(0), fPads() {}
 CbmMuchSector::CbmMuchSector(UInt_t modAddress, UInt_t index, Int_t nChannels)
   : fAddress(CbmMuchAddress::SetElementId(modAddress, kMuchSector, index))
   , fNChannels(nChannels)
-  , fPads() {
+  , fPads()
+{
   fPads.resize(nChannels);
 }
 // -------------------------------------------------------------------------
 
-CbmMuchPad* CbmMuchSector::GetPadByChannelIndex(Int_t iChannel) const {
+CbmMuchPad* CbmMuchSector::GetPadByChannelIndex(Int_t iChannel) const
+{
   //  LOG(debug) << "iChannel=" << iChannel << " fPads.size()=" << fPads.size()
   //             << " fNChannels=" << fNChannels;
   if (iChannel >= static_cast<Int_t>(fPads.size()) || iChannel < 0) {
     LOG(error) << "iChannel=" << iChannel << " fPads.size()=" << fPads.size();
-    LOG(error) << "  station index="
-               << CbmMuchAddress::GetStationIndex(fAddress);
+    LOG(error) << "  station index=" << CbmMuchAddress::GetStationIndex(fAddress);
     LOG(error) << "    layer index=" << CbmMuchAddress::GetLayerIndex(fAddress);
-    LOG(error) << "   module index="
-               << CbmMuchAddress::GetModuleIndex(fAddress);
-    LOG(error) << "   sector index="
-               << CbmMuchAddress::GetSectorIndex(fAddress);
+    LOG(error) << "   module index=" << CbmMuchAddress::GetModuleIndex(fAddress);
+    LOG(error) << "   sector index=" << CbmMuchAddress::GetSectorIndex(fAddress);
     return nullptr;
   }
   return fPads[iChannel];

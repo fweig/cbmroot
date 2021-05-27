@@ -20,9 +20,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b008_ch050";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -30,9 +29,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b008_ch051";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -40,9 +38,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b008_ch052";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,9 +47,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b008_ch053";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -61,9 +57,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b009_ch050";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -71,9 +66,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b009_ch051";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -81,9 +75,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b009_ch052";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -91,9 +84,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_ft_b009_ch053";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -103,9 +95,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_tot_b008_ch025";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -113,9 +104,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_tot_b008_ch026";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -123,9 +113,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_tot_b009_ch025";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -133,9 +122,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_tot_b009_ch026";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -144,9 +132,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_dnlsum_b008_ch025";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -154,9 +141,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_dnlsum_b008_ch026";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -164,9 +150,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_dnlsum_b009_ch025";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -174,9 +159,8 @@
   gROOT->cd();
   TString hname = "tof_vftx_dnlsum_b009_ch026";
   hPla          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla != NULL) {
-    hPla->Draw();
-  } else {
+  if (hPla != NULL) { hPla->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

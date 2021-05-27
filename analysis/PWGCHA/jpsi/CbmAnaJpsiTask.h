@@ -2,8 +2,6 @@
 #ifndef CBMJPSIANATASK
 #define CBMJPSIANATASK
 
-#include "FairTask.h"
-
 #include "CbmAnaJpsiCandidate.h"
 #include "CbmAnaJpsiCuts.h"
 #include "CbmAnaJpsiHist.h"
@@ -14,6 +12,8 @@
 #include "CbmRichRing.h"
 #include "CbmTrdTrack.h"
 #include "CbmVertex.h"
+
+#include "FairTask.h"
 
 #include "TClonesArray.h"
 #include "TH1D.h"
@@ -103,11 +103,7 @@ private:
        * \param[in] min Minimum value for X axis.
        * \param[in] max Maximum value for X axis.
        */
-  void CreateAnalysisStepsH1(const string& name,
-                             const string& axisX,
-                             const string& axisY,
-                             double nBins,
-                             double min,
+  void CreateAnalysisStepsH1(const string& name, const string& axisX, const string& axisY, double nBins, double min,
                              double max);
 
   /*
@@ -123,16 +119,8 @@ private:
        * \param[in] minY Minimum value for Y axis.
        * \param[in] maxY Maximum value for Y axis.
        */
-  void CreateAnalysisStepsH2(const string& name,
-                             const string& axisX,
-                             const string& axisY,
-                             const string& axisZ,
-                             double nBinsX,
-                             double minX,
-                             double maxX,
-                             double nBinsY,
-                             double minY,
-                             double maxY);
+  void CreateAnalysisStepsH2(const string& name, const string& axisX, const string& axisY, const string& axisZ,
+                             double nBinsX, double minX, double maxX, double nBinsY, double minY, double maxY);
 
 
   /*
@@ -144,11 +132,7 @@ private:
    * \param[in] min Minimum value.
    * \param[in] max Maximum value.
    */
-  void CreateSourceTypesH1(const string& name,
-                           const string& axisX,
-                           const string& axisY,
-                           double nBins,
-                           double min,
+  void CreateSourceTypesH1(const string& name, const string& axisX, const string& axisY, double nBins, double min,
                            double max);
 
 
@@ -165,23 +149,11 @@ private:
    * \param[in] minY Minimum value for Y axis.
    * \param[in] maxY Maximum value for Y axis.
    */
-  void CreateSourceTypesH2(const string& name,
-                           const string& axisX,
-                           const string& axisY,
-                           const string& axisZ,
-                           double nBinsX,
-                           double minX,
-                           double maxX,
-                           double nBinsY,
-                           double minY,
-                           double maxY);
+  void CreateSourceTypesH2(const string& name, const string& axisX, const string& axisY, const string& axisZ,
+                           double nBinsX, double minX, double maxX, double nBinsY, double minY, double maxY);
 
-  void CreateAnaStepsPairSourceH1(const string& name,
-                                  const string& axisX,
-                                  const string& axisY,
-                                  double nBins,
-                                  double min,
-                                  double max);
+  void CreateAnaStepsPairSourceH1(const string& name, const string& axisX, const string& axisY, double nBins,
+                                  double min, double max);
 
   void InitHist();
 
@@ -216,29 +188,20 @@ private:
      */
   void PairMcAndAcceptance();
 
-  void PairSource(CbmAnaJpsiCandidate* candP,
-                  CbmAnaJpsiCandidate* candM,
-                  CbmAnaJpsiAnalysisSteps step,
+  void PairSource(CbmAnaJpsiCandidate* candP, CbmAnaJpsiCandidate* candM, CbmAnaJpsiAnalysisSteps step,
                   CbmAnaJpsiKinematicParams* parRec);
 
-  void TrackSource(CbmAnaJpsiCandidate* cand,
-                   CbmAnaJpsiAnalysisSteps step,
-                   Int_t pdg);
+  void TrackSource(CbmAnaJpsiCandidate* cand, CbmAnaJpsiAnalysisSteps step, Int_t pdg);
 
-  void FillPairHists(CbmAnaJpsiCandidate* candP,
-                     CbmAnaJpsiCandidate* candM,
-                     CbmAnaJpsiKinematicParams* parMc,
-                     CbmAnaJpsiKinematicParams* parRec,
-                     CbmAnaJpsiAnalysisSteps step);
+  void FillPairHists(CbmAnaJpsiCandidate* candP, CbmAnaJpsiCandidate* candM, CbmAnaJpsiKinematicParams* parMc,
+                     CbmAnaJpsiKinematicParams* parRec, CbmAnaJpsiAnalysisSteps step);
 
   void SignalAndBgReco();
 
   /**
      * \brief  Identifies particle as Electron (or not)
      */
-  void IsElectron(Int_t globalTrackIndex,
-                  Double_t momentum,
-                  CbmAnaJpsiCandidate* cand);
+  void IsElectron(Int_t globalTrackIndex, Double_t momentum, CbmAnaJpsiCandidate* cand);
 
 
   void IsMismatch(CbmAnaJpsiCandidate* cand);

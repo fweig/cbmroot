@@ -27,32 +27,27 @@
 #include "../include/rootalias.C"
 
 
-void run_sim_maf(Int_t nEvents         = 10,
-                 const char* setupName = "sis100_electron",
-                 const char* inputFile = "") {
+void run_sim_maf(Int_t nEvents = 10, const char* setupName = "sis100_electron", const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_sim";  // this macro's name for screen output
+  TString myName = "run_sim";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile =
-    inputFile;  // give here or as argument; otherwise default is taken
+  TString inFile = inputFile;  // give here or as argument; otherwise default is taken
   //TString outDir  = "/gluster2/cbm/sim/data/";
   TString outDir = inFile;  //"/opt/CBM/Daten/";
   outDir.Resize(outDir.Last('/'));
   TRegexp Nr("[.][0-9][0-9][0-9][0-9][0-9][.]");
-  TString outFile =
-    outDir + setupName + TString(inputFile)(Nr) + "_test.raw.root";
-  TString parFile =
-    outDir + setupName + TString(inputFile)(Nr) + "_params.root";
-  TString geoFile =
-    outDir + setupName + TString(inputFile)(Nr) + "_geofile_full.root";
+  TString outFile = outDir + setupName + TString(inputFile)(Nr) + "_test.raw.root";
+  TString parFile = outDir + setupName + TString(inputFile)(Nr) + "_params.root";
+  TString geoFile = outDir + setupName + TString(inputFile)(Nr) + "_geofile_full.root";
 
   // ------------------------------------------------------------------------
 
@@ -84,26 +79,20 @@ void run_sim_maf(Int_t nEvents         = 10,
   setupFunct = setupFunct + setupName + "()";
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
 
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -124,7 +113,7 @@ void run_sim_maf(Int_t nEvents         = 10,
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -184,7 +173,8 @@ void run_sim_maf(Int_t nEvents         = 10,
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInputFile;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -211,8 +201,7 @@ void run_sim_maf(Int_t nEvents         = 10,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -234,8 +223,7 @@ void run_sim_maf(Int_t nEvents         = 10,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -322,9 +310,7 @@ void run_sim_maf(Int_t nEvents         = 10,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

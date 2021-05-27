@@ -6,9 +6,12 @@
 #include "CbmRichRecGeoPar.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingLight.h"
+
 #include "FairTrackParam.h"
+
 #include "TGeoNavigator.h"
 #include "TString.h"
+
 #include <vector>
 
 using namespace std;
@@ -42,34 +45,23 @@ public:
   /*
      *
      */
-  void GetPmtNormal(Int_t NofPMTPoints,
-                    vector<Double_t>& normalPMT,
-                    Double_t& normalCste);
+  void GetPmtNormal(Int_t NofPMTPoints, vector<Double_t>& normalPMT, Double_t& normalCste);
 
   /*
      * Calculate the normal of the considered mirror tile, using the sphere center position of the tile (ptC) and the local reflection point on the mirror (ptM) => normalMirr.
      * Then calculate point on sensitive plane from the reflected track extrapolated (ptR2 = reflection of ptR1, with reflection axis = normalMirr).
      * ptR2Center uses ptC for the calculations, whereas ptR2Mirr uses ptM.
      */
-  void ComputeR2(vector<Double_t>& ptR2Center,
-                 vector<Double_t>& ptR2Mirr,
-                 vector<Double_t> ptM,
-                 vector<Double_t> ptC,
-                 vector<Double_t> ptR1,
-                 TGeoNavigator* navi,
-                 TString s);
+  void ComputeR2(vector<Double_t>& ptR2Center, vector<Double_t>& ptR2Mirr, vector<Double_t> ptM, vector<Double_t> ptC,
+                 vector<Double_t> ptR1, TGeoNavigator* navi, TString s);
 
   /*
      * Calculate the intersection point (P) between the track and the PMT plane, as if the track had been reflected by the mirror tile.
      * ptPMirr is calculated using the mirror point (ptM) to define the line reflected by the mirror and towards the PMT plane.
      * ptPR2 is calculated using ptR2Mirr (the reflection of point R1 on the sensitive plane, using ptM for the calculations -> see ComputeR2 method).
      */
-  void ComputeP(vector<Double_t>& ptPMirr,
-                vector<Double_t>& ptPR2,
-                vector<Double_t> normalPMT,
-                vector<Double_t> ptM,
-                vector<Double_t> ptR2Mirr,
-                Double_t normalCste);
+  void ComputeP(vector<Double_t>& ptPMirr, vector<Double_t>& ptPR2, vector<Double_t> normalPMT, vector<Double_t> ptM,
+                vector<Double_t> ptR2Mirr, Double_t normalCste);
 
   /*
      * Set output directory for images.

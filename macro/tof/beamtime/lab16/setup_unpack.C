@@ -6,9 +6,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void setup_unpack(Int_t calMode = 1,
-                  char* cFileId = "CbmTofPiHd_17Aug1057",
-                  Int_t iSet    = 0) {
+void setup_unpack(Int_t calMode = 1, char* cFileId = "CbmTofPiHd_17Aug1057", Int_t iSet = 0)
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 2;
 
@@ -62,18 +61,16 @@ void setup_unpack(Int_t calMode = 1,
   // parFileList->Add(&convParFile);
 
   // TOF digi file
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";
   // parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
+  TObjString tofDigiBdfFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
   // parFileList->Add(&tofDigiBdfFile);
 
   // -----------------------------  Geo Manager  -----------------------------
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -155,8 +152,7 @@ void setup_unpack(Int_t calMode = 1,
   // ===                      Unpacker monitoring                          ===
   // =========================================================================
 
-  TMbsUnpTofMonitor* tofUnpMonitor =
-    new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
   run->AddTask(tofUnpMonitor);
 
   // ===                    End of Unpacker monitoring                     ===

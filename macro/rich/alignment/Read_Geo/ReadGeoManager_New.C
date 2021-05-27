@@ -1,6 +1,7 @@
 #include <unistd.h>
 
-void ReadGeoManager_New() {
+void ReadGeoManager_New()
+{
   // ---------------------------------------------------------------------------------------------------------------------
 
   TString vmcDir = TString(gSystem->Getenv("VMCWORKDIR"));
@@ -10,8 +11,7 @@ void ReadGeoManager_New() {
   TGDMLParse parser;
   // Define your input GDML file HERE
   //	TGeoVolume* gdmlTop = parser.GDMLReadFile ("../../../../../geometry/rich/alignment/misalignment_correction/v15_rot/Rich_dec_2015_misalign.gdml");
-  TGeoVolume* gdmlTop = parser.GDMLReadFile(
-    "../../../../../geometry/rich/Rich_jan2016_misalign.gdml");
+  TGeoVolume* gdmlTop = parser.GDMLReadFile("../../../../../geometry/rich/Rich_jan2016_misalign.gdml");
   TGeoVolume* rootTop = new TGeoVolumeAssembly("TOP");
 
   gGeoManager->SetTopVolume(rootTop);
@@ -41,8 +41,8 @@ void ReadGeoManager_New() {
 
     navi->GetCurrentMatrix()->Print();
     navi->GetMotherMatrix()->Print();
-
-  } else {
+  }
+  else {
     std::cout << "No node found." << std::endl;
   }
   //return;
@@ -58,10 +58,8 @@ void ReadGeoManager_New() {
   TGeoNode* curNode;
   TGeoMatrix* curMatrix;
 
-  const Double_t*
-    curNodeTranslation;  // 3 components - pointers to some memory which is provided by ROOT
-  const Double_t*
-    curNodeRotationM;  // 9 components - pointers to some memory which is provided by ROOT
+  const Double_t* curNodeTranslation;  // 3 components - pointers to some memory which is provided by ROOT
+  const Double_t* curNodeRotationM;    // 9 components - pointers to some memory which is provided by ROOT
 
   TString filterName0("mirror_tile_type0");
   TString filterName1("mirror_tile_type1");
@@ -76,12 +74,9 @@ void ReadGeoManager_New() {
 
     // Filter using volume name, not node name
     // But you can do 'if (nodeName.Contains("filter"))'
-    if (curNode->GetVolume()->GetName() == filterName0
-        || curNode->GetVolume()->GetName() == filterName1
-        || curNode->GetVolume()->GetName() == filterName2
-        || curNode->GetVolume()->GetName() == filterName3
-        || curNode->GetVolume()->GetName() == filterName4
-        || curNode->GetVolume()->GetName() == filterName5) {
+    if (curNode->GetVolume()->GetName() == filterName0 || curNode->GetVolume()->GetName() == filterName1
+        || curNode->GetVolume()->GetName() == filterName2 || curNode->GetVolume()->GetName() == filterName3
+        || curNode->GetVolume()->GetName() == filterName4 || curNode->GetVolume()->GetName() == filterName5) {
 
       if (curNode->GetNdaughters() == 0) {
 
@@ -96,10 +91,7 @@ void ReadGeoManager_New() {
         //TODO Retrieve rotation angles
 
         printf("%s tr:\t", nodePath.Data());
-        printf("%08f\t%08f\t%08f\t\n",
-               curNodeTranslation[0],
-               curNodeTranslation[1],
-               curNodeTranslation[2]);
+        printf("%08f\t%08f\t%08f\t\n", curNodeTranslation[0], curNodeTranslation[1], curNodeTranslation[2]);
         /*	    const Char_t *topNodePath = gGeoManager->GetTopNode()->GetName();
 	    printf ("top node path: %s\n", topNodePath);
 	    TGeoVolume *topVolume;
@@ -131,10 +123,8 @@ void ReadGeoManager_New() {
 
     // Filter using volume name, not node name
     // But you can do 'if (nodeName.Contains("filter"))'
-    if (curNode->GetVolume()->GetName() == filterName_inter0
-        || curNode->GetVolume()->GetName() == filterName_inter1
-        || curNode->GetVolume()->GetName() == filterName_inter2
-        || curNode->GetVolume()->GetName() == filterName_inter3
+    if (curNode->GetVolume()->GetName() == filterName_inter0 || curNode->GetVolume()->GetName() == filterName_inter1
+        || curNode->GetVolume()->GetName() == filterName_inter2 || curNode->GetVolume()->GetName() == filterName_inter3
         || curNode->GetVolume()->GetName() == filterName_inter4
         || curNode->GetVolume()->GetName() == filterName_inter5) {
 
@@ -151,10 +141,7 @@ void ReadGeoManager_New() {
         //TODO Retrieve rotation angles
 
         printf("%s tr:\t", nodePath.Data());
-        printf("%08f\t%08f\t%08f\t\n",
-               curNodeTranslation[0],
-               curNodeTranslation[1],
-               curNodeTranslation[2]);
+        printf("%08f\t%08f\t%08f\t\n", curNodeTranslation[0], curNodeTranslation[1], curNodeTranslation[2]);
       }
     }
   }

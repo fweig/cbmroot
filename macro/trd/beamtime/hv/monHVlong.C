@@ -1,4 +1,3 @@
-#include "Riostream.h"
 #include "TCanvas.h"
 #include "TDatime.h"
 #include "TFile.h"
@@ -9,29 +8,26 @@
 #include "TProfile2D.h"
 #include "TString.h"
 #include "TStyle.h"
+
 #include <map>
+
+#include "Riostream.h"
 
 Int_t firstDay(0), firstHour(0), firstMin(0), firstSec(0), firstMsec(0);
 
 //martin: if set true no questions form user required
 Bool_t kohnmode = kFALSE;
 
-Bool_t readFile(TString inFile,
-                std::map<Int_t, TH1I*>& mVoltage,
-                std::map<Int_t, TH1I*>& mCurrent,
-                std::map<Int_t, TGraph*>& mTrendingI,
-                std::map<Int_t, TGraph*>& mTrendingU,
-                TH1I* hChID,
-                TGraph* gCurrentSum1,
-                TH1I* hCurrent,
-                TH1I* hVoltage,
-                Bool_t debug) {
+Bool_t readFile(TString inFile, std::map<Int_t, TH1I*>& mVoltage, std::map<Int_t, TH1I*>& mCurrent,
+                std::map<Int_t, TGraph*>& mTrendingI, std::map<Int_t, TGraph*>& mTrendingU, TH1I* hChID,
+                TGraph* gCurrentSum1, TH1I* hCurrent, TH1I* hVoltage, Bool_t debug)
+{
 
   Bool_t fileStat;
   ifstream in;
   in.open(inFile);
-  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1),
-    chID(-1), deltaT(0), lineLength(0), fileTime(0);
+  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1), chID(-1), deltaT(0), lineLength(0),
+    fileTime(0);
   Int_t lastDay(-1), lastHour(-1), lastMin(-1), lastSec(-1), lastMsec(-1);
   Double_t voltage(0.0), current(0.0), currentSum1(0.0);
   Int_t lineColor(1), lineStyle(1);
@@ -42,7 +38,8 @@ Bool_t readFile(TString inFile,
   if (!in) {
     cout << inFile << " not found!" << endl;
     fileStat = false;
-  } else {
+  }
+  else {
     cout << inFile << " found!" << endl;
     Int_t nLines = 0;
     cout << "Reading file";
@@ -81,28 +78,15 @@ Bool_t readFile(TString inFile,
 	  }
 	*/
         if (debug)
-          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n",
-                 sTime.Data(),
-                 year,
-                 month,
-                 day,
-                 hour,
-                 min,
-                 sec,
+          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n", sTime.Data(), year, month, day, hour, min, sec,
                  msec);
-        fileTime = (msec - firstMsec)
-                   + ((sec - firstSec)
-                      + ((min - firstMin)
-                         + ((hour - firstHour) + (day - firstDay) * 24) * 60)
-                          * 60)
-                       * 1000;
+        fileTime =
+          (msec - firstMsec)
+          + ((sec - firstSec) + ((min - firstMin) + ((hour - firstHour) + (day - firstDay) * 24) * 60) * 60) * 1000;
         if (lastDay > 0) {
-          deltaT = (msec - lastMsec)
-                   + ((sec - lastSec)
-                      + ((min - lastMin)
-                         + ((hour - lastHour) + (day - lastDay) * 24) * 60)
-                          * 60)
-                       * 1000;
+          deltaT =
+            (msec - lastMsec)
+            + ((sec - lastSec) + ((min - lastMin) + ((hour - lastHour) + (day - lastDay) * 24) * 60) * 60) * 1000;
           //	  hDeltaT->Fill(deltaT);
           //	  gTime->SetPoint(gTime->GetN(),fileTime,deltaT);
           if (debug) cout << deltaT << endl;
@@ -112,7 +96,8 @@ Bool_t readFile(TString inFile,
         lastMin  = min;
         lastSec  = sec;
         lastMsec = msec;
-      } else if (line.EndsWith("A")) {
+      }
+      else if (line.EndsWith("A")) {
         line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementCurrent.u", "");
         line.ReplaceAll(" A", "");
         if (debug) cout << "A: ";
@@ -121,11 +106,9 @@ Bool_t readFile(TString inFile,
         chID       = sChID.Atoi();
         // continue for lv channels
         if (chID == 312) {
-          gCurrentSum1->SetPoint(
-            (gCurrentSum1->GetN()),
-            fileTime,
-            currentSum1);    // write summed current to plot and
-          currentSum1 = 0.;  // reset currentSum in a new time bin
+          gCurrentSum1->SetPoint((gCurrentSum1->GetN()), fileTime,
+                                 currentSum1);  // write summed current to plot and
+          currentSum1 = 0.;                     // reset currentSum in a new time bin
         }
         // continue for lv channels
         if (chID < 200) {
@@ -177,9 +160,9 @@ Bool_t readFile(TString inFile,
         }
         mCurrent[chID]->Fill(current);
         mTrendingI[chID]->SetPoint(mTrendingI[chID]->GetN(), fileTime, current);
-      } else if (line.EndsWith("V")) {
-        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u",
-                        "");
+      }
+      else if (line.EndsWith("V")) {
+        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u", "");
         line.ReplaceAll(" V", "");
         if (debug) cout << "V: ";
         lineLength = (Int_t) line.Length();
@@ -231,11 +214,12 @@ Bool_t readFile(TString inFile,
         }
         mVoltage[chID]->Fill(voltage);
         mTrendingU[chID]->SetPoint(mTrendingU[chID]->GetN(), fileTime, voltage);
-      } else if (line.BeginsWith("Loop")) {
+      }
+      else if (line.BeginsWith("Loop")) {
         //	cout << endl << inFile << line << endl;
-      } else {
-        cout << endl
-             << "/" << line << "/ : Unknown content! To be ignored" << endl;
+      }
+      else {
+        cout << endl << "/" << line << "/ : Unknown content! To be ignored" << endl;
       }
       if (debug) cout << lineLength << ":   " << line << endl;
 
@@ -247,9 +231,7 @@ Bool_t readFile(TString inFile,
       }
       nLines++;
     }
-    cout << endl
-         << "Done" << endl
-         << "Found " << nLines << " lines in file " << inFile << endl;
+    cout << endl << "Done" << endl << "Found " << nLines << " lines in file " << inFile << endl;
 
     fileStat = true;
   }
@@ -258,9 +240,9 @@ Bool_t readFile(TString inFile,
 }
 
 
-void monHVlong(TString listoffilenames = "tempname.config",
-               TString path            = "/mount/scr1/p_kaeh01/hv/",
-               TString exportpath      = "/mount/scr1/p_kaeh01/hv/plot/") {
+void monHVlong(TString listoffilenames = "tempname.config", TString path = "/mount/scr1/p_kaeh01/hv/",
+               TString exportpath = "/mount/scr1/p_kaeh01/hv/plot/")
+{
   //  TH1I* hTime = new TH1I("hTime","hTime",60000,0,60000);
   TH1I* hChID = new TH1I("hChID", "hChID", 991, -0.5, 990.5);
   hChID->SetXTitle("channel ID");
@@ -299,15 +281,7 @@ void monHVlong(TString listoffilenames = "tempname.config",
     while (getline(filestream, infile)) {
       cout << infile << endl;
       pathedinfile = path + infile;
-      readFile(pathedinfile,
-               mVoltage,
-               mCurrent,
-               mTrendingI,
-               mTrendingU,
-               hChID,
-               gCurrentSum1,
-               hCurrent,
-               hVoltage,
+      readFile(pathedinfile, mVoltage, mCurrent, mTrendingI, mTrendingU, hChID, gCurrentSum1, hCurrent, hVoltage,
                debug);
       /*    }
     }
@@ -352,9 +326,7 @@ void monHVlong(TString listoffilenames = "tempname.config",
       TMultiGraph* multiI = new TMultiGraph();
       gCurrentSum1->SetLineColor(kRed);
       multiI->Add(gCurrentSum1);
-      for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin();
-           it != mTrendingI.end();
-           it++) {
+      for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin(); it != mTrendingI.end(); it++) {
         //    if (it->first == 304 || it->first == 405)
         //    switch (it->first)
         //      {
@@ -382,9 +354,7 @@ void monHVlong(TString listoffilenames = "tempname.config",
       c7->SetTicky();
       c7->SetGridy();
       TMultiGraph* multiU = new TMultiGraph();
-      for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin();
-           it != mTrendingU.end();
-           it++) {
+      for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin(); it != mTrendingU.end(); it++) {
         multiU->Add(it->second);
       }
       multiU->Draw("AL");

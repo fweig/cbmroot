@@ -1,4 +1,5 @@
-void pl_over_pos(Int_t iNDet = 1) {
+void pl_over_pos(Int_t iNDet = 1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 900, 900);
@@ -33,7 +34,8 @@ void pl_over_pos(Int_t iNDet = 1) {
         h2->Draw("colz");
         gPad->SetLogz();
         h2->ProfileX()->Draw("same");
-      } else {
+      }
+      else {
         cout << "Histogram " << hname2 << " not existing. " << endl;
       }
     }

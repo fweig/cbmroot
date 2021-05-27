@@ -28,8 +28,7 @@ public:
   CbmBuildEventsFromTracksIdeal();
 
   CbmBuildEventsFromTracksIdeal(const CbmBuildEventsFromTracksIdeal&) = delete;
-  CbmBuildEventsFromTracksIdeal&
-  operator=(const CbmBuildEventsFromTracksIdeal&) = delete;
+  CbmBuildEventsFromTracksIdeal& operator=(const CbmBuildEventsFromTracksIdeal&) = delete;
 
   /** Destructor **/
   virtual ~CbmBuildEventsFromTracksIdeal();

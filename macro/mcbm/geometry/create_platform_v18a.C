@@ -15,6 +15,7 @@
 
 
 #include "TGeoManager.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -31,7 +32,8 @@ TGeoManager* gGeoMan = NULL;  // will be set later
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_platform_v18a() {
+void create_platform_v18a()
+{
 
   // -----   Define platform parts   ----------------------------------------------
 
@@ -75,9 +77,7 @@ void create_platform_v18a() {
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "Platform geometry created with create_platform_v16.C"
-           << std::endl
-           << std::endl;
+  infoFile << "Platform geometry created with create_platform_v16.C" << std::endl << std::endl;
   // --------------------------------------------------------------------------
 
 
@@ -124,21 +124,17 @@ void create_platform_v18a() {
 
 
   // -----   Create   ---------------------------------------------------------
-  TGeoBBox* platform_base =
-    new TGeoBBox("", sizeX / 2., sizeY / 2., sizeZ / 2.);
-  TGeoVolume* platform_vol =
-    new TGeoVolume("platform", platform_base, aluminium);
+  TGeoBBox* platform_base  = new TGeoBBox("", sizeX / 2., sizeY / 2., sizeZ / 2.);
+  TGeoVolume* platform_vol = new TGeoVolume("platform", platform_base, aluminium);
   platform_vol->SetLineColor(kBlue);
   platform_vol->SetTransparency(70);
 
   TGeoTranslation* platform_trans = new TGeoTranslation("", posX, posY, posZ);
   platform->AddNode(platform_vol, 1, platform_trans);
 
-  infoFile << "sizeX: " << setprecision(2) << sizeX
-           << "sizeY: " << setprecision(2) << sizeY
+  infoFile << "sizeX: " << setprecision(2) << sizeX << "sizeY: " << setprecision(2) << sizeY
            << "sizeZ: " << setprecision(2) << sizeZ << endl;
-  infoFile << "posX : " << setprecision(2) << posX
-           << "posY : " << setprecision(2) << posY
+  infoFile << "posX : " << setprecision(2) << posX << "posY : " << setprecision(2) << posY
            << "posZ : " << setprecision(2) << posZ << endl;
 
   // ---------------   Finish   -----------------------------------------------
@@ -149,8 +145,7 @@ void create_platform_v18a() {
   gGeoMan->PrintOverlaps();
   gGeoMan->Test();
 
-  platform->Export(
-    geoFileName);  // an alternative way of writing the platform volume
+  platform->Export(geoFileName);  // an alternative way of writing the platform volume
 
   TFile* geoFile = new TFile(geoFileName, "UPDATE");
 
@@ -158,8 +153,7 @@ void create_platform_v18a() {
   TGeoRotation* platform_rotation = new TGeoRotation();
   platform_rotation->RotateY(platform_angle);
   //  TGeoCombiTrans* platform_placement = new TGeoCombiTrans( sin( platform_angle/180.*acos(-1) ) * z1[1]/2., 0., 0., platform_rotation);
-  TGeoCombiTrans* platform_placement =
-    new TGeoCombiTrans("platform_rot", platX_offset, 0., 0, platform_rotation);
+  TGeoCombiTrans* platform_placement = new TGeoCombiTrans("platform_rot", platX_offset, 0., 0, platform_rotation);
 
 
   //  TGeoTranslation* platform_placement = new TGeoTranslation("platform_trans", 0., 0., 0.);
@@ -167,8 +161,7 @@ void create_platform_v18a() {
   geoFile->Close();
 
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << geoFileName << endl;
 
   top->Draw("ogl");
 

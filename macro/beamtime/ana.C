@@ -4,7 +4,8 @@
  ** Clusters and hits
  */
 
-void ana(Int_t runID, Int_t fileID) {
+void ana(Int_t runID, Int_t fileID)
+{
 
   TString runN  = TString::Itoa(runID, 10);
   TString fileN = TString::Itoa(fileID, 10);
@@ -40,8 +41,7 @@ void ana(Int_t runID, Int_t fileID) {
   std::cout << ">>> readLmd: Initialising..." << std::endl;
 
   // --- Sets
-  Bool_t alignment =
-    kFALSE;  // kFALSE - without alignment; kTRUE - with alignment
+  Bool_t alignment = kFALSE;  // kFALSE - without alignment; kTRUE - with alignment
 
   // --- Run
   FairRunAna* run = new FairRunAna();
@@ -71,8 +71,7 @@ void ana(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

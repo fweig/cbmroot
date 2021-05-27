@@ -17,8 +17,8 @@ CbmLatexReportElement::CbmLatexReportElement() {}
 
 CbmLatexReportElement::~CbmLatexReportElement() {}
 
-string CbmLatexReportElement::TableBegin(const string& caption,
-                                         const vector<string>& colNames) const {
+string CbmLatexReportElement::TableBegin(const string& caption, const vector<string>& colNames) const
+{
   string st = "\\begin{table}[h] \n";
   st += "\\centering";
   if (caption != "") st += "\\caption{" + caption + "} \n";
@@ -35,19 +35,17 @@ string CbmLatexReportElement::TableBegin(const string& caption,
   return st;
 }
 
-string CbmLatexReportElement::TableEnd() const {
-  return "\\end{tabular} \\end{table}";
-}
+string CbmLatexReportElement::TableEnd() const { return "\\end{tabular} \\end{table}"; }
 
-string CbmLatexReportElement::TableEmptyRow(int nofCols,
-                                            const string& name) const {
+string CbmLatexReportElement::TableEmptyRow(int nofCols, const string& name) const
+{
   stringstream ss;
-  ss << "\\multicolumn{" << nofCols << "}{|c|}{" << name << "} \\\\ \\hline"
-     << endl;
+  ss << "\\multicolumn{" << nofCols << "}{|c|}{" << name << "} \\\\ \\hline" << endl;
   return ss.str();
 }
 
-string CbmLatexReportElement::TableRow(const vector<string>& row) const {
+string CbmLatexReportElement::TableRow(const vector<string>& row) const
+{
   string st;
   for (unsigned int i = 0; i < row.size(); i++) {
     st += (i < (row.size() - 1)) ? (row[i] + " & ") : (row[i]);
@@ -56,8 +54,8 @@ string CbmLatexReportElement::TableRow(const vector<string>& row) const {
   return st;
 }
 
-string CbmLatexReportElement::Image(const string& title,
-                                    const string& file) const {
+string CbmLatexReportElement::Image(const string& title, const string& file) const
+{
   stringstream ss;
 
   ss << "\\begin{figure}[h]" << endl;
@@ -68,7 +66,8 @@ string CbmLatexReportElement::Image(const string& title,
   return ss.str();
 }
 
-string CbmLatexReportElement::DocumentBegin() const {
+string CbmLatexReportElement::DocumentBegin() const
+{
   string str = "\\documentclass[a4paper,14pt]{article}";
   str += "\\usepackage{amssymb}";
   str += "\\setlength\\oddsidemargin{-2cm}";
@@ -83,7 +82,8 @@ string CbmLatexReportElement::DocumentBegin() const {
 
 string CbmLatexReportElement::DocumentEnd() const { return "\\end{document}"; }
 
-string CbmLatexReportElement::Title(int size, const string& title) const {
+string CbmLatexReportElement::Title(int size, const string& title) const
+{
   string st = "\\";
   for (int i = 0; i < size; i++)
     st += "sub";

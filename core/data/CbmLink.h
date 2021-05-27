@@ -52,13 +52,14 @@ public:
     **/
   virtual std::string ToString() const;
 
-  friend Bool_t operator==(const CbmLink& lhs, const CbmLink& rhs) {
-    return (lhs.GetFile() == rhs.GetFile() && lhs.GetEntry() == rhs.GetEntry()
-            && lhs.GetIndex() == rhs.GetIndex());
+  friend Bool_t operator==(const CbmLink& lhs, const CbmLink& rhs)
+  {
+    return (lhs.GetFile() == rhs.GetFile() && lhs.GetEntry() == rhs.GetEntry() && lhs.GetIndex() == rhs.GetIndex());
   }
 
   /** Comparison operators by //Dr.Sys **/
-  friend Bool_t operator<(const CbmLink& l, const CbmLink& r) {
+  friend Bool_t operator<(const CbmLink& l, const CbmLink& r)
+  {
     if (l.GetFile() == r.GetFile()) {
       if (l.GetEntry() == r.GetEntry()) return l.GetIndex() < r.GetIndex();
       return l.GetEntry() < r.GetEntry();
@@ -66,7 +67,8 @@ public:
     return l.GetFile() < r.GetFile();
   }
 
-  friend Bool_t operator>(const CbmLink& l, const CbmLink& r) {
+  friend Bool_t operator>(const CbmLink& l, const CbmLink& r)
+  {
     if (l.GetFile() == r.GetFile()) {
       if (l.GetEntry() == r.GetEntry()) return l.GetIndex() > r.GetIndex();
       return l.GetEntry() > r.GetEntry();

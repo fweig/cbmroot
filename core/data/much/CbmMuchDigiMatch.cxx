@@ -6,8 +6,7 @@
 
 #include "CbmMuchDigiMatch.h"
 
-CbmMuchDigiMatch::CbmMuchDigiMatch(CbmMuchDigiMatch* match)
-  : CbmMatch(*match) {}
+CbmMuchDigiMatch::CbmMuchDigiMatch(CbmMuchDigiMatch* match) : CbmMatch(*match) {}
 
 
 ClassImp(CbmMuchDigiMatch)

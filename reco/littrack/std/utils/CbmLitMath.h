@@ -8,7 +8,8 @@ class CbmLitStripHit;
 class CbmLitPixelHit;
 class CbmLitTrack;
 
-namespace lit {
+namespace lit
+{
 
   /* Calculates chi square
  * @param par Pointer to the updated or smoothed track parameter

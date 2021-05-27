@@ -1,5 +1,6 @@
 
-void run_urqmd(Float_t beamMomentum, Int_t index) {
+void run_urqmd(Float_t beamMomentum, Int_t index)
+{
   TStopwatch timer;
   timer.Start();
   gDebug = 0;
@@ -33,28 +34,12 @@ void run_urqmd(Float_t beamMomentum, Int_t index) {
 
   char* ver = getenv("CBMVER");
 
-  sprintf(
-    strInputFile, "/home/kresan/data/urqmd/auau/%1.0fgev/centr", beamMomentum);
-  sprintf(strOutputFile,
-          "/home/kresan/data/mc/%s/urqmd/auau/%1.0fgev/centr",
-          ver,
-          beamMomentum);
+  sprintf(strInputFile, "/home/kresan/data/urqmd/auau/%1.0fgev/centr", beamMomentum);
+  sprintf(strOutputFile, "/home/kresan/data/mc/%s/urqmd/auau/%1.0fgev/centr", ver, beamMomentum);
 
-  sprintf(strInputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.ftn14",
-          strInputFile,
-          beamMomentum,
-          index);
-  sprintf(strParamFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.param.root",
-          strOutputFile,
-          beamMomentum,
-          index);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.root",
-          strOutputFile,
-          beamMomentum,
-          index);
+  sprintf(strInputFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.ftn14", strInputFile, beamMomentum, index);
+  sprintf(strParamFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.param.root", strOutputFile, beamMomentum, index);
+  sprintf(strOutputFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.root", strOutputFile, beamMomentum, index);
   for (Int_t i = 0; i < 1000; i++) {
     if (' ' == strInputFile[i]) strInputFile[i] = '0';
     if (' ' == strOutputFile[i]) strOutputFile[i] = '0';

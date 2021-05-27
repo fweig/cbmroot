@@ -1,4 +1,5 @@
-void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
+void create_STS_geo_file(char* geometry = "sts-3maps-4strips")
+{
 
   // macro to create STS geometry description files for CBMROOT
   // from a data table
@@ -35,7 +36,8 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
   if (!fopen(infile, "r")) {
     printf("... does not exist.\n");
     printf("... exit.\n\n");
-  } else {
+  }
+  else {
 
     printf("output file: %s\n", outfile);
     printf("log file:    %s\n", logfile);
@@ -49,16 +51,7 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
       fscanf(fin, "%s", dummy);
     }
     for (Int_t i = 0; i < n; i++) {
-      fscanf(fin,
-             "%d %s %f %f %f %f %f %f",
-             &nn,
-             type[i],
-             &d[i],
-             &z[i],
-             &ri[i],
-             &ro[i],
-             &ai[i],
-             &ao[i]);
+      fscanf(fin, "%d %s %f %f %f %f %f %f", &nn, type[i], &d[i], &z[i], &ri[i], &ro[i], &ai[i], &ao[i]);
       //printf("%d %s %f %f %f %f %f %f\n",nn,type[i],d[i],z[i],
       //                                   ri[i],ro[i],ai[i],ao[i]);
     }
@@ -67,10 +60,8 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
 
     // calculate inner and outer radius of the disk
     for (Int_t i = 0; i < n; i++) {
-      if (ri[i] == 0 && ai[i] != 0)
-        ri[i] = z[i] * TMath::Tan(ai[i] / 180 * TMath::Pi());
-      if (ro[i] == 0 && ao[i] != 0)
-        ro[i] = z[i] * TMath::Tan(ao[i] / 180 * TMath::Pi());
+      if (ri[i] == 0 && ai[i] != 0) ri[i] = z[i] * TMath::Tan(ai[i] / 180 * TMath::Pi());
+      if (ro[i] == 0 && ao[i] != 0) ro[i] = z[i] * TMath::Tan(ao[i] / 180 * TMath::Pi());
       // + area
       area[i] = TMath::Pi() * (ro[i] * ro[i] - ri[i] * ri[i]) / 1000000.;
     }
@@ -80,17 +71,10 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
 
     printf("detector layout:\n");
     for (Int_t i = 0; i < n; i++) {
-      printf(
-        "station: %02d  %5s  z=%4.0f mm   ri=%5.1f mm   ro=%5.1f mm   d=%4.3f "
-        "mm   area=%7.5f m^2\n",
-        //printf("station: %2d  %5s z=%4.0f  ri=%5.1f  ro=%5.1f  d=%3.1f  area=%7.5f\n",
-        i + 1,
-        type[i],
-        z[i],
-        ri[i],
-        ro[i],
-        d[i],
-        area[i]);
+      printf("station: %02d  %5s  z=%4.0f mm   ri=%5.1f mm   ro=%5.1f mm   d=%4.3f "
+             "mm   area=%7.5f m^2\n",
+             //printf("station: %2d  %5s z=%4.0f  ri=%5.1f  ro=%5.1f  d=%3.1f  area=%7.5f\n",
+             i + 1, type[i], z[i], ri[i], ro[i], d[i], area[i]);
     }
 
     fprintf(flog, "input file:  %s\n", infile);
@@ -100,13 +84,7 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
       fprintf(flog,
               "station: %02d  %5s  z=%4.0f mm   ri=%5.1f mm   ro=%5.1f mm   "
               "d=%4.3f mm   area=%7.5f m^2\n",
-              i + 1,
-              type[i],
-              z[i],
-              ri[i],
-              ro[i],
-              d[i],
-              area[i]);
+              i + 1, type[i], z[i], ri[i], ro[i], d[i], area[i]);
     }
     fclose(flog);
 
@@ -114,18 +92,13 @@ void create_STS_geo_file(char* geometry = "sts-3maps-4strips") {
     // output to geo file
     FILE* fout = fopen(outfile, "w");
     for (Int_t i = 0; i < nn; i++) {
-      fprintf(fout,
-              "//*********************************  %5s  z=%4.0f mm\n",
-              type[i],
-              z[i]);
+      fprintf(fout, "//*********************************  %5s  z=%4.0f mm\n", type[i], z[i]);
 
-      if ((i + 1) < 10)
-        fprintf(fout, "stsstation0%d\n", i + 1);
+      if ((i + 1) < 10) fprintf(fout, "stsstation0%d\n", i + 1);
       else
         fprintf(fout, "stsstation%d\n", i + 1);
 
-      if (i < 3 && strcmp(type[i], "MAPS") == 0)
-        fprintf(fout, "pipevac1\n");
+      if (i < 3 && strcmp(type[i], "MAPS") == 0) fprintf(fout, "pipevac1\n");
       else
         fprintf(fout, "cave\n");
 

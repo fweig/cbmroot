@@ -10,13 +10,13 @@
 #ifndef CBMPIXELHIT_H_
 #define CBMPIXELHIT_H_
 
+#include "CbmHit.h"  // for CbmHit
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 #include <TVector3.h>    // for TVector3
 
 #include <string>  // for string
-
-#include "CbmHit.h"  // for CbmHit
 
 class CbmPixelHit : public CbmHit {
 public:
@@ -39,17 +39,8 @@ public:
          * \param[in] time Hit time [ns].   
          * \param[in] timeError Error of hit time [ns].         
  	 **/
-  CbmPixelHit(Int_t address,
-              Double_t x,
-              Double_t y,
-              Double_t z,
-              Double_t dx,
-              Double_t dy,
-              Double_t dz,
-              Double_t dxy,
-              Int_t refId,
-              Double_t time      = -1.,
-              Double_t timeError = -1.);
+  CbmPixelHit(Int_t address, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy, Double_t dz, Double_t dxy,
+              Int_t refId, Double_t time = -1., Double_t timeError = -1.);
 
   /**
 	 * \breif Standard constructor.
@@ -61,12 +52,7 @@ public:
          * \param[in] time Hit time [ns].   
          * \param[in] timeError Error of hit time [ns].         
 	 **/
-  CbmPixelHit(Int_t address,
-              const TVector3& pos,
-              const TVector3& err,
-              Double_t dxy,
-              Int_t refId,
-              Double_t time      = -1.,
+  CbmPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId, Double_t time = -1.,
               Double_t timeError = -1.);
 
   /**

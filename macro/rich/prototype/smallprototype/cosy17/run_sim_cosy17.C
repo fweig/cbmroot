@@ -1,15 +1,16 @@
-void run_sim_cosy17(Int_t nEvents = 500) {
+void run_sim_cosy17(Int_t nEvents = 500)
+{
 
   TTree::SetMaxTreeSize(90000000000);
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
-  TString myName = "run_sim_geotest";  // this macro's name for screen output
+  TString myName = "run_sim_geotest";              // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
   TString richGeoTag = "cosy17_quartz";
 
-  TString dir = "/Users/slebedev/Development/cbm/data/sim/rich/richprototype/";
+  TString dir        = "/Users/slebedev/Development/cbm/data/sim/rich/richprototype/";
   TString asciiInput = "proton_1.25gevc.ascii.dat";
   TString parFile    = dir + "/param.00001.root";
   TString geoFile    = dir + "/geofilefull.00001.root";
@@ -83,9 +84,7 @@ void run_sim_cosy17(Int_t nEvents = 500) {
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

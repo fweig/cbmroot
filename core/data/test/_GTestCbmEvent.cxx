@@ -1,25 +1,20 @@
-#include "CbmEvent.h"
-
 #include "CbmDefs.h"
+#include "CbmEvent.h"
 #include "CbmMatch.h"
 #include "CbmVertex.h"
 
 #include <TMatrixTSym.h>
 
+#include <vector>
+
 #include <gtest/gtest-spi.h>
 #include <gtest/gtest.h>
 
-#include <vector>
-
 #include "compareVertex.h"
 
-void compareEventDataMembers(CbmEvent& test,
-                             Int_t evnumber,
-                             Double_t starttime,
-                             Double_t endtime,
-                             Int_t numobjects,
-                             CbmMatch* match,
-                             CbmVertex* vertex) {
+void compareEventDataMembers(CbmEvent& test, Int_t evnumber, Double_t starttime, Double_t endtime, Int_t numobjects,
+                             CbmMatch* match, CbmVertex* vertex)
+{
   Int_t retValInt {-111};
   Double_t retValDouble {-111.};
 
@@ -40,29 +35,18 @@ void compareEventDataMembers(CbmEvent& test,
   if (!vertex) {
     Double_t val[6] = {0., 0., 0., 0., 0., 0.};
     compareVertexDataMembers(*(test.GetVertex()), 0., 0., 0., 0., 0, 0, val);
-  } else {
-    Double_t val[6] = {vertex->GetCovariance(0, 0),
-                       vertex->GetCovariance(0, 1),
-                       vertex->GetCovariance(0, 2),
-                       vertex->GetCovariance(1, 1),
-                       vertex->GetCovariance(1, 2),
-                       vertex->GetCovariance(2, 2)};
-    compareVertexDataMembers(*(test.GetVertex()),
-                             vertex->GetX(),
-                             vertex->GetY(),
-                             vertex->GetZ(),
-                             vertex->GetChi2(),
-                             vertex->GetNDF(),
-                             vertex->GetNTracks(),
-                             val);
+  }
+  else {
+    Double_t val[6] = {vertex->GetCovariance(0, 0), vertex->GetCovariance(0, 1), vertex->GetCovariance(0, 2),
+                       vertex->GetCovariance(1, 1), vertex->GetCovariance(1, 2), vertex->GetCovariance(2, 2)};
+    compareVertexDataMembers(*(test.GetVertex()), vertex->GetX(), vertex->GetY(), vertex->GetZ(), vertex->GetChi2(),
+                             vertex->GetNDF(), vertex->GetNTracks(), val);
   }
 }
 
-void compareEventMap(CbmEvent& test,
-                     Int_t numobjects,
-                     Int_t numobjectstype,
-                     ECbmDataType type,
-                     std::vector<UInt_t> indices) {
+void compareEventMap(CbmEvent& test, Int_t numobjects, Int_t numobjectstype, ECbmDataType type,
+                     std::vector<UInt_t> indices)
+{
   Int_t retValInt {-111};
   UInt_t retValUInt {111};
 
@@ -81,12 +65,16 @@ void compareEventMap(CbmEvent& test,
 }
 
 
-TEST(_GTestCbmEvent, CheckDefaultConstructor) {
+TEST(_GTestCbmEvent, CheckDefaultConstructor)
+{
   CbmEvent test;
-  { SCOPED_TRACE("CheckDefaultConstructor"); }
+  {
+    SCOPED_TRACE("CheckDefaultConstructor");
+  }
 }
 
-TEST(_GTestCbmEvent, CheckStandardConstructor) {
+TEST(_GTestCbmEvent, CheckStandardConstructor)
+{
   CbmEvent test {-111};
   {
     SCOPED_TRACE("CheckStandardConstructor");
@@ -95,7 +83,8 @@ TEST(_GTestCbmEvent, CheckStandardConstructor) {
 }
 
 
-TEST(_GTestCbmEvent, CheckSettersAndGetters) {
+TEST(_GTestCbmEvent, CheckSettersAndGetters)
+{
   CbmEvent test {-111, 1., 2.};
   {
     SCOPED_TRACE("CheckSettersAndGetters: Initial Test");
@@ -122,7 +111,8 @@ TEST(_GTestCbmEvent, CheckSettersAndGetters) {
   }
 }
 
-TEST(_GTestCbmEvent, CheckAddData) {
+TEST(_GTestCbmEvent, CheckAddData)
+{
   CbmEvent test {-111, 1., 2.};
   {
     SCOPED_TRACE("CheckAddData: Initial Test");
@@ -284,7 +274,8 @@ TEST(_GTestCbmEvent, CheckAddData) {
                test.ToString().c_str());
 }
 
-TEST(_GTestCbmEvent, CheckSetVertex) {
+TEST(_GTestCbmEvent, CheckSetVertex)
+{
 
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;  // 0 1 2

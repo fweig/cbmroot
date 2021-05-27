@@ -9,6 +9,7 @@
 #define CBMLITFIELDFITTER_H_
 
 #include "../../parallel/LitFieldSlice.h"
+
 #include <vector>
 class FairField;
 
@@ -103,10 +104,7 @@ private:
     * \param[out] parBy Output vector with polynomial coefficients for By.
     * \param[out] parBz Output vector with polynomial coefficients for Bz.
     */
-  void FitSlice(double Z,
-                std::vector<double>& parBx,
-                std::vector<double>& parBy,
-                std::vector<double>& parBz);
+  void FitSlice(double Z, std::vector<double>& parBx, std::vector<double>& parBy, std::vector<double>& parBz);
 
   /**
     * \brief Fit (X, Y) slice of magnetic field.
@@ -115,9 +113,7 @@ private:
     * \param[in] z Vector with field values.
     * \param[out] par Output vector with polynomial coefficients.
     */
-  void FitSlice(const std::vector<double>& x,
-                const std::vector<double>& y,
-                const std::vector<double>& z,
+  void FitSlice(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& z,
                 std::vector<double>& par);
 
   /**
@@ -127,10 +123,7 @@ private:
     * \param[out] parBy Output vector with polynomial coefficients for By.
     * \param[out] parBz Output vector with polynomial coefficients for Bz.
     */
-  void FitSliceMy(double Z,
-                  std::vector<double>& parBx,
-                  std::vector<double>& parBy,
-                  std::vector<double>& parBz);
+  void FitSliceMy(double Z, std::vector<double>& parBx, std::vector<double>& parBy, std::vector<double>& parBz);
 
   /**
     * \brief Return polynomial which is used for approximation.
@@ -147,12 +140,10 @@ private:
   int fNofBinsX;  // Number of bins for X [cm]
   int fNofBinsY;  // Number of bins for Y [cm]
 
-  bool
-    fUseEllipseAcc;  // If true than only values inside an ellipse will be fitted
+  bool fUseEllipseAcc;  // If true than only values inside an ellipse will be fitted
 
-  unsigned int
-    fPolynomDegree;  // Degree of the polynomial to be used for the field approximation
-  CbmLitPolynom* fPolynom;  // Polynomial to be used for field approximation
+  unsigned int fPolynomDegree;  // Degree of the polynomial to be used for the field approximation
+  CbmLitPolynom* fPolynom;      // Polynomial to be used for field approximation
 };
 
 #endif /* CBMLITFIELDFITTER_H_ */

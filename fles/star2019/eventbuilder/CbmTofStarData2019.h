@@ -8,39 +8,27 @@
 #ifndef CbmTofStarData2019_H
 #define CbmTofStarData2019_H
 
-#include "gDpbMessv100.h"
-
 #include "Rtypes.h"
 
 #include <vector>
 
+#include "gDpbMessv100.h"
+
 class CbmTofStarTrigger2019 {
 public:
   // Constructors
-  CbmTofStarTrigger2019(ULong64_t ulGdpbTsFullIn,
-                        ULong64_t ulStarTsFullIn,
-                        UInt_t uStarTokenIn,
-                        UInt_t uStarDaqCmdIn,
-                        UInt_t uStarTrigCmdIn,
-                        UShort_t usGdpbId = 0);
+  CbmTofStarTrigger2019(ULong64_t ulGdpbTsFullIn, ULong64_t ulStarTsFullIn, UInt_t uStarTokenIn, UInt_t uStarDaqCmdIn,
+                        UInt_t uStarTrigCmdIn, UShort_t usGdpbId = 0);
 
   // Destructor
   ~CbmTofStarTrigger2019() {};
 
   // Setters
-  inline void SetFullGdpbTs(ULong64_t ulGdpbTsFullIn) {
-    fulGdpbTsFull = ulGdpbTsFullIn;
-  }
-  inline void SetFullStarTs(ULong64_t ulStarTsFullIn) {
-    fulStarTsFull = ulStarTsFullIn;
-  }
+  inline void SetFullGdpbTs(ULong64_t ulGdpbTsFullIn) { fulGdpbTsFull = ulGdpbTsFullIn; }
+  inline void SetFullStarTs(ULong64_t ulStarTsFullIn) { fulStarTsFull = ulStarTsFullIn; }
   inline void SetStarToken(UInt_t uStarTokenIn) { fuStarToken = uStarTokenIn; }
-  inline void SetStarDaqCmd(UInt_t uStarDaqCmdIn) {
-    fusStarDaqCmd = uStarDaqCmdIn;
-  }
-  inline void SetStarTRigCmd(UInt_t uStarTrigCmdIn) {
-    fusStarTrigCmd = uStarTrigCmdIn;
-  }
+  inline void SetStarDaqCmd(UInt_t uStarDaqCmdIn) { fusStarDaqCmd = uStarDaqCmdIn; }
+  inline void SetStarTRigCmd(UInt_t uStarTrigCmdIn) { fusStarTrigCmd = uStarTrigCmdIn; }
 
   // Accessors
   inline ULong64_t GetFullGdpbTs() const { return fulGdpbTsFull; }
@@ -82,41 +70,43 @@ public:
   ~CbmTofStarSubevent2019();
 
   // Setters
-  inline void SetTrigger(CbmTofStarTrigger2019 triggerIn) {
+  inline void SetTrigger(CbmTofStarTrigger2019 triggerIn)
+  {
     fTrigger     = triggerIn;
     fbTriggerSet = kTRUE;
   }
-  inline void SetSource(UShort_t sourceIdIn) {
-    fusSourceId = sourceIdIn;
-    fulEventStatusFlags =
-      (fulEventStatusFlags & !(kulSourceIdMask << kulSourceIdOffset))
-      | ((sourceIdIn & kulSourceIdMask) << kulSourceIdOffset);
+  inline void SetSource(UShort_t sourceIdIn)
+  {
+    fusSourceId         = sourceIdIn;
+    fulEventStatusFlags = (fulEventStatusFlags & !(kulSourceIdMask << kulSourceIdOffset))
+                          | ((sourceIdIn & kulSourceIdMask) << kulSourceIdOffset);
   }
-  inline void SetBadEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagBadEvt)
-               : (fulEventStatusFlags &= ~(kulFlagBadEvt));
+  inline void SetBadEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagBadEvt) : (fulEventStatusFlags &= ~(kulFlagBadEvt));
   }
-  inline void SetOverlapEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagOverlapEvt)
-               : (fulEventStatusFlags &= ~(kulFlagOverlapEvt));
+  inline void SetOverlapEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagOverlapEvt) : (fulEventStatusFlags &= ~(kulFlagOverlapEvt));
   }
-  inline void SetEmptyEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagEmptyEvt)
-               : (fulEventStatusFlags &= ~(kulFlagEmptyEvt));
+  inline void SetEmptyEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagEmptyEvt) : (fulEventStatusFlags &= ~(kulFlagEmptyEvt));
   }
-  inline void SetStartBorderEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagStartBorderEvt)
-               : (fulEventStatusFlags &= ~(kulFlagStartBorderEvt));
+  inline void SetStartBorderEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagStartBorderEvt) : (fulEventStatusFlags &= ~(kulFlagStartBorderEvt));
   }
-  inline void SetEndBorderEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagEndBorderEvt)
-               : (fulEventStatusFlags &= ~(kulFlagEndBorderEvt));
+  inline void SetEndBorderEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagEndBorderEvt) : (fulEventStatusFlags &= ~(kulFlagEndBorderEvt));
   }
-  inline void SetIncompleteEventFlag(Bool_t bFlagState = kTRUE) {
-    bFlagState ? (fulEventStatusFlags |= kulFlagIncompleteEvt)
-               : (fulEventStatusFlags &= ~(kulFlagIncompleteEvt));
+  inline void SetIncompleteEventFlag(Bool_t bFlagState = kTRUE)
+  {
+    bFlagState ? (fulEventStatusFlags |= kulFlagIncompleteEvt) : (fulEventStatusFlags &= ~(kulFlagIncompleteEvt));
   }
-  inline void AddMsg(const gdpbv100::FullMessage& msgIn) {
+  inline void AddMsg(const gdpbv100::FullMessage& msgIn)
+  {
     fvMsgBuffer.push_back(msgIn);
     fuEventSizeBytes += 2 * sizeof(ULong64_t);
   }
@@ -124,31 +114,17 @@ public:
   // Accessors
   inline CbmTofStarTrigger2019 GetTrigger() const { return fTrigger; }
   inline UShort_t GetSource() const { return fusSourceId; }
-  inline Bool_t GetBadEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagBadEvt);
-  }
-  inline Bool_t GetOverlapEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagOverlapEvt);
-  }
-  inline Bool_t GetEmptyEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagEmptyEvt);
-  }
-  inline Bool_t GetStartBorderEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagStartBorderEvt);
-  }
-  inline Bool_t GetEndBorderEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagEndBorderEvt);
-  }
-  inline Bool_t GetIncompleteEventFlag() const {
-    return 0 < (fulEventStatusFlags & kulFlagIncompleteEvt);
-  }
+  inline Bool_t GetBadEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagBadEvt); }
+  inline Bool_t GetOverlapEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagOverlapEvt); }
+  inline Bool_t GetEmptyEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagEmptyEvt); }
+  inline Bool_t GetStartBorderEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagStartBorderEvt); }
+  inline Bool_t GetEndBorderEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagEndBorderEvt); }
+  inline Bool_t GetIncompleteEventFlag() const { return 0 < (fulEventStatusFlags & kulFlagIncompleteEvt); }
   inline Int_t GetEventSize() const { return fuEventSizeBytes; }
   inline gdpbv100::Message GetMsg(UInt_t uMsgIdx) const;
   inline UInt_t GetMsgBuffSize() const { return fvMsgBuffer.size(); }
   inline static uint32_t GetMaxOutputSize() { return kuMaxOutputSize; }
-  inline Double_t GetEventTimeSec() const {
-    return (1e-9) * gdpbv100::kdClockCycleSizeNs * fTrigger.GetFullGdpbTs();
-  }
+  inline Double_t GetEventTimeSec() const { return (1e-9) * gdpbv100::kdClockCycleSizeNs * fTrigger.GetFullGdpbTs(); }
 
   // Content clearing
   void ClearSubEvent();
@@ -166,20 +142,15 @@ public:
   void PrintSubEvent();
 
 private:
-  static const uint32_t kuMaxOutputSize = 131072;  // 2^17
-  static const uint32_t kuMaxNbMsgs =
-    8190;  // 4 * 64b in header => floor( (2^17 / 8 ) - 4) / 2
-  static const uint64_t kulFlagBadEvt = 0x1
-                                        << 0;  //! General flag for bad event
-  static const uint64_t kulFlagOverlapEvt =
-    0x1 << 1;  //! Event in overlap with the previous event
-  static const uint64_t kulFlagEmptyEvt = 0x1 << 2;  //! Empty event
-  static const uint64_t kulFlagStartBorderEvt =
-    0x1 << 3;  //! Event containing data from previous overlap MS
-  static const uint64_t kulFlagEndBorderEvt =
-    0x1 << 4;  //! Event containing data from following overlap MS
-  static const uint64_t kulFlagIncompleteEvt =
-    0x1 << 5;  //! Incomplete event: at least one gDPB missed the trigger signal
+  static const uint32_t kuMaxOutputSize       = 131072;    // 2^17
+  static const uint32_t kuMaxNbMsgs           = 8190;      // 4 * 64b in header => floor( (2^17 / 8 ) - 4) / 2
+  static const uint64_t kulFlagBadEvt         = 0x1 << 0;  //! General flag for bad event
+  static const uint64_t kulFlagOverlapEvt     = 0x1 << 1;  //! Event in overlap with the previous event
+  static const uint64_t kulFlagEmptyEvt       = 0x1 << 2;  //! Empty event
+  static const uint64_t kulFlagStartBorderEvt = 0x1 << 3;  //! Event containing data from previous overlap MS
+  static const uint64_t kulFlagEndBorderEvt   = 0x1 << 4;  //! Event containing data from following overlap MS
+  static const uint64_t kulFlagIncompleteEvt  = 0x1
+                                               << 5;  //! Incomplete event: at least one gDPB missed the trigger signal
   static const uint64_t kulSourceIdOffset  = 16;
   static const uint64_t kulSourceIdMask    = 0xFFFF;
   static const uint64_t kulEventSizeOffset = 32;

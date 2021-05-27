@@ -5,6 +5,7 @@
  */
 
 #include "selection/CbmLitQualitySort.h"
+
 #include "data/CbmLitTrack.h"
 
 #include <algorithm>
@@ -31,8 +32,8 @@ CbmLitQualitySort::~CbmLitQualitySort() {}
 //   return DoSort(tracks.begin(), tracks.end());
 //}
 
-LitStatus CbmLitQualitySort::DoSortNofHits(TrackPtrIterator itBegin,
-                                           TrackPtrIterator itEnd) {
+LitStatus CbmLitQualitySort::DoSortNofHits(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   std::sort(itBegin, itEnd, CompareTrackPtrNofHitsMore());
 
   Int_t maxNofHits = (*itBegin)->GetNofHits();
@@ -43,8 +44,7 @@ LitStatus CbmLitQualitySort::DoSortNofHits(TrackPtrIterator itBegin,
     value.SetNofHits(iNofHits);
 
     std::pair<TrackPtrIterator, TrackPtrIterator> bounds;
-    bounds =
-      std::equal_range(itBegin, itEnd, &value, CompareTrackPtrNofHitsMore());
+    bounds = std::equal_range(itBegin, itEnd, &value, CompareTrackPtrNofHitsMore());
 
     if (bounds.first == bounds.second) { continue; }
 
@@ -53,8 +53,8 @@ LitStatus CbmLitQualitySort::DoSortNofHits(TrackPtrIterator itBegin,
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitQualitySort::DoSortLastStation(TrackPtrIterator itBegin,
-                                               TrackPtrIterator itEnd) {
+LitStatus CbmLitQualitySort::DoSortLastStation(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   std::sort(itBegin, itEnd, CompareTrackPtrLastStationIdMore());
 
   Int_t maxPlaneId = (*itBegin)->GetLastStationId();
@@ -65,8 +65,7 @@ LitStatus CbmLitQualitySort::DoSortLastStation(TrackPtrIterator itBegin,
     value.SetLastStationId(iPlaneId);
 
     std::pair<TrackPtrIterator, TrackPtrIterator> bounds;
-    bounds = std::equal_range(
-      itBegin, itEnd, &value, CompareTrackPtrLastStationIdMore());
+    bounds = std::equal_range(itBegin, itEnd, &value, CompareTrackPtrLastStationIdMore());
 
     if (bounds.first == bounds.second) { continue; }
 
@@ -75,8 +74,8 @@ LitStatus CbmLitQualitySort::DoSortLastStation(TrackPtrIterator itBegin,
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitQualitySort::DoSortChiSqOverNDF(TrackPtrIterator itBegin,
-                                                TrackPtrIterator itEnd) {
+LitStatus CbmLitQualitySort::DoSortChiSqOverNDF(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   std::sort(itBegin, itEnd, CompareTrackPtrChiSqOverNdfLess());
   return kLITSUCCESS;
 }

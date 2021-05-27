@@ -27,7 +27,8 @@ ClassImp(CbmTofContFact)
 
   static CbmTofContFact gCbmTofContFact;
 
-CbmTofContFact::CbmTofContFact() {
+CbmTofContFact::CbmTofContFact()
+{
   // Constructor (called when the library is loaded)
   fName  = "CbmTofContFact";
   fTitle = "Factory for parameter containers in libTof";
@@ -35,19 +36,17 @@ CbmTofContFact::CbmTofContFact() {
   FairRuntimeDb::instance()->addContFactory(this);
 }
 
-void CbmTofContFact::setAllContainers() {
+void CbmTofContFact::setAllContainers()
+{
   /** Creates the Container objects with all accepted contexts and adds them to
    *  the list of containers for the Tof library.*/
 
-  FairContainer* p1 = new FairContainer(
-    "CbmTofDigiPar", "TOF Digitization parameters", "TestDefaultContext");
+  FairContainer* p1 = new FairContainer("CbmTofDigiPar", "TOF Digitization parameters", "TestDefaultContext");
   p1->addContext("TestNonDefaultContext");
 
   containers->Add(p1);
 
-  FairContainer* p2 = new FairContainer("CbmTofDigiBdfPar",
-                                        "TOF BDF Digitization parameters",
-                                        "TestDefaultContext");
+  FairContainer* p2 = new FairContainer("CbmTofDigiBdfPar", "TOF BDF Digitization parameters", "TestDefaultContext");
   p2->addContext("TestNonDefaultContext");
 
   containers->Add(p2);
@@ -57,7 +56,8 @@ void CbmTofContFact::setAllContainers() {
   containers->Add(beamPars);
 }
 
-FairParSet* CbmTofContFact::createContainer(FairContainer* c) {
+FairParSet* CbmTofContFact::createContainer(FairContainer* c)
+{
   /** Calls the constructor of the corresponding parameter container.
    * For an actual context, which is not an empty string and not the default context
    * of this container, the name is concatinated with the context. */
@@ -65,12 +65,10 @@ FairParSet* CbmTofContFact::createContainer(FairContainer* c) {
   LOG(info) << "container name " << name;
   FairParSet* p = nullptr;
   if (strcmp(name, "CbmTofDigiPar") == 0) {
-    p = new CbmTofDigiPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTofDigiPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
   else if (strcmp(name, "CbmTofDigiBdfPar") == 0) {
-    p = new CbmTofDigiBdfPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTofDigiBdfPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
   else if (strcmp(name, "CbmMcbm2018TofPar") == 0) {
     p = new CbmMcbm2018TofPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());

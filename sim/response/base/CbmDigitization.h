@@ -42,9 +42,7 @@ public:
      ** @param eventRate Rate for events from input file [1/s]
      ** @param mode      Tree access mode (kRegular / kRepeat / kRandom)
      **/
-  void AddInput(UInt_t inputId,
-                TString fileName,
-                Double_t eventRate  = -1.,
+  void AddInput(UInt_t inputId, TString fileName, Double_t eventRate = -1.,
                 ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
@@ -56,9 +54,8 @@ public:
      ** Shortcut for legacy reasons, when only one input file is used.
      ** This will set the inputId to zero. Repeated use will lead to abort.
      **/
-  void AddInput(TString fileName,
-                Double_t eventRate  = -1.,
-                ECbmTreeAccess mode = ECbmTreeAccess::kRegular) {
+  void AddInput(TString fileName, Double_t eventRate = -1., ECbmTreeAccess mode = ECbmTreeAccess::kRegular)
+  {
     AddInput(0, fileName, eventRate, mode);
   }
 
@@ -95,9 +92,7 @@ public:
      ** @param targetInputId ID of the input to be embedded into
      ** @param mode      Tree access mode (kRegular / kRepeat / kRandom)
      **/
-  void EmbedInput(UInt_t inputId,
-                  TString fileName,
-                  UInt_t targetInputId,
+  void EmbedInput(UInt_t inputId, TString fileName, UInt_t targetInputId,
                   ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
@@ -148,10 +143,7 @@ public:
      ** default ones is to be used. The respective digitizer has to be
      ** instantiated before. The ownership is passed to this class.
      **/
-  void SetDigitizer(ECbmModuleId system,
-                    CbmDigitizeBase* digitizer,
-                    TString branch    = "",
-                    Bool_t persistent = kTRUE);
+  void SetDigitizer(ECbmModuleId system, CbmDigitizeBase* digitizer, TString branch = "", Bool_t persistent = kTRUE);
 
 
   /** @brief Set event-by-event mode
@@ -220,9 +212,7 @@ public:
       **
       ** By default, only time slices containing data are filled into the tree.
       **/
-  void StoreAllTimeSlices(Bool_t choice = kTRUE) {
-    fDaq->StoreAllTimeSlices(choice);
-  }
+  void StoreAllTimeSlices(Bool_t choice = kTRUE) { fDaq->StoreAllTimeSlices(choice); }
 
   /** @brief Get the pointer on a given digitizer if existing
      ** @param system System ID (ECbmModuleId)

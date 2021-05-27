@@ -26,27 +26,25 @@
 using std::cout;
 using std::endl;
 
-CbmRichElectronIdAnn::CbmRichElectronIdAnn()
-  : fAnnWeights(""), fNN(NULL), fGlobalTracks(NULL), fRichRings(NULL) {
+CbmRichElectronIdAnn::CbmRichElectronIdAnn() : fAnnWeights(""), fNN(NULL), fGlobalTracks(NULL), fRichRings(NULL)
+{
   Init();
 }
 
 CbmRichElectronIdAnn::~CbmRichElectronIdAnn() {}
 
-void CbmRichElectronIdAnn::Init() {
+void CbmRichElectronIdAnn::Init()
+{
   if (fNN != NULL) { delete fNN; }
 
-  if (CbmRichGeoManager::GetInstance().fGP->fGeometryType
-      == CbmRichGeometryTypeCylindrical) {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v17a_elid_ann_weights.txt";
-  } else if (CbmRichGeoManager::GetInstance().fGP->fGeometryType
-             == CbmRichGeometryTypeTwoWings) {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v16a_elid_ann_weights.txt";
-  } else {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v17a_elid_ann_weights.txt";
+  if (CbmRichGeoManager::GetInstance().fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v17a_elid_ann_weights.txt";
+  }
+  else if (CbmRichGeoManager::GetInstance().fGP->fGeometryType == CbmRichGeometryTypeTwoWings) {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v16a_elid_ann_weights.txt";
+  }
+  else {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v17a_elid_ann_weights.txt";
   }
 
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
@@ -65,51 +63,42 @@ void CbmRichElectronIdAnn::Init() {
   simu->Branch("xOut", &xOut, "xOut/D");
 
   fNN = new TMultiLayerPerceptron("x0,x1,x2,x3,x4,x5,x6,x7,x8:18:xOut", simu);
-  cout << "-I- CbmRichElIdAnn: get NeuralNet weight parameters from: "
-       << fAnnWeights << endl;
+  cout << "-I- CbmRichElIdAnn: get NeuralNet weight parameters from: " << fAnnWeights << endl;
   fNN->LoadWeights(fAnnWeights.c_str());
 
   FairRootManager* ioman = FairRootManager::Instance();
   if (ioman != NULL) {
     fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-    if (fRichRings == NULL) {
-      LOG(error) << "CbmRichElectronIdAnn::Init() fRichRings == NULL";
-    }
+    if (fRichRings == NULL) { LOG(error) << "CbmRichElectronIdAnn::Init() fRichRings == NULL"; }
     fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-    if (fGlobalTracks == NULL) {
-      LOG(error) << "CbmRichElectronIdAnn::Init() fGlobalTracks == NULL";
-    }
-  } else {
+    if (fGlobalTracks == NULL) { LOG(error) << "CbmRichElectronIdAnn::Init() fGlobalTracks == NULL"; }
+  }
+  else {
     LOG(error) << "FairRootManager::Instance() == NULL";
   }
 }
 
-double CbmRichElectronIdAnn::CalculateAnnValue(int globalTrackIndex,
-                                               double momentum) {
+double CbmRichElectronIdAnn::CalculateAnnValue(int globalTrackIndex, double momentum)
+{
   double errorValue = -1.;
   if (globalTrackIndex < 0) return errorValue;
 
   if (fGlobalTracks == NULL || fRichRings == NULL) return -1;
 
-  const CbmGlobalTrack* globalTrack =
-    static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
   if (globalTrack == NULL) return errorValue;
 
   Int_t richId = globalTrack->GetRichRingIndex();
   if (richId == -1) return errorValue;
-  const CbmRichRing* richRing =
-    static_cast<const CbmRichRing*>(fRichRings->At(richId));
+  const CbmRichRing* richRing = static_cast<const CbmRichRing*>(fRichRings->At(richId));
   if (richRing == NULL) return errorValue;
 
   double rtDistance = CbmRichUtil::GetRingTrackDistance(globalTrackIndex);
 
-  if (richRing->GetAaxis() >= 10. || richRing->GetAaxis() <= 0.
-      || richRing->GetBaxis() >= 10. || richRing->GetBaxis() <= 0.
-      || richRing->GetNofHits() <= 5. || rtDistance <= 0. || rtDistance >= 999.
-      || richRing->GetRadialPosition() <= 0.
-      || richRing->GetRadialPosition() >= 999. || richRing->GetPhi() <= -6.5
-      || richRing->GetPhi() >= 6.5 || richRing->GetRadialAngle() <= -6.5
-      || richRing->GetRadialAngle() >= 6.5) {
+  if (richRing->GetAaxis() >= 10. || richRing->GetAaxis() <= 0. || richRing->GetBaxis() >= 10.
+      || richRing->GetBaxis() <= 0. || richRing->GetNofHits() <= 5. || rtDistance <= 0. || rtDistance >= 999.
+      || richRing->GetRadialPosition() <= 0. || richRing->GetRadialPosition() >= 999. || richRing->GetPhi() <= -6.5
+      || richRing->GetPhi() >= 6.5 || richRing->GetRadialAngle() <= -6.5 || richRing->GetRadialAngle() >= 6.5) {
 
     return -1.;
   }

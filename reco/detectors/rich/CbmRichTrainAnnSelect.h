@@ -12,8 +12,11 @@
 
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingSelectImpl.h"
+
 #include "FairTask.h"
+
 #include "TH1D.h"
+
 #include <vector>
 using std::vector;
 

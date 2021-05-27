@@ -1,11 +1,11 @@
 #ifndef CBMTRDPARMODGAS_H
 #define CBMTRDPARMODGAS_H
 
+#include "CbmTrdParMod.h"  // for CbmTrdParMod
+
 #include <Rtypes.h>      // for CLRBIT, SETBIT, TESTBIT, THashConsistencyH...
 #include <RtypesCore.h>  // for Double_t, Int_t, Float_t, Char_t, UShort_t
 #include <TString.h>     // for TString
-
-#include "CbmTrdParMod.h"  // for CbmTrdParMod
 
 class TDirectory;
 class TH2F;
@@ -15,11 +15,12 @@ class TH2F;
 /** \brief Definition of gas parameters for one TRD module **/
 class CbmTrdParModGas : public CbmTrdParMod {
 public:
-  enum CbmTrdParModGasDef {
+  enum CbmTrdParModGasDef
+  {
     kDetType = 0 /** Detector type (GSI=0, MB=1) */
-    ,
+      ,
     kNobleGasType /** Type of noble gas (Xe=0, Ar=1)*/
-    ,
+      ,
     kPID /** PID Method (ANN=0, Likelihood=1)*/
   };
   CbmTrdParModGas(const char* title = "TRD gas properties definition");
@@ -29,7 +30,8 @@ public:
   const Char_t* GetDetName() const { return (GetDetType() ? "MB" : "GSI"); }
   Int_t GetDetType() const { return TESTBIT(fConfig, kDetType); }
   Double_t GetDriftTime(Double_t y0, Double_t z0) const;
-  void GetElectricPotential(Int_t& ua, Int_t& ud) const {
+  void GetElectricPotential(Int_t& ua, Int_t& ud) const
+  {
     ua = fUa;
     ud = fUd;
   }
@@ -45,12 +47,8 @@ public:
   Float_t EkevFC(Float_t ekev) const;
   TString GetFileName() const { return fFileNamePID; }
   Double_t GetNobleGas() const { return 1. - fPercentCO2; }
-  const Char_t* GetNobleGasName() const {
-    return (GetNobleGasType() - 1 ? "Ar" : "Xe");
-  }
-  Int_t GetNobleGasType() const {
-    return TESTBIT(fConfig, kNobleGasType) ? 2 : 1;
-  }
+  const Char_t* GetNobleGasName() const { return (GetNobleGasType() - 1 ? "Ar" : "Xe"); }
+  Int_t GetNobleGasType() const { return TESTBIT(fConfig, kNobleGasType) ? 2 : 1; }
   /** \brief Get branching ration for radiative process on the
    * \param[in] shell shell id in capitals e.g. K, L, M ... \sa GetPEshell()
    */
@@ -77,8 +75,7 @@ public:
    * \sa CbmTrdModuleSimT::ScanPadPlane() CbmTrdModuleSimT::AddDigi()
    * \author A.Bercuci <abercuci@niham.nipne.ro>
    **/
-  Double_t
-  ScanDriftTime(Double_t y0, Double_t z0, Double_t dzdy, Double_t dy) const;
+  Double_t ScanDriftTime(Double_t y0, Double_t z0, Double_t dzdy, Double_t dy) const;
 
   /**
    * \brief Load drift map for current settings from repository
@@ -89,19 +86,14 @@ public:
   void SetDriftMap(TH2F* hm, TDirectory* d);
   void SetDw(Double_t dw) { fDw = dw; }
   void SetGasThick(Double_t sz) { fGasThick = sz; }
-  void SetDetType(Int_t gsi = 0) {
-    gsi ? SETBIT(fConfig, kDetType) : CLRBIT(fConfig, kDetType);
-  }
+  void SetDetType(Int_t gsi = 0) { gsi ? SETBIT(fConfig, kDetType) : CLRBIT(fConfig, kDetType); }
   void SetCO2(Double_t p) { fPercentCO2 = p; }
   void SetFileName(const Char_t* fn) { fFileNamePID = fn; }
   void SetNobleGas(Double_t p) { fPercentCO2 = 1 - p; }
-  void SetNobleGasType(Int_t ar = 1) {
-    ar ? SETBIT(fConfig, kNobleGasType) : CLRBIT(fConfig, kNobleGasType);
-  }
-  void SetPidType(Int_t like = 1) {
-    like ? SETBIT(fConfig, kPID) : CLRBIT(fConfig, kPID);
-  }
-  void SetElectricPotential(Int_t ua, Int_t ud) {
+  void SetNobleGasType(Int_t ar = 1) { ar ? SETBIT(fConfig, kNobleGasType) : CLRBIT(fConfig, kNobleGasType); }
+  void SetPidType(Int_t like = 1) { like ? SETBIT(fConfig, kPID) : CLRBIT(fConfig, kPID); }
+  void SetElectricPotential(Int_t ua, Int_t ud)
+  {
     fUa = ua;
     fUd = ud;
   }
@@ -119,17 +111,11 @@ private:
   TH2F* fDriftMap;       ///< drift time map for one amplification cell
   TString fFileNamePID;  ///< filename for PID database
 
-  static Float_t fgkBindingEnergy
-    [2]
-    [NSHELLS];  ///< binding energy in keV for first atomic shells of Ar and Xe
-  static Float_t
-    fgkBR[2][NSHELLS
-             - 1];  ///< branching ratio for non-ionizing decay of Ar and Xe
-  static Float_t fgkWi
-    [3];  ///< average energy to produce one electron-ion pair for ar, xe and co2
-  static Float_t fgkGGainUaPar
-    [2];  ///< gas gaian parametrization on Ua for Ar on Buch detector
-  static Float_t fgkE0;  ///< min energy [ADC ch] which can be measured
+  static Float_t fgkBindingEnergy[2][NSHELLS];  ///< binding energy in keV for first atomic shells of Ar and Xe
+  static Float_t fgkBR[2][NSHELLS - 1];         ///< branching ratio for non-ionizing decay of Ar and Xe
+  static Float_t fgkWi[3];                      ///< average energy to produce one electron-ion pair for ar, xe and co2
+  static Float_t fgkGGainUaPar[2];              ///< gas gaian parametrization on Ua for Ar on Buch detector
+  static Float_t fgkE0;                         ///< min energy [ADC ch] which can be measured
   ClassDef(CbmTrdParModGas,
            1)  // Definition of gas parameters for one TRD module
 };

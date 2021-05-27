@@ -1,11 +1,14 @@
 
 #include "CbmAnaJpsiReport.h"
+
 #include "CbmAnaJpsiCuts.h"
 #include "CbmAnaJpsiHist.h"
 #include "CbmDrawHist.h"
 #include "CbmHistManager.h"
 #include "CbmReportElement.h"
 #include "CbmUtils.h"
+#include "cbm/elid/CbmLitGlobalElectronId.h"
+
 #include "TCanvas.h"
 #include "TDirectory.h"
 #include "TF1.h"
@@ -15,8 +18,9 @@
 #include "TMarker.h"
 #include "TPad.h"
 #include "TStyle.h"
-#include "cbm/elid/CbmLitGlobalElectronId.h"
+
 #include <boost/assign/list_of.hpp>
+
 #include <iostream>
 #include <map>
 
@@ -29,13 +33,12 @@ using std::map;
 using std::string;
 using std::vector;
 
-CbmAnaJpsiReport::CbmAnaJpsiReport() : CbmSimulationReport() {
-  SetReportName("jpsi_qa");
-}
+CbmAnaJpsiReport::CbmAnaJpsiReport() : CbmSimulationReport() { SetReportName("jpsi_qa"); }
 
 CbmAnaJpsiReport::~CbmAnaJpsiReport() {}
 
-void CbmAnaJpsiReport::Create() {
+void CbmAnaJpsiReport::Create()
+{
   //Out().precision(3);
   Out() << R()->DocumentBegin();
   Out() << R()->Title(0, GetTitle());
@@ -45,7 +48,8 @@ void CbmAnaJpsiReport::Create() {
   Out() << R()->DocumentEnd();
 }
 
-void CbmAnaJpsiReport::Draw() {
+void CbmAnaJpsiReport::Draw()
+{
   SetDefaultDrawStyle();
 
   int nofEvents = H1("fh_event_number")->GetEntries();
@@ -91,8 +95,7 @@ void CbmAnaJpsiReport::Draw() {
   DrawAnalysisStepsH2("fh_signal_pty", true);
 
   {
-    TCanvas* c = CreateCanvas(
-      "jpsi_fh_vertex_el_gamma", "jpsi_fh_vertex_el_gamma", 1000, 1000);
+    TCanvas* c = CreateCanvas("jpsi_fh_vertex_el_gamma", "jpsi_fh_vertex_el_gamma", 1000, 1000);
     c->Divide(2, 2);
     c->cd(1);
     DrawH2(H2("fh_vertex_el_gamma_xz"));
@@ -105,8 +108,7 @@ void CbmAnaJpsiReport::Draw() {
   }
 
   {  // Number of BG and signal tracks after each cut
-    TCanvas* c =
-      CreateCanvas("jpsi_fh_nof_tracks", "jpsi_fh_nof_tracks", 1000, 500);
+    TCanvas* c = CreateCanvas("jpsi_fh_nof_tracks", "jpsi_fh_nof_tracks", 1000, 500);
     c->Divide(2, 1);
     c->cd(1);
     gPad->SetLogy();
@@ -120,8 +122,7 @@ void CbmAnaJpsiReport::Draw() {
   }
 
   {  //number of mismatches
-    TCanvas* c = CreateCanvas(
-      "jpsi_fh_nof_mismatches", "jpsi_fh_nof_mismatches", 1000, 1000);
+    TCanvas* c = CreateCanvas("jpsi_fh_nof_mismatches", "jpsi_fh_nof_mismatches", 1000, 1000);
     c->Divide(2, 2);
     c->cd(1);
     DrawH1(H1("fh_nof_mismatches"));
@@ -141,9 +142,7 @@ void CbmAnaJpsiReport::Draw() {
     SetAnalysisStepLabels(H1("fh_nof_mismatches_tof"));
   }
 
-  DrawBgSource2D("fh_source_tracks",
-                 list_of("#gamma")("#pi^{0}")("#pi^{#pm}")("p")("K")(
-                   "e^{#pm}_{sec}")("oth."),
+  DrawBgSource2D("fh_source_tracks", list_of("#gamma")("#pi^{0}")("#pi^{#pm}")("p")("K")("e^{#pm}_{sec}")("oth."),
                  "Tracks per event");
 
   DrawPtYEfficiencyAll();
@@ -154,24 +153,19 @@ void CbmAnaJpsiReport::Draw() {
   DrawPairSource();
 
   {
-    TCanvas* c = CreateCanvas("jpsi_fh_PdgCode_of Others_BG",
-                              "jpsi_fh_PdgCode_of Others_BG",
-                              1000,
-                              1000);
+    TCanvas* c = CreateCanvas("jpsi_fh_PdgCode_of Others_BG", "jpsi_fh_PdgCode_of Others_BG", 1000, 1000);
     c->Divide(2, 2);
     for (int i = 0; i < CbmAnaJpsiHist::fNofAnaSteps - 2; i++) {
       c->cd(i + 1);
       DrawH1(H1("fh_PdgCode_of Others_BG_" + CbmAnaJpsiHist::fAnaSteps[i + 2]));
-      DrawTextOnPad(
-        CbmAnaJpsiHist::fAnaStepsLatex[i + 2], 0.6, 0.92, 0.7, 0.99);
+      DrawTextOnPad(CbmAnaJpsiHist::fAnaStepsLatex[i + 2], 0.6, 0.92, 0.7, 0.99);
     }
   }
 }
 
-void CbmAnaJpsiReport::DrawAnalysisStepsH2(const string& hName,
-                                           bool DoDrawEfficiency) {
-  TCanvas* c = CreateCanvas(
-    ("jpsi_" + hName).c_str(), ("jpsi_" + hName).c_str(), 1200, 800);
+void CbmAnaJpsiReport::DrawAnalysisStepsH2(const string& hName, bool DoDrawEfficiency)
+{
+  TCanvas* c = CreateCanvas(("jpsi_" + hName).c_str(), ("jpsi_" + hName).c_str(), 1200, 800);
   c->Divide(3, 2);
   for (int i = 0; i < CbmAnaJpsiHist::fNofAnaSteps; i++) {
     c->cd(i + 1);
@@ -180,15 +174,12 @@ void CbmAnaJpsiReport::DrawAnalysisStepsH2(const string& hName,
     DrawH2(H2(h));
     DrawTextOnPad(CbmAnaJpsiHist::fAnaStepsLatex[i], 0.6, 0.89, 0.7, 0.99);
 
-    if (DoDrawEfficiency)
-      DrawEfficiency(h, hName + "_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc]);
+    if (DoDrawEfficiency) DrawEfficiency(h, hName + "_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc]);
   }
 }
 
-void CbmAnaJpsiReport::DrawAnalysisStepsH1(const string& hName,
-                                           bool doScale,
-                                           double min,
-                                           double max) {
+void CbmAnaJpsiReport::DrawAnalysisStepsH1(const string& hName, bool doScale, double min, double max)
+{
   CreateCanvas(("jpsi_" + hName).c_str(), ("jpsi_" + hName).c_str(), 600, 600);
   vector<TH1*> h;
   vector<string> hLegend;
@@ -207,7 +198,8 @@ void CbmAnaJpsiReport::DrawAnalysisStepsH1(const string& hName,
   DrawH1(h, hLegend, kLinear, kLog, true, 0.90, 0.7, 0.99, 0.99);
 }
 
-void CbmAnaJpsiReport::DrawSourceTypesH1(const string& hName, bool doScale) {
+void CbmAnaJpsiReport::DrawSourceTypesH1(const string& hName, bool doScale)
+{
   vector<TH1*> h;
   vector<string> hLegend;
   for (int i = 0; i < CbmAnaJpsiHist::fNofSourceTypes; i++) {
@@ -224,9 +216,8 @@ void CbmAnaJpsiReport::DrawSourceTypesH1(const string& hName, bool doScale) {
   DrawH1(h, hLegend, kLinear, kLog, true, 0.90, 0.7, 0.99, 0.99);
 }
 
-void CbmAnaJpsiReport::DrawCutH1(const string& hName,
-                                 double cutValue,
-                                 bool doScale) {
+void CbmAnaJpsiReport::DrawCutH1(const string& hName, double cutValue, bool doScale)
+{
   CreateCanvas(("jpsi_" + hName).c_str(), ("jpsi_" + hName).c_str(), 600, 600);
   DrawSourceTypesH1(hName, doScale);
   if (cutValue != -999999.) {
@@ -236,9 +227,9 @@ void CbmAnaJpsiReport::DrawCutH1(const string& hName,
   }
 }
 
-void CbmAnaJpsiReport::Draw2DCut(const string& hist) {
-  TCanvas* c =
-    CreateCanvas(("jpsi_" + hist).c_str(), ("jpsi_" + hist).c_str(), 900, 900);
+void CbmAnaJpsiReport::Draw2DCut(const string& hist)
+{
+  TCanvas* c = CreateCanvas(("jpsi_" + hist).c_str(), ("jpsi_" + hist).c_str(), 900, 900);
   c->Divide(2, 2);
   for (int i = 0; i < CbmAnaJpsiHist::fNofSourceTypes; i++) {
     c->cd(i + 1);
@@ -247,7 +238,8 @@ void CbmAnaJpsiReport::Draw2DCut(const string& hist) {
   }
 }
 
-void CbmAnaJpsiReport::DrawCutDistributions() {
+void CbmAnaJpsiReport::DrawCutDistributions()
+{
   CbmAnaJpsiCuts cuts;
   cuts.SetDefaultCuts();
   DrawCutH1("fh_track_chi2prim", cuts.fChiPrimCut, false);
@@ -255,16 +247,13 @@ void CbmAnaJpsiReport::DrawCutDistributions() {
   DrawCutH1("fh_track_chi2sts", -999999., false);
   DrawCutH1("fh_track_rapidity", -999999., false);
   DrawCutH1("fh_track_pt", cuts.fPtCut, false);
-  DrawCutH1("fh_track_rich_ann",
-            CbmLitGlobalElectronId::GetInstance().GetRichAnnCut(),
-            false);
-  DrawCutH1("fh_track_trd_ann",
-            CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut(),
-            false);
+  DrawCutH1("fh_track_rich_ann", CbmLitGlobalElectronId::GetInstance().GetRichAnnCut(), false);
+  DrawCutH1("fh_track_trd_ann", CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut(), false);
   Draw2DCut("fh_track_tof_m2");
 }
 
-void CbmAnaJpsiReport::DrawSignalMinv() {
+void CbmAnaJpsiReport::DrawSignalMinv()
+{
   double min         = 1e-9;
   double max         = 3e-8;
   const string hName = "fh_signal_minv";
@@ -289,86 +278,65 @@ void CbmAnaJpsiReport::DrawSignalMinv() {
   DrawH1(h, hLegend, kLinear, kLog, true, 0.90, 0.7, 0.99, 0.99);
 }
 
-void CbmAnaJpsiReport::DrawMinvMismatches(int step) {
-  double trueMatch =
-    H1("fh_bg_truematch_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
-  double trueMatchEl =
-    H1("fh_bg_truematch_el_minv_" + CbmAnaJpsiHist::fAnaSteps[step])
-      ->GetEntries();
-  double trueMatchNotEl =
-    H1("fh_bg_truematch_notel_minv_" + CbmAnaJpsiHist::fAnaSteps[step])
-      ->GetEntries();
-  double misMatch =
-    H1("fh_bg_mismatch_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
-  double nofBg =
-    H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
+void CbmAnaJpsiReport::DrawMinvMismatches(int step)
+{
+  double trueMatch      = H1("fh_bg_truematch_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
+  double trueMatchEl    = H1("fh_bg_truematch_el_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
+  double trueMatchNotEl = H1("fh_bg_truematch_notel_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
+  double misMatch       = H1("fh_bg_mismatch_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
+  double nofBg          = H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->GetEntries();
 
   DrawH1(list_of(H1("fh_bg_truematch_minv_" + CbmAnaJpsiHist::fAnaSteps[step]))(
            H1("fh_bg_truematch_el_minv_" + CbmAnaJpsiHist::fAnaSteps[step]))(
            H1("fh_bg_truematch_notel_minv_" + CbmAnaJpsiHist::fAnaSteps[step]))(
            H1("fh_bg_mismatch_minv_" + CbmAnaJpsiHist::fAnaSteps[step])),
-         list_of("true match ("
-                 + Cbm::NumberToString(100. * trueMatch / nofBg, 1) + "%)")(
-           "true match (e^{#pm}) ("
-           + Cbm::NumberToString(100. * trueMatchEl / nofBg, 1) + "%)")(
-           "true match (not e^{#pm}) ("
-           + Cbm::NumberToString(100. * trueMatchNotEl / nofBg, 1) + "%)")(
-           "mismatch (" + Cbm::NumberToString(100. * misMatch / nofBg) + "%)"),
-         kLinear,
-         kLog,
-         true,
-         0.63,
-         0.8,
-         0.99,
-         0.99);
+         list_of("true match (" + Cbm::NumberToString(100. * trueMatch / nofBg, 1)
+                 + "%)")("true match (e^{#pm}) (" + Cbm::NumberToString(100. * trueMatchEl / nofBg, 1)
+                         + "%)")("true match (not e^{#pm}) (" + Cbm::NumberToString(100. * trueMatchNotEl / nofBg, 1)
+                                 + "%)")("mismatch (" + Cbm::NumberToString(100. * misMatch / nofBg) + "%)"),
+         kLinear, kLog, true, 0.63, 0.8, 0.99, 0.99);
 
   DrawTextOnPad(CbmAnaJpsiHist::fAnaStepsLatex[step], 0.15, 0.9, 0.35, 0.99);
 }
 
-void CbmAnaJpsiReport::DrawMinvMismatchesAll() {
+void CbmAnaJpsiReport::DrawMinvMismatchesAll()
+{
   Int_t hi   = 1;
-  TCanvas* c = CreateCanvas(
-    "jpsi_fh_minv_mismatches", "jpsi_fh_minv_mismatches", 1000, 1000);
+  TCanvas* c = CreateCanvas("jpsi_fh_minv_mismatches", "jpsi_fh_minv_mismatches", 1000, 1000);
   c->Divide(2, 2);
   for (int step = kJpsiReco; step < CbmAnaJpsiHist::fNofAnaSteps; step++) {
     c->cd(hi++);
     DrawMinvMismatches(step);
   }
 
-  CreateCanvas(
-    "jpsi_fh_minv_mismatches_ptcut", "jpsi_fh_minv_mismatches_ptcut", 600, 600);
+  CreateCanvas("jpsi_fh_minv_mismatches_ptcut", "jpsi_fh_minv_mismatches_ptcut", 600, 600);
   DrawMinvMismatches(kJpsiPtCut);
 }
 
 
-void CbmAnaJpsiReport::DrawEfficiency(const string& histName,
-                                      const string& McHistName) {
+void CbmAnaJpsiReport::DrawEfficiency(const string& histName, const string& McHistName)
+{
   Double_t nofMCEntries = H2(McHistName)->GetEntries();
   if (nofMCEntries != 0) {
-    DrawTextOnPad(Cbm::NumberToString((Double_t) H2(histName)->GetEntries()
-                                      / nofMCEntries * 100.)
-                    + "%",
-                  0.2,
-                  0.9,
-                  0.35,
-                  0.99);
+    DrawTextOnPad(Cbm::NumberToString((Double_t) H2(histName)->GetEntries() / nofMCEntries * 100.) + "%", 0.2, 0.9,
+                  0.35, 0.99);
   }
 }
 
-void CbmAnaJpsiReport::DrawPtYEfficiency(int step) {
-  TH2D* Efficiency =
-    Cbm::DivideH2(H2("fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[step]),
-                  H2("fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc]));
+void CbmAnaJpsiReport::DrawPtYEfficiency(int step)
+{
+  TH2D* Efficiency = Cbm::DivideH2(H2("fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[step]),
+                                   H2("fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc]));
   DrawH2(Efficiency);
   DrawTextOnPad(CbmAnaJpsiHist::fAnaStepsLatex[step], 0.6, 0.89, 0.7, 0.99);
   DrawEfficiency("fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[step],
                  "fh_signal_pty_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc]);
 }
 
-void CbmAnaJpsiReport::DrawPtYEfficiencyAll() {
+void CbmAnaJpsiReport::DrawPtYEfficiencyAll()
+{
 
-  TCanvas* c =
-    CreateCanvas("jpsi_fh_pty_efficiency", "jpsi_fh_pty_efficiency", 1200, 800);
+  TCanvas* c = CreateCanvas("jpsi_fh_pty_efficiency", "jpsi_fh_pty_efficiency", 1200, 800);
   c->Divide(3, 2);
   for (int i = 1; i < CbmAnaJpsiHist::fNofAnaSteps; i++) {
     c->cd(i);
@@ -376,7 +344,8 @@ void CbmAnaJpsiReport::DrawPtYEfficiencyAll() {
   }
 }
 
-void CbmAnaJpsiReport::SetAnalysisStepLabels(TH1* h) {
+void CbmAnaJpsiReport::SetAnalysisStepLabels(TH1* h)
+{
   h->GetXaxis()->SetLabelSize(0.06);
   int x = 1;
   for (Int_t step = 0; step < CbmAnaJpsiHist::fNofAnaSteps; step++) {
@@ -385,10 +354,10 @@ void CbmAnaJpsiReport::SetAnalysisStepLabels(TH1* h) {
   }
 }
 
-double CbmAnaJpsiReport::SignalOverBg(int step) {
-  TH1D* signal =
-    (TH1D*) H1("fh_signal_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
-  TH1D* bg = (TH1D*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
+double CbmAnaJpsiReport::SignalOverBg(int step)
+{
+  TH1D* signal = (TH1D*) H1("fh_signal_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
+  TH1D* bg     = (TH1D*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
 
   //Create Histogram for the Gaus-Fit
   TH1D* signalFit = (TH1D*) signal->Clone();
@@ -412,24 +381,17 @@ double CbmAnaJpsiReport::SignalOverBg(int step) {
   }
 
   //Calculate Signal/Background
-  if (NOfBgEntries <= 0.) {
-    return 0.;
-  } else {
+  if (NOfBgEntries <= 0.) { return 0.; }
+  else {
     double sOverBg = NOfSignalEntries / NOfBgEntries;
     return sOverBg;
   }
 }
 
-void CbmAnaJpsiReport::SignalOverBgAllSteps() {
-  CreateCanvas("jpsi_fh_SignalOverBg_allAnaSteps",
-               "jpsi_fh_SignalOverBg_allAnaSteps",
-               600,
-               600);
-  HM()->Create1<TH1D>("fh_SignalOverBg_allAnaSteps",
-                      "fh_SignalOverBg_allAnaSteps;AnaSteps;S/Bg",
-                      6,
-                      0,
-                      6);
+void CbmAnaJpsiReport::SignalOverBgAllSteps()
+{
+  CreateCanvas("jpsi_fh_SignalOverBg_allAnaSteps", "jpsi_fh_SignalOverBg_allAnaSteps", 600, 600);
+  HM()->Create1<TH1D>("fh_SignalOverBg_allAnaSteps", "fh_SignalOverBg_allAnaSteps;AnaSteps;S/Bg", 6, 0, 6);
 
   for (int i = 0; i < CbmAnaJpsiHist::fNofAnaSteps; i++) {
     double nstep   = i + 0.5;
@@ -442,11 +404,10 @@ void CbmAnaJpsiReport::SignalOverBgAllSteps() {
   DrawH1(H1("fh_SignalOverBg_allAnaSteps"));
 }
 
-void CbmAnaJpsiReport::DrawMinvSAndBg(int step) {
-  TH1D* signal =
-    (TH1D*) H1("fh_signal_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
-  TH1D* background =
-    (TH1D*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
+void CbmAnaJpsiReport::DrawMinvSAndBg(int step)
+{
+  TH1D* signal     = (TH1D*) H1("fh_signal_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
+  TH1D* background = (TH1D*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step]);
 
   //Create new histograms for further steps
   TH1D* s   = (TH1D*) signal->Clone();
@@ -458,8 +419,7 @@ void CbmAnaJpsiReport::DrawMinvSAndBg(int step) {
   sbg->Add(s);
   sbg->SetMinimum(1e-12);
 
-  DrawH1(
-    list_of(sbg)(bg)(s), list_of("")("")(""), kLinear, kLog, false, 0, 0, 0, 0);
+  DrawH1(list_of(sbg)(bg)(s), list_of("")("")(""), kLinear, kLog, false, 0, 0, 0, 0);
   //DrawH1(list_of(sbg)(bg)(s),list_of("Signal And Bg")("Background")("Signal"),kLinear, kLog, true, 0.9, 0.7, 0.99, 0.9);
   s->SetFillColor(kRed);
   s->SetLineColor(kBlack);
@@ -481,9 +441,9 @@ void CbmAnaJpsiReport::DrawMinvSAndBg(int step) {
   DrawTextOnPad(CbmAnaJpsiHist::fAnaStepsLatex[step], 0.65, 0.9, 0.85, 1.);
 }
 
-void CbmAnaJpsiReport::DrawMinvSAndBgAllSteps() {
-  TCanvas* c1 = CreateCanvas(
-    "jpsi_fh_Minv_Signal_and_Bg", "jpsi_fh_Minv_Signal_and_Bg", 1200, 800);
+void CbmAnaJpsiReport::DrawMinvSAndBgAllSteps()
+{
+  TCanvas* c1 = CreateCanvas("jpsi_fh_Minv_Signal_and_Bg", "jpsi_fh_Minv_Signal_and_Bg", 1200, 800);
 
   c1->Divide(3, 2);
 
@@ -492,108 +452,70 @@ void CbmAnaJpsiReport::DrawMinvSAndBgAllSteps() {
     DrawMinvSAndBg(i);
   }
 
-  CreateCanvas("jpsi_fh_Minv_Signal_and_Bg_ptCut",
-               "jpsi_fh_Minv_Signal_and_Bg_ptCut",
-               600,
-               600);
+  CreateCanvas("jpsi_fh_Minv_Signal_and_Bg_ptCut", "jpsi_fh_Minv_Signal_and_Bg_ptCut", 600, 600);
   DrawMinvSAndBg(kJpsiPtCut);
 }
 
-void CbmAnaJpsiReport::DrawMomEffAllSteps() {
-  TH1D* Mc = (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc])
-               ->Clone();
-  TH1D* McEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
+void CbmAnaJpsiReport::DrawMomEffAllSteps()
+{
+  TH1D* Mc = (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc])->Clone();
+  TH1D* McEff =
+    Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiMc])->Clone(), (TH1D*) Mc->Clone());
   McEff->SetMinimum(0.);
   McEff->SetMaximum(115.);
-  TH1D* AccEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiAcc])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
-  TH1D* RecEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiReco])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
-  TH1D* Chi2PrimEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiChi2Prim])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
-  TH1D* ElIdEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiElId])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
-  TH1D* PtEff = Cbm::DivideH1(
-    (TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiPtCut])
-      ->Clone(),
-    (TH1D*) Mc->Clone());
+  TH1D* AccEff =
+    Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiAcc])->Clone(), (TH1D*) Mc->Clone());
+  TH1D* RecEff =
+    Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiReco])->Clone(), (TH1D*) Mc->Clone());
+  TH1D* Chi2PrimEff = Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiChi2Prim])->Clone(),
+                                    (TH1D*) Mc->Clone());
+  TH1D* ElIdEff =
+    Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiElId])->Clone(), (TH1D*) Mc->Clone());
+  TH1D* PtEff =
+    Cbm::DivideH1((TH1D*) H1("fh_track_el_mom_" + CbmAnaJpsiHist::fAnaSteps[kJpsiPtCut])->Clone(), (TH1D*) Mc->Clone());
 
-  CreateCanvas("jpsi_fh_Momentum_Efficiency_AllSteps",
-               "jpsi_fh_Momentum_Efficiency_AllSteps",
-               800,
-               800);
+  CreateCanvas("jpsi_fh_Momentum_Efficiency_AllSteps", "jpsi_fh_Momentum_Efficiency_AllSteps", 800, 800);
 
   DrawH1(list_of(McEff)(AccEff)(RecEff)(Chi2PrimEff)(ElIdEff)(PtEff),
-         list_of(CbmAnaJpsiHist::fAnaStepsLatex[kJpsiMc])(
-           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiAcc])(
-           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiReco])(
-           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiChi2Prim])(
-           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiElId])(
-           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiPtCut]),
-         kLinear,
-         kLinear,
-         true,
-         0.9,
-         0.6,
-         0.99,
-         0.99,
-         "HIST");
+         list_of(CbmAnaJpsiHist::fAnaStepsLatex[kJpsiMc])(CbmAnaJpsiHist::fAnaStepsLatex[kJpsiAcc])(
+           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiReco])(CbmAnaJpsiHist::fAnaStepsLatex[kJpsiChi2Prim])(
+           CbmAnaJpsiHist::fAnaStepsLatex[kJpsiElId])(CbmAnaJpsiHist::fAnaStepsLatex[kJpsiPtCut]),
+         kLinear, kLinear, true, 0.9, 0.6, 0.99, 0.99, "HIST");
 
 
   DrawAnalysisStepsH1("fh_track_el_mom", false);
   gPad->SetLogy(false);
 }
 
-void CbmAnaJpsiReport::DrawMomMcVsRec() {
-  CreateCanvas(
-    "jpsi_fh_Momentum_Mc_Reco", "jpsi_fh_Momentum_Mc_Reco", 800, 800);
+void CbmAnaJpsiReport::DrawMomMcVsRec()
+{
+  CreateCanvas("jpsi_fh_Momentum_Mc_Reco", "jpsi_fh_Momentum_Mc_Reco", 800, 800);
   DrawH2(H2("fh_track_el_mom_mc_rec"));
 }
 
-void CbmAnaJpsiReport::DrawPairSourceAnaSteps(int step) {
-  H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg")
-    ->SetMaximum(1e-2);
-  H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg")
-    ->SetMinimum(1e-6);
-  DrawH1(
-    list_of(
-      H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg"))(
-      (TH1*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->Clone())(
-      H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gp"))(
-      H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_go"))
-    //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_pg"))
-    (H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_pp"))(
-      H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_po"))
-    //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_og"))
-    //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_op"))
-    (H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_oo")),
-    list_of("#gamma + #gamma")("whole BG")("#gamma + #pi^{0}")(
-      "#gamma + others")
-    /*("#pi^{0} + #gamma")*/ ("#pi^{0} + #pi^{0}")("#pi^{0} + others")
-    /*("others + #gamma")("others + #pi^{0}")*/ ("others + others"),
-    kLinear,
-    kLog,
-    true,
-    0.85,
-    0.6,
-    0.99,
-    0.99);
+void CbmAnaJpsiReport::DrawPairSourceAnaSteps(int step)
+{
+  H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg")->SetMaximum(1e-2);
+  H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg")->SetMinimum(1e-6);
+  DrawH1(list_of(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gg"))(
+           (TH1*) H1("fh_bg_minv_" + CbmAnaJpsiHist::fAnaSteps[step])->Clone())(
+           H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_gp"))(
+           H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_go"))
+         //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_pg"))
+         (H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_pp"))(
+           H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_po"))
+         //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_og"))
+         //(H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_op"))
+         (H1("fh_bg_participants_minv_" + CbmAnaJpsiHist::fAnaSteps[step] + "_oo")),
+         list_of("#gamma + #gamma")("whole BG")("#gamma + #pi^{0}")("#gamma + others")
+         /*("#pi^{0} + #gamma")*/ ("#pi^{0} + #pi^{0}")("#pi^{0} + others")
+         /*("others + #gamma")("others + #pi^{0}")*/ ("others + others"),
+         kLinear, kLog, true, 0.85, 0.6, 0.99, 0.99);
 }
 
-void CbmAnaJpsiReport::DrawPairSource() {
-  TCanvas* c =
-    CreateCanvas("jpsi_fh_bg_pair_source", "jpsi_fh_bg_pair_source", 1200, 800);
+void CbmAnaJpsiReport::DrawPairSource()
+{
+  TCanvas* c = CreateCanvas("jpsi_fh_bg_pair_source", "jpsi_fh_bg_pair_source", 1200, 800);
   c->Divide(2, 2);
   for (int i = 0; i < CbmAnaJpsiHist::fNofAnaSteps - 2; i++) {
     c->cd(i + 1);
@@ -602,14 +524,10 @@ void CbmAnaJpsiReport::DrawPairSource() {
   }
 }
 
-void CbmAnaJpsiReport::DrawBgSource2D(const string& histName,
-                                      const vector<string>& yLabels,
-                                      const string& zTitle) {
+void CbmAnaJpsiReport::DrawBgSource2D(const string& histName, const vector<string>& yLabels, const string& zTitle)
+{
   gStyle->SetPaintTextFormat("4.2f");
-  CreateCanvas(string("jpsi_" + histName + "_abs").c_str(),
-               string("jpsi_" + histName + "_abs").c_str(),
-               900,
-               600);
+  CreateCanvas(string("jpsi_" + histName + "_abs").c_str(), string("jpsi_" + histName + "_abs").c_str(), 900, 600);
   TH2D* habs = (TH2D*) H2(histName)->Clone();
   habs->SetStats(false);
   habs->GetZaxis()->SetTitle(zTitle.c_str());
@@ -617,9 +535,7 @@ void CbmAnaJpsiReport::DrawBgSource2D(const string& histName,
   habs->SetMarkerSize(1.8);
   DrawH2(habs, kLinear, kLinear, kLog, "text COLZ");
 
-  CreateCanvas(string("jpsi_" + histName + "_percent").c_str(),
-               string("jpsi_" + histName + "_percent").c_str(),
-               900,
+  CreateCanvas(string("jpsi_" + histName + "_percent").c_str(), string("jpsi_" + histName + "_percent").c_str(), 900,
                600);
   TH2D* hperc = (TH2D*) H2(histName)->Clone();
   hperc->SetStats(false);

@@ -39,10 +39,7 @@ public:
     * \param[in] downstream Propagation direction (true for downstream, false for upstream).
     * \return Status code.
     */
-  virtual LitStatus Update(CbmLitTrackParam* par,
-                           const CbmLitMaterialInfo* mat,
-                           int pdg,
-                           bool downstream) = 0;
+  virtual LitStatus Update(CbmLitTrackParam* par, const CbmLitMaterialInfo* mat, int pdg, bool downstream) = 0;
 };
 
 #endif /*CBMLITMATERIALEFFECTS_H_*/

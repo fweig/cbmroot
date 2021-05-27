@@ -1,4 +1,5 @@
-void check_timing(Int_t nEvents = 1, TString fileName = "") {
+void check_timing(Int_t nEvents = 1, TString fileName = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements

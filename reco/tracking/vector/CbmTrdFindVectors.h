@@ -115,35 +115,30 @@ private:
   TClonesArray* fClusters;     // Input array of CbmTrdCluster
   TClonesArray* fDigiMatches;  // Input array of
   //TClonesArray* fPoints;                          // Input array of CbmTrdPoint
-  CbmMCDataArray* fPoints;      // Input array of CbmTrdPoint
-  Double_t fXy[fgkPlanes][5];   // hit float data
-  Double_t fXyi[fgkPlanes][3];  // hit int data
-  Double_t fDz[fgkPlanes];  // geometrical constants (Z-distances from layer 0)
-  std::map<Int_t, TDecompLU*>
-    fLus;             // system matrices (for different hit layer patterns)
-  Double_t fZ0;       // Z-positions of the first layers
-  Double_t fErrX;     // hit measurement error in X
-  Double_t fErrY;     // hit measurement error in Y
-  Double_t fCutChi2;  // Chi2-cuts
-  std::map<Int_t, TMatrixDSym*>
-    fMatr;  // system matrices (for different hit layer patterns)
-  std::multimap<Int_t, Int_t>
-    fHitPl[fgkPlanes];  // hit indices on planes vs tube No
-  std::multimap<Double_t, Int_t>
-    fHitX[fgkPlanes];                   // hit indices on planes vs X-coord.
-  std::vector<CbmMuchTrack*> fVectors;  // track vectors for stations
+  CbmMCDataArray* fPoints;                          // Input array of CbmTrdPoint
+  Double_t fXy[fgkPlanes][5];                       // hit float data
+  Double_t fXyi[fgkPlanes][3];                      // hit int data
+  Double_t fDz[fgkPlanes];                          // geometrical constants (Z-distances from layer 0)
+  std::map<Int_t, TDecompLU*> fLus;                 // system matrices (for different hit layer patterns)
+  Double_t fZ0;                                     // Z-positions of the first layers
+  Double_t fErrX;                                   // hit measurement error in X
+  Double_t fErrY;                                   // hit measurement error in Y
+  Double_t fCutChi2;                                // Chi2-cuts
+  std::map<Int_t, TMatrixDSym*> fMatr;              // system matrices (for different hit layer patterns)
+  std::multimap<Int_t, Int_t> fHitPl[fgkPlanes];    // hit indices on planes vs tube No
+  std::multimap<Double_t, Int_t> fHitX[fgkPlanes];  // hit indices on planes vs X-coord.
+  std::vector<CbmMuchTrack*> fVectors;              // track vectors for stations
 
-  void ComputeMatrix();  // compute system matrix
-  void GetHits();        // get TRD hits
-  void MakeVectors();    // make vectors
-  void CheckParams();    // check vector parameters (apriory constraints)
-  void RemoveClones();   // remove clones
-  void StoreVectors();   // store vectors
+  void ComputeMatrix();                                  // compute system matrix
+  void GetHits();                                        // get TRD hits
+  void MakeVectors();                                    // make vectors
+  void CheckParams();                                    // check vector parameters (apriory constraints)
+  void RemoveClones();                                   // remove clones
+  void StoreVectors();                                   // store vectors
   void ProcessPlane(Int_t lay, Int_t patt, Int_t flag);  // process next plane
   void FindLine(Int_t patt, Double_t* pars);             // line fit
   Double_t FindChi2(Int_t patt, Double_t* pars);         // fit chi2
-  void AddVector(Int_t patt,
-                 Double_t chi2,
+  void AddVector(Int_t patt, Double_t chi2,
                  Double_t* pars);      // add vector to temp. container
   void SetTrackId(CbmMuchTrack* vec);  // set track ID
 

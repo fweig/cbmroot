@@ -2,7 +2,8 @@
 //  script to run tracking routine with LHEtrack's classes
 //  Modified 21/06/2005
 
-void lhetrack() {
+void lhetrack()
+{
 
   TStopwatch timer;
   timer.Start();
@@ -35,8 +36,8 @@ void lhetrack() {
   Double_t dist   = 0.00;    // distance for hit merging
   Int_t nPileUp   = 1;       // number of pileup events
 
-  CbmStsMapsHitProducer* mapsHitProd = new CbmStsMapsHitProducer(
-    1, 2, sigmaX, sigmaY, eff, fakes, dist, nPileUp, version);
+  CbmStsMapsHitProducer* mapsHitProd =
+    new CbmStsMapsHitProducer(1, 2, sigmaX, sigmaY, eff, fakes, dist, nPileUp, version);
 
   /* Since these values are the default ones, this is equivalent to
      CbmMapsHitProducer(1, 2). Note that in case you define nPileUp>1,
@@ -48,10 +49,9 @@ void lhetrack() {
 
 
   // -----   Hybrid hit producer   ------------------------------------------
-  Double_t lx = 0.005;  // Pixel x size
-  Double_t ly = 0.005;  // Pixel y size
-  CbmStsHybridHitProducer* hybHitProd =
-    new CbmStsHybridHitProducer(3, 3, lx, ly, version);
+  Double_t lx                         = 0.005;  // Pixel x size
+  Double_t ly                         = 0.005;  // Pixel y size
+  CbmStsHybridHitProducer* hybHitProd = new CbmStsHybridHitProducer(3, 3, lx, ly, version);
 
   /* Since these parameters are the default ones, this is equivalent to
      CbmHybridHitProducer(3, 3) */
@@ -59,8 +59,7 @@ void lhetrack() {
 
 
   // -----   Strip hit producer   -------------------------------------------
-  CbmStsStripHitProducer* stripHitProd =
-    new CbmStsStripHitProducer(4, 7, version);
+  CbmStsStripHitProducer* stripHitProd = new CbmStsStripHitProducer(4, 7, version);
   // ------------------------------------------------------------------------
 
 
@@ -88,8 +87,7 @@ void lhetrack() {
   fRun->AddTask(hybHitProd);
   fRun->AddTask(stripHitProd);
 
-  CbmStsMapsStripTracker* trackMS =
-    new CbmStsMapsStripTracker("Tracking routine");
+  CbmStsMapsStripTracker* trackMS = new CbmStsMapsStripTracker("Tracking routine");
   trackMS->SetOption("smear");
   fRun->AddTask(trackMS);
 

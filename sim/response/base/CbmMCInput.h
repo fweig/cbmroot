@@ -7,9 +7,11 @@
 #define CBMMCINPUT_H 1
 
 #include "CbmDefs.h"
+
 #include "TChain.h"
 #include "TF1.h"
 #include "TObject.h"
+
 #include <set>
 
 
@@ -65,9 +67,7 @@ public:
   /** @brief Maximal number of events to be read from the input.
      ** @value Number of entries in the tree for kRegular. -1 else.
      **/
-  Int_t GetMaxNofEvents() const {
-    return (fMode == ECbmTreeAccess::kRegular ? fChain->GetEntries() : -1);
-  }
+  Int_t GetMaxNofEvents() const { return (fMode == ECbmTreeAccess::kRegular ? fChain->GetEntries() : -1); }
 
 
   /** @brief Tree access mode

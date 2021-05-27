@@ -73,19 +73,19 @@ CbmTrdDigitizer::CbmTrdDigitizer(CbmTrdRadiator* radiator)
   //  ,fConverter()
   //  ,fGeoHandler(new CbmTrdGeoHandler())
   , fModuleMap()
-  , fDigiMap() {
+  , fDigiMap()
+{
   if (fRadiator == NULL) fRadiator = new CbmTrdRadiator(kTRUE, "tdr18");
 }
 
 
 //________________________________________________________________________________________
-CbmTrdDigitizer::~CbmTrdDigitizer() {
+CbmTrdDigitizer::~CbmTrdDigitizer()
+{
   ResetArrays();
   delete fDigis;
   delete fDigiMatches;
-  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++)
+  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++)
     delete imod->second;
   fModuleMap.clear();
 
@@ -95,20 +95,18 @@ CbmTrdDigitizer::~CbmTrdDigitizer() {
 
 
 //________________________________________________________________________________________
-void CbmTrdDigitizer::SetParContainers() {
-  fAsicPar = static_cast<CbmTrdParSetAsic*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
-  fGasPar = static_cast<CbmTrdParSetGas*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
-  fDigiPar = static_cast<CbmTrdParSetDigi*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
-  fGainPar = static_cast<CbmTrdParSetGain*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
-  fGeoPar = new CbmTrdParSetGeo();  //fGeoPar->Print();
+void CbmTrdDigitizer::SetParContainers()
+{
+  fAsicPar = static_cast<CbmTrdParSetAsic*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
+  fGasPar  = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
+  fDigiPar = static_cast<CbmTrdParSetDigi*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
+  fGainPar = static_cast<CbmTrdParSetGain*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
+  fGeoPar  = new CbmTrdParSetGeo();  //fGeoPar->Print();
 }
 
 //________________________________________________________________________________________
-InitStatus CbmTrdDigitizer::Init() {
+InitStatus CbmTrdDigitizer::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) LOG(fatal) << "CbmTrdDigitizer::Init: No FairRootManager";
 
@@ -138,7 +136,8 @@ InitStatus CbmTrdDigitizer::Init() {
 }
 
 //________________________________________________________________________________________
-void CbmTrdDigitizer::Exec(Option_t*) {
+void CbmTrdDigitizer::Exec(Option_t*)
+{
   // start timer
   TStopwatch timer;
   timer.Start();
@@ -159,8 +158,7 @@ void CbmTrdDigitizer::Exec(Option_t*) {
 
     CbmTrdPoint* point = static_cast<CbmTrdPoint*>(fPoints->At(iPoint));
     if (!point) continue;
-    const CbmMCTrack* track =
-      static_cast<const CbmMCTrack*>(fTracks->At(point->GetTrackID()));
+    const CbmMCTrack* track = static_cast<const CbmMCTrack*>(fTracks->At(point->GetTrackID()));
     if (!track) continue;
 
     Double_t dz = point->GetZOut() - point->GetZIn();
@@ -170,8 +168,7 @@ void CbmTrdDigitizer::Exec(Option_t*) {
     }
 
     // get link to the module working class
-    map<Int_t, CbmTrdModuleSim*>::iterator imod =
-      fModuleMap.find(point->GetDetectorID());
+    map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.find(point->GetDetectorID());
     if (imod == fModuleMap.end()) {
       // Looking for gas node corresponding to current point in geo manager
       Double_t meanX = (point->GetXOut() + point->GetXIn()) / 2.;
@@ -179,29 +176,24 @@ void CbmTrdDigitizer::Exec(Option_t*) {
       Double_t meanZ = (point->GetZOut() + point->GetZIn()) / 2.;
       gGeoManager->FindNode(meanX, meanY, meanZ);
       if (!TString(gGeoManager->GetPath()).Contains("gas")) {
-        LOG(error) << GetName() << "::Exec: MC-track not in TRD! Node:"
-                   << TString(gGeoManager->GetPath()).Data()
+        LOG(error) << GetName() << "::Exec: MC-track not in TRD! Node:" << TString(gGeoManager->GetPath()).Data()
                    << " gGeoManager->MasterToLocal() failed!";
         continue;
       }
       mod = AddModule(point->GetDetectorID());
-    } else
+    }
+    else
       mod = imod->second;
     mod->SetLinkId(fCurrentInput, fCurrentMCEntry, iPoint);
-    Double_t gamma = TMath::Sqrt(
-      1 + TMath::Power(track->GetP() / (3.e8 * track->GetMass()), 2));
+    Double_t gamma = TMath::Sqrt(1 + TMath::Power(track->GetP() / (3.e8 * track->GetMass()), 2));
     mod->SetGamma(gamma);
-    mod->MakeDigi(
-      point, fCurrentEventTime, TMath::Abs(track->GetPdgCode()) == 11);
+    mod->MakeDigi(point, fCurrentEventTime, TMath::Abs(track->GetPdgCode()) == 11);
   }
 
   // Fill data from internally used stl map into CbmDaqBuffer.
   // Calculate final event statistics
-  Int_t nDigis(0), nofElectrons(0), nofLatticeHits(0),
-    nofPointsAboveThreshold(0), n0, n1, n2;
-  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++) {
+  Int_t nDigis(0), nofElectrons(0), nofLatticeHits(0), nofPointsAboveThreshold(0), n0, n1, n2;
+  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++) {
     // in streaming mode flush buffers only up to a certain point in time wrt to current event time (allow for event pile-ups)
     //printf("Processing data for module %d\n", imod->first);
     if (IsTimeBased()) nDigis += imod->second->FlushBuffer(fCurrentEventTime);
@@ -211,13 +203,9 @@ void CbmTrdDigitizer::Exec(Option_t*) {
     nofElectrons += n0;
     nofLatticeHits += n1;
     nofPointsAboveThreshold += n2;
-    std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis =
-      imod->second->GetDigiMap();
+    std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis = imod->second->GetDigiMap();
     //printf("  Digits[%d] %d\n", imod->first, digis->size());
-    for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it =
-           digis->begin();
-         it != digis->end();
-         it++) {
+    for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it = digis->begin(); it != digis->end(); it++) {
       assert(it->second.second);
       SendData(it->second.first, it->second.second);
       nDigis++;
@@ -227,63 +215,46 @@ void CbmTrdDigitizer::Exec(Option_t*) {
   fLastEventTime = fCurrentEventTime;
 
 
-  Double_t digisOverPoints =
-    (nofPoints > 0) ? Double_t(nDigis) / Double_t(nofPoints) : 0;
-  Double_t latticeHitsOverElectrons =
-    (nofElectrons > 0) ? (Double_t) nofLatticeHits / (Double_t) nofElectrons
-                       : 0;
+  Double_t digisOverPoints          = (nofPoints > 0) ? Double_t(nDigis) / Double_t(nofPoints) : 0;
+  Double_t latticeHitsOverElectrons = (nofElectrons > 0) ? (Double_t) nofLatticeHits / (Double_t) nofElectrons : 0;
   LOG(debug) << "CbmTrdDigitizer::Exec Points:               " << nofPoints;
-  LOG(debug) << "CbmTrdDigitizer::Exec PointsAboveThreshold: "
-             << nofPointsAboveThreshold;
+  LOG(debug) << "CbmTrdDigitizer::Exec PointsAboveThreshold: " << nofPointsAboveThreshold;
   LOG(debug) << "CbmTrdDigitizer::Exec Digis:                " << nDigis;
-  LOG(debug) << "CbmTrdDigitizer::Exec digis/points:         "
-             << digisOverPoints;
-  LOG(debug) << "CbmTrdDigitizer::Exec BackwardTracks:       "
-             << nofBackwardTracks;
-  LOG(debug) << "CbmTrdDigitizer::Exec LatticeHits:          "
-             << nofLatticeHits;
+  LOG(debug) << "CbmTrdDigitizer::Exec digis/points:         " << digisOverPoints;
+  LOG(debug) << "CbmTrdDigitizer::Exec BackwardTracks:       " << nofBackwardTracks;
+  LOG(debug) << "CbmTrdDigitizer::Exec LatticeHits:          " << nofLatticeHits;
   LOG(debug) << "CbmTrdDigitizer::Exec Electrons:            " << nofElectrons;
-  LOG(debug) << "CbmTrdDigitizer::Exec latticeHits/electrons:"
-             << latticeHitsOverElectrons;
+  LOG(debug) << "CbmTrdDigitizer::Exec latticeHits/electrons:" << latticeHitsOverElectrons;
   timer.Stop();
-  LOG(debug) << "CbmTrdDigitizer::Exec real time=" << timer.RealTime()
-             << " CPU time=" << timer.CpuTime();
+  LOG(debug) << "CbmTrdDigitizer::Exec real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
 
   // --- Event log
-  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right
-            << fCurrentEvent << " at " << fixed << setprecision(3)
-            << fCurrentEventTime << " ns, points: " << nofPoints
-            << ", digis: " << nDigis << ". Exec time " << setprecision(6)
-            << timer.RealTime() << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right << fCurrentEvent << " at " << fixed
+            << setprecision(3) << fCurrentEventTime << " ns, points: " << nofPoints << ", digis: " << nDigis
+            << ". Exec time " << setprecision(6) << timer.RealTime() << " s.";
 }
 
 //________________________________________________________________________________________
-void CbmTrdDigitizer::FlushBuffers() {
+void CbmTrdDigitizer::FlushBuffers()
+{
   LOG(info) << GetName() << ": Processing analogue buffers";
   Int_t nDigis(0);
-  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++) {
+  for (map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++) {
     nDigis += imod->second->FlushBuffer();
-    std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis =
-      imod->second->GetDigiMap();
-    for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it =
-           digis->begin();
-         it != digis->end();
-         it++) {
+    std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis = imod->second->GetDigiMap();
+    for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it = digis->begin(); it != digis->end(); it++) {
       assert(it->second.second);
       SendData(it->second.first, it->second.second);
       nDigis++;
     }  //# modules
     digis->clear();
   }  //# digis
-  LOG(info) << GetName() << ": " << nDigis
-            << (nDigis == 1 ? " digi " : " digis ")
-            << "created and sent to DAQ ";
+  LOG(info) << GetName() << ": " << nDigis << (nDigis == 1 ? " digi " : " digis ") << "created and sent to DAQ ";
 }
 
 //________________________________________________________________________________________
-void CbmTrdDigitizer::Finish() {
+void CbmTrdDigitizer::Finish()
+{
   // flush buffers in streaming mode
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Finish run";
@@ -295,7 +266,8 @@ void CbmTrdDigitizer::Finish() {
 }
 
 //________________________________________________________________________________________
-CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId) {
+CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
+{
   /**  The geometry structure is treelike with cave as
  * the top node. For the TRD there are keeping volume
  * trd_vXXy_1 which is only container for the different layers.
@@ -313,78 +285,67 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId) {
 
   const char* path = gGeoManager->GetPath();
   CbmTrdGeoHandler geoHandler;
-  Int_t moduleAddress = geoHandler.GetModuleAddress(path),
-        moduleType    = geoHandler.GetModuleType(path),
-        orientation   = geoHandler.GetModuleOrientation(path),
-        lyId          = CbmTrdAddress::GetLayerId(detId);
+  Int_t moduleAddress = geoHandler.GetModuleAddress(path), moduleType = geoHandler.GetModuleType(path),
+        orientation = geoHandler.GetModuleOrientation(path), lyId = CbmTrdAddress::GetLayerId(detId);
   if (moduleAddress != detId) {
-    LOG(error) << "CbmTrdDigitizer::AddModule: MC module ID " << detId
-               << " does not match geometry definition " << moduleAddress
-               << ". Module init failed!";
+    LOG(error) << "CbmTrdDigitizer::AddModule: MC module ID " << detId << " does not match geometry definition "
+               << moduleAddress << ". Module init failed!";
     return NULL;
   }
-  LOG(debug) << GetName() << "::AddModule(" << path << " "
-             << (moduleType < 9 ? 'R' : 'T') << "] mod[" << moduleAddress
+  LOG(debug) << GetName() << "::AddModule(" << path << " " << (moduleType < 9 ? 'R' : 'T') << "] mod[" << moduleAddress
              << "] ly[" << lyId << "] det[" << detId << "]";
   CbmTrdModuleSim* module(NULL);
   if (moduleType >= 9) {
-    module = fModuleMap[moduleAddress] =
-      new CbmTrdModuleSimT(moduleAddress, lyId, orientation, UseFASP());
-  } else {
-    module = fModuleMap[moduleAddress] =
-      new CbmTrdModuleSimR(moduleAddress, lyId, orientation);
+    module = fModuleMap[moduleAddress] = new CbmTrdModuleSimT(moduleAddress, lyId, orientation, UseFASP());
+  }
+  else {
+    module = fModuleMap[moduleAddress] = new CbmTrdModuleSimR(moduleAddress, lyId, orientation);
     module->SetMessageConverter(fConverter);
     module->SetQA(fQA);
   }
 
   // try to load Geometry parameters for module
   const CbmTrdParModGeo* pGeo(NULL);
-  if (!fGeoPar
-      || !(pGeo = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(detId))) {
-    LOG(debug) << GetName() << "::AddModule : No Geo params for module @ "
-               << path << ". Using default.";
+  if (!fGeoPar || !(pGeo = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(detId))) {
+    LOG(debug) << GetName() << "::AddModule : No Geo params for module @ " << path << ". Using default.";
     module->SetGeoPar(new CbmTrdParModGeo(Form("TRD_%d", detId), path));
-  } else
+  }
+  else
     module->SetGeoPar(pGeo);
 
   // try to load read-out parameters for module
   const CbmTrdParModDigi* pDigi(NULL);
-  if (!fDigiPar
-      || !(pDigi = (const CbmTrdParModDigi*) fDigiPar->GetModulePar(detId))) {
-    LOG(debug) << GetName() << "::AddModule : No Read-Out params for module @ "
-               << path << ". Using default.";
-  } else
+  if (!fDigiPar || !(pDigi = (const CbmTrdParModDigi*) fDigiPar->GetModulePar(detId))) {
+    LOG(debug) << GetName() << "::AddModule : No Read-Out params for module @ " << path << ". Using default.";
+  }
+  else
     module->SetDigiPar(pDigi);
 
   // TODO check if this works also for ModuleR (moduleType < 9) modules
   if (moduleType >= 9) {
     // try to load ASIC parameters for module
     CbmTrdParSetAsic* pAsic(NULL);
-    if (!fAsicPar
-        || !(pAsic = (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(detId))) {
-      LOG(debug) << GetName() << "::AddModule : No ASIC params for module @ "
-                 << path << ". Using default.";
-      module
-        ->SetAsicPar();  // map ASIC channels to read-out channels - need ParModDigi already loaded
-    } else
+    if (!fAsicPar || !(pAsic = (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(detId))) {
+      LOG(debug) << GetName() << "::AddModule : No ASIC params for module @ " << path << ". Using default.";
+      module->SetAsicPar();  // map ASIC channels to read-out channels - need ParModDigi already loaded
+    }
+    else
       module->SetAsicPar(pAsic);
 
     // try to load Chamber parameters for module
     const CbmTrdParModGas* pChmb(NULL);
-    if (!fGasPar
-        || !(pChmb = (const CbmTrdParModGas*) fGasPar->GetModulePar(detId))) {
-      LOG(debug) << GetName() << "::AddModule : No Gas params for module @ "
-                 << path << ". Using default.";
-    } else
+    if (!fGasPar || !(pChmb = (const CbmTrdParModGas*) fGasPar->GetModulePar(detId))) {
+      LOG(debug) << GetName() << "::AddModule : No Gas params for module @ " << path << ". Using default.";
+    }
+    else
       module->SetChmbPar(pChmb);
 
     // try to load Gain parameters for module
     const CbmTrdParModGain* pGain(NULL);
-    if (!fGainPar
-        || !(pGain = (const CbmTrdParModGain*) fGainPar->GetModulePar(detId))) {
-      LOG(debug) << GetName() << "::AddModule : No Gain params for module @ "
-                 << path << ". Using default.";
-    } else
+    if (!fGainPar || !(pGain = (const CbmTrdParModGain*) fGainPar->GetModulePar(detId))) {
+      LOG(debug) << GetName() << "::AddModule : No Gain params for module @ " << path << ". Using default.";
+    }
+    else
       module->SetGainPar(pGain);
   }
 
@@ -398,19 +359,19 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId) {
 }
 
 //________________________________________________________________________________________
-void CbmTrdDigitizer::ResetCounters() {
+void CbmTrdDigitizer::ResetCounters()
+{
   /** Loop over modules and calls ResetCounters on each
  */
   fpoints           = 0;
   nofBackwardTracks = 0;
-  for (std::map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++)
+  for (std::map<Int_t, CbmTrdModuleSim*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++)
     imod->second->ResetCounters();
 }
 
 
-void CbmTrdDigitizer::ResetArrays() {
+void CbmTrdDigitizer::ResetArrays()
+{
 
   if (fDigis) fDigis->clear();
   if (fDigiMatches) fDigiMatches->clear();

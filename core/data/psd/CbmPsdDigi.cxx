@@ -18,28 +18,30 @@ CbmPsdDigi::CbmPsdDigi() {}
 
 
 // --- Constructor with assignment
-CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t edep, Double_t time)
-  : fdEdep(edep), fdTime(time), fuAddress(address) {}
+CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t edep, Double_t time) : fdEdep(edep), fdTime(time), fuAddress(address) {}
 
 
 // --- Constructor with module and section number
-CbmPsdDigi::CbmPsdDigi(UInt_t moduleId,
-                       UInt_t sectionId,
-                       Double_t edep,
-                       Double_t time)
-  : fdEdep(edep), fdTime(time), fuAddress(0) {
+CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t edep, Double_t time)
+  : fdEdep(edep)
+  , fdTime(time)
+  , fuAddress(0)
+{
   fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
 }
 
 
 // --- Copy constructor
 CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& digiIn)
-  : fdEdep(digiIn.fdEdep), fdTime(digiIn.fdTime), fuAddress(digiIn.fuAddress) {}
+  : fdEdep(digiIn.fdEdep)
+  , fdTime(digiIn.fdTime)
+  , fuAddress(digiIn.fuAddress)
+{
+}
 
 
 // --- Move constructor
-CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other)
-  : fdEdep(other.fdEdep), fdTime(other.fdTime), fuAddress(other.fuAddress) {}
+CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fdEdep(other.fdEdep), fdTime(other.fdTime), fuAddress(other.fuAddress) {}
 
 
 // --- Destructor
@@ -47,7 +49,8 @@ CbmPsdDigi::~CbmPsdDigi() {}
 
 
 // --- Assignment operator
-CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& rhs) {
+CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& rhs)
+{
   if (this != &rhs) {
     fdEdep    = rhs.fdEdep;
     fdTime    = rhs.fdTime;
@@ -58,7 +61,8 @@ CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& rhs) {
 
 
 // --- Move assignment operator
-CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other) {
+CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other)
+{
   if (this != &other) {
     fdEdep    = other.fdEdep;
     fdTime    = other.fdTime;
@@ -69,22 +73,22 @@ CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other) {
 
 
 // --- Set address from module and section number
-void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId) {
+void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId)
+{
   fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
 }
 
 
 // --- Info to string
-std::string CbmPsdDigi::ToString() const {
-  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f",
-                        fuAddress,
-                        fdEdep,
-                        fdTime);
+std::string CbmPsdDigi::ToString() const
+{
+  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f", fuAddress, fdEdep, fdTime);
   return string.Data();
 }
 
 // --- Custom Streamer
-void CbmPsdDigi::Streamer(TBuffer& R__b) {
+void CbmPsdDigi::Streamer(TBuffer& R__b)
+{
   // Stream an object of class CbmPsdDigi.
 
   UInt_t R__s, R__c;
@@ -97,7 +101,8 @@ void CbmPsdDigi::Streamer(TBuffer& R__b) {
       R__b >> fdTime;
       R__b >> fuAddress;
       R__b.CheckByteCount(R__s, R__c, CbmPsdDigi::IsA());
-    } else if (4 == R__v) {
+    }
+    else if (4 == R__v) {
       R__b >> ffFitHarmonic1;
       R__b >> ffFitHarmonic2;
       R__b >> ffFitR2;
@@ -110,7 +115,8 @@ void CbmPsdDigi::Streamer(TBuffer& R__b) {
       R__b >> fdEdepWfm;
       R__b.CheckByteCount(R__s, R__c, CbmPsdDigi::IsA());
     }
-  } else {
+  }
+  else {
     // The function WriteVersion does not return the version number
     // but the position where ti write the next data
     // to get the class version use TClass->GetClassVersion()

@@ -6,22 +6,25 @@
  *
  */
 #include "CbmLitFieldGridCreator.h"
-#include "../../parallel/LitFieldGrid.h"
 
 #include "FairField.h"
 #include "FairRunAna.h"
+
+#include "../../parallel/LitFieldGrid.h"
 
 CbmLitFieldGridCreator::CbmLitFieldGridCreator()
   : fField(FairRunAna::Instance()->GetField())
   , fXangle(35.)
   , fYangle(35.)
   , fCellSizeX(2.)
-  , fCellSizeY(2.) {}
+  , fCellSizeY(2.)
+{
+}
 
 CbmLitFieldGridCreator::~CbmLitFieldGridCreator() {}
 
-void CbmLitFieldGridCreator::CreateGrid(fscal Z,
-                                        lit::parallel::LitFieldGrid& grid) {
+void CbmLitFieldGridCreator::CreateGrid(fscal Z, lit::parallel::LitFieldGrid& grid)
+{
   float tanXangle = std::tan(fXangle * 3.14159265 / 180.);  //
   float tanYangle = std::tan(fYangle * 3.14159265 / 180.);  //
   float Xmax      = Z * tanXangle;

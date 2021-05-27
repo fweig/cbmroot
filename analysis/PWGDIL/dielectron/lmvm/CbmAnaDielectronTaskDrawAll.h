@@ -7,13 +7,13 @@
 #ifndef CBM_ANA_DIELECTRON_TASK_DRAW_ALL
 #define CBM_ANA_DIELECTRON_TASK_DRAW_ALL
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "CbmLmvmHist.h"
 
 #include "TObject.h"
+
+#include <map>
+#include <string>
+#include <vector>
 
 class TH1;
 class TH2D;
@@ -22,7 +22,14 @@ class TFile;
 class TCanvas;
 class CbmHistManager;
 
-enum SignalType { kInmed = 0, kQgp = 1, kOmega = 2, kPhi = 3, kOmegaD = 4 };
+enum SignalType
+{
+  kInmed  = 0,
+  kQgp    = 1,
+  kOmega  = 2,
+  kPhi    = 3,
+  kOmegaD = 4
+};
 
 class CbmAnaDielectronTaskDrawAll : public TObject {
 
@@ -42,7 +49,8 @@ public:
     , fh_mean_pi0_minv_pt()
     , fh_mean_sbg_vs_minv()
     , fh_sum_s_minv()
-    , fOutputDir("") {
+    , fOutputDir("")
+  {
     ;
   }
 
@@ -61,19 +69,15 @@ public:
      * \param[in] outputDir Output directory for figures and .json file.
      * \param useMvd draw histograms related to the MVD detector?
      **/
-  void DrawHistosFromFile(const std::string& fileNameInmed,
-                          const std::string& fileNameQgp,
-                          const std::string& fileNameOmega,
-                          const std::string& fileNamePhi,
-                          const std::string& fileNameOmegaDalitz,
-                          const std::string& outputDir = "",
-                          Bool_t useMvd                = false);
+  void DrawHistosFromFile(const std::string& fileNameInmed, const std::string& fileNameQgp,
+                          const std::string& fileNameOmega, const std::string& fileNamePhi,
+                          const std::string& fileNameOmegaDalitz, const std::string& outputDir = "",
+                          Bool_t useMvd = false);
 
 private:
   static const int fNofSignals = 5;
 
-  Bool_t
-    fUseMvd;  // do you want to draw histograms related to the MVD detector?
+  Bool_t fUseMvd;   // do you want to draw histograms related to the MVD detector?
   Bool_t fDrawQgp;  // do you wan to draq QGP signal
 
   //[0]=rho0, [1]=omega, [2]=phi, [3]=omegaDalitz
@@ -85,8 +89,7 @@ private:
   std::vector<TH1D*> fh_mean_pi0_minv;
   std::vector<TH2D*> fh_mean_eta_minv_pt;
   std::vector<TH2D*> fh_mean_pi0_minv_pt;
-  std::vector<TH1D*>
-    fh_mean_sbg_vs_minv;  //Coctail/BG vs. invariant mass for different analysis steps
+  std::vector<TH1D*> fh_mean_sbg_vs_minv;  //Coctail/BG vs. invariant mass for different analysis steps
 
 
   // index: AnalysisSteps

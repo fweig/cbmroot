@@ -10,8 +10,9 @@
 #ifndef CBMLITFIELDGRIDCREATOR_H_
 #define CBMLITFIELDGRIDCREATOR_H_
 
-#include "../../parallel/LitFieldGrid.h"
 #include <vector>
+
+#include "../../parallel/LitFieldGrid.h"
 class FairField;
 
 class CbmLitFieldGridCreator {

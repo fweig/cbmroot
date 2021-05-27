@@ -6,7 +6,8 @@ const Double_t mass_el = 0.000510998902;
 const Double_t mass_pi = 0.13957018;
 
 
-void angle(Double_t p = 1.) {
+void angle(Double_t p = 1.)
+{
   Double_t e_el    = TMath::Sqrt(p * p + mass_el * mass_el);
   Double_t e_pi    = TMath::Sqrt(p * p + mass_pi * mass_pi);
   Double_t beta_el = p / e_el;
@@ -21,7 +22,8 @@ void angle(Double_t p = 1.) {
 }
 
 
-void radius() {
+void radius()
+{
   TPstyle();
 
   TF1* f1_el = new TF1("f1_el", f_radius, 0., 30., 1);
@@ -57,7 +59,8 @@ void radius() {
 }
 
 
-Double_t f_radius(Double_t* x, Double_t* par) {
+Double_t f_radius(Double_t* x, Double_t* par)
+{
   if (x[0] <= 0.) { return 0.; }
   Double_t e    = TMath::Sqrt(x[0] * x[0] + par[0] * par[0]);
   Double_t beta = x[0] / e;

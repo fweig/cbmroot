@@ -3,6 +3,8 @@
 // derived from version created for STS
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
+#include "FairRadLenPoint.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFile.h"
@@ -14,8 +16,6 @@
 #include "TSystem.h"
 #include "TTree.h"
 #include "TVector3.h"
-
-#include "FairRadLenPoint.h"
 
 #include <iostream>
 #include <vector>
@@ -29,18 +29,19 @@ using std::vector;
 #include "TH2.h"
 #include "TRandom.h"
 
-int station_num(float pos, float pitch, float first_z, int n_stations) {
+int station_num(float pos, float pitch, float first_z, int n_stations)
+{
   float range_from = first_z - pitch / 2;
   float range_to   = range_from + n_stations * pitch;
-  if (pos < range_from || pos > range_to)
-    return -1;
+  if (pos < range_from || pos > range_to) return -1;
   else
     return (pos - range_from) / (range_to - range_from) * n_stations;
 }
 
 // Int_t matbudget_ana(Int_t nEvents = 10      , const char* mvdGeo = "v17a_tr")
 // Int_t matbudget_ana(Int_t nEvents = 10000 , const char* mvdGeo = "v17a_tr")
-Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
+Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr")
+{
 
   // Input file (MC)
   TString mvdVersion(mvdGeo);
@@ -63,23 +64,21 @@ Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
   tree->SetBranchAddress("RadLen", &points);
 
   // Create output histograms
-  TH1D* hisRadLen     = new TH1D("hisRadLen", "Radiation Length", 1000, 0, 100);
-  const int nStations = 4;     // number of MVD stations
-  const int nBins     = 1000;  // number of bins in histograms (in both x and y)
-  const int rMax      = 21;  // maximal radius for histograms (for both x and y)
+  TH1D* hisRadLen           = new TH1D("hisRadLen", "Radiation Length", 1000, 0, 100);
+  const int nStations       = 4;     // number of MVD stations
+  const int nBins           = 1000;  // number of bins in histograms (in both x and y)
+  const int rMax            = 21;    // maximal radius for histograms (for both x and y)
   const float stationPitch  = 5.;
   const float firstStationZ = 1.;
   // % x/X0 the individual plots should have as limit:
   // const double zRange = 22.5; // full-scale (including aluminium heatsinks)
-  const double zRange =
-    0.7;  // fixed-scale to pin range to values found in acceptance
+  const double zRange = 0.7;  // fixed-scale to pin range to values found in acceptance
   TProfile2D* hStationRadLen[nStations];
   TProfile2D* hMvdRadLen;
   double MvdRadThick = 0;
 
   TString mvdname = "Material Budget x/X_{0} [%], MVD";
-  hMvdRadLen =
-    new TProfile2D(mvdname, mvdname, nBins, -rMax, rMax, nBins, -rMax, rMax);
+  hMvdRadLen      = new TProfile2D(mvdname, mvdname, nBins, -rMax, rMax, nBins, -rMax, rMax);
 
   for (int i = 0; i < nStations; ++i) {
     TString hisname = "Radiation Thickness [%],";
@@ -88,8 +87,7 @@ Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
     TString name = "Material Budget x/X_{0} [%],";
     name += " Station ";
     name += i;
-    hStationRadLen[i] =
-      new TProfile2D(hisname, name, nBins, -rMax, rMax, nBins, -rMax, rMax);
+    hStationRadLen[i] = new TProfile2D(hisname, name, nBins, -rMax, rMax, nBins, -rMax, rMax);
   }
 
   // Auxiliary variables
@@ -98,17 +96,13 @@ Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
 
   // Event loop
   int firstEvent = 0;
-  for (Int_t event = firstEvent;
-       event < (firstEvent + nEvents) && event < tree->GetEntriesFast();
-       event++) {
+  for (Int_t event = firstEvent; event < (firstEvent + nEvents) && event < tree->GetEntriesFast(); event++) {
     tree->GetEntry(event);
     if (0 == event % 10000) cout << "*** Processing event " << event << endl;
 
     const int nTracks = 1;
-    std::vector<double> RadLengthOnTrack(
-      nTracks, 0.0);  // trackID, vector with points on track
-    std::vector<double> TrackLength(
-      nTracks, 0.0);  // trackID, vector with points on track
+    std::vector<double> RadLengthOnTrack(nTracks, 0.0);  // trackID, vector with points on track
+    std::vector<double> TrackLength(nTracks, 0.0);       // trackID, vector with points on track
 
     double OverallRadThick = 0.0;
     vector<double> RadThick(nStations, 0);
@@ -150,10 +144,8 @@ Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
       // if (event == 20) return -1;
 
       // Determine station number
-      int iStation =
-        station_num(posIn.Z(), stationPitch, firstStationZ, nStations);
-      int iStationOut =
-        station_num(posOut.Z(), stationPitch, firstStationZ, nStations);
+      int iStation    = station_num(posIn.Z(), stationPitch, firstStationZ, nStations);
+      int iStationOut = station_num(posOut.Z(), stationPitch, firstStationZ, nStations);
 
       // cout << "station in: " << iStation << "station out: " << iStationOut <<
       // endl;
@@ -243,11 +235,9 @@ Int_t matbudget_ana(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
     hStationRadLen[iStation]->Draw("colz");
     // Plot file
     thisStation.Form("%d", iStation);
-    plotFile =
-      "mvd_" + mvdVersion + "_station_" + thisStation + "_matbudget.pdf";
+    plotFile = "mvd_" + mvdVersion + "_station_" + thisStation + "_matbudget.pdf";
     can2->SaveAs(plotFile);
-    plotFile =
-      "mvd_" + mvdVersion + "_station_" + thisStation + "_matbudget.jpg";
+    plotFile = "mvd_" + mvdVersion + "_station_" + thisStation + "_matbudget.jpg";
     can2->SaveAs(plotFile);
   }
 

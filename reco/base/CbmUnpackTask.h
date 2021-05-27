@@ -10,6 +10,7 @@
 
 /// CbmRoot (+externals) headers
 #include "CbmUnpackTaskBase.hpp"
+
 #include "Timeslice.hpp"
 
 /// FairRoot headers
@@ -46,9 +47,7 @@ public:
   void AddMsComponentToList(size_t /*component*/, UShort_t /*usDetectorId*/) {};
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
 
   //      void SetTimeOffsetNs( Double_t dOffsetIn = 0.0 ); <= Specialization method?
@@ -58,10 +57,8 @@ public:
 
 private:
   /// Control flags
-  Bool_t fbMonitorMode =
-    kFALSE;  //! Switch ON the filling of a minimal set of histograms in the algo
-  Bool_t fbDebugMonitorMode =
-    kFALSE;  //! Switch ON the filling of a additional set of histograms in the algo
+  Bool_t fbMonitorMode      = kFALSE;  //! Switch ON the filling of a minimal set of histograms in the algo
+  Bool_t fbDebugMonitorMode = kFALSE;  //! Switch ON the filling of a additional set of histograms in the algo
   Bool_t fbWriteOutput =
     kTRUE;  //! If ON the output vector of digi is written to disk by FairRoot, otherwise just made available for higher stages
 

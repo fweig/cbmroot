@@ -1,9 +1,9 @@
 #ifndef CBMTOFCONTFACT_H
 #define CBMTOFCONTFACT_H
 
-#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
-
 #include <FairContFact.h>  // for FairContFact
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 class FairParSet;
 class FairContainer;

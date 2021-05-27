@@ -11,6 +11,7 @@
 #include "base/CbmLitEnums.h"
 #include "base/CbmLitFloat.h"
 #include "propagation/CbmLitMaterialInfo.h"
+
 #include <vector>
 using std::vector;
 
@@ -41,8 +42,7 @@ public:
     * \param[out] inter Output vector with crossed materials.
     * \return Status code.
     */
-  virtual LitStatus FindIntersections(const CbmLitTrackParam* par,
-                                      litfloat zOut,
+  virtual LitStatus FindIntersections(const CbmLitTrackParam* par, litfloat zOut,
                                       vector<CbmLitMaterialInfo>& inter) = 0;
 };
 

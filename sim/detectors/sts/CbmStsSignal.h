@@ -7,6 +7,7 @@
 #define CBMSTSSIGNAL_H 1
 
 #include "CbmMatch.h"
+
 #include "TObject.h"
 
 
@@ -34,11 +35,7 @@ public:
 		 ** @param entry   Entry in input TTree
 		 ** @param file    Number of input file
 		 **/
-  CbmStsSignal(Double_t time   = 0.,
-               Double_t charge = 0.,
-               Int_t index     = 0,
-               Int_t entry     = -1,
-               Int_t file      = -1);
+  CbmStsSignal(Double_t time = 0., Double_t charge = 0., Int_t index = 0, Int_t entry = -1, Int_t file = -1);
 
 
   /** Destructor **/
@@ -51,8 +48,8 @@ public:
 		 ** @param entry   Entry in input TTree
 		 ** @param file    Number of input file
 		 **/
-  void
-  AddLink(Double_t charge, Int_t index, Int_t entry = -1, Int_t file = -1) {
+  void AddLink(Double_t charge, Int_t index, Int_t entry = -1, Int_t file = -1)
+  {
     fMatch.AddLink(charge, index, entry, file);
   }
 
@@ -85,9 +82,7 @@ public:
 		 ** @param Reference to CbmSignal object to compare to
 		 ** @return true if signal time is less than time of comparison signal
 		 **/
-  bool operator<(const CbmStsSignal& otherSignal) const {
-    return (fTime < otherSignal.GetTime());
-  }
+  bool operator<(const CbmStsSignal& otherSignal) const { return (fTime < otherSignal.GetTime()); }
 
 
   /** Comparator for pointer objects
@@ -95,7 +90,8 @@ public:
 		 ** Sorting criterion is the signal time.
 		 **/
   struct Before {
-    bool operator()(CbmStsSignal* signal1, CbmStsSignal* signal2) const {
+    bool operator()(CbmStsSignal* signal1, CbmStsSignal* signal2) const
+    {
       return (signal1->GetTime() < signal2->GetTime());
     }
   };

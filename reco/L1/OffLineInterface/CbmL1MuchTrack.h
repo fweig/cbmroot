@@ -1,9 +1,8 @@
 #ifndef CBM_L1_MuchTrack_h
 #define CBM_L1_MuchTrack_h
 
-#include "CbmL1MuchHit.h"
-
 #include "CbmKFTrackInterface.h"
+#include "CbmL1MuchHit.h"
 
 #include <vector>
 
@@ -34,9 +33,9 @@ public:
   bool stopped;
   int StsID;
 
-  static bool Compare(const CbmL1MuchTrack* p1, const CbmL1MuchTrack* p2) {
-    return (p1->NHits > p2->NHits)
-           || (p1->NHits == p2->NHits) && (p1->chi2 < p2->chi2);
+  static bool Compare(const CbmL1MuchTrack* p1, const CbmL1MuchTrack* p2)
+  {
+    return (p1->NHits > p2->NHits) || (p1->NHits == p2->NHits) && (p1->chi2 < p2->chi2);
   }
 
 public:

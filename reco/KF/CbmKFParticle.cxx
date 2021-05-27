@@ -8,33 +8,34 @@
  */
 
 #include "CbmKFParticle.h"
+
 #include "CbmKF.h"
 #include "CbmKFMath.h"
 #include "CbmKFTrack.h"
 #include "CbmStsKFTrackFitter.h"
+
 #include "TMath.h"
 //#include "TDatabasePDG.h"
 
 #include "CbmKFParticleDatabase.h"
 
-#include <cmath>
 #include <vector>
+
+#include <cmath>
 
 using namespace std;
 
 ClassImp(CbmKFParticle)
 
-  CbmKFParticle::CbmKFParticle(CbmKFTrackInterface* Track,
-                               Double_t* z0,
-                               Int_t* qHypo,
-                               Int_t* pdg)
+  CbmKFParticle::CbmKFParticle(CbmKFTrackInterface* Track, Double_t* z0, Int_t* qHypo, Int_t* pdg)
   : fId(-1)
   , fDaughtersIds()
   , fPDG(-1)
   , NDF(0)
   , Chi2(0)
   , Q(0)
-  , AtProductionVertex(0) {
+  , AtProductionVertex(0)
+{
 
   fDaughtersIds.push_back(Track->Id());
 
@@ -79,14 +80,13 @@ ClassImp(CbmKFParticle)
   r[6] = E;
   r[7] = 0;
 
-  double cxpz = H[0] * V[3] + H[1] * V[6] + H[2] * V[10];
-  double cypz = H[0] * V[4] + H[1] * V[7] + H[2] * V[11];
-  double capz = H[0] * V[5] + H[1] * V[8] + H[2] * V[12];
-  double cbpz = H[0] * V[8] + H[1] * V[9] + H[2] * V[13];
-  double cqpz = H[0] * V[12] + H[1] * V[13] + H[2] * V[14];
-  double cpzpz =
-    H[0] * H[0] * V[5] + H[1] * H[1] * V[9] + H[2] * H[2] * V[14]
-    + 2 * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12] + H[1] * H[2] * V[13]);
+  double cxpz  = H[0] * V[3] + H[1] * V[6] + H[2] * V[10];
+  double cypz  = H[0] * V[4] + H[1] * V[7] + H[2] * V[11];
+  double capz  = H[0] * V[5] + H[1] * V[8] + H[2] * V[12];
+  double cbpz  = H[0] * V[8] + H[1] * V[9] + H[2] * V[13];
+  double cqpz  = H[0] * V[12] + H[1] * V[13] + H[2] * V[14];
+  double cpzpz = H[0] * H[0] * V[5] + H[1] * H[1] * V[9] + H[2] * H[2] * V[14]
+                 + 2 * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12] + H[1] * H[2] * V[13]);
 
   C[0]  = V[0];
   C[1]  = V[1];
@@ -126,7 +126,8 @@ ClassImp(CbmKFParticle)
   AtProductionVertex = 1;
 }
 
-void drawcov(double C[]) {
+void drawcov(double C[])
+{
   double s0 = sqrt(C[0]);
   double s1 = sqrt(C[2]);
   double s2 = sqrt(C[5]);
@@ -135,23 +136,22 @@ void drawcov(double C[]) {
   cout << s0 << " ";
   cout << C[1] / s0 / s1 << " " << s1 << " ";
   cout << C[3] / s0 / s2 << " " << C[4] / s1 / s2 << " " << s2 << " ";
-  cout << C[6] / s0 / s3 << " " << C[7] / s1 / s3 << " " << C[8] / s2 / s3
-       << " " << s3 << " ";
-  cout << C[10] / s0 / s4 << " " << C[11] / s1 / s4 << " " << C[12] / s2 / s4
-       << " " << C[13] / s3 / s4 << " " << s4 << endl;
+  cout << C[6] / s0 / s3 << " " << C[7] / s1 / s3 << " " << C[8] / s2 / s3 << " " << s3 << " ";
+  cout << C[10] / s0 / s4 << " " << C[11] / s1 / s4 << " " << C[12] / s2 / s4 << " " << C[13] / s3 / s4 << " " << s4
+       << endl;
 }
 
-void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
-                              CbmKFVertexInterface* Parent,
-                              Double_t Mass,
-                              Double_t CutChi2) {
+void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters, CbmKFVertexInterface* Parent, Double_t Mass,
+                              Double_t CutChi2)
+{
   const Int_t MaxIter = 3;
 
   if (CbmKF::Instance()->vTargets.empty()) {
     r[0] = r[1] = r[2] = 0.;
     C[0] = C[2] = C[5] = 1.;
     C[1] = C[3] = C[4] = 0;
-  } else {
+  }
+  else {
     CbmKFTube& t = CbmKF::Instance()->vTargets[0];
     r[0] = r[1] = 0.;
     r[2]        = t.z;
@@ -185,9 +185,7 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
       vector<CbmKFTrack*> TrV;
 
       Int_t nvect = 0;
-      for (vector<CbmKFTrackInterface*>::iterator tr = vDaughters.begin();
-           tr != vDaughters.end();
-           ++tr) {
+      for (vector<CbmKFTrackInterface*>::iterator tr = vDaughters.begin(); tr != vDaughters.end(); ++tr) {
         CbmKFTrack* Tr       = new CbmKFTrack(**tr);
         fTDaughter[nvect][0] = Tr->GetTrack()[0];
         fTDaughter[nvect][1] = Tr->GetTrack()[1];
@@ -206,8 +204,7 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
         nvect++;
       }
 
-      Double_t z = (fTDaughter[0][3] * fTDaughter[0][5]
-                    - fTDaughter[1][3] * fTDaughter[1][5] + fTDaughter[1][1]
+      Double_t z = (fTDaughter[0][3] * fTDaughter[0][5] - fTDaughter[1][3] * fTDaughter[1][5] + fTDaughter[1][1]
                     - fTDaughter[0][1])
                    / (fTDaughter[0][3] - fTDaughter[1][3]);
 
@@ -252,9 +249,7 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
     Chi2       = 0.;
     Q          = 0;
     bool first = 1;
-    for (vector<CbmKFTrackInterface*>::iterator tr = vDaughters.begin();
-         tr != vDaughters.end();
-         ++tr) {
+    for (vector<CbmKFTrackInterface*>::iterator tr = vDaughters.begin(); tr != vDaughters.end(); ++tr) {
       CbmKFParticle Daughter(*tr, &(r0[2]));
 
       Daughter.Extrapolate(Daughter.r, Daughter.GetDStoPoint(r0));
@@ -262,11 +257,9 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
       Double_t* m  = Daughter.r;
       Double_t* Cd = Daughter.C;
 
-      Double_t d[3]   = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
-      Double_t SigmaS = .1
-                        + 10.
-                            * sqrt((d[0] * d[0] + d[1] * d[1] + d[2] * d[2])
-                                   / (m[3] * m[3] + m[4] * m[4] + m[5] * m[5]));
+      Double_t d[3] = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
+      Double_t SigmaS =
+        .1 + 10. * sqrt((d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) / (m[3] * m[3] + m[4] * m[4] + m[5] * m[5]));
 
       Double_t h[6];
 
@@ -281,51 +274,27 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
       {
         Double_t zeta[3] = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
 
-        Double_t Vv[6] = {Cd[0] + h[0] * h[0],
-                          Cd[1] + h[1] * h[0],
-                          Cd[2] + h[1] * h[1],
-                          Cd[3] + h[2] * h[0],
-                          Cd[4] + h[2] * h[1],
-                          Cd[5] + h[2] * h[2]};
+        Double_t Vv[6] = {Cd[0] + h[0] * h[0], Cd[1] + h[1] * h[0], Cd[2] + h[1] * h[1],
+                          Cd[3] + h[2] * h[0], Cd[4] + h[2] * h[1], Cd[5] + h[2] * h[2]};
 
-        Double_t Vvp[9] = {Cd[6] + h[0] * h[3],
-                           Cd[7] + h[1] * h[3],
-                           Cd[8] + h[2] * h[3],
-                           Cd[10] + h[0] * h[4],
-                           Cd[11] + h[1] * h[4],
-                           Cd[12] + h[2] * h[4],
-                           Cd[15] + h[0] * h[5],
-                           Cd[16] + h[1] * h[5],
-                           Cd[17] + h[2] * h[5]};
+        Double_t Vvp[9] = {Cd[6] + h[0] * h[3],  Cd[7] + h[1] * h[3],  Cd[8] + h[2] * h[3],
+                           Cd[10] + h[0] * h[4], Cd[11] + h[1] * h[4], Cd[12] + h[2] * h[4],
+                           Cd[15] + h[0] * h[5], Cd[16] + h[1] * h[5], Cd[17] + h[2] * h[5]};
 
         if (CutChi2 > 0.) {
 
-          Double_t Si[6] = {Vv[0] + C0[0],
-                            Vv[1] + C0[1],
-                            Vv[2] + C0[2],
-                            Vv[3] + C0[3],
-                            Vv[4] + C0[4],
-                            Vv[5] + C0[5]};
-          Double_t S[6]  = {Si[2] * Si[5] - Si[4] * Si[4],
-                           Si[3] * Si[4] - Si[1] * Si[5],
-                           Si[0] * Si[5] - Si[3] * Si[3],
-                           Si[1] * Si[4] - Si[2] * Si[3],
-                           Si[1] * Si[3] - Si[0] * Si[4],
-                           Si[0] * Si[2] - Si[1] * Si[1]};
+          Double_t Si[6] = {Vv[0] + C0[0], Vv[1] + C0[1], Vv[2] + C0[2], Vv[3] + C0[3], Vv[4] + C0[4], Vv[5] + C0[5]};
+          Double_t S[6]  = {Si[2] * Si[5] - Si[4] * Si[4], Si[3] * Si[4] - Si[1] * Si[5], Si[0] * Si[5] - Si[3] * Si[3],
+                           Si[1] * Si[4] - Si[2] * Si[3], Si[1] * Si[3] - Si[0] * Si[4], Si[0] * Si[2] - Si[1] * Si[1]};
           Double_t det   = (Si[0] * S[0] + Si[1] * S[1] + Si[3] * S[3]);
-          Double_t chi2 =
-            (+(S[0] * zeta[0] + S[1] * zeta[1] + S[3] * zeta[2]) * zeta[0]
-             + (S[1] * zeta[0] + S[2] * zeta[1] + S[4] * zeta[2]) * zeta[1]
-             + (S[3] * zeta[0] + S[4] * zeta[1] + S[5] * zeta[2]) * zeta[2]);
+          Double_t chi2  = (+(S[0] * zeta[0] + S[1] * zeta[1] + S[3] * zeta[2]) * zeta[0]
+                           + (S[1] * zeta[0] + S[2] * zeta[1] + S[4] * zeta[2]) * zeta[1]
+                           + (S[3] * zeta[0] + S[4] * zeta[1] + S[5] * zeta[2]) * zeta[2]);
           if (chi2 > 2 * CutChi2 * det) continue;
         }
 
-        double S[6] = {Vv[2] * Vv[5] - Vv[4] * Vv[4],
-                       Vv[3] * Vv[4] - Vv[1] * Vv[5],
-                       Vv[0] * Vv[5] - Vv[3] * Vv[3],
-                       Vv[1] * Vv[4] - Vv[2] * Vv[3],
-                       Vv[1] * Vv[3] - Vv[0] * Vv[4],
-                       Vv[0] * Vv[2] - Vv[1] * Vv[1]};
+        double S[6] = {Vv[2] * Vv[5] - Vv[4] * Vv[4], Vv[3] * Vv[4] - Vv[1] * Vv[5], Vv[0] * Vv[5] - Vv[3] * Vv[3],
+                       Vv[1] * Vv[4] - Vv[2] * Vv[3], Vv[1] * Vv[3] - Vv[0] * Vv[4], Vv[0] * Vv[2] - Vv[1] * Vv[1]};
 
         double s = (Vv[0] * S[0] + Vv[1] * S[1] + Vv[3] * S[3]);
         s        = (s > 1.E-20) ? 1. / s : 0;
@@ -406,12 +375,7 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
 
       double S[6];
       {
-        double Si[6] = {C[0] + V[0],
-                        C[1] + V[1],
-                        C[2] + V[2],
-                        C[3] + V[3],
-                        C[4] + V[4],
-                        C[5] + V[5]};
+        double Si[6] = {C[0] + V[0], C[1] + V[1], C[2] + V[2], C[3] + V[3], C[4] + V[4], C[5] + V[5]};
 
         S[0] = Si[2] * Si[5] - Si[4] * Si[4];
         S[1] = Si[3] * Si[4] - Si[1] * Si[5];
@@ -517,8 +481,7 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
         double dx = Parent->GetRefX() - r[0];
         double dy = Parent->GetRefY() - r[1];
         double dz = Parent->GetRefZ() - r[2];
-        r0[7] = r[7] = sqrt((dx * dx + dy * dy + dz * dz)
-                            / (r[3] * r[3] + r[4] * r[4] + r[5] * r[5]));
+        r0[7] = r[7] = sqrt((dx * dx + dy * dy + dz * dz) / (r[3] * r[3] + r[4] * r[4] + r[5] * r[5]));
       }
     }
 
@@ -530,17 +493,17 @@ void CbmKFParticle::Construct(vector<CbmKFTrackInterface*>& vDaughters,
   AtProductionVertex = 0;
 }
 
-void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
-                                            CbmKFVertexInterface* Parent,
-                                            Double_t Mass,
-                                            Double_t CutChi2) {
+void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters, CbmKFVertexInterface* Parent,
+                                            Double_t Mass, Double_t CutChi2)
+{
   const Int_t MaxIter = 3;
 
   if (CbmKF::Instance()->vTargets.empty()) {
     r[0] = r[1] = r[2] = 0.;
     C[0] = C[2] = C[5] = 1.;
     C[1] = C[3] = C[4] = 0;
-  } else {
+  }
+  else {
     CbmKFTube& t = CbmKF::Instance()->vTargets[0];
     r[0] = r[1] = 0.;
     r[2]        = t.z;
@@ -573,9 +536,7 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
       vector<CbmKFTrack*> TrV;
 
       Int_t nvect = 0;
-      for (vector<CbmKFParticle*>::iterator tr = vDaughters.begin();
-           tr != vDaughters.end();
-           ++tr) {
+      for (vector<CbmKFParticle*>::iterator tr = vDaughters.begin(); tr != vDaughters.end(); ++tr) {
         CbmKFParticle* Part        = *tr;
         CbmKFTrackInterface* TrInt = new CbmKFTrackInterface();
         Part->GetKFTrack(TrInt);
@@ -599,8 +560,7 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
         nvect++;
       }
 
-      Double_t z = (fTDaughter[0][3] * fTDaughter[0][5]
-                    - fTDaughter[1][3] * fTDaughter[1][5] + fTDaughter[1][1]
+      Double_t z = (fTDaughter[0][3] * fTDaughter[0][5] - fTDaughter[1][3] * fTDaughter[1][5] + fTDaughter[1][1]
                     - fTDaughter[0][1])
                    / (fTDaughter[0][3] - fTDaughter[1][3]);
 
@@ -645,9 +605,7 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
     Chi2       = 0.;
     Q          = 0;
     bool first = 1;
-    for (vector<CbmKFParticle*>::iterator tr = vDaughters.begin();
-         tr != vDaughters.end();
-         ++tr) {
+    for (vector<CbmKFParticle*>::iterator tr = vDaughters.begin(); tr != vDaughters.end(); ++tr) {
       CbmKFParticle Daughter = *(*tr);
 
       Double_t dx_aprox = Daughter.r[0] - r0[0];
@@ -655,19 +613,16 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
       Double_t dz_aprox = Daughter.r[2] - r0[2];
       Double_t dS_aprox =
         sqrt((dx_aprox * dx_aprox + dy_aprox * dy_aprox + dz_aprox * dz_aprox)
-             / (Daughter.r[3] * Daughter.r[3] + Daughter.r[4] * Daughter.r[4]
-                + Daughter.r[5] * Daughter.r[5]));
+             / (Daughter.r[3] * Daughter.r[3] + Daughter.r[4] * Daughter.r[4] + Daughter.r[5] * Daughter.r[5]));
 
       Daughter.Extrapolate(Daughter.r, -dS_aprox);
 
       Double_t* m  = Daughter.r;
       Double_t* Cd = Daughter.C;
 
-      Double_t d[3]   = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
-      Double_t SigmaS = .1
-                        + 10.
-                            * sqrt((d[0] * d[0] + d[1] * d[1] + d[2] * d[2])
-                                   / (m[3] * m[3] + m[4] * m[4] + m[5] * m[5]));
+      Double_t d[3] = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
+      Double_t SigmaS =
+        .1 + 10. * sqrt((d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) / (m[3] * m[3] + m[4] * m[4] + m[5] * m[5]));
 
       Double_t h[6];
 
@@ -682,51 +637,27 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
       {
         Double_t zeta[3] = {r0[0] - m[0], r0[1] - m[1], r0[2] - m[2]};
 
-        Double_t Vv[6] = {Cd[0] + h[0] * h[0],
-                          Cd[1] + h[1] * h[0],
-                          Cd[2] + h[1] * h[1],
-                          Cd[3] + h[2] * h[0],
-                          Cd[4] + h[2] * h[1],
-                          Cd[5] + h[2] * h[2]};
+        Double_t Vv[6] = {Cd[0] + h[0] * h[0], Cd[1] + h[1] * h[0], Cd[2] + h[1] * h[1],
+                          Cd[3] + h[2] * h[0], Cd[4] + h[2] * h[1], Cd[5] + h[2] * h[2]};
 
-        Double_t Vvp[9] = {Cd[6] + h[0] * h[3],
-                           Cd[7] + h[1] * h[3],
-                           Cd[8] + h[2] * h[3],
-                           Cd[10] + h[0] * h[4],
-                           Cd[11] + h[1] * h[4],
-                           Cd[12] + h[2] * h[4],
-                           Cd[15] + h[0] * h[5],
-                           Cd[16] + h[1] * h[5],
-                           Cd[17] + h[2] * h[5]};
+        Double_t Vvp[9] = {Cd[6] + h[0] * h[3],  Cd[7] + h[1] * h[3],  Cd[8] + h[2] * h[3],
+                           Cd[10] + h[0] * h[4], Cd[11] + h[1] * h[4], Cd[12] + h[2] * h[4],
+                           Cd[15] + h[0] * h[5], Cd[16] + h[1] * h[5], Cd[17] + h[2] * h[5]};
 
         if (CutChi2 > 0.) {
 
-          Double_t Si[6] = {Vv[0] + C0[0],
-                            Vv[1] + C0[1],
-                            Vv[2] + C0[2],
-                            Vv[3] + C0[3],
-                            Vv[4] + C0[4],
-                            Vv[5] + C0[5]};
-          Double_t S[6]  = {Si[2] * Si[5] - Si[4] * Si[4],
-                           Si[3] * Si[4] - Si[1] * Si[5],
-                           Si[0] * Si[5] - Si[3] * Si[3],
-                           Si[1] * Si[4] - Si[2] * Si[3],
-                           Si[1] * Si[3] - Si[0] * Si[4],
-                           Si[0] * Si[2] - Si[1] * Si[1]};
+          Double_t Si[6] = {Vv[0] + C0[0], Vv[1] + C0[1], Vv[2] + C0[2], Vv[3] + C0[3], Vv[4] + C0[4], Vv[5] + C0[5]};
+          Double_t S[6]  = {Si[2] * Si[5] - Si[4] * Si[4], Si[3] * Si[4] - Si[1] * Si[5], Si[0] * Si[5] - Si[3] * Si[3],
+                           Si[1] * Si[4] - Si[2] * Si[3], Si[1] * Si[3] - Si[0] * Si[4], Si[0] * Si[2] - Si[1] * Si[1]};
           Double_t det   = (Si[0] * S[0] + Si[1] * S[1] + Si[3] * S[3]);
-          Double_t chi2 =
-            (+(S[0] * zeta[0] + S[1] * zeta[1] + S[3] * zeta[2]) * zeta[0]
-             + (S[1] * zeta[0] + S[2] * zeta[1] + S[4] * zeta[2]) * zeta[1]
-             + (S[3] * zeta[0] + S[4] * zeta[1] + S[5] * zeta[2]) * zeta[2]);
+          Double_t chi2  = (+(S[0] * zeta[0] + S[1] * zeta[1] + S[3] * zeta[2]) * zeta[0]
+                           + (S[1] * zeta[0] + S[2] * zeta[1] + S[4] * zeta[2]) * zeta[1]
+                           + (S[3] * zeta[0] + S[4] * zeta[1] + S[5] * zeta[2]) * zeta[2]);
           if (chi2 > 2 * CutChi2 * det) continue;
         }
 
-        double S[6] = {Vv[2] * Vv[5] - Vv[4] * Vv[4],
-                       Vv[3] * Vv[4] - Vv[1] * Vv[5],
-                       Vv[0] * Vv[5] - Vv[3] * Vv[3],
-                       Vv[1] * Vv[4] - Vv[2] * Vv[3],
-                       Vv[1] * Vv[3] - Vv[0] * Vv[4],
-                       Vv[0] * Vv[2] - Vv[1] * Vv[1]};
+        double S[6] = {Vv[2] * Vv[5] - Vv[4] * Vv[4], Vv[3] * Vv[4] - Vv[1] * Vv[5], Vv[0] * Vv[5] - Vv[3] * Vv[3],
+                       Vv[1] * Vv[4] - Vv[2] * Vv[3], Vv[1] * Vv[3] - Vv[0] * Vv[4], Vv[0] * Vv[2] - Vv[1] * Vv[1]};
 
         double s = (Vv[0] * S[0] + Vv[1] * S[1] + Vv[3] * S[3]);
         s        = (s > 1.E-20) ? 1. / s : 0;
@@ -807,12 +738,7 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
 
       double S[6];
       {
-        double Si[6] = {C[0] + V[0],
-                        C[1] + V[1],
-                        C[2] + V[2],
-                        C[3] + V[3],
-                        C[4] + V[4],
-                        C[5] + V[5]};
+        double Si[6] = {C[0] + V[0], C[1] + V[1], C[2] + V[2], C[3] + V[3], C[4] + V[4], C[5] + V[5]};
 
         S[0] = Si[2] * Si[5] - Si[4] * Si[4];
         S[1] = Si[3] * Si[4] - Si[1] * Si[5];
@@ -918,8 +844,7 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
         double dx = Parent->GetRefX() - r[0];
         double dy = Parent->GetRefY() - r[1];
         double dz = Parent->GetRefZ() - r[2];
-        r0[7] = r[7] = sqrt((dx * dx + dy * dy + dz * dz)
-                            / (r[3] * r[3] + r[4] * r[4] + r[5] * r[5]));
+        r0[7] = r[7] = sqrt((dx * dx + dy * dy + dz * dz) / (r[3] * r[3] + r[4] * r[4] + r[5] * r[5]));
       }
     }
 
@@ -931,7 +856,8 @@ void CbmKFParticle::ConstructFromKFParticle(vector<CbmKFParticle*>& vDaughters,
   AtProductionVertex = 0;
 }
 
-void CbmKFParticle::MeasureMass(Double_t r0[], Double_t Mass) {
+void CbmKFParticle::MeasureMass(Double_t r0[], Double_t Mass)
+{
   double H[8];
   H[0] = H[1] = H[2] = 0.;
   H[3]               = -2 * r0[3];
@@ -939,7 +865,7 @@ void CbmKFParticle::MeasureMass(Double_t r0[], Double_t Mass) {
   H[5]               = -2 * r0[5];
   H[6]               = 2 * r0[6];
   H[7]               = 0;
-  double m2 = r0[6] * r0[6] - r0[3] * r0[3] - r0[4] * r0[4] - r0[5] * r0[5];
+  double m2          = r0[6] * r0[6] - r0[3] * r0[3] - r0[4] * r0[4] - r0[5] * r0[5];
 
   double zeta = Mass * Mass - m2;
   for (Int_t i = 0; i < 8; ++i)
@@ -967,8 +893,8 @@ void CbmKFParticle::MeasureMass(Double_t r0[], Double_t Mass) {
 }
 
 
-void CbmKFParticle::MeasureProductionVertex(Double_t r0[],
-                                            CbmKFVertexInterface* Parent) {
+void CbmKFParticle::MeasureProductionVertex(Double_t r0[], CbmKFVertexInterface* Parent)
+{
 
   double m[3], *V;
   {
@@ -1018,12 +944,7 @@ void CbmKFParticle::MeasureProductionVertex(Double_t r0[],
   double z[3] = {m[0] - r[0], m[1] - r[1], m[2] - r[2]};
 
   {
-    double AV[6] = {C[0] - V[0],
-                    C[1] - V[1],
-                    C[2] - V[2],
-                    C[3] - V[3],
-                    C[4] - V[4],
-                    C[5] - V[5]};
+    double AV[6] = {C[0] - V[0], C[1] - V[1], C[2] - V[2], C[3] - V[3], C[4] - V[4], C[5] - V[5]};
     double AVi[6];
     AVi[0] = AV[4] * AV[4] - AV[2] * AV[5];
     AVi[1] = AV[1] * AV[5] - AV[3] * AV[4];
@@ -1035,10 +956,10 @@ void CbmKFParticle::MeasureProductionVertex(Double_t r0[],
     det = 1. / (AV[0] * AVi[0] + AV[1] * AVi[1] + AV[3] * AVi[3]);
 
     NDF += 2;
-    Chi2 += (+(AVi[0] * z[0] + AVi[1] * z[1] + AVi[3] * z[2]) * z[0]
-             + (AVi[1] * z[0] + AVi[2] * z[1] + AVi[4] * z[2]) * z[1]
-             + (AVi[3] * z[0] + AVi[4] * z[1] + AVi[5] * z[2]) * z[2])
-            * det;
+    Chi2 +=
+      (+(AVi[0] * z[0] + AVi[1] * z[1] + AVi[3] * z[2]) * z[0] + (AVi[1] * z[0] + AVi[2] * z[1] + AVi[4] * z[2]) * z[1]
+       + (AVi[3] * z[0] + AVi[4] * z[1] + AVi[5] * z[2]) * z[2])
+      * det;
   }
 
   r[0] = m[0];
@@ -1119,7 +1040,8 @@ void CbmKFParticle::MeasureProductionVertex(Double_t r0[],
 }
 
 
-void CbmKFParticle::Convert(Double_t r0[], bool ToProduction) {
+void CbmKFParticle::Convert(Double_t r0[], bool ToProduction)
+{
 
   Double_t B[3];
   {
@@ -1194,7 +1116,8 @@ void CbmKFParticle::Convert(Double_t r0[], bool ToProduction) {
   C[26] += h[5] * C[34];
 }
 
-void CbmKFParticle::ExtrapolateLine(Double_t r0[], Double_t dS) {
+void CbmKFParticle::ExtrapolateLine(Double_t r0[], Double_t dS)
+{
   if (r0 && r0 != r) {
     r0[0] += dS * r0[3];
     r0[1] += dS * r0[4];
@@ -1239,7 +1162,8 @@ void CbmKFParticle::ExtrapolateLine(Double_t r0[], Double_t dS) {
   C[30] += dS * C[33];
 }
 
-void CbmKFParticle::Extrapolate(Double_t r0[], Double_t dS) {
+void CbmKFParticle::Extrapolate(Double_t r0[], Double_t dS)
+{
 
   if (Q == 0) {
     ExtrapolateLine(r0, dS);
@@ -1255,8 +1179,7 @@ void CbmKFParticle::Extrapolate(Double_t r0[], Double_t dS) {
 
   Double_t px = r[3], py = r[4], pz = r[5];
 
-  Double_t sx = 0, sy = 0, sz = 0, syy = 0, syz = 0, syyy = 0, Sx = 0, Sy = 0,
-           Sz = 0, Syy = 0, Syz = 0, Syyy = 0;
+  Double_t sx = 0, sy = 0, sz = 0, syy = 0, syz = 0, syyy = 0, Sx = 0, Sy = 0, Sz = 0, Syy = 0, Syz = 0, Syyy = 0;
 
   {  // get field integrals
 
@@ -1319,16 +1242,13 @@ void CbmKFParticle::Extrapolate(Double_t r0[], Double_t dS) {
     syyy = syy * syy * syy / 1296;
     syy  = syy * syy / 72;
 
-    Syy = (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1])
-           + B[1][1] * (208 * B[1][1] + 16 * B[2][1]) + B[2][1] * (3 * B[2][1]))
+    Syy = (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1]) + B[1][1] * (208 * B[1][1] + 16 * B[2][1])
+           + B[2][1] * (3 * B[2][1]))
           * dS * dS * dS * c * c / 2520.;
     Syyy = (B[0][1]
-              * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1])
-                 + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
+              * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1]) + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
                  + B[2][1] * (19 * B[2][1]))
-            + B[1][1]
-                * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1])
-                   + B[2][1] * (62 * B[2][1]))
+            + B[1][1] * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1]) + B[2][1] * (62 * B[2][1]))
             + B[2][1] * B[2][1] * (3 * B[2][1]))
            * dS * dS * dS * dS * c * c * c / 90720.;
   }
@@ -1401,7 +1321,8 @@ void CbmKFParticle::Extrapolate(Double_t r0[], Double_t dS) {
 }
 
 
-void CbmKFParticle::TransportToProductionVertex() {
+void CbmKFParticle::TransportToProductionVertex()
+{
   if (AtProductionVertex) return;
   Double_t r0[8];
   for (int i = 0; i < 8; i++)
@@ -1411,7 +1332,8 @@ void CbmKFParticle::TransportToProductionVertex() {
   AtProductionVertex = 1;
 }
 
-void CbmKFParticle::TransportToDecayVertex() {
+void CbmKFParticle::TransportToDecayVertex()
+{
   if (!AtProductionVertex) return;
   Double_t r0[8];
   for (int i = 0; i < 8; i++)
@@ -1422,7 +1344,8 @@ void CbmKFParticle::TransportToDecayVertex() {
 }
 
 
-void CbmKFParticle::GetKFTrack(CbmKFTrackInterface* Track) {
+void CbmKFParticle::GetKFTrack(CbmKFTrackInterface* Track)
+{
 
   Double_t* T         = Track->GetTrack();
   Double_t* Cov       = Track->GetCovMatrix();
@@ -1469,7 +1392,8 @@ void CbmKFParticle::GetKFTrack(CbmKFTrackInterface* Track) {
   Cov[14] = -qp3 * (px * cqpx + py * cqpy + pz * cqpz);
 }
 
-void CbmKFParticle::GetKFVertex(CbmKFVertexInterface& vtx) {
+void CbmKFParticle::GetKFVertex(CbmKFVertexInterface& vtx)
+{
   vtx.GetRefX() = r[0];
   vtx.GetRefY() = r[1];
   vtx.GetRefZ() = r[2];
@@ -1479,7 +1403,8 @@ void CbmKFParticle::GetKFVertex(CbmKFVertexInterface& vtx) {
   vtx.GetRefNDF()  = NDF;
 }
 
-void CbmKFParticle::GetMomentum(Double_t& P, Double_t& Error_) {
+void CbmKFParticle::GetMomentum(Double_t& P, Double_t& Error_)
+{
   Double_t x  = r[3];
   Double_t y  = r[4];
   Double_t z  = r[5];
@@ -1488,27 +1413,25 @@ void CbmKFParticle::GetMomentum(Double_t& P, Double_t& Error_) {
   Double_t z2 = z * z;
   Double_t p2 = x2 + y2 + z2;
   P           = sqrt(p2);
-  Error_      = sqrt((x2 * C[9] + y2 * C[14] + z2 * C[20]
-                 + 2 * (x * y * C[13] + x * z * C[18] + y * z * C[19]))
-                / p2);
+  Error_      = sqrt((x2 * C[9] + y2 * C[14] + z2 * C[20] + 2 * (x * y * C[13] + x * z * C[18] + y * z * C[19])) / p2);
 }
 
-void CbmKFParticle::GetMass(Double_t& M, Double_t& Error_) {
+void CbmKFParticle::GetMass(Double_t& M, Double_t& Error_)
+{
   // S = sigma^2 of m2/2
 
-  Double_t S =
-    (r[3] * r[3] * C[9] + r[4] * r[4] * C[14] + r[5] * r[5] * C[20]
-     + r[6] * r[6] * C[27]
-     + 2
-         * (+r[3] * r[4] * C[13] + r[5] * (r[3] * C[18] + r[4] * C[19])
-            - r[6] * (r[3] * C[24] + r[4] * C[25] + r[5] * C[26])));
+  Double_t S  = (r[3] * r[3] * C[9] + r[4] * r[4] * C[14] + r[5] * r[5] * C[20] + r[6] * r[6] * C[27]
+                + 2
+                    * (+r[3] * r[4] * C[13] + r[5] * (r[3] * C[18] + r[4] * C[19])
+                       - r[6] * (r[3] * C[24] + r[4] * C[25] + r[5] * C[26])));
   Double_t m2 = r[6] * r[6] - r[3] * r[3] - r[4] * r[4] - r[5] * r[5];
   M           = (m2 > 1.e-20) ? sqrt(m2) : 0.;
   Error_      = (S >= 0 && m2 > 1.e-20) ? sqrt(S / m2) : 1.e4;
 }
 
 
-void CbmKFParticle::GetDecayLength(Double_t& L, Double_t& Error_) {
+void CbmKFParticle::GetDecayLength(Double_t& L, Double_t& Error_)
+{
   Double_t x  = r[3];
   Double_t y  = r[4];
   Double_t z  = r[5];
@@ -1518,14 +1441,14 @@ void CbmKFParticle::GetDecayLength(Double_t& L, Double_t& Error_) {
   Double_t z2 = z * z;
   Double_t p2 = x2 + y2 + z2;
   L           = t * sqrt(p2);
-  Error_      = sqrt(p2 * C[35]
-                + t * t / p2
-                    * (x2 * C[9] + y2 * C[14] + z2 * C[20]
-                       + 2 * (x * y * C[13] + x * z * C[18] + y * z * C[19]))
-                + 2 * t * (x * C[31] + y * C[32] + z * C[33]));
+  Error_ =
+    sqrt(p2 * C[35]
+         + t * t / p2 * (x2 * C[9] + y2 * C[14] + z2 * C[20] + 2 * (x * y * C[13] + x * z * C[18] + y * z * C[19]))
+         + 2 * t * (x * C[31] + y * C[32] + z * C[33]));
 }
 
-void CbmKFParticle::GetLifeTime(Double_t& TauC, Double_t& Error_) {
+void CbmKFParticle::GetLifeTime(Double_t& TauC, Double_t& Error_)
+{
   Double_t m, dm;
   GetMass(m, dm);
   Double_t cTM = (-r[3] * C[31] - r[4] * C[32] - r[5] * C[33] + r[6] * C[34]);
@@ -1533,17 +1456,14 @@ void CbmKFParticle::GetLifeTime(Double_t& TauC, Double_t& Error_) {
   Error_       = sqrt(m * m * C[35] + 2 * r[7] * cTM + r[7] * r[7] * dm * dm);
 }
 
-Double_t CbmKFParticle::GetRapidity() const {
-  return 0.5 * TMath::Log((r[6] + r[5]) / (r[6] - r[5]));
-}
-Double_t CbmKFParticle::GetPt() const {
-  return TMath::Sqrt(r[3] * r[3] + r[4] * r[4]);
-}
+Double_t CbmKFParticle::GetRapidity() const { return 0.5 * TMath::Log((r[6] + r[5]) / (r[6] - r[5])); }
+Double_t CbmKFParticle::GetPt() const { return TMath::Sqrt(r[3] * r[3] + r[4] * r[4]); }
 Double_t CbmKFParticle::GetTheta() const { return TMath::ATan2(GetPt(), r[5]); }
 Double_t CbmKFParticle::GetPhi() const { return TMath::ATan2(r[4], r[5]); }
 
 
-Double_t CbmKFParticle::GetDStoPoint(const Double_t xyz[]) const {
+Double_t CbmKFParticle::GetDStoPoint(const Double_t xyz[]) const
+{
   //TODO check the method!
   Double_t dx = xyz[0] - r[0];
   Double_t dy = xyz[1] - r[1];
@@ -1551,8 +1471,7 @@ Double_t CbmKFParticle::GetDStoPoint(const Double_t xyz[]) const {
   Double_t p2 = r[3] * r[3] + r[4] * r[4] + r[5] * r[5];
 
   if (Q == 0 && r[2] < xyz[2]) return sqrt((dx * dx + dy * dy + dz * dz) / p2);
-  if (Q == 0 && r[2] >= xyz[2])
-    return -sqrt((dx * dx + dy * dy + dz * dz) / p2);
+  if (Q == 0 && r[2] >= xyz[2]) return -sqrt((dx * dx + dy * dy + dz * dz) / p2);
 
   const Double_t kCLight = 0.000299792458;
   Double_t B[3];
@@ -1574,13 +1493,10 @@ Double_t CbmKFParticle::GetDStoPoint(const Double_t xyz[]) const {
 
   if (pt2 < 1.e-4) return 0;
 
-  if (TMath::Abs(bq) < 1.e-8)
-    dS = a / pt2;
+  if (TMath::Abs(bq) < 1.e-8) dS = a / pt2;
   else
-    dS = TMath::ATan2(bq * a,
-                      pt2 + bq1 * (dz * r[4] - dy * r[5])
-                        - bq2 * (dz * r[3] - dx * r[5])
-                        + bq3 * (dy * r[3] - dx * r[4]))
+    dS = TMath::ATan2(bq * a, pt2 + bq1 * (dz * r[4] - dy * r[5]) - bq2 * (dz * r[3] - dx * r[5])
+                                + bq3 * (dy * r[3] - dx * r[4]))
          / bq;
 
   // Double_t dSm = rB/pB;

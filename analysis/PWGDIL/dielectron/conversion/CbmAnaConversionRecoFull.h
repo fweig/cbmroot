@@ -37,43 +37,22 @@ public:
   void Finish();
   void Exec();
 
-  void CombineElectrons(std::vector<CbmGlobalTrack*> gtrack,
-                        std::vector<TVector3> momenta,
-                        std::vector<float> momentaChi,
-                        std::vector<int> mctrackID,
-                        std::vector<std::vector<int>> reconstructedPhotons,
-                        Int_t index);
-  Double_t Invmass_4particlesRECO(const TVector3 part1,
-                                  const TVector3 part2,
-                                  const TVector3 part3,
+  void CombineElectrons(std::vector<CbmGlobalTrack*> gtrack, std::vector<TVector3> momenta,
+                        std::vector<float> momentaChi, std::vector<int> mctrackID,
+                        std::vector<std::vector<int>> reconstructedPhotons, Int_t index);
+  Double_t Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                   const TVector3 part4);
-  Double_t Pt_4particlesRECO(const TVector3 part1,
-                             const TVector3 part2,
-                             const TVector3 part3,
-                             const TVector3 part4);
-  Double_t Rap_4particlesRECO(const TVector3 part1,
-                              const TVector3 part2,
-                              const TVector3 part3,
-                              const TVector3 part4);
+  Double_t Pt_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3, const TVector3 part4);
+  Double_t Rap_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3, const TVector3 part4);
 
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1,
-                                                      const TVector3 electron2);
-  CbmLmvmKinematicParams
-  CalculateKinematicParams_4particles(const TVector3 part1,
-                                      const TVector3 part2,
-                                      const TVector3 part3,
-                                      const TVector3 part4);
+  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  CbmLmvmKinematicParams CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
+                                                             const TVector3 part3, const TVector3 part4);
 
-  void CombinePhotons(std::vector<CbmGlobalTrack*> gtrack,
-                      std::vector<TVector3> momenta,
-                      std::vector<float> momentaChi,
-                      std::vector<int> mctrackID,
-                      std::vector<std::vector<int>> reconstructedPhotons,
-                      Int_t index);
-  Double_t OpeningAngleBetweenPhotons2(std::vector<int> photon1,
-                                       std::vector<int> photons2);
-  Double_t OpeningAngleBetweenPhotons(std::vector<TVector3> momenta,
-                                      std::vector<int> photon1,
+  void CombinePhotons(std::vector<CbmGlobalTrack*> gtrack, std::vector<TVector3> momenta, std::vector<float> momentaChi,
+                      std::vector<int> mctrackID, std::vector<std::vector<int>> reconstructedPhotons, Int_t index);
+  Double_t OpeningAngleBetweenPhotons2(std::vector<int> photon1, std::vector<int> photons2);
+  Double_t OpeningAngleBetweenPhotons(std::vector<TVector3> momenta, std::vector<int> photon1,
                                       std::vector<int> photons2);
 
   //void CombineElectronsRefit();

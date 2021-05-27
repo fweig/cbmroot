@@ -19,33 +19,33 @@ CbmPsdMCbmHitProducer::CbmPsdMCbmHitProducer()
   , fPsdHits(NULL)
   , fEventNum(0)
   , fHitError(10) /*half a module in cm*/
-{}
+{
+}
 
-CbmPsdMCbmHitProducer::~CbmPsdMCbmHitProducer() {
+CbmPsdMCbmHitProducer::~CbmPsdMCbmHitProducer()
+{
   FairRootManager* manager = FairRootManager::Instance();
   manager->Write();
 }
 
 void CbmPsdMCbmHitProducer::SetParContainers() {}
 
-InitStatus CbmPsdMCbmHitProducer::Init() {
+InitStatus CbmPsdMCbmHitProducer::Init()
+{
   FairRootManager* manager = FairRootManager::Instance();
 
   fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
-  if (fCbmEvents == nullptr) {
-    LOG(info) << ": CbmEvent NOT found \n \n \n";
-  } else {
+  if (fCbmEvents == nullptr) { LOG(info) << ": CbmEvent NOT found \n \n \n"; }
+  else {
     LOG(info) << ": CbmEvent found \n \n \n";
   }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
-  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd))
-    Fatal("CbmPsdMCbmHitProducer::Init", "No PsdDigi array!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd)) Fatal("CbmPsdMCbmHitProducer::Init", "No PsdDigi array!");
 
   fPsdHits = new TClonesArray("CbmPsdMCbmHit");  //TODO
-  manager->Register(
-    "PsdHit", "PSD", fPsdHits, IsOutputBranchPersistent("PsdHit"));
+  manager->Register("PsdHit", "PSD", fPsdHits, IsOutputBranchPersistent("PsdHit"));
 
   //InitMapping();
 
@@ -92,7 +92,8 @@ void CbmPsdMCbmHitProducer::InitMapping() //TODO change for psd
 }
 */
 
-void CbmPsdMCbmHitProducer::Exec(Option_t* /*option*/) {
+void CbmPsdMCbmHitProducer::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   LOG(info) << "CbmPsdMCbmHitProducer Event " << fEventNum;
 
@@ -103,17 +104,15 @@ void CbmPsdMCbmHitProducer::Exec(Option_t* /*option*/) {
   Int_t nUnits = (fCbmEvents != nullptr) ? fCbmEvents->GetEntriesFast() : 1;
 
   for (Int_t iUnit = 0; iUnit < nUnits; iUnit++) {
-    CbmEvent* event = (fCbmEvents != nullptr)
-                        ? static_cast<CbmEvent*>(fCbmEvents->At(iUnit))
-                        : nullptr;
+    CbmEvent* event = (fCbmEvents != nullptr) ? static_cast<CbmEvent*>(fCbmEvents->At(iUnit)) : nullptr;
     ProcessData(event);
   }
 }
 
-void CbmPsdMCbmHitProducer::ProcessData(CbmEvent* event) {
+void CbmPsdMCbmHitProducer::ProcessData(CbmEvent* event)
+{
   if (event != NULL) {
-    LOG(info) << "CbmPsdMCbmHitProducer CbmEvent mode. CbmEvent # "
-              << event->GetNumber();
+    LOG(info) << "CbmPsdMCbmHitProducer CbmEvent mode. CbmEvent # " << event->GetNumber();
     Int_t nofDigis = event->GetNofData(ECbmDataType::kPsdDigi);
     LOG(info) << "nofDigis: " << nofDigis;
 
@@ -121,35 +120,27 @@ void CbmPsdMCbmHitProducer::ProcessData(CbmEvent* event) {
       Int_t digiIndex = event->GetIndex(ECbmDataType::kPsdDigi, iDigi);
       ProcessDigi(event, digiIndex);
     }
-
-  } else {
-    for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kPsd);
-         iDigi++) {
+  }
+  else {
+    for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kPsd); iDigi++) {
       ProcessDigi(event, iDigi);
     }
   }
 }
 
-void CbmPsdMCbmHitProducer::ProcessDigi(CbmEvent* event, Int_t digiIndex) {
+void CbmPsdMCbmHitProducer::ProcessDigi(CbmEvent* event, Int_t digiIndex)
+{
   const CbmPsdDigi* digi = fDigiMan->Get<CbmPsdDigi>(digiIndex);
   if (digi == nullptr) return;
   if (digi->GetAddress() < 0) return;
   if (isInEnRange(digi->GetEdep())) {
-    AddHit(event,
-           digi->GetTime(),
-           digi->GetEdep(),
-           digi->GetModuleID(),
-           digi->GetSectionID(),
-           digiIndex);
+    AddHit(event, digi->GetTime(), digi->GetEdep(), digi->GetModuleID(), digi->GetSectionID(), digiIndex);
   }
 }
 
-void CbmPsdMCbmHitProducer::AddHit(CbmEvent* event,
-                                   Double_t time,
-                                   Double_t energy,
-                                   UInt_t moduleId,
-                                   UInt_t sectionId,
-                                   Int_t /*index*/) {
+void CbmPsdMCbmHitProducer::AddHit(CbmEvent* event, Double_t time, Double_t energy, UInt_t moduleId, UInt_t sectionId,
+                                   Int_t /*index*/)
+{
 
   Int_t nofHits = fPsdHits->GetEntriesFast();
   new ((*fPsdHits)[nofHits]) CbmPsdMCbmHit();
@@ -166,13 +157,13 @@ void CbmPsdMCbmHitProducer::AddHit(CbmEvent* event,
 void CbmPsdMCbmHitProducer::Finish() { fPsdHits->Clear(); }
 
 
-bool CbmPsdMCbmHitProducer::isInEnRange(const double energy) {
+bool CbmPsdMCbmHitProducer::isInEnRange(const double energy)
+{
 
   if (!fDoEnCut) return true;
 
-  if ((energy > fEnLimitLow) && (energy < fEnLimitHigh)) {
-    return true;
-  } else {
+  if ((energy > fEnLimitLow) && (energy < fEnLimitHigh)) { return true; }
+  else {
     return false;
   }
 }

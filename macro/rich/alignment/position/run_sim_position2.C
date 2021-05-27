@@ -35,7 +35,8 @@ static double crosstalkRich;
 static Double_t trdAnnCut;
 static Int_t minNofPointsTrd;
 
-void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
+void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -45,8 +46,7 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
 
   //gRandom->SetSeed(10);
 
-  TString urqmdFile =
-    "/data/Cbm_Root/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root";
+  TString urqmdFile = "/data/Cbm_Root/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root";
 
   outDir = TString(gSystem->Getenv("OUT_DIR"));
   //    outDir = "~/CBMSRC/macro/rich/alignment/misalignment_correction/position/test/";
@@ -65,8 +65,7 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
 */
   // Set geometries:
   //	TString caveGeom = "cave.geo";
-  TString caveGeom =
-    "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/geometry/cave.geo";
+  TString caveGeom = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/geometry/cave.geo";
   //	TString pipeGeom = "pipe/pipe_v14l.root";
   TString pipeGeom = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                      "geometry/pipe/pipe_v16c_1e.geo.root";
@@ -83,13 +82,16 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
   if (Flag == 0) {
     TString richGeom = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                        "geometry/rich/position/Aligned.root";
-  } else if (Flag == 1) {
+  }
+  else if (Flag == 1) {
     TString richGeom = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                        "geometry/rich/position/Misaligned_5mrad.root";
-  } else if (Flag == 2) {
+  }
+  else if (Flag == 2) {
     TString richGeom = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                        "geometry/rich/position/rich_v16a_1e.root";
-  } else if {
+  }
+  else if {
     TString richGeom = "";
   }
   TString trdGeom       = "";   //"trd_v15a_1e.geo.root";
@@ -99,16 +101,14 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
   Double_t fieldScale   = 1.;   // field scaling factor
   Double_t fieldSymType = 3;
 
-  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                         + "/macro/rich/run/geosetup/geosetup_25gev.C";
+  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/geosetup_25gev.C";
 
-  TString electrons =
-    "yes";                // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 1;  // number of e- to be generated
-  Int_t NPOSITRONS  = 1;  // number of e+ to be generated
-  TString urqmd     = "no";  // If "yes" then UrQMD will be used as background
-  TString pluto     = "no";  // If "yes" PLUTO particles will be embedded
-  TString plutoFile = "";
+  TString electrons     = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS      = 1;      // number of e- to be generated
+  Int_t NPOSITRONS      = 1;      // number of e+ to be generated
+  TString urqmd         = "no";   // If "yes" then UrQMD will be used as background
+  TString pluto         = "no";   // If "yes" PLUTO particles will be embedded
+  TString plutoFile     = "";
   TString plutoParticle = "";
 
   if (script == "yes") {
@@ -158,7 +158,7 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // creation of the primary vertex
   Bool_t smearVertexXY = kTRUE;
@@ -190,8 +190,7 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
     fRun->AddModule(pipe);
   }
 
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   fRun->AddModule(target);
@@ -236,9 +235,8 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
   // Create magnetic field
   cout << "fieldSymType=" << fieldSymType << endl;
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     CbmFieldMap* magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -332,8 +330,7 @@ void run_sim_position2(Int_t nEvents = 100, Int_t Flag = 0) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

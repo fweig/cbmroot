@@ -28,6 +28,7 @@ class CbmMCDataObject;
 class CbmMCEventList;
 
 #include "CbmTofAddress.h"  // in cbmdata/tof
+
 #include "FairTask.h"
 
 class TClonesArray;
@@ -134,92 +135,91 @@ public:
   inline void SetMrpcSel3Addr(Int_t ival) { fiMrpcSel3Addr = ival; }
   inline void SetBeamRefAddr(Int_t ival) { fiBeamRefAddr = ival; }
 
-  inline void SetDut(Int_t ival) {
+  inline void SetDut(Int_t ival)
+  {
     fiDut     = ival;
     fiDutAddr = CbmTofAddress::GetUniqueAddress(fiDutSm, fiDutRpc, 0, 0, fiDut);
   }
-  inline void SetDutSm(Int_t ival) {
+  inline void SetDutSm(Int_t ival)
+  {
     fiDutSm   = ival;
     fiDutAddr = CbmTofAddress::GetUniqueAddress(fiDutSm, fiDutRpc, 0, 0, fiDut);
   }
-  inline void SetDutRpc(Int_t ival) {
+  inline void SetDutRpc(Int_t ival)
+  {
     fiDutRpc  = ival;
     fiDutAddr = CbmTofAddress::GetUniqueAddress(fiDutSm, fiDutRpc, 0, 0, fiDut);
   }
 
-  inline void SetMrpcRef(Int_t ival) {
+  inline void SetMrpcRef(Int_t ival)
+  {
     fiMrpcRef     = ival;
-    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
+    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
   }
-  inline void SetMrpcRefSm(Int_t ival) {
+  inline void SetMrpcRefSm(Int_t ival)
+  {
     fiMrpcRefSm   = ival;
-    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
+    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
   }
-  inline void SetMrpcRefRpc(Int_t ival) {
+  inline void SetMrpcRefRpc(Int_t ival)
+  {
     fiMrpcRefRpc  = ival;
-    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
+    fiMrpcRefAddr = CbmTofAddress::GetUniqueAddress(fiMrpcRefSm, fiMrpcRefRpc, 0, 0, fiMrpcRef);
   }
 
-  inline void SetMrpcSel2(Int_t ival) {
+  inline void SetMrpcSel2(Int_t ival)
+  {
     fiMrpcSel2     = ival;
-    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
+    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
   }
-  inline void SetMrpcSel2Sm(Int_t ival) {
+  inline void SetMrpcSel2Sm(Int_t ival)
+  {
     fiMrpcSel2Sm   = ival;
-    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
+    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
   }
-  inline void SetMrpcSel2Rpc(Int_t ival) {
+  inline void SetMrpcSel2Rpc(Int_t ival)
+  {
     fiMrpcSel2Rpc  = ival;
-    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
+    fiMrpcSel2Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel2Sm, fiMrpcSel2Rpc, 0, 0, fiMrpcSel2);
   }
 
-  inline void SetMrpcSel3(Int_t ival) {
+  inline void SetMrpcSel3(Int_t ival)
+  {
     fiMrpcSel3     = ival;
-    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
+    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
   }
-  inline void SetMrpcSel3Sm(Int_t ival) {
+  inline void SetMrpcSel3Sm(Int_t ival)
+  {
     fiMrpcSel3Sm   = ival;
-    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
+    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
   }
-  inline void SetMrpcSel3Rpc(Int_t ival) {
+  inline void SetMrpcSel3Rpc(Int_t ival)
+  {
     fiMrpcSel3Rpc  = ival;
-    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(
-      fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
+    fiMrpcSel3Addr = CbmTofAddress::GetUniqueAddress(fiMrpcSel3Sm, fiMrpcSel3Rpc, 0, 0, fiMrpcSel3);
   }
 
   inline void SetPlaSelect(Int_t ival) { fiPlaSelect = ival; }
-  inline void SetBeamRefSmType(Int_t ival) {
+  inline void SetBeamRefSmType(Int_t ival)
+  {
     fiBeamRefSmType = ival;
-    fiBeamRefAddr   = CbmTofAddress::GetUniqueAddress(
-      fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
+    fiBeamRefAddr   = CbmTofAddress::GetUniqueAddress(fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
   }
-  inline void SetBeamRefSmId(Int_t ival) {
+  inline void SetBeamRefSmId(Int_t ival)
+  {
     fiBeamRefSmId = ival;
-    fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(
-      fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
+    fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
   }
-  inline void SetBeamRefRpc(Int_t ival) {
+  inline void SetBeamRefRpc(Int_t ival)
+  {
     fiBeamRefRpc  = ival;
-    fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(
-      fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
+    fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(fiBeamRefSmId, fiBeamRefRpc, 0, 0, fiBeamRefSmType);
   }
 
   inline void SetReqTrg(Int_t ival) { fiReqTrg = ival; }
 
-  inline void SetCalParFileName(TString CalParFileName) {
-    fCalParFileName = CalParFileName;
-  }
-  inline void SetCalOutFileName(TString CalOutFileName) {
-    fCalOutFileName = CalOutFileName;
-  }
+  inline void SetCalParFileName(TString CalParFileName) { fCalParFileName = CalParFileName; }
+  inline void SetCalOutFileName(TString CalOutFileName) { fCalOutFileName = CalOutFileName; }
 
   inline void SetChi2LimFit(Double_t val) { fChi2LimFit = val; }
   inline void SetR0LimFit(Double_t val) { fR0LimFit = val; }
@@ -228,9 +228,7 @@ public:
   inline void SetSIGX(Double_t val) { fSIGX = val; }
   inline void SetSIGY(Double_t val) { fSIGY = val; }
 
-  inline void SetEnableMatchPosScaling(Bool_t bval) {
-    fEnableMatchPosScaling = bval;
-  }
+  inline void SetEnableMatchPosScaling(Bool_t bval) { fEnableMatchPosScaling = bval; }
 
   inline Double_t GetChi2LimFit() { return fChi2LimFit; }
   inline Double_t GetR0LimFit() { return fR0LimFit; }
@@ -244,19 +242,11 @@ public:
   inline void SetDutY(Double_t val) { fdDutY = val; }
   inline void SetDutDY(Double_t val) { fdDutDY = val; }
 
-  inline void SetMonteCarloComparison(Bool_t bval) {
-    fbMonteCarloComparison = bval;
-  }
-  inline void SetGhostTrackHitQuota(Double_t val) {
-    fdGhostTrackHitQuota = val;
-  }
+  inline void SetMonteCarloComparison(Bool_t bval) { fbMonteCarloComparison = bval; }
+  inline void SetGhostTrackHitQuota(Double_t val) { fdGhostTrackHitQuota = val; }
   inline void SetDelayMCPoints(Bool_t bval) { fbDelayMCPoints = bval; }
-  inline void SetAttachDutHitToTracklet(Bool_t bval) {
-    fbAttachDutHitToTracklet = bval;
-  }
-  inline void SetBestSelTrackletOnly(Bool_t bval) {
-    fbBestSelTrackletOnly = bval;
-  }
+  inline void SetAttachDutHitToTracklet(Bool_t bval) { fbAttachDutHitToTracklet = bval; }
+  inline void SetBestSelTrackletOnly(Bool_t bval) { fbBestSelTrackletOnly = bval; }
   inline void SetUseSigCalib(Bool_t bval) { fbUseSigCalib = bval; }
   inline void SetAnaMode(Int_t ival) { fiAnaMode = ival; }
 
@@ -316,14 +306,11 @@ private:
   TMbsMappingTofPar* fMbsMappingPar;
 
   Int_t iNbSmTot;
-  std::vector<Int_t>
-    fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
+  std::vector<Int_t> fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
   Int_t iNbRpcTot;
-  std::vector<std::vector<Int_t>>
-    fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
+  std::vector<std::vector<Int_t>> fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
   Int_t iNbChTot;
-  std::vector<std::vector<std::vector<Int_t>>>
-    fvRpcChOffs;  // Offset in channel index for first channel of each RPC
+  std::vector<std::vector<std::vector<Int_t>>> fvRpcChOffs;  // Offset in channel index for first channel of each RPC
 
   // Parameters
   CbmTofDigiPar* fDigiPar;
@@ -664,12 +651,9 @@ private:
   std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*> fhCounterAccRndmTrackMul;
   std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*> fhCounterAccDomTrackMul;
 
-  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*>
-    fhCounterRecRefTrackEfficiencyPassed;
-  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*>
-    fhCounterRecRefTrackEfficiencyTotal;
-  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*>
-    fhCounterRecRefTrackPurityPassed;
+  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*> fhCounterRecRefTrackEfficiencyPassed;
+  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*> fhCounterRecRefTrackEfficiencyTotal;
+  std::map<std::tuple<Int_t, Int_t, Int_t>, TH1*> fhCounterRecRefTrackPurityPassed;
 
   std::map<std::tuple<Int_t, Int_t, Int_t>, TH2*> fhCounterRefTrackMulHitMul;
   std::map<std::tuple<Int_t, Int_t, Int_t>, TH2*> fhCounterRefTrackLocalXY;
@@ -729,21 +713,20 @@ private:
   Double_t fdMulDMax;                   // max multiplicity in Diamond counter
   Double_t fdSpillDuration;             // min. spill length in sec
   Double_t fdSpillBreak;                // min. spill break in sec
-  Double_t
-    fdStartSpillTime;   // Start of Spill, if negative find begin of first spill
-  Double_t fdDTDia;     // max time difference between diamonds
-  Double_t fdDTD4MAX;   // max time difference between reference & diamond
-  Double_t fdMul0Max;   // max multiplicity in Dut
-  Double_t fdMul4Max;   // max multiplicity in HD/Buc Ref counter
-  Double_t fdCh4Sel;    // Center of selected strip numbers
-  Double_t fdDCh4Sel;   // Width  of selected strip numbers
-  Double_t fdPosY4Sel;  // Fraction of Y-Size
-  Double_t fdPosY4SelOff;   // Offset of selection interval in cm
-  Double_t fdChS2Sel;       // Center of selected strip numbers
-  Double_t fdDChS2Sel;      // Width  of selected strip numbers
-  Double_t fdPosYS2Sel;     // Fraction of Y-Size
-  Double_t fdPosYS2SelOff;  // Offset of selection interval in cm
-  Double_t fdSel2TOff;      // Offset for matching Sel2 time
+  Double_t fdStartSpillTime;            // Start of Spill, if negative find begin of first spill
+  Double_t fdDTDia;                     // max time difference between diamonds
+  Double_t fdDTD4MAX;                   // max time difference between reference & diamond
+  Double_t fdMul0Max;                   // max multiplicity in Dut
+  Double_t fdMul4Max;                   // max multiplicity in HD/Buc Ref counter
+  Double_t fdCh4Sel;                    // Center of selected strip numbers
+  Double_t fdDCh4Sel;                   // Width  of selected strip numbers
+  Double_t fdPosY4Sel;                  // Fraction of Y-Size
+  Double_t fdPosY4SelOff;               // Offset of selection interval in cm
+  Double_t fdChS2Sel;                   // Center of selected strip numbers
+  Double_t fdDChS2Sel;                  // Width  of selected strip numbers
+  Double_t fdPosYS2Sel;                 // Fraction of Y-Size
+  Double_t fdPosYS2SelOff;              // Offset of selection interval in cm
+  Double_t fdSel2TOff;                  // Offset for matching Sel2 time
 
   Double_t fdHitDistMin;  // minimal spatial distance of correlated hits
   Double_t fdHitDistAv;   // average spatial distance of correlated hits
@@ -815,8 +798,7 @@ private:
   Int_t fiCurrentModuleType;
   Int_t fiCurrentModuleIndex;
   Int_t fiCurrentCounterIndex;
-  std::map<std::tuple<Int_t, Int_t, Int_t>, TGeoPhysicalNode*>
-    fCounterModuleNodes;
+  std::map<std::tuple<Int_t, Int_t, Int_t>, TGeoPhysicalNode*> fCounterModuleNodes;
 
   Int_t fiNAccRefTracks;
   Double_t fdGhostTrackHitQuota;

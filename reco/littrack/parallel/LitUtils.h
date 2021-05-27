@@ -14,8 +14,10 @@
 #include <sstream>
 #include <string>
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn template <class T>std::string ToString(const T& value)
@@ -28,7 +30,8 @@ namespace lit {
  * \param[in] mat Reference to material
  */
     template<class T>
-    std::string ToString(const T& value) {
+    std::string ToString(const T& value)
+    {
       std::stringstream ss;
       ss.precision(5);
       ss << value;
@@ -51,7 +54,8 @@ namespace lit {
     class DeleteObject {
     public:
       template<typename T>
-      void operator()(const T* ptr) const {
+      void operator()(const T* ptr) const
+      {
         delete ptr;
       }
     };

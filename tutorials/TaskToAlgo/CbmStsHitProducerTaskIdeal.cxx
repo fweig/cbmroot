@@ -26,7 +26,9 @@ CbmStsHitProducerTaskIdeal::CbmStsHitProducerTaskIdeal()
   : FairTask("Ideal STS Hit Producer Task")
   , fPointArray(NULL)
   , fHitArray(NULL)
-  , fTrdGasPar(NULL) {}
+  , fTrdGasPar(NULL)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -34,13 +36,14 @@ CbmStsHitProducerTaskIdeal::CbmStsHitProducerTaskIdeal()
 CbmStsHitProducerTaskIdeal::~CbmStsHitProducerTaskIdeal() {}
 // -------------------------------------------------------------------------
 
-void CbmStsHitProducerTaskIdeal::SetParContainers() {
-  fTrdGasPar = static_cast<CbmTrdParSetGas*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
+void CbmStsHitProducerTaskIdeal::SetParContainers()
+{
+  fTrdGasPar = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
 }
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmStsHitProducerTaskIdeal::Init() {
+InitStatus CbmStsHitProducerTaskIdeal::Init()
+{
 
   // Get RootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -60,8 +63,7 @@ InitStatus CbmStsHitProducerTaskIdeal::Init() {
 
   // Create and register output array
   fHitArray = new TClonesArray("CbmStsHit");
-  ioman->Register(
-    "StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
+  ioman->Register("StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
 
 
   if (fTrdGasPar) fTrdGasPar->Dump();
@@ -74,15 +76,14 @@ InitStatus CbmStsHitProducerTaskIdeal::Init() {
 // -------------------------------------------------------------------------
 
 
-std::vector<CbmStsPoint>
-CbmStsHitProducerTaskIdeal::Convert(TClonesArray* arr) {
+std::vector<CbmStsPoint> CbmStsHitProducerTaskIdeal::Convert(TClonesArray* arr)
+{
 
   std::vector<CbmStsPoint> vec;
   Int_t entries = arr->GetEntriesFast();
   if (entries > 0) {
     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(0));
-    LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
-              << entries;
+    LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
   }
   for (int i = 0; i < entries; ++i) {
     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(i));
@@ -92,8 +93,8 @@ CbmStsHitProducerTaskIdeal::Convert(TClonesArray* arr) {
 }
 
 
-std::vector<CbmStsHit>
-CbmStsHitProducerTaskIdeal::Algo(const std::vector<CbmStsPoint>& pointVect) {
+std::vector<CbmStsHit> CbmStsHitProducerTaskIdeal::Algo(const std::vector<CbmStsPoint>& pointVect)
+{
   // Declare some variables
   //  CbmStsPoint* point{nullptr};
   Int_t detID {0};  // Detector ID
@@ -128,7 +129,8 @@ CbmStsHitProducerTaskIdeal::Algo(const std::vector<CbmStsPoint>& pointVect) {
   return hitVect;
 }
 // -----   Public method Exec   --------------------------------------------
-void CbmStsHitProducerTaskIdeal::Exec(Option_t* /*opt*/) {
+void CbmStsHitProducerTaskIdeal::Exec(Option_t* /*opt*/)
+{
 
   // Reset output array
   if (!fHitArray) Fatal("Exec", "No StsHit array");
@@ -155,8 +157,8 @@ void CbmStsHitProducerTaskIdeal::Exec(Option_t* /*opt*/) {
 
 
   // Event summary
-  cout << "-I- CbmStsHitProducerTaskIdeal: " << points.size() << " StsPoints, "
-       << hits.size() << " Hits created." << endl;
+  cout << "-I- CbmStsHitProducerTaskIdeal: " << points.size() << " StsPoints, " << hits.size() << " Hits created."
+       << endl;
 }
 // -------------------------------------------------------------------------
 

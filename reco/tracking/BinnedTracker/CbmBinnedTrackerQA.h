@@ -21,10 +21,14 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include "FairTask.h"
-#include "Settings.h"
+
 #include "TClonesArray.h"
+
 #include <functional>
+
+#include "Settings.h"
 
 class CbmBinnedTrackerQA : public FairTask {
 public:
@@ -36,35 +40,24 @@ public:
   void Finish();             // Overridden from FairTask
   void SetParContainers();
 
-  void SetPrimaryParticle(EPrimaryParticleId v) {
+  void SetPrimaryParticle(EPrimaryParticleId v)
+  {
     fPrimaryParticleIds.clear();
     fPrimaryParticleIds.push_back(v);
   }
 
-  void AddPrimaryParticle(EPrimaryParticleId v) {
-    fPrimaryParticleIds.push_back(v);
-  }
+  void AddPrimaryParticle(EPrimaryParticleId v) { fPrimaryParticleIds.push_back(v); }
 
 private:
-  void HandleSts(Int_t stsTrackIndex,
-                 std::map<Int_t, std::set<Int_t>>& mcTrackIds,
-                 std::set<Int_t>* globalTrackMCRefs,
+  void HandleSts(Int_t stsTrackIndex, std::map<Int_t, std::set<Int_t>>& mcTrackIds, std::set<Int_t>* globalTrackMCRefs,
                  Int_t* globalTracksHitInds);
-  void HandleMuch(Int_t muchTrackIndex,
-                  std::map<Int_t, std::set<Int_t>>& mcTrackIds,
-                  std::set<Int_t>* globalTrackMCRefs,
-                  Int_t* globalTracksHitInds);
-  void HandleTrd(Int_t trdTrackIndex,
-                 std::map<Int_t, std::set<Int_t>>& mcTrackIds,
-                 std::set<Int_t>* globalTrackMCRefs,
+  void HandleMuch(Int_t muchTrackIndex, std::map<Int_t, std::set<Int_t>>& mcTrackIds,
+                  std::set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds);
+  void HandleTrd(Int_t trdTrackIndex, std::map<Int_t, std::set<Int_t>>& mcTrackIds, std::set<Int_t>* globalTrackMCRefs,
                  Int_t* globalTracksHitInds);
-  void HandleTof(Int_t globalTrackIndex,
-                 Int_t tofHitIndex,
-                 std::map<Int_t, std::set<Int_t>>& mcTrackIds,
-                 std::set<Int_t>* globalTrackMCRefs,
-                 Int_t* globalTracksHitInds);
-  void IterateTrdHits(
-    std::function<void(const CbmTrdHit*, const CbmTrdPoint*)> handleData);
+  void HandleTof(Int_t globalTrackIndex, Int_t tofHitIndex, std::map<Int_t, std::set<Int_t>>& mcTrackIds,
+                 std::set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds);
+  void IterateTrdHits(std::function<void(const CbmTrdHit*, const CbmTrdPoint*)> handleData);
 
 private:
   std::list<EPrimaryParticleId> fPrimaryParticleIds;

@@ -11,8 +11,9 @@
 
 #include <boost/any.hpp>  // for any
 
+#include <string>  // for string
+
 #include <stddef.h>  // for size_t
-#include <string>    // for string
 
 class CbmMatch;
 

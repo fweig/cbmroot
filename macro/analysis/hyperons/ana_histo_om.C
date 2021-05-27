@@ -1,4 +1,5 @@
-void ana_histo_om() {
+void ana_histo_om()
+{
   gROOT->LoadMacro("$VMCWORKDIR/analysis/hyperon/hyperon_style.C");
   hyperon_style();
   TString resultFileName = "om.histo.res.root";
@@ -16,44 +17,29 @@ void ana_histo_om() {
   Double_t bmoMax  = 0.20;
   Int_t nBins      = 100;
   title            = ";b_{#Lambda} [cm];#chi^{2}_{#pi^{ -}}";
-  TH2D* hSbB1Chi2 =
-    new TH2D("hSbB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
-  TH2D* hSnB1Chi2 =
-    new TH2D("hSnB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
-  TH2D* hEfB1Chi2 =
-    new TH2D("hEfB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
+  TH2D* hSbB1Chi2  = new TH2D("hSbB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
+  TH2D* hSnB1Chi2  = new TH2D("hSnB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
+  TH2D* hEfB1Chi2  = new TH2D("hEfB1Chi2", title, nBins, 0., b1Max, nBins, 0., chi2Max);
 
-  title = ";b_{p} [cm];b_{#pi^{ -}} [cm]";
-  TH2D* hSbB1B2 =
-    new TH2D("hSbB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
-  TH2D* hSnB1B2 =
-    new TH2D("hSnB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
-  TH2D* hEfB1B2 =
-    new TH2D("hEfB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
+  title         = ";b_{p} [cm];b_{#pi^{ -}} [cm]";
+  TH2D* hSbB1B2 = new TH2D("hSbB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
+  TH2D* hSnB1B2 = new TH2D("hSnB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
+  TH2D* hEfB1B2 = new TH2D("hEfB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
 
-  title = ";#chi^{2}_{p};#chi^{2}_{#pi^{ -}}";
-  TH2D* hSbChi1Chi2 =
-    new TH2D("hSbChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
-  TH2D* hSnChi1Chi2 =
-    new TH2D("hSnChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
-  TH2D* hEfChi1Chi2 =
-    new TH2D("hEfChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
+  title             = ";#chi^{2}_{p};#chi^{2}_{#pi^{ -}}";
+  TH2D* hSbChi1Chi2 = new TH2D("hSbChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
+  TH2D* hSnChi1Chi2 = new TH2D("hSnChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
+  TH2D* hEfChi1Chi2 = new TH2D("hEfChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
 
-  title = ";#chi^{2};Distance of closest approach [cm]";
-  TH2D* hSbChiDca =
-    new TH2D("hSbChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
-  TH2D* hSnChiDca =
-    new TH2D("hSnChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
-  TH2D* hEfChiDca =
-    new TH2D("hEfChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
+  title           = ";#chi^{2};Distance of closest approach [cm]";
+  TH2D* hSbChiDca = new TH2D("hSbChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
+  TH2D* hSnChiDca = new TH2D("hSnChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
+  TH2D* hEfChiDca = new TH2D("hEfChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
 
-  title = ";z-vertex [cm];b_{#Xi^{ -}} [cm]";
-  TH2D* hSbPcaBmo =
-    new TH2D("hSbPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
-  TH2D* hSnPcaBmo =
-    new TH2D("hSnPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
-  TH2D* hEfPcaBmo =
-    new TH2D("hEfPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
+  title           = ";z-vertex [cm];b_{#Xi^{ -}} [cm]";
+  TH2D* hSbPcaBmo = new TH2D("hSbPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
+  TH2D* hSnPcaBmo = new TH2D("hSnPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
+  TH2D* hEfPcaBmo = new TH2D("hEfPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
 
   title               = ";M_{inv} [GeV/c^{2}];pairs / 0.6 MeV";
   TH1D* hAllM         = new TH1D("hAllM", title, 50, mMin, mMax);

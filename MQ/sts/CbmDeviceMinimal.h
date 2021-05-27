@@ -11,6 +11,7 @@
 #include "FairMQDevice.h"
 
 #include "TMessage.h"
+
 #include <vector>
 
 class CbmDeviceStsLocalReco : public FairMQDevice {
@@ -30,9 +31,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

@@ -8,11 +8,11 @@
 #ifndef CBMMUCHPADRADIAL_H
 #define CBMMUCHPADRADIAL_H 1
 
+#include "CbmMuchPad.h"  // for CbmMuchPad
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 #include <TCrown.h>      // for TCrown
-
-#include "CbmMuchPad.h"  // for CbmMuchPad
 
 class CbmMuchPadRadial : public CbmMuchPad, public TCrown {
 
@@ -25,11 +25,7 @@ public:
    */
   //  CbmMuchPadRadial (CbmMuchSectorRadial* sector, Int_t iChannel);
 
-  CbmMuchPadRadial(Int_t address,
-                   Double_t r1,
-                   Double_t r2,
-                   Double_t phi1,
-                   Double_t phi2);
+  CbmMuchPadRadial(Int_t address, Double_t r1, Double_t r2, Double_t phi1, Double_t phi2);
 
   ~CbmMuchPadRadial() {}
   Double_t GetPhi1() const { return fPhi1; }

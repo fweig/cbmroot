@@ -40,9 +40,7 @@ public:
     * \param[out] chiSq Output value of contribution to chi-square.
     * \return Status code.
     */
-  virtual LitStatus Update(const CbmLitTrackParam* pParamIn,
-                           CbmLitTrackParam* pParamOut,
-                           const CbmLitHit* pHit,
+  virtual LitStatus Update(const CbmLitTrackParam* pParamIn, CbmLitTrackParam* pParamOut, const CbmLitHit* pHit,
                            litfloat& chiSq) = 0;
 
   /**
@@ -52,8 +50,7 @@ public:
     * \param[out] chiSq Output value of contribution to chi-square.
     * \return Status code.
     */
-  virtual LitStatus
-  Update(CbmLitTrackParam* pParam, const CbmLitHit* pHit, litfloat& chiSq) = 0;
+  virtual LitStatus Update(CbmLitTrackParam* pParam, const CbmLitHit* pHit, litfloat& chiSq) = 0;
 };
 
 #endif /* CBMLITTRACKUPDATE_H_ */

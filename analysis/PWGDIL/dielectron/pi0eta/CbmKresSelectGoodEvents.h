@@ -2,10 +2,12 @@
 #define CBM_KRES_SELECT_GOOD_EVENTS
 
 
+#include "CbmMCTrack.h"
+
 #include "FairTask.h"
 
-#include "CbmMCTrack.h"
 #include <TClonesArray.h>
+
 #include <vector>
 
 class FairMCApplication;

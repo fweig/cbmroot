@@ -53,8 +53,7 @@ using std::setw;
 using std::vector;
 
 // ---- Default constructor -------------------------------------------
-CbmTrdHitRateFastQa::CbmTrdHitRateFastQa()
-  : CbmTrdHitRateFastQa("TrdHitRateFastQa", "") {}
+CbmTrdHitRateFastQa::CbmTrdHitRateFastQa() : CbmTrdHitRateFastQa("TrdHitRateFastQa", "") {}
 // --------------------------------------------------------------------
 
 // ---- Constructor ----------------------------------------------------
@@ -131,11 +130,14 @@ CbmTrdHitRateFastQa::CbmTrdHitRateFastQa(const char* name, const char*)
   , fZLevel()
   , fBitPerHit(0)
   , fDigiMap()
-  , fDigiMapIt() {}
+  , fDigiMapIt()
+{
+}
 // --------------------------------------------------------------------
 
 // ---- Destructor ----------------------------------------------------
-CbmTrdHitRateFastQa::~CbmTrdHitRateFastQa() {
+CbmTrdHitRateFastQa::~CbmTrdHitRateFastQa()
+{
   //    FairRootManager *ioman =FairRootManager::Instance();
   //ioman->Write();
   //fDigiCollection->Clear("C");
@@ -146,7 +148,8 @@ CbmTrdHitRateFastQa::~CbmTrdHitRateFastQa() {
 // --------------------------------------------------------------------
 
 // ----  Initialisation  ----------------------------------------------
-void CbmTrdHitRateFastQa::SetParContainers() {
+void CbmTrdHitRateFastQa::SetParContainers()
+{
   cout << " * CbmTrdHitRateFastQa * :: SetParContainers() " << endl;
 
 
@@ -161,7 +164,8 @@ void CbmTrdHitRateFastQa::SetParContainers() {
 // --------------------------------------------------------------------
 
 // ---- ReInit  -------------------------------------------------------
-InitStatus CbmTrdHitRateFastQa::ReInit() {
+InitStatus CbmTrdHitRateFastQa::ReInit()
+{
 
   cout << " * CbmTrdHitRateFastQa * :: ReInit() " << endl;
 
@@ -178,7 +182,8 @@ InitStatus CbmTrdHitRateFastQa::ReInit() {
 // --------------------------------------------------------------------
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmTrdHitRateFastQa::Init() {
+InitStatus CbmTrdHitRateFastQa::Init()
+{
 
   cout << " * CbmTrdHitRate * :: Init() " << endl;
 
@@ -215,7 +220,8 @@ InitStatus CbmTrdHitRateFastQa::Init() {
 
 
 // ---- Exec ----------------------------------------------------------
-void CbmTrdHitRateFastQa::Exec(Option_t*) {
+void CbmTrdHitRateFastQa::Exec(Option_t*)
+{
   myfile.open("hits_per_asic.txt", std::fstream::out);
   myfile << "#" << endl;
   myfile << "##   TRD data per ASIC" << endl;
@@ -223,9 +229,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   myfile << "#" << endl;
   myfile << "#--------------------------" << endl;
 
-  fBitPerHit =
-    112
-    * 1.5;  // (112 + 4*16) * 10 / 8.;   // 6 time samples, 8b/10b encoding, CBMnet header
+  fBitPerHit = 112 * 1.5;  // (112 + 4*16) * 10 / 8.;   // 6 time samples, 8b/10b encoding, CBMnet header
   //  fBitPerHit = 220; // (112 + 4*16) * 10 / 8.;   // 6 time samples, 8b/10b encoding, CBMnet header
   //  fBitPerHit = 112;  // 6 time samples 3 + (9 * 6 + 3) / 15 = 7 words = 7 * 16 bit = 112 bits
 
@@ -258,8 +262,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  tFile    = new TFile(
-    "CbmTrdHitRateFastQa.root", "RECREATE", " ROOT file with histograms");
+  tFile = new TFile("CbmTrdHitRateFastQa.root", "RECREATE", " ROOT file with histograms");
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
   gFile      = oldFile;
@@ -289,8 +292,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   }
   TH1F* h1HitAsic = new TH1F(name, title, anbins, axbins);  // Mbit
 
-  if (fBitPerHit == 1.)
-    h1HitAsic->SetXTitle("Hits/Asic [Hz]");
+  if (fBitPerHit == 1.) h1HitAsic->SetXTitle("Hits/Asic [Hz]");
   else
     h1HitAsic->SetXTitle("Data/32ch Asic [Mbit/s]");
   h1HitAsic->SetYTitle("count");
@@ -316,8 +318,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   }
   h1DataModule = new TH1F(name, title, bnbins, bxbins);  // Mbit
 
-  if (fBitPerHit == 1.)
-    h1DataModule->SetXTitle("Hits/Module [Hz]");
+  if (fBitPerHit == 1.) h1DataModule->SetXTitle("Hits/Module [Hz]");
   else
     h1DataModule->SetXTitle("Data/Module [Mbit/s]");
   h1DataModule->SetYTitle("count");
@@ -343,36 +344,18 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
     c0->Divide(3, 1);
   }
   const Int_t z_cave = 12000;
-  h2Topview[0]       = new TH2F("TopView",
-                          "TopView",
-                          int(2 * winsize / mm2bin),
-                          -winsize,
-                          winsize,
-                          int(z_cave / mm2bin),
-                          0,
-                          z_cave);
+  h2Topview[0] =
+    new TH2F("TopView", "TopView", int(2 * winsize / mm2bin), -winsize, winsize, int(z_cave / mm2bin), 0, z_cave);
   h2Topview[0]->SetXTitle("x-Coordinate [mm]");
   h2Topview[0]->SetYTitle("z-Coordinate [mm]");
   h2Topview[0]->SetZTitle("#");
-  h2Topview[1] = new TH2F("FrontView",
-                          "FrontView",
-                          int(2 * winsize / mm2bin),
-                          -winsize,
-                          winsize,
-                          int(2 * winsize / mm2bin),
-                          -winsize,
-                          winsize);
+  h2Topview[1] = new TH2F("FrontView", "FrontView", int(2 * winsize / mm2bin), -winsize, winsize,
+                          int(2 * winsize / mm2bin), -winsize, winsize);
   h2Topview[1]->SetXTitle("x-Coordinate [mm]");
   h2Topview[1]->SetYTitle("y-Coordinate [mm]");
   h2Topview[1]->SetZTitle("#");
-  h2Topview[2] = new TH2F("SideView",
-                          "SideView",
-                          int(z_cave / mm2bin),
-                          0,
-                          z_cave,
-                          int(2 * winsize / mm2bin),
-                          -winsize,
-                          winsize);
+  h2Topview[2] =
+    new TH2F("SideView", "SideView", int(z_cave / mm2bin), 0, z_cave, int(2 * winsize / mm2bin), -winsize, winsize);
   h2Topview[2]->SetXTitle("z-Coordinate [mm]");
   h2Topview[2]->SetYTitle("y-Coordinate [mm]");
   h2Topview[2]->SetZTitle("#");
@@ -404,10 +387,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   */
   for (Int_t i = 0; i < TColor::GetNumberOfColors(); i++) {
     fColors.push_back(TColor::GetColorPalette(i));
-    fZLevel.push_back(
-      ZRangeL
-      + TMath::Power(10,
-                     TMath::Log10(ZRangeU) / TColor::GetNumberOfColors() * i));
+    fZLevel.push_back(ZRangeL + TMath::Power(10, TMath::Log10(ZRangeU) / TColor::GetNumberOfColors() * i));
     //fZLevel.push_back(ZRangeL + (i+1) * ((ZRangeU - ZRangeL) / TColor::GetNumberOfColors()));
     //printf("%2i %3i %f\n",i,TColor::GetColorPalette(i),ZRangeL + (i+1) * ((ZRangeU - ZRangeL) / TColor::GetNumberOfColors()));
   }
@@ -483,10 +463,9 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   TImage* Outimage1;
   TImage* Outimage2;
 
-  TLine* MaxHitRatePerPad =
-    new TLine(1e05, 0, 1e05, 1e04);   // 100.000 hits per pad
-  MaxHitRatePerPad->SetLineColor(2);  // make it red
-  MaxHitRatePerPad->SetLineWidth(8);  // make it thick
+  TLine* MaxHitRatePerPad = new TLine(1e05, 0, 1e05, 1e04);  // 100.000 hits per pad
+  MaxHitRatePerPad->SetLineColor(2);                         // make it red
+  MaxHitRatePerPad->SetLineWidth(8);                         // make it thick
 
   /*
     h2Layer  = new TH2F("dummy1","dummy1",1,-0.5,0.5,1,-0.5,0.5);
@@ -505,10 +484,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
       fStation = fPlane / 4 + 1;  // OK for SIS100 and SIS300
       fLayer   = fPlane % 4 + 1;  // OK for SIS100 and SIS300
 
-      printf("Station: %i  Layer: %i   nModules: %i\n",
-             fStation,
-             fLayer,
-             nModulesInThisLayer);
+      printf("Station: %i  Layer: %i   nModules: %i\n", fStation, fLayer, nModulesInThisLayer);
 
       h2Topview[0]->Reset();
       h2Topview[1]->Reset();
@@ -568,11 +544,8 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
         h1HitAsic->Draw();
         h1HitAsic->Write("", TObject::kOverwrite);
         c2->Update();
-        TLine* MaxDataRatePerUplink =
-          new TLine(500,
-                    0.7 * gPad->GetUymax(),
-                    500,
-                    gPad->GetUymax());  // 500 Mbit per Uplink
+        TLine* MaxDataRatePerUplink = new TLine(500, 0.7 * gPad->GetUymax(), 500,
+                                                gPad->GetUymax());  // 500 Mbit per Uplink
         // TLine* MaxDataRatePerUplink = new TLine(500,60,500,80);  // 500 Mbit per Uplink
         MaxDataRatePerUplink->SetLineColor(2);  // make it red
         MaxDataRatePerUplink->SetLineWidth(8);  // make it thick
@@ -583,11 +556,8 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
         h1DataModule->Write("", TObject::kOverwrite);
         c2->Update();
 
-        TLine* MaxDataRatePerOptLink =
-          new TLine(5000,
-                    0.7 * gPad->GetUymax(),
-                    5000,
-                    gPad->GetUymax());  // 500 Mbit per Uplink
+        TLine* MaxDataRatePerOptLink = new TLine(5000, 0.7 * gPad->GetUymax(), 5000,
+                                                 gPad->GetUymax());  // 500 Mbit per Uplink
         // TLine* MaxDataRatePerOptLink = new TLine(5000,5,5000,8);  // 500 Mbit per Uplink
         MaxDataRatePerOptLink->SetLineColor(2);  // make it red
         MaxDataRatePerOptLink->SetLineWidth(8);  // make it thick
@@ -623,8 +593,7 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
   printf("     --------------------------\n");
   printf("     total number of ASICs        : %d\n", nTotalAsics);
   printf("     total number of optical links: %d\n", nTotalOptLinks);
-  printf("     total TRD data rate          : %.2f (Gbit/s)\n",
-         trdTotalDataRate * 1e-3);
+  printf("     total TRD data rate          : %.2f (Gbit/s)\n", trdTotalDataRate * 1e-3);
   printf("     --------------------------\n");
   printf("     --------------------------\n");
 
@@ -635,23 +604,17 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
 }
 
 
-void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
-                                          TCanvas*& c1,
-                                          TCanvas*& c2,
-                                          TH1F*& HitPad,
-                                          TH1F*& HitAsic) {
+void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress, TCanvas*& c1, TCanvas*& c2, TH1F*& HitPad,
+                                          TH1F*& HitAsic)
+{
   c1->cd(1);
   Double_t ratePerModule = 0;  // sum of data from this module
   TVector3 padPos;
   TVector3 padSize;
-  CbmTrdParSetAsic* fModuleAsic =
-    (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(moduleAddress);
-  CbmTrdParModDigi* fModuleInfo =
-    (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
-  CbmTrdParModGeo* fModuleGeo =
-    (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
-  gGeoManager->FindNode(
-    fModuleGeo->GetX(), fModuleGeo->GetY(), fModuleGeo->GetZ());
+  CbmTrdParSetAsic* fModuleAsic = (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(moduleAddress);
+  CbmTrdParModDigi* fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
+  CbmTrdParModGeo* fModuleGeo   = (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
+  gGeoManager->FindNode(fModuleGeo->GetX(), fModuleGeo->GetY(), fModuleGeo->GetZ());
   /*gGeoManager->FindNode(fModuleInfo->GetX(),
     fModuleInfo->GetY(),
     fModuleInfo->GetZ());
@@ -674,31 +637,19 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
     const Int_t nCol = fModuleInfo->GetNofColumnsInSector(s);
     for (Int_t r = 0; r < nRow; r++) {
       for (Int_t c = 0; c < nCol; c++) {
-        fModuleInfo->GetPosition(/*moduleAddress, */ s,
-                                 c,
-                                 r,
-                                 padPos,
+        fModuleInfo->GetPosition(/*moduleAddress, */ s, c, r, padPos,
                                  padSize);  // padPos local or global???
-        Int_t channelAddress =
-          CbmTrdAddress::GetAddress(CbmTrdAddress::GetLayerId(moduleAddress),
-                                    CbmTrdAddress::GetModuleId(moduleAddress),
-                                    s,
-                                    r,
-                                    c);
-        Double_t local_min[3] = {padPos[0] - 0.5 * padSize[0],
-                                 padPos[1] - 0.5 * padSize[1],
-                                 padPos[2]};
-        Double_t local_max[3] = {padPos[0] + 0.5 * padSize[0],
-                                 padPos[1] + 0.5 * padSize[1],
-                                 padPos[2]};
+        Int_t channelAddress  = CbmTrdAddress::GetAddress(CbmTrdAddress::GetLayerId(moduleAddress),
+                                                         CbmTrdAddress::GetModuleId(moduleAddress), s, r, c);
+        Double_t local_min[3] = {padPos[0] - 0.5 * padSize[0], padPos[1] - 0.5 * padSize[1], padPos[2]};
+        Double_t local_max[3] = {padPos[0] + 0.5 * padSize[0], padPos[1] + 0.5 * padSize[1], padPos[2]};
         //Double_t master_min[3];
         //Double_t master_max[3];
         //gGeoManager->LocalToMaster(local_min, master_min);
         //gGeoManager->LocalToMaster(local_max, master_max);
-        if (
-          fModuleInfo->GetOrientation() == 1
-          || fModuleInfo->GetOrientation()
-               == 3) {  // Pad size is in local coordinate system where position is in global coordinate system
+        if (fModuleInfo->GetOrientation() == 1
+            || fModuleInfo->GetOrientation()
+                 == 3) {  // Pad size is in local coordinate system where position is in global coordinate system
           local_min[0] = padPos[0] - 0.5 * padSize[1];
           local_min[1] = padPos[1] - 0.5 * padSize[0];
           local_max[0] = padPos[0] + 0.5 * padSize[1];
@@ -717,14 +668,12 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
           local_max[i] *= 10.;
         }
         //Double_t rate = CalcHitRatePad(global_min[0], global_max[0], global_min[1], global_max[1], global_max[2]);
-        Double_t rate = CalcHitRatePad(
-          local_min[0], local_max[0], local_min[1], local_max[1], local_max[2]);
+        Double_t rate = CalcHitRatePad(local_min[0], local_max[0], local_min[1], local_max[1], local_max[2]);
         HitPad->Fill(rate);
         ratePerModule += rate;  // increase sum by rate of this asic
 
         //TBox *pad = new TBox(global_min[0], global_min[1], global_max[0], global_max[1]);
-        TBox* pad =
-          new TBox(local_min[0], local_min[1], local_max[0], local_max[1]);
+        TBox* pad = new TBox(local_min[0], local_min[1], local_max[0], local_max[1]);
         //printf("    %i %i %i  (%f, %f)   (%f, %f)   %f\n",s,r,c,local_min[0],local_min[1],global_min[0],global_min[1],rate);
         pad->SetLineColor(0);
         pad->SetLineWidth(0);
@@ -742,10 +691,9 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
         //delete pad;
         Int_t AsicAddress = fModuleAsic->GetAsicAddress(channelAddress);
         if (AsicAddress < 0)
-          LOG(error) << "CbmTrdHitRateFastQa::ScanModulePlane: Channel address:"
-                     << channelAddress << " is not initialized in module "
-                     << moduleAddress << "(s:" << s << ", r:" << r
-                     << ", c:" << c << ")";
+          LOG(error) << "CbmTrdHitRateFastQa::ScanModulePlane: Channel address:" << channelAddress
+                     << " is not initialized in module " << moduleAddress << "(s:" << s << ", r:" << r << ", c:" << c
+                     << ")";
         ratePerAsicMap[AsicAddress] += rate;
       }
     }
@@ -753,11 +701,9 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
     //sec->SetLineStyle(2);
     //sec->Draw("same");
   }
-  TBox* module =
-    new TBox(fModuleGeo->GetX() * 10 - fModuleInfo->GetSizeX() * 10,
-             fModuleGeo->GetY() * 10 - fModuleInfo->GetSizeY() * 10,
-             fModuleGeo->GetX() * 10 + fModuleInfo->GetSizeX() * 10,
-             fModuleGeo->GetY() * 10 + fModuleInfo->GetSizeY() * 10);
+  TBox* module = new TBox(
+    fModuleGeo->GetX() * 10 - fModuleInfo->GetSizeX() * 10, fModuleGeo->GetY() * 10 - fModuleInfo->GetSizeY() * 10,
+    fModuleGeo->GetX() * 10 + fModuleInfo->GetSizeX() * 10, fModuleGeo->GetY() * 10 + fModuleInfo->GetSizeY() * 10);
   module->SetFillStyle(0);
   module->Draw("same");
   c1->Update();
@@ -784,35 +730,24 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
     gGeoManager->LocalToMaster(local_min, master_min);
     gGeoManager->LocalToMaster(local_max, master_max);
     //printf("moduleAddress:%10i O:%i Asic:%3i  rate:%E\n",moduleAddress,fModuleInfo->GetOrientation(),AsicAddresses[iAsic],ratePerAsicMap[AsicAddresses[iAsic]]);
-    asic = new TBox(10. * master_min[0],
-                    10. * master_min[1],
-                    10. * master_max[0],
-                    10. * master_max[1]);
+    asic = new TBox(10. * master_min[0], 10. * master_min[1], 10. * master_max[0], 10. * master_max[1]);
     c2->cd(1);
-    if (ratePerAsicMap[AsicAddresses[iAsic]] > 4e6)
-      asic->SetFillColor(kBlack);
+    if (ratePerAsicMap[AsicAddresses[iAsic]] > 4e6) asic->SetFillColor(kBlack);
     else
-      asic->SetFillColor(
-        utils->GetColorCode(ratePerAsicMap[AsicAddresses[iAsic]]));
+      asic->SetFillColor(utils->GetColorCode(ratePerAsicMap[AsicAddresses[iAsic]]));
 
     //    myfile << iAsic << " " << AsicAddresses[iAsic] << " " << ratePerAsicMap[AsicAddresses[iAsic]] << endl;
-    myfile << moduleAddress << " " << setfill('0') << setw(2) << iAsic << " "
-           << setiosflags(ios::fixed) << setprecision(0) << setfill(' ')
-           << setw(8) << ratePerAsicMap[AsicAddresses[iAsic]] << endl;
+    myfile << moduleAddress << " " << setfill('0') << setw(2) << iAsic << " " << setiosflags(ios::fixed)
+           << setprecision(0) << setfill(' ') << setw(8) << ratePerAsicMap[AsicAddresses[iAsic]] << endl;
 
-    Double_t dataPerAsic = ratePerAsicMap[AsicAddresses[iAsic]] * 3 * 1e-6
-                           * fBitPerHit;  // Mbit, incl. neighbor
+    Double_t dataPerAsic = ratePerAsicMap[AsicAddresses[iAsic]] * 3 * 1e-6 * fBitPerHit;  // Mbit, incl. neighbor
     HitAsic->Fill(dataPerAsic);
     asic->Draw("same");
     //c2->Update();
   }
 
-  Double_t dataPerModule =
-    ratePerModule * 3 * 1e-6 * fBitPerHit;  // Mbit, incl. neighbor
-  Int_t nOptLinks =
-    1
-    + dataPerModule
-        / 4000.;  // 5000.; // 1 link plus 1 for each 4 Gbps (fill links to 80% max)
+  Double_t dataPerModule = ratePerModule * 3 * 1e-6 * fBitPerHit;  // Mbit, incl. neighbor
+  Int_t nOptLinks = 1 + dataPerModule / 4000.;  // 5000.; // 1 link plus 1 for each 4 Gbps (fill links to 80% max)
   h1DataModule->Fill(dataPerModule);
   h1OptLinksModule->Fill(nOptLinks);
 
@@ -828,14 +763,9 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress,
 }
 
 
-void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1,
-                                    TCanvas*& c2,
-                                    TCanvas*& c3,
-                                    TH2F*& Layer,
-                                    TH1F*& HitPad,
-                                    Double_t ZRangeL,
-                                    Double_t ZRangeU,
-                                    Double_t mm2bin) {
+void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TCanvas*& c3, TH2F*& Layer, TH1F*& HitPad,
+                                    Double_t ZRangeL, Double_t ZRangeU, Double_t mm2bin)
+{
   Char_t name[50];
   Char_t title[50];
 
@@ -896,14 +826,8 @@ void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1,
   sprintf(title, "Station %d, Layer %d", fStation, fLayer);
   printf("%s\n", title);
 
-  Layer = new TH2F(name,
-                   title,
-                   int(2 * winsize / mm2bin),
-                   -winsize,
-                   winsize,
-                   int(2 * winsize / mm2bin),
-                   -winsize,
-                   winsize);
+  Layer =
+    new TH2F(name, title, int(2 * winsize / mm2bin), -winsize, winsize, int(2 * winsize / mm2bin), -winsize, winsize);
   Layer->SetContour(99);
   Layer->SetXTitle("x-Coordinate [mm]");
   Layer->SetYTitle("y-Coordinate [mm]");
@@ -942,7 +866,8 @@ void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1,
 // --------------------------------------------------------------------
 
 // ---- FinishTask-----------------------------------------------------
-void CbmTrdHitRateFastQa::FinishEvent() {
+void CbmTrdHitRateFastQa::FinishEvent()
+{
   fDigiMap.clear();
   if (fDigiCollection) fDigiCollection->Clear();
   if (fDigiMatchCollection) fDigiMatchCollection->Clear();
@@ -950,7 +875,8 @@ void CbmTrdHitRateFastQa::FinishEvent() {
 
 // --------------------------------------------------------------------
 // ----GetModuleInformation ------------------------------------------
-void CbmTrdHitRateFastQa::GetModuleInformation() {
+void CbmTrdHitRateFastQa::GetModuleInformation()
+{
   // Extract the information about station, layer, module type
   // and cpoy number of the module from the full path to the
   // node.
@@ -990,28 +916,18 @@ void CbmTrdHitRateFastQa::GetModuleInformation() {
 
 // --------------------------------------------------------------------
 // ----GetModuleInformationFromDigiPar ------------------------------------------
-void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
-  HitRateGeoPara2* GeoPara,
-  Bool_t Fast,
-  Bool_t Lines,
-  Int_t VolumeID,
-  TH2F* Layer,
-  TCanvas* c1,
-  TH1F* HitPad,
-  TCanvas* c2,
-  TH2F* Topview[3],
-  TCanvas* c0,
-  Double_t mm2bin) {
+void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(HitRateGeoPara2* GeoPara, Bool_t Fast, Bool_t Lines,
+                                                          Int_t VolumeID, TH2F* Layer, TCanvas* c1, TH1F* HitPad,
+                                                          TCanvas* c2, TH2F* Topview[3], TCanvas* c0, Double_t mm2bin)
+{
   // fPos is >0 for x and y and not rotated
   // origin of the local coordinate system in
   // the lower left corner of the chamber,
   // x to the right (small side of the pads), y up
   //cout << "GetModuleInformationFromDigiPar" << endl;
 
-  CbmTrdParModDigi* fModuleInfo =
-    (CbmTrdParModDigi*) fDigiPar->GetModulePar(VolumeID);
-  CbmTrdParModGeo* fModuleGeo =
-    (CbmTrdParModGeo*) fGeoPar->GetModulePar(VolumeID);
+  CbmTrdParModDigi* fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(VolumeID);
+  CbmTrdParModGeo* fModuleGeo   = (CbmTrdParModGeo*) fGeoPar->GetModulePar(VolumeID);
   if (fModuleInfo != NULL) {
 
     // fill GeoPara
@@ -1049,18 +965,14 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
         if (i == 0)  // x direction
         {
           GeoPara->sSize[s][i] = fModuleInfo->GetSectorSizeX(s) * 10;
-          if (GeoPara->sSize[s][i]
-              < 2 * GeoPara->mSize[i])  // if sector smaller than module
+          if (GeoPara->sSize[s][i] < 2 * GeoPara->mSize[i])  // if sector smaller than module
           {
-            GeoPara->sCol[s] =
-              round(GeoPara->sSize[s][i]
-                    / GeoPara->pSize[s][i]);  // calculate number of pads
-          } else                              // only one sector
+            GeoPara->sCol[s] = round(GeoPara->sSize[s][i] / GeoPara->pSize[s][i]);  // calculate number of pads
+          }
+          else  // only one sector
           {
             if (s == 0)
-              GeoPara->sCol[s] =
-                round(GeoPara->sSize[s][i]
-                      / GeoPara->pSize[s][i]);  // calculate number of pads
+              GeoPara->sCol[s] = round(GeoPara->sSize[s][i] / GeoPara->pSize[s][i]);  // calculate number of pads
             else
               GeoPara->sCol[s] = 0;  // set other sectors 0
           }
@@ -1070,17 +982,14 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
         if (i == 1)  // y direction
         {
           GeoPara->sSize[s][i] = fModuleInfo->GetSectorSizeY(s) * 10;
-          if (GeoPara->sSize[s][i]
-              < 2 * GeoPara->mSize[i])  // if sector smaller than module
+          if (GeoPara->sSize[s][i] < 2 * GeoPara->mSize[i])  // if sector smaller than module
           {
-            GeoPara->sRow[s] =
-              round(GeoPara->sSize[s][i] / GeoPara->pSize[s][i]);
-          } else  // only one sector
+            GeoPara->sRow[s] = round(GeoPara->sSize[s][i] / GeoPara->pSize[s][i]);
+          }
+          else  // only one sector
           {
             if (s == 0)
-              GeoPara->sRow[s] =
-                round(GeoPara->sSize[s][i]
-                      / GeoPara->pSize[s][i]);  // calculate number of pads
+              GeoPara->sRow[s] = round(GeoPara->sSize[s][i] / GeoPara->pSize[s][i]);  // calculate number of pads
             else
               GeoPara->sRow[s] = 0;  // set other sectors 0
           }
@@ -1136,28 +1045,20 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     GeoPara->vY[2] = padPos[2] * 10 - GeoPara->vOrigin[2];
 
     // normal vector
-    GeoPara->vN[0] =
-      GeoPara->vX[1] * GeoPara->vY[2] - GeoPara->vX[2] * GeoPara->vY[1];
-    GeoPara->vN[1] =
-      GeoPara->vX[2] * GeoPara->vY[0] - GeoPara->vX[0] * GeoPara->vY[2];
-    GeoPara->vN[2] =
-      GeoPara->vX[0] * GeoPara->vY[1] - GeoPara->vX[1] * GeoPara->vY[0];
+    GeoPara->vN[0] = GeoPara->vX[1] * GeoPara->vY[2] - GeoPara->vX[2] * GeoPara->vY[1];
+    GeoPara->vN[1] = GeoPara->vX[2] * GeoPara->vY[0] - GeoPara->vX[0] * GeoPara->vY[2];
+    GeoPara->vN[2] = GeoPara->vX[0] * GeoPara->vY[1] - GeoPara->vX[1] * GeoPara->vY[0];
 
     // inclination angle
-    GeoPara->lambda = (GeoPara->vOrigin[0] * GeoPara->vN[0]
-                       + GeoPara->vOrigin[1] * GeoPara->vN[1]
+    GeoPara->lambda = (GeoPara->vOrigin[0] * GeoPara->vN[0] + GeoPara->vOrigin[1] * GeoPara->vN[1]
                        + GeoPara->vOrigin[2] * GeoPara->vN[2]);
 
     /*x-direction*/
-    GeoPara->cosX =
-      (GeoPara->vX[0] * 1 + GeoPara->vX[1] * 0 + GeoPara->vX[2] * 0)
-      / sqrt(pow(GeoPara->vX[0], 2) + pow(GeoPara->vX[1], 2)
-             + pow(GeoPara->vX[2], 2));
+    GeoPara->cosX = (GeoPara->vX[0] * 1 + GeoPara->vX[1] * 0 + GeoPara->vX[2] * 0)
+                    / sqrt(pow(GeoPara->vX[0], 2) + pow(GeoPara->vX[1], 2) + pow(GeoPara->vX[2], 2));
     /*y-direction*/
-    GeoPara->cosY =
-      (GeoPara->vY[0] * 0 + GeoPara->vY[1] * 1 + GeoPara->vY[2] * 0)
-      / sqrt(pow(GeoPara->vY[0], 2) + pow(GeoPara->vY[1], 2)
-             + pow(GeoPara->vY[2], 2));
+    GeoPara->cosY = (GeoPara->vY[0] * 0 + GeoPara->vY[1] * 1 + GeoPara->vY[2] * 0)
+                    / sqrt(pow(GeoPara->vY[0], 2) + pow(GeoPara->vY[1], 2) + pow(GeoPara->vY[2], 2));
 
     // check and fix cos values (were larger than 1)
     //    cout << "a cosX " << GeoPara->cosX << " cosY " << GeoPara->cosY << endl;
@@ -1171,25 +1072,17 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
 
     if (GeoPara->vX[0] != 0)
       GeoPara->stepDirection[0] =
-        fabs(GeoPara->vX[0])
-        / (GeoPara
-             ->vX[0]);  // is the next pad (1,0,0) on the left  or right side?
+        fabs(GeoPara->vX[0]) / (GeoPara->vX[0]);  // is the next pad (1,0,0) on the left  or right side?
     else
       GeoPara->stepDirection[0] =
-        -fabs(GeoPara->vX[1])
-        / (GeoPara
-             ->vX[1]);  // is the next pad (1,0,0) on the left  or right side?
+        -fabs(GeoPara->vX[1]) / (GeoPara->vX[1]);  // is the next pad (1,0,0) on the left  or right side?
 
     if (GeoPara->vY[1] != 0)
       GeoPara->stepDirection[1] =
-        fabs(GeoPara->vY[1])
-        / (GeoPara
-             ->vY[1]);  // is the next pad (0,1,0) on the upper or lower side?
+        fabs(GeoPara->vY[1]) / (GeoPara->vY[1]);  // is the next pad (0,1,0) on the upper or lower side?
     else
       GeoPara->stepDirection[1] =
-        -fabs(GeoPara->vY[0])
-        / (GeoPara
-             ->vY[0]);  // is the next pad (0,1,0) on the upper or lower side?
+        -fabs(GeoPara->vY[0]) / (GeoPara->vY[0]);  // is the next pad (0,1,0) on the upper or lower side?
 
     // transfer values to old variables
     Double_t Mpos[3];
@@ -1203,9 +1096,8 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     cout.setf(ios::fixed);
     cout.precision(0);
     if (Lines)
-      cout << "pos " << setw(6) << Mpos[0] << setw(6) << Mpos[1] << setw(6)
-           << Mpos[2] << " size " << setw(6) << Msize[0] << setw(6) << Msize[1]
-           << setw(6) << Msize[2] << endl;
+      cout << "pos " << setw(6) << Mpos[0] << setw(6) << Mpos[1] << setw(6) << Mpos[2] << " size " << setw(6)
+           << Msize[0] << setw(6) << Msize[1] << setw(6) << Msize[2] << endl;
 
 
     const Int_t nSec = fModuleInfo->GetNofSectors();  // is always 3
@@ -1224,15 +1116,13 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     }
 
     if (Lines)
-      cout << "sec   " << setw(10) << Ssize[0] << setw(10) << Ssize[1]
-           << setw(10) << Ssize[3] << setw(10) << Ssize[4] << setw(10)
-           << Ssize[6] << setw(10) << Ssize[7] << endl;
+      cout << "sec   " << setw(10) << Ssize[0] << setw(10) << Ssize[1] << setw(10) << Ssize[3] << setw(10) << Ssize[4]
+           << setw(10) << Ssize[6] << setw(10) << Ssize[7] << endl;
 
     cout.precision(2);
     if (Lines)
-      cout << "pad   " << setw(10) << Psize[0] << setw(10) << Psize[1]
-           << setw(10) << Psize[3] << setw(10) << Psize[4] << setw(10)
-           << Psize[6] << setw(10) << Psize[7] << endl;
+      cout << "pad   " << setw(10) << Psize[0] << setw(10) << Psize[1] << setw(10) << Psize[3] << setw(10) << Psize[4]
+           << setw(10) << Psize[6] << setw(10) << Psize[7] << endl;
 
     // nCol and nRow
     Int_t nCol = GeoPara->nCol;  // columns per module - or - pads per row
@@ -1242,26 +1132,18 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     const Int_t mRow = fModuleInfo->GetNofRows();
 
     if (Lines) {
-      cout << "col0  " << setw(10) << GeoPara->sCol[0] << "  row0  " << setw(10)
-           << GeoPara->sRow[0] << endl;
-      cout << "col1  " << setw(10) << GeoPara->sCol[1] << "  row1  " << setw(10)
-           << GeoPara->sRow[1] << endl;
-      cout << "col2  " << setw(10) << GeoPara->sCol[2] << "  row2  " << setw(10)
-           << GeoPara->sRow[2] << endl;
-      cout << "col   " << setw(10) << nCol << "  row   " << setw(10) << nRow
-           << endl;
+      cout << "col0  " << setw(10) << GeoPara->sCol[0] << "  row0  " << setw(10) << GeoPara->sRow[0] << endl;
+      cout << "col1  " << setw(10) << GeoPara->sCol[1] << "  row1  " << setw(10) << GeoPara->sRow[1] << endl;
+      cout << "col2  " << setw(10) << GeoPara->sCol[2] << "  row2  " << setw(10) << GeoPara->sRow[2] << endl;
+      cout << "col   " << setw(10) << nCol << "  row   " << setw(10) << nRow << endl;
 
-      cout << "mcol  " << setw(10) << mCol << "  mrow  " << setw(10) << mRow
-           << endl;
-      cout << "0col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(0)
-           << "  0row  " << setw(10) << fModuleInfo->GetNofRowsInSector(0)
-           << endl;
-      cout << "1col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(1)
-           << "  1row  " << setw(10) << fModuleInfo->GetNofRowsInSector(1)
-           << endl;
-      cout << "2col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(2)
-           << "  2row  " << setw(10) << fModuleInfo->GetNofRowsInSector(2)
-           << endl;
+      cout << "mcol  " << setw(10) << mCol << "  mrow  " << setw(10) << mRow << endl;
+      cout << "0col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(0) << "  0row  " << setw(10)
+           << fModuleInfo->GetNofRowsInSector(0) << endl;
+      cout << "1col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(1) << "  1row  " << setw(10)
+           << fModuleInfo->GetNofRowsInSector(1) << endl;
+      cout << "2col  " << setw(10) << fModuleInfo->GetNofColumnsInSector(2) << "  2row  " << setw(10)
+           << fModuleInfo->GetNofRowsInSector(2) << endl;
     }
 
 
@@ -1298,34 +1180,28 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
       cout << "vX1   " << setw(10) << GeoPara->vX[1] << endl;
       cout << "vY0   " << setw(10) << GeoPara->vY[0] << endl;
       cout << "vY1   " << setw(10) << GeoPara->vY[1] << endl;
-      cout << "step  " << setw(10) << GeoPara->stepDirection[0] << setw(10)
-           << GeoPara->stepDirection[1] << endl;
-      cout << "cos   " << setw(10) << GeoPara->cosX << setw(10) << GeoPara->cosY
-           << endl;
-      cout << "v00xy " << setw(10) << GeoPara->mPos[0] - GeoPara->vOrigin[0]
-           << setw(10) << GeoPara->mPos[1] - GeoPara->vOrigin[1] << endl;
+      cout << "step  " << setw(10) << GeoPara->stepDirection[0] << setw(10) << GeoPara->stepDirection[1] << endl;
+      cout << "cos   " << setw(10) << GeoPara->cosX << setw(10) << GeoPara->cosY << endl;
+      cout << "v00xy " << setw(10) << GeoPara->mPos[0] - GeoPara->vOrigin[0] << setw(10)
+           << GeoPara->mPos[1] - GeoPara->vOrigin[1] << endl;
 
       //      cout << "------------------------------------------------------" << endl;
     }
 
     // angles are relative to y direction
-    if ((GeoPara->stepDirection[0] == 1)
-        && (GeoPara->stepDirection[1] == 1))  // OK - vert up
+    if ((GeoPara->stepDirection[0] == 1) && (GeoPara->stepDirection[1] == 1))  // OK - vert up
       GeoPara->rot_angle = 0;
-    if ((GeoPara->stepDirection[0] == -1)
-        && (GeoPara->stepDirection[1] == 1))  // OK - hori left
+    if ((GeoPara->stepDirection[0] == -1) && (GeoPara->stepDirection[1] == 1))  // OK - hori left
       GeoPara->rot_angle = 1;
-    if ((GeoPara->stepDirection[0] == -1)
-        && (GeoPara->stepDirection[1] == -1))  // OK - vert down
+    if ((GeoPara->stepDirection[0] == -1) && (GeoPara->stepDirection[1] == -1))  // OK - vert down
       GeoPara->rot_angle = 2;
-    if ((GeoPara->stepDirection[0] == 1)
-        && (GeoPara->stepDirection[1] == -1))  // OK - hori right
+    if ((GeoPara->stepDirection[0] == 1) && (GeoPara->stepDirection[1] == -1))  // OK - hori right
       GeoPara->rot_angle = 3;
 
     //    GeoPara->ori       = fModuleInfo->GetOrientation();  // is 0,1,2,3
     if (Lines)
-      cout << "ori   " << setw(10) << fModuleInfo->GetOrientation()
-           << "  rot   " << setw(10) << GeoPara->rot_angle << endl;
+      cout << "ori   " << setw(10) << fModuleInfo->GetOrientation() << "  rot   " << setw(10) << GeoPara->rot_angle
+           << endl;
 
     //    if (GeoPara->rot_angle == 3)
     //    {
@@ -1345,8 +1221,7 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     //      GeoPara->vOrigin[1] = padPos[1] * 10;
     //    }
 
-    if (Lines)
-      cout << "------------------------------------------------------" << endl;
+    if (Lines) cout << "------------------------------------------------------" << endl;
 
     Topview[0]->Fill(GeoPara->mPos[0], GeoPara->mPos[2]);
     Topview[1]->Fill(GeoPara->mPos[0], GeoPara->mPos[1]);
@@ -1355,7 +1230,8 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
     if (Lines) {
       DrawPads(GeoPara, Layer, c1);
       DrawBorders(GeoPara, Layer, c1);
-    } else {
+    }
+    else {
       Histo(GeoPara, Fast, Layer, c1, HitPad, c2, Topview, c0, mm2bin);
     }
 
@@ -1374,11 +1250,7 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
           start->Draw("same");
         }
 
-        fModuleInfo->GetPosition(/*VolumeID,*/ s,
-                                 GeoPara->sCol[0] - 1,
-                                 GeoPara->sRow[s] - 1,
-                                 padPos,
-                                 padSize);
+        fModuleInfo->GetPosition(/*VolumeID,*/ s, GeoPara->sCol[0] - 1, GeoPara->sRow[s] - 1, padPos, padSize);
 
         TPolyMarker* end = new TPolyMarker(1);
         end->SetPoint(0, padPos(0) * 10, padPos(1) * 10);
@@ -1390,17 +1262,14 @@ void CbmTrdHitRateFastQa::GetModuleInformationFromDigiPar(
           end->Draw("same");
         }
       }
-
   }
 
   else
     printf("fModuleInfo == NULL\n");
 }
-Double_t CbmTrdHitRateFastQa::CalcHitRatePad(const Double_t x_min,
-                                             const Double_t x_max,
-                                             const Double_t y_min,
-                                             const Double_t y_max,
-                                             const Double_t z) {  //[mm]
+Double_t CbmTrdHitRateFastQa::CalcHitRatePad(const Double_t x_min, const Double_t x_max, const Double_t y_min,
+                                             const Double_t y_max, const Double_t z)
+{  //[mm]
   //    Double_t a[3] = { 7.66582e+00,  6.97712e+00,  6.53780e+00};
   //    Double_t b[3] = {-2.72375e-03, -1.85168e-03, -1.42673e-03};
   Double_t r(0), alpha(0), HitRate(0);
@@ -1415,8 +1284,7 @@ Double_t CbmTrdHitRateFastQa::CalcHitRatePad(const Double_t x_min,
       r     = sqrt(pow(x, 2) + pow(y, 2));
       alpha = atan(r / z) * 1000.;  //[mrad]
       HitRate +=                    // fit including errors
-        exp(4.536355e00 + -8.393716e-03 * alpha)
-        + exp(2.400547e01 + -1.208306e-02 * alpha) / (z * z);
+        exp(4.536355e00 + -8.393716e-03 * alpha) + exp(2.400547e01 + -1.208306e-02 * alpha) / (z * z);
       x += xStepWidth;
     }
     y += yStepWidth;
@@ -1424,16 +1292,10 @@ Double_t CbmTrdHitRateFastQa::CalcHitRatePad(const Double_t x_min,
   return (HitRate);  // [Hz/mm^2]
 }
 
-Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara,
-                                          Double_t StartX,
-                                          Double_t /*StopX*/,
-                                          Int_t xSteps,
-                                          Double_t StartY,
-                                          Double_t /*StopY*/,
-                                          Int_t ySteps,
-                                          Double_t* /*Mpos*/,
-                                          TH2F** /*Topview[3]*/,
-                                          TCanvas* /*c0*/) {
+Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara, Double_t StartX, Double_t /*StopX*/, Int_t xSteps,
+                                          Double_t StartY, Double_t /*StopY*/, Int_t ySteps, Double_t* /*Mpos*/,
+                                          TH2F** /*Topview[3]*/, TCanvas* /*c0*/)
+{
   //cout << "CalcHitRate" << endl;
   Double_t HitRate = 0;  //1. / sqrt( pow( StartX,2) + pow( StartY,2));
   Double_t r       = 0;
@@ -1444,22 +1306,19 @@ Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara,
 
   Double_t xStepWidth = GeoPara->cosX;
   Double_t yStepWidth = GeoPara->cosY;
-  Double_t x =
-    StartX + 0.5 * GeoPara->cosX;  // don't start on the pad border line
-  Double_t y = StartY + 0.5 * GeoPara->cosY;
+  Double_t x          = StartX + 0.5 * GeoPara->cosX;  // don't start on the pad border line
+  Double_t y          = StartY + 0.5 * GeoPara->cosY;
 
   //  Double_t xStepWidth = fabs(GeoPara->cosX);
   //  Double_t yStepWidth = fabs(GeoPara->cosY);
   //  Double_t x = StartX + 0.5 * fabs(GeoPara->cosX); // don't start on the pad border line
   //  Double_t y = StartY + 0.5 * fabs(GeoPara->cosY);
-  Double_t z = (GeoPara->lambda - (x * GeoPara->vN[0] + y * GeoPara->vN[1]))
-               / GeoPara->vN[2];
+  Double_t z = (GeoPara->lambda - (x * GeoPara->vN[0] + y * GeoPara->vN[1])) / GeoPara->vN[2];
   for (Int_t yStep = 0; yStep < ySteps; yStep++) {
     x = StartX + 0.5 * GeoPara->cosX;
     //    x = StartX + 0.5 * fabs(GeoPara->cosX);
     for (Int_t xStep = 0; xStep < xSteps; xStep++) {
-      z = (GeoPara->lambda - (x * GeoPara->vN[0] + y * GeoPara->vN[1]))
-          / GeoPara->vN[2];
+      z     = (GeoPara->lambda - (x * GeoPara->vN[0] + y * GeoPara->vN[1])) / GeoPara->vN[2];
       r     = sqrt(pow(x / 1.5, 2) + pow(y, 2));
       alpha = atan(r / z) * 1000.;
       /* //Fit without errors
@@ -1470,8 +1329,7 @@ Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara,
 	   ;
 	*/
       HitRate +=  // fit including errors
-        exp(4.536355e00 + -8.393716e-03 * alpha)
-        + exp(2.400547e01 + -1.208306e-02 * alpha) / (z * z);
+        exp(4.536355e00 + -8.393716e-03 * alpha) + exp(2.400547e01 + -1.208306e-02 * alpha) / (z * z);
       /*
 	  Topview[0]->Fill(x,z);
 	  Topview[1]->Fill(x,y);
@@ -1481,20 +1339,13 @@ Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara,
     }
     y += yStepWidth;
   }
-  return (
-    HitRate /*/(counter/100.)*/); /*Convertes Hits/Pad -> Hits/cm² on each Pad*/
+  return (HitRate /*/(counter/100.)*/); /*Convertes Hits/Pad -> Hits/cm² on each Pad*/
 }
 
 
-void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
-                                Bool_t Fast,
-                                TH2F* h2Layer,
-                                TCanvas* /*c1*/,
-                                TH1F* h1HitPad,
-                                TCanvas* /*c2*/,
-                                TH2F* Topview[3],
-                                TCanvas* c0,
-                                Double_t mm2bin) {
+void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara, Bool_t Fast, TH2F* h2Layer, TCanvas* /*c1*/, TH1F* h1HitPad,
+                                TCanvas* /*c2*/, TH2F* Topview[3], TCanvas* c0, Double_t mm2bin)
+{
   Double_t ZRangeL = 1e00;  //1e05;
   Double_t ZRangeU = 1e05;  //1e06;
   TString name;
@@ -1507,22 +1358,10 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
   name.Form("Module%05d", GeoPara->moduleId);
   TH2F* h2Module;
   if (GeoPara->mSize[0] < 500)  // small module
-    h2Module = new TH2F(name,
-                        name,
-                        600 / mm2bin + 1,
-                        -300.5,
-                        300.5,
-                        600 / mm2bin + 1,
-                        -300.5,
+    h2Module = new TH2F(name, name, 600 / mm2bin + 1, -300.5, 300.5, 600 / mm2bin + 1, -300.5,
                         300.5);  //  501 x  501 bins
   else                           // large module
-    h2Module = new TH2F(name,
-                        name,
-                        1000 / mm2bin + 1,
-                        -500.5,
-                        500.5,
-                        1000 / mm2bin + 1,
-                        -500.5,
+    h2Module = new TH2F(name, name, 1000 / mm2bin + 1, -500.5, 500.5, 1000 / mm2bin + 1, -500.5,
                         500.5);  // 1001 x 1001 bins
   //  TH2F *h2Module = new TH2F(name,name,1500/mm2bin+1,-750.5,750.5,1500/mm2bin+1,-750.5,750.5);
   h2Module->GetZaxis()->SetRangeUser(ZRangeL, ZRangeU);
@@ -1547,15 +1386,12 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
   Double_t planeStartY = GeoPara->mPos[1] - GeoPara->mSize[1];
   Double_t planeStopY  = planeStartY + GeoPara->pSize[iSecY][1];
 
-  Double_t StartX =
-    GeoPara->vOrigin[0]
-    + 0.5 * GeoPara->pSize[iSecX][0]
-        * GeoPara->cosX;  // vOrigin points to the center of pad (0,0,0)
+  Double_t StartX = GeoPara->vOrigin[0]
+                    + 0.5 * GeoPara->pSize[iSecX][0] * GeoPara->cosX;  // vOrigin points to the center of pad (0,0,0)
   Double_t StopX = StartX + GeoPara->pSize[iSecX][0] * GeoPara->cosX;
 
-  Double_t StartY =
-    GeoPara->vOrigin[1] + 0.5 * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
-  Double_t StopY = StartY + GeoPara->pSize[iSecY][1] * GeoPara->cosY;
+  Double_t StartY = GeoPara->vOrigin[1] + 0.5 * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
+  Double_t StopY  = StartY + GeoPara->pSize[iSecY][1] * GeoPara->cosY;
 
   Int_t xSteps = 0;
   Int_t ySteps = 0;
@@ -1573,9 +1409,7 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
   //if (GeoPara->rot_angle != 3)
   for (Int_t iR = 0; iR < GeoPara->nRow; iR++)  // rows
   {
-    StartX =
-      GeoPara->vOrigin[0]
-      + 0.5 * GeoPara->pSize[iSecX][0] * GeoPara->cosX;  // why to the left?
+    StartX      = GeoPara->vOrigin[0] + 0.5 * GeoPara->pSize[iSecX][0] * GeoPara->cosX;  // why to the left?
     StopX       = StartX + GeoPara->pSize[iSecX][0] * GeoPara->cosX;
     planeStartX = GeoPara->mPos[0] - GeoPara->mSize[0];
     planeStopX  = planeStartX + GeoPara->pSize[iSecX][0];
@@ -1588,35 +1422,16 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
       if (Fast) {
         //DE
         //	      if (GeoPara->mPos[0] > -1 && GeoPara->mPos[1] > -1)
-        if (GeoPara->mPos[0] < 1
-            && GeoPara->mPos[1] < 1)  // copy the bottom left quadrant
+        if (GeoPara->mPos[0] < 1 && GeoPara->mPos[1] < 1)  // copy the bottom left quadrant
         {
-          HiteRate = CalcHitRate(GeoPara,
-                                 StartX,
-                                 StopX,
-                                 xSteps,
-                                 StartY,
-                                 StopY,
-                                 ySteps,
-                                 GeoPara->mPos,
-                                 Topview,
-                                 c0);
+          HiteRate = CalcHitRate(GeoPara, StartX, StopX, xSteps, StartY, StopY, ySteps, GeoPara->mPos, Topview, c0);
           h1HitPad->Fill(HiteRate, 4);  // weight 4 for each quadrant
         }
       }
 
       else  // slow, for each module
       {
-        HiteRate = CalcHitRate(GeoPara,
-                               StartX,
-                               StopX,
-                               xSteps,
-                               StartY,
-                               StopY,
-                               ySteps,
-                               GeoPara->mPos,
-                               Topview,
-                               c0);
+        HiteRate = CalcHitRate(GeoPara, StartX, StopX, xSteps, StartY, StopY, ySteps, GeoPara->mPos, Topview, c0);
         h1HitPad->Fill(HiteRate);
         h1HitPadModule->Fill(HiteRate);  // single module, goes into root file
       }
@@ -1626,38 +1441,28 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
       Int_t mStepX = Int_t((planeStartX - GeoPara->mPos[0]));
       Int_t mStepY = Int_t((planeStartY - GeoPara->mPos[1]));
 
-      for (Int_t stepY = int(planeStartY / mm2bin);
-           stepY < int(planeStopY / mm2bin);
-           stepY++) {
+      for (Int_t stepY = int(planeStartY / mm2bin); stepY < int(planeStopY / mm2bin); stepY++) {
         //	      mStepX = Int_t((planeStartX-GeoPara->mPos[0]));
 
-        for (Int_t stepX = int(planeStartX / mm2bin);
-             stepX < int(planeStopX / mm2bin);
-             stepX++) {
+        for (Int_t stepX = int(planeStartX / mm2bin); stepX < int(planeStopX / mm2bin); stepX++) {
 
           if (Fast) {
             //DE
             //		      if (GeoPara->mPos[0]/*GeoPara->mPos[0]*/ > -1 && GeoPara->mPos[1]/*GeoPara->mPos[1]*/ > -1)
-            if (GeoPara->mPos[0] /*GeoPara->mPos[0]*/ < 1
-                && GeoPara->mPos[1] /*GeoPara->mPos[1]*/ < 1) {
+            if (GeoPara->mPos[0] /*GeoPara->mPos[0]*/ < 1 && GeoPara->mPos[1] /*GeoPara->mPos[1]*/ < 1) {
 
-              h2Layer->SetBinContent(stepX + int(winsize / mm2bin),
-                                     stepY + int(winsize / mm2bin),
+              h2Layer->SetBinContent(stepX + int(winsize / mm2bin), stepY + int(winsize / mm2bin),
                                      HiteRate);  // bin coordiantes
-              h2Layer->SetBinContent(-1 * stepX + int(winsize / mm2bin),
-                                     stepY + int(winsize / mm2bin),
+              h2Layer->SetBinContent(-1 * stepX + int(winsize / mm2bin), stepY + int(winsize / mm2bin),
                                      HiteRate);  // bin coordiantes
-              h2Layer->SetBinContent(stepX + int(winsize / mm2bin),
-                                     -1 * stepY + int(winsize / mm2bin),
+              h2Layer->SetBinContent(stepX + int(winsize / mm2bin), -1 * stepY + int(winsize / mm2bin),
                                      HiteRate);  // bin coordiantes
-              h2Layer->SetBinContent(-1 * stepX + int(winsize / mm2bin),
-                                     -1 * stepY + int(winsize / mm2bin),
+              h2Layer->SetBinContent(-1 * stepX + int(winsize / mm2bin), -1 * stepY + int(winsize / mm2bin),
                                      HiteRate);  // bin coordiantes
 
               if (GeoPara->moduleId == 5) {
                 //                            cout << "filling 5 " << mStepX << " " << mStepY << " " << HiteRate << endl;
-                h2Module->Fill(mStepX,
-                               mStepY,
+                h2Module->Fill(mStepX, mStepY,
                                HiteRate);  // single module, goes into root file
               }
             }
@@ -1666,17 +1471,14 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
           else  // slow
           {
 
-            h2Layer->SetBinContent(stepX + int(winsize / mm2bin),
-                                   stepY + int(winsize / mm2bin),
+            h2Layer->SetBinContent(stepX + int(winsize / mm2bin), stepY + int(winsize / mm2bin),
                                    HiteRate);  // bin coordinates
 
             //                      cout << "StepX " << stepX << " StepY " << stepY << endl;
 
             if (GeoPara->moduleId == 5) {
-              cout << "filling 5 " << mStepX << " " << mStepY << " " << HiteRate
-                   << endl;
-              h2Module->Fill(mStepX,
-                             mStepY,
+              cout << "filling 5 " << mStepX << " " << mStepY << " " << HiteRate << endl;
+              h2Module->Fill(mStepX, mStepY,
                              HiteRate);  // single module, goes into root file
             }
             //                      cout << "mStepX " << mStepX << " mStepY " << mStepY << endl;
@@ -1695,10 +1497,8 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
         //	    cout << "iC " << iC << " " << GeoPara->nCol << " " << iSecX << endl;
         iSecX++;
       }
-      StartX +=
-        GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0] * GeoPara->cosX;
-      StopX +=
-        GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0] * GeoPara->cosX;
+      StartX += GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0] * GeoPara->cosX;
+      StopX += GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0] * GeoPara->cosX;
       planeStartX += GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0];
       planeStopX += GeoPara->stepDirection[0] * GeoPara->pSize[iSecX][0];
       //	  StartX      += GeoPara->pSize[iSecX][0] * GeoPara->cosX;
@@ -1715,10 +1515,8 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
       iSecY++;
     }
 
-    StartY +=
-      GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
-    StopY +=
-      GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
+    StartY += GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
+    StopY += GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1] * GeoPara->cosY;
     planeStartY += GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1];
     planeStopY += GeoPara->stepDirection[1] * GeoPara->pSize[iSecY][1];
     //    StartY      += GeoPara->pSize[iSecY][1] * GeoPara->cosY;
@@ -1742,52 +1540,47 @@ void CbmTrdHitRateFastQa::Histo(HitRateGeoPara2* GeoPara,
 }
 
 
-void CbmTrdHitRateFastQa::DrawBorders(HitRateGeoPara2* GeoPara,
-                                      TH2F* /*Layer*/,
-                                      TCanvas* c1) {
+void CbmTrdHitRateFastQa::DrawBorders(HitRateGeoPara2* GeoPara, TH2F* /*Layer*/, TCanvas* c1)
+{
   //----------------------Sector--------------------------------------
   Double_t SecXStart = 0.0;
   Double_t SecYStart = 0.0;
   Double_t SecXStop  = 0.0;
   Double_t SecYStop  = 0.0;
 
-  for (Int_t iSec = 0; iSec < GeoPara->nSec - 1;
-       iSec++)  // would be enough to iterate up to nSec-1
+  for (Int_t iSec = 0; iSec < GeoPara->nSec - 1; iSec++)  // would be enough to iterate up to nSec-1
   {
 
-    if (GeoPara->sSize[iSec][0] < 2 * GeoPara->mSize[0]
-        && GeoPara->sSize[iSec][0] > 0)  // in x direction
+    if (GeoPara->sSize[iSec][0] < 2 * GeoPara->mSize[0] && GeoPara->sSize[iSec][0] > 0)  // in x direction
     {
       SecXStart += GeoPara->sSize[iSec][0];
       SecXStop = SecXStart;
-    } else {
+    }
+    else {
       SecXStart = 0.0;
       SecXStop  = GeoPara->sSize[iSec][0];
     }
 
-    if (GeoPara->sSize[iSec][1] < 2 * GeoPara->mSize[1]
-        && GeoPara->sSize[iSec][1] > 0)  // in x direction
+    if (GeoPara->sSize[iSec][1] < 2 * GeoPara->mSize[1] && GeoPara->sSize[iSec][1] > 0)  // in x direction
     {
       SecYStart += GeoPara->sSize[iSec][1];
       SecYStop = SecYStart;
-    } else {
+    }
+    else {
       SecYStart = 0.0;
       SecYStop  = GeoPara->sSize[iSec][1];
     }
 
 
-    TLine* sector = new TLine(GeoPara->mPos[0] - GeoPara->mSize[0] + SecXStart,
-                              GeoPara->mPos[1] - GeoPara->mSize[1] + SecYStart,
-                              GeoPara->mPos[0] - GeoPara->mSize[0] + SecXStop,
-                              GeoPara->mPos[1] - GeoPara->mSize[1] + SecYStop);
+    TLine* sector =
+      new TLine(GeoPara->mPos[0] - GeoPara->mSize[0] + SecXStart, GeoPara->mPos[1] - GeoPara->mSize[1] + SecYStart,
+                GeoPara->mPos[0] - GeoPara->mSize[0] + SecXStop, GeoPara->mPos[1] - GeoPara->mSize[1] + SecYStop);
     sector->SetLineColor(15);
     sector->SetLineStyle(2);
 
     TPolyMarker* corner = new TPolyMarker(1);
-    corner->SetPoint(
-      0,
-      GeoPara->mPos[0] - GeoPara->stepDirection[0] * GeoPara->mSize[0],
-      GeoPara->mPos[1] - GeoPara->stepDirection[1] * GeoPara->mSize[1]);
+    corner->SetPoint(0, GeoPara->mPos[0] - GeoPara->stepDirection[0] * GeoPara->mSize[0],
+                     GeoPara->mPos[1] - GeoPara->stepDirection[1] * GeoPara->mSize[1]);
     corner->SetMarkerStyle(21);
     corner->SetMarkerSize(.8);
 
@@ -1800,17 +1593,13 @@ void CbmTrdHitRateFastQa::DrawBorders(HitRateGeoPara2* GeoPara,
 
 
   //----------------------Module--------------------------------------
-  TBox* module = new TBox(GeoPara->mPos[0] - GeoPara->mSize[0],
-                          GeoPara->mPos[1] - GeoPara->mSize[1],
-                          GeoPara->mPos[0] + GeoPara->mSize[0],
-                          GeoPara->mPos[1] + GeoPara->mSize[1]);
+  TBox* module = new TBox(GeoPara->mPos[0] - GeoPara->mSize[0], GeoPara->mPos[1] - GeoPara->mSize[1],
+                          GeoPara->mPos[0] + GeoPara->mSize[0], GeoPara->mPos[1] + GeoPara->mSize[1]);
   module->SetFillStyle(0);
   module->SetLineColor(1);
 
-  TBox* M_inner = new TBox(GeoPara->mPos[0] - 100,
-                           GeoPara->mPos[1] - 100,
-                           GeoPara->mPos[0] + 100,
-                           GeoPara->mPos[1] + 100);
+  TBox* M_inner =
+    new TBox(GeoPara->mPos[0] - 100, GeoPara->mPos[1] - 100, GeoPara->mPos[0] + 100, GeoPara->mPos[1] + 100);
   //  M_inner->SetUniqueID(ModuleId);
   M_inner->SetFillColor(kWhite);
 
@@ -1824,9 +1613,8 @@ void CbmTrdHitRateFastQa::DrawBorders(HitRateGeoPara2* GeoPara,
 // --------------------------------------------------------------------
 
 
-void CbmTrdHitRateFastQa::DrawPads(HitRateGeoPara2* GeoPara,
-                                   TH2F* /*Layer*/,
-                                   TCanvas* c1) {
+void CbmTrdHitRateFastQa::DrawPads(HitRateGeoPara2* GeoPara, TH2F* /*Layer*/, TCanvas* c1)
+{
   //----------------------Pad--------------------------------------
   //  const Int_t nR = GeoPara->nRow;
   //  const Int_t nC = GeoPara->nCol;
@@ -1846,21 +1634,14 @@ void CbmTrdHitRateFastQa::DrawPads(HitRateGeoPara2* GeoPara,
     for (Int_t iC = 0; iC < GeoPara->nCol; iC++)  // cols
     {
       TLine* Pa = new TLine(StartX,  // - low
-                            StartY,
-                            StartX + GeoPara->pSize[iSecX][0],
-                            StartY);
+                            StartY, StartX + GeoPara->pSize[iSecX][0], StartY);
       TLine* Pb = new TLine(StartX,  // - high
-                            StartY + GeoPara->pSize[iSecY][1],
-                            StartX + GeoPara->pSize[iSecX][0],
+                            StartY + GeoPara->pSize[iSecY][1], StartX + GeoPara->pSize[iSecX][0],
                             StartY + GeoPara->pSize[iSecY][1]);
       TLine* Pc = new TLine(StartX,  // | left
-                            StartY,
-                            StartX,
-                            StartY + GeoPara->pSize[iSecY][1]);
+                            StartY, StartX, StartY + GeoPara->pSize[iSecY][1]);
       TLine* Pd = new TLine(StartX + GeoPara->pSize[iSecX][0],  // | right
-                            StartY,
-                            StartX + GeoPara->pSize[iSecX][0],
-                            StartY + GeoPara->pSize[iSecY][1]);
+                            StartY, StartX + GeoPara->pSize[iSecX][0], StartY + GeoPara->pSize[iSecY][1]);
       c1->cd(1);
       Pa->SetLineColor(17);
       //Pa->SetLineStyle(3);
@@ -1903,7 +1684,8 @@ void CbmTrdHitRateFastQa::DrawDigi() {}
 
 
 // ---- Register ------------------------------------------------------
-void CbmTrdHitRateFastQa::Register() {
+void CbmTrdHitRateFastQa::Register()
+{
   //FairRootManager::Instance()->Register("TrdDigi","Trd Digi", fDigiCollection, IsOutputBranchPersistent("TrdDigi"));
   //FairRootManager::Instance()->Register("TrdDigiMatch","Trd Digi Match", fDigiMatchCollection, IsOutputBranchPersistent("TrdDigiMatch"));
 }

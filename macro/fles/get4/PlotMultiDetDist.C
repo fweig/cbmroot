@@ -336,92 +336,56 @@
    profDistTriple[47] = hGet4DistTripleHits_087->ProfileX( "ProfTriple_047" );
    */
 
-  TH1D* hDoubleHitsDistLeftHDP2 =
-    new TH1D("hDoubleHitsDistLeftHDP2",
-             "2nd hit distance per channel for HDP2, left; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hDoubleHitsDistRightHDP2 =
-    new TH1D("hDoubleHitsDistRightHDP2",
-             "2nd hit distance per channel for HDP2, right; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hTripleHitsDistLeftHDP2 =
-    new TH1D("hTripleHitsDistLeftHDP2",
-             "3rd hit distance per channel for HDP2, left; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hTripleHitsDistRightHDP2 =
-    new TH1D("hTripleHitsDistRightHDP2",
-             "3rd hit distance per channel for HDP2, right; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
+  TH1D* hDoubleHitsDistLeftHDP2  = new TH1D("hDoubleHitsDistLeftHDP2",
+                                           "2nd hit distance per channel for HDP2, left; Strip; Mean deltaT "
+                                           "1st-2nd [ns]",
+                                           32, -0.5, 31.5);
+  TH1D* hDoubleHitsDistRightHDP2 = new TH1D("hDoubleHitsDistRightHDP2",
+                                            "2nd hit distance per channel for HDP2, right; Strip; Mean deltaT "
+                                            "1st-2nd [ns]",
+                                            32, -0.5, 31.5);
+  TH1D* hTripleHitsDistLeftHDP2  = new TH1D("hTripleHitsDistLeftHDP2",
+                                           "3rd hit distance per channel for HDP2, left; Strip; Mean deltaT "
+                                           "3rd-2nd [ns]",
+                                           32, -0.5, 31.5);
+  TH1D* hTripleHitsDistRightHDP2 = new TH1D("hTripleHitsDistRightHDP2",
+                                            "3rd hit distance per channel for HDP2, right; Strip; Mean deltaT "
+                                            "3rd-2nd [ns]",
+                                            32, -0.5, 31.5);
 
-  TH1D* hDoubleHitsDistLeftTSUS =
-    new TH1D("hDoubleHitsDistLeftTSUS",
-             "2nd hit distance per channel for TSUS, left; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hDoubleHitsDistRightTSUS =
-    new TH1D("hDoubleHitsDistRightTSUS",
-             "2nd hit distance per channel for TSUS, right; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hTripleHitsDistLeftTSUS =
-    new TH1D("hTripleHitsDistLeftTSUS",
-             "3rd hit distance per channel for TSUS, left; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
-  TH1D* hTripleHitsDistRightTSUS =
-    new TH1D("hTripleHitsDistRightTSUS",
-             "3rd hit distance per channel for TSUS, right; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             32,
-             -0.5,
-             31.5);
+  TH1D* hDoubleHitsDistLeftTSUS  = new TH1D("hDoubleHitsDistLeftTSUS",
+                                           "2nd hit distance per channel for TSUS, left; Strip; Mean deltaT "
+                                           "1st-2nd [ns]",
+                                           32, -0.5, 31.5);
+  TH1D* hDoubleHitsDistRightTSUS = new TH1D("hDoubleHitsDistRightTSUS",
+                                            "2nd hit distance per channel for TSUS, right; Strip; Mean deltaT "
+                                            "1st-2nd [ns]",
+                                            32, -0.5, 31.5);
+  TH1D* hTripleHitsDistLeftTSUS  = new TH1D("hTripleHitsDistLeftTSUS",
+                                           "3rd hit distance per channel for TSUS, left; Strip; Mean deltaT "
+                                           "3rd-2nd [ns]",
+                                           32, -0.5, 31.5);
+  TH1D* hTripleHitsDistRightTSUS = new TH1D("hTripleHitsDistRightTSUS",
+                                            "3rd hit distance per channel for TSUS, right; Strip; Mean deltaT "
+                                            "3rd-2nd [ns]",
+                                            32, -0.5, 31.5);
 
-  TH1D* hDoubleHitsDistLeftHDP5 =
-    new TH1D("hDoubleHitsDistLeftHDP5",
-             "2nd hit distance per channel for HDP5, left; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             16,
-             -0.5,
-             15.5);
-  TH1D* hDoubleHitsDistRightHDP5 =
-    new TH1D("hDoubleHitsDistRightHDP5",
-             "2nd hit distance per channel for HDP5, right; Strip; Mean deltaT "
-             "1st-2nd [ns]",
-             16,
-             -0.5,
-             15.5);
-  TH1D* hTripleHitsDistLeftHDP5 =
-    new TH1D("hTripleHitsDistLeftHDP5",
-             "3rd hit distance per channel for HDP5, left; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             16,
-             -0.5,
-             15.5);
-  TH1D* hTripleHitsDistRightHDP5 =
-    new TH1D("hTripleHitsDistRightHDP5",
-             "3rd hit distance per channel for HDP5, right; Strip; Mean deltaT "
-             "3rd-2nd [ns]",
-             16,
-             -0.5,
-             15.5);
+  TH1D* hDoubleHitsDistLeftHDP5  = new TH1D("hDoubleHitsDistLeftHDP5",
+                                           "2nd hit distance per channel for HDP5, left; Strip; Mean deltaT "
+                                           "1st-2nd [ns]",
+                                           16, -0.5, 15.5);
+  TH1D* hDoubleHitsDistRightHDP5 = new TH1D("hDoubleHitsDistRightHDP5",
+                                            "2nd hit distance per channel for HDP5, right; Strip; Mean deltaT "
+                                            "1st-2nd [ns]",
+                                            16, -0.5, 15.5);
+  TH1D* hTripleHitsDistLeftHDP5  = new TH1D("hTripleHitsDistLeftHDP5",
+                                           "3rd hit distance per channel for HDP5, left; Strip; Mean deltaT "
+                                           "3rd-2nd [ns]",
+                                           16, -0.5, 15.5);
+  TH1D* hTripleHitsDistRightHDP5 = new TH1D("hTripleHitsDistRightHDP5",
+                                            "3rd hit distance per channel for HDP5, right; Strip; Mean deltaT "
+                                            "3rd-2nd [ns]",
+                                            16, -0.5, 15.5);
   /*
    TH1D* hDoubleHitsDistLeftUSTC = new TH1D("hDoubleHitsDistLeftUSTC",
          "2nd hit distance per channel for USTC, left; Strip; Mean deltaT 1st-2nd [ns]",
@@ -440,137 +404,97 @@
   for (Int_t iChip = 0; iChip < 4; iChip++)
     for (Int_t iChan = 0; iChan < iNbChChip; iChan++) {
       // Double HDP2  0-15
-      hDoubleHitsDistLeftHDP2->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[iChip]->GetBinContent(iChan));
-      hDoubleHitsDistLeftHDP2->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[iChip]->GetBinError(iChan));
-      hDoubleHitsDistRightHDP2->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[4 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistRightHDP2->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[4 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistLeftHDP2->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistDouble[iChip]->GetBinContent(iChan));
+      hDoubleHitsDistLeftHDP2->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistDouble[iChip]->GetBinError(iChan));
+      hDoubleHitsDistRightHDP2->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistDouble[4 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistRightHDP2->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistDouble[4 + iChip]->GetBinError(iChan));
       // Double HDP2 16-31
-      hDoubleHitsDistLeftHDP2->SetBinContent(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[8 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistLeftHDP2->SetBinError(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[8 + iChip]->GetBinError(iChan));
-      hDoubleHitsDistRightHDP2->SetBinContent(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistDouble[12 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistRightHDP2->SetBinError(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistDouble[12 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistLeftHDP2->SetBinContent((4 + iChip) * iNbChChip + iChan + 1,
+                                             profDistDouble[8 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistLeftHDP2->SetBinError((4 + iChip) * iNbChChip + iChan + 1,
+                                           profDistDouble[8 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistRightHDP2->SetBinContent((8 - iChip) * iNbChChip - iChan,
+                                              profDistDouble[12 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistRightHDP2->SetBinError((8 - iChip) * iNbChChip - iChan,
+                                            profDistDouble[12 + iChip]->GetBinError(iChan));
       // Triple HDP2  0-15
-      hTripleHitsDistLeftHDP2->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[iChip]->GetBinContent(iChan));
-      hTripleHitsDistLeftHDP2->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[iChip]->GetBinError(iChan));
-      hTripleHitsDistRightHDP2->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[4 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistRightHDP2->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[4 + iChip]->GetBinError(iChan));
+      hTripleHitsDistLeftHDP2->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistTriple[iChip]->GetBinContent(iChan));
+      hTripleHitsDistLeftHDP2->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistTriple[iChip]->GetBinError(iChan));
+      hTripleHitsDistRightHDP2->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistTriple[4 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistRightHDP2->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistTriple[4 + iChip]->GetBinError(iChan));
       // Triple HDP2 16-31
-      hTripleHitsDistLeftHDP2->SetBinContent(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[8 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistLeftHDP2->SetBinError(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[8 + iChip]->GetBinError(iChan));
-      hTripleHitsDistRightHDP2->SetBinContent(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistTriple[12 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistRightHDP2->SetBinError(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistTriple[12 + iChip]->GetBinError(iChan));
+      hTripleHitsDistLeftHDP2->SetBinContent((4 + iChip) * iNbChChip + iChan + 1,
+                                             profDistTriple[8 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistLeftHDP2->SetBinError((4 + iChip) * iNbChChip + iChan + 1,
+                                           profDistTriple[8 + iChip]->GetBinError(iChan));
+      hTripleHitsDistRightHDP2->SetBinContent((8 - iChip) * iNbChChip - iChan,
+                                              profDistTriple[12 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistRightHDP2->SetBinError((8 - iChip) * iNbChChip - iChan,
+                                            profDistTriple[12 + iChip]->GetBinError(iChan));
 
       // Double TSUS  0-15
-      hDoubleHitsDistLeftTSUS->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[16 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistLeftTSUS->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[16 + iChip]->GetBinError(iChan));
-      hDoubleHitsDistRightTSUS->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[20 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistRightTSUS->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[20 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistLeftTSUS->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistDouble[16 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistLeftTSUS->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistDouble[16 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistRightTSUS->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistDouble[20 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistRightTSUS->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistDouble[20 + iChip]->GetBinError(iChan));
       // Double TSUS 16-31
-      hDoubleHitsDistLeftTSUS->SetBinContent(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[24 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistLeftTSUS->SetBinError(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[24 + iChip]->GetBinError(iChan));
-      hDoubleHitsDistRightTSUS->SetBinContent(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistDouble[28 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistRightTSUS->SetBinError(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistDouble[28 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistLeftTSUS->SetBinContent((4 + iChip) * iNbChChip + iChan + 1,
+                                             profDistDouble[24 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistLeftTSUS->SetBinError((4 + iChip) * iNbChChip + iChan + 1,
+                                           profDistDouble[24 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistRightTSUS->SetBinContent((8 - iChip) * iNbChChip - iChan,
+                                              profDistDouble[28 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistRightTSUS->SetBinError((8 - iChip) * iNbChChip - iChan,
+                                            profDistDouble[28 + iChip]->GetBinError(iChan));
       // Triple TSUS  0-15
-      hTripleHitsDistLeftTSUS->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[16 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistLeftTSUS->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[16 + iChip]->GetBinError(iChan));
-      hTripleHitsDistRightTSUS->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[20 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistRightTSUS->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[20 + iChip]->GetBinError(iChan));
+      hTripleHitsDistLeftTSUS->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistTriple[16 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistLeftTSUS->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistTriple[16 + iChip]->GetBinError(iChan));
+      hTripleHitsDistRightTSUS->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistTriple[20 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistRightTSUS->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistTriple[20 + iChip]->GetBinError(iChan));
       // Triple TSUS 16-31
-      hTripleHitsDistLeftTSUS->SetBinContent(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[24 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistLeftTSUS->SetBinError(
-        (4 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[24 + iChip]->GetBinError(iChan));
-      hTripleHitsDistRightTSUS->SetBinContent(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistTriple[28 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistRightTSUS->SetBinError(
-        (8 - iChip) * iNbChChip - iChan,
-        profDistTriple[28 + iChip]->GetBinError(iChan));
+      hTripleHitsDistLeftTSUS->SetBinContent((4 + iChip) * iNbChChip + iChan + 1,
+                                             profDistTriple[24 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistLeftTSUS->SetBinError((4 + iChip) * iNbChChip + iChan + 1,
+                                           profDistTriple[24 + iChip]->GetBinError(iChan));
+      hTripleHitsDistRightTSUS->SetBinContent((8 - iChip) * iNbChChip - iChan,
+                                              profDistTriple[28 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistRightTSUS->SetBinError((8 - iChip) * iNbChChip - iChan,
+                                            profDistTriple[28 + iChip]->GetBinError(iChan));
 
       // Double HDP5  0-15
-      hDoubleHitsDistLeftHDP5->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[32 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistLeftHDP5->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistDouble[32 + iChip]->GetBinError(iChan));
-      hDoubleHitsDistRightHDP5->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[36 + iChip]->GetBinContent(iChan));
-      hDoubleHitsDistRightHDP5->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistDouble[36 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistLeftHDP5->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistDouble[32 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistLeftHDP5->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistDouble[32 + iChip]->GetBinError(iChan));
+      hDoubleHitsDistRightHDP5->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistDouble[36 + iChip]->GetBinContent(iChan));
+      hDoubleHitsDistRightHDP5->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistDouble[36 + iChip]->GetBinError(iChan));
       // Triple HDP5  0-15
-      hTripleHitsDistLeftHDP5->SetBinContent(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[32 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistLeftHDP5->SetBinError(
-        (0 + iChip) * iNbChChip + iChan + 1,
-        profDistTriple[32 + iChip]->GetBinError(iChan));
-      hTripleHitsDistRightHDP5->SetBinContent(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[36 + iChip]->GetBinContent(iChan));
-      hTripleHitsDistRightHDP5->SetBinError(
-        (4 - iChip) * iNbChChip - iChan,
-        profDistTriple[36 + iChip]->GetBinError(iChan));
+      hTripleHitsDistLeftHDP5->SetBinContent((0 + iChip) * iNbChChip + iChan + 1,
+                                             profDistTriple[32 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistLeftHDP5->SetBinError((0 + iChip) * iNbChChip + iChan + 1,
+                                           profDistTriple[32 + iChip]->GetBinError(iChan));
+      hTripleHitsDistRightHDP5->SetBinContent((4 - iChip) * iNbChChip - iChan,
+                                              profDistTriple[36 + iChip]->GetBinContent(iChan));
+      hTripleHitsDistRightHDP5->SetBinError((4 - iChip) * iNbChChip - iChan,
+                                            profDistTriple[36 + iChip]->GetBinError(iChan));
       /*
          // Double USTC  0-15
          hDoubleHitsDistLeftUSTC->SetBinContent(  (0+iChip)*iNbChChip + iChan + 1,

@@ -5,18 +5,20 @@
  **/
 
 #include "elid/CbmLitGlobalElectronId.h"
+
 #include "CbmGlobalTrack.h"
 #include "CbmRichElectronIdAnn.h"
 #include "CbmRichRing.h"
 #include "CbmTofHit.h"
 #include "CbmTrdTrack.h"
+#include "utils/CbmRichUtil.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
 #include "TMath.h"
 #include "TString.h"
 #include "TSystem.h"
-#include "utils/CbmRichUtil.h"
 
 #include <cmath>
 
@@ -33,13 +35,15 @@ CbmLitGlobalElectronId::CbmLitGlobalElectronId()
   , fGlobalTracks(NULL)
   , fRichRings(NULL)
   , fTrdTracks(NULL)
-  , fTofHits(NULL) {
+  , fTofHits(NULL)
+{
   Init();
 }
 
 CbmLitGlobalElectronId::~CbmLitGlobalElectronId() {}
 
-void CbmLitGlobalElectronId::Init() {
+void CbmLitGlobalElectronId::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (ioman != nullptr) {
     fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
@@ -49,72 +53,66 @@ void CbmLitGlobalElectronId::Init() {
   }
 }
 
-Bool_t CbmLitGlobalElectronId::IsRichElectron(Int_t globalTrackIndex,
-                                              Double_t momentum) {
+Bool_t CbmLitGlobalElectronId::IsRichElectron(Int_t globalTrackIndex, Double_t momentum)
+{
   if (fRichUseAnn == false) {
     if (NULL == fGlobalTracks || NULL == fRichRings) return false;
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
-    Int_t richId = globalTrack->GetRichRingIndex();
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+    Int_t richId                      = globalTrack->GetRichRingIndex();
     if (richId < 0) return false;
     CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(richId));
     if (NULL == ring) return false;
     Double_t axisA = ring->GetAaxis();
     Double_t axisB = ring->GetBaxis();
     Double_t dist  = CbmRichUtil::GetRingTrackDistance(globalTrackIndex);
-    if (fabs(axisA - fRichMeanA) < fRichRmsCoeff * fRichRmsA
-        && fabs(axisB - fRichMeanB) < fRichRmsCoeff * fRichRmsB
+    if (fabs(axisA - fRichMeanA) < fRichRmsCoeff * fRichRmsA && fabs(axisB - fRichMeanB) < fRichRmsCoeff * fRichRmsB
         && dist < fRichDistCut) {
       return true;
-    } else {
+    }
+    else {
       return false;
     }
-  } else {
-    Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(
-      globalTrackIndex, momentum);
-    if (ann > fRichAnnCut)
-      return true;
+  }
+  else {
+    Double_t ann = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(globalTrackIndex, momentum);
+    if (ann > fRichAnnCut) return true;
     else
       return false;
   }
 }
 
-Bool_t CbmLitGlobalElectronId::IsTrdElectron(Int_t globalTrackIndex,
-                                             Double_t momentum) {
+Bool_t CbmLitGlobalElectronId::IsTrdElectron(Int_t globalTrackIndex, Double_t momentum)
+{
   if (NULL == fGlobalTracks || NULL == fTrdTracks) return false;
-  const CbmGlobalTrack* globalTrack =
-    static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
-  Int_t trdId = globalTrack->GetTrdTrackIndex();
+  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+  Int_t trdId                       = globalTrack->GetTrdTrackIndex();
   if (trdId < 0) return false;
   CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdId));
   if (NULL == trdTrack) return false;
 
   Double_t ann = trdTrack->GetPidLikeEL();
-  if (ann > fTrdAnnCut)
-    return true;
+  if (ann > fTrdAnnCut) return true;
   else
     return false;
 }
 
-Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex,
-                                             Double_t momentum) {
+Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t momentum)
+{
   if (NULL == fGlobalTracks || NULL == fTofHits) return false;
-  const CbmGlobalTrack* globalTrack =
-    static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
-  Double_t trackLength = globalTrack->GetLength() / 100.;
-  Int_t tofId          = globalTrack->GetTofHitIndex();
+  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+  Double_t trackLength              = globalTrack->GetLength() / 100.;
+  Int_t tofId                       = globalTrack->GetTofHitIndex();
   if (tofId < 0) return false;
   CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofId);
   if (NULL == tofHit) return false;
 
-  Double_t time =
-    0.2998 * tofHit->GetTime();  // time in ns -> transfrom to ct in m
-  Double_t mass2 =
-    TMath::Power(momentum, 2.) * (TMath::Power(time / trackLength, 2) - 1);
+  Double_t time  = 0.2998 * tofHit->GetTime();  // time in ns -> transfrom to ct in m
+  Double_t mass2 = TMath::Power(momentum, 2.) * (TMath::Power(time / trackLength, 2) - 1);
 
   if (momentum >= 1.) {
     if (mass2 < (0.013 * momentum - 0.003)) { return true; }
-  } else {
+  }
+  else {
     if (mass2 < 0.01) {
       return true;  //fTofM2
     }
@@ -122,18 +120,16 @@ Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex,
   return false;
 }
 
-Double_t CbmLitGlobalElectronId::GetRichAnn(Int_t globalTrackIndex,
-                                            Double_t momentum) {
-  return CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(globalTrackIndex,
-                                                               momentum);
+Double_t CbmLitGlobalElectronId::GetRichAnn(Int_t globalTrackIndex, Double_t momentum)
+{
+  return CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(globalTrackIndex, momentum);
 }
 
-Double_t CbmLitGlobalElectronId::GetTrdAnn(Int_t globalTrackIndex,
-                                           Double_t momentum) {
+Double_t CbmLitGlobalElectronId::GetTrdAnn(Int_t globalTrackIndex, Double_t momentum)
+{
   if (NULL == fGlobalTracks || NULL == fTrdTracks) return -1.;
-  const CbmGlobalTrack* globalTrack =
-    static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
-  Int_t trdId = globalTrack->GetTrdTrackIndex();
+  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+  Int_t trdId                       = globalTrack->GetTrdTrackIndex();
   if (trdId < 0) return -1.;
   CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdId));
   if (NULL == trdTrack) return -1.;

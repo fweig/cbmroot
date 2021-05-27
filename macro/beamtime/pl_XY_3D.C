@@ -1,9 +1,6 @@
 
-void pl_XY_3D(Int_t iNSt     = 4,
-              Int_t iOpt     = 0,
-              Int_t i2D      = 0,
-              Int_t i1D      = 0,
-              Double_t dYmax = 0.) {
+void pl_XY_3D(Int_t iNSt = 4, Int_t iOpt = 0, Int_t i2D = 0, Int_t i1D = 0, Double_t dYmax = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -50,8 +47,7 @@ void pl_XY_3D(Int_t iNSt     = 4,
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
     hname = Form("hXY_%s_%d", cOpt.Data(), iSt);
     h3f   = (TH3*) gROOT->FindObjectAny(hname);
-    cout << hname.Data() << " with pointer  " << h3f << " at iCan = " << iCan
-         << endl;
+    cout << hname.Data() << " with pointer  " << h3f << " at iCan = " << iCan << endl;
     if (h3f != NULL) {
       switch (i1D) {
         case 0:
@@ -71,13 +67,15 @@ void pl_XY_3D(Int_t iNSt     = 4,
           h->SetMinimum(-dYmax);
           h->SetMaximum(dYmax);
         }
-      } else {
+      }
+      else {
         h->Draw("same");
       }
       gPad->SetGridx();
       gPad->SetGridy();
       //gPad->SetLogy();
-    } else
+    }
+    else
       cout << hname << " not found" << endl;
   }
   can->SaveAs("pl_XY_3D.pdf");

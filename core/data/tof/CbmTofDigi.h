@@ -22,16 +22,16 @@
 #ifndef CBMTOFDIGI_H
 #define CBMTOFDIGI_H 1
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t, Bool_t, kTRUE
-
-#include <string>  // for string
-
 #include "CbmDefs.h"        // for kTof
 #include "CbmTofAddress.h"  // for CbmTofAddress
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t, Bool_t, kTRUE
+
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+
+#include <string>  // for string
 
 //class CbmMatch;
 
@@ -60,13 +60,7 @@ public:
        ** @param[in] Side    Channel Side (optional, used for strips). (cf CbmTofAddress)
        ** @param[in] Sm Type Super Module Type (optional). (cf CbmTofAddress)
        **/
-  CbmTofDigi(UInt_t Sm,
-             UInt_t Rpc,
-             UInt_t Channel,
-             Double_t time,
-             Double_t tot,
-             UInt_t Side   = 0,
-             UInt_t SmType = 0);
+  CbmTofDigi(UInt_t Sm, UInt_t Rpc, UInt_t Channel, Double_t time, Double_t tot, UInt_t Side = 0, UInt_t SmType = 0);
 
   /**
        ** @brief Copy constructor.
@@ -133,23 +127,15 @@ public:
   /**
           ** @brief Channel .
           **/
-  Double_t GetChannel() const {
-    return CbmTofAddress::GetChannelId(GetAddress());
-  };
+  Double_t GetChannel() const { return CbmTofAddress::GetChannelId(GetAddress()); };
   /**
           ** @brief Channel Side.
           **/
-  Double_t GetSide() const {
-    return CbmTofAddress::GetChannelSide(GetAddress());
-  };
+  Double_t GetSide() const { return CbmTofAddress::GetChannelSide(GetAddress()); };
 
   /** Modifiers **/
   void SetAddress(Int_t address) { fuAddress = address; };
-  void SetAddress(UInt_t Sm,
-                  UInt_t Rpc,
-                  UInt_t Channel,
-                  UInt_t Side   = 0,
-                  UInt_t SmType = 0);
+  void SetAddress(UInt_t Sm, UInt_t Rpc, UInt_t Channel, UInt_t Side = 0, UInt_t SmType = 0);
   void SetTime(Double_t time) { fdTime = time; };
   void SetTot(Double_t tot) { fdTot = tot; };
 
@@ -164,7 +150,8 @@ private:
   friend class boost::serialization::access;
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fuAddress;
     ar& fdTime;
     ar& fdTot;

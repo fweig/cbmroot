@@ -14,8 +14,7 @@
   Panel1->SetFrameBorderMode(0);
 
   THStack* TofTests_MultiPntHitClosestDeltaY_px = new THStack();
-  TofTests_MultiPntHitClosestDeltaY_px->SetName(
-    "TofTests_MultiPntHitClosestDeltaY_px");
+  TofTests_MultiPntHitClosestDeltaY_px->SetName("TofTests_MultiPntHitClosestDeltaY_px");
   TofTests_MultiPntHitClosestDeltaY_px->SetTitle(
     "Quality of the Tof Hits position on Y axis relative to closest Point, for "
     "hit coming from multiple MC Point");
@@ -24,9 +23,7 @@
     new TH1F("TofTests_MultiPntHitClosestDeltaY_px_stack_1",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->SetMinimum(0.1923082);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->SetMaximum(5.096441e+07);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->SetDirectory(0);
@@ -36,8 +33,7 @@
   TColor* color;  // for color definition with alpha
   ci = TColor::GetColor("#000099");
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->SetLineColor(ci);
-  TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Point) [cm]");
+  TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetXaxis()->SetTitle(" Y(Hit) - Y(Point) [cm]");
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetXaxis()->SetRange(1, 600);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetXaxis()->SetLabelFont(42);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetXaxis()->SetLabelSize(0.035);
@@ -53,17 +49,14 @@
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_stack_1->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiPntHitClosestDeltaY_px->SetHistogram(
-    TofTests_MultiPntHitClosestDeltaY_px_stack_1);
+  TofTests_MultiPntHitClosestDeltaY_px->SetHistogram(TofTests_MultiPntHitClosestDeltaY_px_stack_1);
 
 
   TH1D* TofTests_MultiPntHitClosestDeltaY_px__1 =
     new TH1D("TofTests_MultiPntHitClosestDeltaY_px__1",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiPntHitClosestDeltaY_px__1->SetBinContent(0, 2);
   TofTests_MultiPntHitClosestDeltaY_px__1->SetBinContent(23, 1);
   TofTests_MultiPntHitClosestDeltaY_px__1->SetBinContent(37, 1);
@@ -595,8 +588,7 @@
   TofTests_MultiPntHitClosestDeltaY_px__1->SetBinContent(601, 1);
   TofTests_MultiPntHitClosestDeltaY_px__1->SetEntries(1.967911e+08);
   TofTests_MultiPntHitClosestDeltaY_px__1->SetDirectory(0);
-  TofTests_MultiPntHitClosestDeltaY_px__1->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Point) [cm]");
+  TofTests_MultiPntHitClosestDeltaY_px__1->GetXaxis()->SetTitle(" Y(Hit) - Y(Point) [cm]");
   TofTests_MultiPntHitClosestDeltaY_px__1->GetXaxis()->SetRange(1, 600);
   TofTests_MultiPntHitClosestDeltaY_px__1->GetXaxis()->SetLabelFont(42);
   TofTests_MultiPntHitClosestDeltaY_px__1->GetXaxis()->SetLabelSize(0.035);
@@ -611,16 +603,13 @@
   TofTests_MultiPntHitClosestDeltaY_px__1->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px__1->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px__1->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiPntHitClosestDeltaY_px->Add(
-    TofTests_MultiPntHitClosestDeltaY_px, "");
+  TofTests_MultiPntHitClosestDeltaY_px->Add(TofTests_MultiPntHitClosestDeltaY_px, "");
 
   TH1D* TofTests_MultiPntHitClosestDeltaY_px_v1__2 =
     new TH1D("TofTests_MultiPntHitClosestDeltaY_px_v1__2",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetBinContent(0, 1);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetBinContent(40, 1);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetBinContent(42, 1);
@@ -1149,8 +1138,7 @@
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetEntries(1.916697e+08);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetDirectory(0);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->SetLineColor(2);
-  TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Point) [cm]");
+  TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetXaxis()->SetTitle(" Y(Hit) - Y(Point) [cm]");
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetXaxis()->SetRange(1, 600);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetXaxis()->SetLabelFont(42);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetXaxis()->SetLabelSize(0.035);
@@ -1165,16 +1153,13 @@
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v1__2->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiPntHitClosestDeltaY_px->Add(
-    TofTests_MultiPntHitClosestDeltaY_px_v1, "");
+  TofTests_MultiPntHitClosestDeltaY_px->Add(TofTests_MultiPntHitClosestDeltaY_px_v1, "");
 
   TH1D* TofTests_MultiPntHitClosestDeltaY_px_v2__3 =
     new TH1D("TofTests_MultiPntHitClosestDeltaY_px_v2__3",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetBinContent(37, 1);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetBinContent(38, 1);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetBinContent(40, 1);
@@ -1699,8 +1684,7 @@
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetEntries(1.113615e+08);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetDirectory(0);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->SetLineColor(3);
-  TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Point) [cm]");
+  TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetXaxis()->SetTitle(" Y(Hit) - Y(Point) [cm]");
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetXaxis()->SetRange(1, 600);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetXaxis()->SetLabelFont(42);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetXaxis()->SetLabelSize(0.035);
@@ -1715,16 +1699,13 @@
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v2__3->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiPntHitClosestDeltaY_px->Add(
-    TofTests_MultiPntHitClosestDeltaY_px_v2, "");
+  TofTests_MultiPntHitClosestDeltaY_px->Add(TofTests_MultiPntHitClosestDeltaY_px_v2, "");
 
   TH1D* TofTests_MultiPntHitClosestDeltaY_px_v3__4 =
     new TH1D("TofTests_MultiPntHitClosestDeltaY_px_v3__4",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetBinContent(28, 1);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetBinContent(40, 2);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetBinContent(42, 5);
@@ -2252,8 +2233,7 @@
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetEntries(8.577804e+07);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetDirectory(0);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->SetLineColor(4);
-  TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Point) [cm]");
+  TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetXaxis()->SetTitle(" Y(Hit) - Y(Point) [cm]");
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetXaxis()->SetRange(1, 600);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetXaxis()->SetLabelFont(42);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetXaxis()->SetLabelSize(0.035);
@@ -2268,8 +2248,7 @@
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiPntHitClosestDeltaY_px_v3__4->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiPntHitClosestDeltaY_px->Add(
-    TofTests_MultiPntHitClosestDeltaY_px_v3, "");
+  TofTests_MultiPntHitClosestDeltaY_px->Add(TofTests_MultiPntHitClosestDeltaY_px_v3, "");
   TofTests_MultiPntHitClosestDeltaY_px->Draw("nostack, hist");
 
   TPaveText* pt = new TPaveText(0.15, 0.9327359, 0.85, 0.995, "blNDC");
@@ -2278,22 +2257,19 @@
   pt->SetFillColor(0);
   pt->SetFillStyle(0);
   pt->SetTextFont(42);
-  TText* text =
-    pt->AddText("Quality of the Tof Hits position on Y axis relative to "
-                "closest Point, for hit coming from multiple MC Point");
+  TText* text = pt->AddText("Quality of the Tof Hits position on Y axis relative to "
+                            "closest Point, for hit coming from multiple MC Point");
   pt->Draw();
 
-  TLegend* leg =
-    new TLegend(0.5539936, 0.777381, 0.9035144, 0.9178571, NULL, "brNDC");
+  TLegend* leg = new TLegend(0.5539936, 0.777381, 0.9035144, 0.9178571, NULL, "brNDC");
   leg->SetBorderSize(2);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
   leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
-  TLegendEntry* entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px",
-                                      "TofTests_MultiPntHitClosestDeltaY_px",
-                                      "l");
+  TLegendEntry* entry =
+    leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px", "TofTests_MultiPntHitClosestDeltaY_px", "l");
   entry->SetLineColor(1);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2301,9 +2277,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v1",
-                        "TofTests_MultiPntHitClosestDeltaY_px_v1",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v1", "TofTests_MultiPntHitClosestDeltaY_px_v1", "l");
   entry->SetLineColor(2);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2311,9 +2285,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v2",
-                        "TofTests_MultiPntHitClosestDeltaY_px_v2",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v2", "TofTests_MultiPntHitClosestDeltaY_px_v2", "l");
   entry->SetLineColor(3);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2321,9 +2293,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v3",
-                        "TofTests_MultiPntHitClosestDeltaY_px_v3",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiPntHitClosestDeltaY_px_v3", "TofTests_MultiPntHitClosestDeltaY_px_v3", "l");
   entry->SetLineColor(4);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);

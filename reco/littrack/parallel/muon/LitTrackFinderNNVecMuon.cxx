@@ -4,6 +4,12 @@
  * \date 2009
  **/
 #include "LitTrackFinderNNVecMuon.h"
+
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <vector>
+
 #include "../LitAddMaterial.h"
 #include "../LitExtrapolation.h"
 #include "../LitFieldGrid.h"
@@ -16,11 +22,6 @@
 #include "LitDetectorLayoutMuon.h"
 #include "LitHitDataMuon.h"
 
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <vector>
-
 lit::parallel::LitTrackFinderNNVecMuon::LitTrackFinderNNVecMuon()
   : fTracks()
   , fLayout()
@@ -29,14 +30,15 @@ lit::parallel::LitTrackFinderNNVecMuon::LitTrackFinderNNVecMuon()
   , fIsProcessSubstationsTogether(true)
   , fSigmaCoef(3.5)
   , fMaxCovSq(20. * 20.)
-  , fChiSqPixelHitCut(25) {}
+  , fChiSqPixelHitCut(25)
+{
+}
 
 lit::parallel::LitTrackFinderNNVecMuon::~LitTrackFinderNNVecMuon() {}
 
-void lit::parallel::LitTrackFinderNNVecMuon::DoFind(
-  const PixelHitArray& hits,
-  const TrackArray& trackSeeds,
-  TrackArray& tracks) {
+void lit::parallel::LitTrackFinderNNVecMuon::DoFind(const PixelHitArray& hits, const TrackArray& trackSeeds,
+                                                    TrackArray& tracks)
+{
   ArrangeHits(hits);
   InitTrackSeeds(trackSeeds);
   FollowTracks();
@@ -61,8 +63,8 @@ void lit::parallel::LitTrackFinderNNVecMuon::DoFind(
   fHitData.Clear();
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::ArrangeHits(
-  const PixelHitArray& hits) {
+void lit::parallel::LitTrackFinderNNVecMuon::ArrangeHits(const PixelHitArray& hits)
+{
   for (unsigned int iHit = 0; iHit < hits.size(); iHit++) {
     LitScalPixelHit* hit = hits[iHit];
     //       if (fUsedHitsSet.find(hit->GetRefId()) != fUsedHitsSet.end()) continue;
@@ -72,8 +74,8 @@ void lit::parallel::LitTrackFinderNNVecMuon::ArrangeHits(
   //   std::cout << fHitData;
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::InitTrackSeeds(
-  const TrackArray& trackSeeds) {
+void lit::parallel::LitTrackFinderNNVecMuon::InitTrackSeeds(const TrackArray& trackSeeds)
+{
   fscal QpCut = 1. / 1.5;
   for (unsigned int iTrack = 0; iTrack < trackSeeds.size(); iTrack++) {
     LitScalTrack* track = trackSeeds[iTrack];
@@ -85,7 +87,8 @@ void lit::parallel::LitTrackFinderNNVecMuon::InitTrackSeeds(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::FollowTracks() {
+void lit::parallel::LitTrackFinderNNVecMuon::FollowTracks()
+{
   // Temporary arrays to store track indices from the fTracks array
   std::vector<unsigned int> tracksId1;
   std::vector<unsigned int> tracksId2;
@@ -99,16 +102,14 @@ void lit::parallel::LitTrackFinderNNVecMuon::FollowTracks() {
   unsigned char nofStationGroups = fLayout.GetNofStationGroups();
   for (unsigned char iStationGroup = 0; iStationGroup < nofStationGroups;
        iStationGroup++) {  // loop over station groups
-    const LitStationGroupMuon<fvec>& stg =
-      fLayout.GetStationGroup(iStationGroup);
+    const LitStationGroupMuon<fvec>& stg = fLayout.GetStationGroup(iStationGroup);
 
     // First propagate all tracks through absorber
     PropagateThroughAbsorber(tracksId1, stg.GetAbsorber());
 
     // Loop over stations, and propagate tracks from station to station
     unsigned char nofStations = stg.GetNofStations();
-    for (unsigned char iStation = 0; iStation < nofStations;
-         iStation++) {  // loop over stations
+    for (unsigned char iStation = 0; iStation < nofStations; iStation++) {  // loop over stations
 
       // Process station for each track
       ProcessStation(tracksId1, iStationGroup, iStation);
@@ -117,9 +118,7 @@ void lit::parallel::LitTrackFinderNNVecMuon::FollowTracks() {
       // Propagate further only tracks which pass the cut.
       for (unsigned int iTrack = 0; iTrack < tracksId1.size(); iTrack++) {
         unsigned int id = tracksId1[iTrack];
-        if (fTracks[id]->GetNofMissingHits() <= fMaxNofMissingHits) {
-          tracksId2.push_back(id);
-        }
+        if (fTracks[id]->GetNofMissingHits() <= fMaxNofMissingHits) { tracksId2.push_back(id); }
       }
       tracksId1.assign(tracksId2.begin(), tracksId2.end());
       tracksId2.clear();
@@ -127,16 +126,12 @@ void lit::parallel::LitTrackFinderNNVecMuon::FollowTracks() {
   }    // loop over station groups
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(
-  const std::vector<unsigned int>& tracksId1,
-  const LitAbsorber<fvec>& absorber) {
-  unsigned int nofTracks = tracksId1.size();  // number of tracks
-  unsigned int nofTracksVec =
-    nofTracks / fvecLen;  // number of tracks grouped in vectors
-  unsigned int dTracks =
-    nofTracks
-    - fvecLen
-        * nofTracksVec;  // number of tracks remained after grouping in vectors
+void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(const std::vector<unsigned int>& tracksId1,
+                                                                      const LitAbsorber<fvec>& absorber)
+{
+  unsigned int nofTracks    = tracksId1.size();               // number of tracks
+  unsigned int nofTracksVec = nofTracks / fvecLen;            // number of tracks grouped in vectors
+  unsigned int dTracks = nofTracks - fvecLen * nofTracksVec;  // number of tracks remained after grouping in vectors
 
   // loop over fTracks, pack data and propagate through the absorber
   for (unsigned int iTrack = 0; iTrack < nofTracksVec; iTrack++) {
@@ -167,9 +162,9 @@ void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(
-  const TrackArray& tracks,
-  const LitAbsorber<fvec>& absorber) {
+void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(const TrackArray& tracks,
+                                                                      const LitAbsorber<fvec>& absorber)
+{
   // Pack track parameters
   LitTrackParamScal par[fvecLen];
   for (unsigned int i = 0; i < fvecLen; i++) {
@@ -183,10 +178,7 @@ void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(
   //   absorber.GetFieldSliceFront().GetFieldValue(lpar.X, lpar.Y, v1);
   //   absorber.GetFieldSliceMiddle().GetFieldValue(lpar.X, lpar.Y, v2);
   //   absorber.GetFieldSliceBack().GetFieldValue(lpar.X, lpar.Y, v3);
-  LitRK4Extrapolation(lpar,
-                      absorber.GetZ(),
-                      absorber.GetFieldGridFront(),
-                      absorber.GetFieldGridMiddle(),
+  LitRK4Extrapolation(lpar, absorber.GetZ(), absorber.GetFieldGridFront(), absorber.GetFieldGridMiddle(),
                       absorber.GetFieldGridBack());
   LitAddMaterial(lpar, absorber.GetMaterial());
 
@@ -199,20 +191,14 @@ void lit::parallel::LitTrackFinderNNVecMuon::PropagateThroughAbsorber(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(
-  const std::vector<unsigned int>& tracksId1,
-  unsigned char stationGroup,
-  unsigned char station) {
-  unsigned int nofTracks = tracksId1.size();  // number of tracks
-  unsigned int nofTracksVec =
-    nofTracks / fvecLen;  // number of tracks grouped in vectors
-  unsigned int dTracks =
-    nofTracks
-    - fvecLen
-        * nofTracksVec;  // number of tracks remained after grouping in vectors
+void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(const std::vector<unsigned int>& tracksId1,
+                                                            unsigned char stationGroup, unsigned char station)
+{
+  unsigned int nofTracks    = tracksId1.size();               // number of tracks
+  unsigned int nofTracksVec = nofTracks / fvecLen;            // number of tracks grouped in vectors
+  unsigned int dTracks = nofTracks - fvecLen * nofTracksVec;  // number of tracks remained after grouping in vectors
 
-  for (unsigned int iTrack = 0; iTrack < nofTracksVec;
-       iTrack++) {  // loop over tracks
+  for (unsigned int iTrack = 0; iTrack < nofTracksVec; iTrack++) {  // loop over tracks
     unsigned int start = fvecLen * iTrack;
     // Collect track group
     std::vector<LitScalTrack*> tracks(fvecLen);
@@ -240,17 +226,15 @@ void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(
-  const TrackArray& tracks,
-  unsigned char stationGroup,
-  unsigned char station) {
+void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(const TrackArray& tracks, unsigned char stationGroup,
+                                                            unsigned char station)
+{
   const LitStationGroupMuon<fvec>& stg = fLayout.GetStationGroup(stationGroup);
   const LitStationMuon<fvec>& sta      = stg.GetStation(station);
   unsigned char nofSubstations         = sta.GetNofSubstations();
 
   // Pack track parameters
-  std::vector<std::vector<LitTrackParamScal>> par(
-    nofSubstations, std::vector<LitTrackParamScal>(fvecLen));
+  std::vector<std::vector<LitTrackParamScal>> par(nofSubstations, std::vector<LitTrackParamScal>(fvecLen));
   for (unsigned int i = 0; i < fvecLen; i++) {
     par[0][i] = tracks[i]->GetParamLast();
   }
@@ -263,26 +247,21 @@ void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(
   stg.GetFieldRegion(lpar[0].X, lpar[0].Y, field);
 
   // Propagate to each of the substations
-  for (unsigned char iSubstation = 0; iSubstation < nofSubstations;
-       iSubstation++) {  // loop over substations
+  for (unsigned char iSubstation = 0; iSubstation < nofSubstations; iSubstation++) {  // loop over substations
     const LitSubstationMuon<fvec>& substation = sta.GetSubstation(iSubstation);
     // Propagation through station
     //      LitRK4Extrapolation(lpar[iSubstation], substation.GetZ(), field);
     LitLineExtrapolation(lpar[iSubstation], substation.GetZ());
     LitAddMaterial(lpar[iSubstation], substation.GetMaterial());
-    if (iSubstation < nofSubstations - 1) {
-      lpar[iSubstation + 1] = lpar[iSubstation];
-    }
+    if (iSubstation < nofSubstations - 1) { lpar[iSubstation + 1] = lpar[iSubstation]; }
   }  // loop over substations
 
-  for (unsigned char iSubstation = 0; iSubstation < nofSubstations;
-       iSubstation++) {
+  for (unsigned char iSubstation = 0; iSubstation < nofSubstations; iSubstation++) {
     UnpackTrackParam(lpar[iSubstation], &par[iSubstation][0]);
   }
   for (unsigned int i = 0; i < fvecLen; i++) {
     std::vector<LitTrackParamScal> spar(nofSubstations);
-    for (unsigned char iSubstation = 0; iSubstation < nofSubstations;
-         iSubstation++) {
+    for (unsigned char iSubstation = 0; iSubstation < nofSubstations; iSubstation++) {
       spar[iSubstation] = par[iSubstation][i];
     }
 
@@ -290,29 +269,21 @@ void lit::parallel::LitTrackFinderNNVecMuon::ProcessStation(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::CollectHits(
-  std::vector<LitTrackParamScal>& par,
-  LitScalTrack* track,
-  unsigned char stationGroup,
-  unsigned char station,
-  unsigned char nofSubstations) {
+void lit::parallel::LitTrackFinderNNVecMuon::CollectHits(std::vector<LitTrackParamScal>& par, LitScalTrack* track,
+                                                         unsigned char stationGroup, unsigned char station,
+                                                         unsigned char nofSubstations)
+{
   std::vector<PixelHitConstIteratorPair> hits(nofSubstations);
   unsigned int nofHits = 0;
 
   // TODO implement multithreading for this loop
-  for (unsigned char iSubstation = 0; iSubstation < nofSubstations;
-       iSubstation++) {  // loop over substations
+  for (unsigned char iSubstation = 0; iSubstation < nofSubstations; iSubstation++) {  // loop over substations
     track->SetParamLast(par[iSubstation]);
 
-    const PixelHitArray& hitvec =
-      fHitData.GetHits(stationGroup, station, iSubstation);
-    fscal err = fHitData.GetMaxErr(stationGroup, station, iSubstation);
+    const PixelHitArray& hitvec = fHitData.GetHits(stationGroup, station, iSubstation);
+    fscal err                   = fHitData.GetMaxErr(stationGroup, station, iSubstation);
 
-    MinMaxIndex(&par[iSubstation],
-                hitvec,
-                err,
-                hits[iSubstation].first,
-                hits[iSubstation].second);
+    MinMaxIndex(&par[iSubstation], hitvec, err, hits[iSubstation].first, hits[iSubstation].second);
     nofHits += std::distance(hits[iSubstation].first, hits[iSubstation].second);
   }  // loop over substations
 
@@ -322,8 +293,7 @@ void lit::parallel::LitTrackFinderNNVecMuon::CollectHits(
   std::vector<LitTrackParamScal*> apars(nofHits);
   unsigned int cnt = 0;
   for (unsigned char iss = 0; iss < nofSubstations; iss++) {
-    for (PixelHitConstIterator j = hits[iss].first; j != hits[iss].second;
-         j++) {
+    for (PixelHitConstIterator j = hits[iss].first; j != hits[iss].second; j++) {
       ahits[cnt] = *j;
       apars[cnt] = &par[iss];
       cnt++;
@@ -335,22 +305,17 @@ void lit::parallel::LitTrackFinderNNVecMuon::CollectHits(
   if (!hitAdded) { track->IncNofMissingHits(); }
 }
 
-bool lit::parallel::LitTrackFinderNNVecMuon::AddNearestHit(
-  LitScalTrack* track,
-  const PixelHitArray& hits,
-  const std::vector<LitTrackParamScal*>& pars,
-  unsigned int nofHits) {
+bool lit::parallel::LitTrackFinderNNVecMuon::AddNearestHit(LitScalTrack* track, const PixelHitArray& hits,
+                                                           const std::vector<LitTrackParamScal*>& pars,
+                                                           unsigned int nofHits)
+{
   bool hitAdded         = false;
   LitScalPixelHit* hita = NULL;
   LitTrackParamScal param;
   fscal chiSq = std::numeric_limits<fscal>::max();
 
-  unsigned int nofHitsVec =
-    nofHits / fvecLen;  // number of hits grouped in vectors
-  unsigned int dHits =
-    nofHits
-    - fvecLen
-        * nofHitsVec;  // number of hits remained after grouping in vectors
+  unsigned int nofHitsVec = nofHits / fvecLen;               // number of hits grouped in vectors
+  unsigned int dHits      = nofHits - fvecLen * nofHitsVec;  // number of hits remained after grouping in vectors
   for (unsigned int iHit = 0; iHit < nofHitsVec; iHit++) {
     unsigned int start = fvecLen * iHit;
 
@@ -429,12 +394,10 @@ bool lit::parallel::LitTrackFinderNNVecMuon::AddNearestHit(
   return hitAdded;
 }
 
-void lit::parallel::LitTrackFinderNNVecMuon::MinMaxIndex(
-  const LitTrackParamScal* par,
-  const PixelHitArray& hits,
-  fscal maxErr,
-  PixelHitConstIterator& first,
-  PixelHitConstIterator& last) {
+void lit::parallel::LitTrackFinderNNVecMuon::MinMaxIndex(const LitTrackParamScal* par, const PixelHitArray& hits,
+                                                         fscal maxErr, PixelHitConstIterator& first,
+                                                         PixelHitConstIterator& last)
+{
   first = hits.begin();
   last  = hits.begin();
   LitScalPixelHit hit;
@@ -442,9 +405,7 @@ void lit::parallel::LitTrackFinderNNVecMuon::MinMaxIndex(
   if (C0 > fMaxCovSq || C0 < 0.) { return; }
   fscal devX = fSigmaCoef * (std::sqrt(C0) + maxErr);
   hit.X      = par->X - devX;
-  first =
-    std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
-  hit.X = par->X + devX;
-  last =
-    std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
+  first      = std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
+  hit.X      = par->X + devX;
+  last       = std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
 }

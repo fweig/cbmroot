@@ -1,6 +1,7 @@
 #include "drawStyle.C"
 
-void plot() {
+void plot()
+{
   TPstyle();
 
   gROOT->LoadMacro("$(VMCWORKDIR)/gconfig/basiclibs.C");
@@ -9,8 +10,7 @@ void plot() {
   char* ver = getenv("CBMVER");
 
   char str[1000];
-  sprintf(str,
-          "/misc/kresan/mc/%s/urqmd/auau/2gev/centr/\
+  sprintf(str, "/misc/kresan/mc/%s/urqmd/auau/2gev/centr/\
 urqmd.auau.2gev.centr.0000.mc.root",
           ver);
   TFile* file = new TFile(str);

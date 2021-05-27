@@ -13,12 +13,11 @@
 //
 //---------------------------------------------------
 
-void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
-                TString ACCfile       = "accMap_sis100_muon_lmvm.root",
+void Correction(TString PLUTOfile = "YPtM_8gev.pluto.omega.root", TString ACCfile = "accMap_sis100_muon_lmvm.root",
                 TString RECOfileOmega = "YPtM_8gev.reco.omega.root",
-                TString RECOfileBg    = "YPtM_8gev.reco.centr.SE.root",
-                TString OUTfile       = "YPt_8gev.corrected.omega.root",
-                TString fit_type      = "expo") {
+                TString RECOfileBg = "YPtM_8gev.reco.centr.SE.root", TString OUTfile = "YPt_8gev.corrected.omega.root",
+                TString fit_type = "expo")
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(6);
@@ -33,9 +32,7 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
 
   TFile* f1   = new TFile(RECOfileOmega.Data());
   TH3D* hReco = (TH3D*) f1->Get("YPtM");
-  hReco->Scale(
-    sgn_BR
-    * sgn_mult);  // if YPtM file was produced after CbmAnaDimuonAnalysis task
+  hReco->Scale(sgn_BR * sgn_mult);  // if YPtM file was produced after CbmAnaDimuonAnalysis task
 
   TFile* f11 = new TFile(RECOfileBg.Data());
   hReco->Add((TH3D*) f11->Get("YPtM_bg"));
@@ -66,8 +63,7 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
   TFile* f3    = new TFile(name.Data());
   TH2D* AccMap = (TH2D*) f3->Get("AcceptanceMap");
 
-  TH2D* plutoYPt = new TH2D(
-    "plutoYPt", "plutoYPt", NofBinsX, Xmin, Xmax, NofBinsY, Ymin, Ymax);
+  TH2D* plutoYPt = new TH2D("plutoYPt", "plutoYPt", NofBinsX, Xmin, Xmax, NofBinsY, Ymin, Ymax);
   plutoYPt->SetTitle("pluto #omega");
   plutoYPt->GetXaxis()->SetTitle("Y");
   plutoYPt->GetYaxis()->SetTitle("Pt, GeV/c");
@@ -81,8 +77,7 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
   TH2D* corrYPt = (TH2D*) plutoYPt->Clone("corrYPt");
   corrYPt->SetTitle("corrected #omega");
 
-  Double_t initPar[] = {sgnMass,
-                        0.02};  // omega mass and sigma for fit initialization
+  Double_t initPar[] = {sgnMass, 0.02};  // omega mass and sigma for fit initialization
 
   name.Form("gaus(0)+%s(3)", fit_type.Data());
   TF1* fit = new TF1("fullFit", name.Data(), 0.60, 0.90);
@@ -107,22 +102,15 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
     for (int j = 1; j < NofBinsY; j++) {
 
       name.Form("z%d%d", i, j);
-      invM_PLUTO[counter] =
-        (TH1D*) hPluto->ProjectionZ(name, i - 1, i, j - 1, j);
-      plutoYPt->Fill(i * Xbin + Xmin - Xbin / 2.,
-                     j * Ybin + Ymin - Ybin / 2.,
-                     invM_PLUTO[counter]->Integral());
+      invM_PLUTO[counter] = (TH1D*) hPluto->ProjectionZ(name, i - 1, i, j - 1, j);
+      plutoYPt->Fill(i * Xbin + Xmin - Xbin / 2., j * Ybin + Ymin - Ybin / 2., invM_PLUTO[counter]->Integral());
 
-      if (AccMap->GetBinContent(i, j) != 0)
-        accYPt->SetBinContent(i, j, plutoYPt->GetBinContent(i, j));
+      if (AccMap->GetBinContent(i, j) != 0) accYPt->SetBinContent(i, j, plutoYPt->GetBinContent(i, j));
       else
         accYPt->SetBinContent(i, j, 0);
 
-      name.Form("Y[%2.2f,%2.2f], Pt[%2.2f,%2.2f]",
-                (Double_t)(i - 1) * Xbin + Xmin,
-                (Double_t) i * Xbin + Xmin,
-                (Double_t)(j - 1) * Ybin + Ymin,
-                (Double_t) j * Ybin + Ymin);
+      name.Form("Y[%2.2f,%2.2f], Pt[%2.2f,%2.2f]", (Double_t)(i - 1) * Xbin + Xmin, (Double_t) i * Xbin + Xmin,
+                (Double_t)(j - 1) * Ybin + Ymin, (Double_t) j * Ybin + Ymin);
       invM[counter] = (TH1D*) hReco->ProjectionZ(name, i - 1, i, j - 1, j);
 
       if (invM[counter]->GetEntries() == 0) continue;
@@ -131,8 +119,7 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
 
       float start = fitSgn->GetParameter(1) - 2 * fitSgn->GetParameter(2);
       float end   = fitSgn->GetParameter(1) + 2 * fitSgn->GetParameter(2);
-      Double_t I =
-        invM[counter]->Integral((Int_t)(start / Zbin), (Int_t)(end / Zbin));
+      Double_t I  = invM[counter]->Integral((Int_t)(start / Zbin), (Int_t)(end / Zbin));
       if (I < 1e-6) continue;
 
       fit->SetParameter(1, (0.60 + 0.90) / 2);
@@ -163,8 +150,7 @@ void Correction(TString PLUTOfile     = "YPtM_8gev.pluto.omega.root",
         fitSgn->SetParameter(iPar, fit->GetParameter(iPar));
 
       float S = fitSgn->Integral(start, end) / Zbin;
-      recoYPt->Fill(
-        i * Xbin + Xmin - Xbin / 2., j * Ybin + Ymin - Ybin / 2., S);
+      recoYPt->Fill(i * Xbin + Xmin - Xbin / 2., j * Ybin + Ymin - Ybin / 2., S);
 
       invM[counter]->Write();
 

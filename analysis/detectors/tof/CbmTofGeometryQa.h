@@ -79,14 +79,11 @@ private:
   CbmTofDetectorId* fTofId;
   CbmTofCell* fChannelInfo;
   Int_t iNbSmTot;
-  std::vector<Int_t>
-    fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
+  std::vector<Int_t> fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
   Int_t iNbRpcTot;
-  std::vector<std::vector<Int_t>>
-    fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
+  std::vector<std::vector<Int_t>> fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
   Int_t fiNbChTot;
-  std::vector<std::vector<std::vector<Int_t>>>
-    fvRpcChOffs;  // Offset in channel index for first channel of each RPC
+  std::vector<std::vector<std::vector<Int_t>>> fvRpcChOffs;  // Offset in channel index for first channel of each RPC
 
   // Parameters
 
@@ -96,8 +93,7 @@ private:
   TClonesArray* fTofPointsColl;      // TOF MC points
   TClonesArray* fMcTracksColl;       // MC tracks
   TClonesArray* fRealTofPointsColl;  // Realistics TOF MC points
-  TClonesArray*
-    fRealTofMatchColl;  // Index of Realistics TOF MC points for each MC Point (CbmMatch)
+  TClonesArray* fRealTofMatchColl;   // Index of Realistics TOF MC points for each MC Point (CbmMatch)
   Bool_t fbRealPointAvail;
 
   // Histograms
@@ -106,29 +102,25 @@ private:
   // Position of the TOF wall on Z axis for centering histos with Z
   Double_t fdWallPosZ;
   // Geometric Mapping
-  Bool_t fbCentDepOn;  // Switch on study of dependence on centrality
-  std::vector<TH2*>
-    fvhTrackAllStartZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH2*>
-    fvhTrackSecStartZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH3*>
-    fvhTrackAllStartXZCent;  // Dependence of Track origin on centrality, if TOF points
-  std::vector<TH3*>
-    fvhTofPntAllAngCent;  // Dependence of Tof Point position (angular) on centrality
-  std::vector<TH2*> fvhTrackAllStartXZ;  // Track origin mapping, if TOF points
-  std::vector<TH2*> fvhTrackAllStartYZ;  // Track origin mapping, if TOF points
-  TH2* fhTrackMapXY;           // Only when creating normalization histos
-  TH2* fhTrackMapXZ;           // Only when creating normalization histos
-  TH2* fhTrackMapYZ;           // Only when creating normalization histos
-  TH2* fhTrackMapAng;          // Only when creating normalization histos
-  TH2* fhTrackMapSph;          // Only when creating normalization histos
-  TH2* fhTrackMapAngPrimAll;   // For angular acceptance study
-  TH2* fhTrackMapAngPrimSts;   // For angular acceptance study
-  TH2* fhTrackMapAngPrimRich;  // For angular acceptance study
-  TH2* fhTrackMapAngPrimMuch;  // For angular acceptance study
-  TH2* fhTrackMapAngPrimTrd;   // For angular acceptance study
-  TH2* fhTrackMapAngPrimTof;   // For angular acceptance study
-                               /*
+  Bool_t fbCentDepOn;                        // Switch on study of dependence on centrality
+  std::vector<TH2*> fvhTrackAllStartZCent;   // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH2*> fvhTrackSecStartZCent;   // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH3*> fvhTrackAllStartXZCent;  // Dependence of Track origin on centrality, if TOF points
+  std::vector<TH3*> fvhTofPntAllAngCent;     // Dependence of Tof Point position (angular) on centrality
+  std::vector<TH2*> fvhTrackAllStartXZ;      // Track origin mapping, if TOF points
+  std::vector<TH2*> fvhTrackAllStartYZ;      // Track origin mapping, if TOF points
+  TH2* fhTrackMapXY;                         // Only when creating normalization histos
+  TH2* fhTrackMapXZ;                         // Only when creating normalization histos
+  TH2* fhTrackMapYZ;                         // Only when creating normalization histos
+  TH2* fhTrackMapAng;                        // Only when creating normalization histos
+  TH2* fhTrackMapSph;                        // Only when creating normalization histos
+  TH2* fhTrackMapAngPrimAll;                 // For angular acceptance study
+  TH2* fhTrackMapAngPrimSts;                 // For angular acceptance study
+  TH2* fhTrackMapAngPrimRich;                // For angular acceptance study
+  TH2* fhTrackMapAngPrimMuch;                // For angular acceptance study
+  TH2* fhTrackMapAngPrimTrd;                 // For angular acceptance study
+  TH2* fhTrackMapAngPrimTof;                 // For angular acceptance study
+                                             /*
       TH2 * fhTrackMapAngSecAll;  // For angular acceptance study
       TH2 * fhTrackMapAngSecSts;  // For angular acceptance study
       TH2 * fhTrackMapAngSecRich; // For angular acceptance study

@@ -8,12 +8,10 @@
 // --------------------------------------------------------------------------
 
 
-void cosy2019_calib(
-  Int_t nTimeslices = -1,
-  UInt_t uRunId     = 0,
-  TString outDir    = "data",
-  TString dataSet   = "data/cosy2019"  // Data set for file names
-) {
+void cosy2019_calib(Int_t nTimeslices = -1, UInt_t uRunId = 0, TString outDir = "data",
+                    TString dataSet = "data/cosy2019"  // Data set for file names
+)
+{
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
   TString logVerbosity = "LOW";
@@ -21,7 +19,7 @@ void cosy2019_calib(
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "cosy2019_calib";  // this macro's name for screen output
+  TString myName = "cosy2019_calib";               // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");
   // ------------------------------------------------------------------------
@@ -65,8 +63,7 @@ void cosy2019_calib(
 
 
   // -----   Calibration tasks   --------------------------------------------
-  CbmOffsetDigiTime<CbmStsDigi>* pCalSts =
-    new CbmOffsetDigiTime<CbmStsDigi>("StsDigi", "StsDigi", "Calib. STS Digis");
+  CbmOffsetDigiTime<CbmStsDigi>* pCalSts = new CbmOffsetDigiTime<CbmStsDigi>("StsDigi", "StsDigi", "Calib. STS Digis");
 
   /// List of time offset to apply
   pCalSts->AddOffsetPoint(3916, -169593);
@@ -105,8 +102,7 @@ void cosy2019_calib(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

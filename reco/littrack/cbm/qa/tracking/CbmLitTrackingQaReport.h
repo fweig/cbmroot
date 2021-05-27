@@ -8,6 +8,7 @@
 #define CBMLITTRACKINGQAREPORT_H_
 
 #include "CbmSimulationReport.h"
+
 #include <string>
 #include <vector>
 using std::string;
@@ -67,8 +68,7 @@ protected:
     * \param[in] isPidEfficiency True if PID efficiency is plotted.
     * \return String with tracking efficiency.
     */
-  string PrintTrackingEfficiency(Bool_t includeRich,
-                                 Bool_t isPidEfficiency) const;
+  string PrintTrackingEfficiency(Bool_t includeRich, Bool_t isPidEfficiency) const;
 
   /**
     * \brief Return string with pion suppression efficiency.
@@ -86,12 +86,10 @@ protected:
     * \param[in] canvasName Name of canvas.
     * \param[in] histNamePattern Histogram name pattern.
     */
-  void DrawEfficiency(const string& canvasName,
-                      const string& histNamePattern,
+  void DrawEfficiency(const string& canvasName, const string& histNamePattern,
                       string (*labelFormatter)(const string&, Double_t));
 
-  void DrawPionSuppression(const string& canvasName,
-                           const string& histNamePattern,
+  void DrawPionSuppression(const string& canvasName, const string& histNamePattern,
                            string (*labelFormatter)(const string&, Double_t));
 
   /**
@@ -99,8 +97,7 @@ protected:
     * \param[in] histos Vector of histograms.
     * \param[in] efficiencies Vector of efficiency numbers.
     */
-  void DrawMeanEfficiencyLines(const vector<TH1*>& histos,
-                               const vector<Double_t>& efficiencies);
+  void DrawMeanEfficiencyLines(const vector<TH1*>& histos, const vector<Double_t>& efficiencies);
 
   /**
     * \brief Draw accepted and reconstructed tracks histograms.
@@ -133,9 +130,7 @@ protected:
     * \param[in] effHistName Name of the efficiency histogram.
     * \param[in] drawOnlyEfficiency Specify whether you want to draw only efficiency histo or including distributions.
     */
-  void DrawYPt(const string& canvasName,
-               const string& effHistName,
-               Bool_t drawOnlyEfficiency = false);
+  void DrawYPt(const string& canvasName, const string& effHistName, Bool_t drawOnlyEfficiency = false);
 
   /**
     * \brief Calculate efficiency for two histograms.
@@ -143,9 +138,7 @@ protected:
     * \param[in] histAcc Acceptance histogram.
     * \param[in] scale Scaling factor for efficiency.
     */
-  Double_t CalcEfficiency(const TH1* histRec,
-                          const TH1* histAcc,
-                          Double_t scale = 1.) const;
+  Double_t CalcEfficiency(const TH1* histRec, const TH1* histAcc, Double_t scale = 1.) const;
 
   void FillGlobalTrackVariants();
 

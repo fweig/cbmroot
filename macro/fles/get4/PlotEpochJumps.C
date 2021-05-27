@@ -41,8 +41,7 @@
   cEpJumpChans->cd(4);
   hFullCtEpJumpFeeACh_003->Draw("colz");
 
-  TCanvas* cEpJumpChansSortCt =
-    new TCanvas("cEpJumpChansSortCt", "Epoch Jumps CT chans sorted");
+  TCanvas* cEpJumpChansSortCt = new TCanvas("cEpJumpChansSortCt", "Epoch Jumps CT chans sorted");
   cEpJumpChansSortCt->Divide(2, 2);
 
   cEpJumpChansSortCt->cd(1);
@@ -57,8 +56,7 @@
   cEpJumpChansSortCt->cd(4);
   hFullCtEpJumpFeeAChSort_003->Draw("colz");
 
-  TCanvas* cEpJumpChansSort =
-    new TCanvas("cEpJumpChansSort", "Epoch Jumps chan sort");
+  TCanvas* cEpJumpChansSort = new TCanvas("cEpJumpChansSort", "Epoch Jumps chan sort");
   cEpJumpChansSort->Divide(2, 2);
 
   cEpJumpChansSort->cd(1);
@@ -69,68 +67,57 @@
   hGet4BadEpochRatio->Draw("colz");
 
   cEpJumpChansSort->cd(3);
-  TProfile* pGet4BadEpRatioChip_prof =
-    hGet4BadEpRatioChip->ProfileX("hGet4BadEpRatioChip_prof");
+  TProfile* pGet4BadEpRatioChip_prof = hGet4BadEpRatioChip->ProfileX("hGet4BadEpRatioChip_prof");
   //   hGet4BadEpRatioChip->Draw("colz");
   pGet4BadEpRatioChip_prof->Draw("SAME");
 
   TCanvas* cEpQualityFirstCh =
-    new TCanvas("cEpQualityFirstCh",
-                "Epoch quality as function of first channel readout for each "
-                "chip in FEE A");
+    new TCanvas("cEpQualityFirstCh", "Epoch quality as function of first channel readout for each "
+                                     "chip in FEE A");
   cEpQualityFirstCh->Divide(2, 4);
 
   cEpQualityFirstCh->cd(1);
-  TProfile* pEpQualityFirstChFeeA_prof000 =
-    hEpQualityFirstChFeeA_000->ProfileX("pEpQualityFirstChFeeA_prof000");
+  TProfile* pEpQualityFirstChFeeA_prof000 = hEpQualityFirstChFeeA_000->ProfileX("pEpQualityFirstChFeeA_prof000");
   //   hEpQualityFirstChFeeA_000->Draw("colz");
   pEpQualityFirstChFeeA_prof000->Draw("SAME");
 
   cEpQualityFirstCh->cd(2);
-  TProfile* pEpQualityFirstChFeeA_prof001 =
-    hEpQualityFirstChFeeA_001->ProfileX("pEpQualityFirstChFeeA_prof001");
+  TProfile* pEpQualityFirstChFeeA_prof001 = hEpQualityFirstChFeeA_001->ProfileX("pEpQualityFirstChFeeA_prof001");
   //   hEpQualityFirstChFeeA_001->Draw("colz");
   pEpQualityFirstChFeeA_prof001->Draw("SAME");
 
   cEpQualityFirstCh->cd(3);
-  TProfile* pEpQualityFirstChFeeA_prof002 =
-    hEpQualityFirstChFeeA_002->ProfileX("pEpQualityFirstChFeeA_prof002");
+  TProfile* pEpQualityFirstChFeeA_prof002 = hEpQualityFirstChFeeA_002->ProfileX("pEpQualityFirstChFeeA_prof002");
   //   hEpQualityFirstChFeeA_002->Draw("colz");
   pEpQualityFirstChFeeA_prof002->Draw("SAME");
 
   cEpQualityFirstCh->cd(4);
-  TProfile* pEpQualityFirstChFeeA_prof003 =
-    hEpQualityFirstChFeeA_003->ProfileX("pEpQualityFirstChFeeA_prof003");
+  TProfile* pEpQualityFirstChFeeA_prof003 = hEpQualityFirstChFeeA_003->ProfileX("pEpQualityFirstChFeeA_prof003");
   //   hEpQualityFirstChFeeA_003->Draw("colz");
   pEpQualityFirstChFeeA_prof003->Draw("SAME");
 
   cEpQualityFirstCh->cd(5);
-  TProfile* pEpQualityFirstChFeeA_prof004 =
-    hEpQualityFirstChFeeA_004->ProfileX("pEpQualityFirstChFeeA_prof004");
+  TProfile* pEpQualityFirstChFeeA_prof004 = hEpQualityFirstChFeeA_004->ProfileX("pEpQualityFirstChFeeA_prof004");
   //   hEpQualityFirstChFeeA_004->Draw("colz");
   pEpQualityFirstChFeeA_prof004->Draw("SAME");
 
   cEpQualityFirstCh->cd(6);
-  TProfile* pEpQualityFirstChFeeA_prof005 =
-    hEpQualityFirstChFeeA_005->ProfileX("pEpQualityFirstChFeeA_prof005");
+  TProfile* pEpQualityFirstChFeeA_prof005 = hEpQualityFirstChFeeA_005->ProfileX("pEpQualityFirstChFeeA_prof005");
   //   hEpQualityFirstChFeeA_005->Draw("colz");
   pEpQualityFirstChFeeA_prof005->Draw("SAME");
 
   cEpQualityFirstCh->cd(7);
-  TProfile* pEpQualityFirstChFeeA_prof006 =
-    hEpQualityFirstChFeeA_006->ProfileX("pEpQualityFirstChFeeA_prof006");
+  TProfile* pEpQualityFirstChFeeA_prof006 = hEpQualityFirstChFeeA_006->ProfileX("pEpQualityFirstChFeeA_prof006");
   //   hEpQualityFirstChFeeA_006->Draw("colz");
   pEpQualityFirstChFeeA_prof006->Draw("SAME");
 
   cEpQualityFirstCh->cd(8);
-  TProfile* pEpQualityFirstChFeeA_prof007 =
-    hEpQualityFirstChFeeA_007->ProfileX("pEpQualityFirstChFeeA_prof007");
+  TProfile* pEpQualityFirstChFeeA_prof007 = hEpQualityFirstChFeeA_007->ProfileX("pEpQualityFirstChFeeA_prof007");
   //   hEpQualityFirstChFeeA_007->Draw("colz");
   pEpQualityFirstChFeeA_prof007->Draw("SAME");
 
-  TCanvas* chFullCtChOrderCh = new TCanvas(
-    "chFullCtChOrderCh",
-    "CT and readout order for each channel when epoch jump, chip 0 FEE A");
+  TCanvas* chFullCtChOrderCh =
+    new TCanvas("chFullCtChOrderCh", "CT and readout order for each channel when epoch jump, chip 0 FEE A");
   chFullCtChOrderCh->Divide(2, 2);
 
   chFullCtChOrderCh->cd(1);
@@ -146,61 +133,51 @@
   hFullCtChOrderCh_003->Draw("colz");
 
   TCanvas* chFullCtEpQualityCh =
-    new TCanvas("chFullCtEpQualityCh",
-                "Epoch Quality as function of CT (Full range) for each "
-                "channel, chip 0 FEE A");
+    new TCanvas("chFullCtEpQualityCh", "Epoch Quality as function of CT (Full range) for each "
+                                       "channel, chip 0 FEE A");
   chFullCtEpQualityCh->Divide(2, 2);
 
   chFullCtEpQualityCh->cd(1);
-  TProfile* pFullCtEpQualityCh_prof000 =
-    hFullCtEpQualityCh_000->ProfileX("pFullCtEpQualityCh_prof000");
+  TProfile* pFullCtEpQualityCh_prof000 = hFullCtEpQualityCh_000->ProfileX("pFullCtEpQualityCh_prof000");
   //   hFullCtEpQualityCh_000->Draw("colz");
   pFullCtEpQualityCh_prof000->Draw("SAME");
 
   chFullCtEpQualityCh->cd(2);
-  TProfile* pFullCtEpQualityCh_prof001 =
-    hFullCtEpQualityCh_001->ProfileX("pFullCtEpQualityCh_prof001");
+  TProfile* pFullCtEpQualityCh_prof001 = hFullCtEpQualityCh_001->ProfileX("pFullCtEpQualityCh_prof001");
   //   hFullCtEpQualityCh_001->Draw("colz");
   pFullCtEpQualityCh_prof001->Draw("SAME");
 
   chFullCtEpQualityCh->cd(3);
-  TProfile* pFullCtEpQualityCh_prof002 =
-    hFullCtEpQualityCh_002->ProfileX("pFullCtEpQualityCh_prof002");
+  TProfile* pFullCtEpQualityCh_prof002 = hFullCtEpQualityCh_002->ProfileX("pFullCtEpQualityCh_prof002");
   //   hFullCtEpQualityCh_002->Draw("colz");
   pFullCtEpQualityCh_prof002->Draw("SAME");
 
   chFullCtEpQualityCh->cd(4);
-  TProfile* pFullCtEpQualityCh_prof003 =
-    hFullCtEpQualityCh_003->ProfileX("pFullCtEpQualityCh_prof003");
+  TProfile* pFullCtEpQualityCh_prof003 = hFullCtEpQualityCh_003->ProfileX("pFullCtEpQualityCh_prof003");
   //   hFullCtEpQualityCh_003->Draw("colz");
   pFullCtEpQualityCh_prof003->Draw("SAME");
 
-  TCanvas* chFullCtEpQualityChZoom = new TCanvas(
-    "chFullCtEpQualityChZoom",
-    "Epoch Quality as function of CT (Zoomed) for each channel, chip 0 FEE A");
+  TCanvas* chFullCtEpQualityChZoom =
+    new TCanvas("chFullCtEpQualityChZoom", "Epoch Quality as function of CT (Zoomed) for each channel, chip 0 FEE A");
   chFullCtEpQualityChZoom->Divide(2, 2);
 
   chFullCtEpQualityChZoom->cd(1);
-  TProfile* pFullCtEpQualityChZoom_prof000 =
-    hFullCtEpQualityChZoom_000->ProfileX("pFullCtEpQualityChZoom_prof000");
+  TProfile* pFullCtEpQualityChZoom_prof000 = hFullCtEpQualityChZoom_000->ProfileX("pFullCtEpQualityChZoom_prof000");
   //   hFullCtEpQualityChZoom_000->Draw("colz");
   pFullCtEpQualityChZoom_prof000->Draw("SAME");
 
   chFullCtEpQualityChZoom->cd(2);
-  TProfile* pFullCtEpQualityChZoom_prof001 =
-    hFullCtEpQualityChZoom_001->ProfileX("pFullCtEpQualityChZoom_prof001");
+  TProfile* pFullCtEpQualityChZoom_prof001 = hFullCtEpQualityChZoom_001->ProfileX("pFullCtEpQualityChZoom_prof001");
   //   hFullCtEpQualityChZoom_001->Draw("colz");
   pFullCtEpQualityChZoom_prof001->Draw("SAME");
 
   chFullCtEpQualityChZoom->cd(3);
-  TProfile* pFullCtEpQualityChZoom_prof002 =
-    hFullCtEpQualityChZoom_002->ProfileX("pFullCtEpQualityChZoom_prof002");
+  TProfile* pFullCtEpQualityChZoom_prof002 = hFullCtEpQualityChZoom_002->ProfileX("pFullCtEpQualityChZoom_prof002");
   //   hFullCtEpQualityChZoom_002->Draw("colz");
   pFullCtEpQualityChZoom_prof002->Draw("SAME");
 
   chFullCtEpQualityChZoom->cd(4);
-  TProfile* pFullCtEpQualityChZoom_prof003 =
-    hFullCtEpQualityChZoom_003->ProfileX("pFullCtEpQualityChZoom_prof003");
+  TProfile* pFullCtEpQualityChZoom_prof003 = hFullCtEpQualityChZoom_003->ProfileX("pFullCtEpQualityChZoom_prof003");
   //   hFullCtEpQualityChZoom_003->Draw("colz");
   pFullCtEpQualityChZoom_prof003->Draw("SAME");
 }

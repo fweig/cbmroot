@@ -1,4 +1,5 @@
-void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
+void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 25, 700, 800);
@@ -25,7 +26,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h1 != NULL) {
     h1->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -38,7 +40,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
     gPad->SetLogz();
     TProfile* h2pfx = h2->ProfileX();
     h2pfx->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -53,8 +56,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
     h2pfx->Draw("same");
     TH1D* h2py = h2->ProjectionY();
     cout << "Average TOff :" << h2py->GetMean() << endl;
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -67,7 +70,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
     gPad->SetLogz();
     TProfile* h2pfx = h2->ProfileX();
     h2pfx->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -80,7 +84,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
     gPad->SetLogz();
     TProfile* h2pfx = h2->ProfileX();
     h2pfx->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -91,7 +96,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -104,7 +110,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
     gPad->SetLogz();
     TProfile* h2pfx = h2->ProfileX();
     h2pfx->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -115,7 +122,8 @@ void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

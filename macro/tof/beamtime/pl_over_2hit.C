@@ -1,4 +1,5 @@
-void pl_over_2hit(Int_t iLog = 0) {
+void pl_over_2hit(Int_t iLog = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 1000, 800);
@@ -30,7 +31,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -41,7 +43,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -52,7 +55,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -64,7 +68,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -75,7 +80,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -86,7 +92,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -98,7 +105,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -109,7 +117,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -120,7 +129,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -132,7 +142,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -143,7 +154,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -154,7 +166,8 @@ void pl_over_2hit(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

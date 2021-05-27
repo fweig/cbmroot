@@ -31,23 +31,16 @@ CbmFieldConst::CbmFieldConst()
   , fZmax(0.)
   , fBx(0.)
   , fBy(0.)
-  , fBz(0.) {
+  , fBz(0.)
+{
   fType = 0;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmFieldConst::CbmFieldConst(const char* name,
-                             Double_t xMin,
-                             Double_t xMax,
-                             Double_t yMin,
-                             Double_t yMax,
-                             Double_t zMin,
-                             Double_t zMax,
-                             Double_t bX,
-                             Double_t bY,
-                             Double_t bZ)
+CbmFieldConst::CbmFieldConst(const char* name, Double_t xMin, Double_t xMax, Double_t yMin, Double_t yMax,
+                             Double_t zMin, Double_t zMax, Double_t bX, Double_t bY, Double_t bZ)
   : FairField(name)
   , fXmin(xMin)
   , fXmax(xMax)
@@ -57,7 +50,8 @@ CbmFieldConst::CbmFieldConst(const char* name,
   , fZmax(zMax)
   , fBx(bX)
   , fBy(bY)
-  , fBz(bZ) {
+  , fBz(bZ)
+{
   fType = 0;
 }
 // -------------------------------------------------------------------------
@@ -74,12 +68,13 @@ CbmFieldConst::CbmFieldConst(CbmFieldPar* fieldPar)
   , fZmax(0.)
   , fBx(0.)
   , fBy(0.)
-  , fBz(0.) {
+  , fBz(0.)
+{
   if (!fieldPar) {
-    cerr << "-W- CbmFieldConst::CbmFieldConst: empty parameter container!"
-         << endl;
+    cerr << "-W- CbmFieldConst::CbmFieldConst: empty parameter container!" << endl;
     fType = 0;
-  } else {
+  }
+  else {
     fXmin = fieldPar->GetXmin();
     fXmax = fieldPar->GetXmax();
     fYmin = fieldPar->GetYmin();
@@ -101,12 +96,9 @@ CbmFieldConst::~CbmFieldConst() {}
 
 
 // -----   Set field region   ----------------------------------------------
-void CbmFieldConst::SetFieldRegion(Double_t xMin,
-                                   Double_t xMax,
-                                   Double_t yMin,
-                                   Double_t yMax,
-                                   Double_t zMin,
-                                   Double_t zMax) {
+void CbmFieldConst::SetFieldRegion(Double_t xMin, Double_t xMax, Double_t yMin, Double_t yMax, Double_t zMin,
+                                   Double_t zMax)
+{
   fXmin = xMin;
   fXmax = xMax;
   fYmin = yMin;
@@ -118,7 +110,8 @@ void CbmFieldConst::SetFieldRegion(Double_t xMin,
 
 
 // -----   Set field values   ----------------------------------------------
-void CbmFieldConst::SetField(Double_t bX, Double_t bY, Double_t bZ) {
+void CbmFieldConst::SetField(Double_t bX, Double_t bY, Double_t bZ)
+{
   fBx = bX;
   fBy = bY;
   fBz = bZ;
@@ -127,52 +120,46 @@ void CbmFieldConst::SetField(Double_t bX, Double_t bY, Double_t bZ) {
 
 
 // -----   Get x component of field   --------------------------------------
-Double_t CbmFieldConst::GetBx(Double_t x, Double_t y, Double_t z) {
-  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin
-      || z > fZmax)
-    return 0.;
+Double_t CbmFieldConst::GetBx(Double_t x, Double_t y, Double_t z)
+{
+  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin || z > fZmax) return 0.;
   return fBx;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Get y component of field   --------------------------------------
-Double_t CbmFieldConst::GetBy(Double_t x, Double_t y, Double_t z) {
-  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin
-      || z > fZmax)
-    return 0.;
+Double_t CbmFieldConst::GetBy(Double_t x, Double_t y, Double_t z)
+{
+  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin || z > fZmax) return 0.;
   return fBy;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Get z component of field   --------------------------------------
-Double_t CbmFieldConst::GetBz(Double_t x, Double_t y, Double_t z) {
-  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin
-      || z > fZmax)
-    return 0.;
+Double_t CbmFieldConst::GetBz(Double_t x, Double_t y, Double_t z)
+{
+  if (x < fXmin || x > fXmax || y < fYmin || y > fYmax || z < fZmin || z > fZmax) return 0.;
   return fBz;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Screen output   -------------------------------------------------
-void CbmFieldConst::Print(Option_t*) const {
+void CbmFieldConst::Print(Option_t*) const
+{
   cout << "======================================================" << endl;
   cout << "----  " << fTitle << " : " << fName << endl;
   cout << "----" << endl;
   cout << "----  Field type    : constant" << endl;
   cout << "----" << endl;
   cout << "----  Field regions : " << endl;
-  cout << "----        x = " << setw(4) << fXmin << " to " << setw(4) << fXmax
-       << " cm" << endl;
-  cout << "----        y = " << setw(4) << fYmin << " to " << setw(4) << fYmax
-       << " cm" << endl;
-  cout << "----        z = " << setw(4) << fZmin << " to " << setw(4) << fZmax
-       << " cm" << endl;
+  cout << "----        x = " << setw(4) << fXmin << " to " << setw(4) << fXmax << " cm" << endl;
+  cout << "----        y = " << setw(4) << fYmin << " to " << setw(4) << fYmax << " cm" << endl;
+  cout << "----        z = " << setw(4) << fZmin << " to " << setw(4) << fZmax << " cm" << endl;
   cout.precision(4);
-  cout << "----  B = ( " << fBx << ", " << fBy << ", " << fBz << " ) kG"
-       << endl;
+  cout << "----  B = ( " << fBx << ", " << fBy << ", " << fBz << " ) kG" << endl;
   cout << "======================================================" << endl;
 }
 // -------------------------------------------------------------------------

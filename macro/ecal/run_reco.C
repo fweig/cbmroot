@@ -50,7 +50,8 @@ static Int_t fieldSymType;
 static TString defaultInputFile;
 #endif
 
-void run_reco(Int_t nEvents = 1) {
+void run_reco(Int_t nEvents = 1)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -129,14 +130,12 @@ void run_reco(Int_t nEvents = 1) {
 
 
   // -----   MVD Digitiser   -------------------------------------------------
-  CbmMvdDigitizer* mvdDigitise =
-    new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
   run->AddTask(mvdDigitise);
   // -------------------------------------------------------------------------
 
   // -----   MVD Clusterfinder   ---------------------------------------------
-  CbmMvdClusterfinder* mvdCluster =
-    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   run->AddTask(mvdCluster);
   // -------------------------------------------------------------------------
 
@@ -145,17 +144,16 @@ void run_reco(Int_t nEvents = 1) {
   // -----   The parameters of the STS digitizer are set such as to match
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;  // Model: 1 = uniform charge distribution along track
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // Model: 1 = uniform charge distribution along track
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetParameters(
-    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
   // -------------------------------------------------------------------------
 
@@ -165,8 +163,7 @@ void run_reco(Int_t nEvents = 1) {
   // =========================================================================
 
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdHitfinder* mvdHitfinder =
-    new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+  CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
   mvdHitfinder->UseClusterfinder(kTRUE);
   run->AddTask(mvdHitfinder);
   // -------------------------------------------------------------------------
@@ -203,13 +200,13 @@ void run_reco(Int_t nEvents = 1) {
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
 
@@ -221,7 +218,7 @@ void run_reco(Int_t nEvents = 1) {
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  Bool_t simpleTR          = kTRUE;  // use fast and simple version for TR production
   CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
@@ -256,8 +253,7 @@ void run_reco(Int_t nEvents = 1) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducerNew* tofHitProd =
-    new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
+  CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
   tofHitProd->SetInitFromAscii(kFALSE);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
@@ -299,14 +295,12 @@ void run_reco(Int_t nEvents = 1) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
-    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
-    new CbmTrdSetTracksPidANN("Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
@@ -354,8 +348,7 @@ void run_reco(Int_t nEvents = 1) {
 
   // -----   ECAL hit producer  ----------------------------------------------
 
-  CbmEcalStructureFiller* ecalFiller =
-    new CbmEcalStructureFiller("ecalFiller", iVerbose, "ecal/ecal_v12a.geo");
+  CbmEcalStructureFiller* ecalFiller = new CbmEcalStructureFiller("ecalFiller", iVerbose, "ecal/ecal_v12a.geo");
   ecalFiller->SetUseMCPoints(kTRUE);
   ecalFiller->StoreTrackInformation();
   run->AddTask(ecalFiller);
@@ -366,9 +359,8 @@ void run_reco(Int_t nEvents = 1) {
   CbmEcalPrepare* ecalPrepare = new CbmEcalPrepare("ecalPrepare", iVerbose);
   run->AddTask(ecalPrepare);
 
-  CbmEcalTracking* ecalTracking = new CbmEcalTracking("ecalTracking", iVerbose);
-  CbmEcalTrackExtrapolationKF* ecalTrackExtrapolation =
-    new CbmEcalTrackExtrapolationKF(iVerbose);
+  CbmEcalTracking* ecalTracking                       = new CbmEcalTracking("ecalTracking", iVerbose);
+  CbmEcalTrackExtrapolationKF* ecalTrackExtrapolation = new CbmEcalTrackExtrapolationKF(iVerbose);
   ecalTracking->SetTrackExtrapolation(ecalTrackExtrapolation);
   run->AddTask(ecalTracking);
 
@@ -377,28 +369,23 @@ void run_reco(Int_t nEvents = 1) {
   ecalSCurve->AddFile("$VMCWORKDIR/parameters/ecal/scurve4_x25.root");
   run->AddTask(ecalSCurve);
 
-  CbmEcalCalibrationV2* ecalECalibration = new CbmEcalCalibrationV2(
-    "ecalECalibration",
-    iVerbose,
-    "$VMCWORKDIR/parameters/ecal/calibratione_x22.cfg");
+  CbmEcalCalibrationV2* ecalECalibration =
+    new CbmEcalCalibrationV2("ecalECalibration", iVerbose, "$VMCWORKDIR/parameters/ecal/calibratione_x22.cfg");
   run->AddTask(ecalECalibration);
 
-  CbmEcalMaximumLocator* ecalLocator =
-    new CbmEcalMaximumLocator("ecalMaximumLocator", 10);
+  CbmEcalMaximumLocator* ecalLocator = new CbmEcalMaximumLocator("ecalMaximumLocator", 10);
   run->AddTask(ecalLocator);
 
-  CbmEcalIdentification* ecalId = new CbmEcalIdentification(
-    "ecalId", iVerbose, "$VMCWORKDIR/parameters/ecal/id_jun25.cfg");
+  CbmEcalIdentification* ecalId =
+    new CbmEcalIdentification("ecalId", iVerbose, "$VMCWORKDIR/parameters/ecal/id_jun25.cfg");
   run->AddTask(ecalId);
 
   CbmEcalCalibrationV2* ecalCalibration =
-    new CbmEcalCalibrationV2("ecalECalibration",
-                             iVerbose,
-                             "$VMCWORKDIR/parameters/ecal/calibration_x22.cfg");
+    new CbmEcalCalibrationV2("ecalECalibration", iVerbose, "$VMCWORKDIR/parameters/ecal/calibration_x22.cfg");
   run->AddTask(ecalCalibration);
 
-  CbmEcalClusterFinder* ecalCls = new CbmEcalClusterFinder(
-    "ecalCls", iVerbose, "$VMCWORKDIR/parameters/ecal/clusterfinder_light.cfg");
+  CbmEcalClusterFinder* ecalCls =
+    new CbmEcalClusterFinder("ecalCls", iVerbose, "$VMCWORKDIR/parameters/ecal/clusterfinder_light.cfg");
   run->AddTask(ecalCls);
 
   CbmEcalShLibTable* ecalShLib = new CbmEcalShLibTable("ecalShLib", iVerbose);
@@ -406,12 +393,11 @@ void run_reco(Int_t nEvents = 1) {
   ecalShLib->AddFile("$VMCWORKDIR/parameters/ecal/shlib4_x22.root");
   run->AddTask(ecalShLib);
 
-  CbmEcalReco* ecalReco = new CbmEcalReco(
-    "ecalReco", iVerbose, "$VMCWORKDIR/parameters/ecal/reco_light.cfg");
+  CbmEcalReco* ecalReco = new CbmEcalReco("ecalReco", iVerbose, "$VMCWORKDIR/parameters/ecal/reco_light.cfg");
   run->AddTask(ecalReco);
 
-  CbmEcalMatching* ecalMatch = new CbmEcalMatching(
-    "ecalMatching", iVerbose, "$VMCWORKDIR/parameters/ecal/matching_light.cfg");
+  CbmEcalMatching* ecalMatch =
+    new CbmEcalMatching("ecalMatching", iVerbose, "$VMCWORKDIR/parameters/ecal/matching_light.cfg");
   run->AddTask(ecalMatch);
 
   // -------------------------------------------------------------------------

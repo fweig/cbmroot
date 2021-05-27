@@ -19,7 +19,8 @@ static CbmFieldContFact gCbmFieldContFact;
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmFieldContFact::CbmFieldContFact() {
+CbmFieldContFact::CbmFieldContFact()
+{
   fName  = "CbmFieldContFact";
   fTitle = "Factory for field parameter containers";
   SetAllContainers();
@@ -34,25 +35,24 @@ CbmFieldContFact::~CbmFieldContFact() {}
 
 
 // -----   Create containers   ---------------------------------------------
-FairParSet* CbmFieldContFact::createContainer(FairContainer* container) {
+FairParSet* CbmFieldContFact::createContainer(FairContainer* container)
+{
 
 
   const char* name = container->GetName();
   LOG(info) << "create CbmFieldPar container " << name;
   FairParSet* set = nullptr;
   if (strcmp(name, "CbmFieldPar") == 0)
-    set = new CbmFieldPar(container->getConcatName().Data(),
-                          container->GetTitle(),
-                          container->getContext());
+    set = new CbmFieldPar(container->getConcatName().Data(), container->GetTitle(), container->getContext());
   return set;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set all containers (private)   ----------------------------------
-void CbmFieldContFact::SetAllContainers() {
-  FairContainer* container = new FairContainer(
-    "CbmFieldPar", "Field parameter container", "Default field");
+void CbmFieldContFact::SetAllContainers()
+{
+  FairContainer* container = new FairContainer("CbmFieldPar", "Field parameter container", "Default field");
   containers->Add(container);
 }
 // -------------------------------------------------------------------------

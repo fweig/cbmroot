@@ -108,9 +108,7 @@ private:
      * \param[in] ring Pointer to CbmRichRing to be fitted and filled in histograms.
      * \param[in] momentum MC momentum of particle produced ring.
      */
-  void FitAndFillHistEllipse(Int_t histIndex,
-                             CbmRichRingLight* ring,
-                             Double_t momentum);
+  void FitAndFillHistEllipse(Int_t histIndex, CbmRichRingLight* ring, Double_t momentum);
 
   /**
      * \brief Fit ring using circle fitter and fill histograms.
@@ -118,9 +116,7 @@ private:
      * \param[in] ring Pointer to CbmRichRingLight to be fitted and filled in histograms.
      * \param[in] momentum MC momentum of particle produced ring.
      */
-  void FitAndFillHistCircle(Int_t histIndex,
-                            CbmRichRingLight* ring,
-                            Double_t momentum);
+  void FitAndFillHistCircle(Int_t histIndex, CbmRichRingLight* ring, Double_t momentum);
 
   /**
      * \brief Calculate difference between ellipse parameters
@@ -171,9 +167,7 @@ private:
      */
   void DrawPmts();
 
-  void DrawPmtPoint(const string& coordinates,
-                    const vector<Int_t>& ids,
-                    Bool_t isDrawPixel);
+  void DrawPmtPoint(const string& coordinates, const vector<Int_t>& ids, Bool_t isDrawPixel);
 
   /**
      * \brief Calculate efficiency.
@@ -210,8 +204,7 @@ private:
   CbmHistManager* fHM;  // Histogram manager
 
   Int_t fEventNum;
-  Int_t
-    fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
+  Int_t fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
 
   // fitting efficiency
   Double_t fMinAaxis;

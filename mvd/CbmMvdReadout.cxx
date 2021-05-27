@@ -4,6 +4,7 @@
 
 // Includes from MVD
 #include "CbmMvdReadout.h"
+
 #include "CbmMvdDetector.h"
 #include "CbmMvdSensorReadoutTask.h"
 
@@ -12,9 +13,9 @@
 #include "FairRootManager.h"
 
 // Includes from ROOT
-#include "TClonesArray.h"
-
 #include "CbmDigiManager.h"
+
+#include "TClonesArray.h"
 
 
 // Includes from C++
@@ -36,7 +37,9 @@ CbmMvdReadout::CbmMvdReadout(const char* name)
   , fPluginNr(0)
   , fShowDebugHistos(kFALSE)
   , fDetector(nullptr)
-  , fDigiMan(nullptr) {}
+  , fDigiMan(nullptr)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -44,7 +47,8 @@ CbmMvdReadout::~CbmMvdReadout() {}
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdReadout::Exec(Option_t* /*opt*/) {
+void CbmMvdReadout::Exec(Option_t* /*opt*/)
+{
 
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd) > 0) {
     if (fVerbose) cout << "//----------------------------------------//";
@@ -58,7 +62,8 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/) {
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdReadout::Init() {
+InitStatus CbmMvdReadout::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -84,11 +89,10 @@ InitStatus CbmMvdReadout::Init() {
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose)
-      cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
-  } else {
-    LOG(fatal)
-      << "Geometry couldn't be loaded from file. No MVD digitizer available.";
+    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+  }
+  else {
+    LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
   CbmMvdSensorReadoutTask* readerTask = new CbmMvdSensorReadoutTask();
@@ -113,7 +117,8 @@ InitStatus CbmMvdReadout::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdReadout::Finish() {
+void CbmMvdReadout::Finish()
+{
   fDetector->Finish();
   PrintParameters();
 }
@@ -121,23 +126,21 @@ void CbmMvdReadout::Finish() {
 
 
 // -----   Private method Reset   ------------------------------------------
-void CbmMvdReadout::Reset() {
+void CbmMvdReadout::Reset()
+{
   // fCluster->Delete();
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdReadout::PrintParameters() const {
+void CbmMvdReadout::PrintParameters() const
+{
 
   //cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters Readout ===== ===================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters Readout ===== ====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

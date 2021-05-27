@@ -1,10 +1,8 @@
 #include <fstream>
 #include <iostream>
-void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0,
-                                   float pmt_pos_z_addend = 0,
-                                   int RotMir             = -10,
-                                   float PMTrotX          = 5,
-                                   float PMTrotY          = 5) {
+void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0, float pmt_pos_z_addend = 0, int RotMir = -10,
+                                   float PMTrotX = 5, float PMTrotY = 5)
+{
 
   float DeltaPMT_Width = 500., DeltaPMT_Height = 400.;
   float pmt_width         = 1000 + DeltaPMT_Width;  //
@@ -24,9 +22,8 @@ void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0,
   //if(RotMir==-7){DefaultRotX=14.952765.;}
 
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d", RotMir);
   }
 
@@ -43,20 +40,16 @@ void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0,
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
   /////////////////////////////////// Translation in z
   char ZTransText[256];
-  if (pmt_pos_z_addend < 0) {
-    sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend);
-  } else {
+  if (pmt_pos_z_addend < 0) { sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend); }
+  else {
     sprintf(ZTransText, "Z_p%d", pmt_pos_z_addend);
   }
   char YTransText[256];
-  if (pmt_pos_y_addend < 0) {
-    sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend);
-  } else {
+  if (pmt_pos_y_addend < 0) { sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend); }
+  else {
     sprintf(YTransText, "Y_p%d", pmt_pos_y_addend);
   }
 
@@ -67,11 +60,7 @@ void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0,
   sprintf(GeoFileName,
           "/data/cbmroot/geometry/rich/GeoOpt/TransPMT/"
           "rich_geo_%s_RotPMT_%s_%s_TransPMT_%s_%s.gdml",
-          RotMirText,
-          ShiftXTxt,
-          ShiftYTxt,
-          YTransText,
-          ZTransText);
+          RotMirText, ShiftXTxt, ShiftYTxt, YTransText, ZTransText);
 
   cout << GeoFileName << endl;  //continue;
   //return;
@@ -84,26 +73,17 @@ void CreateTransGDMLfile_April2015(float pmt_pos_y_addend = 0,
   }
 
   outfile << "                  " << std::endl;
-  outfile << "<variable name=\"RICH_mirror_angle\" value=\""
-          << RICH_mirror_angle << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>"
-          << std::endl;
-  outfile << "<variable name=\"pmt_height\" value=\"" << pmt_height << "\"/>"
-          << std::endl;
-  outfile << "<variable name=\"pmt_pos_x_addend\" value=\"" << pmt_pos_x_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_pos_y_addend\" value=\"" << pmt_pos_y_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_pos_z_addend\" value=\"" << pmt_pos_z_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_thickness\" value=\"" << pmt_thickness
-          << "\"/>" << std::endl;
+  outfile << "<variable name=\"RICH_mirror_angle\" value=\"" << RICH_mirror_angle << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_height\" value=\"" << pmt_height << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_pos_x_addend\" value=\"" << pmt_pos_x_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_pos_y_addend\" value=\"" << pmt_pos_y_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_pos_z_addend\" value=\"" << pmt_pos_z_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_thickness\" value=\"" << pmt_thickness << "\"/>" << std::endl;
 
-  outfile << "<variable name=\"pmt_rot_x_addend\" value=\""
-          << PMTrotX - DefaultRotX << "\"/>";
+  outfile << "<variable name=\"pmt_rot_x_addend\" value=\"" << PMTrotX - DefaultRotX << "\"/>";
   outfile << " <!-- rot x =" << PMTrotX << " --> " << std::endl;
-  outfile << "<variable name=\"pmt_rot_y_addend\" value=\""
-          << PMTrotY - DefaultRotY << "\"/>";
+  outfile << "<variable name=\"pmt_rot_y_addend\" value=\"" << PMTrotY - DefaultRotY << "\"/>";
   outfile << " <!-- rot y =" << PMTrotY << " --> " << std::endl;
 
   outfile << "                  " << std::endl;

@@ -7,8 +7,11 @@
 #define CBMTBDAQBUFFER_H 1
 
 #include "CbmDefs.h"
+
 #include <RtypesCore.h>  // for Double_t, Int_t
+
 #include <boost/any.hpp>
+
 #include <map>      // for multimap, __map_const_iterator, multimap<>::...
 #include <utility>  // for pair
 
@@ -70,7 +73,8 @@ public:
 
   /** Insert digi of any type into the buffer */
   template<class Digi>
-  void InsertData(Digi* digi) {
+  void InsertData(Digi* digi)
+  {
     Double_t digi_time    = digi->GetTime();
     ECbmModuleId systemID = Digi::GetSystem();
     InsertData(digi, digi_time, systemID);
@@ -102,9 +106,9 @@ private:
    ** @param digi  pointer to data object to be inserted
    **/
   //  void InsertData(boost::any digi);
-  void InsertData(boost::any digi, Double_t time, ECbmModuleId systemID) {
-    fData.insert(
-      std::make_pair(time, std::make_pair(std::move(digi), systemID)));
+  void InsertData(boost::any digi, Double_t time, ECbmModuleId systemID)
+  {
+    fData.insert(std::make_pair(time, std::make_pair(std::move(digi), systemID)));
   }
 };
 

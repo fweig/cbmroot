@@ -25,15 +25,10 @@ class CbmKFSecondaryVertexFinder : public TObject {
 
   void AddMassConstraint();
   void AddTopoConstraint();
-  Double_t& Cij(Int_t i, Int_t j) {
-    return C[(j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i];
-  }
+  Double_t& Cij(Int_t i, Int_t j) { return C[(j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i]; }
 
 public:
-  CbmKFSecondaryVertexFinder()
-    : vTracks(), NDF(0), Chi2(0), MassConstraint(0), VParent(0), VGuess(0) {
-    Clear();
-  };
+  CbmKFSecondaryVertexFinder() : vTracks(), NDF(0), Chi2(0), MassConstraint(0), VParent(0), VGuess(0) { Clear(); };
   ~CbmKFSecondaryVertexFinder() {};
 
   virtual void Clear(Option_t* opt = "");

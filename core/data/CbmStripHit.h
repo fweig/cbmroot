@@ -10,12 +10,12 @@
 #ifndef CBMSTRIPHIT_H_
 #define CBMSTRIPHIT_H_
 
+#include "CbmHit.h"  // for CbmHit
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 
 #include <string>  // for string
-
-#include "CbmHit.h"  // for CbmHit
 
 class TVector3;
 
@@ -40,16 +40,8 @@ public:
 	 * \param[in] timeError Error of hit time [ns].
 
 	 **/
-  CbmStripHit(Int_t address,
-              Double_t u,
-              Double_t phi,
-              Double_t z,
-              Double_t du,
-              Double_t dphi,
-              Double_t dz,
-              Int_t refId,
-              Double_t time      = -1.,
-              Double_t timeError = -1.);
+  CbmStripHit(Int_t address, Double_t u, Double_t phi, Double_t z, Double_t du, Double_t dphi, Double_t dz, Int_t refId,
+              Double_t time = -1., Double_t timeError = -1.);
 
   /**
 	 * \brief Standard constructor.
@@ -60,11 +52,7 @@ public:
 	 * \param[in] time Hit time [ns].
 	 * \param[in] timeError Error of hit time [ns].
 	 **/
-  CbmStripHit(Int_t address,
-              const TVector3& pos,
-              const TVector3& err,
-              Int_t refId,
-              Double_t time      = -1.,
+  CbmStripHit(Int_t address, const TVector3& pos, const TVector3& err, Int_t refId, Double_t time = -1.,
               Double_t timeError = -1.);
 
   /**

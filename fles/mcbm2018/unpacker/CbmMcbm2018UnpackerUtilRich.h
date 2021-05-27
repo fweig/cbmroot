@@ -9,18 +9,17 @@
 
 class CbmMcbmRichEdge {
 public:
-  CbmMcbmRichEdge(Int_t subsubevid, Int_t ch, Double_t time)
-    : fSubSubEventID(subsubevid), fChannel(ch), fTime(time) {}
+  CbmMcbmRichEdge(Int_t subsubevid, Int_t ch, Double_t time) : fSubSubEventID(subsubevid), fChannel(ch), fTime(time) {}
   ~CbmMcbmRichEdge() {}
   Int_t fSubSubEventID;
   Int_t fChannel;
   Double_t fTime;
 };
 
-namespace mRichSupport {
+namespace mRichSupport
+{
 
-  std::string GetBinaryRepresentation(size_t const size,
-                                      uint8_t const* const ptr);
+  std::string GetBinaryRepresentation(size_t const size, uint8_t const* const ptr);
 
   /**
 	 * size in bytes

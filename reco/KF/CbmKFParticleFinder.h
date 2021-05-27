@@ -5,9 +5,11 @@
 #define CbmKFParticleFinder_HH
 
 #include "CbmStsTrack.h"
+
 #include "FairTask.h"
 
 #include "TString.h"
+
 #include <vector>
 
 class CbmKFParticleFinderPID;
@@ -26,8 +28,7 @@ struct KFFieldVector {
 class CbmKFParticleFinder : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFParticleFinder(const char* name = "CbmKFParticleFinder",
-                      Int_t iVerbose   = 0);
+  CbmKFParticleFinder(const char* name = "CbmKFParticleFinder", Int_t iVerbose = 0);
   ~CbmKFParticleFinder();
 
   void UseMCPV() { fPVFindMode = 0; }
@@ -35,17 +36,13 @@ public:
   void RconstructMultiplePV() { fPVFindMode = 2; }
   void UseReconstructedPV() { fPVFindMode = 3; }
 
-  void SetStsTrackBranchName(const TString& name) {
-    fStsTrackBranchName = name;
-  }
+  void SetStsTrackBranchName(const TString& name) { fStsTrackBranchName = name; }
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);
   virtual void Finish();
 
-  const KFParticleTopoReconstructor* GetTopoReconstructor() const {
-    return fTopoReconstructor;
-  }
+  const KFParticleTopoReconstructor* GetTopoReconstructor() const { return fTopoReconstructor; }
 
   void SetPIDInformation(CbmKFParticleFinderPID* pid) { fPID = pid; }
 
@@ -83,12 +80,9 @@ public:
 
 private:
   double InversedChi2Prob(double p, int ndf) const;
-  void FillKFPTrackVector(KFPTrackVector* tracks,
-                          const std::vector<CbmStsTrack>& vRTracks,
-                          const std::vector<KFFieldVector>& vField,
-                          const std::vector<int>& pdg,
-                          const std::vector<int>& trackId,
-                          const std::vector<float>& vChiToPrimVtx,
+  void FillKFPTrackVector(KFPTrackVector* tracks, const std::vector<CbmStsTrack>& vRTracks,
+                          const std::vector<KFFieldVector>& vField, const std::vector<int>& pdg,
+                          const std::vector<int>& trackId, const std::vector<float>& vChiToPrimVtx,
                           bool atFirstPoint = 1) const;
 
   const CbmKFParticleFinder& operator=(const CbmKFParticleFinder&);

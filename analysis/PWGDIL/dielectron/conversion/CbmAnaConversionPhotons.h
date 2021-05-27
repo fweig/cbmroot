@@ -53,16 +53,13 @@ public:
   void FillMCTracklist(CbmMCTrack* mctrack);
   void FillMCTracklist_allElectrons(CbmMCTrack* mctrack);
   void FillMCTracklist_allGammas(CbmMCTrack* mctrack);
-  void FillRecoTracklist_allElectrons(CbmMCTrack* mctrack,
-                                      TVector3 refittedMom);
+  void FillRecoTracklist_allElectrons(CbmMCTrack* mctrack, TVector3 refittedMom);
   void CombineElectrons();
   int CheckMC(CbmMCTrack* mctrack);
 
   //CbmAnaConversionKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
-  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP,
-                                                  const CbmMCTrack* mctrackM);
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1,
-                                                      const TVector3 electron2);
+  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
+  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
 
 
   void AnalyseElectronsFromGammaMC();
@@ -82,8 +79,7 @@ private:
   CbmVertex* fPrimVertex;
   CbmKFVertex fKFVertex;
 
-  std::vector<TH1*>
-    fHistoList_photons;  // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_photons;  // list of all histograms related to rich rings
   std::vector<TH1*> fHistoList_EFG;
   std::vector<TH1*> fHistoList_EFG_angle;
   std::vector<TH1*> fHistoList_EFG_invmass;

@@ -22,9 +22,8 @@
   gSystem->Load("libEcal");
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -100,7 +99,8 @@
       if (11 == pdg) {
         // electron counter
         nev_el_true += 1;
-      } else if (-211 == pdg) {
+      }
+      else if (-211 == pdg) {
         // pion counter
         nev_pi_true += 1;
       }
@@ -121,13 +121,14 @@
     if (0 == nr) {
       // If no rings found, set index to invalid value
       index = -1;
-    } else if (1 == nr) {
+    }
+    else if (1 == nr) {
       // If single ring is found, set index to 0
       index = 0;
-    } else {
+    }
+    else {
       // Run selection
-      cout << "Event: " << i << " - " << nr << " rings. Running selection..."
-           << endl;
+      cout << "Event: " << i << " - " << nr << " rings. Running selection..." << endl;
       nr_det   = 0;
       min_dist = 100;
       index    = -1;
@@ -140,9 +141,8 @@
         // Check memory
         if (NULL == ring || NULL == proj) continue;
         // Calculate distance
-        dist =
-          TMath::Sqrt(TMath::Power(ring->GetCenterX() - proj->GetX(), 2)
-                      + TMath::Power(ring->GetCenterY() - proj->GetY(), 2));
+        dist = TMath::Sqrt(TMath::Power(ring->GetCenterX() - proj->GetX(), 2)
+                           + TMath::Power(ring->GetCenterY() - proj->GetY(), 2));
         // Cut on Nhits
         //if(ring->GetNofHitsOnRing() <= 5) continue;
         // Select closest
@@ -153,9 +153,8 @@
       }
       // Check for distance
       if (index >= 0) { nr_det += 1; }
-      if (0 == nr_det) {
-        cout << "Event: " << i << " - NO DETECTED RINGS!!!" << endl;
-      } else if (1 == nr_det) {
+      if (0 == nr_det) { cout << "Event: " << i << " - NO DETECTED RINGS!!!" << endl; }
+      else if (1 == nr_det) {
         //cout << "             selected ring " << index
         //    << " with distance " << min_dist << endl;
       }
@@ -175,7 +174,8 @@
     if (a > el_a_max || a < el_a_min) {
       // Definitly pion
       pdg1 = -211;
-    } else {
+    }
+    else {
       // Probably electron
       pdg1 = 11;
     }
@@ -186,10 +186,10 @@
         nev_el_bad += 1;
         //cout << "Event: " << i << ", b/a=" << (b/a) << " !!!!!" << endl;
       }
-    } else if (-211 == pdg1 && -211 == pdg) {
-      if (p <= 5.) {
-        nev_pi_fake += 1;
-      } else {
+    }
+    else if (-211 == pdg1 && -211 == pdg) {
+      if (p <= 5.) { nev_pi_fake += 1; }
+      else {
         nev_pi_pid += 1;
       }
       if ((b / a) < 0.9) {
@@ -199,14 +199,12 @@
     }
     // Check for missidentification
     if (pdg1 != pdg) {
-      if (11 == pdg1 && -211 == pdg) {
-        nev_el_fake += 1;
-      } else if (-211 == pdg1 && 11 == pdg) {
+      if (11 == pdg1 && -211 == pdg) { nev_el_fake += 1; }
+      else if (-211 == pdg1 && 11 == pdg) {
         nev_pi_fake += 1;
       }
-      if (11 == pdg) {
-        nev_el_pidpi += 1;
-      } else if (-211 == pdg) {
+      if (11 == pdg) { nev_el_pidpi += 1; }
+      else if (-211 == pdg) {
         nev_pi_pidel += 1;
       }
     }
@@ -218,26 +216,20 @@
 
   cout << endl;
   cout << "Number of electrons: " << nev_el_true << endl;
-  cout << "Number of identified electrons: " << nev_el_pid << "   "
-       << (100. * nev_el_pid / nev_el_true) << "%" << endl;
-  cout << "Number of fake electrons: " << nev_el_fake << "   "
-       << (100. * nev_el_fake / nev_el_true) << "%" << endl;
-  cout << "Number of MISSidentified electrons: " << nev_el_pidpi << "   "
-       << (100. * nev_el_pidpi / nev_el_true) << "%" << endl;
+  cout << "Number of identified electrons: " << nev_el_pid << "   " << (100. * nev_el_pid / nev_el_true) << "%" << endl;
+  cout << "Number of fake electrons: " << nev_el_fake << "   " << (100. * nev_el_fake / nev_el_true) << "%" << endl;
+  cout << "Number of MISSidentified electrons: " << nev_el_pidpi << "   " << (100. * nev_el_pidpi / nev_el_true) << "%"
+       << endl;
   cout << endl;
   cout << "Number of pions: " << nev_pi_true << endl;
-  cout << "Number of pions above threshold: " << nev_pi_cnkv << "   "
-       << (100. * nev_pi_cnkv / nev_pi_true) << "%" << endl;
-  cout << "Number of identified pions: " << nev_pi_pid << "   "
-       << (100. * nev_pi_pid / nev_pi_cnkv) << "%" << endl;
-  cout << "Number of fake pions: " << nev_pi_fake << "   "
-       << (100. * nev_pi_fake / nev_pi_cnkv) << "%" << endl;
-  cout << "Number of MISSidentified pions: " << nev_pi_pidel << "   "
-       << (100. * nev_pi_pidel / nev_pi_true) << "%" << endl;
+  cout << "Number of pions above threshold: " << nev_pi_cnkv << "   " << (100. * nev_pi_cnkv / nev_pi_true) << "%"
+       << endl;
+  cout << "Number of identified pions: " << nev_pi_pid << "   " << (100. * nev_pi_pid / nev_pi_cnkv) << "%" << endl;
+  cout << "Number of fake pions: " << nev_pi_fake << "   " << (100. * nev_pi_fake / nev_pi_cnkv) << "%" << endl;
+  cout << "Number of MISSidentified pions: " << nev_pi_pidel << "   " << (100. * nev_pi_pidel / nev_pi_true) << "%"
+       << endl;
   cout << endl;
-  cout << "Bad electron rings: " << nev_el_bad << "   "
-       << (100. * nev_el_bad / nev_el_pid) << "%" << endl;
-  cout << "Bad pion rings: " << nev_pi_bad << "   "
-       << (100. * nev_pi_bad / nev_pi_pid) << "%" << endl;
+  cout << "Bad electron rings: " << nev_el_bad << "   " << (100. * nev_el_bad / nev_el_pid) << "%" << endl;
+  cout << "Bad pion rings: " << nev_pi_bad << "   " << (100. * nev_pi_bad / nev_pi_pid) << "%" << endl;
   cout << endl;
 }

@@ -1,7 +1,8 @@
 // -------------------------------------------------------------------------
 // ----- This task draws the average X-component of the Q-vector versus detector multiplicity - here for the PSD: <Qx> vs Energy
 
-void check_EPflattening_Qvector() {
+void check_EPflattening_Qvector()
+{
   TFile* f1 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au2au/"
                         "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/"
                         "8m/ana/ana_10Kevt_RECOtracks_STScutY_0.8.root",
@@ -75,8 +76,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -100,8 +100,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -125,8 +124,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -150,8 +148,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -175,8 +172,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -200,8 +196,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -225,8 +220,7 @@ void check_EPflattening_Qvector() {
     //if (i>0) continue;
     Q_tmp = Q[i];
     E_tmp = E[i];
-    if (i == 0)
-      repeat = "";
+    if (i == 0) repeat = "";
     else
       repeat = "same";
     num = "";
@@ -246,13 +240,10 @@ void check_EPflattening_Qvector() {
 
   break;
 
-  c2->SaveAs(
-    "plot/EP/"
-    "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.C");
-  c2->SaveAs(
-    "plot/EP/"
-    "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.eps");
-  c2->SaveAs(
-    "plot/EP/"
-    "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.gif");
+  c2->SaveAs("plot/EP/"
+             "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.C");
+  c2->SaveAs("plot/EP/"
+             "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.eps");
+  c2->SaveAs("plot/EP/"
+             "Qx_profile_beforeflat_2_4_6_10_15_25_35AGeV_colorcodePSD_sub1_2_3.gif");
 }

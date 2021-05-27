@@ -19,8 +19,11 @@
 #include "CbmMatch.h"
 #include "CbmTofDigi.h"
 #include "CbmTofHit.h"
+
 #include "FairTask.h"
+
 #include "TClonesArray.h"
+
 #include <list>
 #include <set>
 #include <vector>
@@ -64,7 +67,9 @@ public:
       , tofHits()
       , used(false)
       , parent(nullptr)
-      , offsprings() {}
+      , offsprings()
+    {
+    }
     TrackData(const TrackData&) = default;
     TrackData& operator=(const TrackData&) = delete;
   };
@@ -92,9 +97,7 @@ public:
   void SetNofEvents(Int_t v) { fNofEvents = v; }
 
 private:
-  bool CheckMatch(const TrackData* stsMCTrack,
-                  Int_t tofHitInd,
-                  bool deepSearch = false) const;
+  bool CheckMatch(const TrackData* stsMCTrack, Int_t tofHitInd, bool deepSearch = false) const;
   bool SemiTofTrack(const TrackData* mcTrack) const;
 
 private:

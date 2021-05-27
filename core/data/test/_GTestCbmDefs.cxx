@@ -2,10 +2,10 @@
 
 #include <TString.h>
 
+#include <iostream>
+
 #include <gtest/gtest-spi.h>
 #include <gtest/gtest.h>
-
-#include <iostream>
 using std::cout;
 using std::endl;
 
@@ -34,18 +34,19 @@ protected:
 };
 
 // This is the derived class for the non-parameterized test cases.
-class CbmDetectorListTest : public _TestCbmDetectorListBase<testing::Test> {};
+class CbmDetectorListTest : public _TestCbmDetectorListBase<testing::Test> {
+};
 
 // This is the derived class for the parameterized test cases.
-class CbmDetectorListParamTest :
-  public _TestCbmDetectorListBase<testing::TestWithParam<InOutStructure>> {
+class CbmDetectorListParamTest : public _TestCbmDetectorListBase<testing::TestWithParam<InOutStructure>> {
 protected:
   DetectorId detIdFromEnum;
   Int_t detId;
   TString detName;
   TString detNameUppercase;
 
-  virtual void SetUp() {
+  virtual void SetUp()
+  {
     InOutStructure const& p = GetParam();
 
     detIdFromEnum    = p.detIdFromEnum;
@@ -55,7 +56,8 @@ protected:
   }
 };
 
-TEST(CbmDetectorList, outOfBounds) {
+TEST(CbmDetectorList, outOfBounds)
+{
   CbmDetectorList fList;
   TString retName;
 
@@ -72,7 +74,8 @@ TEST(CbmDetectorList, outOfBounds) {
   EXPECT_EQ("UNKNOWN", retName);
 }
 
-TEST_P(CbmDetectorListParamTest, checkUniqueIdCreation) {
+TEST_P(CbmDetectorListParamTest, checkUniqueIdCreation)
+{
   TString retName;
   fList.GetSystemName(detIdFromEnum, retName);
   EXPECT_EQ(detName, retName);
@@ -101,17 +104,5 @@ InOutStructure val11 = {kFHODO, 10, "fhodo", "FHODO"};
 InOutStructure val12 = {kTutDet, 11, "tutdet", "TUTDET"};
 InOutStructure val13 = {kNOFDETS, 12, "unknown", "UNKNOWN"};
 
-INSTANTIATE_TEST_CASE_P(TestAllParameters,
-                        CbmDetectorListParamTest,
-                        ::testing::Values(val1,
-                                          val2,
-                                          val3,
-                                          val4,
-                                          val5,
-                                          val6,
-                                          val7,
-                                          val8,
-                                          val9,
-                                          val10,
-                                          val11,
-                                          val12));
+INSTANTIATE_TEST_CASE_P(TestAllParameters, CbmDetectorListParamTest,
+                        ::testing::Values(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));

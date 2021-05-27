@@ -2,12 +2,12 @@
 
 using namespace std;
 
-void run_reco(Int_t nEvents = 100000) {
+void run_reco(Int_t nEvents = 100000)
+{
   Int_t iVerbose = 0;
   gRandom->SetSeed(10);
 
-  TString dir =
-    "/Users/slebedev/Development/cbm/data/simulations/richprototype/";
+  TString dir     = "/Users/slebedev/Development/cbm/data/simulations/richprototype/";
   TString inFile  = dir + "/mc.root";
   TString parFile = dir + "/params.root";
   TString outFile = dir + "/reco.root";
@@ -26,13 +26,12 @@ void run_reco(Int_t nEvents = 100000) {
     parFile = TString(gSystem->Getenv("PAR_FILE"));
     outFile = TString(gSystem->Getenv("RECO_FILE"));
 
-    nofNoiseHitsInRich =
-      TString(gSystem->Getenv("NOF_NOISE_HITS_IN_RICH")).Atoi();
-    collectionEff  = TString(gSystem->Getenv("RICH_COLLECTION_EFF")).Atof();
-    sigmaErrorRich = TString(gSystem->Getenv("SIGMA_ERROR_RICH")).Atof();
-    crosstalkRich  = TString(gSystem->Getenv("CROSSTALK_RICH")).Atof();
-    pmtType        = TString(gSystem->Getenv("PMT_TYPE")).Atoi();
-    ringFinder     = string(gSystem->Getenv("RING_FINDER"));
+    nofNoiseHitsInRich = TString(gSystem->Getenv("NOF_NOISE_HITS_IN_RICH")).Atoi();
+    collectionEff      = TString(gSystem->Getenv("RICH_COLLECTION_EFF")).Atof();
+    sigmaErrorRich     = TString(gSystem->Getenv("SIGMA_ERROR_RICH")).Atof();
+    crosstalkRich      = TString(gSystem->Getenv("CROSSTALK_RICH")).Atof();
+    pmtType            = TString(gSystem->Getenv("PMT_TYPE")).Atoi();
+    ringFinder         = string(gSystem->Getenv("RING_FINDER"));
   }
 
   gDebug = 0;
@@ -60,8 +59,7 @@ void run_reco(Int_t nEvents = 100000) {
   run->AddTask(richHitProd);
 
 
-  CbmRichProtPrepareExtrapolation* richPrepare =
-    new CbmRichProtPrepareExtrapolation(iVerbose);
+  CbmRichProtPrepareExtrapolation* richPrepare = new CbmRichProtPrepareExtrapolation(iVerbose);
   richPrepare->SetReso(1. / 10., 1. / 1000.);
   run->AddTask(richPrepare);
 

@@ -26,11 +26,11 @@ Int_t fieldSymType  = 0;
 TString defaultInputFile = "";
 
 
-void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
+void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0)
+{
   TTree::SetMaxTreeSize(90000000000);
 
-  Int_t iVerbose =
-    0;  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
+  Int_t iVerbose     = 0;  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   FairLogger* logger = FairLogger::GetLogger();
   logger->SetLogScreenLevel("INFO");
   logger->SetLogVerbosityLevel("LOW");
@@ -38,12 +38,11 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
 
   // -----   Environment   --------------------------------------------------
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
-  TString myName = "run_reco";  // macro's name for screen output
+  TString myName = "run_reco";                     // macro's name for screen output
   // ------------------------------------------------------------------------
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
 
   // -----   In- and output file names   ------------------------------------
   TString setupName = "", outDir = "", outDir2 = "";
@@ -52,24 +51,18 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
     setupName = "setup_align";
     if (corrFlag == 0) { outDir2 = "/data/Sim_Outputs/Align/Uncorrected/"; }
     if (corrFlag == 1) { outDir2 = "/data/Sim_Outputs/Align/Corrected/"; }
-  } else if (studyName == 1) {
+  }
+  else if (studyName == 1) {
     outDir    = "/data/Sim_Outputs/Gauss_sigma_1/";
     setupName = "setup_misalign_gauss_sigma_1";  // sigma_1
-    if (corrFlag == 0) {
-      outDir2 = "/data/Sim_Outputs/Gauss_sigma_1/Uncorrected/";
-    }
-    if (corrFlag == 1) {
-      outDir2 = "/data/Sim_Outputs/Gauss_sigma_1/Corrected/";
-    }
-  } else if (studyName == 2) {
+    if (corrFlag == 0) { outDir2 = "/data/Sim_Outputs/Gauss_sigma_1/Uncorrected/"; }
+    if (corrFlag == 1) { outDir2 = "/data/Sim_Outputs/Gauss_sigma_1/Corrected/"; }
+  }
+  else if (studyName == 2) {
     outDir    = "/data/Sim_Outputs/Gauss_sigma_3/";
     setupName = "setup_misalign_gauss_sigma_3";  // sigma_3
-    if (corrFlag == 0) {
-      outDir2 = "/data/Sim_Outputs/Gauss_sigma_3/Uncorrected/";
-    }
-    if (corrFlag == 1) {
-      outDir2 = "/data/Sim_Outputs/Gauss_sigma_3/Corrected/";
-    }
+    if (corrFlag == 0) { outDir2 = "/data/Sim_Outputs/Gauss_sigma_3/Uncorrected/"; }
+    if (corrFlag == 1) { outDir2 = "/data/Sim_Outputs/Gauss_sigma_3/Corrected/"; }
   }
 
   if (script == "yes") {
@@ -97,8 +90,7 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
     parFile   = TString(gSystem->Getenv("PAR_FILE"));
     resultDir = TString(gSystem->Getenv("LIT_RESULT_DIR"));
 
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/matching/geosetup/"
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/matching/geosetup/"
                    + TString(gSystem->Getenv("GEO_SETUP_FILE"));
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
   }
@@ -111,8 +103,7 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- setupFile: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- setupFile: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   //gInterpreter->ProcessLine(setupFunct);
@@ -127,25 +118,19 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
 
   // - TRD digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -186,13 +171,13 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   // -----   The parameters of the STS digitizer are set such as to match
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;         // User sensor type DSSD
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // User sensor type DSSD
 
   // The following settings correspond to a validated implementation.
   // Changing them is on your own risk.
@@ -240,7 +225,7 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   run->AddTask(l1);
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -275,21 +260,18 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
   //richDigitizer->SetNofNoiseHits(0);
   run->AddTask(richDigitizer);
-  std::cout << "-I- digitize: Added task " << richDigitizer->GetName()
-            << std::endl;
+  std::cout << "-I- digitize: Added task " << richDigitizer->GetName() << std::endl;
 
   CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
   run->AddTask(richHitProd);
-  std::cout << "-I- hitProducer: Added task " << richHitProd->GetName()
-            << std::endl;
+  std::cout << "-I- hitProducer: Added task " << richHitProd->GetName() << std::endl;
 
   CbmRichReconstruction* richReco = new CbmRichReconstruction();
   richReco->SetRunExtrapolation(true);
   richReco->SetRunProjection(true);
   //    richReco->SetMirrorMisalignmentCorrectionParameterFile("");
-  if (corrFlag == 0) {
-    richReco->SetMirrorMisalignmentCorrectionParameterFile("");
-  } else if (corrFlag == 1) {
+  if (corrFlag == 0) { richReco->SetMirrorMisalignmentCorrectionParameterFile(""); }
+  else if (corrFlag == 1) {
     richReco->SetMirrorMisalignmentCorrectionParameterFile(outDir.Data());
   }
   richReco->SetRunTrackAssign(true);
@@ -332,9 +314,8 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   // RICH reco QA
   CbmRichRecoQa* richRecoQa = new CbmRichRecoQa();
   richRecoQa->SetOutputDir(std::string(resultDir));
-  if (corrFlag == 0) {
-    richRecoQa->SetCorrection("Uncorrected");
-  } else if (corrFlag == 1) {
+  if (corrFlag == 0) { richRecoQa->SetCorrection("Uncorrected"); }
+  else if (corrFlag == 1) {
     richRecoQa->SetCorrection("Corrected");
   }
   run->AddTask(richRecoQa);
@@ -394,8 +375,7 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0) {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

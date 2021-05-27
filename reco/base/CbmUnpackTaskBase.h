@@ -37,9 +37,8 @@ public:
 
   virtual Bool_t ReInitContainers() { return kTRUE; }
 
-  virtual void AddMsComponentToList(size_t component,
-                                    UShort_t usDetectorId)        = 0;
-  virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) = 0;
+  virtual void AddMsComponentToList(size_t component, UShort_t usDetectorId) = 0;
+  virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)            = 0;
 };
 
 #endif  // CBMUNPACKTASKBASE_H

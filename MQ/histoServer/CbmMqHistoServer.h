@@ -12,10 +12,10 @@
 
 #include "THttpServer.h"
 #include "TObjArray.h"
+#include <thread>
 
 #include <memory>
 #include <string>
-#include <thread>
 
 class TNamed;
 class TCanvas;
@@ -60,12 +60,10 @@ private:
   std::vector<bool> fvbCanvasReady;
   bool fbAllCanvasReady;
 
-  std::vector<std::pair<TNamed*, std::string>>
-    fvHistos;  //! Vector of Histos pointers and folder path
+  std::vector<std::pair<TNamed*, std::string>> fvHistos;  //! Vector of Histos pointers and folder path
   std::vector<bool> fvbHistoRegistered;
   bool fbAllHistosRegistered;
-  std::vector<std::pair<TCanvas*, std::string>>
-    fvCanvas;  //! Vector of Canvas pointers and folder path
+  std::vector<std::pair<TCanvas*, std::string>> fvCanvas;  //! Vector of Canvas pointers and folder path
   std::vector<bool> fvbCanvasRegistered;
   bool fbAllCanvasRegistered;
 

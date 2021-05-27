@@ -1,4 +1,5 @@
-void pl_over_clu(Int_t SmT = 0) {
+void pl_over_clu(Int_t SmT = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 700, 900);
@@ -19,9 +20,8 @@ void pl_over_clu(Int_t SmT = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm000_rpc000_Size", SmT);
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("colz");
-  } else {
+  if (h1 != NULL) { h1->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -29,9 +29,8 @@ void pl_over_clu(Int_t SmT = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm000_rpc000_Pos", SmT);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -39,9 +38,8 @@ void pl_over_clu(Int_t SmT = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm000_rpc000_TOff", SmT);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -49,9 +47,8 @@ void pl_over_clu(Int_t SmT = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm000_rpc000_Tot", SmT);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -59,9 +56,8 @@ void pl_over_clu(Int_t SmT = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm000_rpc000_AvWalk", SmT);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -72,7 +68,8 @@ void pl_over_clu(Int_t SmT = 0) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

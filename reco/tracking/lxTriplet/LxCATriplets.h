@@ -3,11 +3,14 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
+#include "Rtypes.h"
+
+#include <list>
+
+#include <cmath>
+
 #include "LxMC.h"
 #include "LxSettings.h"
-#include "Rtypes.h"
-#include <cmath>
-#include <list>
 
 struct LxTriplet;
 #ifdef USE_SEGMENTS
@@ -32,14 +35,7 @@ struct LxPoint {
   std::list<LxMCPoint*> mcPoints;
 #endif  //MAKE_EFF_CALC
 
-  LxPoint(Double_t X,
-          Double_t Y,
-          Double_t Z,
-          Double_t Dx,
-          Double_t Dy,
-          Double_t Dz,
-          LxLayer* Layer,
-          Int_t HitId)
+  LxPoint(Double_t X, Double_t Y, Double_t Z, Double_t Dx, Double_t Dy, Double_t Dz, LxLayer* Layer, Int_t HitId)
     : x(X)
     , y(Y)
     , z(Z)
@@ -52,7 +48,9 @@ struct LxPoint {
     , used(false)
     , layer(Layer)
     , hitId(HitId)
-    , track(0) {}
+    , track(0)
+  {
+  }
   ~LxPoint();
 };
 
@@ -71,7 +69,7 @@ struct LxTriplet {
   Double_t chi2;
 #ifdef USE_SEGMENTS
   std::list<LxSegment*> neighbours;
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
   std::list<std::pair<LxTriplet*, Double_t>> neighbours;
 #endif  //USE_SEGMENTS
 
@@ -87,7 +85,9 @@ struct LxTriplet {
     , dty2((l->dy2 + r->dy2) / deltaZ2)
     , dtx(sqrt(dtx2))
     , dty(sqrt(dty2))
-    , chi2(c2) {}
+    , chi2(c2)
+  {
+  }
 };
 
 #ifdef USE_SEGMENTS
@@ -103,13 +103,7 @@ struct LxSegment {
   Double_t chi2;
   std::list<LxTriplet*> neighbours;
 
-  LxSegment(LxPoint* s,
-            LxPoint* e,
-            Double_t Tx,
-            Double_t Ty,
-            Double_t Dtx2,
-            Double_t Dty2,
-            Double_t Chi2)
+  LxSegment(LxPoint* s, LxPoint* e, Double_t Tx, Double_t Ty, Double_t Dtx2, Double_t Dty2, Double_t Chi2)
     : source(s)
     , end(e)
     , tx(Tx)
@@ -118,7 +112,9 @@ struct LxSegment {
     , dty2(Dty2)
     , dtx(sqrt(Dtx2))
     , dty(sqrt(Dty2))
-    , chi2(Chi2) {}
+    , chi2(Chi2)
+  {
+  }
 };
 #endif  //USE_SEGMENTS
 
@@ -163,7 +159,7 @@ struct LxStation {
   Double_t yOutDispTriplet;
   Double_t xOutDispTriplet2;
   Double_t yOutDispTriplet2;
-#else   //OUT_DISP_BY_TRIPLET_DIR
+#else  //OUT_DISP_BY_TRIPLET_DIR
   Double_t xOutDispVertex;
   Double_t yOutDispVertex;
   Double_t xOutDispVertex2;
@@ -184,7 +180,7 @@ struct LxStation {
   Double_t tyInterStationBreak;
   Double_t txInterStationBreak2;
   Double_t tyInterStationBreak2;
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
   Double_t txInterTripletBreak;
   Double_t tyInterTripletBreak;
   Double_t txInterTripletBreak2;
@@ -214,7 +210,7 @@ struct LxStation {
   void BuildTriplets();
 #ifdef USE_SEGMENTS
   void BuildSegments();
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
   void ConnectTriplets();
 #endif  //USE_SEGMENTS
 };
@@ -223,23 +219,23 @@ struct LxTrackCandidate {
 #ifdef USE_SEGMENTS
   LxTriplet* begin;
   std::pair<LxSegment*, LxTriplet*> branches[LXSTATIONS - 1];
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
   LxTriplet* branches[LXSTATIONS];
 #endif  //USE_SEGMENTS
   Double_t chi2;
   Int_t length;
 
 #ifdef USE_SEGMENTS
-  LxTrackCandidate(LxTriplet* Begin,
-                   std::pair<LxSegment*, LxTriplet*>* Branches,
-                   Double_t Chi2)
-    : begin(Begin), chi2(Chi2) {
+  LxTrackCandidate(LxTriplet* Begin, std::pair<LxSegment*, LxTriplet*>* Branches, Double_t Chi2)
+    : begin(Begin)
+    , chi2(Chi2)
+  {
     for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
       branches[i] = Branches[i];
   }
-#else   //USE_SEGMENTS
-  LxTrackCandidate(Int_t len, LxTriplet** Branches, Double_t Chi2)
-    : chi2(Chi2), length(len) {
+#else  //USE_SEGMENTS
+  LxTrackCandidate(Int_t len, LxTriplet** Branches, Double_t Chi2) : chi2(Chi2), length(len)
+  {
     for (Int_t i = 0; i < length; ++i)
       branches[i] = Branches[i];
   }
@@ -259,7 +255,7 @@ struct LxTrack {
 #ifdef USE_SEGMENTS
   LxTriplet* begin;
   std::pair<LxSegment*, LxTriplet*> branches[LXSTATIONS - 1];
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
   LxTriplet* branches[LXSTATIONS];
 #endif  //USE_SEGMENTS
   Double_t chi2;
@@ -285,7 +281,8 @@ struct LxTrack {
     , matched(false)
     , mcTrack(0)
     , clone(false)
-    , length(trackCandidate->length) {
+    , length(trackCandidate->length)
+  {
 #ifdef USE_SEGMENTS
     begin->left->used                       = true;
     begin->left->track                      = this;
@@ -300,14 +297,14 @@ struct LxTrack {
 
 #ifdef USE_SEGMENTS
     for (Int_t i = 0; i < LXSTATIONS - 1; ++i)
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
     for (Int_t i = 0; i < length; ++i)
 #endif  //USE_SEGMENTS
     {
       branches[i] = trackCandidate->branches[i];
 #ifdef USE_SEGMENTS
       LxTriplet* triplet = branches[i].second;
-#else   //USE_SEGMENTS
+#else  //USE_SEGMENTS
       LxTriplet* triplet = branches[i];
 #endif  //USE_SEGMENTS
       triplet->left->used      = true;
@@ -344,34 +341,19 @@ struct LxSpace {
   void BuildTriplets();
 #ifdef USE_SEGMENTS
   void BuildSegments();
-  void BuildCandidates(LxTriplet* begin,
-                       LxTriplet* triplet,
-                       std::pair<LxSegment*, LxTriplet*>* branches,
-                       std::list<LxTrackCandidate*>& candidates,
-                       Int_t level,
-                       Double_t chi2);
-#else   //USE_SEGMENTS
+  void BuildCandidates(LxTriplet* begin, LxTriplet* triplet, std::pair<LxSegment*, LxTriplet*>* branches,
+                       std::list<LxTrackCandidate*>& candidates, Int_t level, Double_t chi2);
+#else  //USE_SEGMENTS
   void ConnectTriplets();
-  void BuildCandidates(Int_t endStNum,
-                       LxTriplet* triplet,
-                       LxTriplet** branches,
-                       std::list<LxTrackCandidate*>& candidates,
-                       Int_t level,
-                       Double_t chi2);
+  void BuildCandidates(Int_t endStNum, LxTriplet* triplet, LxTriplet** branches,
+                       std::list<LxTrackCandidate*>& candidates, Int_t level, Double_t chi2);
 #endif  //USE_SEGMENTS
   void RemoveClones();
   void Reconstruct();
   void JoinExtTracks();
   void FitTracks();
-  LxPoint* AddPoint(Int_t stationNumber,
-                    Int_t layerNumber,
-                    Int_t hitId,
-                    Double_t x,
-                    Double_t y,
-                    Double_t z,
-                    Double_t dx,
-                    Double_t dy,
-                    Double_t dz);
+  LxPoint* AddPoint(Int_t stationNumber, Int_t layerNumber, Int_t hitId, Double_t x, Double_t y, Double_t z,
+                    Double_t dx, Double_t dy, Double_t dz);
 };
 
 #endif  //LXCATRIPLETS_INCLUDED

@@ -22,8 +22,7 @@
 #include <vector>
 using namespace std;
 
-CbmTrdSetTracksPidANN::CbmTrdSetTracksPidANN()
-  : CbmTrdSetTracksPidANN("TrdSetTracksPidANN", "") {}
+CbmTrdSetTracksPidANN::CbmTrdSetTracksPidANN() : CbmTrdSetTracksPidANN("TrdSetTracksPidANN", "") {}
 
 CbmTrdSetTracksPidANN::CbmTrdSetTracksPidANN(const char* name, const char*)
   : FairTask(name)
@@ -33,24 +32,25 @@ CbmTrdSetTracksPidANN::CbmTrdSetTracksPidANN(const char* name, const char*)
   , fANNPar1(-1.)
   , fANNPar2(-1.)
   , fNN()
-  , fTRDGeometryType("h++") {}
+  , fTRDGeometryType("h++")
+{
+}
 
 
 CbmTrdSetTracksPidANN::~CbmTrdSetTracksPidANN() {}
 
 void CbmTrdSetTracksPidANN::SetParContainers() {}
 
-Bool_t CbmTrdSetTracksPidANN::ReadData() {
+Bool_t CbmTrdSetTracksPidANN::ReadData()
+{
   string fileName = string(gSystem->Getenv("VMCWORKDIR"));
   vector<string> weightsFilesANN;
 
   if (fTRDGeometryType != "h++") {
-    cout << "-E- CbmTrdSetTracksPidANN::Init: " << fTRDGeometryType
-         << " is wrong geometry type." << endl;
+    cout << "-E- CbmTrdSetTracksPidANN::Init: " << fTRDGeometryType << " is wrong geometry type." << endl;
     return kFALSE;
   }
-  fileName +=
-    "/parameters/trd/elid/ann/" + string(fTRDGeometryType.Data()) + "/";
+  fileName += "/parameters/trd/elid/ann/" + string(fTRDGeometryType.Data()) + "/";
 
   for (int i = 0; i < 10; i++) {
     stringstream ss;
@@ -104,8 +104,7 @@ Bool_t CbmTrdSetTracksPidANN::ReadData() {
       int nofHidden = 2 * (iH + 1);
       if (iL == iH) ss << "x" << (iL + 1) << ":" << nofHidden << ":xOut";
     }
-    TMultiLayerPerceptron* ann =
-      new TMultiLayerPerceptron(ss.str().c_str(), simu);
+    TMultiLayerPerceptron* ann = new TMultiLayerPerceptron(ss.str().c_str(), simu);
     ann->LoadWeights(weightsFilesANN[iH].c_str());
     fNN.push_back(ann);
   }
@@ -113,28 +112,24 @@ Bool_t CbmTrdSetTracksPidANN::ReadData() {
   return kTRUE;
 }
 
-InitStatus CbmTrdSetTracksPidANN::Init() {
+InitStatus CbmTrdSetTracksPidANN::Init()
+{
   if (!ReadData()) { Fatal("CbmTrdSetTracksPidANN::Init", "ReadData"); }
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmTrdSetTracksPidANN::Init", "RootManager not instantised");
-  }
+  if (NULL == ioman) { Fatal("CbmTrdSetTracksPidANN::Init", "RootManager not instantised"); }
 
   fTrackArray = (TClonesArray*) ioman->GetObject("TrdTrack");
-  if (NULL == fTrackArray) {
-    Fatal("CbmTrdSetTracksPidANN::Init", "No TrdTrack array");
-  }
+  if (NULL == fTrackArray) { Fatal("CbmTrdSetTracksPidANN::Init", "No TrdTrack array"); }
 
   fTrdHitArray = (TClonesArray*) ioman->GetObject("TrdHit");
-  if (NULL == fTrdHitArray) {
-    Fatal("CbmTrdSetTracksPidANN::Init", "No TrdHit array");
-  }
+  if (NULL == fTrdHitArray) { Fatal("CbmTrdSetTracksPidANN::Init", "No TrdHit array"); }
 
   return kSUCCESS;
 }
 
-void CbmTrdSetTracksPidANN::Exec(Option_t*) {
+void CbmTrdSetTracksPidANN::Exec(Option_t*)
+{
   Int_t nTracks = fTrackArray->GetEntriesFast();
   std::vector<Double_t> eLossVector;
 
@@ -161,9 +156,8 @@ void CbmTrdSetTracksPidANN::Exec(Option_t*) {
 
     Int_t iANN = nofHits - 1;
     Double_t nnEval;
-    if (iANN < 0 || iANN >= 12 || fNN[iANN] == NULL) {
-      nnEval = -2.;
-    } else {
+    if (iANN < 0 || iANN >= 12 || fNN[iANN] == NULL) { nnEval = -2.; }
+    else {
       nnEval = fNN[iANN]->Evaluate(0, &eLossVector[0]);
       if (TMath::IsNaN(nnEval) == 1) {
         cout << " -W- CbmTrdSetTracksPidANN: nnEval nan " << endl;

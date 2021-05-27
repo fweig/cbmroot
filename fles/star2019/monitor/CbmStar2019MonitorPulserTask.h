@@ -8,9 +8,9 @@
 #ifndef CbmStar2019MonitorPulserTask_H
 #define CbmStar2019MonitorPulserTask_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 #include "TString.h"
 
@@ -42,19 +42,16 @@ public:
   /// Algo settings setters
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   inline void SetHistoFilename(TString sNameIn) { fsHistoFileName = sNameIn; }
-  inline void SetEtofFeeIndexing(Bool_t bFlagIn = kTRUE) {
-    fbEtofFeeIndexing = bFlagIn;
-  }
+  inline void SetEtofFeeIndexing(Bool_t bFlagIn = kTRUE) { fbEtofFeeIndexing = bFlagIn; }
   inline void SetUpdateFreqTs(UInt_t uFreq = 100) { fuUpdateFreqTs = uFreq; }
-  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuPulserMinTot = uMin;
     fuPulserMaxTot = uMax;
   }
   inline void SetPulserChannel(UInt_t uChan) { fuPulserChannel = uChan; }
   inline void SetSectorIndex(Int_t iSector = -1) { fiSectorIndex = iSector; }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
 
 private:
   Bool_t SaveHistograms();

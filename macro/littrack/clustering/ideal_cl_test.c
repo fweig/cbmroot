@@ -9,23 +9,21 @@
 using std::cout;
 using std::endl;
 
-void ideal_cl_test(Int_t nEvents = 1) {
+void ideal_cl_test(Int_t nEvents = 1)
+{
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
-  TString dir =
-    "/home/kozlov/cbm/cbmroot_new/events/03/";       // Input/Output directory
-  TString mcFile   = dir + "mc.0000.root";           // MC transport file
-  TString parFile  = dir + "param.0000.root";        // Parameters file
-  TString recoFile = dir + "global.reco.0000.root";  // Reconstruction file
-  TString outFile  = dir + "OUT.Ideal.test.0000.root";  // Output file
+  TString dir      = "/home/kozlov/cbm/cbmroot_new/events/03/";  // Input/Output directory
+  TString mcFile   = dir + "mc.0000.root";                       // MC transport file
+  TString parFile  = dir + "param.0000.root";                    // Parameters file
+  TString recoFile = dir + "global.reco.0000.root";              // Reconstruction file
+  TString outFile  = dir + "OUT.Ideal.test.0000.root";           // Output file
 
   TString resultDir = "./test/";  // Directory for output results
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v11a.digi.par";  // Digi scheme for STS
+  TList* parFileList      = new TList();
+  TObjString stsDigiFile  = parDir + "/sts/sts_v11a.digi.par";  // Digi scheme for STS
   TObjString muchDigiFile = parDir + "/much/much_v11a.digi.root";
   parFileList->Add(&stsDigiFile);
   parFileList->Add(&muchDigiFile);
@@ -79,7 +77,6 @@ void ideal_cl_test(Int_t nEvents = 1) {
   cout << "Macro finished successfully." << endl;
   //cout << "Output file is " << outFile << endl;
   //cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   // ------------------------------------------------------------------------
 }

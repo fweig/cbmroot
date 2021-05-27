@@ -27,8 +27,7 @@ using std::map;
 using std::pair;
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdReadoutCluster::CbmMvdReadoutCluster()
-  : CbmMvdReadoutCluster::CbmMvdReadoutCluster("MvdReadoutCluster", 0) {}
+CbmMvdReadoutCluster::CbmMvdReadoutCluster() : CbmMvdReadoutCluster::CbmMvdReadoutCluster("MvdReadoutCluster", 0) {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -39,7 +38,9 @@ CbmMvdReadoutCluster::CbmMvdReadoutCluster(const char* name, Int_t iVerbose)
   , fWordsPerRegion()
   , fWordsPerSuperRegion()
   , fMvdCluster(nullptr)
-  , fEventNumber(0) {}
+  , fEventNumber(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -47,7 +48,8 @@ CbmMvdReadoutCluster::~CbmMvdReadoutCluster() { ; }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-InitStatus CbmMvdReadoutCluster::Init() {
+InitStatus CbmMvdReadoutCluster::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) { LOG(fatal) << "RootManager not instantised!"; }
 
@@ -62,29 +64,24 @@ InitStatus CbmMvdReadoutCluster::Init() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutCluster::SetupHistograms() {
+void CbmMvdReadoutCluster::SetupHistograms()
+{
   for (Int_t i = 0; i < 350; ++i) {
-    fWordsPerRegion[i] = new TH1F(
-      Form("fWordsPerRegionSensor%d", i), "Words send to a region", 65, 0, 64);
-    fWordsPerSuperRegion[i] = new TH1F(Form("fWordsPerSuperRegionSensor%d", i),
-                                       "Words send to a region",
-                                       16,
-                                       0,
-                                       15);
+    fWordsPerRegion[i]      = new TH1F(Form("fWordsPerRegionSensor%d", i), "Words send to a region", 65, 0, 64);
+    fWordsPerSuperRegion[i] = new TH1F(Form("fWordsPerSuperRegionSensor%d", i), "Words send to a region", 16, 0, 15);
   }
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutCluster::Exec(Option_t* /*opt*/) {
-  LOG(debug) << "//--------------- New Event " << fEventNumber
-             << " -----------------------\\";
+void CbmMvdReadoutCluster::Exec(Option_t* /*opt*/)
+{
+  LOG(debug) << "//--------------- New Event " << fEventNumber << " -----------------------\\";
 
-  for (Int_t nClusters = 0; nClusters < fMvdCluster->GetEntriesFast();
-       ++nClusters) {
-    CbmMvdCluster* cluster = (CbmMvdCluster*) fMvdCluster->At(nClusters);
-    Int_t sensorNr         = cluster->GetSensorNr();
+  for (Int_t nClusters = 0; nClusters < fMvdCluster->GetEntriesFast(); ++nClusters) {
+    CbmMvdCluster* cluster                  = (CbmMvdCluster*) fMvdCluster->At(nClusters);
+    Int_t sensorNr                          = cluster->GetSensorNr();
     map<pair<Int_t, Int_t>, Int_t> pixelMap = cluster->GetPixelMap();
 
     for (auto cntr = pixelMap.begin(); cntr != pixelMap.end(); ++cntr) {
@@ -103,7 +100,8 @@ void CbmMvdReadoutCluster::Exec(Option_t* /*opt*/) {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutCluster::Finish() {
+void CbmMvdReadoutCluster::Finish()
+{
   foutFile->cd();
 
   Float_t scale = 1. / (Float_t) fEventNumber;
@@ -118,7 +116,8 @@ void CbmMvdReadoutCluster::Finish() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdReadoutCluster::WriteHistograms() {
+void CbmMvdReadoutCluster::WriteHistograms()
+{
 
   for (Int_t i = 0; i < 350; ++i) {
     fWordsPerRegion[i]->Write();

@@ -1,4 +1,5 @@
-void pl_lambda(Double_t sf = 0.) {
+void pl_lambda(Double_t sf = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 900, 900);
@@ -26,7 +27,8 @@ void pl_lambda(Double_t sf = 0.) {
   if (h1 != NULL) {
     h1->Draw();
     //gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname1 << " not found -> return" << endl;
     return;
   }
@@ -48,7 +50,8 @@ void pl_lambda(Double_t sf = 0.) {
   if (h1 != NULL) {
     h1->Draw();
     //gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname3 << " not found" << endl;
   }
 
@@ -59,7 +62,8 @@ void pl_lambda(Double_t sf = 0.) {
   if (h1 != NULL) {
     h1->Draw();
     //gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname4 << " not found" << endl;
   }
 
@@ -101,8 +105,8 @@ void pl_lambda(Double_t sf = 0.) {
     hMinvdif->Draw("same");
     hMinvdif->SetLineColor(3);
     //gPad->SetLogz();
-
-  } else {
+  }
+  else {
     cout << hname7 << " not found" << endl;
   }
 
@@ -118,7 +122,8 @@ void pl_lambda(Double_t sf = 0.) {
     h->Draw("same");
     h->Scale(sf);
     h->SetLineColor(7);
-  } else {
+  }
+  else {
     cout << hname5 << " not found" << endl;
   }
 
@@ -134,7 +139,8 @@ void pl_lambda(Double_t sf = 0.) {
     h->Draw("same");
     h->SetLineColor(7);
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname6 << " not found" << endl;
   }
 
@@ -164,7 +170,8 @@ void pl_lambda(Double_t sf = 0.) {
     hLdif->Draw("same");
     hLdif->SetLineColor(3);
     //gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname8 << " not found" << endl;
   }
 
@@ -183,7 +190,8 @@ void pl_lambda(Double_t sf = 0.) {
       h->Draw();
       h1->Draw("same");
       h->SetLineColor(kRed);
-    } else {
+    }
+    else {
       h1->Draw();
     }
     hname9 = "hMIXMMom";
@@ -203,8 +211,8 @@ void pl_lambda(Double_t sf = 0.) {
     hMomdif->SetLineColor(3);
 
     gPad->SetLogy();
-
-  } else {
+  }
+  else {
     cout << hname9 << " not found" << endl;
   }
 
@@ -231,24 +239,21 @@ void pl_lambda(Double_t sf = 0.) {
     Double_t dFRange = 2.5;
     MMin             = MMEAN - dFRange * MSIG;
     MMax             = MMEAN + dFRange * MSIG;
-    cout << " Fit results: " << MMEAN << ", " << MSIG << ", new range: " << MMin
-         << " - " << MMax << endl;
+    cout << " Fit results: " << MMEAN << ", " << MSIG << ", new range: " << MMin << " - " << MMax << endl;
     h1->Fit("fSignal", "", "", MMin, MMax);
     fSignal->GetParameters(param);
     MMEAN = param[1];
     MSIG  = param[2];
     cout << " Fit results: " << MMEAN << ", " << MSIG << endl;
     Double_t dSignal = h1->Integral(h1->FindBin(MMin), h1->FindBin(MMax));
-    Double_t dAll =
-      hMinvall->Integral(hMinvall->FindBin(MMin), hMinvall->FindBin(MMax));
-    Double_t dBckgd = dAll - dSignal;
-    Double_t SoB    = dSignal / dBckgd;
-    Double_t Signif = dSignal / TMath::Sqrt(dAll);
+    Double_t dAll    = hMinvall->Integral(hMinvall->FindBin(MMin), hMinvall->FindBin(MMax));
+    Double_t dBckgd  = dAll - dSignal;
+    Double_t SoB     = dSignal / dBckgd;
+    Double_t Signif  = dSignal / TMath::Sqrt(dAll);
     cout << "Integral counts in Signal [" << MMin << "," << MMax << "] "
          << h1->Integral(h1->FindBin(MMin), h1->FindBin(MMax)) << endl;
     cout << "Integral counts in Signal + Bckgrd[] "
-         << hMinvall->Integral(hMinvall->FindBin(MMin), hMinvall->FindBin(MMax))
-         << endl;
+         << hMinvall->Integral(hMinvall->FindBin(MMin), hMinvall->FindBin(MMax)) << endl;
     cout << "Signal over background: " << SoB << endl;
     cout << "Significance: " << Signif << endl;
     cout << "Acc * eff = " << dSignal / dNLamPrim << endl;

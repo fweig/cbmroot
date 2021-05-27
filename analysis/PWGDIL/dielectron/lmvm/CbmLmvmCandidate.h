@@ -43,9 +43,12 @@ public:
     , fIsMvd2CutElectron(kFALSE)
     , fRichAnn(0.)
     , fTrdAnn(0.)
-    , fMass2(0.) {}
+    , fMass2(0.)
+  {
+  }
 
-  void ResetMcParams() {
+  void ResetMcParams()
+  {
     fIsMcSignalElectron = false;
     fIsMcPi0Electron    = false;
     fIsMcGammaElectron  = false;

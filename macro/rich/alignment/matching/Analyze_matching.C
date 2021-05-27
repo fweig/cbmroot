@@ -1,14 +1,15 @@
-#include <Analyze_matching.h>
 #include <iomanip>
 #include <vector>
 
+#include <Analyze_matching.h>
+
 /* Draw histograms of radius, dR, a, b and b over a, on a same canvass. */
 
-void Analyze_matching(TString geom_nb = "00001") {
+void Analyze_matching(TString geom_nb = "00001")
+{
   LoadLibs();
 
-  TString outDir =
-    "/data/misalignment_correction/Sim_Outputs/Matching/test/reference/";
+  TString outDir = "/data/misalignment_correction/Sim_Outputs/Matching/test/reference/";
   LoadSimFiles(geom_nb, outDir);
   PrepareHistos(geom_nb, outDir);
 
@@ -26,11 +27,7 @@ void Analyze_matching(TString geom_nb = "00001") {
   int nEv = cbmrec->GetEntries();
   cout << "We have " << nEv << " events" << endl;
 
-  cout
-    << endl
-    << "---------- Filling the ring-track VS PMT position histogram ----------"
-    << endl
-    << endl;
+  cout << endl << "---------- Filling the ring-track VS PMT position histogram ----------" << endl << endl;
   sleep(3);
 
   for (Int_t iev = 0; iev < nEv; iev++) {
@@ -40,18 +37,13 @@ void Analyze_matching(TString geom_nb = "00001") {
     int nRings = rings->GetEntriesFast();
     //int nRingMatch = ringmatch->GetEntriesFast();
     cout << endl;
-    cout << "Event ID : " << iev + 1 << "; nb of total Hits = " << nHits
-         << endl;
+    cout << "Event ID : " << iev + 1 << "; nb of total Hits = " << nHits << endl;
 
     for (int ir = 0; ir < nRings; ir++) {
       CbmRichRing* ring = (CbmRichRing*) rings->At(ir);
       float radius      = ring->GetRadius();
-      if (radius <= 0.) {
-        continue;
-      }  // With ideal finder --> many rings with radius -1
-      if (!(radius > 0)) {
-        continue;
-      }  // Test if radius is NAN - if(!(radius<=1. || radius>1.))
+      if (radius <= 0.) { continue; }   // With ideal finder --> many rings with radius -1
+      if (!(radius > 0)) { continue; }  // Test if radius is NAN - if(!(radius<=1. || radius>1.))
       //cout << "For ring number: " << ir << ", radius = " << radius << endl;
 
       float aA = ring->GetAaxis();
@@ -71,9 +63,7 @@ void Analyze_matching(TString geom_nb = "00001") {
         CbmRichHit* hit = (CbmRichHit*) hits->At(ring->GetHit(iH));
         double xH       = hit->GetX();
         double yH       = hit->GetY();
-        double dR       = aA
-                    - TMath::Sqrt((CentX - xH) * (CentX - xH)
-                                  + (CentY - yH) * (CentY - yH));
+        double dR       = aA - TMath::Sqrt((CentX - xH) * (CentX - xH) + (CentY - yH) * (CentY - yH));
         H_dR->Fill(dR);
       }
     }
@@ -156,7 +146,8 @@ void Analyze_matching(TString geom_nb = "00001") {
 // Functions
 // ------------------------------------------------------------------- //
 
-void LoadLibs() {
+void LoadLibs()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   //  basiclibs();
   gSystem->Load("libGeoBase");
@@ -181,7 +172,8 @@ void LoadLibs() {
 
 // ------------------------------------------------------------------- //
 
-void LoadSimFiles(TString geom_nb, TString outDir) {
+void LoadSimFiles(TString geom_nb, TString outDir)
+{
   TString ParFileTxt  = outDir + "param." + geom_nb + ".root";
   TString McFileTxt   = outDir + "mc." + geom_nb + ".root";
   TString RecoFileTxt = outDir + "reco." + geom_nb + ".root";
@@ -197,7 +189,8 @@ void LoadSimFiles(TString geom_nb, TString outDir) {
 
 // ------------------------------------------------------------------- //
 
-void PrepareHistos(TString geom_nb, TString outDir) {
+void PrepareHistos(TString geom_nb, TString outDir)
+{
   TString HistText1 = "Radius_" + geom_nb;
   H_Radius          = new TH1F(HistText1, HistText1, 2001, 1., 10.);
 
@@ -221,12 +214,12 @@ void PrepareHistos(TString geom_nb, TString outDir) {
 
 // ------------------------------------------------------------------- //
 
-void WriteHistos(TString geom_nb, TString outDir) {
+void WriteHistos(TString geom_nb, TString outDir)
+{
   TString HistosFile = outDir + "RingHistos." + geom_nb + ".root";
   TFile* Histos      = new TFile(HistosFile, "RECREATE");
 
-  cout << endl
-       << "Writing Histograms in the following file: " << HistosFile << endl;
+  cout << endl << "Writing Histograms in the following file: " << HistosFile << endl;
 
   H_Radius->Write();
   H_dR->Write();

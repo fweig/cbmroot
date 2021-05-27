@@ -17,7 +17,8 @@ public:
   void Finish();
   void BuildStatistics();
   void SetParticleType(TString v);
-  void SetUseBgr(bool v) {
+  void SetUseBgr(bool v)
+  {
     useBgr     = v;
     saveHistos = !v;
   }

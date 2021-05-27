@@ -24,9 +24,7 @@ public:
   /**
     * \brief Constructor.
     */
-  CbmLitPixelHit() : fX(0.), fY(0.), fDx(0.), fDy(0.), fDxy(0.) {
-    SetHitType(kLITPIXELHIT);
-  }
+  CbmLitPixelHit() : fX(0.), fY(0.), fDx(0.), fDy(0.), fDxy(0.) { SetHitType(kLITPIXELHIT); }
 
   /**
     * \brief Destructor.
@@ -51,12 +49,12 @@ public:
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
-    ss << "PixelHit: pos=(" << GetX() << "," << GetY() << "," << GetZ()
-       << ") err=(" << GetDx() << "," << GetDy() << "," << GetDz() << ") "
-       << " dxy=" << GetDxy() << " refId=" << GetRefId()
-       << " hitType=" << GetType() << " detId=" << GetSystem()
+    ss << "PixelHit: pos=(" << GetX() << "," << GetY() << "," << GetZ() << ") err=(" << GetDx() << "," << GetDy() << ","
+       << GetDz() << ") "
+       << " dxy=" << GetDxy() << " refId=" << GetRefId() << " hitType=" << GetType() << " detId=" << GetSystem()
        << " station=" << GetStation() << std::endl;
     return ss.str();
   }

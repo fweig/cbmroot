@@ -15,20 +15,18 @@
 #ifndef CBMMVDSENSOR_H
 #define CBMMVDSENSOR_H 1
 
-#include "CbmMvdDetectorId.h"
-#include "TNamed.h"
-
 #include "CbmMvdCluster.h"
+#include "CbmMvdDetectorId.h"
 #include "SensorDataSheets/CbmMvdSensorDataSheet.h"
 #include "plugins/CbmMvdSensorPlugin.h"
 
 #include "TClonesArray.h"
 #include "TGeoBBox.h"
+#include "TNamed.h"
 #include "TObjArray.h"
+#include "TString.h"
 
 #include <map>
-
-#include "TString.h"
 
 // data classes
 class CbmMvdPoint;
@@ -44,13 +42,8 @@ public:
   CbmMvdSensor();
 
 
-  CbmMvdSensor(const char* name,
-               CbmMvdSensorDataSheet* dataSheet,
-               TString volName,
-               TString nodeName,
-               Int_t stationNr,
-               Int_t volume,
-               Double_t sensorStartTime);
+  CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, TString volName, TString nodeName, Int_t stationNr,
+               Int_t volume, Double_t sensorStartTime);
 
 
   /** Destructor **/
@@ -66,25 +59,17 @@ public:
   Double_t GetDX() const { return fShape->GetDX(); };
   Double_t GetDY() const { return fShape->GetDY(); };
   Double_t GetDZ() const { return fShape->GetDZ(); };
-  Double_t GetX() const {
-    return fSensorPosition[0];
-  };  // returns x position for pixle 0/0
-  Double_t GetY() const {
-    return fSensorPosition[1];
-  };  // returns y position for pixle 0/0
+  Double_t GetX() const { return fSensorPosition[0]; };  // returns x position for pixle 0/0
+  Double_t GetY() const { return fSensorPosition[1]; };  // returns y position for pixle 0/0
   Double_t GetZ() const { return fSensorPosition[2]; };  // returns z position
-  Double_t GetIntegrationtime() const {
-    return fSensorData->GetIntegrationTime();
-  };
+  Double_t GetIntegrationtime() const { return fSensorData->GetIntegrationTime(); };
   Double_t GetCurrentEventTime() const { return fcurrentEventTime; };
   Double_t GetReadoutTime(Double_t absoluteTime) const;
 
   TString GetNodeName() { return fNodeName; };
   CbmMvdSensorDataSheet* GetDataSheet() { return fSensorData; }
   void SetDataSheet(CbmMvdSensorDataSheet* sheet) { fSensorData = sheet; }
-  void SetMap(std::map<Int_t, Int_t> SensorMap) {
-    fSensorMap = SensorMap;
-  }  // Get Sensor Map to identify every Sensor
+  void SetMap(std::map<Int_t, Int_t> SensorMap) { fSensorMap = SensorMap; }  // Get Sensor Map to identify every Sensor
   void SendInput(CbmMvdPoint* point);
   void SendInputDigi(CbmMvdDigi* digi);
   void SendInputDigiToHit(CbmMvdDigi* digi);
@@ -122,15 +107,12 @@ public:
 
   void SetPluginList(TObjArray* pluginArray) { fPluginArray = pluginArray; };
 
-  void AddPlugin(CbmMvdSensorPlugin* plugin) {
-    fPluginArray->AddLast((TObject*) plugin);
-  };
+  void AddPlugin(CbmMvdSensorPlugin* plugin) { fPluginArray->AddLast((TObject*) plugin); };
 
-  CbmMvdSensorPlugin* GetPlugin(UInt_t nPlugin) {
-    return (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
-  }
+  CbmMvdSensorPlugin* GetPlugin(UInt_t nPlugin) { return (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin); }
 
-  void SetMisalignment(Float_t misalignment[3]) {
+  void SetMisalignment(Float_t misalignment[3])
+  {
     for (Int_t i = 0; i < 3; i++)
       epsilon[i] = misalignment[i];
   }
@@ -181,14 +163,11 @@ protected:
 
 
   /** Position of the sensor */
-  TGeoBBox* fShape;  // volume corresponding to the sensor in the TGeoManager
-  TGeoHMatrix*
-    fMCMatrix;  // coordinate transformation from Master to MC-Position of this volume
-  TGeoHMatrix* fRecoMatrix;  // The reconstructed position of the sensor
-  TGeoHMatrix*
-    fAlignmentCorr;  // Correction of the sensor position according to alignment
-  Double_t
-    fTempCoordinate[3];  // Just a vector to buffer temporarily position data.
+  TGeoBBox* fShape;             // volume corresponding to the sensor in the TGeoManager
+  TGeoHMatrix* fMCMatrix;       // coordinate transformation from Master to MC-Position of this volume
+  TGeoHMatrix* fRecoMatrix;     // The reconstructed position of the sensor
+  TGeoHMatrix* fAlignmentCorr;  // Correction of the sensor position according to alignment
+  Double_t fTempCoordinate[3];  // Just a vector to buffer temporarily position data.
   Double_t fSensorPosition[3];
 
   /** Technical data of the sensor */

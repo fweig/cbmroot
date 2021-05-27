@@ -13,11 +13,11 @@
 #ifndef CBMPSDPOINT_H
 #define CBMPSDPOINT_H 1
 
+#include <FairMCPoint.h>  // for FairMCPoint
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Option_t
 #include <TVector3.h>    // for TVector3
-
-#include <FairMCPoint.h>  // for FairMCPoint
 
 #include <string>  // for string
 
@@ -37,13 +37,7 @@ public:
    *@param length   Track length since creation [cm]
    *@param eLoss    Energy deposit [GeV]
    **/
-  CbmPsdPoint(Int_t trackID,
-              Int_t detID,
-              TVector3 pos,
-              TVector3 mom,
-              Double_t tof,
-              Double_t length,
-              Double_t eLoss);
+  CbmPsdPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length, Double_t eLoss);
 
 
   /** Copy constructor **/

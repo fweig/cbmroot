@@ -13,9 +13,9 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_display_event(Int_t nEvents         = 3,
-                        TString dataset       = "data/test",
-                        const char* setupName = "sis18_mcbm_25deg_long") {
+void mcbm_display_event(Int_t nEvents = 3, TString dataset = "data/test",
+                        const char* setupName = "sis18_mcbm_25deg_long")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -28,7 +28,7 @@ void mcbm_display_event(Int_t nEvents         = 3,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_display";  // this macro's name for screen output
+  TString myName = "mcbm_display";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -64,20 +64,16 @@ void mcbm_display_event(Int_t nEvents         = 3,
 
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -98,8 +94,7 @@ void mcbm_display_event(Int_t nEvents         = 3,
 
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Using input file " << rawFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using input file " << rawFile << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -123,17 +118,14 @@ void mcbm_display_event(Int_t nEvents         = 3,
   // -----   Local reconstruction in MVD   ----------------------------------
   if (setup->IsActive(kMvd)) {
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
-    std::cout << "-I- " << myName << ": Added task " << mvdCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << mvdCluster->GetName() << std::endl;
 
     CbmMvdHitfinder* mvdHit = new CbmMvdHitfinder("MVD Hit Finder", 0, 0);
     mvdHit->UseClusterfinder(kTRUE);
     run->AddTask(mvdHit);
-    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -161,13 +153,12 @@ void mcbm_display_event(Int_t nEvents         = 3,
 
     if (muchFlag) {
       std::cout << geoTag << std::endl;
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag + "_digi_sector.root";
+      parFile = parFile + "/parameters/much/much_" + geoTag + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
-    } else {
+    }
+    else {
       std::cout << geoTag(0, 4) << std::endl;
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+      parFile = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
     }
 
@@ -175,8 +166,7 @@ void mcbm_display_event(Int_t nEvents         = 3,
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
     run->AddTask(muchHitGem);
-    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName()
-              << FairLogger::endl;
+    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << FairLogger::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -184,21 +174,19 @@ void mcbm_display_event(Int_t nEvents         = 3,
   // -----   Local reconstruction in TRD   ----------------------------------
   if (0) {  //setup->IsActive(kTrd) ) {
 
-    Double_t triggerThreshold = 0.5e-6;  // SIS100
-    Bool_t triangularPads     = false;  // Bucharest triangular pad-plane layout
+    Double_t triggerThreshold       = 0.5e-6;  // SIS100
+    Bool_t triangularPads           = false;   // Bucharest triangular pad-plane layout
     CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
     trdCluster->SetNeighbourEnable(true);
     trdCluster->SetMinimumChargeTH(triggerThreshold);
     trdCluster->SetNeighbourEnable(false);
     trdCluster->SetRowMerger(true);
     run->AddTask(trdCluster);
-    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName() << std::endl;
 
     CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
     run->AddTask(trdHit);
-    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -207,32 +195,26 @@ void mcbm_display_event(Int_t nEvents         = 3,
   if (setup->IsActive(kTof)) {
     switch (iTofCluMode) {
       case 1: {
-        CbmTofEventClusterizer* tofCluster =
-          new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
-        Int_t calMode      = 93;
-        Int_t calSel       = 0;
-        Int_t calSm        = 0;
-        Int_t RefSel       = 0;
-        Double_t dDeadtime = 50.;
+        CbmTofEventClusterizer* tofCluster = new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+        Int_t calMode                      = 93;
+        Int_t calSel                       = 0;
+        Int_t calSm                        = 0;
+        Int_t RefSel                       = 0;
+        Double_t dDeadtime                 = 50.;
 
         tofCluster->SetCalMode(calMode);
         tofCluster->SetCalSel(calSel);
-        tofCluster->SetCaldXdYMax(3.);  // geometrical matching window in cm
-        tofCluster->SetCalCluMulMax(
-          5.);  // Max Counter Cluster Multiplicity for filling calib histos
-        tofCluster->SetCalRpc(calSm);  // select detector for calibration update
-        tofCluster->SetTRefId(
-          RefSel);                   // reference trigger for offset calculation
-        tofCluster->SetTotMax(20.);  // Tot upper limit for walk corection
-        tofCluster->SetTotMin(
-          0.01);  //(12000.);  // Tot lower limit for walk correction
-        tofCluster->SetTotPreRange(
-          5.);  // effective lower Tot limit  in ns from peak position
-        tofCluster->SetTotMean(5.);       // Tot calibration target value in ns
-        tofCluster->SetMaxTimeDist(1.0);  // default cluster range in ns
-        tofCluster->SetDelTofMax(
-          5.);  // acceptance range for cluster distance in ns (!)
-        tofCluster->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+        tofCluster->SetCaldXdYMax(3.);              // geometrical matching window in cm
+        tofCluster->SetCalCluMulMax(5.);            // Max Counter Cluster Multiplicity for filling calib histos
+        tofCluster->SetCalRpc(calSm);               // select detector for calibration update
+        tofCluster->SetTRefId(RefSel);              // reference trigger for offset calculation
+        tofCluster->SetTotMax(20.);                 // Tot upper limit for walk corection
+        tofCluster->SetTotMin(0.01);                //(12000.);  // Tot lower limit for walk correction
+        tofCluster->SetTotPreRange(5.);             // effective lower Tot limit  in ns from peak position
+        tofCluster->SetTotMean(5.);                 // Tot calibration target value in ns
+        tofCluster->SetMaxTimeDist(1.0);            // default cluster range in ns
+        tofCluster->SetDelTofMax(5.);               // acceptance range for cluster distance in ns (!)
+        tofCluster->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
         tofCluster->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
         tofCluster->SetEnableAvWalk(kFALSE);
         //tofCluster->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -242,17 +224,14 @@ void mcbm_display_event(Int_t nEvents         = 3,
         tofCluster->SetTRefDifMax(2.0);  // in ns
         tofCluster->PosYMaxScal(0.75);   //in % of length
         run->AddTask(tofCluster);
-        std::cout << "-I- " << myName << ": Added task "
-                  << tofCluster->GetName() << std::endl;
+        std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
       } break;
       default: {
-        CbmTofSimpClusterizer* tofCluster =
-          new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+        CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
         tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
         tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
         run->AddTask(tofCluster);
-        std::cout << "-I- " << myName << ": Added task "
-                  << tofCluster->GetName() << std::endl;
+        std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
       }
     }
   }
@@ -273,35 +252,28 @@ void mcbm_display_event(Int_t nEvents         = 3,
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
       tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
-      CbmTofFindTracks* tofFindTracks =
-        new CbmTofFindTracks("TOF Track Finder");
+      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
-      tofFindTracks->SetCorMode(
-        iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.041);  // target value for inverse velocity, > 0.033 ns/cm!
+      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+      tofFindTracks->SetTtTarg(0.041);     // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(
-        cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-      tofFindTracks->SetStationMaxHMul(
-        30);  // Max Hit Multiplicity in any used station
+      tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+      tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
+      tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
 
-      tofFindTracks->SetT0MAX(dScalFac);  // in ns
-      tofFindTracks->SetSIGT(0.08);       // default in ns
-      tofFindTracks->SetSIGX(0.3);        // default in cm
-      tofFindTracks->SetSIGY(0.45);       // default in cm
-      tofFindTracks->SetSIGZ(0.05);       // default in cm
-      tofFindTracks->SetUseSigCalib(
-        kFALSE);  // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2
-                                * 2.);  // matching window in multiples of chi2
+      tofFindTracks->SetT0MAX(dScalFac);           // in ns
+      tofFindTracks->SetSIGT(0.08);                // default in ns
+      tofFindTracks->SetSIGX(0.3);                 // default in cm
+      tofFindTracks->SetSIGY(0.45);                // default in cm
+      tofFindTracks->SetSIGZ(0.05);                // default in cm
+      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
       tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
       Int_t iMinNofHits   = -1;
@@ -365,8 +337,7 @@ void mcbm_display_event(Int_t nEvents         = 3,
       run->AddTask(tofFindTracks);
     } break;
     default: {
-      CbmBinnedTrackerTask* trackerTask =
-        new CbmBinnedTrackerTask(kTRUE, beamWidthX, beamWidthY);
+      CbmBinnedTrackerTask* trackerTask = new CbmBinnedTrackerTask(kTRUE, beamWidthX, beamWidthY);
       trackerTask->SetUse(kTrd, kFALSE);
       run->AddTask(trackerTask);
     }
@@ -416,22 +387,14 @@ void mcbm_display_event(Int_t nEvents         = 3,
   FairEventManager* fMan = new FairEventManager();
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
-  FairMCPointDraw* MvdPoint =
-    new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
-  FairMCPointDraw* StsPoint =
-    new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
-  FairMCPointDraw* MuchPoint =
-    new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
-  FairMCPointDraw* TrdPoint =
-    new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
-  FairMCPointDraw* TofPoint =
-    new FairMCPointDraw("TofPoint", kRed, kFullSquare);
-  FairMCPointDraw* EcalPoint =
-    new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
-  FairMCPointDraw* RefPlanePoint =
-    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+  FairMCPointDraw* MvdPoint      = new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
+  FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
+  FairMCPointDraw* MuchPoint     = new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RichPoint     = new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
+  FairMCPointDraw* TrdPoint      = new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
+  FairMCPointDraw* TofPoint      = new FairMCPointDraw("TofPoint", kRed, kFullSquare);
+  FairMCPointDraw* EcalPoint     = new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
+  FairMCPointDraw* RefPlanePoint = new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
 
   fMan->AddTask(Track);
 
@@ -445,17 +408,13 @@ void mcbm_display_event(Int_t nEvents         = 3,
   fMan->AddTask(RefPlanePoint);
 
 
-  CbmPixelHitSetDraw* StsHits =
-    new CbmPixelHitSetDraw("StsHit", kRed, kOpenCircle);  // kFullSquare);
+  CbmPixelHitSetDraw* StsHits = new CbmPixelHitSetDraw("StsHit", kRed, kOpenCircle);  // kFullSquare);
   fMan->AddTask(StsHits);
-  CbmPixelHitSetDraw* TrdHits =
-    new CbmPixelHitSetDraw("TrdHit", kRed, kOpenCircle);  // kFullSquare);
+  CbmPixelHitSetDraw* TrdHits = new CbmPixelHitSetDraw("TrdHit", kRed, kOpenCircle);  // kFullSquare);
   fMan->AddTask(TrdHits);
-  CbmPixelHitSetDraw* TofHits =
-    new CbmPixelHitSetDraw("TofHit", kRed, kOpenCircle);  // kFullSquare);
+  CbmPixelHitSetDraw* TofHits = new CbmPixelHitSetDraw("TofHit", kRed, kOpenCircle);  // kFullSquare);
   fMan->AddTask(TofHits);
-  CbmPixelHitSetDraw* TofUHits =
-    new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
+  CbmPixelHitSetDraw* TofUHits = new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
   fMan->AddTask(TofUHits);
   CbmEvDisTracks* Tracks = new CbmEvDisTracks("Tof Tracks", 1);
   Tracks->SetVerbose(4);
@@ -484,8 +443,7 @@ void mcbm_display_event(Int_t nEvents         = 3,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << recFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

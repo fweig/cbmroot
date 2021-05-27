@@ -16,16 +16,16 @@
 #ifndef CBMPSDDIGI_H
 #define CBMPSDDIGI_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
-#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t
-
-#include <string>  // for string
-
 #include "CbmDefs.h"        // for ECbmModuleId::kPsd
 #include "CbmPsdAddress.h"  // for CbmPsdAddress
 
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
+#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t
+
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+
+#include <string>  // for string
 
 
 class CbmPsdDigi {
@@ -102,17 +102,13 @@ public:
   /** @brief Module Identifier
        ** @return Module number
        **/
-  Double_t GetModuleID() const {
-    return CbmPsdAddress::GetModuleId(GetAddress());
-  }
+  Double_t GetModuleID() const { return CbmPsdAddress::GetModuleId(GetAddress()); }
 
 
   /** @brief Section Identifier
        ** @return Section number
        **/
-  Double_t GetSectionID() const {
-    return CbmPsdAddress::GetSectionId(GetAddress());
-  }
+  Double_t GetSectionID() const { return CbmPsdAddress::GetSectionId(GetAddress()); }
 
 
   /** @brief System identifier
@@ -165,7 +161,8 @@ private:
   /// BOOST serialization interface
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& ffFitHarmonic1;
     ar& ffFitHarmonic2;
     ar& ffFitR2;

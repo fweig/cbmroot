@@ -94,7 +94,8 @@ public:
      ** @param stationId  Station number
      ** @value Pointer to station object. nullptr if not present.
      **/
-  CbmStsStation* GetStation(Int_t stationId) const {
+  CbmStsStation* GetStation(Int_t stationId) const
+  {
     if (fStations.find(stationId) == fStations.end()) return nullptr;
     return fStations.at(stationId);
   }
@@ -151,7 +152,8 @@ public:
 
 
   /** Print list of sensors with parameters **/
-  void ListSensors() const {
+  void ListSensors() const
+  {
     for (auto it = fSensors.begin(); it != fSensors.end(); it++)
       LOG(info) << it->second->ToString();
   }

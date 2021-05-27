@@ -8,12 +8,13 @@
 #ifndef CBMCHECKEVENTS_H
 #define CBMCHECKEVENTS_H
 
+#include "CbmDefs.h"
+#include "CbmTofDigi.h"
+
 #include "FairTask.h"
 
-#include "CbmDefs.h"
-
-#include "CbmTofDigi.h"
 #include "TString.h"
+
 #include <vector>
 
 class CbmEvent;

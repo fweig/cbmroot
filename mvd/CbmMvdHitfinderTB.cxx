@@ -4,6 +4,7 @@
 
 // Includes from MVD
 #include "CbmMvdHitfinderTB.h"
+
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 #include "plugins/tasks/CbmMvdSensorFindHitTask.h"
@@ -41,7 +42,9 @@ CbmMvdHitfinderTB::CbmMvdHitfinderTB()
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(-1) {}
+  , fmode(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -55,13 +58,13 @@ CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name, Int_t iVerbose)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(-1) {}
+  , fmode(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name,
-                                     Int_t mode,
-                                     Int_t iVerbose)
+CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name, Int_t mode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fDetector(NULL)
   , fInputDigis(NULL)
@@ -71,13 +74,15 @@ CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name,
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(mode) {
+  , fmode(mode)
+{
   //    fmode = mode;
 }
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdHitfinderTB::~CbmMvdHitfinderTB() {
+CbmMvdHitfinderTB::~CbmMvdHitfinderTB()
+{
 
   if (fHits) {
     fHits->Delete();
@@ -87,7 +92,8 @@ CbmMvdHitfinderTB::~CbmMvdHitfinderTB() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdHitfinderTB::Exec(Option_t* /*opt*/) {
+void CbmMvdHitfinderTB::Exec(Option_t* /*opt*/)
+{
 
   using namespace std;
 
@@ -100,21 +106,19 @@ void CbmMvdHitfinderTB::Exec(Option_t* /*opt*/) {
   fDetector->Exec(fHitfinderPluginNr);
   LOG(debug) << "End Chain";
   LOG(debug) << "Start writing Hits";
-  fHits->AbsorbObjects(fDetector->GetOutputHits(),
-                       0,
-                       fDetector->GetOutputHits()->GetEntriesFast() - 1);
+  fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
   LOG(debug) << "Total of " << fHits->GetEntriesFast() << " hits found";
   LOG(debug) << "Finished writing Hits";
   LOG(debug) << "//----------------------------------------//";
-  LOG(info) << "+ " << setw(20) << GetName()
-            << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed
+  LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed
             << setprecision(6) << fTimer.RealTime() << " s";
   fTimer.Stop();
 }
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdHitfinderTB::Init() {
+InitStatus CbmMvdHitfinderTB::Init()
+{
 
   using namespace std;
 
@@ -141,8 +145,7 @@ InitStatus CbmMvdHitfinderTB::Init() {
 
   // **********  Register output array
   fHits = new TClonesArray("CbmMvdHit", 10000);
-  ioman->Register(
-    "MvdHit", "Mvd Hits", fHits, IsOutputBranchPersistent("MvdHit"));
+  ioman->Register("MvdHit", "Mvd Hits", fHits, IsOutputBranchPersistent("MvdHit"));
 
   fDetector = CbmMvdDetector::Instance();
 
@@ -182,19 +185,16 @@ void CbmMvdHitfinderTB::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdHitfinderTB::PrintParameters() {
+void CbmMvdHitfinderTB::PrintParameters()
+{
 
   using namespace std;
 
   cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters MvdHitfinder ====================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters MvdHitfinder =====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

@@ -33,26 +33,16 @@ URun::URun()
   , fPhiMin(0.)
   , fPhiMax(0.)
   , fSigma(0.)
-  , fNEvents(0) {}
+  , fNEvents(0)
+{
+}
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-URun::URun(const char* generator,
-           const char* comment,
-           Int_t aProj,
-           Int_t zProj,
-           Double_t pProj,
-           Int_t aTarg,
-           Int_t zTarg,
-           Double_t pTarg,
-           Double_t bMin,
-           Double_t bMax,
-           Int_t bWeight,
-           Double_t phiMin,
-           Double_t phiMax,
-           Double_t sigma,
-           Int_t nEvents)
+URun::URun(const char* generator, const char* comment, Int_t aProj, Int_t zProj, Double_t pProj, Int_t aTarg,
+           Int_t zTarg, Double_t pTarg, Double_t bMin, Double_t bMax, Int_t bWeight, Double_t phiMin, Double_t phiMax,
+           Double_t sigma, Int_t nEvents)
   : TNamed("run", "Run Header")
   , fGenerator(generator)
   , fComment(comment)
@@ -69,19 +59,23 @@ URun::URun(const char* generator,
   , fPhiMin(phiMin)
   , fPhiMax(phiMax)
   , fSigma(sigma)
-  , fNEvents(nEvents) {}
+  , fNEvents(nEvents)
+{
+}
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-URun::~URun() {
+URun::~URun()
+{
   // Destructor
 }
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-void URun::Print(Option_t* /*option*/) const {
+void URun::Print(Option_t* /*option*/) const
+{
   // Print all data members to the standard output
   cout << "--------------------------------------------------" << endl
        << "-I-                 Run Header                 -I-" << endl
@@ -107,7 +101,8 @@ void URun::Print(Option_t* /*option*/) const {
 
 
 //--------------------------------------------------------------------
-Double_t URun::GetProjectileEnergy() {
+Double_t URun::GetProjectileEnergy()
+{
   // Get the projectile energy
   Double_t mProt = 0.938272029;
   Double_t mNeut = 0.939565360;
@@ -121,15 +116,15 @@ Double_t URun::GetProjectileEnergy() {
   else if (fAProj == -1)  // pion
     eProj = TMath::Sqrt(fPProj * fPProj + mPion * mPion);
   else
-    cout << "Warning:: URun: Projectile mass " << fAProj << " not valid! "
-         << endl;
+    cout << "Warning:: URun: Projectile mass " << fAProj << " not valid! " << endl;
   return eProj;
 }
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-Double_t URun::GetTargetEnergy() {
+Double_t URun::GetTargetEnergy()
+{
   // Get the target energy
   Double_t mProt = 0.938272029;
   Double_t mNeut = 0.939565360;
@@ -150,17 +145,19 @@ Double_t URun::GetTargetEnergy() {
 
 
 //--------------------------------------------------------------------
-Double_t URun::GetNNSqrtS() {
+Double_t URun::GetNNSqrtS()
+{
   // Get the cm energy
-  Double_t eSum = TMath::Sqrt(fPTarg * fPTarg + 0.938272029 * 0.938272029)
-                  + TMath::Sqrt(fPProj * fPProj + 0.938272029 * 0.938272029);
+  Double_t eSum =
+    TMath::Sqrt(fPTarg * fPTarg + 0.938272029 * 0.938272029) + TMath::Sqrt(fPProj * fPProj + 0.938272029 * 0.938272029);
   Double_t pSum = Double_t(fPProj + fPTarg);
   Double_t ecm  = TMath::Sqrt(eSum * eSum - pSum * pSum);
   return ecm;
 }
 //--------------------------------------------------------------------
 
-Double_t URun::GetSqrtS() {
+Double_t URun::GetSqrtS()
+{
   // Get the cm energy
   Double_t eSum = GetProjectileEnergy() + GetTargetEnergy();
   Double_t pSum = Double_t(fAProj) * fPProj + Double_t(fATarg) * fPTarg;
@@ -171,7 +168,8 @@ Double_t URun::GetSqrtS() {
 
 
 //--------------------------------------------------------------------
-Double_t URun::GetBetaCM() {
+Double_t URun::GetBetaCM()
+{
   // Get cm velocity
   Double_t eSum = GetProjectileEnergy() + GetTargetEnergy();
   Double_t pSum = Double_t(fAProj) * fPProj + Double_t(fATarg) * fPTarg;
@@ -181,7 +179,8 @@ Double_t URun::GetBetaCM() {
 
 
 //--------------------------------------------------------------------
-Double_t URun::GetGammaCM() {
+Double_t URun::GetGammaCM()
+{
   // Get cm gamma factor
   Double_t betaCM = GetBetaCM();
   return 1. / TMath::Sqrt(1. - betaCM * betaCM);

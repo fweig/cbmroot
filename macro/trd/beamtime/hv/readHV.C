@@ -1,4 +1,3 @@
-#include "Riostream.h"
 #include "TCanvas.h"
 #include "TDatime.h"
 #include "TFile.h"
@@ -8,28 +7,23 @@
 #include "TMultiGraph.h"
 #include "TString.h"
 #include "TStyle.h"
+
 #include <map>
+
+#include "Riostream.h"
 
 Int_t firstDay(0), firstHour(0), firstMin(0), firstSec(0), firstMsec(0);
 
 
-Bool_t readFile(TString inFile,
-                std::map<Int_t, TH1I*>& mVoltage,
-                std::map<Int_t, TH1I*>& mCurrent,
-                std::map<Int_t, TGraph*>& mTrendingI,
-                std::map<Int_t, TGraph*>& mTrendingU,
-                TGraph* gTrendingT,
-                TH1I* hTime,
-                TH1I* hChID,
-                TH1I* hDeltaT,
-                TH1I* hCurrent,
-                TH1I* hVoltage,
-                Bool_t debug) {
+Bool_t readFile(TString inFile, std::map<Int_t, TH1I*>& mVoltage, std::map<Int_t, TH1I*>& mCurrent,
+                std::map<Int_t, TGraph*>& mTrendingI, std::map<Int_t, TGraph*>& mTrendingU, TGraph* gTrendingT,
+                TH1I* hTime, TH1I* hChID, TH1I* hDeltaT, TH1I* hCurrent, TH1I* hVoltage, Bool_t debug)
+{
   Bool_t fileStat;
   ifstream in;
   in.open(inFile);
-  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1),
-    chID(-1), deltaTime_rel(0), lineLength(0), deltaTime_abs(0);
+  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1), chID(-1), deltaTime_rel(0), lineLength(0),
+    deltaTime_abs(0);
   Int_t lastDay(-1), lastHour(-1), lastMin(-1), lastSec(-1), lastMsec(-1);
   Float_t voltage(0.0), current(0.0);
   Int_t lineColor(1), lineStyle(1);
@@ -39,7 +33,8 @@ Bool_t readFile(TString inFile,
   if (!in) {
     cout << inFile << " not found!" << endl;
     fileStat = false;
-  } else {
+  }
+  else {
     cout << inFile << " found!" << endl;
     Int_t nLines = 0;
     cout << "Reading file";
@@ -77,30 +72,15 @@ Bool_t readFile(TString inFile,
 	  }
 	*/
         if (debug)
-          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n",
-                 sTime.Data(),
-                 year,
-                 month,
-                 day,
-                 hour,
-                 min,
-                 sec,
+          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n", sTime.Data(), year, month, day, hour, min, sec,
                  msec);
         deltaTime_abs =
           (msec - firstMsec)
-          + ((sec - firstSec)
-             + ((min - firstMin)
-                + ((hour - firstHour) + (day - firstDay) * 24) * 60)
-                 * 60)
-              * 1000;
+          + ((sec - firstSec) + ((min - firstMin) + ((hour - firstHour) + (day - firstDay) * 24) * 60) * 60) * 1000;
         if (lastDay > 0) {
           deltaTime_rel =
             (msec - lastMsec)
-            + ((sec - lastSec)
-               + ((min - lastMin)
-                  + ((hour - lastHour) + (day - lastDay) * 24) * 60)
-                   * 60)
-                * 1000;
+            + ((sec - lastSec) + ((min - lastMin) + ((hour - lastHour) + (day - lastDay) * 24) * 60) * 60) * 1000;
           hDeltaT->Fill(deltaTime_rel);
           if (debug) cout << deltaTime_rel << endl;
         }
@@ -110,7 +90,8 @@ Bool_t readFile(TString inFile,
         lastMin  = min;
         lastSec  = sec;
         lastMsec = msec;
-      } else if (line.EndsWith("A")) {
+      }
+      else if (line.EndsWith("A")) {
         line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementCurrent.u", "");
         line.ReplaceAll(" A", "");
         if (debug) cout << "A: ";
@@ -138,11 +119,10 @@ Bool_t readFile(TString inFile,
           mTrendingI[chID]->SetLineColor(lineColor);
         }
         mCurrent[chID]->Fill(current);
-        mTrendingI[chID]->SetPoint(
-          mTrendingI[chID]->GetN(), deltaTime_abs, current);
-      } else if (line.EndsWith("V")) {
-        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u",
-                        "");
+        mTrendingI[chID]->SetPoint(mTrendingI[chID]->GetN(), deltaTime_abs, current);
+      }
+      else if (line.EndsWith("V")) {
+        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u", "");
         line.ReplaceAll(" V", "");
         if (debug) cout << "V: ";
         lineLength = (Int_t) line.Length();
@@ -170,13 +150,13 @@ Bool_t readFile(TString inFile,
           mTrendingU[chID]->SetLineColor(lineColor);
         }
         mVoltage[chID]->Fill(voltage);
-        mTrendingU[chID]->SetPoint(
-          mTrendingU[chID]->GetN(), deltaTime_abs, voltage);
-      } else if (line.BeginsWith("Loop")) {
+        mTrendingU[chID]->SetPoint(mTrendingU[chID]->GetN(), deltaTime_abs, voltage);
+      }
+      else if (line.BeginsWith("Loop")) {
         cout << endl << line << endl;
-      } else {
-        cout << endl
-             << "/" << line << "/ : Unknown content! To be ignored" << endl;
+      }
+      else {
+        cout << endl << "/" << line << "/ : Unknown content! To be ignored" << endl;
       }
       if (debug) cout << lineLength << ":   " << line << endl;
 
@@ -188,9 +168,7 @@ Bool_t readFile(TString inFile,
       }
       nLines++;
     }
-    cout << endl
-         << "Done" << endl
-         << "Found " << nLines << " lines in file " << inFile << endl;
+    cout << endl << "Done" << endl << "Found " << nLines << " lines in file " << inFile << endl;
 
     fileStat = true;
   }
@@ -198,7 +176,8 @@ Bool_t readFile(TString inFile,
   return fileStat;
 }
 
-void readHV(TString inFile = "hv.log" /*exampleHV.txt"*/) {
+void readHV(TString inFile = "hv.log" /*exampleHV.txt"*/)
+{
   TDatime da(2015, 10, 30, 12, 00, 00);
   gStyle->SetTimeOffset(da.Convert());
   Bool_t debug(false), nextFile(true);
@@ -224,17 +203,7 @@ void readHV(TString inFile = "hv.log" /*exampleHV.txt"*/) {
   gTrendingT->SetTitle("gTrendingT");
   ;
   while (nextFile) {
-    readFile(inFile,
-             mVoltage,
-             mCurrent,
-             mTrendingI,
-             mTrendingU,
-             gTrendingT,
-             hTime,
-             hChID,
-             hDeltaT,
-             hCurrent,
-             hVoltage,
+    readFile(inFile, mVoltage, mCurrent, mTrendingI, mTrendingU, gTrendingT, hTime, hChID, hDeltaT, hCurrent, hVoltage,
              debug);
 
     cout << "Read new file?: (1,0)   ";
@@ -260,26 +229,20 @@ void readHV(TString inFile = "hv.log" /*exampleHV.txt"*/) {
   hChID->Write("", TObject::kOverwrite);
   out->cd();
   c->cd(1);
-  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin();
-       it != mCurrent.end();
-       it++) {
+  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin(); it != mCurrent.end(); it++) {
     it->second->DrawCopy("same");
     it->second->Write("", TObject::kOverwrite);
   }
   c->Update();
   c->cd(2);
-  for (std::map<Int_t, TH1I*>::iterator it = mVoltage.begin();
-       it != mVoltage.end();
-       it++) {
+  for (std::map<Int_t, TH1I*>::iterator it = mVoltage.begin(); it != mVoltage.end(); it++) {
     it->second->DrawCopy("same");
     it->second->Write("", TObject::kOverwrite);
   }
   c->Update();
   c->cd(4)->SetLogy(0);
   TMultiGraph* multiI = new TMultiGraph();
-  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin();
-       it != mTrendingI.end();
-       it++) {
+  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin(); it != mTrendingI.end(); it++) {
     multiI->Add(it->second);
     it->second->Write("", TObject::kOverwrite);
   }
@@ -291,9 +254,7 @@ void readHV(TString inFile = "hv.log" /*exampleHV.txt"*/) {
   c->Update();
   c->cd(5)->SetLogy(0);
   TMultiGraph* multiU = new TMultiGraph();
-  for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin();
-       it != mTrendingU.end();
-       it++) {
+  for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin(); it != mTrendingU.end(); it++) {
     multiU->Add(it->second);
     it->second->Write("", TObject::kOverwrite);
   }

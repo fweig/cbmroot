@@ -66,25 +66,19 @@ void trd_digi1(Int_t nEvents = 1, const char* setupName = "sis100_electron")
 
   // - TRD digitisation parameters
   if (cbmsetup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- Using parameter file " << trdFile->GetString()
-              << std::endl;
+    std::cout << "-I- Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (cbmsetup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- Using parameter file " << tofFile->GetString()
-              << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
-              << std::endl;
+    std::cout << "-I- Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   // Function needed for CTest runtime dependency

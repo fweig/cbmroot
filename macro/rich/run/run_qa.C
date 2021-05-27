@@ -1,17 +1,11 @@
-void run_qa(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
-  const string& recoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root",
-  const string& qaFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/qa.00000.root",
-  const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "results_recoqa_newqa/",
-  int nEvents             = 100) {
+void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
+            const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
+            const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
+            const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root",
+            const string& qaFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/qa.00000.root",
+            const string& geoSetup = "sis100_electron", const string& resultDir = "results_recoqa_newqa/",
+            int nEvents = 100)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   TString myName = "run_reco";
@@ -21,8 +15,7 @@ void run_qa(
 
   CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   TString geoTag;
 
@@ -31,26 +24,20 @@ void run_qa(
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   TStopwatch timer;
@@ -121,9 +108,7 @@ void run_qa(
   tofQa->SetOutputDir(std::string(resultDir));
   //run->AddTask(tofQa);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -149,7 +134,6 @@ void run_qa(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << qaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

@@ -37,7 +37,8 @@ public:
    **     = 1 Rayleigh scattering (Default)
    ** @endcode
    **/
-  void SetProcessRayleighScattering(Int_t val) {
+  void SetProcessRayleighScattering(Int_t val)
+  {
     CheckValueInRange(val, 0, 1, "SetProcessRayleighScattering");
     fProcessRayleighScattering = val;
   }
@@ -51,7 +52,8 @@ public:
    **     = 2 production of Cerenkov photons with primary stopped at each step 
    ** @endcode
    **/
-  void SetProcessCherenkovProduction(Int_t val) {
+  void SetProcessCherenkovProduction(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessCherenkovProduction");
     fProcessCherenkov = val;
   }
@@ -64,7 +66,8 @@ public:
    **     = 1 collision sampling switched on => no delta-rays
    ** @endcode
    **/
-  void SetProcessEneryLossStraggling(Int_t val) {
+  void SetProcessEneryLossStraggling(Int_t val)
+  {
     CheckValueInRange(val, 0, 1, "SetProcessEneryLossStraggling");
     fProcessEnergyLossStraggling = val;
   }
@@ -78,7 +81,8 @@ public:
    **     = 1 automatic calculation (Default)
    ** @endcode
    **/
-  void SetAutomaticTrackingMediumParameters(Int_t val) {
+  void SetAutomaticTrackingMediumParameters(Int_t val)
+  {
     CheckValueInRange(val, 0, 1, "SetAutomaticTrackingMediumParameters");
     fAutomaticTrackingMediumParameters = val;
   }
@@ -96,7 +100,8 @@ public:
    **         If they are in a sensitive volume additional checks are done (Default)
    ** @endcode
    **/
-  void SetParticleStoppingMethod(Int_t val) {
+  void SetParticleStoppingMethod(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetParticleStoppingMethod");
     fStoppingMethod = val;
   }
@@ -111,7 +116,8 @@ public:
    **     = 2 all volumes are ordered along the best axis (Default)
    ** @endcode
    **/
-  void SetTrackingOptimizationMethod(Int_t val) {
+  void SetTrackingOptimizationMethod(Int_t val)
+  {
     CheckValueInRange(val, -1, 2, "SetTrackingOptimizationMethod");
     fTrackingOptimizationMethod = val;
   }
@@ -121,8 +127,8 @@ public:
    ** @param[in] maxekin  maximum kinetic energy in GeV
    ** @param[in] bins     number of logarithmic bins (<200)
    **/
-  void
-  SetCrossSectionTableLimits(Double_t minekin, Double_t maxekin, Int_t bins) {
+  void SetCrossSectionTableLimits(Double_t minekin, Double_t maxekin, Int_t bins)
+  {
     CheckValueInRange(minekin, 0., 100., "SetCrossSectionTableLimits");
     CheckValueInRange(maxekin, 0., 100., "SetCrossSectionTableLimits");
     CheckValueInRange(bins, 1, 200, "SetCrossSectionTableLimits");
@@ -137,8 +143,8 @@ public:
    ** @param[in] maxevent Last event for which debug output should be produced
    ** The debug output will be produced for each event between the minevent and maxevent
    **/
-  void
-  SetDebugOutput(Bool_t val = kTRUE, Int_t minevent = 0, Int_t maxevent = 100) {
+  void SetDebugOutput(Bool_t val = kTRUE, Int_t minevent = 0, Int_t maxevent = 100)
+  {
     fDebugOutput   = val;
     fDebugMinEvent = minevent;
     fDebugMaxEvent = maxevent;

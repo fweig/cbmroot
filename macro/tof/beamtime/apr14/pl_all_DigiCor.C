@@ -1,4 +1,5 @@
-void pl_all_trbtdc(Int_t iNDet = 4) {
+void pl_all_trbtdc(Int_t iNDet = 4)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -26,7 +27,8 @@ void pl_all_trbtdc(Int_t iNDet = 4) {
     if (h1 != NULL) {
       h1->Draw("");
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

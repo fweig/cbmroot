@@ -11,11 +11,12 @@
 #define L1GRID_H
 
 #include "CbmL1Def.h"
+
 #include <algorithm>
-#include <string.h>
+#include <cstdio>
 
 #include <assert.h>
-#include <cstdio>
+#include <string.h>
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -52,7 +53,9 @@ public:
     , fBinInGrid(0)
     , fFirstHitInBin()
     , fHitsInBin()
-    , fNThreads(0) {}
+    , fNThreads(0)
+  {
+  }
 
   L1Grid(const L1Grid& grid)
     : fN(grid.N())
@@ -68,7 +71,9 @@ public:
     , fBinInGrid(0)
     , fFirstHitInBin()
     , fHitsInBin()
-    , fNThreads(0) {}
+    , fNThreads(0)
+  {
+  }
   //  ~L1Grid(){ //if ( fFirstHitInBin ) delete[] fFirstHitInBin;
   //
   //
@@ -79,56 +84,21 @@ public:
   //    }
   //  }
 
-  void CreatePar(L1HitPoint* points,
-                 THitI nhits,
-                 L1Vector<L1HitPoint>* pointsBuf,
-                 L1Vector<L1StsHit>* hitsBuf,
-                 const L1StsHit* hits,
-                 L1Vector<THitI>* indices,
-                 L1Vector<THitI>* indicesBuf,
-                 char iS,
-                 L1Algo& Algo,
+  void CreatePar(L1HitPoint* points, THitI nhits, L1Vector<L1HitPoint>* pointsBuf, L1Vector<L1StsHit>* hitsBuf,
+                 const L1StsHit* hits, L1Vector<THitI>* indices, L1Vector<THitI>* indicesBuf, char iS, L1Algo& Algo,
                  THitI n);
-  void StoreHits(THitI nhits,
-                 const L1StsHit* hits,
-                 char iS,
-                 L1Algo& Algo,
-                 THitI n,
-                 L1StsHit* hitsBuf1,
-                 const L1StsHit* hits1,
-                 THitI* indices1);
+  void StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo, THitI n, L1StsHit* hitsBuf1,
+                 const L1StsHit* hits1, THitI* indices1);
 
-  void CreatePar0(float yMin,
-                  float yMax,
-                  float zMin,
-                  float zMax,
-                  float sy,
-                  float sz);
-  void BuildBins(float yMin,
-                 float yMax,
-                 float zMin,
-                 float zMax,
-                 float tMin,
-                 float tMax,
-                 float sy,
-                 float sz,
-                 float st);
+  void CreatePar0(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
+  void BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz, float st);
 
-  void HitsSort(L1HitPoint* pointsBuf,
-                L1StsHit* hitsBuf,
-                const L1StsHit* hits,
-                THitI* indices,
-                THitI* indicesBuf,
-                L1HitPoint* points,
-                THitI n,
-                THitI nhits,
-                char iS,
-                L1Algo& Algo);
+  void HitsSort(L1HitPoint* pointsBuf, L1StsHit* hitsBuf, const L1StsHit* hits, THitI* indices, THitI* indicesBuf,
+                L1HitPoint* points, THitI n, THitI nhits, char iS, L1Algo& Algo);
 
   void Initial1(int NThreads);
   void AllocateMemory(int NThreads);
-  void
-  Create(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
+  void Create(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
 
   void Fill(const L1HitPoint* points, THitI n);  // call after sort
   void FillPar(const L1HitPoint* points, THitI n);
@@ -137,10 +107,7 @@ public:
   int GetBin(float Y, float Z) const;
 
   unsigned int GetBinBounded(const float& Y, const float& Z) const;
-  void GetBinBounded(const float& Y,
-                     const float& Z,
-                     unsigned short& bY,
-                     unsigned short& bZ) const;
+  void GetBinBounded(const float& Y, const float& Z, unsigned short& bY, unsigned short& bZ) const;
 
 
   int GetBin(float Y, float Z, float T) const;
@@ -149,25 +116,11 @@ public:
   // static void GetBinBounded( const L1Grid *array, const unsigned short &indexes, const float &Y, const float &Z, unsigned short *bY, unsigned short *bZ );
   // static unsigned short Ny( const L1Grid *array, const unsigned short &indexes ) { return unsigned short( array, &L1Grid::fNy, indexes ); }
 
-  void GetBinBounds(unsigned int iBin,
-                    float& Ymin,
-                    float& Ymax,
-                    float& Zmin,
-                    float& Zmax) const;
-  unsigned int
-  GetBinBounded(const float& Y, const float& Z, const float& T) const;
-  void GetBinBounded(const float& Y,
-                     const float& Z,
-                     const float& T,
-                     unsigned short& bY,
-                     unsigned short& bZ,
+  void GetBinBounds(unsigned int iBin, float& Ymin, float& Ymax, float& Zmin, float& Zmax) const;
+  unsigned int GetBinBounded(const float& Y, const float& Z, const float& T) const;
+  void GetBinBounded(const float& Y, const float& Z, const float& T, unsigned short& bY, unsigned short& bZ,
                      unsigned short& bT) const;
-  void GetBinBounds(unsigned int iBin,
-                    float& Ymin,
-                    float& Ymax,
-                    float& Zmin,
-                    float& Zmax,
-                    float& Tmin,
+  void GetBinBounds(unsigned int iBin, float& Ymin, float& Ymax, float& Zmin, float& Zmax, float& Tmin,
                     float& Tmax) const;
 
   unsigned int N() const { return fN; }
@@ -175,9 +128,9 @@ public:
   unsigned short Nz() const { return fNz; }
   unsigned short Nt() const { return fNt; }
 
-  THitI FirstHitInBin(unsigned int i) const {
-    if (i < (fN + 1))
-      return fFirstHitInBin[i];
+  THitI FirstHitInBin(unsigned int i) const
+  {
+    if (i < (fN + 1)) return fFirstHitInBin[i];
     else
       return fFirstHitInBin[fN + 1];
   }
@@ -191,17 +144,9 @@ public:
   //     };
 
 
-  void UpdateIterGrid(unsigned int Nelements,
-                      L1StsHit* hits,
-                      vector<THitI>* indicesBuf,
-                      THitI* indices,
-                      vector<L1StsHit>* hits2,
-                      vector<L1HitPoint>* pointsBuf,
-                      L1HitPoint* points,
-                      int& NHitsOnStation,
-                      char iS,
-                      L1Algo& Algo,
-                      const vector<unsigned char>* vSFlag);
+  void UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI>* indicesBuf, THitI* indices,
+                      vector<L1StsHit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
+                      char iS, L1Algo& Algo, const vector<unsigned char>* vSFlag);
 
 
 private:
@@ -264,7 +209,8 @@ private:
 
 
 // }
-inline int L1Grid::GetBin(float Y, float Z) const {
+inline int L1Grid::GetBin(float Y, float Z) const
+{
   //* get the bin pointer
   const int& yBin = static_cast<int>(Y * fStepYInv - fYMinOverStep);
   const int& zBin = static_cast<int>(Z * fStepZInv - fZMinOverStep);
@@ -276,7 +222,8 @@ inline int L1Grid::GetBin(float Y, float Z) const {
   return bin;
 }
 
-inline int L1Grid::GetBin(float Y, float Z, float T) const {
+inline int L1Grid::GetBin(float Y, float Z, float T) const
+{
   //* get the bin pointer
   const int& yBin = static_cast<int>(Y * fStepYInv - fYMinOverStep);
   const int& zBin = static_cast<int>(Z * fStepZInv - fZMinOverStep);
@@ -292,11 +239,8 @@ inline int L1Grid::GetBin(float Y, float Z, float T) const {
 }
 
 
-inline void L1Grid::GetBinBounds(unsigned int iBin,
-                                 float& Ymin,
-                                 float& Ymax,
-                                 float& Zmin,
-                                 float& Zmax) const {
+inline void L1Grid::GetBinBounds(unsigned int iBin, float& Ymin, float& Ymax, float& Zmin, float& Zmax) const
+{
   int zBin = iBin / fNy;
   int yBin = iBin % fNy;
   Ymin     = (fYMinOverStep + yBin) / fStepYInv;
@@ -305,13 +249,9 @@ inline void L1Grid::GetBinBounds(unsigned int iBin,
   Zmax     = Zmin + 1. / fStepZInv;
 }
 
-inline void L1Grid::GetBinBounds(unsigned int iBin,
-                                 float& Ymin,
-                                 float& Ymax,
-                                 float& Zmin,
-                                 float& Zmax,
-                                 float& Tmin,
-                                 float& Tmax) const {
+inline void L1Grid::GetBinBounds(unsigned int iBin, float& Ymin, float& Ymax, float& Zmin, float& Zmax, float& Tmin,
+                                 float& Tmax) const
+{
   int zBin = (iBin % (fNy * fNz)) / fNy;
   int yBin = (iBin % (fNy * fNz)) % fNy;
   int tBin = (iBin / (fNy * fNz));
@@ -324,8 +264,8 @@ inline void L1Grid::GetBinBounds(unsigned int iBin,
 }
 
 
-inline unsigned int L1Grid::GetBinBounded(const float& Y,
-                                          const float& Z) const {
+inline unsigned int L1Grid::GetBinBounded(const float& Y, const float& Z) const
+{
   //* get the bin pointer at
 
   unsigned short yBin, zBin;
@@ -333,8 +273,8 @@ inline unsigned int L1Grid::GetBinBounded(const float& Y,
   return (unsigned int) zBin * (unsigned int) fNy + (unsigned int) yBin;
 }
 
-inline unsigned int
-L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T) const {
+inline unsigned int L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T) const
+{
   //* get the bin pointer at
 
   unsigned short yBin, zBin, tBin;
@@ -343,10 +283,8 @@ L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T) const {
          + tBin * ((unsigned int) fNy * (unsigned int) fNz);
 }
 
-inline void L1Grid::GetBinBounded(const float& Y,
-                                  const float& Z,
-                                  unsigned short& bY,
-                                  unsigned short& bZ) const {
+inline void L1Grid::GetBinBounded(const float& Y, const float& Z, unsigned short& bY, unsigned short& bZ) const
+{
   const short& yBin = (Y * fStepYInv - fYMinOverStep);
   const short& zBin = (Z * fStepZInv - fZMinOverStep);
 
@@ -354,12 +292,9 @@ inline void L1Grid::GetBinBounded(const float& Y,
   bZ = max(short(0), min(short(fNz - 1), zBin));
 }
 
-inline void L1Grid::GetBinBounded(const float& Y,
-                                  const float& Z,
-                                  const float& T,
-                                  unsigned short& bY,
-                                  unsigned short& bZ,
-                                  unsigned short& bT) const {
+inline void L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T, unsigned short& bY,
+                                  unsigned short& bZ, unsigned short& bT) const
+{
   const short& yBin = (Y * fStepYInv - fYMinOverStep);
   const short& zBin = (Z * fStepZInv - fZMinOverStep);
   const short& tBin = (T * fStepTInv - fTMinOverStep);

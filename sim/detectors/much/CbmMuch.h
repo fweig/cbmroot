@@ -13,8 +13,10 @@
 
 
 #include "FairDetector.h"
+
 #include "TLorentzVector.h"
 #include "TVector3.h"
+
 #include <string>
 
 class TClonesArray;
@@ -127,15 +129,8 @@ private:
   TString fVolumeName;
   TGeoCombiTrans* fCombiTrans;
 
-  CbmMuchPoint* AddHit(Int_t trackID,
-                       Int_t detID,
-                       TVector3 posIn,
-                       TVector3 posOut,
-                       TVector3 momIn,
-                       TVector3 momOut,
-                       Double_t time,
-                       Double_t length,
-                       Double_t eLoss);
+  CbmMuchPoint* AddHit(Int_t trackID, Int_t detID, TVector3 posIn, TVector3 posOut, TVector3 momIn, TVector3 momOut,
+                       Double_t time, Double_t length, Double_t eLoss);
 
 
   /** Private method ResetParameters
@@ -155,7 +150,8 @@ private:
 };
 
 
-inline void CbmMuch::ResetParameters() {
+inline void CbmMuch::ResetParameters()
+{
   fTrackID = fVolumeID = 0;
   fPosIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fPosOut.SetXYZM(0.0, 0.0, 0.0, 0.0);

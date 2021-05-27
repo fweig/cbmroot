@@ -3,19 +3,17 @@
 using namespace std;
 
 // Used for building of the background on an invariant mass.
-void LxFinder::SaveEventTracks() {
+void LxFinder::SaveEventTracks()
+{
 #ifdef MAKE_HISTOS
-  for (list<LxTrack*>::iterator i = caSpace.tracks.begin();
-       i != caSpace.tracks.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = caSpace.tracks.begin(); i != caSpace.tracks.end(); ++i) {
     LxTrack* firstTrack = *i;
 
     if (0 == firstTrack->externalTrack) continue;
 
     CbmStsTrack t = *firstTrack->externalTrack->track;
 
-    if (t.GetParamLast()->GetQp() > 0)
-      extFitter.DoFit(&t, -13);
+    if (t.GetParamLast()->GetQp() > 0) extFitter.DoFit(&t, -13);
     else
       extFitter.DoFit(&t, 13);
 

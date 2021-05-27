@@ -8,7 +8,7 @@
 #ifndef CBMSTSTRACKSTATUS_H
 #define CBMSTSTRACKSTATUS_H
 
-#include <RtypesCore.h>      // for Double_t, UInt_t, Int_t
+#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t
 
 /** @class CbmStsTrackStatus
  ** @brief Stores status of track during transport.
@@ -33,7 +33,9 @@ public:
     , fPz(0.)
     , fTime(0.)
     , fLength(0.)
-    , fFlag(kTRUE) {}
+    , fFlag(kTRUE)
+  {
+  }
 
 
   /** Destructor  **/
@@ -41,7 +43,8 @@ public:
 
 
   /** Reset all parameters to zero **/
-  void Reset() {
+  void Reset()
+  {
     fAddress = 0;
     fTrackId = 0;
     fPid     = 0;

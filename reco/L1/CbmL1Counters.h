@@ -2,6 +2,7 @@
 #define CbmL1Counters_H
 
 #include "TString.h"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -17,25 +18,27 @@ template<typename T>
 struct TL1TracksCatCounters  // counters for different tracks categories
 {
   TL1TracksCatCounters() : NCounters(0), counters() { counters.clear(); };
-  TL1TracksCatCounters(int nCounters) : NCounters(nCounters), counters() {
-    counters.resize(NCounters, T(0));
-  };
+  TL1TracksCatCounters(int nCounters) : NCounters(nCounters), counters() { counters.resize(NCounters, T(0)); };
 
-  void AddCounter() {
+  void AddCounter()
+  {
     NCounters++;
     counters.push_back(T(0));
   };
-  void AddCounters(int nCounters) {
+  void AddCounters(int nCounters)
+  {
     NCounters += nCounters;
     counters.resize(NCounters, T(0));
   };
 
-  TL1TracksCatCounters& operator+=(TL1TracksCatCounters& a) {
+  TL1TracksCatCounters& operator+=(TL1TracksCatCounters& a)
+  {
     if (NCounters != a.NCounters) {
       std::cout << " TL1TracksCatCounters: Error. Addition of counters of "
                    "different sizes: "
                 << NCounters << " " << a.NCounters << std::endl;
-    } else {
+    }
+    else {
       for (int iC = 0; iC < NCounters; iC++) {
         counters[iC] += a.counters[iC];
       }
@@ -43,20 +46,23 @@ struct TL1TracksCatCounters  // counters for different tracks categories
     return *this;
   };
 
-  TL1TracksCatCounters operator+(TL1TracksCatCounters& a) {
+  TL1TracksCatCounters operator+(TL1TracksCatCounters& a)
+  {
     TL1TracksCatCounters res = *this;
     res += a;
     return res;
   };
 
   template<typename T2>
-  TL1TracksCatCounters<double> operator/(TL1TracksCatCounters<T2>& a) {
+  TL1TracksCatCounters<double> operator/(TL1TracksCatCounters<T2>& a)
+  {
     TL1TracksCatCounters<double> b(NCounters);
     if (NCounters != a.NCounters) {
       std::cout << " TL1TracksCatCounters: Error. Addition of counters of "
                    "different sizes: "
                 << NCounters << " " << a.NCounters << std::endl;
-    } else {
+    }
+    else {
       for (int iC = 0; iC < NCounters; iC++) {
         b.counters[iC] = Div(counters[iC], a.counters[iC]);
       }
@@ -65,7 +71,8 @@ struct TL1TracksCatCounters  // counters for different tracks categories
   };
 
   template<typename T2>
-  TL1TracksCatCounters<T2> operator/(double a) {
+  TL1TracksCatCounters<T2> operator/(double a)
+  {
     TL1TracksCatCounters<T2> b(NCounters);
     for (int iC = 0; iC < NCounters; iC++) {
       b.counters[iC] = static_cast<T2>(Div(counters[iC], a));
@@ -73,8 +80,8 @@ struct TL1TracksCatCounters  // counters for different tracks categories
     return b;
   };
 
-  friend std::fstream& operator<<(std::fstream& strm,
-                                  const TL1TracksCatCounters<T>& a) {
+  friend std::fstream& operator<<(std::fstream& strm, const TL1TracksCatCounters<T>& a)
+  {
     strm << a.NCounters << " " << a.counters.size() << " ";
     for (unsigned int iV = 0; iV < a.counters.size(); iV++)
       strm << a.counters[iV] << " ";
@@ -82,8 +89,8 @@ struct TL1TracksCatCounters  // counters for different tracks categories
     return strm;
   }
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const TL1TracksCatCounters<T>& a) {
+  friend std::ostream& operator<<(std::ostream& strm, const TL1TracksCatCounters<T>& a)
+  {
     strm << a.NCounters << " " << a.counters.size() << " ";
     for (unsigned int iV = 0; iV < a.counters.size(); iV++)
       strm << a.counters[iV] << " ";
@@ -91,8 +98,8 @@ struct TL1TracksCatCounters  // counters for different tracks categories
     return strm;
   }
 
-  friend std::fstream& operator>>(std::fstream& strm,
-                                  TL1TracksCatCounters<T>& a) {
+  friend std::fstream& operator>>(std::fstream& strm, TL1TracksCatCounters<T>& a)
+  {
     int tmp;
     strm >> tmp;
     a.NCounters = tmp;
@@ -142,9 +149,8 @@ struct TL1Efficiencies {
   void PrintEff();
 
 
-  vector<TString> names;  // names counters indexed by index of counter
-  map<TString, int>
-    indices;  // indices of counters indexed by a counter shortname
+  vector<TString> names;      // names counters indexed by index of counter
+  map<TString, int> indices;  // indices of counters indexed by a counter shortname
 
   TL1TracksCatCounters<double> ratio_reco;
   double ratio_ghosts;
@@ -157,7 +163,8 @@ struct TL1Efficiencies {
   int nEvents;
 };
 
-inline void TL1Efficiencies::AddCounter(TString shortname, TString name) {
+inline void TL1Efficiencies::AddCounter(TString shortname, TString name)
+{
   indices[shortname] = names.size();
   names.push_back(name);
 
@@ -166,19 +173,22 @@ inline void TL1Efficiencies::AddCounter(TString shortname, TString name) {
   reco.AddCounter();
 }
 
-inline void TL1Efficiencies::CalcEff() {
+inline void TL1Efficiencies::CalcEff()
+{
   ratio_reco         = reco / mc;
   const double total = reco.counters[indices["total"]] + ghosts + clones;
   if (total > 0) {
     ratio_clones = clones / total;
     ratio_ghosts = ghosts / total;
-  } else {
+  }
+  else {
     ratio_clones = -1;
     ratio_ghosts = -1;
   }
 };
 
-inline TL1Efficiencies& TL1Efficiencies::operator+=(TL1Efficiencies& a) {
+inline TL1Efficiencies& TL1Efficiencies::operator+=(TL1Efficiencies& a)
+{
   mc += a.mc;
   reco += a.reco;
   ghosts += a.ghosts;
@@ -188,14 +198,16 @@ inline TL1Efficiencies& TL1Efficiencies::operator+=(TL1Efficiencies& a) {
   return *this;
 };
 
-inline void TL1Efficiencies::Inc(bool isReco, TString name) {
+inline void TL1Efficiencies::Inc(bool isReco, TString name)
+{
   const int index = indices[name];
 
   mc.counters[index]++;
   if (isReco) reco.counters[index]++;
 };
 
-inline void TL1Efficiencies::PrintEff() {
+inline void TL1Efficiencies::PrintEff()
+{
   std::cout.setf(ios::fixed);
   std::cout.setf(ios::showpoint);
   std::cout.precision(3);
@@ -207,14 +219,11 @@ inline void TL1Efficiencies::PrintEff() {
 
   int NCounters = mc.NCounters;
   for (int iC = 0; iC < NCounters; iC++) {
-    std::cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  | "
-              << mc.counters[iC] << std::endl;
+    std::cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  | " << mc.counters[iC] << std::endl;
   }
 
-  std::cout << "Clone     probability  : " << ratio_clones << " | " << clones
-            << std::endl;
-  std::cout << "Ghost     probability  : " << ratio_ghosts << " | " << ghosts
-            << std::endl;
+  std::cout << "Clone     probability  : " << ratio_clones << " | " << clones << std::endl;
+  std::cout << "Ghost     probability  : " << ratio_ghosts << " | " << ghosts << std::endl;
 };
 
 #endif

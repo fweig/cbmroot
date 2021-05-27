@@ -8,10 +8,9 @@
  */
 
 //void unpack_tsa(Int_t nEvt=100, TString FileId = "cosmic_2016110701_safe_4links_4")
-void unpack_tsa(Int_t nEvt       = 100,
-                Double_t dDeltaT = 50.,
-                Int_t iReqDet    = 0x00001006,
-                TString FileId   = "r0001_20171215_1342") {
+void unpack_tsa(Int_t nEvt = 100, Double_t dDeltaT = 50., Int_t iReqDet = 0x00001006,
+                TString FileId = "r0001_20171215_1342")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = "./input/star2018/" + FileId + "/";
   TString inFile = "*.tsa";
@@ -57,19 +56,16 @@ void unpack_tsa(Int_t nEvt       = 100,
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
   // Get4 Unpacker
-  CbmUnpackTofStar2018* unpacker_tof =
-    new CbmUnpackTofStar2018();  //argument is number of gDpb
+  CbmUnpackTofStar2018* unpacker_tof = new CbmUnpackTofStar2018();  //argument is number of gDpb
   //  unpacker_tof->SetEpochSuppressedMode(bEpSupp);
   //unpacker_tof->SetTShiftRef(1700000.);  // Reference signal time shift in ns, run 008 <-> 0018
-  unpacker_tof->SetTShiftRef(
-    21000.);  // Reference signal time shift in ns, run 0026
+  unpacker_tof->SetTShiftRef(21000.);  // Reference signal time shift in ns, run 0026
 
   // --- Source task
   CbmFlibTestSource* source = new CbmFlibTestSource();
   source->SetMaxDeltaT(dDeltaT);
-  source->SetReqDigiAddr(
-    iReqDet);             //0x00005006);  // request diamond for output events
-  source->SetReqMode(1);  // Look for events with ANY detector in setup
+  source->SetReqDigiAddr(iReqDet);  //0x00005006);  // request diamond for output events
+  source->SetReqMode(1);            // Look for events with ANY detector in setup
   //source->SetFileName(inFile);
   source->AddPath(inDir, inFile);
   source->AddUnpacker(unpacker_tof, 0x60, 6);  //gDPB A & B
@@ -100,15 +96,13 @@ void unpack_tsa(Int_t nEvt       = 100,
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa: Starting run..." << std::endl;
-  if (bEvt == -1)
-    run->Run(bEvt, 0);  // run until end of input file
+  if (bEvt == -1) run->Run(bEvt, 0);  // run until end of input file
   else
     run->Run(0, nEvents);  // process nEvents
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -116,8 +110,7 @@ void unpack_tsa(Int_t nEvt       = 100,
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

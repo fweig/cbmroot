@@ -12,7 +12,8 @@
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 
-namespace CbmStsAddress {
+namespace CbmStsAddress
+{
 
   // -----    Definition of address bit field   ------------------------------
   const UShort_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
@@ -45,41 +46,21 @@ namespace CbmStsAddress {
 
   // -----    Bit shifts -----------------------------------------------------
   const Int_t kShift[kCurrentVersion + 1][kStsNofLevels] = {
-    {0,
-     kShift[0][0] + kBits[0][0],
-     kShift[0][1] + kBits[0][1],
-     kShift[0][2] + kBits[0][2],
-     kShift[0][3] + kBits[0][3],
-     kShift[0][4] + kBits[0][4],
-     kShift[0][5] + kBits[0][5]},
+    {0, kShift[0][0] + kBits[0][0], kShift[0][1] + kBits[0][1], kShift[0][2] + kBits[0][2], kShift[0][3] + kBits[0][3],
+     kShift[0][4] + kBits[0][4], kShift[0][5] + kBits[0][5]},
 
-    {0,
-     kShift[1][0] + kBits[1][0],
-     kShift[1][1] + kBits[1][1],
-     kShift[1][2] + kBits[1][2],
-     kShift[1][3] + kBits[1][3],
-     kShift[1][4] + kBits[1][4],
-     kShift[1][5] + kBits[1][5]}};
+    {0, kShift[1][0] + kBits[1][0], kShift[1][1] + kBits[1][1], kShift[1][2] + kBits[1][2], kShift[1][3] + kBits[1][3],
+     kShift[1][4] + kBits[1][4], kShift[1][5] + kBits[1][5]}};
   // -------------------------------------------------------------------------
 
 
   // -----    Bit masks  -----------------------------------------------------
   const Int_t kMask[kCurrentVersion + 1][kStsNofLevels] = {
-    {(1 << kBits[0][0]) - 1,
-     (1 << kBits[0][1]) - 1,
-     (1 << kBits[0][2]) - 1,
-     (1 << kBits[0][3]) - 1,
-     (1 << kBits[0][4]) - 1,
-     (1 << kBits[0][5]) - 1,
-     (1 << kBits[0][6]) - 1},
+    {(1 << kBits[0][0]) - 1, (1 << kBits[0][1]) - 1, (1 << kBits[0][2]) - 1, (1 << kBits[0][3]) - 1,
+     (1 << kBits[0][4]) - 1, (1 << kBits[0][5]) - 1, (1 << kBits[0][6]) - 1},
 
-    {(1 << kBits[1][0]) - 1,
-     (1 << kBits[1][1]) - 1,
-     (1 << kBits[1][2]) - 1,
-     (1 << kBits[1][3]) - 1,
-     (1 << kBits[1][4]) - 1,
-     (1 << kBits[1][5]) - 1,
-     (1 << kBits[1][6]) - 1}};
+    {(1 << kBits[1][0]) - 1, (1 << kBits[1][1]) - 1, (1 << kBits[1][2]) - 1, (1 << kBits[1][3]) - 1,
+     (1 << kBits[1][4]) - 1, (1 << kBits[1][5]) - 1, (1 << kBits[1][6]) - 1}};
   // -------------------------------------------------------------------------
 
 
@@ -87,13 +68,9 @@ namespace CbmStsAddress {
 
 
 // -----   Construct address from element Ids   ------------------------------
-Int_t CbmStsAddress::GetAddress(UInt_t unit,
-                                UInt_t ladder,
-                                UInt_t halfladder,
-                                UInt_t module,
-                                UInt_t sensor,
-                                UInt_t side,
-                                UInt_t version) {
+Int_t CbmStsAddress::GetAddress(UInt_t unit, UInt_t ladder, UInt_t halfladder, UInt_t module, UInt_t sensor,
+                                UInt_t side, UInt_t version)
+{
 
   assert(version <= kCurrentVersion);
 
@@ -110,8 +87,7 @@ Int_t CbmStsAddress::GetAddress(UInt_t unit,
   }
   UInt_t maxHalfLadder = (1 << kBits[version][kStsHalfLadder]) - 1;
   if (halfladder > maxHalfLadder) {
-    LOG(error) << "HalfLadder Id " << halfladder << " exceeds maximum "
-               << maxHalfLadder;
+    LOG(error) << "HalfLadder Id " << halfladder << " exceeds maximum " << maxHalfLadder;
     return 0;
   }
   UInt_t maxModule = (1 << kBits[version][kStsModule]) - 1;
@@ -130,29 +106,25 @@ Int_t CbmStsAddress::GetAddress(UInt_t unit,
     return 0;
   }
 
-  return ToIntegralType(ECbmModuleId::kSts) << kShift[version][kStsSystem]
-         | unit << kShift[version][kStsUnit]
-         | ladder << kShift[version][kStsLadder]
-         | halfladder << kShift[version][kStsHalfLadder]
-         | module << kShift[version][kStsModule]
-         | sensor << kShift[version][kStsSensor]
+  return ToIntegralType(ECbmModuleId::kSts) << kShift[version][kStsSystem] | unit << kShift[version][kStsUnit]
+         | ladder << kShift[version][kStsLadder] | halfladder << kShift[version][kStsHalfLadder]
+         | module << kShift[version][kStsModule] | sensor << kShift[version][kStsSensor]
          | side << kShift[version][kStsSide] | version << kVersionShift;
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Construct address from array of element Ids   ----------------------
-Int_t CbmStsAddress::GetAddress(UInt_t* elementId, UInt_t version) {
+Int_t CbmStsAddress::GetAddress(UInt_t* elementId, UInt_t version)
+{
 
   assert(version <= kCurrentVersion);
 
-  Int_t address = ToIntegralType(ECbmModuleId::kSts)
-                  << kShift[version][kStsSystem];
+  Int_t address = ToIntegralType(ECbmModuleId::kSts) << kShift[version][kStsSystem];
   for (Int_t level = 1; level < kStsNofLevels; level++) {
     UInt_t maxId = (1 << kBits[version][level]) - 1;
     if (elementId[level] > maxId) {
-      LOG(error) << "Id " << elementId[level] << " for STS level " << level
-                 << " exceeds maximum " << maxId;
+      LOG(error) << "Id " << elementId[level] << " for STS level " << level << " exceeds maximum " << maxId;
       return 0;
     }
     address = address | (elementId[level] << kShift[version][level]);
@@ -165,7 +137,8 @@ Int_t CbmStsAddress::GetAddress(UInt_t* elementId, UInt_t version) {
 
 
 // -----   Construct address from address of descendant element   ------------
-Int_t CbmStsAddress::GetMotherAddress(Int_t address, Int_t level) {
+Int_t CbmStsAddress::GetMotherAddress(Int_t address, Int_t level)
+{
   assert(level >= kStsSystem && level < kStsNofLevels);
   if (level == kStsNofLevels - 1) return address;
   UInt_t version  = GetVersion(address);
@@ -177,17 +150,18 @@ Int_t CbmStsAddress::GetMotherAddress(Int_t address, Int_t level) {
 
 
 // -----   Get the index of an element   -------------------------------------
-UInt_t CbmStsAddress::GetElementId(Int_t address, Int_t level) {
+UInt_t CbmStsAddress::GetElementId(Int_t address, Int_t level)
+{
   assert(level >= kStsSystem && level < kStsNofLevels);
   UInt_t version = GetVersion(address);
-  return (address & (kMask[version][level] << kShift[version][level]))
-         >> kShift[version][level];
+  return (address & (kMask[version][level] << kShift[version][level])) >> kShift[version][level];
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Get System ID   ---------------------------------------------------
-ECbmModuleId CbmStsAddress::GetSystemId(Int_t address) {
+ECbmModuleId CbmStsAddress::GetSystemId(Int_t address)
+{
   return static_cast<ECbmModuleId>(GetElementId(address, kStsSystem));
   //  return GetElementId(address, kStsSystem);
 }
@@ -195,40 +169,37 @@ ECbmModuleId CbmStsAddress::GetSystemId(Int_t address) {
 
 
 // -----   Get the version number from the address   -------------------------
-UInt_t CbmStsAddress::GetVersion(Int_t address) {
+UInt_t CbmStsAddress::GetVersion(Int_t address)
+{
   return UInt_t((address & (kVersionMask << kVersionShift)) >> kVersionShift);
 }
 // ---------------------------------------------------------------------------
 
 
 // -----  Construct address by changing the index of an element   ------------
-Int_t CbmStsAddress::SetElementId(Int_t address, Int_t level, UInt_t newId) {
+Int_t CbmStsAddress::SetElementId(Int_t address, Int_t level, UInt_t newId)
+{
   assert(level >= kStsSystem && level < kStsNofLevels);
   UInt_t version = GetVersion(address);
   UInt_t maxId   = (1 << kBits[version][level]) - 1;
   if (newId > maxId) {
-    LOG(fatal) << "Id " << newId << " for STS level " << level
-               << " exceeds maximum " << maxId;
+    LOG(fatal) << "Id " << newId << " for STS level " << level << " exceeds maximum " << maxId;
     return 0;
   }
-  return (address & (~(kMask[version][level] << kShift[version][level])))
-         | (newId << kShift[version][level]);
+  return (address & (~(kMask[version][level] << kShift[version][level]))) | (newId << kShift[version][level]);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   String output   -------------------------------------------------
-std::string CbmStsAddress::ToString(Int_t address) {
+std::string CbmStsAddress::ToString(Int_t address)
+{
   std::stringstream ss;
 
-  ss << "StsAddress: address " << address << " (version " << GetVersion(address)
-     << ")"
-     << ": system " << GetElementId(address, kStsSystem) << ", unit "
-     << GetElementId(address, kStsUnit) << ", ladder "
-     << GetElementId(address, kStsLadder) << ", half-ladder "
-     << GetElementId(address, kStsHalfLadder) << ", module "
-     << GetElementId(address, kStsModule) << ", sensor "
-     << GetElementId(address, kStsSensor) << ", side "
+  ss << "StsAddress: address " << address << " (version " << GetVersion(address) << ")"
+     << ": system " << GetElementId(address, kStsSystem) << ", unit " << GetElementId(address, kStsUnit) << ", ladder "
+     << GetElementId(address, kStsLadder) << ", half-ladder " << GetElementId(address, kStsHalfLadder) << ", module "
+     << GetElementId(address, kStsModule) << ", sensor " << GetElementId(address, kStsSensor) << ", side "
      << GetElementId(address, kStsSide);
   return ss.str();
 }

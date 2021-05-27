@@ -47,27 +47,19 @@ public:
   void SetCharge(UInt_t chCl, Int_t iCl);
   void SetNPads(Int_t nofPads, Int_t iCl);
   void SetPadInCl(Int_t nPad, Int_t iCl, Int_t iPad);
-  void SetCluster(Int_t nCl,
-                  Float_t xCl,
-                  Float_t yCl,
-                  UInt_t chCl,
-                  Int_t nofPads,
-                  Int_t iCl);
+  void SetCluster(Int_t nCl, Float_t xCl, Float_t yCl, UInt_t chCl, Int_t nofPads, Int_t iCl);
 
   //--
   void CalculateEfficiency();
   void CalculateAccuracy();
   void MainTesting();
-  Float_t GetMeanAccuracy() const {
-    return ((fMeanErrorOnX + fMeanErrorOnY) / 2);
-  }
-  Float_t GetMeanAccuracyForSubCenters() const {
+  Float_t GetMeanAccuracy() const { return ((fMeanErrorOnX + fMeanErrorOnY) / 2); }
+  Float_t GetMeanAccuracyForSubCenters() const
+  {
     return ((fMeanErrorOnXforSubCenters + fMeanErrorOnYforSubCenters) / 2);
   }
   Float_t GetMeanEfficiency() const { return fEfficiency; }
-  Float_t GetMeanEfficiencyForSubCenters() const {
-    return fEfficiencyForSubCenters;
-  }
+  Float_t GetMeanEfficiencyForSubCenters() const { return fEfficiencyForSubCenters; }
   /**
     * \brief Destructor.
     */

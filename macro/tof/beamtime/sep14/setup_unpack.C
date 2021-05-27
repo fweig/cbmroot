@@ -6,12 +6,9 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void setup_unpack(Int_t nEvents   = 10,
-                  Int_t start_run = 10,
-                  Int_t end_run   = 11,
-                  Int_t calMode   = 1,
-                  char* cFileId   = "MbsTrbThu1715",
-                  Int_t iSet      = 0) {
+void setup_unpack(Int_t nEvents = 10, Int_t start_run = 10, Int_t end_run = 11, Int_t calMode = 1,
+                  char* cFileId = "MbsTrbThu1715", Int_t iSet = 0)
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 3;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -62,8 +59,7 @@ void setup_unpack(Int_t nEvents   = 10,
   TObjString convParFile = paramDir + "/parConvApr2014.txt";
   parFileList->Add(&convParFile);
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
@@ -136,8 +132,7 @@ void setup_unpack(Int_t nEvents   = 10,
   // =========================================================================
   // ===                     Unpacker monitoring                           ===
   // =========================================================================
-  TMbsUnpTofMonitor* tofUnpMonitor =
-    new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
   run->AddTask(tofUnpMonitor);
   // ===                 End of Unpacker monitoring                        ===
   // =========================================================================
@@ -162,8 +157,8 @@ void setup_unpack(Int_t nEvents   = 10,
   // ===                      End of Mapping                               ===
   // =========================================================================
   if (0) {
-    CbmTofTestBeamClusterizer* tofTestBeamClust = new CbmTofTestBeamClusterizer(
-      "TOF TestBeam Clusterizer", iVerbose, kFALSE);
+    CbmTofTestBeamClusterizer* tofTestBeamClust =
+      new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", iVerbose, kFALSE);
     //tofTestBeamClust->SetCalParFileName("MbsTrbBeamtofTestBeamClust.hst.root");
     Int_t calTrg    = -1;
     Int_t calSmType = 0;
@@ -172,8 +167,7 @@ void setup_unpack(Int_t nEvents   = 10,
     tofTestBeamClust->SetCalSel(calTrg);
     tofTestBeamClust->SetCaldXdYMax(150.);  // geometrical matching window
     tofTestBeamClust->SetdTRefMax(500000.);
-    tofTestBeamClust->SetCalSmType(
-      calSmType);  // select detectors for walk correction
+    tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
     //tofTestBeamClust->SetTRefDetId(20486);        //0x00005006; big Diamond
     //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
     //tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
@@ -186,53 +180,44 @@ void setup_unpack(Int_t nEvents   = 10,
         tofTestBeamClust->PosYMaxScal(2000.);      //in % of length
         break;
       case 1:
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbBeam01tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbBeam01tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(100000.);  // in ps
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 2:  // time difference calibration
         //	tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_01tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbBeam02tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbBeam02tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 12:
         //	tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_01tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_10tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_10tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
         tofTestBeamClust->PosYMaxScal(5.);         //in % of length
         break;
       case 22:
         //	tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_02tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_20tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_20tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);         //in % of length
         break;
       case 3:
         //	 tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_01tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_03tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_03tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(200000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);         //in % of length
         break;
       case 13:
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_13tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_13tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(50000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);        //in % of length
         break;
-      default:
-        cout << "<E> Calib mode not implemented! stop execution of script"
-             << endl;
-        return;
+      default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
     }
     run->AddTask(tofTestBeamClust);
   }

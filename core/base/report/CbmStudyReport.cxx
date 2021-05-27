@@ -24,9 +24,9 @@ CbmStudyReport::CbmStudyReport() : CbmReport(), fHM(), fStudyNames() {}
 
 CbmStudyReport::~CbmStudyReport() {}
 
-void CbmStudyReport::Create(const vector<CbmHistManager*>& histManagers,
-                            const vector<string>& studyNames,
-                            const string& outputDir) {
+void CbmStudyReport::Create(const vector<CbmHistManager*>& histManagers, const vector<string>& studyNames,
+                            const string& outputDir)
+{
   assert(histManagers.size() == studyNames.size());
   fHM         = histManagers;
   fStudyNames = studyNames;
@@ -34,9 +34,8 @@ void CbmStudyReport::Create(const vector<CbmHistManager*>& histManagers,
   CreateReports();
 }
 
-void CbmStudyReport::Create(const vector<string>& fileNames,
-                            const vector<string>& studyNames,
-                            const string& outputDir) {
+void CbmStudyReport::Create(const vector<string>& fileNames, const vector<string>& studyNames, const string& outputDir)
+{
   assert(fileNames.size() == studyNames.size());
   Int_t nofStudies = fileNames.size();
   vector<TFile*> files(nofStudies);

@@ -10,80 +10,73 @@
 #ifndef LITTRACKSELECTION_H_
 #define LITTRACKSELECTION_H_
 
-#include "LitScalTrack.h"
-
 #include <algorithm>
 #include <functional>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include "LitScalTrack.h"
+
 using std::equal_range;
 using std::pair;
 using std::set;
 using std::sort;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
 
-    void DoSortNofHits(vector<LitScalTrack*>& tracks) {
+    void DoSortNofHits(vector<LitScalTrack*>& tracks)
+    {
       sort(tracks.begin(), tracks.end(), CompareLitScalTrackNofHitsMore());
 
       unsigned int maxNofHits = tracks.front()->GetNofHits();
       unsigned int minNofHits = tracks.back()->GetNofHits();
 
-      for (unsigned int iNofHits = minNofHits; iNofHits <= maxNofHits;
-           iNofHits++) {
+      for (unsigned int iNofHits = minNofHits; iNofHits <= maxNofHits; iNofHits++) {
         LitScalTrack value;
         value.SetNofHits(iNofHits);
 
-        pair<vector<LitScalTrack*>::iterator, vector<LitScalTrack*>::iterator>
-          bounds;
-        bounds = equal_range(tracks.begin(),
-                             tracks.end(),
-                             &value,
-                             CompareLitScalTrackNofHitsMore());
+        pair<vector<LitScalTrack*>::iterator, vector<LitScalTrack*>::iterator> bounds;
+        bounds = equal_range(tracks.begin(), tracks.end(), &value, CompareLitScalTrackNofHitsMore());
 
         if (bounds.first == bounds.second) { continue; }
 
-        sort(
-          bounds.first, bounds.second, CompareLitScalTrackChiSqOverNdfLess());
+        sort(bounds.first, bounds.second, CompareLitScalTrackChiSqOverNdfLess());
       }
     }
 
-    void DoSortLastStation(vector<LitScalTrack*>& tracks) {
-      sort(
-        tracks.begin(), tracks.end(), CompareLitScalTrackLastStationIdMore());
+    void DoSortLastStation(vector<LitScalTrack*>& tracks)
+    {
+      sort(tracks.begin(), tracks.end(), CompareLitScalTrackLastStationIdMore());
 
       unsigned int maxPlaneId = tracks.front()->GetLastStationId();
       unsigned int minPlaneId = tracks.back()->GetLastStationId();
 
-      for (unsigned int iPlaneId = minPlaneId; iPlaneId <= maxPlaneId;
-           iPlaneId++) {
+      for (unsigned int iPlaneId = minPlaneId; iPlaneId <= maxPlaneId; iPlaneId++) {
         LitScalTrack value;
         value.SetLastStationId(iPlaneId);
 
-        pair<vector<LitScalTrack*>::iterator, vector<LitScalTrack*>::iterator>
-          bounds;
-        bounds = equal_range(tracks.begin(),
-                             tracks.end(),
-                             &value,
-                             CompareLitScalTrackLastStationIdMore());
+        pair<vector<LitScalTrack*>::iterator, vector<LitScalTrack*>::iterator> bounds;
+        bounds = equal_range(tracks.begin(), tracks.end(), &value, CompareLitScalTrackLastStationIdMore());
 
         if (bounds.first == bounds.second) { continue; }
 
-        sort(
-          bounds.first, bounds.second, CompareLitScalTrackChiSqOverNdfLess());
+        sort(bounds.first, bounds.second, CompareLitScalTrackChiSqOverNdfLess());
       }
     }
 
-    void DoSortChiSqOverNDF(vector<LitScalTrack*>& tracks) {
+    void DoSortChiSqOverNDF(vector<LitScalTrack*>& tracks)
+    {
       sort(tracks.begin(), tracks.end(), CompareLitScalTrackChiSqOverNdfLess());
     }
 
 
-    void DoSelectSharedHits(vector<LitScalTrack*>& tracks) {
+    void DoSelectSharedHits(vector<LitScalTrack*>& tracks)
+    {
       static const int NOF_SHARED_HITS = 3;
       if (tracks.empty()) return;
 

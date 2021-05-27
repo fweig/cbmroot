@@ -1,12 +1,9 @@
 #include <fstream>
 #include <iostream>
-void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
-                                   float pmt_pos_z_addend = 80,
-                                   int RotMir             = -10,
-                                   float PMTrotX          = 5,
-                                   float PMTrotY          = 5,
-                                   float EnlargedPMTWidth = 4.,
-                                   float EnlargedPMTHight = 2.) {
+void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10, float pmt_pos_z_addend = 80, int RotMir = -10,
+                                   float PMTrotX = 5, float PMTrotY = 5, float EnlargedPMTWidth = 4.,
+                                   float EnlargedPMTHight = 2.)
+{
 
   //////////////////////////////////////
   //Define variables
@@ -49,8 +46,7 @@ void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
   float RICH_mirror_angle            = RotMir;
   float pmt_pos_x_addend             = 0.;
 
-  float sens_plane_pos =
-    RICH_mirror_position_from_IP - RICH_position_from_IP - Delta_sens_plane_pos;
+  float sens_plane_pos = RICH_mirror_position_from_IP - RICH_position_from_IP - Delta_sens_plane_pos;
 
   float DefaultRotX = 32.952765;
   float DefaultRotY = 18.477;  //for rotmir=-10
@@ -68,9 +64,8 @@ void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
   cout << InFileLower << endl;
 
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d_Extended", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d_Extended", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d_Extended", RotMir);
   }
 
@@ -83,20 +78,16 @@ void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
   /////////////////////////////////// Translation in z
   char ZTransText[256];
-  if (pmt_pos_z_addend < 0) {
-    sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend);
-  } else {
+  if (pmt_pos_z_addend < 0) { sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend); }
+  else {
     sprintf(ZTransText, "Z_p%d", pmt_pos_z_addend);
   }
   char YTransText[256];
-  if (pmt_pos_y_addend < 0) {
-    sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend);
-  } else {
+  if (pmt_pos_y_addend < 0) { sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend); }
+  else {
     sprintf(YTransText, "Y_p%d", pmt_pos_y_addend);
   }
 
@@ -107,15 +98,8 @@ void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
   char* Path1       = "/data/cbmroot";
   TString ExtraText = ".";  //
 
-  sprintf(GeoFileName,
-          "/geometry/rich/GeoOpt/rich_geo_%s_RotPMT_%s_%s_TransPMT_%s_%s_%s%s",
-          RotMirText,
-          ShiftXTxt,
-          ShiftYTxt,
-          YTransText,
-          ZTransText,
-          PMTDimsText,
-          ExtraText.Data());
+  sprintf(GeoFileName, "/geometry/rich/GeoOpt/rich_geo_%s_RotPMT_%s_%s_TransPMT_%s_%s_%s%s", RotMirText, ShiftXTxt,
+          ShiftYTxt, YTransText, ZTransText, PMTDimsText, ExtraText.Data());
   cout << GeoFileName << endl;
 
   char OutFile_GDML_Ch[256];
@@ -127,88 +111,56 @@ void CreateGDMLfile_ExtMirrOct2015(float pmt_pos_y_addend = 10,
   std::ofstream OutFile_GDML(OutFile_GDML_Ch);
 
   OutFile_GDML << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-    < gdml xmlns :
-    xsi =\"http://www.w3.org/2001/XMLSchema-instance\" "
-          "xsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/"
-          "service-spi/app/releases/GDML/schema/gdml.xsd\">"
-         << std::endl;
+    < gdml xmlns : xsi =\"http://www.w3.org/2001/XMLSchema-instance\" "
+                         "xsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/"
+                         "service-spi/app/releases/GDML/schema/gdml.xsd\">"
+                        << std::endl;
 
   OutFile_GDML << "<define>" << std::endl;
-  OutFile_GDML
-    << "<position name=\"central\" x=\"0\" y=\"0\" z=\"0\" unit=\"mm\"/>"
-    << std::endl;
-  OutFile_GDML
-    << "<rotation name=\"identity\" x=\"0\" y=\"0\" z=\"0\" unit=\"degree\"/>"
-    << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_trapezoid_angle\" value=\""
-               << RICH_trapezoid_angle << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_entrance_width\" value=\""
-               << RICH_entrance_width << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_exit_width\" value=\""
-               << RICH_exit_width << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_height\" value=\"" << RICH_height
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_length\" value=\"" << RICH_length
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_covering_thickness\" value=\""
-               << RICH_covering_thickness << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"entrance_width_addend\" value=\""
-               << entrance_width_addend << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_pipe_entrance_r\" value=\""
-               << RICH_pipe_entrance_r << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_pipe_exit_r\" value=\""
-               << RICH_pipe_exit_r << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_pipe_entrance_thickness\" value=\""
-               << RICH_pipe_entrance_thickness << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_pipe_exit_thickness\" value=\""
-               << RICH_pipe_exit_thickness << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_pipe_angle\" value=\""
-               << RICH_pipe_angle << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_position_from_IP\" value=\""
-               << RICH_position_from_IP << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"sens_plane_pos\" value=\"" << sens_plane_pos
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"Delta_sens_plane_area\" value=\""
-               << Delta_sens_plane_area << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_mirror_position_from_IP\" value=\""
-               << RICH_mirror_position_from_IP << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_mirror_r\" value=\"" << RICH_mirror_r
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_mirror_thickness\" value=\""
-               << RICH_mirror_thickness << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"mirror_cont_supp_addend_out\" value=\""
-               << mirror_cont_supp_addend_out << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>"
+  OutFile_GDML << "<position name=\"central\" x=\"0\" y=\"0\" z=\"0\" unit=\"mm\"/>" << std::endl;
+  OutFile_GDML << "<rotation name=\"identity\" x=\"0\" y=\"0\" z=\"0\" unit=\"degree\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_trapezoid_angle\" value=\"" << RICH_trapezoid_angle << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_entrance_width\" value=\"" << RICH_entrance_width << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_exit_width\" value=\"" << RICH_exit_width << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_height\" value=\"" << RICH_height << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_length\" value=\"" << RICH_length << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_covering_thickness\" value=\"" << RICH_covering_thickness << "\"/>"
                << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_height\" value=\"" << pmt_height
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_thickness\" value=\"" << pmt_thickness
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"TTT\" value=\"" << TTT << "\"/>"
+  OutFile_GDML << "<variable name=\"entrance_width_addend\" value=\"" << entrance_width_addend << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_pipe_entrance_r\" value=\"" << RICH_pipe_entrance_r << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_pipe_exit_r\" value=\"" << RICH_pipe_exit_r << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_pipe_entrance_thickness\" value=\"" << RICH_pipe_entrance_thickness << "\"/>"
                << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_mirror_Y_shift\" value=\""
-               << RICH_mirror_Y_shift << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"RICH_mirror_angle\" value=\""
-               << RICH_mirror_angle << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_pipe_exit_thickness\" value=\"" << RICH_pipe_exit_thickness << "\"/>"
+               << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_pipe_angle\" value=\"" << RICH_pipe_angle << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_position_from_IP\" value=\"" << RICH_position_from_IP << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"sens_plane_pos\" value=\"" << sens_plane_pos << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"Delta_sens_plane_area\" value=\"" << Delta_sens_plane_area << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_mirror_position_from_IP\" value=\"" << RICH_mirror_position_from_IP << "\"/>"
+               << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_mirror_r\" value=\"" << RICH_mirror_r << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_mirror_thickness\" value=\"" << RICH_mirror_thickness << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"mirror_cont_supp_addend_out\" value=\"" << mirror_cont_supp_addend_out << "\"/>"
+               << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_height\" value=\"" << pmt_height << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_thickness\" value=\"" << pmt_thickness << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"TTT\" value=\"" << TTT << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_mirror_Y_shift\" value=\"" << RICH_mirror_Y_shift << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"RICH_mirror_angle\" value=\"" << RICH_mirror_angle << "\"/>" << std::endl;
   // OutFile_GDML <<"<variable name=\"pmt_rot_x_addend\" value=\""<<pmt_rot_x_addend<<"\"/>" << std::endl;
   // OutFile_GDML <<"<variable name=\"pmt_rot_y_addend\" value=\""<<pmt_rot_y_addend<<"\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_pos_x_addend\" value=\""
-               << pmt_pos_x_addend << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_pos_y_addend\" value=\""
-               << pmt_pos_y_addend << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_pos_z_addend\" value=\""
-               << pmt_pos_z_addend << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_pos_x_addend\" value=\"" << pmt_pos_x_addend << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_pos_y_addend\" value=\"" << pmt_pos_y_addend << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"pmt_pos_z_addend\" value=\"" << pmt_pos_z_addend << "\"/>" << std::endl;
 
-  OutFile_GDML << "<variable name=\"kapton_thickness\" value=\"" << 0.25
-               << "\"/>" << std::endl;
-  OutFile_GDML << "<variable name=\"DEGtoRAD\" value=\"" << 1.74532925199433E-02
-               << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"kapton_thickness\" value=\"" << 0.25 << "\"/>" << std::endl;
+  OutFile_GDML << "<variable name=\"DEGtoRAD\" value=\"" << 1.74532925199433E-02 << "\"/>" << std::endl;
 
-  OutFile_GDML << "<variable name=\"pmt_rot_x_addend\" value=\""
-               << PMTrotX - DefaultRotX << "\"/>";
+  OutFile_GDML << "<variable name=\"pmt_rot_x_addend\" value=\"" << PMTrotX - DefaultRotX << "\"/>";
   OutFile_GDML << " <!-- rot x =" << PMTrotX << " --> " << std::endl;
-  OutFile_GDML << "<variable name=\"pmt_rot_y_addend\" value=\""
-               << PMTrotY - DefaultRotY << "\"/>";
+  OutFile_GDML << "<variable name=\"pmt_rot_y_addend\" value=\"" << PMTrotY - DefaultRotY << "\"/>";
   OutFile_GDML << " <!-- rot y =" << PMTrotY << " --> " << std::endl;
 
   OutFile_GDML << "</define>" << std::endl;

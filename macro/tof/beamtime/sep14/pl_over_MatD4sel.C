@@ -31,7 +31,8 @@
   if (h1 != NULL) {
     h1->Draw();
     NEvents = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -39,9 +40,8 @@
   gROOT->cd();
   TString hname = "hD4XY";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -49,9 +49,8 @@
   gROOT->cd();
   TString hname = "hD4Tof";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -59,36 +58,32 @@
   gROOT->cd();
   TString hname = "hD4CluSize";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(5);
   TString hname = "hD4Chi2DX";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(6);
   TString hname = "hD4Chi2DY";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(7);
   TString hname = "hD4Chi2DTof";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -98,7 +93,8 @@
   if (h2f != NULL) {
     h2f->Draw("colz");
     h2f->FitSlicesY();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -107,9 +103,8 @@
   can->cd(9);
   TString hname = "hD4XYsel";
   h2            = (TH2F*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 

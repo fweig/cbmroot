@@ -99,19 +99,14 @@ private:
   // TODO: Up to now we have three disconnected vectors which is very
   //       error prone. Find a better solution
 
-  std::vector<std::string> fAllowedChannels = {"stscomponent",
-                                               "richcomponent",
-                                               "trdcomponent",
-                                               "muchcomponent",
-                                               "tofcomponent",
-                                               "t0component"};
+  std::vector<std::string> fAllowedChannels = {"stscomponent",  "richcomponent", "trdcomponent",
+                                               "muchcomponent", "tofcomponent",  "t0component"};
   //    std::vector<int> fSysId = {16, 48, 64, 96, 144, 80};
   std::vector<int> fSysId = {0x10, 0x30, 0x40, 0x50, 0x60, 0x90};
 
 
-  std::vector<int> fComponentsToSend = {0, 0, 0, 0, 0, 0};
-  std::vector<std::vector<std::string>> fChannelsToSend =
-    {{}, {}, {}, {}, {}, {}};
+  std::vector<int> fComponentsToSend                    = {0, 0, 0, 0, 0, 0};
+  std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}, {}, {}, {}, {}};
 
   bool fbListCompPerSysIdReady                       = false;
   std::vector<std::vector<uint32_t>> fvvCompPerSysId = {{}, {}, {}, {}, {}, {}};

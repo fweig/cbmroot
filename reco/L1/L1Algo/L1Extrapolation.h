@@ -2,6 +2,7 @@
 #define L1Extrapolation_h
 
 #include "CbmL1Def.h"
+
 #include "L1Field.h"
 #include "L1TrackPar.h"
 
@@ -11,12 +12,11 @@
 
 // #define ANALYTICEXTRAPOLATION
 #ifdef ANALYTICEXTRAPOLATION
-inline void L1Extrapolate(
-  L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-  fvec z_out,     // extrapolate to this z position
-  fvec qp0,       // use Q/p linearisation at this value
-  L1FieldRegion& F,
-  fvec* w = 0) {
+inline void L1Extrapolate(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
+                          fvec z_out,     // extrapolate to this z position
+                          fvec qp0,       // use Q/p linearisation at this value
+                          L1FieldRegion& F, fvec* w = 0)
+{
   //cout<<"Extrapolation..."<<endl;
   //
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
@@ -25,9 +25,8 @@ inline void L1Extrapolate(
   cnst ZERO = 0.0, ONE = 1.;
   cnst c_light = 0.000299792458, c_light_i = 1. / c_light;
 
-  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15.,
-       c18 = 18., c45 = 45., c2i = 1. / 2., c3i = 1. / 3., c6i = 1. / 6.,
-       c12i = 1. / 12.;
+  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15., c18 = 18., c45 = 45., c2i = 1. / 2.,
+       c3i = 1. / 3., c6i = 1. / 6., c12i = 1. / 12.;
 
   const fvec qp  = T.qp;
   const fvec dz  = (z_out - T.z);
@@ -95,22 +94,17 @@ inline void L1Extrapolate(
 
   fvec syz;
   {
-    cnst d = 1. / 360., c00 = 30. * 6. * d, c01 = 30. * 2. * d, c02 = 30. * d,
-         c10 = 3. * 40. * d, c11 = 3. * 15. * d, c12 = 3. * 8. * d,
-         c20 = 2. * 45. * d, c21 = 2. * 2. * 9. * d, c22 = 2. * 2. * 5. * d;
-    syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2)
-          + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
+    cnst d = 1. / 360., c00 = 30. * 6. * d, c01 = 30. * 2. * d, c02 = 30. * d, c10 = 3. * 40. * d, c11 = 3. * 15. * d,
+         c12 = 3. * 8. * d, c20 = 2. * 45. * d, c21 = 2. * 2. * 9. * d, c22 = 2. * 2. * 5. * d;
+    syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
   fvec Syz;
   {
-    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d,
-         c02 = 21. * 2. * d, c10 = 7. * 30. * d, c11 = 7. * 9. * d,
-         c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d,
-         c22 = 2. * 10. * d;
-    Syz      = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2)
-          + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
+    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d, c02 = 21. * 2. * d, c10 = 7. * 30. * d,
+         c11 = 7. * 9. * d, c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d, c22 = 2. * 10. * d;
+    Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
@@ -119,24 +113,18 @@ inline void L1Extrapolate(
 
   fvec Syy;
   {
-    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d,
-         c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d, c05 = 20. * d;
-    Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2)
-          + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
+    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d, c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d,
+         c05 = 20. * d;
+    Syy      = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
   }
 
   fvec Syyy;
   {
-    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d,
-         c002 = 5 * 1008 * d, c011 = 21 * 180 * d, c012 = 24 * 180 * d,
-         c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d,
-         c222       = 112 * d;
+    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d, c002 = 5 * 1008 * d, c011 = 21 * 180 * d,
+         c012 = 24 * 180 * d, c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d, c222 = 112 * d;
     const fvec Fy22 = Fy2 * Fy2;
-    Syyy            = Fy0
-             * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2)
-                + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
-           + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22)
-           + c222 * Fy22 * Fy2;
+    Syyy = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
+           + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
   }
 
 
@@ -205,7 +193,8 @@ inline void L1Extrapolate(
   {
     const fvec zero = ZERO;
     initialised     = fvec(zero < *w);
-  } else {
+  }
+  else {
     const fvec one  = ONE;
     const fvec zero = ZERO;
     initialised     = fvec(zero < one);
@@ -229,15 +218,13 @@ inline void L1Extrapolate(
   const fvec tmp2 = ht1sA1 + c2 * ht2sA2 + c3 * ht3sA3;
   const fvec tmp3 = ht1sB1 + c2 * ht2sB2 + c3 * ht3sB3;
 
-  const fvec j02 =
-    dz * (c1 + xt2i * tmp0 + ht1 * SA1_x + ht2 * SA2_x + ht3 * SA3_x);
+  const fvec j02 = dz * (c1 + xt2i * tmp0 + ht1 * SA1_x + ht2 * SA2_x + ht3 * SA3_x);
   const fvec j12 = dz * (xt2i * tmp1 + ht1 * SB1_x + ht2 * SB2_x + ht3 * SB3_x);
   const fvec j22 = c1 + xt2i * tmp2 + ht1 * sA1_x + ht2 * sA2_x + ht3 * sA3_x;
   const fvec j32 = xt2i * tmp3 + ht1 * sB1_x + ht2 * sB2_x + ht3 * sB3_x;
 
   const fvec j03 = dz * (yt2i * tmp0 + ht1 * SA1_y + ht2 * SA2_y);
-  const fvec j13 =
-    dz * (c1 + yt2i * tmp1 + ht1 * SB1_y + ht2 * SB2_y + ht3 * SB3_y);
+  const fvec j13 = dz * (c1 + yt2i * tmp1 + ht1 * SB1_y + ht2 * SB2_y + ht3 * SB3_y);
   const fvec j23 = yt2i * tmp2 + ht1 * sA1_y + ht2 * sA2_y;
   const fvec j33 = c1 + yt2i * tmp3 + ht1 * sB1_y + ht2 * sB2_y + ht3 * sB3_y;
 
@@ -278,44 +265,31 @@ inline void L1Extrapolate(
   const fvec cj23 = T.C22 * j32 + T.C32 * j33 + c42 * j34;
   const fvec cj33 = T.C32 * j32 + T.C33 * j33 + c43 * j34;
 
-  T.C40 += ((c42 * j02 + c43 * j03 + T.C44 * j04) & initialised);  // cj40
-  T.C41 += ((c42 * j12 + c43 * j13 + T.C44 * j14) & initialised);  // cj41
-  T.C42 = ((c42 * j22 + c43 * j23 + T.C44 * j24) & initialised)
-          + (T.C42 & (!initialised));  // cj42
-  T.C43 = ((c42 * j32 + c43 * j33 + T.C44 * j34) & initialised)
-          + (T.C43 & (!initialised));  // cj43
+  T.C40 += ((c42 * j02 + c43 * j03 + T.C44 * j04) & initialised);                            // cj40
+  T.C41 += ((c42 * j12 + c43 * j13 + T.C44 * j14) & initialised);                            // cj41
+  T.C42 = ((c42 * j22 + c43 * j23 + T.C44 * j24) & initialised) + (T.C42 & (!initialised));  // cj42
+  T.C43 = ((c42 * j32 + c43 * j33 + T.C44 * j34) & initialised) + (T.C43 & (!initialised));  // cj43
 
-  T.C00 = ((cj00 + j02 * cj20 + j03 * cj30 + j04 * T.C40) & initialised)
-          + (T.C00 & (!initialised));
-  T.C10 = ((cj01 + j02 * cj21 + j03 * cj31 + j04 * T.C41) & initialised)
-          + (T.C10 & (!initialised));
-  T.C11 = ((cj11 + j12 * cj21 + j13 * cj31 + j14 * T.C41) & initialised)
-          + (T.C11 & (!initialised));
+  T.C00 = ((cj00 + j02 * cj20 + j03 * cj30 + j04 * T.C40) & initialised) + (T.C00 & (!initialised));
+  T.C10 = ((cj01 + j02 * cj21 + j03 * cj31 + j04 * T.C41) & initialised) + (T.C10 & (!initialised));
+  T.C11 = ((cj11 + j12 * cj21 + j13 * cj31 + j14 * T.C41) & initialised) + (T.C11 & (!initialised));
 
-  T.C20 = ((j22 * cj20 + j23 * cj30 + j24 * T.C40) & initialised)
-          + (T.C20 & (!initialised));
-  T.C30 = ((j32 * cj20 + j33 * cj30 + j34 * T.C40) & initialised)
-          + (T.C30 & (!initialised));
-  T.C21 = ((j22 * cj21 + j23 * cj31 + j24 * T.C41) & initialised)
-          + (T.C21 & (!initialised));
-  T.C31 = ((j32 * cj21 + j33 * cj31 + j34 * T.C41) & initialised)
-          + (T.C31 & (!initialised));
-  T.C22 = ((j22 * cj22 + j23 * cj32 + j24 * T.C42) & initialised)
-          + (T.C22 & (!initialised));
-  T.C32 = ((j32 * cj22 + j33 * cj32 + j34 * T.C42) & initialised)
-          + (T.C32 & (!initialised));
-  T.C33 = ((j32 * cj23 + j33 * cj33 + j34 * T.C43) & initialised)
-          + (T.C33 & (!initialised));
+  T.C20 = ((j22 * cj20 + j23 * cj30 + j24 * T.C40) & initialised) + (T.C20 & (!initialised));
+  T.C30 = ((j32 * cj20 + j33 * cj30 + j34 * T.C40) & initialised) + (T.C30 & (!initialised));
+  T.C21 = ((j22 * cj21 + j23 * cj31 + j24 * T.C41) & initialised) + (T.C21 & (!initialised));
+  T.C31 = ((j32 * cj21 + j33 * cj31 + j34 * T.C41) & initialised) + (T.C31 & (!initialised));
+  T.C22 = ((j22 * cj22 + j23 * cj32 + j24 * T.C42) & initialised) + (T.C22 & (!initialised));
+  T.C32 = ((j32 * cj22 + j33 * cj32 + j34 * T.C42) & initialised) + (T.C32 & (!initialised));
+  T.C33 = ((j32 * cj23 + j33 * cj33 + j34 * T.C43) & initialised) + (T.C33 & (!initialised));
   //cout<<"Extrapolation ok"<<endl;
 }
 #else
-inline void
-  L1Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
-  (L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-   fvec z_out,     // extrapolate to this z position
-   fvec qp0,       // use Q/p linearisation at this value
-   const L1FieldRegion& F,
-   fvec* w = 0) {
+inline void L1Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (L1TrackPar& T,          // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
+   fvec z_out,             // extrapolate to this z position
+   fvec qp0,               // use Q/p linearisation at this value
+   const L1FieldRegion& F, fvec* w = 0)
+{
   //
   // Forth-order Runge-Kutta method for solution of the equation
   // of motion of a particle with parameter qp = Q /P
@@ -376,9 +350,8 @@ inline void
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k[step * 4 - 4 + i];
       }
     }
@@ -395,19 +368,13 @@ inline void
     //   fvec I_tx2ty2 = qp0 * hC / tx2ty2 ; unsused ???
     tx2ty2 *= hC;
     fvec tx2ty2qp = tx2ty2 * qp0;
-    Ax[step] =
-      (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
-    Ay[step] = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0])
-               * tx2ty2;
+    Ax[step]      = (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
+    Ay[step]      = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0]) * tx2ty2;
 
-    Ax_tx[step] = Ax[step] * tx * I_tx2ty21
-                  + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
-    Ax_ty[step] =
-      Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
-    Ay_tx[step] =
-      Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
-    Ay_ty[step] = Ay[step] * ty * I_tx2ty21
-                  + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
+    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
+    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
 
     step4        = step * 4;
     k[step4]     = tx * h;
@@ -422,28 +389,21 @@ inline void
   {
     const fvec zero = ZERO;
     initialised     = fvec(zero < *w);
-  } else {
+  }
+  else {
     const fvec one  = ONE;
     const fvec zero = ZERO;
     initialised     = fvec(zero < one);
   }
 
   {
-    T.x = ((x0[0] + c[0] * k[0] + c[1] * k[4 + 0] + c[2] * k[8 + 0]
-            + c[3] * k[12 + 0])
-           & initialised)
+    T.x = ((x0[0] + c[0] * k[0] + c[1] * k[4 + 0] + c[2] * k[8 + 0] + c[3] * k[12 + 0]) & initialised)
           + ((!initialised) & T.x);
-    T.y = ((x0[1] + c[0] * k[1] + c[1] * k[4 + 1] + c[2] * k[8 + 1]
-            + c[3] * k[12 + 1])
-           & initialised)
+    T.y = ((x0[1] + c[0] * k[1] + c[1] * k[4 + 1] + c[2] * k[8 + 1] + c[3] * k[12 + 1]) & initialised)
           + ((!initialised) & T.y);
-    T.tx = ((x0[2] + c[0] * k[2] + c[1] * k[4 + 2] + c[2] * k[8 + 2]
-             + c[3] * k[12 + 2])
-            & initialised)
+    T.tx = ((x0[2] + c[0] * k[2] + c[1] * k[4 + 2] + c[2] * k[8 + 2] + c[3] * k[12 + 2]) & initialised)
            + ((!initialised) & T.tx);
-    T.ty = ((x0[3] + c[0] * k[3] + c[1] * k[4 + 3] + c[2] * k[8 + 3]
-             + c[3] * k[12 + 3])
-            & initialised)
+    T.ty = ((x0[3] + c[0] * k[3] + c[1] * k[4 + 3] + c[2] * k[8 + 3] + c[3] * k[12 + 3]) & initialised)
            + ((!initialised) & T.ty);
     T.z = (z_out & initialised) + ((!initialised) & T.z);
   }
@@ -462,9 +422,8 @@ inline void
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -479,8 +438,7 @@ inline void
   fvec J[25];
 
   for (i = 0; i < 4; ++i) {
-    J[20 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                + c[3] * k1[12 + i];
+    J[20 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
   J[24] = 1.;
   //
@@ -501,9 +459,8 @@ inline void
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else if (i != 2) {
+      if (step == 0) { x[i] = x0[i]; }
+      else if (i != 2) {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -516,10 +473,7 @@ inline void
   }  // end of Runge-Kutta steps for derivatives dx/dtx
 
   for (i = 0; i < 4; ++i) {
-    if (i != 2) {
-      J[10 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                  + c[3] * k1[12 + i];
-    }
+    if (i != 2) { J[10 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i]; }
   }
   //      end of derivatives dx/dtx
   J[12] = 1.f;
@@ -541,7 +495,8 @@ inline void
     for (i = 0; i < 4; ++i) {
       if (step == 0) {
         x[i] = x0[i];  // ty fixed
-      } else if (i != 3) {
+      }
+      else if (i != 3) {
         x[i] = x0[i] + b[step] * k1[step * 4 - 4 + i];
       }
     }
@@ -554,8 +509,7 @@ inline void
   }  // end of Runge-Kutta steps for derivatives dx/dty
 
   for (i = 0; i < 3; ++i) {
-    J[15 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i]
-                + c[3] * k1[12 + i];
+    J[15 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
   //      end of derivatives dx/dty
   J[18] = 1.;
@@ -599,89 +553,52 @@ inline void
 
   const fvec c42 = T.C42, c43 = T.C43;
 
-  const fvec cj00 =
-    T.C00 + T.C20 * J[5 * 2 + 0] + T.C30 * J[5 * 3 + 0] + T.C40 * J[5 * 4 + 0];
+  const fvec cj00 = T.C00 + T.C20 * J[5 * 2 + 0] + T.C30 * J[5 * 3 + 0] + T.C40 * J[5 * 4 + 0];
   // const fvec cj10 = T.C10 + T.C21*J[5*2 + 0] + T.C31*J[5*3 + 0] + T.C41*J[5*4 + 0];
-  const fvec cj20 =
-    T.C20 + T.C22 * J[5 * 2 + 0] + T.C32 * J[5 * 3 + 0] + c42 * J[5 * 4 + 0];
-  const fvec cj30 =
-    T.C30 + T.C32 * J[5 * 2 + 0] + T.C33 * J[5 * 3 + 0] + c43 * J[5 * 4 + 0];
+  const fvec cj20 = T.C20 + T.C22 * J[5 * 2 + 0] + T.C32 * J[5 * 3 + 0] + c42 * J[5 * 4 + 0];
+  const fvec cj30 = T.C30 + T.C32 * J[5 * 2 + 0] + T.C33 * J[5 * 3 + 0] + c43 * J[5 * 4 + 0];
 
-  const fvec cj01 =
-    T.C10 + T.C20 * J[5 * 2 + 1] + T.C30 * J[5 * 3 + 1] + T.C40 * J[5 * 4 + 1];
-  const fvec cj11 =
-    T.C11 + T.C21 * J[5 * 2 + 1] + T.C31 * J[5 * 3 + 1] + T.C41 * J[5 * 4 + 1];
-  const fvec cj21 =
-    T.C21 + T.C22 * J[5 * 2 + 1] + T.C32 * J[5 * 3 + 1] + c42 * J[5 * 4 + 1];
-  const fvec cj31 =
-    T.C31 + T.C32 * J[5 * 2 + 1] + T.C33 * J[5 * 3 + 1] + c43 * J[5 * 4 + 1];
+  const fvec cj01 = T.C10 + T.C20 * J[5 * 2 + 1] + T.C30 * J[5 * 3 + 1] + T.C40 * J[5 * 4 + 1];
+  const fvec cj11 = T.C11 + T.C21 * J[5 * 2 + 1] + T.C31 * J[5 * 3 + 1] + T.C41 * J[5 * 4 + 1];
+  const fvec cj21 = T.C21 + T.C22 * J[5 * 2 + 1] + T.C32 * J[5 * 3 + 1] + c42 * J[5 * 4 + 1];
+  const fvec cj31 = T.C31 + T.C32 * J[5 * 2 + 1] + T.C33 * J[5 * 3 + 1] + c43 * J[5 * 4 + 1];
 
   // const fvec cj02 = T.C20*J[5*2 + 2] + T.C30*J[5*3 + 2] + T.C40*J[5*4 + 2];
   // const fvec cj12 = T.C21*J[5*2 + 2] + T.C31*J[5*3 + 2] + T.C41*J[5*4 + 2];
-  const fvec cj22 =
-    T.C22 * J[5 * 2 + 2] + T.C32 * J[5 * 3 + 2] + c42 * J[5 * 4 + 2];
-  const fvec cj32 =
-    T.C32 * J[5 * 2 + 2] + T.C33 * J[5 * 3 + 2] + c43 * J[5 * 4 + 2];
+  const fvec cj22 = T.C22 * J[5 * 2 + 2] + T.C32 * J[5 * 3 + 2] + c42 * J[5 * 4 + 2];
+  const fvec cj32 = T.C32 * J[5 * 2 + 2] + T.C33 * J[5 * 3 + 2] + c43 * J[5 * 4 + 2];
 
   // const fvec cj03 = T.C20*J[5*2 + 3] + T.C30*J[5*3 + 3] + T.C40*J[5*4 + 3];
   // const fvec cj13 = T.C21*J[5*2 + 3] + T.C31*J[5*3 + 3] + T.C41*J[5*4 + 3];
-  const fvec cj23 =
-    T.C22 * J[5 * 2 + 3] + T.C32 * J[5 * 3 + 3] + c42 * J[5 * 4 + 3];
-  const fvec cj33 =
-    T.C32 * J[5 * 2 + 3] + T.C33 * J[5 * 3 + 3] + c43 * J[5 * 4 + 3];
+  const fvec cj23 = T.C22 * J[5 * 2 + 3] + T.C32 * J[5 * 3 + 3] + c42 * J[5 * 4 + 3];
+  const fvec cj33 = T.C32 * J[5 * 2 + 3] + T.C33 * J[5 * 3 + 3] + c43 * J[5 * 4 + 3];
 
-  T.C40 += ((c42 * J[5 * 2 + 0] + c43 * J[5 * 3 + 0] + T.C44 * J[5 * 4 + 0])
-            & initialised);  // cj40
-  T.C41 += ((c42 * J[5 * 2 + 1] + c43 * J[5 * 3 + 1] + T.C44 * J[5 * 4 + 1])
-            & initialised);  // cj41
-  T.C42 = ((c42 * J[5 * 2 + 2] + c43 * J[5 * 3 + 2] + T.C44 * J[5 * 4 + 2])
-           & initialised)
-          + ((!initialised) & T.C42);
-  T.C43 = ((c42 * J[5 * 2 + 3] + c43 * J[5 * 3 + 3] + T.C44 * J[5 * 4 + 3])
-           & initialised)
-          + ((!initialised) & T.C43);
+  T.C40 += ((c42 * J[5 * 2 + 0] + c43 * J[5 * 3 + 0] + T.C44 * J[5 * 4 + 0]) & initialised);  // cj40
+  T.C41 += ((c42 * J[5 * 2 + 1] + c43 * J[5 * 3 + 1] + T.C44 * J[5 * 4 + 1]) & initialised);  // cj41
+  T.C42 = ((c42 * J[5 * 2 + 2] + c43 * J[5 * 3 + 2] + T.C44 * J[5 * 4 + 2]) & initialised) + ((!initialised) & T.C42);
+  T.C43 = ((c42 * J[5 * 2 + 3] + c43 * J[5 * 3 + 3] + T.C44 * J[5 * 4 + 3]) & initialised) + ((!initialised) & T.C43);
 
-  T.C00 =
-    ((cj00 + J[5 * 2 + 0] * cj20 + J[5 * 3 + 0] * cj30 + J[5 * 4 + 0] * T.C40)
-     & initialised)
-    + ((!initialised) & T.C00);
-  T.C10 =
-    ((cj01 + J[5 * 2 + 0] * cj21 + J[5 * 3 + 0] * cj31 + J[5 * 4 + 0] * T.C41)
-     & initialised)
-    + ((!initialised) & T.C10);
-  T.C11 =
-    ((cj11 + J[5 * 2 + 1] * cj21 + J[5 * 3 + 1] * cj31 + J[5 * 4 + 1] * T.C41)
-     & initialised)
-    + ((!initialised) & T.C11);
+  T.C00 = ((cj00 + J[5 * 2 + 0] * cj20 + J[5 * 3 + 0] * cj30 + J[5 * 4 + 0] * T.C40) & initialised)
+          + ((!initialised) & T.C00);
+  T.C10 = ((cj01 + J[5 * 2 + 0] * cj21 + J[5 * 3 + 0] * cj31 + J[5 * 4 + 0] * T.C41) & initialised)
+          + ((!initialised) & T.C10);
+  T.C11 = ((cj11 + J[5 * 2 + 1] * cj21 + J[5 * 3 + 1] * cj31 + J[5 * 4 + 1] * T.C41) & initialised)
+          + ((!initialised) & T.C11);
 
-  T.C20 = ((J[5 * 2 + 2] * cj20 + J[5 * 3 + 2] * cj30 + J[5 * 4 + 2] * T.C40)
-           & initialised)
-          + ((!initialised) & T.C20);
-  T.C30 = ((J[5 * 2 + 3] * cj20 + J[5 * 3 + 3] * cj30 + J[5 * 4 + 3] * T.C40)
-           & initialised)
-          + ((!initialised) & T.C30);
-  T.C21 = ((J[5 * 2 + 2] * cj21 + J[5 * 3 + 2] * cj31 + J[5 * 4 + 2] * T.C41)
-           & initialised)
-          + ((!initialised) & T.C21);
-  T.C31 = ((J[5 * 2 + 3] * cj21 + J[5 * 3 + 3] * cj31 + J[5 * 4 + 3] * T.C41)
-           & initialised)
-          + ((!initialised) & T.C31);
-  T.C22 = ((J[5 * 2 + 2] * cj22 + J[5 * 3 + 2] * cj32 + J[5 * 4 + 2] * T.C42)
-           & initialised)
-          + ((!initialised) & T.C22);
-  T.C32 = ((J[5 * 2 + 3] * cj22 + J[5 * 3 + 3] * cj32 + J[5 * 4 + 3] * T.C42)
-           & initialised)
-          + ((!initialised) & T.C32);
-  T.C33 = ((J[5 * 2 + 3] * cj23 + J[5 * 3 + 3] * cj33 + J[5 * 4 + 3] * T.C43)
-           & initialised)
-          + ((!initialised) & T.C33);
+  T.C20 = ((J[5 * 2 + 2] * cj20 + J[5 * 3 + 2] * cj30 + J[5 * 4 + 2] * T.C40) & initialised) + ((!initialised) & T.C20);
+  T.C30 = ((J[5 * 2 + 3] * cj20 + J[5 * 3 + 3] * cj30 + J[5 * 4 + 3] * T.C40) & initialised) + ((!initialised) & T.C30);
+  T.C21 = ((J[5 * 2 + 2] * cj21 + J[5 * 3 + 2] * cj31 + J[5 * 4 + 2] * T.C41) & initialised) + ((!initialised) & T.C21);
+  T.C31 = ((J[5 * 2 + 3] * cj21 + J[5 * 3 + 3] * cj31 + J[5 * 4 + 3] * T.C41) & initialised) + ((!initialised) & T.C31);
+  T.C22 = ((J[5 * 2 + 2] * cj22 + J[5 * 3 + 2] * cj32 + J[5 * 4 + 2] * T.C42) & initialised) + ((!initialised) & T.C22);
+  T.C32 = ((J[5 * 2 + 3] * cj22 + J[5 * 3 + 3] * cj32 + J[5 * 4 + 3] * T.C42) & initialised) + ((!initialised) & T.C32);
+  T.C33 = ((J[5 * 2 + 3] * cj23 + J[5 * 3 + 3] * cj33 + J[5 * 4 + 3] * T.C43) & initialised) + ((!initialised) & T.C33);
 }
 #endif  //ANALYTICEXTRAPOLATION
 
-inline void L1Extrapolate0(
-  L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-  fvec z_out,     // extrapolate to this z position
-  L1FieldRegion& F) {
+inline void L1Extrapolate0(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
+                           fvec z_out,     // extrapolate to this z position
+                           L1FieldRegion& F)
+{
   //
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
@@ -778,19 +695,17 @@ inline void L1Extrapolate0(
 }
 
 
-inline void L1ExtrapolateTime(
-  L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-  fvec dz         // extrapolate to this z position
-) {
+inline void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
+                              fvec dz         // extrapolate to this z position
+)
+{
 
   cnst c_light = 29.9792458;
 
   T.t += sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) * dz / c_light;
 
-  const fvec k1 =
-    T.tx * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
-  const fvec k2 =
-    T.ty * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  const fvec k1 = T.tx * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  const fvec k2 = T.ty * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
 
   fvec c52 = T.C52;
   fvec c53 = T.C53;
@@ -811,7 +726,8 @@ inline void L1ExtrapolateTime(
   //     cout<<ha2<<" c54 "<<T.C54<<endl;
 }
 
-inline void L1ExtrapolateLine(L1TrackPar& T, fvec z_out) {
+inline void L1ExtrapolateLine(L1TrackPar& T, fvec z_out)
+{
   fvec dz = (z_out - T.z);
 
   T.x += T.tx * dz;
@@ -838,34 +754,32 @@ inline void L1ExtrapolateLine(L1TrackPar& T, fvec z_out) {
   T.C41 += dz * T.C43;
 }
 
-inline void
-L1ExtrapolateXC00Line(const L1TrackPar& T, fvec z_out, fvec& x, fvec& C00) {
+inline void L1ExtrapolateXC00Line(const L1TrackPar& T, fvec z_out, fvec& x, fvec& C00)
+{
   const fvec dz = (z_out - T.z);
   x             = T.x + T.tx * dz;
   C00           = T.C00 + dz * (2 * T.C20 + dz * T.C22);
 }
 
-inline void
-L1ExtrapolateYC11Line(const L1TrackPar& T, fvec z_out, fvec& y, fvec& C11) {
+inline void L1ExtrapolateYC11Line(const L1TrackPar& T, fvec z_out, fvec& y, fvec& C11)
+{
   const fvec dz = (z_out - T.z);
   y             = T.y + T.ty * dz;
   C11           = T.C11 + dz * (2 * T.C31 + dz * T.C33);
 }
 
-inline void L1ExtrapolateC10Line(const L1TrackPar& T, fvec z_out, fvec& C10) {
+inline void L1ExtrapolateC10Line(const L1TrackPar& T, fvec z_out, fvec& C10)
+{
   const fvec dz = (z_out - T.z);
   C10           = T.C10 + dz * (T.C21 + T.C30 + dz * T.C32);
 }
 
 inline void L1ExtrapolateJXY  // is not used currently
-  (fvec& tx,
-   fvec& ty,
+  (fvec& tx, fvec& ty,
    fvec& qp,  // input track parameters
    fvec dz,   // extrapolate to this dz
-   L1FieldRegion& F,
-   fvec& extrDx,
-   fvec& extrDy,
-   fvec extrJ[]) {
+   L1FieldRegion& F, fvec& extrDx, fvec& extrDy, fvec extrJ[])
+{
   //
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
@@ -873,8 +787,8 @@ inline void L1ExtrapolateJXY  // is not used currently
   //   cnst ZERO = 0.0, ONE = 1.;
   cnst c_light = 0.000299792458;
 
-  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15.,
-       c18 = 18., c45 = 45., c2i = 1. / 2., c6i = 1. / 6., c12i = 1. / 12.;
+  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15., c18 = 18., c45 = 45., c2i = 1. / 2.,
+       c6i = 1. / 6., c12i = 1. / 12.;
 
   fvec dz2 = dz * dz;
   fvec dz3 = dz2 * dz;
@@ -935,35 +849,26 @@ inline void L1ExtrapolateJXY  // is not used currently
 
   fvec Syz;
   {
-    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d,
-         c02 = 21. * 2. * d, c10 = 7. * 30. * d, c11 = 7. * 9. * d,
-         c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d,
-         c22 = 2. * 10. * d;
-    Syz      = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2)
-          + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
+    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d, c02 = 21. * 2. * d, c10 = 7. * 30. * d,
+         c11 = 7. * 9. * d, c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d, c22 = 2. * 10. * d;
+    Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
   fvec Syy;
   {
-    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d,
-         c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d, c05 = 20. * d;
-    Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2)
-          + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
+    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d, c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d,
+         c05 = 20. * d;
+    Syy      = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
   }
 
   fvec Syyy;
   {
-    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d,
-         c002 = 5 * 1008 * d, c011 = 21 * 180 * d, c012 = 24 * 180 * d,
-         c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d,
-         c222 = 112 * d;
+    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d, c002 = 5 * 1008 * d, c011 = 21 * 180 * d,
+         c012 = 24 * 180 * d, c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d, c222 = 112 * d;
     fvec Fy22 = Fy2 * Fy2;
-    Syyy      = Fy0
-             * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2)
-                + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
-           + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22)
-           + c222 * Fy22 * Fy2;
+    Syyy      = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
+           + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
   }
 
   fvec SA1   = Sx * xy + Sy * Ay + Sz * y;
@@ -1008,27 +913,20 @@ inline void L1ExtrapolateJXY  // is not used currently
   fvec tmp0 = ht1SA1 + c2 * ht2SA2 + c3 * ht3SA3;
   fvec tmp1 = ht1SB1 + c2 * ht2SB2 + c3 * ht3SB3;
 
-  extrJ[0] =
-    dz * (c1 + xt2i * tmp0 + ht1 * SA1_x + ht2 * SA2_x + ht3 * SA3_x);  // j02
-  extrJ[1] = dz * (yt2i * tmp0 + ht1 * SA1_y + ht2 * SA2_y);            // j03
-  extrJ[2] = ctdz2 * (SA1 + c2 * ht1 * SA2 + c3 * ht2 * SA3);           // j04
-  extrJ[3] =
-    dz * (xt2i * tmp1 + ht1 * SB1_x + ht2 * SB2_x + ht3 * SB3_x);  // j12
-  extrJ[4] =
-    dz * (c1 + yt2i * tmp1 + ht1 * SB1_y + ht2 * SB2_y + ht3 * SB3_y);  // j13
-  extrJ[5] = ctdz2 * (SB1 + c2 * ht1 * SB2 + c3 * ht2 * SB3);           // j14
+  extrJ[0] = dz * (c1 + xt2i * tmp0 + ht1 * SA1_x + ht2 * SA2_x + ht3 * SA3_x);  // j02
+  extrJ[1] = dz * (yt2i * tmp0 + ht1 * SA1_y + ht2 * SA2_y);                     // j03
+  extrJ[2] = ctdz2 * (SA1 + c2 * ht1 * SA2 + c3 * ht2 * SA3);                    // j04
+  extrJ[3] = dz * (xt2i * tmp1 + ht1 * SB1_x + ht2 * SB2_x + ht3 * SB3_x);       // j12
+  extrJ[4] = dz * (c1 + yt2i * tmp1 + ht1 * SB1_y + ht2 * SB2_y + ht3 * SB3_y);  // j13
+  extrJ[5] = ctdz2 * (SB1 + c2 * ht1 * SB2 + c3 * ht2 * SB3);                    // j14
 }
 
 inline void L1ExtrapolateJXY0(fvec& tx,
                               fvec& ty,  // input track slopes
                               fvec dz,   // extrapolate to this dz position
-                              L1FieldRegion& F,
-                              fvec& extrDx,
-                              fvec& extrDy,
-                              fvec& J04,
-                              fvec& J14) {
-  cnst c_light = 0.000299792458, c1 = 1., c2i = 0.5, c6i = 1. / 6.,
-       c12i = 1. / 12.;
+                              L1FieldRegion& F, fvec& extrDx, fvec& extrDy, fvec& J04, fvec& J14)
+{
+  cnst c_light = 0.000299792458, c1 = 1., c2i = 0.5, c6i = 1. / 6., c12i = 1. / 12.;
 
   fvec dz2     = dz * dz;
   fvec dzc6i   = dz * c6i;

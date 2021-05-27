@@ -1,15 +1,14 @@
-void run_sim_jpsi(Int_t nEvents = 10) {
+void run_sim_jpsi(Int_t nEvents = 10)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   //gRandom->SetSeed(10);
 
-  TString inFile =
-    "/hera/cbm/users/adrian/trunk/cbmroot/input/urqmd.auau.25gev.centr.root";
+  TString inFile  = "/hera/cbm/users/adrian/trunk/cbmroot/input/urqmd.auau.25gev.centr.root";
   TString parFile = "/hera/cbm/users/adrian/data/test/param.0002.root";
   TString outFile = "/hera/cbm/users/adrian/data/test/mc.0002.root";
 
@@ -28,10 +27,9 @@ void run_sim_jpsi(Int_t nEvents = 10) {
   TString ecalGeom   = "";
   TString fieldMap   = "field_v12a";
 
-  TString electrons =
-    "no";                 // If "yes" than primary electrons will be generated
-  Int_t NELECTRONS  = 5;  // number of e- to be generated
-  Int_t NPOSITRONS  = 5;  // number of e+ to be generated
+  TString electrons = "no";   // If "yes" than primary electrons will be generated
+  Int_t NELECTRONS  = 5;      // number of e- to be generated
+  Int_t NPOSITRONS  = 5;      // number of e+ to be generated
   TString urqmd     = "yes";  // If "yes" than UrQMD will be used as background
   TString pluto     = "yes";  // If "yes" PLUTO particles will be embedded
   TString plutoFile = "/hera/cbm/users/ekrebs/pluto/jpsi/25gev/jpsi/epem/"
@@ -217,8 +215,7 @@ void run_sim_jpsi(Int_t nEvents = 10) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

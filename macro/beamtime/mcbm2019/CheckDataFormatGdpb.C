@@ -10,12 +10,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void CheckDataFormatGdpb(TString inFile           = "",
-                         TString sHostname        = "localhost",
-                         Int_t iServerRefreshRate = 100,
-                         Int_t iServerHttpPort    = 8080,
-                         TString sHistoFile       = "data/HistosCheckGdpb.root",
-                         Int_t nrEvents           = 0) {
+void CheckDataFormatGdpb(TString inFile = "", TString sHostname = "localhost", Int_t iServerRefreshRate = 100,
+                         Int_t iServerHttpPort = 8080, TString sHistoFile = "data/HistosCheckGdpb.root",
+                         Int_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = srcDir + "/input/";
   //  if( "" != inFile )
@@ -61,16 +59,13 @@ void CheckDataFormatGdpb(TString inFile           = "",
   std::cout << ">>> ngDpbMonitorLab: Initialising..." << std::endl;
 
   // Get4 Unpacker
-  CbmCheckDataFormatGdpb2018* test_monitor_tof =
-    new CbmCheckDataFormatGdpb2018();
+  CbmCheckDataFormatGdpb2018* test_monitor_tof = new CbmCheckDataFormatGdpb2018();
   test_monitor_tof->SetIgnoreMsOverlap();
   test_monitor_tof->SetHistoFilename(sHistoFile);
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }
@@ -101,13 +96,13 @@ void CheckDataFormatGdpb(TString inFile           = "",
   std::cout << ">>> ngDpbMonitorLab: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -117,8 +112,7 @@ void CheckDataFormatGdpb(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

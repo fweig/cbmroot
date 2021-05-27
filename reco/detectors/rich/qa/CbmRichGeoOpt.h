@@ -11,7 +11,9 @@
 #define CBM_RICH_GEO_OPT
 
 #include "CbmRichPoint.h"
+
 #include "FairTask.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -28,6 +30,7 @@ class CbmRichRingLight;
 class TCanvas;
 
 #include "TVector3.h"
+
 #include <map>
 #include <vector>
 
@@ -80,8 +83,7 @@ private:
 
   Int_t fEventNum;
   Int_t PMTPointsFilled;
-  Int_t
-    fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
+  Int_t fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
 
   Int_t nPhotonsNotOnPlane;
   Int_t nPhotonsNotOnSphere;
@@ -167,10 +169,7 @@ private:
   /**
     * \ calculate intersection sphere-line.
     */
-  float GetIntersectionPointsLS(TVector3 MirrCenter,
-                                TVector3 G_P1,
-                                TVector3 G_P2,
-                                float R);
+  float GetIntersectionPointsLS(TVector3 MirrCenter, TVector3 G_P1, TVector3 G_P2, float R);
 
   /**
     * \ Check if a given point lies on a given sphare.
@@ -251,8 +250,7 @@ private:
   TH2D* H_PointsIn_XY_Left2Thirds;
   TH2D* H_PointsIn_XY_RightThird;
 
-  TH2D*
-    H_PointsOut_XY;  // distribution of X and Y position of points (tilting pmt plane)
+  TH2D* H_PointsOut_XY;             // distribution of X and Y position of points (tilting pmt plane)
   TH1D* H_NofPhotonsPerEv;          // Number of photons per hit
   TH1D* H_NofPhotonsPerHit;         // Number of photons per hit
   TH1D* H_NofPhotonsSmallerThan30;  // Number of photons per hit

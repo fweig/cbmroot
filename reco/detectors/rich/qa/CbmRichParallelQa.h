@@ -10,6 +10,7 @@
 #include "CbmL1RichENNRingFinder.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingFinderHough.h"
+
 #include "FairTask.h"
 
 #include <vector>

@@ -1,8 +1,9 @@
 #ifndef CBM_KF_F32vec1_H
 #define CBM_KF_F32vec1_H
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 /**********************************
  *
@@ -75,37 +76,33 @@ public:
   friend void operator*=(F32vec1& a, const F32vec1& b) { a = a * b; }
   friend void operator/=(F32vec1& a, const F32vec1& b) { a = a / b; }
 
-#define _op(A, B, O)                                                           \
-  F32vec1 z;                                                                   \
-  z.v = A.v O B.v;                                                             \
+#define _op(A, B, O)                                                                                                   \
+  F32vec1 z;                                                                                                           \
+  z.v = A.v O B.v;                                                                                                     \
   return z;
 
   //   /* Comparison */
   friend F32vec1 operator<(const F32vec1& a, const F32vec1& b) { _op(a, b, <) }
-  friend F32vec1 operator<=(const F32vec1& a, const F32vec1& b) {
-    _op(a, b, <=)
-  }
+  friend F32vec1 operator<=(const F32vec1& a, const F32vec1& b) { _op(a, b, <=) }
   friend F32vec1 operator>(const F32vec1& a, const F32vec1& b) { _op(a, b, >) }
-  friend F32vec1 operator>=(const F32vec1& a, const F32vec1& b) {
-    _op(a, b, >=)
-  }
+  friend F32vec1 operator>=(const F32vec1& a, const F32vec1& b) { _op(a, b, >=) }
 
   //   /* Logic */
   friend F32vec1 operator&(const F32vec1& a, const F32vec1& b) { _op(a, b, &&) }
   friend F32vec1 operator|(const F32vec1& a, const F32vec1& b) { _op(a, b, ||) }
-  friend F32vec1 operator||(const F32vec1& a, const F32vec1& b) {
-    _op(a, b, ||)
-  }
+  friend F32vec1 operator||(const F32vec1& a, const F32vec1& b) { _op(a, b, ||) }
 #undef _op
 
-  friend F32vec1 operator!(const F32vec1& a) {
+  friend F32vec1 operator!(const F32vec1& a)
+  {
     F32vec1 z;
     z[0] = !a[0];
 
     return z;
   }
 
-  friend F32vec1 if3(const F32vec1& a, const F32vec1& b, const F32vec1& c) {
+  friend F32vec1 if3(const F32vec1& a, const F32vec1& b, const F32vec1& c)
+  {
     F32vec1 z;
     z[0] = (a[0]) ? b[0] : c[0];
 
@@ -114,17 +111,20 @@ public:
 
 #define NotEmptyFvec(a) bool((a)[0])
 #define EmptyFvec(a) !(bool((a)[0]))
-  friend F32vec1 bool2int(const F32vec1& a) {  // mask returned
+  friend F32vec1 bool2int(const F32vec1& a)
+  {  // mask returned
     return if3(a, 1, 0);
   }
 
 
-  friend ostream& operator<<(ostream& strm, const F32vec1& a) {
+  friend ostream& operator<<(ostream& strm, const F32vec1& a)
+  {
     strm << a[0];
     return strm;
   }
 
-  friend istream& operator>>(istream& strm, F32vec1& a) {
+  friend istream& operator>>(istream& strm, F32vec1& a)
+  {
     float tmp;
     strm >> tmp;
     a = tmp;
@@ -141,7 +141,8 @@ const int fvecLen = 1;
 #define _fvecalignment
 
 
-namespace nsL1 {
+namespace nsL1
+{
   template<typename T>
   struct vector {
     typedef std::vector<T> TStd;
@@ -154,6 +155,7 @@ namespace nsL1 {
 template<typename T>
 struct nsL1vector :
   public nsL1::vector<T>  // just for use std::vector simultaniosly
-{};
+{
+};
 
 #endif

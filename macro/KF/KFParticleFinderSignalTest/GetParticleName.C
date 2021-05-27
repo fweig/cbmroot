@@ -1,6 +1,7 @@
 // #include "$VMCWORKDIR/KF/KFParticleParformance/KFPartEfficiencies.h"
 
-void GetParticleName(int iParticle = 0) {
+void GetParticleName(int iParticle = 0)
+{
 
   TStopwatch timer;
   timer.Start();

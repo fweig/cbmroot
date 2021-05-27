@@ -3,8 +3,11 @@
 
 
 #include "CbmRichRingLight.h"
+
 #include "FairTask.h"
+
 #include "TVector3.h"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -22,13 +25,7 @@ public:
   /*
 	 * Constructor.
 	 */
-  CbmRichMirror()
-    : fMirrorId("")
-    , fMomentum()
-    , fProjHit()
-    , fExtrapHit()
-    , fRotAngles()
-    , fRingL() {}
+  CbmRichMirror() : fMirrorId(""), fMomentum(), fProjHit(), fExtrapHit(), fRotAngles(), fRingL() {}
 
   /*
 	 * Destructor.
@@ -38,15 +35,9 @@ public:
   // Modifiers:
   void setMirrorId(string s) { fMirrorId = s; }
   void setMomentum(TVector3 v) { fMomentum = v; }
-  void setProjHit(Double_t xX, Double_t yY) {
-    fProjHit.push_back(xX), fProjHit.push_back(yY);
-  }
-  void setExtrapHit(Double_t xX, Double_t yY) {
-    fExtrapHit.push_back(xX), fExtrapHit.push_back(yY);
-  }
-  void setRotAngles(Double_t xX, Double_t yY) {
-    fRotAngles.push_back(xX), fRotAngles.push_back(yY);
-  }
+  void setProjHit(Double_t xX, Double_t yY) { fProjHit.push_back(xX), fProjHit.push_back(yY); }
+  void setExtrapHit(Double_t xX, Double_t yY) { fExtrapHit.push_back(xX), fExtrapHit.push_back(yY); }
+  void setRotAngles(Double_t xX, Double_t yY) { fRotAngles.push_back(xX), fRotAngles.push_back(yY); }
   void setRingLight(CbmRichRingLight ringL) { fRingL = ringL; }
 
   // Accessors:

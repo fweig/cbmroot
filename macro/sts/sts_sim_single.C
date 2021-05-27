@@ -19,7 +19,8 @@
 //
 // --------------------------------------------------------------------------
 
-void sts_sim_single(Int_t nEvents = 10, const char* geoTag = "v15b") {
+void sts_sim_single(Int_t nEvents = 10, const char* geoTag = "v15b")
+{
 
   // =====   Logger settings   ==============================================
   TString logLevel   = "INFO";
@@ -127,8 +128,6 @@ void sts_sim_single(Int_t nEvents = 10, const char* geoTag = "v15b") {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ========================================================================
 }

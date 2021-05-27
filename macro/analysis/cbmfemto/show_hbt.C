@@ -8,15 +8,17 @@
  */
 
 #ifndef __CLING__
+#include <TCanvas.h>
+#include <TH1.h>
+
 #include "NicaAnaFile.h"
 #include "NicaFemto1DCF.h"
 #include "NicaFemtoCorrFuncKt.h"
-#include <TCanvas.h>
-#include <TH1.h>
 #endif
 
 
-void show_hbt() {
+void show_hbt()
+{
   NicaAnaFile* f             = new NicaAnaFile("test2.root");
   NicaFemtoCorrFuncKt* cf_kt = (NicaFemtoCorrFuncKt*) f->GetMainObject(2);
   TH1* h                     = cf_kt->GetKtNum();

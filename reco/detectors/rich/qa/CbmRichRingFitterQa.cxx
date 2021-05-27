@@ -6,11 +6,12 @@
 **/
 
 #include "CbmRichRingFitterQa.h"
+
+#include "CbmRichRing.h"
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseMinuit.h"
 #include "CbmRichRingFitterEllipseTau.h"
 
-#include "CbmRichRing.h"
 #include "TCanvas.h"
 #include "TH1D.h"
 #include "TMath.h"
@@ -51,48 +52,37 @@ CbmRichRingFitterQa::CbmRichRingFitterQa()
 
   fhRadiusPool(NULL)
   , fhCircleXcPool(NULL)
-  , fhCircleYcPool(NULL) {
-  fhErrorA = new TH1D("fhErrorA", "fhErrorA;dA [cm];Counter", 100, -2., 2.);
-  fhErrorB = new TH1D("fhErrorB", "fhErrorB;B [cm];Counter", 100, -2., 2.);
-  fhErrorX = new TH1D("fhErrorX", "fhErrorX;X [cm];Counter", 100, -2., 2.);
-  fhErrorY = new TH1D("fhErrorY", "fhErrorY;Y [cm];Counter", 100, -2., 2.);
-  fhErrorPhi =
-    new TH1D("fhErrorPhi", "fhErrorPhi;d#Phi [rad];Counter", 100, -2., 2.);
+  , fhCircleYcPool(NULL)
+{
+  fhErrorA   = new TH1D("fhErrorA", "fhErrorA;dA [cm];Counter", 100, -2., 2.);
+  fhErrorB   = new TH1D("fhErrorB", "fhErrorB;B [cm];Counter", 100, -2., 2.);
+  fhErrorX   = new TH1D("fhErrorX", "fhErrorX;X [cm];Counter", 100, -2., 2.);
+  fhErrorY   = new TH1D("fhErrorY", "fhErrorY;Y [cm];Counter", 100, -2., 2.);
+  fhErrorPhi = new TH1D("fhErrorPhi", "fhErrorPhi;d#Phi [rad];Counter", 100, -2., 2.);
 
   fhA         = new TH1D("fhA", "fhA;A [cm];Counter", 100, 5., 7.);
   fhB         = new TH1D("fhB", "fhB;B [cm];Counter", 100, 5., 7.);
   fhX         = new TH1D("fhX", "fhX;X [cm];Counter", 100, -1., 1.);
   fhY         = new TH1D("fhY", "fhY;Y [cm];Counter", 100, -1., 1.);
   Double_t pi = TMath::Pi();
-  fhPhi       = new TH1D("fhPhi",
-                   "fhPhi;#Phi [rad];Counter",
-                   100,
-                   -pi / 2. - pi / 6.,
-                   pi / 2. + pi / 6.);
+  fhPhi       = new TH1D("fhPhi", "fhPhi;#Phi [rad];Counter", 100, -pi / 2. - pi / 6., pi / 2. + pi / 6.);
 
   // circle fitting
-  fhRadiusErr =
-    new TH1D("fhRadiusErr", "fhRadiusErr;dR [cm];Counter", 100, -2., 2.);
-  fhCircleXcErr =
-    new TH1D("fhCircleXcErr", "fhCircleXcErr;dXc [cm];Counter", 100, -2., 2.);
-  fhCircleYcErr =
-    new TH1D("fhCircleYcErr", "fhCircleYcErr;dYc [cm];Counter", 100, -2., 2.);
-  fhRadius = new TH1D("fhRadius", "fhRadius;Radius [cm];Counter", 100, 4., 8.);
-  fhCircleXc =
-    new TH1D("fhCircleXc", "fhCircleXc;Xc [cm];Counter", 100, -2., 2.);
-  fhCircleYc =
-    new TH1D("fhCircleYc", "fhCircleYc;Yc [cm];Counter", 100, -2., 2.);
-  fhRadiusPool =
-    new TH1D("fhRadiusPool", "fhRadiusPool;Pool R;Counter", 100, -5., 5.);
-  fhCircleXcPool =
-    new TH1D("fhCircleXcPool", "fhCircleXcPool;Pool Xc;Counter", 100, -5., 5.);
-  fhCircleYcPool =
-    new TH1D("fhCircleYcPool", "fhCircleYcPool;Pool Yc;Counter", 100, -5., 5.);
+  fhRadiusErr    = new TH1D("fhRadiusErr", "fhRadiusErr;dR [cm];Counter", 100, -2., 2.);
+  fhCircleXcErr  = new TH1D("fhCircleXcErr", "fhCircleXcErr;dXc [cm];Counter", 100, -2., 2.);
+  fhCircleYcErr  = new TH1D("fhCircleYcErr", "fhCircleYcErr;dYc [cm];Counter", 100, -2., 2.);
+  fhRadius       = new TH1D("fhRadius", "fhRadius;Radius [cm];Counter", 100, 4., 8.);
+  fhCircleXc     = new TH1D("fhCircleXc", "fhCircleXc;Xc [cm];Counter", 100, -2., 2.);
+  fhCircleYc     = new TH1D("fhCircleYc", "fhCircleYc;Yc [cm];Counter", 100, -2., 2.);
+  fhRadiusPool   = new TH1D("fhRadiusPool", "fhRadiusPool;Pool R;Counter", 100, -5., 5.);
+  fhCircleXcPool = new TH1D("fhCircleXcPool", "fhCircleXcPool;Pool Xc;Counter", 100, -5., 5.);
+  fhCircleYcPool = new TH1D("fhCircleYcPool", "fhCircleYcPool;Pool Yc;Counter", 100, -5., 5.);
 }
 
 CbmRichRingFitterQa::~CbmRichRingFitterQa() {}
 
-void CbmRichRingFitterQa::GenerateEllipse() {
+void CbmRichRingFitterQa::GenerateEllipse()
+{
   //	Double_t maxX = 15;
   //	Double_t maxY = 15;
   Int_t nofHits       = 50;
@@ -108,8 +98,7 @@ void CbmRichRingFitterQa::GenerateEllipse() {
   CbmRichRingFitterCOP* fitCircle         = new CbmRichRingFitterCOP();
 
   for (Int_t iR = 0; iR < 50000; iR++) {
-    Double_t phi =
-      0.;  //TMath::Pi()*(6./12.); //gRandom->Rndm()*TMath::Pi() - TMath::Pi()/2.;
+    Double_t phi = 0.;  //TMath::Pi()*(6./12.); //gRandom->Rndm()*TMath::Pi() - TMath::Pi()/2.;
     ellipse.SetXYABP(X0, Y0, A, B, phi);
     for (Int_t iH = 0; iH < nofHits; iH++) {
       Double_t alfa = gRandom->Rndm() * 2. * TMath::Pi();
@@ -159,9 +148,9 @@ void CbmRichRingFitterQa::GenerateEllipse() {
   cout << nofBadFit << endl;
 }
 
-void CbmRichRingFitterQa::Draw(Option_t*) {
-  TCanvas* c =
-    new TCanvas("rich_fitter_errors", "rich_fitter_errors", 900, 600);
+void CbmRichRingFitterQa::Draw(Option_t*)
+{
+  TCanvas* c = new TCanvas("rich_fitter_errors", "rich_fitter_errors", 900, 600);
   c->Divide(3, 2);
   c->cd(1);
   fhErrorA->Draw();
@@ -180,8 +169,7 @@ void CbmRichRingFitterQa::Draw(Option_t*) {
   cout << fhErrorY->GetMean() << " " << fhErrorY->GetRMS() << endl;
   cout << fhErrorPhi->GetMean() << " " << fhErrorPhi->GetRMS() << endl;
 
-  TCanvas* c2 =
-    new TCanvas("rich_fitter_params", "rich_fitter_params", 900, 600);
+  TCanvas* c2 = new TCanvas("rich_fitter_params", "rich_fitter_params", 900, 600);
   c2->Divide(3, 2);
   c2->cd(1);
   fhA->Draw();
@@ -194,8 +182,7 @@ void CbmRichRingFitterQa::Draw(Option_t*) {
   c2->cd(5);
   fhPhi->Draw();
 
-  TCanvas* c3 =
-    new TCanvas("rich_fitter_circle", "rich_fitter_circle", 900, 900);
+  TCanvas* c3 = new TCanvas("rich_fitter_circle", "rich_fitter_circle", 900, 900);
   c3->Divide(3, 3);
   c3->cd(1);
   fhRadiusErr->Draw();
@@ -217,9 +204,8 @@ void CbmRichRingFitterQa::Draw(Option_t*) {
   fhCircleYcPool->Draw();
 }
 
-void CbmRichRingFitterQa::CalculateFitErrors(CbmRichRingLight* ring,
-                                             Double_t sigma,
-                                             TMatrixD& cov) {
+void CbmRichRingFitterQa::CalculateFitErrors(CbmRichRingLight* ring, Double_t sigma, TMatrixD& cov)
+{
   //TMatrixD H3(3,3);
   TMatrixD HY3(3, 1);
   //TMatrixD Cov3(3,3);

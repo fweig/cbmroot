@@ -26,7 +26,8 @@ CbmVertex::CbmVertex()
   , fChi2(0.)
   , fNDF(0)
   , fNTracks(0)
-  , fCovMatrix() {
+  , fCovMatrix()
+{
   for (Int_t i = 0; i < 6; i++)
     fCovMatrix[i] = 0;
 }
@@ -41,7 +42,8 @@ CbmVertex::CbmVertex(const char* name, const char* title)
   , fChi2(0.)
   , fNDF(0)
   , fNTracks(0)
-  , fCovMatrix() {
+  , fCovMatrix()
+{
   for (Int_t i = 0; i < 6; i++)
     fCovMatrix[i] = 0;
 }
@@ -49,15 +51,8 @@ CbmVertex::CbmVertex(const char* name, const char* title)
 
 
 // -----   Constructor with all parameters   -------------------------------
-CbmVertex::CbmVertex(const char* name,
-                     const char* title,
-                     Double_t x,
-                     Double_t y,
-                     Double_t z,
-                     Double_t chi2,
-                     Int_t ndf,
-                     Int_t nTracks,
-                     const TMatrixFSym& covMat)
+CbmVertex::CbmVertex(const char* name, const char* title, Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf,
+                     Int_t nTracks, const TMatrixFSym& covMat)
   : TNamed(name, title)
   , fX(x)
   , fY(y)
@@ -65,13 +60,15 @@ CbmVertex::CbmVertex(const char* name,
   , fChi2(chi2)
   , fNDF(ndf)
   , fNTracks(nTracks)
-  , fCovMatrix() {
+  , fCovMatrix()
+{
   if ((covMat.GetNrows() != 3) && (covMat.GetNcols() != 3)) {
     LOG(error) << "Wrong dimension of passed covariance matrix. Clear the "
                   "covariance matrix.";
     for (Int_t i = 0; i < 6; i++)
       fCovMatrix[i] = 0;
-  } else {
+  }
+  else {
     Int_t index = 0;
     for (Int_t i = 0; i < 3; i++) {
       for (Int_t j = i; j < 3; j++)
@@ -88,10 +85,10 @@ CbmVertex::~CbmVertex() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmVertex::Print(Option_t*) const {
+void CbmVertex::Print(Option_t*) const
+{
   Double_t chi2ndf;
-  if (fNDF)
-    chi2ndf = fChi2 / Double_t(fNDF);
+  if (fNDF) chi2ndf = fChi2 / Double_t(fNDF);
   else
     chi2ndf = 0.;
   LOG(info) << "Vertex coord. (" << fX << "," << fY << "," << fZ << ") cm, "
@@ -101,7 +98,8 @@ void CbmVertex::Print(Option_t*) const {
 
 
 // -----   Accessor to covariance matrix    --------------------------------
-void CbmVertex::CovMatrix(TMatrixFSym& covMat) const {
+void CbmVertex::CovMatrix(TMatrixFSym& covMat) const
+{
   Int_t index = 0;
   for (int i = 0; i < 3; i++) {
     for (int j = i; j < 3; j++) {
@@ -115,7 +113,8 @@ void CbmVertex::CovMatrix(TMatrixFSym& covMat) const {
 
 
 // -----   Accessor to covariance matrix elements   ------------------------
-Double_t CbmVertex::GetCovariance(Int_t i, Int_t j) const {
+Double_t CbmVertex::GetCovariance(Int_t i, Int_t j) const
+{
   TMatrixFSym* mat = new TMatrixFSym(3);
   CovMatrix(*mat);
   Double_t element = (*mat)[i][j];
@@ -126,13 +125,9 @@ Double_t CbmVertex::GetCovariance(Int_t i, Int_t j) const {
 
 
 // -----   Public method SetVertex   ---------------------------------------
-void CbmVertex::SetVertex(Double_t x,
-                          Double_t y,
-                          Double_t z,
-                          Double_t chi2,
-                          Int_t ndf,
-                          Int_t nTracks,
-                          const TMatrixFSym& covMat) {
+void CbmVertex::SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
+                          const TMatrixFSym& covMat)
+{
   fX       = x;
   fY       = y;
   fZ       = z;
@@ -144,7 +139,8 @@ void CbmVertex::SetVertex(Double_t x,
                   "covariance matrix.";
     for (Int_t i = 0; i < 6; i++)
       fCovMatrix[i] = 0;
-  } else {
+  }
+  else {
     Int_t index = 0;
     for (Int_t i = 0; i < 3; i++) {
       for (Int_t j = i; j < 3; j++)
@@ -156,7 +152,8 @@ void CbmVertex::SetVertex(Double_t x,
 
 
 // -----   Public method Reset   -------------------------------------------
-void CbmVertex::Reset() {
+void CbmVertex::Reset()
+{
   fX = fY = fZ = fChi2 = 0.;
   fNDF = fNTracks = 0;
   for (Int_t i = 0; i < 6; i++)
@@ -166,13 +163,13 @@ void CbmVertex::Reset() {
 
 
 // --- String output  ------------------------------------------------------
-string CbmVertex::ToString() const {
+string CbmVertex::ToString() const
+{
 
   Double_t chi2ndf = (fNDF ? fChi2 / Double_t(fNDF) : 0.);
   stringstream ss;
-  ss << "Vertex: position (" << fixed << setprecision(4) << fX << ", " << fY
-     << ", " << fZ << ") cm, chi2/ndf = " << chi2ndf
-     << ", tracks used: " << fNTracks;
+  ss << "Vertex: position (" << fixed << setprecision(4) << fX << ", " << fY << ", " << fZ
+     << ") cm, chi2/ndf = " << chi2ndf << ", tracks used: " << fNTracks;
   return ss.str();
 }
 // -------------------------------------------------------------------------

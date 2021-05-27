@@ -2,10 +2,10 @@
 #ifndef CBM_RICH_MCBM_HIT_PRODUCER
 #define CBM_RICH_MCBM_HIT_PRODUCER
 
-#include "CbmRichRecGeoPar.h"
-#include "FairTask.h"
-
 #include "CbmDigiManager.h"  // for ROOTCLING
+#include "CbmRichRecGeoPar.h"
+
+#include "FairTask.h"
 
 class TClonesArray;
 class TVector3;
@@ -70,15 +70,14 @@ public:
   /**
      * Set mapping file path.
      */
-  void SetMappingFile(const std::string& mappingFile) {
-    fMappingFile = mappingFile;
-  }
+  void SetMappingFile(const std::string& mappingFile) { fMappingFile = mappingFile; }
 
 
   /**
     * Set ToT Limits.
     */
-  void setToTLimits(double low, double high) {
+  void setToTLimits(double low, double high)
+  {
     fToTLimitLow  = low;
     fToTLimitHigh = high;
   }
@@ -114,11 +113,11 @@ public:
 
 private:
   CbmDigiManager* fDigiMan = nullptr;
-  TClonesArray* fRichHits;             // RICH hits
-  TClonesArray* fCbmEvents = nullptr;  // CbmEvent for time-based simulations
-  bool fDoToT              = false;
-  bool fRestrictToAcc      = false;
-  bool fRestrictToFullAcc  = false;
+  TClonesArray* fRichHits;                      // RICH hits
+  TClonesArray* fCbmEvents          = nullptr;  // CbmEvent for time-based simulations
+  bool fDoToT                       = false;
+  bool fRestrictToAcc               = false;
+  bool fRestrictToFullAcc           = false;
   bool fRestrictToAerogelAccDec2019 = false;
   double fToTLimitLow               = 0.;
   double fToTLimitHigh              = 1000.;
@@ -150,11 +149,7 @@ private:
      * \brief Add hit to the output array (and) CbmEvent if it is not NULL.
      */
 
-  void AddHit(CbmEvent* event,
-              TVector3& posHit,
-              const CbmRichDigi* digi,
-              Int_t index,
-              Int_t PmtId);
+  void AddHit(CbmEvent* event, TVector3& posHit, const CbmRichDigi* digi, Int_t index, Int_t PmtId);
 
   /**
      * \brief Copy constructor.

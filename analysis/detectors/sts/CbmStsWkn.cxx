@@ -5,35 +5,35 @@
  **/
 
 #include "CbmStsWkn.h"
-#include "FairRootManager.h"
 
 #include "CbmGlobalTrack.h"
-
 #include "CbmStsCluster.h"
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
+
+#include "FairRootManager.h"
+
 #include "TClonesArray.h"
 #include "TMath.h"
 #include "TString.h"
 #include "TSystem.h"
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 using std::cout;
 using std::endl;
 using std::fabs;
 using std::map;
 using std::vector;
 
-CbmStsWkn::CbmStsWkn()
-  : fdegWkn(4), fEmp(2.4), fXi(0.5), fk1(fdegWkn + 1), fnSet(8), fwkn(-1) {
-  Init();
-}
+CbmStsWkn::CbmStsWkn() : fdegWkn(4), fEmp(2.4), fXi(0.5), fk1(fdegWkn + 1), fnSet(8), fwkn(-1) { Init(); }
 
 CbmStsWkn::~CbmStsWkn() {}
 
-void CbmStsWkn::Init() {
+void CbmStsWkn::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (ioman != nullptr) {
     fGlobalTracks    = (TClonesArray*) ioman->GetObject("GlobalTrack");
@@ -44,7 +44,8 @@ void CbmStsWkn::Init() {
   }
 }
 
-Double_t CbmStsWkn::GetStsWkn(Int_t StsTrackIndex) {
+Double_t CbmStsWkn::GetStsWkn(Int_t StsTrackIndex)
+{
   double dr = 1.;
   std::vector<float> eLossVector;
   std::vector<float> dEdxAllveto;
@@ -52,9 +53,7 @@ Double_t CbmStsWkn::GetStsWkn(Int_t StsTrackIndex) {
   CbmStsTrack* StsTrack = (CbmStsTrack*) fStsTracks->At(StsTrackIndex);
   if (StsTrack == NULL) return fwkn;
 
-  int nClustersWveto =
-    StsTrack->GetNofStsHits()
-    + StsTrack->GetNofStsHits();  //assume all clusters with veto
+  int nClustersWveto = StsTrack->GetNofStsHits() + StsTrack->GetNofStsHits();  //assume all clusters with veto
   if (nClustersWveto < 8) return fwkn;
 
   //cout<<fnSet<<endl;
@@ -69,24 +68,20 @@ Double_t CbmStsWkn::GetStsWkn(Int_t StsTrackIndex) {
     z = stsHit->GetZ();
 
     if (iHit != StsTrack->GetNofStsHits() - 1) {
-      CbmStsHit* stsHitNext =
-        (CbmStsHit*) fStsHits->At(StsTrack->GetStsHitIndex(iHit + 1));
-      xNext = stsHitNext->GetX();
-      yNext = stsHitNext->GetY();
-      zNext = stsHitNext->GetZ();
-      dr    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y)
-                + (zNext - z) * (zNext - z))
+      CbmStsHit* stsHitNext = (CbmStsHit*) fStsHits->At(StsTrack->GetStsHitIndex(iHit + 1));
+      xNext                 = stsHitNext->GetX();
+      yNext                 = stsHitNext->GetY();
+      zNext                 = stsHitNext->GetZ();
+      dr                    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y) + (zNext - z) * (zNext - z))
            / (zNext - z);  // if *300um, you get real reconstructed dr
     }                      // else dr stay previous
                            // ***********End of dr calculation
 
     //************dE is defined as a total cluster charge
-    Int_t FrontClusterId = stsHit->GetFrontClusterId();
-    CbmStsCluster* frontCluster =
-      (CbmStsCluster*) fStsClusterArray->At(FrontClusterId);
-    Int_t BackClusterId = stsHit->GetBackClusterId();
-    CbmStsCluster* backCluster =
-      (CbmStsCluster*) fStsClusterArray->At(BackClusterId);
+    Int_t FrontClusterId        = stsHit->GetFrontClusterId();
+    CbmStsCluster* frontCluster = (CbmStsCluster*) fStsClusterArray->At(FrontClusterId);
+    Int_t BackClusterId         = stsHit->GetBackClusterId();
+    CbmStsCluster* backCluster  = (CbmStsCluster*) fStsClusterArray->At(BackClusterId);
 
     if (!frontCluster || !backCluster) return fwkn;
 
@@ -126,14 +121,13 @@ Double_t CbmStsWkn::GetStsWkn(Int_t StsTrackIndex) {
   return result_wkn;
 }
 
-Double_t CbmStsWkn::GetStsWkn(const CbmStsTrack* StsTrack) {
+Double_t CbmStsWkn::GetStsWkn(const CbmStsTrack* StsTrack)
+{
   double dr = 1.;
   std::vector<float> eLossVector;
   std::vector<float> dEdxAllveto;
 
-  int nClustersWveto =
-    StsTrack->GetNofStsHits()
-    + StsTrack->GetNofStsHits();  //assume all clusters with veto
+  int nClustersWveto = StsTrack->GetNofStsHits() + StsTrack->GetNofStsHits();  //assume all clusters with veto
   if (nClustersWveto < 8) return fwkn;
 
   //cout<<fnSet<<endl;
@@ -148,24 +142,20 @@ Double_t CbmStsWkn::GetStsWkn(const CbmStsTrack* StsTrack) {
     z = stsHit->GetZ();
 
     if (iHit != StsTrack->GetNofStsHits() - 1) {
-      CbmStsHit* stsHitNext =
-        (CbmStsHit*) fStsHits->At(StsTrack->GetStsHitIndex(iHit + 1));
-      xNext = stsHitNext->GetX();
-      yNext = stsHitNext->GetY();
-      zNext = stsHitNext->GetZ();
-      dr    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y)
-                + (zNext - z) * (zNext - z))
+      CbmStsHit* stsHitNext = (CbmStsHit*) fStsHits->At(StsTrack->GetStsHitIndex(iHit + 1));
+      xNext                 = stsHitNext->GetX();
+      yNext                 = stsHitNext->GetY();
+      zNext                 = stsHitNext->GetZ();
+      dr                    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y) + (zNext - z) * (zNext - z))
            / (zNext - z);  // if *300um, you get real reconstructed dr
     }                      // else dr stay previous
                            // ***********End of dr calculation
 
     //************dE is defined as a total cluster charge
-    Int_t FrontClusterId = stsHit->GetFrontClusterId();
-    CbmStsCluster* frontCluster =
-      (CbmStsCluster*) fStsClusterArray->At(FrontClusterId);
-    Int_t BackClusterId = stsHit->GetBackClusterId();
-    CbmStsCluster* backCluster =
-      (CbmStsCluster*) fStsClusterArray->At(BackClusterId);
+    Int_t FrontClusterId        = stsHit->GetFrontClusterId();
+    CbmStsCluster* frontCluster = (CbmStsCluster*) fStsClusterArray->At(FrontClusterId);
+    Int_t BackClusterId         = stsHit->GetBackClusterId();
+    CbmStsCluster* backCluster  = (CbmStsCluster*) fStsClusterArray->At(BackClusterId);
 
     if (!frontCluster || !backCluster) return fwkn;
 

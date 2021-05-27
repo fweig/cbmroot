@@ -10,10 +10,11 @@ nh, adapt from
 #include "CbmTofTrackFinder.h"
 #include "CbmTofTrackFitter.h"
 #include "CbmTofTracklet.h"
-#include "LKFMinuit.h"
 
 #include <map>
 #include <vector>
+
+#include "LKFMinuit.h"
 
 class TClonesArray;
 
@@ -50,9 +51,7 @@ public:
   void UpdateTrackList(CbmTofTracklet* pTrk);
 
   inline void SetFitter(CbmTofTrackFitter* Fitter) { fFitter = Fitter; }
-  inline void SetMaxTofTimeDifference(Double_t val) {
-    fMaxTofTimeDifference = val;
-  }
+  inline void SetMaxTofTimeDifference(Double_t val) { fMaxTofTimeDifference = val; }
   inline void SetTxLIM(Double_t val) { fTxLIM = val; }
   inline void SetTyLIM(Double_t val) { fTyLIM = val; }
   inline void SetTxMean(Double_t val) { fTxMean = val; }
@@ -101,8 +100,7 @@ private:
   //intermediate storage variables
   std::vector<CbmTofTracklet*> fTracks;  // Tracklets to which hit is assigned
   //std::vector<std::map <CbmTofTracklet *, Int_t> > fvTrkMap;  // Tracklets to which hit is assigned
-  std::vector<std::vector<CbmTofTracklet*>>
-    fvTrkVec;  // Tracklets to which hit is assigned
+  std::vector<std::vector<CbmTofTracklet*>> fvTrkVec;  // Tracklets to which hit is assigned
 
   ClassDef(CbmTofTrackFinderNN, 1);
 };

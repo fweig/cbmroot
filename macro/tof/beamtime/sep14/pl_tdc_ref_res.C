@@ -1,22 +1,15 @@
 
-void pl_tdc_ref_res(Int_t fNumberOfTDC = 34) {
+void pl_tdc_ref_res(Int_t fNumberOfTDC = 34)
+{
   // Monitoring of the TDc resolution stability using reference channel
   TCanvas* fOverviewRes;  //!
   TH2* fhResolutionSummary;
 
   delete gROOT->FindObjectAny("OverviewRes");
   delete gROOT->FindObjectAny("fhResolutionSummary");
-  fOverviewRes =
-    new TCanvas("OverviewRes", "Overview TDc Resolution", 48, 56, 1000, 700);
-  fhResolutionSummary =
-    new TH2D("fhResolutionSummary",
-             "TDC Resolution summary; TDC #1 []; TDC #2 [] ",
-             fNumberOfTDC - 1,
-             0,
-             fNumberOfTDC - 1,
-             fNumberOfTDC - 1,
-             1,
-             fNumberOfTDC);
+  fOverviewRes        = new TCanvas("OverviewRes", "Overview TDc Resolution", 48, 56, 1000, 700);
+  fhResolutionSummary = new TH2D("fhResolutionSummary", "TDC Resolution summary; TDC #1 []; TDC #2 [] ",
+                                 fNumberOfTDC - 1, 0, fNumberOfTDC - 1, fNumberOfTDC - 1, 1, fNumberOfTDC);
   fhResolutionSummary->SetStats(kFALSE);
 
 
@@ -36,8 +29,7 @@ void pl_tdc_ref_res(Int_t fNumberOfTDC = 34) {
 
       // Read the obtained sigma and fill it in the 2D summary histogram
       for (Int_t iTdc2 = iTdc1 + 1; iTdc2 < fNumberOfTDC; iTdc2++)
-        fhResolutionSummary->Fill(
-          iTdc1, iTdc2, ((TH2*) aSlices[2])->GetBinContent(iTdc2 - iTdc1));
+        fhResolutionSummary->Fill(iTdc1, iTdc2, ((TH2*) aSlices[2])->GetBinContent(iTdc2 - iTdc1));
     }  // if (h2!=NULL)
     else
       cout << "Histogram " << hname << " not existing. " << endl;

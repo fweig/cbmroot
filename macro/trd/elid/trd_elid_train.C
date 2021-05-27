@@ -6,7 +6,8 @@
 #include <vector>
 using namespace std;
 
-void trd_elid_train() {
+void trd_elid_train()
+{
 
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -16,10 +17,9 @@ void trd_elid_train() {
   gSystem->Load("libTMVA");
 
 
-  int nofTrdLayers = 12;
-  string outputDir = "results/temp/";
-  int idMethod =
-    4;  //kANN = 0, kBDT = 1, kMEDIANA = 2, kLIKELIHOOD = 3, kMeanCut = 4
+  int nofTrdLayers    = 12;
+  string outputDir    = "results/temp/";
+  int idMethod        = 4;  //kANN = 0, kBDT = 1, kMEDIANA = 2, kLIKELIHOOD = 3, kMeanCut = 4
   string radiatorName = "4mm_foam";
 
   TString script = TString(gSystem->Getenv("SCRIPT"));

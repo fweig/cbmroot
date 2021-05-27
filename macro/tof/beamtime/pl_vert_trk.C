@@ -1,4 +1,5 @@
-void pl_vert_trk() {
+void pl_vert_trk()
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -34,7 +36,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -45,7 +48,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -56,7 +60,8 @@ void pl_vert_trk() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -67,7 +72,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -78,7 +84,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -89,7 +96,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -100,7 +108,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -111,7 +120,8 @@ void pl_vert_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

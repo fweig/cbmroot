@@ -18,13 +18,13 @@
 
 #include "CbmMvdSensorDigitizerTBTask.h"
 
-#include "TClonesArray.h"
-#include "TObjArray.h"
-
 #include "CbmMvdPileupManager.h"
 #include "CbmMvdPoint.h"
 
 #include "FairRuntimeDb.h"
+
+#include "TClonesArray.h"
+#include "TObjArray.h"
 
 // Includes from FairRoot
 #include "FairEventHeader.h"
@@ -123,9 +123,9 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   , fReadoutLast()
   , fReadoutCurrent()
   , fReadoutNext()
-  , fSignalPoints() {
-  LOG(debug)
-    << "Starting CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask() ";
+  , fSignalPoints()
+{
+  LOG(debug) << "Starting CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask() ";
 
   fRandGen.SetSeed(2736);
   fEvent       = 0;
@@ -134,9 +134,8 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   fSigmaY      = 0.0005;
   fReadoutTime = 0.00005;
 
-  fSegmentLength = 0.0001;
-  fDiffusionCoefficient =
-    0.0055;  // correspondes to the sigma of the gauss with the max drift length
+  fSegmentLength           = 0.0001;
+  fDiffusionCoefficient    = 0.0055;      // correspondes to the sigma of the gauss with the max drift length
   fElectronsPerKeV         = 276;         //3.62 eV for e-h creation
   fWidthOfCluster          = 3.5;         // in sigmas
   fCutOnDeltaRays          = 0.00169720;  //MeV
@@ -168,7 +167,8 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdSensorDigitizerTBTask::~CbmMvdSensorDigitizerTBTask() {
+CbmMvdSensorDigitizerTBTask::~CbmMvdSensorDigitizerTBTask()
+{
 
   if (fInputPoints) {
     fInputPoints->Delete();
@@ -182,7 +182,8 @@ CbmMvdSensorDigitizerTBTask::~CbmMvdSensorDigitizerTBTask() {
 // ------------------------------------------------------------------------
 
 // -----    Virtual private method ReadSensorInformation   ----------------
-InitStatus CbmMvdSensorDigitizerTBTask::ReadSensorInformation() {
+InitStatus CbmMvdSensorDigitizerTBTask::ReadSensorInformation()
+{
 
   CbmMvdSensorDataSheet* sensorData;
   sensorData = fSensor->GetDataSheet();
@@ -213,23 +214,23 @@ InitStatus CbmMvdSensorDigitizerTBTask::ReadSensorInformation() {
 
 
 // -----------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTBTask::SetInputArray(TClonesArray* inputStream) {
+void CbmMvdSensorDigitizerTBTask::SetInputArray(TClonesArray* inputStream)
+{
 
   Int_t i       = 0;
   Int_t nInputs = inputStream->GetEntriesFast();
   while (nInputs > i) {
-    new ((*fInputPoints)[fInputPoints->GetEntriesFast()])
-      CbmMvdPoint(*((CbmMvdPoint*) inputStream->At(i)));
+    new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) inputStream->At(i)));
     ++i;
   }
 }
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTBTask::SetInput(CbmMvdPoint* point) {
+void CbmMvdSensorDigitizerTBTask::SetInput(CbmMvdPoint* point)
+{
 
-  new ((*fInputPoints)[fInputPoints->GetEntriesFast()])
-    CbmMvdPoint(*((CbmMvdPoint*) point));
+  new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));
 }
 // -----------------------------------------------------------------------------
 
@@ -238,7 +239,8 @@ void CbmMvdSensorDigitizerTBTask::ExecChain() { Exec(); }
 // -----------------------------------------------------------------------------
 
 // -----   Virtual public method Exec   ------------------------------------
-void CbmMvdSensorDigitizerTBTask::Exec() {
+void CbmMvdSensorDigitizerTBTask::Exec()
+{
 
   if (fPreviousPlugin) {
     fInputPoints->Delete();
@@ -265,17 +267,14 @@ void CbmMvdSensorDigitizerTBTask::Exec() {
       }
       if (point->GetStationNr() != fSensor->GetSensorNr()) {
         cout << "-W-" << GetName() << ":: Exec:" << endl;
-        cout << "    -received bad MC-Point which doesn't belong here. Ignored."
-             << endl;
+        cout << "    -received bad MC-Point which doesn't belong here. Ignored." << endl;
         continue;
       }
       //The digitizer acts only on particles, which crossed the station.
       //Particles generated in the sensor or being absorbed in this sensor are ignored
       if (TMath::Abs(point->GetZOut() - point->GetZ()) < 0.9 * fEpiTh) {
-        LOG(debug) << "hit not on chip with thickness "
-                   << 0.9 * 2 * fSensor->GetDZ();
-        LOG(debug) << "hit not on chip with length "
-                   << TMath::Abs(point->GetZOut() - point->GetZ());
+        LOG(debug) << "hit not on chip with thickness " << 0.9 * 2 * fSensor->GetDZ();
+        LOG(debug) << "hit not on chip with length " << TMath::Abs(point->GetZOut() - point->GetZ());
         continue;
       }
       // Reject for the time being light nuclei (no digitization modell yet)
@@ -287,8 +286,7 @@ void CbmMvdSensorDigitizerTBTask::Exec() {
     for (Int_t i = 0; i < fPixelCharge->GetEntriesFast(); ++i) {
       CbmMvdPixelCharge* pixel = (CbmMvdPixelCharge*) fPixelCharge->At(i);
 
-      if (pixel->GetCharge() > fChargeThreshold
-          && pixel->GetTime() <= fReadoutLast) {
+      if (pixel->GetCharge() > fChargeThreshold && pixel->GetTime() <= fReadoutLast) {
         /* Not used
 		nDigis = fOutputBuffer->GetEntriesFast();
 
@@ -302,25 +300,19 @@ void CbmMvdSensorDigitizerTBTask::Exec() {
         CbmMatch* match = new CbmMatch();
         for (Int_t iLink = 0; iLink < pixel->GetNContributors(); iLink++) {
           if (pixel->GetTrackID()[iLink] > -1)
-            match->AddLink((Double_t) pixel->GetPointWeight()[iLink],
-                           pixel->GetPointID()[iLink],
-                           eventNr,
-                           inputNr);
+            match->AddLink((Double_t) pixel->GetPointWeight()[iLink], pixel->GetPointID()[iLink], eventNr, inputNr);
           else
-            match->AddLink((Double_t) pixel->GetPointWeight()[iLink],
-                           pixel->GetPointID()[iLink]);
+            match->AddLink((Double_t) pixel->GetPointWeight()[iLink], pixel->GetPointID()[iLink]);
         }
 
         //digi->SetMatch(match);
-        std::pair<Int_t, Int_t> thispoint =
-          std::make_pair(pixel->GetX(), pixel->GetY());
-        std::pair<std::pair<Int_t, Int_t>, Double_t> thisTimePoint =
-          std::make_pair(thispoint, pixel->GetTime());
+        std::pair<Int_t, Int_t> thispoint                          = std::make_pair(pixel->GetX(), pixel->GetY());
+        std::pair<std::pair<Int_t, Int_t>, Double_t> thisTimePoint = std::make_pair(thispoint, pixel->GetTime());
 
         fChargeMap.erase(thisTimePoint);
         fPixelCharge->RemoveAt(i);
-
-      } else {
+      }
+      else {
         ;
       }
     }
@@ -338,9 +330,8 @@ void CbmMvdSensorDigitizerTBTask::Exec() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTBTask::GetEventInfo(Int_t& inputNr,
-                                               Int_t& eventNr,
-                                               Double_t& eventTime) {
+void CbmMvdSensorDigitizerTBTask::GetEventInfo(Int_t& inputNr, Int_t& eventNr, Double_t& eventTime)
+{
 
   // --- The event number is taken from the FairRootManager
   eventNr = FairRootManager::Instance()->GetEntryNr();
@@ -354,8 +345,7 @@ void CbmMvdSensorDigitizerTBTask::GetEventInfo(Int_t& inputNr,
 
   // --- In a FairRunSim, the input number and event time are always zero.
   else {
-    if (!FairRunSim::Instance())
-      LOG(fatal) << GetName() << ": neither SIM nor ANA run.";
+    if (!FairRunSim::Instance()) LOG(fatal) << GetName() << ": neither SIM nor ANA run.";
     inputNr   = 0;
     eventTime = 0.;
   }
@@ -363,15 +353,15 @@ void CbmMvdSensorDigitizerTBTask::GetEventInfo(Int_t& inputNr,
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
+void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point)
+{
   /** Produces ionisation points along track segment within 
    ** the active Silicon layer.
    **/
   //Transform coordinates of the point into sensor frame
 
   Double_t globalPositionIn[3]  = {point->GetX(), point->GetY(), point->GetZ()};
-  Double_t globalPositionOut[3] = {
-    point->GetXOut(), point->GetYOut(), point->GetZOut()};
+  Double_t globalPositionOut[3] = {point->GetXOut(), point->GetYOut(), point->GetZOut()};
 
   Double_t localPositionIn[3] = {0, 0, 0};
 
@@ -457,28 +447,20 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
   //-----------------------------------------------------------
 
 
-  Double_t rawLength =
-    sqrt(lx * lx + ly * ly
-         + lz * lz);  //length of the track inside the epi-layer, in cm
+  Double_t rawLength   = sqrt(lx * lx + ly * ly + lz * lz);  //length of the track inside the epi-layer, in cm
   Double_t trackLength = 0;
 
-  if (rawLength < 1.0e+3) {
-    trackLength = rawLength;
-  }
+  if (rawLength < 1.0e+3) { trackLength = rawLength; }
 
   else {
-    cout << "-W- " << GetName() << " : rawlength > 1.0e+3 : " << rawLength
-         << endl;
+    cout << "-W- " << GetName() << " : rawlength > 1.0e+3 : " << rawLength << endl;
     trackLength = 1.0e+3;
   }
 
   //Smear the energy on each track segment
-  Double_t charge =
-    fLandauRandom->Landau(fLandauGain, fLandauSigma / fLandauMPV);
+  Double_t charge = fLandauRandom->Landau(fLandauGain, fLandauSigma / fLandauMPV);
 
-  if (charge > (12000 / fLandauMPV)) {
-    charge = 12000 / fLandauMPV;
-  }  //limit Random generator behaviour
+  if (charge > (12000 / fLandauMPV)) { charge = 12000 / fLandauMPV; }  //limit Random generator behaviour
   //Translate the charge to normalized energy
 
   //     cout << endl << "charge after random generator " << charge << endl;
@@ -486,14 +468,9 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
   //   cout << endl << "dEmean " << dEmean << endl;
   fNumberOfSegments = int(trackLength / fSegmentLength) + 1;
 
-  dEmean =
-    dEmean
-    * ((Double_t) trackLength / fEpiTh);  //scale the energy to the track length
+  dEmean = dEmean * ((Double_t) trackLength / fEpiTh);  //scale the energy to the track length
 
-  dEmean =
-    dEmean
-    / ((Double_t)
-         fNumberOfSegments);  // From this point dEmean corresponds to the E lost per segment.
+  dEmean = dEmean / ((Double_t) fNumberOfSegments);  // From this point dEmean corresponds to the E lost per segment.
 
 
   fSignalPoints.resize(fNumberOfSegments);
@@ -508,10 +485,10 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
          projection (=fSegmentDepth)
 	 **/
     fSegmentDepth = fEpiTh / ((Double_t) fNumberOfSegments);
-  } else {  //condition added 05/08/08
+  }
+  else {  //condition added 05/08/08
     fSegmentDepth = 0;
-    cout << "-W- " << GetName()
-         << " Length of track in detector (z-direction) is 0!!!" << endl;
+    cout << "-W- " << GetName() << " Length of track in detector (z-direction) is 0!!!" << endl;
   }
 
 
@@ -522,21 +499,11 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
 
   for (int i = 0; i < fNumberOfSegments; ++i) {
 
-    z = -fEpiTh / 2
-        + ((double) (i) + 0.5)
-            * fSegmentDepth;  //middle position of the segment; zdirection
-    x =
-      entryXepi
-      + ((double) (i) + 0.5)
-          * (lx
-             / ((Double_t)
-                  fNumberOfSegments));  //middle position of the segment; xdirection
-    y =
-      entryYepi
-      + ((double) (i) + 0.5)
-          * (ly
-             / ((Double_t)
-                  fNumberOfSegments));  //middle position of the segment; ydirection
+    z = -fEpiTh / 2 + ((double) (i) + 0.5) * fSegmentDepth;  //middle position of the segment; zdirection
+    x = entryXepi
+        + ((double) (i) + 0.5) * (lx / ((Double_t) fNumberOfSegments));  //middle position of the segment; xdirection
+    y = entryYepi
+        + ((double) (i) + 0.5) * (ly / ((Double_t) fNumberOfSegments));  //middle position of the segment; ydirection
 
     if (fShowDebugHistos) {
       xDebug = xDebug + x;
@@ -548,11 +515,10 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
 
     fEsum         = fEsum + dEmean;
     sPoint->eloss = dEmean;
-    sPoint->x =
-      x;  //here the coordinates x,y,z are given in the sensor reference frame.
-    sPoint->y = y;
-    sPoint->z = z;
-    charge    = 1.0e+6 * dEmean * fElectronsPerKeV;
+    sPoint->x     = x;  //here the coordinates x,y,z are given in the sensor reference frame.
+    sPoint->y     = y;
+    sPoint->z     = z;
+    charge        = 1.0e+6 * dEmean * fElectronsPerKeV;
     //cout << endl << "charge " << charge << endl;
     sPoint->sigmaX     = fPixelSize;
     sPoint->sigmaY     = fPixelSize;
@@ -562,7 +528,8 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point) {
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
+void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point)
+{
 
   fCurrentTotalCharge = 0.0;
 
@@ -587,8 +554,7 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
   yUp = sPoint->y + fWidthOfCluster * sigmaY;
 
   if (fNumberOfSegments < 2) {
-    Fatal("-E- CbmMvdDigitizer: ",
-          "fNumberOfSegments < 2, this makes no sense, check parameters.");
+    Fatal("-E- CbmMvdDigitizer: ", "fNumberOfSegments < 2, this makes no sense, check parameters.");
   }
 
   Int_t* lowerXArray = new Int_t[fNumberOfSegments];
@@ -653,10 +619,7 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
       fSensor->PixelToLocal(ix, iy, Current);
       pixel = nullptr;
       for (Int_t i = 0; i < fNumberOfSegments; ++i) {
-        if (ix < lowerXArray[i] || iy < lowerYArray[i] || ix > upperXArray[i]
-            || iy > upperYArray[i]) {
-          continue;
-        }
+        if (ix < lowerXArray[i] || iy < lowerYArray[i] || ix > upperXArray[i] || iy > upperYArray[i]) { continue; }
 
         sPoint  = &fSignalPoints[i];
         xCentre = sPoint->x;  //of segment
@@ -666,14 +629,11 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
         fCurrentTotalCharge += sPoint->charge;
 
         //compute the charge distributed to this pixel by this segment
-        Float_t numerator =
-          sPoint->charge * fLorentzNorm * (0.5 * fPar0 * fPar1 / TMath::Pi());
-        Float_t maxCount =
-          TMath::Max(1.e-10,
-                     (((Current[0] - xCentre) * (Current[0] - xCentre))
-                      + ((Current[1] - yCentre) * (Current[1] - yCentre)))
-                         / fPixelSizeX / fPixelSizeY
-                       + 0.25 * fPar1 * fPar1);
+        Float_t numerator = sPoint->charge * fLorentzNorm * (0.5 * fPar0 * fPar1 / TMath::Pi());
+        Float_t maxCount  = TMath::Max(1.e-10, (((Current[0] - xCentre) * (Current[0] - xCentre))
+                                               + ((Current[1] - yCentre) * (Current[1] - yCentre)))
+                                                  / fPixelSizeX / fPixelSizeY
+                                                + 0.25 * fPar1 * fPar1);
 
         Float_t totCharge = (numerator / maxCount + fPar2);
 
@@ -684,39 +644,33 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
           fChargeMapIt  = fChargeMap.find(thisTimePoint);
           if (fChargeMapIt == fChargeMap.end()) {
             pixel = new ((*fPixelCharge)[fPixelCharge->GetEntriesFast()])
-              CbmMvdPixelCharge(totCharge,
-                                ix,
-                                iy,
-                                point->GetPointId(),
-                                point->GetTrackID(),
-                                (point->GetX() + point->GetXOut()) / 2,
-                                (point->GetY() + point->GetXOut()) / 2,
-                                ROTime);
+              CbmMvdPixelCharge(totCharge, ix, iy, point->GetPointId(), point->GetTrackID(),
+                                (point->GetX() + point->GetXOut()) / 2, (point->GetY() + point->GetXOut()) / 2, ROTime);
             fChargeMap[thisTimePoint] = pixel;
-          } else {
+          }
+          else {
             pixel = fChargeMapIt->second;
             pixel->AddCharge(totCharge);
           }
           fPixelChargeShort.push_back(pixel);
-        } else {
+        }
+        else {
           pixel->AddCharge(totCharge);
         }
       }  // end for (track segments)
     }    //for y
   }      // for x
 
-  std::vector<CbmMvdPixelCharge*>::size_type vectorSize =
-    fPixelChargeShort.size();
+  std::vector<CbmMvdPixelCharge*>::size_type vectorSize = fPixelChargeShort.size();
 
   for (ULong64_t f = 0; f < vectorSize; f++) {
     CbmMvdPixelCharge* pixelCharge = fPixelChargeShort.at(f);
     if (pixelCharge) {
-      pixelCharge->DigestCharge(
-        ((float) (point->GetX() + point->GetXOut()) / 2),
-        ((float) (point->GetY() + point->GetYOut()) / 2),
-        point->GetPointId(),
-        point->GetTrackID());
-    } else {
+      pixelCharge->DigestCharge(((float) (point->GetX() + point->GetXOut()) / 2),
+                                ((float) (point->GetY() + point->GetYOut()) / 2), point->GetPointId(),
+                                point->GetTrackID());
+    }
+    else {
       cout << endl << "Warning working on broken pixel " << endl;
     }
   }
@@ -729,7 +683,8 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point) {
 // -------------------------------------------------------------------------
 
 // -----    Virtual private method Init   ----------------------------------
-void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor) {
+void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor)
+{
 
   //Read information on the sensor von data base
   fSensor = mySensor;
@@ -745,9 +700,8 @@ void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor) {
   fPixelCharge = new TClonesArray("CbmMvdPixelCharge", 100000);
 
   if (!fSensor) {
-    Fatal(GetName(),
-          "Fatal error: Init(CbmMvdSensor*) called without valid pointer, "
-          "don't know how to proceed.");
+    Fatal(GetName(), "Fatal error: Init(CbmMvdSensor*) called without valid pointer, "
+                     "don't know how to proceed.");
   };
 
   ReadSensorInformation();
@@ -758,7 +712,8 @@ void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor) {
 // -------------------------------------------------------------------------
 
 // -----   Virtual public method Reinit   ----------------------------------
-void CbmMvdSensorDigitizerTBTask::ReInit(CbmMvdSensor* sensor) {
+void CbmMvdSensorDigitizerTBTask::ReInit(CbmMvdSensor* sensor)
+{
 
   delete fOutputBuffer;
 

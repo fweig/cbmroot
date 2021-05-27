@@ -1,4 +1,5 @@
-void run_ronchi() {
+void run_ronchi()
+{
   //gSystem->Load("libCbmRichMirrors");
   //gSystem->Load("libtiff");
 

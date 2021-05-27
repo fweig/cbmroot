@@ -12,10 +12,10 @@ void drawCircle(double xc, double yc, double r, int color);
 void findXYCenter(TH2* h, double& maxX, double& maxY, double threshold);
 void runD0ForFile(const string& fileName, bool doDraw);
 
-void run_d0() {
-  string file =
-    "/Users/slebedev/Development/cbm/data/d0/test_03_09_15/mirror3/2mm.asc";
-  double d0 = runD0ForFile(file, true);
+void run_d0()
+{
+  string file = "/Users/slebedev/Development/cbm/data/d0/test_03_09_15/mirror3/2mm.asc";
+  double d0   = runD0ForFile(file, true);
 
   return;
 
@@ -42,7 +42,8 @@ void run_d0() {
 }
 
 
-double runD0ForFile(const string& fileName, bool doDraw) {
+double runD0ForFile(const string& fileName, bool doDraw)
+{
   int dimX = 1024;
   int dimY = 1024;
 
@@ -51,8 +52,7 @@ double runD0ForFile(const string& fileName, bool doDraw) {
   int x = 0;
   int y = 0;
 
-  TH2D* hCamera = new TH2D(
-    "hCamera", "hCamera;x [pixel];Y [pixel];", dimX, 0, dimX, dimY, 0, dimY);
+  TH2D* hCamera = new TH2D("hCamera", "hCamera;x [pixel];Y [pixel];", dimX, 0, dimX, dimY, 0, dimY);
   while (!fin.eof()) {
     x++;
     fin >> k;
@@ -74,23 +74,18 @@ double runD0ForFile(const string& fileName, bool doDraw) {
     TCanvas* can1 = new TCanvas("rich_d0_camera", "rich_d0_camera", 700, 600);
     drawH2((TH2D*) hCamera->Clone());
 
-    TCanvas* can2 = new TCanvas(
-      "rich_d0_camera_threshold", "rich_d0_camera_threshold", 700, 600);
+    TCanvas* can2 = new TCanvas("rich_d0_camera_threshold", "rich_d0_camera_threshold", 700, 600);
     hCamera->SetMinimum(threshold);
     drawH2((TH2D*) hCamera->Clone());
 
-    TCanvas* can3 =
-      new TCanvas("rich_d0_camera_zoom", "rich_d0_camera_zoom", 700, 600);
-    hCamera->GetXaxis()->SetRangeUser(centerX - 1.2 * radius,
-                                      centerX + 1.2 * radius);
-    hCamera->GetYaxis()->SetRangeUser(centerY - 1.2 * radius,
-                                      centerY + 1.2 * radius);
+    TCanvas* can3 = new TCanvas("rich_d0_camera_zoom", "rich_d0_camera_zoom", 700, 600);
+    hCamera->GetXaxis()->SetRangeUser(centerX - 1.2 * radius, centerX + 1.2 * radius);
+    hCamera->GetYaxis()->SetRangeUser(centerY - 1.2 * radius, centerY + 1.2 * radius);
     drawH2((TH2D*) hCamera->Clone());
     drawCircle(centerX, centerY, radius, kBlack);
   }
 
-  int intensityInit =
-    calculateIntensity(hCamera, centerX, centerY, radius, threshold);
+  int intensityInit = calculateIntensity(hCamera, centerX, centerY, radius, threshold);
   // cout << "Initial intensity = " << intensityInit << endl;
 
   int intensity95 = 0.95 * intensityInit;
@@ -112,7 +107,8 @@ double runD0ForFile(const string& fileName, bool doDraw) {
   return 2. * newR;
 }
 
-void findXYCenter(TH2* h, double& maxX, double& maxY, double threshold) {
+void findXYCenter(TH2* h, double& maxX, double& maxY, double threshold)
+{
   int nBins = 1;
   h->RebinX(nBins);
   h->RebinY(nBins);
@@ -137,7 +133,8 @@ void findXYCenter(TH2* h, double& maxX, double& maxY, double threshold) {
   cout << "maxX:" << maxX << " maxY:" << maxY << endl;
 }
 
-int calculateIntensity(TH2* h, double xc, double yc, double r, int threshold) {
+int calculateIntensity(TH2* h, double xc, double yc, double r, int threshold)
+{
   int nx      = h->GetNbinsX();
   int ny      = h->GetNbinsY();
   int counter = 0;
@@ -162,7 +159,8 @@ int calculateIntensity(TH2* h, double xc, double yc, double r, int threshold) {
   return counter;
 }
 
-void drawCircle(double xc, double yc, double r, int color) {
+void drawCircle(double xc, double yc, double r, int color)
+{
   TEllipse* ellipse = new TEllipse(xc, yc, r);
   ellipse->SetFillStyle(0);
   ellipse->SetLineWidth(2);
@@ -175,7 +173,8 @@ void drawCircle(double xc, double yc, double r, int color) {
   ellipse->DrawClone();
 }
 
-void drawH2(TH2* h) {
+void drawH2(TH2* h)
+{
   h->Draw("COLZ");
   h->SetStats(false);
   Double_t textSize = 0.06;
@@ -198,7 +197,8 @@ void drawH2(TH2* h) {
   gPad->SetGrid(true, true);
 }
 
-void drawGraph(TGraph* graph) {
+void drawGraph(TGraph* graph)
+{
   string drawOpt    = "AC";
   Double_t textSize = 0.06;
   graph->SetLineColor(kBlue);

@@ -3,7 +3,8 @@
    specific cuts and processes to g3 or g4 should be set in the g3Config.C or g4Config.C
 */
 
-void SetCuts() {
+void SetCuts()
+{
 
   std::cout << "----  Execute macro SetCuts.C  -----" << std::endl;
 

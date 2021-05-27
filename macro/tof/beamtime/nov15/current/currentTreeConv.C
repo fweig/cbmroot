@@ -1,10 +1,11 @@
 // ROOT headers
-#include "Riostream.h"
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TString.h"
 #include "TTimeStamp.h"
 #include "TTree.h"
+
+#include "Riostream.h"
 
 // C++ headers
 //#include <iostream>
@@ -16,16 +17,13 @@
 #include "FileListDef.h"
 #include "StructDef.h"
 
-Bool_t currentTreeConv(Int_t iFileIndex,
-                       Int_t iSecOffset      = 0,
-                       Int_t iMilliSecOffset = 0) {
+Bool_t currentTreeConv(Int_t iFileIndex, Int_t iSecOffset = 0, Int_t iMilliSecOffset = 0)
+{
   if (iFileIndex < 0 || kiNbFiles <= iFileIndex) {
     cout << " Invalid File Index." << endl;
-    cout << " It should be between 0 and " << kiNbFiles
-         << ", corresponding to following periods:" << endl;
+    cout << " It should be between 0 and " << kiNbFiles << ", corresponding to following periods:" << endl;
     for (Int_t iFile = 0; iFile < kiNbFiles; iFile++)
-      cout << iFile << " " << ksFilesDay[iFile] << " " << ksFilesHour[iFile]
-           << endl;
+      cout << iFile << " " << ksFilesDay[iFile] << " " << ksFilesHour[iFile] << endl;
     cout << " The command to use should be in the form currentTreeConv"
          << "( Integer FileIndex, Integer Offset in seconds, Integer Offset in "
             "Milliseconds )"
@@ -53,10 +51,8 @@ Bool_t currentTreeConv(Int_t iFileIndex,
   std::streampos fSizeFile[kiNbBoardsUsed];
 
   for (Int_t iBoardIndex = 0; iBoardIndex < kiNbBoardsUsed; iBoardIndex++) {
-    sFileName[iBoardIndex] = Form("./csv/Log_Slot%02d_%s_%s.csv",
-                                  kiSlotIndex[iBoardIndex],
-                                  ksFilesDay[iFileIndex].Data(),
-                                  ksFilesHour[iFileIndex].Data());
+    sFileName[iBoardIndex] = Form("./csv/Log_Slot%02d_%s_%s.csv", kiSlotIndex[iBoardIndex],
+                                  ksFilesDay[iFileIndex].Data(), ksFilesHour[iFileIndex].Data());
     //            cout<<iBoardIndex<<" . "<<kiSlotIndex[iBoardIndex]<<" . "
     //                <<ksFilesDay[iFileIndex]<<" . "<<ksFilesHour[iFileIndex]<<" . "<<sFileName[iBoardIndex]<<endl;
     fInputFile[iBoardIndex] = new ifstream(sFileName[iBoardIndex], ios::in);
@@ -65,8 +61,7 @@ Bool_t currentTreeConv(Int_t iFileIndex,
       cout << "****************************************************************"
               "********"
            << endl;
-      cout << " File with index " << iBoardIndex
-           << " could not be opened, filename tried: " << sFileName[iBoardIndex]
+      cout << " File with index " << iBoardIndex << " could not be opened, filename tried: " << sFileName[iBoardIndex]
            << endl;
       return kFALSE;
     }  // if( true == fNegFile.fail() || true == fPosFile.fail() )
@@ -78,14 +73,9 @@ Bool_t currentTreeConv(Int_t iFileIndex,
   }  // for( Int_t iBoardIndex = 0; iBoardIndex < kiNbBoardsUsed; iBoardIndex++)
 
   // Produce a root file with a TTree from the chosen csv file
-  TString sOutputFilename = Form("LogHv_%s_%s.root",
-                                 ksFilesDay[iFileIndex].Data(),
-                                 ksFilesHour[iFileIndex].Data());
+  TString sOutputFilename = Form("LogHv_%s_%s.root", ksFilesDay[iFileIndex].Data(), ksFilesHour[iFileIndex].Data());
   TFile* fOutputFile =
-    new TFile(sOutputFilename,
-              "RECREATE",
-              "TTree file with HV slow control data for CERN SPS February 2015",
-              9);
+    new TFile(sOutputFilename, "RECREATE", "TTree file with HV slow control data for CERN SPS February 2015", 9);
   sOutputFilename += ":/";
 
   if (fOutputFile->IsZombie()) {
@@ -96,26 +86,21 @@ Bool_t currentTreeConv(Int_t iFileIndex,
 
   gDirectory->Cd(sOutputFilename);
 
-  TTree* fOutputTree =
-    new TTree("CaenHV", "CERN SPS February 2015 HV slow control");
+  TTree* fOutputTree = new TTree("CaenHV", "CERN SPS February 2015 HV slow control");
   cout << " Output Tree created in " << gDirectory->GetPath() << endl;
 
   // Add RPC data as Tree branches
   TBranch* branchRpc[kiNbRpc];
   for (Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++)
-    branchRpc[iRpcIndex] = fOutputTree->Branch(
-      sChNameRpc[iRpcIndex],
-      &(stRpcValArray[iRpcIndex]),
-      "iTimeSec/I:iTimeMilliSec:dVoltageNeg/D:dCurrentNeg:iPowerNeg/"
-      "I:iStatusNeg:dVoltagePos/D:dCurrentPos:iPowerPos/I:iStatusPos");
+    branchRpc[iRpcIndex] = fOutputTree->Branch(sChNameRpc[iRpcIndex], &(stRpcValArray[iRpcIndex]),
+                                               "iTimeSec/I:iTimeMilliSec:dVoltageNeg/D:dCurrentNeg:iPowerNeg/"
+                                               "I:iStatusNeg:dVoltagePos/D:dCurrentPos:iPowerPos/I:iStatusPos");
 
   // Add PMT data as Tree branches
   TBranch* branchPmt[kiNbPmt];
   for (Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++)
-    branchPmt[iPmtIndex] = fOutputTree->Branch(
-      sChNamePmt[iPmtIndex],
-      &(stPmtValArray[iPmtIndex]),
-      "iTimeSec/I:iTimeMilliSec:dVoltage/D:dCurrent:iPower/I:iStatus");
+    branchPmt[iPmtIndex] = fOutputTree->Branch(sChNamePmt[iPmtIndex], &(stPmtValArray[iPmtIndex]),
+                                               "iTimeSec/I:iTimeMilliSec:dVoltage/D:dCurrent:iPower/I:iStatus");
 
   // Add TRD data as Tree branches
   /*
@@ -130,12 +115,9 @@ Bool_t currentTreeConv(Int_t iFileIndex,
   for (Int_t iBoardIndex = 1; iBoardIndex < kiNbBoardsUsed; iBoardIndex++)
     if ((fSizeFile[0] + kiSlotSzOff[iBoardIndex]) != fSizeFile[iBoardIndex]) {
       cout << " Warning!!!! the file for board " << iBoardIndex
-           << " does not have the same size as the first one for file "
-           << iFileIndex << " : " << endl;
-      cout << " Sizes are " << fSizeFile[0] << " VS " << fSizeFile[iBoardIndex]
-           << endl;
-      cout << " For files " << sFileName[0] << " and " << sFileName[iBoardIndex]
-           << endl;
+           << " does not have the same size as the first one for file " << iFileIndex << " : " << endl;
+      cout << " Sizes are " << fSizeFile[0] << " VS " << fSizeFile[iBoardIndex] << endl;
+      cout << " For files " << sFileName[0] << " and " << sFileName[iBoardIndex] << endl;
       bAllSameSize = kFALSE;
     }  // if( fSizeFile[0] != fSizeFile[iBoardIndex] )
 
@@ -233,69 +215,58 @@ Bool_t currentTreeConv(Int_t iFileIndex,
       TObjString* subString;
 
       // Take readout time from negative voltage board
-      subString     = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(0);
-      TString sHour = subString->GetString();
-      TString sMin  = sHour(3, 2);
-      TString sSec  = sHour(6, 2);
+      subString       = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(0);
+      TString sHour   = subString->GetString();
+      TString sMin    = sHour(3, 2);
+      TString sSec    = sHour(6, 2);
       TString sMilSec = sHour(9, 2);
       sHour           = sHour(0, 2);
-      if (-1 == iFirstHour)
-        iFirstHour = sHour.Atoi();
+      if (-1 == iFirstHour) iFirstHour = sHour.Atoi();
       else if (sHour.Atoi() < iFirstHour) {
         iNewDay++;
         iFirstHour = sHour.Atoi();
-      }                                  // else if ( sHour.Atoi() < iFirstHour)
-      tTempTime.Set(sYearString.Atoi(),  // Year
-                    sMonthString.Atoi(),          // Month
-                    sDayString.Atoi() + iNewDay,  // Day
-                    sHour.Atoi(),                 // Hour
-                    sMin.Atoi(),                  // Minutes
-                    sSec.Atoi() + iSecOffset,     // Seconds
-                    (sMilSec.Atoi() + iMilliSecOffset)
-                      * 10000000,  // Nanoseconds
-                    kFALSE,        // Not in UTC
+      }                                                             // else if ( sHour.Atoi() < iFirstHour)
+      tTempTime.Set(sYearString.Atoi(),                             // Year
+                    sMonthString.Atoi(),                            // Month
+                    sDayString.Atoi() + iNewDay,                    // Day
+                    sHour.Atoi(),                                   // Hour
+                    sMin.Atoi(),                                    // Minutes
+                    sSec.Atoi() + iSecOffset,                       // Seconds
+                    (sMilSec.Atoi() + iMilliSecOffset) * 10000000,  // Nanoseconds
+                    kFALSE,                                         // Not in UTC
                     0);
-      stRpcValArray[iRpcIndex].iTimeSec = tTempTime.GetSec();  //Extract seconds
-      stRpcValArray[iRpcIndex].iTimeMilliSec =
-        tTempTime.GetNanoSec() / 1000000;  //Extract milliseconds
+      stRpcValArray[iRpcIndex].iTimeSec      = tTempTime.GetSec();                //Extract seconds
+      stRpcValArray[iRpcIndex].iTimeMilliSec = tTempTime.GetNanoSec() / 1000000;  //Extract milliseconds
 
       // Go for negative HV values
-      subString = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexVoltage);
-      stRpcValArray[iRpcIndex].dVoltageNeg =
-        (subString->GetString()).Atof();  // HV
-      subString = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexCurrent);
-      stRpcValArray[iRpcIndex].dCurrentNeg =
-        (subString->GetString()).Atof();  // Current
-      subString = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexPower);
-      stRpcValArray[iRpcIndex].iPowerNeg =
-        (subString->GetString()).Atoi();  // Power status (ON/OFF)
-      subString = (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexStatus);
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexVoltage);
+      stRpcValArray[iRpcIndex].dVoltageNeg = (subString->GetString()).Atof();  // HV
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexCurrent);
+      stRpcValArray[iRpcIndex].dCurrentNeg = (subString->GetString()).Atof();  // Current
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexPower);
+      stRpcValArray[iRpcIndex].iPowerNeg = (subString->GetString()).Atoi();  // Power status (ON/OFF)
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcNeg[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcNeg[iRpcIndex] + iIndexStatus);
       stRpcValArray[iRpcIndex].iStatusNeg =
-        (subString->GetString())
-          .Atoi();  // Channel status (OK, Tripped, Ramping, ...)
+        (subString->GetString()).Atoi();  // Channel status (OK, Tripped, Ramping, ...)
 
       // Go for Positive HV values
-      subString = (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexVoltage);
-      stRpcValArray[iRpcIndex].dVoltagePos =
-        (subString->GetString()).Atof();  // HV
-      subString = (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexCurrent);
-      stRpcValArray[iRpcIndex].dCurrentPos =
-        (subString->GetString()).Atof();  // Current
-      subString = (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexPower);
-      stRpcValArray[iRpcIndex].iPowerPos =
-        (subString->GetString()).Atoi();  // Power status (ON/OFF)
-      subString = (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(
-        1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexStatus);
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexVoltage);
+      stRpcValArray[iRpcIndex].dVoltagePos = (subString->GetString()).Atof();  // HV
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexCurrent);
+      stRpcValArray[iRpcIndex].dCurrentPos = (subString->GetString()).Atof();  // Current
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexPower);
+      stRpcValArray[iRpcIndex].iPowerPos = (subString->GetString()).Atoi();  // Power status (ON/OFF)
+      subString =
+        (TObjString*) pValuesArray[iSlotRpcPos[iRpcIndex]]->At(1 + iNbFields * iChIdxRpcPos[iRpcIndex] + iIndexStatus);
       stRpcValArray[iRpcIndex].iStatusPos =
-        (subString->GetString())
-          .Atoi();  // Channel status (OK, Tripped, Ramping, ...)
+        (subString->GetString()).Atoi();  // Channel status (OK, Tripped, Ramping, ...)
 
     }  // for( Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++)
 
@@ -304,44 +275,37 @@ Bool_t currentTreeConv(Int_t iFileIndex,
       TObjString* subString;
 
       // Take readout time
-      subString     = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(0);
-      TString sHour = subString->GetString();
-      TString sMin  = sHour(3, 2);
-      TString sSec  = sHour(6, 2);
+      subString       = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(0);
+      TString sHour   = subString->GetString();
+      TString sMin    = sHour(3, 2);
+      TString sSec    = sHour(6, 2);
       TString sMilSec = sHour(9, 2);
       sHour           = sHour(0, 2);
-      tTempTime.Set(sYearString.Atoi(),           // Year
-                    sMonthString.Atoi(),          // Month
-                    sDayString.Atoi() + iNewDay,  // Day
-                    sHour.Atoi(),                 // Hour
-                    sMin.Atoi(),                  // Minutes
-                    sSec.Atoi() + iSecOffset,     // Seconds
-                    (sMilSec.Atoi() + iMilliSecOffset)
-                      * 10000000,  // Nanoseconds
-                    kFALSE,        // Not in UTC
+      tTempTime.Set(sYearString.Atoi(),                             // Year
+                    sMonthString.Atoi(),                            // Month
+                    sDayString.Atoi() + iNewDay,                    // Day
+                    sHour.Atoi(),                                   // Hour
+                    sMin.Atoi(),                                    // Minutes
+                    sSec.Atoi() + iSecOffset,                       // Seconds
+                    (sMilSec.Atoi() + iMilliSecOffset) * 10000000,  // Nanoseconds
+                    kFALSE,                                         // Not in UTC
                     0);
-      stPmtValArray[iPmtIndex].iTimeSec = tTempTime.GetSec();  //Extract seconds
-      stPmtValArray[iPmtIndex].iTimeMilliSec =
-        tTempTime.GetNanoSec() / 1000000;  //Extract milliseconds
+      stPmtValArray[iPmtIndex].iTimeSec      = tTempTime.GetSec();                //Extract seconds
+      stPmtValArray[iPmtIndex].iTimeMilliSec = tTempTime.GetNanoSec() / 1000000;  //Extract milliseconds
 
       // Go for negative HV values
-      subString = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(
-        1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexVoltage);
-      stPmtValArray[iPmtIndex].dVoltage =
-        (subString->GetString()).Atof();  // HV
-      subString = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(
-        1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexCurrent);
-      stPmtValArray[iPmtIndex].dCurrent =
-        (subString->GetString()).Atof();  // Current
-      subString = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(
-        1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexPower);
-      stPmtValArray[iPmtIndex].iPower =
-        (subString->GetString()).Atoi();  // Power status (ON/OFF)
-      subString = (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(
-        1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexStatus);
-      stPmtValArray[iPmtIndex].iStatus =
-        (subString->GetString())
-          .Atoi();  // Channel status (OK, Tripped, Ramping, ...)
+      subString =
+        (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexVoltage);
+      stPmtValArray[iPmtIndex].dVoltage = (subString->GetString()).Atof();  // HV
+      subString =
+        (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexCurrent);
+      stPmtValArray[iPmtIndex].dCurrent = (subString->GetString()).Atof();  // Current
+      subString =
+        (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexPower);
+      stPmtValArray[iPmtIndex].iPower = (subString->GetString()).Atoi();  // Power status (ON/OFF)
+      subString =
+        (TObjString*) pValuesArray[iSlotPmtNeg[iPmtIndex]]->At(1 + iNbFields * iChIdxPmtNeg[iPmtIndex] + iIndexStatus);
+      stPmtValArray[iPmtIndex].iStatus = (subString->GetString()).Atoi();  // Channel status (OK, Tripped, Ramping, ...)
 
     }  // for( Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++)
 
@@ -413,8 +377,7 @@ Bool_t currentTreeConv(Int_t iFileIndex,
     fOutputTree->Fill();
 
     iNbLinesRead++;
-    if (0 == iNbLinesRead % 1000 && 0 < iNbLinesRead)
-      cout << iNbLinesRead << endl;
+    if (0 == iNbLinesRead % 1000 && 0 < iNbLinesRead) cout << iNbLinesRead << endl;
 
     bEndReachedInOne = kFALSE;
 
@@ -424,7 +387,7 @@ Bool_t currentTreeConv(Int_t iFileIndex,
         bEndReachedInOne = kTRUE;
         break;
       }  // if( true == fInputFile[iBoardIndex]->eof() )
-    }  // for( Int_t iBoardIndex = 0; iBoardIndex < kiNbBoardsUsed; iBoardIndex++)
+    }    // for( Int_t iBoardIndex = 0; iBoardIndex < kiNbBoardsUsed; iBoardIndex++)
 
     // If at least one file is over, stop!
     if (kTRUE == bEndReachedInOne) break;

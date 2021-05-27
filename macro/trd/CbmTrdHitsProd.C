@@ -54,16 +54,13 @@
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
                                // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   // -------- Performance of hit producer ------------
-  CbmTrdHitProducerQa* trdHitQa =
-    new CbmTrdHitProducerQa("HitProducerPerformance");
+  CbmTrdHitProducerQa* trdHitQa = new CbmTrdHitProducerQa("HitProducerPerformance");
   fRun->AddTask(trdHitQa);
   // -------------------------------------------------
 

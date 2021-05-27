@@ -1,5 +1,4 @@
 
-#include "Riostream.h"
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -7,7 +6,10 @@
 #include "TString.h"
 #include "TTree.h"
 
-void readHistosFromFile(TString filename = "test.root") {
+#include "Riostream.h"
+
+void readHistosFromFile(TString filename = "test.root")
+{
   TFile file = TFile(filename, "READ");
   if (file.IsOpen()) {
     TKey* key = NULL;
@@ -18,14 +20,15 @@ void readHistosFromFile(TString filename = "test.root") {
         cout << "               ..." << obj->GetName() << endl;
         TH1* h1 = (TH1*) obj;
         // do what ever you like
-      } else {
+      }
+      else {
 
         // object is of no type that we know or can handle
-        cout << "Unknown object type, name: " << obj->GetName()
-             << " title: " << obj->GetTitle() << endl;
+        cout << "Unknown object type, name: " << obj->GetName() << " title: " << obj->GetTitle() << endl;
       }
     }
-  } else {
+  }
+  else {
     printf("ERROR:: no file %s found!\n", filename.Data());
   }
 }

@@ -16,7 +16,8 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
+void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0)
+{
   // is v15c
 
   // ========================================================================
@@ -71,8 +72,7 @@ void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
 
-  TObjString tofDigiFile =
-    paramDir + "/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = paramDir + "/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof/tof_" + TofGeo + ".digibdf.par";
@@ -114,8 +114,7 @@ void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
   // =========================================================================
   // -----   TOF digitizer   -------------------------------------------------
 
-  CbmTofDigitizerBDF* tofDigitizerBdf =
-    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kTRUE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kTRUE);
   tofDigitizerBdf->SetInputFileName(TofDigitizerBDFInputFile);
@@ -123,8 +122,7 @@ void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
   run->AddTask(tofDigitizerBdf);
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kTRUE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
   tofSimpClust->SetHistoFileName("SimpClusterizer_Control.root");
@@ -174,8 +172,7 @@ void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
     // (taken from hadron/produceDST.C
     //
     CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
-    CbmFitGlobalTracks* fitGlobal =
-      new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
+    CbmFitGlobalTracks* fitGlobal             = new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
     run->AddTask(fitGlobal);
 
     //  CbmProduceDst *produceDst = new CbmProduceDst(); // in hadron
@@ -187,8 +184,8 @@ void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
     if (1) {
       CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
       HadronAna->SetBeamMomentum(10.);                         // beam momentum
-      HadronAna->SetBSelMax(11.);  // maximum impact parameter to be analyzed
-      HadronAna->SetDY(0.5);       // flow analysis exclusion window
+      HadronAna->SetBSelMax(11.);                              // maximum impact parameter to be analyzed
+      HadronAna->SetDY(0.5);                                   // flow analysis exclusion window
 
       run->AddTask(HadronAna);
     }

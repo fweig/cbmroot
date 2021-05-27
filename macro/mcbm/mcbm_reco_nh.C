@@ -16,31 +16,25 @@
 // Version     24/04/2007 (V. Friese)
 //
 // --------------------------------------------------------------------------
-void mcbm_reco_nh(Int_t nEvents         = 1000,
-                  TString cSys          = "lam",
-                  TString cEbeam        = "2.5gev",
-                  TString cCentr        = "-",
-                  Int_t iRun            = 0,
-                  const char* setupName = "sis18_mcbm") {
+void mcbm_reco_nh(Int_t nEvents = 1000, TString cSys = "lam", TString cEbeam = "2.5gev", TString cCentr = "-",
+                  Int_t iRun = 0, const char* setupName = "sis18_mcbm")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_nh";  // this macro's name for screen output
+  TString myName = "run_reco_nh";                  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
   TString outDir = "data/";
-  TString inFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr
-                   + ".mc." + Form("%05d", iRun)
+  TString inFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d", iRun)
                    + ".root";  // Input file (MC events)
-  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
-                    + cCentr + ".params." + Form("%05d", iRun)
+  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d", iRun)
                     + ".root";  // Parameter file
-  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
-                    + cCentr + ".eds." + Form("%05d", iRun)
+  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".eds." + Form("%05d", iRun)
                     + ".root";  // Output file
 
   // -----   Remove old CTest runtime dependency file  ----------------------
@@ -72,20 +66,16 @@ void mcbm_reco_nh(Int_t nEvents         = 1000,
 
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -143,12 +133,10 @@ void mcbm_reco_nh(Int_t nEvents         = 1000,
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully" << std::endl;
   // ------------------------------------------------------------------------
   // =========================================================================
   // ===                    Matching to Monte-carlo                        ===
@@ -197,8 +185,7 @@ void mcbm_reco_nh(Int_t nEvents         = 1000,
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

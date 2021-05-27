@@ -10,7 +10,9 @@
 
 #include "CbmModuleList.h"
 #include "CbmTofDigi.h"
+
 #include "TString.h"
+
 #include <vector>
 
 class TH1;
@@ -20,7 +22,8 @@ class CbmDigiManager;
 class CheckTimingDetector {
 public:
   CheckTimingDetector() { ; }
-  CheckTimingDetector(ECbmModuleId detIdIn, std::string sNameIn) {
+  CheckTimingDetector(ECbmModuleId detIdIn, std::string sNameIn)
+  {
     detId = detIdIn;
     sName = sNameIn;
   }
@@ -75,20 +78,12 @@ public:
   inline void SetOutFilename(TString sNameIn) { fOutFileName = sNameIn; }
   void WriteHistos();
 
-  void SetReferenceDetector(ECbmModuleId refDetIn,
-                            std::string sNameIn,
-                            Double_t dTimeRangeBegIn = -1000.0,
-                            Double_t dTimeRangeEndIn = 1000.0,
-                            UInt_t uRangeNbBinsIn    = 320,
-                            UInt_t uChargeCutMinIn   = 0,
-                            UInt_t uChargeCutMaxIn   = 0);
-  void AddCheckDetector(ECbmModuleId detIn,
-                        std::string sNameIn,
-                        Double_t dTimeRangeBegIn = -1000.0,
-                        Double_t dTimeRangeEndIn = 1000.0,
-                        UInt_t uRangeNbBinsIn    = 320,
-                        UInt_t uChargeCutMinIn   = 0,
-                        UInt_t uChargeCutMaxIn   = 0);
+  void SetReferenceDetector(ECbmModuleId refDetIn, std::string sNameIn, Double_t dTimeRangeBegIn = -1000.0,
+                            Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
+                            UInt_t uChargeCutMaxIn = 0);
+  void AddCheckDetector(ECbmModuleId detIn, std::string sNameIn, Double_t dTimeRangeBegIn = -1000.0,
+                        Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
+                        UInt_t uChargeCutMaxIn = 0);
   void RemoveCheckDetector(ECbmModuleId detIn);
 
 private:
@@ -98,9 +93,7 @@ private:
   template<class DigiRef>
   void CheckInterSystemOffset();
   template<class Digi>
-  void FillTimeOffsetHistos(const Double_t dRefTime,
-                            const Double_t dRefCharge,
-                            UInt_t uDetIdx);
+  void FillTimeOffsetHistos(const Double_t dRefTime, const Double_t dRefCharge, UInt_t uDetIdx);
 
 
   /** Input array from previous already existing data level **/
@@ -114,12 +107,9 @@ private:
 
   CheckTimingDetector fRefDet {CheckTimingDetector(ECbmModuleId::kT0, "T0")};
   std::vector<CheckTimingDetector> fvDets {
-    CheckTimingDetector(ECbmModuleId::kSts, "Sts"),
-    CheckTimingDetector(ECbmModuleId::kMuch, "Much"),
-    CheckTimingDetector(ECbmModuleId::kTrd, "Trd"),
-    CheckTimingDetector(ECbmModuleId::kTof, "Tof"),
-    CheckTimingDetector(ECbmModuleId::kRich, "Rich"),
-    CheckTimingDetector(ECbmModuleId::kPsd, "Psd")};
+    CheckTimingDetector(ECbmModuleId::kSts, "Sts"),   CheckTimingDetector(ECbmModuleId::kMuch, "Much"),
+    CheckTimingDetector(ECbmModuleId::kTrd, "Trd"),   CheckTimingDetector(ECbmModuleId::kTof, "Tof"),
+    CheckTimingDetector(ECbmModuleId::kRich, "Rich"), CheckTimingDetector(ECbmModuleId::kPsd, "Psd")};
 
   /// vectors storing histograms for each detector under investigation
   std::vector<TH1*> fvhDetSelfDiff           = {};

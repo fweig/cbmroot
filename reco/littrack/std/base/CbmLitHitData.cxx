@@ -11,21 +11,22 @@
 #include "data/CbmLitStripHit.h"
 
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <sstream>
+
+#include <cmath>
 
 using std::endl;
 using std::max;
 
 const litfloat CbmLitHitData::EPSILON = 0.005;
 
-CbmLitHitData::CbmLitHitData()
-  : fHits(), fMaxErrX(), fMaxErrY(), fMaxErrT(), fNofStations(0) {}
+CbmLitHitData::CbmLitHitData() : fHits(), fMaxErrX(), fMaxErrY(), fMaxErrT(), fNofStations(0) {}
 
 CbmLitHitData::~CbmLitHitData() {}
 
-void CbmLitHitData::SetNofStations(Int_t nofStations) {
+void CbmLitHitData::SetNofStations(Int_t nofStations)
+{
   fNofStations = nofStations;
   fHits.resize(nofStations);
   fMaxErrX.resize(nofStations);
@@ -41,7 +42,8 @@ void CbmLitHitData::SetNofStations(Int_t nofStations) {
   }
 }
 
-void CbmLitHitData::AddHit(CbmLitHit* hit) {
+void CbmLitHitData::AddHit(CbmLitHit* hit)
+{
   Int_t station = hit->GetStation();
   assert(station > -1 && station < fNofStations);
   fHits[station].push_back(hit);
@@ -54,34 +56,21 @@ void CbmLitHitData::AddHit(CbmLitHit* hit) {
     CbmLitPixelHit* pixelHit = static_cast<CbmLitPixelHit*>(hit);
     fMaxErrX[station]        = max(pixelHit->GetDx(), fMaxErrX[station]);
     fMaxErrY[station]        = max(pixelHit->GetDy(), fMaxErrY[station]);
-    fMaxErrT[station] =
-      max(pixelHit->GetDt() > 0 ? pixelHit->GetDt() : 100, fMaxErrT[station]);
+    fMaxErrT[station]        = max(pixelHit->GetDt() > 0 ? pixelHit->GetDt() : 100, fMaxErrT[station]);
   }
 }
 
-const CbmLitHit* CbmLitHitData::GetHit(Int_t station, Int_t hitId) const {
-  return fHits[station][hitId];
-}
+const CbmLitHit* CbmLitHitData::GetHit(Int_t station, Int_t hitId) const { return fHits[station][hitId]; }
 
-const HitPtrVector& CbmLitHitData::GetHits(Int_t station) {
-  return fHits[station];
-}
+const HitPtrVector& CbmLitHitData::GetHits(Int_t station) { return fHits[station]; }
 
-Int_t CbmLitHitData::GetNofHits(Int_t station) const {
-  return fHits[station].size();
-}
+Int_t CbmLitHitData::GetNofHits(Int_t station) const { return fHits[station].size(); }
 
-litfloat CbmLitHitData::GetMaxErrX(Int_t station) const {
-  return fMaxErrX[station];
-}
+litfloat CbmLitHitData::GetMaxErrX(Int_t station) const { return fMaxErrX[station]; }
 
-litfloat CbmLitHitData::GetMaxErrY(Int_t station) const {
-  return fMaxErrY[station];
-}
+litfloat CbmLitHitData::GetMaxErrY(Int_t station) const { return fMaxErrY[station]; }
 
-litfloat CbmLitHitData::GetMaxErrT(Int_t station) const {
-  return fMaxErrT[station];
-}
+litfloat CbmLitHitData::GetMaxErrT(Int_t station) const { return fMaxErrT[station]; }
 
 //const vector<litfloat>& CbmLitHitData::GetZPos(
 //   Int_t station) const
@@ -89,23 +78,19 @@ litfloat CbmLitHitData::GetMaxErrT(Int_t station) const {
 //   return fZPos[station];
 //}
 
-const vector<Int_t>& CbmLitHitData::GetZPosBins(Int_t station) const {
-  return fZPosBins[station];
-}
+const vector<Int_t>& CbmLitHitData::GetZPosBins(Int_t station) const { return fZPosBins[station]; }
 
-litfloat CbmLitHitData::GetZPosByBin(Int_t station, Int_t bin) const {
-  return GetMinZPos(station) + bin * EPSILON;
-}
+litfloat CbmLitHitData::GetZPosByBin(Int_t station, Int_t bin) const { return GetMinZPos(station) + bin * EPSILON; }
 
-Int_t CbmLitHitData::GetBinByZPos(Int_t station, litfloat zPos) const {
-  return (zPos - GetMinZPos(station)) / EPSILON;
-}
+Int_t CbmLitHitData::GetBinByZPos(Int_t station, litfloat zPos) const { return (zPos - GetMinZPos(station)) / EPSILON; }
 
-litfloat CbmLitHitData::GetMinZPos(Int_t station) const {
+litfloat CbmLitHitData::GetMinZPos(Int_t station) const
+{
   return (fZPosSet[station].empty()) ? 0. : *fZPosSet[station].begin();
 }
 
-void CbmLitHitData::Clear() {
+void CbmLitHitData::Clear()
+{
   for (UInt_t i = 0; i < fHits.size(); i++) {
     fHits[i].clear();
     fHits[i].reserve(1500);
@@ -117,15 +102,15 @@ void CbmLitHitData::Clear() {
   }
 }
 
-void CbmLitHitData::Arrange() {
+void CbmLitHitData::Arrange()
+{
   for (Int_t iStation = 0; iStation < fNofStations; iStation++) {
     if (fZPosSet[iStation].empty()) continue;
     Double_t minZ = *fZPosSet[iStation].begin();
     Double_t maxZ = *fZPosSet[iStation].rbegin();
     set<Int_t> binSet;
     set<Double_t>::const_iterator it;
-    for (it = fZPosSet[iStation].begin(); it != fZPosSet[iStation].end();
-         it++) {
+    for (it = fZPosSet[iStation].begin(); it != fZPosSet[iStation].end(); it++) {
       Double_t z = *it;
       Int_t bin  = (z - minZ) / EPSILON;
       binSet.insert(bin);
@@ -141,24 +126,20 @@ void CbmLitHitData::Arrange() {
   }
 }
 
-string CbmLitHitData::ToString() const {
+string CbmLitHitData::ToString() const
+{
   stringstream ss;
   ss << "HitData: nofStations=" << fNofStations << endl;
   for (UInt_t i = 0; i < fHits.size(); i++) {
     ss << " station " << i << ": " << GetNofHits(i) << " hits, "
-       << "maxerrx=" << GetMaxErrX(i) << ", maxerry=" << GetMaxErrY(i)
-       << ", maxerrt=" << GetMaxErrT(i) << ", ";
+       << "maxerrx=" << GetMaxErrX(i) << ", maxerry=" << GetMaxErrY(i) << ", maxerrt=" << GetMaxErrT(i) << ", ";
     ss << "zposset=(";
-    for (set<litfloat>::const_iterator it = fZPosSet[i].begin();
-         it != fZPosSet[i].end();
-         it++) {
+    for (set<litfloat>::const_iterator it = fZPosSet[i].begin(); it != fZPosSet[i].end(); it++) {
       ss << *it << ", ";
     }
     ss << ") ";
     ss << "zposbins=(";
-    for (vector<Int_t>::const_iterator it = fZPosBins[i].begin();
-         it != fZPosBins[i].end();
-         it++) {
+    for (vector<Int_t>::const_iterator it = fZPosBins[i].begin(); it != fZPosBins[i].end(); it++) {
       ss << "|" << *it << "," << GetZPosByBin(i, *it) << "| ";
     }
     ss << ")" << endl;

@@ -1,52 +1,23 @@
 #include "CbmTrdHit.h"
 
+#include "compareTrdHit.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareTrdHit.h"
-
-TEST(_GTestCbmTrdHit, CheckDefaultConstructor) {
+TEST(_GTestCbmTrdHit, CheckDefaultConstructor)
+{
   // Create object
   CbmTrdHit test;
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, -1.);
 
   CbmTrdHit* test1 = new CbmTrdHit();
 
-  compareTrdHitDataMembers(*test1,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           -1.);
+  compareTrdHitDataMembers(*test1, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, -1.);
 }
 
-TEST(_GTestCbmTrdHit, CheckStandardConstructor) {
+TEST(_GTestCbmTrdHit, CheckStandardConstructor)
+{
   Int_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
@@ -57,45 +28,18 @@ TEST(_GTestCbmTrdHit, CheckStandardConstructor) {
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss);
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           pos.Z(),
-                           error.Z(),
-                           refId,
-                           address,
-                           nullptr,
-                           0.,
-                           0.,
-                           pos.X(),
-                           error.X(),
-                           pos.Y(),
-                           error.Y(),
-                           dxy,
-                           0,
-                           eloss);
+  compareTrdHitDataMembers(test, kTRDHIT, pos.Z(), error.Z(), refId, address, nullptr, 0., 0., pos.X(), error.X(),
+                           pos.Y(), error.Y(), dxy, 0, eloss);
 
 
   CbmTrdHit* test1 = new CbmTrdHit(address, pos, error, dxy, refId, eloss);
 
-  compareTrdHitDataMembers(*test1,
-                           kTRDHIT,
-                           pos.Z(),
-                           error.Z(),
-                           refId,
-                           address,
-                           nullptr,
-                           0.,
-                           0.,
-                           pos.X(),
-                           error.X(),
-                           pos.Y(),
-                           error.Y(),
-                           dxy,
-                           0,
-                           eloss);
+  compareTrdHitDataMembers(*test1, kTRDHIT, pos.Z(), error.Z(), refId, address, nullptr, 0., 0., pos.X(), error.X(),
+                           pos.Y(), error.Y(), dxy, 0, eloss);
 }
 
-TEST(_GTestCbmTrdHit, CheckStandardConstructorWithTime) {
+TEST(_GTestCbmTrdHit, CheckStandardConstructorWithTime)
+{
   Int_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
@@ -107,252 +51,61 @@ TEST(_GTestCbmTrdHit, CheckStandardConstructorWithTime) {
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss, time, timeError);
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           pos.Z(),
-                           error.Z(),
-                           refId,
-                           address,
-                           nullptr,
-                           time,
-                           timeError,
-                           pos.X(),
-                           error.X(),
-                           pos.Y(),
-                           error.Y(),
-                           dxy,
-                           0,
-                           eloss);
+  compareTrdHitDataMembers(test, kTRDHIT, pos.Z(), error.Z(), refId, address, nullptr, time, timeError, pos.X(),
+                           error.X(), pos.Y(), error.Y(), dxy, 0, eloss);
 
 
-  CbmTrdHit* test1 =
-    new CbmTrdHit(address, pos, error, dxy, refId, eloss, time, timeError);
+  CbmTrdHit* test1 = new CbmTrdHit(address, pos, error, dxy, refId, eloss, time, timeError);
 
-  compareTrdHitDataMembers(*test1,
-                           kTRDHIT,
-                           pos.Z(),
-                           error.Z(),
-                           refId,
-                           address,
-                           nullptr,
-                           time,
-                           timeError,
-                           pos.X(),
-                           error.X(),
-                           pos.Y(),
-                           error.Y(),
-                           dxy,
-                           0,
-                           eloss);
+  compareTrdHitDataMembers(*test1, kTRDHIT, pos.Z(), error.Z(), refId, address, nullptr, time, timeError, pos.X(),
+                           error.X(), pos.Y(), error.Y(), dxy, 0, eloss);
 }
 
-TEST(_GTestCbmTrdHit, CheckSetBits) {
+TEST(_GTestCbmTrdHit, CheckSetBits)
+{
   // Create object
   CbmTrdHit test;
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, -1.);
 
   test.SetMaxType(true);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           2,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 2, -1.);
 
   test.SetClassType(true);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           3,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 3, -1.);
 
   test.SetMaxType(false);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           1,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 1, -1.);
 
   test.SetRowCross(true);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           5,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 5, -1.);
 
   test.SetClassType(false);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           4,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 4, -1.);
 
   test.SetOverFlow(true);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           12,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 12, -1.);
 
   test.SetRowCross(false);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           8,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 8, -1.);
 
   test.SetOverFlow(false);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, -1.);
 }
 
-TEST(_GTestCbmTrdHit, CheckSetEloss) {
+TEST(_GTestCbmTrdHit, CheckSetEloss)
+{
   // Create object
   CbmTrdHit test;
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           -1.);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, -1.);
 
   test.SetELoss(134.56);
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           0.,
-                           0.,
-                           -1,
-                           -1,
-                           nullptr,
-                           -1.,
-                           -1.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0.,
-                           0,
-                           134.56);
+  compareTrdHitDataMembers(test, kTRDHIT, 0., 0., -1, -1, nullptr, -1., -1., 0., 0., 0., 0., 0., 0, 134.56);
 }
 
-TEST(_GTestCbmTrdHit, CheckToString) {
+TEST(_GTestCbmTrdHit, CheckToString)
+{
   Int_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
@@ -364,22 +117,8 @@ TEST(_GTestCbmTrdHit, CheckToString) {
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss, time, timeError);
 
-  compareTrdHitDataMembers(test,
-                           kTRDHIT,
-                           pos.Z(),
-                           error.Z(),
-                           refId,
-                           address,
-                           nullptr,
-                           time,
-                           timeError,
-                           pos.X(),
-                           error.X(),
-                           pos.Y(),
-                           error.Y(),
-                           dxy,
-                           0,
-                           eloss);
+  compareTrdHitDataMembers(test, kTRDHIT, pos.Z(), error.Z(), refId, address, nullptr, time, timeError, pos.X(),
+                           error.X(), pos.Y(), error.Y(), dxy, 0, eloss);
 
 
   EXPECT_STREQ("CbmPixelHit: address=12345 pos=(-3,5.777,123.765) "

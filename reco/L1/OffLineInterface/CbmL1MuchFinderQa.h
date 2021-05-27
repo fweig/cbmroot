@@ -3,7 +3,9 @@
 #define CBM_L1_MuchFinderQa_h
 
 #include "CbmStsKFTrackFitter.h"
+
 #include "FairTask.h"
+
 #include "TH1.h"
 #include "TLorentzVector.h"
 
@@ -57,8 +59,7 @@ private:
   void writedir2current(TObject* obj);
 
   TProfile *fhPerfSignal, *fhPerfAll, *fhGhost;
-  TH1F *histPull_dx[40], *histPull_dy[40], *histPull_tx[40], *histPull_ty[40],
-    *histPull_qp[40], *histChi2[40];
+  TH1F *histPull_dx[40], *histPull_dy[40], *histPull_tx[40], *histPull_ty[40], *histPull_qp[40], *histChi2[40];
 
 public:
   ClassDef(CbmL1MuchFinderQa, 1);

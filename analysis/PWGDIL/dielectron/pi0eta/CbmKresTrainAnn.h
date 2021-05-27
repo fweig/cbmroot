@@ -5,6 +5,7 @@
 #include "TH2D.h"
 #include "TVector3.h"
 #include <TClonesArray.h>
+
 #include <vector>
 
 using namespace std;
@@ -21,14 +22,8 @@ public:
   void Init();
   void InitHistograms();
 
-  void Exec(int event,
-            int IdForANN,
-            double InvariantMass,
-            double OpeningAngle,
-            double PlaneAngle_last,
-            double ZPos,
-            TVector3 Momentum1,
-            TVector3 Momentum2);
+  void Exec(int event, int IdForANN, double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos,
+            TVector3 Momentum1, TVector3 Momentum2);
   void TrainAndTestAnn();
   void Draw();
 

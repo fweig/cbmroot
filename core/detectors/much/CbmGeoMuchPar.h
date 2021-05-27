@@ -14,11 +14,11 @@
 #ifndef CBMGEOMUCHPAR_H
 #define CBMGEOMUCHPAR_H
 
+#include <FairParGenericSet.h>  // for FairParGenericSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Bool_t, Int_t
 #include <TObjArray.h>   // for TObjArray
-
-#include <FairParGenericSet.h>  // for FairParGenericSet
 
 class FairParamList;
 
@@ -28,8 +28,7 @@ public:
   TObjArray* fGeoPassNodes;  // List of FairGeoNodes for passive volumes
   TObjArray* fStations;
 
-  CbmGeoMuchPar(const char* name    = "CbmGeoMuchPar",
-                const char* title   = "Much Geometry Parameters",
+  CbmGeoMuchPar(const char* name = "CbmGeoMuchPar", const char* title = "Much Geometry Parameters",
                 const char* context = "TestDefaultContext");
   ~CbmGeoMuchPar(void);
   void clear(void);

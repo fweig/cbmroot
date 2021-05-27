@@ -10,6 +10,7 @@
 
 /// CbmRoot (+externals) headers
 #include "CbmErrorMessage.h"
+
 #include "Timeslice.hpp"
 
 /// FairRoot headers
@@ -30,9 +31,9 @@ class TNamed;
 class TCanvas;
 
 template<class T>
-bool is_this_type(const boost::any& varValue) {
-  if (auto q = boost::any_cast<T>(&varValue))
-    return true;
+bool is_this_type(const boost::any& varValue)
+{
+  if (auto q = boost::any_cast<T>(&varValue)) return true;
   else
     return false;
 }
@@ -71,57 +72,42 @@ public:
   virtual Bool_t ReInitContainers() = 0;
   virtual TList* GetParList()       = 0;
   virtual void SetParameter(std::string /*param*/) { ; }
-  virtual std::string GetParameter(std::string /*param*/) {
-    return std::string {""};
-  }
+  virtual std::string GetParameter(std::string /*param*/) { return std::string {""}; }
 
   /// For monitoring of internal processes.
-  void AddHistoToVector(TNamed* pointer, std::string sFolder = "") {
-    fvpAllHistoPointers.push_back(
-      std::pair<TNamed*, std::string>(pointer, sFolder));
+  void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
+  {
+    fvpAllHistoPointers.push_back(std::pair<TNamed*, std::string>(pointer, sFolder));
   }
-  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() {
-    return fvpAllHistoPointers;
+  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() { return fvpAllHistoPointers; }
+  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "")
+  {
+    fvpAllCanvasPointers.push_back(std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
-  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "") {
-    fvpAllCanvasPointers.push_back(
-      std::pair<TCanvas*, std::string>(pointer, sFolder));
-  }
-  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() {
-    return fvpAllCanvasPointers;
-  }
+  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   /// Output vector
   void AssignOutputVector(std::vector<T>& rVect) { fDigiVect = rVect; }
-  void AssignErrorVector(std::vector<CbmErrorMessage>& rVect) {
-    fErrVect = rVect;
-  }
+  void AssignErrorVector(std::vector<CbmErrorMessage>& rVect) { fErrVect = rVect; }
   //      void ClearVector() {fDigiVect->clear();}
   //      std::vector<T> * GetVector() {return fDigiVect;}
 
   /// Control flags
-  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE) {
-    fbIgnoreOverlapMs = bFlagIn;
-  }
+  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE) { fbIgnoreOverlapMs = bFlagIn; }
 
 protected:
   /// Parameter management
   TList* fParCList = nullptr;
 
   /// Parameters related to FLES containers
-  std::vector<size_t>
-    fvMsComponentsList;  //! List of components used in the TS, updated internaly by the Algos
-  size_t fuNbCoreMsPerTs;  //! Number of Core MS in the TS
-  size_t fuNbOverMsPerTs;  //! Number of Overlap MS at the end of the TS
-  size_t
-    fuNbMsLoop;  //! Number of MS for the loop in each MS, updated internaly by the Algos to read OverMS or not
-  Bool_t
-    fbIgnoreOverlapMs;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
-  Double_t fdMsSizeInNs;  //! Size of a single MS, [nanoseconds]
-  Double_t
-    fdTsCoreSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
-  Double_t
-    fdTsFullSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
+  std::vector<size_t> fvMsComponentsList;  //! List of components used in the TS, updated internaly by the Algos
+  size_t fuNbCoreMsPerTs;                  //! Number of Core MS in the TS
+  size_t fuNbOverMsPerTs;                  //! Number of Overlap MS at the end of the TS
+  size_t fuNbMsLoop;  //! Number of MS for the loop in each MS, updated internaly by the Algos to read OverMS or not
+  Bool_t fbIgnoreOverlapMs;   //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
+  Double_t fdMsSizeInNs;      //! Size of a single MS, [nanoseconds]
+  Double_t fdTsCoreSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
+  Double_t fdTsFullSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
 
   /// For monitoring of internal processes.
   /// => Pointers should be filled with TH1*, TH2*, TProfile*, ...
@@ -140,18 +126,13 @@ protected:
     fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
 
   /// Output vector
-  std::vector<T>&
-    fDigiVect;  //! Vector of digis FIXME: check that the reference works as expected
+  std::vector<T>& fDigiVect;                    //! Vector of digis FIXME: check that the reference works as expected
   std::vector<CbmErrorMessage>& fErrVect = {};  //! Vector of error messages
 
   /// For any algo
-  std::map<std::string, std::string>
-    fParameterMap;  //! Map of parameter name and type
+  std::map<std::string, std::string> fParameterMap;  //! Map of parameter name and type
 
-  Bool_t CheckParameterValidity(std::string /*parameterName*/,
-                                std::string /*parameterType*/) {
-    return kTRUE;
-  }
+  Bool_t CheckParameterValidity(std::string /*parameterName*/, std::string /*parameterType*/) { return kTRUE; }
 
 private:
 };

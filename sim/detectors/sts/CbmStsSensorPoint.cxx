@@ -5,6 +5,7 @@
 
 
 #include "CbmStsSensorPoint.h"
+
 #include <sstream>
 
 using std::string;
@@ -23,7 +24,9 @@ CbmStsSensorPoint::CbmStsSensorPoint()
   , fBx(0.)
   , fBy(0.)
   , fBz(0.)
-  , fPid(0) {}
+  , fPid(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -33,18 +36,8 @@ CbmStsSensorPoint::~CbmStsSensorPoint() {}
 
 
 // --- Standard constructor   ----------------------------------------------
-CbmStsSensorPoint::CbmStsSensorPoint(Double_t x1,
-                                     Double_t y1,
-                                     Double_t z1,
-                                     Double_t x2,
-                                     Double_t y2,
-                                     Double_t z2,
-                                     Double_t p,
-                                     Double_t eLoss,
-                                     Double_t time,
-                                     Double_t bx,
-                                     Double_t by,
-                                     Double_t bz,
+CbmStsSensorPoint::CbmStsSensorPoint(Double_t x1, Double_t y1, Double_t z1, Double_t x2, Double_t y2, Double_t z2,
+                                     Double_t p, Double_t eLoss, Double_t time, Double_t bx, Double_t by, Double_t bz,
                                      Int_t pid)
   : fX1(x1)
   , fY1(y1)
@@ -58,12 +51,15 @@ CbmStsSensorPoint::CbmStsSensorPoint(Double_t x1,
   , fBx(bx)
   , fBy(by)
   , fBz(bz)
-  , fPid(pid) {}
+  , fPid(pid)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsSensorPoint::ToString() const {
+string CbmStsSensorPoint::ToString() const
+{
   std::stringstream ss;
   ss << "PID: " << fPid << ", p = " << fP << ", eLoss = " << fELoss << ", "
      << "in : (" << fX1 << ", " << fY1 << ", " << fZ1 << "), "

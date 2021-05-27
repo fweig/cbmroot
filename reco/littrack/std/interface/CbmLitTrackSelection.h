@@ -35,8 +35,7 @@ public:
     * \param[in] itEnd Iterator to last track.
     * \return Status code.
     */
-  virtual LitStatus DoSelect(TrackPtrIterator itBegin,
-                             TrackPtrIterator itEnd) = 0;
+  virtual LitStatus DoSelect(TrackPtrIterator itBegin, TrackPtrIterator itEnd) = 0;
 
   /**
     * \brief Main function to be implemented for concrete track selection algorithm.

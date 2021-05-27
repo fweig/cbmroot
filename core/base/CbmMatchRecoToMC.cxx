@@ -47,7 +47,8 @@ Int_t CbmMatchRecoToMC::fEventNumber = 0;
 
 CbmMatchRecoToMC::CbmMatchRecoToMC() : FairTask("MatchRecoToMC") {}
 
-CbmMatchRecoToMC::~CbmMatchRecoToMC() {
+CbmMatchRecoToMC::~CbmMatchRecoToMC()
+{
 
   if (fStsClusterMatches != nullptr) {
     fStsClusterMatches->Delete();
@@ -108,13 +109,15 @@ CbmMatchRecoToMC::~CbmMatchRecoToMC() {
   }
 }
 
-InitStatus CbmMatchRecoToMC::Init() {
+InitStatus CbmMatchRecoToMC::Init()
+{
   ReadAndCreateDataBranches();
 
   return kSUCCESS;
 }
 
-void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
+void CbmMatchRecoToMC::Exec(Option_t* /*opt*/)
+{
   if (fStsClusterMatches != nullptr) fStsClusterMatches->Delete();
   if (fStsHitMatches != nullptr) fStsHitMatches->Delete();
   if (fStsTrackMatches != nullptr) fStsTrackMatches->Delete();
@@ -132,9 +135,8 @@ void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
 
   // -----   MVD   -----
   // MVD: digi->hit
-  if (fMvdHits && fMvdHitMatches && !fMvdCluster) {
-    MatchHitsMvd(fMvdHits, fMvdHitMatches);
-  } else {
+  if (fMvdHits && fMvdHitMatches && !fMvdCluster) { MatchHitsMvd(fMvdHits, fMvdHitMatches); }
+  else {
     // MVD: digi->cluster
     MatchClusters(ECbmModuleId::kMvd, fMvdCluster, fMvdClusterMatches);
     // MVD: cluster->hit
@@ -147,12 +149,7 @@ void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
   // STS: cluster->hit
   MatchHitsSts(fStsClusterMatches, fStsHits, fStsHitMatches);
   // STS: hit->track
-  MatchStsTracks(fMvdHitMatches,
-                 fStsHitMatches,
-                 fMvdPoints,
-                 fStsPoints,
-                 fStsTracks,
-                 fStsTrackMatches);
+  MatchStsTracks(fMvdHitMatches, fStsHitMatches, fMvdPoints, fStsPoints, fStsTracks, fStsTrackMatches);
 
   // -----   MUCH  -----
   // MUCH: digi->cluster
@@ -160,14 +157,12 @@ void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
   // MUCH: cluster->hit
   MatchHits(fMuchClusterMatches, fMuchPixelHits, fMuchPixelHitMatches);
   // MUCH: hit->track
-  MatchTracks(
-    fMuchPixelHitMatches, fMuchPoints, fMuchTracks, fMuchTrackMatches);
+  MatchTracks(fMuchPixelHitMatches, fMuchPoints, fMuchTracks, fMuchTrackMatches);
 
 
   //RICH
   if (fRichHits && fRichMcPoints && fRichRings && fRichTrackMatches) {
-    MatchRichRings(
-      fRichRings, fRichHits, fRichMcPoints, fMCTracks, fRichTrackMatches);
+    MatchRichRings(fRichRings, fRichHits, fRichMcPoints, fMCTracks, fRichTrackMatches);
   }
 
   // TRD
@@ -175,7 +170,8 @@ void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
     MatchClusters(ECbmModuleId::kTrd, fTrdClusters, fTrdClusterMatches);
     MatchHits(fTrdClusterMatches, fTrdHits, fTrdHitMatches);
     MatchTracks(fTrdHitMatches, fTrdPoints, fTrdTracks, fTrdTrackMatches);
-  } else if (fTrdHits) {  // MC->hit->track
+  }
+  else if (fTrdHits) {  // MC->hit->track
     MatchHitsToPoints(fTrdPoints, fTrdHits, fTrdHitMatches);
     MatchTracks(fTrdHitMatches, fTrdPoints, fTrdTracks, fTrdTrackMatches);
   }
@@ -189,15 +185,12 @@ void CbmMatchRecoToMC::Exec(Option_t* /*opt*/) {
 
 void CbmMatchRecoToMC::Finish() {}
 
-void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
+void CbmMatchRecoToMC::ReadAndCreateDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    LOG(fatal)
-      << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL FairRootManager.";
-  }
+  if (nullptr == ioman) { LOG(fatal) << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL FairRootManager."; }
 
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
 
   if (nullptr == mcManager) { LOG(fatal) << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL MCDataManager."; }
 
@@ -219,40 +212,28 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 
   fStsClusters = static_cast<TClonesArray*>(ioman->GetObject("StsCluster"));
   if (nullptr != fStsClusters) {
-    fStsClusterMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("StsClusterMatch"));
+    fStsClusterMatches = static_cast<TClonesArray*>(ioman->GetObject("StsClusterMatch"));
     if (nullptr == fStsClusterMatches) {
       fStsClusterMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("StsClusterMatch",
-                      "STS",
-                      fStsClusterMatches,
-                      IsOutputBranchPersistent("StsClusterMatch"));
+      ioman->Register("StsClusterMatch", "STS", fStsClusterMatches, IsOutputBranchPersistent("StsClusterMatch"));
     }
   }
 
   fStsHits = static_cast<TClonesArray*>(ioman->GetObject("StsHit"));
   if (nullptr != fStsHits) {
-    fStsHitMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("StsHitMatch"));
+    fStsHitMatches = static_cast<TClonesArray*>(ioman->GetObject("StsHitMatch"));
     if (nullptr == fStsHitMatches) {
       fStsHitMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("StsHitMatch",
-                      "STS",
-                      fStsHitMatches,
-                      IsOutputBranchPersistent("StsHitMatch"));
+      ioman->Register("StsHitMatch", "STS", fStsHitMatches, IsOutputBranchPersistent("StsHitMatch"));
     }
   }
 
   fStsTracks = static_cast<TClonesArray*>(ioman->GetObject("StsTrack"));
   if (nullptr != fStsTracks) {
-    fStsTrackMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("StsTrackMatch"));
+    fStsTrackMatches = static_cast<TClonesArray*>(ioman->GetObject("StsTrackMatch"));
     if (nullptr == fStsTrackMatches) {
       fStsTrackMatches = new TClonesArray("CbmTrackMatchNew", 100);
-      ioman->Register("StsTrackMatch",
-                      "STS",
-                      fStsTrackMatches,
-                      IsOutputBranchPersistent("StsTrackMatch"));
+      ioman->Register("StsTrackMatch", "STS", fStsTrackMatches, IsOutputBranchPersistent("StsTrackMatch"));
     }
   }
 
@@ -262,14 +243,10 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 
   fRichRings = static_cast<TClonesArray*>(ioman->GetObject("RichRing"));
   if (nullptr != fRichRings) {
-    fRichTrackMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("RichRingMatch"));
+    fRichTrackMatches = static_cast<TClonesArray*>(ioman->GetObject("RichRingMatch"));
     if (nullptr == fRichTrackMatches) {
       fRichTrackMatches = new TClonesArray("CbmTrackMatchNew", 100);
-      ioman->Register("RichRingMatch",
-                      "RICH",
-                      fRichTrackMatches,
-                      IsOutputBranchPersistent("RichRingMatch"));
+      ioman->Register("RichRingMatch", "RICH", fRichTrackMatches, IsOutputBranchPersistent("RichRingMatch"));
     }
   }
 
@@ -277,41 +254,29 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
   fTrdPoints   = mcManager->InitBranch("TrdPoint");
   fTrdClusters = static_cast<TClonesArray*>(ioman->GetObject("TrdCluster"));
   if (nullptr != fTrdClusters) {
-    fTrdClusterMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("TrdClusterMatch"));
+    fTrdClusterMatches = static_cast<TClonesArray*>(ioman->GetObject("TrdClusterMatch"));
     if (nullptr == fTrdClusterMatches) {
       fTrdClusterMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("TrdClusterMatch",
-                      "TRD",
-                      fTrdClusterMatches,
-                      IsOutputBranchPersistent("TrdClusterMatch"));
+      ioman->Register("TrdClusterMatch", "TRD", fTrdClusterMatches, IsOutputBranchPersistent("TrdClusterMatch"));
     }
   }
 
   fTrdHits = static_cast<TClonesArray*>(ioman->GetObject("TrdHit"));
   if (nullptr != fTrdHits) {
-    fTrdHitMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("TrdHitMatch"));
+    fTrdHitMatches = static_cast<TClonesArray*>(ioman->GetObject("TrdHitMatch"));
     if (nullptr == fTrdHitMatches) {
       fTrdHitMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("TrdHitMatch",
-                      "TRD",
-                      fTrdHitMatches,
-                      IsOutputBranchPersistent("TrdHitMatch"));
+      ioman->Register("TrdHitMatch", "TRD", fTrdHitMatches, IsOutputBranchPersistent("TrdHitMatch"));
     }
   }
 
 
   fTrdTracks = static_cast<TClonesArray*>(ioman->GetObject("TrdTrack"));
   if (nullptr != fTrdTracks) {
-    fTrdTrackMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("TrdTrackMatch"));
+    fTrdTrackMatches = static_cast<TClonesArray*>(ioman->GetObject("TrdTrackMatch"));
     if (nullptr == fTrdTrackMatches) {
       fTrdTrackMatches = new TClonesArray("CbmTrackMatchNew", 100);
-      ioman->Register("TrdTrackMatch",
-                      "TRD",
-                      fTrdTrackMatches,
-                      IsOutputBranchPersistent("TrdTrackMatch"));
+      ioman->Register("TrdTrackMatch", "TRD", fTrdTrackMatches, IsOutputBranchPersistent("TrdTrackMatch"));
     }
   }
 
@@ -321,40 +286,28 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
   fMuchTracks   = (TClonesArray*) ioman->GetObject("MuchTrack");
   fMuchClusters = static_cast<TClonesArray*>(ioman->GetObject("MuchCluster"));
   if (nullptr != fMuchClusters) {
-    fMuchClusterMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("MuchClusterMatch"));
+    fMuchClusterMatches = static_cast<TClonesArray*>(ioman->GetObject("MuchClusterMatch"));
     if (nullptr == fMuchClusterMatches) {
       fMuchClusterMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("MuchClusterMatch",
-                      "MUCH",
-                      fMuchClusterMatches,
-                      IsOutputBranchPersistent("MuchClusterMatch"));
+      ioman->Register("MuchClusterMatch", "MUCH", fMuchClusterMatches, IsOutputBranchPersistent("MuchClusterMatch"));
     }
   }
 
   fMuchPixelHits = static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHit"));
   if (nullptr != fMuchPixelHits) {
-    fMuchPixelHitMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHitMatch"));
+    fMuchPixelHitMatches = static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHitMatch"));
     if (nullptr == fMuchPixelHitMatches) {
       fMuchPixelHitMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("MuchPixelHitMatch",
-                      "MUCH",
-                      fMuchPixelHitMatches,
-                      IsOutputBranchPersistent("MuchPixelHitMatch"));
+      ioman->Register("MuchPixelHitMatch", "MUCH", fMuchPixelHitMatches, IsOutputBranchPersistent("MuchPixelHitMatch"));
     }
   }
 
   fMuchTracks = static_cast<TClonesArray*>(ioman->GetObject("MuchTrack"));
   if (nullptr != fMuchTracks) {
-    fMuchTrackMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("MuchTrackMatch"));
+    fMuchTrackMatches = static_cast<TClonesArray*>(ioman->GetObject("MuchTrackMatch"));
     if (nullptr == fMuchTrackMatches) {
       fMuchTrackMatches = new TClonesArray("CbmTrackMatchNew", 100);
-      ioman->Register("MuchTrackMatch",
-                      "MUCH",
-                      fMuchTrackMatches,
-                      IsOutputBranchPersistent("MuchTrackMatch"));
+      ioman->Register("MuchTrackMatch", "MUCH", fMuchTrackMatches, IsOutputBranchPersistent("MuchTrackMatch"));
     }
   }
 
@@ -363,27 +316,19 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 
   fMvdCluster = static_cast<TClonesArray*>(ioman->GetObject("MvdCluster"));
   if (nullptr != fMvdCluster) {
-    fMvdClusterMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("MvdClusterMatch"));
+    fMvdClusterMatches = static_cast<TClonesArray*>(ioman->GetObject("MvdClusterMatch"));
     if (nullptr == fMvdClusterMatches) {
       fMvdClusterMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("MvdClusterMatch",
-                      "MVD",
-                      fMvdClusterMatches,
-                      IsOutputBranchPersistent("MvdClusterMatch"));
+      ioman->Register("MvdClusterMatch", "MVD", fMvdClusterMatches, IsOutputBranchPersistent("MvdClusterMatch"));
     }
   }
 
   fMvdHits = static_cast<TClonesArray*>(ioman->GetObject("MvdHit"));
   if (nullptr != fMvdHits) {
-    fMvdHitMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("MvdHitMatch"));
+    fMvdHitMatches = static_cast<TClonesArray*>(ioman->GetObject("MvdHitMatch"));
     if (nullptr == fMvdHitMatches) {
       fMvdHitMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("MvdHitMatch",
-                      "MVD",
-                      fMvdHitMatches,
-                      IsOutputBranchPersistent("MvdHitMatch"));
+      ioman->Register("MvdHitMatch", "MVD", fMvdHitMatches, IsOutputBranchPersistent("MvdHitMatch"));
     }
   }
 
@@ -417,14 +362,10 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 
   fTofHits = static_cast<TClonesArray*>(ioman->GetObject("TofHit"));
   if (nullptr != fTofHits) {
-    fTofHitMatches =
-      static_cast<TClonesArray*>(ioman->GetObject("TofHitMatch"));
+    fTofHitMatches = static_cast<TClonesArray*>(ioman->GetObject("TofHitMatch"));
     if (nullptr == fTofHitMatches) {
       fTofHitMatches = new TClonesArray("CbmMatch", 100);
-      ioman->Register("TofHitMatch",
-                      "TOF",
-                      fTofHitMatches,
-                      IsOutputBranchPersistent("TofHitMatch"));
+      ioman->Register("TofHitMatch", "TOF", fTofHitMatches, IsOutputBranchPersistent("TofHitMatch"));
     }
   }
 
@@ -451,9 +392,9 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 }
 
 
-void CbmMatchRecoToMC::MatchClusters(const TClonesArray* digiMatches,
-                                     const TClonesArray* clusters,
-                                     TClonesArray* clusterMatches) {
+void CbmMatchRecoToMC::MatchClusters(const TClonesArray* digiMatches, const TClonesArray* clusters,
+                                     TClonesArray* clusterMatches)
+{
   if (!(digiMatches && clusters && clusterMatches)) return;
   Int_t nofClusters = clusters->GetEntriesFast();
   for (Int_t iCluster = 0; iCluster < nofClusters; iCluster++) {
@@ -461,16 +402,14 @@ void CbmMatchRecoToMC::MatchClusters(const TClonesArray* digiMatches,
     CbmMatch* clusterMatch = new ((*clusterMatches)[iCluster]) CbmMatch();
     Int_t nofDigis         = cluster->GetNofDigis();
     for (Int_t iDigi = 0; iDigi < nofDigis; iDigi++) {
-      const CbmMatch* digiMatch =
-        static_cast<const CbmMatch*>(digiMatches->At(cluster->GetDigi(iDigi)));
+      const CbmMatch* digiMatch = static_cast<const CbmMatch*>(digiMatches->At(cluster->GetDigi(iDigi)));
       clusterMatch->AddLinks(*digiMatch);
     }  //# digis in cluster
   }    //# clusters
 }
 
-void CbmMatchRecoToMC::MatchClusters(ECbmModuleId systemId,
-                                     const TClonesArray* clusters,
-                                     TClonesArray* clusterMatches) {
+void CbmMatchRecoToMC::MatchClusters(ECbmModuleId systemId, const TClonesArray* clusters, TClonesArray* clusterMatches)
+{
   if (!fDigiManager->IsMatchPresent(systemId)) return;
   if (!(clusters && clusterMatches)) return;
   Int_t nofClusters = clusters->GetEntriesFast();
@@ -486,53 +425,47 @@ void CbmMatchRecoToMC::MatchClusters(ECbmModuleId systemId,
   }    //# clusters
 }
 
-void CbmMatchRecoToMC::MatchHits(const TClonesArray* matches,
-                                 const TClonesArray* hits,
-                                 TClonesArray* hitMatches) {
+void CbmMatchRecoToMC::MatchHits(const TClonesArray* matches, const TClonesArray* hits, TClonesArray* hitMatches)
+{
   if (!(matches && hits && hitMatches)) return;
   Int_t nofHits = hits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-    CbmHit* hit        = static_cast<CbmHit*>(hits->At(iHit));
-    CbmMatch* hitMatch = new ((*hitMatches)[iHit]) CbmMatch();
-    const CbmMatch* clusterMatch =
-      static_cast<const CbmMatch*>(matches->At(hit->GetRefId()));
+    CbmHit* hit                  = static_cast<CbmHit*>(hits->At(iHit));
+    CbmMatch* hitMatch           = new ((*hitMatches)[iHit]) CbmMatch();
+    const CbmMatch* clusterMatch = static_cast<const CbmMatch*>(matches->At(hit->GetRefId()));
     hitMatch->AddLinks(*clusterMatch);
   }
 }
 
-void CbmMatchRecoToMC::MatchHitsSts(const TClonesArray* cluMatches,
-                                    const TClonesArray* hits,
-                                    TClonesArray* hitMatches) {
+void CbmMatchRecoToMC::MatchHitsSts(const TClonesArray* cluMatches, const TClonesArray* hits, TClonesArray* hitMatches)
+{
   if (!(cluMatches && hits && hitMatches)) return;
   Int_t nofHits = hits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-    CbmStsHit* hit     = static_cast<CbmStsHit*>(hits->At(iHit));
-    CbmMatch* hitMatch = new ((*hitMatches)[iHit]) CbmMatch();
-    const CbmMatch* frontClusterMatch =
-      static_cast<const CbmMatch*>(cluMatches->At(hit->GetFrontClusterId()));
-    const CbmMatch* backClusterMatch =
-      static_cast<const CbmMatch*>(cluMatches->At(hit->GetBackClusterId()));
+    CbmStsHit* hit                    = static_cast<CbmStsHit*>(hits->At(iHit));
+    CbmMatch* hitMatch                = new ((*hitMatches)[iHit]) CbmMatch();
+    const CbmMatch* frontClusterMatch = static_cast<const CbmMatch*>(cluMatches->At(hit->GetFrontClusterId()));
+    const CbmMatch* backClusterMatch  = static_cast<const CbmMatch*>(cluMatches->At(hit->GetBackClusterId()));
     hitMatch->AddLinks(*frontClusterMatch);
     hitMatch->AddLinks(*backClusterMatch);
   }
 }
 
-void CbmMatchRecoToMC::MatchHitsMvd(const TClonesArray* hits,
-                                    TClonesArray* hitMatches) {
+void CbmMatchRecoToMC::MatchHitsMvd(const TClonesArray* hits, TClonesArray* hitMatches)
+{
   if (!(hits && hitMatches)) return;
   Int_t nofHits = hits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-    CbmPixelHit* hit   = static_cast<CbmPixelHit*>(hits->At(iHit));
-    CbmMatch* hitMatch = new ((*hitMatches)[iHit]) CbmMatch();
-    const CbmMatch* digiMatch =
-      fDigiManager->GetMatch(ECbmModuleId::kMvd, hit->GetRefId());
+    CbmPixelHit* hit          = static_cast<CbmPixelHit*>(hits->At(iHit));
+    CbmMatch* hitMatch        = new ((*hitMatches)[iHit]) CbmMatch();
+    const CbmMatch* digiMatch = fDigiManager->GetMatch(ECbmModuleId::kMvd, hit->GetRefId());
     hitMatch->AddLinks(*digiMatch);
   }
 }
 
-void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
-                                    const TClonesArray* hits,
-                                    TClonesArray* hitMatches) {
+void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches, const TClonesArray* hits,
+                                    TClonesArray* hitMatches)
+{
   if (!(HitDigiMatches && hits && hitMatches)) return;
 
   Int_t iNbTofDigis       = fTofDigis->size();
@@ -541,7 +474,7 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
     LOG(fatal) << "CbmMatchRecoToMC::MatchHitsTof => Nb digis in vector not matching nb matches in vector: "
                << iNbTofDigis << " VS " << iNbTofDigiMatches;
 
-  Int_t nofHits     = hits->GetEntriesFast();
+  Int_t nofHits = hits->GetEntriesFast();
   CbmTofDigi digiTof;
   CbmMatch matchDigiPnt;
 
@@ -585,71 +518,56 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
           hitMatch->AddLink(CbmLink(digiTof.GetTot(), iPointIdx, lPoint.GetEntry(),
                                     lPoint.GetFile()));  // Point generating the Digi
         else
-          hitMatch->AddLink(CbmLink(
-            0,
-            iPointIdx,
-            lPoint.GetEntry(),
-            lPoint.GetFile()));  // Point whose Digi was hidden by True one
-      }  // for( Int_t iPoint = 0; iPoint < iNbPointsDigi; iPoint ++)
-    }    // for (Int_t iDigi = 0; iDigi < iNbDigisHit; iDigi++)
-  }      // for (Int_t iHit = 0; iHit < nofHits; iHit++)
+          hitMatch->AddLink(CbmLink(0, iPointIdx, lPoint.GetEntry(),
+                                    lPoint.GetFile()));  // Point whose Digi was hidden by True one
+      }                                                  // for( Int_t iPoint = 0; iPoint < iNbPointsDigi; iPoint ++)
+    }                                                    // for (Int_t iDigi = 0; iDigi < iNbDigisHit; iDigi++)
+  }                                                      // for (Int_t iHit = 0; iHit < nofHits; iHit++)
 }
 
-void CbmMatchRecoToMC::MatchHitsToPoints(CbmMCDataArray* points,
-                                         const TClonesArray* hits,
-                                         TClonesArray* hitMatches) {
+void CbmMatchRecoToMC::MatchHitsToPoints(CbmMCDataArray* points, const TClonesArray* hits, TClonesArray* hitMatches)
+{
   if (!(hits && hitMatches)) return;
   Int_t nofHits = hits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
     CbmHit* hit              = static_cast<CbmHit*>(hits->At(iHit));
     CbmMatch* hitMatch       = new ((*hitMatches)[iHit]) CbmMatch();
-    const FairMCPoint* point = static_cast<const FairMCPoint*>(
-      points->Get(0, fEventNumber, hit->GetRefId()));
-    hitMatch->AddLink(
-      CbmLink(point->GetEnergyLoss(), hit->GetRefId(), fEventNumber));
+    const FairMCPoint* point = static_cast<const FairMCPoint*>(points->Get(0, fEventNumber, hit->GetRefId()));
+    hitMatch->AddLink(CbmLink(point->GetEnergyLoss(), hit->GetRefId(), fEventNumber));
   }
 }
 
-void CbmMatchRecoToMC::MatchTracks(const TClonesArray* hitMatches,
-                                   CbmMCDataArray* points,
-                                   const TClonesArray* tracks,
-                                   TClonesArray* trackMatches) {
+void CbmMatchRecoToMC::MatchTracks(const TClonesArray* hitMatches, CbmMCDataArray* points, const TClonesArray* tracks,
+                                   TClonesArray* trackMatches)
+{
   if (!(hitMatches && points && tracks && trackMatches)) return;
 
   Bool_t editMode = (trackMatches->GetEntriesFast() != 0);
 
   Int_t nofTracks = tracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
-    const CbmTrack* track = static_cast<const CbmTrack*>(tracks->At(iTrack));
-    CbmTrackMatchNew* trackMatch =
-      (editMode) ? static_cast<CbmTrackMatchNew*>(trackMatches->At(iTrack))
-                 : new ((*trackMatches)[iTrack]) CbmTrackMatchNew();
-    Int_t nofHits = track->GetNofHits();
+    const CbmTrack* track        = static_cast<const CbmTrack*>(tracks->At(iTrack));
+    CbmTrackMatchNew* trackMatch = (editMode) ? static_cast<CbmTrackMatchNew*>(trackMatches->At(iTrack))
+                                              : new ((*trackMatches)[iTrack]) CbmTrackMatchNew();
+    Int_t nofHits                = track->GetNofHits();
     for (Int_t iHit = 0; iHit < nofHits; iHit++) {
       if ((track->GetHitType(iHit) == kMUCHPIXELHIT)
-          || (track->GetHitType(iHit) == kMUCHSTRAWHIT
-              && hitMatches == fMuchPixelHitMatches))
+          || (track->GetHitType(iHit) == kMUCHSTRAWHIT && hitMatches == fMuchPixelHitMatches))
         continue;  //AZ
-      const CbmMatch* hitMatch =
-        static_cast<CbmMatch*>(hitMatches->At(track->GetHitIndex(iHit)));
-      Int_t nofLinks = hitMatch->GetNofLinks();
+      const CbmMatch* hitMatch = static_cast<CbmMatch*>(hitMatches->At(track->GetHitIndex(iHit)));
+      Int_t nofLinks           = hitMatch->GetNofLinks();
       for (Int_t iLink = 0; iLink < nofLinks; iLink++) {
-        const FairMCPoint* point = static_cast<const FairMCPoint*>(
-          points->Get(hitMatch->GetLink(iLink)));
+        const FairMCPoint* point = static_cast<const FairMCPoint*>(points->Get(hitMatch->GetLink(iLink)));
         if (nullptr == point) continue;
         ////fix low energy cut case on STS
-        if (CbmStsAddress::GetSystemId(point->GetDetectorID())
-            == ECbmModuleId::kSts) {
-          Int_t mcTrackId = point->GetTrackID();
-          CbmMCTrack* mcTrack =
-            (CbmMCTrack*) fMCTracks->Get(hitMatch->GetLink(iLink).GetFile(),
-                                         hitMatch->GetLink(iLink).GetEntry(),
-                                         mcTrackId);
+        if (CbmStsAddress::GetSystemId(point->GetDetectorID()) == ECbmModuleId::kSts) {
+          Int_t mcTrackId     = point->GetTrackID();
+          CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(hitMatch->GetLink(iLink).GetFile(),
+                                                             hitMatch->GetLink(iLink).GetEntry(), mcTrackId);
           if (mcTrack->GetNPoints(ECbmModuleId::kSts) < 2) continue;
         }
         ////
-        trackMatch->AddLink(CbmLink(
-          1., point->GetTrackID(), hitMatch->GetLink(iLink).GetEntry()));
+        trackMatch->AddLink(CbmLink(1., point->GetTrackID(), hitMatch->GetLink(iLink).GetEntry()));
       }
     }
     if (!trackMatch->GetNofLinks()) continue;
@@ -658,16 +576,13 @@ void CbmMatchRecoToMC::MatchTracks(const TClonesArray* hitMatches,
     Int_t wrongCounter = trackMatch->GetNofWrongHits();
     for (Int_t iHit = 0; iHit < nofHits; iHit++) {
       if ((track->GetHitType(iHit) == kMUCHPIXELHIT)
-          || (track->GetHitType(iHit) == kMUCHSTRAWHIT
-              && hitMatches == fMuchPixelHitMatches))
+          || (track->GetHitType(iHit) == kMUCHSTRAWHIT && hitMatches == fMuchPixelHitMatches))
         continue;  //AZ
-      const CbmMatch* hitMatch =
-        static_cast<CbmMatch*>(hitMatches->At(track->GetHitIndex(iHit)));
-      Int_t nofLinks = hitMatch->GetNofLinks();
-      Bool_t hasTrue = false;
+      const CbmMatch* hitMatch = static_cast<CbmMatch*>(hitMatches->At(track->GetHitIndex(iHit)));
+      Int_t nofLinks           = hitMatch->GetNofLinks();
+      Bool_t hasTrue           = false;
       for (Int_t iLink = 0; iLink < nofLinks; iLink++) {
-        const FairMCPoint* point = static_cast<const FairMCPoint*>(
-          points->Get(hitMatch->GetLink(iLink)));
+        const FairMCPoint* point = static_cast<const FairMCPoint*>(points->Get(hitMatch->GetLink(iLink)));
         if (nullptr == point) continue;
         if (
           /*point->GetEventID() == trackMatch->GetMatchedLink().GetEntry() && */
@@ -676,8 +591,7 @@ void CbmMatchRecoToMC::MatchTracks(const TClonesArray* hitMatches,
           break;
         }
       }
-      if (hasTrue)
-        trueCounter++;
+      if (hasTrue) trueCounter++;
       else
         wrongCounter++;
     }
@@ -687,12 +601,10 @@ void CbmMatchRecoToMC::MatchTracks(const TClonesArray* hitMatches,
   }
 }
 
-void CbmMatchRecoToMC::MatchStsTracks(const TClonesArray* mvdHitMatches,
-                                      const TClonesArray* stsHitMatches,
-                                      CbmMCDataArray* mvdPoints,
-                                      CbmMCDataArray* stsPoints,
-                                      const TClonesArray* tracks,
-                                      TClonesArray* trackMatches) {
+void CbmMatchRecoToMC::MatchStsTracks(const TClonesArray* mvdHitMatches, const TClonesArray* stsHitMatches,
+                                      CbmMCDataArray* mvdPoints, CbmMCDataArray* stsPoints, const TClonesArray* tracks,
+                                      TClonesArray* trackMatches)
+{
   if (!tracks) { return; }
 
   if (!(stsHitMatches && stsPoints && tracks && trackMatches)) {
@@ -725,34 +637,27 @@ void CbmMatchRecoToMC::MatchStsTracks(const TClonesArray* mvdHitMatches,
   Int_t nofTracks = tracks->GetEntriesFast();
 
   for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
-    const CbmStsTrack* track =
-      static_cast<const CbmStsTrack*>(tracks->At(iTrack));
-    CbmTrackMatchNew* trackMatch =
-      (editMode) ? static_cast<CbmTrackMatchNew*>(trackMatches->At(iTrack))
-                 : new ((*trackMatches)[iTrack]) CbmTrackMatchNew();
+    const CbmStsTrack* track     = static_cast<const CbmStsTrack*>(tracks->At(iTrack));
+    CbmTrackMatchNew* trackMatch = (editMode) ? static_cast<CbmTrackMatchNew*>(trackMatches->At(iTrack))
+                                              : new ((*trackMatches)[iTrack]) CbmTrackMatchNew();
 
     Int_t nofStsHits = track->GetNofStsHits();
     for (Int_t iHit = 0; iHit < nofStsHits; iHit++) {
-      const CbmMatch* hitMatch =
-        static_cast<CbmMatch*>(stsHitMatches->At(track->GetHitIndex(iHit)));
-      Int_t nofLinks = hitMatch->GetNofLinks();
+      const CbmMatch* hitMatch = static_cast<CbmMatch*>(stsHitMatches->At(track->GetHitIndex(iHit)));
+      Int_t nofLinks           = hitMatch->GetNofLinks();
       for (Int_t iLink = 0; iLink < nofLinks; iLink++) {
-        const CbmLink& link = hitMatch->GetLink(iLink);
-        const FairMCPoint* point =
-          static_cast<const FairMCPoint*>(stsPoints->Get(link));
+        const CbmLink& link      = hitMatch->GetLink(iLink);
+        const FairMCPoint* point = static_cast<const FairMCPoint*>(stsPoints->Get(link));
         assert(point);
         /// fix low energy cut case on STS
-        if (CbmStsAddress::GetSystemId(point->GetDetectorID())
-            == ECbmModuleId::kSts) {
+        if (CbmStsAddress::GetSystemId(point->GetDetectorID()) == ECbmModuleId::kSts) {
           Int_t mcTrackId     = point->GetTrackID();
-          CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(
-            link.GetFile(), link.GetEntry(), mcTrackId);
+          CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(link.GetFile(), link.GetEntry(), mcTrackId);
           assert(mcTrack);
           if (mcTrack->GetNPoints(ECbmModuleId::kSts) < 2) { continue; }
         }
         ///
-        trackMatch->AddLink(
-          CbmLink(1., point->GetTrackID(), link.GetEntry(), link.GetFile()));
+        trackMatch->AddLink(CbmLink(1., point->GetTrackID(), link.GetEntry(), link.GetFile()));
       }
     }
 
@@ -775,13 +680,11 @@ void CbmMatchRecoToMC::MatchStsTracks(const TClonesArray* mvdHitMatches,
     Int_t trueCounter  = trackMatch->GetNofTrueHits();
     Int_t wrongCounter = trackMatch->GetNofWrongHits();
     for (Int_t iHit = 0; iHit < nofStsHits; iHit++) {
-      const CbmMatch* hitMatch =
-        static_cast<CbmMatch*>(stsHitMatches->At(track->GetHitIndex(iHit)));
-      Int_t nofLinks = hitMatch->GetNofLinks();
-      Bool_t hasTrue = false;
+      const CbmMatch* hitMatch = static_cast<CbmMatch*>(stsHitMatches->At(track->GetHitIndex(iHit)));
+      Int_t nofLinks           = hitMatch->GetNofLinks();
+      Bool_t hasTrue           = false;
       for (Int_t iLink = 0; iLink < nofLinks; iLink++) {
-        const FairMCPoint* point = static_cast<const FairMCPoint*>(
-          stsPoints->Get(hitMatch->GetLink(iLink)));
+        const FairMCPoint* point = static_cast<const FairMCPoint*>(stsPoints->Get(hitMatch->GetLink(iLink)));
         if (nullptr == point) { continue; }
         if (point->GetTrackID() == trackMatch->GetMatchedLink().GetIndex()) {
           hasTrue = true;
@@ -822,31 +725,26 @@ void CbmMatchRecoToMC::MatchStsTracks(const TClonesArray* mvdHitMatches,
 }
 
 
-void CbmMatchRecoToMC::MatchRichRings(const TClonesArray* richRings,
-                                      const TClonesArray* richHits,
+void CbmMatchRecoToMC::MatchRichRings(const TClonesArray* richRings, const TClonesArray* richHits,
                                       // const TClonesArray* richDigis,
                                       // const TClonesArray* richDigiMatches,
-                                      CbmMCDataArray* richMcPoints,
-                                      CbmMCDataArray* mcTracks,
-                                      TClonesArray* ringMatches) {
+                                      CbmMCDataArray* richMcPoints, CbmMCDataArray* mcTracks, TClonesArray* ringMatches)
+{
   // Loop over RichRings
   Int_t nRings = richRings->GetEntriesFast();
   for (Int_t iRing = 0; iRing < nRings; iRing++) {
-    const CbmRichRing* ring =
-      static_cast<const CbmRichRing*>(richRings->At(iRing));
+    const CbmRichRing* ring = static_cast<const CbmRichRing*>(richRings->At(iRing));
     if (nullptr == ring) continue;
 
-    CbmTrackMatchNew* ringMatch =
-      new ((*ringMatches)[iRing]) CbmTrackMatchNew();
+    CbmTrackMatchNew* ringMatch = new ((*ringMatches)[iRing]) CbmTrackMatchNew();
 
     Int_t nofHits = ring->GetNofHits();
     for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-      const CbmRichHit* hit =
-        static_cast<const CbmRichHit*>(richHits->At(ring->GetHit(iHit)));
+      const CbmRichHit* hit = static_cast<const CbmRichHit*>(richHits->At(ring->GetHit(iHit)));
       if (nullptr == hit) continue;
 
-      vector<pair<Int_t, Int_t>> motherIds = GetMcTrackMotherIdsForRichHit(
-        fDigiManager, hit, richMcPoints, mcTracks, fEventNumber);
+      vector<pair<Int_t, Int_t>> motherIds =
+        GetMcTrackMotherIdsForRichHit(fDigiManager, hit, richMcPoints, mcTracks, fEventNumber);
       for (UInt_t i = 0; i < motherIds.size(); i++) {
         ringMatch->AddLink(1., motherIds[i].second, motherIds[i].first);
       }
@@ -860,24 +758,23 @@ void CbmMatchRecoToMC::MatchRichRings(const TClonesArray* richRings,
       Int_t trueCounter  = 0;
       Int_t wrongCounter = 0;
       for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-        const CbmRichHit* hit =
-          static_cast<const CbmRichHit*>(richHits->At(ring->GetHit(iHit)));
+        const CbmRichHit* hit = static_cast<const CbmRichHit*>(richHits->At(ring->GetHit(iHit)));
         if (nullptr == hit) continue;
-        vector<pair<Int_t, Int_t>> motherIds = GetMcTrackMotherIdsForRichHit(
-          fDigiManager, hit, richMcPoints, mcTracks, fEventNumber);
-        if (std::find(motherIds.begin(),
-                      motherIds.end(),
-                      std::make_pair(bestTrackEventId, bestTrackId))
+        vector<pair<Int_t, Int_t>> motherIds =
+          GetMcTrackMotherIdsForRichHit(fDigiManager, hit, richMcPoints, mcTracks, fEventNumber);
+        if (std::find(motherIds.begin(), motherIds.end(), std::make_pair(bestTrackEventId, bestTrackId))
             != motherIds.end()) {
           trueCounter++;
-        } else {
+        }
+        else {
           wrongCounter++;
         }
       }
 
       ringMatch->SetNofTrueHits(trueCounter);
       ringMatch->SetNofWrongHits(wrongCounter);
-    } else {
+    }
+    else {
       ringMatch->SetNofTrueHits(0);
       ringMatch->SetNofWrongHits(0);
     }
@@ -886,12 +783,12 @@ void CbmMatchRecoToMC::MatchRichRings(const TClonesArray* richRings,
 }
 
 
-vector<pair<Int_t, Int_t>>
-CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
-                                                const CbmRichHit* hit,
-                                                CbmMCDataArray* richPoints,
-                                                CbmMCDataArray* mcTracks,
-                                                Int_t /*eventNumber*/) {
+vector<pair<Int_t, Int_t>> CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
+                                                                           const CbmRichHit* hit,
+                                                                           CbmMCDataArray* richPoints,
+                                                                           CbmMCDataArray* mcTracks,
+                                                                           Int_t /*eventNumber*/)
+{
   vector<pair<Int_t, Int_t>> result;
   if (nullptr == hit) return result;
   Int_t digiIndex = hit->GetRefId();
@@ -906,36 +803,30 @@ CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
     Int_t pointId = links[i].GetIndex();
     Int_t eventId = links[i].GetEntry();
     if (pointId < 0) continue;  // noise hit
-    const CbmRichPoint* pMCpt =
-      static_cast<const CbmRichPoint*>(richPoints->Get(0, eventId, pointId));
+    const CbmRichPoint* pMCpt = static_cast<const CbmRichPoint*>(richPoints->Get(0, eventId, pointId));
 
     if (nullptr == pMCpt) continue;
     Int_t mcTrackIndex = pMCpt->GetTrackID();
     if (mcTrackIndex < 0) continue;
     //TODO: Currently we support only legacy mode of CbmMCDataArray
-    const CbmMCTrack* mcTrack =
-      static_cast<const CbmMCTrack*>(mcTracks->Get(0, eventId, mcTrackIndex));
+    const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->Get(0, eventId, mcTrackIndex));
     // CbmMCTrack* pMCtr = (CbmMCTrack*) mcTracks->At(mcTrackIndex);
     if (nullptr == mcTrack) continue;
-    if (mcTrack->GetPdgCode() != 50000050)
-      continue;  // select only Cherenkov photons
+    if (mcTrack->GetPdgCode() != 50000050) continue;  // select only Cherenkov photons
     Int_t motherId = mcTrack->GetMotherId();
     // several photons can have same mother track
     // count only unique motherIds
     pair<Int_t, Int_t> val = std::make_pair(eventId, motherId);
-    if (std::find(result.begin(), result.end(), val) == result.end()) {
-      result.push_back(val);
-    }
+    if (std::find(result.begin(), result.end(), val) == result.end()) { result.push_back(val); }
   }
 
   return result;
 }
 
-vector<Int_t>
-CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
-                                                const CbmRichHit* hit,
-                                                const TClonesArray* richPoints,
-                                                const TClonesArray* mcTracks) {
+vector<Int_t> CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan, const CbmRichHit* hit,
+                                                              const TClonesArray* richPoints,
+                                                              const TClonesArray* mcTracks)
+{
   vector<Int_t> result;
   if (nullptr == hit) return result;
   Int_t digiIndex = hit->GetRefId();
@@ -950,24 +841,19 @@ CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
     Int_t pointId = links[i].GetIndex();
     if (pointId < 0) continue;  // noise hit
 
-    const CbmRichPoint* pMCpt =
-      static_cast<const CbmRichPoint*>(richPoints->At(pointId));
+    const CbmRichPoint* pMCpt = static_cast<const CbmRichPoint*>(richPoints->At(pointId));
     if (nullptr == pMCpt) continue;
     Int_t mcTrackIndex = pMCpt->GetTrackID();
     if (mcTrackIndex < 0) continue;
     //TODO: Currently we support only legacy mode of CbmMCDataArray
-    const CbmMCTrack* mcTrack =
-      static_cast<const CbmMCTrack*>(mcTracks->At(mcTrackIndex));
+    const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->At(mcTrackIndex));
     // CbmMCTrack* pMCtr = (CbmMCTrack*) mcTracks->At(mcTrackIndex);
     if (nullptr == mcTrack) continue;
-    if (mcTrack->GetPdgCode() != 50000050)
-      continue;  // select only Cherenkov photons
+    if (mcTrack->GetPdgCode() != 50000050) continue;  // select only Cherenkov photons
     Int_t motherId = mcTrack->GetMotherId();
     // several photons can have same mother track
     // count only unique motherIds
-    if (std::find(result.begin(), result.end(), motherId) == result.end()) {
-      result.push_back(motherId);
-    }
+    if (std::find(result.begin(), result.end(), motherId) == result.end()) { result.push_back(motherId); }
   }
 
   return result;

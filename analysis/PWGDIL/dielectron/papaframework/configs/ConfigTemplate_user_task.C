@@ -23,7 +23,8 @@ PairAnalysis* Config_PairAnalysis(Int_t cutDefinition);
 
 /// names of the tasks
 TString names = ("Acc;TRD;RICH;TRD+RICH");
-enum {
+enum
+{
   kAcc,        /// acceptance study
   kTRDcfg,     /// TRD reconstruction
   kRICHcfg,    /// RICH reconstruction
@@ -47,14 +48,13 @@ TObjArray* arrNames = names.Tokenize(";");
 const Int_t nPapa   = arrNames->GetEntries();
 
 //______________________________________________________________________________________
-AnalysisTaskMultiPairAnalysis* ConfigTemplate_user_task(const char* taskname) {
+AnalysisTaskMultiPairAnalysis* ConfigTemplate_user_task(const char* taskname)
+{
   ///
   /// creation of one multi task
   ///
-  AnalysisTaskMultiPairAnalysis* task =
-    new AnalysisTaskMultiPairAnalysis(taskname);
-  task->SetBeamEnergy(
-    8.);  //TODO: get internally from FairBaseParSet::GetBeamMom()
+  AnalysisTaskMultiPairAnalysis* task = new AnalysisTaskMultiPairAnalysis(taskname);
+  task->SetBeamEnergy(8.);  //TODO: get internally from FairBaseParSet::GetBeamMom()
   SetupEventCuts(task);
 
   /// add PAPA analysis with different cuts to the task
@@ -73,7 +73,8 @@ AnalysisTaskMultiPairAnalysis* ConfigTemplate_user_task(const char* taskname) {
 }
 
 //______________________________________________________________________________________
-PairAnalysis* Config_PairAnalysis(Int_t cutDefinition) {
+PairAnalysis* Config_PairAnalysis(Int_t cutDefinition)
+{
   ///
   /// Setup the instance of PairAnalysis
   ///
@@ -83,8 +84,7 @@ PairAnalysis* Config_PairAnalysis(Int_t cutDefinition) {
   printf(" Adding config %s \n", name.Data());
 
   /// init PairAnalysis
-  PairAnalysis* papa =
-    new PairAnalysis(Form("%s", name.Data()), Form("%s", name.Data()));
+  PairAnalysis* papa = new PairAnalysis(Form("%s", name.Data()), Form("%s", name.Data()));
   papa->SetHasMC(kTRUE);  /// TODO: set automatically
   /// ~ type of analysis (leptonic, hadronic or semi-leptonic 2-particle decays are supported)
   papa->SetLegPdg(-11, +11);  /// default: dielectron
@@ -133,22 +133,19 @@ void SetupEventCuts(AnalysisTaskMultiPairAnalysis* task);
   /// Cuts can be added by either excluding or including criteria (see PairAnalysisVarCuts.h)
   /// formula function strings are listed here: http://root.cern.ch/root/html/TFormula.html#TFormula:Analyze
   PairAnalysisVarCuts* eventCuts = new PairAnalysisVarCuts("vertex", "vertex");
-  eventCuts->AddCut(
-    PairAnalysisVarManager::kNVtxContrib, 0.0, 800.);  /// inclusion cut
-  eventCuts->AddCut("VtxChi/VtxNDF",
-                    6.,
-                    1.e3,
-                    kTRUE);  /// 'kTRUE': exclusion cut based on formula
-  eventCuts->AddCut(
-    "abs(ZvPrim)", 0., 10.);  /// example of TMath in formula-cuts
-  eventCuts->Print();         /// for debug purpose (recommended)
+  eventCuts->AddCut(PairAnalysisVarManager::kNVtxContrib, 0.0, 800.);  /// inclusion cut
+  eventCuts->AddCut("VtxChi/VtxNDF", 6., 1.e3,
+                    kTRUE);                   /// 'kTRUE': exclusion cut based on formula
+  eventCuts->AddCut("abs(ZvPrim)", 0., 10.);  /// example of TMath in formula-cuts
+  eventCuts->Print();                         /// for debug purpose (recommended)
 
   /// add cuts to the event filter
   task->SetEventFilter(eventCuts);
 }
 
 //______________________________________________________________________________________
-void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
+void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Setup the track cuts
   ///
@@ -156,15 +153,11 @@ void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
 
   /* vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv TRACK QUALITY CUTS vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
   /// setup a cut group, in which cut logic can be set (kCompAND, kCompOR)
-  PairAnalysisCutGroup* grpQualCuts = new PairAnalysisCutGroup(
-    "quality", "quality", PairAnalysisCutGroup::kCompAND);
+  PairAnalysisCutGroup* grpQualCuts = new PairAnalysisCutGroup("quality", "quality", PairAnalysisCutGroup::kCompAND);
 
   /// example for adding different acceptance cuts to the first cut object
-  PairAnalysisVarCuts* accCuts =
-    new PairAnalysisVarCuts("acceptance", "acceptance");
-  accCuts->SetCutType(
-    PairAnalysisVarCuts::
-      kAll);  /// wheter 'kAll' or 'kAny' cut has to be fullfilled
+  PairAnalysisVarCuts* accCuts = new PairAnalysisVarCuts("acceptance", "acceptance");
+  accCuts->SetCutType(PairAnalysisVarCuts::kAll);  /// wheter 'kAll' or 'kAny' cut has to be fullfilled
   /// 'switch' for config specific cut settings
   switch (cutDefinition) {
       //  case kAcc:
@@ -172,8 +165,7 @@ void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
     case kRICHcfg:
     case kTRDRICHcfg:
       accCuts->AddCut(PairAnalysisVarManager::kPt, 0.05, 1e30);
-      accCuts->AddCut(
-        PairAnalysisVarManager::kTRDHitsMC, 0., 0.5, kTRUE);  /// TRD acceptance
+      accCuts->AddCut(PairAnalysisVarManager::kTRDHitsMC, 0., 0.5, kTRUE);  /// TRD acceptance
       break;
     default: accCuts->AddCut(PairAnalysisVarManager::kPt, 0.4, 1e30); break;
   }
@@ -181,36 +173,29 @@ void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
   /// example of second cut object - standard reconstruction cuts
   PairAnalysisVarCuts* recSTS = new PairAnalysisVarCuts("recSTS", "recSTS");
   recSTS->SetCutType(PairAnalysisVarCuts::kAll);
-  recSTS->AddCut(PairAnalysisVarManager::kSTSHits,
-                 4.,
+  recSTS->AddCut(PairAnalysisVarManager::kSTSHits, 4.,
                  10.);  /// min+max requieremnt for hits
-  recSTS->AddCut(PairAnalysisVarManager::kChi2NDFtoVtx,
-                 0.,
+  recSTS->AddCut(PairAnalysisVarManager::kChi2NDFtoVtx, 0.,
                  3.);  /// keep tracks pointing to the primary vertex
-  recSTS->AddCut(PairAnalysisVarManager::kSTSFirstHitPosZ,
-                 0.,
-                 35.);  /// require a hit in first STS layer
-  recSTS->AddCut(
-    "STSPin-STSPout", 0.1, 100., kTRUE);  /// exclude momentum large differences
+  recSTS->AddCut(PairAnalysisVarManager::kSTSFirstHitPosZ, 0.,
+                 35.);                                 /// require a hit in first STS layer
+  recSTS->AddCut("STSPin-STSPout", 0.1, 100., kTRUE);  /// exclude momentum large differences
 
   /// example of third cut object - standard reconstruction cuts
   PairAnalysisVarCuts* recRICH = new PairAnalysisVarCuts("recRICH", "recRICH");
   recRICH->SetCutType(PairAnalysisVarCuts::kAll);
-  recRICH->AddCut(PairAnalysisVarManager::kRICHHits,
-                  6.,
+  recRICH->AddCut(PairAnalysisVarManager::kRICHHits, 6.,
                   100.);  /// min+max  exclusion for hits
 
   /// example of fourth cut object - standard reconstruction cuts
   PairAnalysisVarCuts* recTRD = new PairAnalysisVarCuts("recTRD", "recTRD");
   recTRD->SetCutType(PairAnalysisVarCuts::kAll);
   // recTRD->AddCut("TRDTrueHits/TRDHits",                   0.7,  1.);         /// remove 'ghost' tracks
-  recTRD->AddCut(
-    PairAnalysisVarManager::kTRDHits, 3., 4.);  /// min+max requieremnt for hits
+  recTRD->AddCut(PairAnalysisVarManager::kTRDHits, 3., 4.);  /// min+max requieremnt for hits
 
 
   /* vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv TRACK PID CUTS vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
-  PairAnalysisCutGroup* grpPIDCut =
-    new PairAnalysisCutGroup("PID", "PID", PairAnalysisCutGroup::kCompOR);
+  PairAnalysisCutGroup* grpPIDCut = new PairAnalysisCutGroup("PID", "PID", PairAnalysisCutGroup::kCompOR);
 
   PairAnalysisVarCuts* pidTRD = new PairAnalysisVarCuts("pidTRD", "pidTRD");
   pidTRD->AddCut(PairAnalysisVarManager::kTRDPidANN, 0.85, 10.);
@@ -221,30 +206,17 @@ void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
   /// example of a var cut combination:
   /// cuts can be applied e.g. for a certain range momentum range only, used for 2-dimensional
   /// PID cuts or for a cut in a pre-selected range (see possible 'AddCut'-arguments in PairAnalysisVarCutsCombi.h)
-  PairAnalysisVarCutsCombi* pidCutsCombi =
-    new PairAnalysisVarCutsCombi("PIDCuts", "PIDCuts");
+  PairAnalysisVarCutsCombi* pidCutsCombi = new PairAnalysisVarCutsCombi("PIDCuts", "PIDCuts");
   //  pidCutsCombi->SetCutType(PairAnalysisVarCutCombi::kAny);
 
   switch (cutDefinition) {
     case kTRDRICHcfg:
-      pidCutsCombi->AddCut(
-        PairAnalysisVarManager::kTRDHits,
-        3.,
-        4.,
-        kFALSE,
-        PairAnalysisVarManager::kTRDPidANN,
-        0.85,
-        10.,
-        kFALSE);  /// apply TRD Pid only for tracks with 3-4 hits
-      pidCutsCombi->AddCut(
-        PairAnalysisVarManager::kRICHHits,
-        6.,
-        100.,
-        kFALSE,
-        PairAnalysisVarManager::kRICHPidANN,
-        -0.8,
-        10.,
-        kFALSE);  /// apply RICH Pid only for rings with >=6 hits
+      pidCutsCombi->AddCut(PairAnalysisVarManager::kTRDHits, 3., 4., kFALSE, PairAnalysisVarManager::kTRDPidANN, 0.85,
+                           10.,
+                           kFALSE);  /// apply TRD Pid only for tracks with 3-4 hits
+      pidCutsCombi->AddCut(PairAnalysisVarManager::kRICHHits, 6., 100., kFALSE, PairAnalysisVarManager::kRICHPidANN,
+                           -0.8, 10.,
+                           kFALSE);  /// apply RICH Pid only for rings with >=6 hits
       break;
   }
 
@@ -292,7 +264,8 @@ void SetupTrackCuts(PairAnalysis* papa, Int_t cutDefinition) {
 }
 
 //______________________________________________________________________________________
-void SetupPairCuts(PairAnalysis* papa, Int_t cutDefinition) {
+void SetupPairCuts(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Setup the pair cuts
   ///
@@ -314,14 +287,14 @@ void SetupPairCuts(PairAnalysis* papa, Int_t cutDefinition) {
 
   /* vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv PAIR  CUTS vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
   /// example of rapidity selection
-  PairAnalysisVarCuts* rapCut =
-    new PairAnalysisVarCuts("RapidityCut", "RapdityCut");
+  PairAnalysisVarCuts* rapCut = new PairAnalysisVarCuts("RapidityCut", "RapdityCut");
   rapCut->AddCut(PairAnalysisVarManager::kY, 0.0, 1.0);
   papa->GetPairFilter().AddCuts(rapCut);
 }
 
 //______________________________________________________________________________________
-void SetupTrackCutsMC(PairAnalysis* papa, Int_t cutDefinition) {
+void SetupTrackCutsMC(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Setup the track cuts based on MC information only
   ///
@@ -329,11 +302,8 @@ void SetupTrackCutsMC(PairAnalysis* papa, Int_t cutDefinition) {
 
   /* vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv TRACK CUTS ON MCtruth vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
   /// example of adding acceptance cuts
-  PairAnalysisVarCuts* varAccCutsMC =
-    new PairAnalysisVarCuts("accCutMCtruth", "accCutMCtruth");
-  varAccCutsMC->SetCutType(
-    PairAnalysisVarCuts::
-      kAll);  /// wheter kAll or kAny cut has to be fullfilled
+  PairAnalysisVarCuts* varAccCutsMC = new PairAnalysisVarCuts("accCutMCtruth", "accCutMCtruth");
+  varAccCutsMC->SetCutType(PairAnalysisVarCuts::kAll);  /// wheter kAll or kAny cut has to be fullfilled
 
   /// example for config specific cuts
   switch (cutDefinition) {
@@ -344,21 +314,18 @@ void SetupTrackCutsMC(PairAnalysis* papa, Int_t cutDefinition) {
       varAccCutsMC->AddCut(PairAnalysisVarManager::kPtMC, 0.05, 1e30);
       // varAccCutsMC->AddCut(PairAnalysisVarManager::kEtaMC,         -0.8,   0.8);
       break;
-    default:
-      varAccCutsMC->AddCut(PairAnalysisVarManager::kPtMC, 0.4, 1e30);
-      break;
+    default: varAccCutsMC->AddCut(PairAnalysisVarManager::kPtMC, 0.4, 1e30); break;
   }
 
   /* vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ACTIVATE CUTS vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
   switch (cutDefinition) {
-    default:
-      papa->GetTrackFilterMC().AddCuts(varAccCutsMC);
-      varAccCutsMC->Print();
+    default: papa->GetTrackFilterMC().AddCuts(varAccCutsMC); varAccCutsMC->Print();
   }
 }
 
 //______________________________________________________________________________________
-void ConfigBgrd(PairAnalysis* papa, Int_t cutDefinition) {
+void ConfigBgrd(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Configurate the background estimators
   ///
@@ -378,27 +345,23 @@ void ConfigBgrd(PairAnalysis* papa, Int_t cutDefinition) {
   rot->SetConeAnglePhi(TMath::Pi());   /// cone angle
   rot->SetStartAnglePhi(TMath::Pi());  /// starting angle
   rot->SetRotationType(
-    PairAnalysisTrackRotator::
-      kRotateBothRandom);  /// kRotatePositive, kRotateNegative or kRotateBothRandom (default)
+    PairAnalysisTrackRotator::kRotateBothRandom);  /// kRotatePositive, kRotateNegative or kRotateBothRandom (default)
   papa->SetTrackRotator(rot);
 
   /// Event Mixing - add event pools for event characteristics
   /// select the type of mixed events kAll, kOSonly, kOSandLS
   PairAnalysisMixingHandler* mix = new PairAnalysisMixingHandler;
   mix->AddVariable(PairAnalysisVarManager::kZvPrim,
-                   PairAnalysisHelper::MakeArbitraryBinning(
-                     "-10.,-3.,-2.,-1.,0.,1.,2.,3.,+10."));
-  mix->AddVariable(PairAnalysisVarManager::kNVtxContrib,
-                   PairAnalysisHelper::MakeLinBinning(5, 0., 500.));
-  mix->SetMixType(
-    PairAnalysisMixingHandler::
-      kAll);  /// checkout PairAnalysisMixingHandler.h (LS ME, OS ME or both)
-  mix->SetDepth(5);  /// pool depth (be carefull)
+                   PairAnalysisHelper::MakeArbitraryBinning("-10.,-3.,-2.,-1.,0.,1.,2.,3.,+10."));
+  mix->AddVariable(PairAnalysisVarManager::kNVtxContrib, PairAnalysisHelper::MakeLinBinning(5, 0., 500.));
+  mix->SetMixType(PairAnalysisMixingHandler::kAll);  /// checkout PairAnalysisMixingHandler.h (LS ME, OS ME or both)
+  mix->SetDepth(5);                                  /// pool depth (be carefull)
   papa->SetMixingHandler(mix);
 }
 
 //______________________________________________________________________________________
-void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
+void InitHistograms(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Initialise the histograms
   ///
@@ -412,8 +375,7 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
   Bool_t hasMC = papa->GetHasMC();
 
   ///Setup histogram Manager
-  PairAnalysisHistos* histos =
-    new PairAnalysisHistos(papa->GetName(), papa->GetTitle());
+  PairAnalysisHistos* histos = new PairAnalysisHistos(papa->GetName(), papa->GetTitle());
   papa->SetHistogramManager(histos);
 
   ///Initialise superior histogram classes
@@ -422,18 +384,11 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
   ////// EVENT HISTOS /////
   histos->AddClass("Event");  /// add histogram class
   /// define output objects
-  histos->AddHistogram("Event",
-                       PairAnalysisHelper::MakeLinBinning(200, -1., 1.),
-                       PairAnalysisVarManager::kXvPrim);
-  histos->AddHistogram("Event",
-                       PairAnalysisHelper::MakeLinBinning(100, 0., 400.),
+  histos->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(200, -1., 1.), PairAnalysisVarManager::kXvPrim);
+  histos->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(100, 0., 400.),
                        PairAnalysisVarManager::kNVtxContrib);
-  histos->AddHistogram("Event",
-                       PairAnalysisHelper::MakeLinBinning(200, 0.0, 10.0),
-                       "VtxChi/VtxNDF");
-  histos->AddHistogram("Event",
-                       PairAnalysisHelper::MakeLinBinning(100, 0., 500.),
-                       PairAnalysisVarManager::kNTrk);
+  histos->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(200, 0.0, 10.0), "VtxChi/VtxNDF");
+  histos->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(100, 0., 500.), PairAnalysisVarManager::kNTrk);
 
   ////// PAIR HISTOS /////
   if (!papa->IsNoPairing()) {
@@ -441,14 +396,10 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
     /// loop over all pair types and add classes (pair types in PairAnalysis.h EPairType)
     /// automatically skip pair types w.r.t. configured bgrd estimators
     for (Int_t i = 0; i < PairAnalysis::kPairTypes; i++) {
-      if (!papa->DoProcessLS()
-          && (i == PairAnalysis::kSEPP || i == PairAnalysis::kSEMM))
-        continue;  /// check SE LS
-      if (!papa->GetMixingHandler()
-          && (i >= PairAnalysis::kMEPP && i <= PairAnalysis::kMEMM))
-        continue;  /// check ME OS,LS
-      if (!papa->GetTrackRotator() && (i == PairAnalysis::kSEPMRot))
-        continue;  /// check SE ROT
+      if (!papa->DoProcessLS() && (i == PairAnalysis::kSEPP || i == PairAnalysis::kSEMM)) continue;  /// check SE LS
+      if (!papa->GetMixingHandler() && (i >= PairAnalysis::kMEPP && i <= PairAnalysis::kMEMM))
+        continue;                                                               /// check ME OS,LS
+      if (!papa->GetTrackRotator() && (i == PairAnalysis::kSEPMRot)) continue;  /// check SE ROT
       histos->AddClass(Form("Pair.%s", PairAnalysis::PairClassName(i)));
     }
 
@@ -457,8 +408,7 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
       for (Int_t i = 0; i < papa->GetMCSignals()->GetEntriesFast(); ++i) {
         PairAnalysisSignalMC* sigMC = papa->GetMCSignals()->At(i);
         if (!sigMC) continue;
-        if (sigMC->IsSingleParticle())
-          continue;  /// skip single particle signals (only pairs)
+        if (sigMC->IsSingleParticle()) continue;  /// skip single particle signals (only pairs)
         TString sigMCname = sigMC->GetName();
         histos->AddClass(Form("Pair_%s", sigMCname.Data()));
         histos->AddClass(Form("Pair_%s_MCtruth", sigMCname.Data()));
@@ -466,32 +416,16 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
     }
 
     ///// define output objects /////
-    histos->AddHistogram(
-      "Pair",
-      PairAnalysisHelper::MakeLinBinning(250, 0.0, 250 * 0.02),
-      PairAnalysisVarManager::kM);  /// 20MeV bins, 5 GeV/c2
-    histos->AddHistogram("Pair",
-                         PairAnalysisHelper::MakeLinBinning(100, 1., 4.5),
-                         PairAnalysisVarManager::kYlab);
-    histos->AddHistogram("Pair",
-                         PairAnalysisHelper::MakeLinBinning(250, 0, 5.),
-                         PairAnalysisVarManager::kPt);
-    histos->AddHistogram(
-      "Pair",
-      PairAnalysisHelper::MakeLinBinning(125, .0, 125 * 0.04),
-      PairAnalysisVarManager::kM,
-      PairAnalysisHelper::MakeLinBinning(250, 0, 5.),
-      PairAnalysisVarManager::kPt);
-    histos->AddHistogram(
-      "Pair",
-      PairAnalysisHelper::MakeLinBinning(100, 0., TMath::Pi() / 2),
-      PairAnalysisVarManager::kOpeningAngle);
-    histos->AddHistogram("Pair",
-                         PairAnalysisHelper::MakePdgBinning(),
-                         PairAnalysisVarManager::kPdgCode);
-    histos->AddHistogram("Pair",
-                         PairAnalysisHelper::MakePdgBinning(),
-                         PairAnalysisVarManager::kPdgCodeMother);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakeLinBinning(250, 0.0, 250 * 0.02),
+                         PairAnalysisVarManager::kM);  /// 20MeV bins, 5 GeV/c2
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakeLinBinning(100, 1., 4.5), PairAnalysisVarManager::kYlab);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakeLinBinning(250, 0, 5.), PairAnalysisVarManager::kPt);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakeLinBinning(125, .0, 125 * 0.04), PairAnalysisVarManager::kM,
+                         PairAnalysisHelper::MakeLinBinning(250, 0, 5.), PairAnalysisVarManager::kPt);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakeLinBinning(100, 0., TMath::Pi() / 2),
+                         PairAnalysisVarManager::kOpeningAngle);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakePdgBinning(), PairAnalysisVarManager::kPdgCode);
+    histos->AddHistogram("Pair", PairAnalysisHelper::MakePdgBinning(), PairAnalysisVarManager::kPdgCodeMother);
   }  // pairs
 
 
@@ -501,14 +435,10 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
     /// loop over all pair types and add classes (pair types in PairAnalysis.h EPairType)
     /// automatically skip pair types w.r.t. configured bgrd estimators
     for (Int_t i = 0; i < PairAnalysis::kPairTypes; i++) {
-      if (!papa->DoProcessLS()
-          && (i == PairAnalysis::kSEPP || i == PairAnalysis::kSEMM))
-        continue;  /// check SE LS
-      if (!papa->GetMixingHandler()
-          && (i >= PairAnalysis::kMEPP && i <= PairAnalysis::kMEMM))
-        continue;  /// check ME OS,LS
-      if (!papa->GetTrackRotator() && (i == PairAnalysis::kSEPMRot))
-        continue;  /// check SE ROT
+      if (!papa->DoProcessLS() && (i == PairAnalysis::kSEPP || i == PairAnalysis::kSEMM)) continue;  /// check SE LS
+      if (!papa->GetMixingHandler() && (i >= PairAnalysis::kMEPP && i <= PairAnalysis::kMEMM))
+        continue;                                                               /// check ME OS,LS
+      if (!papa->GetTrackRotator() && (i == PairAnalysis::kSEPMRot)) continue;  /// check SE ROT
       ///      histos->AddClass(Form("Track.Legs_%s",PairAnalysis::PairClassName(i)));
     }
   }
@@ -518,8 +448,7 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
   for (Int_t i = 0; i < PairAnalysis::kLegTypes; ++i)
     histos->AddClass(Form("Track.%s", PairAnalysis::TrackClassName(i)));
   /// OR/AND add merged leg histograms (e.g. e+-)
-  histos->AddClass(
-    Form("Track.%s", PairAnalysis::PairClassName(PairAnalysis::kSEPM)));
+  histos->AddClass(Form("Track.%s", PairAnalysis::PairClassName(PairAnalysis::kSEPM)));
 
   /// add MC signal (if any) histograms to pair class
   if (papa->GetMCSignals()) {
@@ -532,106 +461,56 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
       /// mc reconstructed - pair leg class
       ///      histos->AddClass(Form("Track.Legs_%s",        sigMCname.Data()));
       /// single tracks (merged +-)
-      histos->AddClass(Form("Track.%s_%s",
-                            PairAnalysis::PairClassName(PairAnalysis::kSEPM),
-                            sigMCname.Data()));
-      histos->AddClass(Form("Track.%s_%s_MCtruth",
-                            PairAnalysis::PairClassName(PairAnalysis::kSEPM),
-                            sigMCname.Data()));
+      histos->AddClass(Form("Track.%s_%s", PairAnalysis::PairClassName(PairAnalysis::kSEPM), sigMCname.Data()));
+      histos->AddClass(Form("Track.%s_%s_MCtruth", PairAnalysis::PairClassName(PairAnalysis::kSEPM), sigMCname.Data()));
     }
   }
 
   ///// define output objects /////
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakePdgBinning(),
-                       PairAnalysisVarManager::kPdgCode);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakePdgBinning(),
-                       PairAnalysisVarManager::kPdgCodeMother);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakePdgBinning(),
-                       PairAnalysisVarManager::kPdgCodeGrandMother);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakePdgBinning(), PairAnalysisVarManager::kPdgCode);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakePdgBinning(), PairAnalysisVarManager::kPdgCodeMother);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakePdgBinning(), PairAnalysisVarManager::kPdgCodeGrandMother);
   /// MC matching
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(49, -0.5, 48.5),
-                       PairAnalysisVarManager::kGeantId);
-  histos->AddProfile("Track",
-                     PairAnalysisHelper::MakeLogBinning(23, 1., 500.),
-                     PairAnalysisVarManager::kNTrk,
-                     PairAnalysisVarManager::kSTSisMC,
-                     "I");
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(49, -0.5, 48.5), PairAnalysisVarManager::kGeantId);
+  histos->AddProfile("Track", PairAnalysisHelper::MakeLogBinning(23, 1., 500.), PairAnalysisVarManager::kNTrk,
+                     PairAnalysisVarManager::kSTSisMC, "I");
   /// Reconstuction Quality
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(100, 0., 50.),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(100, 0., 50.),
                        PairAnalysisVarManager::kTrackChi2NDF);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(101, -0.05, 10.05),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(101, -0.05, 10.05),
                        PairAnalysisVarManager::kChi2NDFtoVtx);
   /// Kinematics
   /// checkout http://root.cern.ch/root/html/TFormula.html#TFormula:Analyze for formula function strings
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLogBinning(400, 1.e-3., 4.),
-                       "sqrt(Xv*Xv+Yv*Yv+Zv*Zv)");
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLogBinning(400, 1.e-3, 4.),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLogBinning(400, 1.e-3., 4.), "sqrt(Xv*Xv+Yv*Yv+Zv*Zv)");
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLogBinning(400, 1.e-3, 4.),
                        "sqrt(XvMC*XvMC+YvMC*YvMC+ZvMC*ZvMC)");
-  histos->AddHistogram(
-    "Track", PairAnalysisHelper::MakeLinBinning(400, 0., 4.), "Pt/PtMC");
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(400, 0, 4.),
-                       PairAnalysisVarManager::kPt);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(400, 0, 10.),
-                       PairAnalysisVarManager::kPout);
-  histos->AddHistogram(
-    "Track",
-    PairAnalysisHelper::MakeLinBinning(316, 0., TMath::TwoPi()),
-    PairAnalysisVarManager::kPhi);
-  histos->AddHistogram(
-    "Track",
-    PairAnalysisHelper::MakeLinBinning(100, 0., TMath::Pi() / 4),
-    PairAnalysisVarManager::kTheta);
-  histos->AddHistogram(
-    "Track",
-    PairAnalysisHelper::MakeLinBinning(100, -3.0, 3.0),
-    PairAnalysisVarManager::kY,
-    PairAnalysisHelper::MakeLinBinning(200, 0, TMath::TwoPi()),
-    PairAnalysisVarManager::kPhi);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(400, 0., 4.), "Pt/PtMC");
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(400, 0, 4.), PairAnalysisVarManager::kPt);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(400, 0, 10.), PairAnalysisVarManager::kPout);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(316, 0., TMath::TwoPi()),
+                       PairAnalysisVarManager::kPhi);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(100, 0., TMath::Pi() / 4),
+                       PairAnalysisVarManager::kTheta);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(100, -3.0, 3.0), PairAnalysisVarManager::kY,
+                       PairAnalysisHelper::MakeLinBinning(200, 0, TMath::TwoPi()), PairAnalysisVarManager::kPhi);
   //// TRD
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(6, -0.5, 5.5),
-                       PairAnalysisVarManager::kTRDHits);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(6, -0.5, 5.5),
-                       PairAnalysisVarManager::kTRDHitsMC);
-  histos->AddProfile("Track",
-                     PairAnalysisHelper::MakeLinBinning(100, 0., 10.),
-                     PairAnalysisVarManager::kPout,
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(6, -0.5, 5.5), PairAnalysisVarManager::kTRDHits);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(6, -0.5, 5.5), PairAnalysisVarManager::kTRDHitsMC);
+  histos->AddProfile("Track", PairAnalysisHelper::MakeLinBinning(100, 0., 10.), PairAnalysisVarManager::kPout,
                      "TRDFakeHits/TRDHits",
                      "I;-0.5;2.");  ///S
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(100, 0., 5.e-4),
-                       PairAnalysisVarManager::kTRDSignal);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(100, 0., 5.e-4), PairAnalysisVarManager::kTRDSignal);
   /// STS
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(16, -0.5, 15.5),
-                       PairAnalysisVarManager::kSTSHits);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(101, -0.5, 50.5),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(16, -0.5, 15.5), PairAnalysisVarManager::kSTSHits);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(101, -0.5, 50.5),
                        PairAnalysisVarManager::kSTSChi2NDF);
   /// MVD
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(101, -0.5, 5.5),
-                       PairAnalysisVarManager::kMVDHits);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(101, -0.5, 5.5), PairAnalysisVarManager::kMVDHits);
   /// RICH
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(46, 4.5, 50.5),
-                       PairAnalysisVarManager::kRICHHits);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(101, -0.5, 50.5),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(46, 4.5, 50.5), PairAnalysisVarManager::kRICHHits);
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(101, -0.5, 50.5),
                        PairAnalysisVarManager::kRICHChi2NDF);
-  histos->AddHistogram("Track",
-                       PairAnalysisHelper::MakeLinBinning(150, -1.5, 1.5),
+  histos->AddHistogram("Track", PairAnalysisHelper::MakeLinBinning(150, -1.5, 1.5),
                        PairAnalysisVarManager::kRICHPidANN);
 
   //// Example of THnSparse ////
@@ -642,11 +521,8 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
   limits->Add(PairAnalysisHelper::MakeLinBinning(8, 0., TMath::TwoPi()));
   limits->Add(PairAnalysisHelper::MakeLinBinning(100, 0., 5.));
   limits->Add(PairAnalysisHelper::MakeLinBinning(100, 0., 5.));
-  UInt_t* vars =
-    PairAnalysisVarManager::GetArray(PairAnalysisVarManager::kNVtxContrib,
-                                     PairAnalysisVarManager::kPhi,
-                                     PairAnalysisVarManager::kPt,
-                                     PairAnalysisVarManager::kPtMC);
+  UInt_t* vars = PairAnalysisVarManager::GetArray(PairAnalysisVarManager::kNVtxContrib, PairAnalysisVarManager::kPhi,
+                                                  PairAnalysisVarManager::kPt, PairAnalysisVarManager::kPtMC);
   /// add track sparse, NOTE: only for SE tracks
   //  histos->AddSparse(Form("Track.%s",PairAnalysis::PairClassName(PairAnalysis::kSEPM)), limits->GetEntriesFast(), limits, vars);
 
@@ -659,36 +535,29 @@ void InitHistograms(PairAnalysis* papa, Int_t cutDefinition) {
       PairAnalysisSignalMC* sigMC = papa->GetMCSignals()->At(i);
       if (!sigMC) continue;
       TString sigMCname = sigMC->GetName();
-      if (!sigMC->IsSingleParticle())
-        continue;  /// skip pair particle signals (only single particles)
+      if (!sigMC->IsSingleParticle()) continue;  /// skip pair particle signals (only single particles)
       /// single tracks (merged +-)
       histos->AddClass(Form("Hit.TRD_%s", sigMCname.Data()));
     }
   }
   /// define output objects
-  histos->AddHistogram("Hit",
-                       PairAnalysisHelper::MakeLinBinning(200, -400., 400.),
-                       PairAnalysisVarManager::kPosX,
-                       PairAnalysisHelper::MakeLinBinning(200, -400., 400.),
-                       PairAnalysisVarManager::kPosY);
-  histos->AddHistogram("Hit",
-                       PairAnalysisHelper::MakeLinBinning(100, 0., 5.e-5),
-                       PairAnalysisVarManager::kEloss);
+  histos->AddHistogram("Hit", PairAnalysisHelper::MakeLinBinning(200, -400., 400.), PairAnalysisVarManager::kPosX,
+                       PairAnalysisHelper::MakeLinBinning(200, -400., 400.), PairAnalysisVarManager::kPosY);
+  histos->AddHistogram("Hit", PairAnalysisHelper::MakeLinBinning(100, 0., 5.e-5), PairAnalysisVarManager::kEloss);
 
 
   ////// DEBUG //////
   TIter nextClass(histos->GetHistogramList());
   THashList* l = 0;
   while ((l = static_cast<THashList*>(nextClass()))) {
-    printf(" [D] HistogramManger: Class %s: Histograms: %04d \n",
-           l->GetName(),
-           l->GetEntries());
+    printf(" [D] HistogramManger: Class %s: Histograms: %04d \n", l->GetName(), l->GetEntries());
   }
 
 }  //end: init histograms
 
 //______________________________________________________________________________________
-void InitHF(PairAnalysis* papa, Int_t cutDefinition) {
+void InitHF(PairAnalysis* papa, Int_t cutDefinition)
+{
   ///
   /// Setup the Histogram Framework (a matrix of histograms)
   ///
@@ -698,11 +567,9 @@ void InitHF(PairAnalysis* papa, Int_t cutDefinition) {
   papa->SetHistogramArray(hf);
 
   ////// Add Variables and Dimensions /////
-  hf->AddCutVariable(PairAnalysisVarManager::kNTrk,
-                     PairAnalysisHelper::MakeLinBinning(5, 0., 500));
-  hf->AddCutVariable(
-    PairAnalysisVarManager::kTRDMatches,
-    PairAnalysisHelper::MakeArbitraryBinning("0.,1.,40.,50.,500."));
+  hf->AddCutVariable(PairAnalysisVarManager::kNTrk, PairAnalysisHelper::MakeLinBinning(5, 0., 500));
+  hf->AddCutVariable(PairAnalysisVarManager::kTRDMatches,
+                     PairAnalysisHelper::MakeArbitraryBinning("0.,1.,40.,50.,500."));
 
   ///Initialise superior histogram classes
   hf->SetReservedWords("Track;Pair");
@@ -710,48 +577,36 @@ void InitHF(PairAnalysis* papa, Int_t cutDefinition) {
   ////// EVENT HISTOS /////
   hf->AddClass("Event");  /// add histogram class
   /// define output objects
-  hf->AddHistogram("Event",
-                   PairAnalysisHelper::MakeLinBinning(200, -1., 1.),
-                   PairAnalysisVarManager::kXvPrim);
-  hf->AddHistogram("Event",
-                   PairAnalysisHelper::MakeLinBinning(200, -1., 1.),
-                   PairAnalysisVarManager::kYvPrim);
-  hf->AddHistogram("Event",
-                   PairAnalysisHelper::MakeLinBinning(200, -1., 1.),
-                   PairAnalysisVarManager::kZvPrim);
+  hf->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(200, -1., 1.), PairAnalysisVarManager::kXvPrim);
+  hf->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(200, -1., 1.), PairAnalysisVarManager::kYvPrim);
+  hf->AddHistogram("Event", PairAnalysisHelper::MakeLinBinning(200, -1., 1.), PairAnalysisVarManager::kZvPrim);
 }
 
 //______________________________________________________________________________________
-void AddMCSignals(PairAnalysis* papa, Int_t cutDefinition) {
+void AddMCSignals(PairAnalysis* papa, Int_t cutDefinition)
+{
   /// Do we have an MC handler?
   if (!papa->GetHasMC()) return;
 
   /// Example usage of predefined signals (see PairAnalysisSignalMC::EDefinedSignal)
   /// pair signals
-  PairAnalysisSignalMC* conv =
-    new PairAnalysisSignalMC(PairAnalysisSignalMC::kConversion);
+  PairAnalysisSignalMC* conv = new PairAnalysisSignalMC(PairAnalysisSignalMC::kConversion);
   conv->SetFillPureMCStep(kTRUE);
-  PairAnalysisSignalMC* rho0 =
-    new PairAnalysisSignalMC(PairAnalysisSignalMC::kRho0);
-  rho0->SetFillPureMCStep(
-    kTRUE);  /// whether to fill MC truth (generator level)output (attention on CPU consumption)
+  PairAnalysisSignalMC* rho0 = new PairAnalysisSignalMC(PairAnalysisSignalMC::kRho0);
+  rho0->SetFillPureMCStep(kTRUE);  /// whether to fill MC truth (generator level)output (attention on CPU consumption)
   rho0->SetWeight(
-    9
-    * 4.72e-05);  /// apply a weighting (fills PairAnalysisVarManager::kWeight & can be used for histogram weighting)
+    9 * 4.72e-05);  /// apply a weighting (fills PairAnalysisVarManager::kWeight & can be used for histogram weighting)
 
   /// single particle signals
-  PairAnalysisSignalMC* ele =
-    new PairAnalysisSignalMC(PairAnalysisSignalMC::kPrimEle);
+  PairAnalysisSignalMC* ele = new PairAnalysisSignalMC(PairAnalysisSignalMC::kPrimEle);
   ele->SetFillPureMCStep(kTRUE);
 
   /// Example of a MC signal configuration (see PairAnalysisSignalMC.h for full functionality)
   PairAnalysisSignalMC* all = new PairAnalysisSignalMC("EPEM", "EPEM");
   all->SetLegPDGs(11, -11);
   //  all->SetMotherPDGs(22,22,kTRUE,kTRUE);            /// requierement on the mother pdg code
-  all->SetMothersRelation(
-    PairAnalysisSignalMC::kSame);  /// relation of the daughters
-  all->SetFillPureMCStep(
-    kTRUE);  /// whether to fill MC truth (generator level) output
+  all->SetMothersRelation(PairAnalysisSignalMC::kSame);  /// relation of the daughters
+  all->SetFillPureMCStep(kTRUE);                         /// whether to fill MC truth (generator level) output
   //  all->SetCheckBothChargesLegs(kTRUE,kTRUE);        /// check both daughter charge combinations
   //  all->SetCheckBothChargesMothers(kTRUE,kTRUE);     /// check both mother charge combinations
   //  all->SetGEANTProcess(kPPrimary);                  /// set an requirement on the Geant process (see root: TMCProcess.h)

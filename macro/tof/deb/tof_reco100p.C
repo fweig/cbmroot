@@ -17,7 +17,8 @@
 // --------------------------------------------------------------------------
 
 
-void tof_reco100p(Int_t nEvents = 1000) {
+void tof_reco100p(Int_t nEvents = 1000)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -46,8 +47,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
   paramDir += "/parameters";
 
   //TObjString stsDigiFile = paramDir + "/sts/sts_v11a.digi.par";
-  TObjString stsDigiFile =
-    paramDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
+  TObjString stsDigiFile       = paramDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
   TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_v12b.root";
 
   TString TofGeoPar = "/parameters/tof/par_tof_V12a.txt";  // 6 m version
@@ -131,8 +131,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
 
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -156,7 +155,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
   l1->SetMaterialBudgetFileName(stsMatBudgetFileName);
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -169,7 +168,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
 
@@ -182,8 +181,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd =
-    new CbmTofHitProducer("TOF HitProducer", iVerbose);
+  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer", iVerbose);
   tofHitProd->SetParFileName(std::string(TofGeoPar));
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
@@ -217,8 +215,7 @@ void tof_reco100p(Int_t nEvents = 1000) {
   // (taken from hadron/produceDST.C
   //
   CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks* fitGlobal =
-    new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
+  CbmFitGlobalTracks* fitGlobal             = new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
   run->AddTask(fitGlobal);
 
   CbmProduceDst* produceDst = new CbmProduceDst();  // in hadron

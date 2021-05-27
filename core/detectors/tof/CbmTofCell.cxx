@@ -6,28 +6,18 @@
 #include <TNamed.h>       // for TNamed
 
 // -----   Default constructor   -------------------------------------------
-CbmTofCell::CbmTofCell()
-  : TNamed()
-  , fDetectorId(0)
-  , fX(-666.)
-  , fY(-666.)
-  , fZ(-666.)
-  , fSizex(-666.)
-  , fSizey(-666.) {}
+CbmTofCell::CbmTofCell() : TNamed(), fDetectorId(0), fX(-666.), fY(-666.), fZ(-666.), fSizex(-666.), fSizey(-666.) {}
 
-CbmTofCell::CbmTofCell(Int_t detId,
-                       Double_t x,
-                       Double_t y,
-                       Double_t z,
-                       Double_t sizex,
-                       Double_t sizey)
+CbmTofCell::CbmTofCell(Int_t detId, Double_t x, Double_t y, Double_t z, Double_t sizex, Double_t sizey)
   : TNamed()
   , fDetectorId(detId)
   , fX(x)
   , fY(y)
   , fZ(z)
   , fSizex(sizex)
-  , fSizey(sizey) {}
+  , fSizey(sizey)
+{
+}
 // -------------------------------------------------------------------------
 CbmTofCell::~CbmTofCell() {}
 /*
@@ -145,9 +135,10 @@ void CbmTofCell::GetPosition(const Int_t Col, const Int_t Row,
 }
 */
 
-void CbmTofCell::Print(Option_t*) const {
-  LOG(info) << "ID, X, Y, Z, sizex, sizey: " << fDetectorId << ", " << fX
-            << ", " << fY << ", " << fZ << ", " << fSizex << ", " << fSizey;
+void CbmTofCell::Print(Option_t*) const
+{
+  LOG(info) << "ID, X, Y, Z, sizex, sizey: " << fDetectorId << ", " << fX << ", " << fY << ", " << fZ << ", " << fSizex
+            << ", " << fSizey;
 }
 
 // -------------------------------------------------------------------------

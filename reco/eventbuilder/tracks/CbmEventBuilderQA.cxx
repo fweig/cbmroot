@@ -5,6 +5,7 @@
 
 // Cbm Headers ----------------------
 #include "CbmEventBuilderQA.h"
+
 #include "CbmMCTrack.h"
 #include "CbmTrack.h"
 #include "CbmTrackMatchNew.h"
@@ -12,23 +13,22 @@
 #include "FairRunAna.h"
 
 //KF Particle headers
+#include "CbmEvent.h"
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
+#include "CbmStsDigi.h"
+#include "CbmStsHit.h"
+#include "CbmStsPoint.h"
+#include "CbmStsSensor.h"
+#include "CbmStsSetup.h"
+#include "CbmStsStation.h"
+#include "CbmStsTrack.h"
+
 #include "KFMCTrack.h"
 #include "KFParticleMatch.h"
 #include "KFParticleTopoReconstructor.h"
 #include "KFTopoPerformance.h"
 #include "L1Field.h"
-
-#include "CbmEvent.h"
-#include "CbmStsDigi.h"
-#include "CbmStsHit.h"
-#include "CbmStsPoint.h"
-#include "CbmStsTrack.h"
-
-#include "CbmStsSensor.h"
-#include "CbmStsSetup.h"
-#include "CbmStsStation.h"
 
 //ROOT headers
 #include "TClonesArray.h"
@@ -41,25 +41,24 @@
 #include "TObject.h"
 
 //c++ and std headers
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-
+#include "CbmEbEventEfficiencies.h"
+#include "CbmEbEventMatch.h"
+#include "CbmEbMCEvent.h"
 #include "CbmGlobalTrack.h"
-#include "CbmMuchTrack.h"
-#include "CbmRichRing.h"
-#include "CbmStsTrack.h"
-#include "CbmTrack.h"
-
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
+#include "CbmMuchTrack.h"
+#include "CbmRichRing.h"
+#include "CbmStsTrack.h"
+#include "CbmTrack.h"
 #include "CbmTrackMatchNew.h"
 
-#include "CbmEbEventEfficiencies.h"
-#include "CbmEbEventMatch.h"
-#include "CbmEbMCEvent.h"
+#include <iomanip>
+#include <iostream>
+
+#include <cmath>
 
 using std::map;
 using std::vector;
@@ -70,9 +69,7 @@ struct TH1FParameters {
   float xMin, xMax;
 };
 
-CbmEventBuilderQA::CbmEventBuilderQA(const char* name,
-                                     Int_t iVerbose,
-                                     TString outFileName)
+CbmEventBuilderQA::CbmEventBuilderQA(const char* name, Int_t iVerbose, TString outFileName)
   : FairTask(name, iVerbose)
   , fPointsInTracks()
   , fStsTrackBranchName("StsTrack")
@@ -105,8 +102,7 @@ CbmEventBuilderQA::CbmEventBuilderQA(const char* name,
   TFile* curFile           = gFile;
   TDirectory* curDirectory = gDirectory;
 
-  if (!(fOutFileName == ""))
-    fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
+  if (!(fOutFileName == "")) fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
   else
     fOutFile = gFile;
 
@@ -124,40 +120,16 @@ CbmEventBuilderQA::CbmEventBuilderQA(const char* name,
       {"NHitsVsTime", "NHitsVsTime", 12100, -100.f, 12000.f},
       {"HitsTimeResidual", "HitsTimeResidual", 300, -30.f, 30.f},
       {"HitsTimePull", "HitsTimePull", 100, -10.f, 10.f},
-      {"NTracksInEventsVsTime",
-       "NTracksInEventsVsTime",
-       12100,
-       -100.f,
-       12000.f},
+      {"NTracksInEventsVsTime", "NTracksInEventsVsTime", 12100, -100.f, 12000.f},
       {"NHitsInEventsVsTime", "NHitsInEventsVsTime", 12100, -100.f, 12000.f},
       {"NTracksVsMCTime", "NTracksVsMCTime", 12100, -100.f, 12000.f},
       {"NHitsVsMCTime", "NHitsVsMCTime", 12100, -100.f, 12000.f},
       {"dtDistribution", "dtDistribution", 100, 0.f, 50.f},
-      {"NTracksInEventsVsTime1",
-       "NTracksInEventsVsTime1",
-       120100,
-       -100.f,
-       12000.f},
-      {"NTracksInEventsVsTime2",
-       "NTracksInEventsVsTime2",
-       120100,
-       -100.f,
-       12000.f},
-      {"NTracksInEventsVsTime3",
-       "NTracksInEventsVsTime3",
-       120100,
-       -100.f,
-       12000.f},
-      {"NTracksInEventsVsTime4",
-       "NTracksInEventsVsTime4",
-       120100,
-       -100.f,
-       12000.f},
-      {"NTracksInEventsVsTime5",
-       "NTracksInEventsVsTime5",
-       120100,
-       -100.f,
-       12000.f},
+      {"NTracksInEventsVsTime1", "NTracksInEventsVsTime1", 120100, -100.f, 12000.f},
+      {"NTracksInEventsVsTime2", "NTracksInEventsVsTime2", 120100, -100.f, 12000.f},
+      {"NTracksInEventsVsTime3", "NTracksInEventsVsTime3", 120100, -100.f, 12000.f},
+      {"NTracksInEventsVsTime4", "NTracksInEventsVsTime4", 120100, -100.f, 12000.f},
+      {"NTracksInEventsVsTime5", "NTracksInEventsVsTime5", 120100, -100.f, 12000.f},
 
       {"NHitsInEventsVsTime1", "NHitsInEventsVsTime1", 12100, -100.f, 12000.f},
       {"NHitsInEventsVsTime2", "NHitsInEventsVsTime2", 12100, -100.f, 12000.f},
@@ -172,11 +144,8 @@ CbmEventBuilderQA::CbmEventBuilderQA(const char* name,
       {"TrackTimeEvent", "TrackTimeEvent", 100, -10.f, 10.f},
       {"TrackTimeNoEvent", "TrackTimeNoEvent", 100, -10.f, 10.f}};
     for (int iH = 0; iH < fNTimeHistos; iH++)
-      fTimeHisto[iH] = new TH1F(timeHisto[iH].name.Data(),
-                                timeHisto[iH].title.Data(),
-                                timeHisto[iH].nbins,
-                                timeHisto[iH].xMin,
-                                timeHisto[iH].xMax);
+      fTimeHisto[iH] = new TH1F(timeHisto[iH].name.Data(), timeHisto[iH].title.Data(), timeHisto[iH].nbins,
+                                timeHisto[iH].xMin, timeHisto[iH].xMax);
 
     fTimeHisto[0]->GetXaxis()->SetTitle("Time, ns");
     fTimeHisto[0]->GetYaxis()->SetTitle("Number of tracks");
@@ -216,12 +185,7 @@ CbmEventBuilderQA::~CbmEventBuilderQA() {}
 
 
 struct CbmBuildEventMCTrack {
-  CbmBuildEventMCTrack()
-    : fMCFileId(-1)
-    , fMCEventId(-1)
-    , fMCTrackId(-1)
-    , fRecoTrackId()
-    , fRecoEventId() {}
+  CbmBuildEventMCTrack() : fMCFileId(-1), fMCEventId(-1), fMCTrackId(-1), fRecoTrackId(), fRecoEventId() {}
 
   int fMCFileId;
   int fMCEventId;
@@ -231,7 +195,8 @@ struct CbmBuildEventMCTrack {
   vector<int> fRecoEventId;
 };
 
-InitStatus CbmEventBuilderQA::Init() {
+InitStatus CbmEventBuilderQA::Init()
+{
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -240,8 +205,7 @@ InitStatus CbmEventBuilderQA::Init() {
     return kERROR;
   }
 
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
   if (mcManager == nullptr) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
 
   fMCTracks = (CbmMCDataArray*) mcManager->InitBranch("MCTrack");
@@ -278,14 +242,13 @@ InitStatus CbmEventBuilderQA::Init() {
 
   // --- Get input array (CbmEvent)
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (nullptr == fEvents) {
-    Fatal("CbmEventBuilderQA::Init", "No CbmEvent TClonesArray found!");
-  }
+  if (nullptr == fEvents) { Fatal("CbmEventBuilderQA::Init", "No CbmEvent TClonesArray found!"); }
 
   return kSUCCESS;
 }
 
-void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
+void CbmEventBuilderQA::Exec(Option_t* /*opt*/)
+{
   fPointsInTracks.clear();
 
   int nMCEvents = fEventList->GetNofEvents();
@@ -332,11 +295,8 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
 
     if (iCol >= 0) fTimeHisto[16 + iCol]->Fill(hit_time);
 
-    CbmStsPoint* stsMcPoint = (CbmStsPoint*) fStsPoints->Get(
-      link.GetFile(), link.GetEntry(), link.GetIndex());
-    double mcTime =
-      stsMcPoint->GetTime()
-      + fEventList->GetEventTime(link.GetEntry() + 1, link.GetFile());
+    CbmStsPoint* stsMcPoint = (CbmStsPoint*) fStsPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+    double mcTime           = stsMcPoint->GetTime() + fEventList->GetEventTime(link.GetEntry() + 1, link.GetFile());
 
     fTimeHisto[7]->Fill(mcTime);
 
@@ -363,8 +323,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
       unsigned int nStsPoints = fStsPoints->Size(iMCFile, iMCEvent);
 
       for (unsigned int iStsPoint = 0; iStsPoint < nStsPoints; iStsPoint++) {
-        CbmStsPoint* point =
-          (CbmStsPoint*) fStsPoints->Get(iMCFile, iMCEvent, iStsPoint);
+        CbmStsPoint* point = (CbmStsPoint*) fStsPoints->Get(iMCFile, iMCEvent, iStsPoint);
         const int iMCTrack = point->GetTrackID();
         fPointsInTracks[iMCEvent][iMCTrack].push_back(iStsPoint);
       }
@@ -407,8 +366,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
       //fTimeHisto[8]->Fill(mcTime);
     }
 
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
     if (stsTrackMatch->GetNofLinks() == 0) continue;
     Float_t bestWeight  = 0.f;
     Float_t totalWeight = 0.f;
@@ -433,8 +391,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
 
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(0, mcEvent, mcTrackId);
 
-    double mcTime = mcTrack->GetStartT()
-                    + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
+    double mcTime   = mcTrack->GetStartT() + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
     double residual = track->GetTime() - mcTime;
     double pull     = residual / track->GetTimeError();
     fTimeHisto[1]->Fill(residual);
@@ -454,20 +411,17 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
 
     mcTrackMap[iMCEvent].resize(nMCTracks);
 
-    fTimeHisto[10]->Fill(
-      fEventList->GetEventTime(iMCEvent + 1, 0)
-      - tEvent);  // +fEventList->GetEventTime(iMCEvent+1, 0) );
+    fTimeHisto[10]->Fill(fEventList->GetEventTime(iMCEvent + 1, 0)
+                         - tEvent);  // +fEventList->GetEventTime(iMCEvent+1, 0) );
     tEvent = fEventList->GetEventTime(iMCEvent + 1, 0);
 
     int nReconstructableMCTracks = 0;
     for (unsigned int iMC = 0; iMC < nMCTracks; iMC++) {
       CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(0, iMCEvent, iMC);
 
-      if (CalculateIsReconstructable(0, iMCEvent, iMC))
-        nReconstructableMCTracks++;
+      if (CalculateIsReconstructable(0, iMCEvent, iMC)) nReconstructableMCTracks++;
 
-      fTimeHisto[8]->Fill(mcTrack->GetStartT()
-                          + fEventList->GetEventTime(iMCEvent + 1, 0));
+      fTimeHisto[8]->Fill(mcTrack->GetStartT() + fEventList->GetEventTime(iMCEvent + 1, 0));
 
       CbmBuildEventMCTrack newMCTrack;
       newMCTrack.fMCFileId  = 0;
@@ -490,10 +444,8 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
     if (nReconstructableMCTracks > 2) fMCEvents[iMCEvent].SetReconstructable(1);
   }
 
-  for (int iTrack = 0; iTrack < fStsTrackMatchArray->GetEntriesFast();
-       iTrack++) {
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
+  for (int iTrack = 0; iTrack < fStsTrackMatchArray->GetEntriesFast(); iTrack++) {
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
     if (stsTrackMatch->GetNofLinks() == 0) continue;
     Float_t bestWeight  = 0.f;
     Float_t totalWeight = 0.f;
@@ -538,8 +490,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
 
       tracks.push_back(stsTrackIndex);
 
-      CbmTrackMatchNew* stsTrackMatch =
-        (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsTrackIndex);
+      CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsTrackIndex);
       if (stsTrackMatch->GetNofLinks() == 0) continue;
       Float_t bestWeight  = 0.f;
       Float_t totalWeight = 0.f;
@@ -567,22 +518,19 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
       if ((track->GetTime()) > tLastTrack) tLastTrack = (track->GetTime());
       if ((track->GetTime()) < tFirstTrack) tFirstTrack = (track->GetTime());
 
-      double mcTime = mcTrack->GetStartT()
-                      + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
+      double mcTime = mcTrack->GetStartT() + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
 
-      fTimeHisto[24]->Fill(fabs(track->GetTime() - mcTime)
-                           / track->GetTimeError());
+      fTimeHisto[24]->Fill(fabs(track->GetTime() - mcTime) / track->GetTimeError());
 
       if (fMCEvents[mcEvent].IsReconstructable()) EventMatch.AddTrack(mcEvent);
 
       for (int iTr1 = iTr + 1; iTr1 < nEventTracks; iTr1++) {
         if (iTr1 == iTr) continue;
         const int stsTrackIndex1 = event->GetStsTrackIndex(iTr1);
-        CbmStsTrack* track1 = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
+        CbmStsTrack* track1      = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
 
-        fTimeHisto[25]->Fill(
-          fabs(track->GetTime() - track1->GetTime())
-          / sqrt(track->GetTimeError() + track1->GetTimeError()));
+        fTimeHisto[25]->Fill(fabs(track->GetTime() - track1->GetTime())
+                             / sqrt(track->GetTimeError() + track1->GetTimeError()));
       }
 
       for (int iEvent1 = 0; iEvent1 < fEvents->GetEntriesFast(); iEvent1++) {
@@ -593,13 +541,12 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
         Int_t nTracks1 = event1->GetNofData(ECbmDataType::kStsTrack);
         for (int iTr1 = 0; iTr1 < nTracks1; iTr1++) {
           const int stsTrackIndex1 = event1->GetStsTrackIndex(iTr1);
-          CbmStsTrack* track1 = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
+          CbmStsTrack* track1      = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
 
           if (fabs(track->GetTime() - track1->GetTime()) > 8.5) continue;
 
-          fTimeHisto[26]->Fill(
-            fabs(track->GetTime() - track1->GetTime())
-            / sqrt(track->GetTimeError() + track1->GetTimeError()));
+          fTimeHisto[26]->Fill(fabs(track->GetTime() - track1->GetTime())
+                               / sqrt(track->GetTimeError() + track1->GetTimeError()));
         }
       }
     }
@@ -608,8 +555,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
     fTimeHisto[22]->Fill(tLastTrack - tFirstTrack);
     eventMatches.push_back(EventMatch);
 
-    for (std::map<int, int>::iterator it = EventMatch.GetMCEvents().begin();
-         it != EventMatch.GetMCEvents().end();
+    for (std::map<int, int>::iterator it = EventMatch.GetMCEvents().begin(); it != EventMatch.GetMCEvents().end();
          ++it) {
 
       fMCEvents[it->first].AddRecoEvent(iEvent);
@@ -623,8 +569,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
     int nMcPoints = fStsPoints->Size(0, iMCEvent);
     for (int i = 0; i < nMcPoints; i++) {
       CbmStsPoint* stsMcPoint = (CbmStsPoint*) fStsPoints->Get(0, iMCEvent, i);
-      double mcTime =
-        stsMcPoint->GetTime() + fEventList->GetEventTime(iMCEvent + 1, 0);
+      double mcTime           = stsMcPoint->GetTime() + fEventList->GetEventTime(iMCEvent + 1, 0);
       fTimeHisto[9]->Fill(mcTime);
     }
   }
@@ -677,11 +622,9 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
     eventEfficiency.AddGhost(eventMatches[iEvent].IsGhost());
 
   for (unsigned int iMCEvent = 0; iMCEvent < fMCEvents.size(); iMCEvent++) {
-    if (fMCEvents[iMCEvent].IsReconstructable()
-        && fMCEvents[iMCEvent].NMCTracks() > 1) {
-      const vector<int>& recoEvents =
-        fMCEvents[iMCEvent].GetRecoEvents();  // for length calculations
-      bool reco = 0;
+    if (fMCEvents[iMCEvent].IsReconstructable() && fMCEvents[iMCEvent].NMCTracks() > 1) {
+      const vector<int>& recoEvents = fMCEvents[iMCEvent].GetRecoEvents();  // for length calculations
+      bool reco                     = 0;
       if (recoEvents.size() == 1) reco = 1;
       // number of cloned events
       int nclones = 0;
@@ -690,9 +633,8 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
     }
     //  if( fMCEvents[iMCEvent].IsReconstructed() )
     if (fMCEvents[iMCEvent].GetRecoTrackIds().size() > 2) {
-      const vector<int>& recoEvents =
-        fMCEvents[iMCEvent].GetRecoEvents();  // for length calculations
-      bool reco = 0;
+      const vector<int>& recoEvents = fMCEvents[iMCEvent].GetRecoEvents();  // for length calculations
+      bool reco                     = 0;
       if (recoEvents.size() == 1) reco = 1;
       // number of cloned events
       int nclones = 0;
@@ -718,12 +660,10 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/) {
   }
 }
 
-bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile,
-                                                   const int iMCEvent,
-                                                   const int iMCTrack) {
+bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile, const int iMCEvent, const int iMCTrack)
+{
 
-  CbmMCTrack* mcTrack =
-    (CbmMCTrack*) fMCTracks->Get(iMCFile, iMCEvent, iMCTrack);
+  CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(iMCFile, iMCEvent, iMCTrack);
 
   bool f = 1;
 
@@ -744,16 +684,13 @@ bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile,
   int nMCContStations = 0;
   int istaold = -1, ncont = 0;
   int cur_maxNStaMC = 0, cur_maxNSensorMC = 0;
-  for (unsigned int iH = 0; iH < fPointsInTracks[iMCEvent][iMCTrack].size();
-       iH++) {
+  for (unsigned int iH = 0; iH < fPointsInTracks[iMCEvent][iMCTrack].size(); iH++) {
 
-    int iStsPoint = fPointsInTracks[iMCEvent][iMCTrack][iH];
-    CbmStsPoint* point =
-      (CbmStsPoint*) fStsPoints->Get(iMCFile, iMCEvent, iStsPoint);
+    int iStsPoint      = fPointsInTracks[iMCEvent][iMCTrack][iH];
+    CbmStsPoint* point = (CbmStsPoint*) fStsPoints->Get(iMCFile, iMCEvent, iStsPoint);
 
     int currentStation = -1;
-    for (int iStation = 0; iStation < CbmStsSetup::Instance()->GetNofStations();
-         iStation++) {
+    for (int iStation = 0; iStation < CbmStsSetup::Instance()->GetNofStations(); iStation++) {
       CbmStsStation* station = CbmStsSetup::Instance()->GetStation(iStation);
       const float zStation   = station->GetZ();
 
@@ -764,8 +701,7 @@ bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile,
     }
     if (currentStation < 0) continue;
 
-    if (currentStation == lastSta)
-      cur_maxNStaMC++;
+    if (currentStation == lastSta) cur_maxNStaMC++;
     else {  // new station
       if (cur_maxNStaMC > maxNStaMC) maxNStaMC = cur_maxNStaMC;
       cur_maxNStaMC = 1;
@@ -782,8 +718,7 @@ bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile,
     }
 
     int ista = currentStation;
-    if (ista - istaold == 1)
-      ncont++;
+    if (ista - istaold == 1) ncont++;
     else if (ista - istaold > 1) {
       if (nMCContStations < ncont) nMCContStations = ncont;
       ncont = 1;
@@ -808,7 +743,8 @@ bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile,
   return (isReconstructableTrack);
 };
 
-void CbmEventBuilderQA::Finish() {
+void CbmEventBuilderQA::Finish()
+{
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
   // Open output file and write histograms
@@ -823,10 +759,10 @@ void CbmEventBuilderQA::Finish() {
   gDirectory = curr;
 }
 
-void CbmEventBuilderQA::WriteHistosCurFile(TObject* obj) {
+void CbmEventBuilderQA::WriteHistosCurFile(TObject* obj)
+{
 
-  if (!obj->IsFolder())
-    obj->Write();
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur    = gDirectory;
     TFile* currentFile = gFile;

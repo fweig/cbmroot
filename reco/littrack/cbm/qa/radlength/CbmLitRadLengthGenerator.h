@@ -2,6 +2,7 @@
 #define CBMLITRADLENGTHGENERATOR_H_
 
 #include "FairGenerator.h"
+
 #include <vector>
 
 class FairPrimaryGenerator;
@@ -12,7 +13,8 @@ class CbmLitRadLengthGenerator : public FairGenerator {
 public:
   CbmLitRadLengthGenerator();
 
-  void SetXY(const vector<Double_t>& x, const vector<Double_t>& y) {
+  void SetXY(const vector<Double_t>& x, const vector<Double_t>& y)
+  {
     fX = x;
     fY = y;
   }

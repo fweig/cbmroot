@@ -8,6 +8,7 @@
 #define CBM_ANA_CONVERSION_KINEMATIC_PARAMS
 
 #include "CbmMCTrack.h"
+
 #include "TLorentzVector.h"
 #include "TMath.h"
 
@@ -26,11 +27,11 @@ public:
   /*
     * Calculate kinematic parameters for MC tracks.
     */
-  static CbmAnaConversionKinematicParams
-  KinematicParams_4particles_MC(const CbmMCTrack* mctrack1,
-                                const CbmMCTrack* mctrack2,
-                                const CbmMCTrack* mctrack3,
-                                const CbmMCTrack* mctrack4) {
+  static CbmAnaConversionKinematicParams KinematicParams_4particles_MC(const CbmMCTrack* mctrack1,
+                                                                       const CbmMCTrack* mctrack2,
+                                                                       const CbmMCTrack* mctrack3,
+                                                                       const CbmMCTrack* mctrack4)
+  {
     CbmAnaConversionKinematicParams params;
 
     TLorentzVector lorVec1;
@@ -59,8 +60,7 @@ public:
     TVector3 momPair    = part1 + part2 + part3 + part4;
     Double_t energyPair = energy1 + energy2 + energy3 + energy4;
     Double_t pzPair     = momPair.Pz();
-    Double_t yPair =
-      0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+    Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
 
     Double_t invmass = sum.Mag();
 
@@ -80,11 +80,9 @@ public:
   /*
     * Calculate kinematic parameters for reconstructed momenta
     */
-  static CbmAnaConversionKinematicParams
-  KinematicParams_4particles_Reco(const TVector3 part1,
-                                  const TVector3 part2,
-                                  const TVector3 part3,
-                                  const TVector3 part4) {
+  static CbmAnaConversionKinematicParams KinematicParams_4particles_Reco(const TVector3 part1, const TVector3 part2,
+                                                                         const TVector3 part3, const TVector3 part4)
+  {
     CbmAnaConversionKinematicParams params;
 
     Double_t energy1 = TMath::Sqrt(part1.Mag2() + M2E);
@@ -105,8 +103,7 @@ public:
     TVector3 momPair    = part1 + part2 + part3 + part4;
     Double_t energyPair = energy1 + energy2 + energy3 + energy4;
     Double_t pzPair     = momPair.Pz();
-    Double_t yPair =
-      0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+    Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
 
     Double_t invmass = sum.Mag();
 
@@ -124,9 +121,9 @@ public:
   }
 
 
-  static CbmAnaConversionKinematicParams
-  KinematicParams_2particles_Reco(const TVector3 electron1,
-                                  const TVector3 electron2) {
+  static CbmAnaConversionKinematicParams KinematicParams_2particles_Reco(const TVector3 electron1,
+                                                                         const TVector3 electron2)
+  {
     CbmAnaConversionKinematicParams params;
 
     Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
@@ -139,12 +136,10 @@ public:
     Double_t energyPair = energyP + energyM;
     Double_t ptPair     = momPair.Perp();
     Double_t pzPair     = momPair.Pz();
-    Double_t yPair =
-      0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
-    Double_t anglePair = lorVecM.Angle(lorVecP.Vect());
-    Double_t theta     = 180. * anglePair / TMath::Pi();
-    Double_t minv      = 2. * TMath::Sin(anglePair / 2.)
-                    * TMath::Sqrt(electron1.Mag() * electron2.Mag());
+    Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+    Double_t anglePair  = lorVecM.Angle(lorVecP.Vect());
+    Double_t theta      = 180. * anglePair / TMath::Pi();
+    Double_t minv       = 2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(electron1.Mag() * electron2.Mag());
 
     params.fMomentumMag = momPair.Mag();
     params.fPt          = ptPair;

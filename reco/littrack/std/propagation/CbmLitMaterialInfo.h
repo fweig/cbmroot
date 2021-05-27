@@ -19,8 +19,7 @@ using std::string;
 class CbmLitMaterialInfo {
 public:
   /* Constructor */
-  CbmLitMaterialInfo()
-    : fLength(0.), fRL(0.), fRho(0.), fZ(0.), fA(0.), fZpos(0.), fName("") {}
+  CbmLitMaterialInfo() : fLength(0.), fRL(0.), fRho(0.), fZ(0.), fA(0.), fZpos(0.), fName("") {}
 
   // This constructor never used!
   //   /* Constructor with assignment
@@ -91,11 +90,11 @@ public:
   void SetName(const string& name) { fName = name; }
 
   /* @return String representation of the class */
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
-    ss << "MaterialInfo: length=" << fLength << " rl=" << fRL << " rho=" << fRho
-       << " Z=" << fZ << " A=" << fA << " zpos=" << fZpos << " name=" << fName
-       << std::endl;
+    ss << "MaterialInfo: length=" << fLength << " rl=" << fRL << " rho=" << fRho << " Z=" << fZ << " A=" << fA
+       << " zpos=" << fZpos << " name=" << fName << std::endl;
     return ss.str();
   }
 

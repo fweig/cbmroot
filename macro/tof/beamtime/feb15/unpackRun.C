@@ -1,4 +1,5 @@
-void unpackRun(char* cFileId = "CernSps05Mar0041") {
+void unpackRun(char* cFileId = "CernSps05Mar0041")
+{
   FairRunOnline* run = new FairRunOnline();
   gROOT->LoadMacro("setup_unpack.C");
   cout << "Process FileId  " << cFileId << endl;

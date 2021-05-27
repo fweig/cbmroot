@@ -9,15 +9,14 @@
 // The macro follows the file naming conventions of macro/run/run_transport.C
 // --------------------------------------------------------------------------
 
-void sts_transport(Int_t nEvents         = 3,
-                   const char* output    = "sts",
-                   const char* inputFile = "") {
+void sts_transport(Int_t nEvents = 3, const char* output = "sts", const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName    = "sts_transport";  // this macro's name for screen output
+  TString myName    = "sts_transport";                // this macro's name for screen output
   TString srcDir    = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString setupName = "sis100_hadron";
   // ------------------------------------------------------------------------
@@ -31,8 +30,7 @@ void sts_transport(Int_t nEvents         = 3,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if (strcmp(inputFile, "") == 0)
-    inFile = defaultInputFile;
+  if (strcmp(inputFile, "") == 0) inFile = defaultInputFile;
   else
     inFile = inputFile;
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -61,7 +59,7 @@ void sts_transport(Int_t nEvents         = 3,
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -127,8 +125,7 @@ void sts_transport(Int_t nEvents         = 3,
   // Remove all geometries except STS
   TString dummy;
   for (Int_t module = 0; module < kLastModule; module++) {
-    if (module != kSts && setup->GetGeoTag(module, dummy))
-      CbmSetup::Instance()->RemoveModule(module);
+    if (module != kSts && setup->GetGeoTag(module, dummy)) CbmSetup::Instance()->RemoveModule(module);
   }
   // ------------------------------------------------------------------------
 
@@ -153,8 +150,7 @@ void sts_transport(Int_t nEvents         = 3,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -176,8 +172,7 @@ void sts_transport(Int_t nEvents         = 3,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -249,9 +244,7 @@ void sts_transport(Int_t nEvents         = 3,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

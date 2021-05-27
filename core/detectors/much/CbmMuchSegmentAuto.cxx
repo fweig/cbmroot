@@ -39,6 +39,7 @@
 #include <cassert>  // for assert
 #include <iosfwd>   // for string
 #include <limits>   // for numeric_limits
+
 #include <math.h>   // for exp
 #include <stdio.h>  // for printf, fprintf, fclose
 
@@ -60,7 +61,9 @@ CbmMuchSegmentAuto::CbmMuchSegmentAuto()
   , fSigmaYmin()
   , fSigmaXmax()
   , fSigmaYmax()
-  , fOccupancyMax() {}
+  , fOccupancyMax()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -79,14 +82,17 @@ CbmMuchSegmentAuto::CbmMuchSegmentAuto(const char* digiFileName)
   , fSigmaYmin()
   , fSigmaXmax()
   , fSigmaYmax()
-  , fOccupancyMax() {}
+  , fOccupancyMax()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
 CbmMuchSegmentAuto::~CbmMuchSegmentAuto() {}
 // -------------------------------------------------------------------------
 
-void CbmMuchSegmentAuto::SetNStations(Int_t nStations) {
+void CbmMuchSegmentAuto::SetNStations(Int_t nStations)
+{
   fNStations = nStations;
   fSigmaXmin.resize(fNStations);
   fSigmaYmin.resize(fNStations);
@@ -95,27 +101,31 @@ void CbmMuchSegmentAuto::SetNStations(Int_t nStations) {
   fOccupancyMax.resize(fNStations);
 }
 
-void CbmMuchSegmentAuto::SetSigmaMin(Double_t* sigmaXmin, Double_t* sigmaYmin) {
+void CbmMuchSegmentAuto::SetSigmaMin(Double_t* sigmaXmin, Double_t* sigmaYmin)
+{
   for (Int_t iStation = 0; iStation < fNStations; ++iStation) {
     fSigmaXmin.at(iStation) = sigmaXmin[iStation];
     fSigmaYmin.at(iStation) = sigmaYmin[iStation];
   }
 }
-void CbmMuchSegmentAuto::SetSigmaMax(Double_t* sigmaXmax, Double_t* sigmaYmax) {
+void CbmMuchSegmentAuto::SetSigmaMax(Double_t* sigmaXmax, Double_t* sigmaYmax)
+{
   for (Int_t iStation = 0; iStation < fNStations; ++iStation) {
     fSigmaXmax.at(iStation) = sigmaXmax[iStation];
     fSigmaYmax.at(iStation) = sigmaYmax[iStation];
   }
 }
 
-void CbmMuchSegmentAuto::SetOccupancyMax(Double_t* occupancyMax) {
+void CbmMuchSegmentAuto::SetOccupancyMax(Double_t* occupancyMax)
+{
   for (Int_t iStation = 0; iStation < fNStations; ++iStation) {
     fOccupancyMax.at(iStation) = occupancyMax[iStation];
   }
 }
 
 // -----   Private method SetParContainers  --------------------------------
-void CbmMuchSegmentAuto::SetParContainers() {
+void CbmMuchSegmentAuto::SetParContainers()
+{
   // Get runtime database
   FairRuntimeDb* db = FairRuntimeDb::instance();
   if (!db) Fatal("SetParContainers", "No runtime database");
@@ -126,7 +136,8 @@ void CbmMuchSegmentAuto::SetParContainers() {
 
 
 // -----   Private method Init  --------------------------------------------
-InitStatus CbmMuchSegmentAuto::Init() {
+InitStatus CbmMuchSegmentAuto::Init()
+{
   FairRootManager* fManager = FairRootManager::Instance();
   fPoints                   = (TClonesArray*) fManager->GetObject("MuchPoint");
   fEvents                   = 0;
@@ -139,8 +150,7 @@ InitStatus CbmMuchSegmentAuto::Init() {
 
   for (Int_t i = 0; i < fNStations; i++) {
     //    CbmMuchStation* station = (CbmMuchStation*) fStations->At(i);
-    fHistHitDensity[i] = new TH1D(
-      Form("hStation%i", i + 1), Form("Station %i", i + 1), 110, 0, 220);
+    fHistHitDensity[i] = new TH1D(Form("hStation%i", i + 1), Form("Station %i", i + 1), 110, 0, 220);
     fHistHitDensity[i]->GetXaxis()->SetTitle("r, cm");
     fHistHitDensity[i]->GetYaxis()->SetTitle("hits/(event#timescm^{2})");
     fHistHitDensity[i]->SetLineColor(4);
@@ -152,7 +162,8 @@ InitStatus CbmMuchSegmentAuto::Init() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMuchSegmentAuto::Exec(Option_t*) {
+void CbmMuchSegmentAuto::Exec(Option_t*)
+{
   fEvents++;
   printf("Event: %i\n", fEvents);
 
@@ -178,7 +189,8 @@ void CbmMuchSegmentAuto::Exec(Option_t*) {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMuchSegmentAuto::FinishTask() {
+void CbmMuchSegmentAuto::FinishTask()
+{
   // Create normalization histo
   TH1D* hNorm      = new TH1D("hNorm", "", 110, 0, 220);
   Double_t binSize = 2.;
@@ -193,8 +205,7 @@ void CbmMuchSegmentAuto::FinishTask() {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(i);
     TH1D* h                 = fHistHitDensity[i];
     h->Divide(hNorm);
-    TCanvas* c1 = new TCanvas(
-      Form("cStation%i", i + 1), Form("Station %i", i + 1), 10, 10, 500, 500);
+    TCanvas* c1 = new TCanvas(Form("cStation%i", i + 1), Form("Station %i", i + 1), 10, 10, 500, 500);
     c1->SetLogy();
     c1->SetLeftMargin(0.12);
     c1->SetRightMargin(0.08);
@@ -208,10 +219,8 @@ void CbmMuchSegmentAuto::FinishTask() {
     fExp1.push_back(exp1);
 
     h->Draw();
-    c1->Print(
-      Form("%s/hd_station%i.eps", gSystem->DirName(fDigiFileName), i + 1));
-    c1->Print(
-      Form("%s/hd_station%i.png", gSystem->DirName(fDigiFileName), i + 1));
+    c1->Print(Form("%s/hd_station%i.eps", gSystem->DirName(fDigiFileName), i + 1));
+    c1->Print(Form("%s/hd_station%i.png", gSystem->DirName(fDigiFileName), i + 1));
   }
 
   for (Int_t i = 0; i < fNStations; i++) {
@@ -234,7 +243,7 @@ void CbmMuchSegmentAuto::FinishTask() {
   TDirectory* oldDir = gDirectory;
 
   // Save parameters
-  TFile* f       = new TFile(fDigiFileName, "RECREATE");
+  TFile* f = new TFile(fDigiFileName, "RECREATE");
   fStations->Write("stations", 1);
 
   f->Close();
@@ -250,7 +259,8 @@ void CbmMuchSegmentAuto::FinishTask() {
 
 
 // -----   Private method InitLayerSide  -----------------------------------
-void CbmMuchSegmentAuto::InitLayerSide(CbmMuchLayerSide* layerSide) {
+void CbmMuchSegmentAuto::InitLayerSide(CbmMuchLayerSide* layerSide)
+{
   if (!layerSide) Fatal("Init", "Incomplete layer sides array.");
   Int_t nModules = layerSide->GetNModules();
   for (Int_t iModule = 0; iModule < nModules; iModule++) {
@@ -264,7 +274,8 @@ void CbmMuchSegmentAuto::InitLayerSide(CbmMuchLayerSide* layerSide) {
 
 
 // -----   Private method SegmentModule  -----------------------------------
-void CbmMuchSegmentAuto::SegmentModule(CbmMuchModuleGem* module) {
+void CbmMuchSegmentAuto::SegmentModule(CbmMuchModuleGem* module)
+{
   TVector3 modSize     = module->GetSize();
   Double_t modLx       = modSize.X();
   Double_t modLy       = modSize.Y();
@@ -274,9 +285,8 @@ void CbmMuchSegmentAuto::SegmentModule(CbmMuchModuleGem* module) {
   Double_t modY        = modPosition.Y();
   Double_t modZ        = modPosition.Z();
 
-  Bool_t result = modLx > modLy;
-  Int_t iRatio  = (result) ? (Int_t)((modLx + 1e-3) / modLy)
-                          : (Int_t)((modLy + 1e-3) / modLx);
+  Bool_t result    = modLx > modLy;
+  Int_t iRatio     = (result) ? (Int_t)((modLx + 1e-3) / modLy) : (Int_t)((modLy + 1e-3) / modLx);
   Int_t detectorId = module->GetDetectorId();
   Double_t secLx   = (result) ? modLx / iRatio : modLx;
   Double_t secLy   = (result) ? modLy : modLy / iRatio;
@@ -287,16 +297,16 @@ void CbmMuchSegmentAuto::SegmentModule(CbmMuchModuleGem* module) {
 
     TVector3 sectorPosition(secX, secY, modZ);
     TVector3 sectorSize(secLx, secLy, modLz);
-    CbmMuchSectorRectangular* sector = new CbmMuchSectorRectangular(
-      detectorId, iSector, sectorPosition, sectorSize, 8, 16);
+    CbmMuchSectorRectangular* sector =
+      new CbmMuchSectorRectangular(detectorId, iSector, sectorPosition, sectorSize, 8, 16);
     SegmentSector(module, sector);
   }
 }
 // -------------------------------------------------------------------------
 
 // -----  Private method SegmentSector  ------------------------------------
-void CbmMuchSegmentAuto::SegmentSector(CbmMuchModuleGem* module,
-                                       CbmMuchSectorRectangular* sector) {
+void CbmMuchSegmentAuto::SegmentSector(CbmMuchModuleGem* module, CbmMuchSectorRectangular* sector)
+{
   TVector3 secSize     = sector->GetSize();
   TVector3 secPosition = sector->GetPosition();
   Int_t detectorId     = module->GetDetectorId();
@@ -319,13 +329,11 @@ void CbmMuchSegmentAuto::SegmentSector(CbmMuchModuleGem* module,
   Bool_t result1 = ShouldSegmentByX(sector);
   Bool_t result2 = ShouldSegmentByY(sector);
 
-  if (result1 || result2) {
-    delete sector;
-  } else {
+  if (result1 || result2) { delete sector; }
+  else {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
     Double_t rMax           = station->GetRmax();
-    if ((IntersectsRad(sector, module->GetCutRadius()) == 2)
-        || !IntersectsRad(sector, rMax)) {
+    if ((IntersectsRad(sector, module->GetCutRadius()) == 2) || !IntersectsRad(sector, rMax)) {
       delete sector;
       return;
     }
@@ -341,53 +349,43 @@ void CbmMuchSegmentAuto::SegmentSector(CbmMuchModuleGem* module,
   if (result1 && result2) {
     if (equal) { res = kTRUE; }
     for (Int_t i = 0; i < 2; ++i) {
-      iSector =
-        module
-          ->GetNSectors();  //CbmMuchGeoScheme::GetDetIdFromModule(moduleId, module->GetNSectors());
+      iSector  = module->GetNSectors();  //CbmMuchGeoScheme::GetDetIdFromModule(moduleId, module->GetNSectors());
       newSecLx = res ? secLx / 2. : secLx;
       newSecLy = res ? secLy : secLy / 2.;
       newSecX  = res ? secX + (i - 0.5) * newSecLx : secX;
       newSecY  = res ? secY : secY + (i - 0.5) * newSecLy;
       position.SetXYZ(newSecX, newSecY, secZ);
       size.SetXYZ(newSecLx, newSecLy, secLz);
-      SegmentSector(module,
-                    new CbmMuchSectorRectangular(
-                      detectorId, iSector, position, size, 8, 16));
+      SegmentSector(module, new CbmMuchSectorRectangular(detectorId, iSector, position, size, 8, 16));
     }
-  } else if (result1 || result2) {
+  }
+  else if (result1 || result2) {
     for (Int_t i = 0; i < 2; i++) {
-      iSector =
-        module
-          ->GetNSectors();  //CbmMuchGeoScheme::GetDetIdFromModule(moduleId, module->GetNSectors());
+      iSector  = module->GetNSectors();  //CbmMuchGeoScheme::GetDetIdFromModule(moduleId, module->GetNSectors());
       newSecLx = result1 ? secLx / 2. : secLx;
       newSecLy = result1 ? secLy : secLy / 2;
       newSecX  = result1 ? secX + (i - 0.5) * newSecLx : secX;
       newSecY  = result1 ? secY : secY + (i - 0.5) * newSecLy;
       position.SetXYZ(newSecX, newSecY, secZ);
       size.SetXYZ(newSecLx, newSecLy, secLz);
-      SegmentSector(module,
-                    new CbmMuchSectorRectangular(
-                      detectorId, iSector, position, size, 8, 16));
+      SegmentSector(module, new CbmMuchSectorRectangular(detectorId, iSector, position, size, 8, 16));
     }
   }
 }
 // -------------------------------------------------------------------------
 
 // -----  Private method ShouldSegmentByX  ---------------------------------
-Bool_t CbmMuchSegmentAuto::ShouldSegmentByX(CbmMuchSectorRectangular* sector) {
+Bool_t CbmMuchSegmentAuto::ShouldSegmentByX(CbmMuchSectorRectangular* sector)
+{
   Double_t secLx = sector->GetSize()[0];
   Double_t secLy = sector->GetSize()[1];
   Double_t secX  = sector->GetPosition()[0];
   Double_t secY  = sector->GetPosition()[1];
 
-  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
-  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
 
   Double_t uR = (ulR < urR) ? ulR : urR;
   Double_t bR = (blR < brR) ? blR : brR;
@@ -396,22 +394,16 @@ Bool_t CbmMuchSegmentAuto::ShouldSegmentByX(CbmMuchSectorRectangular* sector) {
   Int_t iStation = CbmMuchAddress::GetStationIndex(sector->GetAddress());
   //CbmMuchStationGem* station = (CbmMuchStationGem*)fStations->At(iStation);
   // Check minimum and maximum allowed resolution
-  Double_t sigmaMax =
-    fSigmaXmax.at(iStation);  //station->GetSigmaXmax(); //[cm]
-  Double_t sigmaMin =
-    fSigmaXmin.at(iStation);  //station->GetSigmaXmin(); //[cm]
-  Double_t sigma = sector->GetSigmaX();
+  Double_t sigmaMax = fSigmaXmax.at(iStation);  //station->GetSigmaXmax(); //[cm]
+  Double_t sigmaMin = fSigmaXmin.at(iStation);  //station->GetSigmaXmin(); //[cm]
+  Double_t sigma    = sector->GetSigmaX();
   if (sigma > sigmaMin && sigma / 2. < sigmaMin) return false;
   if (sigma > sigmaMax) return true;
   // Check for occupancy
-  Double_t hitDensity = exp(fExp0.at(iStation) + fExp1.at(iStation) * R);
-  Double_t occupancyMax =
-    fOccupancyMax.at(iStation);  //station->GetOccupancyMax();
-  Double_t sPad = secLx * secLy / 128.;
-  Double_t nPads =
-    (1.354
-     - 0.304
-         * TMath::Log2(sPad));  // number of pads fired by one track in average
+  Double_t hitDensity   = exp(fExp0.at(iStation) + fExp1.at(iStation) * R);
+  Double_t occupancyMax = fOccupancyMax.at(iStation);  //station->GetOccupancyMax();
+  Double_t sPad         = secLx * secLy / 128.;
+  Double_t nPads        = (1.354 - 0.304 * TMath::Log2(sPad));  // number of pads fired by one track in average
   //printf("nPads:%f\n",nPads);
   Double_t occupancy = hitDensity * sPad * nPads;
   if (occupancy > occupancyMax) return true;
@@ -420,20 +412,17 @@ Bool_t CbmMuchSegmentAuto::ShouldSegmentByX(CbmMuchSectorRectangular* sector) {
 // -------------------------------------------------------------------------
 
 // -----  Private method ShouldSegmentByY  ---------------------------------
-Bool_t CbmMuchSegmentAuto::ShouldSegmentByY(CbmMuchSectorRectangular* sector) {
+Bool_t CbmMuchSegmentAuto::ShouldSegmentByY(CbmMuchSectorRectangular* sector)
+{
   Double_t secLx = sector->GetSize()[0];
   Double_t secLy = sector->GetSize()[1];
   Double_t secX  = sector->GetPosition()[0];
   Double_t secY  = sector->GetPosition()[1];
 
-  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
-  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
 
   Double_t uR = (ulR < urR) ? ulR : urR;
   Double_t bR = (blR < brR) ? blR : brR;
@@ -442,23 +431,17 @@ Bool_t CbmMuchSegmentAuto::ShouldSegmentByY(CbmMuchSectorRectangular* sector) {
   Int_t iStation = CbmMuchAddress::GetStationIndex(sector->GetAddress());
   //CbmMuchStationGem* station = (CbmMuchStationGem*)fStations->At(iStation);
   // Check minimum and maximum allowed resolution
-  Double_t sigmaMax =
-    fSigmaYmax.at(iStation);  //station->GetSigmaYmax(); //[cm]
-  Double_t sigmaMin =
-    fSigmaYmin.at(iStation);  //station->GetSigmaYmin(); //[cm]
-  Double_t sigma = sector->GetSigmaY();
+  Double_t sigmaMax = fSigmaYmax.at(iStation);  //station->GetSigmaYmax(); //[cm]
+  Double_t sigmaMin = fSigmaYmin.at(iStation);  //station->GetSigmaYmin(); //[cm]
+  Double_t sigma    = sector->GetSigmaY();
   if (sigma > sigmaMin && sigma / 2. < sigmaMin) return false;
   if (sigma > sigmaMax) return true;
   // Check for occupancy
-  Double_t hitDensity = exp(fExp0.at(iStation) + fExp1.at(iStation) * R);
-  Double_t occupancyMax =
-    fOccupancyMax.at(iStation);  //station->GetOccupancyMax();
-  Double_t sPad = secLx * secLy / 128.;
-  Double_t nPads =
-    (1.354
-     - 0.304
-         * TMath::Log2(sPad));  // number of pads fired by one track in average
-  Double_t occupancy = hitDensity * sPad * nPads;
+  Double_t hitDensity   = exp(fExp0.at(iStation) + fExp1.at(iStation) * R);
+  Double_t occupancyMax = fOccupancyMax.at(iStation);  //station->GetOccupancyMax();
+  Double_t sPad         = secLx * secLy / 128.;
+  Double_t nPads        = (1.354 - 0.304 * TMath::Log2(sPad));  // number of pads fired by one track in average
+  Double_t occupancy    = hitDensity * sPad * nPads;
   if (occupancy > occupancyMax) return true;
   return false;
 }
@@ -466,8 +449,8 @@ Bool_t CbmMuchSegmentAuto::ShouldSegmentByY(CbmMuchSectorRectangular* sector) {
 
 
 // -----  Private method IntersectsHole  -----------------------------------
-Int_t CbmMuchSegmentAuto::IntersectsRad(CbmMuchSectorRectangular* sector,
-                                        Double_t radius) {
+Int_t CbmMuchSegmentAuto::IntersectsRad(CbmMuchSectorRectangular* sector, Double_t radius)
+{
   if (radius < 0) return 0;
 
   Int_t intersects = 0;
@@ -477,14 +460,10 @@ Int_t CbmMuchSegmentAuto::IntersectsRad(CbmMuchSectorRectangular* sector,
   Double_t secX  = sector->GetPosition()[0];
   Double_t secY  = sector->GetPosition()[1];
 
-  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY + secLy / 2.) * (secY + secLy / 2.));
-  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
-  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.)
-                             + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t ulR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t urR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY + secLy / 2.) * (secY + secLy / 2.));
+  Double_t blR = TMath::Sqrt((secX - secLx / 2.) * (secX - secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
+  Double_t brR = TMath::Sqrt((secX + secLx / 2.) * (secX + secLx / 2.) + (secY - secLy / 2.) * (secY - secLy / 2.));
 
   if (ulR < radius) intersects++;
   if (urR < radius) intersects++;
@@ -492,14 +471,14 @@ Int_t CbmMuchSegmentAuto::IntersectsRad(CbmMuchSectorRectangular* sector,
   if (brR < radius) intersects++;
 
   if (intersects == 4) return 2;
-  if (intersects)
-    return 1;
+  if (intersects) return 1;
   else
     return 0;
 }
 // -------------------------------------------------------------------------
 
-void CbmMuchSegmentAuto::Print(Option_t*) const {
+void CbmMuchSegmentAuto::Print(Option_t*) const
+{
   printf("Segmentation written to file %s\n", fDigiFileName.Data());
   Int_t nTotSectors  = 0;
   Int_t nTotChannels = 0;
@@ -533,10 +512,8 @@ void CbmMuchSegmentAuto::Print(Option_t*) const {
               if (!module) continue;
               nGems++;
               nSectors += module->GetNSectors();
-              for (Int_t iSector = 0; iSector < module->GetNSectors();
-                   ++iSector) {
-                CbmMuchSectorRectangular* sector =
-                  (CbmMuchSectorRectangular*) module->GetSector(iSector);
+              for (Int_t iSector = 0; iSector < module->GetNSectors(); ++iSector) {
+                CbmMuchSectorRectangular* sector = (CbmMuchSectorRectangular*) module->GetSector(iSector);
                 if (!sector) continue;
                 Double_t padLx = sector->GetPadDx();
                 Double_t padLy = sector->GetPadDy();
@@ -560,12 +537,7 @@ void CbmMuchSegmentAuto::Print(Option_t*) const {
     if (nGems)
       printf("      Sectors: %i,  Pads: %i, Min.Pad size:%3.2fx%3.2f, Max.Pad "
              "size:%3.2fx%3.2f\n",
-             nSectors,
-             nChannels,
-             padMinLx,
-             padMinLy,
-             padMaxLx,
-             padMaxLy);
+             nSectors, nChannels, padMinLx, padMinLy, padMaxLx, padMaxLy);
     printf("   Straw modules: %i\n", nStraws);
     nTotSectors += nSectors;
     nTotChannels += nChannels;
@@ -576,15 +548,13 @@ void CbmMuchSegmentAuto::Print(Option_t*) const {
          "----------------------------\n");
   printf(" Summary: \n   GEM modules: %i\n      Sectors: %i, Pads: %i\n   "
          "Straw modules: %i\n",
-         nTotGems,
-         nTotSectors,
-         nTotChannels,
-         nTotStraws);
+         nTotGems, nTotSectors, nTotChannels, nTotStraws);
   printf("====================================================================="
          "============================\n");
 }
 
-void CbmMuchSegmentAuto::DrawSegmentation() {
+void CbmMuchSegmentAuto::DrawSegmentation()
+{
   string digifile(fDigiFileName.Data());
   Int_t startIndex = digifile.size() - 4;
   string txtfile   = digifile.erase(startIndex, 4);
@@ -607,8 +577,7 @@ void CbmMuchSegmentAuto::DrawSegmentation() {
         if (mod->GetDetectorType() != 1) continue;
         CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
         for (Int_t iSector = 0; iSector < module->GetNSectors(); ++iSector) {
-          CbmMuchSectorRectangular* sector =
-            (CbmMuchSectorRectangular*) module->GetSector(iSector);
+          CbmMuchSectorRectangular* sector = (CbmMuchSectorRectangular*) module->GetSector(iSector);
           if (sector->GetSize()[0] < secMinLx) secMinLx = sector->GetSize()[0];
           if (sector->GetSize()[1] < secMinLy) secMinLy = sector->GetSize()[1];
         }
@@ -617,20 +586,14 @@ void CbmMuchSegmentAuto::DrawSegmentation() {
   }
 
   for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
-    fprintf(outfile,
-            "=================================================================="
-            "==========\n");
+    fprintf(outfile, "=================================================================="
+                     "==========\n");
     fprintf(outfile, "Station %i\n", iStation + 1);
-    fprintf(outfile,
-            "Sector size, cm   Sector position, cm   Number of pads   Side   "
-            "Pad size, cm\n");
-    fprintf(outfile,
-            "------------------------------------------------------------------"
-            "----------\n");
-    TCanvas* c1 = new TCanvas(Form("station%i", iStation + 1),
-                              Form("station%i", iStation + 1),
-                              800,
-                              800);
+    fprintf(outfile, "Sector size, cm   Sector position, cm   Number of pads   Side   "
+                     "Pad size, cm\n");
+    fprintf(outfile, "------------------------------------------------------------------"
+                     "----------\n");
+    TCanvas* c1 = new TCanvas(Form("station%i", iStation + 1), Form("station%i", iStation + 1), 800, 800);
     c1->SetFillColor(0);
     c1->Range(-250, -250, 250, 250);
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
@@ -644,8 +607,7 @@ void CbmMuchSegmentAuto::DrawSegmentation() {
         if (mod->GetDetectorType() != 1) continue;
         CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
         for (Int_t iSector = 0; iSector < module->GetNSectors(); ++iSector) {
-          CbmMuchSectorRectangular* sector =
-            (CbmMuchSectorRectangular*) module->GetSector(iSector);
+          CbmMuchSectorRectangular* sector = (CbmMuchSectorRectangular*) module->GetSector(iSector);
 
           //          Int_t i = Int_t((sector->GetSize()[0]+1e-3)/secMinLx) - 1;
           //          Int_t j = Int_t((sector->GetSize()[1]+1e-3)/secMinLy) - 1;
@@ -654,13 +616,8 @@ void CbmMuchSegmentAuto::DrawSegmentation() {
           //          sector->Draw("f");
           //          sector->Draw();
           const char* side = iSide ? "Back" : "Front";
-          fprintf(outfile,
-                  "%-4.2fx%-10.2f   %-6.2fx%-12.2f   %-14i   %-5s   ",
-                  sector->GetSize()[0],
-                  sector->GetSize()[1],
-                  sector->GetPosition()[0],
-                  sector->GetPosition()[1],
-                  sector->GetNChannels(),
+          fprintf(outfile, "%-4.2fx%-10.2f   %-6.2fx%-12.2f   %-14i   %-5s   ", sector->GetSize()[0],
+                  sector->GetSize()[1], sector->GetPosition()[0], sector->GetPosition()[1], sector->GetNChannels(),
                   side);
           //TODO          fprintf(outfile, "%-4.2fx%-4.2f\n", sector->GetDx(), sector->GetDy());
         }  // sectors
@@ -671,10 +628,8 @@ void CbmMuchSegmentAuto::DrawSegmentation() {
     TArc* arc = new TArc(0., 0., station->GetRmin());
     arc->Draw();
 
-    c1->Print(
-      Form("%s/station%i.eps", gSystem->DirName(fDigiFileName), iStation + 1));
-    c1->Print(
-      Form("%s/station%i.png", gSystem->DirName(fDigiFileName), iStation + 1));
+    c1->Print(Form("%s/station%i.eps", gSystem->DirName(fDigiFileName), iStation + 1));
+    c1->Print(Form("%s/station%i.png", gSystem->DirName(fDigiFileName), iStation + 1));
   }  //stations
   fclose(outfile);
 }

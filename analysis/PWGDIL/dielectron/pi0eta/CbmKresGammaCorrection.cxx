@@ -15,6 +15,7 @@
  **/
 
 #include "CbmKresGammaCorrection.h"
+
 #include "TFile.h"
 #include "TH2D.h"
 #include "TMath.h"
@@ -29,22 +30,21 @@ CbmKresGammaCorrection::CbmKresGammaCorrection()
   : fHistoList_factors()
   , Correction_factros_all(nullptr)
   , Correction_factros_two(nullptr)
-  , Correction_factros_onetwo(nullptr) {}
+  , Correction_factros_onetwo(nullptr)
+{
+}
 
 CbmKresGammaCorrection::~CbmKresGammaCorrection() {}
 
 void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
                                   std::vector<std::vector<double>>& vect_two,
-                                  std::vector<std::vector<double>>& vect_onetwo,
-                                  double OA,
-                                  double IM) {
+                                  std::vector<std::vector<double>>& vect_onetwo, double OA, double IM)
+{
   InitHistograms();
 
-  string Correction_path =
-    string(gSystem->Getenv("VMCWORKDIR"))
-    + Form("/analysis/conversion2/Correction_pi0_g_OA%i_IM%i_num2.root",
-           (int) OA,
-           (int) IM);  /// most recent files for conversion
+  string Correction_path = string(gSystem->Getenv("VMCWORKDIR"))
+                           + Form("/analysis/conversion2/Correction_pi0_g_OA%i_IM%i_num2.root", (int) OA,
+                                  (int) IM);  /// most recent files for conversion
   cout << "file is " << Correction_path << endl;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -52,17 +52,12 @@ void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
   TDirectory* oldDir = gDirectory;
 
   TFile* fcorrection = new TFile(
-    Correction_path
-      .c_str());  // file with almost ?? Mio photons, homogeneously distributed over interested region
+    Correction_path.c_str());  // file with almost ?? Mio photons, homogeneously distributed over interested region
   // rapidity graphs
-  TH2D* mc = (TH2D*) fcorrection->Get(
-    "conversionKres/General/MC_info/MC_Direct_photons_Pt_vs_rap_est");
-  TH2D* all = (TH2D*) fcorrection->Get(
-    "conversionKres/direct photons/Both/all/Ph_pt_vs_rap_est_all_Both");
-  TH2D* two = (TH2D*) fcorrection->Get(
-    "conversionKres/direct photons/Both/two/Ph_pt_vs_rap_est_two_Both");
-  TH2D* onetwo = (TH2D*) fcorrection->Get(
-    "conversionKres/direct photons/Both/onetwo/Ph_pt_vs_rap_est_onetwo_Both");
+  TH2D* mc     = (TH2D*) fcorrection->Get("conversionKres/General/MC_info/MC_Direct_photons_Pt_vs_rap_est");
+  TH2D* all    = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/all/Ph_pt_vs_rap_est_all_Both");
+  TH2D* two    = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/two/Ph_pt_vs_rap_est_two_Both");
+  TH2D* onetwo = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/onetwo/Ph_pt_vs_rap_est_onetwo_Both");
 
   std::vector<double> rapidity_column;
 
@@ -120,7 +115,8 @@ void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
   gDirectory = oldDir;
 }
 
-void CbmKresGammaCorrection::Finish() {
+void CbmKresGammaCorrection::Finish()
+{
   gDirectory->mkdir("Correction factors");
   gDirectory->cd("Correction factors");
   for (UInt_t i = 0; i < fHistoList_factors.size(); i++) {
@@ -129,35 +125,15 @@ void CbmKresGammaCorrection::Finish() {
   gDirectory->cd("..");
 }
 
-void CbmKresGammaCorrection::InitHistograms() {
+void CbmKresGammaCorrection::InitHistograms()
+{
   Correction_factros_all =
-    new TH2D("Correction_factros_all",
-             "Correction_factros_all; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("Correction_factros_all", "Correction_factros_all; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_factors.push_back(Correction_factros_all);
   Correction_factros_two =
-    new TH2D("Correction_factros_two",
-             "Correction_factros_two; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("Correction_factros_two", "Correction_factros_two; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_factors.push_back(Correction_factros_two);
-  Correction_factros_onetwo =
-    new TH2D("Correction_factros_onetwo",
-             "Correction_factros_onetwo; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+  Correction_factros_onetwo = new TH2D(
+    "Correction_factros_onetwo", "Correction_factros_onetwo; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_factors.push_back(Correction_factros_onetwo);
 }

@@ -45,12 +45,10 @@ const Int_t ModMask = 0x00007FFF;  // geo v21a
 Int_t iNevtBuild=0; // Should be class member!
 Int_t iMsgCnt=100;  // Should be class member!
 */
-const Int_t nbClWalkBinX = 50;  // was 100 (11.10.2018)
-const Int_t nbClWalkBinY =
-  41;  // choose odd number to have central bin symmetric around 0
-const Double_t WalkNHmin =
-  10.;  // minimal number of hits in bin for walk correction
-const Int_t iNWalkSmooth = 1;  // Smoothing level for walk histos
+const Int_t nbClWalkBinX = 50;   // was 100 (11.10.2018)
+const Int_t nbClWalkBinY = 41;   // choose odd number to have central bin symmetric around 0
+const Double_t WalkNHmin = 10.;  // minimal number of hits in bin for walk correction
+const Int_t iNWalkSmooth = 1;    // Smoothing level for walk histos
 /*
 Double_t TOTMax=5.E4; // Should be class member!
 Double_t TOTMin=0.;           //2.E4; // Should be class member!

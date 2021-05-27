@@ -8,9 +8,9 @@
 #ifndef CbmMcbm2018MonitorDataRates_H
 #define CbmMcbm2018MonitorDataRates_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 #include "Rtypes.h"
 #include "TClonesArray.h"
@@ -46,27 +46,19 @@ public:
 
   Bool_t ReInitContainers();
 
-  void SetMsLimitLevel(size_t uAcceptBoundaryPct = 100) {
-    fuMsAcceptsPercent = uAcceptBoundaryPct;
-  }
+  void SetMsLimitLevel(size_t uAcceptBoundaryPct = 100) { fuMsAcceptsPercent = uAcceptBoundaryPct; }
   size_t GetMsLimitLevel() { return fuMsAcceptsPercent; }
 
   virtual void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
-  void SetIgnoreOverlapMs(Bool_t bEnaFlag = kTRUE) {
-    fbIgnoreOverlapMs = bEnaFlag;
-  }
+  void SetIgnoreOverlapMs(Bool_t bEnaFlag = kTRUE) { fbIgnoreOverlapMs = bEnaFlag; }
   void SetMsOverlap(size_t uOverlapMsNb = 1) { fuOverlapMsNb = uOverlapMsNb; }
   size_t GetMsOverlap() { return fuOverlapMsNb; }
 
   inline void SetHistoFilename(TString sNameIn) { fsHistoFilename = sNameIn; }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
 
-  inline void AddEqIdChannelNumber(UInt_t uEqId, UInt_t uNbCh) {
-    fmChannelsPerEqId[uEqId] = uNbCh;
-  }
+  inline void AddEqIdChannelNumber(UInt_t uEqId, UInt_t uNbCh) { fmChannelsPerEqId[uEqId] = uNbCh; }
 
   void SaveAllHistos(TString sFileName = "");
   void ResetAllHistos();
@@ -78,16 +70,13 @@ private:
   std::vector<size_t> fvMsComponentsList;  //!
   size_t fuNbCoreMsPerTs;                  //!
   size_t fuNbOverMsPerTs;                  //!
-  Bool_t
-    fbIgnoreOverlapMs;  //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  Bool_t fbIgnoreOverlapMs;                //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
 
   /// OLD, to be cleaned out !!!!!
-  size_t
-    fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
-  size_t fuTotalMsNb; /** Total nb of MS per link in timeslice **/
-  size_t
-    fuOverlapMsNb; /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-  size_t fuCoreMs; /** Number of non overlap MS at beginning of TS **/
+  size_t fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
+  size_t fuTotalMsNb;        /** Total nb of MS per link in timeslice **/
+  size_t fuOverlapMsNb;      /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  size_t fuCoreMs;           /** Number of non overlap MS at beginning of TS **/
   Double_t fdMsSizeInNs;
   Double_t fdTsCoreSizeInNs;
 
@@ -101,8 +90,8 @@ private:
   /** Running indices **/
   uint64_t fulCurrentTsIndex;  // Idx of the current TS
   size_t fuCurrentMs;          // Idx of the current MS in TS (0 to fuTotalMsNb)
-  size_t fuCurrentMsSysId;  // SysId of the current MS in TS (0 to fuTotalMsNb)
-  Double_t fdMsIndex;       // Time in ns of current MS from its index
+  size_t fuCurrentMsSysId;     // SysId of the current MS in TS (0 to fuTotalMsNb)
+  Double_t fdMsIndex;          // Time in ns of current MS from its index
   Int_t fiEquipmentId;
 
   /// Constants
@@ -119,8 +108,7 @@ private:
 
   /// Histograms and histogram control variables
   // Evolution plots control
-  Double_t
-    fdStartTimeMsSz; /** Time of first microslice, used as reference for evolution plots**/
+  Double_t fdStartTimeMsSz;  /** Time of first microslice, used as reference for evolution plots**/
   UInt_t fuHistoryHistoSize; /** Size in seconds of the evolution histograms **/
                              // Counters
   std::vector<UInt_t> fvuTsSzLink;

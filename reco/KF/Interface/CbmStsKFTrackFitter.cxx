@@ -4,18 +4,19 @@
 #include "CbmKFStsHit.h"
 #include "CbmKFTrack.h"
 #include "CbmKFVertex.h"
-
 #include "CbmMvdHit.h"
 #include "CbmStsTrack.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
 #include "TMath.h"
 #include "TMatrixTSym.h"
 
-#include "math.h"
 #include <iostream>
+
+#include "math.h"
 
 using std::cout;
 using std::endl;
@@ -23,10 +24,10 @@ using std::endl;
 
 ClassImp(CbmStsKFTrackFitter);
 
-CbmStsKFTrackFitter::CbmStsKFTrackFitter()
-  : fHits(), fMvdHitsArray(0), fStsHitsArray(0), fIsInitialised(0) {}
+CbmStsKFTrackFitter::CbmStsKFTrackFitter() : fHits(), fMvdHitsArray(0), fStsHitsArray(0), fIsInitialised(0) {}
 
-void CbmStsKFTrackFitter::Init() {
+void CbmStsKFTrackFitter::Init()
+{
   // Initialisation
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
@@ -49,7 +50,8 @@ void CbmStsKFTrackFitter::Init() {
   fIsInitialised = 1;
 };
 
-void CbmStsKFTrackFitter::SetKFHits(CbmKFTrack& T, CbmStsTrack* track) {
+void CbmStsKFTrackFitter::SetKFHits(CbmKFTrack& T, CbmStsTrack* track)
+{
 
   T.fHits.clear();
 
@@ -69,14 +71,14 @@ void CbmStsKFTrackFitter::SetKFHits(CbmKFTrack& T, CbmStsTrack* track) {
   if (NStsHits > 0 && fStsHitsArray) {
     for (Int_t i = 0; i < NStsHits; i++) {
       Int_t j = track->GetHitIndex(i);
-      fHits[NMvdHits + i].Create(
-        reinterpret_cast<CbmStsHit*>(fStsHitsArray->At(j)));
+      fHits[NMvdHits + i].Create(reinterpret_cast<CbmStsHit*>(fStsHitsArray->At(j)));
       T.fHits.push_back(&(fHits[NMvdHits + i]));
     }
   }
 }
 
-Int_t CbmStsKFTrackFitter::DoFit(CbmStsTrack* track, Int_t pidHypo) {
+Int_t CbmStsKFTrackFitter::DoFit(CbmStsTrack* track, Int_t pidHypo)
+{
   track->SetPidHypo(pidHypo);
 
   CbmKFTrack T;
@@ -97,8 +99,7 @@ Int_t CbmStsKFTrackFitter::DoFit(CbmStsTrack* track, Int_t pidHypo) {
     track->SetParamLast(&par);
     err = T.Fit(0);  // fit upstream
     ok  = ok && (!err) && CheckTrack(T);
-    if (ok)
-      T.GetStsTrack(*track, 1);  // store fitted track & cov.matrix & chi2 & NDF
+    if (ok) T.GetStsTrack(*track, 1);  // store fitted track & cov.matrix & chi2 & NDF
   }
   if (!ok) {
     Double_t* t = T.GetTrack();
@@ -113,16 +114,16 @@ Int_t CbmStsKFTrackFitter::DoFit(CbmStsTrack* track, Int_t pidHypo) {
     T.GetStsTrack(*track, 0);
     T.GetStsTrack(*track, 1);
     track->SetFlag(1);
-  } else {
+  }
+  else {
     track->SetFlag(0);
   }
   return !ok;
 }
 
 
-void CbmStsKFTrackFitter::Extrapolate(FairTrackParam* track,
-                                      Double_t z,
-                                      FairTrackParam* e_track) {
+void CbmStsKFTrackFitter::Extrapolate(FairTrackParam* track, Double_t z, FairTrackParam* e_track)
+{
   if (!track) return;
   CbmKFTrack T;
   T.SetTrackParam(*track);
@@ -131,28 +132,30 @@ void CbmStsKFTrackFitter::Extrapolate(FairTrackParam* track,
 }
 
 
-void CbmStsKFTrackFitter::Extrapolate(CbmStsTrack* track,
-                                      Double_t z,
-                                      FairTrackParam* e_track) {
+void CbmStsKFTrackFitter::Extrapolate(CbmStsTrack* track, Double_t z, FairTrackParam* e_track)
+{
   if (!track) return;
   CbmKFTrack T;
   T.SetPID(track->GetPidHypo());
-  const FairTrackParam *fpar = track->GetParamFirst(),
-                       *lpar = track->GetParamLast();
+  const FairTrackParam *fpar = track->GetParamFirst(), *lpar = track->GetParamLast();
 
   if (z <= fpar->GetZ()) {  // extrapolate first parameters
     T.SetTrackParam(*fpar);
     T.Extrapolate(z);
-  } else if (z < fpar->GetZ() + 0.1) {  // extrapolate first parameters
+  }
+  else if (z < fpar->GetZ() + 0.1) {  // extrapolate first parameters
     T.SetTrackParam(*fpar);
     T.Propagate(z);
-  } else if (lpar->GetZ() <= z) {  // extrapolate last parameters
+  }
+  else if (lpar->GetZ() <= z) {  // extrapolate last parameters
     T.SetTrackParam(*lpar);
     T.Extrapolate(z);
-  } else if (lpar->GetZ() - 0.1 < z) {  // extrapolate last parameters
+  }
+  else if (lpar->GetZ() - 0.1 < z) {  // extrapolate last parameters
     T.SetTrackParam(*lpar);
     T.Propagate(z);
-  } else {  // refit with smoother
+  }
+  else {  // refit with smoother
     SetKFHits(T, track);
     T.SetTrackParam(*fpar);
     T.Smooth(z);
@@ -161,8 +164,8 @@ void CbmStsKFTrackFitter::Extrapolate(CbmStsTrack* track,
 }
 
 
-Double_t CbmStsKFTrackFitter::GetChiToVertex(CbmStsTrack* track,
-                                             CbmVertex* vtx) {
+Double_t CbmStsKFTrackFitter::GetChiToVertex(CbmStsTrack* track, CbmVertex* vtx)
+{
   if (!vtx) {
     FairRootManager* fManger = FairRootManager::Instance();
     // Get pointer to PrimaryVertex object from IOManager if it exists
@@ -170,13 +173,9 @@ Double_t CbmStsKFTrackFitter::GetChiToVertex(CbmStsTrack* track,
     // "PrimaryVertex." Check first for the new name
     // TODO: don't use reinterpret_cast
     vtx = reinterpret_cast<CbmVertex*>(fManger->GetObject("PrimaryVertex."));
-    if (nullptr == vtx) {
-      vtx = reinterpret_cast<CbmVertex*>(fManger->GetObject("PrimaryVertex"));
-    }
+    if (nullptr == vtx) { vtx = reinterpret_cast<CbmVertex*>(fManger->GetObject("PrimaryVertex")); }
     if (!vtx) {
-      cout
-        << "-W- CbmStsKFTrackFitter::GetChiToVertex: No Primary Vertex found!"
-        << endl;
+      cout << "-W- CbmStsKFTrackFitter::GetChiToVertex: No Primary Vertex found!" << endl;
       return 100.;
     }
   }
@@ -188,18 +187,12 @@ Double_t CbmStsKFTrackFitter::GetChiToVertex(CbmStsTrack* track,
   vtx->CovMatrix(tmp);
   Double_t Cv[3] = {tmp(0, 0), tmp(0, 1), tmp(1, 1)};
 
-  return CbmKFMath::getDeviation(T.GetTrack()[0],
-                                 T.GetTrack()[1],
-                                 T.GetCovMatrix(),
-                                 vtx->GetX(),
-                                 vtx->GetY(),
-                                 Cv);
+  return CbmKFMath::getDeviation(T.GetTrack()[0], T.GetTrack()[1], T.GetCovMatrix(), vtx->GetX(), vtx->GetY(), Cv);
 }
 
 
-Double_t CbmStsKFTrackFitter::FitToVertex(CbmStsTrack* track,
-                                          CbmVertex* vtx,
-                                          FairTrackParam* v_track) {
+Double_t CbmStsKFTrackFitter::FitToVertex(CbmStsTrack* track, CbmVertex* vtx, FairTrackParam* v_track)
+{
   Double_t ret = 100.;
   if (!track || !vtx || !v_track) return ret;
   CbmKFTrack T(*track);
@@ -213,7 +206,8 @@ Double_t CbmStsKFTrackFitter::FitToVertex(CbmStsTrack* track,
   return ret;
 }
 
-Bool_t CbmStsKFTrackFitter::CheckTrack(CbmKFTrack& T) {
+Bool_t CbmStsKFTrackFitter::CheckTrack(CbmKFTrack& T)
+{
   Bool_t ok   = 1;
   Double_t* t = T.GetTrack();
   Double_t* c = T.GetCovMatrix();

@@ -6,6 +6,7 @@
 #define CBMBUILDEVENTSFROMTRACKSREAL_H 1
 
 #include "CbmStsTrack.h"
+
 #include <FairTask.h>
 
 class TClonesArray;
@@ -17,8 +18,7 @@ public:
   CbmBuildEventsFromTracksReal();
 
   CbmBuildEventsFromTracksReal(const CbmBuildEventsFromTracksReal&) = delete;
-  CbmBuildEventsFromTracksReal&
-  operator=(const CbmBuildEventsFromTracksReal&) = delete;
+  CbmBuildEventsFromTracksReal& operator=(const CbmBuildEventsFromTracksReal&) = delete;
   /** Destructor **/
   virtual ~CbmBuildEventsFromTracksReal();
 
@@ -34,7 +34,8 @@ private:
     SortTracks() : Track(), index(-1), used(false) {}
   };
 
-  static bool CompareTrackTime(const SortTracks& a, const SortTracks& b) {
+  static bool CompareTrackTime(const SortTracks& a, const SortTracks& b)
+  {
     return (a.Track.GetTime() < b.Track.GetTime());
   }
 

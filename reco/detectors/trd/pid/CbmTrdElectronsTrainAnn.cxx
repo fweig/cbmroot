@@ -1,10 +1,13 @@
 
 #include "CbmTrdElectronsTrainAnn.h"
+
+#include "CbmDrawHist.h"
 #include "CbmMCTrack.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TCut.h"
@@ -16,8 +19,6 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TSystem.h"
-
-#include "CbmDrawHist.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -67,7 +68,8 @@ CbmTrdElectronsTrainAnn::CbmTrdElectronsTrainAnn(Int_t nofTrdLayers)
   , fElIdEfficiency(0.9)
   , fhOutput()
   , fhCumProbOutput()
-  , fhInput() {
+  , fhInput()
+{
   fEloss.resize(2);
   fhMeanEloss.resize(2);
   fhEloss.resize(2);
@@ -81,17 +83,9 @@ CbmTrdElectronsTrainAnn::CbmTrdElectronsTrainAnn(Int_t nofTrdLayers)
   for (int i = 0; i < 2; i++) {
     if (i == 0) s = "El";
     if (i == 1) s = "Pi";
-    fhMeanEloss[i] = new TH1D(("fhMeanEloss" + s).c_str(),
-                              "fhMeanEloss;Mean energy loss [a.u.];Yield",
-                              100,
-                              0.,
-                              50e-6);
+    fhMeanEloss[i] = new TH1D(("fhMeanEloss" + s).c_str(), "fhMeanEloss;Mean energy loss [a.u.];Yield", 100, 0., 50e-6);
     fHists.push_back(fhMeanEloss[i]);
-    fhEloss[i] = new TH1D(("fhEloss" + s).c_str(),
-                          "fhEloss;Energy loss [a.u.];Yield",
-                          100,
-                          0.,
-                          50e-6);
+    fhEloss[i] = new TH1D(("fhEloss" + s).c_str(), "fhEloss;Energy loss [a.u.];Yield", 100, 0., 50e-6);
     fHists.push_back(fhEloss[i]);
   }
 
@@ -104,11 +98,7 @@ CbmTrdElectronsTrainAnn::CbmTrdElectronsTrainAnn(Int_t nofTrdLayers)
       if (j == 0) ss1 << "fhElossSortEl" << i;
       if (j == 1) ss1 << "fhElossSortPi" << i;
       fhElossSort[j][i] =
-        new TH1D(ss1.str().c_str(),
-                 (ss1.str() + ";Energy loss [a.u.];Counters").c_str(),
-                 nofSortBins,
-                 0.,
-                 0.);
+        new TH1D(ss1.str().c_str(), (ss1.str() + ";Energy loss [a.u.];Counters").c_str(), nofSortBins, 0., 0.);
     }
   }
 
@@ -118,66 +108,47 @@ CbmTrdElectronsTrainAnn::CbmTrdElectronsTrainAnn(Int_t nofTrdLayers)
   fhCumProbOutput.resize(2);
   fhInput.resize(2);
   for (Int_t i = 0; i < 2; i++) {
-    s           = (i == 0) ? "El" : "Pi";
-    fhOutput[i] = new TH1D(("fhOutput" + s).c_str(),
-                           "fhOutput;Output;Counter",
-                           nofBins,
-                           fMinEval,
-                           fMaxEval);
-    fhCumProbOutput[i] =
-      new TH1D(("fhCumProbOutput" + s).c_str(),
-               "fhCumProbOutput;Output;Cumulative probability",
-               nofBins,
-               fMinEval,
-               fMaxEval);
+    s                  = (i == 0) ? "El" : "Pi";
+    fhOutput[i]        = new TH1D(("fhOutput" + s).c_str(), "fhOutput;Output;Counter", nofBins, fMinEval, fMaxEval);
+    fhCumProbOutput[i] = new TH1D(("fhCumProbOutput" + s).c_str(), "fhCumProbOutput;Output;Cumulative probability",
+                                  nofBins, fMinEval, fMaxEval);
 
     fhInput[i].resize(fNofTrdLayers);
     for (Int_t j = 0; j < fNofTrdLayers; j++) {
       stringstream ss;
       ss << s << j;
-      fhInput[i][j] =
-        new TH1D(("fhInput" + ss.str()).c_str(), "fhInput", 100, 0.0, 0.0);
+      fhInput[i][j] = new TH1D(("fhInput" + ss.str()).c_str(), "fhInput", 100, 0.0, 0.0);
     }
   }
 }
 
 CbmTrdElectronsTrainAnn::~CbmTrdElectronsTrainAnn() {}
 
-InitStatus CbmTrdElectronsTrainAnn::Init() {
+InitStatus CbmTrdElectronsTrainAnn::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "RootManager not instantised!"); }
 
   fMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMCTracks) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No MCTrack array!");
-  }
+  if (NULL == fMCTracks) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No MCTrack array!"); }
 
   fTrdPoints = (TClonesArray*) ioman->GetObject("TrdPoint");
-  if (NULL == fTrdPoints) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TRDPoint array!");
-  }
+  if (NULL == fTrdPoints) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TRDPoint array!"); }
 
   fTrdTracks = (TClonesArray*) ioman->GetObject("TrdTrack");
-  if (NULL == fTrdTracks) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TrdTrack array!");
-  }
+  if (NULL == fTrdTracks) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TrdTrack array!"); }
 
   fTrdTrackMatches = (TClonesArray*) ioman->GetObject("TrdTrackMatch");
-  if (NULL == fTrdTrackMatches) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TrdTrackMatch array!");
-  }
+  if (NULL == fTrdTrackMatches) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TrdTrackMatch array!"); }
 
   fTrdHits = (TClonesArray*) ioman->GetObject("TrdHit");
-  if (NULL == fTrdHits) {
-    Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TRDHit array!");
-  }
+  if (NULL == fTrdHits) { Fatal("-E- CbmTrdElectronsTrainAnn::Init", "No TRDHit array!"); }
 
   return kSUCCESS;
 }
 
-void CbmTrdElectronsTrainAnn::Exec(Option_t*) {
+void CbmTrdElectronsTrainAnn::Exec(Option_t*)
+{
   fEventNum++;
   cout << "CbmTrdElectronsTrainAnn, event " << fEventNum << endl;
 
@@ -191,7 +162,8 @@ void CbmTrdElectronsTrainAnn::Exec(Option_t*) {
   // Finish();
 }
 
-void CbmTrdElectronsTrainAnn::Finish() {
+void CbmTrdElectronsTrainAnn::Finish()
+{
   Run();
   Draw();
 
@@ -201,8 +173,7 @@ void CbmTrdElectronsTrainAnn::Finish() {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f =
-    new TFile(string(fOutputDir + "/trd_elid_hist.root").c_str(), "RECREATE");
+  TFile* f = new TFile(string(fOutputDir + "/trd_elid_hist.root").c_str(), "RECREATE");
   for (unsigned int i = 0; i < fHists.size(); i++) {
     fHists[i]->Write();
   }
@@ -214,7 +185,8 @@ void CbmTrdElectronsTrainAnn::Finish() {
   f->Close();
 }
 
-void CbmTrdElectronsTrainAnn::RunBeamData() {
+void CbmTrdElectronsTrainAnn::RunBeamData()
+{
   FillElossVectorReal();
   FillElossHist();
   SortElossAndFillHist();
@@ -225,10 +197,10 @@ void CbmTrdElectronsTrainAnn::RunBeamData() {
   Finish();
 }
 
-void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
+void CbmTrdElectronsTrainAnn::FillElossVectorReal()
+{
   if (fBeamDataFile == "" || fBeamDataPiHist == "" || fBeamDataElHist == "") {
-    Fatal("-E- CbmTrdElectronsTrainAnn::FillElossVectorReal()",
-          "Set input file for beam data and histogram names!");
+    Fatal("-E- CbmTrdElectronsTrainAnn::FillElossVectorReal()", "Set input file for beam data and histogram names!");
   }
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -239,8 +211,8 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
   TH1F* hPion     = (TH1F*) file->Get(fBeamDataPiHist.c_str())->Clone();
   TH1F* hElectron = (TH1F*) file->Get(fBeamDataElHist.c_str())->Clone();
 
-  double scaleX = fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX())
-                  / hPion->GetXaxis()->GetBinUpEdge(hPion->GetNbinsX());
+  double scaleX =
+    fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX()) / hPion->GetXaxis()->GetBinUpEdge(hPion->GetNbinsX());
 
   int nofSimulatedParticles = 1000000;
   fEloss[0].resize(nofSimulatedParticles);
@@ -264,16 +236,16 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
   gDirectory = oldDir;
 }
 
-void CbmTrdElectronsTrainAnn::FillElossVectorSim() {
+void CbmTrdElectronsTrainAnn::FillElossVectorSim()
+{
   Int_t nofTrdTracks = fTrdTracks->GetEntriesFast();
   for (Int_t iTrdTrack = 0; iTrdTrack < nofTrdTracks; iTrdTrack++) {
     CbmTrdTrack* trdtrack = (CbmTrdTrack*) fTrdTracks->At(iTrdTrack);
     Int_t nHits           = trdtrack->GetNofHits();
 
 
-    CbmTrackMatchNew* trdmatch =
-      (CbmTrackMatchNew*) fTrdTrackMatches->At(iTrdTrack);
-    Int_t iMC = trdmatch->GetMatchedLink().GetIndex();
+    CbmTrackMatchNew* trdmatch = (CbmTrackMatchNew*) fTrdTrackMatches->At(iTrdTrack);
+    Int_t iMC                  = trdmatch->GetMatchedLink().GetIndex();
     if (iMC < 0 || iMC > fMCTracks->GetEntriesFast()) continue;
 
     CbmMCTrack* mctrack = (CbmMCTrack*) fMCTracks->At(iMC);
@@ -293,9 +265,7 @@ void CbmTrdElectronsTrainAnn::FillElossVectorSim() {
     for (Int_t iHit = 0; iHit < nHits; iHit++) {
       Int_t hitIndex    = trdtrack->GetHitIndex(iHit);
       CbmTrdHit* trdhit = (CbmTrdHit*) fTrdHits->At(hitIndex);
-      TrdEloss e(trdhit->GetELoss(),
-                 trdhit->GetELoss(),
-                 0 /*trdhit->GetELossdEdX(), trdhit->GetELossTR()*/);
+      TrdEloss e(trdhit->GetELoss(), trdhit->GetELoss(), 0 /*trdhit->GetELossdEdX(), trdhit->GetELossTR()*/);
       if (static_cast<UInt_t>(fNofTrdLayers) == v.size()) break;
       v.push_back(e);
     }  //iHit
@@ -303,7 +273,8 @@ void CbmTrdElectronsTrainAnn::FillElossVectorSim() {
   }  //iTrdTrack
 }
 
-void CbmTrdElectronsTrainAnn::FillElossHist() {
+void CbmTrdElectronsTrainAnn::FillElossHist()
+{
   // [0]=electron, [1]=pion
   for (int i = 0; i < 2; i++) {
     for (unsigned int iT = 0; iT < fEloss[i].size(); iT++) {
@@ -318,7 +289,8 @@ void CbmTrdElectronsTrainAnn::FillElossHist() {
   }
 }
 
-void CbmTrdElectronsTrainAnn::SortElossAndFillHist() {
+void CbmTrdElectronsTrainAnn::SortElossAndFillHist()
+{
   vector<double> v;
   v.resize(fNofTrdLayers);
   for (int iP = 0; iP < 2; iP++) {
@@ -338,28 +310,30 @@ void CbmTrdElectronsTrainAnn::SortElossAndFillHist() {
   }
 }
 
-void CbmTrdElectronsTrainAnn::Run() {
+void CbmTrdElectronsTrainAnn::Run()
+{
   if (fIdMethod == kBDT || fIdMethod == kANN) {
     if (fIsDoTrain) DoTrain();
     DoTest();
-  } else if (fIdMethod == kMEDIAN || fIdMethod == kLIKELIHOOD
-             || fIdMethod == kMeanCut) {
+  }
+  else if (fIdMethod == kMEDIAN || fIdMethod == kLIKELIHOOD || fIdMethod == kMeanCut) {
     DoTest();
   }
 }
 
-void CbmTrdElectronsTrainAnn::Transform() {
+void CbmTrdElectronsTrainAnn::Transform()
+{
   if (fIdMethod == kBDT || fIdMethod == kANN) {
-    if (fTransformType == 1) {
-      Transform1();
-    } else if (fTransformType == 2) {
+    if (fTransformType == 1) { Transform1(); }
+    else if (fTransformType == 2) {
       Transform2();
     }
   }
 }
 
 
-void CbmTrdElectronsTrainAnn::Transform1() {
+void CbmTrdElectronsTrainAnn::Transform1()
+{
   Double_t ANNCoef1 = 1.06;
   Double_t ANNCoef2 = 0.57;
   //Double_t ANNCoef1[] = {1.04,1.105,1.154,1.277,1.333,1.394,1.47,1.50,1.54,1.58};
@@ -374,30 +348,29 @@ void CbmTrdElectronsTrainAnn::Transform1() {
   }
 }
 
-void CbmTrdElectronsTrainAnn::Transform2() {
+void CbmTrdElectronsTrainAnn::Transform2()
+{
   sort(fAnnInput.begin(), fAnnInput.end());
 
   Int_t size = fAnnInput.size();
   for (Int_t j = 0; j < size; j++) {
     Int_t binNumEl = fhElossSort[0][j]->FindBin(fAnnInput[j]);
-    if (binNumEl > fhElossSort[0][j]->GetNbinsX())
-      binNumEl = fhElossSort[0][j]->GetNbinsX();
+    if (binNumEl > fhElossSort[0][j]->GetNbinsX()) binNumEl = fhElossSort[0][j]->GetNbinsX();
     Double_t probEl = fhElossSort[0][j]->GetBinContent(binNumEl);
 
     Int_t binNumPi = fhElossSort[1][j]->FindBin(fAnnInput[j]);
-    if (binNumPi > fhElossSort[1][j]->GetNbinsX())
-      binNumPi = fhElossSort[1][j]->GetNbinsX();
+    if (binNumPi > fhElossSort[1][j]->GetNbinsX()) binNumPi = fhElossSort[1][j]->GetNbinsX();
     Double_t probPi = fhElossSort[1][j]->GetBinContent(binNumPi);
 
-    if (TMath::IsNaN(probPi / (probEl + probPi))) {
-      fAnnInput[j] = 0.;
-    } else {
+    if (TMath::IsNaN(probPi / (probEl + probPi))) { fAnnInput[j] = 0.; }
+    else {
       fAnnInput[j] = probPi / (probEl + probPi);
     }
   }
 }
 
-Double_t CbmTrdElectronsTrainAnn::Likelihood() {
+Double_t CbmTrdElectronsTrainAnn::Likelihood()
+{
   Double_t lPi = 1.;
   Double_t lEl = 1.;
   // sort(fAnnInput.begin(), fAnnInput.end());
@@ -415,51 +388,53 @@ Double_t CbmTrdElectronsTrainAnn::Likelihood() {
   return lEl / (lEl + lPi);
 }
 
-Double_t CbmTrdElectronsTrainAnn::Median() {
+Double_t CbmTrdElectronsTrainAnn::Median()
+{
   sort(fAnnInput.begin(), fAnnInput.end());
   double eval = 0.;
-  if (fNofTrdLayers % 2 == 0) {
-    eval =
-      (fAnnInput[fNofTrdLayers / 2] + fAnnInput[fNofTrdLayers / 2 + 1]) / 2.;
-  } else {
+  if (fNofTrdLayers % 2 == 0) { eval = (fAnnInput[fNofTrdLayers / 2] + fAnnInput[fNofTrdLayers / 2 + 1]) / 2.; }
+  else {
     eval = fAnnInput[fNofTrdLayers / 2 + 1];
   }
-  double scaleX =
-    1. / fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX());
+  double scaleX = 1. / fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX());
   return eval * scaleX;
 }
 
-Double_t CbmTrdElectronsTrainAnn::MeanCut() {
+Double_t CbmTrdElectronsTrainAnn::MeanCut()
+{
   double eval = 0.;
   for (int i = 0; i < fNofTrdLayers; i++) {
     eval += fAnnInput[i];
   }
-  eval = eval / fNofTrdLayers;
-  double scaleX =
-    1. / fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX());
+  eval          = eval / fNofTrdLayers;
+  double scaleX = 1. / fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX());
   return eval * scaleX;
 }
 
-Double_t CbmTrdElectronsTrainAnn::Eval(Bool_t) {
-  if (fIdMethod == kBDT) {
-    return fReader->EvaluateMVA("BDT");
-  } else if (fIdMethod == kANN) {
+Double_t CbmTrdElectronsTrainAnn::Eval(Bool_t)
+{
+  if (fIdMethod == kBDT) { return fReader->EvaluateMVA("BDT"); }
+  else if (fIdMethod == kANN) {
     Double_t par[fNofTrdLayers];
     for (UInt_t i = 0; i < fAnnInput.size(); i++)
       par[i] = fAnnInput[i];
     return fNN->Evaluate(0, par);
-  } else if (fIdMethod == kMEDIAN) {
+  }
+  else if (fIdMethod == kMEDIAN) {
     return Median();
-  } else if (fIdMethod == kLIKELIHOOD) {
+  }
+  else if (fIdMethod == kLIKELIHOOD) {
     return Likelihood();
-  } else if (fIdMethod == kMeanCut) {
+  }
+  else if (fIdMethod == kMeanCut) {
     return MeanCut();
   }
   return -1.;
 }
 
 
-void CbmTrdElectronsTrainAnn::DoTrain() {
+void CbmTrdElectronsTrainAnn::DoTrain()
+{
   fAnnInput.clear();
   fAnnInput.resize(fNofTrdLayers);
 
@@ -486,7 +461,8 @@ void CbmTrdElectronsTrainAnn::DoTrain() {
     stringstream ss;
     ss << fOutputDir + "/ann_weights_" << fNofTrdLayers << ".txt";
     fNN->DumpWeights(ss.str().c_str());
-  } else if (fIdMethod == kBDT) {
+  }
+  else if (fIdMethod == kBDT) {
     CreateFactory(simu);
     (TMVA::gConfig().GetIONames()).fWeightFileDir = fOutputDir;
     TCut mycuts                                   = "";
@@ -494,8 +470,7 @@ void CbmTrdElectronsTrainAnn::DoTrain() {
     //      factory->PrepareTrainingAndTestTree(mycuts, mycutb,"SplitMode=Random:NormMode=NumEvents:!V");
     //factory->BookMethod(TMVA::Types::kTMlpANN, "TMlpANN","!H:!V:NCycles=50:HiddenLayers=N+1");
     stringstream ss;
-    ss << "nTrain_Signal=" << fNofTrainSamples - 500
-       << ":nTrain_Background=" << fNofTrainSamples - 500
+    ss << "nTrain_Signal=" << fNofTrainSamples - 500 << ":nTrain_Background=" << fNofTrainSamples - 500
        << ":nTest_Signal=0:nTest_Background=0";
     //TMVA_API
     //      factory->PrepareTrainingAndTestTree("", ss.str().c_str());
@@ -504,15 +479,17 @@ void CbmTrdElectronsTrainAnn::DoTrain() {
   }
 }
 
-void CbmTrdElectronsTrainAnn::DoPreTest() {
+void CbmTrdElectronsTrainAnn::DoPreTest()
+{
   cout << "-I- Start pretesting " << endl;
-  if (fIdMethod == kBDT) {
-    cout << "-I- IdMethod = kBDT " << endl;
-  } else if (fIdMethod == kANN) {
+  if (fIdMethod == kBDT) { cout << "-I- IdMethod = kBDT " << endl; }
+  else if (fIdMethod == kANN) {
     cout << "-I- IdMethod = kANN " << endl;
-  } else if (fIdMethod == kMEDIAN) {
+  }
+  else if (fIdMethod == kMEDIAN) {
     cout << "-I- IdMethod = kMEDIANA " << endl;
-  } else if (fIdMethod == kLIKELIHOOD) {
+  }
+  else if (fIdMethod == kLIKELIHOOD) {
     cout << "-I- IdMethod = kLIKELIHOOD " << endl;
   }
 
@@ -522,11 +499,12 @@ void CbmTrdElectronsTrainAnn::DoPreTest() {
   if (fIdMethod == kBDT) {
     fReader = CreateTmvaReader();
     fReader->BookMVA("BDT", fOutputDir + "/TMVAnalysis_BDT.weights.xml");
-  } else if (fIdMethod == kANN) {
+  }
+  else if (fIdMethod == kANN) {
     if (fNN != NULL) delete fNN;
     TTree* simu       = CreateTree();
     TString mlpString = CreateAnnString();
-    fNN = new TMultiLayerPerceptron(mlpString, simu, "(Entry$+1)");
+    fNN               = new TMultiLayerPerceptron(mlpString, simu, "(Entry$+1)");
     stringstream ss;
     ss << fOutputDir + "/ann_weights_" << fNofTrdLayers << ".txt";
     fNN->LoadWeights(ss.str().c_str());
@@ -543,8 +521,7 @@ void CbmTrdElectronsTrainAnn::DoPreTest() {
       //     fElossEl[iE][i1] = fElossPi[randPi][i1];
       // }
       for (int iH = 0; iH < fNofTrdLayers; iH++) {
-        if (fSigmaError != 0.)
-          fEloss[i][iT][iH].fEloss += gRandom->Gaus(0., fSigmaError);
+        if (fSigmaError != 0.) fEloss[i][iT][iH].fEloss += gRandom->Gaus(0., fSigmaError);
         fAnnInput[iH] = fEloss[i][iT][iH].fEloss;
       }
 
@@ -560,14 +537,14 @@ void CbmTrdElectronsTrainAnn::DoPreTest() {
   CreateCumProbOutputHist();
 }
 
-void CbmTrdElectronsTrainAnn::DoTest() {
+void CbmTrdElectronsTrainAnn::DoTest()
+{
   fAnnInput.clear();
   fAnnInput.resize(fNofTrdLayers);
 
   DoPreTest();
   double cut = FindOptimalCut();
-  cout << "-I- Optimal cut = " << cut << " for " << 100 * fElIdEfficiency
-       << "% electron efficiency" << endl;
+  cout << "-I- Optimal cut = " << cut << " for " << 100 * fElIdEfficiency << "% electron efficiency" << endl;
   cout << "-I- Start testing" << endl;
   fAnnInput.clear();
   fAnnInput.resize(fNofTrdLayers);
@@ -576,11 +553,12 @@ void CbmTrdElectronsTrainAnn::DoTest() {
     fReader = CreateTmvaReader();
     //reader->BookMVA("TMlpANN", "weights/TMVAnalysis_TMlpANN.weights.txt");
     fReader->BookMVA("BDT", fOutputDir + "/TMVAnalysis_BDT.weights.xml");
-  } else if (fIdMethod == kANN) {
+  }
+  else if (fIdMethod == kANN) {
     if (fNN != NULL) delete fNN;
     TTree* simu       = CreateTree();
     TString mlpString = CreateAnnString();
-    fNN = new TMultiLayerPerceptron(mlpString, simu, "(Entry$+1)");
+    fNN               = new TMultiLayerPerceptron(mlpString, simu, "(Entry$+1)");
     stringstream ss;
     ss << fOutputDir + "/ann_weights_" << fNofTrdLayers << ".txt";
     fNN->LoadWeights(ss.str().c_str());
@@ -608,7 +586,8 @@ void CbmTrdElectronsTrainAnn::DoTest() {
       if (i == 0) {
         nofElTest++;
         if (nnEval < cut) nofElLikePi++;
-      } else if (i == 1) {
+      }
+      else if (i == 1) {
         nofPiTest++;
         if (nnEval > cut) nofPiLikeEl++;
       }
@@ -625,17 +604,16 @@ void CbmTrdElectronsTrainAnn::DoTest() {
   cout << "nof Pi = " << nofPiTest << endl;
   cout << "nof Pi identified as El = " << nofPiLikeEl << endl;
   cout << "nof El identified as Pi = " << nofElLikePi << endl;
-  cout << "pion suppression = " << nofPiTest << "/" << nofPiLikeEl << " = "
-       << piSupp << endl;
-  cout << "electron efficiency loss in % = " << nofElLikePi << "/" << nofElTest
-       << " = " << elEff << endl;
+  cout << "pion suppression = " << nofPiTest << "/" << nofPiLikeEl << " = " << piSupp << endl;
+  cout << "electron efficiency loss in % = " << nofElLikePi << "/" << nofElTest << " = " << elEff << endl;
 
   // write results to histogramm
   fhResults->SetBinContent(1, piSupp);
   fhResults->SetBinContent(2, elEff);
 }
 
-void CbmTrdElectronsTrainAnn::CreateCumProbOutputHist() {
+void CbmTrdElectronsTrainAnn::CreateCumProbOutputHist()
+{
   for (Int_t i = 0; i < 2; i++) {
     Double_t cumProb = 0.;
     Double_t nofTr   = fhOutput[i]->GetEntries();
@@ -647,7 +625,8 @@ void CbmTrdElectronsTrainAnn::CreateCumProbOutputHist() {
   }
 }
 
-TGraph* CbmTrdElectronsTrainAnn::CreateRocDiagramm() {
+TGraph* CbmTrdElectronsTrainAnn::CreateRocDiagramm()
+{
   Int_t nBins = fhCumProbOutput[0]->GetNbinsX();
   Double_t x[nBins], y[nBins];
 
@@ -665,7 +644,8 @@ TGraph* CbmTrdElectronsTrainAnn::CreateRocDiagramm() {
   return rocGraph;
 }
 
-Double_t CbmTrdElectronsTrainAnn::FindOptimalCut() {
+Double_t CbmTrdElectronsTrainAnn::FindOptimalCut()
+{
   Double_t optimalCut = -1;
   for (Int_t i = 1; i <= fhCumProbOutput[0]->GetNbinsX(); i++) {
     if (fhCumProbOutput[0]->GetBinContent(i) <= fElIdEfficiency) {
@@ -676,7 +656,8 @@ Double_t CbmTrdElectronsTrainAnn::FindOptimalCut() {
   return optimalCut;
 }
 
-TTree* CbmTrdElectronsTrainAnn::CreateTree() {
+TTree* CbmTrdElectronsTrainAnn::CreateTree()
+{
   fAnnInput.clear();
   fAnnInput.resize(fNofTrdLayers);
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
@@ -691,7 +672,8 @@ TTree* CbmTrdElectronsTrainAnn::CreateTree() {
   return simu;
 }
 
-string CbmTrdElectronsTrainAnn::CreateAnnString() {
+string CbmTrdElectronsTrainAnn::CreateAnnString()
+{
   string st = "";
   char txt[50];
   for (Int_t i = 0; i < fNofTrdLayers - 1; i++) {
@@ -705,10 +687,10 @@ string CbmTrdElectronsTrainAnn::CreateAnnString() {
   return st;
 }
 
-TMVA::Factory* CbmTrdElectronsTrainAnn::CreateFactory(TTree*) {
+TMVA::Factory* CbmTrdElectronsTrainAnn::CreateFactory(TTree*)
+{
   if (fOutputDir != "") gSystem->mkdir(fOutputDir.c_str(), true);
-  TFile* outputFile =
-    TFile::Open(string(fOutputDir + "/tmva_output.root").c_str(), "RECREATE");
+  TFile* outputFile = TFile::Open(string(fOutputDir + "/tmva_output.root").c_str(), "RECREATE");
 
   TMVA::Factory* factory = new TMVA::Factory("TMVAnalysis", outputFile);
 
@@ -726,7 +708,8 @@ TMVA::Factory* CbmTrdElectronsTrainAnn::CreateFactory(TTree*) {
   return factory;
 }
 
-TMVA::Reader* CbmTrdElectronsTrainAnn::CreateTmvaReader() {
+TMVA::Reader* CbmTrdElectronsTrainAnn::CreateTmvaReader()
+{
   if (!fReader) delete fReader;
 
   fAnnInput.clear();
@@ -742,56 +725,33 @@ TMVA::Reader* CbmTrdElectronsTrainAnn::CreateTmvaReader() {
   return reader;
 }
 
-void CbmTrdElectronsTrainAnn::FillAnnInputHist(Bool_t isEl) {
+void CbmTrdElectronsTrainAnn::FillAnnInputHist(Bool_t isEl)
+{
   for (UInt_t j = 0; j < fAnnInput.size(); j++) {
-    if (isEl) {
-      fhInput[0][j]->Fill(fAnnInput[j]);
-    } else {
+    if (isEl) { fhInput[0][j]->Fill(fAnnInput[j]); }
+    else {
       fhInput[1][j]->Fill(fAnnInput[j]);
     }
   }
 }
 
-void CbmTrdElectronsTrainAnn::Draw(Option_t*) {
+void CbmTrdElectronsTrainAnn::Draw(Option_t*)
+{
   SetDefaultDrawStyle();
   TCanvas* cEloss = new TCanvas("trd_elid_eloss", "trd_elid_eloss", 1200, 600);
   cEloss->Divide(2, 1);
   cEloss->cd(1);
-  DrawH1(fhMeanEloss,
-         list_of("e^{#pm}")("#pi^{#pm}"),
-         kLinear,
-         kLog,
-         true,
-         0.8,
-         0.8,
-         0.99,
-         0.99);
+  DrawH1(fhMeanEloss, list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
   cEloss->cd(2);
-  DrawH1(fhEloss,
-         list_of("e^{#pm}")("#pi^{#pm}"),
-         kLinear,
-         kLog,
-         true,
-         0.8,
-         0.8,
-         0.99,
-         0.99);
+  DrawH1(fhEloss, list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
 
 
-  TCanvas* cElossSort =
-    new TCanvas("trd_elid_eloss_sort", "trd_elid_eloss_sort", 1200, 900);
+  TCanvas* cElossSort = new TCanvas("trd_elid_eloss_sort", "trd_elid_eloss_sort", 1200, 900);
   cElossSort->Divide(4, 3);
   for (int iL = 0; iL < fNofTrdLayers; iL++) {
     cElossSort->cd(iL + 1);
-    DrawH1(list_of(fhElossSort[0][iL])(fhElossSort[1][iL]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
-           0.99);
+    DrawH1(list_of(fhElossSort[0][iL])(fhElossSort[1][iL]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8,
+           0.8, 0.99, 0.99);
   }
 
   //   TCanvas* cClassifierOutput = new TCanvas("trd_elid_classifier_output","trd_elid_classifier_output", 500, 500);
@@ -799,47 +759,23 @@ void CbmTrdElectronsTrainAnn::Draw(Option_t*) {
   TH1D* out1 = (TH1D*) fhOutput[1]->Clone();
   out0->Rebin(50);
   out1->Rebin(50);
-  DrawH1(list_of(out0)(out1),
-         list_of("e^{#pm}")("#pi^{#pm}"),
-         kLinear,
-         kLog,
-         true,
-         0.8,
-         0.8,
-         0.99,
-         0.99);
+  DrawH1(list_of(out0)(out1), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
   out0->Scale(1. / out0->Integral());
   out1->Scale(1. / out1->Integral());
 
   //	TCanvas* cCumProbOutput = new TCanvas("trd_elid_cum_prob_output","trd_elid_cum_prob_output", 500,500);
-  DrawH1(fhCumProbOutput,
-         list_of("e^{#pm}")("#pi^{#pm}"),
-         kLinear,
-         kLinear,
-         true,
-         0.8,
-         0.8,
-         0.99,
-         0.99);
+  DrawH1(fhCumProbOutput, list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLinear, true, 0.8, 0.8, 0.99, 0.99);
 
   //	TCanvas* cRoc = new TCanvas("trd_elid_roc","trd_elid_roc", 500, 500);
   TGraph* rocGraph = CreateRocDiagramm();
   DrawGraph(rocGraph);
   gPad->SetLogy();
 
-  TCanvas* cInput =
-    new TCanvas("trd_elid_input", "trd_elid_ann_input", 10, 10, 800, 800);
+  TCanvas* cInput = new TCanvas("trd_elid_input", "trd_elid_ann_input", 10, 10, 800, 800);
   cInput->Divide(4, 3);
   for (int i = 0; i < fNofTrdLayers; i++) {
     cInput->cd(i + 1);
-    DrawH1(list_of(fhInput[0][i])(fhInput[1][i]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
+    DrawH1(list_of(fhInput[0][i])(fhInput[1][i]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99,
            0.99);
   }
 }

@@ -87,8 +87,7 @@
   Double_t trdSigmaY3[] = {10300, 15000, 33000, 33000, 33000, 33000, 33000};
   Int_t trdNFoils       = 100;    // number of polyetylene foils,  default = 100
   Float_t trdDFoils     = 0.001;  // thickness of 1 foil [cm], default = 0.001
-  Float_t trdDGap =
-    0.008;  // thickness of gap between foils [cm], default = 0.008
+  Float_t trdDGap       = 0.008;  // thickness of gap between foils [cm], default = 0.008
 
   // Specify parameters for TOF digitisation
   Double_t tofSigmaT  = 0.08;  //80 ps
@@ -96,9 +95,8 @@
   Double_t tofSigmaXY = 0.5;   //5 mm (old hit producer)
 
   // Specify parameters for RICH ring-track assignment
-  Double_t richDistance =
-    1.;                   // Maximum distance between ring centre and track [cm]
-  Int_t richNPoints = 5;  // Minmum number of hits on ring
+  Double_t richDistance = 1.;  // Maximum distance between ring centre and track [cm]
+  Int_t richNPoints     = 5;   // Minmum number of hits on ring
 
 
   // ----  Load libraries   -------------------------------------------------
@@ -158,8 +156,7 @@
   // =========================================================================
 
   // -----   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd =
-    new CbmTofHitProducer("TOF HitProducer", iVerbose);
+  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer", iVerbose);
   tofHitProd->SetSigmaT(tofSigmaT);
   //tofHitProd->SetSigmaY(tofSigmaY);
   tofHitProd->SetSigmaXY(tofSigmaXY);

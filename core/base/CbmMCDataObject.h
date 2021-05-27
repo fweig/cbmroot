@@ -5,6 +5,8 @@
 #ifndef CBMMCDATAOBJECT_H
 #define CBMMCDATAOBJECT_H
 
+#include "CbmLink.h"  // for CbmLink
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Long64_t
 #include <TString.h>     // for TString
@@ -12,8 +14,6 @@
 #include <list>    // for list
 #include <map>     // for map
 #include <vector>  // for vector
-
-#include "CbmLink.h"  // for CbmLink
 
 class TChain;
 class TObject;
@@ -43,18 +43,14 @@ public:
 		 ** @param link Pointer to CbmLink object
 		 ** @value      Pointer to linked object
 		 **/
-  TObject* Get(const CbmLink* lnk) {
-    return Get(lnk->GetFile(), lnk->GetEntry());
-  }
+  TObject* Get(const CbmLink* lnk) { return Get(lnk->GetFile(), lnk->GetEntry()); }
 
 
   /** Get an object by CbmLink reference
 		 ** @param link Reference to CbmLink object
 		 ** @value      Pointer to linked object
 		 **/
-  TObject* Get(const CbmLink& lnk) {
-    return Get(lnk.GetFile(), lnk.GetEntry());
-  }
+  TObject* Get(const CbmLink& lnk) { return Get(lnk.GetFile(), lnk.GetEntry()); }
 
 
   /** Get an object by file number and event number
@@ -66,22 +62,15 @@ public:
 
 private:
   /** Default constructor. Should be called from CbmMCDataManager. **/
-  CbmMCDataObject()
-    : fLegacy(0)
-    , fLegacyObject(nullptr)
-    , fBranchName()
-    , fSize(0)
-    , fChains()
-    , fTArr()
-    , fN(0)
-    , fArrays() {}
+  CbmMCDataObject() : fLegacy(0), fLegacyObject(nullptr), fBranchName(), fSize(0), fChains(), fTArr(), fN(0), fArrays()
+  {
+  }
 
   /** Standard constructor. Should be called from CbmMCDataManager.
 		 ** @param branchName   Name of data branch
 		 ** @param fileList     Vector of file list (one for each input source)
 		 **/
-  CbmMCDataObject(const char* branchName,
-                  const std::vector<std::list<TString>>& fileList);
+  CbmMCDataObject(const char* branchName, const std::vector<std::list<TString>>& fileList);
 
   /** Constructor in legacy mode. Gets the branch from FairRootManager.
 	   ** @param branchName  Name of data branch
@@ -121,9 +110,8 @@ private:
   TString fBranchName;           //! Name of the data branch
   Int_t fSize;                   //! Number of input file lists (one per source)
   std::vector<TChain*> fChains;  //! Arrays of chains (one per input source)
-  std::vector<TObject*>
-    fTArr;                   //! Data objects from chains (one per input source)
-  std::vector<Long64_t> fN;  //! Number of entries in chains
+  std::vector<TObject*> fTArr;   //! Data objects from chains (one per input source)
+  std::vector<Long64_t> fN;      //! Number of entries in chains
 
   /** Cached data objects. The vector index is the input source number, the map
 		 ** index is the event number.

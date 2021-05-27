@@ -1,9 +1,9 @@
 #ifndef CBMTRDCONTFACT_H
 #define CBMTRDCONTFACT_H
 
-#include <Rtypes.h>  // for ClassDef
-
 #include "FairContFact.h"  // for FairContFact
+
+#include <Rtypes.h>  // for ClassDef
 
 class FairParSet;
 class FairContainer;

@@ -35,15 +35,14 @@ CbmTrdDigiDraw::CbmTrdDigiDraw()
   , fq(nullptr)
   , fColor()
   , fStyle()
-  , fActiveLayers() {}
+  , fActiveLayers()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTrdDigiDraw::CbmTrdDigiDraw(const char* name,
-                               Color_t color,
-                               Style_t mstyle,
-                               Int_t iVerbose)
+CbmTrdDigiDraw::CbmTrdDigiDraw(const char* name, Color_t color, Style_t mstyle, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fVerbose(iVerbose)
   , fPointList(nullptr)
@@ -53,13 +52,15 @@ CbmTrdDigiDraw::CbmTrdDigiDraw(const char* name,
   , fq(nullptr)
   , fColor(color)
   , fStyle(mstyle)
-  , fActiveLayers() {
+  , fActiveLayers()
+{
   for (Int_t i = 0; i < 15; i++) {
     fActiveLayers[i] = kTRUE;
   }
 }
 // ----  Initialisation  ----------------------------------------------
-void CbmTrdDigiDraw::SetParContainers() {
+void CbmTrdDigiDraw::SetParContainers()
+{
   LOG(debug) << " * CbmTrdDigiDraw * :: SetParContainers() ";
 
 
@@ -72,13 +73,13 @@ void CbmTrdDigiDraw::SetParContainers() {
 // --------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-InitStatus CbmTrdDigiDraw::Init() {
+InitStatus CbmTrdDigiDraw::Init()
+{
   LOG(debug) << "CbmTrdDigiDraw::Init()";
   FairRootManager* fManager = FairRootManager::Instance();
   fPointList                = (TClonesArray*) fManager->GetObject(GetName());
   if (fPointList == 0) {
-    LOG(warn) << "CbmTrdDigiDraw::Init()  branch " << GetName()
-              << " Not found! Task will be deactivated ";
+    LOG(warn) << "CbmTrdDigiDraw::Init()  branch " << GetName() << " Not found! Task will be deactivated ";
     SetActive(kFALSE);
   }
   LOG(debug1) << "CbmTrdDigiDraw::Init() get track list" << fPointList;
@@ -91,7 +92,8 @@ InitStatus CbmTrdDigiDraw::Init() {
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
-void CbmTrdDigiDraw::Exec(Option_t* /*option*/) {
+void CbmTrdDigiDraw::Exec(Option_t* /*option*/)
+{
   if (IsActive()) {
 
     CbmTrdDigi* digi = 0;
@@ -171,28 +173,17 @@ CbmTrdDigiDraw::~CbmTrdDigiDraw() {}
 /** Action after each event**/
 void CbmTrdDigiDraw::Finish() {}
 // -------------------------------------------------------------------------
-void CbmTrdDigiDraw::Reset() {
+void CbmTrdDigiDraw::Reset()
+{
   if (fq != 0) {
     fq->Reset();
     gEve->RemoveElement(fq, fEventManager);
   }
 }
 
-void CbmTrdDigiDraw::SetActiveLayer(Bool_t Layer1,
-                                    Bool_t Layer2,
-                                    Bool_t Layer3,
-                                    Bool_t Layer4,
-                                    Bool_t Layer5,
-                                    Bool_t Layer6,
-                                    Bool_t Layer7,
-                                    Bool_t Layer8,
-                                    Bool_t Layer9,
-                                    Bool_t Layer10,
-                                    Bool_t Layer11,
-                                    Bool_t Layer12,
-                                    Bool_t Layer13,
-                                    Bool_t Layer14,
-                                    Bool_t Layer15)
+void CbmTrdDigiDraw::SetActiveLayer(Bool_t Layer1, Bool_t Layer2, Bool_t Layer3, Bool_t Layer4, Bool_t Layer5,
+                                    Bool_t Layer6, Bool_t Layer7, Bool_t Layer8, Bool_t Layer9, Bool_t Layer10,
+                                    Bool_t Layer11, Bool_t Layer12, Bool_t Layer13, Bool_t Layer14, Bool_t Layer15)
 
 {
   fActiveLayers[0]  = Layer1;

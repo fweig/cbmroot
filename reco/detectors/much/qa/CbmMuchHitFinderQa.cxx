@@ -73,7 +73,9 @@ CbmMuchHitFinderQa::CbmMuchHitFinderQa(const char* name, Int_t verbose)
   , fSignalHits("SignalHits", 0)
   , fPointsTotal("PointsTotal", 0)
   , fPointsUnderCounted("PointsUnderCounted", 0)
-  , fPointsOverCounted("PointsOverCounted", 0) {}
+  , fPointsOverCounted("PointsOverCounted", 0)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -82,7 +84,8 @@ CbmMuchHitFinderQa::~CbmMuchHitFinderQa() { DeInit(); }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::DeInit() {
+void CbmMuchHitFinderQa::DeInit()
+{
   fPoints      = nullptr;
   fDigiManager = nullptr;
   fClusters    = nullptr;
@@ -132,7 +135,8 @@ void CbmMuchHitFinderQa::DeInit() {
 
 
 // -------------------------------------------------------------------------
-InitStatus CbmMuchHitFinderQa::Init() {
+InitStatus CbmMuchHitFinderQa::Init()
+{
 
   DeInit();
 
@@ -219,23 +223,11 @@ InitStatus CbmMuchHitFinderQa::Init() {
   for (Int_t i = 0; i < fNstations; i++) {
 
     fhPointsInCluster[i] =
-      new TH1I(Form("hMCPointsInCluster%i", i + 1),
-               Form("MC Points in Cluster : Station %i ", i + 1),
-               10,
-               0,
-               10);
+      new TH1I(Form("hMCPointsInCluster%i", i + 1), Form("MC Points in Cluster : Station %i ", i + 1), 10, 0, 10);
     fhDigisInCluster[i] =
-      new TH1I(Form("hDigisInCluster%i", i + 1),
-               Form("Digis in Cluster : Station %i ", i + 1),
-               10,
-               0,
-               10);
+      new TH1I(Form("hDigisInCluster%i", i + 1), Form("Digis in Cluster : Station %i ", i + 1), 10, 0, 10);
     fhHitsPerCluster[i] =
-      new TH1I(Form("hHitsPerCluster%i", i + 1),
-               Form("Hits per Cluster : Station %i ", i + 1),
-               10,
-               0,
-               10);
+      new TH1I(Form("hHitsPerCluster%i", i + 1), Form("Hits per Cluster : Station %i ", i + 1), 10, 0, 10);
     histFolder->Add(fhPointsInCluster[i]);
     histFolder->Add(fhDigisInCluster[i]);
     histFolder->Add(fhHitsPerCluster[i]);
@@ -243,23 +235,14 @@ InitStatus CbmMuchHitFinderQa::Init() {
   gStyle->SetOptStat(1);
 
   //Pull Distribution
-  fhPullX = new TH1D(
-    "hPullX", "Pull distribution X;(x_{RC} - x_{MC}) / dx_{RC}", 500, -5, 5);
-  fhPullY = new TH1D(
-    "hPullY", "Pull distribution Y;(y_{RC} - y_{MC}) / dy_{RC}", 500, -5, 5);
-  fhPullT = new TH1D(
-    "hPullT", "Pull distribution T;(t_{RC} - t_{MC}) / dt_{RC}", 120, -5, 5);
+  fhPullX = new TH1D("hPullX", "Pull distribution X;(x_{RC} - x_{MC}) / dx_{RC}", 500, -5, 5);
+  fhPullY = new TH1D("hPullY", "Pull distribution Y;(y_{RC} - y_{MC}) / dy_{RC}", 500, -5, 5);
+  fhPullT = new TH1D("hPullT", "Pull distribution T;(t_{RC} - t_{MC}) / dt_{RC}", 120, -5, 5);
 
   //Residual Distribution
-  fhResidualX = new TH1D(
-    "hResidualX", "Residual distribution X;(x_{RC} - x_{MC})(cm)", 500, -3, 3);
-  fhResidualY = new TH1D(
-    "hResidualY", "Residual distribution Y;(y_{RC} - y_{MC})(cm)", 500, -3, 3);
-  fhResidualT = new TH1D("hResidualT",
-                         "Residual distribution T;(t_{RC} - t_{MC})(ns)",
-                         140,
-                         -17,
-                         17);
+  fhResidualX = new TH1D("hResidualX", "Residual distribution X;(x_{RC} - x_{MC})(cm)", 500, -3, 3);
+  fhResidualY = new TH1D("hResidualY", "Residual distribution Y;(y_{RC} - y_{MC})(cm)", 500, -3, 3);
+  fhResidualT = new TH1D("hResidualT", "Residual distribution T;(t_{RC} - t_{MC})(ns)", 140, -17, 17);
 
   histFolder->Add(fhPullX);
   histFolder->Add(fhPullY);
@@ -268,23 +251,19 @@ InitStatus CbmMuchHitFinderQa::Init() {
   histFolder->Add(fhResidualY);
   histFolder->Add(fhResidualT);
 
-  fCanvPointsInCluster = new CbmQaCanvas(
-    "cMCPointsInCluster", "MC Points In Cluster", 2 * 400, 2 * 400);
+  fCanvPointsInCluster = new CbmQaCanvas("cMCPointsInCluster", "MC Points In Cluster", 2 * 400, 2 * 400);
   fCanvPointsInCluster->Divide2D(fNstations);
 
-  fCanvDigisInCluster =
-    new CbmQaCanvas("cDigisInCluster", "Digis In Cluster", 2 * 400, 2 * 400);
+  fCanvDigisInCluster = new CbmQaCanvas("cDigisInCluster", "Digis In Cluster", 2 * 400, 2 * 400);
   fCanvDigisInCluster->Divide2D(fNstations);
 
-  fCanvHitsPerCluster =
-    new CbmQaCanvas("cHitsPerCluster", "Hits Per Cluster", 2 * 400, 2 * 400);
+  fCanvHitsPerCluster = new CbmQaCanvas("cHitsPerCluster", "Hits Per Cluster", 2 * 400, 2 * 400);
   fCanvHitsPerCluster->Divide2D(fNstations);
 
   fCanvPull = new CbmQaCanvas("cPull", "Pull Distribution", 3 * 600, 1 * 400);
   fCanvPull->Divide2D(3);
 
-  fCanvResidual =
-    new CbmQaCanvas("cResidual", "Residual Distribution", 3 * 600, 1 * 400);
+  fCanvResidual = new CbmQaCanvas("cResidual", "Residual Distribution", 3 * 600, 1 * 400);
   fCanvResidual->Divide2D(3);
 
   fOutFolder.Add(fCanvPointsInCluster);
@@ -299,7 +278,8 @@ InitStatus CbmMuchHitFinderQa::Init() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::SetParContainers() {
+void CbmMuchHitFinderQa::SetParContainers()
+{
   // Get run and runtime database
   // FairRuntimeDb* db = FairRuntimeDb::instance();
   // if ( ! db ) Fatal("SetParContainers", "No runtime database");
@@ -310,7 +290,8 @@ void CbmMuchHitFinderQa::SetParContainers() {
 
 
 // -------------------------------------------------------------------------x
-void CbmMuchHitFinderQa::Exec(Option_t*) {
+void CbmMuchHitFinderQa::Exec(Option_t*)
+{
   fNevents.SetVal(fNevents.GetVal() + 1);
   LOG(debug) << "Event: " << fNevents.GetVal();
 
@@ -322,7 +303,8 @@ void CbmMuchHitFinderQa::Exec(Option_t*) {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::FinishTask() {
+void CbmMuchHitFinderQa::FinishTask()
+{
 
   if (fVerbose > 0) { printf(" CbmMuchHitFinderQa FinishTask\n"); }
 
@@ -373,7 +355,8 @@ void CbmMuchHitFinderQa::FinishTask() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::DrawCanvases() {
+void CbmMuchHitFinderQa::DrawCanvases()
+{
 
   for (Int_t i = 0; i < fNstations; i++) {
     fCanvPointsInCluster->cd(i + 1);
@@ -438,7 +421,8 @@ void CbmMuchHitFinderQa::DrawCanvases() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::StatisticsQa() {
+void CbmMuchHitFinderQa::StatisticsQa()
+{
   //  Bool_t verbose = (fVerbose>2);
   Int_t nClusters = fClusters->GetEntriesFast();
   TArrayI hitsInCluster;
@@ -476,8 +460,7 @@ void CbmMuchHitFinderQa::StatisticsQa() {
       for (Int_t digiId = 0; digiId < nDigis; digiId++) {
         Int_t index = cluster->GetDigi(digiId);
         //Access Match from CbmDigi only
-        CbmMatch* match =
-          (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
+        CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
         if (!match) {
           LOG(fatal) << "CbmMuchHitFinderQa::StatisticsQa(): Match should be "
                         "present but is null.";
@@ -506,10 +489,8 @@ void CbmMuchHitFinderQa::StatisticsQa() {
     Int_t nHits = hitsInCluster[i];
     fhPointsInCluster[StationIndex]->Fill(nPts);
     fhHitsPerCluster[StationIndex]->Fill(nHits);
-    if (nPts > nHits)
-      fPointsUnderCounted.SetVal(fPointsUnderCounted.GetVal() + (nPts - nHits));
-    if (nHits > nPts)
-      fPointsOverCounted.SetVal(fPointsOverCounted.GetVal() + (nHits - nPts));
+    if (nPts > nHits) fPointsUnderCounted.SetVal(fPointsUnderCounted.GetVal() + (nPts - nHits));
+    if (nHits > nPts) fPointsOverCounted.SetVal(fPointsOverCounted.GetVal() + (nHits - nPts));
     fPointsTotal.SetVal(fPointsTotal.GetVal() + nPts);
   }
 }
@@ -517,7 +498,8 @@ void CbmMuchHitFinderQa::StatisticsQa() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::PullsQa() {
+void CbmMuchHitFinderQa::PullsQa()
+{
   Bool_t verbose = (fVerbose > 2);
   // Filling residuals and pulls for hits at the first layer
   for (Int_t i = 0; i < fHits->GetEntriesFast(); i++) {
@@ -531,8 +513,7 @@ void CbmMuchHitFinderQa::PullsQa() {
     //Earlier finding for only one station
     //if(!(iStation == 0)) continue;
     //    if(!(iStation == 3 && iLayer == 0)) continue;
-    if (verbose)
-      printf("   Hit %i, station %i, layer %i ", i, iStation, iLayer);
+    if (verbose) printf("   Hit %i, station %i, layer %i ", i, iStation, iLayer);
 
     Int_t clusterId   = hit->GetRefId();
     Bool_t hit_unique = 1;
@@ -565,12 +546,10 @@ void CbmMuchHitFinderQa::PullsQa() {
         return;
       }
       if (index < 0) {
-        LOG(fatal)
-          << "CbmMuchHitFinderQa::PullsQa(): Error, index out of bounds.";
+        LOG(fatal) << "CbmMuchHitFinderQa::PullsQa(): Error, index out of bounds.";
         return;
       }
-      CbmMatch* match =
-        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
+      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
       if (!match) {
         LOG(fatal) << "CbmMuchHitFinderQa::PullsQa(): Error, match not found.";
         return;
@@ -588,8 +567,7 @@ void CbmMuchHitFinderQa::PullsQa() {
       }
       CbmLink currentLink = match->GetLink(0);
 
-      CbmMuchModuleGem* module =
-        (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(digi->GetAddress());
+      CbmMuchModuleGem* module = (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(digi->GetAddress());
       if (!module) {
         LOG(fatal) << "CbmMuchHitFinderQa::PullsQa(): Error, module not found.";
         return;
@@ -649,7 +627,8 @@ void CbmMuchHitFinderQa::PullsQa() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::ClusterDeconvQa() {
+void CbmMuchHitFinderQa::ClusterDeconvQa()
+{
 
   Int_t nClusters = fClusters->GetEntriesFast();
   vector<CbmLink> vPoints;
@@ -673,18 +652,15 @@ void CbmMuchHitFinderQa::ClusterDeconvQa() {
   for (Int_t iCluster = 0; iCluster < nClusters; ++iCluster) {
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(iCluster);
     if (!cluster) {
-      LOG(fatal)
-        << "CbmMuchHitFinderQa::ClusterDeconvQa(): Error, cluster not found.";
+      LOG(fatal) << "CbmMuchHitFinderQa::ClusterDeconvQa(): Error, cluster not found.";
       return;
     }
     Int_t nDigis = cluster->GetNofDigis();
     for (Int_t id = 0; id < nDigis; ++id) {
-      Int_t iDigi = cluster->GetDigi(id);
-      CbmMatch* match =
-        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, iDigi);
+      Int_t iDigi     = cluster->GetDigi(id);
+      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, iDigi);
       if (!match) {
-        LOG(fatal)
-          << "CbmMuchHitFinderQa::ClusterDeconvQa(): Error, match not found.";
+        LOG(fatal) << "CbmMuchHitFinderQa::ClusterDeconvQa(): Error, match not found.";
         return;
       }
       for (Int_t ip = 0; ip < match->GetNofLinks(); ++ip) {
@@ -709,8 +685,7 @@ Bool_t CbmMuchHitFinderQa::IsSignalPoint(CbmLink pointLink)
   CbmMCTrack* track = (CbmMCTrack*) fMCTracks->Get(pointLink.GetFile(), pointLink.GetEntry(), iTrack);
   if (!track) return kFALSE;
 
-  if (iTrack != 0 && iTrack != 1)
-    return kFALSE;  // Signal tracks must be fist ones
+  if (iTrack != 0 && iTrack != 1) return kFALSE;  // Signal tracks must be fist ones
   // Verify if it is a signal muon
   if (track->GetMotherId() < 0) {  // No mother for signal
     Int_t pdgCode = track->GetPdgCode();

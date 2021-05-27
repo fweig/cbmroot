@@ -6,7 +6,9 @@ class TH1D;
 class TH2D;
 
 #include "CbmMCTrack.h"
+
 #include <TClonesArray.h>
+
 #include <vector>
 
 using namespace std;
@@ -26,55 +28,28 @@ public:
 
   void Exec(int Event, double OpeningAngleCut, double GammaInvMassCut);
 
-  Double_t CalculateOpeningAngleBetweenGammas_MC(CbmMCTrack* mctrack1,
-                                                 CbmMCTrack* mctrack2,
-                                                 CbmMCTrack* mctrack3,
+  Double_t CalculateOpeningAngleBetweenGammas_MC(CbmMCTrack* mctrack1, CbmMCTrack* mctrack2, CbmMCTrack* mctrack3,
                                                  CbmMCTrack* mctrack4);
-  Double_t CalculateOpeningAngleBetweenGammas_Reco(TVector3 electron1,
-                                                   TVector3 electron2,
-                                                   TVector3 electron3,
+  Double_t CalculateOpeningAngleBetweenGammas_Reco(TVector3 electron1, TVector3 electron2, TVector3 electron3,
                                                    TVector3 electron4);
 
-  void EtaDoubleGammaAnalysis(vector<TVector3> RefMom,
-                              vector<CbmMCTrack*> MC,
-                              vector<Int_t> Id,
-                              vector<TH1*> gg);
+  void EtaDoubleGammaAnalysis(vector<TVector3> RefMom, vector<CbmMCTrack*> MC, vector<Int_t> Id, vector<TH1*> gg);
 
-  void EtaChargedPionsGammaAnalysis(vector<TVector3> RefMomPion,
-                                    vector<CbmMCTrack*> MCPion,
-                                    vector<Int_t> IdPion,
-                                    vector<TVector3> RefMomEl,
-                                    vector<CbmMCTrack*> MCEl,
-                                    vector<Int_t> IdEl,
+  void EtaChargedPionsGammaAnalysis(vector<TVector3> RefMomPion, vector<CbmMCTrack*> MCPion, vector<Int_t> IdPion,
+                                    vector<TVector3> RefMomEl, vector<CbmMCTrack*> MCEl, vector<Int_t> IdEl,
                                     vector<TH1*> ppg);
 
-  void EtaPosNegNeutralPionsAnalysis(vector<TVector3> RefMomNeutral,
-                                     vector<CbmMCTrack*> MCNeutral,
-                                     vector<Int_t> IdNeutral,
-                                     vector<TVector3> RefMomPion,
-                                     vector<CbmMCTrack*> MCPion,
-                                     vector<Int_t> IdPion,
-                                     vector<TH1*> ppp);
+  void EtaPosNegNeutralPionsAnalysis(vector<TVector3> RefMomNeutral, vector<CbmMCTrack*> MCNeutral,
+                                     vector<Int_t> IdNeutral, vector<TVector3> RefMomPion, vector<CbmMCTrack*> MCPion,
+                                     vector<Int_t> IdPion, vector<TH1*> ppp);
 
 
-  void EtaDoubleGammaAnalysis_plusBG(double OpeningAngleCut,
-                                     double GammaInvMassCut,
-                                     int Event,
-                                     vector<TVector3> RefMom,
-                                     vector<CbmMCTrack*> MC,
-                                     vector<Int_t> Id,
-                                     vector<TH1*> gg);
-  void EtaChargedPionsGammaAnalysis_plusBG(double OpeningAngleCut,
-                                           double GammaInvMassCut,
-                                           int Event,
-                                           vector<TVector3> RefMomPion,
-                                           vector<CbmMCTrack*> MCPion,
-                                           vector<Int_t> IdPion,
-                                           vector<TVector3> RefMomEl,
-                                           vector<CbmMCTrack*> MCEl,
-                                           vector<Int_t> IdEl,
-                                           vector<TH1*> ppg,
-                                           vector<TH1*> ppp);
+  void EtaDoubleGammaAnalysis_plusBG(double OpeningAngleCut, double GammaInvMassCut, int Event, vector<TVector3> RefMom,
+                                     vector<CbmMCTrack*> MC, vector<Int_t> Id, vector<TH1*> gg);
+  void EtaChargedPionsGammaAnalysis_plusBG(double OpeningAngleCut, double GammaInvMassCut, int Event,
+                                           vector<TVector3> RefMomPion, vector<CbmMCTrack*> MCPion,
+                                           vector<Int_t> IdPion, vector<TVector3> RefMomEl, vector<CbmMCTrack*> MCEl,
+                                           vector<Int_t> IdEl, vector<TH1*> ppg, vector<TH1*> ppp);
 
   void Mixing_gg();
   void Mixing_ppg();

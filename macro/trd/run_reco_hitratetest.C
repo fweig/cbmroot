@@ -18,7 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_hitratetest() {
+void run_reco_hitratetest()
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -29,10 +30,8 @@ void run_reco_hitratetest() {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 9);
   digipar.ReplaceAll(".", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -129,11 +128,9 @@ void run_reco_hitratetest() {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
                                // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   // -----   TRD clusterizer     ----------------------------------------------
@@ -142,8 +139,7 @@ void run_reco_hitratetest() {
   run->AddTask(trdClustering);
   */
   printf("CbmTrdHitRateTest\n");
-  CbmTrdHitRateQa* trdRateTest =
-    new CbmTrdHitRateQa("HitRateTest", "Hit Rate Test", radiator);
+  CbmTrdHitRateQa* trdRateTest = new CbmTrdHitRateQa("HitRateTest", "Hit Rate Test", radiator);
   run->AddTask(trdRateTest);
   // -------------------------------------------------------------------------
 

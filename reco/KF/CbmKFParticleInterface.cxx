@@ -3,9 +3,11 @@
 
 // Cbm Headers ----------------------
 #include "CbmKFParticleInterface.h"
+
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
 #include "CbmStsTrack.h"
+
 #include "L1Field.h"
 
 //KF Particle headers
@@ -19,16 +21,16 @@
 #include "TStopwatch.h"    //to measure the time
 
 //c++ and std headers
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 using std::vector;
 
 
-void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track,
-                                                       KFParticle* particle,
-                                                       Int_t pdg,
-                                                       Bool_t firstPoint) {
+void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track, KFParticle* particle, Int_t pdg,
+                                                       Bool_t firstPoint)
+{
   vector<CbmStsTrack> vRTracks(1);
   vRTracks[0] = *track;
 
@@ -45,8 +47,7 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track,
   for (Int_t iTr = 0; iTr < 1; iTr++) {
     const FairTrackParam* parameters;
 
-    if (firstPoint)
-      parameters = vRTracks[iTr].GetParamFirst();
+    if (firstPoint) parameters = vRTracks[iTr].GetParamFirst();
     else
       parameters = vRTracks[iTr].GetParamLast();
 
@@ -58,8 +59,7 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track,
       for (Int_t j = 0; j <= i; j++, iCov++)
         V[iCov] = parameters->GetCovariance(i, j);
 
-    float a = parameters->GetTx(), b = parameters->GetTy(),
-          qp = parameters->GetQp();
+    float a = parameters->GetTx(), b = parameters->GetTy(), qp = parameters->GetQp();
 
     Int_t q = 0;
     if (qp > 0.f) q = 1;
@@ -82,13 +82,12 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track,
     par[4] = py;
     par[5] = pz;
 
-    float cxpz = H[0] * V[3] + H[1] * V[6] + H[2] * V[10];
-    float cypz = H[0] * V[4] + H[1] * V[7] + H[2] * V[11];
-    float capz = H[0] * V[5] + H[1] * V[8] + H[2] * V[12];
-    float cbpz = H[0] * V[8] + H[1] * V[9] + H[2] * V[13];
-    float cpzpz =
-      H[0] * H[0] * V[5] + H[1] * H[1] * V[9] + H[2] * H[2] * V[14]
-      + 2 * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12] + H[1] * H[2] * V[13]);
+    float cxpz  = H[0] * V[3] + H[1] * V[6] + H[2] * V[10];
+    float cypz  = H[0] * V[4] + H[1] * V[7] + H[2] * V[11];
+    float capz  = H[0] * V[5] + H[1] * V[8] + H[2] * V[12];
+    float cbpz  = H[0] * V[8] + H[1] * V[9] + H[2] * V[13];
+    float cpzpz = H[0] * H[0] * V[5] + H[1] * H[1] * V[9] + H[2] * H[2] * V[14]
+                  + 2 * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12] + H[1] * H[2] * V[13]);
 
     float cov[21];
     cov[0]  = V[0];
@@ -150,10 +149,9 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track,
   particle->Chi2() = track->GetChiSq();
 }
 
-void CbmKFParticleInterface::ExtrapolateTrackToPV(const CbmStsTrack* track,
-                                                  CbmVertex* pv,
-                                                  FairTrackParam* paramAtPV,
-                                                  float& chiPrim) {
+void CbmKFParticleInterface::ExtrapolateTrackToPV(const CbmStsTrack* track, CbmVertex* pv, FairTrackParam* paramAtPV,
+                                                  float& chiPrim)
+{
   vector<CbmStsTrack> vRTracks(1);
   vRTracks[0] = *track;
 

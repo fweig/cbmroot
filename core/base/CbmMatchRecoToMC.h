@@ -67,9 +67,7 @@ private:
      ** The cluster match objects are created by summing up the match objects
      ** of all digis belonging to the cluster.
      **/
-  void MatchClusters(const TClonesArray* digiMatches,
-                     const TClonesArray* clusters,
-                     TClonesArray* clusterMatches);
+  void MatchClusters(const TClonesArray* digiMatches, const TClonesArray* clusters, TClonesArray* clusterMatches);
 
 
   /** @brief Generic creation of cluster match objects, using CbmDigiManager
@@ -79,14 +77,10 @@ private:
      ** The cluster match objects are created by summing up the match objects
      ** of all digis belonging to the cluster.
      **/
-  void MatchClusters(ECbmModuleId systemId,
-                     const TClonesArray* clusters,
-                     TClonesArray* clusterMatches);
+  void MatchClusters(ECbmModuleId systemId, const TClonesArray* clusters, TClonesArray* clusterMatches);
 
 
-  void MatchHits(const TClonesArray* matches,
-                 const TClonesArray* hits,
-                 TClonesArray* hitMatches);
+  void MatchHits(const TClonesArray* matches, const TClonesArray* hits, TClonesArray* hitMatches);
 
   /** @brief Match STS hits, using cluster match objects
      ** @param clusterMatches   TClonesArray with cluster matches
@@ -99,38 +93,23 @@ private:
      ** the method MatchHits, which just copies the cluster match object to the
      ** hit match object.
      */
-  void MatchHitsSts(const TClonesArray* clusterMmatches,
-                    const TClonesArray* hits,
-                    TClonesArray* hitMatches);
+  void MatchHitsSts(const TClonesArray* clusterMmatches, const TClonesArray* hits, TClonesArray* hitMatches);
 
   void MatchHitsMvd(const TClonesArray* hits, TClonesArray* hitMatches);
 
-  void MatchHitsTof(const TClonesArray* HitDigiMatches,
-                    const TClonesArray* hits,
-                    TClonesArray* hitMatches);
+  void MatchHitsTof(const TClonesArray* HitDigiMatches, const TClonesArray* hits, TClonesArray* hitMatches);
 
-  void MatchHitsToPoints(CbmMCDataArray* points,
-                         const TClonesArray* hits,
-                         TClonesArray* hitMatches);
+  void MatchHitsToPoints(CbmMCDataArray* points, const TClonesArray* hits, TClonesArray* hitMatches);
 
-  void MatchTracks(const TClonesArray* hitMatches,
-                   CbmMCDataArray* points,
-                   const TClonesArray* tracks,
+  void MatchTracks(const TClonesArray* hitMatches, CbmMCDataArray* points, const TClonesArray* tracks,
                    TClonesArray* trackMatches);
 
   //Special case for STS: now evbased compatible
-  void MatchStsTracks(const TClonesArray* mvdHitMatches,
-                      const TClonesArray* stsHitMatches,
-                      CbmMCDataArray* mvdPoints,
-                      CbmMCDataArray* stsPoints,
-                      const TClonesArray* tracks,
-                      TClonesArray* trackMatches);
+  void MatchStsTracks(const TClonesArray* mvdHitMatches, const TClonesArray* stsHitMatches, CbmMCDataArray* mvdPoints,
+                      CbmMCDataArray* stsPoints, const TClonesArray* tracks, TClonesArray* trackMatches);
 
-  void MatchRichRings(const TClonesArray* richRings,
-                      const TClonesArray* richHits,
-                      CbmMCDataArray* richMcPoints,
-                      CbmMCDataArray* mcTracks,
-                      TClonesArray* ringMatches);
+  void MatchRichRings(const TClonesArray* richRings, const TClonesArray* richHits, CbmMCDataArray* richMcPoints,
+                      CbmMCDataArray* mcTracks, TClonesArray* ringMatches);
 
 public:
   /**
@@ -138,17 +117,11 @@ public:
      * C++11 efficient way to return vector
      */
   static std::vector<std::pair<Int_t, Int_t>>
-  GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
-                                const CbmRichHit* hit,
-                                CbmMCDataArray* richPoints,
-                                CbmMCDataArray* mcTracks,
-                                Int_t eventNumber);
+  GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan, const CbmRichHit* hit, CbmMCDataArray* richPoints,
+                                CbmMCDataArray* mcTracks, Int_t eventNumber);
 
-  static std::vector<Int_t>
-  GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan,
-                                const CbmRichHit* hit,
-                                const TClonesArray* richPoints,
-                                const TClonesArray* mcTracks);
+  static std::vector<Int_t> GetMcTrackMotherIdsForRichHit(CbmDigiManager* digiMan, const CbmRichHit* hit,
+                                                          const TClonesArray* richPoints, const TClonesArray* mcTracks);
 
 private:
   static Int_t fEventNumber;
@@ -200,12 +173,12 @@ private:
   TClonesArray* fTrdTrackMatches   = nullptr;  //! Track matches [out]
 
   // TOF
-  CbmMCDataArray* fTofPoints       = nullptr;  //! CbmTofPoint array
+  CbmMCDataArray* fTofPoints                 = nullptr;  //! CbmTofPoint array
   const std::vector<CbmTofDigi>* fTofDigis   = nullptr;  // TOF MC point matches
   const std::vector<CbmMatch>* fTofDigiMatch = nullptr;  // TOF MC point matches
-  TClonesArray* fTofHits           = nullptr;  //! CbmTofHit array
-  TClonesArray* fTofHitDigiMatches = nullptr;  //! Match Hit -> Digi [out]
-  TClonesArray* fTofHitMatches     = nullptr;  //! Match Hit -> MC point [out]
+  TClonesArray* fTofHits                     = nullptr;  //! CbmTofHit array
+  TClonesArray* fTofHitDigiMatches           = nullptr;  //! Match Hit -> Digi [out]
+  TClonesArray* fTofHitMatches               = nullptr;  //! Match Hit -> MC point [out]
 
 
   CbmMatchRecoToMC(const CbmMatchRecoToMC&);

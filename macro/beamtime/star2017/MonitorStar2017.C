@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorStar2017(TString inFile = "") {
+void MonitorStar2017(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = srcDir + "/input/";
   TString inDir = "/home/mework/star/";
@@ -64,8 +65,7 @@ void MonitorStar2017(TString inFile = "") {
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("localhost");
     source->SetPortNumber(5556);
@@ -105,8 +105,7 @@ void MonitorStar2017(TString inFile = "") {
 
   //  run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -114,8 +113,7 @@ void MonitorStar2017(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorStar2017: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorStar2017: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorStar2017: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorStar2017: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

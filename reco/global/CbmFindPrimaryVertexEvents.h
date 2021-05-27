@@ -9,6 +9,7 @@
 
 
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 class TClonesArray;
@@ -40,8 +41,7 @@ public:
 
   // Prevent auto copy constructor and assignment operator
   CbmFindPrimaryVertexEvents(const CbmFindPrimaryVertexEvents&) = delete;
-  CbmFindPrimaryVertexEvents&
-  operator=(const CbmFindPrimaryVertexEvents&) = delete;
+  CbmFindPrimaryVertexEvents& operator=(const CbmFindPrimaryVertexEvents&) = delete;
 
   /** Constructor with name and title
    **
@@ -49,9 +49,7 @@ public:
    *@param title     Title of task
    *@param pvFinder  Pointer to vertex finder concrete object
    **/
-  CbmFindPrimaryVertexEvents(const char* name,
-                             const char* title,
-                             CbmPrimaryVertexFinder* pvFinder);
+  CbmFindPrimaryVertexEvents(const char* name, const char* title, CbmPrimaryVertexFinder* pvFinder);
 
 
   /** Destructor **/

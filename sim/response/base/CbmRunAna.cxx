@@ -26,7 +26,8 @@ CbmRunAna::~CbmRunAna() {}
 
 
 // -----   Fill output tree   ------------------------------------------------
-void CbmRunAna::Fill() {
+void CbmRunAna::Fill()
+{
 
   if (fAsync) return;
   fRootManager->Fill();

@@ -4,17 +4,17 @@
  **/
 #include "CbmStsAlgoFindHits.h"
 
-#include <iostream>
-
+#include "CbmDigiManager.h"
 #include "CbmStsCluster.h"
+#include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsParSensor.h"
 #include "CbmStsParSensorCond.h"
+
 #include <TGeoMatrix.h>
 #include <TMath.h>
 
-#include "CbmDigiManager.h"
-#include "CbmStsDigi.h"
+#include <iostream>
 
 using std::pair;
 using std::vector;
@@ -26,17 +26,10 @@ CbmStsAlgoFindHits::CbmStsAlgoFindHits() {}
 
 
 // -----   Create a new hit   ----------------------------------------------
-void CbmStsAlgoFindHits::CreateHit(Double_t xLocal,
-                                   Double_t yLocal,
-                                   Double_t varX,
-                                   Double_t varY,
-                                   Double_t varXY,
-                                   const CbmStsCluster& clusterF,
-                                   const CbmStsCluster& clusterB,
-                                   UInt_t indexF,
-                                   UInt_t indexB,
-                                   Double_t du,
-                                   Double_t dv) {
+void CbmStsAlgoFindHits::CreateHit(Double_t xLocal, Double_t yLocal, Double_t varX, Double_t varY, Double_t varXY,
+                                   const CbmStsCluster& clusterF, const CbmStsCluster& clusterB, UInt_t indexF,
+                                   UInt_t indexB, Double_t du, Double_t dv)
+{
 
   // ---  Check output array
   assert(fHits);
@@ -44,8 +37,7 @@ void CbmStsAlgoFindHits::CreateHit(Double_t xLocal,
   // --- Transform into global coordinate system
   Double_t local[3] = {xLocal, yLocal, 0.};
   Double_t global[3];
-  if (fMatrix)
-    fMatrix->LocalToMaster(local, global);
+  if (fMatrix) fMatrix->LocalToMaster(local, global);
   else {
     global[0] = local[0];
     global[1] = local[1];
@@ -65,16 +57,7 @@ void CbmStsAlgoFindHits::CreateHit(Double_t xLocal,
   Double_t hitTimeError = 0.5 * TMath::Sqrt(etF * etF + etB * etB);
 
   // --- Create hit
-  fHits->emplace_back(fAddress,
-                      global,
-                      error,
-                      varXY,
-                      indexF,
-                      indexB,
-                      hitTime,
-                      hitTimeError,
-                      du,
-                      dv);
+  fHits->emplace_back(fAddress, global, error, varXY, indexF, indexB, hitTime, hitTimeError, du, dv);
 
   return;
 }
@@ -82,20 +65,11 @@ void CbmStsAlgoFindHits::CreateHit(Double_t xLocal,
 
 
 // -----   Algorithm execution   -------------------------------------------
-Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF,
-                                  const vector<CbmStsCluster>& clustersB,
-                                  vector<CbmStsHit>& hits,
-                                  UInt_t address,
-                                  Double_t timeCutSig,
-                                  Double_t timeCutAbs,
-                                  Double_t dY,
-                                  UInt_t nStrips,
-                                  Double_t pitch,
-                                  Double_t stereoF,
-                                  Double_t stereoB,
-                                  Double_t lorentzF,
-                                  Double_t lorentzB,
-                                  TGeoHMatrix* matrix) {
+Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF, const vector<CbmStsCluster>& clustersB,
+                                  vector<CbmStsHit>& hits, UInt_t address, Double_t timeCutSig, Double_t timeCutAbs,
+                                  Double_t dY, UInt_t nStrips, Double_t pitch, Double_t stereoF, Double_t stereoB,
+                                  Double_t lorentzF, Double_t lorentzB, TGeoHMatrix* matrix)
+{
 
   // Assert validity of parameters
   assert(nStrips > 0);
@@ -149,15 +123,16 @@ Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF,
       if ((timeDiff > 0) && (timeDiff > max_sigma_both)) {
         startB++;
         continue;
-      } else if ((timeDiff > 0) && (timeDiff > max_sigma)) {
+      }
+      else if ((timeDiff > 0) && (timeDiff > max_sigma)) {
         continue;
-      } else if ((timeDiff < 0) && (fabs(timeDiff) > max_sigma))
+      }
+      else if ((timeDiff < 0) && (fabs(timeDiff) > max_sigma))
         break;
 
       // Cut on time difference of the two clusters
       Double_t timeCut = -1.;
-      if (timeCutAbs > 0.)
-        timeCut = timeCutAbs;  // absolute cut value
+      if (timeCutAbs > 0.) timeCut = timeCutAbs;  // absolute cut value
       else {
         if (timeCutSig > 0.) {
           Double_t eF = clusterF.GetTimeError();
@@ -168,8 +143,7 @@ Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF,
       if (fabs(clusterF.GetTime() - clusterB.GetTime()) > timeCut) continue;
 
       // --- Calculate intersection points
-      Int_t nOfHits =
-        IntersectClusters(clusterF, clusterB, iClusterF, iClusterB);
+      Int_t nOfHits = IntersectClusters(clusterF, clusterB, iClusterF, iClusterB);
       nHits += nOfHits;
 
     }  //# clusters back side
@@ -182,9 +156,8 @@ Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF,
 
 
 // -----   Get cluster position at read-out edge   -------------------------
-void CbmStsAlgoFindHits::GetClusterPosition(Double_t centre,
-                                            Double_t& xCluster,
-                                            Int_t& side) {
+void CbmStsAlgoFindHits::GetClusterPosition(Double_t centre, Double_t& xCluster, Int_t& side)
+{
 
   // Take integer channel
   Int_t iChannel = Int_t(centre);
@@ -206,8 +179,7 @@ void CbmStsAlgoFindHits::GetClusterPosition(Double_t centre,
   // sensor, which is not correct for tracks not traversing the entire
   // sensor thickness (i.e., are created or stopped somewhere in the sensor).
   // However, this is the best one can do in reconstruction.
-  if (side == 0)
-    xCluster -= fLorentzF;
+  if (side == 0) xCluster -= fLorentzF;
   else
     xCluster -= fLorentzB;
 
@@ -217,7 +189,8 @@ void CbmStsAlgoFindHits::GetClusterPosition(Double_t centre,
 
 
 // -----   Get strip and side from channel number   ------------------------
-pair<Int_t, Int_t> CbmStsAlgoFindHits::GetStrip(UInt_t channel) const {
+pair<Int_t, Int_t> CbmStsAlgoFindHits::GetStrip(UInt_t channel) const
+{
 
   Int_t stripNr = -1;
   Int_t side    = -1;
@@ -226,7 +199,8 @@ pair<Int_t, Int_t> CbmStsAlgoFindHits::GetStrip(UInt_t channel) const {
   if (channel < fNofStrips) {  // front side
     side    = 0;
     stripNr = channel;
-  } else {  // back side
+  }
+  else {  // back side
     side    = 1;
     stripNr = channel - fNofStrips;
   }
@@ -243,15 +217,9 @@ pair<Int_t, Int_t> CbmStsAlgoFindHits::GetStrip(UInt_t channel) const {
 
 
 // -----   Intersection of two lines along the strips   --------------------
-Bool_t CbmStsAlgoFindHits::Intersect(Double_t xF,
-                                     Double_t exF,
-                                     Double_t xB,
-                                     Double_t exB,
-                                     Double_t& x,
-                                     Double_t& y,
-                                     Double_t& varX,
-                                     Double_t& varY,
-                                     Double_t& varXY) {
+Bool_t CbmStsAlgoFindHits::Intersect(Double_t xF, Double_t exF, Double_t xB, Double_t exB, Double_t& x, Double_t& y,
+                                     Double_t& varX, Double_t& varY, Double_t& varXY)
+{
 
   // In the coordinate system with origin at the bottom left corner,
   // a line along the strips with coordinate x0 at the top edge is
@@ -292,11 +260,9 @@ Bool_t CbmStsAlgoFindHits::Intersect(Double_t xF,
   }
 
   // --- OK, both sides have stereo angle
-  x    = (fTanStereoB * xF - fTanStereoF * xB) / (fTanStereoB - fTanStereoF);
-  y    = fDy + (xB - xF) / (fTanStereoB - fTanStereoF);
-  varX = fErrorFac
-         * (exF * exF * fTanStereoB * fTanStereoB
-            + exB * exB * fTanStereoF * fTanStereoF);
+  x     = (fTanStereoB * xF - fTanStereoF * xB) / (fTanStereoB - fTanStereoF);
+  y     = fDy + (xB - xF) / (fTanStereoB - fTanStereoF);
+  varX  = fErrorFac * (exF * exF * fTanStereoB * fTanStereoB + exB * exB * fTanStereoF * fTanStereoF);
   varY  = fErrorFac * (exF * exF + exB * exB);
   varXY = -1. * fErrorFac * (exF * exF * fTanStereoB + exB * exB * fTanStereoF);
 
@@ -307,10 +273,9 @@ Bool_t CbmStsAlgoFindHits::Intersect(Double_t xF,
 
 
 // -----   Intersect two clusters   ----------------------------------------
-Int_t CbmStsAlgoFindHits::IntersectClusters(const CbmStsCluster& clusterF,
-                                            const CbmStsCluster& clusterB,
-                                            UInt_t indexF,
-                                            UInt_t indexB) {
+Int_t CbmStsAlgoFindHits::IntersectClusters(const CbmStsCluster& clusterF, const CbmStsCluster& clusterB, UInt_t indexF,
+                                            UInt_t indexB)
+{
 
   // --- Calculate cluster centre position on readout edge
   Int_t side  = -1;
@@ -320,8 +285,7 @@ Int_t CbmStsAlgoFindHits::IntersectClusters(const CbmStsCluster& clusterF,
   //std::cout << "Cluster position " << clusterF.GetPosition() << ": x "
   //    << xF << " side " << side;
   if (side != 0) {
-    std::cout << "Cluster position " << clusterF.GetPosition() << ": x " << xF
-              << " side " << side << std::endl;
+    std::cout << "Cluster position " << clusterF.GetPosition() << ": x " << xF << " side " << side << std::endl;
   }
   assert(side == 0);
   Double_t exF = clusterF.GetPositionError() * fPitch;
@@ -375,17 +339,7 @@ Int_t CbmStsAlgoFindHits::IntersectClusters(const CbmStsCluster& clusterF,
         xC -= 0.5 * fDx;
         yC -= 0.5 * fDy;
         // --- Create the hit
-        CreateHit(xC,
-                  yC,
-                  varX,
-                  varY,
-                  varXY,
-                  clusterF,
-                  clusterB,
-                  indexF,
-                  indexB,
-                  du,
-                  dv);
+        CreateHit(xC, yC, varX, varY, varXY, clusterF, clusterB, indexF, indexB, du, dv);
         nHits++;
 
       }  //? Intersection of lines
@@ -400,7 +354,8 @@ Int_t CbmStsAlgoFindHits::IntersectClusters(const CbmStsCluster& clusterF,
 
 
 // -----   Check whether a point is inside the active area   ---------------
-Bool_t CbmStsAlgoFindHits::IsInside(Double_t x, Double_t y) {
+Bool_t CbmStsAlgoFindHits::IsInside(Double_t x, Double_t y)
+{
   if (x < -fDx / 2.) return kFALSE;
   if (x > fDx / 2.) return kFALSE;
   if (y < -fDy / 2.) return kFALSE;

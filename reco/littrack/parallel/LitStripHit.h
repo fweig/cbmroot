@@ -41,10 +41,10 @@ public:
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-  string ToString() const {
+  string ToString() const
+  {
     stringstream ss;
-    ss << "LitStripHit: phiCos=" << phiCos << " phiSin=" << phiSin << " U=" << U
-       << " Du=" << Du << " Z=" << Z << "\n";
+    ss << "LitStripHit: phiCos=" << phiCos << " phiSin=" << phiSin << " U=" << U << " Du=" << Du << " Z=" << Z << "\n";
     return ss.str();
   }
 
@@ -52,7 +52,8 @@ public:
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-  friend ostream& operator<<(ostream& strm, const LitStripHit& hit) {
+  friend ostream& operator<<(ostream& strm, const LitStripHit& hit)
+  {
     strm << hit.ToString();
     return strm;
   }

@@ -14,9 +14,7 @@
 
 ClassImp(CbmTofDigiPar)
 
-  CbmTofDigiPar::CbmTofDigiPar(const char* name,
-                               const char* title,
-                               const char* context)
+  CbmTofDigiPar::CbmTofDigiPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fCellMap()
   , fCellIdArray()
@@ -25,15 +23,16 @@ ClassImp(CbmTofDigiPar)
   , fCellZArray()
   , fCellDxArray()
   , fCellDyArray()
-  , fNrOfCells(-1) {
+  , fNrOfCells(-1)
+{
   detName = "Tof";
 }
 
-CbmTofDigiPar::~CbmTofDigiPar(void) {
+CbmTofDigiPar::~CbmTofDigiPar(void)
+{
   LOG(debug4) << "Enter CbmTofDigiPar destructor";
   std::map<Int_t, CbmTofCell*>::iterator fCellMapIt;
-  for (fCellMapIt = fCellMap.begin(); fCellMapIt != fCellMap.end();
-       ++fCellMapIt) {
+  for (fCellMapIt = fCellMap.begin(); fCellMapIt != fCellMap.end(); ++fCellMapIt) {
     delete fCellMapIt->second;
   }
   fCellMap.clear();
@@ -41,12 +40,14 @@ CbmTofDigiPar::~CbmTofDigiPar(void) {
   LOG(debug4) << "Leave CbmTofDigiPar destructor";
 }
 
-void CbmTofDigiPar::clear(void) {
+void CbmTofDigiPar::clear(void)
+{
   status = kFALSE;
   resetInputVersions();
 }
 
-void CbmTofDigiPar::putParams(FairParamList* l) {
+void CbmTofDigiPar::putParams(FairParamList* l)
+{
   if (!l) { return; }
 
   l->add("NrOfCells", fNrOfCells);
@@ -58,7 +59,8 @@ void CbmTofDigiPar::putParams(FairParamList* l) {
   l->add("CellDyArray", fCellDyArray);
 }
 
-Bool_t CbmTofDigiPar::getParams(FairParamList* l) {
+Bool_t CbmTofDigiPar::getParams(FairParamList* l)
+{
   if (!l) { return kFALSE; }
 
   LOG(debug2) << "Get the tof digitization parameters.";
@@ -87,12 +89,8 @@ Bool_t CbmTofDigiPar::getParams(FairParamList* l) {
 
 
   for (Int_t i = 0; i < fNrOfCells; i++) {
-    fCellMap[fCellIdArray[i]] = new CbmTofCell(fCellIdArray[i],
-                                               fCellXArray[i],
-                                               fCellYArray[i],
-                                               fCellZArray[i],
-                                               fCellDxArray[i],
-                                               fCellDyArray[i]);
+    fCellMap[fCellIdArray[i]] =
+      new CbmTofCell(fCellIdArray[i], fCellXArray[i], fCellYArray[i], fCellZArray[i], fCellDxArray[i], fCellDyArray[i]);
   }
   return kTRUE;
 }

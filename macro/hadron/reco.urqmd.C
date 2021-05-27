@@ -1,5 +1,6 @@
 
-void reco_urqmd(Int_t index) {
+void reco_urqmd(Int_t index)
+{
   TStopwatch timer;
   timer.Start();
   gDebug        = 0;
@@ -51,19 +52,11 @@ void reco_urqmd(Int_t index) {
   char* ver = getenv("CBMVER");
 
   sprintf(strInputFile, "/home/kresan/data/mc/%s/urqmd/auau/25gev/centr", ver);
-  sprintf(
-    strOutputFile, "/home/kresan/data/reco/%s/urqmd/auau/25gev/centr", ver);
+  sprintf(strOutputFile, "/home/kresan/data/reco/%s/urqmd/auau/25gev/centr", ver);
 
-  sprintf(strParamFile,
-          "%s/urqmd.auau.25gev.centr.%4d.mc.param.root",
-          strInputFile,
-          index);
-  sprintf(
-    strInputFile, "%s/urqmd.auau.25gev.centr.%4d.mc.root", strInputFile, index);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.25gev.centr.%4d.reco.root",
-          strOutputFile,
-          index);
+  sprintf(strParamFile, "%s/urqmd.auau.25gev.centr.%4d.mc.param.root", strInputFile, index);
+  sprintf(strInputFile, "%s/urqmd.auau.25gev.centr.%4d.mc.root", strInputFile, index);
+  sprintf(strOutputFile, "%s/urqmd.auau.25gev.centr.%4d.reco.root", strOutputFile, index);
 
   for (Int_t i = 0; i < 1000; i++) {
     if (' ' == strInputFile[i]) strInputFile[i] = '0';
@@ -113,8 +106,7 @@ void reco_urqmd(Int_t index) {
   // ===                     MVD local reconstruction                      ===
   // =========================================================================
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder =
-    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
+  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
   // ===                 End of MVD local reconstruction                   ===
@@ -126,8 +118,7 @@ void reco_urqmd(Int_t index) {
   // =========================================================================
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -147,7 +138,7 @@ void reco_urqmd(Int_t index) {
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -158,7 +149,7 @@ void reco_urqmd(Int_t index) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
   // ===                 End of STS local reconstruction                   ===
@@ -176,11 +167,9 @@ void reco_urqmd(Int_t index) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   // -------------------------------------------------------------------------
@@ -192,8 +181,7 @@ void reco_urqmd(Int_t index) {
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd =
-    new CbmTofHitProducer("TOF HitProducer", iVerbose);
+  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer", iVerbose);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
   // ===                   End of TOF local reconstruction                 ===
@@ -232,14 +220,12 @@ void reco_urqmd(Int_t index) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
-    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
-    new CbmTrdSetTracksPidANN("Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 

@@ -20,9 +20,8 @@
   gROOT->cd();
   TString hname = "hXX2";
   hPla2         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hPla2 != NULL) {
-    hPla2->Draw("colz");
-  } else {
+  if (hPla2 != NULL) { hPla2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -30,9 +29,8 @@
   gROOT->cd();
   TString hname = "hYY2";
   hPla2         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hPla2 != NULL) {
-    hPla2->Draw("colz");
-  } else {
+  if (hPla2 != NULL) { hPla2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -41,9 +39,8 @@
   gROOT->cd();
   TString hname = "Cor_SmT2_sm000_rpc000_Ch000_S0_Walk_px";
   hPla1         = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla1 != NULL) {
-    hPla1->Draw();
-  } else {
+  if (hPla1 != NULL) { hPla1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -51,9 +48,8 @@
   gROOT->cd();
   TString hname = "Cor_SmT2_sm000_rpc000_Ch000_S1_Walk_px";
   hPla1         = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla1 != NULL) {
-    hPla1->Draw();
-  } else {
+  if (hPla1 != NULL) { hPla1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -61,9 +57,8 @@
   gROOT->cd();
   TString hname = "Cor_SmT2_sm001_rpc000_Ch000_S0_Walk_px";
   hPla1         = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla1 != NULL) {
-    hPla1->Draw();
-  } else {
+  if (hPla1 != NULL) { hPla1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -72,9 +67,8 @@
   gROOT->cd();
   TString hname = "Cor_SmT2_sm001_rpc000_Ch000_S1_Walk_px";
   hPla1         = (TH1*) gROOT->FindObjectAny(hname);
-  if (hPla1 != NULL) {
-    hPla1->Draw();
-  } else {
+  if (hPla1 != NULL) { hPla1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -82,9 +76,8 @@
   gROOT->cd();
   TString hname = "hDT2";
   hdTPla        = (TH1*) gROOT->FindObjectAny(hname);
-  if (hdTPla != NULL) {
-    hdTPla->Fit("gaus");
-  } else {
+  if (hdTPla != NULL) { hdTPla->Fit("gaus"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

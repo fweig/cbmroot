@@ -5,8 +5,7 @@
 
 // ---------------- Foward Declarations und struct Declarations
 
-TClonesArray*
-ConnectBranchIfExist(TFile* f, TTree* t, TString branch, TString dataClass);
+TClonesArray* ConnectBranchIfExist(TFile* f, TTree* t, TString branch, TString dataClass);
 TDirectoryFile* GetResidual(TFile* f, std::string& component);
 
 struct triple {
@@ -29,12 +28,10 @@ struct perf_component {
  ** @param maxMemoryUsed  Max Memeory used allowed for reconstruction in MB
  ** @param uploadFit      Create and Upload JPGS of Fitted Histograms
  **/
-void run_reco_analysis(
-  const char* filename                                  = "test",
-  std::vector<std::array<std::string, 3>> componentsInp = {},
-  std::vector<std::pair<std::string, std::array<float, 4>>> residualsInp = {},
-  int maxMemoryUsed                                                      = 5000,
-  bool uploadFit = false) {
+void run_reco_analysis(const char* filename = "test", std::vector<std::array<std::string, 3>> componentsInp = {},
+                       std::vector<std::pair<std::string, std::array<float, 4>>> residualsInp = {},
+                       int maxMemoryUsed = 5000, bool uploadFit = false)
+{
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -44,12 +41,10 @@ void run_reco_analysis(
 
   // ----------------- Open Files and Trees
   TString filename_data(filename);
-  TString recFile = filename_data + ".tb.rec.root";
-  TString monFile = filename_data + ".tb.rec.monitor.root";
-  TString qaFile  = filename_data + ".qa.hists.root";
-  TString fairFile =
-    filename_data.Insert(filename_data.Last('/') + 1, "FairRunInfo_")
-    + ".par.root";
+  TString recFile  = filename_data + ".tb.rec.root";
+  TString monFile  = filename_data + ".tb.rec.monitor.root";
+  TString qaFile   = filename_data + ".qa.hists.root";
+  TString fairFile = filename_data.Insert(filename_data.Last('/') + 1, "FairRunInfo_") + ".par.root";
 
   std::unique_ptr<TFile> f_rec(new TFile(recFile, "READ"));
   if (f_rec == nullptr) {
@@ -69,8 +64,7 @@ void run_reco_analysis(
     exit(1);
   }
 
-  std::unique_ptr<TDirectory> t_mon(
-    static_cast<TDirectory*>(f_mon->Get("MonitorResults")));
+  std::unique_ptr<TDirectory> t_mon(static_cast<TDirectory*>(f_mon->Get("MonitorResults")));
   if (t_mon == nullptr) {
     std::cerr << "Could not open MonitorResults" << std::endl;
     exit(1);
@@ -80,9 +74,7 @@ void run_reco_analysis(
   if (f_l1 == nullptr) { std::cerr << "Could not open QA file" << std::endl; }
 
   std::unique_ptr<TFile> f_fri(new TFile(fairFile, "READ"));
-  if (f_fri == nullptr) {
-    std::cerr << "Could not open FairRunInfo file." << std::endl;
-  }
+  if (f_fri == nullptr) { std::cerr << "Could not open FairRunInfo file." << std::endl; }
 
   // -------------------------------------------------
   // Performance
@@ -96,43 +88,26 @@ void run_reco_analysis(
     std::cout << "Connecting " << componentsInp[i][0];
     std::string tmpstring = componentsInp[i][2];
     std::replace(tmpstring.begin(), tmpstring.end(), '_', ' ');
-    perf_component tmp = {
-      ConnectBranchIfExist(
-        f_rec.get(), t_rec.get(), componentsInp[i][0], componentsInp[i][1]),
-      tmpstring,
-      std::vector<triple>(treeentries),
-      std::vector<TH1F*>(2),
-      std::vector<TH1*>(3)};
+    perf_component tmp = {ConnectBranchIfExist(f_rec.get(), t_rec.get(), componentsInp[i][0], componentsInp[i][1]),
+                          tmpstring, std::vector<triple>(treeentries), std::vector<TH1F*>(2), std::vector<TH1*>(3)};
     if (tmp.rec_branch) {
       components.push_back(tmp);
       std::cout << " Branch Address: " << tmp.rec_branch << std::endl;
-    } else {
+    }
+    else {
       std::cout << " ... not found in Tree!" << std::endl;
     }
   };
 
   for (int i = 0; i < components.size(); i++) {
-    TString name           = components[i].histName;
-    components[i].hists[0] = static_cast<TH1*>(new TH2F((name + "_Time"),
-                                                        "Time / Entries",
-                                                        treeentries,
-                                                        0,
-                                                        1,
-                                                        treeentries,
-                                                        0,
-                                                        .1));
+    TString name = components[i].histName;
+    components[i].hists[0] =
+      static_cast<TH1*>(new TH2F((name + "_Time"), "Time / Entries", treeentries, 0, 1, treeentries, 0, .1));
     components[i].hists[0]->SetCanExtend(TH1::kAllAxes);
-    components[i].hists[1] = static_cast<TH1*>(new TH2F(name + "_Memory",
-                                                        "Memory / Entries",
-                                                        treeentries,
-                                                        0,
-                                                        1,
-                                                        treeentries,
-                                                        0,
-                                                        1));
+    components[i].hists[1] =
+      static_cast<TH1*>(new TH2F(name + "_Memory", "Memory / Entries", treeentries, 0, 1, treeentries, 0, 1));
     components[i].hists[1]->SetCanExtend(TH1::kAllAxes);
-    components[i].hists[2] = static_cast<TH1*>(
-      new TH1F(name + "_Entries", "Entries", treeentries, 0, 1));
+    components[i].hists[2] = static_cast<TH1*>(new TH1F(name + "_Entries", "Entries", treeentries, 0, 1));
     components[i].hists[2]->SetCanExtend(TH1::kAllAxes);
   }
 
@@ -146,10 +121,8 @@ void run_reco_analysis(
       TObject* tmp = lnk->GetObject();
       tmp_str      = tmp->GetName();
       if (tmp_str.Contains(components[i].histName)) {
-        if (tmp_str.Contains("_TIM"))
-          components[i].monHists[0] = static_cast<TH1F*>(t_mon->Get(tmp_str));
-        if (tmp_str.Contains("_MEM"))
-          components[i].monHists[1] = static_cast<TH1F*>(t_mon->Get(tmp_str));
+        if (tmp_str.Contains("_TIM")) components[i].monHists[0] = static_cast<TH1F*>(t_mon->Get(tmp_str));
+        if (tmp_str.Contains("_MEM")) components[i].monHists[1] = static_cast<TH1F*>(t_mon->Get(tmp_str));
       }
       lnk = lnk->Next();
     }
@@ -163,12 +136,10 @@ void run_reco_analysis(
       if (components[i].rec_branch->GetEntriesFast() > 0) {
         Int_t currententries = components[i].rec_branch->GetEntriesFast();
         std::cout << "\t\t" << components[i].rec_branch->GetName()
-                  << " Entries: " << components[i].rec_branch->GetEntriesFast()
-                  << std::endl;
-        double curr_time      = components[i].monHists[0]->GetBinContent(j + 1);
-        double curr_mem       = components[i].monHists[1]->GetBinContent(j + 1);
-        components[i].data[j] = {
-          components[i].rec_branch->GetEntriesFast(), 0, 0};
+                  << " Entries: " << components[i].rec_branch->GetEntriesFast() << std::endl;
+        double curr_time           = components[i].monHists[0]->GetBinContent(j + 1);
+        double curr_mem            = components[i].monHists[1]->GetBinContent(j + 1);
+        components[i].data[j]      = {components[i].rec_branch->GetEntriesFast(), 0, 0};
         components[i].data[j].time = curr_time;
         components[i].data[j].mem  = curr_mem;
         components[i].hists[0]->Fill(currententries, curr_time);
@@ -194,8 +165,7 @@ void run_reco_analysis(
 
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
-  std::cout
-    << "<DartMeasurement name=\"MaxMemoryAnalysis\" type=\"numeric/double\">";
+  std::cout << "<DartMeasurement name=\"MaxMemoryAnalysis\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
   Float_t cpuUsage = ctime / rtime;
@@ -215,49 +185,37 @@ void run_reco_analysis(
         std::cout << "Strong Deviation" << std::endl;
         std::cout << "Max Memory Used > " << maxMemoryUsed << std::endl;
       }
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
       std::cout << "Could not find ResidentMemoryVsEvent" << std::endl;
     }
   }
 
   // ---- Submit Parameters of Fitted Functions as HTML Table
 
-  std::string htmlString =
-    "<DartMeasurement name=\"PerformanceTable\" type=\"text/html\"><![CDATA[";
+  std::string htmlString = "<DartMeasurement name=\"PerformanceTable\" type=\"text/html\"><![CDATA[";
   htmlString += "<table><tr><th>Component</th><th>Histogramm</"
                 "th><th>Parameter</th><th>Value</th><th>Error</th></tr>";
   for (int i = 0; i < components.size(); i++) {
     std::string tmpname = components[i].histName;
-    tmpname.erase(
-      std::remove_if(tmpname.begin(),
-                     tmpname.end(),
-                     [](unsigned char x) { return std::isspace(x); }),
-      tmpname.end());
-    std::cout << "<DartMeasurement name=\"" << tmpname
-              << "SumTime\" type=\"numeric/double\">"
-              << components[i].monHists[0]->GetSum() << "</DartMeasurement>"
-              << std::endl;
-    std::cout << "<DartMeasurement name=\"" << tmpname
-              << "TimePerEntry\" type=\"numeric/double\">"
-              << components[i].monHists[0]->GetSum() / treeentries
-              << "</DartMeasurement>" << std::endl;
-    std::cout << "<DartMeasurement name=\"" << tmpname
-              << "MaxMemory\" type=\"numeric/double\">"
-              << components[i].monHists[1]->GetMaximum() << "</DartMeasurement>"
-              << std::endl;
+    tmpname.erase(std::remove_if(tmpname.begin(), tmpname.end(), [](unsigned char x) { return std::isspace(x); }),
+                  tmpname.end());
+    std::cout << "<DartMeasurement name=\"" << tmpname << "SumTime\" type=\"numeric/double\">"
+              << components[i].monHists[0]->GetSum() << "</DartMeasurement>" << std::endl;
+    std::cout << "<DartMeasurement name=\"" << tmpname << "TimePerEntry\" type=\"numeric/double\">"
+              << components[i].monHists[0]->GetSum() / treeentries << "</DartMeasurement>" << std::endl;
+    std::cout << "<DartMeasurement name=\"" << tmpname << "MaxMemory\" type=\"numeric/double\">"
+              << components[i].monHists[1]->GetMaximum() << "</DartMeasurement>" << std::endl;
     for (int j = 0; j < components[i].hists.size() - 2; j++) {
       components[i].hists[j]->Fit("pol3", "Q");
       TF1* fit = components[i].hists[j]->GetFunction("pol3");
-      htmlString += "<tr><td>" + components[i].histName + "</td>" + "<td>"
-                    + components[i].hists[j]->GetName() + "</td>";
-      htmlString += "<td>p0</td><td>" + std::to_string(fit->GetParameter(0))
-                    + "</td><td>" + std::to_string(fit->GetParError(0))
-                    + "</td></tr>";
-      htmlString += "<td></td><td></td><td>p1</td><td>"
-                    + std::to_string(fit->GetParameter(1)) + "</td><td>"
+      htmlString +=
+        "<tr><td>" + components[i].histName + "</td>" + "<td>" + components[i].hists[j]->GetName() + "</td>";
+      htmlString += "<td>p0</td><td>" + std::to_string(fit->GetParameter(0)) + "</td><td>"
+                    + std::to_string(fit->GetParError(0)) + "</td></tr>";
+      htmlString += "<td></td><td></td><td>p1</td><td>" + std::to_string(fit->GetParameter(1)) + "</td><td>"
                     + std::to_string(fit->GetParError(1)) + "</td></tr>";
-      htmlString += "<td></td><td></td><td>p2</td><td>"
-                    + std::to_string(fit->GetParameter(2)) + "</td><td>"
+      htmlString += "<td></td><td></td><td>p2</td><td>" + std::to_string(fit->GetParameter(2)) + "</td><td>"
                     + std::to_string(fit->GetParError(2)) + "</td></tr>";
       if (uploadFit) {
         std::string tmpstring = filename;
@@ -266,19 +224,15 @@ void run_reco_analysis(
         components[i].hists[j]->SetMarkerStyle(20);
         components[i].hists[j]->Draw();
         gPad->Print(tmpstring.c_str());
-        std::cout << "<DartMeasurementFile name=\"" << tmpstring
-                  << "\" type=\"image/jpg\">" << cwdbuff << "/" << tmpstring
-                  << "</DartMeasurementFile>" << std::endl;
+        std::cout << "<DartMeasurementFile name=\"" << tmpstring << "\" type=\"image/jpg\">" << cwdbuff << "/"
+                  << tmpstring << "</DartMeasurementFile>" << std::endl;
       }
     }
     TH1F* currHist = static_cast<TH1F*>(components[i].hists[2]);
-    htmlString += "<tr><td>" + components[i].histName + "</td>" + "<td>"
-                  + currHist->GetName() + "</td>";
-    htmlString += "<td>Mean</td><td>" + std::to_string(currHist->GetMean())
-                  + "</td><td>" + std::to_string(currHist->GetMeanError())
-                  + "</td></tr>";
-    htmlString += "<tr><td></td><td></td><td>StdDev</td><td>"
-                  + std::to_string(currHist->GetStdDev()) + "</td><td>"
+    htmlString += "<tr><td>" + components[i].histName + "</td>" + "<td>" + currHist->GetName() + "</td>";
+    htmlString += "<td>Mean</td><td>" + std::to_string(currHist->GetMean()) + "</td><td>"
+                  + std::to_string(currHist->GetMeanError()) + "</td></tr>";
+    htmlString += "<tr><td></td><td></td><td>StdDev</td><td>" + std::to_string(currHist->GetStdDev()) + "</td><td>"
                   + std::to_string(currHist->GetStdDevError()) + "</td></tr>";
   }
 
@@ -291,19 +245,17 @@ void run_reco_analysis(
   if (f_l1) {
 
     for (int i = 0; i < residualsInp.size(); i++) {
-      TDirectoryFile* residualDir =
-        GetResidual(f_l1.get(), residualsInp[i].first);
+      TDirectoryFile* residualDir   = GetResidual(f_l1.get(), residualsInp[i].first);
       std::vector<std::string> dims = {"x", "y", "t"};
       for (int k = 0; k < dims.size(); k++) {
         std::string tmp       = dims[k];
         std::string tmpstring = "P" + tmp + "_" + residualsInp[i].first;
         std::cout << "Finding " << tmpstring << std::endl;
-        TH1F* tmphist = static_cast<TH1F*>(residualDir->Get(tmpstring.c_str()));
+        TH1F* tmphist        = static_cast<TH1F*>(residualDir->Get(tmpstring.c_str()));
         float pullDevAllowed = residualsInp[i].second[0];
         if (tmphist && pullDevAllowed != -1) {
           float tmp_stdDev = tmphist->GetStdDev();
-          if (((tmp_stdDev > 1 + pullDevAllowed)
-               || (tmp_stdDev < 1 - pullDevAllowed))
+          if (((tmp_stdDev > 1 + pullDevAllowed) || (tmp_stdDev < 1 - pullDevAllowed))
               && (tmp_stdDev != 0 && tmphist->GetEntries() != 0)) {
             TString tmpfilename       = "_P" + tmp + residualsInp[i].first;
             TString tmpfilenamesuffix = filename_data + tmpfilename + ".jpg";
@@ -312,24 +264,22 @@ void run_reco_analysis(
             std::cout << "<DartMeasurementFile name=\"";
             std::cout << tmpfilename;
             std::cout << "\" type=\"image/jpg\">";
-            std::cout << cwdbuff << "/" << filename_data << tmpfilename
-                      << ".jpg";
+            std::cout << cwdbuff << "/" << filename_data << tmpfilename << ".jpg";
             std::cout << "</DartMeasurementFile>" << std::endl;
             std::cout << "Strong Deviation" << std::endl;
             std::cout << "Pull " << tmpfilename << std::endl;
           }
-        } else {
+        }
+        else {
           std::cout << "Could not find Histogram " + tmpstring << std::endl;
         }
         tmpstring = tmp + "_" + residualsInp[i].first;
         std::cout << "Finding " << tmpstring << std::endl;
-        TH1F* tmphist_2 =
-          static_cast<TH1F*>(residualDir->Get(tmpstring.c_str()));
+        TH1F* tmphist_2      = static_cast<TH1F*>(residualDir->Get(tmpstring.c_str()));
         float resMeanAllowed = residualsInp[i].second[1 + k];
         if (tmphist_2 && resMeanAllowed != -1) {
           float tmp_mean = tmphist->GetMean();
-          if ((tmp_mean < 0 - resMeanAllowed || tmp_mean > 0 + resMeanAllowed)
-              && tmphist_2->GetEntries() != 0) {
+          if ((tmp_mean < 0 - resMeanAllowed || tmp_mean > 0 + resMeanAllowed) && tmphist_2->GetEntries() != 0) {
             TString tmpfilename       = "_" + tmp + residualsInp[i].first;
             TString tmpfilenamesuffix = filename_data + tmpfilename + ".jpg";
             tmphist_2->Draw();
@@ -337,13 +287,13 @@ void run_reco_analysis(
             std::cout << "<DartMeasurementFile name=\"";
             std::cout << tmpfilename;
             std::cout << "\" type=\"image/jpg\">";
-            std::cout << cwdbuff << "/" << filename_data << tmpfilename
-                      << ".jpg";
+            std::cout << cwdbuff << "/" << filename_data << tmpfilename << ".jpg";
             std::cout << "</DartMeasurementFile>" << std::endl;
             std::cout << "Strong Deviation" << std::endl;
             std::cout << "Residual " << tmpfilename << std::endl;
           }
-        } else {
+        }
+        else {
           std::cout << "Could not find Histogram " + tmpstring << std::endl;
         }
       }
@@ -353,8 +303,8 @@ void run_reco_analysis(
   cout << " All ok " << endl;
 }
 
-TClonesArray*
-ConnectBranchIfExist(TFile* f, TTree* t, TString branch, TString dataClass) {
+TClonesArray* ConnectBranchIfExist(TFile* f, TTree* t, TString branch, TString dataClass)
+{
   TClonesArray* tcl {nullptr};
   TList* list = dynamic_cast<TList*>(f->Get("BranchList"));
   if (list) {
@@ -373,7 +323,8 @@ ConnectBranchIfExist(TFile* f, TTree* t, TString branch, TString dataClass) {
   return tcl;
 }
 
-TDirectoryFile* GetResidual(TFile* f, std::string& component) {
+TDirectoryFile* GetResidual(TFile* f, std::string& component)
+{
   TString tmp            = component;
   TDirectoryFile* dirptr = static_cast<TDirectoryFile*>(f->Get(tmp));
   return dirptr;

@@ -34,9 +34,7 @@ public:
   /** @brief Get the stored information 
      ** @return Reference to the vector of pairs
      **/
-  const std::vector<std::pair<TString, TString>>& GetVector() {
-    return fMatList;
-  }
+  const std::vector<std::pair<TString, TString>>& GetVector() { return fMatList; }
 
 private:
   std::vector<std::pair<TString, TString>> fMatList;

@@ -9,7 +9,9 @@
 #include "CbmTofHit.h"
 #include "CbmTofTracklet.h"
 #include "CbmTofTrackletParam.h"
+
 #include "FairTrackParam.h"
+
 #include "TMath.h"
 
 #include <vector>
@@ -33,8 +35,7 @@ public:
   virtual Double_t GetXdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
   virtual Double_t GetYdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
   virtual Double_t GetTdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
-  virtual Double_t
-  GetTexpected(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
+  virtual Double_t GetTexpected(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
 
 private:
   ClassDef(CbmTofTrackletTools, 1);

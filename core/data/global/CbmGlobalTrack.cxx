@@ -24,7 +24,9 @@ CbmGlobalTrack::CbmGlobalTrack()
   , fChi2(0.)
   , fNDF(0)
   , fFlag(0)
-  , fLength(0.) {}
+  , fLength(0.)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -34,16 +36,15 @@ CbmGlobalTrack::~CbmGlobalTrack() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmGlobalTrack::Print(Option_t*) const {
-  LOG(info) << "StsTrack " << fStsTrack << ", TrdTrack " << fTrdTrack
-            << ", MuchTrack " << fMuchTrack << ", RichRing " << fRichRing
-            << ", TofHit " << fTofHit;
+void CbmGlobalTrack::Print(Option_t*) const
+{
+  LOG(info) << "StsTrack " << fStsTrack << ", TrdTrack " << fTrdTrack << ", MuchTrack " << fMuchTrack << ", RichRing "
+            << fRichRing << ", TofHit " << fTofHit;
   //  LOG(info) << "Parameters at first plane: ";
   //  fParamFirst.Print();
   //  LOG(info) << "Parameters at last plane: ";
   //  fParamLast.Print();
-  LOG(info) << "chi2 = " << fChi2 << ", NDF = " << fNDF << ", Quality flag "
-            << fFlag;
+  LOG(info) << "chi2 = " << fChi2 << ", NDF = " << fNDF << ", Quality flag " << fFlag;
   LOG(info) << "length = " << fLength;
 }
 // -------------------------------------------------------------------------

@@ -8,9 +8,10 @@
 #ifndef CBMLITTGEONAVIGATOR_H_
 #define CBMLITTGEONAVIGATOR_H_
 
-#include "TObject.h"
 #include "interface/CbmLitGeoNavigator.h"
 #include "propagation/CbmLitMaterialInfo.h"
+
+#include "TObject.h"
 
 #include <vector>
 
@@ -25,9 +26,7 @@ public:
   virtual ~CbmLitTGeoNavigator();
 
   /* Inherited from CbmLitGeoNavigator */
-  LitStatus FindIntersections(const CbmLitTrackParam* par,
-                              litfloat zOut,
-                              std::vector<CbmLitMaterialInfo>& inter);
+  LitStatus FindIntersections(const CbmLitTrackParam* par, litfloat zOut, std::vector<CbmLitMaterialInfo>& inter);
 
 private:
   /* Sets the current position and direction for the TGeoManager

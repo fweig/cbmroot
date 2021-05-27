@@ -1,8 +1,6 @@
-void pl_Dut_Vel(const char* cDut = "900",
-                Double_t dEffMin = 0.7,
-                Double_t Tstart  = 0.,
-                Double_t Tend    = 50.,
-                TString sysinfo  = "") {
+void pl_Dut_Vel(const char* cDut = "900", Double_t dEffMin = 0.7, Double_t Tstart = 0., Double_t Tend = 50.,
+                TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -29,9 +27,8 @@ void pl_Dut_Vel(const char* cDut = "900",
   hname = Form("hDutVel_Found_%s", cDut);
   cout << " Look for histo " << hname << endl;
   h1_1 = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1_1 != NULL) {
-    h1_1->Draw("");
-  } else {
+  if (h1_1 != NULL) { h1_1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -40,7 +37,8 @@ void pl_Dut_Vel(const char* cDut = "900",
   if (h1_2 != NULL) {
     h1_2->Draw("same");
     h1_2->SetLineColor(kRed);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

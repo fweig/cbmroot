@@ -7,7 +7,8 @@
  */
 // --- Specify number of TS to be converted.
 // --- -1 means run until the end of the input file.
-void convert_tsa_gdpb(TString inFile = "", Int_t nrEvents = 0) {
+void convert_tsa_gdpb(TString inFile = "", Int_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -42,16 +43,14 @@ void convert_tsa_gdpb(TString inFile = "", Int_t nrEvents = 0) {
   std::cout << std::endl;
   std::cout << ">>> convert_tsa_gdpb: Initialising..." << std::endl;
 
-  CbmMcbm2018RawConverterGdpb* raw_conv_gdpb =
-    new CbmMcbm2018RawConverterGdpb();
+  CbmMcbm2018RawConverterGdpb* raw_conv_gdpb = new CbmMcbm2018RawConverterGdpb();
 
   raw_conv_gdpb->SetIgnoreOverlapMs();
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
   source->SetFileName(inFile);
-  source->AddUnpacker(
-    raw_conv_gdpb, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
+  source->AddUnpacker(raw_conv_gdpb, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
   source->AddUnpacker(raw_conv_gdpb, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
 
   // --- Event header
@@ -82,24 +81,22 @@ void convert_tsa_gdpb(TString inFile = "", Int_t nrEvents = 0) {
   std::cout << ">>> convert_tsa_gdpb: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> convert_tsa_gdpb: Macro finished successfully."
-            << std::endl;
+  std::cout << ">>> convert_tsa_gdpb: Macro finished successfully." << std::endl;
   std::cout << ">>> convert_tsa_gdpb: Output file is " << outFile << std::endl;
-  std::cout << ">>> convert_tsa_gdpb: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> convert_tsa_gdpb: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

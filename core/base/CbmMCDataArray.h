@@ -5,6 +5,8 @@
 #ifndef CBMMCDATAARRAY_H
 #define CBMMCDATAARRAY_H
 
+#include "CbmLink.h"  // for CbmLink
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Long64_t
 #include <TString.h>     // for TString
@@ -12,8 +14,6 @@
 #include <list>    // for list
 #include <map>     // for map
 #include <vector>  // for vector
-
-#include "CbmLink.h"  // for CbmLink
 
 class TChain;
 class TClonesArray;
@@ -44,18 +44,14 @@ public:
 		 ** @param link Pointer to CbmLink object
 		 ** @value      Pointer to linked object
 		 **/
-  TObject* Get(const CbmLink* lnk) {
-    return Get(lnk->GetFile(), lnk->GetEntry(), lnk->GetIndex());
-  }
+  TObject* Get(const CbmLink* lnk) { return Get(lnk->GetFile(), lnk->GetEntry(), lnk->GetIndex()); }
 
 
   /** Get an object by CbmLink reference
 		 ** @param link Reference to CbmLink object
 		 ** @value      Pointer to linked object
 		 **/
-  TObject* Get(const CbmLink& lnk) {
-    return Get(lnk.GetFile(), lnk.GetEntry(), lnk.GetIndex());
-  }
+  TObject* Get(const CbmLink& lnk) { return Get(lnk.GetFile(), lnk.GetEntry(), lnk.GetIndex()); }
 
 
   /** Get an object by file number, event number and index
@@ -83,28 +79,17 @@ public:
 		 ** @param link	Pointer to CbmLink object, index field is ignored
 		 ** @value 	Size of corresponding TClonesArray
 		 **/
-  Int_t Size(const CbmLink* lnk) {
-    return Size(lnk->GetFile(), lnk->GetEntry());
-  }
+  Int_t Size(const CbmLink* lnk) { return Size(lnk->GetFile(), lnk->GetEntry()); }
 
 private:
   /** Default constructor. Should be called from CbmMCDataManager. **/
-  CbmMCDataArray()
-    : fLegacy(0)
-    , fLegacyArray(nullptr)
-    , fBranchName()
-    , fSize(0)
-    , fChains()
-    , fTArr()
-    , fN(0)
-    , fArrays() {}
+  CbmMCDataArray() : fLegacy(0), fLegacyArray(nullptr), fBranchName(), fSize(0), fChains(), fTArr(), fN(0), fArrays() {}
 
   /** Standard constructor. Should be called from CbmMCDataManager.
 		 ** @param branchName   Name of data branch
 		 ** @param fileList     Vector of file list (one for each input source)
 		 **/
-  CbmMCDataArray(const char* branchName,
-                 const std::vector<std::list<TString>>& fileList);
+  CbmMCDataArray(const char* branchName, const std::vector<std::list<TString>>& fileList);
 
   /** Constructor in legacy mode. Gets the branch from FairRootManager.
 	   ** @param branchName  Name of data branch
@@ -140,14 +125,13 @@ private:
 
 
   //----   Private data members -------
-  Int_t fLegacy;                 //! If true, run in legacy mode
-  TClonesArray* fLegacyArray;    //! Pointer to TClonesArray for legacy mode
-  TString fBranchName;           //! Name of the data branch
-  Int_t fSize;                   //! Number of input file lists (one per source)
-  std::vector<TChain*> fChains;  //! Arrays of chains (one per input source)
-  std::vector<TClonesArray*>
-    fTArr;                   //! Data arrays from chains (one per input source)
-  std::vector<Long64_t> fN;  //! Number of entries in chains
+  Int_t fLegacy;                     //! If true, run in legacy mode
+  TClonesArray* fLegacyArray;        //! Pointer to TClonesArray for legacy mode
+  TString fBranchName;               //! Name of the data branch
+  Int_t fSize;                       //! Number of input file lists (one per source)
+  std::vector<TChain*> fChains;      //! Arrays of chains (one per input source)
+  std::vector<TClonesArray*> fTArr;  //! Data arrays from chains (one per input source)
+  std::vector<Long64_t> fN;          //! Number of entries in chains
 
   /** Cached data arrays. The vector index is the input source number, the map
 		 ** index is the event number.

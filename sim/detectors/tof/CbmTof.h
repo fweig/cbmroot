@@ -18,10 +18,10 @@
 #include "FairDetector.h"
 
 #include "TLorentzVector.h"
+#include <tuple>
 
 #include <map>
 #include <set>
-#include <tuple>
 
 
 class CbmTofPoint;
@@ -114,18 +114,11 @@ public:
   /** Do all initilization for the TOF detector **/
   virtual void Initialize();
 
-  void GenerateOnePointPerTrack(Bool_t bOnePointPerTrack = kTRUE) {
-    fbOnePointPerTrack = bOnePointPerTrack;
-  }
-  void SetProcessAnyTrack(Bool_t bProcess = kTRUE) {
-    fbProcessAnyTrack = bProcess;
-  }
-  void SetAllCountersInactive(Bool_t bInactive = kTRUE) {
-    fbAllCountersInactive = bInactive;
-  }
+  void GenerateOnePointPerTrack(Bool_t bOnePointPerTrack = kTRUE) { fbOnePointPerTrack = bOnePointPerTrack; }
+  void SetProcessAnyTrack(Bool_t bProcess = kTRUE) { fbProcessAnyTrack = bProcess; }
+  void SetAllCountersInactive(Bool_t bInactive = kTRUE) { fbAllCountersInactive = bInactive; }
 
-  void
-  SetCounterActive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
+  void SetCounterActive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
   /** Set a counter inactive
      ** @param iModuleType    type of inactive module
@@ -135,9 +128,7 @@ public:
      ** If a counter is set inactive, no CbmTofPoint objects will be created for
      ** collision products traversing its Cell volumes.
      **/
-  void SetCounterInactive(Int_t iModuleType,
-                          Int_t iModuleIndex,
-                          Int_t iCounterIndex);
+  void SetCounterInactive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
   /** Set a counter in beam
      ** @param iModuleType    type of inactive module
@@ -148,8 +139,7 @@ public:
      ** counter coordinate system and create a CbmTofPoint object if it actually
      ** traverses the counter volume.
      **/
-  void
-  SetCounterInBeam(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
+  void SetCounterInBeam(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
 private:
   /** Track information to be stored until the track leaves the
@@ -166,8 +156,7 @@ private:
   TClonesArray* fTofCollection;   //! Hit collection
   CbmTofGeoHandler* fGeoHandler;  //! Interface to gMC and gGeoManager
 
-  TGeoCombiTrans*
-    fCombiTrans;  //! Transformation matrix for geometry positioning
+  TGeoCombiTrans* fCombiTrans;  //! Transformation matrix for geometry positioning
 
   std::string fVolumeName;  //! Name of Volume to be imported
 
@@ -180,14 +169,11 @@ private:
   Int_t fCurrentModuleIndex;   //! Current module index
   Int_t fCurrentCounterIndex;  //! Current counter index
 
-  std::set<std::tuple<Int_t, Int_t, Int_t>>
-    fActiveCounters;  //! Set of   active counters
-  std::set<std::tuple<Int_t, Int_t, Int_t>>
-    fInactiveCounters;                  //! Set of inactive counters
-  std::set<Int_t> fInactiveCounterIDs;  //! Set of inactive counter IDs
+  std::set<std::tuple<Int_t, Int_t, Int_t>> fActiveCounters;    //! Set of   active counters
+  std::set<std::tuple<Int_t, Int_t, Int_t>> fInactiveCounters;  //! Set of inactive counters
+  std::set<Int_t> fInactiveCounterIDs;                          //! Set of inactive counter IDs
 
-  std::map<std::tuple<Int_t, Int_t, Int_t>,
-           std::pair<TString, TGeoPhysicalNode*>>
+  std::map<std::tuple<Int_t, Int_t, Int_t>, std::pair<TString, TGeoPhysicalNode*>>
     fCountersInBeam;  //! Map of counters in beam
 
   Int_t fOutputTreeEntry;
@@ -200,12 +186,7 @@ private:
    **
    ** Adds a CbmTofPoint to the HitCollection
    **/
-  CbmTofPoint* AddHit(Int_t trackID,
-                      Int_t detID,
-                      TVector3 pos,
-                      TVector3 mom,
-                      Double_t time,
-                      Double_t length,
+  CbmTofPoint* AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length,
                       Double_t eLoss);
 
   /** Private method ResetParameters
@@ -228,7 +209,8 @@ private:
 };
 
 
-inline void CbmTof::ResetParameters() {
+inline void CbmTof::ResetParameters()
+{
   fTrackID = fVolumeID = 0;
   fPos.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fMom.SetXYZM(0.0, 0.0, 0.0, 0.0);

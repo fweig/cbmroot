@@ -8,17 +8,20 @@
 #ifndef PSD_GBT_READER_H_
 #define PSD_GBT_READER_H_
 
+#include <vector>  // for vector
+
 #include <stdint.h>  // for uint64_t, uint32_t
-#include <vector>    // for vector
 
 #include "PsdGbtDataFormat.h"  // for PsdHitData, PsdHitHeader, PsdEventHead...
 
-namespace PsdData {
+namespace PsdData
+{
   class PsdGbtReader {
 
   public:
     PsdGbtReader() {};
-    PsdGbtReader(const uint64_t* input) {
+    PsdGbtReader(const uint64_t* input)
+    {
       buffer         = input;
       gbt_word_index = 0;
     }
@@ -33,7 +36,8 @@ namespace PsdData {
     std::vector<PsdHitHeader> VectHitHdr;
     std::vector<PsdHitData> VectHitData;
 
-    void SetInput(const uint64_t* input) {
+    void SetInput(const uint64_t* input)
+    {
       buffer         = input;
       gbt_word_index = 0;
     }

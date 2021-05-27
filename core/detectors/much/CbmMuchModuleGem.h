@@ -10,13 +10,13 @@
 #ifndef CBMMUCHMODULEGEM_H
 #define CBMMUCHMODULEGEM_H 1
 
+#include "CbmMuchModule.h"  // for CbmMuchModule
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t, Color_t, Double_t, kTRUE
 #include <TVector3.h>    // for TVector3
 
 #include <vector>  // for vector
-
-#include "CbmMuchModule.h"  // for CbmMuchModule
 
 class CbmMuchPad;
 class CbmMuchSector;
@@ -34,12 +34,7 @@ public:
    *@param position  Location of the module center in global c.s. (all dimensions in [cm])
    *@param cutRadius Radius of the cut (if any, otherwise = -1.) [cm]
    **/
-  CbmMuchModuleGem(Int_t iStation,
-                   Int_t iLayer,
-                   Bool_t iSide,
-                   Int_t iModule,
-                   TVector3 position,
-                   TVector3 size,
+  CbmMuchModuleGem(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position, TVector3 size,
                    Double_t cutRadius);
 
   /** Destructor */

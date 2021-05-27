@@ -55,7 +55,8 @@ CbmBuildEventsSimple::~CbmBuildEventsSimple() { ; }
 
 
 // =====   FillEvent method   ================================================
-void CbmBuildEventsSimple::FillEvent(Int_t st, Int_t end) {
+void CbmBuildEventsSimple::FillEvent(Int_t st, Int_t end)
+{
   Int_t i;
   //  CbmStsDigi* digi;
   Int_t nev       = fEvents->GetEntriesFast();
@@ -66,14 +67,14 @@ void CbmBuildEventsSimple::FillEvent(Int_t st, Int_t end) {
     event->AddData(ECbmDataType::kStsDigi, i);
   }
   FairRootManager::Instance()->Fill();
-  LOG(info) << "CbmBuildEventsSimple:	Event constructed. Digis used from "
-            << st << " to " << end << ".";
+  LOG(info) << "CbmBuildEventsSimple:	Event constructed. Digis used from " << st << " to " << end << ".";
 }
 
 // ===========================================================================
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsSimple::Exec(Option_t*) {
+void CbmBuildEventsSimple::Exec(Option_t*)
+{
 
   // Reset output array
   fEvents->Delete();
@@ -188,7 +189,8 @@ void CbmBuildEventsSimple::Exec(Option_t*) {
 
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsSimple::Init() {
+InitStatus CbmBuildEventsSimple::Init()
+{
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
@@ -199,8 +201,7 @@ InitStatus CbmBuildEventsSimple::Init() {
 
   // Register output array (CbmStsDigi)
   fEvents = new TClonesArray("CbmEvent", 100);
-  ioman->Register(
-    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
+  ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   return kSUCCESS;
 }

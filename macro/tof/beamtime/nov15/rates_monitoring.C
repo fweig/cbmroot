@@ -7,7 +7,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void rates_monitoring() {
+void rates_monitoring()
+{
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   //   TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -101,22 +102,8 @@ void rates_monitoring() {
   display->MonitorDigiStatus(kFALSE);
   display->SetResMonitorEna(kFALSE);
   display->SetRateMonitorEna(kTRUE);
-  display->SetFreeTrloNames("HD-P5",
-                            "HD-P2",
-                            "PAD  ",
-                            "BREF ",
-                            "B12-1",
-                            "B12-2",
-                            "B12-3",
-                            "B12-4",
-                            "BUC15",
-                            "DIAM ",
-                            "BOX31",
-                            "BOX32",
-                            "BOX21",
-                            "BOX22",
-                            "BOX11",
-                            "BOX12");
+  display->SetFreeTrloNames("HD-P5", "HD-P2", "PAD  ", "BREF ", "B12-1", "B12-2", "B12-3", "B12-4", "BUC15", "DIAM ",
+                            "BOX31", "BOX32", "BOX21", "BOX22", "BOX11", "BOX12");
   display->RatesSlidingScaleEna(kTRUE);
   run->AddTask(display);
 

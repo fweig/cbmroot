@@ -14,7 +14,8 @@ typedef struct {
   Int_t iStatusPos;
 } Rpc_HV;
 
-void Rpc_HV::Clear() {
+void Rpc_HV::Clear()
+{
   iTimeSec      = 0;
   iTimeMilliSec = 0;
   dVoltageNeg   = 0.0;
@@ -26,7 +27,8 @@ void Rpc_HV::Clear() {
   iPowerPos     = -1;
   iStatusPos    = -1;
 };
-void Rpc_HV::Rpc_HV(&Rpc_HV in) {
+void Rpc_HV::Rpc_HV(&Rpc_HV in)
+{
   iTimeSec      = in.iTimeSec;
   iTimeMilliSec = in.iTimeMilliSec;
   dVoltageNeg   = in.dVoltageNeg;
@@ -39,19 +41,12 @@ void Rpc_HV::Rpc_HV(&Rpc_HV in) {
   iStatusPos    = in.iStatusPos;
 };
 
-void Rpc_HV::Print() {
+void Rpc_HV::Print()
+{
   TString sOut = Form(" Time %09d s %03d ms V- = %5.2f I- = %5.2f P- = %1d S- "
                       "= %1d V+ = %5.2f I+ = %5.2f P+ = %1d S+ = %1d",
-                      iTimeSec,
-                      iTimeMilliSec,
-                      dVoltageNeg,
-                      dCurrentNeg,
-                      iPowerNeg,
-                      iStatusNeg,
-                      dVoltagePos,
-                      dCurrentPos,
-                      iPowerPos,
-                      iStatusPos);
+                      iTimeSec, iTimeMilliSec, dVoltageNeg, dCurrentNeg, iPowerNeg, iStatusNeg, dVoltagePos,
+                      dCurrentPos, iPowerPos, iStatusPos);
   cout << sOut << endl;
 };
 
@@ -64,7 +59,8 @@ typedef struct {
   Int_t iStatus;
 } Pmt_HV;
 
-void Pmt_HV::Clear() {
+void Pmt_HV::Clear()
+{
   iTimeSec      = 0;
   iTimeMilliSec = 0;
   dVoltage      = 0.0;
@@ -72,7 +68,8 @@ void Pmt_HV::Clear() {
   iPower        = -1;
   iStatus       = -1;
 };
-void Pmt_HV::Rpc_HV(&Pmt_HV in) {
+void Pmt_HV::Rpc_HV(&Pmt_HV in)
+{
   iTimeSec      = in.iTimeSec;
   iTimeMilliSec = in.iTimeMilliSec;
   dVoltage      = in.dVoltage;
@@ -81,14 +78,9 @@ void Pmt_HV::Rpc_HV(&Pmt_HV in) {
   iStatus       = in.iStatus;
 };
 
-void Pmt_HV::Print() {
-  TString sOut =
-    Form(" Time %09d s %03d ms V- = %5.2f I- = %5.2f P- = %1d S- = %1d",
-         iTimeSec,
-         iTimeMilliSec,
-         dVoltage,
-         dCurrent,
-         iPower,
-         iStatus);
+void Pmt_HV::Print()
+{
+  TString sOut = Form(" Time %09d s %03d ms V- = %5.2f I- = %5.2f P- = %1d S- = %1d", iTimeSec, iTimeMilliSec, dVoltage,
+                      dCurrent, iPower, iStatus);
   cout << sOut << endl;
 };

@@ -14,6 +14,13 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
+#include "CbmDefs.h"
+#include "CbmMCDataManager.h"
+#include "CbmMuchDigitizerQa.h"
+#include "CbmMuchHitFinderQa.h"
+#include "CbmMuchTransportQa.h"
+#include "CbmSetup.h"
+
 #include <FairFileSource.h>
 #include <FairMonitor.h>
 #include <FairParAsciiFileIo.h>
@@ -22,13 +29,6 @@
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
 #include <FairSystemInfo.h>
-
-#include "CbmDefs.h"
-#include "CbmMCDataManager.h"
-#include "CbmMuchDigitizerQa.h"
-#include "CbmMuchHitFinderQa.h"
-#include "CbmMuchTransportQa.h"
-#include "CbmSetup.h"
 
 #include <TStopwatch.h>
 #endif
@@ -45,7 +45,7 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_qa";  // this macro's name for screen output
+  TString myName = "run_qa";                       // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -92,21 +92,17 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -196,8 +192,7 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << sinkFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

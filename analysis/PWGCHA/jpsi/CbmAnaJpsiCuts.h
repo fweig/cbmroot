@@ -14,7 +14,8 @@ public:
   /*
 	 * Set default electron ID and analysis cuts.
 	 */
-  void SetDefaultCuts() {
+  void SetDefaultCuts()
+  {
     //electron ID cuts, we use CbmLitGlobalElectronId
 
     // analysis cuts
@@ -25,7 +26,8 @@ public:
   /*
 	 * Print out cuts.
 	 */
-  void Print() {
+  void Print()
+  {
     std::cout << "Used cuts:" << std::endl
               << "fChiPrimCut = " << fChiPrimCut << std::endl
               << "fPtCut = " << fPtCut << std::endl;

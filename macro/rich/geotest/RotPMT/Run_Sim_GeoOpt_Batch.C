@@ -1,4 +1,5 @@
-void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
+void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1)
+{
 
   float PMTrotX = 20, PMTrotY = 10;
   int PMTtransY = -40, PMTtransZ = 80;
@@ -27,8 +28,7 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
   if (script == "yes") {
-    cout << " ----------------- running with script --------------------"
-         << endl;
+    cout << " ----------------- running with script --------------------" << endl;
     nEvents   = TString(gSystem->Getenv("N_EVS")).Atof();
     PMTrotX   = TString(gSystem->Getenv("PMT_ROTX")).Atof();
     PMTrotY   = TString(gSystem->Getenv("PMT_ROTY")).Atof();
@@ -59,17 +59,12 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
     ExtraText            = TString(gSystem->Getenv("EXTRATEXT"));
   }
 
-  cout << "PMTrotX=" << PMTrotX << "  PMTrotY=" << PMTrotY
-       << "  PMTtransY=" << PMTtransY << "  PMTtransZ=" << PMTtransZ
-       << "  ThetaMin=" << ThetaMin << "  ThetaMax=" << ThetaMax
-       << "  PhiMin=" << PhiMin << "  PhiMax=" << PhiMax
-       << "  GeoCase=" << GeoCase << "  DimCase=" << DimCase
-       << "  EnlargedPMTWidth=" << EnlargedPMTWidth
-       << "  EnlargedPMTHight=" << EnlargedPMTHight << "  PtNotP=" << PtNotP
-       << "  MomMin=" << MomMin << "  MomMax=" << MomMax
-       << "  rotmir=" << RotMir << "  extendedmir=" << extendedmir
-       << "  DefaultDims=" << DefaultDims
-       << "  DefaultDims_LargePMT=" << DefaultDims_LargePMT << "  =" << endl;
+  cout << "PMTrotX=" << PMTrotX << "  PMTrotY=" << PMTrotY << "  PMTtransY=" << PMTtransY << "  PMTtransZ=" << PMTtransZ
+       << "  ThetaMin=" << ThetaMin << "  ThetaMax=" << ThetaMax << "  PhiMin=" << PhiMin << "  PhiMax=" << PhiMax
+       << "  GeoCase=" << GeoCase << "  DimCase=" << DimCase << "  EnlargedPMTWidth=" << EnlargedPMTWidth
+       << "  EnlargedPMTHight=" << EnlargedPMTHight << "  PtNotP=" << PtNotP << "  MomMin=" << MomMin
+       << "  MomMax=" << MomMax << "  rotmir=" << RotMir << "  extendedmir=" << extendedmir
+       << "  DefaultDims=" << DefaultDims << "  DefaultDims_LargePMT=" << DefaultDims_LargePMT << "  =" << endl;
   //return;
   // if(EnlargedPMTWidth == 0 && EnlargedPMTHight==0){DefaultDims=1; DefaultDims_LargePMT=0;}
 
@@ -87,25 +82,22 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   TString PhiText   = GetPhiText(OldCode, PhiMin, PhiMax);
   TString ThetaText = GetThetaText(OldCode, ThetaMin, ThetaMax);
   cout << ThetaText << endl;
-  TString DimentionText =
-    GetDimentionText(DimCase, EnlargedPMTWidth, EnlargedPMTHight);
+  TString DimentionText = GetDimentionText(DimCase, EnlargedPMTWidth, EnlargedPMTHight);
   cout << "DimentionText " << DimentionText << endl;
 
-  TString richGeom = GetRICH_GeoFile(
-    RotMirText, PMTRotText, PMTTransText, GeoCase, DimentionText, ExtraText);
+  TString richGeom = GetRICH_GeoFile(RotMirText, PMTRotText, PMTTransText, GeoCase, DimentionText, ExtraText);
   cout << "rich geo = " << richGeom << endl;
   TString pipeGeom = GetPipe_GeoFile(GeoCase);
   pipeGeom         = "";
   //  return;
   TString NamingText;
   if (OldCode == 1) {
-    NamingText = GeoText + "_" + RotMirText + "_" + PMTRotText + "_"
-                 + PMTTransText + "_" + MomText + "_" + ThetaText
+    NamingText = GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + PMTTransText + "_" + MomText + "_" + ThetaText
                  + DimentionText + ExtraText + "root";
-  } else {
-    NamingText = GeoText + "_" + RotMirText + "_" + PMTRotText + "_"
-                 + PMTTransText + "_" + MomText + "_" + ThetaText + "_"
-                 + PhiText + DimentionText + ExtraText + "root";
+  }
+  else {
+    NamingText = GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + PMTTransText + "_" + MomText + "_" + ThetaText
+                 + "_" + PhiText + DimentionText + ExtraText + "root";
   }
 
   TString ParFile       = outDir + "Parameters_" + NamingText;  //
@@ -124,8 +116,8 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   ThetaMax /= 100.;
   MomMin /= 100.;
   MomMax /= 100.;
-  cout << "ThetaMin =" << ThetaMin << "  ThetaMax=" << ThetaMax
-       << "  MomMin=" << MomMin << "  MomMax=" << MomMax << endl;
+  cout << "ThetaMin =" << ThetaMin << "  ThetaMax=" << ThetaMax << "  MomMin=" << MomMin << "  MomMax=" << MomMax
+       << endl;
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
@@ -183,8 +175,7 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
     //FairDetector* rich = new CbmRich("RICH", kTRUE);
     CbmRich* rich = new CbmRich("RICH", kTRUE);
     rich->SetGeometryFileName(richGeom);
-    rich->SetRegisterPhotonsOnSensitivePlane(
-      kTRUE);  // Cerenkov photons are also registered in the sim tree
+    rich->SetRegisterPhotonsOnSensitivePlane(kTRUE);  // Cerenkov photons are also registered in the sim tree
     fRun->AddModule(rich);
   }
 
@@ -197,9 +188,8 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
 
   // e+/-
   FairBoxGenerator* boxGen1 = new FairBoxGenerator(11, 1);
-  if (PtNotP == 1) {
-    boxGen1->SetPtRange(MomMin, MomMax);
-  } else {
+  if (PtNotP == 1) { boxGen1->SetPtRange(MomMin, MomMax); }
+  else {
     boxGen1->SetPRange(MomMin, MomMax);
   }
   // boxGen1->SetPRange(0.,10.);
@@ -209,9 +199,8 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   boxGen1->SetCosTheta();
 
   FairBoxGenerator* boxGen2 = new FairBoxGenerator(-11, 1);
-  if (PtNotP == 1) {
-    boxGen2->SetPtRange(MomMin, MomMax);
-  } else {
+  if (PtNotP == 1) { boxGen2->SetPtRange(MomMin, MomMax); }
+  else {
     boxGen2->SetPRange(MomMin, MomMax);
   }
   // boxGen2->SetPtRange(0.,4.);
@@ -224,11 +213,13 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
     cout << "gggggggggggggggggggggg electrons " << endl;
     boxGen1->Init();  //el
     primGen->AddGenerator(boxGen1);
-  } else if (ExtraText == "_MirrUpdated_Positrons.") {
+  }
+  else if (ExtraText == "_MirrUpdated_Positrons.") {
     cout << "gggggggggggggggggggggg positrons " << endl;
     boxGen2->Init();  //pos
     primGen->AddGenerator(boxGen2);
-  } else {
+  }
+  else {
     cout << "gggggggggggggggggggggg electrons and positrons" << endl;
     boxGen1->Init();  //el
     primGen->AddGenerator(boxGen1);
@@ -268,8 +259,7 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << SimFile << endl;
   cout << "Parameter file is " << ParFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
   cout << "====================================================" << endl;
@@ -286,13 +276,13 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 1) {
   cout << "====================================================" << endl;
 }
 ////////////////////////////////////////////
-TString GetMomText(int OldCode = 1, int PtNotP, float MomMin, float MomMax) {
+TString GetMomText(int OldCode = 1, int PtNotP, float MomMin, float MomMax)
+{
   TString Pstring = "P";
   if (PtNotP == 1) { Pstring = "Pt"; }
   char Ptxt[256];
-  if (OldCode == 1) {
-    sprintf(Ptxt, "%s%dto%d", Pstring.Data(), MomMin / 100., MomMax / 100.);
-  } else {
+  if (OldCode == 1) { sprintf(Ptxt, "%s%dto%d", Pstring.Data(), MomMin / 100., MomMax / 100.); }
+  else {
 
     int MomMinMod100       = int(MomMin) % 100;
     int MomMaxMod100       = int(MomMax) % 100;
@@ -306,23 +296,15 @@ TString GetMomText(int OldCode = 1, int PtNotP, float MomMin, float MomMax) {
     cout << "   #####################################  " << endl;
     cout << "   #### Momentum  " << endl;
 
-    cout << IntegerMomMin100 << "." << MomMinMod100 << ",  " << IntegerMomMax100
-         << "." << MomMaxMod100 << endl;
-    cout << IntegerMomMin10 << "." << MomMinMod10 << ",  " << IntegerMomMax10
-         << "." << MomMaxMod10 << endl;
+    cout << IntegerMomMin100 << "." << MomMinMod100 << ",  " << IntegerMomMax100 << "." << MomMaxMod100 << endl;
+    cout << IntegerMomMin10 << "." << MomMinMod10 << ",  " << IntegerMomMax10 << "." << MomMaxMod10 << endl;
 
-    cout << IntegerMomMin100 << "." << IntegerMomMin10 << ",  "
-         << IntegerMomMax100 << "." << IntegerMomMax10 << endl;
+    cout << IntegerMomMin100 << "." << IntegerMomMin10 << ",  " << IntegerMomMax100 << "." << IntegerMomMax10 << endl;
     cout << "   #####################################  " << endl;
 
     char MinMomTxt[256];
     char MaxMomTxt[256];
-    sprintf(Ptxt,
-            "%s%dpoint%d_to_%dpoint%d",
-            Pstring.Data(),
-            IntegerMomMin100,
-            IntegerMomMin10,
-            IntegerMomMax100,
+    sprintf(Ptxt, "%s%dpoint%d_to_%dpoint%d", Pstring.Data(), IntegerMomMin100, IntegerMomMin10, IntegerMomMax100,
             IntegerMomMax10);
     //cout<<Ptxt<<endl;
   }
@@ -332,7 +314,8 @@ TString GetMomText(int OldCode = 1, int PtNotP, float MomMin, float MomMax) {
 }
 
 ////////////////////////////////////////////
-TString GetGeoText(int GeoCase) {
+TString GetGeoText(int GeoCase)
+{
   //GeoCase=-2 ==> old geometry with rich_v08a.geo (RICH starts at 1600, Mirror tilt -1)
   //GeoCase=-1 ==> old geometry with rich_v14a.gdml (RICH starts at 1800, Mirror tilt -1)
   //GeoCase=0 ==> old geometry with *.geo (own creation)(RICH starts at 1600, Mirror tilt -1)
@@ -348,7 +331,8 @@ TString GetGeoText(int GeoCase) {
   if (GeoCase == 2) { return "RichGeo_NewGdml"; }
 }
 ////////////////////////////////////////////
-TString GetOutDir(int GeoCase) {
+TString GetOutDir(int GeoCase)
+{
   return "/nas/Tariq/GeoOpt/";
   //  return "/data/GeoOpt/Test2/";
   //   return "/data/GeoOpt/OptiPMTSize/";
@@ -359,11 +343,11 @@ TString GetOutDir(int GeoCase) {
   // if(GeoCase==2){return "/data/GeoOpt/RotPMT/NewGeo/";}
 }
 ////////////////////////////////////////////
-TString GetMirText(int RotMir, int extend) {
+TString GetMirText(int RotMir, int extend)
+{
   char RotMir_txt[256];
-  if (RotMir < 0) {
-    sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMir_txt, "RotMir_p%d", RotMir);
   }
 
@@ -373,7 +357,8 @@ TString GetMirText(int RotMir, int extend) {
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPMTRotText(float PMTrotX, float PMTrotY) {
+TString GetPMTRotText(float PMTrotX, float PMTrotY)
+{
   int ShiftXmod10     = (int(PMTrotX * 10)) % 10;
   int ShiftYmod10     = (int(PMTrotY * 10)) % 10;
   float IntegerXValue = PMTrotX - (float(ShiftXmod10)) / 10.;
@@ -383,26 +368,23 @@ TString GetPMTRotText(float PMTrotX, float PMTrotY) {
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   stringstream ss;
   ss << "RotPMT_" << ShiftXTxt << "_" << ShiftYTxt;
   return ss.str();
 }
 ///////////////////////////////////////////////
-TString GetPMTTransText(int PMTTransY, int PMTTransZ) {
+TString GetPMTTransText(int PMTTransY, int PMTTransZ)
+{
   char ZTransText[256];
   char YTransText[256];
-  if (PMTTransY < 0) {
-    sprintf(YTransText, "Y_m%d", -1 * PMTTransY);
-  } else {
+  if (PMTTransY < 0) { sprintf(YTransText, "Y_m%d", -1 * PMTTransY); }
+  else {
     sprintf(YTransText, "Y_p%d", PMTTransY);
   }
-  if (PMTTransZ < 0) {
-    sprintf(ZTransText, "Z_m%d", -1 * PMTTransZ);
-  } else {
+  if (PMTTransZ < 0) { sprintf(ZTransText, "Z_m%d", -1 * PMTTransZ); }
+  else {
     sprintf(ZTransText, "Z_p%d", PMTTransZ);
   }
   stringstream ss;
@@ -410,17 +392,17 @@ TString GetPMTTransText(int PMTTransY, int PMTTransZ) {
   return ss.str();
 }
 ///////////////////////////////////////////////
-TString
-GetDimentionText(int DimCase, int EnlargedPMTWidth, int EnlargedPMTHight) {
-  if (DimCase == 0) {
-    return ".";
-  } else if (DimCase == 1) {
+TString GetDimentionText(int DimCase, int EnlargedPMTWidth, int EnlargedPMTHight)
+{
+  if (DimCase == 0) { return "."; }
+  else if (DimCase == 1) {
     return "_DefaultRichDims";
-  } else if (DimCase == 2) {
+  }
+  else if (DimCase == 2) {
     return "_DefaultRichDims_LargePMT";
-  } else if (DimCase == 3) {
-    float PMTWidth = 1000. + EnlargedPMTWidth,
-          PMTHight = 600. + EnlargedPMTHight;
+  }
+  else if (DimCase == 3) {
+    float PMTWidth = 1000. + EnlargedPMTWidth, PMTHight = 600. + EnlargedPMTHight;
     char PMTDimsText[256];
     sprintf(PMTDimsText, "_PMTW%d_H%d", PMTWidth, PMTHight);
 
@@ -431,12 +413,9 @@ GetDimentionText(int DimCase, int EnlargedPMTWidth, int EnlargedPMTHight) {
 }
 
 ////////////////////////////////////////////////////////
-TString GetRICH_GeoFile(char* RotMirText,
-                        TString PMTRotText,
-                        TString PMTTransText,
-                        int GeoCase,
-                        TString PMTDimsText,
-                        TString ExtraText) {
+TString GetRICH_GeoFile(char* RotMirText, TString PMTRotText, TString PMTTransText, int GeoCase, TString PMTDimsText,
+                        TString ExtraText)
+{
   //return "rich/rich_v14a.root";
   // return "rich/minus10deg_ext_mirror.gdml";
   //GeoCase=-2 ==> old geometry with rich_v08a.geo (RICH starts at 1600, Mirror tilt -1)
@@ -466,19 +445,18 @@ TString GetRICH_GeoFile(char* RotMirText,
   if (GeoCase == 2) { Dir2 = "/"; }
   stringstream ss;
   //ss<<Dir<<Dir2<<"rich_geo_"<<RotMirText<<"_"<<PMTRotText<<Endung;
-  ss << Dir << Dir2 << "rich_geo_" << RotMirText << "_" << PMTRotText << "_"
-     << PMTTransText << PMTDimsText << ExtraText << Endung;
+  ss << Dir << Dir2 << "rich_geo_" << RotMirText << "_" << PMTRotText << "_" << PMTTransText << PMTDimsText << ExtraText
+     << Endung;
   //rich_geo_RotMir_m10_Extended_RotPMT_Xpos5point0_Ypos5point0_TransPMT_Y_p10_Z_p80_PMTW1004_H602.root
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString
-GetThetaText(int OldCode = 1, float ThetaMin = 250., float ThetaMax = 2500.) {
+TString GetThetaText(int OldCode = 1, float ThetaMin = 250., float ThetaMax = 2500.)
+{
   TString Tstring = "Theta";
   char THtxt[256];
-  if (OldCode == 1) {
-    sprintf(THtxt, "%s_%d", Tstring.Data(), ThetaMax / 100.);
-  } else {
+  if (OldCode == 1) { sprintf(THtxt, "%s_%d", Tstring.Data(), ThetaMax / 100.); }
+  else {
     int ThetaMinMod100       = int(ThetaMin) % 100;
     int ThetaMaxMod100       = int(ThetaMax) % 100;
     float IntegerThetaMin100 = (ThetaMin - ThetaMinMod100) / 100.;
@@ -492,35 +470,28 @@ GetThetaText(int OldCode = 1, float ThetaMin = 250., float ThetaMax = 2500.) {
     cout << "   #####################################  " << endl;
     cout << "   #### Theta  " << endl;
 
-    cout << IntegerThetaMin100 << "." << ThetaMinMod100 << ",  "
-         << IntegerThetaMax100 << "." << ThetaMaxMod100 << endl;
-    cout << IntegerThetaMin10 << "." << ThetaMinMod10 << ",  "
-         << IntegerThetaMax10 << "." << ThetaMaxMod10 << endl;
+    cout << IntegerThetaMin100 << "." << ThetaMinMod100 << ",  " << IntegerThetaMax100 << "." << ThetaMaxMod100 << endl;
+    cout << IntegerThetaMin10 << "." << ThetaMinMod10 << ",  " << IntegerThetaMax10 << "." << ThetaMaxMod10 << endl;
 
-    cout << IntegerThetaMin100 << "." << IntegerThetaMin10 << ",  "
-         << IntegerThetaMax100 << "." << IntegerThetaMax10 << endl;
+    cout << IntegerThetaMin100 << "." << IntegerThetaMin10 << ",  " << IntegerThetaMax100 << "." << IntegerThetaMax10
+         << endl;
     cout << "   #####################################  " << endl;
 
     char MinThetaTxt[256];
     char MaxThetaTxt[256];
-    sprintf(THtxt,
-            "%s%dpoint%d_to_%dpoint%d",
-            Tstring.Data(),
-            IntegerThetaMin100,
-            IntegerThetaMin10,
-            IntegerThetaMax100,
-            IntegerThetaMax10);
+    sprintf(THtxt, "%s%dpoint%d_to_%dpoint%d", Tstring.Data(), IntegerThetaMin100, IntegerThetaMin10,
+            IntegerThetaMax100, IntegerThetaMax10);
   }
   stringstream ss;
   ss << THtxt;
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPhiText(int OldCode = 1, float PhiMin, float PhiMax) {
+TString GetPhiText(int OldCode = 1, float PhiMin, float PhiMax)
+{
   char PHtxt[256];
-  if (OldCode == 1) {
-    return "";
-  } else {
+  if (OldCode == 1) { return ""; }
+  else {
     sprintf(PHtxt, "Phi_%d_to_%d", PhiMin, PhiMax);
   }
   stringstream ss;
@@ -528,10 +499,10 @@ TString GetPhiText(int OldCode = 1, float PhiMin, float PhiMax) {
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPipe_GeoFile(int GeoCase) {
-  if (GeoCase == -2 || GeoCase == 0) {
-    return "pipe/pipe_standard.geo";
-  } else {
+TString GetPipe_GeoFile(int GeoCase)
+{
+  if (GeoCase == -2 || GeoCase == 0) { return "pipe/pipe_standard.geo"; }
+  else {
     return "pipe/pipe_v14h.root";
   }
 }

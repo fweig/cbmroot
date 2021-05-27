@@ -13,11 +13,11 @@
 #define CBMMVDSENSORTRACKINGBUFFER_H 1
 
 
+#include "CbmMvdHit.h"
 #include "CbmMvdSensor.h"
 #include "CbmMvdSensorBuffer.h"
-#include "TObject.h"
 
-#include "CbmMvdHit.h"
+#include "TObject.h"
 
 class TClonesArray;
 class CbmMvdSensor;
@@ -39,7 +39,8 @@ public:
    **/
   virtual void SetInputArray(TClonesArray* inputStream);
 
-  virtual TClonesArray* GetOutputArray() {
+  virtual TClonesArray* GetOutputArray()
+  {
     SetPluginReady(false);
     return fCurrentEvent;
   };

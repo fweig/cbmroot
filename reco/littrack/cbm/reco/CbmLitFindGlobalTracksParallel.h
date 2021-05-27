@@ -8,8 +8,9 @@
 #ifndef CBMLITFINDGLOBALTRACKSPARALLEL_H_
 #define CBMLITFINDGLOBALTRACKSPARALLEL_H_
 
-#include "FairTask.h"
 #include "base/CbmLitDetectorSetup.h"
+
+#include "FairTask.h"
 
 #include "TStopwatch.h"
 
@@ -47,9 +48,7 @@ public:
   virtual void Finish();
 
   /* Setters */
-  void SetTrackingType(const string& trackingType) {
-    fTrackingType = trackingType;
-  }
+  void SetTrackingType(const string& trackingType) { fTrackingType = trackingType; }
   void SetMergerType(const string& mergerType) { fMergerType = mergerType; }
   void SetFitterType(const string& fitterType) { fFitterType = fitterType; }
 
@@ -104,8 +103,7 @@ private:
   TStopwatch fTrackingWithIOWatch;  // stopwatch for tracking including IO
 
   CbmLitFindGlobalTracksParallel(const CbmLitFindGlobalTracksParallel&);
-  CbmLitFindGlobalTracksParallel&
-  operator=(const CbmLitFindGlobalTracksParallel&);
+  CbmLitFindGlobalTracksParallel& operator=(const CbmLitFindGlobalTracksParallel&);
 
   ClassDef(CbmLitFindGlobalTracksParallel, 1);
 };

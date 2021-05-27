@@ -22,8 +22,7 @@ using std::endl;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmTrdSetTracksPidWkn::CbmTrdSetTracksPidWkn()
-  : CbmTrdSetTracksPidWkn("TrdSetTracksPidWkn", "") {}
+CbmTrdSetTracksPidWkn::CbmTrdSetTracksPidWkn() : CbmTrdSetTracksPidWkn("TrdSetTracksPidWkn", "") {}
 // -------------------------------------------------------------------------
 
 
@@ -45,7 +44,8 @@ CbmTrdSetTracksPidWkn::CbmTrdSetTracksPidWkn(const char* name, const char*)
   , fTrdHitArray(NULL)
 
 
-{}
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -60,7 +60,8 @@ void CbmTrdSetTracksPidWkn::SetParContainers() {}
 
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmTrdSetTracksPidWkn::Init() {
+InitStatus CbmTrdSetTracksPidWkn::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -92,7 +93,8 @@ InitStatus CbmTrdSetTracksPidWkn::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmTrdSetTracksPidWkn::Exec(Option_t*) {
+void CbmTrdSetTracksPidWkn::Exec(Option_t*)
+{
 
   if (!fTrackArray) return;
 
@@ -118,8 +120,7 @@ void CbmTrdSetTracksPidWkn::Exec(Option_t*) {
     if (pTrack->GetELoss() < 0.) {
       double_t sumEloss = 0.;
       for (Int_t iHit = 0; iHit < NHits; iHit++) {
-        CbmTrdHit* hit =
-          (CbmTrdHit*) fTrdHitArray->At(pTrack->GetHitIndex(iHit));
+        CbmTrdHit* hit = (CbmTrdHit*) fTrdHitArray->At(pTrack->GetHitIndex(iHit));
         assert(hit);
         sumEloss += hit->GetELoss();
       }
@@ -173,7 +174,8 @@ void CbmTrdSetTracksPidWkn::Exec(Option_t*) {
 void CbmTrdSetTracksPidWkn::Finish() {}
 // -------------------------------------------------------------------------
 
-void CbmTrdSetTracksPidWkn::SetParameters() {
+void CbmTrdSetTracksPidWkn::SetParameters()
+{
   if (fSISType == "sis300") {
     fnSet   = 5;  //  number of the layers with TR
     fdegWkn = 4;  //  statistics degree

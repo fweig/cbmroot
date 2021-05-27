@@ -6,11 +6,11 @@
 
 #include "CbmTrdHitProducerClusterQa.h"
 
+#include "CbmMCTrack.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmMCTrack.h"
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -23,16 +23,14 @@
 using std::cout;
 using std::endl;
 
-CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa()
-  : CbmTrdHitProducerClusterQa("TrdHitProducerClusterQa", "") {}
+CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa() : CbmTrdHitProducerClusterQa("TrdHitProducerClusterQa", "") {}
 
-CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa(const char* name,
-                                                       const char*)
-  : FairTask(name) {}
+CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa(const char* name, const char*) : FairTask(name) {}
 
 CbmTrdHitProducerClusterQa::~CbmTrdHitProducerClusterQa() {}
 
-InitStatus CbmTrdHitProducerClusterQa::Init() {
+InitStatus CbmTrdHitProducerClusterQa::Init()
+{
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
     cout << "-E- CbmTrdHitProducerClusterQa::Init : "
@@ -45,7 +43,8 @@ InitStatus CbmTrdHitProducerClusterQa::Init() {
 void CbmTrdHitProducerClusterQa::Exec(Option_t*) {}
 void CbmTrdHitProducerClusterQa::Finish() { WriteHistograms(); }
 void CbmTrdHitProducerClusterQa::PrepareHistograms() {}
-void CbmTrdHitProducerClusterQa::WriteHistograms() {
+void CbmTrdHitProducerClusterQa::WriteHistograms()
+{
   gDirectory->mkdir("CbmTrdHitProducerClusterQa");
   gDirectory->cd("CbmTrdHitProducerClusterQa");
   gDirectory->cd("..");

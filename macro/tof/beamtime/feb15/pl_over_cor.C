@@ -1,4 +1,5 @@
-void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -26,7 +27,8 @@ void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0) {
     h1->Draw("colz");
     gPad->SetLogz();
     iNch = h1->GetNbinsX();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -37,7 +39,8 @@ void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -48,48 +51,51 @@ void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0) {
   if (h2 != NULL) {
     h2->Draw();
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(4);
   // gROOT->cd();
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
-    TString hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
-    h2 = (TH2*) gDirectory->FindObjectAny(hname);
+    TString hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
+    h2            = (TH2*) gDirectory->FindObjectAny(hname);
     if (h2 != NULL) {
       if (iCh == 0) {
         h2->Draw("");
         h2->SetMinimum(-500.);
         h2->SetMaximum(500.);
-      } else {
+      }
+      else {
         h2->Draw("same");
       }
       h2->SetLineColor(iCh + 1);
       //  h2->UseCurrentStyle();
       //  gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
 
   can->cd(5);
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
-    TString hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
-    h2 = (TH2*) gDirectory->FindObjectAny(hname);
+    TString hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
+    h2            = (TH2*) gDirectory->FindObjectAny(hname);
     if (h2 != NULL) {
       if (iCh == 0) {
         h2->Draw("");
         h2->SetMinimum(-500.);
         h2->SetMaximum(500.);
-      } else {
+      }
+      else {
         h2->Draw("same");
       }
       h2->SetLineColor(iCh + 1);
       //  gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -102,27 +108,29 @@ void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(7);
   Int_t iNSel = 4;
   for (Int_t iTr = 0; iTr < iNSel; iTr++) {
-    TString hname =
-      Form("cl_CorSmT%d_sm%03d_rpc%03d_Sel%02d_DelTof", SmT, iSm, iRpc, iTr);
-    h2 = (TH2*) gDirectory->FindObjectAny(hname);
+    TString hname = Form("cl_CorSmT%d_sm%03d_rpc%03d_Sel%02d_DelTof", SmT, iSm, iRpc, iTr);
+    h2            = (TH2*) gDirectory->FindObjectAny(hname);
     if (h2 != NULL) {
       if (iTr == 0) {
         h2->Draw("");
         h2->SetMinimum(-500.);
         h2->SetMaximum(500.);
-      } else {
+      }
+      else {
         h2->Draw("same");
       }
       h2->SetLineColor(iTr + 1);
       //  gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

@@ -1,6 +1,5 @@
-void check_pulser(UInt_t uRunId  = 0,
-                  Int_t nrEvents = 0,
-                  TString sDir   = "data") {
+void check_pulser(UInt_t uRunId = 0, Int_t nrEvents = 0, TString sDir = "data")
+{
   if (uRunId < 353) return kFALSE;
 
   // --- Specify number of events to be produced.
@@ -50,9 +49,7 @@ void check_pulser(UInt_t uRunId  = 0,
   pulserChecker->SetTofOffsetSearchRange(500);
   pulserChecker->SetRichOffsetSearchRange(1000);
   pulserChecker->SetPsdOffsetSearchRange(5000);
-  if (0 < uRunId)
-    pulserChecker->SetOutFilename(
-      Form("data/HistosPulserCheck_%03u.root", uRunId));
+  if (0 < uRunId) pulserChecker->SetOutFilename(Form("data/HistosPulserCheck_%03u.root", uRunId));
   fRun->AddTask(pulserChecker);
 
   // -----  Parameter database   --------------------------------------------
@@ -73,7 +70,8 @@ void check_pulser(UInt_t uRunId  = 0,
   cout << "Starting run" << endl;
   if (0 == nrEvents) {
     fRun->Run(0, nEvents);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nrEvents);  // process  N Events
   }
   // ------------------------------------------------------------------------

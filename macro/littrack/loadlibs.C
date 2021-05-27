@@ -4,7 +4,8 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2012
  */
-void loadlibs() {
+void loadlibs()
+{
   /*
    gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
    basiclibs();

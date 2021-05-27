@@ -49,9 +49,8 @@ Int_t fieldSymType  = 0;
 TString defaultInputFile = "";
 
 
-void tof_qa_ana(Int_t nEvents     = 2,
-                const char* setup = "sis100_electron",
-                Int_t iRandSeed   = 0) {
+void tof_qa_ana(Int_t nEvents = 2, const char* setup = "sis100_electron", Int_t iRandSeed = 0)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -89,12 +88,9 @@ void tof_qa_ana(Int_t nEvents     = 2,
   gInterpreter->ProcessLine(setupFunct);
 
   // TOF maps normalization
-  TString normCartInFile =
-    inDir + "/macro/tof/qa/data/norm." + tofTag + "_xyz_geantino_qa.hst.root";
-  TString normAngInFile =
-    inDir + "/macro/tof/qa/data/norm." + tofTag + "_ang_geantino_qa.hst.root";
-  TString normSphInFile =
-    inDir + "/macro/tof/qa/data/norm." + tofTag + "_sph_geantino_qa.hst.root";
+  TString normCartInFile = inDir + "/macro/tof/qa/data/norm." + tofTag + "_xyz_geantino_qa.hst.root";
+  TString normAngInFile  = inDir + "/macro/tof/qa/data/norm." + tofTag + "_ang_geantino_qa.hst.root";
+  TString normSphInFile  = inDir + "/macro/tof/qa/data/norm." + tofTag + "_sph_geantino_qa.hst.root";
 
   // Output file
   TString outFile      = outDir + "/tofqa." + setup + "_qa.eds.root";
@@ -163,13 +159,11 @@ void tof_qa_ana(Int_t nEvents     = 2,
   // =========================================================================
 
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf =
-    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   tofDigitizerBdf->SetInputFileName(
-    paramDir
-    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+    paramDir + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
   tofDigitizerBdf->SetHistoFileName(digiOutFile);
   run->AddTask(tofDigitizerBdf);
 
@@ -178,8 +172,7 @@ void tof_qa_ana(Int_t nEvents     = 2,
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
   tofSimpClust->SetHistoFileName(clustOutFile);
@@ -214,37 +207,44 @@ void tof_qa_ana(Int_t nEvents     = 2,
     cout << "Setting TOF QA histograms for a TOF wall Z position of  500 cm "
             "(v16a_1h)."
          << endl;
-  } else if ("v16a_1e" == tofTag) {
+  }
+  else if ("v16a_1e" == tofTag) {
     tofQa->SetWallPosZ(650);
     cout << "Setting TOF QA histograms for a TOF wall Z position of  650 cm "
             "(v16a_1e)."
          << endl;
-  } else if ("v16a_1m" == tofTag) {
+  }
+  else if ("v16a_1m" == tofTag) {
     tofQa->SetWallPosZ(730);
     cout << "Setting TOF QA histograms for a TOF wall Z position of  730 cm "
             "(v16a_1m)."
          << endl;
-  } else if ("v16a_3e" == tofTag) {
+  }
+  else if ("v16a_3e" == tofTag) {
     tofQa->SetWallPosZ(930);
     cout << "Setting TOF QA histograms for a TOF wall Z position of  930 cm "
             "(v16a_3e)."
          << endl;
-  } else if ("v16a_3m" == tofTag) {
+  }
+  else if ("v16a_3m" == tofTag) {
     tofQa->SetWallPosZ(1070);
     cout << "Setting TOF QA histograms for a TOF wall Z position of 1070 cm "
             "(v16a_3m)."
          << endl;
-  } else if ("v13-5a" == tofTag || "v14-0a" == tofTag) {
+  }
+  else if ("v13-5a" == tofTag || "v14-0a" == tofTag) {
     tofQa->SetWallPosZ(550);
     cout << "Setting TOF QA histograms for a TOF wall Z position of  550 cm "
             "(v14-0a)."
          << endl;
-  } else if ("v13-5d" == tofTag || "v14-0b" == tofTag) {
+  }
+  else if ("v13-5d" == tofTag || "v14-0b" == tofTag) {
     tofQa->SetWallPosZ(900);
     cout << "Setting TOF QA histograms for a TOF wall Z position of  900 cm "
             "(v14-0b)."
          << endl;
-  } else {
+  }
+  else {
     tofQa->SetWallPosZ(1000);  // default position of the wall
     cout << "Setting TOF QA histograms for a TOF wall Z position of 1000 cm "
             "(default). tofTag = "

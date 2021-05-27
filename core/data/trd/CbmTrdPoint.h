@@ -14,11 +14,11 @@
 #define CBMTRDPOINT_H 1
 
 
+#include <FairMCPoint.h>  // for FairMCPoint
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Double32_t, Int_t, Option_t
 #include <TVector3.h>    // for TVector3
-
-#include <FairMCPoint.h>  // for FairMCPoint
 
 class CbmTrdPoint : public FairMCPoint {
 
@@ -38,15 +38,8 @@ public:
      *@param length   Track length since creation [cm]
      *@param eLoss    Energy deposit [GeV]
      **/
-  CbmTrdPoint(Int_t trackID,
-              Int_t detID,
-              const TVector3& posIn,
-              const TVector3& momIn,
-              const TVector3& posOut,
-              const TVector3& momOut,
-              Double_t tof,
-              Double_t length,
-              Double_t eLoss);
+  CbmTrdPoint(Int_t trackID, Int_t detID, const TVector3& posIn, const TVector3& momIn, const TVector3& posOut,
+              const TVector3& momOut, Double_t tof, Double_t length, Double_t eLoss);
 
 
   /** Copy constructor **/
@@ -76,9 +69,7 @@ public:
   Int_t GetModuleAddress() const { return GetDetectorID(); }
 
   void PositionOut(TVector3& pos) const { pos.SetXYZ(fX_out, fY_out, fZ_out); }
-  void MomentumOut(TVector3& mom) const {
-    mom.SetXYZ(fPx_out, fPy_out, fPz_out);
-  }
+  void MomentumOut(TVector3& mom) const { mom.SetXYZ(fPx_out, fPy_out, fPz_out); }
 
 private:
   Double32_t fX_out, fY_out, fZ_out;

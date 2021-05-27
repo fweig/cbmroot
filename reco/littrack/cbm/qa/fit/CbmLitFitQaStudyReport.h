@@ -8,6 +8,7 @@
 #define CBMLITFITQASTUDYREPORT_H_
 
 #include "CbmStudyReport.h"
+
 #include <string>
 using std::string;
 class TH1;

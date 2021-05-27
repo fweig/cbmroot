@@ -63,9 +63,8 @@
 
 
   // -----   Input file name   ----------------------------------------------
-  TString inUrqmdFile = "/d/cbm01/cbmsim/urqmd/" + system + "/" + beam + "/"
-                        + trigger + "/urqmd." + system + "." + beam + "."
-                        + trigger + ".0000.ftn14";
+  TString inUrqmdFile = "/d/cbm01/cbmsim/urqmd/" + system + "/" + beam + "/" + trigger + "/urqmd." + system + "." + beam
+                        + "." + trigger + ".0000.ftn14";
 
   TString inPlutoFile = "/d/cbm02/galatyuk/pluto/auau/25gev/omega/epem/"
                         "pluto.auau.25gev.omega.epem.0000.root";
@@ -128,8 +127,7 @@
 
 
   // -----   Create magnetic field   ----------------------------------------
-  if (fieldMap == "FieldActive" || fieldMap == "FieldIron")
-    magField = new CbmFieldMapSym3(fieldMap);
+  if (fieldMap == "FieldActive" || fieldMap == "FieldIron") magField = new CbmFieldMapSym3(fieldMap);
   else if (fieldMap == "FieldAlligator")
     magField = new CbmFieldMapSym2(fieldMap);
   else {
@@ -195,7 +193,6 @@
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

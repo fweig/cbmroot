@@ -3,6 +3,7 @@
 
 // Cbm Headers ----------------------
 #include "CbmKFTrackQA.h"
+
 #include "CbmMCTrack.h"
 #include "CbmTrack.h"
 #include "CbmTrackMatchNew.h"
@@ -12,6 +13,7 @@
 //KF Particle headers
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
+
 #include "KFMCTrack.h"
 #include "KFParticleMatch.h"
 #include "KFParticleTopoReconstructor.h"
@@ -29,10 +31,6 @@
 #include "TObject.h"
 
 //c++ and std headers
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-
 #include "CbmGlobalTrack.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
@@ -45,12 +43,15 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
 
+#include <iomanip>
+#include <iostream>
+
+#include <cmath>
+
 using std::map;
 using std::vector;
 
-CbmKFTrackQA::CbmKFTrackQA(const char* name,
-                           Int_t iVerbose,
-                           TString outFileName)
+CbmKFTrackQA::CbmKFTrackQA(const char* name, Int_t iVerbose, TString outFileName)
   : FairTask(name, iVerbose)
   , fStsTrackBranchName("StsTrack")
   , fGlobalTrackBranchName("GlobalTrack")
@@ -82,12 +83,12 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
   , fOutFile(0)
   , fHistoDir(0)
   , fNEvents(0)
-  , fPDGtoIndexMap() {
+  , fPDGtoIndexMap()
+{
   TFile* curFile           = gFile;
   TDirectory* curDirectory = gDirectory;
 
-  if (!(fOutFileName == ""))
-    fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
+  if (!(fOutFileName == "")) fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
   else
     fOutFile = gFile;
 
@@ -105,8 +106,7 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
     float xMin[NStsHisto]        = {-0.5, 0.f, 0.f};
     float xMax[NStsHisto]        = {15.5, 20.f, 1.f};
 
-    TString subdirs[8] = {
-      "Tracks", "e", "mu", "pi", "K", "p", "fragments", "ghost"};
+    TString subdirs[8] = {"Tracks", "e", "mu", "pi", "K", "p", "fragments", "ghost"};
 
     for (int iDir = 0; iDir < 8; iDir++) {
       gDirectory->mkdir(subdirs[iDir].Data());
@@ -124,26 +124,16 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
           float xMaxFit[5] = {0.05, 0.045, 0.01, 0.01, 0.1};
 
           for (int iH = 0; iH < 5; iH++) {
-            hStsFitHisto[iDir][iH]     = new TH1F((res + parName[iH]).Data(),
-                                              (res + parName[iH]).Data(),
-                                              nBinsFit,
-                                              -xMaxFit[iH],
-                                              xMaxFit[iH]);
-            hStsFitHisto[iDir][iH + 5] = new TH1F((pull + parName[iH]).Data(),
-                                                  (pull + parName[iH]).Data(),
-                                                  nBinsFit,
-                                                  -10,
-                                                  10);
+            hStsFitHisto[iDir][iH] =
+              new TH1F((res + parName[iH]).Data(), (res + parName[iH]).Data(), nBinsFit, -xMaxFit[iH], xMaxFit[iH]);
+            hStsFitHisto[iDir][iH + 5] =
+              new TH1F((pull + parName[iH]).Data(), (pull + parName[iH]).Data(), nBinsFit, -10, 10);
           }
         }
         gDirectory->cd("..");
 
         for (int iH = 0; iH < NStsHisto; iH++) {
-          hStsHisto[iDir][iH] = new TH1F(histoName[iH].Data(),
-                                         histoName[iH].Data(),
-                                         nBins[iH],
-                                         xMin[iH],
-                                         xMax[iH]);
+          hStsHisto[iDir][iH] = new TH1F(histoName[iH].Data(), histoName[iH].Data(), nBins[iH], xMin[iH], xMax[iH]);
           hStsHisto[iDir][iH]->GetXaxis()->SetTitle(axisName[iH].Data());
         }
       }
@@ -155,13 +145,11 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
   gDirectory->mkdir("MuCh");
   gDirectory->cd("MuCh");
   {
-    TString histoName[NMuchHisto] = {
-      "NHits", "FirstStation", "LastStation", "chi2/NDF", "prob"};
-    TString axisName[NMuchHisto] = {
-      "N hits", "First Station", "Last Station", "#chi^{2}/NDF", "prob"};
-    int nBins[NMuchHisto]  = {16, 16, 16, 100, 100};
-    float xMin[NMuchHisto] = {-0.5f, -0.5f, -0.5f, 0.f, 0.f};
-    float xMax[NMuchHisto] = {15.5f, 15.5f, 15.5f, 20.f, 1.f};
+    TString histoName[NMuchHisto] = {"NHits", "FirstStation", "LastStation", "chi2/NDF", "prob"};
+    TString axisName[NMuchHisto]  = {"N hits", "First Station", "Last Station", "#chi^{2}/NDF", "prob"};
+    int nBins[NMuchHisto]         = {16, 16, 16, 100, 100};
+    float xMin[NMuchHisto]        = {-0.5f, -0.5f, -0.5f, 0.f, 0.f};
+    float xMax[NMuchHisto]        = {15.5f, 15.5f, 15.5f, 20.f, 1.f};
 
     TString subdirs[3] = {"mu", "Background", "Ghost"};
 
@@ -169,11 +157,7 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
       gDirectory->mkdir(subdirs[iDir].Data());
       gDirectory->cd(subdirs[iDir].Data());
       for (int iH = 0; iH < NMuchHisto; iH++) {
-        hMuchHisto[iDir][iH] = new TH1F(histoName[iH].Data(),
-                                        histoName[iH].Data(),
-                                        nBins[iH],
-                                        xMin[iH],
-                                        xMax[iH]);
+        hMuchHisto[iDir][iH] = new TH1F(histoName[iH].Data(), histoName[iH].Data(), nBins[iH], xMin[iH], xMax[iH]);
         hMuchHisto[iDir][iH]->GetXaxis()->SetTitle(axisName[iH].Data());
       }
       gDirectory->cd("..");  //MuCh
@@ -184,26 +168,15 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
   gDirectory->mkdir("RICH");
   gDirectory->cd("RICH");
   {
-    TString subdirs[10]                   = {"AllTracks",
-                           "e",
-                           "mu",
-                           "pi",
-                           "K",
-                           "p",
-                           "Fragments",
-                           "Mismatch",
-                           "GhostTrack",
-                           "GhostRing"};
+    TString subdirs[10] = {"AllTracks", "e", "mu", "pi", "K", "p", "Fragments", "Mismatch", "GhostTrack", "GhostRing"};
     TString histoName2D[NRichRingHisto2D] = {"r", "axisA", "axisB"};
 
     for (int iDir = 0; iDir < 10; iDir++) {
       gDirectory->mkdir(subdirs[iDir]);
       gDirectory->cd(subdirs[iDir]);
       for (int iH = 0; iH < NRichRingHisto2D; iH++) {
-        hRichRingHisto2D[iDir][iH] = new TH2F(
-          histoName2D[iH], histoName2D[iH], 1000, 0, 15., 1000, 0, 10.);
-        hRichRingHisto2D[iDir][iH]->GetYaxis()->SetTitle(histoName2D[iH]
-                                                         + TString(" [cm]"));
+        hRichRingHisto2D[iDir][iH] = new TH2F(histoName2D[iH], histoName2D[iH], 1000, 0, 15., 1000, 0, 10.);
+        hRichRingHisto2D[iDir][iH]->GetYaxis()->SetTitle(histoName2D[iH] + TString(" [cm]"));
         hRichRingHisto2D[iDir][iH]->GetXaxis()->SetTitle("p [GeV/c]");
       }
       gDirectory->cd("..");  //RICH
@@ -220,34 +193,17 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
     float xMin[NTrdHisto]        = {-1.5f, -1.5f};
     float xMax[NTrdHisto]        = {1.5f, 1.5f};
 
-    TString subdirs[14] = {"AllTracks",
-                           "e",
-                           "mu",
-                           "pi",
-                           "K",
-                           "p",
-                           "Fragments",
-                           "Mismatch",
-                           "GhostTrack",
-                           "GhostTrdTrack",
-                           "d",
-                           "t",
-                           "He3",
-                           "He4"};
+    TString subdirs[14] = {"AllTracks",     "e", "mu", "pi",  "K",  "p", "Fragments", "Mismatch", "GhostTrack",
+                           "GhostTrdTrack", "d", "t",  "He3", "He4"};
 
     for (int iDir = 0; iDir < 14; iDir++) {
       gDirectory->mkdir(subdirs[iDir].Data());
       gDirectory->cd(subdirs[iDir].Data());
       for (int iH = 0; iH < NTrdHisto; iH++) {
-        hTrdHisto[iDir][iH] = new TH1F(histoName[iH].Data(),
-                                       histoName[iH].Data(),
-                                       nBins[iH],
-                                       xMin[iH],
-                                       xMax[iH]);
+        hTrdHisto[iDir][iH] = new TH1F(histoName[iH].Data(), histoName[iH].Data(), nBins[iH], xMin[iH], xMax[iH]);
         hTrdHisto[iDir][iH]->GetXaxis()->SetTitle(axisName[iH].Data());
       }
-      hTrdHisto2D[iDir][0] =
-        new TH2F("dE/dx", "dE/dx", 1500, 0., 15., 1000, 0., 1000.);
+      hTrdHisto2D[iDir][0] = new TH2F("dE/dx", "dE/dx", 1500, 0., 15., 1000, 0., 1000.);
       hTrdHisto2D[iDir][0]->GetYaxis()->SetTitle("dE/dx [keV/(cm)]");
       hTrdHisto2D[iDir][0]->GetXaxis()->SetTitle("p [GeV/c]");
       gDirectory->cd("..");  //Trd
@@ -260,8 +216,7 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
   {
     TString histoName2D[2]         = {"M2P", "M2dEdX"};
     TString xAxisName[NTofHisto2D] = {"p [GeV/c]", "dE/dx [keV/(cm)]"};
-    TString yAxisName[NTofHisto2D] = {"m^{2} [GeV^{2}/c^{4}]",
-                                      "m^{2} [GeV^{2}/c^{4}]"};
+    TString yAxisName[NTofHisto2D] = {"m^{2} [GeV^{2}/c^{4}]", "m^{2} [GeV^{2}/c^{4}]"};
     float xMin[NTofHisto2D]        = {-15., 0.};
     float xMax[NTofHisto2D]        = {15., 1000.};
     Int_t xBins[NTofHisto2D]       = {3000, 1000};
@@ -269,34 +224,16 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
     float yMax[NTofHisto2D]        = {14., 14.};
     Int_t yBins[NTofHisto2D]       = {1600, 1600};
 
-    TString subdirs[14] = {"AllTracks",
-                           "e",
-                           "mu",
-                           "pi",
-                           "K",
-                           "p",
-                           "Fragments",
-                           "Mismatch",
-                           "GhostTrack",
-                           "WrongTofPoint",
-                           "d",
-                           "t",
-                           "He3",
-                           "He4"};
+    TString subdirs[14] = {"AllTracks",     "e", "mu", "pi",  "K",  "p", "Fragments", "Mismatch", "GhostTrack",
+                           "WrongTofPoint", "d", "t",  "He3", "He4"};
 
     for (int iDir = 0; iDir < 14; iDir++) {
       gDirectory->mkdir(subdirs[iDir].Data());
       gDirectory->cd(subdirs[iDir].Data());
 
       for (int iH = 0; iH < NTofHisto2D; iH++) {
-        hTofHisto2D[iDir][iH] = new TH2F(histoName2D[iH].Data(),
-                                         histoName2D[iH].Data(),
-                                         xBins[iH],
-                                         xMin[iH],
-                                         xMax[iH],
-                                         yBins[iH],
-                                         yMin[iH],
-                                         yMax[iH]);
+        hTofHisto2D[iDir][iH] = new TH2F(histoName2D[iH].Data(), histoName2D[iH].Data(), xBins[iH], xMin[iH], xMax[iH],
+                                         yBins[iH], yMin[iH], yMax[iH]);
         hTofHisto2D[iDir][iH]->GetXaxis()->SetTitle(xAxisName[iH]);
         hTofHisto2D[iDir][iH]->GetYaxis()->SetTitle(yAxisName[iH]);
       }
@@ -322,7 +259,8 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name,
 
 CbmKFTrackQA::~CbmKFTrackQA() {}
 
-InitStatus CbmKFTrackQA::Init() {
+InitStatus CbmKFTrackQA::Init()
+{
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -340,26 +278,21 @@ InitStatus CbmKFTrackQA::Init() {
 
   // Get global tracks
   fGlobalTrackArray = (TClonesArray*) ioman->GetObject(fGlobalTrackBranchName);
-  if (fGlobalTrackArray == 0)
-    Warning("CbmKFTrackQA::Init", "global track array not found!");
+  if (fGlobalTrackArray == 0) Warning("CbmKFTrackQA::Init", "global track array not found!");
 
   // Get ToF hits
   fTofHitArray = (TClonesArray*) ioman->GetObject(fTofBranchName);
-  if (fTofHitArray == 0)
-    Warning("CbmKFTrackQA::Init", "TOF hit-array not found!");
+  if (fTofHitArray == 0) Warning("CbmKFTrackQA::Init", "TOF hit-array not found!");
 
   // TRD
   fTrdTrackArray = (TClonesArray*) ioman->GetObject(fTrdBranchName);
-  if (fTrdTrackArray == 0)
-    Warning("CbmKFTrackQA::Init", "TRD track-array not found!");
+  if (fTrdTrackArray == 0) Warning("CbmKFTrackQA::Init", "TRD track-array not found!");
 
   fTrdHitArray = (TClonesArray*) ioman->GetObject(fTrdHitBranchName);
-  if (fTrdHitArray == 0)
-    Warning("CbmKFTrackQA::Init", "TRD hit-array not found!");
+  if (fTrdHitArray == 0) Warning("CbmKFTrackQA::Init", "TRD hit-array not found!");
 
   fRichRingArray = (TClonesArray*) ioman->GetObject(fRichBranchName);
-  if (fRichRingArray == 0)
-    Warning("CbmKFTrackQA::Init", "Rich ring array not found!");
+  if (fRichRingArray == 0) Warning("CbmKFTrackQA::Init", "Rich ring array not found!");
 
   fMCTrackArray = (TClonesArray*) ioman->GetObject(fMCTracksBranchName);
   if (fMCTrackArray == 0) {
@@ -368,59 +301,44 @@ InitStatus CbmKFTrackQA::Init() {
   }
 
   //Track match
-  fStsTrackMatchArray =
-    (TClonesArray*) ioman->GetObject(fStsTrackMatchBranchName);
+  fStsTrackMatchArray = (TClonesArray*) ioman->GetObject(fStsTrackMatchBranchName);
   if (fStsTrackMatchArray == 0) {
     Warning("CbmKFTrackQA::Init", "track match array not found!");
     return kERROR;
   }
 
   //Ring match
-  fRichRingMatchArray =
-    (TClonesArray*) ioman->GetObject(fRichRingMatchBranchName);
-  if (fRichRingMatchArray == 0)
-    Warning("CbmKFTrackQA::Init", "RichRing match array not found!");
+  fRichRingMatchArray = (TClonesArray*) ioman->GetObject(fRichRingMatchBranchName);
+  if (fRichRingMatchArray == 0) Warning("CbmKFTrackQA::Init", "RichRing match array not found!");
 
   //Tof match
   fTofHitMatchArray = (TClonesArray*) ioman->GetObject(fTofHitMatchBranchName);
-  if (fTofHitMatchArray == 0)
-    Warning("CbmKFTrackQA::Init", "TofHit match array not found!");
+  if (fTofHitMatchArray == 0) Warning("CbmKFTrackQA::Init", "TofHit match array not found!");
 
   //TRD match
-  fTrdTrackMatchArray =
-    (TClonesArray*) ioman->GetObject(fTrdTrackMatchBranchName);
-  if (fTrdTrackMatchArray == 0)
-    Warning("CbmKFTrackQA::Init", "TrdTrack match array not found!");
+  fTrdTrackMatchArray = (TClonesArray*) ioman->GetObject(fTrdTrackMatchBranchName);
+  if (fTrdTrackMatchArray == 0) Warning("CbmKFTrackQA::Init", "TrdTrack match array not found!");
 
   //Much track match
-  fMuchTrackMatchArray =
-    (TClonesArray*) ioman->GetObject(fMuchTrackMatchBranchName);
-  if (fMuchTrackMatchArray == 0) {
-    Warning("CbmKFTrackQA::Init", "Much track match array not found!");
-  }
+  fMuchTrackMatchArray = (TClonesArray*) ioman->GetObject(fMuchTrackMatchBranchName);
+  if (fMuchTrackMatchArray == 0) { Warning("CbmKFTrackQA::Init", "Much track match array not found!"); }
   //Much
   fMuchTrackArray = (TClonesArray*) ioman->GetObject(fMuchTrackBranchName);
-  if (fMuchTrackArray == 0) {
-    Warning("CbmKFTrackQA::Init", "Much track-array not found!");
-  }
+  if (fMuchTrackArray == 0) { Warning("CbmKFTrackQA::Init", "Much track-array not found!"); }
 
   // mc data manager
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
-  if (mcManager == 0) {
-    Warning("CbmKFTrackQA::Init", "mc manager not found!");
-  }
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  if (mcManager == 0) { Warning("CbmKFTrackQA::Init", "mc manager not found!"); }
 
   // Tof points
   fTofPoints = (CbmMCDataArray*) mcManager->InitBranch("TofPoint");
-  if (fTofPoints == 0) {
-    Warning("CbmKFTrackQA::Init", "tof points not found!");
-  }
+  if (fTofPoints == 0) { Warning("CbmKFTrackQA::Init", "tof points not found!"); }
 
   return kSUCCESS;
 }
 
-void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
+void CbmKFTrackQA::Exec(Option_t* /*opt*/)
+{
   fNEvents++;
 
   Int_t nMCTracks = fMCTrackArray->GetEntriesFast();
@@ -438,8 +356,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
 
     Int_t pdg  = cbmMCTrack->GetPdgCode();
     Double_t q = 1;
-    if (pdg < 9999999
-        && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
+    if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
       q = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
     else if (pdg == 1000010020)
       q = 1;
@@ -471,8 +388,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
   vector<int> trackMatch(ntrackMatches, -1);
 
   for (int iTr = 0; iTr < ntrackMatches; iTr++) {
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTr);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTr);
     if (stsTrackMatch->GetNofLinks() == 0) continue;
     Float_t bestWeight  = 0.f;
     Float_t totalWeight = 0.f;
@@ -486,8 +402,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
     }
     if (bestWeight / totalWeight < 0.7) continue;
     if (mcTrackId >= nMCTracks || mcTrackId < 0) {
-      std::cout << "Sts Matching is wrong!    StsTackId = " << mcTrackId
-                << " N mc tracks = " << nMCTracks << std::endl;
+      std::cout << "Sts Matching is wrong!    StsTackId = " << mcTrackId << " N mc tracks = " << nMCTracks << std::endl;
       continue;
     }
 
@@ -522,20 +437,12 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
 
     const FairTrackParam* parameters = vRTracks[iTr].GetParamFirst();
 
-    Double_t recoParam[5] = {parameters->GetX(),
-                             parameters->GetY(),
-                             parameters->GetTx(),
-                             parameters->GetTy(),
+    Double_t recoParam[5] = {parameters->GetX(), parameters->GetY(), parameters->GetTx(), parameters->GetTy(),
                              parameters->GetQp()};
-    Double_t recoError[5] = {parameters->GetCovariance(0, 0),
-                             parameters->GetCovariance(1, 1),
-                             parameters->GetCovariance(2, 2),
-                             parameters->GetCovariance(3, 3),
+    Double_t recoError[5] = {parameters->GetCovariance(0, 0), parameters->GetCovariance(1, 1),
+                             parameters->GetCovariance(2, 2), parameters->GetCovariance(3, 3),
                              parameters->GetCovariance(4, 4)};
-    Double_t mcParam[5]   = {mcTrack.X(),
-                           mcTrack.Y(),
-                           mcTrack.Px() / mcTrack.Pz(),
-                           mcTrack.Py() / mcTrack.Pz(),
+    Double_t mcParam[5]   = {mcTrack.X(), mcTrack.Y(), mcTrack.Px() / mcTrack.Pz(), mcTrack.Py() / mcTrack.Pz(),
                            mcTrack.Par()[6]};
 
     int iDir = GetHistoIndex(mcTrack.PDG());
@@ -549,7 +456,8 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
 
           hStsFitHisto[0][iParam]->Fill((pReco - pMC) / pMC);
           hStsFitHisto[iDir][iParam]->Fill((pReco - pMC) / pMC);
-        } else {
+        }
+        else {
           hStsFitHisto[0][iParam]->Fill(residual);
           hStsFitHisto[iDir][iParam]->Fill(residual);
         }
@@ -571,8 +479,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
     trackMuchMatch.resize(nMuchTrackMatches, -1);
 
     for (int iTr = 0; iTr < nMuchTrackMatches; iTr++) {
-      CbmTrackMatchNew* muchTrackMatch =
-        (CbmTrackMatchNew*) fMuchTrackMatchArray->At(iTr);
+      CbmTrackMatchNew* muchTrackMatch = (CbmTrackMatchNew*) fMuchTrackMatchArray->At(iTr);
       if (muchTrackMatch->GetNofLinks() == 0) continue;
       Float_t bestWeight  = 0.f;
       Float_t totalWeight = 0.f;
@@ -586,8 +493,8 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
       }
       if (bestWeight / totalWeight < 0.7) continue;
       if (mcTrackId >= nMCTracks || mcTrackId < 0) {
-        std::cout << "Much Matching is wrong!    MuchTackId = " << mcTrackId
-                  << " N mc tracks = " << nMCTracks << std::endl;
+        std::cout << "Much Matching is wrong!    MuchTackId = " << mcTrackId << " N mc tracks = " << nMCTracks
+                  << std::endl;
         continue;
       }
 
@@ -595,23 +502,18 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
     }
   }
 
-  if (fGlobalTrackArray == NULL)
-    Warning("KF Track QA", "No GlobalTrack array!");
+  if (fGlobalTrackArray == NULL) Warning("KF Track QA", "No GlobalTrack array!");
   else {
     for (Int_t igt = 0; igt < fGlobalTrackArray->GetEntriesFast(); igt++) {
-      const CbmGlobalTrack* globalTrack =
-        static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
+      const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
 
-      Int_t stsTrackIndex = globalTrack->GetStsTrackIndex();  //for STS histos
-      CbmStsTrack* cbmStsTrack =
-        (CbmStsTrack*) fStsTrackArray->At(stsTrackIndex);
-      int stsTrackMCIndex    = trackMatch[stsTrackIndex];
-      Double_t* stsHistoData = new Double_t[NStsHisto];
-      stsHistoData[0]        = cbmStsTrack->GetNofHits();  //NHits
-      stsHistoData[1] =
-        cbmStsTrack->GetChiSq() / cbmStsTrack->GetNDF();  //Chi2/NDF
-      stsHistoData[2] =
-        TMath::Prob(cbmStsTrack->GetChiSq(), cbmStsTrack->GetNDF());  //prob
+      Int_t stsTrackIndex      = globalTrack->GetStsTrackIndex();  //for STS histos
+      CbmStsTrack* cbmStsTrack = (CbmStsTrack*) fStsTrackArray->At(stsTrackIndex);
+      int stsTrackMCIndex      = trackMatch[stsTrackIndex];
+      Double_t* stsHistoData   = new Double_t[NStsHisto];
+      stsHistoData[0]          = cbmStsTrack->GetNofHits();                                    //NHits
+      stsHistoData[1]          = cbmStsTrack->GetChiSq() / cbmStsTrack->GetNDF();              //Chi2/NDF
+      stsHistoData[2]          = TMath::Prob(cbmStsTrack->GetChiSq(), cbmStsTrack->GetNDF());  //prob
       if (stsTrackMCIndex > -1) {
         int iDir = GetHistoIndex(mcTracks[stsTrackMCIndex].PDG());
         if (iDir < 3) {
@@ -620,7 +522,8 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
             hStsHisto[0][iH]->Fill(stsHistoData[iH]);
           }
         }
-      } else
+      }
+      else
         for (int iH = 0; iH < NStsHisto; iH++)  //ghost
           hStsHisto[7][iH]->Fill(stsHistoData[iH]);
       delete[] stsHistoData;
@@ -628,21 +531,16 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
 
       Int_t muchIndex = globalTrack->GetMuchTrackIndex();  //for MuCh histos
       if (muchIndex > -1) {
-        CbmMuchTrack* muchTrack =
-          (CbmMuchTrack*) fMuchTrackArray->At(muchIndex);
+        CbmMuchTrack* muchTrack = (CbmMuchTrack*) fMuchTrackArray->At(muchIndex);
 
         int muchTrackMCIndex = trackMuchMatch[muchIndex];
 
         Double_t* muchHistoData = new Double_t[NMuchHisto];
-        muchHistoData[0]        = muchTrack->GetNofHits();  //NHits
-        muchHistoData[1] =
-          GetZtoNStation(muchTrack->GetParamFirst()->GetZ());  //FirstStation
-        muchHistoData[2] =
-          GetZtoNStation(muchTrack->GetParamLast()->GetZ());  //LastStation
-        muchHistoData[3] =
-          muchTrack->GetChiSq() / muchTrack->GetNDF();  //Chi2/NDF
-        muchHistoData[4] =
-          TMath::Prob(muchTrack->GetChiSq(), muchTrack->GetNDF());  //prob
+        muchHistoData[0]        = muchTrack->GetNofHits();                                  //NHits
+        muchHistoData[1]        = GetZtoNStation(muchTrack->GetParamFirst()->GetZ());       //FirstStation
+        muchHistoData[2]        = GetZtoNStation(muchTrack->GetParamLast()->GetZ());        //LastStation
+        muchHistoData[3]        = muchTrack->GetChiSq() / muchTrack->GetNDF();              //Chi2/NDF
+        muchHistoData[4]        = TMath::Prob(muchTrack->GetChiSq(), muchTrack->GetNDF());  //prob
 
         if (stsTrackMCIndex < 0 || stsTrackMCIndex != muchTrackMCIndex)  //ghost
           for (int iH = 0; iH < NMuchHisto; iH++)
@@ -672,24 +570,21 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
         if (richIndex > -1) {
           CbmRichRing* richRing = (CbmRichRing*) fRichRingArray->At(richIndex);
           if (richRing) {
-            int richTrackMCIndex = -1;
-            CbmTrackMatchNew* richRingMatch =
-              (CbmTrackMatchNew*) fRichRingMatchArray->At(richIndex);
+            int richTrackMCIndex            = -1;
+            CbmTrackMatchNew* richRingMatch = (CbmTrackMatchNew*) fRichRingMatchArray->At(richIndex);
             if (richRingMatch) {
               if (richRingMatch->GetNofLinks() > 0) {
                 float bestWeight  = 0.f;
                 float totalWeight = 0.f;
                 int bestMCTrackId = -1;
-                for (int iLink = 0; iLink < richRingMatch->GetNofLinks();
-                     iLink++) {
+                for (int iLink = 0; iLink < richRingMatch->GetNofLinks(); iLink++) {
                   totalWeight += richRingMatch->GetLink(iLink).GetWeight();
                   if (richRingMatch->GetLink(iLink).GetWeight() > bestWeight) {
                     bestWeight    = richRingMatch->GetLink(iLink).GetWeight();
                     bestMCTrackId = richRingMatch->GetLink(iLink).GetIndex();
                   }
                 }
-                if (bestWeight / totalWeight >= 0.7)
-                  richTrackMCIndex = bestMCTrackId;
+                if (bestWeight / totalWeight >= 0.7) richTrackMCIndex = bestMCTrackId;
               }
             }
 
@@ -702,8 +597,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
             hRichRingHisto2D[0][2]->Fill(p, axisB);
 
             int iTrackCategory = -1;
-            if (stsTrackMCIndex < 0)
-              iTrackCategory = 8;  // ghost sts track + any ring
+            if (stsTrackMCIndex < 0) iTrackCategory = 8;  // ghost sts track + any ring
             else if (richTrackMCIndex < 0)
               iTrackCategory = 9;  // normal sts track + ghost ring
             else if (stsTrackMCIndex != richTrackMCIndex)
@@ -733,15 +627,13 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
         if (trdIndex > -1) {
           CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTrackArray->At(trdIndex);
           if (trdTrack) {
-            Int_t trdTrackMCIndex = -1;
-            CbmTrackMatchNew* trdTrackMatch =
-              (CbmTrackMatchNew*) fTrdTrackMatchArray->At(trdIndex);
+            Int_t trdTrackMCIndex           = -1;
+            CbmTrackMatchNew* trdTrackMatch = (CbmTrackMatchNew*) fTrdTrackMatchArray->At(trdIndex);
             for (int iTr = 0; iTr < ntrackTrdMatches; iTr++) {
               if (trdTrackMatch->GetNofLinks() == 0) continue;
               Float_t bestWeight  = 0.f;
               Float_t totalWeight = 0.f;
-              for (int iLink = 0; iLink < trdTrackMatch->GetNofLinks();
-                   iLink++) {
+              for (int iLink = 0; iLink < trdTrackMatch->GetNofLinks(); iLink++) {
                 totalWeight += trdTrackMatch->GetLink(iLink).GetWeight();
                 if (trdTrackMatch->GetLink(iLink).GetWeight() > bestWeight) {
                   bestWeight      = trdTrackMatch->GetLink(iLink).GetWeight();
@@ -750,9 +642,8 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
               }
               if (bestWeight / totalWeight < 0.7) continue;
               if (trdTrackMCIndex >= nMCTracks || trdTrackMCIndex < 0) {
-                std::cout << "Trd Matching is wrong!    TrdTackId = "
-                          << trdTrackMCIndex << " N mc tracks = " << nMCTracks
-                          << std::endl;
+                std::cout << "Trd Matching is wrong!    TrdTackId = " << trdTrackMCIndex
+                          << " N mc tracks = " << nMCTracks << std::endl;
                 continue;
               }
 
@@ -770,13 +661,10 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
               CbmTrdHit* trdHit = (CbmTrdHit*) fTrdHitArray->At(TRDindex);
               eloss += trdHit->GetELoss();
             }
-            if (trdTrack->GetNofHits() > 0.)
-              eloss =
-                eloss / trdTrack->GetNofHits();  // average of dE/dx per station
+            if (trdTrack->GetNofHits() > 0.) eloss = eloss / trdTrack->GetNofHits();  // average of dE/dx per station
 
             int iTrackCategory = -1;
-            if (stsTrackMCIndex < 0)
-              iTrackCategory = 8;  // ghost sts track + any trd track
+            if (stsTrackMCIndex < 0) iTrackCategory = 8;  // ghost sts track + any trd track
             else if (trdTrackMCIndex < 0)
               iTrackCategory = 9;  // normal sts track + ghost trd track
             else if (stsTrackMCIndex != trdTrackMCIndex)
@@ -803,17 +691,14 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
         Int_t stsIndex = globalTrack->GetStsTrackIndex();
 
         if (tofIndex > -1 && stsIndex > -1) {
-          CbmTofHit* tofHit     = (CbmTofHit*) fTofHitArray->At(tofIndex);
-          CbmMatch* tofHitMatch = (CbmMatch*) fTofHitMatchArray->At(tofIndex);
-          CbmTrackMatchNew* stsMatch =
-            (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsIndex);
+          CbmTofHit* tofHit          = (CbmTofHit*) fTofHitArray->At(tofIndex);
+          CbmMatch* tofHitMatch      = (CbmMatch*) fTofHitMatchArray->At(tofIndex);
+          CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsIndex);
 
           Double_t l    = globalTrack->GetLength();
           Double_t time = tofHit->GetTime();
           Double_t q    = stsPar->GetQp() > 0 ? 1. : -1.;
-          Double_t m2 =
-            p * p
-            * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
+          Double_t m2   = p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
 
           hTofHisto2D[0][0]->Fill(p * q, m2);
           hTofHisto2D[0][1]->Fill(eloss * 1e6, m2);
@@ -821,13 +706,11 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
           if (tofHit && tofHitMatch && stsMatch) {
             Int_t tofMCPointIndex = tofHitMatch->GetMatchedLink().GetIndex();
             Int_t tofMCEventNo    = tofHitMatch->GetMatchedLink().GetEntry();
-            CbmTofPoint* tofPoint =
-              (CbmTofPoint*) fTofPoints->Get(0, tofMCEventNo, tofMCPointIndex);
-            Int_t tofMCTrackId = tofPoint->GetTrackID();
+            CbmTofPoint* tofPoint = (CbmTofPoint*) fTofPoints->Get(0, tofMCEventNo, tofMCPointIndex);
+            Int_t tofMCTrackId    = tofPoint->GetTrackID();
 
             int iHitCategory = -1;
-            if (stsTrackMCIndex < 0)
-              iHitCategory = 8;  // ghost sts track + any tof hit
+            if (stsTrackMCIndex < 0) iHitCategory = 8;  // ghost sts track + any tof hit
             else if (tofMCTrackId < 0)
               iHitCategory = 9;  // normal sts track + ghost tof hit
             else if (stsTrackMCIndex != tofMCTrackId)
@@ -844,7 +727,8 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/) {
   }
 }
 
-void CbmKFTrackQA::Finish() {
+void CbmKFTrackQA::Finish()
+{
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
   // Open output file and write histograms
@@ -859,11 +743,11 @@ void CbmKFTrackQA::Finish() {
   gDirectory = curr;
 }
 
-void CbmKFTrackQA::WriteHistosCurFile(TObject* obj) {
+void CbmKFTrackQA::WriteHistosCurFile(TObject* obj)
+{
 
 
-  if (!obj->IsFolder())
-    obj->Write();
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur    = gDirectory;
     TFile* currentFile = gFile;
@@ -880,16 +764,17 @@ void CbmKFTrackQA::WriteHistosCurFile(TObject* obj) {
   }
 }
 
-int CbmKFTrackQA::GetHistoIndex(int pdg) {
+int CbmKFTrackQA::GetHistoIndex(int pdg)
+{
   map<int, int>::iterator it;
   it = fPDGtoIndexMap.find(TMath::Abs(pdg));
-  if (it != fPDGtoIndexMap.end())
-    return it->second;
+  if (it != fPDGtoIndexMap.end()) return it->second;
   else
     return 6;
 }
 
-Int_t CbmKFTrackQA::GetZtoNStation(Double_t getZ) {
+Int_t CbmKFTrackQA::GetZtoNStation(Double_t getZ)
+{
   if (TMath::Abs(getZ - 145) <= 2.0) return 1;
   if (TMath::Abs(getZ - 155) <= 2.0) return 2;
   if (TMath::Abs(getZ - 165) <= 2.0) return 3;

@@ -12,13 +12,9 @@ using std::sqrt;
 
 ClassImp(CbmKFMath)
 
-  Bool_t CbmKFMath::intersectCone(Double_t zCone,
-                                  Double_t ZCone,
-                                  Double_t rCone,
-                                  Double_t RCone,
-                                  const Double_t x[],
-                                  Double_t* z1,
-                                  Double_t* z2) {
+  Bool_t CbmKFMath::intersectCone(Double_t zCone, Double_t ZCone, Double_t rCone, Double_t RCone, const Double_t x[],
+                                  Double_t* z1, Double_t* z2)
+{
   Double_t t  = (RCone - rCone) / (ZCone - zCone);
   Double_t A  = (RCone * zCone - rCone * ZCone) / (ZCone - zCone);
   Double_t x0 = x[0] - x[5] * x[2];
@@ -39,10 +35,8 @@ ClassImp(CbmKFMath)
 }
 
 
-void CbmKFMath::multQSQt(Int_t N,
-                         const Double_t Q[],
-                         const Double_t S[],
-                         Double_t S_out[]) {
+void CbmKFMath::multQSQt(Int_t N, const Double_t Q[], const Double_t S[], Double_t S_out[])
+{
   Double_t A[N * N];
 
   {
@@ -67,10 +61,8 @@ void CbmKFMath::multQSQt(Int_t N,
   }
 }
 
-void CbmKFMath::multQtSQ(Int_t N,
-                         const Double_t Q[],
-                         const Double_t S[],
-                         Double_t S_out[]) {
+void CbmKFMath::multQtSQ(Int_t N, const Double_t Q[], const Double_t S[], Double_t S_out[])
+{
   Double_t A[N * N];
 
   for (Int_t i = 0, n = 0; i < N; i++) {
@@ -91,10 +83,8 @@ void CbmKFMath::multQtSQ(Int_t N,
   }
 }
 
-void CbmKFMath::multSSQ(const Double_t* A,
-                        const Double_t* B,
-                        Double_t* C,
-                        Int_t n) {
+void CbmKFMath::multSSQ(const Double_t* A, const Double_t* B, Double_t* C, Int_t n)
+{
   for (Int_t i = 0; i < n; ++i) {
     for (Int_t j = 0; j < n; ++j) {
       Int_t ind = i * n + j;
@@ -105,7 +95,8 @@ void CbmKFMath::multSSQ(const Double_t* A,
   }
 }
 
-void CbmKFMath::four_dim_inv(Double_t a[4][4]) {
+void CbmKFMath::four_dim_inv(Double_t a[4][4])
+{
   /**** Gaussian algorithm for 4x4 matrix inversion ****/
   Int_t i, j, k, l;
   Double_t factor;
@@ -115,8 +106,7 @@ void CbmKFMath::four_dim_inv(Double_t a[4][4]) {
   // Set b to I
   for (i = 0; i < 4; i++)
     for (j = 0; j < 4; j++)
-      if (i == j)
-        b[i][j] = 1.0;
+      if (i == j) b[i][j] = 1.0;
       else
         b[i][j] = 0.0;
 
@@ -165,7 +155,8 @@ void CbmKFMath::four_dim_inv(Double_t a[4][4]) {
       a[i][j] = b[i][j];
 }
 
-void CbmKFMath::five_dim_inv(Double_t a[5][5]) {
+void CbmKFMath::five_dim_inv(Double_t a[5][5])
+{
   /**** Gaussian algorithm for 5x5 matrix inversion ****/
   Int_t i, j, k, l;
   Double_t factor;
@@ -175,8 +166,7 @@ void CbmKFMath::five_dim_inv(Double_t a[5][5]) {
   // Set b to I
   for (i = 0; i < 5; i++) {
     for (j = 0; j < 5; j++) {
-      if (i == j)
-        b[i][j] = 1.0;
+      if (i == j) b[i][j] = 1.0;
       else
         b[i][j] = 0.0;
     }
@@ -229,7 +219,8 @@ void CbmKFMath::five_dim_inv(Double_t a[5][5]) {
       a[i][j] = b[i][j];
 }
 
-Bool_t CbmKFMath::invS(Double_t A[], Int_t N) {
+Bool_t CbmKFMath::invS(Double_t A[], Int_t N)
+{
 
   Bool_t ret = 0;
 
@@ -263,7 +254,8 @@ Bool_t CbmKFMath::invS(Double_t A[], Int_t N) {
             ;
           *ik = (*ik - sum) * x;  // ik == Aij
         }
-      } else {
+      }
+      else {
         Double_t* ji = jj;
         for (Int_t i = j; i < N; i++)
           *(ji += i) = 0.;
@@ -294,7 +286,8 @@ Bool_t CbmKFMath::invS(Double_t A[], Int_t N) {
             *kj = sum * x;
           }
         }
-      } else {
+      }
+      else {
         for (Double_t* ik = ij; ik != ii + 1; ik++) {
           *ik = 0.;
         }
@@ -321,12 +314,8 @@ Bool_t CbmKFMath::invS(Double_t A[], Int_t N) {
   return ret;
 }
 
-Double_t CbmKFMath::getDeviation(Double_t x,
-                                 Double_t y,
-                                 Double_t C[],
-                                 Double_t vx,
-                                 Double_t vy,
-                                 Double_t Cv[]) {
+Double_t CbmKFMath::getDeviation(Double_t x, Double_t y, Double_t C[], Double_t vx, Double_t vy, Double_t Cv[])
+{
   Double_t dx   = x - vx;
   Double_t dy   = y - vy;
   Double_t c[3] = {0, 0, 0};
@@ -342,15 +331,14 @@ Double_t CbmKFMath::getDeviation(Double_t x,
   }
   Double_t d = c[0] * c[2] - c[1] * c[1];
   if (fabs(d) < 1.e-20) return 0;
-  return sqrt(
-    fabs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
+  return sqrt(fabs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
 }
 
-Double_t
-CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
-                      const Double_t V[],  // vertex parameters (x,y,z)
-                      FairField* MagneticField  // magnetic field
-) {
+Double_t CbmKFMath::AnalyticQP(const Double_t T[],       // track parameters (x,y,tx,ty,Q/p,z)
+                               const Double_t V[],       // vertex parameters (x,y,z)
+                               FairField* MagneticField  // magnetic field
+)
+{
 
   const Double_t c_light = 0.000299792458;
 
@@ -362,12 +350,10 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
 
            txtx = tx * tx, tyty = ty * ty, txty = tx * ty;
 
-  Double_t Ax = txty, Ay = -txtx - 1, Az = ty, Ayy = tx * (txtx * 3 + 3),
-           Ayz = -2 * txty, Azy = Ayz,
+  Double_t Ax = txty, Ay = -txtx - 1, Az = ty, Ayy = tx * (txtx * 3 + 3), Ayz = -2 * txty, Azy = Ayz,
            Ayyy = -(15 * txtx * txtx + 18 * txtx + 3),
 
-           Bx = tyty + 1, By = -txty, Bz = -tx, Byy = ty * (txtx * 3 + 1),
-           Byz = 2 * txtx + 1, Bzy = txtx - tyty,
+           Bx = tyty + 1, By = -txty, Bz = -tx, Byy = ty * (txtx * 3 + 1), Byz = 2 * txtx + 1, Bzy = txtx - tyty,
            Byyy = -txty * (txtx * 15 + 9);
 
   Double_t t = c_light * sqrt(1. + txtx + tyty), h = t * qp0;
@@ -405,9 +391,8 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
       Sy = (B[0][1] + 2 * B[1][1]) * dz * dz * 4 / 6.;
       Sz = (B[0][2] + 2 * B[1][2]) * dz * dz * 4 / 6.;
 
-      Double_t c2[3][3] = {{5, -4, -1}, {44, 80, -4}, {11, 44, 5}};  // /=360.
-      Double_t C2[3][3] = {
-        {38, 8, -4}, {148, 208, -20}, {3, 36, 3}};  // /=2520.
+      Double_t c2[3][3] = {{5, -4, -1}, {44, 80, -4}, {11, 44, 5}};    // /=360.
+      Double_t C2[3][3] = {{38, 8, -4}, {148, 208, -20}, {3, 36, 3}};  // /=2520.
       for (Int_t k = 0; k < 3; k++)
         for (Int_t m = 0; m < 3; m++) {
           syz += c2[k][m] * B[k][1] * B[m][2];
@@ -426,32 +411,22 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
       syyy = syy * syy * syy / 1296;
       syy  = syy * syy / 72;
 
-      Syy =
-        (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1])
-         + B[1][1] * (208 * B[1][1] + 16 * B[2][1]) + B[2][1] * (3 * B[2][1]))
-        * dz * dz * dz * 8 / 2520.;
+      Syy = (B[0][1] * (38 * B[0][1] + 156 * B[1][1] - B[2][1]) + B[1][1] * (208 * B[1][1] + 16 * B[2][1])
+             + B[2][1] * (3 * B[2][1]))
+            * dz * dz * dz * 8 / 2520.;
       Syyy = (B[0][1]
-                * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1])
-                   + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
+                * (B[0][1] * (85 * B[0][1] + 526 * B[1][1] - 7 * B[2][1]) + B[1][1] * (1376 * B[1][1] + 84 * B[2][1])
                    + B[2][1] * (19 * B[2][1]))
-              + B[1][1]
-                  * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1])
-                     + B[2][1] * (62 * B[2][1]))
+              + B[1][1] * (B[1][1] * (1376 * B[1][1] + 256 * B[2][1]) + B[2][1] * (62 * B[2][1]))
               + B[2][1] * B[2][1] * (3 * B[2][1]))
              * dz * dz * dz * dz * 16 / 90720.;
 
-      x += tx * 2 * dz + h * (Sx * Ax + Sy * Ay + Sz * Az)
-           + h * h * (Syy * Ayy + Syz * Ayz + Szy * Azy)
+      x += tx * 2 * dz + h * (Sx * Ax + Sy * Ay + Sz * Az) + h * h * (Syy * Ayy + Syz * Ayz + Szy * Azy)
            + h * h * h * Syyy * Ayyy;
-      y += ty * 2 * dz + h * (Sx * Bx + Sy * By + Sz * Bz)
-           + h * h * (Syy * Byy + Syz * Byz + Szy * Bzy)
+      y += ty * 2 * dz + h * (Sx * Bx + Sy * By + Sz * Bz) + h * h * (Syy * Byy + Syz * Byz + Szy * Bzy)
            + h * h * h * Syyy * Byyy;
-      tx += h * (sx * Ax + sy * Ay + sz * Az)
-            + h * h * (syy * Ayy + syz * Ayz + szy * Azy)
-            + h * h * h * syyy * Ayyy;
-      ty += h * (sx * Bx + sy * By + sz * Bz)
-            + h * h * (syy * Byy + syz * Byz + szy * Bzy)
-            + h * h * h * syyy * Byyy;
+      tx += h * (sx * Ax + sy * Ay + sz * Az) + h * h * (syy * Ayy + syz * Ayz + szy * Azy) + h * h * h * syyy * Ayyy;
+      ty += h * (sx * Bx + sy * By + sz * Bz) + h * h * (syy * Byy + syz * Byz + szy * Bzy) + h * h * h * syyy * Byyy;
       z += 2 * dz;
       txtx = tx * tx;
       tyty = ty * ty;
@@ -503,10 +478,8 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
 
       Syz_ = Szy_ = 0;
 
-      Double_t c2[3][3] = {
-        {5, -52, -13}, {-28, 320, 68}, {-37, 332, 125}};  // /=5760
-      Double_t C2[3][3] = {
-        {13, -152, -29}, {-82, 1088, 170}, {-57, 576, 153}};  // /=80640
+      Double_t c2[3][3] = {{5, -52, -13}, {-28, 320, 68}, {-37, 332, 125}};      // /=5760
+      Double_t C2[3][3] = {{13, -152, -29}, {-82, 1088, 170}, {-57, 576, 153}};  // /=80640
       {
         for (Int_t k = 0; k < 3; k++)
           for (Int_t m = 0; m < 3; m++) {
@@ -518,27 +491,21 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
       Syz_ *= dz * dz * dz * 8 / 80640.;
       Szy_ *= dz * dz * dz * 8 / 80640.;
 
-      Syy_ = (B[0][1] * (13 * B[0][1] - 234 * B[1][1] - 86 * B[2][1])
-              + B[1][1] * (1088 * B[1][1] + 746 * B[2][1])
+      Syy_ = (B[0][1] * (13 * B[0][1] - 234 * B[1][1] - 86 * B[2][1]) + B[1][1] * (1088 * B[1][1] + 746 * B[2][1])
               + B[2][1] * (153 * B[2][1]))
              * dz * dz * dz * 8 / 80640.;
 
       Syyy_ = (B[0][1]
                  * (B[0][1] * (-43 * B[0][1] + 1118 * B[1][1] + 451 * B[2][1])
-                    + B[1][1] * (-9824 * B[1][1] - 7644 * B[2][1])
-                    + B[2][1] * (-1669 * B[2][1]))
-               + B[1][1]
-                   * (B[1][1] * (29344 * B[1][1] + 32672 * B[2][1])
-                      + B[2][1] * (13918 * B[2][1]))
+                    + B[1][1] * (-9824 * B[1][1] - 7644 * B[2][1]) + B[2][1] * (-1669 * B[2][1]))
+               + B[1][1] * (B[1][1] * (29344 * B[1][1] + 32672 * B[2][1]) + B[2][1] * (13918 * B[2][1]))
                + B[2][1] * B[2][1] * (2157 * B[2][1]))
               * dz * dz * dz * dz * 16 / 23224320.;
 
       r[2] += dz;
-      r[0] = x + tx * dz + h * (Sx_ * Ax + Sy_ * Ay + Sz_ * Az)
-             + h * h * (Syy_ * Ayy + Syz_ * Ayz + Szy_ * Azy)
+      r[0] = x + tx * dz + h * (Sx_ * Ax + Sy_ * Ay + Sz_ * Az) + h * h * (Syy_ * Ayy + Syz_ * Ayz + Szy_ * Azy)
              + h * h * h * Syyy_ * Ayyy;
-      r[1] = y + ty * dz + h * (Sx_ * Bx + Sy_ * By + Sz_ * Bz)
-             + h * h * (Syy_ * Byy + Syz_ * Byz + Szy_ * Bzy)
+      r[1] = y + ty * dz + h * (Sx_ * Bx + Sy_ * By + Sz_ * Bz) + h * h * (Syy_ * Byy + Syz_ * Byz + Szy_ * Bzy)
              + h * h * h * Syyy_ * Byyy;
       /* 
 	Syyy_+= dz*syyy+Sy_*syy+Syy_*sy+Syyy;
@@ -593,32 +560,24 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
       syyy_ = -syy_ * syy_ * syy_ / 82944;
       syy_  = syy_ * syy_ / 1152;
 
-      Syy_ = (B[0][1] * (13 * B[0][1] - 234 * B[1][1] - 86 * B[2][1])
-              + B[1][1] * (1088 * B[1][1] + 746 * B[2][1])
+      Syy_ = (B[0][1] * (13 * B[0][1] - 234 * B[1][1] - 86 * B[2][1]) + B[1][1] * (1088 * B[1][1] + 746 * B[2][1])
               + B[2][1] * (153 * B[2][1]))
              * dz * dz * dz * 8 / 80640.;
 
       Syyy_ = (B[0][1]
                  * (B[0][1] * (-43 * B[0][1] + 1118 * B[1][1] + 451 * B[2][1])
-                    + B[1][1] * (-9824 * B[1][1] - 7644 * B[2][1])
-                    + B[2][1] * (-1669 * B[2][1]))
-               + B[1][1]
-                   * (B[1][1] * (29344 * B[1][1] + 32672 * B[2][1])
-                      + B[2][1] * (13918 * B[2][1]))
+                    + B[1][1] * (-9824 * B[1][1] - 7644 * B[2][1]) + B[2][1] * (-1669 * B[2][1]))
+               + B[1][1] * (B[1][1] * (29344 * B[1][1] + 32672 * B[2][1]) + B[2][1] * (13918 * B[2][1]))
                + B[2][1] * B[2][1] * (2157 * B[2][1]))
               * dz * dz * dz * dz * 16 / 23224320.;
 
-      x += tx * dz + h * (Sx_ * Ax + Sy_ * Ay + Sz_ * Az)
-           + h * h * (Syy_ * Ayy + Syz_ * Ayz + Szy_ * Azy)
+      x += tx * dz + h * (Sx_ * Ax + Sy_ * Ay + Sz_ * Az) + h * h * (Syy_ * Ayy + Syz_ * Ayz + Szy_ * Azy)
            + h * h * h * Syyy_ * Ayyy;
-      y += ty * dz + h * (Sx_ * Bx + Sy_ * By + Sz_ * Bz)
-           + h * h * (Syy_ * Byy + Syz_ * Byz + Szy_ * Bzy)
+      y += ty * dz + h * (Sx_ * Bx + Sy_ * By + Sz_ * Bz) + h * h * (Syy_ * Byy + Syz_ * Byz + Szy_ * Bzy)
            + h * h * h * Syyy_ * Byyy;
-      tx += h * (sx_ * Ax + sy_ * Ay + sz_ * Az)
-            + h * h * (syy_ * Ayy + syz_ * Ayz + szy_ * Azy)
+      tx += h * (sx_ * Ax + sy_ * Ay + sz_ * Az) + h * h * (syy_ * Ayy + syz_ * Ayz + szy_ * Azy)
             + h * h * h * syyy_ * Ayyy;
-      ty += h * (sx_ * Bx + sy_ * By + sz_ * Bz)
-            + h * h * (syy_ * Byy + syz_ * Byz + szy_ * Bzy)
+      ty += h * (sx_ * Bx + sy_ * By + sz_ * Bz) + h * h * (syy_ * Byy + syz_ * Byz + szy_ * Bzy)
             + h * h * h * syyy_ * Byyy;
       z += dz;
       txtx = tx * tx;
@@ -695,12 +654,11 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
   Double_t
 
     c = (x - vx) + tx * (vz - z),
-    b = t * (Sx * Ax + Sy * Ay + Sz * Az),
-    a = t * t * (Syy * Ayy + Syz * Ayz + Szy * Azy),
+    b = t * (Sx * Ax + Sy * Ay + Sz * Az), a = t * t * (Syy * Ayy + Syz * Ayz + Szy * Azy),
     d = t * t * t * (Syyy * Ayyy);
 
-  Double_t C = d * qp0 * qp0 * qp0 + a * qp0 * qp0 + b * qp0 + c,
-           B = 3 * d * qp0 * qp0 + 2 * a * qp0 + b, A = 3 * d + a;
+  Double_t C = d * qp0 * qp0 * qp0 + a * qp0 * qp0 + b * qp0 + c, B = 3 * d * qp0 * qp0 + 2 * a * qp0 + b,
+           A = 3 * d + a;
 
   Double_t D = B * B - 4 * A * C;
   if (D < 0) D = 0;
@@ -714,18 +672,16 @@ CbmKFMath::AnalyticQP(const Double_t T[],  // track parameters (x,y,tx,ty,Q/p,z)
 }
 
 
-Bool_t CbmKFMath::GetThickness(Double_t z1,
-                               Double_t z2,
-                               Double_t mz,
-                               Double_t mthick,
-                               Double_t* mz_out,
-                               Double_t* mthick_out) {
+Bool_t CbmKFMath::GetThickness(Double_t z1, Double_t z2, Double_t mz, Double_t mthick, Double_t* mz_out,
+                               Double_t* mthick_out)
+{
   Double_t z, Z;
 
   if (z1 < z2) {
     z = z1;
     Z = z2;
-  } else {
+  }
+  else {
     Z = z1;
     z = z2;
   }
@@ -736,15 +692,18 @@ Bool_t CbmKFMath::GetThickness(Double_t z1,
   {
     *mz_out     = mz;
     *mthick_out = mthick;
-  } else if (z <= tmin && tmin < Z && Z <= tmax)  // case  z |*Z*|
+  }
+  else if (z <= tmin && tmin < Z && Z <= tmax)  // case  z |*Z*|
   {
     *mz_out     = (tmin + Z) / 2;
     *mthick_out = Z - tmin;
-  } else if (tmax <= Z && tmin <= z && z < tmax)  // case |*z*| Z
+  }
+  else if (tmax <= Z && tmin <= z && z < tmax)  // case |*z*| Z
   {
     *mz_out     = (tmax + z) / 2;
     *mthick_out = tmax - z;
-  } else if (tmin <= z && Z <= tmax)  // case |*zZ*|
+  }
+  else if (tmin <= z && Z <= tmax)  // case |*zZ*|
   {
     *mz_out     = (Z + z) / 2;
     *mthick_out = Z - z;
@@ -753,19 +712,10 @@ Bool_t CbmKFMath::GetThickness(Double_t z1,
 }
 
 
-Int_t CbmKFMath::GetNoise(Double_t Lrl,
-                          Double_t F,
-                          Double_t Fe,
-                          Double_t tx,
-                          Double_t ty,
-                          Double_t qp,
-                          Double_t mass,
-                          Bool_t is_electron,
-                          Bool_t downstream_direction,
-                          Double_t* Q5,
-                          Double_t* Q8,
-                          Double_t* Q9,
-                          Double_t* Ecor) {
+Int_t CbmKFMath::GetNoise(Double_t Lrl, Double_t F, Double_t Fe, Double_t tx, Double_t ty, Double_t qp, Double_t mass,
+                          Bool_t is_electron, Bool_t downstream_direction, Double_t* Q5, Double_t* Q8, Double_t* Q9,
+                          Double_t* Ecor)
+{
   *Q5        = 0;
   *Q8        = 0;
   *Q9        = 0;
@@ -775,9 +725,8 @@ Int_t CbmKFMath::GetNoise(Double_t Lrl,
   t          = sqrt(t);
   Double_t l = t * Lrl;
   if (l > 1.) l = 1.;  // protect against l too big
-  Double_t s0 =
-    (l > exp(-1. / 0.038)) ? F * .0136 * (1 + 0.038 * log(l)) * qp : 0.;
-  Double_t a = (1. + mass * mass * qp * qp) * s0 * s0 * t * t * l;
+  Double_t s0 = (l > exp(-1. / 0.038)) ? F * .0136 * (1 + 0.038 * log(l)) * qp : 0.;
+  Double_t a  = (1. + mass * mass * qp * qp) * s0 * s0 * t * t * l;
 
   *Q5 = a * (1. + tx * tx);
   *Q8 = a * tx * ty;
@@ -797,8 +746,7 @@ Int_t CbmKFMath::GetNoise(Double_t Lrl,
     Double_t m_energyLoss = Fe;
     //      Double_t m_energyLoss = 0.02145;//0.060;
     Double_t corr = (1. - fabs(qp) * L * m_energyLoss);
-    if (corr > 0.001 * fabs(qp))
-      *Ecor *= 1. / corr;
+    if (corr > 0.001 * fabs(qp)) *Ecor *= 1. / corr;
     else
       *Ecor = 1000. / fabs(qp);
   }
@@ -806,9 +754,8 @@ Int_t CbmKFMath::GetNoise(Double_t Lrl,
 }
 
 
-void CbmKFMath::CopyTC2TrackParam(FairTrackParam* par,
-                                  Double_t T[],
-                                  Double_t C[]) {
+void CbmKFMath::CopyTC2TrackParam(FairTrackParam* par, Double_t T[], Double_t C[])
+{
   if (T) {
     par->SetX(T[0]);
     par->SetY(T[1]);
@@ -824,9 +771,8 @@ void CbmKFMath::CopyTC2TrackParam(FairTrackParam* par,
   }
 }
 
-void CbmKFMath::CopyTrackParam2TC(const FairTrackParam* par,
-                                  Double_t T[],
-                                  Double_t C[]) {
+void CbmKFMath::CopyTrackParam2TC(const FairTrackParam* par, Double_t T[], Double_t C[])
+{
   if (T) {
     T[0] = par->GetX();
     T[1] = par->GetY();

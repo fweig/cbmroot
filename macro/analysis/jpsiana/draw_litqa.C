@@ -1,4 +1,5 @@
-void draw_litqa() {
+void draw_litqa()
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
@@ -8,10 +9,8 @@ void draw_litqa() {
 
   std::string script = std::string(TString(gSystem->Getenv("SCRIPT")).Data());
   if (script == "yes") {
-    dir = std::string(TString(gSystem->Getenv("LMVM_MAIN_DIR")).Data());
-    fileName =
-      dir
-      + std::string(TString(gSystem->Getenv("LMVM_LITQA_FILE_NAME")).Data());
+    dir      = std::string(TString(gSystem->Getenv("LMVM_MAIN_DIR")).Data());
+    fileName = dir + std::string(TString(gSystem->Getenv("LMVM_LITQA_FILE_NAME")).Data());
   }
 
   std::string outputDirTracking   = dir + "results_litqa_tracking/";

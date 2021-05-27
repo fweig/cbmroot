@@ -12,22 +12,21 @@
  * @author M. Al-Turany, A. Rybalchenko
  */
 
+#include "ParameterMQServer.h"
+
 #include "CbmMQDefs.h"
 
-#include "Rtypes.h"
-#include "TMessage.h"
-
+#include "FairMQLogger.h"
+#include "FairMQProgOptions.h"
 #include "FairParAsciiFileIo.h"
 #include "FairParGenericSet.h"
 #include "FairParRootFileIo.h"
 #include "FairRuntimeDb.h"
 
-#include "FairMQLogger.h"
-#include "FairMQProgOptions.h"
-#include "ParameterMQServer.h"
-
+#include "Rtypes.h"
 #include "TGeoManager.h"
 #include "TList.h"
+#include "TMessage.h"
 #include "TObjString.h"
 #include "TSystem.h"
 
@@ -41,9 +40,12 @@ ParameterMQServer::ParameterMQServer()
   , fSecondInputType("ROOT")
   , fOutputName("")
   , fOutputType("ROOT")
-  , fChannelName("data") {}
+  , fChannelName("data")
+{
+}
 
-void ParameterMQServer::InitTask() {
+void ParameterMQServer::InitTask()
+{
   string loadLibs = fConfig->GetValue<string>("libs-to-load");
   if (loadLibs.length() > 0) {
     LOG(info) << "There are libraries to load.";
@@ -55,11 +57,13 @@ void ParameterMQServer::InitTask() {
         LOG(info) << "Load library " << s;
         gSystem->Load(s.c_str());
       }
-    } else {
+    }
+    else {
       LOG(info) << "Load library " << loadLibs;
       gSystem->Load(loadLibs.c_str());
     }
-  } else {
+  }
+  else {
     LOG(info) << "There are no libraries to load.";
   }
 
@@ -77,7 +81,8 @@ void ParameterMQServer::InitTask() {
       FairParRootFileIo* par1R = new FairParRootFileIo();
       par1R->open(fFirstInputName.data(), "UPDATE");
       fRtdb->setFirstInput(par1R);
-    } else if (fFirstInputType == "ASCII") {
+    }
+    else if (fFirstInputType == "ASCII") {
       FairParAsciiFileIo* par1A = new FairParAsciiFileIo();
       if (fFirstInputName.find(";") != std::string::npos) {
         LOG(info) << "File list found!";
@@ -91,7 +96,8 @@ void ParameterMQServer::InitTask() {
           parFileList->Add(parFile);
           par1A->open(parFileList, "in");
         }
-      } else {
+      }
+      else {
         LOG(info) << "Single input file found!";
         par1A->open(fFirstInputName.data(), "in");
       }
@@ -104,7 +110,8 @@ void ParameterMQServer::InitTask() {
         FairParRootFileIo* par2R = new FairParRootFileIo();
         par2R->open(fSecondInputName.data(), "UPDATE");
         fRtdb->setSecondInput(par2R);
-      } else if (fSecondInputType == "ASCII") {
+      }
+      else if (fSecondInputType == "ASCII") {
         FairParAsciiFileIo* par2A = new FairParAsciiFileIo();
         if (fSecondInputName.find(";") != std::string::npos) {
           LOG(info) << "File list found!";
@@ -118,7 +125,8 @@ void ParameterMQServer::InitTask() {
             parFileList->Add(parFile);
             par2A->open(parFileList, "in");
           }
-        } else {
+        }
+        else {
           LOG(info) << "Single input file found!";
           par2A->open(fFirstInputName.data(), "in");
         }
@@ -140,7 +148,8 @@ void ParameterMQServer::InitTask() {
   fRtdb->print();
 }
 
-void ParameterMQServer::Run() {
+void ParameterMQServer::Run()
+{
   string parameterName   = "";
   FairParGenericSet* par = nullptr;
 
@@ -149,8 +158,7 @@ void ParameterMQServer::Run() {
 
     if (Receive(req, fChannelName, 0) > 0) {
       string reqStr(static_cast<char*>(req->GetData()), req->GetSize());
-      LOG(info) << "Received parameter request from client: \"" << reqStr
-                << "\"";
+      LOG(info) << "Received parameter request from client: \"" << reqStr << "\"";
 
       size_t pos              = reqStr.rfind(",");
       string newParameterName = reqStr.substr(0, pos);
@@ -162,8 +170,7 @@ void ParameterMQServer::Run() {
       // Check if the parameter name has changed to avoid getting same container repeatedly
       if (newParameterName != parameterName) {
         parameterName = newParameterName;
-        par           = static_cast<FairParGenericSet*>(
-          fRtdb->getContainer(parameterName.c_str()));
+        par           = static_cast<FairParGenericSet*>(fRtdb->getContainer(parameterName.c_str()));
       }
       LOG(info) << "Retrieving parameter...Done";
 
@@ -177,18 +184,15 @@ void ParameterMQServer::Run() {
         tmsg->WriteObject(par);
 
         FairMQMessagePtr rep(NewMessage(
-          tmsg->Buffer(),
-          tmsg->BufferSize(),
-          [](void* /*data*/, void* object) {
-            delete static_cast<TMessage*>(object);
-          },
-          tmsg));
+          tmsg->Buffer(), tmsg->BufferSize(),
+          [](void* /*data*/, void* object) { delete static_cast<TMessage*>(object); }, tmsg));
 
         if (Send(rep, fChannelName, 0) < 0) {
           LOG(error) << "failed sending reply";
           break;
         }
-      } else {
+      }
+      else {
         LOG(error) << "Parameter uninitialized!";
         // Send an empty message back to keep the REQ/REP cycle
         FairMQMessagePtr rep(NewMessage());
@@ -201,7 +205,8 @@ void ParameterMQServer::Run() {
   }
 }
 
-ParameterMQServer::~ParameterMQServer() {
+ParameterMQServer::~ParameterMQServer()
+{
   if (gGeoManager) {
     gGeoManager->GetListOfVolumes()->Delete();
     gGeoManager->GetListOfShapes()->Delete();

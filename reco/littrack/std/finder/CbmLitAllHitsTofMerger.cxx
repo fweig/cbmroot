@@ -24,13 +24,14 @@ CbmLitAllHitsTofMerger::CbmLitAllHitsTofMerger()
   , fLinePropagator()
   , fFilter()
   , fPDG(211)
-  , fChiSqCut(25.) {}
+  , fChiSqCut(25.)
+{
+}
 
 CbmLitAllHitsTofMerger::~CbmLitAllHitsTofMerger() {}
 
-LitStatus CbmLitAllHitsTofMerger::DoMerge(HitPtrVector& hits,
-                                          TrackPtrVector& tracks,
-                                          TofTrackPtrVector& tofTracks) {
+LitStatus CbmLitAllHitsTofMerger::DoMerge(HitPtrVector& hits, TrackPtrVector& tracks, TofTrackPtrVector& tofTracks)
+{
   // First find hit with minimum Z position and build map from Z hit position
   // to track parameter to improve the calculation speed.
   litfloat zMin = std::numeric_limits<litfloat>::max();
@@ -56,9 +57,7 @@ LitStatus CbmLitAllHitsTofMerger::DoMerge(HitPtrVector& hits,
     // This is done to improve calculation speed.
     // In case of planar TOF geometry only 1 track extrapolation is required,
     // since all hits located at the same Z.
-    for (map<litfloat, CbmLitTrackParam>::iterator it2 = zParamMap.begin();
-         it2 != zParamMap.end();
-         it2++) {
+    for (map<litfloat, CbmLitTrackParam>::iterator it2 = zParamMap.begin(); it2 != zParamMap.end(); it2++) {
       (*it2).second = par;
       fLinePropagator->Propagate(&(*it2).second, (*it2).first, fPDG);
     }
@@ -66,18 +65,15 @@ LitStatus CbmLitAllHitsTofMerger::DoMerge(HitPtrVector& hits,
     // Loop over hits
     for (HitPtrIterator it = hits.begin(); it != hits.end(); it++) {
       const CbmLitHit* hit = *it;
-      if (zParamMap.find(hit->GetZ())
-          == zParamMap.end()) {  // This should never happen
-        std::cout << "-E- CbmLitAllHitsTofMerger::DoMerge: Z position "
-                  << hit->GetZ() << " not found in map. Something is wrong.\n";
+      if (zParamMap.find(hit->GetZ()) == zParamMap.end()) {  // This should never happen
+        std::cout << "-E- CbmLitAllHitsTofMerger::DoMerge: Z position " << hit->GetZ()
+                  << " not found in map. Something is wrong.\n";
       }
       CbmLitTrackParam tpar(zParamMap[hit->GetZ()]);
       litfloat chi = 0.;
       fFilter->Update(&tpar, hit, chi);
-      if (
-        chi
-        < fChiSqCut) {  // Check if hit is inside validation gate and closer to the track.
-                        //Create new TOF track
+      if (chi < fChiSqCut) {  // Check if hit is inside validation gate and closer to the track.
+                              //Create new TOF track
         CbmLitTofTrack* tofTrack = new CbmLitTofTrack();
         tofTrack->SetTrack(track);
         tofTrack->SetHit(hit);

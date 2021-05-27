@@ -10,8 +10,10 @@
 
 #include "CbmDefs.h"
 #include "CbmStsKFTrackFitter.h"
-#include "FairTask.h"
 #include "cbm/base/CbmLitDetectorSetup.h"
+
+#include "FairTask.h"
+
 #include <string>
 
 class CbmHistManager;
@@ -70,7 +72,8 @@ public:
   void SetOutputDir(const string& dir) { fOutputDir = dir; }
   void SetFixedBounds(Bool_t isFixedBounds) { fIsFixedBounds = isFixedBounds; }
 
-  void SetPRange(Int_t bins, Int_t min, Int_t max) {
+  void SetPRange(Int_t bins, Int_t min, Int_t max)
+  {
     fPRangeBins = bins;
     fPRangeMin  = min;
     fPRangeMax  = max;
@@ -90,14 +93,10 @@ private:
 
   void ProcessMuchTrack(Int_t trackId);
 
-  void FillResidualsAndPulls(const FairTrackParam* par,
-                             const CbmLitMCPoint* mcPoint,
-                             const string& histName,
-                             Float_t wrongPar,
-                             ECbmModuleId detId);
+  void FillResidualsAndPulls(const FairTrackParam* par, const CbmLitMCPoint* mcPoint, const string& histName,
+                             Float_t wrongPar, ECbmModuleId detId);
 
-  void FillTrackParamHistogramm(const string& histName,
-                                const FairTrackParam* par);
+  void FillTrackParamHistogramm(const string& histName, const FairTrackParam* par);
 
   void ProcessTrackParamsAtVertex();
   void ProcessTrackParamsAtVertex(CbmEvent* event);
@@ -106,8 +105,7 @@ private:
 
   void CreateHistograms();
 
-  void CreateResidualAndPullHistograms(ECbmModuleId detId,
-                                       const string& detName);
+  void CreateResidualAndPullHistograms(ECbmModuleId detId, const string& detName);
 
   void CreateTrackParamHistograms(ECbmModuleId detId, const string& detName);
 
@@ -144,9 +142,8 @@ private:
 
   Double_t fQuota;  // percent of correctly attached hits
 
-  CbmVertex* fPrimVertex;  // Pointer to the primary vertex
-  CbmStsKFTrackFitter
-    fKFFitter;  // Pointer to the Kalman Filter Fitter algorithm
+  CbmVertex* fPrimVertex;         // Pointer to the primary vertex
+  CbmStsKFTrackFitter fKFFitter;  // Pointer to the Kalman Filter Fitter algorithm
 
   CbmLitMCTrackCreator* fMCTrackCreator;  // MC track creator tool
 

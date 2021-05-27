@@ -9,7 +9,8 @@
 
 #include <G4NuclearLevelData.hh>
 
-void CbmGeant4Settings::Init(TVirtualMC* vmc) {
+void CbmGeant4Settings::Init(TVirtualMC* vmc)
+{
 
   CbmVMCSettings::Init(vmc);
 
@@ -28,8 +29,7 @@ void CbmGeant4Settings::Init(TVirtualMC* vmc) {
 
   // --- Random seed and maximum number of steps
   Text_t buffer[50];
-  sprintf(
-    buffer, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
+  sprintf(buffer, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
   vmcg4->ProcessGeantCommand(buffer);
 
   vmcg4->SetMaxNStep(fMaxNumSteps);
@@ -41,8 +41,7 @@ void CbmGeant4Settings::Init(TVirtualMC* vmc) {
 
   LOG(warning) << "Fix for Geant4 bug applied (see "
                   "https://bugzilla-geant4.kek.jp/show_bug.cgi?id=2226)";
-  G4NuclearLevelData::GetInstance()->GetParameters()->SetMaxLifeTime(
-    1 * CLHEP::microsecond);
+  G4NuclearLevelData::GetInstance()->GetParameters()->SetMaxLifeTime(1 * CLHEP::microsecond);
 }
 
 ClassImp(CbmGeant4Settings);

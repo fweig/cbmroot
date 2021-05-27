@@ -9,8 +9,10 @@
 
 #include "CbmBeam.h"
 #include "CbmTarget.h"
+
 #include "Rtypes.h"
 #include "TVector3.h"
+
 #include <memory>
 #include <string>
 
@@ -55,8 +57,7 @@ public:
 		 ** beam with a plane, specified by the point and a vector
 		 ** perpendicular to the plane. The latter need not be normalised.
 		 **/
-  TVector3 ExtrapolateToPlane(const TVector3& point,
-                              const TVector3& norm) const;
+  TVector3 ExtrapolateToPlane(const TVector3& point, const TVector3& norm) const;
 
 
   /** @brief Generate a beam trajectory
@@ -75,10 +76,7 @@ public:
 		 **
 		 ** A non-positive value for sigma means a fixed angle (no sampling).
 		 **/
-  void SetAngle(Double_t x0,
-                Double_t y0,
-                Double_t sigmaX = -1.,
-                Double_t sigmaY = -1.);
+  void SetAngle(Double_t x0, Double_t y0, Double_t sigmaX = -1., Double_t sigmaY = -1.);
 
 
   /** @brief Set the parameters for the beam position distribution
@@ -90,11 +88,7 @@ public:
 		 **
 		 ** A non-positive value for sigma means a fixed position (no sampling).
 		 **/
-  void SetPosition(Double_t x0,
-                   Double_t y0,
-                   Double_t sigmaX = -1.,
-                   Double_t sigmaY = -1.,
-                   Double_t zF     = 0.);
+  void SetPosition(Double_t x0, Double_t y0, Double_t sigmaX = -1., Double_t sigmaY = -1., Double_t zF = 0.);
 
 
   /** @brief Info to string **/

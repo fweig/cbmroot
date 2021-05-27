@@ -18,7 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
+void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5)
+{
   Int_t gen    = 0;
   TString sGen = "";
   if (gen == 0) sGen = "urqmd";
@@ -163,8 +164,7 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
 
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder =
-    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
+  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   //run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
   run->AddTask(l1);
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
 
@@ -237,11 +237,9 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   //run->AddTask(trdHitProd);
 
   // -------------------------------------------------------------------------
@@ -255,8 +253,7 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducerNew* tofHitProd =
-    new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
+  CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
   tofHitProd->SetInitFromAscii(kFALSE);
   //run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------

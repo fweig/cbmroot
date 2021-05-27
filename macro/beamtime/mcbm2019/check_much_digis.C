@@ -1,9 +1,6 @@
-void check_much_digis(UInt_t uRunId,
-                      UInt_t uTsJump,
-                      Double_t dFirstTsOffset,
-                      Double_t dDigiDistPlotStartTime = 0.0,
-                      Int_t nrEvents                  = 0,
-                      TString sDir                    = "data") {
+void check_much_digis(UInt_t uRunId, UInt_t uTsJump, Double_t dFirstTsOffset, Double_t dDigiDistPlotStartTime = 0.0,
+                      Int_t nrEvents = 0, TString sDir = "data")
+{
   if (uRunId < 353) return kFALSE;
 
   // --- Specify number of events to be produced.
@@ -50,8 +47,7 @@ void check_much_digis(UInt_t uRunId,
   muchChecker->SetTimeWindow(uTsJump, dFirstTsOffset, 2, 3, 10240000);
   muchChecker->SetDigiDistPlotStartTime(dDigiDistPlotStartTime);
   muchChecker->SetMuchPulseradcLimits(5, 15);
-  if (0 < uRunId)
-    muchChecker->SetOutFilename(Form("data/HistosMuchCheck_%03u.root", uRunId));
+  if (0 < uRunId) muchChecker->SetOutFilename(Form("data/HistosMuchCheck_%03u.root", uRunId));
   fRun->AddTask(muchChecker);
 
   // -----  Parameter database   --------------------------------------------
@@ -72,7 +68,8 @@ void check_much_digis(UInt_t uRunId,
   cout << "Starting run" << endl;
   if (0 == nrEvents) {
     fRun->Run(0, nEvents);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nrEvents);  // process  N Events
   }
   // ------------------------------------------------------------------------

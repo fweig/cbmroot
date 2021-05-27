@@ -25,7 +25,8 @@ ClassImp(CbmMuchContFact)
 
   static CbmMuchContFact gCbmMuchContFact;
 
-CbmMuchContFact::CbmMuchContFact() {
+CbmMuchContFact::CbmMuchContFact()
+{
   // Constructor (called when the library is loaded)
   fName  = "CbmMuchContFact";
   fTitle = "Factory for parameter containers in libMuch";
@@ -33,7 +34,8 @@ CbmMuchContFact::CbmMuchContFact() {
   FairRuntimeDb::instance()->addContFactory(this);
 }
 
-void CbmMuchContFact::setAllContainers() {
+void CbmMuchContFact::setAllContainers()
+{
   /** Creates the Container objects with all accepted contexts and adds them to
    *  the list of containers for the MuCh library.*/
   //   FairContainer* p1= new FairContainer("CbmMuchDigiPar",
@@ -42,8 +44,7 @@ void CbmMuchContFact::setAllContainers() {
   //   p1->addContext("TestNonDefaultContext");
   //  containers->Add(p1);
 
-  FairContainer* p2 = new FairContainer(
-    "CbmGeoMuchPar", "Much Geometry Parameters", "TestDefaultContext");
+  FairContainer* p2 = new FairContainer("CbmGeoMuchPar", "Much Geometry Parameters", "TestDefaultContext");
   p2->addContext("TestNonDefaultContext");
   containers->Add(p2);
 
@@ -52,7 +53,8 @@ void CbmMuchContFact::setAllContainers() {
   containers->Add(beamPars);
 }
 
-FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
+FairParSet* CbmMuchContFact::createContainer(FairContainer* c)
+{
   /** Calls the constructor of the corresponding parameter container.
    * For an actual context, which is not an empty string and not the default context
    * of this container, the name is concatinated with the context. */
@@ -60,8 +62,7 @@ FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
   LOG(info) << " -I container name " << name;
   FairParSet* p = 0;
   if (strcmp(name, "CbmGeoMuchPar") == 0) {
-    p = new CbmGeoMuchPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmGeoMuchPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
   else if (strcmp(name, "CbmMcbm2018MuchPar") == 0) {
     p = new CbmMcbm2018MuchPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
@@ -70,7 +71,8 @@ FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
   return p;
 }
 
-void CbmMuchContFact::activateParIo(FairParIo*) {
+void CbmMuchContFact::activateParIo(FairParIo*)
+{
   // activates the input/output class for the parameters
   // needed by the MuCh
   //   if (strcmp(io->IsA()->GetName(),"FairParRootFileIo")==0) {

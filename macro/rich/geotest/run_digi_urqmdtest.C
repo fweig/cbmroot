@@ -1,11 +1,9 @@
 void run_digi_urqmdtest(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
-  int nEvents = 1000) {
+  const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
+  const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
+  const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
+  int nEvents            = 1000)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
@@ -40,7 +38,6 @@ void run_digi_urqmdtest(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Digi file is " << digiFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

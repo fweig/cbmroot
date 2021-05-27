@@ -1,4 +1,5 @@
-void pl_XY_trk(Int_t NSt = 4) {
+void pl_XY_trk(Int_t NSt = 4)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 500, 800);
@@ -29,7 +30,8 @@ void pl_XY_trk(Int_t NSt = 4) {
       TH2D* h2acc = h2->Clone(Form("Acc_%d", iSt));
       h2acc->Divide(h2, h2, 1., 1., "B");
       Double_t Nall = h2->GetEntries();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
 
@@ -45,9 +47,10 @@ void pl_XY_trk(Int_t NSt = 4) {
       h2missed->Multiply(h2, h2acc, 1., 1., "B");
       Double_t NmisaI = h2missed->Integral();
       Double_t eff    = 1. - NmisaI / (Nall + NmisaI);
-      cout << "Effficiency of Station " << iSt << ": all " << Nall << ", mis "
-           << Nmis << ", " << NmisI << ", " << NmisaI << " -> " << eff << endl;
-    } else {
+      cout << "Effficiency of Station " << iSt << ": all " << Nall << ", mis " << Nmis << ", " << NmisI << ", "
+           << NmisaI << " -> " << eff << endl;
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

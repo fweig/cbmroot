@@ -1,10 +1,12 @@
 #ifndef L1Algo_F64vec2P4_H
 #define L1Algo_F64vec2P4_H
 
-#include "vec_arithmetic.h"
+#include <iostream>
+
 #include <cmath>
 #include <emmintrin.h>
-#include <iostream>
+
+#include "vec_arithmetic.h"
 
 /**********************************
  *
@@ -25,11 +27,9 @@ const union {
   long long i[2];
   __m128d m;
 } __f64vec2_abs_mask_cheat = {{0x7fffffffffffffffll, 0x7fffffffffffffffll}},
-  __f64vec2_sgn_mask_cheat = {{0x8000000000000000ull, 0x8000000000000000ull}},
-  __f64vec2_zero_cheat     = {{0, 0}},
-  __f64vec2_one_cheat      = {{__d_one.i, __d_one.i}},
-  __f64vec2_true_cheat     = {{0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF}},
-  __f64vec2_false_cheat    = {{0x0000000000000000, 0x0000000000000000}};
+  __f64vec2_sgn_mask_cheat = {{0x8000000000000000ull, 0x8000000000000000ull}}, __f64vec2_zero_cheat = {{0, 0}},
+  __f64vec2_one_cheat = {{__d_one.i, __d_one.i}}, __f64vec2_true_cheat = {{0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF}},
+  __f64vec2_false_cheat = {{0x0000000000000000, 0x0000000000000000}};
 
 #define _f64vec2_abs_mask (static_cast<F64vec2>(__f64vec2_abs_mask_cheat.m))
 #define _f64vec2_sgn_mask (static_cast<F64vec2>(__f64vec2_sgn_mask_cheat.m))
@@ -43,9 +43,7 @@ public:
   __m128d v;
 
   double& operator[](int i) { return (reinterpret_cast<double*>(&v))[i]; }
-  double operator[](int i) const {
-    return (reinterpret_cast<const double*>(&v))[i];
-  }
+  double operator[](int i) const { return (reinterpret_cast<const double*>(&v))[i]; }
 
   F64vec2() : v(_mm_set_pd1(0)) {}
   F64vec2(const __m128d& a) : v(a) {}
@@ -57,26 +55,14 @@ public:
   operator __m128d() const { return v; } /* Convert to __m128d */
 
   /* Arithmetic Operators */
-  friend F64vec2 operator+(const F64vec2& a, const F64vec2& b) {
-    return _mm_add_pd(a, b);
-  }
-  friend F64vec2 operator-(const F64vec2& a, const F64vec2& b) {
-    return _mm_sub_pd(a, b);
-  }
-  friend F64vec2 operator*(const F64vec2& a, const F64vec2& b) {
-    return _mm_mul_pd(a, b);
-  }
-  friend F64vec2 operator/(const F64vec2& a, const F64vec2& b) {
-    return _mm_div_pd(a, b);
-  }
+  friend F64vec2 operator+(const F64vec2& a, const F64vec2& b) { return _mm_add_pd(a, b); }
+  friend F64vec2 operator-(const F64vec2& a, const F64vec2& b) { return _mm_sub_pd(a, b); }
+  friend F64vec2 operator*(const F64vec2& a, const F64vec2& b) { return _mm_mul_pd(a, b); }
+  friend F64vec2 operator/(const F64vec2& a, const F64vec2& b) { return _mm_div_pd(a, b); }
 
   /* Functions */
-  friend F64vec2 min(const F64vec2& a, const F64vec2& b) {
-    return _mm_min_pd(a, b);
-  }
-  friend F64vec2 max(const F64vec2& a, const F64vec2& b) {
-    return _mm_max_pd(a, b);
-  }
+  friend F64vec2 min(const F64vec2& a, const F64vec2& b) { return _mm_min_pd(a, b); }
+  friend F64vec2 max(const F64vec2& a, const F64vec2& b) { return _mm_max_pd(a, b); }
 
   /* Square Root */
   friend F64vec2 sqrt(const F64vec2& a) { return _mm_sqrt_pd(a); }
@@ -94,33 +80,28 @@ public:
 
 
   /* Absolute value */
-  friend F64vec2 fabs(const F64vec2& a) {
-    return _mm_and_pd(a, _f64vec2_abs_mask);
-  }
+  friend F64vec2 fabs(const F64vec2& a) { return _mm_and_pd(a, _f64vec2_abs_mask); }
 
   /* Sign */
-  friend F64vec2 sgn(const F64vec2& a) {
-    return _mm_or_pd(_mm_and_pd(a, _f64vec2_sgn_mask), _f64vec2_one);
-  }
-  friend F64vec2 asgnb(const F64vec2& a, const F64vec2& b) {
-    return _mm_or_pd(_mm_and_pd(b, _f64vec2_sgn_mask), a);
-  }
+  friend F64vec2 sgn(const F64vec2& a) { return _mm_or_pd(_mm_and_pd(a, _f64vec2_sgn_mask), _f64vec2_one); }
+  friend F64vec2 asgnb(const F64vec2& a, const F64vec2& b) { return _mm_or_pd(_mm_and_pd(b, _f64vec2_sgn_mask), a); }
 
   /* Logical */
 
-  friend F64vec2 operator&(const F64vec2& a,
-                           const F64vec2& b) {  // mask returned
+  friend F64vec2 operator&(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_and_pd(a, b);
   }
-  friend F64vec2 operator|(const F64vec2& a,
-                           const F64vec2& b) {  // mask returned
+  friend F64vec2 operator|(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_or_pd(a, b);
   }
-  friend F64vec2 operator^(const F64vec2& a,
-                           const F64vec2& b) {  // mask returned
+  friend F64vec2 operator^(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_xor_pd(a, b);
   }
-  friend F64vec2 operator!(const F64vec2& a) {  // mask returned
+  friend F64vec2 operator!(const F64vec2& a)
+  {  // mask returned
     return _mm_xor_pd(a, _f64vec2_true);
   }
   // friend F64vec2 operator||( const F64vec2 &a, const F64vec2 &b ){ // mask returned
@@ -129,24 +110,24 @@ public:
 
   /* Comparison */
 
-  friend F64vec2 operator<(const F64vec2& a,
-                           const F64vec2& b) {  // mask returned
+  friend F64vec2 operator<(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_cmplt_pd(a, b);
   }
-  friend F64vec2 operator<=(const F64vec2& a,
-                            const F64vec2& b) {  // mask returned
+  friend F64vec2 operator<=(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_cmple_pd(a, b);
   }
-  friend F64vec2 operator>(const F64vec2& a,
-                           const F64vec2& b) {  // mask returned
+  friend F64vec2 operator>(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_cmpgt_pd(a, b);
   }
-  friend F64vec2 operator>=(const F64vec2& a,
-                            const F64vec2& b) {  // mask returned
+  friend F64vec2 operator>=(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_cmpge_pd(a, b);
   }
-  friend F64vec2 operator==(const F64vec2& a,
-                            const F64vec2& b) {  // mask returned
+  friend F64vec2 operator==(const F64vec2& a, const F64vec2& b)
+  {  // mask returned
     return _mm_cmpeq_pd(a, b);
   }
 
@@ -156,7 +137,8 @@ public:
 #define EmptyFvec(a) !(bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3]))
   // bool NotEmpty(const F64vec2 &a) { return a[0]||a[1]||a[2]||a[3]; }
   // bool    Empty(const F64vec2 &a) { return !(a[0]||a[1]||a[2]||a[3]); } // optimize
-  friend F64vec2 bool2int(const F64vec2& a) {  // mask returned
+  friend F64vec2 bool2int(const F64vec2& a)
+  {  // mask returned
     return if3(a, 1, 0);
   }
 
@@ -176,7 +158,8 @@ public:
 
 #undef _f1
 
-  friend F64vec2 atan2(const F64vec2& y, const F64vec2& x) {
+  friend F64vec2 atan2(const F64vec2& y, const F64vec2& x)
+  {
     const F64vec2 pi(3.1415926535897932);
     const F64vec2 pi_2 = pi / 2;
     const F64vec2 zero(0);
@@ -192,21 +175,15 @@ public:
     F64vec2 a                   = absY / absX;
     const F64vec2 pi_4          = pi / 4;
     const F64vec2& gt_tan_3pi_8 = F64vec2(a > F64vec2(2.414213562373095));
-    const F64vec2& gt_tan_pi_8 =
-      F64vec2(a > F64vec2(0.4142135623730950)) & F64vec2(!gt_tan_3pi_8);
+    const F64vec2& gt_tan_pi_8  = F64vec2(a > F64vec2(0.4142135623730950)) & F64vec2(!gt_tan_3pi_8);
     const F64vec2 minusOne(-1);
     F64vec2 b(zero);
-    b = (pi_2 & gt_tan_3pi_8) + (F64vec2(!gt_tan_3pi_8) & b);
-    b = (pi_4 & gt_tan_pi_8) + (F64vec2(!gt_tan_pi_8) & b);
-    a = (gt_tan_3pi_8 & (minusOne / a)) + (F64vec2(!gt_tan_3pi_8) & a);
-    a = (gt_tan_pi_8 & ((absY - absX) / (absY + absX)))
-        + (F64vec2(!gt_tan_pi_8) & a);
+    b                 = (pi_2 & gt_tan_3pi_8) + (F64vec2(!gt_tan_3pi_8) & b);
+    b                 = (pi_4 & gt_tan_pi_8) + (F64vec2(!gt_tan_pi_8) & b);
+    a                 = (gt_tan_3pi_8 & (minusOne / a)) + (F64vec2(!gt_tan_3pi_8) & a);
+    a                 = (gt_tan_pi_8 & ((absY - absX) / (absY + absX))) + (F64vec2(!gt_tan_pi_8) & a);
     const F64vec2& a2 = a * a;
-    b +=
-      (((8.05374449538e-2 * a2 - 1.38776856032E-1) * a2 + 1.99777106478E-1) * a2
-       - 3.33329491539E-1)
-        * a2 * a
-      + a;
+    b += (((8.05374449538e-2 * a2 - 1.38776856032E-1) * a2 + 1.99777106478E-1) * a2 - 3.33329491539E-1) * a2 * a + a;
     F64vec2 xyNeg = F64vec2(xNeg ^ yNeg);
     b             = (xyNeg & (-b)) + (F64vec2(!xyNeg) & b);
     xyNeg         = F64vec2(xNeg & !yNeg);
@@ -220,12 +197,14 @@ public:
     return b;
   }
 
-  friend std::ostream& operator<<(std::ostream& strm, const F64vec2& a) {
+  friend std::ostream& operator<<(std::ostream& strm, const F64vec2& a)
+  {
     strm << "[" << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << "]";
     return strm;
   }
 
-  friend std::istream& operator>>(std::istream& strm, F64vec2& a) {
+  friend std::istream& operator>>(std::istream& strm, F64vec2& a)
+  {
     double tmp;
     strm >> tmp;
     a = tmp;

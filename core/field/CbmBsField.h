@@ -19,13 +19,13 @@
 #ifndef CBMBSF_H
 #define CBMBSF_H
 
+#include "CbmFieldMap.h"  // for CbmFieldMap
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Float_t
 #include <TString.h>     // for TString
 
 #include <string.h>  // for strcpy
-
-#include "CbmFieldMap.h"  // for CbmFieldMap
 
 class CbmFieldPar;
 class TArrayF;
@@ -42,18 +42,14 @@ public:
   void Init();
 
   void writeBsRootfile(const char* name);  // Write Field Splined  to root file
-  void readBsRootfile(const char* name);  // Read  Field Splined  from root file
-  void readFortranAsciifiles(const char* MapFile1,
-                             const char* MapFile2,
+  void readBsRootfile(const char* name);   // Read  Field Splined  from root file
+  void readFortranAsciifiles(const char* MapFile1, const char* MapFile2,
                              const char* MapFile3);  // for the first use only
 
   void GetFieldValue(const Double_t Point[3], Double_t* Bfield);
 
-  void CalculateMapFromBs(
-    Int_t pNx = 0,
-    Int_t pNy = 0,
-    Int_t pNz =
-      0);  // calculate map pNx,pNy,Pnz dim (default - LL1-3,LL2-3,LL3-3)
+  void CalculateMapFromBs(Int_t pNx = 0, Int_t pNy = 0,
+                          Int_t pNz = 0);  // calculate map pNx,pNy,Pnz dim (default - LL1-3,LL2-3,LL3-3)
 
 
   TArrayF* GetBsBx() { return fBsBx; }
@@ -64,7 +60,8 @@ public:
   TArrayF* GetZ() { return fZ; }
 
   void GetBsName(char* pBsName) { strcpy(pBsName, fBsName.Data()); }
-  void SetBsName(const char* pBsName) {
+  void SetBsName(const char* pBsName)
+  {
     fBsName = pBsName;
     this->SetName(pBsName);
   }
@@ -94,17 +91,9 @@ protected:
 
   TString fBsName;  // basic field name used in Bs root file
 protected:
-  void PALC0(Double_t X,
-             Double_t Y,
-             Double_t Z,
-             Double_t* BX,
-             Double_t* BY,
+  void PALC0(Double_t X, Double_t Y, Double_t Z, Double_t* BX, Double_t* BY,
              Double_t* BZ);  // from Fortran code
-  Float_t SPL0(Double_t T,
-               Double_t X0,
-               Double_t X1,
-               Double_t X2,
-               Double_t X3,
+  Float_t SPL0(Double_t T, Double_t X0, Double_t X1, Double_t X2, Double_t X3,
                Double_t X4);  // from Fortran code
 
 private:

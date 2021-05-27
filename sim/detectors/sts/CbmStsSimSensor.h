@@ -103,17 +103,13 @@ public:
      ** system. The appropriate analogue response is then calculated
      ** with the pure virtual method CalculateResponse.
      **/
-  Int_t ProcessPoint(const CbmStsPoint* point,
-                     Double_t eventTime = 0.,
-                     CbmLink* link      = NULL);
+  Int_t ProcessPoint(const CbmStsPoint* point, Double_t eventTime = 0., CbmLink* link = NULL);
 
 
   /** Set the sensor conditions
      ** @param conditions    Pointer to conditions parameters
      **/
-  void SetConditions(const CbmStsParSensorCond* conditions) {
-    fConditions = conditions;
-  }
+  void SetConditions(const CbmStsParSensorCond* conditions) { fConditions = conditions; }
 
 
   /** @brief Set the corresponding STS setup element
@@ -131,7 +127,8 @@ public:
      ** Lorentz shift of charge carries in the sensor. The field is
      ** approximated to be constant.
      **/
-  void SetField(Double_t bX, Double_t bY, Double_t bZ) {
+  void SetField(Double_t bX, Double_t bY, Double_t bZ)
+  {
     fBx = bX;
     fBy = bY;
     fBz = bZ;
@@ -168,10 +165,10 @@ protected:
   const CbmStsParSim* fSettings = nullptr;  //! Simulation settings
   //const CbmStsParSensor* fParameters = nullptr;     //! Sensor parameters
   const CbmStsParSensorCond* fConditions = nullptr;  //! Operating conditions
-  Double_t fBx = 0.;  ///< x component of magnetic field in sensor centre
-  Double_t fBy = 0.;  ///< y component of magnetic field in sensor centre
-  Double_t fBz = 0.;  ///< z component of magnetic field in sensor centre
-  CbmLink* fCurrentLink = nullptr;  //! Link to currently processed MCPoint
+  Double_t fBx                           = 0.;       ///< x component of magnetic field in sensor centre
+  Double_t fBy                           = 0.;       ///< y component of magnetic field in sensor centre
+  Double_t fBz                           = 0.;       ///< z component of magnetic field in sensor centre
+  CbmLink* fCurrentLink                  = nullptr;  //! Link to currently processed MCPoint
 
 
   /** Perform response simulation for one MC Point

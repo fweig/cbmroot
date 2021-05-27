@@ -5,7 +5,8 @@
  * \date 2011
  */
 
-void qa_study_report() {
+void qa_study_report()
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
@@ -23,7 +24,8 @@ void qa_study_report() {
       studyNames.push_back(gSystem->Getenv(ssname.str().c_str()));
     }
     outputDir = std::string(gSystem->Getenv("LIT_STUDY_OUTPUT_DIR"));
-  } else {
+  }
+  else {
     fileNames.push_back("scripts/events_sts_v13d_real/qa.00001.root");
     fileNames.push_back("scripts/events_sts_v13d_new/qa.00001.root");
     //fileNames.push_back("scripts/events_trd_v13p_3e/qa.digi.nn.0000.root");

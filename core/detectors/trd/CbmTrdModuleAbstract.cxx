@@ -10,7 +10,9 @@ CbmTrdModuleAbstract::CbmTrdModuleAbstract()
   , fChmbPar(nullptr)
   , fAsicPar(nullptr)
   , fGainPar(nullptr)
-  , fGeoPar(nullptr) {}
+  , fGeoPar(nullptr)
+{
+}
 
 //_______________________________________________________________________________
 CbmTrdModuleAbstract::CbmTrdModuleAbstract(Int_t mod, Int_t ly, Int_t rot)
@@ -22,15 +24,19 @@ CbmTrdModuleAbstract::CbmTrdModuleAbstract(Int_t mod, Int_t ly, Int_t rot)
   , fChmbPar(nullptr)
   , fAsicPar(nullptr)
   , fGainPar(nullptr)
-  , fGeoPar(nullptr) {}
+  , fGeoPar(nullptr)
+{
+}
 
 //_______________________________________________________________________________
-CbmTrdModuleAbstract::~CbmTrdModuleAbstract() {
+CbmTrdModuleAbstract::~CbmTrdModuleAbstract()
+{
   if (fAsicPar) delete fAsicPar;
 }
 
 //_______________________________________________________________________________
-void CbmTrdModuleAbstract::LocalToMaster(Double_t in[3], Double_t out[3]) {
+void CbmTrdModuleAbstract::LocalToMaster(Double_t in[3], Double_t out[3])
+{
   if (!fGeoPar) return;
   fGeoPar->LocalToMaster(in, out);
 }

@@ -10,7 +10,8 @@
 // Version         13/03/2015 (P.-A. Loizeau)
 //
 // --------------------------------------------------------------------------
-void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron") {
+void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -52,34 +53,25 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron") {
 
   // - TRD digitisation parameters
   if (cbmsetup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".asic.par");
+    TObjString* trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".asic.par");
     parFileList->Add(trdFile);
-    trdFile =
-      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    trdFile =
-      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gain.par");
+    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gain.par");
     parFileList->Add(trdFile);
-    trdFile =
-      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gas.par");
+    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gas.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- Using parameter file " << trdFile->GetString()
-              << std::endl;
+    std::cout << "-I- Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (cbmsetup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- Using parameter file " << tofFile->GetString()
-              << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
-              << std::endl;
+    std::cout << "-I- Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   // In general, the following parts need not be touched
@@ -121,10 +113,8 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron") {
   tofDigitizer->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizer->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   tofDigitizer->SetInputFileName(
-    paramDir
-    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
-  tofDigitizer
-    ->UseMcTrackMonitoring();  // Enable the Mc Track Usage in the digitizer
+    paramDir + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+  tofDigitizer->UseMcTrackMonitoring();     // Enable the Mc Track Usage in the digitizer
   run->AddTask(tofDigitizer);
 
 
@@ -133,12 +123,10 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron") {
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
-  tofSimpClust
-    ->UseMcTrackMonitoring();  // Enable the Mc Track Usage in the clusterizer
+  tofSimpClust->UseMcTrackMonitoring();  // Enable the Mc Track Usage in the clusterizer
   run->AddTask(tofSimpClust);
 
   // ------   TOF hit producer   ---------------------------------------------

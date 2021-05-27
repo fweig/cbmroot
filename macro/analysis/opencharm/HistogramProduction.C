@@ -44,11 +44,9 @@ Bool_t useMC     = kFALSE;
 
 TString version = "trunk.Refxx";
 
-void HistogramProduction(Int_t nEvents   = 100,
-                         Int_t ProcID    = 1,
-                         bool PileUp     = false,
-                         Int_t PidTyp    = 0,
-                         bool superEvent = 0) {
+void HistogramProduction(Int_t nEvents = 100, Int_t ProcID = 1, bool PileUp = false, Int_t PidTyp = 0,
+                         bool superEvent = 0)
+{
   // -------------------------------------------------------------------------
 
   switch (PidTyp) {
@@ -59,104 +57,60 @@ void HistogramProduction(Int_t nEvents   = 100,
   }
 
   // Input file (MC events)
-  TString mcFileName = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root",
-                            input.Data(),
-                            inputGEV.Data(),
-                            nEvents,
-                            ProcID,
-                            signal.Data(),
-                            setup.Data());
+  TString mcFileName = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                            ProcID, signal.Data(), setup.Data());
 
   // Reco file
-  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s",
-                          input.Data(),
-                          inputGEV.Data(),
-                          nEvents,
-                          ProcID,
-                          signal.Data(),
-                          setup.Data());
+  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s", input.Data(), inputGEV.Data(), nEvents, ProcID,
+                          signal.Data(), setup.Data());
   if (!PileUp) {
-    if (littrack)
-      TString rcFileName = rcSystem + ".littrack.root";
+    if (littrack) TString rcFileName = rcSystem + ".littrack.root";
     else
       TString rcFileName = rcSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString rcFileName = rcSystem + ".PileUp.littrack.root";
   else
     TString rcFileName = rcSystem + ".PileUp.l1.root";
 
   // Pair file
   if (!superEvent)
-    TString pairSystem =
-      Form("data/opencharm.pairs.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-           input.Data(),
-           inputGEV.Data(),
-           nEvents,
-           ProcID,
-           signal.Data(),
-           setup.Data(),
-           pidMode.Data());
+    TString pairSystem = Form("data/opencharm.pairs.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(), inputGEV.Data(),
+                              nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   else
-    TString pairSystem =
-      Form("data/opencharm.pairs.superEvent.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-           input.Data(),
-           inputGEV.Data(),
-           nEvents,
-           ProcID,
-           signal.Data(),
-           setup.Data(),
-           pidMode.Data());
+    TString pairSystem = Form("data/opencharm.pairs.superEvent.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(),
+                              inputGEV.Data(), nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   if (useMC) pairSystem += ".mcMode";
   if (!PileUp) {
-    if (littrack)
-      TString pairFileName = pairSystem + ".littrack.root";
+    if (littrack) TString pairFileName = pairSystem + ".littrack.root";
     else
       TString pairFileName = pairSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString pairFileName = pairSystem + ".PileUp.littrack.root";
   else
     TString pairFileName = pairSystem + ".PileUp.l1.root";
 
 
   // Track file
-  TString trackSystem =
-    Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-         input.Data(),
-         inputGEV.Data(),
-         nEvents,
-         ProcID,
-         signal.Data(),
-         setup.Data(),
-         pidMode.Data());
+  TString trackSystem = Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(), inputGEV.Data(),
+                             nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   if (!PileUp) {
-    if (littrack)
-      TString trackFileName = trackSystem + ".littrack.root";
+    if (littrack) TString trackFileName = trackSystem + ".littrack.root";
     else
       TString trackFileName = trackSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString trackFileName = trackSystem + ".PileUp.littrack.root";
   else
     TString trackFileName = trackSystem + ".PileUp.l1.root";
 
   if (!superEvent)
-    TString outFileName = Form("data/opencharm.histo.%s.%s.%i.%i.%s.%s.%s.root",
-                               input.Data(),
-                               inputGEV.Data(),
-                               nEvents,
-                               ProcID,
-                               signal.Data(),
-                               setup.Data(),
-                               version.Data());
+    TString outFileName = Form("data/opencharm.histo.%s.%s.%i.%i.%s.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                               ProcID, signal.Data(), setup.Data(), version.Data());
   else
-    TString outFileName =
-      Form("data/opencharm.histo.superEvent.%s.%s.%i.%i.%s.%s.%s.root",
-           input.Data(),
-           inputGEV.Data(),
-           nEvents,
-           ProcID,
-           signal.Data(),
-           setup.Data(),
-           version.Data());
+    TString outFileName = Form("data/opencharm.histo.superEvent.%s.%s.%i.%i.%s.%s.%s.root", input.Data(),
+                               inputGEV.Data(), nEvents, ProcID, signal.Data(), setup.Data(), version.Data());
 
   TFile* outFile  = new TFile(outFileName, "RECREATE");
   TFile* mcFile   = new TFile(mcFileName, "READ");
@@ -174,8 +128,7 @@ void HistogramProduction(Int_t nEvents   = 100,
 
   const char* group = "PAIR";
 
-  CbmD0HistogramManager* D0histo =
-    new CbmD0HistogramManager(group, 1, 0.04, 0.01);
+  CbmD0HistogramManager* D0histo = new CbmD0HistogramManager(group, 1, 0.04, 0.01);
   D0histo->SetOutFile(outFile);
   D0histo->SetMCFile(mcFile);
   // D0histo->SetRecoFile(rcFile);

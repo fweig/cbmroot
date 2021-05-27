@@ -15,7 +15,9 @@
 #define LXTBTRDTASK_H
 
 #include "CbmMCDataArray.h"
+
 #include "FairTask.h"
+
 #include "LxTBBinned.h"
 
 #define CUR_TIMEBIN_LENGTH 100
@@ -31,7 +33,8 @@ public:
     Int_t pdg;
     Double_t z;
 
-    TrackDataHolder() : isSignal(false), pdg(-1), z(0) {
+    TrackDataHolder() : isSignal(false), pdg(-1), z(0)
+    {
       for (int i = 0; i < CUR_NOF_STATIONS; ++i)
         pointInds[i] = -1;
     }

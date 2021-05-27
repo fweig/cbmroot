@@ -9,12 +9,12 @@
 #ifndef CBMTRACKMATCHNEW_H_
 #define CBMTRACKMATCHNEW_H_
 
+#include "CbmMatch.h"  // for CbmMatch
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t
 
 #include <string>  // for string
-
-#include "CbmMatch.h"  // for CbmMatch
 
 class CbmTrackMatchNew : public CbmMatch {
 public:
@@ -32,11 +32,13 @@ public:
   Int_t GetNofTrueHits() const { return fNofTrueHits; }
   Int_t GetNofWrongHits() const { return fNofWrongHits; }
   Int_t GetNofHits() const { return fNofTrueHits + fNofWrongHits; }
-  Double_t GetTrueOverAllHitsRatio() const {
+  Double_t GetTrueOverAllHitsRatio() const
+  {
     Double_t all = GetNofHits();
     return (all == 0) ? 0. : (fNofTrueHits / all);
   }
-  Double_t GetWrongOverAllHitsRatio() const {
+  Double_t GetWrongOverAllHitsRatio() const
+  {
     Double_t all = GetNofHits();
     return (all == 0) ? 0. : (fNofWrongHits / all);
   }

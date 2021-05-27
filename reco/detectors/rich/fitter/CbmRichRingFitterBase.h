@@ -45,7 +45,8 @@ protected:
 	 * \brief Calculate chi2 for circle fitting algorithms.
 	 * \param[in,out] ring Fitted ring.
 	 */
-  virtual void CalcChi2(CbmRichRingLight* ring) {
+  virtual void CalcChi2(CbmRichRingLight* ring)
+  {
     int nofHits = ring->GetNofHits();
     if (nofHits < 4) {
       ring->SetChi2(-1.);
@@ -67,8 +68,7 @@ protected:
     ring->SetChi2(chi2);
   }
 
-  static const int MAX_NOF_HITS_IN_RING =
-    400;  // maximum possible number of hits
+  static const int MAX_NOF_HITS_IN_RING = 400;  // maximum possible number of hits
 };
 
 #endif

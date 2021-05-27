@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
+void sts_sim(Int_t nEvents, Int_t energy, Int_t index)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -79,10 +80,7 @@ void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
   char strOutputFile[1000];
   char strParamFile[1000];
 
-  sprintf(strInputFile,
-          "/Users/Anna/cbmroot/input/pau/urqmd.pau.%1.0fgev.centr.%4d",
-          energy,
-          index);
+  sprintf(strInputFile, "/Users/Anna/cbmroot/input/pau/urqmd.pau.%1.0fgev.centr.%4d", energy, index);
   sprintf(strParamFile, "params.pau.%1.0fgev.centr.%4d.root", energy, index);
   sprintf(strOutputFile, "sts.mc.pau.%1.0fgev.centr.%4d.root", energy, index);
   for (Int_t i = 0; i < 1000; i++) {
@@ -181,7 +179,6 @@ void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
   cout << "Macro finished succesfully." << endl;
   //  cout << "Output file is "    << outFile << endl;
   //  cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

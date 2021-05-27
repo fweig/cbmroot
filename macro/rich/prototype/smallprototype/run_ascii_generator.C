@@ -3,7 +3,8 @@
 
 using namespace std;
 
-void run_ascii_generator(Int_t nEvents = 100000) {
+void run_ascii_generator(Int_t nEvents = 100000)
+{
 
   string asciiFile = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/rich/"
                      "prototype/smallprototype/beamdistribution.ascii.dat";
@@ -24,8 +25,7 @@ void run_ascii_generator(Int_t nEvents = 100000) {
     double vy = gRandom->Gaus(0., 0.3);
 
     // Write out event header
-    file << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz
-         << endl;
+    file << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz << endl;
 
     int pdgProton   = 2212;
     int pdgPionPlus = 211;
@@ -50,11 +50,11 @@ void run_ascii_generator(Int_t nEvents = 100000) {
     int random = gRandom->Uniform(0, 0);
 
 
-    if (random == 0) {
-      file << pdgProton << " " << px << " " << py << " " << pz << endl;
-    } else if (random == 1) {
+    if (random == 0) { file << pdgProton << " " << px << " " << py << " " << pz << endl; }
+    else if (random == 1) {
       file << pdgPionPlus << " " << px << " " << py << " " << pz << endl;
-    } else {
+    }
+    else {
       file << pdgKaonPlus << " " << px << " " << py << " " << pz << endl;
     }
     // Status output

@@ -1,5 +1,6 @@
 // flag =0 for sis100 flag =1 for mini cbm geometry
-void much_hits_gem(Int_t flag = 1) {
+void much_hits_gem(Int_t flag = 1)
+{
   Int_t nEvents    = 10;
   TString inFile   = "data/mc.test.mcbm.root";
   TString outFile  = "data/hits.test.mcbm.root";

@@ -29,7 +29,6 @@
 #include <Logger.h>
 
 // ROOT Classes and includes
-#include "Riostream.h"
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -41,53 +40,20 @@
 #include "TRandom.h"
 #include "TString.h"
 
+#include "Riostream.h"
+
 using std::cout;
 using std::endl;
 
 //___________________________________________________________________
 // Constants definitions: Particles list
-const Int_t kiNbPart                = 13;
-const TString ksPartTag[kiNbPart]   = {"others",
-                                     "ep",
-                                     "em",
-                                     "pip",
-                                     "pim",
-                                     "kp",
-                                     "km",
-                                     "p",
-                                     "pbar",
-                                     "d",
-                                     "t",
-                                     "he",
-                                     "a"};
-const Int_t kiPartPdgCode[kiNbPart] = {0,
-                                       11,
-                                       -11,
-                                       211,
-                                       -211,
-                                       321,
-                                       -321,
-                                       2212,
-                                       -2212,
-                                       1000010020,
-                                       1000010030,
-                                       1000020030,
-                                       1000020040};
-const TString ksPartName[kiNbPart]  = {"any other part.",
-                                      "e+",
-                                      "e-",
-                                      "#pi+",
-                                      "#pi-",
-                                      "k+",
-                                      "k-",
-                                      "p",
-                                      "anti-p",
-                                      "d",
-                                      "t",
-                                      "he",
-                                      "#alpha"};
-const Int_t kiMinNbStsPntAcc =
-  3;  // Number of STS Pnt for Trk to be reconstructable
+const Int_t kiNbPart              = 13;
+const TString ksPartTag[kiNbPart] = {"others", "ep", "em", "pip", "pim", "kp", "km", "p", "pbar", "d", "t", "he", "a"};
+const Int_t kiPartPdgCode[kiNbPart] = {0,    11,    -11,        211,        -211,       321,       -321,
+                                       2212, -2212, 1000010020, 1000010030, 1000020030, 1000020040};
+const TString ksPartName[kiNbPart]  = {"any other part.", "e+", "e-", "#pi+", "#pi-",  "k+", "k-", "p",
+                                      "anti-p",          "d",  "t",  "he",   "#alpha"};
+const Int_t kiMinNbStsPntAcc        = 3;  // Number of STS Pnt for Trk to be reconstructable
 //___________________________________________________________________
 
 
@@ -382,7 +348,8 @@ CbmTofHitFinderQa::CbmTofHitFinderQa()
   , fhMcTrkStartSecSingTrk(NULL)
   , fhMcTrkStartPrimMultiTrk(NULL)
   , fhMcTrkStartSecMultiTrk(NULL)
-  , fhPointMatchWeight(NULL) {
+  , fhPointMatchWeight(NULL)
+{
   cout << "CbmTofHitFinderQa: Task started " << endl;
 }
 // ------------------------------------------------------------------
@@ -672,17 +639,21 @@ CbmTofHitFinderQa::CbmTofHitFinderQa(const char* name, Int_t verbose)
   , fhMcTrkStartSecSingTrk(NULL)
   , fhMcTrkStartPrimMultiTrk(NULL)
   , fhMcTrkStartSecMultiTrk(NULL)
-  , fhPointMatchWeight(NULL) {}
+  , fhPointMatchWeight(NULL)
+{
+}
 // ------------------------------------------------------------------
 
 // ------------------------------------------------------------------
-CbmTofHitFinderQa::~CbmTofHitFinderQa() {
+CbmTofHitFinderQa::~CbmTofHitFinderQa()
+{
   // Destructor
 }
 // ------------------------------------------------------------------
 /************************************************************************************/
 // FairTasks inherited functions
-InitStatus CbmTofHitFinderQa::Init() {
+InitStatus CbmTofHitFinderQa::Init()
+{
   if (kFALSE == RegisterInputs()) return kFATAL;
 
   // Initialize the TOF GeoHandler
@@ -696,17 +667,12 @@ InitStatus CbmTofHitFinderQa::Init() {
     return kFATAL;
   }  // if( k12b > iGeoVersion )
 
-  if (NULL != fTofId)
-    LOG(info) << "CbmTofHitFinderQa::Init with GeoVersion "
-              << fGeoHandler->GetGeoVersion();
+  if (NULL != fTofId) LOG(info) << "CbmTofHitFinderQa::Init with GeoVersion " << fGeoHandler->GetGeoVersion();
   else {
     switch (iGeoVersion) {
       case k12b: fTofId = new CbmTofDetectorId_v12b(); break;
       case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
-      default:
-        LOG(error) << "CbmTofHitFinderQa::Init => Invalid geometry!!!"
-                   << iGeoVersion;
-        return kFATAL;
+      default: LOG(error) << "CbmTofHitFinderQa::Init => Invalid geometry!!!" << iGeoVersion; return kFATAL;
     }  // switch(iGeoVersion)
   }    // else of if(NULL != fTofId)
 
@@ -717,7 +683,8 @@ InitStatus CbmTofHitFinderQa::Init() {
   return kSUCCESS;
 }
 
-void CbmTofHitFinderQa::SetParContainers() {
+void CbmTofHitFinderQa::SetParContainers()
+{
   LOG(info) << " CbmTofHitFinderQa => Get the digi parameters for tof";
 
   // Get Base Container
@@ -729,7 +696,8 @@ void CbmTofHitFinderQa::SetParContainers() {
   fDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
 }
 
-void CbmTofHitFinderQa::Exec(Option_t* /*option*/) {
+void CbmTofHitFinderQa::Exec(Option_t* /*option*/)
+{
   // Task execution
 
   LOG(debug) << " CbmTofHitFinderQa => New event";
@@ -743,13 +711,12 @@ void CbmTofHitFinderQa::Exec(Option_t* /*option*/) {
   fEvents += 1;
 }
 
-void CbmTofHitFinderQa::Finish() {
+void CbmTofHitFinderQa::Finish()
+{
   // Normalisations
-  cout << "CbmTofHitFinderQa::Finish up with " << fEvents << " analyzed events "
-       << endl;
+  cout << "CbmTofHitFinderQa::Finish up with " << fEvents << " analyzed events " << endl;
 
-  if (kFALSE == fbNormHistGenMode)
-    NormalizeMapHistos();
+  if (kFALSE == fbNormHistGenMode) NormalizeMapHistos();
   else
     NormalizeNormHistos();
 
@@ -760,7 +727,8 @@ void CbmTofHitFinderQa::Finish() {
 
 /************************************************************************************/
 // Functions common for all clusters approximations
-Bool_t CbmTofHitFinderQa::RegisterInputs() {
+Bool_t CbmTofHitFinderQa::RegisterInputs()
+{
   FairRootManager* fManager = FairRootManager::Instance();
 
   fMCEventHeader = (FairMCEventHeader*) fManager->GetObject("MCEventHeader.");
@@ -792,8 +760,7 @@ Bool_t CbmTofHitFinderQa::RegisterInputs() {
                     "CbmTofHitProducerNew is used!!!";
     //     return kFALSE;
   }  // if( NULL == fTofDigisColl)
-  fTofDigiMatchPointsColl =
-    (TClonesArray*) fManager->GetObject("TofDigiMatchPoints");
+  fTofDigiMatchPointsColl = (TClonesArray*) fManager->GetObject("TofDigiMatchPoints");
   if (NULL == fTofDigiMatchPointsColl) {
     LOG(WARNING) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
                     "TofDigiMatchPoints TClonesArray!!!";
@@ -824,13 +791,11 @@ Bool_t CbmTofHitFinderQa::RegisterInputs() {
     return kFALSE;
   }  // if( NULL == fTofDigiMatchPointsColl)
 
-  if (NULL == fTofDigisColl && NULL == fTofDigiMatchPointsColl
-      && NULL == fTofDigiMatchColl)
+  if (NULL == fTofDigisColl && NULL == fTofDigiMatchPointsColl && NULL == fTofDigiMatchColl)
     fbHitProducerSource = kTRUE;
 
   if ((kFALSE == fbHitProducerSource)
-      && (NULL == fTofDigisColl || NULL == fTofDigiMatchPointsColl
-          || NULL == fTofDigiMatchColl)) {
+      && (NULL == fTofDigisColl || NULL == fTofDigiMatchPointsColl || NULL == fTofDigiMatchColl)) {
     LOG(error) << "CbmTofHitFinderQa::RegisterInputs => fTofDigisColl or "
                   "fTofDigiMatchPointsColl or fTofDigiMatchColl present while "
                   "the other is missing";
@@ -843,15 +808,15 @@ Bool_t CbmTofHitFinderQa::RegisterInputs() {
   fRealTofMatchColl  = (TClonesArray*) fManager->GetObject("TofRealPntMatch");
   if (NULL != fRealTofPointsColl && NULL != fRealTofMatchColl) {
     fbRealPointAvail = kTRUE;
-    LOG(info)
-      << "CbmTofHitFinderQa::RegisterInputs => Both fRealTofPointsColl & "
-         "fRealTofMatchColl there, realistic mean TOF MC point used for QA";
+    LOG(info) << "CbmTofHitFinderQa::RegisterInputs => Both fRealTofPointsColl & "
+                 "fRealTofMatchColl there, realistic mean TOF MC point used for QA";
   }  // if( NULL != fRealTofPointsColl && NULL != fRealTofMatchColl )
 
   return kTRUE;
 }
 /************************************************************************************/
-Bool_t CbmTofHitFinderQa::LoadGeometry() {
+Bool_t CbmTofHitFinderQa::LoadGeometry()
+{
   /*
      Type 0: 5 RPC/SM,  24 SM, 32 ch/RPC =>  3840 ch          , 120 RPC         ,
      Type 1: 5 RPC/SM, 142 SM, 32 ch/RPC => 22720 ch => 26560 , 710 RPC =>  830 , => 166
@@ -896,21 +861,21 @@ Bool_t CbmTofHitFinderQa::LoadGeometry() {
 }
 /************************************************************************************/
 // ------------------------------------------------------------------
-Bool_t CbmTofHitFinderQa::SetWallPosZ(Double_t dWallPosCm) {
+Bool_t CbmTofHitFinderQa::SetWallPosZ(Double_t dWallPosCm)
+{
   fdWallPosZ = dWallPosCm;
   LOG(info) << "CbmTofHitFinderQa::SetWallPosZ => Change histograms center on "
                "Z axis to "
             << dWallPosCm << " cm";
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::CreateHistos() {
+Bool_t CbmTofHitFinderQa::CreateHistos()
+{
   // Create histogramms
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  gROOT
-    ->cd();  // <= To prevent histos from being sucked in by the param file of the TRootManager !
-             /*
+  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gROOT->cd();                     // <= To prevent histos from being sucked in by the param file of the TRootManager !
+                                   /*
    Double_t ymin=-1.;
    Double_t ymax=4.;
    Double_t ptmmax=2.5;
@@ -969,51 +934,25 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
   Double_t dNbMaxCentr = 16.0;
 
   // Nb Hits per event for first N events
-  fhNbHitsPerEvent =
-    new TH1I("TofTests_NbHitsPerEvent",
-             "Number of Hits per event; EventsIdx []; # [Hits]",
-             fuNbEventsForHitsNbPlots,
-             -0.5,
-             fuNbEventsForHitsNbPlots - 0.5);
+  fhNbHitsPerEvent = new TH1I("TofTests_NbHitsPerEvent", "Number of Hits per event; EventsIdx []; # [Hits]",
+                              fuNbEventsForHitsNbPlots, -0.5, fuNbEventsForHitsNbPlots - 0.5);
   fhNbHitsSingPntPerEvent =
-    new TH1I("TofTests_NbHitsSingPntPerEvent",
-             "Number of Single Point Hits per event; EventsIdx []; # [Hits]",
-             fuNbEventsForHitsNbPlots,
-             -0.5,
-             fuNbEventsForHitsNbPlots - 0.5);
+    new TH1I("TofTests_NbHitsSingPntPerEvent", "Number of Single Point Hits per event; EventsIdx []; # [Hits]",
+             fuNbEventsForHitsNbPlots, -0.5, fuNbEventsForHitsNbPlots - 0.5);
   fhNbHitsMultPntPerEvent =
-    new TH1I("TofTests_NbHitsMultPntPerEvent",
-             "Number of Multi Point Hits per event; EventsIdx []; # [Hits]",
-             fuNbEventsForHitsNbPlots,
-             -0.5,
-             fuNbEventsForHitsNbPlots - 0.5);
+    new TH1I("TofTests_NbHitsMultPntPerEvent", "Number of Multi Point Hits per event; EventsIdx []; # [Hits]",
+             fuNbEventsForHitsNbPlots, -0.5, fuNbEventsForHitsNbPlots - 0.5);
   fhNbHitsSingTrkPerEvent =
-    new TH1I("TofTests_NbHitsSingTrkPerEvent",
-             "Number of Single Track Hits per event; EventsIdx []; # [Hits]",
-             fuNbEventsForHitsNbPlots,
-             -0.5,
-             fuNbEventsForHitsNbPlots - 0.5);
+    new TH1I("TofTests_NbHitsSingTrkPerEvent", "Number of Single Track Hits per event; EventsIdx []; # [Hits]",
+             fuNbEventsForHitsNbPlots, -0.5, fuNbEventsForHitsNbPlots - 0.5);
   fhNbHitsMultTrkPerEvent =
-    new TH1I("TofTests_NbHitsMultTrkPerEvent",
-             "Number of Multi Track Hits per event; EventsIdx []; # [Hits]",
-             fuNbEventsForHitsNbPlots,
-             -0.5,
-             fuNbEventsForHitsNbPlots - 0.5);
+    new TH1I("TofTests_NbHitsMultTrkPerEvent", "Number of Multi Track Hits per event; EventsIdx []; # [Hits]",
+             fuNbEventsForHitsNbPlots, -0.5, fuNbEventsForHitsNbPlots - 0.5);
   // Nb different TOF digis in Hit
-  fhNbDigisInHit      = new TH1I("TofTests_NbDigisInHit",
-                            "Number of Digis per Hit; # [Digis]",
-                            100,
-                            -0.5,
-                            100 - 0.5);
-  fhNbDigisInHitMapXY = new TProfile2D(
-    "TofTests_NbDigisInHitMapXY",
-    "Number of Digis per Hit vs Position; X[cm]; Y[cm]; Mean [Digis/Hit]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
+  fhNbDigisInHit = new TH1I("TofTests_NbDigisInHit", "Number of Digis per Hit; # [Digis]", 100, -0.5, 100 - 0.5);
+  fhNbDigisInHitMapXY =
+    new TProfile2D("TofTests_NbDigisInHitMapXY", "Number of Digis per Hit vs Position; X[cm]; Y[cm]; Mean [Digis/Hit]",
+                   nbinx, -xrange, xrange, nbiny, -yrange, yrange);
 
   // Mapping
   // Dependence of Track origin on centrality
@@ -1025,651 +964,278 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
   fvhTofPntAllAngCent.resize(kiNbPart);
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
     // Track origin for tracks reaching TOF
-    fvhTrackAllStartZCent[iPartIdx] = new TH2D(
-      Form("TofTests_TrackAllStartZCent_%s", ksPartTag[iPartIdx].Data()),
-      Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
-           "all tracks; Start Z [cm]; B [fm]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsStartZ,
-      dMinStartZ,
-      dMaxStartZ,
-      iNbBinsCentr,
-      dNbMinCentr,
-      dNbMaxCentr);
-    fvhTrackSecStartZCent[iPartIdx] = new TH2D(
-      Form("TofTests_TrackSecStartZCent_%s", ksPartTag[iPartIdx].Data()),
-      Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
-           "secondary tracks; Start Z [cm]; B [fm]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsStartZ,
-      dMinStartZ,
-      dMaxStartZ,
-      iNbBinsCentr,
-      dNbMinCentr,
-      dNbMaxCentr);
+    fvhTrackAllStartZCent[iPartIdx] =
+      new TH2D(Form("TofTests_TrackAllStartZCent_%s", ksPartTag[iPartIdx].Data()),
+               Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
+                    "all tracks; Start Z [cm]; B [fm]; # []",
+                    ksPartName[iPartIdx].Data()),
+               iNbBinsStartZ, dMinStartZ, dMaxStartZ, iNbBinsCentr, dNbMinCentr, dNbMaxCentr);
+    fvhTrackSecStartZCent[iPartIdx] =
+      new TH2D(Form("TofTests_TrackSecStartZCent_%s", ksPartTag[iPartIdx].Data()),
+               Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
+                    "secondary tracks; Start Z [cm]; B [fm]; # []",
+                    ksPartName[iPartIdx].Data()),
+               iNbBinsStartZ, dMinStartZ, dMaxStartZ, iNbBinsCentr, dNbMinCentr, dNbMaxCentr);
     if (2 == iPartIdx)  // 3D plot only for e-
-      fvhTrackAllStartXZCent[iPartIdx] = new TH3D(
-        Form("TofTests_TrackAllStartXZCent_%s", ksPartTag[iPartIdx].Data()),
-        Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
-             "all tracks; Start X [cm]; Start Z [cm]; B [fm];",
-             ksPartName[iPartIdx].Data()),
-        iNbBinsStartXY / 2,
-        dMinStartXY,
-        dMaxStartXY,
-        iNbBinsStartZ / 2,
-        dMinStartZ,
-        dMaxStartZ,
-        iNbBinsCentr,
-        dNbMinCentr,
-        dNbMaxCentr);
+      fvhTrackAllStartXZCent[iPartIdx] =
+        new TH3D(Form("TofTests_TrackAllStartXZCent_%s", ksPartTag[iPartIdx].Data()),
+                 Form("Centrality vs Start Z distribution for MC tracks w/ TOF Pnt, %s, "
+                      "all tracks; Start X [cm]; Start Z [cm]; B [fm];",
+                      ksPartName[iPartIdx].Data()),
+                 iNbBinsStartXY / 2, dMinStartXY, dMaxStartXY, iNbBinsStartZ / 2, dMinStartZ, dMaxStartZ, iNbBinsCentr,
+                 dNbMinCentr, dNbMaxCentr);
     fvhTrackAllStartXZ[iPartIdx] =
       new TH2D(Form("TofTests_TrackAllStartXZ_%s", ksPartTag[iPartIdx].Data()),
                Form("Start X vs Z distribution for MC tracks w/ TOF Pnt, %s, "
                     "all tracks; Start Z [cm]; Start X [cm]; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsStartZ / 2,
-               dMinStartZ,
-               dMaxStartZ,
-               iNbBinsStartXY,
-               dMinStartXY,
-               dMaxStartXY);
+               iNbBinsStartZ / 2, dMinStartZ, dMaxStartZ, iNbBinsStartXY, dMinStartXY, dMaxStartXY);
     fvhTrackAllStartYZ[iPartIdx] =
       new TH2D(Form("TofTests_TrackAllStartYZ_%s", ksPartTag[iPartIdx].Data()),
                Form("Start Y vs Z distribution for MC tracks w/ TOF Pnt, %s, "
                     "all tracks; Start Z [cm]; Start Y [cm]; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsStartZ / 2,
-               dMinStartZ,
-               dMaxStartZ,
-               iNbBinsStartXY,
-               dMinStartXY,
-               dMaxStartXY);
-    fvhTofPntAllAngCent[iPartIdx] =
-      new TH3D(Form("TofTests_TofPntAllAngCent_%s", ksPartTag[iPartIdx].Data()),
-               Form("Centrality vs Angular position of TOF Pnt, %s, all "
-                    "tracks; #theta_{x}[Deg.]; #theta_{y}[Deg.]; B [fm];",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinThetaX / 2,
-               dThetaXMin,
-               dThetaXMax,
-               iNbBinThetaY / 2,
-               dThetaYMin,
-               dThetaYMax,
-               iNbBinsCentr,
-               dNbMinCentr,
-               dNbMaxCentr);
+               iNbBinsStartZ / 2, dMinStartZ, dMaxStartZ, iNbBinsStartXY, dMinStartXY, dMaxStartXY);
+    fvhTofPntAllAngCent[iPartIdx] = new TH3D(Form("TofTests_TofPntAllAngCent_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("Centrality vs Angular position of TOF Pnt, %s, all "
+                                                  "tracks; #theta_{x}[Deg.]; #theta_{y}[Deg.]; B [fm];",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinThetaX / 2, dThetaXMin, dThetaXMax, iNbBinThetaY / 2, dThetaYMin,
+                                             dThetaYMax, iNbBinsCentr, dNbMinCentr, dNbMaxCentr);
   }  // for( Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++)
      // tracks: Only when creating normalization histos
   if (kTRUE == fbNormHistGenMode) {
     fhTrackMapXY  = new TH2D("TofTests_TracksMapXY",
                             "Position of the MC Tracks assuming along Z axis; "
                             "X[cm]; Y[cm]; # [Tracks]",
-                            nbinx,
-                            -xrange,
-                            xrange,
-                            nbiny,
-                            -yrange,
-                            yrange);
+                            nbinx, -xrange, xrange, nbiny, -yrange, yrange);
     fhTrackMapXZ  = new TH2D("TofTests_TracksMapXZ",
                             "Position of the MC Tracks assuming along Z axis; "
                             "X[cm]; Z[cm]; # [Tracks]",
-                            nbinx,
-                            -xrange,
-                            xrange,
-                            nbinz,
-                            zmin,
-                            zmax);
+                            nbinx, -xrange, xrange, nbinz, zmin, zmax);
     fhTrackMapYZ  = new TH2D("TofTests_TracksMapYZ",
                             "Position of the MC Tracks assuming along Z axis; "
                             "Y[cm]; Z[cm]; # [Tracks]",
-                            nbiny,
-                            -yrange,
-                            yrange,
-                            nbinz,
-                            zmin,
-                            zmax);
+                            nbiny, -yrange, yrange, nbinz, zmin, zmax);
     fhTrackMapAng = new TH2D("TofTests_TracksMapAng",
                              "Position of the MC Tracks assuming from origin; "
                              "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Tracks]",
-                             iNbBinThetaX,
-                             dThetaXMin,
-                             dThetaXMax,
-                             iNbBinThetaY,
-                             dThetaYMin,
-                             dThetaYMax);
+                             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
     fhTrackMapSph = new TH2D("TofTests_TracksMapSph",
                              "Position of the MC Tracks assuming from origin; "
                              "#theta[rad.]; #phi[rad.]; # [Tracks]",
-                             iNbBinTheta,
-                             dThetaMin,
-                             dThetaMax,
-                             iNbBinPhi,
-                             dPhiMin,
-                             dPhiMax);
+                             iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   }  // if( kTRUE == fbNormHistGenMode )
      // points
-  fhPointMapXY =
-    new TH2D("TofTests_PointsMapXY",
-             "Position of the Tof Points; X[cm]; Y[cm]; # [Points]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  fhPointMapXZ =
-    new TH2D("TofTests_PointsMapXZ",
-             "Position of the Tof Points; X[cm]; Z[cm]; # [Points]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  fhPointMapYZ =
-    new TH2D("TofTests_PointsMapYZ",
-             "Position of the Tof Points; Y[cm]; Z[cm]; # [Points]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
+  fhPointMapXY  = new TH2D("TofTests_PointsMapXY", "Position of the Tof Points; X[cm]; Y[cm]; # [Points]", nbinx,
+                          -xrange, xrange, nbiny, -yrange, yrange);
+  fhPointMapXZ  = new TH2D("TofTests_PointsMapXZ", "Position of the Tof Points; X[cm]; Z[cm]; # [Points]", nbinx,
+                          -xrange, xrange, nbinz, zmin, zmax);
+  fhPointMapYZ  = new TH2D("TofTests_PointsMapYZ", "Position of the Tof Points; Y[cm]; Z[cm]; # [Points]", nbiny,
+                          -yrange, yrange, nbinz, zmin, zmax);
   fhPointMapAng = new TH2D("TofTests_PointsMapAng",
                            "Position of the Tof Points; #theta_{x}[Deg.]; "
                            "#theta_{y}[Deg.]; # [Points]",
-                           iNbBinThetaX,
-                           dThetaXMin,
-                           dThetaXMax,
-                           iNbBinThetaY,
-                           dThetaYMin,
-                           dThetaYMax);
-  fhPointMapSph =
-    new TH2D("TofTests_PointsMapSph",
-             "Position of the Tof Points; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+                           iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhPointMapSph = new TH2D("TofTests_PointsMapSph", "Position of the Tof Points; #theta[rad.]; #phi[rad.]; # [Points]",
+                           iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // real (mean over all gaps) points
-  fhRealPointMapXY = new TH2D(
-    "TofTests_RealPointsMapXY",
-    "Position of the Tof Points (mean o/ gaps); X[cm]; Y[cm]; # [Points]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhRealPointMapXZ = new TH2D(
-    "TofTests_RealPointsMapXZ",
-    "Position of the Tof Points (mean o/ gaps); X[cm]; Z[cm]; # [Points]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhRealPointMapYZ = new TH2D(
-    "TofTests_RealPointsMapYZ",
-    "Position of the Tof Points (mean o/ gaps); Y[cm]; Z[cm]; # [Points]",
-    nbiny,
-    -yrange,
-    yrange,
-    nbinz,
-    zmin,
-    zmax);
+  fhRealPointMapXY =
+    new TH2D("TofTests_RealPointsMapXY", "Position of the Tof Points (mean o/ gaps); X[cm]; Y[cm]; # [Points]", nbinx,
+             -xrange, xrange, nbiny, -yrange, yrange);
+  fhRealPointMapXZ =
+    new TH2D("TofTests_RealPointsMapXZ", "Position of the Tof Points (mean o/ gaps); X[cm]; Z[cm]; # [Points]", nbinx,
+             -xrange, xrange, nbinz, zmin, zmax);
+  fhRealPointMapYZ =
+    new TH2D("TofTests_RealPointsMapYZ", "Position of the Tof Points (mean o/ gaps); Y[cm]; Z[cm]; # [Points]", nbiny,
+             -yrange, yrange, nbinz, zmin, zmax);
   fhRealPointMapAng = new TH2D("TofTests_RealPointsMapAng",
                                "Position of the Tof Points (mean o/ gaps); "
                                "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Points]",
-                               iNbBinThetaX,
-                               dThetaXMin,
-                               dThetaXMax,
-                               iNbBinThetaY,
-                               dThetaYMin,
-                               dThetaYMax);
+                               iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
   fhRealPointMapSph = new TH2D("TofTests_RealPointsMapSph",
                                "Position of the Tof Points (mean o/ gaps); "
                                "#theta[rad.]; #phi[rad.]; # [Points]",
-                               iNbBinTheta,
-                               dThetaMin,
-                               dThetaMax,
-                               iNbBinPhi,
-                               dPhiMin,
-                               dPhiMax);
+                               iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Digis
-  fhDigiMapXY  = new TH2D("TofTests_DigisMapXY",
-                         "Position of the Tof Digis; X[cm]; Y[cm]; # [Digi]",
-                         nbinx,
-                         -xrange,
-                         xrange,
-                         nbiny,
-                         -yrange,
-                         yrange);
-  fhDigiMapXZ  = new TH2D("TofTests_DigisMapXZ",
-                         "Position of the Tof Digis; X[cm]; Z[cm]; # [Digi]",
-                         nbinx,
-                         -xrange,
-                         xrange,
-                         nbinz,
-                         zmin,
-                         zmax);
-  fhDigiMapYZ  = new TH2D("TofTests_DigisMapYZ",
-                         "Position of the Tof Digis; Y[cm]; Z[cm]; # [Digi]",
-                         nbiny,
-                         -yrange,
-                         yrange,
-                         nbinz,
-                         zmin,
-                         zmax);
-  fhDigiMapAng = new TH2D(
-    "TofTests_DigisMapAng",
-    "Position of the Tof Digis; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Digi]",
-    iNbBinThetaX,
-    dThetaXMin,
-    dThetaXMax,
-    iNbBinThetaY,
-    dThetaYMin,
-    dThetaYMax);
-  fhDigiMapSph =
-    new TH2D("TofTests_DigisMapSph",
-             "Position of the Tof Digis; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  fhDigiMapXY = new TH2D("TofTests_DigisMapXY", "Position of the Tof Digis; X[cm]; Y[cm]; # [Digi]", nbinx, -xrange,
+                         xrange, nbiny, -yrange, yrange);
+  fhDigiMapXZ = new TH2D("TofTests_DigisMapXZ", "Position of the Tof Digis; X[cm]; Z[cm]; # [Digi]", nbinx, -xrange,
+                         xrange, nbinz, zmin, zmax);
+  fhDigiMapYZ = new TH2D("TofTests_DigisMapYZ", "Position of the Tof Digis; Y[cm]; Z[cm]; # [Digi]", nbiny, -yrange,
+                         yrange, nbinz, zmin, zmax);
+  fhDigiMapAng =
+    new TH2D("TofTests_DigisMapAng", "Position of the Tof Digis; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Digi]",
+             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhDigiMapSph = new TH2D("TofTests_DigisMapSph", "Position of the Tof Digis; #theta[rad.]; #phi[rad.]; # [Points]",
+                          iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
   // Hits
-  fhHitMapXY  = new TH2D("TofTests_HitsMapXY",
-                        "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]",
-                        nbinx,
-                        -xrange,
-                        xrange,
-                        nbiny,
-                        -yrange,
-                        yrange);
-  fhHitMapXZ  = new TH2D("TofTests_HitsMapXZ",
-                        "Position of the Tof Hits; X[cm]; Z[cm]; # [Hits]",
-                        nbinx,
-                        -xrange,
-                        xrange,
-                        nbinz,
-                        zmin,
-                        zmax);
-  fhHitMapYZ  = new TH2D("TofTests_HitsMapYZ",
-                        "Position of the Tof Hits; Y[cm]; Z[cm]; # [Hits]",
-                        nbiny,
-                        -yrange,
-                        yrange,
-                        nbinz,
-                        zmin,
-                        zmax);
-  fhHitMapAng = new TH2D(
-    "TofTests_HitsMapAng",
-    "Position of the Tof Hits; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-    iNbBinThetaX,
-    dThetaXMin,
-    dThetaXMax,
-    iNbBinThetaY,
-    dThetaYMin,
-    dThetaYMax);
-  fhHitMapSph =
-    new TH2D("TofTests_HitsMapSph",
-             "Position of the Tof Hits; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  fhHitMapXY = new TH2D("TofTests_HitsMapXY", "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]", nbinx, -xrange,
+                        xrange, nbiny, -yrange, yrange);
+  fhHitMapXZ = new TH2D("TofTests_HitsMapXZ", "Position of the Tof Hits; X[cm]; Z[cm]; # [Hits]", nbinx, -xrange,
+                        xrange, nbinz, zmin, zmax);
+  fhHitMapYZ = new TH2D("TofTests_HitsMapYZ", "Position of the Tof Hits; Y[cm]; Z[cm]; # [Hits]", nbiny, -yrange,
+                        yrange, nbinz, zmin, zmax);
+  fhHitMapAng =
+    new TH2D("TofTests_HitsMapAng", "Position of the Tof Hits; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhHitMapSph = new TH2D("TofTests_HitsMapSph", "Position of the Tof Hits; #theta[rad.]; #phi[rad.]; # [Points]",
+                         iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
   // L/R digis missmatch
   if (0 == fiNbChTot && kTRUE == fbHitProducerSource)
-    fiNbChTot =
-      1;  // Should only happen when the HitProducer is used, set to 1 to avoid histogram warning
+    fiNbChTot = 1;  // Should only happen when the HitProducer is used, set to 1 to avoid histogram warning
 
   fhLeftRightDigiMatch = new TH2D("TofTests_DigiMatchLR",
                                   "Matching between the left an right digi for "
                                   "strips added to hit; Global Strip Index []",
-                                  fiNbChTot,
-                                  0,
-                                  fiNbChTot,
-                                  3,
-                                  -0.5,
-                                  2.5);
+                                  fiNbChTot, 0, fiNbChTot, 3, -0.5, 2.5);
   fhLeftRightDigiMatch->GetYaxis()->SetBinLabel(1, "Same MC Point");
   fhLeftRightDigiMatch->GetYaxis()->SetBinLabel(2, "Same MC Track");
   fhLeftRightDigiMatch->GetYaxis()->SetBinLabel(3, "Diff MC Track");
 
   // Nb different MC Points and Tracks in Hit
   fhNbPointsInHit =
-    new TH1D("TofTests_NbPointsInHit",
-             "Number of different MC Points in Hit; # [MC Points]",
-             100,
-             -0.5,
-             99.5);
+    new TH1D("TofTests_NbPointsInHit", "Number of different MC Points in Hit; # [MC Points]", 100, -0.5, 99.5);
   fhNbTracksInHit =
-    new TH1D("TofTests_NbTracksInHit",
-             "Number of different MC Tracks in Hit; # [MC Tracks]",
-             100,
-             -0.5,
-             99.5);
+    new TH1D("TofTests_NbTracksInHit", "Number of different MC Tracks in Hit; # [MC Tracks]", 100, -0.5, 99.5);
 
   // Mapping of position for hits coming from a single MC Point
-  fhHitMapSingPntXY = new TH2D(
-    "TofTests_HitsMapSingPntXY",
-    "Position of the Tof Hits from a single MC Point; X[cm]; Y[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhHitMapSingPntXZ = new TH2D(
-    "TofTests_HitsMapSingPntXZ",
-    "Position of the Tof Hits from a single MC Point; X[cm]; Z[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapSingPntYZ = new TH2D(
-    "TofTests_HitsMapSingPntYZ",
-    "Position of the Tof Hits from a single MC Point; Y[cm]; Z[cm]; # [Hits]",
-    nbiny,
-    -yrange,
-    yrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapSingPntAng =
-    new TH2D("TofTests_HitsMapSingPntAng",
-             "Position of the Tof Hits from a single MC Point; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
+  fhHitMapSingPntXY =
+    new TH2D("TofTests_HitsMapSingPntXY", "Position of the Tof Hits from a single MC Point; X[cm]; Y[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  fhHitMapSingPntXZ =
+    new TH2D("TofTests_HitsMapSingPntXZ", "Position of the Tof Hits from a single MC Point; X[cm]; Z[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  fhHitMapSingPntYZ =
+    new TH2D("TofTests_HitsMapSingPntYZ", "Position of the Tof Hits from a single MC Point; Y[cm]; Z[cm]; # [Hits]",
+             nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  fhHitMapSingPntAng = new TH2D("TofTests_HitsMapSingPntAng",
+                                "Position of the Tof Hits from a single MC Point; "
+                                "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+                                iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
   fhHitMapSingPntSph = new TH2D("TofTests_HitsMapSingPntSph",
                                 "Position of the Tof Hits from a single MC "
                                 "Point; #theta[rad.]; #phi[rad.]; # [Points]",
-                                iNbBinTheta,
-                                dThetaMin,
-                                dThetaMax,
-                                iNbBinPhi,
-                                dPhiMin,
-                                dPhiMax);
+                                iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from multiple MC Points
-  fhHitMapMultPntXY = new TH2D(
-    "TofTests_HitsMapMultPntXY",
-    "Position of the Tof Hits from multiple MC Points; X[cm]; Y[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhHitMapMultPntXZ = new TH2D(
-    "TofTests_HitsMapMultPntXZ",
-    "Position of the Tof Hits from multiple MC Points; X[cm]; Z[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapMultPntYZ = new TH2D(
-    "TofTests_HitsMapMultPntYZ",
-    "Position of the Tof Hits from multiple MC Points; Y[cm]; Z[cm]; # [Hits]",
-    nbiny,
-    -yrange,
-    yrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapMultPntAng =
-    new TH2D("TofTests_HitsMapMultPntAng",
-             "Position of the Tof Hits from multiple MC Points; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
+  fhHitMapMultPntXY =
+    new TH2D("TofTests_HitsMapMultPntXY", "Position of the Tof Hits from multiple MC Points; X[cm]; Y[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  fhHitMapMultPntXZ =
+    new TH2D("TofTests_HitsMapMultPntXZ", "Position of the Tof Hits from multiple MC Points; X[cm]; Z[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  fhHitMapMultPntYZ =
+    new TH2D("TofTests_HitsMapMultPntYZ", "Position of the Tof Hits from multiple MC Points; Y[cm]; Z[cm]; # [Hits]",
+             nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  fhHitMapMultPntAng = new TH2D("TofTests_HitsMapMultPntAng",
+                                "Position of the Tof Hits from multiple MC Points; "
+                                "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+                                iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
   fhHitMapMultPntSph = new TH2D("TofTests_HitsMapMultPntSph",
                                 "Position of the Tof Hits from multiple MC "
                                 "Points; #theta[rad.]; #phi[rad.]; # [Points]",
-                                iNbBinTheta,
-                                dThetaMin,
-                                dThetaMax,
-                                iNbBinPhi,
-                                dPhiMin,
-                                dPhiMax);
+                                iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from a single MC Track
-  fhHitMapSingTrkXY = new TH2D(
-    "TofTests_HitsMapSingTrkXY",
-    "Position of the Tof Hits from a single MC Track; X[cm]; Y[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhHitMapSingTrkXZ = new TH2D(
-    "TofTests_HitsMapSingTrkXZ",
-    "Position of the Tof Hits from a single MC Track; X[cm]; Z[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapSingTrkYZ = new TH2D(
-    "TofTests_HitsMapSingTrkYZ",
-    "Position of the Tof Hits from a single MC Track; Y[cm]; Z[cm]; # [Hits]",
-    nbiny,
-    -yrange,
-    yrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapSingTrkAng =
-    new TH2D("TofTests_HitsMapSingTrkAng",
-             "Position of the Tof Hits from a single MC Track; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
+  fhHitMapSingTrkXY =
+    new TH2D("TofTests_HitsMapSingTrkXY", "Position of the Tof Hits from a single MC Track; X[cm]; Y[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  fhHitMapSingTrkXZ =
+    new TH2D("TofTests_HitsMapSingTrkXZ", "Position of the Tof Hits from a single MC Track; X[cm]; Z[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  fhHitMapSingTrkYZ =
+    new TH2D("TofTests_HitsMapSingTrkYZ", "Position of the Tof Hits from a single MC Track; Y[cm]; Z[cm]; # [Hits]",
+             nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  fhHitMapSingTrkAng = new TH2D("TofTests_HitsMapSingTrkAng",
+                                "Position of the Tof Hits from a single MC Track; "
+                                "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+                                iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
   fhHitMapSingTrkSph = new TH2D("TofTests_HitsMapSingTrkSph",
                                 "Position of the Tof Hits from a single MC "
                                 "Track; #theta[rad.]; #phi[rad.]; # [Points]",
-                                iNbBinTheta,
-                                dThetaMin,
-                                dThetaMax,
-                                iNbBinPhi,
-                                dPhiMin,
-                                dPhiMax);
+                                iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from multiple MC Tracks
-  fhHitMapMultTrkXY = new TH2D(
-    "TofTests_HitsMapMultTrkXY",
-    "Position of the Tof Hits from multiple MC Tracks; X[cm]; Y[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhHitMapMultTrkXZ = new TH2D(
-    "TofTests_HitsMapMultTrkXZ",
-    "Position of the Tof Hits from multiple MC Tracks; X[cm]; Z[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapMultTrkYZ = new TH2D(
-    "TofTests_HitsMapMultTrkYZ",
-    "Position of the Tof Hits from multiple MC Tracks; Y[cm]; Z[cm]; # [Hits]",
-    nbiny,
-    -yrange,
-    yrange,
-    nbinz,
-    zmin,
-    zmax);
-  fhHitMapMultTrkAng =
-    new TH2D("TofTests_HitsMapMultTrkAng",
-             "Position of the Tof Hits from multiple MC Tracks; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
+  fhHitMapMultTrkXY =
+    new TH2D("TofTests_HitsMapMultTrkXY", "Position of the Tof Hits from multiple MC Tracks; X[cm]; Y[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  fhHitMapMultTrkXZ =
+    new TH2D("TofTests_HitsMapMultTrkXZ", "Position of the Tof Hits from multiple MC Tracks; X[cm]; Z[cm]; # [Hits]",
+             nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  fhHitMapMultTrkYZ =
+    new TH2D("TofTests_HitsMapMultTrkYZ", "Position of the Tof Hits from multiple MC Tracks; Y[cm]; Z[cm]; # [Hits]",
+             nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  fhHitMapMultTrkAng = new TH2D("TofTests_HitsMapMultTrkAng",
+                                "Position of the Tof Hits from multiple MC Tracks; "
+                                "#theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+                                iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
   fhHitMapMultTrkSph = new TH2D("TofTests_HitsMapMultTrkSph",
                                 "Position of the Tof Hits from multiple MC "
                                 "Tracks; #theta[rad.]; #phi[rad.]; # [Points]",
-                                iNbBinTheta,
-                                dThetaMin,
-                                dThetaMax,
-                                iNbBinPhi,
-                                dPhiMin,
-                                dPhiMax);
+                                iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
 
   // Hit Quality for Hits coming from a single MC Point
-  fhSinglePointHitDeltaX =
-    new TH1D("TofTests_SinglePointHitDeltaX",
-             "Quality of the Tof Hits position on X axis, for hit coming from "
-             "a single MC Point; X(Hit) - X(Point) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSinglePointHitDeltaY =
-    new TH1D("TofTests_SinglePointHitDeltaY",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Point; Y(Hit) - Y(Point) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSinglePointHitDeltaZ =
-    new TH1D("TofTests_SinglePointHitDeltaZ",
-             "Quality of the Tof Hits position on Z axis, for hit coming from "
-             "a single MC Point; Z(Hit) - Z(Point) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSinglePointHitDeltaR =
-    new TH1D("TofTests_SinglePointHitDeltaR",
-             "Quality of the Tof Hits position, for hit coming from a single "
-             "MC Point; R(Hit -> Point) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSinglePointHitDeltaT =
-    new TH1D("TofTests_SinglePointHitDeltaT",
-             "Quality of the Tof Hits Time, for hit coming from a single MC "
-             "Point; T(hit) - T(Point) [ps]; # [Hits]",
-             iNbBinsDeltaTime,
-             -dDeltaTimeRange,
-             dDeltaTimeRange);
-  fhSinglePointHitPullX =
-    new TH1D("TofTests_SinglePointHitPullX",
-             "Quality of the Tof Hits position error on X axis, for hit coming "
-             "from a single MC Point; Pull X(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSinglePointHitPullY =
-    new TH1D("TofTests_SinglePointHitPullY",
-             "Quality of the Tof Hits position error on Y axis, for hit coming "
-             "from a single MC Point; Pull Y(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSinglePointHitPullZ =
-    new TH1D("TofTests_SinglePointHitPullZ",
-             "Quality of the Tof Hits position error on Z axis, for hit coming "
-             "from a single MC Point; Pull Z(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSinglePointHitPullR =
-    new TH1D("TofTests_SinglePointHitPullR",
-             "Quality of the Tof Hits position error, for hit coming from a "
-             "single MC Point; Pull R(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSinglePointHitPullT =
-    new TH1D("TofTests_SinglePointHitPullT",
-             "Quality of the Tof Hits time error, for hit coming from a single "
-             "MC Point; Pull T(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhCltSzSinglePointHitPullX =
-    new TH2D("TofTests_CltSzSinglePointHitPullX",
-             "Quality of the Tof Hits position error on X axis, for hit coming "
-             "from a single MC Point; Pull X(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             32,
-             1,
-             33);
-  fhCltSzSinglePointHitPullY =
-    new TH2D("TofTests_CltSzSinglePointHitPullY",
-             "Quality of the Tof Hits position error on Y axis, for hit coming "
-             "from a single MC Point; Pull Y(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             32,
-             1,
-             33);
-  fhCltSzSinglePointHitPullZ =
-    new TH2D("TofTests_CltSzSinglePointHitPullZ",
-             "Quality of the Tof Hits position error on Z axis, for hit coming "
-             "from a single MC Point; Pull Z(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             32,
-             1,
-             33);
-  fhCltSzSinglePointHitPullR =
-    new TH2D("TofTests_CltSzSinglePointHitPullR",
-             "Quality of the Tof Hits position error, for hit coming from a "
-             "single MC Point; Pull R(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             32,
-             1,
-             33);
-  fhCltSzSinglePointHitPullT =
-    new TH2D("TofTests_CltSzSinglePointHitPullT",
-             "Quality of the Tof Hits time error, for hit coming from a single "
-             "MC Point; Pull T(Hit -> Point) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             32,
-             1,
-             33);
+  fhSinglePointHitDeltaX     = new TH1D("TofTests_SinglePointHitDeltaX",
+                                    "Quality of the Tof Hits position on X axis, for hit coming from "
+                                    "a single MC Point; X(Hit) - X(Point) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSinglePointHitDeltaY     = new TH1D("TofTests_SinglePointHitDeltaY",
+                                    "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                    "a single MC Point; Y(Hit) - Y(Point) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSinglePointHitDeltaZ     = new TH1D("TofTests_SinglePointHitDeltaZ",
+                                    "Quality of the Tof Hits position on Z axis, for hit coming from "
+                                    "a single MC Point; Z(Hit) - Z(Point) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSinglePointHitDeltaR     = new TH1D("TofTests_SinglePointHitDeltaR",
+                                    "Quality of the Tof Hits position, for hit coming from a single "
+                                    "MC Point; R(Hit -> Point) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSinglePointHitDeltaT     = new TH1D("TofTests_SinglePointHitDeltaT",
+                                    "Quality of the Tof Hits Time, for hit coming from a single MC "
+                                    "Point; T(hit) - T(Point) [ps]; # [Hits]",
+                                    iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange);
+  fhSinglePointHitPullX      = new TH1D("TofTests_SinglePointHitPullX",
+                                   "Quality of the Tof Hits position error on X axis, for hit coming "
+                                   "from a single MC Point; Pull X(Hit -> Point) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSinglePointHitPullY      = new TH1D("TofTests_SinglePointHitPullY",
+                                   "Quality of the Tof Hits position error on Y axis, for hit coming "
+                                   "from a single MC Point; Pull Y(Hit -> Point) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSinglePointHitPullZ      = new TH1D("TofTests_SinglePointHitPullZ",
+                                   "Quality of the Tof Hits position error on Z axis, for hit coming "
+                                   "from a single MC Point; Pull Z(Hit -> Point) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSinglePointHitPullR      = new TH1D("TofTests_SinglePointHitPullR",
+                                   "Quality of the Tof Hits position error, for hit coming from a "
+                                   "single MC Point; Pull R(Hit -> Point) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSinglePointHitPullT      = new TH1D("TofTests_SinglePointHitPullT",
+                                   "Quality of the Tof Hits time error, for hit coming from a single "
+                                   "MC Point; Pull T(Hit -> Point) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhCltSzSinglePointHitPullX = new TH2D("TofTests_CltSzSinglePointHitPullX",
+                                        "Quality of the Tof Hits position error on X axis, for hit coming "
+                                        "from a single MC Point; Pull X(Hit -> Point) []; # [Hits]",
+                                        iNbBinsPullPos, -dPullPosRange, dPullPosRange, 32, 1, 33);
+  fhCltSzSinglePointHitPullY = new TH2D("TofTests_CltSzSinglePointHitPullY",
+                                        "Quality of the Tof Hits position error on Y axis, for hit coming "
+                                        "from a single MC Point; Pull Y(Hit -> Point) []; # [Hits]",
+                                        iNbBinsPullPos, -dPullPosRange, dPullPosRange, 32, 1, 33);
+  fhCltSzSinglePointHitPullZ = new TH2D("TofTests_CltSzSinglePointHitPullZ",
+                                        "Quality of the Tof Hits position error on Z axis, for hit coming "
+                                        "from a single MC Point; Pull Z(Hit -> Point) []; # [Hits]",
+                                        iNbBinsPullPos, -dPullPosRange, dPullPosRange, 32, 1, 33);
+  fhCltSzSinglePointHitPullR = new TH2D("TofTests_CltSzSinglePointHitPullR",
+                                        "Quality of the Tof Hits position error, for hit coming from a "
+                                        "single MC Point; Pull R(Hit -> Point) []; # [Hits]",
+                                        iNbBinsPullPos, -dPullPosRange, dPullPosRange, 32, 1, 33);
+  fhCltSzSinglePointHitPullT = new TH2D("TofTests_CltSzSinglePointHitPullT",
+                                        "Quality of the Tof Hits time error, for hit coming from a single "
+                                        "MC Point; Pull T(Hit -> Point) []; # [Hits]",
+                                        iNbBinsPullPos, -dPullPosRange, dPullPosRange, 32, 1, 33);
 
   // Hit Quality for Hits coming from a multiple MC Points
   // To Point closest to Hit
@@ -1678,584 +1244,314 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
              "Quality of the Tof Hits position on X axis relative to closest "
              "Point, for hit coming from multiple MC Point; X(Hit) - X(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestDeltaY =
     new TH2D("TofTests_MultiPntHitClosestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Point, for hit coming from multiple MC Point; Y(Hit) - Y(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestDeltaZ =
     new TH2D("TofTests_MultiPntHitClosestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to closest "
              "Point, for hit coming from multiple MC Point; Z(Hit) - Z(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestDeltaR =
     new TH2D("TofTests_MultiPntHitClosestDeltaR",
              "Quality of the Tof Hits position relative to closest Point, for "
              "hit coming from multiple MC Point; R(Hit -> Point) [cm]; # "
              "[Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitClosestDeltaT = new TH2D(
-    "TofTests_MultiPntHitClosestDeltaT",
-    "Quality of the Tof Hits Time relative to closest Point, for hit coming "
-    "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitClosestDeltaT =
+    new TH2D("TofTests_MultiPntHitClosestDeltaT",
+             "Quality of the Tof Hits Time relative to closest Point, for hit coming "
+             "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestPullX =
     new TH2D("TofTests_MultiPntHitClosestPullX",
              "Quality of the Tof Hits position error on X axis relative to "
              "closest Point, for hit coming from multiple MC Point; Pull X(Hit "
              "-> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestPullY =
     new TH2D("TofTests_MultiPntHitClosestPullY",
              "Quality of the Tof Hits position error on Y axis relative to "
              "closest Point, for hit coming from multiple MC Point; Pull Y(Hit "
              "-> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestPullZ =
     new TH2D("TofTests_MultiPntHitClosestPullZ",
              "Quality of the Tof Hits position error on Z axis relative to "
              "closest Point, for hit coming from multiple MC Point; Pull Z(Hit "
              "-> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestPullR =
     new TH2D("TofTests_MultiPntHitClosestPullR",
              "Quality of the Tof Hits position error relative to closest "
              "Point, for hit coming from multiple MC Point; Pull R(Hit -> "
              "Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitClosestPullT =
     new TH2D("TofTests_MultiPntHitClosestPullT",
              "Quality of the Tof Hits time error relative to closest Point, "
              "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
              "# [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To Point furthest from Hit
   fhMultiPntHitFurthestDeltaX =
     new TH2D("TofTests_MultiPntHitFurthestDeltaX",
              "Quality of the Tof Hits position on X axis relative to furthest "
              "Point, for hit coming from multiple MC Point; X(Hit) - X(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestDeltaY =
     new TH2D("TofTests_MultiPntHitFurthestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to furthest "
              "Point, for hit coming from multiple MC Point; Y(Hit) - Y(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestDeltaZ =
     new TH2D("TofTests_MultiPntHitFurthestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to furthest "
              "Point, for hit coming from multiple MC Point; Z(Hit) - Z(Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestDeltaR =
     new TH2D("TofTests_MultiPntHitFurthestDeltaR",
              "Quality of the Tof Hits position relative to furthest Point, for "
              "hit coming from multiple MC Point; R(Hit -> Point) [cm]; # "
              "[Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitFurthestDeltaT = new TH2D(
-    "TofTests_MultiPntHitFurthestDeltaT",
-    "Quality of the Tof Hits Time relative to furthest Point, for hit coming "
-    "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitFurthestDeltaT =
+    new TH2D("TofTests_MultiPntHitFurthestDeltaT",
+             "Quality of the Tof Hits Time relative to furthest Point, for hit coming "
+             "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestPullX =
     new TH2D("TofTests_MultiPntHitFurthestPullX",
              "Quality of the Tof Hits position error on X axis relative to "
              "furthest Point, for hit coming from multiple MC Point; Pull "
              "X(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestPullY =
     new TH2D("TofTests_MultiPntHitFurthestPullY",
              "Quality of the Tof Hits position error on Y axis relative to "
              "furthest Point, for hit coming from multiple MC Point; Pull "
              "Y(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestPullZ =
     new TH2D("TofTests_MultiPntHitFurthestPullZ",
              "Quality of the Tof Hits position error on Z axis relative to "
              "furthest Point, for hit coming from multiple MC Point; Pull "
              "Z(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestPullR =
     new TH2D("TofTests_MultiPntHitFurthestPullR",
              "Quality of the Tof Hits position error relative to furthest "
              "Point, for hit coming from multiple MC Point; Pull R(Hit -> "
              "Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitFurthestPullT =
     new TH2D("TofTests_MultiPntHitFurthestPullT",
              "Quality of the Tof Hits time error relative to furthest Point, "
              "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
              "# [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To mean Point position
   fhMultiPntHitMeanDeltaX =
     new TH2D("TofTests_MultiPntHitMeanDeltaX",
              "Quality of the Tof Hits position on X axis relative to mean "
              "Point position, for hit coming from multiple MC Point; X(Hit) - "
              "X(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitMeanDeltaY =
     new TH2D("TofTests_MultiPntHitMeanDeltaY",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Point position, for hit coming from multiple MC Point; Y(Hit) - "
              "Y(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitMeanDeltaZ =
     new TH2D("TofTests_MultiPntHitMeanDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to mean "
              "Point position, for hit coming from multiple MC Point; Z(Hit) - "
              "Z(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitMeanDeltaR =
     new TH2D("TofTests_MultiPntHitMeanDeltaR",
              "Quality of the Tof Hits position relative to mean Point "
              "position, for hit coming from multiple MC Point; R(Hit -> Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitMeanDeltaT = new TH2D(
-    "TofTests_MultiPntHitMeanDeltaT",
-    "Quality of the Tof Hits Time relative to mean Point time, for hit coming "
-    "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
-  fhMultiPntHitMeanPullX =
-    new TH2D("TofTests_MultiPntHitMeanPullX",
-             "Quality of the Tof Hits position error on X axis relative to "
-             "mean Point position, for hit coming from multiple MC Point; Pull "
-             "X(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitMeanPullY =
-    new TH2D("TofTests_MultiPntHitMeanPullY",
-             "Quality of the Tof Hits position error on Y axis relative to "
-             "mean Point position, for hit coming from multiple MC Point; Pull "
-             "Y(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitMeanPullZ =
-    new TH2D("TofTests_MultiPntHitMeanPullZ",
-             "Quality of the Tof Hits position error on Z axis relative to "
-             "mean Point position, for hit coming from multiple MC Point; Pull "
-             "Z(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitMeanPullR =
-    new TH2D("TofTests_MultiPntHitMeanPullR",
-             "Quality of the Tof Hits position error relative to mean Point "
-             "position, for hit coming from multiple MC Point; Pull R(Hit -> "
-             "Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitMeanPullT =
-    new TH2D("TofTests_MultiPntHitMeanPullT",
-             "Quality of the Tof Hits time error relative to mean Point time, "
-             "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
-             "# [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanDeltaT =
+    new TH2D("TofTests_MultiPntHitMeanDeltaT",
+             "Quality of the Tof Hits Time relative to mean Point time, for hit coming "
+             "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanPullX = new TH2D("TofTests_MultiPntHitMeanPullX",
+                                    "Quality of the Tof Hits position error on X axis relative to "
+                                    "mean Point position, for hit coming from multiple MC Point; Pull "
+                                    "X(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanPullY = new TH2D("TofTests_MultiPntHitMeanPullY",
+                                    "Quality of the Tof Hits position error on Y axis relative to "
+                                    "mean Point position, for hit coming from multiple MC Point; Pull "
+                                    "Y(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanPullZ = new TH2D("TofTests_MultiPntHitMeanPullZ",
+                                    "Quality of the Tof Hits position error on Z axis relative to "
+                                    "mean Point position, for hit coming from multiple MC Point; Pull "
+                                    "Z(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanPullR = new TH2D("TofTests_MultiPntHitMeanPullR",
+                                    "Quality of the Tof Hits position error relative to mean Point "
+                                    "position, for hit coming from multiple MC Point; Pull R(Hit -> "
+                                    "Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitMeanPullT = new TH2D("TofTests_MultiPntHitMeanPullT",
+                                    "Quality of the Tof Hits time error relative to mean Point time, "
+                                    "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
+                                    "# [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To best Point (highest TOT contribution
   fhMultiPntHitBestDeltaX =
     new TH2D("TofTests_MultiPntHitBestDeltaX",
              "Quality of the Tof Hits position on X axis relative to best "
              "Point position, for hit coming from multiple MC Point; X(Hit) - "
              "X(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitBestDeltaY =
     new TH2D("TofTests_MultiPntHitBestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to best "
              "Point position, for hit coming from multiple MC Point; Y(Hit) - "
              "Y(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitBestDeltaZ =
     new TH2D("TofTests_MultiPntHitBestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to best "
              "Point position, for hit coming from multiple MC Point; Z(Hit) - "
              "Z(Point) [cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiPntHitBestDeltaR =
     new TH2D("TofTests_MultiPntHitBestDeltaR",
              "Quality of the Tof Hits position relative to best Point "
              "position, for hit coming from multiple MC Point; R(Hit -> Point) "
              "[cm]; # [Hits]; Multi [Pnt]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitBestDeltaT = new TH2D(
-    "TofTests_MultiPntHitBestDeltaT",
-    "Quality of the Tof Hits Time relative to best Point time, for hit coming "
-    "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
-  fhMultiPntHitBestPullX =
-    new TH2D("TofTests_MultiPntHitBestPullX",
-             "Quality of the Tof Hits position error on X axis relative to "
-             "best Point position, for hit coming from multiple MC Point; Pull "
-             "X(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitBestPullY =
-    new TH2D("TofTests_MultiPntHitBestPullY",
-             "Quality of the Tof Hits position error on Y axis relative to "
-             "best Point position, for hit coming from multiple MC Point; Pull "
-             "Y(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitBestPullZ =
-    new TH2D("TofTests_MultiPntHitBestPullZ",
-             "Quality of the Tof Hits position error on Z axis relative to "
-             "best Point position, for hit coming from multiple MC Point; Pull "
-             "Z(Hit -> Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitBestPullR =
-    new TH2D("TofTests_MultiPntHitBestPullR",
-             "Quality of the Tof Hits position error relative to best Point "
-             "position, for hit coming from multiple MC Point; Pull R(Hit -> "
-             "Point) []; # [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiPntHitBestPullT =
-    new TH2D("TofTests_MultiPntHitBestPullT",
-             "Quality of the Tof Hits time error relative to best Point time, "
-             "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
-             "# [Hits]; Multi [Pnt]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestDeltaT =
+    new TH2D("TofTests_MultiPntHitBestDeltaT",
+             "Quality of the Tof Hits Time relative to best Point time, for hit coming "
+             "from multiple MC Point; T(hit) - T(Point) [ps]; # [Hits]; Multi [Pnt]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestPullX = new TH2D("TofTests_MultiPntHitBestPullX",
+                                    "Quality of the Tof Hits position error on X axis relative to "
+                                    "best Point position, for hit coming from multiple MC Point; Pull "
+                                    "X(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestPullY = new TH2D("TofTests_MultiPntHitBestPullY",
+                                    "Quality of the Tof Hits position error on Y axis relative to "
+                                    "best Point position, for hit coming from multiple MC Point; Pull "
+                                    "Y(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestPullZ = new TH2D("TofTests_MultiPntHitBestPullZ",
+                                    "Quality of the Tof Hits position error on Z axis relative to "
+                                    "best Point position, for hit coming from multiple MC Point; Pull "
+                                    "Z(Hit -> Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestPullR = new TH2D("TofTests_MultiPntHitBestPullR",
+                                    "Quality of the Tof Hits position error relative to best Point "
+                                    "position, for hit coming from multiple MC Point; Pull R(Hit -> "
+                                    "Point) []; # [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiPntHitBestPullT = new TH2D("TofTests_MultiPntHitBestPullT",
+                                    "Quality of the Tof Hits time error relative to best Point time, "
+                                    "for hit coming from multiple MC Point; Pull T(Hit -> Point) []; "
+                                    "# [Hits]; Multi [Pnt]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
 
   // Hit Quality for Hits coming from a single MC Track
-  fhSingleTrackHitDeltaX =
-    new TH1D("TofTests_SingleTrackHitDeltaX",
-             "Quality of the Tof Hits position on X axis, for hit coming from "
-             "a single MC Track; X(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingleTrackHitDeltaY =
-    new TH1D("TofTests_SingleTrackHitDeltaY",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track; Y(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingleTrackHitDeltaZ =
-    new TH1D("TofTests_SingleTrackHitDeltaZ",
-             "Quality of the Tof Hits position on Z axis, for hit coming from "
-             "a single MC Track; Z(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingleTrackHitDeltaR =
-    new TH1D("TofTests_SingleTrackHitDeltaR",
-             "Quality of the Tof Hits position, for hit coming from a single "
-             "MC Track; R(Hit -> Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingleTrackHitDeltaT =
-    new TH1D("TofTests_SingleTrackHitDeltaT",
-             "Quality of the Tof Hits Time, for hit coming from a single MC "
-             "Track; T(hit) - T(Track) [ps]; # [Hits]",
-             iNbBinsDeltaTime,
-             -dDeltaTimeRange,
-             dDeltaTimeRange);
-  fhSingleTrackHitPullX =
-    new TH1D("TofTests_SingleTrackHitPullX",
-             "Quality of the Tof Hits position error on X axis, for hit coming "
-             "from a single MC Track; Pull X(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingleTrackHitPullY =
-    new TH1D("TofTests_SingleTrackHitPullY",
-             "Quality of the Tof Hits position error on Y axis, for hit coming "
-             "from a single MC Track; Y(Hit) - X(Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingleTrackHitPullZ =
-    new TH1D("TofTests_SingleTrackHitPullZ",
-             "Quality of the Tof Hits position error on Z axis, for hit coming "
-             "from a single MC Track; Z(Hit) - X(Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingleTrackHitPullR =
-    new TH1D("TofTests_SingleTrackHitPullR",
-             "Quality of the Tof Hits position error, for hit coming from a "
-             "single MC Track; Pull R(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingleTrackHitPullT =
-    new TH1D("TofTests_SingleTrackHitPullT",
-             "Quality of the Tof Hits time error, for hit coming from a single "
-             "MC Track; Pull T(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
+  fhSingleTrackHitDeltaX = new TH1D("TofTests_SingleTrackHitDeltaX",
+                                    "Quality of the Tof Hits position on X axis, for hit coming from "
+                                    "a single MC Track; X(Hit) - X(Track) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingleTrackHitDeltaY = new TH1D("TofTests_SingleTrackHitDeltaY",
+                                    "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                    "a single MC Track; Y(Hit) - X(Track) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingleTrackHitDeltaZ = new TH1D("TofTests_SingleTrackHitDeltaZ",
+                                    "Quality of the Tof Hits position on Z axis, for hit coming from "
+                                    "a single MC Track; Z(Hit) - X(Track) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingleTrackHitDeltaR = new TH1D("TofTests_SingleTrackHitDeltaR",
+                                    "Quality of the Tof Hits position, for hit coming from a single "
+                                    "MC Track; R(Hit -> Track) [cm]; # [Hits]",
+                                    iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingleTrackHitDeltaT = new TH1D("TofTests_SingleTrackHitDeltaT",
+                                    "Quality of the Tof Hits Time, for hit coming from a single MC "
+                                    "Track; T(hit) - T(Track) [ps]; # [Hits]",
+                                    iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange);
+  fhSingleTrackHitPullX  = new TH1D("TofTests_SingleTrackHitPullX",
+                                   "Quality of the Tof Hits position error on X axis, for hit coming "
+                                   "from a single MC Track; Pull X(Hit -> Track) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingleTrackHitPullY  = new TH1D("TofTests_SingleTrackHitPullY",
+                                   "Quality of the Tof Hits position error on Y axis, for hit coming "
+                                   "from a single MC Track; Y(Hit) - X(Track) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingleTrackHitPullZ  = new TH1D("TofTests_SingleTrackHitPullZ",
+                                   "Quality of the Tof Hits position error on Z axis, for hit coming "
+                                   "from a single MC Track; Z(Hit) - X(Track) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingleTrackHitPullR  = new TH1D("TofTests_SingleTrackHitPullR",
+                                   "Quality of the Tof Hits position error, for hit coming from a "
+                                   "single MC Track; Pull R(Hit -> Track) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingleTrackHitPullT  = new TH1D("TofTests_SingleTrackHitPullT",
+                                   "Quality of the Tof Hits time error, for hit coming from a single "
+                                   "MC Track; Pull T(Hit -> Track) []; # [Hits]",
+                                   iNbBinsPullPos, -dPullPosRange, dPullPosRange);
 
   // Hit Quality for Hits coming from a single MC Track but multiple points
-  fhSingTrkMultiPntHitDeltaX =
-    new TH1D("TofTests_SingTrkMultiPntHitDeltaX",
-             "Quality of the Tof Hits position on X axis, for hit coming from "
-             "a single MC Track; X(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingTrkMultiPntHitDeltaY =
-    new TH1D("TofTests_SingTrkMultiPntHitDeltaY",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track; Y(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingTrkMultiPntHitDeltaZ =
-    new TH1D("TofTests_SingTrkMultiPntHitDeltaZ",
-             "Quality of the Tof Hits position on Z axis, for hit coming from "
-             "a single MC Track; Z(Hit) - X(Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingTrkMultiPntHitDeltaR =
-    new TH1D("TofTests_SingTrkMultiPntHitDeltaR",
-             "Quality of the Tof Hits position, for hit coming from a single "
-             "MC Track; R(Hit -> Track) [cm]; # [Hits]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange);
-  fhSingTrkMultiPntHitDeltaT =
-    new TH1D("TofTests_SingTrkMultiPntHitDeltaT",
-             "Quality of the Tof Hits Time, for hit coming from a single MC "
-             "Track; T(hit) - T(Track) [ps]; # [Hits]",
-             iNbBinsDeltaTime,
-             -dDeltaTimeRange,
-             dDeltaTimeRange);
-  fhSingTrkMultiPntHitPullX =
-    new TH1D("TofTests_SingTrkMultiPntHitPullX",
-             "Quality of the Tof Hits position error on X axis, for hit coming "
-             "from a single MC Track; Pull X(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingTrkMultiPntHitPullY =
-    new TH1D("TofTests_SingTrkMultiPntHitPullY",
-             "Quality of the Tof Hits position error on Y axis, for hit coming "
-             "from a single MC Track; Y(Hit) - X(Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingTrkMultiPntHitPullZ =
-    new TH1D("TofTests_SingTrkMultiPntHitPullZ",
-             "Quality of the Tof Hits position error on Z axis, for hit coming "
-             "from a single MC Track; Z(Hit) - X(Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingTrkMultiPntHitPullR =
-    new TH1D("TofTests_SingTrkMultiPntHitPullR",
-             "Quality of the Tof Hits position error, for hit coming from a "
-             "single MC Track; Pull R(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
-  fhSingTrkMultiPntHitPullT =
-    new TH1D("TofTests_SingTrkMultiPntHitPullT",
-             "Quality of the Tof Hits time error, for hit coming from a single "
-             "MC Track; Pull T(Hit -> Track) []; # [Hits]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange);
+  fhSingTrkMultiPntHitDeltaX = new TH1D("TofTests_SingTrkMultiPntHitDeltaX",
+                                        "Quality of the Tof Hits position on X axis, for hit coming from "
+                                        "a single MC Track; X(Hit) - X(Track) [cm]; # [Hits]",
+                                        iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingTrkMultiPntHitDeltaY = new TH1D("TofTests_SingTrkMultiPntHitDeltaY",
+                                        "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                        "a single MC Track; Y(Hit) - X(Track) [cm]; # [Hits]",
+                                        iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingTrkMultiPntHitDeltaZ = new TH1D("TofTests_SingTrkMultiPntHitDeltaZ",
+                                        "Quality of the Tof Hits position on Z axis, for hit coming from "
+                                        "a single MC Track; Z(Hit) - X(Track) [cm]; # [Hits]",
+                                        iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingTrkMultiPntHitDeltaR = new TH1D("TofTests_SingTrkMultiPntHitDeltaR",
+                                        "Quality of the Tof Hits position, for hit coming from a single "
+                                        "MC Track; R(Hit -> Track) [cm]; # [Hits]",
+                                        iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange);
+  fhSingTrkMultiPntHitDeltaT = new TH1D("TofTests_SingTrkMultiPntHitDeltaT",
+                                        "Quality of the Tof Hits Time, for hit coming from a single MC "
+                                        "Track; T(hit) - T(Track) [ps]; # [Hits]",
+                                        iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange);
+  fhSingTrkMultiPntHitPullX  = new TH1D("TofTests_SingTrkMultiPntHitPullX",
+                                       "Quality of the Tof Hits position error on X axis, for hit coming "
+                                       "from a single MC Track; Pull X(Hit -> Track) []; # [Hits]",
+                                       iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingTrkMultiPntHitPullY  = new TH1D("TofTests_SingTrkMultiPntHitPullY",
+                                       "Quality of the Tof Hits position error on Y axis, for hit coming "
+                                       "from a single MC Track; Y(Hit) - X(Track) []; # [Hits]",
+                                       iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingTrkMultiPntHitPullZ  = new TH1D("TofTests_SingTrkMultiPntHitPullZ",
+                                       "Quality of the Tof Hits position error on Z axis, for hit coming "
+                                       "from a single MC Track; Z(Hit) - X(Track) []; # [Hits]",
+                                       iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingTrkMultiPntHitPullR  = new TH1D("TofTests_SingTrkMultiPntHitPullR",
+                                       "Quality of the Tof Hits position error, for hit coming from a "
+                                       "single MC Track; Pull R(Hit -> Track) []; # [Hits]",
+                                       iNbBinsPullPos, -dPullPosRange, dPullPosRange);
+  fhSingTrkMultiPntHitPullT  = new TH1D("TofTests_SingTrkMultiPntHitPullT",
+                                       "Quality of the Tof Hits time error, for hit coming from a single "
+                                       "MC Track; Pull T(Hit -> Track) []; # [Hits]",
+                                       iNbBinsPullPos, -dPullPosRange, dPullPosRange);
 
   // Hit Quality for Hits coming from a multiple MC Tracks
   // To Point closest to Hit
@@ -2264,440 +1560,230 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
              "Quality of the Tof Hits position on X axis relative to closest "
              "Track, for hit coming from multiple MC Track; X(Hit) - X(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestDeltaY =
     new TH2D("TofTests_MultiTrkHitClosestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to closest "
              "Track, for hit coming from multiple MC Track; Y(Hit) - Y(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestDeltaZ =
     new TH2D("TofTests_MultiTrkHitClosestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to closest "
              "Track, for hit coming from multiple MC Track; Z(Hit) - Z(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestDeltaR =
     new TH2D("TofTests_MultiTrkHitClosestDeltaR",
              "Quality of the Tof Hits position relative to closest Track, for "
              "hit coming from multiple MC Track; R(Hit -> Track) [cm]; # "
              "[Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitClosestDeltaT = new TH2D(
-    "TofTests_MultiTrkHitClosestDeltaT",
-    "Quality of the Tof Hits Time relative to closest Track, for hit coming "
-    "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitClosestDeltaT =
+    new TH2D("TofTests_MultiTrkHitClosestDeltaT",
+             "Quality of the Tof Hits Time relative to closest Track, for hit coming "
+             "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestPullX =
     new TH2D("TofTests_MultiTrkHitClosestPullX",
              "Quality of the Tof Hits position error on X axis relative to "
              "closest Track, for hit coming from multiple MC Track; Pull X(Hit "
              "-> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestPullY =
     new TH2D("TofTests_MultiTrkHitClosestPullY",
              "Quality of the Tof Hits position error on Y axis relative to "
              "closest Track, for hit coming from multiple MC Track; Pull Y(Hit "
              "-> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestPullZ =
     new TH2D("TofTests_MultiTrkHitClosestPullZ",
              "Quality of the Tof Hits position error on Z axis relative to "
              "closest Track, for hit coming from multiple MC Track; Pull Z(Hit "
              "-> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestPullR =
     new TH2D("TofTests_MultiTrkHitClosestPullR",
              "Quality of the Tof Hits position error relative to closest "
              "Track, for hit coming from multiple MC Track; Pull R(Hit -> "
              "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitClosestPullT =
     new TH2D("TofTests_MultiTrkHitClosestPullT",
              "Quality of the Tof Hits time error relative to closest Track, "
              "for hit coming from multiple MC Track; Pull T(Hit -> Track) []; "
              "# [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To Track furthest from Hit
   fhMultiTrkHitFurthestDeltaX =
     new TH2D("TofTests_MultiTrkHitFurthestDeltaX",
              "Quality of the Tof Hits position on X axis relative to furthest "
              "Track, for hit coming from multiple MC Track; X(Hit) - X(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestDeltaY =
     new TH2D("TofTests_MultiTrkHitFurthestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to furthest "
              "Track, for hit coming from multiple MC Track; Y(Hit) - Y(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestDeltaZ =
     new TH2D("TofTests_MultiTrkHitFurthestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to furthest "
              "Track, for hit coming from multiple MC Track; Z(Hit) - Z(Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestDeltaR =
     new TH2D("TofTests_MultiTrkHitFurthestDeltaR",
              "Quality of the Tof Hits position relative to furthest Track, for "
              "hit coming from multiple MC Track; R(Hit -> Track) [cm]; # "
              "[Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitFurthestDeltaT = new TH2D(
-    "TofTests_MultiTrkHitFurthestDeltaT",
-    "Quality of the Tof Hits Time relative to furthest Track, for hit coming "
-    "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitFurthestDeltaT =
+    new TH2D("TofTests_MultiTrkHitFurthestDeltaT",
+             "Quality of the Tof Hits Time relative to furthest Track, for hit coming "
+             "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestPullX =
     new TH2D("TofTests_MultiTrkHitFurthestPullX",
              "Quality of the Tof Hits position error on X axis relative to "
              "furthest Track, for hit coming from multiple MC Track; Pull "
              "X(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestPullY =
     new TH2D("TofTests_MultiTrkHitFurthestPullY",
              "Quality of the Tof Hits position error on Y axis relative to "
              "furthest Track, for hit coming from multiple MC Track; Pull "
              "Y(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestPullZ =
     new TH2D("TofTests_MultiTrkHitFurthestPullZ",
              "Quality of the Tof Hits position error on Z axis relative to "
              "furthest Track, for hit coming from multiple MC Track; Pull "
              "Z(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestPullR =
     new TH2D("TofTests_MultiTrkHitFurthestPullR",
              "Quality of the Tof Hits position error relative to furthest "
              "Track, for hit coming from multiple MC Track; Pull R(Hit -> "
              "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitFurthestPullT =
     new TH2D("TofTests_MultiTrkHitFurthestPullT",
              "Quality of the Tof Hits time error relative to furthest Track, "
              "for hit coming from multiple MC Track; Pull T(Hit -> Track) []; "
              "# [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To mean Track position
   fhMultiTrkHitMeanDeltaX =
     new TH2D("TofTests_MultiTrkHitMeanDeltaX",
              "Quality of the Tof Hits position on X axis relative to mean "
              "Track position, for hit coming from multiple MC Track; X(Hit) - "
              "X(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitMeanDeltaY =
     new TH2D("TofTests_MultiTrkHitMeanDeltaY",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Track position, for hit coming from multiple MC Track; Y(Hit) - "
              "Y(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitMeanDeltaZ =
     new TH2D("TofTests_MultiTrkHitMeanDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to mean "
              "Track position, for hit coming from multiple MC Track; Z(Hit) - "
              "Z(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitMeanDeltaR =
     new TH2D("TofTests_MultiTrkHitMeanDeltaR",
              "Quality of the Tof Hits position relative to mean Track "
              "position, for hit coming from multiple MC Track; R(Hit -> Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitMeanDeltaT = new TH2D(
-    "TofTests_MultiTrkHitMeanDeltaT",
-    "Quality of the Tof Hits Time relative to mean Track time, for hit coming "
-    "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
-  fhMultiTrkHitMeanPullX =
-    new TH2D("TofTests_MultiTrkHitMeanPullX",
-             "Quality of the Tof Hits position error on X axis relative to "
-             "mean Track position, for hit coming from multiple MC Track; Pull "
-             "X(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitMeanPullY =
-    new TH2D("TofTests_MultiTrkHitMeanPullY",
-             "Quality of the Tof Hits position error on Y axis relative to "
-             "mean Track position, for hit coming from multiple MC Track; Pull "
-             "Y(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitMeanPullZ =
-    new TH2D("TofTests_MultiTrkHitMeanPullZ",
-             "Quality of the Tof Hits position error on Z axis relative to "
-             "mean Track position, for hit coming from multiple MC Track; Pull "
-             "Z(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitMeanPullR =
-    new TH2D("TofTests_MultiTrkHitMeanPullR",
-             "Quality of the Tof Hits position error relative to mean Track "
-             "position, for hit coming from multiple MC Track; Pull R(Hit -> "
-             "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitMeanPullT =
-    new TH2D("TofTests_MultiTrkHitMeanPullT",
-             "Quality of the Tof Hits time error relative to mean Track "
-             "position, for hit coming from multiple MC Track; Pull T(Hit -> "
-             "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanDeltaT =
+    new TH2D("TofTests_MultiTrkHitMeanDeltaT",
+             "Quality of the Tof Hits Time relative to mean Track time, for hit coming "
+             "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanPullX = new TH2D("TofTests_MultiTrkHitMeanPullX",
+                                    "Quality of the Tof Hits position error on X axis relative to "
+                                    "mean Track position, for hit coming from multiple MC Track; Pull "
+                                    "X(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanPullY = new TH2D("TofTests_MultiTrkHitMeanPullY",
+                                    "Quality of the Tof Hits position error on Y axis relative to "
+                                    "mean Track position, for hit coming from multiple MC Track; Pull "
+                                    "Y(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanPullZ = new TH2D("TofTests_MultiTrkHitMeanPullZ",
+                                    "Quality of the Tof Hits position error on Z axis relative to "
+                                    "mean Track position, for hit coming from multiple MC Track; Pull "
+                                    "Z(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanPullR = new TH2D("TofTests_MultiTrkHitMeanPullR",
+                                    "Quality of the Tof Hits position error relative to mean Track "
+                                    "position, for hit coming from multiple MC Track; Pull R(Hit -> "
+                                    "Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitMeanPullT = new TH2D("TofTests_MultiTrkHitMeanPullT",
+                                    "Quality of the Tof Hits time error relative to mean Track "
+                                    "position, for hit coming from multiple MC Track; Pull T(Hit -> "
+                                    "Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   // To best Track (Highest TOT contribution)
   fhMultiTrkHitBestDeltaX =
     new TH2D("TofTests_MultiTrkHitBestDeltaX",
              "Quality of the Tof Hits position on X axis relative to best "
              "Track position, for hit coming from multiple MC Track; X(Hit) - "
              "X(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitBestDeltaY =
     new TH2D("TofTests_MultiTrkHitBestDeltaY",
              "Quality of the Tof Hits position on Y axis relative to best "
              "Track position, for hit coming from multiple MC Track; Y(Hit) - "
              "Y(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitBestDeltaZ =
     new TH2D("TofTests_MultiTrkHitBestDeltaZ",
              "Quality of the Tof Hits position on Z axis relative to best "
              "Track position, for hit coming from multiple MC Track; Z(Hit) - "
              "Z(Track) [cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
   fhMultiTrkHitBestDeltaR =
     new TH2D("TofTests_MultiTrkHitBestDeltaR",
              "Quality of the Tof Hits position relative to best Track "
              "position, for hit coming from multiple MC Track; R(Hit -> Track) "
              "[cm]; # [Hits]; Multi [Trk]",
-             iNbBinsDeltaPos,
-             -dDeltaPosRange,
-             dDeltaPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitBestDeltaT = new TH2D(
-    "TofTests_MultiTrkHitBestDeltaT",
-    "Quality of the Tof Hits Time relative to best Track time, for hit coming "
-    "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
-    iNbBinsDeltaTime,
-    -dDeltaTimeRange,
-    dDeltaTimeRange,
-    iNbBinsMulti,
-    iMinMulti,
-    iMaxMulti);
-  fhMultiTrkHitBestPullX =
-    new TH2D("TofTests_MultiTrkHitBestPullX",
-             "Quality of the Tof Hits position error on X axis relative to "
-             "best Track position, for hit coming from multiple MC Track; Pull "
-             "X(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitBestPullY =
-    new TH2D("TofTests_MultiTrkHitBestPullY",
-             "Quality of the Tof Hits position error on Y axis relative to "
-             "best Track position, for hit coming from multiple MC Track; Pull "
-             "Y(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitBestPullZ =
-    new TH2D("TofTests_MultiTrkHitBestPullZ",
-             "Quality of the Tof Hits position error on Z axis relative to "
-             "best Track position, for hit coming from multiple MC Track; Pull "
-             "Z(Hit -> Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitBestPullR =
-    new TH2D("TofTests_MultiTrkHitBestPullR",
-             "Quality of the Tof Hits position error relative to best Track "
-             "position, for hit coming from multiple MC Track; Pull R(Hit -> "
-             "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
-  fhMultiTrkHitBestPullT =
-    new TH2D("TofTests_MultiTrkHitBestPullT",
-             "Quality of the Tof Hits time error relative to best Track "
-             "position, for hit coming from multiple MC Track; Pull T(Hit -> "
-             "Track) []; # [Hits]; Multi [Trk]",
-             iNbBinsPullPos,
-             -dPullPosRange,
-             dPullPosRange,
-             iNbBinsMulti,
-             iMinMulti,
-             iMaxMulti);
+             iNbBinsDeltaPos, -dDeltaPosRange, dDeltaPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestDeltaT =
+    new TH2D("TofTests_MultiTrkHitBestDeltaT",
+             "Quality of the Tof Hits Time relative to best Track time, for hit coming "
+             "from multiple MC Track; T(hit) - T(Track) [ps]; # [Hits]; Multi [Trk]",
+             iNbBinsDeltaTime, -dDeltaTimeRange, dDeltaTimeRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestPullX = new TH2D("TofTests_MultiTrkHitBestPullX",
+                                    "Quality of the Tof Hits position error on X axis relative to "
+                                    "best Track position, for hit coming from multiple MC Track; Pull "
+                                    "X(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestPullY = new TH2D("TofTests_MultiTrkHitBestPullY",
+                                    "Quality of the Tof Hits position error on Y axis relative to "
+                                    "best Track position, for hit coming from multiple MC Track; Pull "
+                                    "Y(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestPullZ = new TH2D("TofTests_MultiTrkHitBestPullZ",
+                                    "Quality of the Tof Hits position error on Z axis relative to "
+                                    "best Track position, for hit coming from multiple MC Track; Pull "
+                                    "Z(Hit -> Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestPullR = new TH2D("TofTests_MultiTrkHitBestPullR",
+                                    "Quality of the Tof Hits position error relative to best Track "
+                                    "position, for hit coming from multiple MC Track; Pull R(Hit -> "
+                                    "Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
+  fhMultiTrkHitBestPullT = new TH2D("TofTests_MultiTrkHitBestPullT",
+                                    "Quality of the Tof Hits time error relative to best Track "
+                                    "position, for hit coming from multiple MC Track; Pull T(Hit -> "
+                                    "Track) []; # [Hits]; Multi [Trk]",
+                                    iNbBinsPullPos, -dPullPosRange, dPullPosRange, iNbBinsMulti, iMinMulti, iMaxMulti);
 
   // Physics coord mapping, 1 per particle type
   // Phase space
@@ -2750,404 +1836,240 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
   fvhPlabSecStsTrkTofHit.resize(kiNbPart);
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
     // Phase space
-    fvhPtmRapGenTrk[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapGenTrk_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution for MC tracks, %s, primary "
-                    "tracks; y; P_{t}/M; # []",
+    fvhPtmRapGenTrk[iPartIdx] = new TH2D(Form("TofTests_PtmRapGenTrk_%s", ksPartTag[iPartIdx].Data()),
+                                         Form("P_{t}/M vs y distribution for MC tracks, %s, primary "
+                                              "tracks; y; P_{t}/M; # []",
+                                              ksPartName[iPartIdx].Data()),
+                                         iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapStsPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapStsPnt_%s", ksPartTag[iPartIdx].Data()),
+                                         Form("P_{t}/M vs y distribution from MC Track with STS points, "
+                                              "%s, primary tracks; y; P_{t}/M; # []",
+                                              ksPartName[iPartIdx].Data()),
+                                         iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                         Form("P_{t}/M vs y distribution from MC Track for TOF points, "
+                                              "%s, primary tracks; y; P_{t}/M; # []",
+                                              ksPartName[iPartIdx].Data()),
+                                         iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHit[iPartIdx] = new TH2D(Form("TofTests_PtmRapTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                         Form("P_{t}/M vs y distribution from MC Track for TOF Hits, %s, "
+                                              "primary tracks; y; P_{t}/M; # []",
+                                              ksPartName[iPartIdx].Data()),
+                                         iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSinglePnt[iPartIdx] =
+      new TH2D(Form("TofTests_PtmRapTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
+                    "TOF Point, %s, primary tracks; y; P_{t}/M; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapStsPnt[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapStsPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track with STS points, "
-                    "%s, primary tracks; y; P_{t}/M; # []",
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSingleTrk[iPartIdx] =
+      new TH2D(Form("TofTests_PtmRapTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
+                    "MC track, %s, primary tracks; y; P_{t}/M; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofPnt[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track for TOF points, "
-                    "%s, primary tracks; y; P_{t}/M; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHit[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track for TOF Hits, %s, "
-                    "primary tracks; y; P_{t}/M; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHitSinglePnt[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
-           "TOF Point, %s, primary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapTofHitSingleTrk[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
-           "MC track, %s, primary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
     // PLab
-    fvhPlabGenTrk[iPartIdx] =
-      new TH1D(Form("TofTests_PlabGenTrk_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution for MC tracks, %s, primary tracks; "
-                    "P_{lab} [GeV/c]; # []",
+    fvhPlabGenTrk[iPartIdx] = new TH1D(Form("TofTests_PlabGenTrk_%s", ksPartTag[iPartIdx].Data()),
+                                       Form("P_{lab} distribution for MC tracks, %s, primary tracks; "
+                                            "P_{lab} [GeV/c]; # []",
+                                            ksPartName[iPartIdx].Data()),
+                                       iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabStsPnt[iPartIdx] = new TH1D(Form("TofTests_PlabStsPnt_%s", ksPartTag[iPartIdx].Data()),
+                                       Form("P_{lab} distribution from MC Track with STS points, %s, "
+                                            "primary tracks; P_{lab} [GeV/c]; # []",
+                                            ksPartName[iPartIdx].Data()),
+                                       iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofPnt[iPartIdx] = new TH1D(Form("TofTests_PlabTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                       Form("P_{lab} distribution from MC Track for TOF points, %s, "
+                                            "primary tracks; P_{lab} [GeV/c]; # []",
+                                            ksPartName[iPartIdx].Data()),
+                                       iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHit[iPartIdx] = new TH1D(Form("TofTests_PlabTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                       Form("P_{lab} distribution from MC Track for TOF Hits, %s, "
+                                            "primary tracks; P_{lab} [GeV/c]; # []",
+                                            ksPartName[iPartIdx].Data()),
+                                       iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSinglePnt[iPartIdx] =
+      new TH1D(Form("TofTests_PlabTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution from MC Track for TOF Hits from a single TOF "
+                    "Point, %s, primary tracks; P_{lab} [GeV/c]; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabStsPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabStsPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track with STS points, %s, "
-                    "primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track for TOF points, %s, "
-                    "primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHit[iPartIdx] =
-      new TH1D(Form("TofTests_PlabTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track for TOF Hits, %s, "
-                    "primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHitSinglePnt[iPartIdx] = new TH1D(
-      Form("TofTests_PlabTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track for TOF Hits from a single TOF "
-           "Point, %s, primary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabTofHitSingleTrk[iPartIdx] = new TH1D(
-      Form("TofTests_PlabTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track for TOF Hits from a single MC "
-           "tracks, %s, primary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+               iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSingleTrk[iPartIdx] = new TH1D(Form("TofTests_PlabTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
+                                                Form("P_{lab} distribution from MC Track for TOF Hits from a single MC "
+                                                     "tracks, %s, primary tracks; P_{lab} [GeV/c]; # []",
+                                                     ksPartName[iPartIdx].Data()),
+                                                iNbBinsPlab, dMinPlab, dMaxPlab);
 
 
     // MC Tracks losses
-    fvhPtmRapGenTrkTofPnt[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution for MC tracks with TOF Point(s), %s, "
-           "primary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapGenTrkTofHit[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution for MC tracks with TOF Hit(s), %s, "
-           "primary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+    fvhPtmRapGenTrkTofPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                               Form("P_{t}/M vs y distribution for MC tracks with TOF Point(s), %s, "
+                                                    "primary tracks; y; P_{t}/M; # []",
+                                                    ksPartName[iPartIdx].Data()),
+                                               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapGenTrkTofHit[iPartIdx] = new TH2D(Form("TofTests_PtmRapGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                               Form("P_{t}/M vs y distribution for MC tracks with TOF Hit(s), %s, "
+                                                    "primary tracks; y; P_{t}/M; # []",
+                                                    ksPartName[iPartIdx].Data()),
+                                               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
 
-    fvhPlabGenTrkTofPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution for MC tracks with TOF Point(s), %s, "
-                    "primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabGenTrkTofHit[iPartIdx] =
-      new TH1D(Form("TofTests_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track with TOF Hit(s), %s, "
-                    "primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabStsTrkTofPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabStsTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution for MC tracks with STS and TOF "
-                    "Point(s), %s, primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabStsTrkTofHit[iPartIdx] =
-      new TH1D(Form("TofTests_PlabStsTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track with STS points and "
-                    "TOF Hit(s), %s, primary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
+    fvhPlabGenTrkTofPnt[iPartIdx] = new TH1D(Form("TofTests_PlabGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} distribution for MC tracks with TOF Point(s), %s, "
+                                                  "primary tracks; P_{lab} [GeV/c]; # []",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabGenTrkTofHit[iPartIdx] = new TH1D(Form("TofTests_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} distribution from MC Track with TOF Hit(s), %s, "
+                                                  "primary tracks; P_{lab} [GeV/c]; # []",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabStsTrkTofPnt[iPartIdx] = new TH1D(Form("TofTests_PlabStsTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} distribution for MC tracks with STS and TOF "
+                                                  "Point(s), %s, primary tracks; P_{lab} [GeV/c]; # []",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabStsTrkTofHit[iPartIdx] = new TH1D(Form("TofTests_PlabStsTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} distribution from MC Track with STS points and "
+                                                  "TOF Hit(s), %s, primary tracks; P_{lab} [GeV/c]; # []",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
 
     // Secondary tracks
     // Phase space
-    fvhPtmRapSecGenTrk[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapSecGenTrk_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution for MC tracks, %s, secondary "
-                    "tracks; y; P_{t}/M; # []",
+    fvhPtmRapSecGenTrk[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecGenTrk_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y distribution for MC tracks, %s, secondary "
+                                                 "tracks; y; P_{t}/M; # []",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecStsPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecStsPnt_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y distribution from MC Track with STS points, "
+                                                 "%s, secondary tracks; y; P_{t}/M; # []",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecTofPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y distribution from MC Track for TOF points, "
+                                                 "%s, secondary tracks; y; P_{t}/M; # []",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecTofHit[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y distribution from MC Track for TOF Hits, %s, "
+                                                 "secondary tracks; y; P_{t}/M; # []",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecTofHitSinglePnt[iPartIdx] =
+      new TH2D(Form("TofTests_PtmRapSecTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
+                    "TOF Point, %s, secondary tracks; y; P_{t}/M; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapSecStsPnt[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapSecStsPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track with STS points, "
-                    "%s, secondary tracks; y; P_{t}/M; # []",
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecTofHitSingleTrk[iPartIdx] =
+      new TH2D(Form("TofTests_PtmRapSecTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
+                    "MC track, %s, secondary tracks; y; P_{t}/M; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapSecTofPnt[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapSecTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track for TOF points, "
-                    "%s, secondary tracks; y; P_{t}/M; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapSecTofHit[iPartIdx] =
-      new TH2D(Form("TofTests_PtmRapSecTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution from MC Track for TOF Hits, %s, "
-                    "secondary tracks; y; P_{t}/M; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapSecTofHitSinglePnt[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapSecTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
-           "TOF Point, %s, secondary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapSecTofHitSingleTrk[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapSecTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution from MC Track for TOF Hits from a single "
-           "MC track, %s, secondary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
     // PLab
-    fvhPlabSecGenTrk[iPartIdx] =
-      new TH1D(Form("TofTests_PlabSecGenTrk_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution for MC tracks, %s, secondary tracks; "
-                    "P_{lab} [GeV/c]; # []",
+    fvhPlabSecGenTrk[iPartIdx] = new TH1D(Form("TofTests_PlabSecGenTrk_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} distribution for MC tracks, %s, secondary tracks; "
+                                               "P_{lab} [GeV/c]; # []",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecStsPnt[iPartIdx] = new TH1D(Form("TofTests_PlabSecStsPnt_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} distribution from MC Track with STS points, %s, "
+                                               "secondary tracks; P_{lab} [GeV/c]; # []",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecTofPnt[iPartIdx] = new TH1D(Form("TofTests_PlabSecTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} distribution from MC Track for TOF points, %s, "
+                                               "secondary tracks; P_{lab} [GeV/c]; # []",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecTofHit[iPartIdx] = new TH1D(Form("TofTests_PlabSecTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} distribution from MC Track for TOF Hits, %s, "
+                                               "secondary tracks; P_{lab} [GeV/c]; # []",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecTofHitSinglePnt[iPartIdx] =
+      new TH1D(Form("TofTests_PlabSecTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution from MC Track for TOF Hits from a single TOF "
+                    "Point, %s, secondary tracks; P_{lab} [GeV/c]; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabSecStsPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabSecStsPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track with STS points, %s, "
-                    "secondary tracks; P_{lab} [GeV/c]; # []",
+               iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecTofHitSingleTrk[iPartIdx] =
+      new TH1D(Form("TofTests_PlabSecTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution from MC Track for TOF Hits from a single MC "
+                    "tracks, %s, secondary tracks; P_{lab} [GeV/c]; # []",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabSecTofPnt[iPartIdx] =
-      new TH1D(Form("TofTests_PlabSecTofPnt_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track for TOF points, %s, "
-                    "secondary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabSecTofHit[iPartIdx] =
-      new TH1D(Form("TofTests_PlabSecTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution from MC Track for TOF Hits, %s, "
-                    "secondary tracks; P_{lab} [GeV/c]; # []",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabSecTofHitSinglePnt[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track for TOF Hits from a single TOF "
-           "Point, %s, secondary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabSecTofHitSingleTrk[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track for TOF Hits from a single MC "
-           "tracks, %s, secondary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+               iNbBinsPlab, dMinPlab, dMaxPlab);
 
 
     // MC Tracks losses
-    fvhPtmRapSecGenTrkTofPnt[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapSecGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution for MC tracks with TOF Point(s), %s, "
-           "secondary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapSecGenTrkTofHit[iPartIdx] = new TH2D(
-      Form("TofTests_PtmRapSecGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution for MC tracks with TOF Hit(s), %s, "
-           "secondary tracks; y; P_{t}/M; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+    fvhPtmRapSecGenTrkTofPnt[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                                  Form("P_{t}/M vs y distribution for MC tracks with TOF Point(s), %s, "
+                                                       "secondary tracks; y; P_{t}/M; # []",
+                                                       ksPartName[iPartIdx].Data()),
+                                                  iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapSecGenTrkTofHit[iPartIdx] = new TH2D(Form("TofTests_PtmRapSecGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                                  Form("P_{t}/M vs y distribution for MC tracks with TOF Hit(s), %s, "
+                                                       "secondary tracks; y; P_{t}/M; # []",
+                                                       ksPartName[iPartIdx].Data()),
+                                                  iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
 
-    fvhPlabSecGenTrkTofPnt[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution for MC tracks with TOF Point(s), %s, "
-           "secondary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabSecGenTrkTofHit[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track with TOF Hit(s), %s, secondary "
-           "tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+    fvhPlabSecGenTrkTofPnt[iPartIdx] = new TH1D(Form("TofTests_PlabSecGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+                                                Form("P_{lab} distribution for MC tracks with TOF Point(s), %s, "
+                                                     "secondary tracks; P_{lab} [GeV/c]; # []",
+                                                     ksPartName[iPartIdx].Data()),
+                                                iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecGenTrkTofHit[iPartIdx] =
+      new TH1D(Form("TofTests_PlabSecGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution from MC Track with TOF Hit(s), %s, secondary "
+                    "tracks; P_{lab} [GeV/c]; # []",
+                    ksPartName[iPartIdx].Data()),
+               iNbBinsPlab, dMinPlab, dMaxPlab);
 
-    fvhPlabSecStsTrkTofPnt[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecStsTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution for MC tracks with STS and TOF Point(s), %s, "
-           "secondary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabSecStsTrkTofHit[iPartIdx] = new TH1D(
-      Form("TofTests_PlabSecStsTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution from MC Track with STS points and TOF Hit(s), "
-           "%s, secondary tracks; P_{lab} [GeV/c]; # []",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+    fvhPlabSecStsTrkTofPnt[iPartIdx] =
+      new TH1D(Form("TofTests_PlabSecStsTrkTofPnt_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution for MC tracks with STS and TOF Point(s), %s, "
+                    "secondary tracks; P_{lab} [GeV/c]; # []",
+                    ksPartName[iPartIdx].Data()),
+               iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabSecStsTrkTofHit[iPartIdx] =
+      new TH1D(Form("TofTests_PlabSecStsTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution from MC Track with STS points and TOF Hit(s), "
+                    "%s, secondary tracks; P_{lab} [GeV/c]; # []",
+                    ksPartName[iPartIdx].Data()),
+               iNbBinsPlab, dMinPlab, dMaxPlab);
   }  // for( Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++)
 
   // Integrated TofHit Efficiency
-  fhIntegratedHitPntEff =
-    new TH1D("TofTests_IntegratedHitPntEff",
-             "Efficiency of TOF hit generation, all tracks; Eff = Nb_{Trk w/ "
-             "Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-             202,
-             -0.5,
-             100.5);
-  fhIntegratedHitPntEffPrim =
-    new TH1D("TofTests_IntegratedHitPntEffPrim",
-             "Efficiency of TOF hit generation, primary tracks; Eff = Nb_{Trk "
-             "w/ Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-             202,
-             -0.5,
-             100.5);
-  fhIntegratedHitPntEffSec =
-    new TH1D("TofTests_IntegratedHitPntEffSec",
-             "Efficiency of TOF hit generation, secondary tracks; Eff = "
-             "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-             202,
-             -0.5,
-             100.5);
+  fhIntegratedHitPntEff     = new TH1D("TofTests_IntegratedHitPntEff",
+                                   "Efficiency of TOF hit generation, all tracks; Eff = Nb_{Trk w/ "
+                                   "Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                   202, -0.5, 100.5);
+  fhIntegratedHitPntEffPrim = new TH1D("TofTests_IntegratedHitPntEffPrim",
+                                       "Efficiency of TOF hit generation, primary tracks; Eff = Nb_{Trk "
+                                       "w/ Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                       202, -0.5, 100.5);
+  fhIntegratedHitPntEffSec  = new TH1D("TofTests_IntegratedHitPntEffSec",
+                                      "Efficiency of TOF hit generation, secondary tracks; Eff = "
+                                      "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                      202, -0.5, 100.5);
 
 
   // Integrated TofHit Efficiency: Tracks firing channel but not going to Digi/Hit
-  fhIntegratedHiddenHitPntLoss =
-    new TH1D("TofTests_IntegratedHiddenHitPntLoss",
-             "Losses of TOF hit generation due to multiplicity, all tracks; "
-             "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-             202,
-             -0.5,
-             100.5);
-  fhIntegratedHiddenHitPntLossPrim = new TH1D(
-    "TofTests_IntegratedHiddenHitPntLossPrim",
-    "Efficiency of TOF hit generation due to multiplicity, primary tracks; "
-    "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-    202,
-    -0.5,
-    100.5);
-  fhIntegratedHiddenHitPntLossSec = new TH1D(
-    "TofTests_IntegratedHiddenHitPntLossSec",
-    "Efficiency of TOF hit generation due to multiplicity, secondary tracks; "
-    "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
-    202,
-    -0.5,
-    100.5);
+  fhIntegratedHiddenHitPntLoss     = new TH1D("TofTests_IntegratedHiddenHitPntLoss",
+                                          "Losses of TOF hit generation due to multiplicity, all tracks; "
+                                          "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                          202, -0.5, 100.5);
+  fhIntegratedHiddenHitPntLossPrim = new TH1D("TofTests_IntegratedHiddenHitPntLossPrim",
+                                              "Efficiency of TOF hit generation due to multiplicity, primary tracks; "
+                                              "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                              202, -0.5, 100.5);
+  fhIntegratedHiddenHitPntLossSec  = new TH1D("TofTests_IntegratedHiddenHitPntLossSec",
+                                             "Efficiency of TOF hit generation due to multiplicity, secondary tracks; "
+                                             "Loss = Nb_{Trk w/ Hidden Hit}/Nb_{Trk w/ Pnt} [\%]; # [Events]",
+                                             202, -0.5, 100.5);
 
   // Efficiency dependence on nb crossed gaps
   fvulIdxTracksWithPntGaps.resize(fuMaxCrossedGaps);
@@ -3156,105 +2078,55 @@ Bool_t CbmTofHitFinderQa::CreateHistos() {
   fvulIdxPrimTracksWithHitGaps.resize(fuMaxCrossedGaps);
   fvulIdxSecTracksWithPntGaps.resize(fuMaxCrossedGaps);
   fvulIdxSecTracksWithHitGaps.resize(fuMaxCrossedGaps);
-  fhIntegratedHitPntEffGaps = new TH2D(
-    "TofTests_IntegratedHitPntEffGaps",
-    "Efficiency of TOF hit generation VS gaps crossed, all tracks; Eff = "
-    "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
-    202,
-    -0.5,
-    100.5,
-    fuMaxCrossedGaps,
-    0.5,
-    fuMaxCrossedGaps + 0.5);
-  fhIntegratedHitPntEffPrimGaps = new TH2D(
-    "TofTests_IntegratedHitPntEffPrimGaps",
-    "Efficiency of TOF hit generation VS gaps crossed, primary tracks; Eff = "
-    "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
-    202,
-    -0.5,
-    100.5,
-    fuMaxCrossedGaps,
-    0.5,
-    fuMaxCrossedGaps + 0.5);
-  fhIntegratedHitPntEffSecGaps = new TH2D(
-    "TofTests_IntegratedHitPntEffSecGaps",
-    "Efficiency of TOF hit generation VS gaps crossed, secondary tracks; Eff = "
-    "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
-    202,
-    -0.5,
-    100.5,
-    fuMaxCrossedGaps,
-    0.5,
-    fuMaxCrossedGaps + 0.5);
+  fhIntegratedHitPntEffGaps     = new TH2D("TofTests_IntegratedHitPntEffGaps",
+                                       "Efficiency of TOF hit generation VS gaps crossed, all tracks; Eff = "
+                                       "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
+                                       202, -0.5, 100.5, fuMaxCrossedGaps, 0.5, fuMaxCrossedGaps + 0.5);
+  fhIntegratedHitPntEffPrimGaps = new TH2D("TofTests_IntegratedHitPntEffPrimGaps",
+                                           "Efficiency of TOF hit generation VS gaps crossed, primary tracks; Eff = "
+                                           "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
+                                           202, -0.5, 100.5, fuMaxCrossedGaps, 0.5, fuMaxCrossedGaps + 0.5);
+  fhIntegratedHitPntEffSecGaps  = new TH2D("TofTests_IntegratedHitPntEffSecGaps",
+                                          "Efficiency of TOF hit generation VS gaps crossed, secondary tracks; Eff = "
+                                          "Nb_{Trk w/ Hit}/Nb_{Trk w/ Pnt} [\%]; Nb TofPoint (gaps) []; # [Events]",
+                                          202, -0.5, 100.5, fuMaxCrossedGaps, 0.5, fuMaxCrossedGaps + 0.5);
 
-  Float_t fMaxCbmLen = 1500;
-  fhMcTrkStartPrimSingTrk =
-    new TH2D("TofTests_McTrkStartPrimSingTrk",
-             "Origin in Z of the MC primary tracks in hits with a single "
-             "track; MC trk Start Z [cm]; ; # [Events]",
-             fMaxCbmLen + 1,
-             -1,
-             fMaxCbmLen,
-             kiNbPart,
-             -0.5,
-             kiNbPart - 0.5);
-  fhMcTrkStartSecSingTrk =
-    new TH2D("TofTests_McTrkStartSecSingTrk",
-             "Origin in Z of the MC secondary tracks in hits with a single "
-             "track; MC trk Start Z [cm]; ; # [Events]",
-             fMaxCbmLen + 1,
-             -1,
-             fMaxCbmLen,
-             kiNbPart,
-             -0.5,
-             kiNbPart - 0.5);
-  fhMcTrkStartPrimMultiTrk =
-    new TH2D("TofTests_McTrkStartPrimMultiTrk",
-             "Origin in Z of the MC primary tracks in hits with multiple "
-             "tracks; MC trk Start Z [cm]; ; # [Events]",
-             fMaxCbmLen + 1,
-             -1,
-             fMaxCbmLen,
-             kiNbPart,
-             -0.5,
-             kiNbPart - 0.5);
-  fhMcTrkStartSecMultiTrk =
-    new TH2D("TofTests_McTrkStartSecMultiTrk",
-             "Origin in Z of the MC secondary tracks in hits with multiple "
-             "tracks; MC trk Start Z [cm]; ; # [Events]",
-             fMaxCbmLen + 1,
-             -1,
-             fMaxCbmLen,
-             kiNbPart,
-             -0.5,
-             kiNbPart - 0.5);
+  Float_t fMaxCbmLen       = 1500;
+  fhMcTrkStartPrimSingTrk  = new TH2D("TofTests_McTrkStartPrimSingTrk",
+                                     "Origin in Z of the MC primary tracks in hits with a single "
+                                     "track; MC trk Start Z [cm]; ; # [Events]",
+                                     fMaxCbmLen + 1, -1, fMaxCbmLen, kiNbPart, -0.5, kiNbPart - 0.5);
+  fhMcTrkStartSecSingTrk   = new TH2D("TofTests_McTrkStartSecSingTrk",
+                                    "Origin in Z of the MC secondary tracks in hits with a single "
+                                    "track; MC trk Start Z [cm]; ; # [Events]",
+                                    fMaxCbmLen + 1, -1, fMaxCbmLen, kiNbPart, -0.5, kiNbPart - 0.5);
+  fhMcTrkStartPrimMultiTrk = new TH2D("TofTests_McTrkStartPrimMultiTrk",
+                                      "Origin in Z of the MC primary tracks in hits with multiple "
+                                      "tracks; MC trk Start Z [cm]; ; # [Events]",
+                                      fMaxCbmLen + 1, -1, fMaxCbmLen, kiNbPart, -0.5, kiNbPart - 0.5);
+  fhMcTrkStartSecMultiTrk  = new TH2D("TofTests_McTrkStartSecMultiTrk",
+                                     "Origin in Z of the MC secondary tracks in hits with multiple "
+                                     "tracks; MC trk Start Z [cm]; ; # [Events]",
+                                     fMaxCbmLen + 1, -1, fMaxCbmLen, kiNbPart, -0.5, kiNbPart - 0.5);
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
-    fhMcTrkStartPrimSingTrk->GetYaxis()->SetBinLabel(1 + iPartIdx,
-                                                     ksPartTag[iPartIdx]);
-    fhMcTrkStartSecSingTrk->GetYaxis()->SetBinLabel(1 + iPartIdx,
-                                                    ksPartTag[iPartIdx]);
-    fhMcTrkStartPrimMultiTrk->GetYaxis()->SetBinLabel(1 + iPartIdx,
-                                                      ksPartTag[iPartIdx]);
-    fhMcTrkStartSecMultiTrk->GetYaxis()->SetBinLabel(1 + iPartIdx,
-                                                     ksPartTag[iPartIdx]);
+    fhMcTrkStartPrimSingTrk->GetYaxis()->SetBinLabel(1 + iPartIdx, ksPartTag[iPartIdx]);
+    fhMcTrkStartSecSingTrk->GetYaxis()->SetBinLabel(1 + iPartIdx, ksPartTag[iPartIdx]);
+    fhMcTrkStartPrimMultiTrk->GetYaxis()->SetBinLabel(1 + iPartIdx, ksPartTag[iPartIdx]);
+    fhMcTrkStartSecMultiTrk->GetYaxis()->SetBinLabel(1 + iPartIdx, ksPartTag[iPartIdx]);
   }  // for( Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++)
 
   fhPointMatchWeight =
-    new TH1I("TofTests_PointMatchWeight",
-             "Weigth of TofPoints contributing to Hits; w [Prop. or ps]; #",
-             1000,
-             -0.05,
+    new TH1I("TofTests_PointMatchWeight", "Weigth of TofPoints contributing to Hits; w [Prop. or ps]; #", 1000, -0.05,
              100 - 0.05);
 
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
 
   return kTRUE;
 }
 
 // ------------------------------------------------------------------
-Bool_t CbmTofHitFinderQa::FillHistos() {
+Bool_t CbmTofHitFinderQa::FillHistos()
+{
   // Declare variables outside the loop
   CbmMCTrack* pMcTrk;
   CbmTofPoint* pTofPoint;
@@ -3264,14 +2136,12 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
   CbmMatch* pMatchHitDigi;
   CbmMatch* pMatchHitPnt;
 
-  Int_t iNbTracks, iNbTofPts, iNbTofRealPts, iNbTofDigisMatch, iNbTofHits,
-    iNbTofHitsMatch;
+  Int_t iNbTracks, iNbTofPts, iNbTofRealPts, iNbTofDigisMatch, iNbTofHits, iNbTofHitsMatch;
   Int_t iNbTofDigis = 0;
 
   iNbTracks = fMcTracksColl->GetEntriesFast();
   iNbTofPts = fTofPointsColl->GetEntriesFast();
-  if (kTRUE == fbRealPointAvail)
-    iNbTofRealPts = fRealTofPointsColl->GetEntriesFast();
+  if (kTRUE == fbRealPointAvail) iNbTofRealPts = fRealTofPointsColl->GetEntriesFast();
   else
     iNbTofRealPts = 0;
   iNbTofHits = fTofHitsColl->GetEntriesFast();
@@ -3280,15 +2150,13 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
     iNbTofDigisMatch = fTofDigiMatchPointsColl->GetEntriesFast();
     iNbTofHitsMatch  = fTofDigiMatchColl->GetEntriesFast();
     if (iNbTofDigis != iNbTofDigisMatch)
-      LOG(fatal)
-        << "CbmTofHitFinderQa::FillHistos => Nb entries in TofDigiMatchPoints "
-           "TClonesArray doe not match nb entries in TofDigi!!!";
+      LOG(fatal) << "CbmTofHitFinderQa::FillHistos => Nb entries in TofDigiMatchPoints "
+                    "TClonesArray doe not match nb entries in TofDigi!!!";
     if (iNbTofHits != iNbTofHitsMatch)
-      LOG(fatal)
-        << "CbmTofHitFinderQa::FillHistos => Nb entries in TofDigiMatch "
-           "TClonesArray doe not match nb entries in TofHit!!! "
-        << iNbTofHits << " VS " << iNbTofHitsMatch
-        << " (Prev step: " << iNbTofDigis << " VS " << iNbTofDigisMatch << " )";
+      LOG(fatal) << "CbmTofHitFinderQa::FillHistos => Nb entries in TofDigiMatch "
+                    "TClonesArray doe not match nb entries in TofHit!!! "
+                 << iNbTofHits << " VS " << iNbTofHitsMatch << " (Prev step: " << iNbTofDigis << " VS "
+                 << iNbTofDigisMatch << " )";
   }  // if( kFALSE == fbHitProducerSource )
 
   fvulIdxTracksWithPnt.clear();
@@ -3346,20 +2214,17 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       fvulIdxTracksWithPnt.push_back(iTrkInd);
 
       UInt_t uNbTofPnt = pMcTrk->GetNPoints(ECbmModuleId::kTof) - 1;
-      if (uNbTofPnt < fuMaxCrossedGaps)
-        fvulIdxTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
+      if (uNbTofPnt < fuMaxCrossedGaps) fvulIdxTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
 
       if (-1 == pMcTrk->GetMotherId()) {
         iNbTofTracksPrim++;
         fvulIdxPrimTracksWithPnt.push_back(iTrkInd);
-        if (uNbTofPnt < fuMaxCrossedGaps)
-          fvulIdxPrimTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
+        if (uNbTofPnt < fuMaxCrossedGaps) fvulIdxPrimTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
       }  // if( -1 == pMcTrk->GetMotherId() )
       else {
         fvulIdxSecTracksWithPnt.push_back(iTrkInd);
 
-        if (uNbTofPnt < fuMaxCrossedGaps)
-          fvulIdxSecTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
+        if (uNbTofPnt < fuMaxCrossedGaps) fvulIdxSecTracksWithPntGaps[uNbTofPnt].push_back(iTrkInd);
       }  // else of if( -1 == pMcTrk->GetMotherId() )
     }    // if( 0 < pMcTrk->GetNPoints(ECbmModuleId::kTof) )
 
@@ -3375,11 +2240,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       }  // if( pMcTrk->GetPz() == pMcTrk->GetP() )
 
       // Angular mapping: assume tracks all coming from origin and not necess. along Z axis
-      if (0 != pMcTrk->GetPz()
-          && ((0 != pMcTrk->GetPx()) || (0 != pMcTrk->GetPy())))
-        fhTrackMapAng->Fill(
-          TMath::ATan2(pMcTrk->GetPx(), pMcTrk->GetPz()) * 180.0 / TMath::Pi(),
-          TMath::ATan2(pMcTrk->GetPy(), pMcTrk->GetPz()) * 180.0 / TMath::Pi());
+      if (0 != pMcTrk->GetPz() && ((0 != pMcTrk->GetPx()) || (0 != pMcTrk->GetPy())))
+        fhTrackMapAng->Fill(TMath::ATan2(pMcTrk->GetPx(), pMcTrk->GetPz()) * 180.0 / TMath::Pi(),
+                            TMath::ATan2(pMcTrk->GetPy(), pMcTrk->GetPz()) * 180.0 / TMath::Pi());
 
       // Spherical mapping: assume tracks all coming from origin and not necess. along Z axis
       if (0 != pMcTrk->GetPz() && 0 != pMcTrk->GetPx())
@@ -3399,34 +2262,27 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
     // Dependence of Track origin on centrality or position
     if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof)) {
-      fvhTrackAllStartZCent[iPartIdx]->Fill(pMcTrk->GetStartZ(),
-                                            fMCEventHeader->GetB());
+      fvhTrackAllStartZCent[iPartIdx]->Fill(pMcTrk->GetStartZ(), fMCEventHeader->GetB());
       if (2 == iPartIdx)  // 3D plot only for e-
-        fvhTrackAllStartXZCent[iPartIdx]->Fill(
-          pMcTrk->GetStartX(), pMcTrk->GetStartZ(), fMCEventHeader->GetB());
-      fvhTrackAllStartXZ[iPartIdx]->Fill(pMcTrk->GetStartZ(),
-                                         pMcTrk->GetStartX());
-      fvhTrackAllStartYZ[iPartIdx]->Fill(pMcTrk->GetStartZ(),
-                                         pMcTrk->GetStartY());
+        fvhTrackAllStartXZCent[iPartIdx]->Fill(pMcTrk->GetStartX(), pMcTrk->GetStartZ(), fMCEventHeader->GetB());
+      fvhTrackAllStartXZ[iPartIdx]->Fill(pMcTrk->GetStartZ(), pMcTrk->GetStartX());
+      fvhTrackAllStartYZ[iPartIdx]->Fill(pMcTrk->GetStartZ(), pMcTrk->GetStartY());
     }
 
     if (-1 == pMcTrk->GetMotherId()) {
       // primary track
       // Phase space
-      fvhPtmRapGenTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                      pMcTrk->GetPt() / pMcTrk->GetMass());
+      fvhPtmRapGenTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
       // PLab
       fvhPlabGenTrk[iPartIdx]->Fill(pMcTrk->GetP());
       // Do the same for tracks within STS acceptance
       if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts)) {
-        fvhPtmRapStsPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                        pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapStsPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabStsPnt[iPartIdx]->Fill(pMcTrk->GetP());
       }  // if( 0 < pMcTrk->GetNPoints(ECbmModuleId::kSts) )
       // Do the same for tracks within STS acceptance
       if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof)) {
-        fvhPtmRapGenTrkTofPnt[iPartIdx]->Fill(
-          pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapGenTrkTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabGenTrkTofPnt[iPartIdx]->Fill(pMcTrk->GetP());
 
         if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts))
@@ -3437,24 +2293,20 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       // secondary track
       // Dependence of Track origin on centrality
       if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof))
-        fvhTrackSecStartZCent[iPartIdx]->Fill(pMcTrk->GetStartZ(),
-                                              fMCEventHeader->GetB());
+        fvhTrackSecStartZCent[iPartIdx]->Fill(pMcTrk->GetStartZ(), fMCEventHeader->GetB());
 
       // Phase space
-      fvhPtmRapSecGenTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                         pMcTrk->GetPt() / pMcTrk->GetMass());
+      fvhPtmRapSecGenTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
       // PLab
       fvhPlabSecGenTrk[iPartIdx]->Fill(pMcTrk->GetP());
       // Do the same for tracks within STS acceptance
       if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts)) {
-        fvhPtmRapSecStsPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                           pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapSecStsPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabSecStsPnt[iPartIdx]->Fill(pMcTrk->GetP());
       }  // if( 0 < pMcTrk->GetNPoints(ECbmModuleId::kSts) )
       // Do the same for tracks within STS acceptance
       if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof)) {
-        fvhPtmRapSecGenTrkTofPnt[iPartIdx]->Fill(
-          pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapSecGenTrkTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabSecGenTrkTofPnt[iPartIdx]->Fill(pMcTrk->GetP());
 
         if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts))
@@ -3483,8 +2335,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
     // and all tracks reach TOF (protons)
     if (kTRUE == fbNormHistGenMode) {
       // XYZ mapping: assume tracks along Z axis
-      if (pMcTrk->GetPz() == pMcTrk->GetP() && pMcTrk->GetStartX() == dX
-          && pMcTrk->GetStartY() == dY) {
+      if (pMcTrk->GetPz() == pMcTrk->GetP() && pMcTrk->GetStartX() == dX && pMcTrk->GetStartY() == dY) {
         fhTrackMapXZ->Fill(dX, dZ);  // only way to get Z here?
         fhTrackMapYZ->Fill(dY, dZ);  // only way to get Z here?
       }                              // if( pMcTrk->GetPz() == pMcTrk->GetP() )
@@ -3498,9 +2349,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
     Double_t dThetaY = TMath::ATan2(dY, dZ) * 180.0 / TMath::Pi();
     fhPointMapAng->Fill(dThetaX, dThetaY);
 
-    Double_t dTheta =
-      TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  // *180.0/TMath::Pi();
-    Double_t dPhi = TMath::ATan2(dY, dX);                // *180.0/TMath::Pi();
+    Double_t dTheta = TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  // *180.0/TMath::Pi();
+    Double_t dPhi   = TMath::ATan2(dY, dX);                              // *180.0/TMath::Pi();
     fhPointMapSph->Fill(dTheta, dPhi);
 
     // Physics coord mapping, 1 per particle type
@@ -3514,22 +2364,19 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
     if (-1 == iPartIdx) iPartIdx = 0;
 
     // Beam pipe check
-    fvhTofPntAllAngCent[iPartIdx]->Fill(
-      dThetaX, dThetaY, fMCEventHeader->GetB());
+    fvhTofPntAllAngCent[iPartIdx]->Fill(dThetaX, dThetaY, fMCEventHeader->GetB());
 
     if (-1 == pMcTrk->GetMotherId()) {
       // primary track
       // Phase space
-      fvhPtmRapTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                      pMcTrk->GetPt() / pMcTrk->GetMass());
+      fvhPtmRapTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
       // PLab
       fvhPlabTofPnt[iPartIdx]->Fill(pMcTrk->GetP());
     }  // if( -1 == pMcTrk->GetMotherId() )
     else {
       // secondary track
       // Phase space
-      fvhPtmRapSecTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                         pMcTrk->GetPt() / pMcTrk->GetMass());
+      fvhPtmRapSecTofPnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
       // PLab
       fvhPlabSecTofPnt[iPartIdx]->Fill(pMcTrk->GetP());
     }  // else of if( -1 == pMcTrk->GetMotherId() )
@@ -3582,10 +2429,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Int_t iRpc    = pTofDigi->GetRpc();
         Int_t iCh     = pTofDigi->GetChannel();
         // First Get X/Y position info
-        if (fGeoHandler->GetGeoVersion() < k14a)
-          iCh = iCh + 1;  //FIXME: Due to change in tofGeoHandler
-        CbmTofDetectorInfo xDetInfo(
-          ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+        if (fGeoHandler->GetGeoVersion() < k14a) iCh = iCh + 1;  //FIXME: Due to change in tofGeoHandler
+        CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
         Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
         fChannelInfo = fDigiPar->GetCell(iChId);
 
@@ -3666,9 +2511,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
     Double_t dThetaY = TMath::ATan2(dY, dZ) * 180.0 / TMath::Pi();
     fhHitMapAng->Fill(dThetaX, dThetaY);
 
-    Double_t dTheta =
-      TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  // *180.0/TMath::Pi();
-    Double_t dPhi = TMath::ATan2(dY, dX);                // *180.0/TMath::Pi();
+    Double_t dTheta = TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  // *180.0/TMath::Pi();
+    Double_t dPhi   = TMath::ATan2(dY, dX);                              // *180.0/TMath::Pi();
     fhHitMapSph->Fill(dTheta, dPhi);
 
     if (kFALSE == fbNormHistGenMode) {
@@ -3677,11 +2521,10 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         pMatchHitDigi     = (CbmMatch*) fTofDigiMatchColl->At(iHitInd);
         Int_t iNbDigisHit = pMatchHitDigi->GetNofLinks();
         if (0 != iNbDigisHit % 2)
-          LOG(fatal)
-            << "CbmTofHitFinderQa::FillHistos => Nb of digis matching Hit #"
-            << iHitInd << " in event #" << fEvents
-            << " is not a multiple of 2 => should not happen as both ends of "
-               "strp required!!!";
+          LOG(fatal) << "CbmTofHitFinderQa::FillHistos => Nb of digis matching Hit #" << iHitInd << " in event #"
+                     << fEvents
+                     << " is not a multiple of 2 => should not happen as both ends of "
+                        "strp required!!!";
 
         // Nb different TOF digis in Hit
         fhNbDigisInHit->Fill(iNbDigisHit);
@@ -3695,10 +2538,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
             Int_t iDigiIdx = lDigi.GetIndex();
 
             if (iNbTofDigis <= iDigiIdx) {
-              LOG(error)
-                << "CbmTofHitFinderQa::FillHistos => Digi index from Hit #"
-                << iHitInd << " in event #" << fEvents
-                << " is bigger than nb entries in Digis arrays => ignore it!!!";
+              LOG(error) << "CbmTofHitFinderQa::FillHistos => Digi index from Hit #" << iHitInd << " in event #"
+                         << fEvents << " is bigger than nb entries in Digis arrays => ignore it!!!";
               continue;
             }  // if( iNbTofDigis <= iDigiIdx )
 
@@ -3707,8 +2548,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
             CbmLink lPt  = pMatchDigiPnt->GetMatchedLink();
             Int_t iPtIdx = lPt.GetIndex();
-            Int_t iTrkId =
-              ((CbmTofPoint*) fTofPointsColl->At(iPtIdx))->GetTrackID();
+            Int_t iTrkId = ((CbmTofPoint*) fTofPointsColl->At(iPtIdx))->GetTrackID();
 
             Int_t iSmType     = pTofDigi->GetType();
             Int_t iSm         = pTofDigi->GetSm();
@@ -3719,8 +2559,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
             // Check Left-Right MC missmatch (digis match always stored by pairs)
             if (0 == iDigi % 2) {
               // Get Info about the other end of the strip
-              pMatchDigiPntB =
-                (CbmMatch*) fTofDigiMatchPointsColl->At(iDigiIdx + 1);
+              pMatchDigiPntB = (CbmMatch*) fTofDigiMatchPointsColl->At(iDigiIdx + 1);
 
               CbmLink lPtB  = pMatchDigiPntB->GetMatchedLink();
               Int_t iPtIdxB = lPtB.GetIndex();
@@ -3728,9 +2567,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
               // Check Left-Right missmatch for MC Point
               if (iPtIdx != iPtIdxB) {
                 // Check Left-Right missmatch for MC Track
-                if (iTrkId
-                    != ((CbmTofPoint*) fTofPointsColl->At(iPtIdxB))
-                         ->GetTrackID()) {
+                if (iTrkId != ((CbmTofPoint*) fTofPointsColl->At(iPtIdxB))->GetTrackID()) {
                   fhLeftRightDigiMatch->Fill(iGlobalChan, 2);
                 }  // if( iTrkId != ((CbmTofPoint*) fTofPointsColl->At(iPtIdxB))->GetTrackID() )
                 else
@@ -3750,10 +2587,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Int_t iPtIdx = lPnt.GetIndex();
 
         if (iNbTofPts <= iPtIdx) {
-          LOG(error)
-            << "CbmTofHitFinderQa::FillHistos => Pnt index from Hit #"
-            << iHitInd << " in event #" << fEvents
-            << " is bigger than nb entries in TofPoints arrays => ignore it!!!";
+          LOG(error) << "CbmTofHitFinderQa::FillHistos => Pnt index from Hit #" << iHitInd << " in event #" << fEvents
+                     << " is bigger than nb entries in TofPoints arrays => ignore it!!!";
           continue;
         }  // if( iNbTofDigis <= iDigiIdx )
 
@@ -3763,11 +2598,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         if (kTRUE == fbRealPointAvail) {
           // Always only one mean MC Point Index per MC TofPoint
           // Weight always 1.0 so just read the index
-          Int_t iRealPntIdx =
-            (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0))
-              .GetIndex();
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx);
-          iPtIdx    = iRealPntIdx;
+          Int_t iRealPntIdx = (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0)).GetIndex();
+          pTofPoint         = (CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx);
+          iPtIdx            = iRealPntIdx;
         }  // if( kTRUE == fbRealPointAvail )
 
         Int_t iTrkId = pTofPoint->GetTrackID();
@@ -3777,8 +2610,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
         // Count Nb different MC Points in Hit
         Bool_t bPointFound = kFALSE;
-        for (UInt_t uPrevPtIdx = 0; uPrevPtIdx < vTofPointsId.size();
-             uPrevPtIdx++)
+        for (UInt_t uPrevPtIdx = 0; uPrevPtIdx < vTofPointsId.size(); uPrevPtIdx++)
           if (iPtIdx == vTofPointsId[uPrevPtIdx]) {
             bPointFound = kTRUE;
             break;
@@ -3799,8 +2631,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
           // Check if closest MC Point to Hit position
           Double_t dPntDeltaR =
-            TMath::Sqrt((dX - vPntPos.X()) * (dX - vPntPos.X())
-                        + (dY - vPntPos.Y()) * (dY - vPntPos.Y()));
+            TMath::Sqrt((dX - vPntPos.X()) * (dX - vPntPos.X()) + (dY - vPntPos.Y()) * (dY - vPntPos.Y()));
           //                   + (dZ - vPntPos.Z())*(dZ - vPntPos.Z()) );
           if (dPntDeltaR < dClosestPntDr) {
             iClosestPntIdx = iPtIdx;
@@ -3816,8 +2647,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         // Count Nb different MC Tracks in Hit
         // Build a list of Track weigths
         Bool_t bTrackFound = kFALSE;
-        for (UInt_t uPrevTrkIdx = 0; uPrevTrkIdx < vTofTracksId.size();
-             uPrevTrkIdx++)
+        for (UInt_t uPrevTrkIdx = 0; uPrevTrkIdx < vTofTracksId.size(); uPrevTrkIdx++)
           if (iTrkId == vTofTracksId[uPrevTrkIdx]) {
             bTrackFound = kTRUE;
             vTofTracksWeight[uPrevTrkIdx] += lPnt.GetWeight();
@@ -3841,8 +2671,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
           // Check if closest MC track to Hit position
           Double_t dTrkDeltaR =
-            TMath::Sqrt((dX - vPntPos.X()) * (dX - vPntPos.X())
-                        + (dY - vPntPos.Y()) * (dY - vPntPos.Y()));
+            TMath::Sqrt((dX - vPntPos.X()) * (dX - vPntPos.X()) + (dY - vPntPos.Y()) * (dY - vPntPos.Y()));
           //                   + (dZ - vPntPos.Z())*(dZ - vPntPos.Z()) );
           if (dTrkDeltaR < dClosestTrkDr) {
             iClosestTrkIdx = iPtIdx;
@@ -3867,78 +2696,52 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       UInt_t uHitTrk;
       for (UInt_t uTrkInHit = 0; uTrkInHit < vTofTracksId.size(); uTrkInHit++) {
         for (uHitTrk = 0; uHitTrk < fvulIdxTracksWithHit.size(); uHitTrk++)
-          if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-              == fvulIdxTracksWithHit[uHitTrk])
-            break;
-        if (fvulIdxTracksWithHit.size() == uHitTrk)
-          fvulIdxTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
+          if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxTracksWithHit[uHitTrk]) break;
+        if (fvulIdxTracksWithHit.size() == uHitTrk) fvulIdxTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
 
         // Get a pointer to the corresponding MC Track
         pMcTrk = (CbmMCTrack*) fMcTracksColl->At(vTofTracksId[uTrkInHit]);
 
         if (-1 == pMcTrk->GetMotherId()) {
-          for (uHitTrk = 0; uHitTrk < fvulIdxPrimTracksWithHit.size();
-               uHitTrk++)
-            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                == fvulIdxPrimTracksWithHit[uHitTrk])
-              break;
-          if (fvulIdxPrimTracksWithHit.size() == uHitTrk)
-            fvulIdxPrimTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
+          for (uHitTrk = 0; uHitTrk < fvulIdxPrimTracksWithHit.size(); uHitTrk++)
+            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxPrimTracksWithHit[uHitTrk]) break;
+          if (fvulIdxPrimTracksWithHit.size() == uHitTrk) fvulIdxPrimTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
         }  // if( -1 == pMcTrk->GetMotherId() )
         else {
           for (uHitTrk = 0; uHitTrk < fvulIdxSecTracksWithHit.size(); uHitTrk++)
-            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                == fvulIdxSecTracksWithHit[uHitTrk])
-              break;
-          if (fvulIdxSecTracksWithHit.size() == uHitTrk)
-            fvulIdxSecTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
+            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxSecTracksWithHit[uHitTrk]) break;
+          if (fvulIdxSecTracksWithHit.size() == uHitTrk) fvulIdxSecTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
         }  // else of if( -1 == pMcTrk->GetMotherId() )
 
         // Check as function of Nb gaps crossed
         UInt_t uNbTofPnt = pMcTrk->GetNPoints(ECbmModuleId::kTof) - 1;
         if (uNbTofPnt < fuMaxCrossedGaps) {
-          for (uHitTrk = 0;
-               uHitTrk < fvulIdxTracksWithHitGaps[uNbTofPnt].size();
-               uHitTrk++)
-            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                == fvulIdxTracksWithHitGaps[uNbTofPnt][uHitTrk])
-              break;
+          for (uHitTrk = 0; uHitTrk < fvulIdxTracksWithHitGaps[uNbTofPnt].size(); uHitTrk++)
+            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxTracksWithHitGaps[uNbTofPnt][uHitTrk]) break;
           if (fvulIdxTracksWithHitGaps[uNbTofPnt].size() == uHitTrk)
-            fvulIdxTracksWithHitGaps[uNbTofPnt].push_back(
-              vTofTracksId[uTrkInHit]);
+            fvulIdxTracksWithHitGaps[uNbTofPnt].push_back(vTofTracksId[uTrkInHit]);
 
           if (-1 == pMcTrk->GetMotherId()) {
-            for (uHitTrk = 0;
-                 uHitTrk < fvulIdxPrimTracksWithHitGaps[uNbTofPnt].size();
-                 uHitTrk++)
-              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                  == fvulIdxPrimTracksWithHitGaps[uNbTofPnt][uHitTrk])
+            for (uHitTrk = 0; uHitTrk < fvulIdxPrimTracksWithHitGaps[uNbTofPnt].size(); uHitTrk++)
+              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxPrimTracksWithHitGaps[uNbTofPnt][uHitTrk])
                 break;
             if (fvulIdxPrimTracksWithHitGaps[uNbTofPnt].size() == uHitTrk)
-              fvulIdxPrimTracksWithHitGaps[uNbTofPnt].push_back(
-                vTofTracksId[uTrkInHit]);
+              fvulIdxPrimTracksWithHitGaps[uNbTofPnt].push_back(vTofTracksId[uTrkInHit]);
           }  // if( -1 == pMcTrk->GetMotherId() )
           else {
-            for (uHitTrk = 0;
-                 uHitTrk < fvulIdxSecTracksWithHitGaps[uNbTofPnt].size();
-                 uHitTrk++)
-              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                  == fvulIdxSecTracksWithHitGaps[uNbTofPnt][uHitTrk])
+            for (uHitTrk = 0; uHitTrk < fvulIdxSecTracksWithHitGaps[uNbTofPnt].size(); uHitTrk++)
+              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxSecTracksWithHitGaps[uNbTofPnt][uHitTrk])
                 break;
             if (fvulIdxSecTracksWithHitGaps[uNbTofPnt].size() == uHitTrk)
-              fvulIdxSecTracksWithHitGaps[uNbTofPnt].push_back(
-                vTofTracksId[uTrkInHit]);
+              fvulIdxSecTracksWithHitGaps[uNbTofPnt].push_back(vTofTracksId[uTrkInHit]);
           }  // else of if( -1 == pMcTrk->GetMotherId() )
-        }  // if( static_cast<UInt_t>(pMcTrk->GetNPoints(ECbmModuleId::kTof)) < fuMaxCrossedGaps + 1 )
+        }    // if( static_cast<UInt_t>(pMcTrk->GetNPoints(ECbmModuleId::kTof)) < fuMaxCrossedGaps + 1 )
 
         if (0 == vTofTracksWeight[uTrkInHit]) {
           // Tracks generating only signal hidden under signal from other tracks!
 
-          for (uHitTrk = 0; uHitTrk < fvulIdxHiddenTracksWithHit.size();
-               uHitTrk++)
-            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                == fvulIdxHiddenTracksWithHit[uHitTrk])
-              break;
+          for (uHitTrk = 0; uHitTrk < fvulIdxHiddenTracksWithHit.size(); uHitTrk++)
+            if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxHiddenTracksWithHit[uHitTrk]) break;
           if (fvulIdxHiddenTracksWithHit.size() == uHitTrk)
             fvulIdxHiddenTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
 
@@ -3946,25 +2749,19 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           pMcTrk = (CbmMCTrack*) fMcTracksColl->At(vTofTracksId[uTrkInHit]);
 
           if (-1 == pMcTrk->GetMotherId()) {
-            for (uHitTrk = 0; uHitTrk < fvulIdxHiddenPrimTracksWithHit.size();
-                 uHitTrk++)
-              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                  == fvulIdxHiddenPrimTracksWithHit[uHitTrk])
-                break;
+            for (uHitTrk = 0; uHitTrk < fvulIdxHiddenPrimTracksWithHit.size(); uHitTrk++)
+              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxHiddenPrimTracksWithHit[uHitTrk]) break;
             if (fvulIdxHiddenPrimTracksWithHit.size() == uHitTrk)
               fvulIdxHiddenPrimTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
           }  // if( -1 == pMcTrk->GetMotherId() )
           else {
-            for (uHitTrk = 0; uHitTrk < fvulIdxHiddenSecTracksWithHit.size();
-                 uHitTrk++)
-              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit])
-                  == fvulIdxHiddenSecTracksWithHit[uHitTrk])
-                break;
+            for (uHitTrk = 0; uHitTrk < fvulIdxHiddenSecTracksWithHit.size(); uHitTrk++)
+              if (static_cast<ULong64_t>(vTofTracksId[uTrkInHit]) == fvulIdxHiddenSecTracksWithHit[uHitTrk]) break;
             if (fvulIdxHiddenSecTracksWithHit.size() == uHitTrk)
               fvulIdxHiddenSecTracksWithHit.push_back(vTofTracksId[uTrkInHit]);
           }  // else of if( -1 == pMcTrk->GetMotherId() )
         }    // if( 0 == vTofTracksWeight[uTrkInHit] )
-      }  // for( UInt_t uTrkInHit = 0; uTrkInHit < vTofTracksId.size(); uTrkInHit ++)
+      }      // for( UInt_t uTrkInHit = 0; uTrkInHit < vTofTracksId.size(); uTrkInHit ++)
 
       // Check Hit Quality for Hits coming from a single MC Point
       if (1 == uNbPointsInHit) {
@@ -3977,8 +2774,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhHitMapSingPntSph->Fill(dTheta, dPhi);
 
         //            pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofPointsId[0]);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofPointsId[0]);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofPointsId[0]);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofPointsId[0]);
 
@@ -3999,16 +2795,14 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhSinglePointHitDeltaT->Fill(dDeltaT);
         fhSinglePointHitPullX->Fill(dDeltaX / dErrX);
         fhSinglePointHitPullY->Fill(dDeltaY / dErrY);
-        fhSinglePointHitPullZ->Fill(
-          dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
+        fhSinglePointHitPullZ->Fill(dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
         fhSinglePointHitPullR->Fill(dDeltaR / dErrR);
         fhSinglePointHitPullT->Fill(dDeltaT / dErrT);
 
         fhCltSzSinglePointHitPullX->Fill(dDeltaX / dErrX, iClusterSize);
         fhCltSzSinglePointHitPullY->Fill(dDeltaY / dErrY, iClusterSize);
-        fhCltSzSinglePointHitPullZ->Fill(
-          dDeltaZ / dErrZ,
-          iClusterSize);  // Offset(s) bec. hit assigned to middle of det.
+        fhCltSzSinglePointHitPullZ->Fill(dDeltaZ / dErrZ,
+                                         iClusterSize);  // Offset(s) bec. hit assigned to middle of det.
         fhCltSzSinglePointHitPullR->Fill(dDeltaR / dErrR, iClusterSize);
         fhCltSzSinglePointHitPullT->Fill(dDeltaT / dErrT, iClusterSize);
       }  // if( 1 == vTofPointsId.size() )
@@ -4031,8 +2825,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaMeanX = dX - dPntMeanPosX;
         Double_t dDeltaMeanY = dY - dPntMeanPosY;
         Double_t dDeltaMeanZ = dZ - dPntMeanPosZ;
-        Double_t dDeltaMeanR =
-          TMath::Sqrt(dDeltaMeanX * dDeltaMeanX + dDeltaMeanY * dDeltaMeanY);
+        Double_t dDeltaMeanR = TMath::Sqrt(dDeltaMeanX * dDeltaMeanX + dDeltaMeanY * dDeltaMeanY);
         Double_t dDeltaMeanT = 1000.0 * (pTofHit->GetTime() - dPntMeanTime);
 
         fhMultiPntHitMeanDeltaX->Fill(dDeltaMeanX, uNbPointsInHit);
@@ -4042,16 +2835,14 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiPntHitMeanDeltaT->Fill(dDeltaMeanT, uNbPointsInHit);
         fhMultiPntHitMeanPullX->Fill(dDeltaMeanX / dErrX, uNbPointsInHit);
         fhMultiPntHitMeanPullY->Fill(dDeltaMeanY / dErrY, uNbPointsInHit);
-        fhMultiPntHitMeanPullZ->Fill(
-          dDeltaMeanZ / dErrZ,
-          uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiPntHitMeanPullZ->Fill(dDeltaMeanZ / dErrZ,
+                                     uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiPntHitMeanPullR->Fill(dDeltaMeanR / dErrR, uNbPointsInHit);
         fhMultiPntHitMeanPullT->Fill(dDeltaMeanT / dErrT, uNbPointsInHit);
 
         // Check Hit Quality relative to closest MC Point
         //               pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iClosestPntIdx);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iClosestPntIdx);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iClosestPntIdx);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iClosestPntIdx);
 
@@ -4062,10 +2853,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaCloX = dX - vPntPosClo.X();
         Double_t dDeltaCloY = dY - vPntPosClo.Y();
         Double_t dDeltaCloZ = dZ - vPntPosClo.Z();
-        Double_t dDeltaCloR =
-          TMath::Sqrt(dDeltaCloX * dDeltaCloX + dDeltaCloY * dDeltaCloY);
-        Double_t dDeltaCloT =
-          1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+        Double_t dDeltaCloR = TMath::Sqrt(dDeltaCloX * dDeltaCloX + dDeltaCloY * dDeltaCloY);
+        Double_t dDeltaCloT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
         fhMultiPntHitClosestDeltaX->Fill(dDeltaCloX, uNbPointsInHit);
         fhMultiPntHitClosestDeltaY->Fill(dDeltaCloY, uNbPointsInHit);
@@ -4074,16 +2863,14 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiPntHitClosestDeltaT->Fill(dDeltaCloT, uNbPointsInHit);
         fhMultiPntHitClosestPullX->Fill(dDeltaCloX / dErrX, uNbPointsInHit);
         fhMultiPntHitClosestPullY->Fill(dDeltaCloY / dErrY, uNbPointsInHit);
-        fhMultiPntHitClosestPullZ->Fill(
-          dDeltaCloZ / dErrZ,
-          uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiPntHitClosestPullZ->Fill(dDeltaCloZ / dErrZ,
+                                        uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiPntHitClosestPullR->Fill(dDeltaCloR / dErrR, uNbPointsInHit);
         fhMultiPntHitClosestPullT->Fill(dDeltaCloT / dErrT, uNbPointsInHit);
 
         // Check Hit Quality relative to furthest MC Point
         //               pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iFurthestPntIdx);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iFurthestPntIdx);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iFurthestPntIdx);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iFurthestPntIdx);
 
@@ -4094,10 +2881,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaFarX = dX - vPntPosFar.X();
         Double_t dDeltaFarY = dY - vPntPosFar.Y();
         Double_t dDeltaFarZ = dZ - vPntPosFar.Z();
-        Double_t dDeltaFarR =
-          TMath::Sqrt(dDeltaFarX * dDeltaFarX + dDeltaFarY * dDeltaFarY);
-        Double_t dDeltaFarT =
-          1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+        Double_t dDeltaFarR = TMath::Sqrt(dDeltaFarX * dDeltaFarX + dDeltaFarY * dDeltaFarY);
+        Double_t dDeltaFarT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
         fhMultiPntHitFurthestDeltaX->Fill(dDeltaFarX, uNbPointsInHit);
         fhMultiPntHitFurthestDeltaY->Fill(dDeltaFarY, uNbPointsInHit);
@@ -4106,9 +2891,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiPntHitFurthestDeltaT->Fill(dDeltaFarT, uNbPointsInHit);
         fhMultiPntHitFurthestPullX->Fill(dDeltaFarX / dErrX, uNbPointsInHit);
         fhMultiPntHitFurthestPullY->Fill(dDeltaFarY / dErrY, uNbPointsInHit);
-        fhMultiPntHitFurthestPullZ->Fill(
-          dDeltaFarZ / dErrZ,
-          uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiPntHitFurthestPullZ->Fill(dDeltaFarZ / dErrZ,
+                                         uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiPntHitFurthestPullR->Fill(dDeltaFarR / dErrR, uNbPointsInHit);
         fhMultiPntHitFurthestPullT->Fill(dDeltaFarT / dErrT, uNbPointsInHit);
 
@@ -4121,11 +2905,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           if (kTRUE == fbRealPointAvail) {
             // Always only one mean MC Point Index per MC TofPoint
             // Weight always 1.0 so just read the index
-            Int_t iRealPntIdx =
-              (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0))
-                .GetIndex();
-            pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx);
-            iPtIdx    = iRealPntIdx;
+            Int_t iRealPntIdx = (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0)).GetIndex();
+            pTofPoint         = (CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx);
+            iPtIdx            = iRealPntIdx;
           }  // if( kTRUE == fbRealPointAvail )
 
           // Obtain Point position
@@ -4135,10 +2917,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           Double_t dDeltaBestX = dX - vPntPosBest.X();
           Double_t dDeltaBestY = dY - vPntPosBest.Y();
           Double_t dDeltaBestZ = dZ - vPntPosBest.Z();
-          Double_t dDeltaBestR =
-            TMath::Sqrt(dDeltaBestX * dDeltaBestX + dDeltaBestY * dDeltaBestY);
-          Double_t dDeltaBestT =
-            1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+          Double_t dDeltaBestR = TMath::Sqrt(dDeltaBestX * dDeltaBestX + dDeltaBestY * dDeltaBestY);
+          Double_t dDeltaBestT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
           fhMultiPntHitBestDeltaX->Fill(dDeltaBestX, uNbPointsInHit);
           fhMultiPntHitBestDeltaY->Fill(dDeltaBestY, uNbPointsInHit);
@@ -4147,9 +2927,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           fhMultiPntHitBestDeltaT->Fill(dDeltaBestT, uNbPointsInHit);
           fhMultiPntHitBestPullX->Fill(dDeltaBestX / dErrX, uNbPointsInHit);
           fhMultiPntHitBestPullY->Fill(dDeltaBestY / dErrY, uNbPointsInHit);
-          fhMultiPntHitBestPullZ->Fill(
-            dDeltaBestZ / dErrZ,
-            uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
+          fhMultiPntHitBestPullZ->Fill(dDeltaBestZ / dErrZ,
+                                       uNbPointsInHit);  // Offset(s) bec. hit assigned to middle of det.
           fhMultiPntHitBestPullR->Fill(dDeltaBestR / dErrR, uNbPointsInHit);
           fhMultiPntHitBestPullT->Fill(dDeltaBestT / dErrT, uNbPointsInHit);
         }  // if( kFALSE == fbHitProducerSource )
@@ -4168,8 +2947,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         // => If all points come from the same track, any of them should give
         //    the approximate position and time of the track at the detector level
         //            pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofPointsId[0]);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofPointsId[0]);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofPointsId[0]);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofPointsId[0]);
 
@@ -4190,8 +2968,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhSingleTrackHitDeltaT->Fill(dDeltaT);
         fhSingleTrackHitPullX->Fill(dDeltaX / dErrX);
         fhSingleTrackHitPullY->Fill(dDeltaY / dErrY);
-        fhSingleTrackHitPullZ->Fill(
-          dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
+        fhSingleTrackHitPullZ->Fill(dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
         fhSingleTrackHitPullR->Fill(dDeltaR / dErrR);
         fhSingleTrackHitPullT->Fill(dDeltaT / dErrT);
 
@@ -4200,12 +2977,10 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           fhSingTrkMultiPntHitDeltaY->Fill(dDeltaY);
           fhSingTrkMultiPntHitDeltaZ->Fill(dDeltaZ);
           fhSingTrkMultiPntHitDeltaR->Fill(dDeltaR);
-          fhSingTrkMultiPntHitDeltaT->Fill(
-            1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime()));
+          fhSingTrkMultiPntHitDeltaT->Fill(1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime()));
           fhSingTrkMultiPntHitPullX->Fill(dDeltaX / dErrX);
           fhSingTrkMultiPntHitPullY->Fill(dDeltaY / dErrY);
-          fhSingTrkMultiPntHitPullZ->Fill(
-            dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
+          fhSingTrkMultiPntHitPullZ->Fill(dDeltaZ / dErrZ);  // Offset(s) bec. hit assigned to middle of det.
           fhSingTrkMultiPntHitPullR->Fill(dDeltaR / dErrR);
           fhSingTrkMultiPntHitPullT->Fill(dDeltaT / dErrT);
         }  // if( 1 < uNbPointsInHit )
@@ -4221,8 +2996,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
             break;
           }  // if( kiPartPdgCode[iPart] == iPdgCode )
         if (-1 == iPartIdx) iPartIdx = 0;
-        if (-1 == pMcTrk->GetMotherId())
-          fhMcTrkStartPrimSingTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
+        if (-1 == pMcTrk->GetMotherId()) fhMcTrkStartPrimSingTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
         else
           fhMcTrkStartSecSingTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
       }  // if( 1 == vTofTracksId.size() )
@@ -4245,8 +3019,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaMeanX = dX - dTrkMeanPosX;
         Double_t dDeltaMeanY = dY - dTrkMeanPosY;
         Double_t dDeltaMeanZ = dZ - dTrkMeanPosZ;
-        Double_t dDeltaMeanR =
-          TMath::Sqrt(dDeltaMeanX * dDeltaMeanX + dDeltaMeanY * dDeltaMeanY);
+        Double_t dDeltaMeanR = TMath::Sqrt(dDeltaMeanX * dDeltaMeanX + dDeltaMeanY * dDeltaMeanY);
         Double_t dDeltaMeanT = 1000.0 * (pTofHit->GetTime() - dTrkMeanTime);
 
         fhMultiTrkHitMeanDeltaX->Fill(dDeltaMeanX, uNbTracksInHit);
@@ -4256,17 +3029,15 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiTrkHitMeanDeltaT->Fill(dDeltaMeanT, uNbTracksInHit);
         fhMultiTrkHitMeanPullX->Fill(dDeltaMeanX / dErrX, uNbTracksInHit);
         fhMultiTrkHitMeanPullY->Fill(dDeltaMeanY / dErrY, uNbTracksInHit);
-        fhMultiTrkHitMeanPullZ->Fill(
-          dDeltaMeanZ / dErrZ,
-          uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiTrkHitMeanPullZ->Fill(dDeltaMeanZ / dErrZ,
+                                     uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiTrkHitMeanPullR->Fill(dDeltaMeanR / dErrR, uNbTracksInHit);
         fhMultiTrkHitMeanPullT->Fill(dDeltaMeanT / dErrT, uNbTracksInHit);
 
         // Check Hit Quality relative to closest MC Tracks
         // Obtain Point position (Consider 1st Pnt of each Trk is approximate coord)
         //               pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iClosestTrkIdx);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iClosestTrkIdx);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iClosestTrkIdx);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iClosestTrkIdx);
 
@@ -4276,10 +3047,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaCloX = dX - vPntPosClo.X();
         Double_t dDeltaCloY = dY - vPntPosClo.Y();
         Double_t dDeltaCloZ = dZ - vPntPosClo.Z();
-        Double_t dDeltaCloR =
-          TMath::Sqrt(dDeltaCloX * dDeltaCloX + dDeltaCloY * dDeltaCloY);
-        Double_t dDeltaCloT =
-          1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+        Double_t dDeltaCloR = TMath::Sqrt(dDeltaCloX * dDeltaCloX + dDeltaCloY * dDeltaCloY);
+        Double_t dDeltaCloT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
         fhMultiTrkHitClosestDeltaX->Fill(dDeltaCloX, uNbTracksInHit);
         fhMultiTrkHitClosestDeltaY->Fill(dDeltaCloY, uNbTracksInHit);
@@ -4288,17 +3057,15 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiTrkHitClosestDeltaT->Fill(dDeltaCloT, uNbTracksInHit);
         fhMultiTrkHitClosestPullX->Fill(dDeltaCloX / dErrX, uNbTracksInHit);
         fhMultiTrkHitClosestPullY->Fill(dDeltaCloY / dErrY, uNbTracksInHit);
-        fhMultiTrkHitClosestPullZ->Fill(
-          dDeltaCloZ / dErrZ,
-          uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiTrkHitClosestPullZ->Fill(dDeltaCloZ / dErrZ,
+                                        uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiTrkHitClosestPullR->Fill(dDeltaCloR / dErrR, uNbTracksInHit);
         fhMultiTrkHitClosestPullT->Fill(dDeltaCloT / dErrT, uNbTracksInHit);
 
         // Check Hit Quality relative to furthest MC Tracks
         // Obtain Point position (Consider 1st Pnt of each Trk is approximate coord)
         //               pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iFurthestTrkIdx);
-        if (kTRUE == fbRealPointAvail)
-          pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iFurthestTrkIdx);
+        if (kTRUE == fbRealPointAvail) pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(iFurthestTrkIdx);
         else
           pTofPoint = (CbmTofPoint*) fTofPointsColl->At(iFurthestTrkIdx);
 
@@ -4308,10 +3075,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         Double_t dDeltaFarX = dX - vPntPosFar.X();
         Double_t dDeltaFarY = dY - vPntPosFar.Y();
         Double_t dDeltaFarZ = dZ - vPntPosFar.Z();
-        Double_t dDeltaFarR =
-          TMath::Sqrt(dDeltaFarX * dDeltaFarX + dDeltaFarY * dDeltaFarY);
-        Double_t dDeltaFarT =
-          1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+        Double_t dDeltaFarR = TMath::Sqrt(dDeltaFarX * dDeltaFarX + dDeltaFarY * dDeltaFarY);
+        Double_t dDeltaFarT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
         fhMultiTrkHitFurthestDeltaX->Fill(dDeltaFarX, uNbTracksInHit);
         fhMultiTrkHitFurthestDeltaY->Fill(dDeltaFarY, uNbTracksInHit);
@@ -4320,9 +3085,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         fhMultiTrkHitFurthestDeltaT->Fill(dDeltaFarT, uNbTracksInHit);
         fhMultiTrkHitFurthestPullX->Fill(dDeltaFarX / dErrX, uNbTracksInHit);
         fhMultiTrkHitFurthestPullY->Fill(dDeltaFarY / dErrY, uNbTracksInHit);
-        fhMultiTrkHitFurthestPullZ->Fill(
-          dDeltaFarZ / dErrZ,
-          uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
+        fhMultiTrkHitFurthestPullZ->Fill(dDeltaFarZ / dErrZ,
+                                         uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
         fhMultiTrkHitFurthestPullR->Fill(dDeltaFarR / dErrR, uNbTracksInHit);
         fhMultiTrkHitFurthestPullT->Fill(dDeltaFarT / dErrT, uNbTracksInHit);
 
@@ -4341,11 +3105,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           // Obtain Point position (Consider 1st Pnt of each Trk is approximate coord)
           //                  pTofPoint = (CbmTofPoint*) fTofPointsColl->At( vTofTracksFirstPntId[uBestTrackIdx] );
           if (kTRUE == fbRealPointAvail)
-            pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(
-              vTofTracksFirstPntId[uBestTrackIdx]);
+            pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofTracksFirstPntId[uBestTrackIdx]);
           else
-            pTofPoint = (CbmTofPoint*) fTofPointsColl->At(
-              vTofTracksFirstPntId[uBestTrackIdx]);
+            pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofTracksFirstPntId[uBestTrackIdx]);
 
           TVector3 vPntPosBest;
           pTofPoint->Position(vPntPosBest);
@@ -4353,10 +3115,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           Double_t dDeltaBestX = dX - vPntPosBest.X();
           Double_t dDeltaBestY = dY - vPntPosBest.Y();
           Double_t dDeltaBestZ = dZ - vPntPosBest.Z();
-          Double_t dDeltaBestR =
-            TMath::Sqrt(dDeltaBestX * dDeltaBestX + dDeltaBestY * dDeltaBestY);
-          Double_t dDeltaBestT =
-            1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
+          Double_t dDeltaBestR = TMath::Sqrt(dDeltaBestX * dDeltaBestX + dDeltaBestY * dDeltaBestY);
+          Double_t dDeltaBestT = 1000.0 * (pTofHit->GetTime() - pTofPoint->GetTime());
 
           fhMultiTrkHitBestDeltaX->Fill(dDeltaBestX, uNbTracksInHit);
           fhMultiTrkHitBestDeltaY->Fill(dDeltaBestY, uNbTracksInHit);
@@ -4365,9 +3125,8 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
           fhMultiTrkHitBestDeltaT->Fill(dDeltaBestT, uNbTracksInHit);
           fhMultiTrkHitBestPullX->Fill(dDeltaBestX / dErrX, uNbTracksInHit);
           fhMultiTrkHitBestPullY->Fill(dDeltaBestY / dErrY, uNbTracksInHit);
-          fhMultiTrkHitBestPullZ->Fill(
-            dDeltaBestZ / dErrZ,
-            uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
+          fhMultiTrkHitBestPullZ->Fill(dDeltaBestZ / dErrZ,
+                                       uNbTracksInHit);  // Offset(s) bec. hit assigned to middle of det.
           fhMultiTrkHitBestPullR->Fill(dDeltaBestR / dErrR, uNbTracksInHit);
           fhMultiTrkHitBestPullT->Fill(dDeltaBestT / dErrT, uNbTracksInHit);
         }  // if( kFALSE == fbHitProducerSource )
@@ -4376,11 +3135,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
         for (UInt_t uTrkIdx = 0; uTrkIdx < vTofTracksId.size(); uTrkIdx++) {
           //                  pTofPoint = (CbmTofPoint*) fTofPointsColl->At( vTofTracksFirstPntId[uTrkIdx] );
           if (kTRUE == fbRealPointAvail)
-            pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(
-              vTofTracksFirstPntId[uTrkIdx]);
+            pTofPoint = (CbmTofPoint*) fRealTofPointsColl->At(vTofTracksFirstPntId[uTrkIdx]);
           else
-            pTofPoint =
-              (CbmTofPoint*) fTofPointsColl->At(vTofTracksFirstPntId[uTrkIdx]);
+            pTofPoint = (CbmTofPoint*) fTofPointsColl->At(vTofTracksFirstPntId[uTrkIdx]);
 
           pMcTrk = (CbmMCTrack*) fMcTracksColl->At(pTofPoint->GetTrackID());
 
@@ -4392,8 +3149,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
               break;
             }  // if( kiPartPdgCode[iPart] == iPdgCode )
           if (-1 == iPartIdx) iPartIdx = 0;
-          if (-1 == pMcTrk->GetMotherId())
-            fhMcTrkStartPrimMultiTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
+          if (-1 == pMcTrk->GetMotherId()) fhMcTrkStartPrimMultiTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
           else
             fhMcTrkStartSecMultiTrk->Fill(pMcTrk->GetStartZ(), iPartIdx);
         }  // for( UInt_t uTrkIdx = 0; uTrkIdx < vTofTracksId.size(); uTrkIdx++)
@@ -4426,11 +3182,9 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       if (kTRUE == fbRealPointAvail) {
         // Always only one mean MC Point Index per MC TofPoint
         // Weight always 1.0 so just read the index
-        Int_t iRealPntIdx =
-          (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0)).GetIndex();
-        iTrkId =
-          ((CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx))->GetTrackID();
-        iPtIdx = iRealPntIdx;
+        Int_t iRealPntIdx = (((CbmMatch*) fRealTofMatchColl->At(iPtIdx))->GetLink(0)).GetIndex();
+        iTrkId            = ((CbmTofPoint*) fRealTofPointsColl->At(iRealPntIdx))->GetTrackID();
+        iPtIdx            = iRealPntIdx;
       }  // if( kTRUE == fbRealPointAvail )
 
       // Get a pointer to the corresponding MC Track
@@ -4447,36 +3201,30 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       if (-1 == pMcTrk->GetMotherId()) {
         // primary track
         // Phase space
-        fvhPtmRapTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                        pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         // PLab
         fvhPlabTofHit[iPartIdx]->Fill(pMcTrk->GetP());
         if (1 == vTofPointsId.size()) {
-          fvhPtmRapTofHitSinglePnt[iPartIdx]->Fill(
-            pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+          fvhPtmRapTofHitSinglePnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
           fvhPlabTofHitSinglePnt[iPartIdx]->Fill(pMcTrk->GetP());
         }  // if( 1 == vTofPointsId.size() )
         if (1 == vTofTracksId.size()) {
-          fvhPtmRapTofHitSingleTrk[iPartIdx]->Fill(
-            pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+          fvhPtmRapTofHitSingleTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
           fvhPlabTofHitSingleTrk[iPartIdx]->Fill(pMcTrk->GetP());
         }  // if( 1 == vTofTracksId.size() )
       }    // if( -1 == pMcTrk->GetMotherId() )
       else {
         // secondary track
         // Phase space
-        fvhPtmRapSecTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(),
-                                           pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapSecTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         // PLab
         fvhPlabSecTofHit[iPartIdx]->Fill(pMcTrk->GetP());
         if (1 == vTofPointsId.size()) {
-          fvhPtmRapSecTofHitSinglePnt[iPartIdx]->Fill(
-            pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+          fvhPtmRapSecTofHitSinglePnt[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
           fvhPlabSecTofHitSinglePnt[iPartIdx]->Fill(pMcTrk->GetP());
         }  // if( 1 == vTofPointsId.size() )
         if (1 == vTofTracksId.size()) {
-          fvhPtmRapSecTofHitSingleTrk[iPartIdx]->Fill(
-            pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+          fvhPtmRapSecTofHitSingleTrk[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
           fvhPlabSecTofHitSingleTrk[iPartIdx]->Fill(pMcTrk->GetP());
         }  // if( 1 == vTofTracksId.size() )
       }    // else of if( -1 == pMcTrk->GetMotherId() )
@@ -4509,8 +3257,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       if (-1 == iPartIdx) iPartIdx = 0;
       if (-1 == pMcTrk->GetMotherId()) {
         // primary track
-        fvhPtmRapGenTrkTofHit[iPartIdx]->Fill(
-          pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapGenTrkTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabGenTrkTofHit[iPartIdx]->Fill(pMcTrk->GetP());
 
         if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts))
@@ -4518,8 +3265,7 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
       }  // if( -1 == pMcTrk->GetMotherId() )
       else {
         // secondary track
-        fvhPtmRapSecGenTrkTofHit[iPartIdx]->Fill(
-          pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
+        fvhPtmRapSecGenTrkTofHit[iPartIdx]->Fill(pMcTrk->GetRapidity(), pMcTrk->GetPt() / pMcTrk->GetMass());
         fvhPlabSecGenTrkTofHit[iPartIdx]->Fill(pMcTrk->GetP());
 
         if (kiMinNbStsPntAcc <= pMcTrk->GetNPoints(ECbmModuleId::kSts))
@@ -4531,69 +3277,49 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 
   // Integrated TofHit Efficiency
   if (0 < fvulIdxTracksWithPnt.size())
-    fhIntegratedHitPntEff->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxTracksWithPnt.size())));
+    fhIntegratedHitPntEff->Fill(100.0 * (static_cast<Double_t>(fvulIdxTracksWithHit.size()))
+                                / (static_cast<Double_t>(fvulIdxTracksWithPnt.size())));
   if (0 < fvulIdxPrimTracksWithPnt.size())
-    fhIntegratedHitPntEffPrim->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxPrimTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxPrimTracksWithPnt.size())));
+    fhIntegratedHitPntEffPrim->Fill(100.0 * (static_cast<Double_t>(fvulIdxPrimTracksWithHit.size()))
+                                    / (static_cast<Double_t>(fvulIdxPrimTracksWithPnt.size())));
   if (0 < fvulIdxSecTracksWithPnt.size())
-    fhIntegratedHitPntEffSec->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxSecTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxSecTracksWithPnt.size())));
+    fhIntegratedHitPntEffSec->Fill(100.0 * (static_cast<Double_t>(fvulIdxSecTracksWithHit.size()))
+                                   / (static_cast<Double_t>(fvulIdxSecTracksWithPnt.size())));
 
   // Integrated TofHit Efficiency: Tracks firing channel but not going to Digi/Hit
   if (0 < fvulIdxTracksWithPnt.size())
-    fhIntegratedHiddenHitPntLoss->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxHiddenTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxTracksWithPnt.size())));
+    fhIntegratedHiddenHitPntLoss->Fill(100.0 * (static_cast<Double_t>(fvulIdxHiddenTracksWithHit.size()))
+                                       / (static_cast<Double_t>(fvulIdxTracksWithPnt.size())));
   if (0 < fvulIdxPrimTracksWithPnt.size())
-    fhIntegratedHiddenHitPntLossPrim->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxHiddenPrimTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxPrimTracksWithPnt.size())));
+    fhIntegratedHiddenHitPntLossPrim->Fill(100.0 * (static_cast<Double_t>(fvulIdxHiddenPrimTracksWithHit.size()))
+                                           / (static_cast<Double_t>(fvulIdxPrimTracksWithPnt.size())));
   if (0 < fvulIdxSecTracksWithPnt.size())
-    fhIntegratedHiddenHitPntLossSec->Fill(
-      100.0 * (static_cast<Double_t>(fvulIdxHiddenSecTracksWithHit.size()))
-      / (static_cast<Double_t>(fvulIdxSecTracksWithPnt.size())));
+    fhIntegratedHiddenHitPntLossSec->Fill(100.0 * (static_cast<Double_t>(fvulIdxHiddenSecTracksWithHit.size()))
+                                          / (static_cast<Double_t>(fvulIdxSecTracksWithPnt.size())));
 
-  LOG(debug2) << "CbmTofHitFinderQa::FillHistos => nb prim trk w/ pnt: "
-              << fvulIdxPrimTracksWithPnt.size()
-              << " nb prim trk w/ hit:  " << fvulIdxPrimTracksWithHit.size()
-              << " ";
+  LOG(debug2) << "CbmTofHitFinderQa::FillHistos => nb prim trk w/ pnt: " << fvulIdxPrimTracksWithPnt.size()
+              << " nb prim trk w/ hit:  " << fvulIdxPrimTracksWithHit.size() << " ";
   // Efficiency dependence on nb crossed gaps
-  TString sHead =
-    "CbmTofHitFinderQa::FillHistos =>                N pnt:       ";
-  TString sPnt =
-    "CbmTofHitFinderQa::FillHistos => nb prim trk w/ N pnt:       ";
-  TString sHit =
-    "CbmTofHitFinderQa::FillHistos => nb prim trk w/ N pnt & hit: ";
+  TString sHead = "CbmTofHitFinderQa::FillHistos =>                N pnt:       ";
+  TString sPnt  = "CbmTofHitFinderQa::FillHistos => nb prim trk w/ N pnt:       ";
+  TString sHit  = "CbmTofHitFinderQa::FillHistos => nb prim trk w/ N pnt & hit: ";
   for (UInt_t uNbGaps = 0; uNbGaps < fuMaxCrossedGaps; uNbGaps++) {
     sHead += Form("%4u ", uNbGaps);
     sPnt += Form("%4lu ", fvulIdxPrimTracksWithPntGaps[uNbGaps].size());
     sHit += Form("%4lu ", fvulIdxPrimTracksWithHitGaps[uNbGaps].size());
 
     if (0 < fvulIdxTracksWithPntGaps[uNbGaps].size())
-      fhIntegratedHitPntEffGaps->Fill(
-        100.0
-          * (static_cast<Double_t>(fvulIdxTracksWithHitGaps[uNbGaps].size()))
-          / (static_cast<Double_t>(fvulIdxTracksWithPntGaps[uNbGaps].size())),
-        uNbGaps + 1);
+      fhIntegratedHitPntEffGaps->Fill(100.0 * (static_cast<Double_t>(fvulIdxTracksWithHitGaps[uNbGaps].size()))
+                                        / (static_cast<Double_t>(fvulIdxTracksWithPntGaps[uNbGaps].size())),
+                                      uNbGaps + 1);
     if (0 < fvulIdxPrimTracksWithPntGaps[uNbGaps].size())
-      fhIntegratedHitPntEffPrimGaps->Fill(
-        100.0
-          * (static_cast<Double_t>(
-            fvulIdxPrimTracksWithHitGaps[uNbGaps].size()))
-          / (static_cast<Double_t>(
-            fvulIdxPrimTracksWithPntGaps[uNbGaps].size())),
-        uNbGaps + 1);
+      fhIntegratedHitPntEffPrimGaps->Fill(100.0 * (static_cast<Double_t>(fvulIdxPrimTracksWithHitGaps[uNbGaps].size()))
+                                            / (static_cast<Double_t>(fvulIdxPrimTracksWithPntGaps[uNbGaps].size())),
+                                          uNbGaps + 1);
     if (0 < fvulIdxSecTracksWithPntGaps[uNbGaps].size())
-      fhIntegratedHitPntEffSecGaps->Fill(
-        100.0
-          * (static_cast<Double_t>(fvulIdxSecTracksWithHitGaps[uNbGaps].size()))
-          / (static_cast<Double_t>(
-            fvulIdxSecTracksWithPntGaps[uNbGaps].size())),
-        uNbGaps + 1);
+      fhIntegratedHitPntEffSecGaps->Fill(100.0 * (static_cast<Double_t>(fvulIdxSecTracksWithHitGaps[uNbGaps].size()))
+                                           / (static_cast<Double_t>(fvulIdxSecTracksWithPntGaps[uNbGaps].size())),
+                                         uNbGaps + 1);
   }  // for( UInt_t uNbGaps = 0; uNbGaps < fuMaxCrossedGaps; uNbGaps++)
   LOG(debug2) << sHead;
   LOG(debug2) << sPnt;
@@ -4603,19 +3329,23 @@ Bool_t CbmTofHitFinderQa::FillHistos() {
 }
 // ------------------------------------------------------------------
 
-Bool_t CbmTofHitFinderQa::SetHistoFileNameCartCoordNorm(TString sFilenameIn) {
+Bool_t CbmTofHitFinderQa::SetHistoFileNameCartCoordNorm(TString sFilenameIn)
+{
   fsHistoInNormCartFilename = sFilenameIn;
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::SetHistoFileNameAngCoordNorm(TString sFilenameIn) {
+Bool_t CbmTofHitFinderQa::SetHistoFileNameAngCoordNorm(TString sFilenameIn)
+{
   fsHistoInNormAngFilename = sFilenameIn;
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::SetHistoFileNameSphCoordNorm(TString sFilenameIn) {
+Bool_t CbmTofHitFinderQa::SetHistoFileNameSphCoordNorm(TString sFilenameIn)
+{
   fsHistoInNormSphFilename = sFilenameIn;
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
+Bool_t CbmTofHitFinderQa::NormalizeMapHistos()
+{
   // TIP: Normalization files can (should?) be generated using the FairBoxGenerator
   //      to get uniform distributions with the right density in the desired coords.
   // Normalization of Cartesian coordinates maps
@@ -4626,12 +3356,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    TFile* fHistNorm  = new TFile(fsHistoInNormCartFilename, "READ");
+    TFile* fHistNorm = new TFile(fsHistoInNormCartFilename, "READ");
     if (NULL == fHistNorm) {
-      LOG(error)
-        << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
-        << " with Normalization histos of Cartesian coordinates maps with name "
-        << fsHistoInNormCartFilename << " => Stopping normalization here!";
+      LOG(error) << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
+                 << " with Normalization histos of Cartesian coordinates maps with name " << fsHistoInNormCartFilename
+                 << " => Stopping normalization here!";
       return kFALSE;
     }  // if( NULL == fHistNorm )
     gROOT->cd();
@@ -4648,55 +3377,31 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TH2* fhHitMapNormYZ   = NULL;
 
     // Get pointers for norm histos from file if they exist
-    fhPointMapNormXY =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapXY"));
-    fhPointMapNormXZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapXZ"));
-    fhPointMapNormYZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapYZ"));
+    fhPointMapNormXY = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapXY"));
+    fhPointMapNormXZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapXZ"));
+    fhPointMapNormYZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapYZ"));
 
-    fhDigiMapNormXY =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapXY"));
-    fhDigiMapNormXZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapXZ"));
-    fhDigiMapNormYZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapYZ"));
+    fhDigiMapNormXY = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapXY"));
+    fhDigiMapNormXZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapXZ"));
+    fhDigiMapNormYZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapYZ"));
 
-    fhHitMapNormXY =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapXY"));
-    fhHitMapNormXZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapXZ"));
-    fhHitMapNormYZ =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapYZ"));
-    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => XY norm histos: "
-              << fhPointMapNormXY << " " << fhDigiMapNormXY << " "
-              << fhHitMapNormXY << " ";
-    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => XZ norm histos: "
-              << fhPointMapNormXZ << " " << fhDigiMapNormXZ << " "
-              << fhHitMapNormXZ << " ";
-    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => YZ norm histos: "
-              << fhPointMapNormYZ << " " << fhDigiMapNormYZ << " "
-              << fhHitMapNormYZ << " ";
+    fhHitMapNormXY = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapXY"));
+    fhHitMapNormXZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapXZ"));
+    fhHitMapNormYZ = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapYZ"));
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => XY norm histos: " << fhPointMapNormXY << " "
+              << fhDigiMapNormXY << " " << fhHitMapNormXY << " ";
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => XZ norm histos: " << fhPointMapNormXZ << " "
+              << fhDigiMapNormXZ << " " << fhHitMapNormXZ << " ";
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => YZ norm histos: " << fhPointMapNormYZ << " "
+              << fhDigiMapNormYZ << " " << fhHitMapNormYZ << " ";
 
     // If norm histo found, normalize corresponding map
-    if (NULL != fhPointMapNormXY) {
-      fhPointMapXY->Divide(fhPointMapNormXY);
-    }  // if( NULL != fhPointMapNormXY )
-    if (NULL != fhPointMapNormXZ) {
-      fhPointMapXZ->Divide(fhPointMapNormXZ);
-    }  // if( NULL != fhPointMapNormXZ )
-    if (NULL != fhPointMapNormYZ) {
-      fhPointMapYZ->Divide(fhPointMapNormYZ);
-    }  // if( NULL != fhPointMapNormYZ )
-    if (NULL != fhDigiMapNormXY) {
-      fhDigiMapXY->Divide(fhDigiMapNormXY);
-    }  // if( NULL != fhDigiMapNormXY  )
-    if (NULL != fhDigiMapNormXZ) {
-      fhDigiMapXZ->Divide(fhDigiMapNormXZ);
-    }  // if( NULL != fhDigiMapNormXZ  )
-    if (NULL != fhDigiMapNormYZ) {
-      fhDigiMapYZ->Divide(fhDigiMapNormYZ);
-    }  // if( NULL != fhDigiMapNormYZ  )
+    if (NULL != fhPointMapNormXY) { fhPointMapXY->Divide(fhPointMapNormXY); }  // if( NULL != fhPointMapNormXY )
+    if (NULL != fhPointMapNormXZ) { fhPointMapXZ->Divide(fhPointMapNormXZ); }  // if( NULL != fhPointMapNormXZ )
+    if (NULL != fhPointMapNormYZ) { fhPointMapYZ->Divide(fhPointMapNormYZ); }  // if( NULL != fhPointMapNormYZ )
+    if (NULL != fhDigiMapNormXY) { fhDigiMapXY->Divide(fhDigiMapNormXY); }     // if( NULL != fhDigiMapNormXY  )
+    if (NULL != fhDigiMapNormXZ) { fhDigiMapXZ->Divide(fhDigiMapNormXZ); }     // if( NULL != fhDigiMapNormXZ  )
+    if (NULL != fhDigiMapNormYZ) { fhDigiMapYZ->Divide(fhDigiMapNormYZ); }     // if( NULL != fhDigiMapNormYZ  )
     if (NULL != fhHitMapNormXY) {
       fhHitMapXY->Divide(fhHitMapNormXY);
       fhHitMapSingPntXY->Divide(fhHitMapNormXY);
@@ -4726,10 +3431,9 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormCartFilename )
   else
-    LOG(info)
-      << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
-      << " Normalization of Cartesian coordinates maps not given"
-      << " => no normalization for these maps!";
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
+              << " Normalization of Cartesian coordinates maps not given"
+              << " => no normalization for these maps!";
   // Normalization of Angular   coordinates maps
   if ("" != fsHistoInNormAngFilename) {
     // Open file and set folders properly to avoid creating objects in uncontrolled places
@@ -4738,12 +3442,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    TFile* fHistNorm  = new TFile(fsHistoInNormAngFilename, "READ");
+    TFile* fHistNorm = new TFile(fsHistoInNormAngFilename, "READ");
     if (NULL == fHistNorm) {
-      LOG(error)
-        << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
-        << " with Normalization histos of Angular   coordinates maps with name "
-        << fsHistoInNormAngFilename << " => Stopping normalization here!";
+      LOG(error) << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
+                 << " with Normalization histos of Angular   coordinates maps with name " << fsHistoInNormAngFilename
+                 << " => Stopping normalization here!";
       return kFALSE;
     }  // if( NULL == fHistNorm )
     gROOT->cd();
@@ -4754,16 +3457,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TH2* fhHitMapNormAng   = NULL;
 
     // Get pointers for norm histos from file if they exist
-    fhPointMapNormAng =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapAng"));
-    fhDigiMapNormAng =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapAng"));
-    fhHitMapNormAng =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapAng"));
-    LOG(info)
-      << "CbmTofHitFinderQa::NormalizeMapHistos => Angular norm histos: "
-      << fhPointMapNormAng << " " << fhDigiMapNormAng << " " << fhHitMapNormAng
-      << " ";
+    fhPointMapNormAng = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapAng"));
+    fhDigiMapNormAng  = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapAng"));
+    fhHitMapNormAng   = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapAng"));
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => Angular norm histos: " << fhPointMapNormAng << " "
+              << fhDigiMapNormAng << " " << fhHitMapNormAng << " ";
 
     // If norm histo found, normalize corresponding map
     if (NULL != fhPointMapNormAng) fhPointMapAng->Divide(fhPointMapNormAng);
@@ -4783,10 +3481,9 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormAngFilename )
   else
-    LOG(info)
-      << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
-      << " Normalization of Angular   coordinates maps not given"
-      << " => no normalization for these maps!";
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
+              << " Normalization of Angular   coordinates maps not given"
+              << " => no normalization for these maps!";
   // Normalization of Spherical coordinates maps
   if ("" != fsHistoInNormSphFilename) {
     // Open file and set folders properly to avoid creating objects in uncontrolled places
@@ -4795,12 +3492,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    TFile* fHistNorm  = new TFile(fsHistoInNormSphFilename, "READ");
+    TFile* fHistNorm = new TFile(fsHistoInNormSphFilename, "READ");
     if (NULL == fHistNorm) {
-      LOG(error)
-        << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
-        << " with Normalization histos of Spherical coordinates maps with name "
-        << fsHistoInNormSphFilename << " => Stopping normalization here!";
+      LOG(error) << "CbmTofHitFinderQa::NormalizeMapHistos => Could not open file"
+                 << " with Normalization histos of Spherical coordinates maps with name " << fsHistoInNormSphFilename
+                 << " => Stopping normalization here!";
       return kFALSE;
     }  // if( NULL == fHistNorm )
     gROOT->cd();
@@ -4811,16 +3507,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     TH2* fhHitMapNormSph   = NULL;
 
     // Get pointers for norm histos from file if they exist
-    fhPointMapNormSph =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapSph"));
-    fhDigiMapNormSph =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapSph"));
-    fhHitMapNormSph =
-      static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapSph"));
-    LOG(info)
-      << "CbmTofHitFinderQa::NormalizeMapHistos => Spherical norm histos: "
-      << fhPointMapNormSph << " " << fhDigiMapNormSph << " " << fhHitMapNormSph
-      << " ";
+    fhPointMapNormSph = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_PointsMapSph"));
+    fhDigiMapNormSph  = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_DigisMapSph"));
+    fhHitMapNormSph   = static_cast<TH2*>(fHistNorm->FindObjectAny("TofTests_HitsMapSph"));
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => Spherical norm histos: " << fhPointMapNormSph << " "
+              << fhDigiMapNormSph << " " << fhHitMapNormSph << " ";
 
     // If norm histo found, normalize corresponding map
     if (NULL != fhPointMapNormSph) fhPointMapSph->Divide(fhPointMapNormSph);
@@ -4840,13 +3531,13 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormSphFilename )
   else
-    LOG(info)
-      << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
-      << " Normalization of Spherical coordinates maps not given"
-      << " => no normalization for these maps!";
+    LOG(info) << "CbmTofHitFinderQa::NormalizeMapHistos => Name of input file for"
+              << " Normalization of Spherical coordinates maps not given"
+              << " => no normalization for these maps!";
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::NormalizeNormHistos() {
+Bool_t CbmTofHitFinderQa::NormalizeNormHistos()
+{
   if (0 < fhTrackMapXY->GetEntries()) {
     fhPointMapXY->Divide(fhTrackMapXY);
     fhDigiMapXY->Divide(fhTrackMapXY);
@@ -4877,11 +3568,13 @@ Bool_t CbmTofHitFinderQa::NormalizeNormHistos() {
 }
 // ------------------------------------------------------------------
 
-Bool_t CbmTofHitFinderQa::SetHistoFileName(TString sFilenameIn) {
+Bool_t CbmTofHitFinderQa::SetHistoFileName(TString sFilenameIn)
+{
   fsHistoOutFilename = sFilenameIn;
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::WriteHistos() {
+Bool_t CbmTofHitFinderQa::WriteHistos()
+{
   // TODO: add sub-folders ?
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -4889,7 +3582,7 @@ Bool_t CbmTofHitFinderQa::WriteHistos() {
   TDirectory* oldDir = gDirectory;
 
   // Write histogramms to the file
-  TFile* fHist      = new TFile(fsHistoOutFilename, "RECREATE");
+  TFile* fHist = new TFile(fsHistoOutFilename, "RECREATE");
   fHist->cd();
 
   // Nb Hits per event for first N events
@@ -5195,7 +3888,8 @@ Bool_t CbmTofHitFinderQa::WriteHistos() {
 
   return kTRUE;
 }
-Bool_t CbmTofHitFinderQa::DeleteHistos() {
+Bool_t CbmTofHitFinderQa::DeleteHistos()
+{
   // Nb Hits per event for first N events
   delete fhNbHitsPerEvent;
   delete fhNbHitsSingPntPerEvent;

@@ -1,4 +1,5 @@
-void pl_all_CluMul(Int_t iNDet = 8) {
+void pl_all_CluMul(Int_t iNDet = 8)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -29,13 +30,13 @@ void pl_all_CluMul(Int_t iNDet = 8) {
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname =
-          Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iType[iCh], iSm, iRp);
-        h = (TH1*) gROOT->FindObjectAny(hname);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iType[iCh], iSm, iRp);
+        h             = (TH1*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           h->Draw("");
           //     gPad->SetLogy();
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

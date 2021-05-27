@@ -2,10 +2,10 @@
 #define MCBM_RICH_QA_REAL
 
 #include "CbmEvent.h"
-#include "CbmRichRingFinderHoughImpl.h"
-#include "FairTask.h"
-
 #include "CbmHistManager.h"  // for ROOTCLING
+#include "CbmRichRingFinderHoughImpl.h"
+
+#include "FairTask.h"
 
 class TClonesArray;
 class CbmRichRing;
@@ -108,15 +108,16 @@ public:
   /**
     * Set an ToT cut of the RICH Hits. 
     */
-  void SetTotRich(Double_t min, Double_t max) {
+  void SetTotRich(Double_t min, Double_t max)
+  {
     fTotRichMin = min;
     fTotRichMax = max;
   }
 
-  bool isOnTarget(CbmTofTracklet* tTrack) {
+  bool isOnTarget(CbmTofTracklet* tTrack)
+  {
 
-    Double_t val = std::sqrt(tTrack->GetFitX(0.) * tTrack->GetFitX(0.)
-                             + tTrack->GetFitY(0.) * tTrack->GetFitY(0.));
+    Double_t val = std::sqrt(tTrack->GetFitX(0.) * tTrack->GetFitX(0.) + tTrack->GetFitY(0.) * tTrack->GetFitY(0.));
     if (val < 10.) return true;
 
     return false;
@@ -162,8 +163,7 @@ private:
 
   Int_t fTracksinRich = 0;
 
-  Int_t fRingsWithTrack[6] =
-    {0, 0, 0, 0, 0, 0};  //rwt;ring;track;ringCut;trackCut;combinations;
+  Int_t fRingsWithTrack[6] = {0, 0, 0, 0, 0, 0};  //rwt;ring;track;ringCut;trackCut;combinations;
 
   Int_t fTracksinRichWithRichHits[4] = {0, 0, 0, 0};
 
@@ -209,29 +209,22 @@ private:
 
   void DrawEvent(CbmEvent* ev, std::vector<int>& ringIndx, bool full);
 
-  void DrawRing(CbmRichRing* ring, std::vector<CbmTofTracklet*> track) {
-    DrawRing(ring, track, false);
-  };
+  void DrawRing(CbmRichRing* ring, std::vector<CbmTofTracklet*> track) { DrawRing(ring, track, false); };
 
-  void
-  DrawRing(CbmRichRing* ring, std::vector<CbmTofTracklet*> track, bool full);
+  void DrawRing(CbmRichRing* ring, std::vector<CbmTofTracklet*> track, bool full);
 
-  void DrawRichTofEv(const std::vector<int> richHitIndx,
-                     const std::vector<int> tofTrackIndx);
+  void DrawRichTofEv(const std::vector<int> richHitIndx, const std::vector<int> tofTrackIndx);
 
-  std::pair<int, double>
-  FindClosestTrack(const CbmRichRing* ring,
-                   const std::vector<CbmTofTracklet*> track);
+  std::pair<int, double> FindClosestTrack(const CbmRichRing* ring, const std::vector<CbmTofTracklet*> track);
 
-  std::pair<int, double> FindClosestRing(CbmTofTracklet* track,
-                                         std::vector<int>& ringIndx);
+  std::pair<int, double> FindClosestRing(CbmTofTracklet* track, std::vector<int>& ringIndx);
 
   bool isAccmRICH(CbmTofTracklet* track);
 
   template<typename T = CbmRichHit>
-  bool doToT(T* hit) {
-    if ((hit->GetToT() > fTotRichMin) && (hit->GetToT() < fTotRichMax))
-      return true;
+  bool doToT(T* hit)
+  {
+    if ((hit->GetToT() > fTotRichMin) && (hit->GetToT() < fTotRichMax)) return true;
     return false;
   }
 
@@ -239,8 +232,7 @@ private:
 
   Double_t getBeta(CbmRichRing* ring);
 
-  void
-  analyseRing(CbmRichRing* ring, CbmEvent* ev, std::pair<int, double>& clTrack);
+  void analyseRing(CbmRichRing* ring, CbmEvent* ev, std::pair<int, double>& clTrack);
 
   Bool_t cutRadius(CbmRichRing* ring);
   Bool_t cutDistance(std::pair<int, double>& clTrack);

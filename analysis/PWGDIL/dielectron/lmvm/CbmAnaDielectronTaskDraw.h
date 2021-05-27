@@ -38,17 +38,13 @@ public:
      * \param[in] useMvd draw histograms related to the MVD detector?
      * \param[in] drawSig Do you want to draw significance histograms?
      **/
-  void DrawHistFromFile(const std::string& fileName,
-                        const std::string& outputDir = "",
-                        Bool_t useMvd                = true,
-                        Bool_t drawSig               = true);
+  void DrawHistFromFile(const std::string& fileName, const std::string& outputDir = "", Bool_t useMvd = true,
+                        Bool_t drawSig = true);
 
 private:
   Int_t fNofEvents;
-  Bool_t
-    fUseMvd;  // do you want to draw histograms related to the MVD detector?
-  Bool_t
-    fDrawSignificance;  // do you want to draw significance histograms of 1D cuts?
+  Bool_t fUseMvd;            // do you want to draw histograms related to the MVD detector?
+  Bool_t fDrawSignificance;  // do you want to draw significance histograms of 1D cuts?
 
   CbmLmvmCuts fCuts;  // electron identification and analysis cuts
 
@@ -95,18 +91,12 @@ private:
      * \param[in] name Name of new significance histogram.
      * \param[in] option Could be "right" or "left".
      */
-  TH1D* CreateSignificanceH1D(TH1D* s,
-                              TH1D* bg,
-                              const std::string& name,
-                              const std::string& option);
+  TH1D* CreateSignificanceH1D(TH1D* s, TH1D* bg, const std::string& name, const std::string& option);
 
   /**
      * Produce 2D significance histogram Significance=S/sqrt(S+BG).
      */
-  TH2D* CreateSignificanceH2D(TH2D* signal,
-                              TH2D* bg,
-                              const std::string& name,
-                              const std::string& title);
+  TH2D* CreateSignificanceH2D(TH2D* signal, TH2D* bg, const std::string& name, const std::string& title);
 
   /**
      * \brief Fit signal histogram using Fit("gaus").
@@ -175,24 +165,19 @@ private:
   // Draw distribution and significance of 1D analysis cut
   void Draw1DSourceTypes(const std::string& hName, bool doScale = true);
 
-  void Draw1DCut(const std::string& hName,
-                 const std::string& sigOption,
-                 double cutValue = -999999.);
+  void Draw1DCut(const std::string& hName, const std::string& sigOption, double cutValue = -999999.);
 
   void DrawElPiMomHis();
 
   void Draw2DCutTriangle(double xCross, double yCross);
 
-  void Draw2DCut(const std::string& hist,
-                 double cutCrossX = -999999.,
-                 double cutCrossY = -999999.);
+  void Draw2DCut(const std::string& hist, double cutCrossX = -999999., double cutCrossY = -999999.);
 
   void DrawCutDistributions();
 
   void DrawMismatchesAndGhosts();
 
-  void
-  DrawSourcesBgPairsEpEm(int step, bool inPercent, bool drawAnaStep = true);
+  void DrawSourcesBgPairsEpEm(int step, bool inPercent, bool drawAnaStep = true);
 
   /**
      * Draw sources of BG pairs for all steps.
@@ -201,8 +186,7 @@ private:
 
   void DrawGammaVertex();
 
-  void Draw1DHistoForEachAnalysisStep(const std::string& hist,
-                                      Bool_t logy = false);
+  void Draw1DHistoForEachAnalysisStep(const std::string& hist, Bool_t logy = false);
 
   //Draw Invariant mass distributions after each cut
   void DrawMinvForEachAnalysisStep();
@@ -224,11 +208,8 @@ private:
   void RemoveMvdCutBins();
 
 
-  void DrawBgSource2D(const std::string& canvasName,
-                      const std::string& histName,
-                      const std::vector<std::string>& yLabels,
-                      double scale,
-                      const std::string& zTitle);
+  void DrawBgSource2D(const std::string& canvasName, const std::string& histName,
+                      const std::vector<std::string>& yLabels, double scale, const std::string& zTitle);
 
 
   //SOURCE TRACKS

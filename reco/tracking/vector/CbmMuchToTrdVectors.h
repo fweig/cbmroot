@@ -59,11 +59,7 @@ private:
 
   void GetMuchVectors();  // get MUCH vectors
   void MergeVectors();    // merge vectors
-  void AddTrack(CbmMuchTrack* tr1,
-                CbmMuchTrack* tr2,
-                Int_t indx1,
-                Int_t indx2,
-                FairTrackParam& parOk,
+  void AddTrack(CbmMuchTrack* tr1, CbmMuchTrack* tr2, Int_t indx1, Int_t indx2, FairTrackParam& parOk,
                 Double_t c2);  // add track
   void RemoveClones();         // remove clones
 

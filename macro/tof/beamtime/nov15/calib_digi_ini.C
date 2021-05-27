@@ -5,13 +5,9 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void calib_digi_ini(Int_t nEvents   = 10000,
-                    Int_t calMode   = 0,
-                    Int_t calSel    = -1,
-                    Int_t calSm     = 200,
-                    Int_t RefSel    = 1,
-                    TString cFileId = "CbmTofSps_27Nov1728",
-                    Int_t iCalSet   = 0) {
+void calib_digi_ini(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
+                    TString cFileId = "CbmTofSps_27Nov1728", Int_t iCalSet = 0)
+{
   TStopwatch timer;
   timer.Start();
 
@@ -36,10 +32,8 @@ void calib_digi_ini(Int_t nEvents   = 10000,
 
   TString geoFile = srcDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
 
-  TObjString tofDigiParFile =
-    (srcDir + "/parameters/tof/tof_" + TofGeo + ".digi.par").Data();
-  TObjString tofDigiBdfParFile =
-    (srcDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par").Data();
+  TObjString tofDigiParFile    = (srcDir + "/parameters/tof/tof_" + TofGeo + ".digi.par").Data();
+  TObjString tofDigiBdfParFile = (srcDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par").Data();
 
   TString InputFile  = "../../unpack_" + cFileId + ".out.root";
   TString OutputFile = "./digi_ini.out.root";
@@ -91,23 +85,19 @@ void calib_digi_ini(Int_t nEvents   = 10000,
   rtdb->setFirstInput(parIo1);
 
 
-  CbmTofTestBeamClusterizer* tofTestBeamClust =
-    new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", 1, kFALSE);
+  CbmTofTestBeamClusterizer* tofTestBeamClust = new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", 1, kFALSE);
   tofTestBeamClust->SetPs2Ns(kTRUE);
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(5.);  // geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    20.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofTestBeamClust->SetCalRpc(calSm);  // select detector for calibration update
-  tofTestBeamClust->SetTRefId(
-    RefSel);                         // reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(0.01);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5.);  // effective lower Tot limit  in ns from peak position
-  tofTestBeamClust->SetTotMean(2.);       // Tot calibration target value in ns
-  tofTestBeamClust->SetMaxTimeDist(0.5);  // default cluster range in ns
+  tofTestBeamClust->SetCaldXdYMax(5.);     // geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(20.);  // Max Counter Cluster Multiplicity for filling calib histos
+  tofTestBeamClust->SetCalRpc(calSm);      // select detector for calibration update
+  tofTestBeamClust->SetTRefId(RefSel);     // reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10.);        // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(0.01);       // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5.);    // effective lower Tot limit  in ns from peak position
+  tofTestBeamClust->SetTotMean(2.);        // Tot calibration target value in ns
+  tofTestBeamClust->SetMaxTimeDist(0.5);   // default cluster range in ns
   //tofTestBeamClust->SetMaxTimeDist(0.);        //Deb// default cluster range in ns
   tofTestBeamClust->SetBeamRefMulMax(4);  // limit Multiplicity in beam counter
   tofTestBeamClust->SetBeamAddRefMul(-1);
@@ -259,10 +249,7 @@ void calib_digi_ini(Int_t nEvents   = 10000,
       tofTestBeamClust->PosYMaxScal(0.7);    // in % of length
       break;
 
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
 

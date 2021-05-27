@@ -10,8 +10,10 @@
 #include "CbmMCEventFilter.h"
 #include "CbmSetup.h"
 #include "CbmStackFilter.h"
+
 #include "TNamed.h"
 #include "TString.h"
+
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -27,9 +29,18 @@ class CbmTarget;
 class CbmGeant3Settings;
 class CbmGeant4Settings;
 
-enum ECbmGenerator { kUnigen, kUrqmd, kPluto };
+enum ECbmGenerator
+{
+  kUnigen,
+  kUrqmd,
+  kPluto
+};
 
-enum ECbmEngine { kGeant3, kGeant4 };
+enum ECbmEngine
+{
+  kGeant3,
+  kGeant4
+};
 
 
 /** @class CbmTransport
@@ -143,10 +154,7 @@ public:
      **
      ** Without using this method, the default beam is always in z direction.
      **/
-  void SetBeamAngle(Double_t x0,
-                    Double_t y0,
-                    Double_t sigmaX = -1.,
-                    Double_t sigmaY = -1.);
+  void SetBeamAngle(Double_t x0, Double_t y0, Double_t sigmaX = -1., Double_t sigmaY = -1.);
 
 
   /** @brief Set the beam position
@@ -165,11 +173,7 @@ public:
      ** Without using this method, the primary vertex is always
      ** at x=0 and y=0.
      **/
-  void SetBeamPosition(Double_t x0,
-                       Double_t y0,
-                       Double_t sigmaX = -1.,
-                       Double_t sigmaY = -1.,
-                       Double_t zF     = 0.);
+  void SetBeamPosition(Double_t x0, Double_t y0, Double_t sigmaX = -1., Double_t sigmaY = -1., Double_t zF = 0.);
 
 
   /** @brief Set a decay mode for a particle
@@ -198,15 +202,14 @@ public:
      ** It will be used instead of the default CbmMCEventFilter class
      ** for filtering MC events before writing to the output.
      **/
-  void SetEventFilter(std::unique_ptr<CbmMCEventFilter>& filter) {
+  void SetEventFilter(std::unique_ptr<CbmMCEventFilter>& filter)
+  {
     fEventFilter.reset();
     fEventFilter = std::move(filter);
   }
 
 
-  void SetEventFilterMinNofData(ECbmDataType type, Int_t value) {
-    fEventFilter->SetMinNofData(type, value);
-  }
+  void SetEventFilterMinNofData(ECbmDataType type, Int_t value) { fEventFilter->SetMinNofData(type, value); }
 
 
   /** @brief Set magnetic field
@@ -237,9 +240,7 @@ public:
      ** it will be applied. A relative path will be appended to
      ** GEOMPATH if defined, else to VMCWRKDIR/geometry.
      **/
-  void SetMediaFileName(TString fileName) {
-    fSetup->SetMediaFilePath(fileName.Data());
-  }
+  void SetMediaFileName(TString fileName) { fSetup->SetMediaFilePath(fileName.Data()); }
 
 
   /** @brief Define parameter file name
@@ -257,7 +258,8 @@ public:
      ** It will be used instead of the default CbmStackFilter class
      ** for filtering MCTracks before writing to the output.
      **/
-  void SetStackFilter(std::unique_ptr<CbmStackFilter>& filter) {
+  void SetStackFilter(std::unique_ptr<CbmStackFilter>& filter)
+  {
     fStackFilter.reset();
     fStackFilter = std::move(filter);
   }
@@ -276,13 +278,8 @@ public:
      ** By default, it is centred at the origin. It can be rotated around
      ** the y axis.
      **/
-  void SetTarget(const char* medium,
-                 Double_t thickness,
-                 Double_t diameter,
-                 Double_t x   = 0.,
-                 Double_t y   = 0.,
-                 Double_t z   = 0.,
-                 Double_t rot = 0.);
+  void SetTarget(const char* medium, Double_t thickness, Double_t diameter, Double_t x = 0., Double_t y = 0.,
+                 Double_t z = 0., Double_t rot = 0.);
 
 
   /** @brief Define output file name
@@ -300,8 +297,7 @@ public:
      ** from phiMin to phiMax. In case several generators are used
      ** at the same time, this rotation applies to all inputs.
      **/
-  void SetRandomEventPlane(Double_t phiMin = 0.,
-                           Double_t phiMax = 2. * TMath::Pi());
+  void SetRandomEventPlane(Double_t phiMin = 0., Double_t phiMax = 2. * TMath::Pi());
 
 
   /** @brief Set global random seed value

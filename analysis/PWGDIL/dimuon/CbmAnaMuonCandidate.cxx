@@ -23,6 +23,8 @@ CbmAnaMuonCandidate::CbmAnaMuonCandidate()
   , fMu(0)
   , fPdg(13)
   , fId(-1)
-  , fM(1e8) {}
+  , fM(1e8)
+{
+}
 
 ClassImp(CbmAnaMuonCandidate);

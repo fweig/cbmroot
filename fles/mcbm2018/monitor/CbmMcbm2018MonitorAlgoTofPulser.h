@@ -12,6 +12,7 @@
 
 // Data
 #include "CbmTofDigi.h"
+
 #include "gDpbMessv100.h"
 
 // CbmRoot
@@ -44,9 +45,7 @@ public:
   Bool_t InitParameters();
 
   Bool_t ProcessTs(const fles::Timeslice& ts);
-  Bool_t ProcessTs(const fles::Timeslice& ts, size_t /*component*/) {
-    return ProcessTs(ts);
-  }
+  Bool_t ProcessTs(const fles::Timeslice& ts, size_t /*component*/) { return ProcessTs(ts); }
   Bool_t ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
 
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
@@ -58,14 +57,13 @@ public:
 
   inline void SetGdpbIndex(Int_t iGdpb = -1) { fiGdpbIndex = iGdpb; }
   inline void SetUpdateFreqTs(UInt_t uFreq = 100) { fuUpdateFreqTs = uFreq; }
-  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuPulserMinTot = uMin;
     fuPulserMaxTot = uMax;
   }
   inline void SetPulserChannel(UInt_t uChan) { fuPulserChannel = uChan; }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
 
 private:
   /// Control flags
@@ -74,17 +72,17 @@ private:
   UInt_t fuUpdateFreqTs;
 
   /// Settings from parameter file
-  CbmMcbm2018TofPar* fUnpackPar;  //!
-                                  /// Readout chain dimensions and mapping
-  UInt_t fuNrOfGdpbs;             //! Total number of GDPBs in the system
+  CbmMcbm2018TofPar* fUnpackPar;             //!
+                                             /// Readout chain dimensions and mapping
+  UInt_t fuNrOfGdpbs;                        //! Total number of GDPBs in the system
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;  //! gDPB ID to index map
   UInt_t fuNrOfFeePerGdpb;                   //! Number of FEBs per GDPB
   UInt_t fuNrOfGet4PerFee;                   //! Number of GET4s per FEE
   UInt_t fuNrOfChannelsPerGet4;              //! Number of channels in each GET4
   UInt_t fuNrOfChannelsPerFee;               //! Number of channels in each FEE
-  UInt_t fuNrOfGet4;             //! Total number of Get4 chips in the system
-  UInt_t fuNrOfGet4PerGdpb;      //! Number of GET4s per GDPB
-  UInt_t fuNrOfChannelsPerGdpb;  //! Number of channels per GDPB
+  UInt_t fuNrOfGet4;                         //! Total number of Get4 chips in the system
+  UInt_t fuNrOfGet4PerGdpb;                  //! Number of GET4s per GDPB
+  UInt_t fuNrOfChannelsPerGdpb;              //! Number of channels per GDPB
 
   /// User settings: Data correction parameters
   UInt_t fuPulserMinTot;
@@ -99,31 +97,21 @@ private:
   /// TS/MS info
   ULong64_t fulCurrentTsIdx;
   ULong64_t fulCurrentMsIdx;
-  uint32_t
-    fuCurrentMsSysId;  //! SysId of the current MS in TS (0 to fuTotalMsNb)
-  Double_t
-    fdTsStartTime;  //! Time in ns of current TS from the index of the first MS first component
-  Double_t
-    fdTsStopTimeCore;  //! End Time in ns of current TS Core from the index of the first MS first component
-  Double_t
-    fdMsTime;  //! Start Time in ns of current MS from its index field in header
-  UInt_t fuMsIndex;  //! Index of current MS within the TS
-                     /// Current data properties
-  UInt_t
-    fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t
-    fuCurrDpbId;  //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t
-    fuCurrDpbIdx;  //! Index of the DPB from which the MS currently unpacked is coming
-  UInt_t
-    fuGet4Id;  //! running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
-  UInt_t
-    fuGet4Nr;  //! running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
-    /// Data format control: Current time references for each GDPB: merged epoch marker, epoch cycle, full epoch [fuNrOfGdpbs]
-  std::vector<ULong64_t> fvulCurrentEpoch;  //! Current epoch index, per DPB
-  std::vector<ULong64_t>
-    fvulCurrentEpochCycle;  //! Epoch cycle from the Ms Start message and Epoch counter flip
-  std::vector<ULong64_t> fvulCurrentEpochFull;  //! Epoch + Epoch Cycle
+  uint32_t fuCurrentMsSysId;    //! SysId of the current MS in TS (0 to fuTotalMsNb)
+  Double_t fdTsStartTime;       //! Time in ns of current TS from the index of the first MS first component
+  Double_t fdTsStopTimeCore;    //! End Time in ns of current TS Core from the index of the first MS first component
+  Double_t fdMsTime;            //! Start Time in ns of current MS from its index field in header
+  UInt_t fuMsIndex;             //! Index of current MS within the TS
+                                /// Current data properties
+  UInt_t fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
+  UInt_t fuCurrDpbId;           //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx;          //! Index of the DPB from which the MS currently unpacked is coming
+  UInt_t fuGet4Id;  //! running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
+  UInt_t fuGet4Nr;  //! running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
+  /// Data format control: Current time references for each GDPB: merged epoch marker, epoch cycle, full epoch [fuNrOfGdpbs]
+  std::vector<ULong64_t> fvulCurrentEpoch;       //! Current epoch index, per DPB
+  std::vector<ULong64_t> fvulCurrentEpochCycle;  //! Epoch cycle from the Ms Start message and Epoch counter flip
+  std::vector<ULong64_t> fvulCurrentEpochFull;   //! Epoch + Epoch Cycle
 
   /// Buffer for suppressed epoch processing
   std::vector<gdpbv100::Message> fvmEpSupprBuffer;
@@ -145,13 +133,12 @@ private:
 
   /// Histograms
   /// Pulser dT within gDPB
-  std::vector<std::vector<TH1*>>
-    fvvhFeePairPulserTimeDiff;   //! [ FEE A ][ FEE B ]
-  TH2* fhPulserTimeDiffMean;     //!
-  TH2* fhPulserTimeDiffRms;      //!
-  TH2* fhPulserTimeDiffRmsZoom;  //!
-  TH2* fhPulserRmsGdpbToRefEvo;  //!
-  TH2* fhPulserRmsGbtxToRefEvo;  //!
+  std::vector<std::vector<TH1*>> fvvhFeePairPulserTimeDiff;  //! [ FEE A ][ FEE B ]
+  TH2* fhPulserTimeDiffMean;                                 //!
+  TH2* fhPulserTimeDiffRms;                                  //!
+  TH2* fhPulserTimeDiffRmsZoom;                              //!
+  TH2* fhPulserRmsGdpbToRefEvo;                              //!
+  TH2* fhPulserRmsGbtxToRefEvo;                              //!
 
   /// Canvases
   TCanvas* fcSummary;  //!
@@ -164,8 +151,7 @@ private:
   void ProcessHit(gdpbv100::FullMessage mess);
 
   CbmMcbm2018MonitorAlgoTofPulser(const CbmMcbm2018MonitorAlgoTofPulser&);
-  CbmMcbm2018MonitorAlgoTofPulser
-  operator=(const CbmMcbm2018MonitorAlgoTofPulser&);
+  CbmMcbm2018MonitorAlgoTofPulser operator=(const CbmMcbm2018MonitorAlgoTofPulser&);
 
   ClassDef(CbmMcbm2018MonitorAlgoTofPulser, 1)
 };

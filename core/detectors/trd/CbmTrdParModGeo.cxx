@@ -7,8 +7,8 @@
 #include <string.h>  // for memcpy, memset
 
 //___________________________________________________________________
-CbmTrdParModGeo::CbmTrdParModGeo(const char* name, const char* title)
-  : CbmTrdParMod(name, title), fNode(nullptr) {
+CbmTrdParModGeo::CbmTrdParModGeo(const char* name, const char* title) : CbmTrdParMod(name, title), fNode(nullptr)
+{
   fNode = new TGeoPhysicalNode(title);
 }
 
@@ -16,28 +16,24 @@ CbmTrdParModGeo::CbmTrdParModGeo(const char* name, const char* title)
 CbmTrdParModGeo::~CbmTrdParModGeo() { delete fNode; }
 
 //___________________________________________________________________
-Double_t CbmTrdParModGeo::GetDX() const {
-  return ((TGeoBBox*) fNode->GetShape())->GetDX();
-}
+Double_t CbmTrdParModGeo::GetDX() const { return ((TGeoBBox*) fNode->GetShape())->GetDX(); }
 
 //___________________________________________________________________
-Double_t CbmTrdParModGeo::GetDY() const {
-  return ((TGeoBBox*) fNode->GetShape())->GetDY();
-}
+Double_t CbmTrdParModGeo::GetDY() const { return ((TGeoBBox*) fNode->GetShape())->GetDY(); }
 
 //___________________________________________________________________
-Double_t CbmTrdParModGeo::GetDZ() const {
-  return ((TGeoBBox*) fNode->GetShape())->GetDZ();
-}
+Double_t CbmTrdParModGeo::GetDZ() const { return ((TGeoBBox*) fNode->GetShape())->GetDZ(); }
 
 //_______________________________________________________________________________
-void CbmTrdParModGeo::LocalToMaster(Double_t in[3], Double_t out[3]) const {
+void CbmTrdParModGeo::LocalToMaster(Double_t in[3], Double_t out[3]) const
+{
   if (!fNode) return;
   fNode->GetMatrix()->LocalToMaster(in, out);
 }
 
 //___________________________________________________________________
-void CbmTrdParModGeo::GetXYZ(Double_t xyz[3]) const {
+void CbmTrdParModGeo::GetXYZ(Double_t xyz[3]) const
+{
   memset(xyz, 0, 3 * sizeof(Double_t));
   Double_t gxyz[3];
   fNode->GetMatrix()->LocalToMaster(xyz, gxyz);

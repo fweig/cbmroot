@@ -28,13 +28,13 @@
  **/
 
 
-void test_hodogeo_digi(
-  Int_t nEvents            = 1,       // Number of events to process
-  TString dataSet          = "test",  // Data set for file names
-  Double_t eventRate       = 1.e7,    // Interaction rate [1/s]
-  Double_t timeSliceLength = 1.e4,    // Length of time-slice [ns]
-  Bool_t eventMode         = kTRUE    // Event-by-event mode
-) {
+void test_hodogeo_digi(Int_t nEvents            = 1,       // Number of events to process
+                       TString dataSet          = "test",  // Data set for file names
+                       Double_t eventRate       = 1.e7,    // Interaction rate [1/s]
+                       Double_t timeSliceLength = 1.e4,    // Length of time-slice [ns]
+                       Bool_t eventMode         = kTRUE    // Event-by-event mode
+)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -81,11 +81,10 @@ void test_hodogeo_digi(
   // ------------------------------------------------------------------------
 
   run.DefaultInit();
-  CbmStsDigitize* stsDigitizer =
-    dynamic_cast<CbmStsDigitize*>(run.GetDigitizer(kSts));
+  CbmStsDigitize* stsDigitizer = dynamic_cast<CbmStsDigitize*>(run.GetDigitizer(kSts));
   if (nullptr == stsDigitizer) {
-    std::cout << "No STS digitizer could be accessed: "
-              << run.GetDigitizer(kSts) << " -> " << stsDigitizer << std::endl;
+    std::cout << "No STS digitizer could be accessed: " << run.GetDigitizer(kSts) << " -> " << stsDigitizer
+              << std::endl;
     return;
   }  // if( nullptr == stsDigitizer )
   stsDigitizer->SetSensorParameterFile(sHodoGeoPar);
@@ -102,9 +101,7 @@ void test_hodogeo_digi(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

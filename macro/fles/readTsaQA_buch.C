@@ -7,7 +7,8 @@
  */
 
 
-void readTsaQA_buch(TString inFile = "/opt/cbm/testdata/237_spa11_2016.tsa") {
+void readTsaQA_buch(TString inFile = "/opt/cbm/testdata/237_spa11_2016.tsa")
+{
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -90,7 +91,6 @@ void readTsaQA_buch(TString inFile = "/opt/cbm/testdata/237_spa11_2016.tsa") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 }

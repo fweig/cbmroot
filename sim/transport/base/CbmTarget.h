@@ -8,7 +8,9 @@
 
 
 #include "FairModule.h"
+
 #include "TVector3.h"
+
 #include <string>
 
 
@@ -55,10 +57,7 @@ public:
 		 ** By using this constructor, the target geometry will be constructed
 		 ** as a tube with material and parameters specified as arguments.
 		 **/
-  CbmTarget(const char* element,
-            Double_t thickness,
-            Double_t diameter,
-            Double_t density = -1.);
+  CbmTarget(const char* element, Double_t thickness, Double_t diameter, Double_t density = -1.);
 
 
   /** @brief Constructor with target properties
@@ -71,10 +70,7 @@ public:
 		 ** By using this constructor, the target geometry will be constructed
 		 ** as a tube with material and parameters specified as arguments.
 		 **/
-  CbmTarget(Int_t z,
-            Double_t thickness,
-            Double_t diameter,
-            Double_t density = -1.);
+  CbmTarget(Int_t z, Double_t thickness, Double_t diameter, Double_t density = -1.);
 
 
   /** @brief Destructor **/
@@ -164,7 +160,8 @@ public:
 		 ** @param posY  target centre position in y [cm]
 		 ** @param posZ  target centre position in z [cm]
 		 **/
-  void SetPosition(Double_t x, Double_t y, Double_t z) {
+  void SetPosition(Double_t x, Double_t y, Double_t z)
+  {
     fPosX = x;
     fPosY = y;
     fPosZ = z;

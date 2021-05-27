@@ -8,6 +8,7 @@
 
 
 #include "CbmStsSimSensorDssd.h"
+
 #include <cassert>
 
 
@@ -40,10 +41,7 @@ public:
      ** @param pitchB       Strip pitch back side [cm]
      ** @param element      Pointer to element in geometry setup
      **/
-  CbmStsSimSensorDssdOrtho(Int_t nStripsF,
-                           Double_t pitchF,
-                           Int_t nStripsB,
-                           Double_t pitchB,
+  CbmStsSimSensorDssdOrtho(Int_t nStripsF, Double_t pitchF, Int_t nStripsB, Double_t pitchB,
                            CbmStsElement* element = nullptr);
 
 
@@ -52,8 +50,7 @@ public:
 
 
   /** @brief Assignment operator (disabled)  **/
-  CbmStsSimSensorDssdOrtho&
-  operator=(const CbmStsSimSensorDssdOrtho& rhs) = delete;
+  CbmStsSimSensorDssdOrtho& operator=(const CbmStsSimSensorDssdOrtho& rhs) = delete;
 
 
   /** @brief Destructor  **/
@@ -64,7 +61,8 @@ public:
      ** @param side  0 = front side, 1 = back side
      ** @return  Number of strips
      **/
-  virtual Int_t GetNofStrips(Int_t side) const {
+  virtual Int_t GetNofStrips(Int_t side) const
+  {
     assert(side == 0 || side == 1);
     return fNofStrips[side];
   }
@@ -94,10 +92,7 @@ public:
      ** @param pitchB            Strip pitch back side [cm]
      ** @value kTRUE if parameters are successfully set; else kFALSE
      **/
-  Bool_t SetParameters(Int_t nStripsF,
-                       Double_t pitchF,
-                       Int_t nStripsB,
-                       Double_t pitchB);
+  Bool_t SetParameters(Int_t nStripsF, Double_t pitchF, Int_t nStripsB, Double_t pitchB);
 
 
   /** String output **/
@@ -131,12 +126,7 @@ protected:
      ** Edge effects are neglected, i.e. diffusion into the inactive area is
      ** allowed.
      **/
-  virtual void Diffusion(Double_t x,
-                         Double_t y,
-                         Double_t sigma,
-                         Int_t side,
-                         Double_t& fracL,
-                         Double_t& fracC,
+  virtual void Diffusion(Double_t x, Double_t y, Double_t sigma, Int_t side, Double_t& fracL, Double_t& fracC,
                          Double_t& fracR);
 
 
@@ -170,12 +160,7 @@ protected:
      ** @param side    0 = front (n) side; 1 = back (p) side
      ** @param sensor  Pointer to sensor object
      **/
-  virtual void PropagateCharge(Double_t x,
-                               Double_t y,
-                               Double_t z,
-                               Double_t charge,
-                               Double_t bY,
-                               Int_t side);
+  virtual void PropagateCharge(Double_t x, Double_t y, Double_t z, Double_t charge, Double_t bY, Int_t side);
 
 
   ClassDef(CbmStsSimSensorDssdOrtho, 1);

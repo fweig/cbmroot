@@ -7,14 +7,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorRich(
-  TString inFile =
-    "/Users/slebedev/Development/cbm/data/mcbm18/159_pn02_0000.tsa",
-  TString sHostname        = "localhost",
-  Int_t iServerHttpPort    = 8080,
-  Int_t iServerRefreshRate = 100,
-  UInt_t uRunId            = 0,
-  UInt_t nrEvents          = 0) {
+void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm18/159_pn02_0000.tsa",
+                 TString sHostname = "localhost", Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100,
+                 UInt_t uRunId = 0, UInt_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -40,19 +36,16 @@ void MonitorRich(
   // --- Set debug level
   gDebug = 0;
 
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
   unpacker_rich->SetIgnoreOverlapMs();
   unpacker_rich->SetMonitorMode();
   unpacker_rich->DoTotCorr(kFALSE);
-  unpacker_rich->SetWriteOutputFlag(
-    kFALSE);  /// Needed to avoid bug with FairRoot not checking if Data Sink exists
+  unpacker_rich->SetWriteOutputFlag(kFALSE);  /// Needed to avoid bug with FairRoot not checking if Data Sink exists
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  } else {
+  if ("" != inFile) { source->SetFileName(inFile); }
+  else {
     source->SetHostName(sHostname);
   }
 
@@ -84,23 +77,22 @@ void MonitorRich(
   std::cout << ">>> MonitorRich: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorRich: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorRich: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorRich: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

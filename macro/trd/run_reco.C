@@ -19,7 +19,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco(Int_t nEvents = 1) {
+void run_reco(Int_t nEvents = 1)
+{
 
   gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
@@ -34,10 +35,8 @@ void run_reco(Int_t nEvents = 1) {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 11);
   digipar.ReplaceAll(".ge", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -108,8 +107,7 @@ void run_reco(Int_t nEvents = 1) {
   Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
   // -----   TRD hit producer   ----------------------------------------------
   //CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);

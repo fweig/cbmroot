@@ -10,15 +10,12 @@ CbmRichTrbDigi::CbmRichTrbDigi()
   , fLeadingEdgeChannel(0)
   , fTrailingEdgeChannel(0)
   , fLeadingEdgeTimestamp(0.)
-  , fTrailingEdgeTimestamp(0.) {}
+  , fTrailingEdgeTimestamp(0.)
+{
+}
 
-CbmRichTrbDigi::CbmRichTrbDigi(UInt_t TDCid,
-                               Bool_t hasLedge,
-                               Bool_t hasTedge,
-                               UInt_t Lch,
-                               UInt_t Tch,
-                               Double_t Ltimestamp,
-                               Double_t Ttimestamp)
+CbmRichTrbDigi::CbmRichTrbDigi(UInt_t TDCid, Bool_t hasLedge, Bool_t hasTedge, UInt_t Lch, UInt_t Tch,
+                               Double_t Ltimestamp, Double_t Ttimestamp)
   : TObject()
   , fTDCid(TDCid)
   , fHasLeadingEdge(hasLedge)
@@ -26,7 +23,9 @@ CbmRichTrbDigi::CbmRichTrbDigi(UInt_t TDCid,
   , fLeadingEdgeChannel(Lch)
   , fTrailingEdgeChannel(Tch)
   , fLeadingEdgeTimestamp(Ltimestamp)
-  , fTrailingEdgeTimestamp(Ttimestamp) {}
+  , fTrailingEdgeTimestamp(Ttimestamp)
+{
+}
 
 CbmRichTrbDigi::~CbmRichTrbDigi() {}
 

@@ -1,12 +1,6 @@
-void ana_digi_cal_self(Int_t nEvents = 10000,
-                       Int_t calMode = 0,
-                       Int_t calSel  = -1,
-                       Int_t calSm   = 200,
-                       Int_t RefSel  = 1,
-                       char* cFileId = "CbmTofSps_27Nov1728",
-                       Int_t iSet    = 0,
-                       Int_t iBRef   = 500,
-                       Bool_t bOut   = 0) {
+void ana_digi_cal_self(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
+                       char* cFileId = "CbmTofSps_27Nov1728", Int_t iSet = 0, Int_t iBRef = 500, Bool_t bOut = 0)
+{
 
   Int_t iVerbose = 1;
 
@@ -25,8 +19,7 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
   TString paramDir   = workDir + "/macro/tof/beamtime/lab16";
   TString ParFile    = paramDir + "/unpack_" + cFileId + ".params.root";
   TString InputFile  = paramDir + "/unpack_" + cFileId + ".out.root";
-  TString OutputFile = paramDir + "/digi_" + cFileId
-                       + Form("_%06d_%03d", iSet, -iBRef) + ".out.root";
+  TString OutputFile = paramDir + "/digi_" + cFileId + Form("_%06d_%03d", iSet, -iBRef) + ".out.root";
 
   TList* parFileList = new TList();
 
@@ -35,9 +28,7 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
 
   TString TofGeo = "v15d";  //use beamtime calib for buc PW
   TString FId    = cFileId;
-  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) {
-    TofGeo = "v15b";
-  }
+  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) { TofGeo = "v15b"; }
   if (FId.Contains("CernSps28Feb")) { TofGeo = "v15a"; }
   if (FId.Contains("BUC")) {  //use beamtime calib for buc PW
     TofGeo = "v15c";
@@ -51,12 +42,10 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
     FPar   = "tsu.";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
+  TObjString tofDigiBdfFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
   TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -104,33 +93,24 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
     new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", iVerbose, bOut);
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(20);  // Geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    32.);  // Max counter cluster multiplicity for filling calib histos
-  tofTestBeamClust->SetCalRpc(calSm);  // Select detector for calibration update
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // Reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(12800.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  // (12000.);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // Effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);     // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(500.);  // Default cluster range in ps
+  tofTestBeamClust->SetCaldXdYMax(20);      // Geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(32.);   // Max counter cluster multiplicity for filling calib histos
+  tofTestBeamClust->SetCalRpc(calSm);       // Select detector for calibration update
+  tofTestBeamClust->SetTRefId(RefSel);      // Reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(12800.);      // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);          // (12000.);  // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);  // Effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);      // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);   // Default cluster range in ps
   tofTestBeamClust->SetBeamRefMulMax(32);
   //tofTestBeamClust->SetMaxTimeDist(0.);       		// Deb // default cluster range in ps
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
 
-  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root",
-                        cFileId,
-                        iSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root", cFileId, iSet, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
+  TString cOutFname = Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
   TString cAnaFile = Form("%s_%06d_tofAnaTestBeam.hst.root", cFileId, iSet);
 
@@ -318,10 +298,7 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
       tofTestBeamClust->PosYMaxScal(0.7);     // in % of length
       break;
 
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
 
   }  //end-switch(calMode)
 
@@ -331,8 +308,7 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
   /* **************************************************************************
 							TOF TestBeam Analysis
 	************************************************************************** */
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   tofAnaTestbeam->SetDXMean(0.);  //CbmTofAnaTestbeam Defaults:
   tofAnaTestbeam->SetDYMean(0.);
@@ -341,21 +317,19 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosY4Sel(0.5);    // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetDTDia(0.);        // Time difference to additional diamond
   tofAnaTestbeam->SetCorMode(1);       // 1 - DTD4, 2 - X4
   tofAnaTestbeam->SetMul0Max(1);       // Max Multiplicity in dut
   tofAnaTestbeam->SetMul4Max(1);       // Max Multiplicity in HDRef - RPC
   tofAnaTestbeam->SetMulDMax(5);       // Max Multiplicity in Diamond
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
-  tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
-  tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
-  tofAnaTestbeam->SetTShift(0.);      // Shift DTD4 to 0
-  tofAnaTestbeam->SetSel2TOff(0.);    // Shift Sel2 time peak to 0
-  tofAnaTestbeam->SetTOffD4(13000.);  // Shift DTD4 to physical value
+  tofAnaTestbeam->SetPosYS2Sel(0.5);   // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetChS2Sel(0.);      // Center of channel selection window
+  tofAnaTestbeam->SetDChS2Sel(100.);   // Width  of channel selection window
+  tofAnaTestbeam->SetTShift(0.);       // Shift DTD4 to 0
+  tofAnaTestbeam->SetSel2TOff(0.);     // Shift Sel2 time peak to 0
+  tofAnaTestbeam->SetTOffD4(13000.);   // Shift DTD4 to physical value
 
   Int_t iRSel    = iBRef;
   Int_t iRSelRpc = iRSel % 10;
@@ -368,8 +342,7 @@ void ana_digi_cal_self(Int_t nEvents = 10000,
   tofTestBeamClust->SetBeamRefDet(iRSelRpc);
   tofTestBeamClust->SetBeamAddRefMul(-1);
 
-  tofTestBeamClust->SetSel2Id(
-    iRSel);  // PW: define Sel2 for Cluster building equal to the beam Ref
+  tofTestBeamClust->SetSel2Id(iRSel);  // PW: define Sel2 for Cluster building equal to the beam Ref
   tofTestBeamClust->SetSel2Sm(iRSelSm);
   tofTestBeamClust->SetSel2Rpc(iRSelRpc);
 

@@ -17,11 +17,12 @@
 #ifndef CBMPOINTSETARRAYEDITOR_H
 #define CBMPOINTSETARRAYEDITOR_H
 
-#include <GuiTypes.h>    // for Pixel_t
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, UInt_t
 #include <TGFrame.h>     // for kChildFrame
 #include <TGedFrame.h>   // for TGedFrame
+
+#include <GuiTypes.h>  // for Pixel_t
 
 class CbmPointSetArray;
 class TGComboBox;
@@ -30,9 +31,8 @@ class TObject;
 
 
 class CbmPointSetArrayEditor : public TGedFrame {
-  CbmPointSetArrayEditor(const CbmPointSetArrayEditor&);  // Not implemented
-  CbmPointSetArrayEditor&
-  operator=(const CbmPointSetArrayEditor&);  // Not implemented
+  CbmPointSetArrayEditor(const CbmPointSetArrayEditor&);             // Not implemented
+  CbmPointSetArrayEditor& operator=(const CbmPointSetArrayEditor&);  // Not implemented
 
 protected:
   CbmPointSetArray* fM;      // pointer to CbmPointSetArray
@@ -40,11 +40,8 @@ protected:
   TGComboBox* fComboMarker;  // ComboBox for Marker-Coding
 
 public:
-  CbmPointSetArrayEditor(const TGWindow* p = 0,
-                         Int_t width       = 170,
-                         Int_t height      = 30,
-                         UInt_t options    = kChildFrame,
-                         Pixel_t back      = GetDefaultFrameBackground());
+  CbmPointSetArrayEditor(const TGWindow* p = 0, Int_t width = 170, Int_t height = 30, UInt_t options = kChildFrame,
+                         Pixel_t back = GetDefaultFrameBackground());
   ~CbmPointSetArrayEditor();
 
   virtual void SetModel(TObject* obj);

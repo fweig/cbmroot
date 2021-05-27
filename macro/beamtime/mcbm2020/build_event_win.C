@@ -77,8 +77,7 @@ Bool_t build_event_win(UInt_t uRunId        = 0,
   // ------------------------------------------------------------------------
 
   //  CbmMcbm2019TimeWinEventBuilder* eventBuilder = new CbmMcbm2019TimeWinEventBuilder();
-  CbmMcbm2019TimeWinEventBuilderTask* eventBuilder =
-    new CbmMcbm2019TimeWinEventBuilderTask();
+  CbmMcbm2019TimeWinEventBuilderTask* eventBuilder = new CbmMcbm2019TimeWinEventBuilderTask();
 
   eventBuilder->SetFillHistos(kTRUE);
 

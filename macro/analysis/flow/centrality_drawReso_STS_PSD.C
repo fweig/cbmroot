@@ -1,7 +1,8 @@
 // -------------------------------------------------------------------------
 // ----- This task draws the centrality resolution versus collision centrality
 
-centrality_drawReso_STS_PSD() {
+centrality_drawReso_STS_PSD()
+{
   // show c_STS for kPSD==0 -> biais for centrality, same for kPSD1vsSTS etc
   // use E_PSD distr. w "" and w "kPSD==1" -> norm -> efficiency (1D)
   // show fB w "" and w "PSD==0" and w "PSD==1"
@@ -355,12 +356,9 @@ centrality_drawReso_STS_PSD() {
 
   t1_centr->SetMakeClass(1);
   t1_centr->SetBranchAddress("StsEvent.fmult", &M_STS_bis, &b_M_STS);
-  t1_centr->SetBranchAddress(
-    "PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, &b_E_sub1);
-  t1_centr->SetBranchAddress(
-    "PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, &b_E_sub2);
-  t1_centr->SetBranchAddress(
-    "PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, &b_E_sub3);
+  t1_centr->SetBranchAddress("PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, &b_E_sub1);
+  t1_centr->SetBranchAddress("PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, &b_E_sub2);
+  t1_centr->SetBranchAddress("PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, &b_E_sub3);
   t1_centr->SetBranchAddress("PsdEvent.fedep_sub12", &E_sub12_bis, &b_E_sub12);
   t1_centr->SetBranchAddress("PsdEvent.fedep_sub23", &E_sub23_bis, &b_E_sub23);
   t1_centr->SetBranchAddress("McEvent.fB", &mcB, &b_mcB);
@@ -376,12 +374,9 @@ centrality_drawReso_STS_PSD() {
   t1_centr->SetBranchAddress("c_PSD3vsSTS", &c_PSD3vsSTS, &b_c_PSD3vsSTS);
   t1_centr->SetBranchAddress("c_STS_err", &c_STS_err, &b_c_STS_err);
   t1_centr->SetBranchAddress("c_PSD_err", &c_PSD_err, &b_c_PSD_err);
-  t1_centr->SetBranchAddress(
-    "c_PSD1vsSTS_err", &c_PSD1vsSTS_err, &b_c_PSD1vsSTS_err);
-  t1_centr->SetBranchAddress(
-    "c_PSD2vsSTS_err", &c_PSD2vsSTS_err, &b_c_PSD2vsSTS_err);
-  t1_centr->SetBranchAddress(
-    "c_PSD3vsSTS_err", &c_PSD3vsSTS_err, &b_c_PSD3vsSTS_err);
+  t1_centr->SetBranchAddress("c_PSD1vsSTS_err", &c_PSD1vsSTS_err, &b_c_PSD1vsSTS_err);
+  t1_centr->SetBranchAddress("c_PSD2vsSTS_err", &c_PSD2vsSTS_err, &b_c_PSD2vsSTS_err);
+  t1_centr->SetBranchAddress("c_PSD3vsSTS_err", &c_PSD3vsSTS_err, &b_c_PSD3vsSTS_err);
 
   TTree* t2_centr = new TTree("t2_centr", "t2_centr");
   t2_centr->SetDirectory(0);
@@ -418,8 +413,7 @@ centrality_drawReso_STS_PSD() {
 
     c_comb_meth1_2   = (c_STS + c_PSD) / 2.;
     c_comb_meth3_4_5 = (c_PSD1vsSTS + c_PSD2vsSTS + c_PSD3vsSTS) / 3.;
-    c_comb_methall =
-      (c_STS + c_PSD + c_PSD1vsSTS + c_PSD2vsSTS + c_PSD3vsSTS) / 5.;
+    c_comb_methall   = (c_STS + c_PSD + c_PSD1vsSTS + c_PSD2vsSTS + c_PSD3vsSTS) / 5.;
 
     t2_centr->Fill();
   }
@@ -755,9 +749,8 @@ centrality_drawReso_STS_PSD() {
   // STS
   dom_cut = 20;
 
-  TCanvas* cDrawCut_STS =
-    new TCanvas("c_drawcut_STS", " dom def STS ", 200, 10, 500, 500);
-  stat_sample = 0.;
+  TCanvas* cDrawCut_STS = new TCanvas("c_drawcut_STS", " dom def STS ", 200, 10, 500, 500);
+  stat_sample           = 0.;
 
   /*for (int i=0;i<dom_cut;i++)
     {
@@ -793,21 +786,18 @@ centrality_drawReso_STS_PSD() {
 
   hname   = "hSTS_drawcut";
   detinfo = "StsEvent.fmult:McEvent.fB";
-  t2_centr->Draw(
-    detinfo + ">>" + hname + "(34, 0., 17., 200, 0., 1.)", "kSTS == 1", "colz");
+  t2_centr->Draw(detinfo + ">>" + hname + "(34, 0., 17., 200, 0., 1.)", "kSTS == 1", "colz");
 
   //LcteX = 2.;
   delta_c = 1.;
   for (int i = 0; i < dom_cut; i++) {
     index1 = "";
-    if ((i + 1) * step - delta_c > 0.)
-      index1 += ((i + 1) * step - delta_c);
+    if ((i + 1) * step - delta_c > 0.) index1 += ((i + 1) * step - delta_c);
     else
       index1 += 0.;
 
     index2 = "";
-    if ((i + 1) * step + delta_c < 100.)
-      index2 += ((i + 1) * step + delta_c);
+    if ((i + 1) * step + delta_c < 100.) index2 += ((i + 1) * step + delta_c);
     else
       index2 += 100.;
 
@@ -817,11 +807,8 @@ centrality_drawReso_STS_PSD() {
     // fit functions = cuts
     hname = "hSTS_drawcut";
     hname += i + 1;
-    detinfo = "StsEvent.fmult:McEvent.fB";
-    entry =
-      t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17., 1000, 0., 1.)",
-                     "kSTS == 1 &&" + cut,
-                     "goff");
+    detinfo  = "StsEvent.fmult:McEvent.fB";
+    entry    = t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17., 1000, 0., 1.)", "kSTS == 1 &&" + cut, "goff");
     hSTS_tmp = (TH1F*) t2_centr->GetHistogram();
 
     if (entry == 0.) continue;
@@ -833,8 +820,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hSTS_drawcut2";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(170, 0., 17.)", "kSTS == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kSTS == 1 &&" + cut, "goff");
     hSTS_b = (TH1F*) t2_centr->GetHistogram();
 
     LcteX_1 = hSTS_b->GetMean() - 3 * hSTS_b->GetRMS();
@@ -848,8 +834,7 @@ centrality_drawReso_STS_PSD() {
 
   break;
 
-  TCanvas* c_b_STS =
-    new TCanvas("c_b_STS", " dom STS - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_STS = new TCanvas("c_b_STS", " dom STS - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_STS->Divide(5, 4);
 
@@ -867,8 +852,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hSTS_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(170, 0., 17.)", "kSTS == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kSTS == 1 &&" + cut, "goff");
     hSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hSTS_b->Integral()/Nentries << endl;
 
@@ -888,8 +872,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hSTS_c";
     hname += i + 1;
     detinfo = "c_STS";
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(100, 0., 100.)", "kSTS == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kSTS == 1 &&" + cut, "goff");
     hSTS_c             = (TH1F*) t2_centr->GetHistogram();
     inc_evt_STS[i]     = hSTS_c->GetMean();
     inc_evt_err_STS[i] = hSTS_c->GetMeanError();
@@ -907,9 +890,8 @@ centrality_drawReso_STS_PSD() {
   // exception
   dom_cut = 16;  //2agev: 16, 10agev: 11, 35agev: 20
 
-  TCanvas* cDrawCut_PSD =
-    new TCanvas("c_drawcut_PSD", " dom def PSD ", 200, 10, 500, 500);
-  stat_sample = 0.;
+  TCanvas* cDrawCut_PSD = new TCanvas("c_drawcut_PSD", " dom def PSD ", 200, 10, 500, 500);
+  stat_sample           = 0.;
 
   /*for (int i=0;i<dom_cut;i++)
     {
@@ -950,8 +932,7 @@ centrality_drawReso_STS_PSD() {
   // exception: 35 agev
   //detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":PsdEvent.fedep_" + sPSDsub2;
 
-  t2_centr->Draw(
-    detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)", "kPSD == 1", "colz");
+  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)", "kPSD == 1", "colz");
 
   //LcteX = 2.;
   delta_c = 0.1;
@@ -959,14 +940,12 @@ centrality_drawReso_STS_PSD() {
     //if (i!=10) continue;
 
     index1 = "";
-    if ((i + 1) * step - delta_c > 0.)
-      index1 += ((i + 1) * step - delta_c);
+    if ((i + 1) * step - delta_c > 0.) index1 += ((i + 1) * step - delta_c);
     else
       index1 += 0.;
 
     index2 = "";
-    if ((i + 1) * step + delta_c < 100.)
-      index2 += ((i + 1) * step + delta_c);
+    if ((i + 1) * step + delta_c < 100.) index2 += ((i + 1) * step + delta_c);
     else
       index2 += 100.;
 
@@ -981,10 +960,7 @@ centrality_drawReso_STS_PSD() {
     // exception: 35 agev
     //detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":PsdEvent.fedep_" + sPSDsub2;
 
-    entry =
-      t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)",
-                     "kPSD == 1 &&" + cut,
-                     "goff");
+    entry    = t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD == 1 &&" + cut, "goff");
     hPSD_tmp = (TH1F*) t2_centr->GetHistogram();
 
     //hPSD_tmp->Draw();
@@ -1003,8 +979,7 @@ centrality_drawReso_STS_PSD() {
     // exception: 35 agev
     //detinfo = "PsdEvent.fedep_" + sPSDsub2;
 
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(100, 0., 1.)", "kPSD == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)", "kPSD == 1 &&" + cut, "goff");
     hPSD_b = (TH1F*) t2_centr->GetHistogram();
 
     LcteX_1 = hPSD_b->GetMean() - 4 * hPSD_b->GetRMS();
@@ -1016,8 +991,7 @@ centrality_drawReso_STS_PSD() {
     if (i < dom_cut - 1) funct->Draw("same");
   }
 
-  TCanvas* c_b_PSD =
-    new TCanvas("c_b_PSD", " dom PSD - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_PSD = new TCanvas("c_b_PSD", " dom PSD - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_PSD->Divide(5, 4);
 
@@ -1035,8 +1009,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(170, 0., 17.)", "kPSD == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kPSD == 1 &&" + cut, "goff");
     hPSD_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSD_b->Integral()/Nentries << endl;
 
@@ -1056,8 +1029,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD_c";
     hname += i + 1;
     detinfo = "c_PSD";
-    t2_centr->Draw(
-      detinfo + ">>" + hname + "(100, 0., 100.)", "kPSD == 1 &&" + cut, "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kPSD == 1 &&" + cut, "goff");
     hPSD_c             = (TH1F*) t2_centr->GetHistogram();
     inc_evt_PSD[i]     = hPSD_c->GetMean();
     inc_evt_err_PSD[i] = hPSD_c->GetMeanError();
@@ -1085,9 +1057,8 @@ centrality_drawReso_STS_PSD() {
   // exception
   dom_cut = 18;  //2agev: 18, 10agev: 13, 35agev: 18
 
-  TCanvas* cDrawCut_sub1vsM = new TCanvas(
-    "c_drawcut_PSD_sub1vsM", " dom def PSD (sub1) vs STS ", 200, 10, 500, 500);
-  stat_sample = 0.;
+  TCanvas* cDrawCut_sub1vsM = new TCanvas("c_drawcut_PSD_sub1vsM", " dom def PSD (sub1) vs STS ", 200, 10, 500, 500);
+  stat_sample               = 0.;
 
   /*for (int i=0;i<dom_cut;i++)
     {
@@ -1122,9 +1093,7 @@ centrality_drawReso_STS_PSD() {
 
   hname   = "hPSD1vsSTS_drawcut";
   detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":StsEvent.fmult";
-  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)",
-                 "kPSD1vsSTS == 1",
-                 "colz");
+  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)", "kPSD1vsSTS == 1", "colz");
 
   //LcteX = 2.;
   delta_c = 0.1;
@@ -1132,14 +1101,12 @@ centrality_drawReso_STS_PSD() {
     //if (i!=10) continue;
 
     index1 = "";
-    if ((i + 1) * step - delta_c > 0.)
-      index1 += ((i + 1) * step - delta_c);
+    if ((i + 1) * step - delta_c > 0.) index1 += ((i + 1) * step - delta_c);
     else
       index1 += 0.;
 
     index2 = "";
-    if ((i + 1) * step + delta_c < 100.)
-      index2 += ((i + 1) * step + delta_c);
+    if ((i + 1) * step + delta_c < 100.) index2 += ((i + 1) * step + delta_c);
     else
       index2 += 100.;
 
@@ -1150,10 +1117,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD1vsSTS_drawcut";
     hname += i + 1;
     detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":StsEvent.fmult";
-    entry =
-      t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)",
-                     "kPSD1vsSTS == 1 &&" + cut,
-                     "goff");
+    entry = t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD1vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_tmp = (TH1F*) t2_centr->GetHistogram();
 
     //hPSDvsSTS_tmp->Draw();
@@ -1168,9 +1132,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD1vsSTS_drawcut2";
     hname += i + 1;
     detinfo = "StsEvent.fmult";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)",
-                   "kPSD1vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)", "kPSD1vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
 
     LcteX_1 = hPSDvsSTS_b->GetMean() - 4 * hPSDvsSTS_b->GetRMS();
@@ -1182,8 +1144,7 @@ centrality_drawReso_STS_PSD() {
     if (i < dom_cut - 1) funct->Draw("same");
   }
 
-  TCanvas* c_b_PSD_sub1vsM = new TCanvas(
-    "c_b_PSD_sub1vsM", " dom PSD (sub1) vs STS - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_PSD_sub1vsM = new TCanvas("c_b_PSD_sub1vsM", " dom PSD (sub1) vs STS - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_PSD_sub1vsM->Divide(5, 4);
 
@@ -1201,9 +1162,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD1vsSTS_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)",
-                   "kPSD1vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kPSD1vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSDvsSTS_b->Integral()/Nentries << endl;
 
@@ -1223,9 +1182,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD1vsSTS_c";
     hname += i + 1;
     detinfo = "c_PSD1vsSTS";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)",
-                   "kPSD1vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kPSD1vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_c              = (TH1F*) t2_centr->GetHistogram();
     inc_evt_PSD1vsSTS[i]     = hPSDvsSTS_c->GetMean();
     inc_evt_err_PSD1vsSTS[i] = hPSDvsSTS_c->GetMeanError();
@@ -1255,9 +1212,8 @@ centrality_drawReso_STS_PSD() {
   // exception
   dom_cut = 19;  //2agev:19, 10agev: 17, 35agev: 19
 
-  TCanvas* cDrawCut_sub2vsM = new TCanvas(
-    "c_drawcut_PSD_sub2vsM", " dom def PSD (sub2) vs STS ", 200, 10, 500, 500);
-  stat_sample = 0.;
+  TCanvas* cDrawCut_sub2vsM = new TCanvas("c_drawcut_PSD_sub2vsM", " dom def PSD (sub2) vs STS ", 200, 10, 500, 500);
+  stat_sample               = 0.;
 
   /*for (int i=0;i<dom_cut;i++)    
     {
@@ -1291,22 +1247,18 @@ centrality_drawReso_STS_PSD() {
 
   hname   = "hPSD2vsSTS_drawcut";
   detinfo = "PsdEvent.fedep_" + sPSDsub2 + ":StsEvent.fmult";
-  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)",
-                 "kPSD2vsSTS == 1",
-                 "colz");
+  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)", "kPSD2vsSTS == 1", "colz");
 
   //LcteX = 2.;
   delta_c = 0.1;
   for (int i = 0; i < dom_cut; i++) {
     index1 = "";
-    if ((i + 1) * step - delta_c > 0.)
-      index1 += ((i + 1) * step - delta_c);
+    if ((i + 1) * step - delta_c > 0.) index1 += ((i + 1) * step - delta_c);
     else
       index1 += 0.;
 
     index2 = "";
-    if ((i + 1) * step + delta_c < 100.)
-      index2 += ((i + 1) * step + delta_c);
+    if ((i + 1) * step + delta_c < 100.) index2 += ((i + 1) * step + delta_c);
     else
       index2 += 100.;
 
@@ -1324,10 +1276,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD2vsSTS_drawcut";
     hname += i + 1;
     detinfo = "PsdEvent.fedep_" + sPSDsub2 + ":StsEvent.fmult";
-    entry =
-      t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)",
-                     "kPSD2vsSTS == 1 &&" + cut,
-                     "goff");
+    entry = t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD2vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_tmp = (TH1F*) t2_centr->GetHistogram();
 
     //hPSDvsSTS_tmp->Draw();
@@ -1342,9 +1291,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD2vsSTS_drawcut2";
     hname += i + 1;
     detinfo = "StsEvent.fmult";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)",
-                   "kPSD2vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)", "kPSD2vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
 
     LcteX_1 = hPSDvsSTS_b->GetMean() - 4 * hPSDvsSTS_b->GetRMS();
@@ -1356,8 +1303,7 @@ centrality_drawReso_STS_PSD() {
     if (i < dom_cut - 1) funct->Draw("same");
   }
 
-  TCanvas* c_b_PSD_sub2vsM = new TCanvas(
-    "c_b_PSD_sub2vsM", " dom PSD (sub2) vs STS - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_PSD_sub2vsM = new TCanvas("c_b_PSD_sub2vsM", " dom PSD (sub2) vs STS - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_PSD_sub2vsM->Divide(5, 4);
 
@@ -1382,9 +1328,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD2vsSTS_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)",
-                   "kPSD2vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kPSD2vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSDvsSTS_b->Integral()/Nentries << endl;
 
@@ -1404,9 +1348,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD2vsSTS_c";
     hname += i + 1;
     detinfo = "c_PSD2vsSTS";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)",
-                   "kPSD2vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kPSD2vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_c              = (TH1F*) t2_centr->GetHistogram();
     inc_evt_PSD2vsSTS[i]     = hPSDvsSTS_c->GetMean();
     inc_evt_err_PSD2vsSTS[i] = hPSDvsSTS_c->GetMeanError();
@@ -1438,9 +1380,8 @@ centrality_drawReso_STS_PSD() {
   // exception
   dom_cut = 19;  //2agev: 19, 10agev: 19, 35agev:19
 
-  TCanvas* cDrawCut_sub3vsM = new TCanvas(
-    "c_drawcut_PSD_sub3vsM", " dom def PSD (sub3) vs STS ", 200, 10, 500, 500);
-  stat_sample = 0.;
+  TCanvas* cDrawCut_sub3vsM = new TCanvas("c_drawcut_PSD_sub3vsM", " dom def PSD (sub3) vs STS ", 200, 10, 500, 500);
+  stat_sample               = 0.;
 
   /*for (int i=0;i<dom_cut;i++)
     {
@@ -1475,9 +1416,7 @@ centrality_drawReso_STS_PSD() {
 
   hname   = "hPSD3vsSTS_drawcut";
   detinfo = "PsdEvent.fedep_" + sPSDsub3 + ":StsEvent.fmult";
-  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)",
-                 "kPSD3vsSTS == 1",
-                 "colz");
+  t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1., 100, 0., 1.)", "kPSD3vsSTS == 1", "colz");
 
   //LcteX = 2.;
   delta_c = 0.1;
@@ -1485,14 +1424,12 @@ centrality_drawReso_STS_PSD() {
     //if (i!=10) continue;
 
     index1 = "";
-    if ((i + 1) * step - delta_c > 0.)
-      index1 += ((i + 1) * step - delta_c);
+    if ((i + 1) * step - delta_c > 0.) index1 += ((i + 1) * step - delta_c);
     else
       index1 += 0.;
 
     index2 = "";
-    if ((i + 1) * step + delta_c < 100.)
-      index2 += ((i + 1) * step + delta_c);
+    if ((i + 1) * step + delta_c < 100.) index2 += ((i + 1) * step + delta_c);
     else
       index2 += 100.;
 
@@ -1503,10 +1440,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD3vsSTS_drawcut";
     hname += i + 1;
     detinfo = "PsdEvent.fedep_" + sPSDsub3 + ":StsEvent.fmult";
-    entry =
-      t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)",
-                     "kPSD3vsSTS == 1 &&" + cut,
-                     "goff");
+    entry = t2_centr->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_tmp = (TH1F*) t2_centr->GetHistogram();
 
     //hPSDvsSTS_tmp->Draw();
@@ -1521,9 +1455,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD3vsSTS_drawcut2";
     hname += i + 1;
     detinfo = "StsEvent.fmult";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)",
-                   "kPSD3vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 1.)", "kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
 
     LcteX_1 = hPSDvsSTS_b->GetMean() - 4 * hPSDvsSTS_b->GetRMS();
@@ -1535,8 +1467,7 @@ centrality_drawReso_STS_PSD() {
     if (i < dom_cut - 1) funct->Draw("same");
   }
 
-  TCanvas* c_b_PSD_sub3vsM = new TCanvas(
-    "c_b_PSD_sub3vsM", " dom PSD (sub3) vs STS - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_PSD_sub3vsM = new TCanvas("c_b_PSD_sub3vsM", " dom PSD (sub3) vs STS - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_PSD_sub3vsM->Divide(5, 4);
 
@@ -1554,9 +1485,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD3vsSTS_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)",
-                   "kPSD3vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSDvsSTS_b->Integral()/Nentries << endl;
 
@@ -1576,9 +1505,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hPSD3vsSTS_c";
     hname += i + 1;
     detinfo = "c_PSD3vsSTS";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)",
-                   "kPSD3vsSTS == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_c              = (TH1F*) t2_centr->GetHistogram();
     inc_evt_PSD3vsSTS[i]     = hPSDvsSTS_c->GetMean();
     inc_evt_err_PSD3vsSTS[i] = hPSDvsSTS_c->GetMeanError();
@@ -1605,8 +1532,7 @@ centrality_drawReso_STS_PSD() {
   // - 1 + 2 -
   dom_cut = 20;
 
-  TCanvas* c_b_comb_meth1_2 =
-    new TCanvas("c_b_comb_meth1_2", " meth 1+2 - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_comb_meth1_2 = new TCanvas("c_b_comb_meth1_2", " meth 1+2 - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_comb_meth1_2->Divide(5, 4);
 
@@ -1625,9 +1551,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hcomb_meth1_2_b";
     hname += i + 1;
     detinfo = "McEvent.fB";
-    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)",
-                   "kSTS == 1 && kPSD == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)", "kSTS == 1 && kPSD == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSDvsSTS_b->Integral()/Nentries << endl;
 
@@ -1647,9 +1571,7 @@ centrality_drawReso_STS_PSD() {
     hname = "hcomb_meth1_2_c";
     hname += i + 1;
     detinfo = "c_comb_meth1_2";
-    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)",
-                   "kSTS == 1 && kPSD == 1 &&" + cut,
-                   "goff");
+    t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)", "kSTS == 1 && kPSD == 1 &&" + cut, "goff");
     hPSDvsSTS_c                 = (TH1F*) t2_centr->GetHistogram();
     inc_evt_comb_meth1_2[i]     = hPSDvsSTS_c->GetMean();
     inc_evt_err_comb_meth1_2[i] = hPSDvsSTS_c->GetMeanError();
@@ -1675,8 +1597,7 @@ centrality_drawReso_STS_PSD() {
   // - 3 + 4 + 5 -
   dom_cut = 20;
 
-  TCanvas* c_b_comb_meth3_4_5 = new TCanvas(
-    "c_b_comb_meth3_4_5", " meth 3+4+5 - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_comb_meth3_4_5 = new TCanvas("c_b_comb_meth3_4_5", " meth 3+4+5 - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_comb_meth3_4_5->Divide(5, 4);
 
@@ -1696,9 +1617,7 @@ centrality_drawReso_STS_PSD() {
     hname += i + 1;
     detinfo = "McEvent.fB";
     t2_centr->Draw(detinfo + ">>" + hname + "(170, 0., 17.)",
-                   "kPSD1vsSTS == 1 && kPSD2vsSTS == 1 && kPSD3vsSTS == 1 &&"
-                     + cut,
-                   "goff");
+                   "kPSD1vsSTS == 1 && kPSD2vsSTS == 1 && kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_b = (TH1F*) t2_centr->GetHistogram();
     //cout << "stat dom " << i+1 << ": " << 100*hPSDvsSTS_b->Integral()/Nentries << endl;
 
@@ -1719,9 +1638,7 @@ centrality_drawReso_STS_PSD() {
     hname += i + 1;
     detinfo = "c_comb_meth3_4_5";
     t2_centr->Draw(detinfo + ">>" + hname + "(100, 0., 100.)",
-                   "kPSD1vsSTS == 1 && kPSD2vsSTS == 1 && kPSD3vsSTS == 1 &&"
-                     + cut,
-                   "goff");
+                   "kPSD1vsSTS == 1 && kPSD2vsSTS == 1 && kPSD3vsSTS == 1 &&" + cut, "goff");
     hPSDvsSTS_c                   = (TH1F*) t2_centr->GetHistogram();
     inc_evt_comb_meth3_4_5[i]     = hPSDvsSTS_c->GetMean();
     inc_evt_err_comb_meth3_4_5[i] = hPSDvsSTS_c->GetMeanError();
@@ -1748,8 +1665,7 @@ centrality_drawReso_STS_PSD() {
   // exception:
   dom_cut = 19;  // 2agev: 19, 10agev: 13, 35: 20
 
-  TCanvas* c_b_comb_methall = new TCanvas(
-    "c_b_comb_methall", " meth 1+2+3+4+5 - b distr.", 200, 10, 700, 500);
+  TCanvas* c_b_comb_methall = new TCanvas("c_b_comb_methall", " meth 1+2+3+4+5 - b distr.", 200, 10, 700, 500);
   gStyle->SetOptStat(0);
   c_b_comb_methall->Divide(5, 4);
 
@@ -1968,8 +1884,7 @@ centrality_drawReso_STS_PSD() {
     //    inc_evt_STS[i] /= Nentries;
     //    inc_evt_STS[i] *= 100;
     //
-    cout << "% most central coll. (/all_evt_STS): " << inc_evt_STS[i] << " +/- "
-         << inc_evt_err_STS[i] << endl;
+    cout << "% most central coll. (/all_evt_STS): " << inc_evt_STS[i] << " +/- " << inc_evt_err_STS[i] << endl;
   }
 
   for (int i = 0; i < 20; i++) {
@@ -1980,8 +1895,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean0[i] =
       (sigma0[i] / mean0[i])
-      * TMath::Sqrt(TMath::Power((esigma0[i] / sigma0[i]), 2)
-                    + TMath::Power((emean0[i] / mean0[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma0[i] / sigma0[i]), 2) + TMath::Power((emean0[i] / mean0[i]), 2));
     sigmaovermean0[i] = sigma0[i] / mean0[i];
   }
 
@@ -2004,8 +1918,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean1[i] =
       (sigma1[i] / mean1[i])
-      * TMath::Sqrt(TMath::Power((esigma1[i] / sigma1[i]), 2)
-                    + TMath::Power((emean1[i] / mean1[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma1[i] / sigma1[i]), 2) + TMath::Power((emean1[i] / mean1[i]), 2));
     sigmaovermean1[i] = sigma1[i] / mean1[i];
   }
 
@@ -2018,8 +1931,7 @@ centrality_drawReso_STS_PSD() {
     //inc_evt_PSD1vsSTS[i] /= Nentries;
     //inc_evt_PSD1vsSTS[i] *= 100;
 
-    cout << "% most central coll. (/all_evt_PSD1vsSTS): "
-         << inc_evt_PSD1vsSTS[i] << endl;
+    cout << "% most central coll. (/all_evt_PSD1vsSTS): " << inc_evt_PSD1vsSTS[i] << endl;
   }
 
   for (int i = 0; i < 20; i++) {
@@ -2030,8 +1942,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean2[i] =
       (sigma2[i] / mean2[i])
-      * TMath::Sqrt(TMath::Power((esigma2[i] / sigma2[i]), 2)
-                    + TMath::Power((emean2[i] / mean2[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma2[i] / sigma2[i]), 2) + TMath::Power((emean2[i] / mean2[i]), 2));
     sigmaovermean2[i] = sigma2[i] / mean2[i];
   }
 
@@ -2044,8 +1955,7 @@ centrality_drawReso_STS_PSD() {
     //inc_evt_PSD2vsSTS[i] /= Nentries;
     //inc_evt_PSD2vsSTS[i] *= 100;
 
-    cout << "% most central coll. (/all_evt_PSD2vsSTS): "
-         << inc_evt_PSD2vsSTS[i] << endl;
+    cout << "% most central coll. (/all_evt_PSD2vsSTS): " << inc_evt_PSD2vsSTS[i] << endl;
   }
 
   for (int i = 0; i < 20; i++) {
@@ -2056,8 +1966,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean3[i] =
       (sigma3[i] / mean3[i])
-      * TMath::Sqrt(TMath::Power((esigma3[i] / sigma3[i]), 2)
-                    + TMath::Power((emean3[i] / mean3[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma3[i] / sigma3[i]), 2) + TMath::Power((emean3[i] / mean3[i]), 2));
     sigmaovermean3[i] = sigma3[i] / mean3[i];
   }
 
@@ -2069,8 +1978,7 @@ centrality_drawReso_STS_PSD() {
     //inc_evt_PSD3vsSTS[i] /= Nentries;
     //inc_evt_PSD3vsSTS[i] *= 100;
 
-    cout << "% most central coll. (/all_evt_PSD3vsSTS): "
-         << inc_evt_PSD3vsSTS[i] << endl;
+    cout << "% most central coll. (/all_evt_PSD3vsSTS): " << inc_evt_PSD3vsSTS[i] << endl;
   }
 
   for (int i = 0; i < 20; i++) {
@@ -2081,8 +1989,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean4[i] =
       (sigma4[i] / mean4[i])
-      * TMath::Sqrt(TMath::Power((esigma4[i] / sigma4[i]), 2)
-                    + TMath::Power((emean4[i] / mean4[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma4[i] / sigma4[i]), 2) + TMath::Power((emean4[i] / mean4[i]), 2));
     sigmaovermean4[i] = sigma4[i] / mean4[i];
   }
 
@@ -2096,8 +2003,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean5[i] =
       (sigma5[i] / mean5[i])
-      * TMath::Sqrt(TMath::Power((esigma5[i] / sigma5[i]), 2)
-                    + TMath::Power((emean5[i] / mean5[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma5[i] / sigma5[i]), 2) + TMath::Power((emean5[i] / mean5[i]), 2));
     sigmaovermean5[i] = sigma5[i] / mean5[i];
   }
 
@@ -2110,8 +2016,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean6[i] =
       (sigma6[i] / mean6[i])
-      * TMath::Sqrt(TMath::Power((esigma6[i] / sigma6[i]), 2)
-                    + TMath::Power((emean6[i] / mean6[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma6[i] / sigma6[i]), 2) + TMath::Power((emean6[i] / mean6[i]), 2));
     sigmaovermean6[i] = sigma6[i] / mean6[i];
   }
 
@@ -2125,8 +2030,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean7[i] =
       (sigma7[i] / mean7[i])
-      * TMath::Sqrt(TMath::Power((esigma7[i] / sigma7[i]), 2)
-                    + TMath::Power((emean7[i] / mean7[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma7[i] / sigma7[i]), 2) + TMath::Power((emean7[i] / mean7[i]), 2));
     sigmaovermean7[i] = sigma7[i] / mean7[i];
   }
   // iteration 1
@@ -2138,8 +2042,7 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean8[i] =
       (sigma8[i] / mean8[i])
-      * TMath::Sqrt(TMath::Power((esigma8[i] / sigma8[i]), 2)
-                    + TMath::Power((emean8[i] / mean8[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma8[i] / sigma8[i]), 2) + TMath::Power((emean8[i] / mean8[i]), 2));
     sigmaovermean8[i] = sigma8[i] / mean8[i];
   }
   // iteration 2
@@ -2151,15 +2054,13 @@ centrality_drawReso_STS_PSD() {
   for (int i = 0; i < 20; i++) {
     esigmaovermean9[i] =
       (sigma9[i] / mean9[i])
-      * TMath::Sqrt(TMath::Power((esigma9[i] / sigma9[i]), 2)
-                    + TMath::Power((emean9[i] / mean9[i]), 2));
+      * TMath::Sqrt(TMath::Power((esigma9[i] / sigma9[i]), 2) + TMath::Power((emean9[i] / mean9[i]), 2));
     sigmaovermean9[i] = sigma9[i] / mean9[i];
   }
 
   // ==================================================== Final Graphs
 
-  TCanvas* c_reso =
-    new TCanvas("c_reso", " sigma(b)/<b> vs % centrality ", 200, 10, 700, 500);
+  TCanvas* c_reso = new TCanvas("c_reso", " sigma(b)/<b> vs % centrality ", 200, 10, 700, 500);
   c_reso->SetFillColor(0);
   c_reso->SetGrid();
 
@@ -2175,104 +2076,70 @@ centrality_drawReso_STS_PSD() {
 
   Int_t n = 20;
 
-  gr10 = new TGraphErrors(
-    n, percent_STS, sigmaovermean0, percent_err_STS, esigmaovermean0);
+  gr10 = new TGraphErrors(n, percent_STS, sigmaovermean0, percent_err_STS, esigmaovermean0);
   gr10->SetName("gr10");
   gr10->SetMarkerColor(kBlack);
   gr10->SetLineColor(kBlack);
   gr10->SetMarkerStyle(25);
   gr10->Draw("P");
 
-  gr11 = new TGraphErrors(
-    n, percent_PSD, sigmaovermean1, percent_err_PSD, esigmaovermean1);
+  gr11 = new TGraphErrors(n, percent_PSD, sigmaovermean1, percent_err_PSD, esigmaovermean1);
   gr11->SetName("gr11");
   gr11->SetMarkerColor(kRed);
   gr11->SetLineColor(kRed);
   gr11->SetMarkerStyle(25);
   gr11->Draw("P");
 
-  gr12 = new TGraphErrors(n,
-                          percent_PSD1vsSTS,
-                          sigmaovermean2,
-                          percent_err_PSD1vsSTS,
-                          esigmaovermean2);
+  gr12 = new TGraphErrors(n, percent_PSD1vsSTS, sigmaovermean2, percent_err_PSD1vsSTS, esigmaovermean2);
   gr12->SetName("gr12");
   gr12->SetMarkerColor(kGreen);
   gr12->SetLineColor(kGreen);
   gr12->SetMarkerStyle(25);
   gr12->Draw("P");
 
-  gr13 = new TGraphErrors(n,
-                          percent_PSD2vsSTS,
-                          sigmaovermean3,
-                          percent_err_PSD2vsSTS,
-                          esigmaovermean3);
+  gr13 = new TGraphErrors(n, percent_PSD2vsSTS, sigmaovermean3, percent_err_PSD2vsSTS, esigmaovermean3);
   gr13->SetName("gr13");
   gr13->SetMarkerColor(kBlue);
   gr13->SetLineColor(kBlue);
   gr13->SetMarkerStyle(25);
   gr13->Draw("P");
 
-  gr14 = new TGraphErrors(n,
-                          percent_PSD3vsSTS,
-                          sigmaovermean4,
-                          percent_err_PSD3vsSTS,
-                          esigmaovermean4);
+  gr14 = new TGraphErrors(n, percent_PSD3vsSTS, sigmaovermean4, percent_err_PSD3vsSTS, esigmaovermean4);
   gr14->SetName("gr14");
   gr14->SetMarkerColor(kMagenta);
   gr14->SetLineColor(kMagenta);
   gr14->SetMarkerStyle(25);
   gr14->Draw("P");
 
-  gr15 = new TGraphErrors(n,
-                          percent_comb_meth1_2,
-                          sigmaovermean5,
-                          percent_err_comb_meth1_2,
-                          esigmaovermean5);
+  gr15 = new TGraphErrors(n, percent_comb_meth1_2, sigmaovermean5, percent_err_comb_meth1_2, esigmaovermean5);
   gr15->SetName("gr15");
   gr15->SetMarkerColor(kGreen);
   gr15->SetLineColor(kGreen);
   gr15->SetMarkerStyle(25);
   //gr15->Draw("P");
 
-  gr16 = new TGraphErrors(n,
-                          percent_comb_meth3_4_5,
-                          sigmaovermean6,
-                          percent_err_comb_meth3_4_5,
-                          esigmaovermean6);
+  gr16 = new TGraphErrors(n, percent_comb_meth3_4_5, sigmaovermean6, percent_err_comb_meth3_4_5, esigmaovermean6);
   gr16->SetName("gr16");
   gr16->SetMarkerColor(kMagenta);
   gr16->SetLineColor(kMagenta);
   gr16->SetMarkerStyle(25);
   //gr16->Draw("P");
 
-  gr17 = new TGraphErrors(n,
-                          percent_comb_methall_it0,
-                          sigmaovermean7,
-                          percent_err_comb_methall_it0,
-                          esigmaovermean7);
+  gr17 = new TGraphErrors(n, percent_comb_methall_it0, sigmaovermean7, percent_err_comb_methall_it0, esigmaovermean7);
   gr17->SetName("gr17");
   gr17->SetMarkerColor(kGreen);
   gr17->SetLineColor(kGreen);
   gr17->SetMarkerStyle(25);
   //gr17->Draw("P");
 
-  gr18 = new TGraphErrors(n,
-                          percent_comb_methall_it1,
-                          sigmaovermean8,
-                          percent_err_comb_methall_it1,
-                          esigmaovermean8);
+  gr18 = new TGraphErrors(n, percent_comb_methall_it1, sigmaovermean8, percent_err_comb_methall_it1, esigmaovermean8);
   gr18->SetName("gr18");
   gr18->SetMarkerColor(kBlue);
   gr18->SetLineColor(kBlue);
   gr18->SetMarkerStyle(25);
   //gr18->Draw("P");
 
-  gr19 = new TGraphErrors(n,
-                          percent_comb_methall_it2,
-                          sigmaovermean9,
-                          percent_err_comb_methall_it2,
-                          esigmaovermean9);
+  gr19 = new TGraphErrors(n, percent_comb_methall_it2, sigmaovermean9, percent_err_comb_methall_it2, esigmaovermean9);
   gr19->SetName("gr19");
   gr19->SetMarkerColor(kMagenta);
   gr19->SetLineColor(kMagenta);
@@ -2294,8 +2161,7 @@ centrality_drawReso_STS_PSD() {
 
   leg->Draw();
 
-  TCanvas* c_mean_reso = new TCanvas(
-    "c_mean_reso", " <b> +/- sigma(b) vs % centrality ", 200, 10, 700, 500);
+  TCanvas* c_mean_reso = new TCanvas("c_mean_reso", " <b> +/- sigma(b) vs % centrality ", 200, 10, 700, 500);
   c_mean_reso->SetFillColor(0);
   c_mean_reso->SetGrid();
 
@@ -2324,64 +2190,56 @@ centrality_drawReso_STS_PSD() {
   gr21->SetMarkerStyle(25);
   gr21->Draw("P");
 
-  gr22 = new TGraphErrors(
-    n, percent_PSD1vsSTS, mean2, percent_err_PSD1vsSTS, sigma2);
+  gr22 = new TGraphErrors(n, percent_PSD1vsSTS, mean2, percent_err_PSD1vsSTS, sigma2);
   gr22->SetName("gr22");
   gr22->SetMarkerColor(kGreen);
   gr22->SetLineColor(kGreen);
   gr22->SetMarkerStyle(25);
   gr22->Draw("P");
 
-  gr23 = new TGraphErrors(
-    n, percent_PSD2vsSTS, mean3, percent_err_PSD2vsSTS, sigma3);
+  gr23 = new TGraphErrors(n, percent_PSD2vsSTS, mean3, percent_err_PSD2vsSTS, sigma3);
   gr23->SetName("gr23");
   gr23->SetMarkerColor(kBlue);
   gr23->SetLineColor(kBlue);
   gr23->SetMarkerStyle(25);
   gr23->Draw("P");
 
-  gr24 = new TGraphErrors(
-    n, percent_PSD3vsSTS, mean4, percent_err_PSD3vsSTS, sigma4);
+  gr24 = new TGraphErrors(n, percent_PSD3vsSTS, mean4, percent_err_PSD3vsSTS, sigma4);
   gr24->SetName("gr24");
   gr24->SetMarkerColor(kMagenta);
   gr24->SetLineColor(kMagenta);
   gr24->SetMarkerStyle(25);
   gr24->Draw("P");
 
-  gr25 = new TGraphErrors(
-    n, percent_comb_meth1_2, mean5, percent_err_comb_meth1_2, sigma5);
+  gr25 = new TGraphErrors(n, percent_comb_meth1_2, mean5, percent_err_comb_meth1_2, sigma5);
   gr25->SetName("gr25");
   gr25->SetMarkerColor(kGreen);
   gr25->SetLineColor(kGreen);
   gr25->SetMarkerStyle(25);
   //gr25->Draw("P");
 
-  gr26 = new TGraphErrors(
-    n, percent_comb_meth3_4_5, mean6, percent_err_comb_meth3_4_5, sigma6);
+  gr26 = new TGraphErrors(n, percent_comb_meth3_4_5, mean6, percent_err_comb_meth3_4_5, sigma6);
   gr26->SetName("gr26");
   gr26->SetMarkerColor(kMagenta);
   gr26->SetLineColor(kMagenta);
   gr26->SetMarkerStyle(25);
   //gr26->Draw("P");
 
-  gr27 = new TGraphErrors(
-    n, percent_comb_methall_it0, mean7, percent_err_comb_methall_it0, sigma7);
+  gr27 = new TGraphErrors(n, percent_comb_methall_it0, mean7, percent_err_comb_methall_it0, sigma7);
   gr27->SetName("gr27");
   gr27->SetMarkerColor(kGreen);
   gr27->SetLineColor(kGreen);
   gr27->SetMarkerStyle(25);
   //gr27->Draw("P");
 
-  gr28 = new TGraphErrors(
-    n, percent_comb_methall_it1, mean8, percent_err_comb_methall_it1, sigma8);
+  gr28 = new TGraphErrors(n, percent_comb_methall_it1, mean8, percent_err_comb_methall_it1, sigma8);
   gr28->SetName("gr28");
   gr28->SetMarkerColor(kBlue);
   gr28->SetLineColor(kBlue);
   gr28->SetMarkerStyle(25);
   //gr28->Draw("P");
 
-  gr29 = new TGraphErrors(
-    n, percent_comb_methall_it2, mean9, percent_err_comb_methall_it2, sigma9);
+  gr29 = new TGraphErrors(n, percent_comb_methall_it2, mean9, percent_err_comb_methall_it2, sigma9);
   gr29->SetName("gr29");
   gr29->SetMarkerColor(kMagenta);
   gr29->SetLineColor(kMagenta);
@@ -2421,10 +2279,8 @@ centrality_drawReso_STS_PSD() {
     cDrawCut_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domDef_au2au.eps");
     c_b_PSD_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domBdistr_au2au.eps");
     */
-  c_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.eps");
-  c_mean_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.eps");
+  c_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.eps");
+  c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.eps");
 
   //c_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_sigmaovermean_au2au.eps");
   //c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_meanSigma_au2au.eps");
@@ -2445,10 +2301,8 @@ centrality_drawReso_STS_PSD() {
     cDrawCut_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domDef_au2au.C");
     c_b_PSD_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domBdistr_au2au.C");
     */
-  c_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.C");
-  c_mean_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.C");
+  c_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.C");
+  c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.C");
 
   //c_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_sigmaovermean_au2au.C");
   //c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_meanSigma_au2au.C");
@@ -2469,10 +2323,8 @@ centrality_drawReso_STS_PSD() {
     cDrawCut_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domDef_au2au.gif");
     c_b_PSD_sub3vsM->SaveAs("plot/centrality_310714/PSD3vsSTS_domBdistr_au2au.gif");
     */
-  c_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.gif");
-  c_mean_reso->SaveAs(
-    "plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.gif");
+  c_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_sigmaovermean_au2au.gif");
+  c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_PSD123vsSTS_meanSigma_au2au.gif");
 
   //c_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_sigmaovermean_au2au.gif");
   //c_mean_reso->SaveAs("plot/centrality_310714/STS_PSD_comball_meanSigma_au2au.gif");

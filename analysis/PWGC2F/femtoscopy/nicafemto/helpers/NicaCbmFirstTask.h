@@ -9,6 +9,7 @@
 #ifndef NICACBMFIRSTTASK_H_
 #define NICACBMFIRSTTASK_H_
 #include "CbmHelix.h"
+
 #include "FairField.h"
 #include "FairTask.h"
 

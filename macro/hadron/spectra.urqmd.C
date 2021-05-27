@@ -1,7 +1,6 @@
 
-void spectra_urqmd(Float_t beamMomentum,
-                   Float_t timeResolution,
-                   Float_t purity) {
+void spectra_urqmd(Float_t beamMomentum, Float_t timeResolution, Float_t purity)
+{
   // Load libraries
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -32,48 +31,28 @@ void spectra_urqmd(Float_t beamMomentum,
 
   char* ver = getenv("CBMVER");
 
-  sprintf(strOutputFile,
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
+  sprintf(strOutputFile, "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
 auau/%1.0fgev/centr",
-          ver,
-          beamMomentum);
+          ver, beamMomentum);
   sprintf(strMkdir, "mkdir -p %s", strOutputFile);
   system(strMkdir);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.hadron.spectra",
-          strOutputFile,
-          beamMomentum,
-          timeResolution,
-          purity);
+  sprintf(strOutputFile, "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.hadron.spectra", strOutputFile,
+          beamMomentum, timeResolution, purity);
   sprintf(strOutputFile, "%s.root", strOutputFile);
 
-  sprintf(strMCFile,
-          "/lustre/cbm/user/kresan/mc/%s/urqmd/\
+  sprintf(strMCFile, "/lustre/cbm/user/kresan/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.mc.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
-  sprintf(strParamFile,
-          "/lustre/cbm/user/kresan/mc/%s/urqmd/\
+          ver, beamMomentum, beamMomentum);
+  sprintf(strParamFile, "/lustre/cbm/user/kresan/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.mc.param.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
-  sprintf(strHadronFile,
-          "/lustre/cbm/user/kresan/dst/%s/urqmd/\
+          ver, beamMomentum, beamMomentum);
+  sprintf(strHadronFile, "/lustre/cbm/user/kresan/dst/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.dst.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
+          ver, beamMomentum, beamMomentum);
 
-  sprintf(strPdfFile,
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
+  sprintf(strPdfFile, "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.fitted.reco.root",
-          ver,
-          beamMomentum,
-          beamMomentum,
-          timeResolution,
-          purity);
+          ver, beamMomentum, beamMomentum, timeResolution, purity);
   /*    sprintf(strPdfFile, "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.fitted.root",
 	    ver, beamMomentum, beamMomentum, timeResolution, purity);*/
@@ -84,20 +63,12 @@ auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.fitted.root",
   fRun->AddFriend(strHadronFile);
 
   for (Int_t iFile = 1; iFile < 200; iFile++) {
-    sprintf(strMCFile,
-            "/lustre/cbm/user/kresan/mc/%s/urqmd/\
+    sprintf(strMCFile, "/lustre/cbm/user/kresan/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%4d.mc.root",
-            ver,
-            beamMomentum,
-            beamMomentum,
-            iFile);
-    sprintf(strHadronFile,
-            "/lustre/cbm/user/kresan/dst/%s/urqmd/\
+            ver, beamMomentum, beamMomentum, iFile);
+    sprintf(strHadronFile, "/lustre/cbm/user/kresan/dst/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%4d.dst.root",
-            ver,
-            beamMomentum,
-            beamMomentum,
-            iFile);
+            ver, beamMomentum, beamMomentum, iFile);
     for (Int_t i = 0; i < 1000; i++) {
       if (' ' == strMCFile[i]) strMCFile[i] = '0';
       if (' ' == strHadronFile[i]) strHadronFile[i] = '0';

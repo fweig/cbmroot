@@ -1,6 +1,5 @@
-void pl_info_2D(char* cHist = "hDTD4DT04D4best",
-                Int_t iDBin = 1,
-                Int_t iMode = 0) {
+void pl_info_2D(char* cHist = "hDTD4DT04D4best", Int_t iDBin = 1, Int_t iMode = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
 
@@ -101,13 +100,8 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
       // for (Int_t iBinL=0; iBinL<2; iBinL++){
       const char* cnam = Form("%s_py%d", (char*) hname, iBinL);
       switch (iMode) {
-        case 0:
-          hDT04proY[iBinL] =
-            h2->ProjectionY(cnam, iBinL, iBinL + iDBin - 1, "");
-          break;
-        case 1:
-          hDT04proY[iBinL] = h2->ProjectionY(cnam, iBinL, iNbinsX - 1, "");
-          break;
+        case 0: hDT04proY[iBinL] = h2->ProjectionY(cnam, iBinL, iBinL + iDBin - 1, ""); break;
+        case 1: hDT04proY[iBinL] = h2->ProjectionY(cnam, iBinL, iNbinsX - 1, ""); break;
         default:;
       }
 
@@ -118,9 +112,7 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
       if (100 > hDT04proY[iBinL]->GetEntries()) continue;
 
       fFitRes[iBinL] = (TFitResultPtr) hDT04proY[iBinL]->Fit("Gaus", "S");
-      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ",
-                   iBinL,
-                   fFitRes[iBinL]->Parameter(2),
+      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ", iBinL, fFitRes[iBinL]->Parameter(2),
                    hDT04proY[iBinL]->GetRMS());
       cout << endl;
 
@@ -137,17 +129,14 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
 
       Double_t param[3];
       gfit->GetParameters(param);
-      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[2]
-           << ", " << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
+      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[2] << ", "
+           << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
 
       Double_t BinWidth = hDT04proY[iBinL]->GetBinWidth(0);
 
 
-      Double_t dOut =
-        hDT04proY[iBinL]->Integral(
-          0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
-        + hDT04proY[iBinL]->Integral(
-          hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
+      Double_t dOut = hDT04proY[iBinL]->Integral(0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
+                      + hDT04proY[iBinL]->Integral(hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
 
       if (dOut == 0) continue;
       //	           +(Double_t)gfit->Integral(param[1]+3.*param[2],DTMax,&param[0]);
@@ -159,8 +148,7 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
         hSigma->SetBinContent(iB, fFitRes[iBinL]->Parameter(2));
         hGMean->SetBinContent(iB, fFitRes[iBinL]->Parameter(1));
         hCnts->SetBinContent(iB, hDT04proY[iBinL]->Integral());
-        hInt->SetBinContent(
-          iB, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
+        hInt->SetBinContent(iB, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
         hOut->SetBinContent(iB, dOut / hInt->GetBinContent(iBinL));
       }
 
@@ -178,7 +166,8 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
         hDT04proY[iBinL]->SetLineColor(iCol++);
       }
     }
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -210,13 +199,6 @@ void pl_info_2D(char* cHist = "hDTD4DT04D4best",
   Double_t NEntries = h2->GetEntries();
   cout << Form("<%s> 1-sig timing resolution at lower index %d (-> %6.1f ps): "
                "%6.1f ps, RMS: %6.1f ps from  %6.0f entries of %6.0f (%6.3f)",
-               cHist,
-               BL,
-               BLL,
-               BRes,
-               Brms,
-               BEntries,
-               NEntries,
-               BEntries / NEntries)
+               cHist, BL, BLL, BRes, Brms, BEntries, NEntries, BEntries / NEntries)
        << endl;
 }

@@ -1,11 +1,6 @@
-void pl_Eff_TIR(Int_t iDut       = 900,
-                Double_t dEffMin = 0.,
-                Double_t dEffMax = 1.,
-                Int_t iBl        = 0,
-                Int_t iBh        = 8,
-                Double_t TIRmin  = 0.,
-                Double_t TIRmax  = 30.,
-                TString sysinfo  = "") {
+void pl_Eff_TIR(Int_t iDut = 900, Double_t dEffMin = 0., Double_t dEffMax = 1., Int_t iBl = 0, Int_t iBh = 8,
+                Double_t TIRmin = 0., Double_t TIRmax = 30., TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -49,7 +44,8 @@ void pl_Eff_TIR(Int_t iDut       = 900,
     h2f    = (TH2*) h2->Clone();
     Nfound = h2f->GetEntries();
     h1f    = (TH1*) h2f->ProjectionX("_px", iBl + 1, iBh + 1);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -66,7 +62,8 @@ void pl_Eff_TIR(Int_t iDut       = 900,
 
     gPad->SetLogz();
     h1m = (TH1*) h2m->ProjectionX("_px", iBl + 1, iBh + 1);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

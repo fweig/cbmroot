@@ -1,12 +1,14 @@
-enum enu_calibMode {
+enum enu_calibMode
+{
   etn_IMPORT,  // import calibration tables from the file and use them
   etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
   etn_NOCALIB,  // use linear function going from origin to (512, n) which means that the fine time is not calibrated
-  etn_IDEAL,  // use almost linear function - close to real calibration but idealized
-  etn_NOFINE  // ignore fine time counter at all
+  etn_IDEAL,    // use almost linear function - close to real calibration but idealized
+  etn_NOFINE    // ignore fine time counter at all
 };
 
-void run_analysis2() {
+void run_analysis2()
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
@@ -41,7 +43,8 @@ void run_analysis2() {
     outputDir       = TString(gSystem->Getenv("OUTPUT_DIR"));
     runTitle        = TString(gSystem->Getenv("RUN_TITLE"));
     outHistoFile    = TString(gSystem->Getenv("OUTPUT_HISTO_FILE"));
-  } else {
+  }
+  else {
 
     // --- Set the input files
 
@@ -53,8 +56,7 @@ void run_analysis2() {
 
   CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
   fgCalibrator->SetCalibrationPeriod(100000);
-  fgCalibrator->SetInputFilename(
-    "calibration.root");  // does not actually import data - only defines
+  fgCalibrator->SetInputFilename("calibration.root");  // does not actually import data - only defines
   // the file that will be used if you specify mode etn_IMPORT
   fgCalibrator->SetMode(etn_ONLINE);
   // Also note the (un)commented line in the end of the macro with export func
@@ -127,8 +129,7 @@ void run_analysis2() {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outRootFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

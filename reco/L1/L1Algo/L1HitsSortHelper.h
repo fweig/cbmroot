@@ -1,11 +1,12 @@
 #ifndef _L1HitsL1HitsSortHelper_h_
 #define _L1HitsL1HitsSortHelper_h_
 
+#include <algorithm>
+#include <vector>
+
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 #include "L1StsHit.h"
-#include <algorithm>
-#include <vector>
 
 using std::vector;
 
@@ -15,22 +16,16 @@ struct L1HitsSortHelperData {
   unsigned int bin;
   THitI i;
 
-  static bool compare(const L1HitsSortHelperData& a,
-                      const L1HitsSortHelperData& b) {
+  static bool compare(const L1HitsSortHelperData& a, const L1HitsSortHelperData& b)
+  {
     return a.bin < b.bin || (a.bin == b.bin && a.p->V() < b.p->V());
   }
 };
 
 class L1HitsSortHelper {
 public:
-  L1HitsSortHelper(vector<L1StsHit>& hits,
-                   vector<L1HitPoint>& points,
-                   vector<THitI>& indices,
-                   const L1Grid* grid,
-                   THitI* iStart,
-                   THitI* iStop,
-                   int nStations,
-                   int nDontUsedHits);
+  L1HitsSortHelper(vector<L1StsHit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices, const L1Grid* grid,
+                   THitI* iStart, THitI* iStop, int nStations, int nDontUsedHits);
 
   void Sort();
 

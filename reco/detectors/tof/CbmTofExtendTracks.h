@@ -14,6 +14,7 @@
 #include "FairTask.h"
 //#include "CbmTofTypes.h"
 #include "TTimeStamp.h"
+
 #include <map>
 #include <vector>
 
@@ -56,9 +57,7 @@ public:
    *@param title  Task title
    *@param finder Pointer to STS track finder concrete class
    **/
-  CbmTofExtendTracks(const char* name,
-                     const char* title         = "FairTask",
-                     CbmTofTrackFinder* finder = NULL);
+  CbmTofExtendTracks(const char* name, const char* title = "FairTask", CbmTofTrackFinder* finder = NULL);
 
   /** Destructor **/
   virtual ~CbmTofExtendTracks();
@@ -112,12 +111,8 @@ public:
   inline void SetCutStationMaxHitMul(Int_t i) { fiCutStationMaxHitMul = i; };
   inline void SetNTrkTofMax(Int_t i) { fiNTrkTofMax = i; };
 
-  inline void SetCalParFileName(TString CalParFileName) {
-    fCalParFileName = CalParFileName;
-  }
-  inline void SetCalOutFileName(TString CalOutFileName) {
-    fCalOutFileName = CalOutFileName;
-  }
+  inline void SetCalParFileName(TString CalParFileName) { fCalParFileName = CalParFileName; }
+  inline void SetCalOutFileName(TString CalOutFileName) { fCalOutFileName = CalOutFileName; }
 
   /** Set concrete track finder **/
   void UseFinder(CbmTofTrackFinder* finder) { fFinder = finder; };
@@ -130,20 +125,19 @@ public:
 
 private:
   static CbmTofExtendTracks* fInstance;
-  CbmTofTrackFinder* fFinder;           // Pointer to TrackFinder concrete class
-  CbmTofTrackFitter* fFitter;           // Pointer to TrackFitter concrete class
-  CbmTofTrackletTools* fTrackletTools;  // Pointer to Tracklet tools class
-  CbmTofCalibrator* fTofCalibrator;     // Pointer to Calibrator
-  TClonesArray* fEventsColl;            // CBMEvents (time based)
-  TClonesArray* fTofHitArrayIn;         // Input array of TOF hits
-  TClonesArray* fStsHitArrayIn;         // Input array of TOF hits
-  TClonesArray* fMuchHitArrayIn;        // Input array of TOF hits
-  TClonesArray* fRichHitArrayIn;        // Input array of TOF hits
-  TClonesArray* fTofMatchArrayIn;       // Input array of TOF hit matches
-  TClonesArray* fTofHitArray;           // Output array of recalibrated TOF hits
-  TClonesArray* fTofTrackArrayIn;       // Input array of CbmTofTracks
-  TClonesArray*
-    fTrackArrayOut;  // Output array of CbmTofTracks in CbmEvent mode
+  CbmTofTrackFinder* fFinder;                      // Pointer to TrackFinder concrete class
+  CbmTofTrackFitter* fFitter;                      // Pointer to TrackFitter concrete class
+  CbmTofTrackletTools* fTrackletTools;             // Pointer to Tracklet tools class
+  CbmTofCalibrator* fTofCalibrator;                // Pointer to Calibrator
+  TClonesArray* fEventsColl;                       // CBMEvents (time based)
+  TClonesArray* fTofHitArrayIn;                    // Input array of TOF hits
+  TClonesArray* fStsHitArrayIn;                    // Input array of TOF hits
+  TClonesArray* fMuchHitArrayIn;                   // Input array of TOF hits
+  TClonesArray* fRichHitArrayIn;                   // Input array of TOF hits
+  TClonesArray* fTofMatchArrayIn;                  // Input array of TOF hit matches
+  TClonesArray* fTofHitArray;                      // Output array of recalibrated TOF hits
+  TClonesArray* fTofTrackArrayIn;                  // Input array of CbmTofTracks
+  TClonesArray* fTrackArrayOut;                    // Output array of CbmTofTracks in CbmEvent mode
   std::vector<std::vector<Int_t>> fvTofHitIndex;   // Index of hit in TS
   std::vector<Int_t> fvTofTrackIndex;              // Index of track in TS
   std::vector<std::vector<Int_t>> fvStsHitIndex;   // Index of hit in TS
@@ -154,8 +148,7 @@ private:
   std::vector<Double_t> fvMuchStationZ;            // Z position of Tof stations
   std::vector<Double_t> fvRichStationZ;            // Z position of Tof stations
 
-  std::vector<std::vector<CbmPixelHit*>>
-    fvAllHitPointer;  // Pointer to hits in TS
+  std::vector<std::vector<CbmPixelHit*>> fvAllHitPointer;  // Pointer to hits in TS
   std::vector<std::vector<CbmPixelHit*>> fvTrkCalHits;
   std::vector<CbmTofTrackletParam*> fvTrkPar;
 
@@ -238,12 +231,12 @@ private:
   Double_t fdTrkCutDX;
   Double_t fdTrkCutDY;
   Double_t fdTrkCutDT;
-  Double_t fdChi2Max;   // Max accepted matching chi2
-  Int_t fiCorSrc;       // correction source (0 - all hits, 1 pulls)
-  Int_t fiCorMode;      // correction update mode
-  Int_t fiAddStations;  // extend tracks (station number *100)
-  Int_t fiReqStations;  // request station for track (station number *100)
-  Int_t fiStationUT;    // station under test
+  Double_t fdChi2Max;           // Max accepted matching chi2
+  Int_t fiCorSrc;               // correction source (0 - all hits, 1 pulls)
+  Int_t fiCorMode;              // correction update mode
+  Int_t fiAddStations;          // extend tracks (station number *100)
+  Int_t fiReqStations;          // request station for track (station number *100)
+  Int_t fiStationUT;            // station under test
   Int_t fiCutStationMaxHitMul;  //max hit multiplicity for any station
   Int_t fiNTrkTofMax;           // maximum number of TofTracks per event
   Int_t fiEvent;                // Number of processed events

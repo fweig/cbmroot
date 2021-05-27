@@ -10,8 +10,7 @@ void set_Get4v1Par()
   }
 
   if (strcmp(param1->ClassName(), "TGet4v1Param") != 0) {
-    cout << "Parameter Get4v1Par has wrong class " << param1->ClassName()
-         << endl;
+    cout << "Parameter Get4v1Par has wrong class " << param1->ClassName() << endl;
     return;
   }
 
@@ -74,8 +73,7 @@ void set_Get4v1Par()
   param1->bLongTimeHistos = kTRUE;
   // No Online Change - Size of roc epoch counter cycle in epochs
   //   param1->uRocCycleSize       = 1048576;  // old value, can be used to have graph with ~27s bin
-  param1->uRocCycleSize =
-    4294967295;  // New value, can be used to have graph with ~31h16m29s bin
+  param1->uRocCycleSize = 4294967295;  // New value, can be used to have graph with ~31h16m29s bin
   // No Online Change - Size of the synchronization cycle in Main clock (250MHz) epochs
   param1->uMainSyncCycleSize = 40;
   // No Online Change - Nb of Rocs "GET4" in setup

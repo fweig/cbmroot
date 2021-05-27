@@ -1,10 +1,8 @@
-void Import_GDML_Export_ROOT(float PMTrotX = 5,
-                             float PMTrotY = 5,
-                             int RotMir    = -10) {
+void Import_GDML_Export_ROOT(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10)
+{
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d", RotMir);
   }
 
@@ -17,15 +15,10 @@ void Import_GDML_Export_ROOT(float PMTrotX = 5,
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   char GeoFileName[256];
-  sprintf(GeoFileName,
-          "/geometry/rich/GeoOpt/RotPMT/NewGeo/rich_geo_%s_RotPMT_%s_%s",
-          RotMirText,
-          ShiftXTxt,
+  sprintf(GeoFileName, "/geometry/rich/GeoOpt/RotPMT/NewGeo/rich_geo_%s_RotPMT_%s_%s", RotMirText, ShiftXTxt,
           ShiftYTxt);
 
 

@@ -4,7 +4,8 @@
  ** Clusters and hits
  */
 
-void reco(Int_t runID, Int_t fileID) {
+void reco(Int_t runID, Int_t fileID)
+{
 
   TString runN  = TString::Itoa(runID, 10);
   TString fileN = TString::Itoa(fileID, 10);
@@ -40,7 +41,7 @@ void reco(Int_t runID, Int_t fileID) {
   std::cout << ">>> readLmd: Initialising..." << std::endl;
 
   // --- Sets
-  Bool_t trigger = kTRUE;  // kFALSE - self-trigger; kTRUE - external trigger
+  Bool_t trigger          = kTRUE;  // kFALSE - self-trigger; kTRUE - external trigger
   Int_t triggered_station = 2;
 
 
@@ -80,8 +81,7 @@ void reco(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

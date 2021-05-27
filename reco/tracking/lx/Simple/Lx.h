@@ -4,20 +4,27 @@
 #pragma GCC diagnostic ignored "-Weffc++"
 
 #include "CbmMuchPixelHit.h"
+
 #include "FairTask.h"
+
+#include "TClonesArray.h"
+
+#include <unistd.h>
+
 #include "LxCA.h"
 #include "LxMC.h"
-#include "TClonesArray.h"
-#include <unistd.h>
 //#include "LxEff.h"
 #include "CbmStsKFTrackFitter.h"
 #include "CbmTrackMatch.h"
 #include "CbmVertex.h"
+
 #include "FairFileHeader.h"
 #include "FairRunAna.h"
+
 #include "TH1.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
+
 #include <fstream>
 
 #ifdef FAST_CODE
@@ -33,23 +40,11 @@ public:
   bool Open(TString fileName, bool forWrite);
   bool StartEvent(Int_t nEnt);
   bool EndEvent();
-  bool WriteHit(Int_t stationNumber,
-                Int_t layerNumber,
-                Double_t x,
-                Double_t y,
-                Double_t z,
-                Double_t xErr,
-                Double_t yErr,
-                Double_t zErr);
+  bool WriteHit(Int_t stationNumber, Int_t layerNumber, Double_t x, Double_t y, Double_t z, Double_t xErr,
+                Double_t yErr, Double_t zErr);
   bool ReadEvent(Int_t eventNumber);
-  bool ReadHit(Int_t& stationNumber,
-               Int_t& layerNumber,
-               Double_t& x,
-               Double_t& y,
-               Double_t& z,
-               Double_t& xErr,
-               Double_t& yErr,
-               Double_t& zErr);
+  bool ReadHit(Int_t& stationNumber, Int_t& layerNumber, Double_t& x, Double_t& y, Double_t& z, Double_t& xErr,
+               Double_t& yErr, Double_t& zErr);
   bool Close();
 
 private:
@@ -97,9 +92,7 @@ public:
 
   void SetCutCoeff(scaltype value) { cutCoeff = value; }
 
-  void SetSaveOnlyTriggeringTracks(bool value) {
-    saveOnlyTriggeringTracks = value;
-  }
+  void SetSaveOnlyTriggeringTracks(bool value) { saveOnlyTriggeringTracks = value; }
 
   void SetVerbosity(Int_t v) { verbosity = v; }
 
@@ -109,7 +102,8 @@ public:
 
   void SetFileSaveSuffix(TString v) { fileSaveSuffix = v; }
 
-  void SetParticleType(TString v) {
+  void SetParticleType(TString v)
+  {
     particleType         = v;
     lxFinderParticleType = v;
 
@@ -140,8 +134,7 @@ private:
   TClonesArray* listMuchPixelDigiMatches;
   TClonesArray* listStsTracks;
   TClonesArray* listStsMatches;
-  TClonesArray*
-    listStsPts;  // STS MC-points array. Used for experiments with STS matching.
+  TClonesArray* listStsPts;      // STS MC-points array. Used for experiments with STS matching.
   TClonesArray* listRecoTracks;  // It is an output array.
 #ifdef MAKE_EFF_CALC
   //LxEff effCounter;
@@ -198,10 +191,8 @@ private:
   TString fileSaveSuffix;
   TString particleType;
   bool pPtCut;
-  std::vector<LxMCPoint>
-    MCPoints;  // Points should lay here in the same order as in listMuchPts.
-  std::vector<LxMCTrack>
-    MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
+  std::vector<LxMCPoint> MCPoints;  // Points should lay here in the same order as in listMuchPts.
+  std::vector<LxMCTrack> MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
   std::list<LxStsMCPoint> MCStsPoints;
   std::list<LxStsMCPoint*> MCStsPointsByStations[8];
 #ifdef MAKE_DISPERSE_2D_HISTOS
@@ -211,13 +202,12 @@ private:
   LxSpace caSpace;
   //std::map<Int_t, std::map<Int_t, int> > particleCounts;
 #ifdef MAKE_EFF_CALC
-  std::ofstream
-    incomplete_events;  // Events where not all tracks are reconstructed.
+  std::ofstream incomplete_events;  // Events where not all tracks are reconstructed.
   Int_t falseSignalTriggerings;
   Int_t trueSignalTriggerings;
   bool hasSignalInEvent;  //hasJPsiInEvent;
   Int_t signalCounter;    //jpsiCounter;
-#endif                    //MAKE_EFF_CALC
+#endif  //MAKE_EFF_CALC
   Int_t eventNumber;
 #ifdef CALC_MUCH_DETECTORS_EFF
   Int_t mcPointsCount;

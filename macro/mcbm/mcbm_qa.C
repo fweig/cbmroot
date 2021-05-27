@@ -14,6 +14,11 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
+#include "CbmDefs.h"
+#include "CbmMCDataManager.h"
+#include "CbmMuchTransportQa.h"
+#include "CbmSetup.h"
+
 #include <FairFileSource.h>
 #include <FairMonitor.h>
 #include <FairParAsciiFileIo.h>
@@ -23,17 +28,11 @@
 #include <FairRuntimeDb.h>
 #include <FairSystemInfo.h>
 
-#include "CbmDefs.h"
-#include "CbmMCDataManager.h"
-#include "CbmMuchTransportQa.h"
-#include "CbmSetup.h"
-
 #include <TStopwatch.h>
 #endif
 
-void mcbm_qa(Int_t nEvents   = 0,
-             TString dataset = "data/mcbm_beam_2020_03_test",
-             TString setup   = "mcbm_beam_2020_03") {
+void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test", TString setup = "mcbm_beam_2020_03")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -44,7 +43,7 @@ void mcbm_qa(Int_t nEvents   = 0,
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_qa";  // this macro's name for screen output
+  TString myName = "mcbm_qa";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -91,21 +90,17 @@ void mcbm_qa(Int_t nEvents   = 0,
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -188,8 +183,7 @@ void mcbm_qa(Int_t nEvents   = 0,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << sinkFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

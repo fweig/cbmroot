@@ -18,6 +18,7 @@
 
 
 #include "TGeoManager.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -37,25 +38,16 @@ const char* gkMaterial     = "carbon";  // material of beam pipe
 TGeoManager* gGeoMan = NULL;  // will be set later
 // ----------------------------------------------------------------------------
 
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* r,
-                     TGeoMedium* medium,
-                     fstream* infoFile);
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* r, TGeoMedium* medium, fstream* infoFile);
 
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* r,
-                       TGeoMedium* medium,
-                       fstream* infoFile);
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* r, TGeoMedium* medium, fstream* infoFile);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_pipegeo_v14(const char* geoTag) {
+void create_pipegeo_v14(const char* geoTag)
+{
 
   // -----   Define pipe parts   ----------------------------------------------
 
@@ -112,9 +104,7 @@ void create_pipegeo_v14(const char* geoTag) {
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "Beam pipe geometry created with create_pipegeo_v13.C"
-           << std::endl
-           << std::endl;
+  infoFile << "Beam pipe geometry created with create_pipegeo_v13.C" << std::endl << std::endl;
   infoFile << "Material:  " << gkMaterial << endl;
   infoFile << "Thickness: " << gkThickness << "cm" << endl << endl;
   // --------------------------------------------------------------------------
@@ -196,8 +186,7 @@ void create_pipegeo_v14(const char* geoTag) {
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << geoFileName << endl;
   geoFile->Close();
   infoFile.close();
 }
@@ -207,20 +196,15 @@ void create_pipegeo_v14(const char* geoTag) {
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* r,
-                     TGeoMedium* medium,
-                     fstream* infoFile) {
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* r, TGeoMedium* medium, fstream* infoFile)
+{
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
     shape->DefineSection(iSect, z[iSect], r[iSect], r[iSect] + gkThickness);
-    *infoFile << setw(2) << iSect << setw(10) << fixed << setprecision(2)
-              << z[iSect] << setw(10) << fixed << setprecision(2) << r[iSect]
-              << endl;
+    *infoFile << setw(2) << iSect << setw(10) << fixed << setprecision(2) << z[iSect] << setw(10) << fixed
+              << setprecision(2) << r[iSect] << endl;
   }
 
   // ---> Volume
@@ -233,12 +217,8 @@ TGeoVolume* MakePipe(Int_t iPart,
 
 
 // =====   Make the volume for the vacuum inside the beam pipe   ==============
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* r,
-                       TGeoMedium* medium,
-                       fstream* infoFile) {
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* r, TGeoMedium* medium, fstream* infoFile)
+{
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);

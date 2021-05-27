@@ -7,8 +7,8 @@
  ** to the standard output.
  */
 
-Bool_t
-tsaCrcChecker(TString inFile, Int_t iStartFile = -1, Int_t iStopFile = -1) {
+Bool_t tsaCrcChecker(TString inFile, Int_t iStartFile = -1, Int_t iStopFile = -1)
+{
   CbmMcbm2018MsCrcCheck* msChecker = new CbmMcbm2018MsCrcCheck();
 
   if ("" != inFile) {
@@ -25,9 +25,7 @@ tsaCrcChecker(TString inFile, Int_t iStartFile = -1, Int_t iStopFile = -1) {
       msChecker->SetFileName(inFile);
   }  // if( "" != inFile )
   else
-    std::cout
-      << "This macro needs to be provided with an input file full path!!"
-      << std::endl;
+    std::cout << "This macro needs to be provided with an input file full path!!" << std::endl;
 
   msChecker->Run();
 

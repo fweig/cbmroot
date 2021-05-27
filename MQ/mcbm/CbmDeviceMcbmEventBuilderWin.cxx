@@ -9,20 +9,22 @@
 
 
 /// CBM headers
-#include "CbmMQDefs.h"
-
 #include "CbmEvent.h"
 #include "CbmFlesCanvasTools.h"
+#include "CbmMQDefs.h"
 #include "CbmMatch.h"
 #include "CbmMvdDigi.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
-#include "BoostSerializer.h"
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
 #include "FairParGenericSet.h"
 #include "FairRunOnline.h"
+
+#include "BoostSerializer.h"
+
 #include "RootSerializer.h"
 
 /// FAIRSOFT headers (geant, boost, ...)
@@ -31,15 +33,15 @@
 #include "TH1.h"
 #include "TList.h"
 #include "TNamed.h"
+
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
 
 /// C/C++ headers
 #include <array>
 #include <iomanip>
-#include <string>
-
 #include <stdexcept>
+#include <string>
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -48,11 +50,10 @@ using namespace std;
 
 //Bool_t bMcbm2018MonitorTaskT0ResetHistos = kFALSE;
 
-CbmDeviceMcbmEventBuilderWin::CbmDeviceMcbmEventBuilderWin() {
-  fpAlgo = new CbmMcbm2019TimeWinEventBuilderAlgo();
-}
+CbmDeviceMcbmEventBuilderWin::CbmDeviceMcbmEventBuilderWin() { fpAlgo = new CbmMcbm2019TimeWinEventBuilderAlgo(); }
 
-void CbmDeviceMcbmEventBuilderWin::InitTask() try {
+void CbmDeviceMcbmEventBuilderWin::InitTask()
+try {
   /// Read options from executable
   LOG(info) << "Init options for CbmDeviceMcbmEventBuilderWin.";
   fbFillHistos      = fConfig->GetValue<bool>("FillHistos");
@@ -90,8 +91,7 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
     if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
-      if (!IsChannelNameAllowed(entry.first))
-        throw InitTaskError("Channel name does not match.");
+      if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
       OnData(entry.first, &CbmDeviceMcbmEventBuilderWin::HandleData);
     }  // if( entry.first.find( "ts" )
   }    // for( auto const &entry : fChannels )
@@ -283,11 +283,8 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
   ioman                  = FairRootManager::Instance();
   if (NULL == ioman) { throw InitTaskError("No FairRootManager instance"); }
   fTimeSliceMetaDataArray = new TClonesArray("TimesliceMetaData", 1);
-  if (NULL == fTimeSliceMetaDataArray) {
-    throw InitTaskError("Failed creating the TS meta data TClonesarray ");
-  }
-  ioman->Register(
-    "TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, kFALSE);
+  if (NULL == fTimeSliceMetaDataArray) { throw InitTaskError("Failed creating the TS meta data TClonesarray "); }
+  ioman->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, kFALSE);
   /// Digis storage
   ioman->RegisterAny("T0Digi", fvDigiT0, kFALSE);
   ioman->RegisterAny("StsDigi", fvDigiSts, kFALSE);
@@ -321,11 +318,9 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
   /// Histograms management
   if (kTRUE == fbFillHistos) {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fpAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fpAlgo->GetHistoVector();
     /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
-    std::vector<std::pair<TCanvas*, std::string>> vCanvases =
-      fpAlgo->GetCanvasVector();
+    std::vector<std::pair<TCanvas*, std::string>> vCanvases = fpAlgo->GetCanvasVector();
 
     /// Add pointers to each histo in the histo array
     /// Create histo config vector
@@ -336,22 +331,19 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
       //                   << " in " << vHistos[ uHisto ].second.data()
       //                   ;
       fArrayHisto.Add(vHistos[uHisto].first);
-      std::pair<std::string, std::string> psHistoConfig(
-        vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
+      std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
       fvpsHistosFolder.push_back(psHistoConfig);
 
       /// Serialize the vector of histo config into a single MQ message
       FairMQMessagePtr messageHist(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(
-        *messageHist, psHistoConfig);
+      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
 
       /// Send message to the common histogram config messages queue
       if (Send(messageHist, fsChannelNameHistosConfig) < 0) {
         throw InitTaskError("Problem sending histo config");
       }  // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
 
-      LOG(info) << "Config of hist  " << psHistoConfig.first.data()
-                << " in folder " << psHistoConfig.second.data();
+      LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
     /// Create canvas config vector
@@ -361,8 +353,7 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
       //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
       //                   << " in " << vCanvases[ uCanv ].second.data();
       std::string sCanvName = (vCanvases[uCanv].first)->GetName();
-      std::string sCanvConf =
-        GenerateCanvasConfigString(vCanvases[uCanv].first);
+      std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
 
       std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
 
@@ -370,43 +361,37 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
 
       /// Serialize the vector of canvas config into a single MQ message
       FairMQMessagePtr messageCan(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(
-        *messageCan, psCanvConfig);
+      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
 
       /// Send message to the common canvas config messages queue
       if (Send(messageCan, fsChannelNameCanvasConfig) < 0) {
         throw InitTaskError("Problem sending canvas config");
       }  // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
 
-      LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data()
-                << " is " << psCanvConfig.second.data();
+      LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
     }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
   }    // if( kTRUE == fbFillHistos )
-
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceMcbmEventBuilderWin::IsChannelNameAllowed(
-  std::string channelName) {
+bool CbmDeviceMcbmEventBuilderWin::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fsAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
     if (pos1 != std::string::npos) {
       const vector<std::string>::const_iterator pos =
         std::find(fsAllowedChannels.begin(), fsAllowedChannels.end(), entry);
-      const vector<std::string>::size_type idx =
-        pos - fsAllowedChannels.begin();
+      const vector<std::string>::size_type idx = pos - fsAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       return true;
     }  // if (pos1!=std::string::npos)
   }    // for(auto const &entry : fsAllowedChannels)
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
 }
@@ -473,15 +458,13 @@ Bool_t CbmDeviceMcbmEventBuilderWin::InitParameters( TList* fParCList )
 }
 */
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts,
-                                              int /*index*/) {
+bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts, int /*index*/)
+{
   fulNumMessages++;
-  LOG(debug) << "Received message number " << fulNumMessages << " with "
-             << parts.Size() << " parts"
+  LOG(debug) << "Received message number " << fulNumMessages << " with " << parts.Size() << " parts"
              << ", size0: " << parts.At(0)->GetSize();
 
-  if (0 == fulNumMessages % 10000)
-    LOG(info) << "Received " << fulNumMessages << " messages";
+  if (0 == fulNumMessages % 10000) LOG(info) << "Received " << fulNumMessages << " messages";
 
   /// Extract unpacked data from input message
   uint32_t uPartIdx = 0;
@@ -497,64 +480,55 @@ bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts,
 */
   Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
   /// FIXME: Not if this is the proper way to insert the data
-  new (
-    (*fTimeSliceMetaDataArray)
-      [fTimeSliceMetaDataArray->GetEntriesFast()
-       //                                    ] ) TimesliceMetaData( *fTsMetaData ) ;
+  new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()
+                                  //                                    ] ) TimesliceMetaData( *fTsMetaData ) ;
   ]) TimesliceMetaData(std::move(*fTsMetaData));
   ++uPartIdx;
 
   /// T0
-  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                       (parts.At(uPartIdx))->GetSize());
+  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issT0(msgStrT0);
   boost::archive::binary_iarchive inputArchiveT0(issT0);
   inputArchiveT0 >> *fvDigiT0;
   ++uPartIdx;
 
   /// STS
-  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issSts(msgStrSts);
   boost::archive::binary_iarchive inputArchiveSts(issSts);
   inputArchiveSts >> *fvDigiSts;
   ++uPartIdx;
 
   /// MUCH
-  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                         (parts.At(uPartIdx))->GetSize());
+  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issMuch(msgStrMuch);
   boost::archive::binary_iarchive inputArchiveMuch(issMuch);
   inputArchiveMuch >> *fvDigiMuch;
   ++uPartIdx;
 
   /// TRD
-  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issTrd(msgStrTrd);
   boost::archive::binary_iarchive inputArchiveTrd(issTrd);
   inputArchiveTrd >> *fvDigiTrd;
   ++uPartIdx;
 
   /// T0F
-  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issTof(msgStrTof);
   boost::archive::binary_iarchive inputArchiveTof(issTof);
   inputArchiveTof >> *fvDigiTof;
   ++uPartIdx;
 
   /// RICH
-  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                         (parts.At(uPartIdx))->GetSize());
+  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issRich(msgStrRich);
   boost::archive::binary_iarchive inputArchiveRich(issRich);
   inputArchiveRich >> *fvDigiRich;
   ++uPartIdx;
 
   /// PSD
-  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issPsd(msgStrPsd);
   boost::archive::binary_iarchive inputArchivePsd(issPsd);
   inputArchivePsd >> *fvDigiPsd;
@@ -589,13 +563,10 @@ bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts,
     /// Send histograms each 100 time slices. Should be each ~1s
     /// Use also runtime checker to trigger sending after M s if
     /// processing too slow or delay sending if processing too fast
-    std::chrono::system_clock::time_point currentTime =
-      std::chrono::system_clock::now();
-    std::chrono::duration<double_t> elapsedSeconds =
-      currentTime - fLastPublishTime;
+    std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
+    std::chrono::duration<double_t> elapsedSeconds    = currentTime - fLastPublishTime;
     if ((fdMaxPublishTime < elapsedSeconds.count())
-        || (0 == fulNumMessages % fuPublishFreqTs
-            && fdMinPublishTime < elapsedSeconds.count())) {
+        || (0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
       SendHistograms();
       fLastPublishTime = std::chrono::system_clock::now();
     }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
@@ -604,7 +575,8 @@ bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts,
   return true;
 }
 
-bool CbmDeviceMcbmEventBuilderWin::SendEvents(FairMQParts& partsIn) {
+bool CbmDeviceMcbmEventBuilderWin::SendEvents(FairMQParts& partsIn)
+{
   /// Clear events TClonesArray before usage.
   fEvents->Delete();
   //   fEvents->Clear();
@@ -617,10 +589,7 @@ bool CbmDeviceMcbmEventBuilderWin::SendEvents(FairMQParts& partsIn) {
     LOG(debug) << "Vector: " << event->ToString();
     new ((*fEvents)[fEvents->GetEntriesFast()]) CbmEvent(std::move(*event));
     //      new ( (*fEvents)[fEvents->GetEntriesFast()] ) CbmEvent( *event );
-    LOG(debug) << "TClonesArray: "
-               << static_cast<CbmEvent*>(
-                    fEvents->At(fEvents->GetEntriesFast() - 1))
-                    ->ToString();
+    LOG(debug) << "TClonesArray: " << static_cast<CbmEvent*>(fEvents->At(fEvents->GetEntriesFast() - 1))->ToString();
   }  // for( CbmEvent* event: vEvents )
 
   /// Serialize the array of events into a single MQ message
@@ -657,7 +626,8 @@ bool CbmDeviceMcbmEventBuilderWin::SendEvents(FairMQParts& partsIn) {
   return true;
 }
 
-bool CbmDeviceMcbmEventBuilderWin::SendHistograms() {
+bool CbmDeviceMcbmEventBuilderWin::SendHistograms()
+{
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
   Serialize<RootSerializer>(*message, &fArrayHisto);
@@ -674,7 +644,8 @@ bool CbmDeviceMcbmEventBuilderWin::SendHistograms() {
   return true;
 }
 
-CbmDeviceMcbmEventBuilderWin::~CbmDeviceMcbmEventBuilderWin() {
+CbmDeviceMcbmEventBuilderWin::~CbmDeviceMcbmEventBuilderWin()
+{
   /// Clear metadata
   fTimeSliceMetaDataArray->Clear();
   delete fTsMetaData;

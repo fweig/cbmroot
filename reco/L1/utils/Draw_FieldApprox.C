@@ -12,7 +12,8 @@
 
 #include <unistd.h>  // for dir navigation
 
-void Draw_FieldApprox() {
+void Draw_FieldApprox()
+{
 
   TString fileName    = "FieldApprox.root";
   const int NStations = 8;

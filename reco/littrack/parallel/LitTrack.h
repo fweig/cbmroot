@@ -7,19 +7,21 @@
 #ifndef LITTRACK_H_
 #define LITTRACK_H_
 
-#include "LitPixelHit.h"
-#include "LitTrackParam.h"
-#include "LitTypes.h"
-
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "LitPixelHit.h"
+#include "LitTrackParam.h"
+#include "LitTypes.h"
 using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitTrack
@@ -56,10 +58,11 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
-        ss << "LitTrack: nofHits=" << GetNofHits() << " chiSq=" << chiSq
-           << " paramLast=" << paramLast.ToString() << "\n";
+        ss << "LitTrack: nofHits=" << GetNofHits() << " chiSq=" << chiSq << " paramLast=" << paramLast.ToString()
+           << "\n";
         return ss.str();
       }
 
@@ -67,7 +70,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitTrack& track) {
+      friend ostream& operator<<(ostream& strm, const LitTrack& track)
+      {
         strm << track.ToString();
         return strm;
       }

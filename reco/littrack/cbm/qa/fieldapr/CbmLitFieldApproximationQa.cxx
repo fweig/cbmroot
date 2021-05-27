@@ -4,6 +4,7 @@
  * \date 2009
  **/
 #include "CbmLitFieldApproximationQa.h"
+
 #include "CbmDrawHist.h"
 #include "CbmHistManager.h"
 #include "CbmLitFieldApproximationQaReport.h"
@@ -12,9 +13,7 @@
 #include "base/CbmLitFieldGridCreator.h"
 #include "base/CbmLitFloat.h"
 
-#include "../../../parallel/LitFieldGrid.h"
 #include "../../../parallel/LitFieldSlice.h"
-#include "../../../parallel/LitFieldValue.h"
 
 #include "FairField.h"
 #include "FairRunAna.h"
@@ -31,12 +30,16 @@
 #include "TPaveText.h"
 #include "TStyle.h"
 
-#include <cmath>
+#include <boost/assign/list_of.hpp>
+
 #include <limits>
 #include <sstream>
 #include <string>
 
-#include <boost/assign/list_of.hpp>
+#include <cmath>
+
+#include "../../../parallel/LitFieldGrid.h"
+#include "../../../parallel/LitFieldValue.h"
 
 using boost::assign::list_of;
 using Cbm::SaveCanvasAsImage;
@@ -66,11 +69,14 @@ CbmLitFieldApproximationQa::CbmLitFieldApproximationQa()
   , fPolynomDegreeIndex(1)
   , fNofPolynoms(4)
   , fPolynomDegrees()
-  , fHM(NULL) {}
+  , fHM(NULL)
+{
+}
 
 CbmLitFieldApproximationQa::~CbmLitFieldApproximationQa() {}
 
-InitStatus CbmLitFieldApproximationQa::Init() {
+InitStatus CbmLitFieldApproximationQa::Init()
+{
   fNofSlices   = fZSlicePosition.size();
   fNofPolynoms = fPolynomDegrees.size();
 
@@ -127,30 +133,31 @@ void CbmLitFieldApproximationQa::Exec(Option_t* opt) {}
 
 void CbmLitFieldApproximationQa::Finish() {}
 
-void CbmLitFieldApproximationQa::CreateHistos() {
+void CbmLitFieldApproximationQa::CreateHistos()
+{
   CreateFieldHistos();
   CreateFitterHistos();
   CreateGridHistos();
   cout << fHM->ToString();
 }
 
-void CbmLitFieldApproximationQa::CreateFieldHistos() {
+void CbmLitFieldApproximationQa::CreateFieldHistos()
+{
   string names[]  = {"Bx", "By", "Bz", "Mod"};
-  string zTitle[] = {
-    "B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
+  string zTitle[] = {"B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
   for (Int_t v = 0; v < 4; v++) {
     for (Int_t i = 0; i < fNofSlices; i++) {
       TGraph2D* graph = new TGraph2D();
-      string name =
-        "hfa_" + names[v] + "_Graph2D_" + ToString<Int_t>(fZSlicePosition[i]);
-      string title = name + ";X [cm];Y [cm];" + zTitle[v];
+      string name     = "hfa_" + names[v] + "_Graph2D_" + ToString<Int_t>(fZSlicePosition[i]);
+      string title    = name + ";X [cm];Y [cm];" + zTitle[v];
       graph->SetNameTitle(name.c_str(), title.c_str());
       fHM->Add(name, graph);
     }
   }
 }
 
-void CbmLitFieldApproximationQa::CreateFitterHistos() {
+void CbmLitFieldApproximationQa::CreateFitterHistos()
+{
   string names[] = {"Bx", "By", "Bz", "Mod"};
 
   Int_t nofBinsX       = fNofBinsX;
@@ -167,15 +174,9 @@ void CbmLitFieldApproximationQa::CreateFitterHistos() {
     maxRelErrB = 10.;
   }
 
-  string zTitle[] = {
-    "B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
-  string errTitle[]    = {"B_{x} error [kGauss]",
-                       "B_{y} error [kGauss]",
-                       "B_{z} error [kGauss]",
-                       "|B| error [kGauss]"};
-  string relErrTitle[] = {"B_{x} relative error [%]",
-                          "B_{y} relative error [%]",
-                          "B_{z} relative error [%]",
+  string zTitle[]      = {"B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
+  string errTitle[]    = {"B_{x} error [kGauss]", "B_{y} error [kGauss]", "B_{z} error [kGauss]", "|B| error [kGauss]"};
+  string relErrTitle[] = {"B_{x} relative error [%]", "B_{y} relative error [%]", "B_{z} relative error [%]",
                           "|B| relative error [%]"};
 
   // Create histograms
@@ -183,59 +184,33 @@ void CbmLitFieldApproximationQa::CreateFitterHistos() {
     for (Int_t i = 0; i < fNofSlices; i++) {
       for (Int_t j = 0; j < fNofPolynoms; j++) {
         TGraph2D* graph = new TGraph2D();
-        string name     = "hfa_" + names[v] + "Apr_Graph2D" + "_"
-                      + ToString<Int_t>(fZSlicePosition[i]) + "_"
+        string name     = "hfa_" + names[v] + "Apr_Graph2D" + "_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                       + ToString<Int_t>(fPolynomDegrees[j]);
         string title = name + ";X [cm];Y [cm];" + zTitle[v];
         graph->SetNameTitle(name.c_str(), title.c_str());
         fHM->Add(name, graph);
 
-        name = "hfa_" + names[v] + "ErrApr_H1_"
-               + ToString<Int_t>(fZSlicePosition[i]) + "_"
+        name = "hfa_" + names[v] + "ErrApr_H1_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                + ToString<Int_t>(fPolynomDegrees[j]);
         title = name + ";" + errTitle[v] + ";Counter";
-        fHM->Add(
-          name,
-          new TH1D(name.c_str(), title.c_str(), nofBinsErrB, minErrB, maxErrB));
+        fHM->Add(name, new TH1D(name.c_str(), title.c_str(), nofBinsErrB, minErrB, maxErrB));
 
-        name = "hfa_" + names[v] + "ErrApr_H2_"
-               + ToString<Int_t>(fZSlicePosition[i]) + "_"
+        name = "hfa_" + names[v] + "ErrApr_H2_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                + ToString<Int_t>(fPolynomDegrees[j]);
         title = name + ";X [cm];Y [cm];" + errTitle[v];
-        fHM->Add(name,
-                 new TH2D(name.c_str(),
-                          title.c_str(),
-                          nofBinsErrX,
-                          -fXSlicePosition[i],
-                          fXSlicePosition[i],
-                          nofBinsErrY,
-                          -fYSlicePosition[i],
-                          fYSlicePosition[i]));
+        fHM->Add(name, new TH2D(name.c_str(), title.c_str(), nofBinsErrX, -fXSlicePosition[i], fXSlicePosition[i],
+                                nofBinsErrY, -fYSlicePosition[i], fYSlicePosition[i]));
 
-        name = "hfa_" + names[v] + "RelErrApr_H1_"
-               + ToString<Int_t>(fZSlicePosition[i]) + "_"
+        name = "hfa_" + names[v] + "RelErrApr_H1_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                + ToString<Int_t>(fPolynomDegrees[j]);
         title = name + ";" + relErrTitle[v] + ";Counter";
-        fHM->Add(name,
-                 new TH1D(name.c_str(),
-                          title.c_str(),
-                          nofBinsRelErrB,
-                          minRelErrB,
-                          maxRelErrB));
+        fHM->Add(name, new TH1D(name.c_str(), title.c_str(), nofBinsRelErrB, minRelErrB, maxRelErrB));
 
-        name = "hfa_" + names[v] + "RelErrApr_H2_"
-               + ToString<Int_t>(fZSlicePosition[i]) + "_"
+        name = "hfa_" + names[v] + "RelErrApr_H2_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                + ToString<Int_t>(fPolynomDegrees[j]);
         title = name + ";X [cm];Y [cm];" + relErrTitle[v];
-        fHM->Add(name,
-                 new TH2D(name.c_str(),
-                          title.c_str(),
-                          nofBinsErrX,
-                          -fXSlicePosition[i],
-                          fXSlicePosition[i],
-                          nofBinsErrY,
-                          -fYSlicePosition[i],
-                          fYSlicePosition[i]));
+        fHM->Add(name, new TH2D(name.c_str(), title.c_str(), nofBinsErrX, -fXSlicePosition[i], fXSlicePosition[i],
+                                nofBinsErrY, -fYSlicePosition[i], fYSlicePosition[i]));
       }
     }
   }
@@ -244,7 +219,8 @@ void CbmLitFieldApproximationQa::CreateFitterHistos() {
        << endl;
 }
 
-void CbmLitFieldApproximationQa::CreateGridHistos() {
+void CbmLitFieldApproximationQa::CreateGridHistos()
+{
   string names[] = {"Bx", "By", "Bz", "Mod"};
 
   Int_t nofBinsX       = fNofBinsX;
@@ -261,67 +237,37 @@ void CbmLitFieldApproximationQa::CreateGridHistos() {
     maxRelErrB = 10.;
   }
 
-  string zTitle[] = {
-    "B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
-  string errTitle[]    = {"B_{x} error [kGauss]",
-                       "B_{y} error [kGauss]",
-                       "B_{z} error [kGauss]",
-                       "|B| error [kGauss]"};
-  string relErrTitle[] = {"B_{x} relative error [%]",
-                          "B_{y} relative error [%]",
-                          "B_{z} relative error [%]",
+  string zTitle[]      = {"B_{x} [kGauss]", "B_{y} [kGauss]", "B_{z} [kGauss]", "|B| [kGauss]"};
+  string errTitle[]    = {"B_{x} error [kGauss]", "B_{y} error [kGauss]", "B_{z} error [kGauss]", "|B| error [kGauss]"};
+  string relErrTitle[] = {"B_{x} relative error [%]", "B_{y} relative error [%]", "B_{z} relative error [%]",
                           "|B| relative error [%]"};
 
   // Create histograms
   for (Int_t v = 0; v < 4; v++) {
     for (Int_t i = 0; i < fNofSlices; i++) {
       TGraph2D* graph = new TGraph2D();
-      string name     = "hfa_" + names[v] + "Grid_Graph2D_"
-                    + ToString<Int_t>(fZSlicePosition[i]);
-      string title = name + ";X [cm]; Y [cm];" + zTitle[v];
+      string name     = "hfa_" + names[v] + "Grid_Graph2D_" + ToString<Int_t>(fZSlicePosition[i]);
+      string title    = name + ";X [cm]; Y [cm];" + zTitle[v];
       graph->SetNameTitle(name.c_str(), title.c_str());
       fHM->Add(name, graph);
 
-      name =
-        "hfa_" + names[v] + "ErrGrid_H1_" + ToString<Int_t>(fZSlicePosition[i]);
+      name  = "hfa_" + names[v] + "ErrGrid_H1_" + ToString<Int_t>(fZSlicePosition[i]);
       title = name + ";" + errTitle[v] + ";Counter";
-      fHM->Add(
-        name,
-        new TH1D(name.c_str(), title.c_str(), nofBinsErrB, minErrB, maxErrB));
+      fHM->Add(name, new TH1D(name.c_str(), title.c_str(), nofBinsErrB, minErrB, maxErrB));
 
-      name =
-        "hfa_" + names[v] + "ErrGrid_H2_" + ToString<Int_t>(fZSlicePosition[i]);
+      name  = "hfa_" + names[v] + "ErrGrid_H2_" + ToString<Int_t>(fZSlicePosition[i]);
       title = name + ";X [cm];Y [cm];" + errTitle[v];
-      fHM->Add(name,
-               new TH2D(name.c_str(),
-                        title.c_str(),
-                        nofBinsErrX,
-                        -fXSlicePosition[i],
-                        fXSlicePosition[i],
-                        nofBinsErrY,
-                        -fYSlicePosition[i],
-                        fYSlicePosition[i]));
+      fHM->Add(name, new TH2D(name.c_str(), title.c_str(), nofBinsErrX, -fXSlicePosition[i], fXSlicePosition[i],
+                              nofBinsErrY, -fYSlicePosition[i], fYSlicePosition[i]));
 
-      name = "hfa_" + names[v] + "RelErrGrid_H1_"
-             + ToString<Int_t>(fZSlicePosition[i]);
+      name  = "hfa_" + names[v] + "RelErrGrid_H1_" + ToString<Int_t>(fZSlicePosition[i]);
       title = name + ";" + relErrTitle[v] + ";Counter";
-      fHM->Add(
-        name,
-        new TH1D(
-          name.c_str(), title.c_str(), nofBinsRelErrB, minRelErrB, maxRelErrB));
+      fHM->Add(name, new TH1D(name.c_str(), title.c_str(), nofBinsRelErrB, minRelErrB, maxRelErrB));
 
-      name = "hfa_" + names[v] + "RelErrGrid_H2_"
-             + ToString<Int_t>(fZSlicePosition[i]);
+      name  = "hfa_" + names[v] + "RelErrGrid_H2_" + ToString<Int_t>(fZSlicePosition[i]);
       title = name + ";X [cm];Y [cm];" + relErrTitle[v];
-      fHM->Add(name,
-               new TH2D(name.c_str(),
-                        title.c_str(),
-                        nofBinsErrX,
-                        -fXSlicePosition[i],
-                        fXSlicePosition[i],
-                        nofBinsErrY,
-                        -fYSlicePosition[i],
-                        fYSlicePosition[i]));
+      fHM->Add(name, new TH2D(name.c_str(), title.c_str(), nofBinsErrX, -fXSlicePosition[i], fXSlicePosition[i],
+                              nofBinsErrY, -fYSlicePosition[i], fYSlicePosition[i]));
     }
   }
   cout << "-I- CbmLitFieldApproximationQa::CreateGridErrHistos(): Grid creator "
@@ -329,25 +275,23 @@ void CbmLitFieldApproximationQa::CreateGridHistos() {
        << endl;
 }
 
-void CbmLitFieldApproximationQa::FillBHistos() {
+void CbmLitFieldApproximationQa::FillBHistos()
+{
   // Fill graphs for magnetic field for each (X, Y) slice
   for (UInt_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // loop over slices
     Double_t Z = fZSlicePosition[iSlice];
 
-    Int_t cnt = 0;
-    Double_t HX =
-      2 * fXSlicePosition[iSlice] / fNofBinsX;  // step size for X position
-    Double_t HY =
-      2 * fYSlicePosition[iSlice] / fNofBinsY;  // step size for Y position
-    for (Int_t iX = 0; iX < fNofBinsX; iX++) {  // loop over x position
+    Int_t cnt   = 0;
+    Double_t HX = 2 * fXSlicePosition[iSlice] / fNofBinsX;  // step size for X position
+    Double_t HY = 2 * fYSlicePosition[iSlice] / fNofBinsY;  // step size for Y position
+    for (Int_t iX = 0; iX < fNofBinsX; iX++) {              // loop over x position
       Double_t X = -fXSlicePosition[iSlice] + (iX + 0.5) * HX;
       for (Int_t iY = 0; iY < fNofBinsY; iY++) {  // loop over y position
         Double_t Y = -fYSlicePosition[iSlice] + (iY + 0.5) * HY;
 
         // Check acceptance for ellipse
-        Double_t el =
-          (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
-          + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
+        Double_t el = (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
+                      + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
         if (fUseEllipseAcc && el > 1.) { continue; }
 
         // Get field value
@@ -368,7 +312,8 @@ void CbmLitFieldApproximationQa::FillBHistos() {
   }
 }
 
-void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
+void CbmLitFieldApproximationQa::FillFieldApproximationHistos()
+{
   vector<vector<LitFieldSliceScal>> slices;
   slices.resize(fNofPolynoms);
   for (UInt_t i = 0; i < fNofPolynoms; i++) {
@@ -380,8 +325,7 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
     for (Int_t j = 0; j < fNofSlices; j++) {
       fFitter[i]->FitSlice(fZSlicePosition[j], slices[i][j]);
       cout << "-I- CbmLitFieldApproximationQa::FillFieldApproximationHistos: "
-           << " field approximation (degree=" << fPolynomDegrees[i]
-           << ", Z=" << fZSlicePosition[j] << ")" << endl;
+           << " field approximation (degree=" << fPolynomDegrees[i] << ", Z=" << fZSlicePosition[j] << ")" << endl;
     }
   }
 
@@ -390,27 +334,23 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
     Double_t Z = fZSlicePosition[iSlice];
     Int_t cnt  = 0;
 
-    Double_t HX =
-      2 * fXSlicePosition[iSlice] / fNofBinsX;  // Step size for X position
-    Double_t HY =
-      2 * fYSlicePosition[iSlice] / fNofBinsY;  // Step size for Y position
-    for (Int_t iX = 0; iX < fNofBinsX; iX++) {  // Loop over x position
+    Double_t HX = 2 * fXSlicePosition[iSlice] / fNofBinsX;  // Step size for X position
+    Double_t HY = 2 * fYSlicePosition[iSlice] / fNofBinsY;  // Step size for Y position
+    for (Int_t iX = 0; iX < fNofBinsX; iX++) {              // Loop over x position
       Double_t X = -fXSlicePosition[iSlice] + (iX + 0.5) * HX;
       for (Int_t iY = 0; iY < fNofBinsY; iY++) {  // Loop over y position
         Double_t Y = -fYSlicePosition[iSlice] + (iY + 0.5) * HY;
 
         // Check acceptance for ellipse
-        Double_t el =
-          (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
-          + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
+        Double_t el = (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
+                      + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
         if (fUseEllipseAcc && el > 1.) { continue; }
 
         for (Int_t p = 0; p < fNofPolynoms; p++) {
           LitFieldValueScal v;
           slices[p][iSlice].GetFieldValue(X, Y, v);
           Double_t mod = sqrt(v.Bx * v.Bx + v.By * v.By + v.Bz * v.Bz);
-          string s     = ToString<Int_t>(fZSlicePosition[iSlice]) + "_"
-                     + ToString<Int_t>(fPolynomDegrees[p]);
+          string s     = ToString<Int_t>(fZSlicePosition[iSlice]) + "_" + ToString<Int_t>(fPolynomDegrees[p]);
           fHM->G2(string("hfa_BxApr_Graph2D_") + s)->SetPoint(cnt, X, Y, v.Bx);
           fHM->G2(string("hfa_ByApr_Graph2D_") + s)->SetPoint(cnt, X, Y, v.By);
           fHM->G2(string("hfa_BzApr_Graph2D_") + s)->SetPoint(cnt, X, Y, v.Bz);
@@ -425,20 +365,17 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
   Int_t nofBinsX = 100;
   Int_t nofBinsY = 100;
   for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {
-    Double_t Z = fZSlicePosition[iSlice];
-    Double_t HX =
-      2 * fXSlicePosition[iSlice] / nofBinsX;  // step size for X position
-    Double_t HY =
-      2 * fYSlicePosition[iSlice] / nofBinsY;  // step size for Y position
-    for (Int_t iX = 0; iX < nofBinsX; iX++) {  // loop over x position
+    Double_t Z  = fZSlicePosition[iSlice];
+    Double_t HX = 2 * fXSlicePosition[iSlice] / nofBinsX;  // step size for X position
+    Double_t HY = 2 * fYSlicePosition[iSlice] / nofBinsY;  // step size for Y position
+    for (Int_t iX = 0; iX < nofBinsX; iX++) {              // loop over x position
       Double_t X = -fXSlicePosition[iSlice] + (iX + 0.5) * HX;
       for (Int_t iY = 0; iY < nofBinsY; iY++) {  // loop over y position
         Double_t Y = -fYSlicePosition[iSlice] + (iY + 0.5) * HY;
 
         // Check acceptance for ellipse
-        Double_t el =
-          (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
-          + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
+        Double_t el = (X * X) / (fXSlicePosition[iSlice] * fXSlicePosition[iSlice])
+                      + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
         if (fUseEllipseAcc && el > 1.) { continue; }
 
         // Get field value
@@ -462,8 +399,7 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
           Double_t relErrBz  = (B[2] != 0.) ? (errBz / B[2]) * 100. : 0.;
           Double_t relErrMod = (Bmod != 0.) ? (errMod / Bmod) * 100. : 0;
 
-          string s = ToString<Int_t>(fZSlicePosition[iSlice]) + "_"
-                     + ToString<Int_t>(fPolynomDegrees[p]);
+          string s = ToString<Int_t>(fZSlicePosition[iSlice]) + "_" + ToString<Int_t>(fPolynomDegrees[p]);
           fHM->H1(string("hfa_BxErrApr_H1_") + s)->Fill(errBx);
           fHM->H1(string("hfa_BxRelErrApr_H1_") + s)->Fill(relErrBx);
           fHM->H2(string("hfa_BxErrApr_H2_") + s)->Fill(X, Y, errBx);
@@ -486,7 +422,8 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos() {
   }
 }
 
-void CbmLitFieldApproximationQa::FillGridCreatorHistos() {
+void CbmLitFieldApproximationQa::FillGridCreatorHistos()
+{
   vector<LitFieldGrid> grids;
   grids.resize(fNofSlices);
   for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {
@@ -495,13 +432,11 @@ void CbmLitFieldApproximationQa::FillGridCreatorHistos() {
 
   // Fill graph
   for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {
-    Int_t cnt  = 0;
-    Double_t Z = fZSlicePosition[iSlice];
-    Double_t HX =
-      2 * fXSlicePosition[iSlice] / fNofBinsX;  // step size for X position
-    Double_t HY =
-      2 * fYSlicePosition[iSlice] / fNofBinsY;  // step size for Y position
-    for (Int_t iX = 0; iX < fNofBinsX; iX++) {  // loop over x position
+    Int_t cnt   = 0;
+    Double_t Z  = fZSlicePosition[iSlice];
+    Double_t HX = 2 * fXSlicePosition[iSlice] / fNofBinsX;  // step size for X position
+    Double_t HY = 2 * fYSlicePosition[iSlice] / fNofBinsY;  // step size for Y position
+    for (Int_t iX = 0; iX < fNofBinsX; iX++) {              // loop over x position
       Double_t X = -fXSlicePosition[iSlice] + (iX + 0.5) * HX;
       for (Int_t iY = 0; iY < fNofBinsY; iY++) {  // loop over y position
         Double_t Y = -fYSlicePosition[iSlice] + (iY + 0.5) * HY;
@@ -522,12 +457,10 @@ void CbmLitFieldApproximationQa::FillGridCreatorHistos() {
   Int_t nofBinsX = 100;
   Int_t nofBinsY = 100;
   for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {
-    Double_t Z = fZSlicePosition[iSlice];
-    Double_t HX =
-      2 * fXSlicePosition[iSlice] / nofBinsX;  // step size for X position
-    Double_t HY =
-      2 * fYSlicePosition[iSlice] / nofBinsY;  // step size for Y position
-    for (Int_t iX = 0; iX < nofBinsX; iX++) {  // loop over x position
+    Double_t Z  = fZSlicePosition[iSlice];
+    Double_t HX = 2 * fXSlicePosition[iSlice] / nofBinsX;  // step size for X position
+    Double_t HY = 2 * fYSlicePosition[iSlice] / nofBinsY;  // step size for Y position
+    for (Int_t iX = 0; iX < nofBinsX; iX++) {              // loop over x position
       Double_t X = -fXSlicePosition[iSlice] + (iX + 0.5) * HX;
       for (Int_t iY = 0; iY < nofBinsY; iY++) {  // loop over y position
         Double_t Y = -fYSlicePosition[iSlice] + (iY + 0.5) * HY;

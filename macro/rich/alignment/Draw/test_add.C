@@ -1,4 +1,5 @@
-void test_add() {
+void test_add()
+{
   TH2D* h1 = new TH2D("h1", "h1", 100, 0., 20., 100, 0., 20.);
   TH2D* h2 = new TH2D("h2", "h2", 100, 0., 20., 100, 0., 20.);
   TF2* xyg = new TF2("xyg", "xygaus", 0, 10, 0, 10);

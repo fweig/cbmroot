@@ -28,15 +28,14 @@
  **/
 
 
-void mcbm_digi_nh(Int_t nEvents      = 100,  // Number of events to process
-                  TString RunId      = "test",
-                  TString InDir      = "./data/",
-                  TString OutDir     = "./data/",
-                  TString setup      = "mcbm_beam_2021_03",
-                  Bool_t eventMode   = kFALSE,     // Event-by-event mode
-                  Double_t eventRate = 1.e5,       // Interaction rate [1/s]
-                  Double_t timeSliceLength = 1.e4  // Length of time-slice [ns]
-) {
+void mcbm_digi_nh(Int_t nEvents = 100,  // Number of events to process
+                  TString RunId = "test", TString InDir = "./data/", TString OutDir = "./data/",
+                  TString setup            = "mcbm_beam_2021_03",
+                  Bool_t eventMode         = kFALSE,  // Event-by-event mode
+                  Double_t eventRate       = 1.e5,    // Interaction rate [1/s]
+                  Double_t timeSliceLength = 1.e4     // Length of time-slice [ns]
+)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -52,8 +51,7 @@ void mcbm_digi_nh(Int_t nEvents      = 100,  // Number of events to process
   // -----   File names   ---------------------------------------------------
   TString inFile  = InDir + "/" + RunId + ".tra.root";
   TString parFile = OutDir + "/" + RunId + ".par.root";
-  TString outFile =
-    OutDir + "/" + RunId + Form(".%2.1e", eventRate) + ".raw.root";
+  TString outFile = OutDir + "/" + RunId + Form(".%2.1e", eventRate) + ".raw.root";
   TString monFile = OutDir + "/" + RunId + ".raw.moni.root";
   if (eventMode) {
     outFile = OutDir + "/" + RunId + ".event.raw.root";
@@ -97,9 +95,7 @@ void mcbm_digi_nh(Int_t nEvents      = 100,  // Number of events to process
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

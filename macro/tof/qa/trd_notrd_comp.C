@@ -1,16 +1,13 @@
 
-Bool_t trd_notrd_comp(
-  TString sFilenameTrd =
-    "data/tofqa.cbm100_pbar_auau.25gev.centr._qa.hst.all.root",
-  TString sFilenameNoTrd =
-    "data/tofqa.cbm100_pbar_auau.25gev.centr.noTRD_qa.hst.all.root",
-  TString sOutFileTag = "_cbm100_pbar_25gev") {
+Bool_t trd_notrd_comp(TString sFilenameTrd   = "data/tofqa.cbm100_pbar_auau.25gev.centr._qa.hst.all.root",
+                      TString sFilenameNoTrd = "data/tofqa.cbm100_pbar_auau.25gev.centr.noTRD_qa.hst.all.root",
+                      TString sOutFileTag    = "_cbm100_pbar_25gev")
+{
   //   gStyle->SetPalette(51); TString sPalName = "DeepSea";// Deep sea (Dark blue to light blue)
   //   gStyle->SetPalette(52); TString sPalName = "GreySca"; // Grey scale
   //   gStyle->SetPalette(53); TString sPalName = "DarkBody"; // Dark body radiator (black to white through yellow)
   gStyle->SetPalette(54);
-  TString sPalName =
-    "TwoCol";  // two-color hue (dark blue through neutral gray to bright yellow)
+  TString sPalName = "TwoCol";  // two-color hue (dark blue through neutral gray to bright yellow)
   //   gStyle->SetPalette(55); TString sPalName = "RainBow"; // Rain Bow
   //   gStyle->SetPalette(56); TString sPalName = "DarkBodyInv"; // inverted Dark Body Radiator
   // Set size of PAD title for all pads
@@ -35,70 +32,46 @@ Bool_t trd_notrd_comp(
   gROOT->cd();
 
   //-----------------------------------
-  tempTwoDimHist =
-    (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapSingPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntAngTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_Trd"));
+  tempTwoDimHist = (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapSingPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntAngTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_Trd"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapSingPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntAngNoTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_NoTrd"));
+  tempTwoDimHist = (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapSingPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntAngNoTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_NoTrd"));
   else
     return kFALSE;
 
   //-----------------------------------
-  tempTwoDimHist =
-    (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapMultPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntAngTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_Trd"));
+  tempTwoDimHist = (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapMultPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntAngTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_Trd"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapMultPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntAngNoTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_NoTrd"));
+  tempTwoDimHist = (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapMultPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntAngNoTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_NoTrd"));
   else
     return kFALSE;
 
   //-----------------------------------
-  tempTwoDimHist =
-    (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapSingTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkAngTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_Trd"));
+  tempTwoDimHist = (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapSingTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkAngTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_Trd"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapSingTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkAngNoTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_NoTrd"));
+  tempTwoDimHist = (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapSingTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkAngNoTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_NoTrd"));
   else
     return kFALSE;
 
   //-----------------------------------
-  tempTwoDimHist =
-    (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapMultTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkAngTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_Trd"));
+  tempTwoDimHist = (TH2*) (fileTrd->FindObjectAny("TofTests_HitsMapMultTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkAngTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_Trd"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapMultTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkAngNoTrd =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_NoTrd"));
+  tempTwoDimHist = (TH2*) (fileNotTrd->FindObjectAny("TofTests_HitsMapMultTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkAngNoTrd = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_NoTrd"));
   else
     return kFALSE;
 
@@ -107,52 +80,28 @@ Bool_t trd_notrd_comp(
   fileTrd->Close();
   fileNotTrd->Close();
 
-  Int_t iNbBinThetaX  = 1200;
-  Double_t dThetaXMin = -60.0;
-  Double_t dThetaXMax = 60.0;
-  Int_t iNbBinThetaY  = 800;
-  Double_t dThetaYMin = -40.0;
-  Double_t dThetaYMax = 40.0;
-  TH2* fhTrdNoTrdSingPntAng =
-    new TH2D("TofQa_fhTrdNoTrdSingPntAng",
-             "Ratio of hits from single points, Trd VS NoTrd; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhTrdNoTrdMultiPntAng =
-    new TH2D("TofQa_fhTrdNoTrdMultiPntAng",
-             "Ratio of hits from multiple points, Trd VS NoTrd; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhTrdNoTrdSingTrkAng =
-    new TH2D("TofQa_fhTrdNoTrdSingTrkAng",
-             "Ratio of hits from single tracks, Trd VS NoTrd; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhTrdNoTrdMultiTrkAng =
-    new TH2D("TofQa_fhTrdNoTrdMultiTrkAng",
-             "Ratio of hits from multiple tracks, Trd VS NoTrd; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
+  Int_t iNbBinThetaX         = 1200;
+  Double_t dThetaXMin        = -60.0;
+  Double_t dThetaXMax        = 60.0;
+  Int_t iNbBinThetaY         = 800;
+  Double_t dThetaYMin        = -40.0;
+  Double_t dThetaYMax        = 40.0;
+  TH2* fhTrdNoTrdSingPntAng  = new TH2D("TofQa_fhTrdNoTrdSingPntAng",
+                                       "Ratio of hits from single points, Trd VS NoTrd; "
+                                       "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
+                                       iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhTrdNoTrdMultiPntAng = new TH2D("TofQa_fhTrdNoTrdMultiPntAng",
+                                        "Ratio of hits from multiple points, Trd VS NoTrd; "
+                                        "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhTrdNoTrdSingTrkAng  = new TH2D("TofQa_fhTrdNoTrdSingTrkAng",
+                                       "Ratio of hits from single tracks, Trd VS NoTrd; "
+                                       "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
+                                       iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhTrdNoTrdMultiTrkAng = new TH2D("TofQa_fhTrdNoTrdMultiTrkAng",
+                                        "Ratio of hits from multiple tracks, Trd VS NoTrd; "
+                                        "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Ratio. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
 
   fhTrdNoTrdSingPntAng->Divide(fhHitMapSingPntAngTrd, fhHitMapSingPntAngNoTrd);
   fhTrdNoTrdSingPntAng->Scale(100.0);
@@ -164,8 +113,7 @@ Bool_t trd_notrd_comp(
   fhTrdNoTrdMultiTrkAng->Divide(fhHitMapMultTrkAngTrd, fhHitMapMultTrkAngNoTrd);
   fhTrdNoTrdMultiTrkAng->Scale(100.0);
 
-  TCanvas* canvTrdComp =
-    new TCanvas("canvTrdComp", "Comparison of W/ and W/o TRD", 1920, 986);
+  TCanvas* canvTrdComp = new TCanvas("canvTrdComp", "Comparison of W/ and W/o TRD", 1920, 986);
   canvTrdComp->Divide(2, 2);
 
   //   TCanvas * canvSingPnt = new TCanvas("CanvSingPnt");
@@ -196,8 +144,6 @@ Bool_t trd_notrd_comp(
   fhTrdNoTrdMultiTrkAng->GetZaxis()->SetRangeUser(dMinRangeZ, dMaxRangeZ);
   fhTrdNoTrdMultiTrkAng->Draw("colz");
 
-  canvTrdComp->SaveAs(
-    Form("TrdComp_%s%s.png", sPalName.Data(), sOutFileTag.Data()));
-  canvTrdComp->SaveAs(
-    Form("TrdComp_%s%s.pdf", sPalName.Data(), sOutFileTag.Data()));
+  canvTrdComp->SaveAs(Form("TrdComp_%s%s.png", sPalName.Data(), sOutFileTag.Data()));
+  canvTrdComp->SaveAs(Form("TrdComp_%s%s.pdf", sPalName.Data(), sOutFileTag.Data()));
 }

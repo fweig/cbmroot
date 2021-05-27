@@ -3,9 +3,11 @@
 
 #include "TObject.h"
 #include "TVector3.h"
-#include <cmath>
+
 #include <string>
 #include <vector>
+
+#include <cmath>
 
 using namespace std;
 
@@ -46,7 +48,9 @@ public:
     ,
 
     fDeviation(0.)
-    , fRLoc(0.) {}
+    , fRLoc(0.)
+  {
+  }
 
   int fPixelX;
   int fPixelY;
@@ -91,8 +95,7 @@ public:
 
 class CbmRichRonchiLineData {
 public:
-  CbmRichRonchiLineData()
-    : fNofPoints(0), fMeanPrimary(0), fMeanSecondary(0), fLineInd(0) {}
+  CbmRichRonchiLineData() : fNofPoints(0), fMeanPrimary(0), fMeanSecondary(0), fLineInd(0) {}
 
   int fNofPoints;
   double fMeanPrimary;
@@ -127,22 +130,16 @@ private:
   double fDistRulingCCD;  // in microns
   double fDistMirrorCCD;  // in microns
   double fDistMirrorRuling;
-  double
-    fOffsetCCDOptAxisX;  // in microns; horizontal distance of center of CCD to optical axis of mirror
-  double
-    fOffsetCCDOptAxisY;  // in microns; vertical distance of center of CCD to optical axis of mirror
-  double
-    fOffsetLEDOpticalAxisX;  // in microns; horizontal distance of light source to optical axis of mirror
+  double fOffsetCCDOptAxisX;      // in microns; horizontal distance of center of CCD to optical axis of mirror
+  double fOffsetCCDOptAxisY;      // in microns; vertical distance of center of CCD to optical axis of mirror
+  double fOffsetLEDOpticalAxisX;  // in microns; horizontal distance of light source to optical axis of mirror
   double fOffsetLEDOpticalAxisY;
-  double
-    fCorrection;  // correction value; defines center of mirror at exactly 3,000,000 mum in z dircetion
+  double fCorrection;  // correction value; defines center of mirror at exactly 3,000,000 mum in z dircetion
 
   // values that will be determined by function
-  double
-    fCenterCcdX;  // in pixels; approximate center of image on CCD, will be defined in 'DoLocalNormal' function
+  double fCenterCcdX;  // in pixels; approximate center of image on CCD, will be defined in 'DoLocalNormal' function
   double fCenterCcdY;  // in pixels
-  double
-    fImageCenterMirrorX;  // in pixels; approximate center of image on mirror  (NEEDED??)
+  double fImageCenterMirrorX;  // in pixels; approximate center of image on mirror  (NEEDED??)
   double fImageCenterMirrorY;  // in pixels
 
   vector<vector<double>> ReadTiffFile(const string& fileName);
@@ -159,40 +156,23 @@ private:
 
   void DoLineSearch(vector<vector<double>>& data);
 
-  vector<vector<double>> DoSuperpose(const vector<vector<double>>& dataH,
-                                     const vector<vector<double>>& dataV);
+  vector<vector<double>> DoSuperpose(const vector<vector<double>>& dataH, const vector<vector<double>>& dataV);
 
-  vector<CbmRichRonchiIntersectionData>
-  DoIntersection(vector<vector<double>>& dataH,
-                 const vector<vector<double>>& dataV);
+  vector<CbmRichRonchiIntersectionData> DoIntersection(vector<vector<double>>& dataH,
+                                                       const vector<vector<double>>& dataV);
 
-  void DoOrderLines(vector<CbmRichRonchiIntersectionData>& intersections,
-                    const string& option);
-  bool AreTwoSegmentsSameLine(const CbmRichRonchiLineData* line1,
-                              const CbmRichRonchiLineData* line2);
-  void UpdateIntersectionLineInd(
-    vector<CbmRichRonchiIntersectionData>& intersections,
-    CbmRichRonchiLineData* line1,
-    CbmRichRonchiLineData* line2,
-    const string& option);
+  void DoOrderLines(vector<CbmRichRonchiIntersectionData>& intersections, const string& option);
+  bool AreTwoSegmentsSameLine(const CbmRichRonchiLineData* line1, const CbmRichRonchiLineData* line2);
+  void UpdateIntersectionLineInd(vector<CbmRichRonchiIntersectionData>& intersections, CbmRichRonchiLineData* line1,
+                                 CbmRichRonchiLineData* line2, const string& option);
 
   void DoLocalNormal(vector<CbmRichRonchiIntersectionData>& data);
   void DrawXYMum(vector<CbmRichRonchiIntersectionData>& data);
-  void DrawXZProjection(vector<CbmRichRonchiIntersectionData>& data,
-                        int orderedLineY,
-                        double scale);
-  void DrawMirrorSegments(vector<CbmRichRonchiIntersectionData>& data,
-                          int orderedLineX,
-                          int orderedLineY);
+  void DrawXZProjection(vector<CbmRichRonchiIntersectionData>& data, int orderedLineY, double scale);
+  void DrawMirrorSegments(vector<CbmRichRonchiIntersectionData>& data, int orderedLineX, int orderedLineY);
   void DrawMirrorSegmentsSphereAll(vector<CbmRichRonchiIntersectionData>& data);
-  void DrawMirrorSegmentsSphere(vector<CbmRichRonchiIntersectionData>& data,
-                                int orderedLineX,
-                                int orderedLineY);
-  void DrawOneMirrorSegment(const TVector3& tl,
-                            const TVector3& tr,
-                            const TVector3& bl,
-                            const TVector3& br,
-                            int color);
+  void DrawMirrorSegmentsSphere(vector<CbmRichRonchiIntersectionData>& data, int orderedLineX, int orderedLineY);
+  void DrawOneMirrorSegment(const TVector3& tl, const TVector3& tr, const TVector3& bl, const TVector3& br, int color);
   void DrawSphere(vector<CbmRichRonchiIntersectionData>& data);
   void DrawRLocMum(vector<CbmRichRonchiIntersectionData>& data);
 
@@ -200,31 +180,21 @@ private:
 
   void DoSphere(vector<CbmRichRonchiIntersectionData>& intersections);
 
-  int GetIndexForLineXLineY(int lineX,
-                            int lineY,
-                            vector<CbmRichRonchiIntersectionData>& data);
-  int GetMinIndexForLineX(int lineX,
-                          vector<CbmRichRonchiIntersectionData>& data);
-  int GetMinIndexForLineY(int lineY,
-                          vector<CbmRichRonchiIntersectionData>& data);
+  int GetIndexForLineXLineY(int lineX, int lineY, vector<CbmRichRonchiIntersectionData>& data);
+  int GetMinIndexForLineX(int lineX, vector<CbmRichRonchiIntersectionData>& data);
+  int GetMinIndexForLineY(int lineY, vector<CbmRichRonchiIntersectionData>& data);
 
   void DoHeightCorners(vector<CbmRichRonchiIntersectionData>& intersections);
 
   void DoScanLineHeight(vector<CbmRichRonchiIntersectionData>& intersections);
 
-  void
-  DoCalculateRemaining(vector<CbmRichRonchiIntersectionData>& intersections);
+  void DoCalculateRemaining(vector<CbmRichRonchiIntersectionData>& intersections);
 
   void DoIntegrate(vector<CbmRichRonchiIntersectionData>& intersections);
 
-  void
-  DoAverageSurroundings(vector<CbmRichRonchiIntersectionData>& intersections);
+  void DoAverageSurroundings(vector<CbmRichRonchiIntersectionData>& intersections);
 
-  void RotatePointImpl(TVector3* inPos,
-                       TVector3* outPos,
-                       Double_t rotX,
-                       Double_t rotY,
-                       TVector3* cV);
+  void RotatePointImpl(TVector3* inPos, TVector3* outPos, Double_t rotX, Double_t rotY, TVector3* cV);
 
   void DoDeviation(vector<CbmRichRonchiIntersectionData>& data);
 

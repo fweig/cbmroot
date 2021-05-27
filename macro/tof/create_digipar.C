@@ -14,7 +14,8 @@
 // --------------------------------------------------------------------------
 
 
-void create_digipar(TString geomFile = "full.root", Int_t nEvents = 0) {
+void create_digipar(TString geomFile = "full.root", Int_t nEvents = 0)
+{
 
   //Extract Filename without extension and path
   //TODO: Do this in a better way.
@@ -90,8 +91,7 @@ void create_digipar(TString geomFile = "full.root", Int_t nEvents = 0) {
   parIo2->open(digiFile, "out");
   rtdb->setOutput(parIo2);
 
-  CbmTofCreateDigiPar* tofDigiProducer =
-    new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+  CbmTofCreateDigiPar* tofDigiProducer = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
   run->AddTask(tofDigiProducer);
 
   // -------------------------------------------------------------------------

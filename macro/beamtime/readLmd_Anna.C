@@ -10,7 +10,8 @@
  ** Uses CbmSourceLmd as source task.
  */
 
-void readLmd_Anna() {
+void readLmd_Anna()
+{
 
   // TString runN = TString::Itoa(runID,10);
   //  TString fileN = TString::Itoa(fileID,10);
@@ -58,7 +59,7 @@ void readLmd_Anna() {
   std::cout << ">>> readLmd: Initialising..." << std::endl;
 
   // --- Sets
-  Bool_t trigger = kFALSE;  // kFALSE - self-trigger; kTRUE - external trigger
+  Bool_t trigger          = kFALSE;  // kFALSE - self-trigger; kTRUE - external trigger
   Int_t triggered_station = 2;
 
   // --- Source task
@@ -111,8 +112,7 @@ void readLmd_Anna() {
 
   // --- Residuals & correlations
   StsCosyTrack* track = new StsCosyTrack();
-  Bool_t alignment =
-    kFALSE;  // kFALSE - without alignment; kTRUE - with alignment
+  Bool_t alignment    = kFALSE;  // kFALSE - without alignment; kTRUE - with alignment
   track->SetAlignment(alignment);
   //  track->SetChi2Cut(100.,100.);
   run->AddTask(track);
@@ -134,8 +134,7 @@ void readLmd_Anna() {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

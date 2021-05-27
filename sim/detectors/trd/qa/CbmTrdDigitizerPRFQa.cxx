@@ -6,11 +6,11 @@
 
 #include "CbmTrdDigitizerPRFQa.h"
 
+#include "CbmMCTrack.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmMCTrack.h"
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -23,15 +23,14 @@
 using std::cout;
 using std::endl;
 
-CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa()
-  : CbmTrdDigitizerPRFQa("TrdDigitizerPRFQa", "") {}
+CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa() : CbmTrdDigitizerPRFQa("TrdDigitizerPRFQa", "") {}
 
-CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa(const char* name, const char*)
-  : FairTask(name) {}
+CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa(const char* name, const char*) : FairTask(name) {}
 
 CbmTrdDigitizerPRFQa::~CbmTrdDigitizerPRFQa() {}
 
-InitStatus CbmTrdDigitizerPRFQa::Init() {
+InitStatus CbmTrdDigitizerPRFQa::Init()
+{
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
     cout << "-E- CbmTrdDigitizerPRFQa::Init : "
@@ -44,7 +43,8 @@ InitStatus CbmTrdDigitizerPRFQa::Init() {
 void CbmTrdDigitizerPRFQa::Exec(Option_t*) {}
 void CbmTrdDigitizerPRFQa::Finish() { WriteHistograms(); }
 void CbmTrdDigitizerPRFQa::PrepareHistograms() {}
-void CbmTrdDigitizerPRFQa::WriteHistograms() {
+void CbmTrdDigitizerPRFQa::WriteHistograms()
+{
   gDirectory->mkdir("CbmTrdDigitizerPRFQa");
   gDirectory->cd("CbmTrdDigitizerPRFQa");
   gDirectory->cd("..");

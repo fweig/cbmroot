@@ -19,7 +19,11 @@
 class TClonesArray;
 class CbmMvdSensor;
 
-enum MvdSensorPluginType { task, buffer };
+enum MvdSensorPluginType
+{
+  task,
+  buffer
+};
 
 class CbmMvdSensorPlugin : public TObject {
 
@@ -46,12 +50,8 @@ public:
   virtual void SetInput(CbmMvdPoint*) { ; }
   virtual void SetOutputArray(TClonesArray*) { ; }
 
-  virtual void SetNextPlugin(CbmMvdSensorPlugin* plugin) {
-    fNextPlugin = plugin;
-  }
-  virtual void SetPreviousPlugin(CbmMvdSensorPlugin* plugin) {
-    fPreviousPlugin = plugin;
-  }
+  virtual void SetNextPlugin(CbmMvdSensorPlugin* plugin) { fNextPlugin = plugin; }
+  virtual void SetPreviousPlugin(CbmMvdSensorPlugin* plugin) { fPreviousPlugin = plugin; }
 
   virtual CbmMvdSensorPlugin* GetNextPlugin() { return fNextPlugin; }
   virtual CbmMvdSensorPlugin* GetPrevousPlugin() { return fPreviousPlugin; }

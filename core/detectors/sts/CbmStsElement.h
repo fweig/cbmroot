@@ -6,15 +6,14 @@
 #ifndef CBMSTSELEMENT_H
 #define CBMSTSELEMENT_H 1
 
+#include "CbmStsAddress.h"  // for EStsElementLevel, GetElementId
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Option_t
-
-#include <TNamed.h>   // for TNamed
-#include <TString.h>  // for TString
+#include <TNamed.h>      // for TNamed
+#include <TString.h>     // for TString
 
 #include <vector>  // for vector
-
-#include "CbmStsAddress.h"  // for EStsElementLevel, GetElementId
 
 class TGeoPhysicalNode;
 
@@ -42,10 +41,7 @@ public:
      ** @param node     Pointer to geometry node
      ** @param mother   Pointer to mother element
      **/
-  CbmStsElement(Int_t address,
-                Int_t level,
-                TGeoPhysicalNode* node = nullptr,
-                CbmStsElement* mother  = nullptr);
+  CbmStsElement(Int_t address, Int_t level, TGeoPhysicalNode* node = nullptr, CbmStsElement* mother = nullptr);
 
 
   /** Destructor **/
@@ -74,9 +70,7 @@ public:
   /** Get the index within the mother element
      ** @return Index of element in mother
      **/
-  Int_t GetIndex() const {
-    return CbmStsAddress::GetElementId(fAddress, fLevel);
-  }
+  Int_t GetIndex() const { return CbmStsAddress::GetElementId(fAddress, fLevel); }
 
 
   /** Get the element level

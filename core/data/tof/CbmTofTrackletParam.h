@@ -13,9 +13,10 @@
 #include <TObject.h>     // for TObject
 #include <TVector3.h>    // for TVector3
 
-#include <math.h>   // for abs, sqrt
 #include <sstream>  // for operator<<, basic_ostream, stringstream, cha...
 #include <vector>   // for vector
+
+#include <math.h>  // for abs, sqrt
 
 /**
  * built by on 
@@ -40,7 +41,9 @@ public:
     , fQp(0.)
     , fLz(0.)
     , fChiSq(0.)
-    , fCovMatrix(15, 0.) {}
+    , fCovMatrix(15, 0.)
+  {
+  }
 
   /**
     * \brief Destructor.
@@ -72,9 +75,7 @@ public:
   void SetTt(Double_t tt) { fTt = tt; }
   void SetQp(Double_t qp) { fQp = qp; }
   void SetChiSq(Double_t v) { fChiSq = v; }
-  void SetCovMatrix(const std::vector<Double_t>& C) {
-    fCovMatrix.assign(C.begin(), C.end());
-  }
+  void SetCovMatrix(const std::vector<Double_t>& C) { fCovMatrix.assign(C.begin(), C.end()); }
   void SetCovariance(int index, Double_t cov) { fCovMatrix[index] = cov; }
 
   /**
@@ -83,7 +84,8 @@ public:
     * \param[out] ny Output direction cosine for OY axis.
     * \param[out] nz Output direction cosine for OZ axis.
     */
-  void GetDirCos(Double_t& nx, Double_t& ny, Double_t& nz) const {
+  void GetDirCos(Double_t& nx, Double_t& ny, Double_t& nz) const
+  {
     Double_t p    = (std::abs(fQp) != 0.) ? 1. / std::abs(fQp) : 1.e20;
     Double_t pz   = std::sqrt(p * p / (fTx * fTx + fTy * fTy + 1));
     Double_t px   = fTx * pz;
@@ -98,7 +100,8 @@ public:
     * \brief Return state vector as vector.
     * \return State vector as vector.
     */
-  std::vector<Double_t> GetStateVector() const {
+  std::vector<Double_t> GetStateVector() const
+  {
     std::vector<Double_t> state(5, 0.);
     state[0] = GetX();
     state[1] = GetY();
@@ -112,7 +115,8 @@ public:
     * \brief Set parameters from vector.
     * \param[in] x State vector.
     */
-  void SetStateVector(const std::vector<Double_t>& x) {
+  void SetStateVector(const std::vector<Double_t>& x)
+  {
     SetX(x[0]);
     SetY(x[1]);
     SetTx(x[2]);
@@ -124,23 +128,24 @@ public:
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-  std::string ToString() const {
+  std::string ToString() const
+  {
     std::stringstream ss;
-    ss << "TofTrackletParam: pos=(" << fX << "," << fY << "," << fZ
-       << ") tx=" << fTx << " ty=" << fTy << " qp=" << fQp;  // << std::endl;
-                                                             // ss << "cov: ";
+    ss << "TofTrackletParam: pos=(" << fX << "," << fY << "," << fZ << ") tx=" << fTx << " ty=" << fTy
+       << " qp=" << fQp;  // << std::endl;
+                          // ss << "cov: ";
     // for (Int_t i = 0; i < 15; i++) ss << fCovMatrix[i] << " ";
     // ss << endl;
     ss.precision(3);
-    ss << " cov: x=" << fCovMatrix[0] << " y=" << fCovMatrix[5]
-       << " tx=" << fCovMatrix[9] << " ty=" << fCovMatrix[12]
+    ss << " cov: x=" << fCovMatrix[0] << " y=" << fCovMatrix[5] << " tx=" << fCovMatrix[9] << " ty=" << fCovMatrix[12]
        << " q/p=" << fCovMatrix[14];
     return ss.str();
   }
 
   Double_t GetZr(Double_t R) const;
 
-  Double_t GetZy(Double_t Y) const {
+  Double_t GetZy(Double_t Y) const
+  {
     if (fTy != 0.) { return (Y - fY) / fTy + fZ; }
     return 0.;
   }
@@ -149,8 +154,8 @@ public:
 private:
   Double_t fX, fY, fZ, fT;  // X, Y, Z coordinates in [cm]
   Double_t fTx, fTy, fTt;   // Slopes: tx=dx/dz, ty=dy/dz
-  Double_t fQp;  // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
-  Double_t fLz;  // tracklength in z - direction
+  Double_t fQp;             // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
+  Double_t fLz;             // tracklength in z - direction
   Double_t fChiSq;
   /* Covariance matrix.
     * Upper triangle symmetric matrix.

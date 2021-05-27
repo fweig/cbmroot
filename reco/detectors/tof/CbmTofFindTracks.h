@@ -20,6 +20,7 @@
 #include "FairTask.h"
 //#include "CbmTofTypes.h"
 #include "TTimeStamp.h"
+
 #include <map>
 #include <vector>
 
@@ -56,9 +57,7 @@ public:
    *@param title  Task title
    *@param finder Pointer to STS track finder concrete class
    **/
-  CbmTofFindTracks(const char* name,
-                   const char* title         = "FairTask",
-                   CbmTofTrackFinder* finder = NULL);
+  CbmTofFindTracks(const char* name, const char* title = "FairTask", CbmTofTrackFinder* finder = NULL);
 
   /** Destructor **/
   virtual ~CbmTofFindTracks();
@@ -148,12 +147,8 @@ public:
   inline void SetRefDVel(Double_t dval) { fdRefDVel = dval; }
 
   inline void SetCorMode(Int_t ival) { fiCorMode = ival; }
-  inline void SetCalParFileName(TString CalParFileName) {
-    fCalParFileName = CalParFileName;
-  }
-  inline void SetCalOutFileName(TString CalOutFileName) {
-    fCalOutFileName = CalOutFileName;
-  }
+  inline void SetCalParFileName(TString CalParFileName) { fCalParFileName = CalParFileName; }
+  inline void SetCalOutFileName(TString CalOutFileName) { fCalOutFileName = CalOutFileName; }
   inline void SetTtTarg(Double_t val) { fTtTarg = val; }
   inline void SetT0MAX(Double_t val) { fT0MAX = val; }
 
@@ -163,9 +158,7 @@ public:
   void ResetStationsFired();
 
   inline void SetBeamMomentumLab(Double_t dval) { fdBeamMomentumLab = dval; }
-  inline void SetRemoveSignalPropagationTime(Bool_t bval) {
-    fbRemoveSignalPropagationTime = bval;
-  }
+  inline void SetRemoveSignalPropagationTime(Bool_t bval) { fbRemoveSignalPropagationTime = bval; }
   inline void SetBeamMaxHMul(Int_t ival) { fiBeamMaxHMul = ival; }
   inline void SetCalOpt(Int_t ival) { fiCalOpt = ival; }
 
@@ -174,29 +167,28 @@ public:
   inline Double_t GetVertexY() const { return fVTX_Y; }
   inline Double_t GetVertexZ() const { return fVTX_Z; }
 
-  inline Int_t GetTofHitIndex(Int_t iHit) {
-    if (fTofHitIndexArray.size() < 1)
-      return iHit;
+  inline Int_t GetTofHitIndex(Int_t iHit)
+  {
+    if (fTofHitIndexArray.size() < 1) return iHit;
     else
       return fTofHitIndexArray[iHit];
   }
 
 private:
   static CbmTofFindTracks* fInstance;
-  CbmTofTrackFinder* fFinder;           // Pointer to TrackFinder concrete class
-  CbmTofTrackFitter* fFitter;           // Pointer to TrackFitter concrete class
-  CbmTofTrackletTools* fTrackletTools;  // Pointer to Tracklet tools class
-  CbmTofCalibrator* fTofCalibrator;     // Pointer to Calibrator
-  TClonesArray* fEventsColl;            // CBMEvents (time based)
-  TClonesArray* fTofHitArrayIn;         // Input array of TOF hits
-  TClonesArray* fTofMatchArrayIn;       // Input array of TOF hit matches
-  TClonesArray* fTofHitArray;           // Output array of recalibrated TOF hits
+  CbmTofTrackFinder* fFinder;            // Pointer to TrackFinder concrete class
+  CbmTofTrackFitter* fFitter;            // Pointer to TrackFitter concrete class
+  CbmTofTrackletTools* fTrackletTools;   // Pointer to Tracklet tools class
+  CbmTofCalibrator* fTofCalibrator;      // Pointer to Calibrator
+  TClonesArray* fEventsColl;             // CBMEvents (time based)
+  TClonesArray* fTofHitArrayIn;          // Input array of TOF hits
+  TClonesArray* fTofMatchArrayIn;        // Input array of TOF hit matches
+  TClonesArray* fTofHitArray;            // Output array of recalibrated TOF hits
   std::vector<Int_t> fTofHitIndexArray;  // Index of hit in TS
-  TClonesArray* fTofHitArrayOut;  // Output array of recalibrated TOF hits
-  TClonesArray* fTrackArray;      // Output array of CbmTofTracks
-  TClonesArray*
-    fTrackArrayOut;             // Output array of CbmTofTracks in CbmEvent mode
-  TClonesArray* fTofUHitArray;  // Output array of unused TOF hits
+  TClonesArray* fTofHitArrayOut;         // Output array of recalibrated TOF hits
+  TClonesArray* fTrackArray;             // Output array of CbmTofTracks
+  TClonesArray* fTrackArrayOut;          // Output array of CbmTofTracks in CbmEvent mode
+  TClonesArray* fTofUHitArray;           // Output array of unused TOF hits
 
   Int_t fMinNofHits;     // minimal number of Tof Hits for filling histos
   Int_t fNofTracks;      // Number of tracks created
@@ -269,8 +261,7 @@ private:
   TH2* fhVTX_DT0_Norm;
 
   Int_t fTypeStation[100];  // FIXME fixed array size
-  TString
-    fOutHstFileName;  // name of the histogram output file name with Calibration Parameters
+  TString fOutHstFileName;  // name of the histogram output file name with Calibration Parameters
 
   Bool_t LoadCalParameter();
   Bool_t WriteHistos();

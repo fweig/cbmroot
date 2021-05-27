@@ -9,24 +9,19 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorPsd(TString inFile           = "",
-                TString sHostname        = "localhost",
-                Int_t iServerHttpPort    = 8080,
-                Int_t iServerRefreshRate = 100,
-                UInt_t uRunId            = 0,
-                TString sHistoFilePrefix = "",
-                UInt_t nrEvents          = 0) {
+void MonitorPsd(TString inFile = "", TString sHostname = "localhost", Int_t iServerHttpPort = 8080,
+                Int_t iServerRefreshRate = 100, UInt_t uRunId = 0, TString sHistoFilePrefix = "", UInt_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
   Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId   = TString::Format("%u", uRunId);
-  TString outFile = "data/moni_psd_" + runId + ".root";
-  TString parFile = "data/moni_psd_params_" + runId + ".root";
-  TString outFileNameHistos =
-    Form("data/HistosMonitorPsd_%03u_", uRunId) + sHistoFilePrefix + ".root";
+  TString runId             = TString::Format("%u", uRunId);
+  TString outFile           = "data/moni_psd_" + runId + ".root";
+  TString parFile           = "data/moni_psd_params_" + runId + ".root";
+  TString outFileNameHistos = Form("data/HistosMonitorPsd_%03u_", uRunId) + sHistoFilePrefix + ".root";
 
   // --- Set log output levels
   FairLogger::GetLogger();
@@ -62,9 +57,7 @@ void MonitorPsd(TString inFile           = "",
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -98,15 +91,15 @@ void MonitorPsd(TString inFile           = "",
   std::cout << ">>> MonitorPsd: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -114,10 +107,8 @@ void MonitorPsd(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorPsd: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorPsd: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorPsd: Output histos file is " << outFileNameHistos
-            << std::endl;
-  std::cout << ">>> MonitorPsd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> MonitorPsd: Output histos file is " << outFileNameHistos << std::endl;
+  std::cout << ">>> MonitorPsd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -5,15 +5,14 @@
 
 #include "CbmL1SttTrackFinder.h"
 
-#include "CbmL1SttHit.h"
-#include "CbmL1SttTrack.h"
-
 #include "CbmKF.h"
 #include "CbmKFHit.h"
 #include "CbmKFMaterial.h"
 #include "CbmKFMath.h"
 #include "CbmKFPixelMeasurement.h"
 #include "CbmKFTrackInterface.h"
+#include "CbmL1SttHit.h"
+#include "CbmL1SttTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchHit.h"
 #include "CbmMuchPoint.h"
@@ -25,6 +24,7 @@
 #include "CbmSttPoint.h"
 #include "CbmSttTrack.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -32,9 +32,10 @@
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -43,8 +44,8 @@ using std::vector;
 
 ClassImp(CbmL1SttTrackFinder);
 
-CbmL1SttTrackFinder::CbmL1SttTrackFinder(const char* name, Int_t iVerbose)
-  : FairTask(name, iVerbose) {
+CbmL1SttTrackFinder::CbmL1SttTrackFinder(const char* name, Int_t iVerbose) : FairTask(name, iVerbose)
+{
   fTrackCollection = new TClonesArray("CbmSttTrack", 100);
   histodir         = 0;
 }
@@ -54,26 +55,21 @@ CbmL1SttTrackFinder::~CbmL1SttTrackFinder() {}
 
 InitStatus CbmL1SttTrackFinder::Init() { return ReInit(); }
 
-InitStatus CbmL1SttTrackFinder::ReInit() {
-  fSttPoints =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("SttPoint");
-  fSttHits = (TClonesArray*) FairRootManager::Instance()->GetObject("SttHit");
-  fMuchTracks =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("MuchTrack");
-  fStsTracks =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
-  fMCTracks = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
-  fSTSTrackMatch =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
+InitStatus CbmL1SttTrackFinder::ReInit()
+{
+  fSttPoints     = (TClonesArray*) FairRootManager::Instance()->GetObject("SttPoint");
+  fSttHits       = (TClonesArray*) FairRootManager::Instance()->GetObject("SttHit");
+  fMuchTracks    = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchTrack");
+  fStsTracks     = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
+  fMCTracks      = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
+  fSTSTrackMatch = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
   //  fPrimVtx =  (CbmVertex *) FairRootManager::Instance() ->GetObject("PrimaryVertex");
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
-  fPrimVtx = dynamic_cast<CbmVertex*>(
-    FairRootManager::Instance()->GetObject("PrimaryVertex."));
+  fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex."));
   if (nullptr == fPrimVtx) {
-    fPrimVtx = dynamic_cast<CbmVertex*>(
-      FairRootManager::Instance()->GetObject("PrimaryVertex"));
+    fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex"));
   }
   if (nullptr == fPrimVtx) {
     Error("CbmL1SttTrackFinder::ReInit", "vertex not found!");
@@ -81,12 +77,10 @@ InitStatus CbmL1SttTrackFinder::ReInit() {
   }
   fStsFitter.Init();
 
-  FairRootManager::Instance()->Register(
-    "SttTrack", "Stt", fTrackCollection, IsOutputBranchPersistent("SttTrack"));
+  FairRootManager::Instance()->Register("SttTrack", "Stt", fTrackCollection, IsOutputBranchPersistent("SttTrack"));
 
   cout << " **************************************************" << endl;
-  if (fMuchTracks)
-    cout << " *** Using Much tracks for Stt tracking *** " << endl;
+  if (fMuchTracks) cout << " *** Using Much tracks for Stt tracking *** " << endl;
   else
     cout << " *** Using Sts tracks for Stt tracking *** " << endl;
   cout << " **************************************************" << endl;
@@ -98,7 +92,8 @@ void CbmL1SttTrackFinder::SetParContainers() {}
 
 void CbmL1SttTrackFinder::Finish() { Write(); }
 
-void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
+void CbmL1SttTrackFinder::Exec(Option_t* /*option*/)
+{
   const int MaxBranches = 50;
 
   static bool first = 1;
@@ -116,8 +111,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
     TDirectory* curdir = gDirectory;
     histodir           = gDirectory->mkdir("SttRec");
     histodir->cd();
-    fhNBranches =
-      new TH1F("NBranches", "N Branches", MaxBranches, 0, MaxBranches);
+    fhNBranches = new TH1F("NBranches", "N Branches", MaxBranches, 0, MaxBranches);
     curdir->cd();
   }
 
@@ -134,8 +128,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
 
   Int_t nStsTracks;
   TClonesArray* seedTracks;
-  if (fMuchTracks)
-    seedTracks = fMuchTracks;
+  if (fMuchTracks) seedTracks = fMuchTracks;
   else
     seedTracks = fStsTracks;
   nStsTracks = seedTracks->GetEntriesFast();
@@ -149,10 +142,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
     Int_t nOK    = 0;
     TObject* sts = seedTracks->UncheckedAt(itr);
     if (!fMuchTracks) {
-      if (((CbmStsTrack*) sts)->GetNStsHits()
-            + ((CbmStsTrack*) sts)->GetNMvdHits()
-          < 4)
-        continue;
+      if (((CbmStsTrack*) sts)->GetNStsHits() + ((CbmStsTrack*) sts)->GetNMvdHits() < 4) continue;
     }
 
     // MC
@@ -185,23 +175,17 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
       for (int ih = 0; ih < NHits; ++ih) {
         CbmL1SttHit& h = vSttHits[ih];
         CbmSttHit* hit = (CbmSttHit*) fSttHits->UncheckedAt(h.index);
-        CbmSttPoint* p =
-          (CbmSttPoint*) fSttPoints->UncheckedAt(hit->GetRefIndex());
+        CbmSttPoint* p = (CbmSttPoint*) fSttPoints->UncheckedAt(hit->GetRefIndex());
         if (p->GetTrackID() != mcTrackID) continue;
-        if (p->GetStationNo() == 1
-            && TMath::Sqrt(p->GetX() * p->GetX() + p->GetY() * p->GetY()) > 220)
-          continue;
+        if (p->GetStationNo() == 1 && TMath::Sqrt(p->GetX() * p->GetX() + p->GetY() * p->GetY()) > 220) continue;
         if (hitPlanes[h.iStation] < 0) {
           hitPlanes[h.iStation] = 1;
           ++nOK;
         }
-        if (mom0[0] < -1e+5)
-          p->Momentum(mom0);
+        if (mom0[0] < -1e+5) p->Momentum(mom0);
         else
           p->Momentum(mom1);
-        if (itr < MaxBranches)
-          scatAng[itr] =
-            TMath::Max(scatAng[itr], mom1.Angle(mom0) * TMath::RadToDeg());
+        if (itr < MaxBranches) scatAng[itr] = TMath::Max(scatAng[itr], mom1.Angle(mom0) * TMath::RadToDeg());
       }
       if (nOK < nStations) {
         //cout << " Track " << mcTrackID << " has " << nOK << " points " << endl;
@@ -209,13 +193,11 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
       }
     }
 
-    if (!fMuchTracks)
-      fStsFitter.DoFit((CbmStsTrack*) sts, 13);  // refit with muon mass
+    if (!fMuchTracks) fStsFitter.DoFit((CbmStsTrack*) sts, 13);  // refit with muon mass
 
     int NBranches = 1;
 
-    fMuchTracks == 0x0 ? Branches[0].SetStsTrack((CbmStsTrack*) sts)
-                       : Branches[0].SetMuchTrack((CbmMuchTrack*) sts);
+    fMuchTracks == 0x0 ? Branches[0].SetStsTrack((CbmStsTrack*) sts) : Branches[0].SetMuchTrack((CbmMuchTrack*) sts);
     Branches[0].StsID           = itr;
     Branches[0].NHits           = 0;
     Branches[0].NMissed         = 0;
@@ -238,8 +220,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
         //double Zdet = zPlanes[ist];
         tr.Extrapolate(Zdet);
         if (fabs(tr.T[4]) > 100.) tr.stopped = 1;
-        if (1. < 0.5 * fabs(tr.T[4]))
-          tr.stopped = 1;  // 0.5 GeV, stop transport
+        if (1. < 0.5 * fabs(tr.T[4])) tr.stopped = 1;  // 0.5 GeV, stop transport
         //if( tr.stopped ) cout<<"Sts track N "<<itr<<" stopped at Mu station "<<ist
         //<<" with mom="<<1./tr.T[4]<<endl;
         if (tr.stopped) continue;
@@ -286,8 +267,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
           Double_t du = uTr - h.FitPoint.u;
           //Double_t c0 = tr.C[0] + h.FitPoint.sigma2;
           //Double_t chi2 = du * du / c0; // w/out correlations at the moment !!!
-          Double_t w = h.FitPoint.sigma2 + h.FitPoint.phi_cc * tr.C[0]
-                       + h.FitPoint.phi_2sc * tr.C[1]
+          Double_t w = h.FitPoint.sigma2 + h.FitPoint.phi_cc * tr.C[0] + h.FitPoint.phi_2sc * tr.C[1]
                        + h.FitPoint.phi_ss * tr.C[2];
           Double_t chi21 = du * du / w;
           //cout << " chi2 " << ist << " " << du << " " << chi21 << " " << chi21 << endl;
@@ -311,15 +291,15 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
           tr.NHits++;
           double qp0 = tr.T[4];
           h.Filter(tr, 1, qp0);
-        } else
+        }
+        else
           tr.NMissed++;
       }  // for( int ibr=0; ibr<NBranchesOld;
     }    // for( int ist=0; ist<nStations;
     int bestbr = 0;
     for (int ibr = 1; ibr < NBranches; ++ibr) {
       if ((Branches[ibr].NHits > Branches[bestbr].NHits)
-          || (Branches[ibr].NHits == Branches[bestbr].NHits)
-               && (Branches[ibr].chi2 < Branches[bestbr].chi2))
+          || (Branches[ibr].NHits == Branches[bestbr].NHits) && (Branches[ibr].chi2 < Branches[bestbr].chi2))
         bestbr = ibr;
     }
     vTracks.push_back(Branches[bestbr]);
@@ -335,8 +315,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
       if( abs(mcTrack->GetPdgCode())==13 ) fhNBranches->Fill(NBranches);
     }
     */
-    if (nOK == nStations)
-      fhNBranches->Fill(NBranches);
+    if (nOK == nStations) fhNBranches->Fill(NBranches);
     else
       (vTracks.back()).ok = kFALSE;
     //cout << itr << " " << nOK << " " << (vTracks.back()).ok << endl;
@@ -388,9 +367,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
       track->SetSttTrack(&tp);
       track->SetStsTrackID(tr.StsID);
       int nh = 0;
-      for (vector<CbmL1SttHit*>::iterator i = tr.vHits.begin();
-           i != tr.vHits.end();
-           i++) {
+      for (vector<CbmL1SttHit*>::iterator i = tr.vHits.begin(); i != tr.vHits.end(); i++) {
         if (++nh > 30) break;
         track->AddHitIndex((*i)->index);
       }
@@ -402,22 +379,21 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
       tr.vHits[ih]->busy = 1;
   }
 
-  if (EventCounter < 100 && EventCounter % 10 == 0
-      || EventCounter >= 100 && EventCounter % 100 == 0)
-    Write();
+  if (EventCounter < 100 && EventCounter % 10 == 0 || EventCounter >= 100 && EventCounter % 100 == 0) Write();
   cout << "end of SttRec " << fTrackCollection->GetEntriesFast() << endl;
 }
 
 
-void CbmL1SttTrackFinder::Write() {
+void CbmL1SttTrackFinder::Write()
+{
   TFile HistoFile("SttRec.root", "RECREATE");
   writedir2current(histodir);
   HistoFile.Close();
 }
 
-void CbmL1SttTrackFinder::writedir2current(TObject* obj) {
-  if (!obj->IsFolder())
-    obj->Write();
+void CbmL1SttTrackFinder::writedir2current(TObject* obj)
+{
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur = gDirectory;
     TDirectory* sub = cur->mkdir(obj->GetName());

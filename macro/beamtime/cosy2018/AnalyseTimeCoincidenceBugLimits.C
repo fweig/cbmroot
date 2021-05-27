@@ -1,4 +1,5 @@
-void save_canvas_to_file(TFile* outf, TCanvas* canv, TString runCase) {
+void save_canvas_to_file(TFile* outf, TCanvas* canv, TString runCase)
+{
   outf->cd();
   gDirectory->mkdir(runCase);
   gDirectory->cd(runCase);
@@ -6,9 +7,9 @@ void save_canvas_to_file(TFile* outf, TCanvas* canv, TString runCase) {
   gDirectory->cd("..");
 }
 
-void save_canvas_to_pdf(TCanvas* canv, TString runCase) {
-  canv->SaveAs(TString("canvasesLimits/") + runCase + TString(canv->GetName())
-               + TString(".pdf"));
+void save_canvas_to_pdf(TCanvas* canv, TString runCase)
+{
+  canv->SaveAs(TString("canvasesLimits/") + runCase + TString(canv->GetName()) + TString(".pdf"));
 }
 
 UInt_t uScanCaseOffset        = 7;
@@ -21,14 +22,10 @@ Double_t dNoiseBlockStop[kuMaxNbFiredChan][kuMaxNbTotChan];
 Double_t dMainBlockStart[kuMaxNbFiredChan][kuMaxNbTotChan];
 Double_t dMainBlockStop[kuMaxNbFiredChan][kuMaxNbTotChan];
 
-Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles,
-                                     const UInt_t kuNbStats,
-                                     TString* sFilename,
-                                     UInt_t* uNbChanFixed,
-                                     UInt_t* uNbChanScan,
-                                     TString* sStats,
-                                     TString runCase,
-                                     TFile* outf) {
+Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles, const UInt_t kuNbStats, TString* sFilename,
+                                     UInt_t* uNbChanFixed, UInt_t* uNbChanScan, TString* sStats, TString runCase,
+                                     TFile* outf)
+{
   TFile* pFile[kuNbFiles];
 
   /// Scaling function, the constant should lead to a ratio of ~1 for the 1st bins
@@ -60,72 +57,48 @@ Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles,
 
     TH1D* phNbFiredChanProj[uNbChanTot - uScanCaseOffset + 1];
     TH1D* phNbFiredChanScan[uNbChanTot - uScanCaseOffset + 1];
-    TCanvas* cNbFiredProj = new TCanvas(
-      Form("cNbFiredProj_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile]),
-      "Numbers of fired Channels projections for each number of channels");
+    TCanvas* cNbFiredProj = new TCanvas(Form("cNbFiredProj_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile]),
+                                        "Numbers of fired Channels projections for each number of channels");
     cNbFiredProj->Divide(canvCols, canvRows);
 
-    TCanvas* cNbFiredProjStack = new TCanvas(
-      Form("cNbFiredProjStack_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile]),
-      "Numbers of fired Channels projections for each number of channels");
+    TCanvas* cNbFiredProjStack = new TCanvas(Form("cNbFiredProjStack_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile]),
+                                             "Numbers of fired Channels projections for each number of channels");
 
-    THStack* stackFiredProj =
-      new THStack("stackFiredProj", "Stack of the projections");
+    THStack* stackFiredProj = new THStack("stackFiredProj", "Stack of the projections");
 
     /// Recover the NbFiredChan and NbMultiChan 2D plots
-    tempTwoDimHist =
-      (TH2*) (pFile[uFile]->FindObjectAny("hNbFiredChanPerMs00"));
+    tempTwoDimHist = (TH2*) (pFile[uFile]->FindObjectAny("hNbFiredChanPerMs00"));
     if (NULL != tempTwoDimHist) {
-      phNbFiredChanPerMs[uFile] = (TH2D*) (tempTwoDimHist->Clone(Form(
-        "phNbFiredChanPerMs_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile])));
-    } else {
+      phNbFiredChanPerMs[uFile] =
+        (TH2D*) (tempTwoDimHist->Clone(Form("phNbFiredChanPerMs_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile])));
+    }
+    else {
       return kFALSE;
     }
 
     for (UInt_t uNbChan = uScanCaseOffset; uNbChan <= uNbChanTot; uNbChan++) {
-      phNbFiredChanProj[uNbChan - uScanCaseOffset] =
-        phNbFiredChanPerMs[uFile]->ProjectionX(Form("hNbFiredChanProj_%u_%u_%u",
-                                                    uNbChanFixed[uFile],
-                                                    uNbChanScan[uFile],
-                                                    uNbChan),
-                                               uNbChan,
-                                               uNbChan);
+      phNbFiredChanProj[uNbChan - uScanCaseOffset] = phNbFiredChanPerMs[uFile]->ProjectionX(
+        Form("hNbFiredChanProj_%u_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan), uNbChan, uNbChan);
       phNbFiredChanScan[uNbChan - uScanCaseOffset] =
-        new TH1D(Form("hNbFiredChanScan_%u_%u_%u",
-                      uNbChanFixed[uFile],
-                      uNbChanScan[uFile],
-                      uNbChan),
+        new TH1D(Form("hNbFiredChanScan_%u_%u_%u", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan),
                  Form("Number of pulses with %u fired channels instead of %u "
                       "for the %u-%u case",
-                      uNbChan,
-                      uNbChanTot,
-                      uNbChanFixed[uFile],
-                      uNbChanScan[uFile]),
-                 uNbBinsDist,
-                 dDistMin,
-                 dDistMax);
+                      uNbChan, uNbChanTot, uNbChanFixed[uFile], uNbChanScan[uFile]),
+                 uNbBinsDist, dDistMin, dDistMax);
 
       /// Loop on the time in run bins (1/2s stepping) with check on the corresponding delay stepping
       for (UInt_t uBin = 1;
            uBin <= phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetNbinsX()
            && dDistMin
-                  + dDistStep
-                      * phNbFiredChanProj[uNbChan - uScanCaseOffset]
-                          ->GetBinCenter(uBin)
-                      / dDistStepDuration
+                  + dDistStep * phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetBinCenter(uBin) / dDistStepDuration
                 <= dDistMax;
            ++uBin) {
         /// Delay corresponding to the bin
         Double_t dDist =
-          dDistMin
-          + dDistStep
-              * phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetBinCenter(uBin)
-              / dDistStepDuration;
+          dDistMin + dDistStep * phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetBinCenter(uBin) / dDistStepDuration;
 
         phNbFiredChanScan[uNbChan - uScanCaseOffset]->Fill(
-          dDist,
-          phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetBinContent(uBin)
-            / dDistStepPulses);
+          dDist, phNbFiredChanProj[uNbChan - uScanCaseOffset]->GetBinContent(uBin) / dDistStepPulses);
       }  // loop on bins until end or out of coincidence window
 
       /// Loop on the time delay bins and check if we are starting to see the wrong number of channels
@@ -139,38 +112,30 @@ Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles,
         Bool_t bStopFlagNoise             = kTRUE;
         Bool_t bStopFlagMain              = kTRUE;
         Double_t dCountRatioPreviousDelay = 0.0;
-        for (UInt_t uBin = 1;
-             uBin <= phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetNbinsX();
-             ++uBin) {
+        for (UInt_t uBin = 1; uBin <= phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetNbinsX(); ++uBin) {
           /// Delay corresponding to the bin
-          Double_t dDist =
-            phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetBinCenter(uBin);
+          Double_t dDist = phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetBinCenter(uBin);
 
           /// Fraction of pulses having this number of fired channels
-          Double_t dCountRatio =
-            phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetBinContent(uBin);
+          Double_t dCountRatio = phNbFiredChanScan[uNbChan - uScanCaseOffset]->GetBinContent(uBin);
 
-          if (1e-3 < dCountRatio && dCountRatioPreviousDelay <= 1e-3
-              && bStopFlagNoise) {
+          if (1e-3 < dCountRatio && dCountRatioPreviousDelay <= 1e-3 && bStopFlagNoise) {
             bStartFlagNoise = kTRUE;
             bStopFlagNoise  = kFALSE;
             dDelayStartNoise.push_back(dDist);
           }  // if( 1e-3 < dCountRatio && dCountRatioPreviousDelay <= 1e-3 )
-          else if (1e-3 > dCountRatio && dCountRatioPreviousDelay >= 1e-3
-                   && bStartFlagNoise) {
+          else if (1e-3 > dCountRatio && dCountRatioPreviousDelay >= 1e-3 && bStartFlagNoise) {
             bStartFlagNoise = kFALSE;
             bStopFlagNoise  = kTRUE;
             dDelayStopNoise.push_back(dDist);
           }  // if( 1e-3 > dCountRatio && dCountRatioPreviousDelay >= 1e-3 )
 
-          if (1e-2 < dCountRatio && dCountRatioPreviousDelay <= 1e-2
-              && bStopFlagMain) {
+          if (1e-2 < dCountRatio && dCountRatioPreviousDelay <= 1e-2 && bStopFlagMain) {
             bStartFlagMain = kTRUE;
             bStopFlagMain  = kFALSE;
             dDelayStartMain.push_back(dDist);
           }  // if( 1e-2 < dCountRatio && dCountRatioPreviousDelay <= 1e-2 )
-          else if (1e-2 > dCountRatio && dCountRatioPreviousDelay >= 1e-2
-                   && bStartFlagMain) {
+          else if (1e-2 > dCountRatio && dCountRatioPreviousDelay >= 1e-2 && bStartFlagMain) {
             bStartFlagMain = kFALSE;
             bStopFlagMain  = kTRUE;
             dDelayStopMain.push_back(dDist);
@@ -188,59 +153,35 @@ Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles,
         }  // loop on bins until end
 
         if (dDelayStartNoise.size() != dDelayStopNoise.size()) {
-          std::cout << Form("Case %2u-%2u fired %2u ",
-                            uNbChanFixed[uFile],
-                            uNbChanScan[uFile],
-                            uNbChan)
-                    << " Unmatched Start-Stop for noise! "
-                    << dDelayStartNoise.size() << " " << dDelayStopNoise.size()
+          std::cout << Form("Case %2u-%2u fired %2u ", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan)
+                    << " Unmatched Start-Stop for noise! " << dDelayStartNoise.size() << " " << dDelayStopNoise.size()
                     << std::endl;
         }  // if( dDelayStartNoise.size() != dDelayStopNoise.size() )
 
-        std::cout << Form("Case %2u-%2u fired %2u noise blocks: ",
-                          uNbChanFixed[uFile],
-                          uNbChanScan[uFile],
-                          uNbChan);
-        for (UInt_t uNoiseBlock = 0; uNoiseBlock < dDelayStartNoise.size()
-                                     && uNoiseBlock < dDelayStopNoise.size();
+        std::cout << Form("Case %2u-%2u fired %2u noise blocks: ", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan);
+        for (UInt_t uNoiseBlock = 0; uNoiseBlock < dDelayStartNoise.size() && uNoiseBlock < dDelayStopNoise.size();
              ++uNoiseBlock) {
-          std::cout << Form("%4.0f to % 4.0f, ",
-                            dDelayStartNoise[uNoiseBlock],
-                            dDelayStopNoise[uNoiseBlock]);
+          std::cout << Form("%4.0f to % 4.0f, ", dDelayStartNoise[uNoiseBlock], dDelayStopNoise[uNoiseBlock]);
 
-          if (dDelayStartNoise[uNoiseBlock]
-              < dNoiseBlockStart[uNbChan][uNbChanTot])
-            dNoiseBlockStart[uNbChan][uNbChanTot] =
-              dDelayStartNoise[uNoiseBlock];
-          if (dNoiseBlockStop[uNbChan][uNbChanTot]
-              < dDelayStopNoise[uNoiseBlock])
+          if (dDelayStartNoise[uNoiseBlock] < dNoiseBlockStart[uNbChan][uNbChanTot])
+            dNoiseBlockStart[uNbChan][uNbChanTot] = dDelayStartNoise[uNoiseBlock];
+          if (dNoiseBlockStop[uNbChan][uNbChanTot] < dDelayStopNoise[uNoiseBlock])
             dNoiseBlockStop[uNbChan][uNbChanTot] = dDelayStopNoise[uNoiseBlock];
         }  // Loop on noise blocks
         std::cout << std::endl;
 
         if (dDelayStartMain.size() != dDelayStopMain.size()) {
-          std::cout << Form("Case %2u-%2u fired %2u ",
-                            uNbChanFixed[uFile],
-                            uNbChanScan[uFile],
-                            uNbChan)
-                    << " Unmatched Start-Stop for main! "
-                    << dDelayStartMain.size() << " " << dDelayStopMain.size()
+          std::cout << Form("Case %2u-%2u fired %2u ", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan)
+                    << " Unmatched Start-Stop for main! " << dDelayStartMain.size() << " " << dDelayStopMain.size()
                     << std::endl;
         }  // if( dDelayStartMain.size() != dDelayStopMain.size() )
 
-        std::cout << Form("Case %2u-%2u fired %2u main blocks:  ",
-                          uNbChanFixed[uFile],
-                          uNbChanScan[uFile],
-                          uNbChan);
-        for (UInt_t uMainBlock = 0; uMainBlock < dDelayStartMain.size()
-                                    && uMainBlock < dDelayStopMain.size();
+        std::cout << Form("Case %2u-%2u fired %2u main blocks:  ", uNbChanFixed[uFile], uNbChanScan[uFile], uNbChan);
+        for (UInt_t uMainBlock = 0; uMainBlock < dDelayStartMain.size() && uMainBlock < dDelayStopMain.size();
              ++uMainBlock) {
-          std::cout << Form("%4.0f to % 4.0f, ",
-                            dDelayStartMain[uMainBlock],
-                            dDelayStopMain[uMainBlock]);
+          std::cout << Form("%4.0f to % 4.0f, ", dDelayStartMain[uMainBlock], dDelayStopMain[uMainBlock]);
 
-          if (dDelayStartMain[uMainBlock]
-              < dMainBlockStart[uNbChan][uNbChanTot])
+          if (dDelayStartMain[uMainBlock] < dMainBlockStart[uNbChan][uNbChanTot])
             dMainBlockStart[uNbChan][uNbChanTot] = dDelayStartMain[uMainBlock];
           if (dMainBlockStop[uNbChan][uNbChanTot] < dDelayStopMain[uMainBlock])
             dMainBlockStop[uNbChan][uNbChanTot] = dDelayStopMain[uMainBlock];
@@ -280,115 +221,89 @@ Bool_t analyseTimeCoincidenceBugCase(const UInt_t kuNbFiles,
 
 
 // 6 + n
-Bool_t AnalyseTimeCoincidenceBugSixN(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugSixN(TFile* outf)
+{
   /// Data source parameters
   const UInt_t kuNbFiles       = 6;
   const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0031_20180803_0824.root",
-                                  "data/PulserHistos_r0032_20180803_0841.root",
-                                  "data/PulserHistos_r0033_20180803_0858.root",
-                                  "data/PulserHistos_r0034_20180803_0915.root",
-                                  "data/PulserHistos_r0035_20180803_0932.root",
-                                  "data/PulserHistos_r0036_20180803_0949.root"};
+  TString sFilename[kuNbFiles] = {
+    "data/PulserHistos_r0031_20180803_0824.root", "data/PulserHistos_r0032_20180803_0841.root",
+    "data/PulserHistos_r0033_20180803_0858.root", "data/PulserHistos_r0034_20180803_0915.root",
+    "data/PulserHistos_r0035_20180803_0932.root", "data/PulserHistos_r0036_20180803_0949.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6, 6, 6, 6, 6, 6};
   UInt_t uNbChanScan[kuNbFiles]  = {1, 2, 3, 4, 5, 6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "6n";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 // 7
-Bool_t AnalyseTimeCoincidenceBugSeven(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugSeven(TFile* outf)
+{
   /// Data source parameters
   const UInt_t kuNbFiles       = 6;
   const UInt_t kuNbStats       = 3;
   TString sFilename[kuNbFiles] = {
-    "data/PulserHistos_r0031_20180803_0824.root",
-    "data/PulserHistos_r0037_20180803_1006.root",
-    "data/PulserHistos_r0038_20180803_1023.root",
-    "data/PulserHistos_r0039_20180803_1040.root",
-    "data/PulserHistos_r0040_20180803_1057.root",
-    "data/PulserHistos_r0041_20180803_1114.root",
+    "data/PulserHistos_r0031_20180803_0824.root", "data/PulserHistos_r0037_20180803_1006.root",
+    "data/PulserHistos_r0038_20180803_1023.root", "data/PulserHistos_r0039_20180803_1040.root",
+    "data/PulserHistos_r0040_20180803_1057.root", "data/PulserHistos_r0041_20180803_1114.root",
   };
   UInt_t uNbChanFixed[kuNbFiles] = {6, 5, 4, 3, 2, 1};
   UInt_t uNbChanScan[kuNbFiles]  = {1, 2, 3, 4, 5, 6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "7tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 // 8
-Bool_t AnalyseTimeCoincidenceBugEight(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugEight(TFile* outf)
+{
   /// Data source parameters
   const UInt_t kuNbFiles       = 5;
   const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0032_20180803_0841.root",
-                                  "data/PulserHistos_r0042_20180803_1131.root",
-                                  "data/PulserHistos_r0043_20180803_1148.root",
-                                  "data/PulserHistos_r0044_20180803_1205.root",
-                                  "data/PulserHistos_r0045_20180803_1222.root"};
+  TString sFilename[kuNbFiles] = {
+    "data/PulserHistos_r0032_20180803_0841.root", "data/PulserHistos_r0042_20180803_1131.root",
+    "data/PulserHistos_r0043_20180803_1148.root", "data/PulserHistos_r0044_20180803_1205.root",
+    "data/PulserHistos_r0045_20180803_1222.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6, 5, 4, 3, 2};
   UInt_t uNbChanScan[kuNbFiles]  = {2, 3, 4, 5, 6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "8tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 // 9
-Bool_t AnalyseTimeCoincidenceBugNine(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugNine(TFile* outf)
+{
   /// Data source parameters
   const UInt_t kuNbFiles       = 4;
   const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0033_20180803_0858.root",
-                                  "data/PulserHistos_r0046_20180803_1239.root",
-                                  "data/PulserHistos_r0047_20180803_1256.root",
-                                  "data/PulserHistos_r0048_20180803_1313.root"};
+  TString sFilename[kuNbFiles] = {
+    "data/PulserHistos_r0033_20180803_0858.root", "data/PulserHistos_r0046_20180803_1239.root",
+    "data/PulserHistos_r0047_20180803_1256.root", "data/PulserHistos_r0048_20180803_1313.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6, 5, 4, 3};
   UInt_t uNbChanScan[kuNbFiles]  = {3, 4, 5, 6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "9tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 
 // 10
-Bool_t AnalyseTimeCoincidenceBugTen(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugTen(TFile* outf)
+{
   /// Data source parameters
-  const UInt_t kuNbFiles       = 3;
-  const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0034_20180803_0915.root",
+  const UInt_t kuNbFiles         = 3;
+  const UInt_t kuNbStats         = 3;
+  TString sFilename[kuNbFiles]   = {"data/PulserHistos_r0034_20180803_0915.root",
                                   "data/PulserHistos_r0049_20180803_1330.root",
                                   "data/PulserHistos_r0050_20180803_1346.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6, 5, 4};
@@ -396,76 +311,59 @@ Bool_t AnalyseTimeCoincidenceBugTen(TFile* outf) {
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "10tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 // 11
-Bool_t AnalyseTimeCoincidenceBugEleven(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugEleven(TFile* outf)
+{
   /// Data source parameters
-  const UInt_t kuNbFiles       = 2;
-  const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0035_20180803_0932.root",
+  const UInt_t kuNbFiles         = 2;
+  const UInt_t kuNbStats         = 3;
+  TString sFilename[kuNbFiles]   = {"data/PulserHistos_r0035_20180803_0932.root",
                                   "data/PulserHistos_r0051_20180803_1404.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6, 5};
   UInt_t uNbChanScan[kuNbFiles]  = {5, 6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "11tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
 // 12
-Bool_t AnalyseTimeCoincidenceBugTwelve(TFile* outf) {
+Bool_t AnalyseTimeCoincidenceBugTwelve(TFile* outf)
+{
   /// Data source parameters
-  const UInt_t kuNbFiles       = 1;
-  const UInt_t kuNbStats       = 3;
-  TString sFilename[kuNbFiles] = {"data/PulserHistos_r0036_20180803_0949.root"};
+  const UInt_t kuNbFiles         = 1;
+  const UInt_t kuNbStats         = 3;
+  TString sFilename[kuNbFiles]   = {"data/PulserHistos_r0036_20180803_0949.root"};
   UInt_t uNbChanFixed[kuNbFiles] = {6};
   UInt_t uNbChanScan[kuNbFiles]  = {6};
 
   TString sStats[kuNbStats] = {"min", "mean", "max"};
   TString runCase           = "12tot";
-  return analyseTimeCoincidenceBugCase(kuNbFiles,
-                                       kuNbStats,
-                                       sFilename,
-                                       uNbChanFixed,
-                                       uNbChanScan,
-                                       sStats,
-                                       runCase,
+  return analyseTimeCoincidenceBugCase(kuNbFiles, kuNbStats, sFilename, uNbChanFixed, uNbChanScan, sStats, runCase,
                                        outf);
 }
 
-Bool_t AnalyseTimeCoincidenceBugLimits(
-  TString sFilename = "STSXyterPulserLimits.root") {
+Bool_t AnalyseTimeCoincidenceBugLimits(TString sFilename = "STSXyterPulserLimits.root")
+{
   /// Open output root file
   TDirectory* oldDir = gDirectory;
   TFile* histoFile   = new TFile(sFilename, "RECREATE");
   if (NULL == histoFile) return kFALSE;
 
   /// Prepare the arrays with the limits
-  for (UInt_t uNbFiredChan = 0; uNbFiredChan < kuMaxNbFiredChan;
-       ++uNbFiredChan) {
+  for (UInt_t uNbFiredChan = 0; uNbFiredChan < kuMaxNbFiredChan; ++uNbFiredChan) {
     for (UInt_t uNbTotChan = 0; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan) {
       dNoiseBlockStart[uNbFiredChan][uNbTotChan] = dDummyStart;
       dNoiseBlockStop[uNbFiredChan][uNbTotChan]  = dDummyStop;
       dMainBlockStart[uNbFiredChan][uNbTotChan]  = dDummyStart;
       dMainBlockStop[uNbFiredChan][uNbTotChan]   = dDummyStop;
     }  // for( UInt_t uNbTotChan = 0; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan )
-  }  // for( UInt_t uNbFiredChan = 0; uNbFiredChan < kuMaxNbFiredChan; ++uNbFiredChan )
+  }    // for( UInt_t uNbFiredChan = 0; uNbFiredChan < kuMaxNbFiredChan; ++uNbFiredChan )
 
   /// Run all cases
   AnalyseTimeCoincidenceBugSixN(histoFile);
@@ -479,19 +377,15 @@ Bool_t AnalyseTimeCoincidenceBugLimits(
   /// Printout limits for noise blocks
   std::cout << "Noise blocks limits" << std::endl;
   std::cout << "          ";
-  for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan;
-       ++uNbTotChan)
+  for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan)
     std::cout << Form("%2u channels ", uNbTotChan);
   std::cout << std::endl;
-  for (UInt_t uNbFiredChan = uScanCaseOffset; uNbFiredChan < kuMaxNbFiredChan;
-       ++uNbFiredChan) {
+  for (UInt_t uNbFiredChan = uScanCaseOffset; uNbFiredChan < kuMaxNbFiredChan; ++uNbFiredChan) {
     std::cout << Form("%2u fired: ", uNbFiredChan);
-    for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan;
-         ++uNbTotChan) {
+    for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan) {
       if (dNoiseBlockStart[uNbFiredChan][uNbTotChan] < dDummyStart
           && dDummyStop < dNoiseBlockStop[uNbFiredChan][uNbTotChan])
-        std::cout << Form("%4.0f - %4.0f ",
-                          dNoiseBlockStart[uNbFiredChan][uNbTotChan],
+        std::cout << Form("%4.0f - %4.0f ", dNoiseBlockStart[uNbFiredChan][uNbTotChan],
                           dNoiseBlockStop[uNbFiredChan][uNbTotChan]);
       else
         std::cout << "----------- ";
@@ -502,19 +396,15 @@ Bool_t AnalyseTimeCoincidenceBugLimits(
   /// Printout limits for Main blocks
   std::cout << "Main blocks limits" << std::endl;
   std::cout << "          ";
-  for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan;
-       ++uNbTotChan)
+  for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan)
     std::cout << Form("%2u channels ", uNbTotChan);
   std::cout << std::endl;
-  for (UInt_t uNbFiredChan = uScanCaseOffset; uNbFiredChan < kuMaxNbFiredChan;
-       ++uNbFiredChan) {
+  for (UInt_t uNbFiredChan = uScanCaseOffset; uNbFiredChan < kuMaxNbFiredChan; ++uNbFiredChan) {
     std::cout << Form("%2u fired: ", uNbFiredChan);
-    for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan;
-         ++uNbTotChan) {
+    for (UInt_t uNbTotChan = uScanCaseOffset + 1; uNbTotChan < kuMaxNbTotChan; ++uNbTotChan) {
       if (dMainBlockStart[uNbFiredChan][uNbTotChan] < dDummyStart
           && dDummyStop < dMainBlockStop[uNbFiredChan][uNbTotChan])
-        std::cout << Form("%4.0f - %4.0f ",
-                          dMainBlockStart[uNbFiredChan][uNbTotChan],
+        std::cout << Form("%4.0f - %4.0f ", dMainBlockStart[uNbFiredChan][uNbTotChan],
                           dMainBlockStop[uNbFiredChan][uNbTotChan]);
       else
         std::cout << "----------- ";

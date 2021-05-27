@@ -14,14 +14,14 @@
 #ifndef CBMTRDPARMANAGER_H
 #define CBMTRDPARMANAGER_H
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Bool_t, kFALSE, Int_t, Option_t, kTRUE
-#include <TString.h>     // for TString
+#include "CbmTrdHardwareSetupR.h"  //for CbmTrdHardwareSetupR
+#include "CbmTrdParSet.h"          // for GetParSetList
 
 #include "FairTask.h"  // for FairTask, InitStatus
 
-#include "CbmTrdHardwareSetupR.h"  //for CbmTrdHardwareSetupR
-#include "CbmTrdParSet.h"          // for GetParSetList
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Bool_t, kFALSE, Int_t, Option_t, kTRUE
+#include <TString.h>     // for TString
 
 class CbmTrdGeoHandler;
 class CbmTrdParSetAsic;
@@ -35,7 +35,8 @@ class CbmTrdParSetGas;
  */
 class CbmTrdParManager : public FairTask {
 public:
-  enum class ECbmTrdParSets : Int_t {
+  enum class ECbmTrdParSets : Int_t
+  {
     kBegin            = 0,
     kCbmTrdParSetAsic = kBegin,
     kCbmTrdParSetDigi,
@@ -89,8 +90,7 @@ public:
    * \brief Create parameter files from geometry in gGeoManager
    * A run macro can be found in the trd cbm.gsi git repository
    **/
-  bool CreateParFilesFromGeometry(bool createRootFileOutput,
-                                  TString outDir = "");
+  bool CreateParFilesFromGeometry(bool createRootFileOutput, TString outDir = "");
 
   static void GetParSetList(std::vector<CbmTrdParSet*>* parSetList);
   static void GetParFileExtensions(std::vector<std::string>* vec);

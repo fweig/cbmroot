@@ -43,21 +43,18 @@
   hRocErrorCntEvo_000->Draw("same");
   hRocTotErrorCntEvo_000->SetLineColor(kOrange);
   hRocTotErrorCntEvo_000->SetLineWidth(2);
-  legA->AddEntry(
-    hRocTotErrorCntEvo_000, hRocTotErrorCntEvo_000->GetTitle(), "L");
+  legA->AddEntry(hRocTotErrorCntEvo_000, hRocTotErrorCntEvo_000->GetTitle(), "L");
   hRocTotErrorCntEvo_000->Draw("same");
   if (0 < hRocDataLossCntEvo_000->GetEntries()) {
     hRocDataLossCntEvo_000->SetLineColor(kBlue);
     hRocDataLossCntEvo_000->SetLineWidth(2);
-    legA->AddEntry(
-      hRocDataLossCntEvo_000, hRocDataLossCntEvo_000->GetTitle(), "L");
+    legA->AddEntry(hRocDataLossCntEvo_000, hRocDataLossCntEvo_000->GetTitle(), "L");
     hRocDataLossCntEvo_000->Draw("same");
   }  // if( 0 < hRocDataLossCntEvo_000->GetEntries() )
   if (0 < hRocEpochLossCntEvo_000->GetEntries()) {
     hRocEpochLossCntEvo_000->SetLineColor(kGreen);
     hRocEpochLossCntEvo_000->SetLineWidth(2);
-    legA->AddEntry(
-      hRocEpochLossCntEvo_000, hRocEpochLossCntEvo_000->GetTitle(), "L");
+    legA->AddEntry(hRocEpochLossCntEvo_000, hRocEpochLossCntEvo_000->GetTitle(), "L");
     hRocEpochLossCntEvo_000->Draw("same");
   }  // if( 0 < hRocEpochLossCntEvo_000->GetEntries() )
   legA->Draw();
@@ -276,12 +273,9 @@
   stackRoc000->Draw("nostack,h");
 
   TLegend* leg24bRoc000 = new TLegend(0.3, 0.7, 0.88, 0.9);
-  leg24bRoc000->AddEntry(
-    hRocEpochMissmCntEvo_000, hRocEpochMissmCntEvo_000->GetTitle(), "L");
-  leg24bRoc000->AddEntry(
-    hRocEpochLossCntEvo_000, hRocEpochLossCntEvo_000->GetTitle(), "L");
-  leg24bRoc000->AddEntry(
-    hRocDataLossCntEvo_000, hRocDataLossCntEvo_000->GetTitle(), "L");
+  leg24bRoc000->AddEntry(hRocEpochMissmCntEvo_000, hRocEpochMissmCntEvo_000->GetTitle(), "L");
+  leg24bRoc000->AddEntry(hRocEpochLossCntEvo_000, hRocEpochLossCntEvo_000->GetTitle(), "L");
+  leg24bRoc000->AddEntry(hRocDataLossCntEvo_000, hRocDataLossCntEvo_000->GetTitle(), "L");
   leg24bRoc000->Draw();
   /*
    hRocEpochMissmCntEvo_000->SetLineColor( kBlack );

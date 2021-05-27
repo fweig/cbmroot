@@ -5,7 +5,8 @@
  * \date 2008
  */
 
-void cbmrootlibs() {
+void cbmrootlibs()
+{
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
   gSystem->Load("libBase");

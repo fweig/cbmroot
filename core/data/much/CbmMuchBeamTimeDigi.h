@@ -19,12 +19,12 @@
 #ifndef CBMMUCHBEAMTIMEDIGI_H
 #define CBMMUCHBEAMTIMEDIGI_H 1
 
+#include "CbmMuchDigi.h"  // for CbmMuchDigi
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, ULong64_t
 
 #include <string>  // for string
-
-#include "CbmMuchDigi.h"  // for CbmMuchDigi
 
 class CbmMuchBeamTimeDigi : public CbmMuchDigi {
 public:

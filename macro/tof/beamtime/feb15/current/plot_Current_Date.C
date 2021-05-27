@@ -3,14 +3,11 @@
 #include "StructDef.h"
 
 // Overloaded functions used to get a user friendly date/time input as string
-void plot_Current_Date(TString sInputName  = "LogHv_Full_CernFeb15.root",
-                       TString sStartDate  = "2015-02-24 09:56:00",
-                       TString sStopDate   = "2015-03-05 07:53:00",
-                       Int_t iNbSecPerBin  = 1,
-                       Int_t iSpillDistSec = kiSpillDistSec,
-                       Int_t iFirstDet     = 0,
-                       Int_t iSecondDet    = 1,
-                       Int_t iRefDet       = 30) {
+void plot_Current_Date(TString sInputName = "LogHv_Full_CernFeb15.root", TString sStartDate = "2015-02-24 09:56:00",
+                       TString sStopDate = "2015-03-05 07:53:00", Int_t iNbSecPerBin = 1,
+                       Int_t iSpillDistSec = kiSpillDistSec, Int_t iFirstDet = 0, Int_t iSecondDet = 1,
+                       Int_t iRefDet = 30)
+{
   // Use ROOT TDatime class for its nice string to date function
   TDatime dateStart(sStartDate);
   TDatime dateStop(sStopDate);
@@ -27,46 +24,33 @@ void plot_Current_Date(TString sInputName  = "LogHv_Full_CernFeb15.root",
   UInt_t uHour, uMin, uSec;
   timeStart.GetDate(kFALSE, 0, &uDay, &uMonth, &uYear);
   timeStart.GetTime(kFALSE, 0, &uHour, &uMin, &uSec);
-  cout << timeStart.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear
-       << " " << uHour << ":" << uMin << ":" << uSec << endl;
+  cout << timeStart.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear << " " << uHour << ":" << uMin << ":"
+       << uSec << endl;
   timeStop.GetDate(kFALSE, 0, &uDay, &uMonth, &uYear);
   timeStop.GetTime(kFALSE, 0, &uHour, &uMin, &uSec);
-  cout << timeStop.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear
-       << " " << uHour << ":" << uMin << ":" << uSec << endl;
+  cout << timeStop.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear << " " << uHour << ":" << uMin << ":"
+       << uSec << endl;
 
   // Set time offset for histograms to 0 => Start on 01/01/1970 as we use
   // are the UNIX time frame!
   gStyle->SetTimeOffset(0);
 
   // Do real call to function
-  plot_Current_Date_B(sInputName,
-                      timeStart,
-                      timeStop,
-                      iNbSecPerBin,
-                      iSpillDistSec,
-                      iFirstDet,
-                      iSecondDet,
-                      iRefDet);
+  plot_Current_Date_B(sInputName, timeStart, timeStop, iNbSecPerBin, iSpillDistSec, iFirstDet, iSecondDet, iRefDet);
 }
 
-Bool_t plot_Current_Date_B(
-  TString sInputName    = "LogHv_Full_CernFeb15.root",
-  TTimeStamp tStartTime = 1424768160,  // Start of rate data taking
-  TTimeStamp tStopTime  = 1425538380,  // End of rate data taking
-  Int_t iNbSecPerBin    = 1,
-  Int_t iSpillDistSec   = kiSpillDistSec,
-  Int_t iFirstDet       = 0,
-  Int_t iSecondDet      = 2,
-  Int_t iRefDet         = 30) {
+Bool_t plot_Current_Date_B(TString sInputName    = "LogHv_Full_CernFeb15.root",
+                           TTimeStamp tStartTime = 1424768160,  // Start of rate data taking
+                           TTimeStamp tStopTime  = 1425538380,  // End of rate data taking
+                           Int_t iNbSecPerBin = 1, Int_t iSpillDistSec = kiSpillDistSec, Int_t iFirstDet = 0,
+                           Int_t iSecondDet = 2, Int_t iRefDet = 30)
+{
   // For now this macro works only for "RPC"-like detectors
-  if ((!(0 <= iFirstDet && iFirstDet < kiNbRpc)
-       && !(0 <= iFirstDet - kiPmtOffset && iFirstDet - kiPmtOffset < kiNbPmt)
+  if ((!(0 <= iFirstDet && iFirstDet < kiNbRpc) && !(0 <= iFirstDet - kiPmtOffset && iFirstDet - kiPmtOffset < kiNbPmt)
        && !(0 <= iFirstDet - kiTrdOffset && iFirstDet - kiTrdOffset < kiNbTrd))
       || (!(0 <= iSecondDet && iSecondDet < kiNbRpc)
-          && !(0 <= iSecondDet - kiPmtOffset
-               && iSecondDet - kiPmtOffset < kiNbPmt)
-          && !(0 <= iSecondDet - kiTrdOffset
-               && iSecondDet - kiTrdOffset < kiNbTrd))) {
+          && !(0 <= iSecondDet - kiPmtOffset && iSecondDet - kiPmtOffset < kiNbPmt)
+          && !(0 <= iSecondDet - kiTrdOffset && iSecondDet - kiTrdOffset < kiNbTrd))) {
     cout << " One of the Detector indices is out of bound" << endl;
     PrintHelp();
     return kFALSE;
@@ -78,7 +62,8 @@ Bool_t plot_Current_Date_B(
          << kiNbPmt << " )" << endl;
     PrintHelp();
     return kFALSE;
-  } else
+  }
+  else
     iRefDet -= kiPmtOffset;
 
   Bool_t bFirstIsRpc    = kFALSE;
@@ -105,14 +90,12 @@ Bool_t plot_Current_Date_B(
     sNameSecondDet = sChNameRpc[iSecondDet];
     bSecondIsRpc   = kTRUE;
   }  // First detector is an RPC
-  else if (0 <= iSecondDet - kiPmtOffset
-           && iSecondDet - kiPmtOffset < kiNbPmt) {
+  else if (0 <= iSecondDet - kiPmtOffset && iSecondDet - kiPmtOffset < kiNbPmt) {
     iSecondDet -= kiPmtOffset;
     sNameSecondDet = sChNamePmt[iSecondDet];
     bSecondIsPmt   = kTRUE;
   }  // First detector is a PMT
-  else if (0 <= iSecondDet - kiTrdOffset
-           && iSecondDet - kiTrdOffset < kiNbTrd) {
+  else if (0 <= iSecondDet - kiTrdOffset && iSecondDet - kiTrdOffset < kiNbTrd) {
     iSecondDet -= kiTrdOffset;
     sNameSecondDet = sChNameTrd[iSecondDet];
   }  // First detector is a TRD
@@ -125,8 +108,7 @@ Bool_t plot_Current_Date_B(
 
   TFile* fInputFileHv = new TFile(sInputName, "READ");
   if (!fInputFileHv || kFALSE == fInputFileHv->IsOpen()) {
-    cout << Form("Input file %s cannot be opened.", sInputFilenameHv.Data())
-         << endl;
+    cout << Form("Input file %s cannot be opened.", sInputFilenameHv.Data()) << endl;
     return kFALSE;
   }
 
@@ -145,8 +127,7 @@ Bool_t plot_Current_Date_B(
     tBranchEventRpc[iRpcIndex] = NULL;
     tBranchEventRpc[iRpcIndex] = tInputTreeHv->GetBranch(sChNameRpc[iRpcIndex]);
     if (!tBranchEventRpc[iRpcIndex]) {
-      cout << "No branch " << sChNameRpc[iRpcIndex] << " in input tree."
-           << endl;
+      cout << "No branch " << sChNameRpc[iRpcIndex] << " in input tree." << endl;
       return kFALSE;
     }  // if(!tBranchEventRpc)
     tBranchEventRpc[iRpcIndex]->SetAddress(&(tRpcHvEvt[iRpcIndex].iTimeSec));
@@ -158,8 +139,7 @@ Bool_t plot_Current_Date_B(
     tBranchEventPmt[iPmtIndex] = NULL;
     tBranchEventPmt[iPmtIndex] = tInputTreeHv->GetBranch(sChNamePmt[iPmtIndex]);
     if (!tBranchEventPmt[iPmtIndex]) {
-      cout << "No branch " << sChNamePmt[iPmtIndex] << " in input tree."
-           << endl;
+      cout << "No branch " << sChNamePmt[iPmtIndex] << " in input tree." << endl;
       return kFALSE;
     }  // if(!tBranchEventPmt)
     tBranchEventPmt[iPmtIndex]->SetAddress(&(tPmtHvEvt[iPmtIndex].iTimeSec));
@@ -171,8 +151,7 @@ Bool_t plot_Current_Date_B(
     tBranchEventTrd[iTrdIndex] = NULL;
     tBranchEventTrd[iTrdIndex] = tInputTreeHv->GetBranch(sChNameTrd[iTrdIndex]);
     if (!tBranchEventTrd[iTrdIndex]) {
-      cout << "No branch " << sChNameTrd[iTrdIndex] << " in input tree."
-           << endl;
+      cout << "No branch " << sChNameTrd[iTrdIndex] << " in input tree." << endl;
       return kFALSE;
     }  // if(!tBranchEventPmt)
     tBranchEventTrd[iTrdIndex]->SetAddress(&(tPmtHvEvt[iTrdIndex].iTimeSec));
@@ -221,234 +200,165 @@ Bool_t plot_Current_Date_B(
   cout << uNTreeEntriesHv << " entries in HV tree " << endl;
 
   // Prepare histograms and variables
-  Int_t iNbBins =
-    (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iNbSecPerBin;
+  Int_t iNbBins       = (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iNbSecPerBin;
   Double_t dStartTime = tStartTime.GetSec();
   Double_t dStopTime  = tStopTime.GetSec();
-  cout << "Nb Bins: " << iNbBins << ", " << dStartTime << ", " << dStopTime
-       << endl;
+  cout << "Nb Bins: " << iNbBins << ", " << dStartTime << ", " << dStopTime << endl;
   Int_t iTimeIntervalsec = dStopTime - dStartTime;
   cout << "Time interval: " << iTimeIntervalsec << " s" << endl;
 
   // Full time interval histograms
-  TProfile* hCurrentEvoNegA = new TProfile(
-    "hCurrentEvoNegA",
-    Form("Current evolution for the Negative HV of %s; Time [s]; Current [uA]",
-         sNameFirstDet.Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+  TProfile* hCurrentEvoNegA =
+    new TProfile("hCurrentEvoNegA",
+                 Form("Current evolution for the Negative HV of %s; Time [s]; Current [uA]", sNameFirstDet.Data()),
+                 iNbBins, dStartTime, dStopTime);
   hCurrentEvoNegA->SetLineColor(kBlue);
   hCurrentEvoNegA->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoNegA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoPosA = new TProfile(
-    "hCurrentEvoPosA",
-    Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-         sNameFirstDet.Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+  TProfile* hCurrentEvoPosA =
+    new TProfile("hCurrentEvoPosA",
+                 Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sNameFirstDet.Data()),
+                 iNbBins, dStartTime, dStopTime);
   hCurrentEvoPosA->SetLineColor(kRed);
   hCurrentEvoPosA->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoPosA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
-  TProfile* hCurrentEvoNegB = new TProfile(
-    "hCurrentEvoNegB",
-    Form("Current evolution for the Negative HV of %s; Time [s]; Current [uA]",
-         sNameSecondDet.Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+  TProfile* hCurrentEvoNegB =
+    new TProfile("hCurrentEvoNegB",
+                 Form("Current evolution for the Negative HV of %s; Time [s]; Current [uA]", sNameSecondDet.Data()),
+                 iNbBins, dStartTime, dStopTime);
   hCurrentEvoNegB->SetLineColor(kBlue);
   hCurrentEvoNegB->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoNegB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoPosB = new TProfile(
-    "hCurrentEvoPosB",
-    Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-         sNameSecondDet.Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+  TProfile* hCurrentEvoPosB =
+    new TProfile("hCurrentEvoPosB",
+                 Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sNameSecondDet.Data()),
+                 iNbBins, dStartTime, dStopTime);
   hCurrentEvoPosB->SetLineColor(kRed);
   hCurrentEvoPosB->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoPosB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
   // Full time interval histograms for diamonds
   TProfile* hCurrentEvoDiam = new TProfile(
-    "hCurrentEvoDiam",
-    Form("Current evolution for the HV of %s; Time [s]; Current [uA]",
-         sChNamePmt[iRefDet].Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+    "hCurrentEvoDiam", Form("Current evolution for the HV of %s; Time [s]; Current [uA]", sChNamePmt[iRefDet].Data()),
+    iNbBins, dStartTime, dStopTime);
   hCurrentEvoDiam->SetLineColor(kBlue);
   hCurrentEvoDiam->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoDiam->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   TProfile* hVoltageEvoDiam = new TProfile(
-    "hVoltageEvoDiam",
-    Form("Voltage evolution for the HV of %s; Time [s]; Voltage [V]",
-         sChNamePmt[iRefDet].Data()),
-    iNbBins,
-    dStartTime,
-    dStopTime);
+    "hVoltageEvoDiam", Form("Voltage evolution for the HV of %s; Time [s]; Voltage [V]", sChNamePmt[iRefDet].Data()),
+    iNbBins, dStartTime, dStopTime);
   hVoltageEvoDiam->SetLineColor(kBlue);
   hVoltageEvoDiam->GetXaxis()->SetTimeDisplay(1);
   hVoltageEvoDiam->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
   // In spill histograms
-  Int_t iNbBinsSpill =
-    (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iSpillDistSec;
-  TProfile* hCurrentEvoSpillNegA =
-    new TProfile("hCurrentEvoSpillNegA",
-                 Form("Current evolution for the Negative HV of %s in spill; "
-                      "Time [s]; Current [uA]",
-                      sNameFirstDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  Int_t iNbBinsSpill             = (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iSpillDistSec;
+  TProfile* hCurrentEvoSpillNegA = new TProfile("hCurrentEvoSpillNegA",
+                                                Form("Current evolution for the Negative HV of %s in spill; "
+                                                     "Time [s]; Current [uA]",
+                                                     sNameFirstDet.Data()),
+                                                iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoSpillNegA->SetLineColor(kBlue);
   hCurrentEvoSpillNegA->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoSpillNegA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoSpillPosA =
-    new TProfile("hCurrentEvoSpillPosA",
-                 Form("Current evolution for the Positive HV of %s in spill; "
-                      "Time [s]; Current [uA]",
-                      sNameFirstDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  TProfile* hCurrentEvoSpillPosA = new TProfile("hCurrentEvoSpillPosA",
+                                                Form("Current evolution for the Positive HV of %s in spill; "
+                                                     "Time [s]; Current [uA]",
+                                                     sNameFirstDet.Data()),
+                                                iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoSpillPosA->SetLineColor(kRed);
   hCurrentEvoSpillPosA->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoSpillPosA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
-  TProfile* hCurrentEvoSpillNegB =
-    new TProfile("hCurrentEvoSpillNegB",
-                 Form("Current evolution for the Negative HV of %s in spill; "
-                      "Time [s]; Current [uA]",
-                      sNameSecondDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  TProfile* hCurrentEvoSpillNegB = new TProfile("hCurrentEvoSpillNegB",
+                                                Form("Current evolution for the Negative HV of %s in spill; "
+                                                     "Time [s]; Current [uA]",
+                                                     sNameSecondDet.Data()),
+                                                iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoSpillNegB->SetLineColor(kBlue);
   hCurrentEvoSpillNegB->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoSpillNegB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoSpillPosB =
-    new TProfile("hCurrentEvoSpillPosB",
-                 Form("Current evolution for the Positive HV of %s in spill; "
-                      "Time [s]; Current [uA]",
-                      sNameSecondDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  TProfile* hCurrentEvoSpillPosB = new TProfile("hCurrentEvoSpillPosB",
+                                                Form("Current evolution for the Positive HV of %s in spill; "
+                                                     "Time [s]; Current [uA]",
+                                                     sNameSecondDet.Data()),
+                                                iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoSpillPosB->SetLineColor(kRed);
   hCurrentEvoSpillPosB->GetXaxis()->SetTimeDisplay(1);
   hCurrentEvoSpillPosB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
   // Out of spill histograms
-  TProfile* hCurrentEvoNoSpillNegA =
-    new TProfile("hCurrentEvoNoSpillNegA",
-                 Form("Current evolution for the Negative HV of %s off spill; "
-                      "Time [s]; Current [uA]",
-                      sNameFirstDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  TProfile* hCurrentEvoNoSpillNegA = new TProfile("hCurrentEvoNoSpillNegA",
+                                                  Form("Current evolution for the Negative HV of %s off spill; "
+                                                       "Time [s]; Current [uA]",
+                                                       sNameFirstDet.Data()),
+                                                  iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoNoSpillNegA->SetLineColor(kBlue);
   hCurrentEvoNoSpillNegA->GetXaxis()->SetTimeDisplay(1);
-  hCurrentEvoNoSpillNegA->GetXaxis()->SetTimeFormat(
-    "#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoNoSpillPosA =
-    new TProfile("hCurrentEvoNoSpillPosA",
-                 Form("Current evolution for the Positive HV of %s off spill; "
-                      "Time [s]; Current [uA]",
-                      sNameFirstDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  hCurrentEvoNoSpillNegA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
+  TProfile* hCurrentEvoNoSpillPosA = new TProfile("hCurrentEvoNoSpillPosA",
+                                                  Form("Current evolution for the Positive HV of %s off spill; "
+                                                       "Time [s]; Current [uA]",
+                                                       sNameFirstDet.Data()),
+                                                  iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoNoSpillPosA->SetLineColor(kRed);
   hCurrentEvoNoSpillPosA->GetXaxis()->SetTimeDisplay(1);
-  hCurrentEvoNoSpillPosA->GetXaxis()->SetTimeFormat(
-    "#splitline{%d\/%m}{%H:%M}");
+  hCurrentEvoNoSpillPosA->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
-  TProfile* hCurrentEvoNoSpillNegB =
-    new TProfile("hCurrentEvoNoSpillNegB",
-                 Form("Current evolution for the Negative HV of %s off spill; "
-                      "Time [s]; Current [uA]",
-                      sNameSecondDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  TProfile* hCurrentEvoNoSpillNegB = new TProfile("hCurrentEvoNoSpillNegB",
+                                                  Form("Current evolution for the Negative HV of %s off spill; "
+                                                       "Time [s]; Current [uA]",
+                                                       sNameSecondDet.Data()),
+                                                  iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoNoSpillNegB->SetLineColor(kBlue);
   hCurrentEvoNoSpillNegB->GetXaxis()->SetTimeDisplay(1);
-  hCurrentEvoNoSpillNegB->GetXaxis()->SetTimeFormat(
-    "#splitline{%d\/%m}{%H:%M}");
-  TProfile* hCurrentEvoNoSpillPosB =
-    new TProfile("hCurrentEvoNoSpillPosB",
-                 Form("Current evolution for the Positive HV of %s off spill; "
-                      "Time [s]; Current [uA]",
-                      sNameSecondDet.Data()),
-                 iNbBinsSpill,
-                 dStartTime,
-                 dStopTime);
+  hCurrentEvoNoSpillNegB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
+  TProfile* hCurrentEvoNoSpillPosB = new TProfile("hCurrentEvoNoSpillPosB",
+                                                  Form("Current evolution for the Positive HV of %s off spill; "
+                                                       "Time [s]; Current [uA]",
+                                                       sNameSecondDet.Data()),
+                                                  iNbBinsSpill, dStartTime, dStopTime);
   hCurrentEvoNoSpillPosB->SetLineColor(kRed);
   hCurrentEvoNoSpillPosB->GetXaxis()->SetTimeDisplay(1);
-  hCurrentEvoNoSpillPosB->GetXaxis()->SetTimeFormat(
-    "#splitline{%d\/%m}{%H:%M}");
+  hCurrentEvoNoSpillPosB->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
   TProfile* hCurrentEvoNegRpc[kiNbRpc];
   TProfile* hCurrentEvoPosRpc[kiNbRpc];
   for (Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++) {
     hCurrentEvoNegRpc[iRpcIndex] = new TProfile(
       Form("hCurrentEvoNegRpc_%s", sChNameRpc[iRpcIndex].Data()),
-      Form(
-        "Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-        sChNameRpc[iRpcIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+      Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sChNameRpc[iRpcIndex].Data()),
+      iNbBins, dStartTime, dStopTime);
     hCurrentEvoNegRpc[iRpcIndex]->SetLineColor(kBlue);
     hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeDisplay(1);
-    hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
     hCurrentEvoPosRpc[iRpcIndex] = new TProfile(
       Form("hCurrentEvoPosRpc_%s", sChNameRpc[iRpcIndex].Data()),
-      Form(
-        "Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-        sChNameRpc[iRpcIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+      Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sChNameRpc[iRpcIndex].Data()),
+      iNbBins, dStartTime, dStopTime);
     hCurrentEvoNegRpc[iRpcIndex]->SetLineColor(kRed);
     hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeDisplay(1);
-    hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    hCurrentEvoNegRpc[iRpcIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }  // for( Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++)
 
   TProfile* hCurrentEvoPmt[kiNbPmt];
   TProfile* hVoltageEvoPmt[kiNbPmt];
   for (Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++) {
-    hCurrentEvoPmt[iPmtIndex] = new TProfile(
-      Form("hCurrentEvoPmt_%s", sChNamePmt[iPmtIndex].Data()),
-      Form("Current evolution for the HV of %s; Time [s]; Current [uA]",
-           sChNamePmt[iPmtIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+    hCurrentEvoPmt[iPmtIndex] =
+      new TProfile(Form("hCurrentEvoPmt_%s", sChNamePmt[iPmtIndex].Data()),
+                   Form("Current evolution for the HV of %s; Time [s]; Current [uA]", sChNamePmt[iPmtIndex].Data()),
+                   iNbBins, dStartTime, dStopTime);
     hCurrentEvoPmt[iPmtIndex]->SetLineColor(kBlue);
     hCurrentEvoPmt[iPmtIndex]->GetXaxis()->SetTimeDisplay(1);
-    hCurrentEvoPmt[iPmtIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
-    hVoltageEvoPmt[iPmtIndex] = new TProfile(
-      Form("hVoltageEvoPmt_%s", sChNamePmt[iPmtIndex].Data()),
-      Form("Voltage evolution for the HV of %s; Time [s]; Voltage [V]",
-           sChNamePmt[iPmtIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+    hCurrentEvoPmt[iPmtIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
+    hVoltageEvoPmt[iPmtIndex] =
+      new TProfile(Form("hVoltageEvoPmt_%s", sChNamePmt[iPmtIndex].Data()),
+                   Form("Voltage evolution for the HV of %s; Time [s]; Voltage [V]", sChNamePmt[iPmtIndex].Data()),
+                   iNbBins, dStartTime, dStopTime);
     hVoltageEvoPmt[iPmtIndex]->SetLineColor(kRed);
     hVoltageEvoPmt[iPmtIndex]->GetXaxis()->SetTimeDisplay(1);
-    hVoltageEvoPmt[iPmtIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    hVoltageEvoPmt[iPmtIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }  // for( Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++)
 
   TProfile* hCurrentEvoNegTrd[kiNbTrd];
@@ -456,28 +366,18 @@ Bool_t plot_Current_Date_B(
   for (Int_t iTrdIndex = 0; iTrdIndex < kiNbTrd; iTrdIndex++) {
     hCurrentEvoNegTrd[iTrdIndex] = new TProfile(
       Form("hCurrentEvoNegTrd_%s", sChNameTrd[iTrdIndex].Data()),
-      Form(
-        "Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-        sChNameTrd[iTrdIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+      Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sChNameTrd[iTrdIndex].Data()),
+      iNbBins, dStartTime, dStopTime);
     hCurrentEvoNegTrd[iTrdIndex]->SetLineColor(kBlue);
     hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeDisplay(1);
-    hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
     hCurrentEvoPosTrd[iTrdIndex] = new TProfile(
       Form("hCurrentEvoPosTrd_%s", sChNameTrd[iTrdIndex].Data()),
-      Form(
-        "Current evolution for the Positive HV of %s; Time [s]; Current [uA]",
-        sChNameTrd[iTrdIndex].Data()),
-      iNbBins,
-      dStartTime,
-      dStopTime);
+      Form("Current evolution for the Positive HV of %s; Time [s]; Current [uA]", sChNameTrd[iTrdIndex].Data()),
+      iNbBins, dStartTime, dStopTime);
     hCurrentEvoNegTrd[iTrdIndex]->SetLineColor(kRed);
     hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeDisplay(1);
-    hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    hCurrentEvoNegTrd[iTrdIndex]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }  // for( Int_t iTrdIndex = 0; iTrdIndex < kiNbTrd; iTrdIndex++)
 
   Int_t iNbHvPoint = 0;
@@ -497,17 +397,13 @@ Bool_t plot_Current_Date_B(
     // Plot current vs time
     if (kTRUE == bFirstIsRpc)  // RPC
     {
-      hCurrentEvoNegA->Fill(tEventTime.GetSec(),
-                            tRpcHvEvt[iFirstDet].dCurrentNeg);
-      hCurrentEvoPosA->Fill(tEventTime.GetSec(),
-                            tRpcHvEvt[iFirstDet].dCurrentPos);
+      hCurrentEvoNegA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentNeg);
+      hCurrentEvoPosA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentPos);
     }                                // if( kTRUE == bFirstIsRpc )
     else if (kFALSE == bFirstIsPmt)  // TRD
     {
-      hCurrentEvoNegA->Fill(tEventTime.GetSec(),
-                            tTrdHvEvt[iFirstDet].dCurrentNeg);
-      hCurrentEvoPosA->Fill(tEventTime.GetSec(),
-                            tTrdHvEvt[iFirstDet].dCurrentPos);
+      hCurrentEvoNegA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentNeg);
+      hCurrentEvoPosA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentPos);
     }     // else if( kFALSE == bFirstIsPmt )
     else  // PMT
     {
@@ -516,22 +412,17 @@ Bool_t plot_Current_Date_B(
 
     if (kTRUE == bSecondIsRpc)  // RPC
     {
-      hCurrentEvoNegB->Fill(tEventTime.GetSec(),
-                            tRpcHvEvt[iSecondDet].dCurrentNeg);
-      hCurrentEvoPosB->Fill(tEventTime.GetSec(),
-                            tRpcHvEvt[iSecondDet].dCurrentPos);
+      hCurrentEvoNegB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentNeg);
+      hCurrentEvoPosB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentPos);
     }                                 // if( kTRUE == bSecondIsRpc )
     else if (kFALSE == bSecondIsPmt)  // TRD
     {
-      hCurrentEvoNegB->Fill(tEventTime.GetSec(),
-                            tTrdHvEvt[iSecondDet].dCurrentNeg);
-      hCurrentEvoPosB->Fill(tEventTime.GetSec(),
-                            tTrdHvEvt[iSecondDet].dCurrentPos);
+      hCurrentEvoNegB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentNeg);
+      hCurrentEvoPosB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentPos);
     }     // else if( kFALSE == bSecondIsPmt )
     else  // PMT
     {
-      hCurrentEvoNegB->Fill(tEventTime.GetSec(),
-                            tPmtHvEvt[iSecondDet].dCurrent);
+      hCurrentEvoNegB->Fill(tEventTime.GetSec(), tPmtHvEvt[iSecondDet].dCurrent);
     }
 
 
@@ -543,104 +434,78 @@ Bool_t plot_Current_Date_B(
     if (kdSpillDiamThr <= tPmtHvEvt[iRefDet].dCurrent) {
       if (kTRUE == bFirstIsRpc)  // RPC
       {
-        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(),
-                                   tRpcHvEvt[iFirstDet].dCurrentNeg);
-        hCurrentEvoSpillPosA->Fill(tEventTime.GetSec(),
-                                   tRpcHvEvt[iFirstDet].dCurrentPos);
+        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentNeg);
+        hCurrentEvoSpillPosA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentPos);
       }                                // if( kTRUE == bFirstIsRpc )
       else if (kFALSE == bFirstIsPmt)  // TRD
       {
-        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(),
-                                   tTrdHvEvt[iFirstDet].dCurrentNeg);
-        hCurrentEvoSpillPosA->Fill(tEventTime.GetSec(),
-                                   tTrdHvEvt[iFirstDet].dCurrentPos);
+        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentNeg);
+        hCurrentEvoSpillPosA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentPos);
       }     // else if( kFALSE == bFirstIsPmt )
       else  // PMT
       {
-        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(),
-                                   tPmtHvEvt[iFirstDet].dCurrent);
+        hCurrentEvoSpillNegA->Fill(tEventTime.GetSec(), tPmtHvEvt[iFirstDet].dCurrent);
       }
 
       if (kTRUE == bSecondIsRpc)  // RPC
       {
-        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(),
-                                   tRpcHvEvt[iSecondDet].dCurrentNeg);
-        hCurrentEvoSpillPosB->Fill(tEventTime.GetSec(),
-                                   tRpcHvEvt[iSecondDet].dCurrentPos);
+        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentNeg);
+        hCurrentEvoSpillPosB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentPos);
       }                                 // if( kTRUE == bSecondIsRpc )
       else if (kFALSE == bSecondIsPmt)  // TRD
       {
-        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(),
-                                   tTrdHvEvt[iSecondDet].dCurrentNeg);
-        hCurrentEvoSpillPosB->Fill(tEventTime.GetSec(),
-                                   tTrdHvEvt[iSecondDet].dCurrentPos);
+        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentNeg);
+        hCurrentEvoSpillPosB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentPos);
       }     // else if( kFALSE == bSecondIsPmt )
       else  // PMT
       {
-        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(),
-                                   tPmtHvEvt[iSecondDet].dCurrent);
+        hCurrentEvoSpillNegB->Fill(tEventTime.GetSec(), tPmtHvEvt[iSecondDet].dCurrent);
       }
     }  // if( kdSpillDiamThr <= dMeanFluxDiamA )
     else if (tPmtHvEvt[iRefDet].dCurrent < kdNoSpillDiamThr) {
       if (kTRUE == bFirstIsRpc)  // RPC
       {
-        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(),
-                                     tRpcHvEvt[iFirstDet].dCurrentNeg);
-        hCurrentEvoNoSpillPosA->Fill(tEventTime.GetSec(),
-                                     tRpcHvEvt[iFirstDet].dCurrentPos);
+        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentNeg);
+        hCurrentEvoNoSpillPosA->Fill(tEventTime.GetSec(), tRpcHvEvt[iFirstDet].dCurrentPos);
       }                                // if( kTRUE == bFirstIsRpc )
       else if (kFALSE == bFirstIsPmt)  // TRD
       {
-        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(),
-                                     tTrdHvEvt[iFirstDet].dCurrentNeg);
-        hCurrentEvoNoSpillPosA->Fill(tEventTime.GetSec(),
-                                     tTrdHvEvt[iFirstDet].dCurrentPos);
+        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentNeg);
+        hCurrentEvoNoSpillPosA->Fill(tEventTime.GetSec(), tTrdHvEvt[iFirstDet].dCurrentPos);
       }     // else if( kFALSE == bFirstIsPmt )
       else  // PMT
       {
-        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(),
-                                     tPmtHvEvt[iFirstDet].dCurrent);
+        hCurrentEvoNoSpillNegA->Fill(tEventTime.GetSec(), tPmtHvEvt[iFirstDet].dCurrent);
       }
 
       if (kTRUE == bSecondIsRpc)  // RPC
       {
-        hCurrentEvoNoSpillNegB->Fill(tEventTime.GetSec(),
-                                     tRpcHvEvt[iSecondDet].dCurrentNeg);
-        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(),
-                                     tRpcHvEvt[iSecondDet].dCurrentPos);
+        hCurrentEvoNoSpillNegB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentNeg);
+        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(), tRpcHvEvt[iSecondDet].dCurrentPos);
       }                                 // if( kTRUE == bSecondIsRpc )
       else if (kFALSE == bSecondIsPmt)  // TRD
       {
-        hCurrentEvoNoSpillNegB->Fill(tEventTime.GetSec(),
-                                     tTrdHvEvt[iSecondDet].dCurrentNeg);
-        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(),
-                                     tTrdHvEvt[iSecondDet].dCurrentPos);
+        hCurrentEvoNoSpillNegB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentNeg);
+        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(), tTrdHvEvt[iSecondDet].dCurrentPos);
       }     // else if( kFALSE == bSecondIsPmt )
       else  // PMT
       {
-        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(),
-                                     tPmtHvEvt[iSecondDet].dCurrent);
+        hCurrentEvoNoSpillPosB->Fill(tEventTime.GetSec(), tPmtHvEvt[iSecondDet].dCurrent);
       }
     }  // else if( dMeanFluxDiamA < kdNoSpillDiamThr )
 
 
     for (Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++) {
-      hCurrentEvoNegRpc[iRpcIndex]->Fill(tEventTime.GetSec(),
-                                         tRpcHvEvt[iRpcIndex].dCurrentNeg);
-      hCurrentEvoPosRpc[iRpcIndex]->Fill(tEventTime.GetSec(),
-                                         tRpcHvEvt[iRpcIndex].dCurrentPos);
+      hCurrentEvoNegRpc[iRpcIndex]->Fill(tEventTime.GetSec(), tRpcHvEvt[iRpcIndex].dCurrentNeg);
+      hCurrentEvoPosRpc[iRpcIndex]->Fill(tEventTime.GetSec(), tRpcHvEvt[iRpcIndex].dCurrentPos);
     }  // for( Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++)
     for (Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++) {
-      hCurrentEvoPmt[iPmtIndex]->Fill(tEventTime.GetSec(),
-                                      tPmtHvEvt[iPmtIndex].dCurrent);
-      hVoltageEvoPmt[iPmtIndex]->Fill(tEventTime.GetSec(),
-                                      tPmtHvEvt[iPmtIndex].dVoltage);
+      hCurrentEvoPmt[iPmtIndex]->Fill(tEventTime.GetSec(), tPmtHvEvt[iPmtIndex].dCurrent);
+      hVoltageEvoPmt[iPmtIndex]->Fill(tEventTime.GetSec(), tPmtHvEvt[iPmtIndex].dVoltage);
     }  // for( Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++)
     for (Int_t iTrdIndex = 0; iTrdIndex < kiNbTrd; iTrdIndex++) {
-      hCurrentEvoNegTrd[iTrdIndex]->Fill(tEventTime.GetSec(),
-                                         tTrdHvEvt[iTrdIndex].dCurrentNeg);
-      hCurrentEvoPosTrd[iTrdIndex]->Fill(tEventTime.GetSec(),
-                                         tTrdHvEvt[iTrdIndex].dCurrentPos);
+      hCurrentEvoNegTrd[iTrdIndex]->Fill(tEventTime.GetSec(), tTrdHvEvt[iTrdIndex].dCurrentNeg);
+      hCurrentEvoPosTrd[iTrdIndex]->Fill(tEventTime.GetSec(), tTrdHvEvt[iTrdIndex].dCurrentPos);
     }  // for( Int_t iTrdIndex = 0; iTrdIndex < kiNbTrd; iTrdIndex++)
        /*
       cout<<"MBS Time HV point #"<<iNbHvPoint<<":  "<<tTimeCurrMbsEvent.AsString()<<endl;
@@ -669,14 +534,11 @@ Bool_t plot_Current_Date_B(
    delete tInputTreeHv;
 */
   // Check is histos are filled
-  cout << "First RPC histos:  " << hCurrentEvoNegA->GetEntries() << " "
-       << hCurrentEvoPosA->GetEntries() << endl;
-  cout << "Second RPC histos: " << hCurrentEvoNegB->GetEntries() << " "
-       << hCurrentEvoPosB->GetEntries() << endl;
+  cout << "First RPC histos:  " << hCurrentEvoNegA->GetEntries() << " " << hCurrentEvoPosA->GetEntries() << endl;
+  cout << "Second RPC histos: " << hCurrentEvoNegB->GetEntries() << " " << hCurrentEvoPosB->GetEntries() << endl;
 
   // Now need to be displayed
-  TCanvas* tCanvasA =
-    new TCanvas("tCanvasA", "Currents evolution", 0, 0, 1000, 500);
+  TCanvas* tCanvasA = new TCanvas("tCanvasA", "Currents evolution", 0, 0, 1000, 500);
   tCanvasA->SetFillColor(0);
   tCanvasA->SetGridx(0);
   tCanvasA->SetGridy(0);
@@ -702,8 +564,7 @@ Bool_t plot_Current_Date_B(
   hCurrentEvoPosB->Draw("hSAME");
   hCurrentEvoNegB->Draw("hSAME");
 
-  TCanvas* tCanvasDiam =
-    new TCanvas("tCanvasDiam", "Currents evolution Diamond", 0, 0, 1000, 500);
+  TCanvas* tCanvasDiam = new TCanvas("tCanvasDiam", "Currents evolution Diamond", 0, 0, 1000, 500);
   tCanvasDiam->SetFillColor(0);
   tCanvasDiam->SetGridx(0);
   tCanvasDiam->SetGridy(0);
@@ -728,8 +589,7 @@ Bool_t plot_Current_Date_B(
   hVoltageEvoDiam->Draw("hSAME");
 
 
-  TCanvas* tCanvasB =
-    new TCanvas("tCanvasB", "Currents evolution in spill", 0, 0, 1000, 500);
+  TCanvas* tCanvasB = new TCanvas("tCanvasB", "Currents evolution in spill", 0, 0, 1000, 500);
   tCanvasB->SetFillColor(0);
   tCanvasB->SetGridx(0);
   tCanvasB->SetGridy(0);
@@ -756,8 +616,7 @@ Bool_t plot_Current_Date_B(
   hCurrentEvoSpillNegB->Draw("hSAME");
 
 
-  TCanvas* tCanvasC =
-    new TCanvas("tCanvasC", "Currents evolution out of spill", 0, 0, 1000, 500);
+  TCanvas* tCanvasC = new TCanvas("tCanvasC", "Currents evolution out of spill", 0, 0, 1000, 500);
   tCanvasC->SetFillColor(0);
   tCanvasC->SetGridx(0);
   tCanvasC->SetGridy(0);
@@ -783,8 +642,7 @@ Bool_t plot_Current_Date_B(
   hCurrentEvoNoSpillPosB->Draw("hSAME");
   hCurrentEvoNoSpillNegB->Draw("hSAME");
 
-  TCanvas* tCanvasRpc = new TCanvas(
-    "tCanvasRpc", "Currents evolution for all RPCs", 0, 0, 1200, 900);
+  TCanvas* tCanvasRpc = new TCanvas("tCanvasRpc", "Currents evolution for all RPCs", 0, 0, 1200, 900);
   tCanvasRpc->SetFillColor(0);
   tCanvasRpc->SetGridx(0);
   tCanvasRpc->SetGridy(0);
@@ -804,8 +662,7 @@ Bool_t plot_Current_Date_B(
     hCurrentEvoPosRpc[iRpcIndex]->Draw("hSAME");
   }  // for( Int_t iRpcIndex = 0; iRpcIndex < kiNbRpc; iRpcIndex++)
 
-  TCanvas* tCanvasPmt = new TCanvas(
-    "tCanvasPmt", "Currents evolution for all PMTs", 0, 0, 1200, 900);
+  TCanvas* tCanvasPmt = new TCanvas("tCanvasPmt", "Currents evolution for all PMTs", 0, 0, 1200, 900);
   tCanvasPmt->SetFillColor(0);
   tCanvasPmt->SetGridx(0);
   tCanvasPmt->SetGridy(0);
@@ -825,8 +682,7 @@ Bool_t plot_Current_Date_B(
     hCurrentEvoPmt[iPmtIndex]->Draw("hSAME");
   }  // for( Int_t iPmtIndex = 0; iPmtIndex < kiNbPmt; iPmtIndex++)
 
-  TCanvas* tCanvasTrd = new TCanvas(
-    "tCanvasTrd", "Currents evolution for all TRDs", 0, 0, 1200, 900);
+  TCanvas* tCanvasTrd = new TCanvas("tCanvasTrd", "Currents evolution for all TRDs", 0, 0, 1200, 900);
   tCanvasTrd->SetFillColor(0);
   tCanvasTrd->SetGridx(0);
   tCanvasTrd->SetGridy(0);

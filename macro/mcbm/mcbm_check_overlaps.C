@@ -1,4 +1,5 @@
-void mcbm_check_overlaps(const char* dataset = "test") {
+void mcbm_check_overlaps(const char* dataset = "test")
+{
   // 2020-07-10 - DE - simplify overlap name checking
   // 2019-12-20 - FU - adapt expected overlaps to new targetbox name
   // 2019-08-13 - FU - Filter "expected overlaps"
@@ -17,8 +18,7 @@ void mcbm_check_overlaps(const char* dataset = "test") {
   TString geoFile = TString(dataset) + ".geo.root";
   TFile* f        = new TFile(geoFile);
   if (!f->IsOpen()) {
-    std::cout << "check_overlaps: geometry file " << geoFile
-              << " is not accessible!" << std::endl;
+    std::cout << "check_overlaps: geometry file " << geoFile << " is not accessible!" << std::endl;
     return;
   }
 
@@ -32,25 +32,21 @@ void mcbm_check_overlaps(const char* dataset = "test") {
     TString OverlapName = ov->GetTitle();
     // within the TOF detector geometry
     if (OverlapName.Contains("gas_box extruded by: gas_box/counter_0")) {
-      std::cout << "Expected Overlap between gas_box and gas_box/counter_0"
-                << endl;
+      std::cout << "Expected Overlap between gas_box and gas_box/counter_0" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box/counter_0 overlapping gas_box/counter_1")) {
-      std::cout
-        << "Expected Overlap between gas_box/counter_0 and gas_box/counter_1"
-        << endl;
+    else if (OverlapName.Contains("gas_box/counter_0 overlapping gas_box/counter_1")) {
+      std::cout << "Expected Overlap between gas_box/counter_0 and gas_box/counter_1" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // overlap of T0 detector with pipe vacuum geometry
     else if (OverlapName.Contains("vacu20_1 overlapping"))
       if (OverlapName.Contains("module_5_0")) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter"
-                  << endl;
+        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
         std::cout << ov->GetTitle() << std::endl << std::endl;
-      } else {
+      }
+      else {
         cout << "Unexpected Overlap:" << endl;
         ov->PrintInfo();
         cout << endl;
@@ -69,45 +65,38 @@ void mcbm_check_overlaps(const char* dataset = "test") {
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_5 overlapping counter_6")) {
+    else if (OverlapName.Contains("gas_box: node counter_5 overlapping counter_6")) {
       std::cout << "Expected Overlap between counter_6 and counter_6" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_1 overlapping counter_2")) {
+    else if (OverlapName.Contains("gas_box: node counter_1 overlapping counter_2")) {
       std::cout << "Expected Overlap between counter_1 and counter_2" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_3 overlapping counter_4")) {
+    else if (OverlapName.Contains("gas_box: node counter_3 overlapping counter_4")) {
       std::cout << "Expected Overlap between counter_3 and counter_4" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_0 overlapping counter_1")) {
+    else if (OverlapName.Contains("gas_box: node counter_0 overlapping counter_1")) {
       std::cout << "Expected Overlap between counter_0 and counter_1" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_2 overlapping counter_3")) {
+    else if (OverlapName.Contains("gas_box: node counter_2 overlapping counter_3")) {
       std::cout << "Expected Overlap between counter_2 and counter_3" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
-    else if (OverlapName.Contains(
-               "gas_box: node counter_6 overlapping counter_7")) {
+    else if (OverlapName.Contains("gas_box: node counter_6 overlapping counter_7")) {
       std::cout << "Expected Overlap between counter_6 and counter_7" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
     else if (OverlapName.Contains("node module_8_0 overlapping module_8_0")) {
-      std::cout << "Expected Overlap between tof module_8_0 and module_8_0"
-                << endl;
+      std::cout << "Expected Overlap between tof module_8_0 and module_8_0" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // within the TOF detector geometry
@@ -124,7 +113,8 @@ void mcbm_check_overlaps(const char* dataset = "test") {
     else if (OverlapName.Contains("node Gas_1 overlapping kapton_1")) {
       std::cout << "Expected Overlap between  Gas_1 and kapton_1" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
-    } else {
+    }
+    else {
       cout << "Unexpected Overlap:" << endl;
       ov->PrintInfo();
       cout << endl;
@@ -135,9 +125,9 @@ void mcbm_check_overlaps(const char* dataset = "test") {
 
   if (unexpectedOverlaps != benchmarkNumber) {
     cout << " Test failed" << endl;
-    cout << " We have in total " << unexpectedOverlaps
-         << " unexpected overlaps." << endl;
-  } else {
+    cout << " We have in total " << unexpectedOverlaps << " unexpected overlaps." << endl;
+  }
+  else {
     cout << " Test passed" << endl;
     cout << " All ok " << endl;
   }

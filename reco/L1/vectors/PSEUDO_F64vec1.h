@@ -1,9 +1,11 @@
 #ifndef L1Algo_PSEUDO_F64vec1_H
 #define L1Algo_PSEUDO_F64vec1_H
 
-#include "vec_arithmetic.h"
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
+
+#include "vec_arithmetic.h"
 
 /**********************************
  *
@@ -24,24 +26,22 @@ public:
 
   friend double min(double x, double y) { return x < y ? x : y; }
   friend double max(double x, double y) { return x < y ? y : x; }
-  friend double asgnb(double x, double y) {
-    return y >= 0 ? fabs(x) : -fabs(x);
-  }
+  friend double asgnb(double x, double y) { return y >= 0 ? fabs(x) : -fabs(x); }
   friend double rsqrt(double x) { return 1. / sqrt(x); }
   friend double rcp(double x) { return 1. / x; }
   friend double sgn(double x) { return x >= 0 ? 1 : -1; }
 
-#define _f2(A, B, F)                                                           \
-  F64vec1 z;                                                                   \
-  z.v[0] = F(A.v[0], B.v[0]);                                                  \
+#define _f2(A, B, F)                                                                                                   \
+  F64vec1 z;                                                                                                           \
+  z.v[0] = F(A.v[0], B.v[0]);                                                                                          \
   return z;
-#define _f1(A, F)                                                              \
-  F64vec1 z;                                                                   \
-  z.v[0] = F(A.v[0]);                                                          \
+#define _f1(A, F)                                                                                                      \
+  F64vec1 z;                                                                                                           \
+  z.v[0] = F(A.v[0]);                                                                                                  \
   return z;
-#define _op(A, B, O)                                                           \
-  F64vec1 z;                                                                   \
-  z.v[0] = A.v[0] O B.v[0];                                                    \
+#define _op(A, B, O)                                                                                                   \
+  F64vec1 z;                                                                                                           \
+  z.v[0] = A.v[0] O B.v[0];                                                                                            \
   return z;
 
   /* Arithmetic Operators */
@@ -71,12 +71,14 @@ public:
 
   vec_arithmetic(F64vec1, double);
 
-  friend std::ostream& operator<<(std::ostream& strm, const F64vec1& a) {
+  friend std::ostream& operator<<(std::ostream& strm, const F64vec1& a)
+  {
     strm << a[0];
     return strm;
   }
 
-  friend std::istream& operator>>(std::istream& strm, F64vec1& a) {
+  friend std::istream& operator>>(std::istream& strm, F64vec1& a)
+  {
     double tmp;
     strm >> tmp;
     a = tmp;

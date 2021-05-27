@@ -43,8 +43,7 @@ public:
    **
    ** Formulae provided by S. Chatterji.
    **/
-  Double_t
-  GetLeakageCurrent(Double_t fluence, Double_t volume, Double_t temperatur);
+  Double_t GetLeakageCurrent(Double_t fluence, Double_t volume, Double_t temperatur);
 
   /**  Get NIEL factor
    *@param type   Particle Id (PDG code)

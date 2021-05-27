@@ -17,12 +17,9 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_qa_nh(Int_t nEvents     = 1000,
-                TString cSys      = "nini",
-                TString cEbeam    = "1.93gev",
-                TString cCentr    = "mbias",
-                Int_t iRun        = 986,
-                const char* setup = "sis18_mcbm_20deg_long") {
+void mcbm_qa_nh(Int_t nEvents = 1000, TString cSys = "nini", TString cEbeam = "1.93gev", TString cCentr = "mbias",
+                Int_t iRun = 986, const char* setup = "sis18_mcbm_20deg_long")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -31,14 +28,12 @@ void mcbm_qa_nh(Int_t nEvents     = 1000,
   Int_t iVerbose = 0;
 
   TString outDir = "data/";
-  TString inFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
-                   + ".mc." + Form("%05d", iRun)
+  TString inFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d", iRun)
                    + ".root";  // Input file (MC events)
-  TString parFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
-                    + ".params." + Form("%05d", iRun)
+  TString parFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d", iRun)
                     + ".root";  // Parameter file
-  TString outFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
-                    + ".eds." + Form("%05d", iRun) + ".root";  // Output file
+  TString outFile =
+    outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".eds." + Form("%05d", iRun) + ".root";  // Output file
 
   //FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");

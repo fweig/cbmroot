@@ -22,16 +22,12 @@ public:
 
   Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
-  static void FilterPDAF(CbmKFTrackInterface& track,
-                         std::vector<CbmKFStsHit*>& vpHits,
-                         Bool_t downstream,
-                         Double_t* QP0,
-                         double gateX,
-                         double gateY,
-                         int& best_hit_idx);
+  static void FilterPDAF(CbmKFTrackInterface& track, std::vector<CbmKFStsHit*>& vpHits, Bool_t downstream,
+                         Double_t* QP0, double gateX, double gateY, int& best_hit_idx);
 
 
-  const CbmKFStsHit& operator=(const CbmKFStsHit& a) {
+  const CbmKFStsHit& operator=(const CbmKFStsHit& a)
+  {
     tube     = a.tube;
     FitPoint = a.FitPoint;
     return *this;

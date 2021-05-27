@@ -32,14 +32,7 @@ public:
    *@param phi      event plane angle [rad]
    *@param nPrim    number of input tracks
    **/
-  CbmMCEvent(UInt_t runId,
-             Int_t iEvent,
-             Double_t x,
-             Double_t y,
-             Double_t z,
-             Double_t t,
-             Double_t b,
-             Double_t phi,
+  CbmMCEvent(UInt_t runId, Int_t iEvent, Double_t x, Double_t y, Double_t z, Double_t t, Double_t b, Double_t phi,
              Int_t nPrim);
 
 
@@ -97,14 +90,16 @@ private:
 };
 
 
-inline void CbmMCEvent::SetVertex(Double_t x, Double_t y, Double_t z) {
+inline void CbmMCEvent::SetVertex(Double_t x, Double_t y, Double_t z)
+{
   fX = x;
   fY = y;
   fZ = z;
 }
 
 
-inline void CbmMCEvent::SetVertex(const TVector3& vertex) {
+inline void CbmMCEvent::SetVertex(const TVector3& vertex)
+{
   fX = vertex.X();
   fY = vertex.Y();
   fZ = vertex.Z();

@@ -1,6 +1,7 @@
 #include "tof_feb15_setup_unpack.C"
 
-void TofCernFeb15Calib(Int_t nEvents = 10000) {
+void TofCernFeb15Calib(Int_t nEvents = 10000)
+{
   TString outDir = "data/";
 
   // Function needed for CTest runtime dependency
@@ -45,8 +46,7 @@ void TofCernFeb15Calib(Int_t nEvents = 10000) {
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> TofCernFeb15: Macro finished successfully." << std::endl;
-  std::cout << ">>> TofCernFeb15: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> TofCernFeb15: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// -----   Resource monitoring in automatic tests  ------------------

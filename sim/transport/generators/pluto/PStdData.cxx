@@ -25,32 +25,35 @@
 //////////////////////////////////////////////////////////////////////
 
 // local arrays
+#include "PStdData.h"
+
 #include "TArrayD.h"
 #include "TArrayI.h"
 
-#include "PDataBase.h"
-#include "PStdData.h"
 #include <math.h>
 
-PStdData& fStdData() {
+#include "PDataBase.h"
+
+PStdData& fStdData()
+{
   static PStdData* ans = new PStdData();
   return *ans;
 }
 
 PStdData* makeStdData() { return &fStdData(); }
 
-PStdData::PStdData() {
+PStdData::PStdData()
+{
   //    Info("PStdData()","(%s)", PRINT_CTOR);
 
   disable = 0;
 }
 
-PStdData::~PStdData() {
-  cout << "Killing standard particle data table" << endl;
-}
+PStdData::~PStdData() { cout << "Killing standard particle data table" << endl; }
 
 
-Bool_t PStdData::fillDataBase(void) {
+Bool_t PStdData::fillDataBase(void)
+{
 
   if (disable) return kTRUE;
 
@@ -92,8 +95,7 @@ Bool_t PStdData::fillDataBase(void) {
   base->MakeParamDouble("brorig", "Original branching ratio (for norm.)");
   base->SetFastKey(idxkey, 1000 * 32);
 
-  base->MakeParamInt(
-    "widx", "Width flag");  //partial/total width switched on by default
+  base->MakeParamInt("widx", "Width flag");  //partial/total width switched on by default
   base->MakeParamInt("tdepth", "total depth");
   base->MakeParamInt("hdepth", "hadronic depth");
   base->MakeParamDouble("ethreshold", "Energy threshold");
@@ -119,8 +121,7 @@ Bool_t PStdData::fillDataBase(void) {
   base->MakeParamTObj("decaychannel", "Decay channel for decay manager");
 
   //...for the decay_all option
-  base->MakeParamTObj("stackchannel",
-                      "Stack of channels for the decayall option in PReaction");
+  base->MakeParamTObj("stackchannel", "Stack of channels for the decayall option in PReaction");
 
   Int_t skey = -1;
   if ((skey = base->AddEntry("std_set")) < 0) return kFALSE;
@@ -131,33 +132,22 @@ Bool_t PStdData::fillDataBase(void) {
   for (int i = 0; i < maxnumpar; i++) {
     //	if ((pkey=base->AddEntry(PStdData::PName[i]))<0) return kFALSE;
     //	Int_t dkey = base->AddListEntry(PStdData::PName[i],"pnmodes", "link",PMDescription [j]);
-    if ((pkey =
-           base->AddListEntry("std_set", "snpart", "slink", PStdData::PName[i]))
-        < 0)
-      return kFALSE;
+    if ((pkey = base->AddListEntry("std_set", "snpart", "slink", PStdData::PName[i])) < 0) return kFALSE;
     ii = new int(i);  //never destructed, but called only once!
     if (!base->SetParamInt(pkey, "pid", ii)) return kFALSE;
-    if (!base->SetParamDouble(pkey, "width", &(PStdData::PWidth[i])))
-      return kFALSE;
-    if (!base->SetParamDouble(pkey, "mass", &(PStdData::PMass[i])))
-      return kFALSE;
+    if (!base->SetParamDouble(pkey, "width", &(PStdData::PWidth[i]))) return kFALSE;
+    if (!base->SetParamDouble(pkey, "mass", &(PStdData::PMass[i]))) return kFALSE;
     if (PMeson[i])
-      if (!base->SetParamInt(pkey, "meson", &(PStdData::PMeson[i])))
-        return kFALSE;
+      if (!base->SetParamInt(pkey, "meson", &(PStdData::PMeson[i]))) return kFALSE;
     if (PBaryon[i])
-      if (!base->SetParamInt(pkey, "baryon", &(PStdData::PBaryon[i])))
-        return kFALSE;
+      if (!base->SetParamInt(pkey, "baryon", &(PStdData::PBaryon[i]))) return kFALSE;
     if (PLepton[i])
-      if (!base->SetParamInt(pkey, "lepton", &(PStdData::PLepton[i])))
-        return kFALSE;
-    if (!base->SetParamInt(pkey, "charge", &(PStdData::PCharge[i])))
-      return kFALSE;
+      if (!base->SetParamInt(pkey, "lepton", &(PStdData::PLepton[i]))) return kFALSE;
+    if (!base->SetParamInt(pkey, "charge", &(PStdData::PCharge[i]))) return kFALSE;
     if (!base->SetParamInt(pkey, "spin", &(PStdData::PJ[i]))) return kFALSE;
-    if (!base->SetParamInt(pkey, "parity", &(PStdData::PParity[i])))
-      return kFALSE;
+    if (!base->SetParamInt(pkey, "parity", &(PStdData::PParity[i]))) return kFALSE;
     if (!base->SetParamInt(pkey, "ispin", &(PStdData::PI[i]))) return kFALSE;
-    if (!base->SetParamInt(pkey, "pythiakf", &(PStdData::Pkf[i])))
-      return kFALSE;
+    if (!base->SetParamInt(pkey, "pythiakf", &(PStdData::Pkf[i]))) return kFALSE;
     ii = new int(0);  //never destructed, but called only once!
     //0 means on, -1 means off
     if (!base->SetParamInt(pkey, "widx", ii)) return kFALSE;
@@ -165,24 +155,18 @@ Bool_t PStdData::fillDataBase(void) {
     if (!base->SetParamInt(pkey, "tdepth", ii)) return kFALSE;
     ii = new int(0);
     if (!base->SetParamInt(pkey, "hdepth", ii)) return kFALSE;
-    dd = new Double_t(
-      PStdData::PMass[i]
-      - 2
-          * PStdData::PWidth
-            [i]);  //BUGBUG look to ethreshold later -> only 1st guess!!!
+    dd = new Double_t(PStdData::PMass[i]
+                      - 2 * PStdData::PWidth[i]);  //BUGBUG look to ethreshold later -> only 1st guess!!!
     if (!base->SetParamDouble(pkey, "ethreshold", dd)) return kFALSE;
 
     //Adding Fireballs!
     char* name = new char[100];
     sprintf(name, "Fireball: %s", PStdData::PName[i]);
-    if ((pkey = base->AddListEntry("std_set", "snpart", "slink", name)) < 0)
-      return kFALSE;
+    if ((pkey = base->AddListEntry("std_set", "snpart", "slink", name)) < 0) return kFALSE;
     ii = new int(i + 500);  //never destructed, but called only once!
     if (!base->SetParamInt(pkey, "pid", ii)) return kFALSE;
-    if (!base->SetParamDouble(pkey, "mass", &(PStdData::PMass[i])))
-      return kFALSE;
-    if (!base->SetParamDouble(pkey, "width", &(PStdData::PWidth[i])))
-      return kFALSE;
+    if (!base->SetParamDouble(pkey, "mass", &(PStdData::PMass[i]))) return kFALSE;
+    if (!base->SetParamDouble(pkey, "width", &(PStdData::PWidth[i]))) return kFALSE;
   }
 
   for (int i = 0; i < maxnumpar; i++) {
@@ -198,8 +182,7 @@ Bool_t PStdData::fillDataBase(void) {
 
       TString s = PMode[j];  // retrieve decay mode string
 
-      Int_t dkey = base->AddListEntry(
-        PStdData::PName[i], "pnmodes", "link", PMDescription[j]);
+      Int_t dkey = base->AddListEntry(PStdData::PName[i], "pnmodes", "link", PMDescription[j]);
 
       ii = new int(i);
       base->SetParamInt(dkey, "ppid", ii);  //set parent id
@@ -215,8 +198,7 @@ Bool_t PStdData::fillDataBase(void) {
 
       if (!base->SetParamDouble(dkey, "br", &(PStdData::PBR[j]))) return kFALSE;
 
-      if (!base->SetParamDouble(dkey, "brorig", new Double_t(PStdData::PBR[j])))
-        return kFALSE;
+      if (!base->SetParamDouble(dkey, "brorig", new Double_t(PStdData::PBR[j]))) return kFALSE;
 
       dd = new Double_t(0.);
       if (!base->SetParamDouble(dkey, "ethreshold", dd)) return kFALSE;
@@ -232,16 +214,14 @@ Bool_t PStdData::fillDataBase(void) {
       Int_t np  = len / 3 + (res > 0);
       Int_t pid, k = 0;
       for (int iPart = 0; iPart < np; ++iPart) {  // loop over product particles
-        Int_t m = (!iPart && res) ? res : 3;  // number of digits in current pid
-        pid     = 0;                          // reset id
+        Int_t m = (!iPart && res) ? res : 3;      // number of digits in current pid
+        pid     = 0;                              // reset id
         for (int jj = 1; jj <= m; ++jj)
           pid += (*(s(k + jj - 1, 1).Data()) - 48) * int(pow(10., m - jj));
         //cout << s << endl;
         //cout << pid << endl;
         Int_t* pkey1 = new int(base->GetEntryInt("pid", pid));
-        if (*pkey1 < 0) {
-          cout << "Error: processing decay: do not find pid " << pid << endl;
-        }
+        if (*pkey1 < 0) { cout << "Error: processing decay: do not find pid " << pid << endl; }
         if (iPart == 0) base->SetParamInt(dkey, "d1", pkey1);
         if (iPart == 1) base->SetParamInt(dkey, "d2", pkey1);
         if (iPart == 2) base->SetParamInt(dkey, "d3", pkey1);
@@ -268,27 +248,22 @@ Bool_t PStdData::fillDataBase(void) {
 
 //Please do not touch the tables below
 
-#define nmax 999     // maximum number of supported particles
-#define mnpar 70     // number of particles stored permanently
+#define nmax 999  // maximum number of supported particles
+#define mnpar 70  // number of particles stored permanently
 #define mnmodes 220  // number of decay modes stored permanently
 
 
 // particle naming convention for use with the PParticle constructor
 const char* PStdData::NAME[mnpar] = {
-  "dummy",    "g",           "e+",          "e-",          "nu",
-  "mu+",      "mu-",         "pi0",         "pi+",         "pi-",
-  "K0L",      "K+",          "K-",          "n",           "p",
-  "anti_p",   "K0S",         "eta",         "Lambda",      "Sigma+",
-  "Sigma0",   "Sigma-",      "Xi0",         "Xi-",         "Omega",
-  "anti_n",   "anti_Lambda", "anti_Sigma-", "anti_Sigma0", "anti_Sigma+",
-  "anti_Xi0", "anti_Xi+",    "anti_Omega+", "File",        "D0",
-  "D++",      "D+",          "D-",          "NP11+",       "ND13+",
-  "NS11+",    "rho0",        "rho+",        "rho-",        "BOZO",
-  "d",        "t",           "alpha",       "BOZO2",       "He3",  //BOZO->BOZO2
-  "dimuon",   "dilepton",    "w",           "eta'",        "sigma",
-  "phi",      "DP330",       "DP33++",      "DP33+",       "DP33-",
-  "DS310",    "DS31++",      "DS31+",       "DS31-",       "NP110",
-  "ND130",    "NS110",       "J/Psi",       "Psi'",        "pn"};
+  "dummy",       "g",           "e+",          "e-",       "nu",       "mu+",         "mu-",    "pi0",    "pi+",
+  "pi-",         "K0L",         "K+",          "K-",       "n",        "p",           "anti_p", "K0S",    "eta",
+  "Lambda",      "Sigma+",      "Sigma0",      "Sigma-",   "Xi0",      "Xi-",         "Omega",  "anti_n", "anti_Lambda",
+  "anti_Sigma-", "anti_Sigma0", "anti_Sigma+", "anti_Xi0", "anti_Xi+", "anti_Omega+", "File",   "D0",     "D++",
+  "D+",          "D-",          "NP11+",       "ND13+",    "NS11+",    "rho0",        "rho+",   "rho-",   "BOZO",
+  "d",           "t",           "alpha",       "BOZO2",    "He3",  //BOZO->BOZO2
+  "dimuon",      "dilepton",    "w",           "eta'",     "sigma",    "phi",         "DP330",  "DP33++", "DP33+",
+  "DP33-",       "DS310",       "DS31++",      "DS31+",    "DS31-",    "NP110",       "ND130",  "NS110",  "J/Psi",
+  "Psi'",        "pn"};
 
 // particle masses (GeV/c**2)
 //const double MASS[mnpar]={
@@ -1322,256 +1297,254 @@ const char* PStdData::MODE[mnmodes] = {
   "67017",                // id=68 Psi'  --> J/Psi eta
   "8009008009007",        // id=68 Psi'  --> 2pi+ + 2pi- + pi0
   "8009008009008009007",  // id=68 Psi'  --> 3pi+ + 3pi- + pi0
-  "4004",  // id=68 Psi'  --> junk (=2 neutrinos as a placeholder)
+  "4004",                 // id=68 Psi'  --> junk (=2 neutrinos as a placeholder)
   // pn, 2 channels
   "51013014",  // id=69 pn  --> dilepton + p + n
   "1013014"    // id=69 pn  --> photon + p + n
 };
 
 // Decay-mode text description
-const char* PStdData::DESCRIPTION[mnmodes] = {
-  "mu+ --> e+ + neutrino + neutrino",
-  "mu- --> e- + neutrino + neutrino",
-  "pi0 --> photon + photon",
-  "pi0 --> dilepton + photon (Dalitz)",
-  "pi+ --> mu+ + neutrino",
-  "pi- --> mu- + neutrino",
-  "K0 long --> pi0 + pi0 + pi0",
-  "K0 long --> pi+ + pi- + pi0",
-  "K0 long --> pi+ + mu- + neutrino",
-  "K0 long --> pi- + mu+ + neutrino",
-  "K0 long --> pi+ + e- + neutrino",
-  "K0 long --> pi- + e+ + neutrino",
-  "K+ --> mu+ + neutrino",
-  "K+ --> pi+ + pi0",
-  "K+ --> pi+ + pi+ + pi-",
-  "K+ --> pi+ + pi0 + pi0",
-  "K+ --> pi0 + mu+ + neutrino",
-  "K+ --> pi0 + e+ + neutrino",
-  "K- --> mu- + neutrino",
-  "K- --> pi- + pi0",
-  "K- --> pi- + pi- + pi+",
-  "K- --> pi- + pi0 + pi0",
-  "K- --> pi0 + mu- + neutrino",
-  "K- --> pi0 + e- + neutrino",
-  "n --> p + e- + neutrino",
-  "K0 short --> pi+ + pi-",
-  "K0 short --> pi0 + pi0",
-  "K0 short --> pi+ + pi- + photon",
-  "eta --> photon + photon",
-  "eta --> pi0 + pi0 + pi0",
-  "eta --> pi+ + pi- + pi0",
-  "eta --> pi+ + pi- + photon",
-  "eta --> dilepton + photon (Dalitz)",
-  "eta --> dimuon + photon",
-  "eta --> e+ + e-",
-  "eta --> mu+ + mu-",
-  "Lambda --> p + pi-",
-  "Lambda --> n + pi0",
-  "Lambda --> n + photon",
-  "anti_n --> anti_p + e+ + neutrino",
-  "Delta0 --> p + pi-",
-  "Delta0 --> n + pi0",
-  "Delta0 --> n + photon",
-  "Delta0 --> dilepton + n (Dalitz)",
-  "Delta++ --> p + pi+",
-  "Delta+ --> p + pi0",
-  "Delta+ --> n + pi+",
-  "Delta+ --> p + photon",
-  "Delta+ --> dilepton + p (Dalitz)",
-  "Delta- --> n + pi-",
-  "N*(1440)+ --> p + pi0",
-  "N*(1440)+ --> n + pi+",
-  "N*(1440)+ --> Delta++ + pi-",
-  "N*(1440)+ --> Delta+ + pi0",
-  "N*(1440)+ --> Delta0 + pi+",
-  "N*(1440)+ --> p + rho0",
-  "N*(1440)+ --> n + rho+",
-  "N*(1440)+ --> p + pi0 + pi0",
-  "N*(1440)+ --> p + pi+ + pi-",
-  "N*(1440)+ --> p + photon",
-  "N*(1520)+ --> p + pi0",
-  "N*(1520)+ --> n + pi+",
-  "N*(1520)+ --> Delta++ + pi-",
-  "N*(1520)+ --> Delta+ + pi0",
-  "N*(1520)+ --> Delta0 + pi+",
-  "N*(1520)+ --> p + rho0",
-  "N*(1520)+ --> n + rho+",
-  "N*(1520)+ --> p + pi0 + pi0",
-  "N*(1520)+ --> p + pi+ + pi-",
-  "N*(1520)+ --> p + photon",
-  "N*(1535)+ --> p + pi0",
-  "N*(1535)+ --> n + pi+",
-  "N*(1535)+ --> p + eta",
-  "N*(1535)+ --> Delta++ + pi-",
-  "N*(1535)+ --> Delta+ + pi0",
-  "N*(1535)+ --> Delta0 + pi+",
-  "N*(1535)+ --> p + rho0",
-  "N*(1535)+ --> n + rho+",
-  "N*(1535)+ --> p + pi0 + pi0",
-  "N*(1535)+ --> p + pi+ + pi-",
-  "N*(1535)+ --> N*(1440)+ + pi0",
-  "N*(1535)+ --> N*(1440)0 + pi+",
-  "N*(1535)+ --> p + photon",
-  "rho0 --> pi+ + pi-",
-  "rho0 --> e+ + e-",
-  "rho0 --> mu+ + mu-",
-  "rho+ --> pi+ + pi0",
-  "rho- --> pi- + pi0",
-  "dimuon --> mu+ + mu-",
-  "dilepton --> e+ + e-",
-  "omega --> pi+ + pi- + pi0",
-  "omega --> pi0 + photon",
-  "omega --> pi+ + pi-",
-  "omega --> dilepton + pi0 (Dalitz)",
-  "omega --> dimuon + pi0",
-  "omega --> e+ + e-",
-  "omega --> mu+ + mu-",
-  "eta' --> eta + pi- + pi+ ",
-  "eta' --> rho0 + photon",
-  "eta' --> eta + pi0 + pi0",
-  "eta' --> omega + photon",
-  "eta' --> photon + photon",
-  "eta' --> pi0 + pi0 + pi0",
-  "eta' --> dimuon + photon",
-  "sigma --> pi+ + pi-",
-  "sigma --> e+ + e-",
-  "sigma --> mu+ + mu-",
-  "phi --> K+ + K-",
-  "phi --> K0L + K0S",
-  "phi --> pi+ + pi- + pi0",
-  "phi --> eta + photon",
-  "phi --> pi0 + photon",
-  "phi --> e+ + e-",
-  "phi --> mu+ + mu-",
-  "phi --> eta + dilepton",
-  "Delta(1600)0 --> p + pi-",
-  "Delta(1600)0 --> n + pi0",
-  "Delta(1600)0 --> Delta+ + pi-",
-  "Delta(1600)0 --> Delta0 + pi0",
-  "Delta(1600)0 --> Delta- + pi+",
-  "Delta(1600)0 --> p + rho-",
-  "Delta(1600)0 --> n + rho0",
-  "Delta(1600)0 --> N(1440)+ + rho-",
-  "Delta(1600)0 --> N(1440)0 + rho0",
-  "Delta(1600)0 --> n + photon",
-  "Delta(1600)++ --> p + pi+",
-  "Delta(1600)++ --> Delta++ + pi0",
-  "Delta(1600)++ --> Delta+ + pi+",
-  "Delta(1600)++ --> p + rho+",
-  "Delta(1600)++ --> N(1440)+ + rho+",
-  "Delta(1600)+ --> p + pi0",
-  "Delta(1600)+ --> n + pi+",
-  "Delta(1600)+ --> Delta++ + pi-",
-  "Delta(1600)+ --> Delta+ + pi0",
-  "Delta(1600)+ --> Delta0 + pi+",
-  "Delta(1600)+ --> p + rho0",
-  "Delta(1600)+ --> n + rho+",
-  "Delta(1600)+ --> N(1440)+ + rho0",
-  "Delta(1600)+ --> N(1440)0 + rho+",
-  "Delta(1600)+ --> p + photon",
-  "Delta(1600)- --> n + pi-",
-  "Delta(1600)- --> Delta0 + pi-",
-  "Delta(1600)- --> Delta- + pi0",
-  "Delta(1600)- --> n + rho-",
-  "Delta(1600)- --> N(1440)0 + rho-",
-  "Delta(1620)0 --> p + pi-",
-  "Delta(1620)0 --> n + pi0",
-  "Delta(1620)0 --> Delta+ + pi-",
-  "Delta(1620)0 --> Delta0 + pi0",
-  "Delta(1620)0 --> Delta- + pi+",
-  "Delta(1620)0 --> p + rho-",
-  "Delta(1620)0 --> n + rho0",
-  "Delta(1620)0 --> n + photon",
-  "Delta(1620)++ --> p + pi+",
-  "Delta(1620)++ --> Delta++ + pi0",
-  "Delta(1620)++ --> Delta+ + pi+",
-  "Delta(1620)++ --> p + rho+",
-  "Delta(1620)+ --> p + pi0",
-  "Delta(1620)+ --> n + pi+",
-  "Delta(1620)+ --> Delta++ + pi-",
-  "Delta(1620)+ --> Delta+ + pi0",
-  "Delta(1620)+ --> Delta0 + pi+",
-  "Delta(1620)+ --> p + rho0",
-  "Delta(1620)+ --> n + rho+",
-  "Delta(1620)+ --> p + photon",
-  "Delta(1620)- --> n + pi-",
-  "Delta(1620)- --> Delta0 + pi-",
-  "Delta(1620)- --> Delta- + pi0",
-  "Delta(1620)- --> n + rho-",
-  "N*(1440)0 --> p + pi-",
-  "N*(1440)0 --> n + pi0",
-  "N*(1440)0 --> Delta+ + pi-",
-  "N*(1440)0 --> Delta0 + pi0",
-  "N*(1440)0 --> Delta- + pi+",
-  "N*(1440)0 --> p + rho-",
-  "N*(1440)0 --> n + rho0",
-  "N*(1440)0 --> n + pi+ + pi-",
-  "N*(1440)0 --> n + pi0 + pi0",
-  "N*(1440)0 --> n + photon",
-  "N*(1520)0 --> p + pi-",
-  "N*(1520)0 --> n + pi0",
-  "N*(1520)0 --> Delta+ + pi-",
-  "N*(1520)0 --> Delta0 + pi0",
-  "N*(1520)0 --> Delta- + pi+",
-  "N*(1520)0 --> p + rho-",
-  "N*(1520)0 --> n + rho0",
-  "N*(1520)0 --> n + pi+ + pi-",
-  "N*(1520)0 --> n + pi0 + pi0",
-  "N*(1520)0 --> n + photon",
-  "N*(1535)0 --> p + pi-",
-  "N*(1535)0 --> n + pi0",
-  "N*(1535)0 --> n + eta",
-  "N*(1535)0 --> Delta+ + pi-",
-  "N*(1535)0 --> Delta0 + pi0",
-  "N*(1535)0 --> Delta- + pi+",
-  "N*(1535)0 --> p + rho-",
-  "N*(1535)0 --> n + rho0",
-  "N*(1535)0 --> n + pi+ + pi-",
-  "N*(1535)0 --> n + pi0 + pi0",
-  "N*(1535)0 --> N*(1440)+ + pi-",
-  "N*(1535)0 --> N*(1440)0 + pi0",
-  "N*(1535)0 --> n + photon",
-  "J/Psi --> e+ + e-",
-  "J/Psi --> mu+ + mu-",
-  "J/Psi --> dilepton + photon",
-  "J/Psi --> 2pi+ + 2pi- + pi0",
-  "J/Psi --> 3pi+ + 3pi- + pi0",
-  "J/Psi --> pi+ + pi- + pi0",
-  "J/Psi --> K+ + K- + pi+ + pi- + pi0",
-  "J/Psi --> junk",
-  "Psi'  --> e+ + e-",
-  "Psi'  --> mu+ + mu-",
-  "Psi'  --> J/Psi + pi+ + pi-",
-  "Psi'  --> J/Psi + pi0 + pi0",
-  "Psi'  --> J/Psi + eta",
-  "Psi'  --> 2pi+ + 2pi- + pi0",
-  "Psi'  --> 3pi+ + 3pi- + pi0",
-  "Psi'  --> junk",
-  "pn --> dilepton + p + n",
-  "pn --> photon + p + n"};
+const char* PStdData::DESCRIPTION[mnmodes] = {"mu+ --> e+ + neutrino + neutrino",
+                                              "mu- --> e- + neutrino + neutrino",
+                                              "pi0 --> photon + photon",
+                                              "pi0 --> dilepton + photon (Dalitz)",
+                                              "pi+ --> mu+ + neutrino",
+                                              "pi- --> mu- + neutrino",
+                                              "K0 long --> pi0 + pi0 + pi0",
+                                              "K0 long --> pi+ + pi- + pi0",
+                                              "K0 long --> pi+ + mu- + neutrino",
+                                              "K0 long --> pi- + mu+ + neutrino",
+                                              "K0 long --> pi+ + e- + neutrino",
+                                              "K0 long --> pi- + e+ + neutrino",
+                                              "K+ --> mu+ + neutrino",
+                                              "K+ --> pi+ + pi0",
+                                              "K+ --> pi+ + pi+ + pi-",
+                                              "K+ --> pi+ + pi0 + pi0",
+                                              "K+ --> pi0 + mu+ + neutrino",
+                                              "K+ --> pi0 + e+ + neutrino",
+                                              "K- --> mu- + neutrino",
+                                              "K- --> pi- + pi0",
+                                              "K- --> pi- + pi- + pi+",
+                                              "K- --> pi- + pi0 + pi0",
+                                              "K- --> pi0 + mu- + neutrino",
+                                              "K- --> pi0 + e- + neutrino",
+                                              "n --> p + e- + neutrino",
+                                              "K0 short --> pi+ + pi-",
+                                              "K0 short --> pi0 + pi0",
+                                              "K0 short --> pi+ + pi- + photon",
+                                              "eta --> photon + photon",
+                                              "eta --> pi0 + pi0 + pi0",
+                                              "eta --> pi+ + pi- + pi0",
+                                              "eta --> pi+ + pi- + photon",
+                                              "eta --> dilepton + photon (Dalitz)",
+                                              "eta --> dimuon + photon",
+                                              "eta --> e+ + e-",
+                                              "eta --> mu+ + mu-",
+                                              "Lambda --> p + pi-",
+                                              "Lambda --> n + pi0",
+                                              "Lambda --> n + photon",
+                                              "anti_n --> anti_p + e+ + neutrino",
+                                              "Delta0 --> p + pi-",
+                                              "Delta0 --> n + pi0",
+                                              "Delta0 --> n + photon",
+                                              "Delta0 --> dilepton + n (Dalitz)",
+                                              "Delta++ --> p + pi+",
+                                              "Delta+ --> p + pi0",
+                                              "Delta+ --> n + pi+",
+                                              "Delta+ --> p + photon",
+                                              "Delta+ --> dilepton + p (Dalitz)",
+                                              "Delta- --> n + pi-",
+                                              "N*(1440)+ --> p + pi0",
+                                              "N*(1440)+ --> n + pi+",
+                                              "N*(1440)+ --> Delta++ + pi-",
+                                              "N*(1440)+ --> Delta+ + pi0",
+                                              "N*(1440)+ --> Delta0 + pi+",
+                                              "N*(1440)+ --> p + rho0",
+                                              "N*(1440)+ --> n + rho+",
+                                              "N*(1440)+ --> p + pi0 + pi0",
+                                              "N*(1440)+ --> p + pi+ + pi-",
+                                              "N*(1440)+ --> p + photon",
+                                              "N*(1520)+ --> p + pi0",
+                                              "N*(1520)+ --> n + pi+",
+                                              "N*(1520)+ --> Delta++ + pi-",
+                                              "N*(1520)+ --> Delta+ + pi0",
+                                              "N*(1520)+ --> Delta0 + pi+",
+                                              "N*(1520)+ --> p + rho0",
+                                              "N*(1520)+ --> n + rho+",
+                                              "N*(1520)+ --> p + pi0 + pi0",
+                                              "N*(1520)+ --> p + pi+ + pi-",
+                                              "N*(1520)+ --> p + photon",
+                                              "N*(1535)+ --> p + pi0",
+                                              "N*(1535)+ --> n + pi+",
+                                              "N*(1535)+ --> p + eta",
+                                              "N*(1535)+ --> Delta++ + pi-",
+                                              "N*(1535)+ --> Delta+ + pi0",
+                                              "N*(1535)+ --> Delta0 + pi+",
+                                              "N*(1535)+ --> p + rho0",
+                                              "N*(1535)+ --> n + rho+",
+                                              "N*(1535)+ --> p + pi0 + pi0",
+                                              "N*(1535)+ --> p + pi+ + pi-",
+                                              "N*(1535)+ --> N*(1440)+ + pi0",
+                                              "N*(1535)+ --> N*(1440)0 + pi+",
+                                              "N*(1535)+ --> p + photon",
+                                              "rho0 --> pi+ + pi-",
+                                              "rho0 --> e+ + e-",
+                                              "rho0 --> mu+ + mu-",
+                                              "rho+ --> pi+ + pi0",
+                                              "rho- --> pi- + pi0",
+                                              "dimuon --> mu+ + mu-",
+                                              "dilepton --> e+ + e-",
+                                              "omega --> pi+ + pi- + pi0",
+                                              "omega --> pi0 + photon",
+                                              "omega --> pi+ + pi-",
+                                              "omega --> dilepton + pi0 (Dalitz)",
+                                              "omega --> dimuon + pi0",
+                                              "omega --> e+ + e-",
+                                              "omega --> mu+ + mu-",
+                                              "eta' --> eta + pi- + pi+ ",
+                                              "eta' --> rho0 + photon",
+                                              "eta' --> eta + pi0 + pi0",
+                                              "eta' --> omega + photon",
+                                              "eta' --> photon + photon",
+                                              "eta' --> pi0 + pi0 + pi0",
+                                              "eta' --> dimuon + photon",
+                                              "sigma --> pi+ + pi-",
+                                              "sigma --> e+ + e-",
+                                              "sigma --> mu+ + mu-",
+                                              "phi --> K+ + K-",
+                                              "phi --> K0L + K0S",
+                                              "phi --> pi+ + pi- + pi0",
+                                              "phi --> eta + photon",
+                                              "phi --> pi0 + photon",
+                                              "phi --> e+ + e-",
+                                              "phi --> mu+ + mu-",
+                                              "phi --> eta + dilepton",
+                                              "Delta(1600)0 --> p + pi-",
+                                              "Delta(1600)0 --> n + pi0",
+                                              "Delta(1600)0 --> Delta+ + pi-",
+                                              "Delta(1600)0 --> Delta0 + pi0",
+                                              "Delta(1600)0 --> Delta- + pi+",
+                                              "Delta(1600)0 --> p + rho-",
+                                              "Delta(1600)0 --> n + rho0",
+                                              "Delta(1600)0 --> N(1440)+ + rho-",
+                                              "Delta(1600)0 --> N(1440)0 + rho0",
+                                              "Delta(1600)0 --> n + photon",
+                                              "Delta(1600)++ --> p + pi+",
+                                              "Delta(1600)++ --> Delta++ + pi0",
+                                              "Delta(1600)++ --> Delta+ + pi+",
+                                              "Delta(1600)++ --> p + rho+",
+                                              "Delta(1600)++ --> N(1440)+ + rho+",
+                                              "Delta(1600)+ --> p + pi0",
+                                              "Delta(1600)+ --> n + pi+",
+                                              "Delta(1600)+ --> Delta++ + pi-",
+                                              "Delta(1600)+ --> Delta+ + pi0",
+                                              "Delta(1600)+ --> Delta0 + pi+",
+                                              "Delta(1600)+ --> p + rho0",
+                                              "Delta(1600)+ --> n + rho+",
+                                              "Delta(1600)+ --> N(1440)+ + rho0",
+                                              "Delta(1600)+ --> N(1440)0 + rho+",
+                                              "Delta(1600)+ --> p + photon",
+                                              "Delta(1600)- --> n + pi-",
+                                              "Delta(1600)- --> Delta0 + pi-",
+                                              "Delta(1600)- --> Delta- + pi0",
+                                              "Delta(1600)- --> n + rho-",
+                                              "Delta(1600)- --> N(1440)0 + rho-",
+                                              "Delta(1620)0 --> p + pi-",
+                                              "Delta(1620)0 --> n + pi0",
+                                              "Delta(1620)0 --> Delta+ + pi-",
+                                              "Delta(1620)0 --> Delta0 + pi0",
+                                              "Delta(1620)0 --> Delta- + pi+",
+                                              "Delta(1620)0 --> p + rho-",
+                                              "Delta(1620)0 --> n + rho0",
+                                              "Delta(1620)0 --> n + photon",
+                                              "Delta(1620)++ --> p + pi+",
+                                              "Delta(1620)++ --> Delta++ + pi0",
+                                              "Delta(1620)++ --> Delta+ + pi+",
+                                              "Delta(1620)++ --> p + rho+",
+                                              "Delta(1620)+ --> p + pi0",
+                                              "Delta(1620)+ --> n + pi+",
+                                              "Delta(1620)+ --> Delta++ + pi-",
+                                              "Delta(1620)+ --> Delta+ + pi0",
+                                              "Delta(1620)+ --> Delta0 + pi+",
+                                              "Delta(1620)+ --> p + rho0",
+                                              "Delta(1620)+ --> n + rho+",
+                                              "Delta(1620)+ --> p + photon",
+                                              "Delta(1620)- --> n + pi-",
+                                              "Delta(1620)- --> Delta0 + pi-",
+                                              "Delta(1620)- --> Delta- + pi0",
+                                              "Delta(1620)- --> n + rho-",
+                                              "N*(1440)0 --> p + pi-",
+                                              "N*(1440)0 --> n + pi0",
+                                              "N*(1440)0 --> Delta+ + pi-",
+                                              "N*(1440)0 --> Delta0 + pi0",
+                                              "N*(1440)0 --> Delta- + pi+",
+                                              "N*(1440)0 --> p + rho-",
+                                              "N*(1440)0 --> n + rho0",
+                                              "N*(1440)0 --> n + pi+ + pi-",
+                                              "N*(1440)0 --> n + pi0 + pi0",
+                                              "N*(1440)0 --> n + photon",
+                                              "N*(1520)0 --> p + pi-",
+                                              "N*(1520)0 --> n + pi0",
+                                              "N*(1520)0 --> Delta+ + pi-",
+                                              "N*(1520)0 --> Delta0 + pi0",
+                                              "N*(1520)0 --> Delta- + pi+",
+                                              "N*(1520)0 --> p + rho-",
+                                              "N*(1520)0 --> n + rho0",
+                                              "N*(1520)0 --> n + pi+ + pi-",
+                                              "N*(1520)0 --> n + pi0 + pi0",
+                                              "N*(1520)0 --> n + photon",
+                                              "N*(1535)0 --> p + pi-",
+                                              "N*(1535)0 --> n + pi0",
+                                              "N*(1535)0 --> n + eta",
+                                              "N*(1535)0 --> Delta+ + pi-",
+                                              "N*(1535)0 --> Delta0 + pi0",
+                                              "N*(1535)0 --> Delta- + pi+",
+                                              "N*(1535)0 --> p + rho-",
+                                              "N*(1535)0 --> n + rho0",
+                                              "N*(1535)0 --> n + pi+ + pi-",
+                                              "N*(1535)0 --> n + pi0 + pi0",
+                                              "N*(1535)0 --> N*(1440)+ + pi-",
+                                              "N*(1535)0 --> N*(1440)0 + pi0",
+                                              "N*(1535)0 --> n + photon",
+                                              "J/Psi --> e+ + e-",
+                                              "J/Psi --> mu+ + mu-",
+                                              "J/Psi --> dilepton + photon",
+                                              "J/Psi --> 2pi+ + 2pi- + pi0",
+                                              "J/Psi --> 3pi+ + 3pi- + pi0",
+                                              "J/Psi --> pi+ + pi- + pi0",
+                                              "J/Psi --> K+ + K- + pi+ + pi- + pi0",
+                                              "J/Psi --> junk",
+                                              "Psi'  --> e+ + e-",
+                                              "Psi'  --> mu+ + mu-",
+                                              "Psi'  --> J/Psi + pi+ + pi-",
+                                              "Psi'  --> J/Psi + pi0 + pi0",
+                                              "Psi'  --> J/Psi + eta",
+                                              "Psi'  --> 2pi+ + 2pi- + pi0",
+                                              "Psi'  --> 3pi+ + 3pi- + pi0",
+                                              "Psi'  --> junk",
+                                              "pn --> dilepton + p + n",
+                                              "pn --> photon + p + n"};
 
 
 // static members
 int PStdData::maxnumpar   = mnpar;    // number of particles
 int PStdData::maxnummodes = mnmodes;  // number of decay modes
 
-char** PStdData::PName   = (char**) NAME;    // particle names
-double* PStdData::PMass  = (double*) MASS;   // masses
-double* PStdData::PWidth = (double*) WIDTH;  // widths
-int* PStdData::PMeson    = (int*) MESON;     // meson (1) or not (0)
-int* PStdData::PBaryon   = (int*) BARYON;    // baryon number
-int* PStdData::PLepton   = (int*) LEPTON;    // lepton number
-int* PStdData::PCharge   = (int*) CHARGE;    // charge
-int* PStdData::PJ        = (int*) SPIN;      // 2 x J
-int* PStdData::PParity   = (int*) PARITY;    // Parity
-int* PStdData::PI        = (int*) ISPIN;     // 2 x I
-int* PStdData::PNModes   = (int*) NMODES;    // number of decay modes
-int* PStdData::Pkf       = (int*) PYTHIAKF;  // Pythia6 kf code
-double* PStdData::PBR    = (double*) BRR;    // branching ratio
-char** PStdData::PMode   = (char**) MODE;    // decay mode coded by product ids
-char** PStdData::PMDescription =
-  (char**) DESCRIPTION;  // text description of decay mode
+char** PStdData::PName         = (char**) NAME;         // particle names
+double* PStdData::PMass        = (double*) MASS;        // masses
+double* PStdData::PWidth       = (double*) WIDTH;       // widths
+int* PStdData::PMeson          = (int*) MESON;          // meson (1) or not (0)
+int* PStdData::PBaryon         = (int*) BARYON;         // baryon number
+int* PStdData::PLepton         = (int*) LEPTON;         // lepton number
+int* PStdData::PCharge         = (int*) CHARGE;         // charge
+int* PStdData::PJ              = (int*) SPIN;           // 2 x J
+int* PStdData::PParity         = (int*) PARITY;         // Parity
+int* PStdData::PI              = (int*) ISPIN;          // 2 x I
+int* PStdData::PNModes         = (int*) NMODES;         // number of decay modes
+int* PStdData::Pkf             = (int*) PYTHIAKF;       // Pythia6 kf code
+double* PStdData::PBR          = (double*) BRR;         // branching ratio
+char** PStdData::PMode         = (char**) MODE;         // decay mode coded by product ids
+char** PStdData::PMDescription = (char**) DESCRIPTION;  // text description of decay mode
 
 
 //const long double PStdData::hbar=6.582122e-25; // units of (GeV s)

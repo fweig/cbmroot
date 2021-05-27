@@ -71,7 +71,8 @@ CbmTransport::CbmTransport()
   , fEngine(kGeant3)
   , fStackFilter(new CbmStackFilter())
   , fGenerateRunInfo(kFALSE)
-  , fStoreTrajectories(kFALSE) {
+  , fStoreTrajectories(kFALSE)
+{
   // TODO: I do not like instantiating FairRunSim from this constructor;
   // It should be done in Run(). However, the presence of a FairRunSim
   // is required by CbmUnigenGenerator. Not a good construction; should
@@ -103,7 +104,8 @@ CbmTransport::~CbmTransport() {}
 
 
 // -----   Add a file-based input   -----------------------------------------
-void CbmTransport::AddInput(const char* fileName, ECbmGenerator genType) {
+void CbmTransport::AddInput(const char* fileName, ECbmGenerator genType)
+{
 
   FairGenerator* generator = NULL;
 
@@ -133,7 +135,8 @@ void CbmTransport::AddInput(const char* fileName, ECbmGenerator genType) {
 
 
 // -----   Add a generator-based input   ------------------------------------
-void CbmTransport::AddInput(FairGenerator* generator) {
+void CbmTransport::AddInput(FairGenerator* generator)
+{
   assert(generator);
   fEventGen->AddGenerator(generator);
 }
@@ -141,7 +144,8 @@ void CbmTransport::AddInput(FairGenerator* generator) {
 
 
 // -----   Configure the TVirtualMC   ---------------------------------------
-void CbmTransport::ConfigureVMC() {
+void CbmTransport::ConfigureVMC()
+{
 
   std::cout << std::endl;
   LOG(info) << GetName() << ": Configuring VMC...";
@@ -164,10 +168,9 @@ void CbmTransport::ConfigureVMC() {
   else if (fEngine == kGeant4) {
     LOG(info) << GetName() << ": Create TGeant4";
     if (!fGeant4Settings) { fGeant4Settings = new CbmGeant4Settings(); }
-    std::array<std::string, 3> runConfigSettings =
-      fGeant4Settings->GetG4RunConfig();
-    TG4RunConfiguration* runConfig = new TG4RunConfiguration(
-      runConfigSettings[0], runConfigSettings[1], runConfigSettings[2]);
+    std::array<std::string, 3> runConfigSettings = fGeant4Settings->GetG4RunConfig();
+    TG4RunConfiguration* runConfig =
+      new TG4RunConfiguration(runConfigSettings[0], runConfigSettings[1], runConfigSettings[2]);
     vmc = new TGeant4("TGeant4", "C++ Interface to Geant4", runConfig);
     fGeant4Settings->Init(vmc);
   }  //? Geant4
@@ -184,7 +187,8 @@ void CbmTransport::ConfigureVMC() {
 
 
 // -----   Force creation of event vertex at a given z position   -----------
-void CbmTransport::ForceVertexAtZ(Double_t zVertex) {
+void CbmTransport::ForceVertexAtZ(Double_t zVertex)
+{
   assert(fEventGen);
   fEventGen->ForceVertexAtZ(zVertex);
 }
@@ -192,7 +196,8 @@ void CbmTransport::ForceVertexAtZ(Double_t zVertex) {
 
 
 // -----   Force creation of event vertex in the target   -------------------
-void CbmTransport::ForceVertexInTarget(Bool_t choice) {
+void CbmTransport::ForceVertexInTarget(Bool_t choice)
+{
   assert(fEventGen);
   fEventGen->ForceVertexInTarget(choice);
 }
@@ -200,23 +205,22 @@ void CbmTransport::ForceVertexInTarget(Bool_t choice) {
 
 
 // -----   Force user-defined single-mode decays   --------------------------
-void CbmTransport::ForceUserDecays() {
+void CbmTransport::ForceUserDecays()
+{
 
   assert(gMC);
   auto pdgdb = TDatabasePDG::Instance();
 
   // --- Setting user decays does not work with TGeant4
   if ((!fDecayModes.empty()) && fEngine == kGeant4)
-    LOG(fatal) << GetName()
-               << ": Forcing decay modes is not possible with TGeant4!";
+    LOG(fatal) << GetName() << ": Forcing decay modes is not possible with TGeant4!";
 
   for (auto& decay : fDecayModes) {
 
     Int_t pdg         = decay.first;
     UInt_t nDaughters = decay.second.size();
     stringstream log;
-    log << GetName() << ": Force decay " << pdgdb->GetParticle(pdg)->GetName()
-        << " -> ";
+    log << GetName() << ": Force decay " << pdgdb->GetParticle(pdg)->GetName() << " -> ";
 
     // First check whether VMC knows the particle. Not all particles
     // in TDatabasePDG are necessarily defined in VMC.
@@ -227,8 +231,7 @@ void CbmTransport::ForceUserDecays() {
     // The access to ParticleMCTpye seems to me the only way to check.
     // No method like Bool_t CheckParticle(Int_t) is there, which any
     // sensible programmer would have put.
-    if (gMC->ParticleMCType(pdg)
-        == kPTUndefined) {  // At least TGeant3 delivers that
+    if (gMC->ParticleMCType(pdg) == kPTUndefined) {  // At least TGeant3 delivers that
       LOG(info) << log.str();
       LOG(fatal) << GetName() << ": PDG " << pdg << " not in VMC!";
       continue;
@@ -236,13 +239,8 @@ void CbmTransport::ForceUserDecays() {
 
     // For up to three daughters, the native decayer is used
     if (nDaughters <= 3) {
-      Float_t branch[6] = {100., 0., 0., 0., 0., 0.};  // branching ratios
-      Int_t mode[6][3]  = {{0, 0, 0},
-                          {0, 0, 0},
-                          {0, 0, 0},
-                          {0, 0, 0},
-                          {0, 0, 0},
-                          {0, 0, 0}};  // decay modes
+      Float_t branch[6] = {100., 0., 0., 0., 0., 0.};                                          // branching ratios
+      Int_t mode[6][3]  = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};  // decay modes
       for (UInt_t iDaughter = 0; iDaughter < nDaughters; iDaughter++) {
         mode[0][iDaughter] = decay.second[iDaughter];
         log << pdgdb->GetParticle(decay.second[iDaughter])->GetName() << " ";
@@ -276,7 +274,8 @@ void CbmTransport::ForceUserDecays() {
 // --------------------------------------------------------------------------
 
 // -----   Initialisation of event generator   ------------------------------
-void CbmTransport::InitEventGenerator() {
+void CbmTransport::InitEventGenerator()
+{
 
   // --- Set the target properties to the event generator
   fEventGen->SetTarget(fTarget);
@@ -292,8 +291,7 @@ void CbmTransport::InitEventGenerator() {
   // --- profile. The average beam must hit the target surface.
   if (fTarget) {
     if (!fEventGen->GetBeamProfile().CheckWithTarget(*fTarget)) {
-      LOG(fatal) << GetName()
-                 << ": Beam profile is not consistent with target!";
+      LOG(fatal) << GetName() << ": Beam profile is not consistent with target!";
     }  //? Target not consistent with beam
   }    //? Target specified
 }
@@ -301,21 +299,18 @@ void CbmTransport::InitEventGenerator() {
 
 
 // -----   Set the source the setup will be loaded from   -------------------
-void CbmTransport::SetSetupSource(ECbmSetupSource setupSource) {
-  fSetup->SetSetupSource(setupSource);
-}
+void CbmTransport::SetSetupSource(ECbmSetupSource setupSource) { fSetup->SetSetupSource(setupSource); }
 // --------------------------------------------------------------------------
 
 
 // -----   Load a standard setup   ------------------------------------------
-void CbmTransport::LoadSetup(const char* setupName) {
-  fSetup->LoadSetup(setupName);
-}
+void CbmTransport::LoadSetup(const char* setupName) { fSetup->LoadSetup(setupName); }
 // --------------------------------------------------------------------------
 
 
 // -----   Register ions to the TDatabsePDG   -------------------------------
-void CbmTransport::RegisterIons() {
+void CbmTransport::RegisterIons()
+{
 
   // TODO: Better would be loading the additional particles from a text file.
   // TDatabasePDG reads the particle definitions from pdg_table.txt
@@ -374,7 +369,8 @@ void CbmTransport::RegisterIons() {
 
 
 // -----   Register radiation length   --------------------------------------
-void CbmTransport::RegisterRadLength(Bool_t choice) {
+void CbmTransport::RegisterRadLength(Bool_t choice)
+{
   assert(fRun);
   fRun->SetRadLenRegister(choice);
   LOG(info) << GetName() << ": Radiation length register is enabled";
@@ -388,7 +384,8 @@ void CbmTransport::RegisterSetup() { fSetup->RegisterSetup(); }
 
 
 // -----   Set correct decay modes for pi0 and eta   ------------------------
-void CbmTransport::PiAndEtaDecay(TVirtualMC* vmc) {
+void CbmTransport::PiAndEtaDecay(TVirtualMC* vmc)
+{
 
   assert(vmc);
   LOG(info) << GetName() << ": Set decay modes for pi0 and eta";
@@ -398,8 +395,7 @@ void CbmTransport::PiAndEtaDecay(TVirtualMC* vmc) {
     LOG(warn) << "***********************************";
     LOG(warn) << "***********************************";
     LOG(warn) << GetName() << ": User decay modes cannot be set with TGeant4!";
-    LOG(warn) << GetName()
-              << ": Built-in decay modes for pi0 and eta will be used!";
+    LOG(warn) << GetName() << ": Built-in decay modes for pi0 and eta will be used!";
     LOG(warn) << "***********************************";
     LOG(warn) << "***********************************";
     std::cout << std::endl << std::endl;
@@ -465,7 +461,8 @@ void CbmTransport::PiAndEtaDecay(TVirtualMC* vmc) {
 
 
 // -----   Execute transport run   ------------------------------------------
-void CbmTransport::Run(Int_t nEvents) {
+void CbmTransport::Run(Int_t nEvents)
+{
 
   // --- Timer
   TStopwatch timer;
@@ -474,10 +471,8 @@ void CbmTransport::Run(Int_t nEvents) {
   gRandom->SetSeed(fRandomSeed);
 
   // --- Check presence of required requisites
-  if (fOutFileName.IsNull())
-    LOG(fatal) << GetName() << ": No output file specified!";
-  if (fParFileName.IsNull())
-    LOG(fatal) << GetName() << ": No parameter file specified!";
+  if (fOutFileName.IsNull()) LOG(fatal) << GetName() << ": No output file specified!";
+  if (fParFileName.IsNull()) LOG(fatal) << GetName() << ": No parameter file specified!";
   std::cout << std::endl << std::endl;
 
 
@@ -510,7 +505,8 @@ void CbmTransport::Run(Int_t nEvents) {
   if (fTarget) {
     LOG(info) << fTarget->ToString();
     fRun->AddModule(fTarget.get());
-  } else
+  }
+  else
     LOG(warn) << GetName() << ": No target defined!";
 
 
@@ -558,9 +554,8 @@ void CbmTransport::Run(Int_t nEvents) {
 
 
   // --- Runtime database
-  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-  CbmFieldPar* fieldPar =
-    static_cast<CbmFieldPar*>(rtdb->getContainer("CbmFieldPar"));
+  FairRuntimeDb* rtdb   = fRun->GetRuntimeDb();
+  CbmFieldPar* fieldPar = static_cast<CbmFieldPar*>(rtdb->getContainer("CbmFieldPar"));
   fieldPar->SetParameters(fField);
   fieldPar->setChanged();
   FairParRootFileIo* parOut = new FairParRootFileIo(kTRUE);
@@ -585,7 +580,8 @@ void CbmTransport::Run(Int_t nEvents) {
   if (fEngine == kGeant3) {
     LOG(info) << "Write Geant3Settings";
     fGeant3Settings->Write();
-  } else if (fEngine == kGeant4) {
+  }
+  else if (fEngine == kGeant4) {
     LOG(info) << "Write Geant4Settings";
     fGeant4Settings->Write();
   }
@@ -608,12 +604,10 @@ void CbmTransport::Run(Int_t nEvents) {
   LOG(info) << GetName() << ": Run finished successfully.";
   LOG(info) << GetName() << ": Wall time for Init : " << fRealTimeInit << " s ";
   LOG(info) << GetName() << ": Wall time for Run  : " << fRealTimeRun << " s ("
-            << fRealTimeRun / fEventFilter->GetNofInputEvents()
-            << " s / event)";
+            << fRealTimeRun / fEventFilter->GetNofInputEvents() << " s / event)";
   LOG(info) << GetName() << ": Output file    : " << fOutFileName;
   LOG(info) << GetName() << ": Parameter file : " << fParFileName;
-  if (!fGeoFileName.IsNull())
-    LOG(info) << GetName() << ": Geometry file  : " << fGeoFileName;
+  if (!fGeoFileName.IsNull()) LOG(info) << GetName() << ": Geometry file  : " << fGeoFileName;
   std::cout << std::endl << std::endl;
 
 
@@ -631,10 +625,8 @@ void CbmTransport::Run(Int_t nEvents) {
 
 
 // -----   Set the beam angle distribution   --------------------------------
-void CbmTransport::SetBeamAngle(Double_t x0,
-                                Double_t y0,
-                                Double_t sigmaX,
-                                Double_t sigmaY) {
+void CbmTransport::SetBeamAngle(Double_t x0, Double_t y0, Double_t sigmaX, Double_t sigmaY)
+{
   assert(fEventGen);
   fEventGen->SetBeamAngle(x0, y0, sigmaX, sigmaY);
 }
@@ -642,11 +634,8 @@ void CbmTransport::SetBeamAngle(Double_t x0,
 
 
 // -----   Set the beam position   ------------------------------------------
-void CbmTransport::SetBeamPosition(Double_t x0,
-                                   Double_t y0,
-                                   Double_t sigmaX,
-                                   Double_t sigmaY,
-                                   Double_t z) {
+void CbmTransport::SetBeamPosition(Double_t x0, Double_t y0, Double_t sigmaX, Double_t sigmaY, Double_t z)
+{
   assert(fEventGen);
   fEventGen->SetBeamPosition(x0, y0, sigmaX, sigmaY, z);
 }
@@ -654,13 +643,11 @@ void CbmTransport::SetBeamPosition(Double_t x0,
 
 
 // -----   Set a decay mode   -----------------------------------------------
-void CbmTransport::SetDecayMode(Int_t pdg,
-                                UInt_t nDaughters,
-                                Int_t* daughterPdg) {
+void CbmTransport::SetDecayMode(Int_t pdg, UInt_t nDaughters, Int_t* daughterPdg)
+{
 
   if (fDecayModes.count(pdg) != 0) {
-    LOG(fatal) << GetName() << ": User decay mode for PDG " << pdg
-               << " is already defined!";
+    LOG(fatal) << GetName() << ": User decay mode for PDG " << pdg << " is already defined!";
     return;
   }
 
@@ -672,7 +659,8 @@ void CbmTransport::SetDecayMode(Int_t pdg,
 
 
 // -----   Set geometry file name   -----------------------------------------
-void CbmTransport::SetGeoFileName(TString fileName) {
+void CbmTransport::SetGeoFileName(TString fileName)
+{
 
   // Check for the directory
   std::string name = fileName.Data();
@@ -692,7 +680,8 @@ void CbmTransport::SetGeoFileName(TString fileName) {
 
 
 // -----   Set parameter file name   ----------------------------------------
-void CbmTransport::SetParFileName(TString fileName) {
+void CbmTransport::SetParFileName(TString fileName)
+{
 
   // --- If file does not exist, check the directory
   if (gSystem->AccessPathName(fileName)) {
@@ -701,8 +690,7 @@ void CbmTransport::SetParFileName(TString fileName) {
     if (found >= 0) {
       TString parDir = name.substr(0, found);
       if (gSystem->AccessPathName(parDir.Data())) {
-        LOG(fatal) << GetName() << ": Parameter directory " << parDir
-                   << " does not exist!";
+        LOG(fatal) << GetName() << ": Parameter directory " << parDir << " does not exist!";
         return;
       }  //? Directory of parameter file does not exist
     }    //? File name contains directory path
@@ -714,14 +702,13 @@ void CbmTransport::SetParFileName(TString fileName) {
 
 
 // -----   Set random event plane generation   ------------------------------
-void CbmTransport::SetRandomEventPlane(Double_t phiMin, Double_t phiMax) {
-  fEventGen->SetEventPlane(phiMin, phiMax);
-}
+void CbmTransport::SetRandomEventPlane(Double_t phiMin, Double_t phiMax) { fEventGen->SetEventPlane(phiMin, phiMax); }
 // --------------------------------------------------------------------------
 
 
 // -----   Set output file name   -------------------------------------------
-void CbmTransport::SetOutFileName(TString fileName) {
+void CbmTransport::SetOutFileName(TString fileName)
+{
 
   // Check for the directory
   std::string name = fileName.Data();
@@ -729,8 +716,7 @@ void CbmTransport::SetOutFileName(TString fileName) {
   if (found >= 0) {
     TString outDir = name.substr(0, found);
     if (gSystem->AccessPathName(outDir.Data())) {
-      LOG(fatal) << GetName() << ": Output directory " << outDir
-                 << " does not exist!";
+      LOG(fatal) << GetName() << ": Output directory " << outDir << " does not exist!";
       return;
     }  //? Directory of output file does not exist
   }    //? File name contains directory path
@@ -741,13 +727,9 @@ void CbmTransport::SetOutFileName(TString fileName) {
 
 
 // -----   Define the target   ----------------------------------------------
-void CbmTransport::SetTarget(const char* medium,
-                             Double_t thickness,
-                             Double_t diameter,
-                             Double_t x,
-                             Double_t y,
-                             Double_t z,
-                             Double_t angle) {
+void CbmTransport::SetTarget(const char* medium, Double_t thickness, Double_t diameter, Double_t x, Double_t y,
+                             Double_t z, Double_t angle)
+{
 
   fTarget.reset(new CbmTarget(medium, thickness, diameter));
   fTarget->SetPosition(x, y, z);
@@ -757,7 +739,8 @@ void CbmTransport::SetTarget(const char* medium,
 
 
 // -----   Enable vertex distribution in x and y   --------------------------
-void CbmTransport::SetVertexSmearXY(Bool_t choice) {
+void CbmTransport::SetVertexSmearXY(Bool_t choice)
+{
   assert(fEventGen);
   fEventGen->SmearGausVertexXY(choice);
 }
@@ -765,7 +748,8 @@ void CbmTransport::SetVertexSmearXY(Bool_t choice) {
 
 
 // -----   Enable vertex distribution z   -----------------------------------
-void CbmTransport::SetVertexSmearZ(Bool_t choice) {
+void CbmTransport::SetVertexSmearZ(Bool_t choice)
+{
   assert(fEventGen);
   fEventGen->SmearVertexZ(choice);
 }

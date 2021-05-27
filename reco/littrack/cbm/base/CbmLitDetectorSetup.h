@@ -8,6 +8,7 @@
 #define CBMLITDETECTORSETUP_H_
 
 #include "CbmDefs.h"
+
 #include <map>
 #include <string>
 using std::map;
@@ -49,9 +50,7 @@ public:
     * \brief Set electron setup of detector.
     * \param[in] isElectronSetup True if electron setup.
     */
-  void SetElectronSetup(bool isElectronSetup) {
-    fIsElectronSetup = isElectronSetup;
-  }
+  void SetElectronSetup(bool isElectronSetup) { fIsElectronSetup = isElectronSetup; }
 
   /**
     * \brief Return true if electron setup is detected.

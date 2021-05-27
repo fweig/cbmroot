@@ -8,8 +8,10 @@
 
 #include "CbmDefs.h"
 #include "CbmMCInput.h"
+
 #include "TF1.h"
 #include "TObject.h"
+
 #include <map>
 #include <set>
 #include <utility>
@@ -61,9 +63,7 @@ public:
      ** @param inputId  Unique input identifier
      ** @param input    Pointer to CbmMCInput object
      **/
-  void AddInput(UInt_t inputId,
-                TChain* chain,
-                ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
+  void AddInput(UInt_t inputId, TChain* chain, ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
   /** @brief List of branches
@@ -88,10 +88,10 @@ public:
      **
      ** Returns -1 for the ID and a null pointer if no input is connected.
      **/
-  std::pair<UInt_t, CbmMCInput*> GetFirstInput() {
+  std::pair<UInt_t, CbmMCInput*> GetFirstInput()
+  {
     return (fInputs.empty() ? std::make_pair(-1, nullptr)
-                            : std::make_pair(fInputs.begin()->first,
-                                             fInputs.begin()->second));
+                            : std::make_pair(fInputs.begin()->first, fInputs.begin()->second));
   }
 
 
@@ -99,9 +99,7 @@ public:
      ** @param id  Unique input identifier
      ** @value Pointer to CbmMCInput object. Null if ID is not used.
      **/
-  CbmMCInput* GetInput(UInt_t id) {
-    return (fInputs.find(id) == fInputs.end() ? nullptr : fInputs[id]);
-  }
+  CbmMCInput* GetInput(UInt_t id) { return (fInputs.find(id) == fInputs.end() ? nullptr : fInputs[id]); }
 
 
   /** @brief Maximal number of events to be read from the input set
@@ -143,7 +141,7 @@ private:
   std::map<UInt_t, CbmMCInput*> fInputs;                 // Key is input ID
   std::map<UInt_t, CbmMCInput*>::iterator fInputHandle;  // Handle for inputs
   std::set<TString> fBranches;                           // List of branch names
-  TF1* fDeltaDist;  // Probability distribution for delta(t)
+  TF1* fDeltaDist;                                       // Probability distribution for delta(t)
 
 
   /** @brief Compare an input branch list with the reference branch list

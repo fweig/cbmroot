@@ -1,5 +1,6 @@
 using namespace std;
-void draw_study_report() {
+void draw_study_report()
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
@@ -32,7 +33,6 @@ void draw_study_report() {
                    true);  // create directory if it does not exist
   }
 
-  CbmRichSmallPrototypeStudyReport* reportQa =
-    new CbmRichSmallPrototypeStudyReport();
+  CbmRichSmallPrototypeStudyReport* reportQa = new CbmRichSmallPrototypeStudyReport();
   reportQa->Create(fileNames, studyNames, outputDir);
 }

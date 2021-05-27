@@ -26,7 +26,8 @@ public:
   ClassDef(CbmGeoMuch, 0)  // Class for MUID
 };
 
-inline Int_t CbmGeoMuch::getModNumInMod(const TString& name) {
+inline Int_t CbmGeoMuch::getModNumInMod(const TString& name)
+{
   // returns the module index from module name
   return (Int_t)(name[4] - '0') - 1;
 }

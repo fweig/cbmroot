@@ -1,6 +1,6 @@
-void eventDisplay() {
-  TString dataDir =
-    "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/4mrad_X_2mrad_Y_5_3/New/";
+void eventDisplay()
+{
+  TString dataDir   = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/4mrad_X_2mrad_Y_5_3/New/";
   TString setupName = "setup_4mrad_X_2mrad_Y_5_3";
   TString InputFile = dataDir + setupName + "_mc.root";
   TString ParFile   = dataDir + setupName + "_param.root";
@@ -20,12 +20,9 @@ void eventDisplay() {
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
   //  FairMCPointDraw  *MvdPoint      = new FairMCPointDraw ("MvdPoint",      kBlack,  kFullSquare);
-  FairMCPointDraw* StsPoint =
-    new FairMCPointDraw("StsPoint", kBlue, kFullSquare);
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
-  FairMCPointDraw* RefPlanePoint =
-    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+  FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kBlue, kFullSquare);
+  FairMCPointDraw* RichPoint     = new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RefPlanePoint = new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
   //  FairMCPointDraw  *TrdPoint      = new FairMCPointDraw ("TrdPoint",      kCyan,   kFullSquare);
   //  FairMCPointDraw  *TofPoint      = new FairMCPointDraw ("TofPoint",      kGreen,  kFullSquare);
   //  FairMCPointDraw  *EcalPoint     = new FairMCPointDraw ("EcalPoint",     kYellow, kFullSquare);

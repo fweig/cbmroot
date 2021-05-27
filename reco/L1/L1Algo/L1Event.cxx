@@ -2,7 +2,8 @@
 
 void L1Event::Clear() { fStsHit.clear(); }
 
-void L1Event::TopoReconstructor() {
+void L1Event::TopoReconstructor()
+{
 
   fTopoReconstructor.Init(fKFPTrack, fKFPTrack);
   fTopoReconstructor.ReconstructPrimVertex();

@@ -47,9 +47,7 @@ public:
     * \param[in] colNames Names of the columns in table.
     * \return String with table open tag.
     */
-  virtual std::string
-  TableBegin(const std::string& caption,
-             const std::vector<std::string>& colNames) const = 0;
+  virtual std::string TableBegin(const std::string& caption, const std::vector<std::string>& colNames) const = 0;
 
   /**
     * \brief Return string with table close tag.
@@ -63,8 +61,7 @@ public:
     * \param[in] name Name of the row.
     * \return string with table row which spans over all columns.
     */
-  virtual std::string TableEmptyRow(int nofCols,
-                                    const std::string& name) const = 0;
+  virtual std::string TableEmptyRow(int nofCols, const std::string& name) const = 0;
 
   /**
     * \brief Return string with table row tags.
@@ -79,8 +76,7 @@ public:
     * \param[in] file Name of the image file.
     * \return string with image tags.
     */
-  virtual std::string Image(const std::string& title,
-                            const std::string& file) const = 0;
+  virtual std::string Image(const std::string& title, const std::string& file) const = 0;
 
   /**
     * \brief Return string with open tags for document.

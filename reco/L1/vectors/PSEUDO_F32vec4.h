@@ -1,9 +1,11 @@
 #ifndef L1Algo_PSEUDO_F32vec4_H
 #define L1Algo_PSEUDO_F32vec4_H
 
-#include "vec_arithmetic.h"
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
+
+#include "vec_arithmetic.h"
 
 /**********************************
  *
@@ -29,20 +31,23 @@ public:
   float operator[](int i) const { return ((float*) &v)[i]; }
 
   F32vec4() {}
-  F32vec4(const F32vec4& a) {
+  F32vec4(const F32vec4& a)
+  {
     v[0] = a.v[0];
     v[1] = a.v[1];
     v[2] = a.v[2];
     v[3] = a.v[3];
   }
-  F32vec4(const float& a) {
+  F32vec4(const float& a)
+  {
     v[0] = a;
     v[1] = a;
     v[2] = a;
     v[3] = a;
   }
 
-  F32vec4(const float& f0, const float& f1, const float& f2, const float& f3) {
+  F32vec4(const float& f0, const float& f1, const float& f2, const float& f3)
+  {
     v[0] = f0;
     v[1] = f1;
     v[2] = f2;
@@ -50,26 +55,26 @@ public:
   }
 
 
-#define _f2(A, B, F)                                                           \
-  F32vec4 z;                                                                   \
-  z.v[0] = F(A.v[0], B.v[0]);                                                  \
-  z.v[1] = F(A.v[1], B.v[1]);                                                  \
-  z.v[2] = F(A.v[2], B.v[2]);                                                  \
-  z.v[3] = F(A.v[3], B.v[3]);                                                  \
+#define _f2(A, B, F)                                                                                                   \
+  F32vec4 z;                                                                                                           \
+  z.v[0] = F(A.v[0], B.v[0]);                                                                                          \
+  z.v[1] = F(A.v[1], B.v[1]);                                                                                          \
+  z.v[2] = F(A.v[2], B.v[2]);                                                                                          \
+  z.v[3] = F(A.v[3], B.v[3]);                                                                                          \
   return z;
-#define _f1(A, F)                                                              \
-  F32vec4 z;                                                                   \
-  z.v[0] = F(A.v[0]);                                                          \
-  z.v[1] = F(A.v[1]);                                                          \
-  z.v[2] = F(A.v[2]);                                                          \
-  z.v[3] = F(A.v[3]);                                                          \
+#define _f1(A, F)                                                                                                      \
+  F32vec4 z;                                                                                                           \
+  z.v[0] = F(A.v[0]);                                                                                                  \
+  z.v[1] = F(A.v[1]);                                                                                                  \
+  z.v[2] = F(A.v[2]);                                                                                                  \
+  z.v[3] = F(A.v[3]);                                                                                                  \
   return z;
-#define _op(A, B, O)                                                           \
-  F32vec4 z;                                                                   \
-  z.v[0] = A.v[0] O B.v[0];                                                    \
-  z.v[1] = A.v[1] O B.v[1];                                                    \
-  z.v[2] = A.v[2] O B.v[2];                                                    \
-  z.v[3] = A.v[3] O B.v[3];                                                    \
+#define _op(A, B, O)                                                                                                   \
+  F32vec4 z;                                                                                                           \
+  z.v[0] = A.v[0] O B.v[0];                                                                                            \
+  z.v[1] = A.v[1] O B.v[1];                                                                                            \
+  z.v[2] = A.v[2] O B.v[2];                                                                                            \
+  z.v[3] = A.v[3] O B.v[3];                                                                                            \
   return z;
 
   /* Arithmetic Operators */
@@ -80,22 +85,17 @@ public:
 
   /* Comparison */
   friend F32vec4 operator<(const F32vec4& a, const F32vec4& b) { _op(a, b, <) }
-  friend F32vec4 operator<=(const F32vec4& a, const F32vec4& b) {
-    _op(a, b, <=)
-  }
+  friend F32vec4 operator<=(const F32vec4& a, const F32vec4& b) { _op(a, b, <=) }
   friend F32vec4 operator>(const F32vec4& a, const F32vec4& b) { _op(a, b, >) }
-  friend F32vec4 operator>=(const F32vec4& a, const F32vec4& b) {
-    _op(a, b, >=)
-  }
+  friend F32vec4 operator>=(const F32vec4& a, const F32vec4& b) { _op(a, b, >=) }
 
   /* Logic */
   friend F32vec4 operator&(const F32vec4& a, const F32vec4& b) { _op(a, b, &&) }
   friend F32vec4 operator|(const F32vec4& a, const F32vec4& b) { _op(a, b, ||) }
-  friend F32vec4 operator||(const F32vec4& a, const F32vec4& b) {
-    _op(a, b, ||)
-  }
+  friend F32vec4 operator||(const F32vec4& a, const F32vec4& b) { _op(a, b, ||) }
 
-  friend F32vec4 operator!(const F32vec4& a) {
+  friend F32vec4 operator!(const F32vec4& a)
+  {
     F32vec4 z;
     z[0] = !a[0];
     z[1] = !a[1];
@@ -105,7 +105,8 @@ public:
     return z;
   }
 
-  friend F32vec4 if3(const F32vec4& a, const F32vec4& b, const F32vec4& c) {
+  friend F32vec4 if3(const F32vec4& a, const F32vec4& b, const F32vec4& c)
+  {
     F32vec4 z;
     z[0] = (a[0]) ? b[0] : c[0];
     z[1] = (a[1]) ? b[1] : c[1];
@@ -119,7 +120,8 @@ public:
 #define EmptyFvec(a) !(bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3]))
   // bool NotEmpty(const F32vec4 &a) { return a[0]||a[1]||a[2]||a[3]; }
   // bool    Empty(const F32vec4 &a) { return !(a[0]||a[1]||a[2]||a[3]); } // optimize
-  friend F32vec4 bool2int(const F32vec4& a) {  // mask returned
+  friend F32vec4 bool2int(const F32vec4& a)
+  {  // mask returned
     return if3(a, 1, 0);
   }
 
@@ -152,12 +154,14 @@ public:
 
   vec_arithmetic(F32vec4, float);
 
-  friend ostream& operator<<(ostream& strm, const F32vec4& a) {
+  friend ostream& operator<<(ostream& strm, const F32vec4& a)
+  {
     strm << a[0] << " " << a[1] << " " << a[2] << " " << a[3];
     return strm;
   }
 
-  friend istream& operator>>(istream& strm, F32vec4& a) {
+  friend istream& operator>>(istream& strm, F32vec4& a)
+  {
     float tmp;
     strm >> tmp;
     a = tmp;
@@ -174,7 +178,8 @@ const int fvecLen = 4;
 //#define fvec_false _f32vec4_false
 #define _fvecalignment
 
-namespace nsL1 {
+namespace nsL1
+{
   template<typename T>
   struct vector {
     typedef std::vector<T> TStd;
@@ -187,6 +192,7 @@ namespace nsL1 {
 template<typename T>
 struct nsL1vector :
   public nsL1::vector<T>  // just for use std::vector simultaniosly
-{};
+{
+};
 
 #endif

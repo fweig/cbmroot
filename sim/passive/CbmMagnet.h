@@ -8,14 +8,8 @@ class TGeoCombiTrans;
 
 class CbmMagnet : public FairModule {
 public:
-  CbmMagnet(const char* name,
-            const char* title = "CBM Magnet",
-            Double_t px       = 0.,
-            Double_t py       = 0.,
-            Double_t pz       = 0.,
-            Double_t rx       = 0.,
-            Double_t ry       = 0.,
-            Double_t rz       = 0.);
+  CbmMagnet(const char* name, const char* title = "CBM Magnet", Double_t px = 0., Double_t py = 0., Double_t pz = 0.,
+            Double_t rx = 0., Double_t ry = 0., Double_t rz = 0.);
   CbmMagnet();
   virtual ~CbmMagnet();
   virtual void ConstructGeometry();

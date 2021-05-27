@@ -30,9 +30,7 @@ struct CbmL1TrdHit  //:public CbmL1KFUMeasurement
 
   int MC_Point;
 
-  static bool compareStation(const CbmL1TrdHit& a, const CbmL1TrdHit& b) {
-    return (a.iStation < b.iStation);
-  }
+  static bool compareStation(const CbmL1TrdHit& a, const CbmL1TrdHit& b) { return (a.iStation < b.iStation); }
 };
 
 #endif

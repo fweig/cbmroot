@@ -2,6 +2,7 @@
 #define L1TrackParFit_h
 
 #include "../CbmL1Def.h"
+
 #include "L1Field.h"
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
@@ -10,8 +11,8 @@
 class L1TrackParFit {
 
 public:
-  fvec fx, fy, ftx, fty, fqp, fz, ft, C00, C10, C11, C20, C21, C22, C30, C31,
-    C32, C33, C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF;
+  fvec fx, fy, ftx, fty, fqp, fz, ft, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33, C40, C41, C42, C43, C44, C50,
+    C51, C52, C53, C54, C55, chi2, NDF;
   //  fvec n;
 
   fvec fMass  = 0.10565800;     // muon mass
@@ -131,7 +132,8 @@ public:
 
 // =============================================================================================
 
-inline void L1TrackParFit::Print(int i) {
+inline void L1TrackParFit::Print(int i)
+{
   std::cout.setf(std::ios::scientific, std::ios::floatfield);
   if (i == -1) {
     std::cout << "T = " << std::endl;
@@ -142,7 +144,8 @@ inline void L1TrackParFit::Print(int i) {
     std::cout << fqp << std::endl;
     std::cout << fz << std::endl;
     std::cout << ft << std::endl;
-  } else {
+  }
+  else {
     std::cout << "T = ";
     std::cout << fx[i] << " ";
     std::cout << fy[i] << " ";
@@ -161,7 +164,8 @@ inline void L1TrackParFit::Print(int i) {
 }
 
 
-inline void L1TrackParFit::Compare(L1TrackPar& T) {
+inline void L1TrackParFit::Compare(L1TrackPar& T)
+{
   std::cout.precision(8);
 
   //   if (fabs(T.x[0]-fx[0])/T.x[0] > 1.e-7)  std::cout << fx  <<" x "<< T.x << std::endl;
@@ -201,32 +205,28 @@ inline void L1TrackParFit::Compare(L1TrackPar& T) {
 
 
   std::cout << "parameters:" << std::endl;
-  std::cout << T.x[0] << " " << T.y[0] << " " << T.z[0] << " " << T.tx[0] << " "
-            << T.ty[0] << " " << T.qp[0] << std::endl;
-  std::cout << fx[0] << " " << fy[0] << " " << fz[0] << " " << ftx[0] << " "
-            << fty[0] << " " << fqp[0] << " " << ft[0] << std::endl;
+  std::cout << T.x[0] << " " << T.y[0] << " " << T.z[0] << " " << T.tx[0] << " " << T.ty[0] << " " << T.qp[0]
+            << std::endl;
+  std::cout << fx[0] << " " << fy[0] << " " << fz[0] << " " << ftx[0] << " " << fty[0] << " " << fqp[0] << " " << ft[0]
+            << std::endl;
 
   std::cout << "Covariance matrix:" << std::endl;
-  std::cout << T.C00[0] << " " << T.C10[0] << " " << T.C11[0] << " " << T.C20[0]
-            << " " << T.C21[0] << " " << T.C22[0] << " " << T.C30[0] << " "
-            << T.C31[0] << " " << T.C32[0] << " " << T.C33[0] << " " << T.C40[0]
-            << " " << T.C41[0] << " " << T.C42[0] << " " << T.C43[0] << " "
-            << T.C44[0] << std::endl;
+  std::cout << T.C00[0] << " " << T.C10[0] << " " << T.C11[0] << " " << T.C20[0] << " " << T.C21[0] << " " << T.C22[0]
+            << " " << T.C30[0] << " " << T.C31[0] << " " << T.C32[0] << " " << T.C33[0] << " " << T.C40[0] << " "
+            << T.C41[0] << " " << T.C42[0] << " " << T.C43[0] << " " << T.C44[0] << std::endl;
 
-  std::cout << C00[0] << " " << C10[0] << " " << C11[0] << " " << C20[0] << " "
-            << C21[0] << " " << C22[0] << " " << C30[0] << " " << C31[0] << " "
-            << C32[0] << " " << C33[0] << " " << C40[0] << " " << C41[0] << " "
+  std::cout << C00[0] << " " << C10[0] << " " << C11[0] << " " << C20[0] << " " << C21[0] << " " << C22[0] << " "
+            << C30[0] << " " << C31[0] << " " << C32[0] << " " << C33[0] << " " << C40[0] << " " << C41[0] << " "
             << C42[0] << " " << C43[0] << " " << C44[0] << std::endl;
   std::cout << "    Time covariance:" << std::endl;
-  std::cout << "    " << C50[0] << " " << C51[0] << " " << C52[0] << " "
-            << C53[0] << " " << C54[0] << " " << C55[0] << " " << std::endl;
+  std::cout << "    " << C50[0] << " " << C51[0] << " " << C52[0] << " " << C53[0] << " " << C54[0] << " " << C55[0]
+            << " " << std::endl;
 
   std::cout << std::endl;
 }
 
-inline void L1TrackParFit::SetOneEntry(const int i0,
-                                       const L1TrackParFit& T1,
-                                       const int i1) {
+inline void L1TrackParFit::SetOneEntry(const int i0, const L1TrackParFit& T1, const int i1)
+{
   fx[i0]  = T1.fx[i1];
   fy[i0]  = T1.fy[i1];
   ftx[i0] = T1.ftx[i1];

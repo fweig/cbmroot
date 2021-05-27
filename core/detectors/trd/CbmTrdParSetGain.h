@@ -1,10 +1,10 @@
 #ifndef CBMTRDPARSETGAIN_H
 #define CBMTRDPARSETGAIN_H
 
+#include "CbmTrdParSet.h"  // for CbmTrdParSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Bool_t, kTRUE
-
-#include "CbmTrdParSet.h"  // for CbmTrdParSet
 
 class FairParamList;
 
@@ -16,8 +16,7 @@ class CbmTrdGainMod;
 class CbmTrdParSetGain : public CbmTrdParSet {
 public:
   /** Standard constructor **/
-  CbmTrdParSetGain(const char* name    = "CbmTrdParSetGain",
-                   const char* title   = "TRD GAIN parameters",
+  CbmTrdParSetGain(const char* name = "CbmTrdParSetGain", const char* title = "TRD GAIN parameters",
                    const char* context = "Default");
 
   /** \brief Destructor **/

@@ -1,4 +1,5 @@
-void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
+void create_RICH_geo_file(char* geometry = "rich-2900-N2-0")
+{
   char infile[256];   // geometry data file - input
   char outfile[256];  // geometry data file for CBMROOT - output
   char logfile[256];  // log file
@@ -49,8 +50,8 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
   if (!fopen(infile, "r")) {
     printf("... does not exist. \n");
     printf("... exit. \n\n");
-
-  } else {
+  }
+  else {
 
     printf("output file: %s\n", outfile);
     printf("logfile: %s\n", logfile);
@@ -61,93 +62,26 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     FILE* fin = fopen(infile, "r");
     fscanf(fin, "%s %s", dummy[1], dummy[2]);
     printf("%s %s\n", dummy[1], dummy[2]);
-    fscanf(fin,
-           "%s %s %s %s %s %s",
-           dummy[1],
-           dummy[2],
-           dummy[3],
-           dummy[4],
-           dummy[5],
-           dummy[6]);
-    printf("%s %s %s %s %s %s\n",
-           dummy[1],
-           dummy[2],
-           dummy[3],
-           dummy[4],
-           dummy[5],
-           dummy[6]);
-    fscanf(fin,
-           "%f %f %f %f %f %s",
-           &zBarrel,
-           &lBarrel,
-           &dWindow,
-           &dVessel,
-           &lRadiator,
-           gas);
-    printf("%6.2f %6.2f %6.2f %6.2f %6.2f %s\n",
-           zBarrel,
-           lBarrel,
-           dWindow,
-           dVessel,
-           lRadiator,
-           gas);
+    fscanf(fin, "%s %s %s %s %s %s", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5], dummy[6]);
+    printf("%s %s %s %s %s %s\n", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5], dummy[6]);
+    fscanf(fin, "%f %f %f %f %f %s", &zBarrel, &lBarrel, &dWindow, &dVessel, &lRadiator, gas);
+    printf("%6.2f %6.2f %6.2f %6.2f %6.2f %s\n", zBarrel, lBarrel, dWindow, dVessel, lRadiator, gas);
     fscanf(fin, "%s %s", dummy[1], dummy[2]);
     printf("%s %s\n", dummy[1], dummy[2]);
-    fscanf(
-      fin, "%s %s %s %s %s", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5]);
-    printf(
-      "%s %s %s %s %s\n", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5]);
+    fscanf(fin, "%s %s %s %s %s", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5]);
+    printf("%s %s %s %s %s\n", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5]);
     fscanf(fin, "%f %f %s %f %f", &radius, &dMirror, mirror, &yBeam, &angle);
-    printf(
-      "%6.2f %6.2f %s %6.2f %6.2f\n", radius, dMirror, mirror, yBeam, angle);
+    printf("%6.2f %6.2f %s %6.2f %6.2f\n", radius, dMirror, mirror, yBeam, angle);
     fscanf(fin, "%s %s %s", dummy[1], dummy[2], dummy[3]);
     printf("%s %s %s\n", dummy[1], dummy[2], dummy[3]);
-    fscanf(fin,
-           "%s %s %s %s %s %s %s %s %s %s",
-           dummy[1],
-           dummy[2],
-           dummy[3],
-           dummy[4],
-           dummy[5],
-           dummy[6],
-           dummy[7],
-           dummy[8],
-           dummy[9],
-           dummy[10]);
-    printf("%s %s %s %s %s %s %s %s %s %s\n",
-           dummy[1],
-           dummy[2],
-           dummy[3],
-           dummy[4],
-           dummy[5],
-           dummy[6],
-           dummy[7],
-           dummy[8],
-           dummy[9],
-           dummy[10]);
-    fscanf(fin,
-           "%f %f %f %f %f %f %f %f %f %f",
-           &zPMT,
-           &yPMT,
-           &dx,
-           &dy,
-           &anglePMTx,
-           &anglePMTy,
-           &dGlass,
-           &dCathode,
-           &lTube,
-           &dSupport);
-    printf("%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n",
-           zPMT,
-           yPMT,
-           dx,
-           dy,
-           anglePMTx,
-           anglePMTy,
-           dGlass,
-           dCathode,
-           lTube,
-           dSupport);
+    fscanf(fin, "%s %s %s %s %s %s %s %s %s %s", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5], dummy[6], dummy[7],
+           dummy[8], dummy[9], dummy[10]);
+    printf("%s %s %s %s %s %s %s %s %s %s\n", dummy[1], dummy[2], dummy[3], dummy[4], dummy[5], dummy[6], dummy[7],
+           dummy[8], dummy[9], dummy[10]);
+    fscanf(fin, "%f %f %f %f %f %f %f %f %f %f", &zPMT, &yPMT, &dx, &dy, &anglePMTx, &anglePMTy, &dGlass, &dCathode,
+           &lTube, &dSupport);
+    printf("%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n", zPMT, yPMT, dx, dy, anglePMTx, anglePMTy,
+           dGlass, dCathode, lTube, dSupport);
     printf("--------------------------------------------------------------\n");
     printf("\n");
     fclose(fin);
@@ -192,56 +126,38 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     // beam cone at mirror:
     rM = (r2 - r1) / lBarrel * (lRadiator + zPMT) + r1;
     if ((rM + 30.) > yBeam) yBeam = rM + 30.;  // add 3cm for mirror support
-    if ((TMath::Tan(2.5 / 180. * TMath::Pi()) * (zBarrel + zPMT + lRadiator))
-        > yBeam)
-      yBeam =
-        TMath::Tan(2.5 / 180. * TMath::Pi())
-        * (zBarrel + zPMT + lRadiator);  // agreement: inner hole 2.5 degrees
+    if ((TMath::Tan(2.5 / 180. * TMath::Pi()) * (zBarrel + zPMT + lRadiator)) > yBeam)
+      yBeam = TMath::Tan(2.5 / 180. * TMath::Pi()) * (zBarrel + zPMT + lRadiator);  // agreement: inner hole 2.5 degrees
 
 
     printf("check pipe.geo! --> modify? \n");
-    printf(" ... third last line of pipe1: %6.2f  %6.2f %6.2f ?\n",
-           zBarrel,
-           r1 - rC,
-           r1);
-    printf(" ... third last line of pipevac1: %6.2f  0. %6.2f ?\n",
-           zBarrel,
-           r1 - rC);
-    printf(
-      " ... 4th line of pipe2: %6.2f  0. %6.2f ?\n", zBarrel + lBarrel, r2);
-    printf(" ... 4th line of pipevac2: %6.2f  0. %6.2f ?\n",
-           zBarrel + lBarrel,
-           r2 - rC);
+    printf(" ... third last line of pipe1: %6.2f  %6.2f %6.2f ?\n", zBarrel, r1 - rC, r1);
+    printf(" ... third last line of pipevac1: %6.2f  0. %6.2f ?\n", zBarrel, r1 - rC);
+    printf(" ... 4th line of pipe2: %6.2f  0. %6.2f ?\n", zBarrel + lBarrel, r2);
+    printf(" ... 4th line of pipevac2: %6.2f  0. %6.2f ?\n", zBarrel + lBarrel, r2 - rC);
     printf("\n");
 
     // mirror parameters (angles in degree for SPHE)
-    theta1 =
-      (TMath::Pi() / 2. - TMath::ATan(yM / 2. / radius)) * 180. / TMath::Pi();
-    theta2 =
-      (TMath::Pi() / 2. + TMath::ATan(yM / 2. / radius)) * 180. / TMath::Pi();
-    phi1 = (TMath::Pi() / 2. - TMath::ATan(xM / radius)) * 180. / TMath::Pi();
-    phi2 = (TMath::Pi() / 2. + TMath::ATan(xM / radius)) * 180. / TMath::Pi();
+    theta1 = (TMath::Pi() / 2. - TMath::ATan(yM / 2. / radius)) * 180. / TMath::Pi();
+    theta2 = (TMath::Pi() / 2. + TMath::ATan(yM / 2. / radius)) * 180. / TMath::Pi();
+    phi1   = (TMath::Pi() / 2. - TMath::ATan(xM / radius)) * 180. / TMath::Pi();
+    phi2   = (TMath::Pi() / 2. + TMath::ATan(xM / radius)) * 180. / TMath::Pi();
 
     theta3 = theta1 - TMath::ATan(yBeam / radius) * 180. / TMath::Pi();
-    phi3   = (TMath::Pi() / 2. - TMath::ATan((1.5 * yBeam) / radius)) * 180.
-           / TMath::Pi();
-    phi4 = (TMath::Pi() / 2. + TMath::ATan((1.5 * yBeam) / radius)) * 180.
-           / TMath::Pi();
+    phi3   = (TMath::Pi() / 2. - TMath::ATan((1.5 * yBeam) / radius)) * 180. / TMath::Pi();
+    phi4   = (TMath::Pi() / 2. + TMath::ATan((1.5 * yBeam) / radius)) * 180. / TMath::Pi();
 
 
     // ... (center of SPHE)
-    yMC = yM / 2. * TMath::Cos(angle / 180. * TMath::Pi()) + yBeam
-          + TMath::Tan(angle / 180. * TMath::Pi()) * radius;
+    yMC = yM / 2. * TMath::Cos(angle / 180. * TMath::Pi()) + yBeam + TMath::Tan(angle / 180. * TMath::Pi()) * radius;
     zMC = (lRadiator + zPMT) - radius;
 
     //output to geo file
     FILE* fout = fopen(outfile, "w");
 
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "// RICH barrel\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "cave\n");
     fprintf(fout, "TRAP\n");
@@ -257,8 +173,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. 0. %6.2f\n", zBarrel);
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1entrance\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "TRAP\n");
@@ -267,71 +182,38 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "%6.2f %6.2f 0. \n ", xB1 - dVessel, yB - dVessel);
     fprintf(fout, "-%6.2f %6.2f 0. \n ", xB1 - dVessel, yB - dVessel);
     fprintf(fout, "-%6.2f -%6.2f 0. \n ", xB1 - dVessel, yB - dVessel);
-    fprintf(
-      fout, "%6.2f -%6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
-    fprintf(
-      fout, "%6.2f %6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
-    fprintf(
-      fout, "-%6.2f %6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
-    fprintf(
-      fout, "-%6.2f -%6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
+    fprintf(fout, "%6.2f -%6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
+    fprintf(fout, "%6.2f %6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
+    fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
+    fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", xE1 - dVessel, yB - dVessel, dWindow);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1exit\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "TRAP\n");
     fprintf(fout, "kapton\n");
-    fprintf(fout,
-            "%6.2f -%6.2f %6.2f \n ",
-            xE2 - dVessel,
-            yB - dVessel,
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "%6.2f %6.2f %6.2f \n ",
-            xE2 - dVessel,
-            yB - dVessel,
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "-%6.2f %6.2f %6.2f \n ",
-            xE2 - dVessel,
-            yB - dVessel,
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "-%6.2f -%6.2f %6.2f \n ",
-            xE2 - dVessel,
-            yB - dVessel,
-            (lBarrel - dWindow));
-    fprintf(
-      fout, "%6.2f -%6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
-    fprintf(
-      fout, "%6.2f %6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
-    fprintf(
-      fout, "-%6.2f %6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
-    fprintf(
-      fout, "-%6.2f -%6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
+    fprintf(fout, "%6.2f -%6.2f %6.2f \n ", xE2 - dVessel, yB - dVessel, (lBarrel - dWindow));
+    fprintf(fout, "%6.2f %6.2f %6.2f \n ", xE2 - dVessel, yB - dVessel, (lBarrel - dWindow));
+    fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xE2 - dVessel, yB - dVessel, (lBarrel - dWindow));
+    fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", xE2 - dVessel, yB - dVessel, (lBarrel - dWindow));
+    fprintf(fout, "%6.2f -%6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
+    fprintf(fout, "%6.2f %6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
+    fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
+    fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", xB2 - dVessel, yB - dVessel, lBarrel);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1gas1\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "TRAP\n");
     fprintf(fout, "%s\n", gas);
-    fprintf(
-      fout, "%6.2f -%6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
-    fprintf(
-      fout, "%6.2f %6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
-    fprintf(
-      fout, "-%6.2f %6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
-    fprintf(fout,
-            "-%6.2f -%6.2f %6.2f \n ",
-            (xE1 - dVessel),
-            (yB - dVessel),
-            dWindow);
+    fprintf(fout, "%6.2f -%6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
+    fprintf(fout, "%6.2f %6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
+    fprintf(fout, "-%6.2f %6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
+    fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", (xE1 - dVessel), (yB - dVessel), dWindow);
     fprintf(fout, "%6.2f -%6.2f %6.2f \n ", xI1, (yB - dVessel), zI1);
     fprintf(fout, "%6.2f %6.2f %6.2f \n ", xI1, (yB - dVessel), zI1);
     fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xI1, (yB - dVessel), zI1);
@@ -339,8 +221,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1gas2\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "TRAP\n");
@@ -356,8 +237,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "rich1\n");
     fprintf(fout, "TRAP\n");
@@ -366,34 +246,16 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "%6.2f %6.2f %6.2f \n ", xI2, (yB - dVessel), zI2);
     fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xI2, (yB - dVessel), zI2);
     fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", xI2, (yB - dVessel), zI2);
-    fprintf(fout,
-            "%6.2f -%6.2f %6.2f \n ",
-            xE2 - dVessel,
-            (yB - dVessel),
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "%6.2f %6.2f %6.2f \n ",
-            xE2 - dVessel,
-            (yB - dVessel),
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "-%6.2f %6.2f %6.2f \n ",
-            xE2 - dVessel,
-            (yB - dVessel),
-            (lBarrel - dWindow));
-    fprintf(fout,
-            "-%6.2f -%6.2f %6.2f \n ",
-            xE2 - dVessel,
-            (yB - dVessel),
-            (lBarrel - dWindow));
+    fprintf(fout, "%6.2f -%6.2f %6.2f \n ", xE2 - dVessel, (yB - dVessel), (lBarrel - dWindow));
+    fprintf(fout, "%6.2f %6.2f %6.2f \n ", xE2 - dVessel, (yB - dVessel), (lBarrel - dWindow));
+    fprintf(fout, "-%6.2f %6.2f %6.2f \n ", xE2 - dVessel, (yB - dVessel), (lBarrel - dWindow));
+    fprintf(fout, "-%6.2f -%6.2f %6.2f \n ", xE2 - dVessel, (yB - dVessel), (lBarrel - dWindow));
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "// beam cone\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone1\n");
     fprintf(fout, "rich1gas1\n");
     fprintf(fout, "CONE\n");
@@ -404,8 +266,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rI1);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone1_vac\n");
     fprintf(fout, "rich1_cone1\n");
     fprintf(fout, "CONE\n");
@@ -416,8 +277,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rI1 - rC);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, " \n");
     fprintf(fout, "rich1_cone2\n");
     fprintf(fout, "rich1gas2\n");
@@ -429,8 +289,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rI2);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone2_vac\n");
     fprintf(fout, "rich1_cone2\n");
     fprintf(fout, "CONE\n");
@@ -441,8 +300,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rI2 - rC);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, " \n");
     fprintf(fout, "rich1_cone3\n");
     fprintf(fout, "rich1gas3\n");
@@ -454,8 +312,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rE2);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone3_vac\n");
     fprintf(fout, "rich1_cone3\n");
     fprintf(fout, "CONE\n");
@@ -466,8 +323,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rE2 - rC);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, " \n");
     fprintf(fout, "rich1_cone1_cap\n");
     fprintf(fout, "rich1entrance\n");
@@ -479,8 +335,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rE1);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone1_cap_vac\n");
     fprintf(fout, "rich1_cone1_cap\n");
     fprintf(fout, "CONE\n");
@@ -491,8 +346,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", rE1 - rC);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, " \n");
     fprintf(fout, "rich1_cone2_cap\n");
     fprintf(fout, "rich1exit\n");
@@ -504,8 +358,7 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. %6.2f\n", r2);
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1_cone2_cap_vac\n");
     fprintf(fout, "rich1_cone2_cap\n");
     fprintf(fout, "CONE\n");
@@ -517,11 +370,9 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "0. 0. 0.\n");
     fprintf(fout, " 1. 0. 0. 0. 1. 0. 0. 0. 1.\n");
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "// mirror\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mgl#1\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "SPHE\n");
@@ -530,14 +381,10 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, " %6.2f %6.2f\n", theta1, theta2);
     fprintf(fout, " %6.2f %6.2f\n", phi1, phi2);
     fprintf(fout, "0. %6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. + angle) / 180. * TMath::Pi()),
-            -TMath::Sin((90. + angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. + angle) / 180. * TMath::Pi()),
+    fprintf(fout, " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. + angle) / 180. * TMath::Pi()),
+            -TMath::Sin((90. + angle) / 180. * TMath::Pi()), TMath::Sin((90. + angle) / 180. * TMath::Pi()),
             TMath::Cos((90. + angle) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mglLU#1\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "SPHE\n");
@@ -546,14 +393,10 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, " %6.2f %6.2f\n", theta3, theta1);
     fprintf(fout, " %6.2f %6.2f\n", phi4, phi2);
     fprintf(fout, "0. %6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. + angle) / 180. * TMath::Pi()),
-            -TMath::Sin((90. + angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. + angle) / 180. * TMath::Pi()),
+    fprintf(fout, " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. + angle) / 180. * TMath::Pi()),
+            -TMath::Sin((90. + angle) / 180. * TMath::Pi()), TMath::Sin((90. + angle) / 180. * TMath::Pi()),
             TMath::Cos((90. + angle) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mglRU#1\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "SPHE\n");
@@ -562,51 +405,34 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, " %6.2f %6.2f\n", theta3, theta1);
     fprintf(fout, " %6.2f %6.2f\n", phi1, phi3);
     fprintf(fout, "0. %6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. + angle) / 180. * TMath::Pi()),
-            -TMath::Sin((90. + angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. + angle) / 180. * TMath::Pi()),
+    fprintf(fout, " 1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. + angle) / 180. * TMath::Pi()),
+            -TMath::Sin((90. + angle) / 180. * TMath::Pi()), TMath::Sin((90. + angle) / 180. * TMath::Pi()),
             TMath::Cos((90. + angle) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mgl#2\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "0. -%6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
+    fprintf(fout, " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. - angle) / 180. * TMath::Pi()),
+            TMath::Sin((90. - angle) / 180. * TMath::Pi()), TMath::Sin((90. - angle) / 180. * TMath::Pi()),
             -TMath::Cos((90. - angle) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mglLU#2\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "0. -%6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
+    fprintf(fout, " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. - angle) / 180. * TMath::Pi()),
+            TMath::Sin((90. - angle) / 180. * TMath::Pi()), TMath::Sin((90. - angle) / 180. * TMath::Pi()),
             -TMath::Cos((90. - angle) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "rich1mglRU#2\n");
     fprintf(fout, "rich1gas3\n");
     fprintf(fout, "0. -%6.2f %6.2f\n", yMC, zMC);
-    fprintf(fout,
-            " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n",
-            TMath::Cos((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
-            TMath::Sin((90. - angle) / 180. * TMath::Pi()),
+    fprintf(fout, " -1. 0. 0. 0. %6.4f %6.4f 0. %6.4f %6.4f\n", TMath::Cos((90. - angle) / 180. * TMath::Pi()),
+            TMath::Sin((90. - angle) / 180. * TMath::Pi()), TMath::Sin((90. - angle) / 180. * TMath::Pi()),
             -TMath::Cos((90. - angle) / 180. * TMath::Pi()));
     fprintf(fout, " \n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     fprintf(fout, "// photodetector\n");
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+    fprintf(fout, "//-----------------------------------------------------------\n");
     if (dGlass > 0) {
       fprintf(fout, "rich1dgl#1\n");
       fprintf(fout, "rich1gas1\n");
@@ -621,23 +447,15 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
       fprintf(fout, "-%6.2f  %6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "-%6.2f  -%6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     fprintf(fout, "rich1d#1\n");
     fprintf(fout, "rich1gas1\n");
@@ -652,22 +470,15 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
     fprintf(fout, "-%6.2f  %6.2f  0.\n", dx / 2., dy);
     fprintf(fout, "-%6.2f  -%6.2f  0.\n", dx / 2., dy);
     fprintf(fout, "%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass);
-    fprintf(fout,
-            " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-            TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+    fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n", TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
             -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
             TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-            -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-            TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+            TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
             TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-            TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+            TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+    fprintf(fout, "//-----------------------------------------------------------\n");
     if (lTube > 0) {
       fprintf(fout, "rich1dtube#1\n");
       fprintf(fout, "rich1gas1\n");
@@ -681,25 +492,16 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
       fprintf(fout, "%6.2f  %6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "-%6.2f  %6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "-%6.2f  -%6.2f  0.\n", dx / 2., dy);
-      fprintf(
-        fout, "%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dSupport > 0) {
       fprintf(fout, "rich1dsupport#1\n");
@@ -714,298 +516,178 @@ void create_RICH_geo_file(char* geometry = "rich-2900-N2-0") {
       fprintf(fout, "%6.2f  %6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "-%6.2f  %6.2f  0.\n", dx / 2., dy);
       fprintf(fout, "-%6.2f  -%6.2f  0.\n", dx / 2., dy);
-      fprintf(fout,
-              "%6.2f %6.2f %6.2f\n",
-              dx / 2.,
-              yPMT,
-              zPMT - dGlass - dCathode - lTube);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode - lTube);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dGlass > 0) {
       fprintf(fout, "rich1dgl#2\n");
       fprintf(fout, "rich1gas1\n");
       fprintf(fout, "%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     fprintf(fout, "rich1d#2\n");
     fprintf(fout, "rich1gas1\n");
     fprintf(fout, "%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass);
-    fprintf(fout,
-            " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-            TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+    fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n", TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
             -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
             TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-            TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+            TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
             TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-            TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+            TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+    fprintf(fout, "//-----------------------------------------------------------\n");
     if (lTube > 0) {
       fprintf(fout, "rich1dtube#2\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(
-        fout, "%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dSupport > 0) {
       fprintf(fout, "rich1dsupport#2\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(fout,
-              "%6.2f -%6.2f %6.2f\n",
-              dx / 2.,
-              yPMT,
-              zPMT - dGlass - dCathode - lTube);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode - lTube);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dGlass > 0) {
       fprintf(fout, "rich1dgl#3\n");
       fprintf(fout, "rich1gas1\n");
       fprintf(fout, "-%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     fprintf(fout, "rich1d#3\n");
     fprintf(fout, "rich1gas1\n");
     fprintf(fout, "-%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass);
-    fprintf(fout,
-            " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-            TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+    fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+            TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
             TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-            -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-            TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+            TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
             TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-            TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+            TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+    fprintf(fout, "//-----------------------------------------------------------\n");
     if (lTube > 0) {
       fprintf(fout, "rich1dtube#3\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(
-        fout, "-%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "-%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dSupport > 0) {
       fprintf(fout, "rich1dsupport#3\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(fout,
-              "-%6.2f %6.2f %6.2f\n",
-              dx / 2.,
-              yPMT,
-              zPMT - dGlass - dCathode - lTube);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "-%6.2f %6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode - lTube);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dGlass > 0) {
       fprintf(fout, "rich1dgl#4\n");
       fprintf(fout, "rich1gas1\n");
       fprintf(fout, "-%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     fprintf(fout, "rich1d#4\n");
     fprintf(fout, "rich1gas1\n");
     fprintf(fout, "-%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass);
-    fprintf(fout,
-            " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-            TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+    fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+            TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
             TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-            TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+            -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+            TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
             TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-            TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-              * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-    fprintf(fout,
-            "//-----------------------------------------------------------\n");
+            TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+    fprintf(fout, "//-----------------------------------------------------------\n");
     if (lTube > 0) {
       fprintf(fout, "rich1dtube#4\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(
-        fout, "-%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "-%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
     if (dSupport > 0) {
       fprintf(fout, "rich1dsupport#4\n");
       fprintf(fout, "rich1gas1\n");
-      fprintf(fout,
-              "-%6.2f -%6.2f %6.2f\n",
-              dx / 2.,
-              yPMT,
-              zPMT - dGlass - dCathode - lTube);
-      fprintf(fout,
-              " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
-              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+      fprintf(fout, "-%6.2f -%6.2f %6.2f\n", dx / 2., yPMT, zPMT - dGlass - dCathode - lTube);
+      fprintf(fout, " %6.4f 0. %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f %6.4f\n",
+              TMath::Cos((-anglePMTy) / 180. * TMath::Pi()), -TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Cos((-anglePMTx) / 180. * TMath::Pi()),
-              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
+              -TMath::Sin((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()),
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Sin((-anglePMTy) / 180. * TMath::Pi()),
               TMath::Sin((-anglePMTx) / 180. * TMath::Pi()),
-              TMath::Cos((-anglePMTx) / 180. * TMath::Pi())
-                * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
-      fprintf(
-        fout,
-        "//-----------------------------------------------------------\n");
+              TMath::Cos((-anglePMTx) / 180. * TMath::Pi()) * TMath::Cos((-anglePMTy) / 180. * TMath::Pi()));
+      fprintf(fout, "//-----------------------------------------------------------\n");
     }
 
     fclose(fout);

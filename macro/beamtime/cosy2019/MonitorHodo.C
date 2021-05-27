@@ -10,11 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorHodo(TString inFile           = "",
-                 TString sHostname        = "localhost",
-                 Int_t iServerRefreshRate = 100,
-                 Int_t iServerHttpPort    = 8081,
-                 Int_t nEvents            = -1) {
+void MonitorHodo(TString inFile = "", TString sHostname = "localhost", Int_t iServerRefreshRate = 100,
+                 Int_t iServerHttpPort = 8081, Int_t nEvents = -1)
+{
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -61,9 +59,7 @@ void MonitorHodo(TString inFile           = "",
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -97,13 +93,13 @@ void MonitorHodo(TString inFile           = "",
   //  run->Run(nEvents, 0); // run until end of input file
   if (nEvents <= 0) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nEvents);  // process  N Events
   }
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -113,8 +109,7 @@ void MonitorHodo(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorHodo: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorHodo: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorHodo: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorHodo: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

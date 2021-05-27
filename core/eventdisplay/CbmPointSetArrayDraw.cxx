@@ -36,15 +36,14 @@ CbmPointSetArrayDraw::CbmPointSetArrayDraw()
   , fTimeMax(0)
   , fColorMode(1)
   , fMarkerMode(1)
-  , fRender(kTRUE) {}
+  , fRender(kTRUE)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmPointSetArrayDraw::CbmPointSetArrayDraw(const char* name,
-                                           Int_t colorMode,
-                                           Int_t markerMode,
-                                           Int_t iVerbose,
+CbmPointSetArrayDraw::CbmPointSetArrayDraw(const char* name, Int_t colorMode, Int_t markerMode, Int_t iVerbose,
                                            Bool_t render)
   : FairTask(name, iVerbose)
   , fVerbose(iVerbose)
@@ -57,27 +56,29 @@ CbmPointSetArrayDraw::CbmPointSetArrayDraw(const char* name,
   , fTimeMax(0)
   , fColorMode(colorMode)
   , fMarkerMode(markerMode)
-  , fRender(render) {}
+  , fRender(render)
+{
+}
 // -------------------------------------------------------------------------
-InitStatus CbmPointSetArrayDraw::Init() {
+InitStatus CbmPointSetArrayDraw::Init()
+{
   LOG(debug) << "CbmPointSetArrayDraw::Init()";
   FairRootManager* fManager = FairRootManager::Instance();
-  fPointList = static_cast<TClonesArray*>(fManager->GetObject(GetName()));
+  fPointList                = static_cast<TClonesArray*>(fManager->GetObject(GetName()));
   if (fPointList == 0) {
-    LOG(warn) << "CbmPointSetArrayDraw::Init()  branch " << GetName()
-              << " Not found! Task will be deactivated ";
+    LOG(warn) << "CbmPointSetArrayDraw::Init()  branch " << GetName() << " Not found! Task will be deactivated ";
     SetActive(kFALSE);
   }
   LOG(debug1) << "CbmPointSetArrayDraw::Init() get track list" << fPointList;
   fEventManager = FairEventManager::Instance();
-  LOG(debug1)
-    << "CbmPointSetArrayDraw::Init() get instance of FairEventManager ";
+  LOG(debug1) << "CbmPointSetArrayDraw::Init() get instance of FairEventManager ";
   fl = 0;
 
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
-void CbmPointSetArrayDraw::Exec(Option_t* /*option*/) {
+void CbmPointSetArrayDraw::Exec(Option_t* /*option*/)
+{
   if (IsActive()) {
     Int_t npoints = fPointList->GetEntriesFast();
     Reset();
@@ -100,16 +101,12 @@ void CbmPointSetArrayDraw::Exec(Option_t* /*option*/) {
       if (p != 0) {
         TVector3 vec(GetVector(p));
         l->Fill(vec.X(), vec.Y(), vec.Z(), i);  // fill 3D position
-        l->FillValues(
-          GetPointId(p),
-          GetTime(p),
-          GetTot(p),
-          GetClusterSize(p),
-          i);  // fill physical information used for color and markersize
+        l->FillValues(GetPointId(p), GetTime(p), GetTot(p), GetClusterSize(p),
+                      i);  // fill physical information used for color and markersize
       }
     }
 
-    l->ApplyColorMode();  // apply colorMode and calculate color of each bin
+    l->ApplyColorMode();   // apply colorMode and calculate color of each bin
     l->ApplyMarkerMode();  // apply markerMode and calculate markersize of each bin
     l->ApplyTitles();      // set BBox-title of each bin and computeBBox
 
@@ -121,23 +118,24 @@ void CbmPointSetArrayDraw::Exec(Option_t* /*option*/) {
 }
 // --------------------------------------------------------------------------------
 // returns 3D-vector with position data of hit
-TVector3 CbmPointSetArrayDraw::GetVector(TObject* obj) {
+TVector3 CbmPointSetArrayDraw::GetVector(TObject* obj)
+{
   CbmPixelHit* p = (CbmPixelHit*) obj;
-  LOG(debug2) << "-I- CbmPointSetArrayDraw::GetVector(): " << p->GetX() << " "
-              << p->GetY() << " " << p->GetZ() << " ";
+  LOG(debug2) << "-I- CbmPointSetArrayDraw::GetVector(): " << p->GetX() << " " << p->GetY() << " " << p->GetZ() << " ";
   return TVector3(p->GetX(), p->GetY(), p->GetZ());
 }
 // --------------------------------------------------------------------------------
 // returns hit-time against first hit
-Double_t CbmPointSetArrayDraw::GetTime(TObject* obj) {
+Double_t CbmPointSetArrayDraw::GetTime(TObject* obj)
+{
   CbmPixelHit* p = (CbmPixelHit*) obj;
-  LOG(debug2) << "-I- CbmPointSetArrayDraw::GetTime(): "
-              << p->GetTime() - fTimeOffset;
+  LOG(debug2) << "-I- CbmPointSetArrayDraw::GetTime(): " << p->GetTime() - fTimeOffset;
   return p->GetTime() - fTimeOffset;
 }
 // --------------------------------------------------------------------------------
 // returns ClusterSize of Hit
-Int_t CbmPointSetArrayDraw::GetClusterSize(TObject* obj) {
+Int_t CbmPointSetArrayDraw::GetClusterSize(TObject* obj)
+{
   //CluSize of TofHit is stored in Flag-Variable (set in Clusterizer)
   CbmTofHit* p     = (CbmTofHit*) obj;
   Double_t cluSize = p->GetFlag();
@@ -148,7 +146,8 @@ Int_t CbmPointSetArrayDraw::GetClusterSize(TObject* obj) {
 }
 // --------------------------------------------------------------------------------
 // returns ToT of hit
-Double_t CbmPointSetArrayDraw::GetTot(TObject* obj) {
+Double_t CbmPointSetArrayDraw::GetTot(TObject* obj)
+{
   // ToT of TofHit is stored in Channel-Variable (set in Clusterizer)
   CbmTofHit* p = (CbmTofHit*) obj;
   Double_t tot = Double_t(p->GetCh()) / (20 * GetClusterSize(p));
@@ -157,13 +156,15 @@ Double_t CbmPointSetArrayDraw::GetTot(TObject* obj) {
 }
 // --------------------------------------------------------------------------------
 // returns Id of hit
-Int_t CbmPointSetArrayDraw::GetPointId(TObject* obj) {
+Int_t CbmPointSetArrayDraw::GetPointId(TObject* obj)
+{
   CbmPixelHit* p = (CbmPixelHit*) obj;
   return p->GetRefId();
 }
 // ---------------------------------------------------------------------------------
 // Determine time of first hit in event to use as offset
-void CbmPointSetArrayDraw::DetermineTimeOffset() {
+void CbmPointSetArrayDraw::DetermineTimeOffset()
+{
   Int_t npoints = fPointList->GetEntriesFast();
   fTimeOffset   = 115200000000000;  //32hours in ns as maximum of clock
   fTimeMax      = 0;
@@ -172,16 +173,13 @@ void CbmPointSetArrayDraw::DetermineTimeOffset() {
   for (Int_t i = 0; i < npoints; i++) {  //loop over all hits in event
     hit      = static_cast<CbmPixelHit*>(fPointList->At(i));
     currtime = hit->GetTime();
-    if (currtime < fTimeOffset) {
-      fTimeOffset = currtime;
-    } else if (currtime > fTimeMax) {
+    if (currtime < fTimeOffset) { fTimeOffset = currtime; }
+    else if (currtime > fTimeMax) {
       fTimeMax = currtime;
     }
   }
   fTimeMax -= fTimeOffset;  //time of latest hit in event
-  LOG(debug3) << std::setprecision(15)
-              << "-I- CbmPointSetArrayDraw::DetermineTimeBins: fTimeOffset "
-              << fTimeOffset;
+  LOG(debug3) << std::setprecision(15) << "-I- CbmPointSetArrayDraw::DetermineTimeBins: fTimeOffset " << fTimeOffset;
 }
 
 // -----   Destructor   ----------------------------------------------------
@@ -192,7 +190,8 @@ void CbmPointSetArrayDraw::SetParContainers() {}
 /** Action after each event**/
 void CbmPointSetArrayDraw::Finish() {}
 // -------------------------------------------------------------------------
-void CbmPointSetArrayDraw::Reset() {
+void CbmPointSetArrayDraw::Reset()
+{
   if (fl != 0) {
     fl->RemoveElementsLocal();
     gEve->RemoveElement(fl, fEventManager);

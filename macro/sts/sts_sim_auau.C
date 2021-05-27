@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
+void sts_sim(Int_t nEvents, Int_t energy, Int_t index)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -79,20 +80,9 @@ void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
   char strOutputFile[1000];
   char strParamFile[1000];
 
-  sprintf(strInputFile,
-          "/Users/Anna/cbmroot/input/auau/urqmd.auau.%1.0fgev.centr.%4d",
-          energy,
-          index);
-  sprintf(strParamFile,
-          "data/auau%1.0f/params.auau.%1.0fgev.centr.%4d.root",
-          energy,
-          energy,
-          index);
-  sprintf(strOutputFile,
-          "data/auau%1.0f/sts.mc.auau.%1.0fgev.centr.%4d.root",
-          energy,
-          energy,
-          index);
+  sprintf(strInputFile, "/Users/Anna/cbmroot/input/auau/urqmd.auau.%1.0fgev.centr.%4d", energy, index);
+  sprintf(strParamFile, "data/auau%1.0f/params.auau.%1.0fgev.centr.%4d.root", energy, energy, index);
+  sprintf(strOutputFile, "data/auau%1.0f/sts.mc.auau.%1.0fgev.centr.%4d.root", energy, energy, index);
   for (Int_t i = 0; i < 1000; i++) {
     if (' ' == strInputFile[i]) strInputFile[i] = '0';
     if (' ' == strOutputFile[i]) strOutputFile[i] = '0';
@@ -189,7 +179,6 @@ void sts_sim(Int_t nEvents, Int_t energy, Int_t index) {
   cout << "Macro finished succesfully." << endl;
   //  cout << "Output file is "    << outFile << endl;
   //  cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

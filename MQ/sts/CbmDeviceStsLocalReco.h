@@ -49,7 +49,7 @@ private:
 
   CbmFieldPar* fFieldPar;
 
-  std::vector<std::string> fAllowedChannels = {"stsdigi", "parameters"};
+  std::vector<std::string> fAllowedChannels             = {"stsdigi", "parameters"};
   std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}};
 
   bool IsChannelNameAllowed(std::string channelName);
@@ -73,9 +73,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

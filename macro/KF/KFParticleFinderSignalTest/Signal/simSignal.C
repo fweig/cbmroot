@@ -7,16 +7,15 @@
 //_________________________________________________________________________________
 
 
-void simSignal(int iParticle         = 0,
-               Int_t nEvents         = 1000,
-               const char* setupName = "sis100_electron",
-               const char* inputFile = "") {
+void simSignal(int iParticle = 0, Int_t nEvents = 1000, const char* setupName = "sis100_electron",
+               const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_mc";  // this macro's name for screen output
+  TString myName = "run_mc";                       // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -53,7 +52,7 @@ void simSignal(int iParticle         = 0,
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -130,8 +129,7 @@ void simSignal(int iParticle         = 0,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -153,8 +151,7 @@ void simSignal(int iParticle         = 0,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -178,20 +175,12 @@ void simSignal(int iParticle         = 0,
   run->SetGenerator(primGen);
 
   KFPartEfficiencies eff;
-  for (int jParticle = eff.fFirstStableParticleIndex + 10;
-       jParticle <= eff.fLastStableParticleIndex;
-       jParticle++) {
+  for (int jParticle = eff.fFirstStableParticleIndex + 10; jParticle <= eff.fLastStableParticleIndex; jParticle++) {
     TDatabasePDG* pdgDB = TDatabasePDG::Instance();
 
     if (!pdgDB->GetParticle(eff.partPDG[jParticle])) {
-      pdgDB->AddParticle(eff.partTitle[jParticle].data(),
-                         eff.partTitle[jParticle].data(),
-                         eff.partMass[jParticle],
-                         kTRUE,
-                         0,
-                         eff.partCharge[jParticle] * 3,
-                         "Ion",
-                         eff.partPDG[jParticle]);
+      pdgDB->AddParticle(eff.partTitle[jParticle].data(), eff.partTitle[jParticle].data(), eff.partMass[jParticle],
+                         kTRUE, 0, eff.partCharge[jParticle] * 3, "Ion", eff.partPDG[jParticle]);
     }
   }
 
@@ -207,23 +196,8 @@ void simSignal(int iParticle         = 0,
       Int_t PDG         = eff.partPDG[iPall];
       Double_t charge   = eff.partCharge[iPall];
 
-      FairParticle* newParticle = new FairParticle(PDG,
-                                                   eff.partTitle[iPall].data(),
-                                                   kPTHadron,
-                                                   mass,
-                                                   charge,
-                                                   lifetime,
-                                                   "hadron",
-                                                   0.0,
-                                                   1,
-                                                   1,
-                                                   0,
-                                                   1,
-                                                   1,
-                                                   0,
-                                                   0,
-                                                   1,
-                                                   kFALSE);
+      FairParticle* newParticle = new FairParticle(PDG, eff.partTitle[iPall].data(), kPTHadron, mass, charge, lifetime,
+                                                   "hadron", 0.0, 1, 1, 0, 1, 1, 0, 0, 1, kFALSE);
       run->AddNewParticle(newParticle);
     }
     TString pythia6Config = "/u/mzyzak/cbmtrunk/macro/KF/"
@@ -253,23 +227,8 @@ void simSignal(int iParticle         = 0,
   // ------------------------------------------------------------------------
 
   if (!(iParticle == 56 || iParticle == 57)) {
-    TVirtualMC::GetMC()->DefineParticle(PDG,
-                                        eff.partTitle[iParticle].data(),
-                                        kPTHadron,
-                                        mass,
-                                        charge,
-                                        lifetime,
-                                        "hadron",
-                                        0.0,
-                                        1,
-                                        1,
-                                        0,
-                                        1,
-                                        1,
-                                        0,
-                                        0,
-                                        1,
-                                        kFALSE);
+    TVirtualMC::GetMC()->DefineParticle(PDG, eff.partTitle[iParticle].data(), kPTHadron, mass, charge, lifetime,
+                                        "hadron", 0.0, 1, 1, 0, 1, 1, 0, 0, 1, kFALSE);
 
     Int_t mode[6][3];
     Float_t bratio[6];
@@ -288,30 +247,14 @@ void simSignal(int iParticle         = 0,
 
     TVirtualMC::GetMC()->SetDecayMode(PDG, bratio, mode);
   }
-  for (int iP = eff.fFirstHypernucleusIndex; iP <= eff.fLastHypernucleusIndex;
-       iP++) {
+  for (int iP = eff.fFirstHypernucleusIndex; iP <= eff.fLastHypernucleusIndex; iP++) {
     Double_t lifetime = eff.partLifeTime[iP];  // lifetime
     Double_t mass     = eff.partMass[iP];
     Int_t PDG         = eff.partPDG[iP];
     Double_t charge   = eff.partCharge[iP];
 
-    TVirtualMC::GetMC()->DefineParticle(PDG,
-                                        eff.partTitle[iP].data(),
-                                        kPTHadron,
-                                        mass,
-                                        charge,
-                                        lifetime,
-                                        "hadron",
-                                        0.0,
-                                        1,
-                                        1,
-                                        0,
-                                        1,
-                                        1,
-                                        0,
-                                        0,
-                                        1,
-                                        kFALSE);
+    TVirtualMC::GetMC()->DefineParticle(PDG, eff.partTitle[iP].data(), kPTHadron, mass, charge, lifetime, "hadron", 0.0,
+                                        1, 1, 0, 1, 1, 0, 0, 1, kFALSE);
 
     Int_t mode[6][3];
     Float_t bratio[6];
@@ -348,9 +291,7 @@ void simSignal(int iParticle         = 0,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

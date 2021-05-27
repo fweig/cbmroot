@@ -4,7 +4,8 @@
 
 #include <TVirtualMC.h>
 
-void CbmVMCSettings::Init(TVirtualMC* vmc) {
+void CbmVMCSettings::Init(TVirtualMC* vmc)
+{
 
   LOG(info) << ": Configuring global VMC settings";
   assert(vmc);
@@ -37,18 +38,18 @@ void CbmVMCSettings::Init(TVirtualMC* vmc) {
   // STRA
 
   // Processes
-  vmc->SetProcess("PAIR", fProcessPairProduction);     // pair production
-  vmc->SetProcess("COMP", fProcessComptonScattering);  // Compton scattering
-  vmc->SetProcess("PHOT", fProcessPhotoEffect);        // photo electric effect
-  vmc->SetProcess("PFIS", fProcessPhotoFission);       // photofission
-  vmc->SetProcess("DRAY", fProcessDeltaRay);           // delta-ray
-  vmc->SetProcess("ANNI", fProcessAnnihilation);       // annihilation
-  vmc->SetProcess("BREM", fProcessBremsstrahlung);     // bremsstrahlung
+  vmc->SetProcess("PAIR", fProcessPairProduction);       // pair production
+  vmc->SetProcess("COMP", fProcessComptonScattering);    // Compton scattering
+  vmc->SetProcess("PHOT", fProcessPhotoEffect);          // photo electric effect
+  vmc->SetProcess("PFIS", fProcessPhotoFission);         // photofission
+  vmc->SetProcess("DRAY", fProcessDeltaRay);             // delta-ray
+  vmc->SetProcess("ANNI", fProcessAnnihilation);         // annihilation
+  vmc->SetProcess("BREM", fProcessBremsstrahlung);       // bremsstrahlung
   vmc->SetProcess("HADR", fProcessHadronicInteraction);  // hadronic process
   vmc->SetProcess("MUNU",
-                  fProcessMuonNuclearInteraction);   // muon nuclear interaction
-  vmc->SetProcess("DCAY", fProcessDecay);            // decay
-  vmc->SetProcess("LOSS", fProcessEnergyLossModel);  // energy loss
+                  fProcessMuonNuclearInteraction);      // muon nuclear interaction
+  vmc->SetProcess("DCAY", fProcessDecay);               // decay
+  vmc->SetProcess("LOSS", fProcessEnergyLossModel);     // energy loss
   vmc->SetProcess("MULS", fProcessMultipleScattering);  // multiple scattering
 
   // The cuts with the following names are defined for TGeant3 and TGeant4
@@ -64,19 +65,16 @@ void CbmVMCSettings::Init(TVirtualMC* vmc) {
   vmc->SetCut("CUTNEU", fEnergyCutNeutralHadrons);  // neutral hadrons (GeV)
   vmc->SetCut("CUTHAD", fEnergyCutChargedHadrons);  // charged hadrons (GeV)
   vmc->SetCut("CUTMUO", fEnergyCutMuons);           // muons (GeV)
-  vmc->SetCut(
-    "BCUTE",
-    fEnergyCutElectronBremsstrahlung);  // electron bremsstrahlung (GeV)
-  vmc->SetCut(
-    "BCUTM",
-    fEnergyCutMuonHadronBremsstrahlung);  // muon/hadron bremsstrahlung(GeV)
+  vmc->SetCut("BCUTE",
+              fEnergyCutElectronBremsstrahlung);  // electron bremsstrahlung (GeV)
+  vmc->SetCut("BCUTM",
+              fEnergyCutMuonHadronBremsstrahlung);  // muon/hadron bremsstrahlung(GeV)
   vmc->SetCut("DCUTE",
-              fEnergyCutElectronDeltaRay);  // delta-rays by electrons (GeV)
+              fEnergyCutElectronDeltaRay);       // delta-rays by electrons (GeV)
   vmc->SetCut("DCUTM", fEnergyCutMuonDeltaRay);  // delta-rays by muons (GeV)
-  vmc->SetCut(
-    "PPCUTM",
-    fEnergyCutMuonPairProduction);     // direct pair production by muons (GeV)
-  vmc->SetCut("TOFMAX", fTimeCutTof);  // time of flight cut in seconds
+  vmc->SetCut("PPCUTM",
+              fEnergyCutMuonPairProduction);  // direct pair production by muons (GeV)
+  vmc->SetCut("TOFMAX", fTimeCutTof);         // time of flight cut in seconds
 }
 
 ClassImp(CbmVMCSettings);

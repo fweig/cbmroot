@@ -1,6 +1,7 @@
 
 
-void eLinkMappingCrobStsFebA() {
+void eLinkMappingCrobStsFebA()
+{
   const UInt_t kuNbElinks             = 42;
   const UInt_t kuNbFebs               = 5;
   const UInt_t kuNbSmx                = 8;
@@ -28,34 +29,27 @@ void eLinkMappingCrobStsFebA() {
           UInt_t uGlobSmxIdx = uFebIdx * kuNbSmx + uSmxIdx;
           uSmxMap[uElinkIdx] = uGlobSmxIdx;
           iFebMap[uElinkIdx] = uFebIdx;
-          std::cout << Form("eLink %02u FEB %u SMX %u => Global SMX Idx %02u",
-                            uElinkIdx,
-                            uFebIdx,
-                            uSmxIdx,
-                            uGlobSmxIdx)
+          std::cout << Form("eLink %02u FEB %u SMX %u => Global SMX Idx %02u", uElinkIdx, uFebIdx, uSmxIdx, uGlobSmxIdx)
                     << std::endl;
           bFoundSmx = kTRUE;
         }  // if( uElinkMap[ uFebIdx ][ uSmxIdx ] == uElinkIdx )
     if (kFALSE == bFoundSmx) {
       uSmxMap[uElinkIdx] = 0xFFFF;
       iFebMap[uElinkIdx] = -1;
-      std::cout << Form("eLink %02u               => Not Used!!", uElinkIdx)
-                << std::endl;
+      std::cout << Form("eLink %02u               => Not Used!!", uElinkIdx) << std::endl;
     }
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
 
   for (UInt_t uFebIdx = 0; uFebIdx < kuNbFebs; ++uFebIdx)
     for (UInt_t uSmxIdx = 0; uSmxIdx < kuNbSmx; ++uSmxIdx) {
-      uElinkMapReordered[uFebIdx][uAddrMap[uFebIdx][uSmxIdx]] =
-        uElinkMap[uFebIdx][uSmxIdx];
+      uElinkMapReordered[uFebIdx][uAddrMap[uFebIdx][uSmxIdx]] = uElinkMap[uFebIdx][uSmxIdx];
     }  // Loop on FEB and not ordered smx
 
   std::cout << " Parameter map from eLink to Asic: " << std::endl;
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     //      std::cout << Form( " %6u", uSmxMap[ uElinkIdx ] );
     std::cout << Form(" 0x%04X", uSmxMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6)
-      std::cout << " \\" << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6) std::cout << " \\" << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
@@ -63,16 +57,14 @@ void eLinkMappingCrobStsFebA() {
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     //      std::cout << Form( " %6u", uSmxMap[ uElinkIdx ] );
     std::cout << Form(" 0x%04X,", uSmxMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6)
-      std::cout << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6) std::cout << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
   std::cout << " Parameter map from eLink to FEB: " << std::endl;
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     std::cout << Form(" %2d", iFebMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 7 == uElinkIdx % 8)
-      std::cout << " \\" << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 7 == uElinkIdx % 8) std::cout << " \\" << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
@@ -86,7 +78,8 @@ void eLinkMappingCrobStsFebA() {
   return;
 }
 
-void eLinkMappingCrobStsFebB() {
+void eLinkMappingCrobStsFebB()
+{
   const UInt_t kuNbElinks             = 42;
   const UInt_t kuNbFebs               = 5;
   const UInt_t kuNbSmx                = 8;
@@ -114,34 +107,27 @@ void eLinkMappingCrobStsFebB() {
           UInt_t uGlobSmxIdx = uFebIdx * kuNbSmx + uSmxIdx;
           uSmxMap[uElinkIdx] = uGlobSmxIdx;
           iFebMap[uElinkIdx] = uFebIdx;
-          std::cout << Form("eLink %02u FEB %u SMX %u => Global SMX Idx %02u",
-                            uElinkIdx,
-                            uFebIdx,
-                            uSmxIdx,
-                            uGlobSmxIdx)
+          std::cout << Form("eLink %02u FEB %u SMX %u => Global SMX Idx %02u", uElinkIdx, uFebIdx, uSmxIdx, uGlobSmxIdx)
                     << std::endl;
           bFoundSmx = kTRUE;
         }  // if( uElinkMap[ uFebIdx ][ uSmxIdx ] == uElinkIdx )
     if (kFALSE == bFoundSmx) {
       uSmxMap[uElinkIdx] = 0xFFFF;
       iFebMap[uElinkIdx] = -1;
-      std::cout << Form("eLink %02u               => Not Used!!", uElinkIdx)
-                << std::endl;
+      std::cout << Form("eLink %02u               => Not Used!!", uElinkIdx) << std::endl;
     }
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
 
   for (UInt_t uFebIdx = 0; uFebIdx < kuNbFebs; ++uFebIdx)
     for (UInt_t uSmxIdx = 0; uSmxIdx < kuNbSmx; ++uSmxIdx) {
-      uElinkMapReordered[uFebIdx][uAddrMap[uFebIdx][uSmxIdx]] =
-        uElinkMap[uFebIdx][uSmxIdx];
+      uElinkMapReordered[uFebIdx][uAddrMap[uFebIdx][uSmxIdx]] = uElinkMap[uFebIdx][uSmxIdx];
     }  // Loop on FEB and not ordered smx
 
   std::cout << " Parameter map from eLink to Asic: " << std::endl;
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     //      std::cout << Form( " %6u", uSmxMap[ uElinkIdx ] );
     std::cout << Form(" 0x%04X", uSmxMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6)
-      std::cout << " \\" << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6) std::cout << " \\" << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
@@ -149,16 +135,14 @@ void eLinkMappingCrobStsFebB() {
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     //      std::cout << Form( " %6u", uSmxMap[ uElinkIdx ] );
     std::cout << Form(" 0x%04X,", uSmxMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6)
-      std::cout << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 5 == uElinkIdx % 6) std::cout << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
   std::cout << " Parameter map from eLink to FEB: " << std::endl;
   for (UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElinkIdx) {
     std::cout << Form(" %2d", iFebMap[uElinkIdx]);
-    if (kuNbElinks - 1 != uElinkIdx && 7 == uElinkIdx % 8)
-      std::cout << " \\" << std::endl;
+    if (kuNbElinks - 1 != uElinkIdx && 7 == uElinkIdx % 8) std::cout << " \\" << std::endl;
   }  // for( UInt_t uElinkIdx = 0; uElinkIdx < kuNbElinks; ++uElInkIdx )
   std::cout << std::endl;
 
@@ -172,7 +156,8 @@ void eLinkMappingCrobStsFebB() {
   return;
 }
 
-void eLinkMappingCrobSts() {
+void eLinkMappingCrobSts()
+{
   std::cout << "================= FEB A ===================" << std::endl;
   eLinkMappingCrobStsFebA();
 

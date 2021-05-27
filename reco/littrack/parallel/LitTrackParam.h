@@ -7,17 +7,19 @@
 #ifndef LITTRACKPARAM_H_
 #define LITTRACKPARAM_H_ 1
 
-#include "LitTypes.h"
-#include "LitUtils.h"
-
 #include <sstream>
 #include <string>
+
+#include "LitTypes.h"
+#include "LitUtils.h"
 using std::ostream;
 using std::string;
 using std::stringstream;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitTrackParam
@@ -57,7 +59,9 @@ namespace lit {
         , C11(0.)
         , C12(0.)
         , C13(0.)
-        , C14(0.) {}
+        , C14(0.)
+      {
+      }
 
       /**
     * \brief Destructor.
@@ -68,14 +72,14 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
-        ss << "LitTrackParam: X=" << X << " Y=" << Y << " Z=" << Z
-           << " Tx=" << Tx << " Ty=" << Ty << " Qp=" << Qp << "\n"
-           << " cov matrix[0-14]: " << C0 << " " << C1 << " " << C2 << " " << C3
-           << " " << C4 << " " << C5 << " " << C6 << " " << C7 << " " << C8
-           << " " << C9 << " " << C10 << " " << C11 << " " << C12 << " " << C13
-           << " " << C14 << "\n";
+        ss << "LitTrackParam: X=" << X << " Y=" << Y << " Z=" << Z << " Tx=" << Tx << " Ty=" << Ty << " Qp=" << Qp
+           << "\n"
+           << " cov matrix[0-14]: " << C0 << " " << C1 << " " << C2 << " " << C3 << " " << C4 << " " << C5 << " " << C6
+           << " " << C7 << " " << C8 << " " << C9 << " " << C10 << " " << C11 << " " << C12 << " " << C13 << " " << C14
+           << "\n";
         return ss.str();
       }
 
@@ -83,7 +87,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitTrackParam& par) {
+      friend ostream& operator<<(ostream& strm, const LitTrackParam& par)
+      {
         strm << par.ToString();
         return strm;
       }

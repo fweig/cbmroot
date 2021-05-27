@@ -16,12 +16,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 //____________________________________________________________________
-CbmTrdCluster::CbmTrdCluster()
-  : CbmCluster()
-  , fNCols(0)
-  , fNRows(0xff)
-  , fStartCh(0xffff)
-  , fStartTime(0xffff) {}
+CbmTrdCluster::CbmTrdCluster() : CbmCluster(), fNCols(0), fNRows(0xff), fStartCh(0xffff), fStartTime(0xffff) {}
 
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
@@ -29,7 +24,9 @@ CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
   , fNCols(ref.fNCols)
   , fNRows(ref.fNRows)
   , fStartCh(ref.fStartCh)
-  , fStartTime(ref.fStartTime) {}
+  , fStartTime(ref.fStartTime)
+{
+}
 
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(const std::vector<Int_t>& indices, Int_t address)
@@ -37,19 +34,18 @@ CbmTrdCluster::CbmTrdCluster(const std::vector<Int_t>& indices, Int_t address)
   , fNCols(0)
   , fNRows(0xff)
   , fStartCh(0xffff)
-  , fStartTime(0xffff) {}
+  , fStartTime(0xffff)
+{
+}
 
 //____________________________________________________________________
-CbmTrdCluster::CbmTrdCluster(Int_t address,
-                             Int_t idx,
-                             Int_t ch,
-                             Int_t row,
-                             Int_t time)
+CbmTrdCluster::CbmTrdCluster(Int_t address, Int_t idx, Int_t ch, Int_t row, Int_t time)
   : CbmCluster()
   , fNCols(0)
   , fNRows(0xff)
   , fStartCh(0xffff)
-  , fStartTime(0xffff) {
+  , fStartTime(0xffff)
+{
   ReInit(address, row, time);
   AddDigi(idx, ch);
 }
@@ -58,8 +54,8 @@ CbmTrdCluster::CbmTrdCluster(Int_t address,
 CbmTrdCluster::~CbmTrdCluster() {}
 
 //____________________________________________________________________
-Bool_t
-CbmTrdCluster::AddDigi(Int_t idx, Int_t channel, Int_t terminator, Int_t dt) {
+Bool_t CbmTrdCluster::AddDigi(Int_t idx, Int_t channel, Int_t terminator, Int_t dt)
+{
   /** Extend basic functionality of CbmCluster::AddDigi(). 
  * If channel>=0 add this info to channel map.
  */
@@ -69,22 +65,22 @@ CbmTrdCluster::AddDigi(Int_t idx, Int_t channel, Int_t terminator, Int_t dt) {
     return kTRUE;
   }
 
-  if (channel >= 0xffff)
-    LOG(warn) << GetName() << "::AddDigi: pad-channel truncated to 2bytes.";
+  if (channel >= 0xffff) LOG(warn) << GetName() << "::AddDigi: pad-channel truncated to 2bytes.";
 
   // assume triangular pads only
   if (!fNCols) {  // first digi
     fStartCh = channel;
     CbmCluster::AddDigi(idx);
-    if (terminator < 0)
-      SetProfileStart();
+    if (terminator < 0) SetProfileStart();
     else if (terminator > 0)
       SetProfileStop();
-  } else if (channel > GetEndCh()) {  // digi @ end
+  }
+  else if (channel > GetEndCh()) {  // digi @ end
     if (HasOpenStop()) return kFALSE;
     CbmCluster::AddDigi(idx);
     if (terminator > 0) SetProfileStop();
-  } else if (channel < fStartCh) {  // digi @ beginning
+  }
+  else if (channel < fStartCh) {  // digi @ beginning
     if (HasOpenStart()) return kFALSE;
     fStartCh          = channel;
     vector<Int_t> vec = GetDigis();
@@ -100,7 +96,8 @@ CbmTrdCluster::AddDigi(Int_t idx, Int_t channel, Int_t terminator, Int_t dt) {
 }
 
 //____________________________________________________________________
-void CbmTrdCluster::Clear(Option_t*) {
+void CbmTrdCluster::Clear(Option_t*)
+{
   CbmCluster::ClearDigis();
   fNCols     = 0;
   fNRows     = 0xff;
@@ -109,23 +106,23 @@ void CbmTrdCluster::Clear(Option_t*) {
 }
 
 //____________________________________________________________________
-void CbmTrdCluster::ReInit(Int_t address, Int_t row, Int_t time) {
+void CbmTrdCluster::ReInit(Int_t address, Int_t row, Int_t time)
+{
   SetAddress(address);
   fNCols   = 0;
   fStartCh = 0xffff;
   // check truncation
-  if (row >= 0x1f)
-    LOG(warn) << GetName() << "::ReInit: pad-row truncated to 5bits.";
+  if (row >= 0x1f) LOG(warn) << GetName() << "::ReInit: pad-row truncated to 5bits.";
   SetNRows(row);
   SetProfileStart(0);
   SetProfileStop(0);
-  if (time >= 0xffff)
-    LOG(warn) << GetName() << "::ReInit: buffer time truncated to 2bytes.";
+  if (time >= 0xffff) LOG(warn) << GetName() << "::ReInit: buffer time truncated to 2bytes.";
   fStartTime = time;
 }
 
 //____________________________________________________________________
-Int_t CbmTrdCluster::IsChannelInRange(Int_t ch) const {
+Int_t CbmTrdCluster::IsChannelInRange(Int_t ch) const
+{
   if (!fNCols) return -2;
   //   if(IsTerminatedLeft() && fAddressCh[0]>ch) return -1;
   //   if(IsTerminatedRight() && fAddressCh[clSize-1]<ch) return 1;
@@ -136,12 +133,12 @@ Int_t CbmTrdCluster::IsChannelInRange(Int_t ch) const {
 }
 
 //____________________________________________________________________
-Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second) {
+Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second)
+{
   if (GetRow() != second->GetRow()) return kFALSE;
   if (TMath::Abs(second->fStartTime - fStartTime) > 20) return kFALSE;
   // look before current
-  if (second->fStartCh + second->fNCols == fStartCh && !second->HasOpenStop()
-      && !HasOpenStart()) {
+  if (second->fStartCh + second->fNCols == fStartCh && !second->HasOpenStop() && !HasOpenStart()) {
     //     cout<<"Merge before with "<<second->ToString();
     fStartCh = second->fStartCh;
     fNCols += second->fNCols;
@@ -156,8 +153,8 @@ Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second) {
   }
   // special care for FASP clusters which can be merged also on pairing neighboring
   if (HasTrianglePads()) {
-    if ((second->fStartCh + second->fNCols - 1 == fStartCh)
-        && second->HasOpenStop() && HasOpenStart()) {  // need to merge digi
+    if ((second->fStartCh + second->fNCols - 1 == fStartCh) && second->HasOpenStop()
+        && HasOpenStart()) {  // need to merge digi
       fStartCh = second->fStartCh;
       fNCols += second->fNCols - 1;
       fStartTime = TMath::Min(fStartTime, second->fStartTime);
@@ -172,8 +169,7 @@ Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second) {
   }
 
   // look after current
-  if (fStartCh + fNCols == second->fStartCh && !HasOpenStop()
-      && !second->HasOpenStart()) {
+  if (fStartCh + fNCols == second->fStartCh && !HasOpenStop() && !second->HasOpenStart()) {
     //     cout<<"Merge after  with "<<second->ToString();
     fNCols += second->fNCols;
     fStartTime = TMath::Min(fStartTime, second->fStartTime);
@@ -184,8 +180,7 @@ Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second) {
 
   // special care for FASP clusters which can be merged also on pairing neighboring
   if (HasTrianglePads()) {
-    if ((fStartCh + fNCols - 1 == second->fStartCh) && HasOpenStop()
-        && second->HasOpenStart()) {  // need to merge digi
+    if ((fStartCh + fNCols - 1 == second->fStartCh) && HasOpenStop() && second->HasOpenStart()) {  // need to merge digi
       fNCols += second->fNCols - 1;
       fStartTime = TMath::Min(fStartTime, second->fStartTime);
       AddDigis(second->GetDigis());
@@ -198,12 +193,12 @@ Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second) {
 }
 
 //____________________________________________________________________
-string CbmTrdCluster::ToString() const {
+string CbmTrdCluster::ToString() const
+{
   stringstream ss;
   ss << CbmCluster::ToString();
-  ss << "CbmTrdCluster: mod=" << GetAddress() << " t0=" << fStartTime
-     << " R=" << (Int_t) GetRow() << " " << (HasTrianglePads() ? "T" : "R")
-     << "Chs=";
+  ss << "CbmTrdCluster: mod=" << GetAddress() << " t0=" << fStartTime << " R=" << (Int_t) GetRow() << " "
+     << (HasTrianglePads() ? "T" : "R") << "Chs=";
   ss << (HasOpenStart() ? "/" : "|");
   for (Int_t i(0); i < fNCols; i++)
     ss << fStartCh + i << " ";

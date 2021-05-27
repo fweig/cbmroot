@@ -20,9 +20,8 @@
   gROOT->cd();
   TString hname = "hDXDY24";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -30,9 +29,8 @@
   gROOT->cd();
   TString hname = "hDXDT24";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -40,9 +38,8 @@
   gROOT->cd();
   TString hname = "hDYDT24";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,9 +47,8 @@
   gROOT->cd();
   TString hname = "hChi24";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -60,9 +56,8 @@
   gROOT->cd();
   TString hname = "hYY24";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -74,7 +69,8 @@
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -85,7 +81,8 @@
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -97,7 +94,8 @@
     h1->Draw();
     h1->SetLineColor(2);
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

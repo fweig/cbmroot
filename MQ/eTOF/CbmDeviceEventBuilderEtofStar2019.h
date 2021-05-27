@@ -6,11 +6,11 @@
 #ifndef CBMDEVICEEVENTBUILDERETOFSTAR2019_H_
 #define CBMDEVICEEVENTBUILDERETOFSTAR2019_H_
 
+#include "Timeslice.hpp"
+
 #include "FairMQDevice.h"
 
 #include "TMessage.h"
-#include "Timeslice.hpp"
-
 #include "TStopwatch.h"
 
 class CbmStar2019EventBuilderEtofAlgo;
@@ -31,19 +31,15 @@ public:
 
   Bool_t ReInitContainers();
 
-  void SetSandboxMode(Bool_t bSandboxMode = kTRUE) {
-    fbSandboxMode = bSandboxMode;
-  }
+  void SetSandboxMode(Bool_t bSandboxMode = kTRUE) { fbSandboxMode = bSandboxMode; }
   void SetEventDumpEnable(Bool_t bDumpEna = kTRUE);
 
   /// Temp until we change from CbmMcbmUnpack to something else
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-  CbmDeviceEventBuilderEtofStar2019(const CbmDeviceEventBuilderEtofStar2019&) =
-    delete;
-  CbmDeviceEventBuilderEtofStar2019
-  operator=(const CbmDeviceEventBuilderEtofStar2019&) = delete;
+  CbmDeviceEventBuilderEtofStar2019(const CbmDeviceEventBuilderEtofStar2019&) = delete;
+  CbmDeviceEventBuilderEtofStar2019 operator=(const CbmDeviceEventBuilderEtofStar2019&) = delete;
 
 protected:
   virtual void InitTask();
@@ -56,13 +52,10 @@ protected:
 private:
   uint64_t fNumMessages;
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbSandboxMode;  //! Switch OFF the emission of data toward the STAR DAQ
-  Bool_t
-    fbEventDumpEna;  //! Switch ON the dumping of the events to a binary file
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbSandboxMode;       //! Switch OFF the emission of data toward the STAR DAQ
+  Bool_t fbEventDumpEna;      //! Switch ON the dumping of the events to a binary file
 
   /// Parameters management
   TList* fParCList;
@@ -74,10 +67,7 @@ private:
   bool CheckTimeslice(const fles::Timeslice& ts);
   bool IsChannelNameAllowed(std::string channelName);
 
-  std::vector<std::string> fAllowedChannels             = {"tofcomponent",
-                                               "parameters",
-                                               "etofevts",
-                                               "syscmd"};
+  std::vector<std::string> fAllowedChannels             = {"tofcomponent", "parameters", "etofevts", "syscmd"};
   std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}, {}};
 
   /// Processing algo
@@ -95,9 +85,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICEEVENTBUILDERETOFSTAR2019_H_ */

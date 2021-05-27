@@ -8,9 +8,9 @@
 #ifndef CBMDEVICEMONITORTOF_H_
 #define CBMDEVICEMONITORTOF_H_
 
-#include "FairMQDevice.h"
-
 #include "Timeslice.hpp"
+
+#include "FairMQDevice.h"
 
 #include "Rtypes.h"
 #include "TMessage.h"
@@ -38,12 +38,9 @@ private:
   static const uint16_t kusSysIdT0  = 0x90;
 
   /// Control flags
-  Bool_t fbIgnoreOverlapMs =
-    kFALSE;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
-  Bool_t fbDebugMonitorMode =
-    kFALSE;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbIgnoreCriticalErrors =
-    kTRUE;  //! If ON not printout at all for critical errors
+  Bool_t fbIgnoreOverlapMs       = kFALSE;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
+  Bool_t fbDebugMonitorMode      = kFALSE;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbIgnoreCriticalErrors  = kTRUE;   //! If ON not printout at all for critical errors
   Bool_t fbComponentsAddedToList = kFALSE;
 
   /// User settings parameters
@@ -66,10 +63,9 @@ private:
   TList* fParCList = nullptr;
 
   /// Statistics & first TS rejection
-  uint64_t fulNumMessages = 0;
-  uint64_t fulTsCounter   = 0;
-  std::chrono::system_clock::time_point fLastPublishTime =
-    std::chrono::system_clock::now();
+  uint64_t fulNumMessages                                = 0;
+  uint64_t fulTsCounter                                  = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
 
   /// Processing algo
   CbmMcbm2018MonitorAlgoTof* fMonitorAlgo;
@@ -93,9 +89,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

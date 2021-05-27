@@ -16,6 +16,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
@@ -72,8 +73,7 @@ private:
 
   /// Control flags
   Bool_t fbFillHistos = kFALSE;  //! Switch ON/OFF filling of histograms
-  Bool_t fbFinishDone =
-    kFALSE;  //! Keep track of whether the Finish was already called
+  Bool_t fbFinishDone = kFALSE;  //! Keep track of whether the Finish was already called
 
   /// User settings parameters
   /// Algo enum settings
@@ -98,12 +98,11 @@ private:
   //      Bool_t InitParameters( TList* fParCList );
 
   /// Statistics & missed TS detection
-  uint64_t fuPrevTsIndex      = 0;
-  uint64_t fulNumMessages     = 0;
-  uint64_t fulTsCounter       = 0;
-  uint64_t fulMissedTsCounter = 0;
-  std::chrono::system_clock::time_point fLastPublishTime =
-    std::chrono::system_clock::now();
+  uint64_t fuPrevTsIndex                                 = 0;
+  uint64_t fulNumMessages                                = 0;
+  uint64_t fulTsCounter                                  = 0;
+  uint64_t fulMissedTsCounter                            = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
 
   /// Control Commands reception
   bool fbReceivedEof      = false;
@@ -160,9 +159,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

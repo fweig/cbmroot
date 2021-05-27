@@ -1,4 +1,5 @@
-void eventDisplay() {
+void eventDisplay()
+{
   TString dataDir = "/data/Sim_Outputs/Event_Display/plusY/";
   //  TString setupName = "setup_v17a_1e_3mrad_plusY_";
   TString setupName = "setup_misalign_v17a_pmt_tilt_";
@@ -20,12 +21,9 @@ void eventDisplay() {
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
   //  FairMCPointDraw  *MvdPoint      = new FairMCPointDraw ("MvdPoint",      kBlack,  kFullSquare);
-  FairMCPointDraw* StsPoint =
-    new FairMCPointDraw("StsPoint", kBlue, kFullSquare);
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
-  FairMCPointDraw* RefPlanePoint =
-    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+  FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kBlue, kFullSquare);
+  FairMCPointDraw* RichPoint     = new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RefPlanePoint = new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
   //  FairMCPointDraw  *TrdPoint      = new FairMCPointDraw ("TrdPoint",      kCyan,   kFullSquare);
   //  FairMCPointDraw  *TofPoint      = new FairMCPointDraw ("TofPoint",      kGreen,  kFullSquare);
   //  FairMCPointDraw  *EcalPoint     = new FairMCPointDraw ("EcalPoint",     kYellow, kFullSquare);

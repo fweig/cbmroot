@@ -4,7 +4,8 @@
  ** Sets for cluster building
  */
 
-void cluster_set(Int_t runID, Int_t fileID) {
+void cluster_set(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy2014
 
   TString runN    = TString::Itoa(runID, 10);
@@ -64,8 +65,7 @@ void cluster_set(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> cluster-set: Macro finished successfully." << std::endl;
   std::cout << ">>> cluster-set: Output file is " << outFile << std::endl;
-  std::cout << ">>> cluster-set: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> cluster-set: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

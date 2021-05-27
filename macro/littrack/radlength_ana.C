@@ -4,16 +4,12 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  */
-void radlength_ana(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/radlen/mc.ac.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/radlen/param.ac.root",
-  const string& radqaFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/radlen/radqa.ac.root",
-  const string& resultDir = "results_radlen_ac/",
-  const string& geoSetup  = "sis100_electron_rich_pal_bcarb",
-  Int_t nEvents           = 12100000) {
+void radlength_ana(const string& mcFile    = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/mc.ac.root",
+                   const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/param.ac.root",
+                   const string& radqaFile = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/radqa.ac.root",
+                   const string& resultDir = "results_radlen_ac/",
+                   const string& geoSetup = "sis100_electron_rich_pal_bcarb", Int_t nEvents = 12100000)
+{
 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -69,7 +65,6 @@ void radlength_ana(
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Radqa file is " << radqaFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

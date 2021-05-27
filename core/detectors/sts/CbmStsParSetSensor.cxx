@@ -13,10 +13,9 @@
 ClassImp(CbmStsParSetSensor)
 
   // -----   Constructor   ----------------------------------------------------
-  CbmStsParSetSensor::CbmStsParSetSensor(const char* name,
-                                         const char* title,
-                                         const char* context)
-  : FairParGenericSet(name, title, context) {
+  CbmStsParSetSensor::CbmStsParSetSensor(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+{
   LOG(info) << "Constructor";
 }
 // --------------------------------------------------------------------------
@@ -28,7 +27,8 @@ CbmStsParSetSensor::~CbmStsParSetSensor() {}
 
 
 // -----   Reset   ----------------------------------------------------------
-void CbmStsParSetSensor::clear() {
+void CbmStsParSetSensor::clear()
+{
   fUseGlobal = kFALSE;
   fParams.clear();
   status = kFALSE;
@@ -38,7 +38,8 @@ void CbmStsParSetSensor::clear() {
 
 
 // -----   Read parameters from ASCII file   --------------------------------
-Bool_t CbmStsParSetSensor::getParams(FairParamList*) {
+Bool_t CbmStsParSetSensor::getParams(FairParamList*)
+{
   LOG(fatal) << GetName() << ": ASCII input is not defined!";
   return kFALSE;
 }
@@ -46,7 +47,8 @@ Bool_t CbmStsParSetSensor::getParams(FairParamList*) {
 
 
 // -----   Get parameters of a sensor   -------------------------------------
-const CbmStsParSensor& CbmStsParSetSensor::GetParSensor(UInt_t address) {
+const CbmStsParSensor& CbmStsParSetSensor::GetParSensor(UInt_t address)
+{
   if (fUseGlobal) return fGlobalParams;
   assert(fParams.count(address));
   return fParams[address];
@@ -55,31 +57,26 @@ const CbmStsParSensor& CbmStsParSetSensor::GetParSensor(UInt_t address) {
 
 
 // -----   Write parameters from ASCII file   -------------------------------
-void CbmStsParSetSensor::putParams(FairParamList*) {
-  LOG(fatal) << GetName() << ": ASCII output is not defined!";
-}
+void CbmStsParSetSensor::putParams(FairParamList*) { LOG(fatal) << GetName() << ": ASCII output is not defined!"; }
 // --------------------------------------------------------------------------
 
 
 // -----   Set sensor parameters   ------------------------------------------
-void CbmStsParSetSensor::SetParSensor(UInt_t address,
-                                      const CbmStsParSensor& par) {
-  if (fParams.count(address))
-    LOG(fatal) << GetName() << ": Replacing parameters for sensor address "
-               << address;
+void CbmStsParSetSensor::SetParSensor(UInt_t address, const CbmStsParSensor& par)
+{
+  if (fParams.count(address)) LOG(fatal) << GetName() << ": Replacing parameters for sensor address " << address;
   fParams[address] = par;
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Info to string   ------------------------------------------------
-std::string CbmStsParSetSensor::ToString() const {
+std::string CbmStsParSetSensor::ToString() const
+{
   std::stringstream ss;
-  if (fUseGlobal)
-    ss << "(Global) " << fGlobalParams.ToString();
+  if (fUseGlobal) ss << "(Global) " << fGlobalParams.ToString();
   else {
-    if (fParams.empty())
-      ss << "Empty";
+    if (fParams.empty()) ss << "Empty";
     else
       ss << "Parameters for " << fParams.size() << " sensors";
   }

@@ -35,7 +35,9 @@ public:
     , fDigiVector(nullptr)
     , fMatchVector(nullptr)
     , fDigiArray(nullptr)
-    , fMatchArray(nullptr) {}
+    , fMatchArray(nullptr)
+  {
+  }
   // -----------------------------------------------------------------------
 
 
@@ -52,7 +54,8 @@ public:
 		 ** A std::vector is first looked for; if not found, a TClonesArray
 		 ** is looked for.
 		 **/
-  virtual Bool_t ConnectToTree() {
+  virtual Bool_t ConnectToTree()
+  {
 
     FairRootManager* frm = FairRootManager::Instance();
 
@@ -60,19 +63,14 @@ public:
     fDigiVector = frm->InitObjectAs<std::vector<Digi> const*>(fName.Data());
 
     // Try to find a TClonesArray branch for the digi
-    if (!fDigiVector) {
-      fDigiArray = dynamic_cast<TClonesArray*>(frm->GetObject(fName));
-    }
+    if (!fDigiVector) { fDigiArray = dynamic_cast<TClonesArray*>(frm->GetObject(fName)); }
 
     // Try to find a vector branch for the match
     TString mBranch = fName + "Match";
-    fMatchVector =
-      frm->InitObjectAs<std::vector<CbmMatch> const*>(mBranch.Data());
+    fMatchVector    = frm->InitObjectAs<std::vector<CbmMatch> const*>(mBranch.Data());
 
     // Try to find a TClonesArray branch for the match
-    if (!fMatchVector) {
-      fMatchArray = dynamic_cast<TClonesArray*>(frm->GetObject(mBranch.Data()));
-    }
+    if (!fMatchVector) { fMatchArray = dynamic_cast<TClonesArray*>(frm->GetObject(mBranch.Data())); }
 
     if (fDigiVector || fDigiArray) return kTRUE;
     return kFALSE;
@@ -84,10 +82,10 @@ public:
   /** @brief Number of digis
 		 ** @return Current number of digis in the branch container
 		 **/
-  virtual std::size_t GetNofDigis() const {
+  virtual std::size_t GetNofDigis() const
+  {
     std::size_t nDigis = 0;
-    if (fDigiVector)
-      nDigis = fDigiVector->size();
+    if (fDigiVector) nDigis = fDigiVector->size();
     else if (fDigiArray) {
       assert(fDigiArray->GetEntriesFast() >= 0);
       nDigis = fDigiArray->GetEntriesFast();
@@ -104,11 +102,11 @@ public:
 		 **
 		 ** Returns a null pointer if the branch is not present.
 		 **/
-  virtual boost::any GetDigi(UInt_t index) {
+  virtual boost::any GetDigi(UInt_t index)
+  {
     const Digi* digi = nullptr;
     if (index < GetNofDigis()) {
-      if (fDigiVector)
-        digi = &((*fDigiVector)[index]);
+      if (fDigiVector) digi = &((*fDigiVector)[index]);
       else if (fDigiArray)
         digi = dynamic_cast<const Digi*>(fDigiArray->At(index));
     }
@@ -124,11 +122,11 @@ public:
 		 **
 		 ** Returns a null pointer if the branch is not present.
 		 **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index) {
+  virtual const CbmMatch* GetDigiMatch(UInt_t index)
+  {
     const CbmMatch* match = nullptr;
     if (index < GetNofDigis()) {
-      if (fMatchVector)
-        match = &((*fMatchVector)[index]);
+      if (fMatchVector) match = &((*fMatchVector)[index]);
       else if (fMatchArray)
         match = static_cast<const CbmMatch*>(fMatchArray->At(index));
     }
@@ -141,7 +139,8 @@ public:
   /** @brief Presence of match branch
 		 ** @return kTRUE if match branch is present
 		 **/
-  virtual Bool_t HasMatches() {
+  virtual Bool_t HasMatches()
+  {
     if (fMatchVector || fMatchArray) return kTRUE;
     return kFALSE;
   }
@@ -150,18 +149,17 @@ public:
 
   // -----------------------------------------------------------------------
   /** @brief String output **/
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
     ss << "Branch " << fName << " (";
-    if (fDigiVector)
-      ss << "vector";
+    if (fDigiVector) ss << "vector";
     else if (fDigiArray)
       ss << "TClonesArray";
     else
       ss << "not connected";
     ss << "), match branch " << fName + "Match (";
-    if (fMatchVector)
-      ss << "vector";
+    if (fMatchVector) ss << "vector";
     else if (fMatchArray)
       ss << "TClonesArray";
     else

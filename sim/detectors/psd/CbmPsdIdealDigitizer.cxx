@@ -27,14 +27,16 @@ CbmPsdIdealDigitizer::CbmPsdIdealDigitizer()
   : FairTask("Ideal Psd Digitizer", 1)
   , fNDigis(0)
   , fPointArray(NULL)
-  , fDigiArray(NULL) {
+  , fDigiArray(NULL)
+{
   //  Reset();
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmPsdIdealDigitizer::~CbmPsdIdealDigitizer() {
+CbmPsdIdealDigitizer::~CbmPsdIdealDigitizer()
+{
   if (fDigiArray) {
     fDigiArray->Delete();
     delete fDigiArray;
@@ -44,13 +46,13 @@ CbmPsdIdealDigitizer::~CbmPsdIdealDigitizer() {
 
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmPsdIdealDigitizer::Init() {
+InitStatus CbmPsdIdealDigitizer::Init()
+{
 
   // Get RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    LOG(fatal)
-      << "CbmPsdIdealDigitizer::Init: RootManager not instantised!";  //FLORIAN
+    LOG(fatal) << "CbmPsdIdealDigitizer::Init: RootManager not instantised!";  //FLORIAN
     return kFATAL;
   }
 
@@ -63,11 +65,9 @@ InitStatus CbmPsdIdealDigitizer::Init() {
 
   // Create and register output array
   fDigiArray = new TClonesArray("CbmPsdDigi", 1000);
-  ioman->Register(
-    "PsdDigi", "PSD", fDigiArray, IsOutputBranchPersistent("PsdDigi"));
+  ioman->Register("PsdDigi", "PSD", fDigiArray, IsOutputBranchPersistent("PsdDigi"));
 
-  cout << "-I- CbmPsdIdealDigitizer: Intialisation successfull " << kSUCCESS
-       << endl;
+  cout << "-I- CbmPsdIdealDigitizer: Intialisation successfull " << kSUCCESS << endl;
   return kSUCCESS;
 }
 
@@ -76,7 +76,8 @@ InitStatus CbmPsdIdealDigitizer::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmPsdIdealDigitizer::Exec(Option_t* /*opt*/) {
+void CbmPsdIdealDigitizer::Exec(Option_t* /*opt*/)
+{
 
   cout << " CbmPsdIdealDigitizer::Exec begin " << endl;
   // Reset output array
@@ -127,8 +128,7 @@ void CbmPsdIdealDigitizer::Exec(Option_t* /*opt*/) {
     //sec = (Int_t)((scinID-1)/6);   //marina   0-9
     sec = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
 
-    auto insert_result = edepmap.insert(
-      std::make_pair(std::make_pair(modID, sec), point->GetEnergyLoss()));
+    auto insert_result = edepmap.insert(std::make_pair(std::make_pair(modID, sec), point->GetEnergyLoss()));
 
     if (!insert_result.second) {  // this entry has existed before
       (*insert_result.first).second += point->GetEnergyLoss();
@@ -171,13 +171,13 @@ void CbmPsdIdealDigitizer::Exec(Option_t* /*opt*/) {
   }
 
   // Event summary
-  cout << "-I- CbmPsdIdealDigitizer: " << fNDigis << " CbmPsdDigi created."
-       << endl;
+  cout << "-I- CbmPsdIdealDigitizer: " << fNDigis << " CbmPsdDigi created." << endl;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method Reset   ------------------------------------------
-void CbmPsdIdealDigitizer::Reset() {
+void CbmPsdIdealDigitizer::Reset()
+{
   fNDigis = 0;
   if (fDigiArray) fDigiArray->Delete();
 }

@@ -39,8 +39,10 @@
 #include "CbmMuchDigiMatch.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchSignal.h"
+
 #include "TF1.h"
 #include "TH1.h"
+
 #include <map>
 class CbmMuchSector;
 class CbmMuchPoint;
@@ -48,7 +50,11 @@ class CbmMuchPad;
 class CbmMuchSectorRadial;
 class TChain;
 
-enum DetectorType { kGEM, kMICROMEGAS };
+enum DetectorType
+{
+  kGEM,
+  kMICROMEGAS
+};
 
 static const Double_t gkResponsePeriod = 400.;
 //static const Int_t gkResponseBin = 1;
@@ -138,15 +144,13 @@ public:
      **/
   Double_t MPV_n_e(Double_t Tkin, Double_t mass);
 
-  void ReadAndRegister(
-    Long_t);  //Read from CbmMuchReadoutBuffer and Register as per mode
+  void ReadAndRegister(Long_t);  //Read from CbmMuchReadoutBuffer and Register as per mode
   /** Get number of signals **/
   Int_t GetNofSignals() const { return fNofSignals; }
 
   //Iteriate on each element of fAddressCharge, create a CbmMuchSignal and store in CbmMuchReadoutBuffer.
   Bool_t BufferSignals(Int_t, Double_t, Double_t);
-  CbmMuchDigi* ConvertSignalToDigi(
-    CbmMuchSignal*);  //Converting Analog Signal to Digital Digi
+  CbmMuchDigi* ConvertSignalToDigi(CbmMuchSignal*);  //Converting Analog Signal to Digital Digi
 
   void SetMcChain(TChain* mcChain) { fMcChain = mcChain; }
   //void SetDeadTime(Double_t deadTime) {fDeadTime = deadTime; }
@@ -161,10 +165,12 @@ public:
 
   //------------------------Noise Generation-----------------------//
 
-  void SetGenerateNoise(Bool_t Noise) {
+  void SetGenerateNoise(Bool_t Noise)
+  {
     fGenerateElectronicsNoise = Noise;
   }  // Setting Generate Noise for Time Based Mode
-  void SetPerPadNoiseRate(Double_t noiserate) {
+  void SetPerPadNoiseRate(Double_t noiserate)
+  {
     fPerPadNoiseRate = noiserate;
   }  // Setting Generate Noise for Time Based Mode
   Int_t GenerateNoise(Double_t, Double_t);
@@ -197,11 +203,10 @@ private:
     TH1F * hadcRPC;
 */
 
-  UInt_t fNADCChannels;  // Number of ADC channels
-  UInt_t fQMax;          // Maximum charge that a pad can collect [electrons]
-  UInt_t fQThreshold;    // Charge threshold [electrons]
-  UInt_t
-    fMeanNoise;  // Mean electronics noise value [electrons] different than fGenerateElectronicsNoise
+  UInt_t fNADCChannels;     // Number of ADC channels
+  UInt_t fQMax;             // Maximum charge that a pad can collect [electrons]
+  UInt_t fQThreshold;       // Charge threshold [electrons]
+  UInt_t fMeanNoise;        // Mean electronics noise value [electrons] different than fGenerateElectronicsNoise
   Double_t fSpotRadius;     // Spot radius from secondary electrons [cm]
   Double_t fMeanGasGain;    // Mean gas gain value (1e4 by default)
   Double_t fDTime;          // Time resolution [ns]
@@ -215,10 +220,8 @@ private:
   Double_t fTimeBinWidth;  // Width of the bin for signal shape simulation
   Int_t fNTimeBins;        // Number of bins for signal shape simulation
   //    Int_t              fNdigis;        // Number of created digis
-  Bool_t
-    fTOT;  // Flag to switch between time over threshold/direct amplitude measurement
-  Double_t
-    fTotalDriftTime;  // Total drift time (calculated from drift velocity and drift volume width)
+  Bool_t fTOT;               // Flag to switch between time over threshold/direct amplitude measurement
+  Double_t fTotalDriftTime;  // Total drift time (calculated from drift velocity and drift volume width)
 
   TF1* fSigma[3];
   TF1* fMPV[3];
@@ -246,8 +249,7 @@ private:
   Double_t fPerPadNoiseRate;         //Noise rate per pad
   Double_t fPreviousEventTime = -1;  //! Previous Event Time
   // Double_t       fCurrentEventTime = 0;  //!Current Event Time
-  Bool_t
-    fGenerateElectronicsNoise;  //! Set this boolean variable to True if want to generated Elecronics Noise
+  Bool_t fGenerateElectronicsNoise;  //! Set this boolean variable to True if want to generated Elecronics Noise
   Int_t fNofNoiseTot     = 0;
   Int_t fNofNoiseSignals = 0;
   TF1* fNoiseCharge;  //!Function to sample the noise charge
@@ -272,20 +274,10 @@ private:
   // Bool_t AddDigi(CbmMuchPad* pad);
   inline Int_t GasGain();
   void DetectorParameters(CbmMuchModule* module);
-  Double_t GetNPrimaryElectronsPerCm(const CbmMuchPoint* point,
-                                     int detectortype);
-  Bool_t AddCharge(CbmMuchSectorRadial* s,
-                   UInt_t ne,
-                   Int_t iPoint,
-                   Double_t time,
-                   Double_t driftTime,
-                   Double_t phi1,
+  Double_t GetNPrimaryElectronsPerCm(const CbmMuchPoint* point, int detectortype);
+  Bool_t AddCharge(CbmMuchSectorRadial* s, UInt_t ne, Int_t iPoint, Double_t time, Double_t driftTime, Double_t phi1,
                    Double_t phi2);
-  void AddCharge(CbmMuchPad* pad,
-                 UInt_t charge,
-                 Int_t iPoint,
-                 Double_t time,
-                 Double_t driftTime);
+  void AddCharge(CbmMuchPad* pad, UInt_t charge, Int_t iPoint, Double_t time, Double_t driftTime);
   void Reset();
 
   ClassDef(CbmMuchDigitizeGem, 1)

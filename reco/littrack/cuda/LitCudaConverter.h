@@ -21,8 +21,8 @@
  * @param hit Pointer to CbmLitPixelHit.
  * @param lhit Pointer to LitScalPixelHit.
  */
-void CbmLitPixelHitToLitCudaPixelHit(const CbmLitPixelHit* hit,
-                                     LitCudaPixelHit* lhit) {
+void CbmLitPixelHitToLitCudaPixelHit(const CbmLitPixelHit* hit, LitCudaPixelHit* lhit)
+{
   lhit->X       = hit->GetX();
   lhit->Y       = hit->GetY();
   lhit->Dx      = hit->GetDx();
@@ -37,8 +37,8 @@ void CbmLitPixelHitToLitCudaPixelHit(const CbmLitPixelHit* hit,
  * @param par Pointer to CbmLitTrackParam.
  * @param lpar Pointer to LitCudaTrackParam.
  */
-void CbmLitTrackParamToLitCudaTrackParam(const CbmLitTrackParam* par,
-                                         LitCudaTrackParam* lpar) {
+void CbmLitTrackParamToLitCudaTrackParam(const CbmLitTrackParam* par, LitCudaTrackParam* lpar)
+{
   lpar->X   = par->GetX();
   lpar->Y   = par->GetY();
   lpar->Tx  = par->GetTx();
@@ -66,8 +66,8 @@ void CbmLitTrackParamToLitCudaTrackParam(const CbmLitTrackParam* par,
  * @param lpar Pointer to LitCudaTrackParam.
  * @param par Pointer to CbmLitTrackParam.
  */
-void LitCudaTrackParamToCbmLitTrackParam(const LitCudaTrackParam* lpar,
-                                         CbmLitTrackParam* par) {
+void LitCudaTrackParamToCbmLitTrackParam(const LitCudaTrackParam* lpar, CbmLitTrackParam* par)
+{
   par->SetX(lpar->X);
   par->SetY(lpar->Y);
   par->SetTx(lpar->Tx);
@@ -95,8 +95,8 @@ void LitCudaTrackParamToCbmLitTrackParam(const LitCudaTrackParam* lpar,
  * @param ltrack Pointer to LitCudaTrack.
  * @param track Pointer to CbmLitTrack.
  */
-inline void LitCudaTrackToCbmLitTrack(LitCudaTrack* ltrack,
-                                      CbmLitTrack* track) {
+inline void LitCudaTrackToCbmLitTrack(LitCudaTrack* ltrack, CbmLitTrack* track)
+{
   // Convert track parameters
   CbmLitTrackParam parFirst, parLast;
   LitCudaTrackParamToCbmLitTrackParam(&(ltrack->paramFirst), &parFirst);
@@ -133,12 +133,11 @@ inline void LitCudaTrackToCbmLitTrack(LitCudaTrack* ltrack,
  * @param track Pointer to CbmLitTrack.
  * @param ltrack Pointer to LitCudaTrack.
  */
-inline void CbmLitTrackToLitCudaTrack(CbmLitTrack* track,
-                                      LitCudaTrack* ltrack) {
+inline void CbmLitTrackToLitCudaTrack(CbmLitTrack* track, LitCudaTrack* ltrack)
+{
   // Convert track parameters
   // CbmLitTrackParamToLitTrackParamScal(track->GetParamFirst(), &(ltrack->paramFirst));
-  CbmLitTrackParamToLitCudaTrackParam(track->GetParamLast(),
-                                      &(ltrack->paramLast));
+  CbmLitTrackParamToLitCudaTrackParam(track->GetParamLast(), &(ltrack->paramLast));
 
   // Copy other track parameters
   // ltrack->chiSq = track->GetChi2();

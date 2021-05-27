@@ -5,10 +5,12 @@
 * \date 2005
 **/
 #include "CbmRichRingFitterCOP.h"
+
 #include "CbmRichRingLight.h"
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 using namespace std;
 
@@ -18,7 +20,8 @@ CbmRichRingFitterCOP::~CbmRichRingFitterCOP() {}
 
 void CbmRichRingFitterCOP::DoFit(CbmRichRingLight* ring) { FitRing(ring); }
 
-void CbmRichRingFitterCOP::FitRing(CbmRichRingLight* ring) {
+void CbmRichRingFitterCOP::FitRing(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
   if (nofHits < 3) {
     ring->SetRadius(0.);
@@ -28,8 +31,7 @@ void CbmRichRingFitterCOP::FitRing(CbmRichRingLight* ring) {
   }
 
   if (nofHits >= MAX_NOF_HITS_IN_RING) {
-    cout << "-E- CbmRichRingFitterCOP::DoFit(), too many hits in the ring:"
-         << nofHits << endl;
+    cout << "-E- CbmRichRingFitterCOP::DoFit(), too many hits in the ring:" << nofHits << endl;
     ring->SetRadius(0.);
     ring->SetCenterX(0.);
     ring->SetCenterY(0.);
@@ -84,8 +86,7 @@ void CbmRichRingFitterCOP::FitRing(CbmRichRingLight* ring) {
 
   A2 = 4. * Cov_xy - 3. * Mz * Mz - Mzz;
   A1 = Mzz * Mz + 4. * Cov_xy * Mz - Mxz2 - Myz2 - Mz * Mz * Mz;
-  A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy
-       + Mz * Mz * Cov_xy;
+  A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy + Mz * Mz * Cov_xy;
 
   A22  = A2 + A2;
   xnew = 0.;

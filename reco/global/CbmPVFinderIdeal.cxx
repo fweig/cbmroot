@@ -20,8 +20,7 @@ using std::endl;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmPVFinderIdeal::CbmPVFinderIdeal()
-  : CbmPrimaryVertexFinder(), fMCTracks(NULL) {}
+CbmPVFinderIdeal::CbmPVFinderIdeal() : CbmPrimaryVertexFinder(), fMCTracks(NULL) {}
 // -------------------------------------------------------------------------
 
 
@@ -31,7 +30,8 @@ CbmPVFinderIdeal::~CbmPVFinderIdeal() {}
 
 
 // -----   Public method Init   --------------------------------------------
-void CbmPVFinderIdeal::Init() {
+void CbmPVFinderIdeal::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -52,7 +52,8 @@ void CbmPVFinderIdeal::Init() {
 
 
 // -----   Public method FindPrimaryVertex   -------------------------------
-Int_t CbmPVFinderIdeal::FindPrimaryVertex(TClonesArray*, CbmVertex* vertex) {
+Int_t CbmPVFinderIdeal::FindPrimaryVertex(TClonesArray*, CbmVertex* vertex)
+{
 
   if (!fMCTracks) return 1;
 
@@ -79,7 +80,8 @@ Int_t CbmPVFinderIdeal::FindPrimaryVertex(TClonesArray*, CbmVertex* vertex) {
     x = refTrack->GetStartX();
     y = refTrack->GetStartY();
     z = refTrack->GetStartZ();
-  } else
+  }
+  else
     cout << "-W- CbmPVFinderIdeal::FindPrimaryVertex: "
          << "No primary MCTracks found!" << endl;
 
@@ -92,10 +94,9 @@ Int_t CbmPVFinderIdeal::FindPrimaryVertex(TClonesArray*, CbmVertex* vertex) {
 
 
 // ----   Find event vertex   ----------------------------------------------
-Int_t CbmPVFinderIdeal::FindEventVertex(CbmEvent* /*event*/,
-                                        TClonesArray* /*tracks*/) {
-  LOG(fatal) << GetName()
-             << ": handling of event objects is not implemented yet.";
+Int_t CbmPVFinderIdeal::FindEventVertex(CbmEvent* /*event*/, TClonesArray* /*tracks*/)
+{
+  LOG(fatal) << GetName() << ": handling of event objects is not implemented yet.";
   return 1;
 }
 // -------------------------------------------------------------------------

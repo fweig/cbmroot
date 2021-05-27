@@ -5,7 +5,8 @@
 class DeleteObject {
 public:
   template<typename T>
-  void operator()(const T* ptr) const {
+  void operator()(const T* ptr) const
+  {
     delete ptr;
   }
 };

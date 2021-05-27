@@ -11,11 +11,7 @@
 class CbmMuchPointInfo : public TObject {
 public:
   CbmMuchPointInfo();
-  CbmMuchPointInfo(Int_t pdgCode,
-                   Int_t motherPdg,
-                   Double_t kine,
-                   Double_t length,
-                   Int_t stationId);
+  CbmMuchPointInfo(Int_t pdgCode, Int_t motherPdg, Double_t kine, Double_t length, Int_t stationId);
   ~CbmMuchPointInfo() {};
 
   void SetKinE(Double_t kine) { fKine = kine; }
@@ -25,7 +21,8 @@ public:
   void SetStationId(Int_t id) { fStationId = id; }
   void SetLength(Double_t length) { fLength = length; }
   void AddCharge(Int_t charge) { fCharge += charge; }
-  void AddArea(Double_t s) {
+  void AddArea(Double_t s)
+  {
     fS += s;
     fNPads++;
   }

@@ -1,4 +1,5 @@
-void doDraw(int tdc, int ch) {
+void doDraw(int tdc, int ch)
+{
   TFile* f = new TFile("output/Wuppertal_analysis.histo.root", "READ");
 
   TCanvas* c1 = new TCanvas("cDelay", "Delay", 20, 50, 1200, 600);
@@ -52,11 +53,8 @@ void doDraw(int tdc, int ch) {
   filename.Form("res/tdc001%d_ch%d.png", tdc, ch);
   img->WriteImage(filename.Data());
 
-  std::cout << "tdc " << tdc << " ch " << ch << " Delay_mean "
-            << hist1->GetMean() << " Delay_rms " << hist1->GetRMS()
-            << " ToT_mean " << hist2->GetMean() << " ToT_rms "
-            << hist2->GetRMS() << " Delay_underflow " << hist1->GetBinContent(0)
-            << " Delay_overflow " << hist1->GetBinContent(1001)
-            << " ToT_underflow " << hist2->GetBinContent(0) << " ToT_overflow "
-            << hist2->GetBinContent(801) << std::endl;
+  std::cout << "tdc " << tdc << " ch " << ch << " Delay_mean " << hist1->GetMean() << " Delay_rms " << hist1->GetRMS()
+            << " ToT_mean " << hist2->GetMean() << " ToT_rms " << hist2->GetRMS() << " Delay_underflow "
+            << hist1->GetBinContent(0) << " Delay_overflow " << hist1->GetBinContent(1001) << " ToT_underflow "
+            << hist2->GetBinContent(0) << " ToT_overflow " << hist2->GetBinContent(801) << std::endl;
 }

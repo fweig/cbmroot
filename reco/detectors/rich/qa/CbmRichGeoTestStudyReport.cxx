@@ -4,6 +4,7 @@
  * \date 2012
  */
 #include "CbmRichGeoTestStudyReport.h"
+
 #include "CbmReportElement.h"
 
 #include "TSystem.h"
@@ -15,34 +16,30 @@ using std::endl;
 using std::stringstream;
 using std::vector;
 
-CbmRichGeoTestStudyReport::CbmRichGeoTestStudyReport() {
-  SetReportName("rich_geo_qa");
-}
+CbmRichGeoTestStudyReport::CbmRichGeoTestStudyReport() { SetReportName("rich_geo_qa"); }
 
 CbmRichGeoTestStudyReport::~CbmRichGeoTestStudyReport() {}
 
-void CbmRichGeoTestStudyReport::Create() {
+void CbmRichGeoTestStudyReport::Create()
+{
   Out().precision(3);
   Out() << R()->DocumentBegin();
   Out() << R()->Title(0, GetTitle());
 
-  Out() << R()->TableBegin("Efficiencies",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Efficiencies", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("acc_mean", "ACC");
   Out() << PrintRow("circle_fit_eff_mean", "Circle fit");
   Out() << PrintRow("ellipse_fit_eff_mean", "Ellipse fit");
   Out() << R()->TableEnd() << endl;
 
-  Out() << R()->TableBegin("Nof point and hits in ring",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Nof point and hits in ring", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("nof_points_in_ring_mean", "Nof points, mean");
   Out() << PrintRow("nof_points_in_ring_rms", "Nof points, rms");
   Out() << PrintRow("nof_hits_in_ring_mean", "Nof hits, mean");
   Out() << PrintRow("nof_hits_in_ring_rms", "Nof hits, rms");
   Out() << R()->TableEnd() << endl;
 
-  Out() << R()->TableBegin("Point fit",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Point fit", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("points_fit_a_axis_mean", "A axis, mean");
   Out() << PrintRow("points_fit_a_axis_rms", "A axis, rms");
   Out() << PrintRow("points_fit_b_axis_mean", "B axis, mean");
@@ -53,8 +50,7 @@ void CbmRichGeoTestStudyReport::Create() {
   Out() << PrintRow("points_fit_r_rms", "Radius, mean");
   Out() << R()->TableEnd() << endl;
 
-  Out() << R()->TableBegin("Hit fit",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Hit fit", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("hits_fit_a_axis_mean", "A axis, mean");
   Out() << PrintRow("hits_fit_a_axis_rms", "A axis, rms");
   Out() << PrintRow("hits_fit_b_axis_mean", "B axis, mean");
@@ -65,8 +61,7 @@ void CbmRichGeoTestStudyReport::Create() {
   Out() << PrintRow("hits_fit_r_rms", "Radius, mean");
   Out() << R()->TableEnd() << endl;
 
-  Out() << R()->TableBegin("Point fit vs. hit fit. Ellipse.",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Point fit vs. hit fit. Ellipse.", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("diff_ellipse_da_mean", "dA, mean");
   Out() << PrintRow("diff_ellipse_da_rms", "dA, rms");
   Out() << PrintRow("diff_ellipse_db_mean", "dB, mean");
@@ -77,8 +72,7 @@ void CbmRichGeoTestStudyReport::Create() {
   Out() << PrintRow("diff_ellipse_dy_rms", "dY, rms");
   Out() << R()->TableEnd() << endl;
 
-  Out() << R()->TableBegin("Point fit vs. hit fit. Circle.",
-                           list_of(string("")).range(GetStudyNames()));
+  Out() << R()->TableBegin("Point fit vs. hit fit. Circle.", list_of(string("")).range(GetStudyNames()));
   Out() << PrintRow("diff_circle_dr_mean", "dR, mean");
   Out() << PrintRow("diff_circle_dr_rms", "dR, rms");
   Out() << PrintRow("diff_circle_dx_mean", "dX, mean");
@@ -90,8 +84,8 @@ void CbmRichGeoTestStudyReport::Create() {
   Out() << R()->DocumentEnd();
 }
 
-string CbmRichGeoTestStudyReport::PrintRow(const string& property,
-                                           const string& name) {
+string CbmRichGeoTestStudyReport::PrintRow(const string& property, const string& name)
+{
   vector<string> n(GetStudyNames().size(), "");
   for (unsigned int i = 0; i < GetStudyNames().size(); i++) {
     n[i] = PrintValue(i, property);
@@ -99,8 +93,8 @@ string CbmRichGeoTestStudyReport::PrintRow(const string& property,
   return R()->TableRow(list_of(name).range(n));
 }
 
-string CbmRichGeoTestStudyReport::PrintValue(int /*studyId*/,
-                                             const string& /*valueName*/) {
+string CbmRichGeoTestStudyReport::PrintValue(int /*studyId*/, const string& /*valueName*/)
+{
   stringstream ss;
   ss.precision(3);
   // ss << fQa[studyId].get(valueName, -1.);

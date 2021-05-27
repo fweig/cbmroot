@@ -4,12 +4,16 @@
 #pragma GCC diagnostic ignored "-Weffc++"
 
 #include "CbmMuchPixelHit.h"
+
 #include "FairTask.h"
-#include "LxSettings.h"
-#include "LxTrackAnaSegments.h"
+
 #include "TClonesArray.h"
+
 #include <list>
 #include <vector>
+
+#include "LxSettings.h"
+#include "LxTrackAnaSegments.h"
 
 struct LxSimplePoint {
   scaltype x;
@@ -18,8 +22,7 @@ struct LxSimplePoint {
   scaltype tx;
   scaltype ty;
   LxSimplePoint() : x(0), y(0), z(0), tx(0), ty(0) {}
-  LxSimplePoint(scaltype X, scaltype Y, scaltype Z, scaltype Tx, scaltype Ty)
-    : x(X), y(Y), z(Z), tx(Tx), ty(Ty) {}
+  LxSimplePoint(scaltype X, scaltype Y, scaltype Z, scaltype Tx, scaltype Ty) : x(X), y(Y), z(Z), tx(Tx), ty(Ty) {}
 };
 
 struct LxSimpleTrack {
@@ -32,14 +35,7 @@ struct LxSimpleTrack {
   scaltype pz;
   scaltype e;
   scaltype charge;
-  LxSimpleTrack(Int_t pdgc,
-                Int_t mid,
-                scaltype P,
-                scaltype Pt,
-                scaltype Px,
-                scaltype Py,
-                scaltype Pz,
-                scaltype E)
+  LxSimpleTrack(Int_t pdgc, Int_t mid, scaltype P, scaltype Pt, scaltype Px, scaltype Py, scaltype Pz, scaltype E)
     : pdgCode(pdgc)
     , motherId(mid)
     , p(P)
@@ -50,12 +46,14 @@ struct LxSimpleTrack {
     , e(E)
     , charge(0)
     , linkedMuchTrack(0, 0)
-    , linkedStsTrack(0) {}
+    , linkedStsTrack(0)
+  {
+  }
   std::list<LxSimplePoint> stsPoints[LXSTSSTATIONS];
   std::list<LxSimplePoint> muchPoints[LXSTATIONS][LXLAYERS];
-  std::list<LxSimplePoint> muchMCPts
-    [LXSTATIONS]
-    [LXLAYERS];  // These array is used for storing MUCH MC points when the 'main' array contains hits.
+  std::list<LxSimplePoint>
+    muchMCPts[LXSTATIONS]
+             [LXLAYERS];  // These array is used for storing MUCH MC points when the 'main' array contains hits.
   std::pair<LxSimpleTrack*, scaltype> linkedMuchTrack;
   std::list<std::pair<LxSimpleTrack*, scaltype>>
     linkedStsTracks;  // The front() contains STS track with the minimal chi2.
@@ -93,7 +91,8 @@ public:
   bool GetBuildSegmentsStat() const { return buildSegmentsStat; }
   void SetBuildSegmentsStat(bool v) { buildSegmentsStat = v; }
   TString GetParticleType() const { return particleType; }
-  void SetParticleType(TString v) {
+  void SetParticleType(TString v)
+  {
     particleType = v;
     segmentsAnalyzer.SetParticleType(v);
   }
@@ -103,11 +102,7 @@ private:
   void AveragePoints();
   void BuildStatistics();
   void Connect(bool useCuts);
-  void Connect(LxSimpleTrack* muchTrack,
-               LxSimplePoint muchPt0,
-               scaltype txMuch,
-               scaltype tyMuch,
-               bool useCuts);
+  void Connect(LxSimpleTrack* muchTrack, LxSimplePoint muchPt0, scaltype txMuch, scaltype tyMuch, bool useCuts);
 
   TClonesArray* listMCTracks;
   TClonesArray* listStsPts;

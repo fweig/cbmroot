@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void runProduceFile(Int_t nEvents = 2) {
+void runProduceFile(Int_t nEvents = 2)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -25,12 +26,10 @@ void runProduceFile(Int_t nEvents = 2) {
   TString trigger = "centr";
 
   // Output file name
-  TString outFile =
-    folder + "/" + system + "." + beam + "." + trigger + ".mc.root";
+  TString outFile = folder + "/" + system + "." + beam + "." + trigger + ".mc.root";
 
   // Parameter file name
-  TString parFile =
-    folder + "/" + system + "." + beam + "." + trigger + ".params.root";
+  TString parFile = folder + "/" + system + "." + beam + "." + trigger + ".params.root";
 
   // Cave geometry
   TString caveGeom = "cave.geo";
@@ -89,8 +88,7 @@ void runProduceFile(Int_t nEvents = 2) {
 
   // -----   Create magnetic field   ----------------------------------------
   CbmFieldMap* magField = NULL;
-  if (fieldMap == "field_electron_standard")
-    magField = new CbmFieldMapSym2(fieldMap);
+  if (fieldMap == "field_electron_standard") magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "field_muon_standard")
     magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "field_v10e")
@@ -156,8 +154,7 @@ void runProduceFile(Int_t nEvents = 2) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

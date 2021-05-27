@@ -9,7 +9,8 @@
 using std::cout;
 using std::endl;
 
-void create_field() {
+void create_field()
+{
   // Input ASCII file
   const char* fieldASCII = "AMFz";
   // Output ROOT file
@@ -36,7 +37,6 @@ void create_field() {
   cout << endl << endl;
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << fieldROOT << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   // ------------------------------------------------------------------------
 }

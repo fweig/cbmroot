@@ -12,9 +12,8 @@
 #ifndef CBMLITRK4TRACKEXTRAPOLATOR_H_
 #define CBMLITRK4TRACKEXTRAPOLATOR_H_
 
-#include "interface/CbmLitTrackExtrapolator.h"
-
 #include "data/CbmLitTrackParam.h"
+#include "interface/CbmLitTrackExtrapolator.h"
 
 #include <memory>
 #include <vector>
@@ -33,14 +32,11 @@ public:
   virtual ~CbmLitRK4TrackExtrapolator();
 
   /* Inherited from CbmLitTrackExtrapolation */
-  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
-                                CbmLitTrackParam* parOut,
-                                litfloat zOut,
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut, litfloat zOut,
                                 std::vector<litfloat>* F);
 
   /* Inherited from CbmLitTrackExtrapolation */
-  virtual LitStatus
-  Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
+  virtual LitStatus Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
 
 protected:
   /* Calculates output track parameters and derivatives with the 4th order Runge-Kutta method.
@@ -51,10 +47,7 @@ protected:
     * @param derivs Vector with integrated derivatives.
     */
 
-  void RK4Order(const std::vector<litfloat>& xIn,
-                litfloat zIn,
-                std::vector<litfloat>& xOut,
-                litfloat zOut,
+  void RK4Order(const std::vector<litfloat>& xIn, litfloat zIn, std::vector<litfloat>& xOut, litfloat zOut,
                 std::vector<litfloat>& derivs) const;
 
   /* TODO: add comment */
@@ -65,9 +58,7 @@ protected:
     * @param F Input transport matrix.
     * @param cOut Output covariance matrix.
     */
-  void TransportC(const std::vector<litfloat>& cIn,
-                  const std::vector<litfloat>& F,
-                  std::vector<litfloat>& cOut) const;
+  void TransportC(const std::vector<litfloat>& cIn, const std::vector<litfloat>& F, std::vector<litfloat>& cOut) const;
 
 private:
   std::shared_ptr<CbmLitField> fField;

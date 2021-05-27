@@ -12,12 +12,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorTofPulser(TString inFile           = "",
-                      TString sHostname        = "etofin001",
-                      Int_t iServerRefreshRate = 100,
-                      Int_t iServerHttpPort    = 8083,
-                      UInt_t nrEvents          = 0,
-                      Int_t iGdpbIndex         = -1, ) {
+void MonitorTofPulser(TString inFile = "", TString sHostname = "etofin001", Int_t iServerRefreshRate = 100,
+                      Int_t iServerHttpPort = 8083, UInt_t nrEvents = 0, Int_t iGdpbIndex = -1, )
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -51,8 +48,7 @@ void MonitorTofPulser(TString inFile           = "",
   std::cout << ">>> MonitorTofPulser: Initialising..." << std::endl;
 
   // Get4 Unpacker
-  CbmMcbm2018MonitorTaskTofPulser* monitor_tof =
-    new CbmMcbm2018MonitorTaskTofPulser();
+  CbmMcbm2018MonitorTaskTofPulser* monitor_tof = new CbmMcbm2018MonitorTaskTofPulser();
   monitor_tof->SetUpdateFreqTs(1000);
   monitor_tof->SetPulserTotLimits(85, 95);  // Auto pulser
   monitor_tof->SetPulserChannel(0);
@@ -60,9 +56,7 @@ void MonitorTofPulser(TString inFile           = "",
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -93,23 +87,21 @@ void MonitorTofPulser(TString inFile           = "",
   std::cout << ">>> MonitorTofPulser: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> MonitorTofPulser: Macro finished successfully."
-            << std::endl;
-  std::cout << ">>> MonitorTofPulser: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorTofPulser: Macro finished successfully." << std::endl;
+  std::cout << ">>> MonitorTofPulser: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 }

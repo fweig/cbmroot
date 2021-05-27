@@ -20,42 +20,31 @@ void global_reco(Int_t nEvents = 10,  // number of events
 {
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   // Input and output data
-  TString dir     = "events/mvd_v14a/";       // Output directory
-  TString mcFile  = dir + "mc.0000.root";     // MC transport file
-  TString parFile = dir + "param.0000.root";  // Parameters file
-  TString globalRecoFile =
-    dir
-    + "global.reco.0000.root";  // Output file with reconstructed tracks and hits
+  TString dir            = "events/mvd_v14a/";             // Output directory
+  TString mcFile         = dir + "mc.0000.root";           // MC transport file
+  TString parFile        = dir + "param.0000.root";        // Parameters file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // Output file with reconstructed tracks and hits
   TString globalHitsFile =
-    dir
-    + "global.hits.0000.root";  // File with reconstructed STS tracks, STS, MUCH, TRD and TOF hits and digis
-  TString globalTracksFile =
-    dir + "global.tracks.0000.root";  // Output file with global tracks
+    dir + "global.hits.0000.root";  // File with reconstructed STS tracks, STS, MUCH, TRD and TOF hits and digis
+  TString globalTracksFile = dir + "global.tracks.0000.root";  // Output file with global tracks
 
   // Digi files
   TList* parFileList = new TList();
-  TObjString stsDigiFile(parDir
-                         + "/sts/sts_v13d_std.digi.par");  // STS digi file
-  TObjString trdDigiFile(parDir
-                         + "/trd/trd_v14a_3e.digi.par");  // TRD digi file
-  TString muchDigiFile =
-    parDir + "/much/much_v17b_digi_sector.root";  // MUCH digi file
+  TObjString stsDigiFile(parDir + "/sts/sts_v13d_std.digi.par");           // STS digi file
+  TObjString trdDigiFile(parDir + "/trd/trd_v14a_3e.digi.par");            // TRD digi file
+  TString muchDigiFile     = parDir + "/much/much_v17b_digi_sector.root";  // MUCH digi file
   TString stsMatBudgetFile = parDir + "/sts/sts_matbudget_v13y.root";
-  TObjString tofDigiFile(parDir + "/tof/tof_v13b.digi.par");  // TOF digi file
-  TObjString tofDigiBdfFile(parDir
-                            + "/tof/tof_v13b.digi.par");  // TOF digi file
+  TObjString tofDigiFile(parDir + "/tof/tof_v13b.digi.par");     // TOF digi file
+  TObjString tofDigiBdfFile(parDir + "/tof/tof_v13b.digi.par");  // TOF digi file
 
   // Reconstruction parameters
-  TString globalTrackingType = "nn";   // Global tracking type
-  TString stsHitProducerType = "new";  // STS hit producer type: real, ideal
-  TString trdHitProducerType =
-    "smearing";  // TRD hit producer type: smearing, digi, clustering
-  TString muchHitProducerType =
-    "advanced";  // MUCH hit producer type: simple, advanced
+  TString globalTrackingType  = "nn";        // Global tracking type
+  TString stsHitProducerType  = "new";       // STS hit producer type: real, ideal
+  TString trdHitProducerType  = "smearing";  // TRD hit producer type: smearing, digi, clustering
+  TString muchHitProducerType = "advanced";  // MUCH hit producer type: simple, advanced
 
   if (script == "yes") {
     mcFile           = TString(gSystem->Getenv("LIT_MC_FILE"));
@@ -89,14 +78,17 @@ void global_reco(Int_t nEvents = 10,  // number of events
   if (opt == "all") {
     run->SetInputFile(mcFile);
     run->SetOutputFile(globalRecoFile);
-  } else if (opt == "hits") {
+  }
+  else if (opt == "hits") {
     run->SetInputFile(mcFile);
     run->SetOutputFile(globalHitsFile);
-  } else if (opt == "tracking") {
+  }
+  else if (opt == "tracking") {
     run->SetInputFile(mcFile);
     run->AddFriend(globalHitsFile);
     run->SetOutputFile(globalTracksFile);
-  } else {
+  }
+  else {
     std::cout << "-E- Incorrect opt parameter" << std::endl;
     exit(0);
   }
@@ -113,20 +105,17 @@ void global_reco(Int_t nEvents = 10,  // number of events
     if (IsMvd(parFile)) {
       // ----- MVD reconstruction    --------------------------------------------
       // -----   MVD Digitiser   -------------------------------------------------
-      CbmMvdDigitizer* mvdDigitise =
-        new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+      CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
       run->AddTask(mvdDigitise);
       // -------------------------------------------------------------------------
 
       // -----   MVD Clusterfinder   ---------------------------------------------
-      CbmMvdClusterfinder* mvdCluster =
-        new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+      CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
       run->AddTask(mvdCluster);
       // -------------------------------------------------------------------------
 
       // -----   MVD Hit Finder   ------------------------------------------------
-      CbmMvdHitfinder* mvdHitfinder =
-        new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+      CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
       mvdHitfinder->UseClusterfinder(kTRUE);
       run->AddTask(mvdHitfinder);
     }
@@ -147,7 +136,8 @@ void global_reco(Int_t nEvents = 10,  // number of events
       // FairTask* stsMatchHits = new CbmStsMatchHits();
       // run->AddTask(stsMatchHits);
 */
-    } else if (stsHitProducerType == "ideal") {
+    }
+    else if (stsHitProducerType == "ideal") {
       /*
       // ----- STS IDEAL reconstruction   ---------------------------------------------
       FairTask* stsDigitize =	new CbmStsIdealDigitize();
@@ -162,7 +152,8 @@ void global_reco(Int_t nEvents = 10,  // number of events
        //  FairTask* stsMatchHits = new CbmStsIdealMatchHits("STSMatchHits", iVerbose);
        //  run->AddTask(stsMatchHits);
 */
-    } else if (stsHitProducerType == "new") {
+    }
+    else if (stsHitProducerType == "new") {
       // --- The following calls the STS digitizer with default settings
       CbmStsDigitize* stsDigi = new CbmStsDigitize();
       stsDigi->SetEventMode();
@@ -189,7 +180,7 @@ void global_reco(Int_t nEvents = 10,  // number of events
     //l1->SetMaterialBudgetFileName(stsMatBudgetFile);
     run->AddTask(l1);
     CbmStsTrackFinder* trackFinder = new CbmL1StsTrackFinder();
-    FairTask* findTracks = new CbmStsFindTracks(iVerbose, trackFinder);
+    FairTask* findTracks           = new CbmStsFindTracks(iVerbose, trackFinder);
     run->AddTask(findTracks);
 
     //	FairTask* stsMatchTracks = new CbmStsMatchTracks("STSMatchTracks", iVerbose);
@@ -201,16 +192,13 @@ void global_reco(Int_t nEvents = 10,  // number of events
       //FIXME: Don't hrdcode the mch version (0=sis100) but get the info
       // from the geometry file name
 
-      CbmMuchDigitizeGem* digitize =
-        new CbmMuchDigitizeGem(muchDigiFile.Data(), 0);
-      if (muchHitProducerType == "simple") {
-        digitize->SetAlgorithm(0);
-      } else if (muchHitProducerType == "advanced") {
+      CbmMuchDigitizeGem* digitize = new CbmMuchDigitizeGem(muchDigiFile.Data(), 0);
+      if (muchHitProducerType == "simple") { digitize->SetAlgorithm(0); }
+      else if (muchHitProducerType == "advanced") {
         digitize->SetAlgorithm(1);
       }
       run->AddTask(digitize);
-      CbmMuchFindHitsGem* findHits =
-        new CbmMuchFindHitsGem(muchDigiFile.Data(), 0);
+      CbmMuchFindHitsGem* findHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), 0);
       run->AddTask(findHits);
 
       /*
@@ -230,17 +218,18 @@ void global_reco(Int_t nEvents = 10,  // number of events
       parFileList->Add(&trdDigiFile);
       CbmTrdRadiator* radiator = new CbmTrdRadiator(kTRUE, "H++");
       if (trdHitProducerType == "smearing") {
-        CbmTrdHitProducerSmearing* trdHitProd =
-          new CbmTrdHitProducerSmearing(radiator);
+        CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
         trdHitProd->SetUseDigiPar(false);
         run->AddTask(trdHitProd);
-      } else if (trdHitProducerType == "digi") {
+      }
+      else if (trdHitProducerType == "digi") {
         CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer(radiator);
         run->AddTask(trdDigitizer);
 
         CbmTrdHitProducerDigi* trdHitProd = new CbmTrdHitProducerDigi();
         run->AddTask(trdHitProd);
-      } else if (trdHitProducerType == "clustering") {
+      }
+      else if (trdHitProducerType == "clustering") {
         // ----- TRD clustering -----
         CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
         run->AddTask(trdDigiPrf);
@@ -259,9 +248,8 @@ void global_reco(Int_t nEvents = 10,  // number of events
       parFileList->Add(&tofDigiFile);
       parFileList->Add(&tofDigiBdfFile);
       // ------ TOF hits --------------------------------------------------------
-      Int_t iVerbose = 0;
-      CbmTofDigitizerBDF* tofDigi =
-        new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+      Int_t iVerbose              = 0;
+      CbmTofDigitizerBDF* tofDigi = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
       tofDigi->SetOutputBranchPersistent("TofDigi", kFALSE);
       tofDigi->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
       TString paramDir = gSystem->Getenv("VMCWORKDIR");
@@ -270,8 +258,7 @@ void global_reco(Int_t nEvents = 10,  // number of events
         + "/parameters/tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
       run->AddTask(tofDigi);
 
-      CbmTofSimpClusterizer* tofCluster =
-        new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+      CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
       tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
       tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
       run->AddTask(tofCluster);

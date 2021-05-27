@@ -58,16 +58,13 @@ const Int_t kiScalerIndex[kiNbScalers] = {1, 2, 3, 4, 5, 6};
 const Int_t kiNbRpc              = 8;
 const Int_t kiRpcScalId[kiNbRpc] = {0, 0, 1, 1, 2, 2, 3, 4};
 // channels                            1-8     9-15   1-8   Or 16-23   1-6    9-15   1-4    0-15
-const Double_t kdRpcArea[kiNbRpc] =
-  {648.0, 60.0, 100.0, 560.0, 648.0, 230.0, 864.0, 4.0};
-const TString ksRpcName[kiNbRpc] =
-  {"HDP2", "HDP5", "BREF", "   BR13", "TSUS", "TSUP", "USTC", "DIAM"};
+const Double_t kdRpcArea[kiNbRpc] = {648.0, 60.0, 100.0, 560.0, 648.0, 230.0, 864.0, 4.0};
+const TString ksRpcName[kiNbRpc]  = {"HDP2", "HDP5", "BREF", "   BR13", "TSUS", "TSUP", "USTC", "DIAM"};
 
-const Int_t kiNbOrChanRpc = 32;
-const Int_t kiStart0rRpc  = 0;
-const Int_t kiMidOrRpc    = 16;
-const Int_t kiNbAndChanRpc =
-  16;  // Not usable directly due to register map error
+const Int_t kiNbOrChanRpc  = 32;
+const Int_t kiStart0rRpc   = 0;
+const Int_t kiMidOrRpc     = 16;
+const Int_t kiNbAndChanRpc = 16;  // Not usable directly due to register map error
 const Int_t kiStartAndRpc  = 1;
 const Int_t kiMidAndRpc    = 9;
 const Int_t kiNbOrChanDiam = 16;
@@ -84,12 +81,10 @@ const Double_t kdSpillDiamThr   = 100.0;  // 1/(s.cm^2)
 const Double_t kdNoSpillDiamThr = 1e-5;   // 1/(s.cm^2)
 
 // Overloaded functions used to get a user friendly date/time input as string
-void plot_Flux_Date(TString sInputName  = "",
-                    TString sStartDate  = "2015-11-26 18:20:00",
-                    TString sStopDate   = "2015-12-01 08:00:00",
-                    Int_t iNbSecPerBin  = 5,
-                    Int_t iSpillDistSec = kiSpillDistSec,
-                    Int_t nEvents       = -1) {
+void plot_Flux_Date(TString sInputName = "", TString sStartDate = "2015-11-26 18:20:00",
+                    TString sStopDate = "2015-12-01 08:00:00", Int_t iNbSecPerBin = 5,
+                    Int_t iSpillDistSec = kiSpillDistSec, Int_t nEvents = -1)
+{
   // Use ROOT TDatime class for its nice string to date function
   TDatime dateStart(sStartDate);
   TDatime dateStop(sStopDate);
@@ -106,30 +101,27 @@ void plot_Flux_Date(TString sInputName  = "",
   UInt_t uHour, uMin, uSec;
   timeStart.GetDate(kFALSE, 0, &uDay, &uMonth, &uYear);
   timeStart.GetTime(kFALSE, 0, &uHour, &uMin, &uSec);
-  cout << timeStart.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear
-       << " " << uHour << ":" << uMin << ":" << uSec << endl;
+  cout << timeStart.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear << " " << uHour << ":" << uMin << ":"
+       << uSec << endl;
   timeStop.GetDate(kFALSE, 0, &uDay, &uMonth, &uYear);
   timeStop.GetTime(kFALSE, 0, &uHour, &uMin, &uSec);
-  cout << timeStop.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear
-       << " " << uHour << ":" << uMin << ":" << uSec << endl;
+  cout << timeStop.GetSec() << " " << uDay << "-" << uMonth << "-" << uYear << " " << uHour << ":" << uMin << ":"
+       << uSec << endl;
 
   // Set time offset for histograms to 0 => Start on 01/01/1970 as we use
   // are the UNIX time frame!
   gStyle->SetTimeOffset(0);
 
   // Do real call to function
-  plot_Flux_Date_B(
-    sInputName, iNbSecPerBin, timeStart, timeStop, iSpillDistSec, nEvents);
+  plot_Flux_Date_B(sInputName, iNbSecPerBin, timeStart, timeStop, iSpillDistSec, nEvents);
 }
 
 // Max nEvents: 198999999999
-void plot_Flux_Date_B(
-  TString sInputName    = "",
-  Int_t iNbSecPerBin    = 5,
-  TTimeStamp tStartTime = 1425075060,  // Start of rate data taking
-  TTimeStamp tStopTime  = 1425538380,  // End of rate data taking
-  Int_t iSpillDistSec   = kiSpillDistSec,
-  Int_t nEvents         = -1) {
+void plot_Flux_Date_B(TString sInputName = "", Int_t iNbSecPerBin = 5,
+                      TTimeStamp tStartTime = 1425075060,  // Start of rate data taking
+                      TTimeStamp tStopTime  = 1425538380,  // End of rate data taking
+                      Int_t iSpillDistSec = kiSpillDistSec, Int_t nEvents = -1)
+{
   if ("" == sInputName) {
     cout << "Empty input filename!!!" << endl;
     return;
@@ -139,17 +131,13 @@ void plot_Flux_Date_B(
 
   TTree* tTree = (TTree*) fInput->Get("cbmsim");
   if (!tTree) {
-    cout
-      << "Output tree could not be retrieved from file. Abort macro execution."
-      << endl;
+    cout << "Output tree could not be retrieved from file. Abort macro execution." << endl;
     return;
   }  // if(!tTree)
 
   TBranch* tBranchTrlo = tTree->GetBranch("TofTriglog");
   if (!tBranchTrlo) {
-    cout
-      << "Branch 'TofTriglog' not found in output tree. Abort macro execution."
-      << endl;
+    cout << "Branch 'TofTriglog' not found in output tree. Abort macro execution." << endl;
     return;
   }  // if(!tBranchTrlo)
 
@@ -181,40 +169,31 @@ void plot_Flux_Date_B(
   TTofCalibScaler* tCalibTrloScal;
 
   // Prepare histos and variables
-  Int_t iNbBins =
-    (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iNbSecPerBin;
+  Int_t iNbBins       = (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iNbSecPerBin;
   Double_t dStartTime = tStartTime.GetSec();
   Double_t dStopTime  = tStopTime.GetSec();
-  TProfile* tFluxHdP2 =
-    new TProfile("tFluxHdP2", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxHdP2 = new TProfile("tFluxHdP2", "", iNbBins, dStartTime, dStopTime);
   tFluxHdP2->GetXaxis()->SetTimeDisplay(1);
   tFluxHdP2->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxHdP5 =
-    new TProfile("tFluxHdP5", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxHdP5 = new TProfile("tFluxHdP5", "", iNbBins, dStartTime, dStopTime);
   tFluxHdP5->GetXaxis()->SetTimeDisplay(1);
   tFluxHdP5->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxBRef =
-    new TProfile("tFluxBRef", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxBRef = new TProfile("tFluxBRef", "", iNbBins, dStartTime, dStopTime);
   tFluxBRef->GetXaxis()->SetTimeDisplay(1);
   tFluxBRef->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxB13 =
-    new TProfile("tFluxB13", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxB13 = new TProfile("tFluxB13", "", iNbBins, dStartTime, dStopTime);
   tFluxB13->GetXaxis()->SetTimeDisplay(1);
   tFluxB13->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxTsuS =
-    new TProfile("tFluxTsuS", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxTsuS = new TProfile("tFluxTsuS", "", iNbBins, dStartTime, dStopTime);
   tFluxTsuS->GetXaxis()->SetTimeDisplay(1);
   tFluxTsuS->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxTsuP =
-    new TProfile("tFluxTsuP", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxTsuP = new TProfile("tFluxTsuP", "", iNbBins, dStartTime, dStopTime);
   tFluxTsuP->GetXaxis()->SetTimeDisplay(1);
   tFluxTsuP->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxUstc =
-    new TProfile("tFluxUstc", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxUstc = new TProfile("tFluxUstc", "", iNbBins, dStartTime, dStopTime);
   tFluxUstc->GetXaxis()->SetTimeDisplay(1);
   tFluxUstc->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
-  TProfile* tFluxDiam =
-    new TProfile("tFluxDiam", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxDiam = new TProfile("tFluxDiam", "", iNbBins, dStartTime, dStopTime);
   tFluxDiam->GetXaxis()->SetTimeDisplay(1);
   tFluxDiam->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   Double_t dLastTime       = 0;
@@ -250,27 +229,18 @@ void plot_Flux_Date_B(
   tFluxPmt[5]->GetXaxis()->SetTimeDisplay(1);
   tFluxPmt[5]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
 
-  Int_t iNbBinsSpill =
-    (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iSpillDistSec;
+  Int_t iNbBinsSpill = (Int_t)(tStopTime.GetSec() - tStartTime.GetSec()) / iSpillDistSec;
   TProfile* tSpillFluxRpc[kiNbRpc];
   for (Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++) {
     tSpillFluxRpc[iRpc] =
-      new TProfile(Form("tSpillFlux%s", ksRpcName[iRpc].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tSpillFlux%s", ksRpcName[iRpc].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
     tSpillFluxRpc[iRpc]->GetXaxis()->SetTimeDisplay(1);
     tSpillFluxRpc[iRpc]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }
   TProfile* tSpillFluxPmt[kiNbPmt];
   for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++) {
     tSpillFluxPmt[iPmt] =
-      new TProfile(Form("tSpillFluxPmt%s", ksPmtName[iPmt].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tSpillFluxPmt%s", ksPmtName[iPmt].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
     tSpillFluxPmt[iPmt]->GetXaxis()->SetTimeDisplay(1);
     tSpillFluxPmt[iPmt]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }
@@ -278,36 +248,24 @@ void plot_Flux_Date_B(
   TProfile* tNoSpillFluxRpc[kiNbRpc];
   for (Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++) {
     tNoSpillFluxRpc[iRpc] =
-      new TProfile(Form("tNoSpillFlux%s", ksRpcName[iRpc].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tNoSpillFlux%s", ksRpcName[iRpc].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
     tNoSpillFluxRpc[iRpc]->GetXaxis()->SetTimeDisplay(1);
-    tNoSpillFluxRpc[iRpc]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    tNoSpillFluxRpc[iRpc]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }
   TProfile* tNoSpillFluxPmt[kiNbPmt];
   for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++) {
     tNoSpillFluxPmt[iPmt] =
-      new TProfile(Form("tNoSpillFluxPmt%s", ksPmtName[iPmt].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tNoSpillFluxPmt%s", ksPmtName[iPmt].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
     tNoSpillFluxPmt[iPmt]->GetXaxis()->SetTimeDisplay(1);
-    tNoSpillFluxPmt[iPmt]->GetXaxis()->SetTimeFormat(
-      "#splitline{%d\/%m}{%H:%M}");
+    tNoSpillFluxPmt[iPmt]->GetXaxis()->SetTimeFormat("#splitline{%d\/%m}{%H:%M}");
   }
 
 
   // Loop over measurements
   Long64_t lBranchEntries = tBranch->GetEntries();
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     if (0 == lBranchEntry % 10000 && 0 < lBranchEntry)
-      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!"
-           << endl;
+      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!" << endl;
     tArrayTrlo->Clear("C");
     tArray->Clear("C");
 
@@ -347,22 +305,16 @@ void plot_Flux_Date_B(
     tCalibTrloScal = (TTofCalibScaler*) tArray->At(1 + kiNbScalers);
 
     for (Int_t iAndChan = kiStartAndRpc; iAndChan < kiMidAndRpc; iAndChan++) {
-      dMeanFluxHdP2 +=
-        tCalibScaler[kiRpcScalId[0]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxBRef +=
-        tCalibScaler[kiRpcScalId[2]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxTsuStr +=
-        tCalibScaler[kiRpcScalId[4]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxUstc +=
-        tCalibScaler[kiRpcScalId[6]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxHdP2 += tCalibScaler[kiRpcScalId[0]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxBRef += tCalibScaler[kiRpcScalId[2]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxTsuStr += tCalibScaler[kiRpcScalId[4]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxUstc += tCalibScaler[kiRpcScalId[6]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
 
     }  // for(Int_t iAndCHan = 0; iAndChan < kiNbAndChanRpc; iAndChan ++)
     for (Int_t iAndChan = kiMidAndRpc; iAndChan < kiNbAndChanRpc; iAndChan++) {
-      dMeanFluxHdP5 +=
-        tCalibScaler[kiRpcScalId[1]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxHdP5 += tCalibScaler[kiRpcScalId[1]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
       //         dMeanFluxB2013  += tCalibScaler[ kiRpcScalId[3] ]->GetScalerValue( kiNbOrChanRpc + iAndChan );
-      dMeanFluxTsuPad +=
-        tCalibScaler[kiRpcScalId[5]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxTsuPad += tCalibScaler[kiRpcScalId[5]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
     }  // for(Int_t iAndCHan = 0; iAndChan < kiNbAndChanRpc; iAndChan ++)
     /* Ad-Hoc Fix for bucarest 2013 RPC problem with AND between left and right side */
     for (Int_t iOrChan = kiMidOrRpc; iOrChan < kiNbOrChanRpc; iOrChan++)
@@ -395,8 +347,7 @@ void plot_Flux_Date_B(
             dMeanFluxPmt[iPmt] = 0.0;
             else
             */
-      dMeanFluxPmt[iPmt] =
-        tCalibTrloScal->GetScalerValue(kiPlaScalId[iPmt], 1) / kdPmtArea[iPmt];
+      dMeanFluxPmt[iPmt] = tCalibTrloScal->GetScalerValue(kiPlaScalId[iPmt], 1) / kdPmtArea[iPmt];
       tFluxPmt[iPmt]->Fill(tEventTime.GetSec(), dMeanFluxPmt[iPmt]);
     }  // for( Int_t iPmt = 0; iPmt < kiNbRpc; iPmt++)
 
@@ -423,18 +374,15 @@ void plot_Flux_Date_B(
     }  // else if( dMeanFluxDiamA < kdNoSpillDiamThr )
 
     if (tCalibTrloScal->GetTimeToFirst() < dLastTime) {
-      cout << " Probably a counter cycle: " << dLastTime << " "
-           << tCalibTrloScal->GetTimeToFirst() << endl;
-      cout << "                           " << dLastTimeToLast << " "
-           << tCalibTrloScal->GetTimeToLast() << endl;
+      cout << " Probably a counter cycle: " << dLastTime << " " << tCalibTrloScal->GetTimeToFirst() << endl;
+      cout << "                           " << dLastTimeToLast << " " << tCalibTrloScal->GetTimeToLast() << endl;
     }
     dLastTime       = tCalibTrloScal->GetTimeToFirst();
     dLastTimeToLast = tCalibTrloScal->GetTimeToLast();
 
 
     if (0 == lBranchEntry % 10000 && 0 < lBranchEntry)
-      cout << "Event time: " << tTriglogBoard->GetMbsTimeSec() << " done!"
-           << endl;
+      cout << "Event time: " << tTriglogBoard->GetMbsTimeSec() << " done!" << endl;
   }  // for(Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++)
 
 
@@ -475,8 +423,7 @@ void plot_Flux_Date_B(
   gPad->SetLogy();
 
   delete gROOT->FindObjectAny("tCanvas2");
-  TCanvas* tCanvas2 =
-    new TCanvas("tCanvas2", "Setups Vs Time", 0, 0, 1400, 700);
+  TCanvas* tCanvas2 = new TCanvas("tCanvas2", "Setups Vs Time", 0, 0, 1400, 700);
   tCanvas2->Divide(2, 1);
 
   tCanvas2->cd(1);
@@ -512,8 +459,7 @@ void plot_Flux_Date_B(
   tFluxDiam->Draw("hsame");
 
   delete gROOT->FindObjectAny("tCanvas3");
-  TCanvas* tCanvas3 =
-    new TCanvas("tCanvas3", "Plastics Vs time", 0, 0, 1400, 700);
+  TCanvas* tCanvas3 = new TCanvas("tCanvas3", "Plastics Vs time", 0, 0, 1400, 700);
   tCanvas3->Divide(4, 2);
 
   for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++) {
@@ -568,8 +514,7 @@ void plot_Flux_Date_B(
   }  // // for( Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++)
 
   delete gROOT->FindObjectAny("tCanvasNoSpRpc");
-  TCanvas* tCanvasNoSpRpc =
-    new TCanvas("tCanvasNoSpRpc", "Rpc out of Spill", 0, 0, 1400, 700);
+  TCanvas* tCanvasNoSpRpc = new TCanvas("tCanvasNoSpRpc", "Rpc out of Spill", 0, 0, 1400, 700);
   tCanvasNoSpRpc->Divide(4, 2);
 
   for (Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++) {
@@ -579,8 +524,7 @@ void plot_Flux_Date_B(
   }  // // for( Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++)
 
   delete gROOT->FindObjectAny("tCanvasNoSpPmt");
-  TCanvas* tCanvasNoSpPmt =
-    new TCanvas("tCanvasNoSpPmt", "Pmt out of Spill", 0, 0, 1400, 700);
+  TCanvas* tCanvasNoSpPmt = new TCanvas("tCanvasNoSpPmt", "Pmt out of Spill", 0, 0, 1400, 700);
   tCanvasNoSpPmt->Divide(3, 2);
 
   for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++) {

@@ -27,10 +27,8 @@
   gSystem->Load("libTof");
 
 
-  TFile* file1 =
-    new TFile("/d/cbm02/kresan/rich_prot/jul10/e.standard.30.mc.root");
-  TFile* file2 =
-    new TFile("/d/cbm02/kresan/rich_prot/jul10/e.standard.30.reco.root");
+  TFile* file1         = new TFile("/d/cbm02/kresan/rich_prot/jul10/e.standard.30.mc.root");
+  TFile* file2         = new TFile("/d/cbm02/kresan/rich_prot/jul10/e.standard.30.reco.root");
   TTree* tree1         = (TTree*) file1->Get("cbmsim");
   TTree* tree2         = (TTree*) file2->Get("cbmsim");
   TClonesArray* tracks = new TClonesArray("CbmMCTrack");
@@ -70,8 +68,7 @@
       if (NULL == track) continue;
       pdg = track->GetPdgCode();
       if (50000050 != pdg) continue;
-      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2)
-                           + TMath::Power(track->GetPy(), 2)
+      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2) + TMath::Power(track->GetPy(), 2)
                            + TMath::Power(track->GetPz(), 2));
       lambda = c / n * h / e / energy;
       h_all->Fill(lambda);
@@ -86,8 +83,7 @@
       if (NULL == track) continue;
       pdg = track->GetPdgCode();
       if (50000050 != pdg) continue;
-      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2)
-                           + TMath::Power(track->GetPy(), 2)
+      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2) + TMath::Power(track->GetPy(), 2)
                            + TMath::Power(track->GetPz(), 2));
       lambda = c / n * h / e / energy;
       h_acc->Fill(lambda);
@@ -106,8 +102,7 @@
       if (NULL == track) continue;
       pdg = track->GetPdgCode();
       if (50000050 != pdg) continue;
-      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2)
-                           + TMath::Power(track->GetPy(), 2)
+      energy = TMath::Sqrt(TMath::Power(track->GetPx(), 2) + TMath::Power(track->GetPy(), 2)
                            + TMath::Power(track->GetPz(), 2));
       lambda = c / n * h / e / energy;
       h_phot->Fill(lambda, hit->GetNPhotons());

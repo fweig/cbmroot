@@ -4,10 +4,9 @@
 // --------------------------------------------------------------------------
 
 
-void run_HitProducerTaskIdeal(Int_t nEvents   = 10,
-                              TString inFile  = "data/test.mc.root",
-                              TString parFile = "data/params.root",
-                              TString outFile = "data/test.eds.root") {
+void run_HitProducerTaskIdeal(Int_t nEvents = 10, TString inFile = "data/test.mc.root",
+                              TString parFile = "data/params.root", TString outFile = "data/test.eds.root")
+{
 
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
@@ -23,8 +22,7 @@ void run_HitProducerTaskIdeal(Int_t nEvents   = 10,
   TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters/";
 
-  TObjString* stsDigiFile =
-    new TObjString(paramDir + "/trd/trd_v17n_1m.gas.par");
+  TObjString* stsDigiFile = new TObjString(paramDir + "/trd/trd_v17n_1m.gas.par");
   parFileList->Add(stsDigiFile);
 
   // In general, the following parts need not be touched
@@ -59,8 +57,7 @@ void run_HitProducerTaskIdeal(Int_t nEvents   = 10,
   //CbmStsHitProducerTaskIdeal* stsHitProd = new CbmStsHitProducerTaskIdeal();
 
   // New algorithm based version of the ideal STS hit producer
-  CbmStsHitProducerIdealWrapper* stsHitProd =
-    new CbmStsHitProducerIdealWrapper();
+  CbmStsHitProducerIdealWrapper* stsHitProd = new CbmStsHitProducerIdealWrapper();
 
   run->AddTask(stsHitProd);
 

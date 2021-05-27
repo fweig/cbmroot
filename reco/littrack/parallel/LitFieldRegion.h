@@ -10,8 +10,10 @@
 
 #include "LitMath.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitFieldRegion
@@ -37,12 +39,9 @@ namespace lit {
     * \param[in] B2 Third field value.
     * \param[in] B2z Z position of the third field value.
     */
-      void Set(const LitFieldValue<T>& B0,
-               const T B0z,
-               const LitFieldValue<T>& B1,
-               const T B1z,
-               const LitFieldValue<T>& B2,
-               const T B2z) {
+      void Set(const LitFieldValue<T>& B0, const T B0z, const LitFieldValue<T>& B1, const T B1z,
+               const LitFieldValue<T>& B2, const T B2z)
+      {
         z0    = B0z;
         T dz1 = B1z - B0z, dz2 = B2z - B0z;
         T det = rcp(T(dz1 * dz2 * (dz2 - dz1)));
@@ -80,10 +79,8 @@ namespace lit {
     * \param[in] B1 Second field value.
     * \param[in] B1z Z position of the second field value.
     */
-      void Set(const LitFieldValue<T>& B0,
-               const T B0z,
-               const LitFieldValue<T>& B1,
-               const T B1z) {
+      void Set(const LitFieldValue<T>& B0, const T B0z, const LitFieldValue<T>& B1, const T B1z)
+      {
         z0    = B0z;
         T dzi = rcp(T(B1z - B0z));
         cx0   = B0.Bx;
@@ -98,7 +95,8 @@ namespace lit {
       /**
     *
     */
-      void Shift(T z) {
+      void Shift(T z)
+      {
         T dz    = z - z0;
         T cx2dz = cx2 * dz;
         T cy2dz = cy2 * dz;
@@ -118,7 +116,8 @@ namespace lit {
     * \param[in] z Z position of the field value.
     * \param[out] B Field value.
     */
-      void GetFieldValue(const T& z, LitFieldValue<T>& B) const {
+      void GetFieldValue(const T& z, LitFieldValue<T>& B) const
+      {
         T dz   = z - z0;
         T dzdz = dz * dz;
         B.Bx   = cx0 + cx1 * dz + cx2 * dzdz;

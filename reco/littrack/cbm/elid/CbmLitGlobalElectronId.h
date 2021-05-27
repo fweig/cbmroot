@@ -29,7 +29,8 @@ public:
   /**
 	 * Return Instance of CbmLitGlobalElectronId.
 	 */
-  static CbmLitGlobalElectronId& GetInstance() {
+  static CbmLitGlobalElectronId& GetInstance()
+  {
     static CbmLitGlobalElectronId fInstance;
     return fInstance;
   }
@@ -109,12 +110,8 @@ public:
   /**
 	 * \brief Set RICH electron ID cuts when ANN is not used.
 	 */
-  void SetRichCuts(Double_t meanA,
-                   Double_t rmsA,
-                   Double_t meanB,
-                   Double_t rmsB,
-                   Double_t rmsCoeff,
-                   Double_t rtDistCut) {
+  void SetRichCuts(Double_t meanA, Double_t rmsA, Double_t meanB, Double_t rmsB, Double_t rmsCoeff, Double_t rtDistCut)
+  {
     fRichMeanA    = meanA;
     fRichMeanB    = meanB;
     fRichRmsA     = rmsA;

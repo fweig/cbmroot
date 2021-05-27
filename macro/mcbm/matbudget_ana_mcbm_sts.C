@@ -1,4 +1,6 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
+#include "FairRadLenPoint.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFile.h"
@@ -10,8 +12,6 @@
 #include "TSystem.h"
 #include "TTree.h"
 #include "TVector3.h"
-
-#include "FairRadLenPoint.h"
 
 #include <iostream>
 #include <vector>
@@ -26,7 +26,8 @@ using std::vector;
 // .include $FAIRROOTPATH/include
 // .x 'matbudget_ana_mcbm_sts.C++("sts_v18e")'
 
-Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000) {
+Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000)
+{
 
   // Input file (MC)
   TString geoVersion(inGeo);
@@ -34,9 +35,7 @@ Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000) {
   TFile* input   = new TFile(inFile);
   if (!input) {  // this is not checked in compiled mode
     cout << "*** matbudget_ana: Input file " << inFile << " not found!\n"
-         << "Be sure to run matbudget_mc.C before for the respective "
-              + geoVersion + " geometry!"
-         << endl;
+         << "Be sure to run matbudget_mc.C before for the respective " + geoVersion + " geometry!" << endl;
     exit;
   }
 
@@ -55,14 +54,13 @@ Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000) {
   //  const int rMax      = 55;      // maximal radius for histograms (for both x and y)
   const int nStations = 2;    // number of STS stations
   const int nBins     = 300;  // number of bins in histograms (in both x and y)
-  const int rMax      = 16;  // maximal radius for histograms (for both x and y)
+  const int rMax      = 16;   // maximal radius for histograms (for both x and y)
   TProfile2D* hStaRadLen[nStations];
   for (int i = 0; i < nStations; ++i) {
     TString name = "Radiation Thickness [%],";
     name += " Station";
     name += i + 1;
-    hStaRadLen[i] =
-      new TProfile2D(name, name, nBins, -rMax, rMax, nBins, -rMax, rMax);
+    hStaRadLen[i] = new TProfile2D(name, name, nBins, -rMax, rMax, nBins, -rMax, rMax);
   }
 
   // Auxiliary variables
@@ -72,17 +70,13 @@ Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000) {
 
   // Event loop
   int firstEvent = 0;
-  for (Int_t event = firstEvent;
-       event < (firstEvent + nEvents) && event < tree->GetEntriesFast();
-       event++) {
+  for (Int_t event = firstEvent; event < (firstEvent + nEvents) && event < tree->GetEntriesFast(); event++) {
     tree->GetEntry(event);
     if (0 == event % 100000) cout << "*** Processing event " << event << endl;
 
     const int nTracks = 1;
-    std::vector<double> RadLengthOnTrack(
-      nTracks, 0.0);  //trackID, vector with points on track
-    std::vector<double> TrackLength(
-      nTracks, 0.0);  //trackID, vector with points on track
+    std::vector<double> RadLengthOnTrack(nTracks, 0.0);  //trackID, vector with points on track
+    std::vector<double> TrackLength(nTracks, 0.0);       //trackID, vector with points on track
 
     vector<double> RadThick(nStations, 0);
     double x, y;
@@ -111,8 +105,7 @@ Int_t matbudget_ana_mcbm_sts(const char* inGeo, Int_t nEvents = 10000000) {
       TrackLength[point->GetTrackID()] += posDif.Mag();
 
       // Determine station number
-      int iStation =
-        posIn.Z() / 10 - 3 + 0.5;  // suppose equidistant stations at 30-100 cm
+      int iStation    = posIn.Z() / 10 - 3 + 0.5;  // suppose equidistant stations at 30-100 cm
       int iStationOut = posOut.Z() / 10 - 3 + 0.5;
       if (iStationOut != iStation) continue;
       if (iStation >= nStations || iStation < 0) continue;

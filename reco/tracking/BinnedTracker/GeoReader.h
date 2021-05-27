@@ -15,12 +15,15 @@
 #define GEOREADER_H
 
 #include "FairRootManager.h"
-#include "HitReader.h"
+
 #include "TGeoManager.h"
 #include "Tracker.h"
+
 #include <list>
 #include <map>
 #include <string>
+
+#include "HitReader.h"
 
 class CbmBinnedTracker;
 
@@ -32,34 +35,19 @@ public:
   CbmBinnedGeoReader(FairRootManager*, CbmBinnedTracker* tracker);
   CbmBinnedGeoReader(const CbmBinnedGeoReader&) = delete;
   CbmBinnedGeoReader& operator=(const CbmBinnedGeoReader&) = delete;
-  void
-  FindGeoChild(TGeoNode* node, const char* name, std::list<TGeoNode*>& results);
+  void FindGeoChild(TGeoNode* node, const char* name, std::list<TGeoNode*>& results);
   void Read();
 
 private:
   void ReadDetector(const char* name);
-  void SearchStation(ECbmModuleId stationType,
-                     TGeoNode* node,
-                     CbmBinnedHitReader* hitReader,
+  void SearchStation(ECbmModuleId stationType, TGeoNode* node, CbmBinnedHitReader* hitReader,
                      std::list<const char*>::const_iterator stationPath,
-                     std::list<const char*>::const_iterator stationPathEnd,
-                     const std::list<const char*>& geoPath,
+                     std::list<const char*>::const_iterator stationPathEnd, const std::list<const char*>& geoPath,
                      bool is4d = false);
-  void HandleStation(TGeoNode* node,
-                     std::list<const char*>::const_iterator geoPath,
-                     std::list<const char*>::const_iterator geoPathEnd,
-                     Double_t& left,
-                     Double_t& right,
-                     Double_t& top,
-                     Double_t& bottom,
-                     Double_t& front,
-                     Double_t& back);
-  void HandleActive(TGeoNode* node,
-                    Double_t& left,
-                    Double_t& right,
-                    Double_t& top,
-                    Double_t& bottom,
-                    Double_t& front,
+  void HandleStation(TGeoNode* node, std::list<const char*>::const_iterator geoPath,
+                     std::list<const char*>::const_iterator geoPathEnd, Double_t& left, Double_t& right, Double_t& top,
+                     Double_t& bottom, Double_t& front, Double_t& back);
+  void HandleActive(TGeoNode* node, Double_t& left, Double_t& right, Double_t& top, Double_t& bottom, Double_t& front,
                     Double_t& back);
   void ReadSts();
   void ReadRich();
@@ -67,9 +55,7 @@ private:
   void ReadTrd();
   void ReadTof();
   void ReadTarget();
-  void FindNode(std::list<const char*> nodePath,
-                std::list<TGeoNode*>& results,
-                TGeoNode* rootNode = 0);
+  void FindNode(std::list<const char*> nodePath, std::list<TGeoNode*>& results, TGeoNode* rootNode = 0);
 
 private:
   //FairRootManager* fIoman; (VF) unused

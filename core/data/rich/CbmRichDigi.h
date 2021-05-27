@@ -9,15 +9,15 @@
 
 //TODO implement copy constructor and operator= ?
 
+#include "CbmDefs.h"  // for kRich
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 
-#include <string>  // for basic_string, string
-
-#include "CbmDefs.h"  // for kRich
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+
+#include <string>  // for basic_string, string
 
 #ifndef DATA_RICH_CBMRICHDIGI_H_
 #define DATA_RICH_CBMRICHDIGI_H_
@@ -98,7 +98,8 @@ private:
   /// BOOST serialization interface
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fAddress;
     ar& fTime;
     ar& fToT;

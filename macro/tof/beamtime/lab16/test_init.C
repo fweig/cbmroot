@@ -5,7 +5,8 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void test_init() {
+void test_init()
+{
   FairRunOnline* run = new FairRunOnline();
 
   gLogger->SetLogScreenLevel("ERROR");

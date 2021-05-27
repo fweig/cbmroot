@@ -16,15 +16,16 @@
 
 #include <iostream>
 
-CbmLitTrackFitterImp::CbmLitTrackFitterImp(TrackPropagatorPtr propagator,
-                                           TrackUpdatePtr update) {
+CbmLitTrackFitterImp::CbmLitTrackFitterImp(TrackPropagatorPtr propagator, TrackUpdatePtr update)
+{
   fPropagator = propagator;
   fUpdate     = update;
 }
 
 CbmLitTrackFitterImp::~CbmLitTrackFitterImp() {}
 
-LitStatus CbmLitTrackFitterImp::Fit(CbmLitTrack* track, Bool_t downstream) {
+LitStatus CbmLitTrackFitterImp::Fit(CbmLitTrack* track, Bool_t downstream)
+{
   track->SortHits(downstream);
   track->SetChi2(0.0);
   Int_t nofHits = track->GetNofHits();
@@ -35,7 +36,8 @@ LitStatus CbmLitTrackFitterImp::Fit(CbmLitTrack* track, Bool_t downstream) {
   if (downstream) {
     track->SetParamLast(track->GetParamFirst());
     par = *track->GetParamLast();
-  } else {
+  }
+  else {
     track->SetParamFirst(track->GetParamLast());
     par = *track->GetParamFirst();
   }
@@ -46,8 +48,7 @@ LitStatus CbmLitTrackFitterImp::Fit(CbmLitTrack* track, Bool_t downstream) {
     const CbmLitHit* hit = track->GetHit(iHit);
     litfloat Ze          = hit->GetZ();
     litfloat length      = 0;
-    if (fPropagator->Propagate(&par, Ze, track->GetPDG(), &F, &length)
-        == kLITERROR) {
+    if (fPropagator->Propagate(&par, Ze, track->GetPDG(), &F, &length) == kLITERROR) {
       track->SetQuality(kLITBAD);
       //std::cout << "PROP ERROR: Ze=" << Ze << " length=" << length << " par=" << par.ToString();
       return kLITERROR;
@@ -65,16 +66,14 @@ LitStatus CbmLitTrackFitterImp::Fit(CbmLitTrack* track, Bool_t downstream) {
     nodes[iHit].SetChiSqFiltered(chi2Hit);
     track->SetChi2(track->GetChi2() + chi2Hit);
     if (iHit == 0) {
-      if (downstream) {
-        track->SetParamFirst(&par);
-      } else {
+      if (downstream) { track->SetParamFirst(&par); }
+      else {
         track->SetParamLast(&par);
       }
     }
   }
-  if (downstream) {
-    track->SetParamLast(&par);
-  } else {
+  if (downstream) { track->SetParamLast(&par); }
+  else {
     track->SetParamFirst(&par);
   }
 

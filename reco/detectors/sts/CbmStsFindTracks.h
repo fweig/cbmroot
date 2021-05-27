@@ -44,10 +44,8 @@ public:
    *@param finder   Pointer to STS track finder concrete class
    *@param useMvd   Include MVD hits in track finding
    **/
-  CbmStsFindTracks(Int_t iVerbose,
-                   CbmStsTrackFinder* finder = NULL,
-                   Bool_t useMvd             = kTRUE,
-                   const char* name          = "STSFindTracks");
+  CbmStsFindTracks(Int_t iVerbose, CbmStsTrackFinder* finder = NULL, Bool_t useMvd = kTRUE,
+                   const char* name = "STSFindTracks");
 
 
   /** Destructor **/
@@ -65,7 +63,8 @@ public:
   Bool_t MvdUsage() const { return fUseMvd; }
 
   /** Set concrete track finder **/
-  void UseFinder(CbmStsTrackFinder* finder) {
+  void UseFinder(CbmStsTrackFinder* finder)
+  {
     if (fFinder) delete fFinder;
     fFinder = finder;
   };

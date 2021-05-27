@@ -28,18 +28,18 @@ CbmSimulationReport::CbmSimulationReport() : CbmReport(), fHM(nullptr) {}
 
 CbmSimulationReport::~CbmSimulationReport() {}
 
-void CbmSimulationReport::Create(CbmHistManager* histManager,
-                                 const string& outputDir) {
+void CbmSimulationReport::Create(CbmHistManager* histManager, const string& outputDir)
+{
   assert(histManager != nullptr);
   fHM = histManager;
   SetOutputDir(outputDir);
   CreateReports();
 }
 
-void CbmSimulationReport::Create(const string& fileName,
-                                 const string& outputDir) {
+void CbmSimulationReport::Create(const string& fileName, const string& outputDir)
+{
   assert(fHM == nullptr);
-  fHM         = new CbmHistManager();
+  fHM = new CbmHistManager();
 
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -57,7 +57,8 @@ void CbmSimulationReport::Create(const string& fileName,
   gDirectory = oldDir;
 }
 
-void CbmSimulationReport::DrawH1ByPattern(const string& histNamePattern) {
+void CbmSimulationReport::DrawH1ByPattern(const string& histNamePattern)
+{
   vector<TH1*> histos = HM()->H1Vector(histNamePattern);
   UInt_t nofHistos    = histos.size();
   if (nofHistos < 1) return;
@@ -70,9 +71,9 @@ void CbmSimulationReport::DrawH1ByPattern(const string& histNamePattern) {
   }
 }
 
-void CbmSimulationReport::DrawH1ByPattern(
-  const string& histNamePattern,
-  string (*labelFormatter)(const string&, const CbmHistManager*)) {
+void CbmSimulationReport::DrawH1ByPattern(const string& histNamePattern,
+                                          string (*labelFormatter)(const string&, const CbmHistManager*))
+{
   vector<TH1*> histos = HM()->H1Vector(histNamePattern);
   UInt_t nofHistos    = histos.size();
   if (nofHistos < 1) return;
@@ -89,11 +90,9 @@ void CbmSimulationReport::DrawH1ByPattern(
   DrawH1(histos, labels, kLinear, kLinear, true, 0.3, 0.3, 0.85, 0.6, "PE1");
 }
 
-void CbmSimulationReport::DrawH2ByPattern(const string& histNamePattern,
-                                          HistScale logx,
-                                          HistScale logy,
-                                          HistScale logz,
-                                          const string& drawOpt) {
+void CbmSimulationReport::DrawH2ByPattern(const string& histNamePattern, HistScale logx, HistScale logy, HistScale logz,
+                                          const string& drawOpt)
+{
   vector<TH2*> histos = HM()->H2Vector(histNamePattern);
   UInt_t nofHistos    = histos.size();
   if (nofHistos < 1) return;

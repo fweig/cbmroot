@@ -5,13 +5,13 @@
 #include "CbmFitGlobalTracksQa.h"
 
 #include "CbmGlobalTrack.h"
-
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
 #include "CbmStsTrack.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -61,7 +61,8 @@ CbmFitGlobalTracksQa::CbmFitGlobalTracksQa()
   , fh_last_pully(NULL)
   , fh_last_pulltx(NULL)
   , fh_last_pullty(NULL)
-  , fh_chi2ndf(NULL) {
+  , fh_chi2ndf(NULL)
+{
   CreateHistogramms();
 }
 // -----------------------------------------------------------------------
@@ -96,21 +97,24 @@ CbmFitGlobalTracksQa::CbmFitGlobalTracksQa(const char* name, Int_t verbose)
   , fh_last_pully(NULL)
   , fh_last_pulltx(NULL)
   , fh_last_pullty(NULL)
-  , fh_chi2ndf(NULL) {
+  , fh_chi2ndf(NULL)
+{
   CreateHistogramms();
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-CbmFitGlobalTracksQa::~CbmFitGlobalTracksQa() {
+CbmFitGlobalTracksQa::~CbmFitGlobalTracksQa()
+{
   // Destructor
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-InitStatus CbmFitGlobalTracksQa::Init() {
+InitStatus CbmFitGlobalTracksQa::Init()
+{
   // Initialisation of the task
 
   // Get pointer to the ROOT I/O manager
@@ -164,11 +168,11 @@ InitStatus CbmFitGlobalTracksQa::Init() {
 
 
 // -----------------------------------------------------------------------
-void CbmFitGlobalTracksQa::Exec(Option_t*) {
+void CbmFitGlobalTracksQa::Exec(Option_t*)
+{
   // Task execution
-  if (NULL == fArrayStsPoint || NULL == fArrayTrdPoint || NULL == fArrayStsHit
-      || NULL == fArrayTrdHit || NULL == fArrayStsTrack
-      || NULL == fArrayTrdTrack || NULL == fArrayGlbTrack)
+  if (NULL == fArrayStsPoint || NULL == fArrayTrdPoint || NULL == fArrayStsHit || NULL == fArrayTrdHit
+      || NULL == fArrayStsTrack || NULL == fArrayTrdTrack || NULL == fArrayGlbTrack)
     return;
 
   // Loop over the global tracks
@@ -188,8 +192,7 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
   TVector3 pos;
   TVector3 mom;
 
-  for (Int_t iGlbTrack = 0; iGlbTrack < fArrayGlbTrack->GetEntriesFast();
-       iGlbTrack++) {
+  for (Int_t iGlbTrack = 0; iGlbTrack < fArrayGlbTrack->GetEntriesFast(); iGlbTrack++) {
 
     // Get pointer to the global track
     glbTrack = (CbmGlobalTrack*) fArrayGlbTrack->At(iGlbTrack);
@@ -210,7 +213,8 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
           stsHitIndex = stsTrack->GetHitIndex(0);
           stsHit      = (CbmStsHit*) fArrayStsHit->At(stsHitIndex);
           if (NULL != stsHit) { stsPointIndex = stsHit->GetRefId(); }
-        } else {
+        }
+        else {
           cout << "-W- CbmFitGlobalTracksQa::Exec : "
                << "STS track " << stsTrackIndex << " is empty!" << endl;
         }
@@ -223,26 +227,21 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
             fh_first_resx->Fill(glbTrack->GetParamFirst()->GetX() - pos.X());
             fh_first_resy->Fill(glbTrack->GetParamFirst()->GetY() - pos.Y());
             fh_first_resz->Fill(glbTrack->GetParamFirst()->GetZ() - pos.Z());
-            fh_first_restx->Fill(glbTrack->GetParamFirst()->GetTx()
-                                 - mom.X() / mom.Z());
-            fh_first_resty->Fill(glbTrack->GetParamFirst()->GetTy()
-                                 - mom.Y() / mom.Z());
-            fh_first_pullx->Fill(
-              (glbTrack->GetParamFirst()->GetX() - pos.X())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(0, 0)));
-            fh_first_pully->Fill(
-              (glbTrack->GetParamFirst()->GetY() - pos.Y())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(1, 1)));
-            fh_first_pulltx->Fill(
-              (glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(2, 2)));
-            fh_first_pullty->Fill(
-              (glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(3, 3)));
+            fh_first_restx->Fill(glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z());
+            fh_first_resty->Fill(glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z());
+            fh_first_pullx->Fill((glbTrack->GetParamFirst()->GetX() - pos.X())
+                                 / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(0, 0)));
+            fh_first_pully->Fill((glbTrack->GetParamFirst()->GetY() - pos.Y())
+                                 / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(1, 1)));
+            fh_first_pulltx->Fill((glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z())
+                                  / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(2, 2)));
+            fh_first_pullty->Fill((glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z())
+                                  / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(3, 3)));
           }
         }
       }
-    } else {
+    }
+    else {
       trdTrackIndex = glbTrack->GetTrdTrackIndex();
       trdTrack      = (CbmTrdTrack*) fArrayTrdTrack->At(trdTrackIndex);
       if (NULL != trdTrack) {
@@ -251,7 +250,8 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
           trdHitIndex = trdTrack->GetHitIndex(0);
           trdHit      = (CbmTrdHit*) fArrayTrdHit->At(trdHitIndex);
           if (NULL != trdHit) { trdPointIndex = trdHit->GetRefId(); }
-        } else {
+        }
+        else {
           cout << "-W- CbmFitGlobalTracksQa::Exec : "
                << "TRD track " << trdTrackIndex << " is empty!" << endl;
         }
@@ -264,22 +264,16 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
             fh_first_resx->Fill(glbTrack->GetParamFirst()->GetX() - pos.X());
             fh_first_resy->Fill(glbTrack->GetParamFirst()->GetY() - pos.Y());
             fh_first_resz->Fill(glbTrack->GetParamFirst()->GetZ() - pos.Z());
-            fh_first_restx->Fill(glbTrack->GetParamFirst()->GetTx()
-                                 - mom.X() / mom.Z());
-            fh_first_resty->Fill(glbTrack->GetParamFirst()->GetTy()
-                                 - mom.Y() / mom.Z());
-            fh_first_pullx->Fill(
-              (glbTrack->GetParamFirst()->GetX() - pos.X())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(0, 0)));
-            fh_first_pully->Fill(
-              (glbTrack->GetParamFirst()->GetY() - pos.Y())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(1, 1)));
-            fh_first_pulltx->Fill(
-              (glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(2, 2)));
-            fh_first_pullty->Fill(
-              (glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(3, 3)));
+            fh_first_restx->Fill(glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z());
+            fh_first_resty->Fill(glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z());
+            fh_first_pullx->Fill((glbTrack->GetParamFirst()->GetX() - pos.X())
+                                 / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(0, 0)));
+            fh_first_pully->Fill((glbTrack->GetParamFirst()->GetY() - pos.Y())
+                                 / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(1, 1)));
+            fh_first_pulltx->Fill((glbTrack->GetParamFirst()->GetTx() - mom.X() / mom.Z())
+                                  / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(2, 2)));
+            fh_first_pullty->Fill((glbTrack->GetParamFirst()->GetTy() - mom.Y() / mom.Z())
+                                  / TMath::Sqrt(glbTrack->GetParamFirst()->GetCovariance(3, 3)));
           }
         }
       }
@@ -296,7 +290,8 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
           trdHitIndex = trdTrack->GetHitIndex(trdTrack->GetNofHits() - 1);
           trdHit      = (CbmTrdHit*) fArrayTrdHit->At(trdHitIndex);
           if (NULL != trdHit) { trdPointIndex = trdHit->GetRefId(); }
-        } else {
+        }
+        else {
           cout << "-W- CbmFitGlobalTracksQa::Exec : "
                << "TRD track " << trdTrackIndex << " is empty!" << endl;
         }
@@ -309,26 +304,21 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
             fh_last_resx->Fill(glbTrack->GetParamLast()->GetX() - pos.X());
             fh_last_resy->Fill(glbTrack->GetParamLast()->GetY() - pos.Y());
             fh_last_resz->Fill(glbTrack->GetParamLast()->GetZ() - pos.Z());
-            fh_last_restx->Fill(glbTrack->GetParamLast()->GetTx()
-                                - mom.X() / mom.Z());
-            fh_last_resty->Fill(glbTrack->GetParamLast()->GetTy()
-                                - mom.Y() / mom.Z());
-            fh_last_pullx->Fill(
-              (glbTrack->GetParamLast()->GetX() - pos.X())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(0, 0)));
-            fh_last_pully->Fill(
-              (glbTrack->GetParamLast()->GetY() - pos.Y())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(1, 1)));
-            fh_last_pulltx->Fill(
-              (glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(2, 2)));
-            fh_last_pullty->Fill(
-              (glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(3, 3)));
+            fh_last_restx->Fill(glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z());
+            fh_last_resty->Fill(glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z());
+            fh_last_pullx->Fill((glbTrack->GetParamLast()->GetX() - pos.X())
+                                / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(0, 0)));
+            fh_last_pully->Fill((glbTrack->GetParamLast()->GetY() - pos.Y())
+                                / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(1, 1)));
+            fh_last_pulltx->Fill((glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z())
+                                 / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(2, 2)));
+            fh_last_pullty->Fill((glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z())
+                                 / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(3, 3)));
           }
         }
       }
-    } else {
+    }
+    else {
       stsTrackIndex = glbTrack->GetStsTrackIndex();
       stsTrack      = (CbmStsTrack*) fArrayStsTrack->At(stsTrackIndex);
       if (NULL != stsTrack) {
@@ -337,7 +327,8 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
           stsHitIndex = stsTrack->GetHitIndex(stsTrack->GetNofHits() - 1);
           stsHit      = (CbmStsHit*) fArrayStsHit->At(stsHitIndex);
           if (NULL != stsHit) { stsPointIndex = stsHit->GetRefId(); }
-        } else {
+        }
+        else {
           cout << "-W- CbmFitGlobalTracksQa::Exec : "
                << "STS track " << stsTrackIndex << " is empty!" << endl;
         }
@@ -350,22 +341,16 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
             fh_last_resx->Fill(glbTrack->GetParamLast()->GetX() - pos.X());
             fh_last_resy->Fill(glbTrack->GetParamLast()->GetY() - pos.Y());
             fh_last_resz->Fill(glbTrack->GetParamLast()->GetZ() - pos.Z());
-            fh_last_restx->Fill(glbTrack->GetParamLast()->GetTx()
-                                - mom.X() / mom.Z());
-            fh_last_resty->Fill(glbTrack->GetParamLast()->GetTy()
-                                - mom.Y() / mom.Z());
-            fh_last_pullx->Fill(
-              (glbTrack->GetParamLast()->GetX() - pos.X())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(0, 0)));
-            fh_last_pully->Fill(
-              (glbTrack->GetParamLast()->GetY() - pos.Y())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(1, 1)));
-            fh_last_pulltx->Fill(
-              (glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(2, 2)));
-            fh_last_pullty->Fill(
-              (glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z())
-              / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(3, 3)));
+            fh_last_restx->Fill(glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z());
+            fh_last_resty->Fill(glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z());
+            fh_last_pullx->Fill((glbTrack->GetParamLast()->GetX() - pos.X())
+                                / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(0, 0)));
+            fh_last_pully->Fill((glbTrack->GetParamLast()->GetY() - pos.Y())
+                                / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(1, 1)));
+            fh_last_pulltx->Fill((glbTrack->GetParamLast()->GetTx() - mom.X() / mom.Z())
+                                 / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(2, 2)));
+            fh_last_pullty->Fill((glbTrack->GetParamLast()->GetTy() - mom.Y() / mom.Z())
+                                 / TMath::Sqrt(glbTrack->GetParamLast()->GetCovariance(3, 3)));
           }
         }
       }
@@ -378,7 +363,8 @@ void CbmFitGlobalTracksQa::Exec(Option_t*) {
 
 
 // -----------------------------------------------------------------------
-void CbmFitGlobalTracksQa::Finish() {
+void CbmFitGlobalTracksQa::Finish()
+{
   // Finish of the task execution
   WriteHistogramms();
 }
@@ -386,62 +372,45 @@ void CbmFitGlobalTracksQa::Finish() {
 
 
 // -----------------------------------------------------------------------
-void CbmFitGlobalTracksQa::CreateHistogramms() {
+void CbmFitGlobalTracksQa::CreateHistogramms()
+{
   // Create control histogramms
 
   // Residuals at first TRD layer
-  fh_first_resx =
-    new TH1F("h_glb_first_resx", "x residual at first TRD layer", 200, -1., 1.);
-  fh_first_resy =
-    new TH1F("h_glb_first_resy", "y residual at first TRD layer", 200, -1., 1.);
-  fh_first_restx = new TH1F(
-    "h_glb_first_restx", "t_{x} residual at first TRD layer", 200, -0.01, 0.01);
-  fh_first_resty = new TH1F(
-    "h_glb_first_resty", "t_{y} residual at first TRD layer", 200, -0.01, 0.01);
-  fh_first_resz = new TH1F(
-    "h_glb_first_resz", "z residual at first TRD layer", 100, -0.5, 0.5);
+  fh_first_resx  = new TH1F("h_glb_first_resx", "x residual at first TRD layer", 200, -1., 1.);
+  fh_first_resy  = new TH1F("h_glb_first_resy", "y residual at first TRD layer", 200, -1., 1.);
+  fh_first_restx = new TH1F("h_glb_first_restx", "t_{x} residual at first TRD layer", 200, -0.01, 0.01);
+  fh_first_resty = new TH1F("h_glb_first_resty", "t_{y} residual at first TRD layer", 200, -0.01, 0.01);
+  fh_first_resz  = new TH1F("h_glb_first_resz", "z residual at first TRD layer", 100, -0.5, 0.5);
 
   // Residuals at last TRD layer
-  fh_last_resx =
-    new TH1F("h_glb_last_resx", "x residual at last TRD layer", 200, -1., 1.);
-  fh_last_resy =
-    new TH1F("h_glb_last_resy", "y residual at last TRD layer", 200, -1., 1.);
-  fh_last_restx = new TH1F(
-    "h_glb_last_restx", "t_{x} residual at last TRD layer", 200, -0.01, 0.01);
-  fh_last_resty = new TH1F(
-    "h_glb_last_resty", "t_{y} residual at last TRD layer", 200, -0.01, 0.01);
-  fh_last_resz =
-    new TH1F("h_glb_last_resz", "z residual at last TRD layer", 100, -0.5, 0.5);
+  fh_last_resx  = new TH1F("h_glb_last_resx", "x residual at last TRD layer", 200, -1., 1.);
+  fh_last_resy  = new TH1F("h_glb_last_resy", "y residual at last TRD layer", 200, -1., 1.);
+  fh_last_restx = new TH1F("h_glb_last_restx", "t_{x} residual at last TRD layer", 200, -0.01, 0.01);
+  fh_last_resty = new TH1F("h_glb_last_resty", "t_{y} residual at last TRD layer", 200, -0.01, 0.01);
+  fh_last_resz  = new TH1F("h_glb_last_resz", "z residual at last TRD layer", 100, -0.5, 0.5);
 
   // Pulls at first TRD layer
-  fh_first_pullx =
-    new TH1F("h_glb_first_pullx", "x pull at first TRD layer", 200, -10., 10.);
-  fh_first_pully =
-    new TH1F("h_glb_first_pully", "y pull at first TRD layer", 200, -10., 10.);
-  fh_first_pulltx = new TH1F(
-    "h_glb_first_pulltx", "t_{x} pull at first TRD layer", 200, -10., 10.);
-  fh_first_pullty = new TH1F(
-    "h_glb_first_pullty", "t_{y} pull at first TRD layer", 200, -10., 10.);
+  fh_first_pullx  = new TH1F("h_glb_first_pullx", "x pull at first TRD layer", 200, -10., 10.);
+  fh_first_pully  = new TH1F("h_glb_first_pully", "y pull at first TRD layer", 200, -10., 10.);
+  fh_first_pulltx = new TH1F("h_glb_first_pulltx", "t_{x} pull at first TRD layer", 200, -10., 10.);
+  fh_first_pullty = new TH1F("h_glb_first_pullty", "t_{y} pull at first TRD layer", 200, -10., 10.);
 
   // Pulls at last TRD layer
-  fh_last_pullx =
-    new TH1F("h_glb_last_pullx", "x pull at last TRD layer", 200, -10., 10.);
-  fh_last_pully =
-    new TH1F("h_glb_last_pully", "y pull at last TRD layer", 200, -10., 10.);
-  fh_last_pulltx = new TH1F(
-    "h_glb_last_pulltx", "t_{x} pull at last TRD layer", 200, -10., 10.);
-  fh_last_pullty = new TH1F(
-    "h_glb_last_pullty", "t_{y} pull at last TRD layer", 200, -10., 10.);
+  fh_last_pullx  = new TH1F("h_glb_last_pullx", "x pull at last TRD layer", 200, -10., 10.);
+  fh_last_pully  = new TH1F("h_glb_last_pully", "y pull at last TRD layer", 200, -10., 10.);
+  fh_last_pulltx = new TH1F("h_glb_last_pulltx", "t_{x} pull at last TRD layer", 200, -10., 10.);
+  fh_last_pullty = new TH1F("h_glb_last_pullty", "t_{y} pull at last TRD layer", 200, -10., 10.);
 
   // Chi2/NDF of track fit
-  fh_chi2ndf =
-    new TH1F("h_glb_chi2ndf", "#chi^{2}/NDF of track fit", 500, 0., 50.);
+  fh_chi2ndf = new TH1F("h_glb_chi2ndf", "#chi^{2}/NDF of track fit", 500, 0., 50.);
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-void CbmFitGlobalTracksQa::WriteHistogramms() {
+void CbmFitGlobalTracksQa::WriteHistogramms()
+{
   // Write control histogramms to file
 
   // Residuals at first and last TRD layer

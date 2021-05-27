@@ -1,9 +1,6 @@
-void check_sts_digis(UInt_t uRunId,
-                     UInt_t uTsJump,
-                     Double_t dFirstTsOffset,
-                     Double_t dDigiDistPlotStartTime = 0.0,
-                     Int_t nrEvents                  = 0,
-                     TString sDir                    = "data") {
+void check_sts_digis(UInt_t uRunId, UInt_t uTsJump, Double_t dFirstTsOffset, Double_t dDigiDistPlotStartTime = 0.0,
+                     Int_t nrEvents = 0, TString sDir = "data")
+{
   if (uRunId < 353) return kFALSE;
 
   // --- Specify number of events to be produced.
@@ -51,8 +48,7 @@ void check_sts_digis(UInt_t uRunId,
   stsChecker->SetDigiDistPlotStartTime(dDigiDistPlotStartTime);
   /// Disable as no pulser for now in STS
   stsChecker->SetStsPulseradcLimits(31, 0);
-  if (0 < uRunId)
-    stsChecker->SetOutFilename(Form("data/HistosStsCheck_%03u.root", uRunId));
+  if (0 < uRunId) stsChecker->SetOutFilename(Form("data/HistosStsCheck_%03u.root", uRunId));
   fRun->AddTask(stsChecker);
 
   // -----  Parameter database   --------------------------------------------
@@ -73,7 +69,8 @@ void check_sts_digis(UInt_t uRunId,
   cout << "Starting run" << endl;
   if (0 == nrEvents) {
     fRun->Run(0, nEvents);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nrEvents);  // process  N Events
   }
   // ------------------------------------------------------------------------

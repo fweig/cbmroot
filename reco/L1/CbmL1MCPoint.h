@@ -51,7 +51,9 @@ struct CbmL1MCPoint {
     , pointId(-1)
     , file(-1)
     , event(-1)
-    , hitIds() {}
+    , hitIds()
+  {
+  }
 
   double x, y, z, px, py, pz;
   double xIn, yIn, zIn, pxIn, pyIn, pzIn;
@@ -62,11 +64,13 @@ struct CbmL1MCPoint {
   int pointId;
   int file;
   int event;
-  static bool compareIDz(const CbmL1MCPoint& a, const CbmL1MCPoint& b) {
+  static bool compareIDz(const CbmL1MCPoint& a, const CbmL1MCPoint& b)
+  {
     return (a.ID < b.ID) || ((a.ID == b.ID) && (a.z < b.z));
   }
 
-  static bool pcompareIDz(const CbmL1MCPoint* a, const CbmL1MCPoint* b) {
+  static bool pcompareIDz(const CbmL1MCPoint* a, const CbmL1MCPoint* b)
+  {
     return (a->ID < b->ID) || ((a->ID == b->ID) && (a->z < b->z));
   }
 

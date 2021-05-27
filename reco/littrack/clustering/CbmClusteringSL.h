@@ -9,6 +9,7 @@
 #define CBMCLUSTERINGSL_H_
 
 #include "CbmClusteringGeometry.h"
+
 #include "FairTask.h"
 
 #include <vector>
@@ -21,10 +22,8 @@ public:
 
   void SLRec1(CbmClusteringGeometry* moduleGeo,
               Int_t activePad);  //Recursive function for all neighbours
-  void SLRec2(
-    CbmClusteringGeometry* moduleGeo,
-    Int_t
-      activePad);  //Recursive function for vertical and horizontal neighbours
+  void SLRec2(CbmClusteringGeometry* moduleGeo,
+              Int_t activePad);  //Recursive function for vertical and horizontal neighbours
   void MainClusteringSL(CbmClusteringGeometry* moduleGeo,
                         Int_t algVersion);  //Clustering function
 

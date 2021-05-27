@@ -89,8 +89,7 @@
 
 
   // -----   STS track finder QA   ------------------------------------------
-  CbmStsReconstructionQa* stsReconstructionQa =
-    new CbmStsReconstructionQa(kTRUE, 4, 0.7, iVerbose);
+  CbmStsReconstructionQa* stsReconstructionQa = new CbmStsReconstructionQa(kTRUE, 4, 0.7, iVerbose);
   stsReconstructionQa->SetShowStation1(4);
   fRun->AddTask(stsReconstructionQa);
   // ------------------------------------------------------------------------

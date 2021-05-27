@@ -8,12 +8,12 @@
 #ifndef CBMDEVICETRIGGERHANDLERETOF_H_
 #define CBMDEVICETRIGGERHANDLERETOF_H_
 
-#include "FairMQDevice.h"
+#include "CbmTofStarData2019.h"
 
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 
-#include "CbmTofStarData2019.h"
+#include "FairMQDevice.h"
 
 #include "Rtypes.h"
 #include "TMessage.h"
@@ -55,11 +55,7 @@ private:
   Bool_t ReInitContainers();
 
   uint64_t fNumMessages;
-  std::vector<std::string> fAllowedChannels = {"tofcomponent",
-                                               "parameters",
-                                               "etofevts",
-                                               "tofhits",
-                                               "syscmd"};
+  std::vector<std::string> fAllowedChannels = {"tofcomponent", "parameters", "etofevts", "tofhits", "syscmd"};
 
   // Input variables
 
@@ -68,13 +64,10 @@ private:
   // Constants or setting parameters
   Int_t fiMsgCnt;
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbSandboxMode;  //! Switch OFF the emission of data toward the STAR DAQ
-  Bool_t
-    fbEventDumpEna;  //! Switch ON the dumping of the events to a binary file
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbSandboxMode;       //! Switch OFF the emission of data toward the STAR DAQ
+  Bool_t fbEventDumpEna;      //! Switch ON the dumping of the events to a binary file
 
   Double_t fdEvent;
 
@@ -84,9 +77,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICETRIGGERHANDLERETOF_H_ */

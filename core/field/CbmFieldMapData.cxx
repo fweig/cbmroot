@@ -24,7 +24,9 @@ CbmFieldMapData::CbmFieldMapData()
   , fNz(0)
   , fBx(nullptr)
   , fBy(nullptr)
-  , fBz(nullptr) {}
+  , fBz(nullptr)
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -43,7 +45,9 @@ CbmFieldMapData::CbmFieldMapData(const char* mapName)
   , fNz(0)
   , fBx(nullptr)
   , fBy(nullptr)
-  , fBz(nullptr) {}
+  , fBz(nullptr)
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -62,7 +66,8 @@ CbmFieldMapData::CbmFieldMapData(const char* name, const CbmFieldMap& map)
   , fNz(map.GetNz())
   , fBx(new TArrayF(*(map.GetBx())))
   , fBy(new TArrayF(*(map.GetBy())))
-  , fBz(new TArrayF(*(map.GetBz()))) {
+  , fBz(new TArrayF(*(map.GetBz())))
+{
   // Take out scaling factor and convert from kG to T
   if (map.GetScale() == 0.) { Fatal("CbmFieldMap", "Zero scaling factor"); }
   Double_t factor = map.GetScale() * 10.;
@@ -82,7 +87,8 @@ CbmFieldMapData::CbmFieldMapData(const char* name, const CbmFieldMap& map)
 
 
 // ------------   Destructor   --------------------------------------------
-CbmFieldMapData::~CbmFieldMapData() {
+CbmFieldMapData::~CbmFieldMapData()
+{
   if (fBx) delete fBx;
   if (fBy) delete fBy;
   if (fBz) delete fBz;

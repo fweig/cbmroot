@@ -1,7 +1,5 @@
-void pl_all_cluDelTofTrg(Int_t iNch = 1,
-                         Int_t iTrg = 0,
-                         Int_t SmT  = 0,
-                         Int_t iSm  = 0) {
+void pl_all_cluDelTofTrg(Int_t iNch = 1, Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);

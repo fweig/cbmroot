@@ -50,18 +50,17 @@ public:
      ** cast to CbmDigi* and that it has a static method GetSystem().
      **/
   template<class Digi>
-  const Digi* Get(Int_t index) const {
+  const Digi* Get(Int_t index) const
+  {
     assert(fIsInitialised);
     ECbmModuleId system = Digi::GetSystem();
     if (fBranches.find(system) == fBranches.end()) return nullptr;
     try {
       return boost::any_cast<const Digi*>(fBranches[system]->GetDigi(index));
-    } catch (
-      const boost::exception_detail::clone_impl<
-        boost::exception_detail::error_info_injector<boost::bad_any_cast>>&) {
-      LOG(fatal)
-        << "Failed boost any_cast in Digimanager::Get for a digi of type "
-        << Digi::GetClassName();
+    }
+    catch (
+      const boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::bad_any_cast>>&) {
+      LOG(fatal) << "Failed boost any_cast in Digimanager::Get for a digi of type " << Digi::GetClassName();
     }  // catch only boost::bad_any_cast which can be triggered by CbmMuchDigi/CbmMuchBeamTimeDigi
     return nullptr;
   }
@@ -91,7 +90,8 @@ public:
 
 
   /** @brief Static instance **/
-  static CbmDigiManager* Instance() {
+  static CbmDigiManager* Instance()
+  {
     if (!fgInstance) fgInstance = new CbmDigiManager();
     return fgInstance;
   }
@@ -118,9 +118,7 @@ public:
      ** This can be used if the branch name in the input does
      ** not follow the convention (default).
      **/
-  void SetBranchName(ECbmModuleId system, const char* name) {
-    fBranchNames[system] = std::string(name);
-  }
+  void SetBranchName(ECbmModuleId system, const char* name) { fBranchNames[system] = std::string(name); }
 
 
   /** @brief Use CbmMuchBeamTimeDigi instead of CbmMuchDigi for MUCH
@@ -128,9 +126,7 @@ public:
      **
      ** Temporary solution until the classes are unified.
      **/
-  void UseMuchBeamTimeDigi(Bool_t choice = kTRUE) {
-    fUseMuchBeamTimeDigi = choice;
-  }
+  void UseMuchBeamTimeDigi(Bool_t choice = kTRUE) { fUseMuchBeamTimeDigi = choice; }
 
 
 private:

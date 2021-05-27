@@ -22,7 +22,8 @@
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -30,9 +31,8 @@
   gROOT->cd();
   TString hname = "cl_SmT0_sm000_rpc000_Trg00_Pos";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -40,9 +40,8 @@
   gROOT->cd();
   TString hname = "cl_SmT0_sm000_rpc000_Trg00_TOff";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,9 +49,8 @@
   gROOT->cd();
   TString hname = "cl_SmT0_sm000_rpc000_Trg00_Tot";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -60,9 +58,8 @@
   gROOT->cd();
   TString hname = "cl_SmT0_sm000_rpc000_Trg00_Size";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -70,9 +67,8 @@
   gROOT->cd();
   TString hname = "cl_SmT0_sm000_rpc000_Trg00_AvWalk";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

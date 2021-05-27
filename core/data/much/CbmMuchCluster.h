@@ -8,9 +8,9 @@
 #ifndef CBMMUCHCLUSTER_H
 #define CBMMUCHCLUSTER_H 1
 
-#include <Rtypes.h>  // for ClassDef
-
 #include "CbmCluster.h"  // for CbmCluster
+
+#include <Rtypes.h>  // for ClassDef
 
 /**
  * \class CbmMuchCluster

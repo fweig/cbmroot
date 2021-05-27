@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------
 
 #include "CbmMvdSensorDataSheet.h"
+
 #include "TMath.h"
 
 #include <iostream>
@@ -44,7 +45,9 @@ CbmMvdSensorDataSheet::CbmMvdSensorDataSheet()
   , fStatesPerFrame(0)
   , fPixelsPerBank(0)
   , fAdcStepSize(fAdcDynamic / fAdcSteps)
-  , fValidData(kFALSE) {}
+  , fValidData(kFALSE)
+{
+}
 
 // -----   Destructor   ----------------------------------------------------
 CbmMvdSensorDataSheet::~CbmMvdSensorDataSheet() {}
@@ -52,21 +55,19 @@ CbmMvdSensorDataSheet::~CbmMvdSensorDataSheet() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmMvdSensorDataSheet::Print(Option_t* /*opt*/) const {
+void CbmMvdSensorDataSheet::Print(Option_t* /*opt*/) const
+{
   cout << " --- " << GetName() << "--------------------------------" << endl;
   cout << " Technical Data:" << endl;
   cout << "--------------------------" << endl;
   cout << "Name of the sensor: " << fMimosaName << endl;
-  cout << "Pixel pitch (x/y) [µm]: " << fPixelPitchY * 1e4 << "/"
-       << fPixelPitchY * 1e-4 << endl;
+  cout << "Pixel pitch (x/y) [µm]: " << fPixelPitchY * 1e4 << "/" << fPixelPitchY * 1e-4 << endl;
   cout << "N Pixels (rows/cols): " << fNPixelsX << "/" << fNPixelsY << endl;
   cout << "Thickness of active volume[µm]: " << fEpiTh * 1e4 << endl;
   cout << "Integration time [µs]: " << fIntegrationTime * 1e6 << endl;
-  cout << "ADC resolution: " << fAdcBits << "bit ADC (1 = discriminator)"
-       << endl;
+  cout << "ADC resolution: " << fAdcBits << "bit ADC (1 = discriminator)" << endl;
   cout << "Default noise [e ENC]: " << fNoise << endl;
-  cout << "Matrix size (x/y) [cm]: " << fPixelPitchX * fNPixelsX << " / "
-       << fPixelPitchY * fNPixelsY << endl;
+  cout << "Matrix size (x/y) [cm]: " << fPixelPitchX * fNPixelsX << " / " << fPixelPitchY * fNPixelsY << endl;
   cout << endl;
   cout << "Readout system: " << endl;
   cout << "----------------" << endl;

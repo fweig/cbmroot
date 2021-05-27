@@ -10,19 +10,18 @@
  *   MVD event display object
  **
  **/
-#define TOFDisplay                                                             \
-  1  // =1 means active, other: without Label and not relying on TEvePointSet
+#define TOFDisplay 1  // =1 means active, other: without Label and not relying on TEvePointSet
 
 #ifndef CBMEVDISTRACKS_H
 #define CBMEVDISTRACKS_H
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Bool_t, Int_t, Double_t, kFALSE, kTRUE, Opti...
-#include <TEveTrackPropagator.h>  // IWYU pragma: keep needed by cling
-#include <TString.h>              // for TString
-
 #include <FairEventManager.h>  // IWYU pragma: keep needed by cling
 #include <FairTask.h>          // for FairTask, InitStatus
+
+#include <Rtypes.h>               // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>           // for Bool_t, Int_t, Double_t, kFALSE, kTRUE, Opti...
+#include <TEveTrackPropagator.h>  // IWYU pragma: keep needed by cling
+#include <TString.h>              // for TString
 
 class TClonesArray;
 class TEveElementList;
@@ -40,10 +39,7 @@ public:
     *@param name        Name of task
     *@param iVerbose    Verbosity level
     **/
-  CbmEvDisTracks(const char* name,
-                 Int_t iVerbose = 1,
-                 Bool_t renderP = kFALSE,
-                 Bool_t renderT = kTRUE);
+  CbmEvDisTracks(const char* name, Int_t iVerbose = 1, Bool_t renderP = kFALSE, Bool_t renderT = kTRUE);
 
   /** Destructor **/
   virtual ~CbmEvDisTracks();

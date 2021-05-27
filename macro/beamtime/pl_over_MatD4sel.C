@@ -1,7 +1,6 @@
-void pl_over_MatD4sel(TString sysinfo = "") {
-  gROOT->LoadMacro(
-    ((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C")
-      .Data());
+void pl_over_MatD4sel(TString sysinfo = "")
+{
+  gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());
 
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -36,7 +35,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname1 << " not found" << endl;
   }
 
@@ -48,7 +48,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname2 << " not found" << endl;
   }
 
@@ -59,7 +60,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname3 << " not found" << endl;
   }
 
@@ -68,7 +70,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname4 << " not found" << endl;
   }
 
@@ -76,9 +79,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
   gROOT->cd();
   TString hname5 = "hChiSel24";
   h1             = (TH1*) gROOT->FindObjectAny(hname5);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname5 << " not found" << endl;
   }
 
@@ -87,9 +89,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     gROOT->cd();
     TString hname = "hDXSel24";
     h1            = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw();
-    } else {
+    if (h1 != NULL) { h1->Draw(); }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -99,9 +100,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     gROOT->cd();
     TString hname = "hDYSel24";
     h1            = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw();
-    } else {
+    if (h1 != NULL) { h1->Draw(); }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -115,7 +115,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
       h1->Draw();
       h1->Fit("gaus");
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -128,7 +129,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     if (h1 != NULL) {
       h1->Draw();
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -143,7 +145,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
       NEvents = h1->GetEntries();
       h1->SetLineColor(4);
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -155,7 +158,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
       h12->Draw("same");
       h12->SetLineColor(2);
       NEvents = h1->GetEntries();
-    } else {
+    }
+    else {
       cout << hname2 << " not found" << endl;
     }
   }
@@ -165,9 +169,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     gROOT->cd();
     TString hname = "hXYSel2D4sel";
     h2            = (TH2*) gROOT->FindObjectAny(hname);
-    if (h2 != NULL) {
-      h2->Draw("colz");
-    } else {
+    if (h2 != NULL) { h2->Draw("colz"); }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -176,9 +179,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     gROOT->cd();
     TString hname = "hXY4D4sel";
     h2            = (TH2*) gROOT->FindObjectAny(hname);
-    if (h2 != NULL) {
-      h2->Draw("colz");
-    } else {
+    if (h2 != NULL) { h2->Draw("colz"); }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -187,9 +189,8 @@ void pl_over_MatD4sel(TString sysinfo = "") {
     gROOT->cd();
     TString hname = "hXY0D4sel";
     h2            = (TH2*) gROOT->FindObjectAny(hname);
-    if (h2 != NULL) {
-      h2->Draw("colz");
-    } else {
+    if (h2 != NULL) { h2->Draw("colz"); }
+    else {
       cout << hname << " not found" << endl;
     }
   }

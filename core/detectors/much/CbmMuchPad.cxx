@@ -11,17 +11,14 @@ CbmMuchPad::CbmMuchPad()
   ,
   //fDigi(NULL),
   //fMatch(NULL),
-  fNeighbours() {
+  fNeighbours()
+{
   fNeighbours.resize(20);
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-CbmMuchPad::CbmMuchPad(Int_t address,
-                       Double_t x,
-                       Double_t y,
-                       Double_t dx,
-                       Double_t dy)
+CbmMuchPad::CbmMuchPad(Int_t address, Double_t x, Double_t y, Double_t dx, Double_t dy)
   : fAddress(address)
   , fX(x)
   , fY(y)
@@ -32,7 +29,8 @@ CbmMuchPad::CbmMuchPad(Int_t address,
   ////Can be removed as we will Buffer Digi in the CbmMuchReadoutBuffer
   //fDigi(new CbmMuchDigi(address)),
   //fMatch(new CbmMuchDigiMatch()),
-  fNeighbours() {
+  fNeighbours()
+{
   fNeighbours.resize(20);
 }
 // -------------------------------------------------------------------------

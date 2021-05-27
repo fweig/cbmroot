@@ -1,4 +1,5 @@
-void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -35,7 +37,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -47,7 +50,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -59,7 +63,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -71,7 +76,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -83,7 +89,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -95,7 +102,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -107,7 +115,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -119,7 +128,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -131,7 +141,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -143,7 +154,8 @@ void pl_MulCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

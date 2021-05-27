@@ -4,10 +4,12 @@
  * \date 2011
  */
 #include "CbmLitFieldApproximationQaReport.h"
+
 #include "CbmDrawHist.h"
 #include "CbmHistManager.h"
 #include "CbmReportElement.h"
 #include "CbmUtils.h"
+
 #include "TCanvas.h"
 #include "TGraph2D.h"
 #include "TH1.h"
@@ -16,6 +18,7 @@
 
 #include <boost/assign/list_inserter.hpp>
 #include <boost/assign/list_of.hpp>
+
 #include <cassert>
 using boost::assign::list_of;
 using boost::assign::push_back;
@@ -25,13 +28,12 @@ using Cbm::ToString;
 using std::string;
 using std::vector;
 
-CbmLitFieldApproximationQaReport::CbmLitFieldApproximationQaReport() {
-  SetReportName("fieldapr_qa");
-}
+CbmLitFieldApproximationQaReport::CbmLitFieldApproximationQaReport() { SetReportName("fieldapr_qa"); }
 
 CbmLitFieldApproximationQaReport::~CbmLitFieldApproximationQaReport() {}
 
-void CbmLitFieldApproximationQaReport::Create() {
+void CbmLitFieldApproximationQaReport::Create()
+{
   Out() << R()->DocumentBegin() << std::endl;
   Out() << R()->Title(0, "Magnetic field QA") << std::endl;
   Out() << PrintSummaryTable();
@@ -39,7 +41,8 @@ void CbmLitFieldApproximationQaReport::Create() {
   Out() << R()->DocumentEnd();
 }
 
-std::string CbmLitFieldApproximationQaReport::PrintSummaryTable() {
+std::string CbmLitFieldApproximationQaReport::PrintSummaryTable()
+{
   std::stringstream ss;
   //
   //   int nofSlices = fQa.get("NofSlices", -1.);
@@ -94,7 +97,8 @@ std::string CbmLitFieldApproximationQaReport::PrintSummaryTable() {
   return ss.str();
 }
 
-void CbmLitFieldApproximationQaReport::Draw() {
+void CbmLitFieldApproximationQaReport::Draw()
+{
   // Set draw styles
   SetDefaultDrawStyle();
 
@@ -111,26 +115,19 @@ void CbmLitFieldApproximationQaReport::Draw() {
   DrawSlices("Mod", "Grid");
 }
 
-void CbmLitFieldApproximationQaReport::DrawSlices(const string& b,
-                                                  const string& m) {
+void CbmLitFieldApproximationQaReport::DrawSlices(const string& b, const string& m)
+{
   vector<TGraph2D*> graphs2D = HM()->G2Vector("hfa_" + b + "_Graph2D_.*");
   for (Int_t i = 0; i < graphs2D.size(); i++) {
     string name       = graphs2D[i]->GetName();
-    string canvasName = GetReportName() + "_slice_" + b + "_" + m + "_at_z_"
-                        + Split(name, '_')[3];
-    TCanvas* canvas =
-      CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+    string canvasName = GetReportName() + "_slice_" + b + "_" + m + "_at_z_" + Split(name, '_')[3];
+    TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
     canvas->Divide(3, 2);
-    TGraph2D* aprGraph =
-      HM()->G2(FindAndReplace(name, "_" + b + "_", "_" + b + m + "_"));
-    TH1* errH1    = HM()->H1(FindAndReplace(
-      name, "_" + b + "_Graph2D_", "_" + b + "Err" + m + "_H1_"));
-    TH2* errH2    = HM()->H2(FindAndReplace(
-      name, "_" + b + "_Graph2D_", "_" + b + "Err" + m + "_H2_"));
-    TH1* relErrH1 = HM()->H1(FindAndReplace(
-      name, "_" + b + "_Graph2D_", "_" + b + "RelErr" + m + "_H1_"));
-    TH2* relErrH2 = HM()->H2(FindAndReplace(
-      name, "_" + b + "_Graph2D_", "_" + b + "RelErr" + m + "_H2_"));
+    TGraph2D* aprGraph = HM()->G2(FindAndReplace(name, "_" + b + "_", "_" + b + m + "_"));
+    TH1* errH1         = HM()->H1(FindAndReplace(name, "_" + b + "_Graph2D_", "_" + b + "Err" + m + "_H1_"));
+    TH2* errH2         = HM()->H2(FindAndReplace(name, "_" + b + "_Graph2D_", "_" + b + "Err" + m + "_H2_"));
+    TH1* relErrH1      = HM()->H1(FindAndReplace(name, "_" + b + "_Graph2D_", "_" + b + "RelErr" + m + "_H1_"));
+    TH2* relErrH2      = HM()->H2(FindAndReplace(name, "_" + b + "_Graph2D_", "_" + b + "RelErr" + m + "_H2_"));
     canvas->cd(1);
     DrawGraph2D(graphs2D[i]);
     canvas->cd(2);
@@ -146,13 +143,13 @@ void CbmLitFieldApproximationQaReport::DrawSlices(const string& b,
   }
 }
 
-void CbmLitFieldApproximationQaReport::DrawApr(const string& err) {
+void CbmLitFieldApproximationQaReport::DrawApr(const string& err)
+{
   vector<TGraph2D*> graphs2D = HM()->G2Vector("hfa_Bx_Graph2D_.*");
   for (Int_t i = 0; i < graphs2D.size(); i++) {
     string z          = Split(graphs2D[i]->GetName(), '_')[3];
     string canvasName = GetReportName() + "_" + err + "_degree_z_" + z;
-    TCanvas* canvas =
-      CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+    TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
     canvas->Divide(3, 2);
 
     TLegend* l1 = new TLegend(0.1, 0.1, 0.9, 0.9);
@@ -178,45 +175,17 @@ void CbmLitFieldApproximationQaReport::DrawApr(const string& err) {
       errMod[iP]      = HM()->H1(FindAndReplace(name, "_Bx", "_Mod"));
       string draw_opt = (iP == 0) ? "" : "SAME";
       canvas->cd(2);
-      DrawH1(errBx[iP],
-             kLinear,
-             kLog,
-             draw_opt.c_str(),
-             1 + iP,
-             CbmDrawingOptions::LineWidth(),
-             1 + iP,
-             CbmDrawingOptions::MarkerSize(),
-             kDot);
+      DrawH1(errBx[iP], kLinear, kLog, draw_opt.c_str(), 1 + iP, CbmDrawingOptions::LineWidth(), 1 + iP,
+             CbmDrawingOptions::MarkerSize(), kDot);
       canvas->cd(3);
-      DrawH1(errBy[iP],
-             kLinear,
-             kLog,
-             draw_opt.c_str(),
-             1 + iP,
-             CbmDrawingOptions::LineWidth(),
-             1 + iP,
-             CbmDrawingOptions::MarkerSize(),
-             kDot);
+      DrawH1(errBy[iP], kLinear, kLog, draw_opt.c_str(), 1 + iP, CbmDrawingOptions::LineWidth(), 1 + iP,
+             CbmDrawingOptions::MarkerSize(), kDot);
       canvas->cd(5);
-      DrawH1(errBz[iP],
-             kLinear,
-             kLog,
-             draw_opt.c_str(),
-             1 + iP,
-             CbmDrawingOptions::LineWidth(),
-             1 + iP,
-             CbmDrawingOptions::MarkerSize(),
-             kDot);
+      DrawH1(errBz[iP], kLinear, kLog, draw_opt.c_str(), 1 + iP, CbmDrawingOptions::LineWidth(), 1 + iP,
+             CbmDrawingOptions::MarkerSize(), kDot);
       canvas->cd(6);
-      DrawH1(errMod[iP],
-             kLinear,
-             kLog,
-             draw_opt.c_str(),
-             1 + iP,
-             CbmDrawingOptions::LineWidth(),
-             1 + iP,
-             CbmDrawingOptions::MarkerSize(),
-             kDot);
+      DrawH1(errMod[iP], kLinear, kLog, draw_opt.c_str(), 1 + iP, CbmDrawingOptions::LineWidth(), 1 + iP,
+             CbmDrawingOptions::MarkerSize(), kDot);
 
       string degree = Split(name, '_')[4];
       l1->AddEntry(errBx[iP], degree.c_str(), "lp");

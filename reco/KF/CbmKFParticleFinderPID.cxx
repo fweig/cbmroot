@@ -3,7 +3,11 @@
 
 // Cbm Headers ----------------------
 #include "CbmKFParticleFinderPID.h"
+
+#include "CbmDigiManager.h"
+#include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchTrack.h"
 #include "CbmRichRing.h"
@@ -16,10 +20,6 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmDigiManager.h"
-#include "CbmEvent.h"
-#include "CbmMCDataManager.h"
-
 #include "FairRunAna.h"
 
 //ROOT headers
@@ -30,13 +30,13 @@
 #include <vector>
 using std::vector;
 
-double vecMedian(const vector<double>& vec) {
+double vecMedian(const vector<double>& vec)
+{
   double median          = 0.;
   vector<double> vecCopy = vec;
   sort(vecCopy.begin(), vecCopy.end());
   int size = vecCopy.size();
-  if (size % 2 == 0)
-    median = (vecCopy[size / 2 - 1] + vecCopy[size / 2]) / 2;
+  if (size % 2 == 0) median = (vecCopy[size / 2 - 1] + vecCopy[size / 2]) / 2;
   else
     median = vecCopy[size / 2];
   return median;
@@ -77,7 +77,8 @@ CbmKFParticleFinderPID::CbmKFParticleFinderPID(const char* name, Int_t iVerbose)
   , fUseSTSdEdX(kFALSE)
   , fUseTRDdEdX(kFALSE)
   , fTimeSliceMode(0)
-  , fPID(0) {
+  , fPID(0)
+{
   //MuCh cuts
   fMuchCutsInt[0]   = 7;     // N sts hits
   fMuchCutsInt[1]   = 14;    // N MuCh hits for LMVM
@@ -88,7 +89,8 @@ CbmKFParticleFinderPID::CbmKFParticleFinderPID(const char* name, Int_t iVerbose)
 
 CbmKFParticleFinderPID::~CbmKFParticleFinderPID() {}
 
-InitStatus CbmKFParticleFinderPID::Init() {
+InitStatus CbmKFParticleFinderPID::Init()
+{
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -103,7 +105,8 @@ InitStatus CbmKFParticleFinderPID::Init() {
   if (ioman->CheckBranch("CbmEvent")) {
     fTimeSliceMode = 1;
     LOG(info) << GetName() << ": Running in the timeslice mode.";
-  } else
+  }
+  else
     LOG(info) << GetName() << ": Running in the event by event mode.";
 
   // Get reconstructed events
@@ -118,8 +121,7 @@ InitStatus CbmKFParticleFinderPID::Init() {
 
     CbmMCDataManager* mcManager = 0;
 
-    if (fTimeSliceMode)
-      mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
+    if (fTimeSliceMode) mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
 
     if (fTimeSliceMode)
       if (mcManager == 0) {
@@ -133,7 +135,8 @@ InitStatus CbmKFParticleFinderPID::Init() {
         Fatal("CbmKFParticleFinderPID::Init", "MC track array not found!");
         return kERROR;
       }
-    } else {
+    }
+    else {
       fMCTrackArray = (TClonesArray*) ioman->GetObject("MCTrack");
       if (fMCTrackArray == 0) {
         Fatal("CbmKFParticleFinderPID::Init", "MC track array not found!");
@@ -158,8 +161,7 @@ InitStatus CbmKFParticleFinderPID::Init() {
 
   if (fPIDMode == 2) {
     // Get global tracks
-    fGlobalTrackArray =
-      (TClonesArray*) ioman->GetObject(fGlobalTrackBranchName);
+    fGlobalTrackArray = (TClonesArray*) ioman->GetObject(fGlobalTrackBranchName);
     if (fGlobalTrackArray == 0) {
       Error("CbmKFParticleFinderPID::Init", "global track array not found!");
       return kERROR;
@@ -185,8 +187,7 @@ InitStatus CbmKFParticleFinderPID::Init() {
     fDigiManager->Init();
 
     // --- Check input array (StsDigis)
-    if (!fDigiManager->IsPresent(ECbmModuleId::kSts))
-      LOG(fatal) << GetName() << ": No StsDigi branch in input!";
+    if (!fDigiManager->IsPresent(ECbmModuleId::kSts)) LOG(fatal) << GetName() << ": No StsDigi branch in input!";
 
     // Get ToF hits
     fTofHitArray = (TClonesArray*) ioman->GetObject(fTofBranchName);
@@ -204,9 +205,7 @@ InitStatus CbmKFParticleFinderPID::Init() {
     }
 
     fTrdHitArray = (TClonesArray*) ioman->GetObject(fTrdHitBranchName);
-    if (fTrdHitArray == 0) {
-      Error("CbmKFParticleFinderPID::Init", "TRD hit array not found!");
-    }
+    if (fTrdHitArray == 0) { Error("CbmKFParticleFinderPID::Init", "TRD hit array not found!"); }
 
     if (fRichPIDMode > 0) {
       fRichRingArray = (TClonesArray*) ioman->GetObject(fRichBranchName);
@@ -228,7 +227,8 @@ InitStatus CbmKFParticleFinderPID::Init() {
   return kSUCCESS;
 }
 
-void CbmKFParticleFinderPID::Exec(Option_t* /*opt*/) {
+void CbmKFParticleFinderPID::Exec(Option_t* /*opt*/)
+{
   fPID.clear();
 
   Int_t nTracks = fTrackArray->GetEntriesFast();
@@ -240,7 +240,8 @@ void CbmKFParticleFinderPID::Exec(Option_t* /*opt*/) {
 
 void CbmKFParticleFinderPID::Finish() {}
 
-void CbmKFParticleFinderPID::SetMCPID() {
+void CbmKFParticleFinderPID::SetMCPID()
+{
   Int_t nTracks   = fTrackArray->GetEntriesFast();
   Int_t nMCTracks = 0;
   if (!fTimeSliceMode) nMCTracks = fMCTrackArray->GetEntriesFast();
@@ -248,8 +249,7 @@ void CbmKFParticleFinderPID::SetMCPID() {
   for (int iTr = 0; iTr < nTracks; iTr++) {
     fPID[iTr] = -2;
 
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
     if (stsTrackMatch->GetNofLinks() == 0) continue;
     Float_t bestWeight  = 0.f;
     Float_t totalWeight = 0.f;
@@ -270,8 +270,7 @@ void CbmKFParticleFinderPID::SetMCPID() {
     }
     if (bestWeight / totalWeight < 0.7) continue;
 
-    if ((!fTimeSliceMode) && (mcTrackId >= nMCTracks || mcTrackId < 0))
-      continue;
+    if ((!fTimeSliceMode) && (mcTrackId >= nMCTracks || mcTrackId < 0)) continue;
     //     if(mcTrackId >= nMCTracks || mcTrackId < 0)
     //     {
     //       LOG(info) << "Sts Matching is wrong!    StsTrackId = " << mcTrackId << " N mc tracks = " << nMCTracks;
@@ -283,21 +282,15 @@ void CbmKFParticleFinderPID::SetMCPID() {
 
     CbmMCTrack* cbmMCTrack = 0;
 
-    if (fTimeSliceMode)
-      cbmMCTrack =
-        dynamic_cast<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, mcTrackId));
+    if (fTimeSliceMode) cbmMCTrack = dynamic_cast<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, mcTrackId));
     else
       cbmMCTrack = (CbmMCTrack*) fMCTrackArray->At(mcTrackId);
 
 
-    if (!(TMath::Abs(cbmMCTrack->GetPdgCode()) == 11
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 13
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 211
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 321
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 2212
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000010020
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000010030
-          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000020030
+    if (!(TMath::Abs(cbmMCTrack->GetPdgCode()) == 11 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 13
+          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 211 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 321
+          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 2212 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000010020
+          || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000010030 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000020030
           || TMath::Abs(cbmMCTrack->GetPdgCode()) == 1000020040))
       fPID[iTr] = -1;
     else
@@ -305,20 +298,20 @@ void CbmKFParticleFinderPID::SetMCPID() {
   }
 }
 
-void CbmKFParticleFinderPID::SetRecoPID() {
+void CbmKFParticleFinderPID::SetRecoPID()
+{
   const Double_t m2TOF[7] = {0.885, 0.245, 0.019479835, 0., 3.49, 7.83, 1.95};
 
   Double_t sP[7][5];
   if (fSisMode == 0)  //SIS-100
   {
-    Double_t sPLocal[7][5] = {
-      {0.056908, -0.0470572, 0.0216465, -0.0021016, 8.50396e-05},
-      {0.00943075, -0.00635429, 0.00998695, -0.00111527, 7.77811e-05},
-      {0.00176298, 0.00367263, 0.00308013, 0.000844013, -0.00010423},
-      {0.00218401, 0.00152391, 0.00895357, -0.000533423, 3.70326e-05},
-      {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},
-      {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
-      {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
+    Double_t sPLocal[7][5] = {{0.056908, -0.0470572, 0.0216465, -0.0021016, 8.50396e-05},
+                              {0.00943075, -0.00635429, 0.00998695, -0.00111527, 7.77811e-05},
+                              {0.00176298, 0.00367263, 0.00308013, 0.000844013, -0.00010423},
+                              {0.00218401, 0.00152391, 0.00895357, -0.000533423, 3.70326e-05},
+                              {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},
+                              {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
+                              {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
     for (Int_t iSp = 0; iSp < 7; iSp++)
       for (Int_t jSp = 0; jSp < 5; jSp++)
         sP[iSp][jSp] = sPLocal[iSp][jSp];
@@ -326,29 +319,22 @@ void CbmKFParticleFinderPID::SetRecoPID() {
 
   if (fSisMode == 1)  //SIS-300
   {
-    Double_t sPLocal[7][5] = {
-      {0.0337428, -0.013939, 0.00567602, -0.000202229, 4.07531e-06},
-      {0.00717827, -0.00257353, 0.00389851, -9.83097e-05, 1.33011e-06},
-      {0.001348, 0.00220126, 0.0023619, 7.35395e-05, -4.06706e-06},
-      {0.00142972, 0.00308919, 0.00326995, 6.91715e-05, -2.44194e-06},
-      {0.261491,
-       -0.103121,
-       0.0247587,
-       -0.00123286,
-       2.61731e-05},  //TODO tune for SIS300
-      {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
-      {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
+    Double_t sPLocal[7][5] = {{0.0337428, -0.013939, 0.00567602, -0.000202229, 4.07531e-06},
+                              {0.00717827, -0.00257353, 0.00389851, -9.83097e-05, 1.33011e-06},
+                              {0.001348, 0.00220126, 0.0023619, 7.35395e-05, -4.06706e-06},
+                              {0.00142972, 0.00308919, 0.00326995, 6.91715e-05, -2.44194e-06},
+                              {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},  //TODO tune for SIS300
+                              {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
+                              {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
     for (Int_t iSp = 0; iSp < 7; iSp++)
       for (Int_t jSp = 0; jSp < 5; jSp++)
         sP[iSp][jSp] = sPLocal[iSp][jSp];
   }
 
-  const Int_t PdgHypo[9] = {
-    2212, 321, 211, -11, 1000010029, 1000010030, 1000020030, -13, -19};
+  const Int_t PdgHypo[9] = {2212, 321, 211, -11, 1000010029, 1000010030, 1000020030, -13, -19};
 
   for (Int_t igt = 0; igt < fGlobalTrackArray->GetEntriesFast(); igt++) {
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
 
     Int_t stsTrackIndex = globalTrack->GetStsTrackIndex();
     if (stsTrackIndex < 0) continue;
@@ -389,11 +375,11 @@ void CbmKFParticleFinderPID::SetRecoPID() {
 
             //            if(fElIdAnn->DoSelect(richRing, p) > -0.5) isElectronRICH = 1;
             if (p < 5.) {
-              if (fabs(axisA - fMeanA) < fRmsCoeff * fRmsA
-                  && fabs(axisB - fMeanB) < fRmsCoeff * fRmsB
+              if (fabs(axisA - fMeanA) < fRmsCoeff * fRmsA && fabs(axisB - fMeanB) < fRmsCoeff * fRmsB
                   && dist < fDistCut)
                 isElectronRICH = 1;
-            } else {
+            }
+            else {
               ///3 sigma
               // Double_t polAaxis = 5.80008 - 4.10118 / (momentum - 3.67402);
               // Double_t polBaxis = 5.58839 - 4.75980 / (momentum - 3.31648);
@@ -402,9 +388,8 @@ void CbmKFParticleFinderPID::SetRecoPID() {
               Double_t polAaxis = 5.64791 - 4.24077 / (p - 3.65494);
               Double_t polBaxis = 5.41106 - 4.49902 / (p - 3.52450);
               //Double_t polRaxis = 5.66516 - 6.62229/(momentum - 2.25304);
-              if (axisA < (fMeanA + fRmsCoeff * fRmsA) && axisA > polAaxis
-                  && axisB < (fMeanB + fRmsCoeff * fRmsB) && axisB > polBaxis
-                  && dist < fDistCut)
+              if (axisA < (fMeanA + fRmsCoeff * fRmsA) && axisA > polAaxis && axisB < (fMeanB + fRmsCoeff * fRmsB)
+                  && axisB > polBaxis && dist < fDistCut)
                 isElectronRICH = 1;
             }
           }
@@ -449,22 +434,18 @@ void CbmKFParticleFinderPID::SetRecoPID() {
             CbmTrdHit* trdHit = (CbmTrdHit*) fTrdHitArray->At(TRDindex);
             eloss += trdHit->GetELoss();
           }
-          if (trdTrack->GetNofHits() > 0.)
-            dEdXTRD = 1e6 * pz / p * eloss / trdTrack->GetNofHits();
+          if (trdTrack->GetNofHits() > 0.) dEdXTRD = 1e6 * pz / p * eloss / trdTrack->GetNofHits();
         }
       }
     }
 
     //STS dE/dX
     vector<double> dEdxAllveto;
-    int nClustersWveto =
-      cbmStsTrack->GetNofStsHits()
-      + cbmStsTrack->GetNofStsHits();  //assume all clusters with veto
-    double dr = 1.;
+    int nClustersWveto = cbmStsTrack->GetNofStsHits() + cbmStsTrack->GetNofStsHits();  //assume all clusters with veto
+    double dr          = 1.;
     for (int iHit = 0; iHit < cbmStsTrack->GetNofStsHits(); ++iHit) {
       bool frontVeto = kFALSE, backVeto = kFALSE;
-      CbmStsHit* stsHit =
-        (CbmStsHit*) fStsHitArray->At(cbmStsTrack->GetStsHitIndex(iHit));
+      CbmStsHit* stsHit = (CbmStsHit*) fStsHitArray->At(cbmStsTrack->GetStsHitIndex(iHit));
 
       double x, y, z, xNext, yNext, zNext;
       x = stsHit->GetX();
@@ -472,20 +453,16 @@ void CbmKFParticleFinderPID::SetRecoPID() {
       z = stsHit->GetZ();
 
       if (iHit != cbmStsTrack->GetNofStsHits() - 1) {
-        CbmStsHit* stsHitNext =
-          (CbmStsHit*) fStsHitArray->At(cbmStsTrack->GetStsHitIndex(iHit + 1));
-        xNext = stsHitNext->GetX();
-        yNext = stsHitNext->GetY();
-        zNext = stsHitNext->GetZ();
-        dr    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y)
-                  + (zNext - z) * (zNext - z))
+        CbmStsHit* stsHitNext = (CbmStsHit*) fStsHitArray->At(cbmStsTrack->GetStsHitIndex(iHit + 1));
+        xNext                 = stsHitNext->GetX();
+        yNext                 = stsHitNext->GetY();
+        zNext                 = stsHitNext->GetZ();
+        dr                    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y) + (zNext - z) * (zNext - z))
              / (zNext - z);  // if *300um, you get real reconstructed dr
       }                      // else dr stay previous
 
-      CbmStsCluster* frontCluster =
-        (CbmStsCluster*) fStsClusterArray->At(stsHit->GetFrontClusterId());
-      CbmStsCluster* backCluster =
-        (CbmStsCluster*) fStsClusterArray->At(stsHit->GetBackClusterId());
+      CbmStsCluster* frontCluster = (CbmStsCluster*) fStsClusterArray->At(stsHit->GetFrontClusterId());
+      CbmStsCluster* backCluster  = (CbmStsCluster*) fStsClusterArray->At(stsHit->GetBackClusterId());
 
       if (!frontCluster || !backCluster) {
         LOG(info) << "CbmKFParticleFinderPID: no front or back cluster";
@@ -494,16 +471,10 @@ void CbmKFParticleFinderPID::SetRecoPID() {
 
       //check if at least one digi in a cluster has overflow --- charge is registered in the last ADC channel #31
       for (int iDigi = 0; iDigi < frontCluster->GetNofDigis(); ++iDigi) {
-        if (31
-            == (fDigiManager->Get<CbmStsDigi>(frontCluster->GetDigi(iDigi))
-                  ->GetCharge()))
-          frontVeto = kTRUE;
+        if (31 == (fDigiManager->Get<CbmStsDigi>(frontCluster->GetDigi(iDigi))->GetCharge())) frontVeto = kTRUE;
       }
       for (int iDigi = 0; iDigi < backCluster->GetNofDigis(); ++iDigi) {
-        if (31
-            == (fDigiManager->Get<CbmStsDigi>(backCluster->GetDigi(iDigi))
-                  ->GetCharge()))
-          backVeto = kTRUE;
+        if (31 == (fDigiManager->Get<CbmStsDigi>(backCluster->GetDigi(iDigi))->GetCharge())) backVeto = kTRUE;
       }
 
       if (!frontVeto) dEdxAllveto.push_back((frontCluster->GetCharge()) / dr);
@@ -520,13 +491,10 @@ void CbmKFParticleFinderPID::SetRecoPID() {
     if (fMuchTrackArray && fMuchMode > 0) {
       Int_t muchIndex = globalTrack->GetMuchTrackIndex();
       if (muchIndex > -1) {
-        CbmMuchTrack* muchTrack =
-          (CbmMuchTrack*) fMuchTrackArray->At(muchIndex);
+        CbmMuchTrack* muchTrack = (CbmMuchTrack*) fMuchTrackArray->At(muchIndex);
         if (muchTrack) {
-          if ((cbmStsTrack->GetChiSq() / cbmStsTrack->GetNDF())
-                < fMuchCutsFloat[0]
-              && (muchTrack->GetChiSq() / muchTrack->GetNDF())
-                   < fMuchCutsFloat[1]
+          if ((cbmStsTrack->GetChiSq() / cbmStsTrack->GetNDF()) < fMuchCutsFloat[0]
+              && (muchTrack->GetChiSq() / muchTrack->GetNDF()) < fMuchCutsFloat[1]
               && cbmStsTrack->GetNofHits() >= fMuchCutsInt[0]) {
             if (muchTrack->GetNofHits() >= fMuchCutsInt[1]) isMuon = 2;
             if (muchTrack->GetNofHits() >= fMuchCutsInt[2]) isMuon = 1;
@@ -539,13 +507,13 @@ void CbmKFParticleFinderPID::SetRecoPID() {
       if (isElectronRICH && isElectronTRD) isElectron = 1;
       if (fRichPIDMode == 0 && isElectronTRD) isElectron = 1;
       if (fTrdPIDMode == 0 && isElectronRICH) isElectron = 1;
-    } else if (isElectronRICH)
+    }
+    else if (isElectronRICH)
       isElectron = 1;
 
     if (fTofHitArray && isMuon == 0) {
-      Double_t l =
-        globalTrack->GetLength();  // l is calculated by global tracking
-      if (fSisMode == 0)           //SIS-100
+      Double_t l = globalTrack->GetLength();  // l is calculated by global tracking
+      if (fSisMode == 0)                      //SIS-100
         if (!((l > 500.) && (l < 900.))) continue;
       if (fSisMode == 1)  //SIS 300
         if (!((l > 700.) && (l < 1500.))) continue;
@@ -553,11 +521,11 @@ void CbmKFParticleFinderPID::SetRecoPID() {
       Double_t time;
       Int_t tofHitIndex = globalTrack->GetTofHitIndex();
       if (tofHitIndex >= 0) {
-        const CbmTofHit* tofHit =
-          static_cast<const CbmTofHit*>(fTofHitArray->At(tofHitIndex));
+        const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHitArray->At(tofHitIndex));
         if (!tofHit) continue;
         time = tofHit->GetTime();
-      } else
+      }
+      else
         continue;
 
       if (fSisMode == 0)  //SIS-100
@@ -565,15 +533,13 @@ void CbmKFParticleFinderPID::SetRecoPID() {
       if (fSisMode == 1)  //SIS 300
         if (!((time > 26.) && (time < 52.))) continue;
 
-      Double_t m2 =
-        p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
+      Double_t m2 = p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
 
       Double_t sigma[7];
       Double_t dm2[7];
 
       for (int iSigma = 0; iSigma < 7; iSigma++) {
-        sigma[iSigma] = sP[iSigma][0] + sP[iSigma][1] * p
-                        + sP[iSigma][2] * p * p + sP[iSigma][3] * p * p * p
+        sigma[iSigma] = sP[iSigma][0] + sP[iSigma][1] * p + sP[iSigma][2] * p * p + sP[iSigma][3] * p * p * p
                         + sP[iSigma][4] * p * p * p * p;
         dm2[iSigma] = fabs(m2 - m2TOF[iSigma]) / sigma[iSigma];
       }

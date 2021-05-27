@@ -16,16 +16,16 @@
 #ifndef CBMMUCHDIGI_H
 #define CBMMUCHDIGI_H 1
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, ULong64_t, UShort_t, Bool_t, Doub...
-
-#include <string>  // for string
-
 #include "CbmDefs.h"         // for kMuch
 #include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchModule
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, ULong64_t, UShort_t, Bool_t, Doub...
+
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+
+#include <string>  // for string
 
 
 class CbmMuchDigi {
@@ -38,8 +38,9 @@ public:
 	** @param  time     Measurement time [ns]
 	** @param  charge   Charge [ADC units]
  	**/
-  CbmMuchDigi(UInt_t address, UShort_t charge = 0, ULong64_t time = 0)
-    : fTime(time), fAddress(address), fCharge(charge) {}
+  CbmMuchDigi(UInt_t address, UShort_t charge = 0, ULong64_t time = 0) : fTime(time), fAddress(address), fCharge(charge)
+  {
+  }
   //fMatch will be created in the CbmMuchSignal and should be deleted by that class destructor only.
   //fMatch = new CbmMatch();}
 
@@ -85,9 +86,7 @@ public:
 
   // Specially for littrack
   // TODO remove after littrack fix
-  Int_t GetDetectorId() const {
-    return CbmMuchAddress::GetElementAddress(GetAddress(), kMuchModule);
-  }
+  Int_t GetDetectorId() const { return CbmMuchAddress::GetElementAddress(GetAddress(), kMuchModule); }
   Int_t GetChannelId() const { return GetAddress(); }
   Int_t GetADCCharge() const { return GetAdc(); }
   Int_t GetDTime() const { return 0; }
@@ -95,7 +94,8 @@ public:
   std::string ToString() const { return std::string {""}; }
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fAddress;
     ar& fTime;
     ar& fCharge;

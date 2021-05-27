@@ -24,18 +24,18 @@ CbmBinnedTrackerConfigurator::CbmBinnedTrackerConfigurator(bool useAllDetectors)
   , fStsPoints(0)
   , fMuchPoints(0)
   , fTrdPoints(0)
-  , fTofPoints(0) {
+  , fTofPoints(0)
+{
   fill_n(fUseModules, int(ECbmModuleId::kLastModule), fUseAllDetectors);
   fPrimaryParticleIds.push_back(ppiNone);
   //fUseModules[kMuch] = false;// Temporary hack
   fUseModules[ToIntegralType(ECbmModuleId::kRich)] = false;  // Temporary hack
 }
 
-CbmBinnedTrackerConfigurator::~CbmBinnedTrackerConfigurator() {
-  delete fTracker;
-}
+CbmBinnedTrackerConfigurator::~CbmBinnedTrackerConfigurator() { delete fTracker; }
 
-InitStatus CbmBinnedTrackerConfigurator::Init() {
+InitStatus CbmBinnedTrackerConfigurator::Init()
+{
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
 
   if (!stsSetup->IsInit()) stsSetup->Init();
@@ -89,18 +89,18 @@ InitStatus CbmBinnedTrackerConfigurator::Init() {
   return kSUCCESS;
 }
 
-void CbmBinnedTrackerConfigurator::Exec(Option_t*) {
+void CbmBinnedTrackerConfigurator::Exec(Option_t*)
+{
   CbmBinnedHitReader::Instance()->Read();
   CbmBinnedHitReader::Instance()->Handle();
 }
 
-void CbmBinnedTrackerConfigurator::Finish() {
-  CbmBinnedHitReader::Instance()->Finish();
-}
+void CbmBinnedTrackerConfigurator::Finish() { CbmBinnedHitReader::Instance()->Finish(); }
 
-void CbmBinnedTrackerConfigurator::SetParContainers() {
-  fSettings = static_cast<CbmBinnedSettings*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmBinnedSettings"));
+void CbmBinnedTrackerConfigurator::SetParContainers()
+{
+  fSettings =
+    static_cast<CbmBinnedSettings*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmBinnedSettings"));
 }
 
 ClassImp(CbmBinnedTrackerConfigurator)

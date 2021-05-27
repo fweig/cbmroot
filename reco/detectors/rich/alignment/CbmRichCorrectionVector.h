@@ -9,9 +9,12 @@
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseTau.h"
 #include "CbmRichRingLight.h"
+
 #include "FairTask.h"
+
 #include "TGeoNavigator.h"
 #include "TString.h"
+
 #include <map>
 #include <vector>
 
@@ -87,8 +90,7 @@ public:
   /*
      *
      */
-  void
-  FillPMTMapEllipse(const Char_t* mirr_path, Float_t CenterX, Float_t CenterY);
+  void FillPMTMapEllipse(const Char_t* mirr_path, Float_t CenterX, Float_t CenterY);
 
   /*
      * From incoming track on the mirrors, do reflection of its trajectory and extrapolation of its intersection on the PMT plane.
@@ -98,9 +100,7 @@ public:
   /*
      * Get pmt normal from 3 different points on the plane.
      */
-  void GetPmtNormal(Int_t NofPMTPoints,
-                    vector<Double_t>& normalPMT,
-                    Double_t& normalCste);
+  void GetPmtNormal(Int_t NofPMTPoints, vector<Double_t>& normalPMT, Double_t& normalCste);
 
   /*
      * Calculate mean sphere center coordinates from all the mirror tiles (to be used for the reconstruction step).
@@ -110,10 +110,7 @@ public:
   /*
      * Calculate intersection between incoming particle track (position given by ptR1 and direction by momR1) and sphere with center ptC (Cmean) and radius sphereRadius.
      */
-  void GetMirrorIntersection(vector<Double_t>& ptM,
-                             vector<Double_t> ptR1,
-                             vector<Double_t> momR1,
-                             vector<Double_t> ptC,
+  void GetMirrorIntersection(vector<Double_t>& ptM, vector<Double_t> ptR1, vector<Double_t> momR1, vector<Double_t> ptC,
                              Double_t sphereRadius);
 
   /*
@@ -121,10 +118,7 @@ public:
      * Then calculate point on sensitive plane from the reflected track extrapolated (ptR2 = reflection of ptR1, with reflection axis = normalMirr).
      * ptR2Center uses ptC for the calculations, whereas ptR2Mirr uses ptM.
      */
-  void ComputeR2(vector<Double_t>& ptR2Center,
-                 vector<Double_t>& ptR2Mirr,
-                 vector<Double_t> ptM,
-                 vector<Double_t> ptC,
+  void ComputeR2(vector<Double_t>& ptR2Center, vector<Double_t>& ptR2Mirr, vector<Double_t> ptM, vector<Double_t> ptC,
                  vector<Double_t> ptR1);
 
   /*
@@ -132,24 +126,16 @@ public:
      * ptPMirr is calculated using the mirror point (ptM) to define the line reflected by the mirror and towards the PMT plane.
      * ptPR2 is calculated using ptR2Mirr (the reflection of point R1 on the sensitive plane, using ptM for the calculations -> see ComputeR2 method).
      */
-  void ComputeP(vector<Double_t>& ptPMirr,
-                vector<Double_t>& ptPR2,
-                vector<Double_t> normalPMT,
-                vector<Double_t> ptM,
-                vector<Double_t> ptR2Mirr,
-                Double_t normalCste);
+  void ComputeP(vector<Double_t>& ptPMirr, vector<Double_t>& ptPR2, vector<Double_t> normalPMT, vector<Double_t> ptM,
+                vector<Double_t> ptR2Mirr, Double_t normalCste);
 
   /*
      *
      */
-  void FillHistProjection(TVector3 outPos,
-                          TVector3 outPosUnCorr,
-                          Int_t NofGlobalTracks,
-                          vector<Double_t> normalPMT,
+  void FillHistProjection(TVector3 outPos, TVector3 outPosUnCorr, Int_t NofGlobalTracks, vector<Double_t> normalPMT,
                           Double_t constantePMT);
 
-  void RotateAndCopyHitsToRingLight(const CbmRichRing* ring1,
-                                    CbmRichRingLight* ring2);
+  void RotateAndCopyHitsToRingLight(const CbmRichRing* ring1, CbmRichRingLight* ring2);
 
   /*
      * Draw histograms for alignment method.

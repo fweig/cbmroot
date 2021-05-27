@@ -14,8 +14,7 @@
   Panel1->SetFrameBorderMode(0);
 
   THStack* TofTests_SingTrkMultiPntHitDeltaY = new THStack();
-  TofTests_SingTrkMultiPntHitDeltaY->SetName(
-    "TofTests_SingTrkMultiPntHitDeltaY");
+  TofTests_SingTrkMultiPntHitDeltaY->SetName("TofTests_SingTrkMultiPntHitDeltaY");
   TofTests_SingTrkMultiPntHitDeltaY->SetTitle(
     "Quality of the Tof Hits position on Y axis, for hit coming from a single "
     "MC Track");
@@ -24,9 +23,7 @@
     new TH1F("TofTests_SingTrkMultiPntHitDeltaY_stack_5",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->SetMinimum(0.1963098);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->SetMaximum(3.233796e+07);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->SetDirectory(0);
@@ -36,8 +33,7 @@
   TColor* color;  // for color definition with alpha
   ci = TColor::GetColor("#000099");
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->SetLineColor(ci);
-  TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetXaxis()->SetRange(1, 600);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetXaxis()->SetLabelFont(42);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetXaxis()->SetLabelSize(0.035);
@@ -54,17 +50,14 @@
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetZaxis()->SetLabelSize(0.035);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetZaxis()->SetTitleSize(0.035);
   TofTests_SingTrkMultiPntHitDeltaY_stack_5->GetZaxis()->SetTitleFont(42);
-  TofTests_SingTrkMultiPntHitDeltaY->SetHistogram(
-    TofTests_SingTrkMultiPntHitDeltaY_stack_5);
+  TofTests_SingTrkMultiPntHitDeltaY->SetHistogram(TofTests_SingTrkMultiPntHitDeltaY_stack_5);
 
 
   TH1D* TofTests_SingTrkMultiPntHitDeltaY__17 =
     new TH1D("TofTests_SingTrkMultiPntHitDeltaY__17",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingTrkMultiPntHitDeltaY__17->SetBinContent(93, 1);
   TofTests_SingTrkMultiPntHitDeltaY__17->SetBinContent(101, 1);
   TofTests_SingTrkMultiPntHitDeltaY__17->SetBinContent(121, 1);
@@ -329,8 +322,7 @@
   TofTests_SingTrkMultiPntHitDeltaY__17->SetBinContent(550, 1);
   TofTests_SingTrkMultiPntHitDeltaY__17->SetEntries(1.270061e+08);
   TofTests_SingTrkMultiPntHitDeltaY__17->SetDirectory(0);
-  TofTests_SingTrkMultiPntHitDeltaY__17->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingTrkMultiPntHitDeltaY__17->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingTrkMultiPntHitDeltaY__17->GetXaxis()->SetRange(1, 600);
   TofTests_SingTrkMultiPntHitDeltaY__17->GetXaxis()->SetLabelFont(42);
   TofTests_SingTrkMultiPntHitDeltaY__17->GetXaxis()->SetLabelSize(0.035);
@@ -352,9 +344,7 @@
     new TH1D("TofTests_SingTrkMultiPntHitDeltaY__18",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingTrkMultiPntHitDeltaY__18->SetBinContent(97, 1);
   TofTests_SingTrkMultiPntHitDeltaY__18->SetBinContent(101, 1);
   TofTests_SingTrkMultiPntHitDeltaY__18->SetBinContent(109, 1);
@@ -621,8 +611,7 @@
   TofTests_SingTrkMultiPntHitDeltaY__18->SetEntries(1.151431e+08);
   TofTests_SingTrkMultiPntHitDeltaY__18->SetDirectory(0);
   TofTests_SingTrkMultiPntHitDeltaY__18->SetLineColor(2);
-  TofTests_SingTrkMultiPntHitDeltaY__18->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingTrkMultiPntHitDeltaY__18->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingTrkMultiPntHitDeltaY__18->GetXaxis()->SetRange(1, 600);
   TofTests_SingTrkMultiPntHitDeltaY__18->GetXaxis()->SetLabelFont(42);
   TofTests_SingTrkMultiPntHitDeltaY__18->GetXaxis()->SetLabelSize(0.035);
@@ -644,9 +633,7 @@
     new TH1D("TofTests_SingTrkMultiPntHitDeltaY__19",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingTrkMultiPntHitDeltaY__19->SetBinContent(79, 1);
   TofTests_SingTrkMultiPntHitDeltaY__19->SetBinContent(97, 2);
   TofTests_SingTrkMultiPntHitDeltaY__19->SetBinContent(110, 1);
@@ -895,8 +882,7 @@
   TofTests_SingTrkMultiPntHitDeltaY__19->SetEntries(6.264221e+07);
   TofTests_SingTrkMultiPntHitDeltaY__19->SetDirectory(0);
   TofTests_SingTrkMultiPntHitDeltaY__19->SetLineColor(3);
-  TofTests_SingTrkMultiPntHitDeltaY__19->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingTrkMultiPntHitDeltaY__19->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingTrkMultiPntHitDeltaY__19->GetXaxis()->SetRange(1, 600);
   TofTests_SingTrkMultiPntHitDeltaY__19->GetXaxis()->SetLabelFont(42);
   TofTests_SingTrkMultiPntHitDeltaY__19->GetXaxis()->SetLabelSize(0.035);
@@ -918,9 +904,7 @@
     new TH1D("TofTests_SingTrkMultiPntHitDeltaY__20",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingTrkMultiPntHitDeltaY__20->SetBinContent(41, 1);
   TofTests_SingTrkMultiPntHitDeltaY__20->SetBinContent(100, 1);
   TofTests_SingTrkMultiPntHitDeltaY__20->SetBinContent(101, 1);
@@ -1160,8 +1144,7 @@
   TofTests_SingTrkMultiPntHitDeltaY__20->SetEntries(4.97078e+07);
   TofTests_SingTrkMultiPntHitDeltaY__20->SetDirectory(0);
   TofTests_SingTrkMultiPntHitDeltaY__20->SetLineColor(4);
-  TofTests_SingTrkMultiPntHitDeltaY__20->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingTrkMultiPntHitDeltaY__20->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingTrkMultiPntHitDeltaY__20->GetXaxis()->SetRange(1, 600);
   TofTests_SingTrkMultiPntHitDeltaY__20->GetXaxis()->SetLabelFont(42);
   TofTests_SingTrkMultiPntHitDeltaY__20->GetXaxis()->SetLabelSize(0.035);
@@ -1190,17 +1173,14 @@
                             "hit coming from a single MC Track");
   pt->Draw();
 
-  TLegend* leg =
-    new TLegend(0.5808307, 0.7904762, 0.9303514, 0.9309524, NULL, "brNDC");
+  TLegend* leg = new TLegend(0.5808307, 0.7904762, 0.9303514, 0.9309524, NULL, "brNDC");
   leg->SetBorderSize(2);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
   leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
-  TLegendEntry* entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY",
-                                      "TofTests_SingTrkMultiPntHitDeltaY",
-                                      "l");
+  TLegendEntry* entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY", "TofTests_SingTrkMultiPntHitDeltaY", "l");
   entry->SetLineColor(1);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1208,9 +1188,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY",
-                        "TofTests_SingTrkMultiPntHitDeltaY",
-                        "l");
+  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY", "TofTests_SingTrkMultiPntHitDeltaY", "l");
   entry->SetLineColor(2);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1218,9 +1196,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY",
-                        "TofTests_SingTrkMultiPntHitDeltaY",
-                        "l");
+  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY", "TofTests_SingTrkMultiPntHitDeltaY", "l");
   entry->SetLineColor(3);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1228,9 +1204,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY",
-                        "TofTests_SingTrkMultiPntHitDeltaY",
-                        "l");
+  entry = leg->AddEntry("TofTests_SingTrkMultiPntHitDeltaY", "TofTests_SingTrkMultiPntHitDeltaY", "l");
   entry->SetLineColor(4);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);

@@ -1,4 +1,5 @@
-void run_CbmIonGenerator(Int_t nEvents = 1) {
+void run_CbmIonGenerator(Int_t nEvents = 1)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -135,8 +136,7 @@ void run_CbmIonGenerator(Int_t nEvents = 1) {
 
   // CbmIonGenerator - check in Load libraries: gSystem->Load("libCbmGenerators");
   Int_t nions = 10;  // number of ions/event
-  cout << "@@@@@> CbmIonGenerator is ON with " << nions << " ion(s)/event !!!"
-       << endl;
+  cout << "@@@@@> CbmIonGenerator is ON with " << nions << " ion(s)/event !!!" << endl;
   Int_t z = 79, a = 197, q = 79;  // Au-ion
   Double_t p       = 8.;          // in AGeV/c
   Double_t vz      = -0.0126;     // in cm - z-pos. of vertex
@@ -149,7 +149,7 @@ void run_CbmIonGenerator(Int_t nEvents = 1) {
   // Parameters of the trapezoid are set with respect to mean of Gaussian, NOT necesseraly in absolute coordinates.
   // x1 < x2 < 0 < x3 < x4
   Double_t x1 = -0.10452, x2 = -0.06942, x3 = 0.06942,
-           x4 = 0.10452;  // in cm - trapezoid distr.
+           x4 = 0.10452;                                              // in cm - trapezoid distr.
   Double_t y1 = -0.04448, y2 = -0.02688, y3 = 0.02688, y4 = 0.04448;  // in cm
   Double_t tX1 = -0.00157966, tX2 = -0.001049177, tX3 = 0.001049177,
            tX4 = 0.00157966;  // in rad
@@ -160,34 +160,8 @@ void run_CbmIonGenerator(Int_t nEvents = 1) {
 
   //  CbmIonGenerator *IonGen = new CbmIonGenerator(z, a, q, nions, p, sigmaX, sigmaY, sigmatX, sigmatY, meanX, meanY, vz);
 
-  CbmIonGenerator* IonGen = new CbmIonGenerator(z,
-                                                a,
-                                                q,
-                                                nions,
-                                                p,
-                                                sigmaX,
-                                                sigmaY,
-                                                sigmatX,
-                                                sigmatY,
-                                                meanX,
-                                                meanY,
-                                                vz,
-                                                x1,
-                                                x2,
-                                                x3,
-                                                x4,
-                                                y1,
-                                                y2,
-                                                y3,
-                                                y4,
-                                                tX1,
-                                                tX2,
-                                                tX3,
-                                                tX4,
-                                                tY1,
-                                                tY2,
-                                                tY3,
-                                                tY4);
+  CbmIonGenerator* IonGen = new CbmIonGenerator(z, a, q, nions, p, sigmaX, sigmaY, sigmatX, sigmatY, meanX, meanY, vz,
+                                                x1, x2, x3, x4, y1, y2, y3, y4, tX1, tX2, tX3, tX4, tY1, tY2, tY3, tY4);
 
   primGen->AddGenerator(IonGen);
 
@@ -231,8 +205,7 @@ void run_CbmIonGenerator(Int_t nEvents = 1) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

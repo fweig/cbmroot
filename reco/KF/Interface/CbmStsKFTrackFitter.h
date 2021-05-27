@@ -2,7 +2,6 @@
 #define CBMSTSKFTRACKFITTER 1
 
 #include "CbmKFStsHit.h"
-
 #include "CbmStsTrackFitter.h"
 
 #include <vector>
@@ -45,8 +44,7 @@ public:
    * @param z        new z-position
    * @param e_track  (return value) extrapolated track parameters
    */
-  void
-  Extrapolate(FairTrackParam* trackPar, Double_t z, FairTrackParam* e_track);
+  void Extrapolate(FairTrackParam* trackPar, Double_t z, FairTrackParam* e_track);
 
   /** Get normalized (in sigma's) impact parameter form vertex vtx
    *  if no vtx given, return deviation from primary vertex
@@ -60,8 +58,7 @@ public:
    * @param v_track  (return value) fitted track parameters
    * @param retrun   sqrt(Chi^2/NDF)
    */
-  Double_t
-  FitToVertex(CbmStsTrack* track, CbmVertex* vtx, FairTrackParam* v_track);
+  Double_t FitToVertex(CbmStsTrack* track, CbmVertex* vtx, FairTrackParam* v_track);
 
 private:
   void SetKFHits(CbmKFTrack& T, CbmStsTrack* track);

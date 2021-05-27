@@ -40,7 +40,8 @@ void CbmSetup::Clear(Option_t*) { fProvider->Reset(); }
 
 
 // -----   Get field map type   --------------------------------------------
-CbmFieldMap* CbmSetup::CreateFieldMap() {
+CbmFieldMap* CbmSetup::CreateFieldMap()
+{
   CbmGeoSetupField field = fProvider->GetSetup().GetField();
 
   // --- Open the map file
@@ -59,8 +60,7 @@ CbmFieldMap* CbmSetup::CreateFieldMap() {
   CbmFieldMapData* data = NULL;
   mapFile.GetObject(mapName, data);
   if (!data) {
-    LOG(error) << "Could not find CbmFieldMapData object " << mapName
-               << " in file " << fileName;
+    LOG(error) << "Could not find CbmFieldMapData object " << mapName << " in file " << fileName;
     return NULL;
   }
   Int_t fieldType = data->GetType();
@@ -76,8 +76,7 @@ CbmFieldMap* CbmSetup::CreateFieldMap() {
   // --- Set scale and position of field map
   if (fieldMap) {
     fieldMap->SetScale(field.GetScale());
-    fieldMap->SetPosition(field.GetMatrix().GetTranslation()[0],
-                          field.GetMatrix().GetTranslation()[1],
+    fieldMap->SetPosition(field.GetMatrix().GetTranslation()[0], field.GetMatrix().GetTranslation()[1],
                           field.GetMatrix().GetTranslation()[2]);
   }
 
@@ -87,7 +86,8 @@ CbmFieldMap* CbmSetup::CreateFieldMap() {
 
 
 // -----  Get a geometry file name   ---------------------------------------
-Bool_t CbmSetup::GetGeoFileName(ECbmModuleId moduleId, TString& fileName) {
+Bool_t CbmSetup::GetGeoFileName(ECbmModuleId moduleId, TString& fileName)
+{
   auto& moduleMap = fProvider->GetSetup().GetModuleMap();
 
   if (moduleMap.find(moduleId) == moduleMap.end()) {
@@ -101,7 +101,8 @@ Bool_t CbmSetup::GetGeoFileName(ECbmModuleId moduleId, TString& fileName) {
 
 
 // -----  Get a geometry tag   ---------------------------------------------
-Bool_t CbmSetup::GetGeoTag(ECbmModuleId moduleId, TString& tag) {
+Bool_t CbmSetup::GetGeoTag(ECbmModuleId moduleId, TString& tag)
+{
   auto& moduleMap = fProvider->GetSetup().GetModuleMap();
 
   if (moduleMap.find(moduleId) == moduleMap.end()) {
@@ -115,7 +116,8 @@ Bool_t CbmSetup::GetGeoTag(ECbmModuleId moduleId, TString& tag) {
 
 
 // -----   Instance   ------------------------------------------------------
-CbmSetup* CbmSetup::Instance() {
+CbmSetup* CbmSetup::Instance()
+{
   if (!fgInstance) fgInstance = new CbmSetup();
   return fgInstance;
 }
@@ -123,7 +125,8 @@ CbmSetup* CbmSetup::Instance() {
 
 
 // -----  Get activity flag   ----------------------------------------------
-Bool_t CbmSetup::IsActive(ECbmModuleId moduleId) {
+Bool_t CbmSetup::IsActive(ECbmModuleId moduleId)
+{
   auto& moduleMap = fProvider->GetSetup().GetModuleMap();
 
   if (moduleMap.find(moduleId) == moduleMap.end()) return kFALSE;
@@ -133,14 +136,13 @@ Bool_t CbmSetup::IsActive(ECbmModuleId moduleId) {
 
 
 // -----   Remove a module   -----------------------------------------------
-void CbmSetup::RemoveModule(ECbmModuleId moduleId) {
-  fProvider->RemoveModule(moduleId);
-}
+void CbmSetup::RemoveModule(ECbmModuleId moduleId) { fProvider->RemoveModule(moduleId); }
 // -------------------------------------------------------------------------
 
 
 // -----   Activate or deactivate a detector   -----------------------------
-void CbmSetup::SetActive(ECbmModuleId moduleId, Bool_t active) {
+void CbmSetup::SetActive(ECbmModuleId moduleId, Bool_t active)
+{
 
   auto& moduleMap = fProvider->GetSetup().GetModuleMap();
 
@@ -157,14 +159,10 @@ void CbmSetup::SetActive(ECbmModuleId moduleId, Bool_t active) {
 
 
 // -----   Set the field map   ---------------------------------------------
-void CbmSetup::SetField(const char* tag,
-                        Double_t scale,
-                        Double_t xPos,
-                        Double_t yPos,
-                        Double_t zPos) {
+void CbmSetup::SetField(const char* tag, Double_t scale, Double_t xPos, Double_t yPos, Double_t zPos)
+{
 
-  LOG(warn) << GetName() << ": Overriding field map  "
-            << fProvider->GetSetup().GetField().GetTag()
+  LOG(warn) << GetName() << ": Overriding field map  " << fProvider->GetSetup().GetField().GetTag()
             << " (according to magnet geometry) with field map " << tag;
 
   CbmGeoSetupField field = fProvider->GetFieldByTag(tag);
@@ -176,20 +174,16 @@ void CbmSetup::SetField(const char* tag,
 
 
 // -----   Add or replace a module in the setup   --------------------------
-void CbmSetup::SetModule(ECbmModuleId moduleId,
-                         const char* geoTag,
-                         Bool_t active) {
+void CbmSetup::SetModule(ECbmModuleId moduleId, const char* geoTag, Bool_t active)
+{
 
-  std::map<ECbmModuleId, CbmGeoSetupModule> modmap =
-    fProvider->GetSetup().GetModuleMap();
+  std::map<ECbmModuleId, CbmGeoSetupModule> modmap = fProvider->GetSetup().GetModuleMap();
 
   if (modmap.find(moduleId) != modmap.end()) {
 
-    CbmGeoSetupModule& module =
-      fProvider->GetSetup().GetModuleMap().at(moduleId);
+    CbmGeoSetupModule& module = fProvider->GetSetup().GetModuleMap().at(moduleId);
     // Check presence of module in current setup
-    LOG(debug) << GetName() << ": Changing module " << moduleId << ": "
-               << module.GetTag() << " -> " << geoTag;
+    LOG(debug) << GetName() << ": Changing module " << moduleId << ": " << module.GetTag() << " -> " << geoTag;
   }
   fProvider->SetModuleTag(moduleId, geoTag, active);
 }
@@ -197,30 +191,26 @@ void CbmSetup::SetModule(ECbmModuleId moduleId,
 
 
 // -----   Info to string   ------------------------------------------------
-string CbmSetup::ToString() const {
+string CbmSetup::ToString() const
+{
 
   stringstream ss;
   CbmGeoSetup& setup = fProvider->GetSetup();
-  ss << std::left << "CBM setup: " << setup.GetName() << ", " << GetNofModules()
-     << " modules \n";
+  ss << std::left << "CBM setup: " << setup.GetName() << ", " << GetNofModules() << " modules \n";
   for (auto& it : setup.GetModuleMap()) {
     ECbmModuleId moduleId     = it.first;
     CbmGeoSetupModule& module = it.second;
-    ss << "       " << std::setw(8)
-       << CbmModuleList::GetModuleNameCaps(moduleId) << ":  " << std::setw(8)
+    ss << "       " << std::setw(8) << CbmModuleList::GetModuleNameCaps(moduleId) << ":  " << std::setw(8)
        << module.GetTag();
-    if (module.GetActive())
-      ss << "  *ACTIVE*  ";
+    if (module.GetActive()) ss << "  *ACTIVE*  ";
     else
       ss << "            ";
     ss << " using " << module.GetFilePath() << "\n";
   }
 
   CbmGeoSetupField& field = setup.GetField();
-  ss << "       Field   :  " << field.GetTag() << ", Position ( "
-     << field.GetMatrix().GetTranslation()[0] << ", "
-     << field.GetMatrix().GetTranslation()[1] << ", "
-     << field.GetMatrix().GetTranslation()[2] << " ) cm, scaling "
+  ss << "       Field   :  " << field.GetTag() << ", Position ( " << field.GetMatrix().GetTranslation()[0] << ", "
+     << field.GetMatrix().GetTranslation()[1] << ", " << field.GetMatrix().GetTranslation()[2] << " ) cm, scaling "
      << field.GetScale() << "\n";
 
   return ss.str();
@@ -229,13 +219,12 @@ string CbmSetup::ToString() const {
 
 
 // -----   Set the source the setup will be loaded from   -------------------
-void CbmSetup::SetSetupSource(ECbmSetupSource setupSource) {
+void CbmSetup::SetSetupSource(ECbmSetupSource setupSource)
+{
   switch (setupSource) {
     case kRepo: SetProvider(new CbmGeoSetupRepoProvider()); break;
     case kDb: SetProvider(new CbmGeoSetupDbProvider()); break;
-    default:
-      LOG(fatal) << "Invalid value for geo setup provider source "
-                 << setupSource;
+    default: LOG(fatal) << "Invalid value for geo setup provider source " << setupSource;
   }
 }
 // --------------------------------------------------------------------------

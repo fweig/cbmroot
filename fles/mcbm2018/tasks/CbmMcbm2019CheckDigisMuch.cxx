@@ -27,14 +27,14 @@ using std::fixed;
 using std::setprecision;
 
 // ---- Default constructor -------------------------------------------
-CbmMcbm2019CheckDigisMuch::CbmMcbm2019CheckDigisMuch()
-  : FairTask("CbmMcbm2019CheckDigisMuch") {}
+CbmMcbm2019CheckDigisMuch::CbmMcbm2019CheckDigisMuch() : FairTask("CbmMcbm2019CheckDigisMuch") {}
 
 // ---- Destructor ----------------------------------------------------
 CbmMcbm2019CheckDigisMuch::~CbmMcbm2019CheckDigisMuch() {}
 
 // ----  Initialisation  ----------------------------------------------
-void CbmMcbm2019CheckDigisMuch::SetParContainers() {
+void CbmMcbm2019CheckDigisMuch::SetParContainers()
+{
   // Load all necessary parameter containers from the runtime data base
   /*
    FairRunAna* ana = FairRunAna::Instance();
@@ -46,7 +46,8 @@ void CbmMcbm2019CheckDigisMuch::SetParContainers() {
 }
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmMcbm2019CheckDigisMuch::Init() {
+InitStatus CbmMcbm2019CheckDigisMuch::Init()
+{
 
   // Digi Manager
   fDigiMan = CbmDigiManager::Instance();
@@ -54,9 +55,7 @@ InitStatus CbmMcbm2019CheckDigisMuch::Init() {
   fDigiMan->Init();
 
   // Get a pointer to the previous already existing data level
-  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) {
-    LOG(info) << "No MUCH digis found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) { LOG(info) << "No MUCH digis found."; }
 
   CreateHistos();
 
@@ -64,16 +63,11 @@ InitStatus CbmMcbm2019CheckDigisMuch::Init() {
 }
 
 
-void CbmMcbm2019CheckDigisMuch::CreateHistos() {
+void CbmMcbm2019CheckDigisMuch::CreateHistos()
+{
   Double_t dZoomDuration = (fuStopTs - fuStartTs) * fdTsLength;
-  fDigisPerAsicEvo       = new TH2F("fDigisPerAsicEvo",
-                              "Digis per Asic evo; Time [ ns ]; ASIC []",
-                              dZoomDuration / 1000,
-                              0,
-                              dZoomDuration,
-                              kuMaxNbAsics,
-                              0,
-                              kuMaxNbAsics);
+  fDigisPerAsicEvo = new TH2F("fDigisPerAsicEvo", "Digis per Asic evo; Time [ ns ]; ASIC []", dZoomDuration / 1000, 0,
+                              dZoomDuration, kuMaxNbAsics, 0, kuMaxNbAsics);
 
   for (UInt_t uAsic = 0; uAsic < kuMaxNbAsics; ++uAsic)
     for (UInt_t uChan = 0; uChan < kuNbChansAsic; ++uChan) {
@@ -81,45 +75,27 @@ void CbmMcbm2019CheckDigisMuch::CreateHistos() {
       fdLastMuchDigiPulser[uAsic][uChan] = 0.0;
     }  // loop on channel and asic
 
-  fSameChanDigisDistEvo = new TH2F(
-    "fSameChanDigisDistEvo",
-    "Time dist of digis in same chan evo; Time [ ns ]; Same chan dist [ ns ]",
-    5000,
-    0,
-    500000.,
-    1000,
-    0.,
-    10000.);
+  fSameChanDigisDistEvo =
+    new TH2F("fSameChanDigisDistEvo", "Time dist of digis in same chan evo; Time [ ns ]; Same chan dist [ ns ]", 5000,
+             0, 500000., 1000, 0., 10000.);
 
-  fDigisPerChanEvo =
-    new TH2F("fDigisPerChanEvo",
-             "Time dist of digis in same chan evo; Time [ ns ]; Channel [ ]",
-             5000,
-             0,
-             5000.,
-             kuMaxNbAsics * kuNbChansAsic,
-             0.,
-             kuMaxNbAsics * kuNbChansAsic);
+  fDigisPerChanEvo = new TH2F("fDigisPerChanEvo", "Time dist of digis in same chan evo; Time [ ns ]; Channel [ ]", 5000,
+                              0, 5000., kuMaxNbAsics * kuNbChansAsic, 0., kuMaxNbAsics * kuNbChansAsic);
 
   std::cout << Form("TS with jump %5u, first TS time off %12.0f, start TS %5u "
                     "stop TS %5u, TS length %9.0f Start time %12.0f",
-                    fuTsJump,
-                    fdFirstTsOffs,
-                    fuStartTs,
-                    fuStopTs,
-                    fdTsLength,
-                    fdStartTime)
+                    fuTsJump, fdFirstTsOffs, fuStartTs, fuStopTs, fdTsLength, fdStartTime)
             << std::endl;
 }
 // ---- ReInit  -------------------------------------------------------
 InitStatus CbmMcbm2019CheckDigisMuch::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/) {
+void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/)
+{
   LOG(debug) << "executing TS " << fNrTs;
 
-  if (0 < fNrTs && 0 == fNrTs % 1000)
-    LOG(info) << Form("Processing TS %6d", fNrTs);
+  if (0 < fNrTs && 0 == fNrTs % 1000) LOG(info) << Form("Processing TS %6d", fNrTs);
 
   /// Zoom in on jump
   if (fNrTs < fuStartTs || fuStopTs < fNrTs) {
@@ -145,27 +121,18 @@ void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/) {
     if (0 == iMuch)
       std::cout << Form("Much first hit in TS %5d: asic %2u chan %3u time "
                         "%12.0f T0 time %12.0f check time %12.0f ADC %2.0f",
-                        fNrTs,
-                        uAsic,
-                        uChan,
-                        dTime,
-                        dTime - fdFirstTsOffs,
-                        dTimeSinceStart,
-                        dAdc)
+                        fNrTs, uAsic, uChan, dTime, dTime - fdFirstTsOffs, dTimeSinceStart, dAdc)
                 << std::endl;
 
     if (fdDigiDistStart < dTimeSinceStart && dTimeSinceStart < fdDigiDistStop) {
       //      std::cout << Form( "Much hit in TS %5d: asic %2u chan %3u T0 time %12.0f ADC %2.0f",
       //                            fNrTs, uAsic, uChan, (dTimeSinceStart - fdDigiDistStart), dAdc )
       //              << std::endl;
-      Double_t dTimeDistLastDigi =
-        dTimeSinceStart - fdLastMuchDigi[uAsic][uChan];
+      Double_t dTimeDistLastDigi = dTimeSinceStart - fdLastMuchDigi[uAsic][uChan];
       fSameChanDigisDistEvo->Fill(dTimeSinceStart - fdDigiDistStart,
-                                  dTimeDistLastDigi < 10000 ? dTimeDistLastDigi
-                                                            : 9999);
+                                  dTimeDistLastDigi < 10000 ? dTimeDistLastDigi : 9999);
 
-      fDigisPerChanEvo->Fill(dTimeSinceStart - fdDigiDistStart,
-                             uAsic * kuNbChansAsic + uChan);
+      fDigisPerChanEvo->Fill(dTimeSinceStart - fdDigiDistStart, uAsic * kuNbChansAsic + uChan);
     }
     /*
     if( 0.0 == fdLastMuchDigi[ uAsic ][ uChan ] )
@@ -177,18 +144,11 @@ void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/) {
 
     //    if( 9 != uAsic )
     if (9 != uAsic || uChan < 63) continue;
-    if (fuMaxAdcPulserMuch < Digi->GetAdc()
-        || Digi->GetAdc() < fuMinAdcPulserMuch)
-      continue;
+    if (fuMaxAdcPulserMuch < Digi->GetAdc() || Digi->GetAdc() < fuMinAdcPulserMuch) continue;
 
     std::cout << Form("Much pulser in TS %5d: chan %3u T0 time %12.0f time "
                       "start %12.0f ADC %2.0f dt %12.0f",
-                      fNrTs,
-                      uChan,
-                      dTime,
-                      dTimeSinceStart,
-                      dAdc,
-                      dTime - fdLastMuchDigiPulser[uAsic][uChan])
+                      fNrTs, uChan, dTime, dTimeSinceStart, dAdc, dTime - fdLastMuchDigiPulser[uAsic][uChan])
               << std::endl;
     fdLastMuchDigiPulser[uAsic][uChan] = dTime;
   }  // for (Int_t iMuch = 0; iMuch < nrMuchDigis; ++iMuch)
@@ -199,7 +159,8 @@ void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/) {
 // ---- Finish --------------------------------------------------------
 void CbmMcbm2019CheckDigisMuch::Finish() { WriteHistos(); }
 
-void CbmMcbm2019CheckDigisMuch::WriteHistos() {
+void CbmMcbm2019CheckDigisMuch::WriteHistos()
+{
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 

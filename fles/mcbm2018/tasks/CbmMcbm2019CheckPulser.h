@@ -11,6 +11,7 @@
 /// CBMROOT headers
 #include "CbmDefs.h"
 #include "CbmTofDigi.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
@@ -73,31 +74,38 @@ public:
 
   void SetPsdOffsetSearchRange(Int_t val = 1000) { fPsdOffsetRange = val; }
 
-  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
   }
-  inline void SetStsPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetStsPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserSts = uMin;
     fuMaxAdcPulserSts = uMax;
   }
-  inline void SetMuchPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetMuchPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserMuch = uMin;
     fuMaxAdcPulserMuch = uMax;
   }
-  inline void SetTrdPulserChargeLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetTrdPulserChargeLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinChargePulserTrd = uMin;
     fuMaxChargePulserTrd = uMax;
   }
-  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserTof = uMin;
     fuMaxTotPulserTof = uMax;
   }
-  inline void SetRichPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetRichPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserRich = uMin;
     fuMaxTotPulserRich = uMax;
   }
-  inline void SetPsdPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPsdPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserPsd = uMin;
     fuMaxAdcPulserPsd = uMax;
   }
@@ -106,8 +114,8 @@ public:
 
   inline void SetStsAddress(UInt_t uAddress) { fuStsAddress = uAddress; }
   inline void SetMuchAsic(UInt_t uAsic) { fuMuchAsic = uAsic; }
-  inline void SetMuchChanRange(UInt_t uFirstChan,
-                               UInt_t uLastChan = kuNbChanSMX) {
+  inline void SetMuchChanRange(UInt_t uFirstChan, UInt_t uLastChan = kuNbChanSMX)
+  {
     fuMuchFirstCha = uFirstChan;
     fuMuchLastChan = uLastChan;
   }
@@ -121,14 +129,8 @@ private:
   void CheckInterSystemOffset();
 
   template<class Digi>
-  Int_t FillSystemOffsetHistos(TH1* histo,
-                               TH2* histoEvo,
-                               TH2* histoEvoLong,
-                               TProfile* profMeanEvo,
-                               TH2* histoAFCK,
-                               const Double_t T0Time,
-                               const Int_t offsetRange,
-                               Int_t iStartDigi,
+  Int_t FillSystemOffsetHistos(TH1* histo, TH2* histoEvo, TH2* histoEvoLong, TProfile* profMeanEvo, TH2* histoAFCK,
+                               const Double_t T0Time, const Int_t offsetRange, Int_t iStartDigi,
                                ECbmModuleId iDetId = ECbmModuleId::kLastModule);
 
   Int_t CalcNrBins(Int_t);

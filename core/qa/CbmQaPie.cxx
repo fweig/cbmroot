@@ -4,6 +4,7 @@
 /// \date   07.11.2020
 
 #include "CbmQaPie.h"
+
 #include "TBrowser.h"
 #include "TBuffer.h"
 #include "TPad.h"
@@ -11,8 +12,8 @@
 ClassImp(CbmQaPieSlice);
 ClassImp(CbmQaPie);
 
-CbmQaPie::CbmQaPie(const CbmQaPie& cpy)
-  : TPie(cpy.GetName(), cpy.GetTitle(), cpy.fNvals) {
+CbmQaPie::CbmQaPie(const CbmQaPie& cpy) : TPie(cpy.GetName(), cpy.GetTitle(), cpy.fNvals)
+{
   /// Prevent original copy constructor from a crash
   cpy.TAttText::Copy(*this);
   fAngularOffset = cpy.fAngularOffset;
@@ -25,13 +26,15 @@ CbmQaPie::CbmQaPie(const CbmQaPie& cpy)
   }
 }
 
-void CbmQaPie::Browse(TBrowser* b) {
+void CbmQaPie::Browse(TBrowser* b)
+{
   /// Draw CbmQaPie by a mouse click in the TBrowser
   Draw(b ? b->GetDrawOption() : "");
   gPad->Update();
 }
 
-void CbmQaPie::Draw(Option_t* option) {
+void CbmQaPie::Draw(Option_t* option)
+{
   // Prevents original TPie::Draw() from crashing when there are no entries
   double sum = 0.;
   for (int i = 0; i < fNvals; i++) {
@@ -50,7 +53,8 @@ void CbmQaPie::Draw(Option_t* option) {
   }
 }
 
-void CbmQaPie::Streamer(TBuffer& R__b) {
+void CbmQaPie::Streamer(TBuffer& R__b)
+{
   /// The Streamer is declared by ClassDef() macro
   /// Stream an object of class CbmQaPie
   ///
@@ -58,9 +62,7 @@ void CbmQaPie::Streamer(TBuffer& R__b) {
   if (R__b.IsReading()) {
 
     for (int i = 0; i < fNvals; i++) {
-      if (gPad && gPad->GetListOfPrimitives()) {
-        gPad->GetListOfPrimitives()->Remove(fPieSlices[i]);
-      }
+      if (gPad && gPad->GetListOfPrimitives()) { gPad->GetListOfPrimitives()->Remove(fPieSlices[i]); }
       delete fPieSlices[i];
       fPieSlices[i] = nullptr;
     }
@@ -77,8 +79,8 @@ void CbmQaPie::Streamer(TBuffer& R__b) {
       fPieSlices[i] = new TPieSlice(fSliceStore[i]);
     }
     fSliceStore.clear();
-
-  } else {
+  }
+  else {
 
     fSliceStore.resize(fNvals);
     for (int i = 0; i < fNvals; i++) {

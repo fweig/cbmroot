@@ -28,24 +28,23 @@ CbmTrdGas::CbmTrdGas()
   , fPercentCO2(0.)
   , fNobleGasType(-1)
   , fFileNameLike("")
-  , fFileNameANN("") {
-  if (fgInstance) {
-    LOG(fatal) << "CbmTrdGas::CbmTrdGas Singleton instance already exists.";
-  }
+  , fFileNameANN("")
+{
+  if (fgInstance) { LOG(fatal) << "CbmTrdGas::CbmTrdGas Singleton instance already exists."; }
   fgInstance = this;
 }
 
 CbmTrdGas::~CbmTrdGas() {}
 
-void CbmTrdGas::Init() {
+void CbmTrdGas::Init()
+{
   // Read MWPC gas properties from geometry. This enforce that gas
   // mixture simulation and reconstruction is the same. This is important
   // because dE/dx is calculated in the simulation and TR is calculated
   // in the reconstruction.
 
   // Get pointer to gas volume
-  TGeoVolume* fm =
-    (TGeoVolume*) gGeoManager->GetListOfVolumes()->FindObject("gas");
+  TGeoVolume* fm = (TGeoVolume*) gGeoManager->GetListOfVolumes()->FindObject("gas");
   if (!fm) {
     TObjArray* volList = gGeoManager->GetListOfVolumes();
     TObjArrayIter iter(volList);
@@ -67,8 +66,7 @@ void CbmTrdGas::Init() {
 
   // check if detector is of GSI or Muenster/Bucarest type
   // the type is coded in the master volume name
-  TGeoVolume* fm1 =
-    (TGeoVolume*) gGeoManager->GetListOfVolumes()->FindObject("trd1mb");
+  TGeoVolume* fm1 = (TGeoVolume*) gGeoManager->GetListOfVolumes()->FindObject("trd1mb");
 
   // get pointer to shape of gas volume
   TGeoBBox* shape = (TGeoBBox*) fm->GetShape();
@@ -82,7 +80,8 @@ void CbmTrdGas::Init() {
     fGasThick = 2 * (shape->GetDZ());
     LOG(info) << "CbmTrdGas::Init: Detector type : double sided geometry (1) ";
     LOG(info) << "CbmTrdGas::Init: Gas thickness : " << fGasThick << " cm";
-  } else {  // GSI type
+  }
+  else {  // GSI type
     fDetType  = 0;
     fGasThick = 2 * (shape->GetDZ());
     LOG(info) << "CbmTrdGas::Init: Detector type : standard GSI geometry (2) ";
@@ -95,8 +94,7 @@ void CbmTrdGas::Init() {
   if (nmixt != 3) {
     LOG(error) << "CbmTrdGas::Init: This is not a mixture composed out of "
                   "three different elements.";
-    LOG(error)
-      << "CbmTrdGas::Init: Don't know what to do, so stop execution here.";
+    LOG(error) << "CbmTrdGas::Init: Don't know what to do, so stop execution here.";
     LOG(fatal) << "CbmTrdGas::Init: Unknown gas mixture.";
   }
 
@@ -114,10 +112,12 @@ void CbmTrdGas::Init() {
     if (elem[i] == 6.0) {
       carbon      = i;
       foundCarbon = kTRUE;
-    } else if (elem[i] == 8.0) {
+    }
+    else if (elem[i] == 8.0) {
       oxygen      = i;
       foundOxygen = kTRUE;
-    } else
+    }
+    else
       noblegas = i;
   }
   if (!(foundCarbon && foundOxygen)) {
@@ -133,7 +133,8 @@ void CbmTrdGas::Init() {
                   "to change \n"
                << "CbmTrdGas::Init:  CbmTrdRadiator to be consistent";
     LOG(fatal) << "CbmTrdGas::Init: Unknown gas mixture.";
-  } else {
+  }
+  else {
     fNobleGasType = 1;
   }
 
@@ -142,58 +143,50 @@ void CbmTrdGas::Init() {
   Double_t massXe = amixt[noblegas];
   Double_t x      = weight[noblegas];
   Double_t percentNoblegas =
-    100
-    * (((massC * x) + (2 * massO * x))
-       / (massXe + massC * x + 2 * massO * x - massXe * x));
+    100 * (((massC * x) + (2 * massO * x)) / (massXe + massC * x + 2 * massO * x - massXe * x));
 
   fPercentNobleGas = TMath::Nint(percentNoblegas) / 100.;
   fPercentCO2      = 1 - fPercentNobleGas;
 
-  if (elem[noblegas] == 54) {
-    LOG(info) << "CbmTrdGas::Init: Percent  (Xe) : "
-              << (fPercentNobleGas * 100);
-  }
+  if (elem[noblegas] == 54) { LOG(info) << "CbmTrdGas::Init: Percent  (Xe) : " << (fPercentNobleGas * 100); }
   LOG(info) << "CbmTrdGas::Init: Percent (CO2) : " << (fPercentCO2 * 100);
 
   SetFileName();
 }
 
-TString CbmTrdGas::GetFileName(TString method) const {
-  if (method.Contains("Like")) {
-    return fFileNameLike;
-  } else if (method.Contains("ANN")) {
+TString CbmTrdGas::GetFileName(TString method) const
+{
+  if (method.Contains("Like")) { return fFileNameLike; }
+  else if (method.Contains("ANN")) {
     return fFileNameANN;
-  } else {
-    LOG(error)
-      << "CbmTrdGas::GetFileName: Electron ID method " << method
-      << " not known. \n"
-      << "CbmTrdGas::GetFileName: The input must be either Like or ANN";
+  }
+  else {
+    LOG(error) << "CbmTrdGas::GetFileName: Electron ID method " << method << " not known. \n"
+               << "CbmTrdGas::GetFileName: The input must be either Like or ANN";
     return "";
   }
 }
 
-void CbmTrdGas::SetFileName() {
+void CbmTrdGas::SetFileName()
+{
   Int_t fraction  = TMath::Nint(fPercentNobleGas * 100);
   Int_t thickness = TMath::Nint(fGasThick * 10);
 
   const char* detector = "";
-  if (fDetType == 0) {
-    detector = "GSI";
-  } else if (fDetType == 1) {
+  if (fDetType == 0) { detector = "GSI"; }
+  else if (fDetType == 1) {
     detector = "MB";
-  } else {
-    LOG(error) << "CbmTrdGas::SetFileName: Detector type " << fDetType
-               << " not known";
+  }
+  else {
+    LOG(error) << "CbmTrdGas::SetFileName: Detector type " << fDetType << " not known";
     LOG(error) << "CbmTrdGas::SetFileName: Stop execution of program due to "
                   "initialization error.";
     LOG(fatal) << "CbmTrdGas::SetFileName: Unknown detector type.";
   }
   const char* gastype = "";
-  if (fNobleGasType == 1) {
-    gastype = "Xenon";
-  } else {
-    LOG(error) << "CbmTrdGas::SetFileName: Gas type " << fNobleGasType
-               << " not known";
+  if (fNobleGasType == 1) { gastype = "Xenon"; }
+  else {
+    LOG(error) << "CbmTrdGas::SetFileName: Gas type " << fNobleGasType << " not known";
     LOG(error) << "CbmTrdGas::SetFileName: Stop execution of program due to "
                   "initialization error.";
     LOG(fatal) << "CbmTrdGas::SetFileName: Unknown gas type.";
@@ -201,10 +194,8 @@ void CbmTrdGas::SetFileName() {
 
   TString path = getenv("VMCWORKDIR");
   path         = path + "/parameters/trd/";
-  fFileNameLike.Form(
-    "Likelihood_%s_%d_%s_%d.root", gastype, fraction, detector, thickness);
-  fFileNameANN.Form(
-    "ANN_%s_%d_%s_%d.root", gastype, fraction, detector, thickness);
+  fFileNameLike.Form("Likelihood_%s_%d_%s_%d.root", gastype, fraction, detector, thickness);
+  fFileNameANN.Form("ANN_%s_%d_%s_%d.root", gastype, fraction, detector, thickness);
 
   fFileNameLike = path + fFileNameLike;
   fFileNameANN  = path + fFileNameANN;

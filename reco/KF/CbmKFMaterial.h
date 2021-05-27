@@ -16,13 +16,7 @@ class TString;
 
 class CbmKFMaterial : public TObject {
 public:
-  CbmKFMaterial()
-    : ID(-1)
-    , ZReference(-1)
-    , ZThickness(-1)
-    , RadLength(-1)
-    , F(1)
-    , Fe(0.02145) {}
+  CbmKFMaterial() : ID(-1), ZReference(-1), ZThickness(-1), RadLength(-1), F(1), Fe(0.02145) {}
   virtual ~CbmKFMaterial() {};
 
   Int_t ID;
@@ -33,35 +27,26 @@ public:
   Double_t Fe;
   virtual Bool_t IsOutside(Double_t, Double_t) { return 0; }
 
-  virtual Int_t Pass(Double_t ZCross,
-                     Double_t ZThick,
-                     CbmKFTrackInterface& track,
-                     Bool_t downstream,
-                     Double_t& QP0);
+  virtual Int_t Pass(Double_t ZCross, Double_t ZThick, CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
-  virtual Int_t
-  Pass(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0) {
+  virtual Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0)
+  {
     return Pass(ZReference, ZThickness, track, downstream, QP0);
   }
 
-  virtual Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream) {
+  virtual Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream)
+  {
     Double_t QP0 = track.GetTrack()[4];
     return Pass(ZReference, ZThickness, track, downstream, QP0);
   }
 
   virtual TString KFInfo() const;
 
-  static Bool_t comparePDown(const CbmKFMaterial* a, const CbmKFMaterial* b) {
-    return a->ZReference < b->ZReference;
-  }
+  static Bool_t comparePDown(const CbmKFMaterial* a, const CbmKFMaterial* b) { return a->ZReference < b->ZReference; }
 
-  static Bool_t compareP_z(const CbmKFMaterial* a, Double_t z) {
-    return (a->ZReference + a->ZThickness / 2) < z;
-  }
+  static Bool_t compareP_z(const CbmKFMaterial* a, Double_t z) { return (a->ZReference + a->ZThickness / 2) < z; }
 
-  static Bool_t compareP_Z(Double_t z, const CbmKFMaterial* a) {
-    return z < (a->ZReference + a->ZThickness / 2);
-  }
+  static Bool_t compareP_Z(Double_t z, const CbmKFMaterial* a) { return z < (a->ZReference + a->ZThickness / 2); }
 
   ClassDef(CbmKFMaterial, 1)
 };
@@ -77,14 +62,7 @@ public:
 class CbmKFTube : public CbmKFMaterial {
 public:
   CbmKFTube() : x(0), y(0), z(0), dz(0), r(0), R(0), rr(0), RR(0) {}
-  CbmKFTube(Int_t ID,
-            Double_t x,
-            Double_t y,
-            Double_t z,
-            Double_t dz,
-            Double_t r,
-            Double_t R,
-            Double_t radL);
+  CbmKFTube(Int_t ID, Double_t x, Double_t y, Double_t z, Double_t dz, Double_t r, Double_t R, Double_t radL);
   ~CbmKFTube() {}
 
   TString KFInfo() const;
@@ -92,7 +70,8 @@ public:
   Double_t x, y, z, dz;
   Double_t r, R, rr, RR;
 
-  Bool_t IsOutside(Double_t X, Double_t Y) {
+  Bool_t IsOutside(Double_t X, Double_t Y)
+  {
     X -= x;
     Y -= y;
     Double_t r2 = X * X + Y * Y;
@@ -104,14 +83,7 @@ public:
 class CbmKFBox : public CbmKFMaterial {
 public:
   CbmKFBox() : x(0), y(0), z(0), dx05(0), dy05(0), dz(0) {}
-  CbmKFBox(Int_t ID,
-           Double_t x,
-           Double_t y,
-           Double_t z,
-           Double_t dx,
-           Double_t dy,
-           Double_t dz,
-           Double_t radL);
+  CbmKFBox(Int_t ID, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy, Double_t dz, Double_t radL);
   ~CbmKFBox() {}
 
   TString KFInfo() const;
@@ -131,17 +103,15 @@ public:
   Double_t z1, z2;
   Double_t r1, R1, r2, R2;
 
-  Int_t Pass(Double_t ZCross,
-             Double_t ZThick,
-             CbmKFTrackInterface& track,
-             Bool_t downstream,
-             Double_t& QP0);
+  Int_t Pass(Double_t ZCross, Double_t ZThick, CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
-  Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0) {
+  Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0)
+  {
     return Pass(ZReference, ZThickness, track, downstream, QP0);
   }
 
-  Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream) {
+  Int_t Pass(CbmKFTrackInterface& track, Bool_t downstream)
+  {
     Double_t QP0 = track.GetTrack()[4];
     return Pass(ZReference, ZThickness, track, downstream, QP0);
   }

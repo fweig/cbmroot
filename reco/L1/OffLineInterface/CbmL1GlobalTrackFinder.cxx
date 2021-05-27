@@ -16,13 +16,11 @@
  */
 #include "CbmL1GlobalTrackFinder.h"
 
-
-#include "L1Algo/L1Algo.h"
-
 #include "CbmEvent.h"
 #include "CbmKFMath.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
+
 #include "FairHit.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
@@ -32,6 +30,8 @@
 #include <iostream>
 #include <vector>
 
+#include "L1Algo/L1Algo.h"
+
 using std::cout;
 using std::endl;
 using std::vector;
@@ -40,7 +40,9 @@ ClassImp(CbmL1GlobalTrackFinder)
 
   // -----   Default constructor   -------------------------------------------
   CbmL1GlobalTrackFinder::CbmL1GlobalTrackFinder()
-  : FairTask("CbmL1GlobalTrackFinder"), fEventNo(0) {
+  : FairTask("CbmL1GlobalTrackFinder")
+  , fEventNo(0)
+{
   fName = "Global Track Finder L1";
 }
 // -------------------------------------------------------------------------
@@ -51,7 +53,8 @@ CbmL1GlobalTrackFinder::~CbmL1GlobalTrackFinder() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmL1GlobalTrackFinder::Init() {
+InitStatus CbmL1GlobalTrackFinder::Init()
+{
 
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -78,9 +81,7 @@ InitStatus CbmL1GlobalTrackFinder::Init() {
 
   LOG(info) << fEvents << " fEvents ";
 
-  if (!fEvents) {
-    LOG(warn) << GetName() << ": No event array! Will process entire tree.";
-  }
+  if (!fEvents) { LOG(warn) << GetName() << ": No event array! Will process entire tree."; }
   // --- Get input array (StsHits)
   fStsHits = (TClonesArray*) ioman->GetObject("StsHit");
 
@@ -93,7 +94,8 @@ InitStatus CbmL1GlobalTrackFinder::Init() {
   return kSUCCESS;
 }
 
-void CbmL1GlobalTrackFinder::Exec(Option_t* /*opt*/) {
+void CbmL1GlobalTrackFinder::Exec(Option_t* /*opt*/)
+{
 
   // --- Clear output array
   fTracks->Delete();
@@ -101,8 +103,7 @@ void CbmL1GlobalTrackFinder::Exec(Option_t* /*opt*/) {
   // --- Event loop (from event objects)
   if (fEvents) {
     Int_t nEvents = fEvents->GetEntriesFast();
-    LOG(debug) << GetName() << ": reading time slice with " << nEvents
-               << " events ";
+    LOG(debug) << GetName() << ": reading time slice with " << nEvents << " events ";
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
 
       LOG(debug) << fEvents << " fEvents " << iEvent << " iEvent ";
@@ -119,7 +120,8 @@ void CbmL1GlobalTrackFinder::Exec(Option_t* /*opt*/) {
 }
 
 // ------   Process one event   --------------------------------------------
-void CbmL1GlobalTrackFinder::ProcessEvent(CbmEvent* event) {
+void CbmL1GlobalTrackFinder::ProcessEvent(CbmEvent* event)
+{
 
   // --- Call track finder
   fTimer.Start();
@@ -129,12 +131,9 @@ void CbmL1GlobalTrackFinder::ProcessEvent(CbmEvent* event) {
   // --- Event log
   if (fEvents) {
     Int_t eventNumber = (event ? event->GetNumber() : fNofEvents);
-    Int_t nHits =
-      (event ? event->GetNofData(kStsHit) : fStsHits->GetEntriesFast());
-    LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
-              << eventNumber << ", real time " << fixed << setprecision(6)
-              << fTimer.RealTime() << " s, hits: " << nHits
-              << ", tracks: " << nTracks << ;
+    Int_t nHits       = (event ? event->GetNofData(kStsHit) : fStsHits->GetEntriesFast());
+    LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right << eventNumber << ", real time "
+              << fixed << setprecision(6) << fTimer.RealTime() << " s, hits: " << nHits << ", tracks: " << nTracks << ;
 
     // --- Counters
     fNofEvents++;
@@ -147,12 +146,10 @@ void CbmL1GlobalTrackFinder::ProcessEvent(CbmEvent* event) {
 
 // -------------------------------------------------------------------------
 
-Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
-                                                     TClonesArray* globalTracks,
-                                                     TClonesArray* stsTracks,
-                                                     TClonesArray* trdTracks,
-                                                     TClonesArray* muchTracks,
-                                                     TClonesArray* tofTracks) {
+Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event, TClonesArray* globalTracks,
+                                                     TClonesArray* stsTracks, TClonesArray* trdTracks,
+                                                     TClonesArray* muchTracks, TClonesArray* tofTracks)
+{
 
   CbmL1* L1 = CbmL1::Instance();
   if (!L1) return 0;
@@ -168,19 +165,15 @@ Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
   Int_t muchTrackNo = (muchTracks != NULL) ? muchTracks->GetEntriesFast() : 0;
   Int_t tofTrackNo  = (tofTracks != NULL) ? tofTracks->GetEntriesFast() : 0;
 
-  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin();
-       it != L1->vRTracks.end();
-       ++it) {
+  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin(); it != L1->vRTracks.end(); ++it) {
 
     CbmL1Track& T = *it;
 
-    CbmGlobalTrack* globalTrack =
-      new ((*globalTracks)[globalTrackNo]) CbmGlobalTrack();
+    CbmGlobalTrack* globalTrack = new ((*globalTracks)[globalTrackNo]) CbmGlobalTrack();
 
     globalTrack->SetStsTrackIndex(globalTrackNo);
 
-    Int_t iTrack =
-      event ? event->GetIndex(kStsTrack, globalTrackNo) : globalTrackNo;
+    Int_t iTrack = event ? event->GetIndex(kStsTrack, globalTrackNo) : globalTrackNo;
 
     globalTrackNo++;
     nTracks++;
@@ -193,8 +186,7 @@ Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
     CbmTofTrack* trackTof   = new CbmTofTrack();
 
     // Set last parameter of the CbmGlobal track to be last parameter of CbmLitTrack
-    FairTrackParam fpar(*globalTrack->GetParamFirst()),
-      lpar(*globalTrack->GetParamLast());
+    FairTrackParam fpar(*globalTrack->GetParamFirst()), lpar(*globalTrack->GetParamLast());
     CbmKFMath::CopyTC2TrackParam(&fpar, T.T, T.C);
     CbmKFMath::CopyTC2TrackParam(&lpar, T.TLast, T.CLast);
     globalTrack->SetParamLast(&lpar);
@@ -209,9 +201,7 @@ Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
     trackTrd->SetParamLast(&lpar);
     trackTrd->SetParamFirst(&fpar);
 
-    for (vector<int>::iterator ih = it->StsHits.begin();
-         ih != it->StsHits.end();
-         ++ih) {
+    for (vector<int>::iterator ih = it->StsHits.begin(); ih != it->StsHits.end(); ++ih) {
       CbmL1HitStore& h = L1->vHitStore[*ih];
 
       if (h.Det == 2) {
@@ -238,8 +228,7 @@ Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
         //                 CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTofTrack->GetTrackParam(), &par);
         //                 track->SetTrackParameter(&par);
 
-        CbmGlobalTrack* gTrack =
-          static_cast<CbmGlobalTrack*>(globalTracks->At(globalTrackId));
+        CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(globalTrackId));
         gTrack->SetTofHitIndex(tofHitId);
 
         if (event) event->AddData(kTofHit, tofHitId);
@@ -323,7 +312,8 @@ Int_t CbmL1GlobalTrackFinder::CreateGlobalTrackArray(CbmEvent* event,
 
 
 // -----   Copy tracks to output array   -----------------------------------
-Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event) {
+Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
+{
 
   CbmL1* L1 = CbmL1::Instance();
   if (!L1) return 0;
@@ -331,9 +321,7 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event) {
   Int_t trackIndex = fTracks->GetEntriesFast();
   Int_t nTracks    = 0;
   LOG(debug) << "Copy L1 tracks : " << L1->vRTracks.size() << " tracks in L1";
-  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin();
-       it != L1->vRTracks.end();
-       ++it) {
+  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin(); it != L1->vRTracks.end(); ++it) {
     CbmL1Track& T = *it;
     new ((*fTracks)[trackIndex]) CbmStsTrack();
     nTracks++;
@@ -351,16 +339,15 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event) {
     t->SetTime(T.Tpv[6]);
     t->SetTimeError(T.Cpv[20]);
 
-    for (vector<int>::iterator ih = it->StsHits.begin();
-         ih != it->StsHits.end();
-         ++ih) {
+    for (vector<int>::iterator ih = it->StsHits.begin(); ih != it->StsHits.end(); ++ih) {
       CbmL1HitStore& h = L1->vHitStore[*ih];
       //    double zref = L1->algo->vStations[h.iStation].z[0];
       if (h.ExtIndex < 0) {
         // CbmMvdHit tmp;
         // tmp.SetZ(zref);
         t->AddMvdHit(-h.ExtIndex - 1);  //, &tmp );
-      } else {
+      }
+      else {
         //CbmStsHit tmp;
         //tmp.SetZ(zref);
         t->AddHit(h.ExtIndex, kSTSHIT);  //, &tmp );
@@ -374,7 +361,8 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event) {
 
 
 // -----   Public method DoFind   ------------------------------------------
-Int_t CbmL1GlobalTrackFinder::DoFind() {
+Int_t CbmL1GlobalTrackFinder::DoFind()
+{
 
   if (!fTracks) {
     LOG(error) << "-E- CbmL1GlobalTrackFinder::DoFind: "
@@ -394,7 +382,8 @@ Int_t CbmL1GlobalTrackFinder::DoFind() {
 
 
 // -----   Track finding in one event   ------------------------------------
-Int_t CbmL1GlobalTrackFinder::FindTracks(CbmEvent* event) {
+Int_t CbmL1GlobalTrackFinder::FindTracks(CbmEvent* event)
+{
   /*
   CbmL1 *l1 = CbmL1::Instance();
   if( ! l1 ) return 0;
@@ -406,8 +395,7 @@ Int_t CbmL1GlobalTrackFinder::FindTracks(CbmEvent* event) {
   if (fTofTracks != NULL) fTofTracks->Delete();
   fGlobalTracks->Clear();
 
-  int nTracks = CreateGlobalTrackArray(
-    event, fGlobalTracks, fTracks, fTrdTracks, fMuchTracks, fTofTracks);
+  int nTracks = CreateGlobalTrackArray(event, fGlobalTracks, fTracks, fTrdTracks, fMuchTracks, fTofTracks);
 
   return nTracks;
 }
@@ -415,7 +403,8 @@ Int_t CbmL1GlobalTrackFinder::FindTracks(CbmEvent* event) {
 
 
 // -----   End-of-run action   ---------------------------------------------
-void CbmL1GlobalTrackFinder::Finish() {
+void CbmL1GlobalTrackFinder::Finish()
+{
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";

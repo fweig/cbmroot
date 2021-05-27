@@ -1,4 +1,5 @@
-void pl_over_clu(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_over_clu(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -27,7 +28,8 @@ void pl_over_clu(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname1 << " not found -> return" << endl;
     return;
   }
@@ -47,8 +49,8 @@ void pl_over_clu(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0) {
     //gROOT->LoadMacro("fit_ybox.h");
     cout << " Fit with ybox " << h2y->GetName() << endl;
     fit_ybox((const char*) (h2y->GetName()));
-
-  } else {
+  }
+  else {
     cout << hname2 << " not found" << endl;
   }
 
@@ -75,7 +77,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname4 << " not found" << endl;
   }
 
@@ -87,7 +90,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname5 << " not found" << endl;
   }
 
@@ -99,7 +103,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname6 << " not found" << endl;
   }
 
@@ -110,7 +115,8 @@ can->cd(3);
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname7 << " not found" << endl;
   }
 
@@ -122,7 +128,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname8 << " not found" << endl;
   }
 
@@ -134,7 +141,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname9 << " not found" << endl;
   }
 
@@ -146,7 +154,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname10 << " not found" << endl;
   }
 
@@ -158,7 +167,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname11 << " not found" << endl;
   }
 
@@ -170,7 +180,8 @@ can->cd(3);
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname12 << " not found" << endl;
   }
 

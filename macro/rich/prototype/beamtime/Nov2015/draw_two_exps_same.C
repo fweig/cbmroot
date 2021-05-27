@@ -1,8 +1,6 @@
-void draw_two_exps_same(TString filename1,
-                        TString filename2,
-                        TString histoName1,
-                        TString histoName2,
-                        TString outFolder = "pics_comparison") {
+void draw_two_exps_same(TString filename1, TString filename2, TString histoName1, TString histoName2,
+                        TString outFolder = "pics_comparison")
+{
   TFile* f1 = new TFile(filename1);
   TFile* f2 = new TFile(filename2);
 

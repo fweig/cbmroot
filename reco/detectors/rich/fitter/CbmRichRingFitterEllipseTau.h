@@ -12,13 +12,14 @@
 #define CBM_RICH_RING_FITTER_ELLIPSE_TAU
 
 #include "CbmRichRingFitterEllipseBase.h"
+
 #include "TMath.h"
 #include "TMatrixD.h"
 #include "TMatrixDEigen.h"
 #include "TVectorD.h"
-#include <vector>
 
 #include <iostream>
+#include <vector>
 
 using std::vector;
 
@@ -81,13 +82,7 @@ private:
   /**
 	 * \brief Matrices multiplication.
 	 */
-  void AMultB(const double* const ap,
-              int na,
-              int ncolsa,
-              const double* const bp,
-              int nb,
-              int ncolsb,
-              double* cp);
+  void AMultB(const double* const ap, int na, int ncolsa, const double* const bp, int nb, int ncolsb, double* cp);
 
   /**
 	 * \brief Jacobi method.

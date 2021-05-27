@@ -1,7 +1,7 @@
-void draw_mvd_xy_delta() {
-  TString fileName =
-    "/lustre/cbm/user/ebelolap/aug11/25gev/70field/deltasource/mc.delta.root";
-  TFile* file = new TFile(fileName);
+void draw_mvd_xy_delta()
+{
+  TString fileName = "/lustre/cbm/user/ebelolap/aug11/25gev/70field/deltasource/mc.delta.root";
+  TFile* file      = new TFile(fileName);
 
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameFillColor(kWhite);

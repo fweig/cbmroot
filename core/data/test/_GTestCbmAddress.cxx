@@ -4,7 +4,8 @@
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-TEST(_GTestCbmAddress, CheckDefaultConstructor) {
+TEST(_GTestCbmAddress, CheckDefaultConstructor)
+{
   {
     SCOPED_TRACE("CheckDefaultConstructor");
     CbmAddress test;
@@ -13,13 +14,15 @@ TEST(_GTestCbmAddress, CheckDefaultConstructor) {
   }
 }
 
-TEST(_GTestCbmAddress, CheckGetNofSystemBits) {
+TEST(_GTestCbmAddress, CheckGetNofSystemBits)
+{
   SCOPED_TRACE("CheckGetNofSystemBits");
   CbmAddress test;
   EXPECT_EQ(4, test.GetNofSystemBits());
 }
 
-TEST(_GTestCbmAddress, CheckGetSytemId) {
+TEST(_GTestCbmAddress, CheckGetSytemId)
+{
   SCOPED_TRACE("CheckGetNofSystemBits");
   CbmAddress test;
 

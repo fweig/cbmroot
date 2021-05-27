@@ -22,25 +22,20 @@ using std::vector;
 /// dir - 0 - forward, 1 - backward
 /// qp0 - momentum for extrapolation
 /// initialize - should be params ititialized. 1 - yes.
-void L1Algo::BranchFitterFast(const L1Branch& t,
-                              L1TrackPar& T,
-                              const bool dir,
-                              const fvec qp0,
-                              const bool initParams) {
+void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0, const bool initParams)
+{
   L1_assert(t.NHits >= 3);
 
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
   // get hits of current track
-  const std::vector<THitI>& hits =
-    t.StsHits;  // array of indeses of hits of current track
-  const int nHits = t.NHits;
+  const std::vector<THitI>& hits = t.StsHits;  // array of indeses of hits of current track
+  const int nHits                = t.NHits;
 
-  const signed short int step =
-    -2 * static_cast<int>(dir) + 1;  // increment for station index
-  const int iFirstHit = (dir) ? nHits - 1 : 0;
-  const int iLastHit  = (dir) ? 0 : nHits - 1;
+  const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
+  const int iFirstHit         = (dir) ? nHits - 1 : 0;
+  const int iLastHit          = (dir) ? 0 : nHits - 1;
 
   const L1StsHit& hit0 = (*vStsHits)[hits[iFirstHit]];
   const L1StsHit& hit1 = (*vStsHits)[hits[iFirstHit + step]];
@@ -143,8 +138,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
 
     fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
     if ((step * ista <= step * (NMvdStations + (step + 1) / 2 - 1))
-        && (step * ista_prev
-            >= step * (NMvdStations + (step + 1) / 2 - 1 - step)))
+        && (step * ista_prev >= step * (NMvdStations + (step + 1) / 2 - 1 - step)))
       fit.L1AddPipeMaterial(T, qp0, 1);
 
     fvec u = hit.u;
@@ -181,11 +175,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
 }  // void L1Algo::BranchFitterFast
 
 /// like BranchFitterFast but more precise
-void L1Algo::BranchFitter(const L1Branch& t,
-                          L1TrackPar& T,
-                          const bool dir,
-                          const fvec qp0,
-                          const bool initParams) {
+void L1Algo::BranchFitter(const L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0, const bool initParams)
+{
   BranchFitterFast(t, T, dir, qp0, initParams);
   for (int i = 0; i < 1; i++) {
     BranchFitterFast(t, T, !dir, T.qp, false);
@@ -199,9 +190,7 @@ void L1Algo::BranchFitter(const L1Branch& t,
 /// dir - 0 - forward, 1 - backward
 /// qp0 - momentum for extrapolation
 /// initialize - should be params ititialized. 1 - yes.
-void L1Algo::FindMoreHits(L1Branch& t,
-                          L1TrackPar& T,
-                          const bool dir,
+void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
   std::vector<THitI> newHits;
@@ -210,9 +199,8 @@ void L1Algo::FindMoreHits(L1Branch& t,
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  const signed short int step =
-    -2 * static_cast<int>(dir) + 1;  // increment for station index
-  const int iFirstHit = (dir) ? 2 : t.NHits - 3;
+  const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
+  const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
   //  int ista = GetFStation((*vSFlag)[(*vStsHits)[t.StsHits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
 
   const L1StsHit& hit0 = (*vStsHits)[t.StsHits[iFirstHit]];  // optimize
@@ -254,16 +242,13 @@ void L1Algo::FindMoreHits(L1Branch& t,
 
   fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
 
-  int ista =
-    ista2
-    + 2 * step;  // skip one station. if there would be hit it has to be found on previous stap
+  int ista = ista2 + 2 * step;  // skip one station. if there would be hit it has to be found on previous stap
 
   if (ista2 == FIRSTCASTATION) ista = ista2 + step;
 
   const fvec Pick_gather2 = Pick_gather * Pick_gather;
 
-  for (; (ista < NStations) && (ista >= 0);
-       ista += step) {  // CHECKME why ista2?
+  for (; (ista < NStations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
 
     L1Station& sta = vStations[ista];
 
@@ -283,16 +268,10 @@ void L1Algo::FindMoreHits(L1Branch& t,
     const fscal iz = 1 / T.z[0];
 
 
-    L1HitAreaTime area(
-      vGridTime[ista],
-      T.x[0] * iz,
-      T.y[0] * iz,
-      (sqrt(Pick_gather * (T.C00 + sta.XYInfo.C00)) + MaxDZ * fabs(T.tx))[0]
-        * iz,
-      (sqrt(Pick_gather * (T.C11 + sta.XYInfo.C11)) + MaxDZ * fabs(T.ty))[0]
-        * iz,
-      T.t[0],
-      sqrt(T.C55[0]));
+    L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
+                       (sqrt(Pick_gather * (T.C00 + sta.XYInfo.C00)) + MaxDZ * fabs(T.tx))[0] * iz,
+                       (sqrt(Pick_gather * (T.C11 + sta.XYInfo.C11)) + MaxDZ * fabs(T.ty))[0] * iz, T.t[0],
+                       sqrt(T.C55[0]));
 
     THitI ih = 0;
     while (area.GetNext(ih)) {
@@ -382,7 +361,8 @@ void L1Algo::FindMoreHits(L1Branch& t,
     for (unsigned int i = 0, ii = NNewHits - 1; i < NNewHits; i++, ii--) {
       t.StsHits[i] = newHits[ii];
     }
-  } else {  // forward
+  }
+  else {  // forward
     const unsigned int NOldHits = t.NHits;
     t.NHits                     = (newHits.size() + NOldHits);
     for (unsigned int i = 0; i < newHits.size(); i++) {

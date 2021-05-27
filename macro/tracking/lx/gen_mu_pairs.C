@@ -3,6 +3,7 @@
 #include "TRandom3.h"
 #include "TRotation.h"
 #include "TVector3.h"
+
 #include <fstream>
 #include <iostream>
 
@@ -27,7 +28,8 @@ double GetTheta() { return minTheta + thetaRange * gRandomGen.Rndm(); }
 
 double GetPhi() { return 2 * TMath::Pi() * gRandomGen.Rndm(); }
 
-bool TryE1() {
+bool TryE1()
+{
   Double_t E1;
 
   do {
@@ -39,11 +41,10 @@ bool TryE1() {
   pV1.SetMag(p1);
 
 
-  Double_t E2 = E - E1;
-  Double_t p2 = TMath::Sqrt(E2 * E2 - gMuonMass * gMuonMass);
-  Double_t cosTheta2L =
-    (E1 * E2 + gMuonMass * gMuonMass - M * M / 2) / (p1 * p2);
-  Double_t theta2L = TMath::ACos(cosTheta2L);
+  Double_t E2         = E - E1;
+  Double_t p2         = TMath::Sqrt(E2 * E2 - gMuonMass * gMuonMass);
+  Double_t cosTheta2L = (E1 * E2 + gMuonMass * gMuonMass - M * M / 2) / (p1 * p2);
+  Double_t theta2L    = TMath::ACos(cosTheta2L);
 
   for (int i = 0; i < 100; ++i) {
     Double_t phi2L = GetPhi();
@@ -59,12 +60,9 @@ bool TryE1() {
     Double_t theta2    = TMath::ACos(cosTheta2);
 
     if (theta2 > minTheta && theta2 < maxTheta) {
-      muonPairsFile << 2 << " " << evNumber << " " << 0 << " " << 0 << " " << 0
-                    << endl;
-      muonPairsFile << firstPid << " " << pV1.x() << " " << pV1.y() << " "
-                    << pV1.z() << endl;
-      muonPairsFile << -firstPid << " " << pV2.x() << " " << pV2.y() << " "
-                    << pV2.z() << endl;
+      muonPairsFile << 2 << " " << evNumber << " " << 0 << " " << 0 << " " << 0 << endl;
+      muonPairsFile << firstPid << " " << pV1.x() << " " << pV1.y() << " " << pV1.z() << endl;
+      muonPairsFile << -firstPid << " " << pV2.x() << " " << pV2.y() << " " << pV2.z() << endl;
       return true;
     }
   }
@@ -72,7 +70,8 @@ bool TryE1() {
   return false;
 }
 
-bool TryE() {
+bool TryE()
+{
   do {
     E = gRandomGen.Gaus(8.6, 1.9);
   } while (E < 6.0 || E > 20.0);
@@ -84,7 +83,8 @@ bool TryE() {
   return false;
 }
 
-bool TryTheta1() {
+bool TryTheta1()
+{
   theta1 = GetTheta();
   TRotation r;
   r.RotateZ(phi1);
@@ -102,7 +102,8 @@ bool TryTheta1() {
   return false;
 }
 
-bool CreateMuonPair() {
+bool CreateMuonPair()
+{
   phi1     = GetPhi();
   firstPid = (gRandomGen.Rndm() >= 0.5) ? -13 : 13;
 
@@ -113,7 +114,8 @@ bool CreateMuonPair() {
   return false;
 }
 
-void gen_mu_pairs(Int_t index) {
+void gen_mu_pairs(Int_t index)
+{
   Double_t m = 0.1 + 0.01 * index;
   gMuonMass  = TDatabasePDG::Instance()->GetParticle(13)->Mass();
   M          = m;
@@ -131,8 +133,7 @@ void gen_mu_pairs(Int_t index) {
 
   for (evNumber = 1; evNumber <= 1000; ++evNumber) {
     bool result = CreateMuonPair();
-    cout << "Event number: " << evNumber << " - " << (result ? "Good" : "Bad")
-         << endl;
+    cout << "Event number: " << evNumber << " - " << (result ? "Good" : "Bad") << endl;
   }
 
   cout << "Bad events: " << nofBadEvents << endl;

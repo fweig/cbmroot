@@ -1,6 +1,7 @@
 
 
-void merge_rate() {
+void merge_rate()
+{
   TChain* inputChain = new TChain("cbmsim");
   inputChain->Add("out/unpack_rates_2015_02_27_2311.out.root");
   inputChain->Add("out/unpack_rates_2015_02_28_0928.out.root");
@@ -52,11 +53,9 @@ void merge_rate() {
   // Loop over measurements
   Long64_t lBranchEntries = inputChain->GetEntries();
   cout << lBranchEntries << " rate measurements in total" << endl;
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     if (0 == lBranchEntry % 10000 && 0 < lBranchEntry)
-      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!"
-           << endl;
+      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!" << endl;
     tArray->Clear("C");
 
     inputChain->GetEntry(lBranchEntry);

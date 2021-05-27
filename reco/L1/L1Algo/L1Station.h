@@ -22,7 +22,9 @@ public:
     , backInfo()
     , xInfo()
     , yInfo()
-    , XYInfo() {}
+    , XYInfo()
+  {
+  }
 
   int type;
   fvec z, Rmin, Rmax, Sy;

@@ -1,4 +1,5 @@
-void ana_la(Int_t file_nr = 0, Int_t nEvents = 10) {
+void ana_la(Int_t file_nr = 0, Int_t nEvents = 10)
+{
   Char_t filenr[4];
   sprintf(filenr, "%04d", file_nr);
   printf("Filenr: %s\n", filenr);

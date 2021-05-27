@@ -5,7 +5,8 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void create_calib(Int_t nEvents = 100000000, char* cFileId = "CbmTofPiHd_All") {
+void create_calib(Int_t nEvents = 100000000, char* cFileId = "CbmTofPiHd_All")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -78,8 +79,7 @@ void create_calib(Int_t nEvents = 100000000, char* cFileId = "CbmTofPiHd_All") {
   //tofCalibTrb->SetUpperLinearFineLimit(490); 		// feb15
   tofCalibTrb->SetLowerLinearFineLimit(16);   // nov15
   tofCalibTrb->SetUpperLinearFineLimit(490);  // nov15
-  tofCalibTrb->SetReferenceBoard(
-    3);  // aa: 1st reference tdc should be active one
+  tofCalibTrb->SetReferenceBoard(3);          // aa: 1st reference tdc should be active one
   tofCalibTrb->SetToTSingleLeading(-100.);
 
   CbmTofOnlineDisplay* display = new CbmTofOnlineDisplay();
@@ -89,9 +89,8 @@ void create_calib(Int_t nEvents = 100000000, char* cFileId = "CbmTofPiHd_All") {
   //display->MonitorTdcStatus(kTRUE);
   //display->MonitorFSMockup(kTRUE);
   display->MonitorInspection(kTRUE);
-  display->MonitorCalibration(
-    kTRUE);  // aa: if fit failure see SetReferenceBoard() above
-  display->SetUpdateInterval(10000);  // aa: entries
+  display->MonitorCalibration(kTRUE);  // aa: if fit failure see SetReferenceBoard() above
+  display->SetUpdateInterval(10000);   // aa: entries
   //display->SetUpdateInterval(100000000); 				// disables live updates (speed-up)
 
   // Remember no mapping in create_calib.C

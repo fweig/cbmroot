@@ -9,7 +9,8 @@
  */
 
 
-void readLmd() {
+void readLmd()
+{
 
   // --- Specify input file name (this is just an example)
   TString inFile = "lmd/run260_0000.lmd";
@@ -70,8 +71,7 @@ void readLmd() {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

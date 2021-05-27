@@ -4,6 +4,7 @@
 
 #include "CbmAnaJpsiCandidate.h"
 #include "CbmMCTrack.h"
+
 #include "TLorentzVector.h"
 #include "TMath.h"
 
@@ -20,9 +21,8 @@ public:
   /*
     * Calculate kinematic parameters for MC tracks.
     */
-  static CbmAnaJpsiKinematicParams
-  KinematicParamsWithMcTracks(const CbmMCTrack* mctrackP,
-                              const CbmMCTrack* mctrackM) {
+  static CbmAnaJpsiKinematicParams KinematicParamsWithMcTracks(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
+  {
     CbmAnaJpsiKinematicParams params;
 
     TVector3 momP;  //momentum e+
@@ -39,12 +39,10 @@ public:
     Double_t energyPair = energyP + energyM;
     Double_t ptPair     = momPair.Perp();
     Double_t pzPair     = momPair.Pz();
-    Double_t yPair =
-      0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
-    Double_t anglePair = lorVecM.Angle(lorVecP.Vect());
-    Double_t theta     = 180. * anglePair / TMath::Pi();
-    Double_t minv =
-      2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(momM.Mag() * momP.Mag());
+    Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+    Double_t anglePair  = lorVecM.Angle(lorVecP.Vect());
+    Double_t theta      = 180. * anglePair / TMath::Pi();
+    Double_t minv       = 2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(momM.Mag() * momP.Mag());
 
     params.fMomentumMag = momPair.Mag();
     params.fPt          = ptPair;
@@ -57,9 +55,9 @@ public:
   /*
     * Calculate kinematic parameters for JPSI candidates.
     */
-  static CbmAnaJpsiKinematicParams
-  KinematicParamsWithCandidates(const CbmAnaJpsiCandidate* candP,
-                                const CbmAnaJpsiCandidate* candM) {
+  static CbmAnaJpsiKinematicParams KinematicParamsWithCandidates(const CbmAnaJpsiCandidate* candP,
+                                                                 const CbmAnaJpsiCandidate* candM)
+  {
     CbmAnaJpsiKinematicParams params;
 
     TLorentzVector lorVecP(candP->fMomentum, candP->fEnergy);
@@ -69,13 +67,10 @@ public:
     Double_t energyPair = candP->fEnergy + candM->fEnergy;
     Double_t ptPair     = momPair.Perp();
     Double_t pzPair     = momPair.Pz();
-    Double_t yPair =
-      0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
-    Double_t anglePair = lorVecM.Angle(lorVecP.Vect());
-    Double_t theta     = 180. * anglePair / TMath::Pi();
-    Double_t minv =
-      2. * TMath::Sin(anglePair / 2.)
-      * TMath::Sqrt(candM->fMomentum.Mag() * candP->fMomentum.Mag());
+    Double_t yPair      = 0.5 * TMath::Log((energyPair + pzPair) / (energyPair - pzPair));
+    Double_t anglePair  = lorVecM.Angle(lorVecP.Vect());
+    Double_t theta      = 180. * anglePair / TMath::Pi();
+    Double_t minv = 2. * TMath::Sin(anglePair / 2.) * TMath::Sqrt(candM->fMomentum.Mag() * candP->fMomentum.Mag());
 
     params.fMomentumMag = momPair.Mag();
     params.fPt          = ptPair;

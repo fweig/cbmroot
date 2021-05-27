@@ -14,26 +14,23 @@
 #ifndef STATION3D_H
 #define STATION3D_H
 
-#include "Station.h"
 #include <list>
 #include <utility>
 
+#include "Station.h"
+
 class CbmBinned3DStation : public CbmBinnedStation {
 public:
-  CbmBinned3DStation(ECbmModuleId stationType,
-                     Double_t minZ,
-                     Double_t maxZ,
-                     int nofYBins,
-                     int nofXBins,
-                     int nofTBins)
+  CbmBinned3DStation(ECbmModuleId stationType, Double_t minZ, Double_t maxZ, int nofYBins, int nofXBins, int nofTBins)
     : CbmBinnedStation(stationType, minZ, maxZ, nofYBins, nofXBins, nofTBins)
-    , fYBins(reinterpret_cast<CbmYBin*>(
-        new unsigned char[nofYBins * sizeof(CbmYBin)])) {
+    , fYBins(reinterpret_cast<CbmYBin*>(new unsigned char[nofYBins * sizeof(CbmYBin)]))
+  {
     for (int i = 0; i < nofYBins; ++i)
       new (&fYBins[i]) CbmYBin(0, nofXBins, nofTBins);
   }
 
-  void Clear() {
+  void Clear()
+  {
     CbmBinnedStation::Clear();
 
     for (int i = 0; i < fNofYBins; ++i) {
@@ -53,7 +50,8 @@ public:
     }
   }
 
-  void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index) {
+  void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index)
+  {
     Double_t y = hit->GetY();
 
     if (y < fMinY || y >= fMaxY) return;
@@ -71,8 +69,7 @@ public:
     int xInd = (x - fMinX) / fXBinSize;
     int tInd = (t - fMinT) / fTBinSize;
 
-    if (tInd < 0)
-      tInd = 0;
+    if (tInd < 0) tInd = 0;
     else if (tInd >= fNofTBins)
       tInd = fNofTBins - 1;
 
@@ -91,7 +88,8 @@ public:
     }
   }
 
-  void IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit) {
+  void IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit)
+  {
     for (int i = 0; i < fNofYBins; ++i) {
       CbmYBin& yBin = fYBins[i];
 
@@ -110,9 +108,7 @@ public:
           //if (!tBin.Use())
           //continue;
 
-          for (std::list<CbmTBin::HitHolder>::iterator hi = tBin.HitsBegin();
-               hi != tBin.HitsEnd();
-               ++hi) {
+          for (std::list<CbmTBin::HitHolder>::iterator hi = tBin.HitsBegin(); hi != tBin.HitsEnd(); ++hi) {
             CbmTBin::HitHolder& hitHolder = *hi;
 
             if (fStage > hitHolder.stage) continue;
@@ -124,20 +120,10 @@ public:
     }
   }
 
-  void SearchHits(const CbmTrackParam2& stateVec,
-                  Double_t stateZ,
-                  std::function<void(CbmTBin::HitHolder&)> handleHit);
-  void SearchHits(Segment& segment,
-                  std::function<void(CbmTBin::HitHolder&)> handleHit);
-  void SearchHits(Double_t minZ,
-                  Double_t maxZ,
-                  Double_t minY,
-                  Double_t maxY,
-                  Double_t minX,
-                  Double_t maxX,
-                  Double_t minT,
-                  Double_t maxT,
-                  std::function<void(CbmTBin::HitHolder&)> handleHit);
+  void SearchHits(const CbmTrackParam2& stateVec, Double_t stateZ, std::function<void(CbmTBin::HitHolder&)> handleHit);
+  void SearchHits(Segment& segment, std::function<void(CbmTBin::HitHolder&)> handleHit);
+  void SearchHits(Double_t minZ, Double_t maxZ, Double_t minY, Double_t maxY, Double_t minX, Double_t maxX,
+                  Double_t minT, Double_t maxT, std::function<void(CbmTBin::HitHolder&)> handleHit);
 
 private:
   CbmBinned3DStation(const CbmBinned3DStation&) = delete;

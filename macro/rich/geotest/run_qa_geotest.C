@@ -1,18 +1,13 @@
 
-void run_qa_geotest(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
-  const string& recoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
-  const string& qaFile = "/Users/slebedev/Development/cbm/data/sim/rich/"
-                         "geotest/qa.g3new_media0.00000.root",
-  const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "results_geotest_geant3_new_media0/",
-  int nEvents             = 10000) {
+void run_qa_geotest(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
+                    const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
+                    const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
+                    const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
+                    const string& qaFile   = "/Users/slebedev/Development/cbm/data/sim/rich/"
+                                           "geotest/qa.g3new_media0.00000.root",
+                    const string& geoSetup  = "sis100_electron",
+                    const string& resultDir = "results_geotest_geant3_new_media0/", int nEvents = 10000)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TTree::SetMaxTreeSize(90000000000);
@@ -27,8 +22,7 @@ void run_qa_geotest(
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -53,9 +47,7 @@ void run_qa_geotest(
   geoTest->SetOutputDir(resultDir);
   run->AddTask(geoTest);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -86,7 +78,6 @@ void run_qa_geotest(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << qaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

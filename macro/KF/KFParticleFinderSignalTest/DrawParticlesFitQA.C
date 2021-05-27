@@ -1,4 +1,5 @@
-void DrawParticlesFitQA(int iParticle = 0) {
+void DrawParticlesFitQA(int iParticle = 0)
+{
 
   TStopwatch timer;
   timer.Start();
@@ -44,8 +45,7 @@ void DrawParticlesFitQA(int iParticle = 0) {
     fullDirPath += dirName[iDir];
     TDirectory* dir = f->GetDirectory(fullDirPath);
 
-    std::cout << "Fit of plots form:" << std::endl
-              << fullDirPath.Data() << std::endl;
+    std::cout << "Fit of plots form:" << std::endl << fullDirPath.Data() << std::endl;
 
 
     TH1D* hRes[NParameters];
@@ -97,20 +97,12 @@ void DrawParticlesFitQA(int iParticle = 0) {
 
       fRes[i] = new TF1(sResFit[i].data(), "gaus");
       fRes[i]->SetLineColor(2);
-      hRes[i]->Fit(sResFit[i].data(),
-                   "",
-                   "",
-                   hRes[i]->GetXaxis()->GetXmin(),
-                   hRes[i]->GetXaxis()->GetXmax());
+      hRes[i]->Fit(sResFit[i].data(), "", "", hRes[i]->GetXaxis()->GetXmin(), hRes[i]->GetXaxis()->GetXmax());
 
       hPull[i] = (TH1D*) dir->Get(sPull[i].data());
       fPull[i] = new TF1(sPullFit[i].data(), "gaus");
       fPull[i]->SetLineColor(2);
-      hPull[i]->Fit(sPullFit[i].data(),
-                    "",
-                    "",
-                    hPull[i]->GetXaxis()->GetXmin(),
-                    hPull[i]->GetXaxis()->GetXmax());
+      hPull[i]->Fit(sPullFit[i].data(), "", "", hPull[i]->GetXaxis()->GetXmin(), hPull[i]->GetXaxis()->GetXmax());
       //    hPull[i]->Fit(sPullFit[i].data(),"","",-2,2);
     }
 

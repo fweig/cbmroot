@@ -18,6 +18,7 @@
 #define SLOWSHAPERPEAK 75
 
 #include "CbmMatch.h"
+
 #include "TArrayD.h"
 #include "TArrayI.h"
 #include "TObject.h"
@@ -31,14 +32,7 @@ static const Int_t fDeadTime = 400;  // Deadtime
 class CbmMuchSignal : public TObject {
 public:
   /** Default Constructor */
-  CbmMuchSignal()
-    : TObject()
-    , fAddress(0)
-    , fTimeStart(0)
-    , fTimeStop(0)
-    , fCharge(0)
-    , fPileUpCount(0)
-    , fMatch(nullptr) {}
+  CbmMuchSignal() : TObject(), fAddress(0), fTimeStart(0), fTimeStop(0), fCharge(0), fPileUpCount(0), fMatch(nullptr) {}
   //CbmMuchSignal(): TObject(), fAddress(0), fTimeStart(0), fTimeStop(0), fCharge(0), fPileUpTime(0), fModifiedCharge(0), fPileUpCount(0),fMatch(nullptr) {}
   //WithSignalShape  CbmMuchSignal(): TObject(), fAddress(0), fTimeStart(0), fTimeStop(0), fSignalShape(0), fMatch(nullptr) {}
 
@@ -56,7 +50,9 @@ public:
     , fTimeStop(fTimeStart + fDeadTime)
     , fCharge(0)
     , fPileUpCount(0)
-    , fMatch(new CbmMatch()) {}
+    , fMatch(new CbmMatch())
+  {
+  }
   /*	CbmMuchSignal(UInt_t address, ULong64_t starttime=0)
 		: TObject(), fAddress(address), fTimeStart(starttime), fTimeStop(fTimeStart + fDeadTime), fCharge(0), fPileUpTime(0), fModifiedCharge(0), fPileUpCount(0), fMatch(new CbmMatch())
 		{
@@ -76,7 +72,8 @@ public:
   CbmMuchSignal& operator=(const CbmMuchSignal&) = delete;
 
   /** Destructor **/
-  virtual ~CbmMuchSignal() {
+  virtual ~CbmMuchSignal()
+  {
     if (fMatch) delete fMatch;
   }
 

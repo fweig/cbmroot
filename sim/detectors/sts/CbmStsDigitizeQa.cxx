@@ -1,4 +1,5 @@
 #include "CbmStsDigitizeQa.h"
+
 #include "CbmDigiManager.h"
 #include "CbmHistManager.h"
 #include "CbmMCDataManager.h"
@@ -52,21 +53,25 @@ CbmStsDigitizeQa::CbmStsDigitizeQa(CbmStsDigitize* /*digitizer*/)
   , fNofStation(8)
   , fMaxScale(0)
   , fOutFile(NULL)
-  , fnOfDigisChip() {}
+  , fnOfDigisChip()
+{
+}
 
-CbmStsDigitizeQa::~CbmStsDigitizeQa() {
+CbmStsDigitizeQa::~CbmStsDigitizeQa()
+{
   if (fHM) delete fHM;
 }
 
-void CbmStsDigitizeQa::SetParContainers() {
+void CbmStsDigitizeQa::SetParContainers()
+{
   FairRuntimeDb* rtdb = FairRun::Instance()->GetRuntimeDb();
 
-  fSettings = dynamic_cast<CbmStsParSim*>(rtdb->getContainer("CbmStsParSim"));
-  fModuleParSet =
-    dynamic_cast<CbmStsParSetModule*>(rtdb->getContainer("CbmStsParSetModule"));
+  fSettings     = dynamic_cast<CbmStsParSim*>(rtdb->getContainer("CbmStsParSim"));
+  fModuleParSet = dynamic_cast<CbmStsParSetModule*>(rtdb->getContainer("CbmStsParSetModule"));
 }
 
-InitStatus CbmStsDigitizeQa::Init() {
+InitStatus CbmStsDigitizeQa::Init()
+{
   fSetup = CbmStsSetup::Instance();
   if (!fSetup->IsInit()) fSetup->Init();
   if (!fSetup->IsModuleParsInit()) fSetup->SetModuleParameters(fModuleParSet);
@@ -85,10 +90,8 @@ InitStatus CbmStsDigitizeQa::Init() {
         CbmStsElement* hlad = ladd->GetDaughter(iHla);
         fnOfDigisChip[iStation][iLad][iHla].resize(hlad->GetNofDaughters());
         for (Int_t iMod = 0; iMod < hlad->GetNofDaughters(); iMod++) {
-          CbmStsModule* modu =
-            static_cast<CbmStsModule*>(hlad->GetDaughter(iMod));
-          Int_t nOfChips =
-            Int_t(modu->GetParameters()->GetNofChannels() / 128.);
+          CbmStsModule* modu = static_cast<CbmStsModule*>(hlad->GetDaughter(iMod));
+          Int_t nOfChips     = Int_t(modu->GetParameters()->GetNofChannels() / 128.);
           fnOfDigisChip[iStation][iLad][iHla][iMod].resize(nOfChips);
           for (Int_t iChip = 0; iChip < nOfChips; iChip++) {
             fnOfDigisChip[iStation][iLad][iHla][iMod][iChip] = 0;
@@ -109,12 +112,14 @@ InitStatus CbmStsDigitizeQa::Init() {
   return kSUCCESS;
 }
 
-void CbmStsDigitizeQa::Exec(Option_t* /*opt*/) {
+void CbmStsDigitizeQa::Exec(Option_t* /*opt*/)
+{
   ProcessDigisAndPoints(fStsPoints);
   fHM->H1("h_EventNo_DigitizeQa")->Fill(0.5);
 }
 
-void CbmStsDigitizeQa::Finish() {
+void CbmStsDigitizeQa::Finish()
+{
   ProcessAngles();
   Int_t nofEvents  = fHM->H1("h_EventNo_DigitizeQa")->GetEntries();
   TString fileName = fOutputDir + "/digiRateChip";
@@ -130,16 +135,13 @@ void CbmStsDigitizeQa::Finish() {
       for (Int_t iHla = 0; iHla < ladd->GetNofDaughters(); iHla++) {
         CbmStsElement* hlad = ladd->GetDaughter(iHla);
         for (Int_t iMod = 0; iMod < hlad->GetNofDaughters(); iMod++) {
-          CbmStsModule* modu =
-            static_cast<CbmStsModule*>(hlad->GetDaughter(iMod));
-          UInt_t nChannels = modu->GetParameters()->GetNofChannels();
+          CbmStsModule* modu = static_cast<CbmStsModule*>(hlad->GetDaughter(iMod));
+          UInt_t nChannels   = modu->GetParameters()->GetNofChannels();
           if (nChannels != 2048) cout << "nofChannels = " << nChannels;
           Int_t nOfChips = Int_t(nChannels / 128.);
           for (Int_t iChip = 0; iChip < nOfChips; iChip++)
-            fOutFile << iStation << "\t" << iLad << "\t" << iHla << "\t" << iMod
-                     << "\t" << iChip << "\t"
-                     << fnOfDigisChip[iStation][iLad][iHla][iMod][iChip]
-                     << endl;
+            fOutFile << iStation << "\t" << iLad << "\t" << iHla << "\t" << iMod << "\t" << iChip << "\t"
+                     << fnOfDigisChip[iStation][iLad][iHla][iMod][iChip] << endl;
         }
       }
     }
@@ -148,8 +150,7 @@ void CbmStsDigitizeQa::Finish() {
   gDirectory->cd("STSDigitizeQA");
   fHM->WriteToFile();
   gDirectory->cd("../");
-  CbmSimulationReport* report =
-    new CbmStsDigitizeQaReport(fSetup, fSettings, fAsicPar);
+  CbmSimulationReport* report = new CbmStsDigitizeQaReport(fSetup, fSettings, fAsicPar);
   report->Create(fHM, fOutputDir);
   delete report;
 
@@ -168,7 +169,8 @@ void CbmStsDigitizeQa::Finish() {
 	<<"\n -I- CbmStsTimeBasedQa: Ghost      : "<<ghost<<" %";*/
 }
 
-void CbmStsDigitizeQa::ReadDataBranches() {
+void CbmStsDigitizeQa::ReadDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman) LOG(fatal) << GetName() << ": No FairRootManager!";
 
@@ -186,134 +188,71 @@ void CbmStsDigitizeQa::ReadDataBranches() {
   }
 }
 
-void CbmStsDigitizeQa::CreateHistograms() {
+void CbmStsDigitizeQa::CreateHistograms()
+{
   CreateNofObjectsHistograms();
   CreateDigiHistograms();
   fHM->Create1<TH1F>("h_EventNo_DigitizeQa", "h_EventNo_DigitizeQa", 1, 0, 1.);
 }
 
-void CbmStsDigitizeQa::CreateNofObjectsHistograms() {
+void CbmStsDigitizeQa::CreateNofObjectsHistograms()
+{
   Int_t nofBins = 100;
   Double_t minX = -0.5;
   Double_t maxX = 49999.5;
   string name   = "h_NofObjects_";
-  fHM->Create1<TH1F>(name + "Points",
-                     name + "Points;Objects per event;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
-  fHM->Create1<TH1F>(name + "Digis",
-                     name + "Digis;Objects per event;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
+  fHM->Create1<TH1F>(name + "Points", name + "Points;Objects per event;Entries", nofBins, minX, maxX);
+  fHM->Create1<TH1F>(name + "Digis", name + "Digis;Objects per event;Entries", nofBins, minX, maxX);
 
   nofBins = 8;
   minX    = -0.5;
   maxX    = 7.5;
-  fHM->Create1<TH1F>(name + "Points_Station",
-                     name + "Points_Station;Station number;Objects per event",
-                     nofBins,
-                     minX,
+  fHM->Create1<TH1F>(name + "Points_Station", name + "Points_Station;Station number;Objects per event", nofBins, minX,
                      maxX);
-  fHM->Create1<TH1F>(name + "Digis_Station",
-                     name + "Digis_Station;Station number;Oblects per enent",
-                     nofBins,
-                     minX,
+  fHM->Create1<TH1F>(name + "Digis_Station", name + "Digis_Station;Station number;Oblects per enent", nofBins, minX,
                      maxX);
 }
 
-void CbmStsDigitizeQa::CreateDigiHistograms() {
+void CbmStsDigitizeQa::CreateDigiHistograms()
+{
   Int_t nofBins = 25;
   Double_t minX = 0.5;
   Double_t maxX = minX + nofBins;
-  fHM->Create1<TH1F>("h_PointsInDigi",
-                     "PointsInDigi;Number of Points;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
-  fHM->Create1<TH1F>("h_PointsInDigiLog",
-                     "PointsInDigi;Number of Points;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
-  fHM->Create1<TH1F>("h_DigisByPoint",
-                     "DigisByPoint;Number of Digis;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
-  fHM->Create1<TH1F>("h_DigisByPointLog",
-                     "DigisByPoint;Number of Digis;Entries",
-                     nofBins,
-                     minX,
-                     maxX);
+  fHM->Create1<TH1F>("h_PointsInDigi", "PointsInDigi;Number of Points;Entries", nofBins, minX, maxX);
+  fHM->Create1<TH1F>("h_PointsInDigiLog", "PointsInDigi;Number of Points;Entries", nofBins, minX, maxX);
+  fHM->Create1<TH1F>("h_DigisByPoint", "DigisByPoint;Number of Digis;Entries", nofBins, minX, maxX);
+  fHM->Create1<TH1F>("h_DigisByPointLog", "DigisByPoint;Number of Digis;Entries", nofBins, minX, maxX);
   nofBins = fAsicPar->GetNofAdc();
-  fHM->Create1<TH1F>("h_DigiCharge",
-                     "DigiCharge;Digi Charge, ADC;Entries",
-                     nofBins,
-                     0.,
-                     Double_t(nofBins));
+  fHM->Create1<TH1F>("h_DigiCharge", "DigiCharge;Digi Charge, ADC;Entries", nofBins, 0., Double_t(nofBins));
   for (Int_t stationId = 0; stationId < fNofStation; stationId++) {
-    fHM->Create2<TH2F>(
-      Form("h_DigisPerChip_Station%i", stationId),
-      Form("Digis per Chip, Station %i;x, cm;y, cm", stationId),
-      400,
-      -50,
-      50,
-      200,
-      -50,
-      50);
-    fHM->Create2<TH2F>(Form("h_PointsMap_Station%i", stationId),
-                       Form("Points Map, Station %i;x, cm;y, cm", stationId),
-                       100,
-                       -50,
-                       50,
-                       100,
-                       -50,
-                       50);
-    fHM->Create2<TH2F>(
-      Form("h_MeanAngleMap_Station%i", stationId),
-      Form("Mean Angle Map, Station %i;x, cm;y, cm", stationId),
-      50,
-      -50,
-      50,
-      50,
-      -50,
-      50);
+    fHM->Create2<TH2F>(Form("h_DigisPerChip_Station%i", stationId),
+                       Form("Digis per Chip, Station %i;x, cm;y, cm", stationId), 400, -50, 50, 200, -50, 50);
+    fHM->Create2<TH2F>(Form("h_PointsMap_Station%i", stationId), Form("Points Map, Station %i;x, cm;y, cm", stationId),
+                       100, -50, 50, 100, -50, 50);
+    fHM->Create2<TH2F>(Form("h_MeanAngleMap_Station%i", stationId),
+                       Form("Mean Angle Map, Station %i;x, cm;y, cm", stationId), 50, -50, 50, 50, -50, 50);
     fHM->Create2<TH2F>(Form("h_RMSAngleMap_Station%i", stationId),
-                       Form("RMS Angle Map, Station %i;x, cm;y, cm", stationId),
-                       50,
-                       -50,
-                       50,
-                       50,
-                       -50,
-                       50);
+                       Form("RMS Angle Map, Station %i;x, cm;y, cm", stationId), 50, -50, 50, 50, -50, 50);
   }
   Double_t local[3] = {0., 0., 0.};
   Double_t global[3];
   for (Int_t moduId = 0; moduId < fSetup->GetNofModules(); moduId++) {
-    CbmStsModule* modu = static_cast<CbmStsModule*>(fSetup->GetModule(moduId));
-    TGeoPhysicalNode* node =
-      modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
+    CbmStsModule* modu     = static_cast<CbmStsModule*>(fSetup->GetModule(moduId));
+    TGeoPhysicalNode* node = modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
     if (node) {
       TGeoMatrix* matrix = node->GetMatrix();
       matrix->LocalToMaster(local, global);
     }
-    fHM->Create1<TH1F>(
-      Form("h_ParticleAngles_%s", modu->GetName()),
-      Form("Particle Angles (%.0f cm, %.0f cm);Angle, deg;Entries",
-           global[0],
-           global[1]),
-      90,
-      0.,
-      90.);
+    fHM->Create1<TH1F>(Form("h_ParticleAngles_%s", modu->GetName()),
+                       Form("Particle Angles (%.0f cm, %.0f cm);Angle, deg;Entries", global[0], global[1]), 90, 0.,
+                       90.);
   }
 }
 
-void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
+void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points)
+{
   if (fHM->Exists("h_NofObjects_Digis"))
-    fHM->H1("h_NofObjects_Digis")
-      ->Fill(fDigiManager->GetNofDigis(ECbmModuleId::kSts));
+    fHM->H1("h_NofObjects_Digis")->Fill(fDigiManager->GetNofDigis(ECbmModuleId::kSts));
   std::set<Double_t> pointIndexes;
   std::map<Double_t, Int_t> stations;
   std::map<Double_t, Int_t> digisByPoint;
@@ -321,21 +260,17 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
   pointIndexes.clear();
   Double_t local[3] = {0., 0., 0.};
   Double_t global[3];
-  for (Int_t index = 0; index < fDigiManager->GetNofDigis(ECbmModuleId::kSts);
-       index++) {
+  for (Int_t index = 0; index < fDigiManager->GetNofDigis(ECbmModuleId::kSts); index++) {
     const CbmStsDigi* stsDigi = fDigiManager->Get<CbmStsDigi>(index);
-    const CbmMatch* digiMatch =
-      fDigiManager->GetMatch(ECbmModuleId::kSts, index);
-    Int_t stationId = fSetup->GetStationNumber(stsDigi->GetAddress());
+    const CbmMatch* digiMatch = fDigiManager->GetMatch(ECbmModuleId::kSts, index);
+    Int_t stationId           = fSetup->GetStationNumber(stsDigi->GetAddress());
     //Int_t iLad = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsLadder);
     //Int_t iHla =
     //CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsHalfLadder);
     //Int_t iMod = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsModule);
-    CbmStsModule* modu = static_cast<CbmStsModule*>(
-      fSetup->GetElement(stsDigi->GetAddress(), kStsModule));
-    Int_t nOfChannelsM = modu->GetParameters()->GetNofChannels();
-    TGeoPhysicalNode* node =
-      modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
+    CbmStsModule* modu     = static_cast<CbmStsModule*>(fSetup->GetElement(stsDigi->GetAddress(), kStsModule));
+    Int_t nOfChannelsM     = modu->GetParameters()->GetNofChannels();
+    TGeoPhysicalNode* node = modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
     if (node) {
       TGeoMatrix* matrix = node->GetMatrix();
       matrix->LocalToMaster(local, global);
@@ -355,19 +290,16 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
 
     for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
       const CbmLink link = digiMatch->GetLink(iLink);
-      Double_t index2    = (1000 * link.GetIndex()) + (link.GetFile())
-                        + (0.0001 * link.GetEntry());
+      Double_t index2    = (1000 * link.GetIndex()) + (link.GetFile()) + (0.0001 * link.GetEntry());
       pointIndexes.insert(index2);
       stations.insert(std::pair<Double_t, Int_t>(index2, stationId));
       Int_t channel = stsDigi->GetChannel();
 
       Int_t side = channel < Int_t(nOfChannelsM / 2.) ? 0 : 1;
       map_it     = digisByPoint.find(index2 + (side * 0.00001));
-      if (map_it != digisByPoint.end()) {
-        map_it->second++;
-      } else {
-        digisByPoint.insert(
-          std::pair<Double_t, Int_t>(index2 + (side * 0.00001), 1));
+      if (map_it != digisByPoint.end()) { map_it->second++; }
+      else {
+        digisByPoint.insert(std::pair<Double_t, Int_t>(index2 + (side * 0.00001), 1));
       }
     }
     fHM->H1("h_NofObjects_Digis_Station")->Fill(stationId);
@@ -384,18 +316,14 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
     fHM->H1("h_DigisByPointLog")->Fill(digisByPoint[*set_it]);
     fHM->H1("h_DigisByPointLog")->Fill(digisByPoint[*set_it + 0.00001]);
   }
-  if (pointIndexes.size() > static_cast<size_t>(fMaxScale))
-    fMaxScale = pointIndexes.size();
+  if (pointIndexes.size() > static_cast<size_t>(fMaxScale)) fMaxScale = pointIndexes.size();
 
   Double_t pointX, pointY;  //, pointZ;
   Double_t pointPX, pointPZ;
   for (Int_t iPoint = 0; iPoint < points->GetEntriesFast(); iPoint++) {
-    const FairMCPoint* stsPoint =
-      static_cast<const FairMCPoint*>(points->At(iPoint));
-    CbmStsModule* modu = static_cast<CbmStsModule*>(
-      fSetup->GetElement(stsPoint->GetDetectorID(), kStsModule));
-    TGeoPhysicalNode* node =
-      modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
+    const FairMCPoint* stsPoint = static_cast<const FairMCPoint*>(points->At(iPoint));
+    CbmStsModule* modu          = static_cast<CbmStsModule*>(fSetup->GetElement(stsPoint->GetDetectorID(), kStsModule));
+    TGeoPhysicalNode* node      = modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
     if (node) {
       TGeoMatrix* matrix = node->GetMatrix();
       matrix->LocalToMaster(local, global);
@@ -413,7 +341,8 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
 }
 
 
-void CbmStsDigitizeQa::ProcessAngles() {
+void CbmStsDigitizeQa::ProcessAngles()
+{
   Double_t local[3] = {0., 0., 0.};
   Double_t global[3];
   for (Int_t iStation = 0; iStation < fNofStation; iStation++) {
@@ -423,21 +352,16 @@ void CbmStsDigitizeQa::ProcessAngles() {
       for (Int_t iHla = 0; iHla < ladd->GetNofDaughters(); iHla++) {
         CbmStsElement* hlad = ladd->GetDaughter(iHla);
         for (Int_t iMod = 0; iMod < hlad->GetNofDaughters(); iMod++) {
-          CbmStsElement* modu = hlad->GetDaughter(iMod);
-          Double_t mean =
-            fHM->H1(Form("h_ParticleAngles_%s", modu->GetName()))->GetMean();
-          Double_t rms =
-            fHM->H1(Form("h_ParticleAngles_%s", modu->GetName()))->GetRMS();
-          TGeoPhysicalNode* node =
-            modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
+          CbmStsElement* modu    = hlad->GetDaughter(iMod);
+          Double_t mean          = fHM->H1(Form("h_ParticleAngles_%s", modu->GetName()))->GetMean();
+          Double_t rms           = fHM->H1(Form("h_ParticleAngles_%s", modu->GetName()))->GetRMS();
+          TGeoPhysicalNode* node = modu->CbmStsElement::GetDaughter(0)->CbmStsElement::GetPnode();
           if (node) {
             TGeoMatrix* matrix = node->GetMatrix();
             matrix->LocalToMaster(local, global);
           }
-          fHM->H2(Form("h_MeanAngleMap_Station%i", iStation))
-            ->Fill(global[0], global[1], mean);
-          fHM->H2(Form("h_RMSAngleMap_Station%i", iStation))
-            ->Fill(global[0], global[1], rms);
+          fHM->H2(Form("h_MeanAngleMap_Station%i", iStation))->Fill(global[0], global[1], mean);
+          fHM->H2(Form("h_RMSAngleMap_Station%i", iStation))->Fill(global[0], global[1], rms);
         }
       }
     }

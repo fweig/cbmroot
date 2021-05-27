@@ -1,4 +1,5 @@
-void invert_matrix(Int_t NSt = 3, char* var = "X", Int_t iFit = 0) {
+void invert_matrix(Int_t NSt = 3, char* var = "X", Int_t iFit = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -80,6 +81,5 @@ void invert_matrix(Int_t NSt = 3, char* var = "X", Int_t iFit = 0) {
   grr->Draw("APL");
   grr->SetMarkerStyle(20);
   for (Int_t i = 0; i < NSt; i++)
-    cout << "Gaussian fit width: " << vSig[i] << " => resolution of counter "
-         << i << ": " << vRes[i] << endl;
+    cout << "Gaussian fit width: " << vSig[i] << " => resolution of counter " << i << ": " << vRes[i] << endl;
 }

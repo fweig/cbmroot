@@ -1,4 +1,5 @@
-void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
+void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 700, 900);
@@ -21,7 +22,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h1 != NULL) {
     h1->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -32,7 +34,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -43,7 +46,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -54,7 +58,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -65,7 +70,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -76,7 +82,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -84,9 +91,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm%03d_rpc000_Trg%02d_DelTof", SmT, iSm, iTrg);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -94,9 +100,8 @@ void pl_over_cluTrg(Int_t iTrg = 0, Int_t SmT = 0, Int_t iSm = 0) {
   gROOT->cd();
   TString hname = Form("cl_SmT%d_sm%03d_rpc000_Trg%02d_dXdY", SmT, iSm, iTrg);
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

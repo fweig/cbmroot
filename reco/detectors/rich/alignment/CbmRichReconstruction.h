@@ -70,9 +70,9 @@ public:
   void SetFinderName(const string& n) { fFinderName = n; }
   void SetFitterName(const string& n) { fFitterName = n; }
   void SetTrackAssignName(const string& n) { fTrackAssignName = n; }
-  void SetMirrorMisalignmentCorrectionParameterFile(string s) {
-    fPathToMirrorMisalignmentCorrectionParameterFile =
-      s + "/correction_table/correction_param_array.txt";
+  void SetMirrorMisalignmentCorrectionParameterFile(string s)
+  {
+    fPathToMirrorMisalignmentCorrectionParameterFile = s + "/correction_table/correction_param_array.txt";
   }
 
   /**
@@ -88,14 +88,11 @@ private:
   TClonesArray* fRichTrackParamZ;
   TClonesArray* fGlobalTracks;
 
-  CbmRichRingFinder* fRingFinder;      // pointer to ring finder algorithm
-  CbmRichRingFitterBase* fRingFitter;  // pointer to ring fitting algorithm
-  CbmRichTrackExtrapolationBase*
-    fTrackExtrapolation;  // pointer to track extrapolation algorithm
-  CbmRichProjectionProducerBase*
-    fProjectionProducer;  // pointer to projection producer
-  CbmRichRingTrackAssignBase*
-    fRingTrackAssign;  // pointer to track assignment algorithm
+  CbmRichRingFinder* fRingFinder;                      // pointer to ring finder algorithm
+  CbmRichRingFitterBase* fRingFitter;                  // pointer to ring fitting algorithm
+  CbmRichTrackExtrapolationBase* fTrackExtrapolation;  // pointer to track extrapolation algorithm
+  CbmRichProjectionProducerBase* fProjectionProducer;  // pointer to projection producer
+  CbmRichRingTrackAssignBase* fRingTrackAssign;        // pointer to track assignment algorithm
 
   // What do you wan to run.
   bool fRunExtrapolation;
@@ -105,16 +102,14 @@ private:
   bool fRunTrackAssign;
 
   // Algorithm names for each step of reconstruction.
-  string fExtrapolationName;  // name of extrapolation algorithm
-  string fProjectionName;     // name of track projection algorithm
-  string fFinderName;         // name of ring finder algorithm
-  string fFitterName;         // name of ring fitter algorithm
-  string fTrackAssignName;    // name of track-ring matching algorithm
-  string
-    fPathToMirrorMisalignmentCorrectionParameterFile;  // path to the mirror misalignment parameter file
+  string fExtrapolationName;                                // name of extrapolation algorithm
+  string fProjectionName;                                   // name of track projection algorithm
+  string fFinderName;                                       // name of ring finder algorithm
+  string fFitterName;                                       // name of ring fitter algorithm
+  string fTrackAssignName;                                  // name of track-ring matching algorithm
+  string fPathToMirrorMisalignmentCorrectionParameterFile;  // path to the mirror misalignment parameter file
 
-  Double_t
-    fZTrackExtrapolation;  // Z coordinate to which one wants to extrapolate STS tracks
+  Double_t fZTrackExtrapolation;  // Z coordinate to which one wants to extrapolate STS tracks
 
   /**
     * \brief

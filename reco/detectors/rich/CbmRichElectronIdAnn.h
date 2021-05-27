@@ -11,9 +11,9 @@
 #ifndef CBM_RICH_ELECTRONID_ANN
 #define CBM_RICH_ELECTRONID_ANN
 
-#include <string>
-
 #include "TClonesArray.h"  // for ROOTCLING
+
+#include <string>
 
 class CbmRichRing;
 class TMultiLayerPerceptron;
@@ -40,7 +40,8 @@ public:
   /**
 	 * Return Instance of CbmRichGeoManager.
 	 */
-  static CbmRichElectronIdAnn& GetInstance() {
+  static CbmRichElectronIdAnn& GetInstance()
+  {
     static CbmRichElectronIdAnn fInstance;
     return fInstance;
   }

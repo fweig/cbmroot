@@ -10,7 +10,9 @@
 #define CBMMUCHFINDVECTORSQA_H_ 1
 
 #include "CbmMuchGeoScheme.h"
+
 #include "FairTask.h"
+
 #include <set>
 #include <vector>
 

@@ -66,7 +66,8 @@ public:
   /**
     * Set Energy Limits.
     */
-  void setEnRange(double low, double high) {
+  void setEnRange(double low, double high)
+  {
     fEnLimitLow  = low;
     fEnLimitHigh = high;
   }
@@ -100,12 +101,7 @@ private:
      * \brief Add hit to the output array (and) CbmEvent if it is not NULL.
      */
 
-  void AddHit(CbmEvent* event,
-              Double_t time,
-              Double_t energy,
-              UInt_t moduleId,
-              UInt_t sectionId,
-              Int_t index);
+  void AddHit(CbmEvent* event, Double_t time, Double_t energy, UInt_t moduleId, UInt_t sectionId, Int_t index);
 
   /**
      * \brief Copy constructor.

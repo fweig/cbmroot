@@ -8,12 +8,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void TofTestFee(TString inFile           = "",
-                TString sHostname        = "localhost",
-                TString sHistoFile       = "data/TofTestFeeHistos.root",
-                Int_t iServerRefreshRate = 100,
-                Int_t iServerHttpPort    = 8080,
-                TString sFileTag         = "") {
+void TofTestFee(TString inFile = "", TString sHostname = "localhost", TString sHistoFile = "data/TofTestFeeHistos.root",
+                Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080, TString sFileTag = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -60,18 +57,14 @@ void TofTestFee(TString inFile           = "",
 */
   test_monitor_tof->SetIgnoreMsOverlap();
   test_monitor_tof->SetHistoFileName(sHistoFile);
-  test_monitor_tof->SelectTestFees(1,
-                                   0,
+  test_monitor_tof->SelectTestFees(1, 0,
                                    0,  // DPB GBTx FEE
-                                   1,
-                                   0,
+                                   1, 0,
                                    1);  // DPB GBTx FEE
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }
@@ -103,8 +96,7 @@ void TofTestFee(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -114,7 +106,6 @@ void TofTestFee(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> TofTestFee: Macro finished successfully." << std::endl;
   std::cout << ">>> TofTestFee: Output file is " << outFile << std::endl;
-  std::cout << ">>> TofTestFee: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> TofTestFee: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 }

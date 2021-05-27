@@ -1,14 +1,11 @@
 void run_sim_urqmdtest(
   const string& urqmdFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/"
                             "8gev/centr/urqmd.auau.8gev.centr.00001.root",
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
-  const string& geoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/geosim.00000.root",
-  const string& geoSetup = "sis100_electron",
-  int nEvents            = 1000) {
+  const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
+  const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
+  const string& geoFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/geosim.00000.root",
+  const string& geoSetup = "sis100_electron", int nEvents = 1000)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   remove(parFile.c_str());
@@ -35,7 +32,6 @@ void run_sim_urqmdtest(
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << "s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

@@ -1,9 +1,9 @@
 
 
 void pl_TdcChannelCoincidences(
-  const TString& sTreeFile =
-    "unpack_CbmTofQa_28May1635_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root",
-  bool usePlaMultEvents = 1) {
+  const TString& sTreeFile = "unpack_CbmTofQa_28May1635_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root",
+  bool usePlaMultEvents    = 1)
+{
   gStyle->SetOptStat("emruo");
   gStyle->SetOptFit(10001);
 
@@ -40,51 +40,19 @@ void pl_TdcChannelCoincidences(
 
   //Create Histograms
   gROOT->cd();
-  TH1D* h1 = new TH1D("h1", "Hit distribution of TDC 02", 32, -0.5, 31.5);
-  TH1D* h2 = new TH1D("h2", "Hit distribution of TDC 00", 32, -0.5, 31.5);
-  TH1D* h3 = new TH1D("h3", "Coincidence Pattern", 7, -0.5, 6.5);
-  TH1D* h4 =
-    new TH1D("h4", "triggered RPC-Coincidences on strips", 16, -0.5, 15.5);
-  TH1D* h5 = new TH1D("h5", "RPC-Coincidences on strips", 16, -0.5, 15.5);
-  TH1D* h6 = new TH1D("h6", "RPC+2Pla-Coincidences on strips", 16, -0.5, 15.5);
-  TH2D* h7 = new TH2D("h7",
-                      "PMT-time difference PLA0",
-                      1000,
-                      -100000,
-                      100000,
-                      20000,
-                      0,
-                      20000000);
-  TH2D* h8 = new TH2D("h8",
-                      "PMT-time difference PLA1",
-                      1000,
-                      -100000,
-                      100000,
-                      20000,
-                      0,
-                      20000000);
-  TH2D* h9 = new TH2D("h9",
-                      "PMT-time difference PLA0-PLA1",
-                      1000,
-                      -100000,
-                      100000,
-                      2000,
-                      0,
-                      20000000);
-  TH1D* h10 =
-    new TH1D("h10",
-             "Full RPC-time difference RPC-PLA0 (first hit in channel)",
-             20000,
-             -1000000,
-             1000000);
-  TH1D* h11 = new TH1D(
-    "h11",
-    "Full RPC-time difference RPC-PLA0 und PlaTrig (first hit in channel)",
-    20000,
-    -1000000,
-    1000000);
-  TH2D* h12 = new TH2D(
-    "h9", "Rpc-Y-Position vs Tot", 1000, -100000, 100000, 2000, 0, 5000000);
+  TH1D* h1  = new TH1D("h1", "Hit distribution of TDC 02", 32, -0.5, 31.5);
+  TH1D* h2  = new TH1D("h2", "Hit distribution of TDC 00", 32, -0.5, 31.5);
+  TH1D* h3  = new TH1D("h3", "Coincidence Pattern", 7, -0.5, 6.5);
+  TH1D* h4  = new TH1D("h4", "triggered RPC-Coincidences on strips", 16, -0.5, 15.5);
+  TH1D* h5  = new TH1D("h5", "RPC-Coincidences on strips", 16, -0.5, 15.5);
+  TH1D* h6  = new TH1D("h6", "RPC+2Pla-Coincidences on strips", 16, -0.5, 15.5);
+  TH2D* h7  = new TH2D("h7", "PMT-time difference PLA0", 1000, -100000, 100000, 20000, 0, 20000000);
+  TH2D* h8  = new TH2D("h8", "PMT-time difference PLA1", 1000, -100000, 100000, 20000, 0, 20000000);
+  TH2D* h9  = new TH2D("h9", "PMT-time difference PLA0-PLA1", 1000, -100000, 100000, 2000, 0, 20000000);
+  TH1D* h10 = new TH1D("h10", "Full RPC-time difference RPC-PLA0 (first hit in channel)", 20000, -1000000, 1000000);
+  TH1D* h11 =
+    new TH1D("h11", "Full RPC-time difference RPC-PLA0 und PlaTrig (first hit in channel)", 20000, -1000000, 1000000);
+  TH2D* h12 = new TH2D("h9", "Rpc-Y-Position vs Tot", 1000, -100000, 100000, 2000, 0, 5000000);
 
 
   TH1D* tChannelResHistogram[16];
@@ -92,23 +60,15 @@ void pl_TdcChannelCoincidences(
     delete gROOT->FindObjectAny(Form("tChannelResHistogram%u", iHistogram));
 
     tChannelResHistogram[iHistogram] =
-      new TH1D(Form("tChannelResHistogram%u", iHistogram),
-               Form("channel %u", iHistogram),
-               4000,
-               -20 * *12,
-               20 * *12);
+      new TH1D(Form("tChannelResHistogram%u", iHistogram), Form("channel %u", iHistogram), 4000, -20 * *12, 20 * *12);
   }
 
   TH1D* tChannelResHistogramTrig[16];
   for (Int_t iHistogram = 0; iHistogram < 16; iHistogram++) {
     delete gROOT->FindObjectAny(Form("tChannelResHistogramTrig%u", iHistogram));
 
-    tChannelResHistogramTrig[iHistogram] =
-      new TH1D(Form("tChannelResHistogramTrig%u", iHistogram),
-               Form("channel %u", iHistogram),
-               4000,
-               -20 * *12,
-               20 * *12);
+    tChannelResHistogramTrig[iHistogram] = new TH1D(Form("tChannelResHistogramTrig%u", iHistogram),
+                                                    Form("channel %u", iHistogram), 4000, -20 * *12, 20 * *12);
   }
 
   TH2D* tChannelYPosHistogram[16];
@@ -116,14 +76,8 @@ void pl_TdcChannelCoincidences(
     delete gROOT->FindObjectAny(Form("tChannelYPosHistogram%u", iHistogram));
 
     tChannelYPosHistogram[iHistogram] =
-      new TH2D(Form("tChannelYPosHistogram%u", iHistogram),
-               Form("channel %u", iHistogram),
-               1000,
-               -100000,
-               100000,
-               2000,
-               0,
-               500000);
+      new TH2D(Form("tChannelYPosHistogram%u", iHistogram), Form("channel %u", iHistogram), 1000, -100000, 100000, 2000,
+               0, 500000);
   }
 
 
@@ -179,8 +133,7 @@ void pl_TdcChannelCoincidences(
       DigiAdr = (TTofCalibData*) DigiArray->At(jArray);
 
 
-      if (DigiAdr->GetBoard())
-        h1->Fill(DigiAdr->GetChannel());
+      if (DigiAdr->GetBoard()) h1->Fill(DigiAdr->GetChannel());
       else
         h2->Fill(DigiAdr->GetChannel());
 
@@ -188,16 +141,15 @@ void pl_TdcChannelCoincidences(
       if (DigiAdr->GetChannel() < 16) {
         if (DigiAdr->GetBoard()) {
           bRpcLeft[DigiAdr->GetChannel()]++;
-          if (dRpcTimeLeft[DigiAdr->GetChannel()] == 0
-              && dRpcTotLeft[DigiAdr->GetChannel()] == 0) {
+          if (dRpcTimeLeft[DigiAdr->GetChannel()] == 0 && dRpcTotLeft[DigiAdr->GetChannel()] == 0) {
             dRpcTimeLeft[DigiAdr->GetChannel()] = DigiAdr->GetTime();
             //cout<<"RpcLeft: "<< DigiAdr->GetTime()<<endl;
             dRpcTotLeft[DigiAdr->GetChannel()] = DigiAdr->GetTot();
           }
-        } else {
+        }
+        else {
           bRpcRight[DigiAdr->GetChannel()]++;
-          if (dRpcTimeRight[DigiAdr->GetChannel()] == 0
-              && dRpcTotRight[DigiAdr->GetChannel()] == 0) {
+          if (dRpcTimeRight[DigiAdr->GetChannel()] == 0 && dRpcTotRight[DigiAdr->GetChannel()] == 0) {
             dRpcTimeRight[DigiAdr->GetChannel()] = DigiAdr->GetTime();
             //cout<<"RpcRight: "<< DigiAdr->GetTime()<<endl;
             dRpcTotRight[DigiAdr->GetChannel()] = DigiAdr->GetTot();
@@ -240,37 +192,29 @@ void pl_TdcChannelCoincidences(
           if (bPla0Right && bPla0Left)  //If PLA1 is not in use!
           {
             h6->Fill(i);
-            h10->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-                      - ((dPla0TimeLeft + dPla0TimeRight) / 2));
-            tChannelResHistogram[i]->Fill(
-              ((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            h10->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2) - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            tChannelResHistogram[i]->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
+                                          - ((dPla0TimeLeft + dPla0TimeRight) / 2));
           }
-          if (bPla1Right == 1 && bPla1Left == 1 && bPla0Right == 1
-              && bPla0Left == 1 && bPlaTrig == 1) {
-            h11->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-                      - ((dPla0TimeLeft + dPla0TimeRight) / 2));
-            tChannelResHistogramTrig[i]->Fill(
-              ((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+          if (bPla1Right == 1 && bPla1Left == 1 && bPla0Right == 1 && bPla0Left == 1 && bPlaTrig == 1) {
+            h11->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2) - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            tChannelResHistogramTrig[i]->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
+                                              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
           }
-        } else {
+        }
+        else {
           //			if(bPla1Right && bPla1Left && bPla0Right && bPla0Left)
           if (bPla0Right && bPla0Left)  //If PLA1 is not in use!
           {
             h6->Fill(i);
-            h10->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-                      - ((dPla0TimeLeft + dPla0TimeRight) / 2));
-            tChannelResHistogram[i]->Fill(
-              ((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            h10->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2) - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            tChannelResHistogram[i]->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
+                                          - ((dPla0TimeLeft + dPla0TimeRight) / 2));
           }
           if (bPla1Right && bPla1Left && bPla0Right && bPla0Left && bPlaTrig) {
-            h11->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-                      - ((dPla0TimeLeft + dPla0TimeRight) / 2));
-            tChannelResHistogramTrig[i]->Fill(
-              ((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
-              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            h11->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2) - ((dPla0TimeLeft + dPla0TimeRight) / 2));
+            tChannelResHistogramTrig[i]->Fill(((dRpcTimeLeft[i] + dRpcTimeRight[i]) / 2)
+                                              - ((dPla0TimeLeft + dPla0TimeRight) / 2));
           }
         }
         h5->Fill(i);
@@ -278,23 +222,18 @@ void pl_TdcChannelCoincidences(
         //		tChannelYPosHistogram[i]->Fill( (dRpcTimeLeft[i]-dRpcTimeRight[i]),(dRpcTotLeft[i]) );
         //			h12->Fill( (dRpcTimeLeft[i]-dRpcTimeRight[i]),dRpcTotLeft[i] );
         //		tChannelYPosHistogram[i]->Fill( (dRpcTimeLeft[i]-dRpcTimeRight[i]),(dRpcTotRight[i]) );
-        h12->Fill((dRpcTimeLeft[i] - dRpcTimeRight[i]),
-                  (dRpcTotLeft[i] + dRpcTotRight[i]));
-        tChannelYPosHistogram[i]->Fill((dRpcTimeLeft[i] - dRpcTimeRight[i]),
-                                       (dRpcTotLeft[i] + dRpcTotRight[i]));
+        h12->Fill((dRpcTimeLeft[i] - dRpcTimeRight[i]), (dRpcTotLeft[i] + dRpcTotRight[i]));
+        tChannelYPosHistogram[i]->Fill((dRpcTimeLeft[i] - dRpcTimeRight[i]), (dRpcTotLeft[i] + dRpcTotRight[i]));
       }
     }
 
     if (usePlaMultEvents == 1) {
-      if (bRpcHit && bPla0Left && bPla0Right && bPla1Left && bPla1Right)
-        h3->Fill(0);
+      if (bRpcHit && bPla0Left && bPla0Right && bPla1Left && bPla1Right) h3->Fill(0);
 
       if (bPla0Left && bPla0Right && bPla1Left && bPla1Right) {
         h3->Fill(1);
-        h9->Fill(
-          ((dPla0TimeLeft + dPla0TimeRight) - (dPla1TimeLeft + dPla1TimeRight))
-            * 0.5,
-          (dPla1TotLeft + dPla1TotRight));
+        h9->Fill(((dPla0TimeLeft + dPla0TimeRight) - (dPla1TimeLeft + dPla1TimeRight)) * 0.5,
+                 (dPla1TotLeft + dPla1TotRight));
       }
       if (bRpcHit && bPla0Left && bPla0Right) h3->Fill(2);
 
@@ -304,27 +243,21 @@ void pl_TdcChannelCoincidences(
 
       if (bPla0Left && bPla0Right) {
         h3->Fill(5);
-        h7->Fill(dPla0TimeLeft - dPla0TimeRight,
-                 (dPla0TotLeft + dPla0TotRight));
+        h7->Fill(dPla0TimeLeft - dPla0TimeRight, (dPla0TotLeft + dPla0TotRight));
       }
 
       if (bPla1Left && bPla1Right) {
         h3->Fill(6);
-        h8->Fill(dPla1TimeLeft - dPla1TimeRight,
-                 (dPla1TotLeft + dPla1TotRight));
+        h8->Fill(dPla1TimeLeft - dPla1TimeRight, (dPla1TotLeft + dPla1TotRight));
       }
-    } else {
-      if (bRpcHit && bPla0Left == 1 && bPla0Right == 1 && bPla1Left == 1
-          && bPla1Right == 1)
-        h3->Fill(0);
+    }
+    else {
+      if (bRpcHit && bPla0Left == 1 && bPla0Right == 1 && bPla1Left == 1 && bPla1Right == 1) h3->Fill(0);
 
-      if (bPla0Left == 1 && bPla0Right == 1 && bPla1Left == 1
-          && bPla1Right == 1) {
+      if (bPla0Left == 1 && bPla0Right == 1 && bPla1Left == 1 && bPla1Right == 1) {
         h3->Fill(1);
-        h9->Fill(
-          ((dPla0TimeLeft + dPla0TimeRight) - (dPla1TimeLeft + dPla1TimeRight))
-            * 0.5,
-          (dPla1TotLeft + dPla1TotRight));
+        h9->Fill(((dPla0TimeLeft + dPla0TimeRight) - (dPla1TimeLeft + dPla1TimeRight)) * 0.5,
+                 (dPla1TotLeft + dPla1TotRight));
       }
       if (bRpcHit && bPla0Left == 1 && bPla0Right == 1) h3->Fill(2);
 
@@ -334,14 +267,12 @@ void pl_TdcChannelCoincidences(
 
       if (bPla0Left == 1 && bPla0Right == 1) {
         h3->Fill(5);
-        h7->Fill(dPla0TimeLeft - dPla0TimeRight,
-                 (dPla0TotLeft + dPla0TotRight));
+        h7->Fill(dPla0TimeLeft - dPla0TimeRight, (dPla0TotLeft + dPla0TotRight));
       }
 
       if (bPla1Left == 1 && bPla1Right == 1) {
         h3->Fill(6);
-        h8->Fill(dPla1TimeLeft - dPla1TimeRight,
-                 (dPla1TotLeft + dPla1TotRight));
+        h8->Fill(dPla1TimeLeft - dPla1TimeRight, (dPla1TotLeft + dPla1TotRight));
       }
     }
   }
@@ -462,8 +393,7 @@ void pl_TdcChannelCoincidences(
   h9->GetYaxis()->SetTitle("Tot of Pmt 1(left+right)");
   h9->Draw("colz");
 
-  TCanvas* c5 = new TCanvas(
-    "Full Rpc Time resolution", "Full Rpc Time resolution", 1680., 1000);
+  TCanvas* c5 = new TCanvas("Full Rpc Time resolution", "Full Rpc Time resolution", 1680., 1000);
   c5->SetFillColor(0);
   c5->Divide(1, 3);
   c5->SetGridx(0);
@@ -487,8 +417,7 @@ void pl_TdcChannelCoincidences(
   h12->Draw("colz");
 
 
-  TCanvas* c6 = new TCanvas(
-    "Rpc Channel resolution", "Rpc Channel resolution", 1680., 1000);
+  TCanvas* c6 = new TCanvas("Rpc Channel resolution", "Rpc Channel resolution", 1680., 1000);
   c6->SetFillColor(0);
   c6->Divide(4, 4);
   c6->SetGridx(0);
@@ -496,10 +425,7 @@ void pl_TdcChannelCoincidences(
   c6->GetFrame()->SetFillColor(0);
   c6->GetFrame()->SetBorderSize(0);
 
-  TCanvas* c7 = new TCanvas("Rpc Channel resolution triggered",
-                            "Rpc Channel resolution triggered",
-                            1680.,
-                            1000);
+  TCanvas* c7 = new TCanvas("Rpc Channel resolution triggered", "Rpc Channel resolution triggered", 1680., 1000);
   c7->SetFillColor(0);
   c7->Divide(4, 4);
   c7->SetGridx(0);
@@ -507,8 +433,7 @@ void pl_TdcChannelCoincidences(
   c7->GetFrame()->SetFillColor(0);
   c7->GetFrame()->SetBorderSize(0);
 
-  TCanvas* c8 = new TCanvas(
-    "Rpc Hit position vs Tot", "Rpc Hit position vs Tot", 1680., 1000);
+  TCanvas* c8 = new TCanvas("Rpc Hit position vs Tot", "Rpc Hit position vs Tot", 1680., 1000);
   c8->SetFillColor(0);
   c8->Divide(4, 4);
   c8->SetGridx(0);

@@ -14,8 +14,10 @@ using std::ostream;
 using std::string;
 using std::stringstream;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
     /**
  * \class LitPixelHit
  * \brief Base class for pixel hits.
@@ -42,7 +44,8 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
         ss << "LitPixelHit: XYZ=(" << X << "," << Y << "," << Z << ") "
            << " Dx=" << Dx << " Dy=" << Dy << " Dxy=" << Dxy << "\n";
@@ -53,7 +56,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitPixelHit& hit) {
+      friend ostream& operator<<(ostream& strm, const LitPixelHit& hit)
+      {
         strm << hit.ToString();
         return strm;
       }

@@ -10,14 +10,11 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void batch_ana(Int_t iRunId  = 3,
-               Bool_t bCalib = kTRUE,
-               Bool_t bMap   = kFALSE,
-               Int_t nEvents = -1) {
+void batch_ana(Int_t iRunId = 3, Bool_t bCalib = kTRUE, Bool_t bMap = kFALSE, Int_t nEvents = -1)
+{
   TString script = TString(gSystem->Getenv("ANA_SCRIPT"));
   Bool_t bScript = kFALSE;
-  if (script != "yes")
-    bScript = kFALSE;
+  if (script != "yes") bScript = kFALSE;
   else {
     bScript = kTRUE;
     iRunId--;  // Job Id on batch farm runs from 1 to N instead of 0 to N-1
@@ -89,8 +86,7 @@ void batch_ana(Int_t iRunId  = 3,
       return;
     }  // default:
   }    // switch( iRunId )
-  cout << "Input run Id: " << iRunId << " Run Name: " << sRunName
-       << " Calib Name: " << sCalibName << endl;
+  cout << "Input run Id: " << iRunId << " Run Name: " << sRunName << " Calib Name: " << sCalibName << endl;
 
   //  Parameter files.
   // Add TObjectString containing the different file names to
@@ -104,13 +100,11 @@ void batch_ana(Int_t iRunId  = 3,
   TString outputDir = "/hera/cbm/users/tofGsiApr14/sep14/calib/";
 
   TObjString unpParFile = paramDir + "/parUnpackTower.txt";
-  if (kTRUE == bCalib && kFALSE == bMap)
-    unpParFile = paramDir + "/parUnpackTowerNoOut.txt";
+  if (kTRUE == bCalib && kFALSE == bMap) unpParFile = paramDir + "/parUnpackTowerNoOut.txt";
   parFileList->Add(&unpParFile);
 
   TObjString calParFile = paramDir + "/parCalib.txt";
-  if (kTRUE == bCalib && kFALSE == bMap)
-    calParFile = paramDir + "/parCalibNoOut.txt";
+  if (kTRUE == bCalib && kFALSE == bMap) calParFile = paramDir + "/parCalibNoOut.txt";
   else
     calParFile = paramDir + Form("/parCalib_%s.txt", sRunName.Data());
   parFileList->Add(&calParFile);
@@ -173,8 +167,7 @@ void batch_ana(Int_t iRunId  = 3,
 
   // -----   Online/Offline MBS run   -----------------------------------
   FairRunOnline* run;
-  if (kTRUE == bScript)
-    run = new FairRunOnline();
+  if (kTRUE == bScript) run = new FairRunOnline();
   else
     run = FairRunOnline::Instance();
 
@@ -204,8 +197,7 @@ void batch_ana(Int_t iRunId  = 3,
   if (kTRUE == bCalib) {
     tofCalibration->SetSaveTdcs(kFALSE);
     tofCalibration->SetTdcCalibFilename(sCalibName);
-    tofCalibration->SetTdcCalibOutFoldername(
-      "/hera/cbm/users/tofGsiApr14/sep14/calib/");
+    tofCalibration->SetTdcCalibOutFoldername("/hera/cbm/users/tofGsiApr14/sep14/calib/");
   }  // if( kTRUE == bCalib )
   else
     tofCalibration->SetSaveTdcs(kTRUE);

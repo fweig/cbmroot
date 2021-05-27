@@ -13,8 +13,10 @@
 #include "LitScalTrack.h"
 #include "LitTypes.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn inline fscal rcp(const fscal& a)
@@ -47,11 +49,11 @@ namespace lit {
  * \param[in] track Reference to track.
  * \return Number of degrees of freedom for track.
  */
-    inline unsigned short NDF(const LitScalTrack& track) {
+    inline unsigned short NDF(const LitScalTrack& track)
+    {
       short ndf = 2 * track.GetNofHits() - 5;
-      if (ndf > 0) {
-        return ndf;
-      } else {
+      if (ndf > 0) { return ndf; }
+      else {
         return 1;
       }
 

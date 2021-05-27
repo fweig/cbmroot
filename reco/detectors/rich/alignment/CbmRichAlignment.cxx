@@ -25,13 +25,17 @@
 #include "CbmRichRingLight.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmUtils.h"
+
 #include "FairTrackParam.h"
 #include "FairVolume.h"
+
 #include "TEllipse.h"
 #include "TGeoManager.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+
 #include <stdlib.h>
 //#include <stdio.h>
 #include "CbmGlobalTrack.h"
@@ -68,47 +72,36 @@ CbmRichAlignment::CbmRichAlignment()
   , fDrawAlignment(kTRUE)
   , fCopFit(NULL)
   , fTauFit(NULL)
-  , fPhi() {}
+  , fPhi()
+{
+}
 
 CbmRichAlignment::~CbmRichAlignment() {}
 
-InitStatus CbmRichAlignment::Init() {
+InitStatus CbmRichAlignment::Init()
+{
   FairRootManager* manager = FairRootManager::Instance();
 
   fRichHits = (TClonesArray*) manager->GetObject("RichHit");
-  if (NULL == fRichHits) {
-    Fatal("CbmRichAlignment::Init", "No RichHit array !");
-  }
+  if (NULL == fRichHits) { Fatal("CbmRichAlignment::Init", "No RichHit array !"); }
 
   fRichRings = (TClonesArray*) manager->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichAlignment::Init", "No RichRing array !");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichAlignment::Init", "No RichRing array !"); }
 
   fRichProjections = (TClonesArray*) manager->GetObject("RichProjection");
-  if (NULL == fRichProjections) {
-    Fatal("CbmRichAlignment::Init", "No RichProjection array !");
-  }
+  if (NULL == fRichProjections) { Fatal("CbmRichAlignment::Init", "No RichProjection array !"); }
 
   fRichPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmRichAlignment::Init", "No RichPoint array !");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmRichAlignment::Init", "No RichPoint array !"); }
 
   fMCTracks = (TClonesArray*) manager->GetObject("MCTrack");
-  if (NULL == fMCTracks) {
-    Fatal("CbmRichAlignment::Init", "No MCTracks array !");
-  }
+  if (NULL == fMCTracks) { Fatal("CbmRichAlignment::Init", "No MCTracks array !"); }
 
   fRichRingMatches = (TClonesArray*) manager->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmRichAlignment::Init", "No RichRingMatches array !");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmRichAlignment::Init", "No RichRingMatches array !"); }
 
   fRichMirrorPoints = (TClonesArray*) manager->GetObject("RichMirrorPoint");
-  if (NULL == fRichMirrorPoints) {
-    Fatal("CbmRichAlignment::Init", "No RichMirrorPoints array !");
-  }
+  if (NULL == fRichMirrorPoints) { Fatal("CbmRichAlignment::Init", "No RichMirrorPoints array !"); }
 
   /*	fRichRefPlanePoints  = (TClonesArray*) manager->GetObject("RefPlanePoint");
 	if (NULL == fRichRefPlanePoints) { Fatal("CbmRichAlignment::Init", "No RichRefPlanePoint array !"); }
@@ -129,48 +122,24 @@ InitStatus CbmRichAlignment::Init() {
   return kSUCCESS;
 }
 
-void CbmRichAlignment::InitHistAlignment() {
+void CbmRichAlignment::InitHistAlignment()
+{
   fHM = new CbmHistManager();
 
-  fHM->Create1<TH1D>("fHCenterDistance",
-                     "fHCenterDistance;Distance C-C';Nb of entries",
-                     100,
-                     -0.1,
+  fHM->Create1<TH1D>("fHCenterDistance", "fHCenterDistance;Distance C-C';Nb of entries", 100, -0.1, 5.);
+  fHM->Create1<TH1D>("fHPhi", "fHPhi;Phi_Ch [rad];Nb of entries", 200, -3.4, 3.4);
+  fHM->Create1<TH1D>("fHThetaDiff", "fHThetaDiff;Th_Ch-Th_0 [cm];Nb of entries", 252, -5., 5.);
+  fHM->Create2<TH2D>("fHCherenkovHitsDistribTheta0", "fHCherenkovHitsDistribTheta0;Phi_0 [rad];Theta_0 [cm];Entries",
+                     200, -2., 2., 600, 2., 8.);
+  fHM->Create2<TH2D>("fHCherenkovHitsDistribThetaCh",
+                     "fHCherenkovHitsDistribThetaCh;Phi_Ch [rad];Theta_Ch [cm];Entries", 200, -3.4, 3.4, 600, 0., 20);
+  fHM->Create2<TH2D>("fHCherenkovHitsDistribReduced",
+                     "fHCherenkovHitsDistribReduced;Phi_Ch [rad];Th_Ch-Th_0 [cm];Entries", 200, -3.4, 3.4, 500, -5.,
                      5.);
-  fHM->Create1<TH1D>(
-    "fHPhi", "fHPhi;Phi_Ch [rad];Nb of entries", 200, -3.4, 3.4);
-  fHM->Create1<TH1D>(
-    "fHThetaDiff", "fHThetaDiff;Th_Ch-Th_0 [cm];Nb of entries", 252, -5., 5.);
-  fHM->Create2<TH2D>(
-    "fHCherenkovHitsDistribTheta0",
-    "fHCherenkovHitsDistribTheta0;Phi_0 [rad];Theta_0 [cm];Entries",
-    200,
-    -2.,
-    2.,
-    600,
-    2.,
-    8.);
-  fHM->Create2<TH2D>(
-    "fHCherenkovHitsDistribThetaCh",
-    "fHCherenkovHitsDistribThetaCh;Phi_Ch [rad];Theta_Ch [cm];Entries",
-    200,
-    -3.4,
-    3.4,
-    600,
-    0.,
-    20);
-  fHM->Create2<TH2D>(
-    "fHCherenkovHitsDistribReduced",
-    "fHCherenkovHitsDistribReduced;Phi_Ch [rad];Th_Ch-Th_0 [cm];Entries",
-    200,
-    -3.4,
-    3.4,
-    500,
-    -5.,
-    5.);
 }
 
-void CbmRichAlignment::Exec(Option_t* option) {
+void CbmRichAlignment::Exec(Option_t* option)
+{
   cout << endl
        << "//"
           "--------------------------------------------------------------------"
@@ -192,20 +161,18 @@ void CbmRichAlignment::Exec(Option_t* option) {
   Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
   //	Int_t NofMCPoints = fRichMCPoints->GetEntriesFast();
-  cout << "Nb of rings in evt = " << nofRingsInEvent
-       << ", nb of mirror points = " << nofMirrorPoints
-       << ", nb of hits in evt = " << nofHitsInEvent
-       << " and nb of Monte-Carlo tracks = " << NofMCTracks << endl
+  cout << "Nb of rings in evt = " << nofRingsInEvent << ", nb of mirror points = " << nofMirrorPoints
+       << ", nb of hits in evt = " << nofHitsInEvent << " and nb of Monte-Carlo tracks = " << NofMCTracks << endl
        << endl;  //", nb of Monte-Carlo points = " << NofMCPoints <<
 
-  if (nofRingsInEvent == 0) {
-    cout << "Error no rings registered in event." << endl << endl;
-  } else {
+  if (nofRingsInEvent == 0) { cout << "Error no rings registered in event." << endl << endl; }
+  else {
     CalculateAnglesAndDrawDistrib();
   }
 }
 
-void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
+void CbmRichAlignment::CalculateAnglesAndDrawDistrib()
+{
   cout << "//------------------------------ CbmRichAlignment: Calculate Angles "
           "& Draw Distrib ------------------------------//"
        << endl
@@ -231,8 +198,7 @@ void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
       CbmRichConverter::CopyHitsToRingLight(ring, &ringL);
       fCopFit->DoFit(&ringL);
       // ----- Distance between mean center and fitted center calculation ----- //
-      DistCenters = sqrt(TMath::Power(ringL.GetCenterX() - trackX, 2)
-                         + TMath::Power(ringL.GetCenterY() - trackY, 2));
+      DistCenters = sqrt(TMath::Power(ringL.GetCenterX() - trackX, 2) + TMath::Power(ringL.GetCenterY() - trackY, 2));
       fHM->H1("fHCenterDistance")->Fill(DistCenters);
       // ----- Declaration of new variables ----- //
       Int_t NofHits = ringL.GetNofHits();
@@ -245,9 +211,8 @@ void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
         CbmRichHit* hit = static_cast<CbmRichHit*>(fRichHits->At(HitIndex));
         Float_t xHit    = hit->GetX();
         Float_t yHit    = hit->GetY();
-        Angles_0        = TMath::ATan2(
-          (hit->GetX() - ringL.GetCenterX()),
-          (ringL.GetCenterY() - hit->GetY()));  //* TMath::RadToDeg();
+        Angles_0        = TMath::ATan2((hit->GetX() - ringL.GetCenterX()),
+                                (ringL.GetCenterY() - hit->GetY()));  //* TMath::RadToDeg();
         //cout << "Angles_0 = " << Angles_0[iH] << endl;
 
         if (xRing - xHit == 0 || yRing - yHit == 0) continue;
@@ -255,25 +220,24 @@ void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
         fHM->H1("fHPhi")->Fill(fPhi[iH]);
 
         // ----- Theta_Ch and Theta_0 calculations ----- //
-        Theta_Ch = sqrt(TMath::Power(trackX - hit->GetX(), 2)
-                        + TMath::Power(trackY - hit->GetY(), 2));
-        Theta_0  = sqrt(TMath::Power(ringL.GetCenterX() - hit->GetX(), 2)
-                       + TMath::Power(ringL.GetCenterY() - hit->GetY(), 2));
+        Theta_Ch = sqrt(TMath::Power(trackX - hit->GetX(), 2) + TMath::Power(trackY - hit->GetY(), 2));
+        Theta_0 =
+          sqrt(TMath::Power(ringL.GetCenterX() - hit->GetX(), 2) + TMath::Power(ringL.GetCenterY() - hit->GetY(), 2));
         //cout << "Theta_0 = " << Theta_0 << endl;
         fHM->H1("fHThetaDiff")->Fill(Theta_Ch - Theta_0);
 
         // ----- Filling of final histograms ----- //
         fHM->H2("fHCherenkovHitsDistribTheta0")->Fill(Angles_0, Theta_0);
         fHM->H2("fHCherenkovHitsDistribThetaCh")->Fill(fPhi[iH], Theta_Ch);
-        fHM->H2("fHCherenkovHitsDistribReduced")
-          ->Fill(fPhi[iH], (Theta_Ch - Theta_0));
+        fHM->H2("fHCherenkovHitsDistribReduced")->Fill(fPhi[iH], (Theta_Ch - Theta_0));
       }
       //cout << endl;
     }
   }
 }
 
-void CbmRichAlignment::GetTrackPosition(Double_t& x, Double_t& y) {
+void CbmRichAlignment::GetTrackPosition(Double_t& x, Double_t& y)
+{
   Int_t NofProjections = fRichProjections->GetEntriesFast();
   //cout << "!!! NB PROJECTIONS !!! " << NofProjections << endl;
   for (Int_t iP = 0; iP < NofProjections; iP++) {
@@ -291,11 +255,10 @@ void CbmRichAlignment::GetTrackPosition(Double_t& x, Double_t& y) {
   }
 }
 
-void CbmRichAlignment::DrawHistAlignment() {
+void CbmRichAlignment::DrawHistAlignment()
+{
   TCanvas* c1 = new TCanvas(fRunTitle + "_Data_Histograms_" + fAxisRotTitle,
-                            fRunTitle + "_Data_Histograms_" + fAxisRotTitle,
-                            800,
-                            400);
+                            fRunTitle + "_Data_Histograms_" + fAxisRotTitle, 800, 400);
   c1->Divide(2, 1);
   c1->cd(1);
   /*c1->SetGridx(1);
@@ -323,14 +286,13 @@ void CbmRichAlignment::DrawHistAlignment() {
   Cbm::SaveCanvasAsImage(c1, string(fOutputDir.Data()), "png");
 }
 
-void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
+void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh)
+{
   //vector<Double_t> paramVect;
   //paramVect.reserve(5);
 
   TCanvas* c3 = new TCanvas(fRunTitle + "_Fit_Histograms_" + fAxisRotTitle,
-                            fRunTitle + "_Fit_Histograms_" + fAxisRotTitle,
-                            1100,
-                            600);
+                            fRunTitle + "_Fit_Histograms_" + fAxisRotTitle, 1100, 600);
   c3->SetFillColor(42);
   c3->Divide(4, 2);
   gPad->SetTopMargin(0.1);
@@ -365,9 +327,7 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
 			sleep(1);
 			}
 			else;*/
-      if (CloneArr_2->GetBinContent(x_bin, y_bin) < thresh) {
-        CloneArr_2->SetBinContent(x_bin, y_bin, 0);
-      }
+      if (CloneArr_2->GetBinContent(x_bin, y_bin) < thresh) { CloneArr_2->SetBinContent(x_bin, y_bin, 0); }
     }
   }
   c3->cd(2);
@@ -399,8 +359,7 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
   TH1D* histo_2 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_2");
   histo_2->Draw();
   c3->cd(6);
-  TH1D* histo_chi2 =
-    (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_chi2");
+  TH1D* histo_chi2 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_chi2");
   histo_chi2->Draw();
 
   c3->cd(7);
@@ -430,14 +389,11 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
   f1->Write();
 
   // ------------------------------ CALCULATION OF MISALIGNMENT ANGLE ------------------------------ //
-  Double_t Focal_length = 150., q = 0., A = 0., Alpha = 0., mis_x = 0.,
-           mis_y = 0.;
+  Double_t Focal_length = 150., q = 0., A = 0., Alpha = 0., mis_x = 0., mis_y = 0.;
   // mis_x && mis_y corresponds respect. to rotation angles around the Y and X axes.
   // !!! BEWARE: AXES INDEXES ARE SWITCHED !!!
   q = TMath::ATan(fit->GetParameter(0) / fit->GetParameter(1));
-  cout << endl
-       << "fit_1 = " << fit->GetParameter(0)
-       << " and fit_2 = " << fit->GetParameter(1) << endl;
+  cout << endl << "fit_1 = " << fit->GetParameter(0) << " and fit_2 = " << fit->GetParameter(1) << endl;
   //cout << "q = " << q << endl;
   A = fit->GetParameter(1) / TMath::Cos(q);
   //cout << "Parameter a = " << A << endl;
@@ -447,10 +403,8 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
       10,
       3);  // *0.5, because a mirror rotation of alpha implies a rotation in the particle trajectory of 2*alpha ; 1.5 meters = Focal length = Radius_of_curvature/2
   //cout << setprecision(6) << "Total angle of misalignment alpha = " << Alpha << endl;		// setprecision(#) gives the number of digits in the cout.
-  mis_x = TMath::ATan(fit->GetParameter(0) / Focal_length) * 0.5
-          * TMath::Power(10, 3);
-  mis_y = TMath::ATan(fit->GetParameter(1) / Focal_length) * 0.5
-          * TMath::Power(10, 3);
+  mis_x = TMath::ATan(fit->GetParameter(0) / Focal_length) * 0.5 * TMath::Power(10, 3);
+  mis_y = TMath::ATan(fit->GetParameter(1) / Focal_length) * 0.5 * TMath::Power(10, 3);
   //cout << "Horizontal displacement = " << outputFit[0] << " [mrad] and vertical displacement = " << outputFit[1] << " [mrad]." << endl;
 
   TLegend* LEG = new TLegend(0.27, 0.7, 0.85, 0.87);  // Set legend position
@@ -469,10 +423,8 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
   LEG->Draw();
   //Cbm::SaveCanvasAsImage(c3, string(fOutputDir.Data()), "png");
 
-  TCanvas* c4 = new TCanvas(fRunTitle + "_Sinus_Fit_" + fAxisRotTitle,
-                            fRunTitle + "_Sinus_Fit_" + fAxisRotTitle,
-                            400,
-                            400);
+  TCanvas* c4 =
+    new TCanvas(fRunTitle + "_Sinus_Fit_" + fAxisRotTitle, fRunTitle + "_Sinus_Fit_" + fAxisRotTitle, 400, 400);
   c4->SetGrid(1, 1);
   CloneArr_2->Draw("colz");
   f1->Draw("same");
@@ -535,7 +487,8 @@ void CbmRichAlignment::DrawFit(vector<Double_t>& outputFit, Int_t thresh) {
   outputFit.at(3) = fit->GetParameter(0);
 }
 
-void CbmRichAlignment::DrawHistFromFile(TString fileName) {
+void CbmRichAlignment::DrawHistFromFile(TString fileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -550,23 +503,21 @@ void CbmRichAlignment::DrawHistFromFile(TString fileName) {
   gDirectory = oldDir;
 }
 
-void CbmRichAlignment::Finish() {
-  cout
-    << endl
-    << "// "
-       "-----------------------------------------------------------------------"
-       "----------------------------------------------------------------- //"
-    << endl;
-  cout
-    << "// -------------------------------------------------- CbmRichAlignment "
-       "- Finish Function -------------------------------------------------- //"
-    << endl;
-  cout
-    << "// "
-       "-----------------------------------------------------------------------"
-       "----------------------------------------------------------------- //"
-    << endl
-    << endl;
+void CbmRichAlignment::Finish()
+{
+  cout << endl
+       << "// "
+          "-----------------------------------------------------------------------"
+          "----------------------------------------------------------------- //"
+       << endl;
+  cout << "// -------------------------------------------------- CbmRichAlignment "
+          "- Finish Function -------------------------------------------------- //"
+       << endl;
+  cout << "// "
+          "-----------------------------------------------------------------------"
+          "----------------------------------------------------------------- //"
+       << endl
+       << endl;
 
   if (fDrawAlignment) {
     DrawHistAlignment();
@@ -574,19 +525,12 @@ void CbmRichAlignment::Finish() {
     vector<Double_t> outputFit(4);
     DrawFit(outputFit, thresh);
     cout << setprecision(6) << endl;
-    cout << "Horizontal displacement = " << outputFit[0]
-         << " [mrad] and vertical displacement = " << outputFit[1] << " [mrad]."
-         << endl;
+    cout << "Horizontal displacement = " << outputFit[0] << " [mrad] and vertical displacement = " << outputFit[1]
+         << " [mrad]." << endl;
 
-    fHM->Create2<TH2D>(
-      "fHCherenkovHitsDistribReduced",
-      "fHCherenkovHitsDistribReduced;Phi_Ch [rad];Th_Ch-Th_0 [cm];Entries",
-      200,
-      -3.4,
-      3.4,
-      500,
-      -5.,
-      5.);
+    fHM->Create2<TH2D>("fHCherenkovHitsDistribReduced",
+                       "fHCherenkovHitsDistribReduced;Phi_Ch [rad];Th_Ch-Th_0 [cm];Entries", 200, -3.4, 3.4, 500, -5.,
+                       5.);
 
     ofstream corr_file;
     /*		// Converting double to string.
@@ -605,10 +549,9 @@ void CbmRichAlignment::Finish() {
       corr_file << setprecision(7) << outputFit[3] << "\t";
       corr_file.close();
       cout << "Wrote correction parameters to: " << s << endl;
-    } else {
-      cout
-        << "Error in CbmRichAlignment::Finish ; unable to open parameter file!"
-        << endl;
+    }
+    else {
+      cout << "Error in CbmRichAlignment::Finish ; unable to open parameter file!" << endl;
     }
   }
 

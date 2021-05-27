@@ -4,13 +4,13 @@
 
 // Includes from MVD
 #include "CbmMvdClusterfinder.h"
+
+#include "CbmDigiManager.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 #include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"
 #include "tools/CbmMvdGeoHandler.h"
-
-#include "CbmDigiManager.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -20,7 +20,6 @@
 // Includes from ROOT
 #include "TClonesArray.h"
 #include "TGeoManager.h"
-
 #include "TMath.h"
 #include "TString.h"
 
@@ -45,13 +44,13 @@ CbmMvdClusterfinder::CbmMvdClusterfinder()
   , fCluster(NULL)
   , fClusterPluginNr()
   , fBranchName("")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdClusterfinder::CbmMvdClusterfinder(const char* name,
-                                         Int_t iMode,
-                                         Int_t iVerbose)
+CbmMvdClusterfinder::CbmMvdClusterfinder(const char* name, Int_t iMode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
@@ -60,11 +59,14 @@ CbmMvdClusterfinder::CbmMvdClusterfinder(const char* name,
   , fCluster(NULL)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdClusterfinder::~CbmMvdClusterfinder() {
+CbmMvdClusterfinder::~CbmMvdClusterfinder()
+{
 
   if (fCluster) {
     fCluster->Delete();
@@ -74,7 +76,8 @@ CbmMvdClusterfinder::~CbmMvdClusterfinder() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdClusterfinder::Exec(Option_t* /*opt*/) {
+void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
+{
   // --- Start timer
   fTimer.Start();
 
@@ -83,23 +86,15 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/) {
     if (fVerbose) cout << "//----------------------------------------//";
     if (fVerbose) cout << endl << "Send Input" << endl;
     fDetector->SendInputDigis(fDigiMan);
-    if (fVerbose)
-      cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
+    if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
     fDetector->Exec(fClusterPluginNr);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Cluster" << endl;
-    fCluster->AbsorbObjects(fDetector->GetOutputCluster(),
-                            0,
-                            fDetector->GetOutputCluster()->GetEntriesFast()
-                              - 1);
-    if (fVerbose)
-      cout << "Total of " << fCluster->GetEntriesFast()
-           << " Cluster in this Event" << endl;
-    if (fVerbose)
-      cout << "//----------------------------------------//" << endl;
-    LOG(info) << "+ " << setw(20) << GetName()
-              << ": Created: " << fCluster->GetEntriesFast() << " cluster in "
-              << fixed << setprecision(6) << fTimer.RealTime() << " s";
+    fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+    if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
+    if (fVerbose) cout << "//----------------------------------------//" << endl;
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
+              << setprecision(6) << fTimer.RealTime() << " s";
   }
 
   fTimer.Stop();
@@ -107,7 +102,8 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/) {
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdClusterfinder::Init() {
+InitStatus CbmMvdClusterfinder::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -131,23 +127,18 @@ InitStatus CbmMvdClusterfinder::Init() {
 
   // **********  Register output array
   fCluster = new TClonesArray("CbmMvdCluster", 10000);
-  ioman->Register("MvdCluster",
-                  "Mvd Clusters",
-                  fCluster,
-                  IsOutputBranchPersistent("MvdCluster"));
+  ioman->Register("MvdCluster", "Mvd Clusters", fCluster, IsOutputBranchPersistent("MvdCluster"));
 
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose)
-      cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
-  } else {
-    LOG(fatal)
-      << "Geometry couldn't be loaded from file. No MVD digitizer available.";
+    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+  }
+  else {
+    LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
-  CbmMvdSensorClusterfinderTask* clusterTask =
-    new CbmMvdSensorClusterfinderTask();
+  CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
 
   fDetector->AddPlugin(clusterTask);
   fClusterPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
@@ -170,7 +161,8 @@ InitStatus CbmMvdClusterfinder::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdClusterfinder::Finish() {
+void CbmMvdClusterfinder::Finish()
+{
   fDetector->Finish();
   PrintParameters();
 }
@@ -187,16 +179,13 @@ void CbmMvdClusterfinder::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdClusterfinder::PrintParameters() {
+void CbmMvdClusterfinder::PrintParameters()
+{
 
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters Clusterfinder ===================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters Clusterfinder ====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

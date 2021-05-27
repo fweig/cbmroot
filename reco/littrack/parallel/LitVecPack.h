@@ -15,8 +15,10 @@
 #include "LitTrackParam.h"
 #include "LitTypes.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn void inline void PackFieldValue(const LitFieldValue<fscal> value[], LitFieldValue<fvec>& lvalue)
@@ -24,8 +26,8 @@ namespace lit {
  * \param[in] value Array of fvecLen length of LitFieldValue<fscal> objects to be packed into a vector.
  * \param[out] lvalue Packed LitFieldValue.
  */
-    inline void PackFieldValue(const LitFieldValue<fscal> value[],
-                               LitFieldValue<fvec>& lvalue) {
+    inline void PackFieldValue(const LitFieldValue<fscal> value[], LitFieldValue<fvec>& lvalue)
+    {
       for (unsigned char i = 0; i < fvecLen; i++) {
         lvalue.Bx[i] = value[i].Bx;
         lvalue.By[i] = value[i].By;
@@ -40,8 +42,8 @@ namespace lit {
  * \param[in] par Array of fvecLen length of LitTrackParam<fscal> objects to be packed into a vector.
  * \param[out] lpar Packed LitTrackParam.
  */
-    inline void PackTrackParam(const LitTrackParam<fscal> par[],
-                               LitTrackParam<fvec>& lpar) {
+    inline void PackTrackParam(const LitTrackParam<fscal> par[], LitTrackParam<fvec>& lpar)
+    {
       for (unsigned char i = 0; i < fvecLen; i++) {
         lpar.X[i]   = par[i].X;
         lpar.Y[i]   = par[i].Y;
@@ -74,8 +76,8 @@ namespace lit {
  * \param[in] lpar Packed LitTrackParam to be unpacked.
  * \param[out] par Array of fvecLen length to store unpacked scalar objects.
  */
-    inline void UnpackTrackParam(const LitTrackParam<fvec>& lpar,
-                                 LitTrackParam<fscal> par[]) {
+    inline void UnpackTrackParam(const LitTrackParam<fvec>& lpar, LitTrackParam<fscal> par[])
+    {
       for (unsigned char i = 0; i < fvecLen; i++) {
         par[i].X   = lpar.X[i];
         par[i].Y   = lpar.Y[i];
@@ -109,9 +111,8 @@ namespace lit {
  * \param[in] lpar Packed LitTrackParam to be unpacked.
  * \param[out] par Array of fvecLen length to store unpacked scalar objects.
  */
-    inline void UnpackTrackParam(unsigned int i,
-                                 const LitTrackParam<fvec>& lpar,
-                                 LitTrackParam<fscal>& par) {
+    inline void UnpackTrackParam(unsigned int i, const LitTrackParam<fvec>& lpar, LitTrackParam<fscal>& par)
+    {
       par.X   = lpar.X[i];
       par.Y   = lpar.Y[i];
       par.Tx  = lpar.Tx[i];
@@ -143,8 +144,8 @@ namespace lit {
  * \param[in] par Array of fvecLen length of LitScalPixelHit objects to be packed into a vector.
  * \param[out] lpar Packed LitPixelHit.
  */
-    inline void PackPixelHit(const LitScalPixelHit hit[],
-                             LitPixelHit<fvec>& lhit) {
+    inline void PackPixelHit(const LitScalPixelHit hit[], LitPixelHit<fvec>& lhit)
+    {
       for (unsigned char i = 0; i < fvecLen; i++) {
         lhit.X[i]   = hit[i].X;
         lhit.Y[i]   = hit[i].Y;
@@ -162,8 +163,8 @@ namespace lit {
  * \param[in] lpar Packed LitPixelHit to be unpacked.
  * \param[out] par Array of fvecLen length to store unpacked scalar objects.
  */
-    inline void UnpackPixelHit(const LitPixelHit<fvec>& lhit,
-                               LitScalPixelHit hit[]) {
+    inline void UnpackPixelHit(const LitPixelHit<fvec>& lhit, LitScalPixelHit hit[])
+    {
       for (unsigned char i = 0; i < fvecLen; i++) {
         hit[i].X   = lhit.X[i];
         hit[i].Y   = lhit.Y[i];
@@ -181,8 +182,8 @@ namespace lit {
  * \param[in] par Array of fvecLen length of LitTrack objects to be packed into a vector.
  * \param[out] lpar Packed LitTrack.
  */
-    inline void PackTrack(const LitTrack<fscal>* track[],
-                          LitTrack<fvec>& ltrack) {
+    inline void PackTrack(const LitTrack<fscal>* track[], LitTrack<fvec>& ltrack)
+    {
       //    LitTrackParam<fvec>& lparFirst = ltrack.paramFirst;
       LitTrackParam<fvec>& lparLast = ltrack.paramLast;
       //std::cout << "pack track parameters" << std::endl;
@@ -262,8 +263,8 @@ namespace lit {
  * \param[in] lpar Packed LitTrack to be unpacked.
  * \param[out] par Array of fvecLen length to store unpacked scalar objects.
  */
-    inline void UnpackTrack(const LitTrack<fvec>& ltrack,
-                            LitTrack<fscal> track[]) {
+    inline void UnpackTrack(const LitTrack<fvec>& ltrack, LitTrack<fscal> track[])
+    {
       std::cout << "UnpackTrack: not implemented!" << std::endl;
     }
 

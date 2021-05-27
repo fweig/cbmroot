@@ -3,6 +3,7 @@
  *@since 2014
  **/
 #include "CbmMuchFindVectors.h"
+
 #include "CbmMuchDigiMatch.h"
 #include "CbmMuchMergeVectors.h"
 #include "CbmMuchModule.h"
@@ -47,11 +48,14 @@ CbmMuchFindVectors::CbmMuchFindVectors()
   , fCutChi2(24.0)
   ,  // chi2/ndf=6 for 8 hits
   //fCutChi2(20.0), // chi2/ndf=5 for 8 hits
-  fMinHits(10) {}
+  fMinHits(10)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuchFindVectors::~CbmMuchFindVectors() {
+CbmMuchFindVectors::~CbmMuchFindVectors()
+{
   fTrackArray->Delete();
   for (Int_t i = 0; i < fgkStat; ++i) {
     Int_t nVecs = fVectors[i].size();
@@ -60,14 +64,14 @@ CbmMuchFindVectors::~CbmMuchFindVectors() {
     //nVecs = fVectorsHigh[i].size();
     //for (Int_t j = 0; j < nVecs; ++j) delete fVectorsHigh[i][j];
   }
-  for (map<Int_t, TDecompLU*>::iterator it = fLus.begin(); it != fLus.end();
-       ++it)
+  for (map<Int_t, TDecompLU*>::iterator it = fLus.begin(); it != fLus.end(); ++it)
     delete it->second;
 }
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchFindVectors::Init() {
+InitStatus CbmMuchFindVectors::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -80,18 +84,15 @@ InitStatus CbmMuchFindVectors::Init() {
     ioman->Register("MuchVector", "Much", fTrackArray, kTRUE);
   }
 
-  CbmMuchFindHitsStraws* hitFinder =
-    (CbmMuchFindHitsStraws*) FairRun::Instance()->GetTask(
-      "CbmMuchFindHitsStraws");
+  CbmMuchFindHitsStraws* hitFinder = (CbmMuchFindHitsStraws*) FairRun::Instance()->GetTask("CbmMuchFindHitsStraws");
   //if (hitFinder == NULL) Fatal("Init", "CbmMuchFindHitsStraws is not run!");
   if (hitFinder == NULL) return kSUCCESS;  // no straws
 
   fDiam = hitFinder->GetDiam(0);
 
-  fHits   = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawHit"));
-  fPoints = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
-  fDigiMatches =
-    static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigiMatch"));
+  fHits        = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawHit"));
+  fPoints      = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
+  fDigiMatches = static_cast<TClonesArray*>(ioman->GetObject("MuchStrawDigiMatch"));
 
   // Find first straw station and get some geo constants
   Int_t nSt = fGeoScheme->GetNStations();
@@ -99,8 +100,7 @@ InitStatus CbmMuchFindVectors::Init() {
     CbmMuchStation* st = fGeoScheme->GetStation(i);
     CbmMuchModule* mod = fGeoScheme->GetModule(i, 0, 0, 0);
     if (mod->GetDetectorType() == 2) {
-      if (fStatFirst < 0)
-        fStatFirst = CbmMuchAddress::GetStationIndex(st->GetDetectorId());
+      if (fStatFirst < 0) fStatFirst = CbmMuchAddress::GetStationIndex(st->GetDetectorId());
       //cout << " First station: " << fStatFirst << endl;
       Int_t nLays           = st->GetNLayers();
       fRmin[i - fStatFirst] = st->GetRmin();
@@ -118,11 +118,8 @@ InitStatus CbmMuchFindVectors::Init() {
           fSina[plane] = TMath::Sin(phi);
           if (lay) {
             fDtubes[i - fStatFirst][lay - 1] =
-              fRmax[i - fStatFirst]
-              * TMath::Tan(TMath::ASin(fSina[plane])
-                           - TMath::ASin(fSina[plane - 2]));
-            fDtubes[i - fStatFirst][lay - 1] =
-              TMath::Abs(fDtubes[i - fStatFirst][lay - 1]) / fDiam + 10;
+              fRmax[i - fStatFirst] * TMath::Tan(TMath::ASin(fSina[plane]) - TMath::ASin(fSina[plane - 2]));
+            fDtubes[i - fStatFirst][lay - 1] = TMath::Abs(fDtubes[i - fStatFirst][lay - 1]) / fDiam + 10;
           }
         }
       }
@@ -135,10 +132,9 @@ InitStatus CbmMuchFindVectors::Init() {
   //cout << endl;
 
   // Get absorbers
-  Double_t dzAbs[9] = {0}, zAbs[9] = {0}, radlAbs[9] = {0}, xyzl[3] = {0},
-           xyzg[3] = {0};
-  Int_t nAbs       = 0;
-  TGeoVolume* vol  = 0x0;
+  Double_t dzAbs[9] = {0}, zAbs[9] = {0}, radlAbs[9] = {0}, xyzl[3] = {0}, xyzg[3] = {0};
+  Int_t nAbs      = 0;
+  TGeoVolume* vol = 0x0;
   for (Int_t i = 1; i < 10; ++i) {
     TString abso = "muchabsorber0";
     abso += i;
@@ -150,8 +146,8 @@ InitStatus CbmMuchFindVectors::Init() {
     gGeoManager->cd(path);
     gGeoManager->LocalToMaster(xyzl, xyzg);
     zAbs[nAbs] = xyzg[2];
-    cout << vol->GetName() << " " << vol->GetShape()->GetName() << " "
-         << ((TGeoBBox*) vol->GetShape())->GetDZ() << endl;
+    cout << vol->GetName() << " " << vol->GetShape()->GetName() << " " << ((TGeoBBox*) vol->GetShape())->GetDZ()
+         << endl;
     //dzAbs[nAbs] = ((TGeoCone*) vol->GetShape())->GetDz();
     dzAbs[nAbs]     = ((TGeoBBox*) vol->GetShape())->GetDZ();
     radlAbs[nAbs]   = vol->GetMaterial()->GetRadLen();
@@ -163,8 +159,7 @@ InitStatus CbmMuchFindVectors::Init() {
 
   cout << " \n !!! MUCH Absorbers: " << nAbs << "\n Zbeg, Zend, X0:";
   for (Int_t j = 0; j < nAbs; ++j)
-    cout << " " << fZabs0[j][0] << ", " << fZabs0[j][1] << ", " << fX0abs[j]
-         << ";";
+    cout << " " << fZabs0[j][0] << ", " << fZabs0[j][1] << ", " << fX0abs[j] << ";";
   cout << endl << endl;
 
   if (fStatFirst < 0) return kSUCCESS;  // only GEM configuration
@@ -179,7 +174,8 @@ void CbmMuchFindVectors::SetParContainers() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchFindVectors::Exec(Option_t* opt) {
+void CbmMuchFindVectors::Exec(Option_t* opt)
+{
 
   fTrackArray->Delete();
   if (fStatFirst < 0) return;  // only GEM configuration
@@ -231,7 +227,8 @@ void CbmMuchFindVectors::Exec(Option_t* opt) {
 // -------------------------------------------------------------------------
 
 // -----   Public method Finish   ------------------------------------------
-void CbmMuchFindVectors::Finish() {
+void CbmMuchFindVectors::Finish()
+{
   fTrackArray->Clear();
   for (Int_t i = 0; i < fgkStat; ++i) {
     Int_t nVecs = fVectors[i].size();
@@ -240,14 +237,14 @@ void CbmMuchFindVectors::Finish() {
     //nVecs = fVectorsHigh[i].size();
     //for (Int_t j = 0; j < nVecs; ++j) delete fVectorsHigh[i][j];
   }
-  for (map<Int_t, TDecompLU*>::iterator it = fLus.begin(); it != fLus.end();
-       ++it)
+  for (map<Int_t, TDecompLU*>::iterator it = fLus.begin(); it != fLus.end(); ++it)
     delete it->second;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method ComputeMatrix   ----------------------------------
-void CbmMuchFindVectors::ComputeMatrix() {
+void CbmMuchFindVectors::ComputeMatrix()
+{
   // Compute system matrices for different hit plane patterns
 
   Double_t cos2[fgkPlanes], sin2[fgkPlanes], sincos[fgkPlanes], dz2[fgkPlanes];
@@ -271,8 +268,7 @@ void CbmMuchFindVectors::ComputeMatrix() {
     // either all doublets are active or 3 the first ones (for high resolution mode)
     nDouble = 0;
     for (Int_t j = 0; j < fgkPlanes; j += 2)
-      if (ipat & (3 << j))
-        ++nDouble;
+      if (ipat & (3 << j)) ++nDouble;
       else
         break;
     if ((ipat & (3 << 6)) == 0) ++nDouble;  // 3 doublets
@@ -324,21 +320,21 @@ void CbmMuchFindVectors::ComputeMatrix() {
     TString buf = "";
     for (Int_t jp = 0; jp < fgkPlanes; ++jp)
       buf += Bool_t(ipat & (1 << jp));
-    cout << " Determinant: " << buf << " " << ipat << " " << coef.Determinant()
-         << endl;
+    cout << " Determinant: " << buf << " " << ipat << " " << coef.Determinant() << endl;
     if (ipat == 255) {
       coef.Print();
       cout << " Number of configurations: " << nTot << endl;
     }
     cov *= (0.02 * 0.02);
-    cout << TMath::Sqrt(cov(0, 0)) << " " << TMath::Sqrt(cov(1, 1)) << " "
-         << TMath::Sqrt(cov(2, 2)) << " " << TMath::Sqrt(cov(3, 3)) << endl;
+    cout << TMath::Sqrt(cov(0, 0)) << " " << TMath::Sqrt(cov(1, 1)) << " " << TMath::Sqrt(cov(2, 2)) << " "
+         << TMath::Sqrt(cov(3, 3)) << endl;
   }
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method GetHits   ----------------------------------------
-void CbmMuchFindVectors::GetHits() {
+void CbmMuchFindVectors::GetHits()
+{
   // Group hits according to their plane number
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -361,22 +357,20 @@ void CbmMuchFindVectors::GetHits() {
     CbmMuchModule* module = fGeoScheme->GetModuleByDetId(detId);
     if (module->GetDetectorType() != 2) continue;  // skip GEM hits
     UInt_t address = CbmMuchAddress::GetElementAddress(detId, kMuchModule);
-    Int_t station3 = CbmMuchAddress::GetStationIndex(address);  // station
-    Int_t doublet  = CbmMuchAddress::GetLayerIndex(address);    // doublet
-    Int_t layer =
-      CbmMuchAddress::GetLayerSideIndex(address);  // layer in doublet
+    Int_t station3 = CbmMuchAddress::GetStationIndex(address);    // station
+    Int_t doublet  = CbmMuchAddress::GetLayerIndex(address);      // doublet
+    Int_t layer    = CbmMuchAddress::GetLayerSideIndex(address);  // layer in doublet
     //cout << hit->GetZ() << " " << station3 << " " << doublet << " " << layer << endl;
     //Int_t plane = (station3 - fStatFirst) * 8 + doublet * 2 + layer;
     Int_t plane = doublet * 2 + layer;
-    fHitPl[station3 - fStatFirst][plane].insert(
-      pair<Int_t, Int_t>(hit->GetTube() + 1000 * hit->GetSegment(), i));
+    fHitPl[station3 - fStatFirst][plane].insert(pair<Int_t, Int_t>(hit->GetTube() + 1000 * hit->GetSegment(), i));
     if (fErrU < 0) fErrU = hit->GetDu();
     if (sel) ++nSelTu[station3 - fStatFirst];
   }
 
   // Merge neighbouring hits from 2 layers of 1 doublet.
   // If there is no neighbour, takes hit from a single layer (to account for inefficiency)
-  Int_t nlay2 = fgkPlanes / 2, indx1, indx2, tube1, tube2, next1, next2;
+  Int_t nlay2           = fgkPlanes / 2, indx1, indx2, tube1, tube2, next1, next2;
   CbmMuchStrawHit *hit1 = NULL, *hit2 = NULL;
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -401,10 +395,8 @@ void CbmMuchFindVectors::GetHits() {
       */
 
       // Loop over doublets
-      multimap<Int_t, Int_t>::iterator it1 = fHitPl[ista][i1 * 2].begin(),
-                                       it2 = fHitPl[ista][i1 * 2 + 1].begin();
-      multimap<Int_t, Int_t>::iterator it1end = fHitPl[ista][i1 * 2].end(),
-                                       it2end = fHitPl[ista][i1 * 2 + 1].end();
+      multimap<Int_t, Int_t>::iterator it1 = fHitPl[ista][i1 * 2].begin(), it2 = fHitPl[ista][i1 * 2 + 1].begin();
+      multimap<Int_t, Int_t>::iterator it1end = fHitPl[ista][i1 * 2].end(), it2end = fHitPl[ista][i1 * 2 + 1].end();
       set<Int_t> tubeOk[2];
       next1 = next2 = 1;
       if (it1 == it1end) next1 = 0;
@@ -466,7 +458,8 @@ void CbmMuchFindVectors::GetHits() {
             next1 = 1;
             if (it1 == fHitPl[ista][i1 * 2].end()) next1 = 0;
           }
-        } else {
+        }
+        else {
           ++it1;
           next1 = 1;
           next2 = 0;
@@ -487,7 +480,8 @@ void CbmMuchFindVectors::GetHits() {
 // -------------------------------------------------------------------------
 
 // -----   Private method SelectHitId   ------------------------------------
-Bool_t CbmMuchFindVectors::SelectHitId(const CbmMuchStrawHit* hit) {
+Bool_t CbmMuchFindVectors::SelectHitId(const CbmMuchStrawHit* hit)
+{
   // Select hits with certain track IDs (for debugging)
 
   Int_t nSel = 2, idSel[2] = {0, 1}, id = 0;
@@ -497,14 +491,13 @@ Bool_t CbmMuchFindVectors::SelectHitId(const CbmMuchStrawHit* hit) {
       //if (0) {
       // Mirror hit
       return kFALSE;
-    } else {
-      CbmMuchDigiMatch* digiM =
-        (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
-      Int_t np = digiM->GetNofLinks();
+    }
+    else {
+      CbmMuchDigiMatch* digiM = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
+      Int_t np                = digiM->GetNofLinks();
       for (Int_t ip = 0; ip < np; ++ip) {
-        CbmMuchPoint* point =
-          (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
-        id = point->GetTrackID();
+        CbmMuchPoint* point = (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
+        id                  = point->GetTrackID();
         if (id == idSel[i]) return kTRUE;
       }
     }
@@ -514,7 +507,8 @@ Bool_t CbmMuchFindVectors::SelectHitId(const CbmMuchStrawHit* hit) {
 // -------------------------------------------------------------------------
 
 // -----   Private method SelDoubleId   ------------------------------------
-Bool_t CbmMuchFindVectors::SelDoubleId(Int_t indx1, Int_t indx2) {
+Bool_t CbmMuchFindVectors::SelDoubleId(Int_t indx1, Int_t indx2)
+{
   // Select doublets with certain track IDs (for debugging)
 
   return kTRUE;  // no selection
@@ -529,12 +523,11 @@ Bool_t CbmMuchFindVectors::SelDoubleId(Int_t indx1, Int_t indx2) {
     if (hit->GetFlag() % 2 == 0) {
       // Not a mirror hit
       for (Int_t i = 0; i < nId; ++i) {
-        digiM = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
+        digiM    = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
         Int_t np = digiM->GetNofLinks();
         for (Int_t ip = 0; ip < np; ++ip) {
-          point =
-            (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
-          id = point->GetTrackID();
+          point = (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
+          id    = point->GetTrackID();
           if (id == idSel[i]) return kTRUE;
         }
       }
@@ -545,12 +538,11 @@ Bool_t CbmMuchFindVectors::SelDoubleId(Int_t indx1, Int_t indx2) {
     if (hit->GetFlag() % 2 == 0) {
       // Not a mirror hit
       for (Int_t i = 0; i < nId; ++i) {
-        digiM = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
+        digiM    = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
         Int_t np = digiM->GetNofLinks();
         for (Int_t ip = 0; ip < np; ++ip) {
-          point =
-            (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
-          id = point->GetTrackID();
+          point = (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
+          id    = point->GetTrackID();
           if (id == idSel[i]) return kTRUE;
         }
       }
@@ -561,7 +553,8 @@ Bool_t CbmMuchFindVectors::SelDoubleId(Int_t indx1, Int_t indx2) {
 // -------------------------------------------------------------------------
 
 // -----   Private method MakeVectors   ------------------------------------
-void CbmMuchFindVectors::MakeVectors() {
+void CbmMuchFindVectors::MakeVectors()
+{
   // Make vectors for stations
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -597,20 +590,15 @@ void CbmMuchFindVectors::MakeVectors() {
       patt        = ind1;
       patt |= (ind2 << 1);
       //cout << plane0 << " " << hit->GetX() << " " << hit->GetY() << " " << hit->GetZ() << " " << hit->GetU() << " " << u << endl;
-      ProcessDouble(
-        ista, lay2 + 1, patt, flag, hit->GetTube(), hit->GetSegment());
+      ProcessDouble(ista, lay2 + 1, patt, flag, hit->GetTube(), hit->GetSegment());
     }
   }
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method ProcessDouble   ----------------------------------
-void CbmMuchFindVectors::ProcessDouble(Int_t ista,
-                                       Int_t lay2,
-                                       Int_t patt,
-                                       Int_t flag,
-                                       Int_t tube0,
-                                       Int_t segment0) {
+void CbmMuchFindVectors::ProcessDouble(Int_t ista, Int_t lay2, Int_t patt, Int_t flag, Int_t tube0, Int_t segment0)
+{
   // Main processing engine (recursively adds doublet hits to the vector)
 
   // !!! Tube differences between the same views for mu from omega at 8 GeV !!!
@@ -620,16 +608,14 @@ void CbmMuchFindVectors::ProcessDouble(Int_t ista,
   Int_t ndoubl = fHit2d[ista][lay2].size();
 
   for (Int_t id = 0; id < ndoubl; ++id) {
-    Int_t indx1 = fHit2d[ista][lay2][id].first;
-    Int_t indx2 = fHit2d[ista][lay2][id].second;
-    CbmMuchStrawHit* hit =
-      (CbmMuchStrawHit*) fHits->UncheckedAt(TMath::Max(indx1, indx2));
-    Int_t segment = hit->GetSegment();
-    Int_t tube    = hit->GetTube();
+    Int_t indx1          = fHit2d[ista][lay2][id].first;
+    Int_t indx2          = fHit2d[ista][lay2][id].second;
+    CbmMuchStrawHit* hit = (CbmMuchStrawHit*) fHits->UncheckedAt(TMath::Max(indx1, indx2));
+    Int_t segment        = hit->GetSegment();
+    Int_t tube           = hit->GetTube();
     //if (segment != segment0) continue; // do not combine two half-stations - wrong due to stereo angles
 
-    if (TMath::Abs(tube - tube0) > fDtubes[ista][lay2 - 1])
-      continue;  // !!! cut
+    if (TMath::Abs(tube - tube0) > fDtubes[ista][lay2 - 1]) continue;  // !!! cut
 
     // Check the same views
     Int_t ok = 1;
@@ -702,27 +688,21 @@ void CbmMuchFindVectors::ProcessDouble(Int_t ista,
     patt |= (ind2 << lay2 * 2 + 1);
     //cout << plane << " " << patt << " " << hit->GetX() << " " << hit->GetY() << " " << hit->GetZ() << " " << hit->GetU() << " " << u << endl;
 
-    if (lay2 + 1 < fgkPlanes / 2)
-      ProcessDouble(ista, lay2 + 1, patt, flag, tube, segment);
+    if (lay2 + 1 < fgkPlanes / 2) ProcessDouble(ista, lay2 + 1, patt, flag, tube, segment);
     else {
       // Straight line fit of the vector
       FindLine(patt, pars);
       Double_t chi2 = FindChi2(ista, patt, pars);
       //cout << " *** Stat: " << ista << " " << id << " " << indx1 << " " << indx2 << " " << chi2 << " " << pars[0] << " " << pars[1] << endl;
-      if (chi2 <= fCutChi2)
-        AddVector(
-          ista, patt, chi2, pars);  // add vector to the temporary container
+      if (chi2 <= fCutChi2) AddVector(ista, patt, chi2, pars);  // add vector to the temporary container
     }
   }  // for (id = 0; id < ndoubl;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method IntersectViews   ---------------------------------
-Bool_t CbmMuchFindVectors::IntersectViews(Int_t ista,
-                                          Int_t curLay,
-                                          Int_t indx1,
-                                          Int_t indx2,
-                                          Int_t patt) {
+Bool_t CbmMuchFindVectors::IntersectViews(Int_t ista, Int_t curLay, Int_t indx1, Int_t indx2, Int_t patt)
+{
   // Intersect 2 views
 
   Int_t lay2 = curLay * 2;
@@ -735,20 +715,16 @@ Bool_t CbmMuchFindVectors::IntersectViews(Int_t ista,
 
   Double_t yint = u1 * fCosa[lay2] - u2 * fCosa[lay1];
   yint /= (fSina[lay1] * fCosa[lay2] - fSina[lay2] * fCosa[lay1]);
-  if (TMath::Abs(yint) > fRmax[ista] + 10.0)
-    return kFALSE;  // outside outer dim. + safety margin
+  if (TMath::Abs(yint) > fRmax[ista] + 10.0) return kFALSE;  // outside outer dim. + safety margin
 
   Double_t xint = u2 / fCosa[lay2] - yint * fSina[lay2] / fCosa[lay2];
 
   Double_t v1 = -xint * fSina[lay1] + yint * fCosa[lay1];
   Double_t v2 = -xint * fSina[lay2] + yint * fCosa[lay2];
 
-  cout << xint << " " << yint << " " << v1 << " " << v2 << " " << fUzi[lay1][0]
-       << " " << fUzi[lay2][0] << endl;
-  if (TMath::Abs(v1) > 10.0 && v1 * fUzi[lay1][0] < 0)
-    cout << " Outside !!! " << endl;
-  if (TMath::Abs(v2) > 10.0 && v2 * fUzi[lay2][0] < 0)
-    cout << " Outside !!! " << endl;
+  cout << xint << " " << yint << " " << v1 << " " << v2 << " " << fUzi[lay1][0] << " " << fUzi[lay2][0] << endl;
+  if (TMath::Abs(v1) > 10.0 && v1 * fUzi[lay1][0] < 0) cout << " Outside !!! " << endl;
+  if (TMath::Abs(v2) > 10.0 && v2 * fUzi[lay2][0] < 0) cout << " Outside !!! " << endl;
   if (TMath::Abs(v1) > 30.0 && v1 * fUzi[lay1][0] < 0) return kFALSE;
   if (TMath::Abs(v2) > 30.0 && v2 * fUzi[lay2][0] < 0) return kFALSE;
   return kTRUE;
@@ -756,11 +732,8 @@ Bool_t CbmMuchFindVectors::IntersectViews(Int_t ista,
 // -------------------------------------------------------------------------
 
 // -----   Private method AddVector   --------------------------------------
-void CbmMuchFindVectors::AddVector(Int_t ista,
-                                   Int_t patt,
-                                   Double_t chi2,
-                                   Double_t* pars,
-                                   Bool_t lowRes) {
+void CbmMuchFindVectors::AddVector(Int_t ista, Int_t patt, Double_t chi2, Double_t* pars, Bool_t lowRes)
+{
   // Add vector to the temporary container (as a MuchTrack)
 
   CbmMuchTrack* track = new CbmMuchTrack();
@@ -788,43 +761,39 @@ void CbmMuchFindVectors::AddVector(Int_t ista,
   Int_t ndf = (track->GetNofHits() > 4) ? track->GetNofHits() - 4 : 1;
   track->SetNDF(ndf);
   SetTrackId(track);  // set track ID as its flag
-  if (lowRes)
-    fVectors[ista].push_back(track);
+  if (lowRes) fVectors[ista].push_back(track);
   else
     fVectorsHigh[ista].push_back(track);
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method SetTrackId   -------------------------------------
-void CbmMuchFindVectors::SetTrackId(CbmMuchTrack* vec) {
+void CbmMuchFindVectors::SetTrackId(CbmMuchTrack* vec)
+{
   // Set vector ID as its flag (maximum track ID of its poins)
 
   map<Int_t, Int_t> ids;
   Int_t nhits = vec->GetNofHits(), id = 0;
 
   for (Int_t ih = 0; ih < nhits; ++ih) {
-    CbmMuchStrawHit* hit =
-      (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
+    CbmMuchStrawHit* hit = (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
     if (hit->GetFlag() % 2) {
       //if (0) {
       // Mirror hit
       id = -1;
-      if (ids.find(id) == ids.end())
-        ids.insert(pair<Int_t, Int_t>(id, 1));
+      if (ids.find(id) == ids.end()) ids.insert(pair<Int_t, Int_t>(id, 1));
       else
         ++ids[id];
-    } else {
-      CbmMuchDigiMatch* digiM =
-        (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
-      Int_t np = digiM->GetNofLinks();
+    }
+    else {
+      CbmMuchDigiMatch* digiM = (CbmMuchDigiMatch*) fDigiMatches->UncheckedAt(hit->GetRefId());
+      Int_t np                = digiM->GetNofLinks();
       for (Int_t ip = 0; ip < np; ++ip) {
         //CbmMuchPoint* point = (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(0).GetIndex());
-        CbmMuchPoint* point =
-          (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
-        id = point->GetTrackID();
+        CbmMuchPoint* point = (CbmMuchPoint*) fPoints->UncheckedAt(digiM->GetLink(ip).GetIndex());
+        id                  = point->GetTrackID();
         //if (np > 1) cout << ip << " " << id << endl;
-        if (ids.find(id) == ids.end())
-          ids.insert(pair<Int_t, Int_t>(id, 1));
+        if (ids.find(id) == ids.end()) ids.insert(pair<Int_t, Int_t>(id, 1));
         else
           ++ids[id];
       }
@@ -844,7 +813,8 @@ void CbmMuchFindVectors::SetTrackId(CbmMuchTrack* vec) {
 // -------------------------------------------------------------------------
 
 // -----   Private method FindLine   ---------------------------------------
-void CbmMuchFindVectors::FindLine(Int_t patt, Double_t* pars) {
+void CbmMuchFindVectors::FindLine(Int_t patt, Double_t* pars)
+{
   // Fit of hits to the straight line
 
   // Solve system of linear equations
@@ -873,7 +843,8 @@ void CbmMuchFindVectors::FindLine(Int_t patt, Double_t* pars) {
 // -------------------------------------------------------------------------
 
 // -----   Private method FindChi2   ---------------------------------------
-Double_t CbmMuchFindVectors::FindChi2(Int_t ista, Int_t patt, Double_t* pars) {
+Double_t CbmMuchFindVectors::FindChi2(Int_t ista, Int_t patt, Double_t* pars)
+{
   // Compute chi2 of the fit
 
   Double_t chi2 = 0, x = 0, y = 0, u = 0, errv = 1.;
@@ -905,8 +876,7 @@ Double_t CbmMuchFindVectors::FindChi2(Int_t ista, Int_t patt, Double_t* pars) {
     u           = x * fCosa[i] + y * fSina[i];
     Double_t du = (u - fUz[i][0]) / fErrU, du2 = du * du;
     chi2 += du2;
-    multimap<Double_t, Int_t>::iterator it =
-      fChi2Map.insert(pair<Double_t, Int_t>(du2, i));
+    multimap<Double_t, Int_t>::iterator it = fChi2Map.insert(pair<Double_t, Int_t>(du2, i));
     //cout << " " << i << " " << x << " " << y << " " << u << " " <<  fUz[i][0] << " " << du*du << endl;
 
     // Edge effect
@@ -918,9 +888,8 @@ Double_t CbmMuchFindVectors::FindChi2(Int_t ista, Int_t patt, Double_t* pars) {
     if (TMath::Abs(fUz[i][0]) > fRmin[ista] && v * iseg > 0) continue;
 
     if (TMath::Abs(fUz[i][0]) < fRmin[ista]) {
-      v0 = TMath::Sign(
-        TMath::Sqrt(fRmin[ista] * fRmin[ista] - fUz[i][0] * fUz[i][0]),
-        iseg * 1.);  // beam hole
+      v0 = TMath::Sign(TMath::Sqrt(fRmin[ista] * fRmin[ista] - fUz[i][0] * fUz[i][0]),
+                       iseg * 1.);  // beam hole
       if ((v - v0) * iseg > 0) continue;
     }
     Double_t dv = (v - v0) / errv, dv2 = dv * dv;
@@ -934,7 +903,8 @@ Double_t CbmMuchFindVectors::FindChi2(Int_t ista, Int_t patt, Double_t* pars) {
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckParams   ------------------------------------
-void CbmMuchFindVectors::CheckParams() {
+void CbmMuchFindVectors::CheckParams()
+{
   // Remove vectors with wrong orientation
   // using empirical cuts for omega muons at 8 Gev
 
@@ -946,10 +916,9 @@ void CbmMuchFindVectors::CheckParams() {
     for (Int_t iv = 0; iv < nvec; ++iv) {
       CbmMuchTrack* vec            = fVectors[ista][iv];
       const FairTrackParam* params = vec->GetParamFirst();
-      Double_t dTx = params->GetTx() - params->GetX() / params->GetZ();
-      Double_t dTy = params->GetTy() - params->GetY() / params->GetZ();
-      if (TMath::Abs(dTx) > cut[0] || TMath::Abs(dTy) > cut[1])
-        vec->SetChiSq(-1.0);
+      Double_t dTx                 = params->GetTx() - params->GetX() / params->GetZ();
+      Double_t dTy                 = params->GetTy() - params->GetY() / params->GetZ();
+      if (TMath::Abs(dTx) > cut[0] || TMath::Abs(dTy) > cut[1]) vec->SetChiSq(-1.0);
     }
 
     for (Int_t iv = nvec - 1; iv >= 0; --iv) {
@@ -959,14 +928,15 @@ void CbmMuchFindVectors::CheckParams() {
         fVectors[ista].erase(fVectors[ista].begin() + iv);
       }
     }
-    cout << " Vectors after parameter check in station " << ista << ": " << nvec
-         << " " << fVectors[ista].size() << endl;
+    cout << " Vectors after parameter check in station " << ista << ": " << nvec << " " << fVectors[ista].size()
+         << endl;
   }
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method HighRes   ----------------------------------------
-void CbmMuchFindVectors::HighRes() {
+void CbmMuchFindVectors::HighRes()
+{
   // High resolution processing (resolve ghost hits and make high resolution vectors)
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -974,18 +944,16 @@ void CbmMuchFindVectors::HighRes() {
 
     for (Int_t iv = 0; iv < nvec; ++iv) {
       CbmMuchTrack* vec = fVectors[ista][iv];
-      Int_t nhits = vec->GetNofHits(), patt = 0,
-            size0 = fVectorsHigh[ista].size();
+      Int_t nhits = vec->GetNofHits(), patt = 0, size0 = fVectorsHigh[ista].size();
       Double_t uu[fgkPlanes][2];
 
       for (Int_t ih = 0; ih < nhits; ++ih) {
-        CbmMuchStrawHit* hit =
-          (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
-        Int_t lay    = fGeoScheme->GetLayerIndex(hit->GetAddress());
-        Int_t side   = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
-        Int_t plane  = lay * 2 + side;
-        uu[plane][0] = hit->GetU();
-        uu[plane][1] = hit->GetDouble()[2];
+        CbmMuchStrawHit* hit = (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
+        Int_t lay            = fGeoScheme->GetLayerIndex(hit->GetAddress());
+        Int_t side           = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
+        Int_t plane          = lay * 2 + side;
+        uu[plane][0]         = hit->GetU();
+        uu[plane][1]         = hit->GetDouble()[2];
         patt |= (1 << plane);
         fUzi[plane][0] = hit->GetSegment();
         fUzi[plane][1] = vec->GetHitIndex(ih);
@@ -1012,12 +980,9 @@ void CbmMuchFindVectors::HighRes() {
 // -------------------------------------------------------------------------
 
 // -----   Private method ProcessDoubleHigh   ------------------------------
-void CbmMuchFindVectors::ProcessSingleHigh(Int_t ista,
-                                           Int_t plane,
-                                           Int_t patt,
-                                           Int_t flag,
-                                           Int_t nok,
-                                           Double_t uu[fgkPlanes][2]) {
+void CbmMuchFindVectors::ProcessSingleHigh(Int_t ista, Int_t plane, Int_t patt, Int_t flag, Int_t nok,
+                                           Double_t uu[fgkPlanes][2])
+{
   // Main processing engine for high resolution mode
   // (recursively adds singlet hits to the vector)
 
@@ -1061,20 +1026,16 @@ void CbmMuchFindVectors::ProcessSingleHigh(Int_t ista,
           if (!(patt1 & (1 << j))) continue;
           if (fUz[j][0] > uu[j][0]) lrbits |= (1 << j);
         }
-        fFailed.insert(
-          pair<Int_t, multimap<Double_t, Int_t>>(lrbits, fChi2Map));
+        fFailed.insert(pair<Int_t, multimap<Double_t, Int_t>>(lrbits, fChi2Map));
         continue;  // too high chi2 - do not extend line
       }
       //if (plane + 1 < fgkPlanes) ProcessSingleHigh(ista, plane + 1, patt, flag, nok, uu);
-      if (plane + 1 < fgkPlanes)
-        ProcessSingleHigh(ista, plane + 1, patt, 0, nok, uu);
+      if (plane + 1 < fgkPlanes) ProcessSingleHigh(ista, plane + 1, patt, 0, nok, uu);
       else
-        AddVector(ista,
-                  patt,
-                  chi2,
-                  pars,
+        AddVector(ista, patt, chi2, pars,
                   kFALSE);  // add vector to the temporary container
-    } else {
+    }
+    else {
       ProcessSingleHigh(ista, plane + 1, patt, flag, nok, uu);
     }
   }
@@ -1082,7 +1043,8 @@ void CbmMuchFindVectors::ProcessSingleHigh(Int_t ista,
 // -------------------------------------------------------------------------
 
 // -----   Private method MoveVectors   ------------------------------------
-void CbmMuchFindVectors::MoveVectors() {
+void CbmMuchFindVectors::MoveVectors()
+{
   // Drop low-resolution vectors and move high-res. ones to their container
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -1099,7 +1061,8 @@ void CbmMuchFindVectors::MoveVectors() {
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveClones   -----------------------------------
-void CbmMuchFindVectors::RemoveClones() {
+void CbmMuchFindVectors::RemoveClones()
+{
   // Remove clone vectors (having at least 1 the same hit in each doublet (min. 4 the same hits))
 
   Int_t nthr = 4, planes[20];
@@ -1113,8 +1076,7 @@ void CbmMuchFindVectors::RemoveClones() {
 
     for (Int_t iv = 0; iv < nvec; ++iv) {
       CbmMuchTrack* vec = fVectors[ista][iv];
-      Double_t qual =
-        vec->GetNofHits() + (99 - TMath::Min(vec->GetChiSq(), 99.0)) / 100;
+      Double_t qual     = vec->GetNofHits() + (99 - TMath::Min(vec->GetChiSq(), 99.0)) / 100;
       qMap.insert(pair<Double_t, CbmMuchTrack*>(-qual, vec));
     }
 
@@ -1126,10 +1088,9 @@ void CbmMuchFindVectors::RemoveClones() {
 
       Int_t nhits = vec->GetNofHits();
       for (Int_t ih = 0; ih < nhits; ++ih) {
-        CbmMuchStrawHit* hit =
-          (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
-        Int_t lay  = fGeoScheme->GetLayerIndex(hit->GetAddress());
-        Int_t side = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
+        CbmMuchStrawHit* hit   = (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
+        Int_t lay              = fGeoScheme->GetLayerIndex(hit->GetAddress());
+        Int_t side             = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
         planes[lay * 2 + side] = vec->GetHitIndex(ih);
         //cout << iv << " " << lay*2+side << " " << vec->GetHitIndex(ih) << endl;
       }
@@ -1144,10 +1105,9 @@ void CbmMuchFindVectors::RemoveClones() {
         //nthr = TMath::Min(nhits,nhits1) / 2;
         //nthr = TMath::Min(nhits,nhits1) * 0.75;
         for (Int_t ih = 0; ih < nhits1; ++ih) {
-          CbmMuchStrawHit* hit =
-            (CbmMuchStrawHit*) fHits->UncheckedAt(vec1->GetHitIndex(ih));
-          Int_t lay  = fGeoScheme->GetLayerIndex(hit->GetAddress());
-          Int_t side = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
+          CbmMuchStrawHit* hit = (CbmMuchStrawHit*) fHits->UncheckedAt(vec1->GetHitIndex(ih));
+          Int_t lay            = fGeoScheme->GetLayerIndex(hit->GetAddress());
+          Int_t side           = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
           if (planes[lay * 2 + side] >= 0) {
             if (vec1->GetHitIndex(ih) == planes[lay * 2 + side]) same[lay] = 1;
             //else same[lay] = 0;
@@ -1189,15 +1149,15 @@ void CbmMuchFindVectors::RemoveClones() {
         fVectors[ista].erase(fVectors[ista].begin() + iv);
       }
     }
-    cout << " Vectors after clones removed: " << nvec << " "
-         << fVectors[ista].size() << endl;
+    cout << " Vectors after clones removed: " << nvec << " " << fVectors[ista].size() << endl;
 
   }  // for (Int_t ista = 0; ista < fgkStat;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveShorts   -----------------------------------
-void CbmMuchFindVectors::RemoveShorts() {
+void CbmMuchFindVectors::RemoveShorts()
+{
   // Remove short tracks
 
   Int_t nshort = fgkPlanes / 2, planes[20];
@@ -1216,10 +1176,9 @@ void CbmMuchFindVectors::RemoveShorts() {
       for (Int_t j = 0; j < fgkPlanes; ++j)
         planes[j] = -1;
       for (Int_t ih = 0; ih < nhits; ++ih) {
-        CbmMuchStrawHit* hit =
-          (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
-        Int_t lay  = fGeoScheme->GetLayerIndex(hit->GetAddress());
-        Int_t side = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
+        CbmMuchStrawHit* hit   = (CbmMuchStrawHit*) fHits->UncheckedAt(vec->GetHitIndex(ih));
+        Int_t lay              = fGeoScheme->GetLayerIndex(hit->GetAddress());
+        Int_t side             = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
         planes[lay * 2 + side] = vec->GetHitIndex(ih);
       }
 
@@ -1230,13 +1189,10 @@ void CbmMuchFindVectors::RemoveShorts() {
 
         // Compare hits
         for (Int_t ih = 0; ih < nhits1; ++ih) {
-          CbmMuchStrawHit* hit =
-            (CbmMuchStrawHit*) fHits->UncheckedAt(vec1->GetHitIndex(ih));
-          Int_t lay  = fGeoScheme->GetLayerIndex(hit->GetAddress());
-          Int_t side = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
-          if (vec1->GetHitIndex(ih) == planes[lay * 2 + side]
-              && planes[lay * 2 + side] >= 0)
-            overlap.insert(ih);
+          CbmMuchStrawHit* hit = (CbmMuchStrawHit*) fHits->UncheckedAt(vec1->GetHitIndex(ih));
+          Int_t lay            = fGeoScheme->GetLayerIndex(hit->GetAddress());
+          Int_t side           = fGeoScheme->GetLayerSideIndex(hit->GetAddress());
+          if (vec1->GetHitIndex(ih) == planes[lay * 2 + side] && planes[lay * 2 + side] >= 0) overlap.insert(ih);
         }
         //if (overlap.size() == nshort) {
         if (overlap.size() > 0) {
@@ -1255,15 +1211,15 @@ void CbmMuchFindVectors::RemoveShorts() {
         fVectors[ista].erase(fVectors[ista].begin() + iv);
       }
     }
-    cout << " Vectors after shorts removed: " << nvec << " "
-         << fVectors[ista].size() << endl;
+    cout << " Vectors after shorts removed: " << nvec << " " << fVectors[ista].size() << endl;
 
   }  // for (Int_t ista = 0;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method StoreVectors   -----------------------------------
-void CbmMuchFindVectors::StoreVectors() {
+void CbmMuchFindVectors::StoreVectors()
+{
   // Store vectors (CbmMuchTracks) into TClonesArray
 
   Int_t ntrs     = fTrackArray->GetEntriesFast();
@@ -1274,8 +1230,7 @@ void CbmMuchFindVectors::StoreVectors() {
     Int_t nvec = fVectors[ist].size();
 
     for (Int_t iv = 0; iv < nvec; ++iv) {
-      CbmMuchTrack* tr =
-        new ((*fTrackArray)[ntrs++]) CbmMuchTrack(*(fVectors[ist][iv]));
+      CbmMuchTrack* tr = new ((*fTrackArray)[ntrs++]) CbmMuchTrack(*(fVectors[ist][iv]));
       //cout << " Track: " << tr->GetNofHits() << endl;
       //for (Int_t j = 0; j < tr->GetNofHits(); ++j) cout << j << " " << tr->GetHitIndex(j) << " " << fVectors[ist][iv]->GetHitIndex(j) << endl;
       // Set hit flag (to check Lit tracking)
@@ -1303,7 +1258,8 @@ void CbmMuchFindVectors::StoreVectors() {
 //This is better when most bits in x are 0
 //It uses 3 arithmetic operations and one comparison/branch per "1" bit in x.
 // Wikipedia "Hamming weight"
-Int_t CbmMuchFindVectors::CountBits(Int_t x) {
+Int_t CbmMuchFindVectors::CountBits(Int_t x)
+{
 
   Int_t count;
   for (count = 0; x; count++)
@@ -1313,13 +1269,13 @@ Int_t CbmMuchFindVectors::CountBits(Int_t x) {
 // -------------------------------------------------------------------------
 
 // -----   Private method MatchVectors   -----------------------------------
-void CbmMuchFindVectors::MatchVectors() {
+void CbmMuchFindVectors::MatchVectors()
+{
   // Match vectors from 2 stations
 
-  const Int_t iabs = 3;
-  CbmMuchMergeVectors* merger =
-    (CbmMuchMergeVectors*) FairRun::Instance()->GetTask("MuchMergeVectors");
-  TMatrixF matr = TMatrixF(5, 5);
+  const Int_t iabs            = 3;
+  CbmMuchMergeVectors* merger = (CbmMuchMergeVectors*) FairRun::Instance()->GetTask("MuchMergeVectors");
+  TMatrixF matr               = TMatrixF(5, 5);
   TMatrixF unit(TMatrixF::kUnit, matr);
 
   for (Int_t ista = 0; ista < fgkStat; ++ista) {
@@ -1343,9 +1299,7 @@ void CbmMuchFindVectors::MatchVectors() {
       TMatrixF cf(cov, TMatrixF::kMult, ff);
       TMatrixF fcf(ff, TMatrixF::kTransposeMult, cf);
       cov.SetMatrixArray(fcf.GetMatrixArray());
-      if (ista == 1)
-        merger->PassAbsorber(
-          ista + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 0);
+      if (ista == 1) merger->PassAbsorber(ista + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 0);
       cov.Invert();  // weight matrix
       parFirst.SetCovMatrix(cov);
       vec->SetParamLast(&parFirst);
@@ -1364,10 +1318,7 @@ void CbmMuchFindVectors::MatchVectors() {
     FairTrackParam par1  = *tr1->GetParamLast();
     TMatrixFSym w1(5);
     par1.CovMatrix(w1);
-    Float_t pars1[5] = {(Float_t) par1.GetX(),
-                        (Float_t) par1.GetY(),
-                        (Float_t) par1.GetTx(),
-                        (Float_t) par1.GetTy(),
+    Float_t pars1[5] = {(Float_t) par1.GetX(), (Float_t) par1.GetY(), (Float_t) par1.GetTx(), (Float_t) par1.GetTy(),
                         1.0};
     TMatrixF p1(5, 1, pars1);
     TMatrixF wp1(w1, TMatrixF::kTransposeMult, p1);
@@ -1378,10 +1329,7 @@ void CbmMuchFindVectors::MatchVectors() {
       TMatrixFSym w2(5);
       par2.CovMatrix(w2);
       TMatrixFSym w20  = w2;
-      Float_t pars2[5] = {(Float_t) par2.GetX(),
-                          (Float_t) par2.GetY(),
-                          (Float_t) par2.GetTx(),
-                          (Float_t) par2.GetTy(),
+      Float_t pars2[5] = {(Float_t) par2.GetX(), (Float_t) par2.GetY(), (Float_t) par2.GetTx(), (Float_t) par2.GetTy(),
                           1.0};
       TMatrixF p2(5, 1, pars2);
       TMatrixF wp2(w2, TMatrixF::kTransposeMult, p2);
@@ -1424,22 +1372,19 @@ void CbmMuchFindVectors::MatchVectors() {
     }
   }
 
-  cout << " Vectors after matching: " << fVectors[0].size() << " "
-       << fVectors[1].size() << endl;
+  cout << " Vectors after matching: " << fVectors[0].size() << " " << fVectors[1].size() << endl;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveOutliers   ---------------------------------
-void CbmMuchFindVectors::RemoveOutliers(Int_t ista,
-                                        Int_t patt0,
-                                        Double_t uu[fgkPlanes][2]) {
+void CbmMuchFindVectors::RemoveOutliers(Int_t ista, Int_t patt0, Double_t uu[fgkPlanes][2])
+{
   // Find line with the lowest number of outliers and smallest sum of their chi2
   // - remove outliers and refit
 
   const Double_t thresh = 6.0;  // chi2-cut
   Double_t qualmin = 99.0, qual = 0.0;
-  multimap<Int_t, multimap<Double_t, Int_t>>::iterator mit  = fFailed.begin(),
-                                                       mit0 = mit;
+  multimap<Int_t, multimap<Double_t, Int_t>>::iterator mit = fFailed.begin(), mit0 = mit;
   Int_t patt = patt0, pattmin = patt0;
 
   for (; mit != fFailed.end(); ++mit) {
@@ -1447,9 +1392,7 @@ void CbmMuchFindVectors::RemoveOutliers(Int_t ista,
     Double_t c2sum = 0.0, outl = 0.0;
     patt = patt0;
 
-    for (multimap<Double_t, Int_t>::reverse_iterator rit = chi2s.rbegin();
-         rit != chi2s.rend();
-         ++rit) {
+    for (multimap<Double_t, Int_t>::reverse_iterator rit = chi2s.rbegin(); rit != chi2s.rend(); ++rit) {
       if (rit->first <= thresh) break;
       outl += 1;
       c2sum += rit->first;
@@ -1458,8 +1401,7 @@ void CbmMuchFindVectors::RemoveOutliers(Int_t ista,
     // Check doublets
     Int_t nDouble = 0;
     for (Int_t j = 0; j < fgkPlanes; j += 2)
-      if (patt & (3 << j))
-        ++nDouble;
+      if (patt & (3 << j)) ++nDouble;
       else
         break;
     if (nDouble < fgkPlanes / 2) continue;

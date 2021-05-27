@@ -53,10 +53,8 @@ private:
   /*********************** SHOULD GO IN ALGO ****************************/
 
   /// Control flags
-  Bool_t fbDebugMonitorMode =
-    kFALSE;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbIgnoreCriticalErrors =
-    kTRUE;  //! If ON not printout at all for critical errors
+  Bool_t fbDebugMonitorMode      = kFALSE;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbIgnoreCriticalErrors  = kTRUE;   //! If ON not printout at all for critical errors
   Bool_t fbComponentsAddedToList = kFALSE;
 
   /// User settings parameters
@@ -81,10 +79,9 @@ private:
 */
 
   /// Statistics & first TS rejection
-  uint64_t fulNumMessages = 0;
-  uint64_t fulTsCounter   = 0;
-  std::chrono::system_clock::time_point fLastPublishTime =
-    std::chrono::system_clock::now();
+  uint64_t fulNumMessages                                = 0;
+  uint64_t fulTsCounter                                  = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
 
   /// Data reception
   /// TS MetaData storage
@@ -119,14 +116,8 @@ private:
   void CheckInterSystemOffset();
 
   template<class Digi>
-  Int_t FillSystemOffsetHistos(TH1* histo,
-                               TH2* histoEvo,
-                               TH2* histoEvoLong,
-                               TProfile* profMeanEvo,
-                               TH2* histoAFCK,
-                               const Double_t T0Time,
-                               const Int_t offsetRange,
-                               Int_t iStartDigi,
+  Int_t FillSystemOffsetHistos(TH1* histo, TH2* histoEvo, TH2* histoEvoLong, TProfile* profMeanEvo, TH2* histoAFCK,
+                               const Double_t T0Time, const Int_t offsetRange, Int_t iStartDigi,
                                ECbmModuleId iDetId = ECbmModuleId::kLastModule);
 
   Int_t CalcNrBins(Int_t);
@@ -270,9 +261,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

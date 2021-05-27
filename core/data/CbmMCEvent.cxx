@@ -23,7 +23,8 @@ CbmMCEvent::CbmMCEvent()
   , fNPrim(0)
   , fIsSet(kFALSE)
 
-{}
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -41,20 +42,14 @@ CbmMCEvent::CbmMCEvent(UInt_t runId)
   , fNPrim(0)
   , fIsSet(kFALSE)
 
-{}
+{
+}
 // ------------------------------------------------------------------------
 
 
 // -----   Standard constructor   -----------------------------------------
-CbmMCEvent::CbmMCEvent(UInt_t runId,
-                       Int_t iEvent,
-                       Double_t x,
-                       Double_t y,
-                       Double_t z,
-                       Double_t t,
-                       Double_t b,
-                       Double_t phi,
-                       Int_t nPrim)
+CbmMCEvent::CbmMCEvent(UInt_t runId, Int_t iEvent, Double_t x, Double_t y, Double_t z, Double_t t, Double_t b,
+                       Double_t phi, Int_t nPrim)
   : TNamed("MCEvent", "MC")
   , fRunId(0)
   , fEventId(iEvent)
@@ -67,7 +62,8 @@ CbmMCEvent::CbmMCEvent(UInt_t runId,
   , fNPrim(nPrim)
   , fIsSet(kFALSE)
 
-{}
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -77,7 +73,8 @@ CbmMCEvent::~CbmMCEvent() {}
 
 
 // -----   Public method Reset   ------------------------------------------
-void CbmMCEvent::Reset() {
+void CbmMCEvent::Reset()
+{
   fEventId = fNPrim = 0;
   fX = fY = fZ = fT = fB = fPhi = 0.;
   fIsSet                        = kFALSE;

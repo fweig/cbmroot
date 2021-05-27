@@ -70,7 +70,9 @@ typedef struct OccupancyModule {
     , ModuleSizeY(0.)
     , ModulePositionX(0.)
     , ModulePositionY(0.)
-    , ModulePositionZ() {}
+    , ModulePositionZ()
+  {
+  }
 } OccupancyModule;
 
 class CbmTrdOccupancyQa : public FairTask {
@@ -78,11 +80,8 @@ class CbmTrdOccupancyQa : public FairTask {
 public:
   CbmTrdOccupancyQa();
   //CbmTrdOccupancyQa(const char *name, const char *title="CBM Task", const char *geo="");
-  CbmTrdOccupancyQa(const char* name,
-                    const char* title         = "CBM Task",
-                    const char* geo           = "",
-                    Double_t triggerThreshold = 1.0e-6,
-                    Bool_t plotMergedResults  = false);
+  CbmTrdOccupancyQa(const char* name, const char* title = "CBM Task", const char* geo = "",
+                    Double_t triggerThreshold = 1.0e-6, Bool_t plotMergedResults = false);
   virtual ~CbmTrdOccupancyQa();
   virtual InitStatus ReInit();
   virtual InitStatus Init();

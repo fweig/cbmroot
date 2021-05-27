@@ -47,7 +47,8 @@ public:
   /**
     * Set an ToT cut of the RICH Hits. 
     */
-  void SetTotRich(Double_t min, Double_t max) {
+  void SetTotRich(Double_t min, Double_t max)
+  {
     fTotRichMin = min;
     fTotRichMax = max;
   }
@@ -116,7 +117,8 @@ private:
 
 
   template<typename T = CbmRichHit>
-  bool doToT(T* hit) {
+  bool doToT(T* hit)
+  {
     bool check = false;
     if ((hit->GetToT() > 23.7) && (hit->GetToT() < 30.0)) check = true;
 

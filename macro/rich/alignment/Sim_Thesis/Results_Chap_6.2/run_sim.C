@@ -5,7 +5,8 @@ static Double_t fieldScale;
 #include <iostream>
 using namespace std;
 
-void run_sim(Int_t nEvents) {
+void run_sim(Int_t nEvents)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -13,8 +14,7 @@ void run_sim(Int_t nEvents) {
   //    cout << "script: " << script << endl;
 
   // -----   In- and output file names   ------------------------------------
-  TString setupName = "setup_misalign_3mrad_minusX",
-          outDir    = "/data/Sim_Outputs/Results_Chap_6.2/3mrad_minusX/";
+  TString setupName = "setup_misalign_3mrad_minusX", outDir = "/data/Sim_Outputs/Results_Chap_6.2/3mrad_minusX/";
   //    TString setupName = "setup_align", outDir = "/data/Sim_Outputs/Results_Chap_6.2/Align/";
 
   TString parFile = outDir + setupName + "_param.root";
@@ -27,9 +27,9 @@ void run_sim(Int_t nEvents) {
                  "misalignment_correction/Sim_Thesis/Results_Chap_6.2/geosetup/"
                  + setupName + ".C";
 
-  TString boxGen = "yes";  // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS      = 10;  // number of e- to be generated
-  Int_t NPOSITRONS      = 10;  // number of e+ to be generated
+  TString boxGen        = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS      = 10;     // number of e- to be generated
+  Int_t NPOSITRONS      = 10;     // number of e+ to be generated
   TString urqmd         = "no";
   TString urqmdFile     = "";
   TString pluto         = "no";  // If "yes" PLUTO particles will be embedded
@@ -46,8 +46,7 @@ void run_sim(Int_t nEvents) {
     parFile = TString(gSystem->Getenv("PAR_FILE"));
 
     setupName    = TString(gSystem->Getenv("SETUP_NAME"));
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + TString(gSystem->Getenv("GEO_SETUP_FILE"));
 
     NELECTRONS = TString(gSystem->Getenv("NELECTRONS")).Atoi();
     NPOSITRONS = TString(gSystem->Getenv("NPOSITRONS")).Atoi();
@@ -65,8 +64,7 @@ void run_sim(Int_t nEvents) {
          << "urqmdFile: " << TString(gSystem->Getenv("URQMD_FILE")) << endl;
   }
 
-  std::cout << "-I- using geoSetupFile: " << geoSetupFile
-            << " and setupName: " << setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: " << setupName << std::endl;
 
   remove(parFile.Data());
   remove(mcFile.Data());
@@ -96,8 +94,7 @@ void run_sim(Int_t nEvents) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -143,11 +140,10 @@ void run_sim(Int_t nEvents) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -262,8 +258,7 @@ void run_sim(Int_t nEvents) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

@@ -3,7 +3,8 @@ static Double_t fieldZ;
 static Double_t fieldScale;
 
 
-void run_sim_matching2(Int_t nEvents = 100) {
+void run_sim_matching2(Int_t nEvents = 100)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -14,9 +15,8 @@ void run_sim_matching2(Int_t nEvents = 100) {
   setupName         = "setup_align";
 
   TString outDir = "";
-  if (script == "yes") {
-    outDir = TString(gSystem->Getenv("OUT_DIR"));
-  } else {
+  if (script == "yes") { outDir = TString(gSystem->Getenv("OUT_DIR")); }
+  else {
     outDir = "/lustre/nyx/cbm/users/jbendar/Sim_Outputs/test/";
   }
   TString parFile = outDir + setupName + "_param.root";
@@ -25,14 +25,13 @@ void run_sim_matching2(Int_t nEvents = 100) {
   TString outFile = outDir + setupName + "_out.root";
 
   TString geoSetupFile = "";
-  geoSetupFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/macro/"
+  geoSetupFile         = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/macro/"
                  "rich/matching/geosetup/setup_align.C";
 
-  TString electrons =
-    "yes";                // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 1;  // number of e- to be generated
-  Int_t NPOSITRONS  = 1;  // number of e+ to be generated
-  TString urqmd     = "no";  // If "yes" then UrQMD will be used as background
+  TString electrons = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS  = 1;      // number of e- to be generated
+  Int_t NPOSITRONS  = 1;      // number of e+ to be generated
+  TString urqmd     = "no";   // If "yes" then UrQMD will be used as background
   TString urqmdFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                       "input/urqmd.auau.10gev.centr.root";
   TString pluto         = "no";  // If "yes" PLUTO particles will be embedded
@@ -50,8 +49,7 @@ void run_sim_matching2(Int_t nEvents = 100) {
          << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
          << "urqmdFile: " << TString(gSystem->Getenv("URQMD_FILE")) << endl;
 
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/matching/geosetup/"
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/matching/geosetup/"
                    + TString(gSystem->Getenv("GEO_SETUP_FILE"));
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
 
@@ -64,8 +62,7 @@ void run_sim_matching2(Int_t nEvents = 100) {
     //        plutoParticle = TString(gSystem->Getenv("PLUTO_PARTICLE"));
   }
 
-  std::cout << "-I- using geoSetupFile: " << geoSetupFile
-            << " and setupName: " << setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: " << setupName << std::endl;
 
   remove(parFile.Data());
   remove(mcFile.Data());
@@ -95,8 +92,7 @@ void run_sim_matching2(Int_t nEvents = 100) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -143,11 +139,10 @@ void run_sim_matching2(Int_t nEvents = 100) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -270,8 +265,7 @@ void run_sim_matching2(Int_t nEvents = 100) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

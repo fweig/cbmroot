@@ -1,4 +1,5 @@
-void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
+void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -34,7 +35,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     Double_t dMeanCluSize = h2->ProjectionY()->GetMean();
     cout << " Mean Cluster size: " << dMeanCluSize << endl;
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -45,7 +47,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -57,7 +60,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -69,7 +73,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -81,7 +86,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2f->Draw("colz");
     h2f->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -92,7 +98,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2m->Draw("colz");
     h2m->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -103,7 +110,8 @@ void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "") {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

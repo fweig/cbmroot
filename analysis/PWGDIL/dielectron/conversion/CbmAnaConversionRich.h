@@ -49,8 +49,7 @@ private:
   TClonesArray* fGlobalTracks;
   CbmVertex* fPrimVertex;
 
-  std::vector<TH1*>
-    fHistoList_richrings;  // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_richrings;  // list of all histograms related to rich rings
 
 
   TH2D* fTest;

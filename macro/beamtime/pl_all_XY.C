@@ -1,4 +1,5 @@
-void pl_all_XY(Int_t iNDet = 24, Int_t iMode = 0, Double_t dMax = 0.) {
+void pl_all_XY(Int_t iNDet = 24, Int_t iMode = 0, Double_t dMax = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -44,13 +45,13 @@ void pl_all_XY(Int_t iNDet = 24, Int_t iMode = 0, Double_t dMax = 0.) {
           gPad->SetLogz();
           break;
         case 1:
-          if (iCh == 0)
-            h2->Draw("colz");
+          if (iCh == 0) h2->Draw("colz");
           else
             h2->Draw("colz same");
           break;
       }
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

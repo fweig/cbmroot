@@ -1,10 +1,9 @@
-void DecayConfig() {
+void DecayConfig()
+{
 
   KFPartEfficiencies eff;
 
-  for (int iParticle = eff.GetParticleIndex(429);
-       iParticle <= eff.GetParticleIndex(-429);
-       iParticle++) {
+  for (int iParticle = eff.GetParticleIndex(429); iParticle <= eff.GetParticleIndex(-429); iParticle++) {
     Double_t lifetime = eff.partLifeTime[iParticle];  // lifetime
     Double_t mass     = eff.partMass[iParticle];
     Int_t PDG         = eff.partPDG[iParticle];

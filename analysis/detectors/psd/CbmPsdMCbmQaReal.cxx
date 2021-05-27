@@ -1,25 +1,10 @@
 #include "CbmPsdMCbmQaReal.h"
 
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TEllipse.h"
-#include "TF1.h"
-#include "TGeoBBox.h"
-#include "TGeoManager.h"
-#include "TGeoNode.h"
-#include "TH1.h"
-#include "TH1D.h"
-#include "TLine.h"
-#include "TMarker.h"
-#include "TMath.h"
-#include "TStyle.h"
-#include "TSystem.h"
-#include <TFile.h>
-
-
+#include "CbmDigiManager.h"
 #include "CbmDrawHist.h"
 #include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
 #include "CbmMatchRecoToMC.h"
 #include "CbmPsdDigi.h"
 #include "CbmPsdMCbmHit.h"
@@ -29,17 +14,32 @@
 #include "CbmTofTracklet.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdTrack.h"
-#include "TLatex.h"
-
-#include "CbmDigiManager.h"
-#include "CbmHistManager.h"
 #include "CbmUtils.h"
 
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TEllipse.h"
+#include "TF1.h"
+#include "TGeoBBox.h"
+#include "TGeoManager.h"
+#include "TGeoNode.h"
+#include "TH1.h"
+#include "TH1D.h"
+#include "TLatex.h"
+#include "TLine.h"
+#include "TMarker.h"
+#include "TMath.h"
+#include "TStyle.h"
+#include "TSystem.h"
+#include <TFile.h>
+
 #include <boost/assign/list_of.hpp>
-#include <cmath>
+
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include <cmath>
 
 using namespace std;
 using boost::assign::list_of;
@@ -55,24 +55,23 @@ CbmPsdMCbmQaReal::CbmPsdMCbmQaReal()
   , fCbmEvent(nullptr)
   , fHM(nullptr)
   , fEntryNum(0)
-  , fOutputDir("result") {}
+  , fOutputDir("result")
+{
+}
 
-InitStatus CbmPsdMCbmQaReal::Init() {
+InitStatus CbmPsdMCbmQaReal::Init()
+{
   cout << "CbmPsdMCbmQaReal::Init" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmPsdMCbmQaReal::Init", "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmPsdMCbmQaReal::Init", "RootManager not instantised!"); }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd))
-    Fatal("CbmPsdMCbmQaReal::Init", "No Psd Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd)) Fatal("CbmPsdMCbmQaReal::Init", "No Psd Digis!");
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof))
-    Fatal("CbmPsdMCbmQaReal::Init", "No Tof Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) Fatal("CbmPsdMCbmQaReal::Init", "No Tof Digis!");
 
 
   fPsdHits = (TClonesArray*) ioman->GetObject("PsdHit");
@@ -82,9 +81,7 @@ InitStatus CbmPsdMCbmQaReal::Init() {
   if (nullptr == fTofHits) { Fatal("CbmPsdMCbmQaReal::Init", "No Tof Hits!"); }
 
   fTofTracks = (TClonesArray*) ioman->GetObject("TofTracks");
-  if (nullptr == fTofTracks) {
-    Fatal("CbmPsdMCbmQaReal::Init", "No Tof Tracks!");
-  }
+  if (nullptr == fTofTracks) { Fatal("CbmPsdMCbmQaReal::Init", "No Tof Tracks!"); }
 
   //     fT0Digis =(TClonesArray*) ioman->GetObject("CbmT0Digi");
   //     if (nullptr == fT0Digis) { Fatal("CbmPsdMCbmQaReal::Init", "No T0 Digis!");}
@@ -97,130 +94,62 @@ InitStatus CbmPsdMCbmQaReal::Init() {
   return kSUCCESS;
 }
 
-void CbmPsdMCbmQaReal::InitHistograms() {
+void CbmPsdMCbmQaReal::InitHistograms()
+{
   fHM = new CbmHistManager();
 
   fHM->Create1<TH1D>("fhNofEntries", "fhNofEntries; Counts", 1, 0.5, 1.5);
   fHM->Create1<TH1D>("fhNofCbmEvents", "fhNofCbmEvents;Counts", 1, 0.5, 1.5);
 
-  fHM->Create1<TH1D>(
-    "fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
+  fHM->Create1<TH1D>("fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
 
   // nof objects per timeslice
-  fHM->Create1<TH1D>("fhNofPsdDigisInTimeslice",
-                     "fhNofPsdDigisInTimeslice;# PSD digis / timeslice;Counts",
-                     100,
-                     0,
+  fHM->Create1<TH1D>("fhNofPsdDigisInTimeslice", "fhNofPsdDigisInTimeslice;# PSD digis / timeslice;Counts", 100, 0,
                      2000);
-  fHM->Create1<TH1D>("fhNofPsdHitsInTimeslice",
-                     "fhNofPsdHitsInTimeslice;# PSD hits / timeslice;Counts",
-                     100,
-                     0,
-                     2000);
+  fHM->Create1<TH1D>("fhNofPsdHitsInTimeslice", "fhNofPsdHitsInTimeslice;# PSD hits / timeslice;Counts", 100, 0, 2000);
 
   // PSD hits
-  fHM->Create2<TH2D>("fhPsdHitPos",
-                     "fhPsdHitPos;PSD module id [];PSD section id [];Counts",
-                     20,
-                     0,
-                     20,
-                     20,
-                     0,
-                     20);
-  fHM->Create1<TH1D>(
-    "fhPsdHitsTimeLog", "fhPsdHitsTimeLog;Time [ns];Counts", 400, 0., 0.);
+  fHM->Create2<TH2D>("fhPsdHitPos", "fhPsdHitPos;PSD module id [];PSD section id [];Counts", 20, 0, 20, 20, 0, 20);
+  fHM->Create1<TH1D>("fhPsdHitsTimeLog", "fhPsdHitsTimeLog;Time [ns];Counts", 400, 0., 0.);
 
 
   // PSD digis, the limits of log histograms are set in Exec method
-  fHM->Create1<TH1D>(
-    "fhPsdDigisTimeLog", "fhNofPsdDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
-  fHM->Create1<TH1D>(
-    "fhTofDigisTimeLog", "fhTofDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
-  fHM->Create1<TH1D>(
-    "fhStsDigisTimeLog", "fhStsDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
-  fHM->Create1<TH1D>(
-    "fhT0DigisTimeLog", "fhT0DigisTimeLog;Time [ns];Counts", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhPsdDigisTimeLog", "fhNofPsdDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhTofDigisTimeLog", "fhTofDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhStsDigisTimeLog", "fhStsDigisTimeLog;Time [ns];Counts", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhT0DigisTimeLog", "fhT0DigisTimeLog;Time [ns];Counts", 400, 0., 0.);
 
   //Edep
-  fHM->Create1<TH1D>(
-    "fhPsdDigisEdep", "fhPsdDigisEdep;Edep [adc counts];Counts", 500, 0, 50000);
-  fHM->Create1<TH1D>(
-    "fhPsdHitEdep", "fhPsdHitEdep;Edep [adc counts];Counts", 500, 0, 50000);
-  fHM->Create1<TH1D>("fhPsdEdepInEvent",
-                     "fhPsdEdepInEvent; Edep [adc counts]; Counts",
-                     500,
-                     0,
-                     300000);
+  fHM->Create1<TH1D>("fhPsdDigisEdep", "fhPsdDigisEdep;Edep [adc counts];Counts", 500, 0, 50000);
+  fHM->Create1<TH1D>("fhPsdHitEdep", "fhPsdHitEdep;Edep [adc counts];Counts", 500, 0, 50000);
+  fHM->Create1<TH1D>("fhPsdEdepInEvent", "fhPsdEdepInEvent; Edep [adc counts]; Counts", 500, 0, 300000);
 
   //Tof Psd correlation
-  fHM->Create2<TH2D>(
-    "fhTofTrackMultPsdEdep",
-    "fhTofTrackMultPsdEdep;PSD Edep [adc counts];Tof track Mult [];Counts",
-    500,
-    0,
-    400000,
-    20,
-    0,
-    20);
-  fHM->Create2<TH2D>(
-    "fhTofHitMultPsdEdep",
-    "fhTofHitMultPsdEdep;PSD Edep [adc counts];Tof hit Mult [];Counts",
-    500,
-    0,
-    400000,
-    50,
-    0,
-    50);
+  fHM->Create2<TH2D>("fhTofTrackMultPsdEdep", "fhTofTrackMultPsdEdep;PSD Edep [adc counts];Tof track Mult [];Counts",
+                     500, 0, 400000, 20, 0, 20);
+  fHM->Create2<TH2D>("fhTofHitMultPsdEdep", "fhTofHitMultPsdEdep;PSD Edep [adc counts];Tof hit Mult [];Counts", 500, 0,
+                     400000, 50, 0, 50);
 
   //Tof Hits
-  fHM->Create3<TH3D>(
-    "fhTofXYZ",
-    "fhTofXYZ;Tof Hit X [cm];TofHit Z [cm];Tof Hit Y [cm];Counts",
-    100,
-    -20,
-    20,
-    141,
-    230.,
-    370.,
-    100,
-    -20,
-    20);
-  fHM->Create1<TH1D>(
-    "fhTofHitsZ", "fhTofHitsZ;Z [cm];Counts", 350, -0.5, 349.5);
-  fHM->Create2<TH2D>("fhTofHitsXZ",
-                     "fhTofHitsXZ;Z [cm];X [cm];Counts",
-                     600,
-                     -150,
-                     450,
-                     500,
-                     -50,
-                     450);
+  fHM->Create3<TH3D>("fhTofXYZ", "fhTofXYZ;Tof Hit X [cm];TofHit Z [cm];Tof Hit Y [cm];Counts", 100, -20, 20, 141, 230.,
+                     370., 100, -20, 20);
+  fHM->Create1<TH1D>("fhTofHitsZ", "fhTofHitsZ;Z [cm];Counts", 350, -0.5, 349.5);
+  fHM->Create2<TH2D>("fhTofHitsXZ", "fhTofHitsXZ;Z [cm];X [cm];Counts", 600, -150, 450, 500, -50, 450);
 
   //Tof Tracks
-  fHM->Create1<TH1D>("fhTofTracksPerEvent",
-                     "fhTofTracksPerEvent;NofTracks/Event;Counts",
-                     20,
-                     -5,
-                     25);
-  fHM->Create2<TH2D>("fhTofTracksXY",
-                     "fhTofTracksXY;X[cm];Y[cm];NofTracks/cm^2",
-                     250,
-                     -100,
-                     150,
-                     300,
-                     -150,
-                     150);
+  fHM->Create1<TH1D>("fhTofTracksPerEvent", "fhTofTracksPerEvent;NofTracks/Event;Counts", 20, -5, 25);
+  fHM->Create2<TH2D>("fhTofTracksXY", "fhTofTracksXY;X[cm];Y[cm];NofTracks/cm^2", 250, -100, 150, 300, -150, 150);
 }
 
 
-void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
+void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/)
+{
   fEntryNum++;
   fHM->H1("fhNofEntries")->Fill(1);
   cout << "CbmPsdMCbmQaReal, entry No. " << fEntryNum << endl;
 
   if (fDigiHitsInitialized == false) {
-    if ((fDigiMan->GetNofDigis(ECbmModuleId::kPsd) > 0)
-        || (fDigiMan->GetNofDigis(ECbmModuleId::kSts) > 0)
+    if ((fDigiMan->GetNofDigis(ECbmModuleId::kPsd) > 0) || (fDigiMan->GetNofDigis(ECbmModuleId::kSts) > 0)
         || (fDigiMan->GetNofDigis(ECbmModuleId::kTof) > 0)) {
 
       double minTime = std::numeric_limits<double>::max();
@@ -232,15 +161,9 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
 
       double dT = 40e9;
       fHM->H1("fhPsdHitsTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
-      fHM->H1("fhPsdDigisTimeLog")
-        ->GetXaxis()
-        ->SetLimits(minTime, minTime + dT);
-      fHM->H1("fhTofDigisTimeLog")
-        ->GetXaxis()
-        ->SetLimits(minTime, minTime + dT);
-      fHM->H1("fhStsDigisTimeLog")
-        ->GetXaxis()
-        ->SetLimits(minTime, minTime + dT);
+      fHM->H1("fhPsdDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+      fHM->H1("fhTofDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+      fHM->H1("fhStsDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
       fHM->H1("fhT0DigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
 
 
@@ -299,16 +222,11 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
     std::vector<int> evPsdHitIndx;
 
     // Scan Event to find first Digi that triggered.
-    std::cout << "Sts Digis:" << ev->GetNofData(ECbmDataType::kStsDigi)
-              << std::endl;
-    std::cout << "Much Digis:" << ev->GetNofData(ECbmDataType::kMuchDigi)
-              << std::endl;
-    std::cout << "Tof Digis:" << ev->GetNofData(ECbmDataType::kTofDigi)
-              << std::endl;
-    std::cout << "Rich Digis:" << ev->GetNofData(ECbmDataType::kRichDigi)
-              << std::endl;
-    std::cout << "Psd Digis:" << ev->GetNofData(ECbmDataType::kPsdDigi)
-              << std::endl;
+    std::cout << "Sts Digis:" << ev->GetNofData(ECbmDataType::kStsDigi) << std::endl;
+    std::cout << "Much Digis:" << ev->GetNofData(ECbmDataType::kMuchDigi) << std::endl;
+    std::cout << "Tof Digis:" << ev->GetNofData(ECbmDataType::kTofDigi) << std::endl;
+    std::cout << "Rich Digis:" << ev->GetNofData(ECbmDataType::kRichDigi) << std::endl;
+    std::cout << "Psd Digis:" << ev->GetNofData(ECbmDataType::kPsdDigi) << std::endl;
 
     Int_t nofTofTracksInEvent = ev->GetNofData(ECbmDataType::kTofTrack);
     Int_t nofPsdHitsInEvent   = ev->GetNofData(ECbmDataType::kPsdHit);
@@ -317,8 +235,7 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
     for (int j = 0; j < nofPsdHitsInEvent; j++) {
       auto iPsdHit = ev->GetIndex(ECbmDataType::kPsdHit, j);
       evPsdHitIndx.push_back(iPsdHit);
-      CbmPsdMCbmHit* psdHit =
-        static_cast<CbmPsdMCbmHit*>(fPsdHits->At(iPsdHit));
+      CbmPsdMCbmHit* psdHit = static_cast<CbmPsdMCbmHit*>(fPsdHits->At(iPsdHit));
       PsdEdepInEvent += psdHit->GetEdep();
     }
     fHM->H1("fhPsdEdepInEvent")->Fill(PsdEdepInEvent);
@@ -337,19 +254,18 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
 
     fHM->H1("fhTofTracksPerEvent")->Fill(nofTofTracksInEvent);
     for (int j = 0; j < nofTofTracksInEvent; j++) {
-      auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, j);
-      CbmTofTracklet* tTrack =
-        static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+      auto iTofTrack         = ev->GetIndex(ECbmDataType::kTofTrack, j);
+      CbmTofTracklet* tTrack = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
 
-      fHM->H2("fhTofTracksXY")
-        ->Fill(tTrack->GetFitX(PsdZPos), tTrack->GetFitY(PsdZPos));
+      fHM->H2("fhTofTracksXY")->Fill(tTrack->GetFitX(PsdZPos), tTrack->GetFitY(PsdZPos));
     }
 
   }  //End CbmEvent loop
 }
 
 
-void CbmPsdMCbmQaReal::DrawHist() {
+void CbmPsdMCbmQaReal::DrawHist()
+{
   cout.precision(4);
 
   //SetDefaultDrawStyle();
@@ -358,14 +274,12 @@ void CbmPsdMCbmQaReal::DrawHist() {
   fHM->ScaleByPattern("fh_.*", 1. / nofEvents);
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_fhNofEntries", "psd_mcbm_fhNofEntries", 600, 600);
+    fHM->CreateCanvas("psd_mcbm_fhNofEntries", "psd_mcbm_fhNofEntries", 600, 600);
     DrawH1(fHM->H1("fhNofEntries"));
   }
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_fhNofCbmEvents", "psd_mcbm_fhNofCbmEvents", 600, 600);
+    fHM->CreateCanvas("psd_mcbm_fhNofCbmEvents", "psd_mcbm_fhNofCbmEvents", 600, 600);
     DrawH1(fHM->H1("fhNofCbmEvents"));
   }
 
@@ -376,10 +290,7 @@ void CbmPsdMCbmQaReal::DrawHist() {
 
 
   {
-    TCanvas* c = fHM->CreateCanvas("psd_mcbm_nofObjectsInTimeslice",
-                                   "psd_mcbm_nofObjectsInTimeslice",
-                                   1500,
-                                   500);
+    TCanvas* c = fHM->CreateCanvas("psd_mcbm_nofObjectsInTimeslice", "psd_mcbm_nofObjectsInTimeslice", 1500, 500);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhNofPsdDigisInTimeslice"), kLinear, kLog);
@@ -393,20 +304,10 @@ void CbmPsdMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_DigisTimeLog", "psd_mcbm_DigisTimeLog", 1200, 1200);
-    DrawH1({fHM->H1("fhStsDigisTimeLog"),
-            fHM->H1("fhTofDigisTimeLog"),
-            fHM->H1("fhT0DigisTimeLog"),
+    fHM->CreateCanvas("psd_mcbm_DigisTimeLog", "psd_mcbm_DigisTimeLog", 1200, 1200);
+    DrawH1({fHM->H1("fhStsDigisTimeLog"), fHM->H1("fhTofDigisTimeLog"), fHM->H1("fhT0DigisTimeLog"),
             fHM->H1("fhPsdDigisTimeLog")},
-           {"STS", "TOF", "T0", "PSD"},
-           kLinear,
-           kLog,
-           true,
-           0.87,
-           0.75,
-           0.99,
-           0.99);
+           {"STS", "TOF", "T0", "PSD"}, kLinear, kLog, true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.10);
     fHM->H1("fhStsDigisTimeLog")->GetYaxis()->SetTitleOffset(0.7);
@@ -414,36 +315,27 @@ void CbmPsdMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_fhPsdDigisEdep", "psd_mcbm_fhPsdDigisEdep", 600, 600);
+    fHM->CreateCanvas("psd_mcbm_fhPsdDigisEdep", "psd_mcbm_fhPsdDigisEdep", 600, 600);
     DrawH1(fHM->H1("fhPsdDigisEdep"));
   }
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_fhPsdHitEdep", "psd_mcbm_fhPsdHitEdep", 600, 600);
+    fHM->CreateCanvas("psd_mcbm_fhPsdHitEdep", "psd_mcbm_fhPsdHitEdep", 600, 600);
     DrawH1(fHM->H1("fhPsdHitEdep"));
   }
 
   {
-    fHM->CreateCanvas(
-      "psd_mcbm_fhPsdEdepInEvent", "psd_mcbm_fhPsdEdepInEvent", 600, 600);
+    fHM->CreateCanvas("psd_mcbm_fhPsdEdepInEvent", "psd_mcbm_fhPsdEdepInEvent", 600, 600);
     DrawH1(fHM->H1("fhPsdEdepInEvent"));
   }
 
   {
-    fHM->CreateCanvas("psd_mcbm_fhTofTrackMultPsdEdep",
-                      "psd_mcbm_fhTofTrackMultPsdEdep",
-                      1200,
-                      1200);
+    fHM->CreateCanvas("psd_mcbm_fhTofTrackMultPsdEdep", "psd_mcbm_fhTofTrackMultPsdEdep", 1200, 1200);
     DrawH2(fHM->H2("fhTofTrackMultPsdEdep"));
   }
 
   {
-    fHM->CreateCanvas("psd_mcbm_fhTofHitMultPsdEdep",
-                      "psd_mcbm_fhTofHitMultPsdEdep",
-                      1200,
-                      1200);
+    fHM->CreateCanvas("psd_mcbm_fhTofHitMultPsdEdep", "psd_mcbm_fhTofHitMultPsdEdep", 1200, 1200);
     DrawH2(fHM->H2("fhTofHitMultPsdEdep"));
   }
 
@@ -473,7 +365,8 @@ void CbmPsdMCbmQaReal::DrawHist() {
 }
 
 
-void CbmPsdMCbmQaReal::Finish() {
+void CbmPsdMCbmQaReal::Finish()
+{
   //std::cout<<"Tracks:  "<< fTofTracks->GetEntriesFast() <<std::endl;
   std::cout << "Drawing Hists...";
   DrawHist();
@@ -489,8 +382,8 @@ void CbmPsdMCbmQaReal::Finish() {
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    std::string s     = fOutputDir + "/RecoHists.root";
-    TFile* outFile    = new TFile(s.c_str(), "RECREATE");
+    std::string s  = fOutputDir + "/RecoHists.root";
+    TFile* outFile = new TFile(s.c_str(), "RECREATE");
     if (outFile->IsOpen()) {
       fHM->WriteToFile();
       std::cout << "Written to Root-file \"" << s << "\"  ...";
@@ -504,8 +397,8 @@ void CbmPsdMCbmQaReal::Finish() {
 }
 
 
-void CbmPsdMCbmQaReal::DrawFromFile(const string& fileName,
-                                    const string& outputDir) {
+void CbmPsdMCbmQaReal::DrawFromFile(const string& fileName, const string& outputDir)
+{
   fOutputDir = outputDir;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot

@@ -16,7 +16,8 @@ using namespace std;
 // 2017-07-15 - v18b - DE - arrange 4x mRICH detectors in the setup and tilt towards target
 
 
-void create_rich_v19c_mcbm() {
+void create_rich_v19c_mcbm()
+{
   gSystem->Load("libGeom");
 
   TString geoFileName = "rich_v19c_mcbm.geo.root";
@@ -99,13 +100,13 @@ void create_rich_v19c_mcbm() {
 
   // PMT
   // PMT specs https://www.hamamatsu.com/resources/pdf/etd/H12700_TPMH1348E.pdf
-  const Double_t pmtNofPixels      = 8;
-  const Double_t pmtSize           = 5.2;
-  const Double_t pmtSizeHalf       = pmtSize / 2.;
-  const Double_t pmtSensitiveSize  = 4.85;
-  const Double_t pmtPixelSize      = 0.6;  //pmtSensitiveSize / pmtNofPixels;
-  const Double_t pmtPixelSizeHalf  = pmtPixelSize / 2.;
-  const Double_t pmtOuterPixelSize = 0.625;  //pmtSensitiveSize / pmtNofPixels;
+  const Double_t pmtNofPixels          = 8;
+  const Double_t pmtSize               = 5.2;
+  const Double_t pmtSizeHalf           = pmtSize / 2.;
+  const Double_t pmtSensitiveSize      = 4.85;
+  const Double_t pmtPixelSize          = 0.6;  //pmtSensitiveSize / pmtNofPixels;
+  const Double_t pmtPixelSizeHalf      = pmtPixelSize / 2.;
+  const Double_t pmtOuterPixelSize     = 0.625;  //pmtSensitiveSize / pmtNofPixels;
   const Double_t pmtOuterPixelSizeHalf = pmtOuterPixelSize / 2.;
   const Double_t pmtGap                = 0.1;
   const Double_t pmtGapHalf            = pmtGap / 2.;
@@ -114,10 +115,9 @@ void create_rich_v19c_mcbm() {
   const Double_t pmtWindowThickness    = 0.15;
   Double_t pmtWindowPixelDistance      = 0.0;
   if (pmtWindowThickness > 0.0) pmtWindowPixelDistance = 0.0;
-  const Double_t pmtThickness =
-    pmtPixelThickness + pmtWindowThickness + pmtWindowPixelDistance;
-  const Double_t pmtZPadding = 3.871;
-  const Double_t pmtXShift   = 2.5;
+  const Double_t pmtThickness = pmtPixelThickness + pmtWindowThickness + pmtWindowPixelDistance;
+  const Double_t pmtZPadding  = 3.871;
+  const Double_t pmtXShift    = 2.5;
 
   // Electronics
   const Double_t elecLength = 10.;
@@ -152,112 +152,66 @@ void create_rich_v19c_mcbm() {
   if (isRotate90DegZ) {
     rotBox->RotateZ(90.);
     rotBox->RotateY(0.955);  //Tilting of Rich
-    trBox = new TGeoCombiTrans(
-      0, -pmtXShift - (pmtSize + pmtGap + 1), boxFrontToTarget, rotBox);
-  } else {
+    trBox = new TGeoCombiTrans(0, -pmtXShift - (pmtSize + pmtGap + 1), boxFrontToTarget, rotBox);
+  }
+  else {
     rotBox->RotateX(0.955);  //Tilting of Rich
                              // Nov 2019 run
-    trBox = new TGeoCombiTrans(-pmtXShift - (pmtSize + pmtGap + 1) + 12. + 7.,
-                               0,
-                               boxFrontToTarget,
-                               rotBox);
+    trBox = new TGeoCombiTrans(-pmtXShift - (pmtSize + pmtGap + 1) + 12. + 7., 0, boxFrontToTarget, rotBox);
     //	    trBox = new TGeoCombiTrans(-pmtXShift-(pmtSize + pmtGap + 1), 0, boxFrontToTarget, rotBox);
   }
-  TGeoVolume* boxVol =
-    gGeoMan->MakeBox("box", medAl, boxXLen / 2., boxYLen / 2., boxZLen / 2.);
+  TGeoVolume* boxVol = gGeoMan->MakeBox("box", medAl, boxXLen / 2., boxYLen / 2., boxZLen / 2.);
   rich->AddNode(boxVol, 1, trBox);
 
   // Gas
-  TGeoVolume* gasVol =
-    gGeoMan->MakeBox("Gas",
-                     medNitrogen,
-                     boxXLen / 2. - boxThickness,
-                     boxYLen / 2. - boxThickness,
-                     ((boxZLen - boxBackThickness - boxFrontThickness) / 2.));
-  TGeoTranslation* trGas =
-    new TGeoTranslation(0., 0., (-(boxBackThickness - boxFrontThickness) / 2.));
+  TGeoVolume* gasVol = gGeoMan->MakeBox("Gas", medNitrogen, boxXLen / 2. - boxThickness, boxYLen / 2. - boxThickness,
+                                        ((boxZLen - boxBackThickness - boxFrontThickness) / 2.));
+  TGeoTranslation* trGas = new TGeoTranslation(0., 0., (-(boxBackThickness - boxFrontThickness) / 2.));
   boxVol->AddNode(gasVol, 1, trGas);
 
   // Front plane from kapton
-  TGeoVolume* kaptonVol = gGeoMan->MakeBox("kapton",
-                                           medKapton,
-                                           boxXLen / 2. - boxThickness,
-                                           boxYLen / 2. - boxThickness,
-                                           boxFrontThickness / 2.);
-  TGeoTranslation* trKapton =
-    new TGeoTranslation(0., 0., -(boxZLen - boxFrontThickness) / 2.);
+  TGeoVolume* kaptonVol     = gGeoMan->MakeBox("kapton", medKapton, boxXLen / 2. - boxThickness,
+                                           boxYLen / 2. - boxThickness, boxFrontThickness / 2.);
+  TGeoTranslation* trKapton = new TGeoTranslation(0., 0., -(boxZLen - boxFrontThickness) / 2.);
   boxVol->AddNode(kaptonVol, 1, trKapton);
 
 
   // Aerogel
-  TGeoVolume* aerogelVol = gGeoMan->MakeBox("aerogel",
-                                            medAerogel,
-                                            aerogelXLen / 2.,
-                                            aerogelYLen / 2.,
-                                            aerogelZLen / 2.);
-  Double_t aerogelZ      = boxZLen / 2. - boxBackThickness - pmtZPadding
-                      - aerogelPmtDistance - aerogelZLen / 2.;
-  TGeoTranslation* trAerogel1 =
-    new TGeoTranslation(pmtXShift, (aerogelYLen + aerogelGap) / 2., aerogelZ);
-  TGeoTranslation* trAerogel2 =
-    new TGeoTranslation(pmtXShift, -(aerogelYLen + aerogelGap) / 2., aerogelZ);
+  TGeoVolume* aerogelVol =
+    gGeoMan->MakeBox("aerogel", medAerogel, aerogelXLen / 2., aerogelYLen / 2., aerogelZLen / 2.);
+  Double_t aerogelZ           = boxZLen / 2. - boxBackThickness - pmtZPadding - aerogelPmtDistance - aerogelZLen / 2.;
+  TGeoTranslation* trAerogel1 = new TGeoTranslation(pmtXShift, (aerogelYLen + aerogelGap) / 2., aerogelZ);
+  TGeoTranslation* trAerogel2 = new TGeoTranslation(pmtXShift, -(aerogelYLen + aerogelGap) / 2., aerogelZ);
   gasVol->AddNode(aerogelVol, 1, trAerogel1);
   gasVol->AddNode(aerogelVol, 2, trAerogel2);
 
   // PMT
-  TGeoTranslation* trPmt1 = new TGeoTranslation(
-    pmtSizeHalf + pmtGapHalf, -pmtSize - pmtGap, 0.);  // Bottom Right
-  TGeoTranslation* trPmt2 =
-    new TGeoTranslation(pmtSizeHalf + pmtGapHalf, 0., 0.);  // Middle Right
-  TGeoTranslation* trPmt3 = new TGeoTranslation(
-    pmtSizeHalf + pmtGapHalf, pmtSize + pmtGap, 0.);  // Top Right
-  TGeoTranslation* trPmt4 = new TGeoTranslation(
-    -pmtSizeHalf - pmtGapHalf, -pmtSize - pmtGap, 0.);  // Bottom Left
-  TGeoTranslation* trPmt5 =
-    new TGeoTranslation(-pmtSizeHalf - pmtGapHalf, 0., 0.);  // Middle Left
-  TGeoTranslation* trPmt6 = new TGeoTranslation(
-    -pmtSizeHalf - pmtGapHalf, pmtSize + pmtGap, 0.);  // Top Left
+  TGeoTranslation* trPmt1 = new TGeoTranslation(pmtSizeHalf + pmtGapHalf, -pmtSize - pmtGap, 0.);   // Bottom Right
+  TGeoTranslation* trPmt2 = new TGeoTranslation(pmtSizeHalf + pmtGapHalf, 0., 0.);                  // Middle Right
+  TGeoTranslation* trPmt3 = new TGeoTranslation(pmtSizeHalf + pmtGapHalf, pmtSize + pmtGap, 0.);    // Top Right
+  TGeoTranslation* trPmt4 = new TGeoTranslation(-pmtSizeHalf - pmtGapHalf, -pmtSize - pmtGap, 0.);  // Bottom Left
+  TGeoTranslation* trPmt5 = new TGeoTranslation(-pmtSizeHalf - pmtGapHalf, 0., 0.);                 // Middle Left
+  TGeoTranslation* trPmt6 = new TGeoTranslation(-pmtSizeHalf - pmtGapHalf, pmtSize + pmtGap, 0.);   // Top Left
 
-  TGeoVolume* pmtContVol  = new TGeoVolumeAssembly("pmt_cont_vol");
-  TGeoVolume* pmtVol      = new TGeoVolumeAssembly("pmt_vol_0");
-  TGeoVolume* pmtVol_180  = new TGeoVolumeAssembly("pmt_vol_1");
-  TGeoVolume* pmtPixelVol = gGeoMan->MakeBox("pmt_pixel",
-                                             medCsI,
-                                             pmtPixelSize / 2.,
-                                             pmtPixelSize / 2.,
-                                             pmtPixelThickness / 2.);
+  TGeoVolume* pmtContVol = new TGeoVolumeAssembly("pmt_cont_vol");
+  TGeoVolume* pmtVol     = new TGeoVolumeAssembly("pmt_vol_0");
+  TGeoVolume* pmtVol_180 = new TGeoVolumeAssembly("pmt_vol_1");
+  TGeoVolume* pmtPixelVol =
+    gGeoMan->MakeBox("pmt_pixel", medCsI, pmtPixelSize / 2., pmtPixelSize / 2., pmtPixelThickness / 2.);
   TGeoVolume* pmtPixelVol_outer_outer =
-    gGeoMan->MakeBox("pmt_pixel",
-                     medCsI,
-                     pmtOuterPixelSize / 2.,
-                     pmtOuterPixelSize / 2.,
-                     pmtPixelThickness / 2.);
+    gGeoMan->MakeBox("pmt_pixel", medCsI, pmtOuterPixelSize / 2., pmtOuterPixelSize / 2., pmtPixelThickness / 2.);
   TGeoVolume* pmtPixelVol_inner_outer =
-    gGeoMan->MakeBox("pmt_pixel",
-                     medCsI,
-                     pmtPixelSize / 2.,
-                     pmtOuterPixelSize / 2.,
-                     pmtPixelThickness / 2.);
+    gGeoMan->MakeBox("pmt_pixel", medCsI, pmtPixelSize / 2., pmtOuterPixelSize / 2., pmtPixelThickness / 2.);
   TGeoVolume* pmtPixelVol_outer_inner =
-    gGeoMan->MakeBox("pmt_pixel",
-                     medCsI,
-                     pmtOuterPixelSize / 2.,
-                     pmtPixelSize / 2.,
-                     pmtPixelThickness / 2.);
-  TGeoVolume* pmtWindow = gGeoMan->MakeBox("pmt_Window",
-                                           medPmtGlas,
-                                           pmtSizeHalf,
-                                           pmtSizeHalf,
-                                           pmtWindowThickness / 2.);
+    gGeoMan->MakeBox("pmt_pixel", medCsI, pmtOuterPixelSize / 2., pmtPixelSize / 2., pmtPixelThickness / 2.);
+  TGeoVolume* pmtWindow = gGeoMan->MakeBox("pmt_Window", medPmtGlas, pmtSizeHalf, pmtSizeHalf, pmtWindowThickness / 2.);
 
-  pmtContVol->AddNode(
-    pmtVol_180, 1, trPmt1);                // To Power Module    // Bottom Right
-  pmtContVol->AddNode(pmtVol, 2, trPmt2);  // Middle             // Middle Right
-  pmtContVol->AddNode(pmtVol, 3, trPmt3);  // To Combiner        // Top Right
-  pmtContVol->AddNode(
-    pmtVol_180, 4, trPmt4);                // To Power Module    // Bottom Left
-  pmtContVol->AddNode(pmtVol, 5, trPmt5);  // Middle             // Middle Left
-  pmtContVol->AddNode(pmtVol, 6, trPmt6);  // To Combiner        // Top Left
+  pmtContVol->AddNode(pmtVol_180, 1, trPmt1);  // To Power Module    // Bottom Right
+  pmtContVol->AddNode(pmtVol, 2, trPmt2);      // Middle             // Middle Right
+  pmtContVol->AddNode(pmtVol, 3, trPmt3);      // To Combiner        // Top Right
+  pmtContVol->AddNode(pmtVol_180, 4, trPmt4);  // To Power Module    // Bottom Left
+  pmtContVol->AddNode(pmtVol, 5, trPmt5);      // Middle             // Middle Left
+  pmtContVol->AddNode(pmtVol, 6, trPmt6);      // To Combiner        // Top Left
 
   Int_t halfPmtNofPixels = pmtNofPixels / 2;
   for (Int_t i = 0; i < pmtNofPixels; i++) {
@@ -270,100 +224,95 @@ void create_rich_v19c_mcbm() {
       bool y_outer = false;
 
       if (i == 0) {
-        x = -(halfPmtNofPixels - 1) * pmtPixelSize - pmtOuterPixelSizeHalf;
+        x       = -(halfPmtNofPixels - 1) * pmtPixelSize - pmtOuterPixelSizeHalf;
         x_outer = true;
-      } else if (i == (pmtNofPixels - 1)) {
+      }
+      else if (i == (pmtNofPixels - 1)) {
         x       = (halfPmtNofPixels - 1) * pmtPixelSize + pmtOuterPixelSizeHalf;
         x_outer = true;
-      } else if (i < halfPmtNofPixels) {
-        x = -((halfPmtNofPixels - 1) - i) * pmtPixelSize - pmtPixelSizeHalf;
+      }
+      else if (i < halfPmtNofPixels) {
+        x       = -((halfPmtNofPixels - 1) - i) * pmtPixelSize - pmtPixelSizeHalf;
         x_outer = false;
-      } else {
+      }
+      else {
         x       = (i - halfPmtNofPixels) * pmtPixelSize + pmtPixelSizeHalf;
         x_outer = false;
       }
 
 
       if (j == 0) {
-        y = -(halfPmtNofPixels - 1) * pmtPixelSize - pmtOuterPixelSizeHalf;
+        y       = -(halfPmtNofPixels - 1) * pmtPixelSize - pmtOuterPixelSizeHalf;
         y_outer = true;
-      } else if (j == (pmtNofPixels - 1)) {
+      }
+      else if (j == (pmtNofPixels - 1)) {
         y       = (halfPmtNofPixels - 1) * pmtPixelSize + pmtOuterPixelSizeHalf;
         y_outer = true;
-      } else if (j < halfPmtNofPixels) {
-        y = -((halfPmtNofPixels - 1) - j) * pmtPixelSize - pmtPixelSizeHalf;
+      }
+      else if (j < halfPmtNofPixels) {
+        y       = -((halfPmtNofPixels - 1) - j) * pmtPixelSize - pmtPixelSizeHalf;
         y_outer = false;
-      } else {
+      }
+      else {
         y       = (j - halfPmtNofPixels) * pmtPixelSize + pmtPixelSizeHalf;
         y_outer = false;
       }
       //Double_t x = (i - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
 
       //Double_t y = (j - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
-      TGeoTranslation* trij =
-        new TGeoTranslation(x, y, -pmtPixelThickness / 2. + pmtThickness / 2.);
+      TGeoTranslation* trij = new TGeoTranslation(x, y, -pmtPixelThickness / 2. + pmtThickness / 2.);
 
       //normal rotated PMT (HV connector at lower side)
-      uint uid =
-        18 - ((j % 4) / 2) * 16 - (j % 2) + 2 * i + (1 - (j / 4)) * 100;
+      uint uid = 18 - ((j % 4) / 2) * 16 - (j % 2) + 2 * i + (1 - (j / 4)) * 100;
 
       //180?? rotated PMT
-      uint uid_180 =
-        15 + ((j % 4) / 2) * 16 + (j % 2) - 2 * i + (1 - (j / 4)) * 100;
+      uint uid_180 = 15 + ((j % 4) / 2) * 16 + (j % 2) - 2 * i + (1 - (j / 4)) * 100;
       if (x_outer == true && y_outer == true) {
         pmtVol->AddNode(pmtPixelVol_outer_outer, uid, trij);
         pmtVol_180->AddNode(pmtPixelVol_outer_outer, uid_180, trij);
-      } else if (x_outer == true && y_outer == false) {
+      }
+      else if (x_outer == true && y_outer == false) {
         pmtVol->AddNode(pmtPixelVol_outer_inner, uid, trij);
         pmtVol_180->AddNode(pmtPixelVol_outer_inner, uid_180, trij);
-      } else if (x_outer == false && y_outer == true) {
+      }
+      else if (x_outer == false && y_outer == true) {
         pmtVol->AddNode(pmtPixelVol_inner_outer, uid, trij);
         pmtVol_180->AddNode(pmtPixelVol_inner_outer, uid_180, trij);
-      } else {
+      }
+      else {
         pmtVol->AddNode(pmtPixelVol, uid, trij);
         pmtVol_180->AddNode(pmtPixelVol, uid_180, trij);
       }
     }
   }
 
-  TGeoTranslation* trWndw =
-    new TGeoTranslation(0., 0., +pmtWindowThickness / 2. - pmtThickness / 2.);
+  TGeoTranslation* trWndw = new TGeoTranslation(0., 0., +pmtWindowThickness / 2. - pmtThickness / 2.);
   if (pmtWindowThickness > 0.0) {
     pmtVol->AddNode(pmtWindow, 1, trWndw);
     pmtVol_180->AddNode(pmtWindow, 1, trWndw);
   }
 
   //
-  Double_t pmtContXLen = 2 * (pmtSize + pmtGap);
-  Double_t pmtContYLen = 3 * (pmtSize + pmtGap);
-  TGeoTranslation* trPmtCont1 =
-    new TGeoTranslation(-pmtContXLen / 2., pmtContYLen, 0.);  //Top Left
-  TGeoTranslation* trPmtCont2 =
-    new TGeoTranslation(-pmtContXLen / 2., 0., 0.);  //Middle Left
-  TGeoTranslation* trPmtCont3 =
-    new TGeoTranslation(-pmtContXLen / 2., -pmtContYLen, 0.);  //Bottom Left
-  TGeoTranslation* trPmtCont4 =
-    new TGeoTranslation(pmtContXLen / 2., pmtContYLen, 0.);  //
-  TGeoTranslation* trPmtCont5 =
-    new TGeoTranslation(pmtContXLen / 2., 0., 0.);  //
-  TGeoTranslation* trPmtCont6 =
-    new TGeoTranslation(pmtContXLen / 2., -pmtContYLen, 0.);  //
+  Double_t pmtContXLen        = 2 * (pmtSize + pmtGap);
+  Double_t pmtContYLen        = 3 * (pmtSize + pmtGap);
+  TGeoTranslation* trPmtCont1 = new TGeoTranslation(-pmtContXLen / 2., pmtContYLen, 0.);   //Top Left
+  TGeoTranslation* trPmtCont2 = new TGeoTranslation(-pmtContXLen / 2., 0., 0.);            //Middle Left
+  TGeoTranslation* trPmtCont3 = new TGeoTranslation(-pmtContXLen / 2., -pmtContYLen, 0.);  //Bottom Left
+  TGeoTranslation* trPmtCont4 = new TGeoTranslation(pmtContXLen / 2., pmtContYLen, 0.);    //
+  TGeoTranslation* trPmtCont5 = new TGeoTranslation(pmtContXLen / 2., 0., 0.);             //
+  TGeoTranslation* trPmtCont6 = new TGeoTranslation(pmtContXLen / 2., -pmtContYLen, 0.);   //
 
   TGeoVolume* pmtPlaneVol = new TGeoVolumeAssembly("pmt_plane");
-  pmtPlaneVol->AddNode(
-    pmtContVol,
-    00,
-    trPmtCont1);  // Id gives the Address 0x7**0 of the top left DiRICH in a BP  (X|Y)
+  pmtPlaneVol->AddNode(pmtContVol, 00,
+                       trPmtCont1);  // Id gives the Address 0x7**0 of the top left DiRICH in a BP  (X|Y)
   pmtPlaneVol->AddNode(pmtContVol, 03, trPmtCont2);
   pmtPlaneVol->AddNode(pmtContVol, 06, trPmtCont3);
   pmtPlaneVol->AddNode(pmtContVol, 20, trPmtCont4);
   pmtPlaneVol->AddNode(pmtContVol, 23, trPmtCont5);
   pmtPlaneVol->AddNode(pmtContVol, 26, trPmtCont6);
 
-  TGeoTranslation* trPmtPlane = new TGeoTranslation(
-    pmtXShift,
-    0.,
-    boxZLen / 2. - boxBackThickness - pmtZPadding + (pmtThickness / 2.));
+  TGeoTranslation* trPmtPlane =
+    new TGeoTranslation(pmtXShift, 0., boxZLen / 2. - boxBackThickness - pmtZPadding + (pmtThickness / 2.));
   gasVol->AddNode(pmtPlaneVol, 1, trPmtPlane);
 
 

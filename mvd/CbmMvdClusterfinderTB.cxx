@@ -4,6 +4,7 @@
 
 // Includes from MVD
 #include "CbmMvdClusterfinderTB.h"
+
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmMvdDetector.h"
@@ -19,7 +20,6 @@
 // Includes from ROOT
 #include "TClonesArray.h"
 #include "TGeoManager.h"
-
 #include "TMath.h"
 #include "TString.h"
 
@@ -35,14 +35,11 @@ using std::setprecision;
 using std::setw;
 
 // -----   Default constructor   ------------------------------------------
-CbmMvdClusterfinderTB::CbmMvdClusterfinderTB()
-  : CbmMvdClusterfinderTB("MVDCLusterfinderTB", 0, 0) {}
+CbmMvdClusterfinderTB::CbmMvdClusterfinderTB() : CbmMvdClusterfinderTB("MVDCLusterfinderTB", 0, 0) {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdClusterfinderTB::CbmMvdClusterfinderTB(const char* name,
-                                             Int_t iMode,
-                                             Int_t iVerbose)
+CbmMvdClusterfinderTB::CbmMvdClusterfinderTB(const char* name, Int_t iMode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
@@ -53,11 +50,14 @@ CbmMvdClusterfinderTB::CbmMvdClusterfinderTB(const char* name,
   , fCluster(NULL)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdClusterfinderTB::~CbmMvdClusterfinderTB() {
+CbmMvdClusterfinderTB::~CbmMvdClusterfinderTB()
+{
 
   if (fCluster) {
     fCluster->Delete();
@@ -67,7 +67,8 @@ CbmMvdClusterfinderTB::~CbmMvdClusterfinderTB() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdClusterfinderTB::Exec(Option_t* /*opt*/) {
+void CbmMvdClusterfinderTB::Exec(Option_t* /*opt*/)
+{
   // --- Start timer
   fTimer.Start();
 
@@ -91,23 +92,19 @@ void CbmMvdClusterfinderTB::Exec(Option_t* /*opt*/) {
     fDetector->Exec(fClusterPluginNr);
     LOG(debug) << "End Chain";
     LOG(debug) << "Start writing Cluster";
-    fCluster->AbsorbObjects(fDetector->GetOutputCluster(),
-                            0,
-                            fDetector->GetOutputCluster()->GetEntriesFast()
-                              - 1);
-    LOG(debug) << "Total of " << fCluster->GetEntriesFast()
-               << " Cluster in this Event";
+    fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+    LOG(debug) << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event";
     LOG(debug) << "//----------------------------------------//";
-    LOG(info) << "+ " << setw(20) << GetName()
-              << ": Created: " << fCluster->GetEntriesFast() << " cluster in "
-              << fixed << setprecision(6) << fTimer.RealTime() << " s";
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
+              << setprecision(6) << fTimer.RealTime() << " s";
   }
   fTimer.Stop();
 }
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdClusterfinderTB::Init() {
+InitStatus CbmMvdClusterfinderTB::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -135,22 +132,16 @@ InitStatus CbmMvdClusterfinderTB::Init() {
 
   // **********  Register output array
   fCluster = new TClonesArray("CbmMvdCluster", 10000);
-  ioman->Register("MvdCluster",
-                  "Mvd Clusters",
-                  fCluster,
-                  IsOutputBranchPersistent("MvdCluster"));
+  ioman->Register("MvdCluster", "Mvd Clusters", fCluster, IsOutputBranchPersistent("MvdCluster"));
 
   fDetector = CbmMvdDetector::Instance();
 
-  if (fDetector->GetSensorArraySize() > 1) {
-    LOG(debug) << "-I- succesfully loaded Geometry from file -I-";
-  } else {
-    LOG(fatal)
-      << "Geometry couldn't be loaded from file. No MVD digitizer available.";
+  if (fDetector->GetSensorArraySize() > 1) { LOG(debug) << "-I- succesfully loaded Geometry from file -I-"; }
+  else {
+    LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
-  CbmMvdSensorClusterfinderTask* clusterTask =
-    new CbmMvdSensorClusterfinderTask();
+  CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
 
   fDetector->AddPlugin(clusterTask);
   fClusterPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
@@ -170,7 +161,8 @@ InitStatus CbmMvdClusterfinderTB::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdClusterfinderTB::Finish() {
+void CbmMvdClusterfinderTB::Finish()
+{
   fDetector->Finish();
   PrintParameters();
 }
@@ -187,16 +179,13 @@ void CbmMvdClusterfinderTB::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdClusterfinderTB::PrintParameters() {
+void CbmMvdClusterfinderTB::PrintParameters()
+{
 
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters Clusterfinder ===================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters Clusterfinder ====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

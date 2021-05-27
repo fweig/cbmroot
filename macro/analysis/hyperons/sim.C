@@ -1,11 +1,11 @@
-void sim(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0, Int_t seed = 1) {
+void sim(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0, Int_t seed = 1)
+{
   Char_t filenr[4];
   sprintf(filenr, "%04d", file_nr);
   printf("Filenr: %s\n", filenr);
 
   TString signal;
-  if (s != 3312 && s != 3334)
-    signal = "la";
+  if (s != 3312 && s != 3334) signal = "la";
   else if (s == 3312)
     signal = "xi";
   else if (s == 3334)
@@ -90,8 +90,7 @@ void sim(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0, Int_t seed = 1) {
   // -----   Create magnetic field   ----------------------------------------
   cout << endl << "=== much_sim.C : Create magnetic field ..." << endl;
   CbmFieldMap* magField = NULL;
-  if (fieldMap == "FieldActive" || fieldMap == "FieldIron")
-    magField = new CbmFieldMapSym3(fieldMap);
+  if (fieldMap == "FieldActive" || fieldMap == "FieldIron") magField = new CbmFieldMapSym3(fieldMap);
   else if (fieldMap == "FieldAlligator")
     magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "FieldMuonMagnet")
@@ -119,7 +118,8 @@ void sim(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0, Int_t seed = 1) {
     //gen->SetDistributionY(1.9875,0.546669);  // 25 GeV
     gen->Init();
     primGen->AddGenerator(gen);
-  } else if (signal == "xi") {
+  }
+  else if (signal == "xi") {
     delete gRandom;
     gRandom                    = new TRandom3();
     CbmAnaHypYPtGenerator* gen = new CbmAnaHypYPtGenerator(3312);

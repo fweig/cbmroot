@@ -6,7 +6,8 @@
 //
 // --------------------------------------------------------------------------
 
-int checkFieldMap() {
+int checkFieldMap()
+{
 
   // Choose field map
   TString fieldName = "field_v12b";
@@ -28,8 +29,7 @@ int checkFieldMap() {
 
   // -------  Get magnetic field  -----------------------------------------
   CbmFieldMap* field = NULL;
-  if (fieldName == "field_v12b")
-    field = new CbmFieldMapSym3(fieldName.Data());
+  if (fieldName == "field_v12b") field = new CbmFieldMapSym3(fieldName.Data());
   else if (fieldName == "field_v12a")
     field = new CbmFieldMapSym2(fieldName.Data());
   else {
@@ -295,8 +295,7 @@ int checkFieldMap() {
 
 
   TString fieldType = "";
-  if (type == 0)
-    fieldType = "Constant field";
+  if (type == 0) fieldType = "Constant field";
   else if (type == 1)
     fieldType = "Field map";
   else if (type == 2)
@@ -329,8 +328,7 @@ int checkFieldMap() {
     sprintf(t1, "Centre position (%.2f, %.2f, %.2f) cm", xp, yp, zp);
     info.AddText(0.05, 0.3, t1);
     Double_t scale = field->GetScale();
-    sprintf(
-      t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
+    sprintf(t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
     info.AddText(0.05, 0.1, t1);
   }
   info.Draw();

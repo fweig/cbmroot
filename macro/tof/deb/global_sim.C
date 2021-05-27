@@ -9,18 +9,18 @@
 using std::cout;
 using std::endl;
 
-void global_sim(Int_t nEvents = 10, Int_t seed = 555) {
+void global_sim(Int_t nEvents = 10, Int_t seed = 555)
+{
   gRandom->SetSeed(seed);
 
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
 
   // Files
   //	TString urqmdFile  = "/Users/andrey/Development/cbm/d/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.0000.ftn14"; // input UrQMD file
-  TString urqmdFile =
-    "../../input/urqmd.auau.25gev.centr.0000.ftn14";  // input UrQMD file
-  TString dir     = "data/";  // Directory for output simulation files
-  TString mcFile  = dir + "mc.0000.root";     //MC file name
-  TString parFile = dir + "param.0000.root";  //Parameter file name
+  TString urqmdFile = "../../input/urqmd.auau.25gev.centr.0000.ftn14";  // input UrQMD file
+  TString dir       = "data/";                                          // Directory for output simulation files
+  TString mcFile    = dir + "mc.0000.root";                             //MC file name
+  TString parFile   = dir + "param.0000.root";                          //Parameter file name
 
   // Geometry
   TString caveGeom   = "cave.geo";

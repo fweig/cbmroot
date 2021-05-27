@@ -8,15 +8,16 @@
 #ifndef CBMLITCLUSTERINGQA_H
 #define CBMLITCLUSTERINGQA_H
 
-#include <FairTask.h>
-#include <string>
-#include <vector>
-
 #include "CbmMCEventList.h"
 #include "CbmModuleList.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmTimeSlice.h"
 #include "cbm/base/CbmLitDetectorSetup.h"
+
+#include <FairTask.h>
+
+#include <string>
+#include <vector>
 
 class CbmHistManager;
 class CbmMCDataArray;
@@ -51,9 +52,7 @@ public:
 
   /** Setters */
   void SetOutputDir(const string& outputDir) { fOutputDir = outputDir; }
-  void SetMuchDigiFileName(const string& digiFileName) {
-    fMuchDigiFileName = digiFileName;
-  }
+  void SetMuchDigiFileName(const string& digiFileName) { fMuchDigiFileName = digiFileName; }
 
 private:
   Int_t GetStationId(Int_t address, ECbmModuleId detId);
@@ -65,23 +64,15 @@ private:
 
   void InitMuchGeoScheme(const string& digiFileName);
 
-  void ProcessPoints(Int_t iEvent,
-                     CbmMCDataArray* points,
-                     const string& detName,
-                     ECbmModuleId detId);
+  void ProcessPoints(Int_t iEvent, CbmMCDataArray* points, const string& detName, ECbmModuleId detId);
 
   template<class Digi>
   void ProcessDigis(const string& detName);
 
-  void ProcessClusters(const TClonesArray* clusters,
-                       const TClonesArray* clusterMatches,
-                       const string& detName,
+  void ProcessClusters(const TClonesArray* clusters, const TClonesArray* clusterMatches, const string& detName,
                        ECbmModuleId detId);
 
-  void ProcessHits(const TClonesArray* hits,
-                   const TClonesArray* hitMatches,
-                   const string& detName,
-                   ECbmModuleId detId);
+  void ProcessHits(const TClonesArray* hits, const TClonesArray* hitMatches, const string& detName, ECbmModuleId detId);
 
   /**
      *
@@ -101,34 +92,19 @@ private:
   /**
      *
      */
-  void CreateNofObjectsHistograms(ECbmModuleId detId,
-                                  const string& detName,
-                                  const string& parameter,
+  void CreateNofObjectsHistograms(ECbmModuleId detId, const string& detName, const string& parameter,
                                   const string& xTitle);
 
-  void CreateClusterParametersHistograms(ECbmModuleId detId,
-                                         const string& detName);
+  void CreateClusterParametersHistograms(ECbmModuleId detId, const string& detName);
 
-  void FillResidualAndPullHistograms(CbmMCDataArray* points,
-                                     const TClonesArray* hits,
-                                     const TClonesArray* hitMatches,
-                                     const string& detName,
-                                     ECbmModuleId detId);
+  void FillResidualAndPullHistograms(CbmMCDataArray* points, const TClonesArray* hits, const TClonesArray* hitMatches,
+                                     const string& detName, ECbmModuleId detId);
 
-  void FillHitEfficiencyHistograms(Int_t iEvent,
-                                   CbmMCDataArray* points,
-                                   const TClonesArray* hits,
-                                   const TClonesArray* hitMatches,
-                                   const string& detName,
-                                   ECbmModuleId detId);
+  void FillHitEfficiencyHistograms(Int_t iEvent, CbmMCDataArray* points, const TClonesArray* hits,
+                                   const TClonesArray* hitMatches, const string& detName, ECbmModuleId detId);
 
-  void CreateHitEfficiencyHistograms(ECbmModuleId detId,
-                                     const string& detName,
-                                     const string& parameter,
-                                     const string& xTitle,
-                                     Int_t nofBins,
-                                     Double_t minBin,
-                                     Double_t maxBin);
+  void CreateHitEfficiencyHistograms(ECbmModuleId detId, const string& detName, const string& parameter,
+                                     const string& xTitle, Int_t nofBins, Double_t minBin, Double_t maxBin);
 
   CbmHistManager* fHM    = nullptr;    // Histogram manager
   std::string fOutputDir = "";         // Output directory for results

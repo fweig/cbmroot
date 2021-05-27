@@ -35,57 +35,41 @@ public:
   /**
     * \brief Inherited from CbmLitMaterialEffects.
     */
-  LitStatus Update(CbmLitTrackParam* par,
-                   const CbmLitMaterialInfo* mat,
-                   int pdg,
-                   bool downstream);
+  LitStatus Update(CbmLitTrackParam* par, const CbmLitMaterialInfo* mat, int pdg, bool downstream);
 
   // LitStatus Update2(
   //       CbmLitTrackParam* par,
   //         const CbmLitMaterialInfo* mat);
 public:
-  void AddThinScatter(CbmLitTrackParam* par,
-                      const CbmLitMaterialInfo* mat) const;
+  void AddThinScatter(CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  void AddThickScatter(CbmLitTrackParam* par,
-                       const CbmLitMaterialInfo* mat) const;
+  void AddThickScatter(CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  void AddEnergyLoss(CbmLitTrackParam* par,
-                     const CbmLitMaterialInfo* mat) const;
+  void AddEnergyLoss(CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat CalcThetaSq(const CbmLitTrackParam* par,
-                       const CbmLitMaterialInfo* mat) const;
+  litfloat CalcThetaSq(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
   litfloat BetheBlochSimple(const CbmLitMaterialInfo* mat) const;
 
-  litfloat BetheBloch(const CbmLitTrackParam* par,
-                      const CbmLitMaterialInfo* mat) const;
+  litfloat BetheBloch(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat BetheBlochElectron(const CbmLitTrackParam* par,
-                              const CbmLitMaterialInfo* mat) const;
+  litfloat BetheBlochElectron(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat EnergyLoss(const CbmLitTrackParam* par,
-                      const CbmLitMaterialInfo* mat) const;
+  litfloat EnergyLoss(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat dEdx(const CbmLitTrackParam* par,
-                const CbmLitMaterialInfo* mat) const;
+  litfloat dEdx(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
   litfloat CalcQpAfterEloss(litfloat qp, litfloat eloss) const;
 
-  litfloat CalcSigmaSqQp(const CbmLitTrackParam* par,
-                         const CbmLitMaterialInfo* mat) const;
+  litfloat CalcSigmaSqQp(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat CalcSigmaSqQpElectron(const CbmLitTrackParam* par,
-                                 const CbmLitMaterialInfo* mat) const;
+  litfloat CalcSigmaSqQpElectron(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat MPVEnergyLoss(const CbmLitTrackParam* par,
-                         const CbmLitMaterialInfo* mat) const;
+  litfloat MPVEnergyLoss(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat BetheHeitler(const CbmLitTrackParam* par,
-                        const CbmLitMaterialInfo* mat) const;
+  litfloat BetheHeitler(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
-  litfloat PairProduction(const CbmLitTrackParam* par,
-                          const CbmLitMaterialInfo* mat) const;
+  litfloat PairProduction(const CbmLitTrackParam* par, const CbmLitMaterialInfo* mat) const;
 
   litfloat CalcI(litfloat Z) const;
 

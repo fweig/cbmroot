@@ -32,17 +32,16 @@
 #ifndef CLOCK_MONOTONIC
 #define CLOCK_MONOTONIC 0
 #endif
-inline int clock_gettime(int clk_id, struct timespec* t) {
+inline int clock_gettime(int clk_id, struct timespec* t)
+{
   mach_timebase_info_data_t timebase;
   mach_timebase_info(&timebase);
   uint64_t time;
-  time = mach_absolute_time();
-  double nseconds =
-    ((double) time * (double) timebase.numer) / ((double) timebase.denom);
-  double seconds =
-    ((double) time * (double) timebase.numer) / ((double) timebase.denom * 1e9);
-  t->tv_sec  = seconds;
-  t->tv_nsec = nseconds;
+  time            = mach_absolute_time();
+  double nseconds = ((double) time * (double) timebase.numer) / ((double) timebase.denom);
+  double seconds  = ((double) time * (double) timebase.numer) / ((double) timebase.denom * 1e9);
+  t->tv_sec       = seconds;
+  t->tv_nsec      = nseconds;
   return 0;
 }
 #else
@@ -82,9 +81,12 @@ CbmTofTBClusterizer::CbmTofTBClusterizer()
   , fTofDigiMatchs(0)
   , fStorDigiExp()
   , fStorDigiExpOld()
-  , fOutTimeFactor(1) {}
+  , fOutTimeFactor(1)
+{
+}
 
-Bool_t CbmTofTBClusterizer::InitCalibParameter() {
+Bool_t CbmTofTBClusterizer::InitCalibParameter()
+{
   // dimension and initialize calib parameter
   //
   Int_t iNbSmTypes = fDigiBdfPar->GetNbSmTypes();
@@ -95,8 +97,7 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
     fvCPSigPropSpeed[iT].resize(iNbRpc);
     for (Int_t iRpc = 0; iRpc < iNbRpc; iRpc++)
       if (0.0 < fDigiBdfPar->GetSigVel(iT, 0, iRpc))
-        fvCPSigPropSpeed[iT][iRpc] = /*1000.0 * */ fDigiBdfPar->GetSigVel(
-          iT, 0, iRpc);  // convert in cm/ns
+        fvCPSigPropSpeed[iT][iRpc] = /*1000.0 * */ fDigiBdfPar->GetSigVel(iT, 0, iRpc);  // convert in cm/ns
       else
         fvCPSigPropSpeed[iT][iRpc] = fDigiBdfPar->GetSignalSpeed();
   }  // for (Int_t iT=0; iT<iNbSmTypes; iT++)
@@ -121,8 +122,7 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
           // LOG(info)<<Form(" fvCPDelTof for SmT %d, R %d, B %d",iSmType,iSm*iNbRpc+iRpc,iBx);
           fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx].resize(iNTrg);
           for (Int_t iTrg = 0; iTrg < iNTrg; iTrg++)
-            fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iTrg] =
-              0.;  // initialize
+            fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iTrg] = 0.;  // initialize
         }
 
         Int_t iNbChan = fDigiBdfPar->GetNbChan(iSmType, iRpc);
@@ -135,12 +135,9 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
           fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh].resize(nbSide);
           fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh].resize(nbSide);
           for (Int_t iSide = 0; iSide < nbSide; iSide++) {
-            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] =
-              0.;  //initialize
-            fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] =
-              1.;  //initialize
-            fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][iSide].resize(
-              nbClWalkBinX);
+            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]    = 0.;  //initialize
+            fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] = 1.;  //initialize
+            fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][iSide].resize(nbClWalkBinX);
             for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
               fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][iSide][iWx] = 0.;
             }
@@ -284,7 +281,8 @@ static TH1F* deltaPointTHisto   = 0;
 static TH1F* nofChannelsTHisto  = 0;
 static TH1F* digiTimeHisto      = 0;
 
-InitStatus CbmTofTBClusterizer::Init() {
+InitStatus CbmTofTBClusterizer::Init()
+{
   if (0 == fDigiBdfPar) LOG(fatal) << "No CbmTofDigiBdfPar found";
 
   FairRootManager* ioman = FairRootManager::Instance();
@@ -311,8 +309,7 @@ InitStatus CbmTofTBClusterizer::Init() {
   fGeoHandler->CheckGeometryVersion();
 
   for (Int_t icell = 0; icell < iNrOfCells; ++icell) {
-    Int_t cellId =
-      fDigiPar->GetCellId(icell);  // cellId is assigned in CbmTofCreateDigiPar
+    Int_t cellId = fDigiPar->GetCellId(icell);  // cellId is assigned in CbmTofCreateDigiPar
     fChannelInfo = fDigiPar->GetCell(cellId);
 
     Int_t smtype  = fGeoHandler->GetSMType(cellId);
@@ -337,8 +334,7 @@ InitStatus CbmTofTBClusterizer::Init() {
     Int_t iNbSm  = fDigiBdfPar->GetNbSm(iSmType);
     Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
     fStorDigiExp[iSmType].resize(iNbSm * iNbRpc);
-    LOG(info) << "For the supermodule with the type: " << iSmType
-              << ", the number of such supermodules is: " << iNbSm
+    LOG(info) << "For the supermodule with the type: " << iSmType << ", the number of such supermodules is: " << iNbSm
               << ", and the number of Rpc is: " << iNbRpc;
 
     for (Int_t iSm = 0; iSm < iNbSm; ++iSm) {
@@ -349,38 +345,30 @@ InitStatus CbmTofTBClusterizer::Init() {
     }
   }
 
-  deltaChannelTHisto =
-    new TH1F("deltaChannelTHisto", "deltaChannelTHisto", 100, 0., 10.);
-  deltaPointTHisto =
-    new TH1F("deltaPointTHisto", "deltaPointTHisto", 100, 0., 1.);
-  nofChannelsTHisto =
-    new TH1F("nofChannelsTHisto", "nofChannelsTHisto", 20, 0., 20.);
-  digiTimeHisto =
-    new TH1F("digiTimeHisto", "digiTimeHisto", 10100, -100., 10000.);
+  deltaChannelTHisto = new TH1F("deltaChannelTHisto", "deltaChannelTHisto", 100, 0., 10.);
+  deltaPointTHisto   = new TH1F("deltaPointTHisto", "deltaPointTHisto", 100, 0., 1.);
+  nofChannelsTHisto  = new TH1F("nofChannelsTHisto", "nofChannelsTHisto", 20, 0., 20.);
+  digiTimeHisto      = new TH1F("digiTimeHisto", "digiTimeHisto", 10100, -100., 10000.);
 
   fTofHits = new TClonesArray("CbmTofHit");
-  ioman->Register(
-    "TofHit", "Tof", fTofHits, IsOutputBranchPersistent("TofHit"));
+  ioman->Register("TofHit", "Tof", fTofHits, IsOutputBranchPersistent("TofHit"));
   fTofDigiMatchs = new TClonesArray("CbmMatch", 100);
-  ioman->Register("TofDigiMatch",
-                  "Tof",
-                  fTofDigiMatchs,
-                  IsOutputBranchPersistent("TofDigiMatch"));
+  ioman->Register("TofDigiMatch", "Tof", fTofDigiMatchs, IsOutputBranchPersistent("TofDigiMatch"));
 
   return kSUCCESS;
 }
 
-void CbmTofTBClusterizer::SetParContainers() {
+void CbmTofTBClusterizer::SetParContainers()
+{
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
 
-  fDigiPar = static_cast<CbmTofDigiPar*>(rtdb->getContainer("CbmTofDigiPar"));
-  fDigiBdfPar =
-    static_cast<CbmTofDigiBdfPar*>(rtdb->getContainer("CbmTofDigiBdfPar"));
+  fDigiPar    = static_cast<CbmTofDigiPar*>(rtdb->getContainer("CbmTofDigiPar"));
+  fDigiBdfPar = static_cast<CbmTofDigiBdfPar*>(rtdb->getContainer("CbmTofDigiBdfPar"));
 }
 
-static void AddPts(set<pair<Int_t, Int_t>>& sPtsRef,
-                   const CbmTofDigiExp* digi) {
+static void AddPts(set<pair<Int_t, Int_t>>& sPtsRef, const CbmTofDigiExp* digi)
+{
   CbmMatch* match = digi->GetMatch();
   assert(match);
   Int_t nofLinks = match->GetNofLinks();
@@ -394,7 +382,8 @@ static void AddPts(set<pair<Int_t, Int_t>>& sPtsRef,
 static Int_t currentEvN  = 0;
 static long fullDuration = 0;
 
-void CbmTofTBClusterizer::Exec(Option_t* option) {
+void CbmTofTBClusterizer::Exec(Option_t* option)
+{
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
   long beginTime = ts.tv_sec * 1000000000 + ts.tv_nsec;
@@ -403,8 +392,7 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
   Int_t iEventNr      = 0;
   Double_t dEventTime = 0.;
   GetEventInfo(iInputNr, iEventNr, dEventTime);
-  LOG(debug) << GetName() << ": Input " << iInputNr << ", event " << iEventNr
-             << ", event time " << dEventTime << " ns";
+  LOG(debug) << GetName() << ": Input " << iInputNr << ", event " << iEventNr << ", event time " << dEventTime << " ns";
 
   fTofHits->Clear("C");
   //fTofHits->Delete();
@@ -416,8 +404,7 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
   Double_t dMaxSpaceDist     = fDigiBdfPar->GetMaxDistAlongCh();
   Int_t iNbTofDigi           = fTofDigis->GetEntriesFast();
 
-  LOG(debug) << GetName() << ": Input " << iInputNr << ", event " << iEventNr
-             << ", event time " << dEventTime << " ns"
+  LOG(debug) << GetName() << ": Input " << iInputNr << ", event " << iEventNr << ", event time " << dEventTime << " ns"
              << ", TOF digis: " << iNbTofDigi;
   /*map<pair<Int_t, Int_t>, list<Int_t> > tofPointDigiInds;
    
@@ -519,16 +506,15 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
       LOG(debug) << "Size 3 " << fStorDigiExp[index1][index2].size();
 
 
-      fStorDigiExp[pDigi->GetType()]
-                  [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
-                   + pDigi->GetRpc()][pDigi->GetChannel()]
+      fStorDigiExp[pDigi->GetType()][pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType()) + pDigi->GetRpc()]
+                  [pDigi->GetChannel()]
                     .topDigis[pDigi->GetTime()] = {pDigi, iDigInd};
       LOG(debug) << "done";
-    } else {
+    }
+    else {
       LOG(debug) << "bottom side";
-      fStorDigiExp[pDigi->GetType()]
-                  [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
-                   + pDigi->GetRpc()][pDigi->GetChannel()]
+      fStorDigiExp[pDigi->GetType()][pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType()) + pDigi->GetRpc()]
+                  [pDigi->GetChannel()]
                     .bottomDigis[pDigi->GetTime()] = {pDigi, iDigInd};
     }
 
@@ -606,45 +592,34 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
 
     for (Int_t iSm = 0; iSm < iNbSm; ++iSm) {
       for (Int_t iRpc = 0; iRpc < iNbRpc; ++iRpc) {
-        vector<ChannelDigis>& digisOfRpc =
-          digisOfType[iSm * fDigiBdfPar->GetNbRpc(iSmType) + iRpc];
-        Int_t iNbCh = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+        vector<ChannelDigis>& digisOfRpc = digisOfType[iSm * fDigiBdfPar->GetNbRpc(iSmType) + iRpc];
+        Int_t iNbCh                      = fDigiBdfPar->GetNbChan(iSmType, iRpc);
 
         // Vertical strips => Y comes from bottom top time difference
         for (Int_t iCh = 0; iCh < iNbCh; ++iCh) {
-          ChannelDigis& digisOfChannel = digisOfRpc[iCh];
-          map<Double_t, ChannelDigis::DigiDesc>& topDigis =
-            digisOfChannel.topDigis;
-          map<Double_t, ChannelDigis::DigiDesc>& bottomDigis =
-            digisOfChannel.bottomDigis;
+          ChannelDigis& digisOfChannel                       = digisOfRpc[iCh];
+          map<Double_t, ChannelDigis::DigiDesc>& topDigis    = digisOfChannel.topDigis;
+          map<Double_t, ChannelDigis::DigiDesc>& bottomDigis = digisOfChannel.bottomDigis;
 
           if (bottomDigis.empty()) {
             topDigis.clear();
             continue;
           }
 
-          map<Double_t, ChannelDigis::DigiPair>& digiPairs =
-            digisOfChannel.digiPairs;
+          map<Double_t, ChannelDigis::DigiPair>& digiPairs = digisOfChannel.digiPairs;
 
-          for (map<Double_t, ChannelDigis::DigiDesc>::iterator topDigiIter =
-                 topDigis.begin();
-               topDigiIter != topDigis.end();
-               ++topDigiIter) {
-            Double_t topTime = topDigiIter->first;
-            map<Double_t, ChannelDigis::DigiDesc>::iterator bottomDigiIter =
-              bottomDigis.lower_bound(topTime);
+          for (map<Double_t, ChannelDigis::DigiDesc>::iterator topDigiIter = topDigis.begin();
+               topDigiIter != topDigis.end(); ++topDigiIter) {
+            Double_t topTime                                               = topDigiIter->first;
+            map<Double_t, ChannelDigis::DigiDesc>::iterator bottomDigiIter = bottomDigis.lower_bound(topTime);
 
-            if (bottomDigiIter == bottomDigis.end())
-              --bottomDigiIter;
+            if (bottomDigiIter == bottomDigis.end()) --bottomDigiIter;
             else if (bottomDigiIter->first > topTime) {
               Double_t deltaT = bottomDigiIter->first - topTime;
 
-              if (deltaT > dMaxPairTimeDist
-                  && bottomDigiIter != bottomDigis.begin())
-                --bottomDigiIter;
+              if (deltaT > dMaxPairTimeDist && bottomDigiIter != bottomDigis.begin()) --bottomDigiIter;
               else {
-                map<Double_t, ChannelDigis::DigiDesc>::iterator
-                  bottomDigiIter2 = bottomDigiIter;
+                map<Double_t, ChannelDigis::DigiDesc>::iterator bottomDigiIter2 = bottomDigiIter;
                 --bottomDigiIter2;
 
                 Double_t deltaT2 = topTime - bottomDigiIter2->first;
@@ -653,11 +628,9 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
               }
             }
 
-            if (TMath::Abs(bottomDigiIter->first - topTime) > dMaxPairTimeDist)
-              continue;
+            if (TMath::Abs(bottomDigiIter->first - topTime) > dMaxPairTimeDist) continue;
 
-            Double_t y = fvCPSigPropSpeed[iSmType][iRpc]
-                         * (bottomDigiIter->first - topTime) / 2;
+            Double_t y = fvCPSigPropSpeed[iSmType][iRpc] * (bottomDigiIter->first - topTime) / 2;
 
             CbmTofDetectorInfo xDetInfo(kTof, iSmType, iSm, iRpc, 0, iCh);
             Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
@@ -668,70 +641,52 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
             if (TMath::Abs(y) > fChannelInfo->GetSizey() / 2) continue;
 
             Double_t digiPairTime   = (topTime + bottomDigiIter->first) / 2;
-            digiPairs[digiPairTime] = {
-              y, topDigiIter->second, bottomDigiIter->second};
+            digiPairs[digiPairTime] = {y, topDigiIter->second, bottomDigiIter->second};
           }  // for (map<Double_t, CbmTofDigiExp*>::iterator topDigiIter = topDigis.begin(); topDigiIter != topDigis.end(); ++topDigiIter)
 
           topDigis.clear();
           bottomDigis.clear();
         }  // for (Int_t iCh = 0; iCh < iNbCh; ++iCh)
 
-        gGeoManager->FindNode(
-          fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
+        gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
         gGeoManager->GetCurrentMatrix();
         gGeoManager->CdUp();
         gGeoManager->GetCurrentMatrix();
 
         for (Int_t iCh = 0; iCh < iNbCh; ++iCh)  // 2
         {
-          map<Double_t, ChannelDigis::DigiPair>& digiPairs =
-            digisOfRpc[iCh].digiPairs;
+          map<Double_t, ChannelDigis::DigiPair>& digiPairs = digisOfRpc[iCh].digiPairs;
 
-          for (map<Double_t, ChannelDigis::DigiPair>::iterator chIter =
-                 digiPairs.begin();
-               chIter != digiPairs.end();
+          for (map<Double_t, ChannelDigis::DigiPair>::iterator chIter = digiPairs.begin(); chIter != digiPairs.end();
                ++chIter) {
-            Double_t chTime = chIter->first;
-            Double_t chY    = chIter->second.y;
-            Double_t dTotS  = chIter->second.topDigi.pDigi->GetTot()
-                             + chIter->second.bottomDigi.pDigi->GetTot();
+            Double_t chTime        = chIter->first;
+            Double_t chY           = chIter->second.y;
+            Double_t dTotS         = chIter->second.topDigi.pDigi->GetTot() + chIter->second.bottomDigi.pDigi->GetTot();
             Double_t dWeightedTime = chTime * dTotS;
             Double_t dWeightedPosY = chY * dTotS;
-            Double_t dWeightedPosX =
-              (iCh - Double_t(iNbCh) / 2) * fChannelInfo->GetSizex() * dTotS;
+            Double_t dWeightedPosX = (iCh - Double_t(iNbCh) / 2) * fChannelInfo->GetSizex() * dTotS;
             Double_t dWeightedTimeErrorS =
-              chIter->second.topDigi.pDigi->GetTot()
-                * chIter->second.topDigi.pDigi->GetTot()
-              + chIter->second.bottomDigi.pDigi->GetTot()
-                  * chIter->second.bottomDigi.pDigi->GetTot();
+              chIter->second.topDigi.pDigi->GetTot() * chIter->second.topDigi.pDigi->GetTot()
+              + chIter->second.bottomDigi.pDigi->GetTot() * chIter->second.bottomDigi.pDigi->GetTot();
             Double_t dWeightsSum = dTotS;
             CbmMatch* digiMatch  = new CbmMatch;
-            digiMatch->AddLink(
-              CbmLink(0., chIter->second.topDigi.digiInd, iEventNr, iInputNr));
-            digiMatch->AddLink(CbmLink(
-              0., chIter->second.bottomDigi.digiInd, iEventNr, iInputNr));
+            digiMatch->AddLink(CbmLink(0., chIter->second.topDigi.digiInd, iEventNr, iInputNr));
+            digiMatch->AddLink(CbmLink(0., chIter->second.bottomDigi.digiInd, iEventNr, iInputNr));
             set<pair<Int_t, Int_t>> sPtsRef;
             AddPts(sPtsRef, chIter->second.topDigi.pDigi);
             AddPts(sPtsRef, chIter->second.bottomDigi.pDigi);
 
-            for (Int_t iNeighCh = iCh + 1;
-                 iNeighCh < iNbCh /* && iNeighCh - iCh < 4*/;
-                 ++iNeighCh) {
-              map<Double_t, ChannelDigis::DigiPair>& neighDigiPairs =
-                digisOfRpc[iNeighCh].digiPairs;
+            for (Int_t iNeighCh = iCh + 1; iNeighCh < iNbCh /* && iNeighCh - iCh < 4*/; ++iNeighCh) {
+              map<Double_t, ChannelDigis::DigiPair>& neighDigiPairs = digisOfRpc[iNeighCh].digiPairs;
 
               if (neighDigiPairs.empty()) break;
 
-              map<Double_t, ChannelDigis::DigiPair>::iterator neighIter =
-                neighDigiPairs.lower_bound(chTime);
+              map<Double_t, ChannelDigis::DigiPair>::iterator neighIter = neighDigiPairs.lower_bound(chTime);
 
-              if (neighIter == neighDigiPairs.end())
-                --neighIter;
-              else if (neighIter->first > chTime
-                       && neighIter != neighDigiPairs.begin()) {
-                Double_t deltaTHigh = neighIter->first - chTime;
-                map<Double_t, ChannelDigis::DigiPair>::iterator neighIter_1 =
-                  neighIter;
+              if (neighIter == neighDigiPairs.end()) --neighIter;
+              else if (neighIter->first > chTime && neighIter != neighDigiPairs.begin()) {
+                Double_t deltaTHigh                                         = neighIter->first - chTime;
+                map<Double_t, ChannelDigis::DigiPair>::iterator neighIter_1 = neighIter;
                 --neighIter_1;
                 Double_t deltaTLow = chTime - neighIter_1->first;
 
@@ -743,70 +698,52 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
                 break;
 
               Double_t dTotNeighS =
-                neighIter->second.topDigi.pDigi->GetTot()
-                + neighIter->second.bottomDigi.pDigi->GetTot();
+                neighIter->second.topDigi.pDigi->GetTot() + neighIter->second.bottomDigi.pDigi->GetTot();
               dWeightedTimeErrorS +=
-                neighIter->second.topDigi.pDigi->GetTot()
-                  * neighIter->second.topDigi.pDigi->GetTot()
-                + neighIter->second.bottomDigi.pDigi->GetTot()
-                    * neighIter->second.bottomDigi.pDigi->GetTot();
+                neighIter->second.topDigi.pDigi->GetTot() * neighIter->second.topDigi.pDigi->GetTot()
+                + neighIter->second.bottomDigi.pDigi->GetTot() * neighIter->second.bottomDigi.pDigi->GetTot();
               dWeightedTime += neighIter->first * dTotNeighS;
               dWeightedPosY += neighIter->second.y * dTotNeighS;
-              dWeightedPosX += (iNeighCh - Double_t(iNbCh) / 2)
-                               * fChannelInfo->GetSizex() * dTotNeighS;
+              dWeightedPosX += (iNeighCh - Double_t(iNbCh) / 2) * fChannelInfo->GetSizex() * dTotNeighS;
               dWeightsSum += dTotNeighS;
 
-              digiMatch->AddLink(CbmLink(
-                0., neighIter->second.topDigi.digiInd, iEventNr, iInputNr));
-              digiMatch->AddLink(CbmLink(
-                0., neighIter->second.bottomDigi.digiInd, iEventNr, iInputNr));
+              digiMatch->AddLink(CbmLink(0., neighIter->second.topDigi.digiInd, iEventNr, iInputNr));
+              digiMatch->AddLink(CbmLink(0., neighIter->second.bottomDigi.digiInd, iEventNr, iInputNr));
               AddPts(sPtsRef, neighIter->second.topDigi.pDigi);
               AddPts(sPtsRef, neighIter->second.bottomDigi.pDigi);
               neighDigiPairs.erase(neighIter);
             }  // for (Int_t iNeighCh = iCh + 1; iNeighCh < iNbCh; ++iNeighCh)
 
-            Double_t clusterTime = dWeightedTime / dWeightsSum;
-            Double_t timeRes     = fDigiBdfPar->GetFeeTimeRes();
-            Double_t clusterTimeError =
-              TMath::Sqrt(dWeightedTimeErrorS) * timeRes / dWeightsSum;
-            Double_t clusterY = dWeightedPosY / dWeightsSum;
-            Double_t clusterX = dWeightedPosX / dWeightsSum;
-            hitpos_local[0]   = clusterX;
-            hitpos_local[1]   = clusterY;
-            hitpos_local[2]   = 0;
-            hitpos[0]         = 0;
-            hitpos[1]         = 0;
-            hitpos[2]         = 0;
+            Double_t clusterTime      = dWeightedTime / dWeightsSum;
+            Double_t timeRes          = fDigiBdfPar->GetFeeTimeRes();
+            Double_t clusterTimeError = TMath::Sqrt(dWeightedTimeErrorS) * timeRes / dWeightsSum;
+            Double_t clusterY         = dWeightedPosY / dWeightsSum;
+            Double_t clusterX         = dWeightedPosX / dWeightsSum;
+            hitpos_local[0]           = clusterX;
+            hitpos_local[1]           = clusterY;
+            hitpos_local[2]           = 0;
+            hitpos[0]                 = 0;
+            hitpos[1]                 = 0;
+            hitpos[2]                 = 0;
             gGeoManager->LocalToMaster(hitpos_local, hitpos);
             TVector3 hitPos(hitpos[0], hitpos[1], hitpos[2]);
             // Simple errors, not properly done at all for now
             // Right way of doing it should take into account the weight distribution
             // and real system time resolution
-            TVector3 hitPosErr(
-              fChannelInfo->GetSizex()
-                / sqrt(12.0),  // Single strips approximation
-              fDigiBdfPar->GetFeeTimeRes()
-                * fvCPSigPropSpeed[iSmType]
-                                  [iRpc],  // Use the electronics resolution
-              fDigiBdfPar->GetNbGaps(iSmType, iRpc)
-                * fDigiBdfPar->GetGapSize(iSmType, iRpc) / 10.0
-                /             // Change gap size in cm
-                sqrt(12.0));  // Use full RPC thickness as "Channel" Z size
-            Int_t iChm = floor((clusterX + Double_t(iNbCh) / 2)
-                               / fChannelInfo->GetSizex());
-            Int_t iDetId =
-              CbmTofAddress::GetUniqueAddress(iSm, iRpc, iChm, 0, iSmType);
-            new ((*fTofHits)[fiNbHits]) CbmTofHit(
-              iDetId,
-              hitPos,
-              hitPosErr,  //local detector coordinates
-              fiNbHits,
-              clusterTime * fOutTimeFactor,
-              sPtsRef
-                .size(),  // flag  = number of TofPoints generating the cluster
-              0);
-            static_cast<CbmTofHit*>(fTofHits->At(fiNbHits))
-              ->SetTimeError(clusterTimeError);
+            TVector3 hitPosErr(fChannelInfo->GetSizex() / sqrt(12.0),  // Single strips approximation
+                               fDigiBdfPar->GetFeeTimeRes()
+                                 * fvCPSigPropSpeed[iSmType][iRpc],  // Use the electronics resolution
+                               fDigiBdfPar->GetNbGaps(iSmType, iRpc) * fDigiBdfPar->GetGapSize(iSmType, iRpc) / 10.0
+                                 /             // Change gap size in cm
+                                 sqrt(12.0));  // Use full RPC thickness as "Channel" Z size
+            Int_t iChm   = floor((clusterX + Double_t(iNbCh) / 2) / fChannelInfo->GetSizex());
+            Int_t iDetId = CbmTofAddress::GetUniqueAddress(iSm, iRpc, iChm, 0, iSmType);
+            new ((*fTofHits)[fiNbHits]) CbmTofHit(iDetId, hitPos,
+                                                  hitPosErr,  //local detector coordinates
+                                                  fiNbHits, clusterTime * fOutTimeFactor,
+                                                  sPtsRef.size(),  // flag  = number of TofPoints generating the cluster
+                                                  0);
+            static_cast<CbmTofHit*>(fTofHits->At(fiNbHits))->SetTimeError(clusterTimeError);
             new ((*fTofDigiMatchs)[fiNbHits]) CbmMatch(*digiMatch);
             delete digiMatch;
             ++fiNbHits;
@@ -824,7 +761,8 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
   fullDuration += endTime - beginTime;
 }
 
-static void SaveHisto(TH1* histo) {
+static void SaveHisto(TH1* histo)
+{
   TFile* curFile    = TFile::CurrentFile();
   TString histoName = histo->GetName();
   histoName += ".root";
@@ -835,7 +773,8 @@ static void SaveHisto(TH1* histo) {
   TFile::CurrentFile() = curFile;
 }
 
-void CbmTofTBClusterizer::Finish() {
+void CbmTofTBClusterizer::Finish()
+{
   SaveHisto(deltaChannelTHisto);
   SaveHisto(deltaPointTHisto);
   SaveHisto(nofChannelsTHisto);
@@ -843,9 +782,8 @@ void CbmTofTBClusterizer::Finish() {
   cout << "ToF Time Based clustering runtime: " << fullDuration << endl;
 }
 
-void CbmTofTBClusterizer::GetEventInfo(Int_t& inputNr,
-                                       Int_t& eventNr,
-                                       Double_t& eventTime) {
+void CbmTofTBClusterizer::GetEventInfo(Int_t& inputNr, Int_t& eventNr, Double_t& eventTime)
+{
 
   // --- In a FairRunAna, take the information from FairEventHeader
   if (FairRunAna::Instance()) {
@@ -858,8 +796,7 @@ void CbmTofTBClusterizer::GetEventInfo(Int_t& inputNr,
   // --- In a FairRunSim, the input number and event time are always zero;
   // --- only the event number is retrieved.
   else {
-    if (!FairRunSim::Instance())
-      LOG(fatal) << GetName() << ": neither SIM nor ANA run.";
+    if (!FairRunSim::Instance()) LOG(fatal) << GetName() << ": neither SIM nor ANA run.";
     FairMCEventHeader* event = FairRunSim::Instance()->GetMCEventHeader();
     inputNr                  = 0;
     eventNr                  = event->GetEventID();

@@ -15,6 +15,7 @@
 #define LXTBTIETRACKS_H
 
 #include "FairTrackParam.h"
+
 #include "LxTBBinned.h"
 #include "LxTBDefinitions.h"
 
@@ -64,8 +65,8 @@ struct LxTBBinndedLayer {
     , maxDx(0)
     , maxDy(0)
     , maxDt(0)
-    , tyxBins(reinterpret_cast<LxTbTYXBin*>(
-        new unsigned char[noftb * sizeof(LxTbTYXBin)])) {
+    , tyxBins(reinterpret_cast<LxTbTYXBin*>(new unsigned char[noftb * sizeof(LxTbTYXBin)]))
+  {
     for (int i = 0; i < noftb; ++i)
       new (&tyxBins[i]) LxTbTYXBin(nofXBins, nofYBins);
   }
@@ -74,17 +75,20 @@ struct LxTBBinndedLayer {
 
   ~LxTBBinndedLayer() { delete[] reinterpret_cast<unsigned char*>(tyxBins); }
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < nofTBins; ++i)
       tyxBins[i].Clear();
   }
 
-  void Init() {
+  void Init()
+  {
     binSizeX = (maxX - minX) / nofXBins;
     binSizeY = (maxY - minY) / nofYBins;
   }
 
-  void SetTSBegin(unsigned long long tsLowBound) {
+  void SetTSBegin(unsigned long long tsLowBound)
+  {
     minT = tsLowBound;
     maxT = tsLowBound + timeSliceLength;
   }
@@ -94,59 +98,47 @@ struct LxTBBinndedLayer {
     virtual void HandlePoint(const LxTbBinnedPoint& point) = 0;
   };
 
-  void Search(scaltype x,
-              scaltype xDiv0,
-              scaltype y,
-              scaltype yDiv0,
-              timetype t,
-              PointHandler* pointHandler) {
+  void Search(scaltype x, scaltype xDiv0, scaltype y, scaltype yDiv0, timetype t, PointHandler* pointHandler)
+  {
     scaltype wX = NOF_SIGMAS * std::sqrt(xDiv0 + maxDx * maxDx);
     scaltype wY = NOF_SIGMAS * std::sqrt(yDiv0 + maxDy * maxDy);
     timetype wT = NOF_SIGMAS * std::sqrt(2.0) * maxDt;
 
-    if (x + wX < minX || x - wX > maxX || y + wY < minY || y - wY > maxY
-        || t + wT < minT || t - wT > maxT)
-      return;
+    if (x + wX < minX || x - wX > maxX || y + wY < minY || y - wY > maxY || t + wT < minT || t - wT > maxT) return;
 
     int tIndMin = (t - wT - minT) / binSizeT;
 
-    if (tIndMin < 0)
-      tIndMin = 0;
+    if (tIndMin < 0) tIndMin = 0;
     else if (tIndMin > lastTBin)
       tIndMin = lastTBin;
 
     int tIndMax = (t + wT - minT) / binSizeT;
 
-    if (tIndMax < 0)
-      tIndMax = 0;
+    if (tIndMax < 0) tIndMax = 0;
     else if (tIndMax > lastTBin)
       tIndMax = lastTBin;
 
     int yIndMin = (y - wY - minY) / binSizeY;
 
-    if (yIndMin < 0)
-      yIndMin = 0;
+    if (yIndMin < 0) yIndMin = 0;
     else if (yIndMin > lastYBin)
       yIndMin = lastYBin;
 
     int yIndMax = (y + wY - minY) / binSizeY;
 
-    if (yIndMax < 0)
-      yIndMax = 0;
+    if (yIndMax < 0) yIndMax = 0;
     else if (yIndMax > lastYBin)
       yIndMax = lastYBin;
 
     int xIndMin = (x - wX - minX) / binSizeX;
 
-    if (xIndMin < 0)
-      xIndMin = 0;
+    if (xIndMin < 0) xIndMin = 0;
     else if (xIndMin > lastXBin)
       xIndMin = lastXBin;
 
     int xIndMax = (x + wX - minX) / binSizeX;
 
-    if (xIndMax < 0)
-      xIndMax = 0;
+    if (xIndMax < 0) xIndMax = 0;
     else if (xIndMax > lastXBin)
       xIndMax = lastXBin;
 
@@ -159,9 +151,7 @@ struct LxTBBinndedLayer {
         for (int xInd = xIndMin; xInd <= xIndMax; ++xInd) {
           LxTbXBin& xBin = yxBin.xBins[xInd];
 
-          for (std::list<LxTbBinnedPoint>::iterator i = xBin.points.begin();
-               i != xBin.points.end();
-               ++i) {
+          for (std::list<LxTbBinnedPoint>::iterator i = xBin.points.begin(); i != xBin.points.end(); ++i) {
             LxTbBinnedPoint& point = *i;
             scaltype xDiv          = xDiv0 + point.dx * point.dx;
             scaltype wX_prec_sq    = NOF_SIGMAS_SQ * xDiv;
@@ -174,8 +164,7 @@ struct LxTBBinndedLayer {
             timetype deltaT        = point.t - t;
             timetype deltaTSq      = deltaT * deltaT;
 
-            if (deltaXSq < wX_prec_sq && deltaYSq < wY_prec_sq
-                && deltaTSq < wT * wT)
+            if (deltaXSq < wX_prec_sq && deltaYSq < wY_prec_sq && deltaTSq < wT * wT)
               //{
               //rPoint.neighbours.push_back(LxTbBinnedRay(deltaZ, rPoint, lPoint, deltaXSq / xDiv +
               //deltaYSq / yDiv + deltaTSq / (rPoint.dt * rPoint.dt + lPoint.dt * lPoint.dt)));
@@ -211,9 +200,7 @@ struct LxTBBinnedDetector {
   void Init();
   void Clear();
   void SetTSBegin(unsigned long long tsLowBound);
-  void AddStsTrack(const FairTrackParam& par,
-                   Double_t chiSq,
-                   Double_t time,
+  void AddStsTrack(const FairTrackParam& par, Double_t chiSq, Double_t time,
                    Int_t selfId /*, Int_t eventId, Int_t fileId*/);
   void TieTracks(LxTbBinnedFinder& fFinder);
 };

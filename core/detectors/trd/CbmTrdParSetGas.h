@@ -1,10 +1,10 @@
 #ifndef CBMTRDPARSETGAS_H
 #define CBMTRDPARSETGAS_H
 
+#include "CbmTrdParSet.h"  // for CbmTrdParSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t, Char_t
-
-#include "CbmTrdParSet.h"  // for CbmTrdParSet
 
 class FairParamList;
 class TH2F;
@@ -15,8 +15,7 @@ class TH2F;
 class CbmTrdParSetGas : public CbmTrdParSet {
 public:
   /** Standard constructor **/
-  CbmTrdParSetGas(const char* name    = "CbmTrdParSetGas",
-                  const char* title   = "TRD chamber parameters",
+  CbmTrdParSetGas(const char* name = "CbmTrdParSetGas", const char* title = "TRD chamber parameters",
                   const char* context = "Default");
 
   /** \brief Destructor **/

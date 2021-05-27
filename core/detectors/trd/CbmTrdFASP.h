@@ -4,8 +4,8 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Float_t, ULong64_t, UInt_t, Bool_t
 #include <TObject.h>     // for TObject
+#include <tuple>         // for tuple
 
-#include <tuple>    // for tuple
 #include <utility>  // for pair
 #include <vector>   // for vector
 
@@ -48,9 +48,7 @@ public:
    * \param[in] col column of current digis
    * \param[in] row row of current digis
    */
-  virtual void PhysToRaw(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi,
-                         Int_t col = 0,
-                         Int_t row = 0);
+  virtual void PhysToRaw(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi, Int_t col = 0, Int_t row = 0);
   /** \brief Print-out FASP analog/digital response to currently stored data*/
   virtual void Print(Option_t* opt = "") const;
   /** \brief Set column for the current channel
@@ -90,36 +88,28 @@ protected:
    */
   Int_t ProcessShaper(Char_t typ = 'T');
   /** \brief Read digi array for single channel processing */
-  void ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi,
-                Int_t col,
-                Int_t row);
+  void ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi, Int_t col, Int_t row);
   /** \brief Read digi array for neighbour trigger processing */
-  void ScanDigiNE(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi,
-                  Int_t col,
-                  Int_t row);
+  void ScanDigiNE(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* digi, Int_t col, Int_t row);
   /** \brief Write processed digi to output array */
   void WriteDigi();
 
   ULong64_t fStartTime;  ///< time offset [ns] for the current simulation
-  UInt_t
-    fProcTime;  ///< time window [ns] for actual digi processing (excluded fgkBufferKeep)
-  Int_t fCol;     ///< current column
-  Int_t fRow;     ///< current row
-  Int_t fAsicId;  ///< identifier of FASP in module
-  Int_t fNphys
-    [2];  ///< number of physical digi in the current [0] and next [1] shaper
-  Int_t fNraw;  ///< number of raw digi for the tilt channel
-  std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>*
-    fDigi;  ///< link to digi vector to be transformed
+  UInt_t fProcTime;      ///< time window [ns] for actual digi processing (excluded fgkBufferKeep)
+  Int_t fCol;            ///< current column
+  Int_t fRow;            ///< current row
+  Int_t fAsicId;         ///< identifier of FASP in module
+  Int_t fNphys[2];       ///< number of physical digi in the current [0] and next [1] shaper
+  Int_t fNraw;           ///< number of raw digi for the tilt channel
+  std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* fDigi;  ///< link to digi vector to be transformed
 
   // analog support
   std::vector<bool> fHitThPrev;      ///< previous channel hit threshold
   std::vector<Float_t> fShaper;      ///< current channel shaper analog
   std::vector<Float_t> fShaperNext;  ///< next channel shaper analog
   std::vector<std::tuple<UInt_t, UInt_t, UInt_t, Bool_t>>
-    fDigiProc;  ///< proccessed info <hit_time[ns], CS_time[ns], OUT[ADC], trigger>
-  Float_t fSignal
-    [FASP_WINDOW];  ///< temporary array to store shaper analog signal for current charge interpolation
+    fDigiProc;                   ///< proccessed info <hit_time[ns], CS_time[ns], OUT[ADC], trigger>
+  Float_t fSignal[FASP_WINDOW];  ///< temporary array to store shaper analog signal for current charge interpolation
 
   // FASP channel characteristics
   CbmTrdParFaspChannel* fPar;  ///< current FASP channel parametrization
@@ -129,40 +119,34 @@ protected:
   Float_t fFT;                 ///< Flat Top value [V]
 
   // draw support
-  Int_t fGraphId;  ///< current graph to be filled if draw support is compiled
-  std::vector<Float_t> fOut;  ///< analog output for the current channel
-  std::vector<std::pair<Int_t, Int_t>>
-    fGraphMap;                ///<  map of ASIC id and output FASP signals
-  TGraph* fGraph[NGRAPH];     ///< graph representations of analog FASP response
-  TGraph* fGraphShp[NGRAPH];  ///< graph representations of FASP shaper
-  TGraph* fGraphPhys[NGRAPH];  ///< graph representations of physics digi
-  TLine* fGthr;                ///< graph representation of various thresholds
-  TCanvas* fMonitor;           ///< monitor canvas when drawing
+  Int_t fGraphId;                                  ///< current graph to be filled if draw support is compiled
+  std::vector<Float_t> fOut;                       ///< analog output for the current channel
+  std::vector<std::pair<Int_t, Int_t>> fGraphMap;  ///<  map of ASIC id and output FASP signals
+  TGraph* fGraph[NGRAPH];                          ///< graph representations of analog FASP response
+  TGraph* fGraphShp[NGRAPH];                       ///< graph representations of FASP shaper
+  TGraph* fGraphPhys[NGRAPH];                      ///< graph representations of physics digi
+  TLine* fGthr;                                    ///< graph representation of various thresholds
+  TCanvas* fMonitor;                               ///< monitor canvas when drawing
 
   // CADENCE parameters
-  static const Int_t fgkNDB = 53;          ///< DB shaper size
-  static const Float_t fgkCharge[fgkNDB];  ///< DB input charge discretization
-  static const Float_t fgkShaper
-    [fgkNDB]
-    [FASP_WINDOW];  ///< DB shaper signals for each input charge discretization
-  static const Float_t fgkShaperPar[4];           ///< shaper parameters
-  static const Float_t fgkShaperLUT[SHAPER_LUT];  ///< shaper LUT
-  static const Float_t
-    fgkDecayLUT[SHAPER_LUT];  ///< forced discharged of FASP LUT
+  static const Int_t fgkNDB = 53;                       ///< DB shaper size
+  static const Float_t fgkCharge[fgkNDB];               ///< DB input charge discretization
+  static const Float_t fgkShaper[fgkNDB][FASP_WINDOW];  ///< DB shaper signals for each input charge discretization
+  static const Float_t fgkShaperPar[4];                 ///< shaper parameters
+  static const Float_t fgkShaperLUT[SHAPER_LUT];        ///< shaper LUT
+  static const Float_t fgkDecayLUT[SHAPER_LUT];         ///< forced discharged of FASP LUT
 
   // FASP configuration parameters
-  static const Int_t fgkNclkFT;  ///< length of flat top in FASP clocks
-  static Int_t fgNclkLG;      ///< length of linear-gate command in FASP clocks
-  static Bool_t fgNeighbour;  ///< Neighbour enable flag
-  static Float_t
-    fgNeighbourThr;  ///< neighbour threshold [V] for fgNeighbour=kTRUE
-  static Float_t fgShaperThr;  ///< shaper threshold [V]
-  static Float_t fgBaseline;   ///< FASP baseline [V]
-  static Float_t fgOutGain;    ///< FASP -> ADC gain [V/4095 ADC]
+  static const Int_t fgkNclkFT;   ///< length of flat top in FASP clocks
+  static Int_t fgNclkLG;          ///< length of linear-gate command in FASP clocks
+  static Bool_t fgNeighbour;      ///< Neighbour enable flag
+  static Float_t fgNeighbourThr;  ///< neighbour threshold [V] for fgNeighbour=kTRUE
+  static Float_t fgShaperThr;     ///< shaper threshold [V]
+  static Float_t fgBaseline;      ///< FASP baseline [V]
+  static Float_t fgOutGain;       ///< FASP -> ADC gain [V/4095 ADC]
 
   // FASP simulator configuration
-  static const Int_t
-    fgkBufferKeep;  ///< length of buffer time in 5ns which is kept between cycles
+  static const Int_t fgkBufferKeep;  ///< length of buffer time in 5ns which is kept between cycles
 
   ClassDef(CbmTrdFASP, 1)  // FASP ASIC simulator
 };

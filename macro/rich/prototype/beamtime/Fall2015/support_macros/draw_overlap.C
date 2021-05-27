@@ -1,19 +1,11 @@
-void draw_overlap(TString filename1,
-                  TString filename2,
-                  TString tdc1N     = "50",
-                  TString tdc2N     = "50",
-                  Int_t ch1         = 0,
-                  Int_t ch2         = 2,
-                  TString outFolder = "pics_comparison") {
+void draw_overlap(TString filename1, TString filename2, TString tdc1N = "50", TString tdc2N = "50", Int_t ch1 = 0,
+                  Int_t ch2 = 2, TString outFolder = "pics_comparison")
+{
   TFile* f1 = new TFile(filename1);
   TFile* f2 = new TFile(filename2);
 
   TString histoName;
-  histoName.Form("LeadingEdgeDiff_TDC%s_ch%d_TDC%s_ch%d;1",
-                 tdc1N.Data(),
-                 ch1,
-                 tdc2N.Data(),
-                 ch2);
+  histoName.Form("LeadingEdgeDiff_TDC%s_ch%d_TDC%s_ch%d;1", tdc1N.Data(), ch1, tdc2N.Data(), ch2);
 
   printf("%s\n", histoName.Data());
 
@@ -28,8 +20,7 @@ void draw_overlap(TString filename1,
   }
 
   if (h1->GetEntries() < 1000 || h2->GetEntries() < 1000) {
-    printf(
-      "Less than 1000 entries in one of histograms (or both). Skipping.\n");
+    printf("Less than 1000 entries in one of histograms (or both). Skipping.\n");
     return;
   }
 
@@ -59,11 +50,6 @@ void draw_overlap(TString filename1,
   gPad->Modified();
 
   TString outFileName;
-  outFileName.Form("%s/canvas_TDC%s_ch%d_TDC%s_ch%d.png",
-                   outFolder.Data(),
-                   tdc1N.Data(),
-                   ch1,
-                   tdc2N.Data(),
-                   ch2);
+  outFileName.Form("%s/canvas_TDC%s_ch%d_TDC%s_ch%d.png", outFolder.Data(), tdc1N.Data(), ch1, tdc2N.Data(), ch2);
   c1->SaveAs(outFileName);
 }

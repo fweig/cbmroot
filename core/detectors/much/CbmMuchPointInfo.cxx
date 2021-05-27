@@ -19,15 +19,13 @@ ClassImp(CbmMuchPointInfo)
   , fCharge(0)
   , fStationId(0)
   , fS(0.)
-  , fNPads(0) {}
+  , fNPads(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-CbmMuchPointInfo::CbmMuchPointInfo(Int_t pdgCode,
-                                   Int_t motherPdg,
-                                   Double_t kine,
-                                   Double_t length,
-                                   Int_t stationId)
+CbmMuchPointInfo::CbmMuchPointInfo(Int_t pdgCode, Int_t motherPdg, Double_t kine, Double_t length, Int_t stationId)
   : TObject()
   , fKine(kine)
   , fLength(length)
@@ -36,17 +34,16 @@ CbmMuchPointInfo::CbmMuchPointInfo(Int_t pdgCode,
   , fCharge(0)
   , fStationId(stationId)
   , fS(0)
-  , fNPads(0) {}
+  , fNPads(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMuchPointInfo::Print(Option_t*) const {
-  printf("PointInfo:pdg=%i,kine=%6.4f,length=%4.2f,st_id=%i,charge=%i\n",
-         fPdgCode,
-         fKine,
-         fLength,
-         fStationId,
+void CbmMuchPointInfo::Print(Option_t*) const
+{
+  printf("PointInfo:pdg=%i,kine=%6.4f,length=%4.2f,st_id=%i,charge=%i\n", fPdgCode, fKine, fLength, fStationId,
          fCharge);
 }
 // -------------------------------------------------------------------------

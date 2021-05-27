@@ -17,14 +17,8 @@
 
 #include "CbmKresTrainAnn.h"
 
-#include <boost/assign/list_of.hpp>
-
-#include <cmath>
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "CbmDrawHist.h"
+
 #include "TCanvas.h"
 #include "TH1D.h"
 #include "TH2D.h"
@@ -32,6 +26,14 @@
 #include "TMultiLayerPerceptron.h"
 #include "TSystem.h"
 #include "TTree.h"
+
+#include <boost/assign/list_of.hpp>
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <cmath>
 
 
 using boost::assign::list_of;
@@ -58,26 +60,21 @@ CbmKresTrainAnn::CbmKresTrainAnn()
   , fhAnnOutput_correct(nullptr)
   , fhAnnOutput_wrong(nullptr)
   , fhCumProb_correct(nullptr)
-  , fhCumProb_wrong(nullptr) {}
+  , fhCumProb_wrong(nullptr)
+{
+}
 
 CbmKresTrainAnn::~CbmKresTrainAnn() {}
 
 void CbmKresTrainAnn::Init() { InitHistograms(); }
 
-void CbmKresTrainAnn::Exec(int event,
-                           int IdForANN,
-                           double InvariantMass,
-                           double OpeningAngle,
-                           double PlaneAngle_last,
-                           double ZPos,
-                           TVector3 Momentum1,
-                           TVector3 Momentum2) {
+void CbmKresTrainAnn::Exec(int event, int IdForANN, double InvariantMass, double OpeningAngle, double PlaneAngle_last,
+                           double ZPos, TVector3 Momentum1, TVector3 Momentum2)
+{
   double p1 =
-    TMath::Sqrt(Momentum1.X() * Momentum1.X() + Momentum1.Y() * Momentum1.Y()
-                + Momentum1.Z() * Momentum1.Z());
+    TMath::Sqrt(Momentum1.X() * Momentum1.X() + Momentum1.Y() * Momentum1.Y() + Momentum1.Z() * Momentum1.Z());
   double p2 =
-    TMath::Sqrt(Momentum2.X() * Momentum2.X() + Momentum2.Y() * Momentum2.Y()
-                + Momentum2.Z() * Momentum2.Z());
+    TMath::Sqrt(Momentum2.X() * Momentum2.X() + Momentum2.Y() * Momentum2.Y() + Momentum2.Z() * Momentum2.Z());
   if (IdForANN == 1) {
     //if (IM_correct.size() < fMaxNofTrainSamples){
     IM_correct.push_back(InvariantMass);
@@ -87,7 +84,8 @@ void CbmKresTrainAnn::Exec(int event,
     Mom1_correct.push_back(p1);
     Mom2_correct.push_back(p2);
     //}
-  } else {
+  }
+  else {
     //if (IM_wrong.size() < fMaxNofTrainSamples){
     IM_wrong.push_back(InvariantMass);
     OA_wrong.push_back(OpeningAngle);
@@ -99,8 +97,7 @@ void CbmKresTrainAnn::Exec(int event,
   }
 
   if (IM_correct.size() % 100 == 0 && IdForANN == 1)
-    cout << "correct = " << IM_correct.size()
-         << ";  wrong = " << IM_wrong.size() << endl;
+    cout << "correct = " << IM_correct.size() << ";  wrong = " << IM_wrong.size() << endl;
 
   //if (IM_correct.size() >= fMaxNofTrainSamples && IM_wrong.size() >= fMaxNofTrainSamples) {
   if (event == 2000 && IM_correct.size() >= fMaxNofTrainSamples) {
@@ -122,7 +119,8 @@ void CbmKresTrainAnn::Exec(int event,
   }
 }
 
-void CbmKresTrainAnn::TrainAndTestAnn() {
+void CbmKresTrainAnn::TrainAndTestAnn()
+{
   //cout << "Do TrainAndTestAnn" << endl;
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
   Double_t x[6];
@@ -177,8 +175,7 @@ void CbmKresTrainAnn::TrainAndTestAnn() {
 
   TMultiLayerPerceptron network("x0,x1,x2,x3,x4,x5:12:xOut", simu, "Entry$+1");
   network.Train(300, "text,update=10");
-  network.DumpWeights(
-    "../../../analysis/conversion2/KresAnalysis_ann_weights.txt");
+  network.DumpWeights("../../../analysis/conversion2/KresAnalysis_ann_weights.txt");
 
 
   Double_t params[6];
@@ -226,15 +223,14 @@ void CbmKresTrainAnn::TrainAndTestAnn() {
 }
 
 
-void CbmKresTrainAnn::Draw() {
+void CbmKresTrainAnn::Draw()
+{
   cout << "nof correct pairs = " << IM_correct.size() << endl;
   cout << "nof wrong pairs = " << IM_wrong.size() << endl;
   cout << "wrong like correct = " << fNofWrongLikeCorrect
-       << ", wrong supp = " << (Double_t) IM_wrong.size() / fNofWrongLikeCorrect
-       << endl;
+       << ", wrong supp = " << (Double_t) IM_wrong.size() / fNofWrongLikeCorrect << endl;
   cout << "Correct like wrong = " << fNofCorrectLikeWrong
-       << ", correct lost eff = "
-       << 100. * (Double_t) fNofCorrectLikeWrong / IM_correct.size() << endl;
+       << ", correct lost eff = " << 100. * (Double_t) fNofCorrectLikeWrong / IM_correct.size() << endl;
 
   Double_t cumProbFake = 0.;
   Double_t cumProbTrue = 0.;
@@ -250,47 +246,34 @@ void CbmKresTrainAnn::Draw() {
   }
 
 
-  TCanvas* c1 =
-    new TCanvas("ann_correct_ann_output", "ann_correct_ann_output", 400, 400);
+  TCanvas* c1 = new TCanvas("ann_correct_ann_output", "ann_correct_ann_output", 400, 400);
   c1->SetTitle("ann_correct_ann_output");
   fhAnnOutput_correct->Draw();
 
-  TCanvas* c2 =
-    new TCanvas("ann_wrong_ann_output", "ann_wrong_ann_output", 400, 400);
+  TCanvas* c2 = new TCanvas("ann_wrong_ann_output", "ann_wrong_ann_output", 400, 400);
   c2->SetTitle("ann_wrong_ann_output");
   fhAnnOutput_wrong->Draw();
 
-  TCanvas* c3 =
-    new TCanvas("ann_correct_cum_prob", "ann_correct_cum_prob", 400, 400);
+  TCanvas* c3 = new TCanvas("ann_correct_cum_prob", "ann_correct_cum_prob", 400, 400);
   c3->SetTitle("ann_correct_cum_prob");
   fhCumProb_correct->Draw();
 
-  TCanvas* c4 =
-    new TCanvas("ann_wrong_cum_prob", "ann_wrong_cum_prob", 400, 400);
+  TCanvas* c4 = new TCanvas("ann_wrong_cum_prob", "ann_wrong_cum_prob", 400, 400);
   c4->SetTitle("ann_wrong_cum_prob");
   fhCumProb_wrong->Draw();
 }
 
 
-void CbmKresTrainAnn::InitHistograms() {
+void CbmKresTrainAnn::InitHistograms()
+{
 
-  fhAnnOutput_correct = new TH1D(
-    "fhAnnOutput_correct", "ANN output;ANN output;Counter", 100, -1.2, 1.2);
+  fhAnnOutput_correct = new TH1D("fhAnnOutput_correct", "ANN output;ANN output;Counter", 100, -1.2, 1.2);
   fHists.push_back(fhAnnOutput_correct);
-  fhAnnOutput_wrong = new TH1D(
-    "fhAnnOutput_wrong", "ANN output;ANN output;Counter", 100, -1.2, 1.2);
+  fhAnnOutput_wrong = new TH1D("fhAnnOutput_wrong", "ANN output;ANN output;Counter", 100, -1.2, 1.2);
   fHists.push_back(fhAnnOutput_wrong);
 
-  fhCumProb_correct = new TH1D("fhCumProb_correct",
-                               "ANN output;ANN output;Cumulative probability",
-                               100,
-                               -1.2,
-                               1.2);
+  fhCumProb_correct = new TH1D("fhCumProb_correct", "ANN output;ANN output;Cumulative probability", 100, -1.2, 1.2);
   fHists.push_back(fhCumProb_correct);
-  fhCumProb_wrong = new TH1D("fhCumProb_wrong",
-                             "ANN output;ANN output;Cumulative probability",
-                             100,
-                             -1.2,
-                             1.2);
+  fhCumProb_wrong = new TH1D("fhCumProb_wrong", "ANN output;ANN output;Cumulative probability", 100, -1.2, 1.2);
   fHists.push_back(fhCumProb_wrong);
 }

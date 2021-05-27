@@ -12,11 +12,11 @@
 #ifndef CBMMUCHPAD_H
 #define CBMMUCHPAD_H 1
 
+#include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchChannel, kMuchSector
+
 #include <RtypesCore.h>  // for Double_t, Int_t
 
 #include <vector>  // for vector
-
-#include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchChannel, kMuchSector
 
 class CbmMuchPad {
 
@@ -36,19 +36,13 @@ public:
   //CbmMuchDigiMatch* GetMatch() const { return fMatch; }
 
   std::vector<CbmMuchPad*> GetNeighbours() const { return fNeighbours; }
-  void SetNeighbours(std::vector<CbmMuchPad*> neighbours) {
-    fNeighbours = neighbours;
-  }
+  void SetNeighbours(std::vector<CbmMuchPad*> neighbours) { fNeighbours = neighbours; }
   //Can be removed as we will Buffer Digi in the CbmMuchReadoutBuffer
   void SetDigiIndex(Int_t iDigi) { fDigiIndex = iDigi; }
   virtual void SetFired(Int_t, Int_t, Int_t = 256) {}
 
-  Int_t GetSectorIndex() {
-    return CbmMuchAddress::GetElementId(fAddress, kMuchSector);
-  }
-  Int_t GetChannelIndex() {
-    return CbmMuchAddress::GetElementId(fAddress, kMuchChannel);
-  }
+  Int_t GetSectorIndex() { return CbmMuchAddress::GetElementId(fAddress, kMuchSector); }
+  Int_t GetChannelIndex() { return CbmMuchAddress::GetElementId(fAddress, kMuchChannel); }
 
 protected:
   Int_t fAddress;    // Detector ID (including module number)

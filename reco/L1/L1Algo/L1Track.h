@@ -30,22 +30,19 @@ public:
   int ista;
 
 
-  static bool compareCand(const L1Track& a, const L1Track& b) {
+  static bool compareCand(const L1Track& a, const L1Track& b)
+  {
 
     if (a.NHits != b.NHits) return (a.NHits > b.NHits);
 
-    if (a.ista != b.ista)
-      return (a.ista < b.ista);
+    if (a.ista != b.ista) return (a.ista < b.ista);
 
     else
       return (a.chi2 < b.chi2);
   }
 
 
-  static bool compare(const L1Track& a, const L1Track& b) {
-
-    return (a.Cpv[20] <= b.Cpv[20]);
-  }
+  static bool compare(const L1Track& a, const L1Track& b) { return (a.Cpv[20] <= b.Cpv[20]); }
 };
 
 // #include "cmath"

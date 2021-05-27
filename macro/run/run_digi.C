@@ -7,6 +7,7 @@
 // Includes needed for IDE
 #if !defined(__CLING__)
 #include "CbmDigitization.h"
+
 #include "FairSystemInfo.h"
 #endif
 
@@ -67,14 +68,9 @@
  ** modified. Please consult the documentation of the CbmDigitization class
  ** (http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmDigitization.html).
  **/
-void run_digi(TString inputEvents = "",
-              Int_t nEvents       = -1,
-              TString output      = "",
-              Double_t eventRate  = 1.e7,
-              Double_t tsLength   = -1.,
-              TString inputSignal = "",
-              TString inputBeam   = "",
-              Double_t beamRate   = 1.e9) {
+void run_digi(TString inputEvents = "", Int_t nEvents = -1, TString output = "", Double_t eventRate = 1.e7,
+              Double_t tsLength = -1., TString inputSignal = "", TString inputBeam = "", Double_t beamRate = 1.e9)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -113,15 +109,13 @@ void run_digi(TString inputEvents = "",
   if (eventMode) {
     if (!inputSignal.IsNull()) {
       std::cout << std::endl;
-      std::cout << "-E- " << myName
-                << ": Embedding is not (yet) possible in event-by-event mode! "
+      std::cout << "-E- " << myName << ": Embedding is not (yet) possible in event-by-event mode! "
                 << " Terminating macro execution." << std::endl;
       return;
     }  //? Signal input specified
     if (!inputBeam.IsNull()) {
       std::cout << std::endl;
-      std::cout << "-E- " << myName
-                << ": Mixing inputs is not possible in event-by-event mode! "
+      std::cout << "-E- " << myName << ": Mixing inputs is not possible in event-by-event mode! "
                 << " Terminating macro execution." << std::endl;
       return;
     }  //? Beam input specified
@@ -134,8 +128,7 @@ void run_digi(TString inputEvents = "",
   run.AddInput(0, evntFile, eventRate);
   if (!eventMode) {
     if (!inputSignal.IsNull()) run.EmbedInput(1, signFile, 0);
-    if (!inputBeam.IsNull())
-      run.AddInput(2, beamFile, beamRate, ECbmTreeAccess::kRandom);
+    if (!inputBeam.IsNull()) run.AddInput(2, beamFile, beamRate, ECbmTreeAccess::kRandom);
   }
   run.SetOutputFile(outFile, overwrite);
   run.SetMonitorFile(moniFile);
@@ -143,8 +136,7 @@ void run_digi(TString inputEvents = "",
   run.SetTimeSliceLength(tsLength);
   run.SetEventMode(eventMode);
   run.SetProduceNoise(kFALSE);
-  if (nEvents < 0)
-    run.Run();
+  if (nEvents < 0) run.Run();
   else
     run.Run(nEvents);
   // ------------------------------------------------------------------------
@@ -156,17 +148,16 @@ void run_digi(TString inputEvents = "",
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
-  std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">"
-            << maxMemory << "</DartMeasurement>" << std::endl;
-  std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">"
-            << rtime << "</DartMeasurement>" << std::endl;
+  std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">" << maxMemory << "</DartMeasurement>"
+            << std::endl;
+  std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">" << rtime << "</DartMeasurement>"
+            << std::endl;
   Float_t cpuUsage = ctime / rtime;
-  std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">"
-            << cpuUsage << "</DartMeasurement>" << std::endl;
+  std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">" << cpuUsage << "</DartMeasurement>"
+            << std::endl;
   // ------------------------------------------------------------------------
 
 }  // End of macro

@@ -2,11 +2,12 @@
 R__ADD_INCLUDE_PATH($PWD)
 #include "Config_dilepton_testing.C"
 
-void run_analysis(Int_t nEvents = 0) {
+void run_analysis(Int_t nEvents = 0)
+{
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_analysis";  // this macro's name for screen output
+  TString myName = "run_analysis";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -24,8 +25,7 @@ void run_analysis(Int_t nEvents = 0) {
   // -----   Load the geometry setup   -------------------------------------
   /// load local copy of setup file (same as used for simulation and reconstruction)
   std::cout << std::endl;
-  TString setupName = gSystem->GetFromPipe(
-    Form("echo $(basename $(ls %s/setup_*.C))", inDir.Data()));
+  TString setupName = gSystem->GetFromPipe(Form("echo $(basename $(ls %s/setup_*.C))", inDir.Data()));
   setupName.ReplaceAll("setup_", "");
   setupName.ReplaceAll(".C", "");
 
@@ -75,8 +75,7 @@ void run_analysis(Int_t nEvents = 0) {
     file += "/";
 
     // mc sim file
-    if (!i)
-      src = new FairFileSource(file + "tra.root");
+    if (!i) src = new FairFileSource(file + "tra.root");
     else
       src->AddFile(file + "tra.root");
 
@@ -108,7 +107,7 @@ void run_analysis(Int_t nEvents = 0) {
     TString geoTag;
     setup->GetGeoTag(kMvd, geoTag);
     TString matFile = gSystem->Getenv("VMCWORKDIR");
-    matFile = matFile + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
+    matFile         = matFile + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
     std::cout << "Using material budget file " << matFile << std::endl;
     l1->SetMvdMaterialBudgetFileName(matFile.Data());
   }
@@ -116,7 +115,7 @@ void run_analysis(Int_t nEvents = 0) {
     TString geoTag;
     setup->GetGeoTag(kSts, geoTag);
     TString matFile = gSystem->Getenv("VMCWORKDIR");
-    matFile = matFile + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
+    matFile         = matFile + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
     std::cout << "Using material budget file " << matFile << std::endl;
     l1->SetStsMaterialBudgetFileName(matFile.Data());
   }
@@ -137,8 +136,7 @@ void run_analysis(Int_t nEvents = 0) {
     // run->AddTask( getTRDli );
     // std::cout << "-I- : Added task " << getTRDli->GetName() << std::endl;
 
-    CbmTrdSetTracksPidLike* trdLI =
-      new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+    CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
     trdLI->SetUseMCInfo(kTRUE);
     trdLI->SetUseMomDependence(kFALSE);
     run->AddTask(trdLI);
@@ -153,10 +151,9 @@ void run_analysis(Int_t nEvents = 0) {
   TString cfgPath    = outDir + "/../";
   TString cfgFunc    = "Config_dilepton_";
   TString configName = "testing";
-  TString cfgFile    = cfgPath + cfgFunc + configName
-                    + ".C";  //cfgPath + cfgFunc + configName + ".C";
-  TString cfgFunct = cfgFunc + configName + "(\"" + configName + "\")";
-  TString cfg      = cfgFunc + configName + "()";
+  TString cfgFile    = cfgPath + cfgFunc + configName + ".C";  //cfgPath + cfgFunc + configName + ".C";
+  TString cfgFunct   = cfgFunc + configName + "(\"" + configName + "\")";
+  TString cfg        = cfgFunc + configName + "()";
 
   gROOT->LoadMacro((cfgPath + cfgFunct + configName + ".C"));
   FairTask* task = reinterpret_cast<FairTask*>(gROOT->ProcessLine(cfg));
@@ -187,11 +184,9 @@ void run_analysis(Int_t nEvents = 0) {
 
   timer.Stop();
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << " Output file is " << (outDir + setupName + "_analysis.root")
-            << std::endl;
+  std::cout << " Output file is " << (outDir + setupName + "_analysis.root") << std::endl;
   //  std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

@@ -25,7 +25,8 @@
 #include "TVirtualFitter.h"
 
 Int_t npeaks = 30;
-Double_t fpeaks(Double_t* x, Double_t* par) {
+Double_t fpeaks(Double_t* x, Double_t* par)
+{
   Double_t result = par[0] + par[1] * x[0];
   for (Int_t p = 0; p < npeaks; p++) {
     Double_t norm  = par[3 * p + 2];
@@ -36,7 +37,8 @@ Double_t fpeaks(Double_t* x, Double_t* par) {
   return result;
 }
 
-void FindPeaks(Int_t np = 30, TString hname = "cl_SmT9_sm002_rpc001_rate") {
+void FindPeaks(Int_t np = 30, TString hname = "cl_SmT9_sm002_rpc001_rate")
+{
   Double_t par[3000];
   TCanvas* c1 = new TCanvas("c1", "c1", 10, 10, 1000, 900);
   c1->Divide(1, 2);
@@ -91,6 +93,5 @@ void FindPeaks(Int_t np = 30, TString hname = "cl_SmT9_sm002_rpc001_rate") {
     ypav += par[3 * p + 2];
   }
   ypav /= nfound;
-  cout << "average peak height in " << hname << " from " << nfound
-       << " peaks: " << ypav << endl;
+  cout << "average peak height in " << hname << " from " << nfound << " peaks: " << ypav << endl;
 }

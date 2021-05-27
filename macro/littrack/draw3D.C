@@ -5,7 +5,8 @@
  * \date 2008
  **/
 
-void draw3D() {
+void draw3D()
+{
   TString dir = "/Users/andrey/Development/cbm/d/events/sts_tof/";
   ;
   TString parFile = dir + "param.0000.root";

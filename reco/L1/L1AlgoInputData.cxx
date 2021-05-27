@@ -64,9 +64,8 @@ istream& L1AlgoInputData::eatwhite(istream& is)  // skip spaces
   return is;
 }
 
-bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
-                                       const int maxNEvent,
-                                       const int iVerbose) {
+bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose)
+{
   static int nEvent = 1;
   static ifstream fadata;
   static char fname[100];
@@ -94,9 +93,7 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
     fadata >> nEv;
     //  cout << nEv<<  " nEv"<<endl;
 
-    if (nEv != nEvent)
-      cout << "-E- CbmL1: Can't read event number " << nEvent << " from file "
-           << fname << endl;
+    if (nEv != nEvent) cout << "-E- CbmL1: Can't read event number " << nEvent << " from file " << fname << endl;
 
     int n;  // number of elements
       // read algo->vStsStrips
@@ -140,14 +137,13 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
     int element_iz;
     for (int i = 0; i < n; i++) {
       L1StsHit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u
-        >> element.v >> element.t_reco;
+      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t_reco;
       element.f = static_cast<THitI>(element_f);
       element.b = static_cast<THitI>(element_b);
 #ifdef USE_EVENT_NUMBER
       element.n = static_cast<unsigned short int>(element_n);
 #endif
-      element.iz     = static_cast<TZPosI>(element_iz);
+      element.iz = static_cast<TZPosI>(element_iz);
       vStsHits.push_back(element);
     }
     if (iVerbose >= 4) {
@@ -173,8 +169,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
     }
 
     if (iVerbose >= 2) {
-      cout << "-I- CbmL1: CATrackFinder data for event " << nEvent
-           << " has been read from file " << fname << " successfully." << endl;
+      cout << "-I- CbmL1: CATrackFinder data for event " << nEvent << " has been read from file " << fname
+           << " successfully." << endl;
     }
     //    if (nEvent == maxNEvent) fadata.close();
   }

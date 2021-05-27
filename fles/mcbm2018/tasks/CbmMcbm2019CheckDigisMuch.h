@@ -24,8 +24,7 @@ public:
   CbmMcbm2019CheckDigisMuch();
 
   CbmMcbm2019CheckDigisMuch(const CbmMcbm2019CheckDigisMuch&) = delete;
-  CbmMcbm2019CheckDigisMuch
-  operator=(const CbmMcbm2019CheckDigisMuch&) = delete;
+  CbmMcbm2019CheckDigisMuch operator=(const CbmMcbm2019CheckDigisMuch&) = delete;
 
   /** Constructor with parameters (Optional) **/
   //  CbmMcbm2019CheckDigisMuch(Int_t verbose);
@@ -51,11 +50,9 @@ public:
   /** Finish task called at the end of the run **/
   virtual void Finish();
 
-  inline void SetTimeWindow(UInt_t uTsJump,
-                            Double_t dFirstTsOffset,
-                            UInt_t uPrevTs     = 2,
-                            UInt_t uPostTs     = 2,
-                            Double_t dTsLength = 10240000.) {
+  inline void SetTimeWindow(UInt_t uTsJump, Double_t dFirstTsOffset, UInt_t uPrevTs = 2, UInt_t uPostTs = 2,
+                            Double_t dTsLength = 10240000.)
+  {
     fuTsJump      = uTsJump;
     fdFirstTsOffs = dFirstTsOffset;
     fuStartTs     = uTsJump - uPrevTs;
@@ -63,12 +60,14 @@ public:
     fdTsLength    = dTsLength;
     fdStartTime   = fuStartTs * dTsLength + dFirstTsOffset;
   }
-  inline void SetDigiDistPlotStartTime(Double_t dStartTime) {
+  inline void SetDigiDistPlotStartTime(Double_t dStartTime)
+  {
     fdDigiDistStart = dStartTime;
     fdDigiDistStop  = dStartTime + 500000;
   }
 
-  inline void SetMuchPulseradcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetMuchPulseradcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserMuch = uMin;
     fuMaxAdcPulserMuch = uMax;
   }

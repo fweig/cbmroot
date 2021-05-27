@@ -20,26 +20,20 @@ using std::right;
 using std::setw;
 
 // Forward declarations
-TGeoVolume* ConstructModule(const char* name,
-                            Double_t moduleSize,
-                            Int_t nLayers,
-                            fstream* info = 0);
+TGeoVolume* ConstructModule(const char* name, Double_t moduleSize, Int_t nLayers, fstream* info = 0);
 
-TGeoVolume* ConstructShield(const char* name,
-                            Double_t sizeXY,
-                            Double_t holesize,
-                            Int_t hole_pos,
-                            fstream* info);
+TGeoVolume* ConstructShield(const char* name, Double_t sizeXY, Double_t holesize, Int_t hole_pos, fstream* info);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_psdgeo_46modules() {
+void create_psdgeo_46modules()
+{
   // -----   Steering variables   ---------------------------------------------
-  const Double_t psdX = 9.65;  // x position of PSD in cave (front plane center)
-  const Double_t psdY = 0.;    // y position of PSD in cave (front plane center)
-  const Double_t psdZ = 800.;  // z position of PSD in cave (front plane center)
+  const Double_t psdX     = 9.65;     // x position of PSD in cave (front plane center)
+  const Double_t psdY     = 0.;       // y position of PSD in cave (front plane center)
+  const Double_t psdZ     = 800.;     // z position of PSD in cave (front plane center)
   const Double_t psdRotY  = 0.01321;  // Rotation of PSD around y axis [rad]
   const Double_t holeSize = 0.;       // diagonal size of the square shaped hole
 
@@ -55,13 +49,9 @@ void create_psdgeo_46modules() {
   infoFileName         = infoFileName + geoTag + ".geo.info";
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "PSD geometry " << geoTag
-           << " created with create_psdgeo_46modules.C" << endl
-           << endl;
-  infoFile << "PSD front plane center coordinates: (" << psdX << ", " << psdY
-           << ", " << psdZ << ") cm" << endl;
-  infoFile << "PSD rotation around y axis: " << psdRotY * TMath::RadToDeg()
-           << " degrees" << endl;
+  infoFile << "PSD geometry " << geoTag << " created with create_psdgeo_46modules.C" << endl << endl;
+  infoFile << "PSD front plane center coordinates: (" << psdX << ", " << psdY << ", " << psdZ << ") cm" << endl;
+  infoFile << "PSD rotation around y axis: " << psdRotY * TMath::RadToDeg() << " degrees" << endl;
   // --------------------------------------------------------------------------
 
 
@@ -152,9 +142,8 @@ void create_psdgeo_46modules() {
 
   // -----   Create the PSD modules   -----------------------------------------
   cout << endl;
-  TGeoVolume* module2060 = ConstructModule("module2060", 20., 60, &infoFile);
-  TGeoVolume* module_shield =
-    ConstructShield("shield20", moduleSize, 0., 0, &infoFile);
+  TGeoVolume* module2060    = ConstructModule("module2060", 20., 60, &infoFile);
+  TGeoVolume* module_shield = ConstructShield("shield20", moduleSize, 0., 0, &infoFile);
   // --------------------------------------------------------------------------
 
 
@@ -170,13 +159,11 @@ void create_psdgeo_46modules() {
 
   TString psdName = "psd_";
   psdName += geoTag;
-  TGeoVolume* psd = gGeoManager->MakeBox(
-    psdName, psdMedium, psdSizeX, psdSizeY, psdSizeZ + 0.5 * shieldWidth);
-  cout << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY
-       << " cm x " << 2. * psdSizeZ << " cm" << endl;
+  TGeoVolume* psd = gGeoManager->MakeBox(psdName, psdMedium, psdSizeX, psdSizeY, psdSizeZ + 0.5 * shieldWidth);
+  cout << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY << " cm x " << 2. * psdSizeZ << " cm" << endl;
   infoFile << endl
-           << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY
-           << " cm x " << 2. * psdSizeZ << " cm" << endl;
+           << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY << " cm x " << 2. * psdSizeZ << " cm"
+           << endl;
   // --------------------------------------------------------------------------
 
   struct PSDStatic_t {
@@ -254,16 +241,13 @@ void create_psdgeo_46modules() {
     Int_t iNode = nModules;
 
     // Position of module inside PSD
-    TGeoTranslation* trans =
-      new TGeoTranslation(xModCurrent, yModCurrent, -0.5 * shieldWidth);
-    TGeoTranslation* trans_shield =
-      new TGeoTranslation(xModCurrent, yModCurrent, psdSizeZ);
+    TGeoTranslation* trans        = new TGeoTranslation(xModCurrent, yModCurrent, -0.5 * shieldWidth);
+    TGeoTranslation* trans_shield = new TGeoTranslation(xModCurrent, yModCurrent, psdSizeZ);
 
     psd->AddNode(module2060, iNode, trans);
     psd->AddNode(module_shield, iNode, trans_shield);
 
-    cout << "Adding module " << setw(5) << right << iNode
-         << " at x = " << setw(6) << right << xModCurrent
+    cout << "Adding module " << setw(5) << right << iNode << " at x = " << setw(6) << right << xModCurrent
          << " cm , y = " << setw(6) << right << yModCurrent << " cm" << endl;
     nModules++;
 
@@ -281,12 +265,11 @@ void create_psdgeo_46modules() {
   Double_t psdVolCenterX = psdX + psdHalfLength * sin(psdRotY);
   Double_t psdVolCenterY = psdY;
   Double_t psdVolCenterZ = psdZ + psdHalfLength * cos(psdRotY);
-  infoFile << "PSD volume center coordinates: (" << psdVolCenterX << ", "
-           << psdVolCenterY << ", " << psdVolCenterZ << ") cm" << endl;
+  infoFile << "PSD volume center coordinates: (" << psdVolCenterX << ", " << psdVolCenterY << ", " << psdVolCenterZ
+           << ") cm" << endl;
   TGeoRotation* psdRot = new TGeoRotation();
   psdRot->RotateY(psdRotY * TMath::RadToDeg());
-  TGeoCombiTrans* psdTrans =
-    new TGeoCombiTrans(psdVolCenterX, psdVolCenterY, psdVolCenterZ, psdRot);
+  TGeoCombiTrans* psdTrans = new TGeoCombiTrans(psdVolCenterX, psdVolCenterY, psdVolCenterZ, psdRot);
   top->AddNode(psd, 0, psdTrans);
   cout << endl << "==> PSD position in cave: " << endl;
   psdTrans->Print();
@@ -310,8 +293,7 @@ void create_psdgeo_46modules() {
   TFile* geoFile = new TFile(geoFileName, "UPDATE");
   psdTrans->Write();
   cout << endl;
-  cout << "==> Geometry " << psd->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "==> Geometry " << psd->GetName() << " written to " << geoFileName << endl;
   cout << "==> Info written to " << infoFileName << endl;
   geoFile->Close();
   infoFile.close();
@@ -324,10 +306,7 @@ void create_psdgeo_46modules() {
   TFile* geoManFile      = new TFile(geoManFileName, "RECREATE");
   gGeoManager->Write();
   geoManFile->Close();
-  cout << "==> TGeoManager " << gGeoManager->GetName() << " written to "
-       << geoManFileName << endl
-       << endl
-       << endl;
+  cout << "==> TGeoManager " << gGeoManager->GetName() << " written to " << geoManFileName << endl << endl << endl;
   // --------------------------------------------------------------------------
 
 
@@ -339,14 +318,10 @@ void create_psdgeo_46modules() {
 //  End of main function
 /** ======================================================================= **/
 
-TGeoVolume* ConstructShield(const char* name,
-                            Double_t sizeXY,
-                            Double_t holesize,
-                            Int_t hole_pos,
-                            fstream* info) {
+TGeoVolume* ConstructShield(const char* name, Double_t sizeXY, Double_t holesize, Int_t hole_pos, fstream* info)
+{
 
-  const TString suffix =
-    Form("_shield_%d_%d_%d", int(sizeXY), int(holesize), int(hole_pos));
+  const TString suffix = Form("_shield_%d_%d_%d", int(sizeXY), int(holesize), int(hole_pos));
 
   const Double_t psd2iron     = 2.;
   const Double_t ironD        = 4.;
@@ -363,8 +338,7 @@ TGeoVolume* ConstructShield(const char* name,
   TGeoMedium* medShieldPoly = gGeoManager->GetMedium("PsdPolyethylene");
   if (!medShieldPoly) Fatal("Main", "Medium PsdPolyethylene not found");
 
-  TGeoVolume* shield = gGeoManager->MakeBox(
-    name, medAir, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * shieldLength);
+  TGeoVolume* shield = gGeoManager->MakeBox(name, medAir, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * shieldLength);
   TGeoVolume* iron {nullptr};
   TGeoVolume* poly {nullptr};
 
@@ -388,62 +362,41 @@ TGeoVolume* ConstructShield(const char* name,
         sy = -1;
         break;
     }
-    TGeoCombiTrans* rot45 =
-      new TGeoCombiTrans(Form("rot45%s", suffix.Data()),
-                         sx * sizeXY / 2.,
-                         sy * sizeXY / 2.,
-                         0.,
-                         new TGeoRotation("rot", 45., 0., 0.));
+    TGeoCombiTrans* rot45 = new TGeoCombiTrans(Form("rot45%s", suffix.Data()), sx * sizeXY / 2., sy * sizeXY / 2., 0.,
+                                               new TGeoRotation("rot", 45., 0., 0.));
     rot45->RegisterYourself();
 
-    TGeoBBox* iron1 = new TGeoBBox(
-      Form("iron1%s", suffix.Data()), 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * ironD);
-    TGeoBBox* iron2 = new TGeoBBox(Form("iron2%s", suffix.Data()),
-                                   0.5 * holesize,
-                                   0.5 * holesize,
+    TGeoBBox* iron1 = new TGeoBBox(Form("iron1%s", suffix.Data()), 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * ironD);
+    TGeoBBox* iron2 = new TGeoBBox(Form("iron2%s", suffix.Data()), 0.5 * holesize, 0.5 * holesize,
                                    0.5 * ironD);  //hole
 
-    TGeoCompositeShape* ironShape = new TGeoCompositeShape(Form(
-      "iron1%s-iron2%s:rot45%s", suffix.Data(), suffix.Data(), suffix.Data()));
+    TGeoCompositeShape* ironShape =
+      new TGeoCompositeShape(Form("iron1%s-iron2%s:rot45%s", suffix.Data(), suffix.Data(), suffix.Data()));
     iron = new TGeoVolume(Form("iron%s", suffix.Data()), ironShape, medIron);
 
-    TGeoBBox* poly1 = new TGeoBBox(
-      Form("poly1%s", suffix.Data()), 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * polyD);
-    TGeoBBox* poly2 = new TGeoBBox(Form("poly2%s", suffix.Data()),
-                                   0.5 * holesize,
-                                   0.5 * holesize,
+    TGeoBBox* poly1 = new TGeoBBox(Form("poly1%s", suffix.Data()), 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * polyD);
+    TGeoBBox* poly2 = new TGeoBBox(Form("poly2%s", suffix.Data()), 0.5 * holesize, 0.5 * holesize,
                                    0.5 * polyD);  //hole
 
-    TGeoCompositeShape* polyShape = new TGeoCompositeShape(Form(
-      "poly1%s-poly2%s:rot45%s", suffix.Data(), suffix.Data(), suffix.Data()));
-    poly =
-      new TGeoVolume(Form("poly%s", suffix.Data()), polyShape, medShieldPoly);
-  } else {
-    iron = gGeoManager->MakeBox(
-      "shield_iron", medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * ironD);
-    poly = gGeoManager->MakeBox(
-      "shield_poly", medShieldPoly, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * polyD);
+    TGeoCompositeShape* polyShape =
+      new TGeoCompositeShape(Form("poly1%s-poly2%s:rot45%s", suffix.Data(), suffix.Data(), suffix.Data()));
+    poly = new TGeoVolume(Form("poly%s", suffix.Data()), polyShape, medShieldPoly);
+  }
+  else {
+    iron = gGeoManager->MakeBox("shield_iron", medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * ironD);
+    poly = gGeoManager->MakeBox("shield_poly", medShieldPoly, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * polyD);
   }
 
-  shield->AddNode(
-    iron,
-    0,
-    new TGeoTranslation(0., 0., -shieldLength / 2. + psd2iron + ironD / 2.));
-  shield->AddNode(
-    poly,
-    0,
-    new TGeoTranslation(
-      0., 0., -shieldLength / 2. + psd2iron + ironD + iron2poly + polyD / 2.));
+  shield->AddNode(iron, 0, new TGeoTranslation(0., 0., -shieldLength / 2. + psd2iron + ironD / 2.));
+  shield->AddNode(poly, 0, new TGeoTranslation(0., 0., -shieldLength / 2. + psd2iron + ironD + iron2poly + polyD / 2.));
 
   return shield;
 }
 
 
 /** ======================================================================= **/
-TGeoVolume* ConstructModule(const char* name,
-                            Double_t sizeXY,
-                            Int_t nLayers,
-                            fstream* info) {
+TGeoVolume* ConstructModule(const char* name, Double_t sizeXY, Int_t nLayers, fstream* info)
+{
 
   // The module consists of nLayers of scintillators covered with Tyvek.
   // Between each two scintillators, there is a lead layer (total nLayers -1).
@@ -453,8 +406,7 @@ TGeoVolume* ConstructModule(const char* name,
   // there is a thick iron layer (the back one acting as first absorber)
   // for constructional reasons.
 
-  cout << "===> Creating Module " << name << ", size " << sizeXY << " cm with "
-       << nLayers << " layers...." << endl;
+  cout << "===> Creating Module " << name << ", size " << sizeXY << " cm with " << nLayers << " layers...." << endl;
 
   // -----   Constructional parameters   ----------------------------
   Double_t leadD     = 1.60;  // Thickness of lead layer
@@ -477,11 +429,9 @@ TGeoVolume* ConstructModule(const char* name,
     (*info) << "Thickness of lead layers: " << leadD << " cm" << endl;
     (*info) << "Thickness of scintillators: " << scintD << " cm" << endl;
     (*info) << "Thickness of Tyvek wrap: " << tyvekD << " cm" << endl;
-    (*info) << "Thickness of iron box: (" << boxDx << " / " << boxDy << " / "
-            << boxDz << ") cm" << endl;
+    (*info) << "Thickness of iron box: (" << boxDx << " / " << boxDy << " / " << boxDz << ") cm" << endl;
     (*info) << "Height of fibre channel: " << chanDy << " cm" << endl;
-    (*info) << "Distance of channel from edges: left " << chanDistL
-            << " cm, right " << chanDistR << " cm" << endl;
+    (*info) << "Distance of channel from edges: left " << chanDistL << " cm, right " << chanDistR << " cm" << endl;
   }
   // ------------------------------------------------------------------------
 
@@ -506,10 +456,8 @@ TGeoVolume* ConstructModule(const char* name,
   // Module length: nLayers of scintillators, nLayers - 1 of lead
   // plus the iron box front and back.
   // Material is iron.
-  Double_t moduleLength =
-    2. * boxDz + nLayers * (scintD + 2. * tyvekD) + (nLayers - 1) * leadD;
-  TGeoVolume* module = gGeoManager->MakeBox(
-    name, medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * moduleLength);
+  Double_t moduleLength = 2. * boxDz + nLayers * (scintD + 2. * tyvekD) + (nLayers - 1) * leadD;
+  TGeoVolume* module    = gGeoManager->MakeBox(name, medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * moduleLength);
   module->SetLineColor(kRed);
   module->Print();
   cout << endl;
@@ -521,11 +469,10 @@ TGeoVolume* ConstructModule(const char* name,
   // The Tyvek/scintillator layers and the fibre channel will be placed
   // inside.
   // Dimensions are half-lengths.
-  Double_t leadLx = 0.5 * sizeXY - boxDx;
-  Double_t leadLy = 0.5 * sizeXY - boxDy;
-  Double_t leadLz = 0.5 * moduleLength - boxDz;
-  TGeoVolume* lead =
-    gGeoManager->MakeBox("lead", medLead, leadLx, leadLy, leadLz);
+  Double_t leadLx  = 0.5 * sizeXY - boxDx;
+  Double_t leadLy  = 0.5 * sizeXY - boxDy;
+  Double_t leadLz  = 0.5 * moduleLength - boxDz;
+  TGeoVolume* lead = gGeoManager->MakeBox("lead", medLead, leadLx, leadLy, leadLz);
   lead->SetLineColor(kBlue);
   // ------------------------------------------------------------------------
 
@@ -538,16 +485,14 @@ TGeoVolume* ConstructModule(const char* name,
   // lead edges.
   Double_t chanLx = leadLx - 0.5 * chanDistL - 0.5 * chanDistR;
   if (chanLx < 0.) {
-    cout << "Error: lead volume is not large enough to host fibre channel!"
-         << endl;
-    cout << "Lead width: " << 2. * leadLx << ", distance from left edge "
-         << chanDistL << ", distance from right edge " << chanDistR << endl;
+    cout << "Error: lead volume is not large enough to host fibre channel!" << endl;
+    cout << "Lead width: " << 2. * leadLx << ", distance from left edge " << chanDistL << ", distance from right edge "
+         << chanDistR << endl;
     return 0;
   }
-  Double_t chanLy = 0.5 * chanDy;
-  Double_t chanLz = leadLz;
-  TGeoVolume* channel =
-    gGeoManager->MakeBox("channel", medFibre, chanLx, chanLy, chanLz);
+  Double_t chanLy     = 0.5 * chanDy;
+  Double_t chanLz     = leadLz;
+  TGeoVolume* channel = gGeoManager->MakeBox("channel", medFibre, chanLx, chanLy, chanLz);
   channel->SetLineColor(kMagenta);
   // ------------------------------------------------------------------------
 
@@ -565,15 +510,13 @@ TGeoVolume* ConstructModule(const char* name,
   // The scintillator will be placed inside this, leaving only the thin
   // Tyvek as a wrapper. Since these layers will be placed in the lead filler,
   // there has to be a cut-out for the fibre channel.
-  Double_t tyvekLz = 0.5 * scintD + tyvekD;  // half-length
-  TGeoBBox* tyv1   = new TGeoBBox("psdTyv1", leadLx, leadLy, tyvekLz);
-  TGeoBBox* tyv2   = new TGeoBBox("psdTyv2", chanLx, chanLy, tyvekLz);
-  TGeoTranslation* trans1 =
-    new TGeoTranslation("tPsd1", chanShiftX, chanShiftY, 0.);
+  Double_t tyvekLz        = 0.5 * scintD + tyvekD;  // half-length
+  TGeoBBox* tyv1          = new TGeoBBox("psdTyv1", leadLx, leadLy, tyvekLz);
+  TGeoBBox* tyv2          = new TGeoBBox("psdTyv2", chanLx, chanLy, tyvekLz);
+  TGeoTranslation* trans1 = new TGeoTranslation("tPsd1", chanShiftX, chanShiftY, 0.);
   trans1->RegisterYourself();
-  TGeoCompositeShape* tyvekShape =
-    new TGeoCompositeShape("psdTyv1-psdTyv2:tPsd1");
-  TGeoVolume* tyvek = new TGeoVolume("tyvek", tyvekShape, medTyvek);
+  TGeoCompositeShape* tyvekShape = new TGeoCompositeShape("psdTyv1-psdTyv2:tPsd1");
+  TGeoVolume* tyvek              = new TGeoVolume("tyvek", tyvekShape, medTyvek);
   tyvek->SetLineColor(kGreen);
   // ------------------------------------------------------------------------
 
@@ -582,22 +525,20 @@ TGeoVolume* ConstructModule(const char* name,
   // The scintillator layer is embedded (as daughter) into the Tyvek layer.
   // It is also a box minus the cut-out for the fibres. The cut-out is
   // slightly smaller than for the Tyvek volume.
-  Double_t scintLx   = leadLx - tyvekD;
-  Double_t scintLy   = leadLy - tyvekD;
-  Double_t scintLz   = 0.5 * scintD;
-  TGeoBBox* sci1     = new TGeoBBox("sci1", scintLx, scintLy, scintLz);
-  Double_t cutLx     = chanLx;
-  Double_t cutLy     = chanLy - tyvekD;
-  Double_t cutLz     = scintLz;
-  TGeoBBox* sci2     = new TGeoBBox("sci2", cutLx, cutLy, cutLz);
-  Double_t cutShiftX = chanShiftX;
-  Double_t cutShiftY = scintLy - cutLy;
-  TGeoTranslation* trans2 =
-    new TGeoTranslation("tPsd2", cutShiftX, cutShiftY, 0.);
+  Double_t scintLx        = leadLx - tyvekD;
+  Double_t scintLy        = leadLy - tyvekD;
+  Double_t scintLz        = 0.5 * scintD;
+  TGeoBBox* sci1          = new TGeoBBox("sci1", scintLx, scintLy, scintLz);
+  Double_t cutLx          = chanLx;
+  Double_t cutLy          = chanLy - tyvekD;
+  Double_t cutLz          = scintLz;
+  TGeoBBox* sci2          = new TGeoBBox("sci2", cutLx, cutLy, cutLz);
+  Double_t cutShiftX      = chanShiftX;
+  Double_t cutShiftY      = scintLy - cutLy;
+  TGeoTranslation* trans2 = new TGeoTranslation("tPsd2", cutShiftX, cutShiftY, 0.);
   trans2->RegisterYourself();
-  TGeoCompositeShape* scintShape =
-    new TGeoCompositeShape("scintShape", "sci1-sci2:tPsd2");
-  TGeoVolume* scint = new TGeoVolume("scint", scintShape, medScint);
+  TGeoCompositeShape* scintShape = new TGeoCompositeShape("scintShape", "sci1-sci2:tPsd2");
+  TGeoVolume* scint              = new TGeoVolume("scint", scintShape, medScint);
   scint->SetLineColor(kBlack);
   // ------------------------------------------------------------------------
 
@@ -614,15 +555,13 @@ TGeoVolume* ConstructModule(const char* name,
   Double_t zFirst = 0.;
   Double_t zLast  = 0.;
   for (Int_t iLayer = 0; iLayer < nLayers; iLayer++) {
-    Double_t zPos =
-      -1. * leadLz + iLayer * leadD + (2. * iLayer + 1.) * tyvekLz;
+    Double_t zPos = -1. * leadLz + iLayer * leadD + (2. * iLayer + 1.) * tyvekLz;
     if (iLayer == 0) zFirst = zPos;
     if (iLayer == nLayers - 1) zLast = zPos;
     lead->AddNode(tyvek, iLayer, new TGeoTranslation(0., 0., zPos));
   }
-  cout << module->GetName() << ": Positioned " << nLayers
-       << " Tyvek layers; first at z = " << zFirst << ", last at z = " << zLast
-       << endl;
+  cout << module->GetName() << ": Positioned " << nLayers << " Tyvek layers; first at z = " << zFirst
+       << ", last at z = " << zLast << endl;
 
   // ---> Lead into module
   module->AddNode(lead, 0);

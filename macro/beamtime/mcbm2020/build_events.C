@@ -1,7 +1,5 @@
-void build_events(TString fileName,
-                  UInt_t uRunId  = 0,
-                  Int_t nEvents  = 0,
-                  TString outDir = "data/") {
+void build_events(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir = "data/")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -52,9 +50,7 @@ void build_events(TString fileName,
   eventBuilder->SetTriggerMinNumberMuch(0);
   eventBuilder->SetTriggerMinNumberTof(1);
   eventBuilder->SetFillHistos(kTRUE);
-  if (0 < uRunId)
-    eventBuilder->SetOutFilename(
-      Form("%sHistosEventBuilder_%03u.root", outDir.Data(), uRunId));
+  if (0 < uRunId) eventBuilder->SetOutFilename(Form("%sHistosEventBuilder_%03u.root", outDir.Data(), uRunId));
   fRun->AddTask(eventBuilder);
 
   // -----  Parameter database   --------------------------------------------
@@ -75,7 +71,8 @@ void build_events(TString fileName,
   cout << "Starting run" << endl;
   if (0 == nEvents) {
     fRun->Run(0, 0);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nEvents);  // process  2000 Events
   }
   // ------------------------------------------------------------------------

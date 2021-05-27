@@ -41,22 +41,20 @@ CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName, EMode mode)
   , fNofEvents(0)
   , fBetaCM(0.)
   , fGammaCM(1.)
-  , fIonMap() {
+  , fIonMap()
+{
   LOG(debug) << GetName() << ": Constructor";
   if (mode == kRotateFixed)
     LOG(fatal) << GetName() << ": When choosing "
                << "mode kRotateFixed, a rotation angle must be specified!";
   if (fileName[0] == '\0') return;
-  if (!Init())
-    LOG(fatal) << GetName() << ": Error in intialisation! Aborting...";
+  if (!Init()) LOG(fatal) << GetName() << ": Error in intialisation! Aborting...";
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Constructor   ----------------------------------------------------
-CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName,
-                                       EMode mode,
-                                       Double_t phi)
+CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName, EMode mode, Double_t phi)
   : FairGenerator("UnigenGenerator", "CBM generator")
   , fFileName(fileName)
   , fMode(mode)
@@ -70,17 +68,18 @@ CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName,
   , fNofEvents(0)
   , fBetaCM(0.)
   , fGammaCM(1.)
-  , fIonMap() {
+  , fIonMap()
+{
   LOG(debug) << GetName() << ": Constructor";
   if (fileName[0] == '\0') return;
-  if (!Init())
-    LOG(fatal) << GetName() << ": Error in intialisation! Aborting...";
+  if (!Init()) LOG(fatal) << GetName() << ": Error in intialisation! Aborting...";
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Destructor   -----------------------------------------------------
-CbmUnigenGenerator::~CbmUnigenGenerator() {
+CbmUnigenGenerator::~CbmUnigenGenerator()
+{
   LOG(debug) << GetName() << ": Destructor";
   CloseInput();
   if (fEvent) delete fEvent;
@@ -89,18 +88,17 @@ CbmUnigenGenerator::~CbmUnigenGenerator() {
 
 
 // -----   Add a primary to the event generator   ---------------------------
-void CbmUnigenGenerator::AddPrimary(FairPrimaryGenerator* primGen,
-                                    Int_t pdgCode,
-                                    const TVector3& momentum) {
-  primGen->AddTrack(
-    pdgCode, momentum.Px(), momentum.Py(), momentum.Pz(), 0., 0., 0.);
+void CbmUnigenGenerator::AddPrimary(FairPrimaryGenerator* primGen, Int_t pdgCode, const TVector3& momentum)
+{
+  primGen->AddTrack(pdgCode, momentum.Px(), momentum.Py(), momentum.Pz(), 0., 0., 0.);
   fNofPrimaries++;
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Close the input file   -------------------------------------------
-void CbmUnigenGenerator::CloseInput() {
+void CbmUnigenGenerator::CloseInput()
+{
   if (!fFile) return;
   LOG(INFO) << GetName() << ": Closing input file " << fFileName;
   fFile->Close();
@@ -110,12 +108,12 @@ void CbmUnigenGenerator::CloseInput() {
 
 
 // -----   Read next entry from tree   --------------------------------------
-Bool_t CbmUnigenGenerator::GetNextEntry() {
+Bool_t CbmUnigenGenerator::GetNextEntry()
+{
 
   if (++fCurrentEntry >= fTree->GetEntries()) {
     if (fMode == kReuseEvents) {
-      LOG(info) << GetName()
-                << ": End of input tree - restarting with first entry";
+      LOG(info) << GetName() << ": End of input tree - restarting with first entry";
       fCurrentEntry = 0;
     }  //? Re-use entries
     else {
@@ -127,8 +125,7 @@ Bool_t CbmUnigenGenerator::GetNextEntry() {
   // Read entry
   Int_t result = fTree->GetEntry(fCurrentEntry);
   if (result <= 0) {
-    LOG(ERROR) << GetName() << ": Error reading entry " << fCurrentEntry
-               << " (returns " << result << ")!";
+    LOG(ERROR) << GetName() << ": Error reading entry " << fCurrentEntry << " (returns " << result << ")!";
     return kFALSE;
   }
 
@@ -138,7 +135,8 @@ Bool_t CbmUnigenGenerator::GetNextEntry() {
 
 
 // -----   Open the input file   --------------------------------------------
-Bool_t CbmUnigenGenerator::Init() {
+Bool_t CbmUnigenGenerator::Init()
+{
 
   // --- Check for file being already initialised
   if (fIsInit) {
@@ -150,13 +148,9 @@ Bool_t CbmUnigenGenerator::Init() {
   std::stringstream ss;
   switch (fMode) {
     case kStandard: ss << " standard; rotate event plane to zero"; break;
-    case kRotateFixed:
-      ss << " rotate event plane by fixed angle " << fPhi;
-      break;
+    case kRotateFixed: ss << " rotate event plane by fixed angle " << fPhi; break;
     case kNoRotation: ss << " no event plane rotation"; break;
-    case kReuseEvents:
-      ss << " re-use events if necessary; random event plane angle";
-      break;
+    case kReuseEvents: ss << " re-use events if necessary; random event plane angle"; break;
     default: ss << "unkown"; break;
   }
   LOG(INFO) << GetName() << ": Mode " << ss.str();
@@ -197,8 +191,7 @@ Bool_t CbmUnigenGenerator::Init() {
   fBetaCM        = pTarg / eTarg;
   fGammaCM       = 1. / TMath::Sqrt(1. - fBetaCM * fBetaCM);
   Double_t pBeam = fGammaCM * (pProj - fBetaCM * eProj);
-  LOG(info) << GetName() << ": sqrt(s_NN) = " << run->GetNNSqrtS()
-            << " GeV, p_beam = " << pBeam << " GeV/u";
+  LOG(info) << GetName() << ": sqrt(s_NN) = " << run->GetNNSqrtS() << " GeV, p_beam = " << pBeam << " GeV/u";
   LOG(info) << GetName() << ": Lorentz transformation to lab system: "
             << " beta " << fBetaCM << ", gamma " << fGammaCM;
 
@@ -210,8 +203,7 @@ Bool_t CbmUnigenGenerator::Init() {
     return kFALSE;
   }
   fTree->SetBranchAddress("event", &fEvent);
-  LOG(info) << GetName() << ": " << fTree->GetEntries()
-            << " events in input tree";
+  LOG(info) << GetName() << ": " << fTree->GetEntries() << " events in input tree";
 
   // --- Register ions found in the input file
   Int_t nIons = RegisterIons();
@@ -224,9 +216,8 @@ Bool_t CbmUnigenGenerator::Init() {
 
 
 // -----   Process a composite particle   -----------------------------------
-void CbmUnigenGenerator::ProcessIon(FairPrimaryGenerator* primGen,
-                                    Int_t pdgCode,
-                                    const TVector3& momentum) {
+void CbmUnigenGenerator::ProcessIon(FairPrimaryGenerator* primGen, Int_t pdgCode, const TVector3& momentum)
+{
 
   assert(pdgCode >= 1e9);  // Should be an ion PDG
 
@@ -235,8 +226,7 @@ void CbmUnigenGenerator::ProcessIon(FairPrimaryGenerator* primGen,
   Int_t ionPdg = pdgCode;
   if (GetIonLambdas(pdgCode)) {
     ionPdg = pdgCode - GetIonLambdas(pdgCode) * kPdgLambda;
-    LOG(warn) << GetName() << ": Replacing hypernucleus (PDG " << pdgCode
-              << ") by PDG " << ionPdg;
+    LOG(warn) << GetName() << ": Replacing hypernucleus (PDG " << pdgCode << ") by PDG " << ionPdg;
   }  //? Lambdas in ion
 
   // Charged ions can be registered
@@ -249,15 +239,15 @@ void CbmUnigenGenerator::ProcessIon(FairPrimaryGenerator* primGen,
     TVector3 neutronMom = momentum * (1. / Double_t(mass));
     for (Int_t iNeutron = 0; iNeutron < mass; iNeutron++)
       AddPrimary(primGen, 2112, neutronMom);
-    LOG(warn) << GetName() << ": Neutral fragment with PDG " << ionPdg
-              << " is split into " << mass << " neutrons";
+    LOG(warn) << GetName() << ": Neutral fragment with PDG " << ionPdg << " is split into " << mass << " neutrons";
   }  //? Neutral ion
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Read input event   -----------------------------------------------
-Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
+Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
 
   // Init must have been called before
   assert(fIsInit);
@@ -270,8 +260,8 @@ Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
   Int_t eventId   = fEvent->GetEventNr();  // Generator event ID
   Int_t nPart     = fEvent->GetNpa();      // Number of particles in event
   Double_t impact = fEvent->GetB();        // Impact parameter
-  Double_t phi1   = fEvent->GetPhi();  // Event plane angle (generator) [rad]
-  fNofPrimaries   = 0;                 // Number of registered primaries
+  Double_t phi1   = fEvent->GetPhi();      // Event plane angle (generator) [rad]
+  fNofPrimaries   = 0;                     // Number of registered primaries
 
   // Event rotation angle to be applied on the input momentum vectors
   Double_t phi2 = 0.;
@@ -308,7 +298,8 @@ Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
   if (eventHeader->IsSet()) {
     LOG(warning) << GetName() << ": Event header is already set; "
                  << " event info will not be stored";
-  } else {
+  }
+  else {
     eventHeader->SetEventID(eventId);   // Generator event ID
     eventHeader->SetB(fEvent->GetB());  // Impact parameter
     eventHeader->SetRotZ(phi1 + phi2);  // Event plane angle
@@ -316,10 +307,8 @@ Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
   }
 
   // Info to screen
-  LOG(info) << GetName() << ": Event ID " << eventId << ", particles " << nPart
-            << ", primaries " << fNofPrimaries << ", b = " << impact
-            << " fm, phi (source) = " << phi1
-            << " rad , phi (generated) = " << phi2 << " rad";
+  LOG(info) << GetName() << ": Event ID " << eventId << ", particles " << nPart << ", primaries " << fNofPrimaries
+            << ", b = " << impact << " fm, phi (source) = " << phi1 << " rad , phi (generated) = " << phi2 << " rad";
 
   return kTRUE;
 }
@@ -327,7 +316,8 @@ Bool_t CbmUnigenGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
 
 // -----   Register ions to the run   ---------------------------------------
-Int_t CbmUnigenGenerator::RegisterIons() {
+Int_t CbmUnigenGenerator::RegisterIons()
+{
 
   LOG(debug) << GetName() << ": Registering ions";
   UParticle* particle {nullptr};
@@ -360,10 +350,9 @@ Int_t CbmUnigenGenerator::RegisterIons() {
         if (fIonMap.find(ionName) == fIonMap.end()) {  // new ion
           fIonMap[ionName] = new FairIon(ionName, charge, mass, charge);
           nIons++;
-          LOG(debug) << GetName() << ": Adding new ion " << ionName << ", PDG "
-                     << pdgCode << " (mass " << mass << ", charge " << charge
-                     << ", nLambda " << nLambda << ") from event " << iEvent
-                     << " at index " << iParticle;
+          LOG(debug) << GetName() << ": Adding new ion " << ionName << ", PDG " << pdgCode << " (mass " << mass
+                     << ", charge " << charge << ", nLambda " << nLambda << ") from event " << iEvent << " at index "
+                     << iParticle;
         }  //? new ion
 
       }  //? ion

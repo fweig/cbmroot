@@ -65,19 +65,23 @@ CbmTrdRecoQa::CbmTrdRecoQa(const char* name, const char*)
   , fModuleMapDigi()
   , fModuleMapCluster()
   , fModuleMapHit()
-  , fModuleMapTrack() {}
+  , fModuleMapTrack()
+{
+}
 // --------------------------------------------------------------------------
 
 
 // ---- Destructor ----------------------------------------------------------
 CbmTrdRecoQa::~CbmTrdRecoQa() {}
 // --------------------------------------------------------------------------
-void CbmTrdRecoQa::SetTriggerThreshold(Double_t minCharge) {
+void CbmTrdRecoQa::SetTriggerThreshold(Double_t minCharge)
+{
   fTriggerTH = minCharge;  //  To be used for test beam data processing
 }
 
 // ---- Initialisation ------------------------------------------------------
-InitStatus CbmTrdRecoQa::Init() {
+InitStatus CbmTrdRecoQa::Init()
+{
   // Get pointer to the ROOT I/O manager
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
@@ -123,7 +127,8 @@ InitStatus CbmTrdRecoQa::Init() {
 // --------------------------------------------------------------------------
 
 // ----  Initialisation  ----------------------------------------------
-void CbmTrdRecoQa::SetParContainers() {
+void CbmTrdRecoQa::SetParContainers()
+{
   cout << " * CbmTrdRecoQa * :: SetParContainers() " << endl;
 
 
@@ -136,7 +141,8 @@ void CbmTrdRecoQa::SetParContainers() {
 // --------------------------------------------------------------------
 
 // ---- ReInit  -------------------------------------------------------
-InitStatus CbmTrdRecoQa::ReInit() {
+InitStatus CbmTrdRecoQa::ReInit()
+{
 
   cout << " * CbmTrdRecoQa * :: ReInit() " << endl;
 
@@ -148,9 +154,7 @@ InitStatus CbmTrdRecoQa::ReInit() {
 
   return kSUCCESS;
 }
-void CbmTrdRecoQa::SetTriangularPads(Bool_t triangles) {
-  fTrianglePads = triangles;
-}
+void CbmTrdRecoQa::SetTriangularPads(Bool_t triangles) { fTrianglePads = triangles; }
 /*
 TPolyLine *CbmTrdRecoQa::CreateTriangularPad(Int_t column, Int_t row, Double_t content){
   const Int_t nCoordinates = 4;
@@ -166,7 +170,8 @@ TPolyLine *CbmTrdRecoQa::CreateTriangularPad(Int_t column, Int_t row, Double_t c
 }
 */
 // ---- Task execution ------------------------------------------------------
-void CbmTrdRecoQa::Exec(Option_t*) {
+void CbmTrdRecoQa::Exec(Option_t*)
+{
   CbmTrdUtils* utils = new CbmTrdUtils();
   TStopwatch timer;
   timer.Start();
@@ -183,9 +188,8 @@ void CbmTrdRecoQa::Exec(Option_t*) {
   if (fMCPoints) nPoints = fMCPoints->GetEntriesFast();
   if (fHits) nHits = fHits->GetEntriesFast();
 
-  TH1D* digiMaxSpectrum =
-    new TH1D("digiMaxSpectrum", "digiMaxSpectrum", 10000, 0, 1e-4);
-  TH1D* digiSpectrum = new TH1D("digiSpectrum", "digiSpectrum", 10000, 0, 1e-4);
+  TH1D* digiMaxSpectrum = new TH1D("digiMaxSpectrum", "digiMaxSpectrum", 10000, 0, 1e-4);
+  TH1D* digiSpectrum    = new TH1D("digiSpectrum", "digiSpectrum", 10000, 0, 1e-4);
 
   LOG(info) << "CbmTrdRecoQa::Exec : MC-Points:" << nPoints;
   LOG(info) << "CbmTrdRecoQa::Exec : Digis:    " << nDigis;
@@ -202,11 +206,9 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     point           = (CbmTrdPoint*) fMCPoints->At(iPoint);
     Double_t in[3]  = {point->GetXIn(), point->GetYIn(), point->GetZIn()};
     Double_t out[3] = {point->GetXOut(), point->GetYOut(), point->GetZOut()};
-    gGeoManager->FindNode(
-      (out[0] + in[0]) / 2, (out[1] + in[1]) / 2, (out[2] + in[2]) / 2);
+    gGeoManager->FindNode((out[0] + in[0]) / 2, (out[1] + in[1]) / 2, (out[2] + in[2]) / 2);
     if (!TString(gGeoManager->GetPath()).Contains("gas")) {
-      LOG(error) << "CbmTrdRecoQa::Exec: MC-track not in TRD! Node:"
-                 << TString(gGeoManager->GetPath()).Data()
+      LOG(error) << "CbmTrdRecoQa::Exec: MC-track not in TRD! Node:" << TString(gGeoManager->GetPath()).Data()
                  << " gGeoManager->MasterToLocal() failed!";
       continue;
     }
@@ -214,12 +216,10 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     moduleAddress = CbmTrdAddress::GetModuleAddress(point->GetDetectorID());  //
     moduleId      = CbmTrdAddress::GetModuleId(point->GetDetectorID());
     //printf("Address:%i ID:%i\n",moduleAddress,moduleId);
-    fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(
-      moduleAddress);  ////point->GetDetectorID());
+    fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);  ////point->GetDetectorID());
     //printf("Address:%i ID:%i\n",moduleAddress,moduleId);
     if (fModuleInfo) {
-      std::map<Int_t, TGraphErrors*>::iterator it =
-        fModuleMapPoint.find(moduleAddress);
+      std::map<Int_t, TGraphErrors*>::iterator it = fModuleMapPoint.find(moduleAddress);
       if (it == fModuleMapPoint.end()) {
         name.Form("ModuleAddress%05i", moduleAddress);
         fModuleMap[moduleAddress] = new TCanvas(name, name, 1000, 1000);
@@ -230,37 +230,19 @@ void CbmTrdRecoQa::Exec(Option_t*) {
         fModuleMapPoint[moduleAddress]->SetMarkerSize(0.5);
         fModuleMapPoint[moduleAddress]->SetMarkerColor(15);
         //fModuleMapPoint[moduleAddress] = new TH2I(name,name,fModuleInfo->GetNofColumns(),-0.5,fModuleInfo->GetNofColumns()-0.5,fModuleInfo->GetNofRows(),-0.5,fModuleInfo->GetNofRows()-0.5);
-        TH2I* dummy = new TH2I(name,
-                               name,
-                               fModuleInfo->GetNofColumns(),
-                               -0.5,
-                               fModuleInfo->GetNofColumns() - 0.5,
-                               fModuleInfo->GetNofRows(),
-                               -0.5,
-                               fModuleInfo->GetNofRows() - 0.5);
+        TH2I* dummy = new TH2I(name, name, fModuleInfo->GetNofColumns(), -0.5, fModuleInfo->GetNofColumns() - 0.5,
+                               fModuleInfo->GetNofRows(), -0.5, fModuleInfo->GetNofRows() - 0.5);
         dummy->SetStats(kFALSE);
         name.Form("ModuleAddress%05iDigis", moduleAddress);
         fModuleMapDigi[moduleAddress] =
-          new TH2D(name,
-                   name,
-                   fModuleInfo->GetNofColumns(),
-                   -0.5,
-                   fModuleInfo->GetNofColumns() - 0.5,
-                   fModuleInfo->GetNofRows(),
-                   -0.5,
-                   fModuleInfo->GetNofRows() - 0.5);
+          new TH2D(name, name, fModuleInfo->GetNofColumns(), -0.5, fModuleInfo->GetNofColumns() - 0.5,
+                   fModuleInfo->GetNofRows(), -0.5, fModuleInfo->GetNofRows() - 0.5);
         fModuleMapDigi[moduleAddress]->SetContour(99);
         fModuleMapDigi[moduleAddress]->SetStats(kFALSE);
         name.Form("ModuleAddress%05iClusters", moduleAddress);
         fModuleMapCluster[moduleAddress] =
-          new TH2I(name,
-                   name,
-                   fModuleInfo->GetNofColumns(),
-                   -0.5,
-                   fModuleInfo->GetNofColumns() - 0.5,
-                   fModuleInfo->GetNofRows(),
-                   -0.5,
-                   fModuleInfo->GetNofRows() - 0.5);
+          new TH2I(name, name, fModuleInfo->GetNofColumns(), -0.5, fModuleInfo->GetNofColumns() - 0.5,
+                   fModuleInfo->GetNofRows(), -0.5, fModuleInfo->GetNofRows() - 0.5);
         fModuleMapCluster[moduleAddress]->SetContour(99);
         fModuleMapCluster[moduleAddress]->SetStats(kFALSE);
         name.Form("ModuleAddress%05iHits", moduleAddress);
@@ -289,10 +271,7 @@ void CbmTrdRecoQa::Exec(Option_t*) {
       for (Int_t i = 0; i < 3; i++)
         local_out[i] =
           local_in[i]
-          + 0.975
-              * (local_out[i]
-                 - local_in
-                   [i]);  // cut last 2.5% of tracklet, to move exit point within gas volume
+          + 0.975 * (local_out[i] - local_in[i]);  // cut last 2.5% of tracklet, to move exit point within gas volume
 
       Int_t row_in(0), row_out(0), col_in(0), col_out(0), sec_in(0), sec_out(0);
       Double_t x_in(0), y_in(0), x_out(0), y_out(0);
@@ -311,30 +290,23 @@ void CbmTrdRecoQa::Exec(Option_t*) {
         continue;
       }
       //printf("d1: local_out (%f,%f,%f) sec:%i, col:%i row:%i\n",local_out[0],local_out[1],local_out[2], sec_out, col_out, row_out);
-      if (!fModuleInfo->GetPadInfo(local_out, sec_out, col_out, row_out))
-        continue;
+      if (!fModuleInfo->GetPadInfo(local_out, sec_out, col_out, row_out)) continue;
       //printf("d: local_out (%f,%f,%f) sec:%i, col:%i row:%i\n",local_out[0],local_out[1],local_out[2], sec_out, col_out, row_out);
       fModuleInfo->TransformToLocalPad(local_out, x_out, y_out);
       //printf("e: local_out (%f,%f,%f) sec:%i, col:%i row:%i  (%f,%f)\n",local_out[0],local_out[1],local_out[2], sec_out, col_out, row_out, x_out, y_out);
       row_out = fModuleInfo->GetModuleRow(sec_out, row_out);
       //printf("f: local_out (%f,%f,%f) sec:%i, col:%i row:%i/%i (%f,%f)\n",local_out[0],local_out[1],local_out[2], sec_out, col_out,row_out, fModuleInfo->GetNofRows(), x_out, y_out);
-      Double_t W_in(fModuleInfo->GetPadSizeX(sec_in)),
-        W_out(fModuleInfo->GetPadSizeX(sec_out));
-      Double_t H_in(fModuleInfo->GetPadSizeY(sec_in)),
-        H_out(fModuleInfo->GetPadSizeY(sec_out));
+      Double_t W_in(fModuleInfo->GetPadSizeX(sec_in)), W_out(fModuleInfo->GetPadSizeX(sec_out));
+      Double_t H_in(fModuleInfo->GetPadSizeY(sec_in)), H_out(fModuleInfo->GetPadSizeY(sec_out));
 
 
       pointCounter = fModuleMapPoint[moduleAddress]->GetN();
-      fModuleMapPoint[moduleAddress]->SetPoint(
-        pointCounter,
-        ((col_in + x_in / W_in) + (col_out + x_out / W_out)) / 2.,
-        ((row_in + y_in / H_in) + (row_out + y_out / H_out)) / 2.);
+      fModuleMapPoint[moduleAddress]->SetPoint(pointCounter, ((col_in + x_in / W_in) + (col_out + x_out / W_out)) / 2.,
+                                               ((row_in + y_in / H_in) + (row_out + y_out / H_out)) / 2.);
       //pointCounter++;
       fModuleMap[moduleAddress]->cd();
-      TLine* l = new TLine(col_in + x_in / W_in,
-                           row_in + y_in / H_in,
-                           col_out + x_out / W_out,
-                           row_out + y_out / H_out);
+      TLine* l =
+        new TLine(col_in + x_in / W_in, row_in + y_in / H_in, col_out + x_out / W_out, row_out + y_out / H_out);
       l->SetLineWidth(2);
       l->SetLineColor(15);
       fModuleMapTrack[moduleAddress]->push_back(l);
@@ -348,7 +320,8 @@ void CbmTrdRecoQa::Exec(Option_t*) {
 	fModuleMap[moduleAddress]->cd(4);
 	l->Draw("same");
       */
-    } else {
+    }
+    else {
       printf("Address:%i ID:%i\n", moduleAddress, moduleId);
       break;
     }
@@ -365,13 +338,10 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     digiSpectrum->Fill(digi->GetCharge());
     Int_t digiAddress = digi->GetAddress();
     moduleAddress     = CbmTrdAddress::GetModuleAddress(digiAddress);
-    fModuleInfo       = (CbmTrdParModDigi*) fDigiPar->GetModulePar(
-      moduleAddress);  ////point->GetDetectorID());
-    Int_t sec(CbmTrdAddress::GetSectorId(digiAddress)),
-      row(CbmTrdAddress::GetRowId(digiAddress));
+    fModuleInfo       = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);  ////point->GetDetectorID());
+    Int_t sec(CbmTrdAddress::GetSectorId(digiAddress)), row(CbmTrdAddress::GetRowId(digiAddress));
     row = fModuleInfo->GetModuleRow(sec, row);
-    fModuleMapDigi[moduleAddress]->Fill(
-      CbmTrdAddress::GetColumnId(digiAddress), row, digi->GetCharge());
+    fModuleMapDigi[moduleAddress]->Fill(CbmTrdAddress::GetColumnId(digiAddress), row, digi->GetCharge());
   }
   //cout << "Clusters" << endl;
   Int_t lastModule(0), iCounter(0);
@@ -381,8 +351,7 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     Int_t nDigisInCluster = cluster->GetNofDigis();
     iCounter++;
     for (Int_t iDigi = 0; iDigi < nDigisInCluster; iDigi++) {
-      digi =
-        CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
+      digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
       //      digi = (CbmTrdDigi*)fDigis->At(cluster->GetDigi(iDigi));
       Int_t digiAddress = digi->GetAddress();
       moduleAddress     = CbmTrdAddress::GetModuleAddress(digiAddress);
@@ -391,13 +360,10 @@ void CbmTrdRecoQa::Exec(Option_t*) {
         lastModule = moduleAddress;
       }
       //cout << moduleAddress << endl;
-      fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(
-        moduleAddress);  ////point->GetDetectorID());
-      Int_t sec(CbmTrdAddress::GetSectorId(digiAddress)),
-        row(CbmTrdAddress::GetRowId(digiAddress));
+      fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);  ////point->GetDetectorID());
+      Int_t sec(CbmTrdAddress::GetSectorId(digiAddress)), row(CbmTrdAddress::GetRowId(digiAddress));
       row = fModuleInfo->GetModuleRow(sec, row);
-      fModuleMapCluster[moduleAddress]->Fill(
-        CbmTrdAddress::GetColumnId(digiAddress), row, iCounter + 1);
+      fModuleMapCluster[moduleAddress]->Fill(CbmTrdAddress::GetColumnId(digiAddress), row, iCounter + 1);
       //fModuleMapCluster[moduleAddress]->SetBinContent(CbmTrdAddress::GetColumnId(digiAddress)+1, row+1, iCounter+1);
       charge = digi->GetCharge();
       if (charge > chargeMax) chargeMax = charge;
@@ -410,9 +376,8 @@ void CbmTrdRecoQa::Exec(Option_t*) {
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
     hit = (CbmTrdHit*) fHits->At(iHit);
 
-    moduleAddress = hit->GetAddress();  //GetDetectorID();//?????
-    fModuleInfo   = (CbmTrdParModDigi*) fDigiPar->GetModulePar(
-      moduleAddress);  ////point->GetDetectorID());
+    moduleAddress = hit->GetAddress();                                          //GetDetectorID();//?????
+    fModuleInfo   = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);  ////point->GetDetectorID());
     if (fModuleInfo == NULL) {
       //printf("MA:%6i not found!\n",moduleAddress);
       continue;
@@ -432,12 +397,9 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     modHit = fModuleMapHit[moduleAddress]->GetN();
     fModuleMapHit[moduleAddress]->SetPoint(modHit, col + x / W, row + y / H);
 
-    if (hit->GetDx() <= W)
-      fModuleMapHit[moduleAddress]->SetPointError(
-        modHit, hit->GetDx() / W, hit->GetDy() / H);
+    if (hit->GetDx() <= W) fModuleMapHit[moduleAddress]->SetPointError(modHit, hit->GetDx() / W, hit->GetDy() / H);
     else
-      fModuleMapHit[moduleAddress]->SetPointError(
-        modHit, hit->GetDy() / W, hit->GetDx() / H);
+      fModuleMapHit[moduleAddress]->SetPointError(modHit, hit->GetDy() / W, hit->GetDx() / H);
   }
 
   gDirectory->mkdir("TrdRecoQA");
@@ -470,19 +432,14 @@ void CbmTrdRecoQa::Exec(Option_t*) {
       TPolyLine* pad           = NULL;
       const Int_t nRow         = fModuleMapDigi[it->first]->GetNbinsY();
       const Int_t nCol         = fModuleMapDigi[it->first]->GetNbinsX();
-      const Double_t max_Range = fModuleMapDigi[it->first]->GetBinContent(
-        fModuleMapDigi[it->first]->GetMaximumBin());
+      const Double_t max_Range = fModuleMapDigi[it->first]->GetBinContent(fModuleMapDigi[it->first]->GetMaximumBin());
       for (Int_t iRow = 1; iRow <= nRow; iRow++) {
         for (Int_t iCol = 1; iCol <= nCol; iCol++) {
-          Double_t charge =
-            fModuleMapDigi[it->first]->GetBinContent(iCol, iRow);
+          Double_t charge = fModuleMapDigi[it->first]->GetBinContent(iCol, iRow);
           if (charge > 0.0) {
-            if (fTrianglePads)
-              pad = utils->CreateTriangularPad(
-                iCol - 1, iRow - 1, charge, 0.0, max_Range, false);
+            if (fTrianglePads) pad = utils->CreateTriangularPad(iCol - 1, iRow - 1, charge, 0.0, max_Range, false);
             else
-              pad = utils->CreateRectangularPad(
-                iCol - 1, iRow - 1, charge, 0.0, max_Range, false);
+              pad = utils->CreateRectangularPad(iCol - 1, iRow - 1, charge, 0.0, max_Range, false);
             pad->Draw("f,same");
           }
         }
@@ -522,22 +479,18 @@ void CbmTrdRecoQa::Exec(Option_t*) {
     it->second->cd(3);
     fModuleMapCluster[it->first]->DrawCopy("colz");
     {
-      TPolyLine* pad           = NULL;
-      const Int_t nRow         = fModuleMapCluster[it->first]->GetNbinsY();
-      const Int_t nCol         = fModuleMapCluster[it->first]->GetNbinsX();
-      const Double_t max_Range = fModuleMapCluster[it->first]->GetBinContent(
-        fModuleMapCluster[it->first]->GetMaximumBin());
+      TPolyLine* pad   = NULL;
+      const Int_t nRow = fModuleMapCluster[it->first]->GetNbinsY();
+      const Int_t nCol = fModuleMapCluster[it->first]->GetNbinsX();
+      const Double_t max_Range =
+        fModuleMapCluster[it->first]->GetBinContent(fModuleMapCluster[it->first]->GetMaximumBin());
       for (Int_t iRow = 1; iRow <= nRow; iRow++) {
         for (Int_t iCol = 1; iCol <= nCol; iCol++) {
-          Double_t clusterId =
-            fModuleMapCluster[it->first]->GetBinContent(iCol, iRow);
+          Double_t clusterId = fModuleMapCluster[it->first]->GetBinContent(iCol, iRow);
           if (clusterId > 0) {
-            if (fTrianglePads)
-              pad = utils->CreateTriangularPad(
-                iCol - 1, iRow - 1, clusterId, 0, max_Range, false);
+            if (fTrianglePads) pad = utils->CreateTriangularPad(iCol - 1, iRow - 1, clusterId, 0, max_Range, false);
             else
-              pad = utils->CreateRectangularPad(
-                iCol - 1, iRow - 1, clusterId, 0.0, max_Range, false);
+              pad = utils->CreateRectangularPad(iCol - 1, iRow - 1, clusterId, 0.0, max_Range, false);
             pad->Draw("f,same");
           }
         }
@@ -572,9 +525,8 @@ void CbmTrdRecoQa::Exec(Option_t*) {
       mg->Add(fModuleMapPoint[it->first]);
       mg->SetMaximum(fModuleMapDigi[it->first]->GetYaxis()->GetXmax());
       mg->SetMinimum(fModuleMapDigi[it->first]->GetYaxis()->GetXmin());
-      mg->GetXaxis()->SetLimits(
-        fModuleMapDigi[it->first]->GetXaxis()->GetXmin(),
-        fModuleMapDigi[it->first]->GetXaxis()->GetXmax());
+      mg->GetXaxis()->SetLimits(fModuleMapDigi[it->first]->GetXaxis()->GetXmin(),
+                                fModuleMapDigi[it->first]->GetXaxis()->GetXmax());
       text->Draw("same");
       ptext->Draw("same");
     }
@@ -605,7 +557,8 @@ void CbmTrdRecoQa::Finish() { WriteHistograms(); }
 
 // ---- Write test histograms ------------------------------------------------
 
-void CbmTrdRecoQa::WriteHistograms() {
+void CbmTrdRecoQa::WriteHistograms()
+{
   /*
   // Write histos to output
   gDirectory->mkdir("TrdTracksPidQA");

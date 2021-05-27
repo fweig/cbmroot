@@ -1,6 +1,7 @@
 // #include "$VMCWORKDIR/KF/KFParticleParformance/KFPartEfficiencies.h"
 
-void CalculateEfficincy(TString workdir = "data") {
+void CalculateEfficincy(TString workdir = "data")
+{
 
   TStopwatch timer;
   timer.Start();

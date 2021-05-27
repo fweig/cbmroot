@@ -1,7 +1,8 @@
 // from the following website
 // https://root.cern.ch/doc/master/classTGeoCtub.html
 
-void cutout2() {
+void cutout2()
+{
   TCanvas* c = new TCanvas("c", "c", 0, 0, 600, 600);
   new TGeoManager("ctub", "poza3");
   TGeoMaterial* mat = new TGeoMaterial("Al", 26.98, 13, 2.7);
@@ -23,15 +24,13 @@ void cutout2() {
   nlow[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nlow[2] = TMath::Cos(theta);
 
-  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
   nlow[0] = 0;
   nlow[1] = 0;
   nlow[2] = -1;
 
-  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
   //
 
@@ -45,8 +44,7 @@ void cutout2() {
   nhi[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nhi[2] = TMath::Cos(theta);
 
-  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2]
-       << endl;
+  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2] << endl;
 
   // TGeoVolume *ctub = gGeoManager->MakeCtub("CTUB", med, 25, 27, 30, 200, 160, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
 
@@ -76,22 +74,10 @@ void cutout2() {
   Double_t length = 45.1;
   Double_t offset = 29.9;
 
-  TGeoVolume* ctub = gGeoManager->MakeCtub("CTUB",
-                                           med,
-                                           rmin,
-                                           rmax,
-                                           length / 2.,
-                                           angle1,
-                                           angle2,
-                                           nlow[0],
-                                           nlow[1],
-                                           nlow[2],
-                                           nhi[0],
-                                           nhi[1],
-                                           nhi[2]);
+  TGeoVolume* ctub = gGeoManager->MakeCtub("CTUB", med, rmin, rmax, length / 2., angle1, angle2, nlow[0], nlow[1],
+                                           nlow[2], nhi[0], nhi[1], nhi[2]);
   ctub->SetLineWidth(2);
-  TGeoTranslation* tctub =
-    new TGeoTranslation("tctub", 0, 0, -offset + length / 2.);
+  TGeoTranslation* tctub = new TGeoTranslation("tctub", 0, 0, -offset + length / 2.);
   top->AddNode(ctub, 1, tctub);
 
 
@@ -101,11 +87,9 @@ void cutout2() {
   Double_t thick1 = 0.4;
 
   // upstream cover
-  TGeoVolume* cups = gGeoManager->MakeCtub(
-    "CUPS", med, rmin1, rmax, thick1 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
+  TGeoVolume* cups = gGeoManager->MakeCtub("CUPS", med, rmin1, rmax, thick1 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   cups->SetLineWidth(2);
-  TGeoTranslation* tups =
-    new TGeoTranslation("tups", 0, 0, -offset - thick1 / 2.);
+  TGeoTranslation* tups = new TGeoTranslation("tups", 0, 0, -offset - thick1 / 2.);
   top->AddNode(cups, 1, tups);
 
 
@@ -117,14 +101,12 @@ void cutout2() {
   Double_t thick2 = 0.6;
 
   // downstream cover 1
-  TGeoVolume* dwst =
-    gGeoManager->MakeEltu("DWST", med, 39.24 / 2., 35.56 / 2., thick2 / 2.);
+  TGeoVolume* dwst = gGeoManager->MakeEltu("DWST", med, 39.24 / 2., 35.56 / 2., thick2 / 2.);
   dwst->SetLineWidth(2);
   //   TGeoRotation* dwrot = new TGeoRotation();
   //   dwrot->RotateY(-25.);
   //   TGeoCombiTrans* tdwst = new TGeoCombiTrans("tdwst", 0, 0, -offset +length +thick2/2., dwrot);
-  TGeoTranslation* tdwst =
-    new TGeoTranslation("tdwst", 0, 0, -offset + length + thick2 / 2.);
+  TGeoTranslation* tdwst = new TGeoTranslation("tdwst", 0, 0, -offset + length + thick2 / 2.);
   //   top->AddNode(dwst, 1, tdwst);
 
 
@@ -163,17 +145,13 @@ void cutout2() {
   b1->SetName("A");  // shapes need names too
   //   b2->SetName("B");                 // shapes need names too
 
-  TGeoTranslation* tc1 =
-    new TGeoTranslation("tc1", -(11.5 / 2. - 1.), +(10.0 / 2. - 1.), 0.);
+  TGeoTranslation* tc1 = new TGeoTranslation("tc1", -(11.5 / 2. - 1.), +(10.0 / 2. - 1.), 0.);
   tc1->RegisterYourself();
-  TGeoTranslation* tc2 =
-    new TGeoTranslation("tc2", -(11.5 / 2. - 1.), -(10.0 / 2. - 1.), 0.);
+  TGeoTranslation* tc2 = new TGeoTranslation("tc2", -(11.5 / 2. - 1.), -(10.0 / 2. - 1.), 0.);
   tc2->RegisterYourself();
-  TGeoTranslation* tc3 =
-    new TGeoTranslation("tc3", +(11.5 / 2. - 1.), +(10.0 / 2. - 1.), 0.);
+  TGeoTranslation* tc3 = new TGeoTranslation("tc3", +(11.5 / 2. - 1.), +(10.0 / 2. - 1.), 0.);
   tc3->RegisterYourself();
-  TGeoTranslation* tc4 =
-    new TGeoTranslation("tc4", +(11.5 / 2. - 1.), -(10.0 / 2. - 1.), 0.);
+  TGeoTranslation* tc4 = new TGeoTranslation("tc4", +(11.5 / 2. - 1.), -(10.0 / 2. - 1.), 0.);
   tc4->RegisterYourself();
 
   TGeoTranslation* tc5 = new TGeoTranslation("tc5", -10.0, 0., 0.);
@@ -192,8 +170,7 @@ void cutout2() {
 
   TGeoRotation* dwrot = new TGeoRotation();
   dwrot->RotateY(-25.);
-  TGeoCombiTrans* tcut =
-    new TGeoCombiTrans("tcut", 0, 0, -offset + length + thick2 / 2., dwrot);
+  TGeoCombiTrans* tcut = new TGeoCombiTrans("tcut", 0, 0, -offset + length + thick2 / 2., dwrot);
   //   TGeoTranslation* tcut = new TGeoTranslation("tcut", 0, 0, -offset +length +thick2/2.);
   top->AddNode(cutout, 1, tcut);
 

@@ -4,39 +4,31 @@
  * and open the template in the editor.
  */
 
-#include <set>
-
 #include "Station3D.h"
+
 #include "Tracker.h"
 
-void CbmBinned3DStation::SearchHits(
-  const CbmTrackParam2& stateVec,
-  Double_t,
-  std::function<void(CbmTBin::HitHolder&)> handleHit) {
+#include <set>
+
+void CbmBinned3DStation::SearchHits(const CbmTrackParam2& stateVec, Double_t,
+                                    std::function<void(CbmTBin::HitHolder&)> handleHit)
+{
   CbmTrackParam2 minParams = Extrapolate(stateVec, fMinZ);
   //Double_t minC[21];
   //minParams.CovMatrix(minC);
   CbmTrackParam2 maxParams = Extrapolate(stateVec, fMaxZ);
   //Double_t maxC[21];
   //maxParams.CovMatrix(maxC);
-  Double_t wXmin =
-    fNofSigmasX * std::sqrt(minParams.GetCovXX() + fDxSq + fScatXSq);
-  Double_t wXmax =
-    fNofSigmasX * std::sqrt(maxParams.GetCovXX() + fDxSq + fScatXSq);
-  Double_t wYmin =
-    fNofSigmasY * std::sqrt(minParams.GetCovYY() + fDySq + fScatYSq);
-  Double_t wYmax =
-    fNofSigmasY * std::sqrt(maxParams.GetCovYY() + fDySq + fScatYSq);
+  Double_t wXmin = fNofSigmasX * std::sqrt(minParams.GetCovXX() + fDxSq + fScatXSq);
+  Double_t wXmax = fNofSigmasX * std::sqrt(maxParams.GetCovXX() + fDxSq + fScatXSq);
+  Double_t wYmin = fNofSigmasY * std::sqrt(minParams.GetCovYY() + fDySq + fScatYSq);
+  Double_t wYmax = fNofSigmasY * std::sqrt(maxParams.GetCovYY() + fDySq + fScatYSq);
 
-  Double_t xMin =
-    stateVec.GetTx() > 0 ? minParams.GetX() - wXmin : maxParams.GetX() - wXmax;
-  Double_t xMax =
-    stateVec.GetTx() > 0 ? maxParams.GetX() + wXmax : minParams.GetX() + wXmin;
+  Double_t xMin = stateVec.GetTx() > 0 ? minParams.GetX() - wXmin : maxParams.GetX() - wXmax;
+  Double_t xMax = stateVec.GetTx() > 0 ? maxParams.GetX() + wXmax : minParams.GetX() + wXmin;
 
-  Double_t yMin =
-    stateVec.GetTy() > 0 ? minParams.GetY() - wYmin : maxParams.GetY() - wYmax;
-  Double_t yMax =
-    stateVec.GetTy() > 0 ? maxParams.GetY() + wYmax : minParams.GetY() + wYmin;
+  Double_t yMin = stateVec.GetTy() > 0 ? minParams.GetY() - wYmin : maxParams.GetY() - wYmax;
+  Double_t yMax = stateVec.GetTy() > 0 ? maxParams.GetY() + wYmax : minParams.GetY() + wYmin;
 
   int lowerXind = GetXInd(xMin);
   int upperXind = GetXInd(xMax);
@@ -68,8 +60,8 @@ void CbmBinned3DStation::SearchHits(
   }
 }
 
-void CbmBinned3DStation::SearchHits(Segment& segment,
-                                    std::function<void(CbmTBin::HitHolder&)>) {
+void CbmBinned3DStation::SearchHits(Segment& segment, std::function<void(CbmTBin::HitHolder&)>)
+{
   const CbmPixelHit* hit1 = segment.begin->hit;
   Double_t x1             = hit1->GetX();
   Double_t y1             = hit1->GetY();
@@ -108,38 +100,25 @@ void CbmBinned3DStation::SearchHits(Segment& segment,
     wT      = cbmBinnedSigma * std::sqrt(dtSq + fDtSq);
     tMin    = searchT + tCoeff * (fMinZ - hit2->GetZ()) - wT;
     tMax    = searchT + tCoeff * (fMaxZ - hit2->GetZ()) + wT;
-  } else {
+  }
+  else {
     searchT = (hit1->GetTime() + hit2->GetTime()) / 2;
-    dtSq    = (hit1->GetTimeError() * hit1->GetTimeError()
-            + hit2->GetTimeError() * hit2->GetTimeError())
-           / 2;
-    wT   = cbmBinnedSigma * std::sqrt(dtSq + fDtSq);
-    tMin = searchT + tCoeff * deltaZmin - wT;
-    tMax = searchT + tCoeff * deltaZmax + wT;
+    dtSq    = (hit1->GetTimeError() * hit1->GetTimeError() + hit2->GetTimeError() * hit2->GetTimeError()) / 2;
+    wT      = cbmBinnedSigma * std::sqrt(dtSq + fDtSq);
+    tMin    = searchT + tCoeff * deltaZmin - wT;
+    tMax    = searchT + tCoeff * deltaZmax + wT;
   }
 
-  Double_t wXmin =
-    fNofSigmasX
-    * std::sqrt(coeff1MinSq * dx1Sq + coeff2MinSq * dx2Sq + fDxSq + fScatXSq);
-  Double_t wXmax =
-    fNofSigmasX
-    * std::sqrt(coeff1MaxSq * dx1Sq + coeff2MaxSq * dx2Sq + fDxSq + fScatXSq);
-  Double_t wYmin =
-    fNofSigmasY
-    * std::sqrt(coeff1MinSq * dy1Sq + coeff2MinSq * dy2Sq + fDySq + fScatYSq);
-  Double_t wYmax =
-    fNofSigmasY
-    * std::sqrt(coeff1MaxSq * dy1Sq + coeff2MaxSq * dy2Sq + fDySq + fScatYSq);
+  Double_t wXmin = fNofSigmasX * std::sqrt(coeff1MinSq * dx1Sq + coeff2MinSq * dx2Sq + fDxSq + fScatXSq);
+  Double_t wXmax = fNofSigmasX * std::sqrt(coeff1MaxSq * dx1Sq + coeff2MaxSq * dx2Sq + fDxSq + fScatXSq);
+  Double_t wYmin = fNofSigmasY * std::sqrt(coeff1MinSq * dy1Sq + coeff2MinSq * dy2Sq + fDySq + fScatYSq);
+  Double_t wYmax = fNofSigmasY * std::sqrt(coeff1MaxSq * dy1Sq + coeff2MaxSq * dy2Sq + fDySq + fScatYSq);
 
-  Double_t xMin = tx > 0 ? coeff1Min * x1 + coeff2Min * x2 - wXmin
-                         : coeff1Max * x1 + coeff2Max * x2 - wXmax;
-  Double_t xMax = tx > 0 ? coeff1Max * x1 + coeff2Max * x2 + wXmax
-                         : coeff1Min * x1 + coeff2Min * x2 + wXmin;
+  Double_t xMin = tx > 0 ? coeff1Min * x1 + coeff2Min * x2 - wXmin : coeff1Max * x1 + coeff2Max * x2 - wXmax;
+  Double_t xMax = tx > 0 ? coeff1Max * x1 + coeff2Max * x2 + wXmax : coeff1Min * x1 + coeff2Min * x2 + wXmin;
 
-  Double_t yMin = ty > 0 ? coeff1Min * y1 + coeff2Min * y2 - wYmin
-                         : coeff1Max * y1 + coeff2Max * y2 - wYmax;
-  Double_t yMax = ty > 0 ? coeff1Max * y1 + coeff2Max * y2 + wYmax
-                         : coeff1Min * y1 + coeff2Min * y2 + wYmin;
+  Double_t yMin = ty > 0 ? coeff1Min * y1 + coeff2Min * y2 - wYmin : coeff1Max * y1 + coeff2Max * y2 - wYmax;
+  Double_t yMax = ty > 0 ? coeff1Max * y1 + coeff2Max * y2 + wYmax : coeff1Min * y1 + coeff2Min * y2 + wYmin;
 
   int lowerXind = GetXInd(xMin);
   int upperXind = GetXInd(xMax);
@@ -169,17 +148,15 @@ void CbmBinned3DStation::SearchHits(Segment& segment,
           Double_t y             = coeff1 * y1 + coeff2 * y2;
           Double_t deltaY        = hit->GetY() - y;
 
-          if (deltaY * deltaY > fNofSigmasYSq
-                                  * (coeff1Sq * dy1Sq + coeff2Sq * dy2Sq
-                                     + hit->GetDy() * hit->GetDy() + fScatYSq))
+          if (deltaY * deltaY
+              > fNofSigmasYSq * (coeff1Sq * dy1Sq + coeff2Sq * dy2Sq + hit->GetDy() * hit->GetDy() + fScatYSq))
             continue;
 
           Double_t x      = coeff1 * x1 + coeff2 * x2;
           Double_t deltaX = hit->GetX() - x;
 
-          if (deltaX * deltaX > fNofSigmasXSq
-                                  * (coeff1Sq * dx1Sq + coeff2Sq * dx2Sq
-                                     + hit->GetDx() * hit->GetDx() + fScatXSq))
+          if (deltaX * deltaX
+              > fNofSigmasXSq * (coeff1Sq * dx1Sq + coeff2Sq * dx2Sq + hit->GetDx() * hit->GetDx() + fScatXSq))
             continue;
 
           /*Double_t t = 0 == hit1->GetTimeError() ? searchT + tCoeff * (hit->GetZ() - hit2->GetZ()) : searchT + tCoeff * deltaZ;
@@ -189,8 +166,7 @@ void CbmBinned3DStation::SearchHits(Segment& segment,
                   continue;*/
 
           Segment newSegment(segment.end, &(*hitIter));
-          pair<set<Segment, SegmentComp>::iterator, bool> ir =
-            fSegments.insert(newSegment);
+          pair<set<Segment, SegmentComp>::iterator, bool> ir = fSegments.insert(newSegment);
           segment.children.push_back(const_cast<Segment*>(&(*ir.first)));
           //handleHit(*hitIter);
         }
@@ -199,16 +175,9 @@ void CbmBinned3DStation::SearchHits(Segment& segment,
   }
 }
 
-void CbmBinned3DStation::SearchHits(
-  Double_t,
-  Double_t,
-  Double_t minY,
-  Double_t maxY,
-  Double_t minX,
-  Double_t maxX,
-  Double_t minT,
-  Double_t maxT,
-  std::function<void(CbmTBin::HitHolder&)> handleHit) {
+void CbmBinned3DStation::SearchHits(Double_t, Double_t, Double_t minY, Double_t maxY, Double_t minX, Double_t maxX,
+                                    Double_t minT, Double_t maxT, std::function<void(CbmTBin::HitHolder&)> handleHit)
+{
   int lowerXind = GetXInd(minX);
   int upperXind = GetXInd(maxX);
   int lowerYind = GetYInd(minY);

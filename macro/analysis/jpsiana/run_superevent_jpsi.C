@@ -1,6 +1,7 @@
 #include "Riostream.h"
 
-void run_superevent_jpsi() {
+void run_superevent_jpsi()
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");

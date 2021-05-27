@@ -19,22 +19,14 @@ public:
 
   /** Constructor with all variables **/
 
-  CbmMvdPixelCharge(Float_t charge,
-                    Int_t channelNrX,
-                    Int_t channelNrY,
-                    Int_t hitId,
-                    Int_t trackId,
-                    Float_t pointX,
-                    Float_t pointY,
-                    Float_t time = 0.0,
-                    Int_t frame  = 0);
+  CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t channelNrY, Int_t hitId, Int_t trackId, Float_t pointX,
+                    Float_t pointY, Float_t time = 0.0, Int_t frame = 0);
   virtual ~CbmMvdPixelCharge();
 
   Bool_t TestXY(Int_t channelNrX, Int_t channelNrY);
 
 
-  void
-  DigestCharge(Float_t pointX, Float_t pointY, Int_t PointId, Int_t trackId);
+  void DigestCharge(Float_t pointX, Float_t pointY, Int_t PointId, Int_t trackId);
   void AddCharge(Float_t charge) { fTrackCharge = fTrackCharge + charge; };
 
 

@@ -5,6 +5,7 @@
  */
 
 #include "LxTBTieTracks.h"
+
 #include "CbmMuch.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmTrdHit.h"
@@ -14,13 +15,10 @@
 
 using std::list;
 
-void LxTBBinnedDetector::AddStsTrack(
-  const FairTrackParam& par,
-  Double_t chiSq,
-  Double_t time,
-  Int_t selfId /*, Int_t eventId, Int_t fileId*/) {
-  LxTBBinnedStsTrack stsTrack = {
-    par, chiSq, time, selfId /*, eventId, fileId*/};
+void LxTBBinnedDetector::AddStsTrack(const FairTrackParam& par, Double_t chiSq, Double_t time,
+                                     Int_t selfId /*, Int_t eventId, Int_t fileId*/)
+{
+  LxTBBinnedStsTrack stsTrack = {par, chiSq, time, selfId /*, eventId, fileId*/};
   fStsTracks.push_back(stsTrack);
 }
 
@@ -32,12 +30,12 @@ struct TieHandlePoint : public LxTBBinndedLayer::PointHandler {
   litfloat fZ;
   const LxTbBinnedPoint* fPoint;
 
-  TieHandlePoint()
-    : fFilter(), fPar(), fOutPar(), fChiSq(), fZ(), fPoint(nullptr) {}
+  TieHandlePoint() : fFilter(), fPar(), fOutPar(), fChiSq(), fZ(), fPoint(nullptr) {}
   TieHandlePoint(const TieHandlePoint&) = delete;
   TieHandlePoint& operator=(const TieHandlePoint&) = delete;
 
-  void HandlePoint(const LxTbBinnedPoint& point) {
+  void HandlePoint(const LxTbBinnedPoint& point)
+  {
     litfloat chiSq = std::numeric_limits<litfloat>::max();
     CbmLitPixelHit litHit;
     litHit.SetX(point.x);
@@ -59,39 +57,39 @@ struct TieHandlePoint : public LxTBBinndedLayer::PointHandler {
   }
 };
 
-LxTBBinnedDetector::LxTBBinnedDetector(int nofl,
-                                       int nofxb,
-                                       int nofyb,
-                                       int noftb,
-                                       int binSizeT)
-  : fLayers(reinterpret_cast<LxTBBinndedLayer*>(
-    new unsigned char[nofl * sizeof(LxTBBinndedLayer)]))
+LxTBBinnedDetector::LxTBBinnedDetector(int nofl, int nofxb, int nofyb, int noftb, int binSizeT)
+  : fLayers(reinterpret_cast<LxTBBinndedLayer*>(new unsigned char[nofl * sizeof(LxTBBinndedLayer)]))
   , fNofLayers(nofl)
   , fStsTracks()
   , fMuchTracks(nullptr)
-  , fGlobalTracks(nullptr) {
+  , fGlobalTracks(nullptr)
+{
   for (int i = 0; i < fNofLayers; ++i)
     new (&fLayers[i]) LxTBBinndedLayer(nofxb, nofyb, noftb, binSizeT);
 }
 
-void LxTBBinnedDetector::Init() {
+void LxTBBinnedDetector::Init()
+{
   for (int i = 0; i < fNofLayers; ++i)
     fLayers[i].Init();
 }
 
-void LxTBBinnedDetector::Clear() {
+void LxTBBinnedDetector::Clear()
+{
   fStsTracks.clear();
 
   for (int i = 0; i < fNofLayers; ++i)
     fLayers[i].Clear();
 }
 
-void LxTBBinnedDetector::SetTSBegin(unsigned long long tsLowBound) {
+void LxTBBinnedDetector::SetTSBegin(unsigned long long tsLowBound)
+{
   for (int i = 0; i < fNofLayers; ++i)
     fLayers[i].SetTSBegin(tsLowBound);
 }
 
-void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
+void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&)
+{
   //for (int i = 0; i < fFinder.nofTrackBins; ++i)
   //{
   //list<LxTbBinnedFinder::Chain*>& recoTracksBin = fFinder.recoTracks[i];
@@ -99,19 +97,15 @@ void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
   //for (list<LxTbBinnedFinder::Chain*>::const_iterator j = recoTracksBin.begin(); j != recoTracksBin.end(); ++j)
   //recoTracks.push_back(*j);
   //}
-  TrackPropagatorPtr propagator =
-    CbmLitToolFactory::CreateTrackPropagator("lit");
-  TrackUpdatePtr filter = CbmLitToolFactory::CreateTrackUpdate("kalman");
+  TrackPropagatorPtr propagator = CbmLitToolFactory::CreateTrackPropagator("lit");
+  TrackUpdatePtr filter         = CbmLitToolFactory::CreateTrackUpdate("kalman");
   //TrackFitterPtr fFitter = CbmLitToolFactory::CreateTrackFitter("lit_kalman");
   int muchTrackNo   = 0;
   int globalTrackNo = 0;
 
-  for (list<LxTBBinnedStsTrack>::const_iterator i = fStsTracks.begin();
-       i != fStsTracks.end();
-       ++i) {
+  for (list<LxTBBinnedStsTrack>::const_iterator i = fStsTracks.begin(); i != fStsTracks.end(); ++i) {
     const LxTBBinnedStsTrack& stsTrack = *i;
-    CbmGlobalTrack* globalTrack =
-      new ((*fGlobalTracks)[globalTrackNo]) CbmGlobalTrack();
+    CbmGlobalTrack* globalTrack        = new ((*fGlobalTracks)[globalTrackNo]) CbmGlobalTrack();
     globalTrack->SetStsTrackIndex(globalTrackNo++);
     Double_t qp = stsTrack.fPar.GetQp();
 
@@ -134,8 +128,7 @@ void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
     CbmTrackParam cbmPar;
     cbmPar.Set(stsTrack.fPar, stsTrack.fTime, 2);
     CbmLitTrackParam par;
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmPar,
-                                                                    &par);
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmPar, &par);
     CbmLitTrackParam prevPar;
     CbmLitTrackParam firstPar;
     bool firstTime     = true;
@@ -154,12 +147,11 @@ void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
 
       if (propagator->Propagate(&par, fLayers[j].z, 13) == kLITERROR) break;
 
-      scaltype x = par.GetX();
-      scaltype y = par.GetY();
-      timetype length =
-        sqrt((par.GetX() - prevPar.GetX()) * (par.GetX() - prevPar.GetX())
-             + (par.GetY() - prevPar.GetY()) * (par.GetY() - prevPar.GetY())
-             + (par.GetZ() - prevPar.GetZ()) * (par.GetZ() - prevPar.GetZ()));
+      scaltype x      = par.GetX();
+      scaltype y      = par.GetY();
+      timetype length = sqrt((par.GetX() - prevPar.GetX()) * (par.GetX() - prevPar.GetX())
+                             + (par.GetY() - prevPar.GetY()) * (par.GetY() - prevPar.GetY())
+                             + (par.GetZ() - prevPar.GetZ()) * (par.GetZ() - prevPar.GetZ()));
       t += 1.e9 * length / speedOfLight;
       scaltype sigmaXSq = par.GetCovariance(0);
       scaltype sigmaYSq = par.GetCovariance(6);
@@ -181,7 +173,8 @@ void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
           firstPar  = par;
           firstTime = false;
         }
-      } else
+      }
+      else
         ++nofMissingHits;
 
       if (nofMissingHits > 4) break;
@@ -197,15 +190,12 @@ void LxTBBinnedDetector::TieTracks(LxTbBinnedFinder&) {
     muchTrack->SetPreviousTrackId(stsTrack.fSelfId);
     muchTrack->SetFlag(kLITGOOD);
     FairTrackParam parLast, parFirst;
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&par,
-                                                                    &parLast);
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&firstPar,
-                                                                    &parFirst);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&par, &parLast);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&firstPar, &parFirst);
     muchTrack->SetParamLast(&parLast);
     muchTrack->SetParamFirst(&parFirst);
 
-    for (list<PointData>::const_iterator j = points.begin(); j != points.end();
-         ++j) {
+    for (list<PointData>::const_iterator j = points.begin(); j != points.end(); ++j) {
       const PointData pd = *j;
       muchTrack->AddHit(pd.point->refId, pd.isTrd ? kTRDHIT : kMUCHPIXELHIT);
     }

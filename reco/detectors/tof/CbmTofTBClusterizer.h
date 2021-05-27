@@ -21,7 +21,9 @@
 #include "CbmTofDigiExp.h"
 #include "CbmTofDigiPar.h"
 #include "CbmTofGeoHandler.h"
+
 #include "FairTask.h"
+
 #include "TClonesArray.h"
 
 
@@ -62,13 +64,10 @@ private:
   CbmTofDigiPar* fDigiPar;
   CbmTofCell* fChannelInfo;
   CbmTofDigiBdfPar* fDigiBdfPar;
-  std::vector<std::vector<Double_t>> fvCPSigPropSpeed;  //[nSMT][nRpc]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPDelTof;  //[nSMT][nRpc][nbClDelTofBinX][nbTrg]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPTOff;  //[nSMT][nRpc][nCh][nbSide]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPTotGain;  //[nSMT][nRpc][nCh][nbSide]
+  std::vector<std::vector<Double_t>> fvCPSigPropSpeed;                       //[nSMT][nRpc]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPDelTof;   //[nSMT][nRpc][nbClDelTofBinX][nbTrg]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPTOff;     //[nSMT][nRpc][nCh][nbSide]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPTotGain;  //[nSMT][nRpc][nCh][nbSide]
   std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>
     fvCPWalk;  //[nSMT][nRpc][nCh][nbSide][nbWalkBins]
   TClonesArray* fTofDigis;
@@ -80,13 +79,11 @@ private:
 
   std::vector<std::vector<std::vector<ChannelDigis>>> fStorDigiExp;
 
-  std::vector<std::vector<std::vector<std::pair<
-    std::pair<std::map<Double_t, std::pair<CbmTofDigiExp*, Int_t>>,
-              std::map<Double_t, std::pair<CbmTofDigiExp*, Int_t>>>,
-    std::map<Double_t,
-             std::pair<Double_t,
-                       std::pair<std::pair<CbmTofDigiExp*, Int_t>,
-                                 std::pair<CbmTofDigiExp*, Int_t>>>>>>>>
+  std::vector<std::vector<
+    std::vector<std::pair<std::pair<std::map<Double_t, std::pair<CbmTofDigiExp*, Int_t>>,
+                                    std::map<Double_t, std::pair<CbmTofDigiExp*, Int_t>>>,
+                          std::map<Double_t, std::pair<Double_t, std::pair<std::pair<CbmTofDigiExp*, Int_t>,
+                                                                           std::pair<CbmTofDigiExp*, Int_t>>>>>>>>
     fStorDigiExpOld;  //[nbType][nbSm*nbRpc][nbCh]<[->|nTopDigis][->|nBottomDigis]>
 
   Double_t fOutTimeFactor;

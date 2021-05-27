@@ -31,7 +31,9 @@ CbmMuchToTrdVectors::CbmMuchToTrdVectors()
   , fNofTracks(0)
   , fMuchTracks(NULL)
   , fTrdTracks(NULL)
-  , fZ0(-1) {}
+  , fZ0(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -39,7 +41,8 @@ CbmMuchToTrdVectors::~CbmMuchToTrdVectors() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchToTrdVectors::Init() {
+InitStatus CbmMuchToTrdVectors::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -56,7 +59,8 @@ InitStatus CbmMuchToTrdVectors::Init() {
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmMuchToTrdVectors::SetParContainers() {
+void CbmMuchToTrdVectors::SetParContainers()
+{
   /*
   fDigiPar = (CbmTrdDigiPar*) FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdDigiPar");
   cout << " ******* digiPar ******** " << fDigiPar << endl;
@@ -66,7 +70,8 @@ void CbmMuchToTrdVectors::SetParContainers() {
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchToTrdVectors::Exec(Option_t* opt) {
+void CbmMuchToTrdVectors::Exec(Option_t* opt)
+{
 
   fTrackArray->Delete();
 
@@ -89,7 +94,8 @@ void CbmMuchToTrdVectors::Finish() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method GetMuchVectors   ---------------------------------
-void CbmMuchToTrdVectors::GetMuchVectors() {
+void CbmMuchToTrdVectors::GetMuchVectors()
+{
   // Get MUCH vectors, propagate to TRD
 
   const Int_t nMinSeg = 5;
@@ -149,7 +155,8 @@ void CbmMuchToTrdVectors::GetMuchVectors() {
 // -------------------------------------------------------------------------
 
 // -----   Private method MergeVectors   -----------------------------------
-void CbmMuchToTrdVectors::MergeVectors() {
+void CbmMuchToTrdVectors::MergeVectors()
+{
   // Merge MUCH and TRD tracks
 
   //const Double_t window = 25.0, chi2max = 24;
@@ -199,29 +206,23 @@ void CbmMuchToTrdVectors::MergeVectors() {
     //par1->CovMatrix(w1);
     //Float_t pars1[5] = {(Float_t)par1->GetX(), (Float_t)par1->GetY(), (Float_t)par1->GetTx(), (Float_t)par1->GetTy(), 1.0};
     par1.CovMatrix(w1);
-    Float_t pars1[5] = {(Float_t) par1.GetX(),
-                        (Float_t) par1.GetY(),
-                        (Float_t) par1.GetTx(),
-                        (Float_t) par1.GetTy(),
+    Float_t pars1[5] = {(Float_t) par1.GetX(), (Float_t) par1.GetY(), (Float_t) par1.GetTx(), (Float_t) par1.GetTy(),
                         1.0};
     TMatrixF p1(5, 1, pars1);
     TMatrixF wp1(w1, TMatrixF::kTransposeMult, p1);
     //Double_t x0 = parOk.GetX(), y0 = parOk.GetY();
 
     for (mit = mitb; mit != mite; ++mit) {
-      Int_t indx           = mit->second;
-      CbmMuchTrack* muchTr = (CbmMuchTrack*) fMuchTracks->UncheckedAt(indx);
+      Int_t indx                 = mit->second;
+      CbmMuchTrack* muchTr       = (CbmMuchTrack*) fMuchTracks->UncheckedAt(indx);
       const FairTrackParam* par2 = muchTr->GetParamLast();
       if (par2->GetY() < yv - window || par2->GetY() > yv + window) continue;
 
       TMatrixFSym w2(5);
       par2->CovMatrix(w2);
       TMatrixFSym w20  = w2;
-      Float_t pars2[5] = {(Float_t) par2->GetX(),
-                          (Float_t) par2->GetY(),
-                          (Float_t) par2->GetTx(),
-                          (Float_t) par2->GetTy(),
-                          1.0};
+      Float_t pars2[5] = {(Float_t) par2->GetX(), (Float_t) par2->GetY(), (Float_t) par2->GetTx(),
+                          (Float_t) par2->GetTy(), 1.0};
       TMatrixF p2(5, 1, pars2);
       TMatrixF wp2(w2, TMatrixF::kTransposeMult, p2);
       wp2 += wp1;
@@ -257,12 +258,9 @@ void CbmMuchToTrdVectors::MergeVectors() {
 // -------------------------------------------------------------------------
 
 // -----   Private method AddTrack   ---------------------------------------
-void CbmMuchToTrdVectors::AddTrack(CbmMuchTrack* tr1,
-                                   CbmMuchTrack* tr2,
-                                   Int_t indx1,
-                                   Int_t indx2,
-                                   FairTrackParam& parOk,
-                                   Double_t c2) {
+void CbmMuchToTrdVectors::AddTrack(CbmMuchTrack* tr1, CbmMuchTrack* tr2, Int_t indx1, Int_t indx2,
+                                   FairTrackParam& parOk, Double_t c2)
+{
   // Store merged vector (CbmMuchTracks) into TClonesArray
 
   Int_t ntrs = fTrackArray->GetEntriesFast();
@@ -275,21 +273,18 @@ void CbmMuchToTrdVectors::AddTrack(CbmMuchTrack* tr1,
   track->SetPreviousTrackId(indx1);     // MUCH track index
   track->AddHit(indx2, kMUCHSTRAWHIT);  // TRD vector index
 
-  if (tr1->GetFlag() == tr2->GetFlag())
-    track->SetFlag(tr1->GetFlag());
+  if (tr1->GetFlag() == tr2->GetFlag()) track->SetFlag(tr1->GetFlag());
   else
     track->SetFlag(-1);
 
-  gLogger->Info(MESSAGE_ORIGIN,
-                "CbmMuchToTrdVectors::AddTrack: trID1=%i, trID2=%i, chi2=%f",
-                tr1->GetFlag(),
-                tr2->GetFlag(),
-                track->GetChiSq());
+  gLogger->Info(MESSAGE_ORIGIN, "CbmMuchToTrdVectors::AddTrack: trID1=%i, trID2=%i, chi2=%f", tr1->GetFlag(),
+                tr2->GetFlag(), track->GetChiSq());
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveClones   -----------------------------------
-void CbmMuchToTrdVectors::RemoveClones() {
+void CbmMuchToTrdVectors::RemoveClones()
+{
   // Remove clone tracks (having the same MUCH track)
 
   Int_t nvec = fTrackArray->GetEntriesFast();
@@ -312,8 +307,7 @@ void CbmMuchToTrdVectors::RemoveClones() {
 
     it1 = it;
     for (++it1; it1 != qMap.end(); ++it1) {
-      CbmMuchTrack* vec1 =
-        (CbmMuchTrack*) fTrackArray->UncheckedAt(it1->second);
+      CbmMuchTrack* vec1 = (CbmMuchTrack*) fTrackArray->UncheckedAt(it1->second);
       if (vec1 == NULL) continue;
 
       if (vec1->GetPreviousTrackId() == prevIndx) {
@@ -326,8 +320,7 @@ void CbmMuchToTrdVectors::RemoveClones() {
   fTrackArray->Compress();
   fNofTracks = fTrackArray->GetEntriesFast();
 
-  cout << " Global vectors after clones removed: " << nvec << " " << fNofTracks
-       << endl;
+  cout << " Global vectors after clones removed: " << nvec << " " << fNofTracks << endl;
 }
 // -------------------------------------------------------------------------
 

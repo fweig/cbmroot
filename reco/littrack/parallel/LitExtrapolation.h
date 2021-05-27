@@ -23,8 +23,10 @@
 #include "LitMath.h"
 #include "LitTrackParam.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn template<class T> inline void LitLineExtrapolation(LitTrackParam<T>& par, T zOut)
@@ -34,7 +36,8 @@ namespace lit {
  * \param[in] zOut Z position to extrapolate to.
  */
     template<class T>
-    inline void LitLineExtrapolation(LitTrackParam<T>& par, T zOut) {
+    inline void LitLineExtrapolation(LitTrackParam<T>& par, T zOut)
+    {
       T dz = zOut - par.Z;
 
       // transport state vector F*X*F.T()
@@ -70,14 +73,11 @@ namespace lit {
  * \param[in] field3 Field grid at the end point of extrapolation.
  */
     template<class T>
-    inline void LitRK4Extrapolation(LitTrackParam<T>& par,
-                                    T zOut,
-                                    const LitFieldGrid& field1,
-                                    const LitFieldGrid& field2,
-                                    const LitFieldGrid& field3) {
+    inline void LitRK4Extrapolation(LitTrackParam<T>& par, T zOut, const LitFieldGrid& field1,
+                                    const LitFieldGrid& field2, const LitFieldGrid& field3)
+    {
       static const T fC   = 0.000299792458;
-      static const T ZERO = 0., ONE = 1., TWO = 2., C1_3 = 1. / 3.,
-                     C1_6 = 1. / 6.;
+      static const T ZERO = 0., ONE = 1., TWO = 2., C1_3 = 1. / 3., C1_6 = 1. / 6.;
 
       T coef[4] = {0.0, 0.5, 0.5, 1.0};
 
@@ -233,8 +233,7 @@ namespace lit {
       F[2]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
       F[7]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
       F[12] = ONE;
-      F[17] =
-        x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
+      F[17] = x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
       F[22] = ZERO;
       // end of derivatives dx/dtx
 
@@ -262,12 +261,9 @@ namespace lit {
         //kty[iStep] = (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]) * hCqp;
       }  // 4
 
-      F[3] = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3
-             + kx[3] * C1_6;  // CalcOut(x0[0], k[0]);
-      F[8] = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3
-             + ky[3] * C1_6;  //CalcOut(x0[1], k[1]);
-      F[13] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3
-              + ktx[3] * C1_6;  //CalcOut(x0[2], k[2]);
+      F[3]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;      // CalcOut(x0[0], k[0]);
+      F[8]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;      //CalcOut(x0[1], k[1]);
+      F[13] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;  //CalcOut(x0[2], k[2]);
       F[18] = ONE;
       F[23] = ZERO;
       // end of derivatives dx/dty
@@ -292,18 +288,14 @@ namespace lit {
 
         kx[iStep]  = x[2] * h;
         ky[iStep]  = x[3] * h;
-        ktx[iStep] = Ax[iStep] * hC
-                     + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
-        kty[iStep] = Ay[iStep] * hC
-                     + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
+        ktx[iStep] = Ax[iStep] * hC + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
+        kty[iStep] = Ay[iStep] * hC + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
       }  // 4
 
-      F[4] = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
-      F[9] = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
-      F[14] =
-        x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;
-      F[19] =
-        x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
+      F[4]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
+      F[9]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
+      F[14] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;
+      F[19] = x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
       F[24] = 1.;
       // end of derivatives dx/dqp
 
@@ -312,21 +304,8 @@ namespace lit {
 
       // Transport C matrix
       {
-        T cIn[15] = {par.C0,
-                     par.C1,
-                     par.C2,
-                     par.C3,
-                     par.C4,
-                     par.C5,
-                     par.C6,
-                     par.C7,
-                     par.C8,
-                     par.C9,
-                     par.C10,
-                     par.C11,
-                     par.C12,
-                     par.C13,
-                     par.C14};
+        T cIn[15] = {par.C0, par.C1, par.C2,  par.C3,  par.C4,  par.C5,  par.C6, par.C7,
+                     par.C8, par.C9, par.C10, par.C11, par.C12, par.C13, par.C14};
         // F*C*Ft
         T A = cIn[2] + F[2] * cIn[9] + F[3] * cIn[10] + F[4] * cIn[11];
         T B = cIn[3] + F[2] * cIn[10] + F[3] * cIn[12] + F[4] * cIn[13];
@@ -342,16 +321,13 @@ namespace lit {
 
         T K = cIn[13] + F[17] * cIn[11] + F[19] * cIn[14];
 
-        par.C0 = cIn[0] + F[2] * cIn[2] + F[3] * cIn[3] + F[4] * cIn[4]
-                 + A * F[2] + B * F[3] + C * F[4];
-        par.C1 = cIn[1] + F[2] * cIn[6] + F[3] * cIn[7] + F[4] * cIn[8]
-                 + A * F[7] + B * F[8] + C * F[9];
+        par.C0 = cIn[0] + F[2] * cIn[2] + F[3] * cIn[3] + F[4] * cIn[4] + A * F[2] + B * F[3] + C * F[4];
+        par.C1 = cIn[1] + F[2] * cIn[6] + F[3] * cIn[7] + F[4] * cIn[8] + A * F[7] + B * F[8] + C * F[9];
         par.C2 = A + B * F[13] + C * F[14];
         par.C3 = B + A * F[17] + C * F[19];
         par.C4 = C;
 
-        par.C5 = cIn[5] + F[7] * cIn[6] + F[8] * cIn[7] + F[9] * cIn[8]
-                 + D * F[7] + E * F[8] + G * F[9];
+        par.C5 = cIn[5] + F[7] * cIn[6] + F[8] * cIn[7] + F[9] * cIn[8] + D * F[7] + E * F[8] + G * F[9];
         par.C6 = D + E * F[13] + G * F[14];
         par.C7 = E + D * F[17] + G * F[19];
         par.C8 = G;
@@ -360,8 +336,7 @@ namespace lit {
         par.C10 = I + H * F[17] + J * F[19];
         par.C11 = J;
 
-        par.C12 = cIn[12] + F[17] * cIn[10] + F[19] * cIn[13]
-                  + (F[17] * cIn[9] + cIn[10] + F[19] * cIn[11]) * F[17]
+        par.C12 = cIn[12] + F[17] * cIn[10] + F[19] * cIn[13] + (F[17] * cIn[9] + cIn[10] + F[19] * cIn[11]) * F[17]
                   + K * F[19];
         par.C13 = K;
 
@@ -379,14 +354,11 @@ namespace lit {
  * Implemented temporary for tests.
  */
     template<class T>
-    inline void LitRK4Extrapolation(LitTrackParam<T>& par,
-                                    T zOut,
-                                    const LitFieldValue<T>& field1,
-                                    const LitFieldValue<T>& field2,
-                                    const LitFieldValue<T>& field3) {
+    inline void LitRK4Extrapolation(LitTrackParam<T>& par, T zOut, const LitFieldValue<T>& field1,
+                                    const LitFieldValue<T>& field2, const LitFieldValue<T>& field3)
+    {
       static const T fC   = 0.000299792458;
-      static const T ZERO = 0., ONE = 1., TWO = 2., C1_3 = 1. / 3.,
-                     C1_6 = 1. / 6.;
+      static const T ZERO = 0., ONE = 1., TWO = 2., C1_3 = 1. / 3., C1_6 = 1. / 6.;
 
       T coef[4] = {0.0, 0.5, 0.5, 1.0};
 
@@ -542,8 +514,7 @@ namespace lit {
       F[2]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
       F[7]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
       F[12] = ONE;
-      F[17] =
-        x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
+      F[17] = x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
       F[22] = ZERO;
       // end of derivatives dx/dtx
 
@@ -571,12 +542,9 @@ namespace lit {
         //kty[iStep] = (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]) * hCqp;
       }  // 4
 
-      F[3] = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3
-             + kx[3] * C1_6;  // CalcOut(x0[0], k[0]);
-      F[8] = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3
-             + ky[3] * C1_6;  //CalcOut(x0[1], k[1]);
-      F[13] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3
-              + ktx[3] * C1_6;  //CalcOut(x0[2], k[2]);
+      F[3]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;      // CalcOut(x0[0], k[0]);
+      F[8]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;      //CalcOut(x0[1], k[1]);
+      F[13] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;  //CalcOut(x0[2], k[2]);
       F[18] = ONE;
       F[23] = ZERO;
       // end of derivatives dx/dty
@@ -601,18 +569,14 @@ namespace lit {
 
         kx[iStep]  = x[2] * h;
         ky[iStep]  = x[3] * h;
-        ktx[iStep] = Ax[iStep] * hC
-                     + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
-        kty[iStep] = Ay[iStep] * hC
-                     + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
+        ktx[iStep] = Ax[iStep] * hC + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
+        kty[iStep] = Ay[iStep] * hC + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
       }  // 4
 
-      F[4] = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
-      F[9] = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
-      F[14] =
-        x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;
-      F[19] =
-        x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
+      F[4]  = x0[0] + kx[0] * C1_6 + kx[1] * C1_3 + kx[2] * C1_3 + kx[3] * C1_6;
+      F[9]  = x0[1] + ky[0] * C1_6 + ky[1] * C1_3 + ky[2] * C1_3 + ky[3] * C1_6;
+      F[14] = x0[2] + ktx[0] * C1_6 + ktx[1] * C1_3 + ktx[2] * C1_3 + ktx[3] * C1_6;
+      F[19] = x0[3] + kty[0] * C1_6 + kty[1] * C1_3 + kty[2] * C1_3 + kty[3] * C1_6;
       F[24] = 1.;
       // end of derivatives dx/dqp
 
@@ -621,21 +585,8 @@ namespace lit {
 
       // Transport C matrix
       {
-        T cIn[15] = {par.C0,
-                     par.C1,
-                     par.C2,
-                     par.C3,
-                     par.C4,
-                     par.C5,
-                     par.C6,
-                     par.C7,
-                     par.C8,
-                     par.C9,
-                     par.C10,
-                     par.C11,
-                     par.C12,
-                     par.C13,
-                     par.C14};
+        T cIn[15] = {par.C0, par.C1, par.C2,  par.C3,  par.C4,  par.C5,  par.C6, par.C7,
+                     par.C8, par.C9, par.C10, par.C11, par.C12, par.C13, par.C14};
         // F*C*Ft
         T A = cIn[2] + F[2] * cIn[9] + F[3] * cIn[10] + F[4] * cIn[11];
         T B = cIn[3] + F[2] * cIn[10] + F[3] * cIn[12] + F[4] * cIn[13];
@@ -651,16 +602,13 @@ namespace lit {
 
         T K = cIn[13] + F[17] * cIn[11] + F[19] * cIn[14];
 
-        par.C0 = cIn[0] + F[2] * cIn[2] + F[3] * cIn[3] + F[4] * cIn[4]
-                 + A * F[2] + B * F[3] + C * F[4];
-        par.C1 = cIn[1] + F[2] * cIn[6] + F[3] * cIn[7] + F[4] * cIn[8]
-                 + A * F[7] + B * F[8] + C * F[9];
+        par.C0 = cIn[0] + F[2] * cIn[2] + F[3] * cIn[3] + F[4] * cIn[4] + A * F[2] + B * F[3] + C * F[4];
+        par.C1 = cIn[1] + F[2] * cIn[6] + F[3] * cIn[7] + F[4] * cIn[8] + A * F[7] + B * F[8] + C * F[9];
         par.C2 = A + B * F[13] + C * F[14];
         par.C3 = B + A * F[17] + C * F[19];
         par.C4 = C;
 
-        par.C5 = cIn[5] + F[7] * cIn[6] + F[8] * cIn[7] + F[9] * cIn[8]
-                 + D * F[7] + E * F[8] + G * F[9];
+        par.C5 = cIn[5] + F[7] * cIn[6] + F[8] * cIn[7] + F[9] * cIn[8] + D * F[7] + E * F[8] + G * F[9];
         par.C6 = D + E * F[13] + G * F[14];
         par.C7 = E + D * F[17] + G * F[19];
         par.C8 = G;
@@ -669,8 +617,7 @@ namespace lit {
         par.C10 = I + H * F[17] + J * F[19];
         par.C11 = J;
 
-        par.C12 = cIn[12] + F[17] * cIn[10] + F[19] * cIn[13]
-                  + (F[17] * cIn[9] + cIn[10] + F[19] * cIn[11]) * F[17]
+        par.C12 = cIn[12] + F[17] * cIn[10] + F[19] * cIn[13] + (F[17] * cIn[9] + cIn[10] + F[19] * cIn[11]) * F[17]
                   + K * F[19];
         par.C13 = K;
 
@@ -691,9 +638,8 @@ namespace lit {
  * \param[in] field Reference to field region.
  */
     template<class T>
-    inline void LitRK4Extrapolation(LitTrackParam<T>& par,
-                                    T zOut,
-                                    const LitFieldRegion<T>& field) {
+    inline void LitRK4Extrapolation(LitTrackParam<T>& par, T zOut, const LitFieldRegion<T>& field)
+    {
       static const T C1_2 = 0.5;
       T zIn               = par.Z;
       T h                 = zOut - zIn;

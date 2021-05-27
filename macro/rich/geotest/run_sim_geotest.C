@@ -1,13 +1,10 @@
-void run_sim_geotest(
-  const string& plutoFile = "",  // if "", BoxGenerator is used
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
-  const string& geoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/geosim.00000.root",
-  const string& geoSetup = "sis100_electron",  //"mirror12_42",
-  int nEvents            = 10) {
+void run_sim_geotest(const string& plutoFile = "",  // if "", BoxGenerator is used
+                     const string& mcFile    = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
+                     const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
+                     const string& geoFile  = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/geosim.00000.root",
+                     const string& geoSetup = "sis100_electron",  //"mirror12_42",
+                     int nEvents            = 10)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   remove(parFile.c_str());
@@ -19,9 +16,8 @@ void run_sim_geotest(
 
   CbmTransport run;
 
-  if (plutoFile.length() > 0) {
-    run.AddInput(plutoFile.c_str(), kPluto);
-  } else {
+  if (plutoFile.length() > 0) { run.AddInput(plutoFile.c_str(), kPluto); }
+  else {
     FairBoxGenerator* boxGen1 = new FairBoxGenerator(11, 1);
     boxGen1->SetPtRange(0., 3.);
     boxGen1->SetPhiRange(0., 360.);
@@ -55,7 +51,6 @@ void run_sim_geotest(
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << "s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

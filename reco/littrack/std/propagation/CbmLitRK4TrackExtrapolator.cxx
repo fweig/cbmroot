@@ -7,26 +7,23 @@
 
 #include "interface/CbmLitField.h"
 
-#include <cmath>
 #include <complex>
 
-CbmLitRK4TrackExtrapolator::CbmLitRK4TrackExtrapolator(
-  std::shared_ptr<CbmLitField> field)
-  : fField(field) {}
+#include <cmath>
+
+CbmLitRK4TrackExtrapolator::CbmLitRK4TrackExtrapolator(std::shared_ptr<CbmLitField> field) : fField(field) {}
 
 CbmLitRK4TrackExtrapolator::~CbmLitRK4TrackExtrapolator() {}
 
-LitStatus CbmLitRK4TrackExtrapolator::Extrapolate(const CbmLitTrackParam* parIn,
-                                                  CbmLitTrackParam* parOut,
-                                                  litfloat zOut,
-                                                  std::vector<litfloat>* F) {
+LitStatus CbmLitRK4TrackExtrapolator::Extrapolate(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut,
+                                                  litfloat zOut, std::vector<litfloat>* F)
+{
   *parOut = *parIn;
   return Extrapolate(parOut, zOut, F);
 }
 
-LitStatus CbmLitRK4TrackExtrapolator::Extrapolate(CbmLitTrackParam* par,
-                                                  litfloat zOut,
-                                                  std::vector<litfloat>* F) {
+LitStatus CbmLitRK4TrackExtrapolator::Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F)
+{
   litfloat zIn = par->GetZ();
 
   std::vector<litfloat> xIn = par->GetStateVector();
@@ -48,11 +45,9 @@ LitStatus CbmLitRK4TrackExtrapolator::Extrapolate(CbmLitTrackParam* par,
   return kLITSUCCESS;
 }
 
-void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn,
-                                          litfloat zIn,
-                                          std::vector<litfloat>& xOut,
-                                          litfloat zOut,
-                                          std::vector<litfloat>& derivs) const {
+void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn, litfloat zIn, std::vector<litfloat>& xOut,
+                                          litfloat zOut, std::vector<litfloat>& derivs) const
+{
   const litfloat fC = 0.000299792458;
 
   litfloat coef[4] = {0.0, 0.5, 0.5, 1.0};
@@ -157,8 +152,7 @@ void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn,
     k[1][iStep] = x[3] * h;
     //k[2][iStep] = (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]) * hCqp;
     k[3][iStep] = (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]) * hCqp;
-    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h
-                  / CbmLitTrackParam::fSpeedOfLight / fT1;
+    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h / CbmLitTrackParam::fSpeedOfLight / fT1;
   }  // 2
 
   derivs[2]  = CalcOut(x0[0], k[0]);
@@ -186,8 +180,7 @@ void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn,
     k[1][iStep] = x[3] * h;
     k[2][iStep] = (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]) * hCqp;
     //k[3][iStep] = (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]) * hCqp;
-    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h
-                  / CbmLitTrackParam::fSpeedOfLight / fT1;
+    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h / CbmLitTrackParam::fSpeedOfLight / fT1;
   }  // 4
 
   derivs[3]  = CalcOut(x0[0], k[0]);
@@ -213,12 +206,9 @@ void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn,
 
     k[0][iStep] = x[2] * h;
     k[1][iStep] = x[3] * h;
-    k[2][iStep] =
-      Ax[iStep] * hC + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
-    k[3][iStep] =
-      Ay[iStep] * hC + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
-    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h
-                  / CbmLitTrackParam::fSpeedOfLight / fT1;
+    k[2][iStep] = Ax[iStep] * hC + hCqp * (dAx_dtx[iStep] * x[2] + dAx_dty[iStep] * x[3]);
+    k[3][iStep] = Ay[iStep] * hC + hCqp * (dAy_dtx[iStep] * x[2] + dAy_dty[iStep] * x[3]);
+    k[4][iStep] = (fTx[iStep] * x[2] + fTy[iStep] * x[3]) * h / CbmLitTrackParam::fSpeedOfLight / fT1;
   }  // 4
 
   derivs[4]  = CalcOut(x0[0], k[0]);
@@ -232,14 +222,14 @@ void CbmLitRK4TrackExtrapolator::RK4Order(const std::vector<litfloat>& xIn,
   // end calculation of the derivatives
 }
 
-litfloat CbmLitRK4TrackExtrapolator::CalcOut(litfloat in,
-                                             const litfloat k[4]) const {
+litfloat CbmLitRK4TrackExtrapolator::CalcOut(litfloat in, const litfloat k[4]) const
+{
   return in + k[0] / 6. + k[1] / 3. + k[2] / 3. + k[3] / 6.;
 }
 
-static void MultiplyMatrices(const std::vector<litfloat>& lm,
-                             const std::vector<litfloat>& rm,
-                             std::vector<litfloat>& res) {
+static void MultiplyMatrices(const std::vector<litfloat>& lm, const std::vector<litfloat>& rm,
+                             std::vector<litfloat>& res)
+{
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j) {
       litfloat& r = res[6 * i + j];
@@ -251,17 +241,17 @@ static void MultiplyMatrices(const std::vector<litfloat>& lm,
   }
 }
 
-static void TransposeMatrix(const std::vector<litfloat>& m,
-                            std::vector<litfloat>& res) {
+static void TransposeMatrix(const std::vector<litfloat>& m, std::vector<litfloat>& res)
+{
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j)
       res[i + 6 * j] = m[6 * i + j];
   }
 }
 
-void CbmLitRK4TrackExtrapolator::TransportC(const std::vector<litfloat>& cIn,
-                                            const std::vector<litfloat>& F,
-                                            std::vector<litfloat>& cOut) const {
+void CbmLitRK4TrackExtrapolator::TransportC(const std::vector<litfloat>& cIn, const std::vector<litfloat>& F,
+                                            std::vector<litfloat>& cOut) const
+{
   // F*C*Ft
   /*litfloat A = cIn[2] + F[2] * cIn[9] + F[3] * cIn[10] + F[4] * cIn[11];
    litfloat B = cIn[3] + F[2] * cIn[10] + F[3] * cIn[12] + F[4] * cIn[13];

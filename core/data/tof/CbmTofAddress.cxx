@@ -12,23 +12,17 @@
 /** Offset in bits for Super Module Id in the address field  **/
 const Int_t CbmTofAddress::fgkSmIdOffset = CbmAddress::fgkSystemBits;
 /** Offset in bits for Super Module Type in the address field  **/
-const Int_t CbmTofAddress::fgkSmTypeOffset =
-  CbmTofAddress::fgkSmIdBits + CbmTofAddress::fgkSmIdOffset;
+const Int_t CbmTofAddress::fgkSmTypeOffset = CbmTofAddress::fgkSmIdBits + CbmTofAddress::fgkSmIdOffset;
 /** Offset in bits for Rpc Id in the address field  **/
-const Int_t CbmTofAddress::fgkRpcIdOffset =
-  CbmTofAddress::fgkSmTypeBits + CbmTofAddress::fgkSmTypeOffset;
+const Int_t CbmTofAddress::fgkRpcIdOffset = CbmTofAddress::fgkSmTypeBits + CbmTofAddress::fgkSmTypeOffset;
 /** Offset in bits for Channel Side Id in the address field  **/
-const Int_t CbmTofAddress::fgkChannelSideOffset =
-  CbmTofAddress::fgkRpcIdBits + CbmTofAddress::fgkRpcIdOffset;
+const Int_t CbmTofAddress::fgkChannelSideOffset = CbmTofAddress::fgkRpcIdBits + CbmTofAddress::fgkRpcIdOffset;
 /** Offset in bits for Channel Id in the address field  **/
-const Int_t CbmTofAddress::fgkChannelIdOffset =
-  CbmTofAddress::fgkChannelSideBits + CbmTofAddress::fgkChannelSideOffset;
+const Int_t CbmTofAddress::fgkChannelIdOffset = CbmTofAddress::fgkChannelSideBits + CbmTofAddress::fgkChannelSideOffset;
 /** Offset in bits for Rpc Type in the address field  **/
-const Int_t CbmTofAddress::fgkRpcTypeOffset =
-  CbmTofAddress::fgkChannelIdBits + CbmTofAddress::fgkChannelIdOffset;
+const Int_t CbmTofAddress::fgkRpcTypeOffset = CbmTofAddress::fgkChannelIdBits + CbmTofAddress::fgkChannelIdOffset;
 
 const Int_t CbmTofAddress::fgkiModFullIdMask =
   (((1 << fgkSystemBits) - 1)) + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
-  + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset)
-  + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset)
+  + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset) + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset)
   + (((1 << fgkRpcTypeBits) - 1) << fgkRpcTypeOffset);

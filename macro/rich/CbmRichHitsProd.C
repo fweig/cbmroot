@@ -67,13 +67,12 @@
   // ------- Parameters for photodetector -------------------------
   Double_t pmt_rad  = 0.4;  // PMT radius (cm)
   Double_t pmt_dist = 0.;   // distance between PMTs (cm)
-  Int_t det_type = 4;  // detector type (choose: 1=Protvino, 2=Hamamatsu, 3=CsI)
-  Int_t noise    = 220;  // number of noise points to be added
-                         //  (note: excluding geom. eff. (~0.9))
+  Int_t det_type    = 4;    // detector type (choose: 1=Protvino, 2=Hamamatsu, 3=CsI)
+  Int_t noise       = 220;  // number of noise points to be added
+                            //  (note: excluding geom. eff. (~0.9))
 
   // define RichHitProducer to run
-  CbmRichHitProducer* hp =
-    new CbmRichHitProducer(pmt_rad, pmt_dist, det_type, noise, iVerbose);
+  CbmRichHitProducer* hp = new CbmRichHitProducer(pmt_rad, pmt_dist, det_type, noise, iVerbose);
   fRun->AddTask(hp);
 
 

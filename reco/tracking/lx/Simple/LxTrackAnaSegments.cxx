@@ -1,11 +1,14 @@
 #include "LxTrackAnaSegments.h"
-#include "LxTrackAna.h"
+
 #include "TH1.h"
 #include "TH2.h"
+
 #include <cmath>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include "LxTrackAna.h"
 
 using namespace std;
 
@@ -48,55 +51,50 @@ static TH1F* muchClusterYDispHisto[LXSTATIONS - 1];
 static TH1F* muchClusterTxDispHisto[LXSTATIONS - 1];
 static TH1F* muchClusterTyDispHisto[LXSTATIONS - 1];
 
-LxTrackAnaSegments::LxTrackAnaSegments(LxTrackAna& o)
-  : owner(o), stationsInAlgo(LXSTATIONS) {}
+LxTrackAnaSegments::LxTrackAnaSegments(LxTrackAna& o) : owner(o), stationsInAlgo(LXSTATIONS) {}
 
 static TString particleType("jpsi");
 
-void LxTrackAnaSegments::SetParticleType(TString v) {
+void LxTrackAnaSegments::SetParticleType(TString v)
+{
   particleType = v;
 
   if (v == "omega") stationsInAlgo = 5;
 }
 
-void LxTrackAnaSegments::Init() {
+void LxTrackAnaSegments::Init()
+{
   char name[64];
   char title[256];
 
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
     sprintf(name, "muchInStationXDispLeft_%d", i);
-    sprintf(
-      title, "X dispersion from central to left layer inside station: %d", i);
+    sprintf(title, "X dispersion from central to left layer inside station: %d", i);
     muchInStationXDispLeft[i] = new TH1F(name, title, 100, -3.0, 3.0);
     muchInStationXDispLeft[i]->StatOverflows();
 
     sprintf(name, "muchInStationXDispRight_%d", i);
-    sprintf(
-      title, "X dispersion from central to right layer inside station: %d", i);
+    sprintf(title, "X dispersion from central to right layer inside station: %d", i);
     muchInStationXDispRight[i] = new TH1F(name, title, 100, -3.0, 3.0);
     muchInStationXDispRight[i]->StatOverflows();
 
     sprintf(name, "muchInStationYDispLeft_%d", i);
-    sprintf(
-      title, "Y dispersion from central to left layer inside station: %d", i);
+    sprintf(title, "Y dispersion from central to left layer inside station: %d", i);
     muchInStationYDispLeft[i] = new TH1F(name, title, 100, -3.0, 3.0);
     muchInStationYDispLeft[i]->StatOverflows();
 
     sprintf(name, "muchInStationYDispRight_%d", i);
-    sprintf(
-      title, "Y dispersion from central to right layer inside station: %d", i);
+    sprintf(title, "Y dispersion from central to right layer inside station: %d", i);
     muchInStationYDispRight[i] = new TH1F(name, title, 100, -3.0, 3.0);
     muchInStationYDispRight[i]->StatOverflows();
 
     sprintf(name, "muchInStationXDispRL_%d", i);
-    sprintf(
-      title, "X dispersion on left layer predicted by right station: %d", i);
+    sprintf(title, "X dispersion on left layer predicted by right station: %d", i);
     muchInStationXDispRL[i] = new TH1F(name, title, 100, -0.1, 0.1);
     muchInStationXDispRL[i]->StatOverflows();
 
     sprintf(name, "muchInStationYDispRL_%d", i);
-    sprintf(
-      title, "Y dispersion on left layer predicted by right station: %d", i);
+    sprintf(title, "Y dispersion on left layer predicted by right station: %d", i);
     muchInStationYDispRL[i] = new TH1F(name, title, 100, -0.1, 0.1);
     muchInStationYDispRL[i]->StatOverflows();
 
@@ -112,20 +110,12 @@ void LxTrackAnaSegments::Init() {
 
     if (i > 0) {
       sprintf(name, "muchLongSegmentTxHisto_%d", i);
-      sprintf(
-        title,
-        "Tx tangents distribution for segments between stations: %d and %d",
-        i - 1,
-        i);
+      sprintf(title, "Tx tangents distribution for segments between stations: %d and %d", i - 1, i);
       muchLongSegmentTxHisto[i - 1] = new TH1F(name, title, 100, -.15, .15);
       muchLongSegmentTxHisto[i - 1]->StatOverflows();
 
       sprintf(name, "muchLongSegmentTyHisto_%d", i);
-      sprintf(
-        title,
-        "Ty tangents distribution for segments between stations: %d and %d",
-        i - 1,
-        i);
+      sprintf(title, "Ty tangents distribution for segments between stations: %d and %d", i - 1, i);
       muchLongSegmentTyHisto[i - 1] = new TH1F(name, title, 100, -.15, .15);
       muchLongSegmentTyHisto[i - 1]->StatOverflows();
 
@@ -133,8 +123,7 @@ void LxTrackAnaSegments::Init() {
       sprintf(title,
               "X coordinate dispersion for cluster segments between stations: "
               "%d and %d",
-              i - 1,
-              i);
+              i - 1, i);
       muchClusterXDispHisto[i - 1] = new TH1F(name, title, 100, .0, 3.0);
       muchClusterXDispHisto[i - 1]->StatOverflows();
 
@@ -142,8 +131,7 @@ void LxTrackAnaSegments::Init() {
       sprintf(title,
               "Y coordinate dispersion for cluster segments between stations: "
               "%d and %d",
-              i - 1,
-              i);
+              i - 1, i);
       muchClusterYDispHisto[i - 1] = new TH1F(name, title, 100, .0, 3.0);
       muchClusterYDispHisto[i - 1]->StatOverflows();
 
@@ -151,8 +139,7 @@ void LxTrackAnaSegments::Init() {
       sprintf(title,
               "Tx tangent dispersion for cluster segments between stations: %d "
               "and %d",
-              i - 1,
-              i);
+              i - 1, i);
       muchClusterTxDispHisto[i - 1] = new TH1F(name, title, 100, .0, .05);
       muchClusterTxDispHisto[i - 1]->StatOverflows();
 
@@ -160,8 +147,7 @@ void LxTrackAnaSegments::Init() {
       sprintf(title,
               "Ty tangent dispersion for cluster segments between stations: %d "
               "and %d",
-              i - 1,
-              i);
+              i - 1, i);
       muchClusterTyDispHisto[i - 1] = new TH1F(name, title, 100, .0, .05);
       muchClusterTyDispHisto[i - 1]->StatOverflows();
 
@@ -170,8 +156,7 @@ void LxTrackAnaSegments::Init() {
               "Tx break between right segment of station and left tip of the "
               "interstation segment: %d",
               i);
-      muchOutStationTxBreakLeft[i - 1] =
-        new TH1F(name, title, 100, -0.15, 0.15);
+      muchOutStationTxBreakLeft[i - 1] = new TH1F(name, title, 100, -0.15, 0.15);
       muchOutStationTxBreakLeft[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationTxBreakRight_%d", i);
@@ -179,8 +164,7 @@ void LxTrackAnaSegments::Init() {
               "Tx break between left segment of station and right tip of the "
               "interstation segment: %d",
               i);
-      muchOutStationTxBreakRight[i - 1] =
-        new TH1F(name, title, 100, -0.15, 0.15);
+      muchOutStationTxBreakRight[i - 1] = new TH1F(name, title, 100, -0.15, 0.15);
       muchOutStationTxBreakRight[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationTyBreakLeft_%d", i);
@@ -188,8 +172,7 @@ void LxTrackAnaSegments::Init() {
               "Ty break between right segment of station and left tip of the "
               "interstation segment: %d",
               i);
-      muchOutStationTyBreakLeft[i - 1] =
-        new TH1F(name, title, 100, -0.15, 0.15);
+      muchOutStationTyBreakLeft[i - 1] = new TH1F(name, title, 100, -0.15, 0.15);
       muchOutStationTyBreakLeft[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationTyBreakRight_%d", i);
@@ -197,42 +180,27 @@ void LxTrackAnaSegments::Init() {
               "Ty break between left segment of station and right tip of the "
               "interstation segment: %d",
               i);
-      muchOutStationTyBreakRight[i - 1] =
-        new TH1F(name, title, 100, -0.15, 0.15);
+      muchOutStationTyBreakRight[i - 1] = new TH1F(name, title, 100, -0.15, 0.15);
       muchOutStationTyBreakRight[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationXDispByTriplet_%d", i);
-      sprintf(title,
-              "X dispersion of prediction by triplet angle for station: %d",
-              i);
-      muchOutStationXDispByTriplet[i - 1] =
-        new TH1F(name, title, 100, -10.0, 10.0);
+      sprintf(title, "X dispersion of prediction by triplet angle for station: %d", i);
+      muchOutStationXDispByTriplet[i - 1] = new TH1F(name, title, 100, -10.0, 10.0);
       muchOutStationXDispByTriplet[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationYDispByTriplet_%d", i);
-      sprintf(title,
-              "Y dispersion of prediction by triplet angle for station: %d",
-              i);
-      muchOutStationYDispByTriplet[i - 1] =
-        new TH1F(name, title, 100, -10.0, 10.0);
+      sprintf(title, "Y dispersion of prediction by triplet angle for station: %d", i);
+      muchOutStationYDispByTriplet[i - 1] = new TH1F(name, title, 100, -10.0, 10.0);
       muchOutStationYDispByTriplet[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationXDispByVertex_%d", i);
-      sprintf(
-        title,
-        "X dispersion of prediction by an angle to vertex for station: %d",
-        i);
-      muchOutStationXDispByVertex[i - 1] =
-        new TH1F(name, title, 100, -10.0, 10.0);
+      sprintf(title, "X dispersion of prediction by an angle to vertex for station: %d", i);
+      muchOutStationXDispByVertex[i - 1] = new TH1F(name, title, 100, -10.0, 10.0);
       muchOutStationXDispByVertex[i - 1]->StatOverflows();
 
       sprintf(name, "muchOutStationYDispByVertex_%d", i);
-      sprintf(
-        title,
-        "Y dispersion of prediction by an angle to vertex for station: %d",
-        i);
-      muchOutStationYDispByVertex[i - 1] =
-        new TH1F(name, title, 100, -10.0, 10.0);
+      sprintf(title, "Y dispersion of prediction by an angle to vertex for station: %d", i);
+      muchOutStationYDispByVertex[i - 1] = new TH1F(name, title, 100, -10.0, 10.0);
       muchOutStationYDispByVertex[i - 1]->StatOverflows();
 
       if (i < LXSTATIONS - 1) {
@@ -254,18 +222,12 @@ void LxTrackAnaSegments::Init() {
       }
 
       sprintf(name, "muchStationTxDispHisto_%d", i);
-      sprintf(title,
-              "Tx tangents dispersion for segments between stations: %d and %d",
-              i - 1,
-              i);
+      sprintf(title, "Tx tangents dispersion for segments between stations: %d and %d", i - 1, i);
       muchStationTxDispHisto[i - 1] = new TH1F(name, title, 100, -.05, .05);
       muchStationTxDispHisto[i - 1]->StatOverflows();
 
       sprintf(name, "muchStationTyDispHisto_%d", i);
-      sprintf(title,
-              "Ty tangents dispersion for segments between stations: %d and %d",
-              i - 1,
-              i);
+      sprintf(title, "Ty tangents dispersion for segments between stations: %d and %d", i - 1, i);
       muchStationTyDispHisto[i - 1] = new TH1F(name, title, 100, -.05, .05);
       muchStationTyDispHisto[i - 1]->StatOverflows();
     }
@@ -273,26 +235,24 @@ void LxTrackAnaSegments::Init() {
     if (i < LXSTATIONS - 1) {
       sprintf(name, "muchXTxCovHisto_%d", i);
       sprintf(title, "muchXTxCovHisto on %d", i);
-      muchXTxCovHisto[i] =
-        new TH2F(name, title, 100, -5.0, 5.0, 100, -0.15, 0.15);
+      muchXTxCovHisto[i] = new TH2F(name, title, 100, -5.0, 5.0, 100, -0.15, 0.15);
       muchXTxCovHisto[i]->StatOverflows();
 
       sprintf(name, "muchYTyCovHisto_%d", i);
       sprintf(title, "muchYTyCovHisto on %d", i);
-      muchYTyCovHisto[i] =
-        new TH2F(name, title, 100, -5.0, 5.0, 100, -0.15, 0.15);
+      muchYTyCovHisto[i] = new TH2F(name, title, 100, -5.0, 5.0, 100, -0.15, 0.15);
       muchYTyCovHisto[i]->StatOverflows();
     }
   }
 }
 
-static void SaveHisto(TH1* histo) {
+static void SaveHisto(TH1* histo)
+{
   char dir_name[256];
   sprintf(dir_name, "configuration.%s", particleType.Data());
   DIR* dir = opendir(dir_name);
 
-  if (dir)
-    closedir(dir);
+  if (dir) closedir(dir);
   else
     mkdir(dir_name, 0700);
 
@@ -304,7 +264,8 @@ static void SaveHisto(TH1* histo) {
   delete histo;
 }
 
-void LxTrackAnaSegments::Finish() {
+void LxTrackAnaSegments::Finish()
+{
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
     SaveHisto(muchInStationXDispLeft[i]);
     SaveHisto(muchInStationXDispRight[i]);
@@ -350,15 +311,14 @@ void LxTrackAnaSegments::Finish() {
   }
 }
 
-void LxTrackAnaSegments::BuildStatistics() {
+void LxTrackAnaSegments::BuildStatistics()
+{
   vector<LxSimpleTrack*>& tracks = owner.allTracks;
 
-  for (vector<LxSimpleTrack*>::iterator i = tracks.begin(); i != tracks.end();
-       ++i) {
+  for (vector<LxSimpleTrack*>::iterator i = tracks.begin(); i != tracks.end(); ++i) {
     LxSimpleTrack* track = *i;
 
-    if (0 > track->motherId && (13 == track->pdgCode || -13 == track->pdgCode))
-      StatForTrack(track);
+    if (0 > track->motherId && (13 == track->pdgCode || -13 == track->pdgCode)) StatForTrack(track);
   }
 }
 
@@ -373,10 +333,13 @@ struct LxSimpleSegment {
     : source(s)
     , end(e)
     , tx((e.x - s.x) / (e.z - s.z))
-    , ty((e.y - s.y) / (e.z - s.z)) {}
+    , ty((e.y - s.y) / (e.z - s.z))
+  {
+  }
 };
 
-void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track) {
+void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track)
+{
   for (Int_t i = 0; i < stationsInAlgo; ++i) {
     for (Int_t j = 0; j < LXLAYERS; ++j) {
       if (track->muchPoints[i][j].empty()) return;
@@ -398,9 +361,7 @@ void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track) {
   scaltype stTyP;
 
   for (Int_t i = 0; i < LXSTATIONS; ++i) {
-    if (track->muchPoints[i][0].empty() || track->muchPoints[i][1].empty()
-        || track->muchPoints[i][2].empty())
-      continue;
+    if (track->muchPoints[i][0].empty() || track->muchPoints[i][1].empty() || track->muchPoints[i][2].empty()) continue;
 
     p1             = track->muchPoints[i][1].front();
     scaltype txEst = p1.x / p1.z;
@@ -455,10 +416,8 @@ void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track) {
       muchOutStationXDispByTriplet[i - 1]->Fill(p1.x - p2.x + stTx * deltaZ);
       muchOutStationYDispByTriplet[i - 1]->Fill(p1.y - p2.y + stTy * deltaZ);
 
-      muchOutStationXDispByVertex[i - 1]->Fill(p1.x - p2.x
-                                               + (p2.x / p2.z) * deltaZ);
-      muchOutStationYDispByVertex[i - 1]->Fill(p1.y - p2.y
-                                               + (p2.y / p2.z) * deltaZ);
+      muchOutStationXDispByVertex[i - 1]->Fill(p1.x - p2.x + (p2.x / p2.z) * deltaZ);
+      muchOutStationYDispByVertex[i - 1]->Fill(p1.y - p2.y + (p2.y / p2.z) * deltaZ);
 
       // Rather complex part for implementation: calculate the dispersion characteristics for segment clusters.
       scaltype maxXdisp  = 0;
@@ -466,38 +425,25 @@ void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track) {
       scaltype maxTxdisp = 0;
       scaltype maxTydisp = 0;
 
-      for (list<LxSimplePoint>::iterator l0 =
-             track->muchPoints[i - 1][0].begin();
-           l0 != track->muchPoints[i - 1][0].end();
-           ++l0) {
-        for (list<LxSimplePoint>::iterator l1 =
-               track->muchPoints[i - 1][1].begin();
-             l1 != track->muchPoints[i - 1][1].end();
-             ++l1) {
-          for (list<LxSimplePoint>::iterator l2 =
-                 track->muchPoints[i - 1][2].begin();
-               l2 != track->muchPoints[i - 1][2].end();
-               ++l2) {
-            for (list<LxSimplePoint>::iterator r0 =
-                   track->muchPoints[i][0].begin();
-                 r0 != track->muchPoints[i][0].end();
-                 ++r0) {
-              for (list<LxSimplePoint>::iterator r1 =
-                     track->muchPoints[i][1].begin();
-                   r1 != track->muchPoints[i][1].end();
-                   ++r1) {
-                for (list<LxSimplePoint>::iterator r2 =
-                       track->muchPoints[i][2].begin();
-                     r2 != track->muchPoints[i][2].end();
-                     ++r2) {
-                  LxSimplePoint lPoints[LXLAYERS] = {*l0, *l1, *l2};
-                  LxSimplePoint rPoints[LXLAYERS] = {*r0, *r1, *r2};
+      for (list<LxSimplePoint>::iterator l0 = track->muchPoints[i - 1][0].begin();
+           l0 != track->muchPoints[i - 1][0].end(); ++l0) {
+        for (list<LxSimplePoint>::iterator l1 = track->muchPoints[i - 1][1].begin();
+             l1 != track->muchPoints[i - 1][1].end(); ++l1) {
+          for (list<LxSimplePoint>::iterator l2 = track->muchPoints[i - 1][2].begin();
+               l2 != track->muchPoints[i - 1][2].end(); ++l2) {
+            for (list<LxSimplePoint>::iterator r0 = track->muchPoints[i][0].begin();
+                 r0 != track->muchPoints[i][0].end(); ++r0) {
+              for (list<LxSimplePoint>::iterator r1 = track->muchPoints[i][1].begin();
+                   r1 != track->muchPoints[i][1].end(); ++r1) {
+                for (list<LxSimplePoint>::iterator r2 = track->muchPoints[i][2].begin();
+                     r2 != track->muchPoints[i][2].end(); ++r2) {
+                  LxSimplePoint lPoints[LXLAYERS]               = {*l0, *l1, *l2};
+                  LxSimplePoint rPoints[LXLAYERS]               = {*r0, *r1, *r2};
                   LxSimpleSegment segments[LXLAYERS * LXLAYERS] = {};
 
                   for (Int_t j = 0; j < LXLAYERS; ++j) {
                     for (Int_t k = 0; k < LXLAYERS; ++k)
-                      segments[j * LXLAYERS + k] =
-                        LxSimpleSegment(rPoints[j], lPoints[k]);
+                      segments[j * LXLAYERS + k] = LxSimpleSegment(rPoints[j], lPoints[k]);
                   }
 
                   for (Int_t j = 0; j < LXLAYERS * LXLAYERS - 1; ++j) {
@@ -508,10 +454,8 @@ void LxTrackAnaSegments::StatForTrack(LxSimpleTrack* track) {
                       scaltype diffZ     = s1.source.z - s2.source.z;
                       scaltype dtx       = abs(s2.tx - s1.tx);
                       scaltype dty       = abs(s2.ty - s1.ty);
-                      scaltype dx =
-                        abs(s2.source.x + s2.tx * diffZ - s1.source.x);
-                      scaltype dy =
-                        abs(s2.source.y + s2.ty * diffZ - s1.source.y);
+                      scaltype dx        = abs(s2.source.x + s2.tx * diffZ - s1.source.x);
+                      scaltype dy        = abs(s2.source.y + s2.ty * diffZ - s1.source.y);
 
                       if (maxXdisp < dx) maxXdisp = dx;
 

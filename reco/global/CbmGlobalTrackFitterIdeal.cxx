@@ -5,9 +5,9 @@
 #include "CbmGlobalTrackFitterIdeal.h"
 
 #include "CbmGlobalTrack.h"
-
 #include "CbmStsTrack.h"
 #include "CbmTrdTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -28,19 +28,25 @@ using std::endl;
 
 // ------------------------------------------------------------------
 CbmGlobalTrackFitterIdeal::CbmGlobalTrackFitterIdeal()
-  : CbmGlobalTrackFitter(), fArrayStsTrack(NULL), fArrayTrdTrack(NULL) {}
+  : CbmGlobalTrackFitter()
+  , fArrayStsTrack(NULL)
+  , fArrayTrdTrack(NULL)
+{
+}
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-CbmGlobalTrackFitterIdeal::~CbmGlobalTrackFitterIdeal() {
+CbmGlobalTrackFitterIdeal::~CbmGlobalTrackFitterIdeal()
+{
   // Destructor
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterIdeal::Init() {
+void CbmGlobalTrackFitterIdeal::Init()
+{
   // Initialisation
 
   // Get pointer to the ROOT I/O manager
@@ -66,33 +72,29 @@ void CbmGlobalTrackFitterIdeal::Init() {
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterIdeal::DoFit(CbmGlobalTrack* glbTrack) {
+void CbmGlobalTrackFitterIdeal::DoFit(CbmGlobalTrack* glbTrack)
+{
   // Implementation of the algorithm
   if (NULL == glbTrack) return;
   if (NULL == fArrayStsTrack || NULL == fArrayTrdTrack) return;
 
-  if (glbTrack->GetStsTrackIndex() < 0 && glbTrack->GetTrdTrackIndex() < 0) {
-    return;
-  } else if (glbTrack->GetStsTrackIndex() >= 0
-             && glbTrack->GetTrdTrackIndex() < 0) {
-    CbmStsTrack* stsTrack =
-      (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
+  if (glbTrack->GetStsTrackIndex() < 0 && glbTrack->GetTrdTrackIndex() < 0) { return; }
+  else if (glbTrack->GetStsTrackIndex() >= 0 && glbTrack->GetTrdTrackIndex() < 0) {
+    CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
     if (NULL == stsTrack) { return; }
     glbTrack->SetParamFirst(stsTrack->GetParamFirst());
     glbTrack->SetParamLast(stsTrack->GetParamLast());
-  } else if (glbTrack->GetStsTrackIndex() < 0
-             && glbTrack->GetTrdTrackIndex() >= 0) {
-    CbmTrdTrack* trdTrack =
-      (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
+  }
+  else if (glbTrack->GetStsTrackIndex() < 0 && glbTrack->GetTrdTrackIndex() >= 0) {
+    CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
     if (NULL == trdTrack) { return; }
     glbTrack->SetParamFirst(trdTrack->GetParamFirst());
     glbTrack->SetParamLast(trdTrack->GetParamLast());
-  } else {
-    CbmStsTrack* stsTrack =
-      (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
+  }
+  else {
+    CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
     if (NULL == stsTrack) { return; }
-    CbmTrdTrack* trdTrack =
-      (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
+    CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
     if (NULL == trdTrack) { return; }
     glbTrack->SetParamFirst(stsTrack->GetParamFirst());
     glbTrack->SetParamLast(trdTrack->GetParamLast());

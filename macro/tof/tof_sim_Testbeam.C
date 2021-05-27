@@ -8,7 +8,8 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_sim_Testbeam(Int_t nEvents = 10, Int_t iSys = 0) {
+void tof_sim_Testbeam(Int_t nEvents = 10, Int_t iSys = 0)
+{
   // iSys=25 for particle with UrQMD
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -62,10 +63,9 @@ void tof_sim_Testbeam(Int_t nEvents = 10, Int_t iSys = 0) {
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");  // Transport engine
-  fRun->SetTrackingDebugMode(
-    kFALSE);  // Geant3 debug output can be set in ./gconfig/g3Config.C
-  fRun->SetOutputFile(outFile);  // Output file
+  fRun->SetName("TGeant3");            // Transport engine
+  fRun->SetTrackingDebugMode(kFALSE);  // Geant3 debug output can be set in ./gconfig/g3Config.C
+  fRun->SetOutputFile(outFile);        // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
@@ -137,8 +137,7 @@ void tof_sim_Testbeam(Int_t nEvents = 10, Int_t iSys = 0) {
   Int_t iMode = 0;
   switch (iMode) {
     case 0:  //(pdg,mul,px, py, pz, vx,vy,vz)
-      FairParticleGenerator* fPartGen = new FairParticleGenerator(
-        2212, 1, 0.03, 0.38, 3.5, 0., 0., 0.);  //proton
+      FairParticleGenerator* fPartGen = new FairParticleGenerator(2212, 1, 0.03, 0.38, 3.5, 0., 0., 0.);  //proton
       //FairParticleGenerator *fPartGen= new FairParticleGenerator(13, 1,0.03,0.38, 3.5, 0.,0.,0.); //mu-
       break;
     case 1:
@@ -214,8 +213,7 @@ void tof_sim_Testbeam(Int_t nEvents = 10, Int_t iSys = 0) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

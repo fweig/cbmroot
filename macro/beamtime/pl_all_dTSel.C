@@ -1,4 +1,5 @@
-void pl_all_dTSel(Int_t iNSel = 2) {
+void pl_all_dTSel(Int_t iNSel = 2)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -29,7 +30,8 @@ void pl_all_dTSel(Int_t iNSel = 2) {
       h2->GetYaxis()->SetLabelSize(lsize);
       h2->Draw("colz");
       //gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }
@@ -44,7 +46,8 @@ void pl_all_dTSel(Int_t iNSel = 2) {
       h2->GetYaxis()->SetLabelSize(lsize);
       h2->ProjectionX()->Draw();
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }
@@ -58,7 +61,8 @@ void pl_all_dTSel(Int_t iNSel = 2) {
     h2->GetYaxis()->SetLabelSize(lsize);
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 

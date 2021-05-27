@@ -10,9 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
-                                   UInt_t nrEvents = 0,
-                                   TString outDir  = "data") {
+void unpack_check_time_mcbm_kronos(UInt_t uRunIdx = 99999, UInt_t nrEvents = 0, TString outDir = "data")
+{
   UInt_t uRunId = 0;
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {
@@ -78,21 +77,18 @@ void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
 
   // ---- Trd ----
   TString geoTagTrd = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  bool isActiveTrd  = (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
   if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    LOG(warning) << Form("TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+                         "can not be loaded correctly!",
+                         geoSetupTag.data());
+  }
+  else {
+    TString paramFilesTrd(Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
     CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
     for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+      parFileList->Add(new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
   }
 
@@ -113,23 +109,19 @@ void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
   gDebug = 0;
 
   std::cout << std::endl;
-  std::cout << ">>> unpack_check_time_mcbm_kronos: output file is " << outFile
-            << std::endl;
+  std::cout << ">>> unpack_check_time_mcbm_kronos: output file is " << outFile << std::endl;
 
   // ========================================================================
   // ========================================================================
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
-    new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
-    new CbmMcbm2018UnpackerTaskTrdR();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd   = new CbmMcbm2018UnpackerTaskPsd();
 
   /*
  * Do not generate plots by default
@@ -516,37 +508,26 @@ void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
   source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata
 
-  TString inFile =
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn02_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn04_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn05_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn06_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn08_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn10_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn11_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn12_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn13_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn15_*.tsa", uRunId);
+  TString inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn02_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn04_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn05_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn06_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn08_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn10_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn11_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn12_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn13_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn15_*.tsa", uRunId);
 
   source->SetFileName(inFile);
 
-  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
-  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  //MUCH xyter
-  if (isActiveTrd)
-    source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
-  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
-  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
-  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
-  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);    //PSD
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);                    //STS xyter
+  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);                  //MUCH xyter
+  if (isActiveTrd) source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);                    //gDPB A & B & C
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);                    //gDPB T0 A & B
+  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);                  //RICH trb
+  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);                    //PSD
 
   // --- Event header
   //  FairEventHeader* event = new FairEventHeader();
@@ -576,9 +557,7 @@ void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
   timeChecker->SetRichOffsetSearchRange(10000);
   timeChecker->SetPsdOffsetSearchRange(10000);
   timeChecker->SetT0PulserTotLimits(185, 191);
-  if (0 < uRunId)
-    timeChecker->SetOutFilename(
-      Form("%s/HistosTimeCheck_%03u.root", outDir.Data(), uRunId));
+  if (0 < uRunId) timeChecker->SetOutFilename(Form("%s/HistosTimeCheck_%03u.root", outDir.Data(), uRunId));
   run->AddTask(timeChecker);
 
   // -----   Runtime database   ---------------------------------------------
@@ -596,30 +575,27 @@ void unpack_check_time_mcbm_kronos(UInt_t uRunIdx  = 99999,
   // --- Start run
   TStopwatch timer;
   timer.Start();
-  std::cout << ">>> unpack_check_time_mcbm_kronos: Starting run..."
-            << std::endl;
+  std::cout << ">>> unpack_check_time_mcbm_kronos: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> unpack_check_time_mcbm_kronos: Macro finished successfully."
+  std::cout << ">>> unpack_check_time_mcbm_kronos: Macro finished successfully." << std::endl;
+  std::cout << ">>> unpack_check_time_mcbm_kronos: Output file is " << outFile << std::endl;
+  std::cout << ">>> unpack_check_time_mcbm_kronos: Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
-  std::cout << ">>> unpack_check_time_mcbm_kronos: Output file is " << outFile
-            << std::endl;
-  std::cout << ">>> unpack_check_time_mcbm_kronos: Real time " << rtime
-            << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

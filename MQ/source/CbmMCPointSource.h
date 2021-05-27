@@ -8,17 +8,17 @@
 #ifndef CBMMCPOINTSOURCE_H_
 #define CBMMCPOINTSOURCE_H_
 
-#include "FairMQDevice.h"
-
 #include "CbmMQChannels.h"
 
+#include "FairMQDevice.h"
+
 #include "TClonesArray.h"
+
+#include <boost/archive/binary_oarchive.hpp>
 
 #include <ctime>
 #include <string>
 #include <vector>
-
-#include <boost/archive/binary_oarchive.hpp>
 // include this header to serialize vectors
 #include <boost/serialization/vector.hpp>
 
@@ -53,13 +53,13 @@ private:
   void ConnectChannelIfNeeded(int, std::string, std::string, FairRootManager*);
 
   template<class T>
-  void PrintMCPoint(TClonesArray* arr) {
+  void PrintMCPoint(TClonesArray* arr)
+  {
 
     Int_t entries = arr->GetEntriesFast();
     if (entries > 0) {
       T* point = static_cast<T*>(arr->At(0));
-      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
-                << entries;
+      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
     }
     for (int i = 0; i < entries; ++i) {
       T* point = static_cast<T*>(arr->At(i));
@@ -68,14 +68,14 @@ private:
   }
 
   template<class T>
-  std::vector<T> Convert(TClonesArray* arr) {
+  std::vector<T> Convert(TClonesArray* arr)
+  {
 
     std::vector<T> vec;
     Int_t entries = arr->GetEntriesFast();
     if (entries > 0) {
       T* point = static_cast<T*>(arr->At(0));
-      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
-                << entries;
+      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
     }
     for (int i = 0; i < entries; ++i) {
       T* point = static_cast<T*>(arr->At(i));
@@ -86,14 +86,14 @@ private:
 
 
   template<class T>
-  bool ConvertAndSend(TClonesArray* arr, int i) {
+  bool ConvertAndSend(TClonesArray* arr, int i)
+  {
 
     std::vector<T> vec;
     Int_t entries = arr->GetEntriesFast();
     if (entries > 0) {
       T* point = static_cast<T*>(arr->At(0));
-      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
-                << entries;
+      LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
     }
     for (int iEntries = 0; iEntries < entries; ++iEntries) {
       T* point = static_cast<T*>(arr->At(iEntries));
@@ -110,16 +110,12 @@ private:
     FairMQMessagePtr msg(NewMessage(
       const_cast<char*>(strMsg->c_str()),  // data
       strMsg->length(),                    // size
-      [](void* /*data*/, void* object) {
-        delete static_cast<std::string*>(object);
-      },
+      [](void* /*data*/, void* object) { delete static_cast<std::string*>(object); },
       strMsg));  // object that manages the data
 
     // TODO: Implement sending same data to more than one channel
     // Need to create new message (copy message??)
-    if (fComponentsToSend.at(i) > 1) {
-      LOG(info) << "Need to copy FairMessage";
-    }
+    if (fComponentsToSend.at(i) > 1) { LOG(info) << "Need to copy FairMessage"; }
 
     // in case of error or transfer interruption,
     // return false to go to IDLE state
@@ -136,13 +132,8 @@ private:
 
   std::chrono::steady_clock::time_point fTime {};
 
-  std::vector<std::string> fAllowedChannels = {"MvdPoint",
-                                               "StsPoint",
-                                               "RichPoint",
-                                               "MuchPoint",
-                                               "Trdpoint",
-                                               "TofPoint",
-                                               "PsdPoint"};
+  std::vector<std::string> fAllowedChannels = {"MvdPoint", "StsPoint", "RichPoint", "MuchPoint",
+                                               "Trdpoint", "TofPoint", "PsdPoint"};
 
   /*
     std::vector<std::string> fAllowedChannels 

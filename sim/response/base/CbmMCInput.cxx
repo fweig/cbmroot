@@ -28,7 +28,9 @@ CbmMCInput::CbmMCInput(TChain* chain, ECbmTreeAccess mode)
   , fMode(mode)
   , fBranches()
   , fLastUsedEntry(-1)
-  , fNofUsedEntries(0) {}
+  , fNofUsedEntries(0)
+{
+}
 // ---------------------------------------------------------------------------
 
 
@@ -38,7 +40,8 @@ CbmMCInput::~CbmMCInput() {}
 
 
 // -----   Get branch list   -------------------------------------------------
-std::set<TString>& CbmMCInput::GetBranchList() {
+std::set<TString>& CbmMCInput::GetBranchList()
+{
 
   // At first call, read branch list from file
   if (fBranches.empty()) ReadBranches();
@@ -49,19 +52,17 @@ std::set<TString>& CbmMCInput::GetBranchList() {
 
 
 // -----   Get next entry from chain   ---------------------------------------
-Int_t CbmMCInput::GetNextEntry() {
+Int_t CbmMCInput::GetNextEntry()
+{
 
   assert(fChain);
 
   // Determine entry number to be retrieved
   Int_t entry = -1;
-  if (fMode == ECbmTreeAccess::kRandom) {
-    entry = gRandom->Integer(GetNofEntries());
-  }  //? Random entry number
+  if (fMode == ECbmTreeAccess::kRandom) { entry = gRandom->Integer(GetNofEntries()); }  //? Random entry number
   else {
     entry = fLastUsedEntry + 1;
-    if (entry >= GetNofEntries())
-      entry = (fMode == ECbmTreeAccess::kRepeat ? 0 : -1);
+    if (entry >= GetNofEntries()) entry = (fMode == ECbmTreeAccess::kRepeat ? 0 : -1);
   }  //? Sequential entry number
 
   // Stop run when entryId is -1. This happens when mode is kRegular and
@@ -71,8 +72,7 @@ Int_t CbmMCInput::GetNextEntry() {
   // Get entry from chain
   assert(entry >= 0 && entry < GetNofEntries());  // Just to make sure...
   Int_t nBytes = fChain->GetEntry(entry);
-  if (nBytes <= 0)
-    LOG(warn) << "InputChain: " << nBytes << " Bytes read from tree!";
+  if (nBytes <= 0) LOG(warn) << "InputChain: " << nBytes << " Bytes read from tree!";
   fLastUsedEntry = entry;
   fNofUsedEntries++;
 
@@ -82,7 +82,8 @@ Int_t CbmMCInput::GetNextEntry() {
 
 
 // -----   Get list of data branches from file   -----------------------------
-UInt_t CbmMCInput::ReadBranches() {
+UInt_t CbmMCInput::ReadBranches()
+{
 
   fBranches.clear();
   TList* listFile = dynamic_cast<TList*>(fChain->GetFile()->Get("BranchList"));

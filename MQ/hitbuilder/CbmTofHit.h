@@ -11,6 +11,7 @@
 #define CBMTOFHIT_H_
 
 #include "CbmPixelHit.h"
+
 #include "TMath.h"
 
 #include <boost/serialization/access.hpp>
@@ -26,44 +27,23 @@ public:
   /**
    * \brief Constructor with hit parameters (1b).
    **/
-  CbmTofHit(Int_t address,
-            TVector3 pos,
-            TVector3 dpos,
-            Int_t refIndex,
-            Double_t time,
-            Double_t dtime,
-            Int_t flag,
+  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t time, Double_t dtime, Int_t flag,
             Int_t channel);
 
   /**
    * \brief Constructor with hit parameters (1a).
    **/
-  CbmTofHit(Int_t address,
-            TVector3 pos,
-            TVector3 dpos,
-            Int_t refIndex,
-            Double_t tof,
-            Int_t flag,
-            Int_t channel);
+  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof, Int_t flag, Int_t channel);
 
   /**
    * \brief Constructor with hit parameters (1).
    **/
-  CbmTofHit(Int_t address,
-            TVector3 pos,
-            TVector3 dpos,
-            Int_t refIndex,
-            Double_t tof,
-            Int_t flag);
+  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof, Int_t flag);
 
   /**
    * \brief Constructor with hit parameters (2) [not the flag]
    **/
-  CbmTofHit(Int_t address,
-            TVector3 pos,
-            TVector3 dpos,
-            Int_t refIndex,
-            Double_t tof);
+  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof);
 
   /**
    * \brief Destructor.
@@ -84,16 +64,10 @@ public:
   Int_t GetFlag() const { return fFlag; }
   Int_t GetCh() const { return fChannel; }
 
-  Double_t GetR() const {
-    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY() + GetZ() * GetZ());
-  }
-  Double_t GetRt() const {
-    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY());
-  }
+  Double_t GetR() const { return TMath::Sqrt(GetX() * GetX() + GetY() * GetY() + GetZ() * GetZ()); }
+  Double_t GetRt() const { return TMath::Sqrt(GetX() * GetX() + GetY() * GetY()); }
   Double_t GetCosThe() const { return GetZ() / GetR(); }
-  Double_t GetSinThe() const {
-    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY()) / GetR();
-  }
+  Double_t GetSinThe() const { return TMath::Sqrt(GetX() * GetX() + GetY() * GetY()) / GetR(); }
   Double_t GetCosPhi() const { return GetX() / GetRt(); }
   Double_t GetSinPhi() const { return GetY() / GetRt(); }
 
@@ -113,7 +87,8 @@ private:
   friend class boost::serialization::access;
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fFlag;
     ar& fChannel;
   }

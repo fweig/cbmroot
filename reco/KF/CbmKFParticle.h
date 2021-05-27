@@ -42,32 +42,18 @@ public:
 
   float fieldRegion[10];
 
-  CbmKFParticle()
-    : fId(-1)
-    , fDaughtersIds()
-    , fPDG(0)
-    , NDF(0)
-    , Chi2(0)
-    , Q(0)
-    , AtProductionVertex(0) {};
-  CbmKFParticle(CbmKFTrackInterface* Track,
-                Double_t* z0 = 0,
-                Int_t* qHypo = 0,
-                Int_t* pdg   = 0);
+  CbmKFParticle() : fId(-1), fDaughtersIds(), fPDG(0), NDF(0), Chi2(0), Q(0), AtProductionVertex(0) {};
+  CbmKFParticle(CbmKFTrackInterface* Track, Double_t* z0 = 0, Int_t* qHypo = 0, Int_t* pdg = 0);
 
   ~CbmKFParticle() {};
 
   // Construction
 
-  void Construct(std::vector<CbmKFTrackInterface*>& vDaughters,
-                 CbmKFVertexInterface* Parent = 0,
-                 Double_t Mass                = -1,
-                 Double_t CutChi2             = -1);
+  void Construct(std::vector<CbmKFTrackInterface*>& vDaughters, CbmKFVertexInterface* Parent = 0, Double_t Mass = -1,
+                 Double_t CutChi2 = -1);
 
-  void ConstructFromKFParticle(std::vector<CbmKFParticle*>& vDaughters,
-                               CbmKFVertexInterface* Parent = 0,
-                               Double_t Mass                = -1,
-                               Double_t CutChi2             = -1);
+  void ConstructFromKFParticle(std::vector<CbmKFParticle*>& vDaughters, CbmKFVertexInterface* Parent = 0,
+                               Double_t Mass = -1, Double_t CutChi2 = -1);
 
   // Transportation
 
@@ -142,12 +128,8 @@ public:
   int GetPDG() const { return fPDG; }
 
 protected:
-  Double_t& Cij(Int_t i, Int_t j) {
-    return C[(j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i];
-  }
-  static Int_t IJ(Int_t i, Int_t j) {
-    return (j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i;
-  }
+  Double_t& Cij(Int_t i, Int_t j) { return C[(j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i]; }
+  static Int_t IJ(Int_t i, Int_t j) { return (j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i; }
 
   void MeasureMass(Double_t r0[], Double_t Mass);
   void MeasureProductionVertex(Double_t r0[], CbmKFVertexInterface* Parent);

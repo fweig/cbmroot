@@ -4,7 +4,8 @@
  ** Analysis
  */
 
-void ana(Int_t runID, Int_t fileID) {
+void ana(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy2014
 
   TString runN    = TString::Itoa(runID, 10);
@@ -22,8 +23,7 @@ void ana(Int_t runID, Int_t fileID) {
   TString inFile = Dir + "hits.run" + runN + "_" + fileN + ".root";
 
   // --- Specify output file name (this is just an example)
-  TString outFile =
-    Dir + "ana_50chi2_50x50bin.run" + runN + "_" + fileN + ".root";
+  TString outFile  = Dir + "ana_50chi2_50x50bin.run" + runN + "_" + fileN + ".root";
   TString algnFile = Dir + "alignment.run" + runN + ".root";
   //outFile = Dir + "ana_1stripCluster_20-28channelsSTS1_58x116bin.run" + runN + "_" + fileN + ".root";
 
@@ -64,8 +64,7 @@ void ana(Int_t runID, Int_t fileID) {
   // --- Residuals & correlations
   StsCosyAnalysis* analysis = new StsCosyAnalysis();
   analysis->SetAlignFileName(algnFile);
-  if (cutFile != "")
-    analysis->SetCutFileName(cutFile);
+  if (cutFile != "") analysis->SetCutFileName(cutFile);
   else {
     analysis->SetTimeLimit(t_limits);
     analysis->SetTimeShift(t_shifts);
@@ -94,8 +93,7 @@ void ana(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> analysis: Macro finished successfully." << std::endl;
   std::cout << ">>> analysis: Output file is " << outFile << std::endl;
-  std::cout << ">>> analysis: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> analysis: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -33,7 +33,8 @@
 //
 
 
-void setup_sis100_electron() {
+void setup_sis100_electron()
+{
 
   // -----  Geometry Tags  --------------------------------------------------
   TString magnetGeoTag = "v15a";
@@ -65,8 +66,7 @@ void setup_sis100_electron() {
   // -----  Create setup  ---------------------------------------------------
   CbmSetup* setup = CbmSetup::Instance();
   if (!setup->IsEmpty()) {
-    std::cout << "-W- setup_sis100_electron: overwriting existing setup"
-              << setup->GetTitle() << std::endl;
+    std::cout << "-W- setup_sis100_electron: overwriting existing setup" << setup->GetTitle() << std::endl;
     setup->Clear();
   }
   setup->SetTitle("SIS100 - Electron Setup");

@@ -9,7 +9,8 @@
  **/
 
 
-Bool_t reconstruct() {
+Bool_t reconstruct()
+{
 
 
   // -----   Get the run instance   ------------------------------------------
@@ -19,8 +20,7 @@ Bool_t reconstruct() {
     return kFALSE;
   }
   std::cout << std::endl;
-  std::cout << "-I- Macro reconstruct.C called for run " << run->GetName()
-            << std::endl;
+  std::cout << "-I- Macro reconstruct.C called for run " << run->GetName() << std::endl;
   // -------------------------------------------------------------------------
 
 
@@ -34,8 +34,7 @@ Bool_t reconstruct() {
   // -----   Local reconstruction in MVD   ----------------------------------
   if (setup->IsActive(kMvd)) {
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
     std::cout << "-I- : Added task " << mvdCluster->GetName() << std::endl;
 
@@ -73,8 +72,7 @@ Bool_t reconstruct() {
 
     std::cout << geoTag(0, 4) << std::endl;
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile =
-      parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+    parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
     std::cout << "Using parameter file " << parFile << std::endl;
 
     // --- Hit finder for GEMs
@@ -91,8 +89,8 @@ Bool_t reconstruct() {
   // -----   Local reconstruction in TRD   ----------------------------------
   if (setup->IsActive(kTrd)) {
 
-    Double_t triggerThreshold = 0.5e-6;  // SIS100
-    Bool_t triangularPads     = false;  // Bucharest triangular pad-plane layout
+    Double_t triggerThreshold           = 0.5e-6;  // SIS100
+    Bool_t triangularPads               = false;   // Bucharest triangular pad-plane layout
     CbmTrdClusterFinderFast* trdCluster = new CbmTrdClusterFinderFast();
     trdCluster->SetNeighbourTrigger(true);
     trdCluster->SetTriggerThreshold(triggerThreshold);
@@ -112,8 +110,7 @@ Bool_t reconstruct() {
 
   // -----   Local reconstruction in TOF   ----------------------------------
   if (setup->IsActive(kTof)) {
-    CbmTofSimpClusterizer* tofCluster =
-      new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
     tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
     tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
     run->AddTask(tofCluster);

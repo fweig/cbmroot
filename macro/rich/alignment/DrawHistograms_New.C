@@ -1,15 +1,15 @@
 #include <iomanip>
 #include <vector>
 
-void DrawHistograms_New() {
+void DrawHistograms_New()
+{
   TH1F* Ref;
   TH1F* RotD_2;
   TH1F* RotD_4;
   TH1F* RotD_4_Trig;
   TString Histo_Name = "fhBoverAEllipse";
 
-  TString Path_Ref =
-    "/home/jordan/Documents/CbmRoot/Output_Files/Scint_Fing/Ref/Ref.root";
+  TString Path_Ref  = "/home/jordan/Documents/CbmRoot/Output_Files/Scint_Fing/Ref/Ref.root";
   TFile* Histograms = new TFile(Path_Ref, "READ");
   // cout << HistosFile << endl;
   Ref = (TH1F*) gDirectory->Get(Histo_Name);
@@ -23,9 +23,8 @@ void DrawHistograms_New() {
   TFile* Histograms = new TFile(Path_RotD_4, "READ");
   RotD_4            = (TH1F*) gDirectory->Get(Histo_Name);
 
-  TString Path_RotD_4_Trig =
-    "/home/jordan/Documents/CbmRoot/Output_Files/Cuts/RotX_4mradF_AaxisCut/"
-    "w_Trigger/RotX_4mradF_cuts_over.root";
+  TString Path_RotD_4_Trig = "/home/jordan/Documents/CbmRoot/Output_Files/Cuts/RotX_4mradF_AaxisCut/"
+                             "w_Trigger/RotX_4mradF_cuts_over.root";
   TFile* Histograms = new TFile(Path_RotD_4_Trig, "READ");
   RotD_4_Trig       = (TH1F*) gDirectory->Get(Histo_Name);
 

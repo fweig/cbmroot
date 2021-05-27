@@ -1,15 +1,7 @@
-void ana_digi_cos(Int_t nEvents      = 10000000,
-                  Int_t calMode      = 53,
-                  Int_t calSel       = 0,
-                  Int_t calSm        = 900,
-                  Int_t RefSel       = 1,
-                  TString cFileId    = "Test",
-                  Int_t iCalSet      = 910601600,
-                  Bool_t bOut        = 0,
-                  Int_t iSel2        = 0,
-                  Double_t dDeadtime = 50,
-                  TString cCalId     = "XXX",
-                  Int_t iBugCor      = 0) {
+void ana_digi_cos(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0, Int_t calSm = 900, Int_t RefSel = 1,
+                  TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0, Int_t iSel2 = 0,
+                  Double_t dDeadtime = 50, TString cCalId = "XXX", Int_t iBugCor = 0)
+{
   Int_t iVerbose = 1;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
@@ -29,13 +21,11 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
    cout << "workdir = "<< workDir.Data() << endl;
    return;
   */
-  TString paramDir  = workDir + "/macro/beamtime/mcbm2018/";
-  TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
-  TString InputFile = paramDir + "data/" + cFileId + ".root";
-  TString OutputFile =
-    paramDir + "data/digidev_" + cFileId
-    + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime) + cCalId
-    + ".out.root";
+  TString paramDir   = workDir + "/macro/beamtime/mcbm2018/";
+  TString ParFile    = paramDir + "data/" + cFileId + ".params.root";
+  TString InputFile  = paramDir + "data/" + cFileId + ".root";
+  TString OutputFile = paramDir + "data/digidev_" + cFileId + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime)
+                       + cCalId + ".out.root";
 
   TList* parFileList = new TList();
 
@@ -43,18 +33,16 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
   TString TofGeo = "v18j_cosmicHD";
   cout << "Geometry version " << TofGeo << endl;
 
-  TObjString* tofDigiFile = new TObjString(
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
+  TObjString* tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
   parFileList->Add(tofDigiFile);
 
   //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+  TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
   parFileList->Add(tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -73,28 +61,22 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
   //run->AddFriend(InputFile.Data());
   run->SetOutputFile(OutputFile);
 
-  CbmTofCosmicClusterizer* tofCosmicClust =
-    new CbmTofCosmicClusterizer("TOF Cosmic Clusterizer", iVerbose, bOut);
+  CbmTofCosmicClusterizer* tofCosmicClust = new CbmTofCosmicClusterizer("TOF Cosmic Clusterizer", iVerbose, bOut);
 
   tofCosmicClust->SetCalMode(calMode);
   tofCosmicClust->SetCalSel(calSel);
-  tofCosmicClust->SetCaldXdYMax(30.);  // geometrical matching window in cm
-  tofCosmicClust->SetCalCluMulMax(
-    3.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofCosmicClust->SetCalRpc(calSm);  // select detector for calibration update
-  tofCosmicClust->SetTRefId(
-    RefSel);                       // reference trigger for offset calculation
-  tofCosmicClust->SetTotMax(20.);  // Tot upper limit for walk corection
-  tofCosmicClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
-  tofCosmicClust->SetTotPreRange(
-    5.);  // effective lower Tot limit  in ns from peak position
+  tofCosmicClust->SetCaldXdYMax(30.);   // geometrical matching window in cm
+  tofCosmicClust->SetCalCluMulMax(3.);  // Max Counter Cluster Multiplicity for filling calib histos
+  tofCosmicClust->SetCalRpc(calSm);     // select detector for calibration update
+  tofCosmicClust->SetTRefId(RefSel);    // reference trigger for offset calculation
+  tofCosmicClust->SetTotMax(20.);       // Tot upper limit for walk corection
+  tofCosmicClust->SetTotMin(0.01);      //(12000.);  // Tot lower limit for walk correction
+  tofCosmicClust->SetTotPreRange(5.);   // effective lower Tot limit  in ns from peak position
   tofCosmicClust->SetTotMean(5.);       // Tot calibration target value in ns
   tofCosmicClust->SetMaxTimeDist(1.0);  // default cluster range in ns
   //tofCosmicClust->SetMaxTimeDist(0.);       //Deb// default cluster range in ns
-  tofCosmicClust->SetDelTofMax(
-    60.);  // acceptance range for cluster distance in cm (!)
-  tofCosmicClust->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+  tofCosmicClust->SetDelTofMax(60.);              // acceptance range for cluster distance in cm (!)
+  tofCosmicClust->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
   tofCosmicClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofCosmicClust->SetEnableAvWalk(kFALSE);
   tofCosmicClust->SetYFitMin(1.E4);
@@ -103,18 +85,12 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%09d_%02d_%01dtofCosmicClust.hst.root",
-                        cFileId.Data(),
-                        iCalSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%09d_%02d_%01dtofCosmicClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
   tofCosmicClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofCosmicClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+  TString cOutFname = Form("tofCosmicClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
   tofCosmicClust->SetOutHstFileName(cOutFname);
 
-  TString cAnaFile =
-    Form("%s_%09d%03d_tofAnaCosmic.hst.root", cFileId.Data(), iCalSet, iSel2);
+  TString cAnaFile = Form("%s_%09d%03d_tofAnaCosmic.hst.root", cFileId.Data(), iCalSet, iSel2);
 
   switch (calMode) {
     case -1:                            // initial check of raw data
@@ -134,7 +110,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
       tofCosmicClust->PosYMaxScal(10.);    // in % of length
       tofCosmicClust->SetMaxTimeDist(0.);  // no cluster building
       break;
-    case 1:  // save offsets, update walks, for diamonds
+    case 1:                             // save offsets, update walks, for diamonds
       tofCosmicClust->SetTotMax(256.);  // range in bin number
       tofCosmicClust->SetTotPreRange(256.);
       tofCosmicClust->SetTRefDifMax(6.25);  // in ns
@@ -254,16 +230,12 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
       tofCosmicClust->SetTRefDifMax(0.9);  // in ns
       tofCosmicClust->PosYMaxScal(0.75);   //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofCosmicClust);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF Cosmic Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF Cosmic Analysis", iVerbose);
 
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetReqTrg(0);  // 0 - no selection
@@ -274,8 +246,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosY4Sel(0.5);    // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetDTDia(0.);        // Time difference to additional diamond
   tofAnaTestbeam->SetCorMode(RefSel);  // 1 - DTD4, 2 - X4
   tofAnaTestbeam->SetMul0Max(30);      // Max Multiplicity in dut
@@ -284,8 +255,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
   tofAnaTestbeam->SetEnableMatchPosScaling(kFALSE);
 
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
   tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
   tofAnaTestbeam->SetTShift(0.);      // Shift DTD4 to 0
@@ -301,7 +271,8 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
   if (iSel2 == 0) {
     iRSel = iBRef;  // use diamond
     iSel2 = iBRef;
-  } else {
+  }
+  else {
     if (iSel2 < 0) iSel2 = -iSel2;
     iRSel = iSel2;
   }
@@ -321,12 +292,9 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
     tofCosmicClust->SetSel2Sm(iSel2Sm);
     tofCosmicClust->SetSel2Rpc(iSel2Rpc);
 
-    tofAnaTestbeam->SetMrpcSel2(
-      iSel2);  // initialization of second selector Mrpc Type
-    tofAnaTestbeam->SetMrpcSel2Sm(
-      iSel2Sm);  // initialization of second selector Mrpc SmId
-    tofAnaTestbeam->SetMrpcSel2Rpc(
-      iSel2Rpc);  // initialization of second selector Mrpc RpcId
+    tofAnaTestbeam->SetMrpcSel2(iSel2);        // initialization of second selector Mrpc Type
+    tofAnaTestbeam->SetMrpcSel2Sm(iSel2Sm);    // initialization of second selector Mrpc SmId
+    tofAnaTestbeam->SetMrpcSel2Rpc(iSel2Rpc);  // initialization of second selector Mrpc RpcId
   }
 
   Int_t iRef    = iSet % 1000;
@@ -378,10 +346,8 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
             break;
 
           case 9:
-            tofAnaTestbeam->SetChi2Lim(
-              100.);  // initialization of Chi2 selection limit
-            tofAnaTestbeam->SetMulDMax(
-              3);  // Max Multiplicity in BeamRef // Diamond
+            tofAnaTestbeam->SetChi2Lim(100.);  // initialization of Chi2 selection limit
+            tofAnaTestbeam->SetMulDMax(3);     // Max Multiplicity in BeamRef // Diamond
             tofAnaTestbeam->SetTShift(0.1);    // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(16.);    // Shift DTD4 to physical value
             tofAnaTestbeam->SetSel2TOff(0.5);  // Shift Sel2 time peak to 0
@@ -390,26 +356,23 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
           default:;
         }
 
-        tofAnaTestbeam->SetChi2Lim(
-          30.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(30.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(1.5);
         tofAnaTestbeam->SetDYWidth(1.5);
-        tofAnaTestbeam->SetDTWidth(120.);  // in ps
-        tofAnaTestbeam->SetCh4Sel(15);     // Center of channel selection window
-        tofAnaTestbeam->SetDCh4Sel(3);     // Width  of channel selection window
-        tofAnaTestbeam->SetPosY4Sel(
-          0.25);  // Y Position selection in fraction of strip length
-        tofAnaTestbeam->SetMulDMax(1);  // Max Multiplicity in Diamond
-        tofAnaTestbeam->SetMul0Max(4);  // Max Multiplicity in dut
-        tofAnaTestbeam->SetMul4Max(4);  // Max Multiplicity in Ref - RPC
+        tofAnaTestbeam->SetDTWidth(120.);   // in ps
+        tofAnaTestbeam->SetCh4Sel(15);      // Center of channel selection window
+        tofAnaTestbeam->SetDCh4Sel(3);      // Width  of channel selection window
+        tofAnaTestbeam->SetPosY4Sel(0.25);  // Y Position selection in fraction of strip length
+        tofAnaTestbeam->SetMulDMax(1);      // Max Multiplicity in Diamond
+        tofAnaTestbeam->SetMul0Max(4);      // Max Multiplicity in dut
+        tofAnaTestbeam->SetMul4Max(4);      // Max Multiplicity in Ref - RPC
         break;
 
       case 920300:
       case 921300:
         switch (iRSel) {
           case 5:
-            tofAnaTestbeam->SetMulDMax(
-              1);  // Max Multiplicity in BeamRef // Diamond
+            tofAnaTestbeam->SetMulDMax(1);    // Max Multiplicity in BeamRef // Diamond
             tofAnaTestbeam->SetTShift(0.2);   // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(16.);   // Shift DTD4 to physical value
             tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
@@ -423,26 +386,23 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          30.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(30.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(2.);
         tofAnaTestbeam->SetDYWidth(2.);
-        tofAnaTestbeam->SetDTWidth(0.2);  // in ps
-        tofAnaTestbeam->SetCh4Sel(15);    // Center of channel selection window
-        tofAnaTestbeam->SetDCh4Sel(10);   // Width  of channel selection window
-        tofAnaTestbeam->SetPosY4Sel(
-          0.5);  // Y Position selection in fraction of strip length
-        tofAnaTestbeam->SetMulDMax(1);  // Max Multiplicity in Diamond
-        tofAnaTestbeam->SetMul0Max(3);  // Max Multiplicity in dut
-        tofAnaTestbeam->SetMul4Max(3);  // Max Multiplicity in Ref - RPC
+        tofAnaTestbeam->SetDTWidth(0.2);   // in ps
+        tofAnaTestbeam->SetCh4Sel(15);     // Center of channel selection window
+        tofAnaTestbeam->SetDCh4Sel(10);    // Width  of channel selection window
+        tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+        tofAnaTestbeam->SetMulDMax(1);     // Max Multiplicity in Diamond
+        tofAnaTestbeam->SetMul0Max(3);     // Max Multiplicity in dut
+        tofAnaTestbeam->SetMul4Max(3);     // Max Multiplicity in Ref - RPC
         break;
 
       case 920400:
       case 921400:
         switch (iRSel) {
           case 5:
-            tofAnaTestbeam->SetMulDMax(
-              1);  // Max Multiplicity in BeamRef // Diamond
+            tofAnaTestbeam->SetMulDMax(1);    // Max Multiplicity in BeamRef // Diamond
             tofAnaTestbeam->SetTShift(0.2);   // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(16.);   // Shift DTD4 to physical value
             tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
@@ -456,18 +416,16 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          30.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(30.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(2.);
         tofAnaTestbeam->SetDYWidth(2.);
-        tofAnaTestbeam->SetDTWidth(0.2);  // in ps
-        tofAnaTestbeam->SetCh4Sel(8);     // Center of channel selection window
-        tofAnaTestbeam->SetDCh4Sel(10);   // Width  of channel selection window
-        tofAnaTestbeam->SetPosY4Sel(
-          0.5);  // Y Position selection in fraction of strip length
-        tofAnaTestbeam->SetMulDMax(1);   // Max Multiplicity in Diamond
-        tofAnaTestbeam->SetMul0Max(30);  // Max Multiplicity in dut
-        tofAnaTestbeam->SetMul4Max(30);  // Max Multiplicity in Ref - RPC
+        tofAnaTestbeam->SetDTWidth(0.2);   // in ps
+        tofAnaTestbeam->SetCh4Sel(8);      // Center of channel selection window
+        tofAnaTestbeam->SetDCh4Sel(10);    // Width  of channel selection window
+        tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+        tofAnaTestbeam->SetMulDMax(1);     // Max Multiplicity in Diamond
+        tofAnaTestbeam->SetMul0Max(30);    // Max Multiplicity in dut
+        tofAnaTestbeam->SetMul4Max(30);    // Max Multiplicity in Ref - RPC
         break;
 
       case 300920:
@@ -486,8 +444,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          1.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(1.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(2.);
         tofAnaTestbeam->SetDYWidth(2.);
         tofAnaTestbeam->SetDTWidth(0.5);  // in ps
@@ -513,8 +470,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          10.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(10.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(1.);
         tofAnaTestbeam->SetDYWidth(2.);
         tofAnaTestbeam->SetDTWidth(0.1);  // in ps
@@ -559,10 +515,8 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          5.);  // initialization of Chi2 selection limit
-        tofAnaTestbeam->SetChi2Lim2(
-          3.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(5.);   // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim2(3.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(0.5);
         tofAnaTestbeam->SetDYWidth(0.8);
         tofAnaTestbeam->SetDTWidth(0.08);  // in ns
@@ -597,8 +551,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          10.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(10.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(1.0);
         tofAnaTestbeam->SetDYWidth(2.0);
         tofAnaTestbeam->SetDTWidth(0.15);  // in ps
@@ -622,8 +575,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          40.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(40.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(1.0);
         tofAnaTestbeam->SetDYWidth(2.0);
         tofAnaTestbeam->SetDTWidth(0.15);  // in ps
@@ -664,10 +616,8 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
 
           default:;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          10.);  // initialization of Chi2 selection limit
-        tofAnaTestbeam->SetChi2Lim2(
-          3.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(10.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim2(3.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(1.0);
         tofAnaTestbeam->SetDYWidth(2.0);
         tofAnaTestbeam->SetDTWidth(0.15);  // in ns
@@ -735,10 +685,8 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
             tofAnaTestbeam->SetSel2TOff(0.13);  // Shift Sel2 time peak to 0
             break;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          10.);  // initialization of Chi2 selection limit
-        tofAnaTestbeam->SetChi2Lim2(
-          50.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(10.);   // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim2(50.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(0.5);
         tofAnaTestbeam->SetDYWidth(1.);
         tofAnaTestbeam->SetDTWidth(0.1);  // in ps
@@ -768,8 +716,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
             tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
             break;
         }
-        tofAnaTestbeam->SetChi2Lim(
-          5.);  // initialization of Chi2 selection limit
+        tofAnaTestbeam->SetChi2Lim(5.);  // initialization of Chi2 selection limit
         tofAnaTestbeam->SetDXWidth(0.5);
         tofAnaTestbeam->SetDYWidth(1.);
         tofAnaTestbeam->SetDTWidth(0.1);  // in ps
@@ -872,10 +819,7 @@ void ana_digi_cos(Int_t nEvents      = 10000000,
       gInterpreter->ProcessLine("pl_all_CluMul()");
       gInterpreter->ProcessLine("pl_all_CluRate()");
       gInterpreter->ProcessLine("pl_all_dTSel()");
-      TString FSave = Form("save_hst(\"cosdev-status%d_%d_Cal_%s.hst.root\")",
-                           iCalSet,
-                           iSel2in,
-                           cCalId.Data());
+      TString FSave = Form("save_hst(\"cosdev-status%d_%d_Cal_%s.hst.root\")", iCalSet, iSel2in, cCalId.Data());
       gInterpreter->ProcessLine(FSave.Data());
       //gInterpreter->ProcessLine("pl_over_MatD4sel()");
       break;

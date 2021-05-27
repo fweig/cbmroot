@@ -8,7 +8,8 @@
 //
 // --------------------------------------------------------------------------
 
-void make_geofile(TString stofGeom = "tof_v16a_1e") {
+void make_geofile(TString stofGeom = "tof_v16a_1e")
+{
   Int_t nEvents = 1;
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -193,8 +194,7 @@ void make_geofile(TString stofGeom = "tof_v16a_1e") {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

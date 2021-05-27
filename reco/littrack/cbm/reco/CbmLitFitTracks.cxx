@@ -5,10 +5,9 @@
  */
 
 #include "CbmLitFitTracks.h"
+
 #include "CbmStsTrack.h"
 #include "CbmTrack.h"
-#include "FairRootManager.h"
-#include "FairTrackParam.h"
 #include "base/CbmLitPtrTypes.h"
 #include "base/CbmLitToolFactory.h"
 #include "base/CbmLitTypes.h"
@@ -16,6 +15,9 @@
 #include "cbm/utils/CbmLitConverterFairTrackParam.h"
 #include "std/data/CbmLitTrack.h"
 #include "std/utils/CbmLitMemoryManagment.h"
+
+#include "FairRootManager.h"
+#include "FairTrackParam.h"
 
 #include "TClonesArray.h"
 
@@ -37,11 +39,14 @@ CbmLitFitTracks::CbmLitFitTracks()
   , fTrdTracks(NULL)
   , fMuchPixelHits(NULL)
   , fMuchStrawHits(NULL)
-  , fTrdHits(NULL) {}
+  , fTrdHits(NULL)
+{
+}
 
 CbmLitFitTracks::~CbmLitFitTracks() {}
 
-InitStatus CbmLitFitTracks::Init() {
+InitStatus CbmLitFitTracks::Init()
+{
   ReadDataBranches();
 
   fFitWatch.Reset();
@@ -50,7 +55,8 @@ InitStatus CbmLitFitTracks::Init() {
   return kSUCCESS;
 }
 
-void CbmLitFitTracks::Exec(Option_t* opt) {
+void CbmLitFitTracks::Exec(Option_t* opt)
+{
   static Int_t eventNo = 0;
   std::cout << "CbmLitFitTracks::Exec: eventNo=" << eventNo++ << std::endl;
 
@@ -59,7 +65,8 @@ void CbmLitFitTracks::Exec(Option_t* opt) {
 
 void CbmLitFitTracks::Finish() { PrintStopwatchStatistics(); }
 
-void CbmLitFitTracks::ReadDataBranches() {
+void CbmLitFitTracks::ReadDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman != NULL);
 
@@ -72,7 +79,8 @@ void CbmLitFitTracks::ReadDataBranches() {
   fTrdHits       = (TClonesArray*) ioman->GetObject("TrdHit");
 }
 
-void CbmLitFitTracks::DoFit() {
+void CbmLitFitTracks::DoFit()
+{
   static Bool_t firstTime = true;
   static TrackFitterPtr fitter;
   if (firstTime) {
@@ -85,23 +93,19 @@ void CbmLitFitTracks::DoFit() {
   // Convert input data
   TrackPtrVector ltracks;
   HitPtrVector lhits;
-  CbmLitConverter::HitArrayToHitVector(
-    0, ECbmDataType::kTrdHit, fTrdHits, lhits);
+  CbmLitConverter::HitArrayToHitVector(0, ECbmDataType::kTrdHit, fTrdHits, lhits);
   CbmLitConverter::CbmTrackArrayToCbmLitTrackArray(fTrdTracks, lhits, ltracks);
 
   // Replace first track parameter of the converted tracks with the last STS track parameter
   Int_t nofTracks = ltracks.size();
   for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
-    CbmLitTrack* track = ltracks[iTrack];
-    Int_t stsTrackId   = track->GetPreviousTrackId();
-    CbmStsTrack* stsTrack =
-      static_cast<CbmStsTrack*>(fStsTracks->At(stsTrackId));
+    CbmLitTrack* track    = ltracks[iTrack];
+    Int_t stsTrackId      = track->GetPreviousTrackId();
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsTrackId));
     CbmTrackParam cbmLPar;
-    cbmLPar.Set(
-      *stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    cbmLPar.Set(*stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
     CbmLitTrackParam lpar;
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmLPar,
-                                                                    &lpar);
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmLPar, &lpar);
     track->SetParamFirst(&lpar);
     track->SetPDG(211);
   }
@@ -118,10 +122,8 @@ void CbmLitFitTracks::DoFit() {
     CbmLitTrack* track = ltracks[iTrack];
     CbmTrack* trdTrack = static_cast<CbmTrack*>(fTrdTracks->At(iTrack));
     FairTrackParam firstParam, lastParam;
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      track->GetParamFirst(), &firstParam);
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      track->GetParamLast(), &lastParam);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(track->GetParamFirst(), &firstParam);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(track->GetParamLast(), &lastParam);
     trdTrack->SetParamFirst(&firstParam);
     trdTrack->SetParamLast(&lastParam);
   }
@@ -135,17 +137,15 @@ void CbmLitFitTracks::DoFit() {
   fFitWithIOWatch.Stop();
 }
 
-void CbmLitFitTracks::PrintStopwatchStatistics() {
+void CbmLitFitTracks::PrintStopwatchStatistics()
+{
   cout << "CbmLitFitTracks::PrintStopwatchStatistics: " << endl;
-  cout << "fit without IO: counts=" << fFitWatch.Counter()
-       << ", real=" << fFitWatch.RealTime() / fFitWatch.Counter() << "/"
-       << fFitWatch.RealTime()
-       << " s, cpu=" << fFitWatch.CpuTime() / fFitWatch.Counter() << "/"
+  cout << "fit without IO: counts=" << fFitWatch.Counter() << ", real=" << fFitWatch.RealTime() / fFitWatch.Counter()
+       << "/" << fFitWatch.RealTime() << " s, cpu=" << fFitWatch.CpuTime() / fFitWatch.Counter() << "/"
        << fFitWatch.CpuTime() << endl;
   cout << "fit with IO: counts=" << fFitWithIOWatch.Counter()
-       << ", real=" << fFitWithIOWatch.RealTime() / fFitWithIOWatch.Counter()
-       << "/" << fFitWithIOWatch.RealTime()
-       << " s, cpu=" << fFitWithIOWatch.CpuTime() / fFitWithIOWatch.Counter()
-       << "/" << fFitWithIOWatch.CpuTime() << endl;
+       << ", real=" << fFitWithIOWatch.RealTime() / fFitWithIOWatch.Counter() << "/" << fFitWithIOWatch.RealTime()
+       << " s, cpu=" << fFitWithIOWatch.CpuTime() / fFitWithIOWatch.Counter() << "/" << fFitWithIOWatch.CpuTime()
+       << endl;
 }
 ClassImp(CbmLitFitTracks);

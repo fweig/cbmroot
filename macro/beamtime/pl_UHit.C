@@ -1,9 +1,5 @@
-void pl_UHit(Int_t iNSt     = 10,
-             Int_t iOpt     = 0,
-             Int_t i2D      = 0,
-             Int_t i1D      = 0,
-             Double_t dXmax = 0.,
-             Double_t dXmin = 0.) {
+void pl_UHit(Int_t iNSt = 10, Int_t iOpt = 0, Int_t i2D = 0, Int_t i1D = 0, Double_t dXmax = 0., Double_t dXmin = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can;
@@ -14,7 +10,8 @@ void pl_UHit(Int_t iNSt     = 10,
       cout << "No pointer to Canvas, return" << endl;
       return;
     }
-  } else {
+  }
+  else {
     can = new TCanvas("can", "can", 50, 0, 800, 800);
     if (iOpt < 100) can->Divide(3, 4);
     gPad->SetFillColor(0);
@@ -64,16 +61,17 @@ void pl_UHit(Int_t iNSt     = 10,
       can->cd(iPadLoc[iSt]);
       hname = Form("%s%d", hsrc.Data(), iSt);
       h3f   = (TH3*) gROOT->FindObjectAny(hname);
-      cout << hname.Data() << " with pointer  " << h3f << " at iCan = " << iCan
-           << endl;
+      cout << hname.Data() << " with pointer  " << h3f << " at iCan = " << iCan << endl;
       if (h3f != NULL) {
         h2 = (TH2*) h3f->Project3D(c2D.Data());
         h2->SetTitle(Form("%s", h2->GetName()));
         h2->Draw("colz");
-      } else
+      }
+      else
         cout << hname << " not found" << endl;
     }
-  } else  // 1D projections
+  }
+  else  // 1D projections
   {
     for (Int_t iSt = 0; iSt < iNSt; iSt++) {
       can->cd(iPadLoc[iSt]);
@@ -84,12 +82,8 @@ void pl_UHit(Int_t iNSt     = 10,
       //cout << hname.Data() <<" with pointer  "<<h3f<<" at iCan = "<<iCan<<endl;
       if (h3f != NULL) {
         switch (iOpt) {
-          case 1:
-            h = (TH1*) h3f->Project3DProfile(c2D.Data())->ProfileX();
-            break;
-          case 2:
-            h = (TH1*) h3f->Project3DProfile(c2D.Data())->ProfileY();
-            break;
+          case 1: h = (TH1*) h3f->Project3DProfile(c2D.Data())->ProfileX(); break;
+          case 2: h = (TH1*) h3f->Project3DProfile(c2D.Data())->ProfileY(); break;
           case 3: break;
 
           case 10: h = (TH1*) h3f->ProjectionX(); break;
@@ -112,51 +106,46 @@ void pl_UHit(Int_t iNSt     = 10,
             h     = (TH1*) h3f->ProjectionZ();
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
-            cout << " Got  " << NHits << " normalisation hits from histo "
-                 << hn->GetName() << " => probability = " << dProb << endl;
+            cout << " Got  " << NHits << " normalisation hits from histo " << hn->GetName()
+                 << " => probability = " << dProb << endl;
             h->Scale(1. / NHits);
             break;
 
           case 30:
-            h = (TH1*) h3f->ProjectionX(
-              Form("%s%s", h3f->GetName(), "_pz_prompt"), 1, 11, 51, 51);
+            h     = (TH1*) h3f->ProjectionX(Form("%s%s", h3f->GetName(), "_pz_prompt"), 1, 11, 51, 51);
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
             h->Scale(1. / NHits);
             break;
           case 31:
-            h = (TH1*) h3f->ProjectionY(
-              Form("%s%s", h3f->GetName(), "_pz_prompt"), 1, 11, 51, 51);
+            h     = (TH1*) h3f->ProjectionY(Form("%s%s", h3f->GetName(), "_pz_prompt"), 1, 11, 51, 51);
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
             h->Scale(1. / NHits);
             break;
           case 32:
             //h = (TH1 *)h3f->ProjectionZ(Form("%s%s",h3f->GetName(),"_pzcen"),6,6,6,6);
-            h = (TH1*) h3f->ProjectionZ(
-              Form("%s%s", h3f->GetName(), "_pzcen"), 5, 7, 5, 7);
+            h     = (TH1*) h3f->ProjectionZ(Form("%s%s", h3f->GetName(), "_pzcen"), 5, 7, 5, 7);
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
-            cout << " Got  " << NHits << " normalisation hits from histo "
-                 << hn->GetName() << " => probability = " << dProb << endl;
+            cout << " Got  " << NHits << " normalisation hits from histo " << hn->GetName()
+                 << " => probability = " << dProb << endl;
             h->Scale(1. / NHits);
             break;
           case 33:
-            h = (TH1*) h3f->ProjectionZ(
-              Form("%s%s", h3f->GetName(), "_pzxl"), 6, 6, 1, 11);
+            h     = (TH1*) h3f->ProjectionZ(Form("%s%s", h3f->GetName(), "_pzxl"), 6, 6, 1, 11);
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
-            cout << " Got  " << NHits << " normalisation hits from histo "
-                 << hn->GetName() << " => probability = " << dProb << endl;
+            cout << " Got  " << NHits << " normalisation hits from histo " << hn->GetName()
+                 << " => probability = " << dProb << endl;
             h->Scale(1. / NHits);
             break;
           case 34:
-            h = (TH1*) h3f->ProjectionZ(
-              Form("%s%s", h3f->GetName(), "_pzyl"), 1, 11, 6, 6);
+            h     = (TH1*) h3f->ProjectionZ(Form("%s%s", h3f->GetName(), "_pzyl"), 1, 11, 6, 6);
             NHits = hn->Integral();
             dProb = h->Integral() / NHits;
-            cout << " Got  " << NHits << " normalisation hits from histo "
-                 << hn->GetName() << " => probability = " << dProb << endl;
+            cout << " Got  " << NHits << " normalisation hits from histo " << hn->GetName()
+                 << " => probability = " << dProb << endl;
             h->Scale(1. / NHits);
             break;
 
@@ -188,18 +177,19 @@ void pl_UHit(Int_t iNSt     = 10,
             newpad->SetFillStyle(4000);
             newpad->Draw();
             newpad->cd();
-            TPaveLabel* tit = new TPaveLabel(
-              0.2, 0.75, 0.45, 0.9, Form(" prob  %5.3f ", dProb));
+            TPaveLabel* tit = new TPaveLabel(0.2, 0.75, 0.45, 0.9, Form(" prob  %5.3f ", dProb));
             tit->SetFillColor(0);
             tit->SetTextFont(52);
             tit->SetBorderSize(1);
             tit->Draw();
           }
-        } else {
+        }
+        else {
           h->Draw("same");
           h->SetLineColor(kRed);
         }
-      } else
+      }
+      else
         cout << hname << " not found" << endl;
     }
   }

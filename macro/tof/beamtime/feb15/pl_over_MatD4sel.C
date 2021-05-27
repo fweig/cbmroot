@@ -1,4 +1,5 @@
-void pl_over_MatD4sel() {
+void pl_over_MatD4sel()
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -30,7 +31,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -41,7 +43,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -52,7 +55,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -61,7 +65,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -69,9 +74,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hChiSel24";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -79,9 +83,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hDXSel24";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -89,9 +92,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hDYSel24";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -103,7 +105,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw();
     h1->Fit("gaus");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -115,7 +118,8 @@ void pl_over_MatD4sel() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -130,7 +134,8 @@ void pl_over_MatD4sel() {
       NEvents = h1->GetEntries();
       h1->SetLineColor(4);
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -141,7 +146,8 @@ void pl_over_MatD4sel() {
       h12->Draw("same");
       h12->SetLineColor(2);
       NEvents = h1->GetEntries();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -150,9 +156,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hXYSel2D4sel";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -160,9 +165,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hXY4D4sel";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -170,9 +174,8 @@ void pl_over_MatD4sel() {
   gROOT->cd();
   TString hname = "hXY0D4sel";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 

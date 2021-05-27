@@ -17,15 +17,13 @@
  ** of the target are marked as lines in the x-z histogram. 
  **/
 
-int mcbm_analyze_delta_electrons(TString dataSet    = "mcbm_beam",
-                                 Double_t beamAngle = 25.,
-                                 Double_t targetDz  = 0.025) {
+int mcbm_analyze_delta_electrons(TString dataSet = "mcbm_beam", Double_t beamAngle = 25., Double_t targetDz = 0.025)
+{
 
   TString inFile = "./" + dataSet + ".tra.root";
   TFile* input   = new TFile(inFile);
   if (!input) {
-    cout << "*** analyze_delta_electrons: Input file " << inFile
-         << " not found!\n"
+    cout << "*** analyze_delta_electrons: Input file " << inFile << " not found!\n"
          << "Be sure to run mcbm_transport_beam.C before!" << endl;
     exit(1);
   }
@@ -43,8 +41,7 @@ int mcbm_analyze_delta_electrons(TString dataSet    = "mcbm_beam",
 
   /* histogram creation */
 
-  TH1* h1 =
-    new TH1I("stsHisto", "STS points; number of points; count", 12, 0.0, 12.0);
+  TH1* h1 = new TH1I("stsHisto", "STS points; number of points; count", 12, 0.0, 12.0);
 
   for (Int_t event = 0; event < tree->GetEntriesFast(); event++) {
     tree->GetEntry(event);
@@ -77,15 +74,11 @@ int mcbm_analyze_delta_electrons(TString dataSet    = "mcbm_beam",
       cout << "PID :" << thisPoint->GetPid() << endl;
 
       if (thisPoint->GetPid() == 11) {
-        thisTrack =
-          static_cast<CbmMCTrack*>(mcTracks->At(thisPoint->GetTrackID()));
-        cout << "StartX = " << thisTrack->GetStartX()
-             << " , StartY = " << thisTrack->GetStartY()
+        thisTrack = static_cast<CbmMCTrack*>(mcTracks->At(thisPoint->GetTrackID()));
+        cout << "StartX = " << thisTrack->GetStartX() << " , StartY = " << thisTrack->GetStartY()
              << " , StartZ = " << thisTrack->GetStartZ() << endl;
         stsTrackList->Fill();
-        h3->Fill(thisTrack->GetStartX(),
-                 thisTrack->GetStartY(),
-                 thisTrack->GetStartZ());
+        h3->Fill(thisTrack->GetStartX(), thisTrack->GetStartY(), thisTrack->GetStartZ());
         h2xz->Fill(thisTrack->GetStartX(), thisTrack->GetStartZ());
         h2yz->Fill(thisTrack->GetStartY(), thisTrack->GetStartZ());
       }
@@ -93,8 +86,7 @@ int mcbm_analyze_delta_electrons(TString dataSet    = "mcbm_beam",
     cout << endl;
   }
 
-  TCanvas* hisCanvas =
-    new TCanvas("hisCanvas", "Histograms", 150, 10, 1200, 600);
+  TCanvas* hisCanvas = new TCanvas("hisCanvas", "Histograms", 150, 10, 1200, 600);
   hisCanvas->Divide(2, 1);
   hisCanvas->cd(1);
   gPad->SetGridx();

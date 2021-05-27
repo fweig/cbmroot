@@ -33,7 +33,8 @@
 //
 
 
-void setup_misalign_3mrad_XY() {
+void setup_misalign_3mrad_XY()
+{
 
   // -----  Geometry Tags  --------------------------------------------------
   TString magnetGeoTag = "v15a";
@@ -66,8 +67,7 @@ void setup_misalign_3mrad_XY() {
   // -----  Create setup  ---------------------------------------------------
   CbmSetup* setup = CbmSetup::Instance();
   if (!setup->IsEmpty()) {
-    std::cout << "-W- setup_align: overwriting existing setup"
-              << setup->GetTitle() << std::endl;
+    std::cout << "-W- setup_align: overwriting existing setup" << setup->GetTitle() << std::endl;
     setup->Clear();
   }
   setup->SetTitle("SIS100 - Electron Setup");

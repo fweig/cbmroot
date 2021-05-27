@@ -22,8 +22,7 @@
 
 using std::fabs;
 
-CbmMuchHitProducerIdeal::CbmMuchHitProducerIdeal(const char* digiFileName,
-                                                 Int_t Id)
+CbmMuchHitProducerIdeal::CbmMuchHitProducerIdeal(const char* digiFileName, Int_t Id)
   : FairTask("CbmMuchHitProducerIdeal")
   , fMuchPoints(NULL)
   , fMuchPixelHits(NULL)
@@ -32,21 +31,21 @@ CbmMuchHitProducerIdeal::CbmMuchHitProducerIdeal(const char* digiFileName,
   , fSigmaZ(0.)
   , fId(Id)
   , fDigiFile(digiFileName)
-  , fGeoScheme(NULL) {}
+  , fGeoScheme(NULL)
+{
+}
 
 CbmMuchHitProducerIdeal::~CbmMuchHitProducerIdeal() {}
 
-InitStatus CbmMuchHitProducerIdeal::Init() {
+InitStatus CbmMuchHitProducerIdeal::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  fMuchPoints    = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
-  fMuchPixelHits = new TClonesArray("CbmMuchPixelHit", 100);
-  ioman->Register("MuchPixelHit",
-                  "MUCH",
-                  fMuchPixelHits,
-                  IsOutputBranchPersistent("MuchPixelHit"));
+  fMuchPoints            = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
+  fMuchPixelHits         = new TClonesArray("CbmMuchPixelHit", 100);
+  ioman->Register("MuchPixelHit", "MUCH", fMuchPixelHits, IsOutputBranchPersistent("MuchPixelHit"));
 
   // Initialize GeoScheme
-  fGeoScheme          = CbmMuchGeoScheme::Instance();
+  fGeoScheme = CbmMuchGeoScheme::Instance();
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -63,14 +62,14 @@ InitStatus CbmMuchHitProducerIdeal::Init() {
   return kSUCCESS;
 }
 
-void CbmMuchHitProducerIdeal::Exec(Option_t*) {
+void CbmMuchHitProducerIdeal::Exec(Option_t*)
+{
   static Int_t eventNo = 0;
   fMuchPixelHits->Clear();
   Int_t iHit          = 0;
   Int_t nofMuchPoints = fMuchPoints->GetEntriesFast();
   for (Int_t iPoint = 0; iPoint < nofMuchPoints; iPoint++) {
-    const CbmMuchPoint* point =
-      static_cast<const CbmMuchPoint*>(fMuchPoints->At(iPoint));
+    const CbmMuchPoint* point = static_cast<const CbmMuchPoint*>(fMuchPoints->At(iPoint));
 
     // Smear position
     Double_t dX = gRandom->Gaus(0, fSigmaX);
@@ -81,15 +80,13 @@ void CbmMuchHitProducerIdeal::Exec(Option_t*) {
     dY = (fabs(dY) < 3 * fSigmaY) ? dY : (dY > 0) ? 3 * fSigmaY : -3 * fSigmaY;
     dZ = (fabs(dZ) < 3 * fSigmaZ) ? dZ : (dZ > 0) ? 3 * fSigmaZ : -3 * fSigmaZ;
 
-    TVector3 hitPos(
-      point->GetXIn() + dX, point->GetYIn() + dY, point->GetZIn() + dZ);
+    TVector3 hitPos(point->GetXIn() + dX, point->GetYIn() + dY, point->GetZIn() + dZ);
     TVector3 hitPosErr(fSigmaX, fSigmaY, fSigmaZ);
 
     Int_t address = point->GetDetectorID();
     Int_t planeId = fGeoScheme->GetLayerSideNr(address);
 
-    new ((*fMuchPixelHits)[iHit++])
-      CbmMuchPixelHit(address, hitPos, hitPosErr, 0, iPoint, planeId);
+    new ((*fMuchPixelHits)[iHit++]) CbmMuchPixelHit(address, hitPos, hitPosErr, 0, iPoint, planeId);
   }
   eventNo++;
   LOG(info) << "CbmMuchHitProducerIdeal::Exec: eventNo=" << eventNo << " nofPoints=" << fMuchPoints->GetEntriesFast()

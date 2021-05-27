@@ -18,41 +18,39 @@
 
 class CbmBinned4DStation : public CbmBinnedStation {
 public:
-  CbmBinned4DStation(ECbmModuleId stationType,
-                     Double_t minZ,
-                     Double_t maxZ,
-                     int nofZBins,
-                     int nofYBins,
-                     int nofXBins,
+  CbmBinned4DStation(ECbmModuleId stationType, Double_t minZ, Double_t maxZ, int nofZBins, int nofYBins, int nofXBins,
                      int nofTBins)
     : CbmBinnedStation(stationType, minZ, maxZ, nofYBins, nofXBins, nofTBins)
-    , fZBins(reinterpret_cast<CbmZBin*>(
-        new unsigned char[nofZBins * sizeof(CbmZBin)]))
+    , fZBins(reinterpret_cast<CbmZBin*>(new unsigned char[nofZBins * sizeof(CbmZBin)]))
     , fNofZBins(nofZBins)
     , fZBinSize(0)
     , fDtx(0)
     , fDtxSq(0)
     , fDty(0)
-    , fDtySq(0) {
+    , fDtySq(0)
+  {
     for (int i = 0; i < nofZBins; ++i)
       new (&fZBins[i]) CbmZBin(nofYBins, nofXBins, nofTBins);
   }
 
-  void SetDtx(Double_t v) {
+  void SetDtx(Double_t v)
+  {
     if (v > fDtx) {
       fDtx   = v;
       fDtxSq = v * v;
     }
   }
 
-  void SetDty(Double_t v) {
+  void SetDty(Double_t v)
+  {
     if (v > fDty) {
       fDty   = v;
       fDtySq = v * v;
     }
   }
 
-  void Clear() {
+  void Clear()
+  {
     fDtx   = 0;
     fDtxSq = 0;
     fDty   = 0;
@@ -81,7 +79,8 @@ public:
     }
   }
 
-  void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index) {
+  void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index)
+  {
     Double_t z = hit->GetZ();
 
     if (z < fMinZ || z >= fMaxZ) return;
@@ -122,7 +121,8 @@ public:
     }
   }
 
-  void IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit) {
+  void IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit)
+  {
     for (int i = 0; i < fNofZBins; ++i) {
       CbmZBin& zBin = fZBins[i];
 
@@ -143,9 +143,7 @@ public:
 
             if (!tBin.Use()) continue;
 
-            for (std::list<CbmTBin::HitHolder>::iterator hi = tBin.HitsBegin();
-                 hi != tBin.HitsEnd();
-                 ++hi) {
+            for (std::list<CbmTBin::HitHolder>::iterator hi = tBin.HitsBegin(); hi != tBin.HitsEnd(); ++hi) {
               CbmTBin::HitHolder& hitHolder = *hi;
 
               if (fStage > hitHolder.stage) continue;
@@ -158,53 +156,53 @@ public:
     }
   }
 
-  int GetZInd(Double_t v) const {
+  int GetZInd(Double_t v) const
+  {
     int ind = (v - fMinZ) / fZBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofZBins)
       ind = fNofZBins - 1;
 
     return ind;
   }
 
-  Double_t GetYEnterZ(int yInd, Double_t ty) const {
-    if (ty > 0)
-      return (fMinY + yInd * fYBinSize) / ty;
+  Double_t GetYEnterZ(int yInd, Double_t ty) const
+  {
+    if (ty > 0) return (fMinY + yInd * fYBinSize) / ty;
     else
       return (fMinY + (yInd + 1) * fYBinSize) / ty;
   }
 
-  Double_t GetYExitZ(int yInd, Double_t ty) const {
-    if (ty > 0)
-      return (fMinY + (yInd + 1) * fYBinSize) / ty;
+  Double_t GetYExitZ(int yInd, Double_t ty) const
+  {
+    if (ty > 0) return (fMinY + (yInd + 1) * fYBinSize) / ty;
     else
       return (fMinY + yInd * fYBinSize) / ty;
   }
 
-  Double_t GetXEnterZ(int xInd, Double_t tx) const {
-    if (tx > 0)
-      return (fMinX + xInd * fXBinSize) / tx;
+  Double_t GetXEnterZ(int xInd, Double_t tx) const
+  {
+    if (tx > 0) return (fMinX + xInd * fXBinSize) / tx;
     else
       return (fMinX + (xInd + 1) * fXBinSize) / tx;
   }
 
-  Double_t GetXExitZ(int xInd, Double_t tx) const {
-    if (tx > 0)
-      return (fMinX + (xInd + 1) * fXBinSize) / tx;
+  Double_t GetXExitZ(int xInd, Double_t tx) const
+  {
+    if (tx > 0) return (fMinX + (xInd + 1) * fXBinSize) / tx;
     else
       return (fMinX + xInd * fXBinSize) / tx;
   }
 
-  void Init() {
+  void Init()
+  {
     fZBinSize = (fMaxZ - fMinZ) / fNofZBins;
     CbmBinnedStation::Init();
   }
 
-  void SearchHits(const CbmTrackParam2& stateVec,
-                  Double_t stateZ,
-                  std::function<void(CbmTBin::HitHolder&)> handleHit) {
+  void SearchHits(const CbmTrackParam2& stateVec, Double_t stateZ, std::function<void(CbmTBin::HitHolder&)> handleHit)
+  {
     Double_t deltaZmin = stateZ - fMinZ;
     Double_t tx        = stateVec.GetTx();
     Double_t ty        = stateVec.GetTy();
@@ -217,13 +215,11 @@ public:
     Double_t minTy = ty - wTy;
     Double_t maxTy = ty + wTy;
 
-    if (minTy > 0 && stateVec.GetY() + minTy * deltaZmin >= fMaxY)
-      return;
+    if (minTy > 0 && stateVec.GetY() + minTy * deltaZmin >= fMaxY) return;
     else if (maxTy < 0 && stateVec.GetY() + maxTy * deltaZmin < fMinY)
       return;
 
-    if (minTx > 0 && stateVec.GetX() + minTx * deltaZmin >= fMaxX)
-      return;
+    if (minTx > 0 && stateVec.GetX() + minTx * deltaZmin >= fMaxX) return;
     else if (maxTx < 0 && stateVec.GetX() + minTx * deltaZmin < fMinX)
       return;
 
@@ -235,19 +231,17 @@ public:
     Double_t searchY = stateVec.GetY();
 
     if (minTy > 0) {
-      if ((fMaxY - searchY) / minTy + searchZ < maxZ)
-        maxZ = (fMaxY - searchY) / minTy + searchZ;
-    } else if (maxTy < 0) {
-      if ((fMinY - searchY) / maxTy + searchZ < maxZ)
-        maxZ = (fMinY - searchY) / maxTy + searchZ;
+      if ((fMaxY - searchY) / minTy + searchZ < maxZ) maxZ = (fMaxY - searchY) / minTy + searchZ;
+    }
+    else if (maxTy < 0) {
+      if ((fMinY - searchY) / maxTy + searchZ < maxZ) maxZ = (fMinY - searchY) / maxTy + searchZ;
     }
 
     if (minTx > 0) {
-      if ((fMaxX - searchX) / minTx + searchZ < maxZ)
-        maxZ = (fMaxX - searchX) / minTx + searchZ;
-    } else if (maxTx < 0) {
-      if ((fMinX - searchX) / maxTx + searchZ < maxZ)
-        maxZ = (fMinX - searchX) / maxTx + searchZ;
+      if ((fMaxX - searchX) / minTx + searchZ < maxZ) maxZ = (fMaxX - searchX) / minTx + searchZ;
+    }
+    else if (maxTx < 0) {
+      if ((fMinX - searchX) / maxTx + searchZ < maxZ) maxZ = (fMinX - searchX) / maxTx + searchZ;
     }
 
     int maxZind = GetZInd(maxZ);
@@ -256,12 +250,10 @@ public:
       CbmZBin& zBin  = fZBins[i];
       Double_t minZi = minZ + i * fZBinSize;
       Double_t maxZi = minZ + (i + 1) * fZBinSize;
-      Double_t minY  = minTy > 0 ? minTy * (minZi - searchZ) + searchY
-                                : minTy * (maxZi - searchZ) + searchY;
-      int minYind   = GetYInd(minY);
-      Double_t maxY = maxTy > 0 ? maxTy * (maxZi - searchZ) + searchY
-                                : maxTy * (minZi - searchZ) + searchY;
-      int maxYind = GetYInd(maxY);
+      Double_t minY  = minTy > 0 ? minTy * (minZi - searchZ) + searchY : minTy * (maxZi - searchZ) + searchY;
+      int minYind    = GetYInd(minY);
+      Double_t maxY  = maxTy > 0 ? maxTy * (maxZi - searchZ) + searchY : maxTy * (minZi - searchZ) + searchY;
+      int maxYind    = GetYInd(maxY);
 
       for (int j = minYind; j <= maxYind; ++j) {
         CbmYBin& yBin  = zBin[j];
@@ -287,12 +279,10 @@ public:
 
         if (maxZj == minZi) maxZj = maxZi;
 
-        Double_t minX = minTx > 0 ? minTx * (minZj - searchZ) + searchX
-                                  : minTx * (maxZj - searchZ) + searchX;
-        Double_t maxX = maxTx > 0 ? maxTx * (maxZj - searchZ) + searchX
-                                  : maxTx * (minZj - searchZ) + searchX;
-        int minXind = GetXInd(minX);
-        int maxXind = GetXInd(maxX);
+        Double_t minX = minTx > 0 ? minTx * (minZj - searchZ) + searchX : minTx * (maxZj - searchZ) + searchX;
+        Double_t maxX = maxTx > 0 ? maxTx * (maxZj - searchZ) + searchX : maxTx * (minZj - searchZ) + searchX;
+        int minXind   = GetXInd(minX);
+        int maxXind   = GetXInd(maxX);
 
         for (int k = minXind; k <= maxXind; ++k) {
           CbmXBin& xBin  = yBin[k];
@@ -324,8 +314,8 @@ public:
           int maxTind = 0;  //fNofTBins - 1;//GetTInd(maxT);
 
           for (int l = minTind; l <= maxTind; ++l) {
-            CbmTBin& tBin                                   = xBin[l];
-            std::list<CbmTBin::HitHolder>::iterator hitIter = tBin.HitsBegin();
+            CbmTBin& tBin                                      = xBin[l];
+            std::list<CbmTBin::HitHolder>::iterator hitIter    = tBin.HitsBegin();
             std::list<CbmTBin::HitHolder>::iterator hitIterEnd = tBin.HitsEnd();
 
             for (; hitIter != hitIterEnd; ++hitIter) {
@@ -359,7 +349,8 @@ public:
     }
   }
 
-  void SearchHits(Segment& segment, std::function<void(CbmTBin::HitHolder&)>) {
+  void SearchHits(Segment& segment, std::function<void(CbmTBin::HitHolder&)>)
+  {
     const CbmPixelHit* hit1 = segment.begin->hit;
     Double_t x1             = hit1->GetX();
     Double_t y1             = hit1->GetY();
@@ -382,7 +373,8 @@ public:
       searchZ = hit2->GetZ();
       // searchT = hit2->GetTime();   (VF) not used
       // dtSq = hit2->GetTimeError() * hit2->GetTimeError();   (VF) not used
-    } else {
+    }
+    else {
       searchZ = (hit1->GetZ() + hit2->GetZ()) / 2;
       // searchT = (hit1->GetTime() + hit2->GetTime()) / 2;   (VF) not used
       // dtSq = (hit1->GetTimeError() * hit1->GetTimeError() + hit2->GetTimeError() * hit2->GetTimeError()) / 2;   (VF) not used
@@ -404,13 +396,11 @@ public:
     Double_t minTy = ty - wTy;
     Double_t maxTy = ty + wTy;
 
-    if (minTy > 0 && searchY + minTy * deltaZmin >= fMaxY)
-      return;
+    if (minTy > 0 && searchY + minTy * deltaZmin >= fMaxY) return;
     else if (maxTy < 0 && searchY + maxTy * deltaZmin < fMinY)
       return;
 
-    if (minTx > 0 && searchX + minTx * deltaZmin >= fMaxX)
-      return;
+    if (minTx > 0 && searchX + minTx * deltaZmin >= fMaxX) return;
     else if (maxTx < 0 && searchX + minTx * deltaZmin < fMinX)
       return;
 
@@ -418,19 +408,17 @@ public:
     Double_t maxZ = fMaxZ;
 
     if (minTy > 0) {
-      if ((fMaxY - searchY) / minTy + searchZ < maxZ)
-        maxZ = (fMaxY - searchY) / minTy + searchZ;
-    } else if (maxTy < 0) {
-      if ((fMinY - searchY) / maxTy + searchZ < maxZ)
-        maxZ = (fMinY - searchY) / maxTy + searchZ;
+      if ((fMaxY - searchY) / minTy + searchZ < maxZ) maxZ = (fMaxY - searchY) / minTy + searchZ;
+    }
+    else if (maxTy < 0) {
+      if ((fMinY - searchY) / maxTy + searchZ < maxZ) maxZ = (fMinY - searchY) / maxTy + searchZ;
     }
 
     if (minTx > 0) {
-      if ((fMaxX - searchX) / minTx + searchZ < maxZ)
-        maxZ = (fMaxX - searchX) / minTx + searchZ;
-    } else if (maxTx < 0) {
-      if ((fMinX - searchX) / maxTx + searchZ < maxZ)
-        maxZ = (fMinX - searchX) / maxTx + searchZ;
+      if ((fMaxX - searchX) / minTx + searchZ < maxZ) maxZ = (fMaxX - searchX) / minTx + searchZ;
+    }
+    else if (maxTx < 0) {
+      if ((fMinX - searchX) / maxTx + searchZ < maxZ) maxZ = (fMinX - searchX) / maxTx + searchZ;
     }
 
     int maxZind = GetZInd(maxZ);
@@ -439,12 +427,10 @@ public:
       CbmZBin& zBin  = fZBins[i];
       Double_t minZi = minZ + i * fZBinSize;
       Double_t maxZi = minZ + (i + 1) * fZBinSize;
-      Double_t minY  = minTy > 0 ? minTy * (minZi - searchZ) + searchY
-                                : minTy * (maxZi - searchZ) + searchY;
-      int minYind   = GetYInd(minY);
-      Double_t maxY = maxTy > 0 ? maxTy * (maxZi - searchZ) + searchY
-                                : maxTy * (minZi - searchZ) + searchY;
-      int maxYind = GetYInd(maxY);
+      Double_t minY  = minTy > 0 ? minTy * (minZi - searchZ) + searchY : minTy * (maxZi - searchZ) + searchY;
+      int minYind    = GetYInd(minY);
+      Double_t maxY  = maxTy > 0 ? maxTy * (maxZi - searchZ) + searchY : maxTy * (minZi - searchZ) + searchY;
+      int maxYind    = GetYInd(maxY);
 
       for (int j = minYind; j <= maxYind; ++j) {
         CbmYBin& yBin  = zBin[j];
@@ -470,12 +456,10 @@ public:
 
         if (maxZj == minZi) maxZj = maxZi;
 
-        Double_t minX = minTx > 0 ? minTx * (minZj - searchZ) + searchX
-                                  : minTx * (maxZj - searchZ) + searchX;
-        Double_t maxX = maxTx > 0 ? maxTx * (maxZj - searchZ) + searchX
-                                  : maxTx * (minZj - searchZ) + searchX;
-        int minXind = GetXInd(minX);
-        int maxXind = GetXInd(maxX);
+        Double_t minX = minTx > 0 ? minTx * (minZj - searchZ) + searchX : minTx * (maxZj - searchZ) + searchX;
+        Double_t maxX = maxTx > 0 ? maxTx * (maxZj - searchZ) + searchX : maxTx * (minZj - searchZ) + searchX;
+        int minXind   = GetXInd(minX);
+        int maxXind   = GetXInd(maxX);
 
         for (int k = minXind; k <= maxXind; ++k) {
           CbmXBin& xBin  = yBin[k];
@@ -507,8 +491,8 @@ public:
           int maxTind = fNofTBins - 1;  //GetTInd(maxT);
 
           for (int l = minTind; l <= maxTind; ++l) {
-            CbmTBin& tBin                                   = xBin[l];
-            std::list<CbmTBin::HitHolder>::iterator hitIter = tBin.HitsBegin();
+            CbmTBin& tBin                                      = xBin[l];
+            std::list<CbmTBin::HitHolder>::iterator hitIter    = tBin.HitsBegin();
             std::list<CbmTBin::HitHolder>::iterator hitIterEnd = tBin.HitsEnd();
 
             for (; hitIter != hitIterEnd; ++hitIter) {
@@ -517,17 +501,11 @@ public:
               Double_t zSq           = z * z;
               Double_t deltaY        = hit->GetY() - ty * z;
 
-              if (deltaY * deltaY
-                  > cbmBinnedSigmaSq
-                      * (dTySq * zSq + hit->GetDy() * hit->GetDy()))
-                continue;
+              if (deltaY * deltaY > cbmBinnedSigmaSq * (dTySq * zSq + hit->GetDy() * hit->GetDy())) continue;
 
               Double_t deltaX = hit->GetX() - tx * z;
 
-              if (deltaX * deltaX
-                  > cbmBinnedSigmaSq
-                      * (dTxSq * zSq + hit->GetDx() * hit->GetDx()))
-                continue;
+              if (deltaX * deltaX > cbmBinnedSigmaSq * (dTxSq * zSq + hit->GetDx() * hit->GetDx())) continue;
 
               /*Double_t deltaT = hit->GetTime() - searchT - (z - searchZ) * timeCoeff;
 
@@ -535,8 +513,7 @@ public:
                                 continue;*/
 
               Segment newSegment(segment.end, &(*hitIter));
-              std::pair<std::set<Segment, SegmentComp>::iterator, bool> ir =
-                fSegments.insert(newSegment);
+              std::pair<std::set<Segment, SegmentComp>::iterator, bool> ir = fSegments.insert(newSegment);
               segment.children.push_back(const_cast<Segment*>(&(*ir.first)));
               //handleHit(*hitIter);
             }
@@ -546,15 +523,10 @@ public:
     }
   }
 
-  void SearchHits(Double_t,
-                  Double_t,
-                  Double_t,
-                  Double_t,
-                  Double_t,
-                  Double_t,
-                  Double_t,
-                  Double_t,
-                  std::function<void(CbmTBin::HitHolder&)>) {}
+  void SearchHits(Double_t, Double_t, Double_t, Double_t, Double_t, Double_t, Double_t, Double_t,
+                  std::function<void(CbmTBin::HitHolder&)>)
+  {
+  }
 
 private:
   CbmBinned4DStation(const CbmBinned4DStation&) = delete;

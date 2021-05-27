@@ -3,24 +3,23 @@ static Double_t fieldZ;
 static Double_t fieldScale;
 
 
-void run_sim_position3(Int_t nEvents = 100) {
+void run_sim_position3(Int_t nEvents = 100)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
   TString script        = TString(gSystem->Getenv("SCRIPT"));
   const char* setupName = "";
-  if (script == "yes") {
-    setupName = TString(gSystem->Getenv("SETUP_NAME"));
-  } else {
+  if (script == "yes") { setupName = TString(gSystem->Getenv("SETUP_NAME")); }
+  else {
     setupName = "setup_align";
   }
 
 
   // -----   In- and output file names   ------------------------------------
   TString outDir = "";
-  if (script == "yes") {
-    outDir = TString(gSystem->Getenv("OUT_DIR"));
-  } else {
+  if (script == "yes") { outDir = TString(gSystem->Getenv("OUT_DIR")); }
+  else {
     outDir = "/lustre/nyx/cbm/users/jbendar/Sim_Outputs/test/";
   }
   TString mcFile  = outDir + setupName + "_mc.root";
@@ -30,11 +29,10 @@ void run_sim_position3(Int_t nEvents = 100) {
 
   TString geoSetupFile = "";
 
-  TString electrons =
-    "yes";                // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 1;  // number of e- to be generated
-  Int_t NPOSITRONS  = 1;  // number of e+ to be generated
-  TString urqmd     = "no";  // If "yes" then UrQMD will be used as background
+  TString electrons = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS  = 1;      // number of e- to be generated
+  Int_t NPOSITRONS  = 1;      // number of e+ to be generated
+  TString urqmd     = "no";   // If "yes" then UrQMD will be used as background
   TString urqmdFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                       "input/urqmd.auau.10gev.centr.root";
   TString pluto         = "no";  // If "yes" PLUTO particles will be embedded
@@ -52,9 +50,8 @@ void run_sim_position3(Int_t nEvents = 100) {
          << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
          << "urqmdFile: " << TString(gSystem->Getenv("URQMD_FILE")) << endl;
 
-    TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                           + "/macro/rich/run/geosetup/"
-                           + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+    TString geoSetupFile =
+      TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/" + TString(gSystem->Getenv("GEO_SETUP_FILE"));
 
     NELECTRONS = TString(gSystem->Getenv("NELECTRONS")).Atoi();
     NPOSITRONS = TString(gSystem->Getenv("NPOSITRONS")).Atoi();
@@ -93,13 +90,11 @@ void run_sim_position3(Int_t nEvents = 100) {
   if (script != "yes") {
     geoSetupFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
                    "macro/rich/geosetup/setup_align.C";
-    std::cout << "-I- using not script, following geoSetupFile name used: "
-              << geoSetupFile << std::endl;
+    std::cout << "-I- using not script, following geoSetupFile name used: " << geoSetupFile << std::endl;
   }
   TString setupFunct = "";
   setupFunct         = setupFunct + setupName + "()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -146,11 +141,10 @@ void run_sim_position3(Int_t nEvents = 100) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -270,8 +264,7 @@ void run_sim_position3(Int_t nEvents = 100) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

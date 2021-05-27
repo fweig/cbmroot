@@ -36,9 +36,7 @@ public:
     * \param[out] tracks Output vector of found tracks.
     * \return Status code.
     */
-  virtual LitStatus DoFind(HitPtrVector& hits,
-                           TrackPtrVector& trackSeeds,
-                           TrackPtrVector& tracks) = 0;
+  virtual LitStatus DoFind(HitPtrVector& hits, TrackPtrVector& trackSeeds, TrackPtrVector& tracks) = 0;
 };
 
 #endif /*CBMLITTRACKFINDER_H_*/

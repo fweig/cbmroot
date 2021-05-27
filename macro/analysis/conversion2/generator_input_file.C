@@ -1,5 +1,6 @@
 ///// generating electron/positron track over full acceptance. Filling them step by step in acceptance.
-void generator_input_file() {
+void generator_input_file()
+{
   ofstream* file = new ofstream("my_first_generator.dat");
   gRandom->SetSeed(1);
 
@@ -26,14 +27,12 @@ void generator_input_file() {
     vx = 0;
     vy = 0;
     // Write out event header
-    (*file) << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz
-            << endl;
+    (*file) << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz << endl;
 
     // Select electron or positron
     type = gRandom->Uniform(0., 1.);
-    if (type < 0.5) {
-      pdg = 11;
-    } else {
+    if (type < 0.5) { pdg = 11; }
+    else {
       pdg = -11;
     }
 
@@ -56,8 +55,7 @@ void generator_input_file() {
       idy = idy + (ymax - ymin) / nYsteps;
       idx = 0;
     }
-    if (y > (ymax - (ymax - ymin) / nYsteps) && x > (xRange - xRange / nXsteps))
-      idy = 0;
+    if (y > (ymax - (ymax - ymin) / nYsteps) && x > (xRange - xRange / nXsteps)) idy = 0;
     /**************************************************************************/
 
     // x=0.3;

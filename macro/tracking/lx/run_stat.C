@@ -1,4 +1,5 @@
-void run_stat(int index = -1) {
+void run_stat(int index = -1)
+{
   Int_t nEvents         = 1000;
   const char* setupName = "sis100_electron";
   //const char* setupName = "sis100_muon_jpsi";
@@ -33,26 +34,20 @@ void run_stat(int index = -1) {
   if (useBg) suffix += "." + trigger;
 
   if (useSig) {
-    if (sigAscii)
-      suffix += ".ascii";
+    if (sigAscii) suffix += ".ascii";
     else
       suffix += "." + part;
   }
 
   TString inOutDir;
 
-  if (index >= 0)
-    inOutDir =
-      "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
+  if (index >= 0) inOutDir = "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
   else
     inOutDir = "/data.local/cbmrootdata/";
 
-  TString inFile =
-    inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
-  TString globalParFile =
-    inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
-  TString outFile =
-    inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
+  TString inFile        = inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
+  TString globalParFile = inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
+  TString outFile       = inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -204,8 +199,7 @@ void run_stat(int index = -1) {
   timer.Stop();
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << inFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 

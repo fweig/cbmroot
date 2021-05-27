@@ -16,9 +16,9 @@
 #ifndef CBMFIELDCONTFACT_H
 #define CBMFIELDCONTFACT_H 1
 
-#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
-
 #include <FairContFact.h>  // for FairContFact
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 class FairContainer;
 class FairParSet;

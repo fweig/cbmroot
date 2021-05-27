@@ -16,7 +16,9 @@ CbmTofTrack::CbmTofTrack()
   , fTrackPar()
   , fPidHypo(-1)
   , fMass(-1.)
-  , fDistance(0.) {}
+  , fDistance(0.)
+{
+}
 
 CbmTofTrack::~CbmTofTrack() {}
 

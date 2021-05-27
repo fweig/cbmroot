@@ -4,6 +4,7 @@
 
 // Includes from MVD
 #include "CbmMvdDigiToHitTB.h"
+
 #include "CbmEvent.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
@@ -18,7 +19,6 @@
 // Includes from ROOT
 #include "TClonesArray.h"
 #include "TGeoManager.h"
-
 #include "TMath.h"
 #include "TString.h"
 
@@ -34,14 +34,11 @@ using std::setprecision;
 using std::setw;
 
 // -----   Default constructor   ------------------------------------------
-CbmMvdDigiToHitTB::CbmMvdDigiToHitTB()
-  : CbmMvdDigiToHitTB("MVDDigiToHitTB", 0, 0) {}
+CbmMvdDigiToHitTB::CbmMvdDigiToHitTB() : CbmMvdDigiToHitTB("MVDDigiToHitTB", 0, 0) {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdDigiToHitTB::CbmMvdDigiToHitTB(const char* name,
-                                     Int_t iMode,
-                                     Int_t iVerbose)
+CbmMvdDigiToHitTB::CbmMvdDigiToHitTB(const char* name, Int_t iMode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
@@ -52,11 +49,14 @@ CbmMvdDigiToHitTB::CbmMvdDigiToHitTB(const char* name,
   , fCluster(NULL)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdDigiToHitTB::~CbmMvdDigiToHitTB() {
+CbmMvdDigiToHitTB::~CbmMvdDigiToHitTB()
+{
 
   if (fCluster) {
     fCluster->Delete();
@@ -66,7 +66,8 @@ CbmMvdDigiToHitTB::~CbmMvdDigiToHitTB() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdDigiToHitTB::Exec(Option_t* /*opt*/) {
+void CbmMvdDigiToHitTB::Exec(Option_t* /*opt*/)
+{
   // --- Start timer
   fTimer.Start();
 
@@ -89,22 +90,19 @@ void CbmMvdDigiToHitTB::Exec(Option_t* /*opt*/) {
     fDetector->Exec(fClusterPluginNr);
     LOG(debug) << "End Chain";
     LOG(debug) << "Start writing Hit";
-    fCluster->AbsorbObjects(fDetector->GetOutputHits(),
-                            0,
-                            fDetector->GetOutputHits()->GetEntriesFast() - 1);
-    LOG(debug) << "Total of " << fCluster->GetEntriesFast()
-               << " Hit in this Event";
+    fCluster->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
+    LOG(debug) << "Total of " << fCluster->GetEntriesFast() << " Hit in this Event";
     LOG(debug) << "//----------------------------------------//";
-    LOG(info) << "+ " << setw(20) << GetName()
-              << ": Created: " << fCluster->GetEntriesFast() << " hit in "
-              << fixed << setprecision(6) << fTimer.RealTime() << " s";
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " hit in " << fixed
+              << setprecision(6) << fTimer.RealTime() << " s";
   }
   fTimer.Stop();
 }
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdDigiToHitTB::Init() {
+InitStatus CbmMvdDigiToHitTB::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -130,16 +128,13 @@ InitStatus CbmMvdDigiToHitTB::Init() {
 
   // **********  Register output array
   fCluster = new TClonesArray("CbmMvdHit", 10000);
-  ioman->Register(
-    "MvdHit", "Mvd Hits", fCluster, IsOutputBranchPersistent("MvdHit"));
+  ioman->Register("MvdHit", "Mvd Hits", fCluster, IsOutputBranchPersistent("MvdHit"));
 
   fDetector = CbmMvdDetector::Instance();
 
-  if (fDetector->GetSensorArraySize() > 1) {
-    LOG(debug) << "-I- succesfully loaded Geometry from file -I-";
-  } else {
-    LOG(fatal)
-      << "Geometry couldn't be loaded from file. No MVD digitizer available.";
+  if (fDetector->GetSensorArraySize() > 1) { LOG(debug) << "-I- succesfully loaded Geometry from file -I-"; }
+  else {
+    LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
   CbmMvdSensorDigiToHitTask* clusterTask = new CbmMvdSensorDigiToHitTask();
@@ -162,7 +157,8 @@ InitStatus CbmMvdDigiToHitTB::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdDigiToHitTB::Finish() {
+void CbmMvdDigiToHitTB::Finish()
+{
   fDetector->Finish();
   PrintParameters();
 }
@@ -179,15 +175,13 @@ void CbmMvdDigiToHitTB::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigiToHitTB::PrintParameters() {
+void CbmMvdDigiToHitTB::PrintParameters()
+{
 
-  cout << "============================================================"
-       << endl;
+  cout << "============================================================" << endl;
   cout << "============== Parameters DigiToHit ====================" << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

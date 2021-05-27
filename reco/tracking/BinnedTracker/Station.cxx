@@ -6,11 +6,7 @@
 
 #include "Tracker.h"
 
-CbmBinnedStation::CbmBinnedStation(ECbmModuleId stationType,
-                                   Double_t minZ,
-                                   Double_t maxZ,
-                                   int nofYBins,
-                                   int nofXBins,
+CbmBinnedStation::CbmBinnedStation(ECbmModuleId stationType, Double_t minZ, Double_t maxZ, int nofYBins, int nofXBins,
                                    int nofTBins)
   : fStationType(stationType)
   , fMinZ(minZ)
@@ -51,4 +47,6 @@ CbmBinnedStation::CbmBinnedStation(ECbmModuleId stationType,
   , fNofSigmasXSq(cbmBinnedSigmaSq)
   , fNofSigmasY(cbmBinnedSigma)
   , fNofSigmasYSq(cbmBinnedSigmaSq)
-  , fStage(0) {}
+  , fStage(0)
+{
+}

@@ -1,10 +1,10 @@
 #ifndef CBMTRDPARSETDIGI_H
 #define CBMTRDPARSETDIGI_H
 
+#include "CbmTrdParSet.h"  // for CbmTrdParSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Bool_t
-
-#include "CbmTrdParSet.h"  // for CbmTrdParSet
 
 class FairParamList;
 
@@ -15,8 +15,7 @@ class FairParamList;
 class CbmTrdParSetDigi : public CbmTrdParSet {
 public:
   /** Standard constructor **/
-  CbmTrdParSetDigi(const char* name    = "CbmTrdParSetDigi",
-                   const char* title   = "TRD chamber parameters",
+  CbmTrdParSetDigi(const char* name = "CbmTrdParSetDigi", const char* title = "TRD chamber parameters",
                    const char* context = "Default");
 
   /** \brief Destructor **/

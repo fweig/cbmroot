@@ -17,6 +17,7 @@
 // 2018.08.23 - DE - shorten the table length from 400 cm to 250 cm
 
 #include "TGeoManager.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -33,7 +34,8 @@ TGeoManager* gGeoMan = NULL;  // will be set later
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_platform_v20a() {
+void create_platform_v20a()
+{
 
   // -----   Define platform parts   ----------------------------------------------
 
@@ -82,9 +84,7 @@ void create_platform_v20a() {
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "Platform geometry created with create_platform_v20a.C"
-           << std::endl
-           << std::endl;
+  infoFile << "Platform geometry created with create_platform_v20a.C" << std::endl << std::endl;
   // --------------------------------------------------------------------------
 
 
@@ -131,8 +131,7 @@ void create_platform_v20a() {
 
 
   // -----   Create   ---------------------------------------------------------
-  TGeoBBox* platform_base =
-    new TGeoBBox("", sizeX / 2., sizeY / 2., sizeZ / 2.);
+  TGeoBBox* platform_base  = new TGeoBBox("", sizeX / 2., sizeY / 2., sizeZ / 2.);
   TGeoVolume* platform_vol = new TGeoVolume("platform", platform_base, air);
   platform_vol->SetLineColor(kBlue);
   platform_vol->SetTransparency(70);
@@ -163,8 +162,7 @@ void create_platform_v20a() {
   gGeoMan->PrintOverlaps();
   gGeoMan->Test();
 
-  platform->Export(
-    geoFileName);  // an alternative way of writing the platform volume
+  platform->Export(geoFileName);  // an alternative way of writing the platform volume
 
   TFile* geoFile = new TFile(geoFileName, "UPDATE");
 
@@ -172,19 +170,15 @@ void create_platform_v20a() {
   TGeoRotation* platform_rotation = new TGeoRotation();
   platform_rotation->RotateY(platform_angle);
   //  TGeoCombiTrans* platform_placement = new TGeoCombiTrans( sin( platform_angle/180.*acos(-1) ) * z1[1]/2., 0., 0., platform_rotation);
-  TGeoCombiTrans* platform_placement = new TGeoCombiTrans("platform_rot",
-                                                          platX_offset,
-                                                          platY_offset,
-                                                          platZ_offset,
-                                                          platform_rotation);
+  TGeoCombiTrans* platform_placement =
+    new TGeoCombiTrans("platform_rot", platX_offset, platY_offset, platZ_offset, platform_rotation);
 
   //  TGeoTranslation* platform_placement = new TGeoTranslation("platform_trans", 0., 0., 0.);
   platform_placement->Write();
   geoFile->Close();
 
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << geoFileName << endl;
 
   top->Draw("ogl");
 

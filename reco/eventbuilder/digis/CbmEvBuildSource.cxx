@@ -35,7 +35,8 @@ CbmEvBuildSource::CbmEvBuildSource()
   , fDeadT(10)
   , fMinHitStations(8)
   , fMinDigis(2000)
-  , fEvHeader(NULL) {
+  , fEvHeader(NULL)
+{
   fCh = new TChain("cbmsim");
 }
 
@@ -58,7 +59,8 @@ CbmEvBuildSource::CbmEvBuildSource(const char* fname)
   , fDeadT(10)
   , fMinHitStations(8)
   , fMinDigis(2000)
-  , fEvHeader(NULL) {
+  , fEvHeader(NULL)
+{
   fCh = new TChain("cbmsim");
   AddFile(fname);
 }
@@ -82,11 +84,13 @@ CbmEvBuildSource::CbmEvBuildSource(const CbmEvBuildSource& source)
   , fDeadT(10)
   , fMinHitStations(8)
   , fMinDigis(2000)
-  , fEvHeader(NULL) {
+  , fEvHeader(NULL)
+{
   ;
 }
 
-Int_t CbmEvBuildSource::ReadEvent(UInt_t par) {
+Int_t CbmEvBuildSource::ReadEvent(UInt_t par)
+{
   Int_t j = 0;
   //  Int_t n=0;
   Int_t k;
@@ -101,9 +105,9 @@ Int_t CbmEvBuildSource::ReadEvent(UInt_t par) {
   if (par == 0) {
     fI  = -1;
     fEv = 0;
-  } else if (par != fEv) {
-    LOG(fatal) << "CbmEvBuildSource::ReadEvent(" << par
-               << "): Can't jump to arbitrary event but 0. Current event is "
+  }
+  else if (par != fEv) {
+    LOG(fatal) << "CbmEvBuildSource::ReadEvent(" << par << "): Can't jump to arbitrary event but 0. Current event is "
                << fEv;
     return 3;
   }
@@ -209,7 +213,8 @@ Int_t CbmEvBuildSource::ReadEvent(UInt_t par) {
 
 void CbmEvBuildSource::Close() { return; }
 
-Int_t CbmEvBuildSource::GetNextTimeSlice() {
+Int_t CbmEvBuildSource::GetNextTimeSlice()
+{
   Int_t i;
 
   fI++;
@@ -217,8 +222,7 @@ Int_t CbmEvBuildSource::GetNextTimeSlice() {
   fCh->GetEntry(fI);
 
   cout << fEvHeader << endl;
-  LOG(info) << "CbmBuildEventsSimple:	Sts digis in slice "
-            << fSlice->GetDataSize(kSts)
+  LOG(info) << "CbmBuildEventsSimple:	Sts digis in slice " << fSlice->GetDataSize(kSts)
             << ". Slice start: " << fSlice->GetStartTime();
   fNDigis = 0;
   for (i = 0; i < 16; i++)
@@ -229,7 +233,8 @@ Int_t CbmEvBuildSource::GetNextTimeSlice() {
   return fI;
 }
 
-Bool_t CbmEvBuildSource::Init() {
+Bool_t CbmEvBuildSource::Init()
+{
   FairRootManager* mgr = FairRootManager::Instance();
 
   fCh->SetBranchAddress("TimeSlice.", &(fSlice));
@@ -251,13 +256,15 @@ Bool_t CbmEvBuildSource::Init() {
   return kTRUE;
 }
 
-void CbmEvBuildSource::Reset() {
+void CbmEvBuildSource::Reset()
+{
   cout << "Reset()" << endl;
   //  fI=0;
 }
 
 /** Fills Stsdigis array. STS separate, because start and end] end digi is known. **/
-void CbmEvBuildSource::FillEvent(Int_t st, Int_t end) {
+void CbmEvBuildSource::FillEvent(Int_t st, Int_t end)
+{
   Int_t i;
   CbmStsDigi* digi;
 
@@ -270,19 +277,20 @@ void CbmEvBuildSource::FillEvent(Int_t st, Int_t end) {
     fNSTSDigis++;
     //    cout << fSTSDigi->GetEntriesFast() << " " << fNSTSDigis << endl;
   }
-  LOG(info) << "CbmEvBuildSource:	Event constructed. Digis used from "
-            << st << " to " << end << ".";
+  LOG(info) << "CbmEvBuildSource:	Event constructed. Digis used from " << st << " to " << end << ".";
 }
 
 
 void CbmEvBuildSource::AddFile(const char* fname) { fCh->AddFile(fname); }
 
-CbmEvBuildSource::~CbmEvBuildSource() {
+CbmEvBuildSource::~CbmEvBuildSource()
+{
   if (fCh) delete fCh;
   if (fSTSDigi) delete fSTSDigi;
 }
 
-void CbmEvBuildSource::FillEventHeader(FairEventHeader* feh) {
+void CbmEvBuildSource::FillEventHeader(FairEventHeader* feh)
+{
   feh->SetEventTime(fEvHeader->GetEventTime());
   feh->SetRunId(fEvHeader->GetRunId());
   feh->SetMCEntryNumber(fEvHeader->GetMCEntryNumber());

@@ -12,20 +12,14 @@ const Double_t kdDistStep  = 1;  //cm
 const UInt_t kuNbStepsTime = 10;
 const Double_t kdTimeStep  = 100.0;  //ps
 
-Bool_t hitQualCompPull(
-  TString sFilenameA =
-    "data/tofqa.sis300_electron_auau.25gev.centr._qa.hst.all.root",
-  TString sFilenameB =
-    "data/tofqa.sis300_electron_auau.25gev.centr.noTRD_qa.hst.all.root",
-  TString sFilenameC =
-    "data/tofqa.cbm100_pbar_auau.25gev.centr._qa.hst.all.root",
-  TString sFilenameD =
-    "data/tofqa.cbm100_pbar_auau.25gev.centr.noTRD_qa.hst.all.root",
-  TString sTagA       = "sis300e_Trd_25gev",
-  TString sTagB       = "sis300e_NoTrd_25gev",
-  TString sTagC       = "cbm100p_Trd_25gev",
-  TString sTagD       = "cbm100p_NoTrd_25gev",
-  TString sOutFileTag = "_25gev") {
+Bool_t hitQualCompPull(TString sFilenameA = "data/tofqa.sis300_electron_auau.25gev.centr._qa.hst.all.root",
+                       TString sFilenameB = "data/tofqa.sis300_electron_auau.25gev.centr.noTRD_qa.hst.all.root",
+                       TString sFilenameC = "data/tofqa.cbm100_pbar_auau.25gev.centr._qa.hst.all.root",
+                       TString sFilenameD = "data/tofqa.cbm100_pbar_auau.25gev.centr.noTRD_qa.hst.all.root",
+                       TString sTagA = "sis300e_Trd_25gev", TString sTagB = "sis300e_NoTrd_25gev",
+                       TString sTagC = "cbm100p_Trd_25gev", TString sTagD = "cbm100p_NoTrd_25gev",
+                       TString sOutFileTag = "_25gev")
+{
   // Open the input files
   TFile* filePnt[kuNbFiles];
   filePnt[0] = new TFile(sFilenameA, "READ");
@@ -38,12 +32,10 @@ Bool_t hitQualCompPull(
   sTagFiles[2] = sTagC;
   sTagFiles[3] = sTagD;
 
-  if (NULL == filePnt[0] || NULL == filePnt[1] || NULL == filePnt[2]
-      || NULL == filePnt[3]) {
-    cout << "One of the input files could not be opened: " << sFilenameA
-         << " -> " << filePnt[0] << " " << sFilenameB << " -> " << filePnt[1]
-         << " " << sFilenameC << " -> " << filePnt[2] << " " << sFilenameD
-         << " -> " << filePnt[3] << " " << endl;
+  if (NULL == filePnt[0] || NULL == filePnt[1] || NULL == filePnt[2] || NULL == filePnt[3]) {
+    cout << "One of the input files could not be opened: " << sFilenameA << " -> " << filePnt[0] << " " << sFilenameB
+         << " -> " << filePnt[1] << " " << sFilenameC << " -> " << filePnt[2] << " " << sFilenameD << " -> "
+         << filePnt[3] << " " << endl;
     return kFALSE;
   }  // if( NULL == filePnt[0] || NULL == filePnt[1] || NULL == filePnt[2] || NULL == filePnt[3] )
 
@@ -84,165 +76,109 @@ Bool_t hitQualCompPull(
   TH2* tempTwoDimHist = NULL;
   for (UInt_t uFile = 0; uFile < kuNbFiles; uFile++)
     for (UInt_t uDim = 0; uDim < kuNbDim; uDim++) {
-      tempOneDimHist = (TH1*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_SinglePointHitPull%s", ksDimName[uDim].Data())));
+      tempOneDimHist =
+        (TH1*) (filePnt[uFile]->FindObjectAny(Form("TofTests_SinglePointHitPull%s", ksDimName[uDim].Data())));
       if (NULL != tempOneDimHist)
-        hSinglePointHitPull[uFile][uDim] =
-          (TH1*) (tempOneDimHist->Clone(Form("%s_SinglePointHitPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hSinglePointHitPull[uFile][uDim] = (TH1*) (tempOneDimHist->Clone(
+          Form("%s_SinglePointHitPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiPntHitClosestPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiPntHitClosestPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiPntHitClosestPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiPntHitClosestPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiPntHitClosestPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiPntHitClosestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiPntHitFurthestPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiPntHitFurthestPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiPntHitFurthestPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiPntHitFurthestPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiPntHitFurthestPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiPntHitFurthestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiPntHitMeanPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiPntHitMeanPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiPntHitMeanPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiPntHitMeanPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiPntHitMeanPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiPntHitMeanPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempOneDimHist = (TH1*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_SingleTrackHitPull%s", ksDimName[uDim].Data())));
+      tempOneDimHist =
+        (TH1*) (filePnt[uFile]->FindObjectAny(Form("TofTests_SingleTrackHitPull%s", ksDimName[uDim].Data())));
       if (NULL != tempOneDimHist)
-        hSingleTrackHitPull[uFile][uDim] =
-          (TH1*) (tempOneDimHist->Clone(Form("%s_SingleTrackHitPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hSingleTrackHitPull[uFile][uDim] = (TH1*) (tempOneDimHist->Clone(
+          Form("%s_SingleTrackHitPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempOneDimHist = (TH1*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_SingTrkMultiPntHitPull%s", ksDimName[uDim].Data())));
+      tempOneDimHist =
+        (TH1*) (filePnt[uFile]->FindObjectAny(Form("TofTests_SingTrkMultiPntHitPull%s", ksDimName[uDim].Data())));
       if (NULL != tempOneDimHist)
-        hSingTrkMultiPntHitPull[uFile][uDim] =
-          (TH1*) (tempOneDimHist->Clone(Form("%s_SingTrkMultiPntHitPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hSingTrkMultiPntHitPull[uFile][uDim] = (TH1*) (tempOneDimHist->Clone(
+          Form("%s_SingTrkMultiPntHitPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiTrkHitClosestPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiTrkHitClosestPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiTrkHitClosestPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiTrkHitClosestPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiTrkHitClosestPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiTrkHitClosestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiTrkHitFurthestPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiTrkHitFurthestPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiTrkHitFurthestPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiTrkHitFurthestPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiTrkHitFurthestPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiTrkHitFurthestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      tempTwoDimHist = (TH2*) (filePnt[uFile]->FindObjectAny(
-        Form("TofTests_MultiTrkHitMeanPull%s", ksDimName[uDim].Data())));
+      tempTwoDimHist =
+        (TH2*) (filePnt[uFile]->FindObjectAny(Form("TofTests_MultiTrkHitMeanPull%s", ksDimName[uDim].Data())));
       if (NULL != tempTwoDimHist)
-        hMultiTrkHitMeanPull[uFile][uDim] =
-          (TH2*) (tempTwoDimHist->Clone(Form("%s_MultiTrkHitMeanPull%s",
-                                             sTagFiles[uFile].Data(),
-                                             ksDimName[uDim].Data())));
+        hMultiTrkHitMeanPull[uFile][uDim] = (TH2*) (tempTwoDimHist->Clone(
+          Form("%s_MultiTrkHitMeanPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
       else
         return kFALSE;
 
-      hMultiPntHitClosestPull_proj[uFile][uDim] =
-        hMultiPntHitClosestPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiPntHitClosestPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
-      hMultiPntHitFurthestPull_proj[uFile][uDim] =
-        hMultiPntHitFurthestPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiPntHitFurthestPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
-      hMultiPntHitMeanPull_proj[uFile][uDim] =
-        hMultiPntHitMeanPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiPntHitMeanPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
-      hMultiTrkHitClosestPull_proj[uFile][uDim] =
-        hMultiTrkHitClosestPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiTrkHitClosestPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
-      hMultiTrkHitFurthestPull_proj[uFile][uDim] =
-        hMultiTrkHitFurthestPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiTrkHitFurthestPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
-      hMultiTrkHitMeanPull_proj[uFile][uDim] =
-        hMultiTrkHitMeanPull[uFile][uDim]->ProjectionX(
-          Form("%s_MultiTrkHitMeanPull%s_proj",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data()));
+      hMultiPntHitClosestPull_proj[uFile][uDim] = hMultiPntHitClosestPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiPntHitClosestPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
+      hMultiPntHitFurthestPull_proj[uFile][uDim] = hMultiPntHitFurthestPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiPntHitFurthestPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
+      hMultiPntHitMeanPull_proj[uFile][uDim] = hMultiPntHitMeanPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiPntHitMeanPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
+      hMultiTrkHitClosestPull_proj[uFile][uDim] = hMultiTrkHitClosestPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiTrkHitClosestPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
+      hMultiTrkHitFurthestPull_proj[uFile][uDim] = hMultiTrkHitFurthestPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiTrkHitFurthestPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
+      hMultiTrkHitMeanPull_proj[uFile][uDim] = hMultiTrkHitMeanPull[uFile][uDim]->ProjectionX(
+        Form("%s_MultiTrkHitMeanPull%s_proj", sTagFiles[uFile].Data(), ksDimName[uDim].Data()));
 
-      hAllPntHitClosestPull[uFile][uDim] =
-        (TH1*) (hMultiPntHitClosestPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllPntHitClosestPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
-      hAllPntHitFurthestPull[uFile][uDim] =
-        (TH1*) (hMultiPntHitFurthestPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllPntHitFurthestPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
-      hAllPntHitMeanPull[uFile][uDim] =
-        (TH1*) (hMultiPntHitMeanPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllPntHitMeanPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
-      hAllTrkHitClosestPull[uFile][uDim] =
-        (TH1*) (hMultiTrkHitClosestPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllTrkHitClosestPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
-      hAllTrkHitFurthestPull[uFile][uDim] =
-        (TH1*) (hMultiTrkHitFurthestPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllTrkHitFurthestPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
-      hAllTrkHitMeanPull[uFile][uDim] =
-        (TH1*) (hMultiTrkHitMeanPull_proj[uFile][uDim]->Clone(
-          Form("%s_AllTrkHitMeanPull%s",
-               sTagFiles[uFile].Data(),
-               ksDimName[uDim].Data())));
+      hAllPntHitClosestPull[uFile][uDim]  = (TH1*) (hMultiPntHitClosestPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllPntHitClosestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
+      hAllPntHitFurthestPull[uFile][uDim] = (TH1*) (hMultiPntHitFurthestPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllPntHitFurthestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
+      hAllPntHitMeanPull[uFile][uDim]     = (TH1*) (hMultiPntHitMeanPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllPntHitMeanPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
+      hAllTrkHitClosestPull[uFile][uDim]  = (TH1*) (hMultiTrkHitClosestPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllTrkHitClosestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
+      hAllTrkHitFurthestPull[uFile][uDim] = (TH1*) (hMultiTrkHitFurthestPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllTrkHitFurthestPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
+      hAllTrkHitMeanPull[uFile][uDim]     = (TH1*) (hMultiTrkHitMeanPull_proj[uFile][uDim]->Clone(
+        Form("%s_AllTrkHitMeanPull%s", sTagFiles[uFile].Data(), ksDimName[uDim].Data())));
 
       hAllPntHitClosestPull[uFile][uDim]->Add(hSinglePointHitPull[uFile][uDim]);
-      hAllPntHitFurthestPull[uFile][uDim]->Add(
-        hSinglePointHitPull[uFile][uDim]);
+      hAllPntHitFurthestPull[uFile][uDim]->Add(hSinglePointHitPull[uFile][uDim]);
       hAllPntHitMeanPull[uFile][uDim]->Add(hSinglePointHitPull[uFile][uDim]);
       hAllTrkHitClosestPull[uFile][uDim]->Add(hSingleTrackHitPull[uFile][uDim]);
-      hAllTrkHitFurthestPull[uFile][uDim]->Add(
-        hSingleTrackHitPull[uFile][uDim]);
+      hAllTrkHitFurthestPull[uFile][uDim]->Add(hSingleTrackHitPull[uFile][uDim]);
       hAllTrkHitMeanPull[uFile][uDim]->Add(hSingleTrackHitPull[uFile][uDim]);
     }  // Loop on files and dimensions
 
@@ -272,44 +208,32 @@ Bool_t hitQualCompPull(
       new THStack(Form("histosStackMultiPntProjClos%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, Hits from multi Pnt, Closest Pnt; "
                        "Pull %s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiPntProjFurt[uDim] =
       new THStack(Form("histosStackMultiPntProjFurt%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, Hits from multi Pnt, Furthest "
                        "Pnt; Pull %s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiPntProjMean[uDim] =
       new THStack(Form("histosStackMultiPntProjMean%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, Hits from multi Pnt, Mean Pnt; "
                        "Pull %s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjClos[uDim] =
       new THStack(Form("histosStackMultiTrkProjClos%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, Hits from multi Trk, Closest Trk; "
                        "Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjFurt[uDim] =
       new THStack(Form("histosStackMultiTrkProjFurt%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, Hits from multi Trk, Furthest "
                        "Trk; Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjMean[uDim] =
       new THStack(Form("histosStackMultiTrkProjMean%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, Hits from multi Trk, Mean Trk; "
                        "Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
 
     legMultiPntProjClos[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legMultiPntProjFurt[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
@@ -317,18 +241,12 @@ Bool_t hitQualCompPull(
     legMultiTrkProjClos[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legMultiTrkProjFurt[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legMultiTrkProjMean[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
-    legMultiPntProjClos[uDim]->SetHeader(
-      Form("Pull in %s, Closest", ksDimName[uDim].Data()));
-    legMultiPntProjFurt[uDim]->SetHeader(
-      Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
-    legMultiPntProjMean[uDim]->SetHeader(
-      Form("Pull in %s, Mean", ksDimName[uDim].Data()));
-    legMultiTrkProjClos[uDim]->SetHeader(
-      Form("Pull in %s, Closest", ksDimName[uDim].Data()));
-    legMultiTrkProjFurt[uDim]->SetHeader(
-      Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
-    legMultiTrkProjMean[uDim]->SetHeader(
-      Form("Pull in %s, Mean", ksDimName[uDim].Data()));
+    legMultiPntProjClos[uDim]->SetHeader(Form("Pull in %s, Closest", ksDimName[uDim].Data()));
+    legMultiPntProjFurt[uDim]->SetHeader(Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
+    legMultiPntProjMean[uDim]->SetHeader(Form("Pull in %s, Mean", ksDimName[uDim].Data()));
+    legMultiTrkProjClos[uDim]->SetHeader(Form("Pull in %s, Closest", ksDimName[uDim].Data()));
+    legMultiTrkProjFurt[uDim]->SetHeader(Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
+    legMultiTrkProjMean[uDim]->SetHeader(Form("Pull in %s, Mean", ksDimName[uDim].Data()));
     legMultiPntProjClos[uDim]->SetTextSize(kdLegTextSize);
     legMultiPntProjFurt[uDim]->SetTextSize(kdLegTextSize);
     legMultiPntProjMean[uDim]->SetTextSize(kdLegTextSize);
@@ -338,59 +256,40 @@ Bool_t hitQualCompPull(
 
     canvMultiProj[uDim] =
       new TCanvas(Form("canvMultiProj%s", ksDimName[uDim].Data()),
-                  Form("Pull in %s, hits from mixed MC Points/tracks",
-                       ksDimName[uDim].Data()),
-                  1920,
-                  986);
+                  Form("Pull in %s, hits from mixed MC Points/tracks", ksDimName[uDim].Data()), 1920, 986);
     canvMultiProj[uDim]->cd();
     canvMultiProj[uDim]->Divide(3, 2);
 
     for (UInt_t uFile = 0; uFile < kuNbFiles; uFile++) {
-      hMultiPntHitClosestPull_proj[uFile][uDim]->SetLineColor(
-        kcFileColor[uFile]);
+      hMultiPntHitClosestPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiPntHitClosestPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiPntProjClos[uDim]->Add(
-        hMultiPntHitClosestPull_proj[uFile][uDim]);
-      legMultiPntProjClos[uDim]->AddEntry(
-        hMultiPntHitClosestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiPntProjClos[uDim]->Add(hMultiPntHitClosestPull_proj[uFile][uDim]);
+      legMultiPntProjClos[uDim]->AddEntry(hMultiPntHitClosestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
-      hMultiPntHitFurthestPull_proj[uFile][uDim]->SetLineColor(
-        kcFileColor[uFile]);
+      hMultiPntHitFurthestPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiPntHitFurthestPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiPntProjFurt[uDim]->Add(
-        hMultiPntHitFurthestPull_proj[uFile][uDim]);
-      legMultiPntProjFurt[uDim]->AddEntry(
-        hMultiPntHitFurthestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiPntProjFurt[uDim]->Add(hMultiPntHitFurthestPull_proj[uFile][uDim]);
+      legMultiPntProjFurt[uDim]->AddEntry(hMultiPntHitFurthestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
       hMultiPntHitMeanPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiPntHitMeanPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiPntProjMean[uDim]->Add(
-        hMultiPntHitMeanPull_proj[uFile][uDim]);
-      legMultiPntProjMean[uDim]->AddEntry(
-        hMultiPntHitMeanPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiPntProjMean[uDim]->Add(hMultiPntHitMeanPull_proj[uFile][uDim]);
+      legMultiPntProjMean[uDim]->AddEntry(hMultiPntHitMeanPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
-      hMultiTrkHitClosestPull_proj[uFile][uDim]->SetLineColor(
-        kcFileColor[uFile]);
+      hMultiTrkHitClosestPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiTrkHitClosestPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiTrkProjClos[uDim]->Add(
-        hMultiTrkHitClosestPull_proj[uFile][uDim]);
-      legMultiTrkProjClos[uDim]->AddEntry(
-        hMultiTrkHitClosestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiTrkProjClos[uDim]->Add(hMultiTrkHitClosestPull_proj[uFile][uDim]);
+      legMultiTrkProjClos[uDim]->AddEntry(hMultiTrkHitClosestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
-      hMultiTrkHitFurthestPull_proj[uFile][uDim]->SetLineColor(
-        kcFileColor[uFile]);
+      hMultiTrkHitFurthestPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiTrkHitFurthestPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiTrkProjFurt[uDim]->Add(
-        hMultiTrkHitFurthestPull_proj[uFile][uDim]);
-      legMultiTrkProjFurt[uDim]->AddEntry(
-        hMultiTrkHitFurthestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiTrkProjFurt[uDim]->Add(hMultiTrkHitFurthestPull_proj[uFile][uDim]);
+      legMultiTrkProjFurt[uDim]->AddEntry(hMultiTrkHitFurthestPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
       hMultiTrkHitMeanPull_proj[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hMultiTrkHitMeanPull_proj[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiTrkProjMean[uDim]->Add(
-        hMultiTrkHitMeanPull_proj[uFile][uDim]);
-      legMultiTrkProjMean[uDim]->AddEntry(
-        hMultiTrkHitMeanPull_proj[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiTrkProjMean[uDim]->Add(hMultiTrkHitMeanPull_proj[uFile][uDim]);
+      legMultiTrkProjMean[uDim]->AddEntry(hMultiTrkHitMeanPull_proj[uFile][uDim], sTagFiles[uFile], "l");
 
     }  // for( UInt_t uFile = 0; uFile < kuNbFiles; uFile++)
 
@@ -436,10 +335,8 @@ Bool_t hitQualCompPull(
     histosStackMultiTrkProjMean[uDim]->Draw("nostack");
     //      legMultiTrkProjMean[uDim]->Draw();
 
-    canvMultiProj[uDim]->SaveAs(Form(
-      "Pull_MultiProj%s%s.png", ksDimName[uDim].Data(), sOutFileTag.Data()));
-    canvMultiProj[uDim]->SaveAs(Form(
-      "Pull_MultiProj%s%s.pdf", ksDimName[uDim].Data(), sOutFileTag.Data()));
+    canvMultiProj[uDim]->SaveAs(Form("Pull_MultiProj%s%s.png", ksDimName[uDim].Data(), sOutFileTag.Data()));
+    canvMultiProj[uDim]->SaveAs(Form("Pull_MultiProj%s%s.pdf", ksDimName[uDim].Data(), sOutFileTag.Data()));
   }  // for(UInt_t uDim = 0; uDim < kuNbDim; uDim++)
 
   // Display Single Trk and Multi Pnt Single Trk histos
@@ -449,16 +346,12 @@ Bool_t hitQualCompPull(
   TLegend* legSingTrk[kuNbDim];
   TLegend* legSingTrkMultiPnt[kuNbDim];
 
-  TCanvas* canvSingTrk = new TCanvas(
-    "canvSingTrk", "Pull between Hit and Track, single tracks", 1920, 986);
+  TCanvas* canvSingTrk = new TCanvas("canvSingTrk", "Pull between Hit and Track, single tracks", 1920, 986);
   canvSingTrk->cd();
   canvSingTrk->Divide(3, 2);
 
-  TCanvas* canvSingTrkMultiPnt = new TCanvas(
-    "canvSingTrkMultiPnt",
-    "Pull between Hit and Track, single tracks with multiple points",
-    1920,
-    986);
+  TCanvas* canvSingTrkMultiPnt =
+    new TCanvas("canvSingTrkMultiPnt", "Pull between Hit and Track, single tracks with multiple points", 1920, 986);
   canvSingTrkMultiPnt->cd();
   canvSingTrkMultiPnt->Divide(3, 2);
 
@@ -467,22 +360,17 @@ Bool_t hitQualCompPull(
       new THStack(Form("histosStackSingTrk%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, Hits from single Trk; Pull %s(Hit "
                        "-> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackSingTrkMultiPnt[uDim] =
       new THStack(Form("histosStackSingTrkMultiPnt%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, Hits from single Trk but multi "
                        "Pnt; Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
 
     legSingTrk[uDim]         = new TLegend(0.45, 0.55, 0.9, 0.9);
     legSingTrkMultiPnt[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legSingTrk[uDim]->SetHeader(Form("Pull in %s", ksDimName[uDim].Data()));
-    legSingTrkMultiPnt[uDim]->SetHeader(
-      Form("Pull in %s", ksDimName[uDim].Data()));
+    legSingTrkMultiPnt[uDim]->SetHeader(Form("Pull in %s", ksDimName[uDim].Data()));
     legSingTrk[uDim]->SetTextSize(kdLegTextSize);
     legSingTrkMultiPnt[uDim]->SetTextSize(kdLegTextSize);
 
@@ -490,15 +378,12 @@ Bool_t hitQualCompPull(
       hSingleTrackHitPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hSingleTrackHitPull[uFile][uDim]->SetLineWidth(kiLineWidth);
       histosStackSingTrk[uDim]->Add(hSingleTrackHitPull[uFile][uDim]);
-      legSingTrk[uDim]->AddEntry(
-        hSingleTrackHitPull[uFile][uDim], sTagFiles[uFile], "l");
+      legSingTrk[uDim]->AddEntry(hSingleTrackHitPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hSingTrkMultiPntHitPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hSingTrkMultiPntHitPull[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackSingTrkMultiPnt[uDim]->Add(
-        hSingTrkMultiPntHitPull[uFile][uDim]);
-      legSingTrkMultiPnt[uDim]->AddEntry(
-        hSingTrkMultiPntHitPull[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackSingTrkMultiPnt[uDim]->Add(hSingTrkMultiPntHitPull[uFile][uDim]);
+      legSingTrkMultiPnt[uDim]->AddEntry(hSingTrkMultiPntHitPull[uFile][uDim], sTagFiles[uFile], "l");
     }  // for( UInt_t uFile = 0; uFile < kuNbFiles; uFile++)
 
     canvSingTrk->cd(1 + uDim);
@@ -519,10 +404,8 @@ Bool_t hitQualCompPull(
   canvSingTrk->SaveAs(Form("Pull_SingTrk%s.png", sOutFileTag.Data()));
   canvSingTrk->SaveAs(Form("Pull_SingTrk%s.pdf", sOutFileTag.Data()));
 
-  canvSingTrkMultiPnt->SaveAs(
-    Form("Pull_SingTrkMultiPnt%s.png", sOutFileTag.Data()));
-  canvSingTrkMultiPnt->SaveAs(
-    Form("Pull_SingTrkMultiPnt%s.pdf", sOutFileTag.Data()));
+  canvSingTrkMultiPnt->SaveAs(Form("Pull_SingTrkMultiPnt%s.png", sOutFileTag.Data()));
+  canvSingTrkMultiPnt->SaveAs(Form("Pull_SingTrkMultiPnt%s.pdf", sOutFileTag.Data()));
 
   // Display all Hits distrib
   THStack* histosStackAllPntHitClos[kuNbDim];
@@ -546,44 +429,32 @@ Bool_t hitQualCompPull(
       new THStack(Form("histosStackAllPntHitClos%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, all Hits, Closest Pnt if Multi; "
                        "Pull %s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackAllPntHitFurt[uDim] =
       new THStack(Form("histosStackAllPntHitFurt%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, all Hits, Furthest Pnt if Multi; "
                        "Pull %s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackAllPntHitMean[uDim] =
       new THStack(Form("histosStackAllPntHitMean%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Pnt, all Hits, Mean Pnt if Multi; Pull "
                        "%s(Hit -> Point) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjClos[uDim] =
       new THStack(Form("histosStackMultiTrkProjClos%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, all Hits, Closest Trk if Multi; "
                        "Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjFurt[uDim] =
       new THStack(Form("histosStackMultiTrkProjFurt%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, all Hits, Furthest Trk if Multi; "
                        "Pull %s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
     histosStackMultiTrkProjMean[uDim] =
       new THStack(Form("histosStackMultiTrkProjMean%s", ksDimName[uDim].Data()),
                   Form("Pull in %s from Trk, all Hits, Mean Trk if Multi; Pull "
                        "%s(Hit -> Track) []; Counts [Hits]",
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data(),
-                       ksDimName[uDim].Data()));
+                       ksDimName[uDim].Data(), ksDimName[uDim].Data(), ksDimName[uDim].Data()));
 
     legAllPntHitClos[uDim]    = new TLegend(0.45, 0.55, 0.9, 0.9);
     legAllPntHitFurt[uDim]    = new TLegend(0.45, 0.55, 0.9, 0.9);
@@ -591,18 +462,12 @@ Bool_t hitQualCompPull(
     legMultiTrkProjClos[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legMultiTrkProjFurt[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
     legMultiTrkProjMean[uDim] = new TLegend(0.45, 0.55, 0.9, 0.9);
-    legAllPntHitClos[uDim]->SetHeader(
-      Form("Pull in %s, Closest", ksDimName[uDim].Data()));
-    legAllPntHitFurt[uDim]->SetHeader(
-      Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
-    legAllPntHitMean[uDim]->SetHeader(
-      Form("Pull in %s, Mean", ksDimName[uDim].Data()));
-    legMultiTrkProjClos[uDim]->SetHeader(
-      Form("Pull in %s, Closest", ksDimName[uDim].Data()));
-    legMultiTrkProjFurt[uDim]->SetHeader(
-      Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
-    legMultiTrkProjMean[uDim]->SetHeader(
-      Form("Pull in %s, Mean", ksDimName[uDim].Data()));
+    legAllPntHitClos[uDim]->SetHeader(Form("Pull in %s, Closest", ksDimName[uDim].Data()));
+    legAllPntHitFurt[uDim]->SetHeader(Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
+    legAllPntHitMean[uDim]->SetHeader(Form("Pull in %s, Mean", ksDimName[uDim].Data()));
+    legMultiTrkProjClos[uDim]->SetHeader(Form("Pull in %s, Closest", ksDimName[uDim].Data()));
+    legMultiTrkProjFurt[uDim]->SetHeader(Form("Pull in %s, Furthest", ksDimName[uDim].Data()));
+    legMultiTrkProjMean[uDim]->SetHeader(Form("Pull in %s, Mean", ksDimName[uDim].Data()));
     legAllPntHitClos[uDim]->SetTextSize(kdLegTextSize);
     legAllPntHitFurt[uDim]->SetTextSize(kdLegTextSize);
     legAllPntHitMean[uDim]->SetTextSize(kdLegTextSize);
@@ -610,11 +475,8 @@ Bool_t hitQualCompPull(
     legMultiTrkProjFurt[uDim]->SetTextSize(kdLegTextSize);
     legMultiTrkProjMean[uDim]->SetTextSize(kdLegTextSize);
 
-    canvAllPntHit[uDim] =
-      new TCanvas(Form("canvAllPntHit%s", ksDimName[uDim].Data()),
-                  Form("Pull in %s, all hits", ksDimName[uDim].Data()),
-                  1920,
-                  986);
+    canvAllPntHit[uDim] = new TCanvas(Form("canvAllPntHit%s", ksDimName[uDim].Data()),
+                                      Form("Pull in %s, all hits", ksDimName[uDim].Data()), 1920, 986);
     canvAllPntHit[uDim]->cd();
     canvAllPntHit[uDim]->Divide(3, 2);
 
@@ -622,40 +484,32 @@ Bool_t hitQualCompPull(
       hAllPntHitClosestPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllPntHitClosestPull[uFile][uDim]->SetLineWidth(kiLineWidth);
       histosStackAllPntHitClos[uDim]->Add(hAllPntHitClosestPull[uFile][uDim]);
-      legAllPntHitClos[uDim]->AddEntry(
-        hAllPntHitClosestPull[uFile][uDim], sTagFiles[uFile], "l");
+      legAllPntHitClos[uDim]->AddEntry(hAllPntHitClosestPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hAllPntHitFurthestPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllPntHitFurthestPull[uFile][uDim]->SetLineWidth(kiLineWidth);
       histosStackAllPntHitFurt[uDim]->Add(hAllPntHitFurthestPull[uFile][uDim]);
-      legAllPntHitFurt[uDim]->AddEntry(
-        hAllPntHitFurthestPull[uFile][uDim], sTagFiles[uFile], "l");
+      legAllPntHitFurt[uDim]->AddEntry(hAllPntHitFurthestPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hAllPntHitMeanPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllPntHitMeanPull[uFile][uDim]->SetLineWidth(kiLineWidth);
       histosStackAllPntHitMean[uDim]->Add(hAllPntHitMeanPull[uFile][uDim]);
-      legAllPntHitMean[uDim]->AddEntry(
-        hAllPntHitMeanPull[uFile][uDim], sTagFiles[uFile], "l");
+      legAllPntHitMean[uDim]->AddEntry(hAllPntHitMeanPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hAllTrkHitClosestPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllTrkHitClosestPull[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiTrkProjClos[uDim]->Add(
-        hAllTrkHitClosestPull[uFile][uDim]);
-      legMultiTrkProjClos[uDim]->AddEntry(
-        hAllTrkHitClosestPull[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiTrkProjClos[uDim]->Add(hAllTrkHitClosestPull[uFile][uDim]);
+      legMultiTrkProjClos[uDim]->AddEntry(hAllTrkHitClosestPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hAllTrkHitFurthestPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllTrkHitFurthestPull[uFile][uDim]->SetLineWidth(kiLineWidth);
-      histosStackMultiTrkProjFurt[uDim]->Add(
-        hAllTrkHitFurthestPull[uFile][uDim]);
-      legMultiTrkProjFurt[uDim]->AddEntry(
-        hAllTrkHitFurthestPull[uFile][uDim], sTagFiles[uFile], "l");
+      histosStackMultiTrkProjFurt[uDim]->Add(hAllTrkHitFurthestPull[uFile][uDim]);
+      legMultiTrkProjFurt[uDim]->AddEntry(hAllTrkHitFurthestPull[uFile][uDim], sTagFiles[uFile], "l");
 
       hAllTrkHitMeanPull[uFile][uDim]->SetLineColor(kcFileColor[uFile]);
       hAllTrkHitMeanPull[uFile][uDim]->SetLineWidth(kiLineWidth);
       histosStackMultiTrkProjMean[uDim]->Add(hAllTrkHitMeanPull[uFile][uDim]);
-      legMultiTrkProjMean[uDim]->AddEntry(
-        hAllTrkHitMeanPull[uFile][uDim], sTagFiles[uFile], "l");
+      legMultiTrkProjMean[uDim]->AddEntry(hAllTrkHitMeanPull[uFile][uDim], sTagFiles[uFile], "l");
 
     }  // for( UInt_t uFile = 0; uFile < kuNbFiles; uFile++)
 
@@ -701,10 +555,8 @@ Bool_t hitQualCompPull(
     histosStackMultiTrkProjMean[uDim]->Draw("nostack");
     //      legMultiTrkProjMean[uDim]->Draw();
 
-    canvAllPntHit[uDim]->SaveAs(Form(
-      "Pull_AllPntHit%s%s.png", ksDimName[uDim].Data(), sOutFileTag.Data()));
-    canvAllPntHit[uDim]->SaveAs(Form(
-      "Pull_AllPntHit%s%s.pdf", ksDimName[uDim].Data(), sOutFileTag.Data()));
+    canvAllPntHit[uDim]->SaveAs(Form("Pull_AllPntHit%s%s.png", ksDimName[uDim].Data(), sOutFileTag.Data()));
+    canvAllPntHit[uDim]->SaveAs(Form("Pull_AllPntHit%s%s.pdf", ksDimName[uDim].Data(), sOutFileTag.Data()));
   }  // for(UInt_t uDim = 0; uDim < kuNbDim; uDim++)
 
   return kTRUE;

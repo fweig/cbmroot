@@ -37,12 +37,15 @@ CbmStsMC::CbmStsMC(Bool_t active, const char* name)
   , fStsPoints(NULL)
   , fSetup(NULL)
   , fCombiTrans(NULL)
-  , fProcessNeutrals(kFALSE) {}
+  , fProcessNeutrals(kFALSE)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmStsMC::~CbmStsMC() {
+CbmStsMC::~CbmStsMC()
+{
   if (fStsPoints) {
     fStsPoints->Delete();
     delete fStsPoints;
@@ -53,14 +56,14 @@ CbmStsMC::~CbmStsMC() {
 
 
 // -----  ConstructGeometry  -----------------------------------------------
-void CbmStsMC::ConstructGeometry() {
+void CbmStsMC::ConstructGeometry()
+{
 
   TString fileName = GetGeometryFileName();
 
   // --- Only ROOT geometries are supported
   if (!fileName.EndsWith(".root")) {
-    LOG(fatal) << GetName() << ": Geometry format of file " << fileName.Data()
-               << " not supported.";
+    LOG(fatal) << GetName() << ": Geometry format of file " << fileName.Data() << " not supported.";
   }
   ConstructRootGeometry();
 }
@@ -68,7 +71,8 @@ void CbmStsMC::ConstructGeometry() {
 
 
 // -----   End of event action   -------------------------------------------
-void CbmStsMC::EndOfEvent() {
+void CbmStsMC::EndOfEvent()
+{
   Print();  // Status output
   Reset();  // Reset the track status parameters
 }
@@ -76,7 +80,8 @@ void CbmStsMC::EndOfEvent() {
 
 
 // -----   Initialise   ----------------------------------------------------
-void CbmStsMC::Initialize() {
+void CbmStsMC::Initialize()
+{
 
   // --- Instantiate the output array
   fStsPoints = new TClonesArray("CbmStsPoint");
@@ -117,8 +122,7 @@ void CbmStsMC::Initialize() {
       }
     }
   }
-  LOG(info) << fName << ": Address map initialised with "
-            << Int_t(fAddressMap.size()) << " sensors. ";
+  LOG(info) << fName << ": Address map initialised with " << Int_t(fAddressMap.size()) << " sensors. ";
 
   // --- Call the Initialise method of the mother class
   FairDetector::Initialize();
@@ -127,7 +131,8 @@ void CbmStsMC::Initialize() {
 
 
 // -----   ProcessHits  ----------------------------------------------------
-Bool_t CbmStsMC::ProcessHits(FairVolume* /*vol*/) {
+Bool_t CbmStsMC::ProcessHits(FairVolume* /*vol*/)
+{
 
   // --- If this is the first step for the track in the sensor:
   //     Reset energy loss and store track parameters
@@ -143,8 +148,7 @@ Bool_t CbmStsMC::ProcessHits(FairVolume* /*vol*/) {
 
 
   // --- If track is leaving: get track parameters and create CbmstsPoint
-  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
-      || gMC->IsTrackDisappeared()) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop() || gMC->IsTrackDisappeared()) {
 
     SetStatus(fStatusOut);
 
@@ -167,7 +171,8 @@ Bool_t CbmStsMC::ProcessHits(FairVolume* /*vol*/) {
 
 
 // -----   Reset output array and track status   ---------------------------
-void CbmStsMC::Reset() {
+void CbmStsMC::Reset()
+{
   fStsPoints->Delete();
   fStatusIn.Reset();
   fStatusOut.Reset();
@@ -177,10 +182,10 @@ void CbmStsMC::Reset() {
 
 
 // -----   Screen log   ----------------------------------------------------
-void CbmStsMC::Print(Option_t* /*opt*/) const {
+void CbmStsMC::Print(Option_t* /*opt*/) const
+{
   //Int_t nHits = fStsPoints->GetEntriesFast();
-  LOG(info) << fName << ": " << fStsPoints->GetEntriesFast()
-            << " points registered in this event.";
+  LOG(info) << fName << ": " << fStsPoints->GetEntriesFast() << " points registered in this event.";
 }
 // -------------------------------------------------------------------------
 
@@ -191,26 +196,24 @@ void CbmStsMC::Print(Option_t* /*opt*/) const {
 
 
 // -----   Create STS point   ----------------------------------------------
-CbmStsPoint* CbmStsMC::CreatePoint() {
+CbmStsPoint* CbmStsMC::CreatePoint()
+{
 
   // --- Check detector address
   if (fStatusIn.fAddress != fStatusOut.fAddress) {
-    LOG(error) << GetName() << ": inconsistent detector addresses "
-               << fStatusIn.fAddress << " " << fStatusOut.fAddress;
+    LOG(error) << GetName() << ": inconsistent detector addresses " << fStatusIn.fAddress << " " << fStatusOut.fAddress;
     return NULL;
   }
 
   // --- Check track Id
   if (fStatusIn.fTrackId != fStatusOut.fTrackId) {
-    LOG(error) << GetName() << ": inconsistent track Id " << fStatusIn.fTrackId
-               << " " << fStatusOut.fTrackId;
+    LOG(error) << GetName() << ": inconsistent track Id " << fStatusIn.fTrackId << " " << fStatusOut.fTrackId;
     return NULL;
   }
 
   // --- Check track PID
   if (fStatusIn.fPid != fStatusOut.fPid) {
-    LOG(error) << GetName() << ": inconsistent track PID " << fStatusIn.fPid
-               << " " << fStatusOut.fPid;
+    LOG(error) << GetName() << ": inconsistent track PID " << fStatusIn.fPid << " " << fStatusOut.fPid;
     return NULL;
   }
 
@@ -232,33 +235,22 @@ CbmStsPoint* CbmStsMC::CreatePoint() {
   if (fStatusOut.fFlag) flag += 2;  // second coordinate is exit step
 
   // --- Debug output
-  LOG(debug2) << GetName() << ": Creating point from track "
-              << fStatusIn.fTrackId << " in sensor " << fStatusIn.fAddress
-              << ", position (" << posIn.X() << ", " << posIn.Y() << ", "
-              << posIn.Z() << "), energy loss " << fEloss;
+  LOG(debug2) << GetName() << ": Creating point from track " << fStatusIn.fTrackId << " in sensor "
+              << fStatusIn.fAddress << ", position (" << posIn.X() << ", " << posIn.Y() << ", " << posIn.Z()
+              << "), energy loss " << fEloss;
 
   // --- Add new point to output array
   Int_t newIndex = fStsPoints->GetEntriesFast();
   return new ((*fStsPoints)[fStsPoints->GetEntriesFast()])
-    CbmStsPoint(fStatusIn.fTrackId,
-                fStatusIn.fAddress,
-                posIn,
-                posOut,
-                momIn,
-                momOut,
-                time,
-                length,
-                fEloss,
-                fStatusIn.fPid,
-                0,
-                newIndex,
-                flag);
+    CbmStsPoint(fStatusIn.fTrackId, fStatusIn.fAddress, posIn, posOut, momIn, momOut, time, length, fEloss,
+                fStatusIn.fPid, 0, newIndex, flag);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set the current track status   ----------------------------------
-void CbmStsMC::SetStatus(CbmStsTrackStatus& status) {
+void CbmStsMC::SetStatus(CbmStsTrackStatus& status)
+{
 
   // --- Check for TVirtualMC and TGeomanager
   if (!(gMC && gGeoManager)) {
@@ -272,10 +264,10 @@ void CbmStsMC::SetStatus(CbmStsTrackStatus& status) {
   TString path = gMC->CurrentVolPath();
   auto it      = fAddressMap.find(path);
   if (it == fAddressMap.end()) {
-    LOG(fatal) << fName << ": Path not found in address map! "
-               << gGeoManager->GetPath();
+    LOG(fatal) << fName << ": Path not found in address map! " << gGeoManager->GetPath();
     status.fAddress = 0;
-  } else
+  }
+  else
     status.fAddress = it->second;
 
   // --- Index and PID of current track
@@ -295,11 +287,11 @@ void CbmStsMC::SetStatus(CbmStsTrackStatus& status) {
 
   // --- Status flag (entry/exit or new/stopped/disappeared)
   if (gMC->IsTrackEntering()) {
-    if (gMC->IsNewTrack())
-      status.fFlag = kFALSE;  // Track created in sensor
+    if (gMC->IsNewTrack()) status.fFlag = kFALSE;  // Track created in sensor
     else
       status.fFlag = kTRUE;  // Track entering
-  } else {                   // exiting or stopped or disappeared
+  }
+  else {  // exiting or stopped or disappeared
     if (gMC->IsTrackDisappeared() || gMC->IsTrackStop())
       status.fFlag = kFALSE;  // Track stopped or disappeared in sensor
     else
@@ -310,11 +302,13 @@ void CbmStsMC::SetStatus(CbmStsTrackStatus& status) {
 
 
 //__________________________________________________________________________
-void CbmStsMC::ConstructRootGeometry(TGeoMatrix*) {
+void CbmStsMC::ConstructRootGeometry(TGeoMatrix*)
+{
   if (Cbm::GeometryUtils::IsNewGeometryFile(fgeoName)) {
     LOG(info) << "Importing STS geometry from ROOT file " << fgeoName.Data();
     Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this, fCombiTrans);
-  } else {
+  }
+  else {
     LOG(info) << "Constructing STS geometry from ROOT file " << fgeoName.Data();
     FairModule::ConstructRootGeometry();
   }

@@ -18,6 +18,7 @@
 #define _KFParticleMatch_h_
 
 #include "TObject.h"
+
 #include <vector>
 
 class KFParticleMatch : public TObject {
@@ -36,8 +37,7 @@ public:
 
 private:
   Int_t fMatch;
-  Short_t
-    fMatchType;  // 0 - combinatorial BG, 1 - physics BG, 2 - reconstructed particle
+  Short_t fMatchType;  // 0 - combinatorial BG, 1 - physics BG, 2 - reconstructed particle
 
   ClassDef(KFParticleMatch, 1);
 };
@@ -49,17 +49,17 @@ struct KFMatchParticles  // used for Reco to MC match as well as for MC to Reco
 
   bool IsMatched() const { return ids.size() != 0 || idsMI.size() != 0; };
   bool IsMatchedWithPdg() const { return ids.size() != 0; };
-  int GetBestMatch() const {
-    if (ids.size() != 0)
-      return ids[0];
+  int GetBestMatch() const
+  {
+    if (ids.size() != 0) return ids[0];
     else if (idsMI.size() != 0)
       return idsMI[0];
     else
       return -1;
   };
-  int GetBestMatchWithPdg() const {
-    if (ids.size() != 0)
-      return ids[0];
+  int GetBestMatchWithPdg() const
+  {
+    if (ids.size() != 0) return ids[0];
     else
       return -1;
   };

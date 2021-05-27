@@ -56,13 +56,13 @@ CbmMuchSegmentSector::CbmMuchSegmentSector()
   , fNChannels()
   , fNCols()
   , fNRows()
-  , fDebug(0) {}
+  , fDebug(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMuchSegmentSector::CbmMuchSegmentSector(TString inputFileName,
-                                           TString digiFileName,
-                                           Int_t flag)
+CbmMuchSegmentSector::CbmMuchSegmentSector(TString inputFileName, TString digiFileName, Int_t flag)
   : FairTask()
   , fGeoPar(nullptr)
   , fNStations(0)
@@ -78,7 +78,9 @@ CbmMuchSegmentSector::CbmMuchSegmentSector(TString inputFileName,
   , fNChannels()
   , fNCols()
   , fNRows()
-  , fDebug(0) {}
+  , fDebug(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor  ----------------------------------------------------
@@ -86,7 +88,8 @@ CbmMuchSegmentSector::~CbmMuchSegmentSector() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method SetParContainers  --------------------------------
-void CbmMuchSegmentSector::SetParContainers() {
+void CbmMuchSegmentSector::SetParContainers()
+{
   // Get runtime database
   FairRuntimeDb* db = FairRuntimeDb::instance();
   if (!db) Fatal("Init", "No runtime database");
@@ -95,7 +98,8 @@ void CbmMuchSegmentSector::SetParContainers() {
 // -------------------------------------------------------------------------
 
 // -----   Private method Init ---------------------------------------------
-InitStatus CbmMuchSegmentSector::Init() {
+InitStatus CbmMuchSegmentSector::Init()
+{
   printf("\n=============================  Inputs segmentation parameters  "
          "================================\n");
   ReadInputFile();
@@ -112,9 +116,7 @@ InitStatus CbmMuchSegmentSector::Init() {
     for (Int_t iStation = 0; iStation < fNStations; ++iStation) {
       printf("Station %i\n", iStation + 1);
       for (Int_t iRegion = 0; iRegion < fNRegions[iStation]; ++iRegion)
-        printf("  Region %i: fAngles=%4.1f\n",
-               iRegion + 1,
-               fAngles[iStation][iRegion]);
+        printf("  Region %i: fAngles=%4.1f\n", iRegion + 1, fAngles[iStation][iRegion]);
     }
   }
 
@@ -125,7 +127,8 @@ InitStatus CbmMuchSegmentSector::Init() {
 // -------------------------------------------------------------------------
 
 // -----   Public method SegmentMuch  --------------------------------------
-void CbmMuchSegmentSector::SegmentMuch() {
+void CbmMuchSegmentSector::SegmentMuch()
+{
   for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
 
@@ -134,12 +137,8 @@ void CbmMuchSegmentSector::SegmentMuch() {
       CbmMuchLayer* layer = station->GetLayer(iLayer);
       if (!layer) Fatal("SegmentMuch", "Incomplete layers array.");
       // Segment layer sides
-      printf("Layer=%d SideF Sectors=%i\n",
-             iLayer,
-             SegmentLayerSide(layer->GetSideF()));
-      printf("Layer=%d SideB Sectors=%i\n",
-             iLayer,
-             SegmentLayerSide(layer->GetSideB()));
+      printf("Layer=%d SideF Sectors=%i\n", iLayer, SegmentLayerSide(layer->GetSideF()));
+      printf("Layer=%d SideB Sectors=%i\n", iLayer, SegmentLayerSide(layer->GetSideB()));
     }
     printf("Station %i segmented\n", iStation + 1);
   }
@@ -149,7 +148,7 @@ void CbmMuchSegmentSector::SegmentMuch() {
   TDirectory* oldDir = gDirectory;
 
   // Save parameters
-  TFile* f       = new TFile(fDigiFileName, "RECREATE");
+  TFile* f = new TFile(fDigiFileName, "RECREATE");
   fStations->Write("stations", 1);
 
   f->Close();
@@ -162,7 +161,8 @@ void CbmMuchSegmentSector::SegmentMuch() {
 // -------------------------------------------------------------------------
 
 // -----   Private method SegmentLayerSide  --------------------------------
-Int_t CbmMuchSegmentSector::SegmentLayerSide(CbmMuchLayerSide* layerSide) {
+Int_t CbmMuchSegmentSector::SegmentLayerSide(CbmMuchLayerSide* layerSide)
+{
   if (!layerSide) Fatal("SegmentLayerSide", "Incomplete layer sides array.");
   Int_t nModules = layerSide->GetNModules();
   //  LOG(info)<<" Total Modules "<< nModules;
@@ -173,8 +173,7 @@ Int_t CbmMuchSegmentSector::SegmentLayerSide(CbmMuchLayerSide* layerSide) {
       continue;  ///modified for rpc
                  //   if(module->GetDetectorType()!=3) continue;
     CbmMuchModuleGemRadial* mod = (CbmMuchModuleGemRadial*) module;
-    if (nModules > 0)
-      nSectors += SegmentModule(mod, true);  // Module design
+    if (nModules > 0) nSectors += SegmentModule(mod, true);  // Module design
     else
       nSectors += SegmentModule(mod, false);  // Monolithic design
   }
@@ -183,8 +182,8 @@ Int_t CbmMuchSegmentSector::SegmentLayerSide(CbmMuchLayerSide* layerSide) {
 // -------------------------------------------------------------------------
 
 // -----   Private method SegmentSector  -----------------------------------
-Int_t CbmMuchSegmentSector::SegmentModule(CbmMuchModuleGemRadial* module,
-                                          Bool_t) {
+Int_t CbmMuchSegmentSector::SegmentModule(CbmMuchModuleGemRadial* module, Bool_t)
+{
   Int_t detectorId        = module->GetDetectorId();
   Int_t iStation          = CbmMuchAddress::GetStationIndex(detectorId);
   Int_t iModule           = CbmMuchAddress::GetModuleIndex(detectorId);
@@ -198,7 +197,6 @@ Int_t CbmMuchSegmentSector::SegmentModule(CbmMuchModuleGemRadial* module,
     rMax = station->GetRmax();
     r0   = module->GetPosition().Perp();
     phi0 = module->GetPosition().Phi();
-
   }
 
   else {
@@ -235,8 +233,7 @@ Int_t CbmMuchSegmentSector::SegmentModule(CbmMuchModuleGemRadial* module,
       //      Int_t nPads = 2*Int_t(phiMax/angle)+2;
       //      if (iStation==0 && iLayer==0 && iSide==0 && iModule==0) printf("Sector: %f-%f %i phiMax=%f\n",r1,r2,nPads,phiMax);
       //   LOG(info)<<" sector "<<iSector<< " pad size "<<r2-r1;
-      module->AddSector(new CbmMuchSectorRadial(
-        detectorId, iSector, r1, r2, phi0 - dphi, phi0 + dphi));
+      module->AddSector(new CbmMuchSectorRadial(detectorId, iSector, r1, r2, phi0 - dphi, phi0 + dphi));
       //LOG(info)<<"r1   "<<r1<<"   r2  "<<r2;
       r1 = r2;
       iSector++;
@@ -249,7 +246,8 @@ Int_t CbmMuchSegmentSector::SegmentModule(CbmMuchModuleGemRadial* module,
 
 
 // -------------------------------------------------------------------------
-void CbmMuchSegmentSector::ReadInputFile() {
+void CbmMuchSegmentSector::ReadInputFile()
+{
   ifstream infile;
   infile.open(fInputFileName);
   if (!infile) { Fatal("ReadInputFile", "Error: Cannot open the input file."); }
@@ -306,7 +304,8 @@ void CbmMuchSegmentSector::ReadInputFile() {
   infile.close();
 }
 
-void CbmMuchSegmentSector::DrawSegmentation() {
+void CbmMuchSegmentSector::DrawSegmentation()
+{
   // Change file extension
   char txtfile[100];
   Int_t length = strlen(fDigiFileName);
@@ -329,20 +328,14 @@ void CbmMuchSegmentSector::DrawSegmentation() {
                     kPink+4, kAzure+4, kOrange+4, kViolet+4, kSpring+4};
 */
   for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
-    fprintf(outfile,
-            "=================================================================="
-            "=========\n");
+    fprintf(outfile, "=================================================================="
+                     "=========\n");
     fprintf(outfile, "Station %i\n", iStation + 1);
-    fprintf(outfile,
-            "Sector size, cm   Sector position, cm   Number of pads   Side   "
-            "Pad size, cm\n");
-    fprintf(outfile,
-            "------------------------------------------------------------------"
-            "----------\n");
-    TCanvas* c1 = new TCanvas(Form("station%i", iStation + 1),
-                              Form("station%i", iStation + 1),
-                              1000,
-                              1000);
+    fprintf(outfile, "Sector size, cm   Sector position, cm   Number of pads   Side   "
+                     "Pad size, cm\n");
+    fprintf(outfile, "------------------------------------------------------------------"
+                     "----------\n");
+    TCanvas* c1 = new TCanvas(Form("station%i", iStation + 1), Form("station%i", iStation + 1), 1000, 1000);
     c1->SetFillColor(0);
     c1->Range(-200, -200, 200, 200);
     c1->Range(-270, -270, 270, 270);
@@ -355,15 +348,12 @@ void CbmMuchSegmentSector::DrawSegmentation() {
         CbmMuchModule* mod = layerSide->GetModule(iModule);
         mod->SetFillStyle(0);
         //        mod->Draw();
-        if (mod->GetDetectorType() != 3 && mod->GetDetectorType() != 4)
-          continue;  ///modified for rpc
-        LOG(info) << "Det SEgmentation: " << mod->GetDetectorType()
-                  << " Station " << iStation;
+        if (mod->GetDetectorType() != 3 && mod->GetDetectorType() != 4) continue;  ///modified for rpc
+        LOG(info) << "Det SEgmentation: " << mod->GetDetectorType() << " Station " << iStation;
         // if(mod->GetDetectorType() != 3) continue;
         CbmMuchModuleGemRadial* module = (CbmMuchModuleGemRadial*) mod;
         for (Int_t iSector = 0; iSector < module->GetNSectors(); ++iSector) {
-          CbmMuchSectorRadial* sector =
-            (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
+          CbmMuchSectorRadial* sector = (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
           sector->AddPads();
           sector->DrawPads();
         }  // sectors
@@ -384,10 +374,8 @@ void CbmMuchSegmentSector::DrawSegmentation() {
     }
 
     if (fDebug) {
-      c1->Print(Form(
-        "%s/station%i.eps", gSystem->DirName(fDigiFileName), iStation + 1));
-      c1->Print(Form(
-        "%s/station%i.png", gSystem->DirName(fDigiFileName), iStation + 1));
+      c1->Print(Form("%s/station%i.eps", gSystem->DirName(fDigiFileName), iStation + 1));
+      c1->Print(Form("%s/station%i.png", gSystem->DirName(fDigiFileName), iStation + 1));
     }
 
   }  //stations

@@ -8,9 +8,8 @@
 //
 //---------------------------------------------------
 
-void TrackParameters(Int_t energy   = 8,
-                     Int_t NofFiles = 1000,
-                     TString dir    = "/lustre/cbm/prod/mc/OCT19") {
+void TrackParameters(Int_t energy = 8, Int_t NofFiles = 1000, TString dir = "/lustre/cbm/prod/mc/OCT19")
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -19,11 +18,9 @@ void TrackParameters(Int_t energy   = 8,
   gStyle->SetPalette(55);
   gStyle->SetPaintTextFormat("2.1f");
 
-  TH1D *chi2Vertex[2], *chi2STS[2], *chi2MUCH[2], *NofSTS[2], *NofMUCH[2],
-    *NofTRD[2];
+  TH1D *chi2Vertex[2], *chi2STS[2], *chi2MUCH[2], *NofSTS[2], *NofMUCH[2], *NofTRD[2];
 
-  chi2Vertex[0] = new TH1D(
-    "chi2Vertex_omega", "#chi^{2}/ndf in vertex for omega muons", 200, 0, 20);
+  chi2Vertex[0] = new TH1D("chi2Vertex_omega", "#chi^{2}/ndf in vertex for omega muons", 200, 0, 20);
   chi2Vertex[0]->GetXaxis()->SetTitle("#chi^{2}/ndf");
   chi2Vertex[0]->GetYaxis()->SetTitle("counts/event");
   chi2Vertex[0]->SetLineColor(kRed);
@@ -47,8 +44,7 @@ void TrackParameters(Int_t energy   = 8,
   chi2MUCH[1] = (TH1D*) chi2Vertex[1]->Clone("chi2MUCH_bg");
   chi2MUCH[1]->SetTitle("#chi^{2}/ndf of MUCH track for background");
 
-  NofSTS[0] = new TH1D(
-    "NofSTS_omega", "number of STS hits for omega muons", 16, -0.5, 15.5);
+  NofSTS[0] = new TH1D("NofSTS_omega", "number of STS hits for omega muons", 16, -0.5, 15.5);
   NofSTS[0]->GetXaxis()->SetTitle("number of hits");
   NofSTS[0]->GetYaxis()->SetTitle("counts/event");
   NofSTS[0]->SetLineColor(kRed);
@@ -83,16 +79,9 @@ void TrackParameters(Int_t energy   = 8,
   //--------------------------------------------------------
   for (int i = 0; i < 2; i++)
     for (int k = 1; k < NofFiles + 1; k++) {
-      if (i == 0)
-        name.Form("%s/sis100_muon_lmvm/%dgev/omega/%d/muons.ana.root",
-                  dir.Data(),
-                  energy,
-                  k);
+      if (i == 0) name.Form("%s/sis100_muon_lmvm/%dgev/omega/%d/muons.ana.root", dir.Data(), energy, k);
       else
-        name.Form("%s/sis100_muon_lmvm/%dgev/centr/%d/muons.ana.root",
-                  dir.Data(),
-                  energy,
-                  k);
+        name.Form("%s/sis100_muon_lmvm/%dgev/centr/%d/muons.ana.root", dir.Data(), energy, k);
 
       TFile* f = new TFile(name);
       if (f->IsZombie() || f->GetNkeys() < 1 || f->TestBit(TFile::kRecovered)) {
@@ -100,8 +89,7 @@ void TrackParameters(Int_t energy   = 8,
         continue;
       }
 
-      if (k % 100 == 0)
-        cout << "Input File " << k << " : " << f->GetName() << endl;
+      if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
       InputTree = (TTree*) f->Get("cbmsim");
       InputTree->SetBranchAddress("MuPlus", &MuPlus);
@@ -135,8 +123,7 @@ void TrackParameters(Int_t energy   = 8,
         for (int jPart = 0; jPart < NofMinus; jPart++) {
           Bool_t trigger = kFALSE;
 
-          CbmAnaMuonCandidate* mu_mn =
-            (CbmAnaMuonCandidate*) MuMinus->At(jPart);
+          CbmAnaMuonCandidate* mu_mn = (CbmAnaMuonCandidate*) MuMinus->At(jPart);
 
           if ((i == 0 && mu_mn->GetTrueMu() == 1) || i == 1) trigger = kTRUE;
           if (!trigger) continue;

@@ -10,12 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorStsBinning(TString inFile           = "",
-                       TString sHostname        = "en02",
-                       Int_t iServerRefreshRate = 100,
-                       Int_t iServerHttpPort    = 8080,
-                       TString sHistoFile       = "data/StsHistos.root",
-                       Int_t nEvents            = -1) {
+void MonitorStsBinning(TString inFile = "", TString sHostname = "en02", Int_t iServerRefreshRate = 100,
+                       Int_t iServerHttpPort = 8080, TString sHistoFile = "data/StsHistos.root", Int_t nEvents = -1)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -65,9 +62,7 @@ void MonitorStsBinning(TString inFile           = "",
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -100,13 +95,13 @@ void MonitorStsBinning(TString inFile           = "",
   //  run->Run(nEvents, 0); // run until end of input file
   if (nEvents <= 0) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nEvents);  // process  N Events
   }
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -115,8 +110,7 @@ void MonitorStsBinning(TString inFile           = "",
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorSts: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

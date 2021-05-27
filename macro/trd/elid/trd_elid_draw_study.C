@@ -7,7 +7,8 @@
 using namespace std;
 
 #pragma link C++ class vector < TH1*>;
-void trd_elid_draw_study() {
+void trd_elid_draw_study()
+{
 
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -56,8 +57,7 @@ void trd_elid_draw_study() {
       piSupp[iF][iM].resize(13);
       for (int iH = 6; iH < 13; iH++) {
         stringstream ss;
-        ss << dir << detectors[iF] << "/" << iM << "/" << iH
-           << "/trd_elid_hist.root";
+        ss << dir << detectors[iF] << "/" << iM << "/" << iH << "/trd_elid_hist.root";
         TFile* f = new TFile(ss.str().c_str(), "READ");
         TH1D* h  = (TH1D*) f->Get("fhResults")->Clone();
         // cout << h->GetBinContent(1) << " " << h->GetBinContent(2) << endl;
@@ -73,11 +73,7 @@ void trd_elid_draw_study() {
   for (int iM = 0; iM < 5; iM++) {
     stringstream ss;
     ss << "pisupp_method_" << iM << ";Radiator;Pion suppression";
-    result_hist[iM] = new TH1D(ss.str().c_str(),
-                               ss.str().c_str(),
-                               detectors.size(),
-                               0,
-                               detectors.size());
+    result_hist[iM] = new TH1D(ss.str().c_str(), ss.str().c_str(), detectors.size(), 0, detectors.size());
     for (int iF = 0; iF < detectors.size(); iF++) {
       result_hist[iM]->SetBinContent(iF + 1, piSupp[iF][iM][nofTrdLayers]);
       result_hist[iM]->SetBinError(iF + 1, 0.00001);

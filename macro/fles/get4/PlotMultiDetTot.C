@@ -119,265 +119,165 @@
   TCanvas* cHDP2S = new TCanvas("cHDP2S", "HDP2 summary");
   cHDP2S->Divide(2);
 
-  TH2* hDoubleHitsRatioHDP2 = new TH2D(
-    "hDoubleHitsRatioHDP2",
-    "Ratio of double hits per channel for HDP2; chip; ToT [ns]; Ratio [\%]",
-    16,
-    -0.5,
-    15.5,
-    10,
-    0.0,
-    10.0);
-  TH2* hTripleHitsRatioHDP2 = new TH2D(
-    "hTripleHitsRatioHDP2",
-    "Ratio of triple hits per channel for HDP2;  chip; ToT [ns]; Ratio [\%]",
-    16,
-    -0.5,
-    15.5,
-    10,
-    0.0,
-    10.0);
+  TH2* hDoubleHitsRatioHDP2 =
+    new TH2D("hDoubleHitsRatioHDP2", "Ratio of double hits per channel for HDP2; chip; ToT [ns]; Ratio [\%]", 16, -0.5,
+             15.5, 10, 0.0, 10.0);
+  TH2* hTripleHitsRatioHDP2 =
+    new TH2D("hTripleHitsRatioHDP2", "Ratio of triple hits per channel for HDP2;  chip; ToT [ns]; Ratio [\%]", 16, -0.5,
+             15.5, 10, 0.0, 10.0);
 
-  TH2* hDoubleHitsRatioTSUS = new TH2D(
-    "hDoubleHitsRatioTSUS",
-    "Ratio of double hits per channel for TSUS;  chip; ToT [ns]; Ratio [\%]",
-    16,
-    -0.5,
-    15.5,
-    10,
-    0.0,
-    10.0);
-  TH2* hTripleHitsRatioTSUS = new TH2D(
-    "hTripleHitsRatioTSUS",
-    "Ratio of triple hits per channel for TSUS;  chip; ToT [ns]; Ratio [\%]",
-    16,
-    -0.5,
-    15.5,
-    10,
-    0.0,
-    10.0);
+  TH2* hDoubleHitsRatioTSUS =
+    new TH2D("hDoubleHitsRatioTSUS", "Ratio of double hits per channel for TSUS;  chip; ToT [ns]; Ratio [\%]", 16, -0.5,
+             15.5, 10, 0.0, 10.0);
+  TH2* hTripleHitsRatioTSUS =
+    new TH2D("hTripleHitsRatioTSUS", "Ratio of triple hits per channel for TSUS;  chip; ToT [ns]; Ratio [\%]", 16, -0.5,
+             15.5, 10, 0.0, 10.0);
 
-  TH2* hDoubleHitsRatioHDP5 = new TH2D(
-    "hDoubleHitsRatioHDP5",
-    "Ratio of double hits per channel for HDP5;  chip; ToT [ns];; Ratio [\%]",
-    8,
-    -0.5,
-    7.5,
-    10,
-    0.0,
-    10.0);
-  TH2* hTripleHitsRatioHDP5 = new TH2D(
-    "hTripleHitsRatioHDP5",
-    "Ratio of triple hits per channel for HDP5;  chip; ToT [ns]; Ratio [\%]",
-    8,
-    -0.5,
-    7.5,
-    10,
-    0.0,
-    10.0);
+  TH2* hDoubleHitsRatioHDP5 =
+    new TH2D("hDoubleHitsRatioHDP5", "Ratio of double hits per channel for HDP5;  chip; ToT [ns];; Ratio [\%]", 8, -0.5,
+             7.5, 10, 0.0, 10.0);
+  TH2* hTripleHitsRatioHDP5 =
+    new TH2D("hTripleHitsRatioHDP5", "Ratio of triple hits per channel for HDP5;  chip; ToT [ns]; Ratio [\%]", 8, -0.5,
+             7.5, 10, 0.0, 10.0);
 
   for (Int_t iChan = 0; iChan < iNbChanChip; iChan++) {
     // Double hits
     if (0 < hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        0,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(0, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        1,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(1, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        6,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(6, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        7,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(7, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        8,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(8, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        9,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(9, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        10,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(10, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        11,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(11, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        12,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(12, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        13,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(13, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        14,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(14, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP2->Fill(
-        15,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP2->Fill(15, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1));
 
     // Triple hits
     if (0 < hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        0,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(0, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_000->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        1,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(1, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_001->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_002->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_003->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_004->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_005->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        6,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(6, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_006->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        7,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(7, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_007->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        8,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(8, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_008->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        9,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(9, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_009->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        10,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(10, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_010->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        11,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(11, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_011->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        12,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(12, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_012->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        13,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(13, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_013->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        14,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(14, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_014->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP2->Fill(
-        15,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP2->Fill(15, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_015->GetBinContent(1 + iChan, 1));
   }  // for( Int_t iChan = 0; iChan < 4; iChan ++)
 
   cHDP2S->cd(1);
@@ -405,30 +305,22 @@
            / hGet4MultipleHitsVsTot_017->GetBinContent( 1 + iChan, 1) );
 */
     if (0 < hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1));
     /*
       if( 0 < hGet4MultipleHitsVsTot_022->GetBinContent( 1 + iChan, 1) )
          hDoubleHitsRatioTSUS->Fill( 6, 0.5 + iChan,
@@ -443,54 +335,38 @@
 */
 
     if (0 < hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        8,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(8, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        9,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(9, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        10,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(10, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        11,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(11, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        12,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(12, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        13,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(13, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        14,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(14, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioTSUS->Fill(
-        15,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioTSUS->Fill(15, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1));
 
     // Triple hits
     /*
@@ -506,92 +382,64 @@
            / hGet4MultipleHitsVsTot_017->GetBinContent( 1 + iChan, 1) );
 */
     if (0 < hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_018->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_019->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_020->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_021->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_022->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        6,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_022->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_022->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(6, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_022->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_022->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_023->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        7,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_023->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_023->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(7, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_023->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_023->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        8,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(8, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_064->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        9,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(9, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_065->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        10,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(10, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_066->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        11,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(11, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_067->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        12,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(12, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_068->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        13,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(13, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_069->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        14,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(14, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_070->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioTSUS->Fill(
-        15,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioTSUS->Fill(15, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_071->GetBinContent(1 + iChan, 1));
   }  // for( Int_t iChan = 0; iChan < 4; iChan ++)
 
   cTSUStripS->cd(1);
@@ -607,105 +455,73 @@
   for (Int_t iChan = 0; iChan < iNbChanChip; iChan++) {
     // Double hits
     if (0 < hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        0,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(0, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        1,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(1, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        6,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(6, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1))
-      hDoubleHitsRatioHDP5->Fill(
-        7,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 2)
-          / hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1));
+      hDoubleHitsRatioHDP5->Fill(7, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 2)
+                                   / hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1));
 
     // Triple hits
     if (0 < hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        0,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(0, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_072->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        1,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(1, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_073->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        2,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(2, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_074->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        3,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(3, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_075->GetBinContent(1 + iChan, 1));
 
     if (0 < hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        4,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(4, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_076->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        5,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(5, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_077->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        6,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(6, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_078->GetBinContent(1 + iChan, 1));
     if (0 < hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1))
-      hTripleHitsRatioHDP5->Fill(
-        7,
-        0.5 + iChan,
-        100.0 * hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 3)
-          / hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1));
+      hTripleHitsRatioHDP5->Fill(7, 0.5 + iChan,
+                                 100.0 * hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 3)
+                                   / hGet4MultipleHitsVsTot_079->GetBinContent(1 + iChan, 1));
   }  // for( Int_t iChan = 0; iChan < 4; iChan ++)
 
   cHDP5S->cd(1);

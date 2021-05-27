@@ -11,8 +11,10 @@
 #include "CbmStsDigi.h"
 #include "CbmStsParModule.h"
 #include "CbmStsSignal.h"
+
 #include "TF1.h"
 #include "TRandom.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -45,9 +47,8 @@ public:
   /** @brief Standard constructor
      ** @param setupModule  Pointer to module element in the STS setup
      **/
-  CbmStsSimModule(CbmStsElement* setupModule       = nullptr,
-                  const CbmStsParModule* modulePar = nullptr,
-                  CbmStsDigitize* digitizer        = nullptr);
+  CbmStsSimModule(CbmStsElement* setupModule = nullptr, const CbmStsParModule* modulePar = nullptr,
+                  CbmStsDigitize* digitizer = nullptr);
 
 
   /** @brief Copy constructor (disabled) **/
@@ -75,12 +76,7 @@ public:
      ** previous signals within the same channels is checked and the
      ** proper action is executed.
      **/
-  void AddSignal(UShort_t channel,
-                 Double_t time,
-                 Double_t charge,
-                 Int_t index = 0,
-                 Int_t entry = 0,
-                 Int_t file  = 0);
+  void AddSignal(UShort_t channel, Double_t time, Double_t charge, Int_t index = 0, Int_t entry = 0, Int_t file = 0);
 
 
   /** Get status of the analogue buffer

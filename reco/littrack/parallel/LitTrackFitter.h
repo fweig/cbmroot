@@ -16,34 +16,29 @@
 #include "LitTrackParam.h"
 #include "LitTypes.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \brief Fast scalar track fit.
  */
-    inline void LitTrackFitter(LitScalTrack& track,
-                               const LitDetectorLayoutScal& layout) {
+    inline void LitTrackFitter(LitScalTrack& track, const LitDetectorLayoutScal& layout)
+    {
       LitTrackParamScal par = track.GetParamFirst();
 
       unsigned char nofVirtualStations = layout.GetNofVirtualStations();
       unsigned char nofSteps           = (nofVirtualStations - 1) / 2;
       for (unsigned char iStep = 0; iStep < nofSteps; iStep++) {
-        const LitVirtualStationScal& vsFront =
-          layout.GetVirtualStation(2 * iStep + 0);
-        const LitVirtualStationScal& vsMiddle =
-          layout.GetVirtualStation(2 * iStep + 1);
-        const LitVirtualStationScal& vsBack =
-          layout.GetVirtualStation(2 * iStep + 2);
-        if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty()
-            || vsBack.GetField().IsEmpty()) {
+        const LitVirtualStationScal& vsFront  = layout.GetVirtualStation(2 * iStep + 0);
+        const LitVirtualStationScal& vsMiddle = layout.GetVirtualStation(2 * iStep + 1);
+        const LitVirtualStationScal& vsBack   = layout.GetVirtualStation(2 * iStep + 2);
+        if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty() || vsBack.GetField().IsEmpty()) {
           LitLineExtrapolation(par, vsBack.GetZ());
-        } else {
-          LitRK4Extrapolation(par,
-                              vsBack.GetZ(),
-                              vsFront.GetField(),
-                              vsMiddle.GetField(),
-                              vsBack.GetField());
+        }
+        else {
+          LitRK4Extrapolation(par, vsBack.GetZ(), vsFront.GetField(), vsMiddle.GetField(), vsBack.GetField());
         }
 
         if (!vsFront.GetMaterial().IsEmpty()) {
@@ -62,10 +57,9 @@ namespace lit {
         }
       }
 
-      fscal chiSq = 0.;
-      unsigned char prevStationId =
-        -1;  // start with -1, i.e. there where no previous station id
-      unsigned short nofHits = track.GetNofHits();
+      fscal chiSq                 = 0.;
+      unsigned char prevStationId = -1;  // start with -1, i.e. there where no previous station id
+      unsigned short nofHits      = track.GetNofHits();
       for (unsigned short iHit = 0; iHit < nofHits; iHit++) {
         const LitScalPixelHit* hit = track.GetHit(iHit);
 
@@ -75,11 +69,8 @@ namespace lit {
         // LitRK4Extrapolation(par, hit->Z, field1, field2, field3);
 
         // Add material taking into account missing hits
-        for (unsigned char iStation = prevStationId + 1;
-             iStation <= hit->stationId;
-             iStation++) {
-          const LitVirtualStationScal& vs =
-            layout.GetStation(iStation).GetVirtualStation(0);
+        for (unsigned char iStation = prevStationId + 1; iStation <= hit->stationId; iStation++) {
+          const LitVirtualStationScal& vs = layout.GetStation(iStation).GetVirtualStation(0);
           if (!vs.GetMaterial().IsEmpty()) {
             fscal thickness = vs.GetMaterial().GetMaterial(par.X, par.Y);
             if (thickness > 0) LitAddMaterial<fscal>(par, thickness);

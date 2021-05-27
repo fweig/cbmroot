@@ -18,7 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
+void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
+{
   if (nEvents > 500) nEvents = 500;
   Bool_t trdSmearing(1), trdClustering(0), qa(0);
   // ========================================================================
@@ -28,10 +29,8 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << digipar
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -45,8 +44,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   gStyle->SetOptStat(kFALSE);
   gStyle->SetOptTitle(kFALSE);
   TString trdOption;
-  if (trdSmearing)
-    trdOption = "smearing";
+  if (trdSmearing) trdOption = "smearing";
   else if (trdClustering)
     trdOption = "cluster";
   else
@@ -81,11 +79,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   TString statistic;
   statistic.Form(".%03ievents", nEvents);
   TString outFile;  // = "data/test.pa." + digipar + statistic + ".root";
-  outFile.Form("data/test.pa.%s.%s.%04i.%03ievents.root",
-               digipar.Data(),
-               trdOption.Data(),
-               urqmd,
-               nEvents);
+  outFile.Form("data/test.pa.%s.%s.%04i.%03ievents.root", digipar.Data(), trdOption.Data(), urqmd, nEvents);
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -107,8 +101,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   basiclibs();
   /*dielectron*/ gROOT->LoadMacro("$VMCWORKDIR/macro/rich/cbmlibs.C");
   /*dielectron*/ cbmlibs();
-  /*dielectron*/ gROOT->LoadMacro(
-    "$VMCWORKDIR/macro/littrack/determine_setup.C");
+  /*dielectron*/ gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/determine_setup.C");
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
   gSystem->Load("libBase");
@@ -173,8 +166,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
 
 
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder =
-    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
+  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   /*dielectron*/ mvdHitFinder->SetSigmaNoise(11, kTRUE);
   /*dielectron*/  //mvdHitFinder->ShowDebugHistograms();
   /*dielectron*/ mvdHitFinder->SetAdcDynamic(150);
@@ -216,8 +208,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
 
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -240,8 +231,8 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks           = new CbmStsFindTracks(
-    iVerbose, stsTrackFinder, /*dielectron Bool_t useMvdInTracking= */ true);
+  FairTask* stsFindTracks =
+    new CbmStsFindTracks(iVerbose, stsTrackFinder, /*dielectron Bool_t useMvdInTracking= */ true);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -254,7 +245,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
 
@@ -273,28 +264,24 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
   if (trdSmearing) {
-    CbmTrdHitProducerSmearing* trdHitProd =
-      new CbmTrdHitProducerSmearing(radiator);
+    CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
     run->AddTask(trdHitProd);
-  } else if (trdClustering) {
+  }
+  else if (trdClustering) {
     // -----   TRD clusterizer     ----------------------------------------------
 
-    CbmTrdClusterizerFast* trdCluster = new CbmTrdClusterizerFast(
-      "TRD Clusterizer", "TRD task", radiator, false, true);
+    CbmTrdClusterizerFast* trdCluster = new CbmTrdClusterizerFast("TRD Clusterizer", "TRD task", radiator, false, true);
     run->AddTask(trdCluster);
     printf("Init ClusterfinderFast\n");
 
     //printf("HIER KOMMT DER CLUSTERFINDERFAST\n");
-    CbmTrdClusterFinderFast* trdClusterfindingfast =
-      new CbmTrdClusterFinderFast(true, true, false, 5.0e-7);
+    CbmTrdClusterFinderFast* trdClusterfindingfast = new CbmTrdClusterFinderFast(true, true, false, 5.0e-7);
     run->AddTask(trdClusterfindingfast);
     printf("Finished ClusterfinderFast\n");
 
-    CbmTrdHitProducerCluster* trdClusterHitProducer =
-      new CbmTrdHitProducerCluster();
+    CbmTrdHitProducerCluster* trdClusterHitProducer = new CbmTrdHitProducerCluster();
     run->AddTask(trdClusterHitProducer);
     printf("Finished Hit Producer\n");
   }
@@ -314,8 +301,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd =
-    new CbmTofHitProducer("TOF HitProducer", iVerbose);
+  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer", iVerbose);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
 
@@ -362,8 +348,8 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
-  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask = new CbmTrdSetTracksPidLike(
-    "CbmTrdSetTracksPidLike", "CbmTrdSetTracksPidLike");
+  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =
+    new CbmTrdSetTracksPidLike("CbmTrdSetTracksPidLike", "CbmTrdSetTracksPidLike");
   run->AddTask(trdSetTracksPidLikeTask);
   // -------------------------------------------------------------------------
 
@@ -611,14 +597,12 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
 
   //
   if (qa) {
-    CbmTrdOccupancy* trdOccupancy =
-      new CbmTrdOccupancy("TRD Occupancy", "TRD task", digipar, 5.0e-7);
+    CbmTrdOccupancy* trdOccupancy = new CbmTrdOccupancy("TRD Occupancy", "TRD task", digipar, 5.0e-7);
     run->AddTask(trdOccupancy);
     CbmTrdQa* trdQa = new CbmTrdQa("TRD QA", "TRD task", digipar, 5.0e-7);
     run->AddTask(trdQa);
   }
-  CbmTrdPhotonAnalysis* trdphot =
-    new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
+  CbmTrdPhotonAnalysis* trdphot = new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
   run->AddTask(trdphot);
 
 

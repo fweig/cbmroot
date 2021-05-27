@@ -21,8 +21,7 @@ using std::cout;
 using std::endl;
 
 // -----   Default constructor   -------------------------------------------
-CbmStsHitProducerIdealWrapper::CbmStsHitProducerIdealWrapper()
-  : FairTask("Ideal STS Hit Producer Task") {}
+CbmStsHitProducerIdealWrapper::CbmStsHitProducerIdealWrapper() : FairTask("Ideal STS Hit Producer Task") {}
 // -------------------------------------------------------------------------
 
 
@@ -31,7 +30,8 @@ CbmStsHitProducerIdealWrapper::~CbmStsHitProducerIdealWrapper() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmStsHitProducerIdealWrapper::Init() {
+InitStatus CbmStsHitProducerIdealWrapper::Init()
+{
 
   // Get RootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -51,20 +51,19 @@ InitStatus CbmStsHitProducerIdealWrapper::Init() {
 
   // Create and register output array
   fHitArray = new TClonesArray("CbmStsHit");
-  ioman->Register(
-    "StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
+  ioman->Register("StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
 
 
   fAlgo->Init();
   fAlgo->InitContainers();
 
-  cout << "-I- CbmStsHitProducerIdealWrapper: Intialisation successfull"
-       << endl;
+  cout << "-I- CbmStsHitProducerIdealWrapper: Intialisation successfull" << endl;
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
 
-void CbmStsHitProducerIdealWrapper::SetParContainers() {
+void CbmStsHitProducerIdealWrapper::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* fParCList = fAlgo->GetParList();
@@ -74,12 +73,11 @@ void CbmStsHitProducerIdealWrapper::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -88,15 +86,14 @@ void CbmStsHitProducerIdealWrapper::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-std::vector<CbmStsPoint>
-CbmStsHitProducerIdealWrapper::Convert(TClonesArray* arr) {
+std::vector<CbmStsPoint> CbmStsHitProducerIdealWrapper::Convert(TClonesArray* arr)
+{
 
   std::vector<CbmStsPoint> vec;
   Int_t entries = arr->GetEntriesFast();
   if (entries > 0) {
     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(0));
-    LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
-              << entries;
+    LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
   }
   for (int i = 0; i < entries; ++i) {
     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(i));
@@ -107,7 +104,8 @@ CbmStsHitProducerIdealWrapper::Convert(TClonesArray* arr) {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/) {
+void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/)
+{
 
   // Reset output array
   if (!fHitArray) Fatal("Exec", "No StsHit array");
@@ -130,8 +128,8 @@ void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/) {
   }
 
   // Event summary
-  cout << "-I- CbmStsHitProducerIdealWrapper: " << points.size()
-       << " StsPoints, " << hits.size() << " Hits created." << endl;
+  cout << "-I- CbmStsHitProducerIdealWrapper: " << points.size() << " StsPoints, " << hits.size() << " Hits created."
+       << endl;
 }
 // -------------------------------------------------------------------------
 

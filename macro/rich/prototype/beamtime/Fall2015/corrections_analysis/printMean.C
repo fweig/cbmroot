@@ -1,8 +1,8 @@
 // calib = 0 - see results before calibration
 // calib = 1 - see results after calibration
 
-void printMean(TString filename = "Wuppertal_analysis.histo.root",
-               Int_t calib      = 1) {
+void printMean(TString filename = "Wuppertal_analysis.histo.root", Int_t calib = 1)
+{
   TFile* f = new TFile(filename);
 
   //f->ls();

@@ -72,9 +72,7 @@ private:
   // TODO: Up to now we have three disconnected vectors which is very
   //       error prone. Find a better solution
 
-  std::vector<std::string> fAllowedChannels = {"stscomponent",
-                                               "trdcomponent",
-                                               "tofcomponent"};
+  std::vector<std::string> fAllowedChannels = {"stscomponent", "trdcomponent", "tofcomponent"};
   std::vector<int> fSysId                   = {16, 64, 96};
 
 

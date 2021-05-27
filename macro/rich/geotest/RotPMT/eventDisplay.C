@@ -1,6 +1,7 @@
 
 
-void eventDisplay(int PMTrotX = 10, int PMTrotY = 15, int RotMir = 1) {
+void eventDisplay(int PMTrotX = 10, int PMTrotY = 15, int RotMir = 1)
+{
   int GeoCase = 2;
   //int PtNotP=0;  float MomMin=3.95; float MomMax=4.;
   int PtNotP   = 1;
@@ -13,10 +14,9 @@ void eventDisplay(int PMTrotX = 10, int PMTrotY = 15, int RotMir = 1) {
   TString outDir     = GetOutDir(GeoCase);  //="/data/GeoOpt/RotPMT/NewGeo/";
   TString GeoText    = GetGeoText(GeoCase);
   TString MomText    = GetMomText(PtNotP, MomMin, MomMax);
-  TString ParFile    = outDir + "Parameters_" + GeoText + "_" + RotMirText + "_"
-                    + PMTRotText + "_" + MomText + "_display.root";
-  TString SimFile = outDir + "Sim_" + GeoText + "_" + RotMirText + "_"
-                    + PMTRotText + "_" + MomText + "_display.root";
+  TString ParFile =
+    outDir + "Parameters_" + GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + MomText + "_display.root";
+  TString SimFile = outDir + "Sim_" + GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + MomText + "_display.root";
 
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -53,10 +53,9 @@ void eventDisplay(int PMTrotX = 10, int PMTrotY = 15, int RotMir = 1) {
   rtdb->setFirstInput(parInput1);
 
 
-  FairEventManager* fMan = new FairEventManager();
-  FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
+  FairEventManager* fMan     = new FairEventManager();
+  FairMCTracks* Track        = new FairMCTracks("Monte-Carlo Tracks");
+  FairMCPointDraw* RichPoint = new FairMCPointDraw("RichPoint", kOrange, kFullSquare);
   fMan->AddTask(Track);
   fMan->AddTask(RichPoint);
 
@@ -66,15 +65,15 @@ void eventDisplay(int PMTrotX = 10, int PMTrotY = 15, int RotMir = 1) {
 
 ////////////////////////////////////////////
 ////////////////////////////////////////////
-TString GetMomText(int PtNotP, float MomMin, float MomMax) {
+TString GetMomText(int PtNotP, float MomMin, float MomMax)
+{
   TString Pstring = "P";
   if (PtNotP == 1) { Pstring = "Pt"; }
   if ((MomMax - MomMin) < 0.1) {}
   char Ptxt[256];
 
-  if ((MomMax - MomMin) < 0.1) {
-    sprintf(Ptxt, "%sFixed%d", Pstring.Data(), MomMax);
-  } else {
+  if ((MomMax - MomMin) < 0.1) { sprintf(Ptxt, "%sFixed%d", Pstring.Data(), MomMax); }
+  else {
     sprintf(Ptxt, "%s%dto%d", Pstring.Data(), MomMin, MomMax);
   }
   stringstream ss;
@@ -83,7 +82,8 @@ TString GetMomText(int PtNotP, float MomMin, float MomMax) {
 }
 
 ////////////////////////////////////////////
-TString GetGeoText(int GeoCase) {
+TString GetGeoText(int GeoCase)
+{
   //GeoCase=-2 ==> old geometry with rich_v08a.geo (RICH starts at 1600, Mirror tilt -1)
   //GeoCase=-1 ==> old geometry with rich_v14a.gdml (RICH starts at 1800, Mirror tilt -1)
   //GeoCase=0 ==> old geometry with *.geo (own creation)(RICH starts at 1600, Mirror tilt -1)
@@ -99,7 +99,8 @@ TString GetGeoText(int GeoCase) {
   if (GeoCase == 2) { return "RichGeo_NewGdml"; }
 }
 ////////////////////////////////////////////
-TString GetOutDir(int GeoCase) {
+TString GetOutDir(int GeoCase)
+{
   return "/data/GeoOpt/RotPMT/";
   //return "/hera/cbm/users/tariq/GeoOptRootFiles/RotPMT/";
   // if(GeoCase<=0){return "/data/GeoOpt/RotPMT/OlderGeo/";}
@@ -107,11 +108,11 @@ TString GetOutDir(int GeoCase) {
   // if(GeoCase==2){return "/data/GeoOpt/RotPMT/NewGeo/";}
 }
 ////////////////////////////////////////////
-TString GetMirText(int RotMir) {
+TString GetMirText(int RotMir)
+{
   char RotMir_txt[256];
-  if (RotMir < 0) {
-    sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMir_txt, "RotMir_p%d", RotMir);
   }
 
@@ -120,7 +121,8 @@ TString GetMirText(int RotMir) {
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPMTRotText(float PMTrotX, float PMTrotY) {
+TString GetPMTRotText(float PMTrotX, float PMTrotY)
+{
   int ShiftXmod10     = (int(PMTrotX * 10)) % 10;
   int ShiftYmod10     = (int(PMTrotY * 10)) % 10;
   float IntegerXValue = PMTrotX - (float(ShiftXmod10)) / 10.;
@@ -130,9 +132,7 @@ TString GetPMTRotText(float PMTrotX, float PMTrotY) {
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   stringstream ss;
   ss << "RotPMT_" << ShiftXTxt << "_" << ShiftYTxt;

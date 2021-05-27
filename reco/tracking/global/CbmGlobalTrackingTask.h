@@ -19,7 +19,9 @@
 #include "CbmTimeSlice.h"
 #include "CbmTofHit.h"
 #include "CbmVertex.h"
+
 #include "FairTask.h"
+
 #include "TClonesArray.h"
 
 class CbmGlobalTrackingTask : public FairTask {

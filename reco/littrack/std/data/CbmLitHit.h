@@ -28,14 +28,7 @@ public:
   /**
     * \brief Constructor.
     */
-  CbmLitHit()
-    : fRefId(0)
-    , fHitType(kLITPIXELHIT)
-    , fZ(0.)
-    , fDz(0.)
-    , fT(0.)
-    , fDt(0.)
-    , fDetectorId(0) {}
+  CbmLitHit() : fRefId(0), fHitType(kLITPIXELHIT), fZ(0.), fDz(0.), fT(0.), fDt(0.), fDetectorId(0) {}
 
   /**
     * \brief Destructor.
@@ -49,12 +42,8 @@ public:
   litfloat GetDz() const { return fDz; }
   litfloat GetT() const { return fT; }
   litfloat GetDt() const { return fDt; }
-  LitSystemId GetSystem() const {
-    return LitSystemId((fDetectorId & (WL_SYSTEM << SB_SYSTEM)) >> SB_SYSTEM);
-  }
-  Int_t GetStation() const {
-    return (fDetectorId & (WL_STATION << SB_STATION)) >> SB_STATION;
-  }
+  LitSystemId GetSystem() const { return LitSystemId((fDetectorId & (WL_SYSTEM << SB_SYSTEM)) >> SB_SYSTEM); }
+  Int_t GetStation() const { return (fDetectorId & (WL_STATION << SB_STATION)) >> SB_STATION; }
 
   /* Setters */
   void SetRefId(Int_t refId) { fRefId = refId; }
@@ -63,9 +52,7 @@ public:
   void SetDz(litfloat dz) { fDz = dz; }
   void SetT(litfloat t) { fT = t; }
   void SetDt(litfloat dt) { fDt = dt; }
-  void SetDetectorId(LitSystemId sysId, Int_t station) {
-    fDetectorId = (sysId << SB_SYSTEM) | (station << SB_STATION);
-  }
+  void SetDetectorId(LitSystemId sysId, Int_t station) { fDetectorId = (sysId << SB_SYSTEM) | (station << SB_STATION); }
 
   /**
     * \brief Return string representation of class.
@@ -74,11 +61,10 @@ public:
   virtual string ToString() const { return ""; }
 
 private:
-  Int_t fRefId;  // reference to MC
-  LitHitType
-    fHitType;  // type of the hit (strip, pixel, etc). Used to safely cast to the proper type.
-  litfloat fZ;   // Z position of the hit [cm]
-  litfloat fDz;  // Z position error of the hit [cm]
+  Int_t fRefId;         // reference to MC
+  LitHitType fHitType;  // type of the hit (strip, pixel, etc). Used to safely cast to the proper type.
+  litfloat fZ;          // Z position of the hit [cm]
+  litfloat fDz;         // Z position error of the hit [cm]
   litfloat fT;
   litfloat fDt;
 
@@ -98,23 +84,17 @@ private:
 /**
  * \class Comparator for STL sorting algorithms.
  */
-class CompareHitPtrZLess :
-  public std::binary_function<const CbmLitHit*, const CbmLitHit*, bool> {
+class CompareHitPtrZLess : public std::binary_function<const CbmLitHit*, const CbmLitHit*, bool> {
 public:
-  bool operator()(const CbmLitHit* hit1, const CbmLitHit* hit2) const {
-    return hit1->GetZ() < hit2->GetZ();
-  }
+  bool operator()(const CbmLitHit* hit1, const CbmLitHit* hit2) const { return hit1->GetZ() < hit2->GetZ(); }
 };
 
 /**
  * \class Comparator for STL sorting algorithms.
  */
-class CompareHitPtrZMore :
-  public std::binary_function<const CbmLitHit*, const CbmLitHit*, bool> {
+class CompareHitPtrZMore : public std::binary_function<const CbmLitHit*, const CbmLitHit*, bool> {
 public:
-  bool operator()(const CbmLitHit* hit1, const CbmLitHit* hit2) const {
-    return hit1->GetZ() > hit2->GetZ();
-  }
+  bool operator()(const CbmLitHit* hit1, const CbmLitHit* hit2) const { return hit1->GetZ() > hit2->GetZ(); }
 };
 
 #endif /*CBMLITHIT_H_*/

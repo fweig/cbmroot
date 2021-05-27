@@ -22,18 +22,10 @@
 // --------------------------------------------------------------------------
 
 
-void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
-                       Int_t idx,
-                       TString inputFile);
-void AddLMVMCocktail(FairPrimaryGenerator* primGen,
-                     Int_t idx,
-                     TString inputFile);
-void AddRadiationCocktail(FairPrimaryGenerator* primGen,
-                          Int_t idx,
-                          TString inputFile);
-void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
-                          Int_t idx,
-                          TString inputFile);
+void AddUrqmdGenerator(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile);
+void AddLMVMCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile);
+void AddRadiationCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile);
+void AddCharmoniaCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile);
 void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t idx);
 void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult);
 
@@ -42,9 +34,8 @@ void SetParticleDecays();
 void ConfigureMCStack();
 
 
-void run_sim_fast(Int_t nEvents         = 2,
-                  const char* setupName = "sis100_electron",
-                  const char* inputFile = "") {
+void run_sim_fast(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -57,7 +48,7 @@ void run_sim_fast(Int_t nEvents         = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_sim_fast";  // this macro's name for screen output
+  TString myName = "run_sim_fast";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -123,7 +114,7 @@ void run_sim_fast(Int_t nEvents         = 2,
   Double_t targetPosX      = 0.;      // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;      // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;      // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;      // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -159,12 +150,13 @@ void run_sim_fast(Int_t nEvents         = 2,
 
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
-  TString inFile = "";  // give here or as argument; otherwise default is taken
+  TString inFile           = "";  // give here or as argument; otherwise default is taken
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInputFile;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   //  std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -206,8 +198,7 @@ void run_sim_fast(Int_t nEvents         = 2,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -227,8 +218,7 @@ void run_sim_fast(Int_t nEvents         = 2,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -276,8 +266,7 @@ void run_sim_fast(Int_t nEvents         = 2,
 
   /// AA urqmd
   //TString urqmdFile = location + "/cbm/prod/gen/urqmd/auau/8gev/centr/urqmd.auau.8gev.centr.";
-  TString urqmdFile =
-    location + "/cbm/users/jbook/urqmd/auau/8gev/centr010/";  //selfmade UrQMD
+  TString urqmdFile = location + "/cbm/users/jbook/urqmd/auau/8gev/centr010/";  //selfmade UrQMD
   //  TString urqmdFile = location + "/cbm/prod/gen/urqmd/auau/8gev/mbias/urqmd.auau.8gev.mbias.";
   /// pA urqmd
   // TString urqmdFile = "/scratch/aliceexp/jbook/urqmd-3.4/pau/30gev/centr/"; //selfmade UrQMD
@@ -289,8 +278,7 @@ void run_sim_fast(Int_t nEvents         = 2,
   //TString plutoFile = location + "/cbm/users/ekrebs/pluto/jun15/auau/cktA/8gev/"; //mumu
   AddLMVMCocktail(primGen, idx, plutoFile);
 
-  TString radiationFile =
-    location + "/cbm/users/jbook/pluto/inmed/out_rapp_pluto_ee_inmed_";
+  TString radiationFile = location + "/cbm/users/jbook/pluto/inmed/out_rapp_pluto_ee_inmed_";
   //TString radiationFile = location + "/cbm/users/ekrebs/pluto/jun15/auau/cktRapp/8gev/"; // for mumu
   AddRadiationCocktail(primGen, idx, radiationFile);
 
@@ -318,21 +306,17 @@ void run_sim_fast(Int_t nEvents         = 2,
     "sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/"
     "sis100_electron_analysis.root",
     //"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
-    "RF",
-    "SMEAR");
-  TH2F* eMom =
-    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimElectron", "P_PMC");
+    "RF", "SMEAR");
+  TH2F* eMom = (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimElectron", "P_PMC");
   fastSim->SetLookupResolutionP(eMom, CbmFastSim::kEle);
 
-  TH2F* piMom =
-    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimPion", "P_PMC");
+  TH2F* piMom = (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimPion", "P_PMC");
   fastSim->SetLookupResolutionP(piMom, CbmFastSim::kPio);
 
   TH2F* kMom = (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimKaon", "P_PMC");
   fastSim->SetLookupResolutionP(kMom, CbmFastSim::kKao);
 
-  TH2F* pMom =
-    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimProton", "P_PMC");
+  TH2F* pMom = (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimProton", "P_PMC");
   fastSim->SetLookupResolutionP(pMom, CbmFastSim::kPro);
 
   // --- efficiency
@@ -343,36 +327,25 @@ void run_sim_fast(Int_t nEvents         = 2,
     "sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/"
     "sis100_electron_analysis.root",
     //"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
-    "RF",
-    "EFF");
-  THnBase* eRec = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimElectron", "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase* eGen = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimElectron_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+    "RF", "EFF");
+  THnBase* eRec = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimElectron", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* eGen = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimElectron_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
   fastSim->SetLookupEfficiency(eRec, eGen, CbmFastSim::kEle);
 
-  THnBase* piRec = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimPion", "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase* piGen = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimPion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* piRec = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimPion", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* piGen = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimPion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
   fastSim->SetLookupEfficiency(piRec, piGen, CbmFastSim::kPio);
 
-  THnBase* kRec = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimKaon", "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase* kGen = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimKaon_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* kRec = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimKaon", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* kGen = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimKaon_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
   fastSim->SetLookupEfficiency(kRec, kGen, CbmFastSim::kKao);
 
-  THnBase* pRec = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimProton", "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase* pGen = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_PrimProton_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* pRec = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimProton", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* pGen = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_PrimProton_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
   fastSim->SetLookupEfficiency(pRec, pGen, CbmFastSim::kPro);
 
-  THnBase* gRec = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_Conversion", "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase* gGen = (THnBase*) histos2->GetHist(
-    "EFF", "Track.SE+-_Conversion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* gRec = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_Conversion", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* gGen = (THnBase*) histos2->GetHist("EFF", "Track.SE+-_Conversion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
   fastSim->SetLookupEfficiency(gRec, gGen, CbmFastSim::kGam);
 
   fastSim->SetEfficiencyMethod(
@@ -393,8 +366,7 @@ void run_sim_fast(Int_t nEvents         = 2,
   decayer->SetForceDecay(TPythia6Decayer::kAll);
   decayer->Init();
 
-  std::cout << "-I- " << myName << ": Add external decayer interface"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Add external decayer interface" << std::endl;
   // Tell the decayer interface to use the external decayer.  The
   // external decayer will be used for:
   // - particle decays defined therein
@@ -410,8 +382,7 @@ void run_sim_fast(Int_t nEvents         = 2,
 
   // -----   Configure geant3   ------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Change GEANT3 configuration & cuts"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Change GEANT3 configuration & cuts" << std::endl;
   TString geantFile = outDir + "/../";
   run->SetUserConfig(geantFile + "g3Config.C");
   run->SetUserCuts(geantFile + "SetCuts.C");
@@ -469,9 +440,7 @@ void run_sim_fast(Int_t nEvents         = 2,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -500,9 +469,8 @@ void run_sim_fast(Int_t nEvents         = 2,
 }
 
 // ------------------------------------------------------------------------
-void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
-                       Int_t idx,
-                       TString inputFile) {
+void AddUrqmdGenerator(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile)
+{
   /// UrQMD version 3.3 - 5k files with 1k events each
   /// checkout https://lxcbmredmine01.gsi.de/projects/cbmroot/wiki/Mass_Production_at_GSI
   ///
@@ -513,8 +481,7 @@ void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
   Int_t idy    = (idx >= 0 ? idx % module : gRandom->Integer(module));
 
   TString file = "";
-  if (isOWN)
-    file = inputFile + Form("/%05d", idy + 1) + "/urqmd.root";
+  if (isOWN) file = inputFile + Form("/%05d", idy + 1) + "/urqmd.root";
   else if (isAA)
     file = inputFile + Form("%05d", idy + 1) + ".root";  /// AA
   else
@@ -524,7 +491,8 @@ void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
   if (isAA || isOWN) {
     CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(file);
     primGen->AddGenerator(uniGen);
-  } else {
+  }
+  else {
     FairUrqmdGenerator* urqmdGen = new FairUrqmdGenerator(file);
     urqmdGen->SetEventPlane(0., 360.);
     primGen->AddGenerator(urqmdGen);
@@ -533,9 +501,8 @@ void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
 }
 
 // ------------------------------------------------------------------------
-void AddLMVMCocktail(FairPrimaryGenerator* primGen,
-                     Int_t idx,
-                     TString inputFile) {
+void AddLMVMCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile)
+{
   ///
   ///  DIELECTRON-COCKTAIL: add particles via pluto generator
   ///
@@ -555,9 +522,8 @@ void AddLMVMCocktail(FairPrimaryGenerator* primGen,
   printf("pluto vec.meson: %s \n",inputFile.Data());
   */
 
-  Int_t idy = (idx >= 0 ? idx % module : gRandom->Integer(module));
-  TString file =
-    inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
+  Int_t idy    = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  TString file = inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
   printf("pluto vec.meson: %s \n", file.Data());
   CbmPlutoGenerator* plutoRho = new CbmPlutoGenerator(file);
   //  primGen->AddGenerator(plutoRho); // not added, included in inmed spectral func
@@ -598,9 +564,8 @@ void AddLMVMCocktail(FairPrimaryGenerator* primGen,
 }
 
 // ------------------------------------------------------------------------
-void AddRadiationCocktail(FairPrimaryGenerator* primGen,
-                          Int_t idx,
-                          TString inputFile) {
+void AddRadiationCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile)
+{
   ///
   /// in-medium and qgp radiation
   ///
@@ -640,7 +605,8 @@ void AddRadiationCocktail(FairPrimaryGenerator* primGen,
 }
 
 // ------------------------------------------------------------------------
-void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t mult) {
+void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t mult)
+{
   ///
   ///  HeavyFragments-COCKTAIL: add particles via fair box generator
   ///
@@ -659,38 +625,21 @@ void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t mult) {
   // check if already defined
 
   Int_t ionCode = kion + 10020;
-  if (!pdgDB->GetParticle(ionCode))
-    pdgDB->AddParticle(
-      "Deuteron", "Deuteron", 1.875613, kTRUE, 0, 3, "Ion", ionCode);
+  if (!pdgDB->GetParticle(ionCode)) pdgDB->AddParticle("Deuteron", "Deuteron", 1.875613, kTRUE, 0, 3, "Ion", ionCode);
   pdgDB->AddAntiParticle("AntiDeuteron", -ionCode);
 
   ionCode = kion + 10030;
   if (!pdgDB->GetParticle(ionCode))
-    pdgDB->AddParticle("Triton",
-                       "Triton",
-                       2.80925,
-                       kFALSE,
-                       khShGev / (12.33 * kYear2Sec),
-                       3,
-                       "Ion",
-                       ionCode);
+    pdgDB->AddParticle("Triton", "Triton", 2.80925, kFALSE, khShGev / (12.33 * kYear2Sec), 3, "Ion", ionCode);
   pdgDB->AddAntiParticle("AntiTriton", -ionCode);
 
   ionCode = kion + 20030;
-  if (!pdgDB->GetParticle(ionCode))
-    pdgDB->AddParticle("HE3", "HE3", 2.80923, kFALSE, 0, 6, "Ion", ionCode);
+  if (!pdgDB->GetParticle(ionCode)) pdgDB->AddParticle("HE3", "HE3", 2.80923, kFALSE, 0, 6, "Ion", ionCode);
   pdgDB->AddAntiParticle("AntiHE3", -ionCode);
 
   ionCode = kion + 20040;
   if (!pdgDB->GetParticle(ionCode))
-    pdgDB->AddParticle("Alpha",
-                       "Alpha",
-                       3.727379,
-                       kTRUE,
-                       khShGev / (12.33 * kYear2Sec),
-                       6,
-                       "Ion",
-                       ionCode);
+    pdgDB->AddParticle("Alpha", "Alpha", 3.727379, kTRUE, khShGev / (12.33 * kYear2Sec), 6, "Ion", ionCode);
   pdgDB->AddAntiParticle("AntiAlpha", -ionCode);
 
   // Use box generators for defined particles and per event multiplcities (pdg,mult)
@@ -734,9 +683,8 @@ void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t mult) {
 }
 
 // ------------------------------------------------------------------------
-void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
-                          Int_t idx,
-                          TString inputFile) {
+void AddCharmoniaCocktail(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile)
+{
   ///
   ///  CHARMONIA: add particles via pluto generator, decay them via TEvtGen
   ///
@@ -747,9 +695,8 @@ void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
   // TString idu=Form("%05d",idx+1);
   // inputFile += idu + "/pluto.pau.30gev.jpsi.epem.root";   // OR "/pluto.pau.30gev.jpsi.root"
 
-  Int_t idy = (idx >= 0 ? idx % module : gRandom->Integer(module));
-  TString file =
-    inputFile + Form("%05d", idy + 1) + "/pluto.pau.30gev.jpsi.epem.root";
+  Int_t idy    = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  TString file = inputFile + Form("%05d", idy + 1) + "/pluto.pau.30gev.jpsi.epem.root";
   printf("pluto vec.meson: %s \n", file.Data());
   CbmPlutoGenerator* plutoJpsi = new CbmPlutoGenerator(file);
   if (idy % 2) primGen->AddGenerator(plutoJpsi);
@@ -774,7 +721,8 @@ void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
 }
 
 // ------------------------------------------------------------------------
-void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult) {
+void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult)
+{
   ///
   /// Use box generators for defined particles and per event multiplcities (pdg,mult)
   ///
@@ -819,7 +767,8 @@ void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult) {
 }
 
 // ------------------------------------------------------------------------
-void SetParticleDecays() {
+void SetParticleDecays()
+{
   ///
   /// set and unset particle decays for geant3
   ///
@@ -984,7 +933,8 @@ void SetParticleDecays() {
   gMC->SetRandom(rnd);
 }
 
-void ConfigureMCStack() {
+void ConfigureMCStack()
+{
   ///
   /// configure the cbm stack, apply/release cuts
   ///

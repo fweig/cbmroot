@@ -9,22 +9,19 @@
 using std::cout;
 using std::endl;
 
-void mvd_reco(Int_t nEvents = 10) {
+void mvd_reco(Int_t nEvents = 10)
+{
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   TString dir          = "events/mvd_v14a/";          // Output directory
   TString mcFile       = dir + "mc.0000.root";        // MC transport file
   TString parFile      = dir + "param.0000.root";     // Parameters file
   TString mvdDeltaFile = dir + "mc.delta.0000.root";  // Delta files for MVD
-  TString mvdRecoFile =
-    dir
-    + "mvd.reco.0000.root";  // Output file with reconstructed tracks and hits
+  TString mvdRecoFile  = dir + "mvd.reco.0000.root";  // Output file with reconstructed tracks and hits
 
   TList* parFileList = new TList();
-  TObjString stsDigiFile(
-    parDir + "/sts/sts_v13d_std.digi.par");  // Digi scheme for STS
+  TObjString stsDigiFile(parDir + "/sts/sts_v13d_std.digi.par");  // Digi scheme for STS
   TString stsMatBudgetFile = parDir + "/sts/sts_matbudget_v13d.root";
 
   TString resultDir = "./test/";  // Directory for output results
@@ -34,16 +31,15 @@ void mvd_reco(Int_t nEvents = 10) {
   Int_t nofMvdDeltaEvents    = 0;
 
   if (script == "yes") {
-    mcFile           = TString(gSystem->Getenv("LIT_MC_FILE"));
-    parFile          = TString(gSystem->Getenv("LIT_PAR_FILE"));
-    mvdDeltaFile     = TString(gSystem->Getenv("LIT_MVD_DELTA_FILE"));
-    mvdRecoFile      = TString(gSystem->Getenv("LIT_MVD_RECO_FILE"));
-    resultDir        = TString(gSystem->Getenv("LIT_RESULT_DIR"));
-    stsDigiFile      = TObjString(gSystem->Getenv("LIT_STS_DIGI"));
-    stsMatBudgetFile = TString(gSystem->Getenv("LIT_STS_MAT_BUDGET_FILE"));
-    normStsPoints    = TString(gSystem->Getenv("LIT_NORM_STS_POINTS")).Atoi();
-    nofMvdDeltaEvents =
-      TString(gSystem->Getenv("LIT_NOF_MVD_DELTA_EVENTS")).Atoi();
+    mcFile            = TString(gSystem->Getenv("LIT_MC_FILE"));
+    parFile           = TString(gSystem->Getenv("LIT_PAR_FILE"));
+    mvdDeltaFile      = TString(gSystem->Getenv("LIT_MVD_DELTA_FILE"));
+    mvdRecoFile       = TString(gSystem->Getenv("LIT_MVD_RECO_FILE"));
+    resultDir         = TString(gSystem->Getenv("LIT_RESULT_DIR"));
+    stsDigiFile       = TObjString(gSystem->Getenv("LIT_STS_DIGI"));
+    stsMatBudgetFile  = TString(gSystem->Getenv("LIT_STS_MAT_BUDGET_FILE"));
+    normStsPoints     = TString(gSystem->Getenv("LIT_NORM_STS_POINTS")).Atoi();
+    nofMvdDeltaEvents = TString(gSystem->Getenv("LIT_NOF_MVD_DELTA_EVENTS")).Atoi();
   }
   parFileList->Add(&stsDigiFile);
 
@@ -69,8 +65,7 @@ void mvd_reco(Int_t nEvents = 10) {
     //      CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
     //      run->AddTask(mvdHitFinder);
 
-    CbmMvdDigitizer* mvdDigi =
-      new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+    CbmMvdDigitizer* mvdDigi = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
     mvdDigi->SetPileUp(0);
     run->AddTask(mvdDigi);
 

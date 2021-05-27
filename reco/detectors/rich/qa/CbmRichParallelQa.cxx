@@ -5,9 +5,10 @@
  **/
 
 #include "CbmRichParallelQa.h"
+
 #include "CbmRichHit.h"
+
 #include "FairRootManager.h"
-#include "tbb/tick_count.h"
 
 #include "tbb/parallel_for.h"
 #include "tbb/parallel_invoke.h"
@@ -15,6 +16,7 @@
 #include "tbb/task.h"
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task_scheduler_observer.h"
+#include "tbb/tick_count.h"
 
 #include <fstream>
 #include <iostream>
@@ -24,23 +26,21 @@ using namespace std;
 using namespace tbb;
 
 int threads_counter = -1;
-map<int, long> threadToCpuMap;  // let get cpuId by threadId
-map<int, int>
-  threadNumberToCpuMap;  // let get cpuId by threadNumber (see threads_counter)
+map<int, long> threadToCpuMap;       // let get cpuId by threadId
+map<int, int> threadNumberToCpuMap;  // let get cpuId by threadNumber (see threads_counter)
 spin_mutex mutex;
 
 class TMyObserver : public task_scheduler_observer {
 public:
   void FInit();  // set cpu - thread correspondence
 protected:
-  void
-  on_scheduler_entry(bool Is_worker);  // run at begin of each thread execution
-  void
-  on_scheduler_exit(bool Is_worker);  // run at end of each thread execution
+  void on_scheduler_entry(bool Is_worker);  // run at begin of each thread execution
+  void on_scheduler_exit(bool Is_worker);   // run at end of each thread execution
 };
 
 // set cpu - thread correspondence
-void TMyObserver::FInit() {
+void TMyObserver::FInit()
+{
   for (int i = 0; i < 8; i++) {
     //threadNumberToCpuMap[2 * i + 0] = i;
     //threadNumberToCpuMap[2 * i + 1] = i + 8;
@@ -51,13 +51,14 @@ void TMyObserver::FInit() {
 }
 
 /// redefine function, which will be run at begining of execution of each thread
-#define handle_error_en(en, msg)                                               \
-  do {                                                                         \
-    errno = en;                                                                \
-    perror(msg);                                                               \
-    exit(EXIT_FAILURE);                                                        \
+#define handle_error_en(en, msg)                                                                                       \
+  do {                                                                                                                 \
+    errno = en;                                                                                                        \
+    perror(msg);                                                                                                       \
+    exit(EXIT_FAILURE);                                                                                                \
   } while (0)
-void TMyObserver::on_scheduler_entry(bool Is_worker) {
+void TMyObserver::on_scheduler_entry(bool Is_worker)
+{
   //cout << "-I-Scheduler entry" <<endl;
   pthread_t I = pthread_self();
   spin_mutex::scoped_lock lock;
@@ -98,13 +99,14 @@ class FinderTaskQa : public task {
   std::vector<std::vector<CbmRichHoughHit>> fData;
   // std::vector<CbmRichHoughHit> fData;
 public:
-  FinderTaskQa(CbmL1RichENNRingFinder* HTImpl,
-               const std::vector<std::vector<CbmRichHoughHit>>& data) {
+  FinderTaskQa(CbmL1RichENNRingFinder* HTImpl, const std::vector<std::vector<CbmRichHoughHit>>& data)
+  {
     fHT   = HTImpl;
     fData = data;
     //fData.assign(data[0].begin(), data[0].end());
   }
-  task* execute() {
+  task* execute()
+  {
     //for (int j = 0; j < 10; j ++){
     for (int i = 0; i < fData.size(); i++) {
       //cout<< "rec event "<< i << endl;
@@ -116,7 +118,8 @@ public:
 };
 
 
-CbmRichParallelQa::CbmRichParallelQa() {
+CbmRichParallelQa::CbmRichParallelQa()
+{
   for (int i = 0; i < kMAX_NOF_THREADS; i++) {
     //fHT[i] = new CbmRichRingFinderHough(0, "compact");
     fHT[i] = new CbmL1RichENNRingFinder(0);
@@ -128,23 +131,18 @@ CbmRichParallelQa::CbmRichParallelQa() {
 
 CbmRichParallelQa::~CbmRichParallelQa() { delete fHT; }
 
-InitStatus CbmRichParallelQa::Init() {
+InitStatus CbmRichParallelQa::Init()
+{
   cout << "InitStatus CbmRichParallelQa::Init()" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichParallelQa::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmRichParallelQa::Init", "RootManager not instantised!"); }
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (NULL == fRichHits) {
-    Fatal("CbmRichParallelQa::Init", "No RichHit array!");
-  }
+  if (NULL == fRichHits) { Fatal("CbmRichParallelQa::Init", "No RichHit array!"); }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichParallelQa::Init", "No RichRing array!");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichParallelQa::Init", "No RichRing array!"); }
 
   for (int i = 0; i < kMAX_NOF_THREADS; i++) {
     fHT[i]->Init();
@@ -157,7 +155,8 @@ InitStatus CbmRichParallelQa::Init() {
   return kSUCCESS;
 }
 
-void CbmRichParallelQa::Exec(Option_t* option) {
+void CbmRichParallelQa::Exec(Option_t* option)
+{
   fEventNumber++;
   cout << "-I- Read event " << fEventNumber << endl;
   std::vector<CbmRichHoughHit> data;
@@ -173,12 +172,11 @@ void CbmRichParallelQa::Exec(Option_t* option) {
     CbmRichHit* hit = (CbmRichHit*) fRichHits->At(iHit);
     if (hit) {
       CbmRichHoughHit tempPoint;
-      tempPoint.fHit.fX = hit->GetX();
-      tempPoint.fHit.fY = hit->GetY();
-      tempPoint.fX2plusY2 =
-        hit->GetX() * hit->GetX() + hit->GetY() * hit->GetY();
-      tempPoint.fId     = iHit;
-      tempPoint.fIsUsed = false;
+      tempPoint.fHit.fX   = hit->GetX();
+      tempPoint.fHit.fY   = hit->GetY();
+      tempPoint.fX2plusY2 = hit->GetX() * hit->GetX() + hit->GetY() * hit->GetY();
+      tempPoint.fId       = iHit;
+      tempPoint.fIsUsed   = false;
       data.push_back(tempPoint);
     }
   }
@@ -195,15 +193,15 @@ void CbmRichParallelQa::Exec(Option_t* option) {
   }
 }
 
-void CbmRichParallelQa::DoTestWithTask() {
+void CbmRichParallelQa::DoTestWithTask()
+{
   tbb::tick_count t0 = tbb::tick_count::now();
   task* root_task    = new (task::allocate_root()) empty_task;
   root_task->set_ref_count(fNofTasks + 1);
   task_list list;
 
   for (int iT = 0; iT < fNofTasks; iT++) {
-    list.push_back(*new (root_task->allocate_child())
-                     FinderTaskQa(fHT[iT], fData));
+    list.push_back(*new (root_task->allocate_child()) FinderTaskQa(fHT[iT], fData));
   }
 
   root_task->spawn_and_wait_for_all(list);

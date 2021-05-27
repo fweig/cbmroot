@@ -1,5 +1,6 @@
 // Configuration macro for Geant4 VirtualMC
-void Config() {
+void Config()
+{
   ///    Create the run configuration
   /// In constructor user has to specify the geometry input
   /// and select geometry navigation via the following options:
@@ -24,12 +25,11 @@ void Config() {
   /// When more than one options are selected, they should be separated with '+'
   /// character: eg. stepLimit+specialCuts.
 
-  TG4RunConfiguration* runConfiguration = new TG4RunConfiguration(
-    "geomRoot", "QGSP_BERT_EMV+optical", "stepLimiter+specialCuts");
+  TG4RunConfiguration* runConfiguration =
+    new TG4RunConfiguration("geomRoot", "QGSP_BERT_EMV+optical", "stepLimiter+specialCuts");
 
   /// Create the G4 VMC
-  TGeant4* geant4 =
-    new TGeant4("TGeant4", "The Geant4 Monte Carlo", runConfiguration);
+  TGeant4* geant4 = new TGeant4("TGeant4", "The Geant4 Monte Carlo", runConfiguration);
   cout << "Geant4 has been created." << endl;
 
   /// create the Specific stack
@@ -59,8 +59,7 @@ void Config() {
 
   //set geant4 specific stuff
   Text_t buffer[50];
-  sprintf(
-    buffer, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
+  sprintf(buffer, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
   geant4->ProcessGeantCommand(buffer);
 
   geant4->SetMaxNStep(10000);  // default is 30000

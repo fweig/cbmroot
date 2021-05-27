@@ -5,48 +5,42 @@
 
 #include "CbmStsSimSensorDssdOrtho.h"
 
-#include <cassert>
+#include "CbmMatch.h"
+#include "CbmStsParSim.h"
+#include "CbmStsPhysics.h"
+#include "CbmStsSetup.h"
 
 #include "TGeoBBox.h"
 #include "TGeoMatrix.h"
 #include "TMath.h"
 #include <TGeoPhysicalNode.h>
 
-#include "CbmMatch.h"
-#include "CbmStsParSim.h"
-#include "CbmStsPhysics.h"
-#include "CbmStsSetup.h"
+#include <cassert>
 
 
 using namespace std;
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmStsSimSensorDssdOrtho::CbmStsSimSensorDssdOrtho(CbmStsElement* element)
-  : CbmStsSimSensorDssd(element) {}
+CbmStsSimSensorDssdOrtho::CbmStsSimSensorDssdOrtho(CbmStsElement* element) : CbmStsSimSensorDssd(element) {}
 // -------------------------------------------------------------------------
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmStsSimSensorDssdOrtho::CbmStsSimSensorDssdOrtho(Int_t nStripsF,
-                                                   Double_t pitchF,
-                                                   Int_t nStripsB,
-                                                   Double_t pitchB,
+CbmStsSimSensorDssdOrtho::CbmStsSimSensorDssdOrtho(Int_t nStripsF, Double_t pitchF, Int_t nStripsB, Double_t pitchB,
                                                    CbmStsElement* element)
   : CbmStsSimSensorDssd(element)
   , fNofStrips {nStripsF, nStripsB}
-  , fPitch {pitchF, pitchB} {}
+  , fPitch {pitchF, pitchB}
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Diffusion   -----------------------------------------------------
-void CbmStsSimSensorDssdOrtho::Diffusion(Double_t x,
-                                         Double_t y,
-                                         Double_t sigma,
-                                         Int_t side,
-                                         Double_t& fracL,
-                                         Double_t& fracC,
-                                         Double_t& fracR) {
+void CbmStsSimSensorDssdOrtho::Diffusion(Double_t x, Double_t y, Double_t sigma, Int_t side, Double_t& fracL,
+                                         Double_t& fracC, Double_t& fracR)
+{
 
   // Check side qualifier
   assert(side == 0 || side == 1);
@@ -69,24 +63,20 @@ void CbmStsSimSensorDssdOrtho::Diffusion(Double_t x,
   // Charge fractions
   // The value 0.707107 is 1/sqrt(2)
   fracL = 0.;
-  if (dLeft < 3. * sigma)
-    fracL = 0.5 * (1. - TMath::Erf(0.707107 * dLeft / sigma));
+  if (dLeft < 3. * sigma) fracL = 0.5 * (1. - TMath::Erf(0.707107 * dLeft / sigma));
   fracR = 0.;
-  if (dRight < 3. * sigma)
-    fracR = 0.5 * (1. - TMath::Erf(0.707107 * dRight / sigma));
+  if (dRight < 3. * sigma) fracR = 0.5 * (1. - TMath::Erf(0.707107 * dRight / sigma));
   fracC = 1. - fracL - fracR;
 
-  LOG(debug4) << GetName() << ": Distances to next strip " << dLeft << " / "
-              << dRight << ", charge fractions " << fracL << " / " << fracC
-              << " / " << fracR;
+  LOG(debug4) << GetName() << ": Distances to next strip " << dLeft << " / " << dRight << ", charge fractions " << fracL
+              << " / " << fracC << " / " << fracR;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Get channel number in module   ----------------------------------
-Int_t CbmStsSimSensorDssdOrtho::GetModuleChannel(Int_t strip,
-                                                 Int_t side,
-                                                 Int_t) const {
+Int_t CbmStsSimSensorDssdOrtho::GetModuleChannel(Int_t strip, Int_t side, Int_t) const
+{
 
   // --- Check side
   assert(side == 0 || side == 1);
@@ -101,9 +91,8 @@ Int_t CbmStsSimSensorDssdOrtho::GetModuleChannel(Int_t strip,
 
 
 // -----   Get strip number from coordinates   -----------------------------
-Int_t CbmStsSimSensorDssdOrtho::GetStripNumber(Double_t x,
-                                               Double_t y,
-                                               Int_t side) const {
+Int_t CbmStsSimSensorDssdOrtho::GetStripNumber(Double_t x, Double_t y, Int_t side) const
+{
 
   // Cave: This implementation assumes that the centre of the sensor volume
   // is also the centre of the active area, i.e. that the inactive borders
@@ -131,7 +120,8 @@ Int_t CbmStsSimSensorDssdOrtho::GetStripNumber(Double_t x,
 
 
 // -----   Initialise   ----------------------------------------------------
-Bool_t CbmStsSimSensorDssdOrtho::Init() {
+Bool_t CbmStsSimSensorDssdOrtho::Init()
+{
 
   // Check whether parameters are assigned
   if (fNofStrips[0] <= 0) {
@@ -176,7 +166,8 @@ Bool_t CbmStsSimSensorDssdOrtho::Init() {
 
 
 // -----   Modify the strip pitch   ----------------------------------------
-void CbmStsSimSensorDssdOrtho::ModifyStripPitch(Double_t pitch) {
+void CbmStsSimSensorDssdOrtho::ModifyStripPitch(Double_t pitch)
+{
 
   assert(fIsSet);  // Parameters should have been set before
 
@@ -196,12 +187,9 @@ void CbmStsSimSensorDssdOrtho::ModifyStripPitch(Double_t pitch) {
 
 
 // -----   Propagate charge to the readout strips   ------------------------
-void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x,
-                                               Double_t y,
-                                               Double_t z,
-                                               Double_t charge,
-                                               Double_t bY,
-                                               Int_t side) {
+void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x, Double_t y, Double_t z, Double_t charge, Double_t bY,
+                                               Int_t side)
+{
 
   // Check side qualifier
   assert(side == 0 || side == 1);
@@ -211,15 +199,13 @@ void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x,
   Double_t zCharge = z;
 
   // Debug
-  LOG(debug4) << GetName() << ": Propagating charge " << charge << " from ("
-              << x << ", " << y << ", " << z << ") on side " << side
-              << " of sensor " << GetName();
+  LOG(debug4) << GetName() << ": Propagating charge " << charge << " from (" << x << ", " << y << ", " << z
+              << ") on side " << side << " of sensor " << GetName();
 
   // Lorentz shift on the drift to the readout plane
   if (fSettings->LorentzShift()) { xCharge += LorentzShift(z, side, bY); }
 
-  LOG(debug4) << GetName() << ": After Lorentz shift: (" << xCharge << ", "
-              << yCharge << ", " << zCharge << ") cm";
+  LOG(debug4) << GetName() << ": After Lorentz shift: (" << xCharge << ", " << yCharge << ", " << zCharge << ") cm";
 
   // Stop if the charge after Lorentz shift is not in the active area.
   // Diffusion into the active area is not treated.
@@ -232,23 +218,17 @@ void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x,
   if (!fSettings->Diffusion()) {
     Int_t iStrip = GetStripNumber(xCharge, yCharge, side);
     fStripCharge[side][iStrip] += charge;
-    LOG(debug4) << GetName() << ": Adding charge " << charge << " to strip "
-                << iStrip;
+    LOG(debug4) << GetName() << ": Adding charge " << charge << " to strip " << iStrip;
   }  //? Do not use diffusion
 
   // Diffusion: charge is distributed over centre strip and neighbours
   else {
     // Calculate diffusion width
-    Double_t diffusionWidth =
-      CbmStsPhysics::DiffusionWidth(z + fDz / 2.,  // distance from back side
-                                    fDz,
-                                    GetConditions()->GetVbias(),
-                                    GetConditions()->GetVfd(),
-                                    GetConditions()->GetTemperature(),
-                                    side);
+    Double_t diffusionWidth = CbmStsPhysics::DiffusionWidth(z + fDz / 2.,  // distance from back side
+                                                            fDz, GetConditions()->GetVbias(), GetConditions()->GetVfd(),
+                                                            GetConditions()->GetTemperature(), side);
     assert(diffusionWidth >= 0.);
-    LOG(debug4) << GetName() << ": Diffusion width = " << diffusionWidth
-                << " cm";
+    LOG(debug4) << GetName() << ": Diffusion width = " << diffusionWidth << " cm";
     // Calculate charge fractions in strips
     Double_t fracL = 0.;  // fraction of charge in left neighbour
     Double_t fracC = 1.;  // fraction of charge in centre strip
@@ -265,18 +245,15 @@ void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x,
     // Collect charge on the readout strips
     if (fracC > 0.) {
       fStripCharge[side][iStripC] += charge * fracC;  // centre strip
-      LOG(debug4) << GetName() << ": Adding charge " << charge * fracC
-                  << " to strip " << iStripC;
+      LOG(debug4) << GetName() << ": Adding charge " << charge * fracC << " to strip " << iStripC;
     }
     if (fracL > 0. && iStripL >= 0) {
       fStripCharge[side][iStripL] += charge * fracL;  // right neighbour
-      LOG(debug4) << GetName() << ": Adding charge " << charge * fracL
-                  << " to strip " << iStripL;
+      LOG(debug4) << GetName() << ": Adding charge " << charge * fracL << " to strip " << iStripL;
     }
     if (fracR > 0. && iStripR < fNofStrips[side]) {
       fStripCharge[side][iStripR] += charge * fracR;  // left neighbour
-      LOG(debug4) << GetName() << ": Adding charge " << charge * fracR
-                  << " to strip " << iStripR;
+      LOG(debug4) << GetName() << ": Adding charge " << charge * fracR << " to strip " << iStripR;
     }
   }  //? Use diffusion
 }
@@ -284,10 +261,8 @@ void CbmStsSimSensorDssdOrtho::PropagateCharge(Double_t x,
 
 
 // -----   Set internal sensor parameters   --------------------------------
-Bool_t CbmStsSimSensorDssdOrtho::SetParameters(Int_t nStripsF,
-                                               Double_t pitchF,
-                                               Int_t nStripsB,
-                                               Double_t pitchB) {
+Bool_t CbmStsSimSensorDssdOrtho::SetParameters(Int_t nStripsF, Double_t pitchF, Int_t nStripsB, Double_t pitchB)
+{
 
   // Geometric shape of the sensor volume
   assert(fElement);
@@ -328,13 +303,13 @@ Bool_t CbmStsSimSensorDssdOrtho::SetParameters(Int_t nStripsF,
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsSimSensorDssdOrtho::ToString() const {
+string CbmStsSimSensorDssdOrtho::ToString() const
+{
   stringstream ss;
   assert(fElement);
   ss << fElement->GetName() << " (DssdOrtho): ";
   TGeoPhysicalNode* node = fElement->GetPnode();
-  if (!node)
-    ss << "no node assigned; ";
+  if (!node) ss << "no node assigned; ";
   else {
     ss << "Dimension (" << fDx << ", " << fDy << ", " << fDz << ") cm, ";
     ss << "# strips " << fNofStrips[0] << "/" << fNofStrips[1] << ", ";

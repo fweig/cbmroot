@@ -2,6 +2,7 @@
 #define LX_CALC_STATS
 
 #include "FairTask.h"
+
 #include "TH1F.h"
 
 class LxCalcStats : public FairTask {

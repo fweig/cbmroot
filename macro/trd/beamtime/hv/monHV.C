@@ -1,4 +1,3 @@
-#include "Riostream.h"
 #include "TCanvas.h"
 #include "TDatime.h"
 #include "TFile.h"
@@ -9,33 +8,26 @@
 #include "TProfile2D.h"
 #include "TString.h"
 #include "TStyle.h"
+
 #include <map>
+
+#include "Riostream.h"
 
 Int_t firstDay(0), firstHour(0), firstMin(0), firstSec(0), firstMsec(0);
 
 //martin: if set true no questions form user required
 Bool_t kohnmode = kFALSE;
 
-Bool_t readFile(TString inFile,
-                std::map<Int_t, TH1I*>& mVoltage,
-                std::map<Int_t, TH1I*>& mCurrent,
-                std::map<Int_t, TGraph*>& mTrendingI,
-                std::map<Int_t, TGraph*>& mTrendingU,
-                TH1I* hTime,
-                TH1I* hChID,
-                TH1I* hDeltaT,
-                TGraph* gTime,
-                TH1I* hCurrentDrift,
-                TH1I* hCurrentAnode,
-                TProfile2D* hCurrentMap,
-                TH1I* hVoltage,
-                TH2I* hVoltageCurrent,
-                Bool_t debug) {
+Bool_t readFile(TString inFile, std::map<Int_t, TH1I*>& mVoltage, std::map<Int_t, TH1I*>& mCurrent,
+                std::map<Int_t, TGraph*>& mTrendingI, std::map<Int_t, TGraph*>& mTrendingU, TH1I* hTime, TH1I* hChID,
+                TH1I* hDeltaT, TGraph* gTime, TH1I* hCurrentDrift, TH1I* hCurrentAnode, TProfile2D* hCurrentMap,
+                TH1I* hVoltage, TH2I* hVoltageCurrent, Bool_t debug)
+{
   Bool_t fileStat;
   ifstream in;
   in.open(inFile);
-  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1),
-    chID(-1), deltaT(0), lineLength(0), fileTime(0);
+  Int_t year(-1), month(-1), day(-1), hour(-1), min(-1), sec(-1), msec(-1), chID(-1), deltaT(0), lineLength(0),
+    fileTime(0);
   Int_t lastDay(-1), lastHour(-1), lastMin(-1), lastSec(-1), lastMsec(-1);
   Double_t voltage(0.0), current(0.0);
   Int_t lineColor(1), lineStyle(1), lineWidth(1);
@@ -46,7 +38,8 @@ Bool_t readFile(TString inFile,
   if (!in) {
     cout << inFile << " not found!" << endl;
     fileStat = false;
-  } else {
+  }
+  else {
     cout << inFile << " found!" << endl;
     Int_t nLines = 0;
     cout << "Reading file";
@@ -83,28 +76,15 @@ Bool_t readFile(TString inFile,
 	  }
 	*/
         if (debug)
-          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n",
-                 sTime.Data(),
-                 year,
-                 month,
-                 day,
-                 hour,
-                 min,
-                 sec,
+          printf("T: %s\n   %i-%02i-%02i:%02i:%02i:%02i:%03i\n\n", sTime.Data(), year, month, day, hour, min, sec,
                  msec);
-        fileTime = (msec - firstMsec)
-                   + ((sec - firstSec)
-                      + ((min - firstMin)
-                         + ((hour - firstHour) + (day - firstDay) * 24) * 60)
-                          * 60)
-                       * 1000;
+        fileTime =
+          (msec - firstMsec)
+          + ((sec - firstSec) + ((min - firstMin) + ((hour - firstHour) + (day - firstDay) * 24) * 60) * 60) * 1000;
         if (lastDay > 0) {
-          deltaT = (msec - lastMsec)
-                   + ((sec - lastSec)
-                      + ((min - lastMin)
-                         + ((hour - lastHour) + (day - lastDay) * 24) * 60)
-                          * 60)
-                       * 1000;
+          deltaT =
+            (msec - lastMsec)
+            + ((sec - lastSec) + ((min - lastMin) + ((hour - lastHour) + (day - lastDay) * 24) * 60) * 60) * 1000;
           hDeltaT->Fill(deltaT);
           gTime->SetPoint(gTime->GetN(), fileTime, deltaT);
           if (debug) cout << deltaT << endl;
@@ -114,7 +94,8 @@ Bool_t readFile(TString inFile,
         lastMin  = min;
         lastSec  = sec;
         lastMsec = msec;
-      } else if (line.EndsWith("A")) {
+      }
+      else if (line.EndsWith("A")) {
         line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementCurrent.u", "");
         line.ReplaceAll(" A", "");
         if (debug) cout << "A: ";
@@ -124,25 +105,18 @@ Bool_t readFile(TString inFile,
         // continue for lv channels:
         if (chID < 400) continue;
         // continue for empty hv channels on the CBM TRD Iseg modules:
-        if (chID <= 499 && chID > 406 || chID == 400 || chID == 402
-            || chID == 405)
-          continue;
+        if (chID <= 499 && chID > 406 || chID == 400 || chID == 402 || chID == 405) continue;
         if (chID <= 599 && chID > 503) continue;
         // continue for unused Iseg modules:
         if (chID >= 600) continue;
         hChID->Fill(chID);
         sCurrent = line(4, lineLength - 4);
         current  = sCurrent.Atof();
+        if (chID >= 401 && chID <= 406 && chID != 402 && chID != 405) hCurrentDrift->Fill(current);  //drift channels
+        if (chID >= 500 && chID <= 503) hCurrentAnode->Fill(current);                                //anode channels
         if (chID >= 401 && chID <= 406 && chID != 402 && chID != 405)
-          hCurrentDrift->Fill(current);  //drift channels
-        if (chID >= 500 && chID <= 503)
-          hCurrentAnode->Fill(current);  //anode channels
-        if (chID >= 401 && chID <= 406 && chID != 402 && chID != 405)
-          hCurrentMap->Fill(
-            (chID - 400 + 1), 1, (1E6 * current));  // drift channels
-        if (chID >= 500 && chID <= 503)
-          hCurrentMap->Fill(
-            (chID - 500 + 1), 2, (1E6 * current));  // anode channel
+          hCurrentMap->Fill((chID - 400 + 1), 1, (1E6 * current));                                // drift channels
+        if (chID >= 500 && chID <= 503) hCurrentMap->Fill((chID - 500 + 1), 2, (1E6 * current));  // anode channel
 
         if (chID >= 500 && chID <= 503) hVoltageCurrent->Fill(voltage, current);
 
@@ -166,9 +140,9 @@ Bool_t readFile(TString inFile,
         }
         mCurrent[chID]->Fill(current);
         mTrendingI[chID]->SetPoint(mTrendingI[chID]->GetN(), fileTime, current);
-      } else if (line.EndsWith("V")) {
-        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u",
-                        "");
+      }
+      else if (line.EndsWith("V")) {
+        line.ReplaceAll("WIENER-CRATE-MIB::outputMeasurementTerminalVoltage.u", "");
         line.ReplaceAll(" V", "");
         if (debug) cout << "V: ";
         lineLength = (Int_t) line.Length();
@@ -179,9 +153,7 @@ Bool_t readFile(TString inFile,
         // continue for lv channels:
         if (chID < 400) continue;
         // continue for empty hv channels on the CBM TRD Iseg modules:
-        if (chID <= 499 && chID > 406 || chID == 400 || chID == 402
-            || chID == 405)
-          continue;
+        if (chID <= 499 && chID > 406 || chID == 400 || chID == 402 || chID == 405) continue;
         if (chID <= 599 && chID > 503) continue;
         // continue for unused Iseg modules:
         if (chID >= 600) continue;
@@ -209,11 +181,12 @@ Bool_t readFile(TString inFile,
         }
         mVoltage[chID]->Fill(voltage);
         mTrendingU[chID]->SetPoint(mTrendingU[chID]->GetN(), fileTime, voltage);
-      } else if (line.BeginsWith("Loop")) {
+      }
+      else if (line.BeginsWith("Loop")) {
         cout << endl << line << endl;
-      } else {
-        cout << endl
-             << "/" << line << "/ : Unknown content! To be ignored" << endl;
+      }
+      else {
+        cout << endl << "/" << line << "/ : Unknown content! To be ignored" << endl;
       }
       if (debug) cout << lineLength << ":   " << line << endl;
 
@@ -225,9 +198,7 @@ Bool_t readFile(TString inFile,
       }
       nLines++;
     }
-    cout << endl
-         << "Done" << endl
-         << "Found " << nLines << " lines in file " << inFile << endl;
+    cout << endl << "Done" << endl << "Found " << nLines << " lines in file " << inFile << endl;
 
     fileStat = true;
   }
@@ -236,7 +207,8 @@ Bool_t readFile(TString inFile,
 }
 
 
-void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
+void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config")
+{
   TDatime da(2015, 10, 30, 12, 00, 00);
   gStyle->SetTimeOffset(da.Convert());
   Bool_t debug(false), diffFile(false), nextFile(true);
@@ -247,17 +219,15 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   ifstream config;
   config.open(configFile);
 
-  if (!config) {
-    cout << configFile << " not found, assuming " << inFile << endl;
-  } else {
+  if (!config) { cout << configFile << " not found, assuming " << inFile << endl; }
+  else {
     cout << configFile << " found." << endl;
     config.getline(cname, 200);
     configline = cname;
     inFile     = configline;
   }
   if (!kohnmode) {
-    cout << "File " << inFile
-         << " will be read. Deviating wishes? (1 for yes, 0 for no): ";
+    cout << "File " << inFile << " will be read. Deviating wishes? (1 for yes, 0 for no): ";
     cin >> diffFile;
     if (diffFile) {
       cout << "File name?:   ";
@@ -274,63 +244,28 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   hDeltaT->SetXTitle("#Deltat (ms)");
   TGraph* gTime = new TGraph();
   gTime->SetTitle("ReadoutTimes");
-  TH1I* hCurrentDrift =
-    new TH1I("hCurrentDrift", "hCurrentDrift", 100001, -1E-7, 8E-6);
-  TH1I* hCurrentAnode =
-    new TH1I("hCurrentAnode", "hCurrentAnode", 100001, -1E-7, 8E-6);
+  TH1I* hCurrentDrift = new TH1I("hCurrentDrift", "hCurrentDrift", 100001, -1E-7, 8E-6);
+  TH1I* hCurrentAnode = new TH1I("hCurrentAnode", "hCurrentAnode", 100001, -1E-7, 8E-6);
   hCurrentDrift->SetXTitle("I (A)");
   hCurrentAnode->SetXTitle("I (A)");
   // prepare x limits for channel numbers to be filled, z is the current in nanoampere
-  TProfile2D* hCurrentMap =
-    new TProfile2D("hCurrentMap", "hCurrentMap", 7, 0.5, 7.5, 2, 0.5, 2.5);
-  TH1I* hVoltage = new TH1I("hVoltage", "hVoltage", 200001, -1, 2000);
+  TProfile2D* hCurrentMap = new TProfile2D("hCurrentMap", "hCurrentMap", 7, 0.5, 7.5, 2, 0.5, 2.5);
+  TH1I* hVoltage          = new TH1I("hVoltage", "hVoltage", 200001, -1, 2000);
   hVoltage->SetXTitle("U (V)");
-  TH2I* hVoltageCurrent = new TH2I("hVoltageCurrent",
-                                   "hVoltageCurrent Anodes",
-                                   2000,
-                                   1849,
-                                   1851,
-                                   1000,
-                                   -1E-7,
-                                   6E-6);
+  TH2I* hVoltageCurrent = new TH2I("hVoltageCurrent", "hVoltageCurrent Anodes", 2000, 1849, 1851, 1000, -1E-7, 6E-6);
   std::map<Int_t, TH1I*> mVoltage;
   std::map<Int_t, TH1I*> mCurrent;
   std::map<Int_t, TGraph*> mTrendingI;
   std::map<Int_t, TGraph*> mTrendingU;
 
   if (kohnmode) {
-    readFile(inFile,
-             mVoltage,
-             mCurrent,
-             mTrendingI,
-             mTrendingU,
-             hTime,
-             hChID,
-             hDeltaT,
-             gTime,
-             hCurrentDrift,
-             hCurrentAnode,
-             hCurrentMap,
-             hVoltage,
-             hVoltageCurrent,
-             debug);
-  } else {
+    readFile(inFile, mVoltage, mCurrent, mTrendingI, mTrendingU, hTime, hChID, hDeltaT, gTime, hCurrentDrift,
+             hCurrentAnode, hCurrentMap, hVoltage, hVoltageCurrent, debug);
+  }
+  else {
     while (nextFile) {
-      readFile(inFile,
-               mVoltage,
-               mCurrent,
-               mTrendingI,
-               mTrendingU,
-               hTime,
-               hChID,
-               hDeltaT,
-               gTime,
-               hCurrentDrift,
-               hCurrentAnode,
-               hCurrentMap,
-               hVoltage,
-               hVoltageCurrent,
-               debug);
+      readFile(inFile, mVoltage, mCurrent, mTrendingI, mTrendingU, hTime, hChID, hDeltaT, gTime, hCurrentDrift,
+               hCurrentAnode, hCurrentMap, hVoltage, hVoltageCurrent, debug);
 
       cout << "Read further file? (1 for yes, 0 for no): ";
       cin >> nextFile;
@@ -344,27 +279,21 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   TCanvas* c0 = new TCanvas("c0", "CurrentDriftDist", 800, 600);
   c0->SetLogy(1);
   hCurrentDrift->DrawCopy();
-  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin();
-       it != mCurrent.end();
-       it++) {
+  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin(); it != mCurrent.end(); it++) {
     //  it->second-DrawCopy("same");
   }
   c0->Update();
   TCanvas* c1 = new TCanvas("c1", "CurrentAnodeDist", 800, 600);
   c1->SetLogy(1);
   hCurrentAnode->DrawCopy();
-  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin();
-       it != mCurrent.end();
-       it++) {
+  for (std::map<Int_t, TH1I*>::iterator it = mCurrent.begin(); it != mCurrent.end(); it++) {
     //  it->second->DrawCopy("same");
   }
   c1->Update();
   TCanvas* c2 = new TCanvas("c2", "VoltageDist", 800, 600);
   c2->SetLogy(1);
   hVoltage->DrawCopy();
-  for (std::map<Int_t, TH1I*>::iterator it = mVoltage.begin();
-       it != mVoltage.end();
-       it++) {
+  for (std::map<Int_t, TH1I*>::iterator it = mVoltage.begin(); it != mVoltage.end(); it++) {
     it->second->DrawCopy("same");
   }
   c2->Update();
@@ -380,9 +309,7 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   TCanvas* c6d = new TCanvas("c6d", "CurrentDriftTrend", 800, 600);
   c6d->SetLogy(0);
   TMultiGraph* multiIDrift = new TMultiGraph();
-  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin();
-       it != mTrendingI.end();
-       it++) {
+  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin(); it != mTrendingI.end(); it++) {
     if (it->first >= 400 && it->first <= 406) {
       multiIDrift->Add(it->second);  // select drift channels by chID
     }
@@ -397,9 +324,7 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   TCanvas* c6a = new TCanvas("c6a", "CurrentAnodeTrend", 800, 600);
   c6a->SetLogy(0);
   TMultiGraph* multiIAnode = new TMultiGraph();
-  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin();
-       it != mTrendingI.end();
-       it++) {
+  for (std::map<Int_t, TGraph*>::iterator it = mTrendingI.begin(); it != mTrendingI.end(); it++) {
     if (it->first >= 500 && it->first <= 504) {
       multiIAnode->Add(it->second);  // select anodes by chID
     }
@@ -414,9 +339,7 @@ void monHV(TString configFile = "/data2/cern_nov2016/hv/filename.config") {
   TCanvas* c7 = new TCanvas("c7", "VoltageTrend", 800, 600);
   c7->SetLogy(0);
   TMultiGraph* multiU = new TMultiGraph();
-  for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin();
-       it != mTrendingU.end();
-       it++) {
+  for (std::map<Int_t, TGraph*>::iterator it = mTrendingU.begin(); it != mTrendingU.end(); it++) {
     multiU->Add(it->second);
   }
   multiU->Draw("AL");

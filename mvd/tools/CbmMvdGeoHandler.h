@@ -14,15 +14,16 @@ using std::map;
 
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
-#include "TObject.h"
-
 #include "tools/CbmMvdHelper.h"
+
+#include "TObject.h"
 
 class TGeoBBox;
 class TGeoVolume;
 class TGeoHMatrix;
 
-enum CbmMvdGeoTyp {
+enum CbmMvdGeoTyp
+{
   Default,
   beamtest,
   TwoStation,

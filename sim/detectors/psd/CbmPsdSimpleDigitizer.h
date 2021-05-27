@@ -10,12 +10,11 @@
 #define CBMPSDSimpleDigitizer_H 1
 
 
+#include "CbmDefs.h"
 #include "CbmDigitize.h"
 #include "CbmPsdDigi.h"
 
 #include "TRandom3.h"
-
-#include "CbmDefs.h"
 
 #define N_PSD_MODS 46
 #define N_PSD_SECT 10

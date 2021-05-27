@@ -8,11 +8,13 @@
 #ifndef CBMCHECKTIMING_H
 #define CBMCHECKTIMING_H
 
-#include "FairTask.h"
-
 #include "CbmModuleList.h"
 #include "CbmTofDigi.h"
+
+#include "FairTask.h"
+
 #include "TString.h"
+
 #include <vector>
 
 class TClonesArray;
@@ -55,9 +57,7 @@ public:
   void SetCheckTimeOrder(Bool_t val = kFALSE) { fCheckTimeOrdering = val; }
 
   /** Switch ON check for inter system offsets **/
-  void SetCheckInterSystemOffset(Bool_t val = kTRUE) {
-    fCheckInterSystemOffset = val;
-  }
+  void SetCheckInterSystemOffset(Bool_t val = kTRUE) { fCheckInterSystemOffset = val; }
 
   void SetOffsetSearchRange(Int_t val = 1000) { fOffsetRange = val; }
 
@@ -81,11 +81,13 @@ public:
   void SetRichPeakWidthNs(Double_t val = 40.) { fRichPeakWidthNs = val; }
   void SetPsdPeakWidthNs(Double_t val = 20.) { fPsdPeakWidthNs = val; }
 
-  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
   }
-  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserTof = uMin;
     fuMaxTotPulserTof = uMax;
   }
@@ -108,28 +110,13 @@ private:
                                  Bool_t bSts = kFALSE, Bool_t bMuch = kFALSE, Bool_t bTof = kFALSE );
     */
   template<class Digi>
-  Int_t FillSystemOffsetHistos(TH1* histo,
-                               TH2* histoCharge,
-                               TH2* histoEvo,
-                               TH2* histoEvoLong,
-                               TH2* histoAFCK,
-                               const Double_t T0Time,
-                               const Int_t offsetRange,
-                               Int_t iStartDigi,
-                               Bool_t bSts  = kFALSE,
-                               Bool_t bMuch = kFALSE,
-                               Bool_t bTof  = kFALSE,
-                               Bool_t bPsd  = kFALSE);
+  Int_t FillSystemOffsetHistos(TH1* histo, TH2* histoCharge, TH2* histoEvo, TH2* histoEvoLong, TH2* histoAFCK,
+                               const Double_t T0Time, const Int_t offsetRange, Int_t iStartDigi, Bool_t bSts = kFALSE,
+                               Bool_t bMuch = kFALSE, Bool_t bTof = kFALSE, Bool_t bPsd = kFALSE);
 
   template<class Digi>
-  Int_t FillHistosSelT0(TH1* histo,
-                        const Double_t T0Time,
-                        const Int_t offsetRange,
-                        Int_t iStartDigi,
-                        Bool_t bSts  = kFALSE,
-                        Bool_t bMuch = kFALSE,
-                        Bool_t bTof  = kFALSE,
-                        Bool_t bPsd  = kFALSE);
+  Int_t FillHistosSelT0(TH1* histo, const Double_t T0Time, const Int_t offsetRange, Int_t iStartDigi,
+                        Bool_t bSts = kFALSE, Bool_t bMuch = kFALSE, Bool_t bTof = kFALSE, Bool_t bPsd = kFALSE);
 
   Int_t CalcNrBins(Int_t);
   void CreateHistos();

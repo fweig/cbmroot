@@ -46,12 +46,8 @@ public:
     * \param[out] length Length of track segment.
     * \return Propagation status.
     */
-  virtual LitStatus Propagate(const CbmLitTrackParam* parIn,
-                              CbmLitTrackParam* parOut,
-                              litfloat zOut,
-                              int pdg,
-                              std::vector<litfloat>* F = NULL,
-                              litfloat* length         = NULL) = 0;
+  virtual LitStatus Propagate(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut, litfloat zOut, int pdg,
+                              std::vector<litfloat>* F = NULL, litfloat* length = NULL) = 0;
 
   /**
     * \brief Track parameter propagation.
@@ -62,11 +58,8 @@ public:
     * \param[out] length Length of track segment.
     * \return Propagation status.
     */
-  virtual LitStatus Propagate(CbmLitTrackParam* par,
-                              litfloat zOut,
-                              int pdg,
-                              std::vector<litfloat>* F = NULL,
-                              litfloat* length         = NULL) = 0;
+  virtual LitStatus Propagate(CbmLitTrackParam* par, litfloat zOut, int pdg, std::vector<litfloat>* F = NULL,
+                              litfloat* length = NULL) = 0;
 };
 
 #endif

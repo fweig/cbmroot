@@ -6,7 +6,8 @@
 //
 // --------------------------------------------------------------------------
 
-Int_t checkFieldSym() {
+Int_t checkFieldSym()
+{
 
   // Choose field map
   TString fieldName = "field_v12b";
@@ -27,8 +28,7 @@ Int_t checkFieldSym() {
 
   // -------  Get magnetic field  -----------------------------------------
   CbmFieldMap* field = NULL;
-  if (fieldName == "field_v12b")
-    field = new CbmFieldMapSym3(fieldName.Data());
+  if (fieldName == "field_v12b") field = new CbmFieldMapSym3(fieldName.Data());
   else if (fieldName == "field_v12a")
     field = new CbmFieldMapSym2(fieldName.Data());
   else {
@@ -346,8 +346,7 @@ Int_t checkFieldSym() {
   hB2.Draw("COLZ");
 
   TString fieldType = "";
-  if (type == 0)
-    fieldType = "Constant field";
+  if (type == 0) fieldType = "Constant field";
   else if (type == 1)
     fieldType = "Field map";
   else if (type == 2)

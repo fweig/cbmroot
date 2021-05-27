@@ -13,7 +13,8 @@
 using std::cout;
 using std::endl;
 
-void create_data(Int_t nEvents = 100) {
+void create_data(Int_t nEvents = 100)
+{
   // Output directory
   TString dir = "/d/cbm02/andrey/test_muons/";
   // MC transport file
@@ -65,8 +66,7 @@ void create_data(Int_t nEvents = 100) {
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << dummyFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

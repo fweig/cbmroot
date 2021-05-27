@@ -11,6 +11,7 @@
 /// CBMROOT headers
 #include "CbmDefs.h"
 #include "CbmTofDigi.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
@@ -77,10 +78,7 @@ public:
 
 private:
   template<class Digi>
-  void FillHistosPerDet(TH1* histoSameTime,
-                        TH1* histoDt,
-                        TH1* histoDtLog,
-                        TH2* histoDtPerChan,
+  void FillHistosPerDet(TH1* histoSameTime, TH1* histoDt, TH1* histoDtLog, TH2* histoDtPerChan,
                         ECbmModuleId iDetId = ECbmModuleId::kLastModule);
   void CreateHistos();
   void WriteHistos();

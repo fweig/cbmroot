@@ -28,18 +28,22 @@ using namespace std;
 CbmBuildEventsFromTracksReal::CbmBuildEventsFromTracksReal()
   : FairTask("CbmBuildEventsFromTracksReal")
   , fStsTracks(nullptr)
-  , fEvents(nullptr) {}
+  , fEvents(nullptr)
+{
+}
 // ===========================================================================
 
 
 // =====   Destructor   ======================================================
-CbmBuildEventsFromTracksReal::~CbmBuildEventsFromTracksReal() {
+CbmBuildEventsFromTracksReal::~CbmBuildEventsFromTracksReal()
+{
   //   fEvents->Delete();
 }
 // ===========================================================================
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsFromTracksReal::Init() {
+InitStatus CbmBuildEventsFromTracksReal::Init()
+{
 
 
   // --- Get FairRootManager instance
@@ -52,15 +56,15 @@ InitStatus CbmBuildEventsFromTracksReal::Init() {
 
   // Register output array (CbmStsDigi)
   fEvents = new TClonesArray("CbmEvent", 100);
-  ioman->Register(
-    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
+  ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   return kSUCCESS;
 }
 // ===========================================================================
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsFromTracksReal::Exec(Option_t*) {
+void CbmBuildEventsFromTracksReal::Exec(Option_t*)
+{
 
   TStopwatch timer;
   timer.Start();
@@ -93,8 +97,7 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*) {
     structure.index = iTrack;
     structure.used  = 0;
 
-    if (timeEr > 0 && timeEr == timeEr && time == time)
-      Tracks.push_back(structure);
+    if (timeEr > 0 && timeEr == timeEr && time == time) Tracks.push_back(structure);
   }
 
   // std::sort(Tracks.begin(), Tracks.end(), CompareTrackTime);
@@ -125,10 +128,8 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*) {
       float time1  = Tracks[iTrack].Track.GetTime();
       float timeC1 = Tracks[iTrack].Track.GetTimeError();
 
-      for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size();
-           iClusterTrack++) {
-        CbmStsTrack* stsTrack =
-          (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
+      for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size(); iClusterTrack++) {
+        CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
 
         float time2  = stsTrack->GetTime();
         float timeC2 = stsTrack->GetTimeError();
@@ -149,10 +150,8 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*) {
     float time_min = 100000000000;
     float time_max = 0;
 
-    for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size();
-         iClusterTrack++) {
-      CbmStsTrack* stsTrack =
-        (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
+    for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size(); iClusterTrack++) {
+      CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
 
       if (time_min > stsTrack->GetTime()) time_min = stsTrack->GetTime();
 

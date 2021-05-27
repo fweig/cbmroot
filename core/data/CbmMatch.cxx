@@ -18,7 +18,8 @@ CbmMatch::CbmMatch() : fLinks(), fTotalWeight(0.), fMatchedIndex(-1) {}
 
 CbmMatch::~CbmMatch() {}
 
-string CbmMatch::ToString() const {
+string CbmMatch::ToString() const
+{
   stringstream ss;
   ss << "CbmMatch: ";
   Int_t nofLinks = GetNofLinks();
@@ -27,19 +28,20 @@ string CbmMatch::ToString() const {
     const CbmLink& link = fLinks[i];
     ss << link.ToString();
   }
-  ss << " totalWeight=" << fTotalWeight << ", matchedIndex=" << fMatchedIndex
-     << std::endl;
+  ss << " totalWeight=" << fTotalWeight << ", matchedIndex=" << fMatchedIndex << std::endl;
   return ss.str();
 }
 
-void CbmMatch::AddLinks(const CbmMatch& match) {
+void CbmMatch::AddLinks(const CbmMatch& match)
+{
   Int_t nofLinks = match.GetNofLinks();
   for (Int_t i = 0; i < nofLinks; i++) {
     AddLink(match.GetLink(i));
   }
 }
 
-void CbmMatch::AddLink(const CbmLink& newLink) {
+void CbmMatch::AddLink(const CbmLink& newLink)
+{
   Int_t addedIndex = -1;
   Int_t nofLinks   = GetNofLinks();
   for (Int_t i = 0; i < nofLinks; i++) {
@@ -56,22 +58,21 @@ void CbmMatch::AddLink(const CbmLink& newLink) {
   }
 
   fTotalWeight += newLink.GetWeight();
-  if (fMatchedIndex < 0) {
-    fMatchedIndex = addedIndex;
-  } else {
-    if (fLinks[addedIndex].GetWeight() > fLinks[fMatchedIndex].GetWeight()) {
-      fMatchedIndex = addedIndex;
-    }
+  if (fMatchedIndex < 0) { fMatchedIndex = addedIndex; }
+  else {
+    if (fLinks[addedIndex].GetWeight() > fLinks[fMatchedIndex].GetWeight()) { fMatchedIndex = addedIndex; }
   }
 }
 
-void CbmMatch::AddLink(Double_t weight, Int_t index, Int_t entry, Int_t file) {
+void CbmMatch::AddLink(Double_t weight, Int_t index, Int_t entry, Int_t file)
+{
   CbmLink link(weight, index, entry, file);
   AddLink(link);
 }
 
 
-void CbmMatch::ClearLinks() {
+void CbmMatch::ClearLinks()
+{
   fLinks.clear();
   fTotalWeight  = 0.;
   fMatchedIndex = -1;

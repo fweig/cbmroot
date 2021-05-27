@@ -17,8 +17,8 @@ CbmHtmlReportElement::CbmHtmlReportElement() {}
 
 CbmHtmlReportElement::~CbmHtmlReportElement() {}
 
-string CbmHtmlReportElement::TableBegin(const string& caption,
-                                        const vector<string>& colNames) const {
+string CbmHtmlReportElement::TableBegin(const string& caption, const vector<string>& colNames) const
+{
   stringstream ss;
   ss << "<h2>" << caption << "</h2>";
   ss << "<table id=\"efficiency\" >" << endl;
@@ -32,15 +32,15 @@ string CbmHtmlReportElement::TableBegin(const string& caption,
 
 string CbmHtmlReportElement::TableEnd() const { return "</table>"; }
 
-string CbmHtmlReportElement::TableEmptyRow(int nofCols,
-                                           const string& name) const {
+string CbmHtmlReportElement::TableEmptyRow(int nofCols, const string& name) const
+{
   stringstream ss;
-  ss << "<td colspan=\"" << nofCols << "\"><center><b>" << name
-     << "</b></center></td></tr>" << endl;
+  ss << "<td colspan=\"" << nofCols << "\"><center><b>" << name << "</b></center></td></tr>" << endl;
   return ss.str();
 }
 
-string CbmHtmlReportElement::TableRow(const vector<string>& row) const {
+string CbmHtmlReportElement::TableRow(const vector<string>& row) const
+{
   string st = "<tr>";
   for (unsigned int i = 0; i < row.size(); i++) {
     st += "<td>" + row[i] + "</td>";
@@ -49,8 +49,8 @@ string CbmHtmlReportElement::TableRow(const vector<string>& row) const {
   return st;
 }
 
-string CbmHtmlReportElement::Image(const string& title,
-                                   const string& file) const {
+string CbmHtmlReportElement::Image(const string& title, const string& file) const
+{
   stringstream ss;
   ss << "<h3>" << title << "</h3>";
   ss << "<img src=\"" << file << ".png\" alt=\"" << title << "\" />";
@@ -58,7 +58,8 @@ string CbmHtmlReportElement::Image(const string& title,
   return ss.str();
 }
 
-string CbmHtmlReportElement::DocumentBegin() const {
+string CbmHtmlReportElement::DocumentBegin() const
+{
   string str = "<html><body><head><style type=\"text/css\">";
   str += "#efficiency";
   str += "{";
@@ -92,7 +93,8 @@ string CbmHtmlReportElement::DocumentBegin() const {
 
 string CbmHtmlReportElement::DocumentEnd() const { return "</body></html>"; }
 
-string CbmHtmlReportElement::Title(int size, const string& title) const {
+string CbmHtmlReportElement::Title(int size, const string& title) const
+{
   stringstream ss;
   ss << "<h" << size + 1 << ">" << title << "</h" << size + 1 << ">";
   return ss.str();

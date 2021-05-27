@@ -29,20 +29,8 @@ private:
 
 public:
   URun();
-  URun(const char* generator,
-       const char* comment,
-       Int_t aProj,
-       Int_t zProj,
-       Double_t pProj,
-       Int_t aTarg,
-       Int_t zTarg,
-       Double_t pTarg,
-       Double_t bMin,
-       Double_t bMax,
-       Int_t bWeight,
-       Double_t phiMin,
-       Double_t phiMax,
-       Double_t sigma,
+  URun(const char* generator, const char* comment, Int_t aProj, Int_t zProj, Double_t pProj, Int_t aTarg, Int_t zTarg,
+       Double_t pTarg, Double_t bMin, Double_t bMax, Int_t bWeight, Double_t phiMin, Double_t phiMax, Double_t sigma,
        Int_t nEvents);
   virtual ~URun();
   void Print(Option_t* = "") const;

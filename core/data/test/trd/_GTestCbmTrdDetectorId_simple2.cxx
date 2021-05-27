@@ -20,12 +20,8 @@ protected:
 
   virtual void TearDown() {}
 
-  void FillDetArray(Int_t sys,
-                    Int_t stat,
-                    Int_t lay,
-                    Int_t type,
-                    Int_t copy,
-                    Int_t sect) {
+  void FillDetArray(Int_t sys, Int_t stat, Int_t lay, Int_t type, Int_t copy, Int_t sect)
+  {
     detInfo_array[0] = sys;
     detInfo_array[1] = stat;
     detInfo_array[2] = lay;
@@ -35,7 +31,8 @@ protected:
   }
 };
 
-TEST_F(CbmTrdDetectorIdTest, CheckDefaultSettings) {
+TEST_F(CbmTrdDetectorIdTest, CheckDefaultSettings)
+{
   FillDetArray(0, 0, 0, 0, 0, 0);
   retVal = fTrdId.SetDetectorInfo(detInfo_array);
   EXPECT_EQ(0, retVal);

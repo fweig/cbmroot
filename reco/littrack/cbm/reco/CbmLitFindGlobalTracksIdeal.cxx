@@ -4,12 +4,14 @@
  * \date 2009
  */
 #include "CbmLitFindGlobalTracksIdeal.h"
+
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmTofHit.h"
 #include "CbmTofPoint.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -36,11 +38,14 @@ CbmLitFindGlobalTracksIdeal::CbmLitFindGlobalTracksIdeal()
   , fMcTofMap()
   ,
 
-  fEventNo(0) {}
+  fEventNo(0)
+{
+}
 
 CbmLitFindGlobalTracksIdeal::~CbmLitFindGlobalTracksIdeal() {}
 
-InitStatus CbmLitFindGlobalTracksIdeal::Init() {
+InitStatus CbmLitFindGlobalTracksIdeal::Init()
+{
   fDet.DetermineSetup();
   std::cout << fDet.ToString();
 
@@ -49,12 +54,11 @@ InitStatus CbmLitFindGlobalTracksIdeal::Init() {
   return kSUCCESS;
 }
 
-void CbmLitFindGlobalTracksIdeal::Exec(Option_t* opt) {
+void CbmLitFindGlobalTracksIdeal::Exec(Option_t* opt)
+{
   if (fDet.GetDet(ECbmModuleId::kSts)) { FillTrackMap(fMcStsMap, fStsMatches); }
   if (fDet.GetDet(ECbmModuleId::kTrd)) { FillTrackMap(fMcTrdMap, fTrdMatches); }
-  if (fDet.GetDet(ECbmModuleId::kMuch)) {
-    FillTrackMap(fMcMuchMap, fMuchMatches);
-  }
+  if (fDet.GetDet(ECbmModuleId::kMuch)) { FillTrackMap(fMcMuchMap, fMuchMatches); }
   if (fDet.GetDet(ECbmModuleId::kTof)) { FillMapTof(); }
 
   CreateGlobalTracks();
@@ -64,7 +68,8 @@ void CbmLitFindGlobalTracksIdeal::Exec(Option_t* opt) {
 
 void CbmLitFindGlobalTracksIdeal::Finish() {}
 
-void CbmLitFindGlobalTracksIdeal::ReadDataBranches() {
+void CbmLitFindGlobalTracksIdeal::ReadDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman) { Fatal("Init", "CbmRootManager is not instantiated"); }
 
@@ -101,14 +106,11 @@ void CbmLitFindGlobalTracksIdeal::ReadDataBranches() {
 
   // Create and register CbmGlobalTrack array
   fGlobalTracks = new TClonesArray("CbmGlobalTrack", 100);
-  ioman->Register("GlobalTrack",
-                  "Global",
-                  fGlobalTracks,
-                  IsOutputBranchPersistent("GlobalTrack"));
+  ioman->Register("GlobalTrack", "Global", fGlobalTracks, IsOutputBranchPersistent("GlobalTrack"));
 }
 
-void CbmLitFindGlobalTracksIdeal::FillTrackMap(std::map<Int_t, Int_t>& mcMap,
-                                               const TClonesArray* matches) {
+void CbmLitFindGlobalTracksIdeal::FillTrackMap(std::map<Int_t, Int_t>& mcMap, const TClonesArray* matches)
+{
   mcMap.clear();
   Int_t nofTracks = matches->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
@@ -120,7 +122,8 @@ void CbmLitFindGlobalTracksIdeal::FillTrackMap(std::map<Int_t, Int_t>& mcMap,
   }
 }
 
-void CbmLitFindGlobalTracksIdeal::FillMapTof() {
+void CbmLitFindGlobalTracksIdeal::FillMapTof()
+{
   fMcTofMap.clear();
   Int_t nofTofHits = fTofHits->GetEntriesFast();
   for (Int_t iTofHit = 0; iTofHit < nofTofHits; iTofHit++) {
@@ -137,7 +140,8 @@ void CbmLitFindGlobalTracksIdeal::FillMapTof() {
   }
 }
 
-void CbmLitFindGlobalTracksIdeal::CreateGlobalTracks() {
+void CbmLitFindGlobalTracksIdeal::CreateGlobalTracks()
+{
   fGlobalTracks->Clear();
   Int_t nGlobalTracks = 0;
   Int_t nofMCTracks   = fMCTracks->GetEntriesFast();
@@ -145,27 +149,22 @@ void CbmLitFindGlobalTracksIdeal::CreateGlobalTracks() {
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(iMCTrack);
     if (mcTrack == NULL) { continue; }
     Int_t stsId = -1, trdId = -1, muchId = -1, tofId = -1;
-    if (fDet.GetDet(ECbmModuleId::kSts)
-        && (fMcStsMap.find(iMCTrack) != fMcStsMap.end())) {
+    if (fDet.GetDet(ECbmModuleId::kSts) && (fMcStsMap.find(iMCTrack) != fMcStsMap.end())) {
       stsId = fMcStsMap[iMCTrack];
     }
-    if (fDet.GetDet(ECbmModuleId::kTrd)
-        && (fMcTrdMap.find(iMCTrack) != fMcTrdMap.end())) {
+    if (fDet.GetDet(ECbmModuleId::kTrd) && (fMcTrdMap.find(iMCTrack) != fMcTrdMap.end())) {
       trdId = fMcTrdMap[iMCTrack];
     }
-    if (fDet.GetDet(ECbmModuleId::kMuch)
-        && (fMcMuchMap.find(iMCTrack) != fMcMuchMap.end())) {
+    if (fDet.GetDet(ECbmModuleId::kMuch) && (fMcMuchMap.find(iMCTrack) != fMcMuchMap.end())) {
       muchId = fMcMuchMap[iMCTrack];
     }
-    if (fDet.GetDet(ECbmModuleId::kTof)
-        && (fMcTofMap.find(iMCTrack) != fMcTofMap.end())) {
+    if (fDet.GetDet(ECbmModuleId::kTof) && (fMcTofMap.find(iMCTrack) != fMcTofMap.end())) {
       tofId = fMcTofMap[iMCTrack];
     }
 
     if (stsId == -1 && trdId == -1 && muchId == -1 && tofId == -1) { continue; }
 
-    CbmGlobalTrack* globalTrack =
-      new ((*fGlobalTracks)[nGlobalTracks++]) CbmGlobalTrack();
+    CbmGlobalTrack* globalTrack = new ((*fGlobalTracks)[nGlobalTracks++]) CbmGlobalTrack();
     globalTrack->SetStsTrackIndex(stsId);
     globalTrack->SetTrdTrackIndex(trdId);
     globalTrack->SetTofHitIndex(tofId);

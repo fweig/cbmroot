@@ -4,7 +4,8 @@
  ** Hits
  */
 
-void hit(Int_t runID, Int_t fileID) {
+void hit(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy2014
 
   TString runN    = TString::Itoa(runID, 10);
@@ -54,8 +55,7 @@ void hit(Int_t runID, Int_t fileID) {
   // --- Hits
   StsCosyHitFinder* hits = new StsCosyHitFinder();
   hits->SetZ(25.3, 99.3, 140.7);
-  if (cutFile != "")
-    hits->SetCutFileName(cutFile);
+  if (cutFile != "") hits->SetCutFileName(cutFile);
   else {
     hits->SetTimeLimit(t_limits);
     hits->SetTimeShift(t_shifts);
@@ -78,8 +78,7 @@ void hit(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

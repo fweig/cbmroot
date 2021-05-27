@@ -6,7 +6,8 @@
 //
 // --------------------------------------------------------------------------
 
-void checkFieldMap() {
+void checkFieldMap()
+{
 
   //class CbmFieldMap;
   //class CbmFieldMapSym2;
@@ -323,14 +324,11 @@ void checkFieldMap() {
 
 
   TString fieldType = "";
-  if (type == 0)
-    fieldType = "Constant field";
+  if (type == 0) fieldType = "Constant field";
   else {
-    if (type == 1)
-      fieldType = "Field map";
+    if (type == 1) fieldType = "Field map";
     else {
-      if (type == 2)
-        fieldType = "Field Map Sym2";
+      if (type == 2) fieldType = "Field Map Sym2";
       else {
         if (type == 3) fieldType = "Field Map Sym3";
       }
@@ -363,8 +361,7 @@ void checkFieldMap() {
     info.AddText(0.05, 0.3, t2);
 
     Double_t scale = field->GetScale();
-    sprintf(
-      t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
+    sprintf(t1, "Scaling factor %.2f, Field integral along z = %.4f Tm", scale, bint);
     info.AddText(0.05, 0.1, t1);
   }
   info.Draw();

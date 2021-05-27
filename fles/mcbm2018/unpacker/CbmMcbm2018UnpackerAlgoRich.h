@@ -30,9 +30,19 @@ class CbmMcbm2018RichPar;
 #define TOTMIN -20.
 #define TOTMAX 100.
 
-enum class TrbNetState { IDLE, HEADER, EPOCH, TDC, TRAILER, CTS, DEBUG };
+enum class TrbNetState
+{
+  IDLE,
+  HEADER,
+  EPOCH,
+  TDC,
+  TRAILER,
+  CTS,
+  DEBUG
+};
 
-enum class RichErrorType {
+enum class RichErrorType
+{
   mtsError,
   tdcHeader,
   tdcTrailer,
@@ -70,16 +80,13 @@ public:
 
   virtual Bool_t ProcessTs(const fles::Timeslice& ts, size_t component);
 
-  virtual Bool_t
-  ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
+  virtual Bool_t ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
 
   Bool_t DebugMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
 
   void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
 
-  inline void SetTimeOffsetNs(Double_t dOffsetIn = 0.0) {
-    fdTimeOffsetNs = dOffsetIn;
-  }
+  inline void SetTimeOffsetNs(Double_t dOffsetIn = 0.0) { fdTimeOffsetNs = dOffsetIn; }
 
   inline void DoTotCorr(Bool_t bDoToTCorr = kTRUE) { fbDoToTCorr = bDoToTCorr; }
 
@@ -121,16 +128,12 @@ private:
 	 * Including TDC header, but not including TRB subsubevent header
 	 * Return number of processed bytes
 	 */
-  Int_t ProcessTRBsubsubevent(size_t const size,
-                              uint8_t const* const ptr,
-                              Int_t const hubOffset,
-                              size_t const hubSize);
+  Int_t ProcessTRBsubsubevent(size_t const size, uint8_t const* const ptr, Int_t const hubOffset, size_t const hubSize);
 
   /**
 	 * Process a word written out by the TDC - TIMESTEMP, HEADER, TRAILER, DEBUG, EPOCH, ...
 	 */
-  Int_t
-  ProcessTDCword(uint8_t const* const ptr, Int_t const word, size_t const size);
+  Int_t ProcessTDCword(uint8_t const* const ptr, Int_t const word, size_t const size);
 
   /**
 	 * Process specifically a TIMESTAMP type of word
@@ -140,11 +143,7 @@ private:
   /**
 	 * Write a gidi object into the output collection
 	 */
-  void WriteOutputDigi(Int_t fpgaID,
-                       Int_t channel,
-                       Double_t time,
-                       Double_t tot,
-                       uint64_t MSidx);
+  void WriteOutputDigi(Int_t fpgaID, Int_t channel, Double_t time, Double_t tot, uint64_t MSidx);
 
   /**
 	 * Method which is called at the end of the timeslice processing
@@ -156,7 +155,8 @@ private:
      */
   void ErrorMsg(uint16_t errbits, RichErrorType type, uint16_t tdcAddr = 0);
 
-  Int_t GetPixelUID(Int_t fpgaID, Int_t ch) const {
+  Int_t GetPixelUID(Int_t fpgaID, Int_t ch) const
+  {
     // First 16 bits are used for the FPGA ID, then
     // 8 bits unused and then 8 bits are used for the channel
     return ((fpgaID << 16) | (ch & 0x00FF));
@@ -166,11 +166,9 @@ private:
 
 private:  // data members
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
 
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
 
   Bool_t fRawDataMode;
 
@@ -302,14 +300,12 @@ private:  // digi building
 	 * is encountered, corresponding rising edge is searched here and
 	 * removed if found.
 	 */
-  std::vector<CbmMcbmRichEdge>
-    fRisingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
+  std::vector<CbmMcbmRichEdge> fRisingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
 
   /**
 	 * Buffer of falling edges for which corresponding rising edges were not found
 	 */
-  std::vector<CbmMcbmRichEdge>
-    fFallingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
+  std::vector<CbmMcbmRichEdge> fFallingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
 
 public:  // histograms
   /**
@@ -376,9 +372,7 @@ public:  // histograms
   size_t fuTsMaxVectorSize     = 0;
   Double_t fdCapacityIncFactor = 1.1;
 
-  inline void SetVectCapInc(Double_t dIncFact) {
-    fdCapacityIncFactor = dIncFact;
-  }
+  inline void SetVectCapInc(Double_t dIncFact) { fdCapacityIncFactor = dIncFact; }
 
   ClassDef(CbmMcbm2018UnpackerAlgoRich, 1);
 };

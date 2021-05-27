@@ -8,6 +8,7 @@
 #define CBMLITFITQAREPORT_H_
 
 #include "CbmSimulationReport.h"
+
 #include "TSystem.h"
 
 using namespace std;
@@ -41,9 +42,7 @@ protected:
      */
   virtual void Draw();
 
-  string PrintResAndPullRow(const string& rowName,
-                            const string& histName,
-                            const string& propertyName);
+  string PrintResAndPullRow(const string& rowName, const string& histName, const string& propertyName);
 
   void DrawResidualAndPullHistograms(const string& detName, Bool_t draw2D);
 

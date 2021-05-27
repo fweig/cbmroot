@@ -12,12 +12,12 @@
 #ifndef CBMSTSCLUSTER_H
 #define CBMSTSCLUSTER_H 1
 
+#include "CbmCluster.h"  // for CbmCluster
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 
 #include <string>  // for string
-
-#include "CbmCluster.h"  // for CbmCluster
 
 /**
  ** \class CbmStsCluster
@@ -116,11 +116,9 @@ public:
      ** @param time           Cluster time [ns]
      ** @param timeError      Error of cluster time [ns]
      **/
-  void SetProperties(Double_t charge,
-                     Double_t position,
-                     Double_t positionError,
-                     Double_t time      = 0.,
-                     Double_t timeError = 0.) {
+  void SetProperties(Double_t charge, Double_t position, Double_t positionError, Double_t time = 0.,
+                     Double_t timeError = 0.)
+  {
     fCharge        = charge;
     fPosition      = position;
     fPositionError = positionError;
@@ -143,14 +141,13 @@ public:
 
 
 private:
-  Double_t fCharge;    ///< Total charge
-  Int_t fSize;         ///< Difference between first and last channel
-  Double_t fPosition;  ///< Cluster centre in channel number units
-  Double_t
-    fPositionError;  ///< Cluster centre error (r.m.s.) in channel number units
-  Double_t fTime;    ///< Cluster time (average of digi times) [ns]
-  Double_t fTimeError;  ///< Error of cluster time [ns]
-  Int_t fIndex;         ///< Index of cluster in input array
+  Double_t fCharge;         ///< Total charge
+  Int_t fSize;              ///< Difference between first and last channel
+  Double_t fPosition;       ///< Cluster centre in channel number units
+  Double_t fPositionError;  ///< Cluster centre error (r.m.s.) in channel number units
+  Double_t fTime;           ///< Cluster time (average of digi times) [ns]
+  Double_t fTimeError;      ///< Error of cluster time [ns]
+  Int_t fIndex;             ///< Index of cluster in input array
 
 
   ClassDef(CbmStsCluster, 7);

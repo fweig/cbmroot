@@ -38,12 +38,7 @@ public:
   inline TClonesArray* GetParticleList() const { return fParticles; }
   inline void GetComment(TString& comment) const { comment = fComment; }
   UParticle* GetParticle(Int_t index) const;
-  void SetParameters(Int_t eventNr,
-                     Double_t b,
-                     Double_t phi,
-                     Int_t nes,
-                     Int_t stepNr,
-                     Double_t stepT,
+  void SetParameters(Int_t eventNr, Double_t b, Double_t phi, Int_t nes, Int_t stepNr, Double_t stepT,
                      const char* comment = "");
   inline void SetEventNr(Int_t eventNr) { fEventNr = eventNr; }
   inline void SetB(Double_t b) { fB = b; }
@@ -52,34 +47,11 @@ public:
   inline void SetStepNr(Int_t stepNr) { fStepNr = stepNr; }
   inline void SetStepT(Double_t stepT) { fStepT = stepT; }
   inline void SetComment(const char* comment) { fComment = comment; }
-  void AddParticle(Int_t index,
-                   Int_t pdg,
-                   Int_t status,
-                   Int_t parent,
-                   Int_t parentDecay,
-                   Int_t mate,
-                   Int_t decay,
-                   Int_t child[2],
-                   Double_t px,
-                   Double_t py,
-                   Double_t pz,
-                   Double_t e,
-                   Double_t x,
-                   Double_t y,
-                   Double_t z,
-                   Double_t t,
-                   Double_t weight);
-  void AddParticle(Int_t index,
-                   Int_t pdg,
-                   Int_t status,
-                   Int_t parent,
-                   Int_t parentDecay,
-                   Int_t mate,
-                   Int_t decay,
-                   Int_t child[2],
-                   TLorentzVector mom,
-                   TLorentzVector pos,
-                   Double_t weight);
+  void AddParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+                   Int_t child[2], Double_t px, Double_t py, Double_t pz, Double_t e, Double_t x, Double_t y,
+                   Double_t z, Double_t t, Double_t weight);
+  void AddParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+                   Int_t child[2], TLorentzVector mom, TLorentzVector pos, Double_t weight);
   void AddParticle(const UParticle& particle);
   void Clear(Option_t* = "");
   void RemoveAt(Int_t i);

@@ -5,20 +5,14 @@
 
 #include "CbmL1.h"
 
-TH1F *h_pick_res_x[20][3][3], *h_pick_res_y[20][3][3], *h_pick_pull_x[20][3][3],
-  *h_pick_pull_y[20][3][3], *h_nduplets[20][3], *h_res_x[20][3][3],
-  *h_res_y[20][3][3], *h_res_tx[20][3][3], *h_res_ty[20][3][3],
-  *h_res_qp[20][3][3], *h_pull_x[20][3][3], *h_pull_y[20][3][3],
-  *h_pull_tx[20][3][3], *h_pull_ty[20][3][3], *h_pull_qp[20][3][3];
+TH1F *h_pick_res_x[20][3][3], *h_pick_res_y[20][3][3], *h_pick_pull_x[20][3][3], *h_pick_pull_y[20][3][3],
+  *h_nduplets[20][3], *h_res_x[20][3][3], *h_res_y[20][3][3], *h_res_tx[20][3][3], *h_res_ty[20][3][3],
+  *h_res_qp[20][3][3], *h_pull_x[20][3][3], *h_pull_y[20][3][3], *h_pull_tx[20][3][3], *h_pull_ty[20][3][3],
+  *h_pull_qp[20][3][3];
 //TH2F *h_dyvsy[20], *h_dxvsx[20];
 
-void Pulls(int i,
-           int j,
-           int k,
-           double* mc,
-           L1TrackPar& T,
-           fvec qp0,
-           L1FieldRegion& fld) {
+void Pulls(int i, int j, int k, double* mc, L1TrackPar& T, fvec qp0, L1FieldRegion& fld)
+{
   L1TrackPar tmp_T = T;
   fvec z           = mc[5];
   L1Extrapolate(tmp_T, z, qp0, fld);
@@ -44,7 +38,8 @@ void Pulls(int i,
   h_pull_qp[i][j][k]->Fill(dqp / sqp);
 }
 
-void InitL1Histo() {
+void InitL1Histo()
+{
   static bool first_call = 1;
   if (first_call) {
     TDirectory* curdir = gDirectory;
@@ -65,42 +60,27 @@ void InitL1Histo() {
           gDirectory->mkdir(stepname[istep]);
           gDirectory->cd(stepname[istep]);
 
-          h_nduplets[ist][istep] =
-            new TH1F("h_nduplets", "h_nduplets", 50, 0, 5000);
+          h_nduplets[ist][istep] = new TH1F("h_nduplets", "h_nduplets", 50, 0, 5000);
 
           const char* lmr[3] = {"left", "middle", "right"};
           for (int ilmr = 0; ilmr < 3; ilmr++) {
             gDirectory->mkdir(lmr[ilmr]);
             gDirectory->cd(lmr[ilmr]);
             {
-              h_pick_res_x[ist][ilmr][istep] =
-                new TH1F("h_pick_res_x", "h_pick_res_x", 100, -2, 3);
-              h_pick_res_y[ist][ilmr][istep] =
-                new TH1F("h_pick_res_y", "h_pick_res_y", 100, -1, 1);
-              h_pick_pull_x[ist][ilmr][istep] =
-                new TH1F("h_pick_pull_x", "h_pick_pull_x", 100, -10, 10);
-              h_pick_pull_y[ist][ilmr][istep] =
-                new TH1F("h_pick_pull_y", "h_pick_pull_y", 100, -10, 10);
-              h_res_x[ist][ilmr][istep] =
-                new TH1F("h_res_x", "h_res_x", 100, -.01, .01);
-              h_res_y[ist][ilmr][istep] =
-                new TH1F("h_res_y", "h_res_y", 100, -.1, .1);
-              h_res_tx[ist][ilmr][istep] =
-                new TH1F("h_res_tx", "h_res_tx", 100, -.01, .01);
-              h_res_ty[ist][ilmr][istep] =
-                new TH1F("h_res_ty", "h_res_ty", 100, -.01, .01);
-              h_res_qp[ist][ilmr][istep] =
-                new TH1F("h_res_qp", "h_res_qp", 100, -.1, .1);
-              h_pull_x[ist][ilmr][istep] =
-                new TH1F("h_pull_x", "h_pull_x", 100, -10, 10);
-              h_pull_y[ist][ilmr][istep] =
-                new TH1F("h_pull_y", "h_pull_y", 100, -10, 10);
-              h_pull_tx[ist][ilmr][istep] =
-                new TH1F("h_pull_tx", "h_pull_tx", 100, -10, 10);
-              h_pull_ty[ist][ilmr][istep] =
-                new TH1F("h_pull_ty", "h_pull_ty", 100, -10, 10);
-              h_pull_qp[ist][ilmr][istep] =
-                new TH1F("h_pull_qp", "h_pull_qp", 100, -10, 10);
+              h_pick_res_x[ist][ilmr][istep]  = new TH1F("h_pick_res_x", "h_pick_res_x", 100, -2, 3);
+              h_pick_res_y[ist][ilmr][istep]  = new TH1F("h_pick_res_y", "h_pick_res_y", 100, -1, 1);
+              h_pick_pull_x[ist][ilmr][istep] = new TH1F("h_pick_pull_x", "h_pick_pull_x", 100, -10, 10);
+              h_pick_pull_y[ist][ilmr][istep] = new TH1F("h_pick_pull_y", "h_pick_pull_y", 100, -10, 10);
+              h_res_x[ist][ilmr][istep]       = new TH1F("h_res_x", "h_res_x", 100, -.01, .01);
+              h_res_y[ist][ilmr][istep]       = new TH1F("h_res_y", "h_res_y", 100, -.1, .1);
+              h_res_tx[ist][ilmr][istep]      = new TH1F("h_res_tx", "h_res_tx", 100, -.01, .01);
+              h_res_ty[ist][ilmr][istep]      = new TH1F("h_res_ty", "h_res_ty", 100, -.01, .01);
+              h_res_qp[ist][ilmr][istep]      = new TH1F("h_res_qp", "h_res_qp", 100, -.1, .1);
+              h_pull_x[ist][ilmr][istep]      = new TH1F("h_pull_x", "h_pull_x", 100, -10, 10);
+              h_pull_y[ist][ilmr][istep]      = new TH1F("h_pull_y", "h_pull_y", 100, -10, 10);
+              h_pull_tx[ist][ilmr][istep]     = new TH1F("h_pull_tx", "h_pull_tx", 100, -10, 10);
+              h_pull_ty[ist][ilmr][istep]     = new TH1F("h_pull_ty", "h_pull_ty", 100, -10, 10);
+              h_pull_qp[ist][ilmr][istep]     = new TH1F("h_pull_qp", "h_pull_qp", 100, -10, 10);
               gDirectory->cd("..");
             }
           }

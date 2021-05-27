@@ -30,16 +30,17 @@ struct LxTbAbsorber {
   //LxTbAbsorber(scaltype w, scaltype rl, scaltype d, scaltype z, scaltype a) : width(w), radLength(rl), rho(d), Z(z), A(a) {}
 };
 
-static inline scaltype CalcI(scaltype Z) {
+static inline scaltype CalcI(scaltype Z)
+{
   // mean excitation energy in eV
-  if (Z > 16.) {
-    return 10 * Z;
-  } else {
+  if (Z > 16.) { return 10 * Z; }
+  else {
     return 16 * std::pow(Z, 0.9);
   }
 }
 
-static inline scaltype BetheBloch(scaltype E, const LxTbAbsorber* mat) {
+static inline scaltype BetheBloch(scaltype E, const LxTbAbsorber* mat)
+{
   scaltype K = 0.000307075;  // GeV * g^-1 * cm^2
   scaltype z = 1.;           //(par->GetQp() > 0.) ? 1 : -1.;
   scaltype Z = mat->Z;
@@ -59,8 +60,7 @@ static inline scaltype BetheBloch(scaltype E, const LxTbAbsorber* mat) {
 
   scaltype me    = gElectronMass;  // GeV
   scaltype ratio = me / M;
-  scaltype Tmax =
-    (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
+  scaltype Tmax  = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
 
   // density correction
   scaltype dc = 0.;
@@ -71,12 +71,11 @@ static inline scaltype BetheBloch(scaltype E, const LxTbAbsorber* mat) {
   }
 
   return K * z * z * (Z / A) * (1. / betaSq)
-         * (0.5 * std::log(2 * me * betaSq * gammaSq * Tmax / (I * I)) - betaSq
-            - dc);
+         * (0.5 * std::log(2 * me * betaSq * gammaSq * Tmax / (I * I)) - betaSq - dc);
 }
 
-static inline scaltype
-EnergyLoss(scaltype E, scaltype L, const LxTbAbsorber* mat) {
+static inline scaltype EnergyLoss(scaltype E, scaltype L, const LxTbAbsorber* mat)
+{
   return BetheBloch(E, mat) * mat->rho * L;
 
   /*scaltype result = 0;
@@ -121,8 +120,8 @@ EnergyLoss(scaltype E, scaltype L, const LxTbAbsorber* mat) {
     return result;*/
 }
 
-static inline scaltype
-CalcThetaPrj(scaltype E, scaltype x, const LxTbAbsorber* mat) {
+static inline scaltype CalcThetaPrj(scaltype E, scaltype x, const LxTbAbsorber* mat)
+{
   //scaltype p = std::abs(1. / par->GetQp()); //GeV
   scaltype muMass = gMuonMass;
   //scaltype E = std::sqrt(muMass * muMass + p * p);
@@ -134,8 +133,7 @@ CalcThetaPrj(scaltype E, scaltype x, const LxTbAbsorber* mat) {
   scaltype bcp = beta * p;
   scaltype z   = 1.;
 
-  scaltype theta = 0.0136 * (1. / bcp) * z * std::sqrt(x / X0)
-                   * (1. + 0.038 * std::log(x / X0));
+  scaltype theta = 0.0136 * (1. / bcp) * z * std::sqrt(x / X0) * (1. + 0.038 * std::log(x / X0));
   return theta / std::sqrt(2.0);
   //return theta * theta;
 }

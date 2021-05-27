@@ -16,16 +16,16 @@
 #ifndef CBMTRACK_H_
 #define CBMTRACK_H_ 1
 
+#include "CbmHit.h"  // for HitType
+
+#include <FairTrackParam.h>  // for FairTrackParam
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Double32_t
 #include <TObject.h>     // for TObject
 
-#include <FairTrackParam.h>  // for FairTrackParam
-
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmHit.h"  // for HitType
 
 class CbmMatch;
 
@@ -69,9 +69,7 @@ public:
   void SetFlag(Int_t flag) { fFlag = flag; }
   void SetChiSq(Double_t chiSq) { fChiSq = chiSq; }
   void SetNDF(Int_t ndf) { fNDF = ndf; }
-  void SetPreviousTrackId(Int_t previousTrackId) {
-    fPreviousTrackId = previousTrackId;
-  }
+  void SetPreviousTrackId(Int_t previousTrackId) { fPreviousTrackId = previousTrackId; }
   void SetParamFirst(const FairTrackParam* par) { fParamFirst = *par; }
   void SetParamLast(const FairTrackParam* par) { fParamLast = *par; }
   void SetMatch(CbmMatch* match);

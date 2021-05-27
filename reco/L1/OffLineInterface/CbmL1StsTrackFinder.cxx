@@ -39,7 +39,8 @@ using std::vector;
 ClassImp(CbmL1StsTrackFinder)
 
   // -----   Default constructor   -------------------------------------------
-  CbmL1StsTrackFinder::CbmL1StsTrackFinder() {
+  CbmL1StsTrackFinder::CbmL1StsTrackFinder()
+{
   fName = "STS Track Finder L1";
 }
 // -------------------------------------------------------------------------
@@ -56,7 +57,8 @@ void CbmL1StsTrackFinder::Init() {}
 
 
 // -----   Copy tracks to output array   -----------------------------------
-Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event) {
+Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
+{
 
   CbmL1* L1 = CbmL1::Instance();
   if (!L1) return 0;
@@ -64,9 +66,7 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event) {
   Int_t trackIndex = fTracks->GetEntriesFast();
   Int_t nTracks    = 0;
   LOG(debug) << "Copy L1 tracks : " << L1->vRTracks.size() << " tracks in L1";
-  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin();
-       it != L1->vRTracks.end();
-       ++it) {
+  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin(); it != L1->vRTracks.end(); ++it) {
     CbmL1Track& T = *it;
     new ((*fTracks)[trackIndex]) CbmStsTrack();
     nTracks++;
@@ -84,16 +84,15 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event) {
     t->SetTime(T.Tpv[6]);
     t->SetTimeError(T.Cpv[20]);
 
-    for (vector<int>::iterator ih = it->StsHits.begin();
-         ih != it->StsHits.end();
-         ++ih) {
+    for (vector<int>::iterator ih = it->StsHits.begin(); ih != it->StsHits.end(); ++ih) {
       CbmL1HitStore& h = L1->vHitStore[*ih];
       // 	  double zref = L1->algo->vStations[h.iStation].z[0];
       if (h.ExtIndex < 0) {
         // CbmMvdHit tmp;
         // tmp.SetZ(zref);
         t->AddMvdHit(-h.ExtIndex - 1);  //, &tmp );
-      } else {
+      }
+      else {
         //CbmStsHit tmp;
         //tmp.SetZ(zref);
         t->AddHit(h.ExtIndex, kSTSHIT);  //, &tmp );
@@ -107,7 +106,8 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event) {
 
 
 // -----   Public method DoFind   ------------------------------------------
-Int_t CbmL1StsTrackFinder::DoFind() {
+Int_t CbmL1StsTrackFinder::DoFind()
+{
 
   if (!fTracks) {
     LOG(error) << "-E- CbmL1StsTrackFinder::DoFind: "
@@ -127,7 +127,8 @@ Int_t CbmL1StsTrackFinder::DoFind() {
 
 
 // -----   Track finding in one event   ------------------------------------
-Int_t CbmL1StsTrackFinder::FindTracks(CbmEvent* event) {
+Int_t CbmL1StsTrackFinder::FindTracks(CbmEvent* event)
+{
 
   CbmL1* l1 = CbmL1::Instance();
   if (!l1) return 0;

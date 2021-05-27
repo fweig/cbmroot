@@ -8,6 +8,7 @@
 #define CBMMVDHITFINDERTB_H 1
 
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 class CbmMvdDetector;
@@ -31,7 +32,8 @@ public:
   virtual ~CbmMvdHitfinderTB();
 
   void Exec(Option_t* opt);
-  void UseClusterfinder(Bool_t clusterfinderFlag) {
+  void UseClusterfinder(Bool_t clusterfinderFlag)
+  {
     useClusterfinder = clusterfinderFlag;
   };  //* enable use of external clusterfinder
   void ShowDebugHistos() { fShowDebugHistos = kTRUE; }

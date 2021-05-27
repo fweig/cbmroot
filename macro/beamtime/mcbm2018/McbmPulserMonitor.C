@@ -10,13 +10,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void McbmPulserMonitor(TString inFile           = "",
-                       TString sHostname        = "pn05",
-                       Int_t iServerRefreshRate = 100,
-                       Int_t iServerHttpPort    = 8080,
-                       UInt_t uRunId            = 0,
-                       Bool_t bWithOffset       = kFALSE,
-                       Bool_t bWithTs           = kTRUE) {
+void McbmPulserMonitor(TString inFile = "", TString sHostname = "pn05", Int_t iServerRefreshRate = 100,
+                       Int_t iServerHttpPort = 8080, UInt_t uRunId = 0, Bool_t bWithOffset = kFALSE,
+                       Bool_t bWithTs = kTRUE)
+{
   TString sFileTag = "";
   if (0 < uRunId) sFileTag = Form("_%u_%s", uRunId, sHostname.Data());
   if (kTRUE == bWithOffset) sFileTag += "_Offs";
@@ -62,8 +59,7 @@ void McbmPulserMonitor(TString inFile           = "",
   std::cout << ">>> Cern2017Monitor: Initialising..." << std::endl;
 
   // Hodoscopes Monitor
-  CbmMcbm2018MonitorMcbmPulser* monitorPulser =
-    new CbmMcbm2018MonitorMcbmPulser();
+  CbmMcbm2018MonitorMcbmPulser* monitorPulser = new CbmMcbm2018MonitorMcbmPulser();
   monitorPulser->SetHistoFileName("data/McbmPulserHistos" + sFileTag + ".root");
   monitorPulser->SetIgnoreMsOverlap();
   monitorPulser->SetDiamondDpbIdx();
@@ -80,14 +76,12 @@ void McbmPulserMonitor(TString inFile           = "",
         monitorPulser->SetMuchTofOffsetNs(-2300);  // Run 49
         break;
       case 51:
-        monitorPulser->SetStsTofOffsetNs(
-          165450);  // Run 51, no peak in same MS, peak at ~162 us in same TS
+        monitorPulser->SetStsTofOffsetNs(165450);  // Run 51, no peak in same MS, peak at ~162 us in same TS
         monitorPulser->SetMuchTofOffsetNs(
           850);  // Run 51, no peak in same MS for full run, peak around -850 ns in last spills
         break;
       case 52:
-        monitorPulser->SetStsTofOffsetNs(
-          141500);  // Run 52, no peak in same MS, peak at ~104 us in same TS
+        monitorPulser->SetStsTofOffsetNs(141500);  // Run 52, no peak in same MS, peak at ~104 us in same TS
         monitorPulser->SetMuchTofOffsetNs(18450);  // Run 52
         break;
       case 53:
@@ -102,9 +96,7 @@ void McbmPulserMonitor(TString inFile           = "",
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -144,8 +136,7 @@ void McbmPulserMonitor(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -155,8 +146,7 @@ void McbmPulserMonitor(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

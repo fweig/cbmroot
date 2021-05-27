@@ -1,11 +1,11 @@
-void sela(Int_t file_nr = 0, Int_t nEvents = 1, Int_t pdg = 3312) {
+void sela(Int_t file_nr = 0, Int_t nEvents = 1, Int_t pdg = 3312)
+{
   Char_t filenr[4];
   sprintf(filenr, "%04d", file_nr);
   printf("Filenr: %s\n", filenr);
 
   TString signal;
-  if (pdg == 3312)
-    signal = "xi";
+  if (pdg == 3312) signal = "xi";
   else if (pdg == 3334)
     signal = "om";
   else {

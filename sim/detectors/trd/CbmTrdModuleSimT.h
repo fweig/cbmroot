@@ -53,8 +53,7 @@ private:
    * \sa CbmTrdTriangle CbmTrdRadiator AddDigi()
    * \author A.Bercuci <abercuci@niham.nipne.ro>
    **/
-  Bool_t
-  ScanPadPlane(const Double_t* point, Double_t dx, Double_t E, Double_t tdrift);
+  Bool_t ScanPadPlane(const Double_t* point, Double_t dx, Double_t E, Double_t tdrift);
   /**
    * \brief Adding triangular digits to time slice buffer
    * \param pointId The TRD hit in global coordinates beeing processed
@@ -72,11 +71,10 @@ private:
    **/
   void DumpBuffer() const;
 
-  CbmTrdTrianglePRF*
-    fTriangleBinning;  ///< Integration of PRF on triangular pad-plane geometry
-  CbmTrdFASP* fFASP;   ///< FASP simulator
-  CbmTimeSlice* fTimeSlice;  ///< link to CBM time slice
-  ULong64_t fTimeOld;  ///< time [ns] of the last event processed (check CbmDaq)
+  CbmTrdTrianglePRF* fTriangleBinning;  ///< Integration of PRF on triangular pad-plane geometry
+  CbmTrdFASP* fFASP;                    ///< FASP simulator
+  CbmTimeSlice* fTimeSlice;             ///< link to CBM time slice
+  ULong64_t fTimeOld;                   ///< time [ns] of the last event processed (check CbmDaq)
 
   ClassDef(CbmTrdModuleSimT, 1)
 };

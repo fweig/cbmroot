@@ -15,14 +15,14 @@
 #define CBMMVD_H 1
 
 
-#include <map>
+#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
+
+#include "FairDetector.h"
 
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
-#include "FairDetector.h"
-
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
+#include <map>
 
 
 class TClonesArray;
@@ -150,16 +150,8 @@ private:
 
     ** Adds a MvdPoint to the HitCollection
      **/
-  CbmMvdPoint* AddHit(Int_t trackID,
-                      Int_t pdg,
-                      Int_t sensorNr,
-                      TVector3 posIn,
-                      TVector3 pos_out,
-                      TVector3 momIn,
-                      TVector3 momOut,
-                      Double_t time,
-                      Double_t length,
-                      Double_t eLoss);
+  CbmMvdPoint* AddHit(Int_t trackID, Int_t pdg, Int_t sensorNr, TVector3 posIn, TVector3 pos_out, TVector3 momIn,
+                      TVector3 momOut, Double_t time, Double_t length, Double_t eLoss);
 
 
   /** Private method ResetParameters
@@ -176,7 +168,8 @@ private:
 };
 
 
-inline void CbmMvd::ResetParameters() {
+inline void CbmMvd::ResetParameters()
+{
   fTrackID = fVolumeID = 0;
   fPosIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fPosOut.SetXYZM(0.0, 0.0, 0.0, 0.0);

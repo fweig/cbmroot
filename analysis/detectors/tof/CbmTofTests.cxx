@@ -20,6 +20,7 @@
 // CBMroot classes and includes
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
+
 #include "FairMCEventHeader.h"
 /*
 #include "CbmGlobalTrack.h"
@@ -36,7 +37,6 @@
 #include <Logger.h>
 
 // ROOT Classes and includes
-#include "Riostream.h"
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -45,6 +45,8 @@
 #include "TROOT.h"
 #include "TRandom.h"
 #include "TString.h"
+
+#include "Riostream.h"
 
 using std::cout;
 using std::endl;
@@ -122,7 +124,8 @@ CbmTofTests::CbmTofTests()
   , fhTofEff(NULL)
   , fhTofMixing(NULL)
   , fStart()
-  , fStop() {
+  , fStop()
+{
   cout << "CbmTofTests: Task started " << endl;
 }
 // ------------------------------------------------------------------
@@ -194,18 +197,22 @@ CbmTofTests::CbmTofTests(const char* name, Int_t verbose)
   , fhTofEff(NULL)
   , fhTofMixing(NULL)
   , fStart()
-  , fStop() {}
+  , fStop()
+{
+}
 // ------------------------------------------------------------------
 
 // ------------------------------------------------------------------
-CbmTofTests::~CbmTofTests() {
+CbmTofTests::~CbmTofTests()
+{
   // Destructor
   if (fGeoHandler) delete fGeoHandler;
 }
 // ------------------------------------------------------------------
 /************************************************************************************/
 // FairTasks inherited functions
-InitStatus CbmTofTests::Init() {
+InitStatus CbmTofTests::Init()
+{
   if (kFALSE == RegisterInputs()) return kFATAL;
 
   if (kFALSE == InitParameters()) return kFATAL;
@@ -217,7 +224,8 @@ InitStatus CbmTofTests::Init() {
   return kSUCCESS;
 }
 
-Bool_t CbmTofTests::InitParameters() {
+Bool_t CbmTofTests::InitParameters()
+{
   // Initialize the TOF GeoHandler
   Bool_t isSimulation = kFALSE;
   Int_t iGeoVersion   = fGeoHandler->Init(isSimulation);
@@ -232,14 +240,13 @@ Bool_t CbmTofTests::InitParameters() {
   switch (iGeoVersion) {
     case k12b: fTofId = new CbmTofDetectorId_v12b(); break;
     case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
-    default:
-      LOG(error) << "CbmTofDigitizerBDF::InitParameters: Invalid Detector ID "
-                 << iGeoVersion;
+    default: LOG(error) << "CbmTofDigitizerBDF::InitParameters: Invalid Detector ID " << iGeoVersion;
   }
   return kTRUE;
 }
 
-void CbmTofTests::SetParContainers() {
+void CbmTofTests::SetParContainers()
+{
   LOG(info) << " CbmTofTests => Get the digi parameters for tof";
 
   // Get Base Container
@@ -251,7 +258,8 @@ void CbmTofTests::SetParContainers() {
   fDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
 }
 
-void CbmTofTests::Exec(Option_t* /*option*/) {
+void CbmTofTests::Exec(Option_t* /*option*/)
+{
   // Task execution
 
   LOG(debug) << " CbmTofTests => New event";
@@ -259,8 +267,7 @@ void CbmTofTests::Exec(Option_t* /*option*/) {
   fStart.Set();
   FillHistos();
   fStop.Set();
-  fhTestingTime->Fill(fStop.GetSec() - fStart.GetSec()
-                      + (fStop.GetNanoSec() - fStart.GetNanoSec()) / 1e9);
+  fhTestingTime->Fill(fStop.GetSec() - fStart.GetSec() + (fStop.GetNanoSec() - fStart.GetNanoSec()) / 1e9);
 
   if (0 == (fEvents % 100) && 0 < fEvents) {
     cout << "-I- CbmTofTests::Exec : "
@@ -269,22 +276,21 @@ void CbmTofTests::Exec(Option_t* /*option*/) {
   fEvents += 1;
 }
 
-void CbmTofTests::Finish() {
+void CbmTofTests::Finish()
+{
   // Normalisations
-  cout << "CbmTofTests::Finish up with " << fEvents << " analyzed events "
-       << endl;
+  cout << "CbmTofTests::Finish up with " << fEvents << " analyzed events " << endl;
 
   Double_t dEvtRate     = 1. / fEvents;  // [1/events]
   Double_t dIntRate     = 1.E7;          // [interactions/s]
   Double_t dOptLinkCapa = 2.5;           // Nominal bandwidth [GByte/s]
-  Double_t dOptLinkAvBw =
-    0.8;  // Bandwidth available for data transport [Nominal bandwidth ratio]
-  Double_t dKiloByte = 1024;
-  Double_t dMegaByte = 1024 * dKiloByte;
-  Double_t dGigaByte = 1024 * dMegaByte;
+  Double_t dOptLinkAvBw = 0.8;           // Bandwidth available for data transport [Nominal bandwidth ratio]
+  Double_t dKiloByte    = 1024;
+  Double_t dMegaByte    = 1024 * dKiloByte;
+  Double_t dGigaByte    = 1024 * dMegaByte;
 
-  cout << "<I> Normalisation factors " << dIntRate * dEvtRate << " [1/s], "
-       << dOptLinkCapa * dOptLinkAvBw << " [GByte/s]" << endl;
+  cout << "<I> Normalisation factors " << dIntRate * dEvtRate << " [1/s], " << dOptLinkCapa * dOptLinkAvBw
+       << " [GByte/s]" << endl;
 
   fhFluxMap->Scale(dIntRate * dEvtRate);
   fhDigiFluxMap->Scale(dIntRate * dEvtRate);
@@ -297,12 +303,9 @@ void CbmTofTests::Finish() {
   fhTofDataPerEvt->Scale(1 / dKiloByte);
   //   fhHitRateCh->Scale(dIntRate*dEvtRate);
 
-  fhOptLnkRpc->Scale(dIntRate * dEvtRate / dGigaByte
-                     / (dOptLinkCapa * dOptLinkAvBw));
-  fhOptLnkSm->Scale(dIntRate * dEvtRate / dGigaByte
-                    / (dOptLinkCapa * dOptLinkAvBw));
-  fhOptLnkType->Scale(dIntRate * dEvtRate / dGigaByte
-                      / (dOptLinkCapa * dOptLinkAvBw));
+  fhOptLnkRpc->Scale(dIntRate * dEvtRate / dGigaByte / (dOptLinkCapa * dOptLinkAvBw));
+  fhOptLnkSm->Scale(dIntRate * dEvtRate / dGigaByte / (dOptLinkCapa * dOptLinkAvBw));
+  fhOptLnkType->Scale(dIntRate * dEvtRate / dGigaByte / (dOptLinkCapa * dOptLinkAvBw));
 
   WriteHistos();
   // Prevent them from being sucked in by the CbmHadronAnalysis WriteHistograms method
@@ -311,7 +314,8 @@ void CbmTofTests::Finish() {
 
 /************************************************************************************/
 // Functions common for all clusters approximations
-Bool_t CbmTofTests::RegisterInputs() {
+Bool_t CbmTofTests::RegisterInputs()
+{
   FairRootManager* fManager = FairRootManager::Instance();
   /*
    fMCEventHeader = (CbmMCEventHeader*) fManager->GetObject("MCEventHeader");
@@ -411,7 +415,8 @@ Bool_t CbmTofTests::RegisterInputs() {
   return kTRUE;
 }
 /************************************************************************************/
-Bool_t CbmTofTests::LoadGeometry() {
+Bool_t CbmTofTests::LoadGeometry()
+{
   /*
      Type 0: 5 RPC/SM,  24 SM, 32 ch/RPC =>  3840 ch          , 120 RPC         ,
      Type 1: 5 RPC/SM, 142 SM, 32 ch/RPC => 22720 ch => 26560 , 710 RPC =>  830 , => 166
@@ -456,21 +461,16 @@ Bool_t CbmTofTests::LoadGeometry() {
 }
 /************************************************************************************/
 // ------------------------------------------------------------------
-Bool_t CbmTofTests::CreateHistos() {
+Bool_t CbmTofTests::CreateHistos()
+{
   // Create histogramms
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  gROOT
-    ->cd();  // <= To prevent histos from being sucked in by the param file of the TRootManager !
+  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gROOT->cd();                     // <= To prevent histos from being sucked in by the param file of the TRootManager !
 
   // Test class performance
-  fhTestingTime =
-    new TH1I("TofDigiBdf_TestingTime",
-             "Time needed to for the test processing in each event; Time [s]",
-             4000,
-             0.0,
-             4.0);
+  fhTestingTime = new TH1I("TofDigiBdf_TestingTime", "Time needed to for the test processing in each event; Time [s]",
+                           4000, 0.0, 4.0);
   /*
    Double_t ymin=-1.;
    Double_t ymax=4.;
@@ -515,377 +515,141 @@ Bool_t CbmTofTests::CreateHistos() {
 
   // Mapping
   // points
-  fhPointMapXY =
-    new TH2D("TofTests_PointsMapXY",
-             "Position of the Tof Points; X[cm]; Y[cm]; # [Points]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  fhPointMapXZ =
-    new TH2D("TofTests_PointsMapXZ",
-             "Position of the Tof Points; X[cm]; Z[cm]; # [Points]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  fhPointMapYZ =
-    new TH2D("TofTests_PointsMapYZ",
-             "Position of the Tof Points; Y[cm]; Z[cm]; # [Points]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
+  fhPointMapXY  = new TH2D("TofTests_PointsMapXY", "Position of the Tof Points; X[cm]; Y[cm]; # [Points]", nbinx,
+                          -xrange, xrange, nbiny, -yrange, yrange);
+  fhPointMapXZ  = new TH2D("TofTests_PointsMapXZ", "Position of the Tof Points; X[cm]; Z[cm]; # [Points]", nbinx,
+                          -xrange, xrange, nbinz, zmin, zmax);
+  fhPointMapYZ  = new TH2D("TofTests_PointsMapYZ", "Position of the Tof Points; Y[cm]; Z[cm]; # [Points]", nbiny,
+                          -yrange, yrange, nbinz, zmin, zmax);
   fhPointMapAng = new TH2D("TofTests_PointsMapAng",
                            "Position of the Tof Points; #theta_{x}[Deg.]; "
                            "#theta_{y}[Deg.]; # [Points]",
-                           iNbBinThetaX,
-                           dThetaXMin,
-                           dThetaXMax,
-                           iNbBinThetaY,
-                           dThetaYMin,
-                           dThetaYMax);
-  fhPointMapSph =
-    new TH2D("TofTests_PointsMapSph",
-             "Position of the Tof Points; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+                           iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhPointMapSph = new TH2D("TofTests_PointsMapSph", "Position of the Tof Points; #theta[rad.]; #phi[rad.]; # [Points]",
+                           iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Digis
-  fhDigiMapXY  = new TH2D("TofTests_DigisMapXY",
-                         "Position of the Tof Digis; X[cm]; Y[cm]; # [Digi]",
-                         nbinx,
-                         -xrange,
-                         xrange,
-                         nbiny,
-                         -yrange,
-                         yrange);
-  fhDigiMapXZ  = new TH2D("TofTests_DigisMapXZ",
-                         "Position of the Tof Digis; X[cm]; Z[cm]; # [Digi]",
-                         nbinx,
-                         -xrange,
-                         xrange,
-                         nbinz,
-                         zmin,
-                         zmax);
-  fhDigiMapYZ  = new TH2D("TofTests_DigisMapYZ",
-                         "Position of the Tof Digis; Y[cm]; Z[cm]; # [Digi]",
-                         nbiny,
-                         -yrange,
-                         yrange,
-                         nbinz,
-                         zmin,
-                         zmax);
-  fhDigiMapAng = new TH2D(
-    "TofTests_DigisMapAng",
-    "Position of the Tof Digis; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Digi]",
-    iNbBinThetaX,
-    dThetaXMin,
-    dThetaXMax,
-    iNbBinThetaY,
-    dThetaYMin,
-    dThetaYMax);
-  fhDigiMapSph =
-    new TH2D("TofTests_DigisMapSph",
-             "Position of the Tof Digis; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  fhDigiMapXY = new TH2D("TofTests_DigisMapXY", "Position of the Tof Digis; X[cm]; Y[cm]; # [Digi]", nbinx, -xrange,
+                         xrange, nbiny, -yrange, yrange);
+  fhDigiMapXZ = new TH2D("TofTests_DigisMapXZ", "Position of the Tof Digis; X[cm]; Z[cm]; # [Digi]", nbinx, -xrange,
+                         xrange, nbinz, zmin, zmax);
+  fhDigiMapYZ = new TH2D("TofTests_DigisMapYZ", "Position of the Tof Digis; Y[cm]; Z[cm]; # [Digi]", nbiny, -yrange,
+                         yrange, nbinz, zmin, zmax);
+  fhDigiMapAng =
+    new TH2D("TofTests_DigisMapAng", "Position of the Tof Digis; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Digi]",
+             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhDigiMapSph = new TH2D("TofTests_DigisMapSph", "Position of the Tof Digis; #theta[rad.]; #phi[rad.]; # [Points]",
+                          iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
   // Hits
-  fhHitMapXY  = new TH2D("TofTests_HitsMapXY",
-                        "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]",
-                        nbinx,
-                        -xrange,
-                        xrange,
-                        nbiny,
-                        -yrange,
-                        yrange);
-  fhHitMapXZ  = new TH2D("TofTests_HitsMapXZ",
-                        "Position of the Tof Hits; X[cm]; Z[cm]; # [Hits]",
-                        nbinx,
-                        -xrange,
-                        xrange,
-                        nbinz,
-                        zmin,
-                        zmax);
-  fhHitMapYZ  = new TH2D("TofTests_HitsMapYZ",
-                        "Position of the Tof Hits; Y[cm]; Z[cm]; # [Hits]",
-                        nbiny,
-                        -yrange,
-                        yrange,
-                        nbinz,
-                        zmin,
-                        zmax);
-  fhHitMapAng = new TH2D(
-    "TofTests_HitsMapAng",
-    "Position of the Tof Hits; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
-    iNbBinThetaX,
-    dThetaXMin,
-    dThetaXMax,
-    iNbBinThetaY,
-    dThetaYMin,
-    dThetaYMax);
-  fhHitMapSph =
-    new TH2D("TofTests_HitsMapSph",
-             "Position of the Tof Hits; #theta[rad.]; #phi[rad.]; # [Points]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  fhHitMapXY = new TH2D("TofTests_HitsMapXY", "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]", nbinx, -xrange,
+                        xrange, nbiny, -yrange, yrange);
+  fhHitMapXZ = new TH2D("TofTests_HitsMapXZ", "Position of the Tof Hits; X[cm]; Z[cm]; # [Hits]", nbinx, -xrange,
+                        xrange, nbinz, zmin, zmax);
+  fhHitMapYZ = new TH2D("TofTests_HitsMapYZ", "Position of the Tof Hits; Y[cm]; Z[cm]; # [Hits]", nbiny, -yrange,
+                        yrange, nbinz, zmin, zmax);
+  fhHitMapAng =
+    new TH2D("TofTests_HitsMapAng", "Position of the Tof Hits; #theta_{x}[Deg.]; #theta_{y}[Deg.]; # [Hits]",
+             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  fhHitMapSph = new TH2D("TofTests_HitsMapSph", "Position of the Tof Hits; #theta[rad.]; #phi[rad.]; # [Points]",
+                         iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
   // Rates and data rates
   Int_t iNbSmTypes = fDigiBdfPar->GetNbSmTypes();
-  fhFluxMap        = new TH2D(
-    "TofTests_FluxMap",
-    "Tof Point rate as function of position; X[cm]; Y[cm]; Flux [1/(s*cm^2)]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhDigiFluxMap = new TH2D(
-    "TofTests_DigisFluxMap",
-    "Tof Hit rate as function of position; X[cm]; Y[cm]; Flux [Digi/(s*cm^2)]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhHitFluxMap = new TH2D(
-    "TofTests_HitsFluxMap",
-    "Tof Hit rate as function of position; X[cm]; Y[cm]; Flux [Hits/(s*cm^2)]",
-    nbinx,
-    -xrange,
-    xrange,
-    nbiny,
-    -yrange,
-    yrange);
-  fhDigiRateCh   = new TH1D("TofTests_DigiRateCh",
-                          "Digi rate per channel; Channel []; Rate [1/s]",
-                          2 * iNbChTot,
-                          0,
+  fhFluxMap = new TH2D("TofTests_FluxMap", "Tof Point rate as function of position; X[cm]; Y[cm]; Flux [1/(s*cm^2)]",
+                       nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  fhDigiFluxMap =
+    new TH2D("TofTests_DigisFluxMap", "Tof Hit rate as function of position; X[cm]; Y[cm]; Flux [Digi/(s*cm^2)]", nbinx,
+             -xrange, xrange, nbiny, -yrange, yrange);
+  fhHitFluxMap =
+    new TH2D("TofTests_HitsFluxMap", "Tof Hit rate as function of position; X[cm]; Y[cm]; Flux [Hits/(s*cm^2)]", nbinx,
+             -xrange, xrange, nbiny, -yrange, yrange);
+  fhDigiRateCh =
+    new TH1D("TofTests_DigiRateCh", "Digi rate per channel; Channel []; Rate [1/s]", 2 * iNbChTot, 0, 2 * iNbChTot);
+  fhDataRateCh = new TH1D("TofTests_DataRateCh", "Data rate per channel; Channel []; Data Rate [kB/s]", 2 * iNbChTot, 0,
                           2 * iNbChTot);
-  fhDataRateCh   = new TH1D("TofTests_DataRateCh",
-                          "Data rate per channel; Channel []; Data Rate [kB/s]",
-                          2 * iNbChTot,
-                          0,
-                          2 * iNbChTot);
-  fhDataRateRpc  = new TH1D("TofTests_DataRateRpc",
-                           "Data rate per RPC; RPC []; Rate [GB/s]",
-                           iNbRpcTot,
-                           0,
-                           iNbRpcTot);
-  fhDataRateSm   = new TH1D("TofTests_DataRateSm",
-                          "Data rate per SM; SM []; Rate [GB/s]",
-                          iNbSmTot,
-                          0,
-                          iNbSmTot);
-  fhDataRateType = new TH1D("TofTests_DataRateType",
-                            "Data rate per SM; SM Type[]; Rate [GB/s]",
-                            iNbSmTypes,
-                            0,
-                            iNbSmTypes);
+  fhDataRateRpc = new TH1D("TofTests_DataRateRpc", "Data rate per RPC; RPC []; Rate [GB/s]", iNbRpcTot, 0, iNbRpcTot);
+  fhDataRateSm  = new TH1D("TofTests_DataRateSm", "Data rate per SM; SM []; Rate [GB/s]", iNbSmTot, 0, iNbSmTot);
+  fhDataRateType =
+    new TH1D("TofTests_DataRateType", "Data rate per SM; SM Type[]; Rate [GB/s]", iNbSmTypes, 0, iNbSmTypes);
   fhTofDataPerEvt =
-    new TH1D("TofTests_DataPerEvt",
-             "Data per event for the full wall; Event Size [kB]",
-             1000,
-             0,
-             1000.0);
+    new TH1D("TofTests_DataPerEvt", "Data per event for the full wall; Event Size [kB]", 1000, 0, 1000.0);
   fhTofDataRedEvt = new TH1D("TofTests_DataRedEvt",
                              "Possible data reduction per event for the full "
                              "wall; Event Size Reduction [kB]",
-                             iNbChTot,
-                             0,
-                             iNbChTot);
+                             iNbChTot, 0, iNbChTot);
   //   fhHitRateCh     = new TH1D("TofTests_HitRateCh", "Tof Hit rate per channel; Channel []; Rate [1/s]",
   //                              iNbChTot, 0, iNbChTot);
-  fhOptLnkRpc = new TH1D("TofTests_OptLnkRpc",
-                         "Number of optical links needed per RPC; RPC []",
-                         iNbRpcTot,
-                         0,
-                         iNbRpcTot);
-  fhOptLnkSm =
-    new TH1D("TofTests_OptLnkSm",
-             "Number of optical links needed per SM; SM []; Optical Links []",
-             iNbSmTot,
-             0,
-             iNbSmTot);
-  fhOptLnkType = new TH1D(
-    "TofTests_OptLnkType",
-    "Number of optical links needed per SM type; SM Type[]; Optical Links []",
-    iNbSmTypes,
-    0,
-    iNbSmTypes);
+  fhOptLnkRpc =
+    new TH1D("TofTests_OptLnkRpc", "Number of optical links needed per RPC; RPC []", iNbRpcTot, 0, iNbRpcTot);
+  fhOptLnkSm = new TH1D("TofTests_OptLnkSm", "Number of optical links needed per SM; SM []; Optical Links []", iNbSmTot,
+                        0, iNbSmTot);
+  fhOptLnkType =
+    new TH1D("TofTests_OptLnkType", "Number of optical links needed per SM type; SM Type[]; Optical Links []",
+             iNbSmTypes, 0, iNbSmTypes);
 
   // Performances check
-  fhTofRes = new TH1I(
-    "TofTests_TimeRes",
-    "Time difference between TofHits and TofPoint; tMcPoint -tTofHit [ns]",
-    5000,
-    -5.0,
-    5.0);
+  fhTofRes = new TH1I("TofTests_TimeRes", "Time difference between TofHits and TofPoint; tMcPoint -tTofHit [ns]", 5000,
+                      -5.0, 5.0);
   fhTofResSing = new TH1I("TofTests_TimeResSing",
                           "Time difference between TofHits and TofPoint, only "
                           "1 MC Track/Point per Hit; tMcPoint -tTofHit [ns]",
-                          5000,
-                          -5.0,
-                          5.0);
+                          5000, -5.0, 5.0);
 
-  fhTofPosDifX = new TH2D(
-    "TofTests_PosDifX",
-    "Position Accuracy of the Tof Hits in X; X[cm]; PtX - HitX[cm]; # [Hits]",
-    nbinx,
-    -xrange,
-    xrange,
-    200,
-    -50,
-    50);
-  fhTofPosDifY = new TH2D(
-    "TofTests_PosDifY",
-    "Position Accuracy of the Tof Hits in Y; Y[cm]; PtY - HitY[cm]; # [Hits]",
-    nbiny,
-    -yrange,
-    yrange,
-    200,
-    -50,
-    50);
-  fhTofPosDifZ = new TH2D(
-    "TofTests_PosDifZ",
-    "Position Accuracy of the Tof Hits in Z; Z[cm]; PtZ - HitZ[cm]; # [Hits]",
-    600,
-    950,
-    1100,
-    200,
-    -10,
-    10);
-  fhTofPosDifSingXX =
-    new TH2D("TofTests_PosDifSingXX",
-             "Position Accuracy of the Tof Hits in X, hits from single MC "
-             "point; Pt X[cm]; PtX - HitX[cm]; # [Hits]",
-             nbinx,
-             -xrange,
-             xrange,
-             500,
-             -50,
-             50);
-  fhTofPosDifSingXY =
-    new TH2D("TofTests_PosDifSingXY",
-             "Position Accuracy of the Tof Hits in X, hits from single MC "
-             "point; Pt Y[cm]; PtX - HitX[cm]; # [Hits]",
-             nbiny,
-             -yrange,
-             yrange,
-             500,
-             -50,
-             50);
-  fhTofPosDifSingXZ =
-    new TH2D("TofTests_PosDifSingXZ",
-             "Position Accuracy of the Tof Hits in X, hits from single MC "
-             "point; Pt Z[cm]; PtX - HitX[cm]; # [Hits]",
-             nbinz,
-             zmin,
-             zmax,
-             500,
-             -50,
-             50);
-  fhTofPosDifSingY =
-    new TH2D("TofTests_PosDifSingY",
-             "Position Accuracy of the Tof Hits in Y, hits from single MC "
-             "point; Pt Y[cm]; PtY - HitY[cm]; # [Hits]",
-             nbiny,
-             -yrange,
-             yrange,
-             500,
-             -50,
-             50);
-  fhTofPosDifSingZ =
-    new TH2D("TofTests_PosDifSingZ",
-             "Position Accuracy of the Tof Hits in Z, hits from single MC "
-             "point; Pt Z[cm]; PtZ - HitZ[cm]; # [Hits]",
-             600,
-             950,
-             1100,
-             200,
-             -10,
-             10);
-  fhTofPosDifXZSing =
-    new TH2D("TofTests_PosDifXZSing",
-             "Position Accuracy of the Tof Hits in Z, hits from single MC "
-             "point; PtX - HitX[cm]; PtZ - HitZ[cm]; # [Hits]",
-             200,
-             -50,
-             50,
-             200,
-             -10,
-             10);
+  fhTofPosDifX = new TH2D("TofTests_PosDifX", "Position Accuracy of the Tof Hits in X; X[cm]; PtX - HitX[cm]; # [Hits]",
+                          nbinx, -xrange, xrange, 200, -50, 50);
+  fhTofPosDifY = new TH2D("TofTests_PosDifY", "Position Accuracy of the Tof Hits in Y; Y[cm]; PtY - HitY[cm]; # [Hits]",
+                          nbiny, -yrange, yrange, 200, -50, 50);
+  fhTofPosDifZ = new TH2D("TofTests_PosDifZ", "Position Accuracy of the Tof Hits in Z; Z[cm]; PtZ - HitZ[cm]; # [Hits]",
+                          600, 950, 1100, 200, -10, 10);
+  fhTofPosDifSingXX = new TH2D("TofTests_PosDifSingXX",
+                               "Position Accuracy of the Tof Hits in X, hits from single MC "
+                               "point; Pt X[cm]; PtX - HitX[cm]; # [Hits]",
+                               nbinx, -xrange, xrange, 500, -50, 50);
+  fhTofPosDifSingXY = new TH2D("TofTests_PosDifSingXY",
+                               "Position Accuracy of the Tof Hits in X, hits from single MC "
+                               "point; Pt Y[cm]; PtX - HitX[cm]; # [Hits]",
+                               nbiny, -yrange, yrange, 500, -50, 50);
+  fhTofPosDifSingXZ = new TH2D("TofTests_PosDifSingXZ",
+                               "Position Accuracy of the Tof Hits in X, hits from single MC "
+                               "point; Pt Z[cm]; PtX - HitX[cm]; # [Hits]",
+                               nbinz, zmin, zmax, 500, -50, 50);
+  fhTofPosDifSingY  = new TH2D("TofTests_PosDifSingY",
+                              "Position Accuracy of the Tof Hits in Y, hits from single MC "
+                              "point; Pt Y[cm]; PtY - HitY[cm]; # [Hits]",
+                              nbiny, -yrange, yrange, 500, -50, 50);
+  fhTofPosDifSingZ  = new TH2D("TofTests_PosDifSingZ",
+                              "Position Accuracy of the Tof Hits in Z, hits from single MC "
+                              "point; Pt Z[cm]; PtZ - HitZ[cm]; # [Hits]",
+                              600, 950, 1100, 200, -10, 10);
+  fhTofPosDifXZSing = new TH2D("TofTests_PosDifXZSing",
+                               "Position Accuracy of the Tof Hits in Z, hits from single MC "
+                               "point; PtX - HitX[cm]; PtZ - HitZ[cm]; # [Hits]",
+                               200, -50, 50, 200, -10, 10);
 
-  fhTofBadXPosSing =
-    new TH2D("TofTests_BadXPosSing",
-             "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  fhTofBadYPosSing =
-    new TH2D("TofTests_BadYPosSing",
-             "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  fhTofBadZPosSing =
-    new TH2D("TofTests_BadZPosSing",
-             "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
+  fhTofBadXPosSing = new TH2D("TofTests_BadXPosSing", "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]", nbinx,
+                              -xrange, xrange, nbiny, -yrange, yrange);
+  fhTofBadYPosSing = new TH2D("TofTests_BadYPosSing", "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]", nbinx,
+                              -xrange, xrange, nbiny, -yrange, yrange);
+  fhTofBadZPosSing = new TH2D("TofTests_BadZPosSing", "Position of the Tof Hits; X[cm]; Y[cm]; # [Hits]", nbinx,
+                              -xrange, xrange, nbiny, -yrange, yrange);
 
   fhTofEff    = new TH1I("TofTests_TofEff",
                       "Fraction of tracks reaching Tof producing a non mixed "
                       "TofHit; # non-mixed Hits/ # Tof Tracks []",
-                      1000,
-                      0.0,
-                      1.0);
+                      1000, 0.0, 1.0);
   fhTofMixing = new TH1I("TofTests_TofMix",
                          "Fraction of TofHits built from more than 1 McTrack; "
                          "# mixed Hits/ # Hits []",
-                         1000,
-                         0.0,
-                         0.1);
+                         1000, 0.0, 0.1);
 
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
 
   return kTRUE;
 }
 
 // ------------------------------------------------------------------
-Bool_t CbmTofTests::FillHistos() {
+Bool_t CbmTofTests::FillHistos()
+{
   // Constants, TODO => put as parameter !!!
   Int_t iDataSizeHit = 48;  // [bits]
 
@@ -909,9 +673,7 @@ Bool_t CbmTofTests::FillHistos() {
     pMcTrk = (CbmMCTrack*) fMcTracksColl->At(iTrkInd);
 
     if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof)) { iNbTofTracks++; }
-    if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof)
-        && -1 == pMcTrk->GetMotherId())
-      iNbTofTracksPrim++;
+    if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof) && -1 == pMcTrk->GetMotherId()) iNbTofTracksPrim++;
 
   }  // for(Int_t iTrkInd = 0; iTrkInd < nMcTracks; iTrkInd++)
 
@@ -937,9 +699,8 @@ Bool_t CbmTofTests::FillHistos() {
     Double_t dThetaY = TMath::ATan2(dY, dZ) * 180.0 / TMath::Pi();
     fhPointMapAng->Fill(dThetaX, dThetaY);
 
-    Double_t dPhi =
-      TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
-    Double_t dTheta = TMath::ATan2(dY, dX);              //*180.0/TMath::Pi();
+    Double_t dPhi   = TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
+    Double_t dTheta = TMath::ATan2(dY, dX);                              //*180.0/TMath::Pi();
     fhPointMapSph->Fill(dTheta, dPhi);
   }  // for (Int_t iPntInd = 0; iPntInd < nTofPoint; iPntInd++ )
 
@@ -955,10 +716,8 @@ Bool_t CbmTofTests::FillHistos() {
       Int_t iRpc    = pDigi->GetRpc();
       Int_t iCh     = pDigi->GetChannel();
       // First Get X/Y position info
-      if (fGeoHandler->GetGeoVersion() < k14a)
-        iCh = iCh + 1;  //FIXME: Reason found in TofMC and TofGeoHandler
-      CbmTofDetectorInfo xDetInfo(
-        ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+      if (fGeoHandler->GetGeoVersion() < k14a) iCh = iCh + 1;  //FIXME: Reason found in TofMC and TofGeoHandler
+      CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
       Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
       fChannelInfo = fDigiPar->GetCell(iChId);
 
@@ -975,17 +734,15 @@ Bool_t CbmTofTests::FillHistos() {
       Double_t dThetaY = TMath::ATan2(dY, dZ) * 180.0 / TMath::Pi();
       fhDigiMapAng->Fill(dThetaX, dThetaY);
 
-      Double_t dPhi =
-        TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
-      Double_t dTheta = TMath::ATan2(dY, dX);              //*180.0/TMath::Pi();
+      Double_t dPhi   = TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
+      Double_t dTheta = TMath::ATan2(dY, dX);                              //*180.0/TMath::Pi();
       fhDigiMapSph->Fill(dTheta, dPhi);
 
       Int_t iGlobalChan = iCh + fvRpcChOffs[iSmType][iSm][iRpc];
       Int_t iGlobalRpc  = iRpc + fvSmRpcOffs[iSmType][iSm];
       Int_t iGlobalSm   = iSm + fvTypeSmOffs[iSmType];
       fhDigiRateCh->Fill(iGlobalChan + iNbChTot * pDigi->GetSide());
-      fhDataRateCh->Fill(iGlobalChan + iNbChTot * pDigi->GetSide(),
-                         iDataSizeHit);
+      fhDataRateCh->Fill(iGlobalChan + iNbChTot * pDigi->GetSide(), iDataSizeHit);
       fhDataRateRpc->Fill(iGlobalRpc, iDataSizeHit);
       fhDataRateSm->Fill(iGlobalSm, iDataSizeHit);
       fhDataRateType->Fill(iSmType, iDataSizeHit);
@@ -1020,9 +777,8 @@ Bool_t CbmTofTests::FillHistos() {
     Double_t dThetaY = TMath::ATan2(dY, dZ) * 180.0 / TMath::Pi();
     fhHitMapAng->Fill(dThetaX, dThetaY);
 
-    Double_t dPhi =
-      TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
-    Double_t dTheta = TMath::ATan2(dY, dX);              //*180.0/TMath::Pi();
+    Double_t dPhi   = TMath::ATan2(TMath::Sqrt(dX * dX + dY * dY), dZ);  //*180.0/TMath::Pi();
+    Double_t dTheta = TMath::ATan2(dY, dX);                              //*180.0/TMath::Pi();
     fhHitMapSph->Fill(dPhi, dTheta);
 
     // Get Nb of links in Match and index of Point for best link
@@ -1043,19 +799,15 @@ Bool_t CbmTofTests::FillHistos() {
       fhTofPosDifSingXZ->Fill(pPt->GetZ(), pPt->GetX() - pTofHit->GetX());
       fhTofPosDifSingY->Fill(pPt->GetY(), pPt->GetY() - pTofHit->GetY());
       fhTofPosDifSingZ->Fill(pPt->GetZ(), pPt->GetZ() - pTofHit->GetZ());
-      fhTofPosDifXZSing->Fill(pPt->GetX() - pTofHit->GetX(),
-                              pPt->GetZ() - pTofHit->GetZ());
+      fhTofPosDifXZSing->Fill(pPt->GetX() - pTofHit->GetX(), pPt->GetZ() - pTofHit->GetZ());
 
-      if (pPt->GetX() - pTofHit->GetX() < -0.7
-          || 0.7 < pPt->GetX() - pTofHit->GetX())
+      if (pPt->GetX() - pTofHit->GetX() < -0.7 || 0.7 < pPt->GetX() - pTofHit->GetX())
         fhTofBadXPosSing->Fill(pPt->GetX(), pPt->GetY());
       //            fhTofBadXPosSing->Fill( pTofHit->GetX(), pTofHit->GetY() );
-      if (pPt->GetY() - pTofHit->GetY() < -2.0
-          || 2.0 < pPt->GetY() - pTofHit->GetY())
+      if (pPt->GetY() - pTofHit->GetY() < -2.0 || 2.0 < pPt->GetY() - pTofHit->GetY())
         fhTofBadYPosSing->Fill(pPt->GetX(), pPt->GetY());
       //            fhTofBadYPosSing->Fill( pTofHit->GetX(), pTofHit->GetY() );
-      if (pPt->GetZ() - pTofHit->GetZ() < -0.6
-          || 0.6 < pPt->GetZ() - pTofHit->GetZ())
+      if (pPt->GetZ() - pTofHit->GetZ() < -0.6 || 0.6 < pPt->GetZ() - pTofHit->GetZ())
         fhTofBadZPosSing->Fill(pPt->GetX(), pPt->GetY());
       //            fhTofBadZPosSing->Fill( pTofHit->GetX(), pTofHit->GetY() );
 
@@ -1071,7 +823,8 @@ Bool_t CbmTofTests::FillHistos() {
 }
 // ------------------------------------------------------------------
 
-Bool_t CbmTofTests::WriteHistos() {
+Bool_t CbmTofTests::WriteHistos()
+{
   // TODO: add sub-folders
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -1079,7 +832,7 @@ Bool_t CbmTofTests::WriteHistos() {
   TDirectory* oldDir = gDirectory;
 
   // Write histogramms to the file
-  TFile* fHist      = new TFile("./tofTests.hst.root", "RECREATE");
+  TFile* fHist = new TFile("./tofTests.hst.root", "RECREATE");
   fHist->cd();
 
   // Test class performance
@@ -1147,7 +900,8 @@ Bool_t CbmTofTests::WriteHistos() {
 
   return kTRUE;
 }
-Bool_t CbmTofTests::DeleteHistos() {
+Bool_t CbmTofTests::DeleteHistos()
+{
   // Test class performance
   delete fhTestingTime;
 

@@ -10,9 +10,12 @@
 
 
 #include "CbmStsTrackStatus.h"
+
 #include "FairDetector.h"
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
+
 #include <map>
 
 class FairVolume;
@@ -52,9 +55,7 @@ public:
 		 ** The decision is based on the volume name (has to contain "Sensor").
 		 ** Virtual from FairModule.
 		 **/
-  virtual Bool_t CheckIfSensitive(std::string name) {
-    return (TString(name).Contains("Sensor") ? kTRUE : kFALSE);
-  }
+  virtual Bool_t CheckIfSensitive(std::string name) { return (TString(name).Contains("Sensor") ? kTRUE : kFALSE); }
 
 
   /** @brief Construct the STS geometry in the TGeoManager.
@@ -90,9 +91,7 @@ public:
 		 **
 		 ** Abstract from FairDetector.
 		 **/
-  virtual TClonesArray* GetCollection(Int_t iColl) const {
-    return (iColl ? NULL : fStsPoints);
-  }
+  virtual TClonesArray* GetCollection(Int_t iColl) const { return (iColl ? NULL : fStsPoints); }
 
 
   /** @brief Screen log
@@ -121,10 +120,7 @@ public:
 		 **
 		 ** Abstract from FairDetector.
 		 **/
-  virtual void Register() {
-    FairRootManager::Instance()->Register(
-      "StsPoint", GetName(), fStsPoints, kTRUE);
-  }
+  virtual void Register() { FairRootManager::Instance()->Register("StsPoint", GetName(), fStsPoints, kTRUE); }
 
 
   /** @brief Create StsPoints also for neutral particles
@@ -150,16 +146,14 @@ public:
   virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
 
 private:
-  CbmStsTrackStatus fStatusIn;   //! Track status at entry of sensor
-  CbmStsTrackStatus fStatusOut;  //! Track status at exit of sensor
-  Double_t fEloss;               //! Accumulated energy loss for current track
-  std::map<TString, Int_t>
-    fAddressMap;             ///< Map from full path to unique address
-  TClonesArray* fStsPoints;  //!  Output array (CbmStsPoint)
-  CbmStsSetup* fSetup;       //! Pointer to static instance of CbmStsSetup
-  TGeoCombiTrans*
-    fCombiTrans;            //! Transformation matrix for geometry positioning
-  Bool_t fProcessNeutrals;  ///< Create points also for neutral particles
+  CbmStsTrackStatus fStatusIn;           //! Track status at entry of sensor
+  CbmStsTrackStatus fStatusOut;          //! Track status at exit of sensor
+  Double_t fEloss;                       //! Accumulated energy loss for current track
+  std::map<TString, Int_t> fAddressMap;  ///< Map from full path to unique address
+  TClonesArray* fStsPoints;              //!  Output array (CbmStsPoint)
+  CbmStsSetup* fSetup;                   //! Pointer to static instance of CbmStsSetup
+  TGeoCombiTrans* fCombiTrans;           //! Transformation matrix for geometry positioning
+  Bool_t fProcessNeutrals;               ///< Create points also for neutral particles
 
   /** @brief Create a new StsPoint
      ** Creates a new CbmStsPoint using the current track status information

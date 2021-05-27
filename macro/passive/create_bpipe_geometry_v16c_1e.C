@@ -20,6 +20,7 @@
 
 
 #include "TGeoManager.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -42,48 +43,35 @@ TString rootFileName = "pipe_v16c_1e.geo.root";
 TString pipeName = "pipe_v16c_1e";
 // ----------------------------------------------------------------------------
 
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                      fstream* infoFile);
 
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                        fstream* infoFile);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_bpipe_geometry_v16c_1e() {
+void create_bpipe_geometry_v16c_1e()
+{
   // -----   Define beam pipe sections   --------------------------------------
   /** For v16c_1e:   **/
-  TString pipe1name       = "pipe1 - vacuum chamber";
-  const Int_t nSects1     = 6;
-  Double_t z1[nSects1]    = {-50., -5., -5., 230.17, 230.17, 230.87};  // mm
-  Double_t rin1[nSects1]  = {25., 25., 400., 400., 110., 110.};
-  Double_t rout1[nSects1] = {25.7, 25.7, 400.7, 400.7, 400.7, 130.7};
-  TString pipe2name       = "pipe2 - first window @ 220mm, h=0.7mm, R=600mm";
-  const Int_t nSects2     = 7;
-  Double_t z2[nSects2]    = {
-    220., 220.7, 221.45, 223.71, 227.49, 230.17, 230.87};  // mm
-  Double_t rin2[nSects2]  = {17., 17., 30., 60., 90., 105.86, 110.};
-  Double_t rout2[nSects2] = {17., 28.69, 39.3, 65.55, 94.14, 110., 110.};
-  TString pipevac1name    = "pipevac1";
-  const Int_t nSects01    = 10;
-  Double_t z01[nSects01]  = {
-    -50., -5., -5., 220., 220., 220.7, 221.45, 223.71, 227.49, 230.17};  // mm
-  Double_t rin01[nSects01] = {
-    0., 0., 0., 0., 17., 28.69, 39.3, 65.55, 94.14, 110.};
-  Double_t rout01[nSects01] = {
-    25., 25., 400., 400., 400., 400., 400., 400., 400., 400.};
+  TString pipe1name         = "pipe1 - vacuum chamber";
+  const Int_t nSects1       = 6;
+  Double_t z1[nSects1]      = {-50., -5., -5., 230.17, 230.17, 230.87};  // mm
+  Double_t rin1[nSects1]    = {25., 25., 400., 400., 110., 110.};
+  Double_t rout1[nSects1]   = {25.7, 25.7, 400.7, 400.7, 400.7, 130.7};
+  TString pipe2name         = "pipe2 - first window @ 220mm, h=0.7mm, R=600mm";
+  const Int_t nSects2       = 7;
+  Double_t z2[nSects2]      = {220., 220.7, 221.45, 223.71, 227.49, 230.17, 230.87};  // mm
+  Double_t rin2[nSects2]    = {17., 17., 30., 60., 90., 105.86, 110.};
+  Double_t rout2[nSects2]   = {17., 28.69, 39.3, 65.55, 94.14, 110., 110.};
+  TString pipevac1name      = "pipevac1";
+  const Int_t nSects01      = 10;
+  Double_t z01[nSects01]    = {-50., -5., -5., 220., 220., 220.7, 221.45, 223.71, 227.49, 230.17};  // mm
+  Double_t rin01[nSects01]  = {0., 0., 0., 0., 17., 28.69, 39.3, 65.55, 94.14, 110.};
+  Double_t rout01[nSects01] = {25., 25., 400., 400., 400., 400., 400., 400., 400., 400.};
 
   // tan (acos(-1)/180 * 2.5) *  30 cm = 1.310 cm
   // tan (acos(-1)/180 * 2.5) *  40 cm = 1.746 cm
@@ -104,19 +92,16 @@ void create_bpipe_geometry_v16c_1e() {
   //  Double_t rout3[nSects3]   = {  18.,   18.,    55. };
   //  Double_t rin3[nSects3]; for(Int_t i=0; i<nSects3; i++) { rin3[i] = rout3[i] - rout3[i]/30.; }
   const Int_t nSects3  = 5;
-  Double_t z3[nSects3] = {
-    220., 410., 1183., 1183., 1188.};  // mm Wolfgang's drawing
+  Double_t z3[nSects3] = {220., 410., 1183., 1183., 1188.};  // mm Wolfgang's drawing
   //  Double_t z3[nSects3]      = { 220.,  400.,  1183.,  1183.,  1188. }; // mm Wolfgang's drawing
-  Double_t rout3[nSects3] = {
-    34 / 2., 34 / 2., 55. + pipewallthickness, 85., 85.};
-  Double_t rin3[nSects3] = {999., 999., 55., 55., 55.};
+  Double_t rout3[nSects3] = {34 / 2., 34 / 2., 55. + pipewallthickness, 85., 85.};
+  Double_t rin3[nSects3]  = {999., 999., 55., 55., 55.};
   for (Int_t i = 0; i < 2; i++) {
     rin3[i] = rout3[i] - pipewallthickness;
   }
   TString pipevac3name   = "pipevac3";
   const Int_t nSects03   = nSects3;
-  Double_t z03[nSects03] = {
-    220., 410., 1183., 1183., 1188.};  // mm Wolfgang's drawing
+  Double_t z03[nSects03] = {220., 410., 1183., 1183., 1188.};  // mm Wolfgang's drawing
   //  Double_t z03[nSects03]    = { 220.,  400.,  1183.,  1183.,  1188. }; // mm Wolfgang's drawing
   Double_t rin03[nSects03] = {0., 0., 0., 0., 0.};
   Double_t rout03[nSects03];
@@ -127,9 +112,8 @@ void create_bpipe_geometry_v16c_1e() {
   TString pipe4name       = "pipe4 - STS flange";
   const Int_t nSects4     = 6;
   Double_t z4[nSects4]    = {1188., 1198., 1198., 1215., 1215., 1225.};  // mm
-  Double_t rout4[nSects4] = {
-    85., 85., 55. + pipewallthickness, 55. + pipewallthickness, 85., 85.};
-  Double_t rin4[nSects4] = {55., 55., 55., 55., 55., 55.};
+  Double_t rout4[nSects4] = {85., 85., 55. + pipewallthickness, 55. + pipewallthickness, 85., 85.};
+  Double_t rin4[nSects4]  = {55., 55., 55., 55., 55., 55.};
   //  Double_t rin4[nSects4]; for(Int_t i=0; i<nSects4; i++) { rin4[i] = rout4[i] - pipewallthickness; }
   TString pipevac4name     = "pipevac4";
   const Int_t nSects04     = 2;               // nSects4;
@@ -163,8 +147,7 @@ void create_bpipe_geometry_v16c_1e() {
   fstream infoFile;
   fstream infoFileEmpty;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "SIS-100. Beam pipe geometry created with " + macroname << endl
-           << endl;
+  infoFile << "SIS-100. Beam pipe geometry created with " + macroname << endl << endl;
   infoFile << "  pipe v16c_1e - is a pipe for the STS up to the interface to "
               "RICH at z = 1700 mm"
            << endl
@@ -261,59 +244,50 @@ void create_bpipe_geometry_v16c_1e() {
 
   // -----   Create sections  -------------------------------------------------
   infoFile << endl << "Beam pipe section: " << pipe1name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe1 =
-    MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe1 = MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
   pipe1->SetLineColor(kYellow);
   //  pipe1->SetLineColor(kGray);
   pipe->AddNode(pipe1, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe2name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe2 =
-    MakePipe(2, nSects2, z2, rin2, rout2, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe2 = MakePipe(2, nSects2, z2, rin2, rout2, pipeMedium, &infoFile);
   pipe2->SetLineColor(kBlue);
   pipe->AddNode(pipe2, 0);
-  TGeoVolume* pipevac1 =
-    MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
+  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
   pipevac1->SetLineColor(kCyan);
   pipe->AddNode(pipevac1, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe3name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe3 =
-    MakePipe(3, nSects3, z3, rin3, rout3, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe3 = MakePipe(3, nSects3, z3, rin3, rout3, pipeMedium, &infoFile);
   pipe3->SetLineColor(kGreen);
   pipe->AddNode(pipe3, 0);
-  TGeoVolume* pipevac3 =
-    MakeVacuum(3, nSects03, z03, rin03, rout03, vacuum, &infoFile);
+  TGeoVolume* pipevac3 = MakeVacuum(3, nSects03, z03, rin03, rout03, vacuum, &infoFile);
   pipevac3->SetLineColor(kCyan);
   pipe->AddNode(pipevac3, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe4name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe4 =
-    MakePipe(4, nSects4, z4, rin4, rout4, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe4 = MakePipe(4, nSects4, z4, rin4, rout4, pipeMedium, &infoFile);
   pipe4->SetLineColor(kBlue);
   pipe->AddNode(pipe4, 0);
-  TGeoVolume* pipevac4 =
-    MakeVacuum(4, nSects04, z04, rin04, rout04, vacuum, &infoFile);
+  TGeoVolume* pipevac4 = MakeVacuum(4, nSects04, z04, rin04, rout04, vacuum, &infoFile);
   pipevac4->SetLineColor(kCyan);
   pipe->AddNode(pipevac4, 0);
 
   infoFile << endl << "Beam pipe section: " << pipe5name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe5 =
-    MakePipe(5, nSects5, z5, rin5, rout5, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe5 = MakePipe(5, nSects5, z5, rin5, rout5, pipeMedium, &infoFile);
   pipe5->SetLineColor(kGreen);
   pipe->AddNode(pipe5, 0);
-  TGeoVolume* pipevac5 =
-    MakeVacuum(5, nSects05, z05, rin05, rout05, vacuum, &infoFile);
+  TGeoVolume* pipevac5 = MakeVacuum(5, nSects05, z05, rin05, rout05, vacuum, &infoFile);
   pipevac5->SetLineColor(kCyan);
   pipe->AddNode(pipevac5, 0);
 
@@ -335,8 +309,7 @@ void create_bpipe_geometry_v16c_1e() {
   TFile* rootFile = new TFile(rootFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << rootFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << rootFileName << endl;
   rootFile->Close();
   infoFile.close();
 }
@@ -367,23 +340,17 @@ void create_bpipe_geometry_v16c_1e() {
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
-                     fstream* infoFile) {
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                     fstream* infoFile)
+{
 
   // ---> Shape
   TString volName = Form("pipe%i", iPart);
   TGeoPcon* shape = new TGeoPcon(volName.Data(), 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
-    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
-              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2) << z[iSect] << setw(10) << fixed
+              << setprecision(2) << rin[iSect] << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
               << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
@@ -396,20 +363,15 @@ TGeoVolume* MakePipe(Int_t iPart,
 
 
 // =====   Make the volume for the vacuum inside the beam pipe   ==============
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
-                       fstream* infoFile) {
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                       fstream* infoFile)
+{
 
   // ---> Shape
   TString volName = Form("pipevac%i", iPart);
   TGeoPcon* shape = new TGeoPcon(volName.Data(), 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
   }
 
   // ---> Volume

@@ -1,8 +1,5 @@
-void pl_all_CluRate(Int_t iNSt      = 6,
-                    Int_t iOpt      = 0,
-                    Double_t Tstart = 0.,
-                    Double_t Tend   = 800.,
-                    Int_t iMode     = 0) {
+void pl_all_CluRate(Int_t iNSt = 6, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -55,14 +52,8 @@ void pl_all_CluRate(Int_t iNSt      = 6,
         gROOT->cd();
         TString hname = "";
         switch (iOpt) {
-          case 0:
-            hname =
-              Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iType[iSt], iSm, iRp);
-            break;
-          case 1:
-            hname =
-              Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iType[iSt], iSm, iRp);
-            break;
+          case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iType[iSt], iSm, iRp); break;
+          case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iType[iSt], iSm, iRp); break;
         }
         h = (TH1*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
@@ -85,13 +76,13 @@ void pl_all_CluRate(Int_t iNSt      = 6,
               h->SetLineColor(iCol);
               h->SetLineStyle(1);
               h->SetMarkerColor(iCol);
-              if (iSm == 0 && iRp == 0)
-                h->Draw("LPE");
+              if (iSm == 0 && iRp == 0) h->Draw("LPE");
               else
                 h->Draw("LPEsame");
               break;
           }
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

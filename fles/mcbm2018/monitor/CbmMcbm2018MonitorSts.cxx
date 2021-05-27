@@ -38,6 +38,7 @@
 // C/C++
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbm2018ResetSts     = kFALSE;
@@ -188,11 +189,14 @@ CbmMcbm2018MonitorSts::CbmMcbm2018MonitorSts()
   , fhStsFebSmxErrRatioCopyEvoAsic()
   , fhStsFebSmxErrRatioCopySameAdcEvo()
   , fhStsFebSmxErrRatioCopySameAdcEvoAsic()
-  , fcMsSizeAll(NULL) {}
+  , fcMsSizeAll(NULL)
+{
+}
 
 CbmMcbm2018MonitorSts::~CbmMcbm2018MonitorSts() {}
 
-Bool_t CbmMcbm2018MonitorSts::Init() {
+Bool_t CbmMcbm2018MonitorSts::Init()
+{
   LOG(info) << "Initializing flib StsXyter unpacker for STS";
 
   FairRootManager* ioman = FairRootManager::Instance();
@@ -201,15 +205,15 @@ Bool_t CbmMcbm2018MonitorSts::Init() {
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorSts::SetParContainers() {
+void CbmMcbm2018MonitorSts::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
-  fUnpackParSts =
-    (CbmMcbm2018StsPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer(
-      "CbmMcbm2018StsPar"));
+  fUnpackParSts = (CbmMcbm2018StsPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018StsPar"));
 }
 
 
-Bool_t CbmMcbm2018MonitorSts::InitContainers() {
+Bool_t CbmMcbm2018MonitorSts::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   Bool_t bInit = InitStsParameters();
@@ -218,13 +222,15 @@ Bool_t CbmMcbm2018MonitorSts::InitContainers() {
   return bInit;
 }
 
-Bool_t CbmMcbm2018MonitorSts::ReInitContainers() {
+Bool_t CbmMcbm2018MonitorSts::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   return InitStsParameters();
 }
 
-Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
+Bool_t CbmMcbm2018MonitorSts::InitStsParameters()
+{
 
 
   fuNbModules = fUnpackParSts->GetNbOfModules();
@@ -235,9 +241,8 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
   for (UInt_t uModIdx = 0; uModIdx < fuNbModules; ++uModIdx) {
     fviModuleType[uModIdx] = fUnpackParSts->GetModuleType(uModIdx);
     fviModAddress[uModIdx] = fUnpackParSts->GetModuleAddress(uModIdx);
-    LOG(info) << "Module #" << std::setw(2) << uModIdx << " Type "
-              << std::setw(4) << fviModuleType[uModIdx] << " Address 0x"
-              << std::setw(8) << std::hex << fviModAddress[uModIdx] << std::dec;
+    LOG(info) << "Module #" << std::setw(2) << uModIdx << " Type " << std::setw(4) << fviModuleType[uModIdx]
+              << " Address 0x" << std::setw(8) << std::hex << fviModAddress[uModIdx] << std::dec;
   }  // for( UInt_t uModIdx = 0; uModIdx < fuNbModules; ++uModIdx)
 
   fuNrOfDpbs = fUnpackParSts->GetNrOfDpbs();
@@ -246,10 +251,8 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
   fDpbIdIndexMap.clear();
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fDpbIdIndexMap[fUnpackParSts->GetDpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x"
-              << std::setw(4) << std::hex << fUnpackParSts->GetDpbId(uDpb)
-              << std::dec << " => "
-              << fDpbIdIndexMap[fUnpackParSts->GetDpbId(uDpb)];
+    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
+              << fUnpackParSts->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[fUnpackParSts->GetDpbId(uDpb)];
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   fuNbFebs = fUnpackParSts->GetNrOfFebs();
@@ -271,89 +274,67 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
     fviFebType[uDpb].resize(fUnpackParSts->GetNbCrobsPerDpb());
     fvdFebAdcGain[uDpb].resize(fUnpackParSts->GetNbCrobsPerDpb());
     fvdFebAdcOffs[uDpb].resize(fUnpackParSts->GetNbCrobsPerDpb());
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      fvbCrobActiveFlag[uDpb][uCrobIdx] =
-        fUnpackParSts->IsCrobActive(uDpb, uCrobIdx);
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      fvbCrobActiveFlag[uDpb][uCrobIdx] = fUnpackParSts->IsCrobActive(uDpb, uCrobIdx);
 
       fviFebModuleIdx[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob());
-      fviFebModuleSide[uDpb][uCrobIdx].resize(
-        fUnpackParSts->GetNbFebsPerCrob());
+      fviFebModuleSide[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob());
       fviFebType[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob(), -1);
-      fvdFebAdcGain[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob(),
-                                           0.0);
-      fvdFebAdcOffs[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob(),
-                                           0.0);
-      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob();
-           ++uFebIdx) {
-        fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackParSts->GetFebModuleIdx(uDpb, uCrobIdx, uFebIdx);
-        fviFebModuleSide[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackParSts->GetFebModuleSide(uDpb, uCrobIdx, uFebIdx);
-        fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackParSts->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx);
-        fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackParSts->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx);
+      fvdFebAdcGain[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob(), 0.0);
+      fvdFebAdcOffs[uDpb][uCrobIdx].resize(fUnpackParSts->GetNbFebsPerCrob(), 0.0);
+      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob(); ++uFebIdx) {
+        fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]  = fUnpackParSts->GetFebModuleIdx(uDpb, uCrobIdx, uFebIdx);
+        fviFebModuleSide[uDpb][uCrobIdx][uFebIdx] = fUnpackParSts->GetFebModuleSide(uDpb, uCrobIdx, uFebIdx);
+        fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx]    = fUnpackParSts->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx);
+        fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx]    = fUnpackParSts->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx);
 
         if (0 <= fviFebModuleSide[uDpb][uCrobIdx][uFebIdx]
-            && static_cast<UInt_t>(fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx])
-                 < fuNbModules) {
+            && static_cast<UInt_t>(fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]) < fuNbModules) {
           switch (fviModuleType[fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]) {
             case 0:  // FEB-8-1 with ZIF connector on the right
             {
               // P side (0) has type A (0)
               // N side (1) has type B (1)
-              fviFebType[uDpb][uCrobIdx][uFebIdx] =
-                fviFebModuleSide[uDpb][uCrobIdx][uFebIdx];
+              fviFebType[uDpb][uCrobIdx][uFebIdx] = fviFebModuleSide[uDpb][uCrobIdx][uFebIdx];
               break;
             }        // case 0: // FEB-8-1 with ZIF connector on the right
             case 1:  // FEB-8-1 with ZIF connector on the left
             {
               // P side (0) has type B (1)
               // N side (1) has type A (0)
-              fviFebType[uDpb][uCrobIdx][uFebIdx] =
-                !(fviFebModuleSide[uDpb][uCrobIdx][uFebIdx]);
+              fviFebType[uDpb][uCrobIdx][uFebIdx] = !(fviFebModuleSide[uDpb][uCrobIdx][uFebIdx]);
               break;
             }  // case 1: // FEB-8-1 with ZIF connector on the left
             default: break;
           }  // switch( fviModuleType[ fviFebModuleIdx[ uDpb ][ uCrobIdx ][ uFebIdx ] ] )
-        }  // FEB active and module index OK
-      }  // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob(); ++ uFebIdx )
+        }    // FEB active and module index OK
+      }      // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob(); ++ uFebIdx )
+    }        // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
+  }          // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+
+  for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      LOG(info) << Form("DPB #%02u CROB #%02u Active:  ", uDpb, uCrobIdx) << fvbCrobActiveFlag[uDpb][uCrobIdx];
     }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
   }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      LOG(info) << Form("DPB #%02u CROB #%02u Active:  ", uDpb, uCrobIdx)
-                << fvbCrobActiveFlag[uDpb][uCrobIdx];
-    }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
-  }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
-
-  for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx) {
       LOG(info) << Form("DPB #%02u CROB #%u:       ", uDpb, uCrobIdx);
-      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob();
-           ++uFebIdx)
+      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob(); ++uFebIdx)
         if (0 <= fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]) {
-          LOG(info) << Form(
-            "      FEB #%02u: Mod. Idx = %03d Side %c (%2d) Type %c (%2d) ADC "
-            "gain %4.0f e- ADC Offs %5.0f e-",
-            uFebIdx,
-            fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
-            1 == fviFebModuleSide[uDpb][uCrobIdx][uFebIdx] ? 'N' : 'P',
-            fviFebModuleSide[uDpb][uCrobIdx][uFebIdx],
-            1 == fviFebType[uDpb][uCrobIdx][uFebIdx] ? 'B' : 'A',
-            fviFebType[uDpb][uCrobIdx][uFebIdx],
-            fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx],
-            fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx]);
+          LOG(info) << Form("      FEB #%02u: Mod. Idx = %03d Side %c (%2d) Type %c (%2d) ADC "
+                            "gain %4.0f e- ADC Offs %5.0f e-",
+                            uFebIdx, fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
+                            1 == fviFebModuleSide[uDpb][uCrobIdx][uFebIdx] ? 'N' : 'P',
+                            fviFebModuleSide[uDpb][uCrobIdx][uFebIdx],
+                            1 == fviFebType[uDpb][uCrobIdx][uFebIdx] ? 'B' : 'A', fviFebType[uDpb][uCrobIdx][uFebIdx],
+                            fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx], fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx]);
         }  // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerCrob(); ++ uFebIdx )
-    }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
-  }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+    }      // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
+  }        // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
-  if (fbBinningFw)
-    LOG(info) << "Unpacking data in bin sorter FW mode";
+  if (fbBinningFw) LOG(info) << "Unpacking data in bin sorter FW mode";
   else
     LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
 
@@ -400,16 +381,15 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
         fvdChanLastHitTimeInMs[uXyterIdx][uChan][uMsIdx] = -1.0;
         fvusChanLastHitAdcInMs[uXyterIdx][uChan][uMsIdx] = 0;
       }  // for( UInt_t uMsIdx = 0; uMsIdx < fuMaxNbMicroslices; ++uMsIdx )
-    }  // for( UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic(); ++uChan )
-  }  // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
+    }    // for( UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic(); ++uChan )
+  }      // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
 
   LOG(info) << "CbmMcbm2018MonitorSts::ReInitContainers => Changed "
                "fvuChanNbHitsInMs size "
             << fvuChanNbHitsInMs.size() << " VS " << fuNbStsXyters;
   LOG(info) << "CbmMcbm2018MonitorSts::ReInitContainers =>  Changed "
                "fvuChanNbHitsInMs size "
-            << fvuChanNbHitsInMs[0].size() << " VS "
-            << fUnpackParSts->GetNbChanPerAsic();
+            << fvuChanNbHitsInMs[0].size() << " VS " << fUnpackParSts->GetNbChanPerAsic();
   LOG(info) << "CbmMcbm2018MonitorSts::ReInitContainers =>  Changed "
                "fvuChanNbHitsInMs size "
             << fvuChanNbHitsInMs[0][0].size() << " VS " << fuMaxNbMicroslices;
@@ -421,10 +401,8 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
   fdStsFebChanLastTimeForDist.resize(fuNbFebs);
   for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
     fvmFebHitsInMs[uFebIdx].clear();
-    fvdFebChanCountsSinceLastRateUpdate[uFebIdx].resize(
-      fUnpackParSts->GetNbChanPerFeb(), 0.0);
-    fdStsFebChanLastTimeForDist[uFebIdx].resize(
-      fUnpackParSts->GetNbChanPerFeb(), -1.0);
+    fvdFebChanCountsSinceLastRateUpdate[uFebIdx].resize(fUnpackParSts->GetNbChanPerFeb(), 0.0);
+    fdStsFebChanLastTimeForDist[uFebIdx].resize(fUnpackParSts->GetNbChanPerFeb(), -1.0);
   }  // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
 
   ///----------------- SXM 2.0 Logic Error Tagging --------------------///
@@ -434,8 +412,8 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters() {
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component,
-                                                 UShort_t /*usDetectorId*/) {
+void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component, UShort_t /*usDetectorId*/)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -443,8 +421,7 @@ void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component,
   /// Check if this does not go above hardcoded limits
   if (kiMaxNbFlibLinks <= component) {
     LOG(error) << "CbmMcbm2018MonitorSts::AddMsComponentToList => "
-               << "Ignored the addition of component " << component
-               << " as it is above the hadcoded limit of "
+               << "Ignored the addition of component " << component << " as it is above the hadcoded limit of "
                << static_cast<Int_t>(kiMaxNbFlibLinks) << " !!!!!!!!! "
                << "\n"
                << "         To change this behavior check kiMaxNbFlibLinks in "
@@ -455,25 +432,18 @@ void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component,
 
   /// Add to list
   fvMsComponentsList.push_back(component);
-  LOG(info)
-    << "CbmMcbm2018MonitorSts::AddMsComponentToList => Added component: "
-    << component;
+  LOG(info) << "CbmMcbm2018MonitorSts::AddMsComponentToList => Added component: " << component;
 
   /// Create MS size monitoring histos
   if (NULL == fhMsSz[component]) {
-    TString sMsSzName = Form("MsSz_link_%02lu", component);
-    TString sMsSzTitle =
-      Form("Size of MS for nDPB of link %02lu; Ms Size [bytes]", component);
-    fhMsSz[component] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 30000, 0., 30000.);
+    TString sMsSzName  = Form("MsSz_link_%02lu", component);
+    TString sMsSzTitle = Form("Size of MS for nDPB of link %02lu; Ms Size [bytes]", component);
+    fhMsSz[component]  = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 30000, 0., 30000.);
     fHM->Add(sMsSzName.Data(), fhMsSz[component]);
 
-    sMsSzName  = Form("MsSzTime_link_%02lu", component);
-    sMsSzTitle = Form(
-      "Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]",
-      component);
-    fhMsSzTime[component] =
-      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 15000, 0., 300.);
+    sMsSzName             = Form("MsSzTime_link_%02lu", component);
+    sMsSzTitle            = Form("Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]", component);
+    fhMsSzTime[component] = new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 15000, 0., 300.);
     fHM->Add(sMsSzName.Data(), fhMsSzTime[component]);
 
     if (NULL != fcMsSizeAll) {
@@ -490,7 +460,8 @@ void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component,
     }  // if( server )
   }    // if( NULL == fhMsSz[ component ] )
 }
-void CbmMcbm2018MonitorSts::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) {
+void CbmMcbm2018MonitorSts::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
   fuNbCoreMsPerTs = uCoreMsNb;
   fuNbOverMsPerTs = uOverlapMsNb;
 
@@ -505,12 +476,9 @@ void CbmMcbm2018MonitorSts::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) {
     fvusChanLastHitAdcInMs.resize(fuNbStsXyters);
     for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx) {
       fvuChanNbHitsInMs[uXyterIdx].resize(fUnpackParSts->GetNbChanPerAsic());
-      fvdChanLastHitTimeInMs[uXyterIdx].resize(
-        fUnpackParSts->GetNbChanPerAsic());
-      fvusChanLastHitAdcInMs[uXyterIdx].resize(
-        fUnpackParSts->GetNbChanPerAsic());
-      for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic();
-           ++uChan) {
+      fvdChanLastHitTimeInMs[uXyterIdx].resize(fUnpackParSts->GetNbChanPerAsic());
+      fvusChanLastHitAdcInMs[uXyterIdx].resize(fUnpackParSts->GetNbChanPerAsic());
+      for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic(); ++uChan) {
         fvuChanNbHitsInMs[uXyterIdx][uChan].resize(fuMaxNbMicroslices);
         fvdChanLastHitTimeInMs[uXyterIdx][uChan].resize(fuMaxNbMicroslices);
         fvusChanLastHitAdcInMs[uXyterIdx][uChan].resize(fuMaxNbMicroslices);
@@ -519,18 +487,14 @@ void CbmMcbm2018MonitorSts::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) {
           fvdChanLastHitTimeInMs[uXyterIdx][uChan][uMsIdx] = -1.0;
           fvusChanLastHitAdcInMs[uXyterIdx][uChan][uMsIdx] = 0;
         }  // for( UInt_t uMsIdx = 0; uMsIdx < fuMaxNbMicroslices; ++uMsIdx )
-      }  // for( UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic(); ++uChan )
-    }  // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
-    LOG(info)
-      << "CbmMcbm2018MonitorSts::DoUnpack => Changed fvuChanNbHitsInMs size "
-      << fvuChanNbHitsInMs.size() << " VS " << fuNbStsXyters;
-    LOG(info)
-      << "CbmMcbm2018MonitorSts::DoUnpack =>  Changed fvuChanNbHitsInMs size "
-      << fvuChanNbHitsInMs[0].size() << " VS "
-      << fUnpackParSts->GetNbChanPerAsic();
-    LOG(info)
-      << "CbmMcbm2018MonitorSts::DoUnpack =>  Changed fvuChanNbHitsInMs size "
-      << fvuChanNbHitsInMs[0][0].size() << " VS " << fuMaxNbMicroslices;
+      }    // for( UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerAsic(); ++uChan )
+    }      // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
+    LOG(info) << "CbmMcbm2018MonitorSts::DoUnpack => Changed fvuChanNbHitsInMs size " << fvuChanNbHitsInMs.size()
+              << " VS " << fuNbStsXyters;
+    LOG(info) << "CbmMcbm2018MonitorSts::DoUnpack =>  Changed fvuChanNbHitsInMs size " << fvuChanNbHitsInMs[0].size()
+              << " VS " << fUnpackParSts->GetNbChanPerAsic();
+    LOG(info) << "CbmMcbm2018MonitorSts::DoUnpack =>  Changed fvuChanNbHitsInMs size " << fvuChanNbHitsInMs[0][0].size()
+              << " VS " << fuMaxNbMicroslices;
   }  // if( fuMaxNbMicroslices < uNbMsTotal )
 }
 /*
@@ -542,7 +506,8 @@ void CbmMcbm2018MonitorSts::SetCoincidenceBorder( Double_t dCenterPos, Double_t 
    fdCoincMax    = dCenterPos + dBorderVal;
 }
 */
-void CbmMcbm2018MonitorSts::CreateHistograms() {
+void CbmMcbm2018MonitorSts::CreateHistograms()
+{
   TString sHistName {""};
   TString title {""};
 
@@ -573,10 +538,9 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
    hSysMessType->GetXaxis()->SetBinLabel(1 + 16, "GET4 Hack 32B");
 */
 
-  sHistName = "hPulserMessageTypePerDpb";
-  title     = "Nb of message of each type for each DPB; DPB; Type";
-  fhStsMessTypePerDpb =
-    new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 6, 0., 6.);
+  sHistName           = "hPulserMessageTypePerDpb";
+  title               = "Nb of message of each type for each DPB; DPB; Type";
+  fhStsMessTypePerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 6, 0., 6.);
   fhStsMessTypePerDpb->GetYaxis()->SetBinLabel(1, "Dummy");
   fhStsMessTypePerDpb->GetYaxis()->SetBinLabel(2, "Hit");
   fhStsMessTypePerDpb->GetYaxis()->SetBinLabel(3, "TsMsb");
@@ -591,20 +555,18 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
    fhStsMessType->GetYaxis()->SetBinLabel(1 + stsxyter::MessType::Ack,         "Ack");
 */
 
-  sHistName = "hPulserSysMessTypePerDpb";
-  title = "Nb of system message of each type for each DPB; DPB; System Type";
-  fhStsSysMessTypePerDpb =
-    new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 17, 0., 17.);
+  sHistName              = "hPulserSysMessTypePerDpb";
+  title                  = "Nb of system message of each type for each DPB; DPB; System Type";
+  fhStsSysMessTypePerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 17, 0., 17.);
   /*
    hSysMessType->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_START,       "DAQ START");
    hSysMessType->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_FINISH,      "DAQ FINISH");
    hSysMessType->GetYaxis()->SetBinLabel(1 + 16, "GET4 Hack 32B");
 */
 
-  sHistName = "hStsStatusMessType";
-  title = "Nb of status message of each type for each DPB; ASIC; Status Type";
-  fhStsStatusMessType =
-    new TH2I(sHistName, title, fuNbStsXyters, 0, fuNbStsXyters, 16, 0., 16.);
+  sHistName           = "hStsStatusMessType";
+  title               = "Nb of status message of each type for each DPB; ASIC; Status Type";
+  fhStsStatusMessType = new TH2I(sHistName, title, fuNbStsXyters, 0, fuNbStsXyters, 16, 0., 16.);
   /*
    fhStsStatusMessType->GetYaxis()->SetBinLabel( 1, "Dummy");
    fhStsStatusMessType->GetYaxis()->SetBinLabel( 2, "Hit");
@@ -612,11 +574,9 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
    fhStsStatusMessType->GetYaxis()->SetBinLabel( 4, "Epoch");
 */
 
-  sHistName = "hStsMsStatusFieldType";
-  title =
-    "For each flag in the MS header, ON/OFF counts; Flag bit []; ON/OFF; MS []";
-  fhStsMsStatusFieldType =
-    new TH2I(sHistName, title, 16, -0.5, 15.5, 2, -0.5, 1.5);
+  sHistName              = "hStsMsStatusFieldType";
+  title                  = "For each flag in the MS header, ON/OFF counts; Flag bit []; ON/OFF; MS []";
+  fhStsMsStatusFieldType = new TH2I(sHistName, title, 16, -0.5, 15.5, 2, -0.5, 1.5);
   /*
    fhStsMsStatusFieldType->GetYaxis()->SetBinLabel( 1, "Dummy");
    fhStsMsStatusFieldType->GetYaxis()->SetBinLabel( 2, "Hit");
@@ -624,17 +584,10 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
    fhStsMsStatusFieldType->GetYaxis()->SetBinLabel( 4, "Epoch");
 */
 
-  sHistName = "hStsMessTypePerElink";
-  title     = "Nb of message of each type for each DPB; DPB; Type";
-  fhStsMessTypePerElink =
-    new TH2I(sHistName,
-             title,
-             fuNrOfDpbs * fUnpackParSts->GetNbElinkPerDpb(),
-             0,
-             fuNrOfDpbs * fUnpackParSts->GetNbElinkPerDpb(),
-             6,
-             0.,
-             6.);
+  sHistName             = "hStsMessTypePerElink";
+  title                 = "Nb of message of each type for each DPB; DPB; Type";
+  fhStsMessTypePerElink = new TH2I(sHistName, title, fuNrOfDpbs * fUnpackParSts->GetNbElinkPerDpb(), 0,
+                                   fuNrOfDpbs * fUnpackParSts->GetNbElinkPerDpb(), 6, 0., 6.);
   fhStsMessTypePerElink->GetYaxis()->SetBinLabel(1, "Dummy");
   fhStsMessTypePerElink->GetYaxis()->SetBinLabel(2, "Hit");
   fhStsMessTypePerElink->GetYaxis()->SetBinLabel(3, "TsMsb");
@@ -642,34 +595,25 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
   fhStsMessTypePerElink->GetYaxis()->SetBinLabel(5, "Status");
   fhStsMessTypePerElink->GetYaxis()->SetBinLabel(6, "Empty");
 
-  sHistName = "hStsHitsElinkPerDpb";
-  title = "Nb of hit messages per eLink for each DPB; DPB; eLink; Hits nb []";
-  fhStsHitsElinkPerDpb =
-    new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 42, 0., 42.);
+  sHistName            = "hStsHitsElinkPerDpb";
+  title                = "Nb of hit messages per eLink for each DPB; DPB; eLink; Hits nb []";
+  fhStsHitsElinkPerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 42, 0., 42.);
 
   /// Hit rates evo per FEB in system
-  sHistName = "hStsAllFebsHitRateEvo";
-  title     = "Hits per second & FEB; Time [s]; FEB []; Hits []";
-  fhStsAllFebsHitRateEvo =
-    new TH2I(sHistName, title, 1800, 0, 1800, fuNbFebs, -0.5, fuNbFebs - 0.5);
+  sHistName              = "hStsAllFebsHitRateEvo";
+  title                  = "Hits per second & FEB; Time [s]; FEB []; Hits []";
+  fhStsAllFebsHitRateEvo = new TH2I(sHistName, title, 1800, 0, 1800, fuNbFebs, -0.5, fuNbFebs - 0.5);
 
   /// Hit rates evo per ASIC in system
-  sHistName = "hStsAllAsicsHitRateEvo";
-  title     = "Hits per second & ASIC; Time [s]; ASIC []; Hits []";
-  fhStsAllAsicsHitRateEvo = new TH2I(
-    sHistName, title, 1800, 0, 1800, fuNbStsXyters, -0.5, fuNbStsXyters - 0.5);
+  sHistName               = "hStsAllAsicsHitRateEvo";
+  title                   = "Hits per second & ASIC; Time [s]; ASIC []; Hits []";
+  fhStsAllAsicsHitRateEvo = new TH2I(sHistName, title, 1800, 0, 1800, fuNbStsXyters, -0.5, fuNbStsXyters - 0.5);
 
   /// Hit counts map in system
   sHistName             = "hStsFebAsicHitCounts";
   title                 = "Hits per FEB & ASIC; FEB []; ASIC in FEB[]; Hits []";
-  fhStsFebAsicHitCounts = new TH2I(sHistName,
-                                   title,
-                                   fuNbFebs,
-                                   -0.5,
-                                   fuNbFebs - 0.5,
-                                   fUnpackParSts->GetNbAsicsPerFeb(),
-                                   -0.5,
-                                   fUnpackParSts->GetNbAsicsPerFeb() - 0.5);
+  fhStsFebAsicHitCounts = new TH2I(sHistName, title, fuNbFebs, -0.5, fuNbFebs - 0.5, fUnpackParSts->GetNbAsicsPerFeb(),
+                                   -0.5, fUnpackParSts->GetNbAsicsPerFeb() - 0.5);
   /*
    // Number of rate bins =
    //      9 for the sub-unit decade
@@ -706,9 +650,8 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
    dBinsRate[ iNbBinsRate - 1 ] = std::pow( 10, iNbDecadesRate );
 */
   ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
-  UInt_t uAlignedLimit =
-    fuLongHistoNbSeconds - (fuLongHistoNbSeconds % fuLongHistoBinSizeSec);
-  fuLongHistoBinNb = uAlignedLimit / fuLongHistoBinSizeSec;
+  UInt_t uAlignedLimit = fuLongHistoNbSeconds - (fuLongHistoNbSeconds % fuLongHistoBinSizeSec);
+  fuLongHistoBinNb     = uAlignedLimit / fuLongHistoBinSizeSec;
 
   //   UInt_t uNbBinEvo = (32768 + 1) * 2;
   //   Double_t dMaxEdgeEvo = stsxyter::kdClockCycleNs
@@ -725,51 +668,31 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
   for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
     /// Channel counts
     sHistName = Form("hStsFebChanCntRaw_%03u", uFebIdx);
-    title =
-      Form("Hits Count per channel, FEB #%03u; Channel; Hits []", uFebIdx);
+    title     = Form("Hits Count per channel, FEB #%03u; Channel; Hits []", uFebIdx);
     fhStsFebChanCntRaw.push_back(
-      new TH1I(sHistName,
-               title,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+      new TH1I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     sHistName = Form("hStsFebChanCntRawGood_%03u", uFebIdx);
-    title = Form("Hits Count per channel in good MS (SX2 bug flag off), FEB "
+    title     = Form("Hits Count per channel in good MS (SX2 bug flag off), FEB "
                  "#%03u; Channel; Hits []",
                  uFebIdx);
     fhStsFebChanCntRawGood.push_back(
-      new TH1I(sHistName,
-               title,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+      new TH1I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Raw Adc Distribution
     sHistName = Form("hStsFebChanAdcRaw_%03u", uFebIdx);
-    title = Form("Raw Adc distribution per channel, FEB #%03u; Channel []; Adc "
+    title     = Form("Raw Adc distribution per channel, FEB #%03u; Channel []; Adc "
                  "[]; Hits []",
                  uFebIdx);
-    fhStsFebChanAdcRaw.push_back(
-      new TH2I(sHistName,
-               title,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5,
-               stsxyter::kuHitNbAdcBins,
-               -0.5,
-               stsxyter::kuHitNbAdcBins - 0.5));
+    fhStsFebChanAdcRaw.push_back(new TH2I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                          fUnpackParSts->GetNbChanPerFeb() - 0.5, stsxyter::kuHitNbAdcBins, -0.5,
+                                          stsxyter::kuHitNbAdcBins - 0.5));
 
     /// Raw Adc Distribution profile
     sHistName = Form("hStsFebChanAdcRawProfc_%03u", uFebIdx);
-    title = Form("Raw Adc prodile per channel, FEB #%03u; Channel []; Adc []",
-                 uFebIdx);
+    title     = Form("Raw Adc prodile per channel, FEB #%03u; Channel []; Adc []", uFebIdx);
     fhStsFebChanAdcRawProf.push_back(
-      new TProfile(sHistName,
-                   title,
-                   fUnpackParSts->GetNbChanPerFeb(),
-                   -0.5,
-                   fUnpackParSts->GetNbChanPerFeb() - 0.5));
+      new TProfile(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
     /*
       /// Cal Adc Distribution
       sHistName = Form( "hStsFebChanAdcCal_%03u", uFebIdx );
@@ -786,62 +709,36 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
 */
     /// Raw Ts Distribution
     sHistName = Form("hStsFebChanRawTs_%03u", uFebIdx);
-    title = Form("Raw Timestamp distribution per channel, FEB #%03u; Channel "
+    title     = Form("Raw Timestamp distribution per channel, FEB #%03u; Channel "
                  "[]; Ts []; Hits []",
                  uFebIdx);
-    fhStsFebChanRawTs.push_back(new TH2I(sHistName,
-                                         title,
-                                         fUnpackParSts->GetNbChanPerFeb(),
-                                         -0.5,
-                                         fUnpackParSts->GetNbChanPerFeb() - 0.5,
-                                         stsxyter::kuHitNbTsBins,
-                                         -0.5,
+    fhStsFebChanRawTs.push_back(new TH2I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                         fUnpackParSts->GetNbChanPerFeb() - 0.5, stsxyter::kuHitNbTsBins, -0.5,
                                          stsxyter::kuHitNbTsBins - 0.5));
 
     /// Missed event flag
     sHistName = Form("hStsFebChanMissEvt_%03u", uFebIdx);
-    title = Form("Missed Event flags per channel, FEB #%03u; Channel []; Miss "
+    title     = Form("Missed Event flags per channel, FEB #%03u; Channel []; Miss "
                  "Evt []; Hits []",
                  uFebIdx);
-    fhStsFebChanMissEvt.push_back(
-      new TH2I(sHistName,
-               title,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5,
-               2,
-               -0.5,
-               1.5));
+    fhStsFebChanMissEvt.push_back(new TH2I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                           fUnpackParSts->GetNbChanPerFeb() - 0.5, 2, -0.5, 1.5));
 
     /// Missed event flag counts evolution
     sHistName = Form("hStsFebChanMissEvtEvo_%03u", uFebIdx);
     title     = Form("Missed Evt flags per second & channel in FEB #%03u; Time "
                  "[s]; Channel []; Missed Evt flags []",
                  uFebIdx);
-    fhStsFebChanMissEvtEvo.push_back(
-      new TH2I(sHistName,
-               title,
-               1800,
-               0,
-               1800,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+    fhStsFebChanMissEvtEvo.push_back(new TH2I(sHistName, title, 1800, 0, 1800, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                              fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Missed event flag counts evolution
     sHistName = Form("hStsFebAsicMissEvtEvo_%03u", uFebIdx);
-    title = Form("Missed Evt flags per second & StsXyter in FEB #%03u; Time "
+    title     = Form("Missed Evt flags per second & StsXyter in FEB #%03u; Time "
                  "[s]; Asic []; Missed Evt flags []",
                  uFebIdx);
-    fhStsFebAsicMissEvtEvo.push_back(
-      new TH2I(sHistName,
-               title,
-               1800,
-               0,
-               1800,
-               fUnpackParSts->GetNbAsicsPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+    fhStsFebAsicMissEvtEvo.push_back(new TH2I(sHistName, title, 1800, 0, 1800, fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                              fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
 
     /// Missed event flag counts evolution
     sHistName = Form("hStsFebMissEvtEvo_%03u", uFebIdx);
@@ -852,126 +749,67 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
 
     /// Hit rates evo per channel
     sHistName = Form("hStsFebChanRateEvo_%03u", uFebIdx);
-    title     = Form(
-      "Hits per second & channel in FEB #%03u; Time [s]; Channel []; Hits []",
-      uFebIdx);
-    fhStsFebChanHitRateEvo.push_back(
-      new TH2I(sHistName,
-               title,
-               1800,
-               0,
-               1800,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+    title     = Form("Hits per second & channel in FEB #%03u; Time [s]; Channel []; Hits []", uFebIdx);
+    fhStsFebChanHitRateEvo.push_back(new TH2I(sHistName, title, 1800, 0, 1800, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                              fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Hit rates profile per channel
     sHistName = Form("hStsFebChanRateProf_%03u", uFebIdx);
-    title     = Form(
-      "Hits per second for each channel in FEB #%03u; Channel []; Hits/s []",
-      uFebIdx);
+    title     = Form("Hits per second for each channel in FEB #%03u; Channel []; Hits/s []", uFebIdx);
     fhStsFebChanHitRateProf.push_back(
-      new TProfile(sHistName,
-                   title,
-                   fUnpackParSts->GetNbChanPerFeb(),
-                   -0.5,
-                   fUnpackParSts->GetNbChanPerFeb() - 0.5));
+      new TProfile(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Hit rates evo per StsXyter
     sHistName = Form("hStsFebAsicRateEvo_%03u", uFebIdx);
-    title     = Form(
-      "Hits per second & StsXyter in FEB #%03u; Time [s]; Asic []; Hits []",
-      uFebIdx);
-    fhStsFebAsicHitRateEvo.push_back(
-      new TH2I(sHistName,
-               title,
-               1800,
-               0,
-               1800,
-               fUnpackParSts->GetNbAsicsPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+    title     = Form("Hits per second & StsXyter in FEB #%03u; Time [s]; Asic []; Hits []", uFebIdx);
+    fhStsFebAsicHitRateEvo.push_back(new TH2I(sHistName, title, 1800, 0, 1800, fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                              fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
 
     /// Hit rates evo per FEB
     sHistName = Form("hStsFebRateEvo_%03u", uFebIdx);
-    title = Form("Hits per second in FEB #%03u; Time [s]; Hits []", uFebIdx);
+    title     = Form("Hits per second in FEB #%03u; Time [s]; Hits []", uFebIdx);
     fhStsFebHitRateEvo.push_back(new TH1I(sHistName, title, 1800, 0, 1800));
 
     /// Hit rates evo per channel, 1 minute bins, 24h
     sHistName = Form("hStsFebChanRateEvoLong_%03u", uFebIdx);
-    title     = Form(
-      "Hits per second & channel in FEB #%03u; Time [min]; Channel []; Hits []",
-      uFebIdx);
-    fhStsFebChanHitRateEvoLong.push_back(
-      new TH2D(sHistName,
-               title,
-               fuLongHistoBinNb,
-               -0.5,
-               uAlignedLimit - 0.5,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+    title     = Form("Hits per second & channel in FEB #%03u; Time [min]; Channel []; Hits []", uFebIdx);
+    fhStsFebChanHitRateEvoLong.push_back(new TH2D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5,
+                                                  fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                                  fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Hit rates evo per channel, 1 minute bins, 24h
     sHistName = Form("hStsFebAsicRateEvoLong_%03u", uFebIdx);
-    title     = Form(
-      "Hits per second & StsXyter in FEB #%03u; Time [min]; Asic []; Hits []",
-      uFebIdx);
-    fhStsFebAsicHitRateEvoLong.push_back(
-      new TH2D(sHistName,
-               title,
-               fuLongHistoBinNb,
-               -0.5,
-               uAlignedLimit - 0.5,
-               fUnpackParSts->GetNbAsicsPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+    title     = Form("Hits per second & StsXyter in FEB #%03u; Time [min]; Asic []; Hits []", uFebIdx);
+    fhStsFebAsicHitRateEvoLong.push_back(new TH2D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5,
+                                                  fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                                  fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
 
     /// Hit rates evo per FEB, 1 minute bins, 24h
     sHistName = Form("hStsFebRateEvoLong_%03u", uFebIdx);
-    title = Form("Hits per second in FEB #%03u; Time [min]; Hits []", uFebIdx);
-    fhStsFebHitRateEvoLong.push_back(
-      new TH1D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5));
+    title     = Form("Hits per second in FEB #%03u; Time [min]; Hits []", uFebIdx);
+    fhStsFebHitRateEvoLong.push_back(new TH1D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5));
 
     /// Distance between hits on same channel
     sHistName = Form("hStsFebChanDistT_%03u", uFebIdx);
     title     = Form("Time distance between hits on same channel in FEB #%03u; "
                  "Time difference [ns]; Channel []; ",
                  uFebIdx);
-    fhStsFebChanDistT.push_back(
-      new TH2I(sHistName,
-               title,
-               1000,
-               -0.5,
-               6250.0 - 0.5,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5));
+    fhStsFebChanDistT.push_back(new TH2I(sHistName, title, 1000, -0.5, 6250.0 - 0.5, fUnpackParSts->GetNbChanPerFeb(),
+                                         -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /// Hits with too small dt on same channel
     sHistName = Form("hStsFebChanCloseHitsCounts_%03u", uFebIdx);
-    title = Form("Hits with too small dt on same channel in FEB #%03u; Channel "
+    title     = Form("Hits with too small dt on same channel in FEB #%03u; Channel "
                  "counts []; ",
                  uFebIdx);
-    fhStsFebChanCloseHitsCounts.push_back(
-      new TH2I(sHistName,
-               title,
-               fUnpackParSts->GetNbChanPerFeb(),
-               -0.5,
-               fUnpackParSts->GetNbChanPerFeb() - 0.5,
-               2,
-               -0.5,
-               1.5));
+    fhStsFebChanCloseHitsCounts.push_back(new TH2I(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5,
+                                                   fUnpackParSts->GetNbChanPerFeb() - 0.5, 2, -0.5, 1.5));
     sHistName = Form("hStsFebChanCloseHitsRatio_%03u", uFebIdx);
     title     = Form("Ratio of Hits with too small dt on same channel in FEB "
                  "#%03u; Ratio []; ",
                  uFebIdx);
     fhStsFebChanCloseHitsRatio.push_back(
-      new TProfile(sHistName,
-                   title,
-                   fUnpackParSts->GetNbChanPerFeb(),
-                   -0.5,
-                   fUnpackParSts->GetNbChanPerFeb() - 0.5));
+      new TProfile(sHistName, title, fUnpackParSts->GetNbChanPerFeb(), -0.5, fUnpackParSts->GetNbChanPerFeb() - 0.5));
 
     /*
       /// Channels coincidences between FEBs
@@ -1066,84 +904,56 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
     for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
       /// Evo of ratio MS with SMX Error over all MS
       sHistName = Form("hStsFebSmxErrRatioEvo_%03u", uFebIdx);
-      title = Form("Proportion of uS with SMX logic error in FEB #%03u; Time "
+      title     = Form("Proportion of uS with SMX logic error in FEB #%03u; Time "
                    "[s]; Error MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioEvo.push_back(
-        new TProfile(sHistName, title, 1800, 0, 1800));
+      fhStsFebSmxErrRatioEvo.push_back(new TProfile(sHistName, title, 1800, 0, 1800));
 
       /// Evo of ratio MS with SMX Error per ASIC
       sHistName = Form("hStsFebSmxErrRatioEvoAsic_%03u", uFebIdx);
       title     = Form("Proportion of uS with SMX logic error per ASIC in FEB "
                    "#%03u; Time [s]; ASIC []; Error MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioEvoAsic.push_back(
-        new TProfile2D(sHistName,
-                       title,
-                       1800,
-                       0,
-                       1800,
-                       fUnpackParSts->GetNbAsicsPerFeb(),
-                       -0.5,
-                       fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+      fhStsFebSmxErrRatioEvoAsic.push_back(new TProfile2D(sHistName, title, 1800, 0, 1800,
+                                                          fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                                          fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
 
       /// Evo of ratio MS with hit copies over all MS
       sHistName = Form("hStsFebSmxErrRatioCopyEvo_%03u", uFebIdx);
-      title = Form("Proportion of uS with hit copies in FEB #%03u; Time [s]; "
+      title     = Form("Proportion of uS with hit copies in FEB #%03u; Time [s]; "
                    "Copies MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioCopyEvo.push_back(
-        new TProfile(sHistName, title, 1800, 0, 1800));
+      fhStsFebSmxErrRatioCopyEvo.push_back(new TProfile(sHistName, title, 1800, 0, 1800));
 
       /// Evo of ratio MS with hit copies per ASIC
       sHistName = Form("hStsFebSmxErrRatioCopyEvoAsic_%03u", uFebIdx);
-      title = Form("Proportion of uS with hit copies per ASIC in FEB #%03u; "
+      title     = Form("Proportion of uS with hit copies per ASIC in FEB #%03u; "
                    "Time [s]; ASIC []; Copies MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioCopyEvoAsic.push_back(
-        new TProfile2D(sHistName,
-                       title,
-                       1800,
-                       0,
-                       1800,
-                       fUnpackParSts->GetNbAsicsPerFeb(),
-                       -0.5,
-                       fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+      fhStsFebSmxErrRatioCopyEvoAsic.push_back(new TProfile2D(sHistName, title, 1800, 0, 1800,
+                                                              fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                                              fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
 
       /// Evo of ratio MS with hit copies over all MS
       sHistName = Form("hStsFebSmxErrRatioCopySameAdcEvo_%03u", uFebIdx);
-      title = Form("Proportion of uS with hit full copies in FEB #%03u; Time "
+      title     = Form("Proportion of uS with hit full copies in FEB #%03u; Time "
                    "[s]; Copies MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioCopySameAdcEvo.push_back(
-        new TProfile(sHistName, title, 1800, 0, 1800));
+      fhStsFebSmxErrRatioCopySameAdcEvo.push_back(new TProfile(sHistName, title, 1800, 0, 1800));
 
       /// Evo of ratio MS with hit copies per ASIC
       sHistName = Form("hStsFebSmxErrRatioCopySameAdcEvoAsic_%03u", uFebIdx);
       title     = Form("Proportion of uS with hit full copies per ASIC in FEB "
                    "#%03u; Time [s]; ASIC []; Copies MS fract. []",
                    uFebIdx);
-      fhStsFebSmxErrRatioCopySameAdcEvoAsic.push_back(
-        new TProfile2D(sHistName,
-                       title,
-                       1800,
-                       0,
-                       1800,
-                       fUnpackParSts->GetNbAsicsPerFeb(),
-                       -0.5,
-                       fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
+      fhStsFebSmxErrRatioCopySameAdcEvoAsic.push_back(new TProfile2D(sHistName, title, 1800, 0, 1800,
+                                                                     fUnpackParSts->GetNbAsicsPerFeb(), -0.5,
+                                                                     fUnpackParSts->GetNbAsicsPerFeb() - 0.5));
     }  // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
   }    // if( kTRUE == fbEnableCheckBugSmx20 )
        ///------------------------------------------------------------------///
 
-  fhMsErrorsEvo = new TH2I("fhMsErrorsEvo",
-                           "; MS index [s]; Error type []; Counts []",
-                           600,
-                           0.0,
-                           600.0,
-                           4,
-                           -0.5,
-                           3.5);
+  fhMsErrorsEvo = new TH2I("fhMsErrorsEvo", "; MS index [s]; Error type []; Counts []", 600, 0.0, 600.0, 4, -0.5, 3.5);
   ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
 
   // Miscroslice properties histos
@@ -1201,12 +1011,9 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
           server->Register("/StsSmxErr", fhStsFebSmxErrRatioEvo[uFebIdx]);
           server->Register("/StsSmxErr", fhStsFebSmxErrRatioEvoAsic[uFebIdx]);
           server->Register("/StsSmxErr", fhStsFebSmxErrRatioCopyEvo[uFebIdx]);
-          server->Register("/StsSmxErr",
-                           fhStsFebSmxErrRatioCopyEvoAsic[uFebIdx]);
-          server->Register("/StsSmxErr",
-                           fhStsFebSmxErrRatioCopySameAdcEvo[uFebIdx]);
-          server->Register("/StsSmxErr",
-                           fhStsFebSmxErrRatioCopySameAdcEvoAsic[uFebIdx]);
+          server->Register("/StsSmxErr", fhStsFebSmxErrRatioCopyEvoAsic[uFebIdx]);
+          server->Register("/StsSmxErr", fhStsFebSmxErrRatioCopySameAdcEvo[uFebIdx]);
+          server->Register("/StsSmxErr", fhStsFebSmxErrRatioCopySameAdcEvoAsic[uFebIdx]);
         }  // if( kTRUE == fbEnableCheckBugSmx20 )
       }    // if( kTRUE == fUnpackParSts->IsFebActive( uFebIdx ) )
     }      // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
@@ -1246,10 +1053,7 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
   for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
     if (kTRUE == fUnpackParSts->IsFebActive(uFebIdx)) {
       fvcStsSumm[uFebIdx] =
-        new TCanvas(Form("cStsSum_%03u", uFebIdx),
-                    Form("Summary plots for FEB %03u", uFebIdx),
-                    w,
-                    h);
+        new TCanvas(Form("cStsSum_%03u", uFebIdx), Form("Summary plots for FEB %03u", uFebIdx), w, h);
       fvcStsSumm[uFebIdx]->Divide(2, 3);
 
       fvcStsSumm[uFebIdx]->cd(1);
@@ -1304,10 +1108,7 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
 
       if (kTRUE == fbEnableCheckBugSmx20) {
         fvcStsSmxErr[uFebIdx] =
-          new TCanvas(Form("cStsSmxErr_%03u", uFebIdx),
-                      Form("SMX logic error plots for FEB %03u", uFebIdx),
-                      w,
-                      h);
+          new TCanvas(Form("cStsSmxErr_%03u", uFebIdx), Form("SMX logic error plots for FEB %03u", uFebIdx), w, h);
         fvcStsSmxErr[uFebIdx]->Divide(2, 3);
 
         fvcStsSmxErr[uFebIdx]->cd(1);
@@ -1359,8 +1160,7 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
   // If not existing, create it
   fcMsSizeAll = dynamic_cast<TCanvas*>(gROOT->FindObject("cMsSizeAll"));
   if (NULL == fcMsSizeAll) {
-    fcMsSizeAll =
-      new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
+    fcMsSizeAll = new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
     fcMsSizeAll->Divide(4, 4);
     LOG(info) << "Created MS size canvas in STS monitor";
   }  // if( NULL == fcMsSizeAll )
@@ -1372,8 +1172,8 @@ void CbmMcbm2018MonitorSts::CreateHistograms() {
   /*****************************/
 }
 
-Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
-                                       size_t component) {
+Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
   if (bMcbm2018ResetSts) {
     ResetAllHistos();
     bMcbm2018ResetSts = kFALSE;
@@ -1387,8 +1187,7 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
     bMcbm2018ScanNoisySts = kFALSE;
   }  // if( bMcbm2018WriteSts )
 
-  LOG(debug) << "Timeslice contains " << ts.num_microslices(component)
-             << "microslices.";
+  LOG(debug) << "Timeslice contains " << ts.num_microslices(component) << "microslices.";
   fulCurrentTsIdx = ts.index();
 
   /// Ignore First TS as first MS is typically corrupt
@@ -1400,13 +1199,10 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
 
   // Loop over core microslices (and overlap ones if chosen)
   for (UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx++) {
-    Double_t dMsTime =
-      (1e-9)
-      * static_cast<double>(ts.descriptor(fvMsComponentsList[0], uMsIdx).idx);
+    Double_t dMsTime = (1e-9) * static_cast<double>(ts.descriptor(fvMsComponentsList[0], uMsIdx).idx);
 
     if (0 == fulCurrentTsIdx && 0 == uMsIdx) {
-      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-           ++uMsCompIdx) {
+      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
         UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
         auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
         /*
@@ -1422,20 +1218,18 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
         uint32_t uEqId = static_cast<uint32_t>(msDescriptor.eq_id & 0xFFFF);
         auto it        = fDpbIdIndexMap.find(uEqId);
         if (fDpbIdIndexMap.end() == it) {
-          LOG(warning)
-            << "Could not find the sDPB index for AFCK id 0x" << std::hex
-            << uEqId << std::dec << " component " << uMsCompIdx << "\n"
-            << "If valid this index has to be added in the TOF parameter file "
-               "in the RocIdArray field"
-            << "\n"
-            << "For now we remove it from the list of components analyzed";
+          LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex << uEqId << std::dec
+                       << " component " << uMsCompIdx << "\n"
+                       << "If valid this index has to be added in the TOF parameter file "
+                          "in the RocIdArray field"
+                       << "\n"
+                       << "For now we remove it from the list of components analyzed";
         }  // if( fDpbIdIndexMap.end() == it )
-      }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-    }    // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
+      }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }      // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
 
     // Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessStsMs(ts, uMsComp, uMsIdx)) return kFALSE;
@@ -1632,10 +1426,9 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
       //         std::chrono::steady_clock::time_point tNow = std::chrono::steady_clock::now();
       //         Double_t dUnixTimeInRun = std::chrono::duration_cast< std::chrono::seconds >(tNow - ftStartTimeUnix).count();
 
-      for (
-        itA = fvmHitsInMs.begin(); itA != fvmHitsInMs.end();
-        //              itA != fvmHitsInMs.end() && (*itA).GetTs() < ulLastHitTime - 320; // 320 * 3.125 ns = 1000 ns
-        ++itA) {
+      for (itA = fvmHitsInMs.begin(); itA != fvmHitsInMs.end();
+           //              itA != fvmHitsInMs.end() && (*itA).GetTs() < ulLastHitTime - 320; // 320 * 3.125 ns = 1000 ns
+           ++itA) {
         UShort_t usAsicIdx = (*itA).GetAsic();
         //            UShort_t  usChanIdx = (*itA).GetChan();
         //            ULong64_t ulHitTs   = (*itA).GetTs();
@@ -1676,21 +1469,16 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
         UInt_t uFebIdx    = uAsic / fUnpackParSts->GetNbAsicsPerFeb();
         UInt_t uAsicInFeb = uAsic % fUnpackParSts->GetNbAsicsPerFeb();
 
-        std::vector<ULong64_t> vulLastHitTs(fUnpackParSts->GetNbChanPerAsic(),
-                                            0);
-        std::vector<UShort_t> vusLastHitAdc(fUnpackParSts->GetNbChanPerAsic(),
-                                            0);
+        std::vector<ULong64_t> vulLastHitTs(fUnpackParSts->GetNbChanPerAsic(), 0);
+        std::vector<UShort_t> vusLastHitAdc(fUnpackParSts->GetNbChanPerAsic(), 0);
 
-        for (itA = fvmAsicHitsInMs[uAsic].begin();
-             itA != fvmAsicHitsInMs[uAsic].end();
-             ++itA) {
+        for (itA = fvmAsicHitsInMs[uAsic].begin(); itA != fvmAsicHitsInMs[uAsic].end(); ++itA) {
           //               UShort_t usAsicIdx = (*itA).GetAsic();
           UShort_t usChanIdx = (*itA).GetChan();
           ULong64_t ulHitTs  = (*itA).GetTs();
           UShort_t usHitAdc  = (*itA).GetAdc();
 
-          UInt_t uChanInFeb =
-            usChanIdx + fUnpackParSts->GetNbChanPerAsic() * uAsicInFeb;
+          UInt_t uChanInFeb = usChanIdx + fUnpackParSts->GetNbChanPerAsic() * uAsicInFeb;
 
           ///----------------- SXM 2.0 Logic Error Tagging --------------------///
           if (kTRUE == fbEnableCheckBugSmx20) {
@@ -1699,8 +1487,7 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
             if (vulLastHitTs[usChanIdx] == ulHitTs) {
               bIsNotCopy              = kFALSE;
               bHitCopyInThisMs[uAsic] = kTRUE;
-              if (vusLastHitAdc[usChanIdx] == usHitAdc)
-                bHitCopySameAdcInThisMs[uAsic] = kTRUE;
+              if (vusLastHitAdc[usChanIdx] == usHitAdc) bHitCopySameAdcInThisMs[uAsic] = kTRUE;
             }  // if( vulLastHitTs[ usChanIdx ] == ulHitTs)
 
             vulLastHitTs[usChanIdx]  = ulHitTs;
@@ -1708,8 +1495,7 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
 
             if (bIsNotCopy) {
               fhStsFebChanCntRawGood[uFebIdx]->Fill(uChanInFeb);
-              bFlagOnInThisMs[uAsic] |= SmxErrCheckCoinc(
-                uFebIdx, uAsicInFeb, ulHitTs * stsxyter::kdClockCycleNs);
+              bFlagOnInThisMs[uAsic] |= SmxErrCheckCoinc(uFebIdx, uAsicInFeb, ulHitTs * stsxyter::kdClockCycleNs);
             }  // if( bIsNotCopy )
           }    // if( kTRUE == fbEnableCheckBugSmx20 )
           ///------------------------------------------------------------------///
@@ -1731,27 +1517,18 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
           UInt_t uFebIdx    = uAsic / fUnpackParSts->GetNbAsicsPerFeb();
           UInt_t uAsicInFeb = uAsic % fUnpackParSts->GetNbAsicsPerFeb();
 
-          fhStsFebSmxErrRatioCopyEvoAsic[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz,
-            uAsicInFeb,
-            bHitCopyInThisMs[uAsic] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioCopyEvoAsic[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz, uAsicInFeb,
+                                                        bHitCopyInThisMs[uAsic] ? 1.0 : 0.0);
 
-          fhStsFebSmxErrRatioCopySameAdcEvoAsic[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz,
-            uAsicInFeb,
-            bHitCopySameAdcInThisMs[uAsic] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioCopySameAdcEvoAsic[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz, uAsicInFeb,
+                                                               bHitCopySameAdcInThisMs[uAsic] ? 1.0 : 0.0);
 
-          fhStsFebSmxErrRatioEvoAsic[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz,
-            uAsicInFeb,
-            bFlagOnInThisMs[uAsic] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioEvoAsic[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz, uAsicInFeb,
+                                                    bFlagOnInThisMs[uAsic] ? 1.0 : 0.0);
 
-          vbCopyOnAnyAsicMs[uFebIdx] =
-            vbCopyOnAnyAsicMs[uFebIdx] || bHitCopyInThisMs[uAsic];
-          vbCopySameAdcOnAnyAsicMs[uFebIdx] =
-            vbCopySameAdcOnAnyAsicMs[uFebIdx] || bHitCopySameAdcInThisMs[uAsic];
-          vbFlagOnAnyAsicMs[uFebIdx] =
-            vbFlagOnAnyAsicMs[uFebIdx] || bFlagOnInThisMs[uAsic];
+          vbCopyOnAnyAsicMs[uFebIdx]        = vbCopyOnAnyAsicMs[uFebIdx] || bHitCopyInThisMs[uAsic];
+          vbCopySameAdcOnAnyAsicMs[uFebIdx] = vbCopySameAdcOnAnyAsicMs[uFebIdx] || bHitCopySameAdcInThisMs[uAsic];
+          vbFlagOnAnyAsicMs[uFebIdx]        = vbFlagOnAnyAsicMs[uFebIdx] || bFlagOnInThisMs[uAsic];
 
           bCopyOnAnyMs |= bHitCopyInThisMs[uAsic];
           bCopySameAdcOnAnyMs |= bHitCopySameAdcInThisMs[uAsic];
@@ -1759,13 +1536,10 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
         }  // for( UInt_t uAsic = 0; uAsic < fuNbStsXyters; uAsic++)
 
         for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
-          fhStsFebSmxErrRatioCopyEvo[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz, vbCopyOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
-          fhStsFebSmxErrRatioCopySameAdcEvo[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz,
-            vbCopySameAdcOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
-          fhStsFebSmxErrRatioEvo[uFebIdx]->Fill(
-            dMsTime - fdStartTimeMsSz, vbFlagOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioCopyEvo[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz, vbCopyOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioCopySameAdcEvo[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz,
+                                                           vbCopySameAdcOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
+          fhStsFebSmxErrRatioEvo[uFebIdx]->Fill(dMsTime - fdStartTimeMsSz, vbFlagOnAnyAsicMs[uFebIdx] ? 1.0 : 0.0);
         }  // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
       }    // if( kTRUE == fbEnableCheckBugSmx20 )
       ///------------------------------------------------------------------///
@@ -1911,38 +1685,31 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
   if (0 == ts.index() % 1000) {
     for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
       Double_t dTsMsbTime =
-        static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-          * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+        static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
         + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
             * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
       dTsMsbTime *= stsxyter::kdClockCycleNs * 1e-9;
 
-      LOG(info) << "End of TS " << std::setw(7) << ts.index() << " eDPB "
-                << std::setw(2) << uDpb << " current TS MSB counter is "
-                << std::setw(12) << fvulCurrentTsMsb[uDpb]
-                << " current TS MSB cycle counter is " << std::setw(12)
-                << fvuCurrentTsMsbCycle[uDpb] << " current TS MSB time is "
-                << std::setw(12) << dTsMsbTime << " s";
+      LOG(info) << "End of TS " << std::setw(7) << ts.index() << " eDPB " << std::setw(2) << uDpb
+                << " current TS MSB counter is " << std::setw(12) << fvulCurrentTsMsb[uDpb]
+                << " current TS MSB cycle counter is " << std::setw(12) << fvuCurrentTsMsbCycle[uDpb]
+                << " current TS MSB time is " << std::setw(12) << dTsMsbTime << " s";
     }
   }  // if( 0 == ts.index() % 1000 )
 
-  if (0 == ts.index() % 10000)
-    SaveAllHistos("data/PulserPeriodicHistosSave.root");
+  if (0 == ts.index() % 10000) SaveAllHistos("data/PulserPeriodicHistosSave.root");
 
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
-                                           size_t uMsComp,
-                                           UInt_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsComp, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
+Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts, size_t uMsComp, UInt_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsComp, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
 
   fulCurrentTsIdx = ts.index();
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   if (0 == fulCurrentTsIdx && 0 == uMsIdx) {
     /*
@@ -1959,13 +1726,12 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
   if (kFALSE == fvbMaskedComponents[uMsComp] && 0 == uMsIdx) {
     auto it = fDpbIdIndexMap.find(fuCurrentEquipmentId);
     if (fDpbIdIndexMap.end() == it) {
-      LOG(warning)
-        << "Could not find the sDPB index for AFCK id 0x" << std::hex
-        << fuCurrentEquipmentId << std::dec << " component " << uMsComp << "\n"
-        << "If valid this index has to be added in the TOF parameter file in "
-           "the RocIdArray field"
-        << "\n"
-        << "For now we remove it from the list of components analyzed";
+      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex << fuCurrentEquipmentId << std::dec
+                   << " component " << uMsComp << "\n"
+                   << "If valid this index has to be added in the TOF parameter file in "
+                      "the RocIdArray field"
+                   << "\n"
+                   << "For now we remove it from the list of components analyzed";
       fvbMaskedComponents[uMsComp] = kTRUE;
     }  // if( fDpbIdIndexMap.end() == it )
 
@@ -1976,8 +1742,8 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
   uint32_t uSize   = msDescriptor.size;
   fulCurrentMsIdx  = msDescriptor.idx;
   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
   fuCurrDpbId  = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   fuCurrDpbIdx = fDpbIdIndexMap[fuCurrDpbId];
@@ -1989,20 +1755,17 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
   }  // if( uMsComp < kiMaxNbFlibLinks )
 
   /// Plots in [X/s] update
-  if (static_cast<Int_t>(fvdPrevMsTime[uMsComp])
-      < static_cast<Int_t>(dMsTime)) {
+  if (static_cast<Int_t>(fvdPrevMsTime[uMsComp]) < static_cast<Int_t>(dMsTime)) {
     /// "new second"
     UInt_t uFebIdxOffset = fUnpackParSts->GetNbFebsPerDpb() * fuCurrDpbIdx;
-    for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerDpb();
-         ++uFebIdx) {
+    for (UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerDpb(); ++uFebIdx) {
       UInt_t uFebIdxInSyst = uFebIdxOffset + uFebIdx;
 
       /// Ignore first interval is not clue how late the data taking was started
       if (fvdFebTimeSecLastRateUpdate[uFebIdxInSyst] < 0.0) {
         fvdFebTimeSecLastRateUpdate[uFebIdxInSyst]     = dMsTime;
         fviFebCountsSinceLastRateUpdate[uFebIdxInSyst] = 0;
-        for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerFeb();
-             ++uChan)
+        for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerFeb(); ++uChan)
           fvdFebChanCountsSinceLastRateUpdate[uFebIdxInSyst][uChan] = 0.0;
         continue;
       }  // if( fvdFebTimeSecLastRateUpdate[uFebIdxInSyst] < 0.0 )
@@ -2015,20 +1778,17 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
           continue;
         }  // if( 0 == fviFebCountsSinceLastRateUpdate[uFebIdxInSyst] )
 
-        for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerFeb();
-             ++uChan) {
-          fhStsFebChanHitRateProf[uFebIdxInSyst]->Fill(
-            uChan,
-            fvdFebChanCountsSinceLastRateUpdate[uFebIdxInSyst][uChan]
-              / dTimeInt);
+        for (UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerFeb(); ++uChan) {
+          fhStsFebChanHitRateProf[uFebIdxInSyst]->Fill(uChan, fvdFebChanCountsSinceLastRateUpdate[uFebIdxInSyst][uChan]
+                                                                / dTimeInt);
           fvdFebChanCountsSinceLastRateUpdate[uFebIdxInSyst][uChan] = 0.0;
         }  // for( UInt_t uChan = 0; uChan < fUnpackParSts->GetNbChanPerFeb(); ++uChan )
 
         fvdFebTimeSecLastRateUpdate[uFebIdxInSyst]     = dMsTime;
         fviFebCountsSinceLastRateUpdate[uFebIdxInSyst] = 0;
       }  // if( fiTimeIntervalRateUpdate <= dTimeInt )
-    }  // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerDpb(); ++uFebIdx )
-  }  // if( static_cast<Int_t>( fvdMsTime[ uMsCompIdx ] ) < static_cast<Int_t>( dMsTime )  )
+    }    // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackParSts->GetNbFebsPerDpb(); ++uFebIdx )
+  }      // if( static_cast<Int_t>( fvdMsTime[ uMsCompIdx ] ) < static_cast<Int_t>( dMsTime )  )
 
   // Store MS time for coincidence plots
   fvdPrevMsTime[uMsComp] = dMsTime;
@@ -2048,16 +1808,12 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
     fhStsMsStatusFieldType->Fill(uBit, (uMsHeaderFlags >> uBit) & 0x1);
 
   /** Check the current TS_MSb cycle and correct it if wrong **/
-  UInt_t uTsMsbCycleHeader =
-    std::floor(fulCurrentMsIdx
-               / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs))
-    - fvuInitialTsMsbCycleHeader[fuCurrDpbIdx];
+  UInt_t uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs))
+                             - fvuInitialTsMsbCycleHeader[fuCurrDpbIdx];
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
-    uTsMsbCycleHeader = std::floor(fulCurrentMsIdx
-                                   / (stsxyter::kulTsCycleNbBinsBinning
-                                      * stsxyter::kdClockCycleNs))
+    uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs))
                         - fvuInitialTsMsbCycleHeader[fuCurrDpbIdx];
 
   if (kFALSE == fvuInitialHeaderDone[fuCurrDpbIdx]) {
@@ -2067,44 +1823,33 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
   }  // if( kFALSE == fvuInitialHeaderDone[ fuCurrDpbIdx ] )
   else if (0 == uMsIdx) {
     if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx])
-      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-                << std::setw(12) << fulCurrentMsIdx << " MS Idx "
-                << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0
-                << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb "
-                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx]
-                << " Old MsbCy " << std::setw(5)
-                << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy "
-                << uTsMsbCycleHeader;
+      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = 0;
   }  // if( 0 == uMsIdx )
-  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-           && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]) {
-    LOG(warning)
-      << "TS MSB cycle from MS header does not match current cycle from data "
-      << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-      << std::setw(12) << fulCurrentMsIdx << " MsInTs " << std::setw(3)
-      << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
-      << uTsMsbCycleHeader;
+  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx] && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]) {
+    LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                 << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                 << " MsInTs " << std::setw(3) << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
+                 << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
-  } else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]) {
+  }
+  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]) {
     /// Catch Cycles happening by chance exactly at the TS border
     if (4194303 == fvulCurrentTsMsb[fuCurrDpbIdx]) {
-      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-                << std::setw(12) << fulCurrentMsIdx << " MS Idx "
-                << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0
-                << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb "
-                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx]
-                << " Old MsbCy " << std::setw(5)
-                << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy "
-                << uTsMsbCycleHeader;
-    } else {
-      LOG(warning)
-        << "TS MSB cycle from MS header does not match current cycle from data "
-        << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-        << std::setw(12) << fulCurrentMsIdx << " MsInTs " << std::setw(3)
-        << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-        << " (cnt) VS " << uTsMsbCycleHeader << " (header)";
+      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
+    }
+    else {
+      LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                   << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                   << " MsInTs " << std::setw(3) << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
+                   << " (cnt) VS " << uTsMsbCycleHeader << " (header)";
     }  // else of if( 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] )
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
   }  // else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
@@ -2115,8 +1860,7 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
                << "contain only complete nDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+  uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
   // Prepare variables for the loop on contents
   const uint32_t* pInBuff = reinterpret_cast<const uint32_t*>(msContent);
@@ -2148,9 +1892,8 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
         /// => Quick and dirty hack for binning FW!!!
         if (kTRUE == fbBinningFw) usElinkIdx = mess.GetLinkIndexHitBinning();
 
-        fhStsMessTypePerElink->Fill(
-          fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb() + usElinkIdx,
-          static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb() + usElinkIdx,
+                                    static_cast<uint16_t>(typeMess));
         fhStsHitsElinkPerDpb->Fill(fuCurrDpbIdx, usElinkIdx);
         /*
             ///------ Invalid frames debugging ---------///
@@ -2163,47 +1906,38 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
 
         if (-1 == uFebIdx) {
           LOG(warning) << "CbmMcbm2018MonitorSts::DoUnpack => "
-                       << "Wrong elink Idx! Elink raw "
-                       << Form("%d remap %d", usElinkIdx, uFebIdx);
+                       << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
           continue;
         }  // if( -1 == uFebIdx )
 
         UInt_t uAsicIdx =
-          (fuCurrDpbIdx * fUnpackParSts->GetNbCrobsPerDpb() + uCrobIdx)
-            * fUnpackParSts->GetNbAsicsPerCrob()
-          + fUnpackParSts->ElinkIdxToAsicIdx(
-            1 == fviFebType[fuCurrDpbIdx][uCrobIdx][uFebIdx], usElinkIdx);
+          (fuCurrDpbIdx * fUnpackParSts->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackParSts->GetNbAsicsPerCrob()
+          + fUnpackParSts->ElinkIdxToAsicIdx(1 == fviFebType[fuCurrDpbIdx][uCrobIdx][uFebIdx], usElinkIdx);
 
         FillHitInfo(mess, usElinkIdx, uAsicIdx, uMsIdx);
         break;
       }  // case stsxyter::MessType::Hit :
       case stsxyter::MessType::TsMsb: {
-        fhStsMessTypePerElink->Fill(fuCurrDpbIdx
-                                      * fUnpackParSts->GetNbElinkPerDpb(),
-                                    static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb(), static_cast<uint16_t>(typeMess));
 
         FillTsMsbInfo(mess, uIdx, uMsIdx);
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Epoch: {
-        fhStsMessTypePerElink->Fill(fuCurrDpbIdx
-                                      * fUnpackParSts->GetNbElinkPerDpb(),
-                                    static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb(), static_cast<uint16_t>(typeMess));
 
         // The first message in the TS is a special ones: EPOCH
         FillEpochInfo(mess);
 
         if (0 < uIdx)
           LOG(info) << "CbmMcbm2018MonitorSts::DoUnpack => "
-                    << "EPOCH message at unexpected position in MS: message "
-                    << uIdx << " VS message 0 expected!";
+                    << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Status: {
         UShort_t usElinkIdx = mess.GetStatusLink();
-        fhStsMessTypePerElink->Fill(
-          fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb() + usElinkIdx,
-          static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb() + usElinkIdx,
+                                    static_cast<uint16_t>(typeMess));
         /*
             ///------ Invalid frames debugging ---------///
             if( ( 0 == fuCurrDpbIdx || 13 < usElinkIdx ) && fulCurrentTsIdx < 100 )
@@ -2213,20 +1947,15 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
         UInt_t uCrobIdx = usElinkIdx / fUnpackParSts->GetNbElinkPerCrob();
         Int_t uFebIdx   = fUnpackParSts->ElinkIdxToFebIdx(usElinkIdx);
         UInt_t uAsicIdx =
-          (fuCurrDpbIdx * fUnpackParSts->GetNbCrobsPerDpb() + uCrobIdx)
-            * fUnpackParSts->GetNbAsicsPerCrob()
-          + fUnpackParSts->ElinkIdxToAsicIdx(
-            1 == fviFebType[fuCurrDpbIdx][uCrobIdx][uFebIdx], usElinkIdx);
+          (fuCurrDpbIdx * fUnpackParSts->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackParSts->GetNbAsicsPerCrob()
+          + fUnpackParSts->ElinkIdxToAsicIdx(1 == fviFebType[fuCurrDpbIdx][uCrobIdx][uFebIdx], usElinkIdx);
 
         UShort_t usStatusField = mess.GetStatusStatus();
 
         fhStsStatusMessType->Fill(uAsicIdx, usStatusField);
         /// Always print status messages... or not?
         if (fbPrintMessages) {
-          std::cout << Form("DPB %2u TS %12llu MS %12llu mess %5u ",
-                            fuCurrDpbIdx,
-                            fulCurrentTsIdx,
-                            fulCurrentMsIdx,
+          std::cout << Form("DPB %2u TS %12llu MS %12llu mess %5u ", fuCurrDpbIdx, fulCurrentTsIdx, fulCurrentMsIdx,
                             uIdx);
           mess.PrintMess(std::cout, fPrintMessCtrl);
         }  // if( fbPrintMessages )
@@ -2234,9 +1963,7 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
         break;
       }  // case stsxyter::MessType::Status
       case stsxyter::MessType::Empty: {
-        fhStsMessTypePerElink->Fill(fuCurrDpbIdx
-                                      * fUnpackParSts->GetNbElinkPerDpb(),
-                                    static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb(), static_cast<uint16_t>(typeMess));
         //                   FillTsMsbInfo( mess );
         break;
       }  // case stsxyter::MessType::Empty :
@@ -2253,9 +1980,7 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
         break;
       }  // case stsxyter::MessType::EndOfMs :
       case stsxyter::MessType::Dummy: {
-        fhStsMessTypePerElink->Fill(fuCurrDpbIdx
-                                      * fUnpackParSts->GetNbElinkPerDpb(),
-                                    static_cast<uint16_t>(typeMess));
+        fhStsMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb(), static_cast<uint16_t>(typeMess));
         break;
       }  // case stsxyter::MessType::Dummy / ReadDataAck / Ack :
       default: {
@@ -2270,10 +1995,9 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
-                                        const UShort_t& /*usElinkIdx*/,
-                                        const UInt_t& uAsicIdx,
-                                        const UInt_t& uMsIdx) {
+void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess, const UShort_t& /*usElinkIdx*/, const UInt_t& uAsicIdx,
+                                        const UInt_t& uMsIdx)
+{
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
   //   UShort_t usFullTs = mess.GetHitTimeFull();
@@ -2296,9 +2020,7 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
   //   UInt_t uCrobIdx   = usElinkIdx / fUnpackParSts->GetNbElinkPerCrob();
   UInt_t uFebIdx    = uAsicIdx / fUnpackParSts->GetNbAsicsPerFeb();
   UInt_t uAsicInFeb = uAsicIdx % fUnpackParSts->GetNbAsicsPerFeb();
-  UInt_t uChanInFeb = usChan
-                      + fUnpackParSts->GetNbChanPerAsic()
-                          * (uAsicIdx % fUnpackParSts->GetNbAsicsPerFeb());
+  UInt_t uChanInFeb = usChan + fUnpackParSts->GetNbChanPerAsic() * (uAsicIdx % fUnpackParSts->GetNbAsicsPerFeb());
 
   //   Double_t dCalAdc = fvdFebAdcOffs[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ]
   //                     + (usRawAdc - 1)* fvdFebAdcGain[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ];
@@ -2319,25 +2041,21 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
   fvulChanLastHitTime[uAsicIdx][usChan] = usRawTs;
 
   fvulChanLastHitTime[uAsicIdx][usChan] +=
-    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-      * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-        * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
     fvulChanLastHitTime[uAsicIdx][usChan] =
       usRawTs
-      + static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning)
-          * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+      + static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
       + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBinsBinning)
           * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   //   fvuElinkLastTsHit[fuCurrDpbIdx] = usRawTs;
 
   // Convert the Hit time in bins to Hit time in ns
-  Double_t dHitTimeNs =
-    fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
+  Double_t dHitTimeNs = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
   /*
    // If needed fill the hit interval plots
    if( fbChanHitDtEna )
@@ -2362,8 +2080,7 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
   }  //
 
   // Store new value of Hit time in ns
-  fvdChanLastHitTime[uAsicIdx][usChan] =
-    fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
+  fvdChanLastHitTime[uAsicIdx][usChan] = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
   /*
    LOG(info) << " Asic " << std::setw( 2 ) << uAsicIdx
              << " Channel " << std::setw( 3 ) << usChan
@@ -2378,8 +2095,7 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
    fvmChanHitsInTs[        uAsicIdx ][ usChan ].insert( stsxyter::FinalHit( fvulChanLastHitTime[ uAsicIdx ][ usChan ],
                                                                             usRawAdc, uAsicIdx, usChan ) );
 */
-  fvmHitsInMs.push_back(stsxyter::FinalHit(
-    fvulChanLastHitTime[uAsicIdx][usChan], usRawAdc, uAsicIdx, usChan));
+  fvmHitsInMs.push_back(stsxyter::FinalHit(fvulChanLastHitTime[uAsicIdx][usChan], usRawAdc, uAsicIdx, usChan));
 
   /*
    if( ( 214514 < fulCurrentTsIdx && fulCurrentTsIdx < 214517 ) ||
@@ -2412,8 +2128,7 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
   if (-1 == fdStartTime) fdStartTime = fvdChanLastHitTime[uAsicIdx][usChan];
 
   // Fill histos with time as X axis
-  Double_t dTimeSinceStartSec =
-    (fvdChanLastHitTime[uAsicIdx][usChan] - fdStartTime) * 1e-9;
+  Double_t dTimeSinceStartSec = (fvdChanLastHitTime[uAsicIdx][usChan] - fdStartTime) * 1e-9;
   Double_t dTimeSinceStartMin = dTimeSinceStartSec / 60.0;
 
   fviFebCountsSinceLastRateUpdate[uFebIdx]++;
@@ -2425,10 +2140,8 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
   fhStsFebChanHitRateEvo[uFebIdx]->Fill(dTimeSinceStartSec, uChanInFeb);
   fhStsFebAsicHitRateEvo[uFebIdx]->Fill(dTimeSinceStartSec, uAsicInFeb);
   fhStsFebHitRateEvo[uFebIdx]->Fill(dTimeSinceStartSec);
-  fhStsFebChanHitRateEvoLong[uFebIdx]->Fill(
-    dTimeSinceStartMin, uChanInFeb, 1.0 / 60.0);
-  fhStsFebAsicHitRateEvoLong[uFebIdx]->Fill(
-    dTimeSinceStartMin, uAsicInFeb, 1.0 / 60.0);
+  fhStsFebChanHitRateEvoLong[uFebIdx]->Fill(dTimeSinceStartMin, uChanInFeb, 1.0 / 60.0);
+  fhStsFebAsicHitRateEvoLong[uFebIdx]->Fill(dTimeSinceStartMin, uAsicInFeb, 1.0 / 60.0);
   fhStsFebHitRateEvoLong[uFebIdx]->Fill(dTimeSinceStartMin, 1.0 / 60.0);
   if (mess.IsHitMissedEvts()) {
     fhStsFebChanMissEvtEvo[uFebIdx]->Fill(dTimeSinceStartSec, uChanInFeb);
@@ -2446,9 +2159,8 @@ void CbmMcbm2018MonitorSts::FillHitInfo(stsxyter::Message mess,
 */
 }
 
-void CbmMcbm2018MonitorSts::FillTsMsbInfo(stsxyter::Message mess,
-                                          UInt_t uMessIdx,
-                                          UInt_t uMsIdx) {
+void CbmMcbm2018MonitorSts::FillTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx, UInt_t uMsIdx)
+{
   UInt_t uVal = mess.GetTsMsbVal();
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw) uVal = mess.GetTsMsbValBinning();
@@ -2481,33 +2193,26 @@ void CbmMcbm2018MonitorSts::FillTsMsbInfo(stsxyter::Message mess,
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5)
-              << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb "
-              << std::setw(5) << uVal;
+    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+              << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
 
     fvuCurrentTsMsbCycle[fuCurrDpbIdx]++;
   }  // if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
   if (
-    uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 && 0 != uVal
-    && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx] && 1 != uMessIdx
-    &&  /// First TS_MSB in MS may jump if TS dropped by DAQ
-    !(0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
-    &&  /// case with cycle et edge of 2 MS
+    uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 && 0 != uVal && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]
+    && 1 != uMessIdx &&  /// First TS_MSB in MS may jump if TS dropped by DAQ
+    !(0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx) &&  /// case with cycle et edge of 2 MS
     !(uVal == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
     &&  /// Msg 1 and 2 will be same TS_MSB if data in 1st bin
     uVal < fvulCurrentTsMsb
         [fuCurrDpbIdx]  /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
   ) {
     LOG(info) << "TS MSb Jump in "
-              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb "
-              << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
+              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " => Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
               << std::setw(5) << uVal;
   }  // if( uVal + 1 != fvulCurrentTsMsb[fuCurrDpbIdx] && 4194303 != uVal && 0 != fvulCurrentTsMsb[fuCurrDpbIdx] )
   fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
@@ -2528,7 +2233,8 @@ void CbmMcbm2018MonitorSts::FillTsMsbInfo(stsxyter::Message mess,
 */
 }
 
-void CbmMcbm2018MonitorSts::FillEpochInfo(stsxyter::Message /*mess*/) {
+void CbmMcbm2018MonitorSts::FillEpochInfo(stsxyter::Message /*mess*/)
+{
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
 
@@ -2544,20 +2250,16 @@ void CbmMcbm2018MonitorSts::FillEpochInfo(stsxyter::Message /*mess*/) {
 
 void CbmMcbm2018MonitorSts::Reset() {}
 
-void CbmMcbm2018MonitorSts::Finish() {
+void CbmMcbm2018MonitorSts::Finish()
+{
 
   LOG(info) << "-------------------------------------";
   LOG(info) << "CbmMcbm2018MonitorSts statistics are ";
-  LOG(info) << " Hit      messages: " << fmMsgCounter[stsxyter::MessType::Hit]
-            << "\n"
-            << " Ts MSB   messages: " << fmMsgCounter[stsxyter::MessType::TsMsb]
-            << "\n"
-            << " Dummy    messages: " << fmMsgCounter[stsxyter::MessType::Dummy]
-            << "\n"
-            << " Epoch    messages: " << fmMsgCounter[stsxyter::MessType::Epoch]
-            << "\n"
-            << " Empty    messages: "
-            << fmMsgCounter[stsxyter::MessType::Empty];
+  LOG(info) << " Hit      messages: " << fmMsgCounter[stsxyter::MessType::Hit] << "\n"
+            << " Ts MSB   messages: " << fmMsgCounter[stsxyter::MessType::TsMsb] << "\n"
+            << " Dummy    messages: " << fmMsgCounter[stsxyter::MessType::Dummy] << "\n"
+            << " Epoch    messages: " << fmMsgCounter[stsxyter::MessType::Epoch] << "\n"
+            << " Empty    messages: " << fmMsgCounter[stsxyter::MessType::Empty];
 
   LOG(info) << "-------------------------------------";
 
@@ -2566,12 +2268,13 @@ void CbmMcbm2018MonitorSts::Finish() {
 }
 
 
-void CbmMcbm2018MonitorSts::SaveAllHistos(TString sFileName) {
+void CbmMcbm2018MonitorSts::SaveAllHistos(TString sFileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* histoFile   = NULL;
+  TFile* histoFile = NULL;
   if ("" != sFileName) {
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
@@ -2686,8 +2389,7 @@ void CbmMcbm2018MonitorSts::SaveAllHistos(TString sFileName) {
   TH1* pMissedTsH1 = dynamic_cast<TH1*>(gROOT->FindObjectAny("Missed_TS"));
   if (NULL != pMissedTsH1) pMissedTsH1->Write();
 
-  TProfile* pMissedTsEvoP =
-    dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
+  TProfile* pMissedTsEvoP = dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
   if (NULL != pMissedTsEvoP) pMissedTsEvoP->Write();
 
   gDirectory->cd("..");
@@ -2709,7 +2411,8 @@ void CbmMcbm2018MonitorSts::SaveAllHistos(TString sFileName) {
   gFile      = oldFile;
   gDirectory = oldDir;
 }
-void CbmMcbm2018MonitorSts::ResetAllHistos() {
+void CbmMcbm2018MonitorSts::ResetAllHistos()
+{
   LOG(info) << "Reseting all STS histograms.";
 
   fhStsMessType->Reset();
@@ -2823,19 +2526,17 @@ void CbmMcbm2018MonitorSts::UpdatePairMeanValue( UInt_t uAsicA, UInt_t uAsicB, D
    fvdMeanTimeDiffAsicPair[ uAsicA ][ uAsicB ] = dNewMean;
 }
 */
-void CbmMcbm2018MonitorSts::SetRunStart(Int_t dateIn,
-                                        Int_t timeIn,
-                                        Int_t iBinSize) {
+void CbmMcbm2018MonitorSts::SetRunStart(Int_t dateIn, Int_t timeIn, Int_t iBinSize)
+{
   TDatime* fRunStartDateTime = new TDatime(dateIn, timeIn);
   fiRunStartDateTimeSec      = fRunStartDateTime->Convert();
   fiBinSizeDatePlots         = iBinSize;
 
-  LOG(info) << "Assigned new MUCH Run Start Date-Time: "
-            << fRunStartDateTime->AsString();
+  LOG(info) << "Assigned new MUCH Run Start Date-Time: " << fRunStartDateTime->AsString();
 }
 
-void CbmMcbm2018MonitorSts::SetLongDurationLimits(UInt_t uDurationSeconds,
-                                                  UInt_t uBinSize) {
+void CbmMcbm2018MonitorSts::SetLongDurationLimits(UInt_t uDurationSeconds, UInt_t uBinSize)
+{
   fbLongHistoEnable     = kTRUE;
   fuLongHistoNbSeconds  = uDurationSeconds;
   fuLongHistoBinSizeSec = uBinSize;
@@ -2843,7 +2544,8 @@ void CbmMcbm2018MonitorSts::SetLongDurationLimits(UInt_t uDurationSeconds,
 ///------------------------------------------------------------------///
 ///----------------- SXM 2.0 Logic Error Tagging --------------------///
 ///------------------------------------------------------------------///
-void CbmMcbm2018MonitorSts::SmxErrInitializeVariables() {
+void CbmMcbm2018MonitorSts::SmxErrInitializeVariables()
+{
 
   if (kTRUE == fbSmx2ErrorUseNoiseLevels) {
     fdSmxErrCoincWinM07 = kdSmxErrCoincWinNoiseM07;
@@ -2868,11 +2570,9 @@ void CbmMcbm2018MonitorSts::SmxErrInitializeVariables() {
     fvuSmxErrIdxFirstHitM10[uFebIdx].resize(fUnpackParSts->GetNbAsicsPerFeb());
     fvuSmxErrIdxFirstHitM11[uFebIdx].resize(fUnpackParSts->GetNbAsicsPerFeb());
     fvuSmxErrIdxLastHit[uFebIdx].resize(fUnpackParSts->GetNbAsicsPerFeb());
-    for (UInt_t uAsicIdx = 0; uAsicIdx < fUnpackParSts->GetNbAsicsPerFeb();
-         ++uAsicIdx) {
+    for (UInt_t uAsicIdx = 0; uAsicIdx < fUnpackParSts->GetNbAsicsPerFeb(); ++uAsicIdx) {
       //fvulLastHitTs[ uXyterIdx ].resize( fuNbChanPerAsic, 0 );
-      fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx].resize(kuSmxErrCoincWinNbHits,
-                                                      -1.0);
+      fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx].resize(kuSmxErrCoincWinNbHits, -1.0);
       fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx] = kuSmxErrCoincWinNbHits;
       fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx] = kuSmxErrCoincWinNbHits;
       fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx] = kuSmxErrCoincWinNbHits;
@@ -2883,9 +2583,8 @@ void CbmMcbm2018MonitorSts::SmxErrInitializeVariables() {
   }    // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
 }
 
-Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx,
-                                               UInt_t uAsicIdx,
-                                               Double_t dNewHitTime) {
+Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx, UInt_t uAsicIdx, Double_t dNewHitTime)
+{
   if (kuSmxErrCoincWinNbHits == fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx]
       && kuSmxErrCoincWinNbHits == fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx]
       && kuSmxErrCoincWinNbHits == fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx]
@@ -2893,23 +2592,20 @@ Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx,
       && kuSmxErrCoincWinNbHits == fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]
       && kuSmxErrCoincWinNbHits == fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]) {
     /// 1st iteration => Initialize both indices on first slot in array
-    fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx] = 4;
-    fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx] = 3;
-    fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx] = 2;
-    fvuSmxErrIdxFirstHitM10[uFebIdx][uAsicIdx] = 1;
-    fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx] = 0;
-    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]     = 0;
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
+    fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx]                                       = 4;
+    fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx]                                       = 3;
+    fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx]                                       = 2;
+    fvuSmxErrIdxFirstHitM10[uFebIdx][uAsicIdx]                                       = 1;
+    fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]                                       = 0;
+    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]                                           = 0;
+    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
 
     /// Exit as we have less hits than needed to trigger the bug
     return kFALSE;
   }  /// if both indices are 0 => 1st hit in this ASIC
   else if (kuSmxErrCoincWinNbHits - 1
-             == fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]
-                  - fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]
-           || fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx] - 1
-                == fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]) {
+             == fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] - fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]
+           || fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx] - 1 == fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]) {
     /// Running loop once the array is full => shift indices for both first and last hit
     fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx] =
       (fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx] + 1) % kuSmxErrCoincWinNbHits;
@@ -2921,48 +2617,29 @@ Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx,
       (fvuSmxErrIdxFirstHitM10[uFebIdx][uAsicIdx] + 1) % kuSmxErrCoincWinNbHits;
     fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx] =
       (fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx] + 1) % kuSmxErrCoincWinNbHits;
-    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] =
-      (fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] + 1) % kuSmxErrCoincWinNbHits;
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
+    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] = (fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] + 1) % kuSmxErrCoincWinNbHits;
+    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
   }  /// If we had already at least kuNbHitCoincWinBug hits
   else {
     /// Still filling the array => shift only the index for last hit
-    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] =
-      fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] + 1;
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
+    fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] = fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx] + 1;
+    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]] = dNewHitTime;
 
     /// Exit as we have less hits than needed to trigger the bug
     return kFALSE;
   }  /// less than kuSmxErrCoincWinNbHits hits
 
   /// Compute the time difference between 1st and last for each condition
-  Double_t dTimeDiff07 =
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
-    - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                           [fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx]];
-  Double_t dTimeDiff08 =
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
-    - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                           [fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx]];
-  Double_t dTimeDiff09 =
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
-    - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                           [fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx]];
-  Double_t dTimeDiff10 =
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
-    - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                           [fvuSmxErrIdxFirstHitM10[uFebIdx][uAsicIdx]];
-  Double_t dTimeDiff11 =
-    fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                         [fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
-    - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx]
-                           [fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]];
+  Double_t dTimeDiff07 = fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
+                         - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxFirstHitM07[uFebIdx][uAsicIdx]];
+  Double_t dTimeDiff08 = fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
+                         - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxFirstHitM08[uFebIdx][uAsicIdx]];
+  Double_t dTimeDiff09 = fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
+                         - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxFirstHitM09[uFebIdx][uAsicIdx]];
+  Double_t dTimeDiff10 = fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
+                         - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxFirstHitM10[uFebIdx][uAsicIdx]];
+  Double_t dTimeDiff11 = fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxLastHit[uFebIdx][uAsicIdx]]
+                         - fvdSmxErrTimeLastHits[uFebIdx][uAsicIdx][fvuSmxErrIdxFirstHitM11[uFebIdx][uAsicIdx]];
 
   /// Go around bug in FPGA
   /*
@@ -2980,14 +2657,10 @@ Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx,
 
   /// Check conditions and set flag
   if ((kdSmxErrCoincWinBeg <= dTimeDiff07 && dTimeDiff07 <= fdSmxErrCoincWinM07)
-      || (kdSmxErrCoincWinBeg <= dTimeDiff08
-          && dTimeDiff08 <= fdSmxErrCoincWinM08)
-      || (kdSmxErrCoincWinBeg <= dTimeDiff09
-          && dTimeDiff09 <= fdSmxErrCoincWinM09)
-      || (kdSmxErrCoincWinBeg <= dTimeDiff10
-          && dTimeDiff10 <= fdSmxErrCoincWinM10)
-      || (kdSmxErrCoincWinBeg <= dTimeDiff11
-          && dTimeDiff11 <= fdSmxErrCoincWinM11)) {
+      || (kdSmxErrCoincWinBeg <= dTimeDiff08 && dTimeDiff08 <= fdSmxErrCoincWinM08)
+      || (kdSmxErrCoincWinBeg <= dTimeDiff09 && dTimeDiff09 <= fdSmxErrCoincWinM09)
+      || (kdSmxErrCoincWinBeg <= dTimeDiff10 && dTimeDiff10 <= fdSmxErrCoincWinM10)
+      || (kdSmxErrCoincWinBeg <= dTimeDiff11 && dTimeDiff11 <= fdSmxErrCoincWinM11)) {
     return kTRUE;
   }  /// If we are within at least one of the coincidence windows
   else {
@@ -2995,31 +2668,21 @@ Bool_t CbmMcbm2018MonitorSts::SmxErrCheckCoinc(UInt_t uFebIdx,
   }  /// Out of all coincidence windows, we are safe!
 }
 ///------------------------------------------------------------------///
-Bool_t CbmMcbm2018MonitorSts::ScanForNoisyChannels(Double_t dNoiseThreshold) {
+Bool_t CbmMcbm2018MonitorSts::ScanForNoisyChannels(Double_t dNoiseThreshold)
+{
   for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
     if (kTRUE == fUnpackParSts->IsFebActive(uFebIdx)) {
-      LOG(info) << Form(
-        " ------------------ Noisy channels scan for FEB %2d ------------",
-        uFebIdx);
-      for (UInt_t uAsicIdx = 0; uAsicIdx < fUnpackParSts->GetNbAsicsPerFeb();
-           ++uAsicIdx)
-        for (UInt_t uChanIdx = 0; uChanIdx < fUnpackParSts->GetNbChanPerAsic();
-             ++uChanIdx) {
-          UInt_t uChanInFeb =
-            uAsicIdx * fUnpackParSts->GetNbChanPerAsic() + uChanIdx;
-          if (dNoiseThreshold
-              < fhStsFebChanHitRateProf[uFebIdx]->GetBinContent(1 + uChanInFeb))
-            LOG(info) << Form(
-              "Noisy Channel ASIC %d channel %3d (%4d) level %6.0f",
-              uAsicIdx,
-              uChanIdx,
-              uChanInFeb,
-              fhStsFebChanHitRateProf[uFebIdx]->GetBinContent(1 + uChanInFeb));
+      LOG(info) << Form(" ------------------ Noisy channels scan for FEB %2d ------------", uFebIdx);
+      for (UInt_t uAsicIdx = 0; uAsicIdx < fUnpackParSts->GetNbAsicsPerFeb(); ++uAsicIdx)
+        for (UInt_t uChanIdx = 0; uChanIdx < fUnpackParSts->GetNbChanPerAsic(); ++uChanIdx) {
+          UInt_t uChanInFeb = uAsicIdx * fUnpackParSts->GetNbChanPerAsic() + uChanIdx;
+          if (dNoiseThreshold < fhStsFebChanHitRateProf[uFebIdx]->GetBinContent(1 + uChanInFeb))
+            LOG(info) << Form("Noisy Channel ASIC %d channel %3d (%4d) level %6.0f", uAsicIdx, uChanIdx, uChanInFeb,
+                              fhStsFebChanHitRateProf[uFebIdx]->GetBinContent(1 + uChanInFeb));
 
         }  // for( UInt_t uChanIdx = 0; uChanIdx < fUnpackParSts->GetNbChanPerAsic(); ++uChanIdx )
 
-      LOG(info)
-        << " ---------------------------------------------------------------";
+      LOG(info) << " ---------------------------------------------------------------";
     }  // if( kTRUE == fUnpackParSts->IsFebActive( uFebIdx ) )
   }    // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
   return kTRUE;

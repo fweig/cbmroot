@@ -7,7 +7,8 @@
 
 ///////////////////////////////////////////////////////////////////
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 
   FILE* file_1;  // pointer on in  file
   FILE* file_2;  // pointer on out file

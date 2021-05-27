@@ -1,4 +1,5 @@
-void test_matrix_math() {
+void test_matrix_math()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");

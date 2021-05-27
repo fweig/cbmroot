@@ -16,13 +16,15 @@ enum HitType {
 };
 */
 
-enum ConstructorType {
+enum ConstructorType
+{
   defaultConstructor,
   standardConstructorFull,
   standardConstructor
 };
 
-void CreateTestFile(TString filename, ConstructorType constructor) {
+void CreateTestFile(TString filename, ConstructorType constructor)
+{
   TTree* outTree    = new TTree("cbmsim", "/cbmout", 99);
   TClonesArray* hit = new TClonesArray("CbmHit");
 
@@ -31,12 +33,8 @@ void CreateTestFile(TString filename, ConstructorType constructor) {
   for (Int_t i = 0; i < 100; ++i) {
     switch (constructor) {
       case (defaultConstructor): new ((*hit)[i]) CbmHit(); break;
-      case (standardConstructor):
-        new ((*hit)[i]) CbmHit(kHIT, 0., 0., -1, -1);
-        break;
-      case (standardConstructorFull):
-        new ((*hit)[i]) CbmHit(kHIT, 0., 0., -1, -1, -2., -2.);
-        break;
+      case (standardConstructor): new ((*hit)[i]) CbmHit(kHIT, 0., 0., -1, -1); break;
+      case (standardConstructorFull): new ((*hit)[i]) CbmHit(kHIT, 0., 0., -1, -1, -2., -2.); break;
       default: new ((*hit)[i]) CbmHit();
     }
   }
@@ -51,7 +49,8 @@ void CreateTestFile(TString filename, ConstructorType constructor) {
   delete outTree;
 }
 
-Bool_t CompareDouble(Double_t found, Double_t expected, TString text) {
+Bool_t CompareDouble(Double_t found, Double_t expected, TString text)
+{
   if (TMath::Abs(found - expected) > 0.0001) {
     cout << text << found << ", " << expected << endl;
     return kFALSE;
@@ -59,7 +58,8 @@ Bool_t CompareDouble(Double_t found, Double_t expected, TString text) {
   return kTRUE;
 }
 
-Bool_t CompareInt(Int_t found, Int_t expected, TString text) {
+Bool_t CompareInt(Int_t found, Int_t expected, TString text)
+{
   if (found != expected) {
     cout << text << found << ", " << expected << endl;
     return kFALSE;
@@ -68,8 +68,8 @@ Bool_t CompareInt(Int_t found, Int_t expected, TString text) {
 }
 
 
-Bool_t
-TestTestFile(TString filename, Int_t* intValues, Double_t* doubleValues) {
+Bool_t TestTestFile(TString filename, Int_t* intValues, Double_t* doubleValues)
+{
   // Open the file
   TFile* testFile = TFile::Open(filename, "update");
 
@@ -95,35 +95,21 @@ TestTestFile(TString filename, Int_t* intValues, Double_t* doubleValues) {
     for (Int_t iHits = 0; iHits < nHits; iHits++) {
       testHit = (CbmHit*) hits->At(iHits);
 
-      finalResult = finalResult
-                    && CompareDouble(testHit->GetZ(),
-                                     doubleValues[0],
-                                     "z position different(found, expected): ");
+      finalResult =
+        finalResult && CompareDouble(testHit->GetZ(), doubleValues[0], "z position different(found, expected): ");
       finalResult =
         finalResult
-        && CompareDouble(testHit->GetDz(),
-                         doubleValues[1],
-                         "z position error different(found, expected): ");
-      finalResult = finalResult
-                    && CompareDouble(testHit->GetTime(),
-                                     doubleValues[2],
-                                     "time different(found, expected): ");
-      finalResult = finalResult
-                    && CompareDouble(testHit->GetTimeError(),
-                                     doubleValues[3],
-                                     "time error different(found, expected): ");
-      finalResult = finalResult
-                    && CompareInt(testHit->GetType(),
-                                  intValues[0],
-                                  "hit type different(found, expected): ");
-      finalResult = finalResult
-                    && CompareInt(testHit->GetRefId(),
-                                  intValues[1],
-                                  "refId different(found, expected): ");
-      finalResult = finalResult
-                    && CompareInt(testHit->GetAddress(),
-                                  intValues[2],
-                                  "address different(found, expected): ");
+        && CompareDouble(testHit->GetDz(), doubleValues[1], "z position error different(found, expected): ");
+      finalResult =
+        finalResult && CompareDouble(testHit->GetTime(), doubleValues[2], "time different(found, expected): ");
+      finalResult =
+        finalResult
+        && CompareDouble(testHit->GetTimeError(), doubleValues[3], "time error different(found, expected): ");
+      finalResult =
+        finalResult && CompareInt(testHit->GetType(), intValues[0], "hit type different(found, expected): ");
+      finalResult = finalResult && CompareInt(testHit->GetRefId(), intValues[1], "refId different(found, expected): ");
+      finalResult =
+        finalResult && CompareInt(testHit->GetAddress(), intValues[2], "address different(found, expected): ");
     }
   }
 
@@ -136,14 +122,16 @@ TestTestFile(TString filename, Int_t* intValues, Double_t* doubleValues) {
   if (finalResult) {
     cout << "Test passed" << endl;
     return kTRUE;
-  } else {
+  }
+  else {
     cout << "Test failed" << endl;
     return kFALSE;
   }
 }
 
 
-int TestCbmHit() {
+int TestCbmHit()
+{
   // expected values for type, refId, address
   Int_t intValues[3] = {0, -1, -1};
 

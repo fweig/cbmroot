@@ -21,9 +21,8 @@
   gROOT->cd();
   TString hname = "tof_trb_trigger_pattern";
   h1            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -31,9 +30,8 @@
   gROOT->cd();
   TString hname = "tof_trb_trigger_types";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -41,9 +39,8 @@
   gROOT->cd();
   TString hname = "tof_trb_time_in_spill";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("colz");
-  } else {
+  if (h1 != NULL) { h1->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -51,9 +48,8 @@
   gROOT->cd();
   TString hname = "";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

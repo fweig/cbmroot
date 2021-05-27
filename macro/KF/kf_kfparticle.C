@@ -21,19 +21,16 @@
 // [dataset].Efficiency_KFParticleFinder.txt - a file with efficiencies
 // --------------------------------------------------------------------------
 
-void kf_kfparticle(Int_t nEvents               = 2,
-                   const TString setupName     = "sis100_electron",
-                   const TString dataset       = "test",
-                   const Bool_t useDetectorPID = kTRUE,
-                   const Bool_t superEvent     = kFALSE,
-                   const int iDecay            = -1) {
+void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron", const TString dataset = "test",
+                   const Bool_t useDetectorPID = kTRUE, const Bool_t superEvent = kFALSE, const int iDecay = -1)
+{
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString macroName = "run_kfparticle";  // this macro's name for screen output
+  TString macroName = "run_kfparticle";               // this macro's name for screen output
   TString srcDir    = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir  = srcDir + "/parameters";
   // ------------------------------------------------------------------------
@@ -53,8 +50,7 @@ void kf_kfparticle(Int_t nEvents               = 2,
   TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
   setupFunct         = setupFunct + setupName + "()";
-  std::cout << "-I- " << macroName << ": Loading macro " << setupFile
-            << std::endl;
+  std::cout << "-I- " << macroName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
   CbmSetup* setup = CbmSetup::Instance();
@@ -75,11 +71,11 @@ void kf_kfparticle(Int_t nEvents               = 2,
       return;
     }
     if (treeMC->GetEntriesFast() < nEvents) {
-      std::cout << "[FATAL  ]  Simulation is incomplete. N mc events = "
-                << treeMC->GetEntriesFast() << std::endl;
+      std::cout << "[FATAL  ]  Simulation is incomplete. N mc events = " << treeMC->GetEntriesFast() << std::endl;
       return;
     }
-  } else {
+  }
+  else {
     std::cout << "[FATAL  ]  MC file does not exist." << std::endl;
     return;
   }
@@ -92,11 +88,12 @@ void kf_kfparticle(Int_t nEvents               = 2,
       return;
     }
     if (treeReco->GetEntriesFast() < nEvents) {
-      std::cout << "[FATAL  ]  Reconstruction is incomplete. N reco events = "
-                << treeReco->GetEntriesFast() << std::endl;
+      std::cout << "[FATAL  ]  Reconstruction is incomplete. N reco events = " << treeReco->GetEntriesFast()
+                << std::endl;
       return;
     }
-  } else {
+  }
+  else {
     std::cout << "[FATAL  ]  Reco file does not exist." << std::endl;
     return;
   }
@@ -131,14 +128,12 @@ void kf_kfparticle(Int_t nEvents               = 2,
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);
   if (setup->IsActive(ECbmModuleId::kMvd)) {
     setup->GetGeoTag(ECbmModuleId::kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(ECbmModuleId::kSts)) {
     setup->GetGeoTag(ECbmModuleId::kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -156,11 +151,13 @@ void kf_kfparticle(Int_t nEvents               = 2,
       kfParticleFinderPID->SetNMinMuchHitsForJPsi(11);
       kfParticleFinderPID->SetMaxChi2ForStsMuonTrack(3);
       kfParticleFinderPID->SetMaxChi2ForMuchMuonTrack(3);
-    } else {
+    }
+    else {
       kfParticleFinderPID->UseTRDANNPID();
       kfParticleFinderPID->UseRICHRvspPID();
     }
-  } else
+  }
+  else
     kfParticleFinderPID->UseMCPID();
   run->AddTask(kfParticleFinderPID);
   // ------------------------------------------------------------------------
@@ -175,17 +172,13 @@ void kf_kfparticle(Int_t nEvents               = 2,
 
   // ----- KF Particle Finder QA --------------------------------------------
   CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA",
-                              0,
-                              kfParticleFinder->GetTopoReconstructor(),
-                              histoFile.Data());
+    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(nEvents);
   if (superEvent) kfParticleFinderQA->SetSuperEventAnalysis();  // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());
   if (iDecay > -1) {
     TString referenceResults = srcDir + "/input/qa/KF/reference/";
-    if (useDetectorPID)
-      referenceResults += "realpid/";
+    if (useDetectorPID) referenceResults += "realpid/";
     else
       referenceResults += "mcpid/";
     kfParticleFinderQA->SetReferenceResults(referenceResults);
@@ -217,20 +210,12 @@ void kf_kfparticle(Int_t nEvents               = 2,
   rtdb->print();
 
   KFPartEfficiencies eff;
-  for (int jParticle = eff.fFirstStableParticleIndex + 10;
-       jParticle <= eff.fLastStableParticleIndex;
-       jParticle++) {
+  for (int jParticle = eff.fFirstStableParticleIndex + 10; jParticle <= eff.fLastStableParticleIndex; jParticle++) {
     TDatabasePDG* pdgDB = TDatabasePDG::Instance();
 
     if (!pdgDB->GetParticle(eff.partPDG[jParticle])) {
-      pdgDB->AddParticle(eff.partTitle[jParticle].data(),
-                         eff.partTitle[jParticle].data(),
-                         eff.partMass[jParticle],
-                         kTRUE,
-                         0,
-                         eff.partCharge[jParticle] * 3,
-                         "Ion",
-                         eff.partPDG[jParticle]);
+      pdgDB->AddParticle(eff.partTitle[jParticle].data(), eff.partTitle[jParticle].data(), eff.partMass[jParticle],
+                         kTRUE, 0, eff.partCharge[jParticle] * 3, "Ion", eff.partPDG[jParticle]);
     }
   }
   run->Run(0, nEvents);
@@ -245,8 +230,7 @@ void kf_kfparticle(Int_t nEvents               = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   if (iDecay > -1) {
     if (kfParticleFinderQA->IsTestPassed()) {

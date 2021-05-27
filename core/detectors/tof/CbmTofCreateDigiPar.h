@@ -7,14 +7,14 @@
 #ifndef CBMTOFCREATEDIGIPAR_H
 #define CBMTOFCREATEDIGIPAR_H
 
+#include <FairTask.h>  // for InitStatus, FairTask
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Option_t
 #include <TString.h>     // for TString
 
 #include <map>     // for map, map<>::iterator
 #include <vector>  // for vector
-
-#include <FairTask.h>  // for InitStatus, FairTask
 
 class CbmTofCell;
 class CbmTofDigiPar;
@@ -68,9 +68,8 @@ private:
   Double_t fY;
   Double_t fZ;
 
-  Int_t fDetID;  //Unique number for detector element (including gap)
-  Int_t
-    fCellID;  //Unique number for a detector cell (8 gaps add up to one cell)
+  Int_t fDetID;   //Unique number for detector element (including gap)
+  Int_t fCellID;  //Unique number for a detector cell (8 gaps add up to one cell)
 
   /** Map of Unique Tof Cell Id to corresponding TofCell **/
   std::map<Int_t, std::vector<CbmTofCell*>> fCellMap;              //!

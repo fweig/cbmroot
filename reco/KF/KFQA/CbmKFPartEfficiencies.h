@@ -2,6 +2,7 @@
 #define CbmKFPartEfficiencies_H
 
 #include "CbmL1Counters.h"
+
 #include "TNamed.h"
 
 class CbmKFPartEfficiencies : public TNamed {
@@ -19,33 +20,33 @@ public:
     , ratio_clone()
     , ghost()
     , bg()
-    , clone() {
+    , clone()
+  {
     // add total efficiency
     // AddCounter("piPlus"  ,"PiPlus  efficiency");
     // AddCounter("piMinus" ,"PiMinus efficiency");
 
     int mPartPDG[nParticles] = {
-      310,     3122,     -3122,   3312,     -3312, 3322,   -3322,
-      3334,    -3334,    3212,    -3212,    3222,  -3222,  //strange meson and hyperons
+      310,     3122,     -3122,   3312,     -3312, 3322,   -3322, 3334, -3334, 3212,
+      -3212,   3222,     -3222,                            //strange meson and hyperons
       313,     -313,     323,     -323,                    //K* resonances
       3224,    3114,     -3114,   -3224,    3214,  -3214,  //sigma resonances
       3124,    -3124,                                      //Lambda resonances
       3324,    -3324,    1003314, -1003314, 3314,  -3314,  //Xi resonances
       1003334, -1003334,                                   //Omega resonances
       3000,                                                //exotics
-      333,     113,                         //vector mesons, hadron chanel
-      100113,  200113,                      //light vector mesons
-      22,                                   //dielectrons
-      111,     221,                         //pi0, eta
-      443,     100443,                      // J/Psi
-      421,     -421,     100421,  -100421,  //D0
-      411,     -411,                        //D+, D-
-      431,     -431,                        //Ds+, Ds-
-      4122,    -4122,                       //Lambdac
+      333,     113,                                        //vector mesons, hadron chanel
+      100113,  200113,                                     //light vector mesons
+      22,                                                  //dielectrons
+      111,     221,                                        //pi0, eta
+      443,     100443,                                     // J/Psi
+      421,     -421,     100421,  -100421,                 //D0
+      411,     -411,                                       //D+, D-
+      431,     -431,                                       //Ds+, Ds-
+      4122,    -4122,                                      //Lambdac
       10421,   -10421,   10411,   -10411,   20411, -20411,
-      3001,  //H->Lambda p pi
-      11,      -11,      13,      -13,      211,   -211,   321,
-      -321,    2212,     -2212  // stable particles
+      3001,                                                                           //H->Lambda p pi
+      11,      -11,      13,      -13,      211,   -211,   321,   -321, 2212,  -2212  // stable particles
     };
     TString mPartName[nParticles]  = {"ks",
                                      "lambda",
@@ -191,17 +192,14 @@ public:
     };
 
     float mPartMHistoMin[nParticles] = {
-      0.3, 1.,  1.,  1.,  1.,  1., 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.6,
-      0.6, 0.6, 0.6, 1.,  1.,  1., 1.,  1.,  1.,  1.4, 1.4, 1.4, 1.4, 1.4,
-      1.4, 1.4, 1.4, 1.8, 1.8, 1., 0.8, 0.1, 0.1, 0.1, 0.,  0.,  0.,  1.,
-      1.,  1.,  1.,  1.,  1.,  1., 1.,  1.,  1.,  1.8, 1.8, 1.8, 1.8, 1.8,
-      1.8, 1.8, 1.8, 1.,  0.,  0., 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.};
-    float mPartMHistoMax[nParticles] = {
-      1.3, 2.,  2.,  3.,  3.,   3.,   3.,  3.,  3.,  3.,  3.,  3.,  3.,  2.6,
-      2.6, 2.6, 2.6, 3.,  3.,   3.,   3.,  3.,  3.,  3.4, 3.4, 3.4, 3.4, 3.4,
-      3.4, 3.4, 3.4, 3.8, 3.8,  3.,   2.8, 2.1, 2.1, 2.1, 3.,  3.,  3.,  4.,
-      4.,  3.,  3.,  3.,  3.,   3.,   3.,  3.,  3.,  3.8, 3.8, 3.8, 3.8, 3.8,
-      3.8, 3.8, 3.8, 3.,  0.01, 0.01, 1.,  1.,  1.,  1.,  1.,  1.,  1.5, 1.5};
+      0.3, 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.6, 0.6, 0.6, 0.6, 1., 1., 1., 1., 1., 1., 1.4,
+      1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.8, 1.8, 1.,  0.8, 0.1, 0.1, 0.1, 0.,  0.,  0.,  1., 1., 1., 1., 1., 1., 1.,
+      1.,  1.,  1.,  1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.,  0.,  0.,  0.,  0.,  0.,  0., 0., 0., 0., 0.};
+    float mPartMHistoMax[nParticles] = {1.3, 2.,  2.,  3.,  3.,   3.,   3.,  3.,  3.,  3.,  3.,  3.,  3.,  2.6,
+                                        2.6, 2.6, 2.6, 3.,  3.,   3.,   3.,  3.,  3.,  3.4, 3.4, 3.4, 3.4, 3.4,
+                                        3.4, 3.4, 3.4, 3.8, 3.8,  3.,   2.8, 2.1, 2.1, 2.1, 3.,  3.,  3.,  4.,
+                                        4.,  3.,  3.,  3.,  3.,   3.,   3.,  3.,  3.,  3.8, 3.8, 3.8, 3.8, 3.8,
+                                        3.8, 3.8, 3.8, 3.,  0.01, 0.01, 1.,  1.,  1.,  1.,  1.,  1.,  1.5, 1.5};
 
     float mPartMaxMult[nParticles];
     for (int i = 0; i < 60; i++)
@@ -424,12 +422,9 @@ public:
     }
 
     for (int iP = 0; iP < nParticles; iP++) {
-      AddCounter(Form("%s", partName[iP].Data()),
-                 Form("%-*s", 14, partTitle[iP].Data()));
-      AddCounter(Form("%s_prim", partName[iP].Data()),
-                 Form("%s Prim", partTitle[iP].Data()));
-      AddCounter(Form("%s_sec", partName[iP].Data()),
-                 Form("%s Sec ", partTitle[iP].Data()));
+      AddCounter(Form("%s", partName[iP].Data()), Form("%-*s", 14, partTitle[iP].Data()));
+      AddCounter(Form("%s_prim", partName[iP].Data()), Form("%s Prim", partTitle[iP].Data()));
+      AddCounter(Form("%s_sec", partName[iP].Data()), Form("%s Sec ", partTitle[iP].Data()));
     }
 
     for (int iP = 0; iP < nParticles; iP++)
@@ -438,16 +433,17 @@ public:
 
   virtual ~CbmKFPartEfficiencies() {};
 
-  int GetParticleIndex(int pdg) {
+  int GetParticleIndex(int pdg)
+  {
     std::map<int, int>::iterator it;
     it = fPdgToIndex.find(pdg);
-    if (it != fPdgToIndex.end())
-      return it->second;
+    if (it != fPdgToIndex.end()) return it->second;
     else
       return -1;
   }
 
-  virtual void AddCounter(TString shortname, TString name) {
+  virtual void AddCounter(TString shortname, TString name)
+  {
     indices[shortname] = names.size();
     names.push_back(name);
 
@@ -463,7 +459,8 @@ public:
     clone.AddCounter();
   };
 
-  CbmKFPartEfficiencies& operator+=(CbmKFPartEfficiencies& a) {
+  CbmKFPartEfficiencies& operator+=(CbmKFPartEfficiencies& a)
+  {
     mc += a.mc;
     reco += a.reco;
     ghost += a.ghost;
@@ -472,7 +469,8 @@ public:
     return *this;
   };
 
-  void CalcEff() {
+  void CalcEff()
+  {
     ratio_reco = reco / mc;
 
     TL1TracksCatCounters<int> allReco = reco + ghost + bg;
@@ -482,7 +480,8 @@ public:
   };
 
 
-  void Inc(bool isReco, int nClones, TString name) {
+  void Inc(bool isReco, int nClones, TString name)
+  {
     const int index = indices[name];
 
     mc.counters[index]++;
@@ -490,14 +489,16 @@ public:
     if (nClones > 0) clone.counters[index] += nClones;
   };
 
-  void IncReco(bool isGhost, bool isBg, TString name) {
+  void IncReco(bool isGhost, bool isBg, TString name)
+  {
     const int index = indices[name];
 
     if (isGhost) ghost.counters[index]++;
     if (isBg) bg.counters[index]++;
   };
 
-  void PrintEff() {
+  void PrintEff()
+  {
     std::cout.setf(std::ios::fixed);
     std::cout.setf(std::ios::showpoint);
     std::cout.precision(3);
@@ -520,21 +521,17 @@ public:
 
     int NCounters = mc.NCounters;
     for (int iC = 0; iC < NCounters; iC++) {
-      std::cout << names[iC] << "  : " << std::setw(6)
-                << ratio_reco.counters[iC] << "  / " << std::setw(6)
-                << ratio_ghost.counters[iC]  // particles w\o MCParticle
-                << "  / " << std::setw(6)
-                << ratio_bg.counters[iC]  // particles with incorrect MCParticle
-                << "  / " << std::setw(6) << ghost.counters[iC] << "  / "
-                << std::setw(7) << bg.counters[iC] << "  / " << std::setw(6)
-                << reco.counters[iC] << "  / " << std::setw(7)
-                << clone.counters[iC] << "  | " << std::setw(6)
-                << mc.counters[iC] << std::endl;
+      std::cout << names[iC] << "  : " << std::setw(6) << ratio_reco.counters[iC] << "  / " << std::setw(6)
+                << ratio_ghost.counters[iC]                         // particles w\o MCParticle
+                << "  / " << std::setw(6) << ratio_bg.counters[iC]  // particles with incorrect MCParticle
+                << "  / " << std::setw(6) << ghost.counters[iC] << "  / " << std::setw(7) << bg.counters[iC] << "  / "
+                << std::setw(6) << reco.counters[iC] << "  / " << std::setw(7) << clone.counters[iC] << "  | "
+                << std::setw(6) << mc.counters[iC] << std::endl;
     }
   };
 
-  friend std::fstream& operator<<(std::fstream& strm,
-                                  CbmKFPartEfficiencies& a) {
+  friend std::fstream& operator<<(std::fstream& strm, CbmKFPartEfficiencies& a)
+  {
 
     strm << a.ratio_reco;
     strm << a.mc;
@@ -549,8 +546,8 @@ public:
     return strm;
   }
 
-  friend std::fstream& operator>>(std::fstream& strm,
-                                  CbmKFPartEfficiencies& a) {
+  friend std::fstream& operator>>(std::fstream& strm, CbmKFPartEfficiencies& a)
+  {
 
     strm >> a.ratio_reco;
     strm >> a.mc;
@@ -565,7 +562,8 @@ public:
     return strm;
   }
 
-  void AddFromFile(TString fileName) {
+  void AddFromFile(TString fileName)
+  {
     std::fstream file(fileName.Data(), std::fstream::in);
     file >> *this;
   }
@@ -582,9 +580,8 @@ public:
   ClassDef(CbmKFPartEfficiencies, 1);
 
 private:
-  std::vector<TString> names;  // names counters indexed by index of counter
-  std::map<TString, int>
-    indices;  // indices of counters indexed by a counter shortname
+  std::vector<TString> names;      // names counters indexed by index of counter
+  std::map<TString, int> indices;  // indices of counters indexed by a counter shortname
 
   std::map<int, int> fPdgToIndex;
 

@@ -1,6 +1,7 @@
 #include <string>
 
-void draw_lit_reco_qa_Jan2019(bool lit, bool reco) {
+void draw_lit_reco_qa_Jan2019(bool lit, bool reco)
+{
   //	string dir = "/data/Sim_Outputs/Sim_Thesis/AuAu_10AGeV_Jan2019/Aligned/";
   //	string dir = "/data/Sim_Outputs/Sim_Thesis/AuAu_10AGeV_Jan2019/1mrad/";
   //	string dir = "/data/Sim_Outputs/Sim_Thesis/AuAu_10AGeV_Jan2019/3mrad/";
@@ -15,9 +16,7 @@ void draw_lit_reco_qa_Jan2019(bool lit, bool reco) {
   //      outputDirRecoQa = dir + "Corrected/results_RecoQa/";
 
   std::cout << "fileName, outputDirTracking, outputDirRecoQa:" << std::endl;
-  std::cout << fileName << std::endl
-            << outputDirTracking << std::endl
-            << outputDirRecoQa << std::endl;
+  std::cout << fileName << std::endl << outputDirTracking << std::endl << outputDirRecoQa << std::endl;
 
   if (lit == 1) {
     CbmSimulationReport* trackingQaReport = new CbmLitTrackingQaReport();

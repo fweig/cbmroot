@@ -16,6 +16,7 @@
 
 
 #include "TString.h"
+
 #include <cstdio>
 #include <iostream>
 
@@ -56,13 +57,12 @@ TGeoManager* geoMan = NULL;  // will be set later
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
-void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
-                           const char* digiTag = gkDigiTag) {
+void create_stsdigipar_v12(const char* geoTag = gkGeoTag, const char* digiTag = gkDigiTag)
+{
 
   // ---> Open parameter file
   TString parFileName = "sts_";
-  if (digiTag != "")
-    parFileName = parFileName + geoTag + "_" + digiTag + ".digi.par";
+  if (digiTag != "") parFileName = parFileName + geoTag + "_" + digiTag + ".digi.par";
   else
     parFileName = parFileName + geoTag + ".digi.par";
   FILE* parFile;
@@ -89,8 +89,7 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
   // ---> Top node
   geoMan->CdTop();
   TGeoNode* cave = geoMan->GetCurrentNode();
-  cout << "Top node: " << cave->GetName()
-       << ", daughters: " << cave->GetNdaughters() << endl;
+  cout << "Top node: " << cave->GetName() << ", daughters: " << cave->GetNdaughters() << endl;
 
 
   // ---> STS
@@ -100,8 +99,7 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
     cout << "-E- Illegal STS node name " << sts->GetName() << endl;
     exit(0);
   }
-  cout << "STS node: " << sts->GetName()
-       << ", daughters: " << sts->GetNdaughters()
+  cout << "STS node: " << sts->GetName() << ", daughters: " << sts->GetNdaughters()
        << ", stations: " << GetNofDaughters(sts, "Station") << endl;
 
 
@@ -115,8 +113,7 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
     }
     Int_t statNr   = station->GetNumber();
     Int_t nModules = GetNofModules(station);
-    cout << "Station Nr. " << statNr << ", node " << station->GetName()
-         << ", modules: " << nModules << endl;
+    cout << "Station Nr. " << statNr << ", node " << station->GetName() << ", modules: " << nModules << endl;
     fprintf(parFile, "%d   %d   %d\n", statNr, 0, nModules);
     Int_t moduleNr = 0;  // Running module number
 
@@ -139,8 +136,7 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
             continue;
           }
           moduleNr++;
-          fprintf(
-            parFile, "%4d %4d\n", moduleNr, GetNofDaughters(module, "Sensor"));
+          fprintf(parFile, "%4d %4d\n", moduleNr, GetNofDaughters(module, "Sensor"));
 
           // ---> Sensors
           for (Int_t iModD = 0; iModD < module->GetNdaughters(); iModD++) {
@@ -177,19 +173,8 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
             fprintf(parFile,
                     "%6d %6d %9.3f %9.3f %9.3f %8d %8.2f %8.2f %8.2f %8.4f "
                     "%8.4f %8.2f %8.2f\n",
-                    sensNr,
-                    gkSensorType,
-                    xTrans[0],
-                    xTrans[1],
-                    xTrans[2],
-                    phi,
-                    dx,
-                    dy,
-                    dz,
-                    gkStripPitchFront,
-                    gkStripPitchBack,
-                    gkStereoFront,
-                    gkStereoBack);
+                    sensNr, gkSensorType, xTrans[0], xTrans[1], xTrans[2], phi, dx, dy, dz, gkStripPitchFront,
+                    gkStripPitchBack, gkStereoFront, gkStereoBack);
 
 
             geoMan->CdUp();  // back to module
@@ -218,7 +203,8 @@ void create_stsdigipar_v12(const char* geoTag  = gkGeoTag,
  **
  ** Create geometry, read STS node from file and add it to geometry.
  **/
-Bool_t CreateGeoFromFile(const char* fileName) {
+Bool_t CreateGeoFromFile(const char* fileName)
+{
 
   // ---> Create TGeoManager and top node (cave)
   geoMan           = new TGeoManager("CBM STS", "STS Geometry");
@@ -274,7 +260,8 @@ Bool_t CreateGeoFromFile(const char* fileName) {
 /** ======================================================================= **/
 
 
-Int_t GetNofModules(TGeoNode* station) {
+Int_t GetNofModules(TGeoNode* station)
+{
 
   Int_t nModules = 0;
 
@@ -300,10 +287,10 @@ Int_t GetNofModules(TGeoNode* station) {
 }
 
 
-Int_t GetNofDaughters(TGeoNode* node, const char* name) {
+Int_t GetNofDaughters(TGeoNode* node, const char* name)
+{
   Int_t nDaughters = 0;
   for (Int_t iNode = 0; iNode < node->GetNdaughters(); iNode++)
-    if (TString(node->GetDaughter(iNode)->GetName()).Contains(name))
-      nDaughters++;
+    if (TString(node->GetDaughter(iNode)->GetName()).Contains(name)) nDaughters++;
   return nDaughters;
 }

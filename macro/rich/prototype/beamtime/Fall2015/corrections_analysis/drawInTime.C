@@ -1,4 +1,5 @@
-void drawInTime(TString filename, Int_t num) {
+void drawInTime(TString filename, Int_t num)
+{
   FILE* f = fopen(filename.Data(), "r");
 
   if (f) {
@@ -6,8 +7,7 @@ void drawInTime(TString filename, Int_t num) {
 
     gStyle->SetOptStat(111111);
 
-    TH1I* histo = new TH1I(
-      "histo", "histo;iteration;real events in the buffer", num, 0, num);
+    TH1I* histo = new TH1I("histo", "histo;iteration;real events in the buffer", num, 0, num);
     Int_t curValue;
     char buf[32];
     Int_t i = 1;

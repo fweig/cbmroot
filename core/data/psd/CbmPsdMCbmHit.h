@@ -33,10 +33,7 @@ public:
      ** @param energy      Energy deposition
      ** @param time        Hit time [ns]
      **/
-  CbmPsdMCbmHit(UInt_t moduleId,
-                UInt_t sectionId,
-                Double_t energy,
-                Double_t time);
+  CbmPsdMCbmHit(UInt_t moduleId, UInt_t sectionId, Double_t energy, Double_t time);
 
 
   /** Destructor **/

@@ -17,10 +17,7 @@ class TCanvas;
 class CanvasConfig {
 public:
   CanvasConfig();
-  CanvasConfig(std::string sName,
-               std::string sTitle,
-               uint32_t uNbPadsX,
-               uint32_t uNbPadsY);
+  CanvasConfig(std::string sName, std::string sTitle, uint32_t uNbPadsX, uint32_t uNbPadsY);
 
   ~CanvasConfig();
 
@@ -43,14 +40,8 @@ public:
   void SetNbPadsX(uint32_t uNbColumns);
   void SetNbPadsY(uint32_t uNbRows);
 
-  bool SetConfig(uint32_t uPadIdx,
-                 bool bGridx,
-                 bool bGridy,
-                 bool bLogx,
-                 bool bLogy,
-                 bool bLogz,
-                 std::vector<std::string> vsObjName,
-                 std::vector<std::string> vsOptions);
+  bool SetConfig(uint32_t uPadIdx, bool bGridx, bool bGridy, bool bLogx, bool bLogy, bool bLogz,
+                 std::vector<std::string> vsObjName, std::vector<std::string> vsOptions);
 
 private:
   std::string fsName;

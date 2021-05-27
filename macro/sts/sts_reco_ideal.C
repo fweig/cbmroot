@@ -16,7 +16,8 @@
 // --------------------------------------------------------------------------
 
 
-void sts_reco_ideal(Int_t nEvents = 1) {
+void sts_reco_ideal(Int_t nEvents = 1)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -95,22 +96,19 @@ void sts_reco_ideal(Int_t nEvents = 1) {
 
 
   // -----   STS digitiser   ------------------------------------------------
-  FairTask* stsIdealDigitize =
-    new CbmStsIdealDigitize("STSIdealDigitize", iVerbose);
+  FairTask* stsIdealDigitize = new CbmStsIdealDigitize("STSIdealDigitize", iVerbose);
   run->AddTask(stsIdealDigitize);
   // ------------------------------------------------------------------------
 
 
   // ---  STS hit finding   -------------------------------------------------
-  FairTask* IdealfindHits =
-    new CbmStsIdealFindHits("STSIdealFindHits", iVerbose);
+  FairTask* IdealfindHits = new CbmStsIdealFindHits("STSIdealFindHits", iVerbose);
   run->AddTask(IdealfindHits);
   // ------------------------------------------------------------------------
 
 
   // ---  STS hit matching   ------------------------------------------------
-  FairTask* IdealmatchHits =
-    new CbmStsIdealMatchHits("STSIdealMatchHits", iVerbose);
+  FairTask* IdealmatchHits = new CbmStsIdealMatchHits("STSIdealMatchHits", iVerbose);
   run->AddTask(IdealmatchHits);
   // ------------------------------------------------------------------------
 
@@ -134,8 +132,7 @@ void sts_reco_ideal(Int_t nEvents = 1) {
 
   // -----   STS track fitting   --------------------------------------------
   CbmStsTrackFitter* trackFitter = new CbmStsKFTrackFitter();
-  FairTask* fitTracks =
-    new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
+  FairTask* fitTracks            = new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
   run->AddTask(fitTracks);
   // ------------------------------------------------------------------------
 

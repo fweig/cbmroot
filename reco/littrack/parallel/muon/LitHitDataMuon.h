@@ -8,15 +8,17 @@
 #ifndef LITHITDATAMUON_H_
 #define LITHITDATAMUON_H_
 
+#include <algorithm>
+#include <vector>
+
 #include "../LitComparators.h"
 #include "../LitHit.h"
 #include "LitDetectorLayoutMuon.h"
 
-#include <algorithm>
-#include <vector>
-
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitHitDataMuon.h
@@ -41,7 +43,8 @@ namespace lit {
     * \brief Set detector layout for which hits are arranged.
     * \param[in] layout Detector layout.
     */
-      void SetDetectorLayout(const LitDetectorLayoutMuon<T>& layout) {
+      void SetDetectorLayout(const LitDetectorLayoutMuon<T>& layout)
+      {
         fLayout       = layout;
         int nofGroups = layout.GetNofStationGroups();
         fHits.resize(nofGroups);
@@ -68,10 +71,8 @@ namespace lit {
     * \param[in] substation Index of the substation in the station.
     * \param[in] hit Pointer to the hit to be added.
     */
-      void AddHit(int stationGroup,
-                  int station,
-                  int substation,
-                  LitScalPixelHit* hit) {
+      void AddHit(int stationGroup, int station, int substation, LitScalPixelHit* hit)
+      {
         fHits[stationGroup][station][substation].push_back(hit);
         if (fMaxErr[stationGroup][station][substation] < hit->Dx) {
           fMaxErr[stationGroup][station][substation] = hit->Dx;
@@ -83,7 +84,8 @@ namespace lit {
     * \param[in] planeId Index of the detector plane (substation) in the detector.
     * \param[in] hit Pointer to the hit to be added.
     */
-      void AddHit(unsigned char planeId, LitScalPixelHit* hit) {
+      void AddHit(unsigned char planeId, LitScalPixelHit* hit)
+      {
         unsigned char stationGroup;
         unsigned char station;
         unsigned char substation;
@@ -99,8 +101,8 @@ namespace lit {
     * \param[in] hitId Hit index in the array of hits for the specified substation.
     * \return Hit pointer.
     */
-      const LitScalPixelHit*
-      GetHit(int stationGroup, int station, int substation, int hitId) const {
+      const LitScalPixelHit* GetHit(int stationGroup, int station, int substation, int hitId) const
+      {
         return fHits[stationGroup][station][substation][hitId];
       }
 
@@ -111,8 +113,8 @@ namespace lit {
     * \param[in] substation Index of the substation in the station.
     * \return Hit vector.
     */
-      const std::vector<LitScalPixelHit*>&
-      GetHits(int stationGroup, int station, int substation) {
+      const std::vector<LitScalPixelHit*>& GetHits(int stationGroup, int station, int substation)
+      {
         return fHits[stationGroup][station][substation];
       }
 
@@ -123,8 +125,8 @@ namespace lit {
     * \param[in] substation Index of the substation in the station.
     * \return Number of hits.
     */
-      unsigned int
-      GetNofHits(int stationGroup, int station, int substation) const {
+      unsigned int GetNofHits(int stationGroup, int station, int substation) const
+      {
         return fHits[stationGroup][station][substation].size();
       }
 
@@ -135,14 +137,16 @@ namespace lit {
     * \param[in] substation Index of the substation in the station.
     * \return Maximum hit error.
     */
-      fscal GetMaxErr(int stationGroup, int station, int substation) const {
+      fscal GetMaxErr(int stationGroup, int station, int substation) const
+      {
         return fMaxErr[stationGroup][station][substation];
       }
 
       /**
     * \brief Clear hit arrays.
     */
-      void Clear() {
+      void Clear()
+      {
         for (unsigned int i = 0; i < fHits.size(); i++) {
           for (unsigned int j = 0; j < fHits[i].size(); j++) {
             for (unsigned int k = 0; k < fHits[i][j].size(); k++) {
@@ -157,7 +161,8 @@ namespace lit {
       /**
     * \brief Sort hits in each substation by X coordinate.
     */
-      void SortHits() {
+      void SortHits()
+      {
         // TODO : add threads here
         for (int i = 0; i < fLayout.GetNofStationGroups(); i++) {
           for (int j = 0; j < fLayout.GetNofStations(i); j++) {
@@ -177,7 +182,8 @@ namespace lit {
     * \brief Return std::string representation for the class.
     * \return std::string representation for the class.
     */
-      std::string ToString() const {
+      std::string ToString() const
+      {
         std::string str = "HitDataMuon:\n";
         for (int i = 0; i < fLayout.GetNofStationGroups(); i++) {
           str += " station group " + lit::parallel::ToString<int>(i) + "\n";
@@ -185,9 +191,8 @@ namespace lit {
             str += "  station " + lit::parallel::ToString<int>(j) + "\n";
             for (int k = 0; k < fLayout.GetNofSubstations(i, j); k++) {
               str += "   substation " + lit::parallel::ToString<int>(k) + ": "
-                     + lit::parallel::ToString<int>(GetNofHits(i, j, k))
-                     + " hits, " + "max err="
-                     + lit::parallel::ToString<T>(GetMaxErr(i, j, k)) + "\n";
+                     + lit::parallel::ToString<int>(GetNofHits(i, j, k)) + " hits, "
+                     + "max err=" + lit::parallel::ToString<T>(GetMaxErr(i, j, k)) + "\n";
             }
           }
         }
@@ -198,8 +203,8 @@ namespace lit {
     * \brief Operator << for convenient output to std::ostream.
     * \return std::ostream for continuous output.
     */
-      friend std::ostream& operator<<(std::ostream& strm,
-                                      const LitHitDataMuon& hitData) {
+      friend std::ostream& operator<<(std::ostream& strm, const LitHitDataMuon& hitData)
+      {
         strm << hitData.ToString();
         return strm;
       }
@@ -212,10 +217,9 @@ namespace lit {
     * \param[out] station Index of the station in the station group.
     * \param[out] subsattion Index of the substation in the station.
     */
-      void StationByPlaneId(unsigned char planeId,
-                            unsigned char& stationGroup,
-                            unsigned char& station,
-                            unsigned char& substation) const {
+      void StationByPlaneId(unsigned char planeId, unsigned char& stationGroup, unsigned char& station,
+                            unsigned char& substation) const
+      {
         unsigned char counter = 0;
         for (unsigned char i = 0; i < fLayout.GetNofStationGroups(); i++) {
           for (unsigned char j = 0; j < fLayout.GetNofStations(i); j++) {
@@ -223,8 +227,7 @@ namespace lit {
             if (counter > planeId) {
               stationGroup = i;
               station      = j;
-              substation =
-                fLayout.GetNofSubstations(i, j) - (counter - planeId);
+              substation   = fLayout.GetNofSubstations(i, j) - (counter - planeId);
               return;
             }
           }

@@ -1,4 +1,5 @@
-void entriesCounter(TString filename = "../output/sum_WLS_off.root") {
+void entriesCounter(TString filename = "../output/sum_WLS_off.root")
+{
   TFile f(filename, "UPDATE");
 
   TIter iter(f.GetListOfKeys());
@@ -20,7 +21,8 @@ void entriesCounter(TString filename = "../output/sum_WLS_off.root") {
       if (num > 100) {
         //printf("%s: %d\n", histo1->GetName(), num);
         ;
-      } else {
+      }
+      else {
         TString nameToDelete;
         nameToDelete.Form("%s;1", histo1->GetName());
         listToDelete.push_back(nameToDelete);
@@ -35,18 +37,17 @@ void entriesCounter(TString filename = "../output/sum_WLS_off.root") {
 
   printf("Total %d histograms. %d histograms have less than 101 entries.\nDo "
          "you want to delete them?\n",
-         totalCounter,
-         counter);
+         totalCounter, counter);
   if (getchar() == 'y') {
     std::vector<TString>::iterator veciter;
-    for (veciter = listToDelete.begin(); veciter != listToDelete.end();
-         ++veciter) {
+    for (veciter = listToDelete.begin(); veciter != listToDelete.end(); ++veciter) {
       f.Delete((*veciter).Data());
       printf("%s\n", (*veciter).Data());
     }
     f.Close();
     printf("Removed %d histograms\n", counter);
-  } else {
+  }
+  else {
     f.Close();
   }
 }

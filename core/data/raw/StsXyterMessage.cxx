@@ -17,7 +17,8 @@ using namespace stsxyter;  // Class own namespace
 
 //************************* Messages OP ************************************//
 //----------------------------------------------------------------------------
-MessSubType Message::GetSubType() const {
+MessSubType Message::GetSubType() const
+{
   switch (GetField(kFieldSubtype)) {
     case static_cast<uint16_t>(MessSubType::TsMsb): return MessSubType::TsMsb;
     case static_cast<uint16_t>(MessSubType::Epoch): return MessSubType::Epoch;
@@ -26,13 +27,12 @@ MessSubType Message::GetSubType() const {
   }  // switch( static_cast< uint16_t>( GetField( kFieldSubtype ) ) )
 }
 //----------------------------------------------------------------------------
-bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const {
-  bool bPrintHex = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Hex);
-  bool bPrintHuman =
-    static_cast<bool>(ctrl & MessagePrintMask::msg_print_Human);
-  bool bPrintPrefix =
-    static_cast<bool>(ctrl & MessagePrintMask::msg_print_Prefix);
-  bool bPrintData = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Data);
+bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const
+{
+  bool bPrintHex    = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Hex);
+  bool bPrintHuman  = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Human);
+  bool bPrintPrefix = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Prefix);
+  bool bPrintData   = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Data);
 
 
   if (bPrintHex) {
@@ -40,16 +40,12 @@ bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const {
 
     // Set fill char to 0 and read previous state
     char cPrev = os.fill('0');
-    os << "BE = " << std::hex << std::setw(2)
-       << static_cast<uint16_t>(cArrByt[0]) << ":" << std::setw(2)
-       << static_cast<uint16_t>(cArrByt[1]) << ":" << std::setw(2)
-       << static_cast<uint16_t>(cArrByt[2]) << ":" << std::setw(2)
-       << static_cast<uint16_t>(cArrByt[3]) << " LE = " << std::hex
-       << std::setw(2) << static_cast<uint16_t>(cArrByt[3]) << ":"
-       << std::setw(2) << static_cast<uint16_t>(cArrByt[2]) << ":"
-       << std::setw(2) << static_cast<uint16_t>(cArrByt[1]) << ":"
-       << std::setw(2) << static_cast<uint16_t>(cArrByt[0]) << std::dec
-       << " => ";
+    os << "BE = " << std::hex << std::setw(2) << static_cast<uint16_t>(cArrByt[0]) << ":" << std::setw(2)
+       << static_cast<uint16_t>(cArrByt[1]) << ":" << std::setw(2) << static_cast<uint16_t>(cArrByt[2]) << ":"
+       << std::setw(2) << static_cast<uint16_t>(cArrByt[3]) << " LE = " << std::hex << std::setw(2)
+       << static_cast<uint16_t>(cArrByt[3]) << ":" << std::setw(2) << static_cast<uint16_t>(cArrByt[2]) << ":"
+       << std::setw(2) << static_cast<uint16_t>(cArrByt[1]) << ":" << std::setw(2) << static_cast<uint16_t>(cArrByt[0])
+       << std::dec << " => ";
 
     // Restore fill char to original
     os.fill(cPrev);
@@ -63,13 +59,10 @@ bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const {
       }  // case MessType::TsMsb
       case MessType::Hit: {
         os << " Hit => "
-           << " Lnk: " << std::setw(3) << GetLinkIndex()
-           << " Ch: " << std::setw(3) << GetHitChannel()
-           << " Adc: " << std::setw(2) << GetHitAdc()
-           << " Ts Full: " << std::setw(4) << GetHitTimeFull()
-           << " Ts Over: " << std::hex << GetHitTimeOver() << std::dec
-           << " Ts: " << std::setw(3) << GetHitTime() << " Missed? "
-           << IsHitMissedEvts();
+           << " Lnk: " << std::setw(3) << GetLinkIndex() << " Ch: " << std::setw(3) << GetHitChannel()
+           << " Adc: " << std::setw(2) << GetHitAdc() << " Ts Full: " << std::setw(4) << GetHitTimeFull()
+           << " Ts Over: " << std::hex << GetHitTimeOver() << std::dec << " Ts: " << std::setw(3) << GetHitTime()
+           << " Missed? " << IsHitMissedEvts();
         break;
       }  // case MessType::Hit
       case MessType::TsMsb: {
@@ -82,11 +75,9 @@ bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const {
       }  // case MessType::TsMsb
       case MessType::Status: {
         os << " Status => "
-           << " Lnk: " << std::setw(2) << GetStatusLink()
-           << " Smx TS: " << std::setw(2) << GetStatusSxTs() << " Status: 0x"
-           << std::setw(4) << std::hex << GetStatusStatus() << std::dec
-           << " Dpb TS: " << std::setw(3) << GetStatusDpbTs()
-           << " CP flag: " << IsCpFlagOn();
+           << " Lnk: " << std::setw(2) << GetStatusLink() << " Smx TS: " << std::setw(2) << GetStatusSxTs()
+           << " Status: 0x" << std::setw(4) << std::hex << GetStatusStatus() << std::dec << " Dpb TS: " << std::setw(3)
+           << GetStatusDpbTs() << " CP flag: " << IsCpFlagOn();
         break;
       }  // case MessType::TsMsb
       case MessType::Empty: {

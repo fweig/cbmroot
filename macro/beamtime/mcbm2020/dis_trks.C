@@ -1,19 +1,8 @@
-void dis_trks(Int_t nEvents        = 10,
-              Int_t iSel           = 1,
-              Int_t iGenCor        = 1,
-              TString cFileId      = "831.50.3.0",
-              TString cSet         = "012022500_500",
-              Int_t iSel2          = 500,
-              Int_t iTrackingSetup = 1,
-              Double_t dScalFac    = 1.,
-              Double_t dChi2Lim2   = 5.,
-              Double_t dDeadtime   = 50,
-              TString cCalId       = "",
-              Int_t iAnaCor        = 1,
-              Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalSet        = 12022500,
-              Int_t iCalOpt        = 1,
-              Int_t iMc            = 0) {
+void dis_trks(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, TString cFileId = "831.50.3.0",
+              TString cSet = "012022500_500", Int_t iSel2 = 500, Int_t iTrackingSetup = 1, Double_t dScalFac = 1.,
+              Double_t dChi2Lim2 = 5., Double_t dDeadtime = 50, TString cCalId = "", Int_t iAnaCor = 1,
+              Bool_t bUseSigCalib = kFALSE, Int_t iCalSet = 12022500, Int_t iCalOpt = 1, Int_t iMc = 0)
+{
 
   Int_t iVerbose = 1;
   TString FId    = cFileId;
@@ -23,7 +12,8 @@ void dis_trks(Int_t nEvents        = 10,
     iRun    = 831;
     cCalId  = "831.100.4.0";
     iCalSet = 10020500;
-  } else {
+  }
+  else {
     iRun = cRun.Atoi();
     if (cCalId == "") cCalId = cFileId;
   }
@@ -42,34 +32,21 @@ void dis_trks(Int_t nEvents        = 10,
   TString ParFile       = paramDir + "data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "data/" + cFileId.Data() + ".root";
   TString InputDigiFile = "";
-  if (cRun == "unp") {
-    InputDigiFile = paramDir + "data/" + cFileId.Data() + ".root";
-  } else {
-    InputDigiFile = paramDir + "data/TofHits_" + cFileId.Data()
-                    + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime) + cCalId
-                    + ".out.root";
+  if (cRun == "unp") { InputDigiFile = paramDir + "data/" + cFileId.Data() + ".root"; }
+  else {
+    InputDigiFile = paramDir + "data/TofHits_" + cFileId.Data() + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
+                    + cCalId + ".out.root";
   }
   if (iMc == 1) {
     InputFile     = paramDir + "data/" + cFileId.Data() + ".raw.root";
     InputDigiFile = paramDir + "data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString OutputFile = paramDir + "data/distrks_" + cFileId.Data()
-                       + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
-                       + ".out.root";
-  TString cHstFile =
-    paramDir
-    + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Dis.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+  TString OutputFile =
+    paramDir + "data/distrks_" + cFileId.Data() + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2) + ".out.root";
+  TString cHstFile = paramDir
+                     + Form("/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Dis.hst.root", cFileId.Data(),
+                            dDeadtime, cSet.Data(), iSel, iSel2, dScalFac, dChi2Lim2, iTrackingSetup, cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cCalId.Data());
 
@@ -83,8 +60,7 @@ void dis_trks(Int_t nEvents        = 10,
   Int_t iGeo = 0;  //iMc;
   if (iGeo == 0) {
     TString TofGeo = "";
-    if (iRun < 690)
-      TofGeo = "v20a_mcbm";
+    if (iRun < 690) TofGeo = "v20a_mcbm";
     else
       TofGeo = "v20f_mcbm";
     cout << "Geometry version " << TofGeo << endl;
@@ -101,9 +77,9 @@ void dis_trks(Int_t nEvents        = 10,
   CbmSetup* setup = CbmSetup::Instance();
 */
 
-    TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-    TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-    TFile* fgeo     = new TFile(geoFile);
+    TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+    TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+    TFile* fgeo         = new TFile(geoFile);
     TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
     if (NULL == geoMan) {
       cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -113,8 +89,7 @@ void dis_trks(Int_t nEvents        = 10,
     //TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
     //parFileList->Add(tofDigiFile);
 
-    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
-                                                + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     // -----   Reconstruction run   -------------------------------------------
@@ -155,24 +130,14 @@ void dis_trks(Int_t nEvents        = 10,
     Int_t calSel  = 1;
     Bool_t bOut   = kFALSE;
 
-    CbmTofEventClusterizer* tofClust =
-      new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
-    Int_t calSelRead = calSel;
+    CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
+    Int_t calSelRead                 = calSel;
     if (calSel < 0) calSelRead = 0;
-    TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                          cFileId.Data(),
-                          iCalSet,
-                          calMode,
-                          calSelRead);
+    TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
     if (cCalId != "XXX")
-      cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                    cCalId.Data(),
-                    iCalSet,
-                    calMode,
-                    calSelRead);
+      cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root", cCalId.Data(), iCalSet, calMode, calSelRead);
     tofClust->SetCalParFileName(cFname);
-    TString cOutFname =
-      Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+    TString cOutFname = Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
     tofClust->SetOutHstFileName(cOutFname);
 
     // =========================================================================
@@ -203,31 +168,24 @@ void dis_trks(Int_t nEvents        = 10,
     CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
     tofFindTracks->UseFinder(tofTrackFinder);
     tofFindTracks->UseFitter(tofTrackFitter);
-    tofFindTracks->SetCalOpt(
-      iCalOpt);  // 1 - update offsets, 2 - update walk, 0 - bypass
-    tofFindTracks->SetCorMode(
-      iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-    tofFindTracks->SetTtTarg(
-      0.057);  // target value for inverse velocity, > 0.033 ns/cm!
+    tofFindTracks->SetCalOpt(iCalOpt);   // 1 - update offsets, 2 - update walk, 0 - bypass
+    tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+    tofFindTracks->SetTtTarg(0.057);     // target value for inverse velocity, > 0.033 ns/cm!
     //tofFindTracks->SetTtTarg(0.035);            // target value for inverse velocity, > 0.033 ns/cm!
-    tofFindTracks->SetCalParFileName(
-      cTrkFile);  // Tracker parameter value file name
-    tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
+    tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+    tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
     tofFindTracks->SetR0Lim(100.);
 
-    tofFindTracks->SetStationMaxHMul(
-      30);  // Max Hit Multiplicity in any used station
+    tofFindTracks->SetStationMaxHMul(30);  // Max Hit Multiplicity in any used station
 
-    tofFindTracks->SetT0MAX(dScalFac);  // in ns
-    tofFindTracks->SetSIGT(0.08);       // default in ns
-    tofFindTracks->SetSIGX(0.3);        // default in cm
-    tofFindTracks->SetSIGY(0.6);        // default in cm
-    tofFindTracks->SetSIGZ(0.05);       // default in cm
-    tofFindTracks->SetUseSigCalib(
-      bUseSigCalib);  // ignore resolutions in CalPar file
-    tofTrackFinder->SetSIGLIM(dChi2Lim2
-                              * 2.);  // matching window in multiples of chi2
-    tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
+    tofFindTracks->SetT0MAX(dScalFac);            // in ns
+    tofFindTracks->SetSIGT(0.08);                 // default in ns
+    tofFindTracks->SetSIGX(0.3);                  // default in cm
+    tofFindTracks->SetSIGY(0.6);                  // default in cm
+    tofFindTracks->SetSIGZ(0.05);                 // default in cm
+    tofFindTracks->SetUseSigCalib(bUseSigCalib);  // ignore resolutions in CalPar file
+    tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);    // matching window in multiples of chi2
+    tofTrackFinder->SetChiMaxAccept(dChi2Lim2);   // max tracklet chi2
 
 
     Int_t iMinNofHits   = -1;
@@ -419,8 +377,7 @@ void dis_trks(Int_t nEvents        = 10,
         tofFindTracks->SetStation(3, 0, 2, 2);
 
       default:
-        cout << "Tracking setup " << iTrackingSetup << " not implemented "
-             << endl;
+        cout << "Tracking setup " << iTrackingSetup << " not implemented " << endl;
         return;
         ;
     }
@@ -433,8 +390,7 @@ void dis_trks(Int_t nEvents        = 10,
     // =========================================================================
     // ===                       Analysis                                    ===
     // =========================================================================
-    CbmTofAnaTestbeam* tofAnaTestbeam =
-      new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+    CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
     tofAnaTestbeam->SetCorMode(iAnaCor);  // 1 - DTD4, 2 - X4, 3 - Y4, 4 - Texp
     tofAnaTestbeam->SetHitDistMin(30.);   // initialization
     tofAnaTestbeam->SetEnableMatchPosScaling(kTRUE);
@@ -447,34 +403,28 @@ void dis_trks(Int_t nEvents        = 10,
     tofAnaTestbeam->SetDYWidth(1.0);
     tofAnaTestbeam->SetDTWidth(0.1);  // in ns
     tofAnaTestbeam->SetCalParFileName(cAnaFile);
-    Double_t dScalFacA = 0.9;  // dScalFac is used for tracking
-    tofAnaTestbeam->SetPosY4Sel(
-      0.5 * dScalFacA);  // Y Position selection in fraction of strip length
-    tofAnaTestbeam->SetDTDia(0.);    // Time difference to additional diamond
-    tofAnaTestbeam->SetMul0Max(20);  // Max Multiplicity in dut
-    tofAnaTestbeam->SetMul4Max(30);  // Max Multiplicity in Ref - RPC
-    tofAnaTestbeam->SetMulDMax(3);   // Max Multiplicity in Diamond / BeamRef
-    tofAnaTestbeam->SetTOffD4(14.);  // initialization
-    tofAnaTestbeam->SetDTD4MAX(
-      6.);  // initialization of Max time difference Ref - BRef
+    Double_t dScalFacA = 0.9;                      // dScalFac is used for tracking
+    tofAnaTestbeam->SetPosY4Sel(0.5 * dScalFacA);  // Y Position selection in fraction of strip length
+    tofAnaTestbeam->SetDTDia(0.);                  // Time difference to additional diamond
+    tofAnaTestbeam->SetMul0Max(20);                // Max Multiplicity in dut
+    tofAnaTestbeam->SetMul4Max(30);                // Max Multiplicity in Ref - RPC
+    tofAnaTestbeam->SetMulDMax(3);                 // Max Multiplicity in Diamond / BeamRef
+    tofAnaTestbeam->SetTOffD4(14.);                // initialization
+    tofAnaTestbeam->SetDTD4MAX(6.);                // initialization of Max time difference Ref - BRef
 
     //tofAnaTestbeam->SetTShift(-28000.);// initialization
-    tofAnaTestbeam->SetPosYS2Sel(
-      0.55);  // Y Position selection in fraction of strip length
-    tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
-    tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
-    tofAnaTestbeam->SetSel2TOff(0.);    // Shift Sel2 time peak to 0
-    tofAnaTestbeam->SetChi2Lim(5.);  // initialization of Chi2 selection limit
-    tofAnaTestbeam->SetChi2Lim2(
-      3.);  // initialization of Chi2 selection limit for Mref-Sel2 pair
-    tofAnaTestbeam->SetDutDX(
-      15.);  // limit inspection of tracklets to selected region
-    tofAnaTestbeam->SetDutDY(
-      15.);  // limit inspection of tracklets to selected region
-    tofAnaTestbeam->SetSIGLIM(3.);  // max matching chi2
-    tofAnaTestbeam->SetSIGT(0.08);  // in ns
-    tofAnaTestbeam->SetSIGX(0.3);   // in cm
-    tofAnaTestbeam->SetSIGY(0.6);   // in cm
+    tofAnaTestbeam->SetPosYS2Sel(0.55);  // Y Position selection in fraction of strip length
+    tofAnaTestbeam->SetChS2Sel(0.);      // Center of channel selection window
+    tofAnaTestbeam->SetDChS2Sel(100.);   // Width  of channel selection window
+    tofAnaTestbeam->SetSel2TOff(0.);     // Shift Sel2 time peak to 0
+    tofAnaTestbeam->SetChi2Lim(5.);      // initialization of Chi2 selection limit
+    tofAnaTestbeam->SetChi2Lim2(3.);     // initialization of Chi2 selection limit for Mref-Sel2 pair
+    tofAnaTestbeam->SetDutDX(15.);       // limit inspection of tracklets to selected region
+    tofAnaTestbeam->SetDutDY(15.);       // limit inspection of tracklets to selected region
+    tofAnaTestbeam->SetSIGLIM(3.);       // max matching chi2
+    tofAnaTestbeam->SetSIGT(0.08);       // in ns
+    tofAnaTestbeam->SetSIGX(0.3);        // in cm
+    tofAnaTestbeam->SetSIGY(0.6);        // in cm
 
     Int_t iRSel    = 500;
     Int_t iRSelTyp = 5;
@@ -487,12 +437,9 @@ void dis_trks(Int_t nEvents        = 10,
     tofAnaTestbeam->SetBeamRefRpc(iRSelRpc);
 
     if (iSel2 >= 0) {
-      tofAnaTestbeam->SetMrpcSel2(
-        iSel2);  // initialization of second selector Mrpc Type
-      tofAnaTestbeam->SetMrpcSel2Sm(
-        iSel2Sm);  // initialization of second selector Mrpc SmId
-      tofAnaTestbeam->SetMrpcSel2Rpc(
-        iSel2Rpc);  // initialization of second selector Mrpc RpcId
+      tofAnaTestbeam->SetMrpcSel2(iSel2);        // initialization of second selector Mrpc Type
+      tofAnaTestbeam->SetMrpcSel2Sm(iSel2Sm);    // initialization of second selector Mrpc SmId
+      tofAnaTestbeam->SetMrpcSel2Rpc(iSel2Rpc);  // initialization of second selector Mrpc RpcId
     }
 
     tofAnaTestbeam->SetDut(iDut);            // Device under test
@@ -502,8 +449,8 @@ void dis_trks(Int_t nEvents        = 10,
     tofAnaTestbeam->SetMrpcRefSm(iRefSm);    // Reference RPC
     tofAnaTestbeam->SetMrpcRefRpc(iRefRpc);  // Reference RPC
 
-    cout << "dispatch iSel = " << iSel << ", iSel2in = " << iSel2in
-         << ", iRSelin = " << iRSelin << ", iRSel = " << iRSel << endl;
+    cout << "dispatch iSel = " << iSel << ", iSel2in = " << iSel2in << ", iRSelin = " << iRSelin
+         << ", iRSel = " << iRSel << endl;
     if (1) {
       switch (iSel) {
 
@@ -533,12 +480,10 @@ void dis_trks(Int_t nEvents        = 10,
 
               switch (iSel2in) {
                 case 30:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.3);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-0.3);  // Shift Sel2 time peak to 0
                   break;
                 case 31:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.41);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-0.41);  // Shift Sel2 time peak to 0
                   break;
 
                 default:;
@@ -558,12 +503,10 @@ void dis_trks(Int_t nEvents        = 10,
 
               switch (iSel2in) {
                 case 30:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.3);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-0.3);  // Shift Sel2 time peak to 0
                   break;
                 case 31:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.41);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-0.41);  // Shift Sel2 time peak to 0
                   break;
 
                 default:;
@@ -582,8 +525,7 @@ void dis_trks(Int_t nEvents        = 10,
 
               switch (iSel2in) {
                 case 33:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.55);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-0.55);  // Shift Sel2 time peak to 0
                   break;
 
                 default:;
@@ -594,10 +536,9 @@ void dis_trks(Int_t nEvents        = 10,
           break;
 
         default:
-          cout
-            << "Better to define analysis setup! Running with default offset "
-               "parameter... "
-            << endl;
+          cout << "Better to define analysis setup! Running with default offset "
+                  "parameter... "
+               << endl;
           // return;
       }  // end of different subsets
 
@@ -626,22 +567,15 @@ void dis_trks(Int_t nEvents        = 10,
 
     FairEventManager* fMan = new FairEventManager();
 
-    CbmEvDisTracks* Tracks = new CbmEvDisTracks(
-      "Tof Tracks",
-      1,
-      kFALSE,
-      kTRUE);  //name, verbosity, RnrChildren points, RnrChildren track
-               //  CbmEvDisTracks *Tracks =  new CbmEvDisTracks("Tof Tracks",1);
+    CbmEvDisTracks* Tracks = new CbmEvDisTracks("Tof Tracks", 1, kFALSE,
+                                                kTRUE);  //name, verbosity, RnrChildren points, RnrChildren track
+    //  CbmEvDisTracks *Tracks =  new CbmEvDisTracks("Tof Tracks",1);
     fMan->AddTask(Tracks);
-    CbmPixelHitSetDraw* TofUHits =
-      new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
+    CbmPixelHitSetDraw* TofUHits = new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
     fMan->AddTask(TofUHits);
-    CbmPointSetArrayDraw* TofHits = new CbmPointSetArrayDraw(
-      "TofHit",
-      1,
-      1,
-      1,
-      kTRUE);  //name, colorMode, markerMode, verbosity, RnrChildren
+    CbmPointSetArrayDraw* TofHits =
+      new CbmPointSetArrayDraw("TofHit", 1, 1, 1,
+                               kTRUE);  //name, colorMode, markerMode, verbosity, RnrChildren
     //  CbmPixelHitSetDraw *TofHits = new CbmPixelHitSetDraw ("TofHit", kRed, kOpenCircle, 4);// kFullSquare);
     fMan->AddTask(TofHits);
 

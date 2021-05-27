@@ -1,8 +1,6 @@
-void check_events(Int_t nEvents      = 10,
-                  UInt_t uRunId      = 0,
-                  TString inDir      = "data/",
-                  TString friendFile = "",
-                  TString inFile     = "") {
+void check_events(Int_t nEvents = 10, UInt_t uRunId = 0, TString inDir = "data/", TString friendFile = "",
+                  TString inFile = "")
+{
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)

@@ -49,8 +49,7 @@ public:
   /** @brief Constructor with name
      ** @param name Task name
      **/
-  CbmDigitize(const char* name, const char* branchName = "")
-    : CbmDigitizeBase(name), fBranchName(branchName) {};
+  CbmDigitize(const char* name, const char* branchName = "") : CbmDigitizeBase(name), fBranchName(branchName) {};
 
 
   /** @brief Destructor **/
@@ -59,14 +58,14 @@ public:
 
   // --------------------------------------------------------------------------
   /** @brief Check the output for being time-sorted **/
-  Bool_t CheckOutput() {
+  Bool_t CheckOutput()
+  {
     assert(fDigis);
     if (fDigis->empty()) return kTRUE;
     Double_t prevTime = fDigis->begin()->GetTime();
     for (auto it = (fDigis->begin())++; it != fDigis->end(); it++) {
       if (it->GetTime() < prevTime) {
-        LOG(error) << GetName()
-                   << ": CheckBuffer: Found digi at t = " << it->GetTime()
+        LOG(error) << GetName() << ": CheckBuffer: Found digi at t = " << it->GetTime()
                    << " ns after digi at t = " << prevTime << " ns";
         return kFALSE;
         break;
@@ -80,7 +79,8 @@ public:
 
   // --------------------------------------------------------------------------
   /** @brief Clear the output arrays **/
-  void ClearOutput() {
+  void ClearOutput()
+  {
     if (fDigis) fDigis->clear();
     if (fCreateMatches)
       if (fMatches != nullptr) fMatches->clear();
@@ -97,9 +97,7 @@ public:
      ** of the current time slice are moved from the buffer to the time slice.
      ** For time slices of type kFlexible or kEvent, all data will be moved.
      **/
-  ULong64_t FillTimeSlice(CbmTimeSlice* timeSlice) {
-    return FillTimeSlice(timeSlice, kFALSE, -1.);
-  }
+  ULong64_t FillTimeSlice(CbmTimeSlice* timeSlice) { return FillTimeSlice(timeSlice, kFALSE, -1.); }
   // --------------------------------------------------------------------------
 
 
@@ -114,7 +112,8 @@ public:
      ** the time slice interval will be moved. For time slices of type
      ** kFlexible or kEvent, all data up to fillTime will be moved.
      **/
-  ULong64_t FillTimeSlice(CbmTimeSlice* timeSlice, Double_t fillTime) {
+  ULong64_t FillTimeSlice(CbmTimeSlice* timeSlice, Double_t fillTime)
+  {
     return FillTimeSlice(timeSlice, kTRUE, fillTime);
   }
   // --------------------------------------------------------------------------
@@ -132,10 +131,10 @@ public:
   /** @brief Debug output of DAQ buffer status
      ** @value String with status of DAQ buffer
      **/
-  std::string GetDaqBufferStatus() const {
+  std::string GetDaqBufferStatus() const
+  {
     std::stringstream ss;
-    ss << "Status DAQ buffer: " << GetDaqBufferSize()
-       << " data from t = " << GetDaqBufferTimeFirst() << " to "
+    ss << "Status DAQ buffer: " << GetDaqBufferSize() << " data from t = " << GetDaqBufferTimeFirst() << " to "
        << GetDaqBufferTimeLast() << " ns";
     return ss.str();
   }
@@ -146,7 +145,8 @@ public:
   /** @brief Time stamp of first data in the DAQ buffer
      ** @value Time stamp of first data in the DAQ buffer
      **/
-  Double_t GetDaqBufferTimeFirst() const {
+  Double_t GetDaqBufferTimeFirst() const
+  {
     if (fDaqBuffer.empty()) return -1.;
     return fDaqBuffer.begin()->first;
   }
@@ -157,7 +157,8 @@ public:
   /** @brief Time stamp of last data in the DAQ buffer
      ** @value Time stamp of last data in the DAQ buffer
      **/
-  Double_t GetDaqBufferTimeLast() const {
+  Double_t GetDaqBufferTimeLast() const
+  {
     if (fDaqBuffer.empty()) return -1.;
     return (--fDaqBuffer.end())->first;
   }
@@ -171,7 +172,8 @@ public:
      ** registered as output to the ROOT tree. The current implementation
      ** uses std::vector as container.
      **/
-  void RegisterOutput() {
+  void RegisterOutput()
+  {
 
     // --- Get FairRootManager instance
     FairRootManager* ioman = FairRootManager::Instance();
@@ -182,24 +184,20 @@ public:
     TString digiBranchName = fBranchName;
     if (digiBranchName.IsNull()) {
       TString digiClassName = Digi::GetClassName();
-      if (digiClassName.BeginsWith("Cbm"))
-        digiBranchName = digiClassName(3, digiClassName.Length());
+      if (digiClassName.BeginsWith("Cbm")) digiBranchName = digiClassName(3, digiClassName.Length());
     }  //? No branch name set via constructor
 
 
     // --- Branch for digis
     fDigis = new std::vector<Digi>();
-    ioman->RegisterAny(
-      digiBranchName.Data(), fDigis, IsOutputBranchPersistent(digiBranchName));
+    ioman->RegisterAny(digiBranchName.Data(), fDigis, IsOutputBranchPersistent(digiBranchName));
     LOG(info) << GetName() << ": Registered branch " << digiBranchName;
 
     // --- Branch for matches
     if (fCreateMatches) {
       TString matchBranchName = digiBranchName + "Match";
       fMatches                = new std::vector<CbmMatch>();
-      ioman->RegisterAny(matchBranchName.Data(),
-                         fMatches,
-                         IsOutputBranchPersistent(matchBranchName));
+      ioman->RegisterAny(matchBranchName.Data(), fMatches, IsOutputBranchPersistent(matchBranchName));
       LOG(info) << GetName() << ": Registered branch " << matchBranchName;
     }
   }
@@ -215,12 +213,11 @@ public:
      ** that the digitisers have to create objects by unique pointers
      ** from the start.
      **/
-  void SendData(Digi* digi, CbmMatch* match = nullptr) {
+  void SendData(Digi* digi, CbmMatch* match = nullptr)
+  {
     std::unique_ptr<Digi> tmpDigi(digi);
     std::unique_ptr<CbmMatch> tmpMatch(match);
-    fDaqBuffer.insert(
-      make_pair(digi->GetTime(),
-                std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
+    fDaqBuffer.insert(make_pair(digi->GetTime(), std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
   }
   // --------------------------------------------------------------------------
 
@@ -251,8 +248,8 @@ private:
       ** If checkLimit is selected, only data with time stamp less than fillTime
       ** are moved.
       **/
-  ULong64_t
-  FillTimeSlice(CbmTimeSlice* timeSlice, Bool_t checkLimit, Double_t fillTime) {
+  ULong64_t FillTimeSlice(CbmTimeSlice* timeSlice, Bool_t checkLimit, Double_t fillTime)
+  {
 
     assert(timeSlice);
     ULong64_t nData     = 0;
@@ -262,11 +259,13 @@ private:
     Bool_t checkMaxTime = kTRUE;
     if (timeSlice->IsRegular()) {
       if (checkLimit && fillTime < tMax) tMax = fillTime;
-    } else if (timeSlice->IsFlexible() || timeSlice->IsEvent()) {
+    }
+    else if (timeSlice->IsFlexible() || timeSlice->IsEvent()) {
       checkMinTime = kFALSE;
       checkMaxTime = checkLimit;
       tMax         = fillTime;
-    } else {
+    }
+    else {
       LOG(fatal) << GetName() << ": Unknown time-slice type!";
     }
 
@@ -300,9 +299,7 @@ private:
       }
 
       // Register datum to the time slice header
-      if (fCreateMatches)
-        timeSlice->RegisterData(
-          GetSystemId(), it->first, fMatches->at(fMatches->size() - 1));
+      if (fCreateMatches) timeSlice->RegisterData(GetSystemId(), it->first, fMatches->at(fMatches->size() - 1));
       else
         timeSlice->RegisterData(GetSystemId(), it->first);
 

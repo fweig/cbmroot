@@ -4,17 +4,14 @@
  Author : Semen Lebedev
  E-mail : S.Lebedev@gsi.de
  */
-void run_train_ann(Int_t nEvents = 1000) {
+void run_train_ann(Int_t nEvents = 1000)
+{
   gRandom->SetSeed(10);
 
-  TString mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root";
-  TString parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root";
-  TString recoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root";
-  TString outFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/selectann.00000.root";
+  TString mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root";
+  TString parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root";
+  TString recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root";
+  TString outFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/selectann.00000.root";
 
   // please specify what you want to run
   // select = train ANN for fake rejection algorithm

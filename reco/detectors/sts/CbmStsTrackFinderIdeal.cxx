@@ -10,6 +10,7 @@
 
 // CBM includes
 #include "CbmMCTrack.h"
+
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 
@@ -29,8 +30,8 @@ using std::setw;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmStsTrackFinderIdeal::CbmStsTrackFinderIdeal()
-  : CbmStsTrackFinder(), fMCTrackArray(NULL), fMCPointArray(NULL) {
+CbmStsTrackFinderIdeal::CbmStsTrackFinderIdeal() : CbmStsTrackFinder(), fMCTrackArray(NULL), fMCPointArray(NULL)
+{
   fVerbose = 1;
   fName    = "STSTrackFinderIdeal";
 }
@@ -39,7 +40,10 @@ CbmStsTrackFinderIdeal::CbmStsTrackFinderIdeal()
 
 // -----   Standard constructor   ------------------------------------------
 CbmStsTrackFinderIdeal::CbmStsTrackFinderIdeal(Int_t verbose)
-  : CbmStsTrackFinder(), fMCTrackArray(NULL), fMCPointArray(NULL) {
+  : CbmStsTrackFinder()
+  , fMCTrackArray(NULL)
+  , fMCPointArray(NULL)
+{
   fVerbose = verbose;
   fName    = "STSTrackFinderIdeal";
 }
@@ -52,7 +56,8 @@ CbmStsTrackFinderIdeal::~CbmStsTrackFinderIdeal() {}
 
 
 // -----   Public method Init   --------------------------------------------
-void CbmStsTrackFinderIdeal::Init() {
+void CbmStsTrackFinderIdeal::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -80,7 +85,8 @@ void CbmStsTrackFinderIdeal::Init() {
 
 
 // -----   Public method DoFind   ------------------------------------------
-Int_t CbmStsTrackFinderIdeal::DoFind() {
+Int_t CbmStsTrackFinderIdeal::DoFind()
+{
 
   Bool_t success = kTRUE;
 
@@ -160,8 +166,7 @@ Int_t CbmStsTrackFinderIdeal::DoFind() {
     if (hitMap[iMCTrack] < 3) continue;
     new ((*fTracks)[nTracks]) CbmStsTrack();
     if (fVerbose > 1)
-      cout << "-I- " << fName << ": StsTrack " << nTracks
-           << " created from MCTrack " << iMCTrack << " ("
+      cout << "-I- " << fName << ": StsTrack " << nTracks << " created from MCTrack " << iMCTrack << " ("
            << pMCtr->GetNPoints(ECbmModuleId::kSts) << " StsPoints)" << endl;
     trackMap[iMCTrack] = nTracks++;
   }
@@ -191,8 +196,7 @@ Int_t CbmStsTrackFinderIdeal::DoFind() {
     mcTrackIndex = pMCpt->GetTrackID();
     if (mcTrackIndex < 0 || mcTrackIndex > nMCTracks) {
       cout << "-E- " << fName << "::DoFind: "
-           << "MCTrack index out of range. " << mcTrackIndex << " " << nMCTracks
-           << endl;
+           << "MCTrack index out of range. " << mcTrackIndex << " " << nMCTracks << endl;
       nNoMCTrack++;
       success = kFALSE;
       continue;
@@ -202,16 +206,15 @@ Int_t CbmStsTrackFinderIdeal::DoFind() {
     pTrck      = (CbmStsTrack*) fTracks->At(trackIndex);
     if (!pTrck) {
       cout << "-E- " << fName << "::DoFind: "
-           << "No StsTrack pointer. " << iHit << " " << ptIndex << " "
-           << mcTrackIndex << " " << trackIndex << endl;
+           << "No StsTrack pointer. " << iHit << " " << ptIndex << " " << mcTrackIndex << " " << trackIndex << endl;
       nNoTrack++;
       success = kFALSE;
       continue;
     }
     pTrck->AddHit(iHit, kSTSHIT);
     if (fVerbose > 2)
-      cout << "Sts Hit " << iHit << " from StsPoint " << ptIndex << " (MCTrack "
-           << mcTrackIndex << ") added to StsTrack " << trackIndex << endl;
+      cout << "Sts Hit " << iHit << " from StsPoint " << ptIndex << " (MCTrack " << mcTrackIndex
+           << ") added to StsTrack " << trackIndex << endl;
   }
 
 
@@ -220,19 +223,18 @@ Int_t CbmStsTrackFinderIdeal::DoFind() {
     cout << "-------------------------------------------------------" << endl;
     cout << "-I-    " << fName << endl;
     cout << "Sts hits: " << nHits << endl;
-    cout << "MCTracks: total " << nMCTracks << ", accepted " << nMCacc
-         << ", reconstructable: " << nTracks << endl;
+    cout << "MCTracks: total " << nMCTracks << ", accepted " << nMCacc << ", reconstructable: " << nTracks << endl;
     if (nNoStsHit) cout << "StsHits not found   : " << nNoStsHit << endl;
     if (nNoStsPoint) cout << "StsPoints not found : " << nNoStsPoint << endl;
     if (nNoMCTrack) cout << "MCTracks not found  : " << nNoMCTrack << endl;
     if (nNoTrack) cout << "StsTracks not found : " << nNoTrack << endl;
     cout << "-------------------------------------------------------" << endl;
-  } else if (success)
+  }
+  else if (success)
     cout << "+ ";
   else
     cout << "- ";
-  cout << setw(15) << left << fName << ": " << nMCTracks << ", acc. " << nMCacc
-       << ", rec. " << nTracks << endl;
+  cout << setw(15) << left << fName << ": " << nMCTracks << ", acc. " << nMCacc << ", rec. " << nTracks << endl;
 
   return nTracks;
 }

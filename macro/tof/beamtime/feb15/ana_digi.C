@@ -1,12 +1,6 @@
-void ana_digi(Int_t nEvents = 100000,
-              Int_t calMode = 0,
-              Int_t calSel  = -1,
-              Int_t calSm   = 300,
-              Int_t RefSel  = 1,
-              char* cFileId = "MbsTrbThu1715",
-              Int_t iSet    = 0,
-              Bool_t bOut   = 0,
-              Int_t iSel2   = 0) {
+void ana_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 300, Int_t RefSel = 1,
+              char* cFileId = "MbsTrbThu1715", Int_t iSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0)
+{
   Int_t iVerbose = 1;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -22,8 +16,7 @@ void ana_digi(Int_t nEvents = 100000,
   TString paramDir   = workDir + "/macro/tof/beamtime/feb15";
   TString ParFile    = paramDir + "/unpack_" + cFileId + ".params.root";
   TString InputFile  = paramDir + "/unpack_" + cFileId + ".out.root";
-  TString OutputFile = paramDir + "/digi_" + cFileId
-                       + Form("_%06d_%03d", iSet, iSel2) + ".out.root";
+  TString OutputFile = paramDir + "/digi_" + cFileId + Form("_%06d_%03d", iSet, iSel2) + ".out.root";
 
   TList* parFileList = new TList();
 
@@ -31,9 +24,7 @@ void ana_digi(Int_t nEvents = 100000,
   parFileList->Add(&mapParFile);
   TString FId    = cFileId;
   TString TofGeo = "v15b";
-  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) {
-    TofGeo = "v15b";
-  }
+  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) { TofGeo = "v15b"; }
   if (FId.Contains("CernSps28Feb")) { TofGeo = "v15a"; }
   cout << "Geometry version " << TofGeo << endl;
 
@@ -44,18 +35,16 @@ void ana_digi(Int_t nEvents = 100000,
     FPar   = "tsu.";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   //   TObjString tofDigiBdfFile =  paramDir + "/tof." + FPar + "digibdf.par";
-  TObjString tofDigiBdfFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
+  TObjString tofDigiBdfFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -85,35 +74,25 @@ void ana_digi(Int_t nEvents = 100000,
 
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(2.);  // geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    10.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofTestBeamClust->SetCalRpc(calSm);  // select detector for calibration update
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10000.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  //(12000.);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);     // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(500.);  // default cluster range in ps
+  tofTestBeamClust->SetCaldXdYMax(2.);      // geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(10.);   // Max Counter Cluster Multiplicity for filling calib histos
+  tofTestBeamClust->SetCalRpc(calSm);       // select detector for calibration update
+  tofTestBeamClust->SetTRefId(RefSel);      // reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10000.);      // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);          //(12000.);  // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);  // effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);      // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);   // default cluster range in ps
   //tofTestBeamClust->SetMaxTimeDist(0.);       //Deb// default cluster range in ps
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root",
-                        cFileId,
-                        iSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root", cFileId, iSet, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
+  TString cOutFname = Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
 
-  TString cAnaFile =
-    Form("%s_%06d%03d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel2);
+  TString cAnaFile = Form("%s_%06d%03d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel2);
 
   switch (calMode) {
     case 0:                                  // initial calibration
@@ -123,7 +102,7 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->PosYMaxScal(2000.);       // in % of length
       tofTestBeamClust->SetMaxTimeDist(0.);       // no cluster building
       break;
-    case 1:  // save offsets, update walks, for diamonds
+    case 1:                                     // save offsets, update walks, for diamonds
       tofTestBeamClust->SetTRefDifMax(50000.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.1);       // in % of length
       break;
@@ -236,16 +215,12 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetTRefDifMax(500.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.7);     //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofTestBeamClust);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetReqTrg(0);  // 0 - no selection
@@ -256,8 +231,7 @@ void ana_digi(Int_t nEvents = 100000,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosY4Sel(0.5);    // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetDTDia(0.);        // Time difference to additional diamond
   tofAnaTestbeam->SetCorMode(RefSel);  // 1 - DTD4, 2 - X4
   tofAnaTestbeam->SetMul0Max(3);       // Max Multiplicity in dut
@@ -265,8 +239,7 @@ void ana_digi(Int_t nEvents = 100000,
   tofAnaTestbeam->SetMulDMax(10);      // Max Multiplicity in Diamond
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
 
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
   tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
   tofAnaTestbeam->SetTShift(0.);      // Shift DTD4 to 0
@@ -279,7 +252,8 @@ void ana_digi(Int_t nEvents = 100000,
   if (iSel2 >= 0) {
     iRSel   = 5;  // use diamond
     iRSelSm = 0;  // -1 -> any one ok
-  } else {
+  }
+  else {
     iSel2    = -iSel2;
     iRSel    = iSel2;
     iRSelRpc = iRSel % 10;
@@ -305,12 +279,9 @@ void ana_digi(Int_t nEvents = 100000,
     tofTestBeamClust->SetSel2Sm(iSel2Sm);
     tofTestBeamClust->SetSel2Rpc(iSel2Rpc);
 
-    tofAnaTestbeam->SetMrpcSel2(
-      iSel2);  // initialization of second selector Mrpc Type
-    tofAnaTestbeam->SetMrpcSel2Sm(
-      iSel2Sm);  // initialization of second selector Mrpc SmId
-    tofAnaTestbeam->SetMrpcSel2Rpc(
-      iSel2Rpc);  // initialization of second selector Mrpc RpcId
+    tofAnaTestbeam->SetMrpcSel2(iSel2);        // initialization of second selector Mrpc Type
+    tofAnaTestbeam->SetMrpcSel2Sm(iSel2Sm);    // initialization of second selector Mrpc SmId
+    tofAnaTestbeam->SetMrpcSel2Rpc(iSel2Rpc);  // initialization of second selector Mrpc RpcId
   }
 
   Int_t iRef    = iSet % 1000;
@@ -349,12 +320,11 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetDutId(3);
       tofTestBeamClust->SetSelId(4);
 
-      tofAnaTestbeam->SetDut(3);       // Device under test
-      tofAnaTestbeam->SetMrpcRef(4);   // Reference RPC
-      tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetDut(3);        // Device under test
+      tofAnaTestbeam->SetMrpcRef(4);    // Reference RPC
+      tofAnaTestbeam->SetCh4Sel(8.);    // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(7.);   // Width  of channel selection window
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       break;
 
     case 900400:  // upper part of setup: P2 - P5
@@ -372,10 +342,9 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetDutId(6);
       tofTestBeamClust->SetSelId(1);
 
-      tofAnaTestbeam->SetDut(6);      // Device under test
-      tofAnaTestbeam->SetMrpcRef(1);  // Reference RPC
-      tofAnaTestbeam->SetPlaSelect(
-        2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetDut(6);         // Device under test
+      tofAnaTestbeam->SetMrpcRef(1);     // Reference RPC
+      tofAnaTestbeam->SetPlaSelect(2);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(38.5);   // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(40.);   // Width  of channel selection window
       tofAnaTestbeam->SetTShift(1000.);  // initialization
@@ -391,8 +360,7 @@ void ana_digi(Int_t nEvents = 100000,
       tofAnaTestbeam->SetDut(1);      // Device under test
       tofAnaTestbeam->SetMrpcRef(6);  // Reference RPC
 
-      tofAnaTestbeam->SetPlaSelect(
-        2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(2);    // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(38.5);    // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(45.);    // Width  of channel selection window
       tofAnaTestbeam->SetTShift(2000.);   // Shift DTD4 to 0
@@ -409,18 +377,15 @@ void ana_digi(Int_t nEvents = 100000,
       tofAnaTestbeam->SetDutRpc(2);   // Device under test
       tofAnaTestbeam->SetMrpcRef(6);  // Reference RPC
 
-      tofAnaTestbeam->SetPlaSelect(
-        2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(2);     // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(38.5);     // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(45.);     // Width  of channel selection window
       tofAnaTestbeam->SetSel2TOff(-230.);  // Shift Sel2 time peak to 0
 
-      tofAnaTestbeam->SetChi2Lim(3.);  // initialization of Chi2 selection limit
-      tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
-      tofAnaTestbeam->SetPosY4Sel(
-        0.2);  // Y Position selection in fraction of strip length
-      tofAnaTestbeam->SetPosYS2Sel(
-        0.5);  // Y Position selection in fraction of strip length
+      tofAnaTestbeam->SetChi2Lim(3.);     // initialization of Chi2 selection limit
+      tofAnaTestbeam->SetSel2TOff(0.);    // Shift Sel2 time peak to 0
+      tofAnaTestbeam->SetPosY4Sel(0.2);   // Y Position selection in fraction of strip length
+      tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
 
       break;
 
@@ -469,11 +434,10 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetDutId(9);
       tofTestBeamClust->SetSelId(7);
 
-      tofAnaTestbeam->SetChi2Lim(
-        600.);                         // initialization of Chi2 selection limit
-      tofAnaTestbeam->SetDut(9);       // Device under test
-      tofAnaTestbeam->SetMrpcRef(7);   // Reference RPC
-      tofAnaTestbeam->SetCh4Sel(8.5);  // Center of channel selection window
+      tofAnaTestbeam->SetChi2Lim(600.);  // initialization of Chi2 selection limit
+      tofAnaTestbeam->SetDut(9);         // Device under test
+      tofAnaTestbeam->SetMrpcRef(7);     // Reference RPC
+      tofAnaTestbeam->SetCh4Sel(8.5);    // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(100.);  // Width  of channel selection window
       break;
 
@@ -492,31 +456,23 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetDutId(4);
       tofTestBeamClust->SetSelId(9);
 
-      tofAnaTestbeam->SetDut(4);        // Device under test
-      tofAnaTestbeam->SetMrpcRef(9);    // Reference RPC
-      tofAnaTestbeam->SetCh4Sel(11.5);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(0.7);  // Width  of channel selection window
-      tofAnaTestbeam->SetPosY4Sel(
-        0.1);  // Y Position selection in fraction of strip length
-      tofAnaTestbeam->SetPosY4SelOff(
-        -1.5);  // Y Position selection offset in cm
+      tofAnaTestbeam->SetDut(4);             // Device under test
+      tofAnaTestbeam->SetMrpcRef(9);         // Reference RPC
+      tofAnaTestbeam->SetCh4Sel(11.5);       // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(0.7);       // Width  of channel selection window
+      tofAnaTestbeam->SetPosY4Sel(0.1);      // Y Position selection in fraction of strip length
+      tofAnaTestbeam->SetPosY4SelOff(-1.5);  // Y Position selection offset in cm
       switch (iSel2) {
         case 3:
-          tofAnaTestbeam->SetChi2Lim(
-            6.);  // initialization of Chi2 selection limit
-          tofAnaTestbeam->SetSel2TOff(-100.);  // Shift Sel2 time peak to 0
-          tofAnaTestbeam->SetPosYS2Sel(
-            0.15);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetPosYS2SelOff(
-            -1.5);  // Y Position selection offset in cm
-          tofAnaTestbeam->SetChS2Sel(
-            15.5);  // Center of channel selection window
-          tofAnaTestbeam->SetDChS2Sel(
-            10.7);  // Width  of channel selection window
+          tofAnaTestbeam->SetChi2Lim(6.);         // initialization of Chi2 selection limit
+          tofAnaTestbeam->SetSel2TOff(-100.);     // Shift Sel2 time peak to 0
+          tofAnaTestbeam->SetPosYS2Sel(0.15);     // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetPosYS2SelOff(-1.5);  // Y Position selection offset in cm
+          tofAnaTestbeam->SetChS2Sel(15.5);       // Center of channel selection window
+          tofAnaTestbeam->SetDChS2Sel(10.7);      // Width  of channel selection window
           break;
         case 7:
-          tofAnaTestbeam->SetChi2Lim(
-            10.);  // initialization of Chi2 selection limit
+          tofAnaTestbeam->SetChi2Lim(10.);     // initialization of Chi2 selection limit
           tofAnaTestbeam->SetSel2TOff(-100.);  // Shift Sel2 time peak to 0
           break;
       }
@@ -526,31 +482,23 @@ void ana_digi(Int_t nEvents = 100000,
       tofTestBeamClust->SetDutId(7);
       tofTestBeamClust->SetSelId(9);
 
-      tofAnaTestbeam->SetDut(7);         // Device under test
-      tofAnaTestbeam->SetMrpcRef(9);     // Reference RPC
-      tofAnaTestbeam->SetCh4Sel(11.5);   // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(10.7);  // Width  of channel selection window
-      tofAnaTestbeam->SetPosY4Sel(
-        1.1);  // Y Position selection in fraction of strip length
-      tofAnaTestbeam->SetPosY4SelOff(
-        -1.5);  // Y Position selection offset in cm
+      tofAnaTestbeam->SetDut(7);             // Device under test
+      tofAnaTestbeam->SetMrpcRef(9);         // Reference RPC
+      tofAnaTestbeam->SetCh4Sel(11.5);       // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(10.7);      // Width  of channel selection window
+      tofAnaTestbeam->SetPosY4Sel(1.1);      // Y Position selection in fraction of strip length
+      tofAnaTestbeam->SetPosY4SelOff(-1.5);  // Y Position selection offset in cm
       switch (iSel2) {
         case 3:
-          tofAnaTestbeam->SetChi2Lim(
-            6.);  // initialization of Chi2 selection limit
-          tofAnaTestbeam->SetSel2TOff(-100.);  // Shift Sel2 time peak to 0
-          tofAnaTestbeam->SetPosYS2Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetPosYS2SelOff(
-            0.);  // Y Position selection offset in cm
-          tofAnaTestbeam->SetChS2Sel(
-            15.5);  // Center of channel selection window
-          tofAnaTestbeam->SetDChS2Sel(
-            10.7);  // Width  of channel selection window
+          tofAnaTestbeam->SetChi2Lim(6.);       // initialization of Chi2 selection limit
+          tofAnaTestbeam->SetSel2TOff(-100.);   // Shift Sel2 time peak to 0
+          tofAnaTestbeam->SetPosYS2Sel(0.5);    // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetPosYS2SelOff(0.);  // Y Position selection offset in cm
+          tofAnaTestbeam->SetChS2Sel(15.5);     // Center of channel selection window
+          tofAnaTestbeam->SetDChS2Sel(10.7);    // Width  of channel selection window
           break;
         case 4:
-          tofAnaTestbeam->SetChi2Lim(
-            10.);  // initialization of Chi2 selection limit
+          tofAnaTestbeam->SetChi2Lim(10.);     // initialization of Chi2 selection limit
           tofAnaTestbeam->SetSel2TOff(-100.);  // Shift Sel2 time peak to 0
           break;
       }

@@ -6,6 +6,7 @@
  */
 
 #include "CbmClusteringWard.h"
+
 #include "CbmClusteringGeometry.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchDigi.h"
@@ -41,15 +42,15 @@ CbmClusteringWard::CbmClusteringWard()
   , BLOCK_SIZE()
   , fNumbersOfPads()
   , MAX_NEIGHBORS()
-  , listValue() {
+  , listValue()
+{
   fNofPads       = 0;
   fNofActivePads = 0;
   fNofClusters   = 0;
 }
 
-CbmClusteringWard::CbmClusteringWard(CbmClusteringGeometry* moduleGeo,
-                                     Int_t blockSize)
-  : fModuleGeo() {
+CbmClusteringWard::CbmClusteringWard(CbmClusteringGeometry* moduleGeo, Int_t blockSize) : fModuleGeo()
+{
   MAX_NEIGHBORS = 50;
   BLOCK_SIZE    = blockSize;
 
@@ -89,9 +90,8 @@ CbmClusteringWard::CbmClusteringWard(CbmClusteringGeometry* moduleGeo,
 
   for (Int_t iPad = 0; iPad < fNofPads; iPad++) {
     padsInClusters[iPad] = iPad;  //g_ClustersArray[iPad] - ???
-    if (moduleGeo->GetPadCharge(iPad) > 0) {
-      wardActivePads[iPad] = true;
-    } else {
+    if (moduleGeo->GetPadCharge(iPad) > 0) { wardActivePads[iPad] = true; }
+    else {
       wardActivePads[iPad] = false;
     }
   }
@@ -115,39 +115,40 @@ CbmClusteringWard::CbmClusteringWard(CbmClusteringGeometry* moduleGeo,
 	}*/
 }
 
-CbmClusteringWard::~CbmClusteringWard() {
+CbmClusteringWard::~CbmClusteringWard()
+{
   /*delete fS;
 	delete fNumbersOfPads;
 	delete fClustersInBlock;
 	delete fClusters;*/
 }
 
-Float_t CbmClusteringWard::WardDistance(Int_t iPad1, Int_t iPad2) {
-  return (
-    ((fClustersInBlock[iPad1].clCharge * fClustersInBlock[iPad2].clCharge)
-     * ((fClustersInBlock[iPad1].xc - fClustersInBlock[iPad2].xc)
-          * (fClustersInBlock[iPad1].xc - fClustersInBlock[iPad2].xc)
-        + (fClustersInBlock[iPad1].yc - fClustersInBlock[iPad2].yc)
-            * (fClustersInBlock[iPad1].yc - fClustersInBlock[iPad2].yc)))
-    / (fClustersInBlock[iPad1].clCharge + fClustersInBlock[iPad2].clCharge));
+Float_t CbmClusteringWard::WardDistance(Int_t iPad1, Int_t iPad2)
+{
+  return (((fClustersInBlock[iPad1].clCharge * fClustersInBlock[iPad2].clCharge)
+           * ((fClustersInBlock[iPad1].xc - fClustersInBlock[iPad2].xc)
+                * (fClustersInBlock[iPad1].xc - fClustersInBlock[iPad2].xc)
+              + (fClustersInBlock[iPad1].yc - fClustersInBlock[iPad2].yc)
+                  * (fClustersInBlock[iPad1].yc - fClustersInBlock[iPad2].yc)))
+          / (fClustersInBlock[iPad1].clCharge + fClustersInBlock[iPad2].clCharge));
 }
 
-void CbmClusteringWard::WardCreate(CbmClusteringGeometry* moduleGeo) {
+void CbmClusteringWard::WardCreate(CbmClusteringGeometry* moduleGeo)
+{
   Int_t clusterNumber = 0;
   for (Int_t iPad = 0; iPad < fNofPads; iPad++)  //0 <> 1 -???
   {
     //Initsiatsi9 aktivnih 94eek
     if (moduleGeo->GetPadCharge(iPad) > 0) {
-      fClustersInBlock[clusterNumber].nofNeighbors =
-        moduleGeo->GetGoodNeighborsNum(iPad);
+      fClustersInBlock[clusterNumber].nofNeighbors     = moduleGeo->GetGoodNeighborsNum(iPad);
       fClustersInBlock[clusterNumber].nofPads          = 1;
       fClustersInBlock[clusterNumber].padsInCluster[0] = iPad;
       //---!!!---<
       //fClustersInBlock[clusterNumber].numbersOfPadsInCluster[1] = iPad;
       fClustersInBlock[clusterNumber].nofCluster = iPad;
-      fClustersInBlock[clusterNumber].clCharge = moduleGeo->GetPadCharge(iPad);
-      fClustersInBlock[clusterNumber].xc       = moduleGeo->GetX0(iPad);
-      fClustersInBlock[clusterNumber].yc       = moduleGeo->GetY0(iPad);
+      fClustersInBlock[clusterNumber].clCharge   = moduleGeo->GetPadCharge(iPad);
+      fClustersInBlock[clusterNumber].xc         = moduleGeo->GetX0(iPad);
+      fClustersInBlock[clusterNumber].yc         = moduleGeo->GetY0(iPad);
       clusterNumber++;  //Moved from the beginning of FOR loop - check
     }
   }
@@ -161,11 +162,9 @@ void CbmClusteringWard::WardCreate(CbmClusteringGeometry* moduleGeo) {
     neighbor = 0;
     for (Int_t jPad = 0; jPad < clustersInMethod; jPad++)  //0 <> 1 - ???
     {
-      for (Int_t kPad = 0; kPad < fClustersInBlock[iPad].nofNeighbors;
-           kPad++)  //0 <> 1 - ???
+      for (Int_t kPad = 0; kPad < fClustersInBlock[iPad].nofNeighbors; kPad++)  //0 <> 1 - ???
       {
-        if (moduleGeo->GetNeighbor(fClustersInBlock[iPad].nofCluster, kPad)
-            == fClustersInBlock[jPad].nofCluster) {
+        if (moduleGeo->GetNeighbor(fClustersInBlock[iPad].nofCluster, kPad) == fClustersInBlock[jPad].nofCluster) {
           fClustersInBlock[iPad].neighbors[neighbor] = jPad;
           neighbor++;
         }
@@ -176,11 +175,9 @@ void CbmClusteringWard::WardCreate(CbmClusteringGeometry* moduleGeo) {
   //Vi4islenie rassto9nii mejdu sosed9mi
   for (Int_t iCl = 0; iCl < clustersInMethod; iCl++)  //0 <> 1 - ???
   {
-    for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors;
-         jCl++)  //0 <> 1 - ???
+    for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors; jCl++)  //0 <> 1 - ???
     {
-      fClustersInBlock[iCl].wardDistances[jCl] =
-        WardDistance(iCl, fClustersInBlock[iCl].neighbors[jCl]);
+      fClustersInBlock[iCl].wardDistances[jCl] = WardDistance(iCl, fClustersInBlock[iCl].neighbors[jCl]);
       //Aktivizatsi9 rassto9niz mejdu sosed9mi
       fClustersInBlock[iCl].S[jCl] = 1;
     }
@@ -188,20 +185,17 @@ void CbmClusteringWard::WardCreate(CbmClusteringGeometry* moduleGeo) {
 }
 
 //The block loading methods are not ready. There is a problem with nofNeighbors
-void CbmClusteringWard::AddClusterInBlock(CbmClusteringGeometry* moduleGeo,
-                                          Int_t newCluster,
-                                          Int_t addedCluster) {
-  fClustersInBlock[newCluster].nofNeighbors =
-    moduleGeo->GetGoodNeighborsNum(addedCluster);
+void CbmClusteringWard::AddClusterInBlock(CbmClusteringGeometry* moduleGeo, Int_t newCluster, Int_t addedCluster)
+{
+  fClustersInBlock[newCluster].nofNeighbors      = moduleGeo->GetGoodNeighborsNum(addedCluster);
   fClustersInBlock[newCluster].nofPads           = 1;
   fClustersInBlock[newCluster].nofCluster        = addedCluster;
   fClustersInBlock[newCluster].linkToDesignation = padsInClusters[addedCluster];
-  fClustersInBlock[newCluster].clCharge = moduleGeo->GetPadCharge(addedCluster);
-  fClustersInBlock[newCluster].xc       = moduleGeo->GetX0(addedCluster);
-  fClustersInBlock[newCluster].yc       = moduleGeo->GetY0(addedCluster);
-  fClustersInBlock[newCluster].nofNeighbors = 0;
-  fClustersInBlock[newCluster].padsInCluster[0] =
-    moduleGeo->GetDigiNum(addedCluster);
+  fClustersInBlock[newCluster].clCharge          = moduleGeo->GetPadCharge(addedCluster);
+  fClustersInBlock[newCluster].xc                = moduleGeo->GetX0(addedCluster);
+  fClustersInBlock[newCluster].yc                = moduleGeo->GetY0(addedCluster);
+  fClustersInBlock[newCluster].nofNeighbors      = 0;
+  fClustersInBlock[newCluster].padsInCluster[0]  = moduleGeo->GetDigiNum(addedCluster);
   //std::cout<<"AddClusterInBlock: "<<addedCluster<<" -> "<<newCluster<<"\n";
   //std::cout<<"nofCluster: "<<fClustersInBlock[newCluster].nofCluster<<"; ";
   //std::cout<<"clCharge: "<<fClustersInBlock[newCluster].clCharge<<"; ";
@@ -211,10 +205,9 @@ void CbmClusteringWard::AddClusterInBlock(CbmClusteringGeometry* moduleGeo,
   //std::cout<<"nofNeighbors: "<<fClustersInBlock[newCluster].nofNeighbors<<"\n";
 }
 
-Bool_t CbmClusteringWard::WardBlockCreateStep(CbmClusteringGeometry* moduleGeo,
-                                              Int_t wardStep,
-                                              Bool_t wardStepRec,
-                                              Int_t addedPad) {
+Bool_t CbmClusteringWard::WardBlockCreateStep(CbmClusteringGeometry* moduleGeo, Int_t wardStep, Bool_t wardStepRec,
+                                              Int_t addedPad)
+{
   //std::cout<<"BlockCreateStep started!\n";
   Int_t tempPad = addedPad;
   //wardActivePads[tempPad] = false;
@@ -238,16 +231,11 @@ Bool_t CbmClusteringWard::WardBlockCreateStep(CbmClusteringGeometry* moduleGeo,
   wardActivePads[tempPad] = false;
   wardStep++;
   if (moduleGeo->GetGoodNeighborsNum(addedPad) > 0) {
-    for (Int_t iPad = 0; iPad < moduleGeo->GetGoodNeighborsNum(addedPad);
-         iPad++)  //0 <> 1 -???
+    for (Int_t iPad = 0; iPad < moduleGeo->GetGoodNeighborsNum(addedPad); iPad++)  //0 <> 1 -???
     {
       if (wardActivePads[moduleGeo->GetNeighbor(addedPad, iPad)] == true) {
         //std::cout<<"\nEst' sosed!\n";
-        wardStepRec =
-          WardBlockCreateStep(moduleGeo,
-                              wardStep,
-                              wardStepRec,
-                              moduleGeo->GetNeighbor(addedPad, iPad));
+        wardStepRec = WardBlockCreateStep(moduleGeo, wardStep, wardStepRec, moduleGeo->GetNeighbor(addedPad, iPad));
         if (wardStepRec == 0) {
           //Aktivasti9 94eiki esli dobavlenie v spisok obrabotki nevozmojno
           wardActivePads[tempPad] = true;
@@ -268,8 +256,7 @@ Bool_t CbmClusteringWard::WardBlockCreateStep(CbmClusteringGeometry* moduleGeo,
     clustersInMethod = listValue;
     //std::cout<<"ADD CLUSTER - 2\n";	//--------------------
     AddClusterInBlock(moduleGeo, wardStep, lastPadInRecursion);
-    std::cout << "Add cluster " << lastPadInRecursion << " in cluster "
-              << wardStep << "\n";
+    std::cout << "Add cluster " << lastPadInRecursion << " in cluster " << wardStep << "\n";
     //std::cout<<"Cluster added!\n";	//--------------------
     //wardActivePads[lastPadInRecursion] = false;	//---???---
   }
@@ -277,7 +264,8 @@ Bool_t CbmClusteringWard::WardBlockCreateStep(CbmClusteringGeometry* moduleGeo,
   return wardStepRec;
 }
 
-void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo) {
+void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo)
+{
   //Koeffitsient dostato4nosti razmera spiska obrabotki
   Float_t listLimit = 0.9;
   //Flag zaversheni9 postroeni9 spiska obrabotki
@@ -295,23 +283,18 @@ void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo) {
   do {
     do {
       lastActivePad++;
-      if (wardActivePads[lastActivePad] == true) {
-        nomActivePad = lastActivePad;
-      }
+      if (wardActivePads[lastActivePad] == true) { nomActivePad = lastActivePad; }
     } while ((nomActivePad == 0) && (lastActivePad < fNofPads));
     wardStep = listValue;
     if ((nomActivePad != 0) && (lastActivePad < fNofPads)) {
       //std::cout<<"---nomActivePad: "<<nomActivePad<<"\n";
-      AddClusterInBlock(
-        moduleGeo, wardStep, nomActivePad);  //??? - dobavil 21.12.12 - ???
-      wardStepRec =
-        WardBlockCreateStep(moduleGeo, wardStep, wardStepRec, nomActivePad);
+      AddClusterInBlock(moduleGeo, wardStep, nomActivePad);  //??? - dobavil 21.12.12 - ???
+      wardStepRec = WardBlockCreateStep(moduleGeo, wardStep, wardStepRec, nomActivePad);
       //std::cout<<"BlockCreateStep finished!\n";	//---------------
     }
     nomActivePad = 0;
     //---!!!---!!!---!!!---
-    if ((lastActivePad >= fNofPads)
-        || (wardStep >= (int) (listLimit * BLOCK_SIZE)))  //???
+    if ((lastActivePad >= fNofPads) || (wardStep >= (int) (listLimit * BLOCK_SIZE)))  //???
     {
       workListFinished = true;
     }
@@ -327,16 +310,13 @@ void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo) {
     //std::cout<<"Neighbors: "<<moduleGeo->GetGoodNeighborsNum(fClustersInBlock[iCl].nofCluster)<<"\n";
     for (Int_t jCl = 0; jCl < clustersInMethod; jCl++)  //0 <> 1 - ???
     {
-      for (Int_t kCl = 0;
-           kCl < moduleGeo->GetGoodNeighborsNum(
-             fClustersInBlock[iCl]
-               .nofCluster) /*fClustersInBlock[iCl].nofNeighbors*/;
+      for (Int_t kCl = 0; kCl < moduleGeo->GetGoodNeighborsNum(
+                            fClustersInBlock[iCl].nofCluster) /*fClustersInBlock[iCl].nofNeighbors*/;
            kCl++)  //0 <> 1 - ???
       {
         //std::cout<<"Cl1: "<<moduleGeo->GetNeighbor(fClustersInBlock[iCl].nofCluster, kCl);
         //std::cout<<"; Cl2: "<<fClustersInBlock[jCl].nofCluster<<"\n";
-        if (moduleGeo->GetNeighbor(fClustersInBlock[iCl].nofCluster, kCl)
-            == fClustersInBlock[jCl].nofCluster) {
+        if (moduleGeo->GetNeighbor(fClustersInBlock[iCl].nofCluster, kCl) == fClustersInBlock[jCl].nofCluster) {
           fClustersInBlock[iCl].neighbors[neighbor] = jCl;
           //std::cout<<"Get Neighbor "<<jCl<<" to Pad "<<iCl<<"\n";
           neighbor++;
@@ -348,11 +328,9 @@ void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo) {
   //Vi4islenie rassto9nii mejdu sosed9mi
   for (Int_t iCl = 0; iCl < clustersInMethod; iCl++)  //0 <> 1 - ???
   {
-    for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors;
-         jCl++)  //0 <> 1 - ???
+    for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors; jCl++)  //0 <> 1 - ???
     {
-      fClustersInBlock[iCl].wardDistances[jCl] =
-        WardDistance(iCl, fClustersInBlock[iCl].neighbors[jCl]);
+      fClustersInBlock[iCl].wardDistances[jCl] = WardDistance(iCl, fClustersInBlock[iCl].neighbors[jCl]);
       //Aktivizatsi9 rassto9ni9 mejdu sosed9mi
       fClustersInBlock[iCl].S[jCl] = 1;
     }
@@ -365,65 +343,50 @@ void CbmClusteringWard::WardBlockCreate(CbmClusteringGeometry* moduleGeo) {
   firstBlockElement += listValue;
   for (Int_t i = 0; i < fNofPads + 1; i++) {
     std::cout << "->Pad " << i << "; Cl: " << fClustersInBlock[i].nofCluster
-              << "; sPads: " << fClustersInBlock[i].nofPads
-              << "; nofNeighbors: " << fClustersInBlock[i].nofNeighbors << "\n";
+              << "; sPads: " << fClustersInBlock[i].nofPads << "; nofNeighbors: " << fClustersInBlock[i].nofNeighbors
+              << "\n";
   }
   //std::cout<<"! listValue: "<<listValue<<"\n";
 }
 
-void CbmClusteringWard::DeleteCluaster(Int_t clusterNumber) {
+void CbmClusteringWard::DeleteCluaster(Int_t clusterNumber)
+{
   //Ydalenie klastera iz spiskov sosedei
   Bool_t clusterWasDeleted = false;
-  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors;
-       iCl++)  //0 <> 1 - ???
+  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors; iCl++)  //0 <> 1 - ???
   {
     clusterWasDeleted = false;
-    for (Int_t jCl = 0;
-         jCl < fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-                 .nofNeighbors;
+    for (Int_t jCl = 0; jCl < fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].nofNeighbors;
          jCl++)  //0 <> 1 - ???
     {
       //Sjatie spiskov sosedei klastera s zamesheniem ydal9emogo klastera
       if (clusterWasDeleted == true) {
         //Podn9t' nomer soseda v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .neighbors[jCl - 1] =
-          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-            .neighbors[jCl];
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].neighbors[jCl - 1] =
+          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].neighbors[jCl];
         //Opustit' NULL v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .neighbors[jCl] = 0;
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].neighbors[jCl] = 0;
         //Podn9t' rassto9nie v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .wardDistances[jCl - 1] =
-          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-            .wardDistances[jCl];
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].wardDistances[jCl - 1] =
+          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].wardDistances[jCl];
         //Opustit' NULL v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .wardDistances[jCl] = 0;
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].wardDistances[jCl] = 0;
         //Podn9t' flag aktivnosti rassto9ni9 v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .S[jCl - 1] =
-          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-            .S[jCl];
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].S[jCl - 1] =
+          fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].S[jCl];
         //Opustit' NULL v spiske
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .S[jCl] = 0;
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].S[jCl] = 0;
       }
       //Dostignut udal9emii klaster v spiske sosedei
-      if (fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-            .neighbors[jCl]
-          == clusterNumber) {
+      if (fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].neighbors[jCl] == clusterNumber) {
         clusterWasDeleted = true;
       }
     }
     //Ymen'shenie koli4estva sosedei dlz sosedei ydal9emogo klastera	-???-
-    fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-      .nofNeighbors--;
+    fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].nofNeighbors--;
   }
   //O4istka spiska sosedei ydal9emogo klastera
-  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors;
-       iCl++)  //0 <> 1 - ???
+  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors; iCl++)  //0 <> 1 - ???
   {
     fClustersInBlock[clusterNumber].neighbors[iCl]     = 0;
     fClustersInBlock[clusterNumber].wardDistances[iCl] = 0;
@@ -446,67 +409,57 @@ void CbmClusteringWard::DeleteCluaster(Int_t clusterNumber) {
 	}*/
 }
 
-void CbmClusteringWard::WardDistanceRecalculation(Int_t clusterNumber) {
+void CbmClusteringWard::WardDistanceRecalculation(Int_t clusterNumber)
+{
   Float_t newDistance;
   //Ydalenie klastera iz sobstvennogo spiska sosedei
-  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors;
-       iCl++)  //0 <> 1 - ???
+  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors; iCl++)  //0 <> 1 - ???
   {
     if (fClustersInBlock[clusterNumber].neighbors[iCl] == clusterNumber) {
-      for (Int_t jCl = iCl; jCl < fClustersInBlock[clusterNumber].nofNeighbors;
-           jCl++)  //???
+      for (Int_t jCl = iCl; jCl < fClustersInBlock[clusterNumber].nofNeighbors; jCl++)  //???
       {
-        fClustersInBlock[clusterNumber].neighbors[jCl] =
-          fClustersInBlock[clusterNumber].neighbors[jCl + 1];
-        fClustersInBlock[clusterNumber].S[jCl] =
-          fClustersInBlock[clusterNumber].S[jCl + 1];
+        fClustersInBlock[clusterNumber].neighbors[jCl] = fClustersInBlock[clusterNumber].neighbors[jCl + 1];
+        fClustersInBlock[clusterNumber].S[jCl]         = fClustersInBlock[clusterNumber].S[jCl + 1];
       }
       //Yni4tojenie poslednego soseda posle sdviga massiva
-      fClustersInBlock[clusterNumber]
-        .neighbors[fClustersInBlock[clusterNumber].nofNeighbors - 1] =
-        0;  // - 1 -???
-      fClustersInBlock[clusterNumber]
-        .S[fClustersInBlock[clusterNumber].nofNeighbors - 1] = 0;
+      fClustersInBlock[clusterNumber].neighbors[fClustersInBlock[clusterNumber].nofNeighbors - 1] = 0;  // - 1 -???
+      fClustersInBlock[clusterNumber].S[fClustersInBlock[clusterNumber].nofNeighbors - 1]         = 0;
       fClustersInBlock[clusterNumber].nofNeighbors--;
     }
   }
   //Ras4et novih rassto9nii dl9 vseh sosedei
-  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors;
-       iCl++)  //0 <> 1 - ???
+  for (Int_t iCl = 0; iCl < fClustersInBlock[clusterNumber].nofNeighbors; iCl++)  //0 <> 1 - ???
   {
-    newDistance = WardDistance(clusterNumber,
-                               fClustersInBlock[clusterNumber].neighbors[iCl]);
+    newDistance = WardDistance(clusterNumber, fClustersInBlock[clusterNumber].neighbors[iCl]);
     fClustersInBlock[clusterNumber].wardDistances[iCl] = newDistance;
     //Ystanovka rassto9nii sosed9m
-    for (Int_t jCl = 0;
-         jCl < fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-                 .nofNeighbors;
+    for (Int_t jCl = 0; jCl < fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].nofNeighbors;
          jCl++)  //0 <> 1 - ???
     {
-      if (fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-            .neighbors[jCl]
-          == clusterNumber) {
-        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]]
-          .wardDistances[jCl] = newDistance;
+      if (fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].neighbors[jCl] == clusterNumber) {
+        fClustersInBlock[fClustersInBlock[clusterNumber].neighbors[iCl]].wardDistances[jCl] = newDistance;
       }
     }
   }
 }
 
 
-Float_t CbmClusteringWard::XCenterRecalculation(Int_t cl1, Int_t cl2) {
+Float_t CbmClusteringWard::XCenterRecalculation(Int_t cl1, Int_t cl2)
+{
   return (fClustersInBlock[cl1].xc * fClustersInBlock[cl1].clCharge
           + fClustersInBlock[cl2].xc * fClustersInBlock[cl2].clCharge)
          / (fClustersInBlock[cl1].clCharge + fClustersInBlock[cl2].clCharge);
 }
 
-Float_t CbmClusteringWard::YCenterRecalculation(Int_t cl1, Int_t cl2) {
+Float_t CbmClusteringWard::YCenterRecalculation(Int_t cl1, Int_t cl2)
+{
   return (fClustersInBlock[cl1].yc * fClustersInBlock[cl1].clCharge
           + fClustersInBlock[cl2].yc * fClustersInBlock[cl2].clCharge)
          / (fClustersInBlock[cl1].clCharge + fClustersInBlock[cl2].clCharge);
 }
 
-void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
+void CbmClusteringWard::WardProcessingData(Float_t maxDistance)
+{
   Float_t minimalDistance = maxDistance;
   Int_t cluster1 = 0, cluster2 = 0;
   do {
@@ -518,8 +471,7 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
     for (Int_t iCl = 0; iCl < fNofActivePads; iCl++)  //0 <> 1 - ???
     {
       //std::cout<<iCl<<" - Neighbours: "<<fClustersInBlock[iCl].nofNeighbors<<"\n";
-      for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors;
-           jCl++)  //0 <> 1 - ???
+      for (Int_t jCl = 0; jCl < fClustersInBlock[iCl].nofNeighbors; jCl++)  //0 <> 1 - ???
       {
         /* Inogda popadauts9 W == 0
 				 * Nedo4et v rabote metodov udaleni9 i peres4eta
@@ -534,8 +486,7 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
       }
       //std::cout<<" - c1: "<<cluster1<<"; c2: "<<cluster2<<"\n";
     }
-    if (cluster1 == -1)
-      break;  //If there is no cluster for removing. Strange line
+    if (cluster1 == -1) break;  //If there is no cluster for removing. Strange line
     //Prekreshenie raboti po predel'nomu rassto9niu
     if (minimalDistance >= maxDistance) break;
     //Vibor glavnogo klastera pri ob'edinenii
@@ -547,50 +498,39 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
     //		std::cout<<">>>Connect Cl "<<cluster2<<" to Cl "<<cluster1<<"\n";
     //Sbros aktivnosti prisoedin9emogo klastera,
     //Esli oni dubliryut sv9zi glavnogo klastera
-    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster1].nofNeighbors;
-         iCl++)  //0 <> 1 - ???
+    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster1].nofNeighbors; iCl++)  //0 <> 1 - ???
     {
-      for (Int_t jCl = 0; jCl < fClustersInBlock[cluster2].nofNeighbors;
-           jCl++)  //0 <> 1 - ???
+      for (Int_t jCl = 0; jCl < fClustersInBlock[cluster2].nofNeighbors; jCl++)  //0 <> 1 - ???
       {
-        if (fClustersInBlock[cluster1].neighbors[iCl]
-            == fClustersInBlock[cluster2].neighbors[jCl]) {
+        if (fClustersInBlock[cluster1].neighbors[iCl] == fClustersInBlock[cluster2].neighbors[jCl]) {
           fClustersInBlock[cluster2].S[jCl] = 0;
         }
       }
     }
     //Pereda4a sosedei s aktivnimi sv9z9mi glavnomy klasteru
-    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofNeighbors;
-         iCl++)  //0 <> 1 - ???
+    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofNeighbors; iCl++)  //0 <> 1 - ???
     {
       if (fClustersInBlock[cluster2].S[iCl] == 1) {
-        fClustersInBlock[cluster1]
-          .neighbors[fClustersInBlock[cluster1].nofNeighbors] =
+        fClustersInBlock[cluster1].neighbors[fClustersInBlock[cluster1].nofNeighbors] =
           fClustersInBlock[cluster2].neighbors[iCl];
-        fClustersInBlock[cluster1].S[fClustersInBlock[cluster1].nofNeighbors] =
-          1;
+        fClustersInBlock[cluster1].S[fClustersInBlock[cluster1].nofNeighbors] = 1;
         fClustersInBlock[cluster1].nofNeighbors++;
       }
     }
     //Pereda4a 94eek glavnomu klasteru
-    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofPads;
-         iCl++)  //0 <> 1 - ???
+    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofPads; iCl++)  //0 <> 1 - ???
     {
-      fClustersInBlock[cluster1]
-        .padsInCluster[fClustersInBlock[cluster1].nofPads] =
+      fClustersInBlock[cluster1].padsInCluster[fClustersInBlock[cluster1].nofPads] =
         fClustersInBlock[cluster2].padsInCluster[iCl];
       fClustersInBlock[cluster1].nofPads++;
       //---!!!---<>
       //fClustersInBlock[cluster1].numbersOfPadsInCluster[fClustersInBlock[cluster1].nofPads] = ClustersInBlock[cluster2].numbersOfPadsInCluster[i];
     }
-    for (Int_t iPad = 0; iPad < fNofPads;
-         iPad++)  //0 <> 1 - ???	//g_max_pads <> fNofPads - ???
+    for (Int_t iPad = 0; iPad < fNofPads; iPad++)  //0 <> 1 - ???	//g_max_pads <> fNofPads - ???
     {
-      if (padsInClusters[iPad]
-          == fClustersInBlock[cluster2].linkToDesignation)  //!!!
+      if (padsInClusters[iPad] == fClustersInBlock[cluster2].linkToDesignation)  //!!!
       {
-        padsInClusters[iPad] =
-          fClustersInBlock[cluster1].linkToDesignation;  //!!!
+        padsInClusters[iPad] = fClustersInBlock[cluster1].linkToDesignation;  //!!!
       }
     }
     //Vi4islenie stentra novogo klastera
@@ -598,34 +538,26 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
     fClustersInBlock[cluster1].yc = YCenterRecalculation(cluster1, cluster2);
     //Zamena prisoedin9emogo klastera na novii v spiskah sosedei drugih klasterov
     //Bool_t thereIsNewCluaster;
-    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofNeighbors;
-         iCl++)  //0 <> 1 - ???
+    for (Int_t iCl = 0; iCl < fClustersInBlock[cluster2].nofNeighbors; iCl++)  //0 <> 1 - ???
     {
       Bool_t thereIsNewCluaster = false;
-      for (Int_t j = 0;
-           j < fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]]
-                 .nofNeighbors;
+      for (Int_t j = 0; j < fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]].nofNeighbors;
            j++)  //0 <> 1 - ???
       {
         //Esli v spiskah sosedei yje est' novii klaster
-        if (fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]]
-              .neighbors[j]
-            == cluster1) {
+        if (fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]].neighbors[j] == cluster1) {
           thereIsNewCluaster = true;
         }
       }
       //Dobavlenie novogo klastera v spiski sosedei sosedei prisoedin9emogo klastera
       if (thereIsNewCluaster == false) {
         fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]]
-          .neighbors[fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]]
-                       .nofNeighbors] = cluster1;
-        fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]]
-          .nofNeighbors++;
+          .neighbors[fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]].nofNeighbors] = cluster1;
+        fClustersInBlock[fClustersInBlock[cluster2].neighbors[iCl]].nofNeighbors++;
       }
     }
     //Vi4islenie amplitudi novogo klastera
-    fClustersInBlock[cluster1].clCharge =
-      fClustersInBlock[cluster1].clCharge + fClustersInBlock[cluster2].clCharge;
+    fClustersInBlock[cluster1].clCharge = fClustersInBlock[cluster1].clCharge + fClustersInBlock[cluster2].clCharge;
     //Ydalenie prisoedinennogo klastera
     DeleteCluaster(cluster2);
     //Peres4et rassto9nii dl9 novogo klastera
@@ -640,32 +572,26 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
     d = 0;
     if (fClustersInBlock[iCl].clCharge == 0) {
       for (Int_t i = iCl; i < fNofActivePads; i++) {
-        if (fClustersInBlock[i].clCharge == 0) {
-          d++;
-        } else
+        if (fClustersInBlock[i].clCharge == 0) { d++; }
+        else
           break;
       }
       for (Int_t jCl = iCl; jCl < fNofActivePads; jCl++) {
-        fClustersInBlock[jCl].clCharge   = fClustersInBlock[jCl + d].clCharge;
-        fClustersInBlock[jCl].nofPads    = fClustersInBlock[jCl + d].nofPads;
-        fClustersInBlock[jCl].nofCluster = fClustersInBlock[jCl + d].nofCluster;
-        fClustersInBlock[jCl].nofNeighbors =
-          fClustersInBlock[jCl + d].nofNeighbors;
-        fClustersInBlock[jCl].xc = fClustersInBlock[jCl + d].xc;
-        fClustersInBlock[jCl].yc = fClustersInBlock[jCl + d].yc;
+        fClustersInBlock[jCl].clCharge     = fClustersInBlock[jCl + d].clCharge;
+        fClustersInBlock[jCl].nofPads      = fClustersInBlock[jCl + d].nofPads;
+        fClustersInBlock[jCl].nofCluster   = fClustersInBlock[jCl + d].nofCluster;
+        fClustersInBlock[jCl].nofNeighbors = fClustersInBlock[jCl + d].nofNeighbors;
+        fClustersInBlock[jCl].xc           = fClustersInBlock[jCl + d].xc;
+        fClustersInBlock[jCl].yc           = fClustersInBlock[jCl + d].yc;
         //Perenos nomerov sosedei
-        for (Int_t kCl = 0; kCl < fClustersInBlock[jCl + d].nofNeighbors;
-             kCl++)  //0 <> 1 - ???
+        for (Int_t kCl = 0; kCl < fClustersInBlock[jCl + d].nofNeighbors; kCl++)  //0 <> 1 - ???
         {
-          fClustersInBlock[jCl].neighbors[kCl] =
-            fClustersInBlock[jCl + d].neighbors[kCl];
-          fClustersInBlock[jCl].wardDistances[kCl] =
-            fClustersInBlock[jCl + d].wardDistances[kCl];
+          fClustersInBlock[jCl].neighbors[kCl]     = fClustersInBlock[jCl + d].neighbors[kCl];
+          fClustersInBlock[jCl].wardDistances[kCl] = fClustersInBlock[jCl + d].wardDistances[kCl];
         }
         //Perenos nomerov 94eek v klastere
         for (Int_t iPad = 0; iPad < fClustersInBlock[jCl].nofPads; iPad++) {
-          fClustersInBlock[jCl].padsInCluster[iPad] =
-            fClustersInBlock[jCl + d].padsInCluster[iPad];
+          fClustersInBlock[jCl].padsInCluster[iPad] = fClustersInBlock[jCl + d].padsInCluster[iPad];
         }
         //---!!!---
         /*for(int k = 1; k <= ClustersInBlock[j + 1].padsInCluster; k++)
@@ -683,28 +609,25 @@ void CbmClusteringWard::WardProcessingData(Float_t maxDistance) {
 	 */
 }
 
-void CbmClusteringWard::GetClustersFromBlock() {
+void CbmClusteringWard::GetClustersFromBlock()
+{
   //	std::cout<<"-===-clInMethod: "<<clustersInMethod<<"\n";
   Int_t nc = fNofClusters;
-  for (Int_t iCl = 0; iCl < /*clustersInMethod*/ fNofClusters;
-       iCl++)  //0 <> 1 - ???
+  for (Int_t iCl = 0; iCl < /*clustersInMethod*/ fNofClusters; iCl++)  //0 <> 1 - ???
   {
     if (fClustersInBlock[iCl].nofPads == 0) {
       nc--;
       continue;
     }
-    fClusters[clustersInMethod_2 + iCl].sumClCharge =
-      fClustersInBlock[iCl].clCharge;
+    fClusters[clustersInMethod_2 + iCl].sumClCharge = fClustersInBlock[iCl].clCharge;
     //fClusters[clustersInMethod_2 + iCl].linkToDesignation = fClustersInBlock[iCl].linkToDesignation;	//linkToDesignation - ???
-    fClusters[clustersInMethod_2 + iCl].nofCluster =
-      fClustersInBlock[iCl].nofCluster;
+    fClusters[clustersInMethod_2 + iCl].nofCluster = fClustersInBlock[iCl].nofCluster;
     //		std::cout<<"-=-nofPads: "<<fClustersInBlock[iCl].nofPads<<"\n";
     fClusters[clustersInMethod_2 + iCl].nofPads = fClustersInBlock[iCl].nofPads;
     fClusters[clustersInMethod_2 + iCl].xc      = fClustersInBlock[iCl].xc;
     fClusters[clustersInMethod_2 + iCl].yc      = fClustersInBlock[iCl].yc;
     for (Int_t i = 0; i < fClusters[clustersInMethod_2 + iCl].nofPads; i++) {
-      fClusters[clustersInMethod_2 + iCl].padsInCluster[i] =
-        fClustersInBlock[iCl].padsInCluster[i];
+      fClusters[clustersInMethod_2 + iCl].padsInCluster[i] = fClustersInBlock[iCl].padsInCluster[i];
     }
     //WARNING net zapolneni9 massiva sosedei - ?!
   }
@@ -714,8 +637,8 @@ void CbmClusteringWard::GetClustersFromBlock() {
   //std::cout<<"clustersInMethod: "<<clustersInMethod<<"\n";
 }
 
-void CbmClusteringWard::WardMainFunction(CbmClusteringGeometry* moduleGeo,
-                                         Float_t maxDistance) {
+void CbmClusteringWard::WardMainFunction(CbmClusteringGeometry* moduleGeo, Float_t maxDistance)
+{
   WardCreate(moduleGeo);
   std::cout << "---Ward block created\n";
   //WardBlockCreate(moduleGeo);
@@ -736,22 +659,13 @@ void CbmClusteringWard::WardMainFunction(CbmClusteringGeometry* moduleGeo,
 	}while(firstBlockElement < fNofPads);*/
 }
 
-Int_t CbmClusteringWard::GetCluster(Int_t iCluster) {
-  return fClusters[iCluster].nofCluster;
-}
-Float_t CbmClusteringWard::GetX0(Int_t iCluster) {
-  return fClusters[iCluster].xc;
-}
-Float_t CbmClusteringWard::GetY0(Int_t iCluster) {
-  return fClusters[iCluster].yc;
-}
-UInt_t CbmClusteringWard::GetClCharge(Int_t iCluster) {
-  return fClusters[iCluster].sumClCharge;
-}
-Int_t CbmClusteringWard::GetNofPads(Int_t iCluster) {
-  return fClusters[iCluster].nofPads;
-}
-Int_t CbmClusteringWard::GetPadInCluster(Int_t iCluster, Int_t iPad) {
+Int_t CbmClusteringWard::GetCluster(Int_t iCluster) { return fClusters[iCluster].nofCluster; }
+Float_t CbmClusteringWard::GetX0(Int_t iCluster) { return fClusters[iCluster].xc; }
+Float_t CbmClusteringWard::GetY0(Int_t iCluster) { return fClusters[iCluster].yc; }
+UInt_t CbmClusteringWard::GetClCharge(Int_t iCluster) { return fClusters[iCluster].sumClCharge; }
+Int_t CbmClusteringWard::GetNofPads(Int_t iCluster) { return fClusters[iCluster].nofPads; }
+Int_t CbmClusteringWard::GetPadInCluster(Int_t iCluster, Int_t iPad)
+{
   //std::cout<<"Cl: "<<iCluster;
   //std::cout<<"\nPad: "<<iPad;
   //std::cout<<"\nnPad: "<<fClusters[iCluster].padsInCluster[iPad]<<"\n";

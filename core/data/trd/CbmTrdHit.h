@@ -8,13 +8,13 @@
 #ifndef CBMTRDHIT_H_
 #define CBMTRDHIT_H_
 
+#include "CbmPixelHit.h"    // for CbmPixelHit
+#include "CbmTrdAddress.h"  // for CbmTrdAddress
+
 #include <Rtypes.h>      // for CLRBIT, SETBIT, TESTBIT, ClassDef
 #include <RtypesCore.h>  // for Bool_t, Double_t, kTRUE, Int_t, Double32_t
 
 #include <string>  // for string
-
-#include "CbmPixelHit.h"    // for CbmPixelHit
-#include "CbmTrdAddress.h"  // for CbmTrdAddress
 
 class TVector3;
 
@@ -34,13 +34,14 @@ class TVector3;
  */
 class CbmTrdHit : public CbmPixelHit {
 public:
-  enum CbmTrdHitDef {
+  enum CbmTrdHitDef
+  {
     kType = 0  ///< set type of pad layout
-    ,
+      ,
     kMaxType  ///< set type of pad on which the maximum charge is found
-    ,
+      ,
     kRowCross  ///< mark hit defined by 2 clusters
-    ,
+      ,
     kOvfl  ///< mark over-flow in the data
   };
   /**
@@ -57,14 +58,8 @@ public:
 	  *\param refId Index of digi or cluster
 	  *\param eLoss TR + dEdx
 	  **/
-  CbmTrdHit(Int_t address,
-            const TVector3& pos,
-            const TVector3& dpos,
-            Double_t dxy,
-            Int_t refId,
-            Double_t eLoss,
-            Double_t time      = 0.,
-            Double_t timeError = 0.);
+  CbmTrdHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t refId, Double_t eLoss,
+            Double_t time = 0., Double_t timeError = 0.);
 
   /** \brief Destructor. */
   virtual ~CbmTrdHit();
@@ -85,21 +80,13 @@ public:
   /** Setters **/
   void SetELoss(Double_t loss) { fELoss = loss; }
   /** \brief Mark overflow in one or more digits which define the hit.*/
-  void SetOverFlow(Bool_t set = kTRUE) {
-    set ? SETBIT(fDefine, kOvfl) : CLRBIT(fDefine, kOvfl);
-  }
+  void SetOverFlow(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kOvfl) : CLRBIT(fDefine, kOvfl); }
   /** \brief Mark hit reconstructed between pad rows.*/
-  void SetRowCross(Bool_t set = kTRUE) {
-    set ? SETBIT(fDefine, kRowCross) : CLRBIT(fDefine, kRowCross);
-  }
+  void SetRowCross(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kRowCross) : CLRBIT(fDefine, kRowCross); }
   /** \brief Type of pad layout used in reconstruction R[0], T[1]*/
-  void SetClassType(Bool_t set = kTRUE) {
-    set ? SETBIT(fDefine, kType) : CLRBIT(fDefine, kType);
-  }
+  void SetClassType(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kType) : CLRBIT(fDefine, kType); }
   /** \brief Extra bool definition for the hit (e.g. the type of maximum for triangular pads).*/
-  void SetMaxType(Bool_t set = kTRUE) {
-    set ? SETBIT(fDefine, kMaxType) : CLRBIT(fDefine, kMaxType);
-  }
+  void SetMaxType(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kMaxType) : CLRBIT(fDefine, kMaxType); }
 
 private:
   UChar_t fDefine;    // hit extra info

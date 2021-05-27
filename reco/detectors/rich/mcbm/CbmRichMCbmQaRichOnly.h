@@ -3,6 +3,7 @@
 
 #include "CbmEvent.h"
 #include "CbmRichRingFinderHoughImpl.h"
+
 #include "FairTask.h"
 class TClonesArray;
 class CbmRichRing;
@@ -13,9 +14,10 @@ class TVector3;
 class CbmDigiManager;
 class CbmRichMCbmSEDisplay;
 
+#include <tuple>
+
 #include <array>
 #include <map>
-#include <tuple>
 #include <vector>
 
 using namespace std;

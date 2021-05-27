@@ -1,10 +1,10 @@
 using namespace std;
 
-void run_reco(Int_t nEvents = 100000) {
+void run_reco(Int_t nEvents = 100000)
+{
   TTree::SetMaxTreeSize(90000000000);
 
-  Int_t iVerbose =
-    0;  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
+  Int_t iVerbose = 0;  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
 
   FairLogger* logger = FairLogger::GetLogger();
   logger->SetLogScreenLevel("INFO");
@@ -40,10 +40,9 @@ void run_reco(Int_t nEvents = 100000) {
 
 
   TString geoSetupFile = "";
-  geoSetupFile = "/home/aghoehne/Documents/CbmRoot/trunk/macro/rich/prototype/"
+  geoSetupFile         = "/home/aghoehne/Documents/CbmRoot/trunk/macro/rich/prototype/"
                  "smallprototype/geo.C";
-  TString resultDir =
-    "/home/aghoehne/Documents/CbmRoot/Gregor/results_smallprotype";
+  TString resultDir = "/home/aghoehne/Documents/CbmRoot/Gregor/results_smallprotype";
 
 
   // -----   Script initialization   ----------------------------------------
@@ -61,8 +60,7 @@ void run_reco(Int_t nEvents = 100000) {
 
   // -----   Load the geometry setup   --------------------------------------
   TString setupFunct = "geo()";
-  cout << "-I- setupFile: " << geoSetupFile << endl
-       << "-I- setupFunct: " << setupFunct << endl;
+  cout << "-I- setupFile: " << geoSetupFile << endl << "-I- setupFunct: " << setupFunct << endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
 

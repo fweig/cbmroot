@@ -1,8 +1,8 @@
 
 
 void pl_TdcChannelCoincidencesNoCalib(
-  const TString& sTreeFile =
-    "unpack_CbmTofQa_28May1635_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root") {
+  const TString& sTreeFile = "unpack_CbmTofQa_28May1635_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root")
+{
   gStyle->SetOptStat("emruo");
   gStyle->SetOptFit(10001);
 
@@ -39,39 +39,17 @@ void pl_TdcChannelCoincidencesNoCalib(
   TTofTrbTdcData* DigiData = new TTofTrbTdcData();
   //Create Histograms
   gROOT->cd();
-  TH1D* h1 =
-    new TH1D("h1", "Hit distribution of TDC 00 (No Calib)", 64, -0.5, 63.5);
-  TH1D* h2 =
-    new TH1D("h2", "Hit distribution of TDC 02 (No Calib)", 64, -0.5, 63.5);
-  TH1D* h3 = new TH1D("h3", "Coincidence Pattern (No Calib)", 7, -0.5, 6.5);
-  TH1D* h4 = new TH1D(
-    "h4", "triggered RPC-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
-  TH1D* h5 =
-    new TH1D("h5", "RPC-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
-  TH1D* h6 = new TH1D(
-    "h6", "RPC+2Pla-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
-  TH1D* h7 = new TH1D(
-    "h7", "PMT-time difference PLA0 (No Calib)", 2000, -100000, 100000);
-  TH1D* h8 = new TH1D(
-    "h8", "PMT-time difference PLA1 (No Calib)", 2000, -100000, 100000);
-  TH1D* h9 = new TH1D(
-    "h9", "PMT-time difference PLA0-PLA1 (No Calib)", 2000, -100000, 100000);
-  TH2D* h10 = new TH2D("h10",
-                       "Leading edges vs falling edges by TDC0 channels",
-                       32,
-                       -0.5,
-                       31.5,
-                       3,
-                       -0.5,
-                       2.5);
-  TH2D* h11 = new TH2D("h11",
-                       "Leading edges vs falling edges by TDC2 channels",
-                       32,
-                       -0.5,
-                       31.5,
-                       3,
-                       -0.5,
-                       2.5);
+  TH1D* h1  = new TH1D("h1", "Hit distribution of TDC 00 (No Calib)", 64, -0.5, 63.5);
+  TH1D* h2  = new TH1D("h2", "Hit distribution of TDC 02 (No Calib)", 64, -0.5, 63.5);
+  TH1D* h3  = new TH1D("h3", "Coincidence Pattern (No Calib)", 7, -0.5, 6.5);
+  TH1D* h4  = new TH1D("h4", "triggered RPC-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
+  TH1D* h5  = new TH1D("h5", "RPC-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
+  TH1D* h6  = new TH1D("h6", "RPC+2Pla-Coincidences on strips (No Calib)", 16, -0.5, 15.5);
+  TH1D* h7  = new TH1D("h7", "PMT-time difference PLA0 (No Calib)", 2000, -100000, 100000);
+  TH1D* h8  = new TH1D("h8", "PMT-time difference PLA1 (No Calib)", 2000, -100000, 100000);
+  TH1D* h9  = new TH1D("h9", "PMT-time difference PLA0-PLA1 (No Calib)", 2000, -100000, 100000);
+  TH2D* h10 = new TH2D("h10", "Leading edges vs falling edges by TDC0 channels", 32, -0.5, 31.5, 3, -0.5, 2.5);
+  TH2D* h11 = new TH2D("h11", "Leading edges vs falling edges by TDC2 channels", 32, -0.5, 31.5, 3, -0.5, 2.5);
   cout << "Filling Histograms" << endl;
   fAnalysis->cd();
 
@@ -144,13 +122,11 @@ void pl_TdcChannelCoincidencesNoCalib(
 
           if (DigiData->GetChannel() < 32) {
             if (jArray == 0)
-              if (DigiData->GetChannel() % 2)
-                bRpcLeftRising[DigiData->GetChannel() / 2] = true;
+              if (DigiData->GetChannel() % 2) bRpcLeftRising[DigiData->GetChannel() / 2] = true;
               else
                 bRpcLeftFalling[DigiData->GetChannel() / 2] = true;
             if (jArray == 2)
-              if (DigiData->GetChannel() % 2)
-                bRpcRightRising[DigiData->GetChannel() / 2] = true;
+              if (DigiData->GetChannel() % 2) bRpcRightRising[DigiData->GetChannel() / 2] = true;
               else
                 bRpcRightFalling[DigiData->GetChannel() / 2] = true;
           }
@@ -181,17 +157,13 @@ void pl_TdcChannelCoincidencesNoCalib(
 
 
     for (Int_t i = 0; i < 16; i++) {
-      if (bRpcLeftRising[i] && bRpcRightRising[i] && bRpcLeftFalling[i]
-          && bRpcRightFalling[i]) {
+      if (bRpcLeftRising[i] && bRpcRightRising[i] && bRpcLeftFalling[i] && bRpcRightFalling[i]) {
         bRpcHit = true;
 
-        if (bPlaTrigRising && bPlaTrigFalling && bPla1RightRising
-            && bPla1RightFalling)
-          h4->Fill(i);
+        if (bPlaTrigRising && bPlaTrigFalling && bPla1RightRising && bPla1RightFalling) h4->Fill(i);
 
-        if (bPla1RightRising && bPla1RightFalling && bPla1LeftRising
-            && bPla1LeftFalling && bPla0RightRising && bPla0RightFalling
-            && bPla0LeftRising && bPla0LeftFalling)
+        if (bPla1RightRising && bPla1RightFalling && bPla1LeftRising && bPla1LeftFalling && bPla0RightRising
+            && bPla0RightFalling && bPla0LeftRising && bPla0LeftFalling)
           h6->Fill(i);
 
         h5->Fill(i);
@@ -209,38 +181,23 @@ void pl_TdcChannelCoincidencesNoCalib(
       if (!bTdcHitRight[2 * i] && bTdcHitRight[2 * i + 1]) { h11->Fill(i, 1); }
     }
 
-    if (bRpcHit && bPla0LeftRising && bPla0LeftFalling && bPla0RightRising
-        && bPla0RightFalling && bPla1LeftRising && bPla1LeftFalling
-        && bPla1RightRising && bPla1RightFalling)
+    if (bRpcHit && bPla0LeftRising && bPla0LeftFalling && bPla0RightRising && bPla0RightFalling && bPla1LeftRising
+        && bPla1LeftFalling && bPla1RightRising && bPla1RightFalling)
       h3->Fill(0);
 
-    if (bPla0LeftRising && bPla0LeftFalling && bPla0RightRising
-        && bPla0RightFalling && bPla1LeftRising && bPla1LeftFalling
-        && bPla1RightRising && bPla1RightFalling) {
+    if (bPla0LeftRising && bPla0LeftFalling && bPla0RightRising && bPla0RightFalling && bPla1LeftRising
+        && bPla1LeftFalling && bPla1RightRising && bPla1RightFalling) {
       h3->Fill(1);
     }
-    if (bRpcHit && bPla0LeftRising && bPla0LeftFalling && bPla0RightRising
-        && bPla0RightFalling)
+    if (bRpcHit && bPla0LeftRising && bPla0LeftFalling && bPla0RightRising && bPla0RightFalling) h3->Fill(2);
 
-      h3->Fill(2);
+    if (bRpcHit && bPla1LeftRising && bPla1LeftFalling && bPla1RightRising && bPla1RightFalling) h3->Fill(3);
 
-    if (bRpcHit && bPla1LeftRising && bPla1LeftFalling && bPla1RightRising
-        && bPla1RightFalling)
-      h3->Fill(3);
+    if (bPlaTrigRising && bPlaTrigFalling && bPla1RightRising && bPla1RightFalling) h3->Fill(4);
 
-    if (bPlaTrigRising && bPlaTrigFalling && bPla1RightRising
-        && bPla1RightFalling)
-      h3->Fill(4);
+    if (bPla0LeftRising && bPla0LeftFalling && bPla0RightRising && bPla0RightFalling) { h3->Fill(5); }
 
-    if (bPla0LeftRising && bPla0LeftFalling && bPla0RightRising
-        && bPla0RightFalling) {
-      h3->Fill(5);
-    }
-
-    if (bPla1LeftRising && bPla1LeftFalling && bPla1RightRising
-        && bPla1RightFalling) {
-      h3->Fill(6);
-    }
+    if (bPla1LeftRising && bPla1LeftFalling && bPla1RightRising && bPla1RightFalling) { h3->Fill(6); }
   }
 
 

@@ -12,10 +12,9 @@
  */
 
 
-void monitor_file_get4(Int_t nEvents     = -1,
-                       Int_t iUnpackMode = 1,
-                       TString inFolder  = "data/",
-                       TString inFile    = "get4Test") {
+void monitor_file_get4(Int_t nEvents = -1, Int_t iUnpackMode = 1, TString inFolder = "data/",
+                       TString inFile = "get4Test")
+{
 
   //   FairRunOnline* run = new FairRunOnline();
   CbmRunOnline* run = new CbmRunOnline();
@@ -74,8 +73,7 @@ void monitor_file_get4(Int_t nEvents     = -1,
   get4_monitor->SetBinSizeEvoHistos(1.0);
   //  get4_monitor->SetBinSizeEvoHistos(   0.1 );
   get4_monitor->SetLengthEvoHistos(1200.0);
-  get4_monitor->SetMicroSliceLength(16384 * 8
-                                    * (1e-9));  // s, From to 01/03 15:00
+  get4_monitor->SetMicroSliceLength(16384 * 8 * (1e-9));  // s, From to 01/03 15:00
 
   //  get4_monitor->SetPulserMode( kFALSE ); // kTRUE = ON, kFALSE = OFF (default is ON)
   get4_monitor->SetPulserMode();  // kTRUE = ON, kFALSE = OFF (default is ON)
@@ -89,8 +87,7 @@ void monitor_file_get4(Int_t nEvents     = -1,
                                 304,308,312,316); // 1-16 values (default is 0-15)
 */
   //CHannel 1-16 B1
-  get4_monitor->SetPulserChans(
-    64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79);  //
+  get4_monitor->SetPulserChans(64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79);  //
 
   //CHannel 17-32 B1
   /*    get4_monitor->SetPulserChans(  80, 81, 82, 83,
@@ -144,8 +141,7 @@ void monitor_file_get4(Int_t nEvents     = -1,
   //  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
   run->Run(nEvents, 0);  // run until end of input file
 
-  get4_monitor
-    ->Finish();  // Should be called first as histo owned by analysis file :-(
+  get4_monitor->Finish();  // Should be called first as histo owned by analysis file :-(
   run->Finish();
   timer.Stop();
 
@@ -155,8 +151,7 @@ void monitor_file_get4(Int_t nEvents     = -1,
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

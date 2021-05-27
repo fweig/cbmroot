@@ -4,6 +4,7 @@
 
 #include "CbmAnaJpsiHist.h"
 #include "CbmSimulationReport.h"
+
 #include "TSystem.h"
 
 #include <string>
@@ -23,9 +24,7 @@ public:
   /*
     * \brief Create report.
     */
-  void Create(const std::string& fileEventByEvent,
-              const std::string& fileSuperEvent,
-              const std::string& outputDir);
+  void Create(const std::string& fileEventByEvent, const std::string& fileSuperEvent, const std::string& outputDir);
 
 protected:
   /**
@@ -55,10 +54,8 @@ protected:
 
   void DrawMinvDiffPtBins();
 
-  CbmHistManager*
-    fHMSuperEvent;  // histogram manager for super event histograms
-  CbmHistManager*
-    fHMEventByEvent;  //histogram manager for event-by-event histograms
+  CbmHistManager* fHMSuperEvent;    // histogram manager for super event histograms
+  CbmHistManager* fHMEventByEvent;  //histogram manager for event-by-event histograms
 
 private:
   CbmAnaJpsiSuperEventReport(const CbmAnaJpsiSuperEventReport&);

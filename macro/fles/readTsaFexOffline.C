@@ -1,11 +1,11 @@
 
 
-void readTsaFexOffline(
-  TString inFile =
-    //"data/43_sps2016.tsa"
-  //"/Users/fairbanks/fairbanks/dev/data/tsa/14_debug_spadic1p1.tsa"
-  "/Volumes/fairbanksNAS-1/iri/data/testbeams/2016/sps/118_sps2016.tsa",
-  Bool_t highP = false) {
+void readTsaFexOffline(TString inFile =
+                         //"data/43_sps2016.tsa"
+                       //"/Users/fairbanks/fairbanks/dev/data/tsa/14_debug_spadic1p1.tsa"
+                       "/Volumes/fairbanksNAS-1/iri/data/testbeams/2016/sps/118_sps2016.tsa",
+                       Bool_t highP = false)
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -38,8 +38,7 @@ void readTsaFexOffline(
 
   // Spadic Unpacker
   //CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker = new CbmTSUnpackSpadic11OnlineMonitor(highP);
-  CbmTSUnpackSpadicOnlineFex* spadic_unpacker =
-    new CbmTSUnpackSpadicOnlineFex(highP);
+  CbmTSUnpackSpadicOnlineFex* spadic_unpacker = new CbmTSUnpackSpadicOnlineFex(highP);
 
   // NXyter Unpacker
   CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
@@ -88,8 +87,7 @@ void readTsaFexOffline(
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -1,15 +1,15 @@
-#include <arpa/inet.h>
-
-#include <stdio.h>
-
 #include <iostream>
+
+#include <arpa/inet.h>
+#include <stdio.h>
 #include <string.h>
 
 using namespace std;
 
 #define NUM 4096
 
-int main() {
+int main()
+{
   string filename = "/store/cbm_rich_data_2014/flib/1040_cern2014.hld";
 
   FILE* f = fopen(filename.c_str(), "r");
@@ -28,7 +28,8 @@ int main() {
     }
 
     fclose(f);
-  } else {
+  }
+  else {
     cout << "Error opening file " << filename << endl;
   }
 

@@ -10,14 +10,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void BuildEventStar2018(TString inFile            = "",
-                        TString inDir             = "",
-                        Bool_t bEventBuildingMode = kFALSE,
-                        Bool_t bTimeSort          = kTRUE,
-                        Bool_t bEventBinaryDump   = kFALSE,
-                        Int_t iServerRefreshRate  = 100,
-                        Int_t iServerHttpPort     = 8081,
-                        size_t uAcceptBoundaryPct = 100) {
+void BuildEventStar2018(TString inFile = "", TString inDir = "", Bool_t bEventBuildingMode = kFALSE,
+                        Bool_t bTimeSort = kTRUE, Bool_t bEventBinaryDump = kFALSE, Int_t iServerRefreshRate = 100,
+                        Int_t iServerHttpPort = 8081, size_t uAcceptBoundaryPct = 100)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   /*
   TString inDir  = srcDir + "/input/";
@@ -60,8 +56,7 @@ void BuildEventStar2018(TString inFile            = "",
   std::cout << ">>> ngDpbMonitorLab: Initialising..." << std::endl;
 
   // eTOF event builder
-  CbmTofStarEventBuilder2018* etofEventBuilder =
-    new CbmTofStarEventBuilder2018();
+  CbmTofStarEventBuilder2018* etofEventBuilder = new CbmTofStarEventBuilder2018();
   etofEventBuilder->SetMsLimitLevel(uAcceptBoundaryPct);
   etofEventBuilder->SetEventBuildingMode(bEventBuildingMode);
   etofEventBuilder->SetTimeSortOutput(bTimeSort);
@@ -92,8 +87,7 @@ void BuildEventStar2018(TString inFile            = "",
 
   // --- Run
   //  run = new FairRunOnline(source);
-  if ("" != inFile)
-    run = new FairRunOnline(sourceFile);
+  if ("" != inFile) run = new FairRunOnline(sourceFile);
   else
     run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
@@ -123,8 +117,7 @@ void BuildEventStar2018(TString inFile            = "",
 
   run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -132,8 +125,7 @@ void BuildEventStar2018(TString inFile            = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

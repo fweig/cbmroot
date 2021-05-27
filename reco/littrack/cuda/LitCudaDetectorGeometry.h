@@ -26,8 +26,8 @@ struct LitCudaSubstation {
   LitCudaMaterialInfo material;
   LitCudaFieldSlice fieldSlice;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaSubstation& substation) {
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaSubstation& substation)
+  {
     strm << "LitCudaSubstation: "
          << "Z=" << substation.Z << ", material=" << substation.material;
     //    strm << ", fieldSlice=" << substation.fieldSlice;
@@ -39,9 +39,7 @@ struct LitCudaSubstation {
 struct LitCudaStation {
   LitCudaStation() : nofSubstations(0) {}
 
-  void AddSubstation(const LitCudaSubstation* substation) {
-    substations[nofSubstations++] = *substation;
-  }
+  void AddSubstation(const LitCudaSubstation* substation) { substations[nofSubstations++] = *substation; }
 
   // unsigned char GetNofSubstations() const {
   //    return nofSubstations;
@@ -55,10 +53,9 @@ struct LitCudaStation {
   // number of substations
   unsigned char nofSubstations;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaStation& station) {
-    strm << "LitCudaStation: type" << station.type
-         << ", nofSubstations=" << station.nofSubstations << std::endl;
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaStation& station)
+  {
+    strm << "LitCudaStation: type" << station.type << ", nofSubstations=" << station.nofSubstations << std::endl;
     for (int i = 0; i < station.nofSubstations; i++) {
       strm << "    " << i << station.substations[i];
     }
@@ -73,10 +70,9 @@ struct LitCudaAbsorber {
   LitCudaFieldSlice fieldSliceFront;
   LitCudaFieldSlice fieldSliceBack;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaAbsorber& absorber) {
-    strm << "LitCudaAbsorber: Z" << absorber.Z
-         << ", material=" << absorber.material;
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaAbsorber& absorber)
+  {
+    strm << "LitCudaAbsorber: Z" << absorber.Z << ", material=" << absorber.material;
     //    strm << "fieldSliceFront=" << absorber.fieldSliceFront
     //       << " fieladSliceBack=" << absorber.fieldSliceBack;
     return strm;
@@ -89,9 +85,7 @@ struct LitCudaStationGroup {
 
   // virtual ~LitCudaStationGroup() {}
 
-  void AddStation(const LitCudaStation* station) {
-    stations[nofStations++] = *station;
-  }
+  void AddStation(const LitCudaStation* station) { stations[nofStations++] = *station; }
 
   // unsigned char GetNofStations() const {
   //    return nofStations;
@@ -104,8 +98,8 @@ struct LitCudaStationGroup {
   // absorber
   LitCudaAbsorber absorber;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaStationGroup& stationGroup) {
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaStationGroup& stationGroup)
+  {
     strm << "LitCudaStationGroup: "
          << "nofStations=" << stationGroup.nofStations << std::endl;
     for (unsigned char i = 0; i < stationGroup.nofStations; i++) {
@@ -120,9 +114,7 @@ struct LitCudaStationGroup {
 struct LitCudaDetectorLayout {
   LitCudaDetectorLayout() : nofStationGroups(0) {};
 
-  void AddStationGroup(const LitCudaStationGroup& stationGroup) {
-    stationGroups[nofStationGroups++] = stationGroup;
-  }
+  void AddStationGroup(const LitCudaStationGroup& stationGroup) { stationGroups[nofStationGroups++] = stationGroup; }
 
   // unsigned char GetNofStationGroups() const {
   //    return nofStationGroups;
@@ -153,8 +145,8 @@ struct LitCudaDetectorLayout {
   //number of station groups
   unsigned char nofStationGroups;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaDetectorLayout& layout) {
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaDetectorLayout& layout)
+  {
     strm << "LitCudaDetectorLayout: "
          << "nofStationGroups=" << layout.nofStationGroups << std::endl;
     for (unsigned char i = 0; i < layout.nofStationGroups; i++) {

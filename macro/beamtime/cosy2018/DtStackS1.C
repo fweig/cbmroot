@@ -1,5 +1,6 @@
 
-void DtStackS1() {
+void DtStackS1()
+{
   TFile* _file0 = TFile::Open("data/EfficiencyHistos.root");
 
   TH1* phDtPlotRaw;
@@ -8,13 +9,11 @@ void DtStackS1() {
 
     gDirectory->cd("Sts_Raw");
 
-    phDtPlotRaw = dynamic_cast<TH1*>(
-      gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N1P1"));
+    phDtPlotRaw = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N1P1"));
     if (NULL == phDtPlotRaw) return;
 
     gDirectory->cd("../Sts_GeoCuts");
-    phDtPlotSel = dynamic_cast<TH1*>(
-      gDirectory->FindObjectAny("fhDtBestPairsHodoS1GeoCut"));
+    phDtPlotSel = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhDtBestPairsHodoS1GeoCut"));
     if (NULL == phDtPlotRaw) return;
 
   }  // if( NULL != _file0 )

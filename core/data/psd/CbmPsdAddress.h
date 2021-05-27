@@ -23,9 +23,11 @@
 #ifndef CBMPSDADDRESS_H
 #define CBMPSDADDRESS_H 1
 
-#include "CbmDefs.h"     // for ECbmModuleId::kPsd
+#include "CbmDefs.h"  // for ECbmModuleId::kPsd
+
 #include <RtypesCore.h>  // for UInt_t, Int_t
-#include <cassert>       // for assert
+
+#include <cassert>  // for assert
 
 class CbmPsdAddress {
 public:
@@ -35,11 +37,11 @@ public:
    * \param[in] SectionId Section ID.
    * \return Address from system ID, module, Section.
    **/
-  static UInt_t GetAddress(Int_t moduleId, Int_t sectionId) {
-    assert(!(moduleId < 0 || moduleId > fgkModuleIdLength || sectionId < 0
-             || sectionId > fgkSectionIdLength));
-    return (ToIntegralType(ECbmModuleId::kPsd) << fgkSystemIdShift)
-           | (moduleId << fgkModuleIdShift) | (sectionId << fgkSectionIdShift);
+  static UInt_t GetAddress(Int_t moduleId, Int_t sectionId)
+  {
+    assert(!(moduleId < 0 || moduleId > fgkModuleIdLength || sectionId < 0 || sectionId > fgkSectionIdLength));
+    return (ToIntegralType(ECbmModuleId::kPsd) << fgkSystemIdShift) | (moduleId << fgkModuleIdShift)
+           | (sectionId << fgkSectionIdShift);
   }
 
   /**
@@ -47,9 +49,9 @@ public:
    * \param[in] address Unique channel address.
    * \return System identifier from address.
    **/
-  static UInt_t GetSystemId(UInt_t address) {
-    return (address & (fgkSystemIdLength << fgkSystemIdShift))
-           >> fgkSystemIdShift;
+  static UInt_t GetSystemId(UInt_t address)
+  {
+    return (address & (fgkSystemIdLength << fgkSystemIdShift)) >> fgkSystemIdShift;
   }
 
   /**
@@ -57,9 +59,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Module ID from address.
    **/
-  static UInt_t GetModuleId(UInt_t address) {
-    return (address & (fgkModuleIdLength << fgkModuleIdShift))
-           >> fgkModuleIdShift;
+  static UInt_t GetModuleId(UInt_t address)
+  {
+    return (address & (fgkModuleIdLength << fgkModuleIdShift)) >> fgkModuleIdShift;
   }
 
   /**
@@ -67,9 +69,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Sector ID from address.
    **/
-  static UInt_t GetSectionId(UInt_t address) {
-    return (address & (fgkSectionIdLength << fgkSectionIdShift))
-           >> fgkSectionIdShift;
+  static UInt_t GetSectionId(UInt_t address)
+  {
+    return (address & (fgkSectionIdLength << fgkSectionIdShift)) >> fgkSectionIdShift;
   }
 
   /**
@@ -78,7 +80,8 @@ public:
     * \param newModuleId New value for module ID.
     * \return New address with modified module ID.
     */
-  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId) {
+  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId)
+  {
     assert(!(newModuleId < 0 || newModuleId > fgkModuleIdLength));
     return GetAddress(newModuleId, GetSectionId(address));
   }
@@ -89,7 +92,8 @@ public:
     * \param newSectionId New value for section ID.
     * \return New address with modified section ID.
     */
-  static UInt_t SetSectionId(UInt_t address, Int_t newSectionId) {
+  static UInt_t SetSectionId(UInt_t address, Int_t newSectionId)
+  {
     assert(!(newSectionId < 0 || newSectionId > fgkSectionIdLength));
     return GetAddress(GetModuleId(address), newSectionId);
   }

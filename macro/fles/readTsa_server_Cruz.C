@@ -9,7 +9,8 @@
  */
 
 
-void readTsa_server_Cruz() {
+void readTsa_server_Cruz()
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -78,8 +79,7 @@ void readTsa_server_Cruz() {
   // --- Start run
   TStopwatch timer;
   timer.Start();
-  std::cout << ">>> Start run from the command line by calling Run(<events>)"
-            << std::endl;
+  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
   //  run->Run(nEvents, 0); // run until end of input file
   //  timer.Stop();
 
@@ -89,8 +89,7 @@ void readTsa_server_Cruz() {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

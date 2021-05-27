@@ -8,11 +8,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_tsa_sts_binning(TString inFile  = "",
-                            UInt_t uRunId   = 0,
-                            UInt_t nrEvents = 0,
-                            TString outDir  = "data",
-                            TString inDir   = "") {
+void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents = 0, TString outDir = "data",
+                            TString inDir = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -106,15 +104,15 @@ void unpack_tsa_sts_binning(TString inFile  = "",
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -122,8 +120,7 @@ void unpack_tsa_sts_binning(TString inFile  = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

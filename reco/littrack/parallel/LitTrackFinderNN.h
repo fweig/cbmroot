@@ -8,10 +8,11 @@
 #ifndef LITTRACKFINDERNN_H_
 #define LITTRACKFINDERNN_H_
 
-#include "LitDetectorLayout.h"
-#include "LitHitData.h"
 #include <set>
 #include <vector>
+
+#include "LitDetectorLayout.h"
+#include "LitHitData.h"
 
 using std::set;
 using std::vector;
@@ -19,8 +20,10 @@ using std::vector;
 #include "LitScalPixelHit.h"
 #include "LitScalTrack.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     class LitTrackFinderNN {
     public:
@@ -41,30 +44,17 @@ namespace lit {
     * \param[out] Output array of reconstructed tracks.
     */
       void DoFind(const vector<lit::parallel::LitScalPixelHit*>& hits,
-                  const vector<lit::parallel::LitScalTrack*>& trackSeeds,
-                  vector<lit::parallel::LitScalTrack*>& tracks);
+                  const vector<lit::parallel::LitScalTrack*>& trackSeeds, vector<lit::parallel::LitScalTrack*>& tracks);
 
 
       /* Setters */
-      void SetDetectorLayout(const LitDetectorLayoutScal& layout) {
-        fLayout = layout;
-      }
-      void SetNofIterations(int nofIterations) {
-        fNofIterations = nofIterations;
-      }
-      void SetMaxNofMissingHits(const vector<int>& maxNofMissingHits) {
-        fMaxNofMissingHits = maxNofMissingHits;
-      }
+      void SetDetectorLayout(const LitDetectorLayoutScal& layout) { fLayout = layout; }
+      void SetNofIterations(int nofIterations) { fNofIterations = nofIterations; }
+      void SetMaxNofMissingHits(const vector<int>& maxNofMissingHits) { fMaxNofMissingHits = maxNofMissingHits; }
       void SetPDG(const vector<int>& pdg) { fPDG = pdg; }
-      void SetChiSqStripHitCut(const vector<fscal>& chiSqStripHitCut) {
-        fChiSqStripHitCut = chiSqStripHitCut;
-      }
-      void SetChiSqPixelHitCut(const vector<fscal>& chiSqPixelHitCut) {
-        fChiSqPixelHitCut = chiSqPixelHitCut;
-      }
-      void SetSigmaCoef(const vector<fscal>& sigmaCoef) {
-        fSigmaCoef = sigmaCoef;
-      }
+      void SetChiSqStripHitCut(const vector<fscal>& chiSqStripHitCut) { fChiSqStripHitCut = chiSqStripHitCut; }
+      void SetChiSqPixelHitCut(const vector<fscal>& chiSqPixelHitCut) { fChiSqPixelHitCut = chiSqPixelHitCut; }
+      void SetSigmaCoef(const vector<fscal>& sigmaCoef) { fSigmaCoef = sigmaCoef; }
 
     protected:
       void ArrangeHits(const vector<lit::parallel::LitScalPixelHit*>& hits);
@@ -72,8 +62,7 @@ namespace lit {
       /**
     * \brief Initialize track seeds and copy to local array.
     */
-      void
-      InitTrackSeeds(const vector<lit::parallel::LitScalTrack*>& trackSeeds);
+      void InitTrackSeeds(const vector<lit::parallel::LitScalTrack*>& trackSeeds);
 
       void PropagateVirtualStations(LitTrackParamScal& par);
 
@@ -99,20 +88,18 @@ namespace lit {
     private:
       vector<lit::parallel::LitScalTrack*> fTracks;  // Local copy of tracks.
       LitHitData fHitData;                           // Hit storage.
-      set<int> fUsedHitsSet;   // Sets with hits that have been used.
-      set<int> fUsedSeedsSet;  // Set with track seeds that have been used.
+      set<int> fUsedHitsSet;                         // Sets with hits that have been used.
+      set<int> fUsedSeedsSet;                        // Set with track seeds that have been used.
 
       LitDetectorLayoutScal fLayout;  // Detector layout
       int fNofIterations;             // Number of tracking iterations
       int fIteration;                 // Current tracking iteration
       // Tracking parameters for each iteration
-      vector<int>
-        fMaxNofMissingHits;  // Maximum number of acceptable missing hits.
-      vector<int> fPDG;      // Particle hypothesis for tracking.
+      vector<int> fMaxNofMissingHits;   // Maximum number of acceptable missing hits.
+      vector<int> fPDG;                 // Particle hypothesis for tracking.
       vector<fscal> fChiSqStripHitCut;  // Chi-square cut for strip hits.
       vector<fscal> fChiSqPixelHitCut;  // Chi-square cut for pixel hits.
-      vector<fscal>
-        fSigmaCoef;  // Sigma coefficient for preliminary hit selection
+      vector<fscal> fSigmaCoef;         // Sigma coefficient for preliminary hit selection
     };
 
   }  // namespace parallel

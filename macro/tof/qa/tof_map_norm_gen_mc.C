@@ -15,13 +15,10 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_map_norm_gen_mc(TString geoVersion,
-                         Int_t iCoordType = 0,
-                         Int_t iPartType  = 0,
-                         Int_t nEvents    = 1000000) {
+void tof_map_norm_gen_mc(TString geoVersion, Int_t iCoordType = 0, Int_t iPartType = 0, Int_t nEvents = 1000000)
+{
   TString sCoordType = "";
-  if (0 == iCoordType)
-    sCoordType = "xyz";
+  if (0 == iCoordType) sCoordType = "xyz";
   else if (1 == iCoordType)
     sCoordType = "ang";
   else if (2 == iCoordType)
@@ -30,8 +27,7 @@ void tof_map_norm_gen_mc(TString geoVersion,
     return;  // No reason to enter other values!
 
   TString sPartType = "";
-  if (0 == iPartType)
-    sPartType = "geantino";
+  if (0 == iPartType) sPartType = "geantino";
   else if (1 == iPartType)
     sPartType = "proton";
   else
@@ -54,10 +50,8 @@ void tof_map_norm_gen_mc(TString geoVersion,
   TString inDir   = gSystem->Getenv("VMCWORKDIR");
   TString inFile  = inDir + "/input/urqmd.ftn14";
   TString outDir  = "data";
-  TString outFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                    + sPartType + ".mc.root";
-  TString parFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                    + sPartType + ".params.root";
+  TString outFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + ".mc.root";
+  TString parFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + ".params.root";
 
   // -----  Geometries  -----------------------------------------------------
   TString caveGeom   = "cave.geo";
@@ -181,22 +175,19 @@ void tof_map_norm_gen_mc(TString geoVersion,
   if (0 == iCoordType) {
     // Cartesian coord: in z direction, starting at z = 0.
     boxGen->SetBoxXYZ(-750., -500., 750., 500., 0.);
-    boxGen->SetPRange(
-      0.1, 10.0);  // arbitrary, not sure if any effect to expect here
+    boxGen->SetPRange(0.1, 10.0);  // arbitrary, not sure if any effect to expect here
     boxGen->SetThetaRange(0., 0.);
     boxGen->SetPhiRange(0., 360.);
   }  // if( 0 == iCoordType )
   else if (1 == iCoordType) {
     // angular coord: in all directions, starting at (0,0,0) => (ThetaX, ThetaY).
-    boxGen->SetPRange(
-      0.1, 10.0);  // arbitrary, not sure if any effect to expect here
+    boxGen->SetPRange(0.1, 10.0);    // arbitrary, not sure if any effect to expect here
     boxGen->SetThetaRange(0., 70.);  // approx. sqrt(2)*60 (maximum in thetaX)
     boxGen->SetPhiRange(0., 360.);
   }  // if( 1 == iCoordType )
   else if (2 == iCoordType) {
     // Spherical coord: in all directions, starting at (0,0,0) => (Theta, Phi).
-    boxGen->SetPRange(
-      0.1, 10.0);  // arbitrary, not sure if any effect to expect here
+    boxGen->SetPRange(0.1, 10.0);  // arbitrary, not sure if any effect to expect here
     boxGen->SetThetaRange(0., 90.);
     boxGen->SetPhiRange(0., 360.);
   }  // if( 2 == iCoordType )
@@ -235,8 +226,7 @@ void tof_map_norm_gen_mc(TString geoVersion,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

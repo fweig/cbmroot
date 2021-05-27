@@ -39,8 +39,8 @@ private:
   Double_t fPercentCO2;         /** Percentage of CO2 */
   Int_t fNobleGasType;          /** Type of noble gas (Xe=1, Ar=2)*/
   static CbmTrdGas* fgInstance; /** Singleton Instance */
-  TString fFileNameLike;  //!   /** File name of input for likelihood method */
-  TString fFileNameANN;   //!  /** File name of input for ANN method */
+  TString fFileNameLike;        //!   /** File name of input for likelihood method */
+  TString fFileNameANN;         //!  /** File name of input for ANN method */
   void SetFileName();
 
 

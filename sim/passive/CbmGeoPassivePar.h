@@ -8,8 +8,7 @@ public:
   TObjArray* fGeoSensNodes;  // List of FairGeoNodes for sensitive volumes
   TObjArray* fGeoPassNodes;  // List of FairGeoNodes for sensitive volumes
 
-  CbmGeoPassivePar(const char* name    = "CbmGeoPassivePar",
-                   const char* title   = "Passive Geometry Parameters",
+  CbmGeoPassivePar(const char* name = "CbmGeoPassivePar", const char* title = "Passive Geometry Parameters",
                    const char* context = "TestDefaultContext");
   ~CbmGeoPassivePar(void);
   void clear(void);

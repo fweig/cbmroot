@@ -11,7 +11,8 @@
 /**
  * \enum Define type of hit on detector station.
  */
-enum LitHitType {
+enum LitHitType
+{
   kLITSTRIPHIT = 0, /**< Strip hit. */
   kLITPIXELHIT = 1, /**< Pixel hit. */
   kLITMIXHIT   = 2  /**< Mixed type of hits, i.e. both strip and pixel hits. **/
@@ -20,7 +21,8 @@ enum LitHitType {
 /**
  * \enum Define status code.
  */
-enum LitStatus {
+enum LitStatus
+{
   kLITSUCCESS = 0, /**< Success. */
   kLITERROR   = 1  /**< Error. */
 };
@@ -28,7 +30,8 @@ enum LitStatus {
 /**
  * \enum Define reconstructed track quality.
  */
-enum LitTrackQa {
+enum LitTrackQa
+{
   kLITGOOD      = 0, /**< Good track. */
   kLITBAD       = 1, /**< Bad track. */
   kLITGOODMERGE = 2  /**< Correctly merged track. */
@@ -37,7 +40,8 @@ enum LitTrackQa {
 /**
  * \enum Define system identificator.
  */
-enum LitSystemId {
+enum LitSystemId
+{
   kLITMUCH = 0, /**< MUCH detector. */
   kLITTRD  = 1, /**< TRD detector. */
   kLITTOF  = 2, /**< TOF detector. */

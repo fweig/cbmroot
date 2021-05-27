@@ -16,7 +16,9 @@ CbmMvdSensorPlugin::CbmMvdSensorPlugin()
   , bFlag(false)
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)
-  , fName("CbmMvdSensorPlugin") {}
+  , fName("CbmMvdSensorPlugin")
+{
+}
 // -------------------------------------------------------------------------
 // -----   constructor   -------------------------------------------
 CbmMvdSensorPlugin::CbmMvdSensorPlugin(const char* name)
@@ -26,7 +28,9 @@ CbmMvdSensorPlugin::CbmMvdSensorPlugin(const char* name)
   , bFlag(false)
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)
-  , fName(name) {}
+  , fName(name)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------

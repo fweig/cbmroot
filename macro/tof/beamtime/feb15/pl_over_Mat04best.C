@@ -26,9 +26,8 @@
   gROOT->cd();
   TString hname = "hDXDY04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -36,9 +35,8 @@
   gROOT->cd();
   TString hname = "hDXDT04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -46,9 +44,8 @@
   gROOT->cd();
   TString hname = "hDYDT04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -72,10 +69,7 @@
       const char* cnam   = Form("%s_py%d", (char*) hname, iBinL);
       TH1D* hDT04tmp     = h2->ProjectionY(cnam, iBinL, iNbinsX - iBinL, "");
       TFitResultPtr fRes = hDT04tmp->Fit("gaus", "S");
-      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ",
-                   iBinL,
-                   fRes->Parameter(2),
-                   hDT04tmp->GetRMS());
+      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ", iBinL, fRes->Parameter(2), hDT04tmp->GetRMS());
       cout << endl;
       if (fRes->Parameter(2) < BRes) {
         BRes     = fRes->Parameter(2);
@@ -88,7 +82,8 @@
       if (hDT04tmp->GetEntries() < 1000) break;
     }
     //    gPad->SetOptFit(1);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -100,7 +95,8 @@
   if (h1 != NULL) {
     h1->Draw();
     NFinalHits = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -112,7 +108,8 @@
     h1->Draw();
     gPad->SetLogy();
     NEvents = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -130,7 +127,8 @@
   if (h1 != NULL) {
     h1->Draw();
     NSel = h1->Integral(BL, h1->GetNbinsX(), "");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -141,7 +139,8 @@
   if (h2 != NULL) {
     //  h2->Draw("colz");
     //  TH1D *hDT04=h2->ProjectionY();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -165,10 +164,7 @@
       const char* cnam   = Form("%s_py%d", (char*) hname, iBinL);
       TH1D* hDT04tmp     = h2->ProjectionY(cnam, iBinL, iNbinsX - iBinL, "");
       TFitResultPtr fRes = hDT04tmp->Fit("gaus", "S");
-      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ",
-                   iBinL,
-                   fRes->Parameter(2),
-                   hDT04tmp->GetRMS());
+      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ", iBinL, fRes->Parameter(2), hDT04tmp->GetRMS());
       cout << endl;
       if (fRes->Parameter(2) < BDRes) {
         BDRes     = fRes->Parameter(2);
@@ -181,7 +177,8 @@
       if (hDT04tmp->GetEntries() < 1000) break;
     }
     //    gPad->SetOptFit(1);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -189,17 +186,10 @@
   Double_t dEff = NFinalHits / NEvents;
   cout << Form("<I> Efficiency: %6.3f, overall 1-sigma timing resolution: "
                "%6.1f ps, RMS: %6.1f ps",
-               dEff,
-               dTRes,
-               dTRMS)
+               dEff, dTRes, dTRMS)
        << endl;
   cout << Form("    best 1-sigma timing resolution at lower index %d: %6.1f "
                "ps, RMS: %6.1f ps from  %6.0f entries of %6.0f (%6.3f)",
-               BL,
-               BRes,
-               Brms,
-               BEntries,
-               NSel,
-               BEntries / NSel)
+               BL, BRes, Brms, BEntries, NSel, BEntries / NSel)
        << endl;
 }

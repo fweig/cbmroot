@@ -40,36 +40,20 @@ public:
   /**
     * \brief Inherited from CbmLitTrackFinder.
     */
-  LitStatus DoFind(HitPtrVector& hits,
-                   TrackPtrVector& trackSeeds,
-                   TrackPtrVector& tracks);
+  LitStatus DoFind(HitPtrVector& hits, TrackPtrVector& trackSeeds, TrackPtrVector& tracks);
 
   /* Setters */
-  void SetFinalSelection(TrackSelectionPtr finalSelection) {
-    fFinalSelection = finalSelection;
-  }
-  void SetSeedSelection(TrackSelectionPtr seedSelection) {
-    fSeedSelection = seedSelection;
-  }
+  void SetFinalSelection(TrackSelectionPtr finalSelection) { fFinalSelection = finalSelection; }
+  void SetSeedSelection(TrackSelectionPtr seedSelection) { fSeedSelection = seedSelection; }
   void SetFilter(TrackUpdatePtr filter) { fFilter = filter; }
-  void SetPropagator(TrackPropagatorPtr propagator) {
-    fPropagator = propagator;
-  }
+  void SetPropagator(TrackPropagatorPtr propagator) { fPropagator = propagator; }
   void SetNofStations(Int_t nofStations) { fNofStations = nofStations; }
   void SetNofIterations(Int_t nofIterations) { fNofIterations = nofIterations; }
-  void SetMaxNofMissingHits(const vector<Int_t>& maxNofMissingHits) {
-    fMaxNofMissingHits = maxNofMissingHits;
-  }
+  void SetMaxNofMissingHits(const vector<Int_t>& maxNofMissingHits) { fMaxNofMissingHits = maxNofMissingHits; }
   void SetPDG(const vector<Int_t>& pdg) { fPDG = pdg; }
-  void SetChiSqStripHitCut(const vector<litfloat>& chiSqStripHitCut) {
-    fChiSqStripHitCut = chiSqStripHitCut;
-  }
-  void SetChiSqPixelHitCut(const vector<litfloat>& chiSqPixelHitCut) {
-    fChiSqPixelHitCut = chiSqPixelHitCut;
-  }
-  void SetSigmaCoef(const vector<litfloat>& sigmaCoef) {
-    fSigmaCoef = sigmaCoef;
-  }
+  void SetChiSqStripHitCut(const vector<litfloat>& chiSqStripHitCut) { fChiSqStripHitCut = chiSqStripHitCut; }
+  void SetChiSqPixelHitCut(const vector<litfloat>& chiSqPixelHitCut) { fChiSqPixelHitCut = chiSqPixelHitCut; }
+  void SetSigmaCoef(const vector<litfloat>& sigmaCoef) { fSigmaCoef = sigmaCoef; }
 
 protected:
   void ArrangeHits(HitPtrIterator itBegin, HitPtrIterator itEnd);
@@ -99,9 +83,7 @@ protected:
     * \param[in] Iterator to the last track.
     * \param[out] Output track array.
     */
-  void CopyToOutput(TrackPtrIterator itBegin,
-                    TrackPtrIterator itEnd,
-                    TrackPtrVector& tracks);
+  void CopyToOutput(TrackPtrIterator itBegin, TrackPtrIterator itEnd, TrackPtrVector& tracks);
 
 private:
   CbmLitHitData fHitData;         // Hit storage.
@@ -120,17 +102,14 @@ private:
   Int_t fIteration;      // Current tracking iteration
 
   // Tracking parameters for each iteration
-  Int_t
-    fMaxNofHitsInValidationGate;  // Maximum number of hits in the validation
-                                  // gate for which a separate branch is created
-  Int_t fMaxNofBranches;  // Maximum number of branches for one input track seed
-  vector<Int_t>
-    fMaxNofMissingHits;  // Maximum number of acceptable missing hits.
-  vector<Int_t> fPDG;    // Particle hypothesis for tracking.
+  Int_t fMaxNofHitsInValidationGate;   // Maximum number of hits in the validation
+                                       // gate for which a separate branch is created
+  Int_t fMaxNofBranches;               // Maximum number of branches for one input track seed
+  vector<Int_t> fMaxNofMissingHits;    // Maximum number of acceptable missing hits.
+  vector<Int_t> fPDG;                  // Particle hypothesis for tracking.
   vector<litfloat> fChiSqStripHitCut;  // Chi-square cut for strip hits.
   vector<litfloat> fChiSqPixelHitCut;  // Chi-square cut for pixel hits.
-  vector<litfloat>
-    fSigmaCoef;  // Sigma coefficient for preliminary hit selection
+  vector<litfloat> fSigmaCoef;         // Sigma coefficient for preliminary hit selection
 };
 
 #endif /*CBMLITTRACKFINDERBASEBRANCH_H_*/

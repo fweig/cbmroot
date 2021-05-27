@@ -1,9 +1,8 @@
 #ifndef CBM_L1_STTTRACK_h
 #define CBM_L1_STTTRACK_h
 
-#include "CbmL1SttHit.h"
-
 #include "CbmKFTrackInterface.h"
+#include "CbmL1SttHit.h"
 
 #include <vector>
 
@@ -35,9 +34,9 @@ public:
   bool stopped;
   int StsID;
 
-  static bool Compare(const CbmL1SttTrack* p1, const CbmL1SttTrack* p2) {
-    return (p1->NHits > p2->NHits)
-           || (p1->NHits == p2->NHits) && (p1->chi2 < p2->chi2);
+  static bool Compare(const CbmL1SttTrack* p1, const CbmL1SttTrack* p2)
+  {
+    return (p1->NHits > p2->NHits) || (p1->NHits == p2->NHits) && (p1->chi2 < p2->chi2);
   }
 
 public:

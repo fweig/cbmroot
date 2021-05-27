@@ -1,11 +1,11 @@
-void ana_cascade(Int_t file_nr = 0, Int_t nEvents = 1, Int_t pdg = 3312) {
+void ana_cascade(Int_t file_nr = 0, Int_t nEvents = 1, Int_t pdg = 3312)
+{
   Char_t filenr[4];
   sprintf(filenr, "%04d", file_nr);
   printf("Filenr: %s\n", filenr);
 
   TString signal;
-  if (pdg == 3312)
-    signal = "xi";
+  if (pdg == 3312) signal = "xi";
   else if (pdg == 3334)
     signal = "om";
   else {
@@ -57,7 +57,8 @@ void ana_cascade(Int_t file_nr = 0, Int_t nEvents = 1, Int_t pdg = 3312) {
     //    task->SetCheckB(0);
     //    task->SetCutBla(0.15);
     //    task->SetCutChiDa(4.0);
-  } else if (pdg == 3312) {  // TODO Check cuts
+  }
+  else if (pdg == 3312) {  // TODO Check cuts
     task->SetMotherPdg(3312);
     task->SetSisterPdg(-211);
     task->SetCheckChi(1);

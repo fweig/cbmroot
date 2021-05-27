@@ -17,11 +17,12 @@
 #include "utils/CbmLitMemoryManagment.h"
 
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <limits>
 #include <map>
 #include <set>
+
+#include <cmath>
 
 using std::make_pair;
 using std::map;
@@ -44,13 +45,14 @@ CbmLitTrackFinderNN::CbmLitTrackFinderNN()
   , fPDG()
   , fChiSqStripHitCut()
   , fChiSqPixelHitCut()
-  , fSigmaCoef() {}
+  , fSigmaCoef()
+{
+}
 
 CbmLitTrackFinderNN::~CbmLitTrackFinderNN() {}
 
-LitStatus CbmLitTrackFinderNN::DoFind(HitPtrVector& hits,
-                                      TrackPtrVector& trackSeeds,
-                                      TrackPtrVector& tracks) {
+LitStatus CbmLitTrackFinderNN::DoFind(HitPtrVector& hits, TrackPtrVector& trackSeeds, TrackPtrVector& tracks)
+{
   fTracks.clear();
   fUsedSeedsSet.clear();
   fUsedHitsSet.clear();
@@ -79,13 +81,12 @@ LitStatus CbmLitTrackFinderNN::DoFind(HitPtrVector& hits,
   //}
 
   static Int_t eventNo = 0;
-  std::cout << "CbmLitTrackFinderNN::DoFind: " << eventNo++
-            << " events processed" << std::endl;
+  std::cout << "CbmLitTrackFinderNN::DoFind: " << eventNo++ << " events processed" << std::endl;
   return kLITSUCCESS;
 }
 
-void CbmLitTrackFinderNN::ArrangeHits(HitPtrIterator itBegin,
-                                      HitPtrIterator itEnd) {
+void CbmLitTrackFinderNN::ArrangeHits(HitPtrIterator itBegin, HitPtrIterator itEnd)
+{
   for (HitPtrIterator it = itBegin; it != itEnd; it++) {
     CbmLitHit* hit = *it;
     if (fUsedHitsSet.find(hit->GetRefId()) != fUsedHitsSet.end()) {
@@ -96,8 +97,8 @@ void CbmLitTrackFinderNN::ArrangeHits(HitPtrIterator itBegin,
   fHitData.Arrange();
 }
 
-void CbmLitTrackFinderNN::InitTrackSeeds(TrackPtrIterator itBegin,
-                                         TrackPtrIterator itEnd) {
+void CbmLitTrackFinderNN::InitTrackSeeds(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   for (TrackPtrIterator it = itBegin; it != itEnd; it++) {
     (*it)->SetQuality(kLITGOOD);
   }
@@ -107,18 +108,15 @@ void CbmLitTrackFinderNN::InitTrackSeeds(TrackPtrIterator itBegin,
   for (TrackPtrIterator it = itBegin; it != itEnd; it++) {
     CbmLitTrack* track = *it;
     if (track->GetQuality() == kLITBAD) { continue; }
-    if (fUsedSeedsSet.find(track->GetPreviousTrackId())
-        != fUsedSeedsSet.end()) {
-      continue;
-    }
+    if (fUsedSeedsSet.find(track->GetPreviousTrackId()) != fUsedSeedsSet.end()) { continue; }
     track->SetPDG(fPDG[fIteration]);
     track->SetChi2(0.);
     fTracks.push_back(new CbmLitTrack(*track));
   }
 }
 
-void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
-                                       TrackPtrIterator itEnd) {
+void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   for (TrackPtrIterator itTrack = itBegin; itTrack != itEnd; itTrack++) {
     CbmLitTrack* track = *itTrack;
 
@@ -126,17 +124,14 @@ void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
       CbmLitTrackParam par(*track->GetParamLast());
 
       litfloat zMin = fHitData.GetMinZPos(iStation);
-      if (fPropagator->Propagate(&par, zMin, fPDG[fIteration]) == kLITERROR) {
-        break;
-      }
+      if (fPropagator->Propagate(&par, zMin, fPDG[fIteration]) == kLITERROR) { break; }
 
       const vector<Int_t>& bins = fHitData.GetZPosBins(iStation);
       // map<bin index, pair<track parameter for the bin, true if track was propagated correctly >>
       map<Int_t, pair<CbmLitTrackParam, Bool_t>> binParamMap;
       vector<Int_t>::const_iterator itBins;
       for (itBins = bins.begin(); itBins != bins.end(); itBins++) {
-        binParamMap[*itBins] =
-          make_pair<CbmLitTrackParam, Bool_t>(CbmLitTrackParam(), true);
+        binParamMap[*itBins] = make_pair<CbmLitTrackParam, Bool_t>(CbmLitTrackParam(), true);
       }
 
       // Extrapolate track parameters to each Z position in the map.
@@ -147,25 +142,21 @@ void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
       for (itMap = binParamMap.begin(); itMap != binParamMap.end(); itMap++) {
         (*itMap).second.first = par;
         litfloat z            = fHitData.GetZPosByBin(iStation, (*itMap).first);
-        if (fPropagator->Propagate(&(*itMap).second.first, z, fPDG[fIteration])
-            == kLITERROR) {
+        if (fPropagator->Propagate(&(*itMap).second.first, z, fPDG[fIteration]) == kLITERROR) {
           (*itMap).second.second = false;
         }
       }
 
       // Loop over hits
-      litfloat minChiSq =
-        std::numeric_limits<litfloat>::max();  // minimum chi-square of hit
-      const CbmLitHit* minHit = NULL;  // Pointer to hit with minimum chi-square
-      CbmLitTrackParam minPar;         // Track parameters for closest hit
+      litfloat minChiSq       = std::numeric_limits<litfloat>::max();  // minimum chi-square of hit
+      const CbmLitHit* minHit = NULL;                                  // Pointer to hit with minimum chi-square
+      CbmLitTrackParam minPar;                                         // Track parameters for closest hit
       const HitPtrVector& hits = fHitData.GetHits(iStation);
-      for (HitPtrConstIterator itHit = hits.begin(); itHit != hits.end();
-           itHit++) {
+      for (HitPtrConstIterator itHit = hits.begin(); itHit != hits.end(); itHit++) {
         const CbmLitHit* hit = *itHit;
         Int_t bin            = fHitData.GetBinByZPos(iStation, hit->GetZ());
         assert(binParamMap.find(bin) != binParamMap.end());
-        if (!binParamMap[bin].second)
-          continue;  // Track parameters are wrong for this propagation
+        if (!binParamMap[bin].second) continue;  // Track parameters are wrong for this propagation
         CbmLitTrackParam tpar(binParamMap[bin].first);
 
         // Check preliminary if hit is in the validation gate.
@@ -173,21 +164,15 @@ void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
         // Based on the predicted track position (w/o KF update step)
         // and maximum hit position error.
         if (hit->GetType() == kLITPIXELHIT) {
-          const CbmLitPixelHit* pixelHit =
-            static_cast<const CbmLitPixelHit*>(hit);
-          litfloat maxErrX = fHitData.GetMaxErrX(iStation);
-          litfloat devX    = fSigmaCoef[fIteration]
-                          * (sqrt(tpar.GetCovariance(0) + maxErrX * maxErrX));
-          litfloat maxErrY = fHitData.GetMaxErrY(iStation);
-          litfloat devY    = fSigmaCoef[fIteration]
-                          * (sqrt(tpar.GetCovariance(6) + maxErrY * maxErrY));
-          litfloat maxErrT = fHitData.GetMaxErrT(iStation);
-          litfloat devT    = fSigmaCoef[fIteration]
-                          * (sqrt(tpar.GetCovariance(20) + maxErrT * maxErrT));
-          bool hitInside = (pixelHit->GetX() < (tpar.GetX() + devX))
-                           && (pixelHit->GetX() > (tpar.GetX() - devX))
-                           && (pixelHit->GetY() < (tpar.GetY() + devY))
-                           && (pixelHit->GetY() > (tpar.GetY() - devY))
+          const CbmLitPixelHit* pixelHit = static_cast<const CbmLitPixelHit*>(hit);
+          litfloat maxErrX               = fHitData.GetMaxErrX(iStation);
+          litfloat devX                  = fSigmaCoef[fIteration] * (sqrt(tpar.GetCovariance(0) + maxErrX * maxErrX));
+          litfloat maxErrY               = fHitData.GetMaxErrY(iStation);
+          litfloat devY                  = fSigmaCoef[fIteration] * (sqrt(tpar.GetCovariance(6) + maxErrY * maxErrY));
+          litfloat maxErrT               = fHitData.GetMaxErrT(iStation);
+          litfloat devT                  = fSigmaCoef[fIteration] * (sqrt(tpar.GetCovariance(20) + maxErrT * maxErrT));
+          bool hitInside = (pixelHit->GetX() < (tpar.GetX() + devX)) && (pixelHit->GetX() > (tpar.GetX() - devX))
+                           && (pixelHit->GetY() < (tpar.GetY() + devY)) && (pixelHit->GetY() > (tpar.GetY() - devY))
                            && (pixelHit->GetT() < (tpar.GetTime() + devT))
                            && (pixelHit->GetT() > (tpar.GetTime() - devT));
           if (!hitInside) continue;
@@ -195,14 +180,9 @@ void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
 
         litfloat chi = std::numeric_limits<litfloat>::max();
         fFilter->Update(&tpar, hit, chi);
-        bool hitInValidationGate = (hit->GetType() == kLITPIXELHIT
-                                    && chi < fChiSqPixelHitCut[fIteration])
-                                   || (hit->GetType() == kLITSTRIPHIT
-                                       && chi < fChiSqStripHitCut[fIteration]);
-        if (
-          hitInValidationGate
-          && chi
-               < minChiSq) {  // Check if hit is inside validation gate and closer to the track.
+        bool hitInValidationGate = (hit->GetType() == kLITPIXELHIT && chi < fChiSqPixelHitCut[fIteration])
+                                   || (hit->GetType() == kLITSTRIPHIT && chi < fChiSqStripHitCut[fIteration]);
+        if (hitInValidationGate && chi < minChiSq) {  // Check if hit is inside validation gate and closer to the track.
           minChiSq = chi;
           minHit   = hit;
           minPar   = tpar;
@@ -215,18 +195,17 @@ void CbmLitTrackFinderNN::FollowTracks(TrackPtrIterator itBegin,
         track->SetParamLast(&minPar);
         track->SetChi2(track->GetChi2() + minChiSq);
         track->SetNDF(lit::NDF(track));
-      } else {  // Missing hit
+      }
+      else {  // Missing hit
         track->SetNofMissingHits(track->GetNofMissingHits() + 1);
-        if (track->GetNofMissingHits() > fMaxNofMissingHits[fIteration]) {
-          break;
-        }
+        if (track->GetNofMissingHits() > fMaxNofMissingHits[fIteration]) { break; }
       }
     }
   }
 }
 
-void CbmLitTrackFinderNN::RemoveHits(TrackPtrIterator itBegin,
-                                     TrackPtrIterator itEnd) {
+void CbmLitTrackFinderNN::RemoveHits(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   for (TrackPtrIterator it = itBegin; it != itEnd; it++) {
     CbmLitTrack* track = *it;
     if (track->GetQuality() == kLITBAD) { continue; }
@@ -236,9 +215,8 @@ void CbmLitTrackFinderNN::RemoveHits(TrackPtrIterator itBegin,
   }
 }
 
-void CbmLitTrackFinderNN::CopyToOutput(TrackPtrIterator itBegin,
-                                       TrackPtrIterator itEnd,
-                                       TrackPtrVector& tracks) {
+void CbmLitTrackFinderNN::CopyToOutput(TrackPtrIterator itBegin, TrackPtrIterator itEnd, TrackPtrVector& tracks)
+{
   for (TrackPtrIterator it = itBegin; it != itEnd; it++) {
     CbmLitTrack* track = *it;
     if (track->GetQuality() == kLITBAD) { continue; }

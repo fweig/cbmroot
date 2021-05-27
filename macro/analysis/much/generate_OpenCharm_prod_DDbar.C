@@ -49,8 +49,7 @@ void OpenCharm_prod_DDbar(int nEvents = 1000, int opt = 1)
   // Tree->Branch("P1", P1, "Px[trackno]/D:Py[trackno]:Pz[trackno]:E[trackno]");
 
   const double T = 0.15, a = 6;
-  const double pi = acos(-1.0), pi_mass = 0.139, D_mass = 1.896,
-               lambda_mass = 2.286;
+  const double pi = acos(-1.0), pi_mass = 0.139, D_mass = 1.896, lambda_mass = 2.286;
   const double mp = 0.938, mmu = 0.106, me = 0.51E-3;
 
   double part_mass1 = 0., part_mass2 = 0.;
@@ -61,8 +60,7 @@ void OpenCharm_prod_DDbar(int nEvents = 1000, int opt = 1)
   double beta_CM  = pbeam / (Eb + mp);
   double gamma_CM = 1. / TMath::Sqrt(1. - beta_CM * beta_CM);
 
-  double Y_CM =
-    0.5 * TMath::Log((1 + beta_CM) / (1 - beta_CM));  // frame rapidity
+  double Y_CM = 0.5 * TMath::Log((1 + beta_CM) / (1 - beta_CM));  // frame rapidity
 
   // Rapidity distribution set in the same way as in  SPS signal generator GENESIS. Get width of pion rapidity distribution from Landau formula. For other particles set the width by proper scaling with maxm. possible rapidities
 
@@ -76,9 +74,7 @@ void OpenCharm_prod_DDbar(int nEvents = 1000, int opt = 1)
 
   int count = 0.0;
 
-  float decay_prob[2] = {
-    0.55,
-    0.45};  // set according to the relative branching ratios in semi-leptonic modes
+  float decay_prob[2] = {0.55, 0.45};  // set according to the relative branching ratios in semi-leptonic modes
 
   //neutrion mass taken to bbe zero
 
@@ -137,8 +133,7 @@ void OpenCharm_prod_DDbar(int nEvents = 1000, int opt = 1)
 
       double ylab1 = ycm1 + Y_CM;
       double E1    = mT1 * cosh(ylab1);
-      double pz1 =
-        mT1 * sinh(ylab1);  // Z  comp. of D meson momentum in lab frame
+      double pz1   = mT1 * sinh(ylab1);  // Z  comp. of D meson momentum in lab frame
 
       // X & Y components are same in CM and lab frame
 

@@ -36,10 +36,8 @@ void run_reco_ratioplot(Int_t nEvents = 10, Int_t urqmd = 0000)
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 11);
   digipar.ReplaceAll(".ge", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";

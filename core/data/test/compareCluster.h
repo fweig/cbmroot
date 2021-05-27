@@ -6,11 +6,9 @@
 
 #include "compareMatch.h"
 
-void compareClusterDataMembers(CbmCluster& test,
-                               Int_t vectorsize,
-                               std::vector<Int_t> indices,
-                               Int_t address,
-                               CbmMatch* match) {
+void compareClusterDataMembers(CbmCluster& test, Int_t vectorsize, std::vector<Int_t> indices, Int_t address,
+                               CbmMatch* match)
+{
   Int_t retValInt {-111};
 
   retValInt = test.GetNofDigis();
@@ -28,10 +26,8 @@ void compareClusterDataMembers(CbmCluster& test,
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);
 
-  if (match != nullptr) {
-    compareMatchDataMembers(
-      *test.GetMatch(), match->GetNofLinks(), match->GetTotalWeight());
-  } else {
+  if (match != nullptr) { compareMatchDataMembers(*test.GetMatch(), match->GetNofLinks(), match->GetTotalWeight()); }
+  else {
     EXPECT_EQ(match, test.GetMatch());
   }
 }

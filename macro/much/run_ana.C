@@ -4,23 +4,19 @@
 //
 //---------------------------------------------------
 
-void run_ana(Int_t nEvents   = 1000,
-             TString dataSet = "muons",
-             TString setup   = "sis100_muon_lmvm",
-             Bool_t useMC    = kTRUE,
-             TString pluto   = "",
-             Double_t ANN    = -1) {
+void run_ana(Int_t nEvents = 1000, TString dataSet = "muons", TString setup = "sis100_muon_lmvm", Bool_t useMC = kTRUE,
+             TString pluto = "", Double_t ANN = -1)
+{
   TString dir      = "";
   TString traFile  = dir + dataSet + ".tra.root";
   TString parFile  = dir + dataSet + ".par.root";
   TString recoFile = dir + dataSet + ".rec.root";
   TString outFile;
-  if (ANN < 0)
-    outFile = dataSet + ".ana.root";
+  if (ANN < 0) outFile = dataSet + ".ana.root";
   else
     outFile = Form("%s.ana.ANN_%1.2f.root", dataSet.Data(), ANN);
 
-  FairRunAna* run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(recoFile);
   inputSource->AddFriend(traFile);
   run->SetSource(inputSource);

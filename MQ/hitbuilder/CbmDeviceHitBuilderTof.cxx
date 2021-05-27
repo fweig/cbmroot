@@ -72,8 +72,8 @@ static Int_t iMess                = 0;
 static Int_t iIndexDut            = 0;
 static Double_t StartAnalysisTime = 0.;
 //const Double_t cLight             = 29.9792;  // in cm/ns
-static FairRootManager* rootMgr   = NULL;
-static Int_t iRunId               = 1;
+static FairRootManager* rootMgr = NULL;
+static Int_t iRunId             = 1;
 
 CbmTofDigi* pRef;
 CbmTofDigi* pRefCal;
@@ -1939,14 +1939,9 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
                   TGeoNode* fNode =  // prepare local->global trafo
                     gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
                   //          fNode->Print();
-                  if (
-                    NULL
-                    == fNode) {  // Transformation matrix not available !!!??? - Check
-                    LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p",
-                                       fChannelInfo->GetX(),
-                                       fChannelInfo->GetY(),
-                                       fChannelInfo->GetZ(),
-                                       fNode);
+                  if (NULL == fNode) {  // Transformation matrix not available !!!??? - Check
+                    LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p", fChannelInfo->GetX(), fChannelInfo->GetY(),
+                                       fChannelInfo->GetZ(), fNode);
                     ChangeState(fair::mq::Transition::Stop);
                   }
 
@@ -2609,11 +2604,8 @@ Bool_t CbmDeviceHitBuilderTof::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
 
   TGeoNode* cNode = gGeoManager->GetCurrentNode();
   if (NULL == cNode) {  // Transformation matrix not available !!!??? - Check
-    LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p",
-                       fChannelInfo->GetX(),
-                       fChannelInfo->GetY(),
-                       fChannelInfo->GetZ(),
-                       cNode);
+    LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p", fChannelInfo->GetX(), fChannelInfo->GetY(),
+                       fChannelInfo->GetZ(), cNode);
     ChangeState(fair::mq::Transition::Stop);
   }
 
@@ -2757,11 +2749,8 @@ Bool_t CbmDeviceHitBuilderTof::LoadGeometry()
       gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
 
     if (NULL == fNode) {  // Transformation matrix not available !!!??? - Check
-      LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p",
-                         fChannelInfo->GetX(),
-                         fChannelInfo->GetY(),
-                         fChannelInfo->GetZ(),
-                         fNode);
+      LOG(error) << Form("Node at (%6.1f,%6.1f,%6.1f) : %p", fChannelInfo->GetX(), fChannelInfo->GetY(),
+                         fChannelInfo->GetZ(), fNode);
       ChangeState(fair::mq::Transition::Stop);
     }
     if (icell == 0) {

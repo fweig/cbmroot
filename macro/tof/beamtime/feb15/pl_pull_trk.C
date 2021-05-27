@@ -1,4 +1,5 @@
-void pl_pull_trk(Int_t NSt = 5, char* var = "X", Int_t iFit = 0) {
+void pl_pull_trk(Int_t NSt = 5, char* var = "X", Int_t iFit = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -33,16 +34,16 @@ void pl_pull_trk(Int_t NSt = 5, char* var = "X", Int_t iFit = 0) {
       gPad->SetLogy();
       gPad->SetGridx();
       if (iFit > 0) {
-        Double_t dFMean = h1->GetMean();
-        Double_t dFLim  = 2.5 * h1->GetRMS();
-        TFitResultPtr fRes =
-          h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-        vSt[iSt]   = iSt;
-        vMean[iSt] = fRes->Parameter(1);
-        vSig[iSt]  = fRes->Parameter(2);
+        Double_t dFMean    = h1->GetMean();
+        Double_t dFLim     = 2.5 * h1->GetRMS();
+        TFitResultPtr fRes = h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+        vSt[iSt]           = iSt;
+        vMean[iSt]         = fRes->Parameter(1);
+        vSig[iSt]          = fRes->Parameter(2);
         //vSig[iSt]=TMath::Max(20.,vSig[iSt]);
       }
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -66,9 +67,8 @@ void pl_pull_trk(Int_t NSt = 5, char* var = "X", Int_t iFit = 0) {
   TMatrixD a(NSt, NSt);
   for (Int_t i = 0; i < NSt; i++)
     for (Int_t j = 0; j < NSt; j++) {
-      if (i == j) {
-        a[i][j] = val;
-      } else {
+      if (i == j) { a[i][j] = val; }
+      else {
         a[i][j] = 1;
       }
     }

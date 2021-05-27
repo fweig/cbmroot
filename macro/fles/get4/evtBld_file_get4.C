@@ -10,12 +10,9 @@
  */
 
 
-void evtBld_file_get4(Int_t nEvents     = -1,
-                      TString inFolder  = "data/",
-                      TString inFile    = "get4Test",
-                      Int_t iUnpackMode = 2,
-                      Bool_t bWithUstc  = kFALSE,
-                      Bool_t bSmallMs   = kTRUE) {
+void evtBld_file_get4(Int_t nEvents = -1, TString inFolder = "data/", TString inFile = "get4Test",
+                      Int_t iUnpackMode = 2, Bool_t bWithUstc = kFALSE, Bool_t bSmallMs = kTRUE)
+{
 
   //   FairRunOnline* run = new FairRunOnline();
   CbmRunOnline* run = new CbmRunOnline();
@@ -29,18 +26,14 @@ void evtBld_file_get4(Int_t nEvents     = -1,
   //  Int_t nEvents = -1;
 
   // Create pattern for histo output file name
-  TString sHistoFile =
-    "./" + inFile + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs);
+  TString sHistoFile = "./" + inFile + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs);
 
   // Create pattern for calib output file name
-  TString sCalibFile =
-    inFile + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs);
+  TString sCalibFile = inFile + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs);
 
 
   // --- Specify output file name (this is just an example)
-  TString outFile = "data/" + inFile
-                    + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs)
-                    + ".root";
+  TString outFile = "data/" + inFile + Form("_%1u_%1u_%1u", iUnpackMode, bWithUstc, bSmallMs) + ".root";
 
   // Create input filename
   inFile = inFolder + inFile + ".tsa";
@@ -91,30 +84,13 @@ void evtBld_file_get4(Int_t nEvents     = -1,
   get4_unpacker->SetBinSizeEvoHistos(1.0);
   //  get4_unpacker->SetBinSizeEvoHistos(   0.1 );
   get4_unpacker->SetLengthEvoHistos(1200.0);
-  if (kTRUE == bSmallMs)
-    get4_unpacker->SetMicroSliceLength(16384 * 8
-                                       * (1e-9));  // s, From to 01/03 15:00
+  if (kTRUE == bSmallMs) get4_unpacker->SetMicroSliceLength(16384 * 8 * (1e-9));  // s, From to 01/03 15:00
   else
     get4_unpacker->SetMicroSliceLength(1e-3);  // s, Up to 01/03 15:00
 
-  get4_unpacker->SetPulserMode(
-    kFALSE);                      // kTRUE = ON, kFALSE = OFF (default is ON)
-  get4_unpacker->SetPulserFee();  // 1 value (default is 0)
-  get4_unpacker->SetPulserChans(0,
-                                4,
-                                8,
-                                12,
-                                16,
-                                20,
-                                24,
-                                28,
-                                32,
-                                36,
-                                40,
-                                44,
-                                48,
-                                52,
-                                56,
+  get4_unpacker->SetPulserMode(kFALSE);  // kTRUE = ON, kFALSE = OFF (default is ON)
+  get4_unpacker->SetPulserFee();         // 1 value (default is 0)
+  get4_unpacker->SetPulserChans(0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56,
                                 60);  // 1-16 values (default is 0-15)
   get4_unpacker->SetOldReadoutSupp();
   get4_unpacker->SetMaxCoincDist(200000.0);  // ps
@@ -190,8 +166,7 @@ void evtBld_file_get4(Int_t nEvents     = -1,
     eventDumper->SetActiveGet4(uChipIndex, kFALSE);
   eventDumper->SetNbEvtBuffEmptyCall(50);
   //  eventDumper->SetDataWriting( kFALSE ); // kFALSE = throw out all mode
-  eventDumper->SetDataWriting(
-    kTRUE);  // kTRUE = 1 entry per event if everything works
+  eventDumper->SetDataWriting(kTRUE);  // kTRUE = 1 entry per event if everything works
   run->AddTask(eventDumper);
 
   run->Init();
@@ -202,8 +177,7 @@ void evtBld_file_get4(Int_t nEvents     = -1,
   //  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
   run->Run(nEvents, 0);  // run until end of input file
 
-  get4_unpacker
-    ->Finish();  // Should be called first as histo owned by analysis file :-(
+  get4_unpacker->Finish();  // Should be called first as histo owned by analysis file :-(
   run->Finish();
   timer.Stop();
 
@@ -213,8 +187,7 @@ void evtBld_file_get4(Int_t nEvents     = -1,
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

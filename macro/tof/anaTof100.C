@@ -1,4 +1,5 @@
-anaTof100() {
+anaTof100()
+{
 
   TString InputFile = "data/auaumbias.root";
   TString ParFile   = "data/testparams.root";
@@ -58,20 +59,14 @@ anaTof100() {
   CbmTofHit* TofHit;
 
   //points
-  TH2F* ptm_rap_gen_kp = new TH2F(
-    "ptm_rap_gen_kp", "MCTrack-gen k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
-  TH2F* ptm_rap_gen_km = new TH2F(
-    "ptm_rap_gen_km", "MCTrack-gen k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_gen_kp = new TH2F("ptm_rap_gen_kp", "MCTrack-gen k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_gen_km = new TH2F("ptm_rap_gen_km", "MCTrack-gen k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
 
-  TH2F* ptm_rap_poi_kp = new TH2F(
-    "ptm_rap_poi_kp", "MCTrack-poi k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
-  TH2F* ptm_rap_poi_km = new TH2F(
-    "ptm_rap_poi_km", "MCTrack-poi k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_poi_kp = new TH2F("ptm_rap_poi_kp", "MCTrack-poi k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_poi_km = new TH2F("ptm_rap_poi_km", "MCTrack-poi k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
 
-  TH2F* ptm_rap_hit_kp = new TH2F(
-    "ptm_rap_hit_kp", "MCTrack-hit k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
-  TH2F* ptm_rap_hit_km = new TH2F(
-    "ptm_rap_hit_km", "MCTrack-hit k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_hit_kp = new TH2F("ptm_rap_hit_kp", "MCTrack-hit k-plus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
+  TH2F* ptm_rap_hit_km = new TH2F("ptm_rap_hit_km", "MCTrack-hit k-minus; y; p_{T}/m", 30, -1, 5, 30, 0, 2.5);
 
   //hits
   Int_t nbinx    = 100;
@@ -80,70 +75,31 @@ anaTof100() {
   Float_t yrange = 600.;
   Float_t wxy2   = nbinx * nbiny / 4. / xrange / yrange;
 
-  TH2F* xy_poi1 = new TH2F(
-    "xy_poi1", "TofPoint1; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
-  TH2F* xy_poi2 = new TH2F("xy_poi2",
-                           "TofPoint1 /cm^{2}; ;",
-                           nbinx,
-                           -xrange,
-                           xrange,
-                           nbiny,
-                           -yrange,
-                           yrange);
-  TH2F* xy_poi3 = new TH2F("xy_poi3",
-                           "TofPoint1 /cm^{2}/s; ;",
-                           nbinx,
-                           -xrange,
-                           xrange,
-                           nbiny,
-                           -yrange,
-                           yrange);
+  TH2F* xy_poi1 = new TH2F("xy_poi1", "TofPoint1; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2F* xy_poi2 = new TH2F("xy_poi2", "TofPoint1 /cm^{2}; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2F* xy_poi3 = new TH2F("xy_poi3", "TofPoint1 /cm^{2}/s; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
 
-  TH2F* xy_hit1 = new TH2F(
-    "xy_hit1", "TofHit; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
-  TH2F* xy_hit2 = new TH2F("xy_hit2",
-                           "TofHit /cm^{2}; ;",
-                           nbinx,
-                           -xrange,
-                           xrange,
-                           nbiny,
-                           -yrange,
-                           yrange);
-  TH2F* xy_hit3 = new TH2F("xy_hit3",
-                           "TofHit /cm^{2}/s; ;",
-                           nbinx,
-                           -xrange,
-                           xrange,
-                           nbiny,
-                           -yrange,
-                           yrange);
+  TH2F* xy_hit1 = new TH2F("xy_hit1", "TofHit; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2F* xy_hit2 = new TH2F("xy_hit2", "TofHit /cm^{2}; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2F* xy_hit3 = new TH2F("xy_hit3", "TofHit /cm^{2}/s; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
 
-  TH2F* dxx =
-    new TH2F("dxx", "Delta x; x;", 100, -xrange, xrange, 50., -10., 10.);
-  TH2F* dyy =
-    new TH2F("dyy", "Delta y; y;", 100, -yrange, yrange, 50., -10., 10.);
-  TH2F* dzx =
-    new TH2F("dzx", "Delta z; x;", 100, -xrange, xrange, 50, -20., 20.);
-  TH2F* dzy =
-    new TH2F("dzy", "Delta z; y;", 100, -yrange, yrange, 50, -20., 20.);
-  TH2F* dzz = new TH2F("dzz", "Delta z; z;", 100, 400., 650., 50, -20., 20.);
-  TH2F* pv_hit =
-    new TH2F("pv_hit", "momentum; velocity;", 100, 0., 32., 100., 0., 4.);
+  TH2F* dxx    = new TH2F("dxx", "Delta x; x;", 100, -xrange, xrange, 50., -10., 10.);
+  TH2F* dyy    = new TH2F("dyy", "Delta y; y;", 100, -yrange, yrange, 50., -10., 10.);
+  TH2F* dzx    = new TH2F("dzx", "Delta z; x;", 100, -xrange, xrange, 50, -20., 20.);
+  TH2F* dzy    = new TH2F("dzy", "Delta z; y;", 100, -yrange, yrange, 50, -20., 20.);
+  TH2F* dzz    = new TH2F("dzz", "Delta z; z;", 100, 400., 650., 50, -20., 20.);
+  TH2F* pv_hit = new TH2F("pv_hit", "momentum; velocity;", 100, 0., 32., 100., 0., 4.);
 
   TH1F* tof_hit = new TH1F("tof_hit", "TofHit;", 100, 0., 200.);
 
-  TH2F* tm_hit =
-    new TH2F("tm_hit", "Tofmass; momentum;", 100, 0., 10., 100., 0., 2.5);
-  TH2F* tm_hit1 = new TH2F(
-    "tm_hit1", "Tofmass(flg=1); momentum;", 100, 0., 10., 100., 0., 2.5);
-  TH2F* tm_hit2 = new TH2F(
-    "tm_hit2", "Tofmass(flg=2); momentum;", 100, 0., 10., 100., 0., 2.5);
+  TH2F* tm_hit  = new TH2F("tm_hit", "Tofmass; momentum;", 100, 0., 10., 100., 0., 2.5);
+  TH2F* tm_hit1 = new TH2F("tm_hit1", "Tofmass(flg=1); momentum;", 100, 0., 10., 100., 0., 2.5);
+  TH2F* tm_hit2 = new TH2F("tm_hit2", "Tofmass(flg=2); momentum;", 100, 0., 10., 100., 0., 2.5);
 
   // var
 
   Int_t nMCTracks, nTofPoints, nTofHits;
-  Float_t x_point, y_point, z_point, tof_point, SMtype_point, mod_point,
-    cel_point, gap_point;
+  Float_t x_point, y_point, z_point, tof_point, SMtype_point, mod_point, cel_point, gap_point;
   Float_t x_poi, y_poi, z_poi, tof_poi;
   Float_t SMtype_poi, mod_poi, cel_poi, gap_poi;
   Float_t p_MC, px_MC, py_MC, pz_MC;
@@ -157,8 +113,7 @@ anaTof100() {
   Float_t beta;
   Int_t nevent  = t1->GetEntries();
   Int_t nnevent = 5;
-  Float_t rxy2 =
-    wxy2 * 1.E7 / nevent;  // to scale rates for 10MHz interaction rates
+  Float_t rxy2  = wxy2 * 1.E7 / nevent;  // to scale rates for 10MHz interaction rates
 
   cout << "total events number:" << nevent << endl;
 
@@ -186,14 +141,8 @@ anaTof100() {
       pid     = MCTrack->GetPdgCode();
       if (MCTrack->GetMotherId() != -1) continue;  // primary particles
       //	if (MCTrack->GetNPoints(kTOF)>0) continue;
-      if (pid == 321) {
-        ptm_rap_gen_kp->Fill(MCTrack->GetRapidity(),
-                             MCTrack->GetPt() / MCTrack->GetMass());
-      }
-      if (pid == -321) {
-        ptm_rap_gen_km->Fill(MCTrack->GetRapidity(),
-                             MCTrack->GetPt() / MCTrack->GetMass());
-      }
+      if (pid == 321) { ptm_rap_gen_kp->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
+      if (pid == -321) { ptm_rap_gen_km->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
     }
 
     // TofPoint loop
@@ -208,14 +157,8 @@ anaTof100() {
 
       if (TrackP[k] == 0) {  // for efficiency
         TrackP[k] = 1;
-        if (pid == 321) {
-          ptm_rap_poi_kp->Fill(MCTrack->GetRapidity(),
-                               MCTrack->GetPt() / MCTrack->GetMass());
-        }
-        if (pid == -321) {
-          ptm_rap_poi_km->Fill(MCTrack->GetRapidity(),
-                               MCTrack->GetPt() / MCTrack->GetMass());
-        }
+        if (pid == 321) { ptm_rap_poi_kp->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
+        if (pid == -321) { ptm_rap_poi_km->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
         x_poi      = TofPoint->GetX();
         y_poi      = TofPoint->GetY();
         z_poi      = TofPoint->GetZ();
@@ -275,14 +218,8 @@ anaTof100() {
 
       if (TrackP[k] == 0) {  // for efficiency
         TrackP[k] = 1;
-        if (pid == 321) {
-          ptm_rap_hit_kp->Fill(MCTrack->GetRapidity(),
-                               MCTrack->GetPt() / MCTrack->GetMass());
-        }
-        if (pid == -321) {
-          ptm_rap_hit_km->Fill(MCTrack->GetRapidity(),
-                               MCTrack->GetPt() / MCTrack->GetMass());
-        }
+        if (pid == 321) { ptm_rap_hit_kp->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
+        if (pid == -321) { ptm_rap_hit_km->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass()); }
         if (pid == 211) {
           // if (pid==211 || pid==-211) {
           //mass_pion->Fill(MCTrack->GetMass());

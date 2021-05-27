@@ -25,7 +25,9 @@ public:
     , fInf(NULL)
     , fCaloZ(0.)
     , fFitter(NULL)
-    , fTrackPar(NULL) {}
+    , fTrackPar(NULL)
+  {
+  }
 
   /** Initing routine **/
   virtual InitStatus Init();

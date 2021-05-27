@@ -23,7 +23,8 @@ CbmMCInputSet::CbmMCInputSet(Double_t rate)
   , fInputs()
   , fInputHandle()
   , fBranches()
-  , fDeltaDist(nullptr) {
+  , fDeltaDist(nullptr)
+{
 
   if (rate > 0.) {
     Double_t mean = 1.e9 / rate;  // mean time between events
@@ -36,7 +37,8 @@ CbmMCInputSet::CbmMCInputSet(Double_t rate)
 
 
 // -----   Destructor   ------------------------------------------------------
-CbmMCInputSet::~CbmMCInputSet() {
+CbmMCInputSet::~CbmMCInputSet()
+{
   if (fDeltaDist) delete fDeltaDist;
   for (auto const& entry : fInputs)
     if (entry.second) delete entry.second;
@@ -45,7 +47,8 @@ CbmMCInputSet::~CbmMCInputSet() {
 
 
 // -----   Set the branch address of an input branch   -----------------------
-Bool_t CbmMCInputSet::ActivateObject(TObject** object, const char* branchName) {
+Bool_t CbmMCInputSet::ActivateObject(TObject** object, const char* branchName)
+{
 
   // The branch address has to be set for each input chain
   for (auto const& mapEntry : fInputs) {
@@ -61,9 +64,8 @@ Bool_t CbmMCInputSet::ActivateObject(TObject** object, const char* branchName) {
 
 
 // -----   Add an input to the set   -----------------------------------------
-void CbmMCInputSet::AddInput(UInt_t inputId,
-                             TChain* chain,
-                             ECbmTreeAccess mode) {
+void CbmMCInputSet::AddInput(UInt_t inputId, TChain* chain, ECbmTreeAccess mode)
+{
 
   // Catch invalid chain pointer.
   if (!chain) {
@@ -81,9 +83,7 @@ void CbmMCInputSet::AddInput(UInt_t inputId,
   CbmMCInput* input = new CbmMCInput(chain, mode);
 
   // The first input defines the reference branch list.
-  if (fInputs.empty()) {
-    fBranches = input->GetBranchList();
-  }  //? First input
+  if (fInputs.empty()) { fBranches = input->GetBranchList(); }  //? First input
 
   // Check compatibility of the input branch list with the reference list.
   else {
@@ -101,15 +101,15 @@ void CbmMCInputSet::AddInput(UInt_t inputId,
 
 
 // -----   Check the branch list of an input   -------------------------------
-Bool_t CbmMCInputSet::CheckBranchList(CbmMCInput* input) {
+Bool_t CbmMCInputSet::CheckBranchList(CbmMCInput* input)
+{
 
   assert(input);
   Bool_t success = kTRUE;
   for (auto const& entry : fBranches) {
     auto it = input->GetBranchList().find(entry);
     if (it == input->GetBranchList().end()) {
-      LOG(debug) << "MCInputSet: Required branch " << entry
-                 << " not present in input!";
+      LOG(debug) << "MCInputSet: Required branch " << entry << " not present in input!";
       success = kFALSE;
       break;
     }  //? Global branch not in input
@@ -134,7 +134,8 @@ Bool_t CbmMCInputSet::CheckBranchList(CbmMCInput* input) {
 
 
 // -----   Time difference to next event   -----------------------------------
-Double_t CbmMCInputSet::GetDeltaT() {
+Double_t CbmMCInputSet::GetDeltaT()
+{
   if (!fDeltaDist) return 0.;
   return fDeltaDist->GetRandom();
 }
@@ -142,14 +143,14 @@ Double_t CbmMCInputSet::GetDeltaT() {
 
 
 // -----   Maximal number of events to be read from the input   --------------
-Int_t CbmMCInputSet::GetMaxNofEvents() const {
+Int_t CbmMCInputSet::GetMaxNofEvents() const
+{
 
   Int_t minimum = -1;
 
   for (auto const& entry : fInputs) {
     Int_t test = entry.second->GetMaxNofEvents();
-    LOG(info) << "MCInputSet: Max. number of events for input " << entry.first
-              << " is " << test;
+    LOG(info) << "MCInputSet: Max. number of events for input " << entry.first << " is " << test;
     if (test >= 0 && (minimum == -1 || test < minimum)) minimum = test;
   }  //# Inputs
 
@@ -162,7 +163,8 @@ Int_t CbmMCInputSet::GetMaxNofEvents() const {
 
 
 // -----   Get next entry from chain   ---------------------------------------
-std::tuple<Bool_t, UInt_t, Int_t> CbmMCInputSet::GetNextEntry() {
+std::tuple<Bool_t, UInt_t, Int_t> CbmMCInputSet::GetNextEntry()
+{
 
   // Flag for having reached the last input
   Bool_t allInputsUsed = kFALSE;
@@ -185,10 +187,10 @@ std::tuple<Bool_t, UInt_t, Int_t> CbmMCInputSet::GetNextEntry() {
 
 
 // -----   Register input chains to FairRootManager   ------------------------
-void CbmMCInputSet::RegisterChains() {
+void CbmMCInputSet::RegisterChains()
+{
   for (auto const& mapEntry : fInputs) {
-    FairRootManager::Instance()->SetInChain(mapEntry.second->GetChain(),
-                                            mapEntry.first);
+    FairRootManager::Instance()->SetInChain(mapEntry.second->GetChain(), mapEntry.first);
   }
 }
 // ---------------------------------------------------------------------------

@@ -48,11 +48,9 @@ public:
    **
    *@param pTrack      Pointer to CbmTofTrack
    **/
-  virtual Int_t DoFit(CbmTofTrack* pTrack)          = 0;
-  virtual Int_t DoFit(CbmTofTracklet* pTrack)       = 0;
-  virtual void Extrapolate(const FairTrackParam* trackPar,
-                           Double_t z,
-                           FairTrackParam* e_track) = 0;
+  virtual Int_t DoFit(CbmTofTrack* pTrack)                                                      = 0;
+  virtual Int_t DoFit(CbmTofTracklet* pTrack)                                                   = 0;
+  virtual void Extrapolate(const FairTrackParam* trackPar, Double_t z, FairTrackParam* e_track) = 0;
   /*
   virtual void Extrapolate(CbmTofTracklet* track, Double_t z, FairTrackParam *e_track );
   */

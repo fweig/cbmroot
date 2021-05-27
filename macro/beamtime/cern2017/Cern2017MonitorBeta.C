@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void Cern2017MonitorBeta(TString inFile = "") {
+void Cern2017MonitorBeta(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
   if ("" != inFile) inFile = inDir + inFile;
@@ -65,8 +66,7 @@ void Cern2017MonitorBeta(TString inFile = "") {
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("cbmflib20");
     source->SetPortNumber(5556);
@@ -104,8 +104,7 @@ void Cern2017MonitorBeta(TString inFile = "") {
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -115,8 +114,7 @@ void Cern2017MonitorBeta(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

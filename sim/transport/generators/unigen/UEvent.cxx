@@ -1,11 +1,11 @@
 #include "UEvent.h"
 
-#include "UParticle.h"
-
 #include "TClonesArray.h"
 #include "TString.h"
 
 #include <iostream>
+
+#include "UParticle.h"
 using namespace std;
 
 //____________________________________________________________________
@@ -27,7 +27,9 @@ UEvent::UEvent()
   , fStepT(0.)
   , fNpa(0)
   , fComment("")
-  , fParticles(new TClonesArray("UParticle", 100)) {}
+  , fParticles(new TClonesArray("UParticle", 100))
+{
+}
 //--------------------------------------------------------------------
 
 
@@ -42,7 +44,8 @@ UEvent::UEvent(const UEvent& right)
   , fStepT(right.fStepT)
   , fNpa(right.fNpa)
   , fComment(right.fComment)
-  , fParticles(new TClonesArray("UParticle", 100)) {
+  , fParticles(new TClonesArray("UParticle", 100))
+{
   UParticle* p;
   for (Int_t i = 0; i < fNpa; i++) {
     p = (UParticle*) right.fParticles->At(i);
@@ -53,7 +56,8 @@ UEvent::UEvent(const UEvent& right)
 
 
 //--------------------------------------------------------------------
-UEvent::~UEvent() {
+UEvent::~UEvent()
+{
   // Destructor
   Clear();
   delete fParticles;
@@ -62,7 +66,8 @@ UEvent::~UEvent() {
 
 
 //--------------------------------------------------------------------
-void UEvent::Print(Option_t* option) const {
+void UEvent::Print(Option_t* option) const
+{
   // Print data members to the standard output
   cout << "---------------------------------------------" << endl
        << "-I-                 Event                 -I-" << endl
@@ -89,7 +94,8 @@ void UEvent::Print(Option_t* option) const {
 
 
 //--------------------------------------------------------------------
-UParticle* UEvent::GetParticle(Int_t index) const {
+UParticle* UEvent::GetParticle(Int_t index) const
+{
   // Get pointer to the particle.
   // index - index of the particle
   if (index < 0) { return nullptr; }
@@ -100,83 +106,39 @@ UParticle* UEvent::GetParticle(Int_t index) const {
 
 
 //--------------------------------------------------------------------
-void UEvent::AddParticle(Int_t index,
-                         Int_t pdg,
-                         Int_t status,
-                         Int_t parent,
-                         Int_t parentDecay,
-                         Int_t mate,
-                         Int_t decay,
-                         Int_t child[2],
-                         Double_t px,
-                         Double_t py,
-                         Double_t pz,
-                         Double_t e,
-                         Double_t x,
-                         Double_t y,
-                         Double_t z,
-                         Double_t t,
-                         Double_t weight) {
+void UEvent::AddParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+                         Int_t child[2], Double_t px, Double_t py, Double_t pz, Double_t e, Double_t x, Double_t y,
+                         Double_t z, Double_t t, Double_t weight)
+{
   // Add particle to the array
-  new ((*fParticles)[fNpa]) UParticle(index,
-                                      pdg,
-                                      status,
-                                      parent,
-                                      parentDecay,
-                                      mate,
-                                      decay,
-                                      child,
-                                      px,
-                                      py,
-                                      pz,
-                                      e,
-                                      x,
-                                      y,
-                                      z,
-                                      t,
-                                      weight);
+  new ((*fParticles)[fNpa])
+    UParticle(index, pdg, status, parent, parentDecay, mate, decay, child, px, py, pz, e, x, y, z, t, weight);
   fNpa += 1;
 }
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-void UEvent::AddParticle(Int_t index,
-                         Int_t pdg,
-                         Int_t status,
-                         Int_t parent,
-                         Int_t parentDecay,
-                         Int_t mate,
-                         Int_t decay,
-                         Int_t child[2],
-                         TLorentzVector mom,
-                         TLorentzVector pos,
-                         Double_t weight) {
+void UEvent::AddParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+                         Int_t child[2], TLorentzVector mom, TLorentzVector pos, Double_t weight)
+{
   // Add particle to the array
-  new ((*fParticles)[fNpa]) UParticle(index,
-                                      pdg,
-                                      status,
-                                      parent,
-                                      parentDecay,
-                                      mate,
-                                      decay,
-                                      child,
-                                      mom,
-                                      pos,
-                                      weight);
+  new ((*fParticles)[fNpa]) UParticle(index, pdg, status, parent, parentDecay, mate, decay, child, mom, pos, weight);
   fNpa += 1;
 }
 //--------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------
-void UEvent::AddParticle(const UParticle& particle) {
+void UEvent::AddParticle(const UParticle& particle)
+{
   // Add particle to the array
   new ((*fParticles)[fNpa]) UParticle(particle);
   fNpa += 1;
 }
 //--------------------------------------------------------------------
-UEvent& UEvent::operator=(const UEvent& right) {
+UEvent& UEvent::operator=(const UEvent& right)
+{
   if (this != &right) {
     fEventNr = right.fEventNr;
     fB       = right.fB;
@@ -198,13 +160,9 @@ UEvent& UEvent::operator=(const UEvent& right) {
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
-void UEvent::SetParameters(Int_t eventNr,
-                           Double_t b,
-                           Double_t phi,
-                           Int_t nes,
-                           Int_t stepNr,
-                           Double_t stepT,
-                           const char* comment) {
+void UEvent::SetParameters(Int_t eventNr, Double_t b, Double_t phi, Int_t nes, Int_t stepNr, Double_t stepT,
+                           const char* comment)
+{
   // Set the event parameters
   fEventNr = eventNr;
   fB       = b;
@@ -218,7 +176,8 @@ void UEvent::SetParameters(Int_t eventNr,
 
 
 //--------------------------------------------------------------------
-void UEvent::Clear(Option_t*) {
+void UEvent::Clear(Option_t*)
+{
   // Remove the particles from the array and reset counter
   fParticles->Clear();
   fNpa = 0;
@@ -227,7 +186,8 @@ void UEvent::Clear(Option_t*) {
 
 
 //--------------------------------------------------------------------
-void UEvent::RemoveAt(Int_t i) {
+void UEvent::RemoveAt(Int_t i)
+{
   // Remove one particle from the array.
   // i - index of the particle.
   // Array is automaticaly compressed afterwards, mind the indexing

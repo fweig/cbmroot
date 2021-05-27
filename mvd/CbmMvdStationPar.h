@@ -17,6 +17,7 @@
 
 
 #include "TNamed.h"
+
 #include <map>
 
 class CbmMvdStationPar : public TNamed {
@@ -63,7 +64,7 @@ public:
 protected:
   Int_t fStationCount;  // Number of Stations, station numbering starts at 0!!!
 
-  std::map<Int_t, Int_t> fZPositions;  // map of the z positions of all Stations
+  std::map<Int_t, Int_t> fZPositions;          // map of the z positions of all Stations
   std::map<Int_t, Double_t> fThicknesses;      // in cm
   std::map<Int_t, Double_t> fHeights;          // in cm
   std::map<Int_t, Double_t> fWidths;           // in cm

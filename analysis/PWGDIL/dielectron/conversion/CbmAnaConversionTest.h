@@ -45,11 +45,8 @@ public:
   void CombineElectrons_FromSTSandRICH();
   void CombinePhotons();
   void CombineElectrons_FromRICH();
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1,
-                                                      const TVector3 electron2);
-  Double_t Invmass_4particlesRECO(const TVector3 part1,
-                                  const TVector3 part2,
-                                  const TVector3 part3,
+  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  Double_t Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                   const TVector3 part4);
 
   void CombineElectrons_STSonly();
@@ -73,8 +70,7 @@ private:
   CbmVertex* fPrimVertex;
   CbmKFVertex fKFVertex;
 
-  std::vector<TH1*>
-    fHistoList_test;  // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_test;  // list of all histograms related to rich rings
 
   std::vector<int> fElectrons_gtid;
   std::vector<int> fElectrons_mcid;

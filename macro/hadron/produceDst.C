@@ -1,5 +1,6 @@
 
-void produceDst(Float_t beamMomentum, Int_t index) {
+void produceDst(Float_t beamMomentum, Int_t index)
+{
   TStopwatch timer;
   timer.Start();
   gDebug        = 0;
@@ -38,38 +39,17 @@ void produceDst(Float_t beamMomentum, Int_t index) {
 
   char* ver = getenv("CBMVER");
 
-  sprintf(strInputFile,
-          "/home/kresan/data/mc/%s/urqmd/auau/%1.0fgev/centr",
-          ver,
-          beamMomentum);
-  sprintf(strOutputFile,
-          "/home/kresan/data/dst/%s/urqmd/auau/%1.0fgev/\
+  sprintf(strInputFile, "/home/kresan/data/mc/%s/urqmd/auau/%1.0fgev/centr", ver, beamMomentum);
+  sprintf(strOutputFile, "/home/kresan/data/dst/%s/urqmd/auau/%1.0fgev/\
 centr/",
-          ver,
-          beamMomentum);
+          ver, beamMomentum);
 
-  sprintf(strParamFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.param.root",
-          strInputFile,
-          beamMomentum,
-          index);
-  sprintf(strInputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.root",
-          strInputFile,
-          beamMomentum,
-          index);
-  sprintf(strRecoFile,
-          "/home/kresan/data/reco/%s/urqmd/auau/%1.0fgev/\
+  sprintf(strParamFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.param.root", strInputFile, beamMomentum, index);
+  sprintf(strInputFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.mc.root", strInputFile, beamMomentum, index);
+  sprintf(strRecoFile, "/home/kresan/data/reco/%s/urqmd/auau/%1.0fgev/\
 centr/urqmd.auau.%1.0fgev.centr.%4d.reco.root",
-          ver,
-          beamMomentum,
-          beamMomentum,
-          index);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%4d.dst.root",
-          strOutputFile,
-          beamMomentum,
-          index);
+          ver, beamMomentum, beamMomentum, index);
+  sprintf(strOutputFile, "%s/urqmd.auau.%1.0fgev.centr.%4d.dst.root", strOutputFile, beamMomentum, index);
 
   for (Int_t i = 0; i < 1000; i++) {
     if (' ' == strInputFile[i]) strInputFile[i] = '0';
@@ -99,8 +79,7 @@ centr/urqmd.auau.%1.0fgev.centr.%4d.reco.root",
   fRun->AddTask(kalman);
 
   CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks* fitGlobal =
-    new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
+  CbmFitGlobalTracks* fitGlobal             = new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
   fRun->AddTask(fitGlobal);
 
   CbmProduceDst* produceDst = new CbmProduceDst();

@@ -1,14 +1,14 @@
 //forward declaration
 void loop_over_nodes(TObjArray*, TString&, std::map<TString, TVector3>&);
 
-void create_positionlist(TString inFileName = "") {
+void create_positionlist(TString inFileName = "")
+{
 
   if (inFileName.Length() > 0) {
     cout << "Open file " << inFileName << endl;
     TFile* f = new TFile(inFileName);
     if (!f->IsOpen()) {
-      std::cout << "create_tgeonode_list: geometry file " << inFileName
-                << " is not accessible!" << std::endl;
+      std::cout << "create_tgeonode_list: geometry file " << inFileName << " is not accessible!" << std::endl;
       return;
     }
     gGeoManager = (TGeoManager*) f->Get("FAIRGeom");
@@ -30,8 +30,7 @@ void create_positionlist(TString inFileName = "") {
   TString TopNodeName {node->GetName()};
   Path = "/" + Path + "/" + TopNodeName + "/";
 
-  std::cout << "{\"" << Path << "\", \"" << node->GetMedium()->GetName()
-            << "\"}," << std::endl;
+  std::cout << "{\"" << Path << "\", \"" << node->GetMedium()->GetName() << "\"}," << std::endl;
 
   gGeoManager->cd(Path);
   TGeoMatrix* globalmatrix = gGeoManager->GetCurrentMatrix();
@@ -48,19 +47,17 @@ void create_positionlist(TString inFileName = "") {
   ofstream myfile;
   myfile.open("example.txt");
   for (auto& info : matlist) {
-    std::cout << info.first << ", " << info.second.X() << ", "
-              << info.second.Y() << ", " << info.second.Z() << std::endl;
-    myfile << info.first << ", " << info.second.X() << ", " << info.second.Y()
-           << ", " << info.second.Z() << "\n";
+    std::cout << info.first << ", " << info.second.X() << ", " << info.second.Y() << ", " << info.second.Z()
+              << std::endl;
+    myfile << info.first << ", " << info.second.X() << ", " << info.second.Y() << ", " << info.second.Z() << "\n";
   }
   myfile.close();
 
   RemoveGeoManager();
 }
 
-void loop_over_nodes(TObjArray* nodes,
-                     TString& path,
-                     std::map<TString, TVector3>& matlist) {
+void loop_over_nodes(TObjArray* nodes, TString& path, std::map<TString, TVector3>& matlist)
+{
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node   = static_cast<TGeoNode*>(nodes->At(iNode));
     TString Fullpath = path + node->GetName() + "/";

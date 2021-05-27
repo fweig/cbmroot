@@ -9,6 +9,7 @@
 #define CBMLITFITNODE_H_
 
 #include "data/CbmLitTrackParam.h"
+
 #include <vector>
 using std::vector;
 
@@ -29,7 +30,9 @@ public:
     , fUpdatedParam()
     , fSmoothedParam()
     , fChiSqFiltered(0.)
-    , fChiSqSmoothed(0.) {}
+    , fChiSqSmoothed(0.)
+  {
+  }
 
   /**
     * \brief Destructor.
@@ -46,9 +49,7 @@ public:
 
   /* Setters */
   void SetF(const vector<litfloat>& F) { fF.assign(F.begin(), F.end()); }
-  void SetPredictedParam(const CbmLitTrackParam* par) {
-    fPredictedParam = *par;
-  }
+  void SetPredictedParam(const CbmLitTrackParam* par) { fPredictedParam = *par; }
   void SetUpdatedParam(const CbmLitTrackParam* par) { fUpdatedParam = *par; }
   void SetSmoothedParam(const CbmLitTrackParam* par) { fSmoothedParam = *par; }
   void SetChiSqFiltered(litfloat chiSq) { fChiSqFiltered = chiSq; }
@@ -61,10 +62,8 @@ private:
   CbmLitTrackParam fUpdatedParam;    // Updated with KF track parameters.
   CbmLitTrackParam fSmoothedParam;   // Smoothed track parameters.
 
-  litfloat
-    fChiSqFiltered;  // Contribution to chi-square of updated track parameters and hit.
-  litfloat
-    fChiSqSmoothed;  // Contribution to chi-square of smoothed track parameters and hit.
+  litfloat fChiSqFiltered;  // Contribution to chi-square of updated track parameters and hit.
+  litfloat fChiSqSmoothed;  // Contribution to chi-square of smoothed track parameters and hit.
 };
 
 #endif /*CBMLITFITNODE_H_*/

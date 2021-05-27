@@ -9,9 +9,12 @@
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseTau.h"
 #include "CbmRichRingLight.h"
+
 #include "FairTask.h"
+
 #include "TGeoNavigator.h"
 #include "TString.h"
+
 #include <map>
 #include <vector>
 
@@ -64,9 +67,7 @@ public:
   /*
      * Get pmt normal from 3 different points on the plane.
      */
-  void GetPmtNormal(Int_t NofPMTPoints,
-                    vector<Double_t>& normalPMT,
-                    Double_t& normalCste);
+  void GetPmtNormal(Int_t NofPMTPoints, vector<Double_t>& normalPMT, Double_t& normalCste);
 
   /*
      * Calculate mean sphere center coordinates from all the mirror tiles (to be used for the reconstruction step).
@@ -76,10 +77,7 @@ public:
   /*
      * Calculate intersection between incoming particle track (position given by ptR1 and direction by momR1) and sphere with center ptC (Cmean) and radius sphereRadius.
      */
-  void GetMirrorIntersection(vector<Double_t>& ptM,
-                             vector<Double_t> ptR1,
-                             vector<Double_t> momR1,
-                             vector<Double_t> ptC,
+  void GetMirrorIntersection(vector<Double_t>& ptM, vector<Double_t> ptR1, vector<Double_t> momR1, vector<Double_t> ptC,
                              Double_t sphereRadius);
 
   /*
@@ -89,60 +87,42 @@ public:
      * tile center).
      * The results haven't been conclusive so far. There seems to be a problem with the transformation matrix.
      */
-  vector<Double_t> RotateSphereCenter(vector<Double_t> ptM,
-                                      vector<Double_t> ptC,
-                                      TGeoNavigator* navi);
+  vector<Double_t> RotateSphereCenter(vector<Double_t> ptM, vector<Double_t> ptC, TGeoNavigator* navi);
 
   /*
      * Input matrix mat is inverted using the adjugate matrix (= transpose of the cofactor matrix) to give invMat. A test can be also run, to check that
      * mat*invMat = Id.
      */
-  void
-  InvertMatrix(Double_t mat[3][3], Double_t invMat[3][3], TGeoNavigator* navi);
+  void InvertMatrix(Double_t mat[3][3], Double_t invMat[3][3], TGeoNavigator* navi);
 
   /*
      * From point M and point C uncorrected (coordinates of C = theoretical coordinates of the sphere center) calculates new point M on the mirror.
      * Indeed the fRichMirrorPoints->At(iMirr) gives the point on the rotated mirror and not on the ideally aligned mirror. Even though the correction
      * is minimal, this gives a position more likely to be on the aligned mirror (no misalignment info used).
      */
-  void CalculateMirrorIntersection(vector<Double_t> ptM,
-                                   vector<Double_t> ptCUnCorr,
-                                   vector<Double_t>& ptMNew);
+  void CalculateMirrorIntersection(vector<Double_t> ptM, vector<Double_t> ptCUnCorr, vector<Double_t>& ptMNew);
 
   /*
      * Calculate the normal of the considered mirror tile, using the sphere center position of the tile (ptC) and the local reflection point on the mirror (ptM) => normalMirr.
      * Then calculate point on sensitive plane from the reflected track extrapolated (ptR2 = reflection of ptR1, with reflection axis = normalMirr).
      * ptR2Center uses ptC for the calculations, whereas ptR2Mirr uses ptM.
      */
-  void ComputeR2(vector<Double_t>& ptR2Center,
-                 vector<Double_t>& ptR2Mirr,
-                 vector<Double_t> ptM,
-                 vector<Double_t> ptC,
-                 vector<Double_t> ptR1,
-                 TGeoNavigator* navi,
-                 TString s);
+  void ComputeR2(vector<Double_t>& ptR2Center, vector<Double_t>& ptR2Mirr, vector<Double_t> ptM, vector<Double_t> ptC,
+                 vector<Double_t> ptR1, TGeoNavigator* navi, TString s);
 
   /*
      * Calculate the intersection point (P) between the track and the PMT plane, as if the track had been reflected by the mirror tile.
      * ptPMirr is calculated using the mirror point (ptM) to define the line reflected by the mirror and towards the PMT plane.
      * ptPR2 is calculated using ptR2Mirr (the reflection of point R1 on the sensitive plane, using ptM for the calculations -> see ComputeR2 method).
      */
-  void ComputeP(vector<Double_t>& ptPMirr,
-                vector<Double_t>& ptPR2,
-                vector<Double_t> normalPMT,
-                vector<Double_t> ptM,
-                vector<Double_t> ptR2Mirr,
-                Double_t normalCste);
+  void ComputeP(vector<Double_t>& ptPMirr, vector<Double_t>& ptPR2, vector<Double_t> normalPMT, vector<Double_t> ptM,
+                vector<Double_t> ptR2Mirr, Double_t normalCste);
 
   /*
      * Function filling the diffX, diffY and distance histograms, from the outPos vector.
      */
-  void FillHistProjection(TVector3 outPosIdeal,
-                          TVector3 outPosUnCorr,
-                          TVector3 outPos,
-                          Int_t NofGlobalTracks,
-                          vector<Double_t> normalPMT,
-                          Double_t constantePMT);
+  void FillHistProjection(TVector3 outPosIdeal, TVector3 outPosUnCorr, TVector3 outPos, Int_t NofGlobalTracks,
+                          vector<Double_t> normalPMT, Double_t constantePMT);
 
   /*
      * Draw histograms projection producer method.

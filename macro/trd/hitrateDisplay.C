@@ -1,20 +1,20 @@
-#include "TColor.h"
-
 #include "TCanvas.h"
+#include "TColor.h"
 #include "TFile.h"
 #include "TH2.h"
 #include "TImage.h"
 #include "TLine.h"
 #include "TPaveText.h"
+
 #include <iostream>
 
 
 TFile* file = new TFile("CbmTrdHitRateTest.root", "READ");
 
-void hitrateDisplay() {
+void hitrateDisplay()
+{
 
-  TCanvas* layerSelection =
-    new TCanvas("layerSelection", "layerSelection", 800, 600);
+  TCanvas* layerSelection = new TCanvas("layerSelection", "layerSelection", 800, 600);
   layerSelection->Divide(4, 3);
   TString name;
   Int_t position = 0;
@@ -35,7 +35,8 @@ void hitrateDisplay() {
   layerSelection->AddExec("ex", "LayerClicked()");
 }
 
-void LayerClicked() {
+void LayerClicked()
+{
   int event       = gPad->GetEvent();
   TObject* select = gPad->GetSelected();
   if (select->InheritsFrom("TPad"))
@@ -51,7 +52,8 @@ void LayerClicked() {
       }
     }
 }
-void ModuleClicked() {
+void ModuleClicked()
+{
   int event       = gPad->GetEvent();
   TObject* select = gPad->GetSelected();
   if (select->InheritsFrom("TBox")) {

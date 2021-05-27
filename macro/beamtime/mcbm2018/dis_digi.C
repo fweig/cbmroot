@@ -1,20 +1,8 @@
-void dis_digi(Int_t nEvents        = 100,
-              Int_t calMode        = 93,
-              Int_t calSel         = 1,
-              Int_t calSm          = 0,
-              Int_t RefSel         = 1,
-              TString cFileId      = "159.50.4.1",
-              Int_t iCalSet        = 10500,
-              Bool_t bOut          = 0,
-              Int_t iSel2          = 20,
-              Double_t dDeadtime   = 50,
-              Int_t iGenCor        = 1,
-              Int_t iTrackingSetup = 1,
-              Double_t dScalFac    = 5.,
-              Double_t dChi2Lim2   = 10.,
-              TString cCalId       = "XXX",
-              Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalOpt        = 1) {
+void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t calSm = 0, Int_t RefSel = 1,
+              TString cFileId = "159.50.4.1", Int_t iCalSet = 10500, Bool_t bOut = 0, Int_t iSel2 = 20,
+              Double_t dDeadtime = 50, Int_t iGenCor = 1, Int_t iTrackingSetup = 1, Double_t dScalFac = 5.,
+              Double_t dChi2Lim2 = 10., TString cCalId = "XXX", Bool_t bUseSigCalib = kFALSE, Int_t iCalOpt = 1)
+{
 
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
@@ -46,8 +34,7 @@ void dis_digi(Int_t nEvents        = 100,
   TString paramDir   = "./";
   TString ParFile    = paramDir + "data/" + cFileId + ".params.root";
   TString InputFile  = paramDir + "data/" + cFileId + ".root";
-  TString OutputFile = paramDir + "data/disdigi_" + cFileId
-                       + Form("_%09d%03d", iCalSet, iSel2) + ".out.root";
+  TString OutputFile = paramDir + "data/disdigi_" + cFileId + Form("_%09d%03d", iCalSet, iSel2) + ".out.root";
 
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cFileId.Data());
 
@@ -67,13 +54,12 @@ void dis_digi(Int_t nEvents        = 100,
       workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
     parFileList->Add(tofDigiFile);
     */
-    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
-                                                + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
-    TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-    TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-    TFile* fgeo     = new TFile(geoFile);
+    TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+    TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+    TFile* fgeo         = new TFile(geoFile);
     TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
     if (NULL == geoMan) {
       cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -97,7 +83,8 @@ void dis_digi(Int_t nEvents        = 100,
   if (iSel2 == 0) {
     iRSel = iBRef;  // use diamond
     iSel2 = iBRef;
-  } else {
+  }
+  else {
     if (iSel2 < 0) iSel2 = -iSel2;
     iRSel = iSel2;
   }
@@ -132,27 +119,22 @@ void dis_digi(Int_t nEvents        = 100,
   run->SetUserOutputFileName(OutputFile.Data());
   run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
 
-  CbmTofEventClusterizer* tofClust =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
+  CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
 
   tofClust->SetCalMode(calMode);
   tofClust->SetCalSel(calSel);
-  tofClust->SetCaldXdYMax(50.);  // geometrical matching window in cm
-  tofClust->SetCalCluMulMax(
-    4.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofClust->SetCalRpc(calSm);   // select detector for calibration update
-  tofClust->SetTRefId(RefSel);  // reference trigger for offset calculation
-  tofClust->SetTotMax(20.);     // Tot upper limit for walk corection
-  tofClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
-  tofClust->SetTotPreRange(
-    2.);  // effective lower Tot limit  in ns from peak position
+  tofClust->SetCaldXdYMax(50.);   // geometrical matching window in cm
+  tofClust->SetCalCluMulMax(4.);  // Max Counter Cluster Multiplicity for filling calib histos
+  tofClust->SetCalRpc(calSm);     // select detector for calibration update
+  tofClust->SetTRefId(RefSel);    // reference trigger for offset calculation
+  tofClust->SetTotMax(20.);       // Tot upper limit for walk corection
+  tofClust->SetTotMin(0.01);      //(12000.);  // Tot lower limit for walk correction
+  tofClust->SetTotPreRange(2.);   // effective lower Tot limit  in ns from peak position
   tofClust->SetTotMean(2.);       // Tot calibration target value in ns
   tofClust->SetMaxTimeDist(1.0);  // default cluster range in ns
   //tofClust->SetMaxTimeDist(0.);       //Deb// default cluster range in ns
-  tofClust->SetDelTofMax(
-    60.);  // acceptance range for cluster correlation in cm (!)
-  tofClust->SetSel2MulMax(4);  // limit Multiplicity in 2nd selector
+  tofClust->SetDelTofMax(60.);              // acceptance range for cluster correlation in cm (!)
+  tofClust->SetSel2MulMax(4);               // limit Multiplicity in 2nd selector
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kTRUE);
   tofClust->SetYFitMin(1.E4);
@@ -161,18 +143,12 @@ void dis_digi(Int_t nEvents        = 100,
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                        cFileId.Data(),
-                        iCalSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
   tofClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+  TString cOutFname = Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
   tofClust->SetOutHstFileName(cOutFname);
 
-  TString cAnaFile =
-    Form("%s_%09d%03d_tofAna.hst.root", cFileId.Data(), iCalSet, iSel2);
+  TString cAnaFile = Form("%s_%09d%03d_tofAna.hst.root", cFileId.Data(), iCalSet, iSel2);
 
   switch (calMode) {
     case -1:                      // initial calibration
@@ -313,10 +289,7 @@ void dis_digi(Int_t nEvents        = 100,
       tofClust->SetTRefDifMax(0.5);  // in ns
       tofClust->PosYMaxScal(0.7);    //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofClust);
@@ -349,30 +322,24 @@ void dis_digi(Int_t nEvents        = 100,
   CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
   tofFindTracks->UseFinder(tofTrackFinder);
   tofFindTracks->UseFitter(tofTrackFitter);
-  tofFindTracks->SetCalOpt(
-    iCalOpt);  // 1 - update offsets, 2 - update walk, 0 - bypass
+  tofFindTracks->SetCalOpt(iCalOpt);   // 1 - update offsets, 2 - update walk, 0 - bypass
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-  tofFindTracks->SetTtTarg(
-    0.057);  // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetTtTarg(0.057);     // target value for inverse velocity, > 0.033 ns/cm!
   //tofFindTracks->SetTtTarg(0.035);            // target value for inverse velocity, > 0.033 ns/cm!
-  tofFindTracks->SetCalParFileName(
-    cTrkFile);                             // Tracker parameter value file name
-  tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
+  tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+  tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
   tofFindTracks->SetR0Lim(100.);
 
-  tofFindTracks->SetStationMaxHMul(
-    30);  // Max Hit Multiplicity in any used station
+  tofFindTracks->SetStationMaxHMul(30);  // Max Hit Multiplicity in any used station
 
-  tofFindTracks->SetT0MAX(dScalFac);  // in ns
-  tofFindTracks->SetSIGT(0.08);       // default in ns
-  tofFindTracks->SetSIGX(0.3);        // default in cm
-  tofFindTracks->SetSIGY(0.6);        // default in cm
-  tofFindTracks->SetSIGZ(0.05);       // default in cm
-  tofFindTracks->SetUseSigCalib(
-    bUseSigCalib);  // ignore resolutions in CalPar file
-  tofTrackFinder->SetSIGLIM(dChi2Lim2
-                            * 2.);  // matching window in multiples of chi2
-  tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
+  tofFindTracks->SetT0MAX(dScalFac);            // in ns
+  tofFindTracks->SetSIGT(0.08);                 // default in ns
+  tofFindTracks->SetSIGX(0.3);                  // default in cm
+  tofFindTracks->SetSIGY(0.6);                  // default in cm
+  tofFindTracks->SetSIGZ(0.05);                 // default in cm
+  tofFindTracks->SetUseSigCalib(bUseSigCalib);  // ignore resolutions in CalPar file
+  tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);    // matching window in multiples of chi2
+  tofTrackFinder->SetChiMaxAccept(dChi2Lim2);   // max tracklet chi2
 
 
   Int_t iMinNofHits   = -1;
@@ -551,8 +518,7 @@ void dis_digi(Int_t nEvents        = 100,
       tofFindTracks->SetStation(3, 0, 2, 2);
 
     default:
-      cout << "Tracking setup " << iTrackingSetup << " not implemented "
-           << endl;
+      cout << "Tracking setup " << iTrackingSetup << " not implemented " << endl;
       return;
       ;
   }
@@ -566,8 +532,7 @@ void dis_digi(Int_t nEvents        = 100,
   // ===                       Analysis                                    ===
   // =========================================================================
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetReqTrg(0);  // 0 - no selection
@@ -578,8 +543,7 @@ void dis_digi(Int_t nEvents        = 100,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosY4Sel(0.5);    // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetDTDia(0.);        // Time difference to additional diamond
   tofAnaTestbeam->SetCorMode(RefSel);  // 1 - DTD4, 2 - X4
   tofAnaTestbeam->SetMul0Max(30);      // Max Multiplicity in dut
@@ -588,8 +552,7 @@ void dis_digi(Int_t nEvents        = 100,
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
   tofAnaTestbeam->SetEnableMatchPosScaling(kTRUE);
 
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
   tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
   tofAnaTestbeam->SetTShift(0.);      // Shift DTD4 to 0
@@ -605,12 +568,9 @@ void dis_digi(Int_t nEvents        = 100,
     tofClust->SetSel2Sm(iSel2Sm);
     tofClust->SetSel2Rpc(iSel2Rpc);
 
-    tofAnaTestbeam->SetMrpcSel2(
-      iSel2);  // initialization of second selector Mrpc Type
-    tofAnaTestbeam->SetMrpcSel2Sm(
-      iSel2Sm);  // initialization of second selector Mrpc SmId
-    tofAnaTestbeam->SetMrpcSel2Rpc(
-      iSel2Rpc);  // initialization of second selector Mrpc RpcId
+    tofAnaTestbeam->SetMrpcSel2(iSel2);        // initialization of second selector Mrpc Type
+    tofAnaTestbeam->SetMrpcSel2Sm(iSel2Sm);    // initialization of second selector Mrpc SmId
+    tofAnaTestbeam->SetMrpcSel2Rpc(iSel2Rpc);  // initialization of second selector Mrpc RpcId
   }
 
   tofClust->SetDutId(iDut);
@@ -650,10 +610,8 @@ void dis_digi(Int_t nEvents        = 100,
             break;
 
           case 9:
-            tofAnaTestbeam->SetChi2Lim(
-              100.);  // initialization of Chi2 selection limit
-            tofAnaTestbeam->SetMulDMax(
-              3);  // Max Multiplicity in BeamRef // Diamond
+            tofAnaTestbeam->SetChi2Lim(100.);  // initialization of Chi2 selection limit
+            tofAnaTestbeam->SetMulDMax(3);     // Max Multiplicity in BeamRef // Diamond
             tofAnaTestbeam->SetTShift(0.1);    // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(16.);    // Shift DTD4 to physical value
             tofAnaTestbeam->SetSel2TOff(0.5);  // Shift Sel2 time peak to 0
@@ -697,22 +655,15 @@ void dis_digi(Int_t nEvents        = 100,
 
   FairEventManager* fMan = new FairEventManager();
 
-  CbmEvDisTracks* Tracks = new CbmEvDisTracks(
-    "Tof Tracks",
-    1,
-    kFALSE,
-    kTRUE);  //name, verbosity, RnrChildren points, RnrChildren track
-             //  CbmEvDisTracks *Tracks =  new CbmEvDisTracks("Tof Tracks",1);
+  CbmEvDisTracks* Tracks = new CbmEvDisTracks("Tof Tracks", 1, kFALSE,
+                                              kTRUE);  //name, verbosity, RnrChildren points, RnrChildren track
+                                                       //  CbmEvDisTracks *Tracks =  new CbmEvDisTracks("Tof Tracks",1);
   fMan->AddTask(Tracks);
-  CbmPixelHitSetDraw* TofUHits =
-    new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
+  CbmPixelHitSetDraw* TofUHits = new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
   fMan->AddTask(TofUHits);
-  CbmPointSetArrayDraw* TofHits = new CbmPointSetArrayDraw(
-    "TofHit",
-    1,
-    1,
-    4,
-    kTRUE);  //name, colorMode, markerMode, verbosity, RnrChildren
+  CbmPointSetArrayDraw* TofHits =
+    new CbmPointSetArrayDraw("TofHit", 1, 1, 4,
+                             kTRUE);  //name, colorMode, markerMode, verbosity, RnrChildren
   //  CbmPixelHitSetDraw *TofHits = new CbmPixelHitSetDraw ("TofHit", kRed, kOpenCircle, 4);// kFullSquare);
   fMan->AddTask(TofHits);
 

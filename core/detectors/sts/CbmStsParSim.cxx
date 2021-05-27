@@ -13,15 +13,16 @@
 ClassImp(CbmStsParSim)
 
   // -----   Constructor   ----------------------------------------------------
-  CbmStsParSim::CbmStsParSim(const char* name,
-                             const char* title,
-                             const char* context)
-  : FairParGenericSet(name, title, context) {}
+  CbmStsParSim::CbmStsParSim(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Reset   ----------------------------------------------------------
-void CbmStsParSim::clear() {
+void CbmStsParSim::clear()
+{
   status = kFALSE;
   resetInputVersions();
 }
@@ -29,7 +30,8 @@ void CbmStsParSim::clear() {
 
 
 // -----   Read parameters from ASCII file   --------------------------------
-Bool_t CbmStsParSim::getParams(FairParamList*) {
+Bool_t CbmStsParSim::getParams(FairParamList*)
+{
   LOG(fatal) << GetName() << ": ASCII input is not defined!";
   return kFALSE;
 }
@@ -37,22 +39,20 @@ Bool_t CbmStsParSim::getParams(FairParamList*) {
 
 
 // -----   Write parameters from ASCII file   -------------------------------
-void CbmStsParSim::putParams(FairParamList*) {
-  LOG(fatal) << GetName() << ": ASCII output is not defined!";
-}
+void CbmStsParSim::putParams(FairParamList*) { LOG(fatal) << GetName() << ": ASCII output is not defined!"; }
 // --------------------------------------------------------------------------
 
 
 // -----   String output   --------------------------------------------------
-std::string CbmStsParSim::ToString() const {
+std::string CbmStsParSim::ToString() const
+{
   std::stringstream ss;
   ss << "Mode: " << (fEventMode ? "event" : "stream");
   ss << " | Diffusion: " << (fDiffusion ? "ON" : "OFF");
   ss << " | Lorentz shift: " << (fLorentzShift ? "ON" : "OFF");
   ss << " | Cross-talk: " << (fCrossTalk ? "ON" : "OFF");
   ss << " | Energy loss: ";
-  if (fELossModel == CbmStsELoss::kIdeal)
-    ss << "ideal";
+  if (fELossModel == CbmStsELoss::kIdeal) ss << "ideal";
   else if (fELossModel == CbmStsELoss::kUniform)
     ss << "uniform";
   else if (fELossModel == CbmStsELoss::kUrban)

@@ -7,11 +7,11 @@
 
 #include "CbmRichMatchRings.h"
 
+#include "CbmMCTrack.h"
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 #include "CbmTrackMatchNew.h"
 
-#include "CbmMCTrack.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 
@@ -35,46 +35,38 @@ CbmRichMatchRings::CbmRichMatchRings()
 
   fMatchMap()  //,
 //   fMatchMCMap()
-{}
+{
+}
 
 CbmRichMatchRings::~CbmRichMatchRings() {}
 
 
-InitStatus CbmRichMatchRings::Init() {
+InitStatus CbmRichMatchRings::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichMatchRings::Init", "RootManager not instantiated!");
-  }
+  if (NULL == ioman) { Fatal("CbmRichMatchRings::Init", "RootManager not instantiated!"); }
 
   fHits = (TClonesArray*) ioman->GetObject("RichHit");
   if (NULL == fHits) { Fatal("CbmRichMatchRings::Init", "No RichHit array!"); }
 
   fRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRings) {
-    Fatal("CbmRichMatchRings::Init", "No RichRing array!");
-  }
+  if (NULL == fRings) { Fatal("CbmRichMatchRings::Init", "No RichRing array!"); }
 
   fPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (NULL == fPoints) {
-    Fatal("CbmRichMatchRings::Init", "No RichPoint array!");
-  }
+  if (NULL == fPoints) { Fatal("CbmRichMatchRings::Init", "No RichPoint array!"); }
 
   fTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fTracks) {
-    Fatal("CbmRichMatchRings::Init", "No MCTrack array!");
-  }
+  if (NULL == fTracks) { Fatal("CbmRichMatchRings::Init", "No MCTrack array!"); }
 
   // Create and register RichRingMatch array
   fMatches = new TClonesArray("CbmTrackMatchNew", 100);
-  ioman->Register("RichRingMatch",
-                  "RICH",
-                  fMatches,
-                  IsOutputBranchPersistent("RichRingMatch"));
+  ioman->Register("RichRingMatch", "RICH", fMatches, IsOutputBranchPersistent("RichRingMatch"));
 
   return kSUCCESS;
 }
 
-void CbmRichMatchRings::Exec(Option_t* opt) {
+void CbmRichMatchRings::Exec(Option_t* opt)
+{
   // Clear output array
   if (fMatches != NULL) fMatches->Delete();
   map<Int_t, Int_t>::iterator it;
@@ -108,8 +100,8 @@ void CbmRichMatchRings::Exec(Option_t* opt) {
     CbmRichRing* ring = (CbmRichRing*) fRings->At(iRing);
     if (NULL == ring) continue;
 
-    CbmTrackMatchNew* ringMatch = new ((*fMatches)[iRing])
-      CbmTrackMatchNew();  //(iMCTrack, nTrue, nWrong, nFake, nMCTracks);
+    CbmTrackMatchNew* ringMatch =
+      new ((*fMatches)[iRing]) CbmTrackMatchNew();  //(iMCTrack, nTrue, nWrong, nFake, nMCTracks);
 
     Int_t nHits     = ring->GetNofHits();
     Int_t nAll      = 0;

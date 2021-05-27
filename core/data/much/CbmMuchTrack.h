@@ -9,9 +9,9 @@
 #ifndef CBMMUCHTRACK_H_
 #define CBMMUCHTRACK_H_ 1
 
-#include <Rtypes.h>  // for ClassDef
-
 #include "CbmTrack.h"  // for CbmTrack
+
+#include <Rtypes.h>  // for ClassDef
 
 class CbmMuchTrack : public CbmTrack {
 public:

@@ -9,25 +9,23 @@
 using std::cout;
 using std::endl;
 
-void test_task(Int_t nEvents = 1) {
+void test_task(Int_t nEvents = 1)
+{
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   //TString dir = "../littrack/commit_tests/events_muon/"; // Input/Output directory
   //TString dir = "/home/kozlov/cbm/cbmroot_clustering/cbmroot/macro/littrack/commit_tests/events_muon/"; // Input/Output directory
-  TString dir =
-    "/home/kozlov/cbm/cbmroot_clustering/events/03/";  // Input/Output directory
-  TString mcFile   = dir + "mc.0000.root";             // MC transport file
-  TString parFile  = dir + "param.0000.root";          // Parameters file
-  TString recoFile = dir + "global.reco.0000.root";    // Reconstruction file
-  TString outFile  = dir + "test.0000.root";           // Output file
+  TString dir      = "/home/kozlov/cbm/cbmroot_clustering/events/03/";  // Input/Output directory
+  TString mcFile   = dir + "mc.0000.root";                              // MC transport file
+  TString parFile  = dir + "param.0000.root";                           // Parameters file
+  TString recoFile = dir + "global.reco.0000.root";                     // Reconstruction file
+  TString outFile  = dir + "test.0000.root";                            // Output file
 
   TString resultDir = "./test/";  // Directory for output results
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v11a.digi.par";  // Digi scheme for STS
+  TList* parFileList     = new TList();
+  TObjString stsDigiFile = parDir + "/sts/sts_v11a.digi.par";  // Digi scheme for STS
   parFileList->Add(&stsDigiFile);
 
   TStopwatch timer;
@@ -68,7 +66,6 @@ void test_task(Int_t nEvents = 1) {
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   // ------------------------------------------------------------------------
 }

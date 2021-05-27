@@ -5,8 +5,8 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void apply_calib(Int_t nEvents = 100000000,
-                 char* cFileId = "CbmTofSps_01Dec0427") {
+void apply_calib(Int_t nEvents = 100000000, char* cFileId = "CbmTofSps_01Dec0427")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -70,8 +70,7 @@ void apply_calib(Int_t nEvents = 100000000,
 
   TTofTrbTdcCalib* tofCalibTrb = new TTofTrbTdcCalib();
   tofCalibTrb->CreateCalibration(kFALSE);
-  tofCalibTrb->SaveCalibData(
-    kFALSE);  // aa: kTRUE will also write calib data to unpack_*.out.root
+  tofCalibTrb->SaveCalibData(kFALSE);  // aa: kTRUE will also write calib data to unpack_*.out.root
   tofCalibTrb->SetFineTimeMethod(0);
   tofCalibTrb->SetToTMethod(0);
   tofCalibTrb->SetMinEntriesBinByBin(100000);
@@ -82,8 +81,7 @@ void apply_calib(Int_t nEvents = 100000000,
   //tofCalibTrb->SetUpperLinearFineLimit(480); 		// feb15
   tofCalibTrb->SetLowerLinearFineLimit(16);   // nov15
   tofCalibTrb->SetUpperLinearFineLimit(490);  // nov15
-  tofCalibTrb->SetReferenceBoard(
-    3);  // aa: 1st active tdc in the list in parUnpack_basic.txt
+  tofCalibTrb->SetReferenceBoard(3);          // aa: 1st active tdc in the list in parUnpack_basic.txt
   tofCalibTrb->SetToTSingleLeading(-100.);
 
   TMbsMappingTof* tofMapping = new TMbsMappingTof("Tof Mapping");
@@ -104,8 +102,7 @@ void apply_calib(Int_t nEvents = 100000000,
 
   run->AddTask(tofUnpMonitor);
   run->AddTask(tofCalibTrb);
-  run->AddTask(
-    tofMapping);  // additional feature as opposed to create_calib.C, now get digis.
+  run->AddTask(tofMapping);  // additional feature as opposed to create_calib.C, now get digis.
   run->AddTask(display);
 
   run->SetSource(source);

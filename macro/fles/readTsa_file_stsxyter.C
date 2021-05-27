@@ -1,5 +1,6 @@
 
-void readTsa_file_stsxyter(TString inFile = "stsxdata.tsa") {
+void readTsa_file_stsxyter(TString inFile = "stsxdata.tsa")
+{
   Int_t nEvents   = 1815;
   TString outFile = "data/test_online.root";
 
@@ -38,8 +39,7 @@ void readTsa_file_stsxyter(TString inFile = "stsxdata.tsa") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   std::cout << " Test passed" << std::endl;

@@ -9,11 +9,11 @@
 
 
 // --- String output
-std::string CbmDigitizeInfo::ToString() const {
+std::string CbmDigitizeInfo::ToString() const
+{
   std::stringstream ss;
-  ss << "DigitizeInfo: System " << fSystem << ", present "
-     << (fPresent ? "yes" : "no") << ", active " << (fActive ? "yes" : "no")
-     << ", branch " << fBranch;
+  ss << "DigitizeInfo: System " << fSystem << ", present " << (fPresent ? "yes" : "no") << ", active "
+     << (fActive ? "yes" : "no") << ", branch " << fBranch;
   return ss.str();
 }
 

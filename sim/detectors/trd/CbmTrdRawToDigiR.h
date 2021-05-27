@@ -5,14 +5,15 @@
 #include "CbmTrdDigi.h"
 //#include "CbmSpadicRawMessage22.h"
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include <FairRootManager.h>
+
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
+
+#include <map>
+#include <string>
+#include <vector>
 
 class CbmTrdRawToDigiR : public TObject {
 
@@ -36,10 +37,7 @@ public:
   virtual ~CbmTrdRawToDigiR() { ; }
 
   //  CbmTrdDigi* MakeDigi(CbmSpadicRawMessage22* raw);
-  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples,
-                       Int_t channel,
-                       Int_t uniqueModuleId,
-                       ULong64_t time,
+  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples, Int_t channel, Int_t uniqueModuleId, ULong64_t time,
                        Bool_t FN = false);
 
   Float_t GetTimeShift(std::vector<Int_t> samples);
@@ -72,34 +70,26 @@ private:
   CbmTrdRawToDigiR(const CbmTrdRawToDigiR&);
   CbmTrdRawToDigiR operator=(const CbmTrdRawToDigiR&);
 
-  Double_t fCalibration =
-    35. / 1.1107 / 0.8;  // calibrating pulse height to MIP
-  Double_t fEReco =
-    0.;  // calibrating energy reconstruction to the amount and position of used samples of the pulse
-  Double_t fTau       = 120;  // peaking time of the pulse
-  Int_t fRecoMode     = 1;    // pre defined mode for reconstruction samples
-  Int_t fShapingOrder = 1;    // shaping order in analytic response calculation
-  Int_t fDynamicRange = 500;  // maximum of ADC range to identiefy time shift
-  Int_t fHighBin =
-    3;  // additional sample position for lookup table to identiefy time shift
-  Int_t fPresamples =
-    2;  // additional sample position for lookup table to identiefy time shift
-  Int_t fMaxBin = 2 + fPresamples;  // expected maximum position for the pulse
-  Int_t fMinBin =
-    1 + fPresamples;  // additional sample position for lookup table
-  Float_t fExtrapolate =
-    .2;  // percentage extrapolation range for analytical solution
-  std::vector<Int_t> fSampleMask;  // reconstruction mask
+  Double_t fCalibration = 35. / 1.1107 / 0.8;  // calibrating pulse height to MIP
+  Double_t fEReco = 0.;   // calibrating energy reconstruction to the amount and position of used samples of the pulse
+  Double_t fTau   = 120;  // peaking time of the pulse
+  Int_t fRecoMode = 1;    // pre defined mode for reconstruction samples
+  Int_t fShapingOrder  = 1;                // shaping order in analytic response calculation
+  Int_t fDynamicRange  = 500;              // maximum of ADC range to identiefy time shift
+  Int_t fHighBin       = 3;                // additional sample position for lookup table to identiefy time shift
+  Int_t fPresamples    = 2;                // additional sample position for lookup table to identiefy time shift
+  Int_t fMaxBin        = 2 + fPresamples;  // expected maximum position for the pulse
+  Int_t fMinBin        = 1 + fPresamples;  // additional sample position for lookup table
+  Float_t fExtrapolate = .2;               // percentage extrapolation range for analytical solution
+  std::vector<Int_t> fSampleMask;          // reconstruction mask
   Double_t CalcResponse(Double_t t);
 
   Int_t fLookUp = 3;
 
-  Bool_t fDebug =
-    false;              // Debug switch to output calculation time of the lookup
-  Bool_t fSet = false;  // Boolean for module initialisation in simulation
-  std::string fReadFile = "";  // filepath to existing lookup table
-  std::string fWriteFile =
-    "";  // filepath to write newly calculated lookup table into
+  Bool_t fDebug          = false;  // Debug switch to output calculation time of the lookup
+  Bool_t fSet            = false;  // Boolean for module initialisation in simulation
+  std::string fReadFile  = "";     // filepath to existing lookup table
+  std::string fWriteFile = "";     // filepath to write newly calculated lookup table into
 
   CbmTrdCheckUtil* fQA = NULL;
 

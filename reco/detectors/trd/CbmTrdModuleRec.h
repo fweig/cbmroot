@@ -29,9 +29,7 @@ public:
   /**
    * \brief Add digi to local module
    **/
-  virtual Bool_t AddDigi(const CbmTrdDigi* /*d*/, Int_t /*id*/) {
-    return kTRUE;
-  }
+  virtual Bool_t AddDigi(const CbmTrdDigi* /*d*/, Int_t /*id*/) { return kTRUE; }
   /**
    * \brief Clear local storage
    **/
@@ -57,9 +55,7 @@ public:
   /**
    * \brief Steering routine for converting cluster to hit
    **/
-  virtual CbmTrdHit* MakeHit(Int_t cId,
-                             const CbmTrdCluster* c,
-                             std::vector<const CbmTrdDigi*>* digis) = 0;
+  virtual CbmTrdHit* MakeHit(Int_t cId, const CbmTrdCluster* c, std::vector<const CbmTrdDigi*>* digis) = 0;
 
 protected:
   UInt_t fCalled;           ///< counter for the number of calls

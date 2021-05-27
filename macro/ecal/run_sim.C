@@ -41,7 +41,8 @@ static Int_t fieldSymType;
 static TString defaultInputFile;
 #endif
 
-void run_sim(Int_t nEvents = 5) {
+void run_sim(Int_t nEvents = 5)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -157,9 +158,8 @@ void run_sim(Int_t nEvents = 5) {
   // -----   Create magnetic field   ----------------------------------------
   cout << "Field: " << fieldSymType << endl;
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -234,8 +234,7 @@ void run_sim(Int_t nEvents = 5) {
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

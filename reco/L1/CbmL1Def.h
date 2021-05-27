@@ -5,9 +5,11 @@
 
 
 #include "TStopwatch.h"
-#include <assert.h>
+
 #include <iostream>
 #include <vector>
+
+#include <assert.h>
 #ifdef HAVE_SSE
 #include "vectors/P4_F32vec4.h"
 #else
@@ -18,7 +20,8 @@
 //#include "vectors/PSEUDO_F64vec1.h"
 
 template<typename T>
-T finite(T x) {
+T finite(T x)
+{
   return std::isfinite(x);
 }
 
@@ -45,13 +48,12 @@ T finite(T x) {
 #define L1_ASSERT(v, msg)
 #define L1_assert(v)
 #else
-#define L1_ASSERT(v, msg)                                                      \
-  if (v) {                                                                     \
-  } else {                                                                     \
-    std::cerr << __FILE__ << ":" << __LINE__ << " assertion failed: " << #v    \
-              << " = " << (v) << "\n"                                          \
-              << msg << std::endl;                                             \
-    abort();                                                                   \
+#define L1_ASSERT(v, msg)                                                                                              \
+  if (v) {}                                                                                                            \
+  else {                                                                                                               \
+    std::cerr << __FILE__ << ":" << __LINE__ << " assertion failed: " << #v << " = " << (v) << "\n"                    \
+              << msg << std::endl;                                                                                     \
+    abort();                                                                                                           \
   }
 #define L1_assert(v) assert(v)
 #endif
@@ -76,7 +78,8 @@ public:
   unsigned int Size() const { return fSize; }  // Size() return number
   void Reset() { fSize = 0; }
 
-  void Resize(const unsigned int n) {
+  void Resize(const unsigned int n)
+  {
     if (n > std::vector<T>::size()) {
 #ifdef _OPENMP
 #pragma omp critical
@@ -87,20 +90,23 @@ public:
     fSize = n;
   }
 
-  void Store(const T& element) {
+  void Store(const T& element)
+  {
     if (fSize >= std::vector<T>::size()) {
 #ifdef _OPENMP
 #pragma omp critical
 #endif
       std::vector<T>::push_back(element);
-    } else
+    }
+    else
       std::vector<T>::at(fSize) = element;
 
     fSize++;
   }
 
 
-  T& operator[](const size_t index) {
+  T& operator[](const size_t index)
+  {
 
     //assert(index <= fSize);  // allow auto-resize by 1 element only
 
@@ -116,10 +122,7 @@ public:
     return std::vector<T>::operator[](index);
   }
 
-  const T& operator[](const size_t index) const {
-
-    return std::vector<T>::operator[](index);
-  }
+  const T& operator[](const size_t index) const { return std::vector<T>::operator[](index); }
 
   std::string getName()
   {

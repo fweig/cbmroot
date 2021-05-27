@@ -1,5 +1,4 @@
 // example.C
-#include <RQ_OBJECT.h>
 #include <TCanvas.h>
 #include <TF1.h>
 #include <TGButton.h>
@@ -7,6 +6,8 @@
 #include <TGFrame.h>
 #include <TRandom.h>
 #include <TRootEmbeddedCanvas.h>
+
+#include <RQ_OBJECT.h>
 {
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -169,21 +170,22 @@ public:
   void DoDraw();
   void ChangeStation(Int_t itemp);
 
-  void ChangeQaRecoPlot(Int_t itemp) {
+  void ChangeQaRecoPlot(Int_t itemp)
+  {
     qaRecoToPlot = itemp;
     DoDraw();
   }
 
   void ChangeView(Int_t itemp);
 
-  void
-  ChangeAdditString(char* carr) {  // cout << "addit string = " << carr << endl;
+  void ChangeAdditString(char* carr)
+  {  // cout << "addit string = " << carr << endl;
     fAdditString = Form("%s", carr);
     ChangeQaFileName();
   }
 
-  void ChangeSettingString(
-    char* carr) {  // cout << "setting string = " << carr << endl;
+  void ChangeSettingString(char* carr)
+  {  // cout << "setting string = " << carr << endl;
     fSettingString = Form("%s", carr);
     ChangeQaFileName();
   }
@@ -193,13 +195,15 @@ public:
   void ChangeQaFileName() { qaFileName = "sts.reco.test.root"; }
   void ChangeQaSimFileName() { qasimFileName = "sts.mc.root"; }
 
-  void ChangeNofMCEvents(char* carr) {
+  void ChangeNofMCEvents(char* carr)
+  {
     fNofMCEvents = atoi(carr);
     ChangeGeoFileName();
     ChangeQaFileName();
     ChangeQaSimFileName();
   }
-  void ChangeNofRecoEvents(char* carr) {
+  void ChangeNofRecoEvents(char* carr)
+  {
     fNofRecoEvents = atoi(carr);
     ChangeGeoFileName();
     ChangeQaFileName();
@@ -215,7 +219,8 @@ public:
   void HECa(Int_t event, Int_t x, Int_t y, TObject* sel);
 };
 
-MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
+MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h)
+{
   // Create a main frame
 
   fMain = new TGMainFrame(p, w, h);
@@ -272,9 +277,7 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
 
   // Create canvas widget
   fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fMain, 700, 700);
-  fMain->AddFrame(
-    fEcanvas,
-    new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 10, 10, 10, 1));
+  fMain->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 10, 10, 10, 1));
   // Create a horizontal frame widget with buttons
   TGHorizontalFrame* hframe = new TGHorizontalFrame(fMain, 200, 40);
 
@@ -297,20 +300,14 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
   for (Int_t istat = 0; istat < fNofStations; istat++) {
     statCombo->AddEntry(Form("station %d", istat + 1), istat);
   }
-  statCombo->Connect(
-    "Selected(Int_t)", "MyMainFrame", this, "ChangeStation(Int_t)");
-  hframe->AddFrame(statCombo,
-                   new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5));
+  statCombo->Connect("Selected(Int_t)", "MyMainFrame", this, "ChangeStation(Int_t)");
+  hframe->AddFrame(statCombo, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5));
   statCombo->Resize(100, 20);
 
   // combo box widget
   const Int_t nofRecoQaPlots          = 6;
-  TString recoQaPlots[nofRecoQaPlots] = {"efficiency",
-                                         "mom. resolution",
-                                         "nof hits",
-                                         "hits-pnts 2D",
-                                         "hits-pnts 1D",
-                                         "summary"};
+  TString recoQaPlots[nofRecoQaPlots] = {"efficiency",   "mom. resolution", "nof hits",
+                                         "hits-pnts 2D", "hits-pnts 1D",    "summary"};
   TGComboBox* fCombo                  = new TGComboBox(hframe, 100);
   for (Int_t iqap = 0; iqap < nofRecoQaPlots; iqap++) {
     fCombo->AddEntry(recoQaPlots[iqap], iqap);
@@ -318,10 +315,8 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
   fCombo->Resize(150, 20);
   // Entry3 is selected as current
   fCombo->Select(qaRecoToPlot);
-  fCombo->Connect(
-    "Selected(Int_t)", "MyMainFrame", this, "ChangeQaRecoPlot(Int_t)");
-  hframe->AddFrame(fCombo,
-                   new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5));
+  fCombo->Connect("Selected(Int_t)", "MyMainFrame", this, "ChangeQaRecoPlot(Int_t)");
+  hframe->AddFrame(fCombo, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5));
   fMain->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX, 2, 2, 2, 2));
 
   TGHorizontalFrame* h2frame = new TGHorizontalFrame(fMain, 200, 40);
@@ -346,8 +341,7 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
   saveCanv->Connect("Clicked()", "MyMainFrame", this, "SaveCanvas()");
   h2frame->AddFrame(saveCanv, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
 
-  TGTextButton* exit =
-    new TGTextButton(h2frame, "&Exit", "gApplication->Terminate(0)");
+  TGTextButton* exit = new TGTextButton(h2frame, "&Exit", "gApplication->Terminate(0)");
   h2frame->AddFrame(exit, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
   fMain->AddFrame(h2frame, new TGLayoutHints(kLHintsCenterX, 2, 2, 2, 2));
 
@@ -355,36 +349,27 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
 
   TGTextEntry* spStText = new TGTextEntry(tframe, specialString.Data());
   tframe->AddFrame(spStText, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-  spStText->Connect(
-    "TextChanged(char*)", "MyMainFrame", this, "ChangeSpecialString(char*)");
+  spStText->Connect("TextChanged(char*)", "MyMainFrame", this, "ChangeSpecialString(char*)");
 
-  TGTextEntry* adStText =
-    new TGTextEntry(tframe, fTbmsg = new TGTextBuffer(10));
+  TGTextEntry* adStText = new TGTextEntry(tframe, fTbmsg = new TGTextBuffer(10));
   fTbmsg->AddText(0, fAdditString.Data());
   tframe->AddFrame(adStText, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-  adStText->Connect(
-    "TextChanged(char*)", "MyMainFrame", this, "ChangeAdditString(char*)");
+  adStText->Connect("TextChanged(char*)", "MyMainFrame", this, "ChangeAdditString(char*)");
 
-  TGTextEntry* setStText =
-    new TGTextEntry(tframe, fTbmsg2 = new TGTextBuffer(10));
+  TGTextEntry* setStText = new TGTextEntry(tframe, fTbmsg2 = new TGTextBuffer(10));
   fTbmsg2->AddText(0, fSettingString.Data());
   tframe->AddFrame(setStText, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-  setStText->Connect(
-    "TextChanged(char*)", "MyMainFrame", this, "ChangeSettingString(char*)");
+  setStText->Connect("TextChanged(char*)", "MyMainFrame", this, "ChangeSettingString(char*)");
 
   cout << fNofMCEvents << " MC events" << endl;
   cout << fNofRecoEvents << " reco events" << endl;
-  TGNumberEntryField* spNEEntry = new TGNumberEntryField(
-    tframe, -1, fNofMCEvents, TGNumberFormat::kNESInteger);
+  TGNumberEntryField* spNEEntry = new TGNumberEntryField(tframe, -1, fNofMCEvents, TGNumberFormat::kNESInteger);
   tframe->AddFrame(spNEEntry, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-  spNEEntry->Connect(
-    "TextChanged(char*)", "MyMainFrame", this, "ChangeNofMCEvents(char*)");
+  spNEEntry->Connect("TextChanged(char*)", "MyMainFrame", this, "ChangeNofMCEvents(char*)");
 
-  TGNumberEntryField* spREEntry = new TGNumberEntryField(
-    tframe, -1, fNofRecoEvents, TGNumberFormat::kNESInteger);
+  TGNumberEntryField* spREEntry = new TGNumberEntryField(tframe, -1, fNofRecoEvents, TGNumberFormat::kNESInteger);
   tframe->AddFrame(spREEntry, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-  spREEntry->Connect(
-    "TextChanged(char*)", "MyMainFrame", this, "ChangeNofRecoEvents(char*)");
+  spREEntry->Connect("TextChanged(char*)", "MyMainFrame", this, "ChangeNofRecoEvents(char*)");
 
   //   TGTextEntry *geoFText = new TGTextEntry(tframe,geoFileName.Data());
   //   tframe->AddFrame(geoFText, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
@@ -399,9 +384,7 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
   Int_t parts[] = {8, 16, 36, 10, 10, 10, 10};
   fStatusBar    = new TGStatusBar(fMain, 50, 10, kHorizontalFrame);
   fStatusBar->SetParts(parts, 7);
-  fMain->AddFrame(fStatusBar,
-                  new TGLayoutHints(
-                    kLHintsBottom | kLHintsLeft | kLHintsExpandX, 0, 0, 2, 0));
+  fMain->AddFrame(fStatusBar, new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 0, 0, 2, 0));
 
 
   // Set a name to the main frame
@@ -416,7 +399,8 @@ MyMainFrame::MyMainFrame(const TGWindow* p, UInt_t w, UInt_t h) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::ChangeStation(Int_t itemp) {
+void MyMainFrame::ChangeStation(Int_t itemp)
+{
   // Draws function graphics in randomly choosen interval
   //  cout << "ale jazda" << endl;
   fSelStation = itemp;
@@ -429,7 +413,8 @@ void MyMainFrame::ChangeStation(Int_t itemp) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::ChangeView(Int_t itemp) {
+void MyMainFrame::ChangeView(Int_t itemp)
+{
   // Draws function graphics in randomly choosen interval
   fSelView = itemp - 1;
 
@@ -438,7 +423,8 @@ void MyMainFrame::ChangeView(Int_t itemp) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::DoDraw() {
+void MyMainFrame::DoDraw()
+{
   //  cout << "drawing" << endl;
   // Draws function graphics in randomly choosen interval
   TCanvas* fCanvas = fEcanvas->GetCanvas();
@@ -479,12 +465,9 @@ void MyMainFrame::DoDraw() {
       TLegend* effLegDet = new TLegend(0.3, 0.15, 0.68, 0.4);
       effLegDet->SetBorderSize(0);
       effLegDet->SetFillColor(0);
-      effLegDet->AddEntry(
-        fhMomEffPrim, Form("primaries     (%2.2f%%)", 100. * primEff), "pl");
-      effLegDet->AddEntry(
-        fhMomEffAll, Form("all                (%2.2f%%)", 100. * allEff), "pl");
-      effLegDet->AddEntry(
-        fhMomEffSec, Form("secondaries (%2.2f%%)", 100. * secEff), "pl");
+      effLegDet->AddEntry(fhMomEffPrim, Form("primaries     (%2.2f%%)", 100. * primEff), "pl");
+      effLegDet->AddEntry(fhMomEffAll, Form("all                (%2.2f%%)", 100. * allEff), "pl");
+      effLegDet->AddEntry(fhMomEffSec, Form("secondaries (%2.2f%%)", 100. * secEff), "pl");
       effLegDet->Draw();
 
       TLine* oneLine = new TLine(0.0, 1.0, 10.0, 1.0);
@@ -497,24 +480,15 @@ void MyMainFrame::DoDraw() {
 
       fhMomResPrim->SetAxisRange(0., 3., "Y");
       fhMomResPrim->Draw("cont0");
-      TH1F* fhLowBand = new TH1F("fhLowBand",
-                                 "Low Band",
-                                 fhMomResPrim->GetXaxis()->GetNbins(),
-                                 fhMomResPrim->GetXaxis()->GetXmin(),
-                                 fhMomResPrim->GetXaxis()->GetXmax());
-      TH1F* fhHigBand = new TH1F("fhHigBand",
-                                 "Hig Band",
-                                 fhMomResPrim->GetXaxis()->GetNbins(),
-                                 fhMomResPrim->GetXaxis()->GetXmin(),
-                                 fhMomResPrim->GetXaxis()->GetXmax());
-      for (Int_t ibin = fhMomResPrim->GetXaxis()->GetNbins(); ibin > 1;
-           ibin--) {
-        TF1* gausFit = new TF1("gausFit", "gaus");
-        TH1F* tempProjY =
-          (TH1F*) fhMomResPrim->ProjectionY("tempProjY", ibin, ibin);
+      TH1F* fhLowBand = new TH1F("fhLowBand", "Low Band", fhMomResPrim->GetXaxis()->GetNbins(),
+                                 fhMomResPrim->GetXaxis()->GetXmin(), fhMomResPrim->GetXaxis()->GetXmax());
+      TH1F* fhHigBand = new TH1F("fhHigBand", "Hig Band", fhMomResPrim->GetXaxis()->GetNbins(),
+                                 fhMomResPrim->GetXaxis()->GetXmin(), fhMomResPrim->GetXaxis()->GetXmax());
+      for (Int_t ibin = fhMomResPrim->GetXaxis()->GetNbins(); ibin > 1; ibin--) {
+        TF1* gausFit    = new TF1("gausFit", "gaus");
+        TH1F* tempProjY = (TH1F*) fhMomResPrim->ProjectionY("tempProjY", ibin, ibin);
         tempProjY->Fit("gausFit", "QN", "", -5., 5.);
-        fhLowBand->SetBinContent(
-          ibin, gausFit->GetParameter(1) - gausFit->GetParameter(2));
+        fhLowBand->SetBinContent(ibin, gausFit->GetParameter(1) - gausFit->GetParameter(2));
         fhLowBand->SetBinError(ibin, 0.01);
         fhHigBand->SetBinContent(ibin, gausFit->GetParameter(2));
         fhHigBand->SetBinError(ibin, gausFit->GetParError(2));
@@ -529,10 +503,7 @@ void MyMainFrame::DoDraw() {
       TLegend* effLegMR = new TLegend(0.3, 0.15, 0.68, 0.23);
       effLegMR->SetBorderSize(0);
       effLegMR->SetFillColor(0);
-      effLegMR->AddEntry(
-        fhHigBand,
-        Form("momentum resolution (%2.2f%%)", momentumResolutionPrim),
-        "pl");
+      effLegMR->AddEntry(fhHigBand, Form("momentum resolution (%2.2f%%)", momentumResolutionPrim), "pl");
       effLegMR->Draw();
     }
 
@@ -555,12 +526,10 @@ void MyMainFrame::DoDraw() {
       TF1* fitY;
       Double_t resolution[2];
 
-      projX = (TH1F*) fhHitPointCorrelation[fSelStation]->ProjectionX(
-        Form("projX%i", fSelStation + 1));
-      projY = (TH1F*) fhHitPointCorrelation[fSelStation]->ProjectionY(
-        Form("projY%i", fSelStation + 1));
-      fitX = new TF1(Form("fitX%i", fSelStation + 1), "gaus", -0.02, 0.02);
-      fitY = new TF1(Form("fitY%i", fSelStation + 1), "gaus", -0.02, 0.02);
+      projX = (TH1F*) fhHitPointCorrelation[fSelStation]->ProjectionX(Form("projX%i", fSelStation + 1));
+      projY = (TH1F*) fhHitPointCorrelation[fSelStation]->ProjectionY(Form("projY%i", fSelStation + 1));
+      fitX  = new TF1(Form("fitX%i", fSelStation + 1), "gaus", -0.02, 0.02);
+      fitY  = new TF1(Form("fitY%i", fSelStation + 1), "gaus", -0.02, 0.02);
       projX->SetAxisRange(-0.02, 0.02, "X");
       projY->SetAxisRange(-0.02, 0.02, "X");
       projX->Fit(fitX, "QN", "", -0.02, 0.02);
@@ -597,8 +566,7 @@ void MyMainFrame::DoDraw() {
       printoutPave->AddText(Form("%i events", fNEvents));
       printoutPave->AddText(Form("%3.2f prim, %3.2f sec, %3.2f gh, %3.2f cl",
                                  Double_t(fNPrimTracks) / Double_t(fNEvents),
-                                 Double_t(fNSecTracks) / Double_t(fNEvents),
-                                 Double_t(fNGhosts) / Double_t(fNEvents),
+                                 Double_t(fNSecTracks) / Double_t(fNEvents), Double_t(fNGhosts) / Double_t(fNEvents),
                                  Double_t(fNClones) / Double_t(fNEvents)));
       printoutPave->AddText("Single Hit Resolutions:");
       /*      for ( Int_t ist = 0 ; ist < nofStations ; ist++ )
@@ -606,16 +574,12 @@ void MyMainFrame::DoDraw() {
 	  printoutPave->AddText(Form("st#%i,#sigma_{x}=%3.2f#mum,#sigma_{y}=%3.2f#mum",
 	  ist+1,resolution[0][ist],resolution[1][ist]));*/
       printoutPave->AddText("Tracking efficiencies (p>1.0 GeV/c):");
-      printoutPave->AddText(
-        Form("all = %2.2f%%(%2.2f%%)", 100. * effAll, 100. * allEff));
-      printoutPave->AddText(
-        Form("vertex = %2.2f%%(%2.2f%%)", 100. * effPrim, 100. * primEff));
+      printoutPave->AddText(Form("all = %2.2f%%(%2.2f%%)", 100. * effAll, 100. * allEff));
+      printoutPave->AddText(Form("vertex = %2.2f%%(%2.2f%%)", 100. * effPrim, 100. * primEff));
       printoutPave->AddText(Form("reference = %2.2f%%", 100. * effRef));
+      printoutPave->AddText(Form("non-vertex = %2.2f%%(%2.2f%%)", 100. * effSec, 100. * secEff));
       printoutPave->AddText(
-        Form("non-vertex = %2.2f%%(%2.2f%%)", 100. * effSec, 100. * secEff));
-      printoutPave->AddText(Form("Momentum resolution = %3.2f%%(%3.2f%%)",
-                                 momentumResolutionAll,
-                                 momentumResolutionPrim));
+        Form("Momentum resolution = %3.2f%%(%3.2f%%)", momentumResolutionAll, momentumResolutionPrim));
       printoutPave->Draw();
     }
 
@@ -664,8 +628,7 @@ void MyMainFrame::DoDraw() {
       fhELoss[fSelStation]->SetTitle("");
       fhELoss[fSelStation]->SetAxisRange(-xmax, xmax, "X");
       fhELoss[fSelStation]->SetAxisRange(-ymax, ymax, "Y");
-      fhELoss[fSelStation]->SetAxisRange(
-        fMaxELoss / 5000., fMaxELoss * 1.5, "Z");
+      fhELoss[fSelStation]->SetAxisRange(fMaxELoss / 5000., fMaxELoss * 1.5, "Z");
       fhELoss[fSelStation]->Draw("colz");
     }
     if (fSelView == 6) {
@@ -691,17 +654,13 @@ void MyMainFrame::DoDraw() {
     for (Int_t iwaf = 0; iwaf < nofSensors[fSelStation]; iwaf++) {
       Double_t phi = sensorAngle[fSelStation][iwaf] * 3.14159 / 180.;
 
-      Double_t x1 = sensorPosition[0][fSelStation][iwaf]
-                    - sensorDimension[0][fSelStation][iwaf] / 2 * cos(phi)
+      Double_t x1 = sensorPosition[0][fSelStation][iwaf] - sensorDimension[0][fSelStation][iwaf] / 2 * cos(phi)
                     - sensorDimension[1][fSelStation][iwaf] / 2 * sin(phi);
-      Double_t y1 = sensorPosition[1][fSelStation][iwaf]
-                    - sensorDimension[0][fSelStation][iwaf] / 2 * sin(phi)
+      Double_t y1 = sensorPosition[1][fSelStation][iwaf] - sensorDimension[0][fSelStation][iwaf] / 2 * sin(phi)
                     - sensorDimension[1][fSelStation][iwaf] / 2 * cos(phi);
-      Double_t x2 = sensorPosition[0][fSelStation][iwaf]
-                    + sensorDimension[0][fSelStation][iwaf] / 2 * cos(phi)
+      Double_t x2 = sensorPosition[0][fSelStation][iwaf] + sensorDimension[0][fSelStation][iwaf] / 2 * cos(phi)
                     + sensorDimension[1][fSelStation][iwaf] / 2 * sin(phi);
-      Double_t y2 = sensorPosition[1][fSelStation][iwaf]
-                    + sensorDimension[0][fSelStation][iwaf] / 2 * sin(phi)
+      Double_t y2 = sensorPosition[1][fSelStation][iwaf] + sensorDimension[0][fSelStation][iwaf] / 2 * sin(phi)
                     + sensorDimension[1][fSelStation][iwaf] / 2 * cos(phi);
 
       TLine* up = new TLine(x1, y1, x2, y1);
@@ -746,9 +705,7 @@ void MyMainFrame::DoDraw() {
   fCanvas->SetTopMargin(0.);
 
   if (fSelView == 2 || fSelView == 0) {
-    fCanvas->Connect("ProcessedEvent(Int_t,Int_t,Int_t,TObject*)",
-                     "MyMainFrame",
-                     this,
+    fCanvas->Connect("ProcessedEvent(Int_t,Int_t,Int_t,TObject*)", "MyMainFrame", this,
                      "HECa(Int_t,Int_t,Int_t,TObject*)");
   }
 
@@ -794,17 +751,15 @@ void MyMainFrame::DoDraw() {
       if (fSelView == 2) beingDrawn = Form("%ssecOccup", beingDrawn.Data());
       if (fSelView == 3) beingDrawn = Form("%sclustLen", beingDrawn.Data());
       if (fSelView == 4) beingDrawn = Form("%shitFEff", beingDrawn.Data());
-    } else {
+    }
+    else {
       if (fSelView == 0) beingDrawn = Form("%sLayout", beingDrawn.Data());
     }
 
     CbmStsStation* station = (CbmStsStation*) fStations->At(fSelStation);
 
-    TLatex* ztxt = new TLatex(maxx / 3,
-                              maxy - 1.3,
-                              Form("STS station %i, z=%2.1fcm",
-                                   station->GetStationNr(),
-                                   station->GetZ()));
+    TLatex* ztxt =
+      new TLatex(maxx / 3, maxy - 1.3, Form("STS station %i, z=%2.1fcm", station->GetStationNr(), station->GetZ()));
     ztxt->SetTextSize(0.03);
     ztxt->Draw();
 
@@ -834,8 +789,7 @@ void MyMainFrame::DoDraw() {
       Float_t ystart = ymax * 0.85;
       Float_t dy     = ymax * 0.05;
       for (Int_t i = 0; i < 10; i++) {
-        pave = new TPave(
-          xstart + dx * i, -ystart, xstart + dx * (i + 1), -(ystart + dy), 1);
+        pave = new TPave(xstart + dx * i, -ystart, xstart + dx * (i + 1), -(ystart + dy), 1);
         //	if ( fSelStation < 5 )
         pave->Draw();
         //      Int_t color = (float)COLORSTART-((float)COLORSTART-(float)COLORSTOP)/10*(float)i;
@@ -866,8 +820,7 @@ void MyMainFrame::DoDraw() {
       char lower[100];
       sprintf(lower, "%3.2f", minOccup);
       TLatex* tlow = new TLatex(xstart + 0.5 * dx, -(ystart + dy * 2), "0.1");
-      if (fSelView == 3 || fSelView == 4)
-        tlow->SetText(xstart + 0.5 * dx, -(ystart + dy * 2), lower);
+      if (fSelView == 3 || fSelView == 4) tlow->SetText(xstart + 0.5 * dx, -(ystart + dy * 2), lower);
       tlow->SetTextSize(0.015);
       //	if ( fSelStation < 5 )
       tlow->Draw();
@@ -914,12 +867,10 @@ void MyMainFrame::DoDraw() {
         //	TPave* sensorPave = new TPave(x1,y1,x2,y2,0);
         TPaveText* sensorPave = new TPaveText(x1, y1, x2, y2, 0);
         for (Int_t ichip = 1; ichip < 9; ichip++) {
-          Double_t chipx = lx / 8;
-          TPaveText* chipPave =
-            new TPaveText(x1, y1, x1 + (chipx * ichip), y2, 0);
+          Double_t chipx      = lx / 8;
+          TPaveText* chipPave = new TPaveText(x1, y1, x1 + (chipx * ichip), y2, 0);
           chipPave->SetBorderSize(0);
-          chipPave->SetName(
-            Form("Sector%03dSensor%03d%03d", isect + 1, isens + 1, ichip));
+          chipPave->SetName(Form("Sector%03dSensor%03d%03d", isect + 1, isens + 1, ichip));
         }
 
         sensorPave->SetBorderSize(0);
@@ -932,8 +883,7 @@ void MyMainFrame::DoDraw() {
         TPave* backSide;
         sensorPave->SetName(Form("Sector%03dSensor%03d", isect + 1, isens + 1));
 
-        Double_t sensColor =
-          50. + 70. * (sensor->GetZ0() - station->GetZ() + .35);
+        Double_t sensColor = 50. + 70. * (sensor->GetZ0() - station->GetZ() + .35);
         sensorPave->SetFillColor(sensColor);
         chipPave->SetFillColor(sensColor);
         //	cout << "occupancy" << endl;
@@ -943,54 +893,43 @@ void MyMainFrame::DoDraw() {
           //	  cout << "do i really come here?" << endl;
 
           if (fSelView == 1) {
-            occupancy = fhNofHits[fSelStation][isect][isens]->GetMean()
-                        / fSensorArea[fSelStation][isect][isens];
-            sensorPave->SetFillColor(
-              palette[Int_t(occupancy * 10. / fMaxHitDens)]);
+            occupancy = fhNofHits[fSelStation][isect][isens]->GetMean() / fSensorArea[fSelStation][isect][isens];
+            sensorPave->SetFillColor(palette[Int_t(occupancy * 10. / fMaxHitDens)]);
             //	  if ( occupancy < 0.1 ) sensor[iwaf]->SetFillColor(3);
           }
           //	  cout << "ehllo" << endl;
           if (fSelView == 2) {
 
-            occupancy = 100. * fhFNofDigis[fSelStation][isect]->GetMean()
-                        / ((Float_t) fSectorNChannels[fSelStation][isect]);
+            occupancy =
+              100. * fhFNofDigis[fSelStation][isect]->GetMean() / ((Float_t) fSectorNChannels[fSelStation][isect]);
             cout << occupancy << endl;
-            sensorPave->SetFillColor(
-              palette[Int_t(occupancy * 10. / fMaxDigiOcc)]);
-            occupancy = 100. * fhBNofDigis[fSelStation][isect]->GetMean()
-                        / ((Float_t) fSectorNChannels[fSelStation][isect]);
-            if (yc > 0)
-              backSide = new TPave((x1 + x2) / 2., (y1 + y2) / 2., x2, y2, 0);
+            sensorPave->SetFillColor(palette[Int_t(occupancy * 10. / fMaxDigiOcc)]);
+            occupancy =
+              100. * fhBNofDigis[fSelStation][isect]->GetMean() / ((Float_t) fSectorNChannels[fSelStation][isect]);
+            if (yc > 0) backSide = new TPave((x1 + x2) / 2., (y1 + y2) / 2., x2, y2, 0);
             else
               backSide = new TPave(x1, y1, (x1 + x2) / 2., (y1 + y2) / 2., 0);
-            backSide->SetName(
-              Form("Sector%03dSensor%03dBack", isect + 1, isens + 1));
-            backSide->SetFillColor(
-              palette[Int_t(occupancy * 10. / fMaxDigiOcc)]);
+            backSide->SetName(Form("Sector%03dSensor%03dBack", isect + 1, isens + 1));
+            backSide->SetFillColor(palette[Int_t(occupancy * 10. / fMaxDigiOcc)]);
             //	  if ( occupancy < 0.1 ) sensor[iwaf]->SetFillColor(3);
           }
 
           if (fSelView == 3) {
             occupancy = fhFClusterL[fSelStation][isect]->GetMean();
-            sensorPave->SetFillColor(palette[Int_t(
-              (occupancy - fMinCluster) * 10. / (fMaxCluster - fMinCluster))]);
+            sensorPave->SetFillColor(palette[Int_t((occupancy - fMinCluster) * 10. / (fMaxCluster - fMinCluster))]);
             occupancy = fhBClusterL[fSelStation][isect]->GetMean();
-            if (yc > 0)
-              backSide = new TPave((x1 + x2) / 2., (y1 + y2) / 2., x2, y2, 0);
+            if (yc > 0) backSide = new TPave((x1 + x2) / 2., (y1 + y2) / 2., x2, y2, 0);
             else
               backSide = new TPave(x1, y1, (x1 + x2) / 2., (y1 + y2) / 2., 0);
-            backSide->SetName(
-              Form("Sector%03dSensor%03dBack", isect + 1, isens + 1));
-            backSide->SetFillColor(palette[Int_t(
-              (occupancy - fMinCluster) * 10. / (fMaxCluster - fMinCluster))]);
+            backSide->SetName(Form("Sector%03dSensor%03dBack", isect + 1, isens + 1));
+            backSide->SetFillColor(palette[Int_t((occupancy - fMinCluster) * 10. / (fMaxCluster - fMinCluster))]);
             //	  if ( occupancy < 0.1 ) sensor[iwaf]->SetFillColor(3);
           }
 
           if (fSelView == 4) {
             for (Int_t IChip = 1; IChip < 9; IChip++) {
               // cout<<(Int_t)(fhFNofDigisPerChip[fSelStation][isect][IChip])<<endl;
-              occupancy1 =
-                100. * fhFNofDigisPerChip[fSelStation][isect][IChip]->GetMean();
+              occupancy1 = 100. * fhFNofDigisPerChip[fSelStation][isect][IChip]->GetMean();
               cout << "1  " << occupancy1 << endl;
               //	    cout << "occupancy = " << occupancy << " so color = " << Int_t((occupancy-fMinHFE)*10./(fMaxHFE-fMinHFE)) << endl;
               //  	      chipPave->SetFillColor(palette[Int_t(occupancy1*10./0.1)]);
@@ -1040,57 +979,42 @@ void MyMainFrame::DoDraw() {
       Float_t ystart = ymax * 0.85;
       Float_t dy     = ymax * 0.05;
       for (Int_t i = 0; i < 50; i++) {
-        pave = new TPave(
-          xstart + dx * i, -ystart, xstart + dx * (i + 1), -(ystart + dy), 1);
+        pave = new TPave(xstart + dx * i, -ystart, xstart + dx * (i + 1), -(ystart + dy), 1);
         pave->SetBorderSize(0);
         pave->Draw();
         pave->SetFillColor(paletteZPos[i]);
       }
       cout << "station at " << station->GetZ() << endl;
 
-      TLatex* tlow =
-        new TLatex(xstart + 0.5 * dx, -(ystart + dy * 2), Form("%.2f", -0.35));
+      TLatex* tlow = new TLatex(xstart + 0.5 * dx, -(ystart + dy * 2), Form("%.2f", -0.35));
       tlow->SetTextSize(0.02);
       tlow->Draw();
-      TLatex* tmid = new TLatex(
-        xstart + 24.5 * dx, -(ystart + dy * 2), Form("%.0f", station->GetZ()));
+      TLatex* tmid = new TLatex(xstart + 24.5 * dx, -(ystart + dy * 2), Form("%.0f", station->GetZ()));
       tmid->SetTextSize(0.02);
       tmid->Draw();
-      TLatex* tup = new TLatex(xstart + 45 * dx,
-                               -(ystart + dy * 2),
-                               Form("%.2f", station->GetZ() + 0.35));
+      TLatex* tup = new TLatex(xstart + 45 * dx, -(ystart + dy * 2), Form("%.2f", station->GetZ() + 0.35));
       tup->SetTextSize(0.02);
       tup->Draw();
-      TLatex* ttex =
-        new TLatex(xstart + 35 * dx, -(ystart - 0.5 * dy), "z [cm]");
+      TLatex* ttex = new TLatex(xstart + 35 * dx, -(ystart - 0.5 * dy), "z [cm]");
       ttex->SetTextSize(0.03);
       ttex->Draw();
     }
 
     //    if ( fSelView == 0 ) {
     if (1 == 0) {
-      TEllipse* innerAccLimit =
-        new TEllipse(0.,
-                     0.,
-                     station->GetZ() * TMath::Tan(2.5 * TMath::DegToRad()),
-                     station->GetZ() * TMath::Tan(2.5 * TMath::DegToRad()));
+      TEllipse* innerAccLimit = new TEllipse(0., 0., station->GetZ() * TMath::Tan(2.5 * TMath::DegToRad()),
+                                             station->GetZ() * TMath::Tan(2.5 * TMath::DegToRad()));
       innerAccLimit->SetLineWidth(2);
       innerAccLimit->Draw();
 
-      TEllipse* outerAccLimit =
-        new TEllipse(0.,
-                     0.,
-                     station->GetZ() * TMath::Tan(25. * TMath::DegToRad()),
-                     station->GetZ() * TMath::Tan(25. * TMath::DegToRad()));
+      TEllipse* outerAccLimit = new TEllipse(0., 0., station->GetZ() * TMath::Tan(25. * TMath::DegToRad()),
+                                             station->GetZ() * TMath::Tan(25. * TMath::DegToRad()));
       outerAccLimit->SetLineWidth(2);
       outerAccLimit->SetLineStyle(2);
       outerAccLimit->Draw();
 
       TEllipse* ellipAccLimit =
-        new TEllipse(0.,
-                     0.,
-                     fHorizontalIncrease[fSelStation] * station->GetZ()
-                       * TMath::Tan(25. * TMath::DegToRad()),
+        new TEllipse(0., 0., fHorizontalIncrease[fSelStation] * station->GetZ() * TMath::Tan(25. * TMath::DegToRad()),
                      station->GetZ() * TMath::Tan(25. * TMath::DegToRad()));
       ellipAccLimit->SetLineWidth(2);
       ellipAccLimit->Draw();
@@ -1100,10 +1024,7 @@ void MyMainFrame::DoDraw() {
       // at z=160.cm radius is  3.25 cm
 
       TEllipse* beamPAccLimit =
-        new TEllipse(0.,
-                     0.,
-                     1.05 + (station->GetZ() - 27.) * 0.0165414,
-                     1.05 + (station->GetZ() - 27.) * 0.0165414);
+        new TEllipse(0., 0., 1.05 + (station->GetZ() - 27.) * 0.0165414, 1.05 + (station->GetZ() - 27.) * 0.0165414);
       beamPAccLimit->SetFillColor(2);
       beamPAccLimit->SetLineWidth(0);
       beamPAccLimit->Draw("f");
@@ -1131,7 +1052,8 @@ void MyMainFrame::DoDraw() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::RecognizeStsLayout() {
+void MyMainFrame::RecognizeStsLayout()
+{
 
   TString cutFileName = fGeoFileName.Data();
 
@@ -1180,8 +1102,7 @@ void MyMainFrame::RecognizeStsLayout() {
   //   }
   //cout << " -> " << cutFileName[ichar] << " -> " <<  << endl;
 
-  cout << "seems that there are " << fNofStations
-       << " stations at z = " << flush;
+  cout << "seems that there are " << fNofStations << " stations at z = " << flush;
   for (Int_t istat = 0; istat < fNofStations; istat++)
     cout << (istat ? ", " : "") << fZPos[istat] << flush;
   cout << " cm." << endl;
@@ -1189,7 +1110,8 @@ void MyMainFrame::RecognizeStsLayout() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::ReadGeometry() {
+void MyMainFrame::ReadGeometry()
+{
 
   RecognizeStsLayout();
 
@@ -1236,20 +1158,12 @@ void MyMainFrame::ReadGeometry() {
 
     Int_t stationNr = istat + 1;
 
-    cout << "STATION number " << fStationNumber[istat] << " has "
-         << fNofSectors[istat] << " sectors" << endl;
+    cout << "STATION number " << fStationNumber[istat] << " has " << fNofSectors[istat] << " sectors" << endl;
 
     //  fNofSensors[istat] = 0;
 
     TString stationName = Form("stat%02d", stationNr);
-    station             = new CbmStsStation(stationName.Data(),
-                                stationNr,
-                                fZPos[istat],
-                                -777.,
-                                -777.,
-                                0.,
-                                100.,
-                                tempFloat1);
+    station = new CbmStsStation(stationName.Data(), stationNr, fZPos[istat], -777., -777., 0., 100., tempFloat1);
     fStations->Add(station);
 
     for (Int_t isect = 0; isect < fNofSectors[istat]; isect++) {
@@ -1266,36 +1180,21 @@ void MyMainFrame::ReadGeometry() {
         Double_t sensorRot;
         Double_t sensorXDim, sensorYDim, sensorZDim;
         Double_t sensorDX, sensorDY, sensorStereoF, sensorStereoB;
-        fin >> tempInt >> tempInt2 >> sensorX >> sensorY >> sensorZ >> sensorRot
-          >> sensorXDim >> sensorYDim >> sensorZDim >> sensorDX >> sensorDY
-          >> sensorStereoF >> sensorStereoB;
+        fin >> tempInt >> tempInt2 >> sensorX >> sensorY >> sensorZ >> sensorRot >> sensorXDim >> sensorYDim
+          >> sensorZDim >> sensorDX >> sensorDY >> sensorStereoF >> sensorStereoB;
         fSensorArea[istat][isect][isens] = sensorXDim * sensorYDim;
-        if (isens == 0)
-          fSectorNChannels[istat][isect] = TMath::Ceil(sensorXDim / sensorDX);
+        if (isens == 0) fSectorNChannels[istat][isect] = TMath::Ceil(sensorXDim / sensorDX);
 
         sensorStereoF = sensorStereoF * TMath::Pi() / 180.;
         sensorStereoB = sensorStereoB * TMath::Pi() / 180.;
         sensorRot     = sensorRot * TMath::Pi() / 180.;
 
         Int_t sensorNr = isens + 1;
-        Int_t detId = 2 << 24 | stationNr << 16 | sectorNr << 4 | sensorNr << 1;
+        Int_t detId    = 2 << 24 | stationNr << 16 | sectorNr << 4 | sensorNr << 1;
 
-        TString sensorName =
-          Form("stat%02dsect%dsens%d", stationNr, sectorNr, sensorNr);
-        sensor = new CbmStsSensor(sensorName.Data(),
-                                  detId,
-                                  tempInt2,
-                                  sensorX,
-                                  sensorY,
-                                  sensorZ,
-                                  sensorRot,
-                                  sensorXDim,
-                                  sensorYDim,
-                                  sensorZDim,
-                                  sensorDX,
-                                  sensorDY,
-                                  sensorStereoF,
-                                  sensorStereoB);
+        TString sensorName = Form("stat%02dsect%dsens%d", stationNr, sectorNr, sensorNr);
+        sensor = new CbmStsSensor(sensorName.Data(), detId, tempInt2, sensorX, sensorY, sensorZ, sensorRot, sensorXDim,
+                                  sensorYDim, sensorZDim, sensorDX, sensorDY, sensorStereoF, sensorStereoB);
 
         sector->AddSensor(sensor);
         // 	cout << "helloZ!! " << 	fSensorPosition[2][istat][iwaf] << endl;
@@ -1310,7 +1209,8 @@ void MyMainFrame::ReadGeometry() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::ReadOccupancy() {
+void MyMainFrame::ReadOccupancy()
+{
 
   if (!fGeoRead) {
     cout << " Geometry not read" << endl;
@@ -1338,8 +1238,7 @@ void MyMainFrame::ReadOccupancy() {
   //  TString directoryName = "STSReconstructionQA";
   TString directoryName = "STSFindHitsQA";
 
-  fhHitFindingEffComb =
-    (TH1F*) occuF->Get(Form("%s/hHitFindingEfficiency", directoryName.Data()));
+  fhHitFindingEffComb = (TH1F*) occuF->Get(Form("%s/hHitFindingEfficiency", directoryName.Data()));
 
   Int_t nofStations      = fStations->GetEntriesFast();
   CbmStsStation* station = NULL;
@@ -1349,22 +1248,15 @@ void MyMainFrame::ReadOccupancy() {
     station = (CbmStsStation*) fStations->At(istat);
 
     fhHitFindingEfficiency[istat] =
-      (TH2F*) occuF->Get(Form("%s/Station%d/hRecoPoints%d",
-                              directoryName.Data(),
-                              istat + 1,
-                              istat + 1));
+      (TH2F*) occuF->Get(Form("%s/Station%d/hRecoPoints%d", directoryName.Data(), istat + 1, istat + 1));
     //    fhHitFindingEfficiency[istat  ]->Rebin2D(2,2);
-    fhHitFindingEfficiency[istat + 1] = (TH2F*) occuF->Get(Form(
-      "%s/Station%d/hPoints%d", directoryName.Data(), istat + 1, istat + 1));
-    cout << "STATION #" << istat + 1 << " : "
-         << fhHitFindingEfficiency[istat]->Integral() << " points of "
+    fhHitFindingEfficiency[istat + 1] =
+      (TH2F*) occuF->Get(Form("%s/Station%d/hPoints%d", directoryName.Data(), istat + 1, istat + 1));
+    cout << "STATION #" << istat + 1 << " : " << fhHitFindingEfficiency[istat]->Integral() << " points of "
          << fhHitFindingEfficiency[istat + 1]->Integral() << " found -> hfe = "
-         << fhHitFindingEfficiency[istat]->Integral()
-              / fhHitFindingEfficiency[istat + 1]->Integral()
-         << endl;
+         << fhHitFindingEfficiency[istat]->Integral() / fhHitFindingEfficiency[istat + 1]->Integral() << endl;
     //    fhHitFindingEfficiency[istat+1]->Rebin2D(2,2);
-    fhHitFindingEfficiency[istat]->Divide(fhHitFindingEfficiency[istat],
-                                          fhHitFindingEfficiency[istat + 1]);
+    fhHitFindingEfficiency[istat]->Divide(fhHitFindingEfficiency[istat], fhHitFindingEfficiency[istat + 1]);
     fhHitFindingEfficiency[istat]->Scale(100.);
     cout << "KKKKKKK" << station->GetNSectors() << endl;
     for (Int_t isect = 0; isect < station->GetNSectors(); isect++) {
@@ -1373,70 +1265,37 @@ void MyMainFrame::ReadOccupancy() {
       Float_t occupancy;
 
       for (Int_t isens = 0; isens < sector->GetNSensors(); isens++) {
-        TString tempStr = Form("%s/Station%d/hNofHitsSt%dSect%dSens%d",
-                               directoryName.Data(),
-                               istat + 1,
-                               istat + 1,
-                               isect + 1,
-                               isens + 1);
+        TString tempStr = Form("%s/Station%d/hNofHitsSt%dSect%dSens%d", directoryName.Data(), istat + 1, istat + 1,
+                               isect + 1, isens + 1);
         //	cout << "looking in \"" << tempStr.Data() << "\"" << endl;
-        fhNofHits[istat][isect][isens] =
-          (TH1F*) occuF->Get(Form("%s/Station%d/hNofHitsSt%dSect%dSens%d",
-                                  directoryName.Data(),
-                                  istat + 1,
-                                  istat + 1,
-                                  isect + 1,
-                                  isens + 1));
+        fhNofHits[istat][isect][isens] = (TH1F*) occuF->Get(Form(
+          "%s/Station%d/hNofHitsSt%dSect%dSens%d", directoryName.Data(), istat + 1, istat + 1, isect + 1, isens + 1));
         if (!fhNofHits[istat][isect][isens])
-          cout << "no hits table for " << istat << " " << isect << " " << isens
-               << endl;
+          cout << "no hits table for " << istat << " " << isect << " " << isens << endl;
 
-        occupancy = fhNofHits[istat][isect][isens]->GetMean()
-                    / fSensorArea[istat][isect][isens];
+        occupancy = fhNofHits[istat][isect][isens]->GetMean() / fSensorArea[istat][isect][isens];
         if (fMaxHitDens < occupancy) fMaxHitDens = occupancy;
 
-        occupancy = fhHitFindingEffComb->GetBinContent(
-          ((istat + 1) << 16 | (isect + 1) << 4 | (isens + 1) << 1) + 1);
+        occupancy = fhHitFindingEffComb->GetBinContent(((istat + 1) << 16 | (isect + 1) << 4 | (isens + 1) << 1) + 1);
         //	cout << "hfe = " << occupancy << endl;
         if (fMaxHFE < occupancy) fMaxHFE = occupancy;
         if (fMinHFE > occupancy) fMinHFE = occupancy;
         //	cout << " --> " << fMinHFE << " to " << fMaxHFE << endl;
       }
-      fhFNofDigis[istat][isect] =
-        (TH1F*) occuF->Get(Form("%s/Station%d/hNofFiredDigisFSt%dSect%d",
-                                directoryName.Data(),
-                                istat + 1,
-                                istat + 1,
-                                isect + 1));
+      fhFNofDigis[istat][isect] = (TH1F*) occuF->Get(
+        Form("%s/Station%d/hNofFiredDigisFSt%dSect%d", directoryName.Data(), istat + 1, istat + 1, isect + 1));
       for (Int_t chiip = 1; chiip < 9; chiip++) {
-        fhFNofDigisPerChip[istat][isect][chiip] = (TH1F*) occuF->Get(
-          Form("%s/Station%d/hNofFiredDigisFSt%dSect%dChip%d",
-               directoryName.Data(),
-               istat + 1,
-               istat + 1,
-               isect + 1,
-               chiip));
+        fhFNofDigisPerChip[istat][isect][chiip] =
+          (TH1F*) occuF->Get(Form("%s/Station%d/hNofFiredDigisFSt%dSect%dChip%d", directoryName.Data(), istat + 1,
+                                  istat + 1, isect + 1, chiip));
       }
-      fhFClusterL[istat][isect] =
-        (TH1F*) occuF->Get(Form("%s/Station%d/hClusterLengthFSt%dSect%d",
-                                directoryName.Data(),
-                                istat + 1,
-                                istat + 1,
-                                isect + 1));
-      fhBNofDigis[istat][isect] =
-        (TH1F*) occuF->Get(Form("%s/Station%d/hNofFiredDigisBSt%dSect%d",
-                                directoryName.Data(),
-                                istat + 1,
-                                istat + 1,
-                                isect + 1));
-      fhBClusterL[istat][isect] =
-        (TH1F*) occuF->Get(Form("%s/Station%d/hClusterLengthBSt%dSect%d",
-                                directoryName.Data(),
-                                istat + 1,
-                                istat + 1,
-                                isect + 1));
-      occupancy = 100. * fhFNofDigis[istat][isect]->GetMean()
-                  / ((Float_t) fSectorNChannels[istat][isect]);
+      fhFClusterL[istat][isect] = (TH1F*) occuF->Get(
+        Form("%s/Station%d/hClusterLengthFSt%dSect%d", directoryName.Data(), istat + 1, istat + 1, isect + 1));
+      fhBNofDigis[istat][isect] = (TH1F*) occuF->Get(
+        Form("%s/Station%d/hNofFiredDigisBSt%dSect%d", directoryName.Data(), istat + 1, istat + 1, isect + 1));
+      fhBClusterL[istat][isect] = (TH1F*) occuF->Get(
+        Form("%s/Station%d/hClusterLengthBSt%dSect%d", directoryName.Data(), istat + 1, istat + 1, isect + 1));
+      occupancy = 100. * fhFNofDigis[istat][isect]->GetMean() / ((Float_t) fSectorNChannels[istat][isect]);
 
       if (fMaxDigiOcc < occupancy) fMaxDigiOcc = occupancy;
       occupancy = fhFClusterL[istat][isect]->GetMean();
@@ -1452,8 +1311,7 @@ void MyMainFrame::ReadOccupancy() {
   fMaxHFE     = 0.01 * TMath::Ceil(fMaxHFE * 100.);
   fMinHFE     = 0.01 * TMath::Floor(fMinHFE * 100.);
 
-  cout << "Maximum hit density = " << fMaxHitDens
-       << " hits per square centimeter" << endl;
+  cout << "Maximum hit density = " << fMaxHitDens << " hits per square centimeter" << endl;
   cout << "Maximum digi occupancy is " << fMaxDigiOcc << " percent" << endl;
   cout << "Minimum cluster length is " << fMinCluster << " channels" << endl;
   cout << "Maximum cluster length is " << fMaxCluster << " channels" << endl;
@@ -1464,42 +1322,26 @@ void MyMainFrame::ReadOccupancy() {
 
   TString trackingDirName = "STSReconstructionQA";
 
-  fhMomEffAll =
-    (TH1F*) occuF->Get(Form("%s/hMomEffAll", trackingDirName.Data()));
-  fhMomEffPrim =
-    (TH1F*) occuF->Get(Form("%s/hMomEffPrim", trackingDirName.Data()));
-  fhMomEffSec =
-    (TH1F*) occuF->Get(Form("%s/hMomEffSec", trackingDirName.Data()));
-  fhMomRecAll =
-    (TH1F*) occuF->Get(Form("%s/hMomRecAll", trackingDirName.Data()));
-  fhMomRecPrim =
-    (TH1F*) occuF->Get(Form("%s/hMomRecPrim", trackingDirName.Data()));
-  fhMomRecSec =
-    (TH1F*) occuF->Get(Form("%s/hMomRecSec", trackingDirName.Data()));
-  fhMomAccAll =
-    (TH1F*) occuF->Get(Form("%s/hMomAccAll", trackingDirName.Data()));
-  fhMomAccPrim =
-    (TH1F*) occuF->Get(Form("%s/hMomAccPrim", trackingDirName.Data()));
-  fhMomAccSec =
-    (TH1F*) occuF->Get(Form("%s/hMomAccSec", trackingDirName.Data()));
+  fhMomEffAll  = (TH1F*) occuF->Get(Form("%s/hMomEffAll", trackingDirName.Data()));
+  fhMomEffPrim = (TH1F*) occuF->Get(Form("%s/hMomEffPrim", trackingDirName.Data()));
+  fhMomEffSec  = (TH1F*) occuF->Get(Form("%s/hMomEffSec", trackingDirName.Data()));
+  fhMomRecAll  = (TH1F*) occuF->Get(Form("%s/hMomRecAll", trackingDirName.Data()));
+  fhMomRecPrim = (TH1F*) occuF->Get(Form("%s/hMomRecPrim", trackingDirName.Data()));
+  fhMomRecSec  = (TH1F*) occuF->Get(Form("%s/hMomRecSec", trackingDirName.Data()));
+  fhMomAccAll  = (TH1F*) occuF->Get(Form("%s/hMomAccAll", trackingDirName.Data()));
+  fhMomAccPrim = (TH1F*) occuF->Get(Form("%s/hMomAccPrim", trackingDirName.Data()));
+  fhMomAccSec  = (TH1F*) occuF->Get(Form("%s/hMomAccSec", trackingDirName.Data()));
   fhHitPointCorrelation[10];
   for (Int_t ist = 0; ist < nofStations; ist++)
     fhHitPointCorrelation[ist] =
-      (TH2F*) occuF->Get(Form("%s/Station%i/hHitPointCorrelation%i",
-                              directoryName.Data(),
-                              ist + 1,
-                              ist + 1));
-  fhMomResAll =
-    (TH2F*) occuF->Get(Form("%s/hMomResAll", trackingDirName.Data()));
-  fhMomResPrim =
-    (TH2F*) occuF->Get(Form("%s/hMomResPrim", trackingDirName.Data()));
+      (TH2F*) occuF->Get(Form("%s/Station%i/hHitPointCorrelation%i", directoryName.Data(), ist + 1, ist + 1));
+  fhMomResAll  = (TH2F*) occuF->Get(Form("%s/hMomResAll", trackingDirName.Data()));
+  fhMomResPrim = (TH2F*) occuF->Get(Form("%s/hMomResPrim", trackingDirName.Data()));
   //  fhMomResPrimClone = (TH2F*)fhMomResPrim->Clone();
-  fhNhGhosts = (TH1F*) occuF->Get(Form("%s/hNhGhosts", trackingDirName.Data()));
-  fhNhClones = (TH1F*) occuF->Get(Form("%s/hNhClones", trackingDirName.Data()));
-  fhRefTracks =
-    (TH1F*) occuF->Get(Form("%s/hRefTracks", trackingDirName.Data()));
-  fhRecRefTracks =
-    (TH1F*) occuF->Get(Form("%s/hRecRefTracks", trackingDirName.Data()));
+  fhNhGhosts     = (TH1F*) occuF->Get(Form("%s/hNhGhosts", trackingDirName.Data()));
+  fhNhClones     = (TH1F*) occuF->Get(Form("%s/hNhClones", trackingDirName.Data()));
+  fhRefTracks    = (TH1F*) occuF->Get(Form("%s/hRefTracks", trackingDirName.Data()));
+  fhRecRefTracks = (TH1F*) occuF->Get(Form("%s/hRecRefTracks", trackingDirName.Data()));
 
   fNEvents = fhRefTracks->GetEntries();
   //  fNStsTracks = fhMomAccAll->GetEntries();
@@ -1524,14 +1366,12 @@ void MyMainFrame::ReadOccupancy() {
   secEff = secEffFit->GetParameter(0);
   effRef = fhRecRefTracks->Integral() / fhRefTracks->Integral();
 
-  TF1* momentumResFuncPrim = new TF1("momentumResFuncPrim", "gaus", -10., 10.);
-  TH1F* momentumResHistPrim =
-    (TH1F*) fhMomResPrim->ProjectionY("momentumResHistPrim");
+  TF1* momentumResFuncPrim  = new TF1("momentumResFuncPrim", "gaus", -10., 10.);
+  TH1F* momentumResHistPrim = (TH1F*) fhMomResPrim->ProjectionY("momentumResHistPrim");
   momentumResHistPrim->Fit(momentumResFuncPrim, "QN", "", -10., 10.);
-  momentumResolutionPrim  = momentumResFuncPrim->GetParameter(2);
-  TF1* momentumResFuncAll = new TF1("momentumResFuncAll", "gaus", -10., 10.);
-  TH1F* momentumResHistAll =
-    (TH1F*) fhMomResAll->ProjectionY("momentumResHistAll");
+  momentumResolutionPrim   = momentumResFuncPrim->GetParameter(2);
+  TF1* momentumResFuncAll  = new TF1("momentumResFuncAll", "gaus", -10., 10.);
+  TH1F* momentumResHistAll = (TH1F*) fhMomResAll->ProjectionY("momentumResHistAll");
   momentumResHistAll->Fit(momentumResFuncAll, "QN", "", -10., 10.);
   momentumResolutionAll = momentumResFuncAll->GetParameter(2);
 
@@ -1540,7 +1380,8 @@ void MyMainFrame::ReadOccupancy() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::ReadELoss() {
+void MyMainFrame::ReadELoss()
+{
 
   if (!fGeoRead) {
     cout << " Geometry not read" << endl;
@@ -1561,30 +1402,26 @@ void MyMainFrame::ReadELoss() {
 
   nofStations = 8;
   for (Int_t iwst = 0; iwst < nofStations; iwst++) {
-    fhELoss[iwst] = (TH2F*) elossF->Get(
-      Form("STSSimulationQA/STSOccupancy/hEnergyLossSt%i", iwst + 1));
+    fhELoss[iwst] = (TH2F*) elossF->Get(Form("STSSimulationQA/STSOccupancy/hEnergyLossSt%i", iwst + 1));
 
     fhELoss[iwst]->SetXTitle("x [cm]");
     fhELoss[iwst]->SetYTitle("y [cm]");
 
     fhMrad[iwst] = (TH2F*) fhELoss[iwst]->Clone();
-    fhMrad[iwst]->SetTitle(
-      Form("%s, z=%dcm", fhMrad[iwst]->GetTitle(), (Int_t)(station->GetZ())));
+    fhMrad[iwst]->SetTitle(Form("%s, z=%dcm", fhMrad[iwst]->GetTitle(), (Int_t)(station->GetZ())));
 
-    fhMrad[iwst]->Scale(1. / fNofMCEvents);  // for 1 event
-    fhMrad[iwst]->Scale(
-      1. / stationThickness);  // for GeV/cm3 energy loss (each bin is cm2)
-    fhMrad[iwst]->Scale(1. / siliconDensity);  // for GeV/kg energy loss
-    fhMrad[iwst]->Scale(1.e9);                 // for eV/kg energy loss
-    fhMrad[iwst]->Scale(1.6e-19);              // for Gy=J/kg energy loss
-    fhMrad[iwst]->Scale(1.e2);                 // for rad=.01Gy energy loss
-    fhMrad[iwst]->Scale(1.e-6);                // for Mrad energy loss
+    fhMrad[iwst]->Scale(1. / fNofMCEvents);      // for 1 event
+    fhMrad[iwst]->Scale(1. / stationThickness);  // for GeV/cm3 energy loss (each bin is cm2)
+    fhMrad[iwst]->Scale(1. / siliconDensity);    // for GeV/kg energy loss
+    fhMrad[iwst]->Scale(1.e9);                   // for eV/kg energy loss
+    fhMrad[iwst]->Scale(1.6e-19);                // for Gy=J/kg energy loss
+    fhMrad[iwst]->Scale(1.e2);                   // for rad=.01Gy energy loss
+    fhMrad[iwst]->Scale(1.e-6);                  // for Mrad energy loss
 
-    fhMrad[iwst]->Scale(.25);   // going from central to mbias
-    fhMrad[iwst]->Scale(1.e7);  // going for fluence per second
-    fhMrad[iwst]->Scale(
-      5.26e6);  // going for fluence per 2 months of const. running
-    fhMrad[iwst]->Scale(6.);  // six years of running at this luminocity/rate
+    fhMrad[iwst]->Scale(.25);     // going from central to mbias
+    fhMrad[iwst]->Scale(1.e7);    // going for fluence per second
+    fhMrad[iwst]->Scale(5.26e6);  // going for fluence per 2 months of const. running
+    fhMrad[iwst]->Scale(6.);      // six years of running at this luminocity/rate
 
     fhMips[iwst] = (TH2F*) fhMrad[iwst]->Clone();
     fhMips[iwst]->Scale(1.47e13);  // for mips
@@ -1604,7 +1441,8 @@ void MyMainFrame::ReadELoss() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::HECa(Int_t event, Int_t x, Int_t y, TObject* sel) {
+void MyMainFrame::HECa(Int_t event, Int_t x, Int_t y, TObject* sel)
+{
   TString selName = sel->GetName();
   Int_t isect;
   Int_t isens;
@@ -1648,8 +1486,7 @@ void MyMainFrame::HECa(Int_t event, Int_t x, Int_t y, TObject* sel) {
         if (fSelView == 4) {
           for (Int_t chip = 1; chip < 9; chip++) {
             canvas->SetLogy();
-            fhFNofDigisPerChip[fSelStation][isect][chip]->SetAxisRange(
-              -0.5, 100.5, "X");
+            fhFNofDigisPerChip[fSelStation][isect][chip]->SetAxisRange(-0.5, 100.5, "X");
             fhFNofDigisPerChip[fSelStation][isect][chip]->Draw();
             fhFNofDigisPerChip[fSelStation][isect][chip]->SetLineColor(2);
             fhFNofDigisPerChip[fSelStation][isect][chip]->Draw("same");
@@ -1665,54 +1502,38 @@ void MyMainFrame::HECa(Int_t event, Int_t x, Int_t y, TObject* sel) {
       CbmStsSector* sector   = station->GetSector(isect);
       CbmStsSensor* sensor   = sector->GetSensor(isens);
       fStatusBar->SetText(selName.Data(), 1);
-      fStatusBar->SetText(
-        Form("%.2f / %.2f / %.2f || %.2f X %.2f = %.2f || %d str.",
-             sensor->GetX0(),
-             sensor->GetY0(),
-             sensor->GetZ0(),
-             sensor->GetLx(),
-             sensor->GetLy(),
-             fSensorArea[fSelStation][isect][isens],
-             fSectorNChannels[fSelStation][isect]),
-        2);
+      fStatusBar->SetText(Form("%.2f / %.2f / %.2f || %.2f X %.2f = %.2f || %d str.", sensor->GetX0(), sensor->GetY0(),
+                               sensor->GetZ0(), sensor->GetLx(), sensor->GetLy(),
+                               fSensorArea[fSelStation][isect][isens], fSectorNChannels[fSelStation][isect]),
+                          2);
       fStatusBar->SetText("", 3);
       fStatusBar->SetText("", 4);
       fStatusBar->SetText("", 5);
       fStatusBar->SetText("", 6);
       if (fSelView > 0) {
-        fStatusBar->SetText(Form("%.2f hit/cm^2",
-                                 fhNofHits[fSelStation][isect][isens]->GetMean()
-                                   / fSensorArea[fSelStation][isect][isens]),
+        fStatusBar->SetText(Form("%.2f hit/cm^2", fhNofHits[fSelStation][isect][isens]->GetMean()
+                                                    / fSensorArea[fSelStation][isect][isens]),
                             3);
         if (!selName.Contains("Back")) {
-          fStatusBar->SetText(
-            Form("occ = %.2f %%",
-                 100. * fhFNofDigis[fSelStation][isect]->GetMean()
-                   / ((Float_t) fSectorNChannels[fSelStation][isect])),
-            4);
-          fStatusBar->SetText(
-            Form("clu %.2f ch.", fhFClusterL[fSelStation][isect]->GetMean()),
-            5);
+          fStatusBar->SetText(Form("occ = %.2f %%", 100. * fhFNofDigis[fSelStation][isect]->GetMean()
+                                                      / ((Float_t) fSectorNChannels[fSelStation][isect])),
+                              4);
+          fStatusBar->SetText(Form("clu %.2f ch.", fhFClusterL[fSelStation][isect]->GetMean()), 5);
         }
         if (selName.Contains("Back")) {
-          fStatusBar->SetText(
-            Form("occ = %.2f %%",
-                 100. * fhBNofDigis[fSelStation][isect]->GetMean()
-                   / ((Float_t) fSectorNChannels[fSelStation][isect])),
-            4);
-          fStatusBar->SetText(
-            Form("clu %.2f ch.", fhBClusterL[fSelStation][isect]->GetMean()),
-            5);
+          fStatusBar->SetText(Form("occ = %.2f %%", 100. * fhBNofDigis[fSelStation][isect]->GetMean()
+                                                      / ((Float_t) fSectorNChannels[fSelStation][isect])),
+                              4);
+          fStatusBar->SetText(Form("clu %.2f ch.", fhBClusterL[fSelStation][isect]->GetMean()), 5);
         }
 
         fStatusBar->SetText(
           Form("hfe = %.2f ch.",
-               fhHitFindingEffComb->GetBinContent(
-                 ((fSelStation + 1) << 16 | (isect + 1) << 4 | (isens + 1) << 1)
-                 + 1)),
+               fhHitFindingEffComb->GetBinContent(((fSelStation + 1) << 16 | (isect + 1) << 4 | (isens + 1) << 1) + 1)),
           6);
       }
-    } else {
+    }
+    else {
       fStatusBar->SetText("", 1);
       fStatusBar->SetText("", 2);
       fStatusBar->SetText("", 3);
@@ -1725,7 +1546,8 @@ void MyMainFrame::HECa(Int_t event, Int_t x, Int_t y, TObject* sel) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void MyMainFrame::SaveCanvas() {
+void MyMainFrame::SaveCanvas()
+{
   TCanvas* fCanvas = fEcanvas->GetCanvas();
 
   TString saveToFile = Form("%s.png ", beingDrawn.Data());
@@ -1736,7 +1558,8 @@ void MyMainFrame::SaveCanvas() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-MyMainFrame::~MyMainFrame() {
+MyMainFrame::~MyMainFrame()
+{
   // Clean up used widgets: frames, buttons, layouthints
   fMain->Cleanup();
   delete fMain;
@@ -1744,7 +1567,8 @@ MyMainFrame::~MyMainFrame() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void Occupancy() {
+void Occupancy()
+{
   // Popup the GUI...
   new MyMainFrame(gClient->GetRoot(), 800, 1000);
 }

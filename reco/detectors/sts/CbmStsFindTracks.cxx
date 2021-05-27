@@ -47,17 +47,15 @@ CbmStsFindTracks::CbmStsFindTracks()
   , fNEvents(0)
   , fNEventsFailed(0)
   , fTime(0.)
-  , fNTracks(0.) {
+  , fNTracks(0.)
+{
   fVerbose = 1;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsFindTracks::CbmStsFindTracks(Int_t iVerbose,
-                                   CbmStsTrackFinder* finder,
-                                   Bool_t useMvd,
-                                   const char* name)
+CbmStsFindTracks::CbmStsFindTracks(Int_t iVerbose, CbmStsTrackFinder* finder, Bool_t useMvd, const char* name)
   : FairTask(name, iVerbose)
   , fUseMvd(useMvd)
   , fGeoPar(NULL)
@@ -73,9 +71,9 @@ CbmStsFindTracks::CbmStsFindTracks(Int_t iVerbose,
   , fNEvents(0)
   , fNEventsFailed(0)
   , fTime(0.)
-  , fNTracks(0.) {
-  if (finder)
-    fFinder = finder;
+  , fNTracks(0.)
+{
+  if (finder) fFinder = finder;
   else
     fFinder = new CbmStsTrackFinderIdeal(iVerbose);
 }
@@ -83,7 +81,8 @@ CbmStsFindTracks::CbmStsFindTracks(Int_t iVerbose,
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmStsFindTracks::~CbmStsFindTracks() {
+CbmStsFindTracks::~CbmStsFindTracks()
+{
   // if ( fDigiScheme ) delete fDigiScheme;
   fTracks->Delete();
   if (fFinder) delete fFinder;
@@ -92,7 +91,8 @@ CbmStsFindTracks::~CbmStsFindTracks() {
 
 
 // -----   Virtual public method Exec   ------------------------------------
-void CbmStsFindTracks::Exec(Option_t* /*opt*/) {
+void CbmStsFindTracks::Exec(Option_t* /*opt*/)
+{
 
   fTimer.Start();
 
@@ -106,9 +106,8 @@ void CbmStsFindTracks::Exec(Option_t* /*opt*/) {
   fTimer.Stop();
 
   // --- Event log
-  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
-            << fNEvents << ", real time " << fixed << setprecision(6)
-            << fTimer.RealTime() << " s, hits: " << fStsHits->GetEntriesFast()
+  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right << fNEvents << ", real time " << fixed
+            << setprecision(6) << fTimer.RealTime() << " s, hits: " << fStsHits->GetEntriesFast()
             << ", tracks: " << nTracks;
 
 
@@ -120,7 +119,8 @@ void CbmStsFindTracks::Exec(Option_t* /*opt*/) {
 
 
 // -----   Private virtual method SetParContainers   -----------------------
-void CbmStsFindTracks::SetParContainers() {
+void CbmStsFindTracks::SetParContainers()
+{
 
   // Get run and runtime database
   FairRunAna* run = FairRunAna::Instance();
@@ -139,7 +139,8 @@ void CbmStsFindTracks::SetParContainers() {
 
 
 // -----   Private virtual method Init  ------------------------------------
-InitStatus CbmStsFindTracks::Init() {
+InitStatus CbmStsFindTracks::Init()
+{
 
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -163,8 +164,7 @@ InitStatus CbmStsFindTracks::Init() {
 
   // Create and register output array STSTrack
   fTracks = new TClonesArray("CbmStsTrack", 100);
-  ioman->Register(
-    "StsTrack", "STS", fTracks, IsOutputBranchPersistent("StsTrack"));
+  ioman->Register("StsTrack", "STS", fTracks, IsOutputBranchPersistent("StsTrack"));
 
   // Build digitisation scheme
   /*
@@ -184,8 +184,7 @@ InitStatus CbmStsFindTracks::Init() {
     cout << "-E- " << GetName() << "::Init: No track finder selected!" << endl;
     return kERROR;
   }
-  cout << "-I- Track finder engine " << fFinder->GetName() << " selected"
-       << endl;
+  cout << "-I- Track finder engine " << fFinder->GetName() << " selected" << endl;
 
 
   // Set members of track finder and verbosity and initialise track finder
@@ -207,24 +206,21 @@ InitStatus CbmStsFindTracks::Init() {
 
 
 // -----   Virtual private method Finish   ---------------------------------
-void CbmStsFindTracks::Finish() {
+void CbmStsFindTracks::Finish()
+{
 
   fFinder->Finish();
 
   cout << endl;
-  cout << "============================================================"
-       << endl;
+  cout << "============================================================" << endl;
   cout << "=====   " << GetName() << ": Run summary " << endl;
   cout << "===== " << endl;
   cout << "===== Good events   : " << setw(6) << fNEvents << endl;
   cout << "===== Failed events : " << setw(6) << fNEventsFailed << endl;
-  cout << "===== Average time  : " << setprecision(4) << setw(8) << right
-       << fTime / Double_t(fNEvents) << " s" << endl;
+  cout << "===== Average time  : " << setprecision(4) << setw(8) << right << fTime / Double_t(fNEvents) << " s" << endl;
   cout << "===== " << endl;
-  cout << "===== Found tracks per event  : " << fixed << setprecision(0)
-       << fNTracks / Double_t(fNEvents) << endl;
-  cout << "============================================================"
-       << endl;
+  cout << "===== Found tracks per event  : " << fixed << setprecision(0) << fNTracks / Double_t(fNEvents) << endl;
+  cout << "============================================================" << endl;
 }
 // -------------------------------------------------------------------------
 

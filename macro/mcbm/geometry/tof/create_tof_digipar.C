@@ -12,7 +12,8 @@
 // --------------------------------------------------------------------------
 
 
-void create_tof_digipar(TString fileName = "tof_v16a_1e", Int_t nEvents = 0) {
+void create_tof_digipar(TString fileName = "tof_v16a_1e", Int_t nEvents = 0)
+{
 
   cout << "fileName: " << fileName << endl;
 
@@ -67,8 +68,7 @@ void create_tof_digipar(TString fileName = "tof_v16a_1e", Int_t nEvents = 0) {
   parIo2->open(digiFile, "out");
   rtdb->setOutput(parIo2);
 
-  CbmTofCreateDigiPar* tofDigiProducer =
-    new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+  CbmTofCreateDigiPar* tofDigiProducer = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
   run->AddTask(tofDigiProducer);
 
   // -------------------------------------------------------------------------

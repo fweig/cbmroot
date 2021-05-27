@@ -13,7 +13,8 @@
 
 //void matbudget_mc_phi(Int_t nEvents = 10      , const char* stsGeo = "v15c")
 //void matbudget_mc_phi(Int_t nEvents = 1000000 , const char* stsGeo = "v15c")
-void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
+void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -194,8 +195,7 @@ void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

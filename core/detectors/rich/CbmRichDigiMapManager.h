@@ -26,7 +26,8 @@ public:
   /**
 	 * Return Instance of CbmRichGeoManager.
 	 */
-  static CbmRichDigiMapManager& GetInstance() {
+  static CbmRichDigiMapManager& GetInstance()
+  {
     static CbmRichDigiMapManager fInstance;
     return fInstance;
   }

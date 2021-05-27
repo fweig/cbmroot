@@ -4,15 +4,15 @@
 
 // Includes from MVD
 #include "CbmMvdDigitizer.h"
+
+#include "CbmMatch.h"
 #include "CbmMvdDetector.h"
+#include "CbmMvdDigi.h"
 #include "CbmMvdPileupManager.h"
+#include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
 #include "tools/CbmMvdGeoHandler.h"
-
-#include "CbmMatch.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdPoint.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -59,13 +59,13 @@ CbmMvdDigitizer::CbmMvdDigitizer()
   , fDeltaFileName("")
   , fTimer()
   , fPileupManager(nullptr)
-  , fDeltaManager(nullptr) {}
+  , fDeltaManager(nullptr)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdDigitizer::CbmMvdDigitizer(const char* name,
-                                 Int_t iMode,
-                                 Int_t /*iVerbose*/)
+CbmMvdDigitizer::CbmMvdDigitizer(const char* name, Int_t iMode, Int_t /*iVerbose*/)
   : CbmDigitize<CbmMvdDigi>(name)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
@@ -90,11 +90,14 @@ CbmMvdDigitizer::CbmMvdDigitizer(const char* name,
   , fDeltaFileName("")
   , fTimer()
   , fPileupManager(nullptr)
-  , fDeltaManager(nullptr) {}
+  , fDeltaManager(nullptr)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdDigitizer::~CbmMvdDigitizer() {
+CbmMvdDigitizer::~CbmMvdDigitizer()
+{
 
   if (fMcPileUp) {
     fMcPileUp->Delete();
@@ -106,7 +109,8 @@ CbmMvdDigitizer::~CbmMvdDigitizer() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdDigitizer::Exec(Option_t* /*opt*/) {
+void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
+{
   // --- Start timer
   using namespace std;
 
@@ -184,16 +188,15 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/) {
 
   // --- Event log
   fTimer.Stop();
-  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right
-            << fCurrentEvent << " at " << fixed << setprecision(3)
-            << fCurrentEventTime << " ns, points: " << nPoints
-            << ", digis: " << nDigis << ". Exec time " << setprecision(6)
-            << fTimer.RealTime() << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right << fCurrentEvent << " at " << fixed
+            << setprecision(3) << fCurrentEventTime << " ns, points: " << nPoints << ", digis: " << nDigis
+            << ". Exec time " << setprecision(6) << fTimer.RealTime() << " s.";
 }
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdDigitizer::Init() {
+InitStatus CbmMvdDigitizer::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -219,10 +222,7 @@ InitStatus CbmMvdDigitizer::Init() {
   // **********  Register output arrays
   RegisterOutput();
   fMcPileUp = new TClonesArray("CbmMvdPoint", 10000);
-  ioman->Register("MvdPileUpMC",
-                  "Mvd MC Points after Pile Up",
-                  fMcPileUp,
-                  IsOutputBranchPersistent("MvdPileUpMC"));
+  ioman->Register("MvdPileUpMC", "Mvd MC Points after Pile Up", fMcPileUp, IsOutputBranchPersistent("MvdPileUpMC"));
 
   fDetector = CbmMvdDetector::Instance();
 
@@ -233,16 +233,14 @@ InitStatus CbmMvdDigitizer::Init() {
            << " background file name given! " << endl;
       return kERROR;
     }
-    fPileupManager =
-      new CbmMvdPileupManager(fBgFileName, fInputBranchName, fBgBufferSize);
+    fPileupManager = new CbmMvdPileupManager(fBgFileName, fInputBranchName, fBgBufferSize);
     if (fPileupManager->GetNEvents() < 2 * fNPileup) {
       cout << "-E- " << GetName()
            << ": The size of your BG-File is insufficient to perform the "
               "requested pileup"
            << endl;
       cout << "    You need at least events > 2* fNPileup." << endl;
-      cout << "    Detected: fPileUp = " << fNPileup << ", events in file "
-           << fPileupManager->GetNEvents() << endl;
+      cout << "    Detected: fPileUp = " << fNPileup << ", events in file " << fPileupManager->GetNEvents() << endl;
       Fatal(GetName(), "The size of your BG-File is insufficient");
       return kERROR;
     }
@@ -255,16 +253,15 @@ InitStatus CbmMvdDigitizer::Init() {
            << " background file name given! " << endl;
       return kERROR;
     }
-    fDeltaManager = new CbmMvdPileupManager(
-      fDeltaFileName, fInputBranchName, fDeltaBufferSize);
+    fDeltaManager = new CbmMvdPileupManager(fDeltaFileName, fInputBranchName, fDeltaBufferSize);
     if (fDeltaManager->GetNEvents() < 2 * fNDeltaElect) {
       cout << "-E- " << GetName()
            << ": The size of your Delta-File is insufficient to perform the "
               "requested pileup"
            << endl;
       cout << "    You need at least events > 2* fNDeltaElect." << endl;
-      cout << "    Detected: fNDeltaElect = " << fNDeltaElect
-           << ", events in file " << fDeltaManager->GetNEvents() << endl;
+      cout << "    Detected: fNDeltaElect = " << fNDeltaElect << ", events in file " << fDeltaManager->GetNEvents()
+           << endl;
       Fatal(GetName(), "The size of your Delta-File is insufficient");
       return kERROR;
     }
@@ -293,7 +290,8 @@ InitStatus CbmMvdDigitizer::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdDigitizer::Finish() {
+void CbmMvdDigitizer::Finish()
+{
   // cout<< endl << "finishing" << endl;
   fDetector->Finish();
   PrintParameters();
@@ -307,7 +305,8 @@ void CbmMvdDigitizer::Reset() {}
 
 
 // -----   Reset output arrays   -------------------------------------------
-void CbmMvdDigitizer::ResetArrays() {
+void CbmMvdDigitizer::ResetArrays()
+{
   if (fMcPileUp) fMcPileUp->Delete();
   if (fTmpMatch) fTmpMatch->Delete();
   if (fTmpDigi) fTmpDigi->Delete();
@@ -323,24 +322,22 @@ void CbmMvdDigitizer::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigitizer::PrintParameters() {
+void CbmMvdDigitizer::PrintParameters()
+{
 
   using namespace std;
 
   cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters MvdDigitizer ====================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters MvdDigitizer =====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 
 // ---------------  Build Event  ------------------------------------------------------
-void CbmMvdDigitizer::BuildEvent() {
+void CbmMvdDigitizer::BuildEvent()
+{
 
   // Some frequently used variables
   CbmMvdPoint* point = nullptr;
@@ -377,8 +374,7 @@ void CbmMvdDigitizer::BuildEvent() {
         point = (CbmMvdPoint*) points->At(iPoint);
         point->SetTrackID(-2);
         nPile++;
-        new ((*fInputPoints)[fInputPoints->GetEntriesFast()])
-          CbmMvdPoint(*((CbmMvdPoint*) points->At(iPoint)));
+        new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) points->At(iPoint)));
       }
 
 
@@ -410,8 +406,7 @@ void CbmMvdDigitizer::BuildEvent() {
       for (Int_t iPoint = 0; iPoint < pointsD->GetEntriesFast(); iPoint++) {
         point = (CbmMvdPoint*) pointsD->At(iPoint);
         point->SetTrackID(-3);  // Mark the points as delta electron
-        new ((*fInputPoints)[fInputPoints->GetEntriesFast()])
-          CbmMvdPoint(*((CbmMvdPoint*) pointsD->At(iPoint)));
+        new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) pointsD->At(iPoint)));
         nElec++;
       }
 
@@ -425,9 +420,8 @@ void CbmMvdDigitizer::BuildEvent() {
 
 
   // ----- At last: Screen output
-  LOG(debug) << "+ " << GetName() << "::BuildEvent: original " << nOrig
-             << ", pileup " << nPile << ", delta " << nElec << ", total "
-             << nOrig + nPile + nElec << " MvdPoints";
+  LOG(debug) << "+ " << GetName() << "::BuildEvent: original " << nOrig << ", pileup " << nPile << ", delta " << nElec
+             << ", total " << nOrig + nPile + nElec << " MvdPoints";
 }
 // -----------------------------------------------------------------------------
 

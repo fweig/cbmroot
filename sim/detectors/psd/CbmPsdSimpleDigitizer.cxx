@@ -38,7 +38,9 @@ CbmPsdSimpleDigitizer::CbmPsdSimpleDigitizer()
   , fNofPoints(0.)
   , fNofDigis(0.)
   , fTimeTot(0.)
-  , fPointArray(NULL) {}
+  , fPointArray(NULL)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -48,7 +50,8 @@ CbmPsdSimpleDigitizer::~CbmPsdSimpleDigitizer() {}
 
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmPsdSimpleDigitizer::Init() {
+InitStatus CbmPsdSimpleDigitizer::Init()
+{
 
   // Matches are not produced
   fCreateMatches = kFALSE;
@@ -77,13 +80,13 @@ InitStatus CbmPsdSimpleDigitizer::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmPsdSimpleDigitizer::Exec(Option_t*) {
+void CbmPsdSimpleDigitizer::Exec(Option_t*)
+{
 
   TStopwatch timer;
   timer.Start();
 
-  LOG(debug) << fName << ": processing event " << fCurrentEvent
-             << " at t = " << fCurrentEventTime << " ns";
+  LOG(debug) << fName << ": processing event " << fCurrentEvent << " at t = " << fCurrentEventTime << " ns";
 
   // Declare some variables
   CbmPsdPoint* point = NULL;
@@ -124,16 +127,14 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*) {
     Double_t eLoss = point->GetEnergyLoss();
 
     sec                = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
-    auto insert_result = edepmap.insert(
-      std::make_pair(std::make_pair(modID, sec), point->GetEnergyLoss()));
+    auto insert_result = edepmap.insert(std::make_pair(std::make_pair(modID, sec), point->GetEnergyLoss()));
 
     if (!insert_result.second) {  // this entry has existed before
       (*insert_result.first).second += point->GetEnergyLoss();
     }
     //cout <<"PSD modID,scinID,eloss " << modID << ", " << scinID << ", " << eLoss <<endl;
 
-    if (((sec - 1) >= 0 && (sec - 1) < N_PSD_SECT)
-        && ((modID - 1) >= 0 && (modID - 1) < N_PSD_MODS)) {
+    if (((sec - 1) >= 0 && (sec - 1) < N_PSD_SECT) && ((modID - 1) >= 0 && (modID - 1) < N_PSD_MODS)) {
       edep[sec - 1][modID - 1] += eLoss;
     }
 
@@ -153,22 +154,19 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*) {
     Double_t eDep = edep_entry.second;
 
     //Double_t eLossMIP = edep[isec][imod] / 0.005; // 5MeV per MIP
-    Double_t eLossMIP  = eDep / 0.005;  // 5MeV per MIP
-    Double_t pixPerMIP = 15.;           // 15 pix per MIP
-    Double_t eLossMIPSmeared =
-      gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP))
-      / pixPerMIP;
-    Double_t eLossSmeared = eLossMIPSmeared * 0.005;
-    Double_t eNoise       = gRandom->Gaus(0, 15) / 50. * 0.005;
+    Double_t eLossMIP        = eDep / 0.005;  // 5MeV per MIP
+    Double_t pixPerMIP       = 15.;           // 15 pix per MIP
+    Double_t eLossMIPSmeared = gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP)) / pixPerMIP;
+    Double_t eLossSmeared    = eLossMIPSmeared * 0.005;
+    Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
     // V.F. The digi time is set to the event time. This is a workaround only
     // to integrate PSD in the common digitisation scheme.
-    CbmPsdDigi* digi =
-      new CbmPsdDigi(modID, secID, eLossSmeared, fCurrentEventTime);
+    CbmPsdDigi* digi = new CbmPsdDigi(modID, secID, eLossSmeared, fCurrentEventTime);
     SendData(digi);
     nDigis++;
-    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << secID
-                << " Module " << modID << " energy " << eLossSmeared;
+    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << secID << " Module " << modID << " energy "
+                << eLossSmeared;
   }
   /*
      }
@@ -179,11 +177,9 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*) {
 
   // --- Event log
   timer.Stop();
-  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right
-            << fCurrentEvent << " at " << fixed << setprecision(3)
-            << fCurrentEventTime << " ns, points: " << nPoints
-            << ", digis: " << nDigis << ". Exec time " << setprecision(6)
-            << timer.RealTime() << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right << fCurrentEvent << " at " << fixed
+            << setprecision(3) << fCurrentEventTime << " ns, points: " << nPoints << ", digis: " << nDigis
+            << ". Exec time " << setprecision(6) << timer.RealTime() << " s.";
 
   // --- Run statistics
   fNofEvents++;
@@ -195,18 +191,16 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*) {
 
 
 // -----   End-of-run   ----------------------------------------------------
-void CbmPsdSimpleDigitizer::Finish() {
+void CbmPsdSimpleDigitizer::Finish()
+{
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Events processed    : " << fNofEvents;
-  LOG(info) << "PsdPoint / event    : " << setprecision(1)
-            << fNofPoints / Double_t(fNofEvents);
+  LOG(info) << "PsdPoint / event    : " << setprecision(1) << fNofPoints / Double_t(fNofEvents);
   LOG(info) << "PsdDigi / event     : " << fNofDigis / Double_t(fNofEvents);
-  LOG(info) << "Digis per point     : " << setprecision(6)
-            << fNofDigis / fNofPoints;
-  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fNofEvents)
-            << " s";
+  LOG(info) << "Digis per point     : " << setprecision(6) << fNofDigis / fNofPoints;
+  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fNofEvents) << " s";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------

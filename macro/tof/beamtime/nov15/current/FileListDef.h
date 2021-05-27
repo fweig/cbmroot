@@ -22,17 +22,9 @@
 // 301115 301115 301115
 //   0030   1046   2019
 
-const Int_t kiNbFiles               = 1 + 2 + 1 + 1 + 3;
-const TString ksFilesDay[kiNbFiles] = {"261115",
-                                       "271115",
-                                       "271115",
-                                       "281115",
-                                       "291115",
-                                       "301115",
-                                       "301115",
-                                       "301115"};
-const TString ksFilesHour[kiNbFiles] =
-  {"1820", "1142", "1901", "0803", "1602", "0030", "1046", "2019"};
+const Int_t kiNbFiles                = 1 + 2 + 1 + 1 + 3;
+const TString ksFilesDay[kiNbFiles]  = {"261115", "271115", "271115", "281115", "291115", "301115", "301115", "301115"};
+const TString ksFilesHour[kiNbFiles] = {"1820", "1142", "1901", "0803", "1602", "0030", "1046", "2019"};
 
 /************************ Boards definitions ************************/
 const Int_t kiNbBoardsUsed = 8;
@@ -43,48 +35,19 @@ std::streampos kiSlotSzOff[kiNbBoardsUsed] = {0, 0, 0, 0, 0, 1, 2, 2};
 
 /*********************** Detectors definitions **********************/
 const Int_t kiNbRpc         = 17;
-TString sChNameRpc[kiNbRpc] = {"HD_P2",
-                               "HD_P5",
-                               "TSU_ds",
-                               "TSU_du",
-                               "TSU_su",
-                               "TSU_PAD",
-                               "USTC_du",
-                               "USTC_sss",
-                               "USTC_ssu",
-                               "B_2015_SS",
-                               "B_2015_DS",
-                               "B_2012",
-                               "BUC_Ref",
-                               "BUC_2013",
-                               "BUC_2010",
-                               "CRPC_0",
-                               "CRPC_1"};
-Int_t iSlotRpcNeg[kiNbRpc] =
-  {0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4};
-Int_t iBdIdxRpcNeg[kiNbRpc] =
-  {0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8};
-Int_t iChIdxRpcNeg[kiNbRpc] =
-  {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 4, 5};
-Int_t iSlotRpcPos[kiNbRpc] =
-  {1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5};
-Int_t iBdIdxRpcPos[kiNbRpc] =
-  {2, 2, 2, 2, 2, 2, 6, 6, 6, 6, 6, 6, 10, 10, 10, 10, 10};
-Int_t iChIdxRpcPos[kiNbRpc] =
-  {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 4, 5};
+TString sChNameRpc[kiNbRpc] = {"HD_P2",   "HD_P5",    "TSU_ds",   "TSU_du",    "TSU_su",    "TSU_PAD",
+                               "USTC_du", "USTC_sss", "USTC_ssu", "B_2015_SS", "B_2015_DS", "B_2012",
+                               "BUC_Ref", "BUC_2013", "BUC_2010", "CRPC_0",    "CRPC_1"};
+Int_t iSlotRpcNeg[kiNbRpc]  = {0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4};
+Int_t iBdIdxRpcNeg[kiNbRpc] = {0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8};
+Int_t iChIdxRpcNeg[kiNbRpc] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 4, 5};
+Int_t iSlotRpcPos[kiNbRpc]  = {1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5};
+Int_t iBdIdxRpcPos[kiNbRpc] = {2, 2, 2, 2, 2, 2, 6, 6, 6, 6, 6, 6, 10, 10, 10, 10, 10};
+Int_t iChIdxRpcPos[kiNbRpc] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 4, 5};
 
 const Int_t kiPmtOffset     = 20;
 const Int_t kiNbPmt         = 10;
-TString sChNamePmt[kiNbPmt] = {"PMT1",
-                               "PMT2",
-                               "PMT3",
-                               "PMT4",
-                               "BFL",
-                               "BFR",
-                               "BBL",
-                               "BBR",
-                               "PMT5",
-                               "Dia_PMT"};
+TString sChNamePmt[kiNbPmt] = {"PMT1", "PMT2", "PMT3", "PMT4", "BFL", "BFR", "BBL", "BBR", "PMT5", "Dia_PMT"};
 Int_t iSlotPmtNeg[kiNbPmt]  = {6, 6, 6, 6, 7, 7, 7, 7, 7, 7};
 Int_t iBdIdxPmtNeg[kiNbPmt] = {13, 13, 13, 13, 14, 14, 14, 14, 14, 14};
 Int_t iChIdxPmtNeg[kiNbPmt] = {0, 1, 4, 5, 0, 1, 2, 3, 4, 5};
@@ -105,7 +68,8 @@ const Int_t kiSpillDistSec      = 30;    // Approximate value, now just default
 const Double_t kdSpillDiamThr   = 1e-4;  // µA
 const Double_t kdNoSpillDiamThr = 1e-5;  // µA
 
-void PrintHelp() {
+void PrintHelp()
+{
   cout << "Please provide a detector index, a data, a start time and a stop "
           "time as input!!!!"
        << endl;

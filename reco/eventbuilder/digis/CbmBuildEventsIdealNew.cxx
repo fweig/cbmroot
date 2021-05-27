@@ -33,8 +33,7 @@ using namespace std;
 
 
 // =====   Constructor   =====================================================
-CbmBuildEventsIdealNew::CbmBuildEventsIdealNew()
-  : FairTask("BuildEventsIdealNew") {}
+CbmBuildEventsIdealNew::CbmBuildEventsIdealNew() : FairTask("BuildEventsIdealNew") {}
 // ===========================================================================
 
 
@@ -44,7 +43,8 @@ CbmBuildEventsIdealNew::~CbmBuildEventsIdealNew() {}
 
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsIdealNew::Exec(Option_t*) {
+void CbmBuildEventsIdealNew::Exec(Option_t*)
+{
 
   TStopwatch timer;
   timer.Start();
@@ -146,11 +146,9 @@ void CbmBuildEventsIdealNew::Exec(Option_t*) {
 
   // --- Execution log
   std::cout << std::endl;
-  LOG(info) << "+ " << setw(15) << GetName() << ": Time-slice " << setw(3)
-            << right << fNofEntries << ", events: " << setw(6) << nEvents
-            << ", digis: " << nDigisTot << ", noise: " << nDigisNoise
-            << ". Exec time " << fixed << setprecision(6) << timer.RealTime()
-            << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Time-slice " << setw(3) << right << fNofEntries
+            << ", events: " << setw(6) << nEvents << ", digis: " << nDigisTot << ", noise: " << nDigisNoise
+            << ". Exec time " << fixed << setprecision(6) << timer.RealTime() << " s.";
 
   fNofEntries++;
 }
@@ -158,7 +156,8 @@ void CbmBuildEventsIdealNew::Exec(Option_t*) {
 
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsIdealNew::Init() {
+InitStatus CbmBuildEventsIdealNew::Init()
+{
 
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
@@ -174,12 +173,9 @@ InitStatus CbmBuildEventsIdealNew::Init() {
 
 
   // --- Check input data
-  for (ECbmModuleId system = ECbmModuleId::kMvd;
-       system < ECbmModuleId::kNofSystems;
-       ++system) {
+  for (ECbmModuleId system = ECbmModuleId::kMvd; system < ECbmModuleId::kNofSystems; ++system) {
     if (fDigiMan->IsMatchPresent(system)) {
-      LOG(info) << GetName() << ": Found match branch for "
-                << CbmModuleList::GetModuleNameCaps(system);
+      LOG(info) << GetName() << ": Found match branch for " << CbmModuleList::GetModuleNameCaps(system);
       fSystems.push_back(system);
     }
   }

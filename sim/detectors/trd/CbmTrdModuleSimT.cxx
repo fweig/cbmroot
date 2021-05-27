@@ -42,20 +42,22 @@ CbmTrdModuleSimT::CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
   , fTriangleBinning(NULL)
   , fFASP(NULL)
   , fTimeSlice(NULL)
-  , fTimeOld(0) {
+  , fTimeOld(0)
+{
   SetNameTitle(Form("TrdSimT%d", mod), "Simulator for triangular read-out.");
   SetAsic(FASP);
 }
 
 //_________________________________________________________________________________
-CbmTrdModuleSimT::~CbmTrdModuleSimT() {
+CbmTrdModuleSimT::~CbmTrdModuleSimT()
+{
   if (fTriangleBinning) delete fTriangleBinning;
   if (fFASP) delete fFASP;
 }
 
 //_________________________________________________________________________________
-Bool_t
-CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
+Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
+{
   /**  
   Steering routine for building digits out of the TRD hit for the triangular pad geometry. 
   1. Scan the amplification cells span by the track\n
@@ -65,9 +67,7 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
 */
 
   if (VERBOSE) {
-    printf("CbmTrdModuleSimT::MakeDigi @ T[ns] = ev[%10.2f]+hit[%5.2f] ...\n",
-           time,
-           point->GetTime());
+    printf("CbmTrdModuleSimT::MakeDigi @ T[ns] = ev[%10.2f]+hit[%5.2f] ...\n", time, point->GetTime());
     point->Print("");
   }
   Double_t gin[3]  = {point->GetXIn(), point->GetYIn(), point->GetZIn()},
@@ -82,12 +82,7 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
   gGeoManager->MasterToLocal(gout, lout);
   SetPositionMC(lout);
   if (VERBOSE)
-    printf("  ModPos : in[%7.4f %7.4f %7.4f] out[%7.4f %7.4f %7.4f]\n",
-           lin[0],
-           lin[1],
-           lin[2],
-           lout[0],
-           lout[1],
+    printf("  ModPos : in[%7.4f %7.4f %7.4f] out[%7.4f %7.4f %7.4f]\n", lin[0], lin[1], lin[2], lout[0], lout[1],
            lout[2]);
 
   // General processing on the MC point
@@ -98,7 +93,8 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
       fRadiator->LatticeHit(
         point)) {  // electron has passed lattice grid (or frame material) befor reaching the gas volume -> TR-photons have been absorbed by the lattice grid
                    //      nofLatticeHits++;
-    } else if (gout[2] >= gin[2]) {  //electron has passed the radiator
+    }
+    else if (gout[2] >= gin[2]) {  //electron has passed the radiator
       TVector3 mom;
       point->Momentum(mom);
       ELossTR = fRadiator->GetTR(mom);
@@ -115,8 +111,7 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
     if (i == 2) txy = trackLength;
     trackLength += dd[i] * dd[i];
   }
-  if (trackLength > 0.)
-    trackLength = TMath::Sqrt(trackLength);
+  if (trackLength > 0.) trackLength = TMath::Sqrt(trackLength);
   else {
     LOG(warn) << GetName()
               << "::MakeDigi: NULL track length for"
@@ -124,8 +119,7 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
               << std::setprecision(5) << ELossdEdX * 1e6 << ") keV ";
     return kFALSE;
   }
-  if (txy > 0.)
-    txy = TMath::Sqrt(txy);
+  if (txy > 0.) txy = TMath::Sqrt(txy);
   else {
     LOG(warn) << GetName()
               << "::MakeDigi: NULL xy track length projection for"
@@ -149,24 +143,17 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
   Int_t ncls = TMath::Nint(TMath::Abs(aout[1] - ain[1]) / dw + 1.);
   if (VERBOSE) {
     printf("  WireHit(s): %d\n", ncls);
-    printf("  AnodePos  : win[%7.4f / %7.4f] wout[%7.4f / %7.4f]\n",
-           ain[1],
-           lin[1],
-           aout[1],
-           lout[1]);
+    printf("  AnodePos  : win[%7.4f / %7.4f] wout[%7.4f / %7.4f]\n", ain[1], lin[1], aout[1], lout[1]);
   }
 
   // calculate track segmentation on the amplification cells distribution
   Int_t sgnx(1), sgny(1);
   if (lout[0] < lin[0]) sgnx = -1;
   if (lout[1] < lin[1]) sgny = -1;
-  Double_t dy[] = {TMath::Min((ain[1] + 0.5 * sgny * dw - lin[1]) * sgny,
-                              (lout[1] - lin[1]) * sgny),
-                   TMath::Min((lout[1] - (aout[1] - 0.5 * sgny * dw)) * sgny,
-                              (lout[1] - lin[1]) * sgny)},
+  Double_t dy[] = {TMath::Min((ain[1] + 0.5 * sgny * dw - lin[1]) * sgny, (lout[1] - lin[1]) * sgny),
+                   TMath::Min((lout[1] - (aout[1] - 0.5 * sgny * dw)) * sgny, (lout[1] - lin[1]) * sgny)},
            dxw(TMath::Abs(dd[0] * dw / dd[1])),
-           dx[] = {TMath::Abs(dy[0] * dd[0] / dd[1]),
-                   TMath::Abs(dy[1] * dd[0] / dd[1])};
+           dx[] = {TMath::Abs(dy[0] * dd[0] / dd[1]), TMath::Abs(dy[1] * dd[0] / dd[1])};
   // check partition
   Double_t DX(dx[0]), DY(dy[0]);
   for (Int_t ic(1); ic < ncls - 1; ic++) {
@@ -180,71 +167,48 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
   if (VERBOSE) {
     printf("  DX[%7.4f] = dx0[%7.4f] + dx1[%7.4f] dwx[%7.4f] checkDX[%7.4f]\n"
            "  DY[%7.4f] = dy0[%7.4f] + dy1[%7.4f] dwy[%7.4f] checkDY[%7.4f]\n",
-           dd[0],
-           dx[0],
-           dx[1],
-           dxw,
-           sgnx * DX,
-           dd[1],
-           dy[0],
-           dy[1],
-           dw,
-           sgny * DY);
+           dd[0], dx[0], dx[1], dxw, sgnx * DX, dd[1], dy[0], dy[1], dw, sgny * DY);
   }
 
-  Double_t pos[3] = {ain[0], ain[1], ain[2]}, ldx(0.), ldy(0.), dxy(0.),
-           e(0.), /*etr(0.),*/
+  Double_t pos[3] = {ain[0], ain[1], ain[2]}, ldx(0.), ldy(0.), dxy(0.), e(0.), /*etr(0.),*/
     tdrift, /*x0=lin[0],*/ y0 = lin[1] - ain[1], z0 = lin[2];
   for (Int_t icl(0); icl < ncls; icl++) {
     if (!icl) {
       ldx = dx[0];
       ldy = dy[0];
-    } else if (icl == ncls - 1) {
+    }
+    else if (icl == ncls - 1) {
       ldx = dx[1];
       ldy = dy[1];
-    } else {
+    }
+    else {
       ldx = dxw;
       ldy = dw;
     }
 
     dxy = ldx * ldx + ldy * ldy;
     if (dxy <= 0) {
-      LOG(error) << GetName()
-                 << "::MakeDigi: NULL projected track length in cluster " << icl
-                 << " for track length[cm] (" << std::setprecision(5) << ldx
-                 << ", " << std::setprecision(2) << ldy
+      LOG(error) << GetName() << "::MakeDigi: NULL projected track length in cluster " << icl
+                 << " for track length[cm] (" << std::setprecision(5) << ldx << ", " << std::setprecision(2) << ldy
                  << ")."
                     " dEdx("
                  << std::setprecision(5) << ELossdEdX * 1e6 << ") keV ";
       continue;
     }
     dxy = TMath::Sqrt(dxy);
-    if (VERBOSE)
-      printf("    %d ldx[%7.4f] ldy[%7.4f] xy[%7.4f] frac=%7.2f%%\n",
-             icl,
-             ldx,
-             ldy,
-             dxy,
-             1.e2 * dxy / txy);
+    if (VERBOSE) printf("    %d ldx[%7.4f] ldy[%7.4f] xy[%7.4f] frac=%7.2f%%\n", icl, ldx, ldy, dxy, 1.e2 * dxy / txy);
 
     Double_t dEdx(dxy / txy),
       cELoss(ELossdEdX * dEdx);  // continuos energy deposit
     e += cELoss;
 
     if (VERBOSE)
-      printf("      y0[%7.4f] z0[%7.4f] y1[%7.4f] z1[%7.4f]\n",
-             y0,
-             z0,
-             y0 + ldy * sgny,
-             z0 + dzdy * ldy * sgny);
+      printf("      y0[%7.4f] z0[%7.4f] y1[%7.4f] z1[%7.4f]\n", y0, z0, y0 + ldy * sgny, z0 + dzdy * ldy * sgny);
     tdrift = fChmbPar->ScanDriftTime(y0, z0, dzdy, ldy * sgny);
     y0 += ldy * sgny;
     z0 += dzdy * ldy * sgny;
     pos[0] += 0.5 * ldx * sgnx;
-    if (VERBOSE)
-      printf("      time_hit[ns]=%10.2f time_drift[ns]=%6.2f\n",
-             time + point->GetTime(),
-             tdrift);
+    if (VERBOSE) printf("      time_hit[ns]=%10.2f time_drift[ns]=%6.2f\n", time + point->GetTime(), tdrift);
     // apply GAS GAIN
     // convert Edep [keV] to collected charge [fC]
     cELoss = fChmbPar->EkevFC(1e6 * cELoss);
@@ -253,26 +217,19 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
     pos[1] += dw * sgny;
   }
   if (TMath::Abs(lout[0] - pos[0]) > 1.e-3) {
-    LOG(warn) << GetName() << "::MakeDigi: Along wire coordinate error : x_sim="
-              << std::setprecision(5) << lout[0]
+    LOG(warn) << GetName() << "::MakeDigi: Along wire coordinate error : x_sim=" << std::setprecision(5) << lout[0]
               << " x_calc=" << std::setprecision(5) << pos[0];
   }
   if (TMath::Abs(ELossdEdX - e) > 1.e-3) {
-    LOG(warn) << GetName()
-              << "::MakeDigi: dEdx partition to anode wires error : E[keV] = "
-              << std::setprecision(5) << ELossdEdX * 1e6
-              << " Sum(Ei)[keV]=" << std::setprecision(5) << e * 1e6;
+    LOG(warn) << GetName() << "::MakeDigi: dEdx partition to anode wires error : E[keV] = " << std::setprecision(5)
+              << ELossdEdX * 1e6 << " Sum(Ei)[keV]=" << std::setprecision(5) << e * 1e6;
   }
 
   // simulate TR
   if (ELossTR > 0) {
     Double_t lambda(0.3), diffx(0.1);
     Double_t dist = gRandom->Exp(lambda);
-    if (VERBOSE)
-      printf("    %d PE effect @ %7.4fcm trackLength=%7.4fcm\n",
-             ncls,
-             dist,
-             trackLength);
+    if (VERBOSE) printf("    %d PE effect @ %7.4fcm trackLength=%7.4fcm\n", ncls, dist, trackLength);
     if (dist > trackLength) return kTRUE;
 
     // propgate to PE position
@@ -294,51 +251,32 @@ CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
         if (VERBOSE)
           printf("      yM[%7.4f] zM[%7.4f] -> yA[%7.4f] y0[%7.4f] "
                  "tDrift[ns]=%3d PE=%c EscPeak Edep=%5.3f [keV]\n",
-                 lin[1],
-                 lin[2],
-                 ain[1],
-                 y0,
-                 Int_t(tdrift),
-                 peShell,
-                 ELossTR);
+                 lin[1], lin[2], ain[1], y0, Int_t(tdrift), peShell, ELossTR);
         // 2. main peak
-      } else {
+      }
+      else {
         ELossTR -= 2 * fChmbPar->GetBindingEnergy(peShell, 1);
         if (VERBOSE)
           printf("      yM[%7.4f] zM[%7.4f] -> yA[%7.4f] y0[%7.4f] "
                  "tDrift[ns]=%3d PE=%c MainPeak Edep=%5.3f [keV]\n",
-                 lin[1],
-                 lin[2],
-                 ain[1],
-                 y0,
-                 Int_t(tdrift),
-                 peShell,
-                 ELossTR);
+                 lin[1], lin[2], ain[1], y0, Int_t(tdrift), peShell, ELossTR);
       }
-    } else if (VERBOSE)
+    }
+    else if (VERBOSE)
       printf("      yM[%7.4f] zM[%7.4f] -> yA[%7.4f] y0[%7.4f] tDrift[ns]=%3d "
              "PE=%c\n",
-             lin[1],
-             lin[2],
-             ain[1],
-             y0,
-             Int_t(tdrift),
-             peShell);
+             lin[1], lin[2], ain[1], y0, Int_t(tdrift), peShell);
     //ELossTR = gRandom->Gaus(ELossTR, ); // account for gain uncertainty
-    ELossTR =
-      fChmbPar->EkevFC(ELossTR);  // convert Edep [keV] to collected charge [fC]
+    ELossTR = fChmbPar->EkevFC(ELossTR);  // convert Edep [keV] to collected charge [fC]
 
-    ScanPadPlane(
-      ain, tdrift * diffx, ELossTR, time + point->GetTime() + tdrift);
+    ScanPadPlane(ain, tdrift * diffx, ELossTR, time + point->GetTime() + tdrift);
   }
   return kTRUE;
 }
 
 //_________________________________________________________________________________
-Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
-                                      Double_t DX,
-                                      Double_t ELoss,
-                                      Double_t toff) {
+Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
+{
   /**  
   The hit is expressed in local chamber coordinates, localized as follows:
     - Along the wire in the middle of the track projection on the closest wire
@@ -351,19 +289,13 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
   if (VERBOSE)
     printf("        WirePlane : xy[%7.4f %7.4f] D[%7.4f] S[fC]=%7.4f "
            "time[ns]=%10.2f\n",
-           point[0],
-           point[1],
-           DX,
-           ELoss,
-           toff);
+           point[0], point[1], DX, ELoss, toff);
 
   Int_t sec(-1), col(-1), row(-1);
   fDigiPar->GetPadInfo(point, sec, col, row);
   if (sec < 0 || col < 0 || row < 0) {
-    LOG(error)
-      << "CbmTrdModuleSimT::ScanPadPlane: Hit to pad matching failed for ["
-      << std::setprecision(5) << point[0] << ", " << std::setprecision(5)
-      << point[1] << ", " << std::setprecision(5) << point[2] << "].";
+    LOG(error) << "CbmTrdModuleSimT::ScanPadPlane: Hit to pad matching failed for [" << std::setprecision(5) << point[0]
+               << ", " << std::setprecision(5) << point[1] << ", " << std::setprecision(5) << point[2] << "].";
     return kFALSE;
   }
   for (Int_t is(0); is < sec; is++)
@@ -371,22 +303,13 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
 
   Double_t dx, dy;
   fDigiPar->TransformToLocalPad(point, dx, dy);
-  if (VERBOSE)
-    printf("        PadPlane : col[%d] row[%d] x[%7.4f] y[%7.4f]\n",
-           col,
-           row,
-           dx,
-           dy);
+  if (VERBOSE) printf("        PadPlane : col[%d] row[%d] x[%7.4f] y[%7.4f]\n", col, row, dx, dy);
 
   // build binning if called for the first time. Don't care about sector information as Bucharest has only 1 type of pads
-  if (!fTriangleBinning)
-    fTriangleBinning =
-      new CbmTrdTrianglePRF(fDigiPar->GetPadSizeX(1), fDigiPar->GetPadSizeY(1));
+  if (!fTriangleBinning) fTriangleBinning = new CbmTrdTrianglePRF(fDigiPar->GetPadSizeX(1), fDigiPar->GetPadSizeY(1));
   if (!fTriangleBinning->SetOrigin(dx, dy)) {
-    LOG(warn)
-      << "CbmTrdModuleSimT::ScanPadPlane: Hit outside integration limits ["
-      << std::setprecision(5) << dx << ", " << std::setprecision(5) << dy
-      << "].";
+    LOG(warn) << "CbmTrdModuleSimT::ScanPadPlane: Hit outside integration limits [" << std::setprecision(5) << dx
+              << ", " << std::setprecision(5) << dy << "].";
     return kFALSE;
   }
 
@@ -412,14 +335,12 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
       if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
         printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
                "col[%d] row[%d]\n",
-               colOff,
-               rowOff);
+               colOff, rowOff);
         break;
       }
       //fTriangleBinning->GetCurrentBin(bx, by);
       //printf("      {ru} bin[%2d %2d] c[%d] r[%d] u[%2d] PRF[%f]\n", bx, by, colOff, rowOff, up, prf);
-      if (up)
-        array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
+      if (up) array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
       else {
         array[colOff][rowOff][0] += 0.5 * prf;
         array[colOff][rowOff][1] += 0.5 * prf;
@@ -438,14 +359,12 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
       if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
         printf("CbmTrdModuleSimT::ScanPadPlaneTriangleAB: Bin outside mapped "
                "array : col[%d] row[%d]\n",
-               colOff,
-               rowOff);
+               colOff, rowOff);
         break;
       }
       //fTriangleBinning->GetCurrentBin(bx, by);
       //printf("      {rd} bin[%2d %2d] c[%d] r[%d] u[%2d] PRF[%f]\n", bx, by, colOff, rowOff, up, prf);
-      if (up)
-        array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
+      if (up) array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
       else {
         array[colOff][rowOff][0] += 0.5 * prf;
         array[colOff][rowOff][1] += 0.5 * prf;
@@ -458,8 +377,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
   fTriangleBinning->GoToOriginX();
 
 
-  if (fTriangleBinning
-        ->PrevBinX()) {  // skip bin @ x0 which was calculated before
+  if (fTriangleBinning->PrevBinX()) {  // skip bin @ x0 which was calculated before
     // look left
     do {
       // check if there is any contribution on this bin column
@@ -472,14 +390,12 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
         if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
           printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
                  "col[%d] row[%d]\n",
-                 colOff,
-                 rowOff);
+                 colOff, rowOff);
           break;
         }
         //fTriangleBinning->GetCurrentBin(bx, by);
         //printf("      {lu} bin[%2d %2d] c[%d] r[%d] u[%2d] PRF[%f]\n", bx, by, colOff, rowOff, up, prf);
-        if (up)
-          array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
+        if (up) array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
         else {
           array[colOff][rowOff][0] += 0.5 * prf;
           array[colOff][rowOff][1] += 0.5 * prf;
@@ -497,14 +413,12 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
         if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
           printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
                  "col[%d] row[%d]\n",
-                 colOff,
-                 rowOff);
+                 colOff, rowOff);
           break;
         }
         //fTriangleBinning->GetCurrentBin(bx, by);
         //printf("      {ld} bin[%2d %2d] c[%d] r[%d] u[%2d] PRF[%f]\n", bx, by, colOff, rowOff, up, prf);
-        if (up)
-          array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
+        if (up) array[colOff][rowOff][(up > 0 ? 0 : 1)] += prf;
         else {
           array[colOff][rowOff][0] += 0.5 * prf;
           array[colOff][rowOff][1] += 0.5 * prf;
@@ -525,8 +439,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
     for (Int_t ir(nr); ir--;) {
       printf("      r[%d] ", ir);
       for (Int_t ic(0); ic < nc; ic++)
-        printf(
-          "%6.4f/%6.4f ", 1.e2 * array[ic][ir][0], 1.e2 * array[ic][ir][1]);
+        printf("%6.4f/%6.4f ", 1.e2 * array[ic][ir][0], 1.e2 * array[ic][ir][1]);
       printf("\n");
     }
   }
@@ -549,10 +462,8 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
       //       if(ic>0) array[ic-1][ir][0]+=array[ic][ir][1];  // add top pad to previous tilt pair
       //       array[ic][ir][1] += array[ic][ir][0];           // add bottom pad to current rect pair
 
-      if (ic < nc - 1)
-        array[ic + 1][ir][0] +=
-          array[ic][ir][1];                  // add bottom pad to next tilt pair
-      array[ic][ir][1] += array[ic][ir][0];  // add top pad to current rect pair
+      if (ic < nc - 1) array[ic + 1][ir][0] += array[ic][ir][1];  // add bottom pad to next tilt pair
+      array[ic][ir][1] += array[ic][ir][0];                       // add top pad to current rect pair
     }
   }
   if (VERBOSE) {
@@ -591,8 +502,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
       if (!kCOL) continue;
 
       // compute global column address
-      address =
-        GetPadAddress(wrow, wcol);  //CbmTrdAddress::GetAddress(fLayerId,
+      address = GetPadAddress(wrow, wcol);  //CbmTrdAddress::GetAddress(fLayerId,
 
       // add physics (E[keV], t[ns], Etr[keV])
       AddDigi(address, &dch[0], toff);  //, ELossTR/ELoss);
@@ -602,9 +512,8 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point,
 }
 
 //_______________________________________________________________________________________________
-void CbmTrdModuleSimT::AddDigi(Int_t address,
-                               Double_t* charge,
-                               Double_t time /*, Double_t fTR*/) {
+void CbmTrdModuleSimT::AddDigi(Int_t address, Double_t* charge, Double_t time /*, Double_t fTR*/)
+{
   /**
  * Adding triangular digits to time slice buffer
  */
@@ -613,8 +522,7 @@ void CbmTrdModuleSimT::AddDigi(Int_t address,
   // make digi
   CbmTrdDigi *digi(NULL), *sdigi(NULL);
   CbmMatch* digiMatch(NULL);
-  digi =
-    new CbmTrdDigi(address, charge[0], charge[1], ULong64_t(TMath::Ceil(time)));
+  digi = new CbmTrdDigi(address, charge[0], charge[1], ULong64_t(TMath::Ceil(time)));
   digi->SetAddressModule(fModAddress);  // may not be needed in the future
   digiMatch          = new CbmMatch();
   Double_t weighting = 1;
@@ -622,19 +530,15 @@ void CbmTrdModuleSimT::AddDigi(Int_t address,
   //digi->SetMatch(digiMatch);
 
   // get the link to saved digits
-  std::map<Int_t, std::vector<pair<CbmTrdDigi*, CbmMatch*>>>::iterator it =
-    fBuffer.find(address);
+  std::map<Int_t, std::vector<pair<CbmTrdDigi*, CbmMatch*>>>::iterator it = fBuffer.find(address);
 
   // check for saved
   if (it != fBuffer.end()) {
     Bool_t kINSERT(kFALSE);
-    for (std::vector<pair<CbmTrdDigi*, CbmMatch*>>::iterator itv =
-           fBuffer[address].begin();
-         itv != fBuffer[address].end();
-         itv++) {
+    for (std::vector<pair<CbmTrdDigi*, CbmMatch*>>::iterator itv = fBuffer[address].begin();
+         itv != fBuffer[address].end(); itv++) {
       sdigi = itv->first;
-      if (sdigi->GetTime() <= digi->GetTime())
-        continue;  // arrange digits in increasing order of time
+      if (sdigi->GetTime() <= digi->GetTime()) continue;  // arrange digits in increasing order of time
       fBuffer[address].insert(itv, make_pair(digi, digiMatch));
       if (VERBOSE) cout << "          => Save(I) " << digi->ToString();
       kINSERT = kTRUE;
@@ -644,14 +548,16 @@ void CbmTrdModuleSimT::AddDigi(Int_t address,
       fBuffer[address].push_back(make_pair(digi, digiMatch));
       if (VERBOSE) cout << "          => Save(B) " << digi->ToString();
     }
-  } else {  // add address
+  }
+  else {  // add address
     if (VERBOSE) cout << "          => Add " << digi->ToString();
     fBuffer[address].push_back(make_pair(digi, digiMatch));
   }
 }
 
 //_______________________________________________________________________________________________
-Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
+Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
+{
   /** Flush time sorted digi buffer until requested moment in time. If time limit not specified flush all digits.
  *  Calculate timely interaction between digits which are produced either on different anode wires for the same particle or 
  * are produced by 2 particle close by. Also take into account FASP dead time and mark such digits correspondingly
@@ -673,10 +579,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
   if (VERBOSE)
     printf("CbmTrdModuleSimT::FlushBuffer(%llu) FASP start[%llu] end[%llu] "
            "closeTS[%c]\n",
-           time,
-           fFASP->GetStartTime(),
-           fFASP->GetEndTime(),
-           (closeTS ? 'y' : 'n'));
+           time, fFASP->GetStartTime(), fFASP->GetEndTime(), (closeTS ? 'y' : 'n'));
 
   // ask FASP simulator if there is enough time elapsed from the last running of the simulator
   if (time > 0 && !fFASP->Go(time) && !closeTS) return 0;
@@ -694,8 +597,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
 
   // write from saved buffer
   Int_t localAddress(0), ndigi(0) /*, n2(0)*/;
-  std::map<Int_t, std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>>::iterator it =
-    fBuffer.begin();
+  std::map<Int_t, std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>>::iterator it = fBuffer.begin();
   for (; it != fBuffer.end(); it++) {
     localAddress = it->first;
     ndigi        = fBuffer[localAddress].size();
@@ -709,11 +611,11 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
     // get ASIC channel calibration
     Int_t asicAddress = fAsicPar->GetAsicAddress(localAddress << 1);
     if (asicAddress < 0) {
-      LOG(warn) << GetName() << "::FlushBuffer: FASP Calibration for ro_ch "
-                << localAddress << " in module " << fModAddress << " missing.";
-    } else {
-      LOG(debug) << GetName() << "::FlushBuffer: Found FASP "
-                 << asicAddress % 1000 << " for ro_ch " << localAddress
+      LOG(warn) << GetName() << "::FlushBuffer: FASP Calibration for ro_ch " << localAddress << " in module "
+                << fModAddress << " missing.";
+    }
+    else {
+      LOG(debug) << GetName() << "::FlushBuffer: Found FASP " << asicAddress % 1000 << " for ro_ch " << localAddress
                  << " in module " << fModAddress;
       // fasp  = (CbmTrdParFasp*)fAsicPar->GetAsicPar(asicAddress); (VF) not used
       //fasp->Print();
@@ -761,12 +663,10 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
     while (iv != fBuffer[localAddress].end()) {
       digi = iv->first;
       if (!digi->IsMasked()) {  // no more digi processed
-        if (newStartTime == 0 || digi->GetTimeDAQ() < newStartTime)
-          newStartTime = digi->GetTimeDAQ();
+        if (newStartTime == 0 || digi->GetTimeDAQ() < newStartTime) newStartTime = digi->GetTimeDAQ();
         break;
       }
-      if (digi->IsFlagged(
-            0)) {  // phys digi didn't produce CS/FT update last digiMatch
+      if (digi->IsFlagged(0)) {  // phys digi didn't produce CS/FT update last digiMatch
         delete digi;
         if (digiMatch) {
           digiMatch->AddLink(iv->second->GetLink(0));
@@ -782,11 +682,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
         if (VERBOSE)
           printf("CbmTrdModuleSimT::FlushBuffer : request ly[%d] mod[%d] "
                  "sec[%d] srow[%d] col[%d]\n",
-                 fLayerId,
-                 CbmTrdAddress::GetModuleId(fModAddress),
-                 sec,
-                 srow,
-                 col);
+                 fLayerId, CbmTrdAddress::GetModuleId(fModAddress), sec, srow, col);
         //address = CbmTrdAddress::GetAddress(fLayerId, CbmTrdAddress::GetModuleId(fModAddress), sec, srow, col);
       }
       if (timeMin < 0 || digi->GetTime() < timeMin) timeMin = digi->GetTime();
@@ -803,16 +699,14 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
       nDigiLeft += fBuffer[localAddress].size();
       //printf("%d left-overs @ %d\n", fBuffer[localAddress].size(), localAddress);
       it++;
-    } else
+    }
+    else
       it = fBuffer.erase(it);
   }
   if (VERBOSE)
     printf("CbmTrdModuleSimT::FlushBuffer : write %d digis from %duns to "
            "%duns. Digits still in buffer %d\n",
-           n,
-           TMath::Nint(timeMin),
-           TMath::Nint(timeMax),
-           nDigiLeft);
+           n, TMath::Nint(timeMin), TMath::Nint(timeMax), nDigiLeft);
   fFASP->SetStartTime(newStartTime);
   fFASP->SetProcTime();
 
@@ -822,20 +716,15 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time) {
 }
 
 //_______________________________________________________________________________________________
-void CbmTrdModuleSimT::DumpBuffer() const {
-  for (std::map<Int_t,
-                std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>>::const_iterator
-         it = fBuffer.begin();
-       it != fBuffer.end();
-       it++) {
+void CbmTrdModuleSimT::DumpBuffer() const
+{
+  for (std::map<Int_t, std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>>::const_iterator it = fBuffer.begin();
+       it != fBuffer.end(); it++) {
     if (!it->second.size()) continue;
     printf("address[%10d] n[%2d]\n", it->first, (Int_t) it->second.size());
-    for (std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::const_iterator iv =
-           it->second.cbegin();
-         iv != it->second.cend();
-         iv++) {
-      cout << "\t" << (iv->first->IsFlagged(0) ? 'P' : 'D') << "[" << iv->first
-           << "] " << iv->first->ToString();
+    for (std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::const_iterator iv = it->second.cbegin();
+         iv != it->second.cend(); iv++) {
+      cout << "\t" << (iv->first->IsFlagged(0) ? 'P' : 'D') << "[" << iv->first << "] " << iv->first->ToString();
       cout << "\t" << iv->second->ToString();
     }
   }
@@ -843,12 +732,12 @@ void CbmTrdModuleSimT::DumpBuffer() const {
 
 
 //_______________________________________________________________________________
-void CbmTrdModuleSimT::SetAsicPar(CbmTrdParSetAsic* p) {
+void CbmTrdModuleSimT::SetAsicPar(CbmTrdParSetAsic* p)
+{
   /** Build local set of ASICs and perform initialization. Need a proper fDigiPar already defined.
  */
   if (fAsicPar) {
-    LOG(warn) << GetName() << "::SetAsicPar : The list for module "
-              << fModAddress << " already initialized.";
+    LOG(warn) << GetName() << "::SetAsicPar : The list for module " << fModAddress << " already initialized.";
     return;
   }
   fAsicPar = p;  //new CbmTrdParSetAsic();

@@ -5,14 +5,17 @@
  */
 
 #include "CbmGlobalTrackingTof.h"
+
 #include "CbmPixelHit.h"
 #include "CbmTofAddress.h"
 #include "CbmTofHit.h"
+#include "base/CbmLitToolFactory.h"
+#include "utils/CbmLitConverter.h"
+
 #include "TGeoBBox.h"
 #include "TGeoManager.h"
 #include "TMath.h"
-#include "base/CbmLitToolFactory.h"
-#include "utils/CbmLitConverter.h"
+
 #include <iostream>
 #include <utility>
 
@@ -222,12 +225,14 @@ struct Cuboid {
 
   Int_t fFullModId;
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < fNofTBins; ++i)
       fTBins[i].Clear();
   }
 
-  void Calc(int nofTBins = 0) {
+  void Calc(int nofTBins = 0)
+  {
     fNofTBins = nofTBins;
 
     if (fNofTBins) fTBins = new TBin[fNofTBins];
@@ -265,11 +270,9 @@ struct Cuboid {
             if (0 == dims[l]) {
               int dims2[3] = {dims[0], dims[1], dims[2]};
               dims2[l]     = 1;
-              edges[ind++] = {{vertices[dims[0]][dims[1]][dims[2]].x,
-                               vertices[dims[0]][dims[1]][dims[2]].y,
+              edges[ind++] = {{vertices[dims[0]][dims[1]][dims[2]].x, vertices[dims[0]][dims[1]][dims[2]].y,
                                vertices[dims[0]][dims[1]][dims[2]].z},
-                              {vertices[dims2[0]][dims2[1]][dims2[2]].x,
-                               vertices[dims2[0]][dims2[1]][dims2[2]].y,
+                              {vertices[dims2[0]][dims2[1]][dims2[2]].x, vertices[dims2[0]][dims2[1]][dims2[2]].y,
                                vertices[dims2[0]][dims2[1]][dims2[2]].z}};
             }
           }
@@ -298,141 +301,77 @@ struct Cuboid {
       dims1[j]     = 1;
       dims2[k]     = 1;
       double len1 =
-        TMath::Sqrt((vertices[dims1[0]][dims1[1]][dims1[2]].x
-                     - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                      * (vertices[dims1[0]][dims1[1]][dims1[2]].x
-                         - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                    + (vertices[dims1[0]][dims1[1]][dims1[2]].y
-                       - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                        * (vertices[dims1[0]][dims1[1]][dims1[2]].y
-                           - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                    + (vertices[dims1[0]][dims1[1]][dims1[2]].z
-                       - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                        * (vertices[dims1[0]][dims1[1]][dims1[2]].z
-                           - vertices[dims0[0]][dims0[1]][dims0[2]].z));
-      double cosX1 = (vertices[dims1[0]][dims1[1]][dims1[2]].x
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                     / len1;
-      double cosY1 = (vertices[dims1[0]][dims1[1]][dims1[2]].y
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                     / len1;
-      double cosZ1 = (vertices[dims1[0]][dims1[1]][dims1[2]].z
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                     / len1;
+        TMath::Sqrt((vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                      * (vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                    + (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                        * (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                    + (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z)
+                        * (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z));
+      double cosX1 = (vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x) / len1;
+      double cosY1 = (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y) / len1;
+      double cosZ1 = (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z) / len1;
 
       double len2 =
-        TMath::Sqrt((vertices[dims2[0]][dims2[1]][dims2[2]].x
-                     - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                      * (vertices[dims2[0]][dims2[1]][dims2[2]].x
-                         - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                    + (vertices[dims2[0]][dims2[1]][dims2[2]].y
-                       - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                        * (vertices[dims2[0]][dims2[1]][dims2[2]].y
-                           - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                    + (vertices[dims2[0]][dims2[1]][dims2[2]].z
-                       - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                        * (vertices[dims2[0]][dims2[1]][dims2[2]].z
-                           - vertices[dims0[0]][dims0[1]][dims0[2]].z));
-      double cosX2 = (vertices[dims2[0]][dims2[1]][dims2[2]].x
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                     / len2;
-      double cosY2 = (vertices[dims2[0]][dims2[1]][dims2[2]].y
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                     / len2;
-      double cosZ2 = (vertices[dims2[0]][dims2[1]][dims2[2]].z
-                      - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                     / len2;
+        TMath::Sqrt((vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                      * (vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                    + (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                        * (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                    + (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z)
+                        * (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z));
+      double cosX2 = (vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x) / len2;
+      double cosY2 = (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y) / len2;
+      double cosZ2 = (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z) / len2;
 
-      faces[i][0] = {{vertices[dims0[0]][dims0[1]][dims0[2]].x,
-                      vertices[dims0[0]][dims0[1]][dims0[2]].y,
-                      vertices[dims0[0]][dims0[1]][dims0[2]].z,
-                      cosX1,
-                      cosY1,
-                      cosZ1,
-                      cosX2,
-                      cosY2,
-                      cosZ2},
+      faces[i][0] = {{vertices[dims0[0]][dims0[1]][dims0[2]].x, vertices[dims0[0]][dims0[1]][dims0[2]].y,
+                      vertices[dims0[0]][dims0[1]][dims0[2]].z, cosX1, cosY1, cosZ1, cosX2, cosY2, cosZ2},
                      len1,
                      len2};
 
       dims0[i] = 1;
       dims1[i] = 1;
       dims2[i] = 1;
-      len1     = TMath::Sqrt((vertices[dims1[0]][dims1[1]][dims1[2]].x
-                          - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                           * (vertices[dims1[0]][dims1[1]][dims1[2]].x
-                              - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                         + (vertices[dims1[0]][dims1[1]][dims1[2]].y
-                            - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                             * (vertices[dims1[0]][dims1[1]][dims1[2]].y
-                                - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                         + (vertices[dims1[0]][dims1[1]][dims1[2]].z
-                            - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                             * (vertices[dims1[0]][dims1[1]][dims1[2]].z
-                                - vertices[dims0[0]][dims0[1]][dims0[2]].z));
-      cosX1    = (vertices[dims1[0]][dims1[1]][dims1[2]].x
-               - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-              / len1;
-      cosY1 = (vertices[dims1[0]][dims1[1]][dims1[2]].y
-               - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-              / len1;
-      cosZ1 = (vertices[dims1[0]][dims1[1]][dims1[2]].z
-               - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-              / len1;
+      len1     = TMath::Sqrt((vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                           * (vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                         + (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                             * (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                         + (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z)
+                             * (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z));
+      cosX1    = (vertices[dims1[0]][dims1[1]][dims1[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x) / len1;
+      cosY1    = (vertices[dims1[0]][dims1[1]][dims1[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y) / len1;
+      cosZ1    = (vertices[dims1[0]][dims1[1]][dims1[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z) / len1;
 
-      len2  = TMath::Sqrt((vertices[dims2[0]][dims2[1]][dims2[2]].x
-                          - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                           * (vertices[dims2[0]][dims2[1]][dims2[2]].x
-                              - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-                         + (vertices[dims2[0]][dims2[1]][dims2[2]].y
-                            - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                             * (vertices[dims2[0]][dims2[1]][dims2[2]].y
-                                - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-                         + (vertices[dims2[0]][dims2[1]][dims2[2]].z
-                            - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-                             * (vertices[dims2[0]][dims2[1]][dims2[2]].z
-                                - vertices[dims0[0]][dims0[1]][dims0[2]].z));
-      cosX2 = (vertices[dims2[0]][dims2[1]][dims2[2]].x
-               - vertices[dims0[0]][dims0[1]][dims0[2]].x)
-              / len2;
-      cosY2 = (vertices[dims2[0]][dims2[1]][dims2[2]].y
-               - vertices[dims0[0]][dims0[1]][dims0[2]].y)
-              / len2;
-      cosZ2 = (vertices[dims2[0]][dims2[1]][dims2[2]].z
-               - vertices[dims0[0]][dims0[1]][dims0[2]].z)
-              / len2;
+      len2  = TMath::Sqrt((vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                           * (vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x)
+                         + (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                             * (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y)
+                         + (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z)
+                             * (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z));
+      cosX2 = (vertices[dims2[0]][dims2[1]][dims2[2]].x - vertices[dims0[0]][dims0[1]][dims0[2]].x) / len2;
+      cosY2 = (vertices[dims2[0]][dims2[1]][dims2[2]].y - vertices[dims0[0]][dims0[1]][dims0[2]].y) / len2;
+      cosZ2 = (vertices[dims2[0]][dims2[1]][dims2[2]].z - vertices[dims0[0]][dims0[1]][dims0[2]].z) / len2;
 
-      faces[i][1] = {{vertices[dims0[0]][dims0[1]][dims0[2]].x,
-                      vertices[dims0[0]][dims0[1]][dims0[2]].y,
-                      vertices[dims0[0]][dims0[1]][dims0[2]].z,
-                      cosX1,
-                      cosY1,
-                      cosZ1,
-                      cosX2,
-                      cosY2,
-                      cosZ2},
+      faces[i][1] = {{vertices[dims0[0]][dims0[1]][dims0[2]].x, vertices[dims0[0]][dims0[1]][dims0[2]].y,
+                      vertices[dims0[0]][dims0[1]][dims0[2]].z, cosX1, cosY1, cosZ1, cosX2, cosY2, cosZ2},
                      len1,
                      len2};
     }
   }
 };
 
-static bool Inside(const Cuboid& cuboid, const Point& point) {
+static bool Inside(const Cuboid& cuboid, const Point& point)
+{
   const Point& O = cuboid.vertices[0][0][0];
-  double projX   = (point.x - O.x) * cuboid.dirWidth.cosX
-                 + (point.y - O.y) * cuboid.dirWidth.cosY
+  double projX   = (point.x - O.x) * cuboid.dirWidth.cosX + (point.y - O.y) * cuboid.dirWidth.cosY
                  + (point.z - O.z) * cuboid.dirWidth.cosZ;
 
   if (0 > projX || projX > cuboid.width) return false;
 
-  double projY = (point.x - O.x) * cuboid.dirHeight.cosX
-                 + (point.y - O.y) * cuboid.dirHeight.cosY
+  double projY = (point.x - O.x) * cuboid.dirHeight.cosX + (point.y - O.y) * cuboid.dirHeight.cosY
                  + (point.z - O.z) * cuboid.dirHeight.cosZ;
 
   if (0 > projY || projY > cuboid.height) return false;
 
-  double projZ = (point.x - O.x) * cuboid.dirThickness.cosX
-                 + (point.y - O.y) * cuboid.dirThickness.cosY
+  double projZ = (point.x - O.x) * cuboid.dirThickness.cosX + (point.y - O.y) * cuboid.dirThickness.cosY
                  + (point.z - O.z) * cuboid.dirThickness.cosZ;
 
   if (0 > projZ || projZ > cuboid.thickness) return false;
@@ -440,7 +379,8 @@ static bool Inside(const Cuboid& cuboid, const Point& point) {
   return true;
 }
 
-static bool Intersect(const Cuboid& cuboid1, const Cuboid& cuboid2) {
+static bool Intersect(const Cuboid& cuboid1, const Cuboid& cuboid2)
+{
   // Check if cuboid2 is inside cuboid1
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
@@ -493,20 +433,20 @@ struct XBin {
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
   list<Cuboid*> fCuboids;
 
-  void Clear() {
-    for (list<Cuboid*>::iterator i = fCuboids.begin(); i != fCuboids.end();
-         ++i) {
+  void Clear()
+  {
+    for (list<Cuboid*>::iterator i = fCuboids.begin(); i != fCuboids.end(); ++i) {
       Cuboid* cuboid = *i;
       cuboid->Clear();
     }
   }
-#else   //CBM_GLOBALTB_TOF_3D_CUBOIDS
+#else  //CBM_GLOBALTB_TOF_3D_CUBOIDS
   int fNofTBins;
   TBin* fTBins;
-  explicit XBin(int nofTBins)
-    : fNofTBins(nofTBins), fTBins(new TBin[fNofTBins]) {}
+  explicit XBin(int nofTBins) : fNofTBins(nofTBins), fTBins(new TBin[fNofTBins]) {}
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < fNofTBins; ++i) {
       fTBins[i].Clear();
     }
@@ -520,17 +460,18 @@ struct YBin {
 
   YBin(int nofXBins, int nofTBins)
     : fNofXBins(nofXBins)
-    , fXBins(
-        reinterpret_cast<XBin*>(new unsigned char[fNofXBins * sizeof(XBin)])) {
+    , fXBins(reinterpret_cast<XBin*>(new unsigned char[fNofXBins * sizeof(XBin)]))
+  {
     for (int i = 0; i < fNofXBins; ++i)
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
       new (&fXBins[i]) XBin;
-#else   //CBM_GLOBALTB_TOF_3D_CUBOIDS
+#else  //CBM_GLOBALTB_TOF_3D_CUBOIDS
       new (&fXBins[i]) XBin(nofTBins);
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
   }
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < fNofXBins; ++i)
       fXBins[i].Clear();
   }
@@ -542,13 +483,14 @@ struct ZBin {
 
   ZBin(int nofYBins, int nofXBins, int nofTBins)
     : fNofYBins(nofYBins)
-    , fYBins(
-        reinterpret_cast<YBin*>(new unsigned char[fNofYBins * sizeof(YBin)])) {
+    , fYBins(reinterpret_cast<YBin*>(new unsigned char[fNofYBins * sizeof(YBin)]))
+  {
     for (int i = 0; i < fNofYBins; ++i)
       new (&fYBins[i]) YBin(nofXBins, nofTBins);
   }
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < fNofYBins; ++i)
       fYBins[i].Clear();
   }
@@ -584,27 +526,28 @@ CbmGlobalTrackingTofGeometry::CbmGlobalTrackingTofGeometry()
 {
 }
 
-CbmGlobalTrackingTofGeometry::~CbmGlobalTrackingTofGeometry() {
+CbmGlobalTrackingTofGeometry::~CbmGlobalTrackingTofGeometry()
+{
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
   for (list<Cuboid*>::iterator i = fCuboids.begin(); i != fCuboids.end(); ++i)
     delete *i;
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
 }
 
-static void
-FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results) {
+static void FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results)
+{
   Int_t nofChildren = node->GetNdaughters();
 
   for (Int_t i = 0; i < nofChildren; ++i) {
     TGeoNode* child = node->GetDaughter(i);
     TString childName(child->GetName());
 
-    if (childName.Contains(name, TString::kIgnoreCase))
-      results.push_back(child);
+    if (childName.Contains(name, TString::kIgnoreCase)) results.push_back(child);
   }
 }
 
-bool CbmGlobalTrackingTofGeometry::Read() {
+bool CbmGlobalTrackingTofGeometry::Read()
+{
   fC                        = 1.e-7 * TMath::C();
   fPropagator               = CbmLitToolFactory::CreateTrackPropagator("lit");
   fLinePropagator           = CbmLitToolFactory::CreateTrackPropagator("line");
@@ -622,8 +565,7 @@ bool CbmGlobalTrackingTofGeometry::Read() {
   list<TGeoNode*> tofModules;
   FindGeoChild(tofNode, "module", tofModules);
 
-  for (list<TGeoNode*>::iterator i = tofModules.begin(); i != tofModules.end();
-       ++i) {
+  for (list<TGeoNode*>::iterator i = tofModules.begin(); i != tofModules.end(); ++i) {
     TGeoNode* tofModule  = *i;
     const char* modName  = tofModule->GetName();
     const char* firstUnd = strchr(modName, '_');
@@ -638,17 +580,13 @@ bool CbmGlobalTrackingTofGeometry::Read() {
     list<TGeoNode*> tofGasBoxes;
     FindGeoChild(tofModule, "gas_box", tofGasBoxes);
 
-    for (list<TGeoNode*>::iterator j = tofGasBoxes.begin();
-         j != tofGasBoxes.end();
-         ++j) {
+    for (list<TGeoNode*>::iterator j = tofGasBoxes.begin(); j != tofGasBoxes.end(); ++j) {
       TGeoNode* tofGasBox = *j;
       pNavigator->CdDown(tofGasBox);
       list<TGeoNode*> tofModuleCounters;
       FindGeoChild(tofGasBox, "counter", tofModuleCounters);
 
-      for (list<TGeoNode*>::iterator k = tofModuleCounters.begin();
-           k != tofModuleCounters.end();
-           ++k) {
+      for (list<TGeoNode*>::iterator k = tofModuleCounters.begin(); k != tofModuleCounters.end(); ++k) {
         TGeoNode* tofModuleCounter = *k;
         const char* counterName    = tofModuleCounter->GetName();
 
@@ -659,18 +597,16 @@ bool CbmGlobalTrackingTofGeometry::Read() {
         //int counterNum = atoi(lastUnd2 + 1); (VF) unused
 
         pNavigator->CdDown(tofModuleCounter);
-        TGeoVolume* tofModuleCounterVol = gGeoManager->GetCurrentVolume();
-        const TGeoBBox* tofModuleCounterShape =
-          static_cast<const TGeoBBox*>(tofModuleCounterVol->GetShape());
-        Double_t halfwidth     = tofModuleCounterShape->GetDX();
-        Double_t halfheight    = tofModuleCounterShape->GetDY();
-        Double_t halfthickness = tofModuleCounterShape->GetDZ();
+        TGeoVolume* tofModuleCounterVol       = gGeoManager->GetCurrentVolume();
+        const TGeoBBox* tofModuleCounterShape = static_cast<const TGeoBBox*>(tofModuleCounterVol->GetShape());
+        Double_t halfwidth                    = tofModuleCounterShape->GetDX();
+        Double_t halfheight                   = tofModuleCounterShape->GetDY();
+        Double_t halfthickness                = tofModuleCounterShape->GetDZ();
 
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
-        Cuboid* cuboid =
-          new Cuboid({2 * halfwidth, 2 * halfheight, 2 * halfthickness});
-        cuboid->fFullModId = CbmTofAddress::GetModFullId(
-          CbmTofAddress::GetUniqueAddress(modNum, counterNum, 0, 0, modType));
+        Cuboid* cuboid = new Cuboid({2 * halfwidth, 2 * halfheight, 2 * halfthickness});
+        cuboid->fFullModId =
+          CbmTofAddress::GetModFullId(CbmTofAddress::GetUniqueAddress(modNum, counterNum, 0, 0, modType));
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
 
         /*Int_t modId0 = CbmTofAddress::GetModFullId(CbmTofAddress::GetUniqueAddress(modNum, counterNum, 0, 0, modType));
@@ -688,15 +624,12 @@ bool CbmGlobalTrackingTofGeometry::Read() {
           {
             for (int w = 0; w < 2; ++w)  // w means width
             {
-              Double_t localCoords[3] = {w > 0 ? halfwidth : -halfwidth,
-                                         h > 0 ? halfheight : -halfheight,
-                                         t > 0 ? halfthickness
-                                               : -halfthickness};
+              Double_t localCoords[3] = {w > 0 ? halfwidth : -halfwidth, h > 0 ? halfheight : -halfheight,
+                                         t > 0 ? halfthickness : -halfthickness};
               Double_t globalCoords[3];
               gGeoManager->LocalToMaster(localCoords, globalCoords);
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
-              cuboid->vertices[t][h][w] = {
-                globalCoords[0], globalCoords[1], globalCoords[2]};
+              cuboid->vertices[t][h][w] = {globalCoords[0], globalCoords[1], globalCoords[2]};
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
 
               if (fMinX > globalCoords[0]) fMinX = globalCoords[0];
@@ -741,8 +674,7 @@ bool CbmGlobalTrackingTofGeometry::Read() {
 
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
   // Create references to the existing cuboids
-  for (list<Cuboid*>::iterator iter = fCuboids.begin(); iter != fCuboids.end();
-       ++iter) {
+  for (list<Cuboid*>::iterator iter = fCuboids.begin(); iter != fCuboids.end(); ++iter) {
     Cuboid* cuboid = *iter;
     int zIndMin    = GetZInd(cuboid->minZ);
     int zIndMax    = GetZInd(cuboid->maxZ);
@@ -764,8 +696,7 @@ bool CbmGlobalTrackingTofGeometry::Read() {
           for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 2; ++j) {
               for (int k = 0; k < 2; ++k)
-                cuboid2.vertices[i][j][k] = {fMinX + (xInd + k) * fXBinSize,
-                                             fMinY + (yInd + j) * fYBinSize,
+                cuboid2.vertices[i][j][k] = {fMinX + (xInd + k) * fXBinSize, fMinY + (yInd + j) * fYBinSize,
                                              fMinZ + (zInd + i) * fZBinSize};
             }
           }
@@ -782,7 +713,8 @@ bool CbmGlobalTrackingTofGeometry::Read() {
   return true;
 }
 
-void CbmGlobalTrackingTofGeometry::Clear() {
+void CbmGlobalTrackingTofGeometry::Clear()
+{
   for (int i = 0; i < fNofZBins; ++i)
     fZBins[i].Clear();
 }
@@ -791,7 +723,8 @@ int globalNofHits  = 0;
 int globalNofHitsT = 0;
 int globalNofHitsM = 0;
 
-void CbmGlobalTrackingTofGeometry::Prepare(timetype startTime) {
+void CbmGlobalTrackingTofGeometry::Prepare(timetype startTime)
+{
   Clear();
   fStartTime = startTime;
   fEndTime   = fStartTime + fNofTBins * fTBinSize;
@@ -836,9 +769,7 @@ void CbmGlobalTrackingTofGeometry::Prepare(timetype startTime) {
     Int_t address  = hit->GetAddress();
     Int_t moduleId = CbmTofAddress::GetModFullId(address);
 
-    for (list<Cuboid*>::iterator j = xBin.fCuboids.begin();
-         j != xBin.fCuboids.end();
-         ++j) {
+    for (list<Cuboid*>::iterator j = xBin.fCuboids.begin(); j != xBin.fCuboids.end(); ++j) {
       Cuboid* mrpc = *j;
 
       if (mrpc->fFullModId == moduleId) {
@@ -846,7 +777,7 @@ void CbmGlobalTrackingTofGeometry::Prepare(timetype startTime) {
         ++globalNofHitsM;
       }
     }
-#else   //CBM_GLOBALTB_TOF_3D_CUBOIDS
+#else  //CBM_GLOBALTB_TOF_3D_CUBOIDS
     TBin& tBin = xBin.fTBins[tInd];
     tBin.fHitInds.push_back(i);
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
@@ -857,11 +788,8 @@ int nofMRPCIntersections  = 0;
 int nofToFIntersections   = 0;
 int nofMRPCIntersectionsT = 0;
 
-void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
-                                        timetype trackTime,
-                                        timetype errT,
-                                        Int_t& tofHitInd,
-                                        Double_t& length)
+void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams, timetype trackTime, timetype errT,
+                                        Int_t& tofHitInd, Double_t& length)
 //void CbmGlobalTrackingTofGeometry::Find(scaltype x0, scaltype errX, scaltype y0, scaltype errY, scaltype z0, scaltype t0, scaltype errT,
 //scaltype tx, scaltype errTx, scaltype ty, scaltype errTy, Int_t& tofHitInd)
 //void CbmGlobalTrackingTofGeometry::Find(scaltype x0, scaltype errXSq, scaltype y0, scaltype errYSq, scaltype z0, scaltype t0, scaltype errT,
@@ -892,11 +820,9 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
   CbmTrackParam cbmTrackParams;
   cbmTrackParams.Set(trackParams, trackTime, errT);
   CbmLitTrackParam litTrackParams;
-  CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-    &cbmTrackParams, &litTrackParams);
+  CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmTrackParams, &litTrackParams);
 
-  if (fPropagator->Propagate(&litTrackParams, z1, fPDG, 0, &length)
-      == kLITERROR) {
+  if (fPropagator->Propagate(&litTrackParams, z1, fPDG, 0, &length) == kLITERROR) {
     length = 0;
     return;
   }
@@ -937,44 +863,43 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
   //Find(x1 + deltaX, y1 + deltaY, z1, tx, ty, inds);
 
 
-  if (fMinX <= xMax && xMax <= fMaxX && fMinY <= yMax && yMax <= fMaxY)
-    zMax = fMaxZ;
-  else if (ty > 0 && (fMaxY - y1) / ty < fMaxZ - z1
-           && fMinX <= x1 + tx * (fMaxY - y1) / ty
+  if (fMinX <= xMax && xMax <= fMaxX && fMinY <= yMax && yMax <= fMaxY) zMax = fMaxZ;
+  else if (ty > 0 && (fMaxY - y1) / ty < fMaxZ - z1 && fMinX <= x1 + tx * (fMaxY - y1) / ty
            && x1 + tx * (fMaxY - y1) / ty <= fMaxX) {
     zMax = z1 + (fMaxY - y1) / ty;
     yMax = fMaxY;
     xMax = x1 + tx * (fMaxY - y1) / ty;
-  } else if (ty < 0 && (fMinY - y1) / ty < fMaxZ - z1
-             && fMinX <= x1 + tx * (fMinY - y1) / ty
-             && x1 + tx * (fMinY - y1) / ty <= fMaxX) {
+  }
+  else if (ty < 0 && (fMinY - y1) / ty < fMaxZ - z1 && fMinX <= x1 + tx * (fMinY - y1) / ty
+           && x1 + tx * (fMinY - y1) / ty <= fMaxX) {
     zMax = z1 + (fMinY - y1) / ty;
     yMax = fMinY;
     xMax = x1 + tx * (fMinY - y1) / ty;
-  } else if (tx > 0 && (fMaxX - x1) / tx < fMaxZ - z1
-             && fMinY <= y1 + ty * (fMaxX - x1) / tx
-             && y1 + ty * (fMaxX - x1) / tx <= fMaxY) {
+  }
+  else if (tx > 0 && (fMaxX - x1) / tx < fMaxZ - z1 && fMinY <= y1 + ty * (fMaxX - x1) / tx
+           && y1 + ty * (fMaxX - x1) / tx <= fMaxY) {
     zMax = z1 + (fMaxX - x1) / tx;
     yMax = y1 + ty * (fMaxX - x1) / tx;
     xMax = fMaxX;
-  } else if (tx < 0 && (fMinX - x1) / tx < fMaxZ - z1
-             && fMinY <= y1 + ty * (fMinX - x1) / tx
-             && y1 + ty * (fMinX - x1) / tx <= fMaxY) {
+  }
+  else if (tx < 0 && (fMinX - x1) / tx < fMaxZ - z1 && fMinY <= y1 + ty * (fMinX - x1) / tx
+           && y1 + ty * (fMinX - x1) / tx <= fMaxY) {
     zMax = z1 + (fMinX - x1) / tx;
     yMax = y1 + ty * (fMinX - x1) / tx;
     xMax = fMinX;
-  } else
+  }
+  else
     return;
 
   ++nofToFIntersections;
 
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
   set<const Cuboid*> cuboidSet;
-#else   //CBM_GLOBALTB_TOF_3D_CUBOIDS
+#else  //CBM_GLOBALTB_TOF_3D_CUBOIDS
   double minChi2              = std::numeric_limits<double>::max();
   const CbmTofHit* mergingHit = 0;
   double deltaLength          = 0;
-  Line line = {x1, y1, z1, tx / normLen, ty / normLen, 1 / normLen};
+  Line line                   = {x1, y1, z1, tx / normLen, ty / normLen, 1 / normLen};
 #endif  //CBM_GLOBALTB_TOF_3D_CUBOIDS
 
   set<const TBin*> neighbourhood;
@@ -1000,10 +925,12 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
       if (0 == ty) {
         startZy = startZ;
         stopZy  = stopZ;
-      } else if (0 > ty) {
+      }
+      else if (0 > ty) {
         startZy = z1 + (fMinY + (yInd + 1) * fYBinSize - y1) / ty;
         stopZy  = z1 + (fMinY + yInd * fYBinSize - y1) / ty;
-      } else {
+      }
+      else {
         startZy = z1 + (fMinY + yInd * fYBinSize - y1) / ty;
         stopZy  = z1 + (fMinY + (yInd + 1) * fYBinSize - y1) / ty;
       }
@@ -1054,37 +981,28 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
     }
   }
 
-  for (set<const TBin*>::const_iterator tBinIter = neighbourhood.begin();
-       tBinIter != neighbourhood.end();
-       ++tBinIter) {
+  for (set<const TBin*>::const_iterator tBinIter = neighbourhood.begin(); tBinIter != neighbourhood.end(); ++tBinIter) {
     const TBin* tBin = *tBinIter;
 
-    for (list<Int_t>::const_iterator hitIndIter = tBin->fHitInds.begin();
-         hitIndIter != tBin->fHitInds.end();
+    for (list<Int_t>::const_iterator hitIndIter = tBin->fHitInds.begin(); hitIndIter != tBin->fHitInds.end();
          ++hitIndIter) {
-      Int_t hitInd = *hitIndIter;
-      const CbmTofHit* hit =
-        static_cast<const CbmTofHit*>(fTofHits->At(hitInd));
-      double L01Sq = (hit->GetX() - x1) * (hit->GetX() - x1)
-                     + (hit->GetY() - y1) * (hit->GetY() - y1)
+      Int_t hitInd         = *hitIndIter;
+      const CbmTofHit* hit = static_cast<const CbmTofHit*>(fTofHits->At(hitInd));
+      double L01Sq         = (hit->GetX() - x1) * (hit->GetX() - x1) + (hit->GetY() - y1) * (hit->GetY() - y1)
                      + (hit->GetZ() - z1) * (hit->GetZ() - z1);
       //double L01 = TMath::Sqrt(L01Sq);
-      double L02 = (hit->GetX() - x1) * line.cosX
-                   + (hit->GetY() - y1) * line.cosY
-                   + (hit->GetZ() - z1) * line.cosZ;
+      double L02   = (hit->GetX() - x1) * line.cosX + (hit->GetY() - y1) * line.cosY + (hit->GetZ() - z1) * line.cosZ;
       double extT2 = t1 + L02 / fC;
       /*double x = x1 + L02 * line.cosX;
          double y = y1 + L02 * line.cosY;
          double z = z1 + L02 * line.cosZ;
          double extT2 = t1 + TMath::Sqrt(x * x + y * y + z * z) / fC;*/
-      double chi2 =
-        (L01Sq - L02 * L02)
-          / (litTrackParams.GetCovariance(0) + hit->GetDx() * hit->GetDx()
-             + litTrackParams.GetCovariance(5) + hit->GetDy() * hit->GetDy())
-        + (hit->GetTime() - extT2) * (hit->GetTime() - extT2)
-            / (/*litTrackParams.GetTimeError() * litTrackParams.GetTimeError()*/
-                 errT * errT
-               + hit->GetTimeError() * hit->GetTimeError());
+      double chi2 = (L01Sq - L02 * L02)
+                      / (litTrackParams.GetCovariance(0) + hit->GetDx() * hit->GetDx() + litTrackParams.GetCovariance(5)
+                         + hit->GetDy() * hit->GetDy())
+                    + (hit->GetTime() - extT2) * (hit->GetTime() - extT2)
+                        / (/*litTrackParams.GetTimeError() * litTrackParams.GetTimeError()*/
+                           errT * errT + hit->GetTimeError() * hit->GetTimeError());
 
       if (chi2 < minChi2) {
         tofHitInd   = hitInd;
@@ -1098,16 +1016,15 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
   if (minChi2 > fChi2Cut) {
     tofHitInd = -1;
     length    = 0;
-  } else {
+  }
+  else {
     length += deltaLength;
     fLinePropagator->Propagate(&litTrackParams, mergingHit->GetZ(), fPDG);
     CbmLitPixelHit litHit;
-    CbmLitConverter::CbmPixelHitToCbmLitPixelHit(
-      mergingHit, tofHitInd, &litHit);
+    CbmLitConverter::CbmPixelHitToCbmLitPixelHit(mergingHit, tofHitInd, &litHit);
     double mergingChi2 = 0;
     fFilter->Update(&litTrackParams, &litHit, mergingChi2);
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      &litTrackParams, &trackParams);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&litTrackParams, &trackParams);
   }
 
 #if 0
@@ -1121,7 +1038,7 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
 #ifdef CBM_GLOBALTB_TOF_3D_CUBOIDS
             for (list<Cuboid*>::const_iterator i = xBin.fCuboids.begin(); i != xBin.fCuboids.end(); ++i)
                cuboidSet.insert(*i);
-#else   //CBM_GLOBALTB_TOF_3D_CUBOIDS
+#else  //CBM_GLOBALTB_TOF_3D_CUBOIDS
                const TBin& tBin = xBin.fTBins[tInd];
                
                for (list<Int_t>::const_iterator hitIndIter = tBin.fHitInds.begin(); hitIndIter != tBin.fHitInds.end(); ++hitIndIter)
@@ -1204,9 +1121,7 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
   double normLen = TMath::Sqrt(1 + tx * tx + ty * ty);
   Line line      = {x1, y1, z1, tx / normLen, ty / normLen, 1 / normLen};
 
-  for (set<const Cuboid*>::const_iterator i = cuboidSet.begin();
-       i != cuboidSet.end();
-       ++i) {
+  for (set<const Cuboid*>::const_iterator i = cuboidSet.begin(); i != cuboidSet.end(); ++i) {
     const Cuboid* cuboid   = *i;
     const Rectangle& face1 = cuboid->faces[0][0];
     const Rectangle& face2 = cuboid->faces[0][1];
@@ -1227,20 +1142,15 @@ void CbmGlobalTrackingTofGeometry::Find(FairTrackParam& trackParams,
       double extZ = z1 + line.cosZ * result[2];
       TBin& tBin  = cuboid->fTBins[tInd];
 
-      for (list<Int_t>::const_iterator hitIndIter = tBin.fHitInds.begin();
-           hitIndIter != tBin.fHitInds.end();
+      for (list<Int_t>::const_iterator hitIndIter = tBin.fHitInds.begin(); hitIndIter != tBin.fHitInds.end();
            ++hitIndIter) {
-        Int_t hitInd = *hitIndIter;
-        const CbmTofHit* hit =
-          static_cast<const CbmTofHit*>(fTofHits->At(hitInd));
-        double chi2 =
-          (hit->GetX() - extX) * (hit->GetX() - extX)
-            / (errX * errX + hit->GetDx() * hit->GetDx())
-          + (hit->GetY() - extY) * (hit->GetY() - extY)
-              / (errY * errY + hit->GetDy() * hit->GetDy())
-          + (hit->GetTime() - extT) * (hit->GetTime() - extT)
-              / (litTrackParams.GetTimeError() * litTrackParams.GetTimeError()
-                 + hit->GetTimeError() * hit->GetTimeError());
+        Int_t hitInd         = *hitIndIter;
+        const CbmTofHit* hit = static_cast<const CbmTofHit*>(fTofHits->At(hitInd));
+        double chi2          = (hit->GetX() - extX) * (hit->GetX() - extX) / (errX * errX + hit->GetDx() * hit->GetDx())
+                      + (hit->GetY() - extY) * (hit->GetY() - extY) / (errY * errY + hit->GetDy() * hit->GetDy())
+                      + (hit->GetTime() - extT) * (hit->GetTime() - extT)
+                          / (litTrackParams.GetTimeError() * litTrackParams.GetTimeError()
+                             + hit->GetTimeError() * hit->GetTimeError());
 
         if (chi2 < minChi2) {
           tofHitInd = hitInd;

@@ -10,16 +10,13 @@
 #ifndef CBM_ANA_CONVERSION
 #define CBM_ANA_CONVERSION
 
-#include "FairTask.h"
-
 #include "CbmKFVertex.h"
 #include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 
-//#include "KFParticleTopoReconstructor.h"
-#include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "FairTask.h"
 
+//#include "KFParticleTopoReconstructor.h"
 #include "CbmAnaConversionKF.h"
 #include "CbmAnaConversionPhotons.h"
 #include "CbmAnaConversionPhotons2.h"
@@ -29,6 +26,8 @@
 #include "CbmAnaConversionTest.h"
 #include "CbmAnaConversionTest2.h"
 #include "CbmAnaConversionTomography.h"
+#include "CbmKFParticleFinder.h"
+#include "CbmKFParticleFinderQA.h"
 
 #include "TStopwatch.h"
 
@@ -79,19 +78,13 @@ public:
     */
   virtual void Exec(Option_t* option);
 
-  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP,
-                                                  const CbmMCTrack* mctrackM);
+  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
 
   Double_t Invmass_2gammas(const CbmMCTrack* gamma1, const CbmMCTrack* gamma2);
-  Double_t Invmass_2particles(const CbmMCTrack* mctrack1,
-                              const CbmMCTrack* mctrack2);
-  Double_t Invmass_4particles(const CbmMCTrack* mctrack1,
-                              const CbmMCTrack* mctrack2,
-                              const CbmMCTrack* mctrack3,
+  Double_t Invmass_2particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2);
+  Double_t Invmass_4particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2, const CbmMCTrack* mctrack3,
                               const CbmMCTrack* mctrack4);
-  Double_t Invmass_4particlesRECO(const TVector3 part1,
-                                  const TVector3 part2,
-                                  const TVector3 part3,
+  Double_t Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                   const TVector3 part4);
 
 
@@ -105,11 +98,7 @@ public:
   void AnalyseElectrons(CbmMCTrack* mctrack);
   void FillMCTracklists(CbmMCTrack* mctrack, int i);
   void FillRecoTracklist(CbmMCTrack* mtrack);
-  Bool_t FillRecoTracklistEPEM(CbmMCTrack* mctrack,
-                               TVector3 stsMomentum,
-                               TVector3 refittedMom,
-                               int i,
-                               Double_t chi,
+  Bool_t FillRecoTracklistEPEM(CbmMCTrack* mctrack, TVector3 stsMomentum, TVector3 refittedMom, int i, Double_t chi,
                                Int_t GlobalTrackId);
   void InvariantMassTest();
   void InvariantMassTest_4epem();
@@ -121,8 +110,7 @@ public:
   void ReconstructGamma();
 
 
-  void SetKF(CbmKFParticleFinder* kfparticle,
-             CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
 
   Bool_t AnalysePi0_MC(CbmMCTrack* mctrack, int i);
   void AnalysePi0_Reco();
@@ -146,36 +134,32 @@ private:
   TH1D* fhNofElSec;
   TH1D* fhNofElAll;
   TH1D* fhElectronSources;
-  TH1D* fhNofPi0_perEvent;  // number of pi0 per event
-  TH1D*
-    fhNofPi0_perEvent_cut;  // number of pi0 with cut on z-axis (z <= 4cm, i.e. generated before 4cm)
+  TH1D* fhNofPi0_perEvent;       // number of pi0 per event
+  TH1D* fhNofPi0_perEvent_cut;   // number of pi0 with cut on z-axis (z <= 4cm, i.e. generated before 4cm)
   TH1D* fhNofPi0_perEvent_cut2;  // number of pi0 with cut motherId = -1
-  TH1D*
-    fhNofPi0_perEvent_cut3;  // number of pi0 with conversion of gammas happening before RICH
-  TH1D* fhNofEta_perEvent;  // number of pi0 per event
-  TH1D*
-    fhNofEta_perEvent_cut;  // number of pi0 with cut on z-axis (z <= 10cm, i.e. generated before 10cm)
+  TH1D* fhNofPi0_perEvent_cut3;  // number of pi0 with conversion of gammas happening before RICH
+  TH1D* fhNofEta_perEvent;       // number of pi0 per event
+  TH1D* fhNofEta_perEvent_cut;   // number of pi0 with cut on z-axis (z <= 10cm, i.e. generated before 10cm)
   TH1D* fhNofEta_perEvent_cut2;  // number of pi0 with cut motherId = -1
   TH1D* fhPi0_z;                 // number of pi0 per z-bin
-  TH1D*
-    fhPi0_z_cut;  // number of pi0 per z-bin with cut on acceptance (via x^2 + y^2 <= r^2 with r = z*tan)
-  TH1D* fhPi0_pt;              //
-  TH2D* fhPi0_pt_vs_rap;       //
-  TH1D* fhPi0_theta;           //
-  TH2D* fhPi0_theta_vs_rap;    //
-  TH1D* fhEta_pt;              //
-  TH2D* fhEta_pt_vs_rap;       //
-  TH1D* fhEta_theta;           //
-  TH2D* fhEta_theta_vs_rap;    //
-  TH1D* fhRho_pt;              //
-  TH2D* fhRho_pt_vs_rap;       //
-  TH1D* fhRho_theta;           //
-  TH2D* fhRho_theta_vs_rap;    //
-  TH1D* fhOmega_pt;            //
-  TH2D* fhOmega_pt_vs_rap;     //
-  TH1D* fhOmega_theta;         //
-  TH2D* fhOmega_theta_vs_rap;  //
-  TH1D* fhElectronsFromPi0_z;  //
+  TH1D* fhPi0_z_cut;             // number of pi0 per z-bin with cut on acceptance (via x^2 + y^2 <= r^2 with r = z*tan)
+  TH1D* fhPi0_pt;                //
+  TH2D* fhPi0_pt_vs_rap;         //
+  TH1D* fhPi0_theta;             //
+  TH2D* fhPi0_theta_vs_rap;      //
+  TH1D* fhEta_pt;                //
+  TH2D* fhEta_pt_vs_rap;         //
+  TH1D* fhEta_theta;             //
+  TH2D* fhEta_theta_vs_rap;      //
+  TH1D* fhRho_pt;                //
+  TH2D* fhRho_pt_vs_rap;         //
+  TH1D* fhRho_theta;             //
+  TH2D* fhRho_theta_vs_rap;      //
+  TH1D* fhOmega_pt;              //
+  TH2D* fhOmega_pt_vs_rap;       //
+  TH1D* fhOmega_theta;           //
+  TH2D* fhOmega_theta_vs_rap;    //
+  TH1D* fhElectronsFromPi0_z;    //
 
   TH1D* fhNofTracks_mctrack;
   TH1D* fhNofTracks_globaltrack;
@@ -235,10 +219,8 @@ private:
 
 
   // for data gained from the KFParticle package
-  Int_t
-    fNofGeneratedPi0_allEvents;  // number of generated pi0 summed up over ALL EVENTS
-  Int_t
-    fNofPi0_kfparticle_allEvents;  // number of all reconstructed pi0 summed up over ALL EVENTS
+  Int_t fNofGeneratedPi0_allEvents;    // number of generated pi0 summed up over ALL EVENTS
+  Int_t fNofPi0_kfparticle_allEvents;  // number of all reconstructed pi0 summed up over ALL EVENTS
   Int_t fNofGeneratedPi0;
   Int_t fNofPi0_kfparticle;
   TH1D* fhPi0Ratio;
@@ -251,32 +233,22 @@ private:
     */
   void InitHistograms();
 
-  std::vector<TH1*> fHistoList;  // list of all histograms
-  std::vector<TH1*>
-    fHistoList_MC;  // list of all histograms generated with MC data
-  std::vector<TH1*>
-    fHistoList_tomography;  // list of all histograms of tomography data (photon conversion)
-  std::vector<TH1*>
-    fHistoList_reco;  // list of all histograms of reconstruction data
-  std::vector<TH1*>
-    fHistoList_reco_mom;  // list of all histograms of reconstruction data (used momenta)
-  std::vector<TH1*>
-    fHistoList_kfparticle;  // list of all histograms containing results from KFParticle package
-  std::vector<TH1*>
-    fHistoList_richrings;  // list of all histograms related to rich rings
-  std::vector<TH1*>
-    fHistoList_furtherAnalyses;  // list of all histograms from further analyses (occurence, etc.)
+  std::vector<TH1*> fHistoList;                  // list of all histograms
+  std::vector<TH1*> fHistoList_MC;               // list of all histograms generated with MC data
+  std::vector<TH1*> fHistoList_tomography;       // list of all histograms of tomography data (photon conversion)
+  std::vector<TH1*> fHistoList_reco;             // list of all histograms of reconstruction data
+  std::vector<TH1*> fHistoList_reco_mom;         // list of all histograms of reconstruction data (used momenta)
+  std::vector<TH1*> fHistoList_kfparticle;       // list of all histograms containing results from KFParticle package
+  std::vector<TH1*> fHistoList_richrings;        // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_furtherAnalyses;  // list of all histograms from further analyses (occurence, etc.)
 
   std::vector<CbmMCTrack*> fMCTracklist;
   std::vector<CbmMCTrack*> fMCTracklist_all;
   std::vector<CbmMCTrack*> fRecoTracklist;
   std::vector<CbmMCTrack*> fRecoTracklistEPEM;
-  std::vector<int>
-    fRecoTracklistEPEM_id;  // ids of mctracks from fRecoTracklistEPEM
-  std::vector<Double_t>
-    fRecoTracklistEPEM_chi;  // chi of fitted momenta from fRecoTracklistEPEM
-  std::vector<Int_t>
-    fRecoTracklistEPEM_gtid;  // GlobalTrack ID from fRecoTracklistEPEM
+  std::vector<int> fRecoTracklistEPEM_id;        // ids of mctracks from fRecoTracklistEPEM
+  std::vector<Double_t> fRecoTracklistEPEM_chi;  // chi of fitted momenta from fRecoTracklistEPEM
+  std::vector<Int_t> fRecoTracklistEPEM_gtid;    // GlobalTrack ID from fRecoTracklistEPEM
 
   std::vector<CbmMCTrack*> fTestTracklist;
   std::vector<TVector3> fTestTracklist_momentum;

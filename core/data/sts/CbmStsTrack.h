@@ -15,15 +15,15 @@
 #ifndef CBMSTSTRACK_H
 #define CBMSTSTRACK_H 1
 
+#include "CbmHit.h"    // for kSTSHIT
+#include "CbmTrack.h"  // for CbmTrack
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Double32_t
 
 #include <cassert>  // for assert
 #include <string>   // for string
 #include <vector>   // for vector
-
-#include "CbmHit.h"    // for kSTSHIT
-#include "CbmTrack.h"  // for CbmTrack
 
 /** @class CbmStsTrack.h
  ** @brief Data class with information on a STS local track
@@ -73,9 +73,7 @@ public:
   /** Total number of hits
     ** @return  Sum of numbers of STS and MVD hits
     **/
-  virtual Int_t GetNofHits() const {
-    return (GetNofStsHits() + GetNofMvdHits());
-  }
+  virtual Int_t GetNofHits() const { return (GetNofStsHits() + GetNofMvdHits()); }
 
 
   /** Number of MVD hits
@@ -95,7 +93,8 @@ public:
     **
     ** Throws std::vector exception if out of bounds.
     **/
-  Int_t GetStsHitIndex(Int_t iHit) const {
+  Int_t GetStsHitIndex(Int_t iHit) const
+  {
     assert(iHit < GetNofStsHits());
     return GetHitIndex(iHit);
   }

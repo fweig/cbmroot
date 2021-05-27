@@ -40,10 +40,11 @@ public:
 		 ** buffered data are deleted after being copied to the array.
 		 **/
   //Vikas Todo:- Create similar  for the CbmMuchReadoutBuffe
-  CbmMuchReadoutBuffer(TString branchName,
-                       TString folderName,
-                       Bool_t persistence = kTRUE)
-    : CbmReadoutBuffer(branchName, folderName, persistence), fCounter {0} {}
+  CbmMuchReadoutBuffer(TString branchName, TString folderName, Bool_t persistence = kTRUE)
+    : CbmReadoutBuffer(branchName, folderName, persistence)
+    , fCounter {0}
+  {
+  }
 
   CbmMuchReadoutBuffer(const CbmMuchReadoutBuffer&) = delete;
   CbmMuchReadoutBuffer& operator=(const CbmMuchReadoutBuffer&) = delete;
@@ -55,8 +56,7 @@ public:
   static CbmMuchReadoutBuffer* Instance();
 
   // ---------------------------------------------------------------------
-  virtual Int_t
-  Merge(CbmMuchSignal*, CbmMuchSignal*, std::vector<CbmMuchSignal*>&);
+  virtual Int_t Merge(CbmMuchSignal*, CbmMuchSignal*, std::vector<CbmMuchSignal*>&);
 
   //For getting Event File name etc.
   //		void GetEventInfo(Int_t&, Int_t&, Double_t&);

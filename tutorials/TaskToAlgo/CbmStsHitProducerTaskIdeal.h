@@ -19,10 +19,10 @@
 #define CBMSTSHITPRODUCERTASKIDEAL_H 1
 
 
-#include "FairTask.h"
-
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
+
+#include "FairTask.h"
 
 #include <vector>
 
@@ -36,8 +36,7 @@ public:
   CbmStsHitProducerTaskIdeal();
 
   CbmStsHitProducerTaskIdeal(const CbmStsHitProducerTaskIdeal&) = delete;
-  CbmStsHitProducerTaskIdeal&
-  operator=(const CbmStsHitProducerTaskIdeal&) = delete;
+  CbmStsHitProducerTaskIdeal& operator=(const CbmStsHitProducerTaskIdeal&) = delete;
 
   /** Destructor **/
   ~CbmStsHitProducerTaskIdeal();

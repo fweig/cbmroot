@@ -71,10 +71,7 @@ public:
      ** @param chain     Pointer to input chain
      ** @param mode      Tree access mode (kRegular / kRepeat / kRandom)
      **/
-  void AddInput(UInt_t inputId,
-                TChain* chain,
-                Double_t rate,
-                ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
+  void AddInput(UInt_t inputId, TChain* chain, Double_t rate, ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
   /** @brief Maximal entry number the source can run to
@@ -104,10 +101,7 @@ public:
      ** @param targetInputId  ID of the input to be embedded into
      ** @param mode      Tree access mode (kRegular / kRepeat / kRandom)
      **/
-  void EmbedInput(UInt_t inputId,
-                  TChain* chain,
-                  UInt_t targetInputId,
-                  ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
+  void EmbedInput(UInt_t inputId, TChain* chain, UInt_t targetInputId, ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
   /** @brief Fill the output event header
@@ -131,7 +125,8 @@ public:
 
 
   /** @brief Source type is kFILE **/
-  virtual Source_Type GetSourceType() {
+  virtual Source_Type GetSourceType()
+  {
     LOG(fatal) << "GetSourceTpye";
 
     return kFILE;
@@ -178,7 +173,8 @@ public:
      ** Read the first event from input file to fill the
      ** event header and get the RunID
      **/
-  virtual Bool_t SpecifyRunId() {
+  virtual Bool_t SpecifyRunId()
+  {
     if (ReadEvent(0)) return true;
 
     return false;

@@ -42,7 +42,8 @@ public:
   /** Filter **/
   Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
-  const CbmKFTrdHit& operator=(const CbmKFTrdHit& a) {
+  const CbmKFTrdHit& operator=(const CbmKFTrdHit& a)
+  {
     wall     = a.wall;
     FitPoint = a.FitPoint;
     return *this;

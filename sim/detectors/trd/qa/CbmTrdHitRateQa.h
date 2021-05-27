@@ -2,6 +2,7 @@
 #define CBMTRDHITRATEQA_H_
 
 #include "CbmTrdDigi.h"
+
 #include "FairTask.h"
 
 #include <list>
@@ -84,48 +85,20 @@ public:
   void Register();
 
 private:
-  void HistoInit(TCanvas*& c1,
-                 TCanvas*& c2,
-                 TH2F*& Layer,
-                 TH1F*& HitPad,
-                 Double_t ZRangeL,
-                 Double_t ZRangeU,
+  void HistoInit(TCanvas*& c1, TCanvas*& c2, TH2F*& Layer, TH1F*& HitPad, Double_t ZRangeL, Double_t ZRangeU,
                  Double_t mm2bin);
 
-  void GetModuleInformationFromDigiPar(HitRateGeoPara* GeoPara,
-                                       Bool_t Fast,
-                                       Bool_t Lines,
-                                       Int_t VolumeID,
-                                       TH2F* Layer,
-                                       TCanvas* c1,
-                                       TH1F* HitPad,
-                                       TCanvas* c2,
-                                       TH2F* Topview[3],
-                                       TCanvas* c0,
+  void GetModuleInformationFromDigiPar(HitRateGeoPara* GeoPara, Bool_t Fast, Bool_t Lines, Int_t VolumeID, TH2F* Layer,
+                                       TCanvas* c1, TH1F* HitPad, TCanvas* c2, TH2F* Topview[3], TCanvas* c0,
                                        Double_t mm2bin);
 
   void GetModuleInformation();
 
-  void Histo(HitRateGeoPara* GeoPara,
-             Bool_t Fast,
-             TH2F* Layer,
-             TCanvas* c1,
-             TH1F* HitPad,
-             TCanvas* c2,
-             TH2F* Topview[3],
-             TCanvas* c0,
-             Double_t mm2bin);
+  void Histo(HitRateGeoPara* GeoPara, Bool_t Fast, TH2F* Layer, TCanvas* c1, TH1F* HitPad, TCanvas* c2,
+             TH2F* Topview[3], TCanvas* c0, Double_t mm2bin);
 
-  Double_t CalcHitRate(HitRateGeoPara* GeoPara,
-                       Double_t StartX,
-                       Double_t StopX,
-                       Int_t xSteps,
-                       Double_t StartY,
-                       Double_t StopY,
-                       Int_t ySteps,
-                       Double_t* Mpos,
-                       TH2F* Topview[3],
-                       TCanvas* c0);
+  Double_t CalcHitRate(HitRateGeoPara* GeoPara, Double_t StartX, Double_t StopX, Int_t xSteps, Double_t StartY,
+                       Double_t StopY, Int_t ySteps, Double_t* Mpos, TH2F* Topview[3], TCanvas* c0);
 
   void DrawBorders(HitRateGeoPara* GeoPara, TH2F* Layer, TCanvas* c1);
 
@@ -145,7 +118,7 @@ private:
   Int_t fLayer;
 
   Int_t fCol_mean, fCol_in,
-    fCol_out;  //Calculated pixel column were the hit is in
+    fCol_out;                          //Calculated pixel column were the hit is in
   Int_t fRow_mean, fRow_in, fRow_out;  //Calculated pixel row were the hit is in
   Int_t fModuleID;                     //Unique number for detector module
   Int_t fMCindex;                      // index to MCPoint
@@ -165,8 +138,7 @@ private:
   Double_t global_outC[3];
   // --------------->[mm]<---------------
 
-  Float_t fx_in, fx_out, fy_in, fy_out, fz_in, fz_out, fx_mean, fy_mean,
-    fz_mean;
+  Float_t fx_in, fx_out, fy_in, fy_out, fz_in, fz_out, fx_mean, fy_mean, fz_mean;
   Int_t fSector;
   //Int_t tempNosectors =  (fModuleInfo->GetNoSectors);
   static const Int_t accuracy = 1;  // '1/accuracy' integration step width [mm]
@@ -198,9 +170,7 @@ private:
   Float_t fDeltax, fDeltay;
 
 
-  Float_t fPadCharge
-    [fPadNrY]
-    [fPadNrX];  //Charge on 3 adjacent pads calculated by using the Mathieson formula
+  Float_t fPadCharge[fPadNrY][fPadNrX];  //Charge on 3 adjacent pads calculated by using the Mathieson formula
 
   Float_t fPRFHitPositionLL, fPRFHitPositionC;
 
@@ -223,8 +193,7 @@ private:
   // map<pair<ModuleID,pair<x,y>>, CbmTrdDigi*>
   std::map<std::pair<Int_t, std::pair<Int_t, Int_t>>, CbmTrdDigi*> fDigiMap;
   /**  iterator over map to store digis for pair of x,y position in module **/
-  std::map<std::pair<Int_t, std::pair<Int_t, Int_t>>, CbmTrdDigi*>::iterator
-    fDigiMapIt;  //! iterator over array above
+  std::map<std::pair<Int_t, std::pair<Int_t, Int_t>>, CbmTrdDigi*>::iterator fDigiMapIt;  //! iterator over array above
 
   CbmTrdHitRateQa(const CbmTrdHitRateQa&);
   CbmTrdHitRateQa& operator=(const CbmTrdHitRateQa&);

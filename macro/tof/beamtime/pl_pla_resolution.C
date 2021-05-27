@@ -1,18 +1,12 @@
-void pl_pla_resolution(UInt_t uTdcNumber1,
-                       UInt_t uChNumber1,
-                       UInt_t uTdcNumber2,
-                       UInt_t uChNumber2,
-                       UInt_t uTdcNumber3,
-                       UInt_t uChNumber3,
-                       UInt_t uTdcNumber4,
-                       UInt_t uChNumber4) {
+void pl_pla_resolution(UInt_t uTdcNumber1, UInt_t uChNumber1, UInt_t uTdcNumber2, UInt_t uChNumber2, UInt_t uTdcNumber3,
+                       UInt_t uChNumber3, UInt_t uTdcNumber4, UInt_t uChNumber4)
+{
 
   delete gROOT->FindObjectAny("tHistogram");
 
   FairRootManager* tManager = FairRootManager::Instance();
   if (!tManager) {
-    cout << "FairRootManager could not be retrieved. Abort macro execution."
-         << endl;
+    cout << "FairRootManager could not be retrieved. Abort macro execution." << endl;
     return;
   }
 
@@ -53,16 +47,8 @@ void pl_pla_resolution(UInt_t uTdcNumber1,
   tCanvas1->SetLeftMargin(0.15);
 
   TH1D* tHistogram = new TH1D("tHistogram", "", 2000, -10000, 10000);
-  tHistogram->GetXaxis()->SetTitle(
-    Form("dt PLA (%u,%u;%u,%u) - (%u,%u;%u,%u) [ps]",
-         uTdcNumber1,
-         uChNumber1,
-         uTdcNumber2,
-         uChNumber2,
-         uTdcNumber3,
-         uChNumber3,
-         uTdcNumber4,
-         uChNumber4));
+  tHistogram->GetXaxis()->SetTitle(Form("dt PLA (%u,%u;%u,%u) - (%u,%u;%u,%u) [ps]", uTdcNumber1, uChNumber1,
+                                        uTdcNumber2, uChNumber2, uTdcNumber3, uChNumber3, uTdcNumber4, uChNumber4));
   tHistogram->GetXaxis()->SetTitleSize(0.06);
   tHistogram->GetXaxis()->SetTitleOffset(1.20);
   tHistogram->GetXaxis()->SetLabelSize(0.055);
@@ -78,8 +64,7 @@ void pl_pla_resolution(UInt_t uTdcNumber1,
 
   Long64_t lBranchEntries = tBranch->GetEntries();
 
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     tArray->Clear("C");
 
     tBranch->GetEntry(lBranchEntry);
@@ -94,34 +79,29 @@ void pl_pla_resolution(UInt_t uTdcNumber1,
     for (Int_t iArrayEntry = 0; iArrayEntry < iArrayEntries; iArrayEntry++) {
       TTofCalibData* tCalibTdcData = (TTofCalibData*) tArray->At(iArrayEntry);
 
-      if (tCalibTdcData->GetBoard() == uTdcNumber1
-          && tCalibTdcData->GetChannel() == uChNumber1) {
+      if (tCalibTdcData->GetBoard() == uTdcNumber1 && tCalibTdcData->GetChannel() == uChNumber1) {
         iDataIndex1 = iArrayEntry;
-      } else if (tCalibTdcData->GetBoard() == uTdcNumber2
-                 && tCalibTdcData->GetChannel() == uChNumber2) {
+      }
+      else if (tCalibTdcData->GetBoard() == uTdcNumber2 && tCalibTdcData->GetChannel() == uChNumber2) {
         iDataIndex2 = iArrayEntry;
       }
 
-      else if (tCalibTdcData->GetBoard() == uTdcNumber3
-               && tCalibTdcData->GetChannel() == uChNumber3) {
+      else if (tCalibTdcData->GetBoard() == uTdcNumber3 && tCalibTdcData->GetChannel() == uChNumber3) {
         iDataIndex3 = iArrayEntry;
       }
 
-      else if (tCalibTdcData->GetBoard() == uTdcNumber4
-               && tCalibTdcData->GetChannel() == uChNumber4) {
+      else if (tCalibTdcData->GetBoard() == uTdcNumber4 && tCalibTdcData->GetChannel() == uChNumber4) {
         iDataIndex4 = iArrayEntry;
       }
     }
 
-    if (iDataIndex1 != -1 && iDataIndex2 != -1 && iDataIndex3 != -1
-        && iDataIndex4 != -1) {
-      tHistogram->Fill(
-        0.5
-          * (((TTofCalibData*) tArray->At(iDataIndex1))->GetTime()
-             + ((TTofCalibData*) tArray->At(iDataIndex2))->GetTime())
-        - 0.5
-            * (((TTofCalibData*) tArray->At(iDataIndex3))->GetTime()
-               + ((TTofCalibData*) tArray->At(iDataIndex4))->GetTime()));
+    if (iDataIndex1 != -1 && iDataIndex2 != -1 && iDataIndex3 != -1 && iDataIndex4 != -1) {
+      tHistogram->Fill(0.5
+                         * (((TTofCalibData*) tArray->At(iDataIndex1))->GetTime()
+                            + ((TTofCalibData*) tArray->At(iDataIndex2))->GetTime())
+                       - 0.5
+                           * (((TTofCalibData*) tArray->At(iDataIndex3))->GetTime()
+                              + ((TTofCalibData*) tArray->At(iDataIndex4))->GetTime()));
     }
   }
 
@@ -134,10 +114,8 @@ void pl_pla_resolution(UInt_t uTdcNumber1,
   tHistogram->Draw();
   gPad->Update();
   tHistogram->Fit("gaus", "Q");
-  (tHistogram->GetFunction("gaus"))
-    ->FixParameter(0, (tHistogram->GetFunction("gaus"))->GetParameter(0));
-  (tHistogram->GetFunction("gaus"))
-    ->FixParameter(1, (tHistogram->GetFunction("gaus"))->GetParameter(1));
+  (tHistogram->GetFunction("gaus"))->FixParameter(0, (tHistogram->GetFunction("gaus"))->GetParameter(0));
+  (tHistogram->GetFunction("gaus"))->FixParameter(1, (tHistogram->GetFunction("gaus"))->GetParameter(1));
   (tHistogram->GetFunction("gaus"))->SetLineWidth(3);
   gPad->SetLogy();
   tStats = (TPaveStats*) tHistogram->FindObject("stats");

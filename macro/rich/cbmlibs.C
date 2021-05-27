@@ -1,4 +1,5 @@
-void cbmlibs() {
+void cbmlibs()
+{
 
   gSystem->Load("libboost_regex");
   gSystem->Load("libboost_regex");

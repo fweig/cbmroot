@@ -6,6 +6,7 @@
 #include "CbmBeamProfile.h"
 
 #include "TRandom.h"
+
 #include <sstream>
 
 
@@ -19,12 +20,15 @@ CbmBeamProfile::CbmBeamProfile()
   , fMeanThetaX(0.)
   , fMeanThetaY(0.)
   , fSigmaThetaX(-1.)
-  , fSigmaThetaY(-1.) {}
+  , fSigmaThetaY(-1.)
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Check whether average beam hits the target   ---------------------
-Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const {
+Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const
+{
 
   // --- Check upstream target surface
   TVector3 surf1 = target.GetSurfaceCentreUp();
@@ -32,13 +36,10 @@ Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const {
   Double_t dist1 = (sect1 - surf1).Mag();
   if (dist1 > 0.5 * target.GetDiameter()) {
     LOG(ERROR) << "EventGen: Average beam does not hit first target surface!";
-    LOG(ERROR) << "          Surface centre is (" << surf1.X() << ", "
-               << surf1.Y() << ", " << surf1.Z() << ") cm";
-    LOG(ERROR) << "          Intersection point is (" << sect1.X() << ", "
-               << sect1.Y() << ", " << sect1.Z() << ") cm";
-    LOG(ERROR) << "          Distance to target surface centre is " << dist1
-               << " cm, target radius is " << 0.5 * target.GetDiameter()
-               << " cm";
+    LOG(ERROR) << "          Surface centre is (" << surf1.X() << ", " << surf1.Y() << ", " << surf1.Z() << ") cm";
+    LOG(ERROR) << "          Intersection point is (" << sect1.X() << ", " << sect1.Y() << ", " << sect1.Z() << ") cm";
+    LOG(ERROR) << "          Distance to target surface centre is " << dist1 << " cm, target radius is "
+               << 0.5 * target.GetDiameter() << " cm";
     return kFALSE;
   }
 
@@ -48,13 +49,10 @@ Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const {
   Double_t dist2 = (sect2 - surf2).Mag();
   if (dist2 > 0.5 * target.GetDiameter()) {
     LOG(ERROR) << "EventGen: Average beam does not hit second target surface!";
-    LOG(ERROR) << "          Surface centre is (" << surf2.X() << ", "
-               << surf2.Y() << ", " << surf2.Z() << ") cm";
-    LOG(ERROR) << "          Intersection point is (" << sect2.X() << ", "
-               << sect2.Y() << ", " << sect2.Z() << ") cm";
-    LOG(ERROR) << "          Distance to target surface centre is " << dist2
-               << " cm, target radius is " << 0.5 * target.GetDiameter()
-               << " cm";
+    LOG(ERROR) << "          Surface centre is (" << surf2.X() << ", " << surf2.Y() << ", " << surf2.Z() << ") cm";
+    LOG(ERROR) << "          Intersection point is (" << sect2.X() << ", " << sect2.Y() << ", " << sect2.Z() << ") cm";
+    LOG(ERROR) << "          Distance to target surface centre is " << dist2 << " cm, target radius is "
+               << 0.5 * target.GetDiameter() << " cm";
     return kFALSE;
   }
 
@@ -64,8 +62,8 @@ Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const {
 
 
 // -----   Extrapolate the average beam to a plane   ------------------------
-TVector3 CbmBeamProfile::ExtrapolateToPlane(const TVector3& point,
-                                            const TVector3& norm) const {
+TVector3 CbmBeamProfile::ExtrapolateToPlane(const TVector3& point, const TVector3& norm) const
+{
 
   // Average beam trajectory
   CbmBeam beam(fMeanPosX, fMeanPosY, fFocalZ, fMeanThetaX, fMeanThetaY);
@@ -77,7 +75,8 @@ TVector3 CbmBeamProfile::ExtrapolateToPlane(const TVector3& point,
 
 
 // -----   Generate a beam trajectory   -------------------------------------
-std::unique_ptr<CbmBeam> CbmBeamProfile::GenerateBeam() {
+std::unique_ptr<CbmBeam> CbmBeamProfile::GenerateBeam()
+{
 
   // Beam x position
   Double_t x = fMeanPosX;
@@ -104,10 +103,8 @@ std::unique_ptr<CbmBeam> CbmBeamProfile::GenerateBeam() {
 
 
 // -----   Set the parameters for the beam angle   --------------------------
-void CbmBeamProfile::SetAngle(Double_t x0,
-                              Double_t y0,
-                              Double_t sigmaX,
-                              Double_t sigmaY) {
+void CbmBeamProfile::SetAngle(Double_t x0, Double_t y0, Double_t sigmaX, Double_t sigmaY)
+{
   fMeanThetaX  = x0;
   fMeanThetaY  = y0;
   fSigmaThetaX = sigmaX;
@@ -117,11 +114,8 @@ void CbmBeamProfile::SetAngle(Double_t x0,
 
 
 // -----   Set the parameters for the beam position   -----------------------
-void CbmBeamProfile::SetPosition(Double_t x0,
-                                 Double_t y0,
-                                 Double_t sigmaX,
-                                 Double_t sigmaY,
-                                 Double_t zF) {
+void CbmBeamProfile::SetPosition(Double_t x0, Double_t y0, Double_t sigmaX, Double_t sigmaY, Double_t zF)
+{
   fMeanPosX  = x0;
   fMeanPosY  = y0;
   fSigmaPosX = sigmaX;
@@ -132,29 +126,26 @@ void CbmBeamProfile::SetPosition(Double_t x0,
 
 
 // -----   Info to string   -------------------------------------------------
-std::string CbmBeamProfile::ToString() const {
+std::string CbmBeamProfile::ToString() const
+{
 
   std::stringstream ss;
   ss << "Beam profile:";
   ss << "\n\t x position ";
-  if (fSigmaPosX > 0.)
-    ss << "mean " << fMeanPosX << " cm, sigma " << fSigmaPosX << " cm";
+  if (fSigmaPosX > 0.) ss << "mean " << fMeanPosX << " cm, sigma " << fSigmaPosX << " cm";
   else
     ss << fMeanPosX << " cm (fixed)";
   ss << "\n\t y position ";
-  if (fSigmaPosY > 0.)
-    ss << "mean " << fMeanPosY << " cm, sigma " << fSigmaPosY << " cm";
+  if (fSigmaPosY > 0.) ss << "mean " << fMeanPosY << " cm, sigma " << fSigmaPosY << " cm";
   else
     ss << fMeanPosY << " cm (fixed)";
   ss << "\n\t Focal plane: z =  " << fFocalZ << " cm";
   ss << "\n\t x-z angle ";
-  if (fSigmaThetaX > 0.)
-    ss << "mean " << fMeanThetaX << " rad, sigma " << fSigmaThetaX << " rad";
+  if (fSigmaThetaX > 0.) ss << "mean " << fMeanThetaX << " rad, sigma " << fSigmaThetaX << " rad";
   else
     ss << fMeanThetaX << " rad (fixed)";
   ss << "\n\t y-z angle ";
-  if (fSigmaThetaY > 0.)
-    ss << "mean " << fMeanThetaY << " rad, sigma " << fSigmaThetaY << " rad";
+  if (fSigmaThetaY > 0.) ss << "mean " << fMeanThetaY << " rad, sigma " << fSigmaThetaY << " rad";
   else
     ss << fMeanThetaY << " rad (fixed)";
 

@@ -10,7 +10,8 @@
 FairRunOnline* run = new FairRunOnline();
 
 // Max nEvents: 198999999999
-void tdcref_monitoring_auto(Int_t nEvents = 100000, Bool_t bCalibRun = kFALSE) {
+void tdcref_monitoring_auto(Int_t nEvents = 100000, Bool_t bCalibRun = kFALSE)
+{
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
   logLevel         = "ERROR";

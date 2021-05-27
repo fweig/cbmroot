@@ -8,10 +8,12 @@
 #ifndef CBMCHECKDIGISNBCORR_H
 #define CBMCHECKDIGISNBCORR_H
 
+#include "CbmTofDigi.h"
+
 #include "FairTask.h"
 
-#include "CbmTofDigi.h"
 #include "TString.h"
+
 #include <vector>
 
 class TClonesArray;
@@ -60,12 +62,14 @@ public:
 
   void SetRichOffset(Double_t dval = 1200) { fdRichOffset = dval; }
 
-  inline void SetTimeInterval(Double_t dInterNs, Double_t dTsInNs) {
+  inline void SetTimeInterval(Double_t dInterNs, Double_t dTsInNs)
+  {
     fdBinWidthNs = dInterNs;
     fdTsLengthNs = dTsInNs;
   }
 
-  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
   }

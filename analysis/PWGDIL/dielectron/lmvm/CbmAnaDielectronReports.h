@@ -8,6 +8,7 @@
 #define CBM_ANA_DIELECTRON_REPORTS
 
 #include "TObject.h"
+
 #include <string>
 #include <vector>
 
@@ -31,10 +32,8 @@ public:
     */
   virtual ~CbmAnaDielectronReports();
 
-  void CreateStudyReport(const std::string& title,
-                         const std::vector<std::string>& fileNames,
-                         const std::vector<std::string>& studyNames,
-                         const std::string& outputDir);
+  void CreateStudyReport(const std::string& title, const std::vector<std::string>& fileNames,
+                         const std::vector<std::string>& studyNames, const std::string& outputDir);
 
   ClassDef(CbmAnaDielectronReports, 1);
 };

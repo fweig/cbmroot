@@ -31,18 +31,12 @@ public:
   CbmKFTrack();
   ~CbmKFTrack() {}
 
-  CbmKFTrack(CbmKFTrackInterface& track)
-    : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits() {
-    SetTrack(track);
-  }
+  CbmKFTrack(CbmKFTrackInterface& track) : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits() { SetTrack(track); }
 
-  CbmKFTrack(FairTrackParam& track)
-    : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits() {
-    SetTrackParam(track);
-  }
+  CbmKFTrack(FairTrackParam& track) : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits() { SetTrackParam(track); }
 
-  CbmKFTrack(CbmStsTrack& track, bool first = 1)
-    : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits() {
+  CbmKFTrack(CbmStsTrack& track, bool first = 1) : fMass(0), fChi2(0), fIsElectron(0), fNDF(0), fHits()
+  {
     SetStsTrack(track, first);
   }
 

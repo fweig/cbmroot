@@ -1,7 +1,8 @@
 // from the following website
 // https://root.cern.ch/doc/master/classTGeoCtub.html
 
-void ctub_orig() {
+void ctub_orig()
+{
   TCanvas* c = new TCanvas("c", "c", 0, 0, 600, 600);
   new TGeoManager("ctub", "poza3");
   TGeoMaterial* mat = new TGeoMaterial("Al", 26.98, 13, 2.7);
@@ -17,22 +18,11 @@ void ctub_orig() {
   theta   = 20. * TMath::Pi() / 180.;
   phi     = 60. * TMath::Pi() / 180.;
   Double_t nhi[3];
-  nhi[0]          = TMath::Sin(theta) * TMath::Cos(phi);
-  nhi[1]          = TMath::Sin(theta) * TMath::Sin(phi);
-  nhi[2]          = TMath::Cos(theta);
-  TGeoVolume* vol = gGeoManager->MakeCtub("CTUB",
-                                          med,
-                                          20,
-                                          30,
-                                          40,
-                                          -30,
-                                          250,
-                                          nlow[0],
-                                          nlow[1],
-                                          nlow[2],
-                                          nhi[0],
-                                          nhi[1],
-                                          nhi[2]);
+  nhi[0] = TMath::Sin(theta) * TMath::Cos(phi);
+  nhi[1] = TMath::Sin(theta) * TMath::Sin(phi);
+  nhi[2] = TMath::Cos(theta);
+  TGeoVolume* vol =
+    gGeoManager->MakeCtub("CTUB", med, 20, 30, 40, -30, 250, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
   vol->SetLineWidth(2);
   top->AddNode(vol, 1);
   gGeoManager->CloseGeometry();

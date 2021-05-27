@@ -5,16 +5,17 @@
  */
 
 #include "LitTrackFinderNN.h"
-#include "LitAddMaterial.h"
-#include "LitExtrapolation.h"
-#include "LitFiltration.h"
-#include "LitMath.h"
-#include "LitTrackSelection.h"
 
 #include <algorithm>
 #include <iostream>
 #include <limits>
 #include <map>
+
+#include "LitAddMaterial.h"
+#include "LitExtrapolation.h"
+#include "LitFiltration.h"
+#include "LitMath.h"
+#include "LitTrackSelection.h"
 using std::cout;
 using std::endl;
 using std::for_each;
@@ -35,14 +36,16 @@ lit::parallel::LitTrackFinderNN::LitTrackFinderNN()
   , fPDG()
   , fChiSqStripHitCut()
   , fChiSqPixelHitCut()
-  , fSigmaCoef() {}
+  , fSigmaCoef()
+{
+}
 
 lit::parallel::LitTrackFinderNN::~LitTrackFinderNN() {}
 
-void lit::parallel::LitTrackFinderNN::DoFind(
-  const vector<lit::parallel::LitScalPixelHit*>& hits,
-  const vector<lit::parallel::LitScalTrack*>& trackSeeds,
-  vector<lit::parallel::LitScalTrack*>& tracks) {
+void lit::parallel::LitTrackFinderNN::DoFind(const vector<lit::parallel::LitScalPixelHit*>& hits,
+                                             const vector<lit::parallel::LitScalTrack*>& trackSeeds,
+                                             vector<lit::parallel::LitScalTrack*>& tracks)
+{
   fTracks.clear();
   fUsedSeedsSet.clear();
   fUsedHitsSet.clear();
@@ -68,8 +71,8 @@ void lit::parallel::LitTrackFinderNN::DoFind(
   cout << "LitTrackFinderNN::DoFind: eventNo=" << eventNo++ << endl;
 }
 
-void lit::parallel::LitTrackFinderNN::ArrangeHits(
-  const vector<lit::parallel::LitScalPixelHit*>& hits) {
+void lit::parallel::LitTrackFinderNN::ArrangeHits(const vector<lit::parallel::LitScalPixelHit*>& hits)
+{
   unsigned int nofHits = hits.size();
   for (unsigned int iHit = 0; iHit < nofHits; iHit++) {
     LitScalPixelHit* hit = hits[iHit];
@@ -79,14 +82,13 @@ void lit::parallel::LitTrackFinderNN::ArrangeHits(
   fHitData.Arrange();
 }
 
-void lit::parallel::LitTrackFinderNN::InitTrackSeeds(
-  const vector<lit::parallel::LitScalTrack*>& trackSeeds) {
+void lit::parallel::LitTrackFinderNN::InitTrackSeeds(const vector<lit::parallel::LitScalTrack*>& trackSeeds)
+{
   unsigned int nofSeeds = trackSeeds.size();
   for (unsigned int iTrack = 0; iTrack < nofSeeds; iTrack++) {
     LitScalTrack* seed = trackSeeds[iTrack];
     // Apply cuts here
-    if (std::fabs(seed->GetParamFirst().Qp) > 10)
-      continue;  // momentum cut 0.1 GeV
+    if (std::fabs(seed->GetParamFirst().Qp) > 10) continue;  // momentum cut 0.1 GeV
 
     //if (fUsedSeedsSet.find(seed->GetPreviousTrackId()) != fUsedSeedsSet.end()) { continue; }
     LitScalTrack* track = new LitScalTrack();
@@ -100,26 +102,19 @@ void lit::parallel::LitTrackFinderNN::InitTrackSeeds(
   }
 }
 
-void lit::parallel::LitTrackFinderNN::PropagateVirtualStations(
-  LitTrackParamScal& par) {
+void lit::parallel::LitTrackFinderNN::PropagateVirtualStations(LitTrackParamScal& par)
+{
   unsigned char nofVirtualStations = fLayout.GetNofVirtualStations();
   unsigned char nofSteps           = (nofVirtualStations - 1) / 2;
   for (unsigned char iStep = 0; iStep < nofSteps; iStep++) {
-    const LitVirtualStationScal& vsFront =
-      fLayout.GetVirtualStation(2 * iStep + 0);
-    const LitVirtualStationScal& vsMiddle =
-      fLayout.GetVirtualStation(2 * iStep + 1);
-    const LitVirtualStationScal& vsBack =
-      fLayout.GetVirtualStation(2 * iStep + 2);
-    if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty()
-        || vsBack.GetField().IsEmpty()) {
+    const LitVirtualStationScal& vsFront  = fLayout.GetVirtualStation(2 * iStep + 0);
+    const LitVirtualStationScal& vsMiddle = fLayout.GetVirtualStation(2 * iStep + 1);
+    const LitVirtualStationScal& vsBack   = fLayout.GetVirtualStation(2 * iStep + 2);
+    if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty() || vsBack.GetField().IsEmpty()) {
       LitLineExtrapolation(par, vsBack.GetZ());
-    } else {
-      LitRK4Extrapolation(par,
-                          vsBack.GetZ(),
-                          vsFront.GetField(),
-                          vsMiddle.GetField(),
-                          vsBack.GetField());
+    }
+    else {
+      LitRK4Extrapolation(par, vsBack.GetZ(), vsFront.GetField(), vsMiddle.GetField(), vsBack.GetField());
     }
 
     if (!vsFront.GetMaterial().IsEmpty()) {
@@ -139,9 +134,8 @@ void lit::parallel::LitTrackFinderNN::PropagateVirtualStations(
   }
 }
 
-void lit::parallel::LitTrackFinderNN::PropagateToStation(
-  unsigned char stationId,
-  LitTrackParamScal& par) {
+void lit::parallel::LitTrackFinderNN::PropagateToStation(unsigned char stationId, LitTrackParamScal& par)
+{
   const LitStationScal& station    = fLayout.GetStation(stationId);
   unsigned char nofVirtualStations = station.GetNofVirtualStations();
   if (nofVirtualStations == 1) {
@@ -152,24 +146,18 @@ void lit::parallel::LitTrackFinderNN::PropagateToStation(
       fscal thickness = vs.GetMaterial().GetMaterial(par.X, par.Y);
       if (thickness > 0) LitAddMaterial<fscal>(par, thickness);
     }
-  } else {
+  }
+  else {
     unsigned char nofSteps = (nofVirtualStations - 1) / 2;
     for (unsigned char iStep = 0; iStep < nofSteps; iStep++) {
-      const LitVirtualStationScal& vsFront =
-        station.GetVirtualStation(2 * iStep + 0);
-      const LitVirtualStationScal& vsMiddle =
-        station.GetVirtualStation(2 * iStep + 1);
-      const LitVirtualStationScal& vsBack =
-        station.GetVirtualStation(2 * iStep + 2);
-      if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty()
-          || vsBack.GetField().IsEmpty()) {
+      const LitVirtualStationScal& vsFront  = station.GetVirtualStation(2 * iStep + 0);
+      const LitVirtualStationScal& vsMiddle = station.GetVirtualStation(2 * iStep + 1);
+      const LitVirtualStationScal& vsBack   = station.GetVirtualStation(2 * iStep + 2);
+      if (vsFront.GetField().IsEmpty() || vsMiddle.GetField().IsEmpty() || vsBack.GetField().IsEmpty()) {
         LitLineExtrapolation(par, vsBack.GetZ());
-      } else {
-        LitRK4Extrapolation(par,
-                            vsBack.GetZ(),
-                            vsFront.GetField(),
-                            vsMiddle.GetField(),
-                            vsBack.GetField());
+      }
+      else {
+        LitRK4Extrapolation(par, vsBack.GetZ(), vsFront.GetField(), vsMiddle.GetField(), vsBack.GetField());
       }
 
       if (!vsFront.GetMaterial().IsEmpty()) {
@@ -190,7 +178,8 @@ void lit::parallel::LitTrackFinderNN::PropagateToStation(
   }
 }
 
-void lit::parallel::LitTrackFinderNN::FollowTracks() {
+void lit::parallel::LitTrackFinderNN::FollowTracks()
+{
   unsigned int nofTracks = fTracks.size();
   for (unsigned int iTrack = 0; iTrack < nofTracks; iTrack++) {
     LitScalTrack* track = fTracks[iTrack];
@@ -228,11 +217,9 @@ void lit::parallel::LitTrackFinderNN::FollowTracks() {
       }
 
       // Loop over hits
-      fscal minChiSq =
-        numeric_limits<fscal>::max();  // minimum chi-square of hit
-      const LitScalPixelHit* minHit =
-        NULL;                    // Pointer to hit with minimum chi-square
-      LitTrackParamScal minPar;  // Track parameters for closest hit
+      fscal minChiSq                = numeric_limits<fscal>::max();  // minimum chi-square of hit
+      const LitScalPixelHit* minHit = NULL;                          // Pointer to hit with minimum chi-square
+      LitTrackParamScal minPar;                                      // Track parameters for closest hit
       const vector<LitScalPixelHit*>& hits = fHitData.GetHits(iStation);
       unsigned int nofHits                 = hits.size();
       for (unsigned int iHit = 0; iHit < nofHits; iHit++) {
@@ -245,24 +232,18 @@ void lit::parallel::LitTrackFinderNN::FollowTracks() {
         // This is done in order to speed up the algorithm.
         // Based on the predicted track position (w/o KF update step)
         // and maximum hit position error.
-        fscal maxErrX = fHitData.GetMaxErrX(iStation);
-        fscal devX =
-          fSigmaCoef[fIteration] * (sqrt(tpar.C0 + maxErrX * maxErrX));
-        fscal maxErrY = fHitData.GetMaxErrY(iStation);
-        fscal devY =
-          fSigmaCoef[fIteration] * (sqrt(tpar.C5 + maxErrY * maxErrY));
-        bool hitInside =
-          (hit->X < (tpar.X + devX)) && (hit->X > (tpar.X - devX))
-          && (hit->Y < (tpar.Y + devY)) && (hit->Y > (tpar.Y - devY));
+        fscal maxErrX  = fHitData.GetMaxErrX(iStation);
+        fscal devX     = fSigmaCoef[fIteration] * (sqrt(tpar.C0 + maxErrX * maxErrX));
+        fscal maxErrY  = fHitData.GetMaxErrY(iStation);
+        fscal devY     = fSigmaCoef[fIteration] * (sqrt(tpar.C5 + maxErrY * maxErrY));
+        bool hitInside = (hit->X < (tpar.X + devX)) && (hit->X > (tpar.X - devX)) && (hit->Y < (tpar.Y + devY))
+                         && (hit->Y > (tpar.Y - devY));
         if (!hitInside) continue;
 
         fscal chi = numeric_limits<fscal>::max();
         LitFiltration(tpar, *hit, chi);
         bool hitInValidationGate = chi < fChiSqStripHitCut[fIteration];
-        if (
-          hitInValidationGate
-          && chi
-               < minChiSq) {  // Check if hit is inside validation gate and closer to the track.
+        if (hitInValidationGate && chi < minChiSq) {  // Check if hit is inside validation gate and closer to the track.
           minChiSq = chi;
           minHit   = hit;
           minPar   = tpar;
@@ -276,17 +257,17 @@ void lit::parallel::LitTrackFinderNN::FollowTracks() {
         track->IncChiSq(minChiSq);
         track->SetNDF(NDF(*track));
         track->SetLastStationId(iStation);
-      } else {  // Missing hit
+      }
+      else {  // Missing hit
         track->SetNofMissingHits(track->GetNofMissingHits() + 1);
-        if (track->GetNofMissingHits() > fMaxNofMissingHits[fIteration]) {
-          break;
-        }
+        if (track->GetNofMissingHits() > fMaxNofMissingHits[fIteration]) { break; }
       }
     }
   }
 }
 
-void lit::parallel::LitTrackFinderNN::SelectTracks() {
+void lit::parallel::LitTrackFinderNN::SelectTracks()
+{
   unsigned int nofTracks = fTracks.size();
   for (unsigned int iTrack = 0; iTrack < nofTracks; iTrack++) {
     LitScalTrack* track = fTracks[iTrack];
@@ -295,7 +276,8 @@ void lit::parallel::LitTrackFinderNN::SelectTracks() {
   DoSelectSharedHits(fTracks);
 }
 
-void lit::parallel::LitTrackFinderNN::RemoveHits() {
+void lit::parallel::LitTrackFinderNN::RemoveHits()
+{
   unsigned int nofTracks = fTracks.size();
   for (unsigned int iTrack = 0; iTrack < nofTracks; iTrack++) {
     LitScalTrack* track = fTracks[iTrack];
@@ -306,8 +288,8 @@ void lit::parallel::LitTrackFinderNN::RemoveHits() {
   }
 }
 
-void lit::parallel::LitTrackFinderNN::CopyToOutput(
-  vector<lit::parallel::LitScalTrack*>& tracks) {
+void lit::parallel::LitTrackFinderNN::CopyToOutput(vector<lit::parallel::LitScalTrack*>& tracks)
+{
   unsigned int nofTracks = fTracks.size();
   for (unsigned int iTrack = 0; iTrack < nofTracks; iTrack++) {
     LitScalTrack* track = fTracks[iTrack];

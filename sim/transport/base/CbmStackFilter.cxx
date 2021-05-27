@@ -28,14 +28,13 @@ CbmStackFilter::CbmStackFilter()
   , fStoreAllDecays(kFALSE)
   , fMinNofPoints()
   , fMinEkin(0.)
-  , fStore() {
+  , fStore()
+{
 
   // Initialise NofPoints cuts
-  for (ECbmModuleId iDet = ECbmModuleId::kRef; iDet < ECbmModuleId::kNofSystems;
-       ++iDet)
+  for (ECbmModuleId iDet = ECbmModuleId::kRef; iDet < ECbmModuleId::kNofSystems; ++iDet)
     fMinNofPoints[iDet] = 1;
-  fMinNofPoints[ECbmModuleId::kPsd] =
-    5;  // A hard-coded number. I'll rot in hell for that.
+  fMinNofPoints[ECbmModuleId::kPsd] = 5;  // A hard-coded number. I'll rot in hell for that.
 }
 // --------------------------------------------------------------------------
 
@@ -46,8 +45,8 @@ CbmStackFilter::~CbmStackFilter() {}
 
 
 // -----   Selection procedure   --------------------------------------------
-const vector<Bool_t>& CbmStackFilter::Select(const TClonesArray& particles,
-                                             const PointMap& points) {
+const vector<Bool_t>& CbmStackFilter::Select(const TClonesArray& particles, const PointMap& points)
+{
 
   // Adjust size of output vector
   assert(particles.GetEntriesFast() >= 0);
@@ -73,9 +72,7 @@ const vector<Bool_t>& CbmStackFilter::Select(const TClonesArray& particles,
 
     // Check cuts on number of points in detectors
     fStore[index] = kFALSE;
-    for (ECbmModuleId system = ECbmModuleId::kRef;
-         system < ECbmModuleId::kNofSystems;
-         ++system) {
+    for (ECbmModuleId system = ECbmModuleId::kRef; system < ECbmModuleId::kNofSystems; ++system) {
       auto it        = points.find(make_pair(index, system));
       UInt_t nPoints = (it == points.end() ? 0 : it->second);
       if (nPoints >= fMinNofPoints[system]) {
@@ -127,11 +124,10 @@ const vector<Bool_t>& CbmStackFilter::Select(const TClonesArray& particles,
   if (fStoreAllMothers) {
     for (UInt_t index = 0; index < nParticles; index++) {
       if (!fStore[index]) continue;
-      Int_t iMother =
-        dynamic_cast<TParticle*>(particles.At(index))->GetMother(0);
+      Int_t iMother = dynamic_cast<TParticle*>(particles.At(index))->GetMother(0);
       while (iMother >= 0) {
         fStore[iMother] = kTRUE;
-        iMother = dynamic_cast<TParticle*>(particles.At(iMother))->GetMother(0);
+        iMother         = dynamic_cast<TParticle*>(particles.At(iMother))->GetMother(0);
       }  //? not a primary
     }    //# particles
   }      //? store all mothers

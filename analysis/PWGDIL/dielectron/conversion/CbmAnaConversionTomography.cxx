@@ -12,7 +12,9 @@
 #include "CbmAnaConversionTomography.h"
 
 #include "CbmMCTrack.h"
+
 #include "FairRootManager.h"
+
 #include <iostream>
 #include <map>
 
@@ -55,61 +57,38 @@ CbmAnaConversionTomography::CbmAnaConversionTomography()
   ,
   //fhConversionsPerDetectorPE_cut(NULL),
   timer()
-  , fTime(0.) {}
+  , fTime(0.)
+{
+}
 
 CbmAnaConversionTomography::~CbmAnaConversionTomography() {}
 
 
-void CbmAnaConversionTomography::Init() {
+void CbmAnaConversionTomography::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmAnaConversionTomography::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmAnaConversionTomography::Init", "RootManager not instantised!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmAnaConversion::Init", "No MCTrack array!");
-  }
+  if (NULL == fMcTracks) { Fatal("CbmAnaConversion::Init", "No MCTrack array!"); }
 
 
   InitHistos();
 }
 
 
-void CbmAnaConversionTomography::InitHistos() {
+void CbmAnaConversionTomography::InitHistos()
+{
   fHistoList_tomography.clear();
 
   fhGammaZ = new TH1D("fhGammaZ", "fhGammaZ;Z in cm;Entries", 300, 0.0, 300.);
   fHistoList_tomography.push_back(fhGammaZ);
 
   // for all events including gammas and gamma-conversion
-  fhTomography    = new TH3D("fhTomography",
-                          "Tomography/fhTomography;X in cm;Y in cm;Z in cm",
-                          200,
-                          -200.,
-                          200.,
-                          200,
-                          -200.,
-                          200.,
-                          500,
-                          0.,
-                          1000.);
-  fhTomography_XZ = new TH2D("fhTomography_XZ",
-                             "fhTomography_XZ;X in cm;Z in cm",
-                             3200,
-                             -800.,
-                             800.,
-                             2200,
-                             0.,
-                             1100.);
-  fhTomography_YZ = new TH2D("fhTomography_YZ",
-                             "fhTomography_YZ;Y in cm;Z in cm",
-                             2000,
-                             -500.,
-                             500.,
-                             2200,
-                             0.,
-                             1100.);
+  fhTomography    = new TH3D("fhTomography", "Tomography/fhTomography;X in cm;Y in cm;Z in cm", 200, -200., 200., 200,
+                          -200., 200., 500, 0., 1000.);
+  fhTomography_XZ = new TH2D("fhTomography_XZ", "fhTomography_XZ;X in cm;Z in cm", 3200, -800., 800., 2200, 0., 1100.);
+  fhTomography_YZ = new TH2D("fhTomography_YZ", "fhTomography_YZ;Y in cm;Z in cm", 2000, -500., 500., 2200, 0., 1100.);
   //fhTomography_XZ_cut	= new TH2D("fhTomography_XZ_cut", "fhTomography_XZ_cut;X [cm];Z [cm]", 2800, -700., 700., 2200, 0., 1100.);
   //fhTomography_YZ_cut	= new TH2D("fhTomography_YZ_cut", "fhTomography_YZ_cut;Y [cm];Z [cm]", 2000, -500., 500., 2200, 0., 1100.);
   fHistoList_tomography.push_back(fhTomography);
@@ -118,67 +97,20 @@ void CbmAnaConversionTomography::InitHistos() {
   //fHistoList_tomography.push_back(fhTomography_XZ_cut);
   //fHistoList_tomography.push_back(fhTomography_YZ_cut);
 
-  fhTomography_uptoRICH = new TH2D("fhTomography_uptoRICH",
-                                   "fhTomography_uptoRICH;X in cm;Y in cm",
-                                   600,
-                                   -300.,
-                                   300.,
-                                   400,
-                                   -200.,
-                                   200.);
-  fhTomography_RICH_complete =
-    new TH2D("fhTomography_RICH_complete",
-             "fhTomography_RICH_complete;X in cm;Y in cm",
-             600,
-             -300.,
-             300.,
-             500,
-             -250.,
-             250.);
-  fhTomography_RICH_beampipe =
-    new TH2D("fhTomography_RICH_beampipe",
-             "fhTomography_RICH_beampipe;X in cm;Y in cm",
-             400,
-             -100.,
-             100.,
-             200,
-             -50.,
-             50.);
-  fhTomography_STS_end = new TH2D("fhTomography_STS_end",
-                                  "fhTomography_STS_end;X in cm;Y in cm",
-                                  400,
-                                  -200.,
-                                  200.,
-                                  400,
-                                  -200.,
-                                  200.);
-  fhTomography_STS_lastStation =
-    new TH2D("fhTomography_STS_lastStation",
-             "fhTomography_STS_lastStation;X in cm;Y in cm",
-             200,
-             -100.,
-             100.,
-             200,
-             -100.,
-             100.);
-  fhTomography_RICH_frontplate =
-    new TH2D("fhTomography_RICH_frontplate",
-             "fhTomography_RICH_frontplate;X in cm;Y in cm",
-             600,
-             -300.,
-             300.,
-             500,
-             -250.,
-             250.);
-  fhTomography_RICH_backplate =
-    new TH2D("fhTomography_RICH_backplate",
-             "fhTomography_RICH_backplate;X in cm;Y in cm",
-             600,
-             -300.,
-             300.,
-             500,
-             -250.,
-             250.);
+  fhTomography_uptoRICH =
+    new TH2D("fhTomography_uptoRICH", "fhTomography_uptoRICH;X in cm;Y in cm", 600, -300., 300., 400, -200., 200.);
+  fhTomography_RICH_complete = new TH2D("fhTomography_RICH_complete", "fhTomography_RICH_complete;X in cm;Y in cm", 600,
+                                        -300., 300., 500, -250., 250.);
+  fhTomography_RICH_beampipe = new TH2D("fhTomography_RICH_beampipe", "fhTomography_RICH_beampipe;X in cm;Y in cm", 400,
+                                        -100., 100., 200, -50., 50.);
+  fhTomography_STS_end =
+    new TH2D("fhTomography_STS_end", "fhTomography_STS_end;X in cm;Y in cm", 400, -200., 200., 400, -200., 200.);
+  fhTomography_STS_lastStation = new TH2D(
+    "fhTomography_STS_lastStation", "fhTomography_STS_lastStation;X in cm;Y in cm", 200, -100., 100., 200, -100., 100.);
+  fhTomography_RICH_frontplate = new TH2D(
+    "fhTomography_RICH_frontplate", "fhTomography_RICH_frontplate;X in cm;Y in cm", 600, -300., 300., 500, -250., 250.);
+  fhTomography_RICH_backplate = new TH2D("fhTomography_RICH_backplate", "fhTomography_RICH_backplate;X in cm;Y in cm",
+                                         600, -300., 300., 500, -250., 250.);
   fHistoList_tomography.push_back(fhTomography_uptoRICH);
   fHistoList_tomography.push_back(fhTomography_RICH_complete);
   fHistoList_tomography.push_back(fhTomography_RICH_beampipe);
@@ -188,48 +120,25 @@ void CbmAnaConversionTomography::InitHistos() {
   fHistoList_tomography.push_back(fhTomography_RICH_backplate);
 
 
-  fhConversion = new TH1D(
-    "fhConversion", "fhConversion;Z in cm;# conversions", 4800, -0.5, 1199.5);
-  fhConversion_cut   = new TH1D("fhConversion_cut",
-                              "fhConversion_cut;Z in cm;# conversions",
-                              4800,
-                              -0.5,
-                              1199.5);
-  fhConversion_inSTS = new TH1D("fhConversion_inSTS",
-                                "fhConversion in STS;Z in cm;# conversions",
-                                800,
-                                -0.5,
-                                199.5);
-  fhConversion_prob  = new TH1D("fhConversion_prob",
-                               "fhConversion_prob;Z in cm;# conversions",
-                               1200,
-                               -0.5,
-                               1199.5);
+  fhConversion       = new TH1D("fhConversion", "fhConversion;Z in cm;# conversions", 4800, -0.5, 1199.5);
+  fhConversion_cut   = new TH1D("fhConversion_cut", "fhConversion_cut;Z in cm;# conversions", 4800, -0.5, 1199.5);
+  fhConversion_inSTS = new TH1D("fhConversion_inSTS", "fhConversion in STS;Z in cm;# conversions", 800, -0.5, 199.5);
+  fhConversion_prob  = new TH1D("fhConversion_prob", "fhConversion_prob;Z in cm;# conversions", 1200, -0.5, 1199.5);
   fHistoList_tomography.push_back(fhConversion);
   fHistoList_tomography.push_back(fhConversion_cut);
   fHistoList_tomography.push_back(fhConversion_inSTS);
   fHistoList_tomography.push_back(fhConversion_prob);
 
-  fhConversion_energy = new TH1D(
-    "fhConversion_energy", "fhConversion_energy;energy;#", 1000, 0., 100.);
-  fhConversion_p =
-    new TH1D("fhConversion_p", "fhConversion_p;p;#", 1000, 0., 100.);
+  fhConversion_energy = new TH1D("fhConversion_energy", "fhConversion_energy;energy;#", 1000, 0., 100.);
+  fhConversion_p      = new TH1D("fhConversion_p", "fhConversion_p;p;#", 1000, 0., 100.);
   fHistoList_tomography.push_back(fhConversion_energy);
   fHistoList_tomography.push_back(fhConversion_p);
 
-  fhConversion_vs_momentum =
-    new TH2D("fhConversion_vs_momentum",
-             "fhConversion_vs_momentum;Z in cm;momentum in GeV/c",
-             4800,
-             -0.5,
-             1199.5,
-             1000,
-             0.,
-             10.);
+  fhConversion_vs_momentum = new TH2D("fhConversion_vs_momentum", "fhConversion_vs_momentum;Z in cm;momentum in GeV/c",
+                                      4800, -0.5, 1199.5, 1000, 0., 10.);
   fHistoList_tomography.push_back(fhConversion_vs_momentum);
 
-  fhConversionsPerDetector = new TH1I(
-    "fhConversionsPerDetector", "fhConversionsPerDetector;;#", 5, 0, 5);
+  fhConversionsPerDetector = new TH1I("fhConversionsPerDetector", "fhConversionsPerDetector;;#", 5, 0, 5);
   fHistoList_tomography.push_back(fhConversionsPerDetector);
   fhConversionsPerDetector->GetXaxis()->SetBinLabel(1, "magnet");
   fhConversionsPerDetector->GetXaxis()->SetBinLabel(2, "STS");
@@ -238,14 +147,7 @@ void CbmAnaConversionTomography::InitHistos() {
   fhConversionsPerDetector->GetXaxis()->SetBinLabel(5, "TOF");
 
   fhConversionsPerDetectorPE =
-    new TH2I("fhConversionsPerDetectorPE",
-             "fhConversionsPerDetectorPE;;conversions per event",
-             5,
-             0,
-             5,
-             1500,
-             0,
-             1500);
+    new TH2I("fhConversionsPerDetectorPE", "fhConversionsPerDetectorPE;;conversions per event", 5, 0, 5, 1500, 0, 1500);
   fHistoList_tomography.push_back(fhConversionsPerDetectorPE);
   fhConversionsPerDetectorPE->GetXaxis()->SetBinLabel(1, "magnet");
   fhConversionsPerDetectorPE->GetXaxis()->SetBinLabel(2, "STS");
@@ -262,38 +164,13 @@ void CbmAnaConversionTomography::InitHistos() {
   //fhConversionsPerDetectorPE_cut->GetXaxis()->SetBinLabel(5, "TOF");
 
   // tomography from reconstructed tracks
-  fhTomography_reco    = new TH3D("fhTomography_reco",
-                               "fhTomography_reco;X in cm;Y in cm;Z in cm",
-                               200,
-                               -200.,
-                               200.,
-                               200,
-                               -200.,
-                               200.,
-                               500,
-                               0.,
-                               1000.);
-  fhTomography_reco_XZ = new TH2D("fhTomography_reco_XZ",
-                                  "fhTomography_reco_XZ;X in cm;Z in cm",
-                                  1600,
-                                  -400.,
-                                  400.,
-                                  2400,
-                                  0.,
-                                  1200.);
-  fhTomography_reco_YZ = new TH2D("fhTomography_reco_YZ",
-                                  "fhTomography_reco_YZ;Y in cm;Z in cm",
-                                  1600,
-                                  -400.,
-                                  400.,
-                                  2400,
-                                  0.,
-                                  1200.);
-  fhConversion_reco    = new TH1D("fhConversion_reco",
-                               "fhConversion_reco;Z in cm;# conversions",
-                               4800,
-                               -0.5,
-                               1199.5);
+  fhTomography_reco = new TH3D("fhTomography_reco", "fhTomography_reco;X in cm;Y in cm;Z in cm", 200, -200., 200., 200,
+                               -200., 200., 500, 0., 1000.);
+  fhTomography_reco_XZ =
+    new TH2D("fhTomography_reco_XZ", "fhTomography_reco_XZ;X in cm;Z in cm", 1600, -400., 400., 2400, 0., 1200.);
+  fhTomography_reco_YZ =
+    new TH2D("fhTomography_reco_YZ", "fhTomography_reco_YZ;Y in cm;Z in cm", 1600, -400., 400., 2400, 0., 1200.);
+  fhConversion_reco = new TH1D("fhConversion_reco", "fhConversion_reco;Z in cm;# conversions", 4800, -0.5, 1199.5);
   fHistoList_tomography.push_back(fhTomography_reco);
   fHistoList_tomography.push_back(fhTomography_reco_XZ);
   fHistoList_tomography.push_back(fhTomography_reco_YZ);
@@ -301,7 +178,8 @@ void CbmAnaConversionTomography::InitHistos() {
 }
 
 
-void CbmAnaConversionTomography::Finish() {
+void CbmAnaConversionTomography::Finish()
+{
   //gDirectory->cd("analysis-conversion");
   gDirectory->mkdir("Tomography");
   gDirectory->cd("Tomography");
@@ -314,7 +192,8 @@ void CbmAnaConversionTomography::Finish() {
 }
 
 
-void CbmAnaConversionTomography::Exec() {
+void CbmAnaConversionTomography::Exec()
+{
   timer.Start();
 
   electronIDs.clear();
@@ -346,23 +225,18 @@ void CbmAnaConversionTomography::Exec() {
   //	int photoncounter = 0;
   std::multimap<int, int> electronMap;
   for (unsigned int i = 0; i < electronIDs.size(); i++) {
-    electronMap.insert(
-      std::pair<int, int>(electronMotherIDs[i], electronIDs[i]));
+    electronMap.insert(std::pair<int, int>(electronMotherIDs[i], electronIDs[i]));
   }
 
   //	int check = 0;
-  for (std::map<int, int>::iterator it = electronMap.begin();
-       it != electronMap.end();
-       ++it) {
-    if (it == electronMap.begin()) {
-      TomographyMC(it->second);
-    } else {
+  for (std::map<int, int>::iterator it = electronMap.begin(); it != electronMap.end(); ++it) {
+    if (it == electronMap.begin()) { TomographyMC(it->second); }
+    else {
       std::map<int, int>::iterator zwischen = it;
       zwischen--;
       int id     = it->first;
       int id_old = zwischen->first;
-      if (id == id_old)
-        continue;
+      if (id == id_old) continue;
       else {
         TomographyMC(it->second);
       }
@@ -470,20 +344,13 @@ void CbmAnaConversionTomography::TomographyMC(int electronID)
   if (v.z() >= 170 && v.Z() <= 400) {  // only in region of the RICH detector
     fhTomography_RICH_complete->Fill(v.X(), v.Y());
   }
-  if (
-    v.z() >= 220
-    && v.Z()
-         <= 280) {  // only in region of RICH beampipe, without being distorted by mirrors or camera
+  if (v.z() >= 220 && v.Z() <= 280) {  // only in region of RICH beampipe, without being distorted by mirrors or camera
     fhTomography_RICH_beampipe->Fill(v.X(), v.Y());
   }
-  if (v.z() >= 100
-      && v.Z() <= 170) {  // only in a downstream part of STS and magnet
+  if (v.z() >= 100 && v.Z() <= 170) {  // only in a downstream part of STS and magnet
     fhTomography_STS_end->Fill(v.X(), v.Y());
   }
-  if (
-    v.z() >= 98
-    && v.Z()
-         <= 102) {  // only in a downstream part of STS and magnet, only last STS station
+  if (v.z() >= 98 && v.Z() <= 102) {  // only in a downstream part of STS and magnet, only last STS station
     fhTomography_STS_lastStation->Fill(v.X(), v.Y());
   }
   if (v.z() >= 179 && v.Z() <= 181) {  // only in region of RICH frontplate
@@ -498,8 +365,7 @@ void CbmAnaConversionTomography::TomographyMC(int electronID)
 
   if (mctrack->GetP() > 1) { fhConversion_cut->Fill(v.Z()); }
 
-  if ((TMath::Abs(v.X()) <= 100 && TMath::Abs(v.X()) > 3)
-      && (TMath::Abs(v.Y()) <= 50 && TMath::Abs(v.Y()) > 3)
+  if ((TMath::Abs(v.X()) <= 100 && TMath::Abs(v.X()) > 3) && (TMath::Abs(v.Y()) <= 50 && TMath::Abs(v.Y()) > 3)
       && TMath::Abs(v.Z()) <= 169) {
     fhConversion_inSTS->Fill(v.Z());
   }
@@ -522,15 +388,13 @@ void CbmAnaConversionTomography::TomographyMC(int electronID)
     fhConversionsPerDetector->Fill(4);
     //if(GetNPoints(mctrack)) { conversionsInDetector_cut[4]++; }
   }
-  if ((TMath::Abs(v.X()) <= 100 && TMath::Abs(v.X()) > 3)
-      && (TMath::Abs(v.Y()) <= 65 && TMath::Abs(v.Y()) > 3)
+  if ((TMath::Abs(v.X()) <= 100 && TMath::Abs(v.X()) > 3) && (TMath::Abs(v.Y()) <= 65 && TMath::Abs(v.Y()) > 3)
       && TMath::Abs(v.Z()) <= 105) {  // STS
     conversionsInDetector[1]++;
     fhConversionsPerDetector->Fill(1);
     //if(GetNPoints(mctrack)) { conversionsInDetector_cut[1]++; }
   }
-  if ((TMath::Abs(v.X()) > 100 || TMath::Abs(v.Y()) > 65)
-      && TMath::Abs(v.Z()) <= 169) {  // magnet
+  if ((TMath::Abs(v.X()) > 100 || TMath::Abs(v.Y()) > 65) && TMath::Abs(v.Z()) <= 169) {  // magnet
     conversionsInDetector[0]++;
     fhConversionsPerDetector->Fill(0);
     //if(GetNPoints(mctrack)) { conversionsInDetector_cut[0]++; }
@@ -567,7 +431,8 @@ void CbmAnaConversionTomography::TomographyReco(CbmMCTrack* mctrack)
 }
 
 
-Bool_t CbmAnaConversionTomography::GetNPoints(CbmMCTrack* mctrack) {
+Bool_t CbmAnaConversionTomography::GetNPoints(CbmMCTrack* mctrack)
+{
   Double_t np_sts  = mctrack->GetNPoints(ECbmModuleId::kSts);
   Double_t np_rich = mctrack->GetNPoints(ECbmModuleId::kRich);
   Double_t np_trd  = mctrack->GetNPoints(ECbmModuleId::kTrd);

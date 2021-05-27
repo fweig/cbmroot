@@ -9,10 +9,10 @@
 #ifndef CbmMcbm2018UnpackerTaskPsd_H
 #define CbmMcbm2018UnpackerTaskPsd_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
 #include "CbmPsdDigi.h"
+
+#include "Timeslice.hpp"
 
 class CbmMcbm2018UnpackerAlgoPsd;
 //class TClonesArray;
@@ -23,8 +23,7 @@ public:
   CbmMcbm2018UnpackerTaskPsd(UInt_t uNbSdpb = 1);
 
   CbmMcbm2018UnpackerTaskPsd(const CbmMcbm2018UnpackerTaskPsd&) = delete;
-  CbmMcbm2018UnpackerTaskPsd
-  operator=(const CbmMcbm2018UnpackerTaskPsd&) = delete;
+  CbmMcbm2018UnpackerTaskPsd operator=(const CbmMcbm2018UnpackerTaskPsd&) = delete;
 
   virtual ~CbmMcbm2018UnpackerTaskPsd();
 
@@ -45,9 +44,7 @@ public:
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
   /// Algo settings setters
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
   void SetDiamondDpbIdx(UInt_t uIdx = 2);
@@ -57,12 +54,9 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
 
   /// Parameters
   UInt_t fuDigiMaskId;

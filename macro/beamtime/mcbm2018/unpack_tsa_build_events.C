@@ -10,9 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_tsa_build_events(TString inFile  = "",
-                             UInt_t uRunId   = 0,
-                             UInt_t nrEvents = 0) {
+void unpack_tsa_build_events(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -56,10 +55,9 @@ void unpack_tsa_build_events(TString inFile  = "",
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
-    new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
 
   unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
@@ -82,14 +80,12 @@ void unpack_tsa_build_events(TString inFile  = "",
       unpacker_much->SetTimeOffsetNs(-2300);  // Run 49
       break;
     case 51:
-      unpacker_sts->SetTimeOffsetNs(
-        165450);  // Run 51, no peak in same MS, peak at ~162 us in same TS
+      unpacker_sts->SetTimeOffsetNs(165450);  // Run 51, no peak in same MS, peak at ~162 us in same TS
       unpacker_much->SetTimeOffsetNs(
         850);  // Run 51, no peak in same MS for full run, peak around -850 ns in last spills
       break;
     case 52:
-      unpacker_sts->SetTimeOffsetNs(
-        141500);  // Run 52, no peak in same MS, peak at ~104 us in same TS
+      unpacker_sts->SetTimeOffsetNs(141500);  // Run 52, no peak in same MS, peak at ~104 us in same TS
       unpacker_much->SetTimeOffsetNs(18450);  // Run 52
       break;
     case 53:
@@ -156,15 +152,15 @@ void unpack_tsa_build_events(TString inFile  = "",
   std::cout << ">>> unpack_tsa_sts: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -172,8 +168,7 @@ void unpack_tsa_build_events(TString inFile  = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_sts: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_sts: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_sts: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_sts: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

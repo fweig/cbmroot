@@ -1,12 +1,10 @@
 #include "CbmHit.h"
-
 #include "CbmMatch.h"
-
-#include "gtest/gtest-spi.h"
-#include "gtest/gtest.h"
 
 #include "compareHit.h"
 #include "compareMatch.h"
+#include "gtest/gtest-spi.h"
+#include "gtest/gtest.h"
 
 // Since some functions in CbmHit are protected we have
 // to create a derived class without any data members
@@ -23,28 +21,33 @@ public:
   virtual ~CbmTestHit() { ; }
 
   /** Assignment operator  **/
-  CbmTestHit& operator=(const CbmTestHit& other) {
+  CbmTestHit& operator=(const CbmTestHit& other)
+  {
     if (this != &other) { CbmHit::operator=(other); }
     return *this;
   }
 };
 
-TEST(_GTestCbmHit, CheckDefaultConstructor) {
+TEST(_GTestCbmHit, CheckDefaultConstructor)
+{
   CbmHit test;
   compareHitDataMembers(test, kHIT, 0., 0., -1, -1, nullptr, -1., -1.);
 }
 
-TEST(_GTestCbmHit, CheckStandardConstructor) {
+TEST(_GTestCbmHit, CheckStandardConstructor)
+{
   CbmHit test {kHIT, 0., 0., -1, -1};
   compareHitDataMembers(test, kHIT, 0., 0., -1, -1, nullptr, -1., -1.);
 }
 
-TEST(_GTestCbmHit, CheckStandardConstructorWithTime) {
+TEST(_GTestCbmHit, CheckStandardConstructorWithTime)
+{
   CbmHit test {kHIT, 0., 0., -1, -1, -2., -2.};
   compareHitDataMembers(test, kHIT, 0., 0., -1, -1, nullptr, -2., -2.);
 }
 
-TEST(_GTestCbmHit, CheckCopyConstructor) {
+TEST(_GTestCbmHit, CheckCopyConstructor)
+{
   CbmTestHit test;
   {
     SCOPED_TRACE("CheckCopyConstructor: Initial Test");
@@ -71,20 +74,19 @@ TEST(_GTestCbmHit, CheckCopyConstructor) {
   if (testMatch1) { compareMatchDataMembers(*testMatch1, 0, 0.); }
 
   {
-    SCOPED_TRACE(
-      "CheckCopyConstructor: Test new object after copy construction");
+    SCOPED_TRACE("CheckCopyConstructor: Test new object after copy construction");
     compareHitDataMembers(test2, kHIT, 0., 0., -1, -1, nullptr, -1., -1.);
   }
   // Test if the original object wasn't changed
   {
-    SCOPED_TRACE(
-      "CheckCopyConstructor: Test original object after copy construction");
+    SCOPED_TRACE("CheckCopyConstructor: Test original object after copy construction");
     compareHitDataMembers(test, kHIT, 0., 0., -1, -1, testMatch, -1., -1.);
   }
 }
 
 
-TEST(_GTestCbmHit, CheckAssignmentOperator) {
+TEST(_GTestCbmHit, CheckAssignmentOperator)
+{
   CbmTestHit test;
   {
     SCOPED_TRACE("CheckAssignmentOperator: Initial Test");
@@ -117,13 +119,13 @@ TEST(_GTestCbmHit, CheckAssignmentOperator) {
   }
   // Test if the original object wasn't changed
   {
-    SCOPED_TRACE(
-      "CheckAssignmentOperator: Test original object after assignment");
+    SCOPED_TRACE("CheckAssignmentOperator: Test original object after assignment");
     compareHitDataMembers(test, kHIT, 0., 0., -1, -1, testMatch, -1., -1.);
   }
 }
 
-TEST(_GTestCbmHit, TestSettersAndGetters) {
+TEST(_GTestCbmHit, TestSettersAndGetters)
+{
   CbmHit test;
   compareHitDataMembers(test, kHIT, 0., 0., -1, -1, nullptr, -1., -1.);
 
@@ -163,8 +165,8 @@ TEST(_GTestCbmHit, TestSettersAndGetters) {
   compareMatchDataMembers(*testMatch1, 0, 0.);
 }
 
-TEST(_GTestCbmHit, ToString) {
+TEST(_GTestCbmHit, ToString)
+{
   CbmHit test {kHIT, 0., 0., -1, -1};
-  EXPECT_STREQ("Has to be implemented in derrived class",
-               test.ToString().c_str());
+  EXPECT_STREQ("Has to be implemented in derrived class", test.ToString().c_str());
 }

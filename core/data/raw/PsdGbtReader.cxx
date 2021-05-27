@@ -9,9 +9,11 @@
 
 #include <cstdint>  // for uint16_t, uint64_t, uint32_t
 
-namespace PsdData {
+namespace PsdData
+{
 
-  PsdGbtReader::~PsdGbtReader() {
+  PsdGbtReader::~PsdGbtReader()
+  {
     EvHdrAb.clear();
     EvHdrAc.clear();
     HitHdr.clear();
@@ -20,71 +22,64 @@ namespace PsdData {
     VectHitData.clear();
   }
 
-  void PsdGbtReader::ReadEventHeaderAbFles() {
+  void PsdGbtReader::ReadEventHeaderAbFles()
+  {
     EvHdrAb.clear();
-    buffer_shift = 0;
-    EvHdrAb.ulMicroSlice =
-      (buffer[gbt_word_index] >> buffer_shift) & 0xffffffffffffffff;
+    buffer_shift         = 0;
+    EvHdrAb.ulMicroSlice = (buffer[gbt_word_index] >> buffer_shift) & 0xffffffffffffffff;
     gbt_word_index++;
 
     buffer_shift        = 0;
-    EvHdrAb.uHitsNumber = (buffer[gbt_word_index] >> buffer_shift)
-                          & (((static_cast<uint32_t>(1)) << EvHdrAb.HNs) - 1);
+    EvHdrAb.uHitsNumber = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << EvHdrAb.HNs) - 1);
     buffer_shift += EvHdrAb.HNs;
-    EvHdrAb.uMagicWordAB = (buffer[gbt_word_index] >> buffer_shift)
-                           & (((static_cast<uint32_t>(1)) << EvHdrAb.MWs) - 1);
+    EvHdrAb.uMagicWordAB = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << EvHdrAb.MWs) - 1);
     gbt_word_index++;
 
     if (PrintOut) EvHdrAb.printout();
   }
 
-  void PsdGbtReader::ReadEventHeaderAcFles() {
+  void PsdGbtReader::ReadEventHeaderAcFles()
+  {
     EvHdrAc.clear();
     buffer_shift     = 0;
-    EvHdrAc.uAdcTime = (buffer[gbt_word_index] >> buffer_shift)
-                       & (((static_cast<uint64_t>(1)) << EvHdrAc.TMs) - 1);
+    EvHdrAc.uAdcTime = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint64_t>(1)) << EvHdrAc.TMs) - 1);
     gbt_word_index++;
 
     buffer_shift = 0;
     EvHdrAc.uPacketVersion =
-      (buffer[gbt_word_index] >> buffer_shift)
-      & (((static_cast<uint32_t>(1)) << EvHdrAc.PVs) - 1);
+      (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << EvHdrAc.PVs) - 1);
     buffer_shift += EvHdrAc.PVs;
-    EvHdrAc.uMagicWordAC = (buffer[gbt_word_index] >> buffer_shift)
-                           & (((static_cast<uint32_t>(1)) << EvHdrAc.MWs) - 1);
+    EvHdrAc.uMagicWordAC = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << EvHdrAc.MWs) - 1);
     gbt_word_index++;
 
     if (PrintOut) EvHdrAc.printout();
   }
 
-  void PsdGbtReader::ReadHitHeaderFles() {
+  void PsdGbtReader::ReadHitHeaderFles()
+  {
     HitHdr.clear();
     buffer_shift      = 0;
-    HitHdr.uZeroLevel = (buffer[gbt_word_index] >> buffer_shift)
-                        & (((static_cast<uint32_t>(1)) << HitHdr.ZLs) - 1);
+    HitHdr.uZeroLevel = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitHdr.ZLs) - 1);
     buffer_shift += HitHdr.ZLs;
-    HitHdr.uSignalCharge = (buffer[gbt_word_index] >> buffer_shift)
-                           & (((static_cast<uint32_t>(1)) << HitHdr.SCs) - 1);
+    HitHdr.uSignalCharge = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitHdr.SCs) - 1);
     gbt_word_index++;
 
     buffer_shift       = 0;
-    HitHdr.uHitChannel = (buffer[gbt_word_index] >> buffer_shift)
-                         & (((static_cast<uint32_t>(1)) << HitHdr.HCs) - 1);
+    HitHdr.uHitChannel = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitHdr.HCs) - 1);
     buffer_shift += HitHdr.HCs;
-    HitHdr.uWfmPoints = (buffer[gbt_word_index] >> buffer_shift)
-                        & (((static_cast<uint32_t>(1)) << HitHdr.WPSs) - 1);
+    HitHdr.uWfmPoints = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitHdr.WPSs) - 1);
     gbt_word_index++;
 
     if (PrintOut) HitHdr.printout();
   }
 
-  void PsdGbtReader::ReadHitDataFles() {
+  void PsdGbtReader::ReadHitDataFles()
+  {
     HitData.clear();
     buffer_shift = 64;
     for (int wfm_pt_iter = 0; wfm_pt_iter < HitHdr.uWfmPoints; wfm_pt_iter++) {
       buffer_shift -= HitData.WPs;
-      uint16_t wfm_point = (buffer[gbt_word_index] >> buffer_shift)
-                           & (((static_cast<uint32_t>(1)) << HitData.WPs) - 1);
+      uint16_t wfm_point = (buffer[gbt_word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitData.WPs) - 1);
       HitData.uWfm.push_back(wfm_point);
       if (buffer_shift == 0) {
         gbt_word_index += 2;
@@ -95,7 +90,8 @@ namespace PsdData {
     if (PrintOut) HitData.printout();
   }
 
-  int PsdGbtReader::ReadEventFles() {
+  int PsdGbtReader::ReadEventFles()
+  {
     bool IsAbHeaderInMessage = false;
     bool IsAcHeaderInMessage = false;
 
@@ -119,7 +115,8 @@ namespace PsdData {
       }  //hit loop
 
       if (EvHdrAb.uHitsNumber != VectHitHdr.size()) { return 3; }
-    } else {
+    }
+    else {
       return 1;
     }
 

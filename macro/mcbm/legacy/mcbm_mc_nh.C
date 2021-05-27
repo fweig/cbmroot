@@ -15,13 +15,8 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_mc_nh(Int_t nEvents         = 2,
-                Int_t iMode           = 3,
-                TString cSys          = "lam",
-                TString cEbeam        = "2.5gev",
-                TString cCentr        = "-",
-                Int_t iRun            = 0,
-                const char* setupName = "sis18_mcbm_20deg_long",
+void mcbm_mc_nh(Int_t nEvents = 2, Int_t iMode = 3, TString cSys = "lam", TString cEbeam = "2.5gev",
+                TString cCentr = "-", Int_t iRun = 0, const char* setupName = "sis18_mcbm_20deg_long",
                 const char* inputFile = "")
 
 // available input files
@@ -39,19 +34,18 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_mc";  // this macro's name for screen output
+  TString myName = "mcbm_mc";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
   // -----   In- and output file names   ------------------------------------
   //TString inFile  = srcDir + "/input/urqmd." + cSys + "." + cEbeam + "." + cCentr + "." + Form("%05d",iRun) + ".root";
-  TString inFile = "/lustre/nyx/cbm/prod/gen/urqmd/" + cSys + "/" + cEbeam + "/"
-                   + cCentr + "/urqmd." + cSys + "." + cEbeam + "." + cCentr
-                   + "." + Form("%05d", iRun) + ".root";
-  TString outDir  = "data/";
-  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
-                    + cCentr + ".mc." + Form("%05d", iRun) + ".root";
-  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
-                    + cCentr + ".params." + Form("%05d", iRun) + ".root";
+  TString inFile = "/lustre/nyx/cbm/prod/gen/urqmd/" + cSys + "/" + cEbeam + "/" + cCentr + "/urqmd." + cSys + "."
+                   + cEbeam + "." + cCentr + "." + Form("%05d", iRun) + ".root";
+  TString outDir = "data/";
+  TString outFile =
+    outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d", iRun) + ".root";
+  TString parFile =
+    outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d", iRun) + ".root";
   TString geoFile = outDir + setupName + "_geofile_full.root";
   // ------------------------------------------------------------------------
 
@@ -77,9 +71,8 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   Double_t targetPosX      = 0.;   // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;   // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;   // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
-  Double_t beamRotY =
-    25.;  // with 8 degree wrt R3B beam - beam rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;   // target rotation angle around the y axis [deg]
+  Double_t beamRotY        = 25.;  // with 8 degree wrt R3B beam - beam rotation angle around the y axis [deg]
   //  Double_t beamRotY        = -20.;   // with 15 degree magnet - beam rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
@@ -145,12 +138,12 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   //TString defaultInputFile = srcDir + "/input/urqmd.agag.1.65gev.centr.00001.root";
-  TString defaultInputFile =
-    srcDir + "/input/urqmd.nini.1.93gev.mbias.00001.root";
+  TString defaultInputFile = srcDir + "/input/urqmd.nini.1.93gev.mbias.00001.root";
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInputFile;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -178,8 +171,7 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -227,14 +219,12 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   if (iMode > 0) {
     switch (iMode) {
       case 1: {  //                          (pdg, mul,px,     py, pz, vx,vy,vz)
-        FairParticleGenerator* fPartGen =
-          new FairParticleGenerator(13, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //mu-
+        FairParticleGenerator* fPartGen = new FairParticleGenerator(13, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //mu-
         primGen->AddGenerator(fPartGen);
       } break;
 
       case 2: {  //(pdg,mul,px, py, pz, vx,vy,vz)
-        FairParticleGenerator* fPartGen = new FairParticleGenerator(
-          2212, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //proton
+        FairParticleGenerator* fPartGen = new FairParticleGenerator(2212, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //proton
         primGen->AddGenerator(fPartGen);
       } break;
 
@@ -242,8 +232,7 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
         Double_t pz;
         sscanf(cEbeam, "%lfgev", &pz);
         cout << "simulate single lambda with pz = " << pz << endl;
-        FairParticleGenerator* fPartGen =
-          new FairParticleGenerator(3122, 1, 0.0, 0., pz, 0., 0., 0.);  //lambda
+        FairParticleGenerator* fPartGen = new FairParticleGenerator(3122, 1, 0.0, 0., pz, 0., 0., 0.);  //lambda
         primGen->AddGenerator(fPartGen);
       } break;
       case 4: {
@@ -263,8 +252,7 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
     CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
     uniGen->SetEventPlane(0., 360.);
     primGen->AddGenerator(uniGen);
-    primGen->SetBeamAngle(
-      beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
+    primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
   }
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
@@ -354,9 +342,7 @@ void mcbm_mc_nh(Int_t nEvents         = 2,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

@@ -35,17 +35,16 @@
 #include <sys/time.h>
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 0
-inline int clock_gettime(int clk_id, struct timespec* t) {
+inline int clock_gettime(int clk_id, struct timespec* t)
+{
   mach_timebase_info_data_t timebase;
   mach_timebase_info(&timebase);
   uint64_t time;
-  time = mach_absolute_time();
-  double nseconds =
-    ((double) time * (double) timebase.numer) / ((double) timebase.denom);
-  double seconds =
-    ((double) time * (double) timebase.numer) / ((double) timebase.denom * 1e9);
-  t->tv_sec  = seconds;
-  t->tv_nsec = nseconds;
+  time            = mach_absolute_time();
+  double nseconds = ((double) time * (double) timebase.numer) / ((double) timebase.denom);
+  double seconds  = ((double) time * (double) timebase.numer) / ((double) timebase.denom * 1e9);
+  t->tv_sec       = seconds;
+  t->tv_nsec      = nseconds;
   return 0;
 }
 #else
@@ -100,8 +99,7 @@ struct LxTbMLStation {
 
   LxTbMLStation(int stationNumber, int nofxb, int nofyb, int noftb)
     : fStationNumber(stationNumber)
-    , fLayers(reinterpret_cast<LxTbLayer*>(
-        new unsigned char[NOF_LAYERS * sizeof(LxTbLayer)]))
+    , fLayers(reinterpret_cast<LxTbLayer*>(new unsigned char[NOF_LAYERS * sizeof(LxTbLayer)]))
     , fDeltaThetaX(0)
     , fThetaX(0)
     , fScatXRL(0)
@@ -112,12 +110,14 @@ struct LxTbMLStation {
     , fScatYLS(0)
     , fHandleMPoint(*this)
     , fHandleRPoint(*this)
-    , fHandleLPoint(*this) {
+    , fHandleLPoint(*this)
+  {
     for (int i = 0; i < NOF_LAYERS; ++i)
       new (&fLayers[i]) LxTbLayer(nofxb, nofyb, noftb);
   }
 
-  void Init() {
+  void Init()
+  {
     for (int i = 0; i < NOF_LAYERS; ++i) {
       //fLayers[i].xBinLength = (fLayers[i].maxX - fLayers[i].minX) / fLayers[i].nofXBins;
       //fLayers[i].yBinLength = (fLayers[i].maxY - fLayers[i].minY) / fLayers[i].nofYXBins;
@@ -125,18 +125,21 @@ struct LxTbMLStation {
     }
   }
 
-  void Init2() {
+  void Init2()
+  {
     fHandleMPoint.Init();
     fHandleRPoint.Init();
     fHandleLPoint.Init();
   }
 
-  void Clear() {
+  void Clear()
+  {
     for (int i = 0; i < NOF_LAYERS; ++i)
       fLayers[i].Clear();
   }
 
-  void SetMinT(timetype v) {
+  void SetMinT(timetype v)
+  {
     for (int i = 0; i < NOF_LAYERS; ++i)
       fLayers[i].SetMinT(v);
   }
@@ -147,24 +150,25 @@ struct LxTbMLStation {
     scaltype deltaZr;
     scaltype scatXRL;
 
-    explicit HandleMPoint(LxTbMLStation& parent)
-      : station(parent), c(0), deltaZr(0), scatXRL(0) {}
+    explicit HandleMPoint(LxTbMLStation& parent) : station(parent), c(0), deltaZr(0), scatXRL(0) {}
 
-    void Init() {
+    void Init()
+    {
       c       = speedOfLight;
       deltaZr = station.fLayers[2].z - station.fLayers[1].z;
-      scatXRL = sqrt(station.fScatXRL * station.fScatXRL
-                     + magneticFieldCorrections[station.fStationNumber]
-                         * magneticFieldCorrections[station.fStationNumber]);
+      scatXRL =
+        sqrt(station.fScatXRL * station.fScatXRL
+             + magneticFieldCorrections[station.fStationNumber] * magneticFieldCorrections[station.fStationNumber]);
     }
 
-    void operator()(LxTbBinnedPoint& point) {
-      scaltype txR      = point.x / station.fLayers[1].z;
-      scaltype tyR      = point.y / station.fLayers[1].z;
-      scaltype pXr      = point.x + txR * deltaZr;
-      scaltype pYr      = point.y + tyR * deltaZr;
-      scaltype trajLenR = sqrt(1 + txR * txR + tyR * tyR) * deltaZr;
-      timetype pTr = point.t + 1.e9 * trajLenR / c;  // 1.e9 to convert to ns.
+    void operator()(LxTbBinnedPoint& point)
+    {
+      scaltype txR                 = point.x / station.fLayers[1].z;
+      scaltype tyR                 = point.y / station.fLayers[1].z;
+      scaltype pXr                 = point.x + txR * deltaZr;
+      scaltype pYr                 = point.y + tyR * deltaZr;
+      scaltype trajLenR            = sqrt(1 + txR * txR + tyR * tyR) * deltaZr;
+      timetype pTr                 = point.t + 1.e9 * trajLenR / c;  // 1.e9 to convert to ns.
       station.fHandleRPoint.mPoint = &point;
       station.fHandleLPoint.mPoint = &point;
 #ifdef LXTB_DEBUG
@@ -175,43 +179,24 @@ struct LxTbMLStation {
       };
 
       Debug debug;
-      IterateNeighbourhood(station.fLayers[2],
-                           pXr,
-                           point.dx,
-                           scatXRL,
-                           pYr,
-                           point.dy,
-                           station.fScatYRL,
-                           pTr,
-                           point.dt,
+      IterateNeighbourhood(station.fLayers[2], pXr, point.dx, scatXRL, pYr, point.dy, station.fScatYRL, pTr, point.dt,
                            debug);
 
       if (LAST_STATION == station.fStationNumber) {
         bool isSignal = false;
         bool found    = false;
 
-        for (list<LxTbBinnedPoint::PointDesc>::const_iterator i =
-               point.mcRefs.begin();
-             i != point.mcRefs.end();
-             ++i) {
-          const LxTbBinnedPoint::PointDesc& pd = *i;
-          const vector<vector<LxTBMLFinder::TrackDataHolder>>& mcTracks =
-            *gMCTracks;
+        for (list<LxTbBinnedPoint::PointDesc>::const_iterator i = point.mcRefs.begin(); i != point.mcRefs.end(); ++i) {
+          const LxTbBinnedPoint::PointDesc& pd                          = *i;
+          const vector<vector<LxTBMLFinder::TrackDataHolder>>& mcTracks = *gMCTracks;
 
           if (mcTracks[pd.eventId][pd.trackId].isSignal) isSignal = true;
 
-          for (list<LxTbBinnedPoint*>::iterator j =
-                 debugTracks2[pd.trackId]
-                   .points[point.stationNumber][2]
-                   .begin();
-               j
-               != debugTracks2[pd.trackId].points[point.stationNumber][2].end();
-               ++j) {
+          for (list<LxTbBinnedPoint*>::iterator j = debugTracks2[pd.trackId].points[point.stationNumber][2].begin();
+               j != debugTracks2[pd.trackId].points[point.stationNumber][2].end(); ++j) {
             LxTbBinnedPoint* a = *j;
 
-            for (list<LxTbBinnedPoint*>::iterator k = debug.points.begin();
-                 k != debug.points.end();
-                 ++k) {
+            for (list<LxTbBinnedPoint*>::iterator k = debug.points.begin(); k != debug.points.end(); ++k) {
               LxTbBinnedPoint* b = *k;
 
               if (a == b) found = true;
@@ -220,16 +205,15 @@ struct LxTbMLStation {
         }
 
         if (isSignal) {
-          if (!found)
-            ++nofNotFoundR;
+          if (!found) ++nofNotFoundR;
           else
             ++nofFoundR;
         }
 
         struct Debug2 {
-          void operator()(LxTbBinnedPoint& point) {
-            cout << "Debug2: Point: (" << point.x << ", " << point.y << ", "
-                 << point.t << ")" << endl;
+          void operator()(LxTbBinnedPoint& point)
+          {
+            cout << "Debug2: Point: (" << point.x << ", " << point.y << ", " << point.t << ")" << endl;
           }
         };
 
@@ -237,15 +221,7 @@ struct LxTbMLStation {
         IterateLayer(station.fLayers[2], debug2);
       }
 #endif  //LXTB_DEBUG
-      IterateNeighbourhood(station.fLayers[2],
-                           pXr,
-                           point.dx,
-                           scatXRL,
-                           pYr,
-                           point.dy,
-                           station.fScatYRL,
-                           pTr,
-                           point.dt,
+      IterateNeighbourhood(station.fLayers[2], pXr, point.dx, scatXRL, pYr, point.dy, station.fScatYRL, pTr, point.dt,
                            station.fHandleRPoint);
 #ifdef LXTB_DEBUG
       int qq = 0;
@@ -263,39 +239,28 @@ struct LxTbMLStation {
     scaltype scatXLL;
     LxTbBinnedPoint* mPoint;
 
-    explicit HandleRPoint(LxTbMLStation& parent)
-      : station(parent), c(0), deltaZl(0), scatXLL(0), mPoint(0) {}
+    explicit HandleRPoint(LxTbMLStation& parent) : station(parent), c(0), deltaZl(0), scatXLL(0), mPoint(0) {}
 
-    void Init() {
+    void Init()
+    {
       c       = speedOfLight;
       deltaZl = station.fLayers[0].z - station.fLayers[1].z;
       scatXLL = magneticFieldCorrections[station.fStationNumber];
     }
 
-    void operator()(LxTbBinnedPoint& point) {
-      scaltype txL =
-        (point.x - mPoint->x) / (station.fLayers[2].z - station.fLayers[1].z);
-      scaltype tyL =
-        (point.y - mPoint->y) / (station.fLayers[2].z - station.fLayers[1].z);
+    void operator()(LxTbBinnedPoint& point)
+    {
+      scaltype txL      = (point.x - mPoint->x) / (station.fLayers[2].z - station.fLayers[1].z);
+      scaltype tyL      = (point.y - mPoint->y) / (station.fLayers[2].z - station.fLayers[1].z);
       scaltype pXl      = mPoint->x + txL * deltaZl;
       scaltype pYl      = mPoint->y + tyL * deltaZl;
       scaltype trajLenL = sqrt(1 + txL * txL + tyL * tyL) * deltaZl;
-      timetype pTl =
-        mPoint->t
-        + 1.e9 * trajLenL
-            / c;  // 1.e9 to convert to ns and trajLenL is negative.
+      timetype pTl      = mPoint->t + 1.e9 * trajLenL / c;  // 1.e9 to convert to ns and trajLenL is negative.
       station.fHandleLPoint.rPoint = &point;
-      IterateNeighbourhood(
-        station.fLayers[0],
-        pXl,
-        sqrt(mPoint->dx * mPoint->dx + point.dx * point.dx),
-        scatXLL,
-        pYl,
-        sqrt(mPoint->dy * mPoint->dy + point.dy * point.dy),
-        0,
-        pTl,
-        mPoint->dt /*sqrt(mPoint->dt * mPoint->dt + point.dt * point.dt) / 2*/,
-        station.fHandleLPoint);
+      IterateNeighbourhood(station.fLayers[0], pXl, sqrt(mPoint->dx * mPoint->dx + point.dx * point.dx), scatXLL, pYl,
+                           sqrt(mPoint->dy * mPoint->dy + point.dy * point.dy), 0, pTl,
+                           mPoint->dt /*sqrt(mPoint->dt * mPoint->dt + point.dt * point.dt) / 2*/,
+                           station.fHandleLPoint);
     }
   };
 
@@ -311,13 +276,15 @@ struct LxTbMLStation {
       : station(parent)
       , deltaZ(parent.fLayers[2].z - parent.fLayers[0].z)
       , mPoint(0)
-      , rPoint(0) {}
+      , rPoint(0)
+    {
+    }
 
     void Init() { deltaZ = station.fLayers[0].z - station.fLayers[2].z; }
 
-    void operator()(LxTbBinnedPoint& point) {
-      LxTbBinnedTriplet* triplet =
-        new LxTbBinnedTriplet(&point, rPoint, deltaZ);
+    void operator()(LxTbBinnedPoint& point)
+    {
+      LxTbBinnedTriplet* triplet = new LxTbBinnedTriplet(&point, rPoint, deltaZ);
       mPoint->triplets.push_back(triplet);
     }
   };
@@ -327,16 +294,15 @@ struct LxTbMLStation {
   void Reconstruct() { IterateLayer<HandleMPoint>(fLayers[1], fHandleMPoint); }
 };
 
-static void
-FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results) {
+static void FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results)
+{
   Int_t nofChildren = node->GetNdaughters();
 
   for (Int_t i = 0; i < nofChildren; ++i) {
     TGeoNode* child = node->GetDaughter(i);
     TString childName(child->GetName());
 
-    if (childName.Contains(name, TString::kIgnoreCase))
-      results.push_back(child);
+    if (childName.Contains(name, TString::kIgnoreCase)) results.push_back(child);
   }
 }
 
@@ -354,17 +320,17 @@ struct LxTbDetector {
   SignalParticle* fSignalParticle;
 
   LxTbDetector(int nofxb, int nofyb, int noftb)
-    : fStations(reinterpret_cast<LxTbMLStation*>(
-      new unsigned char[NOF_STATIONS * sizeof(LxTbMLStation)]))
+    : fStations(reinterpret_cast<LxTbMLStation*>(new unsigned char[NOF_STATIONS * sizeof(LxTbMLStation)]))
     , fSignalParticle(&particleDescs[0])
-    , fHandleLastPoint(*this) {
+    , fHandleLastPoint(*this)
+  {
     for (int i = 0; i < NOF_STATIONS; ++i)
       new (&fStations[i]) LxTbMLStation(i, nofxb, nofyb, noftb);
   }
 
-  void Init() {
-    speedOfLight =
-      100 * TMath::C();  // Multiply by 100 to express in centimeters.
+  void Init()
+  {
+    speedOfLight  = 100 * TMath::C();  // Multiply by 100 to express in centimeters.
     gMuonMass     = TDatabasePDG::Instance()->GetParticle(13)->Mass();
     gElectronMass = TDatabasePDG::Instance()->GetParticle(11)->Mass();
     HandleGeometry();
@@ -379,7 +345,7 @@ struct LxTbDetector {
 
     for (int i = 0; i < NOF_STATIONS; ++i) {
       LxTbMLStation& station = fStations[i];
-      scaltype L = station.fAbsorber.width;  // / cos(3.14159265 * 15 / 180);
+      scaltype L             = station.fAbsorber.width;  // / cos(3.14159265 * 15 / 180);
       E -= EnergyLoss(E, L, &station.fAbsorber);
       scaltype Escat = (E0 + E) / 2;
       //scaltype Escat = E;
@@ -388,10 +354,9 @@ struct LxTbDetector {
       station.fDeltaThetaY = deltaTheta;
 
       if (i > 0) {
-        scaltype deltaZLS =
-          station.fLayers[1].z - fStations[i - 1].fLayers[1].z;
-        station.fScatXLS = station.fDeltaThetaX * deltaZLS;
-        station.fScatYLS = station.fDeltaThetaY * deltaZLS;
+        scaltype deltaZLS = station.fLayers[1].z - fStations[i - 1].fLayers[1].z;
+        station.fScatXLS  = station.fDeltaThetaX * deltaZLS;
+        station.fScatYLS  = station.fDeltaThetaY * deltaZLS;
       }
 
       scaltype q0XSq = station.fDeltaThetaX * station.fDeltaThetaX;
@@ -422,10 +387,8 @@ struct LxTbDetector {
         for (int j = 0; j < i; ++j)
           sumLi += Ls[j];
 
-        thetaXSq +=
-          sumLi * sumLi * fStations[i].fDeltaThetaX * fStations[i].fDeltaThetaX;
-        thetaYSq +=
-          sumLi * sumLi * fStations[i].fDeltaThetaY * fStations[i].fDeltaThetaY;
+        thetaXSq += sumLi * sumLi * fStations[i].fDeltaThetaX * fStations[i].fDeltaThetaX;
+        thetaYSq += sumLi * sumLi * fStations[i].fDeltaThetaY * fStations[i].fDeltaThetaY;
       }
 
       station.fThetaX   = sqrt(thetaXSq) / L;
@@ -443,19 +406,22 @@ struct LxTbDetector {
     fHandleRPoint.Init();
   }
 
-  void Clear() {
+  void Clear()
+  {
     recoTracks.clear();
 
     for (int i = 0; i < NOF_STATIONS; ++i)
       fStations[i].Clear();
   }
 
-  void SetMinT(timetype v) {
+  void SetMinT(timetype v)
+  {
     for (int i = 0; i < NOF_STATIONS; ++i)
       fStations[i].SetMinT(v);
   }
 
-  void HandleGeometry() {
+  void HandleGeometry()
+  {
     Double_t localCoords[3] = {0., 0., 0.};
     Double_t globalCoords[3];
     TGeoNavigator* pNavigator = gGeoManager->GetCurrentNavigator();
@@ -463,31 +429,28 @@ struct LxTbDetector {
     list<TGeoNode*> detectors;
     FindGeoChild(gGeoManager->GetCurrentNode(), "much", detectors);
 
-    for (list<TGeoNode*>::iterator i = detectors.begin(); i != detectors.end();
-         ++i) {
+    for (list<TGeoNode*>::iterator i = detectors.begin(); i != detectors.end(); ++i) {
       TGeoNode* detector = *i;
       pNavigator->CdDown(detector);
       list<TGeoNode*> stations;
       FindGeoChild(detector, "station", stations);
       int stationNumber = 0;
 
-      for (list<TGeoNode*>::iterator j = stations.begin(); j != stations.end();
-           ++j) {
+      for (list<TGeoNode*>::iterator j = stations.begin(); j != stations.end(); ++j) {
         TGeoNode* station = *j;
         pNavigator->CdDown(station);
         list<TGeoNode*> layers;
         FindGeoChild(station, "layer", layers);
         int layerNumber = 0;
 
-        for (list<TGeoNode*>::iterator k = layers.begin(); k != layers.end();
-             ++k) {
+        for (list<TGeoNode*>::iterator k = layers.begin(); k != layers.end(); ++k) {
           TGeoNode* layer = *k;
           pNavigator->CdDown(layer);
           gGeoManager->LocalToMaster(localCoords, globalCoords);
 
-          fStations[stationNumber].fLayers[layerNumber].z    = globalCoords[2];
-          fStations[stationNumber].fLayers[layerNumber].minX = 0;
-          fStations[stationNumber].fLayers[layerNumber].maxX = 0;
+          fStations[stationNumber].fLayers[layerNumber].z          = globalCoords[2];
+          fStations[stationNumber].fLayers[layerNumber].minX       = 0;
+          fStations[stationNumber].fLayers[layerNumber].maxX       = 0;
           fStations[stationNumber].fLayers[layerNumber].xBinLength = 0;
           fStations[stationNumber].fLayers[layerNumber].minY       = 0;
           fStations[stationNumber].fLayers[layerNumber].maxY       = 0;
@@ -496,15 +459,12 @@ struct LxTbDetector {
           list<TGeoNode*> actives;
           FindGeoChild(layer, "active", actives);
 
-          for (list<TGeoNode*>::iterator l = actives.begin();
-               l != actives.end();
-               ++l) {
+          for (list<TGeoNode*>::iterator l = actives.begin(); l != actives.end(); ++l) {
             TGeoNode* active = *l;
             pNavigator->CdDown(active);
-            TGeoCompositeShape* cs = dynamic_cast<TGeoCompositeShape*>(
-              active->GetVolume()->GetShape());
-            TGeoBoolNode* bn = cs->GetBoolNode();
-            TGeoTrap* trap   = dynamic_cast<TGeoTrap*>(bn->GetLeftShape());
+            TGeoCompositeShape* cs = dynamic_cast<TGeoCompositeShape*>(active->GetVolume()->GetShape());
+            TGeoBoolNode* bn       = cs->GetBoolNode();
+            TGeoTrap* trap         = dynamic_cast<TGeoTrap*>(bn->GetLeftShape());
 
             if (0 != trap) {
               Double_t* xy = trap->GetVertices();
@@ -512,28 +472,19 @@ struct LxTbDetector {
               for (int m = 0; m < 4; ++m) {
                 Double_t localActiveCoords[3] = {xy[2 * m], xy[2 * m + 1], 0.};
                 Double_t globalActiveCoords[3];
-                gGeoManager->LocalToMaster(localActiveCoords,
-                                           globalActiveCoords);
+                gGeoManager->LocalToMaster(localActiveCoords, globalActiveCoords);
 
-                if (fStations[stationNumber].fLayers[layerNumber].minY
-                    > globalActiveCoords[1])
-                  fStations[stationNumber].fLayers[layerNumber].minY =
-                    globalActiveCoords[1];
+                if (fStations[stationNumber].fLayers[layerNumber].minY > globalActiveCoords[1])
+                  fStations[stationNumber].fLayers[layerNumber].minY = globalActiveCoords[1];
 
-                if (fStations[stationNumber].fLayers[layerNumber].maxY
-                    < globalActiveCoords[1])
-                  fStations[stationNumber].fLayers[layerNumber].maxY =
-                    globalActiveCoords[1];
+                if (fStations[stationNumber].fLayers[layerNumber].maxY < globalActiveCoords[1])
+                  fStations[stationNumber].fLayers[layerNumber].maxY = globalActiveCoords[1];
 
-                if (fStations[stationNumber].fLayers[layerNumber].minX
-                    > globalActiveCoords[0])
-                  fStations[stationNumber].fLayers[layerNumber].minX =
-                    globalActiveCoords[0];
+                if (fStations[stationNumber].fLayers[layerNumber].minX > globalActiveCoords[0])
+                  fStations[stationNumber].fLayers[layerNumber].minX = globalActiveCoords[0];
 
-                if (fStations[stationNumber].fLayers[layerNumber].maxX
-                    < globalActiveCoords[0])
-                  fStations[stationNumber].fLayers[layerNumber].maxX =
-                    globalActiveCoords[0];
+                if (fStations[stationNumber].fLayers[layerNumber].maxX < globalActiveCoords[0])
+                  fStations[stationNumber].fLayers[layerNumber].maxX = globalActiveCoords[0];
               }
             }
 
@@ -554,26 +505,20 @@ struct LxTbDetector {
       FindGeoChild(detector, "absorber", absorbers);
       int absorberNumber = 0;
 
-      for (list<TGeoNode*>::iterator j = absorbers.begin();
-           j != absorbers.end();
-           ++j) {
+      for (list<TGeoNode*>::iterator j = absorbers.begin(); j != absorbers.end(); ++j) {
         TGeoNode* absorber = *j;
         pNavigator->CdDown(absorber);
-        TGeoVolume* absVol = gGeoManager->GetCurrentVolume();
-        const TGeoBBox* absShape =
-          static_cast<const TGeoBBox*>(absVol->GetShape());
+        TGeoVolume* absVol       = gGeoManager->GetCurrentVolume();
+        const TGeoBBox* absShape = static_cast<const TGeoBBox*>(absVol->GetShape());
 
         if (absorberNumber < nofStations) {
           gGeoManager->LocalToMaster(localCoords, globalCoords);
-          fStations[absorberNumber].fAbsorber.zCoord =
-            globalCoords[2] - absShape->GetDZ();
-          fStations[absorberNumber].fAbsorber.width = 2 * absShape->GetDZ();
-          fStations[absorberNumber].fAbsorber.radLength =
-            absVol->GetMaterial()->GetRadLen();
-          fStations[absorberNumber].fAbsorber.rho =
-            absVol->GetMaterial()->GetDensity();
-          fStations[absorberNumber].fAbsorber.Z = absVol->GetMaterial()->GetZ();
-          fStations[absorberNumber].fAbsorber.A = absVol->GetMaterial()->GetA();
+          fStations[absorberNumber].fAbsorber.zCoord    = globalCoords[2] - absShape->GetDZ();
+          fStations[absorberNumber].fAbsorber.width     = 2 * absShape->GetDZ();
+          fStations[absorberNumber].fAbsorber.radLength = absVol->GetMaterial()->GetRadLen();
+          fStations[absorberNumber].fAbsorber.rho       = absVol->GetMaterial()->GetDensity();
+          fStations[absorberNumber].fAbsorber.Z         = absVol->GetMaterial()->GetZ();
+          fStations[absorberNumber].fAbsorber.A         = absVol->GetMaterial()->GetA();
         }
 
         ++absorberNumber;
@@ -594,34 +539,19 @@ struct LxTbDetector {
 
     void Init() { c = speedOfLight; }
 
-    void operator()(LxTbBinnedPoint& point) {
-      for (list<LxTbBinnedTriplet*>::iterator i = point.triplets.begin();
-           i != point.triplets.end();
-           ++i) {
+    void operator()(LxTbBinnedPoint& point)
+    {
+      for (list<LxTbBinnedTriplet*>::iterator i = point.triplets.begin(); i != point.triplets.end(); ++i) {
         LxTbBinnedTriplet* triplet = *i;
         scaltype x                 = point.x + triplet->tx * deltaZ;
         scaltype y                 = point.y + triplet->ty * deltaZ;
-        scaltype trajLen =
-          sqrt(1 + triplet->tx * triplet->tx + triplet->ty * triplet->ty)
-          * deltaZ;
-        timetype t =
-          point.t
-          + 1.e9 * trajLen
-              / c;  // 1.e9 to convert to ns and trajLenL is negative.
-        handleLPoint.rTriplet = triplet;
-        IterateNeighbourhood(
-          *lLayer,
-          x,
-          sqrt(point.dx * point.dx
-               + triplet->dtx * triplet->dtx * deltaZ * deltaZ),
-          rStation->fDeltaThetaX * deltaZ,
-          y,
-          sqrt(point.dy * point.dy
-               + triplet->dty * triplet->dty * deltaZ * deltaZ),
-          rStation->fDeltaThetaY * deltaZ,
-          t,
-          point.dt,
-          handleLPoint);
+        scaltype trajLen           = sqrt(1 + triplet->tx * triplet->tx + triplet->ty * triplet->ty) * deltaZ;
+        timetype t                 = point.t + 1.e9 * trajLen / c;  // 1.e9 to convert to ns and trajLenL is negative.
+        handleLPoint.rTriplet      = triplet;
+        IterateNeighbourhood(*lLayer, x, sqrt(point.dx * point.dx + triplet->dtx * triplet->dtx * deltaZ * deltaZ),
+                             rStation->fDeltaThetaX * deltaZ, y,
+                             sqrt(point.dy * point.dy + triplet->dty * triplet->dty * deltaZ * deltaZ),
+                             rStation->fDeltaThetaY * deltaZ, t, point.dt, handleLPoint);
       }
     }
 
@@ -629,9 +559,7 @@ struct LxTbDetector {
       LxTbBinnedTriplet* rTriplet;
       HandleLPoint() : rTriplet(0) {}
 
-      void operator()(LxTbBinnedPoint& point) {
-        rTriplet->neighbours.push_back(&point);
-      }
+      void operator()(LxTbBinnedPoint& point) { rTriplet->neighbours.push_back(&point); }
     };
 
     HandleLPoint handleLPoint;
@@ -643,7 +571,8 @@ struct LxTbDetector {
     struct KFParamsCoord {
       scaltype coord, tg, C11, C12, C21, C22;
 
-      void Clear() {
+      void Clear()
+      {
         coord = 0;
         tg    = 0;
         C11   = 1.0;
@@ -658,7 +587,8 @@ struct LxTbDetector {
       KFParamsCoord yParams;
       scaltype chi2;
 
-      void Clear() {
+      void Clear()
+      {
         xParams.Clear();
         yParams.Clear();
         chi2 = 0;
@@ -669,22 +599,16 @@ struct LxTbDetector {
 
     explicit HandleLastPoint(LxTbDetector& parent) : detector(parent) {}
 
-    KFParamsCoord KFAddPointCoord(KFParamsCoord prevParam,
-                                  scaltype m,
-                                  scaltype V,
-                                  scaltype& chi2,
-                                  int stationNumber,
-                                  int layerNumber,
-                                  int coordNumber) {
+    KFParamsCoord KFAddPointCoord(KFParamsCoord prevParam, scaltype m, scaltype V, scaltype& chi2, int stationNumber,
+                                  int layerNumber, int coordNumber)
+    {
       KFParamsCoord param          = prevParam;
       const LxTbMLStation& station = detector.fStations[stationNumber];
       const LxTbLayer& layer       = station.fLayers[layerNumber];
       const LxTbMLStation::Q& Q    = station.qs[coordNumber];
       scaltype deltaZ =
         LAST_LAYER == layerNumber
-          ? LAST_STATION == stationNumber
-              ? 0
-              : layer.z - detector.fStations[stationNumber + 1].fLayers[0].z
+          ? LAST_STATION == stationNumber ? 0 : layer.z - detector.fStations[stationNumber + 1].fLayers[0].z
           : layer.z - station.fLayers[layerNumber + 1].z;
       scaltype deltaZSq = deltaZ * deltaZ;
 
@@ -693,14 +617,13 @@ struct LxTbDetector {
 
       // Filter.
       if (LAST_LAYER == layerNumber) {
-        param.C11 += prevParam.C12 * deltaZ + prevParam.C21 * deltaZ
-                     + prevParam.C22 * deltaZSq + Q.Q11;
+        param.C11 += prevParam.C12 * deltaZ + prevParam.C21 * deltaZ + prevParam.C22 * deltaZSq + Q.Q11;
         param.C12 += prevParam.C22 * deltaZ + Q.Q12;
         param.C21 += prevParam.C22 * deltaZ + Q.Q21;
         param.C22 += Q.Q22;
-      } else {
-        param.C11 += prevParam.C12 * deltaZ + prevParam.C21 * deltaZ
-                     + prevParam.C22 * deltaZSq;
+      }
+      else {
+        param.C11 += prevParam.C12 * deltaZ + prevParam.C21 * deltaZ + prevParam.C22 * deltaZSq;
         param.C12 += prevParam.C22 * deltaZ;
         param.C21 += prevParam.C22 * deltaZ;
       }
@@ -719,32 +642,15 @@ struct LxTbDetector {
       return param;
     }
 
-    KFParams KFAddPoint(KFParams prevParam,
-                        scaltype m[2],
-                        scaltype V[2],
-                        int stationNumber,
-                        int layerNumber) {
-      KFParams param = {KFAddPointCoord(prevParam.xParams,
-                                        m[0],
-                                        V[0],
-                                        param.chi2,
-                                        stationNumber,
-                                        layerNumber,
-                                        0),
-                        KFAddPointCoord(prevParam.yParams,
-                                        m[1],
-                                        V[1],
-                                        param.chi2,
-                                        stationNumber,
-                                        layerNumber,
-                                        1)};
+    KFParams KFAddPoint(KFParams prevParam, scaltype m[2], scaltype V[2], int stationNumber, int layerNumber)
+    {
+      KFParams param = {KFAddPointCoord(prevParam.xParams, m[0], V[0], param.chi2, stationNumber, layerNumber, 0),
+                        KFAddPointCoord(prevParam.yParams, m[1], V[1], param.chi2, stationNumber, layerNumber, 1)};
       return param;
     }
 
-    KFParams KFAddTriplet(
-      KFParams param,
-      LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS],
-      int level) {
+    KFParams KFAddTriplet(KFParams param, LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS], int level)
+    {
       LxTbBinnedPoint** points = trackCandidatePoints[level];
 
       for (int i = LAST_LAYER; i >= 0; --i) {
@@ -757,44 +663,33 @@ struct LxTbDetector {
       return param;
     }
 
-    void HandleTriplet(
-      LxTbBinnedTriplet* triplet,
-      LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS],
-      list<LxTBMLFinder::Chain>& chains,
-      int level,
-      KFParams kfParams) {
+    void HandleTriplet(LxTbBinnedTriplet* triplet, LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS],
+                       list<LxTBMLFinder::Chain>& chains, int level, KFParams kfParams)
+    {
       trackCandidatePoints[level][0] = triplet->lPoint;
       trackCandidatePoints[level][2] = triplet->rPoint;
-      kfParams = KFAddTriplet(kfParams, trackCandidatePoints, level);
+      kfParams                       = KFAddTriplet(kfParams, trackCandidatePoints, level);
 
-      if (0 == level)
-        chains.push_back(
-          LxTBMLFinder::Chain(trackCandidatePoints, kfParams.chi2));
+      if (0 == level) chains.push_back(LxTBMLFinder::Chain(trackCandidatePoints, kfParams.chi2));
       else {
-        for (list<LxTbBinnedPoint*>::iterator i = triplet->neighbours.begin();
-             i != triplet->neighbours.end();
-             ++i)
+        for (list<LxTbBinnedPoint*>::iterator i = triplet->neighbours.begin(); i != triplet->neighbours.end(); ++i)
           HandlePoint(*i, trackCandidatePoints, chains, level - 1, kfParams);
       }
     }
 
-    void
-    HandlePoint(LxTbBinnedPoint* point,
-                LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS],
-                list<LxTBMLFinder::Chain>& chains,
-                int level,
-                KFParams kfParams) {
+    void HandlePoint(LxTbBinnedPoint* point, LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS],
+                     list<LxTBMLFinder::Chain>& chains, int level, KFParams kfParams)
+    {
       trackCandidatePoints[level][1] = point;
 
-      for (list<LxTbBinnedTriplet*>::iterator i = point->triplets.begin();
-           i != point->triplets.end();
-           ++i) {
+      for (list<LxTbBinnedTriplet*>::iterator i = point->triplets.begin(); i != point->triplets.end(); ++i) {
         LxTbBinnedTriplet* triplet = *i;
         HandleTriplet(triplet, trackCandidatePoints, chains, level, kfParams);
       }
     }
 
-    void operator()(LxTbBinnedPoint& point) {
+    void operator()(LxTbBinnedPoint& point)
+    {
       LxTbBinnedPoint* trackCandidatePoints[NOF_STATIONS][NOF_LAYERS];
       list<LxTBMLFinder::Chain> chains;
       KFParams kfParams = {{0, 0, 1.0, 0, 0, 1.0}, {0, 0, 1.0, 0, 0, 1.0}, 0};
@@ -802,9 +697,7 @@ struct LxTbDetector {
       const LxTBMLFinder::Chain* bestChain = 0;
       scaltype chi2                        = 0;
 
-      for (list<LxTBMLFinder::Chain>::const_iterator i = chains.begin();
-           i != chains.end();
-           ++i) {
+      for (list<LxTBMLFinder::Chain>::const_iterator i = chains.begin(); i != chains.end(); ++i) {
         const LxTBMLFinder::Chain& chain = *i;
 
         if (0 == bestChain || chain.chi2 < chi2) {
@@ -813,8 +706,7 @@ struct LxTbDetector {
         }
       }
 
-      if (0 != bestChain)
-        detector.recoTracks.push_back(new LxTBMLFinder::Chain(*bestChain));
+      if (0 != bestChain) detector.recoTracks.push_back(new LxTBMLFinder::Chain(*bestChain));
     }
   };
 
@@ -822,12 +714,11 @@ struct LxTbDetector {
 
 #ifdef LXTB_DEBUG
   struct Debug {
-    void operator()(LxTbBinnedPoint& point) {
+    void operator()(LxTbBinnedPoint& point)
+    {
       cout << "Point Point Point!!!" << endl;
 
-      for (list<LxTbBinnedTriplet*>::iterator i = point.triplets.begin();
-           i != point.triplets.end();
-           ++i)
+      for (list<LxTbBinnedTriplet*>::iterator i = point.triplets.begin(); i != point.triplets.end(); ++i)
         cout << "Triplet Triplet Triplet!!!" << endl;
     }
   };
@@ -835,7 +726,8 @@ struct LxTbDetector {
   Debug debug;
 #endif  //LXTB_DEBUG
 
-  void Reconstruct() {
+  void Reconstruct()
+  {
     for (int i = LAST_STATION; i >= 0; --i) {
       LxTbMLStation& rStation = fStations[i];
       rStation.Reconstruct();
@@ -874,7 +766,9 @@ LxTBMLFinder::LxTBMLFinder()
   , fNofXBins(20)
   , fNofYBins(20)
   , fNofTBins(fIsEvByEv ? 5 : 1000)
-  , fNEvents(1000) {}
+  , fNEvents(1000)
+{
+}
 
 #ifdef LXTB_DEBUG
 TH1F* deltaXRHisto[NOF_STATIONS];
@@ -886,7 +780,8 @@ TH1F* deltaYLHisto[NOF_STATIONS];
 TH1F* deltaTLHisto[NOF_STATIONS];
 #endif  //LXTB_DEBUG
 
-InitStatus LxTBMLFinder::Init() {
+InitStatus LxTBMLFinder::Init()
+{
 #ifdef LXTB_DEBUG
   gMCTracks = &fMCTracks;
 #endif  //LXTB_DEBUG
@@ -898,21 +793,18 @@ InitStatus LxTBMLFinder::Init() {
 
   if (nofEventsInFile < fNEvents) fNEvents = nofEventsInFile;
 
-  LxTbDetector* pReconstructor =
-    new LxTbDetector(fNofXBins, fNofYBins, fNofTBins);
-  fReconstructor = pReconstructor;
+  LxTbDetector* pReconstructor = new LxTbDetector(fNofXBins, fNofYBins, fNofTBins);
+  fReconstructor               = pReconstructor;
   pReconstructor->Init();
 
   fMuchPixelHits = static_cast<TClonesArray*>(ioman->GetObject("MuchPixelHit"));
 
 #ifdef LXTB_QA
-  CbmMCDataManager* mcManager =
-    static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
-  fMuchMCPoints = mcManager->InitBranch("MuchPoint");
-  fMuchClusters = static_cast<TClonesArray*>(ioman->GetObject("MuchCluster"));
-  fMuchPixelDigiMatches =
-    static_cast<TClonesArray*>(ioman->GetObject("MuchDigiMatch"));
-  CbmMCDataArray* mcTracks = mcManager->InitBranch("MCTrack");
+  CbmMCDataManager* mcManager = static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  fMuchMCPoints               = mcManager->InitBranch("MuchPoint");
+  fMuchClusters               = static_cast<TClonesArray*>(ioman->GetObject("MuchCluster"));
+  fMuchPixelDigiMatches       = static_cast<TClonesArray*>(ioman->GetObject("MuchDigiMatch"));
+  CbmMCDataArray* mcTracks    = mcManager->InitBranch("MCTrack");
 
   for (int i = 0; i < fNEvents; ++i) {
     Int_t evSize = mcTracks->Size(0, i);
@@ -926,16 +818,14 @@ InitStatus LxTBMLFinder::Init() {
 
     for (int j = 0; j < evSize; ++j) {
       evTracks.push_back(TrackDataHolder());
-      const CbmMCTrack* mcTrack =
-        static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, j));
+      const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, j));
 
       if (mcTrack->GetPdgCode() == 13 || mcTrack->GetPdgCode() == -13) {
         Double_t m     = mcTrack->GetMass();
         Int_t motherId = mcTrack->GetMotherId();
 
         if (motherId >= 0
-            && static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, motherId))
-                   ->GetPdgCode()
+            && static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, motherId))->GetPdgCode()
                  == pReconstructor->fSignalParticle->fPdgCode) {
           //const CbmMCTrack* motherTrack = static_cast<const CbmMCTrack*> (mcTracks->Get(0, i, motherId));
 
@@ -944,8 +834,7 @@ InitStatus LxTBMLFinder::Init() {
             evTracks.back().isSignal = true;
             evTracks.back().isPos    = mcTrack->GetPdgCode() == -13;
 
-            if (-13 == mcTrack->GetPdgCode())
-              posTrack = mcTrack;
+            if (-13 == mcTrack->GetPdgCode()) posTrack = mcTrack;
             else
               negTrack = mcTrack;
           }
@@ -970,33 +859,25 @@ InitStatus LxTBMLFinder::Init() {
     vector<PointDataHolder>& evPoints = fMuchPoints.back();
 
     for (int j = 0; j < evSize; ++j) {
-      const CbmMuchPoint* pMuchPt =
-        static_cast<const CbmMuchPoint*>(fMuchMCPoints->Get(0, i, j));
+      const CbmMuchPoint* pMuchPt = static_cast<const CbmMuchPoint*>(fMuchMCPoints->Get(0, i, j));
       PointDataHolder muchPt;
-      muchPt.x       = (pMuchPt->GetXIn() + pMuchPt->GetXOut()) / 2;
-      muchPt.y       = (pMuchPt->GetYIn() + pMuchPt->GetYOut()) / 2;
-      muchPt.t       = fEventTimes[i] + pMuchPt->GetTime();
-      muchPt.eventId = i;
-      muchPt.trackId = pMuchPt->GetTrackID();
-      muchPt.pointId = j;
-      muchPt.stationNumber =
-        CbmMuchGeoScheme::GetStationIndex(pMuchPt->GetDetectorId());
-      muchPt.layerNumber =
-        CbmMuchGeoScheme::GetLayerIndex(pMuchPt->GetDetectorId());
+      muchPt.x             = (pMuchPt->GetXIn() + pMuchPt->GetXOut()) / 2;
+      muchPt.y             = (pMuchPt->GetYIn() + pMuchPt->GetYOut()) / 2;
+      muchPt.t             = fEventTimes[i] + pMuchPt->GetTime();
+      muchPt.eventId       = i;
+      muchPt.trackId       = pMuchPt->GetTrackID();
+      muchPt.pointId       = j;
+      muchPt.stationNumber = CbmMuchGeoScheme::GetStationIndex(pMuchPt->GetDetectorId());
+      muchPt.layerNumber   = CbmMuchGeoScheme::GetLayerIndex(pMuchPt->GetDetectorId());
       evPoints.push_back(muchPt);
-      fMCTracks[muchPt.eventId][muchPt.trackId]
-        .pointInds[muchPt.stationNumber][muchPt.layerNumber] = muchPt.pointId;
+      fMCTracks[muchPt.eventId][muchPt.trackId].pointInds[muchPt.stationNumber][muchPt.layerNumber] = muchPt.pointId;
     }
   }
 
-  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin();
-       i != fMCTracks.end();
-       ++i) {
+  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin(); i != fMCTracks.end(); ++i) {
     vector<TrackDataHolder>& evTracks = *i;
 
-    for (vector<TrackDataHolder>::iterator j = evTracks.begin();
-         j != evTracks.end();
-         ++j) {
+    for (vector<TrackDataHolder>::iterator j = evTracks.begin(); j != evTracks.end(); ++j) {
       TrackDataHolder& track = *j;
 
       if (!track.isSignal) continue;
@@ -1134,7 +1015,8 @@ static list<LxTbBinnedPoint> ts_points;
    };*/
 #endif  //LXTB_DEBUG
 
-void LxTBMLFinder::Exec(Option_t* opt) {
+void LxTBMLFinder::Exec(Option_t* opt)
+{
 #ifdef LXTB_DEBUG
   debugTracks2.clear();
 #endif  //LXTB_DEBUG
@@ -1143,43 +1025,38 @@ void LxTBMLFinder::Exec(Option_t* opt) {
   pReconstructor->SetMinT(tsStartTime);
 
   for (int i = 0; i < fMuchPixelHits->GetEntriesFast(); ++i) {
-    const CbmMuchPixelHit* hit =
-      static_cast<const CbmMuchPixelHit*>(fMuchPixelHits->At(i));
-    Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(hit->GetAddress());
-    Int_t layerNumber   = CbmMuchGeoScheme::GetLayerIndex(hit->GetAddress());
-    scaltype x          = hit->GetX();
-    scaltype y          = hit->GetY();
-    timetype t          = hit->GetTime();
-    scaltype dx         = hit->GetDx();
-    scaltype dy         = hit->GetDy();
-    timetype dt         = 4;  //hit->GetTimeError();
-    LxTbBinnedPoint point(
-      x, dx, y, dy, t, dt, i, LAST_STATION == stationNumber);
+    const CbmMuchPixelHit* hit = static_cast<const CbmMuchPixelHit*>(fMuchPixelHits->At(i));
+    Int_t stationNumber        = CbmMuchGeoScheme::GetStationIndex(hit->GetAddress());
+    Int_t layerNumber          = CbmMuchGeoScheme::GetLayerIndex(hit->GetAddress());
+    scaltype x                 = hit->GetX();
+    scaltype y                 = hit->GetY();
+    timetype t                 = hit->GetTime();
+    scaltype dx                = hit->GetDx();
+    scaltype dy                = hit->GetDy();
+    timetype dt                = 4;  //hit->GetTimeError();
+    LxTbBinnedPoint point(x, dx, y, dy, t, dt, i, LAST_STATION == stationNumber);
 #ifdef LXTB_QA
-    point.isTrd         = false;
-    point.stationNumber = stationNumber;
-    point.layerNumber   = layerNumber;
-    Int_t clusterId     = hit->GetRefId();
-    const CbmCluster* cluster =
-      static_cast<const CbmCluster*>(fMuchClusters->At(clusterId));
-    Int_t nDigis = cluster->GetNofDigis();
-    double avT   = 0;
+    point.isTrd               = false;
+    point.stationNumber       = stationNumber;
+    point.layerNumber         = layerNumber;
+    Int_t clusterId           = hit->GetRefId();
+    const CbmCluster* cluster = static_cast<const CbmCluster*>(fMuchClusters->At(clusterId));
+    Int_t nDigis              = cluster->GetNofDigis();
+    double avT                = 0;
 #ifdef LXTB_EMU_TS
     double avTErr = 0;
 #endif  //LXTB_EMU_TS
     int nofT = 0;
 
     for (Int_t j = 0; j < nDigis; ++j) {
-      const CbmMatch* digiMatch = static_cast<const CbmMatch*>(
-        fMuchPixelDigiMatches->At(cluster->GetDigi(j)));
-      Int_t nMCs = digiMatch->GetNofLinks();
+      const CbmMatch* digiMatch = static_cast<const CbmMatch*>(fMuchPixelDigiMatches->At(cluster->GetDigi(j)));
+      Int_t nMCs                = digiMatch->GetNofLinks();
 
       for (Int_t k = 0; k < nMCs; ++k) {
-        const CbmLink& lnk       = digiMatch->GetLink(k);
-        Int_t eventId            = fIsEvByEv ? currentEventN : lnk.GetEntry();
-        Int_t pointId            = lnk.GetIndex();
-        const FairMCPoint* pMCPt = static_cast<const FairMCPoint*>(
-          fMuchMCPoints->Get(0, eventId, pointId));
+        const CbmLink& lnk                = digiMatch->GetLink(k);
+        Int_t eventId                     = fIsEvByEv ? currentEventN : lnk.GetEntry();
+        Int_t pointId                     = lnk.GetIndex();
+        const FairMCPoint* pMCPt          = static_cast<const FairMCPoint*>(fMuchMCPoints->Get(0, eventId, pointId));
         Int_t trackId                     = pMCPt->GetTrackID();
         LxTbBinnedPoint::PointDesc ptDesc = {eventId, pointId, trackId};
         point.mcRefs.push_back(ptDesc);
@@ -1221,48 +1098,31 @@ void LxTBMLFinder::Exec(Option_t* opt) {
 
     if (LAST_STATION == stationNumber && LAST_LAYER == layerNumber) qq += 10;
 #endif  //LXTB_DEBUG
-    scaltype minY =
-      pReconstructor->fStations[stationNumber].fLayers[layerNumber].minY;
-    scaltype binSizeY =
-      pReconstructor->fStations[stationNumber].fLayers[layerNumber].yBinLength;
-    int lastYBin = (pReconstructor->fStations[stationNumber]
-                      .fLayers[layerNumber]
-                      .lastYBinNumber);
-    scaltype minX =
-      pReconstructor->fStations[stationNumber].fLayers[layerNumber].minX;
-    scaltype binSizeX =
-      pReconstructor->fStations[stationNumber].fLayers[layerNumber].xBinLength;
-    int lastXBin = pReconstructor->fStations[stationNumber]
-                     .fLayers[layerNumber]
-                     .lastXBinNumber;
-    int last_timebin = pReconstructor->fStations[stationNumber]
-                         .fLayers[layerNumber]
-                         .lastTimeBinNumber;
+    scaltype minY     = pReconstructor->fStations[stationNumber].fLayers[layerNumber].minY;
+    scaltype binSizeY = pReconstructor->fStations[stationNumber].fLayers[layerNumber].yBinLength;
+    int lastYBin      = (pReconstructor->fStations[stationNumber].fLayers[layerNumber].lastYBinNumber);
+    scaltype minX     = pReconstructor->fStations[stationNumber].fLayers[layerNumber].minX;
+    scaltype binSizeX = pReconstructor->fStations[stationNumber].fLayers[layerNumber].xBinLength;
+    int lastXBin      = pReconstructor->fStations[stationNumber].fLayers[layerNumber].lastXBinNumber;
+    int last_timebin  = pReconstructor->fStations[stationNumber].fLayers[layerNumber].lastTimeBinNumber;
 
-    int tInd =
-      (t - pReconstructor->fStations[stationNumber].fLayers[layerNumber].minT)
-      / TIMEBIN_LENGTH;
+    int tInd = (t - pReconstructor->fStations[stationNumber].fLayers[layerNumber].minT) / TIMEBIN_LENGTH;
 
-    if (tInd < 0)
-      tInd = 0;
+    if (tInd < 0) tInd = 0;
     else if (tInd > last_timebin)
       tInd = last_timebin;
 
-    LxTbTYXBin& tyxBin = pReconstructor->fStations[stationNumber]
-                           .fLayers[layerNumber]
-                           .tyxBins[tInd];
-    int yInd = (y - minY) / binSizeY;
+    LxTbTYXBin& tyxBin = pReconstructor->fStations[stationNumber].fLayers[layerNumber].tyxBins[tInd];
+    int yInd           = (y - minY) / binSizeY;
 
-    if (yInd < 0)
-      yInd = 0;
+    if (yInd < 0) yInd = 0;
     else if (yInd > lastYBin)
       yInd = lastYBin;
 
     LxTbYXBin& yxBin = tyxBin.yxBins[yInd];
     int xInd         = (x - minX) / binSizeX;
 
-    if (xInd < 0)
-      xInd = 0;
+    if (xInd < 0) xInd = 0;
     else if (xInd > lastXBin)
       xInd = lastXBin;
 
@@ -1274,15 +1134,14 @@ void LxTBMLFinder::Exec(Option_t* opt) {
       yxBin.use  = true;
       tyxBin.use = true;
 
-      if (0 == layerNumber)
-        xBin.use = true;
+      if (0 == layerNumber) xBin.use = true;
       else if (1 == layerNumber)
         xBin.use = true;
       else if (2 == layerNumber)
         xBin.use = true;
     }
 #endif  //LXTB_EMU_TS
-  }     // for (int i = 0; i < fMuchPixelHits->GetEntriesFast(); ++i)
+  }  // for (int i = 0; i < fMuchPixelHits->GetEntriesFast(); ++i)
 
 #ifdef LXTB_DEBUG
   struct DebugTrack {
@@ -1304,22 +1163,14 @@ void LxTBMLFinder::Exec(Option_t* opt) {
           for (int m = 0; m < layer.nofXBins; ++m) {
             LxTbXBin& xBin = yxBin.xBins[m];
 
-            for (std::list<LxTbBinnedPoint>::iterator n = xBin.points.begin();
-                 n != xBin.points.end();
-                 ++n) {
+            for (std::list<LxTbBinnedPoint>::iterator n = xBin.points.begin(); n != xBin.points.end(); ++n) {
               LxTbBinnedPoint& point = *n;
 
-              for (list<LxTbBinnedPoint::PointDesc>::const_iterator o =
-                     point.mcRefs.begin();
-                   o != point.mcRefs.end();
+              for (list<LxTbBinnedPoint::PointDesc>::const_iterator o = point.mcRefs.begin(); o != point.mcRefs.end();
                    ++o) {
                 const LxTbBinnedPoint::PointDesc& pd = *o;
-                debugTracks[pd.trackId]
-                  .pointIds[point.stationNumber][point.layerNumber]
-                  .push_back(pd.pointId);
-                debugTracks2[pd.trackId]
-                  .points[point.stationNumber][point.layerNumber]
-                  .push_back(&point);
+                debugTracks[pd.trackId].pointIds[point.stationNumber][point.layerNumber].push_back(pd.pointId);
+                debugTracks2[pd.trackId].points[point.stationNumber][point.layerNumber].push_back(&point);
               }
             }
           }
@@ -1353,9 +1204,9 @@ void LxTBMLFinder::Exec(Option_t* opt) {
     };
 
     struct TrLess {
-      bool operator()(const Triplet& a, const Triplet& b) const {
-        if (a.left < b.left)
-          return true;
+      bool operator()(const Triplet& a, const Triplet& b) const
+      {
+        if (a.left < b.left) return true;
         else if (a.middle < b.middle)
           return true;
         else if (a.right < b.right)
@@ -1368,51 +1219,39 @@ void LxTBMLFinder::Exec(Option_t* opt) {
     map<Triplet, bool, TrLess> triplets[NOF_STATIONS];
     int stationNumber;
 
-    explicit Debug(vector<TrackDataHolder>& mcTracks) : stationNumber(-1) {
-      for (vector<TrackDataHolder>::const_iterator i = mcTracks.begin();
-           i != mcTracks.end();
-           ++i) {
+    explicit Debug(vector<TrackDataHolder>& mcTracks) : stationNumber(-1)
+    {
+      for (vector<TrackDataHolder>::const_iterator i = mcTracks.begin(); i != mcTracks.end(); ++i) {
         const TrackDataHolder& track = *i;
 
         if (!track.isSignal) continue;
 
         for (int j = 0; j < NOF_STATIONS; ++j) {
-          Triplet trip(track.pointInds[j][0],
-                       track.pointInds[j][1],
-                       track.pointInds[j][2]);
+          Triplet trip(track.pointInds[j][0], track.pointInds[j][1], track.pointInds[j][2]);
           triplets[j][trip] = false;
         }
       }
     }
 
-    void operator()(const LxTbBinnedPoint& point) {
+    void operator()(const LxTbBinnedPoint& point)
+    {
       if (!point.use) return;
 
-      for (list<LxTbBinnedTriplet*>::const_iterator i = point.triplets.begin();
-           i != point.triplets.end();
-           ++i) {
+      for (list<LxTbBinnedTriplet*>::const_iterator i = point.triplets.begin(); i != point.triplets.end(); ++i) {
         LxTbBinnedTriplet* trip = *i;
 
-        for (list<LxTbBinnedPoint::PointDesc>::const_iterator j =
-               point.mcRefs.begin();
-             j != point.mcRefs.end();
-             ++j) {
+        for (list<LxTbBinnedPoint::PointDesc>::const_iterator j = point.mcRefs.begin(); j != point.mcRefs.end(); ++j) {
           Int_t mId = j->pointId;
 
-          for (list<LxTbBinnedPoint::PointDesc>::const_iterator k =
-                 trip->rPoint->mcRefs.begin();
-               k != trip->rPoint->mcRefs.end();
-               ++k) {
+          for (list<LxTbBinnedPoint::PointDesc>::const_iterator k = trip->rPoint->mcRefs.begin();
+               k != trip->rPoint->mcRefs.end(); ++k) {
             Int_t rId = k->pointId;
 
-            for (list<LxTbBinnedPoint::PointDesc>::const_iterator l =
-                   trip->lPoint->mcRefs.begin();
-                 l != trip->lPoint->mcRefs.end();
-                 ++l) {
+            for (list<LxTbBinnedPoint::PointDesc>::const_iterator l = trip->lPoint->mcRefs.begin();
+                 l != trip->lPoint->mcRefs.end(); ++l) {
               Int_t lId = l->pointId;
               Triplet mcTrip(lId, mId, rId);
-              map<Triplet, bool, TrLess>::iterator iter =
-                triplets[stationNumber].find(mcTrip);
+              map<Triplet, bool, TrLess>::iterator iter = triplets[stationNumber].find(mcTrip);
 
               if (iter != triplets[stationNumber].end()) iter->second = true;
             }
@@ -1477,44 +1316,32 @@ void LxTBMLFinder::Exec(Option_t* opt) {
       }
    }*/
 
-  for (map<Int_t, DebugTrack2>::const_iterator i = debugTracks2.begin();
-       i != debugTracks2.end();
-       ++i) {
+  for (map<Int_t, DebugTrack2>::const_iterator i = debugTracks2.begin(); i != debugTracks2.end(); ++i) {
     const DebugTrack2& dt = i->second;
 
     for (int j = 0; j < NOF_STATIONS; ++j) {
-      scaltype deltaZr = pReconstructor->fStations[j].fLayers[2].z
-                         - pReconstructor->fStations[j].fLayers[1].z;
-      scaltype deltaZl = pReconstructor->fStations[j].fLayers[0].z
-                         - pReconstructor->fStations[j].fLayers[1].z;
+      scaltype deltaZr = pReconstructor->fStations[j].fLayers[2].z - pReconstructor->fStations[j].fLayers[1].z;
+      scaltype deltaZl = pReconstructor->fStations[j].fLayers[0].z - pReconstructor->fStations[j].fLayers[1].z;
 
-      for (list<LxTbBinnedPoint*>::const_iterator k = dt.points[j][1].begin();
-           k != dt.points[j][1].end();
-           ++k) {
+      for (list<LxTbBinnedPoint*>::const_iterator k = dt.points[j][1].begin(); k != dt.points[j][1].end(); ++k) {
         LxTbBinnedPoint* mPt = *k;
-        scaltype rTx      = mPt->x / pReconstructor->fStations[j].fLayers[1].z;
-        scaltype rTy      = mPt->y / pReconstructor->fStations[j].fLayers[1].z;
-        scaltype rX       = mPt->x + rTx * deltaZr;
-        scaltype rY       = mPt->y + rTy * deltaZr;
-        scaltype trajLenR = sqrt(1 + rTx * rTx + rTy * rTy) * deltaZr;
-        timetype rT =
-          mPt->t + 1.e9 * trajLenR / speedOfLight;  // 1.e9 to convert to ns.
+        scaltype rTx         = mPt->x / pReconstructor->fStations[j].fLayers[1].z;
+        scaltype rTy         = mPt->y / pReconstructor->fStations[j].fLayers[1].z;
+        scaltype rX          = mPt->x + rTx * deltaZr;
+        scaltype rY          = mPt->y + rTy * deltaZr;
+        scaltype trajLenR    = sqrt(1 + rTx * rTx + rTy * rTy) * deltaZr;
+        timetype rT          = mPt->t + 1.e9 * trajLenR / speedOfLight;  // 1.e9 to convert to ns.
 
-        for (list<LxTbBinnedPoint*>::const_iterator l = dt.points[j][2].begin();
-             l != dt.points[j][2].end();
-             ++l) {
+        for (list<LxTbBinnedPoint*>::const_iterator l = dt.points[j][2].begin(); l != dt.points[j][2].end(); ++l) {
           LxTbBinnedPoint* rPt = *l;
-          scaltype wXr =
-            NOF_SIGMAS
-            * sqrt(pReconstructor->fStations[j].fHandleMPoint.scatXRL
-                     * pReconstructor->fStations[j].fHandleMPoint.scatXRL
-                   + mPt->dx * mPt->dx + rPt->dx * rPt->dx);
+          scaltype wXr         = NOF_SIGMAS
+                         * sqrt(pReconstructor->fStations[j].fHandleMPoint.scatXRL
+                                  * pReconstructor->fStations[j].fHandleMPoint.scatXRL
+                                + mPt->dx * mPt->dx + rPt->dx * rPt->dx);
           scaltype wYr = NOF_SIGMAS
-                         * sqrt(pReconstructor->fStations[j].fScatYRL
-                                  * pReconstructor->fStations[j].fScatYRL
+                         * sqrt(pReconstructor->fStations[j].fScatYRL * pReconstructor->fStations[j].fScatYRL
                                 + mPt->dy * mPt->dy + rPt->dy * rPt->dy);
-          scaltype wTr =
-            NOF_SIGMAS * sqrt(mPt->dt * mPt->dt + rPt->dt * rPt->dt);
+          scaltype wTr = NOF_SIGMAS * sqrt(mPt->dt * mPt->dt + rPt->dt * rPt->dt);
           deltaXRHisto[j]->Fill(rPt->x - rX);
           deltaYRHisto[j]->Fill(rPt->y - rY);
           deltaTRHisto[j]->Fill(rPt->t - rT);
@@ -1527,35 +1354,22 @@ void LxTBMLFinder::Exec(Option_t* opt) {
             if (abs(rPt->t - rT) > wTr) ++nofOverTR;
           }
 
-          for (list<LxTbBinnedPoint*>::const_iterator m =
-                 dt.points[j][0].begin();
-               m != dt.points[j][0].end();
-               ++m) {
+          for (list<LxTbBinnedPoint*>::const_iterator m = dt.points[j][0].begin(); m != dt.points[j][0].end(); ++m) {
             LxTbBinnedPoint* lPt = *m;
-            scaltype wXl =
-              NOF_SIGMAS
-              * sqrt(pReconstructor->fStations[j].fHandleRPoint.scatXLL
-                       * pReconstructor->fStations[j].fHandleRPoint.scatXLL
-                     + mPt->dx * mPt->dx + rPt->dx * rPt->dx
-                     + lPt->dx * lPt->dx);
-            scaltype wYl =
-              NOF_SIGMAS
-              * sqrt(mPt->dy * mPt->dy + rPt->dy * rPt->dy + lPt->dy * lPt->dy);
-            scaltype wTl =
-              NOF_SIGMAS * sqrt(mPt->dt * mPt->dt + lPt->dt * lPt->dt);
+            scaltype wXl         = NOF_SIGMAS
+                           * sqrt(pReconstructor->fStations[j].fHandleRPoint.scatXLL
+                                    * pReconstructor->fStations[j].fHandleRPoint.scatXLL
+                                  + mPt->dx * mPt->dx + rPt->dx * rPt->dx + lPt->dx * lPt->dx);
+            scaltype wYl = NOF_SIGMAS * sqrt(mPt->dy * mPt->dy + rPt->dy * rPt->dy + lPt->dy * lPt->dy);
+            scaltype wTl = NOF_SIGMAS * sqrt(mPt->dt * mPt->dt + lPt->dt * lPt->dt);
             scaltype lTx = (rPt->x - mPt->x)
-                           / (pReconstructor->fStations[j].fLayers[2].z
-                              - pReconstructor->fStations[j].fLayers[1].z);
+                           / (pReconstructor->fStations[j].fLayers[2].z - pReconstructor->fStations[j].fLayers[1].z);
             scaltype lTy = (rPt->y - mPt->y)
-                           / (pReconstructor->fStations[j].fLayers[2].z
-                              - pReconstructor->fStations[j].fLayers[1].z);
+                           / (pReconstructor->fStations[j].fLayers[2].z - pReconstructor->fStations[j].fLayers[1].z);
             scaltype lX       = mPt->x + lTx * deltaZl;
             scaltype lY       = mPt->y + lTy * deltaZl;
             scaltype trajLenL = sqrt(1 + lTx * lTx + lTy * lTy) * deltaZl;
-            timetype lT =
-              mPt->t
-              + 1.e9 * trajLenL
-                  / speedOfLight;  // 1.e9 to convert to ns and trajLenL is negative.
+            timetype lT = mPt->t + 1.e9 * trajLenL / speedOfLight;  // 1.e9 to convert to ns and trajLenL is negative.
             deltaXLHisto[j]->Fill(lPt->x - lX);
             deltaYLHisto[j]->Fill(lPt->y - lY);
             deltaTLHisto[j]->Fill(lPt->t - lT);
@@ -1590,39 +1404,32 @@ void LxTBMLFinder::Exec(Option_t* opt) {
 
     nofTriplesAll[i] += debug.triplets[i].size();
 
-    for (map<Debug::Triplet, bool, Debug::TrLess>::const_iterator j =
-           debug.triplets[i].begin();
-         j != debug.triplets[i].end();
-         ++j) {
+    for (map<Debug::Triplet, bool, Debug::TrLess>::const_iterator j = debug.triplets[i].begin();
+         j != debug.triplets[i].end(); ++j) {
       if (j->second) ++nofTriplesFound[i];
     }
 
     double foundPerc = 100 * nofTriplesFound[i];
     foundPerc /= nofTriplesAll[i];
-    cout << "For station #:" << i << " found triplets: " << foundPerc << " ( "
-         << nofTriplesFound[i] << " / " << nofTriplesAll[i] << " )" << endl;
+    cout << "For station #:" << i << " found triplets: " << foundPerc << " ( " << nofTriplesFound[i] << " / "
+         << nofTriplesAll[i] << " )" << endl;
   }
 #endif  //LXTB_DEBUG
 
-  cout << "In event #" << currentEventN
-       << " reconstructed: " << pReconstructor->recoTracks.size() << " tracks"
-       << endl;
+  cout << "In event #" << currentEventN << " reconstructed: " << pReconstructor->recoTracks.size() << " tracks" << endl;
 
   static int nofSignals     = 0;
   static int nofRecoSignals = 0;
   bool hasPos               = false;
   bool hasNeg               = false;
 
-  for (vector<TrackDataHolder>::const_iterator i =
-         fMCTracks[currentEventN].begin();
-       i != fMCTracks[currentEventN].end();
-       ++i) {
+  for (vector<TrackDataHolder>::const_iterator i = fMCTracks[currentEventN].begin();
+       i != fMCTracks[currentEventN].end(); ++i) {
     const TrackDataHolder& dh = *i;
 
     if (!dh.isSignal) continue;
 
-    if (dh.isPos)
-      hasPos = true;
+    if (dh.isPos) hasPos = true;
     else
       hasNeg = true;
   }
@@ -1632,14 +1439,12 @@ void LxTBMLFinder::Exec(Option_t* opt) {
   bool hasPos2 = false;
   bool hasNeg2 = false;
 
-  for (list<Chain*>::const_iterator i = pReconstructor->recoTracks.begin();
-       i != pReconstructor->recoTracks.end();
+  for (list<Chain*>::const_iterator i = pReconstructor->recoTracks.begin(); i != pReconstructor->recoTracks.end();
        ++i) {
     const Chain* track = *i;
 
     if ((track->points[0][2]->x - track->points[0][0]->x)
-            / (pReconstructor->fStations[0].fLayers[2].z
-               - pReconstructor->fStations[0].fLayers[0].z)
+            / (pReconstructor->fStations[0].fLayers[2].z - pReconstructor->fStations[0].fLayers[0].z)
           - track->points[0][1]->x / pReconstructor->fStations[0].fLayers[1].z
         > 0)
       hasPos2 = true;
@@ -1654,8 +1459,7 @@ void LxTBMLFinder::Exec(Option_t* opt) {
   }
 
   cout << "The number of triggerings: " << nofTriggerings << endl;
-  cout << "The triggering efficiency: "
-       << (0 == nofSignals ? 100 : 100 * nofRecoSignals / nofSignals) << " % ( "
+  cout << "The triggering efficiency: " << (0 == nofSignals ? 100 : 100 * nofRecoSignals / nofSignals) << " % ( "
        << nofRecoSignals << " / " << nofSignals << " )" << endl;
 
   recoTracks.splice(recoTracks.end(), pReconstructor->recoTracks);
@@ -1671,14 +1475,16 @@ struct RecoTrackData {
 };
 
 struct RTDLess {
-  bool operator()(const RecoTrackData& x, const RecoTrackData& y) const {
+  bool operator()(const RecoTrackData& x, const RecoTrackData& y) const
+  {
     if (x.eventId < y.eventId) return true;
 
     return x.trackId < y.trackId;
   }
 };
 
-static void SaveHisto(TH1* histo) {
+static void SaveHisto(TH1* histo)
+{
   TFile* curFile    = TFile::CurrentFile();
   TString histoName = histo->GetName();
   histoName += ".root";
@@ -1689,54 +1495,43 @@ static void SaveHisto(TH1* histo) {
   TFile::CurrentFile() = curFile;
 }
 
-void LxTBMLFinder::Finish() {
+void LxTBMLFinder::Finish()
+{
 #ifdef LXTB_EMU_TS
   Double_t tCoeff = TIMEBIN_LENGTH * nof_timebins / (max_ts_time - min_ts_time);
 
-  for (list<LxTbBinnedPoint>::iterator i = ts_points.begin();
-       i != ts_points.end();
-       ++i) {
+  for (list<LxTbBinnedPoint>::iterator i = ts_points.begin(); i != ts_points.end(); ++i) {
     LxTbBinnedPoint& point = *i;
     point.t                = (point.t - min_ts_time) * tCoeff;
     point.dt *= tCoeff;
 
     bool isTrd          = point.isTrd;
     Int_t stationNumber = point.stationNumber;
-    scaltype minY       = (isTrd ? fFinder->trdStation.minY
-                           : fFinder->stations[stationNumber].minY);
-    scaltype binSizeY   = (isTrd ? fFinder->trdStation.binSizeY
-                               : fFinder->stations[stationNumber].binSizeY);
-    int lastYBin        = (isTrd ? fFinder->trdStation.lastYBin
-                          : fFinder->stations[stationNumber].lastYBin);
-    scaltype minX       = (isTrd ? fFinder->trdStation.minX
-                           : fFinder->stations[stationNumber].minX);
-    scaltype binSizeX   = (isTrd ? fFinder->trdStation.binSizeX
-                               : fFinder->stations[stationNumber].binSizeX);
-    int lastXBin        = (isTrd ? fFinder->trdStation.lastXBin
-                          : fFinder->stations[stationNumber].lastXBin);
+    scaltype minY       = (isTrd ? fFinder->trdStation.minY : fFinder->stations[stationNumber].minY);
+    scaltype binSizeY   = (isTrd ? fFinder->trdStation.binSizeY : fFinder->stations[stationNumber].binSizeY);
+    int lastYBin        = (isTrd ? fFinder->trdStation.lastYBin : fFinder->stations[stationNumber].lastYBin);
+    scaltype minX       = (isTrd ? fFinder->trdStation.minX : fFinder->stations[stationNumber].minX);
+    scaltype binSizeX   = (isTrd ? fFinder->trdStation.binSizeX : fFinder->stations[stationNumber].binSizeX);
+    int lastXBin        = (isTrd ? fFinder->trdStation.lastXBin : fFinder->stations[stationNumber].lastXBin);
 
     int tInd = (point.t - fFinder->minT) / CUR_TIMEBIN_LENGTH;
 
-    if (tInd < 0)
-      tInd = 0;
+    if (tInd < 0) tInd = 0;
     else if (tInd > last_timebin)
       tInd = last_timebin;
 
     LxTbTYXBin& tyxBin =
-      (isTrd ? fFinder->trdStation.tyxBinsArr[stationNumber][tInd]
-             : fFinder->stations[stationNumber].tyxBins[tInd]);
+      (isTrd ? fFinder->trdStation.tyxBinsArr[stationNumber][tInd] : fFinder->stations[stationNumber].tyxBins[tInd]);
     int yInd = (point.y - minY) / binSizeY;
 
-    if (yInd < 0)
-      yInd = 0;
+    if (yInd < 0) yInd = 0;
     else if (yInd > lastYBin)
       yInd = lastYBin;
 
     LxTbYXBin& yxBin = tyxBin.yxBins[yInd];
     int xInd         = (point.x - minX) / binSizeX;
 
-    if (xInd < 0)
-      xInd = 0;
+    if (xInd < 0) xInd = 0;
     else if (xInd > lastXBin)
       xInd = lastXBin;
 
@@ -1756,16 +1551,12 @@ void LxTBMLFinder::Finish() {
 
   fFinder->Reconstruct();
 
-  for (list<timetype>::iterator i = shortSignalMCTimes.begin();
-       i != shortSignalMCTimes.end();
-       ++i) {
+  for (list<timetype>::iterator i = shortSignalMCTimes.begin(); i != shortSignalMCTimes.end(); ++i) {
     timetype& v = *i;
     v           = (v - min_ts_time) * tCoeff;
   }
 
-  for (list<timetype>::iterator i = longSignalMCTimes.begin();
-       i != longSignalMCTimes.end();
-       ++i) {
+  for (list<timetype>::iterator i = longSignalMCTimes.begin(); i != longSignalMCTimes.end(); ++i) {
     timetype& v = *i;
     v           = (v - min_ts_time) * tCoeff;
   }
@@ -1773,50 +1564,33 @@ void LxTBMLFinder::Finish() {
   for (int i = 0; i < fFinder->nofTrackBins; ++i) {
     list<LxTbBinnedFinder::Chain*>& recoTracksBin = fFinder->recoTracks[i];
 
-    for (list<LxTbBinnedFinder::Chain*>::const_iterator j =
-           recoTracksBin.begin();
-         j != recoTracksBin.end();
-         ++j)
+    for (list<LxTbBinnedFinder::Chain*>::const_iterator j = recoTracksBin.begin(); j != recoTracksBin.end(); ++j)
       recoTracks.push_back(*j);
   }
 
-  SpliceTriggerings(triggerTimes_trd0_sign0_dist0,
-                    fFinder->triggerTimes_trd0_sign0_dist0);
-  SpliceTriggerings(triggerTimes_trd0_sign0_dist1,
-                    fFinder->triggerTimes_trd0_sign0_dist1);
-  SpliceTriggerings(triggerTimes_trd0_sign1_dist0,
-                    fFinder->triggerTimes_trd0_sign1_dist0);
-  SpliceTriggerings(triggerTimes_trd0_sign1_dist1,
-                    fFinder->triggerTimes_trd0_sign1_dist1);
-  SpliceTriggerings(triggerTimes_trd1_sign0_dist0,
-                    fFinder->triggerTimes_trd1_sign0_dist0);
-  SpliceTriggerings(triggerTimes_trd1_sign0_dist1,
-                    fFinder->triggerTimes_trd1_sign0_dist1);
-  SpliceTriggerings(triggerTimes_trd1_sign1_dist0,
-                    fFinder->triggerTimes_trd1_sign1_dist0);
-  SpliceTriggerings(triggerTimes_trd1_sign1_dist1,
-                    fFinder->triggerTimes_trd1_sign1_dist1);
+  SpliceTriggerings(triggerTimes_trd0_sign0_dist0, fFinder->triggerTimes_trd0_sign0_dist0);
+  SpliceTriggerings(triggerTimes_trd0_sign0_dist1, fFinder->triggerTimes_trd0_sign0_dist1);
+  SpliceTriggerings(triggerTimes_trd0_sign1_dist0, fFinder->triggerTimes_trd0_sign1_dist0);
+  SpliceTriggerings(triggerTimes_trd0_sign1_dist1, fFinder->triggerTimes_trd0_sign1_dist1);
+  SpliceTriggerings(triggerTimes_trd1_sign0_dist0, fFinder->triggerTimes_trd1_sign0_dist0);
+  SpliceTriggerings(triggerTimes_trd1_sign0_dist1, fFinder->triggerTimes_trd1_sign0_dist1);
+  SpliceTriggerings(triggerTimes_trd1_sign1_dist0, fFinder->triggerTimes_trd1_sign1_dist0);
+  SpliceTriggerings(triggerTimes_trd1_sign1_dist1, fFinder->triggerTimes_trd1_sign1_dist1);
 #endif  //LXTB_EMU_TS
-  cout << "LxTbBinnedFinder::Reconstruct() full duration was: " << fullDuration
-       << endl;
+  cout << "LxTbBinnedFinder::Reconstruct() full duration was: " << fullDuration << endl;
 
   int nofRecoTracks = recoTracks.size();
-  cout << "LxTbBinnedFinder::Reconstruct() the number of found tracks: "
-       << nofRecoTracks << endl;
+  cout << "LxTbBinnedFinder::Reconstruct() the number of found tracks: " << nofRecoTracks << endl;
 
 #ifdef LXTB_QA
   static int nofSignalTracks     = 0;
   static int nofRecoSignalTracks = 0;
   int eventN                     = 0;
 
-  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin();
-       i != fMCTracks.end();
-       ++i) {
+  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin(); i != fMCTracks.end(); ++i) {
     vector<TrackDataHolder>& evTracks = *i;
 
-    for (vector<TrackDataHolder>::iterator j = evTracks.begin();
-         j != evTracks.end();
-         ++j) {
+    for (vector<TrackDataHolder>::iterator j = evTracks.begin(); j != evTracks.end(); ++j) {
       TrackDataHolder& track = *j;
 
       if (!track.isSignal) continue;
@@ -1825,19 +1599,15 @@ void LxTBMLFinder::Finish() {
 
       int nofMatchPoints = 0;
 
-      for (list<Chain*>::const_iterator k = recoTracks.begin();
-           k != recoTracks.end();
-           ++k) {
+      for (list<Chain*>::const_iterator k = recoTracks.begin(); k != recoTracks.end(); ++k) {
         const Chain* chain = *k;
 
         for (int l = 0; l < NOF_STATIONS; ++l) {
           for (int m = 0; m < NOF_LAYERS; ++m) {
             bool pointsMatched = false;
 
-            for (list<LxTbBinnedPoint::PointDesc>::const_iterator n =
-                   chain->points[l][m]->mcRefs.begin();
-                 n != chain->points[l][m]->mcRefs.end();
-                 ++n) {
+            for (list<LxTbBinnedPoint::PointDesc>::const_iterator n = chain->points[l][m]->mcRefs.begin();
+                 n != chain->points[l][m]->mcRefs.end(); ++n) {
               if (n->eventId == eventN && n->pointId == track.pointInds[l][m]) {
                 pointsMatched = true;
                 break;
@@ -1858,16 +1628,13 @@ void LxTBMLFinder::Finish() {
     ++eventN;
   }
 
-  double eff =
-    0 == nofSignalTracks ? 100 : 100.0 * nofRecoSignalTracks / nofSignalTracks;
-  cout << "Reconstruction efficiency is: " << eff << "% [ "
-       << nofRecoSignalTracks << " / " << nofSignalTracks << " ]" << endl;
+  double eff = 0 == nofSignalTracks ? 100 : 100.0 * nofRecoSignalTracks / nofSignalTracks;
+  cout << "Reconstruction efficiency is: " << eff << "% [ " << nofRecoSignalTracks << " / " << nofSignalTracks << " ]"
+       << endl;
 
   int nofRightRecoTracks = 0;
 
-  for (list<Chain*>::const_iterator i = recoTracks.begin();
-       i != recoTracks.end();
-       ++i) {
+  for (list<Chain*>::const_iterator i = recoTracks.begin(); i != recoTracks.end(); ++i) {
     const Chain* chain = *i;
     map<RecoTrackData, int, RTDLess> nofTracks;
 
@@ -1875,16 +1642,12 @@ void LxTBMLFinder::Finish() {
       for (int k = 0; k < NOF_LAYERS; ++k) {
         int stMask = 1 << j * NOF_LAYERS + k;
 
-        for (list<LxTbBinnedPoint::PointDesc>::const_iterator l =
-               chain->points[j][k]->mcRefs.begin();
-             l != chain->points[j][k]->mcRefs.end();
-             ++l) {
+        for (list<LxTbBinnedPoint::PointDesc>::const_iterator l = chain->points[j][k]->mcRefs.begin();
+             l != chain->points[j][k]->mcRefs.end(); ++l) {
           RecoTrackData st(l->eventId, l->trackId);
-          map<RecoTrackData, int, RTDLess>::iterator nofTIter =
-            nofTracks.find(st);
+          map<RecoTrackData, int, RTDLess>::iterator nofTIter = nofTracks.find(st);
 
-          if (nofTIter != nofTracks.end())
-            nofTIter->second |= stMask;
+          if (nofTIter != nofTracks.end()) nofTIter->second |= stMask;
           else
             nofTracks[st] = stMask;
         }
@@ -1893,9 +1656,7 @@ void LxTBMLFinder::Finish() {
 
     int nofPoints = 0;
 
-    for (map<RecoTrackData, int, RTDLess>::const_iterator j = nofTracks.begin();
-         j != nofTracks.end();
-         ++j) {
+    for (map<RecoTrackData, int, RTDLess>::const_iterator j = nofTracks.begin(); j != nofTracks.end(); ++j) {
       int nofp = 0;
 
       for (int k = 0; k < NOF_STATIONS; ++k) {
@@ -1910,10 +1671,8 @@ void LxTBMLFinder::Finish() {
     if (nofPoints >= NOF_STATIONS * NOF_LAYERS * 0.7) ++nofRightRecoTracks;
   }
 
-  eff =
-    0 == recoTracks.size() ? 100 : 100.0 * nofRightRecoTracks / nofRecoTracks;
-  cout << "Non ghosts are: " << eff << "% [ " << nofRightRecoTracks << " / "
-       << nofRecoTracks << " ]" << endl;
+  eff = 0 == recoTracks.size() ? 100 : 100.0 * nofRightRecoTracks / nofRecoTracks;
+  cout << "Non ghosts are: " << eff << "% [ " << nofRightRecoTracks << " / " << nofRecoTracks << " ]" << endl;
 
   //cout << "Have: " << shortSignalMCTimes.size() << " short signaling events" << endl;
   //cout << "Have: " << longSignalMCTimes.size() << " long signaling events" << endl;
@@ -1922,8 +1681,7 @@ void LxTBMLFinder::Finish() {
   ofstream nofEventsFile("nof_events.txt", ios_base::out | ios_base::trunc);
   nofEventsFile << currentEventN;
 
-  ofstream nofTriggeringsFile("nof_triggerings.txt",
-                              ios_base::out | ios_base::trunc);
+  ofstream nofTriggeringsFile("nof_triggerings.txt", ios_base::out | ios_base::trunc);
   nofTriggeringsFile << nofTriggerings;
 
   /*ofstream nofShortSignalsFile("nof_short_signals.txt", ios_base::out | ios_base::trunc);
@@ -1963,7 +1721,6 @@ void LxTBMLFinder::Finish() {
 #endif  //LXTB_DEBUG
 #endif  //LXTB_QA
 
-  for (list<Chain*>::iterator i = recoTracks.begin(); i != recoTracks.end();
-       ++i)
+  for (list<Chain*>::iterator i = recoTracks.begin(); i != recoTracks.end(); ++i)
     delete *i;
 }

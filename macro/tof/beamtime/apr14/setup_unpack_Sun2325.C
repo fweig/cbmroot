@@ -6,11 +6,9 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void setup_unpack_Sun2325(Int_t nEvents   = 10,
-                          Int_t start_run = 3,
-                          Int_t end_run   = 41,
-                          Int_t calMode   = 0,
-                          char* cFileId   = "MbsTrbSun2325") {
+void setup_unpack_Sun2325(Int_t nEvents = 10, Int_t start_run = 3, Int_t end_run = 41, Int_t calMode = 0,
+                          char* cFileId = "MbsTrbSun2325")
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 3;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -44,9 +42,8 @@ void setup_unpack_Sun2325(Int_t nEvents   = 10,
   TObjString convParFile = paramDir + "/parConvApr2014.txt";
   parFileList->Add(&convParFile);
 
-  TString TofGeo = "v14a";
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TString TofGeo         = "v14a";
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
@@ -118,8 +115,7 @@ void setup_unpack_Sun2325(Int_t nEvents   = 10,
   // =========================================================================
   // ===                     Unpacker monitoring                           ===
   // =========================================================================
-  TMbsUnpTofMonitor* tofUnpMonitor =
-    new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
   run->AddTask(tofUnpMonitor);
   // ===                 End of Unpacker monitoring                        ===
   // =========================================================================

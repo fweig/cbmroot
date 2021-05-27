@@ -8,11 +8,12 @@
 #ifndef LITMATERIALGRID_H_
 #define LITMATERIALGRID_H_
 
-#include "LitTypes.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "LitTypes.h"
 
 using std::ostream;
 using std::right;
@@ -22,8 +23,10 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitMaterialGrid
@@ -64,13 +67,9 @@ namespace lit {
     * \param[in] nofBinsX Number of bins in X.
     * \param[in] nofBinsY Number of bins in Y.
     */
-      void SetMaterial(const vector<vector<fscal>>& material,
-                       fscal xmin,
-                       fscal xmax,
-                       fscal ymin,
-                       fscal ymax,
-                       int nofBinsX,
-                       int nofBinsY) {
+      void SetMaterial(const vector<vector<fscal>>& material, fscal xmin, fscal xmax, fscal ymin, fscal ymax,
+                       int nofBinsX, int nofBinsY)
+      {
         fMaterial = material;
         fXMin     = xmin;
         fXMax     = xmax;
@@ -88,7 +87,8 @@ namespace lit {
     * \param[in] y Y position.
     * \return Material thickness in silicon equivalent.
     */
-      fscal GetMaterial(fscal x, fscal y) const {
+      fscal GetMaterial(fscal x, fscal y) const
+      {
         // Check bound conditions and if out of bounds return zero.
         // Can be removed considering performance!
         if (x < fXMin || x > fXMax || y < fYMin || y > fXMax) {
@@ -146,7 +146,8 @@ namespace lit {
     * \param[in] y Y position.
     * \return Material thickness in silicon equivalent.
     */
-      fvec GetMaterialValue(fvec x, fvec y) const {
+      fvec GetMaterialValue(fvec x, fvec y) const
+      {
         fvec v;
         // Get material thickness for each packed value
         for (unsigned int i = 0; i < fvecLen; i++) {
@@ -164,31 +165,25 @@ namespace lit {
     * \brief Return string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
-        ss << "LitMaterialGrid:" /*Z=" << fZ*/ << " Xmin=" << fXMin
-           << " Xmax=" << fXMax << " Ymin=" << fYMin << " Ymax=" << fYMax
-           << " nofBinsX=" << fNofBinsX << " nofBinsY=" << fNofBinsY
-           << " binSizeX=" << fBinSizeX << " binSizeY=" << fBinSizeY
-           << " material.size=" << fMaterial.size();
+        ss << "LitMaterialGrid:" /*Z=" << fZ*/ << " Xmin=" << fXMin << " Xmax=" << fXMax << " Ymin=" << fYMin
+           << " Ymax=" << fYMax << " nofBinsX=" << fNofBinsX << " nofBinsY=" << fNofBinsY << " binSizeX=" << fBinSizeX
+           << " binSizeY=" << fBinSizeY << " material.size=" << fMaterial.size();
         if (fNofBinsX > 0 && fNofBinsY > 0) {
           unsigned int stepX = fNofBinsX / 10;
           unsigned int stepY = fNofBinsY / 10;
           ss << "\nGrid: stepX=" << stepX << " stepY=" << stepY << "\n";
           for (unsigned int i = 0; i < 11; i++) {
             for (unsigned int j = 0; j < 11; j++) {
-              if (i < 10 && j < 10)
-                ss << right << setfill(' ') << setw(10)
-                   << fMaterial[i * stepX][j * stepY] << " ";
+              if (i < 10 && j < 10) ss << right << setfill(' ') << setw(10) << fMaterial[i * stepX][j * stepY] << " ";
               if (j == 10 && i != 10)
-                ss << right << setfill(' ') << setw(10)
-                   << fMaterial[i * stepX][fNofBinsY - 1] << " ";
+                ss << right << setfill(' ') << setw(10) << fMaterial[i * stepX][fNofBinsY - 1] << " ";
               if (i == 10 && j != 10)
-                ss << right << setfill(' ') << setw(10)
-                   << fMaterial[fNofBinsX - 1][j * stepY] << " ";
+                ss << right << setfill(' ') << setw(10) << fMaterial[fNofBinsX - 1][j * stepY] << " ";
               if (i == 10 && j == 10)
-                ss << right << setfill(' ') << setw(10)
-                   << fMaterial[fNofBinsX - 1][fNofBinsY - 1] << " ";
+                ss << right << setfill(' ') << setw(10) << fMaterial[fNofBinsX - 1][fNofBinsY - 1] << " ";
             }
             ss << "\n";
           }
@@ -200,7 +195,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitMaterialGrid& grid) {
+      friend ostream& operator<<(ostream& strm, const LitMaterialGrid& grid)
+      {
         strm << grid.ToString();
         return strm;
       }

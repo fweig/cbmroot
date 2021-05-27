@@ -8,9 +8,9 @@
 #ifndef CbmMcbm2018MonitorTaskTof_H
 #define CbmMcbm2018MonitorTaskTof_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 #include "TString.h"
 
@@ -20,8 +20,7 @@ class CbmMcbm2018MonitorTaskTof : public CbmMcbmUnpack {
 public:
   CbmMcbm2018MonitorTaskTof();
   CbmMcbm2018MonitorTaskTof(const CbmMcbm2018MonitorTaskTof&) = delete;
-  CbmMcbm2018MonitorTaskTof
-  operator=(const CbmMcbm2018MonitorTaskTof&) = delete;
+  CbmMcbm2018MonitorTaskTof operator=(const CbmMcbm2018MonitorTaskTof&) = delete;
   virtual ~CbmMcbm2018MonitorTaskTof();
 
   virtual Bool_t Init();
@@ -41,18 +40,13 @@ public:
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
   /// Algo settings setters
-  inline void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbDebugMonitorMode = bFlagIn;
-  }
-  inline void SetIgnoreCriticalErrors(Bool_t bFlagIn = kTRUE) {
-    fbIgnoreCriticalErrors = bFlagIn;
-  }
+  inline void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) { fbDebugMonitorMode = bFlagIn; }
+  inline void SetIgnoreCriticalErrors(Bool_t bFlagIn = kTRUE) { fbIgnoreCriticalErrors = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
   inline void SetHistoFilename(TString sNameIn) { fsHistoFileName = sNameIn; }
-  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulser = uMin;
     fuMaxTotPulser = uMax;
   }
@@ -62,10 +56,8 @@ private:
   Bool_t SaveHistograms();
 
   /// Control flags
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbIgnoreCriticalErrors;  //! If ON not printout at all for critical errors
+  Bool_t fbDebugMonitorMode;      //! Switch ON the filling of a additional set of histograms
+  Bool_t fbIgnoreCriticalErrors;  //! If ON not printout at all for critical errors
 
   /// User settings parameters
   UInt_t fuHistoryHistoSize;

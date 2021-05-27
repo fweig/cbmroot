@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void readTsaOnlineSpadic20(TString inFile = "") {
+void readTsaOnlineSpadic20(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
   if ("" != inFile) inFile = inDir + inFile;
@@ -56,8 +57,7 @@ void readTsaOnlineSpadic20(TString inFile = "") {
   std::cout << ">>> eDpbMonitor: Initialising..." << std::endl;
 
   // Spadic 2.0 unpacker
-  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker =
-    new CbmTSUnpackSpadic20OnlineMonitor();
+  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor();
 
   // Dummy Unpacker
   CbmTSUnpackDummy* dummy_unpacker = new CbmTSUnpackDummy();
@@ -79,8 +79,7 @@ void readTsaOnlineSpadic20(TString inFile = "") {
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("localhost");
     source->SetPortNumber(5556);
@@ -124,8 +123,7 @@ void readTsaOnlineSpadic20(TString inFile = "") {
 
   run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -133,8 +131,7 @@ void readTsaOnlineSpadic20(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> eDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> eDpbMonitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

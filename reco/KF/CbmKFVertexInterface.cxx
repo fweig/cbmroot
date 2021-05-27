@@ -33,7 +33,8 @@ Double_t& CbmKFVertexInterface::GetRefChi2() { return gTempD[9]; }
 Int_t& CbmKFVertexInterface::GetRefNDF() { return gTempI[0]; }
 Int_t& CbmKFVertexInterface::GetRefNTracks() { return gTempI[1]; }
 
-void CbmKFVertexInterface::SetVertex(CbmVertex& v) {
+void CbmKFVertexInterface::SetVertex(CbmVertex& v)
+{
   GetRefX()       = v.GetX();
   GetRefY()       = v.GetY();
   GetRefZ()       = v.GetZ();
@@ -47,16 +48,11 @@ void CbmKFVertexInterface::SetVertex(CbmVertex& v) {
       GetCovMatrix()[k] = tmp(i, j);
 }
 
-void CbmKFVertexInterface::GetVertex(CbmVertex& v) {
+void CbmKFVertexInterface::GetVertex(CbmVertex& v)
+{
   TMatrixFSym covMat(3);
   for (int i = 0, k = 0; i < 3; i++)
     for (int j = 0; j <= i; j++, k++)
       covMat(i, j) = GetCovMatrix()[k];
-  v.SetVertex(GetRefX(),
-              GetRefY(),
-              GetRefZ(),
-              GetRefChi2(),
-              GetRefNDF(),
-              GetRefNTracks(),
-              covMat);
+  v.SetVertex(GetRefX(), GetRefY(), GetRefZ(), GetRefChi2(), GetRefNDF(), GetRefNTracks(), covMat);
 }

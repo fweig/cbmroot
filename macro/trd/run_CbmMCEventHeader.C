@@ -7,12 +7,10 @@
 //
 // --------------------------------------------------------------------------
 
-void run_sim_with_destructors(Int_t nEvents   = 4,
-                              TString inDir   = "$VMCWORKDIR/input",
-                              TString inFile  = "urqmd.ftn14",
-                              TString outDir  = "data/",
-                              TString outFile = "test.mc.root",
-                              TString parFile = "params.root") {
+void run_sim_with_destructors(Int_t nEvents = 4, TString inDir = "$VMCWORKDIR/input", TString inFile = "urqmd.ftn14",
+                              TString outDir = "data/", TString outFile = "test.mc.root",
+                              TString parFile = "params.root")
+{
 
   // ----- setup path and file names  ------------------------------------
   // If any part of the directory path contains a environment
@@ -27,7 +25,8 @@ void run_sim_with_destructors(Int_t nEvents   = 4,
       TString envVariable = subPath->ReplaceAll("$", "");
       inDirFinal += gSystem->Getenv(envVariable);
       inDirFinal += "/";
-    } else {
+    }
+    else {
       inDirFinal += *subPath;
       inDirFinal += "/";
     }
@@ -43,7 +42,8 @@ void run_sim_with_destructors(Int_t nEvents   = 4,
       TString envVariable = subPath->ReplaceAll("$", "");
       outDirFinal += gSystem->Getenv(envVariable);
       outDirFinal += "/";
-    } else {
+    }
+    else {
       outDirFinal += *subPath;
       outDirFinal += "/";
     }
@@ -241,8 +241,7 @@ void run_sim_with_destructors(Int_t nEvents   = 4,
 
 
   // -----   Create magnetic field   ----------------------------------------
-  if (fieldMap == "field_electron_standard")
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
+  if (fieldMap == "field_electron_standard") CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "field_muon_standard")
     CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "FieldMuonMagnet")
@@ -348,8 +347,7 @@ void run_sim_with_destructors(Int_t nEvents   = 4,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

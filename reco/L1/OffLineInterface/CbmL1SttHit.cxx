@@ -1,13 +1,16 @@
 
 #include "CbmL1SttHit.h"
+
 #include "CbmKF.h"
 #include "CbmKFTrackInterface.h"
 #include "CbmSttHit.h"
+
 #include "TMath.h"
 
 ClassImp(CbmL1SttHit);
 
-void CbmL1SttHit::Create(CbmSttHit* h, int ind) {
+void CbmL1SttHit::Create(CbmSttHit* h, int ind)
+{
   static const Double_t angle = 10. * TMath::DegToRad();
 
   Double_t phi = 0.;  // rotation angle
@@ -16,8 +19,7 @@ void CbmL1SttHit::Create(CbmSttHit* h, int ind) {
   irot         = irot / 2;
   //if (irot == 1) phi = angle;
   //else if (irot == 2) phi = -angle;
-  if (irot == 1)
-    phi = -angle;
+  if (irot == 1) phi = -angle;
   else if (irot == 2)
     phi = angle;
   FitPoint.Set(h->GetZ(), h->GetU(), phi, h->GetDx() * h->GetDx());
@@ -42,9 +44,8 @@ void CbmL1SttHit::Create(CbmSttHit* h, int ind) {
   index = ind;
 }
 
-Int_t CbmL1SttHit::Filter(CbmKFTrackInterface& track,
-                          Bool_t downstream,
-                          Double_t& QP0) {
+Int_t CbmL1SttHit::Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0)
+{
   Bool_t err = 0;
   err        = err || track.Propagate(FitPoint.z, QP0);
   err        = err || FitPoint.Filter(track);

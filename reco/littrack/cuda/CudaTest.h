@@ -1,9 +1,9 @@
 #ifndef CUDATEST_H_
 #define CUDATEST_H_
 
-#include "LitCudaTest.h"
-
 #include "TObject.h"
+
+#include "LitCudaTest.h"
 
 class CudaTest : public TObject {
 public:

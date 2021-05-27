@@ -21,14 +21,8 @@ struct L1HitPoint {
     //             fscal dx_,
     //             fscal dy_,
     //             fscal dxy_,
-    fscal du_,
-    fscal dv_,
-    fscal z_,
-    fscal v_,
-    fscal u_,
-    float time_,
-    float /*timeEv1_*/ = 0,
-    float timeEr_      = 2.9f)
+    fscal du_, fscal dv_, fscal z_, fscal v_, fscal u_, float time_, float /*timeEv1_*/ = 0,
+    float timeEr_ = 2.9f)
     :  //    : x(x_)
        //    , y(y_)
        //    , dx(dx_)
@@ -70,13 +64,9 @@ struct L1HitPoint {
     //           const float& dx1,
     //           const float& dy1,
     //           const float& xy1,
-    const float& z1,
-    const fscal& u1,
-    const fscal& v1,
-    const fscal& du1,
-    const fscal& dv1,
-    const float& time1,
-    float timeEr1) {
+    const float& z1, const fscal& u1, const fscal& v1, const fscal& du1, const fscal& dv1, const float& time1,
+    float timeEr1)
+  {
     //    x      = x1;
     //    y      = y1;
     //    dx     = dx1;
@@ -111,13 +101,13 @@ static const float shortPackingConstantZ = MZ / 65535.f;
 /// contain strips positions and coordinates of hit
 struct L1HitPoint {
   L1HitPoint() {};
-  L1HitPoint(fscal x_,
-             fscal y_,
-             fscal z_,
-             fscal v_,
-             fscal u_,
-             unsigned short int n_ = 0)
-    : x(f2s(x_)), y(f2s(y_)), z(f2sZ(z_)), u(f2s(u_)), v(f2s(v_)), n(n_) {};
+  L1HitPoint(fscal x_, fscal y_, fscal z_, fscal v_, fscal u_, unsigned short int n_ = 0)
+    : x(f2s(x_))
+    , y(f2s(y_))
+    , z(f2sZ(z_))
+    , u(f2s(u_))
+    , v(f2s(v_))
+    , n(n_) {};
 
   fscal Xs() const { return X() / Z(); }
   fscal Ys() const { return Y() / Z(); }  // value to sort hits by
@@ -132,17 +122,11 @@ struct L1HitPoint {
 
 private:
   //unsigned short int
-  unsigned short int f2s(float f) const {
-    return (f + R) / shortPackingConstant;
-  }
-  float s2f(unsigned short int f) const {
-    return (float(f) + 0.5) * shortPackingConstant - R;
-  }
+  unsigned short int f2s(float f) const { return (f + R) / shortPackingConstant; }
+  float s2f(unsigned short int f) const { return (float(f) + 0.5) * shortPackingConstant - R; }
 
   unsigned short int f2sZ(float f) const { return (f) / shortPackingConstantZ; }
-  float s2fZ(unsigned short int f) const {
-    return (float(f) + 0.5) * shortPackingConstantZ;
-  }
+  float s2fZ(unsigned short int f) const { return (float(f) + 0.5) * shortPackingConstantZ; }
 
   unsigned short int x, y;
   unsigned short int z;  // TODO: may be we should use iz

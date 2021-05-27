@@ -1,8 +1,6 @@
-void check_events(Int_t nEvents      = 10,
-                  UInt_t uRunId      = 0,
-                  TString inDir      = "data/",
-                  TString friendFile = "",
-                  TString inFile     = "") {
+void check_events(Int_t nEvents = 10, UInt_t uRunId = 0, TString inDir = "data/", TString friendFile = "",
+                  TString inFile = "")
+{
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -25,9 +23,7 @@ void check_events(Int_t nEvents      = 10,
 
   TString InputFile      = inDir + "/unp_mcbm_" + runId + ".root";
   TString InputFileEvent = "";
-  if ("" == friendFile) {
-    InputFileEvent = inDir + "/events_" + runId + ".root";
-  }  // if( "" == friendFile )
+  if ("" == friendFile) { InputFileEvent = inDir + "/events_" + runId + ".root"; }  // if( "" == friendFile )
   else {
     InputFileEvent = inDir + friendFile;
   }  // else of if( "" == friendFile )

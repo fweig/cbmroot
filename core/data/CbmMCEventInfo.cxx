@@ -12,7 +12,11 @@ using std::stringstream;
 
 // -----   Constructor   ------------------------------------------------------
 CbmMCEventInfo::CbmMCEventInfo(Int_t fileId, Int_t eventId, Double_t time)
-  : fFileId(fileId), fEventId(eventId), fTime(time) {}
+  : fFileId(fileId)
+  , fEventId(eventId)
+  , fTime(time)
+{
+}
 // ----------------------------------------------------------------------------
 
 
@@ -22,7 +26,8 @@ CbmMCEventInfo::~CbmMCEventInfo() {}
 
 
 // -----   Status info   ------------------------------------------------------
-string CbmMCEventInfo::ToString() const {
+string CbmMCEventInfo::ToString() const
+{
   stringstream ss;
   ss << "File " << fFileId << " Event " << fEventId << " Time " << fTime;
   return ss.str();

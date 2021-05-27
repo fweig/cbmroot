@@ -1,4 +1,5 @@
-void pl_XY_trk(Int_t NSt = 4) {
+void pl_XY_trk(Int_t NSt = 4)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -42,9 +43,8 @@ void pl_XY_trk(Int_t NSt = 4) {
         h2missed->Multiply(h2m, h2acc, 1., 1., "B");
         Double_t NmisaI = h2missed->Integral();
         Double_t eff    = 1. - NmisaI / (Nall + NmisaI);
-        cout << "Effficiency of Station " << iSt << ": all " << Nall << ", mis "
-             << Nmis << ", " << NmisI << ", " << NmisaI << " -> " << eff
-             << endl;
+        cout << "Effficiency of Station " << iSt << ": all " << Nall << ", mis " << Nmis << ", " << NmisI << ", "
+             << NmisaI << " -> " << eff << endl;
 
         can->cd(iCan++);
         TH2D* h2frac = h2->Clone(Form("FractionMissed_%d", iSt));
@@ -55,7 +55,8 @@ void pl_XY_trk(Int_t NSt = 4) {
         h2frac->SetTitle(Form("Fraction of hits missing, station %d", iSt));
         h2frac->SetMaximum(0.8);
       }
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

@@ -1,26 +1,27 @@
 #include <cmath>
 
 //*************************************************************************
-float polinom(int n, float x, float* k) {
+float polinom(int n, float x, float* k)
+{
   float s = 1;
   for (int i = n - 1; i >= 0; i--)
     s = s * x + k[i];
   return s;
 }  //polinom
 
-float dihot(int degree, float edgeNegativ, float edgePositiv, float* kf) {
+float dihot(int degree, float edgeNegativ, float edgePositiv, float* kf)
+{
   for (;;) {
     float x = 0.5 * (edgeNegativ + edgePositiv);
-    if (std::abs(x - edgeNegativ) < 1e-3 || std::abs(x - edgePositiv) < 1e-3)
-      return x;
-    if (polinom(degree, x, kf) < 0)
-      edgeNegativ = x;
+    if (std::abs(x - edgeNegativ) < 1e-3 || std::abs(x - edgePositiv) < 1e-3) return x;
+    if (polinom(degree, x, kf) < 0) edgeNegativ = x;
     else
       edgePositiv = x;
   }
 }  //dihot
 
-void stepUp(int level, float** A, float** B, int* currentRootsCount) {
+void stepUp(int level, float** A, float** B, int* currentRootsCount)
+{
 
   float major = 0;
   for (int i = 0; i < level; i++) {
@@ -36,8 +37,7 @@ void stepUp(int level, float** A, float** B, int* currentRootsCount) {
     float edgeLeft, edgeRight;
     float edgeNegativ, edgePositiv;
 
-    if (i == 0)
-      edgeLeft = -major;
+    if (i == 0) edgeLeft = -major;
     else
       edgeLeft = B[level - 1][i - 1];
 
@@ -49,13 +49,11 @@ void stepUp(int level, float** A, float** B, int* currentRootsCount) {
       continue;
     }
 
-    if (rb > 0)
-      signLeft = 1;
+    if (rb > 0) signLeft = 1;
     else
       signLeft = -1;
 
-    if (i == currentRootsCount[level - 1])
-      edgeRight = major;
+    if (i == currentRootsCount[level - 1]) edgeRight = major;
     else
       edgeRight = B[level - 1][i];
 
@@ -67,8 +65,7 @@ void stepUp(int level, float** A, float** B, int* currentRootsCount) {
       continue;
     }
 
-    if (rb > 0)
-      signRight = 1;
+    if (rb > 0) signRight = 1;
     else
       signRight = -1;
     if (signLeft == signRight) continue;
@@ -76,19 +73,20 @@ void stepUp(int level, float** A, float** B, int* currentRootsCount) {
     if (signLeft < 0) {
       edgeNegativ = edgeLeft;
       edgePositiv = edgeRight;
-    } else {
+    }
+    else {
       edgeNegativ = edgeRight;
       edgePositiv = edgeLeft;
     }
 
-    B[level][currentRootsCount[level]] =
-      dihot(level, edgeNegativ, edgePositiv, A[level]);
+    B[level][currentRootsCount[level]] = dihot(level, edgeNegativ, edgePositiv, A[level]);
     currentRootsCount[level]++;
   }
   return;
 }  //stepUp
 
-void polynomRealRoots(float* rootsArray, int n, float* kf_, int& rootsCount) {
+void polynomRealRoots(float* rootsArray, int n, float* kf_, int& rootsCount)
+{
 
   float* kf = new float[n + 1];
 

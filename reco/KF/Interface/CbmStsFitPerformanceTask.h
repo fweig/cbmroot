@@ -15,18 +15,17 @@
 #ifndef CBMSTSFITPERFORMANCE_H
 #define CBMSTSFITPERFORMANCE_H
 
-#include "CbmStsKFTrackFitter.h"
-
 #include "CbmMCTrack.h"
 #include "CbmMvdPoint.h"
+#include "CbmStsKFTrackFitter.h"
 #include "CbmStsPoint.h"
 #include "CbmStsTrack.h"
 #include "CbmVertex.h"
+
 #include "FairTask.h"
 #include "FairTrackParam.h"
 
 #include "TClonesArray.h"
-
 #include "TH1D.h"
 #include "TH2D.h"
 
@@ -34,8 +33,7 @@ class CbmStsFitPerformanceTask : public FairTask {
 
 public:
   /** Standard constructor */
-  CbmStsFitPerformanceTask(const char* name = "CbmStsFitPerformanceTask",
-                           Int_t iVerbose   = 1);
+  CbmStsFitPerformanceTask(const char* name = "CbmStsFitPerformanceTask", Int_t iVerbose = 1);
 
 
   /** Destructor */
@@ -109,8 +107,7 @@ protected:
   TH1D *fhZRecof, *fhZRecol;  // z first/last of Reco track
 
   TH2D *fhRes_vs_Mom_f, *fhRes_vs_Mom_l;  // resolution vs momentum
-  TH2D*
-    fhExtraTracks2ndMVD;  // extra tracks not detected in the second mvd chamber
+  TH2D* fhExtraTracks2ndMVD;              // extra tracks not detected in the second mvd chamber
 
   TH1D* fhFrst[10];
   TH1D* fhMid[10];

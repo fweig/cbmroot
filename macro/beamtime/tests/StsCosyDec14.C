@@ -17,7 +17,8 @@
  ** => Run 106, File 0000
  */
 
-void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
+void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0)
+{
   Int_t Version = 2014;  // Cosy
 
   TString runN    = TString::Itoa(runID, 10);    // run ID
@@ -31,8 +32,7 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
   TString inFile = "";
 
   TString setup = "";
-  if (runID > 0 && runID < 12)
-    setup = "_hodo_only";
+  if (runID > 0 && runID < 12) setup = "_hodo_only";
   else if (runID > 11 && runID < 15)
     setup = "_hodo_sts";
   else if (runID == 15)
@@ -43,8 +43,7 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
     setup = "_nobeam";
   else if (runID == 21)
     setup = "_nobeam_baselines_first";
-  else if ((runID > 21 && runID < 32) || runID == 54 || runID == 78
-           || runID == 79 || runID == 81)
+  else if ((runID > 21 && runID < 32) || runID == 54 || runID == 78 || runID == 79 || runID == 81)
     setup = "";
   else if (runID == 32 || runID == 45)
     setup = "_0mm_0deg";
@@ -189,8 +188,7 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
   else if (runID == 128)
     setup = "_lowvth_selftrigg_150V";
 
-  if (runID < 10)
-    inFile = inDir + "run00" + runN + setup + "_00" + fileN + "?.lmd";
+  if (runID < 10) inFile = inDir + "run00" + runN + setup + "_00" + fileN + "?.lmd";
   else if (runID > 9 && runID < 100)
     inFile = inDir + "run0" + runN + setup + "_00" + fileN + "?.lmd";
   else if (runID == 106)
@@ -207,8 +205,7 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
   // --- Specify output file name (this is just an example)
   TString outDir = "data/";
 
-  TString outFile = outDir + "stscosy" + Form("%04d", Version) + "_calib.run"
-                    + runN + "_" + fileN + ".root";
+  TString outFile = outDir + "stscosy" + Form("%04d", Version) + "_calib.run" + runN + "_" + fileN + ".root";
   /*
    if (gSystem->FindFile(outDir, outFile)) {
       TString rmCommand = "rm " + outDir + "/" + outFile;
@@ -237,10 +234,9 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
 
   //if(setup->Contains("selftrigg"))trigger = kFALSE; else trigger = kTRUE;
 
-  Int_t triggered_station =
-    1;  // Cosy 2014: first (0) - STS1, second (1) - STS2/3, third (2) - STS0
-  Int_t RocNr1 = 6;
-  Int_t RocNr2 = 7;
+  Int_t triggered_station = 1;  // Cosy 2014: first (0) - STS1, second (1) - STS2/3, third (2) - STS0
+  Int_t RocNr1            = 6;
+  Int_t RocNr2            = 7;
 
   if (Version == 2013) {
     triggered_station = 1;
@@ -251,16 +247,14 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
   CbmDaqMapCosy2014* daqMap14 = NULL;
   CbmDaqMapCosy2013* daqMap13 = NULL;
   // Create the correct mapping for the beamtime
-  if (Version == 2014) {
-    daqMap14 = new CbmDaqMapCosy2014(runID);
-  } else if (Version == 2013)
+  if (Version == 2014) { daqMap14 = new CbmDaqMapCosy2014(runID); }
+  else if (Version == 2013)
     daqMap13 = new CbmDaqMapCosy2013();
 
   // --- Source task
 
   CbmSourceLmd* source = new CbmSourceLmd();
-  if (Version == 2014)
-    source->SetDaqMap(daqMap14);
+  if (Version == 2014) source->SetDaqMap(daqMap14);
   else if (Version == 2013)
     source->SetDaqMap(daqMap13);
   source->SetTriggeredMode(trigger);
@@ -300,8 +294,7 @@ void StsCosyDec14(Int_t nEvents = -1, Int_t runID = 106, Int_t fileID = 0) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// -----   Resource monitoring in automatic tests  ------------------

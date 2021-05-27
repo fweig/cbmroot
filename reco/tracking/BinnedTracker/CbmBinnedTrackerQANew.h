@@ -21,9 +21,12 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include "FairTask.h"
-#include "Settings.h"
+
 #include "TClonesArray.h"
+
+#include "Settings.h"
 
 class CbmBinnedTrackerQANew : public FairTask {
 public:

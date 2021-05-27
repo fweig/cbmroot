@@ -11,14 +11,13 @@
 
 // TO CHECK in the code: IMPORTANT NOTE
 
-void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
+void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
-  bool kbeam =
-    kFALSE;  // if kbeam==kTRUE, transport the beam for estimating required PSD x-shift
-  Int_t gen =
-    0;  // if kbeam==kFALSE, transport particles from input models, gen=0:UrQMD, 1:SHIELD
+  bool kbeam = kFALSE;  // if kbeam==kTRUE, transport the beam for estimating required PSD x-shift
+  Int_t gen  = 0;       // if kbeam==kFALSE, transport particles from input models, gen=0:UrQMD, 1:SHIELD
   cout << "gen = " << gen << endl;
   Float_t psdZpos = 800.;  // (in cm); default: 8m at SIS100, 15m at SIS300
 
@@ -56,22 +55,19 @@ void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
   if (gen == 0) {
     // UNIGEN data format for UrQMD
-    TString inFile = "/hera/cbm/prod/gen/" + sGen + "/auau/" + sEn
-                     + "gev/mbias/urqmd.auau." + sEn + "gev.mbias." + sfileNumL
-                     + ".root";
+    TString inFile = "/hera/cbm/prod/gen/" + sGen + "/auau/" + sEn + "gev/mbias/urqmd.auau." + sEn + "gev.mbias."
+                     + sfileNumL + ".root";
   }
 
   if (gen == 1) {
     // ASCII file for SHIELD, provided by Marina Golubeva
-    TString inFile = "/hera/cbm/users/marina/" + sGen + "/au" + sEn
-                     + "au/evt/FOR038_au" + sEn + "au_100ev_" + sfileNum
-                     + ".dat";
+    TString inFile =
+      "/hera/cbm/users/marina/" + sGen + "/au" + sEn + "au/evt/FOR038_au" + sEn + "au_100ev_" + sfileNum + ".dat";
   }
 
   TString outDir  = "/hera/cbm/users/sseddiki/test/";
   TString outFile = outDir + "sim/mc_" + numEvt + "evt_" + sfileNum + ".root";
-  TString parFile =
-    outDir + "sim/params_" + numEvt + "evt_" + sfileNum + ".root";
+  TString parFile = outDir + "sim/params_" + numEvt + "evt_" + sfileNum + ".root";
 
   cout << "inFile: " << inFile << endl;
   cout << "outFile: " << outFile << endl;
@@ -288,8 +284,7 @@ void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
   psd->SetZposition(psdZpos);  // in cm
   psd->SetXshift(psdXshift);   // in cm
-  TString geoFileNamePsd =
-    outDir + "geo/psd_geo_xy_" + numEvt + "evt_" + sfileNum + ".txt";
+  TString geoFileNamePsd = outDir + "geo/psd_geo_xy_" + numEvt + "evt_" + sfileNum + ".txt";
   psd->SetGeoFile(geoFileNamePsd);
   fRun->AddModule(psd);
 
@@ -328,7 +323,8 @@ void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
 
       primGen->AddGenerator(shieldGen);
     }
-  } else {
+  }
+  else {
     Double_t bMom;
     if (En == 35) bMom = 35.926;
     if (En == 25) bMom = 25.92;
@@ -343,8 +339,7 @@ void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
     int pileup = 100;
     Nion       = nEvents * pileup;
 
-    FairIonGenerator* fIongen =
-      new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.);
+    FairIonGenerator* fIongen = new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.);
     primGen->AddGenerator(fIongen);
 
     nEvents = 1;
@@ -415,8 +410,7 @@ void run_sim_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

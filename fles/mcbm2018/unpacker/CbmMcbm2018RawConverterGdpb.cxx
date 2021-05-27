@@ -43,18 +43,22 @@ CbmMcbm2018RawConverterGdpb::CbmMcbm2018RawConverterGdpb(UInt_t /*uNbGdpb*/)
   , fuCurrentEquipmentId(0)
   , fuCurrDpbId(0)
   , fuCurrDpbIdx(0)
-  , fvGdpbMessages() {}
+  , fvGdpbMessages()
+{
+}
 
 CbmMcbm2018RawConverterGdpb::~CbmMcbm2018RawConverterGdpb() {}
 
-Bool_t CbmMcbm2018RawConverterGdpb::Init() {
+Bool_t CbmMcbm2018RawConverterGdpb::Init()
+{
   LOG(info) << "CbmMcbm2018RawConverterGdpb::Init";
   LOG(info) << "Initializing mCBM gDPB 2018 Raw Messages Converter";
 
   return kTRUE;
 }
 
-void CbmMcbm2018RawConverterGdpb::SetParContainers() {
+void CbmMcbm2018RawConverterGdpb::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   if (nullptr == fParCList) fParCList = new TList();
@@ -66,12 +70,11 @@ void CbmMcbm2018RawConverterGdpb::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -80,12 +83,12 @@ void CbmMcbm2018RawConverterGdpb::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmMcbm2018RawConverterGdpb::InitContainers() {
+Bool_t CbmMcbm2018RawConverterGdpb::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  fUnpackPar = dynamic_cast<CbmMcbm2018TofPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018TofPar"));
+  fUnpackPar = dynamic_cast<CbmMcbm2018TofPar*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018TofPar"));
   if (nullptr == fUnpackPar) {
     LOG(error) << "Failed to obtain parameter container CbmMcbm2018TofPar";
     return kFALSE;
@@ -97,10 +100,8 @@ Bool_t CbmMcbm2018RawConverterGdpb::InitContainers() {
   fDpbIdIndexMap.clear();
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fDpbIdIndexMap[fUnpackPar->GetGdpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x"
-              << std::setw(4) << std::hex << fUnpackPar->GetGdpbId(uDpb)
-              << std::dec << " => "
-              << fDpbIdIndexMap[fUnpackPar->GetGdpbId(uDpb)];
+    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
+              << fUnpackPar->GetGdpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[fUnpackPar->GetGdpbId(uDpb)];
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   /// Initialize and register output arrays with the FairRoot IO manager
@@ -113,21 +114,21 @@ Bool_t CbmMcbm2018RawConverterGdpb::InitContainers() {
     if (NULL == fvGdpbMessages[uDpb]) {
       LOG(fatal) << "Failed creating the gDPB messages vector ";
     }  // if( NULL == fvGdpbMessages[ uDpb ] )
-    ioman->RegisterAny(
-      Form("CbmGdpbMsg%03u", uDpb), fvGdpbMessages[uDpb], kTRUE);
+    ioman->RegisterAny(Form("CbmGdpbMsg%03u", uDpb), fvGdpbMessages[uDpb], kTRUE);
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018RawConverterGdpb::ReInitContainers() {
+Bool_t CbmMcbm2018RawConverterGdpb::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   return kTRUE;
 }
 
-void CbmMcbm2018RawConverterGdpb::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmMcbm2018RawConverterGdpb::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -135,13 +136,12 @@ void CbmMcbm2018RawConverterGdpb::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018RawConverterGdpb::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmMcbm2018RawConverterGdpb::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 
-Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
-                                             size_t /*component*/) {
+Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -154,10 +154,9 @@ Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -169,26 +168,22 @@ Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
   fdTsStopTimeCore = fdTsStartTime + fdTsCoreSizeInNs;
 
   /// Loop over registered components
-  for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-       ++uMsCompIdx) {
+  for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
     /// Loop over core microslices (and overlap ones if chosen)
     for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
-      auto msDescriptor    = ts.descriptor(uMsComp, fuMsIndex);
-      fuCurrentEquipmentId = msDescriptor.eq_id;
-      const uint8_t* msContent =
-        reinterpret_cast<const uint8_t*>(ts.content(uMsComp, fuMsIndex));
+      auto msDescriptor        = ts.descriptor(uMsComp, fuMsIndex);
+      fuCurrentEquipmentId     = msDescriptor.eq_id;
+      const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsComp, fuMsIndex));
 
       uint32_t uSize  = msDescriptor.size;
       fulCurrentMsIdx = msDescriptor.idx;
       //         Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-      LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId "
-                 << std::hex << fuCurrentEquipmentId << std::dec
+      LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
                  << " has size: " << uSize;
 
-      if (0 == fvbMaskedComponents.size())
-        fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+      if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
       fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
 
@@ -208,10 +203,8 @@ Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
                                   msDescriptor.size, msDescriptor.offset );
 */
           LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-          LOG(warning) << "Could not find the gDPB index for AFCK id 0x"
-                       << std::hex << fuCurrDpbId << std::dec
-                       << " in timeslice " << fulCurrentTsIdx
-                       << " in microslice " << fuMsIndex << " component "
+          LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                       << " in timeslice " << fulCurrentTsIdx << " in microslice " << fuMsIndex << " component "
                        << uMsCompIdx << "\n"
                        << "If valid this index has to be added in the TOF "
                           "parameter file in the DbpIdArray field";
@@ -234,8 +227,7 @@ Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
                    << "contain only complete gDPB messages!";
 
       /// Compute the number of complete messages in the input microslice buffer
-      uint32_t uNbMessages =
-        (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+      uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
       /// Prepare variables for the loop on contents
       const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
@@ -253,15 +245,15 @@ Bool_t CbmMcbm2018RawConverterGdpb::DoUnpack(const fles::Timeslice& ts,
         fvGdpbMessages[fuCurrDpbIdx]->push_back(mess);
       }  // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
     }    // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
-  }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+  }      // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
-  if (0 == fulCurrentTsIdx % 10000)
-    LOG(info) << "Processed TS " << fulCurrentTsIdx;
+  if (0 == fulCurrentTsIdx % 10000) LOG(info) << "Processed TS " << fulCurrentTsIdx;
 
   return kTRUE;
 }
 
-void CbmMcbm2018RawConverterGdpb::Reset() {
+void CbmMcbm2018RawConverterGdpb::Reset()
+{
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb)
     fvGdpbMessages[uDpb]->clear();
 }

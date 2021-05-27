@@ -7,17 +7,6 @@
 #include "CbmLitFindMvdTracks.h"
 
 #include "CbmStsTrack.h"
-
-#include "FairHit.h"
-#include "FairRunAna.h"
-#include "FairRuntimeDb.h"
-#include <Logger.h>
-
-#include "TClonesArray.h"
-
-#include <algorithm>
-#include <iostream>
-
 #include "base/CbmLitToolFactory.h"
 #include "base/CbmLitTrackingGeometryConstructor.h"
 #include "data/CbmLitHit.h"
@@ -29,6 +18,16 @@
 #include "utils/CbmLitConverterFairTrackParam.h"
 #include "utils/CbmLitMemoryManagment.h"
 
+#include "FairHit.h"
+#include "FairRunAna.h"
+#include "FairRuntimeDb.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+
+#include <algorithm>
+#include <iostream>
+
 CbmLitFindMvdTracks::CbmLitFindMvdTracks()
   : fStsTracks(NULL)
   , fMvdHits(NULL)
@@ -37,11 +36,14 @@ CbmLitFindMvdTracks::CbmLitFindMvdTracks()
   , fLitMvdHits()
   , fLitOutputTracks()
   , fFinder()
-  , fEventNo(0) {}
+  , fEventNo(0)
+{
+}
 
 CbmLitFindMvdTracks::~CbmLitFindMvdTracks() {}
 
-InitStatus CbmLitFindMvdTracks::Init() {
+InitStatus CbmLitFindMvdTracks::Init()
+{
   ReadAndCreateDataBranches();
 
   fFinder = CbmLitToolFactory::CreateTrackFinder("mvd_nn");
@@ -49,12 +51,12 @@ InitStatus CbmLitFindMvdTracks::Init() {
   return kSUCCESS;
 }
 
-void CbmLitFindMvdTracks::Exec(Option_t* opt) {
+void CbmLitFindMvdTracks::Exec(Option_t* opt)
+{
   if (fStsTracks != NULL && fMvdHits != NULL) {
     if (fEvents) {
       Int_t nEvents = fEvents->GetEntriesFast();
-      LOG(debug) << GetName() << ": reading time slice with " << nEvents
-                 << " events ";
+      LOG(debug) << GetName() << ": reading time slice with " << nEvents << " events ";
 
       for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
         CbmEvent* event = static_cast<CbmEvent*>(fEvents->At(iEvent));
@@ -68,14 +70,16 @@ void CbmLitFindMvdTracks::Exec(Option_t* opt) {
     RunTrackReconstruction();
     ConvertOutputData();
     ClearArrays();
-  } else {
+  }
+  else {
     LOG(warn) << "CbmLitFindMvdTracks::Exec: MVD tracking is not executed NO "
                  "StsTrack or MvdHit arrays.";
   }
   LOG(info) << "-I- Event: " << fEventNo++;
 }
 
-void CbmLitFindMvdTracks::SetParContainers() {
+void CbmLitFindMvdTracks::SetParContainers()
+{
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
   rtdb->getContainer("FairBaseParSet");
@@ -83,7 +87,8 @@ void CbmLitFindMvdTracks::SetParContainers() {
 
 void CbmLitFindMvdTracks::Finish() {}
 
-void CbmLitFindMvdTracks::ReadAndCreateDataBranches() {
+void CbmLitFindMvdTracks::ReadAndCreateDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman) {
     LOG(fatal) << "CbmLitFindMvdTracks::ReadAndCreateDataBranches "
@@ -94,7 +99,8 @@ void CbmLitFindMvdTracks::ReadAndCreateDataBranches() {
   fEvents    = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
 }
 
-void CbmLitFindMvdTracks::ConvertInputData(CbmEvent* event) {
+void CbmLitFindMvdTracks::ConvertInputData(CbmEvent* event)
+{
   CbmLitConverter::StsTrackArrayToTrackVector(event, fStsTracks, fLitStsTracks);
   // Change last and first parameters of the track seeds
   for (Int_t iTrack = 0; iTrack < fLitStsTracks.size(); iTrack++) {
@@ -106,8 +112,7 @@ void CbmLitFindMvdTracks::ConvertInputData(CbmEvent* event) {
 
   CbmLitConverter::MvdHitArrayToHitVector(fMvdHits, fLitMvdHits);
   // Make reverse order of the hits
-  Int_t nofStations =
-    CbmLitTrackingGeometryConstructor::Instance()->GetNofMvdStations();
+  Int_t nofStations = CbmLitTrackingGeometryConstructor::Instance()->GetNofMvdStations();
   for (Int_t iHit = 0; iHit < fLitMvdHits.size(); iHit++) {
     CbmLitHit* hit = fLitMvdHits[iHit];
     hit->SetDetectorId(kLITMVD, nofStations - hit->GetStation() - 1);
@@ -115,7 +120,8 @@ void CbmLitFindMvdTracks::ConvertInputData(CbmEvent* event) {
   LOG(info) << "-I- Number of MVD hits: " << fLitMvdHits.size();
 }
 
-void CbmLitFindMvdTracks::ConvertOutputData() {
+void CbmLitFindMvdTracks::ConvertOutputData()
+{
   for (Int_t iTrack = 0; iTrack < fLitOutputTracks.size(); iTrack++) {
     CbmLitTrack* litTrack = fLitOutputTracks[iTrack];
     Int_t trackId         = litTrack->GetPreviousTrackId();
@@ -129,13 +135,13 @@ void CbmLitFindMvdTracks::ConvertOutputData() {
     //track->SortMvdHits();
 
     FairTrackParam parFirst;
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      litTrack->GetParamLast(), &parFirst);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTrack->GetParamLast(), &parFirst);
     track->SetParamFirst(&parFirst);
   }
 }
 
-void CbmLitFindMvdTracks::ClearArrays() {
+void CbmLitFindMvdTracks::ClearArrays()
+{
   // Free memory
   for_each(fLitStsTracks.begin(), fLitStsTracks.end(), DeleteObject());
   for_each(fLitMvdHits.begin(), fLitMvdHits.end(), DeleteObject());
@@ -145,6 +151,4 @@ void CbmLitFindMvdTracks::ClearArrays() {
   fLitOutputTracks.clear();
 }
 
-void CbmLitFindMvdTracks::RunTrackReconstruction() {
-  fFinder->DoFind(fLitMvdHits, fLitStsTracks, fLitOutputTracks);
-}
+void CbmLitFindMvdTracks::RunTrackReconstruction() { fFinder->DoFind(fLitMvdHits, fLitStsTracks, fLitOutputTracks); }

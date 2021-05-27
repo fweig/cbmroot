@@ -70,14 +70,12 @@
 
 
   // Global track finding -----------------------------------------
-  CbmFindGlobalTracks* findGlobal =
-    new CbmFindGlobalTracks(trackMerger, NULL, tofMerger, 1);
+  CbmFindGlobalTracks* findGlobal = new CbmFindGlobalTracks(trackMerger, NULL, tofMerger, 1);
   fRun->AddTask(findGlobal);
   // --------------------------------------------------------------
 
 
-  CbmFindGlobalTracksQa* findGlobalQa =
-    new CbmFindGlobalTracksQa("FindGlobalQa", 1);
+  CbmFindGlobalTracksQa* findGlobalQa = new CbmFindGlobalTracksQa("FindGlobalQa", 1);
   findGlobalQa->SetRequireTof(kTRUE);
   fRun->AddTask(findGlobalQa);
 

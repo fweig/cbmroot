@@ -10,10 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void eDpbBeamMonitorOffline(
-  Bool_t highP   = true,
-  TString inFile = "/home/cbm/readout/flesnet/build/r0004_20170803_1025/"
-                   "r0004_20170803_1025_0001.tsa") {
+void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile = "/home/cbm/readout/flesnet/build/r0004_20170803_1025/"
+                                                                  "r0004_20170803_1025_0001.tsa")
+{
   //TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //TString inDir  = srcDir + "/input/";
   //if( "" != inFile )
@@ -45,8 +44,7 @@ void eDpbBeamMonitorOffline(
 
   // Spadic 2.0 unpacker
   //CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(highP);
-  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker =
-    new CbmTSUnpackSpadic20OnlineMonitor(false);
+  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(false);
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
@@ -86,8 +84,7 @@ void eDpbBeamMonitorOffline(
   std::cout << std::endl << std::endl;
   std::cout << ">>> eDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> eDpbMonitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

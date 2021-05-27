@@ -75,26 +75,10 @@ struct QAHit {
   set<const QAMCTrack*> tracks;
   int detId;
 
-  QAHit()
-    : x(0.)
-    , dx(0.)
-    , y(0.)
-    , dy(0.)
-    , t(0.)
-    , dt(0.)
-    , points()
-    , tracks()
-    , detId(0) {}
+  QAHit() : x(0.), dx(0.), y(0.), dy(0.), t(0.), dt(0.), points(), tracks(), detId(0) {}
 
-  QAHit(double _x,
-        double _dx,
-        double _y,
-        double _dy,
-        double _t,
-        double _dt,
-        set<const QAMCPoint*> _points,
-        set<const QAMCTrack*> _tracks,
-        int _detId)
+  QAHit(double _x, double _dx, double _y, double _dy, double _t, double _dt, set<const QAMCPoint*> _points,
+        set<const QAMCTrack*> _tracks, int _detId)
     : x(_x)
     , dx(_dx)
     , y(_y)
@@ -103,7 +87,9 @@ struct QAHit {
     , dt(_dt)
     , points(_points)
     , tracks(_tracks)
-    , detId(_detId) {}
+    , detId(_detId)
+  {
+  }
 };
 
 struct QAMCTrack {
@@ -134,23 +120,24 @@ CbmTofHitFinderTBQA::CbmTofHitFinderTBQA()
   , fTofMCPoints(0)
   , fMCTracks(0)
   , fTimeSlice(0)
-  , fEventList(0) {}
+  , fEventList(0)
+{
+}
 
-InitStatus CbmTofHitFinderTBQA::Init() {
+InitStatus CbmTofHitFinderTBQA::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (0 == ioman) LOG(fatal) << "No FairRootManager";
 
-  fTofHits       = static_cast<TClonesArray*>(ioman->GetObject("TofHit"));
-  fTofDigiMatchs = static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatch"));
-  fTofDigis      = static_cast<TClonesArray*>(ioman->GetObject("TofDigiExp"));
-  fTofDigiPointMatchs =
-    static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatchPoints"));
+  fTofHits            = static_cast<TClonesArray*>(ioman->GetObject("TofHit"));
+  fTofDigiMatchs      = static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatch"));
+  fTofDigis           = static_cast<TClonesArray*>(ioman->GetObject("TofDigiExp"));
+  fTofDigiPointMatchs = static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatchPoints"));
 
-  CbmMCDataManager* mcManager =
-    static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
-  fTofMCPoints = mcManager->InitBranch("TofPoint");
-  fMCTracks    = mcManager->InitBranch("MCTrack");
+  CbmMCDataManager* mcManager = static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  fTofMCPoints                = mcManager->InitBranch("TofPoint");
+  fMCTracks                   = mcManager->InitBranch("MCTrack");
   /*tofHitsAll.resize(1000);
    tofPointsAll.resize(1000);
    tofTracksAll.resize(1000);
@@ -197,29 +184,22 @@ InitStatus CbmTofHitFinderTBQA::Init() {
     if (nofmcp > 0) evMcPoints.resize(nofmcp);
 
     for (int j = 0; j < nofmcp; ++j) {
-      const CbmTofPoint* tp =
-        static_cast<const CbmTofPoint*>(fTofMCPoints->Get(0, i, j));
-      int trackId                = tp->GetTrackID();
-      evMcPoints[j]              = {tp->GetX(),
-                       tp->GetY(),
-                       tp->GetTime(),
-                       tp->GetDetectorID(),
-                       &evMcTracks[trackId],
-                       false};
+      const CbmTofPoint* tp = static_cast<const CbmTofPoint*>(fTofMCPoints->Get(0, i, j));
+      int trackId           = tp->GetTrackID();
+      evMcPoints[j]         = {tp->GetX(), tp->GetY(), tp->GetTime(), tp->GetDetectorID(), &evMcTracks[trackId], false};
       const QAMCPoint* lastPoint = &evMcPoints[j];
       evMcTracks[trackId].points.push_back(lastPoint);
     }
   }
 
-  deltaTHisto  = new TH1F("deltaTHisto", "deltaTHisto", 100, -1., 1.);
-  deltaXHisto  = new TH1F("deltaXHisto", "deltaXHisto", 100, -5., 5.);
-  deltaYHisto  = new TH1F("deltaYHisto", "deltaYHisto", 100, -5., 5.);
-  pullTHisto   = new TH1F("pullTHisto", "pullTHisto", 100, -5., 5.);
-  pullXHisto   = new TH1F("pullXHisto", "pullXHisto", 100, -5., 5.);
-  pullYHisto   = new TH1F("pullYHisto", "pullYHisto", 100, -5., 5.);
-  nofHitsHisto = new TH1F("nofHitsHisto", "nofHitsHisto", 5, 0., 5.);
-  nofTracksDepositedHisto =
-    new TH1F("nofTracksDepositedHisto", "nofTracksDepositedHisto", 8, 0., 8.);
+  deltaTHisto             = new TH1F("deltaTHisto", "deltaTHisto", 100, -1., 1.);
+  deltaXHisto             = new TH1F("deltaXHisto", "deltaXHisto", 100, -5., 5.);
+  deltaYHisto             = new TH1F("deltaYHisto", "deltaYHisto", 100, -5., 5.);
+  pullTHisto              = new TH1F("pullTHisto", "pullTHisto", 100, -5., 5.);
+  pullXHisto              = new TH1F("pullXHisto", "pullXHisto", 100, -5., 5.);
+  pullYHisto              = new TH1F("pullYHisto", "pullYHisto", 100, -5., 5.);
+  nofHitsHisto            = new TH1F("nofHitsHisto", "nofHitsHisto", 5, 0., 5.);
+  nofTracksDepositedHisto = new TH1F("nofTracksDepositedHisto", "nofTracksDepositedHisto", 8, 0., 8.);
 
   return kSUCCESS;
 }
@@ -230,7 +210,8 @@ static Int_t currentEvN = 0;
 static int globalNofHits  = 0;
 static int globalNofDigis = 0;
 
-void CbmTofHitFinderTBQA::Exec(Option_t*) {
+void CbmTofHitFinderTBQA::Exec(Option_t*)
+{
   /*vector<TofHitDesc>& tofHitsEv = tofHitsAll[currentEvN];
    Int_t nofHits = fTofHits->GetEntriesFast();
    
@@ -327,9 +308,8 @@ void CbmTofHitFinderTBQA::Exec(Option_t*) {
   globalNofDigis += nofDigis;
 
   for (int i = 0; i < nofHits; ++i) {
-    const CbmTofHit* hit = static_cast<const CbmTofHit*>(fTofHits->At(i));
-    const CbmMatch* hitMatch =
-      static_cast<const CbmMatch*>(fTofDigiMatchs->At(i));
+    const CbmTofHit* hit     = static_cast<const CbmTofHit*>(fTofHits->At(i));
+    const CbmMatch* hitMatch = static_cast<const CbmMatch*>(fTofDigiMatchs->At(i));
     //      evHits[i] = { hit->GetX(), hit->GetDx(), hit->GetY(), hit->GetDy(), hit->GetTime(), hit->GetTimeError(), {}, {}, CbmTofAddress::GetModFullId(hit->GetAddress()) } ;
     evHits[i]      = QAHit {hit->GetX(),
                        hit->GetDx(),
@@ -348,8 +328,7 @@ void CbmTofHitFinderTBQA::Exec(Option_t*) {
       const CbmLink& lnk = hitMatch->GetLink(j);
       Int_t digiInd      = lnk.GetIndex();
       // CbmTofDigiExp* pDigi = static_cast<CbmTofDigiExp*> (fTofDigis->At(digiInd));   (VF) not used
-      const CbmMatch* pPointMatch =
-        static_cast<const CbmMatch*>(fTofDigiPointMatchs->At(digiInd));
+      const CbmMatch* pPointMatch = static_cast<const CbmMatch*>(fTofDigiPointMatchs->At(digiInd));
 
       Int_t nofPoints = pPointMatch->GetNofLinks();
 
@@ -370,9 +349,7 @@ void CbmTofHitFinderTBQA::Exec(Option_t*) {
 
     set<QAMCTrack*> tracks;
 
-    for (set<const QAMCPoint*>::const_iterator j = lastHit.points.begin();
-         j != lastHit.points.end();
-         ++j) {
+    for (set<const QAMCPoint*>::const_iterator j = lastHit.points.begin(); j != lastHit.points.end(); ++j) {
       const QAMCPoint* point = *j;
       tracks.insert(point->track);
     }
@@ -386,7 +363,8 @@ void CbmTofHitFinderTBQA::Exec(Option_t*) {
   ++currentEvN;
 }
 
-static void SaveHisto(TH1* histo) {
+static void SaveHisto(TH1* histo)
+{
   TFile* curFile    = TFile::CurrentFile();
   TString histoName = histo->GetName();
   histoName += ".root";
@@ -397,7 +375,8 @@ static void SaveHisto(TH1* histo) {
   TFile::CurrentFile() = curFile;
 }
 
-void CbmTofHitFinderTBQA::Finish() {
+void CbmTofHitFinderTBQA::Finish()
+{
   /*cout << "min entry = " << minEntry << endl;
    cout << "max entry = " << maxEntry << endl;
    int nofHits = 0;
@@ -496,16 +475,12 @@ void CbmTofHitFinderTBQA::Finish() {
   int nofTracksHit = 0;
   int nofMCEvents  = 0;
 
-  for (vector<vector<QAMCTrack>>::const_iterator i = mcTracks.begin();
-       i != mcTracks.end();
-       ++i) {
+  for (vector<vector<QAMCTrack>>::const_iterator i = mcTracks.begin(); i != mcTracks.end(); ++i) {
     const vector<QAMCTrack>& evTracks = *i;
 
     if (!evTracks.empty()) ++nofMCEvents;
 
-    for (vector<QAMCTrack>::const_iterator j = evTracks.begin();
-         j != evTracks.end();
-         ++j) {
+    for (vector<QAMCTrack>::const_iterator j = evTracks.begin(); j != evTracks.end(); ++j) {
       const QAMCTrack& track = *j;
 
       if (!track.points.empty()) {
@@ -514,9 +489,7 @@ void CbmTofHitFinderTBQA::Finish() {
         if (!track.hits.empty()) ++nofTracksHit;
       }
 
-      for (list<const QAHit*>::const_iterator k = track.hits.begin();
-           k != track.hits.end();
-           ++k) {
+      for (list<const QAHit*>::const_iterator k = track.hits.begin(); k != track.hits.end(); ++k) {
         const QAHit* hit = *k;
         //set<int> detIds;
         set<const QAMCPoint*> hitPoints;
@@ -537,29 +510,23 @@ void CbmTofHitFinderTBQA::Finish() {
                detIds.insert(point->detId);
             }*/
 
-        for (list<const QAMCPoint*>::const_iterator l = track.points.begin();
-             l != track.points.end();
-             ++l) {
+        for (list<const QAMCPoint*>::const_iterator l = track.points.begin(); l != track.points.end(); ++l) {
           const QAMCPoint* point = *l;
 
           //if (detIds.find(point->detId) != detIds.end())
-          if (point->isInit && hit->detId == point->detId)
-            hitPoints.insert(point);
+          if (point->isInit && hit->detId == point->detId) hitPoints.insert(point);
         }
 
         if (hitPoints.empty()) continue;
 
-        for (set<const QAMCPoint*>::const_iterator l = hitPoints.begin();
-             l != hitPoints.end();
-             ++l) {
+        for (set<const QAMCPoint*>::const_iterator l = hitPoints.begin(); l != hitPoints.end(); ++l) {
           const QAMCPoint* point = *l;
           x += point->x;
           y += point->y;
           t += point->t;
         }
 
-        int nofPoints =
-          hitPoints.size();  //hit->points.size();//hitPoints.size();
+        int nofPoints = hitPoints.size();  //hit->points.size();//hitPoints.size();
         double deltaX = hit->x - x / nofPoints;
         double deltaY = hit->y - y / nofPoints;
         double deltaT = hit->t - t / nofPoints;
@@ -577,16 +544,14 @@ void CbmTofHitFinderTBQA::Finish() {
   int nofHits       = 0;
   int nofSingleHits = 0;
 
-  for (vector<vector<QAHit>>::const_iterator i = hits.begin(); i != hits.end();
-       ++i) {
+  for (vector<vector<QAHit>>::const_iterator i = hits.begin(); i != hits.end(); ++i) {
     const vector<QAHit>& evHits = *i;
 
     if (!evHits.empty()) ++nofHitEvents;
 
     nofHits += evHits.size();
 
-    for (vector<QAHit>::const_iterator j = evHits.begin(); j != evHits.end();
-         ++j) {
+    for (vector<QAHit>::const_iterator j = evHits.begin(); j != evHits.end(); ++j) {
       const QAHit& hit = *j;
       nofTracksDepositedHisto->Fill(hit.tracks.size());
 
@@ -605,8 +570,7 @@ void CbmTofHitFinderTBQA::Finish() {
 
   double eff = 100 * nofTracksHit;
   eff /= nofTracksTof;
-  cout << "Clustering efficiency: " << eff << " % [ " << nofTracksHit << " / "
-       << nofTracksTof << " ]" << endl;
+  cout << "Clustering efficiency: " << eff << " % [ " << nofTracksHit << " / " << nofTracksTof << " ]" << endl;
   cout << "NOF hit events: " << nofHitEvents << endl;
   cout << "NOF hits: " << nofHits << endl;
   cout << "NOF hits2: " << globalNofHits << endl;
@@ -614,8 +578,7 @@ void CbmTofHitFinderTBQA::Finish() {
   cout << "NOF MC Events: " << nofMCEvents << endl;
   eff = 100 * nofSingleHits;
   eff /= nofHits;
-  cout << "Pure hits: " << eff << " % [ " << nofSingleHits << " / " << nofHits
-       << " ]" << endl;
+  cout << "Pure hits: " << eff << " % [ " << nofSingleHits << " / " << nofHits << " ]" << endl;
 }
 
 ClassImp(CbmTofHitFinderTBQA)

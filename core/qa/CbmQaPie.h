@@ -6,8 +6,10 @@
 #ifndef CbmQaPie_H
 #define CbmQaPie_H
 
-#include "TPie.h"
 #include "TPieSlice.h"
+
+#include "TPie.h"
+
 #include <vector>
 
 class TBrowser;
@@ -17,9 +19,7 @@ class TBrowser;
 class CbmQaPieSlice : public TPieSlice {
 public:
   /// assignment operator
-  CbmQaPieSlice& operator=(const TPieSlice& inp) {
-    return (*this = (const CbmQaPieSlice&) (inp));
-  }
+  CbmQaPieSlice& operator=(const TPieSlice& inp) { return (*this = (const CbmQaPieSlice&) (inp)); }
   /// set a TPie pointer
   void SetPie(TPie* p) { fPie = p; }
 
@@ -38,7 +38,9 @@ class CbmQaPie : public TPie {
 public:
   /// Reimplementation of any existing TPie constructor
   template<typename... Types>
-  CbmQaPie(Types... args) : TPie(args...) {}
+  CbmQaPie(Types... args) : TPie(args...)
+  {
+  }
 
   /// Prevent original copy constructor from a crash
   CbmQaPie(const CbmQaPie& cpy);

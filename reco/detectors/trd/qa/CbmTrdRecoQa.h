@@ -23,7 +23,6 @@
 #include "FairTask.h"
 
 #include <map>
-
 #include <vector>
 
 class CbmTrdParSetDigi;

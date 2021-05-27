@@ -6,7 +6,8 @@
 //define functions which does the comparision
 #include "compareLink.h"
 
-TEST(_GTestCbmLink, CheckDefaultConstructor) {
+TEST(_GTestCbmLink, CheckDefaultConstructor)
+{
   CbmLink test;
   {
     SCOPED_TRACE("CheckDefaultConstructor");
@@ -14,7 +15,8 @@ TEST(_GTestCbmLink, CheckDefaultConstructor) {
   }
 }
 
-TEST(_GTestCbmLink, CheckStandardConstructor1) {
+TEST(_GTestCbmLink, CheckStandardConstructor1)
+{
   CbmLink test {-2., -2};
   {
     SCOPED_TRACE("CheckStandardConstructor1");
@@ -22,7 +24,8 @@ TEST(_GTestCbmLink, CheckStandardConstructor1) {
   }
 }
 
-TEST(_GTestCbmLink, CheckStandardConstructor2) {
+TEST(_GTestCbmLink, CheckStandardConstructor2)
+{
   CbmLink test {-2., -2, -2, -2};
   {
     SCOPED_TRACE("CheckStandardConstructor2");
@@ -30,7 +33,8 @@ TEST(_GTestCbmLink, CheckStandardConstructor2) {
   }
 }
 
-TEST(_GTestCbmLink, TestSettersAndGetters) {
+TEST(_GTestCbmLink, TestSettersAndGetters)
+{
   CbmLink test {-2., -2, -2, -2};
   {
     SCOPED_TRACE("TestSettersAndGetters: Initial test");
@@ -68,14 +72,15 @@ TEST(_GTestCbmLink, TestSettersAndGetters) {
   }
 }
 
-TEST(_GTestCbmLink, ToString) {
+TEST(_GTestCbmLink, ToString)
+{
   CbmLink test {-2., -2, -2, -2};
-  EXPECT_STREQ("CbmLink: weight=-2 index=-2 entry=-2 file=-2\n",
-               test.ToString().c_str());
+  EXPECT_STREQ("CbmLink: weight=-2 index=-2 entry=-2 file=-2\n", test.ToString().c_str());
 }
 
 
-TEST(_GTestCbmLink, CompareEqual) {
+TEST(_GTestCbmLink, CompareEqual)
+{
   CbmLink test {-2., -2, -2, -2};
   CbmLink test1 {-2., -2, -2, -2};
   CbmLink test2 {-1., -2, -2, -2};
@@ -84,15 +89,14 @@ TEST(_GTestCbmLink, CompareEqual) {
   CbmLink test5 {-2., -2, -2, -1};
 
   EXPECT_TRUE(test == test1);
-  EXPECT_TRUE(
-    test
-    == test2);  //equals only check file, entry, and index ids but not the weight
+  EXPECT_TRUE(test == test2);  //equals only check file, entry, and index ids but not the weight
   EXPECT_FALSE(test == test3);
   EXPECT_FALSE(test == test4);
   EXPECT_FALSE(test == test5);
 }
 
-TEST(_GTestCbmLink, CompareGreater) {
+TEST(_GTestCbmLink, CompareGreater)
+{
   CbmLink test {2., 2, 2, 2};
   CbmLink test1 {2., 2, 2, 2};
   CbmLink test2 {2., 1, 2, 2};
@@ -108,7 +112,8 @@ TEST(_GTestCbmLink, CompareGreater) {
   EXPECT_FALSE(test4 > test);
 }
 
-TEST(_GTestCbmLink, CompareSmaller) {
+TEST(_GTestCbmLink, CompareSmaller)
+{
   CbmLink test {2., 2, 2, 2};
   CbmLink test1 {2., 2, 2, 2};
   CbmLink test2 {2., 1, 2, 2};

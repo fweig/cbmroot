@@ -22,7 +22,9 @@ CbmDigitizeBase::CbmDigitizeBase()
   , fCurrentInput(-1)
   , fCurrentEvent(-1)
   , fCurrentMCEntry(-1)
-  , fCurrentEventTime(0.) {}
+  , fCurrentEventTime(0.)
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -35,7 +37,9 @@ CbmDigitizeBase::CbmDigitizeBase(const char* name)
   , fCurrentInput(-1)
   , fCurrentEvent(-1)
   , fCurrentMCEntry(-1)
-  , fCurrentEventTime(0.) {}
+  , fCurrentEventTime(0.)
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -45,7 +49,8 @@ CbmDigitizeBase::~CbmDigitizeBase() {}
 
 
 // -----   Get event information   ------------------------------------------
-void CbmDigitizeBase::GetEventInfo() {
+void CbmDigitizeBase::GetEventInfo()
+{
 
   // --- The event number is taken from the FairRootManager
   fCurrentEvent = FairRootManager::Instance()->GetEntryNr();

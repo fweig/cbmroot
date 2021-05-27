@@ -53,7 +53,8 @@ Int_t fieldSymType  = 0;
 
 TString defaultInputFile = "";
 
-void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron") {
+void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -66,8 +67,8 @@ void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron") {
 
 
   TString outDir  = "data/";
-  TString inFile  = outDir + setup + "_test.mc.root";  // Input file (MC events)
-  TString parFile = outDir + setup + "_params.root";   // Parameter file
+  TString inFile  = outDir + setup + "_test.mc.root";   // Input file (MC events)
+  TString parFile = outDir + setup + "_params.root";    // Parameter file
   TString outFile = outDir + setup + "_test.eds.root";  // Output file
 
   // Function needed for CTest runtime dependency
@@ -257,7 +258,7 @@ void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron") {
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  Bool_t simpleTR          = kTRUE;  // use fast and simple version for TR production
   CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
@@ -265,11 +266,11 @@ void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron") {
 
   Bool_t triangularPads = false;  // Bucharest triangular pad-plane layout
   //Double_t triggerThreshold = 0.5e-6;//SIS100
-  Double_t triggerThreshold   = 1.0e-6;  //SIS300
-  Double_t trdNoiseSigma_keV  = 0.1;  //default best matching to test beam PRF
-  Double_t eventRate          = 5.0E6;
-  Double_t scaleCentral2mBias = 1.0;
-  Bool_t plotFromFile         = false;
+  Double_t triggerThreshold      = 1.0e-6;  //SIS300
+  Double_t trdNoiseSigma_keV     = 0.1;     //default best matching to test beam PRF
+  Double_t eventRate             = 5.0E6;
+  Double_t scaleCentral2mBias    = 1.0;
+  Bool_t plotFromFile            = false;
   CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
   trdDigiPrf->SetTriangularPads(triangularPads);
   trdDigiPrf->SetNoiseLevel(trdNoiseSigma_keV);
@@ -282,15 +283,13 @@ void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron") {
   trdCluster->SetPrimaryClusterRowMerger(true);
   trdCluster->SetTriangularPads(triangularPads);
   run->AddTask(trdCluster);
-  TString digipar = "trd_v15a_1e.digi.par";
-  CbmTrdOccupancyQa* trdOccupancy =
-    new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
+  TString digipar                 = "trd_v15a_1e.digi.par";
+  CbmTrdOccupancyQa* trdOccupancy = new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
   run->AddTask(trdOccupancy);
   //CbmTrdHitRateQa *trdRateTest = new CbmTrdHitRateQa("HitRateTest","Hit Rate Test");
   //run->AddTask(trdRateTest);
 
-  CbmTrdHitDensityQa* trdHitDensity =
-    new CbmTrdHitDensityQa(triggerThreshold, eventRate, scaleCentral2mBias);
+  CbmTrdHitDensityQa* trdHitDensity = new CbmTrdHitDensityQa(triggerThreshold, eventRate, scaleCentral2mBias);
   trdHitDensity->SetPlotResults(plotFromFile);
   run->AddTask(trdHitDensity);
 

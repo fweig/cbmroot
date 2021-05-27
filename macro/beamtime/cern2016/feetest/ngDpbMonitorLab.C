@@ -10,10 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void ngDpbMonitorLab(TString inFile         = "",
-                     Bool_t bGet4v2Mode     = kTRUE,
-                     Bool_t b24bModeOn      = kFALSE,
-                     Bool_t bMergedEpochsOn = kFALSE) {
+void ngDpbMonitorLab(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24bModeOn = kFALSE,
+                     Bool_t bMergedEpochsOn = kFALSE)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
   if ("" != inFile) inFile = inDir + inFile;
@@ -79,8 +78,7 @@ void ngDpbMonitorLab(TString inFile         = "",
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("localhost");
     source->SetPortNumber(5556);
@@ -121,8 +119,7 @@ void ngDpbMonitorLab(TString inFile         = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -130,8 +127,7 @@ void ngDpbMonitorLab(TString inFile         = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -9,13 +9,12 @@
 using std::cout;
 using std::endl;
 
-void mvd_test(Int_t nEvents = 100) {
+void mvd_test(Int_t nEvents = 100)
+{
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
-  TString dir =
-    "/u/gkozlov/cbm/events/mvd/100events/";  // Input/Output directory
+  TString dir = "/u/gkozlov/cbm/events/mvd/100events/";  // Input/Output directory
   //TString mcFile = dir + "auau.25gev.centr.2maps_v11a_10events.mc.root"; // MC transport file
   //TString parFile = dir + "auau.25gev.centr.2maps_v11a_10events.params.root"; // Parameters file
   //TString recoFile = dir + "auau.25gev.centr.2maps_v11a_10events.rec.root"; // Reconstruction file
@@ -24,11 +23,9 @@ void mvd_test(Int_t nEvents = 100) {
    TString parFile = dir + "pc.30gev.centr_draw10.params.root"; // Parameters file
    TString recoFile = dir + "pc.30gev.centr_draw10.rec.root"; // Reconstruction file*/
   //---cc.25gev.centr---
-  TString mcFile = dir + "cc.25gev.centr_draw10.mc.root";  // MC transport file
-  TString parFile =
-    dir + "cc.25gev.centr_draw10.params.root";  // Parameters file
-  TString recoFile =
-    dir + "cc.25gev.centr_draw10.rec.root";  // Reconstruction file
+  TString mcFile   = dir + "cc.25gev.centr_draw10.mc.root";      // MC transport file
+  TString parFile  = dir + "cc.25gev.centr_draw10.params.root";  // Parameters file
+  TString recoFile = dir + "cc.25gev.centr_draw10.rec.root";     // Reconstruction file
   //---pAu.30gev.centr---
   /*TString mcFile = dir + "pAu.30gev.centr_draw10.mc.root"; // MC transport file
    TString parFile = dir + "pAu.30gev.centr_draw10.params.root"; // Parameters file
@@ -38,10 +35,8 @@ void mvd_test(Int_t nEvents = 100) {
 
   TString resultDir = "./test/";  // Directory for output results
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir
-    + "/sts/sts_v11a_0-8.digi.par";  //sts_v11a.digi.par"; // Digi scheme for STS
+  TList* parFileList     = new TList();
+  TObjString stsDigiFile = parDir + "/sts/sts_v11a_0-8.digi.par";  //sts_v11a.digi.par"; // Digi scheme for STS
   //TObjString muchDigiFile = parDir + "/much/much_v11a.digi.root";
   parFileList->Add(&stsDigiFile);
   //parFileList->Add(&muchDigiFile);
@@ -102,7 +97,6 @@ void mvd_test(Int_t nEvents = 100) {
   cout << "Macro finished successfully." << endl;
   //cout << "Output file is " << outFile << endl;
   //cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   // ------------------------------------------------------------------------
 }

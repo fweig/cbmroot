@@ -1,45 +1,11 @@
 
 // Constants definitions: Particles list
-const Int_t kiNbPart                = 13;
-const TString ksPartTag[kiNbPart]   = {"others",
-                                     "ep",
-                                     "em",
-                                     "pip",
-                                     "pim",
-                                     "kp",
-                                     "km",
-                                     "p",
-                                     "pbar",
-                                     "d",
-                                     "t",
-                                     "he",
-                                     "a"};
-const Int_t kiPartPdgCode[kiNbPart] = {0,
-                                       21,
-                                       -21,
-                                       211,
-                                       -211,
-                                       321,
-                                       -321,
-                                       2212,
-                                       -2212,
-                                       1000010020,
-                                       1000010030,
-                                       1000020030,
-                                       1000020040};
-const TString ksPartName[kiNbPart]  = {"any other part.",
-                                      "e-",
-                                      "e+",
-                                      "#pi+",
-                                      "#pi-",
-                                      "k+",
-                                      "k-",
-                                      "p",
-                                      "anti-p",
-                                      "d",
-                                      "t",
-                                      "he",
-                                      "#alpha"};
+const Int_t kiNbPart              = 13;
+const TString ksPartTag[kiNbPart] = {"others", "ep", "em", "pip", "pim", "kp", "km", "p", "pbar", "d", "t", "he", "a"};
+const Int_t kiPartPdgCode[kiNbPart] = {0,    21,    -21,        211,        -211,       321,       -321,
+                                       2212, -2212, 1000010020, 1000010030, 1000020030, 1000020040};
+const TString ksPartName[kiNbPart]  = {"any other part.", "e-", "e+", "#pi+", "#pi-",  "k+", "k-", "p",
+                                      "anti-p",          "d",  "t",  "he",   "#alpha"};
 //___________________________________________________________________
 
 const Int_t kiRebinFactX = 2;
@@ -49,15 +15,12 @@ const Int_t kiRebinFactZ = 2;
 // C++ Classes and includes
 #include <vector>
 
-Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
-                   TString sClustHistFileName = "",
-                   TString sQaHistFileName    = "",
-                   TString sOutHistFilename   = "",
-                   Double_t fdWallPosZ        = 900) {
+Bool_t tof_qa_plot(TString sDigiHistFileName = "", TString sClustHistFileName = "", TString sQaHistFileName = "",
+                   TString sOutHistFilename = "", Double_t fdWallPosZ = 900)
+{
 
   //******* Open the input and output files
-  if ("" == sDigiHistFileName || "" == sClustHistFileName
-      || "" == sQaHistFileName || "" == sOutHistFilename)
+  if ("" == sDigiHistFileName || "" == sClustHistFileName || "" == sQaHistFileName || "" == sOutHistFilename)
     return kFALSE;
 
   TFile* fDigiHistFile  = new TFile(sDigiHistFileName, "READ");
@@ -65,9 +28,7 @@ Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
   TFile* fQaHistFile    = new TFile(sQaHistFileName, "READ");
   TFile* fOutHistFile   = new TFile(sOutHistFilename, "RECREATE");
 
-  if (NULL == fDigiHistFile || NULL == fClustHistFile || NULL == fQaHistFile
-      || NULL == fOutHistFile)
-    return kFALSE;
+  if (NULL == fDigiHistFile || NULL == fClustHistFile || NULL == fQaHistFile || NULL == fOutHistFile) return kFALSE;
 
   gROOT->cd();
   std::cout << "File opening OK!" << std::endl;
@@ -164,396 +125,289 @@ Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
 
   // Recovery and cloning
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_PointsMapXY"));
-  if (NULL != tempTwoDimHist)
-    fhPointMapXY = (TH2*) (tempTwoDimHist->Clone("PointsMapXY_normed"));
+  if (NULL != tempTwoDimHist) fhPointMapXY = (TH2*) (tempTwoDimHist->Clone("PointsMapXY_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_PointsMapXZ"));
-  if (NULL != tempTwoDimHist)
-    fhPointMapXZ = (TH2*) (tempTwoDimHist->Clone("PointsMapXZ_normed"));
+  if (NULL != tempTwoDimHist) fhPointMapXZ = (TH2*) (tempTwoDimHist->Clone("PointsMapXZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_PointsMapYZ"));
-  if (NULL != tempTwoDimHist)
-    fhPointMapYZ = (TH2*) (tempTwoDimHist->Clone("PointsMapYZ_normed"));
+  if (NULL != tempTwoDimHist) fhPointMapYZ = (TH2*) (tempTwoDimHist->Clone("PointsMapYZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_PointsMapAng"));
-  if (NULL != tempTwoDimHist)
-    fhPointMapAng = (TH2*) (tempTwoDimHist->Clone("PointsMapAng_normed"));
+  if (NULL != tempTwoDimHist) fhPointMapAng = (TH2*) (tempTwoDimHist->Clone("PointsMapAng_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_PointsMapSph"));
-  if (NULL != tempTwoDimHist)
-    fhPointMapSph = (TH2*) (tempTwoDimHist->Clone("PointsMapSph_normed"));
+  if (NULL != tempTwoDimHist) fhPointMapSph = (TH2*) (tempTwoDimHist->Clone("PointsMapSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_DigisMapXY"));
-  if (NULL != tempTwoDimHist)
-    fhDigiMapXY = (TH2*) (tempTwoDimHist->Clone("DigisMapXY_normed"));
+  if (NULL != tempTwoDimHist) fhDigiMapXY = (TH2*) (tempTwoDimHist->Clone("DigisMapXY_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_DigisMapXZ"));
-  if (NULL != tempTwoDimHist)
-    fhDigiMapXZ = (TH2*) (tempTwoDimHist->Clone("DigisMapXZ_normed"));
+  if (NULL != tempTwoDimHist) fhDigiMapXZ = (TH2*) (tempTwoDimHist->Clone("DigisMapXZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_DigisMapYZ"));
-  if (NULL != tempTwoDimHist)
-    fhDigiMapYZ = (TH2*) (tempTwoDimHist->Clone("DigisMapYZ_normed"));
+  if (NULL != tempTwoDimHist) fhDigiMapYZ = (TH2*) (tempTwoDimHist->Clone("DigisMapYZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_DigisMapAng"));
-  if (NULL != tempTwoDimHist)
-    fhDigiMapAng = (TH2*) (tempTwoDimHist->Clone("DigisMapAng_normed"));
+  if (NULL != tempTwoDimHist) fhDigiMapAng = (TH2*) (tempTwoDimHist->Clone("DigisMapAng_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_DigisMapSph"));
-  if (NULL != tempTwoDimHist)
-    fhDigiMapSph = (TH2*) (tempTwoDimHist->Clone("DigisMapSph_normed"));
+  if (NULL != tempTwoDimHist) fhDigiMapSph = (TH2*) (tempTwoDimHist->Clone("DigisMapSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapXY"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapXY = (TH2*) (tempTwoDimHist->Clone("HitsMapXY_normed"));
+  if (NULL != tempTwoDimHist) fhHitMapXY = (TH2*) (tempTwoDimHist->Clone("HitsMapXY_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapXZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapXZ_normed"));
+  if (NULL != tempTwoDimHist) fhHitMapXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapXZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapYZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapYZ_normed"));
+  if (NULL != tempTwoDimHist) fhHitMapYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapYZ_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapAng = (TH2*) (tempTwoDimHist->Clone("HitsMapAng_normed"));
+  if (NULL != tempTwoDimHist) fhHitMapAng = (TH2*) (tempTwoDimHist->Clone("HitsMapAng_normed"));
   else
     return kFALSE;
 
   tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSph"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSph = (TH2*) (tempTwoDimHist->Clone("HitsMapSph_normed"));
+  if (NULL != tempTwoDimHist) fhHitMapSph = (TH2*) (tempTwoDimHist->Clone("HitsMapSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   // Mapping of position for hits coming from a single MC Point
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntXY"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntXY =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntXY_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntXY"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntXY = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntXY_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntXZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntXZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntXZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntXZ"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntXZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntYZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntYZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntYZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntYZ"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntYZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntAng =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntAng = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntAng_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntSph"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingPntSph =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntSph_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingPntSph"));
+  if (NULL != tempTwoDimHist) fhHitMapSingPntSph = (TH2*) (tempTwoDimHist->Clone("HitsMapSingPntSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   // Mapping of position for hits coming from multiple MC Points
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntXY"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntXY =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntXY_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntXY"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntXY = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntXY_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntXZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntXZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntXZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntXZ"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntXZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntYZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntYZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntYZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntYZ"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntYZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntAng =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntAng = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntAng_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntSph"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultPntSph =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntSph_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultPntSph"));
+  if (NULL != tempTwoDimHist) fhHitMapMultPntSph = (TH2*) (tempTwoDimHist->Clone("HitsMapMultPntSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   // Mapping of position for hits coming from a single MC Track
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkXY"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkXY =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkXY_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkXY"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkXY = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkXY_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkXZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkXZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkXZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkXZ"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkXZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkYZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkYZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkYZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkYZ"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkYZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkAng =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkAng = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkAng_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkSph"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapSingTrkSph =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkSph_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapSingTrkSph"));
+  if (NULL != tempTwoDimHist) fhHitMapSingTrkSph = (TH2*) (tempTwoDimHist->Clone("HitsMapSingTrkSph_normed"));
   else
     return kFALSE;
 
   //-----------------------------------
   // Mapping of position for hits coming from multiple MC Tracks
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkXY"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkXY =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkXY_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkXY"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkXY = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkXY_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkXZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkXZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkXZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkXZ"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkXZ = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkXZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkYZ"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkYZ =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkYZ_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkYZ"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkYZ = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkYZ_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkAng"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkAng =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkAng"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkAng = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkAng_normed"));
   else
     return kFALSE;
 
-  tempTwoDimHist =
-    (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkSph"));
-  if (NULL != tempTwoDimHist)
-    fhHitMapMultTrkSph =
-      (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkSph_normed"));
+  tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny("TofTests_HitsMapMultTrkSph"));
+  if (NULL != tempTwoDimHist) fhHitMapMultTrkSph = (TH2*) (tempTwoDimHist->Clone("HitsMapMultTrkSph_normed"));
   else
     return kFALSE;
 
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
     // Phase space
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapGenTrk_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempTwoDimHist)
-      fvhPtmRapGenTrk[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapGenTrk_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempTwoDimHist) fvhPtmRapGenTrk[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapStsPnt_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempTwoDimHist)
-      fvhPtmRapStsPnt[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapStsPnt_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempTwoDimHist) fvhPtmRapStsPnt[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapTofPnt_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempTwoDimHist)
-      fvhPtmRapTofPnt[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapTofPnt_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempTwoDimHist) fvhPtmRapTofPnt[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapTofHit_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempTwoDimHist)
-      fvhPtmRapTofHit[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapTofHit_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempTwoDimHist) fvhPtmRapTofHit[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data())));
+    tempTwoDimHist =
+      (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempTwoDimHist)
-      fvhPtmRapTofHitSinglePnt[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPtmRapTofHitSinglePnt[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data())));
+    tempTwoDimHist =
+      (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempTwoDimHist)
-      fvhPtmRapTofHitSingleTrk[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPtmRapTofHitSingleTrk[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
     //-----------------------------------
     // PLab
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabGenTrk_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempOneDimHist)
-      fvhPlabGenTrk[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabGenTrk_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempOneDimHist) fvhPlabGenTrk[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabStsPnt_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempOneDimHist)
-      fvhPlabStsPnt[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabStsPnt_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempOneDimHist) fvhPlabStsPnt[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabTofPnt_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempOneDimHist)
-      fvhPlabTofPnt[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabTofPnt_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempOneDimHist) fvhPlabTofPnt[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabTofHit_%s", ksPartTag[iPartIdx].Data())));
-    if (NULL != tempOneDimHist)
-      fvhPlabTofHit[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabTofHit_%s", ksPartTag[iPartIdx].Data())));
+    if (NULL != tempOneDimHist) fvhPlabTofHit[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data())));
+    tempOneDimHist =
+      (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabTofHitSinglePnt_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempOneDimHist)
-      fvhPlabTofHitSinglePnt[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPlabTofHitSinglePnt[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data())));
+    tempOneDimHist =
+      (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabTofHitSingleTrk_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempOneDimHist)
-      fvhPlabTofHitSingleTrk[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPlabTofHitSingleTrk[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
     //-----------------------------------
     // MC Tracks losses
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data())));
+    tempTwoDimHist =
+      (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempTwoDimHist)
-      fvhPtmRapGenTrkTofPnt[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPtmRapGenTrkTofPnt[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempTwoDimHist = (TH2*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PtmRapGenTrkTofHit_%s", ksPartTag[iPartIdx].Data())));
+    tempTwoDimHist =
+      (TH2*) (fQaHistFile->FindObjectAny(Form("TofTests_PtmRapGenTrkTofHit_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempTwoDimHist)
-      fvhPtmRapGenTrkTofHit[iPartIdx] =
-        (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPtmRapGenTrkTofHit[iPartIdx] = (TH2*) (tempTwoDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data())));
+    tempOneDimHist =
+      (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabGenTrkTofPnt_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempOneDimHist)
-      fvhPlabGenTrkTofPnt[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPlabGenTrkTofPnt[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
-    tempOneDimHist = (TH1*) (fQaHistFile->FindObjectAny(
-      Form("TofTests_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data())));
+    tempOneDimHist =
+      (TH1*) (fQaHistFile->FindObjectAny(Form("TofTests_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data())));
     if (NULL != tempOneDimHist)
-      fvhPlabGenTrkTofhit[iPartIdx] =
-        (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
+      fvhPlabGenTrkTofhit[iPartIdx] = (TH1*) (tempOneDimHist->Clone("HitMapMultTrkSph_normed"));
     else
       return kFALSE;
 
@@ -651,411 +505,175 @@ Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
   Double_t dMaxPlab = 10.0;
 
   // Geometric Mapping
-  TH2* fhHitEffMapXY = new TH2D("TofQa_HitsEffMapXY",
+  TH2* fhHitEffMapXY  = new TH2D("TofQa_HitsEffMapXY",
                                 "Efficiency of the Tof Hits generation VS "
                                 "position; X[cm]; Y[cm]; Eff. [\%]",
-                                nbinx,
-                                -xrange,
-                                xrange,
-                                nbiny,
-                                -yrange,
-                                yrange);
-  TH2* fhHitEffMapXZ = new TH2D("TofQa_HitsEffMapXZ",
+                                nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitEffMapXZ  = new TH2D("TofQa_HitsEffMapXZ",
                                 "Efficiency of the Tof Hits generation VS "
                                 "position; X[cm]; Z[cm]; Eff. [\%]",
-                                nbinx,
-                                -xrange,
-                                xrange,
-                                nbinz,
-                                zmin,
-                                zmax);
-  TH2* fhHitEffMapYZ = new TH2D("TofQa_HitsEffMapYZ",
+                                nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapYZ  = new TH2D("TofQa_HitsEffMapYZ",
                                 "Efficiency of the Tof Hits generation VS "
                                 "position; Y[cm]; Z[cm]; Eff. [\%]",
-                                nbiny,
-                                -yrange,
-                                yrange,
-                                nbinz,
-                                zmin,
-                                zmax);
-  TH2* fhHitEffMapAng =
-    new TH2D("TofQa_HitsEffMapAng",
-             "Efficiency of the Tof Hits generation VS position; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitEffMapSph =
-    new TH2D("TofQa_HitsEffMapSph",
-             "Efficiency of the Tof Hits generation VS position; #theta[rad.]; "
-             "#phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+                                nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapAng = new TH2D("TofQa_HitsEffMapAng",
+                                 "Efficiency of the Tof Hits generation VS position; "
+                                 "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                 iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitEffMapSph = new TH2D("TofQa_HitsEffMapSph",
+                                 "Efficiency of the Tof Hits generation VS position; #theta[rad.]; "
+                                 "#phi[rad.]; Eff. [\%]",
+                                 iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from a single MC Point
-  TH2* fhHitEffMapSingPntXY =
-    new TH2D("TofQa_HitsEffMapSingPntXY",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Pnt; X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitEffMapSingPntXZ =
-    new TH2D("TofQa_HitsEffMapSingPntXZ",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Pnt; X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapSingPntYZ =
-    new TH2D("TofQa_HitsEffMapSingPntYZ",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Pnt; Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapSingPntAng =
-    new TH2D("TofQa_HitsEffMapSingPntAng",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitEffMapSingPntSph =
-    new TH2D("TofQa_HitsEffMapSingPntSph",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitEffMapSingPntXY  = new TH2D("TofQa_HitsEffMapSingPntXY",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Pnt; X[cm]; Y[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitEffMapSingPntXZ  = new TH2D("TofQa_HitsEffMapSingPntXZ",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Pnt; X[cm]; Z[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapSingPntYZ  = new TH2D("TofQa_HitsEffMapSingPntYZ",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Pnt; Y[cm]; Z[cm]; Eff. [\%]",
+                                       nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapSingPntAng = new TH2D("TofQa_HitsEffMapSingPntAng",
+                                        "Efficiency of the Tof Hits generation for hits from a single MC "
+                                        "Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitEffMapSingPntSph = new TH2D("TofQa_HitsEffMapSingPntSph",
+                                        "Efficiency of the Tof Hits generation for hits from a single MC "
+                                        "Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                        iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
-  TH2* fhHitRatioMapSingPntXY =
-    new TH2D("TofQa_HitsRatioMapSingPntXY",
-             "Tof Hits generation: Fraction of hits from a single MC Pnt; "
-             "X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitRatioMapSingPntXZ =
-    new TH2D("TofQa_HitsRatioMapSingPntXZ",
-             "Tof Hits generation: Fraction of hits from a single MC Pnt; "
-             "X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapSingPntYZ =
-    new TH2D("TofQa_HitsRatioMapSingPntYZ",
-             "Tof Hits generation: Fraction of hits from a single MC Pnt; "
-             "Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapSingPntAng =
-    new TH2D("TofQa_HitsRatioMapSingPntAng",
-             "Tof Hits generation: Fraction of hits from a single MC Pnt; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitRatioMapSingPntSph =
-    new TH2D("TofQa_HitsRatioMapSingPntSph",
-             "Tof Hits generation: Fraction of hits from a single MC Pnt; "
-             "#theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitRatioMapSingPntXY  = new TH2D("TofQa_HitsRatioMapSingPntXY",
+                                         "Tof Hits generation: Fraction of hits from a single MC Pnt; "
+                                         "X[cm]; Y[cm]; Eff. [\%]",
+                                         nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitRatioMapSingPntXZ  = new TH2D("TofQa_HitsRatioMapSingPntXZ",
+                                         "Tof Hits generation: Fraction of hits from a single MC Pnt; "
+                                         "X[cm]; Z[cm]; Eff. [\%]",
+                                         nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapSingPntYZ  = new TH2D("TofQa_HitsRatioMapSingPntYZ",
+                                         "Tof Hits generation: Fraction of hits from a single MC Pnt; "
+                                         "Y[cm]; Z[cm]; Eff. [\%]",
+                                         nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapSingPntAng = new TH2D("TofQa_HitsRatioMapSingPntAng",
+                                          "Tof Hits generation: Fraction of hits from a single MC Pnt; "
+                                          "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                          iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitRatioMapSingPntSph = new TH2D("TofQa_HitsRatioMapSingPntSph",
+                                          "Tof Hits generation: Fraction of hits from a single MC Pnt; "
+                                          "#theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                          iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from multiple MC Points
-  TH2* fhHitEffMapMultPntXY =
-    new TH2D("TofQa_HitsEffMapMultPntXY",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Pnt; X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitEffMapMultPntXZ =
-    new TH2D("TofQa_HitsEffMapMultPntXZ",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Pnt; X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapMultPntYZ =
-    new TH2D("TofQa_HitsEffMapMultPntYZ",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Pnt; Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapMultPntAng =
-    new TH2D("TofQa_HitsEffMapMultPntAng",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitEffMapMultPntSph =
-    new TH2D("TofQa_HitsEffMapMultPntSph",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitEffMapMultPntXY  = new TH2D("TofQa_HitsEffMapMultPntXY",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Pnt; X[cm]; Y[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitEffMapMultPntXZ  = new TH2D("TofQa_HitsEffMapMultPntXZ",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Pnt; X[cm]; Z[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapMultPntYZ  = new TH2D("TofQa_HitsEffMapMultPntYZ",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Pnt; Y[cm]; Z[cm]; Eff. [\%]",
+                                       nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapMultPntAng = new TH2D("TofQa_HitsEffMapMultPntAng",
+                                        "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                        "Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitEffMapMultPntSph = new TH2D("TofQa_HitsEffMapMultPntSph",
+                                        "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                        "Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                        iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from a single MC Track
-  TH2* fhHitEffMapSingTrkXY =
-    new TH2D("TofQa_HitsEffMapSingTrkXY",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Trk; X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitEffMapSingTrkXZ =
-    new TH2D("TofQa_HitsEffMapSingTrkXZ",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Trk; X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapSingTrkYZ =
-    new TH2D("TofQa_HitsEffMapSingTrkYZ",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Trk; Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapSingTrkAng =
-    new TH2D("TofQa_HitsEffMapSingTrkAng",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Trk; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitEffMapSingTrkSph =
-    new TH2D("TofQa_HitsEffMapSingTrkSph",
-             "Efficiency of the Tof Hits generation for hits from a single MC "
-             "Trk; #theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitEffMapSingTrkXY  = new TH2D("TofQa_HitsEffMapSingTrkXY",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Trk; X[cm]; Y[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitEffMapSingTrkXZ  = new TH2D("TofQa_HitsEffMapSingTrkXZ",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Trk; X[cm]; Z[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapSingTrkYZ  = new TH2D("TofQa_HitsEffMapSingTrkYZ",
+                                       "Efficiency of the Tof Hits generation for hits from a single MC "
+                                       "Trk; Y[cm]; Z[cm]; Eff. [\%]",
+                                       nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapSingTrkAng = new TH2D("TofQa_HitsEffMapSingTrkAng",
+                                        "Efficiency of the Tof Hits generation for hits from a single MC "
+                                        "Trk; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitEffMapSingTrkSph = new TH2D("TofQa_HitsEffMapSingTrkSph",
+                                        "Efficiency of the Tof Hits generation for hits from a single MC "
+                                        "Trk; #theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                        iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
-  TH2* fhHitRatioMapSingTrkXY =
-    new TH2D("TofQa_HitsRatioMapSingTrkXY",
-             "Tof Hits generation: Fraction of hits from a single MC Trk; "
-             "X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitRatioMapSingTrkXZ =
-    new TH2D("TofQa_HitsRatioMapSingTrkXZ",
-             "Tof Hits generation: Fraction of hits from a single MC Trk; "
-             "X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapSingTrkYZ =
-    new TH2D("TofQa_HitsRatioMapSingTrkYZ",
-             "Tof Hits generation: Fraction of hits from a single MC Trk; "
-             "Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapSingTrkAng =
-    new TH2D("TofQa_HitsRatioMapSingTrkAng",
-             "Tof Hits generation: Fraction of hits from a single MC Trk; "
-             "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitRatioMapSingTrkSph =
-    new TH2D("TofQa_HitsRatioMapSingTrkSph",
-             "Tof Hits generation: Fraction of hits from a single MC Trk; "
-             "#theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitRatioMapSingTrkXY  = new TH2D("TofQa_HitsRatioMapSingTrkXY",
+                                         "Tof Hits generation: Fraction of hits from a single MC Trk; "
+                                         "X[cm]; Y[cm]; Eff. [\%]",
+                                         nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitRatioMapSingTrkXZ  = new TH2D("TofQa_HitsRatioMapSingTrkXZ",
+                                         "Tof Hits generation: Fraction of hits from a single MC Trk; "
+                                         "X[cm]; Z[cm]; Eff. [\%]",
+                                         nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapSingTrkYZ  = new TH2D("TofQa_HitsRatioMapSingTrkYZ",
+                                         "Tof Hits generation: Fraction of hits from a single MC Trk; "
+                                         "Y[cm]; Z[cm]; Eff. [\%]",
+                                         nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapSingTrkAng = new TH2D("TofQa_HitsRatioMapSingTrkAng",
+                                          "Tof Hits generation: Fraction of hits from a single MC Trk; "
+                                          "#theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                          iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitRatioMapSingTrkSph = new TH2D("TofQa_HitsRatioMapSingTrkSph",
+                                          "Tof Hits generation: Fraction of hits from a single MC Trk; "
+                                          "#theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                          iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
   // Mapping of position for hits coming from multiple MC Tracks
-  TH2* fhHitEffMapMultTrkXY =
-    new TH2D("TofQa_HitsEffMapMultTrkXY",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Trk; X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitEffMapMultTrkXZ =
-    new TH2D("TofQa_HitsEffMapMultTrkXZ",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Trk; X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapMultTrkYZ =
-    new TH2D("TofQa_HitsEffMapMultTrkYZ",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Trk; Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitEffMapMultTrkAng =
-    new TH2D("TofQa_HitsEffMapMultTrkAng",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Trk; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-             iNbBinThetaX,
-             dThetaXMin,
-             dThetaXMax,
-             iNbBinThetaY,
-             dThetaYMin,
-             dThetaYMax);
-  TH2* fhHitEffMapMultTrkSph =
-    new TH2D("TofQa_HitsEffMapMultTrkSph",
-             "Efficiency of the Tof Hits generation for hits from multiple MC "
-             "Trk; #theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitEffMapMultTrkXY  = new TH2D("TofQa_HitsEffMapMultTrkXY",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Trk; X[cm]; Y[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitEffMapMultTrkXZ  = new TH2D("TofQa_HitsEffMapMultTrkXZ",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Trk; X[cm]; Z[cm]; Eff. [\%]",
+                                       nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapMultTrkYZ  = new TH2D("TofQa_HitsEffMapMultTrkYZ",
+                                       "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                       "Trk; Y[cm]; Z[cm]; Eff. [\%]",
+                                       nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitEffMapMultTrkAng = new TH2D("TofQa_HitsEffMapMultTrkAng",
+                                        "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                        "Trk; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+                                        iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitEffMapMultTrkSph = new TH2D("TofQa_HitsEffMapMultTrkSph",
+                                        "Efficiency of the Tof Hits generation for hits from multiple MC "
+                                        "Trk; #theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                        iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
 
-  TH2* fhHitRatioMapMultTrkMultPntXY =
-    new TH2D("TofQa_HitsRatioMapMultTrkMultPntXY",
-             "Tof Hits generation: Fraction of hits from multi. Tracks among "
-             "hits from multi. MC Pnt; X[cm]; Y[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbiny,
-             -yrange,
-             yrange);
-  TH2* fhHitRatioMapMultTrkMultPntXZ =
-    new TH2D("TofQa_HitsRatioMapMultTrkMultPntXZ",
-             "Tof Hits generation: Fraction of hits from multi. Tracks among "
-             "hits from multi. MC Pnt; X[cm]; Z[cm]; Eff. [\%]",
-             nbinx,
-             -xrange,
-             xrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapMultTrkMultPntYZ =
-    new TH2D("TofQa_HitsRatioMapMultTrkMultPntYZ",
-             "Tof Hits generation: Fraction of hits from multi. Tracks among "
-             "hits from multi. MC Pnt; Y[cm]; Z[cm]; Eff. [\%]",
-             nbiny,
-             -yrange,
-             yrange,
-             nbinz,
-             zmin,
-             zmax);
-  TH2* fhHitRatioMapMultTrkMultPntAng = new TH2D(
-    "TofQa_HitsRatioMapMultTrkMultPntAng",
-    "Tof Hits generation: Fraction of hits from multi. Tracks among hits from "
-    "multi. MC Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
-    iNbBinThetaX,
-    dThetaXMin,
-    dThetaXMax,
-    iNbBinThetaY,
-    dThetaYMin,
-    dThetaYMax);
-  TH2* fhHitRatioMapMultTrkMultPntSph =
-    new TH2D("TofQa_HitsRatioMapMultTrkMultPntSph",
-             "Tof Hits generation: Fraction of hits from multi. Tracks among "
-             "hits from multi. MC Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
-             iNbBinTheta,
-             dThetaMin,
-             dThetaMax,
-             iNbBinPhi,
-             dPhiMin,
-             dPhiMax);
+  TH2* fhHitRatioMapMultTrkMultPntXY = new TH2D("TofQa_HitsRatioMapMultTrkMultPntXY",
+                                                "Tof Hits generation: Fraction of hits from multi. Tracks among "
+                                                "hits from multi. MC Pnt; X[cm]; Y[cm]; Eff. [\%]",
+                                                nbinx, -xrange, xrange, nbiny, -yrange, yrange);
+  TH2* fhHitRatioMapMultTrkMultPntXZ = new TH2D("TofQa_HitsRatioMapMultTrkMultPntXZ",
+                                                "Tof Hits generation: Fraction of hits from multi. Tracks among "
+                                                "hits from multi. MC Pnt; X[cm]; Z[cm]; Eff. [\%]",
+                                                nbinx, -xrange, xrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapMultTrkMultPntYZ = new TH2D("TofQa_HitsRatioMapMultTrkMultPntYZ",
+                                                "Tof Hits generation: Fraction of hits from multi. Tracks among "
+                                                "hits from multi. MC Pnt; Y[cm]; Z[cm]; Eff. [\%]",
+                                                nbiny, -yrange, yrange, nbinz, zmin, zmax);
+  TH2* fhHitRatioMapMultTrkMultPntAng =
+    new TH2D("TofQa_HitsRatioMapMultTrkMultPntAng",
+             "Tof Hits generation: Fraction of hits from multi. Tracks among hits from "
+             "multi. MC Pnt; #theta_{x}[Deg.]; #theta_{y}[Deg.]; Eff. [\%]",
+             iNbBinThetaX, dThetaXMin, dThetaXMax, iNbBinThetaY, dThetaYMin, dThetaYMax);
+  TH2* fhHitRatioMapMultTrkMultPntSph = new TH2D("TofQa_HitsRatioMapMultTrkMultPntSph",
+                                                 "Tof Hits generation: Fraction of hits from multi. Tracks among "
+                                                 "hits from multi. MC Pnt; #theta[rad.]; #phi[rad.]; Eff. [\%]",
+                                                 iNbBinTheta, dThetaMin, dThetaMax, iNbBinPhi, dPhiMin, dPhiMax);
 
   // Physics coord mapping, 1 per particle type
   // Phase space
@@ -1104,201 +722,119 @@ Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
 
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
     // Phase space
-    fvhPtmRapStsPntAcc[iPartIdx] =
-      new TH2D(Form("TofQa_PtmRapStsPntAcc_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y acceptance for MC Track with STS points, %s; "
-                    "y; P_{t}/M; Acc. [\%]",
+    fvhPtmRapStsPntAcc[iPartIdx] = new TH2D(Form("TofQa_PtmRapStsPntAcc_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y acceptance for MC Track with STS points, %s; "
+                                                 "y; P_{t}/M; Acc. [\%]",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofPntAcc[iPartIdx] = new TH2D(Form("TofQa_PtmRapTofPntAcc_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y acceptance from MC Track for TOF points, %s; "
+                                                 "y; P_{t}/M; Acc. [\%]",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitEff[iPartIdx] = new TH2D(Form("TofQa_PtmRapTofHitEff_%s", ksPartTag[iPartIdx].Data()),
+                                            Form("P_{t}/M vs y efficiency distribution for TOF Hits VS MC "
+                                                 "tracks(from MC Track), %s; y; P_{t}/M; Eff. [\%]",
+                                                 ksPartName[iPartIdx].Data()),
+                                            iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSinglePntRatio[iPartIdx] =
+      new TH2D(Form("TofQa_PtmRapTofHitSinglePntRatio_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution of the ratio of TOF Hits from a single "
+                    "TOF Point (from MC Track), %s; y; P_{t}/M; Rat. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofPntAcc[iPartIdx] =
-      new TH2D(Form("TofQa_PtmRapTofPntAcc_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y acceptance from MC Track for TOF points, %s; "
-                    "y; P_{t}/M; Acc. [\%]",
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSingleTrkRatio[iPartIdx] =
+      new TH2D(Form("TofQa_PtmRapTofHitSingleTrkRatio_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y distribution of the ratio of TOF Hits from a single "
+                    "MC track (from MC Track), %s; y; P_{t}/M; Rat. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHitEff[iPartIdx] =
-      new TH2D(Form("TofQa_PtmRapTofHitEff_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y efficiency distribution for TOF Hits VS MC "
-                    "tracks(from MC Track), %s; y; P_{t}/M; Eff. [\%]",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHitSinglePntRatio[iPartIdx] = new TH2D(
-      Form("TofQa_PtmRapTofHitSinglePntRatio_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution of the ratio of TOF Hits from a single "
-           "TOF Point (from MC Track), %s; y; P_{t}/M; Rat. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapTofHitSingleTrkRatio[iPartIdx] = new TH2D(
-      Form("TofQa_PtmRapTofHitSingleTrkRatio_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y distribution of the ratio of TOF Hits from a single "
-           "MC track (from MC Track), %s; y; P_{t}/M; Rat. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
 
-    fvhPtmRapTofPntEffSts[iPartIdx] =
-      new TH2D(Form("TofQa_PtmRapTofPntEffSts_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y distribution of the efficiency for TOF "
-                    "points VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
+    fvhPtmRapTofPntEffSts[iPartIdx] = new TH2D(Form("TofQa_PtmRapTofPntEffSts_%s", ksPartTag[iPartIdx].Data()),
+                                               Form("P_{t}/M vs y distribution of the efficiency for TOF "
+                                                    "points VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
+                                                    ksPartName[iPartIdx].Data()),
+                                               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitEffSts[iPartIdx] = new TH2D(Form("TofQa_PtmRapTofHitEffSts_%s", ksPartTag[iPartIdx].Data()),
+                                               Form("P_{t}/M vs y efficiency distribution for TOF Hits VS STS "
+                                                    "(from MC Track), %s; y; P_{t}/M; Eff. [\%]",
+                                                    ksPartName[iPartIdx].Data()),
+                                               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSinglePntEffSts[iPartIdx] =
+      new TH2D(Form("TofQa_PtmRapTofHitSinglePntEffSts_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y efficiency distribution for TOF Hits from a single "
+                    "TOF Point VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHitEffSts[iPartIdx] =
-      new TH2D(Form("TofQa_PtmRapTofHitEffSts_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{t}/M vs y efficiency distribution for TOF Hits VS STS "
-                    "(from MC Track), %s; y; P_{t}/M; Eff. [\%]",
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPtmRapTofHitSingleTrkEffSts[iPartIdx] =
+      new TH2D(Form("TofQa_PtmRapTofHitSingleTrkEffSts_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{t}/M vs y efficiency distribution for TOF Hits from a single MC "
+                    "track VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsY,
-               dMinY,
-               dMaxY,
-               iNbBNinsPtm,
-               dMinPtm,
-               dMaxPtm);
-    fvhPtmRapTofHitSinglePntEffSts[iPartIdx] = new TH2D(
-      Form("TofQa_PtmRapTofHitSinglePntEffSts_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y efficiency distribution for TOF Hits from a single "
-           "TOF Point VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPtmRapTofHitSingleTrkEffSts[iPartIdx] = new TH2D(
-      Form("TofQa_PtmRapTofHitSingleTrkEffSts_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y efficiency distribution for TOF Hits from a single MC "
-           "track VS STS (from MC Track), %s; y; P_{t}/M; Eff. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
+               iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
     // PLab
-    fvhPlabStsPntAcc[iPartIdx] =
-      new TH1D(Form("TofQa_PlabStsPntAcc_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} acceptance for MC Track with STS points, %s; "
-                    "P_{lab} [GeV/c]; Acc. [\%]",
+    fvhPlabStsPntAcc[iPartIdx] = new TH1D(Form("TofQa_PlabStsPntAcc_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} acceptance for MC Track with STS points, %s; "
+                                               "P_{lab} [GeV/c]; Acc. [\%]",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofPntAcc[iPartIdx] = new TH1D(Form("TofQa_PlabTofPntAcc_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} acceptance from MC Track for TOF points, %s; "
+                                               "P_{lab} [GeV/c]; Acc. [\%]",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitEff[iPartIdx] = new TH1D(Form("TofQa_PlabTofHitEff_%s", ksPartTag[iPartIdx].Data()),
+                                          Form("P_{lab} efficiency distribution for TOF Hits VS MC "
+                                               "tracks(from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
+                                               ksPartName[iPartIdx].Data()),
+                                          iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSinglePntRatio[iPartIdx] =
+      new TH1D(Form("TofQa_PlabTofHitSinglePntRatio_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution of the ratio of TOF Hits from a single TOF "
+                    "Point (from MC Track), %s; P_{lab} [GeV/c]; Rat. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofPntAcc[iPartIdx] =
-      new TH1D(Form("TofQa_PlabTofPntAcc_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} acceptance from MC Track for TOF points, %s; "
-                    "P_{lab} [GeV/c]; Acc. [\%]",
+               iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSingleTrkRatio[iPartIdx] =
+      new TH1D(Form("TofQa_PlabTofHitSingleTrkRatio_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} distribution of the ratio of TOF Hits from a single MC "
+                    "track (from MC Track), %s; P_{lab} [GeV/c]; Rat. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHitEff[iPartIdx] =
-      new TH1D(Form("TofQa_PlabTofHitEff_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} efficiency distribution for TOF Hits VS MC "
-                    "tracks(from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHitSinglePntRatio[iPartIdx] = new TH1D(
-      Form("TofQa_PlabTofHitSinglePntRatio_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution of the ratio of TOF Hits from a single TOF "
-           "Point (from MC Track), %s; P_{lab} [GeV/c]; Rat. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabTofHitSingleTrkRatio[iPartIdx] = new TH1D(
-      Form("TofQa_PlabTofHitSingleTrkRatio_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} distribution of the ratio of TOF Hits from a single MC "
-           "track (from MC Track), %s; P_{lab} [GeV/c]; Rat. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+               iNbBinsPlab, dMinPlab, dMaxPlab);
 
-    fvhPlabTofPntEffSts[iPartIdx] =
-      new TH1D(Form("TofQa_PlabTofPntEffSts_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} distribution of the efficiency for TOF points VS "
-                    "STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
+    fvhPlabTofPntEffSts[iPartIdx] = new TH1D(Form("TofQa_PlabTofPntEffSts_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} distribution of the efficiency for TOF points VS "
+                                                  "STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitEffSts[iPartIdx] = new TH1D(Form("TofQa_PlabTofHitEffSts_%s", ksPartTag[iPartIdx].Data()),
+                                             Form("P_{lab} efficiency distribution for TOF Hits VS STS (from "
+                                                  "MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
+                                                  ksPartName[iPartIdx].Data()),
+                                             iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSinglePntEffSts[iPartIdx] =
+      new TH1D(Form("TofQa_PlabTofHitSinglePntEffSts_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} efficiency distribution for TOF Hits from a single TOF "
+                    "Point VS STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHitEffSts[iPartIdx] =
-      new TH1D(Form("TofQa_PlabTofHitEffSts_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} efficiency distribution for TOF Hits VS STS (from "
-                    "MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
+               iNbBinsPlab, dMinPlab, dMaxPlab);
+    fvhPlabTofHitSingleTrkEffSts[iPartIdx] =
+      new TH1D(Form("TofQa_PlabTofHitSingleTrkEffSts_%s", ksPartTag[iPartIdx].Data()),
+               Form("P_{lab} efficiency distribution for TOF Hits from a single MC "
+                    "track VS STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
                     ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
-    fvhPlabTofHitSinglePntEffSts[iPartIdx] = new TH1D(
-      Form("TofQa_PlabTofHitSinglePntEffSts_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} efficiency distribution for TOF Hits from a single TOF "
-           "Point VS STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
-    fvhPlabTofHitSingleTrkEffSts[iPartIdx] = new TH1D(
-      Form("TofQa_PlabTofHitSingleTrkEffSts_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{lab} efficiency distribution for TOF Hits from a single MC "
-           "track VS STS (from MC Track), %s; P_{lab} [GeV/c]; Eff. [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsPlab,
-      dMinPlab,
-      dMaxPlab);
+               iNbBinsPlab, dMinPlab, dMaxPlab);
 
     // MC Tracks losses
-    fvhPtmRapGenTrkTofHitEff[iPartIdx] = new TH2D(
-      Form("TofQa_PtmRapGenTrkTofHitEff_%s", ksPartTag[iPartIdx].Data()),
-      Form("P_{t}/M vs y efficiency distribution for MC tracks with TOF "
-           "Hit(s), %s; y; P_{t}/M; Trk w. Hits [\%]",
-           ksPartName[iPartIdx].Data()),
-      iNbBinsY,
-      dMinY,
-      dMaxY,
-      iNbBNinsPtm,
-      dMinPtm,
-      dMaxPtm);
-    fvhPlabGenTrkTofhitEff[iPartIdx] =
-      new TH1D(Form("TofQa_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
-               Form("P_{lab} efficiency distribution for MC tracks with TOF "
-                    "Hit(s), %s; P_{lab} [GeV/c]; Trk w. Hits [\%]",
-                    ksPartName[iPartIdx].Data()),
-               iNbBinsPlab,
-               dMinPlab,
-               dMaxPlab);
+    fvhPtmRapGenTrkTofHitEff[iPartIdx] = new TH2D(Form("TofQa_PtmRapGenTrkTofHitEff_%s", ksPartTag[iPartIdx].Data()),
+                                                  Form("P_{t}/M vs y efficiency distribution for MC tracks with TOF "
+                                                       "Hit(s), %s; y; P_{t}/M; Trk w. Hits [\%]",
+                                                       ksPartName[iPartIdx].Data()),
+                                                  iNbBinsY, dMinY, dMaxY, iNbBNinsPtm, dMinPtm, dMaxPtm);
+    fvhPlabGenTrkTofhitEff[iPartIdx]   = new TH1D(Form("TofQa_PlabGenTrkTofHit_%s", ksPartTag[iPartIdx].Data()),
+                                                Form("P_{lab} efficiency distribution for MC tracks with TOF "
+                                                     "Hit(s), %s; P_{lab} [GeV/c]; Trk w. Hits [\%]",
+                                                     ksPartName[iPartIdx].Data()),
+                                                iNbBinsPlab, dMinPlab, dMaxPlab);
   }  // for( Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++)
 
   std::cout << "Histo creation OK!" << std::endl;
@@ -1351,59 +887,37 @@ Bool_t tof_qa_plot(TString sDigiHistFileName  = "",
   fhHitRatioMapMultTrkMultPntXY->Divide(fhHitMapMultTrkXY, fhHitMapMultPntXY);
   fhHitRatioMapMultTrkMultPntXZ->Divide(fhHitMapMultTrkXZ, fhHitMapMultPntXZ);
   fhHitRatioMapMultTrkMultPntYZ->Divide(fhHitMapMultTrkYZ, fhHitMapMultPntYZ);
-  fhHitRatioMapMultTrkMultPntAng->Divide(fhHitMapMultTrkAng,
-                                         fhHitMapMultPntAng);
-  fhHitRatioMapMultTrkMultPntSph->Divide(fhHitMapMultTrkSph,
-                                         fhHitMapMultPntSph);
+  fhHitRatioMapMultTrkMultPntAng->Divide(fhHitMapMultTrkAng, fhHitMapMultPntAng);
+  fhHitRatioMapMultTrkMultPntSph->Divide(fhHitMapMultTrkSph, fhHitMapMultPntSph);
 
   // Physics coord mapping, 1 per particle type
   for (Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++) {
     // Phase space
-    fvhPtmRapStsPntAcc[iPartIdx]->Divide(fvhPtmRapStsPnt[iPartIdx],
-                                         fvhPtmRapGenTrk[iPartIdx]);
-    fvhPtmRapTofPntAcc[iPartIdx]->Divide(fvhPtmRapTofPnt[iPartIdx],
-                                         fvhPtmRapGenTrk[iPartIdx]);
-    fvhPtmRapTofHitEff[iPartIdx]->Divide(fvhPtmRapTofHit[iPartIdx],
-                                         fvhPtmRapGenTrk[iPartIdx]);
-    fvhPtmRapTofHitSinglePntRatio[iPartIdx]->Divide(
-      fvhPtmRapTofHitSinglePnt[iPartIdx], fvhPtmRapTofHit[iPartIdx]);
+    fvhPtmRapStsPntAcc[iPartIdx]->Divide(fvhPtmRapStsPnt[iPartIdx], fvhPtmRapGenTrk[iPartIdx]);
+    fvhPtmRapTofPntAcc[iPartIdx]->Divide(fvhPtmRapTofPnt[iPartIdx], fvhPtmRapGenTrk[iPartIdx]);
+    fvhPtmRapTofHitEff[iPartIdx]->Divide(fvhPtmRapTofHit[iPartIdx], fvhPtmRapGenTrk[iPartIdx]);
+    fvhPtmRapTofHitSinglePntRatio[iPartIdx]->Divide(fvhPtmRapTofHitSinglePnt[iPartIdx], fvhPtmRapTofHit[iPartIdx]);
     ;
-    fvhPtmRapTofHitSingleTrkRatio[iPartIdx]->Divide(
-      fvhPtmRapTofHitSingleTrk[iPartIdx], fvhPtmRapTofHit[iPartIdx]);
+    fvhPtmRapTofHitSingleTrkRatio[iPartIdx]->Divide(fvhPtmRapTofHitSingleTrk[iPartIdx], fvhPtmRapTofHit[iPartIdx]);
 
-    fvhPtmRapTofPntEffSts[iPartIdx]->Divide(fvhPtmRapTofPnt[iPartIdx],
-                                            fvhPtmRapStsPnt[iPartIdx]);
-    fvhPtmRapTofHitEffSts[iPartIdx]->Divide(fvhPtmRapTofHit[iPartIdx],
-                                            fvhPtmRapStsPnt[iPartIdx]);
-    fvhPtmRapTofHitSinglePntEffSts[iPartIdx]->Divide(
-      fvhPtmRapTofHitSinglePnt[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
-    fvhPtmRapTofHitSingleTrkEffSts[iPartIdx]->Divide(
-      fvhPtmRapTofHitSingleTrk[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
+    fvhPtmRapTofPntEffSts[iPartIdx]->Divide(fvhPtmRapTofPnt[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
+    fvhPtmRapTofHitEffSts[iPartIdx]->Divide(fvhPtmRapTofHit[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
+    fvhPtmRapTofHitSinglePntEffSts[iPartIdx]->Divide(fvhPtmRapTofHitSinglePnt[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
+    fvhPtmRapTofHitSingleTrkEffSts[iPartIdx]->Divide(fvhPtmRapTofHitSingleTrk[iPartIdx], fvhPtmRapStsPnt[iPartIdx]);
     // PLab
-    fvhPlabStsPntAcc[iPartIdx]->Divide(fvhPlabStsPnt[iPartIdx],
-                                       fvhPlabGenTrk[iPartIdx]);
-    fvhPlabTofPntAcc[iPartIdx]->Divide(fvhPlabTofPnt[iPartIdx],
-                                       fvhPlabGenTrk[iPartIdx]);
-    fvhPlabTofHitEff[iPartIdx]->Divide(fvhPlabTofHit[iPartIdx],
-                                       fvhPlabGenTrk[iPartIdx]);
-    fvhPlabTofHitSinglePntRatio[iPartIdx]->Divide(
-      fvhPlabTofHitSinglePnt[iPartIdx], fvhPlabTofHit[iPartIdx]);
-    fvhPlabTofHitSingleTrkRatio[iPartIdx]->Divide(
-      fvhPlabTofHitSingleTrk[iPartIdx], fvhPlabTofHit[iPartIdx]);
+    fvhPlabStsPntAcc[iPartIdx]->Divide(fvhPlabStsPnt[iPartIdx], fvhPlabGenTrk[iPartIdx]);
+    fvhPlabTofPntAcc[iPartIdx]->Divide(fvhPlabTofPnt[iPartIdx], fvhPlabGenTrk[iPartIdx]);
+    fvhPlabTofHitEff[iPartIdx]->Divide(fvhPlabTofHit[iPartIdx], fvhPlabGenTrk[iPartIdx]);
+    fvhPlabTofHitSinglePntRatio[iPartIdx]->Divide(fvhPlabTofHitSinglePnt[iPartIdx], fvhPlabTofHit[iPartIdx]);
+    fvhPlabTofHitSingleTrkRatio[iPartIdx]->Divide(fvhPlabTofHitSingleTrk[iPartIdx], fvhPlabTofHit[iPartIdx]);
 
-    fvhPlabTofPntEffSts[iPartIdx]->Divide(fvhPlabTofPnt[iPartIdx],
-                                          fvhPlabStsPnt[iPartIdx]);
-    fvhPlabTofHitEffSts[iPartIdx]->Divide(fvhPlabTofHit[iPartIdx],
-                                          fvhPlabStsPnt[iPartIdx]);
-    fvhPlabTofHitSinglePntEffSts[iPartIdx]->Divide(
-      fvhPlabTofHitSinglePnt[iPartIdx], fvhPlabStsPnt[iPartIdx]);
-    fvhPlabTofHitSingleTrkEffSts[iPartIdx]->Divide(
-      fvhPlabTofHitSingleTrk[iPartIdx], fvhPlabStsPnt[iPartIdx]);
+    fvhPlabTofPntEffSts[iPartIdx]->Divide(fvhPlabTofPnt[iPartIdx], fvhPlabStsPnt[iPartIdx]);
+    fvhPlabTofHitEffSts[iPartIdx]->Divide(fvhPlabTofHit[iPartIdx], fvhPlabStsPnt[iPartIdx]);
+    fvhPlabTofHitSinglePntEffSts[iPartIdx]->Divide(fvhPlabTofHitSinglePnt[iPartIdx], fvhPlabStsPnt[iPartIdx]);
+    fvhPlabTofHitSingleTrkEffSts[iPartIdx]->Divide(fvhPlabTofHitSingleTrk[iPartIdx], fvhPlabStsPnt[iPartIdx]);
     // MC Tracks losses
-    fvhPtmRapGenTrkTofHitEff[iPartIdx]->Divide(fvhPtmRapGenTrkTofHit[iPartIdx],
-                                               fvhPtmRapGenTrkTofPnt[iPartIdx]);
-    fvhPlabGenTrkTofhitEff[iPartIdx]->Divide(fvhPlabGenTrkTofhit[iPartIdx],
-                                             fvhPlabGenTrkTofPnt[iPartIdx]);
+    fvhPtmRapGenTrkTofHitEff[iPartIdx]->Divide(fvhPtmRapGenTrkTofHit[iPartIdx], fvhPtmRapGenTrkTofPnt[iPartIdx]);
+    fvhPlabGenTrkTofhitEff[iPartIdx]->Divide(fvhPlabGenTrkTofhit[iPartIdx], fvhPlabGenTrkTofPnt[iPartIdx]);
   }  // for( Int_t iPartIdx = 0; iPartIdx < kiNbPart; iPartIdx++)
 
   std::cout << "Histo filling OK!" << std::endl;

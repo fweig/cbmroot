@@ -1,26 +1,22 @@
-void global_phys(Int_t nEvents = 10, Int_t seed = 555) {
+void global_phys(Int_t nEvents = 10, Int_t seed = 555)
+{
   gRandom->SetSeed(seed);
   TStopwatch timer;
   timer.Start();
 
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   // Input and output data
   //   TString dir = "/Users/andrey/Development/cbm/d/events/nu/25gev/"; // Output directory
-  TString dir     = "data/";                  // Output directory
-  TString mcFile  = dir + "mc.0000.root";     // MC transport file
-  TString parFile = dir + "param.0000.root";  // Parameters file
-  TString globalRecoFile =
-    dir
-    + "global.reco.0000.root";  // Input file with reconstructed tracks and hits
-  TString analysisFile =
-    dir + "analysis.0000.root";  // Output file with analysis
+  TString dir            = "data/";                        // Output directory
+  TString mcFile         = dir + "mc.0000.root";           // MC transport file
+  TString parFile        = dir + "param.0000.root";        // Parameters file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // Input file with reconstructed tracks and hits
+  TString analysisFile   = dir + "analysis.0000.root";     // Output file with analysis
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
+  TList* parFileList           = new TList();
+  TObjString stsDigiFile       = parDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
   TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v12b.root";
 
   if (script == "yes") {
@@ -54,8 +50,7 @@ void global_phys(Int_t nEvents = 10, Int_t seed = 555) {
   CbmKFParticlesFinder* kfPartFinder = new CbmKFParticlesFinder(cuts, 2);
   run->AddTask(kfPartFinder);
 
-  CbmKFParticlesFinderQA* kfPartFinderQA =
-    new CbmKFParticlesFinderQA(kfPartFinder, 1, 3);
+  CbmKFParticlesFinderQA* kfPartFinderQA = new CbmKFParticlesFinderQA(kfPartFinder, 1, 3);
   kfPartFinderQA->SetOutFile("");
   run->AddTask(kfPartFinderQA);
 
@@ -76,6 +71,5 @@ void global_phys(Int_t nEvents = 10, Int_t seed = 555) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << analysisFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time=" << timer.RealTime()
-       << " seconds, CPU time=" << timer.CpuTime() << " seconds" << endl;
+  cout << "Real time=" << timer.RealTime() << " seconds, CPU time=" << timer.CpuTime() << " seconds" << endl;
 }

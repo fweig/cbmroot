@@ -10,13 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorTofPulser(TString inFile           = "",
-                      TString sHostname        = "localhost",
-                      Int_t iStartFile         = -1,
-                      Int_t iStopFile          = -1,
-                      Int_t iServerRefreshRate = 100,
-                      Int_t iServerHttpPort    = 8080,
-                      TString sFileTag         = "") {
+void MonitorTofPulser(TString inFile = "", TString sHostname = "localhost", Int_t iStartFile = -1, Int_t iStopFile = -1,
+                      Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080, TString sFileTag = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = srcDir + "/input/";
   //  if( "" != inFile )
@@ -68,8 +64,7 @@ void MonitorTofPulser(TString inFile           = "",
   //  CbmTSMonitorMuch* test_monitor_much = new CbmTSMonitorMuch();
 
   // Get4 Unpacker
-  CbmMcbm2018MonitorTofPulser* test_monitor_tof =
-    new CbmMcbm2018MonitorTofPulser();
+  CbmMcbm2018MonitorTofPulser* test_monitor_tof = new CbmMcbm2018MonitorTofPulser();
   test_monitor_tof->SetFitZoomWidthPs();
   test_monitor_tof->SetHistoryHistoSize(4000);
   test_monitor_tof->SetHistoryHistoSizeLong(1000.);  // Night: 6 + 10 H
@@ -81,8 +76,7 @@ void MonitorTofPulser(TString inFile           = "",
 */
   test_monitor_tof->SetIgnoreMsOverlap();
   test_monitor_tof->SetDiamondDpbIdx();
-  test_monitor_tof->SetHistoFileName("data/TofPulserHistos" + sFileTag
-                                     + ".root");
+  test_monitor_tof->SetHistoFileName("data/TofPulserHistos" + sFileTag + ".root");
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
@@ -129,8 +123,7 @@ void MonitorTofPulser(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -140,8 +133,7 @@ void MonitorTofPulser(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

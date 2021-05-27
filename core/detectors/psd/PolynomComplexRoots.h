@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -8,7 +9,8 @@
 //
 // Extract individual real or complex roots from list of quadratic factors
 //
-int roots(float* a, int n, float* wr, float* wi) {
+int roots(float* a, int n, float* wr, float* wi)
+{
   float sq, b2, c, disc;
   int m, numroots;
 
@@ -25,12 +27,12 @@ int roots(float* a, int n, float* wr, float* wi) {
       wr[m - 1] = b2;
       wi[m - 1] = -sq;
       numroots += 2;
-    } else {  // real roots
+    }
+    else {  // real roots
       sq        = sqrt(disc);
       wr[m - 2] = fabs(b2) + sq;
       if (b2 < 0.0) wr[m - 2] = -wr[m - 2];
-      if (wr[m - 2] == 0)
-        wr[m - 1] = 0;
+      if (wr[m - 2] == 0) wr[m - 1] = 0;
       else {
         wr[m - 1] = c / wr[m - 2];
         numroots += 2;
@@ -51,7 +53,8 @@ int roots(float* a, int n, float* wr, float* wi) {
 // Deflate polynomial 'a' by dividing out 'quad'. Return quotient
 // polynomial in 'b' and error metric based on remainder in 'err'.
 //
-void deflate(float* a, int n, float* b, float* quad, float* err) {
+void deflate(float* a, int n, float* b, float* quad, float* err)
+{
   float r, s;
   int i;
 
@@ -76,7 +79,8 @@ void deflate(float* a, int n, float* b, float* quad, float* err) {
 //
 // It is advisable to institute traps for these problems. (To do!)
 //
-void find_quad(float* a, int n, float* b, float* quad, float* err, int* iter) {
+void find_quad(float* a, int n, float* b, float* quad, float* err, int* iter)
+{
   float *c, dn, dr, ds, drn, dsn, eps, r, s;
   int i;
 
@@ -102,8 +106,7 @@ void find_quad(float* a, int n, float* b, float* quad, float* err, int* iter) {
     dsn = b[n - 1] * c[n - 1] - b[n] * c[n - 2];
 
     if (fabs(dn) < 1e-10) {
-      if (dn < 0.0)
-        dn = -1e-8;
+      if (dn < 0.0) dn = -1e-8;
       else
         dn = 1e-8;
     }
@@ -121,7 +124,8 @@ void find_quad(float* a, int n, float* b, float* quad, float* err, int* iter) {
 //
 // Differentiate polynomial 'a' returning result in 'b'.
 //
-void diff_poly(float* a, int n, float* b) {
+void diff_poly(float* a, int n, float* b)
+{
   float coef;
   int i;
 
@@ -151,13 +155,8 @@ void diff_poly(float* a, int n, float* b) {
 // the least number of roots at this location, and its estimate is
 // accepted as the root.
 //
-void recurse(float* a,
-             int n,
-             float* b,
-             int m,
-             float* quad,
-             float* err,
-             int* iter) {
+void recurse(float* a, int n, float* b, int m, float* quad, float* err, int* iter)
+{
   float *c, *x, rs[2], tst;
 
   if (fabs(b[m]) < 1e-16) m--;  // this bypasses roots at zero
@@ -195,7 +194,8 @@ void recurse(float* a,
 // polynomial 'a', returning the quadratic factors (and possibly one linear
 // factor) in 'x'.
 //
-void get_quads(float* a, int n, float* quad, float* x) {
+void get_quads(float* a, int n, float* quad, float* x)
+{
   float *b, *z, err, tmp;
   int iter, i, m;
 
@@ -209,7 +209,8 @@ void get_quads(float* a, int n, float* quad, float* x) {
     x[0] = a[1];
     x[1] = a[2];
     return;
-  } else if (n == 1) {
+  }
+  else if (n == 1) {
     x[0] = a[1];
     return;
   }
@@ -253,13 +254,15 @@ void get_quads(float* a, int n, float* quad, float* x) {
   if (m == 2) {
     x[0] = b[1];
     x[1] = b[2];
-  } else
+  }
+  else
     x[0] = b[1];
   delete[] z;
   delete[] b;
 }
 
-void polynomComplexRoots(float* wr, float* wi, int n, float* a, int& numr) {
+void polynomComplexRoots(float* wr, float* wi, int n, float* a, int& numr)
+{
   float* quad = new float[2];
   float* x    = new float[n];
 

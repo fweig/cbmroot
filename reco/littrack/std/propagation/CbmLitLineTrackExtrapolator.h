@@ -21,14 +21,11 @@ public:
   virtual ~CbmLitLineTrackExtrapolator();
 
   /* Inherited from CbmLitTrackExtrapolator */
-  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
-                                CbmLitTrackParam* parOut,
-                                litfloat zOut,
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut, litfloat zOut,
                                 std::vector<litfloat>* F);
 
   /* Inherited from CbmLitTrackExtrapolator */
-  virtual LitStatus
-  Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
+  virtual LitStatus Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
 };
 
 #endif  //CbmLitLineTrackExtrapolator

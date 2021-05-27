@@ -8,7 +8,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void tdcref_monitoring(Int_t nEvents = 2) {
+void tdcref_monitoring(Int_t nEvents = 2)
+{
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
   logLevel         = "ERROR";

@@ -1,4 +1,5 @@
-void pl_all_CluMul(Int_t iNDet = 6) {
+void pl_all_CluMul(Int_t iNDet = 6)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -32,7 +33,8 @@ void pl_all_CluMul(Int_t iNDet = 6) {
       if (h != NULL) {
         h->Draw("");
         //     gPad->SetLogy();
-      } else {
+      }
+      else {
         cout << "Histogram " << hname << " not existing. " << endl;
       }
     }

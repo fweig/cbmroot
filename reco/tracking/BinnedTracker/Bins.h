@@ -16,9 +16,11 @@
 
 #include "CbmDefs.h"
 #include "CbmPixelHit.h"
-#include <cmath>
+
 #include <limits>
 #include <list>
+
+#include <cmath>
 
 class CbmXBin;
 
@@ -34,7 +36,8 @@ public:
     char stage;
     std::list<void*> tracks;
 
-    void SetUse(bool v) {
+    void SetUse(bool v)
+    {
       use = v;
       bin.SetUseRc(v);
     }
@@ -50,10 +53,9 @@ public:
   std::list<HitHolder>::iterator HitsBegin() { return fHits.begin(); }
   std::list<HitHolder>::iterator HitsEnd() { return fHits.end(); }
   void Clear() { fHits.clear(); }
-  void
-  AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index, bool use) {
-    fHits.push_back(
-      {type, hit, index, use, *this, std::numeric_limits<char>::max(), {}});
+  void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index, bool use)
+  {
+    fHits.push_back({type, hit, index, use, *this, std::numeric_limits<char>::max(), {}});
   }
 
 private:
@@ -69,8 +71,8 @@ public:
   CbmXBin(CbmYBin* owner, int nofTBins)
     : fOwner(owner)
     , fUse(false)
-    , fTBins(reinterpret_cast<CbmTBin*>(
-        new unsigned char[nofTBins * sizeof(CbmTBin)])) {
+    , fTBins(reinterpret_cast<CbmTBin*>(new unsigned char[nofTBins * sizeof(CbmTBin)]))
+  {
     for (int i = 0; i < nofTBins; ++i)
       new (&fTBins[i]) CbmTBin(this);
   }
@@ -90,7 +92,8 @@ private:
   //int fNofTBins;
 };
 
-inline void CbmTBin::SetUseRc(bool v) {
+inline void CbmTBin::SetUseRc(bool v)
+{
   fUse = v;
   fOwner->SetUseRc(v);
 }
@@ -102,8 +105,7 @@ public:
   CbmYBin(CbmZBin* owner, int nofXBins, int nofTBins)
     : fOwner(owner)
     , fUse(false)
-    , fXBins(reinterpret_cast<CbmXBin*>(
-        new unsigned char[nofXBins * sizeof(CbmXBin)]))
+    , fXBins(reinterpret_cast<CbmXBin*>(new unsigned char[nofXBins * sizeof(CbmXBin)]))
   //      fNofXBins(nofXBins)
   {
     for (int i = 0; i < nofXBins; ++i)
@@ -125,7 +127,8 @@ private:
   //int fNofXBins; (VF) unused
 };
 
-inline void CbmXBin::SetUseRc(bool v) {
+inline void CbmXBin::SetUseRc(bool v)
+{
   fUse = v;
   fOwner->SetUseRc(v);
 }
@@ -134,8 +137,8 @@ class CbmZBin {
 public:
   explicit CbmZBin(int nofYBins, int nofXBins, int nofTBins)
     : fUse(false)
-    , fYBins(reinterpret_cast<CbmYBin*>(
-        new unsigned char[nofYBins * sizeof(CbmYBin)])) {
+    , fYBins(reinterpret_cast<CbmYBin*>(new unsigned char[nofYBins * sizeof(CbmYBin)]))
+  {
     for (int i = 0; i < nofYBins; ++i)
       new (&fYBins[i]) CbmYBin(this, nofXBins, nofTBins);
   }
@@ -153,7 +156,8 @@ private:
   // int fNofYBins; (VF) unused
 };
 
-inline void CbmYBin::SetUseRc(bool v) {
+inline void CbmYBin::SetUseRc(bool v)
+{
   fUse = v;
 
   if (fOwner) fOwner->SetUse(v);

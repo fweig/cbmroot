@@ -10,7 +10,9 @@
 
 #include <FairGenerator.h>
 #include <FairIon.h>
+
 #include <Rtypes.h>
+
 #include <string>
 #include <vector>
 
@@ -49,11 +51,7 @@ public:
    ** @param momentum  Momentum per nucleon [GeV]
    ** @param zStart    z coordinate of beam start position
    **/
-  CbmBeamGenerator(UInt_t beamZ,
-                   UInt_t beamA,
-                   UInt_t beamQ,
-                   Double_t momentum,
-                   Double_t zStart);
+  CbmBeamGenerator(UInt_t beamZ, UInt_t beamA, UInt_t beamQ, Double_t momentum, Double_t zStart);
 
 
   /** @brief Destructor **/

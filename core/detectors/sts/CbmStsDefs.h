@@ -12,7 +12,8 @@
 
 
 // -----   Namespace CbmSts   ---------------------------------------------
-namespace CbmSts {
+namespace CbmSts
+{
 
   /** @brief Silicon charge [e] **/
   const Double_t kSiCharge = 14.;
@@ -40,7 +41,8 @@ namespace CbmSts {
  ** Uniform: The charge distribution is uniform
  ** Urban: The charge fluctuates according the Urban model
  **/
-enum class CbmStsELoss {
+enum class CbmStsELoss
+{
   kIdeal   = 0,
   kUniform = 1,
   kUrban   = 2,
@@ -58,6 +60,11 @@ enum class CbmStsELoss {
  ** side and horizontal strips at the back side. The front side is read-out
  ** at the top edge, the back side at the left edge.
  **/
-enum class CbmStsSensorClass { kUnknown = 0, kDssdStereo = 1, kDssdOrtho = 2 };
+enum class CbmStsSensorClass
+{
+  kUnknown    = 0,
+  kDssdStereo = 1,
+  kDssdOrtho  = 2
+};
 
 #endif

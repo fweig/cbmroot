@@ -1,17 +1,19 @@
 
 
-#include <glob.h>
-#include <sstream>
-#include <string.h>
-
-
 #include "CbmHaddBase.h"
-#include "Riostream.h"
+
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TKey.h"
 #include "TTree.h"
+
+#include <sstream>
+
+#include <glob.h>
+#include <string.h>
+
+#include "Riostream.h"
 
 using namespace std;
 
@@ -19,7 +21,8 @@ using namespace std;
 ClassImp(CbmHaddBase);
 
 
-vector<string> CbmHaddBase::GetFilesByPattern(const string& pattern) {
+vector<string> CbmHaddBase::GetFilesByPattern(const string& pattern)
+{
   glob_t glob_result;
   glob(pattern.c_str(), GLOB_TILDE, NULL, &glob_result);
   vector<string> files;
@@ -31,9 +34,8 @@ vector<string> CbmHaddBase::GetFilesByPattern(const string& pattern) {
 }
 
 
-vector<string> CbmHaddBase::GetGoodFiles(const string& pattern,
-                                         Int_t fileSizeLimit,
-                                         Int_t nofEvents) {
+vector<string> CbmHaddBase::GetGoodFiles(const string& pattern, Int_t fileSizeLimit, Int_t nofEvents)
+{
   vector<string> files = GetFilesByPattern(pattern);
   cout << "pattern:" << pattern << endl;
   cout << "# of files by pattern:" << files.size() << endl;
@@ -46,12 +48,12 @@ vector<string> CbmHaddBase::GetGoodFiles(const string& pattern,
     if (file != NULL) file->Close();
     if (isGoodFile) goodFiles.push_back(files[i]);
   }
-  cout << "GetGoodFiles all:" << files.size() << " good:" << goodFiles.size()
-       << endl;
+  cout << "GetGoodFiles all:" << files.size() << " good:" << goodFiles.size() << endl;
   return goodFiles;
 }
 
-Bool_t CbmHaddBase::CheckFileSize(TFile* file, Int_t fileSizeLimit) {
+Bool_t CbmHaddBase::CheckFileSize(TFile* file, Int_t fileSizeLimit)
+{
   if (file == NULL) return false;
   if (file->GetEND() < fileSizeLimit) return false;
 
@@ -59,8 +61,8 @@ Bool_t CbmHaddBase::CheckFileSize(TFile* file, Int_t fileSizeLimit) {
 }
 
 
-Bool_t
-CbmHaddBase::CheckFile(TFile* file, Int_t fileSizeLimit, Int_t nofEvents) {
+Bool_t CbmHaddBase::CheckFile(TFile* file, Int_t fileSizeLimit, Int_t nofEvents)
+{
   if (file == NULL) return false;
   if (file->GetEND() < fileSizeLimit) return false;
   TTree* tree = (TTree*) file->Get("cbmsim");
@@ -71,12 +73,9 @@ CbmHaddBase::CheckFile(TFile* file, Int_t fileSizeLimit, Int_t nofEvents) {
 }
 
 
-void CbmHaddBase::AddFilesInDir(const string& dir,
-                                const string& fileTemplate,
-                                const string& addString,
-                                Int_t nofFiles,
-                                Int_t fileSizeLimit,
-                                Int_t nofEvents) {
+void CbmHaddBase::AddFilesInDir(const string& dir, const string& fileTemplate, const string& addString, Int_t nofFiles,
+                                Int_t fileSizeLimit, Int_t nofEvents)
+{
   Int_t maxNofFiles   = 100;
   string fileNameAna  = dir + string("analysis") + fileTemplate;
   string fileNameReco = dir + string("reco") + fileTemplate;
@@ -96,8 +95,7 @@ void CbmHaddBase::AddFilesInDir(const string& dir,
     TFile* fileAna  = TFile::Open((fileNameAna + ss.str()).c_str(), "READ");
     TFile* fileReco = TFile::Open((fileNameReco + ss.str()).c_str(), "READ");
 
-    Bool_t isGoodFile = CheckFile(fileAna, fileSizeLimit, nofEvents)
-                        && CheckFile(fileReco, fileSizeLimit, nofEvents);
+    Bool_t isGoodFile = CheckFile(fileAna, fileSizeLimit, nofEvents) && CheckFile(fileReco, fileSizeLimit, nofEvents);
     if (fileReco != NULL) fileReco->Close();
     if (isGoodFile) {
       if (addString == "analysis") {
@@ -105,24 +103,25 @@ void CbmHaddBase::AddFilesInDir(const string& dir,
         count++;
       }
       if (addString == "litqa") {
-        TFile* fileQa = TFile::Open((fileNameQa + ss.str()).c_str(), "READ");
+        TFile* fileQa       = TFile::Open((fileNameQa + ss.str()).c_str(), "READ");
         Bool_t isGoodQaFile = CheckFileSize(fileQa, fileSizeLimit);
         if (isGoodQaFile) {
           fileList->Add(fileQa);
           count++;
-        } else {
+        }
+        else {
           if (fileQa != NULL) fileQa->Close();
         }
         if (fileAna != NULL) fileAna->Close();
       }
-    } else {
+    }
+    else {
       if (fileAna != NULL) fileAna->Close();
       if (fileReco != NULL) fileReco->Close();
     }
 
     if (fileList->GetEntries() >= maxNofFiles || i == nofFiles - 1) {
-      TFile* tf =
-        CreateAndMergeTempTargetFile(dir, addString, targetFileNum, fileList);
+      TFile* tf = CreateAndMergeTempTargetFile(dir, addString, targetFileNum, fileList);
       tempTargetFiles->Add(tf);
       CloseFilesFromList(fileList);
       fileList->RemoveAll();
@@ -144,23 +143,20 @@ void CbmHaddBase::AddFilesInDir(const string& dir,
   if (fileList != NULL) delete fileList;
 }
 
-TFile* CbmHaddBase::CreateAndMergeTempTargetFile(const string& dir,
-                                                 const string& addString,
-                                                 Int_t targetFileNum,
-                                                 TList* fileList) {
-  cout << "-I- CreateAndMergeTempTargetFile no:" << targetFileNum
-       << ", nofFiles:" << fileList->GetEntries() << endl;
+TFile* CbmHaddBase::CreateAndMergeTempTargetFile(const string& dir, const string& addString, Int_t targetFileNum,
+                                                 TList* fileList)
+{
+  cout << "-I- CreateAndMergeTempTargetFile no:" << targetFileNum << ", nofFiles:" << fileList->GetEntries() << endl;
   stringstream ss;
   ss << targetFileNum << ".root";
-  TFile* targetFile = TFile::Open(
-    string(dir + addString + ".temp.taget.file." + ss.str()).c_str(),
-    "RECREATE");
+  TFile* targetFile = TFile::Open(string(dir + addString + ".temp.taget.file." + ss.str()).c_str(), "RECREATE");
   if (fileList->GetEntries() > 0) MergeRootfile(targetFile, fileList);
   return targetFile;
 }
 
 
-void CbmHaddBase::CloseFilesFromList(TList* fileList) {
+void CbmHaddBase::CloseFilesFromList(TList* fileList)
+{
   int nFL = fileList->GetEntries();
   for (int iFL = 0; iFL < nFL; iFL++) {
     TFile* f = (TFile*) fileList->At(iFL);
@@ -172,7 +168,8 @@ void CbmHaddBase::CloseFilesFromList(TList* fileList) {
 }
 
 
-void CbmHaddBase::MergeRootfile(TDirectory* target, TList* sourcelist) {
+void CbmHaddBase::MergeRootfile(TDirectory* target, TList* sourcelist)
+{
   //  cout << "Target path: " << target->GetPath() << endl;
   TString path((char*) strstr(target->GetPath(), ":"));
   path.Remove(0, 2);
@@ -208,8 +205,7 @@ void CbmHaddBase::MergeRootfile(TDirectory* target, TList* sourcelist) {
       while (nextsource) {
         // make sure we are at the correct directory level by cd'ing to path
         nextsource->cd(path);
-        TKey* key2 =
-          (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
+        TKey* key2 = (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
         if (key2) {
           TH1* h2 = (TH1*) key2->ReadObj();
           h1->Add(h2);

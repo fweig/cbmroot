@@ -1,10 +1,9 @@
-void run_aerogel_analysis(
-  const string& parFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"
-                          "beamtime/mcbm2020/data/unp_mcbm_params_598.root",
-  const string& digiFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"
-                           "beamtime/mcbm2020/data/unp_mcbm_598.root",
-  const string& recoFile = "reco_aerogel_mcbm.root",
-  int nEvents            = 1000) {
+void run_aerogel_analysis(const string& parFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"
+                                                  "beamtime/mcbm2020/data/unp_mcbm_params_598.root",
+                          const string& digiFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"
+                                                   "beamtime/mcbm2020/data/unp_mcbm_598.root",
+                          const string& recoFile = "reco_aerogel_mcbm.root", int nEvents = 1000)
+{
   const unsigned int runId = 598;
 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -19,8 +18,7 @@ void run_aerogel_analysis(
 
   //TString TofFileFolder = Form("/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/%s",cFileId.Data());
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -82,9 +80,7 @@ void run_aerogel_analysis(
   run->AddTask(qaTask);
 
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
 
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   Bool_t kParameterMerged    = kTRUE;
@@ -121,7 +117,6 @@ void run_aerogel_analysis(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

@@ -8,10 +8,10 @@
 #ifndef CBMTSACOMPONENTSINK_H_
 #define CBMTSACOMPONENTSINK_H_
 
-#include "FairMQDevice.h"
-
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
+
+#include "FairMQDevice.h"
 
 class CbmTsaComponentSink : public FairMQDevice {
 public:
@@ -25,9 +25,7 @@ protected:
 private:
   uint64_t fNumMessages;
 
-  std::vector<std::string> fAllowedChannels = {"stscomponent",
-                                               "tofcomponent",
-                                               "trdcomponent"};
+  std::vector<std::string> fAllowedChannels = {"stscomponent", "tofcomponent", "trdcomponent"};
 
   bool CheckTimeslice(const fles::Timeslice& ts);
   void PrintMicroSliceDescriptor(const fles::MicrosliceDescriptor& mdsc);

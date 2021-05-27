@@ -15,19 +15,8 @@ class CbmHadron : public TObject {
 
 public:
   CbmHadron();
-  CbmHadron(Int_t charge,
-            Double_t p,
-            Double_t pt,
-            Double_t pz,
-            Int_t nMvdHits,
-            Int_t nStsHits,
-            Int_t nTrdHits,
-            Double_t b,
-            Double_t length,
-            Double_t mass2,
-            Int_t pdg,
-            Bool_t ghost,
-            Bool_t tdh);
+  CbmHadron(Int_t charge, Double_t p, Double_t pt, Double_t pz, Int_t nMvdHits, Int_t nStsHits, Int_t nTrdHits,
+            Double_t b, Double_t length, Double_t mass2, Int_t pdg, Bool_t ghost, Bool_t tdh);
   virtual ~CbmHadron();
 
 private:

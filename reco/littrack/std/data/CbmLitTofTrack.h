@@ -48,8 +48,7 @@ private:
   const CbmLitTrack* fTrack;     // Pointer to track
   const CbmLitHit* fHit;         // Pointer to TOF hit
   CbmLitTrackParam fTrackParam;  // Track parameters.
-  litfloat
-    fDistance;  // Contribution to chi-square of updated track parameters and hit.
+  litfloat fDistance;            // Contribution to chi-square of updated track parameters and hit.
 };
 
 #endif /* CBMLITTOFTRACK_H_ */

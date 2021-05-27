@@ -1,5 +1,6 @@
 
-Bool_t T0MoniPlot() {
+Bool_t T0MoniPlot()
+{
   /// 23/03/2019
   const UInt_t kuNbRunPerStack = 4;
   const UInt_t kuNbRuns        = 22;
@@ -8,8 +9,8 @@ Bool_t T0MoniPlot() {
     94,  95,  96,  97,  // Detectors parameters scan
     98,  99,  100, 101, 102,
     103, 104, 105, 106,  // Beam intensity and target scan (=> collision rate scan up, empty, no beam)
-    107, 109, 110,  // T0 threshold scan
-    111             // Cooldown run
+    107, 109, 110,       // T0 threshold scan
+    111                  // Cooldown run
   };
 
   /// Obtaining the plots
@@ -18,8 +19,7 @@ Bool_t T0MoniPlot() {
   TH1* phHitCntEvo[kuNbRuns];
   TFile* pFile[kuNbRuns];
   for (UInt_t uRun = 0; uRun < kuNbRuns; ++uRun) {
-    pFile[uRun] =
-      TFile::Open(Form("data/HistosMonitorT0_%03u.root", uRunId[uRun]));
+    pFile[uRun] = TFile::Open(Form("data/HistosMonitorT0_%03u.root", uRunId[uRun]));
     gROOT->cd();
 
     phHitsPerSpill[uRun] = new TH1D();
@@ -49,26 +49,19 @@ Bool_t T0MoniPlot() {
   TCanvas* cHitsSpillAll = new TCanvas("cHitsSpillAll", "T0 hits per spill");
   cHitsSpillAll->Divide(6, 4);
 
-  TCanvas* cHitsCntAll =
-    new TCanvas("cHitsCntAll", "T0 hits count vs Time in Run");
+  TCanvas* cHitsCntAll = new TCanvas("cHitsCntAll", "T0 hits count vs Time in Run");
   cHitsCntAll->Divide(6, 4);
 
-  THStack* pStacksHitSpill[kuNbRuns / kuNbRunPerStack
-                           + (kuNbRuns % kuNbRunPerStack ? 1 : 0)];
-  THStack* pStacksHitEvo[kuNbRuns / kuNbRunPerStack
-                         + (kuNbRuns % kuNbRunPerStack ? 1 : 0)];
+  THStack* pStacksHitSpill[kuNbRuns / kuNbRunPerStack + (kuNbRuns % kuNbRunPerStack ? 1 : 0)];
+  THStack* pStacksHitEvo[kuNbRuns / kuNbRunPerStack + (kuNbRuns % kuNbRunPerStack ? 1 : 0)];
   for (UInt_t uRun = 0; uRun < kuNbRuns; ++uRun) {
     if (0 == uRun % kuNbRunPerStack) {
-      pStacksHitSpill[uRun / kuNbRunPerStack] =
-        new THStack(Form("stackHitSpill_%02u", uRunId[uRun]),
-                    Form("Evolution of T0 hits per spill for runs %02u to %02u",
-                         uRunId[uRun],
-                         uRunId[uRun + kuNbRunPerStack - 1]));
+      pStacksHitSpill[uRun / kuNbRunPerStack] = new THStack(
+        Form("stackHitSpill_%02u", uRunId[uRun]),
+        Form("Evolution of T0 hits per spill for runs %02u to %02u", uRunId[uRun], uRunId[uRun + kuNbRunPerStack - 1]));
       pStacksHitEvo[uRun / kuNbRunPerStack] =
-        new THStack(Form("stackHitCnt_%02u", uRunId[uRun]),
-                    Form("Evolution of To hits count for runs %02u to %02u",
-                         uRunId[uRun],
-                         uRunId[uRun + kuNbRunPerStack - 1]));
+        new THStack(Form("stackHitCnt_%02u", uRunId[uRun]), Form("Evolution of To hits count for runs %02u to %02u",
+                                                                 uRunId[uRun], uRunId[uRun + kuNbRunPerStack - 1]));
     }  // if( 0 == uRun % kuNbRunPerStack )
     switch (uRun % kuNbRunPerStack) {
       case 0:
@@ -95,15 +88,13 @@ Bool_t T0MoniPlot() {
     gPad->SetGridx();
     gPad->SetGridy();
     pStacksHitSpill[uRun / kuNbRunPerStack]->Draw("nostack,hist");
-    pStacksHitSpill[uRun / kuNbRunPerStack]->GetXaxis()->SetRangeUser(0.0,
-                                                                      200.0);
+    pStacksHitSpill[uRun / kuNbRunPerStack]->GetXaxis()->SetRangeUser(0.0, 200.0);
 
     cHitsCnt->cd(1 + uRun / kuNbRunPerStack);
     gPad->SetGridx();
     gPad->SetGridy();
     pStacksHitEvo[uRun / kuNbRunPerStack]->Draw("nostack,hist");
-    pStacksHitEvo[uRun / kuNbRunPerStack]->GetXaxis()->SetRangeUser(0.0,
-                                                                    1400.0);
+    pStacksHitEvo[uRun / kuNbRunPerStack]->GetXaxis()->SetRangeUser(0.0, 1400.0);
 
     cHitsSpillAll->cd(1 + uRun);
     gPad->SetGridx();

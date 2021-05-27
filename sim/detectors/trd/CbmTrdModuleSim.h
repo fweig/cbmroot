@@ -4,6 +4,7 @@
 #include "CbmTrdCheckUtil.h"
 #include "CbmTrdModuleAbstract.h"
 #include "CbmTrdRawToDigiR.h"
+
 #include <map>
 
 class TClonesArray;
@@ -17,7 +18,8 @@ class CbmTrdRadiator;
   **/
 class CbmTrdModuleSim : public CbmTrdModuleAbstract {
 public:
-  enum CbmTrdModuleSimDef {
+  enum CbmTrdModuleSimDef
+  {
     kTime = 0,       ///< select Time based/Event by event simulations
     kNoise,          ///< switch noise digits generation
     kWeightDistance  ///< use weighting distance for link generation
@@ -33,14 +35,13 @@ public:
 
   virtual ~CbmTrdModuleSim();
 
-  virtual void GetCounters(Int_t& nEl, Int_t& nLattice, Int_t& nOverThr) const {
+  virtual void GetCounters(Int_t& nEl, Int_t& nLattice, Int_t& nOverThr) const
+  {
     nEl      = 0;
     nLattice = 0;
     nOverThr = 0;
   }
-  virtual std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* GetDigiMap() {
-    return &fDigiMap;
-  }
+  virtual std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* GetDigiMap() { return &fDigiMap; }
   virtual Int_t GetEventId() const { return fEventId; }
   virtual Int_t GetInputId() const { return fInputId; }
   virtual Int_t GetPointId() const { return fPointId; }
@@ -56,8 +57,7 @@ public:
    * \param[in] time Event time [ns]
    * \param[in] TR Request TR generation on top of dEdx  
    **/
-  virtual Bool_t
-  MakeDigi(CbmTrdPoint* p, Double_t time, Bool_t TR = kFALSE) = 0;
+  virtual Bool_t MakeDigi(CbmTrdPoint* p, Double_t time, Bool_t TR = kFALSE) = 0;
   /**
    * \brief Steering routine for converting MC point to raw format
    **/
@@ -70,10 +70,9 @@ public:
   virtual void SetPointId(Int_t id) { fPointId = id; }
   virtual void SetRadiator(CbmTrdRadiator* radiator = NULL) = 0;
   virtual void SetGamma(Double_t gamma = 0.)                = 0;
-  virtual void SetPositionMC(Double_t pos[3]) {
-    memcpy(fXYZ, pos, 3 * sizeof(Double_t));
-  }
-  virtual void SetLinkId(Int_t input, Int_t event = -1, Int_t point = -1) {
+  virtual void SetPositionMC(Double_t pos[3]) { memcpy(fXYZ, pos, 3 * sizeof(Double_t)); }
+  virtual void SetLinkId(Int_t input, Int_t event = -1, Int_t point = -1)
+  {
     fInputId = input;
     fEventId = event;
     fPointId = point;
@@ -84,10 +83,10 @@ public:
 
 protected:
   // definitions of MC input
-  Int_t fPointId;    ///< MC point id being processed
-  Int_t fEventId;    ///< MC event id being processed
-  Int_t fInputId;    ///< MC input file number
-  Double_t fXYZ[3];  ///< MC position of the point in module coordinates
+  Int_t fPointId;               ///< MC point id being processed
+  Int_t fEventId;               ///< MC event id being processed
+  Int_t fInputId;               ///< MC input file number
+  Double_t fXYZ[3];             ///< MC position of the point in module coordinates
   CbmTrdDigitizer* fDigitizer;  //! Pointer to digitizer
 
   // calibration objects

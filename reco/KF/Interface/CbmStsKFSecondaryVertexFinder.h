@@ -13,7 +13,6 @@
 #include "CbmKFSecondaryVertexFinder.h"
 #include "CbmKFTrack.h"
 #include "CbmKFVertex.h"
-
 #include "CbmStsTrack.h"
 
 #include <vector>
@@ -26,10 +25,7 @@ class CbmStsKFSecondaryVertexFinder : public TObject {
   CbmKFSecondaryVertexFinder Finder;
 
 public:
-  CbmStsKFSecondaryVertexFinder()
-    : vStsTracks(), vKFTracks(), VParent(), VGuess(), Finder() {
-    Clear();
-  };
+  CbmStsKFSecondaryVertexFinder() : vStsTracks(), vKFTracks(), VParent(), VGuess(), Finder() { Clear(); };
   ~CbmStsKFSecondaryVertexFinder() {};
 
   virtual void Clear(Option_t* opt = "");

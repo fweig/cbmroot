@@ -15,11 +15,11 @@
  **/
 
 #include "CbmKresConversionCorrectedPhotons.h"
-#include "CbmKresConversionBG.h"
-#include "CbmKresFunctions.h"
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFParticleInterface.h"
+#include "CbmKresConversionBG.h"
+#include "CbmKresFunctions.h"
 #include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
@@ -30,11 +30,13 @@
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
-#include "KFParticle.h"
-#include "L1Field.h"
 
 #include <iostream>
+
+#include "KFParticle.h"
+#include "L1Field.h"
 
 using namespace std;
 
@@ -332,76 +334,50 @@ CbmKresConversionCorrectedPhotons::CbmKresConversionCorrectedPhotons()
   , CDP_LK_EMT_Pt_onetwo_Outside(nullptr)
   , CDP_LK_EMT_Pt_all_Both(nullptr)
   , CDP_LK_EMT_Pt_two_Both(nullptr)
-  , CDP_LK_EMT_Pt_onetwo_Both(nullptr) {}
+  , CDP_LK_EMT_Pt_onetwo_Both(nullptr)
+{
+}
 
 CbmKresConversionCorrectedPhotons::~CbmKresConversionCorrectedPhotons() {}
 
-void CbmKresConversionCorrectedPhotons::Init(double OA, double IM) {
+void CbmKresConversionCorrectedPhotons::Init(double OA, double IM)
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init",
-          "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmKresConversionCorrectedPhotons::Init", "RootManager not instantised!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (nullptr == fMcTracks) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No MCTrack array!");
-  }
+  if (nullptr == fMcTracks) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No MCTrack array!"); }
 
   fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex."));
-  if (nullptr == fPrimVertex) {
-    fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex"));
-  }
-  if (nullptr == fPrimVertex) {
-    LOG(fatal)
-      << "CbmKresConversionCorrectedPhotons::Init  No PrimaryVertex array!";
-  }
+  if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex")); }
+  if (nullptr == fPrimVertex) { LOG(fatal) << "CbmKresConversionCorrectedPhotons::Init  No PrimaryVertex array!"; }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (nullptr == fGlobalTracks) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No GlobalTrack array!");
-  }
+  if (nullptr == fGlobalTracks) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No GlobalTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (nullptr == fStsTracks) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsTrack array!");
-  }
+  if (nullptr == fStsTracks) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsTrack array!"); }
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (nullptr == fStsTrackMatches) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsTrackMatch array!");
-  }
+  if (nullptr == fStsTrackMatches) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsTrackMatch array!"); }
 
   fRichProjections = (TClonesArray*) ioman->GetObject("RichProjection");
-  if (nullptr == fRichProjections) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init",
-          "No RichProjection array!");
-  }
+  if (nullptr == fRichProjections) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichProjection array!"); }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (nullptr == fRichRings) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichRing array!");
-  }
+  if (nullptr == fRichRings) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichRing array!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (nullptr == fRichRingMatches) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichRingMatch array!");
-  }
+  if (nullptr == fRichRingMatches) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichRingMatch array!"); }
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (nullptr == fRichHits) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichHit array!");
-  }
+  if (nullptr == fRichHits) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No RichHit array!"); }
 
   fArrayMvdHit = (TClonesArray*) ioman->GetObject("MvdHit");
-  if (nullptr == fArrayMvdHit) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No MvdHit array!");
-  }
+  if (nullptr == fArrayMvdHit) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No MvdHit array!"); }
 
   fArrayStsHit = (TClonesArray*) ioman->GetObject("StsHit");
-  if (nullptr == fArrayStsHit) {
-    Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsHit array!");
-  }
+  if (nullptr == fArrayStsHit) { Fatal("CbmKresConversionCorrectedPhotons::Init", "No StsHit array!"); }
 
 
   fTauFit = new CbmRichRingFitterEllipseTau();
@@ -445,16 +421,13 @@ void CbmKresConversionCorrectedPhotons::Init(double OA, double IM) {
 }
 
 
-void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP,
-                                             double OpeningAngleCut,
-                                             double GammaInvMassCut,
-                                             int RealPID) {
-  cout << "CbmKresConversionCorrectedPhotons, event No. " << fEventNumDP
-       << endl;
+void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP, double OpeningAngleCut, double GammaInvMassCut,
+                                             int RealPID)
+{
+  cout << "CbmKresConversionCorrectedPhotons, event No. " << fEventNumDP << endl;
 
-  if (fPrimVertex != nullptr) {
-    fKFVertex = CbmKFVertex(*fPrimVertex);
-  } else {
+  if (fPrimVertex != nullptr) { fKFVertex = CbmKFVertex(*fPrimVertex); }
+  else {
     Fatal("CbmKresConversionCorrectedPhotons::Exec", "No PrimaryVertex array!");
   }
 
@@ -493,8 +466,7 @@ void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP,
     if (stsInd < 0) continue;
     CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsInd);
     if (stsTrack == nullptr) continue;
-    CbmTrackMatchNew* stsMatch =
-      (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
+    CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
     if (stsMatch == nullptr) continue;
     if (stsMatch->GetNofLinks() <= 0) continue;
     Int_t stsMcTrackId = stsMatch->GetMatchedLink().GetIndex();
@@ -505,27 +477,20 @@ void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP,
 
     FairTrackParam* proj = (FairTrackParam*) fRichProjections->At(i);
     if (richInd < 0 && proj->GetX() > -115 && proj->GetX() < 115
-        && ((proj->GetY() < -120 && proj->GetY() > -200)
-            || (proj->GetY() > 120 && proj->GetY() < 200)))
+        && ((proj->GetY() < -120 && proj->GetY() > -200) || (proj->GetY() > 120 && proj->GetY() < 200)))
       continue;
     CbmRichRing* Ring = nullptr;
     if (richInd > -1) {
       Ring = static_cast<CbmRichRing*>(fRichRings->At(richInd));
-      CPdg_vs_Distance_for_dp->Fill(TMath::Abs(mcTrack->GetPdgCode()),
-                                    CbmRichUtil::GetRingTrackDistance(i));
+      CPdg_vs_Distance_for_dp->Fill(TMath::Abs(mcTrack->GetPdgCode()), CbmRichUtil::GetRingTrackDistance(i));
       if (TMath::Abs(mcTrack->GetPdgCode()) == 11)
-        CP_vs_Distance_for_dp->Fill(mcTrack->GetP(),
-                                    CbmRichUtil::GetRingTrackDistance(i));
+        CP_vs_Distance_for_dp->Fill(mcTrack->GetP(), CbmRichUtil::GetRingTrackDistance(i));
     }
 
     // Doing fit with Fit To primary Vertex and calculate chi2 to primary vertex
-    double chi2 = 0;
-    TVector3 Momentum =
-      CbmKresFunctions::FitToVertexAndGetChi(stsTrack,
-                                             fKFVertex.GetRefX(),
-                                             fKFVertex.GetRefY(),
-                                             fKFVertex.GetRefZ(),
-                                             chi2);
+    double chi2       = 0;
+    TVector3 Momentum = CbmKresFunctions::FitToVertexAndGetChi(stsTrack, fKFVertex.GetRefX(), fKFVertex.GetRefY(),
+                                                               fKFVertex.GetRefZ(), chi2);
     const FairTrackParam* track_par = stsTrack->GetParamFirst();
     double charge                   = track_par->GetQp();
 
@@ -533,47 +498,21 @@ void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP,
     if (chi2 != chi2) continue;
     if (chi2 == 0) continue;
 
-    if (chi2 > 3) {
-      SaveOutsideTracks(
-        mcTrack, stsTrack, charge, stsInd, richInd, stsMcTrackId, Ring);
-    }
+    if (chi2 > 3) { SaveOutsideTracks(mcTrack, stsTrack, charge, stsInd, richInd, stsMcTrackId, Ring); }
     if (chi2 > 3) continue;
 
-    SaveTargetTracks(
-      mcTrack, stsTrack, Momentum, charge, stsInd, richInd, stsMcTrackId, Ring);
+    SaveTargetTracks(mcTrack, stsTrack, Momentum, charge, stsInd, richInd, stsMcTrackId, Ring);
   }
 
 
-  FindGammasTarget(fEventNumDP,
-                   OpeningAngleCut,
-                   GammaInvMassCut,
-                   RealPID,
-                   VMCtracks_minus_Target,
-                   VMCtracks_plus_Target,
-                   VStsTrack_minus_Target,
-                   VStsTrack_plus_Target,
-                   VMomenta_minus_Target,
-                   VMomenta_plus_Target,
-                   VRings_minus_Target,
-                   VRings_plus_Target,
-                   VStsIndex_minus_Target,
-                   VStsIndex_plus_Target,
-                   VRichRing_minus_Target,
-                   VRichRing_plus_Target);
+  FindGammasTarget(fEventNumDP, OpeningAngleCut, GammaInvMassCut, RealPID, VMCtracks_minus_Target,
+                   VMCtracks_plus_Target, VStsTrack_minus_Target, VStsTrack_plus_Target, VMomenta_minus_Target,
+                   VMomenta_plus_Target, VRings_minus_Target, VRings_plus_Target, VStsIndex_minus_Target,
+                   VStsIndex_plus_Target, VRichRing_minus_Target, VRichRing_plus_Target);
 
-  FindGammasOutside(fEventNumDP,
-                    OpeningAngleCut,
-                    GammaInvMassCut,
-                    RealPID,
-                    VMCtracks_minus_Outside,
-                    VMCtracks_plus_Outside,
-                    VStsTrack_minus_Outside,
-                    VStsTrack_plus_Outside,
-                    VRings_minus_Outside,
-                    VRings_plus_Outside,
-                    VStsIndex_minus_Outside,
-                    VStsIndex_plus_Outside,
-                    VRichRing_minus_Outside,
+  FindGammasOutside(fEventNumDP, OpeningAngleCut, GammaInvMassCut, RealPID, VMCtracks_minus_Outside,
+                    VMCtracks_plus_Outside, VStsTrack_minus_Outside, VStsTrack_plus_Outside, VRings_minus_Outside,
+                    VRings_plus_Outside, VStsIndex_minus_Outside, VStsIndex_plus_Outside, VRichRing_minus_Outside,
                     VRichRing_plus_Outside);
 
 
@@ -630,13 +569,9 @@ void CbmKresConversionCorrectedPhotons::Exec(int fEventNumDP,
 }
 
 
-void CbmKresConversionCorrectedPhotons::SaveOutsideTracks(CbmMCTrack* mcTrack1,
-                                                          CbmStsTrack* stsTrack,
-                                                          double charge,
-                                                          int stsInd,
-                                                          int richInd,
-                                                          int stsMcTrackId,
-                                                          CbmRichRing* RING) {
+void CbmKresConversionCorrectedPhotons::SaveOutsideTracks(CbmMCTrack* mcTrack1, CbmStsTrack* stsTrack, double charge,
+                                                          int stsInd, int richInd, int stsMcTrackId, CbmRichRing* RING)
+{
   int InRich = FindInRich(richInd, stsMcTrackId);
   if (charge < 0) {
     VMCtracks_minus_Outside.push_back(mcTrack1);
@@ -654,14 +589,10 @@ void CbmKresConversionCorrectedPhotons::SaveOutsideTracks(CbmMCTrack* mcTrack1,
   }
 }
 
-void CbmKresConversionCorrectedPhotons::SaveTargetTracks(CbmMCTrack* mcTrack1,
-                                                         CbmStsTrack* stsTrack,
-                                                         TVector3 refmom,
-                                                         double charge,
-                                                         int stsInd,
-                                                         int richInd,
-                                                         int stsMcTrackId,
-                                                         CbmRichRing* RING) {
+void CbmKresConversionCorrectedPhotons::SaveTargetTracks(CbmMCTrack* mcTrack1, CbmStsTrack* stsTrack, TVector3 refmom,
+                                                         double charge, int stsInd, int richInd, int stsMcTrackId,
+                                                         CbmRichRing* RING)
+{
   int InRich = FindInRich(richInd, stsMcTrackId);
   if (charge < 0) {
     VMCtracks_minus_Target.push_back(mcTrack1);
@@ -683,22 +614,12 @@ void CbmKresConversionCorrectedPhotons::SaveTargetTracks(CbmMCTrack* mcTrack1,
 
 
 void CbmKresConversionCorrectedPhotons::FindGammasTarget(
-  int EventNumMan,
-  double AngleCut,
-  double InvMassCut,
-  int RealPID,
-  vector<CbmMCTrack*> MCtracks_minus,
-  vector<CbmMCTrack*> MCtracks_plus,
-  vector<CbmStsTrack*> StsTrack_minus,
-  vector<CbmStsTrack*> StsTrack_plus,
-  vector<TVector3> Momenta_minus,
-  vector<TVector3> Momenta_plus,
-  std::vector<int> Rings_minus,
-  std::vector<int> Rings_plus,
-  std::vector<int> stsIndex_minus,
-  std::vector<int> stsIndex_plus,
-  vector<CbmRichRing*> richRing_minus,
-  vector<CbmRichRing*> richRing_plus) {
+  int EventNumMan, double AngleCut, double InvMassCut, int RealPID, vector<CbmMCTrack*> MCtracks_minus,
+  vector<CbmMCTrack*> MCtracks_plus, vector<CbmStsTrack*> StsTrack_minus, vector<CbmStsTrack*> StsTrack_plus,
+  vector<TVector3> Momenta_minus, vector<TVector3> Momenta_plus, std::vector<int> Rings_minus,
+  std::vector<int> Rings_plus, std::vector<int> stsIndex_minus, std::vector<int> stsIndex_plus,
+  vector<CbmRichRing*> richRing_minus, vector<CbmRichRing*> richRing_plus)
+{
   for (size_t i = 0; i < Momenta_minus.size(); i++) {
     for (size_t j = 0; j < Momenta_plus.size(); j++) {
 
@@ -716,22 +637,19 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       int richcheck_1 = 0;
       if (RealPID == 1) {
         // Real PID
-        richcheck_0 =
-          CheckIfElectron(richRing_minus[i], Momenta_minus[i].Mag());
+        richcheck_0 = CheckIfElectron(richRing_minus[i], Momenta_minus[i].Mag());
         richcheck_1 = CheckIfElectron(richRing_plus[j], Momenta_plus[j].Mag());
-      } else {
+      }
+      else {
         // MC   PID
         richcheck_0 = Rings_minus[i];
         richcheck_1 = Rings_plus[j];
       }
       int richcheck = richcheck_0 + richcheck_1;
 
-      Double_t InvmassReco =
-        CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -753,14 +671,10 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       double PlaneAngle_last  = CalculatePlaneAngle_last(sts1, sts2);
       double PlaneAngle_first = CalculatePlaneAngle_first(sts1, sts2);
 
-      int IdForANN =
-        0;  // 0 - means wrong pair combination; 		1 - means correct pair
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
-        if (mcTrackmama->GetMotherId() == -1
-            && mcTrackmama->GetPdgCode() == 22) {
+      int IdForANN = 0;  // 0 - means wrong pair combination; 		1 - means correct pair
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+        if (mcTrackmama->GetMotherId() == -1 && mcTrackmama->GetPdgCode() == 22) {
           IdForANN = 1;
           CDP_InvMass_Target->Fill(InvmassReco);
           CDP_InvMass_Both->Fill(InvmassReco);
@@ -777,25 +691,15 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
 
       // run ANN
       if (AnnTrainPhotons == 1) {
-        fTrainPhotons->Exec(EventNumMan,
-                            IdForANN,
-                            InvmassReco,
-                            OpeningAngle,
-                            PlaneAngle_last,
-                            fKFVertex.GetRefZ(),
-                            part1,
-                            part2);
+        fTrainPhotons->Exec(EventNumMan, IdForANN, InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(),
+                            part1, part2);
         continue;
       }
 
       double AnnValue = 999;
       if (UseAnnPhotons == 1) {
-        AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                                  OpeningAngle,
-                                                  PlaneAngle_last,
-                                                  fKFVertex.GetRefZ(),
-                                                  part1,
-                                                  part2);
+        AnnValue =
+          fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), part1, part2);
         if (IdForANN == 1) CDP_AnnTruePairs->Fill(AnnValue);
         if (IdForANN == 0) CDP_AnnFalsePairs->Fill(AnnValue);
       }
@@ -821,46 +725,39 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       int fromCombinatorial = 0;
       int fromConversion    = 0;
       int twoFromTarget     = 0;
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
         if (mcTrackmama->GetPdgCode() == 22) {
-          if (mcTrackmama->GetMotherId() == -1) {
-            fromFireball = 1;
-          } else {
-            CbmMCTrack* mcTrackGrmama =
-              (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
+          if (mcTrackmama->GetMotherId() == -1) { fromFireball = 1; }
+          else {
+            CbmMCTrack* mcTrackGrmama = (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
             if (mcTrackGrmama->GetPdgCode() == 111) fromPions = 1;
             if (mcTrackGrmama->GetPdgCode() == 221) fromEta = 1;
             if (mcTrackGrmama->GetPdgCode() == 3212) fromXi = 1;
             fromConversion = 1;
           }
-        } else {
+        }
+        else {
           if (mcTrackmama->GetPdgCode() == 111) fromDalitz = 1;
           if (mcTrackmama->GetPdgCode() != 111) fromOther = 1;
         }
-      } else if (part1MC->GetMotherId() == part2MC->GetMotherId()
-                 && part1MC->GetMotherId() == -1) {
+      }
+      else if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() == -1) {
         twoFromTarget = 1;
-      } else {
+      }
+      else {
         fromCombinatorial = 1;
       }
 
 
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
         CMother_PDG_Target->Fill(mcTrackmama->GetPdgCode());
         if (mcTrackmama->GetPdgCode() == 22) {
-          if (mcTrackmama->GetMotherId() == -1) {
-            CGrandMother_PDG_Target->Fill(mcTrackmama->GetMotherId());
-          } else {
-            CbmMCTrack* mcTrackGrmama =
-              (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
-            CGrandMother_PDG_Target->Fill(
-              TMath::Abs(mcTrackGrmama->GetPdgCode()));
+          if (mcTrackmama->GetMotherId() == -1) { CGrandMother_PDG_Target->Fill(mcTrackmama->GetMotherId()); }
+          else {
+            CbmMCTrack* mcTrackGrmama = (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
+            CGrandMother_PDG_Target->Fill(TMath::Abs(mcTrackGrmama->GetPdgCode()));
           }
         }
       }
@@ -899,8 +796,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       // everything (RICH == 0, RICH == 1, RICH == 2) together
       if (richcheck == 0 || richcheck == 1 || richcheck == 2) {
         double weight_all = 0;
-        if (corr_all[rap_coef][pt_coef] != 0)
-          weight_all = 1 / corr_all[rap_coef][pt_coef];
+        if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
         if (weight_all > thresholdweight) weight_all = 0;
         CDP_InvMassReco_all_Target->Fill(InvmassReco, weight_all);
         CDP_OpeningAngleReco_all_Target->Fill(OpeningAngle, weight_all);
@@ -919,10 +815,8 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromTarget_Pt_reco_all_Both->Fill(params.fPt, weight_all);
           CPh_pt_vs_rap_est_all_Target->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_all_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_all_Target->Fill(
-            params.fRapidity, params.fPt, weight_all);
-          CPh_pt_vs_rap_est_corr_all_Both->Fill(
-            params.fRapidity, params.fPt, weight_all);
+          CPh_pt_vs_rap_est_corr_all_Target->Fill(params.fRapidity, params.fPt, weight_all);
+          CPh_pt_vs_rap_est_corr_all_Both->Fill(params.fRapidity, params.fPt, weight_all);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_all_Target->Fill(params.fPt, weight_all);
@@ -945,8 +839,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromOther_Pt_reco_all_Both->Fill(params.fPt, weight_all);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_all_Target->Fill(params.fPt,
-                                                         weight_all);
+          CPh_fromCombinatorial_Pt_reco_all_Target->Fill(params.fPt, weight_all);
           CPh_fromCombinatorial_Pt_reco_all_Both->Fill(params.fPt, weight_all);
         }
         if (fromConversion == 1) {
@@ -962,8 +855,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       // only cases, when RICH == 2
       if (richcheck == 2) {
         double weight_two = 0;
-        if (corr_two[rap_coef][pt_coef] != 0)
-          weight_two = 1 / corr_two[rap_coef][pt_coef];
+        if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
         if (weight_two > thresholdweight) weight_two = 0;
         CDP_InvMassReco_two_Target->Fill(InvmassReco, weight_two);
         CDP_OpeningAngleReco_two_Target->Fill(OpeningAngle, weight_two);
@@ -982,10 +874,8 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromTarget_Pt_reco_two_Both->Fill(params.fPt, weight_two);
           CPh_pt_vs_rap_est_two_Target->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_two_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_two_Target->Fill(
-            params.fRapidity, params.fPt, weight_two);
-          CPh_pt_vs_rap_est_corr_two_Both->Fill(
-            params.fRapidity, params.fPt, weight_two);
+          CPh_pt_vs_rap_est_corr_two_Target->Fill(params.fRapidity, params.fPt, weight_two);
+          CPh_pt_vs_rap_est_corr_two_Both->Fill(params.fRapidity, params.fPt, weight_two);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_two_Target->Fill(params.fPt, weight_two);
@@ -1008,8 +898,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromOther_Pt_reco_two_Both->Fill(params.fPt, weight_two);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_two_Target->Fill(params.fPt,
-                                                         weight_two);
+          CPh_fromCombinatorial_Pt_reco_two_Target->Fill(params.fPt, weight_two);
           CPh_fromCombinatorial_Pt_reco_two_Both->Fill(params.fPt, weight_two);
         }
         if (fromConversion == 1) {
@@ -1025,8 +914,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       // cases, when RICH == 1 or RICH == 2 together
       if (richcheck == 1 || richcheck == 2) {
         double weight_onetwo = 0;
-        if (corr_onetwo[rap_coef][pt_coef] != 0)
-          weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+        if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
         if (weight_onetwo > thresholdweight) weight_onetwo = 0;
         // cout << "Rapidity = " << params.fRapidity << "; Pt = " << params.fPt << endl;
         // cout << "rap_coef = " << rap_coef << "; pt_coef = " << pt_coef << "; correction factor is " <<  corr_onetwo[rap_coef][pt_coef] << endl;
@@ -1047,10 +935,8 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromTarget_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
           CPh_pt_vs_rap_est_onetwo_Target->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_onetwo_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_onetwo_Target->Fill(
-            params.fRapidity, params.fPt, weight_onetwo);
-          CPh_pt_vs_rap_est_corr_onetwo_Both->Fill(
-            params.fRapidity, params.fPt, weight_onetwo);
+          CPh_pt_vs_rap_est_corr_onetwo_Target->Fill(params.fRapidity, params.fPt, weight_onetwo);
+          CPh_pt_vs_rap_est_corr_onetwo_Both->Fill(params.fRapidity, params.fPt, weight_onetwo);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_onetwo_Target->Fill(params.fPt, weight_onetwo);
@@ -1073,22 +959,16 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
           CPh_fromOther_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_onetwo_Target->Fill(params.fPt,
-                                                            weight_onetwo);
-          CPh_fromCombinatorial_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                          weight_onetwo);
+          CPh_fromCombinatorial_Pt_reco_onetwo_Target->Fill(params.fPt, weight_onetwo);
+          CPh_fromCombinatorial_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromConversion == 1) {
-          CPh_fromConversion_Pt_reco_onetwo_Target->Fill(params.fPt,
-                                                         weight_onetwo);
-          CPh_fromConversion_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                       weight_onetwo);
+          CPh_fromConversion_Pt_reco_onetwo_Target->Fill(params.fPt, weight_onetwo);
+          CPh_fromConversion_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (twoFromTarget == 1) {
-          CPh_twoFromTarget_Pt_reco_onetwo_Target->Fill(params.fPt,
-                                                        weight_onetwo);
-          CPh_twoFromTarget_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                      weight_onetwo);
+          CPh_twoFromTarget_Pt_reco_onetwo_Target->Fill(params.fPt, weight_onetwo);
+          CPh_twoFromTarget_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
       }
     }
@@ -1097,20 +977,12 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
 
 
 void CbmKresConversionCorrectedPhotons::FindGammasOutside(
-  int EventNumMan,
-  double AngleCut,
-  double InvMassCut,
-  int RealPID,
-  vector<CbmMCTrack*> MCtracks_minus_Outside,
-  vector<CbmMCTrack*> MCtracks_plus_Outside,
-  vector<CbmStsTrack*> StsTrack_minus_Outside,
-  vector<CbmStsTrack*> StsTrack_plus_Outside,
-  std::vector<int> Rings_minus_Outside,
-  std::vector<int> Rings_plus_Outside,
-  std::vector<int> stsIndex_minus_Outside,
-  std::vector<int> /*stsIndex_plus_Outside*/,
-  vector<CbmRichRing*> richRing_minus_Outside,
-  vector<CbmRichRing*> richRing_plus_Outside) {
+  int EventNumMan, double AngleCut, double InvMassCut, int RealPID, vector<CbmMCTrack*> MCtracks_minus_Outside,
+  vector<CbmMCTrack*> MCtracks_plus_Outside, vector<CbmStsTrack*> StsTrack_minus_Outside,
+  vector<CbmStsTrack*> StsTrack_plus_Outside, std::vector<int> Rings_minus_Outside, std::vector<int> Rings_plus_Outside,
+  std::vector<int> stsIndex_minus_Outside, std::vector<int> /*stsIndex_plus_Outside*/,
+  vector<CbmRichRing*> richRing_minus_Outside, vector<CbmRichRing*> richRing_plus_Outside)
+{
   for (size_t i = 0; i < StsTrack_minus_Outside.size(); i++) {
     for (size_t j = 0; j < StsTrack_plus_Outside.size(); j++) {
 
@@ -1122,27 +994,20 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       //			int sts2_index = stsIndex_plus_Outside[j];
 
       KFParticle electron;
-      CbmKFParticleInterface::SetKFParticleFromStsTrack(
-        part1STS, &electron, 11);
+      CbmKFParticleInterface::SetKFParticleFromStsTrack(part1STS, &electron, 11);
       KFParticle positron;
-      CbmKFParticleInterface::SetKFParticleFromStsTrack(
-        part2STS, &positron, -11);
+      CbmKFParticleInterface::SetKFParticleFromStsTrack(part2STS, &positron, -11);
       const KFParticle* daughters[2] = {&electron, &positron};
       KFParticle intersection;
       intersection.Construct(daughters, 2);
 
-      if (intersection.GetZ() > 75 || intersection.GetZ() < -5)
-        continue;  // kick weird intersections
+      if (intersection.GetZ() > 75 || intersection.GetZ() < -5) continue;  // kick weird intersections
 
       // fit to the vertex fitter
-      TVector3 part1 = CbmKresFunctions::FitToVertex(part1STS,
-                                                     intersection.GetX(),
-                                                     intersection.GetY(),
-                                                     intersection.GetZ());
-      TVector3 part2 = CbmKresFunctions::FitToVertex(part2STS,
-                                                     intersection.GetX(),
-                                                     intersection.GetY(),
-                                                     intersection.GetZ());
+      TVector3 part1 =
+        CbmKresFunctions::FitToVertex(part1STS, intersection.GetX(), intersection.GetY(), intersection.GetZ());
+      TVector3 part2 =
+        CbmKresFunctions::FitToVertex(part2STS, intersection.GetX(), intersection.GetY(), intersection.GetZ());
 
       // TVector3 part1(electron.KFParticleBase::Px(), electron.KFParticleBase::Py(), electron.KFParticleBase::Pz());
       // TVector3 part2(positron.KFParticleBase::Px(), positron.KFParticleBase::Py(), positron.KFParticleBase::Pz());
@@ -1155,18 +1020,16 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
         richcheck_0 = CheckIfElectron(richRing_minus_Outside[i], part1.Mag());
         richcheck_1 = CheckIfElectron(richRing_plus_Outside[j], part2.Mag());
         richcheck   = richcheck_0 + richcheck_1;
-      } else {
+      }
+      else {
         // MC   PID
         richcheck = Rings_minus_Outside[i] + Rings_plus_Outside[j];
       }
 
 
-      Double_t InvmassReco =
-        CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1188,14 +1051,10 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       double PlaneAngle_last  = CalculatePlaneAngle_last(part1STS, part2STS);
       double PlaneAngle_first = CalculatePlaneAngle_first(part1STS, part2STS);
 
-      int IdForANN =
-        0;  // 0 - means wrong pair combination; 		1 - means correct pair
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
-        if (mcTrackmama->GetMotherId() == -1
-            && mcTrackmama->GetPdgCode() == 22) {
+      int IdForANN = 0;  // 0 - means wrong pair combination; 		1 - means correct pair
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+        if (mcTrackmama->GetMotherId() == -1 && mcTrackmama->GetPdgCode() == 22) {
           IdForANN = 1;
           CDP_InvMass_Outside->Fill(InvmassReco);
           CDP_InvMass_Both->Fill(InvmassReco);
@@ -1212,25 +1071,15 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
 
       // run ANN
       if (AnnTrainPhotons == 1) {
-        fTrainPhotons->Exec(EventNumMan,
-                            IdForANN,
-                            InvmassReco,
-                            OpeningAngle,
-                            PlaneAngle_last,
-                            intersection.GetZ(),
-                            part1,
-                            part2);
+        fTrainPhotons->Exec(EventNumMan, IdForANN, InvmassReco, OpeningAngle, PlaneAngle_last, intersection.GetZ(),
+                            part1, part2);
         continue;
       }
 
       double AnnValue = 999;
       if (UseAnnPhotons == 1) {
-        AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                                  OpeningAngle,
-                                                  PlaneAngle_last,
-                                                  intersection.GetZ(),
-                                                  part1,
-                                                  part2);
+        AnnValue =
+          fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, intersection.GetZ(), part1, part2);
         if (IdForANN == 1) CDP_AnnTruePairs->Fill(AnnValue);
         if (IdForANN == 0) CDP_AnnFalsePairs->Fill(AnnValue);
       }
@@ -1255,47 +1104,41 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       int fromCombinatorial = 0;
       int fromConversion    = 0;
       int twoFromTarget     = 0;
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
         if (mcTrackmama->GetPdgCode() == 22) {
-          if (mcTrackmama->GetMotherId() == -1) {
-            fromFireball = 1;
-          } else {
-            CbmMCTrack* mcTrackGrmama =
-              (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
+          if (mcTrackmama->GetMotherId() == -1) { fromFireball = 1; }
+          else {
+            CbmMCTrack* mcTrackGrmama = (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
             if (mcTrackGrmama->GetPdgCode() == 111) fromPions = 1;
             if (mcTrackGrmama->GetPdgCode() == 221) fromEta = 1;
             if (mcTrackGrmama->GetPdgCode() == 3212) fromXi = 1;
             fromConversion = 1;
           }
-        } else {
+        }
+        else {
           if (mcTrackmama->GetPdgCode() == 111) fromDalitz = 1;
           if (mcTrackmama->GetPdgCode() != 111) fromOther = 1;
         }
-      } else if (part1MC->GetMotherId() == part2MC->GetMotherId()
-                 && part1MC->GetMotherId() == -1) {
+      }
+      else if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() == -1) {
         twoFromTarget = 1;
-      } else {
+      }
+      else {
         fromCombinatorial = 1;
       }
 
 
-      if (part1MC->GetMotherId() == part2MC->GetMotherId()
-          && part1MC->GetMotherId() != -1) {
-        CbmMCTrack* mcTrackmama =
-          (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
+      if (part1MC->GetMotherId() == part2MC->GetMotherId() && part1MC->GetMotherId() != -1) {
+        CbmMCTrack* mcTrackmama = (CbmMCTrack*) fMcTracks->At(part1MC->GetMotherId());
         if (mcTrackmama->GetPdgCode() == 22) {
-          if (mcTrackmama->GetMotherId() == -1) {
-            CGrandMother_PDG_Outside->Fill(mcTrackmama->GetMotherId());
-          } else {
-            CbmMCTrack* mcTrackGrmama =
-              (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
-            CGrandMother_PDG_Outside->Fill(
-              TMath::Abs(mcTrackGrmama->GetPdgCode()));
+          if (mcTrackmama->GetMotherId() == -1) { CGrandMother_PDG_Outside->Fill(mcTrackmama->GetMotherId()); }
+          else {
+            CbmMCTrack* mcTrackGrmama = (CbmMCTrack*) fMcTracks->At(mcTrackmama->GetMotherId());
+            CGrandMother_PDG_Outside->Fill(TMath::Abs(mcTrackGrmama->GetPdgCode()));
           }
-        } else {
+        }
+        else {
           CMother_PDG_Outside->Fill(TMath::Abs(mcTrackmama->GetPdgCode()));
         }
       }
@@ -1336,8 +1179,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
         double weight_all = 0;
         // cout << "Rapidity = " << params.fRapidity << "; Pt = " << params.fPt << endl;
         // cout << "rap_coef = " << rap_coef << "; pt_coef = " << pt_coef << "; correction factor is " <<  corr_all[rap_coef][pt_coef] << endl;
-        if (corr_all[rap_coef][pt_coef] != 0)
-          weight_all = 1 / corr_all[rap_coef][pt_coef];
+        if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
         if (weight_all > thresholdweight) weight_all = 0;
         CDP_InvMassReco_all_Outside->Fill(InvmassReco, weight_all);
         CDP_OpeningAngleReco_all_Outside->Fill(OpeningAngle, weight_all);
@@ -1356,10 +1198,8 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromTarget_Pt_reco_all_Both->Fill(params.fPt, weight_all);
           CPh_pt_vs_rap_est_all_Outside->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_all_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_all_Outside->Fill(
-            params.fRapidity, params.fPt, weight_all);
-          CPh_pt_vs_rap_est_corr_all_Both->Fill(
-            params.fRapidity, params.fPt, weight_all);
+          CPh_pt_vs_rap_est_corr_all_Outside->Fill(params.fRapidity, params.fPt, weight_all);
+          CPh_pt_vs_rap_est_corr_all_Both->Fill(params.fRapidity, params.fPt, weight_all);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_all_Outside->Fill(params.fPt, weight_all);
@@ -1382,8 +1222,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromOther_Pt_reco_all_Both->Fill(params.fPt, weight_all);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_all_Outside->Fill(params.fPt,
-                                                          weight_all);
+          CPh_fromCombinatorial_Pt_reco_all_Outside->Fill(params.fPt, weight_all);
           CPh_fromCombinatorial_Pt_reco_all_Both->Fill(params.fPt, weight_all);
         }
         if (fromConversion == 1) {
@@ -1399,8 +1238,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       // only cases, when RICH == 2
       if (richcheck == 2) {
         double weight_two = 0;
-        if (corr_two[rap_coef][pt_coef] != 0)
-          weight_two = 1 / corr_two[rap_coef][pt_coef];
+        if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
         if (weight_two > thresholdweight) weight_two = 0;
         CDP_InvMassReco_two_Outside->Fill(InvmassReco, weight_two);
         CDP_OpeningAngleReco_two_Outside->Fill(OpeningAngle, weight_two);
@@ -1419,10 +1257,8 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromTarget_Pt_reco_two_Both->Fill(params.fPt, weight_two);
           CPh_pt_vs_rap_est_two_Outside->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_two_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_two_Outside->Fill(
-            params.fRapidity, params.fPt, weight_two);
-          CPh_pt_vs_rap_est_corr_two_Both->Fill(
-            params.fRapidity, params.fPt, weight_two);
+          CPh_pt_vs_rap_est_corr_two_Outside->Fill(params.fRapidity, params.fPt, weight_two);
+          CPh_pt_vs_rap_est_corr_two_Both->Fill(params.fRapidity, params.fPt, weight_two);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_two_Outside->Fill(params.fPt, weight_two);
@@ -1445,8 +1281,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromOther_Pt_reco_two_Both->Fill(params.fPt, weight_two);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_two_Outside->Fill(params.fPt,
-                                                          weight_two);
+          CPh_fromCombinatorial_Pt_reco_two_Outside->Fill(params.fPt, weight_two);
           CPh_fromCombinatorial_Pt_reco_two_Both->Fill(params.fPt, weight_two);
         }
         if (fromConversion == 1) {
@@ -1462,8 +1297,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       // cases, when RICH == 1 or RICH == 2 together
       if (richcheck == 1 || richcheck == 2) {
         double weight_onetwo = 0;
-        if (corr_onetwo[rap_coef][pt_coef] != 0)
-          weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+        if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
         if (weight_onetwo > thresholdweight) weight_onetwo = 0;
         CDP_InvMassReco_onetwo_Outside->Fill(InvmassReco, weight_onetwo);
         CDP_OpeningAngleReco_onetwo_Outside->Fill(OpeningAngle, weight_onetwo);
@@ -1478,15 +1312,12 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
         CDP_P_reco_onetwo_Both->Fill(params.fMomentumMag, weight_onetwo);
         CDP_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         if (fromFireball == 1) {
-          CPh_fromTarget_Pt_reco_onetwo_Outside->Fill(params.fPt,
-                                                      weight_onetwo);
+          CPh_fromTarget_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
           CPh_fromTarget_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
           CPh_pt_vs_rap_est_onetwo_Outside->Fill(params.fRapidity, params.fPt);
           CPh_pt_vs_rap_est_onetwo_Both->Fill(params.fRapidity, params.fPt);
-          CPh_pt_vs_rap_est_corr_onetwo_Outside->Fill(
-            params.fRapidity, params.fPt, weight_onetwo);
-          CPh_pt_vs_rap_est_corr_onetwo_Both->Fill(
-            params.fRapidity, params.fPt, weight_onetwo);
+          CPh_pt_vs_rap_est_corr_onetwo_Outside->Fill(params.fRapidity, params.fPt, weight_onetwo);
+          CPh_pt_vs_rap_est_corr_onetwo_Both->Fill(params.fRapidity, params.fPt, weight_onetwo);
         }
         if (fromPions == 1) {
           CPh_fromPions_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
@@ -1497,8 +1328,7 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromEtas_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromDalitz == 1) {
-          CPh_fromDalitz_Pt_reco_onetwo_Outside->Fill(params.fPt,
-                                                      weight_onetwo);
+          CPh_fromDalitz_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
           CPh_fromDalitz_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromXi == 1) {
@@ -1510,22 +1340,16 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
           CPh_fromOther_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromCombinatorial == 1) {
-          CPh_fromCombinatorial_Pt_reco_onetwo_Outside->Fill(params.fPt,
-                                                             weight_onetwo);
-          CPh_fromCombinatorial_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                          weight_onetwo);
+          CPh_fromCombinatorial_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
+          CPh_fromCombinatorial_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (fromConversion == 1) {
-          CPh_fromConversion_Pt_reco_onetwo_Outside->Fill(params.fPt,
-                                                          weight_onetwo);
-          CPh_fromConversion_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                       weight_onetwo);
+          CPh_fromConversion_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
+          CPh_fromConversion_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
         if (twoFromTarget == 1) {
-          CPh_twoFromTarget_Pt_reco_onetwo_Outside->Fill(params.fPt,
-                                                         weight_onetwo);
-          CPh_twoFromTarget_Pt_reco_onetwo_Both->Fill(params.fPt,
-                                                      weight_onetwo);
+          CPh_twoFromTarget_Pt_reco_onetwo_Outside->Fill(params.fPt, weight_onetwo);
+          CPh_twoFromTarget_Pt_reco_onetwo_Both->Fill(params.fPt, weight_onetwo);
         }
       }
     }
@@ -1533,18 +1357,15 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
 }
 
 
-int CbmKresConversionCorrectedPhotons::FindInRich(int richInd,
-                                                  int stsMcTrackId) {
+int CbmKresConversionCorrectedPhotons::FindInRich(int richInd, int stsMcTrackId)
+{
   int RingsInRich = 0;
   if (richInd > -1) {
-    CbmTrackMatchNew* richMatch =
-      (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
+    CbmTrackMatchNew* richMatch = (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
     if (richMatch != nullptr && richMatch->GetNofLinks() > 0) {
       int richMcTrackId = richMatch->GetMatchedLink().GetIndex();
       if (richMcTrackId > 0) {
-        if (
-          stsMcTrackId
-          == richMcTrackId) {  // check that global track was matched correctly for STS and RICH together
+        if (stsMcTrackId == richMcTrackId) {  // check that global track was matched correctly for STS and RICH together
           CbmMCTrack* mcTrack2 = (CbmMCTrack*) fMcTracks->At(richMcTrackId);
           if (mcTrack2 != nullptr) {
             int pdgRICH = mcTrack2->GetPdgCode();
@@ -1558,8 +1379,8 @@ int CbmKresConversionCorrectedPhotons::FindInRich(int richInd,
 }
 
 
-int CbmKresConversionCorrectedPhotons::CheckIfElectron(CbmRichRing* ring,
-                                                       double momentum) {
+int CbmKresConversionCorrectedPhotons::CheckIfElectron(CbmRichRing* ring, double momentum)
+{
   int identified = 0;
 
   if (nullptr != ring) {
@@ -1573,9 +1394,8 @@ int CbmKresConversionCorrectedPhotons::CheckIfElectron(CbmRichRing* ring,
       ringHit.AddHit(hl);
     }
     fTauFit->DoFit(&ringHit);
-    if (ringHit.GetAaxis() > 4 && ringHit.GetAaxis() < 6
-        && ringHit.GetBaxis() > 4 && ringHit.GetBaxis() < 6 && momentum > 0.2
-        && momentum < 4.)
+    if (ringHit.GetAaxis() > 4 && ringHit.GetAaxis() < 6 && ringHit.GetBaxis() > 4 && ringHit.GetBaxis() < 6
+        && momentum > 0.2 && momentum < 4.)
       identified++;
     //if (ring->GetDistance() < 2 && ringHit.GetAaxis() > 4 && ringHit.GetAaxis() < 6  && ringHit.GetBaxis() > 4 && ringHit.GetBaxis() < 6 && momentum > 0.2 && momentum < 4.) identified ++;
   }
@@ -1583,8 +1403,8 @@ int CbmKresConversionCorrectedPhotons::CheckIfElectron(CbmRichRing* ring,
   return identified;
 }
 
-std::vector<TVector3>
-CbmKresConversionCorrectedPhotons::SaveAllHits(CbmStsTrack* track) {
+std::vector<TVector3> CbmKresConversionCorrectedPhotons::SaveAllHits(CbmStsTrack* track)
+{
   std::vector<TVector3> AllHitsOfTrack;
   AllHitsOfTrack.clear();
 
@@ -1609,9 +1429,9 @@ CbmKresConversionCorrectedPhotons::SaveAllHits(CbmStsTrack* track) {
   return AllHitsOfTrack;
 }
 
-double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last_fromHits(
-  std::vector<TVector3> track_1,
-  std::vector<TVector3> track_2) {
+double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last_fromHits(std::vector<TVector3> track_1,
+                                                                            std::vector<TVector3> track_2)
+{
   double FinalAngle = 400;
 
   int hits_1 = track_1.size();
@@ -1628,11 +1448,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last_fromHits(
   TVector3 last2 = track_2[hits_2 - 1];
 
   // // check difference in 2 cm, because of two slices of every STS and Mvd stations
-  if (
-    TMath::Abs(last1.Z() - last2.Z()) > 2
-    && last1.Z()
-         > last2
-             .Z()) {  // if last hits are in different stations --> try to find the latest common station
+  if (TMath::Abs(last1.Z() - last2.Z()) > 2
+      && last1.Z() > last2.Z()) {  // if last hits are in different stations --> try to find the latest common station
     for (int i = hits_1 - 2; i > -1; i--) {  // start from second last station
       if (TMath::Abs(last1.Z() - last2.Z()) < 2) continue;
       last1  = track_1[i];
@@ -1642,11 +1459,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last_fromHits(
     }
   }
 
-  if (
-    TMath::Abs(last1.Z() - last2.Z()) > 2
-    && last1.Z()
-         < last2
-             .Z()) {  // if last hits are in different stations --> try to find the latest common station
+  if (TMath::Abs(last1.Z() - last2.Z()) > 2
+      && last1.Z() < last2.Z()) {  // if last hits are in different stations --> try to find the latest common station
     for (int i = hits_2 - 2; i > -1; i--) {  // start from second last station
       if (TMath::Abs(last1.Z() - last2.Z()) < 2) continue;
       last2  = track_2[i];
@@ -1658,17 +1472,15 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last_fromHits(
 
   // calculate angle if we have found common station
   if (TMath::Abs(Zpart1 - Zpart2) < 2 && Zpart1 != 0 && Zpart2 != 0) {
-    FinalAngle =
-      TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
+    FinalAngle = TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
   }
 
   return TMath::Abs(TMath::Abs(FinalAngle) - 180);
 }
 
 
-double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
-  CbmStsTrack* Sts_1,
-  CbmStsTrack* Sts_2) {
+double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(CbmStsTrack* Sts_1, CbmStsTrack* Sts_2)
+{
   double FinalAngle = 400;
   Int_t hits1sts    = Sts_1->GetNofStsHits();
   Int_t hits2sts    = Sts_2->GetNofStsHits();
@@ -1687,7 +1499,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
     Xpart1             = stsHit1->GetX();
     Ypart1             = stsHit1->GetY();
     Zpart1             = stsHit1->GetZ();
-  } else {
+  }
+  else {
     Int_t mvdHitIndex1 = Sts_1->GetMvdHitIndex(hits1mvd - 1);
     CbmMvdHit* mvdHit1 = (CbmMvdHit*) fArrayMvdHit->At(mvdHitIndex1);
     Xpart1             = mvdHit1->GetX();
@@ -1701,7 +1514,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
     Xpart2             = stsHit2->GetX();
     Ypart2             = stsHit2->GetY();
     Zpart2             = stsHit2->GetZ();
-  } else {
+  }
+  else {
     Int_t mvdHitIndex2 = Sts_2->GetMvdHitIndex(hits2mvd - 1);
     CbmMvdHit* mvdHit2 = (CbmMvdHit*) fArrayMvdHit->At(mvdHitIndex2);
     Xpart2             = mvdHit2->GetX();
@@ -1710,10 +1524,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
   }
 
   // check difference in 2 cm, because of two slices of every STS and Mvd stations
-  if (
-    TMath::Abs(Zpart1 - Zpart2) > 2
-    && Zpart1
-         > Zpart2) {  // if last hits are in different stations --> try to find the latest common station
+  if (TMath::Abs(Zpart1 - Zpart2) > 2
+      && Zpart1 > Zpart2) {  // if last hits are in different stations --> try to find the latest common station
     for (int i = hits1sts - 2; i > -1; i--) {  // start from second last station
       if (TMath::Abs(Zpart1 - Zpart2) < 2) continue;
       Int_t stsHitIndex = Sts_1->GetStsHitIndex(i);
@@ -1734,10 +1546,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
     }
   }
 
-  if (
-    TMath::Abs(Zpart1 - Zpart2) > 2
-    && Zpart1
-         < Zpart2) {  // if last hits are in different stations --> try to find the latest common station
+  if (TMath::Abs(Zpart1 - Zpart2) > 2
+      && Zpart1 < Zpart2) {  // if last hits are in different stations --> try to find the latest common station
     for (int i = hits2sts - 2; i > -1; i--) {  // start from second last station
       if (TMath::Abs(Zpart1 - Zpart2) < 2) continue;
       Int_t stsHitIndex = Sts_2->GetStsHitIndex(i);
@@ -1760,16 +1570,14 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_last(
 
   // calculate angle if we found common station
   if (TMath::Abs(Zpart1 - Zpart2) < 2 && Zpart1 != 0 && Zpart2 != 0) {
-    FinalAngle =
-      TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
+    FinalAngle = TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
   }
 
   return TMath::Abs(TMath::Abs(FinalAngle) - 180);
 }
 
-double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
-  CbmStsTrack* Sts_1,
-  CbmStsTrack* Sts_2) {
+double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(CbmStsTrack* Sts_1, CbmStsTrack* Sts_2)
+{
   double FinalAngle = 400;
   Int_t hits1sts    = Sts_1->GetNofStsHits();
   Int_t hits2sts    = Sts_2->GetNofStsHits();
@@ -1788,7 +1596,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
     Xpart1             = mvdHit1->GetX();
     Ypart1             = mvdHit1->GetY();
     Zpart1             = mvdHit1->GetZ();
-  } else {
+  }
+  else {
     Int_t stsHitIndex1 = Sts_1->GetStsHitIndex(0);
     CbmStsHit* stsHit1 = (CbmStsHit*) fArrayStsHit->At(stsHitIndex1);
     Xpart1             = stsHit1->GetX();
@@ -1802,7 +1611,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
     Xpart2             = mvdHit2->GetX();
     Ypart2             = mvdHit2->GetY();
     Zpart2             = mvdHit2->GetZ();
-  } else {
+  }
+  else {
     Int_t stsHitIndex2 = Sts_2->GetStsHitIndex(0);
     CbmStsHit* stsHit2 = (CbmStsHit*) fArrayStsHit->At(stsHitIndex2);
     Xpart2             = stsHit2->GetX();
@@ -1811,10 +1621,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
   }
 
   // check difference in 2 cm, because of two slices of every STS and Mvd stations
-  if (
-    TMath::Abs(Zpart1 - Zpart2) > 2
-    && Zpart1
-         < Zpart2) {  // if first hits are in different stations --> try to find the earliest common station
+  if (TMath::Abs(Zpart1 - Zpart2) > 2
+      && Zpart1 < Zpart2) {  // if first hits are in different stations --> try to find the earliest common station
     for (int i = 1; i < hits1mvd; i++) {  // start from second hit
       if (TMath::Abs(Zpart1 - Zpart2) < 2) continue;
       Int_t mvdHitIndex = Sts_1->GetMvdHitIndex(i);
@@ -1835,10 +1643,8 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
     }
   }
 
-  if (
-    TMath::Abs(Zpart1 - Zpart2) > 2
-    && Zpart1
-         > Zpart2) {  // if first hits are in different stations --> try to find the earliest common station
+  if (TMath::Abs(Zpart1 - Zpart2) > 2
+      && Zpart1 > Zpart2) {  // if first hits are in different stations --> try to find the earliest common station
     for (int i = 1; i < hits2mvd; i++) {  // start from second hit
       if (TMath::Abs(Zpart1 - Zpart2) < 2) continue;
       Int_t mvdHitIndex = Sts_2->GetMvdHitIndex(i);
@@ -1861,49 +1667,37 @@ double CbmKresConversionCorrectedPhotons::CalculatePlaneAngle_first(
 
   // calculate angle if we found common station
   if (TMath::Abs(Zpart1 - Zpart2) < 2 && Zpart1 != 0 && Zpart2 != 0) {
-    FinalAngle =
-      TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
+    FinalAngle = TMath::ATan2(Ypart1 - Ypart2, Xpart1 - Xpart2) * (180 / TMath::Pi());
   }
 
   return TMath::Abs(TMath::Abs(FinalAngle) - 180);
 }
 
-void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(
-  double AngleCut,
-  double InvMassCut)
+void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(double AngleCut, double InvMassCut)
 // mix particles with the same charge TARGET
 {
   int nof_minus = CDP_LK_EMT_momenta_minus_Target.size();
   for (int a = 0; a < nof_minus - 1; a++) {
     for (int b = a + 1; b < nof_minus; b++) {
-      if (CDP_LK_EMT_STS_minus_index_Target[a]
-          == CDP_LK_EMT_STS_minus_index_Target[b])
-        continue;
+      if (CDP_LK_EMT_STS_minus_index_Target[a] == CDP_LK_EMT_STS_minus_index_Target[b]) continue;
       TVector3 e1       = CDP_LK_EMT_momenta_minus_Target[a];
       TVector3 e2       = CDP_LK_EMT_momenta_minus_Target[b];
       CbmStsTrack* sts1 = CDP_LK_EMT_STS_minus_Target[a];
       CbmStsTrack* sts2 = CDP_LK_EMT_STS_minus_Target[b];
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last(sts1, sts2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     fKFVertex.GetRefZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1917,30 +1711,22 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount = CDP_LK_EMT_NofRings_minus_Target[a]
-                         + CDP_LK_EMT_NofRings_minus_Target[b];
+      int rings_amount = CDP_LK_EMT_NofRings_minus_Target[a] + CDP_LK_EMT_NofRings_minus_Target[b];
 
       CDP_LK_EMT_Pt_all_Target->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Target->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Target->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Target->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Target->Fill(params.fPt, weight_onetwo);
       CDP_LK_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
     }
   }
 
@@ -1948,34 +1734,25 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(
   int nof_plus = CDP_LK_EMT_momenta_plus_Target.size();
   for (int a = 0; a < nof_plus - 1; a++) {
     for (int b = a + 1; b < nof_plus; b++) {
-      if (CDP_LK_EMT_STS_plus_index_Target[a]
-          == CDP_LK_EMT_STS_plus_index_Target[b])
-        continue;
+      if (CDP_LK_EMT_STS_plus_index_Target[a] == CDP_LK_EMT_STS_plus_index_Target[b]) continue;
       TVector3 e1       = CDP_LK_EMT_momenta_plus_Target[a];
       TVector3 e2       = CDP_LK_EMT_momenta_plus_Target[b];
       CbmStsTrack* sts1 = CDP_LK_EMT_STS_plus_Target[a];
       CbmStsTrack* sts2 = CDP_LK_EMT_STS_plus_Target[b];
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last(sts1, sts2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     fKFVertex.GetRefZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1989,45 +1766,33 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount =
-        CDP_LK_EMT_NofRings_plus_Target[a] + CDP_LK_EMT_NofRings_plus_Target[b];
+      int rings_amount = CDP_LK_EMT_NofRings_plus_Target[a] + CDP_LK_EMT_NofRings_plus_Target[b];
 
       CDP_LK_EMT_Pt_all_Target->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Target->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Target->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Target->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Target->Fill(params.fPt, weight_onetwo);
       CDP_LK_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
     }
   }
 }
 
-void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
-  double AngleCut,
-  double InvMassCut)
+void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(double AngleCut, double InvMassCut)
 // mix particles with the same charge OUTSIDE
 {
   int nof_minus = CDP_LK_EMT_NofRings_minus_Outside.size();
   for (int a = 0; a < nof_minus - 1; a++) {
     for (int b = a + 1; b < nof_minus; b++) {
-      if (CDP_LK_EMT_STS_minus_index_Outside[a]
-          == CDP_LK_EMT_STS_minus_index_Outside[b])
-        continue;
+      if (CDP_LK_EMT_STS_minus_index_Outside[a] == CDP_LK_EMT_STS_minus_index_Outside[b]) continue;
       CbmStsTrack* sts1 = CDP_LK_EMT_STS_minus_Outside[a];
       CbmStsTrack* sts2 = CDP_LK_EMT_STS_minus_Outside[b];
 
@@ -2039,34 +1804,24 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
       KFParticle intersection;
       intersection.Construct(daughters, 2);
 
-      if (intersection.GetZ() > 75 || intersection.GetZ() < -5)
-        continue;  // kick weird intersections
+      if (intersection.GetZ() > 75 || intersection.GetZ() < -5) continue;  // kick weird intersections
 
-      TVector3 e1 = CbmKresFunctions::FitToVertex(
-        sts1, intersection.GetX(), intersection.GetY(), intersection.GetZ());
-      TVector3 e2 = CbmKresFunctions::FitToVertex(
-        sts2, intersection.GetX(), intersection.GetY(), intersection.GetZ());
+      TVector3 e1 = CbmKresFunctions::FitToVertex(sts1, intersection.GetX(), intersection.GetY(), intersection.GetZ());
+      TVector3 e2 = CbmKresFunctions::FitToVertex(sts2, intersection.GetX(), intersection.GetY(), intersection.GetZ());
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last(sts1, sts2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     fKFVertex.GetRefZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -2080,30 +1835,22 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount = CDP_LK_EMT_NofRings_minus_Outside[a]
-                         + CDP_LK_EMT_NofRings_minus_Outside[b];
+      int rings_amount = CDP_LK_EMT_NofRings_minus_Outside[a] + CDP_LK_EMT_NofRings_minus_Outside[b];
 
       CDP_LK_EMT_Pt_all_Outside->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Outside->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Outside->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Outside->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Outside->Fill(params.fPt, weight_onetwo);
       CDP_LK_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
     }
   }
 
@@ -2111,9 +1858,7 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
   int nof_plus = CDP_LK_EMT_NofRings_plus_Outside.size();
   for (int a = 0; a < nof_plus - 1; a++) {
     for (int b = a + 1; b < nof_plus; b++) {
-      if (CDP_LK_EMT_STS_plus_index_Outside[a]
-          == CDP_LK_EMT_STS_plus_index_Outside[b])
-        continue;
+      if (CDP_LK_EMT_STS_plus_index_Outside[a] == CDP_LK_EMT_STS_plus_index_Outside[b]) continue;
       CbmStsTrack* sts1 = CDP_LK_EMT_STS_plus_Outside[a];
       CbmStsTrack* sts2 = CDP_LK_EMT_STS_plus_Outside[b];
 
@@ -2125,34 +1870,24 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
       KFParticle intersection;
       intersection.Construct(daughters, 2);
 
-      if (intersection.GetZ() > 75 || intersection.GetZ() < -5)
-        continue;  // kick weird intersections
+      if (intersection.GetZ() > 75 || intersection.GetZ() < -5) continue;  // kick weird intersections
 
-      TVector3 e1 = CbmKresFunctions::FitToVertex(
-        sts1, intersection.GetX(), intersection.GetY(), intersection.GetZ());
-      TVector3 e2 = CbmKresFunctions::FitToVertex(
-        sts2, intersection.GetX(), intersection.GetY(), intersection.GetZ());
+      TVector3 e1 = CbmKresFunctions::FitToVertex(sts1, intersection.GetX(), intersection.GetY(), intersection.GetZ());
+      TVector3 e2 = CbmKresFunctions::FitToVertex(sts2, intersection.GetX(), intersection.GetY(), intersection.GetZ());
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last(sts1, sts2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     fKFVertex.GetRefZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -2166,42 +1901,32 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount = CDP_LK_EMT_NofRings_plus_Outside[a]
-                         + CDP_LK_EMT_NofRings_plus_Outside[b];
+      int rings_amount = CDP_LK_EMT_NofRings_plus_Outside[a] + CDP_LK_EMT_NofRings_plus_Outside[b];
 
       CDP_LK_EMT_Pt_all_Outside->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Outside->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Outside->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Outside->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Outside->Fill(params.fPt, weight_onetwo);
       CDP_LK_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
-      if (rings_amount == 2)
-        CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
-      if ((rings_amount == 1 || rings_amount == 2))
-        CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
+      if (rings_amount == 2) CDP_LK_EMT_Pt_two_Both->Fill(params.fPt, weight_two);
+      if ((rings_amount == 1 || rings_amount == 2)) CDP_LK_EMT_Pt_onetwo_Both->Fill(params.fPt, weight_onetwo);
     }
   }
 }
 
 
-void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut,
-                                                          double InvMassCut)
+void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut, double InvMassCut)
 // TARGET
 {
   int nof_Target = CDP_EMT_Event_minus_Target.size();
-  cout << "Mixing for corrected direct photons in Target - nof entries "
-       << nof_Target << endl;
+  cout << "Mixing for corrected direct photons in Target - nof entries " << nof_Target << endl;
 
   for (size_t a = 0; a < CDP_EMT_Event_minus_Target.size(); a++) {
     for (size_t b = 0; b < CDP_EMT_Event_plus_Target.size(); b++) {
@@ -2212,26 +1937,19 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut,
       std::vector<TVector3> hits1 = CDP_EMT_Hits_minus_Target[a];
       std::vector<TVector3> hits2 = CDP_EMT_Hits_plus_Target[b];
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last_fromHits(hits1, hits2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     fKFVertex.GetRefZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, fKFVertex.GetRefZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -2245,19 +1963,15 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut,
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount =
-        CDP_EMT_NofRings_minus_Target[a] + CDP_EMT_NofRings_plus_Target[b];
+      int rings_amount = CDP_EMT_NofRings_minus_Target[a] + CDP_EMT_NofRings_plus_Target[b];
 
       CDP_EMT_Pt_all_Target->Fill(params.fPt, weight_all);
       CDP_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
@@ -2274,13 +1988,11 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut,
 }
 
 
-void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut,
-                                                           double InvMassCut)
+void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut, double InvMassCut)
 // OUTSIDE
 {
   int nof_Outside = CDP_EMT_Event_minus_Outside.size();
-  cout << "Mixing for corrected direct photons in Outside - nof entries "
-       << nof_Outside << endl;
+  cout << "Mixing for corrected direct photons in Outside - nof entries " << nof_Outside << endl;
 
   for (size_t a = 0; a < CDP_EMT_Event_minus_Outside.size(); a++) {
     for (size_t b = 0; b < CDP_EMT_Event_plus_Outside.size(); b++) {
@@ -2294,39 +2006,27 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut,
       KFParticle intersection;
       intersection.Construct(daughters, 2);
 
-      if (intersection.GetZ() > 75 || intersection.GetZ() < -5)
-        continue;  // kick weird intersections
+      if (intersection.GetZ() > 75 || intersection.GetZ() < -5) continue;  // kick weird intersections
 
-      TVector3 e1(electron.KFParticleBase::Px(),
-                  electron.KFParticleBase::Py(),
-                  electron.KFParticleBase::Pz());
-      TVector3 e2(positron.KFParticleBase::Px(),
-                  positron.KFParticleBase::Py(),
-                  positron.KFParticleBase::Pz());
+      TVector3 e1(electron.KFParticleBase::Px(), electron.KFParticleBase::Py(), electron.KFParticleBase::Pz());
+      TVector3 e2(positron.KFParticleBase::Px(), positron.KFParticleBase::Py(), positron.KFParticleBase::Pz());
 
       std::vector<TVector3> hits1 = CDP_EMT_Hits_minus_Outside[a];
       std::vector<TVector3> hits2 = CDP_EMT_Hits_plus_Outside[b];
 
-      double InvmassReco = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
-      double OpeningAngle =
-        CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
+      double InvmassReco     = CbmKresFunctions::Invmass_2particles_RECO(e1, e2);
+      double OpeningAngle    = CbmKresFunctions::CalculateOpeningAngle_Reco(e1, e2);
       double PlaneAngle_last = CalculatePlaneAngle_last_fromHits(hits1, hits2);
 
       //			double AnnValue = fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, intersection.GetZ(), e1, e2);
-      fAnnPhotonsSelection->DoSelect(InvmassReco,
-                                     OpeningAngle,
-                                     PlaneAngle_last,
-                                     intersection.GetZ(),
-                                     e1,
-                                     e2);
+      fAnnPhotonsSelection->DoSelect(InvmassReco, OpeningAngle, PlaneAngle_last, intersection.GetZ(), e1, e2);
 
       // cuts
       if (TMath::Abs(OpeningAngle) > AngleCut) continue;
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params =
-        CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -2340,19 +2040,15 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut,
       double weight_all    = 0;
       double weight_two    = 0;
       double weight_onetwo = 0;
-      if (corr_all[rap_coef][pt_coef] != 0)
-        weight_all = 1 / corr_all[rap_coef][pt_coef];
-      if (corr_two[rap_coef][pt_coef] != 0)
-        weight_two = 1 / corr_two[rap_coef][pt_coef];
-      if (corr_onetwo[rap_coef][pt_coef] != 0)
-        weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
+      if (corr_all[rap_coef][pt_coef] != 0) weight_all = 1 / corr_all[rap_coef][pt_coef];
+      if (corr_two[rap_coef][pt_coef] != 0) weight_two = 1 / corr_two[rap_coef][pt_coef];
+      if (corr_onetwo[rap_coef][pt_coef] != 0) weight_onetwo = 1 / corr_onetwo[rap_coef][pt_coef];
 
       if (weight_all > thresholdweight) weight_all = 0;
       if (weight_two > thresholdweight) weight_two = 0;
       if (weight_onetwo > thresholdweight) weight_onetwo = 0;
 
-      int rings_amount =
-        CDP_EMT_NofRings_minus_Outside[a] + CDP_EMT_NofRings_plus_Outside[b];
+      int rings_amount = CDP_EMT_NofRings_minus_Outside[a] + CDP_EMT_NofRings_plus_Outside[b];
 
       CDP_EMT_Pt_all_Outside->Fill(params.fPt, weight_all);
       CDP_EMT_Pt_all_Both->Fill(params.fPt, weight_all);
@@ -2369,7 +2065,8 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut,
 }
 
 
-void CbmKresConversionCorrectedPhotons::Finish() {
+void CbmKresConversionCorrectedPhotons::Finish()
+{
   gDirectory->mkdir("corrected photons");
   gDirectory->cd("corrected photons");
 
@@ -2475,1481 +2172,670 @@ void CbmKresConversionCorrectedPhotons::Finish() {
 }
 
 
-void CbmKresConversionCorrectedPhotons::InitHistograms() {
+void CbmKresConversionCorrectedPhotons::InitHistograms()
+{
   // Target
-  CMother_PDG_Target =
-    new TH1D("CMother_PDG_Target", "CMother_PDG_Target; Id;#", 1000, -10, 490);
+  CMother_PDG_Target = new TH1D("CMother_PDG_Target", "CMother_PDG_Target; Id;#", 1000, -10, 490);
   fHistoList_dp_Target.push_back(CMother_PDG_Target);
-  CGrandMother_PDG_Target = new TH1D(
-    "CGrandMother_PDG_Target", "CGrandMother_PDG_Target; Id;#", 1000, -10, 490);
+  CGrandMother_PDG_Target = new TH1D("CGrandMother_PDG_Target", "CGrandMother_PDG_Target; Id;#", 1000, -10, 490);
   fHistoList_dp_Target.push_back(CGrandMother_PDG_Target);
 
   // Outside
-  CMother_PDG_Outside = new TH1D(
-    "CMother_PDG_Outside", "CMother_PDG_Outside; Id;#", 1000, -10, 490);
+  CMother_PDG_Outside = new TH1D("CMother_PDG_Outside", "CMother_PDG_Outside; Id;#", 1000, -10, 490);
   fHistoList_dp_Outside.push_back(CMother_PDG_Outside);
-  CGrandMother_PDG_Outside = new TH1D("CGrandMother_PDG_Outside",
-                                      "CGrandMother_PDG_Outside; Id;#",
-                                      1000,
-                                      -10,
-                                      490);
+  CGrandMother_PDG_Outside = new TH1D("CGrandMother_PDG_Outside", "CGrandMother_PDG_Outside; Id;#", 1000, -10, 490);
   fHistoList_dp_Outside.push_back(CGrandMother_PDG_Outside);
 
   // Both
   CPdg_vs_Distance_for_dp =
-    new TH2D("CPdg_vs_Distance_for_dp",
-             "CPdg_vs_Distance_for_dp; pdg; distance in cm",
-             2500,
-             0,
-             2499,
-             500,
-             0,
-             50);
+    new TH2D("CPdg_vs_Distance_for_dp", "CPdg_vs_Distance_for_dp; pdg; distance in cm", 2500, 0, 2499, 500, 0, 50);
   fHistoList_dp_Both.push_back(CPdg_vs_Distance_for_dp);
-  CP_vs_Distance_for_dp =
-    new TH2D("CP_vs_Distance_for_dp",
-             "CDistance between projected track and center of the ring (for e+ "
-             "and e-); P in GeV/c^{2}; distance in cm",
-             300,
-             0,
-             3,
-             300,
-             0,
-             15);
+  CP_vs_Distance_for_dp = new TH2D("CP_vs_Distance_for_dp",
+                                   "CDistance between projected track and center of the ring (for e+ "
+                                   "and e-); P in GeV/c^{2}; distance in cm",
+                                   300, 0, 3, 300, 0, 15);
   fHistoList_dp_Both.push_back(CP_vs_Distance_for_dp);
-  CDP_AnnTruePairs = new TH1D(
-    "CDP_AnnTruePairs", "CDP_AnnTruePairs; Ann value ;#", 100, -1.2, 1.2);
+  CDP_AnnTruePairs = new TH1D("CDP_AnnTruePairs", "CDP_AnnTruePairs; Ann value ;#", 100, -1.2, 1.2);
   fHistoList_dp_Both.push_back(CDP_AnnTruePairs);
-  CDP_AnnFalsePairs = new TH1D(
-    "CDP_AnnFalsePairs", "CDP_AnnFalsePairs; Ann value ;#", 100, -1.2, 1.2);
+  CDP_AnnFalsePairs = new TH1D("CDP_AnnFalsePairs", "CDP_AnnFalsePairs; Ann value ;#", 100, -1.2, 1.2);
   fHistoList_dp_Both.push_back(CDP_AnnFalsePairs);
   CDP_AnnTruePairs_AfterCuts =
-    new TH1D("CDP_AnnTruePairs_AfterCuts",
-             "CDP_AnnTruePairs_AfterCuts; Ann value ;#",
-             100,
-             -1.2,
-             1.2);
+    new TH1D("CDP_AnnTruePairs_AfterCuts", "CDP_AnnTruePairs_AfterCuts; Ann value ;#", 100, -1.2, 1.2);
   fHistoList_dp_Both.push_back(CDP_AnnTruePairs_AfterCuts);
   CDP_AnnFalsePairs_AfterCuts =
-    new TH1D("CDP_AnnFalsePairs_AfterCuts",
-             "CDP_AnnFalsePairs_AfterCuts; Ann value ;#",
-             100,
-             -1.2,
-             1.2);
+    new TH1D("CDP_AnnFalsePairs_AfterCuts", "CDP_AnnFalsePairs_AfterCuts; Ann value ;#", 100, -1.2, 1.2);
   fHistoList_dp_Both.push_back(CDP_AnnFalsePairs_AfterCuts);
 
 
   ///////   histograms to check Cuts
   ///////   Both
-  CDP_candidates_InvMass_vs_OA_Both =
-    new TH2D("CDP_candidates_InvMass_vs_OA_Both",
-             "CDP_candidates_InvMass_vs_OA_Both; invariant mass in GeV/c^{2}; "
-             "opening angle in degree",
-             500,
-             0,
-             0.5,
-             500,
-             0,
-             50);
+  CDP_candidates_InvMass_vs_OA_Both = new TH2D("CDP_candidates_InvMass_vs_OA_Both",
+                                               "CDP_candidates_InvMass_vs_OA_Both; invariant mass in GeV/c^{2}; "
+                                               "opening angle in degree",
+                                               500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Both.push_back(CDP_candidates_InvMass_vs_OA_Both);
   CDP_InvMass_vs_OA_Both = new TH2D("CDP_InvMass_vs_OA_Both",
                                     "CDP_InvMass_vs_OA_Both; invariant mass in "
                                     "GeV/c^{2}; opening angle in degree",
-                                    500,
-                                    0,
-                                    0.5,
-                                    500,
-                                    0,
-                                    50);
+                                    500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Both.push_back(CDP_InvMass_vs_OA_Both);
-  CDP_candidates_InvMass_Both =
-    new TH1D("CDP_candidates_InvMass_Both",
-             "CDP_candidates_InvMass_Both; invariant mass in GeV/c^{2};#",
-             510,
-             -0.01,
-             0.5);
+  CDP_candidates_InvMass_Both = new TH1D("CDP_candidates_InvMass_Both",
+                                         "CDP_candidates_InvMass_Both; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Both.push_back(CDP_candidates_InvMass_Both);
-  CDP_InvMass_Both = new TH1D("CDP_InvMass_Both",
-                              "CDP_InvMass_Both; invariant mass in GeV/c^{2};#",
-                              510,
-                              -0.01,
-                              0.5);
+  CDP_InvMass_Both = new TH1D("CDP_InvMass_Both", "CDP_InvMass_Both; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Both.push_back(CDP_InvMass_Both);
   CDP_candidates_OA_Both =
-    new TH1D("CDP_candidates_OA_Both",
-             "CDP_candidates_OA_Both; opening angle in degree;#",
-             300,
-             -0.1,
-             29.9);
+    new TH1D("CDP_candidates_OA_Both", "CDP_candidates_OA_Both; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Both.push_back(CDP_candidates_OA_Both);
-  CDP_OA_Both = new TH1D(
-    "CDP_OA_Both", "CDP_OA_Both; opening angle in degree;#", 300, -0.1, 29.9);
+  CDP_OA_Both = new TH1D("CDP_OA_Both", "CDP_OA_Both; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Both.push_back(CDP_OA_Both);
   CDP_candidates_PlaneAngles_last_Both =
-    new TH1D("CDP_candidates_PlaneAngles_last_Both",
-             "CDP_candidates_PlaneAngles_last_Both; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_candidates_PlaneAngles_last_Both", "CDP_candidates_PlaneAngles_last_Both; #theta angle in degree;#",
+             720, -1., 179.);
   fHistoList_dp_cuts_Both.push_back(CDP_candidates_PlaneAngles_last_Both);
   CDP_PlaneAngles_last_Both =
-    new TH1D("CDP_PlaneAngles_last_Both",
-             "CDP_PlaneAngles_last_Both; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_PlaneAngles_last_Both", "CDP_PlaneAngles_last_Both; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Both.push_back(CDP_PlaneAngles_last_Both);
   CDP_candidates_PlaneAngles_first_Both =
-    new TH1D("CDP_candidates_PlaneAngles_first_Both",
-             "CDP_candidates_PlaneAngles_first_Both; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_candidates_PlaneAngles_first_Both", "CDP_candidates_PlaneAngles_first_Both; #theta angle in degree;#",
+             720, -1., 179.);
   fHistoList_dp_cuts_Both.push_back(CDP_candidates_PlaneAngles_first_Both);
   CDP_PlaneAngles_first_Both =
-    new TH1D("CDP_PlaneAngles_first_Both",
-             "CDP_PlaneAngles_first_Both; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_PlaneAngles_first_Both", "CDP_PlaneAngles_first_Both; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Both.push_back(CDP_PlaneAngles_first_Both);
 
   ///////   Target
-  CDP_candidates_InvMass_vs_OA_Target =
-    new TH2D("CDP_candidates_InvMass_vs_OA_Target",
-             "CDP_candidates_InvMass_vs_OA_Target; invariant mass in "
-             "GeV/c^{2}; opening angle in degree",
-             500,
-             0,
-             0.5,
-             500,
-             0,
-             50);
+  CDP_candidates_InvMass_vs_OA_Target = new TH2D("CDP_candidates_InvMass_vs_OA_Target",
+                                                 "CDP_candidates_InvMass_vs_OA_Target; invariant mass in "
+                                                 "GeV/c^{2}; opening angle in degree",
+                                                 500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Target.push_back(CDP_candidates_InvMass_vs_OA_Target);
-  CDP_InvMass_vs_OA_Target =
-    new TH2D("CDP_InvMass_vs_OA_Target",
-             "CDP_InvMass_vs_OA_Target; invariant mass in GeV/c^{2}; opening "
-             "angle in degree",
-             500,
-             0,
-             0.5,
-             500,
-             0,
-             50);
+  CDP_InvMass_vs_OA_Target = new TH2D("CDP_InvMass_vs_OA_Target",
+                                      "CDP_InvMass_vs_OA_Target; invariant mass in GeV/c^{2}; opening "
+                                      "angle in degree",
+                                      500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Target.push_back(CDP_InvMass_vs_OA_Target);
-  CDP_candidates_InvMass_Target =
-    new TH1D("CDP_candidates_InvMass_Target",
-             "CDP_candidates_InvMass_Target; invariant mass in GeV/c^{2};#",
-             510,
-             -0.01,
-             0.5);
+  CDP_candidates_InvMass_Target = new TH1D(
+    "CDP_candidates_InvMass_Target", "CDP_candidates_InvMass_Target; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Target.push_back(CDP_candidates_InvMass_Target);
   CDP_InvMass_Target =
-    new TH1D("CDP_InvMass_Target",
-             "CDP_InvMass_Target; invariant mass in GeV/c^{2};#",
-             510,
-             -0.01,
-             0.5);
+    new TH1D("CDP_InvMass_Target", "CDP_InvMass_Target; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Target.push_back(CDP_InvMass_Target);
   CDP_candidates_OA_Target =
-    new TH1D("CDP_candidates_OA_Target",
-             "CDP_candidates_OA_Target; opening angle in degree;#",
-             300,
-             -0.1,
-             29.9);
+    new TH1D("CDP_candidates_OA_Target", "CDP_candidates_OA_Target; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Target.push_back(CDP_candidates_OA_Target);
-  CDP_OA_Target = new TH1D("CDP_OA_Target",
-                           "CDP_OA_Target; opening angle in degree;#",
-                           300,
-                           -0.1,
-                           29.9);
+  CDP_OA_Target = new TH1D("CDP_OA_Target", "CDP_OA_Target; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Target.push_back(CDP_OA_Target);
   CDP_candidates_PlaneAngles_last_Target =
     new TH1D("CDP_candidates_PlaneAngles_last_Target",
-             "CDP_candidates_PlaneAngles_last_Target; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+             "CDP_candidates_PlaneAngles_last_Target; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Target.push_back(CDP_candidates_PlaneAngles_last_Target);
   CDP_PlaneAngles_last_Target =
-    new TH1D("CDP_PlaneAngles_last_Target",
-             "CDP_PlaneAngles_last_Target; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_PlaneAngles_last_Target", "CDP_PlaneAngles_last_Target; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Target.push_back(CDP_PlaneAngles_last_Target);
-  CDP_candidates_PlaneAngles_first_Target = new TH1D(
-    "CDP_candidates_PlaneAngles_first_Target",
-    "CDP_candidates_PlaneAngles_first_Target; #theta angle in degree;#",
-    720,
-    -1.,
-    179.);
+  CDP_candidates_PlaneAngles_first_Target =
+    new TH1D("CDP_candidates_PlaneAngles_first_Target",
+             "CDP_candidates_PlaneAngles_first_Target; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Target.push_back(CDP_candidates_PlaneAngles_first_Target);
   CDP_PlaneAngles_first_Target =
-    new TH1D("CDP_PlaneAngles_first_Target",
-             "CDP_PlaneAngles_first_Target; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_PlaneAngles_first_Target", "CDP_PlaneAngles_first_Target; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Target.push_back(CDP_PlaneAngles_first_Target);
 
   ///////   Outside
-  CDP_candidates_InvMass_vs_OA_Outside =
-    new TH2D("CDP_candidates_InvMass_vs_OA_Outside",
-             "CDP_candidates_InvMass_vs_OA_Outside; invariant mass in "
-             "GeV/c^{2}; opening angle in degree",
-             500,
-             0,
-             0.5,
-             500,
-             0,
-             50);
+  CDP_candidates_InvMass_vs_OA_Outside = new TH2D("CDP_candidates_InvMass_vs_OA_Outside",
+                                                  "CDP_candidates_InvMass_vs_OA_Outside; invariant mass in "
+                                                  "GeV/c^{2}; opening angle in degree",
+                                                  500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Outside.push_back(CDP_candidates_InvMass_vs_OA_Outside);
-  CDP_InvMass_vs_OA_Outside =
-    new TH2D("CDP_InvMass_vs_OA_Outside",
-             "CDP_InvMass_vs_OA_Outside; invariant mass in GeV/c^{2}; opening "
-             "angle in degree",
-             500,
-             0,
-             0.5,
-             500,
-             0,
-             50);
+  CDP_InvMass_vs_OA_Outside = new TH2D("CDP_InvMass_vs_OA_Outside",
+                                       "CDP_InvMass_vs_OA_Outside; invariant mass in GeV/c^{2}; opening "
+                                       "angle in degree",
+                                       500, 0, 0.5, 500, 0, 50);
   fHistoList_dp_cuts_Outside.push_back(CDP_InvMass_vs_OA_Outside);
-  CDP_candidates_InvMass_Outside =
-    new TH1D("CDP_candidates_InvMass_Outside",
-             "CDP_candidates_InvMass_Outside; invariant mass in GeV/c^{2};#",
-             510,
-             -0.01,
-             0.5);
+  CDP_candidates_InvMass_Outside = new TH1D(
+    "CDP_candidates_InvMass_Outside", "CDP_candidates_InvMass_Outside; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Outside.push_back(CDP_candidates_InvMass_Outside);
   CDP_InvMass_Outside =
-    new TH1D("CDP_InvMass_Outside",
-             "CDP_InvMass_Outside; invariant mass in GeV/c^{2};#",
-             510,
-             -0.01,
-             0.5);
+    new TH1D("CDP_InvMass_Outside", "CDP_InvMass_Outside; invariant mass in GeV/c^{2};#", 510, -0.01, 0.5);
   fHistoList_dp_cuts_Outside.push_back(CDP_InvMass_Outside);
   CDP_candidates_OA_Outside =
-    new TH1D("CDP_candidates_OA_Outside",
-             "CDP_candidates_OA_Outside; opening angle in degree;#",
-             300,
-             -0.1,
-             29.9);
+    new TH1D("CDP_candidates_OA_Outside", "CDP_candidates_OA_Outside; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Outside.push_back(CDP_candidates_OA_Outside);
-  CDP_OA_Outside = new TH1D("CDP_OA_Outside",
-                            "CDP_OA_Outside; opening angle in degree;#",
-                            300,
-                            -0.1,
-                            29.9);
+  CDP_OA_Outside = new TH1D("CDP_OA_Outside", "CDP_OA_Outside; opening angle in degree;#", 300, -0.1, 29.9);
   fHistoList_dp_cuts_Outside.push_back(CDP_OA_Outside);
-  CDP_candidates_PlaneAngles_last_Outside = new TH1D(
-    "CDP_candidates_PlaneAngles_last_Outside",
-    "CDP_candidates_PlaneAngles_last_Outside; #theta angle in degree;#",
-    720,
-    -1.,
-    179.);
+  CDP_candidates_PlaneAngles_last_Outside =
+    new TH1D("CDP_candidates_PlaneAngles_last_Outside",
+             "CDP_candidates_PlaneAngles_last_Outside; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Outside.push_back(CDP_candidates_PlaneAngles_last_Outside);
   CDP_PlaneAngles_last_Outside =
-    new TH1D("CDP_PlaneAngles_last_Outside",
-             "CDP_PlaneAngles_last_Outside; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+    new TH1D("CDP_PlaneAngles_last_Outside", "CDP_PlaneAngles_last_Outside; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Outside.push_back(CDP_PlaneAngles_last_Outside);
-  CDP_candidates_PlaneAngles_first_Outside = new TH1D(
-    "CDP_candidates_PlaneAngles_first_Outside",
-    "CDP_candidates_PlaneAngles_first_Outside; #theta angle in degree;#",
-    720,
-    -1.,
-    179.);
-  fHistoList_dp_cuts_Outside.push_back(
-    CDP_candidates_PlaneAngles_first_Outside);
-  CDP_PlaneAngles_first_Outside =
-    new TH1D("CDP_PlaneAngles_first_Outside",
-             "CDP_PlaneAngles_first_Outside; #theta angle in degree;#",
-             720,
-             -1.,
-             179.);
+  CDP_candidates_PlaneAngles_first_Outside =
+    new TH1D("CDP_candidates_PlaneAngles_first_Outside",
+             "CDP_candidates_PlaneAngles_first_Outside; #theta angle in degree;#", 720, -1., 179.);
+  fHistoList_dp_cuts_Outside.push_back(CDP_candidates_PlaneAngles_first_Outside);
+  CDP_PlaneAngles_first_Outside = new TH1D("CDP_PlaneAngles_first_Outside",
+                                           "CDP_PlaneAngles_first_Outside; #theta angle in degree;#", 720, -1., 179.);
   fHistoList_dp_cuts_Outside.push_back(CDP_PlaneAngles_first_Outside);
 
 
   // Target => all
-  CDP_InvMassReco_all_Target =
-    new TH1D("CDP_InvMassReco_all_Target",
-             "CDP_InvMassReco_all_Target; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_all_Target = new TH1D("CDP_InvMassReco_all_Target",
+                                        "CDP_InvMassReco_all_Target; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_all_Target.push_back(CDP_InvMassReco_all_Target);
   CDP_OpeningAngleReco_all_Target =
-    new TH1D("CDP_OpeningAngleReco_all_Target",
-             "CDP_OpeningAngleReco_all_Target; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_all_Target", "CDP_OpeningAngleReco_all_Target; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_all_Target.push_back(CDP_OpeningAngleReco_all_Target);
-  CDP_Pdg_all_Target =
-    new TH1D("CDP_Pdg_all_Target", "CDP_Pdg_all_Target; Id;#", 1000, -10, 490);
+  CDP_Pdg_all_Target = new TH1D("CDP_Pdg_all_Target", "CDP_Pdg_all_Target; Id;#", 1000, -10, 490);
   fHistoList_dp_all_Target.push_back(CDP_Pdg_all_Target);
-  CDP_P_reco_all_Target = new TH1D("CDP_P_reco_all_Target",
-                                   "CDP_P_reco_all_Target; P in GeV/c^{2};#",
-                                   200,
-                                   0,
-                                   10);
+  CDP_P_reco_all_Target = new TH1D("CDP_P_reco_all_Target", "CDP_P_reco_all_Target; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_all_Target.push_back(CDP_P_reco_all_Target);
-  CDP_Pt_reco_all_Target =
-    new TH1D("CDP_Pt_reco_all_Target",
-             "CDP_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_Pt_reco_all_Target = new TH1D("CDP_Pt_reco_all_Target", "CDP_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CDP_Pt_reco_all_Target);
   CPh_fromTarget_Pt_reco_all_Target =
-    new TH1D("CPh_fromTarget_Pt_reco_all_Target",
-             "CPh_fromTarget_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromTarget_Pt_reco_all_Target", "CPh_fromTarget_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromTarget_Pt_reco_all_Target);
   CPh_fromPions_Pt_reco_all_Target =
-    new TH1D("CPh_fromPions_Pt_reco_all_Target",
-             "CPh_fromPions_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_all_Target", "CPh_fromPions_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromPions_Pt_reco_all_Target);
   CPh_fromEtas_Pt_reco_all_Target =
-    new TH1D("CPh_fromEtas_Pt_reco_all_Target",
-             "CPh_fromEtas_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_all_Target", "CPh_fromEtas_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromEtas_Pt_reco_all_Target);
   CPh_fromDalitz_Pt_reco_all_Target =
-    new TH1D("CPh_fromDalitz_Pt_reco_all_Target",
-             "CPh_fromDalitz_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromDalitz_Pt_reco_all_Target", "CPh_fromDalitz_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromDalitz_Pt_reco_all_Target);
   CPh_fromXi_Pt_reco_all_Target =
-    new TH1D("CPh_fromXi_Pt_reco_all_Target",
-             "CPh_fromXi_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_all_Target", "CPh_fromXi_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromXi_Pt_reco_all_Target);
   CPh_fromOther_Pt_reco_all_Target =
-    new TH1D("CPh_fromOther_Pt_reco_all_Target",
-             "CPh_fromOther_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_all_Target", "CPh_fromOther_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromOther_Pt_reco_all_Target);
-  CPh_twoFromTarget_Pt_reco_all_Target =
-    new TH1D("CPh_twoFromTarget_Pt_reco_all_Target",
-             "CPh_twoFromTarget_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_all_Target = new TH1D(
+    "CPh_twoFromTarget_Pt_reco_all_Target", "CPh_twoFromTarget_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_twoFromTarget_Pt_reco_all_Target);
   CPh_fromCombinatorial_Pt_reco_all_Target =
     new TH1D("CPh_fromCombinatorial_Pt_reco_all_Target",
-             "CPh_fromCombinatorial_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+             "CPh_fromCombinatorial_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromCombinatorial_Pt_reco_all_Target);
-  CPh_fromConversion_Pt_reco_all_Target =
-    new TH1D("CPh_fromConversion_Pt_reco_all_Target",
-             "CPh_fromConversion_Pt_reco_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromConversion_Pt_reco_all_Target = new TH1D(
+    "CPh_fromConversion_Pt_reco_all_Target", "CPh_fromConversion_Pt_reco_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CPh_fromConversion_Pt_reco_all_Target);
   CPh_pt_vs_rap_est_all_Target =
-    new TH2D("CPh_pt_vs_rap_est_all_Target",
-             "CPh_pt_vs_rap_est_all_Target; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_all_Target", "CPh_pt_vs_rap_est_all_Target; rapidity y; p_{t} in GeV/c ", 10, 0., 4.,
+             40, 0., 4.);
   fHistoList_dp_all_Target.push_back(CPh_pt_vs_rap_est_all_Target);
   CPh_pt_vs_rap_est_corr_all_Target =
-    new TH2D("CPh_pt_vs_rap_est_corr_all_Target",
-             "CPh_pt_vs_rap_est_corr_all_Target; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_all_Target", "CPh_pt_vs_rap_est_corr_all_Target; rapidity y; p_{t} in GeV/c ", 10,
+             0., 4., 40, 0., 4.);
   fHistoList_dp_all_Target.push_back(CPh_pt_vs_rap_est_corr_all_Target);
 
   // Target => two
-  CDP_InvMassReco_two_Target =
-    new TH1D("CDP_InvMassReco_two_Target",
-             "CDP_InvMassReco_two_Target; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_two_Target = new TH1D("CDP_InvMassReco_two_Target",
+                                        "CDP_InvMassReco_two_Target; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_two_Target.push_back(CDP_InvMassReco_two_Target);
   CDP_OpeningAngleReco_two_Target =
-    new TH1D("CDP_OpeningAngleReco_two_Target",
-             "CDP_OpeningAngleReco_two_Target; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_two_Target", "CDP_OpeningAngleReco_two_Target; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_two_Target.push_back(CDP_OpeningAngleReco_two_Target);
-  CDP_Pdg_two_Target =
-    new TH1D("CDP_Pdg_two_Target", "CDP_Pdg_two_Target; Id;#", 1000, -10, 490);
+  CDP_Pdg_two_Target = new TH1D("CDP_Pdg_two_Target", "CDP_Pdg_two_Target; Id;#", 1000, -10, 490);
   fHistoList_dp_two_Target.push_back(CDP_Pdg_two_Target);
-  CDP_P_reco_two_Target = new TH1D("CDP_P_reco_two_Target",
-                                   "CDP_P_reco_two_Target; P in GeV/c^{2};#",
-                                   200,
-                                   0,
-                                   10);
+  CDP_P_reco_two_Target = new TH1D("CDP_P_reco_two_Target", "CDP_P_reco_two_Target; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_two_Target.push_back(CDP_P_reco_two_Target);
-  CDP_Pt_reco_two_Target =
-    new TH1D("CDP_Pt_reco_two_Target",
-             "CDP_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_Pt_reco_two_Target = new TH1D("CDP_Pt_reco_two_Target", "CDP_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CDP_Pt_reco_two_Target);
   CPh_fromTarget_Pt_reco_two_Target =
-    new TH1D("CPh_fromTarget_Pt_reco_two_Target",
-             "CPh_fromTarget_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromTarget_Pt_reco_two_Target", "CPh_fromTarget_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromTarget_Pt_reco_two_Target);
   CPh_fromPions_Pt_reco_two_Target =
-    new TH1D("CPh_fromPions_Pt_reco_two_Target",
-             "CPh_fromPions_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_two_Target", "CPh_fromPions_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromPions_Pt_reco_two_Target);
   CPh_fromEtas_Pt_reco_two_Target =
-    new TH1D("CPh_fromEtas_Pt_reco_two_Target",
-             "CPh_fromEtas_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_two_Target", "CPh_fromEtas_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromEtas_Pt_reco_two_Target);
   CPh_fromDalitz_Pt_reco_two_Target =
-    new TH1D("CPh_fromDalitz_Pt_reco_two_Target",
-             "CPh_fromDalitz_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromDalitz_Pt_reco_two_Target", "CPh_fromDalitz_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromDalitz_Pt_reco_two_Target);
   CPh_fromXi_Pt_reco_two_Target =
-    new TH1D("CPh_fromXi_Pt_reco_two_Target",
-             "CPh_fromXi_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_two_Target", "CPh_fromXi_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromXi_Pt_reco_two_Target);
   CPh_fromOther_Pt_reco_two_Target =
-    new TH1D("CPh_fromOther_Pt_reco_two_Target",
-             "CPh_fromOther_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_two_Target", "CPh_fromOther_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromOther_Pt_reco_two_Target);
-  CPh_twoFromTarget_Pt_reco_two_Target =
-    new TH1D("CPh_twoFromTarget_Pt_reco_two_Target",
-             "CPh_twoFromTarget_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_two_Target = new TH1D(
+    "CPh_twoFromTarget_Pt_reco_two_Target", "CPh_twoFromTarget_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_twoFromTarget_Pt_reco_two_Target);
   CPh_fromCombinatorial_Pt_reco_two_Target =
     new TH1D("CPh_fromCombinatorial_Pt_reco_two_Target",
-             "CPh_fromCombinatorial_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+             "CPh_fromCombinatorial_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromCombinatorial_Pt_reco_two_Target);
-  CPh_fromConversion_Pt_reco_two_Target =
-    new TH1D("CPh_fromConversion_Pt_reco_two_Target",
-             "CPh_fromConversion_Pt_reco_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromConversion_Pt_reco_two_Target = new TH1D(
+    "CPh_fromConversion_Pt_reco_two_Target", "CPh_fromConversion_Pt_reco_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CPh_fromConversion_Pt_reco_two_Target);
   CPh_pt_vs_rap_est_two_Target =
-    new TH2D("CPh_pt_vs_rap_est_two_Target",
-             "CPh_pt_vs_rap_est_two_Target; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_two_Target", "CPh_pt_vs_rap_est_two_Target; rapidity y; p_{t} in GeV/c ", 10, 0., 4.,
+             40, 0., 4.);
   fHistoList_dp_two_Target.push_back(CPh_pt_vs_rap_est_two_Target);
   CPh_pt_vs_rap_est_corr_two_Target =
-    new TH2D("CPh_pt_vs_rap_est_corr_two_Target",
-             "CPh_pt_vs_rap_est_corr_two_Target; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_two_Target", "CPh_pt_vs_rap_est_corr_two_Target; rapidity y; p_{t} in GeV/c ", 10,
+             0., 4., 40, 0., 4.);
   fHistoList_dp_two_Target.push_back(CPh_pt_vs_rap_est_corr_two_Target);
 
   // Target => onetwo
-  CDP_InvMassReco_onetwo_Target =
-    new TH1D("CDP_InvMassReco_onetwo_Target",
-             "CDP_InvMassReco_onetwo_Target; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_onetwo_Target = new TH1D(
+    "CDP_InvMassReco_onetwo_Target", "CDP_InvMassReco_onetwo_Target; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_onetwo_Target.push_back(CDP_InvMassReco_onetwo_Target);
   CDP_OpeningAngleReco_onetwo_Target =
-    new TH1D("CDP_OpeningAngleReco_onetwo_Target",
-             "CDP_OpeningAngleReco_onetwo_Target; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_onetwo_Target", "CDP_OpeningAngleReco_onetwo_Target; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_onetwo_Target.push_back(CDP_OpeningAngleReco_onetwo_Target);
-  CDP_Pdg_onetwo_Target = new TH1D(
-    "CDP_Pdg_onetwo_Target", "CDP_Pdg_onetwo_Target; Id;#", 1000, -10, 490);
+  CDP_Pdg_onetwo_Target = new TH1D("CDP_Pdg_onetwo_Target", "CDP_Pdg_onetwo_Target; Id;#", 1000, -10, 490);
   fHistoList_dp_onetwo_Target.push_back(CDP_Pdg_onetwo_Target);
   CDP_P_reco_onetwo_Target =
-    new TH1D("CDP_P_reco_onetwo_Target",
-             "CDP_P_reco_onetwo_Target; P in GeV/c^{2};#",
-             200,
-             0,
-             10);
+    new TH1D("CDP_P_reco_onetwo_Target", "CDP_P_reco_onetwo_Target; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_onetwo_Target.push_back(CDP_P_reco_onetwo_Target);
   CDP_Pt_reco_onetwo_Target =
-    new TH1D("CDP_Pt_reco_onetwo_Target",
-             "CDP_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_Pt_reco_onetwo_Target", "CDP_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CDP_Pt_reco_onetwo_Target);
-  CPh_fromTarget_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromTarget_Pt_reco_onetwo_Target",
-             "CPh_fromTarget_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromTarget_Pt_reco_onetwo_Target = new TH1D(
+    "CPh_fromTarget_Pt_reco_onetwo_Target", "CPh_fromTarget_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromTarget_Pt_reco_onetwo_Target);
-  CPh_fromPions_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromPions_Pt_reco_onetwo_Target",
-             "CPh_fromPions_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromPions_Pt_reco_onetwo_Target = new TH1D("CPh_fromPions_Pt_reco_onetwo_Target",
+                                                 "CPh_fromPions_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromPions_Pt_reco_onetwo_Target);
-  CPh_fromEtas_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromEtas_Pt_reco_onetwo_Target",
-             "CPh_fromEtas_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromEtas_Pt_reco_onetwo_Target = new TH1D("CPh_fromEtas_Pt_reco_onetwo_Target",
+                                                "CPh_fromEtas_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromEtas_Pt_reco_onetwo_Target);
-  CPh_fromDalitz_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromDalitz_Pt_reco_onetwo_Target",
-             "CPh_fromDalitz_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromDalitz_Pt_reco_onetwo_Target = new TH1D(
+    "CPh_fromDalitz_Pt_reco_onetwo_Target", "CPh_fromDalitz_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromDalitz_Pt_reco_onetwo_Target);
   CPh_fromXi_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromXi_Pt_reco_onetwo_Target",
-             "CPh_fromXi_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_onetwo_Target", "CPh_fromXi_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromXi_Pt_reco_onetwo_Target);
-  CPh_fromOther_Pt_reco_onetwo_Target =
-    new TH1D("CPh_fromOther_Pt_reco_onetwo_Target",
-             "CPh_fromOther_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromOther_Pt_reco_onetwo_Target = new TH1D("CPh_fromOther_Pt_reco_onetwo_Target",
+                                                 "CPh_fromOther_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CPh_fromOther_Pt_reco_onetwo_Target);
   CPh_twoFromTarget_Pt_reco_onetwo_Target =
-    new TH1D("CPh_twoFromTarget_Pt_reco_onetwo_Target",
-             "CPh_twoFromTarget_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_onetwo_Target.push_back(
-    CPh_twoFromTarget_Pt_reco_onetwo_Target);
-  CPh_fromCombinatorial_Pt_reco_onetwo_Target = new TH1D(
-    "CPh_fromCombinatorial_Pt_reco_onetwo_Target",
-    "CPh_fromCombinatorial_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-    30,
-    0,
-    3);
-  fHistoList_dp_onetwo_Target.push_back(
-    CPh_fromCombinatorial_Pt_reco_onetwo_Target);
+    new TH1D("CPh_twoFromTarget_Pt_reco_onetwo_Target", "CPh_twoFromTarget_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
+             30, 0, 3);
+  fHistoList_dp_onetwo_Target.push_back(CPh_twoFromTarget_Pt_reco_onetwo_Target);
+  CPh_fromCombinatorial_Pt_reco_onetwo_Target =
+    new TH1D("CPh_fromCombinatorial_Pt_reco_onetwo_Target",
+             "CPh_fromCombinatorial_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Target.push_back(CPh_fromCombinatorial_Pt_reco_onetwo_Target);
   CPh_fromConversion_Pt_reco_onetwo_Target =
     new TH1D("CPh_fromConversion_Pt_reco_onetwo_Target",
-             "CPh_fromConversion_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_onetwo_Target.push_back(
-    CPh_fromConversion_Pt_reco_onetwo_Target);
+             "CPh_fromConversion_Pt_reco_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Target.push_back(CPh_fromConversion_Pt_reco_onetwo_Target);
   CPh_pt_vs_rap_est_onetwo_Target =
-    new TH2D("CPh_pt_vs_rap_est_onetwo_Target",
-             "CPh_pt_vs_rap_est_onetwo_Target; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_onetwo_Target", "CPh_pt_vs_rap_est_onetwo_Target; rapidity y; p_{t} in GeV/c ", 10, 0.,
+             4., 40, 0., 4.);
   fHistoList_dp_onetwo_Target.push_back(CPh_pt_vs_rap_est_onetwo_Target);
-  CPh_pt_vs_rap_est_corr_onetwo_Target = new TH2D(
-    "CPh_pt_vs_rap_est_corr_onetwo_Target",
-    "CPh_pt_vs_rap_est_corr_onetwo_Target; rapidity y; p_{t} in GeV/c ",
-    10,
-    0.,
-    4.,
-    40,
-    0.,
-    4.);
+  CPh_pt_vs_rap_est_corr_onetwo_Target =
+    new TH2D("CPh_pt_vs_rap_est_corr_onetwo_Target",
+             "CPh_pt_vs_rap_est_corr_onetwo_Target; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_dp_onetwo_Target.push_back(CPh_pt_vs_rap_est_corr_onetwo_Target);
 
 
   // Outside => all
-  CDP_InvMassReco_all_Outside =
-    new TH1D("CDP_InvMassReco_all_Outside",
-             "CDP_InvMassReco_all_Outside; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_all_Outside = new TH1D(
+    "CDP_InvMassReco_all_Outside", "CDP_InvMassReco_all_Outside; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_all_Outside.push_back(CDP_InvMassReco_all_Outside);
   CDP_OpeningAngleReco_all_Outside =
-    new TH1D("CDP_OpeningAngleReco_all_Outside",
-             "CDP_OpeningAngleReco_all_Outside; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_all_Outside", "CDP_OpeningAngleReco_all_Outside; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_all_Outside.push_back(CDP_OpeningAngleReco_all_Outside);
-  CDP_Pdg_all_Outside = new TH1D(
-    "CDP_Pdg_all_Outside", "CDP_Pdg_all_Outside; Id;#", 1000, -10, 490);
+  CDP_Pdg_all_Outside = new TH1D("CDP_Pdg_all_Outside", "CDP_Pdg_all_Outside; Id;#", 1000, -10, 490);
   fHistoList_dp_all_Outside.push_back(CDP_Pdg_all_Outside);
-  CDP_P_reco_all_Outside = new TH1D("CDP_P_reco_all_Outside",
-                                    "CDP_P_reco_all_Outside; P in GeV/c^{2};#",
-                                    200,
-                                    0,
-                                    10);
+  CDP_P_reco_all_Outside = new TH1D("CDP_P_reco_all_Outside", "CDP_P_reco_all_Outside; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_all_Outside.push_back(CDP_P_reco_all_Outside);
   CDP_Pt_reco_all_Outside =
-    new TH1D("CDP_Pt_reco_all_Outside",
-             "CDP_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_Pt_reco_all_Outside", "CDP_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CDP_Pt_reco_all_Outside);
-  CPh_fromTarget_Pt_reco_all_Outside =
-    new TH1D("CPh_fromTarget_Pt_reco_all_Outside",
-             "CPh_fromTarget_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromTarget_Pt_reco_all_Outside = new TH1D("CPh_fromTarget_Pt_reco_all_Outside",
+                                                "CPh_fromTarget_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromTarget_Pt_reco_all_Outside);
   CPh_fromPions_Pt_reco_all_Outside =
-    new TH1D("CPh_fromPions_Pt_reco_all_Outside",
-             "CPh_fromPions_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_all_Outside", "CPh_fromPions_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromPions_Pt_reco_all_Outside);
   CPh_fromEtas_Pt_reco_all_Outside =
-    new TH1D("CPh_fromEtas_Pt_reco_all_Outside",
-             "CPh_fromEtas_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_all_Outside", "CPh_fromEtas_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromEtas_Pt_reco_all_Outside);
-  CPh_fromDalitz_Pt_reco_all_Outside =
-    new TH1D("CPh_fromDalitz_Pt_reco_all_Outside",
-             "CPh_fromDalitz_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromDalitz_Pt_reco_all_Outside = new TH1D("CPh_fromDalitz_Pt_reco_all_Outside",
+                                                "CPh_fromDalitz_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromDalitz_Pt_reco_all_Outside);
   CPh_fromXi_Pt_reco_all_Outside =
-    new TH1D("CPh_fromXi_Pt_reco_all_Outside",
-             "CPh_fromXi_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_all_Outside", "CPh_fromXi_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromXi_Pt_reco_all_Outside);
   CPh_fromOther_Pt_reco_all_Outside =
-    new TH1D("CPh_fromOther_Pt_reco_all_Outside",
-             "CPh_fromOther_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_all_Outside", "CPh_fromOther_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromOther_Pt_reco_all_Outside);
-  CPh_twoFromTarget_Pt_reco_all_Outside =
-    new TH1D("CPh_twoFromTarget_Pt_reco_all_Outside",
-             "CPh_twoFromTarget_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_all_Outside = new TH1D(
+    "CPh_twoFromTarget_Pt_reco_all_Outside", "CPh_twoFromTarget_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_twoFromTarget_Pt_reco_all_Outside);
   CPh_fromCombinatorial_Pt_reco_all_Outside =
     new TH1D("CPh_fromCombinatorial_Pt_reco_all_Outside",
-             "CPh_fromCombinatorial_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_all_Outside.push_back(
-    CPh_fromCombinatorial_Pt_reco_all_Outside);
-  CPh_fromConversion_Pt_reco_all_Outside =
-    new TH1D("CPh_fromConversion_Pt_reco_all_Outside",
-             "CPh_fromConversion_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+             "CPh_fromCombinatorial_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_all_Outside.push_back(CPh_fromCombinatorial_Pt_reco_all_Outside);
+  CPh_fromConversion_Pt_reco_all_Outside = new TH1D(
+    "CPh_fromConversion_Pt_reco_all_Outside", "CPh_fromConversion_Pt_reco_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CPh_fromConversion_Pt_reco_all_Outside);
   CPh_pt_vs_rap_est_all_Outside =
-    new TH2D("CPh_pt_vs_rap_est_all_Outside",
-             "CPh_pt_vs_rap_est_all_Outside; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_all_Outside", "CPh_pt_vs_rap_est_all_Outside; rapidity y; p_{t} in GeV/c ", 10, 0., 4.,
+             40, 0., 4.);
   fHistoList_dp_all_Outside.push_back(CPh_pt_vs_rap_est_all_Outside);
   CPh_pt_vs_rap_est_corr_all_Outside =
-    new TH2D("CPh_pt_vs_rap_est_corr_all_Outside",
-             "CPh_pt_vs_rap_est_corr_all_Outside; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_all_Outside", "CPh_pt_vs_rap_est_corr_all_Outside; rapidity y; p_{t} in GeV/c ",
+             10, 0., 4., 40, 0., 4.);
   fHistoList_dp_all_Outside.push_back(CPh_pt_vs_rap_est_corr_all_Outside);
 
   // Outside => two
-  CDP_InvMassReco_two_Outside =
-    new TH1D("CDP_InvMassReco_two_Outside",
-             "CDP_InvMassReco_two_Outside; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_two_Outside = new TH1D(
+    "CDP_InvMassReco_two_Outside", "CDP_InvMassReco_two_Outside; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_two_Outside.push_back(CDP_InvMassReco_two_Outside);
   CDP_OpeningAngleReco_two_Outside =
-    new TH1D("CDP_OpeningAngleReco_two_Outside",
-             "CDP_OpeningAngleReco_two_Outside; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_two_Outside", "CDP_OpeningAngleReco_two_Outside; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_two_Outside.push_back(CDP_OpeningAngleReco_two_Outside);
-  CDP_Pdg_two_Outside = new TH1D(
-    "CDP_Pdg_two_Outside", "CDP_Pdg_two_Outside; Id;#", 1000, -10, 490);
+  CDP_Pdg_two_Outside = new TH1D("CDP_Pdg_two_Outside", "CDP_Pdg_two_Outside; Id;#", 1000, -10, 490);
   fHistoList_dp_two_Outside.push_back(CDP_Pdg_two_Outside);
-  CDP_P_reco_two_Outside = new TH1D("CDP_P_reco_two_Outside",
-                                    "CDP_P_reco_two_Outside; P in GeV/c^{2};#",
-                                    200,
-                                    0,
-                                    10);
+  CDP_P_reco_two_Outside = new TH1D("CDP_P_reco_two_Outside", "CDP_P_reco_two_Outside; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_two_Outside.push_back(CDP_P_reco_two_Outside);
   CDP_Pt_reco_two_Outside =
-    new TH1D("CDP_Pt_reco_two_Outside",
-             "CDP_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_Pt_reco_two_Outside", "CDP_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CDP_Pt_reco_two_Outside);
-  CPh_fromTarget_Pt_reco_two_Outside =
-    new TH1D("CPh_fromTarget_Pt_reco_two_Outside",
-             "CPh_fromTarget_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromTarget_Pt_reco_two_Outside = new TH1D("CPh_fromTarget_Pt_reco_two_Outside",
+                                                "CPh_fromTarget_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromTarget_Pt_reco_two_Outside);
   CPh_fromPions_Pt_reco_two_Outside =
-    new TH1D("CPh_fromPions_Pt_reco_two_Outside",
-             "CPh_fromPions_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_two_Outside", "CPh_fromPions_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromPions_Pt_reco_two_Outside);
   CPh_fromEtas_Pt_reco_two_Outside =
-    new TH1D("CPh_fromEtas_Pt_reco_two_Outside",
-             "CPh_fromEtas_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_two_Outside", "CPh_fromEtas_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromEtas_Pt_reco_two_Outside);
-  CPh_fromDalitz_Pt_reco_two_Outside =
-    new TH1D("CPh_fromDalitz_Pt_reco_two_Outside",
-             "CPh_fromDalitz_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromDalitz_Pt_reco_two_Outside = new TH1D("CPh_fromDalitz_Pt_reco_two_Outside",
+                                                "CPh_fromDalitz_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromDalitz_Pt_reco_two_Outside);
   CPh_fromXi_Pt_reco_two_Outside =
-    new TH1D("CPh_fromXi_Pt_reco_two_Outside",
-             "CPh_fromXi_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_two_Outside", "CPh_fromXi_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromXi_Pt_reco_two_Outside);
   CPh_fromOther_Pt_reco_two_Outside =
-    new TH1D("CPh_fromOther_Pt_reco_two_Outside",
-             "CPh_fromOther_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_two_Outside", "CPh_fromOther_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromOther_Pt_reco_two_Outside);
-  CPh_twoFromTarget_Pt_reco_two_Outside =
-    new TH1D("CPh_twoFromTarget_Pt_reco_two_Outside",
-             "CPh_twoFromTarget_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_two_Outside = new TH1D(
+    "CPh_twoFromTarget_Pt_reco_two_Outside", "CPh_twoFromTarget_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_twoFromTarget_Pt_reco_two_Outside);
   CPh_fromCombinatorial_Pt_reco_two_Outside =
     new TH1D("CPh_fromCombinatorial_Pt_reco_two_Outside",
-             "CPh_fromCombinatorial_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_two_Outside.push_back(
-    CPh_fromCombinatorial_Pt_reco_two_Outside);
-  CPh_fromConversion_Pt_reco_two_Outside =
-    new TH1D("CPh_fromConversion_Pt_reco_two_Outside",
-             "CPh_fromConversion_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+             "CPh_fromCombinatorial_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_two_Outside.push_back(CPh_fromCombinatorial_Pt_reco_two_Outside);
+  CPh_fromConversion_Pt_reco_two_Outside = new TH1D(
+    "CPh_fromConversion_Pt_reco_two_Outside", "CPh_fromConversion_Pt_reco_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CPh_fromConversion_Pt_reco_two_Outside);
   CPh_pt_vs_rap_est_two_Outside =
-    new TH2D("CPh_pt_vs_rap_est_two_Outside",
-             "CPh_pt_vs_rap_est_two_Outside; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_two_Outside", "CPh_pt_vs_rap_est_two_Outside; rapidity y; p_{t} in GeV/c ", 10, 0., 4.,
+             40, 0., 4.);
   fHistoList_dp_two_Outside.push_back(CPh_pt_vs_rap_est_two_Outside);
   CPh_pt_vs_rap_est_corr_two_Outside =
-    new TH2D("CPh_pt_vs_rap_est_corr_two_Outside",
-             "CPh_pt_vs_rap_est_corr_two_Outside; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_two_Outside", "CPh_pt_vs_rap_est_corr_two_Outside; rapidity y; p_{t} in GeV/c ",
+             10, 0., 4., 40, 0., 4.);
   fHistoList_dp_two_Outside.push_back(CPh_pt_vs_rap_est_corr_two_Outside);
 
   // Outside => onetwo
   CDP_InvMassReco_onetwo_Outside =
-    new TH1D("CDP_InvMassReco_onetwo_Outside",
-             "CDP_InvMassReco_onetwo_Outside; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+    new TH1D("CDP_InvMassReco_onetwo_Outside", "CDP_InvMassReco_onetwo_Outside; invariant mass in GeV/c^{2};#", 50,
+             -0.005, 0.045);
   fHistoList_dp_onetwo_Outside.push_back(CDP_InvMassReco_onetwo_Outside);
   CDP_OpeningAngleReco_onetwo_Outside =
-    new TH1D("CDP_OpeningAngleReco_onetwo_Outside",
-             "CDP_OpeningAngleReco_onetwo_Outside; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_onetwo_Outside", "CDP_OpeningAngleReco_onetwo_Outside; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_onetwo_Outside.push_back(CDP_OpeningAngleReco_onetwo_Outside);
-  CDP_Pdg_onetwo_Outside = new TH1D(
-    "CDP_Pdg_onetwo_Outside", "CDP_Pdg_onetwo_Outside; Id;#", 1000, -10, 490);
+  CDP_Pdg_onetwo_Outside = new TH1D("CDP_Pdg_onetwo_Outside", "CDP_Pdg_onetwo_Outside; Id;#", 1000, -10, 490);
   fHistoList_dp_onetwo_Outside.push_back(CDP_Pdg_onetwo_Outside);
   CDP_P_reco_onetwo_Outside =
-    new TH1D("CDP_P_reco_onetwo_Outside",
-             "CDP_P_reco_onetwo_Outside; P in GeV/c^{2};#",
-             200,
-             0,
-             10);
+    new TH1D("CDP_P_reco_onetwo_Outside", "CDP_P_reco_onetwo_Outside; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_onetwo_Outside.push_back(CDP_P_reco_onetwo_Outside);
   CDP_Pt_reco_onetwo_Outside =
-    new TH1D("CDP_Pt_reco_onetwo_Outside",
-             "CDP_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_Pt_reco_onetwo_Outside", "CDP_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CDP_Pt_reco_onetwo_Outside);
-  CPh_fromTarget_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromTarget_Pt_reco_onetwo_Outside",
-             "CPh_fromTarget_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromTarget_Pt_reco_onetwo_Outside = new TH1D(
+    "CPh_fromTarget_Pt_reco_onetwo_Outside", "CPh_fromTarget_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromTarget_Pt_reco_onetwo_Outside);
-  CPh_fromPions_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromPions_Pt_reco_onetwo_Outside",
-             "CPh_fromPions_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromPions_Pt_reco_onetwo_Outside = new TH1D(
+    "CPh_fromPions_Pt_reco_onetwo_Outside", "CPh_fromPions_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromPions_Pt_reco_onetwo_Outside);
-  CPh_fromEtas_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromEtas_Pt_reco_onetwo_Outside",
-             "CPh_fromEtas_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromEtas_Pt_reco_onetwo_Outside = new TH1D("CPh_fromEtas_Pt_reco_onetwo_Outside",
+                                                 "CPh_fromEtas_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromEtas_Pt_reco_onetwo_Outside);
-  CPh_fromDalitz_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromDalitz_Pt_reco_onetwo_Outside",
-             "CPh_fromDalitz_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromDalitz_Pt_reco_onetwo_Outside = new TH1D(
+    "CPh_fromDalitz_Pt_reco_onetwo_Outside", "CPh_fromDalitz_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromDalitz_Pt_reco_onetwo_Outside);
   CPh_fromXi_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromXi_Pt_reco_onetwo_Outside",
-             "CPh_fromXi_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_onetwo_Outside", "CPh_fromXi_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromXi_Pt_reco_onetwo_Outside);
-  CPh_fromOther_Pt_reco_onetwo_Outside =
-    new TH1D("CPh_fromOther_Pt_reco_onetwo_Outside",
-             "CPh_fromOther_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromOther_Pt_reco_onetwo_Outside = new TH1D(
+    "CPh_fromOther_Pt_reco_onetwo_Outside", "CPh_fromOther_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CPh_fromOther_Pt_reco_onetwo_Outside);
   CPh_twoFromTarget_Pt_reco_onetwo_Outside =
     new TH1D("CPh_twoFromTarget_Pt_reco_onetwo_Outside",
-             "CPh_twoFromTarget_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_onetwo_Outside.push_back(
-    CPh_twoFromTarget_Pt_reco_onetwo_Outside);
-  CPh_fromCombinatorial_Pt_reco_onetwo_Outside = new TH1D(
-    "CPh_fromCombinatorial_Pt_reco_onetwo_Outside",
-    "CPh_fromCombinatorial_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-    30,
-    0,
-    3);
-  fHistoList_dp_onetwo_Outside.push_back(
-    CPh_fromCombinatorial_Pt_reco_onetwo_Outside);
+             "CPh_twoFromTarget_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Outside.push_back(CPh_twoFromTarget_Pt_reco_onetwo_Outside);
+  CPh_fromCombinatorial_Pt_reco_onetwo_Outside =
+    new TH1D("CPh_fromCombinatorial_Pt_reco_onetwo_Outside",
+             "CPh_fromCombinatorial_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Outside.push_back(CPh_fromCombinatorial_Pt_reco_onetwo_Outside);
   CPh_fromConversion_Pt_reco_onetwo_Outside =
     new TH1D("CPh_fromConversion_Pt_reco_onetwo_Outside",
-             "CPh_fromConversion_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_onetwo_Outside.push_back(
-    CPh_fromConversion_Pt_reco_onetwo_Outside);
+             "CPh_fromConversion_Pt_reco_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Outside.push_back(CPh_fromConversion_Pt_reco_onetwo_Outside);
   CPh_pt_vs_rap_est_onetwo_Outside =
-    new TH2D("CPh_pt_vs_rap_est_onetwo_Outside",
-             "CPh_pt_vs_rap_est_onetwo_Outside; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_onetwo_Outside", "CPh_pt_vs_rap_est_onetwo_Outside; rapidity y; p_{t} in GeV/c ", 10,
+             0., 4., 40, 0., 4.);
   fHistoList_dp_onetwo_Outside.push_back(CPh_pt_vs_rap_est_onetwo_Outside);
-  CPh_pt_vs_rap_est_corr_onetwo_Outside = new TH2D(
-    "CPh_pt_vs_rap_est_corr_onetwo_Outside",
-    "CPh_pt_vs_rap_est_corr_onetwo_Outside; rapidity y; p_{t} in GeV/c ",
-    10,
-    0.,
-    4.,
-    40,
-    0.,
-    4.);
+  CPh_pt_vs_rap_est_corr_onetwo_Outside =
+    new TH2D("CPh_pt_vs_rap_est_corr_onetwo_Outside",
+             "CPh_pt_vs_rap_est_corr_onetwo_Outside; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_dp_onetwo_Outside.push_back(CPh_pt_vs_rap_est_corr_onetwo_Outside);
 
 
   // Both => all
   CDP_InvMassReco_all_Both =
-    new TH1D("CDP_InvMassReco_all_Both",
-             "CDP_InvMassReco_all_Both; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+    new TH1D("CDP_InvMassReco_all_Both", "CDP_InvMassReco_all_Both; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_all_Both.push_back(CDP_InvMassReco_all_Both);
   CDP_OpeningAngleReco_all_Both =
-    new TH1D("CDP_OpeningAngleReco_all_Both",
-             "CDP_OpeningAngleReco_all_Both; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_all_Both", "CDP_OpeningAngleReco_all_Both; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_all_Both.push_back(CDP_OpeningAngleReco_all_Both);
-  CDP_Pdg_all_Both =
-    new TH1D("CDP_Pdg_all_Both", "CDP_Pdg_all_Both; Id;#", 1000, -10, 490);
+  CDP_Pdg_all_Both = new TH1D("CDP_Pdg_all_Both", "CDP_Pdg_all_Both; Id;#", 1000, -10, 490);
   fHistoList_dp_all_Both.push_back(CDP_Pdg_all_Both);
-  CDP_P_reco_all_Both = new TH1D(
-    "CDP_P_reco_all_Both", "CDP_P_reco_all_Both; P in GeV/c^{2};#", 200, 0, 10);
+  CDP_P_reco_all_Both = new TH1D("CDP_P_reco_all_Both", "CDP_P_reco_all_Both; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_all_Both.push_back(CDP_P_reco_all_Both);
-  CDP_Pt_reco_all_Both = new TH1D("CDP_Pt_reco_all_Both",
-                                  "CDP_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-                                  30,
-                                  0,
-                                  3);
+  CDP_Pt_reco_all_Both = new TH1D("CDP_Pt_reco_all_Both", "CDP_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CDP_Pt_reco_all_Both);
   CPh_fromTarget_Pt_reco_all_Both =
-    new TH1D("CPh_fromTarget_Pt_reco_all_Both",
-             "CPh_fromTarget_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromTarget_Pt_reco_all_Both", "CPh_fromTarget_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromTarget_Pt_reco_all_Both);
   CPh_fromPions_Pt_reco_all_Both =
-    new TH1D("CPh_fromPions_Pt_reco_all_Both",
-             "CPh_fromPions_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_all_Both", "CPh_fromPions_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromPions_Pt_reco_all_Both);
   CPh_fromEtas_Pt_reco_all_Both =
-    new TH1D("CPh_fromEtas_Pt_reco_all_Both",
-             "CPh_fromEtas_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_all_Both", "CPh_fromEtas_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromEtas_Pt_reco_all_Both);
   CPh_fromDalitz_Pt_reco_all_Both =
-    new TH1D("CPh_fromDalitz_Pt_reco_all_Both",
-             "CPh_fromDalitz_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromDalitz_Pt_reco_all_Both", "CPh_fromDalitz_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromDalitz_Pt_reco_all_Both);
   CPh_fromXi_Pt_reco_all_Both =
-    new TH1D("CPh_fromXi_Pt_reco_all_Both",
-             "CPh_fromXi_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_all_Both", "CPh_fromXi_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromXi_Pt_reco_all_Both);
   CPh_fromOther_Pt_reco_all_Both =
-    new TH1D("CPh_fromOther_Pt_reco_all_Both",
-             "CPh_fromOther_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_all_Both", "CPh_fromOther_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromOther_Pt_reco_all_Both);
-  CPh_twoFromTarget_Pt_reco_all_Both =
-    new TH1D("CPh_twoFromTarget_Pt_reco_all_Both",
-             "CPh_twoFromTarget_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_all_Both = new TH1D("CPh_twoFromTarget_Pt_reco_all_Both",
+                                                "CPh_twoFromTarget_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_twoFromTarget_Pt_reco_all_Both);
-  CPh_fromCombinatorial_Pt_reco_all_Both =
-    new TH1D("CPh_fromCombinatorial_Pt_reco_all_Both",
-             "CPh_fromCombinatorial_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromCombinatorial_Pt_reco_all_Both = new TH1D(
+    "CPh_fromCombinatorial_Pt_reco_all_Both", "CPh_fromCombinatorial_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromCombinatorial_Pt_reco_all_Both);
-  CPh_fromConversion_Pt_reco_all_Both =
-    new TH1D("CPh_fromConversion_Pt_reco_all_Both",
-             "CPh_fromConversion_Pt_reco_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromConversion_Pt_reco_all_Both = new TH1D("CPh_fromConversion_Pt_reco_all_Both",
+                                                 "CPh_fromConversion_Pt_reco_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CPh_fromConversion_Pt_reco_all_Both);
-  CPh_pt_vs_rap_est_all_Both =
-    new TH2D("CPh_pt_vs_rap_est_all_Both",
-             "CPh_pt_vs_rap_est_all_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+  CPh_pt_vs_rap_est_all_Both = new TH2D(
+    "CPh_pt_vs_rap_est_all_Both", "CPh_pt_vs_rap_est_all_Both; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_dp_all_Both.push_back(CPh_pt_vs_rap_est_all_Both);
   CPh_pt_vs_rap_est_corr_all_Both =
-    new TH2D("CPh_pt_vs_rap_est_corr_all_Both",
-             "CPh_pt_vs_rap_est_corr_all_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_all_Both", "CPh_pt_vs_rap_est_corr_all_Both; rapidity y; p_{t} in GeV/c ", 10, 0.,
+             4., 40, 0., 4.);
   fHistoList_dp_all_Both.push_back(CPh_pt_vs_rap_est_corr_all_Both);
 
   // Both => two
   CDP_InvMassReco_two_Both =
-    new TH1D("CDP_InvMassReco_two_Both",
-             "CDP_InvMassReco_two_Both; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+    new TH1D("CDP_InvMassReco_two_Both", "CDP_InvMassReco_two_Both; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_two_Both.push_back(CDP_InvMassReco_two_Both);
   CDP_OpeningAngleReco_two_Both =
-    new TH1D("CDP_OpeningAngleReco_two_Both",
-             "CDP_OpeningAngleReco_two_Both; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_two_Both", "CDP_OpeningAngleReco_two_Both; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_two_Both.push_back(CDP_OpeningAngleReco_two_Both);
-  CDP_Pdg_two_Both =
-    new TH1D("CDP_Pdg_two_Both", "CDP_Pdg_two_Both; Id;#", 1000, -10, 490);
+  CDP_Pdg_two_Both = new TH1D("CDP_Pdg_two_Both", "CDP_Pdg_two_Both; Id;#", 1000, -10, 490);
   fHistoList_dp_two_Both.push_back(CDP_Pdg_two_Both);
-  CDP_P_reco_two_Both = new TH1D(
-    "CDP_P_reco_two_Both", "CDP_P_reco_two_Both; P in GeV/c^{2};#", 200, 0, 10);
+  CDP_P_reco_two_Both = new TH1D("CDP_P_reco_two_Both", "CDP_P_reco_two_Both; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_two_Both.push_back(CDP_P_reco_two_Both);
-  CDP_Pt_reco_two_Both = new TH1D("CDP_Pt_reco_two_Both",
-                                  "CDP_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-                                  30,
-                                  0,
-                                  3);
+  CDP_Pt_reco_two_Both = new TH1D("CDP_Pt_reco_two_Both", "CDP_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CDP_Pt_reco_two_Both);
   CPh_fromTarget_Pt_reco_two_Both =
-    new TH1D("CPh_fromTarget_Pt_reco_two_Both",
-             "CPh_fromTarget_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromTarget_Pt_reco_two_Both", "CPh_fromTarget_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromTarget_Pt_reco_two_Both);
   CPh_fromPions_Pt_reco_two_Both =
-    new TH1D("CPh_fromPions_Pt_reco_two_Both",
-             "CPh_fromPions_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_two_Both", "CPh_fromPions_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromPions_Pt_reco_two_Both);
   CPh_fromEtas_Pt_reco_two_Both =
-    new TH1D("CPh_fromEtas_Pt_reco_two_Both",
-             "CPh_fromEtas_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_two_Both", "CPh_fromEtas_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromEtas_Pt_reco_two_Both);
   CPh_fromDalitz_Pt_reco_two_Both =
-    new TH1D("CPh_fromDalitz_Pt_reco_two_Both",
-             "CPh_fromDalitz_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromDalitz_Pt_reco_two_Both", "CPh_fromDalitz_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromDalitz_Pt_reco_two_Both);
   CPh_fromXi_Pt_reco_two_Both =
-    new TH1D("CPh_fromXi_Pt_reco_two_Both",
-             "CPh_fromXi_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_two_Both", "CPh_fromXi_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromXi_Pt_reco_two_Both);
   CPh_fromOther_Pt_reco_two_Both =
-    new TH1D("CPh_fromOther_Pt_reco_two_Both",
-             "CPh_fromOther_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_two_Both", "CPh_fromOther_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromOther_Pt_reco_two_Both);
-  CPh_twoFromTarget_Pt_reco_two_Both =
-    new TH1D("CPh_twoFromTarget_Pt_reco_two_Both",
-             "CPh_twoFromTarget_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_two_Both = new TH1D("CPh_twoFromTarget_Pt_reco_two_Both",
+                                                "CPh_twoFromTarget_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_twoFromTarget_Pt_reco_two_Both);
-  CPh_fromCombinatorial_Pt_reco_two_Both =
-    new TH1D("CPh_fromCombinatorial_Pt_reco_two_Both",
-             "CPh_fromCombinatorial_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromCombinatorial_Pt_reco_two_Both = new TH1D(
+    "CPh_fromCombinatorial_Pt_reco_two_Both", "CPh_fromCombinatorial_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromCombinatorial_Pt_reco_two_Both);
-  CPh_fromConversion_Pt_reco_two_Both =
-    new TH1D("CPh_fromConversion_Pt_reco_two_Both",
-             "CPh_fromConversion_Pt_reco_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromConversion_Pt_reco_two_Both = new TH1D("CPh_fromConversion_Pt_reco_two_Both",
+                                                 "CPh_fromConversion_Pt_reco_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CPh_fromConversion_Pt_reco_two_Both);
-  CPh_pt_vs_rap_est_two_Both =
-    new TH2D("CPh_pt_vs_rap_est_two_Both",
-             "CPh_pt_vs_rap_est_two_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+  CPh_pt_vs_rap_est_two_Both = new TH2D(
+    "CPh_pt_vs_rap_est_two_Both", "CPh_pt_vs_rap_est_two_Both; rapidity y; p_{t} in GeV/c ", 10, 0., 4., 40, 0., 4.);
   fHistoList_dp_two_Both.push_back(CPh_pt_vs_rap_est_two_Both);
   CPh_pt_vs_rap_est_corr_two_Both =
-    new TH2D("CPh_pt_vs_rap_est_corr_two_Both",
-             "CPh_pt_vs_rap_est_corr_two_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_two_Both", "CPh_pt_vs_rap_est_corr_two_Both; rapidity y; p_{t} in GeV/c ", 10, 0.,
+             4., 40, 0., 4.);
   fHistoList_dp_two_Both.push_back(CPh_pt_vs_rap_est_corr_two_Both);
 
   // Both => onetwo
-  CDP_InvMassReco_onetwo_Both =
-    new TH1D("CDP_InvMassReco_onetwo_Both",
-             "CDP_InvMassReco_onetwo_Both; invariant mass in GeV/c^{2};#",
-             50,
-             -0.005,
-             0.045);
+  CDP_InvMassReco_onetwo_Both = new TH1D(
+    "CDP_InvMassReco_onetwo_Both", "CDP_InvMassReco_onetwo_Both; invariant mass in GeV/c^{2};#", 50, -0.005, 0.045);
   fHistoList_dp_onetwo_Both.push_back(CDP_InvMassReco_onetwo_Both);
   CDP_OpeningAngleReco_onetwo_Both =
-    new TH1D("CDP_OpeningAngleReco_onetwo_Both",
-             "CDP_OpeningAngleReco_onetwo_Both; angle [deg];#",
-             45,
-             -0.5,
-             4.);
+    new TH1D("CDP_OpeningAngleReco_onetwo_Both", "CDP_OpeningAngleReco_onetwo_Both; angle [deg];#", 45, -0.5, 4.);
   fHistoList_dp_onetwo_Both.push_back(CDP_OpeningAngleReco_onetwo_Both);
-  CDP_Pdg_onetwo_Both = new TH1D(
-    "CDP_Pdg_onetwo_Both", "CDP_Pdg_onetwo_Both; Id;#", 1000, -10, 490);
+  CDP_Pdg_onetwo_Both = new TH1D("CDP_Pdg_onetwo_Both", "CDP_Pdg_onetwo_Both; Id;#", 1000, -10, 490);
   fHistoList_dp_onetwo_Both.push_back(CDP_Pdg_onetwo_Both);
-  CDP_P_reco_onetwo_Both = new TH1D("CDP_P_reco_onetwo_Both",
-                                    "CDP_P_reco_onetwo_Both; P in GeV/c^{2};#",
-                                    200,
-                                    0,
-                                    10);
+  CDP_P_reco_onetwo_Both = new TH1D("CDP_P_reco_onetwo_Both", "CDP_P_reco_onetwo_Both; P in GeV/c^{2};#", 200, 0, 10);
   fHistoList_dp_onetwo_Both.push_back(CDP_P_reco_onetwo_Both);
   CDP_Pt_reco_onetwo_Both =
-    new TH1D("CDP_Pt_reco_onetwo_Both",
-             "CDP_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_Pt_reco_onetwo_Both", "CDP_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CDP_Pt_reco_onetwo_Both);
-  CPh_fromTarget_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromTarget_Pt_reco_onetwo_Both",
-             "CPh_fromTarget_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromTarget_Pt_reco_onetwo_Both = new TH1D("CPh_fromTarget_Pt_reco_onetwo_Both",
+                                                "CPh_fromTarget_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromTarget_Pt_reco_onetwo_Both);
   CPh_fromPions_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromPions_Pt_reco_onetwo_Both",
-             "CPh_fromPions_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromPions_Pt_reco_onetwo_Both", "CPh_fromPions_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromPions_Pt_reco_onetwo_Both);
   CPh_fromEtas_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromEtas_Pt_reco_onetwo_Both",
-             "CPh_fromEtas_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromEtas_Pt_reco_onetwo_Both", "CPh_fromEtas_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromEtas_Pt_reco_onetwo_Both);
-  CPh_fromDalitz_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromDalitz_Pt_reco_onetwo_Both",
-             "CPh_fromDalitz_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_fromDalitz_Pt_reco_onetwo_Both = new TH1D("CPh_fromDalitz_Pt_reco_onetwo_Both",
+                                                "CPh_fromDalitz_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromDalitz_Pt_reco_onetwo_Both);
   CPh_fromXi_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromXi_Pt_reco_onetwo_Both",
-             "CPh_fromXi_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromXi_Pt_reco_onetwo_Both", "CPh_fromXi_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromXi_Pt_reco_onetwo_Both);
   CPh_fromOther_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromOther_Pt_reco_onetwo_Both",
-             "CPh_fromOther_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CPh_fromOther_Pt_reco_onetwo_Both", "CPh_fromOther_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromOther_Pt_reco_onetwo_Both);
-  CPh_twoFromTarget_Pt_reco_onetwo_Both =
-    new TH1D("CPh_twoFromTarget_Pt_reco_onetwo_Both",
-             "CPh_twoFromTarget_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CPh_twoFromTarget_Pt_reco_onetwo_Both = new TH1D(
+    "CPh_twoFromTarget_Pt_reco_onetwo_Both", "CPh_twoFromTarget_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_twoFromTarget_Pt_reco_onetwo_Both);
   CPh_fromCombinatorial_Pt_reco_onetwo_Both =
     new TH1D("CPh_fromCombinatorial_Pt_reco_onetwo_Both",
-             "CPh_fromCombinatorial_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
-  fHistoList_dp_onetwo_Both.push_back(
-    CPh_fromCombinatorial_Pt_reco_onetwo_Both);
-  CPh_fromConversion_Pt_reco_onetwo_Both =
-    new TH1D("CPh_fromConversion_Pt_reco_onetwo_Both",
-             "CPh_fromConversion_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+             "CPh_fromCombinatorial_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
+  fHistoList_dp_onetwo_Both.push_back(CPh_fromCombinatorial_Pt_reco_onetwo_Both);
+  CPh_fromConversion_Pt_reco_onetwo_Both = new TH1D(
+    "CPh_fromConversion_Pt_reco_onetwo_Both", "CPh_fromConversion_Pt_reco_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CPh_fromConversion_Pt_reco_onetwo_Both);
   CPh_pt_vs_rap_est_onetwo_Both =
-    new TH2D("CPh_pt_vs_rap_est_onetwo_Both",
-             "CPh_pt_vs_rap_est_onetwo_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_onetwo_Both", "CPh_pt_vs_rap_est_onetwo_Both; rapidity y; p_{t} in GeV/c ", 10, 0., 4.,
+             40, 0., 4.);
   fHistoList_dp_onetwo_Both.push_back(CPh_pt_vs_rap_est_onetwo_Both);
   CPh_pt_vs_rap_est_corr_onetwo_Both =
-    new TH2D("CPh_pt_vs_rap_est_corr_onetwo_Both",
-             "CPh_pt_vs_rap_est_corr_onetwo_Both; rapidity y; p_{t} in GeV/c ",
-             10,
-             0.,
-             4.,
-             40,
-             0.,
-             4.);
+    new TH2D("CPh_pt_vs_rap_est_corr_onetwo_Both", "CPh_pt_vs_rap_est_corr_onetwo_Both; rapidity y; p_{t} in GeV/c ",
+             10, 0., 4., 40, 0., 4.);
   fHistoList_dp_onetwo_Both.push_back(CPh_pt_vs_rap_est_corr_onetwo_Both);
 
   // EMT Target
-  CDP_EMT_Pt_all_Target =
-    new TH1D("CDP_EMT_Pt_all_Target",
-             "CDP_EMT_Pt_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_EMT_Pt_all_Target = new TH1D("CDP_EMT_Pt_all_Target", "CDP_EMT_Pt_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CDP_EMT_Pt_all_Target);
-  CDP_EMT_Pt_two_Target =
-    new TH1D("CDP_EMT_Pt_two_Target",
-             "CDP_EMT_Pt_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_EMT_Pt_two_Target = new TH1D("CDP_EMT_Pt_two_Target", "CDP_EMT_Pt_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CDP_EMT_Pt_two_Target);
   CDP_EMT_Pt_onetwo_Target =
-    new TH1D("CDP_EMT_Pt_onetwo_Target",
-             "CDP_EMT_Pt_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_EMT_Pt_onetwo_Target", "CDP_EMT_Pt_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CDP_EMT_Pt_onetwo_Target);
 
   // EMT Outside
-  CDP_EMT_Pt_all_Outside =
-    new TH1D("CDP_EMT_Pt_all_Outside",
-             "CDP_EMT_Pt_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_EMT_Pt_all_Outside = new TH1D("CDP_EMT_Pt_all_Outside", "CDP_EMT_Pt_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CDP_EMT_Pt_all_Outside);
-  CDP_EMT_Pt_two_Outside =
-    new TH1D("CDP_EMT_Pt_two_Outside",
-             "CDP_EMT_Pt_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_EMT_Pt_two_Outside = new TH1D("CDP_EMT_Pt_two_Outside", "CDP_EMT_Pt_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CDP_EMT_Pt_two_Outside);
   CDP_EMT_Pt_onetwo_Outside =
-    new TH1D("CDP_EMT_Pt_onetwo_Outside",
-             "CDP_EMT_Pt_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_EMT_Pt_onetwo_Outside", "CDP_EMT_Pt_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CDP_EMT_Pt_onetwo_Outside);
 
   // EMT Both
-  CDP_EMT_Pt_all_Both = new TH1D("CDP_EMT_Pt_all_Both",
-                                 "CDP_EMT_Pt_all_Both; P_{t} in GeV/c^{2};#",
-                                 30,
-                                 0,
-                                 3);
+  CDP_EMT_Pt_all_Both = new TH1D("CDP_EMT_Pt_all_Both", "CDP_EMT_Pt_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CDP_EMT_Pt_all_Both);
-  CDP_EMT_Pt_two_Both = new TH1D("CDP_EMT_Pt_two_Both",
-                                 "CDP_EMT_Pt_two_Both; P_{t} in GeV/c^{2};#",
-                                 30,
-                                 0,
-                                 3);
+  CDP_EMT_Pt_two_Both = new TH1D("CDP_EMT_Pt_two_Both", "CDP_EMT_Pt_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CDP_EMT_Pt_two_Both);
-  CDP_EMT_Pt_onetwo_Both =
-    new TH1D("CDP_EMT_Pt_onetwo_Both",
-             "CDP_EMT_Pt_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_EMT_Pt_onetwo_Both = new TH1D("CDP_EMT_Pt_onetwo_Both", "CDP_EMT_Pt_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CDP_EMT_Pt_onetwo_Both);
 
 
   // CDP_LK_EMT Target
   CDP_LK_EMT_Pt_all_Target =
-    new TH1D("CDP_LK_EMT_Pt_all_Target",
-             "CDP_LK_EMT_Pt_all_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_all_Target", "CDP_LK_EMT_Pt_all_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Target.push_back(CDP_LK_EMT_Pt_all_Target);
   CDP_LK_EMT_Pt_two_Target =
-    new TH1D("CDP_LK_EMT_Pt_two_Target",
-             "CDP_LK_EMT_Pt_two_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_two_Target", "CDP_LK_EMT_Pt_two_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Target.push_back(CDP_LK_EMT_Pt_two_Target);
   CDP_LK_EMT_Pt_onetwo_Target =
-    new TH1D("CDP_LK_EMT_Pt_onetwo_Target",
-             "CDP_LK_EMT_Pt_onetwo_Target; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_onetwo_Target", "CDP_LK_EMT_Pt_onetwo_Target; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Target.push_back(CDP_LK_EMT_Pt_onetwo_Target);
 
 
   // CDP_LK_EMT Outside
   CDP_LK_EMT_Pt_all_Outside =
-    new TH1D("CDP_LK_EMT_Pt_all_Outside",
-             "CDP_LK_EMT_Pt_all_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_all_Outside", "CDP_LK_EMT_Pt_all_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Outside.push_back(CDP_LK_EMT_Pt_all_Outside);
   CDP_LK_EMT_Pt_two_Outside =
-    new TH1D("CDP_LK_EMT_Pt_two_Outside",
-             "CDP_LK_EMT_Pt_two_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_two_Outside", "CDP_LK_EMT_Pt_two_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Outside.push_back(CDP_LK_EMT_Pt_two_Outside);
   CDP_LK_EMT_Pt_onetwo_Outside =
-    new TH1D("CDP_LK_EMT_Pt_onetwo_Outside",
-             "CDP_LK_EMT_Pt_onetwo_Outside; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_onetwo_Outside", "CDP_LK_EMT_Pt_onetwo_Outside; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Outside.push_back(CDP_LK_EMT_Pt_onetwo_Outside);
 
 
   // CDP_LK_EMT Both
-  CDP_LK_EMT_Pt_all_Both =
-    new TH1D("CDP_LK_EMT_Pt_all_Both",
-             "CDP_LK_EMT_Pt_all_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_LK_EMT_Pt_all_Both = new TH1D("CDP_LK_EMT_Pt_all_Both", "CDP_LK_EMT_Pt_all_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_all_Both.push_back(CDP_LK_EMT_Pt_all_Both);
-  CDP_LK_EMT_Pt_two_Both =
-    new TH1D("CDP_LK_EMT_Pt_two_Both",
-             "CDP_LK_EMT_Pt_two_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+  CDP_LK_EMT_Pt_two_Both = new TH1D("CDP_LK_EMT_Pt_two_Both", "CDP_LK_EMT_Pt_two_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_two_Both.push_back(CDP_LK_EMT_Pt_two_Both);
   CDP_LK_EMT_Pt_onetwo_Both =
-    new TH1D("CDP_LK_EMT_Pt_onetwo_Both",
-             "CDP_LK_EMT_Pt_onetwo_Both; P_{t} in GeV/c^{2};#",
-             30,
-             0,
-             3);
+    new TH1D("CDP_LK_EMT_Pt_onetwo_Both", "CDP_LK_EMT_Pt_onetwo_Both; P_{t} in GeV/c^{2};#", 30, 0, 3);
   fHistoList_dp_onetwo_Both.push_back(CDP_LK_EMT_Pt_onetwo_Both);
 }

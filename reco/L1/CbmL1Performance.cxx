@@ -50,19 +50,17 @@ using std::pair;
 using std::setw;
 using std::vector;
 
-void CbmL1::TrackMatch() {
+void CbmL1::TrackMatch()
+{
   map<int, CbmL1MCTrack*> pMCTrackMap;
   pMCTrackMap.clear();
 
   // fill pMCTrackMap
-  for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin();
-       i != vMCTracks.end();
-       ++i) {
+  for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
 
-    if (pMCTrackMap.find(MC.ID) == pMCTrackMap.end()) {
-      pMCTrackMap.insert(pair<int, CbmL1MCTrack*>(MC.ID, &MC));
-    } else {
+    if (pMCTrackMap.find(MC.ID) == pMCTrackMap.end()) { pMCTrackMap.insert(pair<int, CbmL1MCTrack*>(MC.ID, &MC)); }
+    else {
       cout << "*** L1: Track ID " << MC.ID << " encountered twice! ***" << endl;
     }
   }
@@ -76,12 +74,8 @@ void CbmL1::TrackMatch() {
     int hitsum = prtra->StsHits.size();  // number of hits in track
 
     // count how many hits from each mcTrack belong to current recoTrack
-    map<int, int>& hitmap =
-      prtra
-        ->hitMap;  // how many hits from each mcTrack belong to current recoTrack
-    for (vector<int>::iterator ih = (prtra->StsHits).begin();
-         ih != (prtra->StsHits).end();
-         ++ih) {
+    map<int, int>& hitmap = prtra->hitMap;  // how many hits from each mcTrack belong to current recoTrack
+    for (vector<int>::iterator ih = (prtra->StsHits).begin(); ih != (prtra->StsHits).end(); ++ih) {
 
       const int nMCPoints = vStsHits[*ih].mcPointIds.size();
       for (int iP = 0; iP < nMCPoints; iP++) {
@@ -90,8 +84,7 @@ void CbmL1::TrackMatch() {
         //     cout<<iMC<<" iMC"<<endl;
         int ID = -1;
         if (iMC >= 0) ID = vMCPoints[iMC].ID;
-        if (hitmap.find(ID) == hitmap.end())
-          hitmap[ID] = 1;
+        if (hitmap.find(ID) == hitmap.end()) hitmap[ID] = 1;
         else {
           hitmap[ID] += 1;
         }
@@ -99,27 +92,24 @@ void CbmL1::TrackMatch() {
     }    // for iHit
 
     // RTrack <-> MCTrack identification
-    double max_percent =
-      0.0;  // [%]. maximum persent of hits, which belong to one mcTrack.
+    double max_percent = 0.0;  // [%]. maximum persent of hits, which belong to one mcTrack.
     for (map<int, int>::iterator posIt = hitmap.begin(); posIt != hitmap.end();
          posIt++) {  // loop over all touched MCTracks
 
       if (posIt->first < 0) continue;  // not a MC track - based on fake hits
 
       // count max-purity
-      if (double(posIt->second) > max_percent * double(hitsum))
-        max_percent = double(posIt->second) / double(hitsum);
+      if (double(posIt->second) > max_percent * double(hitsum)) max_percent = double(posIt->second) / double(hitsum);
 
       // set relation to the mcTrack
-      if (double(posIt->second)
-          >= CbmL1Constants::MinPurity
-               * double(hitsum)) {  // found correspondent MCTrack
+      if (double(posIt->second) >= CbmL1Constants::MinPurity * double(hitsum)) {  // found correspondent MCTrack
         if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
         CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
 
         pmtra->AddRecoTrack(prtra);
         prtra->AddMCTrack(pmtra);
-      } else {
+      }
+      else {
         if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
         CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
 
@@ -143,7 +133,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     , reco_length()
     , reco_fakes()
     , mc_length()
-    , mc_length_hits() {
+    , mc_length_hits()
+  {
     // add total efficiency
     AddCounter("long_fast_prim", "LongRPrim efficiency");
     AddCounter("fast_prim", "RefPrim   efficiency");
@@ -170,7 +161,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
 
   virtual ~TL1PerfEfficiencies() {};
 
-  virtual void AddCounter(TString shortname, TString name) {
+  virtual void AddCounter(TString shortname, TString name)
+  {
     TL1Efficiencies::AddCounter(shortname, name);
     ratio_killed.AddCounter();
     ratio_clone.AddCounter();
@@ -184,7 +176,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     mc_length_hits.AddCounter();
   };
 
-  TL1PerfEfficiencies& operator+=(TL1PerfEfficiencies& a) {
+  TL1PerfEfficiencies& operator+=(TL1PerfEfficiencies& a)
+  {
     TL1Efficiencies::operator+=(a);
     killed += a.killed;
     clone += a.clone;
@@ -195,7 +188,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     return *this;
   };
 
-  void CalcEff() {
+  void CalcEff()
+  {
     TL1Efficiencies::CalcEff();
     ratio_killed                      = killed / mc;
     ratio_clone                       = clone / mc;
@@ -204,14 +198,9 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     ratio_fakes                       = reco_fakes / allReco;
   };
 
-  void Inc(bool isReco,
-           bool isKilled,
-           double _ratio_length,
-           double _ratio_fakes,
-           int _nclones,
-           int _mc_length,
-           int _mc_length_hits,
-           TString name) {
+  void Inc(bool isReco, bool isKilled, double _ratio_length, double _ratio_fakes, int _nclones, int _mc_length,
+           int _mc_length_hits, TString name)
+  {
     TL1Efficiencies::Inc(isReco, name);
 
     const int index = indices[name];
@@ -224,7 +213,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     mc_length_hits.counters[index] += _mc_length_hits;
   };
 
-  void PrintEff() {
+  void PrintEff()
+  {
     L1_assert(nEvents != 0);
 
     cout.setf(ios::fixed);
@@ -253,20 +243,16 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     int NCounters = mc.NCounters;
     for (int iC = 0; iC < NCounters; iC++) {
       if ((names[iC] != "D0        efficiency") || (mc.counters[iC] != 0))
-        cout
-          << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
-          << ratio_killed.counters
-               [iC]  // tracks with aren't reco because other tracks takes their hit(-s)
-          << "  / " << ratio_length.counters[iC]  // nRecoMCHits/nMCHits
-          << "  / " << ratio_fakes.counters[iC]   // nFakeHits/nRecoAllHits
-          << "  / " << ratio_clone.counters[iC]   // nCloneTracks/nMCTracks
-          << "  / " << setw(8) << reco.counters[iC] / double(nEvents) << " | "
-          << setw(8) << mc.counters[iC] / double(nEvents) << "  / "
-          << mc_length_hits.counters[iC] / double(mc.counters[iC]) << "  / "
-          << mc_length.counters[iC] / double(mc.counters[iC]) << endl;
+        cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
+             << ratio_killed.counters[iC]            // tracks with aren't reco because other tracks takes their hit(-s)
+             << "  / " << ratio_length.counters[iC]  // nRecoMCHits/nMCHits
+             << "  / " << ratio_fakes.counters[iC]   // nFakeHits/nRecoAllHits
+             << "  / " << ratio_clone.counters[iC]   // nCloneTracks/nMCTracks
+             << "  / " << setw(8) << reco.counters[iC] / double(nEvents) << " | " << setw(8)
+             << mc.counters[iC] / double(nEvents) << "  / " << mc_length_hits.counters[iC] / double(mc.counters[iC])
+             << "  / " << mc_length.counters[iC] / double(mc.counters[iC]) << endl;
     }
-    cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts
-         << endl;
+    cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
   };
 
   TL1TracksCatCounters<double> ratio_killed;
@@ -283,7 +269,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
 };
 
 
-void CbmL1::EfficienciesPerformance() {
+void CbmL1::EfficienciesPerformance()
+{
   static TL1PerfEfficiencies L1_NTRA;  // average efficiencies
 
   static int L1_NEVENTS   = 0;
@@ -292,9 +279,7 @@ void CbmL1::EfficienciesPerformance() {
 
   TL1PerfEfficiencies ntra;  // efficiencies for current event
 
-  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin();
-       rtraIt != vRTracks.end();
-       ++rtraIt) {
+  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
     //     if(rtraIt->IsGhost()){ // Debug.
     //       cout << " " << rtraIt->GetNOfHits() << " " << 1./rtraIt->T[5] << " " << rtraIt->GetMaxPurity() << " | ";
@@ -312,9 +297,7 @@ void CbmL1::EfficienciesPerformance() {
     sta_nfakes[i] = 0;
   }
 
-  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin();
-       mtraIt != vMCTracks.end();
-       mtraIt++) {
+  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin(); mtraIt != vMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
 
 
@@ -327,18 +310,16 @@ void CbmL1::EfficienciesPerformance() {
     // is track killed. At least one hit of it belong to some recoTrack
     const bool killed = !reco && mtra.IsDisturbed();
     // ration length for current mcTrack
-    vector<CbmL1Track*>& rTracks =
-      mtra.GetRecoTracks();  // for length calculations
-    double ratio_length   = 0;
-    double ratio_fakes    = 0;
-    double mc_length_hits = mtra.NStations();
+    vector<CbmL1Track*>& rTracks = mtra.GetRecoTracks();  // for length calculations
+    double ratio_length          = 0;
+    double ratio_fakes           = 0;
+    double mc_length_hits        = mtra.NStations();
 
 
     int mc_length = mtra.NMCStations();
     if (reco) {
       for (unsigned int irt = 0; irt < rTracks.size(); irt++) {
-        ratio_length += static_cast<double>(rTracks[irt]->GetNOfHits())
-                        * rTracks[irt]->GetMaxPurity() / mc_length_hits;
+        ratio_length += static_cast<double>(rTracks[irt]->GetNOfHits()) * rTracks[irt]->GetMaxPurity() / mc_length_hits;
         ratio_fakes += 1 - rTracks[irt]->GetMaxPurity();
       }
     }
@@ -355,213 +336,79 @@ void CbmL1::EfficienciesPerformance() {
     //     }
 
     if (mtra.IsAdditional()) {  // short
-      ntra.Inc(reco,
-               killed,
-               ratio_length,
-               ratio_fakes,
-               nclones,
-               mc_length,
-               mc_length_hits,
-               "short");
+      ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "short");
       switch (mtra.pdg) {
         case 11:
         case -11:
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "shortE");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "shortE");
           break;
         case 211:
         case -211:
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "shortPion");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "shortPion");
           break;
         case 321:
         case -321:
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "shortKaon");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "shortKaon");
           break;
         case 2212:
         case -2212:
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "shortProton");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "shortProton");
           break;
-        default:
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "shortRest");
+        default: ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "shortRest");
       }
-    } else {  // separate all efficiecies from short eff
+    }
+    else {  // separate all efficiecies from short eff
 
 
-      ntra.Inc(reco,
-               killed,
-               ratio_length,
-               ratio_fakes,
-               nclones,
-               mc_length,
-               mc_length_hits,
-               "total");
+      ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "total");
 
       if ((mtra.IsPrimary()) && (mtra.z > 0)) {  // D0
-        ntra.Inc(reco,
-                 killed,
-                 ratio_length,
-                 ratio_fakes,
-                 nclones,
-                 mc_length,
-                 mc_length_hits,
-                 "d0");
+        ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "d0");
       }
 
       if (mtra.p > CbmL1Constants::MinRefMom) {  // reference tracks
-        ntra.Inc(reco,
-                 killed,
-                 ratio_length,
-                 ratio_fakes,
-                 nclones,
-                 mc_length,
-                 mc_length_hits,
-                 "fast");
+        ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast");
 
         if (mtra.IsPrimary()) {                // reference primary
           if (mtra.NStations() == NStation) {  // long reference primary
-            ntra.Inc(reco,
-                     killed,
-                     ratio_length,
-                     ratio_fakes,
-                     nclones,
-                     mc_length,
-                     mc_length_hits,
-                     "long_fast_prim");
+            ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "long_fast_prim");
           }
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "fast_prim");
-        } else {  // reference secondary
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "fast_sec");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_prim");
         }
-      } else {  // extra set of tracks
-        ntra.Inc(reco,
-                 killed,
-                 ratio_length,
-                 ratio_fakes,
-                 nclones,
-                 mc_length,
-                 mc_length_hits,
-                 "slow");
+        else {  // reference secondary
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_sec");
+        }
+      }
+      else {  // extra set of tracks
+        ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow");
 
         if (mtra.IsPrimary()) {  // extra primary
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "slow_prim");
-        } else {
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "slow_sec");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_prim");
+        }
+        else {
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_sec");
         }
       }  // if extra
 
       if (mtra.pdg == 11 || mtra.pdg == -11) {
-        ntra.Inc(reco,
-                 killed,
-                 ratio_length,
-                 ratio_fakes,
-                 nclones,
-                 mc_length,
-                 mc_length_hits,
-                 "total_e");
+        ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "total_e");
 
         if (mtra.p > CbmL1Constants::MinRefMom) {  // reference tracks
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "fast_e");
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_e");
 
           if (mtra.IsPrimary()) {  // reference primary
-          } else {                 // reference secondary
-            ntra.Inc(reco,
-                     killed,
-                     ratio_length,
-                     ratio_fakes,
-                     nclones,
-                     mc_length,
-                     mc_length_hits,
-                     "fast_sec_e");
           }
-        } else {  // extra set of tracks
-          ntra.Inc(reco,
-                   killed,
-                   ratio_length,
-                   ratio_fakes,
-                   nclones,
-                   mc_length,
-                   mc_length_hits,
-                   "slow_e");
+          else {  // reference secondary
+            ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_sec_e");
+          }
+        }
+        else {  // extra set of tracks
+          ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_e");
 
           if (mtra.IsPrimary()) {  // extra primary
-          } else {
-            ntra.Inc(reco,
-                     killed,
-                     ratio_length,
-                     ratio_fakes,
-                     nclones,
-                     mc_length,
-                     mc_length_hits,
-                     "slow_sec_e");
+          }
+          else {
+            ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_sec_e");
           }
         }  // if extra
       }
@@ -588,28 +435,22 @@ void CbmL1::EfficienciesPerformance() {
       cout << endl;
     }  // fVerbose > 1
     cout << endl;
-    cout << "L1 ACCUMULATED STAT    : " << L1_NEVENTS << " EVENTS " << endl
-         << endl;
+    cout << "L1 ACCUMULATED STAT    : " << L1_NEVENTS << " EVENTS " << endl << endl;
     L1_NTRA.PrintEff();
     cout << "MC tracks/event found  : "
-         << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]])
-                / double(L1_NEVENTS))
-         << endl;
+         << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
-    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << " s/ev" << endl
-         << endl;
+    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << " s/ev" << endl << endl;
   }
 }  // void CbmL1::Performance()
 
-void CbmL1::
-  HistoPerformance()  // TODO: check if works correctly. Change vHitRef on match data in CbmL1**Track classes
+void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRef on match data in CbmL1**Track classes
 {
 
   //CbmKF &KF = *CbmKF::Instance();
 
-  static TProfile *p_eff_all_vs_mom, *p_eff_prim_vs_mom, *p_eff_sec_vs_mom,
-    *p_eff_d0_vs_mom, *p_eff_prim_vs_theta, *p_eff_all_vs_pt, *p_eff_prim_vs_pt,
-    *p_eff_all_vs_nhits, *p_eff_prim_vs_nhits, *p_eff_sec_vs_nhits;
+  static TProfile *p_eff_all_vs_mom, *p_eff_prim_vs_mom, *p_eff_sec_vs_mom, *p_eff_d0_vs_mom, *p_eff_prim_vs_theta,
+    *p_eff_all_vs_pt, *p_eff_prim_vs_pt, *p_eff_all_vs_nhits, *p_eff_prim_vs_nhits, *p_eff_sec_vs_nhits;
 
   static TH1F *h_reg_MCmom, *h_acc_MCmom, *h_reco_MCmom, *h_ghost_Rmom;
   static TH1F *h_reg_prim_MCmom, *h_acc_prim_MCmom, *h_reco_prim_MCmom;
@@ -617,27 +458,21 @@ void CbmL1::
 
   static TH1F* h_acc_mom_short123s;
 
-  static TH1F *h_reg_mom_prim, *h_reg_mom_sec, *h_reg_nhits_prim,
-    *h_reg_nhits_sec;
-  static TH1F *h_acc_mom_prim, *h_acc_mom_sec, *h_acc_nhits_prim,
-    *h_acc_nhits_sec;
-  static TH1F *h_reco_mom_prim, *h_reco_mom_sec, *h_reco_nhits_prim,
-    *h_reco_nhits_sec;
-  static TH1F *h_rest_mom_prim, *h_rest_mom_sec, *h_rest_nhits_prim,
-    *h_rest_nhits_sec;
+  static TH1F *h_reg_mom_prim, *h_reg_mom_sec, *h_reg_nhits_prim, *h_reg_nhits_sec;
+  static TH1F *h_acc_mom_prim, *h_acc_mom_sec, *h_acc_nhits_prim, *h_acc_nhits_sec;
+  static TH1F *h_reco_mom_prim, *h_reco_mom_sec, *h_reco_nhits_prim, *h_reco_nhits_sec;
+  static TH1F *h_rest_mom_prim, *h_rest_mom_sec, *h_rest_nhits_prim, *h_rest_nhits_sec;
 
   //static TH1F *h_hit_density[10];
 
-  static TH1F *h_ghost_mom, *h_ghost_nhits, *h_ghost_fstation, *h_ghost_chi2,
-    *h_ghost_prob, *h_ghost_tx, *h_ghost_ty;
-  static TH1F *h_reco_mom, *h_reco_d0_mom, *h_reco_nhits, *h_reco_station,
-    *h_reco_chi2, *h_reco_prob, *h_rest_prob, *h_reco_clean, *h_reco_time;
+  static TH1F *h_ghost_mom, *h_ghost_nhits, *h_ghost_fstation, *h_ghost_chi2, *h_ghost_prob, *h_ghost_tx, *h_ghost_ty;
+  static TH1F *h_reco_mom, *h_reco_d0_mom, *h_reco_nhits, *h_reco_station, *h_reco_chi2, *h_reco_prob, *h_rest_prob,
+    *h_reco_clean, *h_reco_time;
   static TProfile *h_reco_timeNtr, *h_reco_timeNhit;
   static TProfile *h_reco_fakeNtr, *h_reco_fakeNhit;
   static TH1F *h_tx, *h_ty, *h_sec_r, *h_ghost_r;
 
-  static TH1F *h_notfound_mom, *h_notfound_nhits, *h_notfound_station,
-    *h_notfound_r, *h_notfound_tx, *h_notfound_ty;
+  static TH1F *h_notfound_mom, *h_notfound_nhits, *h_notfound_station, *h_notfound_r, *h_notfound_tx, *h_notfound_ty;
 
   static TH1F *h_mcp, *h_nmchits;
   //  static TH1F *h_chi2, *h_prob, *MC_vx, *MC_vy, *MC_vz, *VtxChiPrim, *VtxChiSec;
@@ -647,20 +482,15 @@ void CbmL1::
   static TH2F *h2_vertex, *h2_prim_vertex, *h2_sec_vertex;
   //static TH3F *h3_vertex, *h3_prim_vertex, *h3_sec_vertex;
 
-  static TH2F *h2_reg_nhits_vs_mom_prim, *h2_reg_nhits_vs_mom_sec,
-    *h2_reg_fstation_vs_mom_prim, *h2_reg_fstation_vs_mom_sec,
-    *h2_reg_lstation_vs_fstation_prim, *h2_reg_lstation_vs_fstation_sec;
-  static TH2F *h2_acc_nhits_vs_mom_prim, *h2_acc_nhits_vs_mom_sec,
-    *h2_acc_fstation_vs_mom_prim, *h2_acc_fstation_vs_mom_sec,
-    *h2_acc_lstation_vs_fstation_prim, *h2_acc_lstation_vs_fstation_sec;
-  static TH2F *h2_reco_nhits_vs_mom_prim, *h2_reco_nhits_vs_mom_sec,
-    *h2_reco_fstation_vs_mom_prim, *h2_reco_fstation_vs_mom_sec,
-    *h2_reco_lstation_vs_fstation_prim, *h2_reco_lstation_vs_fstation_sec;
-  static TH2F *h2_ghost_nhits_vs_mom, *h2_ghost_fstation_vs_mom,
-    *h2_ghost_lstation_vs_fstation;
-  static TH2F *h2_rest_nhits_vs_mom_prim, *h2_rest_nhits_vs_mom_sec,
-    *h2_rest_fstation_vs_mom_prim, *h2_rest_fstation_vs_mom_sec,
-    *h2_rest_lstation_vs_fstation_prim, *h2_rest_lstation_vs_fstation_sec;
+  static TH2F *h2_reg_nhits_vs_mom_prim, *h2_reg_nhits_vs_mom_sec, *h2_reg_fstation_vs_mom_prim,
+    *h2_reg_fstation_vs_mom_sec, *h2_reg_lstation_vs_fstation_prim, *h2_reg_lstation_vs_fstation_sec;
+  static TH2F *h2_acc_nhits_vs_mom_prim, *h2_acc_nhits_vs_mom_sec, *h2_acc_fstation_vs_mom_prim,
+    *h2_acc_fstation_vs_mom_sec, *h2_acc_lstation_vs_fstation_prim, *h2_acc_lstation_vs_fstation_sec;
+  static TH2F *h2_reco_nhits_vs_mom_prim, *h2_reco_nhits_vs_mom_sec, *h2_reco_fstation_vs_mom_prim,
+    *h2_reco_fstation_vs_mom_sec, *h2_reco_lstation_vs_fstation_prim, *h2_reco_lstation_vs_fstation_sec;
+  static TH2F *h2_ghost_nhits_vs_mom, *h2_ghost_fstation_vs_mom, *h2_ghost_lstation_vs_fstation;
+  static TH2F *h2_rest_nhits_vs_mom_prim, *h2_rest_nhits_vs_mom_sec, *h2_rest_fstation_vs_mom_prim,
+    *h2_rest_fstation_vs_mom_sec, *h2_rest_lstation_vs_fstation_prim, *h2_rest_lstation_vs_fstation_sec;
 
   static bool first_call = 1;
 
@@ -670,220 +500,78 @@ void CbmL1::
     TDirectory* curdir = gDirectory;
     gDirectory         = fHistoDir;
 
-    p_eff_all_vs_mom    = new TProfile("p_eff_all_vs_mom",
-                                    "AllSet Efficiency vs Momentum",
-                                    100,
-                                    0.0,
-                                    5.0,
-                                    0.0,
-                                    100.0);
-    p_eff_prim_vs_mom   = new TProfile("p_eff_prim_vs_mom",
-                                     "Primary Set Efficiency vs Momentum",
-                                     100,
-                                     0.0,
-                                     5.0,
-                                     0.0,
-                                     100.0);
-    p_eff_sec_vs_mom    = new TProfile("p_eff_sec_vs_mom",
-                                    "Secondary Set Efficiency vs Momentum",
-                                    100,
-                                    0.0,
-                                    5.0,
-                                    0.0,
-                                    100.0);
-    p_eff_d0_vs_mom     = new TProfile("p_eff_d0_vs_mom",
-                                   "D0 Secondary Tracks Efficiency vs Momentum",
-                                   150,
-                                   0.0,
-                                   15.0,
-                                   0.0,
-                                   100.0);
-    p_eff_prim_vs_theta = new TProfile("p_eff_prim_vs_theta",
-                                       "All Primary Set Efficiency vs Theta",
-                                       100,
-                                       0.0,
-                                       30.0,
-                                       0.0,
-                                       100.0);
-    p_eff_all_vs_pt     = new TProfile(
-      "p_eff_all_vs_pt", "AllSet Efficiency vs Pt", 100, 0.0, 5.0, 0.0, 100.0);
-    p_eff_prim_vs_pt = new TProfile("p_eff_prim_vs_pt",
-                                    "Primary Set Efficiency vs Pt",
-                                    100,
-                                    0.0,
-                                    5.0,
-                                    0.0,
-                                    100.0);
+    p_eff_all_vs_mom = new TProfile("p_eff_all_vs_mom", "AllSet Efficiency vs Momentum", 100, 0.0, 5.0, 0.0, 100.0);
+    p_eff_prim_vs_mom =
+      new TProfile("p_eff_prim_vs_mom", "Primary Set Efficiency vs Momentum", 100, 0.0, 5.0, 0.0, 100.0);
+    p_eff_sec_vs_mom =
+      new TProfile("p_eff_sec_vs_mom", "Secondary Set Efficiency vs Momentum", 100, 0.0, 5.0, 0.0, 100.0);
+    p_eff_d0_vs_mom =
+      new TProfile("p_eff_d0_vs_mom", "D0 Secondary Tracks Efficiency vs Momentum", 150, 0.0, 15.0, 0.0, 100.0);
+    p_eff_prim_vs_theta =
+      new TProfile("p_eff_prim_vs_theta", "All Primary Set Efficiency vs Theta", 100, 0.0, 30.0, 0.0, 100.0);
+    p_eff_all_vs_pt  = new TProfile("p_eff_all_vs_pt", "AllSet Efficiency vs Pt", 100, 0.0, 5.0, 0.0, 100.0);
+    p_eff_prim_vs_pt = new TProfile("p_eff_prim_vs_pt", "Primary Set Efficiency vs Pt", 100, 0.0, 5.0, 0.0, 100.0);
 
-    p_eff_all_vs_nhits  = new TProfile("p_eff_all_vs_nhits",
-                                      "AllSet Efficiency vs NMCHits",
-                                      8,
-                                      3.0,
-                                      11.0,
-                                      0.0,
-                                      100.0);
-    p_eff_prim_vs_nhits = new TProfile("p_eff_prim_vs_nhits",
-                                       "PrimSet Efficiency vs NMCHits",
-                                       8,
-                                       3.0,
-                                       11.0,
-                                       0.0,
-                                       100.0);
-    p_eff_sec_vs_nhits  = new TProfile("p_eff_sec_vs_nhits",
-                                      "SecSet Efficiency vs NMCHits",
-                                      8,
-                                      3.0,
-                                      11.0,
-                                      0.0,
-                                      100.0);
+    p_eff_all_vs_nhits = new TProfile("p_eff_all_vs_nhits", "AllSet Efficiency vs NMCHits", 8, 3.0, 11.0, 0.0, 100.0);
+    p_eff_prim_vs_nhits =
+      new TProfile("p_eff_prim_vs_nhits", "PrimSet Efficiency vs NMCHits", 8, 3.0, 11.0, 0.0, 100.0);
+    p_eff_sec_vs_nhits = new TProfile("p_eff_sec_vs_nhits", "SecSet Efficiency vs NMCHits", 8, 3.0, 11.0, 0.0, 100.0);
 
-    h_reg_MCmom =
-      new TH1F("h_reg_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
-    h_acc_MCmom =
-      new TH1F("h_acc_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
-    h_reco_MCmom =
-      new TH1F("h_reco_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
-    h_ghost_Rmom     = new TH1F("h_ghost_Rmom", "Ghost tracks", 100, 0.0, 5.0);
-    h_reg_prim_MCmom = new TH1F(
-      "h_reg_prim_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
-    h_acc_prim_MCmom =
-      new TH1F("h_acc_prim_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
-    h_reco_prim_MCmom =
-      new TH1F("h_reco_prim_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
-    h_reg_sec_MCmom = new TH1F(
-      "h_reg_sec_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
-    h_acc_sec_MCmom =
-      new TH1F("h_acc_sec_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
-    h_reco_sec_MCmom =
-      new TH1F("h_reco_sec_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
+    h_reg_MCmom       = new TH1F("h_reg_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
+    h_acc_MCmom       = new TH1F("h_acc_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
+    h_reco_MCmom      = new TH1F("h_reco_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
+    h_ghost_Rmom      = new TH1F("h_ghost_Rmom", "Ghost tracks", 100, 0.0, 5.0);
+    h_reg_prim_MCmom  = new TH1F("h_reg_prim_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
+    h_acc_prim_MCmom  = new TH1F("h_acc_prim_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
+    h_reco_prim_MCmom = new TH1F("h_reco_prim_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
+    h_reg_sec_MCmom   = new TH1F("h_reg_sec_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
+    h_acc_sec_MCmom   = new TH1F("h_acc_sec_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
+    h_reco_sec_MCmom  = new TH1F("h_reco_sec_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
 
     h_acc_mom_short123s =
-      new TH1F("h_acc_mom_short123s",
-               "Momentum of accepted tracks with 3 hits on first stations",
-               500,
-               0.0,
-               5.0);
+      new TH1F("h_acc_mom_short123s", "Momentum of accepted tracks with 3 hits on first stations", 500, 0.0, 5.0);
 
-    h_reg_mom_prim = new TH1F(
-      "h_reg_mom_prim", "Momentum of registered primary tracks", 500, 0.0, 5.0);
-    h_reg_mom_sec  = new TH1F("h_reg_mom_sec",
-                             "Momentum of registered secondary tracks",
-                             500,
-                             0.0,
-                             5.0);
-    h_acc_mom_prim = new TH1F(
-      "h_acc_mom_prim", "Momentum of accepted primary tracks", 500, 0.0, 5.0);
-    h_acc_mom_sec = new TH1F(
-      "h_acc_mom_sec", "Momentum of accepted secondary tracks", 500, 0.0, 5.0);
-    h_reco_mom_prim = new TH1F("h_reco_mom_prim",
-                               "Momentum of reconstructed primary tracks",
-                               500,
-                               0.0,
-                               5.0);
-    h_reco_mom_sec  = new TH1F("h_reco_mom_sec",
-                              "Momentum of reconstructed secondary tracks",
-                              500,
-                              0.0,
-                              5.0);
-    h_rest_mom_prim = new TH1F(
-      "h_rest_mom_prim", "Momentum of not found primary tracks", 500, 0.0, 5.0);
-    h_rest_mom_sec = new TH1F("h_rest_mom_sec",
-                              "Momentum of not found secondary tracks",
-                              500,
-                              0.0,
-                              5.0);
+    h_reg_mom_prim  = new TH1F("h_reg_mom_prim", "Momentum of registered primary tracks", 500, 0.0, 5.0);
+    h_reg_mom_sec   = new TH1F("h_reg_mom_sec", "Momentum of registered secondary tracks", 500, 0.0, 5.0);
+    h_acc_mom_prim  = new TH1F("h_acc_mom_prim", "Momentum of accepted primary tracks", 500, 0.0, 5.0);
+    h_acc_mom_sec   = new TH1F("h_acc_mom_sec", "Momentum of accepted secondary tracks", 500, 0.0, 5.0);
+    h_reco_mom_prim = new TH1F("h_reco_mom_prim", "Momentum of reconstructed primary tracks", 500, 0.0, 5.0);
+    h_reco_mom_sec  = new TH1F("h_reco_mom_sec", "Momentum of reconstructed secondary tracks", 500, 0.0, 5.0);
+    h_rest_mom_prim = new TH1F("h_rest_mom_prim", "Momentum of not found primary tracks", 500, 0.0, 5.0);
+    h_rest_mom_sec  = new TH1F("h_rest_mom_sec", "Momentum of not found secondary tracks", 500, 0.0, 5.0);
 
-    h_reg_nhits_prim = new TH1F("h_reg_nhits_prim",
-                                "Number of hits in registered primary track",
-                                51,
-                                -0.1,
-                                10.1);
-    h_reg_nhits_sec  = new TH1F("h_reg_nhits_sec",
-                               "Number of hits in registered secondary track",
-                               51,
-                               -0.1,
-                               10.1);
-    h_acc_nhits_prim = new TH1F("h_acc_nhits_prim",
-                                "Number of hits in accepted primary track",
-                                51,
-                                -0.1,
-                                10.1);
-    h_acc_nhits_sec  = new TH1F("h_acc_nhits_sec",
-                               "Number of hits in accepted secondary track",
-                               51,
-                               -0.1,
-                               10.1);
-    h_reco_nhits_prim =
-      new TH1F("h_reco_nhits_prim",
-               "Number of hits in reconstructed primary track",
-               51,
-               -0.1,
-               10.1);
-    h_reco_nhits_sec =
-      new TH1F("h_reco_nhits_sec",
-               "Number of hits in reconstructed secondary track",
-               51,
-               -0.1,
-               10.1);
-    h_rest_nhits_prim = new TH1F("h_rest_nhits_prim",
-                                 "Number of hits in not found primary track",
-                                 51,
-                                 -0.1,
-                                 10.1);
-    h_rest_nhits_sec  = new TH1F("h_rest_nhits_sec",
-                                "Number of hits in not found secondary track",
-                                51,
-                                -0.1,
-                                10.1);
+    h_reg_nhits_prim  = new TH1F("h_reg_nhits_prim", "Number of hits in registered primary track", 51, -0.1, 10.1);
+    h_reg_nhits_sec   = new TH1F("h_reg_nhits_sec", "Number of hits in registered secondary track", 51, -0.1, 10.1);
+    h_acc_nhits_prim  = new TH1F("h_acc_nhits_prim", "Number of hits in accepted primary track", 51, -0.1, 10.1);
+    h_acc_nhits_sec   = new TH1F("h_acc_nhits_sec", "Number of hits in accepted secondary track", 51, -0.1, 10.1);
+    h_reco_nhits_prim = new TH1F("h_reco_nhits_prim", "Number of hits in reconstructed primary track", 51, -0.1, 10.1);
+    h_reco_nhits_sec  = new TH1F("h_reco_nhits_sec", "Number of hits in reconstructed secondary track", 51, -0.1, 10.1);
+    h_rest_nhits_prim = new TH1F("h_rest_nhits_prim", "Number of hits in not found primary track", 51, -0.1, 10.1);
+    h_rest_nhits_sec  = new TH1F("h_rest_nhits_sec", "Number of hits in not found secondary track", 51, -0.1, 10.1);
 
-    h_ghost_mom =
-      new TH1F("h_ghost_mom", "Momentum of ghost tracks", 500, 0.0, 5.0);
-    h_ghost_nhits = new TH1F(
-      "h_ghost_nhits", "Number of hits in ghost track", 51, -0.1, 10.1);
-    h_ghost_fstation = new TH1F(
-      "h_ghost_fstation", "First station of ghost track", 50, -0.5, 10.0);
-    h_ghost_chi2 =
-      new TH1F("h_ghost_chi2", "Chi2/NDF of ghost track", 50, -0.5, 10.0);
-    h_ghost_prob =
-      new TH1F("h_ghost_prob", "Prob of ghost track", 505, 0., 1.01);
-    h_ghost_r =
-      new TH1F("h_ghost_r", "R of ghost track at the first hit", 50, 0.0, 15.0);
-    h_ghost_tx = new TH1F(
-      "h_ghost_tx", "tx of ghost track at the first hit", 50, -5.0, 5.0);
-    h_ghost_ty = new TH1F(
-      "h_ghost_ty", "ty of ghost track at the first hit", 50, -1.0, 1.0);
+    h_ghost_mom      = new TH1F("h_ghost_mom", "Momentum of ghost tracks", 500, 0.0, 5.0);
+    h_ghost_nhits    = new TH1F("h_ghost_nhits", "Number of hits in ghost track", 51, -0.1, 10.1);
+    h_ghost_fstation = new TH1F("h_ghost_fstation", "First station of ghost track", 50, -0.5, 10.0);
+    h_ghost_chi2     = new TH1F("h_ghost_chi2", "Chi2/NDF of ghost track", 50, -0.5, 10.0);
+    h_ghost_prob     = new TH1F("h_ghost_prob", "Prob of ghost track", 505, 0., 1.01);
+    h_ghost_r        = new TH1F("h_ghost_r", "R of ghost track at the first hit", 50, 0.0, 15.0);
+    h_ghost_tx       = new TH1F("h_ghost_tx", "tx of ghost track at the first hit", 50, -5.0, 5.0);
+    h_ghost_ty       = new TH1F("h_ghost_ty", "ty of ghost track at the first hit", 50, -1.0, 1.0);
 
-    h_reco_mom = new TH1F("h_reco_mom", "Momentum of reco track", 50, 0.0, 5.0);
-    h_reco_nhits =
-      new TH1F("h_reco_nhits", "Number of hits in reco track", 50, 0.0, 10.0);
-    h_reco_station =
-      new TH1F("h_reco_station", "First station of reco track", 50, -0.5, 10.0);
-    h_reco_chi2 =
-      new TH1F("h_reco_chi2", "Chi2/NDF of reco track", 50, -0.5, 10.0);
-    h_reco_prob = new TH1F("h_reco_prob", "Prob of reco track", 505, 0., 1.01);
-    h_rest_prob =
-      new TH1F("h_rest_prob", "Prob of reco rest track", 505, 0., 1.01);
-    h_reco_clean =
-      new TH1F("h_reco_clean", "Percentage of correct hits", 100, -0.5, 100.5);
-    h_reco_time =
-      new TH1F("h_reco_time", "CA Track Finder Time (s/ev)", 20, 0.0, 20.0);
-    h_reco_timeNtr  = new TProfile("h_reco_timeNtr",
-                                  "CA Track Finder Time (s/ev) vs N Tracks",
-                                  200,
-                                  0.0,
-                                  1000.0);
-    h_reco_timeNhit = new TProfile("h_reco_timeNhit",
-                                   "CA Track Finder Time (s/ev) vs N Hits",
-                                   200,
-                                   0.0,
-                                   30000.0);
-    h_reco_fakeNtr  = new TProfile(
-      "h_reco_fakeNtr", "N Fake hits vs N Tracks", 200, 0.0, 1000.0);
-    h_reco_fakeNhit = new TProfile(
-      "h_reco_fakeNhit", "N Fake hits vs N Hits", 200, 0.0, 30000.0);
+    h_reco_mom      = new TH1F("h_reco_mom", "Momentum of reco track", 50, 0.0, 5.0);
+    h_reco_nhits    = new TH1F("h_reco_nhits", "Number of hits in reco track", 50, 0.0, 10.0);
+    h_reco_station  = new TH1F("h_reco_station", "First station of reco track", 50, -0.5, 10.0);
+    h_reco_chi2     = new TH1F("h_reco_chi2", "Chi2/NDF of reco track", 50, -0.5, 10.0);
+    h_reco_prob     = new TH1F("h_reco_prob", "Prob of reco track", 505, 0., 1.01);
+    h_rest_prob     = new TH1F("h_rest_prob", "Prob of reco rest track", 505, 0., 1.01);
+    h_reco_clean    = new TH1F("h_reco_clean", "Percentage of correct hits", 100, -0.5, 100.5);
+    h_reco_time     = new TH1F("h_reco_time", "CA Track Finder Time (s/ev)", 20, 0.0, 20.0);
+    h_reco_timeNtr  = new TProfile("h_reco_timeNtr", "CA Track Finder Time (s/ev) vs N Tracks", 200, 0.0, 1000.0);
+    h_reco_timeNhit = new TProfile("h_reco_timeNhit", "CA Track Finder Time (s/ev) vs N Hits", 200, 0.0, 30000.0);
+    h_reco_fakeNtr  = new TProfile("h_reco_fakeNtr", "N Fake hits vs N Tracks", 200, 0.0, 1000.0);
+    h_reco_fakeNhit = new TProfile("h_reco_fakeNhit", "N Fake hits vs N Hits", 200, 0.0, 30000.0);
 
-    h_reco_d0_mom =
-      new TH1F("h_reco_d0_mom", "Momentum of reco D0 track", 150, 0.0, 15.0);
+    h_reco_d0_mom = new TH1F("h_reco_d0_mom", "Momentum of reco D0 track", 150, 0.0, 15.0);
 
     //     h_hit_density[0] = new TH1F("h_hit_density0", "Hit density station 1", 50, 0.0,  5.00);
     //     h_hit_density[1] = new TH1F("h_hit_density1", "Hit density station 2", 100, 0.0, 10.00);
@@ -900,21 +588,14 @@ void CbmL1::
     h_tx = new TH1F("h_tx", "tx of MC track at the vertex", 50, -0.5, 0.5);
     h_ty = new TH1F("h_ty", "ty of MC track at the vertex", 50, -0.5, 0.5);
 
-    h_sec_r =
-      new TH1F("h_sec_r", "R of sec MC track at the first hit", 50, 0.0, 15.0);
+    h_sec_r = new TH1F("h_sec_r", "R of sec MC track at the first hit", 50, 0.0, 15.0);
 
-    h_notfound_mom =
-      new TH1F("h_notfound_mom", "Momentum of not found track", 50, 0.0, 5.0);
-    h_notfound_nhits = new TH1F(
-      "h_notfound_nhits", "Num hits of not found track", 50, 0.0, 10.0);
-    h_notfound_station = new TH1F(
-      "h_notfound_station", "First station of not found track", 50, 0.0, 10.0);
-    h_notfound_r = new TH1F(
-      "h_notfound_r", "R at first hit of not found track", 50, 0.0, 15.0);
-    h_notfound_tx = new TH1F(
-      "h_notfound_tx", "tx of not found track at the first hit", 50, -5.0, 5.0);
-    h_notfound_ty = new TH1F(
-      "h_notfound_ty", "ty of not found track at the first hit", 50, -1.0, 1.0);
+    h_notfound_mom     = new TH1F("h_notfound_mom", "Momentum of not found track", 50, 0.0, 5.0);
+    h_notfound_nhits   = new TH1F("h_notfound_nhits", "Num hits of not found track", 50, 0.0, 10.0);
+    h_notfound_station = new TH1F("h_notfound_station", "First station of not found track", 50, 0.0, 10.0);
+    h_notfound_r       = new TH1F("h_notfound_r", "R at first hit of not found track", 50, 0.0, 15.0);
+    h_notfound_tx      = new TH1F("h_notfound_tx", "tx of not found track at the first hit", 50, -5.0, 5.0);
+    h_notfound_ty      = new TH1F("h_notfound_ty", "ty of not found track at the first hit", 50, -1.0, 1.0);
 
     /*
     h_chi2 = new TH1F("chi2", "Chi^2", 100, 0.0, 10.);
@@ -932,273 +613,86 @@ void CbmL1::
 
     //    P_vs_P = new TH2F("P_vs_P", "Resolution P/Q vs P", 20, 0., 20.,100, -.05, .05);
 
-    h2_vertex = new TH2F(
-      "h2_vertex", "2D vertex distribution", 105, -5., 100., 100, -50., 50.);
-    h2_prim_vertex = new TH2F("h2_primvertex",
-                              "2D primary vertex distribution",
-                              105,
-                              -5.,
-                              100.,
-                              100,
-                              -50.,
-                              50.);
-    h2_sec_vertex  = new TH2F("h2_sec_vertex",
-                             "2D secondary vertex distribution",
-                             105,
-                             -5.,
-                             100.,
-                             100,
-                             -50.,
-                             50.);
+    h2_vertex      = new TH2F("h2_vertex", "2D vertex distribution", 105, -5., 100., 100, -50., 50.);
+    h2_prim_vertex = new TH2F("h2_primvertex", "2D primary vertex distribution", 105, -5., 100., 100, -50., 50.);
+    h2_sec_vertex  = new TH2F("h2_sec_vertex", "2D secondary vertex distribution", 105, -5., 100., 100, -50., 50.);
 
     //h3_vertex = new TH3F("h3_vertex", "3D vertex distribution", 20, -5., 100., 100, -50., 50., 100, -50., 50.);
     //h3_prim_vertex = new TH3F("h3_primvertex", "3D vertex distribution", 20, -5., 100., 100, -50., 50., 100, -50., 50.);
     //h3_sec_vertex = new TH3F("h3_sec_vertex", "3D vertex distribution", 20, -5., 100., 100, -50., 50., 100, -50., 50.);
 
     h2_reg_nhits_vs_mom_prim =
-      new TH2F("h2_reg_nhits_vs_mom_prim",
-               "NHits vs. Momentum (Reg. Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_reg_nhits_vs_mom_sec =
-      new TH2F("h2_reg_nhits_vs_mom_sec",
-               "NHits vs. Momentum (Reg. Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reg_nhits_vs_mom_prim", "NHits vs. Momentum (Reg. Primary Tracks)", 51, -0.05, 5.05, 11, -0.5, 10.5);
+    h2_reg_nhits_vs_mom_sec = new TH2F("h2_reg_nhits_vs_mom_sec", "NHits vs. Momentum (Reg. Secondary Tracks)", 51,
+                                       -0.05, 5.05, 11, -0.5, 10.5);
     h2_acc_nhits_vs_mom_prim =
-      new TH2F("h2_acc_nhits_vs_mom_prim",
-               "NHits vs. Momentum (Acc. Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_acc_nhits_vs_mom_sec =
-      new TH2F("h2_acc_nhits_vs_mom_sec",
-               "NHits vs. Momentum (Acc. Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_reco_nhits_vs_mom_prim =
-      new TH2F("h2_reco_nhits_vs_mom_prim",
-               "NHits vs. Momentum (Reco Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_reco_nhits_vs_mom_sec =
-      new TH2F("h2_reco_nhits_vs_mom_sec",
-               "NHits vs. Momentum (Reco Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_ghost_nhits_vs_mom = new TH2F("h2_ghost_nhits_vs_mom",
-                                     "NHits vs. Momentum (Ghost Tracks)",
-                                     51,
-                                     -0.05,
-                                     5.05,
-                                     11,
-                                     -0.5,
-                                     10.5);
-    h2_rest_nhits_vs_mom_prim =
-      new TH2F("h2_rest_nhits_vs_mom_prim",
-               "NHits vs. Momentum (!Found Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_rest_nhits_vs_mom_sec =
-      new TH2F("h2_rest_nhits_vs_mom_sec",
-               "NHits vs. Momentum (!Found Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_acc_nhits_vs_mom_prim", "NHits vs. Momentum (Acc. Primary Tracks)", 51, -0.05, 5.05, 11, -0.5, 10.5);
+    h2_acc_nhits_vs_mom_sec   = new TH2F("h2_acc_nhits_vs_mom_sec", "NHits vs. Momentum (Acc. Secondary Tracks)", 51,
+                                       -0.05, 5.05, 11, -0.5, 10.5);
+    h2_reco_nhits_vs_mom_prim = new TH2F("h2_reco_nhits_vs_mom_prim", "NHits vs. Momentum (Reco Primary Tracks)", 51,
+                                         -0.05, 5.05, 11, -0.5, 10.5);
+    h2_reco_nhits_vs_mom_sec  = new TH2F("h2_reco_nhits_vs_mom_sec", "NHits vs. Momentum (Reco Secondary Tracks)", 51,
+                                        -0.05, 5.05, 11, -0.5, 10.5);
+    h2_ghost_nhits_vs_mom =
+      new TH2F("h2_ghost_nhits_vs_mom", "NHits vs. Momentum (Ghost Tracks)", 51, -0.05, 5.05, 11, -0.5, 10.5);
+    h2_rest_nhits_vs_mom_prim = new TH2F("h2_rest_nhits_vs_mom_prim", "NHits vs. Momentum (!Found Primary Tracks)", 51,
+                                         -0.05, 5.05, 11, -0.5, 10.5);
+    h2_rest_nhits_vs_mom_sec  = new TH2F("h2_rest_nhits_vs_mom_sec", "NHits vs. Momentum (!Found Secondary Tracks)", 51,
+                                        -0.05, 5.05, 11, -0.5, 10.5);
 
     h2_reg_fstation_vs_mom_prim =
-      new TH2F("h2_reg_fstation_vs_mom_prim",
-               "First Station vs. Momentum (Reg. Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reg_fstation_vs_mom_prim", "First Station vs. Momentum (Reg. Primary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
     h2_reg_fstation_vs_mom_sec =
-      new TH2F("h2_reg_fstation_vs_mom_sec",
-               "First Station vs. Momentum (Reg. Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reg_fstation_vs_mom_sec", "First Station vs. Momentum (Reg. Secondary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
     h2_acc_fstation_vs_mom_prim =
-      new TH2F("h2_acc_fstation_vs_mom_prim",
-               "First Station vs. Momentum (Acc. Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_acc_fstation_vs_mom_prim", "First Station vs. Momentum (Acc. Primary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
     h2_acc_fstation_vs_mom_sec =
-      new TH2F("h2_acc_fstation_vs_mom_sec",
-               "First Station vs. Momentum (Acc. Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_acc_fstation_vs_mom_sec", "First Station vs. Momentum (Acc. Secondary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
     h2_reco_fstation_vs_mom_prim =
-      new TH2F("h2_reco_fstation_vs_mom_prim",
-               "First Station vs. Momentum (Reco Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reco_fstation_vs_mom_prim", "First Station vs. Momentum (Reco Primary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
     h2_reco_fstation_vs_mom_sec =
-      new TH2F("h2_reco_fstation_vs_mom_sec",
-               "First Station vs. Momentum (Reco Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
-    h2_ghost_fstation_vs_mom =
-      new TH2F("h2_ghost_fstation_vs_mom",
-               "First Station vs. Momentum (Ghost Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reco_fstation_vs_mom_sec", "First Station vs. Momentum (Reco Secondary Tracks)", 51, -0.05, 5.05, 11,
+               -0.5, 10.5);
+    h2_ghost_fstation_vs_mom = new TH2F("h2_ghost_fstation_vs_mom", "First Station vs. Momentum (Ghost Tracks)", 51,
+                                        -0.05, 5.05, 11, -0.5, 10.5);
     h2_rest_fstation_vs_mom_prim =
-      new TH2F("h2_rest_fstation_vs_mom_prim",
-               "First Station vs. Momentum (!Found Primary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_rest_fstation_vs_mom_prim", "First Station vs. Momentum (!Found Primary Tracks)", 51, -0.05, 5.05,
+               11, -0.5, 10.5);
     h2_rest_fstation_vs_mom_sec =
-      new TH2F("h2_rest_fstation_vs_mom_sec",
-               "First Station vs. Momentum (!Found Secondary Tracks)",
-               51,
-               -0.05,
-               5.05,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_rest_fstation_vs_mom_sec", "First Station vs. Momentum (!Found Secondary Tracks)", 51, -0.05, 5.05,
+               11, -0.5, 10.5);
 
     h2_reg_lstation_vs_fstation_prim =
-      new TH2F("h2_reg_lstation_vs_fstation_prim",
-               "Last vs. First Station (Reg. Primary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reg_lstation_vs_fstation_prim", "Last vs. First Station (Reg. Primary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
     h2_reg_lstation_vs_fstation_sec =
-      new TH2F("h2_reg_lstation_vs_fstation_sec",
-               "Last vs. First Station (Reg. Secondary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reg_lstation_vs_fstation_sec", "Last vs. First Station (Reg. Secondary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
     h2_acc_lstation_vs_fstation_prim =
-      new TH2F("h2_acc_lstation_vs_fstation_prim",
-               "Last vs. First Station (Acc. Primary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_acc_lstation_vs_fstation_prim", "Last vs. First Station (Acc. Primary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
     h2_acc_lstation_vs_fstation_sec =
-      new TH2F("h2_acc_lstation_vs_fstation_sec",
-               "Last vs. First Station (Acc. Secondary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_acc_lstation_vs_fstation_sec", "Last vs. First Station (Acc. Secondary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
     h2_reco_lstation_vs_fstation_prim =
-      new TH2F("h2_reco_lstation_vs_fstation_prim",
-               "Last vs. First Station (Reco Primary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reco_lstation_vs_fstation_prim", "Last vs. First Station (Reco Primary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
     h2_reco_lstation_vs_fstation_sec =
-      new TH2F("h2_reco_lstation_vs_fstation_sec",
-               "Last vs. First Station (Reco Secondary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
-    h2_ghost_lstation_vs_fstation =
-      new TH2F("h2_ghost_lstation_vs_fstation",
-               "Last vs. First Station (Ghost Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_reco_lstation_vs_fstation_sec", "Last vs. First Station (Reco Secondary Tracks)", 11, -0.5, 10.5, 11,
+               -0.5, 10.5);
+    h2_ghost_lstation_vs_fstation = new TH2F("h2_ghost_lstation_vs_fstation", "Last vs. First Station (Ghost Tracks)",
+                                             11, -0.5, 10.5, 11, -0.5, 10.5);
     h2_rest_lstation_vs_fstation_prim =
-      new TH2F("h2_rest_lstation_vs_fstation_prim",
-               "Last vs. First Station (!Found Primary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_rest_lstation_vs_fstation_prim", "Last vs. First Station (!Found Primary Tracks)", 11, -0.5, 10.5,
+               11, -0.5, 10.5);
     h2_rest_lstation_vs_fstation_sec =
-      new TH2F("h2_rest_lstation_vs_fstation_sec",
-               "Last vs. First Station (!Found Secondary Tracks)",
-               11,
-               -0.5,
-               10.5,
-               11,
-               -0.5,
-               10.5);
+      new TH2F("h2_rest_lstation_vs_fstation_sec", "Last vs. First Station (!Found Secondary Tracks)", 11, -0.5, 10.5,
+               11, -0.5, 10.5);
 
     //maindir->cd();
 
@@ -1234,9 +728,7 @@ void CbmL1::
   //   }
 
   //
-  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin();
-       rtraIt != vRTracks.end();
-       ++rtraIt) {
+  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     CbmL1Track* prtra = &(*rtraIt);
     if ((prtra->StsHits).size() < 1) continue;
     {  // fill histos
@@ -1252,11 +744,13 @@ void CbmL1::
       if (prtra->IsGhost()) {
         h_ghost_chi2->Fill(prtra->chi2 / prtra->NDF);
         h_ghost_prob->Fill(TMath::Prob(prtra->chi2, prtra->NDF));
-      } else {
+      }
+      else {
         if (prtra->GetMCTrack()[0].IsReconstructable()) {
           h_reco_chi2->Fill(prtra->chi2 / prtra->NDF);
           h_reco_prob->Fill(TMath::Prob(prtra->chi2, prtra->NDF));
-        } else {
+        }
+        else {
           //          h_rest_chi2->Fill(prtra->chi2/prtra->NDF);
           h_rest_prob->Fill(TMath::Prob(prtra->chi2, prtra->NDF));
         }
@@ -1282,25 +776,17 @@ void CbmL1::
         h_ghost_ty->Fill((h2.y - h1.y) / (z2 - z1));
       }
 
-      if (fabs(prtra->T[4]) > 1.e-10)
-        h2_ghost_nhits_vs_mom->Fill(fabs(1.0 / prtra->T[4]),
-                                    (prtra->StsHits).size());
+      if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_nhits_vs_mom->Fill(fabs(1.0 / prtra->T[4]), (prtra->StsHits).size());
       CbmL1HitStore& hf = vHitStore[prtra->StsHits[0]];
-      CbmL1HitStore& hl =
-        vHitStore[prtra->StsHits[(prtra->StsHits).size() - 1]];
-      if (fabs(prtra->T[4]) > 1.e-10)
-        h2_ghost_fstation_vs_mom->Fill(fabs(1.0 / prtra->T[4]),
-                                       hf.iStation + 1);
-      if (hl.iStation >= hf.iStation)
-        h2_ghost_lstation_vs_fstation->Fill(hf.iStation + 1, hl.iStation + 1);
+      CbmL1HitStore& hl = vHitStore[prtra->StsHits[(prtra->StsHits).size() - 1]];
+      if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_fstation_vs_mom->Fill(fabs(1.0 / prtra->T[4]), hf.iStation + 1);
+      if (hl.iStation >= hf.iStation) h2_ghost_lstation_vs_fstation->Fill(hf.iStation + 1, hl.iStation + 1);
     }
 
   }  // for reco tracks
 
   int mc_total = 0;  // total amount of reconstructable mcTracks
-  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin();
-       mtraIt != vMCTracks.end();
-       mtraIt++) {
+  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin(); mtraIt != vMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
     //    if( !( mtra.pdg == -11 && mtra.mother_ID == -1 ) ) continue; // electrons only
 
@@ -1327,19 +813,16 @@ void CbmL1::
       h_reg_nhits_prim->Fill(nSta);
       h2_reg_nhits_vs_mom_prim->Fill(momentum, nSta);
       h2_reg_fstation_vs_mom_prim->Fill(momentum, fh.iStation + 1);
-      if (lh.iStation >= fh.iStation)
-        h2_reg_lstation_vs_fstation_prim->Fill(fh.iStation + 1,
-                                               lh.iStation + 1);
-    } else {
+      if (lh.iStation >= fh.iStation) h2_reg_lstation_vs_fstation_prim->Fill(fh.iStation + 1, lh.iStation + 1);
+    }
+    else {
       h_reg_mom_sec->Fill(momentum);
       h_reg_sec_MCmom->Fill(momentum);
       h_reg_nhits_sec->Fill(nSta);
       if (momentum > 0.01) {
         h2_reg_nhits_vs_mom_sec->Fill(momentum, nSta);
         h2_reg_fstation_vs_mom_sec->Fill(momentum, fh.iStation + 1);
-        if (lh.iStation >= fh.iStation)
-          h2_reg_lstation_vs_fstation_sec->Fill(fh.iStation + 1,
-                                                lh.iStation + 1);
+        if (lh.iStation >= fh.iStation) h2_reg_lstation_vs_fstation_sec->Fill(fh.iStation + 1, lh.iStation + 1);
       }
     }
 
@@ -1355,19 +838,16 @@ void CbmL1::
       h_acc_nhits_prim->Fill(nSta);
       h2_acc_nhits_vs_mom_prim->Fill(momentum, nSta);
       h2_acc_fstation_vs_mom_prim->Fill(momentum, fh.iStation + 1);
-      if (lh.iStation >= fh.iStation)
-        h2_acc_lstation_vs_fstation_prim->Fill(fh.iStation + 1,
-                                               lh.iStation + 1);
-    } else {
+      if (lh.iStation >= fh.iStation) h2_acc_lstation_vs_fstation_prim->Fill(fh.iStation + 1, lh.iStation + 1);
+    }
+    else {
       h_acc_mom_sec->Fill(momentum);
       h_acc_sec_MCmom->Fill(momentum);
       h_acc_nhits_sec->Fill(nSta);
       if (momentum > 0.01) {
         h2_acc_nhits_vs_mom_sec->Fill(momentum, nSta);
         h2_acc_fstation_vs_mom_sec->Fill(momentum, fh.iStation + 1);
-        if (lh.iStation >= fh.iStation)
-          h2_acc_lstation_vs_fstation_sec->Fill(fh.iStation + 1,
-                                                lh.iStation + 1);
+        if (lh.iStation >= fh.iStation) h2_acc_lstation_vs_fstation_sec->Fill(fh.iStation + 1, lh.iStation + 1);
       }
     }
 
@@ -1378,7 +858,8 @@ void CbmL1::
     if (mtra.mother_ID < 0) {  // primary
       h2_prim_vertex->Fill(mtra.z, mtra.y);
       //h3_prim_vertex->Fill(mtra.z, mtra.x, mtra.y);
-    } else {
+    }
+    else {
       h2_sec_vertex->Fill(mtra.z, mtra.y);
       //h3_sec_vertex->Fill(mtra.z, mtra.x, mtra.y);
     }
@@ -1407,7 +888,8 @@ void CbmL1::
         p_eff_prim_vs_nhits->Fill(nMCHits, 100.0);
         p_eff_prim_vs_pt->Fill(pt, 100.0);
         p_eff_prim_vs_theta->Fill(theta, 100.0);
-      } else {
+      }
+      else {
         p_eff_sec_vs_mom->Fill(momentum, 100.0);
         p_eff_sec_vs_nhits->Fill(nMCHits, 100.0);
       }
@@ -1417,22 +899,20 @@ void CbmL1::
         h_reco_nhits_prim->Fill(nSta);
         h2_reco_nhits_vs_mom_prim->Fill(momentum, nSta);
         h2_reco_fstation_vs_mom_prim->Fill(momentum, fh.iStation + 1);
-        if (lh.iStation >= fh.iStation)
-          h2_reco_lstation_vs_fstation_prim->Fill(fh.iStation + 1,
-                                                  lh.iStation + 1);
-      } else {
+        if (lh.iStation >= fh.iStation) h2_reco_lstation_vs_fstation_prim->Fill(fh.iStation + 1, lh.iStation + 1);
+      }
+      else {
         h_reco_mom_sec->Fill(momentum);
         h_reco_sec_MCmom->Fill(momentum);
         h_reco_nhits_sec->Fill(nSta);
         if (momentum > 0.01) {
           h2_reco_nhits_vs_mom_sec->Fill(momentum, nSta);
           h2_reco_fstation_vs_mom_sec->Fill(momentum, fh.iStation + 1);
-          if (lh.iStation >= fh.iStation)
-            h2_reco_lstation_vs_fstation_sec->Fill(fh.iStation + 1,
-                                                   lh.iStation + 1);
+          if (lh.iStation >= fh.iStation) h2_reco_lstation_vs_fstation_sec->Fill(fh.iStation + 1, lh.iStation + 1);
         }
       }
-    } else {
+    }
+    else {
       h_notfound_mom->Fill(momentum);
       p_eff_all_vs_mom->Fill(momentum, 0.0);
       p_eff_all_vs_nhits->Fill(nMCHits, 0.0);
@@ -1442,7 +922,8 @@ void CbmL1::
         p_eff_prim_vs_nhits->Fill(nMCHits, 0.0);
         p_eff_prim_vs_pt->Fill(pt, 0.0);
         p_eff_prim_vs_theta->Fill(theta, 0.0);
-      } else {
+      }
+      else {
         p_eff_sec_vs_mom->Fill(momentum, 0.0);
         p_eff_sec_vs_nhits->Fill(nMCHits, 0.0);
       }
@@ -1451,18 +932,15 @@ void CbmL1::
         h_rest_nhits_prim->Fill(nSta);
         h2_rest_nhits_vs_mom_prim->Fill(momentum, nSta);
         h2_rest_fstation_vs_mom_prim->Fill(momentum, fh.iStation + 1);
-        if (lh.iStation >= fh.iStation)
-          h2_rest_lstation_vs_fstation_prim->Fill(fh.iStation + 1,
-                                                  lh.iStation + 1);
-      } else {
+        if (lh.iStation >= fh.iStation) h2_rest_lstation_vs_fstation_prim->Fill(fh.iStation + 1, lh.iStation + 1);
+      }
+      else {
         h_rest_mom_sec->Fill(momentum);
         h_rest_nhits_sec->Fill(nSta);
         if (momentum > 0.01) {
           h2_rest_nhits_vs_mom_sec->Fill(momentum, nSta);
           h2_rest_fstation_vs_mom_sec->Fill(momentum, fh.iStation + 1);
-          if (lh.iStation >= fh.iStation)
-            h2_rest_lstation_vs_fstation_sec->Fill(fh.iStation + 1,
-                                                   lh.iStation + 1);
+          if (lh.iStation >= fh.iStation) h2_rest_lstation_vs_fstation_sec->Fill(fh.iStation + 1, lh.iStation + 1);
         }
       }
     }
@@ -1496,8 +974,7 @@ void CbmL1::
 
     if ((mtra.IsPrimary()) && (mtra.z > 0)) {  // D0
       h_reco_d0_mom->Fill(momentum);
-      if (reco)
-        p_eff_d0_vs_mom->Fill(momentum, 100.0);
+      if (reco) p_eff_d0_vs_mom->Fill(momentum, 100.0);
       else
         p_eff_d0_vs_mom->Fill(momentum, 0.0);
     }
@@ -1532,10 +1009,11 @@ void CbmL1::
 }  // void CbmL1::HistoPerformance()
 
 
-void CbmL1::TrackFitPerformance() {
+void CbmL1::TrackFitPerformance()
+{
   const int Nh_fit = 14;
-  static TH1F *h_fit[Nh_fit], *h_fitL[Nh_fit], *h_fitSV[Nh_fit],
-    *h_fitPV[Nh_fit], *h_fit_chi2;  //, *h_smoothed[12][Nh_fit];
+  static TH1F *h_fit[Nh_fit], *h_fitL[Nh_fit], *h_fitSV[Nh_fit], *h_fitPV[Nh_fit],
+    *h_fit_chi2;  //, *h_smoothed[12][Nh_fit];
 
   static TH2F *PRes2D, *PRes2DPrim, *PRes2DSec;
 
@@ -1553,38 +1031,34 @@ void CbmL1::TrackFitPerformance() {
     gDirectory->mkdir("Fit");
     gDirectory->cd("Fit");
     {
-      PRes2D =
-        new TH2F("PRes2D", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
-      PRes2DPrim = new TH2F(
-        "PRes2DPrim", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
-      PRes2DSec = new TH2F(
-        "PRes2DSec", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2D     = new TH2F("PRes2D", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
 
       struct {
         const char* name;
         const char* title;
         Int_t n;
         Double_t l, r;
-      } Table[Nh_fit] = {
-        {"x", "Residual X [#mum]", 140, -40., 40.},
-        {"y", "Residual Y [#mum]", 100, -450., 450.},
-        //{"y",  "Residual Y [#mum]",                   100, -45., 45.},
-        {"tx", "Residual Tx [mrad]", 100, -4., 4.},
-        //{"tx", "Residual Tx [mrad]",                  100,   -7.,   7.},
-        //{"tx", "Residual Tx [mrad]",                  100,   -2.5,   2.5},
-        {"ty", "Residual Ty [mrad]", 100, -3.5, 3.5},
-        //{"ty", "Residual Ty [mrad]",                  100,   -2.5,   2.5},
-        {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
-        //{"P",  "Resolution P/Q [100%]",               100,   -0.2,  0.2 },
-        {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
-        {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
-        {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
-        {"pty", "Pull Ty [residual/estimated_error]", 100, -6., 6.},
-        {"pQP", "Pull Q/P [residual/estimated_error]", 100, -6., 6.},
-        {"QPreco", "Reco Q/P ", 100, -10., 10.},
-        {"QPmc", "MC Q/P ", 100, -10., 10.},
-        {"t", "Residual T [ns]", 100, -6., 6.},
-        {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
+      } Table[Nh_fit] = {{"x", "Residual X [#mum]", 140, -40., 40.},
+                         {"y", "Residual Y [#mum]", 100, -450., 450.},
+                         //{"y",  "Residual Y [#mum]",                   100, -45., 45.},
+                         {"tx", "Residual Tx [mrad]", 100, -4., 4.},
+                         //{"tx", "Residual Tx [mrad]",                  100,   -7.,   7.},
+                         //{"tx", "Residual Tx [mrad]",                  100,   -2.5,   2.5},
+                         {"ty", "Residual Ty [mrad]", 100, -3.5, 3.5},
+                         //{"ty", "Residual Ty [mrad]",                  100,   -2.5,   2.5},
+                         {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
+                         //{"P",  "Resolution P/Q [100%]",               100,   -0.2,  0.2 },
+                         {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
+                         {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
+                         {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
+                         {"pty", "Pull Ty [residual/estimated_error]", 100, -6., 6.},
+                         {"pQP", "Pull Q/P [residual/estimated_error]", 100, -6., 6.},
+                         {"QPreco", "Reco Q/P ", 100, -10., 10.},
+                         {"QPmc", "MC Q/P ", 100, -10., 10.},
+                         {"t", "Residual T [ns]", 100, -6., 6.},
+                         {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
 
       struct Tab {
         const char* name;
@@ -1592,25 +1066,24 @@ void CbmL1::TrackFitPerformance() {
         Int_t n;
         Double_t l, r;
       };
-      Tab TableVertex[Nh_fit] = {
-        //{"x",  "Residual X [cm]",                   200, -0.01, 0.01},
-        {"x", "Residual X [cm]", 2000, -1., 1.},
-        //{"y",  "Residual Y [cm]",                   200, -0.01, 0.01},
-        {"y", "Residual Y [cm]", 2000, -1., 1.},
-        //{"tx", "Residual Tx [mrad]",                  100,   -3.,   3.},
-        {"tx", "Residual Tx [mrad]", 100, -2., 2.},
-        //{"ty", "Residual Ty [mrad]",                  100,   -3.,   3.},
-        {"ty", "Residual Ty [mrad]", 100, -2., 2.},
-        {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
-        {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
-        {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
-        {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
-        {"pty", "Pull Ty [residual/estimated_error]", 100, -6., 6.},
-        {"pQP", "Pull Q/P [residual/estimated_error]", 100, -6., 6.},
-        {"QPreco", "Reco Q/P ", 100, -10., 10.},
-        {"QPmc", "MC Q/P ", 100, -10., 10.},
-        {"t", "Residual T [ns]", 100, -10., 10.},
-        {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
+      Tab TableVertex[Nh_fit] = {//{"x",  "Residual X [cm]",                   200, -0.01, 0.01},
+                                 {"x", "Residual X [cm]", 2000, -1., 1.},
+                                 //{"y",  "Residual Y [cm]",                   200, -0.01, 0.01},
+                                 {"y", "Residual Y [cm]", 2000, -1., 1.},
+                                 //{"tx", "Residual Tx [mrad]",                  100,   -3.,   3.},
+                                 {"tx", "Residual Tx [mrad]", 100, -2., 2.},
+                                 //{"ty", "Residual Ty [mrad]",                  100,   -3.,   3.},
+                                 {"ty", "Residual Ty [mrad]", 100, -2., 2.},
+                                 {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
+                                 {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
+                                 {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
+                                 {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
+                                 {"pty", "Pull Ty [residual/estimated_error]", 100, -6., 6.},
+                                 {"pQP", "Pull Q/P [residual/estimated_error]", 100, -6., 6.},
+                                 {"QPreco", "Reco Q/P ", 100, -10., 10.},
+                                 {"QPmc", "MC Q/P ", 100, -10., 10.},
+                                 {"t", "Residual T [ns]", 100, -10., 10.},
+                                 {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
 
       for (int i = 0; i < Nh_fit; i++) {
         char n[225], t[255];
@@ -1622,12 +1095,10 @@ void CbmL1::TrackFitPerformance() {
         h_fitL[i] = new TH1F(n, t, Table[i].n, Table[i].l, Table[i].r);
         sprintf(n, "svrt_%s", TableVertex[i].name);
         sprintf(t, "Secondary vertex point %s", TableVertex[i].title);
-        h_fitSV[i] =
-          new TH1F(n, t, TableVertex[i].n, TableVertex[i].l, TableVertex[i].r);
+        h_fitSV[i] = new TH1F(n, t, TableVertex[i].n, TableVertex[i].l, TableVertex[i].r);
         sprintf(n, "pvrt_%s", TableVertex[i].name);
         sprintf(t, "Primary vertex point %s", TableVertex[i].title);
-        h_fitPV[i] =
-          new TH1F(n, t, TableVertex[i].n, TableVertex[i].l, TableVertex[i].r);
+        h_fitPV[i] = new TH1F(n, t, TableVertex[i].n, TableVertex[i].l, TableVertex[i].r);
 
         for (int j = 0; j < 12; j++) {
           sprintf(n, "smth_%s_sta_%i", Table[i].name, j);
@@ -1640,8 +1111,7 @@ void CbmL1::TrackFitPerformance() {
     gDirectory = currentDir;
   }  // if first call
 
-  for (vector<CbmL1Track>::iterator it = vRTracks.begin(); it != vRTracks.end();
-       ++it) {
+  for (vector<CbmL1Track>::iterator it = vRTracks.begin(); it != vRTracks.end(); ++it) {
 
     if (it->IsGhost()) continue;
 
@@ -1682,30 +1152,22 @@ void CbmL1::TrackFitPerformance() {
       PRes2D->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
-      if (mcTrack.IsPrimary())
-        PRes2DPrim->Fill(mcP.p,
-                         (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+      if (mcTrack.IsPrimary()) PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
       else
         PRes2DSec->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
 
-      if (finite(trPar.C00[0]) && trPar.C00[0] > 0)
-        h_fit[5]->Fill((trPar.x[0] - mcP.xIn) / sqrt(trPar.C00[0]));
-      if (finite(trPar.C11[0]) && trPar.C11[0] > 0)
-        h_fit[6]->Fill((trPar.y[0] - mcP.yIn) / sqrt(trPar.C11[0]));
+      if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fit[5]->Fill((trPar.x[0] - mcP.xIn) / sqrt(trPar.C00[0]));
+      if (finite(trPar.C11[0]) && trPar.C11[0] > 0) h_fit[6]->Fill((trPar.y[0] - mcP.yIn) / sqrt(trPar.C11[0]));
       if (finite(trPar.C22[0]) && trPar.C22[0] > 0)
-        h_fit[7]->Fill((trPar.tx[0] - mcP.pxIn / mcP.pzIn)
-                       / sqrt(trPar.C22[0]));
+        h_fit[7]->Fill((trPar.tx[0] - mcP.pxIn / mcP.pzIn) / sqrt(trPar.C22[0]));
       if (finite(trPar.C33[0]) && trPar.C33[0] > 0)
-        h_fit[8]->Fill((trPar.ty[0] - mcP.pyIn / mcP.pzIn)
-                       / sqrt(trPar.C33[0]));
-      if (finite(trPar.C44[0]) && trPar.C44[0] > 0)
-        h_fit[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
+        h_fit[8]->Fill((trPar.ty[0] - mcP.pyIn / mcP.pzIn) / sqrt(trPar.C33[0]));
+      if (finite(trPar.C44[0]) && trPar.C44[0] > 0) h_fit[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
       h_fit[10]->Fill(trPar.qp[0]);
       h_fit[11]->Fill(mcP.q / mcP.p);
       if (last_station > NMvdStations) h_fit[12]->Fill(trPar.t[0] - mcP.time);
       if (last_station > NMvdStations)
-        if (finite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fit[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
+        if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fit[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
 
 #else
       int iMC = vHitMCRef[it->StsHits.front()];  // TODO2: adapt to linking
@@ -1721,26 +1183,19 @@ void CbmL1::TrackFitPerformance() {
       PRes2D->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
-      if (mcTrack.IsPrimary())
-        PRes2DPrim->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
+      if (mcTrack.IsPrimary()) PRes2DPrim->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
       else
         PRes2DSec->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
 
-      if (finite(it->C[0]) && it->C[0] > 0)
-        h_fit[5]->Fill((mc.x - it->T[0]) / sqrt(it->C[0]));
-      if (finite(it->C[2]) && it->C[2] > 0)
-        h_fit[6]->Fill((mc.y - it->T[1]) / sqrt(it->C[2]));
-      if (finite(it->C[5]) && it->C[5] > 0)
-        h_fit[7]->Fill((mc.px / mc.pz - it->T[2]) / sqrt(it->C[5]));
-      if (finite(it->C[9]) && it->C[9] > 0)
-        h_fit[8]->Fill((mc.py / mc.pz - it->T[3]) / sqrt(it->C[9]));
-      if (finite(it->C[14]) && it->C[14] > 0)
-        h_fit[9]->Fill((mc.q / mc.p - it->T[4]) / sqrt(it->C[14]));
+      if (finite(it->C[0]) && it->C[0] > 0) h_fit[5]->Fill((mc.x - it->T[0]) / sqrt(it->C[0]));
+      if (finite(it->C[2]) && it->C[2] > 0) h_fit[6]->Fill((mc.y - it->T[1]) / sqrt(it->C[2]));
+      if (finite(it->C[5]) && it->C[5] > 0) h_fit[7]->Fill((mc.px / mc.pz - it->T[2]) / sqrt(it->C[5]));
+      if (finite(it->C[9]) && it->C[9] > 0) h_fit[8]->Fill((mc.py / mc.pz - it->T[3]) / sqrt(it->C[9]));
+      if (finite(it->C[14]) && it->C[14] > 0) h_fit[9]->Fill((mc.q / mc.p - it->T[4]) / sqrt(it->C[14]));
       h_fit[10]->Fill(it->T[4]);
       h_fit[11]->Fill(mc.q / mc.p);
       h_fit[12]->Fill(mc.time - it->T[6]);
-      if (finite(it->C[20]) && it->C[20] > 0)
-        h_fit[13]->Fill((mc.time - it->T[6]) / sqrt(it->C[20]));
+      if (finite(it->C[20]) && it->C[20] > 0) h_fit[13]->Fill((mc.time - it->T[6]) / sqrt(it->C[20]));
 #endif
     }
 
@@ -1784,23 +1239,17 @@ void CbmL1::TrackFitPerformance() {
       if (last_station > NMvdStations) h_fitL[12]->Fill(trPar.t[0] - mcP.time);
 
 
-      if (finite(trPar.C00[0]) && trPar.C00[0] > 0)
-        h_fitL[5]->Fill((trPar.x[0] - mcP.xOut) / sqrt(trPar.C00[0]));
-      if (finite(trPar.C11[0]) && trPar.C11[0] > 0)
-        h_fitL[6]->Fill((trPar.y[0] - mcP.yOut) / sqrt(trPar.C11[0]));
+      if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitL[5]->Fill((trPar.x[0] - mcP.xOut) / sqrt(trPar.C00[0]));
+      if (finite(trPar.C11[0]) && trPar.C11[0] > 0) h_fitL[6]->Fill((trPar.y[0] - mcP.yOut) / sqrt(trPar.C11[0]));
       if (finite(trPar.C22[0]) && trPar.C22[0] > 0)
-        h_fitL[7]->Fill((trPar.tx[0] - mcP.pxOut / mcP.pzOut)
-                        / sqrt(trPar.C22[0]));
+        h_fitL[7]->Fill((trPar.tx[0] - mcP.pxOut / mcP.pzOut) / sqrt(trPar.C22[0]));
       if (finite(trPar.C33[0]) && trPar.C33[0] > 0)
-        h_fitL[8]->Fill((trPar.ty[0] - mcP.pyOut / mcP.pzOut)
-                        / sqrt(trPar.C33[0]));
-      if (finite(trPar.C44[0]) && trPar.C44[0] > 0)
-        h_fitL[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
+        h_fitL[8]->Fill((trPar.ty[0] - mcP.pyOut / mcP.pzOut) / sqrt(trPar.C33[0]));
+      if (finite(trPar.C44[0]) && trPar.C44[0] > 0) h_fitL[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
       h_fitL[10]->Fill(trPar.qp[0]);
       h_fitL[11]->Fill(mcP.q / mcP.p);
       if (last_station > NMvdStations)
-        if (finite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitL[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
+        if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fitL[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
 #else
       CbmL1MCPoint& mc = vMCPoints[iMC];
 
@@ -1809,10 +1258,8 @@ void CbmL1::TrackFitPerformance() {
       h_fitL[2]->Fill((it->TLast[2] - mc.px / mc.pz) * 1.e3);
       h_fitL[3]->Fill((it->TLast[3] - mc.py / mc.pz) * 1.e3);
       h_fitL[4]->Fill(fabs(1. / it->TLast[4]) / mc.p - 1);
-      if (finite(it->CLast[0]) && it->CLast[0] > 0)
-        h_fitL[5]->Fill((it->TLast[0] - mc.x) / sqrt(it->CLast[0]));
-      if (finite(it->CLast[2]) && it->CLast[2] > 0)
-        h_fitL[6]->Fill((it->TLast[1] - mc.y) / sqrt(it->CLast[2]));
+      if (finite(it->CLast[0]) && it->CLast[0] > 0) h_fitL[5]->Fill((it->TLast[0] - mc.x) / sqrt(it->CLast[0]));
+      if (finite(it->CLast[2]) && it->CLast[2] > 0) h_fitL[6]->Fill((it->TLast[1] - mc.y) / sqrt(it->CLast[2]));
       if (finite(it->CLast[5]) && it->CLast[5] > 0)
         h_fitL[7]->Fill((it->TLast[2] - mc.px / mc.pz) / sqrt(it->CLast[5]));
       if (finite(it->CLast[9]) && it->CLast[9] > 0)
@@ -1822,8 +1269,7 @@ void CbmL1::TrackFitPerformance() {
       h_fitL[10]->Fill(it->TLast[4]);
       h_fitL[11]->Fill(mc.q / mc.p);
       h_fitL[12]->Fill(it->TLast[6] - mc.time);
-      if (finite(it->CLast[20]) && it->CLast[20] > 0)
-        h_fitL[13]->Fill((it->TLast[6] - mc.time) / sqrt(it->CLast[20]));
+      if (finite(it->CLast[20]) && it->CLast[20] > 0) h_fitL[13]->Fill((it->TLast[6] - mc.time) / sqrt(it->CLast[20]));
 
 #endif
     }
@@ -1851,13 +1297,10 @@ void CbmL1::TrackFitPerformance() {
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
-          const int dir  = int((mc.z - algo->vStations[fSta].z[0])
-                              / fabs(mc.z - algo->vStations[fSta].z[0]));
+          const int dir  = int((mc.z - algo->vStations[fSta].z[0]) / fabs(mc.z - algo->vStations[fSta].z[0]));
           //         if (abs(mc.z - algo->vStations[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
           for (int iSta = fSta /*+dir*/;
-               (iSta >= 0) && (iSta < NStation)
-               && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0);
-               iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0); iSta += dir) {
             //           cout << iSta << " " << dir << endl;
             fit.L1AddMaterial(trPar, algo->vStations[iSta].materialInfo, trPar.qp, 1);
             if (iSta + dir == NMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
@@ -1881,10 +1324,8 @@ void CbmL1::TrackFitPerformance() {
         h_fitSV[2]->Fill((trPar.tx[0] - mc.px / mc.pz) * 1.e3);
         h_fitSV[3]->Fill((trPar.ty[0] - mc.py / mc.pz) * 1.e3);
         h_fitSV[4]->Fill(fabs(1. / trPar.qp[0]) / mc.p - 1);
-        if (finite(trPar.C00[0]) && trPar.C00[0] > 0)
-          h_fitSV[5]->Fill((trPar.x[0] - mc.x) / sqrt(trPar.C00[0]));
-        if (finite(trPar.C11[0]) && trPar.C11[0] > 0)
-          h_fitSV[6]->Fill((trPar.y[0] - mc.y) / sqrt(trPar.C11[0]));
+        if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitSV[5]->Fill((trPar.x[0] - mc.x) / sqrt(trPar.C00[0]));
+        if (finite(trPar.C11[0]) && trPar.C11[0] > 0) h_fitSV[6]->Fill((trPar.y[0] - mc.y) / sqrt(trPar.C11[0]));
         if (finite(trPar.C22[0]) && trPar.C22[0] > 0)
           h_fitSV[7]->Fill((trPar.tx[0] - mc.px / mc.pz) / sqrt(trPar.C22[0]));
         if (finite(trPar.C33[0]) && trPar.C33[0] > 0)
@@ -1894,9 +1335,9 @@ void CbmL1::TrackFitPerformance() {
         h_fitSV[10]->Fill(trPar.qp[0]);
         h_fitSV[11]->Fill(mc.q / mc.p);
         h_fitSV[12]->Fill(trPar.t[0] - mc.time);
-        if (finite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitSV[13]->Fill((trPar.t[0] - mc.time) / sqrt(trPar.C55[0]));
-      } else {  // primary
+        if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fitSV[13]->Fill((trPar.t[0] - mc.time) / sqrt(trPar.C55[0]));
+      }
+      else {  // primary
 
 #define L1EXTRAPOLATE
 #ifdef L1EXTRAPOLATE
@@ -1912,9 +1353,7 @@ void CbmL1::TrackFitPerformance() {
             const int iStation = vHitStore[it->StsHits[iHit]].iStation;
             L1Station& st      = algo->vStations[iStation];
             z[ih]              = st.z[0];
-            st.fieldSlice.GetFieldValue(vHitStore[it->StsHits[iHit]].x,
-                                        vHitStore[it->StsHits[iHit]].y,
-                                        B[ih]);
+            st.fieldSlice.GetFieldValue(vHitStore[it->StsHits[iHit]].x, vHitStore[it->StsHits[iHit]].y, B[ih]);
             ih++;
             if (ih == 3) break;
           }
@@ -1923,19 +1362,15 @@ void CbmL1::TrackFitPerformance() {
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
 
-          const int dir = (mc.z - algo->vStations[fSta].z[0])
-                          / abs(mc.z - algo->vStations[fSta].z[0]);
+          const int dir = (mc.z - algo->vStations[fSta].z[0]) / abs(mc.z - algo->vStations[fSta].z[0]);
           //         if (abs(mc.z - algo->vStations[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
 
           for (int iSta = fSta + dir;
-               (iSta >= 0) && (iSta < NStation)
-               && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0);
-               iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0); iSta += dir) {
 
             z[0]     = algo->vStations[iSta].z[0];
             float dz = z[1] - z[0];
-            algo->vStations[iSta].fieldSlice.GetFieldValue(
-              trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
+            algo->vStations[iSta].fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
             fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
 
             L1Extrapolate(trPar, algo->vStations[iSta].z[0], trPar.qp, fld);
@@ -1966,10 +1401,8 @@ void CbmL1::TrackFitPerformance() {
         h_fitPV[2]->Fill((mc.px / mc.pz - trPar.tx[0]) * 1.e3);
         h_fitPV[3]->Fill((mc.py / mc.pz - trPar.ty[0]) * 1.e3);
         h_fitPV[4]->Fill(fabs(1 / trPar.qp[0]) / mc.p - 1);
-        if (finite(trPar.C00[0]) && trPar.C00[0] > 0)
-          h_fitPV[5]->Fill((mc.x - trPar.x[0]) / sqrt(trPar.C00[0]));
-        if (finite(trPar.C11[0]) && trPar.C11[0] > 0)
-          h_fitPV[6]->Fill((mc.y - trPar.y[0]) / sqrt(trPar.C11[0]));
+        if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitPV[5]->Fill((mc.x - trPar.x[0]) / sqrt(trPar.C00[0]));
+        if (finite(trPar.C11[0]) && trPar.C11[0] > 0) h_fitPV[6]->Fill((mc.y - trPar.y[0]) / sqrt(trPar.C11[0]));
         if (finite(trPar.C22[0]) && trPar.C22[0] > 0)
           h_fitPV[7]->Fill((mc.px / mc.pz - trPar.tx[0]) / sqrt(trPar.C22[0]));
         if (finite(trPar.C33[0]) && trPar.C33[0] > 0)
@@ -1979,8 +1412,7 @@ void CbmL1::TrackFitPerformance() {
         h_fitPV[10]->Fill(trPar.qp[0]);
         h_fitPV[11]->Fill(mc.q / mc.p);
         h_fitPV[12]->Fill(mc.time - trPar.t[0]);
-        if (finite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitPV[13]->Fill((mc.time - trPar.t[0]) / sqrt(trPar.C55[0]));
+        if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fitPV[13]->Fill((mc.time - trPar.t[0]) / sqrt(trPar.C55[0]));
 #else
         FairTrackParam fTP;
 
@@ -2005,21 +1437,15 @@ void CbmL1::TrackFitPerformance() {
         h_fitPV[2]->Fill((mc.px / mc.pz - it2.T[2]) * 1.e3);
         h_fitPV[3]->Fill((mc.py / mc.pz - it2.T[3]) * 1.e3);
         h_fitPV[4]->Fill(it2.T[4] / mc.q * mc.p - 1);
-        if (finite(it2.C[0]) && it2.C[0] > 0)
-          h_fitPV[5]->Fill((mc.x - it2.T[0]) / sqrt(it2.C[0]));
-        if (finite(it2.C[2]) && it2.C[2] > 0)
-          h_fitPV[6]->Fill((mc.y - it2.T[1]) / sqrt(it2.C[2]));
-        if (finite(it2.C[5]) && it2.C[5] > 0)
-          h_fitPV[7]->Fill((mc.px / mc.pz - it2.T[2]) / sqrt(it2.C[5]));
-        if (finite(it2.C[9]) && it2.C[9] > 0)
-          h_fitPV[8]->Fill((mc.py / mc.pz - it2.T[3]) / sqrt(it2.C[9]));
-        if (finite(it2.C[14]) && it2.C[14] > 0)
-          h_fitPV[9]->Fill((mc.q / mc.p - it2.T[4]) / sqrt(it2.C[14]));
+        if (finite(it2.C[0]) && it2.C[0] > 0) h_fitPV[5]->Fill((mc.x - it2.T[0]) / sqrt(it2.C[0]));
+        if (finite(it2.C[2]) && it2.C[2] > 0) h_fitPV[6]->Fill((mc.y - it2.T[1]) / sqrt(it2.C[2]));
+        if (finite(it2.C[5]) && it2.C[5] > 0) h_fitPV[7]->Fill((mc.px / mc.pz - it2.T[2]) / sqrt(it2.C[5]));
+        if (finite(it2.C[9]) && it2.C[9] > 0) h_fitPV[8]->Fill((mc.py / mc.pz - it2.T[3]) / sqrt(it2.C[9]));
+        if (finite(it2.C[14]) && it2.C[14] > 0) h_fitPV[9]->Fill((mc.q / mc.p - it2.T[4]) / sqrt(it2.C[14]));
         h_fitPV[10]->Fill(it2.T[4]);
         h_fitPV[11]->Fill(mc.q / mc.p);
         h_fitPV[12]->Fill(mc.time - it2.T[6]);
-        if (finite(it2.C[20]) && it2.C[20] > 0)
-          h_fitPV[13]->Fill((mc.time - it2.T[6]) / sqrt(it2.C[20]));
+        if (finite(it2.C[20]) && it2.C[20] > 0) h_fitPV[13]->Fill((mc.time - it2.T[6]) / sqrt(it2.C[20]));
 #endif  // L1EXTRAPOLATE
       }
     }
@@ -2030,7 +1456,8 @@ void CbmL1::TrackFitPerformance() {
 }  // void CbmL1::TrackFitPerformance()
 
 
-void CbmL1::FieldApproxCheck() {
+void CbmL1::FieldApproxCheck()
+{
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
   TFile* fout        = new TFile("FieldApprox.root", "RECREATE");
@@ -2044,10 +1471,10 @@ void CbmL1::FieldApproxCheck() {
       CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[ist];
       z            = t.z;
       Xmax = Ymax = t.R;
-    } else {
-      CbmStsStation* station =
-        CbmStsSetup::Instance()->GetStation(ist - NMvdStations);
-      z = station->GetZ();
+    }
+    else {
+      CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - NMvdStations);
+      z                      = station->GetZ();
 
       Xmax = station->GetXmax();
       Ymax = station->GetYmax();
@@ -2061,38 +1488,18 @@ void CbmL1::FieldApproxCheck() {
     float ddx  = 2 * Xmax / NbinsX;
     float ddy  = 2 * Ymax / NbinsY;
 
-    TH2F* stB  = new TH2F(Form("station %i, dB", ist + 1),
-                         Form("station %i, dB, z = %0.f cm", ist + 1, z),
-                         static_cast<int>(NbinsX + 1),
-                         -(Xmax + ddx / 2.),
-                         (Xmax + ddx / 2.),
-                         static_cast<int>(NbinsY + 1),
-                         -(Ymax + ddy / 2.),
-                         (Ymax + ddy / 2.));
-    TH2F* stBx = new TH2F(Form("station %i, dBx", ist + 1),
-                          Form("station %i, dBx, z = %0.f cm", ist + 1, z),
-                          static_cast<int>(NbinsX + 1),
-                          -(Xmax + ddx / 2.),
-                          (Xmax + ddx / 2.),
-                          static_cast<int>(NbinsY + 1),
-                          -(Ymax + ddy / 2.),
-                          (Ymax + ddy / 2.));
-    TH2F* stBy = new TH2F(Form("station %i, dBy", ist + 1),
-                          Form("station %i, dBy, z = %0.f cm", ist + 1, z),
-                          static_cast<int>(NbinsX + 1),
-                          -(Xmax + ddx / 2.),
-                          (Xmax + ddx / 2.),
-                          static_cast<int>(NbinsY + 1),
-                          -(Ymax + ddy / 2.),
-                          (Ymax + ddy / 2.));
-    TH2F* stBz = new TH2F(Form("station %i, dBz", ist + 1),
-                          Form("station %i, dBz, z = %0.f cm", ist + 1, z),
-                          static_cast<int>(NbinsX + 1),
-                          -(Xmax + ddx / 2.),
-                          (Xmax + ddx / 2.),
-                          static_cast<int>(NbinsY + 1),
-                          -(Ymax + ddy / 2.),
-                          (Ymax + ddy / 2.));
+    TH2F* stB  = new TH2F(Form("station %i, dB", ist + 1), Form("station %i, dB, z = %0.f cm", ist + 1, z),
+                         static_cast<int>(NbinsX + 1), -(Xmax + ddx / 2.), (Xmax + ddx / 2.),
+                         static_cast<int>(NbinsY + 1), -(Ymax + ddy / 2.), (Ymax + ddy / 2.));
+    TH2F* stBx = new TH2F(Form("station %i, dBx", ist + 1), Form("station %i, dBx, z = %0.f cm", ist + 1, z),
+                          static_cast<int>(NbinsX + 1), -(Xmax + ddx / 2.), (Xmax + ddx / 2.),
+                          static_cast<int>(NbinsY + 1), -(Ymax + ddy / 2.), (Ymax + ddy / 2.));
+    TH2F* stBy = new TH2F(Form("station %i, dBy", ist + 1), Form("station %i, dBy, z = %0.f cm", ist + 1, z),
+                          static_cast<int>(NbinsX + 1), -(Xmax + ddx / 2.), (Xmax + ddx / 2.),
+                          static_cast<int>(NbinsY + 1), -(Ymax + ddy / 2.), (Ymax + ddy / 2.));
+    TH2F* stBz = new TH2F(Form("station %i, dBz", ist + 1), Form("station %i, dBz, z = %0.f cm", ist + 1, z),
+                          static_cast<int>(NbinsX + 1), -(Xmax + ddx / 2.), (Xmax + ddx / 2.),
+                          static_cast<int>(NbinsY + 1), -(Ymax + ddy / 2.), (Ymax + ddy / 2.));
 
     Double_t r[3], B[3];
     L1FieldSlice FSl;
@@ -2128,8 +1535,7 @@ void CbmL1::FieldApproxCheck() {
         bbb = sqrt(B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
 
         FSl.GetFieldValue(x, y, B_L1);
-        bbb_L1 = sqrt(B_L1.x[0] * B_L1.x[0] + B_L1.y[0] * B_L1.y[0]
-                      + B_L1.z[0] * B_L1.z[0]);
+        bbb_L1 = sqrt(B_L1.x[0] * B_L1.x[0] + B_L1.y[0] * B_L1.y[0] + B_L1.z[0] * B_L1.z[0]);
 
         stB->SetBinContent(ii, jj, (bbb - bbb_L1));
         stBx->SetBinContent(ii, jj, (B[0] - B_L1.x[0]));
@@ -2182,7 +1588,8 @@ void CbmL1::FieldApproxCheck() {
 }  // void CbmL1::FieldApproxCheck()
 
 #include "TMath.h"
-void CbmL1::FieldIntegralCheck() {
+void CbmL1::FieldIntegralCheck()
+{
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
   TFile* fout        = new TFile("FieldApprox.root", "RECREATE");
@@ -2195,8 +1602,7 @@ void CbmL1::FieldIntegralCheck() {
   int nPointsTheta = 100;
   double startZ = 0, endZ = 100.;
   double startPhi = 0, endPhi = 2 * TMath::Pi();
-  double startTheta = -30. / 180. * TMath::Pi(),
-         endTheta   = 30. / 180. * TMath::Pi();
+  double startTheta = -30. / 180. * TMath::Pi(), endTheta = 30. / 180. * TMath::Pi();
 
   double DZ = endZ - startZ;
   double DP = endPhi - startPhi;
@@ -2205,14 +1611,9 @@ void CbmL1::FieldIntegralCheck() {
   float ddp = endPhi / nPointsPhi;
   float ddt = 2 * endTheta / nPointsTheta;
 
-  TH2F* hSb = new TH2F("Field Integral",
-                       "Field Integral",
-                       static_cast<int>(nPointsPhi),
-                       -(startPhi + ddp / 2.),
-                       (endPhi + ddp / 2.),
-                       static_cast<int>(nPointsTheta),
-                       (startTheta - ddt / 2.),
-                       (endTheta + ddt / 2.));
+  TH2F* hSb =
+    new TH2F("Field Integral", "Field Integral", static_cast<int>(nPointsPhi), -(startPhi + ddp / 2.),
+             (endPhi + ddp / 2.), static_cast<int>(nPointsTheta), (startTheta - ddt / 2.), (endTheta + ddt / 2.));
 
   for (int iP = 0; iP < nPointsPhi; iP++) {
     double phi = startPhi + iP * DP / nPointsPhi;
@@ -2250,18 +1651,15 @@ void CbmL1::FieldIntegralCheck() {
   gDirectory = curr;
 }  // void CbmL1::FieldApproxCheck()
 
-void CbmL1::InputPerformance() {
+void CbmL1::InputPerformance()
+{
   //  static TH1I *nStripFHits, *nStripBHits, *nStripFMC, *nStripBMC;
 
   static TH1F *resXsts, *resYsts, *resTsts, *resXmvd, *resYmvd /*, *pullZ*/;
-  static TH1F *pullXsts, *pullYsts, *pullTsts, *pullXmvd,
-    *pullYmvd /*, *pullZ*/;
-  static TH1F *pullXmuch, *pullYmuch, *pullTmuch, *resXmuch, *resYmuch,
-    *resTmuch /*, *pullZ*/;
-  static TH1F *pullXtrd, *pullYtrd, *pullTtrd, *resXtrd, *resYtrd,
-    *resTtrd /*, *pullZ*/;
-  static TH1F *pullXtof, *pullYtof, *pullTtof, *resXtof, *resYtof,
-    *resTtof /*, *pullZ*/;
+  static TH1F *pullXsts, *pullYsts, *pullTsts, *pullXmvd, *pullYmvd /*, *pullZ*/;
+  static TH1F *pullXmuch, *pullYmuch, *pullTmuch, *resXmuch, *resYmuch, *resTmuch /*, *pullZ*/;
+  static TH1F *pullXtrd, *pullYtrd, *pullTtrd, *resXtrd, *resYtrd, *resTtrd /*, *pullZ*/;
+  static TH1F *pullXtof, *pullYtof, *pullTtof, *resXtof, *resYtof, *resTtof /*, *pullZ*/;
 
 
   static bool first_call = 1;
@@ -2414,8 +1812,7 @@ void CbmL1::InputPerformance() {
       const CbmL1StsHit& h = vStsHits[iH];
 
       if (h.Det != 1) continue;  // mvd hit
-      const CbmStsHit* sh =
-        L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
+      const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
 
 
       //    int iMCPoint = -1;
@@ -2423,19 +1820,16 @@ void CbmL1::InputPerformance() {
       CbmStsPoint* pt = 0;
 
       if (listStsClusterMatch) {
-        const CbmMatch* frontClusterMatch = static_cast<const CbmMatch*>(
-          listStsClusterMatch->At(sh->GetFrontClusterId()));
-        const CbmMatch* backClusterMatch = static_cast<const CbmMatch*>(
-          listStsClusterMatch->At(sh->GetBackClusterId()));
+        const CbmMatch* frontClusterMatch =
+          static_cast<const CbmMatch*>(listStsClusterMatch->At(sh->GetFrontClusterId()));
+        const CbmMatch* backClusterMatch =
+          static_cast<const CbmMatch*>(listStsClusterMatch->At(sh->GetBackClusterId()));
         CbmMatch stsHitMatch;
 
-        for (Int_t iFrontLink = 0;
-             iFrontLink < frontClusterMatch->GetNofLinks();
-             iFrontLink++) {
+        for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
           const CbmLink& frontLink = frontClusterMatch->GetLink(iFrontLink);
 
-          for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks();
-               iBackLink++) {
+          for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks(); iBackLink++) {
             const CbmLink& backLink = backClusterMatch->GetLink(iBackLink);
             if (frontLink == backLink) {
               stsHitMatch.AddLink(frontLink);
@@ -2456,8 +1850,7 @@ void CbmL1::InputPerformance() {
               link = stsHitMatch.GetLink(iLink);
 
 
-              pt = (CbmStsPoint*) fStsPoints->Get(
-                iFile, iEvent, stsHitMatch.GetLink(iLink).GetIndex());
+              pt = (CbmStsPoint*) fStsPoints->Get(iFile, iEvent, stsHitMatch.GetLink(iLink).GetIndex());
             }
           }
         }
@@ -2466,8 +1859,7 @@ void CbmL1::InputPerformance() {
 
         double mcTime = pt->GetTime();
 
-        if (fTimesliceMode)
-          mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+        if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
         // hit pulls and residuals
 
@@ -2480,23 +1872,19 @@ void CbmL1::InputPerformance() {
         mcPos.SetY(pt->GetY(hitPos.Z()));
         mcPos.SetZ(hitPos.Z());
 
-#if 0    // standard errors
+#if 0  // standard errors
       if (hitErr.X() != 0) pullXsts->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
       if (hitErr.Y() != 0) pullYsts->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
-        if (hitErr.X() != 0)
-          pullXsts->Fill((hitPos.X() - mcPos.X()) / sh->GetDx());  // qa errors
-        if (hitErr.Y() != 0)
-          pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sh->GetDy());
+        if (hitErr.X() != 0) pullXsts->Fill((hitPos.X() - mcPos.X()) / sh->GetDx());  // qa errors
+        if (hitErr.Y() != 0) pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sh->GetDy());
 
         pullTsts->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-#else    // errors used in TF
+#else  // errors used in TF
         if (hitErr.X() != 0)
-          pullXsts->Fill((hitPos.X() - mcPos.X())
-                         / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
+          pullXsts->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
         if (hitErr.Y() != 0)
-          pullYsts->Fill((hitPos.Y() - mcPos.Y())
-                         / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+          pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
 
         resXsts->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
@@ -2538,8 +1926,7 @@ void CbmL1::InputPerformance() {
       CbmMvdPoint* pt = 0;
       nMC             = listMvdPts->GetEntriesFast();
 
-      if (iMC >= 0 && iMC < nMC)
-        pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(listMvdPts->At(iMC));
+      if (iMC >= 0 && iMC < nMC) pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(listMvdPts->At(iMC));
 
       if (!pt) {
         //         cout << " No MC points! " << "iMC=" << iMC << endl;
@@ -2555,12 +1942,8 @@ void CbmL1::InputPerformance() {
       //       if (hitErr.X() != 0) pullX->Fill( (hitPos.X() - mcPos.X()) / sh->GetDx() ); // qa errors
       //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / sh->GetDy() );
       if (hitErr.X() != 0)
-        pullXmvd->Fill(
-          (hitPos.X() - mcPos.X())
-          / sqrt(algo->vStations[0].XYInfo.C00[0]));  // errors used in TF
-      if (hitErr.Y() != 0)
-        pullYmvd->Fill((hitPos.Y() - mcPos.Y())
-                       / sqrt(algo->vStations[0].XYInfo.C11[0]));
+        pullXmvd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[0].XYInfo.C00[0]));  // errors used in TF
+      if (hitErr.Y() != 0) pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[0].XYInfo.C11[0]));
 
       resXmvd->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
       resYmvd->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
@@ -2574,10 +1957,8 @@ void CbmL1::InputPerformance() {
 
       if (h.Det != 2) continue;  // mvd hit
 
-      const CbmMuchPixelHit* sh =
-        L1_DYNAMIC_CAST<CbmMuchPixelHit*>(fMuchPixelHits->At(h.extIndex));
-      CbmMatch* hm =
-        L1_DYNAMIC_CAST<CbmMatch*>(listMuchHitMatches->At(h.extIndex));
+      const CbmMuchPixelHit* sh = L1_DYNAMIC_CAST<CbmMuchPixelHit*>(fMuchPixelHits->At(h.extIndex));
+      CbmMatch* hm              = L1_DYNAMIC_CAST<CbmMatch*>(listMuchHitMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2596,12 +1977,10 @@ void CbmL1::InputPerformance() {
       }
       if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
 
-      CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(
-        link.GetFile(), link.GetEntry(), link.GetIndex());
-      double mcTime = pt->GetTime();
+      CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      double mcTime    = pt->GetTime();
 
-      if (fTimesliceMode)
-        mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
       // mcTime+=20;
 
       // hit pulls and residuals
@@ -2620,22 +1999,19 @@ void CbmL1::InputPerformance() {
       mcPos.SetY(0.5 * (pt->GetYIn() + pt->GetYOut()));
       mcPos.SetZ(hitPos.Z());
 
-#if 0    // standard errors
+#if 0  // standard errors
       if (hitErr.X() != 0) pullXmuch->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
       if (hitErr.Y() != 0) pullYmuch->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
-      if (hitErr.X() != 0)
-        pullXmuch->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
+      if (hitErr.X() != 0) pullXmuch->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
       if (hitErr.Y() != 0) pullYmuch->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTmuch->Fill((h.t - mcTime) / sh->GetTimeError());
-#else    // errors used in TF
+#else  // errors used in TF
       if (hitErr.X() != 0)
-        pullXmuch->Fill((hitPos.X() - mcPos.X())
-                        / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
+        pullXmuch->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
       if (hitErr.Y() != 0)
-        pullYmuch->Fill((hitPos.Y() - mcPos.Y())
-                        / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+        pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
 
       resXmuch->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2650,9 +2026,8 @@ void CbmL1::InputPerformance() {
       const CbmL1StsHit& h = vStsHits[iH];
 
       if (h.Det != 3) continue;  // mvd hit
-      const CbmTrdHit* sh =
-        L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(h.extIndex));
-      CbmMatch* hm = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(h.extIndex));
+      const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(h.extIndex));
+      CbmMatch* hm        = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2671,12 +2046,10 @@ void CbmL1::InputPerformance() {
       }
       if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
 
-      CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(
-        link.GetFile(), link.GetEntry(), link.GetIndex());
-      double mcTime = pt->GetTime();
+      CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      double mcTime   = pt->GetTime();
 
-      if (fTimesliceMode)
-        mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
       //      if ((sh->GetPlaneId()) == 0) continue;
@@ -2692,22 +2065,17 @@ void CbmL1::InputPerformance() {
       mcPos.SetY((pt->GetYIn() + pt->GetYOut()) / 2.);
       mcPos.SetZ(hitPos.Z());
 
-#if 0    // standard errors
+#if 0  // standard errors
     if (hitErr.X() != 0) pullXtrd->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
     if (hitErr.Y() != 0) pullYtrd->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
-      if (hitErr.X() != 0)
-        pullXtrd->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
+      if (hitErr.X() != 0) pullXtrd->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
       if (hitErr.Y() != 0) pullYtrd->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTtrd->Fill((h.t - mcTime) / sh->GetTimeError());
-#else    // errors used in TF
-      if (hitErr.X() != 0)
-        pullXtrd->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-      if (hitErr.Y() != 0)
-        pullYtrd->Fill((hitPos.Y() - mcPos.Y())
-                       / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+#else  // errors used in TF
+      if (hitErr.X() != 0) pullXtrd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
+      if (hitErr.Y() != 0) pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
 
       resXtrd->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2724,8 +2092,7 @@ void CbmL1::InputPerformance() {
       if (h.Det != 4) continue;  // mvd hit
 
       CbmTofHit* sh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(h.extIndex));
-      CbmMatch* hm =
-        L1_DYNAMIC_CAST<CbmMatch*>(fTofHitDigiMatches->At(h.extIndex));
+      CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(fTofHitDigiMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2747,12 +2114,10 @@ void CbmL1::InputPerformance() {
 
       if (iMCPoint < 0) continue;
 
-      CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(
-        link.GetFile(), link.GetEntry(), link.GetIndex());
-      double mcTime = pt->GetTime();
+      CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      double mcTime   = pt->GetTime();
 
-      if (fTimesliceMode)
-        mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
 
@@ -2766,22 +2131,17 @@ void CbmL1::InputPerformance() {
       mcPos.SetY((pt->GetY()));
       mcPos.SetZ(hitPos.Z());
 
-#if 0    // standard errors
+#if 0  // standard errors
     if (hitErr.X() != 0) pullXmuch->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
     if (hitErr.Y() != 0) pullYmuch->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
-      if (hitErr.X() != 0)
-        pullXtof->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
+      if (hitErr.X() != 0) pullXtof->Fill((h.x - mcPos.X()) / sh->GetDx());  // qa errors
       if (hitErr.Y() != 0) pullYtof->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTtof->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-#else    // errors used in TF
-      if (hitErr.X() != 0)
-        pullXtof->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-      if (hitErr.Y() != 0)
-        pullYtof->Fill((hitPos.Y() - mcPos.Y())
-                       / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+#else  // errors used in TF
+      if (hitErr.X() != 0) pullXtof->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
+      if (hitErr.Y() != 0) pullYtof->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
 
       resXtof->Fill((h.x - mcPos.X()) * 10 * 1000);

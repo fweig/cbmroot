@@ -1,31 +1,27 @@
 
 
-Bool_t GeomHitMapComp() {
+Bool_t GeomHitMapComp()
+{
 
   // Open the input files
-  TFile* filePntOld = new TFile(
-    "data/tofqa_sis100_electron_old_auau_10gev_centr__qa_hst_all.root", "READ");
-  TFile* filePntNew = new TFile(
-    "data/tofqa_sis100_electron_auau_10gev_centr__qa_hst_all.root", "READ");
+  TFile* filePntOld = new TFile("data/tofqa_sis100_electron_old_auau_10gev_centr__qa_hst_all.root", "READ");
+  TFile* filePntNew = new TFile("data/tofqa_sis100_electron_auau_10gev_centr__qa_hst_all.root", "READ");
 
 
   TH2* hHitMapAngOld;
   TH2* hHitMapAngNew;
 
   TH2* tempTwoDimHist = NULL;
-  tempTwoDimHist = (TH2*) (filePntOld->FindObjectAny("TofTests_HitsMapAng"));
-  if (NULL != tempTwoDimHist)
-    hHitMapAngOld = (TH2*) (tempTwoDimHist->Clone("TofTests_HitsMapAng_old"));
+  tempTwoDimHist      = (TH2*) (filePntOld->FindObjectAny("TofTests_HitsMapAng"));
+  if (NULL != tempTwoDimHist) hHitMapAngOld = (TH2*) (tempTwoDimHist->Clone("TofTests_HitsMapAng_old"));
   else
     return kFALSE;
   tempTwoDimHist = (TH2*) (filePntNew->FindObjectAny("TofTests_HitsMapAng"));
-  if (NULL != tempTwoDimHist)
-    hHitMapAngNew = (TH2*) (tempTwoDimHist->Clone("TofTests_HitsMapAng_new"));
+  if (NULL != tempTwoDimHist) hHitMapAngNew = (TH2*) (tempTwoDimHist->Clone("TofTests_HitsMapAng_new"));
   else
     return kFALSE;
 
-  TCanvas* pCanvas = new TCanvas(
-    "Canvas", "Hit map in angular coord. for old and new geometries");
+  TCanvas* pCanvas = new TCanvas("Canvas", "Hit map in angular coord. for old and new geometries");
   pCanvas->Divide(2);
 
   hHitMapAngOld->SetTitle("v13-5b");

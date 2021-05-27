@@ -60,7 +60,8 @@ CbmStsFindTracksQa::CbmStsFindTracksQa(Int_t minStations, Double_t quota, Int_t 
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmStsFindTracksQa::~CbmStsFindTracksQa() {
+CbmStsFindTracksQa::~CbmStsFindTracksQa()
+{
 
   fHistoList->Delete();
   delete fHistoList;
@@ -69,7 +70,8 @@ CbmStsFindTracksQa::~CbmStsFindTracksQa() {
 
 
 // -----   Task execution   ------------------------------------------------
-void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
+void CbmStsFindTracksQa::Exec(Option_t* /*opt*/)
+{
 
   LOG(debug) << GetName() << ": Process event ";
 
@@ -157,7 +159,8 @@ void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
     if (TMath::Abs(vertex.Z() - fTargetPos.Z()) < 1.) {
       isPrim = kTRUE;
       nPrim++;
-    } else
+    }
+    else
       nSec++;
 
     // Get momentum
@@ -181,7 +184,8 @@ void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
     if (isPrim) {
       fhMomAccPrim->Fill(mom);
       fhNpAccPrim->Fill(Double_t(nStations));
-    } else {
+    }
+    else {
       fhMomAccSec->Fill(mom);
       fhNpAccSec->Fill(Double_t(nStations));
       fhZAccSec->Fill(vertex.Z());
@@ -217,7 +221,8 @@ void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
         nRecPrim++;
         fhMomRecPrim->Fill(mom);
         fhNpRecPrim->Fill(Double_t(nAllHits));
-      } else {
+      }
+      else {
         nRecSec++;
         fhMomRecSec->Fill(mom);
         fhNpRecSec->Fill(Double_t(nAllHits));
@@ -241,30 +246,22 @@ void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
 
 
   // Event summary
-  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
-            << fNEvents << ", real time " << fixed << setprecision(6)
-            << fTimer.RealTime() << " s, MC tracks: all " << nMcTracks
-            << ", acc. " << nAcc << ", rec. " << nRecAll << ", eff. "
-            << setprecision(2) << 100. * effAll << " %";
+  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right << fNEvents << ", real time " << fixed
+            << setprecision(6) << fTimer.RealTime() << " s, MC tracks: all " << nMcTracks << ", acc. " << nAcc
+            << ", rec. " << nRecAll << ", eff. " << setprecision(2) << 100. * effAll << " %";
   if (fair::Logger::Logging(fair::Severity::debug)) {
     LOG(debug) << "----------   StsFindTracksQa : Event summary   ------------";
-    LOG(debug) << "MCTracks   : " << nAll << ", reconstructible: " << nAcc
-               << ", reconstructed: " << nRecAll;
-    LOG(debug) << "Vertex     : reconstructible: " << nPrim
-               << ", reconstructed: " << nRecPrim << ", efficiency "
+    LOG(debug) << "MCTracks   : " << nAll << ", reconstructible: " << nAcc << ", reconstructed: " << nRecAll;
+    LOG(debug) << "Vertex     : reconstructible: " << nPrim << ", reconstructed: " << nRecPrim << ", efficiency "
                << effPrim * 100. << "%";
-    LOG(debug) << "Reference  : reconstructible: " << nRef
-               << ", reconstructed: " << nRecRef << ", efficiency "
+    LOG(debug) << "Reference  : reconstructible: " << nRef << ", reconstructed: " << nRecRef << ", efficiency "
                << effRef * 100. << "%";
     LOG(debug) << "Reference long : reconstructible: " << nRefLong << ", reconstructed: " << nRecRefLong
                << ", efficiency " << effRefLong * 100. << "%";
-    LOG(debug) << "Non-vertex : reconstructible: " << nSec
-               << ", reconstructed: " << nRecSec << ", efficiency "
+    LOG(debug) << "Non-vertex : reconstructible: " << nSec << ", reconstructed: " << nRecSec << ", efficiency "
                << effSec * 100. << "%";
-    LOG(debug) << "STSTracks " << nTracks << ", ghosts " << nGhosts
-               << ", clones " << nClones;
-    LOG(debug)
-      << "-----------------------------------------------------------\n";
+    LOG(debug) << "STSTracks " << nTracks << ", ghosts " << nGhosts << ", clones " << nClones;
+    LOG(debug) << "-----------------------------------------------------------\n";
   }
 
 
@@ -419,7 +416,8 @@ InitStatus CbmStsFindTracksQa::ReInit()
 
 
 // -----   Private method Finish   -----------------------------------------
-void CbmStsFindTracksQa::Finish() {
+void CbmStsFindTracksQa::Finish()
+{
 
   // Divide histograms for efficiency calculation
   DivideHistos(fhMomRecAll, fhMomAccAll, fhMomEffAll);
@@ -450,21 +448,16 @@ void CbmStsFindTracksQa::Finish() {
   LOG(info) << "=====================================";
   LOG(info) << fName << ": Run summary ";
   LOG(info) << "Events processed      : " << fNEvents << setprecision(2);
-  LOG(info) << "Eff. all tracks       : " << effAll * 100 << " % (" << fNRecAll
-            << "/" << fNAccAll << ")";
-  LOG(info) << "Eff. vertex tracks    : " << effPrim * 100 << " % ("
-            << fNRecPrim << "/" << fNAccPrim << ")";
-  LOG(info) << "Eff. reference tracks : " << effRef * 100 << " % (" << fNRecRef
-            << "/" << fNAccRef << ")";
+  LOG(info) << "Eff. all tracks       : " << effAll * 100 << " % (" << fNRecAll << "/" << fNAccAll << ")";
+  LOG(info) << "Eff. vertex tracks    : " << effPrim * 100 << " % (" << fNRecPrim << "/" << fNAccPrim << ")";
+  LOG(info) << "Eff. reference tracks : " << effRef * 100 << " % (" << fNRecRef << "/" << fNAccRef << ")";
   LOG(info) << "Eff. reference long tracks : " << effRefLong * 100 << " % (" << fNRecRefLong << "/" << fNAccRefLong
             << ")";
-  LOG(info) << "Eff. secondary tracks : " << effSec * 100 << " % (" << fNRecSec
-            << "/" << fNAccSec << ")";
+  LOG(info) << "Eff. secondary tracks : " << effSec * 100 << " % (" << fNRecSec << "/" << fNAccSec << ")";
   LOG(info) << "Ghost rate            : " << rateGhosts * 100 << " % (" << fNGhosts << "/" << fNRecAll << ")";
   LOG(info) << "Clone rate            : " << rateClones * 100 << " % (" << fNClones << "/" << fNRecAll << ")";
   LOG(info) << "mc tracks/event " << fNAll / fNEvents << " accepted " << fNRecAll / fNEvents;
-  LOG(info) << "Time per event        : " << setprecision(6)
-            << fTime / Double_t(fNEvents) << " s";
+  LOG(info) << "Time per event        : " << setprecision(6) << fTime / Double_t(fNEvents) << " s";
 
   if (fMvdNstations > 0 && !fIsMvdActive) {
     LOG(warning) << "CbmStsFindTracksQa: MVD hits are missing, MVD is not "
@@ -489,7 +482,8 @@ void CbmStsFindTracksQa::Finish() {
 
 
 // -----   Private method GetGeometry   ------------------------------------
-InitStatus CbmStsFindTracksQa::GetGeometry() {
+InitStatus CbmStsFindTracksQa::GetGeometry()
+{
   // Get target geometry
   GetTargetPosition();
   fMvdNstations = 0;
@@ -509,7 +503,8 @@ InitStatus CbmStsFindTracksQa::GetGeometry() {
 
 
 // -----   Get target node   -----------------------------------------------
-void CbmStsFindTracksQa::GetTargetPosition() {
+void CbmStsFindTracksQa::GetTargetPosition()
+{
 
   TGeoNode* target = NULL;
 
@@ -523,22 +518,16 @@ void CbmStsFindTracksQa::GetTargetPosition() {
       break;
     }
   }
-  for (Int_t iNode2 = 0;
-       iNode2 < gGeoManager->GetCurrentNode()->GetNdaughters();
-       iNode2++) {
-    TString name =
-      gGeoManager->GetCurrentNode()->GetDaughter(iNode2)->GetName();
+  for (Int_t iNode2 = 0; iNode2 < gGeoManager->GetCurrentNode()->GetNdaughters(); iNode2++) {
+    TString name = gGeoManager->GetCurrentNode()->GetDaughter(iNode2)->GetName();
     if (name.Contains("pipevac1", TString::kIgnoreCase)) {
       LOG(debug) << "Found vacuum node " << name;
       gGeoManager->CdDown(iNode2);
       break;
     }
   }
-  for (Int_t iNode3 = 0;
-       iNode3 < gGeoManager->GetCurrentNode()->GetNdaughters();
-       iNode3++) {
-    TString name =
-      gGeoManager->GetCurrentNode()->GetDaughter(iNode3)->GetName();
+  for (Int_t iNode3 = 0; iNode3 < gGeoManager->GetCurrentNode()->GetNdaughters(); iNode3++) {
+    TString name = gGeoManager->GetCurrentNode()->GetDaughter(iNode3)->GetName();
     if (name.Contains("target", TString::kIgnoreCase)) {
       LOG(debug) << "Found target node " << name;
       gGeoManager->CdDown(iNode3);
@@ -550,7 +539,8 @@ void CbmStsFindTracksQa::GetTargetPosition() {
     fTargetPos[0] = 0.;
     fTargetPos[1] = 0.;
     fTargetPos[2] = 0.;
-  } else {
+  }
+  else {
     TGeoHMatrix* glbMatrix = gGeoManager->GetCurrentMatrix();
     Double_t* pos          = glbMatrix->GetTranslation();
     fTargetPos[0]          = pos[0];
@@ -564,7 +554,8 @@ void CbmStsFindTracksQa::GetTargetPosition() {
 
 
 // -----   Private method CreateHistos   -----------------------------------
-void CbmStsFindTracksQa::CreateHistos() {
+void CbmStsFindTracksQa::CreateHistos()
+{
 
   fOutFolder.Clear();
 
@@ -575,27 +566,15 @@ void CbmStsFindTracksQa::CreateHistos() {
   Double_t minMom = 0.;
   Double_t maxMom = 10.;
   Int_t nBinsMom  = 40;
-  fhMomAccAll     = new TH1F(
-    "hMomAccAll", "all reconstructable tracks", nBinsMom, minMom, maxMom);
-  fhMomRecAll = new TH1F(
-    "hMomRecAll", "all reconstructed tracks", nBinsMom, minMom, maxMom);
-  fhMomEffAll =
-    new TH1F("hMomEffAll", "efficiency all tracks", nBinsMom, minMom, maxMom);
-  fhMomAccPrim = new TH1F(
-    "hMomAccPrim", "reconstructable vertex tracks", nBinsMom, minMom, maxMom);
-  fhMomRecPrim = new TH1F(
-    "hMomRecPrim", "reconstructed vertex tracks", nBinsMom, minMom, maxMom);
-  fhMomEffPrim = new TH1F(
-    "hMomEffPrim", "efficiency vertex tracks", nBinsMom, minMom, maxMom);
-  fhMomAccSec = new TH1F("hMomAccSec",
-                         "reconstructable non-vertex tracks",
-                         nBinsMom,
-                         minMom,
-                         maxMom);
-  fhMomRecSec = new TH1F(
-    "hMomRecSec", "reconstructed non-vertex tracks", nBinsMom, minMom, maxMom);
-  fhMomEffSec = new TH1F(
-    "hMomEffSec", "efficiency non-vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomAccAll     = new TH1F("hMomAccAll", "all reconstructable tracks", nBinsMom, minMom, maxMom);
+  fhMomRecAll     = new TH1F("hMomRecAll", "all reconstructed tracks", nBinsMom, minMom, maxMom);
+  fhMomEffAll     = new TH1F("hMomEffAll", "efficiency all tracks", nBinsMom, minMom, maxMom);
+  fhMomAccPrim    = new TH1F("hMomAccPrim", "reconstructable vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomRecPrim    = new TH1F("hMomRecPrim", "reconstructed vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomEffPrim    = new TH1F("hMomEffPrim", "efficiency vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomAccSec     = new TH1F("hMomAccSec", "reconstructable non-vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomRecSec     = new TH1F("hMomRecSec", "reconstructed non-vertex tracks", nBinsMom, minMom, maxMom);
+  fhMomEffSec     = new TH1F("hMomEffSec", "efficiency non-vertex tracks", nBinsMom, minMom, maxMom);
   fHistoList->Add(fhMomAccAll);
   fHistoList->Add(fhMomRecAll);
   fHistoList->Add(fhMomEffAll);
@@ -610,24 +589,15 @@ void CbmStsFindTracksQa::CreateHistos() {
   Double_t minNp = -0.5;
   Double_t maxNp = 15.5;
   Int_t nBinsNp  = 16;
-  fhNpAccAll =
-    new TH1F("hNpAccAll", "all reconstructable tracks", nBinsNp, minNp, maxNp);
-  fhNpRecAll =
-    new TH1F("hNpRecAll", "all reconstructed tracks", nBinsNp, minNp, maxNp);
-  fhNpEffAll =
-    new TH1F("hNpEffAll", "efficiency all tracks", nBinsNp, minNp, maxNp);
-  fhNpAccPrim = new TH1F(
-    "hNpAccPrim", "reconstructable vertex tracks", nBinsNp, minNp, maxNp);
-  fhNpRecPrim = new TH1F(
-    "hNpRecPrim", "reconstructed vertex tracks", nBinsNp, minNp, maxNp);
-  fhNpEffPrim =
-    new TH1F("hNpEffPrim", "efficiency vertex tracks", nBinsNp, minNp, maxNp);
-  fhNpAccSec = new TH1F(
-    "hNpAccSec", "reconstructable non-vertex tracks", nBinsNp, minNp, maxNp);
-  fhNpRecSec = new TH1F(
-    "hNpRecSec", "reconstructed non-vertex tracks", nBinsNp, minNp, maxNp);
-  fhNpEffSec = new TH1F(
-    "hNpEffSec", "efficiency non-vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpAccAll     = new TH1F("hNpAccAll", "all reconstructable tracks", nBinsNp, minNp, maxNp);
+  fhNpRecAll     = new TH1F("hNpRecAll", "all reconstructed tracks", nBinsNp, minNp, maxNp);
+  fhNpEffAll     = new TH1F("hNpEffAll", "efficiency all tracks", nBinsNp, minNp, maxNp);
+  fhNpAccPrim    = new TH1F("hNpAccPrim", "reconstructable vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpRecPrim    = new TH1F("hNpRecPrim", "reconstructed vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpEffPrim    = new TH1F("hNpEffPrim", "efficiency vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpAccSec     = new TH1F("hNpAccSec", "reconstructable non-vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpRecSec     = new TH1F("hNpRecSec", "reconstructed non-vertex tracks", nBinsNp, minNp, maxNp);
+  fhNpEffSec     = new TH1F("hNpEffSec", "efficiency non-vertex tracks", nBinsNp, minNp, maxNp);
   fHistoList->Add(fhNpAccAll);
   fHistoList->Add(fhNpRecAll);
   fHistoList->Add(fhNpEffAll);
@@ -642,21 +612,16 @@ void CbmStsFindTracksQa::CreateHistos() {
   Double_t minZ = 0.;
   Double_t maxZ = 50.;
   Int_t nBinsZ  = 50;
-  fhZAccSec     = new TH1F(
-    "hZAccSec", "reconstructable non-vertex tracks", nBinsZ, minZ, maxZ);
-  fhZRecSec = new TH1F(
-    "hZRecSecl", "reconstructed non-vertex tracks", nBinsZ, minZ, maxZ);
-  fhZEffSec =
-    new TH1F("hZEffRec", "efficiency non-vertex tracks", nBinsZ, minZ, maxZ);
+  fhZAccSec     = new TH1F("hZAccSec", "reconstructable non-vertex tracks", nBinsZ, minZ, maxZ);
+  fhZRecSec     = new TH1F("hZRecSecl", "reconstructed non-vertex tracks", nBinsZ, minZ, maxZ);
+  fhZEffSec     = new TH1F("hZEffRec", "efficiency non-vertex tracks", nBinsZ, minZ, maxZ);
   fHistoList->Add(fhZAccSec);
   fHistoList->Add(fhZRecSec);
   fHistoList->Add(fhZEffSec);
 
   // Number-of-hit distributions
-  fhNhClones =
-    new TH1F("hNhClones", "number of hits for clones", nBinsNp, minNp, maxNp);
-  fhNhGhosts =
-    new TH1F("hNhGhosts", "number of hits for ghosts", nBinsNp, minNp, maxNp);
+  fhNhClones = new TH1F("hNhClones", "number of hits for clones", nBinsNp, minNp, maxNp);
+  fhNhGhosts = new TH1F("hNhGhosts", "number of hits for ghosts", nBinsNp, minNp, maxNp);
   fHistoList->Add(fhNhClones);
   fHistoList->Add(fhNhGhosts);
 
@@ -669,7 +634,8 @@ void CbmStsFindTracksQa::CreateHistos() {
 
 
 // -----   Private method Reset   ------------------------------------------
-void CbmStsFindTracksQa::Reset() {
+void CbmStsFindTracksQa::Reset()
+{
 
   TIter next(fHistoList);
   while (TH1* histo = ((TH1*) next()))
@@ -814,14 +780,15 @@ void CbmStsFindTracksQa::FillMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nClone
   }  // Loop over StsTracks
 
   nRec = nTracks;
-  LOG(debug) << GetName() << ": Filled match map for " << nRec
-             << " STS tracks. Ghosts " << nGhosts << " Clones " << nClones;
+  LOG(debug) << GetName() << ": Filled match map for " << nRec << " STS tracks. Ghosts " << nGhosts << " Clones "
+             << nClones;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Private method DivideHistos   -----------------------------------
-void CbmStsFindTracksQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3) {
+void CbmStsFindTracksQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3)
+{
 
   if (!histo1 || !histo2 || !histo3) {
     LOG(fatal) << GetName() << "::DivideHistos: "
@@ -845,12 +812,12 @@ void CbmStsFindTracksQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3) {
     if (c2 != 0.) {
       c3          = c1 / c2;
       Double_t c4 = (c3 * (1. - c3) / c2);
-      if (c4 >= 0.) {
-        ce = TMath::Sqrt(c3 * (1. - c3) / c2);
-      } else {
+      if (c4 >= 0.) { ce = TMath::Sqrt(c3 * (1. - c3) / c2); }
+      else {
         ce = 0;
       }
-    } else {
+    }
+    else {
       c3 = 0.;
       ce = 0.;
     }

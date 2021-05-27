@@ -18,10 +18,12 @@
 
 /// C/C++ headers
 #include "CbmTofDigi.h"
+
+#include <tuple>
+
 #include <array>
 #include <map>
 #include <set>
-#include <tuple>
 #include <vector>
 
 class TClonesArray;
@@ -31,10 +33,8 @@ public:
   /** Default constructor **/
   CbmMcbm2019TimeWinEventBuilderTask();
 
-  CbmMcbm2019TimeWinEventBuilderTask(
-    const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
-  CbmMcbm2019TimeWinEventBuilderTask
-  operator=(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
+  CbmMcbm2019TimeWinEventBuilderTask(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
+  CbmMcbm2019TimeWinEventBuilderTask operator=(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
 
   /** Constructor with parameters (Optional) **/
   //  CbmMcbm2019TimeWinEventBuilderTask(Int_t verbose);
@@ -72,9 +72,7 @@ public:
 
   void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
 
-  void SetTsParameters(Double_t dTsStartTime,
-                       Double_t dTsLength,
-                       Double_t dTsOverLength);
+  void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength);
 
   void SetEventOverlapMode(EOverlapMode mode);
   void SetIgnoreTsOverlap(Bool_t bFlagIn);

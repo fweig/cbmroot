@@ -16,9 +16,12 @@
 
 #include "CbmMuchPoint.h"
 #include "CbmTrdPoint.h"
+
 #include "FairTask.h"
-#include "LxTBDefinitions.h"
+
 #include <vector>
+
+#include "LxTBDefinitions.h"
 
 #define CUR_NOF_TRD_LAYERS 4
 #define CUR_LAST_TRD_LAYER CUR_NOF_TRD_LAYERS - 1
@@ -26,8 +29,10 @@
 #include "CbmMCDataArray.h"
 #include "CbmPixelHit.h"
 #include "CbmStsTrack.h"
-#include "LxTBTieTracks.h"
+
 #include "TGeoManager.h"
+
+#include "LxTBTieTracks.h"
 
 #define CUR_NOF_STATIONS 4
 #define CUR_LAST_STATION CUR_NOF_STATIONS - 1
@@ -59,8 +64,8 @@ public:
     bool isSignalLong;
     bool isPos;
 
-    TrackDataHolder()
-      : isSignalShort(false), isSignalLong(false), isPos(false) {
+    TrackDataHolder() : isSignalShort(false), isSignalLong(false), isPos(false)
+    {
       for (int i = 0; i < CUR_NOF_STATIONS; ++i)
         pointInds[i] = -1;
 
@@ -79,13 +84,14 @@ public:
   void Exec(Option_t* opt);  // Overridden from FairTask
   void Finish();             // Overridden from FairTask
 
-  void SetEvByEv(bool v = true) {
+  void SetEvByEv(bool v = true)
+  {
     isEvByEv = v;
 
     if (isEvByEv)
 #ifdef LXTB_EMU_TS
       nof_timebins = 1000;
-#else   //LXTB_EMU_TS
+#else  //LXTB_EMU_TS
       nof_timebins = 5;
 #endif  //LXTB_EMU_TS
     else
@@ -103,17 +109,13 @@ public:
 private:
   void HandleGeometry();
 #ifdef LXTB_QA
-  void
-  AddHit(const CbmPixelHit* hit, Int_t stationNumber, Int_t refId, bool isTrd);
+  void AddHit(const CbmPixelHit* hit, Int_t stationNumber, Int_t refId, bool isTrd);
 #else
   void AddHit(const CbmPixelHit* hit, Int_t stationNumber, Int_t refId);
 #endif  //LXTB_QA
 
 #ifdef LXTB_TIE
-  void AddLayerHit(const CbmPixelHit* hit,
-                   Int_t layerNumber,
-                   Int_t refId,
-                   bool isTrd);
+  void AddLayerHit(const CbmPixelHit* hit, Int_t layerNumber, Int_t refId, bool isTrd);
   void AddStsTrack(const CbmStsTrack& stsTrack, Int_t selfId);
 #endif  //LXTB_TIE
 

@@ -4,7 +4,9 @@
 #include "CbmRichMirror.h"
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseTau.h"
+
 #include "FairTask.h"
+
 #include "TGeoNavigator.h"
 
 #include <fstream>
@@ -42,30 +44,17 @@ public:
 
   void ComputeAngles();
 
-  void GetPmtNormal(Int_t NofPMTPoints,
-                    vector<Double_t>& normalPMT,
-                    Double_t& normalCste);
+  void GetPmtNormal(Int_t NofPMTPoints, vector<Double_t>& normalPMT, Double_t& normalCste);
 
-  void ComputeR2(vector<Double_t>& ptR2Center,
-                 vector<Double_t>& ptR2Mirr,
-                 vector<Double_t> ptM,
-                 vector<Double_t> ptC,
-                 vector<Double_t> ptR1,
-                 TGeoNavigator* navi,
-                 TString s);
+  void ComputeR2(vector<Double_t>& ptR2Center, vector<Double_t>& ptR2Mirr, vector<Double_t> ptM, vector<Double_t> ptC,
+                 vector<Double_t> ptR1, TGeoNavigator* navi, TString s);
 
-  void ComputeP(vector<Double_t>& ptPMirr,
-                vector<Double_t>& ptPR2,
-                vector<Double_t> normalPMT,
-                vector<Double_t> ptM,
-                vector<Double_t> ptR2Mirr,
-                Double_t constantePMT);
+  void ComputeP(vector<Double_t>& ptPMirr, vector<Double_t>& ptPR2, vector<Double_t> normalPMT, vector<Double_t> ptM,
+                vector<Double_t> ptR2Mirr, Double_t constantePMT);
 
-  void CreateHistoMap(std::map<string, vector<CbmRichMirror*>> mirrorMap,
-                      std::map<string, TH2D*>& histoMap);
+  void CreateHistoMap(std::map<string, vector<CbmRichMirror*>> mirrorMap, std::map<string, TH2D*>& histoMap);
 
-  void DrawFitAndExtractAngles(std::map<string, vector<Double_t>>& anglesMap,
-                               std::map<string, TH2D*> histoMap);
+  void DrawFitAndExtractAngles(std::map<string, vector<Double_t>>& anglesMap, std::map<string, TH2D*> histoMap);
 
   void setOutputDir(TString s) { fOutputDir = s; }
 

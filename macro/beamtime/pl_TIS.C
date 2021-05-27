@@ -1,7 +1,6 @@
-void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
-  gROOT->LoadMacro(
-    ((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C")
-      .Data());
+void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1)
+{
+  gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 450, 600);
@@ -30,23 +29,22 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
     h1->Draw("");
     h1->SetLineColor(3);
     h1->GetXaxis()->SetTitle("time [s]");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_all = (TH1*) h1->Clone();
 
   hname = "tof_trb_time_in_spill";
   h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("same");
-  } else {
+  if (h1 != NULL) { h1->Draw("same"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
   can->cd(2);
   gROOT->cd();
-  if (NULL != hTIS_all)
-    hTIS_all->Draw();
+  if (NULL != hTIS_all) hTIS_all->Draw();
   else
     return;
 
@@ -56,7 +54,8 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
     h1->Draw("same");
     h1->GetXaxis()->SetTitle("time [s]");
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel = (TH1*) h1->Clone();
@@ -66,7 +65,8 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel1 = (TH1*) h1->Clone();
@@ -76,7 +76,8 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(7);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel2 = (TH1*) h1->Clone();
@@ -138,7 +139,8 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1) {
     h2->Draw("colz");
     h2->GetYaxis()->SetTitleOffset(1.3);
     h2pfx = (TProfile*) h2->ProfileX("hTISDT04D4best_pfs", 1, -1, "s");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

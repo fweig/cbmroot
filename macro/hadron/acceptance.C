@@ -1,9 +1,11 @@
 
 #include "/u/kresan/cbm/trunk_feb12/cbmroot/cbmbase/CbmDetectorList.h"
+
 #include "drawStyle.C"
 
 
-void acceptance(Float_t beamMomentum) {
+void acceptance(Float_t beamMomentum)
+{
   // Load libraries
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -28,12 +30,9 @@ void acceptance(Float_t beamMomentum) {
   TChain* chain = new TChain("cbmsim");
   char strFileName[1000];
   for (Int_t i = 0; i < 10; i++) {
-    sprintf(strFileName,
-            "/lustre/cbm/user/kresan/mc/head/urqmd/auau/%1.0fgev/centr/\
+    sprintf(strFileName, "/lustre/cbm/user/kresan/mc/head/urqmd/auau/%1.0fgev/centr/\
 urqmd.auau.%1.0fgev.centr.%4d.mc.root",
-            beamMomentum,
-            beamMomentum,
-            i);
+            beamMomentum, beamMomentum, i);
     for (Int_t k = 0; k < 1000; k++) {
       if (' ' == strFileName[k]) { strFileName[k] = '0'; }
     }
@@ -66,32 +65,28 @@ urqmd.auau.%1.0fgev.centr.%4d.mc.root",
 
       pdgCode = track->GetPdgCode();
 
-      if (211 == pdgCode) {
-        n_pip_all += 1;
-      } else if (321 == pdgCode) {
+      if (211 == pdgCode) { n_pip_all += 1; }
+      else if (321 == pdgCode) {
         n_kap_all += 1;
-      } else if (2212 == pdgCode) {
+      }
+      else if (2212 == pdgCode) {
         n_prot_all += 1;
       }
 
       // Select accepted tracks
-      if (track->GetNPoints(kSTS) >= 4 && track->GetNPoints(kTRD) >= 9
-          && track->GetNPoints(kTOF) >= 1) {
-        if (211 == pdgCode) {
-          n_pip_acc += 1;
-        } else if (321 == pdgCode) {
+      if (track->GetNPoints(kSTS) >= 4 && track->GetNPoints(kTRD) >= 9 && track->GetNPoints(kTOF) >= 1) {
+        if (211 == pdgCode) { n_pip_acc += 1; }
+        else if (321 == pdgCode) {
           n_kap_acc += 1;
-        } else if (2212 == pdgCode) {
+        }
+        else if (2212 == pdgCode) {
           n_prot_acc += 1;
         }
       }
     }
 
 
-    if (0 == (iev % 100)) {
-      cout << "Event: " << iev << ",  MCTracks: " << mcTracks->GetEntriesFast()
-           << endl;
-    }
+    if (0 == (iev % 100)) { cout << "Event: " << iev << ",  MCTracks: " << mcTracks->GetEntriesFast() << endl; }
   }
 
 

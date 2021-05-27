@@ -7,6 +7,7 @@
 
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
+
 #include <sstream>
 
 #define RESET "\033[0m"
@@ -26,7 +27,9 @@ CbmTarget::CbmTarget()
   , fPosZ(0.)
   , fRotY(0.)
   , fMaterial("")
-  , fBuildFromFile(kFALSE) {}
+  , fBuildFromFile(kFALSE)
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -42,17 +45,15 @@ CbmTarget::CbmTarget(const char* fileName)
   , fPosZ(0.)
   , fRotY(0.)
   , fMaterial("")
-  , fBuildFromFile(kTRUE) {
+  , fBuildFromFile(kTRUE)
+{
   SetGeometryFileName(fileName);
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Constructor with properties   ------------------------------------
-CbmTarget::CbmTarget(const char* element,
-                     Double_t thickness,
-                     Double_t diameter,
-                     Double_t density)
+CbmTarget::CbmTarget(const char* element, Double_t thickness, Double_t diameter, Double_t density)
   : FairModule("Target", "CBM target")
   , fZ(0)
   , fThickness(thickness)
@@ -63,15 +64,14 @@ CbmTarget::CbmTarget(const char* element,
   , fPosZ(0.)
   , fRotY(0.)
   , fMaterial(element)
-  , fBuildFromFile(kFALSE) {}
+  , fBuildFromFile(kFALSE)
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Constructor with properties   ------------------------------------
-CbmTarget::CbmTarget(Int_t z,
-                     Double_t thickness,
-                     Double_t diameter,
-                     Double_t density)
+CbmTarget::CbmTarget(Int_t z, Double_t thickness, Double_t diameter, Double_t density)
   : FairModule("Target", "CBM target")
   , fZ(z)
   , fThickness(thickness)
@@ -82,12 +82,15 @@ CbmTarget::CbmTarget(Int_t z,
   , fPosZ(0.)
   , fRotY(0.)
   , fMaterial("")
-  , fBuildFromFile(kFALSE) {}
+  , fBuildFromFile(kFALSE)
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Construct the geometry   -----------------------------------------
-void CbmTarget::ConstructGeometry() {
+void CbmTarget::ConstructGeometry()
+{
 
   std::cout << std::endl;
 
@@ -118,13 +121,13 @@ void CbmTarget::ConstructGeometry() {
       return;
     }
     fMaterial = targElem->GetTitle();
-  } else if (!fMaterial.IsNull()) {
+  }
+  else if (!fMaterial.IsNull()) {
     targElem = geoMan->GetElementTable()->FindElement(fMaterial.Data());
-    if (!targElem) {
-      LOG(FATAL) << GetName() << ": Unknown element " << fMaterial;
-    }
+    if (!targElem) { LOG(FATAL) << GetName() << ": Unknown element " << fMaterial; }
     fZ = targElem->Z();
-  } else {
+  }
+  else {
     LOG(FATAL) << GetName() << ": Target material not specified!";
     return;
   }
@@ -139,8 +142,7 @@ void CbmTarget::ConstructGeometry() {
   }
 
   // --- Create target medium
-  TGeoMaterial* targMat =
-    new TGeoMaterial("targetMaterial", targElem, fDensity);
+  TGeoMaterial* targMat = new TGeoMaterial("targetMaterial", targElem, fDensity);
   if (fair::Logger::Logging("DEBUG")) targMat->Print();
   // The medium ID (second argument) has no meaning for transport
   TGeoMedium* targMedium = new TGeoMedium("targetMedium", 9999, targMat);
@@ -170,8 +172,7 @@ void CbmTarget::ConstructGeometry() {
   *targetMatrix             = r1 * r2 * *target_rotation;
 
   // --- Create target volume and add it as node to the mother volume
-  TGeoVolume* target =
-    geoMan->MakeTube("target", targMedium, 0., fDiameter / 2., fThickness / 2.);
+  TGeoVolume* target = geoMan->MakeTube("target", targMedium, 0., fDiameter / 2., fThickness / 2.);
   motherNode->GetVolume()->AddNode(target, 0, targetMatrix);
 
   // --- Check the resulting transformation from target to global
@@ -186,14 +187,13 @@ void CbmTarget::ConstructGeometry() {
 
 
 // -----   Normal vector   --------------------------------------------------
-TVector3 CbmTarget::GetNormal() const {
-  return TVector3(TMath::Sin(fRotY), 0., TMath::Cos(fRotY));
-}
+TVector3 CbmTarget::GetNormal() const { return TVector3(TMath::Sin(fRotY), 0., TMath::Cos(fRotY)); }
 // --------------------------------------------------------------------------
 
 
 // -----   Get the density at standard conditions   -------------------------
-Double_t CbmTarget::GetStandardDensity(Int_t charge) const {
+Double_t CbmTarget::GetStandardDensity(Int_t charge) const
+{
 
   // TODO: Better implementation with array or the like
 
@@ -214,25 +214,24 @@ Double_t CbmTarget::GetStandardDensity(Int_t charge) const {
 
 
 // -----   Downstream surface centre   --------------------------------------
-TVector3 CbmTarget::GetSurfaceCentreDown() const {
-  return TVector3(fPosX + 0.5 * fThickness * TMath::Sin(fRotY),
-                  fPosY,
-                  fPosZ + 0.5 * fThickness * TMath::Cos(fRotY));
+TVector3 CbmTarget::GetSurfaceCentreDown() const
+{
+  return TVector3(fPosX + 0.5 * fThickness * TMath::Sin(fRotY), fPosY, fPosZ + 0.5 * fThickness * TMath::Cos(fRotY));
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Upstream surface centre   ----------------------------------------
-TVector3 CbmTarget::GetSurfaceCentreUp() const {
-  return TVector3(fPosX - 0.5 * fThickness * TMath::Sin(fRotY),
-                  fPosY,
-                  fPosZ - 0.5 * fThickness * TMath::Cos(fRotY));
+TVector3 CbmTarget::GetSurfaceCentreUp() const
+{
+  return TVector3(fPosX - 0.5 * fThickness * TMath::Sin(fRotY), fPosY, fPosZ - 0.5 * fThickness * TMath::Cos(fRotY));
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Set a geometry file (overloaded from base class)   ---------------
-void CbmTarget::SetGeometryFileName(TString name, TString version) {
+void CbmTarget::SetGeometryFileName(TString name, TString version)
+{
   fBuildFromFile = kTRUE;
   LOG(INFO) << "Using target file name " << name;
   return FairModule::SetGeometryFileName(name, version);
@@ -241,22 +240,20 @@ void CbmTarget::SetGeometryFileName(TString name, TString version) {
 
 
 // -----   Info   -----------------------------------------------------------
-std::string CbmTarget::ToString() const {
+std::string CbmTarget::ToString() const
+{
 
   std::stringstream ss;
 
-  if (fBuildFromFile)
-    ss << GetName() << ": Geometry file " << fgeoName;
+  if (fBuildFromFile) ss << GetName() << ": Geometry file " << fgeoName;
 
   else {
     ss << GetName() << ": Material " << fMaterial;
-    if (fDensity >= 0.)
-      ss << ", density " << fDensity << " g/cm^3, ";
+    if (fDensity >= 0.) ss << ", density " << fDensity << " g/cm^3, ";
     else
       ss << ", standard density, ";
-    ss << "thickness " << fThickness * 10000. << " mum, diameter " << fDiameter
-       << " cm, position (" << fPosX << ", " << fPosY << ", " << fPosZ
-       << ") cm, rotation (y) " << fRotY << " rad";
+    ss << "thickness " << fThickness * 10000. << " mum, diameter " << fDiameter << " cm, position (" << fPosX << ", "
+       << fPosY << ", " << fPosZ << ") cm, rotation (y) " << fRotY << " rad";
   }  //? Not build from geometry file
 
   return ss.str();

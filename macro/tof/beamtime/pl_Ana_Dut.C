@@ -1,4 +1,5 @@
-void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
+void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
   if (h2f != NULL) {
     h2f->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -34,7 +36,8 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
   if (h2m != NULL) {
     h2m->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -45,7 +48,8 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -55,7 +59,8 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -68,15 +73,14 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
     h1->Draw("");
     gPad->SetLogy();
     if (iFit > 0) {
-      Double_t dFMean = h1->GetMean();
-      Double_t dFLim  = 1.5 * h1->GetRMS();
-      TFitResultPtr fRes =
-        h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-      DXMean = fRes->Parameter(1);
-      DXRMS  = fRes->Parameter(2);
+      Double_t dFMean    = h1->GetMean();
+      Double_t dFLim     = 1.5 * h1->GetRMS();
+      TFitResultPtr fRes = h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+      DXMean             = fRes->Parameter(1);
+      DXRMS              = fRes->Parameter(2);
     }
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -90,15 +94,14 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
     h1->Draw("");
     gPad->SetLogy();
     if (iFit > 0) {
-      Double_t dFMean = h1->GetMean();
-      Double_t dFLim  = 1.5 * h1->GetRMS();
-      TFitResultPtr fRes =
-        h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-      DYMean = fRes->Parameter(1);
-      DYRMS  = fRes->Parameter(2);
+      Double_t dFMean    = h1->GetMean();
+      Double_t dFLim     = 1.5 * h1->GetRMS();
+      TFitResultPtr fRes = h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+      DYMean             = fRes->Parameter(1);
+      DYRMS              = fRes->Parameter(2);
     }
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -112,15 +115,14 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
     h1->Draw("");
     gPad->SetLogy();
     if (iFit > 0) {
-      Double_t dFMean = h1->GetMean();
-      Double_t dFLim  = 1.5 * h1->GetRMS();
-      TFitResultPtr fRes =
-        h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-      DTMean = fRes->Parameter(1);
-      DTRMS  = fRes->Parameter(2);
+      Double_t dFMean    = h1->GetMean();
+      Double_t dFLim     = 1.5 * h1->GetRMS();
+      TFitResultPtr fRes = h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+      DTMean             = fRes->Parameter(1);
+      DTRMS              = fRes->Parameter(2);
     }
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -134,15 +136,14 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
     h1->Draw("");
     gPad->SetLogy();
     if (iFit > 0) {
-      Double_t dFMean = h1->GetMean();
-      Double_t dFLim  = 1.5 * h1->GetRMS();
-      TFitResultPtr fRes =
-        h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-      DTBMean = fRes->Parameter(1);
-      DTBRMS  = fRes->Parameter(2);
+      Double_t dFMean    = h1->GetMean();
+      Double_t dFLim     = 1.5 * h1->GetRMS();
+      TFitResultPtr fRes = h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+      DTBMean            = fRes->Parameter(1);
+      DTBRMS             = fRes->Parameter(2);
     }
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -154,7 +155,8 @@ void pl_Ana_Dut(Int_t iDut = 3, Int_t iFit = 1) {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

@@ -1,11 +1,6 @@
 #ifndef CBM_KRES_CONVERSION_MAIN
 #define CBM_KRES_CONVERSION_MAIN
 
-#include "FairMCEventHeader.h"
-#include "FairTask.h"
-
-#include <TClonesArray.h>
-
 #include "CbmKFParticleFinder.h"
 #include "CbmKFParticleFinderQA.h"
 #include "CbmKresConversionCorrectedPhotons.h"
@@ -21,6 +16,11 @@
 #include "CbmKresEta.h"
 #include "CbmKresEtaMCAnalysis.h"
 #include "CbmKresTemperature.h"
+
+#include "FairMCEventHeader.h"
+#include "FairTask.h"
+
+#include <TClonesArray.h>
 
 using namespace std;
 
@@ -47,8 +47,7 @@ public:
 
   virtual void Finish();
 
-  void SetKF(CbmKFParticleFinder* kfparticle,
-             CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
 
 
 private:

@@ -6,22 +6,25 @@
 #include "data/CbmLitTrack.h"
 #include "data/CbmLitTrackParam.h"
 
-#include <cmath>
 #include <iostream>
 
-namespace lit {
+#include <cmath>
 
-  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitHit* hit) {
+namespace lit
+{
+
+  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitHit* hit)
+  {
     litfloat chisq = 0.;
-    if (hit->GetType() == kLITSTRIPHIT) {
-      chisq = ChiSq(par, static_cast<const CbmLitStripHit*>(hit));
-    } else if (hit->GetType() == kLITPIXELHIT) {
+    if (hit->GetType() == kLITSTRIPHIT) { chisq = ChiSq(par, static_cast<const CbmLitStripHit*>(hit)); }
+    else if (hit->GetType() == kLITPIXELHIT) {
       chisq = ChiSq(par, static_cast<const CbmLitPixelHit*>(hit));
     }
     return chisq;
   }
 
-  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitStripHit* hit) {
+  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitStripHit* hit)
+  {
     litfloat duu        = hit->GetDu() * hit->GetDu();
     litfloat phiCos     = hit->GetCosPhi();
     litfloat phiSin     = hit->GetSinPhi();
@@ -37,7 +40,8 @@ namespace lit {
     return (ru * ru) / (duu - phiCosSq * C0 - phi2SinCos * C1 - phiSinSq * C5);
   }
 
-  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitPixelHit* hit) {
+  litfloat ChiSq(const CbmLitTrackParam* par, const CbmLitPixelHit* hit)
+  {
     litfloat dxx = hit->GetDx() * hit->GetDx();
     litfloat dxy = hit->GetDxy();
     litfloat dyy = hit->GetDy() * hit->GetDy();
@@ -58,8 +62,7 @@ namespace lit {
    return ((xmx * (dyy - C5) - ymy * (dxy - C1)) * xmx
            +(-xmx * (dxy - C1) + ymy * (dxx - C0)) * ymy) / norm;*/
     litfloat norm = (dxx - C0) * ((dyy - C6) * (dtt - C20) - C10 * C10)
-                    + (dxy - C1) * (C5 * C10 - (dxy - C1) * (dtt - C20))
-                    + C5 * ((dxy - C1) * C10 - (dyy - C6) * C5);
+                    + (dxy - C1) * (C5 * C10 - (dxy - C1) * (dtt - C20)) + C5 * ((dxy - C1) * C10 - (dyy - C6) * C5);
 
     if (norm == 0.) { norm = 1e-10; }
 
@@ -71,24 +74,22 @@ namespace lit {
     litfloat M12 = ((dxx - C0) * C10 - (dxy - C1) * C5) / norm;
     litfloat M22 = ((dxx - C0) * (dyy - C6) - (dxy - C1) * (dxy - C1)) / norm;
 
-    return xmx * (xmx * M00 + ymy * M01 + tmt * M02)
-           + ymy * (xmx * M01 + ymy * M11 + tmt * M12)
+    return xmx * (xmx * M00 + ymy * M01 + tmt * M02) + ymy * (xmx * M01 + ymy * M11 + tmt * M12)
            + tmt * (xmx * M02 + ymy * M12 + tmt * M22);
   }
 
-  Int_t NDF(const CbmLitTrack* track) {
+  Int_t NDF(const CbmLitTrack* track)
+  {
     Int_t ndf = 0;
     for (Int_t i = 0; i < track->GetNofHits(); i++) {
-      if (track->GetHit(i)->GetType() == kLITPIXELHIT) {
-        ndf += 2;
-      } else if (track->GetHit(i)->GetType() == kLITSTRIPHIT) {
+      if (track->GetHit(i)->GetType() == kLITPIXELHIT) { ndf += 2; }
+      else if (track->GetHit(i)->GetType() == kLITSTRIPHIT) {
         ndf++;
       }
     }
     ndf -= 5;
-    if (ndf > 0) {
-      return ndf;
-    } else {
+    if (ndf > 0) { return ndf; }
+    else {
       return 1;
     }
   }

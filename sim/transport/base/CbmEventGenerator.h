@@ -10,7 +10,9 @@
 
 #include "CbmBeamProfile.h"
 #include "CbmTarget.h"
+
 #include <FairPrimaryGenerator.h>
+
 #include <memory>
 
 class FairGenericStack;
@@ -54,9 +56,7 @@ public:
   /** @brief Enable or disable forcing the vertex to be in the target
 		 ** @param choice If true, the vertex will be generated in the target
 		 **/
-  void ForceVertexInTarget(Bool_t choice = kTRUE) {
-    fForceVertexInTarget = choice;
-  }
+  void ForceVertexInTarget(Bool_t choice = kTRUE) { fForceVertexInTarget = choice; }
 
 
   /** @brief Beam profile
@@ -97,10 +97,7 @@ public:
 		 **
 		 ** Note: Re-implements the non-virtual method in FairPrimaryGenerator.
 		 */
-  void SetBeamAngle(Double_t meanThetaX,
-                    Double_t meanThetaY,
-                    Double_t sigmaThetaX = -1.,
-                    Double_t sigmaThetaY = -1.);
+  void SetBeamAngle(Double_t meanThetaX, Double_t meanThetaY, Double_t sigmaThetaX = -1., Double_t sigmaThetaY = -1.);
 
 
   /** @brief Set the beam position in the focal plane
@@ -116,11 +113,7 @@ public:
 		 **
 		 ** Default is (0.,0.,0.) for the position, no sampling.
 		 */
-  void SetBeamPosition(Double_t meanX,
-                       Double_t meanY,
-                       Double_t sigmaX = -1.,
-                       Double_t sigmaY = -1.,
-                       Double_t zF     = 0.);
+  void SetBeamPosition(Double_t meanX, Double_t meanY, Double_t sigmaX = -1., Double_t sigmaY = -1., Double_t zF = 0.);
 
 
   /** @brief Set target properties
@@ -138,9 +131,9 @@ public:
 private:
   CbmBeamProfile fBeamProfile;               ///< Beam properties
   std::shared_ptr<const CbmTarget> fTarget;  //! Target properties
-  Bool_t fForceVertexInTarget;  ///< If set, vertex must be in target
-  Bool_t fForceVertexAtZ;       ///< If set, vertex must be at given z
-  Double_t fVertexZ;            ///< forced z coordinate of event vertex
+  Bool_t fForceVertexInTarget;               ///< If set, vertex must be in target
+  Bool_t fForceVertexAtZ;                    ///< If set, vertex must be at given z
+  Double_t fVertexZ;                         ///< forced z coordinate of event vertex
 
 
   /** @brief Generate beam angle

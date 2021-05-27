@@ -5,7 +5,8 @@ void readTsaTimeOffline(TString inFile =
                         //"data/1076_cern2014.tsa"
                         //"data/test.tsa"
                         ,
-                        Bool_t highP = false) {
+                        Bool_t highP = false)
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -36,8 +37,7 @@ void readTsaTimeOffline(TString inFile =
   std::cout << ">>> readTsa: Initialising..." << std::endl;
 
   // Spadic Unpacker
-  CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker =
-    new CbmTSUnpackSpadic11OnlineMonitor(highP);
+  CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker = new CbmTSUnpackSpadic11OnlineMonitor(highP);
 
   // NXyter Unpacker
   CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
@@ -85,8 +85,7 @@ void readTsaTimeOffline(TString inFile =
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

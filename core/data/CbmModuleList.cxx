@@ -13,7 +13,8 @@
 using std::map;
 
 // -----   Initialisation of the list of modules   -------------------------
-map<ECbmModuleId, TString> CbmModuleList::DefineModules() {
+map<ECbmModuleId, TString> CbmModuleList::DefineModules()
+{
   map<ECbmModuleId, TString> data;
 
   data[ECbmModuleId::kRef]      = "ref";
@@ -43,18 +44,17 @@ map<ECbmModuleId, TString> CbmModuleList::DefineModules() {
 // -----   Initialise static map -------------------------- ----------------
 // This is done by using the copy constructor of std::map, calling the
 // method DefineModules, which actually fills the static map.
-map<ECbmModuleId, TString>
-  CbmModuleList::fModules(CbmModuleList::DefineModules());
+map<ECbmModuleId, TString> CbmModuleList::fModules(CbmModuleList::DefineModules());
 // -------------------------------------------------------------------------
 
 
 // ------  Get module Id from module name  ---------------------------------
-ECbmModuleId CbmModuleList::GetModuleId(const char* moduleName) {
+ECbmModuleId CbmModuleList::GetModuleId(const char* moduleName)
+{
 
   map<ECbmModuleId, TString>::iterator it = fModules.begin();
   while (it != fModules.end()) {
-    if (!(it->second).CompareTo(moduleName, TString::kIgnoreCase))
-      return it->first;
+    if (!(it->second).CompareTo(moduleName, TString::kIgnoreCase)) return it->first;
     it++;
   }
   return ECbmModuleId::kNotExist;
@@ -63,7 +63,8 @@ ECbmModuleId CbmModuleList::GetModuleId(const char* moduleName) {
 
 
 // ------   Get module name from module Id   --------------------------------
-TString CbmModuleList::GetModuleName(ECbmModuleId moduleId) {
+TString CbmModuleList::GetModuleName(ECbmModuleId moduleId)
+{
   if (fModules.find(moduleId) == fModules.end()) {
     LOG(error) << "Module List: Illegal module Id " << moduleId;
     return "";
@@ -74,7 +75,8 @@ TString CbmModuleList::GetModuleName(ECbmModuleId moduleId) {
 
 
 // ------   Get module name in capitals from module Id   -------------------
-TString CbmModuleList::GetModuleNameCaps(ECbmModuleId moduleId) {
+TString CbmModuleList::GetModuleNameCaps(ECbmModuleId moduleId)
+{
   TString name = GetModuleName(moduleId);
   name.ToUpper();
   return name;

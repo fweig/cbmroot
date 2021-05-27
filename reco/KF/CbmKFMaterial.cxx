@@ -2,6 +2,7 @@
 
 #include "CbmKF.h"
 #include "CbmKFMath.h"
+
 #include "TString.h"
 
 #include <cmath>
@@ -10,23 +11,17 @@ using std::fabs;
 
 ClassImp(CbmKFMaterial);
 
-TString CbmKFMaterial::KFInfo() const {
+TString CbmKFMaterial::KFInfo() const
+{
   char tmp[255];
-  sprintf(tmp,
-          " ( id, z, dz, RadL )= ( %i, %f, %f, %f )",
-          ID,
-          ZReference,
-          ZThickness,
-          RadLength);
+  sprintf(tmp, " ( id, z, dz, RadL )= ( %i, %f, %f, %f )", ID, ZReference, ZThickness, RadLength);
   return tmp;
 }
 
 
-Int_t CbmKFMaterial::Pass(Double_t ZCross,
-                          Double_t ZThick,
-                          CbmKFTrackInterface& track,
-                          Bool_t downstream,
-                          Double_t& QP0) {
+Int_t CbmKFMaterial::Pass(Double_t ZCross, Double_t ZThick, CbmKFTrackInterface& track, Bool_t downstream,
+                          Double_t& QP0)
+{
   Bool_t err  = 0;
   Double_t* T = track.GetTrack();
   Double_t* C = track.GetCovMatrix();
@@ -35,19 +30,8 @@ Int_t CbmKFMaterial::Pass(Double_t ZCross,
   if (IsOutside(T[0], T[1])) return 0;
   Double_t Q5, Q8, Q9, Ecor;
   err = err
-        || CbmKFMath::GetNoise(ZThick / RadLength,
-                               F,
-                               Fe,
-                               T[2],
-                               T[3],
-                               QP0,
-                               track.GetMass(),
-                               track.IsElectron(),
-                               downstream,
-                               &Q5,
-                               &Q8,
-                               &Q9,
-                               &Ecor);
+        || CbmKFMath::GetNoise(ZThick / RadLength, F, Fe, T[2], T[3], QP0, track.GetMass(), track.IsElectron(),
+                               downstream, &Q5, &Q8, &Q9, &Ecor);
   if (err) return err;
   C[5] += Q5;
   C[8] += Q8;
@@ -65,15 +49,17 @@ Int_t CbmKFMaterial::Pass(Double_t ZCross,
 ClassImp(CbmKFWall);
 ClassImp(CbmKFTube);
 
-CbmKFTube::CbmKFTube(Int_t ID_,
-                     Double_t x_,
-                     Double_t y_,
-                     Double_t z_,
-                     Double_t dz_,
-                     Double_t r_,
-                     Double_t R_,
+CbmKFTube::CbmKFTube(Int_t ID_, Double_t x_, Double_t y_, Double_t z_, Double_t dz_, Double_t r_, Double_t R_,
                      Double_t radL_)
-  : x(x_), y(y_), z(z_), dz(dz_), r(r_), R(R_), rr(r_ * r_), RR(R_ * R_) {
+  : x(x_)
+  , y(y_)
+  , z(z_)
+  , dz(dz_)
+  , r(r_)
+  , R(R_)
+  , rr(r_ * r_)
+  , RR(R_ * R_)
+{
   ID         = ID_;
   ZReference = z_;
   ZThickness = dz_;
@@ -81,34 +67,26 @@ CbmKFTube::CbmKFTube(Int_t ID_,
   F          = 1;
 }
 
-TString CbmKFTube::KFInfo() const {
+TString CbmKFTube::KFInfo() const
+{
   char tmp[255];
-  sprintf(
-    tmp,
-    " tube ( id, x,y,z, dz, r, R, RadL )= ( %i, %f, %f, %f, %f, %f, %f, %f )",
-    ID,
-    x,
-    y,
-    z,
-    dz,
-    r,
-    R,
-    RadLength);
+  sprintf(tmp, " tube ( id, x,y,z, dz, r, R, RadL )= ( %i, %f, %f, %f, %f, %f, %f, %f )", ID, x, y, z, dz, r, R,
+          RadLength);
   return tmp;
 }
 
 
 ClassImp(CbmKFBox);
 
-CbmKFBox::CbmKFBox(Int_t ID_,
-                   Double_t x_,
-                   Double_t y_,
-                   Double_t z_,
-                   Double_t dx_,
-                   Double_t dy_,
-                   Double_t dz_,
+CbmKFBox::CbmKFBox(Int_t ID_, Double_t x_, Double_t y_, Double_t z_, Double_t dx_, Double_t dy_, Double_t dz_,
                    Double_t radL_)
-  : x(x_), y(y_), z(z_), dx05(dx_ / 2), dy05(dy_ / 2), dz(dz_) {
+  : x(x_)
+  , y(y_)
+  , z(z_)
+  , dx05(dx_ / 2)
+  , dy05(dy_ / 2)
+  , dz(dz_)
+{
   ID         = ID_;
   ZReference = z_;
   ZThickness = dz_;
@@ -116,34 +94,22 @@ CbmKFBox::CbmKFBox(Int_t ID_,
   F          = 1;
 }
 
-Bool_t CbmKFBox::IsOutside(Double_t X, Double_t Y) {
-  return (TMath::Abs(X - x) > dx05 || TMath::Abs(Y - y) > dy05);
-}
+Bool_t CbmKFBox::IsOutside(Double_t X, Double_t Y) { return (TMath::Abs(X - x) > dx05 || TMath::Abs(Y - y) > dy05); }
 
-TString CbmKFBox::KFInfo() const {
+TString CbmKFBox::KFInfo() const
+{
   char tmp[255];
-  sprintf(
-    tmp,
-    " box ( id, x,y,z, dx, dy, dz, RadL )= ( %i, %f, %f, %f, %f, %f, %f, %f )",
-    ID,
-    x,
-    y,
-    z,
-    dx05 * 2,
-    dy05 * 2,
-    dz,
-    RadLength);
+  sprintf(tmp, " box ( id, x,y,z, dx, dy, dz, RadL )= ( %i, %f, %f, %f, %f, %f, %f, %f )", ID, x, y, z, dx05 * 2,
+          dy05 * 2, dz, RadLength);
   return tmp;
 }
 
 
 ClassImp(CbmKFCone);
 
-Int_t CbmKFCone::Pass(Double_t ZCross,
-                      Double_t /*ZThick*/,
-                      CbmKFTrackInterface& track,
-                      Bool_t downstream,
-                      Double_t& QP0) {
+Int_t CbmKFCone::Pass(Double_t ZCross, Double_t /*ZThick*/, CbmKFTrackInterface& track, Bool_t downstream,
+                      Double_t& QP0)
+{
 
   Bool_t err  = 0;
   CbmKF* KF   = CbmKF::Instance();
@@ -169,7 +135,8 @@ Int_t CbmKFCone::Pass(Double_t ZCross,
     if (iz1 > -200 && iZ1 > -200) {
       cz1 = (iz1 + iZ1) / 2;
       ct1 = fabs(iZ1 - iz1);
-    } else {
+    }
+    else {
       cz1 = ZCross;  //TODO Check me
       ct1 = 0;
     }
@@ -177,7 +144,8 @@ Int_t CbmKFCone::Pass(Double_t ZCross,
     if (iz2 > -200 && iZ2 > -200) {
       cz2 = (iz2 + iZ2) / 2;
       ct2 = fabs(iZ2 - iz2);
-    } else {
+    }
+    else {
       cz2 = ZCross;  //TODO Check me
       ct2 = 0;
     }
@@ -194,7 +162,8 @@ Int_t CbmKFCone::Pass(Double_t ZCross,
   if (fabs(dz1) < fabs(dz2)) {
     zthick = ct1;
     zcross = cz1;
-  } else {
+  }
+  else {
     zthick = ct2;
     zcross = cz2;
   }
@@ -203,19 +172,8 @@ Int_t CbmKFCone::Pass(Double_t ZCross,
 
   Double_t Q5, Q8, Q9, Ecor;
   err = err
-        || CbmKFMath::GetNoise(zthick / RadLength,
-                               F,
-                               Fe,
-                               T[2],
-                               T[3],
-                               QP0,
-                               track.GetMass(),
-                               track.IsElectron(),
-                               downstream,
-                               &Q5,
-                               &Q8,
-                               &Q9,
-                               &Ecor);
+        || CbmKFMath::GetNoise(zthick / RadLength, F, Fe, T[2], T[3], QP0, track.GetMass(), track.IsElectron(),
+                               downstream, &Q5, &Q8, &Q9, &Ecor);
   if (err) return err;
   C[5] += Q5;
   C[8] += Q8;

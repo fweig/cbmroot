@@ -1,11 +1,11 @@
 #include "CbmPsdHit.h"
 
+#include "comparePsdHit.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "comparePsdHit.h"
-
-TEST(_GTestCbmPsdHit, CheckDefaultConstructor) {
+TEST(_GTestCbmPsdHit, CheckDefaultConstructor)
+{
   // Create object
   CbmPsdHit test;
 
@@ -16,7 +16,8 @@ TEST(_GTestCbmPsdHit, CheckDefaultConstructor) {
   comparePsdHitDataMembers(*test1, -1, -1.);
 }
 
-TEST(_GTestCbmPsdHit, CheckStandardConstructor) {
+TEST(_GTestCbmPsdHit, CheckStandardConstructor)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -27,7 +28,8 @@ TEST(_GTestCbmPsdHit, CheckStandardConstructor) {
   comparePsdHitDataMembers(*test1, 2, 8.9);
 }
 
-TEST(_GTestCbmPsdHit, CheckCopyConstructor) {
+TEST(_GTestCbmPsdHit, CheckCopyConstructor)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -44,7 +46,8 @@ TEST(_GTestCbmPsdHit, CheckCopyConstructor) {
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit, CheckAssignmentOperator) {
+TEST(_GTestCbmPsdHit, CheckAssignmentOperator)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -62,7 +65,8 @@ TEST(_GTestCbmPsdHit, CheckAssignmentOperator) {
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit, CheckMoveConstructor) {
+TEST(_GTestCbmPsdHit, CheckMoveConstructor)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -80,7 +84,8 @@ TEST(_GTestCbmPsdHit, CheckMoveConstructor) {
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit, CheckAssignmentMoveConstructor) {
+TEST(_GTestCbmPsdHit, CheckAssignmentMoveConstructor)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -100,7 +105,8 @@ TEST(_GTestCbmPsdHit, CheckAssignmentMoveConstructor) {
 }
 
 
-TEST(_GTestCbmPsdHit, CheckPrint) {
+TEST(_GTestCbmPsdHit, CheckPrint)
+{
   // Create object
   CbmPsdHit test(5, 6.7);
 

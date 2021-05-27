@@ -1,44 +1,38 @@
 // -------------------------------------------------------------------------
 // ----- Macro to draw the reaction plane resolution versus % most centrality (based on STS multiplicity)
 
-graph_RP_cos_vsCentrality() {
+graph_RP_cos_vsCentrality()
+{
   // files to CHANGE - here: 7 different energies
 
-  TFile* f1 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au2au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f2 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au4au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f3 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au6au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f4 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au10au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f5 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au15au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f6 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au25au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
-  TFile* f7 =
-    new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au35au/"
-              "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
-              "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
-              "R");
+  TFile* f1 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au2au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f2 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au4au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f3 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au6au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f4 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au10au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/8m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f5 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au15au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f6 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au25au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
+  TFile* f7 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au35au/"
+                        "sts_13d_PSDhole6cm_44mods_beampipe/v15/flat_detinfo/15m/ana/"
+                        "ana_10Kevt_RECOtracks_STScutY_0.8_Qcorr_FlatBin_FixStep.root",
+                        "R");
 
   // TO DO: error <% most central.>
 
@@ -114,11 +108,9 @@ graph_RP_cos_vsCentrality() {
     hmult[k] = (TH1F*) t[k]->GetHistogram();
 
     maxmult = "";
-    maxmult += hmult[k]->GetBinCenter(hmult[k]->FindLastBinAbove())
-               + hmult[k]->GetBinWidth(0) / 2.;
+    maxmult += hmult[k]->GetBinCenter(hmult[k]->FindLastBinAbove()) + hmult[k]->GetBinWidth(0) / 2.;
 
-    t[k]->Draw(
-      "StsEvent.fmult>>mult" + num + "(1000, 0, " + maxmult + ")", "", "");
+    t[k]->Draw("StsEvent.fmult>>mult" + num + "(1000, 0, " + maxmult + ")", "", "");
     hmult[k] = (TH1F*) t[k]->GetHistogram();
 
     Xaxis    = hmult[k]->GetXaxis();
@@ -170,14 +162,11 @@ graph_RP_cos_vsCentrality() {
 	    }*/
 
       // STS mult
-      if (i == 0)
-        scut = scutvariable + ">=" + scentr[k][i];
+      if (i == 0) scut = scutvariable + ">=" + scentr[k][i];
       else {
-        if (i == n - 1)
-          scut = scutvariable + "<" + scentr[k][i - 1];
+        if (i == n - 1) scut = scutvariable + "<" + scentr[k][i - 1];
         else {
-          scut = scutvariable + "<" + scentr[k][i - 1] + "&&" + scutvariable
-                 + ">=" + scentr[k][i];
+          scut = scutvariable + "<" + scentr[k][i - 1] + "&&" + scutvariable + ">=" + scentr[k][i];
         }
       }
       //cout << "scut:" << scut << endl;
@@ -190,10 +179,7 @@ graph_RP_cos_vsCentrality() {
       hh[i]   = (TH1F*) t[k]->GetHistogram();
       meantmp = hh[i]->GetMean();
 
-      smear[k][i] =
-        100
-        * hmult[k]->Integral(hmult[k]->FindBin(meantmp), hmult[k]->GetNbinsX())
-        / hmult[k]->Integral();
+      smear[k][i] = 100 * hmult[k]->Integral(hmult[k]->FindBin(meantmp), hmult[k]->GetNbinsX()) / hmult[k]->Integral();
       //esmear[k][i] = hh[i]->GetMeanError();
       esmear[k][i] = 0.;
 

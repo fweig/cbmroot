@@ -1,4 +1,5 @@
-void much_draw3D(TString geofile = "geofile.root") {
+void much_draw3D(TString geofile = "geofile.root")
+{
 
 
   TFile* f = new TFile(geofile);
@@ -16,8 +17,7 @@ void much_draw3D(TString geofile = "geofile.root") {
   master->Draw("ogl");
 
   // Draw much
-  TGeoVolume* much =
-    master->FindNode("much_v17b_sis100_1m_lmvm_hDcarbon_0")->GetVolume();
+  TGeoVolume* much = master->FindNode("much_v17b_sis100_1m_lmvm_hDcarbon_0")->GetVolume();
   //much->Draw("ogl");
   TGeoVolume* station = much->FindNode("station_1")->GetVolume();
   //station->Draw("oglsame");

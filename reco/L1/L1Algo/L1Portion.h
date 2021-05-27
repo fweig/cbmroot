@@ -20,30 +20,35 @@ public:
 
   L1Portion() : a(), dataSize(0) {};
   L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2) {
+  L1Portion(int size, int size2) : a(), dataSize(size2)
+  {
     reserve(size);
     //     reserve2(size2);
   };
   vType& operator[](int i) { return a[i]; }
   void resize(int size) { a.resize(size); };
   void reserve(int size) { a.reserve(size); };
-  void reserve2(int size) {
+  void reserve2(int size)
+  {
     for (unsigned int i = 0; i < a.size(); i++)
       a[i].reserve(size);
   };
   void push_back(vType& v) { a.push_back(v); };
-  void add_void() {
+  void add_void()
+  {
     vType v;
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
   };
-  void add_void(int i) {
+  void add_void(int i)
+  {
     T t;
     a[i].push_back(t);
   };
 
-  int CalcSize() {
+  int CalcSize()
+  {
     int size = 0;
     for (unsigned int i = 0; i < a.size(); i++)
       size += a[i].size();
@@ -65,7 +70,8 @@ public:
 
   L1Portion() : a(), dataSize(0) {};
   L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2) {
+  L1Portion(int size, int size2) : a(), dataSize(size2)
+  {
     reserve(size);
     //     reserve2(size2);
   };
@@ -73,23 +79,27 @@ public:
   vType& operator[](int i) { return a[i]; }
   void resize(int size) { a.resize(size); };
   void reserve(int size) { a.reserve(size); };
-  void reserve2(int size) {
+  void reserve2(int size)
+  {
     for (unsigned int i = 0; i < a.size(); i++)
       a[i].reserve(size);
   };
   void push_back(vType& v) { a.push_back(v); };
-  void add_void() {
+  void add_void()
+  {
     vType v;
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
   };
-  void add_void(int i) {
+  void add_void(int i)
+  {
     T t;
     a[i].push_back(t);
   };
 
-  int CalcSize() {
+  int CalcSize()
+  {
     int size = 0;
     for (unsigned int i = 0; i < a.size(); i++)
       size += a[i].size();
@@ -110,30 +120,35 @@ public:
 
   L1Portion() : a(), dataSize(0) {};
   L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2) {
+  L1Portion(int size, int size2) : a(), dataSize(size2)
+  {
     reserve(size);
     //     reserve2(size2);
   };
   vType& operator[](int i) { return a[i]; }
   void resize(int size) { a.resize(size); };
   void reserve(int size) { a.reserve(size); };
-  void reserve2(int size) {
+  void reserve2(int size)
+  {
     for (int i = 0; i < a.size(); i++)
       a[i].reserve(size);
   };
   void push_back(vType& v) { a.push_back(v); };
-  void add_void() {
+  void add_void()
+  {
     vType v;
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
   };
-  void add_void(int i) {
+  void add_void(int i)
+  {
     T t;
     a[i].push_back(t);
   };
 
-  int CalcSize() {
+  int CalcSize()
+  {
     int size = 0;
     for (int i = 0; i < a.size(); i++)
       size += a[i].size();

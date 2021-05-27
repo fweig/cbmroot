@@ -17,13 +17,13 @@
 /// \date Jun 08, 2015
 ///
 
-void DrawQA() {
+void DrawQA()
+{
 
   // files used for QA trending
   const Int_t nfiles       = 2;
-  TString fileList[nfiles] = {
-    "./data/sis100_electron_TRDdigi.analysis.root",
-    "./data/sis100_electron_TRDclustering.analysis.root"};
+  TString fileList[nfiles] = {"./data/sis100_electron_TRDdigi.analysis.root",
+                              "./data/sis100_electron_TRDclustering.analysis.root"};
 
   // switcher
   Bool_t doTime = kTRUE;  // do time trending
@@ -47,8 +47,7 @@ void DrawQA() {
   can->cd();
 
   // int qa histogra
-  TH1F* hQA = new TH1F(
-    "hQA", "hQA", 10000, 1., 0.);  // find automatically the best limits
+  TH1F* hQA = new TH1F("hQA", "hQA", 10000, 1., 0.);  // find automatically the best limits
   //  hQA->SetYTitle("");   // set the y-title of the qa histogram
 
   // style
@@ -87,15 +86,11 @@ void DrawQA() {
     // get meta data
     PairAnalysisMetaData* meta = histos->GetMetaData();
     if (!meta) continue;
-    TParameter<Int_t>* evts =
-      dynamic_cast<TParameter<Int_t>*>(meta->FindObject("events"));
-    TParameter<Int_t>* date =
-      dynamic_cast<TParameter<Int_t>*>(meta->FindObject("date"));
-    TParameter<Int_t>* time =
-      dynamic_cast<TParameter<Int_t>*>(meta->FindObject("time"));
+    TParameter<Int_t>* evts = dynamic_cast<TParameter<Int_t>*>(meta->FindObject("events"));
+    TParameter<Int_t>* date = dynamic_cast<TParameter<Int_t>*>(meta->FindObject("date"));
+    TParameter<Int_t>* time = dynamic_cast<TParameter<Int_t>*>(meta->FindObject("time"));
     Printf("ifile%d: date %d time%d ", ifile, date->GetVal(), time->GetVal());
-    TParameter<Int_t>* par =
-      dynamic_cast<TParameter<Int_t>*>(meta->FindObject("cbmroot"));
+    TParameter<Int_t>* par = dynamic_cast<TParameter<Int_t>*>(meta->FindObject("cbmroot"));
     Printf("ifile%d: meta data %s %d ", ifile, par->GetName(), par->GetVal());
 
     // get time stamp from meta data
@@ -105,14 +100,12 @@ void DrawQA() {
     // fill value (example)
     Double_t qaval = htest->Integral() * htest->GetMean() / evts->GetVal();
 
-    if (doTime)
-      hQA->Fill(tX, qaval);  // time dependence
+    if (doTime) hQA->Fill(tX, qaval);  // time dependence
     else
       hQA->Fill(par->GetVal(), qaval);  // par  dependence
 
     // set axis titles
-    if (doTime)
-      hQA->SetXTitle("");
+    if (doTime) hQA->SetXTitle("");
     else
       hQA->SetXTitle(par->GetName());
     hQA->SetYTitle(htest->GetXaxis()->GetTitle());

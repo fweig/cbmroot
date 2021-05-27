@@ -1,14 +1,11 @@
 
 void run_reco_mcbm_richOnly(
-  const string srcfolder =
-    "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/beamtime/mcbm2020/data",
+  const string srcfolder   = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/beamtime/mcbm2020/data",
   const unsigned int runId = 790,  // used for the output folder
-  int nEvents              = 0,
-  const int taskId         = -1) {
-  const string& parFile =
-    Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
-  const string& digiFile =
-    Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
+  int nEvents = 0, const int taskId = -1)
+{
+  const string& parFile  = Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
+  const string& digiFile = Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
   const string& recoFile = Form("reco_mcbm_mar20_%d.root", runId);
 
   const Double_t eb_fixedTimeWindow {200.};
@@ -33,8 +30,7 @@ void run_reco_mcbm_richOnly(
   //    gROOT->LoadMacro(setupFile);
   //    gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TString geoFile     = srcDir + "/macro/mcbm/data/mcbm_beam_2020_03.geo.root";
@@ -83,9 +79,8 @@ void run_reco_mcbm_richOnly(
   ;
 
   CbmRichMCbmQaRichOnly* qaTask = new CbmRichMCbmQaRichOnly();
-  if (taskId < 0) {
-    qaTask->SetOutputDir(Form("result_richOnly_run%d", runId));
-  } else {
+  if (taskId < 0) { qaTask->SetOutputDir(Form("result_richOnly_run%d", runId)); }
+  else {
     qaTask->SetOutputDir(Form("result_richOnly_run%d_%05d", runId, taskId));
   }
   //    qaTask->DoRestrictToAcc();//restrict to mRICH MAR2019 in histFilling
@@ -96,9 +91,7 @@ void run_reco_mcbm_richOnly(
   //qaTask->DoWriteHistToFile(false);
   run->AddTask(qaTask);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -129,7 +122,6 @@ void run_reco_mcbm_richOnly(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

@@ -1,14 +1,13 @@
 #include "CbmL1MuchFinderQa.h"
 
-#include "CbmL1MuchHit.h"
-#include "CbmL1MuchTrack.h"
-
 #include "CbmKF.h"
 #include "CbmKFHit.h"
 #include "CbmKFMaterial.h"
 #include "CbmKFMath.h"
 #include "CbmKFPixelMeasurement.h"
 #include "CbmKFTrackInterface.h"
+#include "CbmL1MuchHit.h"
+#include "CbmL1MuchTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchHit.h"
 #include "CbmMuchPoint.h"
@@ -17,6 +16,7 @@
 #include "CbmStsTrack.h"
 #include "CbmStsTrackMatch.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -25,9 +25,10 @@
 #include "TProfile.h"
 #include "TVector3.h"
 
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -36,8 +37,8 @@ using std::vector;
 
 ClassImp(CbmL1MuchFinderQa);
 
-CbmL1MuchFinderQa::CbmL1MuchFinderQa(const char* name, Int_t iVerbose)
-  : FairTask(name, iVerbose) {
+CbmL1MuchFinderQa::CbmL1MuchFinderQa(const char* name, Int_t iVerbose) : FairTask(name, iVerbose)
+{
   histodir     = 0;
   fhPerfAll    = 0;
   fhPerfSignal = 0;
@@ -48,32 +49,27 @@ CbmL1MuchFinderQa::~CbmL1MuchFinderQa() {}
 
 InitStatus CbmL1MuchFinderQa::Init() { return ReInit(); }
 
-InitStatus CbmL1MuchFinderQa::ReInit() {
-  fMuchPoints =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("MuchPoint");
-  fMuchHits = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchHit");
-  fStsTracks =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
-  fMuchTracks =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("MuchTrack");
-  fMCTracks = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
+InitStatus CbmL1MuchFinderQa::ReInit()
+{
+  fMuchPoints = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchPoint");
+  fMuchHits   = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchHit");
+  fStsTracks  = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrack");
+  fMuchTracks = (TClonesArray*) FairRootManager::Instance()->GetObject("MuchTrack");
+  fMCTracks   = (TClonesArray*) FairRootManager::Instance()->GetObject("MCTrack");
   //fPrimVtx =  (CbmVertex *) FairRootManager::Instance() ->GetObject("PrimaryVertex");
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
-  fPrimVtx = dynamic_cast<CbmVertex*>(
-    FairRootManager::Instance()->GetObject("PrimaryVertex."));
+  fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex."));
   if (nullptr == fPrimVtx) {
-    fPrimVtx = dynamic_cast<CbmVertex*>(
-      FairRootManager::Instance()->GetObject("PrimaryVertex"));
+    fPrimVtx = dynamic_cast<CbmVertex*>(FairRootManager::Instance()->GetObject("PrimaryVertex"));
   }
   if (nullptr == fPrimVtx) {
     Error("CbmL1MuchFinderQa::ReInit", "vertex not found!");
     return kERROR;
   }
 
-  fSTSTrackMatch =
-    (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
+  fSTSTrackMatch = (TClonesArray*) FairRootManager::Instance()->GetObject("StsTrackMatch");
   fStsFitter.Init();
 
   return kSUCCESS;
@@ -83,7 +79,8 @@ void CbmL1MuchFinderQa::SetParContainers() {}
 
 void CbmL1MuchFinderQa::Finish() { Write(); }
 
-void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
+void CbmL1MuchFinderQa::Exec(Option_t* /*option*/)
+{
 
   static int EventCounter = 0;
   EventCounter++;
@@ -99,10 +96,9 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
     histodir           = gDirectory->mkdir("MuRecQa");
     histodir->cd();
 
-    fhPerfSignal =
-      new TProfile("eff_signal", "Signal Mu eff vs mom", 60, 0, 30);
-    fhPerfAll = new TProfile("eff_all", "All Mu eff vs mom", 60, 0, 30);
-    fhGhost   = new TProfile("ghost", "ghost vs mom", 60, 0, 30);
+    fhPerfSignal = new TProfile("eff_signal", "Signal Mu eff vs mom", 60, 0, 30);
+    fhPerfAll    = new TProfile("eff_all", "All Mu eff vs mom", 60, 0, 30);
+    fhGhost      = new TProfile("ghost", "ghost vs mom", 60, 0, 30);
 
     char S1[255], S2[255];
     for (int ist = 0; ist < MuNStations; ist++) {
@@ -186,9 +182,7 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
     CbmStsTrackMatch* m = (CbmStsTrackMatch*) fSTSTrackMatch->At(ists);
     if (!Tsts) continue;
     if (!m) continue;
-    double ratio =
-      1. * m->GetNofTrueHits()
-      / (m->GetNofTrueHits() + m->GetNofWrongHits() + m->GetNofFakeHits());
+    double ratio = 1. * m->GetNofTrueHits() / (m->GetNofTrueHits() + m->GetNofWrongHits() + m->GetNofFakeHits());
     if (ratio < .7) continue;
     Int_t mcTrackID = m->GetMCTrackId();
     if (mcTrackID < 0) continue;
@@ -235,7 +229,8 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
         if (P < 5) {
           NMuS5++;
           NMuSRec5 += MuonFlag;
-        } else {
+        }
+        else {
           NMuS10++;
           NMuSRec10 += MuonFlag;
         }
@@ -244,29 +239,32 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
       if (P < 5) {
         NMu5++;
         NMuRec5 += MuonFlag;
-      } else {
+      }
+      else {
         NMu10++;
         NMuRec10 += MuonFlag;
       }
       if (!MuonFlag) was_problem = 1;
-    } else {
+    }
+    else {
       fhGhost->Fill(P, MuonFlag);
       if (P < 5) {
         NGhost5++;
         NGhostRec5 += MuonFlag;
-      } else {
+      }
+      else {
         NGhost10++;
         NGhostRec10 += MuonFlag;
       }
     }
   }
 
-  cout << " N Signal Mu Total/Reconstructed <5Gev = " << NMuS5 << "/"
-       << NMuSRec5 << "; >=5Gev = " << NMuS10 << "/" << NMuSRec10 << endl;
-  cout << " N Mu Total/Reconstructed <5Gev = " << NMu5 << "/" << NMuRec5
-       << "; >=5Gev = " << NMu10 << "/" << NMuRec10 << endl;
-  cout << " N Ghost Total/Reconstructed <5Gev = " << NGhost5 << "/"
-       << NGhostRec5 << "; >=5Gev = " << NGhost10 << "/" << NGhostRec10 << endl;
+  cout << " N Signal Mu Total/Reconstructed <5Gev = " << NMuS5 << "/" << NMuSRec5 << "; >=5Gev = " << NMuS10 << "/"
+       << NMuSRec10 << endl;
+  cout << " N Mu Total/Reconstructed <5Gev = " << NMu5 << "/" << NMuRec5 << "; >=5Gev = " << NMu10 << "/" << NMuRec10
+       << endl;
+  cout << " N Ghost Total/Reconstructed <5Gev = " << NGhost5 << "/" << NGhostRec5 << "; >=5Gev = " << NGhost10 << "/"
+       << NGhostRec10 << endl;
 
   //if( was_problem ) cout<<"\n problem\n"<<endl;//return;
 
@@ -318,9 +316,7 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(mcTrackID);
     if (!mcTrack) continue;
     if (abs(mcTrack->GetPdgCode()) != 13) continue;
-    double ratio =
-      1. * m->GetNofTrueHits()
-      / (m->GetNofTrueHits() + m->GetNofWrongHits() + m->GetNofFakeHits());
+    double ratio = 1. * m->GetNofTrueHits() / (m->GetNofTrueHits() + m->GetNofWrongHits() + m->GetNofFakeHits());
     if (ratio < .7) continue;
 
     fStsFitter.DoFit(Tsts, 13);  // refit with muon mass
@@ -349,8 +345,7 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
         double c0   = tr.C[0] + h.FitPoint.V[0];
         double c1   = tr.C[1] + h.FitPoint.V[1];
         double c2   = tr.C[2] + h.FitPoint.V[2];
-        double chi2 = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2)
-                      / (c0 * c2 - c1 * c1);
+        double chi2 = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2) / (c0 * c2 - c1 * c1);
 
         histChi2[ist]->Fill(chi2);
         {
@@ -385,40 +380,31 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
           p->Position(pos);
           p->Momentum(mom);
           tt.Propagate(pos.Z());
-          if (tt.C[0] > 0.0)
-            histPull_dx[ist]->Fill((tt.T[0] - pos.X()) / sqrt(tt.C[0]));
-          if (tt.C[2] > 0.0)
-            histPull_dy[ist]->Fill((tt.T[1] - pos.Y()) / sqrt(tt.C[2]));
-          if (tt.C[5] > 0.0)
-            histPull_tx[ist]->Fill((tt.T[2] - mom.X() / mom.Z())
-                                   / sqrt(tt.C[5]));
-          if (tt.C[9] > 0.0)
-            histPull_ty[ist]->Fill((tt.T[3] - mom.Y() / mom.Z())
-                                   / sqrt(tt.C[9]));
-          if (tt.C[14] > 0.0)
-            histPull_qp[ist]->Fill((fabs(tt.T[4]) - 1. / mom.Mag())
-                                   / sqrt(tt.C[14]));
+          if (tt.C[0] > 0.0) histPull_dx[ist]->Fill((tt.T[0] - pos.X()) / sqrt(tt.C[0]));
+          if (tt.C[2] > 0.0) histPull_dy[ist]->Fill((tt.T[1] - pos.Y()) / sqrt(tt.C[2]));
+          if (tt.C[5] > 0.0) histPull_tx[ist]->Fill((tt.T[2] - mom.X() / mom.Z()) / sqrt(tt.C[5]));
+          if (tt.C[9] > 0.0) histPull_ty[ist]->Fill((tt.T[3] - mom.Y() / mom.Z()) / sqrt(tt.C[9]));
+          if (tt.C[14] > 0.0) histPull_qp[ist]->Fill((fabs(tt.T[4]) - 1. / mom.Mag()) / sqrt(tt.C[14]));
         }
       }
     }
   }  // tracks
 
 
-  if (EventCounter < 100 && EventCounter % 10 == 0
-      || EventCounter >= 100 && EventCounter % 100 == 0)
-    Write();
+  if (EventCounter < 100 && EventCounter % 10 == 0 || EventCounter >= 100 && EventCounter % 100 == 0) Write();
 }
 
 
-void CbmL1MuchFinderQa::Write() {
+void CbmL1MuchFinderQa::Write()
+{
   TFile HistoFile("MuRecQa.root", "RECREATE");
   writedir2current(histodir);
   HistoFile.Close();
 }
 
-void CbmL1MuchFinderQa::writedir2current(TObject* obj) {
-  if (!obj->IsFolder())
-    obj->Write();
+void CbmL1MuchFinderQa::writedir2current(TObject* obj)
+{
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur = gDirectory;
     TDirectory* sub = cur->mkdir(obj->GetName());

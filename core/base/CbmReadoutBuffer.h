@@ -35,13 +35,7 @@ public:
 		 ** No output TClonesArray will be present. The buffered data have to
 		 ** be fetched through ReadOutData.
 		 **/
-  CbmReadoutBuffer()
-    : FairWriteoutBuffer()
-    , fBuffer()
-    , fBufferIt()
-    , fOldIt()
-    , fArray(nullptr)
-    , fWriteToArray(kFALSE) {}
+  CbmReadoutBuffer() : FairWriteoutBuffer(), fBuffer(), fBufferIt(), fOldIt(), fArray(nullptr), fWriteToArray(kFALSE) {}
   // ---------------------------------------------------------------------
 
   // ---------------------------------------------------------------------
@@ -55,23 +49,21 @@ public:
 		 ** ReadOutData will deliver no data (for the same readout time), since the
 		 ** buffered data are deleted after being copied to the array.
 		 **/
-  CbmReadoutBuffer(TString branchName,
-                   TString folderName,
-                   Bool_t persistence = kTRUE)
+  CbmReadoutBuffer(TString branchName, TString folderName, Bool_t persistence = kTRUE)
     : FairWriteoutBuffer()
     , fBuffer()
     , fBufferIt()
     , fOldIt()
     , fArray(nullptr)
-    , fWriteToArray(kTRUE) {
+    , fWriteToArray(kTRUE)
+  {
 
     if (FairRootManager::Instance()) {
       Data* data            = new Data();
       const char* className = data->ClassName();
       delete data;
       LOG(info) << "Class name is " << className;
-      fArray = FairRootManager::Instance()->Register(
-        branchName, className, folderName, persistence);
+      fArray = FairRootManager::Instance()->Register(branchName, className, folderName, persistence);
     }
   }
   // ---------------------------------------------------------------------
@@ -85,10 +77,9 @@ public:
 		 ** Cleans up remaining data in the buffer, if present, which should not
 		 ** be the case if used properly.
 		 **/
-  virtual ~CbmReadoutBuffer() {
-    if (fBuffer.size())
-      LOG(warn) << "Destroying non-empty readout buffer! Number of data: "
-                << fBuffer.size();
+  virtual ~CbmReadoutBuffer()
+  {
+    if (fBuffer.size()) LOG(warn) << "Destroying non-empty readout buffer! Number of data: " << fBuffer.size();
     for (fBufferIt = fBuffer.begin(); fBufferIt != fBuffer.end(); fBufferIt++)
       if (fBufferIt->second) delete fBufferIt->second;
   }
@@ -110,9 +101,7 @@ public:
 		 ** @param data  Data object
 		 ** @value kTRUE is stop time is later than start time.
 		 **/
-  Bool_t CheckData(Data* data) {
-    return (data->GetTimeStop() >= data->GetTimeStart());
-  }
+  Bool_t CheckData(Data* data) { return (data->GetTimeStop() >= data->GetTimeStart()); }
   // ---------------------------------------------------------------------
 
 
@@ -124,7 +113,8 @@ public:
 		 ** Interference is present if the temporal extension of the objects
 		 ** overlap.
 		 **/
-  Bool_t CheckInterference(Data* data1, Data* data2) {
+  Bool_t CheckInterference(Data* data1, Data* data2)
+  {
     if (data1->GetTimeStop() < data2->GetTimeStart()) return kFALSE;
     if (data2->GetTimeStop() < data1->GetTimeStart()) return kFALSE;
     return kTRUE;
@@ -136,7 +126,8 @@ public:
   /** Clear the output TClonesArray
 		 ** Called at the end of the event from FairRootManager
 		 **/
-  virtual void DeleteOldData() {
+  virtual void DeleteOldData()
+  {
     if (fArray) fArray->Delete();
   }
   // ---------------------------------------------------------------------
@@ -162,24 +153,21 @@ public:
 		 ** be inserted into the buffer. Otherwise, the method Modify is called
 		 ** and the resulting, modified data are inserted into the buffer.
 		 **/
-  void Fill(UInt_t address, Data* data) {
+  void Fill(UInt_t address, Data* data)
+  {
 
-    LOG(debug4) << "RO: Filling data at t = " << data->GetTimeStart()
-                << " in address " << address;
+    LOG(debug4) << "RO: Filling data at t = " << data->GetTimeStart() << " in address " << address;
 
     // --- Check data for consistency (start/stop time)
     if (!CheckData(data)) {
       LOG(fatal) << GetName() << ": inconsistent data input to Fill(). "
-                 << "Start time is " << data->GetTimeStart() << " stop time is "
-                 << data->GetTimeStop();
+                 << "Start time is " << data->GetTimeStart() << " stop time is " << data->GetTimeStop();
     }
 
     // --- Loop over all present data with same address
     // --- Pick the first to which the interference criterion applies.
     Bool_t dataFound = kFALSE;
-    for (fBufferIt = fBuffer.lower_bound(address);
-         fBufferIt != fBuffer.upper_bound(address);
-         fBufferIt++) {
+    for (fBufferIt = fBuffer.lower_bound(address); fBufferIt != fBuffer.upper_bound(address); fBufferIt++) {
 
       // --- Check interference of buffer data with old data. If so, jump
       // --- out of loop
@@ -206,12 +194,11 @@ public:
       for (Int_t iData1 = 0; iData1 < nData; iData1++) {
         for (Int_t iData2 = iData1 + 1; iData2 < nData; iData2++) {
           if (CheckInterference(newDataList[iData1], newDataList[iData2]))
-            LOG(fatal)
-              << GetName() << ": Interfering data in return from Modify! "
-              << "Data 1: t(start) = " << newDataList[iData1]->GetTimeStart()
-              << " ns, t(stop) = " << newDataList[iData1]->GetTimeStop()
-              << ", Data 2: t(start) = " << newDataList[iData2]->GetTimeStart()
-              << " ns, t(stop) = " << newDataList[iData2]->GetTimeStop();
+            LOG(fatal) << GetName() << ": Interfering data in return from Modify! "
+                       << "Data 1: t(start) = " << newDataList[iData1]->GetTimeStart()
+                       << " ns, t(stop) = " << newDataList[iData1]->GetTimeStop()
+                       << ", Data 2: t(start) = " << newDataList[iData2]->GetTimeStart()
+                       << " ns, t(stop) = " << newDataList[iData2]->GetTimeStop();
         }  //# data in vector (second loop)
       }    //# data in vector (first loop)
 
@@ -223,8 +210,7 @@ public:
       // --- Fill new data to buffer, still checking for existing ones
       for (UInt_t iData = 0; iData < newDataList.size(); iData++) {
         LOG(debug4) << "RO: Filling modified data at address " << address
-                    << ", t = " << newDataList[iData]->GetTimeStart() << " to "
-                    << newDataList[iData]->GetTimeStop();
+                    << ", t = " << newDataList[iData]->GetTimeStart() << " to " << newDataList[iData]->GetTimeStop();
         Fill(address, newDataList[iData]);
       }  //# result data of Modify
 
@@ -234,8 +220,7 @@ public:
     else {
 
       fBuffer.insert(std::pair<UInt_t, Data*>(address, data));
-      LOG(debug4) << "RO: Insert data at address " << address
-                  << ", t = " << data->GetTimeStart() << " to "
+      LOG(debug4) << "RO: Insert data at address " << address << ", t = " << data->GetTimeStart() << " to "
                   << data->GetTimeStop();
 
     }  //? No interference
@@ -270,17 +255,14 @@ public:
 
 
   // ---------------------------------------------------------------------
-  virtual Int_t
-  Merge(Data* oldData1, Data* oldData2, std::vector<Data*>& newDataList) {
+  virtual Int_t Merge(Data* oldData1, Data* oldData2, std::vector<Data*>& newDataList)
+  {
 
     // Default prescription: return earlier data, skip the later one,
     // but set the stop time of the result to the maximum of the
     // two stop times
-    Data* firstData =
-      (oldData1->GetTimeStart() < oldData2->GetTimeStart() ? oldData1
-                                                           : oldData2);
-    Double_t stopTime =
-      std::max(oldData1->GetTimeStop(), oldData2->GetTimeStop());
+    Data* firstData   = (oldData1->GetTimeStart() < oldData2->GetTimeStart() ? oldData1 : oldData2);
+    Double_t stopTime = std::max(oldData1->GetTimeStop(), oldData2->GetTimeStop());
 
     // Create new data object
     Data* newData = new Data(*firstData);
@@ -317,10 +299,10 @@ public:
 		 ** The object ownership is passed to the consumer, who is responsible
 		 ** for destroying the data objects in the data vector.
 		 **/
-  Int_t ReadOutData(Double_t time, std::vector<Data*>& dataList) {
+  Int_t ReadOutData(Double_t time, std::vector<Data*>& dataList)
+  {
 
-    LOG(debug) << "RO Buffer: read out at t = " << time << ", buffer size "
-               << fBuffer.size();
+    LOG(debug) << "RO Buffer: read out at t = " << time << ", buffer size " << fBuffer.size();
     if (!dataList.empty()) dataList.clear();
 
     Int_t nData = 0;
@@ -368,12 +350,13 @@ public:
 		 ** Note that this method has no effect if fWriteToArray is kFALSE,
 		 ** which is the default.
 		 **/
-  virtual void WriteOutData(Double_t time) {
+  virtual void WriteOutData(Double_t time)
+  {
 
     if (!fWriteToArray) return;
 
-    LOG(info) << "RO Buffer: write out at t = " << time << ", buffer size "
-              << fBuffer.size() << ", array size " << fArray->GetEntriesFast();
+    LOG(info) << "RO Buffer: write out at t = " << time << ", buffer size " << fBuffer.size() << ", array size "
+              << fArray->GetEntriesFast();
 
     Int_t nDataWritten = 0;
     fBufferIt          = fBuffer.begin();
@@ -409,8 +392,8 @@ public:
 
     }  //# buffer elements
 
-    LOG(info) << "RO Buffer: wrote " << nDataWritten << " data, buffer size "
-              << fBuffer.size() << ", array size " << fArray->GetEntriesFast();
+    LOG(info) << "RO Buffer: wrote " << nDataWritten << " data, buffer size " << fBuffer.size() << ", array size "
+              << fArray->GetEntriesFast();
   }
   // ---------------------------------------------------------------------
 

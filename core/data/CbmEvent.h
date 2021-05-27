@@ -7,6 +7,10 @@
 #ifndef CBMEVENT_H
 #define CBMEVENT_H 1
 
+#include "CbmDefs.h"    // for ECbmDataType, ECbmModuleId::kStsTrack
+#include "CbmMatch.h"   // for CbmMatch
+#include "CbmVertex.h"  // for CbmVertex, found in core/data/global
+
 #include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>      // for Double_t, UInt_t, Int_t
 #include <TMatrixFSymfwd.h>  // for TMatrixFSym
@@ -15,10 +19,6 @@
 #include <map>     // for map, map<>::mapped_type
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmDefs.h"    // for ECbmDataType, ECbmModuleId::kStsTrack
-#include "CbmMatch.h"   // for CbmMatch
-#include "CbmVertex.h"  // for CbmVertex, found in core/data/global
 
 /** @class CbmEvent
  ** @brief Class characterising one event by a collection of links (indices)
@@ -46,12 +46,15 @@ public:
     , fNofData(0)
     , fVertex()
     , fMatch(nullptr)
-    , fIndexMap() {}
+    , fIndexMap()
+  {
+  }
 
   CbmEvent(CbmEvent&&) = default;
 
   /** Destructor **/
-  virtual ~CbmEvent() {
+  virtual ~CbmEvent()
+  {
     if (fMatch) delete fMatch;
   }
 
@@ -114,9 +117,7 @@ public:
 		 ** @param iTrack  Running number of STS track in the event
 		 ** @value index   Index of STS track in TClonesArray
 		 **/
-  Int_t GetStsTrackIndex(Int_t iTrack) {
-    return GetIndex(ECbmDataType::kStsTrack, iTrack);
-  }
+  Int_t GetStsTrackIndex(Int_t iTrack) { return GetIndex(ECbmDataType::kStsTrack, iTrack); }
 
 
   /** Get event end time
@@ -154,7 +155,8 @@ public:
 		 ** Old content will be overwritten.
 		 ** @param indexVector  Vector with indices of STS tracks
 	     **/
-  void SetStsTracks(std::vector<UInt_t>& indexVector) {
+  void SetStsTracks(std::vector<UInt_t>& indexVector)
+  {
     fNofData -= fIndexMap[ECbmDataType::kStsTrack].size();
     fIndexMap[ECbmDataType::kStsTrack] = indexVector;
     fNofData += fIndexMap[ECbmDataType::kStsTrack].size();
@@ -170,12 +172,7 @@ public:
 	   *@param nTracks   Number of tracks used for vertex fit
 	   *@param covMat    Covariance Matrix (symmetric, 3x3)
 	   **/
-  void SetVertex(Double_t x,
-                 Double_t y,
-                 Double_t z,
-                 Double_t chi2,
-                 Int_t ndf,
-                 Int_t nTracks,
+  void SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
                  const TMatrixFSym& covMat);
 
 

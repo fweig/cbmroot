@@ -4,7 +4,6 @@
 #include "CbmKF.h"
 #include "CbmKFMaterial.h"
 #include "CbmKFTrackInterface.h"
-
 #include "CbmMvdHit.h"
 #include "CbmStsAddress.h"
 #include "CbmStsHit.h"
@@ -17,19 +16,18 @@ ClassImp(CbmKFStsHit);
 
 static CbmKFTube st_tube;
 
-void CbmKFStsHit::Create(CbmStsHit* h) {
+void CbmKFStsHit::Create(CbmStsHit* h)
+{
 
   CbmKF* KF = CbmKF::Instance();
   int id    = 1000 + CbmStsSetup::Instance()->GetStationNumber(h->GetAddress());
 
   MaterialIndex = KF->GetMaterialIndex(id);
 
-  if (MaterialIndex >= 0)
-    tube = (CbmKFTube*) KF->vMaterial[MaterialIndex];
+  if (MaterialIndex >= 0) tube = (CbmKFTube*) KF->vMaterial[MaterialIndex];
   else {
-    st_tube.z = st_tube.dz = st_tube.r = st_tube.R = st_tube.rr = st_tube.RR =
-      0;
-    tube = &st_tube;
+    st_tube.z = st_tube.dz = st_tube.r = st_tube.R = st_tube.rr = st_tube.RR = 0;
+    tube                                                                     = &st_tube;
   }
   TVector3 pos, err;
   h->Position(pos);
@@ -50,7 +48,8 @@ void CbmKFStsHit::Create(CbmStsHit* h) {
 }
 
 
-void CbmKFStsHit::Create(CbmMvdHit* h) {
+void CbmKFStsHit::Create(CbmMvdHit* h)
+{
 
   CbmKF* KF = CbmKF::Instance();
   int id    = 1100 + h->GetStationNr();
@@ -58,12 +57,10 @@ void CbmKFStsHit::Create(CbmMvdHit* h) {
   MaterialIndex = KF->GetMaterialIndex(id);
   //   cout << " and material index = " << MaterialIndex << endl;
 
-  if (MaterialIndex >= 0)
-    tube = (CbmKFTube*) KF->vMaterial[MaterialIndex];
+  if (MaterialIndex >= 0) tube = (CbmKFTube*) KF->vMaterial[MaterialIndex];
   else {
-    st_tube.z = st_tube.dz = st_tube.r = st_tube.R = st_tube.rr = st_tube.RR =
-      0;
-    tube = &st_tube;
+    st_tube.z = st_tube.dz = st_tube.r = st_tube.R = st_tube.rr = st_tube.RR = 0;
+    tube                                                                     = &st_tube;
   }
   TVector3 pos, err;
   h->Position(pos);
@@ -79,16 +76,16 @@ void CbmKFStsHit::Create(CbmMvdHit* h) {
 }
 
 
-Int_t CbmKFStsHit::Filter(CbmKFTrackInterface& track,
-                          Bool_t downstream,
-                          Double_t& QP0) {
+Int_t CbmKFStsHit::Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0)
+{
   Bool_t err = 0;
   Double_t zfst, zlst, zend;
   if (downstream) {
     zfst = tube->z - tube->ZThickness / 4.;
     zlst = tube->z + tube->ZThickness / 4.;
     zend = tube->z + tube->ZThickness / 2.;
-  } else {
+  }
+  else {
     zfst = tube->z + tube->ZThickness / 4.;
     zlst = tube->z - tube->ZThickness / 4.;
     zend = tube->z - tube->ZThickness / 2.;
@@ -114,13 +111,9 @@ Int_t CbmKFStsHit::Filter(CbmKFTrackInterface& track,
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void CbmKFStsHit::FilterPDAF(CbmKFTrackInterface& track,
-                             vector<CbmKFStsHit*>& vpHits,
-                             Bool_t downstream,
-                             Double_t* QP0,
-                             double gateX,
-                             double gateY,
-                             int& best_hit_idx) {
+void CbmKFStsHit::FilterPDAF(CbmKFTrackInterface& track, vector<CbmKFStsHit*>& vpHits, Bool_t downstream, Double_t* QP0,
+                             double gateX, double gateY, int& best_hit_idx)
+{
 
   best_hit_idx = 0;
   if (vpHits.empty()) return;
@@ -131,9 +124,7 @@ void CbmKFStsHit::FilterPDAF(CbmKFTrackInterface& track,
 
   vector<CbmKFPixelMeasurement*> vm;
   vm.clear();
-  for (vector<CbmKFStsHit*>::iterator phIt = vpHits.begin();
-       phIt != vpHits.end();
-       ++phIt) {
+  for (vector<CbmKFStsHit*>::iterator phIt = vpHits.begin(); phIt != vpHits.end(); ++phIt) {
     vm.push_back(&((*phIt)->FitPoint));
   }
 
@@ -144,7 +135,8 @@ void CbmKFStsHit::FilterPDAF(CbmKFTrackInterface& track,
     zfst = tube->z - tube->ZThickness / 4.;
     zlst = tube->z + tube->ZThickness / 4.;
     zend = tube->z + tube->ZThickness / 2.;
-  } else {
+  }
+  else {
     zfst = tube->z + tube->ZThickness / 4.;
     zlst = tube->z - tube->ZThickness / 4.;
     zend = tube->z - tube->ZThickness / 2.;
@@ -162,8 +154,7 @@ void CbmKFStsHit::FilterPDAF(CbmKFTrackInterface& track,
   int idx         = 0;
   double bestProb = 0.0;
 
-  for (vector<double>::iterator probIt = vProb.begin(); probIt != vProb.end();
-       ++probIt) {
+  for (vector<double>::iterator probIt = vProb.begin(); probIt != vProb.end(); ++probIt) {
     if ((*probIt) > bestProb) {
       bestProb     = (*probIt);
       best_hit_idx = idx;

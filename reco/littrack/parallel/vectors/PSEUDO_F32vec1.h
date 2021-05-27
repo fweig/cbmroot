@@ -1,8 +1,9 @@
 #ifndef LIT_F32VEC1_H
 #define LIT_F32VEC1_H
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 /**********************************
  *
@@ -74,12 +75,14 @@ public:
   friend void operator*=(F32vec1& a, const F32vec1& b) { a = a * b; }
   friend void operator/=(F32vec1& a, const F32vec1& b) { a = a / b; }
 
-  friend std::ostream& operator<<(std::ostream& strm, const F32vec1& a) {
+  friend std::ostream& operator<<(std::ostream& strm, const F32vec1& a)
+  {
     strm << a[0];
     return strm;
   }
 
-  friend std::istream& operator>>(std::istream& strm, F32vec1& a) {
+  friend std::istream& operator>>(std::istream& strm, F32vec1& a)
+  {
     float tmp;
     strm >> tmp;
     a = tmp;

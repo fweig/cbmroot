@@ -10,14 +10,14 @@
 
 /// CBMROOT headers
 #include "CbmDefs.h"
-#include "TimesliceMetaData.h"
-
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+
+#include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
 #include "FairTask.h"
@@ -39,8 +39,7 @@ public:
   CbmMcbm2019CheckTimingPairs();
 
   CbmMcbm2019CheckTimingPairs(const CbmMcbm2019CheckTimingPairs&) = delete;
-  CbmMcbm2019CheckTimingPairs
-  operator=(const CbmMcbm2019CheckTimingPairs&) = delete;
+  CbmMcbm2019CheckTimingPairs operator=(const CbmMcbm2019CheckTimingPairs&) = delete;
 
   /** Constructor with parameters (Optional) **/
   //  CbmMcbm2019CheckTimingPairs(Int_t verbose);
@@ -78,31 +77,38 @@ public:
 
   void SetPsdOffsetSearchRange(Double_t val = 1000) { fdPsdTimeWin = val; }
 
-  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
   }
-  inline void SetStsPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetStsPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserSts = uMin;
     fuMaxAdcPulserSts = uMax;
   }
-  inline void SetMuchPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetMuchPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserMuch = uMin;
     fuMaxAdcPulserMuch = uMax;
   }
-  inline void SetTrdPulserChargeLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetTrdPulserChargeLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinChargePulserTrd = uMin;
     fuMaxChargePulserTrd = uMax;
   }
-  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetTofPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserTof = uMin;
     fuMaxTotPulserTof = uMax;
   }
-  inline void SetRichPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetRichPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulserRich = uMin;
     fuMaxTotPulserRich = uMax;
   }
-  inline void SetPsdPulserAdcLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetPsdPulserAdcLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinAdcPulserPsd = uMin;
     fuMaxAdcPulserPsd = uMax;
   }
@@ -111,8 +117,8 @@ public:
 
   inline void SetStsAddress(UInt_t uAddress) { fuStsAddress = uAddress; }
   inline void SetMuchAsic(UInt_t uAsic) { fuMuchAsic = uAsic; }
-  inline void SetMuchChanRange(UInt_t uFirstChan,
-                               UInt_t uLastChan = kuNbChanSMX) {
+  inline void SetMuchChanRange(UInt_t uFirstChan, UInt_t uLastChan = kuNbChanSMX)
+  {
     fuMuchFirstCha = uFirstChan;
     fuMuchLastChan = uLastChan;
   }
@@ -124,25 +130,14 @@ private:
   void WriteHistos();
 
   template<class Digi>
-  UInt_t FillCorrBuffer(Double_t dTimeT0,
-                        UInt_t uIndexStart,
-                        Double_t dWinStartTime,
-                        Double_t dWinStopTime,
-                        std::vector<std::vector<Digi>>& vDigi,
-                        ECbmModuleId iDetId = ECbmModuleId::kLastModule);
+  UInt_t FillCorrBuffer(Double_t dTimeT0, UInt_t uIndexStart, Double_t dWinStartTime, Double_t dWinStopTime,
+                        std::vector<std::vector<Digi>>& vDigi, ECbmModuleId iDetId = ECbmModuleId::kLastModule);
   template<class DigiA>
-  void FillHistosInter(UInt_t uIndexT0,
-                       UInt_t uIndexA,
-                       UInt_t uIndexB,
-                       std::vector<DigiA>& vCorrDigA,
+  void FillHistosInter(UInt_t uIndexT0, UInt_t uIndexA, UInt_t uIndexB, std::vector<DigiA>& vCorrDigA,
                        UInt_t uHistoIdx);
   template<class DigiA, class DigiB>
-  void FillHistos(UInt_t uIndexT0,
-                  UInt_t uIndexA,
-                  UInt_t uIndexB,
-                  std::vector<DigiA>& vCorrDigA,
-                  std::vector<DigiB>& vCorrDigB,
-                  UInt_t uHistoIdx);
+  void FillHistos(UInt_t uIndexT0, UInt_t uIndexA, UInt_t uIndexB, std::vector<DigiA>& vCorrDigA,
+                  std::vector<DigiB>& vCorrDigB, UInt_t uHistoIdx);
 
   /** Digi data **/
   CbmDigiManager* fDigiMan                     = nullptr;  //!
@@ -152,31 +147,27 @@ private:
   const TimesliceMetaData* pTsMetaData         = nullptr;
 
   /// Constants
-  static const UInt_t kuNbChanSMX        = 128;
-  static const UInt_t kuMaxNbStsDpbs     = 2;
-  static const UInt_t kuMaxNbMuchDpbs    = 6;
-  static const UInt_t kuMaxNbMuchAsics   = 36;
-  static const UInt_t kuDefaultAddress   = 0xFFFFFFFF;
-  static const UInt_t kuMaxChannelSts    = 3000;
-  static const UInt_t kuNbBinsDefault    = 2000;
-  static constexpr Double_t kdClockCycle = 3.125;
-  static constexpr Double_t kdDefaultTimeWin =
-    kdClockCycle * kuNbBinsDefault / 2;
+  static const UInt_t kuNbChanSMX            = 128;
+  static const UInt_t kuMaxNbStsDpbs         = 2;
+  static const UInt_t kuMaxNbMuchDpbs        = 6;
+  static const UInt_t kuMaxNbMuchAsics       = 36;
+  static const UInt_t kuDefaultAddress       = 0xFFFFFFFF;
+  static const UInt_t kuMaxChannelSts        = 3000;
+  static const UInt_t kuNbBinsDefault        = 2000;
+  static constexpr Double_t kdClockCycle     = 3.125;
+  static constexpr Double_t kdDefaultTimeWin = kdClockCycle * kuNbBinsDefault / 2;
 
   /// List of detectors
-  std::vector<std::string> fvsDetectors =
-    {"STS", "MUCH", "TRD", "TOF", "RICH", "PSD"};  //!
-  UInt_t fuNbDetectors = fvsDetectors.size();
+  std::vector<std::string> fvsDetectors = {"STS", "MUCH", "TRD", "TOF", "RICH", "PSD"};  //!
+  UInt_t fuNbDetectors                  = fvsDetectors.size();
 
   /// Variables to store the previous digi time
-  Double_t fPrevTimeT0 = 0.;
-  std::vector<Double_t> fvPrevTimeDet =
-    std::vector<Double_t>(fuNbDetectors, 0.0);  //!
+  Double_t fPrevTimeT0                = 0.;
+  std::vector<Double_t> fvPrevTimeDet = std::vector<Double_t>(fuNbDetectors, 0.0);  //!
 
   /// Variables to store the first digi fitting the previous T0 hits
   /// => Time-order means the time window for following one can only be in a later digi
-  std::vector<UInt_t> fvuPrevT0FirstDigiDet =
-    std::vector<UInt_t>(fuNbDetectors, 0);  //!
+  std::vector<UInt_t> fvuPrevT0FirstDigiDet = std::vector<UInt_t>(fuNbDetectors, 0);  //!
 
   /// Variable to store correlated Digis
   std::vector<CbmTofDigi> fvDigisT0                         = {};  //!

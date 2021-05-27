@@ -10,7 +10,8 @@
 //
 // --------------------------------------------------------------------------
 
-void create_digipar_root_test(TString geoName = "trd_v15a_1e") {
+void create_digipar_root_test(TString geoName = "trd_v15a_1e")
+{
   TString inDir = gSystem->Getenv("VMCWORKDIR");
 
   TString inFile   = "data/test.mc." + geoName + ".root";

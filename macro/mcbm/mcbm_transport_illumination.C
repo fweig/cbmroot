@@ -18,17 +18,11 @@
  **
  ** Shoot protons following the given source properties.
  **/
-void mcbm_transport_illumination(UInt_t nEvents     = 1,
-                                 Double_t dMinX     = -10.0,
-                                 Double_t dMaxX     = 10.0,
-                                 Double_t dMinY     = -10.0,
-                                 Double_t dMaxY     = 10.0,
-                                 Double_t dMinP     = 1.3,
-                                 Double_t dMaxP     = 1.4,
-                                 Double_t dThetaMin = 0.0,
-                                 Double_t dThetaMax = 0.0,
-                                 TString output     = "test",
-                                 TString setup      = "mcbm_beam_2019_11") {
+void mcbm_transport_illumination(UInt_t nEvents = 1, Double_t dMinX = -10.0, Double_t dMaxX = 10.0,
+                                 Double_t dMinY = -10.0, Double_t dMaxY = 10.0, Double_t dMinP = 1.3,
+                                 Double_t dMaxP = 1.4, Double_t dThetaMin = 0.0, Double_t dThetaMax = 0.0,
+                                 TString output = "test", TString setup = "mcbm_beam_2019_11")
+{
 
   // -----   Define file names   ---------------------------------------------
   TString outFileName = output + ".tra.root";
@@ -83,9 +77,7 @@ void mcbm_transport_illumination(UInt_t nEvents     = 1,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFileName << std::endl;
   std::cout << "Parameter file is " << parFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

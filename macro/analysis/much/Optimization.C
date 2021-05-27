@@ -12,11 +12,9 @@
 //
 //---------------------------------------------------
 
-void Optimization(Int_t energy    = 8,
-                  Int_t NofFiles  = 1000,
-                  Int_t type      = 1,
-                  TString version = "v19c",
-                  TString dir     = "../../much/data/sis100_muon_lmvm") {
+void Optimization(Int_t energy = 8, Int_t NofFiles = 1000, Int_t type = 1, TString version = "v19c",
+                  TString dir = "../../much/data/sis100_muon_lmvm")
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -65,8 +63,8 @@ void Optimization(Int_t energy    = 8,
   Int_t sigmaTOFCut = 2;
 
   TString dir_par = getenv("VMCWORKDIR");
-  TString name    = dir_par + "/parameters/much/TOF8gev_fitParam_sigma"
-                 + std::to_string(sigmaTOFCut) + ".sis100_muon_lmvm.root";
+  TString name =
+    dir_par + "/parameters/much/TOF8gev_fitParam_sigma" + std::to_string(sigmaTOFCut) + ".sis100_muon_lmvm.root";
 
   Double_t p0min, p1min, p2min;
   Double_t p0max, p1max, p2max;
@@ -95,8 +93,7 @@ void Optimization(Int_t energy    = 8,
       continue;
     }
 
-    if (k % 100 == 0)
-      cout << "Input File " << k << " : " << f->GetName() << endl;
+    if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
     InputTree = (TTree*) f->Get("cbmsim");
     if (!InputTree) {
@@ -138,13 +135,11 @@ void Optimization(Int_t energy    = 8,
         Double_t mom  = P_pl->P();
 
         if (type == 0)
-          if (mass < (p0min + p1min * mom + p2min * mom * mom)
-              || mass > (p0max + p1max * mom + p2max * mom * mom))
+          if (mass < (p0min + p1min * mom + p2min * mom * mom) || mass > (p0max + p1max * mom + p2max * mom * mom))
             continue;
 
         for (int jPart = 0; jPart < NofMinus; jPart++) {
-          CbmAnaMuonCandidate* mu_mn =
-            (CbmAnaMuonCandidate*) MuMinus->At(jPart);
+          CbmAnaMuonCandidate* mu_mn = (CbmAnaMuonCandidate*) MuMinus->At(jPart);
           if (type == 0) {
             if (mu_mn->GetNStsHits() < STShits) continue;
             if (mu_mn->GetNMuchHits() < MUCHhits) continue;
@@ -161,8 +156,7 @@ void Optimization(Int_t energy    = 8,
           mom  = P_mn->P();
 
           if (type == 0)
-            if (mass < (p0min + p1min * mom + p2min * mom * mom)
-                || mass > (p0max + p1max * mom + p2max * mom * mom))
+            if (mass < (p0min + p1min * mom + p2min * mom * mom) || mass > (p0max + p1max * mom + p2max * mom * mom))
               continue;
 
           TLorentzVector M(*P_pl + *P_mn);
@@ -189,8 +183,7 @@ void Optimization(Int_t energy    = 8,
       continue;
     }
 
-    if (k % 100 == 0)
-      cout << "Input File " << k << " : " << f->GetName() << endl;
+    if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
     InputTree = (TTree*) f->Get("cbmsim");
     if (!InputTree) {
@@ -229,8 +222,7 @@ void Optimization(Int_t energy    = 8,
         Double_t mom  = P_pl->P();
 
         if (type == 0)
-          if (mass < (p0min + p1min * mom + p2min * mom * mom)
-              || mass > (p0max + p1max * mom + p2max * mom * mom))
+          if (mass < (p0min + p1min * mom + p2min * mom * mom) || mass > (p0max + p1max * mom + p2max * mom * mom))
             continue;
         P1 = *mu_pl->GetMomentum();
         Plus->Fill();
@@ -253,8 +245,7 @@ void Optimization(Int_t energy    = 8,
         Double_t mom  = P_mn->P();
 
         if (type == 0)
-          if (mass < (p0min + p1min * mom + p2min * mom * mom)
-              || mass > (p0max + p1max * mom + p2max * mom * mom))
+          if (mass < (p0min + p1min * mom + p2min * mom * mom) || mass > (p0max + p1max * mom + p2max * mom * mom))
             continue;
         P2 = *mu_mn->GetMomentum();
         Minus->Fill();
@@ -286,8 +277,7 @@ void Optimization(Int_t energy    = 8,
   invM_bg->Scale(1. / NofEvents[1] / NofEvents[1]);
   invM_full->Add(invM_bg);
 
-  Double_t initPar[] = {0.782,
-                        0.02};  // omega mass and sigma for fit initialization
+  Double_t initPar[] = {0.782, 0.02};  // omega mass and sigma for fit initialization
 
   TF1* fit = new TF1("fullFit", "gaus(0)+pol2(3)", 0.60, 0.90);
 
@@ -405,13 +395,13 @@ void Optimization(Int_t energy    = 8,
     Tl.DrawLatex(0.3, 0.2, name);
     name.Form("%d#sigma cut in TOF", sigmaTOFCut);
     Tl.DrawLatex(0.3, 0.1, name);
-  } else {
+  }
+  else {
     invM_full->Draw("pe");
     legend->Draw();
   }
 
-  if (type == 0)
-    name.Form("invM_bg_omega_%dgev.cuts_", energy);
+  if (type == 0) name.Form("invM_bg_omega_%dgev.cuts_", energy);
   else
     name.Form("invM_bg_omega_%dgev.geo_", energy);
   name += version + ".root";

@@ -4,13 +4,12 @@
 #ifndef CbmKFParticleFinderPID_HH
 #define CbmKFParticleFinderPID_HH
 
+#include "CbmMCDataArray.h"
+#include "CbmMCEventList.h"
+
 #include "FairTask.h"
 
 #include "TString.h"
-
-
-#include "CbmMCDataArray.h"
-#include "CbmMCEventList.h"
 
 #include <vector>
 
@@ -22,26 +21,17 @@ class CbmDigiManager;
 class CbmKFParticleFinderPID : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFParticleFinderPID(const char* name = "CbmKFParticleFinderPID",
-                         Int_t iVerbose   = 0);
+  CbmKFParticleFinderPID(const char* name = "CbmKFParticleFinderPID", Int_t iVerbose = 0);
   ~CbmKFParticleFinderPID();
 
-  void SetStsTrackBranchName(const TString& name) {
-    fStsTrackBranchName = name;
-  }
-  void SetGlobalTrackBranchName(const TString& name) {
-    fGlobalTrackBranchName = name;
-  }
+  void SetStsTrackBranchName(const TString& name) { fStsTrackBranchName = name; }
+  void SetGlobalTrackBranchName(const TString& name) { fGlobalTrackBranchName = name; }
   void SetTofBranchName(const TString& name) { fTofBranchName = name; }
   void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
-  void SetTrackMatchBranchName(const TString& name) {
-    fTrackMatchBranchName = name;
-  }
+  void SetTrackMatchBranchName(const TString& name) { fTrackMatchBranchName = name; }
   void SetTrdBranchName(const TString& name) { fTrdBranchName = name; }
   void SetRichBranchName(const TString& name) { fRichBranchName = name; }
-  void SetMuchTrackBranchName(const TString& name) {
-    fMuchTrackBranchName = name;
-  }
+  void SetMuchTrackBranchName(const TString& name) { fMuchTrackBranchName = name; }
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);

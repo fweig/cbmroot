@@ -17,14 +17,16 @@ public:
     , ghosts(0)
     , nEvents(0)
     , ratio_clone()
-    , clone() {
+    , clone()
+  {
     AddCounter("reconstructable", "Reconstructable tracks   ");
     AddCounter("reconstructed", "Reconstructed tracks     ");
   }
 
   ~L1EventEfficiencies() {};
 
-  void AddCounter(string shortname, string name) {
+  void AddCounter(string shortname, string name)
+  {
     indices[shortname] = names.size();
     names.push_back(name);
 
@@ -35,7 +37,8 @@ public:
     clone.AddCounter();
   }
 
-  L1EventEfficiencies& operator+=(L1EventEfficiencies& a) {
+  L1EventEfficiencies& operator+=(L1EventEfficiencies& a)
+  {
     mc += a.mc;
     reco += a.reco;
     clone += a.clone;
@@ -44,19 +47,20 @@ public:
     return *this;
   }
 
-  void CalcEff() {
-    ratio_reco         = reco / mc;
-    const double total = reco.counters[indices["reconstructable"]] + ghosts
-                         + clone.counters[indices["reconstructable"]];
-    if (total > 0)
-      ratio_ghosts = ghosts / total;
+  void CalcEff()
+  {
+    ratio_reco = reco / mc;
+    const double total =
+      reco.counters[indices["reconstructable"]] + ghosts + clone.counters[indices["reconstructable"]];
+    if (total > 0) ratio_ghosts = ghosts / total;
     else
       ratio_ghosts = -1;
     ratio_clone = clone / mc;
   }
 
 
-  void Inc(bool isReco, int _nclones, string name) {
+  void Inc(bool isReco, int _nclones, string name)
+  {
     const int index = indices[name];
     mc.counters[index]++;
     if (isReco) reco.counters[index]++;
@@ -67,7 +71,8 @@ public:
 
   void AddGhost(int i) { ghosts += i; }
 
-  void PrintEff() {
+  void PrintEff()
+  {
 
     std::cout.setf(ios::fixed);
     std::cout.setf(ios::showpoint);
@@ -85,18 +90,15 @@ public:
     for (int iC = 0; iC < NCounters; iC++) {
       std::cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
                 << ratio_clone.counters[iC]  // nCloneTracks/nMCTracks
-                << "  / " << setw(8) << reco.counters[iC] / double(nEvents)
-                << " | " << setw(8) << mc.counters[iC] / double(nEvents)
-                << std::endl;
+                << "  / " << setw(8) << reco.counters[iC] / double(nEvents) << " | " << setw(8)
+                << mc.counters[iC] / double(nEvents) << std::endl;
     }
-    std::cout << "Ghost     probability       : " << ratio_ghosts << " | "
-              << ghosts << std::endl;
+    std::cout << "Ghost     probability       : " << ratio_ghosts << " | " << ghosts << std::endl;
   }
 
 private:
-  vector<string> names;  // names counters indexed by index of counter
-  map<string, int>
-    indices;  // indices of counters indexed by a counter shortname
+  vector<string> names;      // names counters indexed by index of counter
+  map<string, int> indices;  // indices of counters indexed by a counter shortname
 
   TL1TracksCatCounters<double> ratio_reco;
   double ratio_ghosts;

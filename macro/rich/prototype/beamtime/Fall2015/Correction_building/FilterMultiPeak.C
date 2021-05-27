@@ -3,8 +3,8 @@
 #define WINMIN 1.5     // ns
 #define WINMAX 3.0     // ns
 
-void FilterMultiPeak(TString filename       = "sum_rings_WLS_off_G1_2.root",
-                     TString picturesFolder = "pictures") {
+void FilterMultiPeak(TString filename = "sum_rings_WLS_off_G1_2.root", TString picturesFolder = "pictures")
+{
   TH1D* hDevi1 = new TH1D("hDevi1", "hDevi1", 1000, -10., 10.);
   TH1D* hDevi2 = new TH1D("hDevi2", "hDevi2", 1000, -10., 10.);
 
@@ -42,18 +42,12 @@ void FilterMultiPeak(TString filename       = "sum_rings_WLS_off_G1_2.root",
       //TString objName(histo1->GetName());
       if (!(histoName.Contains("LeadingEdgeDiff"))) continue;
 
-      Double_t num =
-        histo1->GetEntries();  // Get the number of entries in the histo
+      Double_t num = histo1->GetEntries();  // Get the number of entries in the histo
       if (num == 0) continue;
 
       UInt_t tdc1, ch1, tdc2, ch2;
       strcpy(LINE, histoName.Data());
-      sscanf(LINE,
-             "LeadingEdgeDiff_TDC%d_ch%d_TDC%d_ch%d",
-             &tdc1,
-             &ch1,
-             &tdc2,
-             &ch2);
+      sscanf(LINE, "LeadingEdgeDiff_TDC%d_ch%d_TDC%d_ch%d", &tdc1, &ch1, &tdc2, &ch2);
 
       if ((tdc1 == tdc2) && (ch1 == ch2)) continue;
 
@@ -81,38 +75,29 @@ void FilterMultiPeak(TString filename       = "sum_rings_WLS_off_G1_2.root",
          }
          */
 
-      if (tdc1 == 50 || tdc1 == 51 || tdc1 == 52 || tdc1 == 53 || tdc1 == 60
-          || tdc1 == 61 || tdc1 == 62 || tdc1 == 63 || tdc2 == 50 || tdc2 == 51
-          || tdc2 == 52 || tdc2 == 53 || tdc2 == 60 || tdc2 == 61 || tdc2 == 62
+      if (tdc1 == 50 || tdc1 == 51 || tdc1 == 52 || tdc1 == 53 || tdc1 == 60 || tdc1 == 61 || tdc1 == 62 || tdc1 == 63
+          || tdc2 == 50 || tdc2 == 51 || tdc2 == 52 || tdc2 == 53 || tdc2 == 60 || tdc2 == 61 || tdc2 == 62
           || tdc2 == 63 ||
 
-          (tdc1 == 10 && ch1 == 4) || (tdc2 == 10 && ch2 == 4)
-          || (tdc1 == 11 && ch1 == 0) || (tdc2 == 11 && ch2 == 0)
+          (tdc1 == 10 && ch1 == 4) || (tdc2 == 10 && ch2 == 4) || (tdc1 == 11 && ch1 == 0) || (tdc2 == 11 && ch2 == 0)
           || (tdc1 == 11 && ch1 == 4) || (tdc2 == 11 && ch2 == 4) ||
 
-          (tdc1 == 13 && ch1 == 3) || (tdc2 == 13 && ch2 == 3)
-          || (tdc1 == 13 && ch1 == 6) || (tdc2 == 13 && ch2 == 6)
-          || (tdc1 == 13 && ch1 == 8) || (tdc2 == 13 && ch2 == 8)
-          || (tdc1 == 13 && ch1 == 9) || (tdc2 == 13 && ch2 == 9)
-          || (tdc1 == 13 && ch1 == 10) || (tdc2 == 13 && ch2 == 10)
-          || (tdc1 == 13 && ch1 == 11) || (tdc2 == 13 && ch2 == 11)
-          || (tdc1 == 13 && ch1 == 13) || (tdc2 == 13 && ch2 == 13) ||
+          (tdc1 == 13 && ch1 == 3) || (tdc2 == 13 && ch2 == 3) || (tdc1 == 13 && ch1 == 6) || (tdc2 == 13 && ch2 == 6)
+          || (tdc1 == 13 && ch1 == 8) || (tdc2 == 13 && ch2 == 8) || (tdc1 == 13 && ch1 == 9)
+          || (tdc2 == 13 && ch2 == 9) || (tdc1 == 13 && ch1 == 10) || (tdc2 == 13 && ch2 == 10)
+          || (tdc1 == 13 && ch1 == 11) || (tdc2 == 13 && ch2 == 11) || (tdc1 == 13 && ch1 == 13)
+          || (tdc2 == 13 && ch2 == 13) ||
 
-          (tdc1 == 20 && ch1 == 0) || (tdc2 == 20 && ch2 == 0)
-          || (tdc1 == 20 && ch1 == 4) || (tdc2 == 20 && ch2 == 4)
-          || (tdc1 == 20 && ch1 == 7) || (tdc2 == 20 && ch2 == 7)
-          || (tdc1 == 20 && ch1 == 14) || (tdc2 == 20 && ch2 == 14)
-          || (tdc1 == 20 && ch1 == 10) || (tdc2 == 20 && ch2 == 10) ||
+          (tdc1 == 20 && ch1 == 0) || (tdc2 == 20 && ch2 == 0) || (tdc1 == 20 && ch1 == 4) || (tdc2 == 20 && ch2 == 4)
+          || (tdc1 == 20 && ch1 == 7) || (tdc2 == 20 && ch2 == 7) || (tdc1 == 20 && ch1 == 14)
+          || (tdc2 == 20 && ch2 == 14) || (tdc1 == 20 && ch1 == 10) || (tdc2 == 20 && ch2 == 10) ||
 
-          (tdc1 == 21 && ch1 == 0) || (tdc2 == 21 && ch2 == 0)
-          || (tdc1 == 21 && ch1 == 5) || (tdc2 == 21 && ch2 == 5)
-          || (tdc1 == 21 && ch1 == 7) || (tdc2 == 21 && ch2 == 7)
-          || (tdc1 == 21 && ch1 == 8) || (tdc2 == 21 && ch2 == 8)
-          || (tdc1 == 21 && ch1 == 14) || (tdc2 == 21 && ch2 == 14)
+          (tdc1 == 21 && ch1 == 0) || (tdc2 == 21 && ch2 == 0) || (tdc1 == 21 && ch1 == 5) || (tdc2 == 21 && ch2 == 5)
+          || (tdc1 == 21 && ch1 == 7) || (tdc2 == 21 && ch2 == 7) || (tdc1 == 21 && ch1 == 8)
+          || (tdc2 == 21 && ch2 == 8) || (tdc1 == 21 && ch1 == 14) || (tdc2 == 21 && ch2 == 14)
           || (tdc1 == 21 && ch1 == 15) || (tdc2 == 21 && ch2 == 15) ||
 
-          (tdc1 == 22 && ch1 == 0) || (tdc2 == 22 && ch2 == 0)
-          || (tdc1 == 22 && ch1 == 4) || (tdc2 == 22 && ch2 == 4)
+          (tdc1 == 22 && ch1 == 0) || (tdc2 == 22 && ch2 == 0) || (tdc1 == 22 && ch1 == 4) || (tdc2 == 22 && ch2 == 4)
           || (tdc1 == 23 && ch1 == 14) || (tdc2 == 23 && ch2 == 14)) {
         continue;
       }
@@ -183,16 +168,8 @@ void FilterMultiPeak(TString filename       = "sum_rings_WLS_off_G1_2.root",
       if (devia < -1.0 || devia > 1.0) continue;
 
       // For correct distributions - print name, maximum position and mean value. They should be close.
-      printf("GOOD: %d\t%d\t%d\t%d\t%d\t%0.8f\t%0.8f\t%0.8f\t%d\n",
-             tdc1,
-             ch1,
-             tdc2,
-             ch2,
-             glMaxBin,
-             histo1->GetMean(),
-             histo1->GetBinCenter(glMaxBin),
-             devia,
-             num);
+      printf("GOOD: %d\t%d\t%d\t%d\t%d\t%0.8f\t%0.8f\t%0.8f\t%d\n", tdc1, ch1, tdc2, ch2, glMaxBin, histo1->GetMean(),
+             histo1->GetBinCenter(glMaxBin), devia, num);
       hDevi2->Fill(devia);
 
       //            TString nameToDelete;

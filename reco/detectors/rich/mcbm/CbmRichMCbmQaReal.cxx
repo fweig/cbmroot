@@ -1,33 +1,17 @@
 #include "CbmRichMCbmQaReal.h"
 
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TEllipse.h"
-#include "TF1.h"
-#include "TGeoBBox.h"
-#include "TGeoManager.h"
-#include "TGeoNode.h"
-#include "TH1.h"
-#include "TH1D.h"
-#include "TLine.h"
-#include "TMarker.h"
-#include "TMath.h"
-#include "TStyle.h"
-#include "TSystem.h"
-#include <TFile.h>
-
-#include <TBox.h>
-#include <TLegend.h>
-
-
+#include "CbmDigiManager.h"
 #include "CbmDrawHist.h"
 #include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
 #include "CbmMatchRecoToMC.h"
+#include "CbmRichConverter.h"
 #include "CbmRichDigi.h"
 #include "CbmRichDraw.h"
 #include "CbmRichGeoManager.h"
 #include "CbmRichHit.h"
+#include "CbmRichMCbmSEDisplay.h"
 #include "CbmRichPoint.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingFinderHoughImpl.h"
@@ -38,23 +22,36 @@
 #include "CbmTofTracklet.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdTrack.h"
-#include "TLatex.h"
-
-#include "CbmRichMCbmSEDisplay.h"
-
-#include "CbmRichConverter.h"
-
-#include "CbmDigiManager.h"
-#include "CbmHistManager.h"
 #include "CbmUtils.h"
+
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TEllipse.h"
+#include "TF1.h"
+#include "TGeoBBox.h"
+#include "TGeoManager.h"
+#include "TGeoNode.h"
+#include "TH1.h"
+#include "TH1D.h"
+#include "TLatex.h"
+#include "TLine.h"
+#include "TMarker.h"
+#include "TMath.h"
+#include "TStyle.h"
+#include "TSystem.h"
+#include <TBox.h>
+#include <TFile.h>
+#include <TLegend.h>
 //#include <CbmSetup.h>
 
 #include <boost/assign/list_of.hpp>
-#include <cmath>
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include <cmath>
 
 using namespace std;
 using boost::assign::list_of;
@@ -80,43 +77,36 @@ CbmRichMCbmQaReal::CbmRichMCbmQaReal()
   , fMaxNofDrawnEvents(100)
   , fTriggerRichHits(0)
   , fTriggerTofHits(0)
-  , fOutputDir("result") {}
+  , fOutputDir("result")
+{
+}
 
-InitStatus CbmRichMCbmQaReal::Init() {
+InitStatus CbmRichMCbmQaReal::Init()
+{
   cout << "CbmRichMCbmQaReal::Init" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmRichMCbmQaReal::Init", "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmRichMCbmQaReal::Init", "RootManager not instantised!"); }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich))
-    Fatal("CbmRichMCbmQaReal::Init", "No Rich Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) Fatal("CbmRichMCbmQaReal::Init", "No Rich Digis!");
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof))
-    Fatal("CbmRichMCbmQaReal::Init", "No Tof Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) Fatal("CbmRichMCbmQaReal::Init", "No Tof Digis!");
 
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (nullptr == fRichHits) {
-    Fatal("CbmRichMCbmQaReal::Init", "No Rich Hits!");
-  }
+  if (nullptr == fRichHits) { Fatal("CbmRichMCbmQaReal::Init", "No Rich Hits!"); }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (nullptr == fRichRings) {
-    Fatal("CbmRichMCbmQaReal::Init", "No Rich Rings!");
-  }
+  if (nullptr == fRichRings) { Fatal("CbmRichMCbmQaReal::Init", "No Rich Rings!"); }
 
   fTofHits = (TClonesArray*) ioman->GetObject("TofHit");
   if (nullptr == fTofHits) { Fatal("CbmRichMCbmQaReal::Init", "No Tof Hits!"); }
 
   fTofTracks = (TClonesArray*) ioman->GetObject("TofTracks");
-  if (nullptr == fTofTracks) {
-    Fatal("CbmRichMCbmQaReal::Init", "No Tof Tracks!");
-  }
+  if (nullptr == fTofTracks) { Fatal("CbmRichMCbmQaReal::Init", "No Tof Tracks!"); }
 
   //     fT0Digis =(TClonesArray*) ioman->GetObject("CbmT0Digi");
   //     if (nullptr == fT0Digis) { Fatal("CbmRichMCbmQaReal::Init", "No T0 Digis!");}
@@ -174,915 +164,318 @@ InitStatus CbmRichMCbmQaReal::Init() {
   return kSUCCESS;
 }
 
-void CbmRichMCbmQaReal::InitHistograms() {
+void CbmRichMCbmQaReal::InitHistograms()
+{
   fHM = new CbmHistManager();
 
   fHM->Create1<TH1D>("fhNofEvents", "fhNofEvents;Entries", 1, 0.5, 1.5);
   fHM->Create1<TH1D>("fhNofCbmEvents", "fhNofCbmEvents;Entries", 1, 0.5, 1.5);
-  fHM->Create1<TH1D>(
-    "fhNofCbmEventsRing", "fhNofCbmEventsRing;Entries", 1, 0.5, 1.5);
+  fHM->Create1<TH1D>("fhNofCbmEventsRing", "fhNofCbmEventsRing;Entries", 1, 0.5, 1.5);
 
-  fHM->Create1<TH1D>(
-    "fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
+  fHM->Create1<TH1D>("fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
 
   // nof objects per timeslice
-  fHM->Create1<TH1D>(
-    "fhNofRichDigisInTimeslice",
-    "fhNofRichDigisInTimeslice;# RICH digis / timeslice;Entries",
-    100,
-    -0.5,
-    999.5);
-  fHM->Create1<TH1D>("fhNofRichHitsInTimeslice",
-                     "fhNofRichHitsInTimeslice;# RICH hits / timeslice;Entries",
-                     100,
-                     -0.5,
+  fHM->Create1<TH1D>("fhNofRichDigisInTimeslice", "fhNofRichDigisInTimeslice;# RICH digis / timeslice;Entries", 100,
+                     -0.5, 999.5);
+  fHM->Create1<TH1D>("fhNofRichHitsInTimeslice", "fhNofRichHitsInTimeslice;# RICH hits / timeslice;Entries", 100, -0.5,
                      999.5);
-  fHM->Create1<TH1D>(
-    "fhNofRichRingsInTimeslice",
-    "fhNofRichRingsInTimeslice;# RICH rings / timeslice;Entries",
-    10,
-    -0.5,
-    9.5);
+  fHM->Create1<TH1D>("fhNofRichRingsInTimeslice", "fhNofRichRingsInTimeslice;# RICH rings / timeslice;Entries", 10,
+                     -0.5, 9.5);
 
   // RICH hits
-  fHM->Create2<TH2D>("fhRichHitXY",
-                     "fhRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     84,
-                     -25.2,
-                     25.2);
-  fHM->Create2<TH2D>("fhRichDigiPixelRate",
-                     "fhRichDigiPixelRate;RICH Digi X [cm];RICH Digi Y [cm];Hz",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     84,
-                     -25.2,
-                     25.2);
+  fHM->Create2<TH2D>("fhRichHitXY", "fhRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries", 67, -20.1 + fXOffsetHisto,
+                     20.1 + fXOffsetHisto, 84, -25.2, 25.2);
+  fHM->Create2<TH2D>("fhRichDigiPixelRate", "fhRichDigiPixelRate;RICH Digi X [cm];RICH Digi Y [cm];Hz", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
 
 
   // RICH digis, the limits of log histograms are set in Exec method
-  fHM->Create1<TH1D>("fhRichDigisTimeLog",
-                     "fhNofRichDigisTimeLog;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhRichDigisTimeLogZoom",
-                     "fhNofRichDigisTimeLogZoom;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhRichDigisTimeLogZoom2",
-                     "fhNofRichDigisTimeLogZoom2;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
+  fHM->Create1<TH1D>("fhRichDigisTimeLog", "fhNofRichDigisTimeLog;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhRichDigisTimeLogZoom", "fhNofRichDigisTimeLogZoom;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhRichDigisTimeLogZoom2", "fhNofRichDigisTimeLogZoom2;Time [ns];Entries", 400, 0., 0.);
 
-  fHM->Create1<TH1D>("fhRichRingsTimeLog",
-                     "fhNofRichRingsTimeLog;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhRichRingsTimeLogZoom",
-                     "fhNofRichRingsTimeLogZoom;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhRichRingsTimeLogZoom2",
-                     "fhNofRichRingsTimeLogZoom2;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
+  fHM->Create1<TH1D>("fhRichRingsTimeLog", "fhNofRichRingsTimeLog;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhRichRingsTimeLogZoom", "fhNofRichRingsTimeLogZoom;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhRichRingsTimeLogZoom2", "fhNofRichRingsTimeLogZoom2;Time [ns];Entries", 400, 0., 0.);
 
-  fHM->Create1<TH1D>(
-    "fhTofDigisTimeLog", "fhTofDigisTimeLog;Time [ns];Entries", 400, 0., 0.);
-  fHM->Create1<TH1D>("fhTofDigisTimeLogZoom",
-                     "fhTofDigisTimeLogZoom;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhTofDigisTimeLogZoom2",
-                     "fhTofDigisTimeLogZoom2;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
+  fHM->Create1<TH1D>("fhTofDigisTimeLog", "fhTofDigisTimeLog;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhTofDigisTimeLogZoom", "fhTofDigisTimeLogZoom;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhTofDigisTimeLogZoom2", "fhTofDigisTimeLogZoom2;Time [ns];Entries", 400, 0., 0.);
 
-  fHM->Create1<TH1D>(
-    "fhStsDigisTimeLog", "fhStsDigisTimeLog;Time [ns];Entries", 400, 0., 0.);
-  fHM->Create1<TH1D>("fhStsDigisTimeLogZoom",
-                     "fhStsDigisTimeLogZoom;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhStsDigisTimeLogZoom2",
-                     "fhStsDigisTimeLogZoom2;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
+  fHM->Create1<TH1D>("fhStsDigisTimeLog", "fhStsDigisTimeLog;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhStsDigisTimeLogZoom", "fhStsDigisTimeLogZoom;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhStsDigisTimeLogZoom2", "fhStsDigisTimeLogZoom2;Time [ns];Entries", 400, 0., 0.);
 
-  fHM->Create1<TH1D>(
-    "fhT0DigisTimeLog", "fhT0DigisTimeLog;Time [ns];Entries", 400, 0., 0.);
-  fHM->Create1<TH1D>("fhT0DigisTimeLogZoom",
-                     "fhT0DigisTimeLogZoom;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
-  fHM->Create1<TH1D>("fhT0DigisTimeLogZoom2",
-                     "fhT0DigisTimeLogZoom2;Time [ns];Entries",
-                     400,
-                     0.,
-                     0.);
+  fHM->Create1<TH1D>("fhT0DigisTimeLog", "fhT0DigisTimeLog;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhT0DigisTimeLogZoom", "fhT0DigisTimeLogZoom;Time [ns];Entries", 400, 0., 0.);
+  fHM->Create1<TH1D>("fhT0DigisTimeLogZoom2", "fhT0DigisTimeLogZoom2;Time [ns];Entries", 400, 0., 0.);
 
   //ToT
-  fHM->Create1<TH1D>(
-    "fhRichDigisToT", "fhRichDigisToT;ToT [ns];Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>(
-    "fhRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>("fhRichHitToTEvent",
-                     "fhRichHitToTEvent;ToT [ns];Entries",
-                     601,
-                     9.975,
-                     40.025);
-  fHM->Create2<TH2D>("fhRichHitXYEvent",
-                     "fhRichHitXYEvent;RICH hit X [cm];RICH hit Y [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     84,
-                     -25.2,
-                     25.2);
+  fHM->Create1<TH1D>("fhRichDigisToT", "fhRichDigisToT;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRichHitToTEvent", "fhRichHitToTEvent;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create2<TH2D>("fhRichHitXYEvent", "fhRichHitXYEvent;RICH hit X [cm];RICH hit Y [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
 
 
   // RICH rings
-  fHM->Create2<TH2D>(
-    "fhRichRingXY",
-    "fhRichRingXY;Ring center X [cm];Ring center Y [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    84,
-    -25.2,
-    25.2);
-  fHM->Create2<TH2D>(
-    "fhRichRingXY_goodTrack",
-    "fhRichRingXY_goodTrack;Ring center X [cm];Ring center Y [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    84,
-    -25.2,
-    25.2);
-  fHM->Create2<TH2D>(
-    "fhRichRing_goodTrackXY",
-    "fhRichRing_goodTrackXY;Track center X [cm];Track center Y [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    84,
-    -25.2,
-    25.2);
+  fHM->Create2<TH2D>("fhRichRingXY", "fhRichRingXY;Ring center X [cm];Ring center Y [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
+  fHM->Create2<TH2D>("fhRichRingXY_goodTrack", "fhRichRingXY_goodTrack;Ring center X [cm];Ring center Y [cm];Entries",
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
+  fHM->Create2<TH2D>("fhRichRing_goodTrackXY", "fhRichRing_goodTrackXY;Track center X [cm];Track center Y [cm];Entries",
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
 
-  fHM->Create2<TH2D>(
-    "fhRichRingRadiusY",
-    "fhRichRingRadiusY;Ring Radius [cm]; Y position[cm];Entries",
-    70,
-    -0.05,
-    6.95,
-    84,
-    -25.2,
-    25.2);
-  fHM->Create2<TH2D>(
-    "fhRichHitsRingRadius",
-    "fhRichHitsRingRadius;#Rich Hits/Ring; Ring Radius [cm];Entries",
-    50,
-    -0.5,
-    49.5,
-    70,
-    -0.05,
-    6.95);
+  fHM->Create2<TH2D>("fhRichRingRadiusY", "fhRichRingRadiusY;Ring Radius [cm]; Y position[cm];Entries", 70, -0.05, 6.95,
+                     84, -25.2, 25.2);
+  fHM->Create2<TH2D>("fhRichHitsRingRadius", "fhRichHitsRingRadius;#Rich Hits/Ring; Ring Radius [cm];Entries", 50, -0.5,
+                     49.5, 70, -0.05, 6.95);
 
-  fHM->Create1<TH1D>("fhRichRingRadius",
-                     "fhRichRingRadius;Ring radius [cm];Entries",
-                     100,
-                     0.,
-                     7.);
-  fHM->Create1<TH1D>("fhNofHitsInRing",
-                     "fhNofHitsInRing;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
+  fHM->Create1<TH1D>("fhRichRingRadius", "fhRichRingRadius;Ring radius [cm];Entries", 100, 0., 7.);
+  fHM->Create1<TH1D>("fhNofHitsInRing", "fhNofHitsInRing;# hits in ring;Entries", 50, -0.5, 49.5);
 
-  fHM->Create1<TH1D>("fhRichRingRadius_goodRing",
-                     "fhRichRingRadius_goodRing;Ring radius [cm];Entries",
-                     100,
-                     0.,
-                     7.);
-  fHM->Create1<TH1D>("fhNofHitsInRing_goodRing",
-                     "fhNofHitsInRing_goodRing;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
+  fHM->Create1<TH1D>("fhRichRingRadius_goodRing", "fhRichRingRadius_goodRing;Ring radius [cm];Entries", 100, 0., 7.);
+  fHM->Create1<TH1D>("fhNofHitsInRing_goodRing", "fhNofHitsInRing_goodRing;# hits in ring;Entries", 50, -0.5, 49.5);
 
   //Tof Rich correlation
-  fHM->Create2<TH2D>("fhTofRichX",
-                     "fhTofRichX;Rich Hit X [cm];TofHit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
-  fHM->Create2<TH2D>("fhTofRichX_stack1",
-                     "fhTofRichX_stack1;Rich Hit X [cm];TofHit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
-  fHM->Create2<TH2D>("fhTofRichX_stack2",
-                     "fhTofRichX_stack2;Rich Hit X [cm];TofHit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
-  fHM->Create2<TH2D>("fhTofRichX_stack3",
-                     "fhTofRichX_stack3;Rich Hit X [cm];TofHit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
-  fHM->Create2<TH2D>("fhTofRichY",
-                     "fhTofRichY;Rich Hit Y [cm];TofHit Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+  fHM->Create2<TH2D>("fhTofRichX", "fhTofRichX;Rich Hit X [cm];TofHit X [cm];Entries", 67, -20.1 + fXOffsetHisto,
+                     20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofRichX_stack1", "fhTofRichX_stack1;Rich Hit X [cm];TofHit X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofRichX_stack2", "fhTofRichX_stack2;Rich Hit X [cm];TofHit X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofRichX_stack3", "fhTofRichX_stack3;Rich Hit X [cm];TofHit X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofRichY", "fhTofRichY;Rich Hit Y [cm];TofHit Y [cm];Entries", 84, -25.2, 25.2, 200, -80, 80);
   //fHM->Create2<TH2D>("fhTofRichRingHitX","fhTofRichRingHitX;Rich Ring Hit X [cm];TofHit X [cm];Entries", 67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto,  400, -50, 110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitX",
-    "fhTofTrackRichHitX;RICH Hit X [cm];TofTrack X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitY",
-    "fhTofTrackRichHitY;RICH Hit Y [cm];TofTrack Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhTofTrackRichHitX", "fhTofTrackRichHitX;RICH Hit X [cm];TofTrack X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichHitY", "fhTofTrackRichHitY;RICH Hit Y [cm];TofTrack Y [cm];Entries", 84, -25.2,
+                     25.2, 200, -80, 80);
 
 
   fHM->Create2<TH2D>("fhTofTrackHitRichHitX_oBetacuts_dtime",
                      "fhTofTrackHitRichHitX_oBetacuts_dtime;Rich Hit X "
                      "[cm];TofHit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackHitRichHitY_oBetacuts_dtime",
                      "fhTofTrackHitRichHitY_oBetacuts_dtime;Rich Hit Y "
                      "[cm];TofHit Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
+                     84, -25.2, 25.2, 200, -80, 80);
+
+
+  fHM->Create2<TH2D>("fhTofTrackRichHitX_cuts", "fhTofTrackRichHitX_cuts;RICH Hit X [cm];TofTrack X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichHitY_cuts", "fhTofTrackRichHitY_cuts;RICH Hit Y [cm];TofTrack Y [cm];Entries", 84,
+                     -25.2, 25.2, 200, -80, 80);
+
+  fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts",
+                     "fhTofTrackRichHitX_oBetacuts;RICH Hit X [cm];TofTrack X [cm];Entries", 67, -20.1 + fXOffsetHisto,
+                     20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts",
+                     "fhTofTrackRichHitY_oBetacuts;RICH Hit Y [cm];TofTrack Y [cm];Entries", 84, -25.2, 25.2, 200, -80,
                      80);
+  fHM->Create1<TH1D>("fhTofTrackRichHitTime_oBetacuts", "fhTofTrackRichHitTime_oBetacuts;#Delta Time [ns];Entries", 280,
+                     -70., 70.);
 
-
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitX_cuts",
-    "fhTofTrackRichHitX_cuts;RICH Hit X [cm];TofTrack X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitY_cuts",
-    "fhTofTrackRichHitY_cuts;RICH Hit Y [cm];TofTrack Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
-
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitX_oBetacuts",
-    "fhTofTrackRichHitX_oBetacuts;RICH Hit X [cm];TofTrack X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitY_oBetacuts",
-    "fhTofTrackRichHitY_oBetacuts;RICH Hit Y [cm];TofTrack Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
-  fHM->Create1<TH1D>("fhTofTrackRichHitTime_oBetacuts",
-                     "fhTofTrackRichHitTime_oBetacuts;#Delta Time [ns];Entries",
-                     280,
-                     -70.,
-                     70.);
-
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitX_uBetacuts",
-    "fhTofTrackRichHitX_uBetacuts;RICH Hit X [cm];TofTrack X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichHitY_uBetacuts",
-    "fhTofTrackRichHitY_uBetacuts;RICH Hit Y [cm];TofTrack Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhTofTrackRichHitX_uBetacuts",
+                     "fhTofTrackRichHitX_uBetacuts;RICH Hit X [cm];TofTrack X [cm];Entries", 67, -20.1 + fXOffsetHisto,
+                     20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichHitY_uBetacuts",
+                     "fhTofTrackRichHitY_uBetacuts;RICH Hit Y [cm];TofTrack Y [cm];Entries", 84, -25.2, 25.2, 200, -80,
+                     80);
 
   fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts_dtime",
                      "fhTofTrackRichHitX_oBetacuts_dtime;RICH Hit X "
                      "[cm];TofTrack X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts_dtime",
                      "fhTofTrackRichHitY_oBetacuts_dtime;RICH Hit Y "
                      "[cm];TofTrack Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+                     84, -25.2, 25.2, 200, -80, 80);
 
   fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts_dtime_4",
                      "fhTofTrackRichHitX_oBetacuts_dtime_4;RICH Hit X "
                      "[cm];TofTrack X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts_dtime_4",
                      "fhTofTrackRichHitY_oBetacuts_dtime_4;RICH Hit Y "
                      "[cm];TofTrack Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+                     84, -25.2, 25.2, 200, -80, 80);
 
   fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts_dtime_6",
                      "fhTofTrackRichHitX_oBetacuts_dtime_6;RICH Hit X "
                      "[cm];TofTrack X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts_dtime_6",
                      "fhTofTrackRichHitY_oBetacuts_dtime_6;RICH Hit Y "
                      "[cm];TofTrack Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+                     84, -25.2, 25.2, 200, -80, 80);
 
   fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts_dtime_8",
                      "fhTofTrackRichHitX_oBetacuts_dtime_8;RICH Hit X "
                      "[cm];TofTrack X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts_dtime_8",
                      "fhTofTrackRichHitY_oBetacuts_dtime_8;RICH Hit Y "
                      "[cm];TofTrack Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+                     84, -25.2, 25.2, 200, -80, 80);
 
   fHM->Create2<TH2D>("fhTofTrackRichHitX_oBetacuts_dtime_10",
                      "fhTofTrackRichHitX_oBetacuts_dtime_10;RICH Hit X "
                      "[cm];TofTrack X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     400,
-                     -50,
-                     110);
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitY_oBetacuts_dtime_10",
                      "fhTofTrackRichHitY_oBetacuts_dtime_10;RICH Hit Y "
                      "[cm];TofTrack Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2,
-                     200,
-                     -80,
-                     80);
+                     84, -25.2, 25.2, 200, -80, 80);
 
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichRingHitX",
-    "fhTofTrackRichRingHitX;RICH Ring Hit X [cm];TofTrack X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichRingHitY",
-    "fhTofTrackRichRingHitY;RICH Ring Hit Y [cm];TofTrack Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhTofTrackRichRingHitX", "fhTofTrackRichRingHitX;RICH Ring Hit X [cm];TofTrack X [cm];Entries",
+                     67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichRingHitY", "fhTofTrackRichRingHitY;RICH Ring Hit Y [cm];TofTrack Y [cm];Entries",
+                     84, -25.2, 25.2, 200, -80, 80);
 
-  fHM->Create2<TH2D>(
-    "fhTofHitRichRingHitX",
-    "fhTofHitRichRingHitX;RICH Ring Hit X [cm];Tof Hit X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofHitRichRingHitY",
-    "fhTofHitRichRingHitY;RICH Ring Hit Y [cm];Tof Hit Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhTofHitRichRingHitX", "fhTofHitRichRingHitX;RICH Ring Hit X [cm];Tof Hit X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofHitRichRingHitY", "fhTofHitRichRingHitY;RICH Ring Hit Y [cm];Tof Hit Y [cm];Entries", 84,
+                     -25.2, 25.2, 200, -80, 80);
 
   //Tof Rich correlation
-  fHM->Create2<TH2D>("fhTofRichX_zoomed",
-                     "fhTofRichX_zoomed;Rich Hit X [cm];TofHit X [cm];Entries",
-                     27,
-                     -8.1 + fXOffsetHisto,
-                     8.1 + fXOffsetHisto,
-                     180,
-                     -15,
-                     75);
-  fHM->Create2<TH2D>("fhTofRichY_zoomed",
-                     "fhTofRichY_zoomed;Rich Hit Y [cm];TofHit Y [cm];Entries",
-                     14,
-                     7.8,
-                     16.2,
-                     30,
-                     -5.,
-                     25);
+  fHM->Create2<TH2D>("fhTofRichX_zoomed", "fhTofRichX_zoomed;Rich Hit X [cm];TofHit X [cm];Entries", 27,
+                     -8.1 + fXOffsetHisto, 8.1 + fXOffsetHisto, 180, -15, 75);
+  fHM->Create2<TH2D>("fhTofRichY_zoomed", "fhTofRichY_zoomed;Rich Hit Y [cm];TofHit Y [cm];Entries", 14, 7.8, 16.2, 30,
+                     -5., 25);
 
-  fHM->Create2<TH2D>(
-    "fhClosTrackRingX",
-    "fhClosTrackRingX;Rich Ring center X [cm];Tof Track X [cm];Entries",
-    67,
-    -20.1 + fXOffsetHisto,
-    20.1 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhClosTrackRingY",
-    "fhClosTrackRingY;Rich Ring center Y [cm];Tof Track Y [cm];Entries",
-    84,
-    -25.2,
-    25.2,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhClosTrackRingX", "fhClosTrackRingX;Rich Ring center X [cm];Tof Track X [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhClosTrackRingY", "fhClosTrackRingY;Rich Ring center Y [cm];Tof Track Y [cm];Entries", 84, -25.2,
+                     25.2, 200, -80, 80);
 
-  fHM->Create2<TH2D>(
-    "fhTofRichRingX",
-    "fhTofRichRingX;Rich Ring Center X [cm];TofHit X [cm];Entries",
-    100,
-    -20 + fXOffsetHisto,
-    20 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofRichRingY",
-    "fhTofRichRingY;Ring Ring Center Y [cm];TofHit Y [cm];Entries",
-    125,
-    -25,
-    25,
-    200,
-    -80,
-    80);
-  fHM->Create2<TH2D>("fhTofRichRingXZ",
-                     "fhTofRichXZ; Z [cm];Hit/Ring X [cm];Entries",
-                     140,
-                     230,
-                     370,
-                     400,
-                     -50,
-                     110);
+  fHM->Create2<TH2D>("fhTofRichRingX", "fhTofRichRingX;Rich Ring Center X [cm];TofHit X [cm];Entries", 100,
+                     -20 + fXOffsetHisto, 20 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofRichRingY", "fhTofRichRingY;Ring Ring Center Y [cm];TofHit Y [cm];Entries", 125, -25, 25,
+                     200, -80, 80);
+  fHM->Create2<TH2D>("fhTofRichRingXZ", "fhTofRichXZ; Z [cm];Hit/Ring X [cm];Entries", 140, 230, 370, 400, -50, 110);
 
-  fHM->Create2<TH2D>("fhTofTrackRichRingXY",
-                     "fhTofTrackRichRingXY; X [cm]; Y [cm];Entries",
-                     100,
-                     -20 + fXOffsetHisto,
-                     20 + fXOffsetHisto,
-                     120,
-                     -10,
+  fHM->Create2<TH2D>("fhTofTrackRichRingXY", "fhTofTrackRichRingXY; X [cm]; Y [cm];Entries", 100, -20 + fXOffsetHisto,
+                     20 + fXOffsetHisto, 120, -10,
                      20);  //1bin == 2mm
-  fHM->Create2<TH2D>("fhTofClosTrackRichRingXY",
-                     "fhTofClosTrackRichRingXY; X [cm]; Y [cm];Entries",
-                     100,
-                     -20 + fXOffsetHisto,
-                     20 + fXOffsetHisto,
-                     120,
-                     -10,
+  fHM->Create2<TH2D>("fhTofClosTrackRichRingXY", "fhTofClosTrackRichRingXY; X [cm]; Y [cm];Entries", 100,
+                     -20 + fXOffsetHisto, 20 + fXOffsetHisto, 120, -10,
                      20);  //1bin == 2mm
 
-  fHM->Create3<TH3D>(
-    "fhTofXYZ",
-    "fhTofXYZ;Tof Hit X [cm];TofHit Z [cm];Tof Hit Y [cm];Entries",
-    100,
-    -20,
-    20,
-    141,
-    230.,
-    370.,
-    100,
-    -20,
-    20);
-  fHM->Create2<TH2D>("fhTofHitsXY",
-                     "fhTofHitsXY;Tof Hit X [cm];Tof Hit Y [cm];Entries",
-                     100,
-                     -20,
-                     20,
-                     200,
-                     -80,
-                     80);
-  fHM->Create1<TH1D>(
-    "fhTofHitsZ", "fhTofHitsZ;Z [cm];Entries", 350, -0.5, 349.5);
-  fHM->Create2<TH2D>("fhTofHitsXZ",
-                     "fhTofHitsXZ;Z [cm];X [cm];Entries",
-                     350,
-                     -0.5,
-                     349.5,
-                     400,
-                     -50,
-                     110);
+  fHM->Create3<TH3D>("fhTofXYZ", "fhTofXYZ;Tof Hit X [cm];TofHit Z [cm];Tof Hit Y [cm];Entries", 100, -20, 20, 141,
+                     230., 370., 100, -20, 20);
+  fHM->Create2<TH2D>("fhTofHitsXY", "fhTofHitsXY;Tof Hit X [cm];Tof Hit Y [cm];Entries", 100, -20, 20, 200, -80, 80);
+  fHM->Create1<TH1D>("fhTofHitsZ", "fhTofHitsZ;Z [cm];Entries", 350, -0.5, 349.5);
+  fHM->Create2<TH2D>("fhTofHitsXZ", "fhTofHitsXZ;Z [cm];X [cm];Entries", 350, -0.5, 349.5, 400, -50, 110);
   //Tof Tracks
-  fHM->Create1<TH1D>("fhTofTracksPerEvent",
-                     "fhTofTracksPerEvent;NofTracks/Event;Entries",
-                     20,
-                     -0.5,
-                     19.5);
-  fHM->Create1<TH1D>("fhTofTracksPerRichEvent",
-                     "fhTofTracksPerRichEvent;NofTracks/RichEvent;Entries",
-                     20,
-                     -0.5,
-                     19.5);
-  fHM->Create2<TH2D>(
-    "fhTofTracksXY",
-    "fhTofTracksXY;X[cm];Y[cm];NofTracks/cm^2",
-    250,
-    -100,
-    150,
-    300,
-    -150,
-    150);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in RICH Plane
+  fHM->Create1<TH1D>("fhTofTracksPerEvent", "fhTofTracksPerEvent;NofTracks/Event;Entries", 20, -0.5, 19.5);
+  fHM->Create1<TH1D>("fhTofTracksPerRichEvent", "fhTofTracksPerRichEvent;NofTracks/RichEvent;Entries", 20, -0.5, 19.5);
+  fHM->Create2<TH2D>("fhTofTracksXY", "fhTofTracksXY;X[cm];Y[cm];NofTracks/cm^2", 250, -100, 150, 300, -150,
+                     150);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in RICH Plane
 
-  fHM->Create2<TH2D>(
-    "fhTofTracksXY_Target",
-    "fhTofTracksXY_Target;X[cm];Y[cm];NofTracks/cm^2",
-    100,
-    -50,
-    50,
-    100,
-    -50,
-    50);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in Z=0
-  fHM->Create2<TH2D>(
-    "fhGoodRingsXY_TargetPos",
-    "fhGoodRingsXY_TargetPos;X[cm];Y[cm];NofTracks/cm^2",
-    100,
-    -50,
-    50,
-    100,
-    -50,
-    50);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in Z=0
+  fHM->Create2<TH2D>("fhTofTracksXY_Target", "fhTofTracksXY_Target;X[cm];Y[cm];NofTracks/cm^2", 100, -50, 50, 100, -50,
+                     50);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in Z=0
+  fHM->Create2<TH2D>("fhGoodRingsXY_TargetPos", "fhGoodRingsXY_TargetPos;X[cm];Y[cm];NofTracks/cm^2", 100, -50, 50, 100,
+                     -50,
+                     50);  //50 , -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180,-90,90); // projected in Z=0
 
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichRingX",
-    "fhTofTrackRichRingX;Rich Ring Center X [cm];TofTrack X [cm];Entries",
-    100,
-    -20 + fXOffsetHisto,
-    20 + fXOffsetHisto,
-    400,
-    -50,
-    110);
-  fHM->Create2<TH2D>(
-    "fhTofTrackRichRingY",
-    "fhTofTrackRichRingY;Ring Ring Center Y [cm];TofTrack Y [cm];Entries",
-    125,
-    -25,
-    25,
-    200,
-    -80,
-    80);
+  fHM->Create2<TH2D>("fhTofTrackRichRingX", "fhTofTrackRichRingX;Rich Ring Center X [cm];TofTrack X [cm];Entries", 100,
+                     -20 + fXOffsetHisto, 20 + fXOffsetHisto, 400, -50, 110);
+  fHM->Create2<TH2D>("fhTofTrackRichRingY", "fhTofTrackRichRingY;Ring Ring Center Y [cm];TofTrack Y [cm];Entries", 125,
+                     -25, 25, 200, -80, 80);
 
-  fHM->Create2<TH2D>("fhTofTracksXYRICH",
-                     "fhTofTracksXYRICH;X[cm];Y[cm];NofTracks/cm^2",
-                     50,
-                     -20 + fXOffsetHisto,
-                     30 + fXOffsetHisto,
-                     180,
-                     -90,
+  fHM->Create2<TH2D>("fhTofTracksXYRICH", "fhTofTracksXYRICH;X[cm];Y[cm];NofTracks/cm^2", 50, -20 + fXOffsetHisto,
+                     30 + fXOffsetHisto, 180, -90,
                      90);  // projected in RICH Plane
-  fHM->Create1<TH1D>("fhNofTofTracks",
-                     "fhNofTofTracks;X[cm];Y[cm];NofTracks",
-                     4,
-                     0,
+  fHM->Create1<TH1D>("fhNofTofTracks", "fhNofTofTracks;X[cm];Y[cm];NofTracks", 4, 0,
                      4);  // 1: All 2: left; 3: right; 4: RICH
 
-  fHM->Create1<TH1D>("fhRingTrackDistance",
-                     "fhRingTrackDistance;RingTrackDistance [cm];Entries",
-                     31,
-                     -0.25,
-                     14.75);
+  fHM->Create1<TH1D>("fhRingTrackDistance", "fhRingTrackDistance;RingTrackDistance [cm];Entries", 31, -0.25, 14.75);
 
-  fHM->Create1<TH1D>("fhTrackRingDistance",
-                     "fhTrackRingDistance;TrackRingDistance [cm];Entries",
-                     31,
-                     -0.5,
-                     30.5);
-  fHM->Create1<TH1D>(
-    "fhTrackRingDistanceOnTarget",
-    "fhTrackRingDistanceOnTarget;TrackRingDistance [cm];Entries",
-    31,
-    -0.5,
-    30.5);
-  fHM->Create1<TH1D>(
-    "fhTrackRingDistanceOffTarget",
-    "fhTrackRingDistanceOffTarget;TrackRingDistance [cm];Entries",
-    31,
-    -0.5,
-    30.5);
+  fHM->Create1<TH1D>("fhTrackRingDistance", "fhTrackRingDistance;TrackRingDistance [cm];Entries", 31, -0.5, 30.5);
+  fHM->Create1<TH1D>("fhTrackRingDistanceOnTarget", "fhTrackRingDistanceOnTarget;TrackRingDistance [cm];Entries", 31,
+                     -0.5, 30.5);
+  fHM->Create1<TH1D>("fhTrackRingDistanceOffTarget", "fhTrackRingDistanceOffTarget;TrackRingDistance [cm];Entries", 31,
+                     -0.5, 30.5);
   fHM->Create2<TH2D>("fhTrackRingDistanceVSRingradius",
                      "fhTrackRingDistanceVSRingradius;TrackRingDistance "
                      "[cm];RingRadius [cm];Entries",
-                     81,
-                     -0.5,
-                     80.5,
-                     100,
-                     0.,
-                     7.);
+                     81, -0.5, 80.5, 100, 0., 7.);
 
-  fHM->Create2<TH2D>(
-    "fhTrackRingDistanceVSRingChi2",
-    "fhTrackRingDistanceVSRingChi2;TrackRingDistance [cm];\\Chi^2;Entries",
-    60,
-    0,
-    30,
-    101,
-    0.,
-    10.1);
+  fHM->Create2<TH2D>("fhTrackRingDistanceVSRingChi2",
+                     "fhTrackRingDistanceVSRingChi2;TrackRingDistance [cm];\\Chi^2;Entries", 60, 0, 30, 101, 0., 10.1);
   fHM->Create2<TH2D>("fhTrackRingDistanceVSRingChi2_goodRing",
                      "fhTrackRingDistanceVSRingChi2_goodRing;TrackRingDistance "
                      "[cm];\\Chi^2;Entries",
-                     40,
-                     0,
-                     10.0,
-                     101,
-                     0.,
-                     10.1);
+                     40, 0, 10.0, 101, 0., 10.1);
 
-  fHM->Create1<TH1D>("fhTrackRingDistance_corr",
-                     "fhTrackRingDistance_corr;TrackRingDistance [cm];Entries",
-                     31,
-                     -0.5,
+  fHM->Create1<TH1D>("fhTrackRingDistance_corr", "fhTrackRingDistance_corr;TrackRingDistance [cm];Entries", 31, -0.5,
                      30.5);
 
-  fHM->Create1<TH1D>("fhTofBetaTracksWithHitsNoRing",
-                     "fhTofBetaTracksWithHitsNoRing; \\beta;Entries",
-                     151,
-                     -0.005,
+  fHM->Create1<TH1D>("fhTofBetaTracksWithHitsNoRing", "fhTofBetaTracksWithHitsNoRing; \\beta;Entries", 151, -0.005,
                      1.505);
-  fHM->Create1<TH1D>("fhTofBetaTracksWithHits",
-                     "fhTofBetaTracksWithHits; \\beta;Entries",
-                     151,
-                     -0.005,
-                     1.505);
-  fHM->Create1<TH1D>("fhTofBetaTracksNoRing",
-                     "fhTofBetaTracksNoRing; \\beta;Entries",
-                     151,
-                     -0.005,
-                     1.505);
-  fHM->Create1<TH1D>("fhTofBetaTrackswithClosestRingInRange",
-                     "fhTofBetaTrackswithClosestRingInRange; \\beta;Entries",
-                     151,
-                     -0.005,
-                     1.505);
+  fHM->Create1<TH1D>("fhTofBetaTracksWithHits", "fhTofBetaTracksWithHits; \\beta;Entries", 151, -0.005, 1.505);
+  fHM->Create1<TH1D>("fhTofBetaTracksNoRing", "fhTofBetaTracksNoRing; \\beta;Entries", 151, -0.005, 1.505);
+  fHM->Create1<TH1D>("fhTofBetaTrackswithClosestRingInRange", "fhTofBetaTrackswithClosestRingInRange; \\beta;Entries",
+                     151, -0.005, 1.505);
 
-  fHM->Create1<TH1D>(
-    "fhRichRingBeta", "fhRichRingBeta; \\beta;Entries", 151, -0.005, 1.505);
-  fHM->Create1<TH1D>("fhRichRingBeta_GoodRing",
-                     "fhRichRingBeta_GoodRing; \\beta;Entries",
-                     151,
-                     -0.005,
-                     1.505);
+  fHM->Create1<TH1D>("fhRichRingBeta", "fhRichRingBeta; \\beta;Entries", 151, -0.005, 1.505);
+  fHM->Create1<TH1D>("fhRichRingBeta_GoodRing", "fhRichRingBeta_GoodRing; \\beta;Entries", 151, -0.005, 1.505);
 
-  fHM->Create1<TH1D>(
-    "fhTofBetaRing", "fhTofBetaRing; \\beta;Entries", 151, -0.005, 1.505);
-  fHM->Create1<TH1D>(
-    "fhTofBetaAll", "fhTofBetaAll; \\beta;Entries", 151, -0.005, 1.505);
-  fHM->Create2<TH2D>("fhTofBetaVsRadius",
-                     "fhTofBetaVsRadius; \\beta;ring radius [cm];Entries",
-                     151,
-                     -0.005,
-                     1.505,
-                     100,
-                     0.,
-                     7.);
-  fHM->Create2<TH2D>("fhTofBetaRingDist",
-                     "fhTofBetaRingDist; \\beta;ring Dist [cm];Entries",
-                     151,
-                     -0.005,
-                     1.505,
-                     100,
-                     0.,
-                     20.);
-  fHM->Create1<TH1D>("fhTofBetaAllFullAcc",
-                     "fhTofBetaAllFullAcc; \\beta;Entries",
-                     301,
-                     -1.505,
-                     1.505);
+  fHM->Create1<TH1D>("fhTofBetaRing", "fhTofBetaRing; \\beta;Entries", 151, -0.005, 1.505);
+  fHM->Create1<TH1D>("fhTofBetaAll", "fhTofBetaAll; \\beta;Entries", 151, -0.005, 1.505);
+  fHM->Create2<TH2D>("fhTofBetaVsRadius", "fhTofBetaVsRadius; \\beta;ring radius [cm];Entries", 151, -0.005, 1.505, 100,
+                     0., 7.);
+  fHM->Create2<TH2D>("fhTofBetaRingDist", "fhTofBetaRingDist; \\beta;ring Dist [cm];Entries", 151, -0.005, 1.505, 100,
+                     0., 20.);
+  fHM->Create1<TH1D>("fhTofBetaAllFullAcc", "fhTofBetaAllFullAcc; \\beta;Entries", 301, -1.505, 1.505);
 
-  fHM->Create1<TH1D>("fhRingDeltaTime",
-                     "fhRingDeltaTime; \\Delta Time/ns;Entries",
-                     101,
-                     -10.1,
-                     10.1);
-  fHM->Create1<TH1D>(
-    "fhRingToTs", "fhRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRingDeltaTime", "fhRingDeltaTime; \\Delta Time/ns;Entries", 101, -10.1, 10.1);
+  fHM->Create1<TH1D>("fhRingToTs", "fhRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
   fHM->Create1<TH1D>("fhRingLE", "fhRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>(
-    "fhGoodRingLE", "fhGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>(
-    "fhRingNoClTrackLE", "fhRingNoClTrackLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhRingClTrackFarAwayLE",
-                     "fhRingClTrackFarAwayLE;LE/ns;Entries",
-                     201,
-                     -0.5,
-                     200.5);
-  fHM->Create2<TH2D>("fhRingLEvsToT",
-                     "fhRingLEvsToT;LE/ns;ToT/ns;Entries",
-                     201,
-                     -0.5,
-                     200.5,
-                     601,
-                     9.975,
-                     40.025);
+  fHM->Create1<TH1D>("fhGoodRingLE", "fhGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhRingNoClTrackLE", "fhRingNoClTrackLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhRingClTrackFarAwayLE", "fhRingClTrackFarAwayLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create2<TH2D>("fhRingLEvsToT", "fhRingLEvsToT;LE/ns;ToT/ns;Entries", 201, -0.5, 200.5, 601, 9.975, 40.025);
 
-  fHM->Create1<TH1D>("fhInnerRingDeltaTime",
-                     "fhInnerRingDeltaTime; \\Delta Time/ns;Entries",
-                     101,
-                     -10.1,
-                     10.1);
-  fHM->Create1<TH1D>(
-    "fhInnerRingToTs", "fhInnerRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>(
-    "fhInnerRingLE", "fhInnerRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>(
-    "fhInnerGoodRingLE", "fhInnerGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhInnerRingNoClTrackLE",
-                     "fhInnerRingNoClTrackLE;LE/ns;Entries",
-                     201,
-                     -0.5,
-                     200.5);
-  fHM->Create1<TH1D>("fhInnerRingClTrackFarAwayLE",
-                     "fhInnerRingClTrackFarAwayLE;LE/ns;Entries",
-                     201,
-                     -0.5,
-                     200.5);
-  fHM->Create1<TH1D>(
-    "fhInnerRingFlag", "fhInnerRingFlag;Has|HasNot;Entries", 2, -0.5, 1.5);
-  fHM->Create1<TH1D>(
-    "fhNofInnerHits", "fhNofInnerHits;#Hits;Entries", 31, -0.5, 30.5);
+  fHM->Create1<TH1D>("fhInnerRingDeltaTime", "fhInnerRingDeltaTime; \\Delta Time/ns;Entries", 101, -10.1, 10.1);
+  fHM->Create1<TH1D>("fhInnerRingToTs", "fhInnerRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhInnerRingLE", "fhInnerRingLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerGoodRingLE", "fhInnerGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingNoClTrackLE", "fhInnerRingNoClTrackLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingClTrackFarAwayLE", "fhInnerRingClTrackFarAwayLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingFlag", "fhInnerRingFlag;Has|HasNot;Entries", 2, -0.5, 1.5);
+  fHM->Create1<TH1D>("fhNofInnerHits", "fhNofInnerHits;#Hits;Entries", 31, -0.5, 30.5);
 
-  fHM->Create1<TH1D>(
-    "fhDiRICHsInRegion", "fhNofInnerHits;#Hits;DiRICH", 4096, 28672, 32767);
+  fHM->Create1<TH1D>("fhDiRICHsInRegion", "fhNofInnerHits;#Hits;DiRICH", 4096, 28672, 32767);
 
-  fHM->Create1<TH1D>(
-    "fhBlobTrackDistX",
-    "fhBlobTrackDistX; |TofTrackX - MAPMT center X| [cm];Entries",
-    30,
-    -0.5,
-    29.5);
-  fHM->Create1<TH1D>(
-    "fhBlobTrackDistY",
-    "fhBlobTrackDistY; |TofTrackY - MAPMT center Y| [cm];Entries",
-    30,
-    -0.5,
-    29.5);
-  fHM->Create1<TH1D>(
-    "fhBlobTrackDist",
-    "fhBlobTrackDist; |TofTrack - MAPMT center dist| [cm];Entries",
-    30,
-    -0.5,
-    29.5);
+  fHM->Create1<TH1D>("fhBlobTrackDistX", "fhBlobTrackDistX; |TofTrackX - MAPMT center X| [cm];Entries", 30, -0.5, 29.5);
+  fHM->Create1<TH1D>("fhBlobTrackDistY", "fhBlobTrackDistY; |TofTrackY - MAPMT center Y| [cm];Entries", 30, -0.5, 29.5);
+  fHM->Create1<TH1D>("fhBlobTrackDist", "fhBlobTrackDist; |TofTrack - MAPMT center dist| [cm];Entries", 30, -0.5, 29.5);
 
-  fHM->Create1<TH1D>("fhNofBlobEvents",
-                     "fhNofBlobEvents;;#Events with min. one Blob",
-                     1,
-                     0.5,
-                     1.5);
-  fHM->Create1<TH1D>("fhNofBlobsInEvent",
-                     "fhNofBlobsInEvent;#Blobs in Event;Entries",
-                     36,
-                     0.5,
-                     36.5);
+  fHM->Create1<TH1D>("fhNofBlobEvents", "fhNofBlobEvents;;#Events with min. one Blob", 1, 0.5, 1.5);
+  fHM->Create1<TH1D>("fhNofBlobsInEvent", "fhNofBlobsInEvent;#Blobs in Event;Entries", 36, 0.5, 36.5);
 
-  fHM->Create1<TH1D>("fhRichDigisConsecTime",
-                     "fhRichDigisConsecTime;consecutive time [ns];Entries",
-                     500,
-                     -0.5,
-                     499.5);
-  fHM->Create1<TH1D>("fhRichDigisConsecTimeTOT",
-                     "fhRichDigisConsecTimeTOT;consecutive time [ns];Entries",
-                     500,
-                     -0.5,
+  fHM->Create1<TH1D>("fhRichDigisConsecTime", "fhRichDigisConsecTime;consecutive time [ns];Entries", 500, -0.5, 499.5);
+  fHM->Create1<TH1D>("fhRichDigisConsecTimeTOT", "fhRichDigisConsecTimeTOT;consecutive time [ns];Entries", 500, -0.5,
                      499.5);
 
-  fHM->Create1<TH1D>("fhNofHitsInGoodRing",
-                     "fhNofHitsInGoodRing;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
-  fHM->Create1<TH1D>(
-    "fhTracksWithRings", "fhTracksWithRings;Scenarios;Entries", 5, -0.5, 4.5);
+  fHM->Create1<TH1D>("fhNofHitsInGoodRing", "fhNofHitsInGoodRing;# hits in ring;Entries", 50, -0.5, 49.5);
+  fHM->Create1<TH1D>("fhTracksWithRings", "fhTracksWithRings;Scenarios;Entries", 5, -0.5, 4.5);
 
-  fHM->Create1<TH1D>(
-    "fhRichRingChi2", "fhRichRingChi2;\\Chi^2;Entries", 101, 0., 10.1);
-  fHM->Create1<TH1D>("fhRichRingChi2_goodRing",
-                     "fhRichRingChi2_goodRing;\\Chi^2;Entries",
-                     101,
-                     0.,
-                     10.1);
+  fHM->Create1<TH1D>("fhRichRingChi2", "fhRichRingChi2;\\Chi^2;Entries", 101, 0., 10.1);
+  fHM->Create1<TH1D>("fhRichRingChi2_goodRing", "fhRichRingChi2_goodRing;\\Chi^2;Entries", 101, 0., 10.1);
 
-  fHM->Create2<TH2D>("fhTofTracksXYRICH_Accectance",
-                     "fhTofTracksXYRICH_Accectance;X[cm];Y[cm];NofTracks/cm^2",
-                     50,
-                     -20 + fXOffsetHisto,
-                     30 + fXOffsetHisto,
-                     180,
-                     -90,
+  fHM->Create2<TH2D>("fhTofTracksXYRICH_Accectance", "fhTofTracksXYRICH_Accectance;X[cm];Y[cm];NofTracks/cm^2", 50,
+                     -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180, -90,
                      90);  // projected in RICH Plane
 }
 
 
-void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
+void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   fHM->H1("fhNofEvents")->Fill(1);
   cout << "CbmRichMCbmQaReal, event No. " << fEventNum << endl;
@@ -1097,8 +490,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
              (fDigiMan->GetNofDigis(ECbmModuleId::kTof) > 10)
             )*/
       if (ev != nullptr) {
-        double minTime =
-          ev->GetStartTime();  //std::numeric_limits<double>::max();
+        double minTime = ev->GetStartTime();  //std::numeric_limits<double>::max();
         /* for (int i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++) {
                     const CbmRichDigi* richDigi = fDigiMan->Get<CbmRichDigi>(i);
                     // fHM->H1("fhRichDigisToT")->Fill(richDigi->GetToT());
@@ -1108,55 +500,25 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
         double dT      = 40e9;
         double dTZoom1 = 0.8e9;
         double dTZoom2 = 0.008e9;
-        fHM->H1("fhRichDigisTimeLog")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dT);
-        fHM->H1("fhRichDigisTimeLogZoom")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom1);
-        fHM->H1("fhRichDigisTimeLogZoom2")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom2);
+        fHM->H1("fhRichDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+        fHM->H1("fhRichDigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
+        fHM->H1("fhRichDigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
-        fHM->H1("fhRichRingsTimeLog")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dT);
-        fHM->H1("fhRichRingsTimeLogZoom")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom1);
-        fHM->H1("fhRichRingsTimeLogZoom2")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom2);
+        fHM->H1("fhRichRingsTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+        fHM->H1("fhRichRingsTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
+        fHM->H1("fhRichRingsTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
-        fHM->H1("fhTofDigisTimeLog")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dT);
-        fHM->H1("fhTofDigisTimeLogZoom")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom1);
-        fHM->H1("fhTofDigisTimeLogZoom2")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom2);
+        fHM->H1("fhTofDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+        fHM->H1("fhTofDigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
+        fHM->H1("fhTofDigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
-        fHM->H1("fhStsDigisTimeLog")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dT);
-        fHM->H1("fhStsDigisTimeLogZoom")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom1);
-        fHM->H1("fhStsDigisTimeLogZoom2")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom2);
+        fHM->H1("fhStsDigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+        fHM->H1("fhStsDigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
+        fHM->H1("fhStsDigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
-        fHM->H1("fhT0DigisTimeLog")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dT);
-        fHM->H1("fhT0DigisTimeLogZoom")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom1);
-        fHM->H1("fhT0DigisTimeLogZoom2")
-          ->GetXaxis()
-          ->SetLimits(minTime, minTime + dTZoom2);
+        fHM->H1("fhT0DigisTimeLog")->GetXaxis()->SetLimits(minTime, minTime + dT);
+        fHM->H1("fhT0DigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
+        fHM->H1("fhT0DigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
         fDigiHitsInitialized = true;
       }
@@ -1230,11 +592,9 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
 
       if (i > 0) {
         const CbmRichDigi* richDigi_prev = fDigiMan->Get<CbmRichDigi>(i - 1);
-        fHM->H1("fhRichDigisConsecTime")
-          ->Fill(richDigi->GetTime() - richDigi_prev->GetTime());
+        fHM->H1("fhRichDigisConsecTime")->Fill(richDigi->GetTime() - richDigi_prev->GetTime());
         if (doToT(richDigi) && doToT(richDigi_prev))
-          fHM->H1("fhRichDigisConsecTimeTOT")
-            ->Fill(richDigi->GetTime() - richDigi_prev->GetTime());
+          fHM->H1("fhRichDigisConsecTimeTOT")->Fill(richDigi->GetTime() - richDigi_prev->GetTime());
       }
 
       //fHM->H2("fhRichDigiPixelRate")->Fill(richDigi->GetX(),richDigi->GetY());
@@ -1259,12 +619,8 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
     fHM->H1("fhNofCbmEvents")->Fill(1);
     CbmEvent* ev = static_cast<CbmEvent*>(fCbmEvent->At(i));
 
-    if (fTriggerRichHits != 0
-        && (ev->GetNofData(ECbmDataType::kRichHit) < fTriggerRichHits))
-      continue;
-    if (fTriggerTofHits != 0
-        && (ev->GetNofData(ECbmDataType::kTofHit) < fTriggerTofHits))
-      continue;
+    if (fTriggerRichHits != 0 && (ev->GetNofData(ECbmDataType::kRichHit) < fTriggerRichHits)) continue;
+    if (fTriggerTofHits != 0 && (ev->GetNofData(ECbmDataType::kTofHit) < fTriggerTofHits)) continue;
 
     //if (ev->GetNofData(ECbmDataType::kTofHit)  > (fTriggerTofHits+10) ) continue;
 
@@ -1294,14 +650,11 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       fHM->H1("fhRichHitToTEvent")->Fill(richHit->GetToT());
       fHM->H2("fhRichHitXYEvent")->Fill(richHit->GetX(), richHit->GetY());
       //Blob finder
-      uint32_t pmtId = (((richHit->GetAddress()) >> 20) & 0xF)
-                       + (((richHit->GetAddress()) >> 24) & 0xF) * 9;
+      uint32_t pmtId = (((richHit->GetAddress()) >> 20) & 0xF) + (((richHit->GetAddress()) >> 24) & 0xF) * 9;
       pmtHits[pmtId]++;
 
       //std::cout<<"\t\t *  "<<i<<". Event, Hit "<< j <<": "<< iRichHit <<"\t " << std::fixed << std::setprecision(5) << richHit->GetTime() <<std::endl;
-      if (richHit->GetTime() < startTime) {
-        startTime = richHit->GetTime(); /*flagRich = 1;*/
-      }
+      if (richHit->GetTime() < startTime) { startTime = richHit->GetTime(); /*flagRich = 1;*/ }
       int nofRichRings2 = fRichRings->GetEntriesFast();
       for (int l = 0; l < nofRichRings2; l++) {
         CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(l));
@@ -1325,9 +678,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       for (int k = 0; k < ev->GetNofData(ECbmDataType::kTofHit); k++) {
         auto iTofHit      = ev->GetIndex(ECbmDataType::kTofHit, k);
         CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
-        if (tofHit->GetTime() < startTime) {
-          startTime = tofHit->GetTime(); /* flagRich = 0;*/
-        }
+        if (tofHit->GetTime() < startTime) { startTime = tofHit->GetTime(); /* flagRich = 0;*/ }
         if (tofHit->GetZ() < 2.) continue;  // Cut T0 away!
         fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
 
@@ -1371,31 +722,25 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
     fHM->H1("fhTofTracksPerEvent")->Fill(noftofTracks);
 
     for (int j = 0; j < noftofTracks; j++) {
-      auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, j);
-      CbmTofTracklet* tTrack =
-        static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+      auto iTofTrack         = ev->GetIndex(ECbmDataType::kTofTrack, j);
+      CbmTofTracklet* tTrack = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
       if (tTrack == nullptr) continue;
 
       fHM->H1("fhTracksWithRings")->Fill(0);
-      fHM->H2("fhTofTracksXY")
-        ->Fill(tTrack->GetFitX(RichZPos), tTrack->GetFitY(RichZPos));
-      fHM->H2("fhTofTracksXY_Target")
-        ->Fill(tTrack->GetFitX(0.), tTrack->GetFitY(0.));
-      fHM->H1("fhNofTofTracks")
-        ->Fill(0.5);  // 1: All 2: left; 3: right; 4: RICH
+      fHM->H2("fhTofTracksXY")->Fill(tTrack->GetFitX(RichZPos), tTrack->GetFitY(RichZPos));
+      fHM->H2("fhTofTracksXY_Target")->Fill(tTrack->GetFitX(0.), tTrack->GetFitY(0.));
+      fHM->H1("fhNofTofTracks")->Fill(0.5);  // 1: All 2: left; 3: right; 4: RICH
       fHM->H1("fhTofBetaAllFullAcc")->Fill(getBeta(tTrack));
       //std::cout<<"beta Track "<< j <<": "<<getBeta(tTrack)<<std::endl;
 
-      if (tTrack->GetFitX(RichZPos) > -10. && tTrack->GetFitX(RichZPos) < +10.
-          && tTrack->GetFitY(RichZPos) > -25.
+      if (tTrack->GetFitX(RichZPos) > -10. && tTrack->GetFitX(RichZPos) < +10. && tTrack->GetFitY(RichZPos) > -25.
           && tTrack->GetFitY(RichZPos) < +25. && isOnTarget(tTrack)) {
         //Track in  RICH
         fTracksinRich++;
         Int_t goodHit = 0;
         for (int k = 0; k < ev->GetNofData(ECbmDataType::kRichHit); k++) {
-          auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, k);
-          CbmRichHit* richHit =
-            static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+          auto iRichHit       = ev->GetIndex(ECbmDataType::kRichHit, k);
+          CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
           if (richHit == nullptr) continue;
           if (std::fabs(richHit->GetY() - tTrack->GetFitY(RichZPos)) < 5.
               && std::fabs(richHit->GetX() - tTrack->GetFitX(RichZPos)) < 9.)
@@ -1411,45 +756,32 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
         if (RestrictToFullAcc(tTrack)) {
           fHM->H2("fhTofTracksXYRICH")
             ->Fill(tTrack->GetFitX(RichZPos),
-                   tTrack->GetFitY(RichZPos));  // projected in RICH Plane
-          fHM->H1("fhNofTofTracks")
-            ->Fill(3.5);  // 1: All 2: left; 3: right; 4: RICH
+                   tTrack->GetFitY(RichZPos));   // projected in RICH Plane
+          fHM->H1("fhNofTofTracks")->Fill(3.5);  // 1: All 2: left; 3: right; 4: RICH
           std::vector<int> evTofTrack;
           evTofTrack.push_back(iTofTrack);
           DrawRichTofEv(evRichHitIndx, evTofTrack);
 
           if (ringIndx.size() == 0 && evRichHitIndx.size() > 0)
-            fHM->H1("fhTofBetaTracksWithHitsNoRing")
-              ->Fill(getBeta(tTrack));  // no Ring in CbmEvent found
-          if (evRichHitIndx.size() > 0)
-            fHM->H1("fhTofBetaTracksWithHits")->Fill(getBeta(tTrack));
-          if (ringIndx.size() == 0)
-            fHM->H1("fhTofBetaTracksNoRing")->Fill(getBeta(tTrack));
+            fHM->H1("fhTofBetaTracksWithHitsNoRing")->Fill(getBeta(tTrack));  // no Ring in CbmEvent found
+          if (evRichHitIndx.size() > 0) fHM->H1("fhTofBetaTracksWithHits")->Fill(getBeta(tTrack));
+          if (ringIndx.size() == 0) fHM->H1("fhTofBetaTracksNoRing")->Fill(getBeta(tTrack));
 
-          if ((tTrack->GetNofHits() == 4
-               && (getBeta(tTrack) > 0.90 && getBeta(tTrack) < 1.10))) {
+          if ((tTrack->GetNofHits() == 4 && (getBeta(tTrack) > 0.90 && getBeta(tTrack) < 1.10))) {
             //tracks after cut
             Double_t trackXpos = tTrack->GetFitX(RichZPos);
             Double_t trackYpos = tTrack->GetFitY(RichZPos);
 
-            if (trackXpos > -8 && trackXpos < 13 && trackYpos > -21
-                && trackYpos < 24) {
-              if (!(trackXpos > -8 && trackXpos < -3 && trackYpos > 5
-                    && trackYpos < 7.5)
-                  && !(trackXpos > 7.8 && trackXpos < 13 && trackYpos > 5
-                       && trackYpos < 7.5)
-                  && !(trackXpos > -8 && trackXpos < 2 && trackYpos > 21
-                       && trackYpos < 24)
-                  && !(trackXpos > 7.8 && trackXpos < 13 && trackYpos > 21
-                       && trackYpos < 24)
-                  && !(trackXpos > 2.2 && trackXpos < 13 && trackYpos > 21
-                       && trackYpos < 16)) {
-                fHM->H2("fhTofTracksXYRICH_Accectance")
-                  ->Fill(trackXpos, trackYpos);
+            if (trackXpos > -8 && trackXpos < 13 && trackYpos > -21 && trackYpos < 24) {
+              if (!(trackXpos > -8 && trackXpos < -3 && trackYpos > 5 && trackYpos < 7.5)
+                  && !(trackXpos > 7.8 && trackXpos < 13 && trackYpos > 5 && trackYpos < 7.5)
+                  && !(trackXpos > -8 && trackXpos < 2 && trackYpos > 21 && trackYpos < 24)
+                  && !(trackXpos > 7.8 && trackXpos < 13 && trackYpos > 21 && trackYpos < 24)
+                  && !(trackXpos > 2.2 && trackXpos < 13 && trackYpos > 21 && trackYpos < 16)) {
+                fHM->H2("fhTofTracksXYRICH_Accectance")->Fill(trackXpos, trackYpos);
                 fHM->H1("fhTracksWithRings")->Fill(2);
                 if (ringIndx.size() > 0) fHM->H1("fhTracksWithRings")->Fill(4);
-                if (FindClosestRing(tTrack, ringIndx).first > -1)
-                  fHM->H1("fhTracksWithRings")->Fill(3);
+                if (FindClosestRing(tTrack, ringIndx).first > -1) fHM->H1("fhTracksWithRings")->Fill(3);
               }
             }
 
@@ -1459,8 +791,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
 
           std::pair<int, double> closeRing = FindClosestRing(tTrack, ringIndx);
           if (closeRing.first > -1) {
-            fHM->H1("fhTofBetaTrackswithClosestRingInRange")
-              ->Fill(getBeta(tTrack));
+            fHM->H1("fhTofBetaTrackswithClosestRingInRange")->Fill(getBeta(tTrack));
             fHM->H1("fhRingTrackDistance")->Fill(closeRing.second);
             fHM->H1("fhTracksWithRings")->Fill(1);
           }
@@ -1468,10 +799,10 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
           fHM->H1("fhTofBetaAll")->Fill(getBeta(tTrack));
         }
       }
-      if (tTrack->GetFitX(RichZPos) > 30) {  // right
-        fHM->H1("fhNofTofTracks")
-          ->Fill(2.5);  // 1: All 2: left; 3: right; 4: RICH
-      } else {          //left
+      if (tTrack->GetFitX(RichZPos) > 30) {    // right
+        fHM->H1("fhNofTofTracks")->Fill(2.5);  // 1: All 2: left; 3: right; 4: RICH
+      }
+      else {  //left
         fHM->H1("fhNofTofTracks")->Fill(1.5);
       }
     }
@@ -1493,8 +824,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
         //fHM->H2("fhTofRichRingXZ")->Fill(tofHit->GetZ(),tofHit->GetX());
         //RichTofEv.emplace_back(tofHit->GetX(),tofHit->GetY(),tofHit->GetZ());
         for (unsigned int rings = 0; rings < ringIndx.size(); rings++) {
-          CbmRichRing* ring =
-            static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
+          CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
           fHM->H2("fhTofRichRingX")->Fill(ring->GetCenterX(), tofHit->GetX());
           fHM->H2("fhTofRichRingY")->Fill(ring->GetCenterY(), tofHit->GetY());
           for (int k = 0; k < ring->GetNofHits(); k++) {
@@ -1515,88 +845,68 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       auto nofTofTracks = ev->GetNofData(ECbmDataType::kTofTrack);
       fHM->H1("fhTofTracksPerRichEvent")->Fill(nofTofTracks);
       for (int j = 0; j < nofTofTracks; j++) {
-        auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, j);
-        CbmTofTracklet* track =
-          static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+        auto iTofTrack        = ev->GetIndex(ECbmDataType::kTofTrack, j);
+        CbmTofTracklet* track = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
         if (track == nullptr) continue;
         if (track->GetNofHits() <= 3) continue;
         TracksOfEvnt.emplace_back(track);
         if (!isOnTarget(track)) continue;
-        fHM->H2("fhTofTrackRichRingXY")
-          ->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
+        fHM->H2("fhTofTrackRichRingXY")->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
         for (int k = 0; k < ev->GetNofData(ECbmDataType::kRichHit); k++) {
-          auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, k);
-          CbmRichHit* richHit =
-            static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+          auto iRichHit       = ev->GetIndex(ECbmDataType::kRichHit, k);
+          CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
           if (richHit == nullptr) continue;
-          fHM->H2("fhTofTrackRichHitX")
-            ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-          fHM->H2("fhTofTrackRichHitY")
-            ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+          fHM->H2("fhTofTrackRichHitX")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+          fHM->H2("fhTofTrackRichHitY")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
 
           //cuts:
           // >3 hits /track
           //                  if (track->GetNofHits() > 3) {
-          fHM->H2("fhTofTrackRichHitX_cuts")
-            ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-          fHM->H2("fhTofTrackRichHitY_cuts")
-            ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+          fHM->H2("fhTofTrackRichHitX_cuts")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+          fHM->H2("fhTofTrackRichHitY_cuts")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
           if (getBeta(track) > 0.90 && getBeta(track) < 1.10) {
-            fHM->H2("fhTofTrackRichHitX_oBetacuts")
-              ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-            fHM->H2("fhTofTrackRichHitY_oBetacuts")
-              ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+            fHM->H2("fhTofTrackRichHitX_oBetacuts")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+            fHM->H2("fhTofTrackRichHitY_oBetacuts")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
             double deltatime = richHit->GetTime() - track->GetTime();
             fHM->H1("fhTofTrackRichHitTime_oBetacuts")->Fill(deltatime);
             if (deltatime > -10 && deltatime < +40) {
               if (track->GetNofHits() == 4) {
-                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime")
-                  ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime")
-                  ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
               }
 
               if (track->GetNofHits() > 4) {
-                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_4")
-                  ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_4")
-                  ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
-              } else if (track->GetNofHits() > 6) {
-                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_6")
-                  ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_6")
-                  ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
-              } else if (track->GetNofHits() > 8) {
-                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_8")
-                  ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_8")
-                  ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
-              } else if (track->GetNofHits() > 10) {
-                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_10")
-                  ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_10")
-                  ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_4")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_4")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+              }
+              else if (track->GetNofHits() > 6) {
+                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_6")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_6")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+              }
+              else if (track->GetNofHits() > 8) {
+                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_8")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_8")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+              }
+              else if (track->GetNofHits() > 10) {
+                fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_10")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+                fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_10")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
               }
 
               if (track->GetNofHits() == 4) {
                 for (int l = 0; l < track->GetNofHits(); ++l) {
-                  auto hitIndex = track->GetHitIndex(l);
-                  auto iTofHit  = ev->GetIndex(ECbmDataType::kTofHit, hitIndex);
-                  const CbmTofHit* tofHit =
-                    static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
+                  auto hitIndex           = track->GetHitIndex(l);
+                  auto iTofHit            = ev->GetIndex(ECbmDataType::kTofHit, hitIndex);
+                  const CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
                   if (tofHit->GetZ() < 2.) continue;  // Cut T0 away!
-                  fHM->H2("fhTofTrackHitRichHitX_oBetacuts_dtime")
-                    ->Fill(richHit->GetX(), tofHit->GetX());
-                  fHM->H2("fhTofTrackHitRichHitY_oBetacuts_dtime")
-                    ->Fill(richHit->GetY(), tofHit->GetY());
+                  fHM->H2("fhTofTrackHitRichHitX_oBetacuts_dtime")->Fill(richHit->GetX(), tofHit->GetX());
+                  fHM->H2("fhTofTrackHitRichHitY_oBetacuts_dtime")->Fill(richHit->GetY(), tofHit->GetY());
                 }
               }
             }
-          } else {
-            fHM->H2("fhTofTrackRichHitX_uBetacuts")
-              ->Fill(richHit->GetX(), track->GetFitX(RichZPos));
-            fHM->H2("fhTofTrackRichHitY_uBetacuts")
-              ->Fill(richHit->GetY(), track->GetFitY(RichZPos));
+          }
+          else {
+            fHM->H2("fhTofTrackRichHitX_uBetacuts")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
+            fHM->H2("fhTofTrackRichHitY_uBetacuts")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
           }
           //}
         }
@@ -1609,8 +919,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       fRingsWithTrack[5] += ringIndx.size() * nofTofTracks;
 
       for (unsigned int rings = 0; rings < ringIndx.size(); rings++) {
-        CbmRichRing* ring =
-          static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
+        CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
         if (nullptr == ring) continue;
 
         fHM->H1("fhRichRingChi2")->Fill(ring->GetChi2());
@@ -1621,28 +930,21 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
 
         fHM->H1("fhRichRingBeta")->Fill(getBeta(ring));
 
-        auto clTrack =
-          FindClosestTrack(ring, TracksOfEvnt);  // has no cut on distance
+        auto clTrack = FindClosestTrack(ring, TracksOfEvnt);  // has no cut on distance
         analyseRing(ring, ev, clTrack);
 
         for (int j = 0; j < nofTofTracks; j++) {
-          auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, j);
-          CbmTofTracklet* track =
-            static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+          auto iTofTrack        = ev->GetIndex(ECbmDataType::kTofTrack, j);
+          CbmTofTracklet* track = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
           if (track == nullptr) continue;
-          if (!(track->GetNofHits() == 4
-                && (getBeta(track) > 0.90 && getBeta(track) < 1.10)))
-            continue;
+          if (!(track->GetNofHits() == 4 && (getBeta(track) > 0.90 && getBeta(track) < 1.10))) continue;
           if (rings == 0) {
             fRingsWithTrack[4]++;
             if (ring->GetChi2() < 4.)
-              fSeDsply_TR->DrawEvent(
-                ev, ringIndx, 1);  //Some will be drawn double, but for now ok
+              fSeDsply_TR->DrawEvent(ev, ringIndx, 1);  //Some will be drawn double, but for now ok
           }
-          fHM->H2("fhTofTrackRichRingX")
-            ->Fill(ring->GetCenterX(), track->GetFitX(RichZPos));
-          fHM->H2("fhTofTrackRichRingY")
-            ->Fill(ring->GetCenterY(), track->GetFitY(RichZPos));
+          fHM->H2("fhTofTrackRichRingX")->Fill(ring->GetCenterX(), track->GetFitX(RichZPos));
+          fHM->H2("fhTofTrackRichRingY")->Fill(ring->GetCenterY(), track->GetFitY(RichZPos));
 
           const double xDist = (track->GetFitX(RichZPos) - ring->GetCenterX());
           const double yDist = (track->GetFitY(RichZPos) - ring->GetCenterY());
@@ -1655,10 +957,8 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
             Int_t hitInd    = ring->GetHit(k);
             CbmRichHit* hit = (CbmRichHit*) fRichHits->At(hitInd);
             if (nullptr == hit) continue;
-            fHM->H2("fhTofTrackRichRingHitX")
-              ->Fill(hit->GetX(), track->GetFitX(RichZPos));
-            fHM->H2("fhTofTrackRichRingHitY")
-              ->Fill(hit->GetY(), track->GetFitY(RichZPos));
+            fHM->H2("fhTofTrackRichRingHitX")->Fill(hit->GetX(), track->GetFitX(RichZPos));
+            fHM->H2("fhTofTrackRichRingHitY")->Fill(hit->GetY(), track->GetFitY(RichZPos));
           }
         }
 
@@ -1667,42 +967,29 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
           //FIXME
           //if (getBeta(TracksOfEvnt[clTrack.first]) > 0.9) DrawRing(ring,TracksOfEvnt,true);
           fHM->H1("fhTrackRingDistance")->Fill(clTrack.second);
-          CbmTofTracklet* track = TracksOfEvnt
-            [clTrack
-               .first];  //static_cast<CbmTofTracklet *>(fTofTracks->At(clTrack.first));
+          CbmTofTracklet* track =
+            TracksOfEvnt[clTrack.first];  //static_cast<CbmTofTracklet *>(fTofTracks->At(clTrack.first));
           if (track == nullptr) continue;
-          if (isOnTarget(track)) {
-            fHM->H1("fhTrackRingDistanceOnTarget")->Fill(clTrack.second);
-
-          } else {
+          if (isOnTarget(track)) { fHM->H1("fhTrackRingDistanceOnTarget")->Fill(clTrack.second); }
+          else {
             fHM->H1("fhTrackRingDistanceOffTarget")->Fill(clTrack.second);
           }
-          fHM->H2("fhTrackRingDistanceVSRingradius")
-            ->Fill(clTrack.second, ring->GetRadius());
-          fHM->H2("fhTrackRingDistanceVSRingChi2")
-            ->Fill(clTrack.second, ring->GetChi2());
+          fHM->H2("fhTrackRingDistanceVSRingradius")->Fill(clTrack.second, ring->GetRadius());
+          fHM->H2("fhTrackRingDistanceVSRingChi2")->Fill(clTrack.second, ring->GetChi2());
           //if ( (clTrack.second < 20.0 )) {
-          fHM->H2("fhRichRingXY_goodTrack")
-            ->Fill(ring->GetCenterX(), ring->GetCenterY());
-          fHM->H2("fhRichRing_goodTrackXY")
-            ->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
+          fHM->H2("fhRichRingXY_goodTrack")->Fill(ring->GetCenterX(), ring->GetCenterY());
+          fHM->H2("fhRichRing_goodTrackXY")->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
           //}
-          fHM->H2("fhClosTrackRingX")
-            ->Fill(ring->GetCenterX(), track->GetFitX(RichZPos));
-          fHM->H2("fhClosTrackRingY")
-            ->Fill(ring->GetCenterY(), track->GetFitY(RichZPos));
-          fHM->H2("fhTofClosTrackRichRingXY")
-            ->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
+          fHM->H2("fhClosTrackRingX")->Fill(ring->GetCenterX(), track->GetFitX(RichZPos));
+          fHM->H2("fhClosTrackRingY")->Fill(ring->GetCenterY(), track->GetFitY(RichZPos));
+          fHM->H2("fhTofClosTrackRichRingXY")->Fill(track->GetFitX(RichZPos), track->GetFitY(RichZPos));
           if ((clTrack.second < (ring->GetRadius() * 1.2))) {  //Good Ring
-            fHM->H2("fhGoodRingsXY_TargetPos")
-              ->Fill(track->GetFitX(0.), track->GetFitY(0.));
+            fHM->H2("fhGoodRingsXY_TargetPos")->Fill(track->GetFitX(0.), track->GetFitY(0.));
             fHM->H1("fhRichRingChi2_goodRing")->Fill(ring->GetChi2());
-            fHM->H2("fhTrackRingDistanceVSRingChi2_goodRing")
-              ->Fill(clTrack.second, ring->GetChi2());
+            fHM->H2("fhTrackRingDistanceVSRingChi2_goodRing")->Fill(clTrack.second, ring->GetChi2());
             fHM->H1("fhTofBetaRing")->Fill(getBeta(track));
             fHM->H2("fhTofBetaRingDist")->Fill(getBeta(track), clTrack.second);
-            fHM->H2("fhTofBetaVsRadius")
-              ->Fill(getBeta(track), ring->GetRadius());
+            fHM->H2("fhTofBetaVsRadius")->Fill(getBeta(track), ring->GetRadius());
             //Ring properties of "Good rings"
             fHM->H1("fhRichRingRadius_goodRing")->Fill(ring->GetRadius());
             fHM->H1("fhNofHitsInRing_goodRing")->Fill(ring->GetNofHits());
@@ -1711,16 +998,12 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
         }
 
         fHM->H2("fhTofRichRingXZ")
-          ->Fill(
-            RichZPos,
-            ring
-              ->GetCenterX());  //Z Axis by Hand because ring has no Z component
-        RichTofEv.emplace_back(
-          ring->GetCenterX(), ring->GetCenterY(), RichZPos);
+          ->Fill(RichZPos,
+                 ring->GetCenterX());  //Z Axis by Hand because ring has no Z component
+        RichTofEv.emplace_back(ring->GetCenterX(), ring->GetCenterY(), RichZPos);
         // Draw XY position of center of rings; later add the Tracks in Tof
         fHM->H2("fhTofTrackRichRingXY")
-          ->Fill(ring->GetCenterX(),
-                 ring->GetCenterY(),
+          ->Fill(ring->GetCenterX(), ring->GetCenterY(),
                  3);  // 3 to change color for Rings
       }
 
@@ -1744,17 +1027,14 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
         double yBlob = 21.2 - ((j % 9) * 5.3);
         //std::cout<<"BLOB X:" << i << "   "<< xBlob << std::endl;
         for (int k = 0; k < ev->GetNofData(ECbmDataType::kTofTrack); k++) {
-          auto iTofTrack = ev->GetIndex(ECbmDataType::kTofTrack, k);
-          CbmTofTracklet* track =
-            static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
+          auto iTofTrack        = ev->GetIndex(ECbmDataType::kTofTrack, k);
+          CbmTofTracklet* track = static_cast<CbmTofTracklet*>(fTofTracks->At(iTofTrack));
           if (track == nullptr) continue;
           double xBlobTrack = track->GetFitX(RichZPos) - xBlob;
           double yBlobTrack = track->GetFitY(RichZPos) - yBlob;
           fHM->H1("fhBlobTrackDistX")->Fill(std::fabs(xBlobTrack));
           fHM->H1("fhBlobTrackDistY")->Fill(std::fabs(yBlobTrack));
-          fHM->H1("fhBlobTrackDist")
-            ->Fill(
-              std::sqrt(xBlobTrack * xBlobTrack + yBlobTrack * yBlobTrack));
+          fHM->H1("fhBlobTrackDist")->Fill(std::sqrt(xBlobTrack * xBlobTrack + yBlobTrack * yBlobTrack));
         }
       }
     }
@@ -1769,7 +1049,8 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
   RichRings();
 }
 
-void CbmRichMCbmQaReal::RichRings() {
+void CbmRichMCbmQaReal::RichRings()
+{
   int nofRichRings = fRichRings->GetEntriesFast();
   fHM->H1("fhNofRichRingsInTimeslice")->Fill(nofRichRings);
   for (int i = 0; i < nofRichRings; i++) {
@@ -1780,14 +1061,13 @@ void CbmRichMCbmQaReal::RichRings() {
     fHM->H1("fhRichRingRadius")->Fill(ring->GetRadius());
     fHM->H1("fhNofHitsInRing")->Fill(ring->GetNofHits());
     fHM->H2("fhRichRingRadiusY")->Fill(ring->GetRadius(), ring->GetCenterY());
-    fHM->H2("fhRichHitsRingRadius")
-      ->Fill(ring->GetNofHits(), ring->GetRadius());
+    fHM->H2("fhRichHitsRingRadius")->Fill(ring->GetNofHits(), ring->GetRadius());
   }
 }
 
-std::pair<int, double>
-CbmRichMCbmQaReal::FindClosestTrack(const CbmRichRing* ring,
-                                    const std::vector<CbmTofTracklet*> track) {
+std::pair<int, double> CbmRichMCbmQaReal::FindClosestTrack(const CbmRichRing* ring,
+                                                           const std::vector<CbmTofTracklet*> track)
+{
   int ringX = ring->GetCenterX();
   int ringY = ring->GetCenterY();
 
@@ -1798,11 +1078,10 @@ CbmRichMCbmQaReal::FindClosestTrack(const CbmRichRing* ring,
 
     //Calc if Track is in Ring (+20% )
     if (track[indx]->GetNofHits() <= 3) continue;
-    const double xDist = (track[indx]->GetFitX(RichZPos) - ringX);
-    const double yDist = (track[indx]->GetFitY(RichZPos) - ringY);
-    const double rDist = std::sqrt(xDist * xDist + yDist * yDist);
-    const double RadiusFactor =
-      1.2;  // Factor of how big radius of acceptance should
+    const double xDist        = (track[indx]->GetFitX(RichZPos) - ringX);
+    const double yDist        = (track[indx]->GetFitY(RichZPos) - ringY);
+    const double rDist        = std::sqrt(xDist * xDist + yDist * yDist);
+    const double RadiusFactor = 1.2;  // Factor of how big radius of acceptance should
 
     if (rDist < ring->GetRadius() * RadiusFactor) {
       //std::cout<<"Track in defined Ring range ("<<ring->GetRadius()*RadiusFactor<<"cm) (RingRadius: "<<ring->GetRadius()<<"cm).  ";
@@ -1811,7 +1090,8 @@ CbmRichMCbmQaReal::FindClosestTrack(const CbmRichRing* ring,
     if (indx == 0) {
       closDist  = rDist;
       closTrack = indx;
-    } else {
+    }
+    else {
       if (closDist > rDist) {
         closDist  = rDist;
         closTrack = indx;
@@ -1827,9 +1107,8 @@ CbmRichMCbmQaReal::FindClosestTrack(const CbmRichRing* ring,
   return p;
 }
 
-std::pair<int, double>
-CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track,
-                                   std::vector<int>& ringIndx) {
+std::pair<int, double> CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track, std::vector<int>& ringIndx)
+{
   // Closest Ring to Track in +20% Ring Radius!
   const double x_track = track->GetFitX(RichZPos);
   const double y_track = track->GetFitY(RichZPos);
@@ -1838,18 +1117,16 @@ CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track,
   double closDist = -999999.99;
 
   for (unsigned int indx = 0; indx < ringIndx.size(); ++indx) {
-    CbmRichRing* ring =
-      static_cast<CbmRichRing*>(fRichRings->At(ringIndx[indx]));
+    CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(ringIndx[indx]));
 
     int ringX = ring->GetCenterX();
     int ringY = ring->GetCenterY();
 
     //Calc if Track is in Ring (+20% )
-    const double xDist = (x_track - ringX);
-    const double yDist = (y_track - ringY);
-    const double rDist = std::sqrt(xDist * xDist + yDist * yDist);
-    const double RadiusFactor =
-      1.2;  // Factor of how big radius of acceptance should
+    const double xDist        = (x_track - ringX);
+    const double yDist        = (y_track - ringY);
+    const double rDist        = std::sqrt(xDist * xDist + yDist * yDist);
+    const double RadiusFactor = 1.2;  // Factor of how big radius of acceptance should
 
     if (rDist < ring->GetRadius() * RadiusFactor && cutRadius(ring)) {
       //std::cout<<"Track in defined Ring range ("<<ring->GetRadius()*RadiusFactor<<"cm) (RingRadius: "<<ring->GetRadius()<<"cm).  ";
@@ -1857,7 +1134,8 @@ CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track,
       if (indx == 0) {
         closDist  = rDist;
         closTrack = indx;
-      } else {
+      }
+      else {
         if (closDist > rDist) {
           closDist  = rDist;
           closTrack = indx;
@@ -1874,7 +1152,8 @@ CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track,
   return p;
 }
 
-void CbmRichMCbmQaReal::DrawHist() {
+void CbmRichMCbmQaReal::DrawHist()
+{
   cout.precision(4);
 
   //SetDefaultDrawStyle();
@@ -1882,20 +1161,17 @@ void CbmRichMCbmQaReal::DrawHist() {
   fHM->ScaleByPattern("fh_.*", 1. / nofEvents);
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofCbmEvents", "rich_mcbm_fhNofCbmEvents", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofCbmEvents", "rich_mcbm_fhNofCbmEvents", 600, 600);
     DrawH1(fHM->H1("fhNofCbmEvents"));
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofCbmEventsRing", "rich_mcbm_fhNofCbmEventsRing", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofCbmEventsRing", "rich_mcbm_fhNofCbmEventsRing", 600, 600);
     DrawH1(fHM->H1("fhNofCbmEventsRing"));
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofEvents", "rich_mcbm_fhNofEvents", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofEvents", "rich_mcbm_fhNofEvents", 600, 600);
     DrawH1(fHM->H1("fhNofEvents"));
   }
 
@@ -1911,8 +1187,7 @@ void CbmRichMCbmQaReal::DrawHist() {
 
 
   {
-    fHM->CreateCanvas(
-      "RichDigisConsecTimeTOT", "RichDigisConsecTimeTOT", 600, 600);
+    fHM->CreateCanvas("RichDigisConsecTimeTOT", "RichDigisConsecTimeTOT", 600, 600);
     DrawH1(fHM->H1("fhRichDigisConsecTimeTOT"), kLinear, kLog);
   }
 
@@ -1925,8 +1200,7 @@ void CbmRichMCbmQaReal::DrawHist() {
     }*/
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "RichRingXY_goodTrack", "RichRingXY_goodTrack", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("RichRingXY_goodTrack", "RichRingXY_goodTrack", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhRichRingXY_goodTrack"));
@@ -1936,10 +1210,7 @@ void CbmRichMCbmQaReal::DrawHist() {
 
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_mcbm_nofObjectsInTimeslice",
-                                   "rich_mcbm_nofObjectsInTimeslice",
-                                   1500,
-                                   500);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_nofObjectsInTimeslice", "rich_mcbm_nofObjectsInTimeslice", 1500, 500);
     c->Divide(3, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhNofRichDigisInTimeslice"), kLinear, kLog);
@@ -1970,8 +1241,7 @@ void CbmRichMCbmQaReal::DrawHist() {
 
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_tof_XY_zoomed", "rich_tof_XY_zoomed", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_tof_XY_zoomed", "rich_tof_XY_zoomed", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofRichX_zoomed"));
@@ -1981,39 +1251,20 @@ void CbmRichMCbmQaReal::DrawHist() {
 
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "rich_mcbm_richDigisTimeLog", "rich_mcbm_richDigisTimeLog", 1200, 1200);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_richDigisTimeLog", "rich_mcbm_richDigisTimeLog", 1200, 1200);
     c->Divide(1, 2);
     c->cd(1);
-    DrawH1({fHM->H1("fhRichDigisTimeLog"),
-            fHM->H1("fhTofDigisTimeLog"),
-            fHM->H1("fhT0DigisTimeLog"),
+    DrawH1({fHM->H1("fhRichDigisTimeLog"), fHM->H1("fhTofDigisTimeLog"), fHM->H1("fhT0DigisTimeLog"),
             fHM->H1("fhStsDigisTimeLog")},
-           {"RICH", "TOF", "T0", "STS"},
-           kLinear,
-           kLog,
-           true,
-           0.87,
-           0.75,
-           0.99,
-           0.99);
+           {"RICH", "TOF", "T0", "STS"}, kLinear, kLog, true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.10);
     fHM->H1("fhStsDigisTimeLog")->GetYaxis()->SetTitleOffset(0.7);
     fHM->H1("fhStsDigisTimeLog")->SetMinimum(0.9);
     c->cd(2);
-    DrawH1({fHM->H1("fhRichDigisTimeLogZoom"),
-            fHM->H1("fhTofDigisTimeLogZoom"),
-            fHM->H1("fhT0DigisTimeLogZoom"),
+    DrawH1({fHM->H1("fhRichDigisTimeLogZoom"), fHM->H1("fhTofDigisTimeLogZoom"), fHM->H1("fhT0DigisTimeLogZoom"),
             fHM->H1("fhStsDigisTimeLogZoom")},
-           {"RICH", "TOF", "T0", "STS"},
-           kLinear,
-           kLog,
-           true,
-           0.87,
-           0.75,
-           0.99,
-           0.99);
+           {"RICH", "TOF", "T0", "STS"}, kLinear, kLog, true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.1);
     fHM->H1("fhStsDigisTimeLogZoom")->GetYaxis()->SetTitleOffset(0.7);
@@ -2021,20 +1272,10 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_richDigisTimeLog2", "rich_mcbm_richDigisTimeLog2", 1200, 600);
-    DrawH1({fHM->H1("fhRichDigisTimeLogZoom2"),
-            fHM->H1("fhTofDigisTimeLogZoom2"),
-            fHM->H1("fhT0DigisTimeLogZoom2"),
+    fHM->CreateCanvas("rich_mcbm_richDigisTimeLog2", "rich_mcbm_richDigisTimeLog2", 1200, 600);
+    DrawH1({fHM->H1("fhRichDigisTimeLogZoom2"), fHM->H1("fhTofDigisTimeLogZoom2"), fHM->H1("fhT0DigisTimeLogZoom2"),
             fHM->H1("fhStsDigisTimeLogZoom2")},
-           {"RICH", "TOF", "T0", "STS"},
-           kLinear,
-           kLog,
-           true,
-           0.87,
-           0.75,
-           0.99,
-           0.99);
+           {"RICH", "TOF", "T0", "STS"}, kLinear, kLog, true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.1);
     fHM->H1("fhStsDigisTimeLogZoom2")->GetYaxis()->SetTitleOffset(0.7);
@@ -2042,24 +1283,11 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas("rich_mcbm_richDigisRingTimeLog",
-                      "rich_mcbm_richDigisRingTimeLog",
-                      1200,
-                      600);
+    fHM->CreateCanvas("rich_mcbm_richDigisRingTimeLog", "rich_mcbm_richDigisRingTimeLog", 1200, 600);
     TH1D* copyRichDigi = (TH1D*) fHM->H1("fhRichDigisTimeLog")->Clone();
     TH1D* copyRichRing = (TH1D*) fHM->H1("fhRichRingsTimeLog")->Clone();
-    DrawH1({copyRichDigi,
-            fHM->H1("fhTofDigisTimeLog"),
-            fHM->H1("fhT0DigisTimeLog"),
-            copyRichRing},
-           {"RICH", "TOF", "T0", "RICH RING"},
-           kLinear,
-           kLog,
-           true,
-           0.83,
-           0.75,
-           0.99,
-           0.99);
+    DrawH1({copyRichDigi, fHM->H1("fhTofDigisTimeLog"), fHM->H1("fhT0DigisTimeLog"), copyRichRing},
+           {"RICH", "TOF", "T0", "RICH RING"}, kLinear, kLog, true, 0.83, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.1);
     copyRichDigi->GetYaxis()->SetTitleOffset(0.7);
@@ -2068,34 +1296,18 @@ void CbmRichMCbmQaReal::DrawHist() {
 
   {
 
-    TCanvas* c = fHM->CreateCanvas(
-      "rich_mcbm_richRingsTimeLog", "rich_mcbm_richRingsTimeLog", 1200, 1200);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_richRingsTimeLog", "rich_mcbm_richRingsTimeLog", 1200, 1200);
     c->Divide(1, 2);
     c->cd(1);
-    DrawH1({fHM->H1("fhRichDigisTimeLog"), fHM->H1("fhRichRingsTimeLog")},
-           {"Digis", "Rings"},
-           kLinear,
-           kLog,
-           true,
-           0.87,
-           0.75,
-           0.99,
-           0.99);
+    DrawH1({fHM->H1("fhRichDigisTimeLog"), fHM->H1("fhRichRingsTimeLog")}, {"Digis", "Rings"}, kLinear, kLog, true,
+           0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.10);
     fHM->H1("fhRichDigisTimeLog")->GetYaxis()->SetTitleOffset(0.7);
     fHM->H1("fhRichDigisTimeLog")->SetMinimum(0.9);
     c->cd(2);
-    DrawH1(
-      {fHM->H1("fhRichDigisTimeLogZoom"), fHM->H1("fhRichRingsTimeLogZoom")},
-      {"Digis", "Rings"},
-      kLinear,
-      kLog,
-      true,
-      0.87,
-      0.75,
-      0.99,
-      0.99);
+    DrawH1({fHM->H1("fhRichDigisTimeLogZoom"), fHM->H1("fhRichRingsTimeLogZoom")}, {"Digis", "Rings"}, kLinear, kLog,
+           true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.1);
     fHM->H1("fhRichDigisTimeLogZoom")->GetYaxis()->SetTitleOffset(0.7);
@@ -2103,18 +1315,9 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_richRingsTimeLog2", "rich_mcbm_richRingsTimeLog2", 1200, 600);
-    DrawH1(
-      {fHM->H1("fhRichDigisTimeLogZoom2"), fHM->H1("fhRichRingsTimeLogZoom2")},
-      {"Digis", "Rings"},
-      kLinear,
-      kLog,
-      true,
-      0.87,
-      0.75,
-      0.99,
-      0.99);
+    fHM->CreateCanvas("rich_mcbm_richRingsTimeLog2", "rich_mcbm_richRingsTimeLog2", 1200, 600);
+    DrawH1({fHM->H1("fhRichDigisTimeLogZoom2"), fHM->H1("fhRichRingsTimeLogZoom2")}, {"Digis", "Rings"}, kLinear, kLog,
+           true, 0.87, 0.75, 0.99, 0.99);
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.1);
     fHM->H1("fhRichDigisTimeLogZoom2")->GetYaxis()->SetTitleOffset(0.7);
@@ -2132,8 +1335,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_BlobTrackDist", "rich_BlobTrackDist", 1800, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_BlobTrackDist", "rich_BlobTrackDist", 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhBlobTrackDistX"));
@@ -2150,8 +1352,7 @@ void CbmRichMCbmQaReal::DrawHist() {
 
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_mcbm_rings", "rich_mcbm_rings", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_rings", "rich_mcbm_rings", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhRichRingRadius"));
@@ -2170,14 +1371,12 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "TofTracksPerRichEvent", "TofTracksPerRichEvent", 1200, 1200);
+    fHM->CreateCanvas("TofTracksPerRichEvent", "TofTracksPerRichEvent", 1200, 1200);
     DrawH1(fHM->H1("fhTofTracksPerRichEvent"), kLinear, kLog);
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("TofRichRingX_Y", "TofRichRingX_Y", 1200, 1200);
+    TCanvas* c = fHM->CreateCanvas("TofRichRingX_Y", "TofRichRingX_Y", 1200, 1200);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofRichRingX"));
@@ -2186,8 +1385,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("TofRichX_Stacks", "TofRichX_Stacks", 1800, 600);
+    TCanvas* c = fHM->CreateCanvas("TofRichX_Stacks", "TofRichX_Stacks", 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofRichX_stack1"));
@@ -2222,8 +1420,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "TofClosTrackRichRingXY", "TofClosTrackRichRingXY", 1200, 1200);
+    fHM->CreateCanvas("TofClosTrackRichRingXY", "TofClosTrackRichRingXY", 1200, 1200);
 
     DrawH2(fHM->H2("fhTofClosTrackRichRingXY"));
   }
@@ -2243,8 +1440,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("ClosTrackRingXY", "ClosTrackRingXY", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("ClosTrackRingXY", "ClosTrackRingXY", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhClosTrackRingX"));
@@ -2276,8 +1472,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "GoodRingsXY_TargetPos", "GoodRingsXY_TargetPos", 800, 800);
+    fHM->CreateCanvas("GoodRingsXY_TargetPos", "GoodRingsXY_TargetPos", 800, 800);
     DrawH2(fHM->H2("fhGoodRingsXY_TargetPos"));
   }
 
@@ -2301,22 +1496,16 @@ void CbmRichMCbmQaReal::DrawHist() {
     fHM->H1("fhTofBetaRing")->Draw("HIST SAME");
 
     auto legend = new TLegend(0.1, 0.75, 0.4, 0.9);
-    legend->AddEntry(fHM->H1("fhTofBetaTracksWithHitsNoRing"),
-                     "Tracks with RichHits and no Ring",
-                     "l");
+    legend->AddEntry(fHM->H1("fhTofBetaTracksWithHitsNoRing"), "Tracks with RichHits and no Ring", "l");
     //legend->AddEntry(fHM->H1("fhTofBetaTracksWithHits"),"Tracks with RichHits","l");
     //legend->AddEntry(fHM->H1("fhTofBetaTracksNoRing"),"Tracks with no Ring","l");
-    legend->AddEntry(fHM->H1("fhTofBetaTrackswithClosestRingInRange"),
-                     "Tracks with clos. Ring in +20% Radius",
-                     "l");
+    legend->AddEntry(fHM->H1("fhTofBetaTrackswithClosestRingInRange"), "Tracks with clos. Ring in +20% Radius", "l");
     legend->AddEntry(fHM->H1("fhTofBetaRing"), "Tracks in good ring", "l");
-    if (fRestrictToAcc) {
-      legend->AddEntry(
-        fHM->H1("fhTofBetaAll"), "All Tracks in mRICH Acc.", "l");
-    } else if (fRestrictToFullAcc) {
-      legend->AddEntry(
-        fHM->H1("fhTofBetaAll"), "All Tracks in full mRICH Acc.", "l");
-    } else {
+    if (fRestrictToAcc) { legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks in mRICH Acc.", "l"); }
+    else if (fRestrictToFullAcc) {
+      legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks in full mRICH Acc.", "l");
+    }
+    else {
       legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks", "l");
     }
     legend->Draw();
@@ -2345,30 +1534,23 @@ void CbmRichMCbmQaReal::DrawHist() {
     fHM->H1("fhTofBetaTrackswithClosestRingInRange")->SetLineColorAlpha(12, 1);
     fHM->H1("fhTofBetaTrackswithClosestRingInRange")->Draw("HIST SAME");
 
-    if (fHM->H1("fhTofBetaRing")->GetMaximum() > max)
-      max = fHM->H1("fhTofBetaRing")->GetMaximum();
+    if (fHM->H1("fhTofBetaRing")->GetMaximum() > max) max = fHM->H1("fhTofBetaRing")->GetMaximum();
     fHM->H1("fhTofBetaRing")->SetLineColorAlpha(kRed, 1);
     fHM->H1("fhTofBetaRing")->Draw("HIST SAME");
 
     fHM->H1("fhTofBetaAll")->SetAxisRange(1., max * 1.8, "Y");
 
     auto legend = new TLegend(0.75, 0.77, 0.99, 0.96);
-    legend->AddEntry(fHM->H1("fhTofBetaTracksWithHitsNoRing"),
-                     "Tracks with RichHits and no Ring",
-                     "l");
+    legend->AddEntry(fHM->H1("fhTofBetaTracksWithHitsNoRing"), "Tracks with RichHits and no Ring", "l");
     //legend->AddEntry(fHM->H1("fhTofBetaTracksWithHits"),"Tracks with RichHits","l");
     //legend->AddEntry(fHM->H1("fhTofBetaTracksNoRing"),"Tracks with no Ring","l");
-    legend->AddEntry(fHM->H1("fhTofBetaTrackswithClosestRingInRange"),
-                     "Tracks with clos. Ring in +20% Radius",
-                     "l");
+    legend->AddEntry(fHM->H1("fhTofBetaTrackswithClosestRingInRange"), "Tracks with clos. Ring in +20% Radius", "l");
     legend->AddEntry(fHM->H1("fhTofBetaRing"), "Tracks in good ring", "l");
-    if (fRestrictToAcc) {
-      legend->AddEntry(
-        fHM->H1("fhTofBetaAll"), "All Tracks in mRICH Acc.", "l");
-    } else if (fRestrictToFullAcc) {
-      legend->AddEntry(
-        fHM->H1("fhTofBetaAll"), "All Tracks in full mRICH Acc.", "l");
-    } else {
+    if (fRestrictToAcc) { legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks in mRICH Acc.", "l"); }
+    else if (fRestrictToFullAcc) {
+      legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks in full mRICH Acc.", "l");
+    }
+    else {
       legend->AddEntry(fHM->H1("fhTofBetaAll"), "All Tracks", "l");
     }
     legend->Draw();
@@ -2390,8 +1572,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TofBetaAllFullAccLog", "TofBetaAllFullAccLog", 800, 800);
+    TCanvas* c = fHM->CreateCanvas("TofBetaAllFullAccLog", "TofBetaAllFullAccLog", 800, 800);
     c->SetLogy();
     DrawH1(fHM->H1("fhTofBetaAllFullAcc"));
   }
@@ -2405,28 +1586,16 @@ void CbmRichMCbmQaReal::DrawHist() {
     c->cd(2);
     DrawH1(fHM->H1("fhRingToTs"));
     c->cd(3);
-    DrawH1({fHM->H1("fhRingLE"),
-            fHM->H1("fhRingNoClTrackLE"),
-            fHM->H1("fhRingClTrackFarAwayLE"),
-            fHM->H1("fhGoodRingLE")},
-           {"all Rings",
-            "Rings w/o closest Track",
-            "Rings w/ closest Track >5cm",
-            "Good Rings"},
-           kLinear,
-           kLinear,
-           true,
-           0.70,
-           0.75,
-           0.95,
-           0.99);
+    DrawH1(
+      {fHM->H1("fhRingLE"), fHM->H1("fhRingNoClTrackLE"), fHM->H1("fhRingClTrackFarAwayLE"), fHM->H1("fhGoodRingLE")},
+      {"all Rings", "Rings w/o closest Track", "Rings w/ closest Track >5cm", "Good Rings"}, kLinear, kLinear, true,
+      0.70, 0.75, 0.95, 0.99);
     c->cd(4);
     DrawH2(fHM->H2("fhRingLEvsToT"));
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("InnerRingAnalysis", "InnerRingAnalysis", 1000, 1200);
+    TCanvas* c = fHM->CreateCanvas("InnerRingAnalysis", "InnerRingAnalysis", 1000, 1200);
     //c->SetLogy();
     c->Divide(2, 3);
     c->cd(1);
@@ -2434,21 +1603,10 @@ void CbmRichMCbmQaReal::DrawHist() {
     c->cd(2);
     DrawH1(fHM->H1("fhInnerRingToTs"));
     c->cd(3);
-    DrawH1({fHM->H1("fhInnerRingLE"),
-            fHM->H1("fhInnerRingNoClTrackLE"),
-            fHM->H1("fhInnerRingClTrackFarAwayLE"),
+    DrawH1({fHM->H1("fhInnerRingLE"), fHM->H1("fhInnerRingNoClTrackLE"), fHM->H1("fhInnerRingClTrackFarAwayLE"),
             fHM->H1("fhInnerGoodRingLE")},
-           {"all Rings",
-            "Rings w/o closest Track",
-            "Rings w/ closest Track >5cm",
-            "Good Rings"},
-           kLinear,
-           kLinear,
-           true,
-           0.70,
-           0.75,
-           0.95,
-           0.99);
+           {"all Rings", "Rings w/o closest Track", "Rings w/ closest Track >5cm", "Good Rings"}, kLinear, kLinear,
+           true, 0.70, 0.75, 0.95, 0.99);
     c->cd(4);
     DrawH1(fHM->H1("fhInnerRingFlag"));
     c->cd(5);
@@ -2484,20 +1642,17 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhBlobEvents", "rich_mcbm_fhBlobEvents", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhBlobEvents", "rich_mcbm_fhBlobEvents", 600, 600);
     DrawH1(fHM->H1("fhNofBlobEvents"));
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhBlobsInCbmEvent", "rich_mcbm_fhBlobsInCbmEvent", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhBlobsInCbmEvent", "rich_mcbm_fhBlobsInCbmEvent", 600, 600);
     DrawH1(fHM->H1("fhNofBlobsInEvent"));
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("TofTrackRichHitXY", "TofTrackRichHitXY", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY", "TofTrackRichHitXY", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX"));
@@ -2506,8 +1661,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TofTrackRichRingHitXY", "TofTrackRichRingHitXY", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichRingHitXY", "TofTrackRichRingHitXY", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichRingHitX"));
@@ -2516,8 +1670,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TofHitRichRingHitXY", "TofHitRichRingHitXY", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TofHitRichRingHitXY", "TofHitRichRingHitXY", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofHitRichRingHitX"));
@@ -2526,8 +1679,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TrackRingDistance_Target", "TrackRingDistance_Target", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TrackRingDistance_Target", "TrackRingDistance_Target", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhTrackRingDistanceOnTarget"));
@@ -2536,8 +1688,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TofTrackRichHitXY_cut", "TofTrackRichHitXY_cut", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_cut", "TofTrackRichHitXY_cut", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX_cuts"));
@@ -2546,10 +1697,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_overBetaCut",
-                                   "TofTrackRichHitXY_overBetaCut",
-                                   1200,
-                                   800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_overBetaCut", "TofTrackRichHitXY_overBetaCut", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX_oBetacuts"));
@@ -2558,10 +1706,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_underBetaCut",
-                                   "TofTrackRichHitXY_underBetaCut",
-                                   1200,
-                                   800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_underBetaCut", "TofTrackRichHitXY_underBetaCut", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX_uBetacuts"));
@@ -2570,10 +1715,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_oBetacuts_dtime",
-                                   "TofTrackRichHitXY_oBetacuts_dtime",
-                                   1200,
-                                   800);
+    TCanvas* c = fHM->CreateCanvas("TofTrackRichHitXY_oBetacuts_dtime", "TofTrackRichHitXY_oBetacuts_dtime", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime"));
@@ -2582,10 +1724,8 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("TofTrackHitRichHitXY_oBetacuts_dtime",
-                                   "TofTrackHitRichHitXY_oBetacuts_dtime",
-                                   1200,
-                                   800);
+    TCanvas* c =
+      fHM->CreateCanvas("TofTrackHitRichHitXY_oBetacuts_dtime", "TofTrackHitRichHitXY_oBetacuts_dtime", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackHitRichHitX_oBetacuts_dtime"));
@@ -2594,19 +1734,14 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas("TofTrackRichHitTime_oBetacuts",
-                      "TofTrackRichHitTime_oBetacuts",
-                      600,
-                      600);
+    fHM->CreateCanvas("TofTrackRichHitTime_oBetacuts", "TofTrackRichHitTime_oBetacuts", 600, 600);
     DrawH1(fHM->H1("fhTofTrackRichHitTime_oBetacuts"));
   }
 
 
   {
     TCanvas* c = fHM->CreateCanvas("TofTrackHitRichHitXY_oBetacuts_dtime_evo",
-                                   "TofTrackHitRichHitXY_oBetacuts_dtime_evo",
-                                   1200,
-                                   3200);
+                                   "TofTrackHitRichHitXY_oBetacuts_dtime_evo", 1200, 3200);
     c->Divide(2, 4);
     c->cd(1);
     DrawH2(fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_4"));
@@ -2630,8 +1765,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "TrackRingDistance_AfterCorr", "TrackRingDistance_AfterCorr", 600, 600);
+    fHM->CreateCanvas("TrackRingDistance_AfterCorr", "TrackRingDistance_AfterCorr", 600, 600);
     DrawH1(fHM->H1("fhTrackRingDistance_corr"));
   }
 
@@ -2659,8 +1793,7 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "TrackRingDistanceVSRingChi2", "TrackRingDistanceVSRingChi2", 1200, 800);
+    TCanvas* c = fHM->CreateCanvas("TrackRingDistanceVSRingChi2", "TrackRingDistanceVSRingChi2", 1200, 800);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhTrackRingDistanceVSRingChi2"));
@@ -2680,20 +1813,19 @@ void CbmRichMCbmQaReal::DrawHist() {
   }
 
   {
-    fHM->CreateCanvas(
-      "TofTracksXYRICH_Accectance", "TofTracksXYRICH_Accectance", 1200, 1200);
+    fHM->CreateCanvas("TofTracksXYRICH_Accectance", "TofTracksXYRICH_Accectance", 1200, 1200);
     DrawH2(fHM->H2("fhTofTracksXYRICH_Accectance"));
   }
 }
 
-void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring) {
+void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring)
+{
   std::vector<CbmTofTracklet*> track;
   this->DrawRing(ring, track);
 }
 
-void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
-                                 std::vector<CbmTofTracklet*> track,
-                                 bool full) {
+void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring, std::vector<CbmTofTracklet*> track, bool full)
+{
   //std::cout<<"#!#DRAW!!!"<<std::endl;
   if (fNofDrawnRings > 20) return;
   fNofDrawnRings++;
@@ -2701,31 +1833,17 @@ void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
   ss << "Event" << fNofDrawnRings;
   //fNofDrawnRings++;
   TCanvas* c = nullptr;
-  if (full == true) {
-    c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 800, 800);
-  } else {
+  if (full == true) { c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 800, 800); }
+  else {
     c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 500, 500);
   }
   c->SetGrid(true, true);
   TH2D* pad = nullptr;
   if (full == true) {
-    pad = new TH2D(ss.str().c_str(),
-                   (ss.str() + ";X [cm];Y [cm]").c_str(),
-                   1,
-                   -15.,
-                   10.,
-                   1,
-                   -5.,
-                   20);
-  } else {
-    pad = new TH2D(ss.str().c_str(),
-                   (ss.str() + ";X [cm];Y [cm]").c_str(),
-                   1,
-                   -5.,
-                   5.,
-                   1,
-                   -5.,
-                   5);
+    pad = new TH2D(ss.str().c_str(), (ss.str() + ";X [cm];Y [cm]").c_str(), 1, -15., 10., 1, -5., 20);
+  }
+  else {
+    pad = new TH2D(ss.str().c_str(), (ss.str() + ";X [cm];Y [cm]").c_str(), 1, -5., 5., 1, -5., 5);
   }
 
   pad->SetStats(false);
@@ -2768,13 +1886,11 @@ void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
   }
 
   //Draw circle and center
-  TEllipse* circle = new TEllipse(
-    ring->GetCenterX() - xCur, ring->GetCenterY() - yCur, ring->GetRadius());
+  TEllipse* circle = new TEllipse(ring->GetCenterX() - xCur, ring->GetCenterY() - yCur, ring->GetRadius());
   circle->SetFillStyle(0);
   circle->SetLineWidth(3);
   circle->Draw();
-  TEllipse* center =
-    new TEllipse(ring->GetCenterX() - xCur, ring->GetCenterY() - yCur, .1);
+  TEllipse* center = new TEllipse(ring->GetCenterX() - xCur, ring->GetCenterY() - yCur, .1);
   center->Draw();
 
 
@@ -2790,7 +1906,8 @@ void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
     //std::cout<<"LE of Hit: "<< hit->GetTime()- fCbmEventStartTime << "\t" << hit->GetTime() << "\t" << fCbmEventStartTime <<std::endl;
     if (doToT(hit)) {  // Good ToT selection
       hitDr->SetFillColor(kRed);
-    } else {
+    }
+    else {
       hitDr->SetFillColor(kBlue);
     }
     hitZ += hit->GetZ();
@@ -2807,31 +1924,29 @@ void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
     std::string sTrackLabel;
     double dist = -99999.999;
     for (auto trackInd : track) {
-      TEllipse* hitDr = new TEllipse(
-        trackInd->GetFitX(hitZ) - xCur, trackInd->GetFitY(hitZ) - yCur, .25);
+      TEllipse* hitDr = new TEllipse(trackInd->GetFitX(hitZ) - xCur, trackInd->GetFitY(hitZ) - yCur, .25);
       hitDr->SetFillColor(kGreen);
       hitDr->Draw();
       //ss3 << "\\beta : "<< getBeta(trackInd); //inVel <<"x10^7 m/s";
       if (trackInd->GetFitX(hitZ) < 30.0) {  // Track on correct side of ToF
         Tc++;
-        double tmp_dist =
-          std::sqrt(trackInd->GetFitX(hitZ) * trackInd->GetFitX(hitZ)
-                    + trackInd->GetFitY(hitZ) * trackInd->GetFitY(hitZ));
+        double tmp_dist = std::sqrt(trackInd->GetFitX(hitZ) * trackInd->GetFitX(hitZ)
+                                    + trackInd->GetFitY(hitZ) * trackInd->GetFitY(hitZ));
         if (dist < -99999.0) {
-          dist = tmp_dist;
-          sTrackLabel =
-            "\\beta : " + std::to_string((double) getBeta(trackInd));
-        } else if (dist > tmp_dist) {
-          dist = tmp_dist;
-          sTrackLabel =
-            "\\beta : " + std::to_string((double) getBeta(trackInd));
+          dist        = tmp_dist;
+          sTrackLabel = "\\beta : " + std::to_string((double) getBeta(trackInd));
+        }
+        else if (dist > tmp_dist) {
+          dist        = tmp_dist;
+          sTrackLabel = "\\beta : " + std::to_string((double) getBeta(trackInd));
         }
       }
     }
     ss3 << sTrackLabel;
     TLatex* latex1 = new TLatex(-4., 0.5, ss3.str().c_str());
     latex1->Draw();
-  } else {
+  }
+  else {
     //std::cout<<"No Tracks to Draw."<<std::endl;
   }
 
@@ -2839,26 +1954,23 @@ void CbmRichMCbmQaReal::DrawRing(CbmRichRing* ring,
   //Draw information
   stringstream ss2;
   if (full == false) {
-    ss2 << "(x,y,r,n)=(" << setprecision(3) << ring->GetCenterX() << ", "
-        << ring->GetCenterY() << ", " << ring->GetRadius() << ", "
-        << ring->GetNofHits() << ")";
-  } else {
-    ss2 << "(x,y,r,n,T,Tc)=(" << setprecision(3) << ring->GetCenterX() << ", "
-        << ring->GetCenterY() << ", " << ring->GetRadius() << ", "
-        << ring->GetNofHits() << ", " << track.size() << ", " << Tc << ")";
+    ss2 << "(x,y,r,n)=(" << setprecision(3) << ring->GetCenterX() << ", " << ring->GetCenterY() << ", "
+        << ring->GetRadius() << ", " << ring->GetNofHits() << ")";
+  }
+  else {
+    ss2 << "(x,y,r,n,T,Tc)=(" << setprecision(3) << ring->GetCenterX() << ", " << ring->GetCenterY() << ", "
+        << ring->GetRadius() << ", " << ring->GetNofHits() << ", " << track.size() << ", " << Tc << ")";
   }
   TLatex* latex = nullptr;
-  if (full == true) {
-    latex = new TLatex(
-      ring->GetCenterX() - 13., ring->GetCenterY() + 5., ss2.str().c_str());
-  } else {
+  if (full == true) { latex = new TLatex(ring->GetCenterX() - 13., ring->GetCenterY() + 5., ss2.str().c_str()); }
+  else {
     latex = new TLatex(-4., 4., ss2.str().c_str());
   }
   latex->Draw();
 }
 
-void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx,
-                                      const std::vector<int> tofTrackIndx) {
+void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx, const std::vector<int> tofTrackIndx)
+{
   if (richHitIndx.size() < 1 || tofTrackIndx.size() < 1) return;
   if (fNofDrawnRichTofEv > 30) return;
   fNofDrawnRichTofEv++;
@@ -2870,14 +1982,7 @@ void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx,
   c          = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 800, 800);
   c->SetGrid(true, true);
 
-  TH2D* pad = new TH2D(ss.str().c_str(),
-                       (ss.str() + ";X [cm];Y [cm]").c_str(),
-                       1,
-                       -15.,
-                       10.,
-                       1,
-                       -5.,
-                       20);
+  TH2D* pad = new TH2D(ss.str().c_str(), (ss.str() + ";X [cm];Y [cm]").c_str(), 1, -15., 10., 1, -5., 20);
 
   pad->SetStats(false);
   pad->Draw();
@@ -2905,16 +2010,16 @@ void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx,
     TEllipse* hitDr = new TEllipse(hit->GetX(), hit->GetY(), .25);
     if (doToT(hit)) {  // Good ToT selection
       hitDr->SetFillColor(kRed);
-    } else {
+    }
+    else {
       hitDr->SetFillColor(kBlue);
     }
     hitZ += hit->GetZ();
     nofDrawHits++;
     hitDr->Draw();
   }
-  if (nofDrawHits != 0) {
-    hitZ /= nofDrawHits;
-  } else {
+  if (nofDrawHits != 0) { hitZ /= nofDrawHits; }
+  else {
     hitZ = RichZPos;
   }
 
@@ -2923,8 +2028,7 @@ void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx,
   for (unsigned int i = 0; i < tofTrackIndx.size(); i++) {
     CbmTofTracklet* track = (CbmTofTracklet*) fTofTracks->At(tofTrackIndx[i]);
     if (track == nullptr) continue;
-    TEllipse* trDr =
-      new TEllipse(track->GetFitX(hitZ), track->GetFitY(hitZ), .25);
+    TEllipse* trDr = new TEllipse(track->GetFitX(hitZ), track->GetFitY(hitZ), .25);
     trDr->SetFillColor(kGreen);
     trDr->Draw();
 
@@ -2937,7 +2041,8 @@ void CbmRichMCbmQaReal::DrawRichTofEv(const std::vector<int> richHitIndx,
 }
 
 
-void CbmRichMCbmQaReal::Finish() {
+void CbmRichMCbmQaReal::Finish()
+{
   //std::cout<<"Tracks:  "<< fTofTracks->GetEntriesFast() <<std::endl;
   std::cout << "Drawing Hists...";
   DrawHist();
@@ -2953,8 +2058,8 @@ void CbmRichMCbmQaReal::Finish() {
     TFile* oldFile    = gFile;
     TDirectory* oldir = gDirectory;
 
-    std::string s     = fOutputDir + "/RecoHists.root";
-    TFile* outFile    = new TFile(s.c_str(), "RECREATE");
+    std::string s  = fOutputDir + "/RecoHists.root";
+    TFile* outFile = new TFile(s.c_str(), "RECREATE");
     if (outFile->IsOpen()) {
       fHM->WriteToFile();
       std::cout << "Written to Root-file \"" << s << "\"  ...";
@@ -2967,43 +2072,29 @@ void CbmRichMCbmQaReal::Finish() {
   }
 
   std::cout << "fTracksinRich: " << fTracksinRich << std::endl;
-  Double_t result = (static_cast<Double_t>(fTracksinRichWithRichHits[0])
-                     / static_cast<Double_t>(fTracksinRich))
-                    * 100.;
-  std::cout << "fTracksinRichWithRichHits >  0: "
-            << fTracksinRichWithRichHits[0] << "\t Percent: " << result << "%"
+  Double_t result = (static_cast<Double_t>(fTracksinRichWithRichHits[0]) / static_cast<Double_t>(fTracksinRich)) * 100.;
+  std::cout << "fTracksinRichWithRichHits >  0: " << fTracksinRichWithRichHits[0] << "\t Percent: " << result << "%"
             << std::endl;
-  result = (static_cast<Double_t>(fTracksinRichWithRichHits[1])
-            / static_cast<Double_t>(fTracksinRich))
-           * 100.;
-  std::cout << "fTracksinRichWithRichHits >  5: "
-            << fTracksinRichWithRichHits[1] << "\t Percent: " << result << "%"
+  result = (static_cast<Double_t>(fTracksinRichWithRichHits[1]) / static_cast<Double_t>(fTracksinRich)) * 100.;
+  std::cout << "fTracksinRichWithRichHits >  5: " << fTracksinRichWithRichHits[1] << "\t Percent: " << result << "%"
             << std::endl;
-  result = (static_cast<Double_t>(fTracksinRichWithRichHits[2])
-            / static_cast<Double_t>(fTracksinRich))
-           * 100.;
-  std::cout << "fTracksinRichWithRichHits > 10: "
-            << fTracksinRichWithRichHits[2] << "\t Percent: " << result << "%"
+  result = (static_cast<Double_t>(fTracksinRichWithRichHits[2]) / static_cast<Double_t>(fTracksinRich)) * 100.;
+  std::cout << "fTracksinRichWithRichHits > 10: " << fTracksinRichWithRichHits[2] << "\t Percent: " << result << "%"
             << std::endl;
-  result = (static_cast<Double_t>(fTracksinRichWithRichHits[3])
-            / static_cast<Double_t>(fTracksinRich))
-           * 100.;
-  std::cout << "fTracksinRichWithRichHits > 15: "
-            << fTracksinRichWithRichHits[3] << "\t Percent: " << result << "%"
+  result = (static_cast<Double_t>(fTracksinRichWithRichHits[3]) / static_cast<Double_t>(fTracksinRich)) * 100.;
+  std::cout << "fTracksinRichWithRichHits > 15: " << fTracksinRichWithRichHits[3] << "\t Percent: " << result << "%"
             << std::endl;
 
 
-  std::cout << "RingsWithTrack: " << fRingsWithTrack[0]
-            << "   Rings: " << fRingsWithTrack[1]
+  std::cout << "RingsWithTrack: " << fRingsWithTrack[0] << "   Rings: " << fRingsWithTrack[1]
             << "   Tracks: " << fRingsWithTrack[2] << std::endl;
-  std::cout << "\t \t Rings Cutted: " << fRingsWithTrack[3]
-            << "   Tracks Cutted: " << fRingsWithTrack[4]
+  std::cout << "\t \t Rings Cutted: " << fRingsWithTrack[3] << "   Tracks Cutted: " << fRingsWithTrack[4]
             << "   Possible Combinations: " << fRingsWithTrack[5] << std::endl;
 }
 
 
-void CbmRichMCbmQaReal::DrawFromFile(const string& fileName,
-                                     const string& outputDir) {
+void CbmRichMCbmQaReal::DrawFromFile(const string& fileName, const string& outputDir)
+{
   fOutputDir = outputDir;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -3024,7 +2115,8 @@ void CbmRichMCbmQaReal::DrawFromFile(const string& fileName,
   gDirectory = oldDir;
 }
 
-bool CbmRichMCbmQaReal::isAccmRICH(CbmTofTracklet* track) {
+bool CbmRichMCbmQaReal::isAccmRICH(CbmTofTracklet* track)
+{
   //check if Track is in mRICH acceptance
 
   bool inside = false;
@@ -3034,7 +2126,8 @@ bool CbmRichMCbmQaReal::isAccmRICH(CbmTofTracklet* track) {
   if (x >= -6.25 && x <= -1.05) {
     // left part of mRICH
     if (y > 8 && y < 15.9) { inside = true; }
-  } else if (x > -1.05 && x < 4.25) {
+  }
+  else if (x > -1.05 && x < 4.25) {
     //right part
     if (y > 8 && y < 13.2) { inside = true; }
   }
@@ -3043,41 +2136,39 @@ bool CbmRichMCbmQaReal::isAccmRICH(CbmTofTracklet* track) {
 }
 
 
-Double_t CbmRichMCbmQaReal::getBeta(CbmTofTracklet* track) {
+Double_t CbmRichMCbmQaReal::getBeta(CbmTofTracklet* track)
+{
   Double_t inVel = 1e7 / (track->GetTt());  // in m/s
   Double_t beta  = inVel / TMath::C();
 
   return beta;
 }
 
-Double_t CbmRichMCbmQaReal::getBeta(CbmRichRing* ring) {
+Double_t CbmRichMCbmQaReal::getBeta(CbmRichRing* ring)
+{
 
   // calculate distance of ring center to penetration point in aerogel with assumption,
   // that particle is from target.
   // INFO: use center of Aerogel as reference -> 11.5cm to MAPMT (TODO: get this from GEO-File)
   const Double_t Aerogel_Dist = 11.5;
-  const Double_t aeroPenetr_Y =
-    ring->GetCenterY() * (1. - Aerogel_Dist / (RichZPos));
-  const Double_t aeroPenetr_X =
-    ring->GetCenterX() * (1. - Aerogel_Dist / (RichZPos));
+  const Double_t aeroPenetr_Y = ring->GetCenterY() * (1. - Aerogel_Dist / (RichZPos));
+  const Double_t aeroPenetr_X = ring->GetCenterX() * (1. - Aerogel_Dist / (RichZPos));
 
-  const Double_t dist = std::sqrt(
-    (ring->GetCenterX() - aeroPenetr_X) * (ring->GetCenterX() - aeroPenetr_X)
-    + (ring->GetCenterY() - aeroPenetr_Y) * (ring->GetCenterY() - aeroPenetr_Y)
-    + Aerogel_Dist * Aerogel_Dist);
+  const Double_t dist = std::sqrt((ring->GetCenterX() - aeroPenetr_X) * (ring->GetCenterX() - aeroPenetr_X)
+                                  + (ring->GetCenterY() - aeroPenetr_Y) * (ring->GetCenterY() - aeroPenetr_Y)
+                                  + Aerogel_Dist * Aerogel_Dist);
 
   const Double_t ioR = 1.05;  // Index of Reflection
 
-  Double_t beta =
-    std::sqrt((((ring->GetRadius() * ring->GetRadius()) / dist * dist) + 1)
-              / (ioR * ioR));
+  Double_t beta = std::sqrt((((ring->GetRadius() * ring->GetRadius()) / dist * dist) + 1) / (ioR * ioR));
 
   //std::cout<<"     beta:"<<beta<<std::endl;
 
   return beta;
 }
 
-bool CbmRichMCbmQaReal::RestrictToFullAcc(CbmTofTracklet* track) {
+bool CbmRichMCbmQaReal::RestrictToFullAcc(CbmTofTracklet* track)
+{
   //check if Track is in mRICH acceptance
 
   double x = track->GetFitX(RichZPos);
@@ -3085,16 +2176,16 @@ bool CbmRichMCbmQaReal::RestrictToFullAcc(CbmTofTracklet* track) {
   return this->RestrictToFullAcc(x, y);
 }
 
-bool CbmRichMCbmQaReal::RestrictToFullAcc(TVector3& pos) {
+bool CbmRichMCbmQaReal::RestrictToFullAcc(TVector3& pos)
+{
   Double_t x = pos.X();
   Double_t y = pos.Y();
 
   return this->RestrictToFullAcc(x, y);
 }
 
-bool CbmRichMCbmQaReal::RestrictToFullAcc(
-  Double_t x,
-  Double_t y) {  //check if Track is in mRICH acceptance
+bool CbmRichMCbmQaReal::RestrictToFullAcc(Double_t x, Double_t y)
+{  //check if Track is in mRICH acceptance
   if (fRestrictToFullAcc == false) return true;
   bool inside = false;
   if (x >= -16.85 && x <= 4.25) {  //TODO:check values
@@ -3105,9 +2196,8 @@ bool CbmRichMCbmQaReal::RestrictToFullAcc(
   return inside;
 }
 
-void CbmRichMCbmQaReal::analyseRing(CbmRichRing* ring,
-                                    CbmEvent* ev,
-                                    std::pair<int, double>& clTrack) {
+void CbmRichMCbmQaReal::analyseRing(CbmRichRing* ring, CbmEvent* ev, std::pair<int, double>& clTrack)
+{
 
   //std::cout<<"analyse a Ring"<<std::endl;
 
@@ -3139,11 +2229,8 @@ void CbmRichMCbmQaReal::analyseRing(CbmRichRing* ring,
     //fHM->H1("fhRingDeltaTime")->Fill(static_cast<Double_t>(meanTime - hit->GetTime()));
 
     fHM->H1("fhRingToTs")->Fill(hit->GetToT());
-    fHM->H1("fhRingLE")
-      ->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
-    fHM->H2("fhRingLEvsToT")
-      ->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()),
-             hit->GetToT());
+    fHM->H1("fhRingLE")->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
+    fHM->H2("fhRingLEvsToT")->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()), hit->GetToT());
     //std::vector<int> tmpRingIndx;
     //tmpRingIndx.push_back(ring->GetIndex);
     const Double_t Tdiff_ring = (hit->GetTime() - ev->GetStartTime());
@@ -3153,16 +2240,12 @@ void CbmRichMCbmQaReal::analyseRing(CbmRichRing* ring,
     }
 
     if (clTrack.first == -1)
-      fHM->H1("fhRingNoClTrackLE")
-        ->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
+      fHM->H1("fhRingNoClTrackLE")->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
     if ((clTrack.first >= 0) && !(clTrack.second < 10.))
-      fHM->H1("fhRingClTrackFarAwayLE")
-        ->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
+      fHM->H1("fhRingClTrackFarAwayLE")->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
     if (cutDistance(clTrack) && cutRadius(ring)) {  //Good Ring
-      fHM->H1("fhGoodRingLE")
-        ->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
-      fHM->H1("fhRingDeltaTime")
-        ->Fill(static_cast<Double_t>(meanTime - hit->GetTime()));
+      fHM->H1("fhGoodRingLE")->Fill(static_cast<Double_t>(hit->GetTime() - ev->GetStartTime()));
+      fHM->H1("fhRingDeltaTime")->Fill(static_cast<Double_t>(meanTime - hit->GetTime()));
     }
   }
 
@@ -3182,47 +2265,39 @@ void CbmRichMCbmQaReal::analyseRing(CbmRichRing* ring,
         InnerHitCnt_cut++;
         //if (InnerHitCnt_cut == 1) {DrawRing(ring);}
         //std::cout<<ev->GetNumber()<<" Address_inner: "<<std::hex<< CbmRichUtil::GetDirichId(richHit->GetAddress())<<std::dec<<"  "<< CbmRichUtil::GetDirichChannel(richHit->GetAddress()) <<"  "<< richHit->GetToT()<<"  "<<ring->GetRadius()<<std::endl;
-        fHM->H1("fhDiRICHsInRegion")
-          ->Fill(CbmRichUtil::GetDirichId(richHit->GetAddress()));
+        fHM->H1("fhDiRICHsInRegion")->Fill(CbmRichUtil::GetDirichId(richHit->GetAddress()));
       }
 
-      fHM->H1("fhInnerRingDeltaTime")
-        ->Fill(static_cast<Double_t>(meanTime - richHit->GetTime()));
+      fHM->H1("fhInnerRingDeltaTime")->Fill(static_cast<Double_t>(meanTime - richHit->GetTime()));
       fHM->H1("fhInnerRingToTs")->Fill(richHit->GetToT());
-      fHM->H1("fhInnerRingLE")
-        ->Fill(static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
+      fHM->H1("fhInnerRingLE")->Fill(static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
       if (clTrack.first == -1)
-        fHM->H1("fhInnerRingNoClTrackLE")
-          ->Fill(
-            static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
+        fHM->H1("fhInnerRingNoClTrackLE")->Fill(static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
       if ((clTrack.first >= 0) && !(clTrack.second < 5.))
-        fHM->H1("fhInnerRingClTrackFarAwayLE")
-          ->Fill(
-            static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
+        fHM->H1("fhInnerRingClTrackFarAwayLE")->Fill(static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
       if (cutDistance(clTrack) && cutRadius(ring)) {  //Good Ring
-        fHM->H1("fhInnerGoodRingLE")
-          ->Fill(
-            static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
+        fHM->H1("fhInnerGoodRingLE")->Fill(static_cast<Double_t>(richHit->GetTime() - ev->GetStartTime()));
       }
     }
   }
-  if (InnerHitCnt == 0) {
-    fHM->H1("fhInnerRingFlag")->Fill(1);
-  } else {
+  if (InnerHitCnt == 0) { fHM->H1("fhInnerRingFlag")->Fill(1); }
+  else {
     fHM->H1("fhInnerRingFlag")->Fill(0);
   }
   fHM->H1("fhNofInnerHits")->Fill(InnerHitCnt);
 }
 
 
-Bool_t CbmRichMCbmQaReal::cutRadius(CbmRichRing* ring) {
+Bool_t CbmRichMCbmQaReal::cutRadius(CbmRichRing* ring)
+{
   if (ring->GetRadius() > 2. && ring->GetRadius() < 4.2) return true;
 
   return false;
 }
 
 
-Bool_t CbmRichMCbmQaReal::cutDistance(std::pair<int, double>& clTrack) {
+Bool_t CbmRichMCbmQaReal::cutDistance(std::pair<int, double>& clTrack)
+{
   if ((clTrack.first >= 0) && (clTrack.second < 10.)) return true;
 
   return false;

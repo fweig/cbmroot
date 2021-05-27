@@ -18,9 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_flow(Int_t nEvents     = 2,
-                   Int_t En          = 10,
-                   const char* setup = "sis300_electron") {
+void run_reco_flow(Int_t nEvents = 2, Int_t En = 10, const char* setup = "sis300_electron")
+{
   Int_t gen = 0;
 
   TString numEvt = "";
@@ -145,13 +144,13 @@ void run_reco_flow(Int_t nEvents     = 2,
   run->AddTask(l1);
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
 

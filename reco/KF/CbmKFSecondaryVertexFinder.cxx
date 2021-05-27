@@ -18,7 +18,8 @@ using std::vector;
 
 ClassImp(CbmKFSecondaryVertexFinder)
 
-  void CbmKFSecondaryVertexFinder::Clear(Option_t* /*opt*/) {
+  void CbmKFSecondaryVertexFinder::Clear(Option_t* /*opt*/)
+{
   vTracks.clear();
   VGuess         = 0;
   VParent        = 0;
@@ -27,37 +28,28 @@ ClassImp(CbmKFSecondaryVertexFinder)
 
 void CbmKFSecondaryVertexFinder::ClearTracks() { vTracks.clear(); }
 
-void CbmKFSecondaryVertexFinder::AddTrack(CbmKFTrackInterface* Track) {
-  vTracks.push_back(Track);
-}
+void CbmKFSecondaryVertexFinder::AddTrack(CbmKFTrackInterface* Track) { vTracks.push_back(Track); }
 
-void CbmKFSecondaryVertexFinder::SetTracks(vector<CbmKFTrackInterface*>& vTr) {
-  vTracks = vTr;
-}
+void CbmKFSecondaryVertexFinder::SetTracks(vector<CbmKFTrackInterface*>& vTr) { vTracks = vTr; }
 
-void CbmKFSecondaryVertexFinder::SetApproximation(CbmKFVertexInterface* Guess) {
-  VGuess = Guess;
-}
+void CbmKFSecondaryVertexFinder::SetApproximation(CbmKFVertexInterface* Guess) { VGuess = Guess; }
 
-void CbmKFSecondaryVertexFinder::SetMassConstraint(Double_t MotherMass) {
-  MassConstraint = MotherMass;
-}
+void CbmKFSecondaryVertexFinder::SetMassConstraint(Double_t MotherMass) { MassConstraint = MotherMass; }
 
-void CbmKFSecondaryVertexFinder::SetTopoConstraint(CbmKFVertexInterface* VP) {
-  VParent = VP;
-}
+void CbmKFSecondaryVertexFinder::SetTopoConstraint(CbmKFVertexInterface* VP) { VParent = VP; }
 
-void CbmKFSecondaryVertexFinder::Fit() {
+void CbmKFSecondaryVertexFinder::Fit()
+{
   const Int_t MaxIter = 3;
 
   if (VGuess) {
     r[0] = VGuess->GetRefX();
     r[1] = VGuess->GetRefY();
     r[2] = VGuess->GetRefZ();
-  } else {
-    if (CbmKF::Instance()->vTargets.empty()) {
-      r[0] = r[1] = r[2] = 0.;
-    } else {
+  }
+  else {
+    if (CbmKF::Instance()->vTargets.empty()) { r[0] = r[1] = r[2] = 0.; }
+    else {
       CbmKFTube& t = CbmKF::Instance()->vTargets[0];
       r[0] = r[1] = 0.;
       r[2]        = t.z;
@@ -88,9 +80,7 @@ void CbmKFSecondaryVertexFinder::Fit() {
     NDF                = -3;
     Chi2               = 0.;
 
-    for (vector<CbmKFTrackInterface*>::iterator tr = vTracks.begin();
-         tr != vTracks.end();
-         ++tr) {
+    for (vector<CbmKFTrackInterface*>::iterator tr = vTracks.begin(); tr != vTracks.end(); ++tr) {
       CbmKFTrack T(**tr);
 
       T.Extrapolate(r0[2]);
@@ -105,12 +95,9 @@ void CbmKFSecondaryVertexFinder::Fit() {
         Double_t s        = V[0] * V[2] - V[1] * V[1];
         s                 = (s > 1.E-20) ? 1. / s : 0;
         Double_t zetas[2] = {(r0[0] - m[0]) * s, (r0[1] - m[1]) * s};
-        a += (V[3] * V[2] - V[4] * V[1]) * zetas[0]
-             + (-V[3] * V[1] + V[4] * V[0]) * zetas[1];
-        b += (V[6] * V[2] - V[7] * V[1]) * zetas[0]
-             + (-V[6] * V[1] + V[7] * V[0]) * zetas[1];
-        qp += (V[10] * V[2] - V[11] * V[1]) * zetas[0]
-              + (-V[10] * V[1] + V[11] * V[0]) * zetas[1];
+        a += (V[3] * V[2] - V[4] * V[1]) * zetas[0] + (-V[3] * V[1] + V[4] * V[0]) * zetas[1];
+        b += (V[6] * V[2] - V[7] * V[1]) * zetas[0] + (-V[6] * V[1] + V[7] * V[0]) * zetas[1];
+        qp += (V[10] * V[2] - V[11] * V[1]) * zetas[0] + (-V[10] * V[1] + V[11] * V[0]) * zetas[1];
       }
 
       //* convert the track to (x,y,px,py,pz,e) parameterization
@@ -145,11 +132,8 @@ void CbmKFSecondaryVertexFinder::Fit() {
         double capz  = H[0] * V[5] + H[1] * V[8] + H[2] * V[12];
         double cbpz  = H[0] * V[8] + H[1] * V[9] + H[2] * V[13];
         double cqpz  = H[0] * V[12] + H[1] * V[13] + H[2] * V[14];
-        double cpzpz = H[0] * H[0] * V[5] + H[1] * H[1] * V[9]
-                       + H[2] * H[2] * V[14]
-                       + 2
-                           * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12]
-                              + H[1] * H[2] * V[13]);
+        double cpzpz = H[0] * H[0] * V[5] + H[1] * H[1] * V[9] + H[2] * H[2] * V[14]
+                       + 2 * (H[0] * H[1] * V[8] + H[0] * H[2] * V[12] + H[1] * H[2] * V[13]);
 
         VV[0]  = V[0];
         VV[1]  = V[1];
@@ -205,15 +189,13 @@ void CbmKFSecondaryVertexFinder::Fit() {
 
       //* Residual (measured - estimated)
 
-      Double_t zeta[2] = {mm[0] - (r[0] - a * (r[2] - r0[2])),
-                          mm[1] - (r[1] - b * (r[2] - r0[2]))};
+      Double_t zeta[2] = {mm[0] - (r[0] - a * (r[2] - r0[2])), mm[1] - (r[1] - b * (r[2] - r0[2]))};
 
       //* Measurement matrix H= { { 1, 0, -a, 0..0}, { 0, 1, -b,0..0} };
 
       //* S = (H*C*H' + V )^{-1}
 
-      Double_t S[3] = {VV[0] + C[0] - 2 * a * C[3] + a * a * C[5],
-                       VV[1] + C[1] - b * C[3] - a * C[4] + a * b * C[5],
+      Double_t S[3] = {VV[0] + C[0] - 2 * a * C[3] + a * a * C[5], VV[1] + C[1] - b * C[3] - a * C[4] + a * b * C[5],
                        VV[2] + C[2] - 2 * b * C[4] + b * b * C[5]};
 
       //* Invert S
@@ -271,8 +253,7 @@ void CbmKFSecondaryVertexFinder::Fit() {
       //* Calculate Chi^2 & NDF
 
       NDF += 2;
-      Chi2 += zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1]
-              + zeta[1] * zeta[1] * S[2];
+      Chi2 += zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1] + zeta[1] * zeta[1] * S[2];
 
     }  // add tracks
 
@@ -285,7 +266,8 @@ void CbmKFSecondaryVertexFinder::Fit() {
 }
 
 
-void CbmKFSecondaryVertexFinder::GetVertex(CbmKFVertexInterface& vtx) {
+void CbmKFSecondaryVertexFinder::GetVertex(CbmKFVertexInterface& vtx)
+{
   vtx.GetRefX() = r[0];
   vtx.GetRefY() = r[1];
   vtx.GetRefZ() = r[2];
@@ -295,15 +277,16 @@ void CbmKFSecondaryVertexFinder::GetVertex(CbmKFVertexInterface& vtx) {
   vtx.GetRefNDF()  = NDF;
 }
 
-void CbmKFSecondaryVertexFinder::GetVertex(CbmVertex& vtx) {
+void CbmKFSecondaryVertexFinder::GetVertex(CbmVertex& vtx)
+{
   CbmKFVertexInterface vi;
   GetVertex(vi);
   vi.GetVertex(vtx);
 }
 
 
-void CbmKFSecondaryVertexFinder::GetMotherTrack(Double_t Par[],
-                                                Double_t Cov[]) {
+void CbmKFSecondaryVertexFinder::GetMotherTrack(Double_t Par[], Double_t Cov[])
+{
 
   if (!Par) return;
 
@@ -360,15 +343,14 @@ void CbmKFSecondaryVertexFinder::GetMotherTrack(Double_t Par[],
 }
 
 
-void CbmKFSecondaryVertexFinder::GetMass(Double_t* M, Double_t* Error_) {
+void CbmKFSecondaryVertexFinder::GetMass(Double_t* M, Double_t* Error_)
+{
   // S = sigma^2 of m2/2
 
-  Double_t S =
-    (r[3] * r[3] * C[9] + r[4] * r[4] * C[14] + r[5] * r[5] * C[20]
-     + r[6] * r[6] * C[27]
-     + 2
-         * (+r[3] * r[4] * C[13] + r[5] * (r[3] * C[18] + r[4] * C[19])
-            - r[6] * (r[3] * C[24] + r[4] * C[25] + r[5] * C[26])));
+  Double_t S  = (r[3] * r[3] * C[9] + r[4] * r[4] * C[14] + r[5] * r[5] * C[20] + r[6] * r[6] * C[27]
+                + 2
+                    * (+r[3] * r[4] * C[13] + r[5] * (r[3] * C[18] + r[4] * C[19])
+                       - r[6] * (r[3] * C[24] + r[4] * C[25] + r[5] * C[26])));
   Double_t m2 = r[6] * r[6] - r[3] * r[3] - r[4] * r[4] - r[5] * r[5];
 
   if (M) *M = (m2 > 1.e-20) ? sqrt(m2) : 0.;
@@ -376,7 +358,8 @@ void CbmKFSecondaryVertexFinder::GetMass(Double_t* M, Double_t* Error_) {
 }
 
 
-void CbmKFSecondaryVertexFinder::AddMassConstraint() {
+void CbmKFSecondaryVertexFinder::AddMassConstraint()
+{
   if (MassConstraint < 0) return;
   double H[8];
   H[0] = H[1] = H[2] = 0.;
@@ -385,7 +368,7 @@ void CbmKFSecondaryVertexFinder::AddMassConstraint() {
   H[5]               = -2 * r0[5];
   H[6]               = 2 * r0[6];
   H[7]               = 0;
-  double m2 = r0[6] * r0[6] - r0[3] * r0[3] - r0[4] * r0[4] - r0[5] * r0[5];
+  double m2          = r0[6] * r0[6] - r0[3] * r0[3] - r0[4] * r0[4] - r0[5] * r0[5];
 
   double zeta = MassConstraint * MassConstraint - m2;
   for (Int_t i = 0; i < 8; ++i)
@@ -413,7 +396,8 @@ void CbmKFSecondaryVertexFinder::AddMassConstraint() {
 }
 
 
-void CbmKFSecondaryVertexFinder::Extrapolate(double T) {
+void CbmKFSecondaryVertexFinder::Extrapolate(double T)
+{
 
   r0[0] += T * r0[3];
   r0[1] += T * r0[4];
@@ -454,7 +438,8 @@ void CbmKFSecondaryVertexFinder::Extrapolate(double T) {
   C[30] += T * C[33];
 }
 
-void CbmKFSecondaryVertexFinder::AddTopoConstraint() {
+void CbmKFSecondaryVertexFinder::AddTopoConstraint()
+{
   if (!VParent) return;
 
   double m[3], *V;
@@ -534,12 +519,7 @@ void CbmKFSecondaryVertexFinder::AddTopoConstraint() {
   r[7] += B[4][0] * z[0] + B[4][1] * z[1] + B[4][2] * z[2];
 
   {
-    double AV[6] = {C[0] - V[0],
-                    C[1] - V[1],
-                    C[2] - V[2],
-                    C[3] - V[3],
-                    C[4] - V[4],
-                    C[5] - V[5]};
+    double AV[6] = {C[0] - V[0], C[1] - V[1], C[2] - V[2], C[3] - V[3], C[4] - V[4], C[5] - V[5]};
     double AVi[6];
     AVi[0] = AV[4] * AV[4] - AV[2] * AV[5];
     AVi[1] = AV[1] * AV[5] - AV[3] * AV[4];
@@ -550,10 +530,10 @@ void CbmKFSecondaryVertexFinder::AddTopoConstraint() {
     det    = (AV[0] * AVi[0] + AV[1] * AVi[1] + AV[3] * AVi[3]);
     det    = (det > 1.e-8) ? 1. / det : 0;
     NDF += 2;
-    Chi2 += (+(AVi[0] * z[0] + AVi[1] * z[1] + AVi[3] * z[2]) * z[0]
-             + (AVi[1] * z[0] + AVi[2] * z[1] + AVi[4] * z[2]) * z[1]
-             + (AVi[3] * z[0] + AVi[4] * z[1] + AVi[5] * z[2]) * z[2])
-            * det;
+    Chi2 +=
+      (+(AVi[0] * z[0] + AVi[1] * z[1] + AVi[3] * z[2]) * z[0] + (AVi[1] * z[0] + AVi[2] * z[1] + AVi[4] * z[2]) * z[1]
+       + (AVi[3] * z[0] + AVi[4] * z[1] + AVi[5] * z[2]) * z[2])
+      * det;
   }
 
   double d0, d1, d2;

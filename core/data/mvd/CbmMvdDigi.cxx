@@ -26,7 +26,9 @@ CbmMvdDigi::CbmMvdDigi()
   , fDigiTime(0.)
   , fFrameNumber(0)
   , fRefId(-1)
-  , fDigiFlag(-1) {}
+  , fDigiFlag(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -70,14 +72,8 @@ CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Flo
 */
 
 // -----   Constructor with parameters  --> used only due to error TODO include correct version -----------------------------------
-CbmMvdDigi::CbmMvdDigi(Int_t iStation,
-                       Int_t iChannelNrX,
-                       Int_t iChannelNrY,
-                       Float_t charge,
-                       Float_t pixelSizeX,
-                       Float_t pixelSizeY,
-                       Float_t time,
-                       Int_t frame)
+CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge, Float_t pixelSizeX,
+                       Float_t pixelSizeY, Float_t time, Int_t frame)
   : TObject()
   , CbmMvdDetectorId()
   , fCharge(charge)
@@ -92,17 +88,15 @@ CbmMvdDigi::CbmMvdDigi(Int_t iStation,
   , fDigiTime(time)
   , fFrameNumber(frame)
   , fRefId(-1)
-  , fDigiFlag(-1) {
+  , fDigiFlag(-1)
+{
   // Check range for station
-  if (!(iStation >= 0 && iStation <= 600)) {
-    LOG(fatal) << "Illegal station number " << iStation;
-  }
+  if (!(iStation >= 0 && iStation <= 600)) { LOG(fatal) << "Illegal station number " << iStation; }
 }
 // -------------------------------------------------------------------------
 
-Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic,
-                               Int_t adcOffset,
-                               Int_t adcBits) {
+Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
+{
   /**
      adcOffset  is the minimum value of the analogue signal
      adcDynamic is the difference between the max and min values of the full scale measurement range
@@ -127,9 +121,7 @@ Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic,
   adcCharge = int((fCharge - adcOffset) / stepSize);
 
 
-  if (adcCharge > int(TMath::Power(2, adcBits) - 1)) {
-    adcCharge = (int) TMath::Power(2, adcBits) - 1;
-  }
+  if (adcCharge > int(TMath::Power(2, adcBits) - 1)) { adcCharge = (int) TMath::Power(2, adcBits) - 1; }
 
   if (gDebug > 0) { LOG(debug) << "CbmMvdDigi::GetAdcCharge() " << adcCharge; }
 

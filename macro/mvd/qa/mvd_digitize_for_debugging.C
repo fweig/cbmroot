@@ -105,18 +105,15 @@
   Int_t pileUpInMVD = 2;  // use 1 or higher
 
   digi->SetBgFileName(bgFile);
-  digi->SetBgBufferSize(
-    5);  //for simulation this buffer should contain > 2 * pileUpInMVD mBias events.
-    //default = few 100 (increase for high pile-up, reduce to limit memory consumption)
+  digi->SetBgBufferSize(5);  //for simulation this buffer should contain > 2 * pileUpInMVD mBias events.
+  //default = few 100 (increase for high pile-up, reduce to limit memory consumption)
   digi->SetPileUp(pileUpInMVD - 1);
 
 
   //--- Delta electrons -------
   digi->SetDeltaName(deltaFile);
-  digi->SetDeltaBufferSize(
-    50);  //for simulation, this buffer must contain at least pileUpInMVD*200 delta electrons
-  digi->SetDeltaEvents(
-    2);  //valid for QA-purposes only, use next line for simulations
+  digi->SetDeltaBufferSize(50);  //for simulation, this buffer must contain at least pileUpInMVD*200 delta electrons
+  digi->SetDeltaEvents(2);       //valid for QA-purposes only, use next line for simulations
   //digi->SetDeltaEvents(pileUpInMVD*100); // for simulation assumes 1% target
 
   //digi->ShowDebugHistograms();
@@ -127,9 +124,8 @@
 
 
   CbmMvdFindHits* mvd_hit = new CbmMvdFindHits("MVDFindHits", 0, iVerbose);
-  mvd_hit->SetSigmaNoise(
-    15, kTRUE);  // kTRUE = add noise to digis, kFALSE = ideal detector
-  mvd_hit->SetSeedThreshold(50);  //in electrons!
+  mvd_hit->SetSigmaNoise(15, kTRUE);  // kTRUE = add noise to digis, kFALSE = ideal detector
+  mvd_hit->SetSeedThreshold(50);      //in electrons!
   mvd_hit->SetNeighbourThreshold(1);
   mvd_hit->SetAdcBits(12);
   mvd_hit->SetAdcDynamic(4096);

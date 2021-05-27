@@ -6,15 +6,12 @@
 #include "CbmMvd.h"
 
 #include "CbmMvdPoint.h"
-
 #include "CbmStack.h"
 #include "tools/CbmMvdGeoHandler.h"
 
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
-
-
 #include "FairVolume.h"
 
 #include "TClonesArray.h"
@@ -50,7 +47,8 @@ CbmMvd::CbmMvd()
   , kGeoSaved(kFALSE)
   , fGeoPar(new TList())
   , fStationMap()
-  , fmvdHandler(nullptr) {
+  , fmvdHandler(nullptr)
+{
   ResetParameters();
   fGeoPar->SetName(GetName());
   fVerboseLevel = 1;
@@ -77,7 +75,8 @@ CbmMvd::CbmMvd(const char* name, Bool_t active)
   , kGeoSaved(kFALSE)
   , fGeoPar(new TList())
   , fStationMap()
-  , fmvdHandler(nullptr) {
+  , fmvdHandler(nullptr)
+{
   fGeoPar->SetName(GetName());
   fVerboseLevel = 1;
   fmvdHandler   = new CbmMvdGeoHandler();
@@ -86,7 +85,8 @@ CbmMvd::CbmMvd(const char* name, Bool_t active)
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvd::~CbmMvd() {
+CbmMvd::~CbmMvd()
+{
   if (fGeoPar) {
     fGeoPar->Delete();
     delete fGeoPar;
@@ -100,7 +100,8 @@ CbmMvd::~CbmMvd() {
 
 
 // -----   Virtual public method ProcessHits  ------------------------------
-Bool_t CbmMvd::ProcessHits(FairVolume* vol) {
+Bool_t CbmMvd::ProcessHits(FairVolume* vol)
+{
 
 
   // Store track parameters at entrance of sensitive volume
@@ -117,8 +118,7 @@ Bool_t CbmMvd::ProcessHits(FairVolume* vol) {
   fELoss += gMC->Edep();
 
   // Set additional parameters at exit of active volume. Create CbmMvdPoint.
-  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
-      || gMC->IsTrackDisappeared()) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop() || gMC->IsTrackDisappeared()) {
     fTrackID = gMC->GetStack()->GetCurrentTrackNumber();
     gMC->TrackPosition(fPosOut);
     gMC->TrackMomentum(fMomOut);
@@ -126,22 +126,14 @@ Bool_t CbmMvd::ProcessHits(FairVolume* vol) {
 
     TString stAdd(address);
 
-    if (stAdd.Contains("/MVDscripted_0")) {
-      fVolumeID = fmvdHandler->GetIDfromPath(stAdd);
-    } else {
+    if (stAdd.Contains("/MVDscripted_0")) { fVolumeID = fmvdHandler->GetIDfromPath(stAdd); }
+    else {
       fVolumeID = vol->getMCid();
     }
     if (fELoss == 0.) return kFALSE;
-    AddHit(fTrackID,
-           fPdg,
-           fStationMap[fVolumeID],
-           TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
-           TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()),
-           TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()),
-           TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()),
-           fTime,
-           fLength,
-           fELoss);
+    AddHit(fTrackID, fPdg, fStationMap[fVolumeID], TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
+           TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()), TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()),
+           TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()), fTime, fLength, fELoss);
 
     // Increment number of MvdPoints for this track
     CbmStack* stack = (CbmStack*) gMC->GetStack();
@@ -161,7 +153,8 @@ void CbmMvd::BeginEvent() {}
 
 
 // -----   Virtual public method EndOfEvent   ------------------------------
-void CbmMvd::EndOfEvent() {
+void CbmMvd::EndOfEvent()
+{
   if (fVerboseLevel) Print();
   //  fCollection->Clear();
   fCollection->Delete();
@@ -171,17 +164,14 @@ void CbmMvd::EndOfEvent() {
 
 
 // -----   Virtual public method Register   --------------------------------
-void CbmMvd::Register() {
-  FairRootManager::Instance()->Register(
-    "MvdPoint", GetName(), fCollection, kTRUE);
-}
+void CbmMvd::Register() { FairRootManager::Instance()->Register("MvdPoint", GetName(), fCollection, kTRUE); }
 // -------------------------------------------------------------------------
 
 
 // -----   Virtual public method GetCollection   ---------------------------
-TClonesArray* CbmMvd::GetCollection(Int_t iColl) const {
-  if (iColl == 0)
-    return fCollection;
+TClonesArray* CbmMvd::GetCollection(Int_t iColl) const
+{
+  if (iColl == 0) return fCollection;
   else
     return NULL;
 }
@@ -189,7 +179,8 @@ TClonesArray* CbmMvd::GetCollection(Int_t iColl) const {
 
 
 // -----   Virtual public method Print   -----------------------------------
-void CbmMvd::Print(Option_t*) const {
+void CbmMvd::Print(Option_t*) const
+{
   Int_t nHits = fCollection->GetEntriesFast();
   LOG(info) << fName << ": " << nHits << " points registered in this event.";
 }
@@ -197,7 +188,8 @@ void CbmMvd::Print(Option_t*) const {
 
 
 // -----   Virtual public method Reset   -----------------------------------
-void CbmMvd::Reset() {
+void CbmMvd::Reset()
+{
   //  fCollection->Clear();
   fCollection->Delete();
   ResetParameters();
@@ -206,7 +198,8 @@ void CbmMvd::Reset() {
 
 
 // -----   Virtual public method CopyClones   ------------------------------
-void CbmMvd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
+void CbmMvd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset)
+{
   Int_t nEntries = cl1->GetEntriesFast();
   LOG(info) << "CbmMvd: " << nEntries << " entries to add.";
   TClonesArray& clref   = *cl2;
@@ -223,19 +216,19 @@ void CbmMvd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
 // -------------------------------------------------------------------------
 
 // --------Pulic method ConstructGeometry()-----------------------------------------------------------------
-void CbmMvd::ConstructGeometry() {
+void CbmMvd::ConstructGeometry()
+{
   TString fileName = GetGeometryFileName();
   if (fileName.EndsWith(".root")) {
-    LOG(info) << "Constructing MVD  geometry from ROOT  file "
-              << fileName.Data();
+    LOG(info) << "Constructing MVD  geometry from ROOT  file " << fileName.Data();
     ConstructRootGeometry();
-  } else if (fileName.EndsWith(".geo")) {
+  }
+  else if (fileName.EndsWith(".geo")) {
     LOG(fatal) << "Don't use old .geo style geometrys for the MVD. Please use "
                   "a .root geometry";
-
-  } else
-    LOG(fatal) << "Geometry format of MVD file " << fileName.Data()
-               << " not supported.";
+  }
+  else
+    LOG(fatal) << "Geometry format of MVD file " << fileName.Data() << " not supported.";
 }
 
 
@@ -244,51 +237,40 @@ void CbmMvd::ConstructAsciiGeometry() {}
 // -------------------------------------------------------------------------
 
 // --------    Public method ConstructRootGeometry     ---------------------
-void CbmMvd::ConstructRootGeometry(
-  TGeoMatrix*)  // added 05.05.14 by P. Sitzmann
+void CbmMvd::ConstructRootGeometry(TGeoMatrix*)  // added 05.05.14 by P. Sitzmann
 {
   FairDetector::ConstructRootGeometry();
   fmvdHandler->Init(kTRUE);
   fmvdHandler->Fill();
   fStationMap = fmvdHandler->GetMap();
-  if (fStationMap.size() == 0)
-    LOG(fatal)
-      << "Tried to load MVD Geometry, but didn't succeed to load Sensors";
-  LOG(debug) << "filled mvd StationMap with: " << fStationMap.size()
-             << " new Sensors";
+  if (fStationMap.size() == 0) LOG(fatal) << "Tried to load MVD Geometry, but didn't succeed to load Sensors";
+  LOG(debug) << "filled mvd StationMap with: " << fStationMap.size() << " new Sensors";
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Private method AddHit   --------------------------------------------
-CbmMvdPoint* CbmMvd::AddHit(Int_t trackID,
-                            Int_t pdg,
-                            Int_t sensorNr,
-                            TVector3 posIn,
-                            TVector3 posOut,
-                            TVector3 momIn,
-                            TVector3 momOut,
-                            Double_t time,
-                            Double_t length,
-                            Double_t eLoss) {
+CbmMvdPoint* CbmMvd::AddHit(Int_t trackID, Int_t pdg, Int_t sensorNr, TVector3 posIn, TVector3 posOut, TVector3 momIn,
+                            TVector3 momOut, Double_t time, Double_t length, Double_t eLoss)
+{
   TClonesArray& clref = *fCollection;
   Int_t size          = clref.GetEntriesFast();
 
-  LOG(debug2) << "CbmMvd: Adding Point at (" << posIn.X() << ", " << posIn.Y()
-              << ", " << posIn.Z() << ") cm,  sensor " << sensorNr << ", track "
-              << trackID << ", energy loss " << eLoss * 1e06 << " keV";
-  return new (clref[size]) CbmMvdPoint(
-    trackID, pdg, sensorNr, posIn, posOut, momIn, momOut, time, length, eLoss);
+  LOG(debug2) << "CbmMvd: Adding Point at (" << posIn.X() << ", " << posIn.Y() << ", " << posIn.Z() << ") cm,  sensor "
+              << sensorNr << ", track " << trackID << ", energy loss " << eLoss * 1e06 << " keV";
+  return new (clref[size]) CbmMvdPoint(trackID, pdg, sensorNr, posIn, posOut, momIn, momOut, time, length, eLoss);
 }
 // ----------------------------------------------------------------------------
 
-Bool_t CbmMvd::CheckIfSensitive(std::string name) {
+Bool_t CbmMvd::CheckIfSensitive(std::string name)
+{
   TString tsname = name;
   if (tsname.Contains("sensorActive") || tsname.Contains("MimosaActive")
       || (tsname.Contains("mvdstation") && !(tsname.Contains("PartAss")))) {
     LOG(debug) << "*** Register " << tsname << " as active volume.";
     return kTRUE;
-  } else if (tsname.EndsWith("-P0")) {
+  }
+  else if (tsname.EndsWith("-P0")) {
     // if(fVerboseLevel>1)
     LOG(debug) << "*** Register " << tsname << " as active volume.";
 

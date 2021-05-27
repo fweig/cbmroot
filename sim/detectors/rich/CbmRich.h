@@ -18,6 +18,7 @@
 #include "TString.h"
 #include "TVector3.h"
 #include <TClonesArray.h>  // for ROOTCLING
+
 #include <map>
 
 class CbmRichRefPlanePoint;
@@ -54,16 +55,9 @@ public:
     * \param[in] ry Rotation around Y.
     * \param[in] rz Rotation around Z.
     */
-  CbmRich(
-    const char* name,
-    Bool_t active,
-    Double_t px = 0.,
-    Double_t py = 0.,
-    Double_t pz =
-      258.75,  // Z coordinate for v16a = 270, for v17a = 258.75, for v18a = 0
-    Double_t rx = 0.,
-    Double_t ry = 0.,
-    Double_t rz = 0.);
+  CbmRich(const char* name, Bool_t active, Double_t px = 0., Double_t py = 0.,
+          Double_t pz = 258.75,  // Z coordinate for v16a = 270, for v17a = 258.75, for v18a = 0
+          Double_t rx = 0., Double_t ry = 0., Double_t rz = 0.);
 
 
   /**
@@ -169,9 +163,7 @@ public:
   /*
     * \brief set fRegisterPhotonsOnSensitivePlane parameter
     */
-  void SetRegisterPhotonsOnSensitivePlane(Bool_t b) {
-    fRegisterPhotonsOnSensitivePlane = b;
-  }
+  void SetRegisterPhotonsOnSensitivePlane(Bool_t b) { fRegisterPhotonsOnSensitivePlane = b; }
 
 private:
   Int_t fPosIndex;
@@ -185,43 +177,26 @@ private:
 
 
   // GDML geometry
-  static std::map<TString, TGeoMedium*>
-    fFixedMedia;            // List of media "repaired" after importing GMDL
-  TGeoRotation* fRotation;  // Rotation matrix of the RICH detector
-  TGeoCombiTrans*
-    fPositionRotation;  // Full combined matrix for position and rotation of the RICH detector
+  static std::map<TString, TGeoMedium*> fFixedMedia;  // List of media "repaired" after importing GMDL
+  TGeoRotation* fRotation;                            // Rotation matrix of the RICH detector
+  TGeoCombiTrans* fPositionRotation;  // Full combined matrix for position and rotation of the RICH detector
 
   /**
     * \brief Adds a RichPoint to the TClonesArray.
     */
-  CbmRichPoint* AddHit(Int_t trackID,
-                       Int_t detID,
-                       TVector3 pos,
-                       TVector3 mom,
-                       Double_t time,
-                       Double_t length,
+  CbmRichPoint* AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length,
                        Double_t eLoss);
 
   /**
     * \brief Adds a RichRefPlanePoint to the TClonesArray.
     */
-  CbmRichPoint* AddRefPlaneHit(Int_t trackID,
-                               Int_t detID,
-                               TVector3 pos,
-                               TVector3 mom,
-                               Double_t time,
-                               Double_t length,
+  CbmRichPoint* AddRefPlaneHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length,
                                Double_t eLoss);
 
   /**
     * \brief Adds a RichMirrorPoint to the TClonesArray.
     */
-  CbmRichPoint* AddMirrorHit(Int_t trackID,
-                             Int_t detID,
-                             TVector3 pos,
-                             TVector3 mom,
-                             Double_t time,
-                             Double_t length,
+  CbmRichPoint* AddMirrorHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length,
                              Double_t eLoss);
 
   /**

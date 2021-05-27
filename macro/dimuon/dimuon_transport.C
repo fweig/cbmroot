@@ -35,10 +35,9 @@
 // add PLUTO input
 //---------------------------------------------------
 
-void dimuon_transport(Int_t nEvents         = 1000,
-                      const char* setupName = "sis100_muon_lmvm",
-                      const char* output    = "test",
-                      const char* inputFile = "") {
+void dimuon_transport(Int_t nEvents = 1000, const char* setupName = "sis100_muon_lmvm", const char* output = "test",
+                      const char* inputFile = "")
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -47,7 +46,7 @@ void dimuon_transport(Int_t nEvents         = 1000,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_transport";  // this macro's name for screen output
+  TString myName = "run_transport";                // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -60,13 +59,11 @@ void dimuon_transport(Int_t nEvents         = 1000,
 
   std::cout << std::endl;
   TString inFile;
-  if (strcmp(inputFile, "") == 0) {
-    inFile = srcDir + "/input/pluto.auau.8gev.omega.mpmm.0001.root";
-  } else {
+  if (strcmp(inputFile, "") == 0) { inFile = srcDir + "/input/pluto.auau.8gev.omega.mpmm.0001.root"; }
+  else {
     inFile = inputFile;
   }
-  std::cout << "-I- " << myName << ": Using signal input file " << inFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using signal input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -100,9 +97,7 @@ void dimuon_transport(Int_t nEvents         = 1000,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

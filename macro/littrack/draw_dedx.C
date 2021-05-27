@@ -5,7 +5,8 @@
  * \date 2008
  **/
 
-void draw_dedx() {
+void draw_dedx()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");

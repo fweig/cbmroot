@@ -8,14 +8,14 @@
 
 #include <iostream>
 
-void fieldapr_qa(Int_t nEvents = 1) {
+void fieldapr_qa(Int_t nEvents = 1)
+{
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
 
-  TString dir =
-    "$VMCWORKDIR/macro/littrack/commit_tests/events_electron/";  // Output directory
-  TString mcFile         = dir + "mc.0000.root";           // MC transport file
-  TString parFile        = dir + "param.0000.root";        // Parameter file
-  TString fieldaprQaFile = dir + "fieldapr.qa.0000.root";  // Output file
+  TString dir            = "$VMCWORKDIR/macro/littrack/commit_tests/events_electron/";  // Output directory
+  TString mcFile         = dir + "mc.0000.root";                                        // MC transport file
+  TString parFile        = dir + "param.0000.root";                                     // Parameter file
+  TString fieldaprQaFile = dir + "fieldapr.qa.0000.root";                               // Output file
   TString resultDir      = "./test/";
 
   if (script == "yes") {
@@ -85,7 +85,6 @@ void fieldapr_qa(Int_t nEvents = 1) {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << fieldaprQaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   // ------------------------------------------------------------------------
 }

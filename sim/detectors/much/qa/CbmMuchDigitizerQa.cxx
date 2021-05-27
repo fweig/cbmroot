@@ -76,13 +76,16 @@ CbmMuchDigitizerQa::CbmMuchDigitizerQa(const char* name, Int_t verbose)
   , fvTrackCharge()
   , fvPadsTotalR()
   , fvPadsFiredR()
-  , fvPadOccupancyR() {}
+  , fvPadOccupancyR()
+{
+}
 
 // -------------------------------------------------------------------------
 CbmMuchDigitizerQa::~CbmMuchDigitizerQa() { DeInit(); }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DeInit() {
+void CbmMuchDigitizerQa::DeInit()
+{
 
   histFolder   = nullptr;
   fGeoScheme   = nullptr;
@@ -156,7 +159,8 @@ void CbmMuchDigitizerQa::DeInit() {
 }
 
 // -------------------------------------------------------------------------
-InitStatus CbmMuchDigitizerQa::Init() {
+InitStatus CbmMuchDigitizerQa::Init()
+{
   DeInit();
   fMcPointInfoMap.clear();
   TDirectory* oldDirectory = gDirectory;
@@ -199,10 +203,10 @@ InitStatus CbmMuchDigitizerQa::Init() {
     fPoints = fMcManager->InitBranch("MuchPoint");
   }
 
-  if (fMCTracks && fPoints
-      && fDigiManager->IsMatchPresent(ECbmModuleId::kMuch)) {
+  if (fMCTracks && fPoints && fDigiManager->IsMatchPresent(ECbmModuleId::kMuch)) {
     LOG(info) << " CbmMuchDigitizerQa: MC data read.";
-  } else {
+  }
+  else {
     LOG(info) << " CbmMuchDigitizerQa: No MC data found.";
     fMCTracks = nullptr;
     fPoints   = nullptr;
@@ -225,7 +229,8 @@ InitStatus CbmMuchDigitizerQa::Init() {
 }
 
 // -------------------------------------------------------------------------
-int CbmMuchDigitizerQa::InitChannelPadInfo() {
+int CbmMuchDigitizerQa::InitChannelPadInfo()
+{
 
   fPadMinLx = std::numeric_limits<Double_t>::max();
   fPadMinLy = std::numeric_limits<Double_t>::max();
@@ -288,14 +293,8 @@ int CbmMuchDigitizerQa::InitChannelPadInfo() {
     nTotChannels += nChannels;
 
     if (fVerbose > 2) {
-      printf("%i\t\t| %i\t\t| %i\t| %5.4fx%5.4f\t\t| %5.4fx%5.4f\n",
-             iStation + 1,
-             nSectors,
-             nChannels,
-             padMinLx,
-             padMinLy,
-             padMaxLx,
-             padMaxLy);
+      printf("%i\t\t| %i\t\t| %i\t| %5.4fx%5.4f\t\t| %5.4fx%5.4f\n", iStation + 1, nSectors, nChannels, padMinLx,
+             padMinLy, padMaxLx, padMaxLy);
       printf("%i\t\t| %i\t\t\n", iStation + 1, nChannels);
     }
   }
@@ -308,26 +307,21 @@ int CbmMuchDigitizerQa::InitChannelPadInfo() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::InitCanvases() {
+void CbmMuchDigitizerQa::InitCanvases()
+{
 
   /***** charge canvases ****/
   if (fMCTracks && fPoints) {
-    fCanvCharge = new CbmQaCanvas(
-      "cTrackCharge", "Charge collected per track", 2 * 800, 2 * 400);
+    fCanvCharge = new CbmQaCanvas("cTrackCharge", "Charge collected per track", 2 * 800, 2 * 400);
     fCanvCharge->Divide2D(3);
 
-    fCanvStationCharge = new CbmQaCanvas(
-      "cTrackChargeVsStation", "Track charge per station", 2 * 800, 2 * 400);
+    fCanvStationCharge = new CbmQaCanvas("cTrackChargeVsStation", "Track charge per station", 2 * 800, 2 * 400);
     fCanvStationCharge->Divide2D(fNstations);
 
-    fCanvChargeVsEnergy = new CbmQaCanvas("cTrackChargeVsEnergy",
-                                          "Track charge vs particle Energy",
-                                          2 * 800,
-                                          2 * 400);
+    fCanvChargeVsEnergy = new CbmQaCanvas("cTrackChargeVsEnergy", "Track charge vs particle Energy", 2 * 800, 2 * 400);
     fCanvChargeVsEnergy->Divide2D(4);
 
-    fCanvChargeVsLength = new CbmQaCanvas(
-      "cTrackChargeVsLength", "Track charge vs track length", 2 * 800, 2 * 400);
+    fCanvChargeVsLength = new CbmQaCanvas("cTrackChargeVsLength", "Track charge vs track length", 2 * 800, 2 * 400);
     fCanvChargeVsLength->Divide2D(4);
 
     fOutFolder.Add(fCanvCharge);
@@ -338,23 +332,19 @@ void CbmMuchDigitizerQa::InitCanvases() {
 
   /***** length canvas ****/
   if (fMCTracks && fPoints) {
-    fCanvTrackLength =
-      new CbmQaCanvas("cTrackLength", "track length", 2 * 800, 2 * 400);
+    fCanvTrackLength = new CbmQaCanvas("cTrackLength", "track length", 2 * 800, 2 * 400);
     fCanvTrackLength->Divide2D(4);
     fOutFolder.Add(fCanvTrackLength);
   }
 
   /***** pad canvases ****/
-  fCanvUsPadsFiredXY = new CbmQaCanvas(
-    "cPadsFiredXY", "Number of pads fired vs XY", 2 * 400, 2 * 400);
+  fCanvUsPadsFiredXY = new CbmQaCanvas("cPadsFiredXY", "Number of pads fired vs XY", 2 * 400, 2 * 400);
   fCanvUsPadsFiredXY->Divide2D(fNstations);
 
-  fCanvPadOccupancyR = new CbmQaCanvas(
-    "cPadOccupancyR", "Pad occupancy [%] vs radius", 2 * 800, 2 * 400);
+  fCanvPadOccupancyR = new CbmQaCanvas("cPadOccupancyR", "Pad occupancy [%] vs radius", 2 * 800, 2 * 400);
   fCanvPadOccupancyR->Divide2D(fNstations);
 
-  fCanvPadsTotalR =
-    new CbmQaCanvas("cPadsTotalR", "Total pads vs radius", 2 * 800, 2 * 400);
+  fCanvPadsTotalR = new CbmQaCanvas("cPadsTotalR", "Total pads vs radius", 2 * 800, 2 * 400);
   fCanvPadsTotalR->Divide2D(fNstations);
 
   fOutFolder.Add(fCanvUsPadsFiredXY);
@@ -363,81 +353,56 @@ void CbmMuchDigitizerQa::InitCanvases() {
 
   /***** pad canvas (MC) ****/
   if (fMCTracks && fPoints) {
-    fCanvNpadsVsArea =
-      new CbmQaCanvas("cNpadsVsArea", "N pads Vs Area", 2 * 800, 2 * 400);
+    fCanvNpadsVsArea = new CbmQaCanvas("cNpadsVsArea", "N pads Vs Area", 2 * 800, 2 * 400);
     fOutFolder.Add(fCanvNpadsVsArea);
   }
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::InitChargeHistos() {
+void CbmMuchDigitizerQa::InitChargeHistos()
+{
 
   if (!fMCTracks || !fPoints) { return; }
 
   fvTrackCharge.resize(fNstations);
   for (Int_t i = 0; i < fNstations; i++) {
-    fvTrackCharge[i] =
-      new TH1F(Form("hTrackCharge%i", i + 1),
-               Form("Track charge : Station %i; Charge [10^4 e]; Count", i + 1),
-               BINNING_CHARGE);
+    fvTrackCharge[i] = new TH1F(Form("hTrackCharge%i", i + 1),
+                                Form("Track charge : Station %i; Charge [10^4 e]; Count", i + 1), BINNING_CHARGE);
     histFolder->Add(fvTrackCharge[i]);
   }
 
-  fhTrackCharge =
-    new TH1F("hCharge", "Charge distribution from tracks", BINNING_CHARGE);
+  fhTrackCharge = new TH1F("hCharge", "Charge distribution from tracks", BINNING_CHARGE);
   fhTrackCharge->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
 
-  fhTrackChargeLog = new TH1F(
-    "hChargeLog", "Charge (log.) distribution from tracks", BINNING_CHARGE_LOG);
+  fhTrackChargeLog = new TH1F("hChargeLog", "Charge (log.) distribution from tracks", BINNING_CHARGE_LOG);
   fhTrackChargeLog->GetXaxis()->SetTitle("Charge [Lg(Number of electrons)]");
 
-  fhTrackChargePr_1GeV_3mm =
-    new TH1F("hChargePr_1GeV_3mm", "Charge for 1 GeV protons", BINNING_CHARGE);
+  fhTrackChargePr_1GeV_3mm = new TH1F("hChargePr_1GeV_3mm", "Charge for 1 GeV protons", BINNING_CHARGE);
   fhTrackChargePr_1GeV_3mm->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
 
   fhTrackChargeVsTrackEnergyLog =
-    new TH2F("hChargeEnergyLog",
-             "Charge vs energy (log.) for all tracks",
-             BINNING_ENERGY_LOG,
-             BINNING_CHARGE);
+    new TH2F("hChargeEnergyLog", "Charge vs energy (log.) for all tracks", BINNING_ENERGY_LOG, BINNING_CHARGE);
 
   fhTrackChargeVsTrackEnergyLogPi =
-    new TH2F("hChargeEnergyLogPi",
-             "Charge vs energy (log.) for pions",
-             BINNING_ENERGY_LOG,
-             BINNING_CHARGE);
+    new TH2F("hChargeEnergyLogPi", "Charge vs energy (log.) for pions", BINNING_ENERGY_LOG, BINNING_CHARGE);
 
   fhTrackChargeVsTrackEnergyLogPr =
-    new TH2F("hChargeEnergyLogPr",
-             "Charge vs energy (log.) for protons",
-             BINNING_ENERGY_LOG,
-             BINNING_CHARGE);
+    new TH2F("hChargeEnergyLogPr", "Charge vs energy (log.) for protons", BINNING_ENERGY_LOG, BINNING_CHARGE);
 
   fhTrackChargeVsTrackEnergyLogEl =
-    new TH2F("hChargeEnergyLogEl",
-             "Charge vs energy (log.) for electrons",
-             BINNING_ENERGY_LOG_EL,
-             BINNING_CHARGE);
+    new TH2F("hChargeEnergyLogEl", "Charge vs energy (log.) for electrons", BINNING_ENERGY_LOG_EL, BINNING_CHARGE);
 
-  fhTrackChargeVsTrackLength = new TH2F("hChargeTrackLength",
-                                        "Charge vs length for all tracks",
-                                        BINNING_LENGTH,
-                                        BINNING_CHARGE);
+  fhTrackChargeVsTrackLength =
+    new TH2F("hChargeTrackLength", "Charge vs length for all tracks", BINNING_LENGTH, BINNING_CHARGE);
 
-  fhTrackChargeVsTrackLengthPi = new TH2F("hChargeTrackLengthPi",
-                                          "Charge vs length for pions",
-                                          BINNING_LENGTH,
-                                          BINNING_CHARGE);
+  fhTrackChargeVsTrackLengthPi =
+    new TH2F("hChargeTrackLengthPi", "Charge vs length for pions", BINNING_LENGTH, BINNING_CHARGE);
 
-  fhTrackChargeVsTrackLengthPr = new TH2F("hChargeTrackLengthPr",
-                                          "Charge vs length for proton",
-                                          BINNING_LENGTH,
-                                          BINNING_CHARGE);
+  fhTrackChargeVsTrackLengthPr =
+    new TH2F("hChargeTrackLengthPr", "Charge vs length for proton", BINNING_LENGTH, BINNING_CHARGE);
 
-  fhTrackChargeVsTrackLengthEl = new TH2F("hChargeTrackLengthEl",
-                                          "Charge vs length for electrons",
-                                          BINNING_LENGTH,
-                                          BINNING_CHARGE);
+  fhTrackChargeVsTrackLengthEl =
+    new TH2F("hChargeTrackLengthEl", "Charge vs length for electrons", BINNING_LENGTH, BINNING_CHARGE);
   std::vector<TH2F*> vChargeHistos;
   vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLog);
   vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLogPi);
@@ -455,9 +420,8 @@ void CbmMuchDigitizerQa::InitChargeHistos() {
     histo->GetYaxis()->SetTitleOffset(1.4);
     histo->GetYaxis()->CenterTitle();
     histo->GetYaxis()->SetTitle("Charge [10^{4} electrons]");
-    if (i < 4) {
-      histo->GetXaxis()->SetTitle("Lg(E_{kin} [MeV])");
-    } else {
+    if (i < 4) { histo->GetXaxis()->SetTitle("Lg(E_{kin} [MeV])"); }
+    else {
       histo->GetXaxis()->SetTitle("Track length [cm]");
     }
     histFolder->Add(histo);
@@ -465,20 +429,18 @@ void CbmMuchDigitizerQa::InitChargeHistos() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::InitLengthHistos() {
+void CbmMuchDigitizerQa::InitLengthHistos()
+{
 
   if (!fMCTracks || !fPoints) { return; }
 
   fhTrackLength = new TH1F("hTrackLength", "Track length", BINNING_LENGTH);
 
-  fhTrackLengthPi =
-    new TH1F("hTrackLengthPi", "Track length for pions", BINNING_LENGTH);
+  fhTrackLengthPi = new TH1F("hTrackLengthPi", "Track length for pions", BINNING_LENGTH);
 
-  fhTrackLengthPr =
-    new TH1F("hTrackLengthPr", "Track length for protons", BINNING_LENGTH);
+  fhTrackLengthPr = new TH1F("hTrackLengthPr", "Track length for protons", BINNING_LENGTH);
 
-  fhTrackLengthEl =
-    new TH1F("hTrackLengthEl", "Track length for electrons", BINNING_LENGTH);
+  fhTrackLengthEl = new TH1F("hTrackLengthEl", "Track length for electrons", BINNING_LENGTH);
 
   std::vector<TH1F*> vLengthHistos;
   vLengthHistos.push_back(fhTrackLength);
@@ -494,7 +456,8 @@ void CbmMuchDigitizerQa::InitLengthHistos() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::InitPadHistos() {
+void CbmMuchDigitizerQa::InitPadHistos()
+{
   // non-MC
   fvPadsTotalR.resize(fNstations);
   fvUsPadsFiredR.resize(fNstations);
@@ -508,43 +471,23 @@ void CbmMuchDigitizerQa::InitPadHistos() {
     Double_t rMin           = station->GetRmin();
 
     fvPadsTotalR[i] =
-      new TH1F(Form("hPadsTotal%i", i + 1),
-               Form("Number of  pads vs radius: Station %i;Radius [cm]", i + 1),
-               100,
-               0.6 * rMin,
-               1.2 * rMax);
+      new TH1F(Form("hPadsTotal%i", i + 1), Form("Number of  pads vs radius: Station %i;Radius [cm]", i + 1), 100,
+               0.6 * rMin, 1.2 * rMax);
 
-    fvUsPadsFiredR[i] = new TH1F(
-      Form("hUsPadsFired%i", i + 1),
-      Form("Number of fired pads vs radius: Station %i;Radius [cm]", i + 1),
-      100,
-      0.6 * rMin,
-      1.2 * rMax);
+    fvUsPadsFiredR[i] =
+      new TH1F(Form("hUsPadsFired%i", i + 1), Form("Number of fired pads vs radius: Station %i;Radius [cm]", i + 1),
+               100, 0.6 * rMin, 1.2 * rMax);
 
-    fvUsPadsFiredXY[i] =
-      new TH2F(Form("hUsPadsFiredXY%i", i + 1),
-               Form("Pads fired XY : Station %i; X; Y", i + 1),
-               100,
-               -1.2 * rMax,
-               1.2 * rMax,
-               100,
-               -1.2 * rMax,
-               1.2 * rMax);
+    fvUsPadsFiredXY[i] = new TH2F(Form("hUsPadsFiredXY%i", i + 1), Form("Pads fired XY : Station %i; X; Y", i + 1), 100,
+                                  -1.2 * rMax, 1.2 * rMax, 100, -1.2 * rMax, 1.2 * rMax);
 
-    fvPadsFiredR[i] = new TH1F(
-      Form("hPadsFired%i", i + 1),
-      Form("Number of fired pads vs radius: Station %i;Radius [cm]", i + 1),
-      100,
-      0.6 * rMin,
-      1.2 * rMax);
+    fvPadsFiredR[i] =
+      new TH1F(Form("hPadsFired%i", i + 1), Form("Number of fired pads vs radius: Station %i;Radius [cm]", i + 1), 100,
+               0.6 * rMin, 1.2 * rMax);
 
-    fvPadOccupancyR[i] = new TH1F(
-      Form("hOccupancy%i", i + 1),
-      Form("Pad occupancy vs radius: Station %i;Radius [cm];Occupancy, %%",
-           i + 1),
-      100,
-      0.6 * rMin,
-      1.2 * rMax);
+    fvPadOccupancyR[i] = new TH1F(Form("hOccupancy%i", i + 1),
+                                  Form("Pad occupancy vs radius: Station %i;Radius [cm];Occupancy, %%", i + 1), 100,
+                                  0.6 * rMin, 1.2 * rMax);
 
     histFolder->Add(fvPadsTotalR[i]);
     histFolder->Add(fvUsPadsFiredXY[i]);
@@ -555,14 +498,7 @@ void CbmMuchDigitizerQa::InitPadHistos() {
   // MC below
   if (fMCTracks && fPoints) {
     fhNpadsVsS =
-      new TH2F("hNpadsVsS",
-               "Number of fired pads per particle vs average pad area",
-               50,
-               0,
-               5,
-               15,
-               0.5,
-               15.5);
+      new TH2F("hNpadsVsS", "Number of fired pads per particle vs average pad area", 50, 0, 5, 15, 0.5, 15.5);
     fhNpadsVsS->SetYTitle("N fired pads");
     fhNpadsVsS->SetXTitle("pad area [cm^2]");
     histFolder->Add(fhNpadsVsS);
@@ -570,15 +506,13 @@ void CbmMuchDigitizerQa::InitPadHistos() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::FillTotalPadsHistos() {
+void CbmMuchDigitizerQa::FillTotalPadsHistos()
+{
 
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules();
-  for (vector<CbmMuchModule*>::iterator im = modules.begin();
-       im != modules.end();
-       im++) {
+  for (vector<CbmMuchModule*>::iterator im = modules.begin(); im != modules.end(); im++) {
     CbmMuchModule* mod = (*im);
-    if (mod->GetDetectorType() == 4
-        || mod->GetDetectorType() == 3) {  // modified for rpc
+    if (mod->GetDetectorType() == 4 || mod->GetDetectorType() == 3) {  // modified for rpc
       CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
       vector<CbmMuchPad*> pads = module->GetPads();
       for (UInt_t ip = 0; ip < pads.size(); ip++) {
@@ -603,7 +537,8 @@ void CbmMuchDigitizerQa::FillTotalPadsHistos() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::InitFits() {
+void CbmMuchDigitizerQa::InitFits()
+{
 
   fFitEl = new TF1("fit_el", LandauMPV, -0.5, 4.5, 1);
   fFitEl->SetParameter(0, 0.511);
@@ -622,7 +557,8 @@ void CbmMuchDigitizerQa::InitFits() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::SetParContainers() {
+void CbmMuchDigitizerQa::SetParContainers()
+{
   // Get run and runtime database
 
   // The code currently does not work,
@@ -643,7 +579,8 @@ void CbmMuchDigitizerQa::SetParContainers() {
 }
 
 // -------------------------------------------------------------------------x
-void CbmMuchDigitizerQa::Exec(Option_t*) {
+void CbmMuchDigitizerQa::Exec(Option_t*)
+{
   fNevents.SetVal(fNevents.GetVal() + 1);
   LOG(debug) << "Event: " << fNevents.GetVal();
 
@@ -669,7 +606,8 @@ void CbmMuchDigitizerQa::Exec(Option_t*) {
 
 
 // -------------------------------------------------------------------------
-int CbmMuchDigitizerQa::CheckConsistency() {
+int CbmMuchDigitizerQa::CheckConsistency()
+{
   // check consistency of geometry & data
   if (!fDigiManager) {
     LOG(error) << "Can not find Much digi manager";
@@ -683,8 +621,7 @@ int CbmMuchDigitizerQa::CheckConsistency() {
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
     if (!digi) {
-      LOG(error) << " Much digi " << i << " out of "
-                 << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
+      LOG(error) << " Much digi " << i << " out of " << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
                  << " doesn't exist";
       return -1;
     }
@@ -692,8 +629,7 @@ int CbmMuchDigitizerQa::CheckConsistency() {
 
     int ista = CbmMuchAddress::GetStationIndex(address);
     if (ista < 0 || ista >= fNstations) {
-      LOG(error) << " Much station " << ista << " for adress " << address
-                 << " is out of the range";
+      LOG(error) << " Much station " << ista << " for adress " << address << " is out of the range";
       return -1;
     }
 
@@ -703,14 +639,12 @@ int CbmMuchDigitizerQa::CheckConsistency() {
       return -1;
     }
     if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3) {
-      LOG(error) << " Much module: unknown detector type  "
-                 << module->GetDetectorType();
+      LOG(error) << " Much module: unknown detector type  " << module->GetDetectorType();
       return -1;
     }
     CbmMuchModuleGem* moduleGem = dynamic_cast<CbmMuchModuleGem*>(module);
     if (!moduleGem) {
-      LOG(error) << " Unexpected Much module type: module " << address
-                 << " is not a Gem module";
+      LOG(error) << " Unexpected Much module type: module " << address << " is not a Gem module";
       return -1;
     }
     CbmMuchPad* pad = moduleGem->GetPad(address);
@@ -720,11 +654,9 @@ int CbmMuchDigitizerQa::CheckConsistency() {
     }
 
     if (fDigiManager->IsMatchPresent(ECbmModuleId::kMuch)) {
-      CbmMatch* match =
-        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
+      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
       if (!match) {
-        LOG(error) << " Much MC match for digi " << i << " out of "
-                   << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
+        LOG(error) << " Much MC match for digi " << i << " out of " << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
                    << "doesn't exist";
         return -1;
       }
@@ -734,17 +666,18 @@ int CbmMuchDigitizerQa::CheckConsistency() {
 }
 
 // -------------------------------------------------------------------------
-const CbmMuchPad* CbmMuchDigitizerQa::GetPad(UInt_t address) const {
+const CbmMuchPad* CbmMuchDigitizerQa::GetPad(UInt_t address) const
+{
   // get Much pad from the digi address
-  CbmMuchModuleGem* moduleGem =
-    dynamic_cast<CbmMuchModuleGem*>(fGeoScheme->GetModuleByDetId(address));
-  CbmMuchPad* pad = moduleGem->GetPad(address);
+  CbmMuchModuleGem* moduleGem = dynamic_cast<CbmMuchModuleGem*>(fGeoScheme->GetModuleByDetId(address));
+  CbmMuchPad* pad             = moduleGem->GetPad(address);
   return pad;
 }
 
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::OccupancyQa() {
+void CbmMuchDigitizerQa::OccupancyQa()
+{
   // Filling occupancy plots
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi     = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
@@ -760,11 +693,11 @@ void CbmMuchDigitizerQa::OccupancyQa() {
 }
 
 // -------------------------------------------------------------------------
-int CbmMuchDigitizerQa::ProcessMCPoints() {
+int CbmMuchDigitizerQa::ProcessMCPoints()
+{
 
   if (!fMCTracks || !fPoints || !fTimeSlice) {
-    LOG(debug)
-      << " CbmMuchDigitizerQa::DigitizerQa(): Found no MC data. Skipping.";
+    LOG(debug) << " CbmMuchDigitizerQa::DigitizerQa(): Found no MC data. Skipping.";
     return 0;
   }
   TVector3 vIn;   // in  position of the track
@@ -843,7 +776,8 @@ int CbmMuchDigitizerQa::ProcessMCPoints() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::FillChargePerPoint() {
+void CbmMuchDigitizerQa::FillChargePerPoint()
+{
 
   if (!fMCTracks || !fPoints) {
     LOG(debug) << " CbmMuchDigitizerQa::FillChargePerPoint()): Found no MC "
@@ -871,7 +805,8 @@ void CbmMuchDigitizerQa::FillChargePerPoint() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
+void CbmMuchDigitizerQa::FillDigitizerPerformancePlots()
+{
 
   if (!fMCTracks || !fPoints) {
     LOG(debug) << " CbmMuchDigitizerQa::FillDigitizerPerformancePlots(): Found "
@@ -895,8 +830,7 @@ void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
     if (pdg == 22 ||  // photons
         pdg == 2112)  // neutrons
     {
-      LOG(error) << "Particle with pdg code " << pdg
-                 << " produces signal in Much";
+      LOG(error) << "Particle with pdg code " << pdg << " produces signal in Much";
     }
 
     // special entry at -0.2 for the particles that are not known for TDataBasePDG
@@ -920,24 +854,26 @@ void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
       fhTrackChargeVsTrackEnergyLogPr->Fill(log_kine, charge);
       fhTrackChargeVsTrackLengthPr->Fill(length, charge);
       fhTrackLengthPr->Fill(length);
-    } else if (pdg == 211 || pdg == -211) {
+    }
+    else if (pdg == 211 || pdg == -211) {
       fhTrackChargeVsTrackEnergyLogPi->Fill(log_kine, charge);
       fhTrackChargeVsTrackLengthPi->Fill(length, charge);
       fhTrackLengthPi->Fill(length);
-    } else if (pdg == 11 || pdg == -11) {
+    }
+    else if (pdg == 11 || pdg == -11) {
       fhTrackChargeVsTrackEnergyLogEl->Fill(log_kine, charge);
       fhTrackChargeVsTrackLengthEl->Fill(length, charge);
       fhTrackLengthEl->Fill(length);
     }
-    if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000
-        && kine < 1020)
+    if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000 && kine < 1020)
       fhTrackChargePr_1GeV_3mm->Fill(charge);
   }
 }
 
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DrawChargeCanvases() {
+void CbmMuchDigitizerQa::DrawChargeCanvases()
+{
 
   if (!fMCTracks || !fPoints) { return; }
 
@@ -991,7 +927,8 @@ void CbmMuchDigitizerQa::DrawChargeCanvases() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DrawPadCanvases() {
+void CbmMuchDigitizerQa::DrawPadCanvases()
+{
   //non-MC
   for (Int_t i = 0; i < fNstations; i++) {
     *fvPadsFiredR[i] = *fvUsPadsFiredR[i];
@@ -1015,7 +952,8 @@ void CbmMuchDigitizerQa::DrawPadCanvases() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DrawLengthCanvases() {
+void CbmMuchDigitizerQa::DrawLengthCanvases()
+{
 
   if (!fMCTracks || !fPoints) { return; }
 
@@ -1035,7 +973,8 @@ void CbmMuchDigitizerQa::DrawLengthCanvases() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
+void CbmMuchDigitizerQa::PrintFrontLayerPoints()
+{
 
   if (!fMCTracks || !fTimeSlice) { return; }
 
@@ -1061,7 +1000,8 @@ void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
+void CbmMuchDigitizerQa::PrintFrontLayerDigis()
+{
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
     UInt_t address    = digi->GetAddress();
@@ -1069,8 +1009,7 @@ void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
     if (stId != 0) continue;
     Int_t layerId = CbmMuchAddress::GetLayerIndex(address);
     if (layerId != 0) continue;
-    CbmMuchModuleGem* module =
-      (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
+    CbmMuchModuleGem* module = (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
     if (!module) continue;
     CbmMuchPad* pad = module->GetPad(address);
     Double_t x0     = pad->GetX();
@@ -1081,7 +1020,8 @@ void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
 }
 
 // -------------------------------------------------------------------------
-TFolder& CbmMuchDigitizerQa::GetQa() {
+TFolder& CbmMuchDigitizerQa::GetQa()
+{
   TDirectory* oldDirectory = gDirectory;
   DrawChargeCanvases();
   DrawPadCanvases();
@@ -1091,7 +1031,8 @@ TFolder& CbmMuchDigitizerQa::GetQa() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::Finish() {
+void CbmMuchDigitizerQa::Finish()
+{
 
   if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
     LOG(error) << "No sink found";
@@ -1102,7 +1043,8 @@ void CbmMuchDigitizerQa::Finish() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::OutputNvsS() {
+void CbmMuchDigitizerQa::OutputNvsS()
+{
   TCanvas* c = new TCanvas("nMeanVsS", "nMeanVsS", 2 * 800, 2 * 400);
   printf("===================================\n");
   printf("DigitizerQa:\n");
@@ -1137,7 +1079,8 @@ void CbmMuchDigitizerQa::OutputNvsS() {
 }
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
+Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par)
+{
   Double_t gaz_gain_mean = 1.7e+4;
   Double_t scale         = 1.e+6;
   gaz_gain_mean /= scale;
@@ -1147,7 +1090,8 @@ Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
 }
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass) {
+Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass)
+{
   Double_t logT;
   TF1 fPol6("fPol6", "pol6", -5, 10);
   if (mass < 0.1) {
@@ -1155,12 +1099,14 @@ Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass) {
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_e) logT = min_logT_e;
     return fPol6.EvalPar(&logT, mpv_e);
-  } else if (mass >= 0.1 && mass < 0.2) {
+  }
+  else if (mass >= 0.1 && mass < 0.2) {
     logT = log(Tkin * 105.658 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_mu) logT = min_logT_mu;
     return fPol6.EvalPar(&logT, mpv_mu);
-  } else {
+  }
+  else {
     logT = log(Tkin * 938.272 / mass);
     if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_p) logT = min_logT_p;

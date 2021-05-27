@@ -22,11 +22,12 @@
 #include "CbmKFParticleFinderQA.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
+
+#include <vector>
+
 #include "KFPartMatch.h"
 #include "KFParticle.h"
 #include "KFTopoPerformance.h"
-
-#include <vector>
 
 class CbmAnaConversionKF {
 
@@ -41,16 +42,13 @@ public:
 
   //void KFParticle_Analysis();
 
-  void SetKF(CbmKFParticleFinder* kfparticle,
-             CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
   void SetSignalIds(std::vector<int>* signalids);
   void SetGhostIds(std::vector<int>* ghostids);
 
 
   void test();
-  Double_t Invmass_4particles(const CbmMCTrack* mctrack1,
-                              const CbmMCTrack* mctrack2,
-                              const CbmMCTrack* mctrack3,
+  Double_t Invmass_4particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2, const CbmMCTrack* mctrack3,
                               const CbmMCTrack* mctrack4);
 
   void test2();
@@ -58,10 +56,7 @@ public:
   void CombinePhotons();
   void Reconstruct();
   void ReconstructGammas();
-  Double_t Invmass_4particlesRECO(KFParticle part1,
-                                  KFParticle part2,
-                                  KFParticle part3,
-                                  KFParticle part4);
+  Double_t Invmass_4particlesRECO(KFParticle part1, KFParticle part2, KFParticle part3, KFParticle part4);
   Double_t Invmass_2gamma(KFParticle part1, KFParticle part2);
   Double_t Invmass_2electrons(KFParticle part1, KFParticle part2);
 
@@ -88,10 +83,8 @@ private:
   TH1D* fhPi0_NDaughters;
 
   // for data gained from the KFParticle package
-  Int_t
-    fNofGeneratedPi0_allEvents;  // number of generated pi0 summed up over ALL EVENTS
-  Int_t
-    fNofPi0_kfparticle_allEvents;  // number of all reconstructed pi0 summed up over ALL EVENTS
+  Int_t fNofGeneratedPi0_allEvents;    // number of generated pi0 summed up over ALL EVENTS
+  Int_t fNofPi0_kfparticle_allEvents;  // number of all reconstructed pi0 summed up over ALL EVENTS
   Int_t fNofGeneratedPi0;
   Int_t fNofPi0_kfparticle;
   TH1D* fhPi0Ratio;
@@ -102,8 +95,7 @@ private:
   std::vector<int> fGhostIds;
 
 
-  std::vector<TH1*>
-    fHistoList_kfparticle;  // list of all histograms containing results from KFParticle package
+  std::vector<TH1*> fHistoList_kfparticle;  // list of all histograms containing results from KFParticle package
 
 
   std::vector<KFParticle> particlevector;

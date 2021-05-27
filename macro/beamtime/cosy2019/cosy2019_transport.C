@@ -12,24 +12,17 @@
 // Specify the beam spot properties, angular spread and momentum.
 // --------------------------------------------------------------------------
 
-void cosy2019_transport(Int_t nEvents      = 1,
-                        Double_t dMinX     = -0.6,
-                        Double_t dMaxX     = 0.6,
-                        Double_t dMinY     = -0.6,
-                        Double_t dMaxY     = 0.6,
-                        Double_t dMinP     = 2.71,
-                        Double_t dMaxP     = 2.74,
-                        Double_t dThetaMin = 0.0,
-                        Double_t dThetaMax = 1.0,
-                        const char* output = "data/cosy2019") {
+void cosy2019_transport(Int_t nEvents = 1, Double_t dMinX = -0.6, Double_t dMaxX = 0.6, Double_t dMinY = -0.6,
+                        Double_t dMaxY = 0.6, Double_t dMinP = 2.71, Double_t dMaxP = 2.74, Double_t dThetaMin = 0.0,
+                        Double_t dThetaMax = 1.0, const char* output = "data/cosy2019")
+{
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName =
-    "cosy2019_transport.C";  // this macro's name for screen output
+  TString myName = "cosy2019_transport.C";         // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -114,9 +107,7 @@ void cosy2019_transport(Int_t nEvents      = 1,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

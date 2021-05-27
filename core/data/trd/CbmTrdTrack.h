@@ -14,10 +14,10 @@
 #ifndef CBMTRDTRACK_H_
 #define CBMTRDTRACK_H_ 1
 
+#include "CbmTrack.h"  // for CbmTrack
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t
-
-#include "CbmTrack.h"  // for CbmTrack
 
 class CbmTrdTrack : public CbmTrack {
 public:

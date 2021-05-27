@@ -16,19 +16,17 @@ using std::vector;
 
 ClassImp(CbmKFPrimaryVertexFinder)
 
-  void CbmKFPrimaryVertexFinder::Clear(Option_t* /*opt*/) {
+  void CbmKFPrimaryVertexFinder::Clear(Option_t* /*opt*/)
+{
   Tracks.clear();
 }
 
-void CbmKFPrimaryVertexFinder::AddTrack(CbmKFTrackInterface* Track) {
-  Tracks.push_back(Track);
-}
+void CbmKFPrimaryVertexFinder::AddTrack(CbmKFTrackInterface* Track) { Tracks.push_back(Track); }
 
-void CbmKFPrimaryVertexFinder::SetTracks(vector<CbmKFTrackInterface*>& vTr) {
-  Tracks = vTr;
-}
+void CbmKFPrimaryVertexFinder::SetTracks(vector<CbmKFTrackInterface*>& vTr) { Tracks = vTr; }
 
-void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
+void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx)
+{
   //* Constants
 
   const Double_t CutChi2 = 3.5 * 3.5;
@@ -46,7 +44,8 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
     r[0] = r[1] = r[2] = 0.;
     C[0] = C[2] = 5.;
     C[5]        = 0.25;
-  } else {
+  }
+  else {
     CbmKFTube& t = CbmKF::Instance()->vTargets[0];
     r[0] = r[1] = 0.;
     r[2]        = t.z;
@@ -80,9 +79,7 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
     vtx.GetRefChi2()    = 0.;
     vtx.GetRefNTracks() = 0;
 
-    for (vector<CbmKFTrackInterface*>::iterator itr = Tracks.begin();
-         itr != Tracks.end();
-         ++itr) {
+    for (vector<CbmKFTrackInterface*>::iterator itr = Tracks.begin(); itr != Tracks.end(); ++itr) {
 
       CbmKFTrack T(**itr);
       Bool_t err = T.Extrapolate(r0[2]);
@@ -98,8 +95,7 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
 
         Double_t S[3] = {(C0[2] + V[2]), -(C0[1] + V[1]), (C0[0] + V[0])};
         Double_t s    = S[2] * S[0] - S[1] * S[1];
-        Double_t chi2 = zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1]
-                        + zeta[1] * zeta[1] * S[2];
+        Double_t chi2 = zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1] + zeta[1] * zeta[1] * S[2];
         if (chi2 > s * CutChi2) continue;
 
         //* Fit of vertex track slopes (a,b) to r0 vertex
@@ -107,14 +103,8 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
         s = V[0] * V[2] - V[1] * V[1];
         if (s < 1.E-20) continue;
         s = 1. / s;
-        a = m[2]
-            + s
-                * ((V[3] * V[2] - V[4] * V[1]) * zeta[0]
-                   + (-V[3] * V[1] + V[4] * V[0]) * zeta[1]);
-        b = m[3]
-            + s
-                * ((V[6] * V[2] - V[7] * V[1]) * zeta[0]
-                   + (-V[6] * V[1] + V[7] * V[0]) * zeta[1]);
+        a = m[2] + s * ((V[3] * V[2] - V[4] * V[1]) * zeta[0] + (-V[3] * V[1] + V[4] * V[0]) * zeta[1]);
+        b = m[3] + s * ((V[6] * V[2] - V[7] * V[1]) * zeta[0] + (-V[6] * V[1] + V[7] * V[0]) * zeta[1]);
       }
 
       //** Update the vertex (r,C) with the track estimate (m,V) :
@@ -123,8 +113,7 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
 
       //* Residual (measured - estimated)
 
-      Double_t zeta[2] = {m[0] - (r[0] - a * (r[2] - r0[2])),
-                          m[1] - (r[1] - b * (r[2] - r0[2]))};
+      Double_t zeta[2] = {m[0] - (r[0] - a * (r[2] - r0[2])), m[1] - (r[1] - b * (r[2] - r0[2]))};
 
       //* CHt = CH'
 
@@ -134,8 +123,7 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
 
       //* S = (H*C*H' + V )^{-1}
 
-      Double_t S[3] = {V[0] + CHt[0][0] - a * CHt[2][0],
-                       V[1] + CHt[1][0] - b * CHt[2][0],
+      Double_t S[3] = {V[0] + CHt[0][0] - a * CHt[2][0], V[1] + CHt[1][0] - b * CHt[2][0],
                        V[2] + CHt[1][1] - b * CHt[2][1]};
 
       //* Invert S
@@ -151,9 +139,8 @@ void CbmKFPrimaryVertexFinder::Fit(CbmKFVertexInterface& vtx) {
 
       //* Calculate Chi^2
 
-      vtx.GetRefChi2() += zeta[0] * zeta[0] * S[0]
-                          + 2 * zeta[0] * zeta[1] * S[1]
-                          + zeta[1] * zeta[1] * S[2] + T.GetRefChi2();
+      vtx.GetRefChi2() +=
+        zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1] + zeta[1] * zeta[1] * S[2] + T.GetRefChi2();
       vtx.GetRefNDF() += 2 + T.GetRefNDF();
       vtx.GetRefNTracks()++;
 

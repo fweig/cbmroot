@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
-void CreateGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10) {
+void CreateGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10)
+{
   //float DefaultRotX=34.159435; float DefaultRotY=18.477; //for rotmir=-10 degrees  and no rot pmt (0,0) (old values)
   //if(RotMir==1){ DefaultRotX=17.536; DefaultRotY=18.477; } old values as taken from -1 degrees
 
@@ -20,9 +21,8 @@ void CreateGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10) {
     pmt_pos_z_addend    = 0.;
   }
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d", RotMir);
   }
 
@@ -39,18 +39,14 @@ void CreateGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10) {
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   std::ifstream infile1(InFileUpper);
   std::ifstream infile2(InFileLower);
   sprintf(GeoFileName,
           "/hera/cbm/users/tariq/cbmroot/geometry/rich/GeoOpt/RotPMT/NewGeo/"
           "rich_geo_%s_RotPMT_%s_%s.gdml",
-          RotMirText,
-          ShiftXTxt,
-          ShiftYTxt);
+          RotMirText, ShiftXTxt, ShiftYTxt);
 
   cout << GeoFileName << endl;  //continue;
   //return;
@@ -63,26 +59,17 @@ void CreateGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10) {
   }
 
   outfile << "                  " << std::endl;
-  outfile << "<variable name=\"RICH_mirror_Y_shift\" value=\""
-          << RICH_mirror_Y_shift << "\"/>" << std::endl;
-  outfile << "<variable name=\"RICH_mirror_angle\" value=\"" << RotMir << "\"/>"
-          << std::endl;
-  outfile << "<variable name=\"pmt_rot_x_addend\" value=\""
-          << PMTrotX - DefaultRotX << "\"/>";
+  outfile << "<variable name=\"RICH_mirror_Y_shift\" value=\"" << RICH_mirror_Y_shift << "\"/>" << std::endl;
+  outfile << "<variable name=\"RICH_mirror_angle\" value=\"" << RotMir << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_rot_x_addend\" value=\"" << PMTrotX - DefaultRotX << "\"/>";
   outfile << " <!-- rot x =" << PMTrotX << " --> " << std::endl;
-  outfile << "<variable name=\"pmt_rot_y_addend\" value=\""
-          << PMTrotY - DefaultRotY << "\"/>";
+  outfile << "<variable name=\"pmt_rot_y_addend\" value=\"" << PMTrotY - DefaultRotY << "\"/>";
   outfile << " <!-- rot y =" << PMTrotY << " --> " << std::endl;
-  outfile << "<variable name=\"pmt_pos_x_addend\" value=\"" << pmt_pos_x_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_pos_y_addend\" value=\"" << pmt_pos_y_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_pos_z_addend\" value=\"" << pmt_pos_z_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>"
-          << std::endl;
-  outfile << "<variable name=\"pmt_height\" value=\"" << pmt_height << "\"/>"
-          << std::endl;
+  outfile << "<variable name=\"pmt_pos_x_addend\" value=\"" << pmt_pos_x_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_pos_y_addend\" value=\"" << pmt_pos_y_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_pos_z_addend\" value=\"" << pmt_pos_z_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_width\" value=\"" << pmt_width << "\"/>" << std::endl;
+  outfile << "<variable name=\"pmt_height\" value=\"" << pmt_height << "\"/>" << std::endl;
   outfile << "                  " << std::endl;
   while (getline(infile2, line)) {
     outfile << line << std::endl;

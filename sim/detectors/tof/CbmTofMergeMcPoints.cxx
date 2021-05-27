@@ -22,8 +22,9 @@
 #include <Logger.h>
 
 // ROOT Classes and includes
-#include "Riostream.h"
 #include "TClonesArray.h"
+
+#include "Riostream.h"
 
 CbmTofMergeMcPoints::CbmTofMergeMcPoints()
   : FairTask()
@@ -33,9 +34,12 @@ CbmTofMergeMcPoints::CbmTofMergeMcPoints()
   , fTofPointsColl(NULL)
   , fTofPntTrkMap()
   , fRealTofPoints(NULL)
-  , fTofRealPntMatches(NULL) {}
+  , fTofRealPntMatches(NULL)
+{
+}
 
-CbmTofMergeMcPoints::~CbmTofMergeMcPoints() {
+CbmTofMergeMcPoints::~CbmTofMergeMcPoints()
+{
   if (fRealTofPoints != NULL) {
     fRealTofPoints->Delete();
     delete fRealTofPoints;
@@ -47,7 +51,8 @@ CbmTofMergeMcPoints::~CbmTofMergeMcPoints() {
   }
 }
 
-InitStatus CbmTofMergeMcPoints::Init() {
+InitStatus CbmTofMergeMcPoints::Init()
+{
   ReadAndCreateDataBranches();
 
   // Initialize the TOF GeoHandler
@@ -63,30 +68,25 @@ InitStatus CbmTofMergeMcPoints::Init() {
 
   fTofId = fGeoHandler->GetDetIdPointer();
 
-  if (NULL != fTofId)
-    LOG(info) << "CbmTofMergeMcPoints::Init with GeoVersion "
-              << fGeoHandler->GetGeoVersion();
+  if (NULL != fTofId) LOG(info) << "CbmTofMergeMcPoints::Init with GeoVersion " << fGeoHandler->GetGeoVersion();
   else {
     switch (iGeoVersion) {
       case k12b: fTofId = new CbmTofDetectorId_v12b(); break;
       case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
-      default:
-        LOG(error) << "CbmTofMergeMcPoints::Init => Invalid geometry!!!"
-                   << iGeoVersion;
-        return kFATAL;
+      default: LOG(error) << "CbmTofMergeMcPoints::Init => Invalid geometry!!!" << iGeoVersion; return kFATAL;
     }  // switch(iGeoVersion)
   }    // else of if(NULL != fTofId)
 
   return kSUCCESS;
 }
 
-void CbmTofMergeMcPoints::Exec(Option_t* /*opt*/) {
+void CbmTofMergeMcPoints::Exec(Option_t* /*opt*/)
+{
   if (fRealTofPoints != NULL) fRealTofPoints->Delete();
   if (fTofRealPntMatches != NULL) fTofRealPntMatches->Delete();
   ;
   // TOF: (MC)=>(Realistic MC) & (MC->RealisticMC)
-  MergeRealisticTofPoints(
-    fMcTracksColl, fTofPointsColl, fRealTofPoints, fTofRealPntMatches);
+  MergeRealisticTofPoints(fMcTracksColl, fTofPointsColl, fRealTofPoints, fTofRealPntMatches);
 
   static Int_t eventNo = 0;
   LOG(info) << "CbmTofMergeMcPoints::Exec eventNo=" << eventNo++;
@@ -94,7 +94,8 @@ void CbmTofMergeMcPoints::Exec(Option_t* /*opt*/) {
 
 void CbmTofMergeMcPoints::Finish() {}
 
-void CbmTofMergeMcPoints::ReadAndCreateDataBranches() {
+void CbmTofMergeMcPoints::ReadAndCreateDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman)
     LOG(fatal) << "CbmTofMergeMcPoints::ReadAndCreateDataBranches() NULL "
@@ -115,22 +116,15 @@ void CbmTofMergeMcPoints::ReadAndCreateDataBranches() {
 
   if (NULL != fTofPointsColl) {
     fRealTofPoints = new TClonesArray("CbmTofPoint", 100);
-    ioman->Register("RealisticTofPoint",
-                    "TOF",
-                    fRealTofPoints,
-                    IsOutputBranchPersistent("RealisticTofPoint"));
+    ioman->Register("RealisticTofPoint", "TOF", fRealTofPoints, IsOutputBranchPersistent("RealisticTofPoint"));
     fTofRealPntMatches = new TClonesArray("CbmMatch", 100);
-    ioman->Register("TofRealPntMatch",
-                    "TOF",
-                    fTofRealPntMatches,
-                    IsOutputBranchPersistent("TofRealPntMatch"));
+    ioman->Register("TofRealPntMatch", "TOF", fTofRealPntMatches, IsOutputBranchPersistent("TofRealPntMatch"));
   }
 }
 
-void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
-                                                  const TClonesArray* points,
-                                                  TClonesArray* realisticPoints,
-                                                  TClonesArray* pointsMatches) {
+void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks, const TClonesArray* points,
+                                                  TClonesArray* realisticPoints, TClonesArray* pointsMatches)
+{
   if (!(points && realisticPoints && pointsMatches)) return;
 
   Int_t iNbTracks    = tracks->GetEntriesFast();
@@ -149,8 +143,7 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
     pMcTrk = (CbmMCTrack*) tracks->At(iTrk);
 
     if (0 < pMcTrk->GetNPoints(ECbmModuleId::kTof))
-      fTofPntTrkMap.insert(
-        std::pair<Int_t, std::vector<Int_t>>(iTrk, std::vector<Int_t>()));
+      fTofPntTrkMap.insert(std::pair<Int_t, std::vector<Int_t>>(iTrk, std::vector<Int_t>()));
   }  // for (Int_t iTrk = 0; iTrk < iNbTofPoints; iTrk++)
 
   // Prepare the vector to keep track of which mean TOF Point comes
@@ -185,9 +178,7 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
   Int_t iMeanModType   = -1;
   Int_t iMeanModule    = -1;
   Int_t iMeanCounter   = -1;
-  for (std::map<Int_t, std::vector<Int_t>>::iterator it = fTofPntTrkMap.begin();
-       it != fTofPntTrkMap.end();
-       ++it) {
+  for (std::map<Int_t, std::vector<Int_t>>::iterator it = fTofPntTrkMap.begin(); it != fTofPntTrkMap.end(); ++it) {
     //      std::vector< Int_t > vTofPnt = it->second;
 
     // Each pair associate a track ID with the list of id for its corresponding TofPoint
@@ -196,8 +187,8 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
       //     point
       //     Keep track of current mean MC Point index
       Int_t iPntIdxList = (it->second).size() - 1;
-      pPnt   = static_cast<CbmTofPoint*>(points->At((it->second)[iPntIdxList]));
-      iDetId = pPnt->GetDetectorID();
+      pPnt              = static_cast<CbmTofPoint*>(points->At((it->second)[iPntIdxList]));
+      iDetId            = pPnt->GetDetectorID();
 
       // First store the info identifying the counter
       iMeanModType = fGeoHandler->GetSMType(iDetId);
@@ -233,8 +224,7 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
         iModule  = fGeoHandler->GetSModule(iDetId);
         iCounter = fGeoHandler->GetCounter(iDetId);
 
-        if ((iMeanModType == iModType) && (iMeanModule == iModule)
-            && (iMeanCounter == iCounter)) {
+        if ((iMeanModType == iModType) && (iMeanModule == iModule) && (iMeanCounter == iCounter)) {
           // Then store the MC Points information if counter match
           iNbPntInMean++;
           iMeanChannel += fGeoHandler->GetCell(iDetId);  // mean channel index
@@ -258,7 +248,7 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
         else {
           iPntIdxList--;  // just got to the next point in the list
         }                 // if different conter as first point
-      }  // while( 0 <= iPntIdxList && 0 < (it->second).size() )
+      }                   // while( 0 <= iPntIdxList && 0 < (it->second).size() )
 
       // C - Create new mean MC Point
       // First do the mean
@@ -272,23 +262,12 @@ void CbmTofMergeMcPoints::MergeRealisticTofPoints(const TClonesArray* tracks,
       dMeanMomZ /= iNbPntInMean;
       dMeanLen /= iNbPntInMean;
       // Store the new mean MC Point in the output TClonesArray
-      CbmTofDetectorInfo detInfo(ECbmModuleId::kTof,
-                                 iMeanModType,
-                                 iMeanModule,
-                                 iMeanCounter,
-                                 0,
-                                 iMeanChannel);
+      CbmTofDetectorInfo detInfo(ECbmModuleId::kTof, iMeanModType, iMeanModule, iMeanCounter, 0, iMeanChannel);
       TVector3 meanPos(dMeanPosX, dMeanPosY, dMeanPosZ);
       TVector3 meanMom(dMeanMomX, dMeanMomY, dMeanMomZ);
       //         CbmTofPoint* pMeanPoint =
       new ((*realisticPoints)[iMeanMcPointId])
-        CbmTofPoint(it->first,
-                    fTofId->SetDetectorInfo(detInfo),
-                    meanPos,
-                    meanMom,
-                    dMeanTime,
-                    dMeanLen,
-                    dTotELoss);
+        CbmTofPoint(it->first, fTofId->SetDetectorInfo(detInfo), meanPos, meanMom, dMeanTime, dMeanLen, dTotELoss);
       // Update the index for the next mean Point
       iMeanMcPointId++;
 

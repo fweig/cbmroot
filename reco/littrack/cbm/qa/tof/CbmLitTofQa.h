@@ -9,7 +9,9 @@
 #define CBMLITTOFQA_H_
 
 #include "CbmStsKFTrackFitter.h"
+
 #include "FairTask.h"
+
 #include <map>
 #include <set>
 #include <string>
@@ -65,7 +67,8 @@ public:
   /**
     * \brief Set momentum range and number of bins for histograms.
     */
-  void SetPRange(Int_t bins, Int_t min, Int_t max) {
+  void SetPRange(Int_t bins, Int_t min, Int_t max)
+  {
     fPRangeBins = bins;
     fPRangeMin  = min;
     fPRangeMax  = max;
@@ -120,25 +123,20 @@ private:
   TClonesArray* fTofTracks;   // CbmTofTrack array
   CbmMCDataArray* fMCTracks;  // CbmMCTrack array
 
-  CbmVertex* fPrimVertex;  // Pointer to the primary vertex
-  CbmStsKFTrackFitter
-    fKFFitter;  // Pointer to the Kalman Filter Fitter algorithm
+  CbmVertex* fPrimVertex;         // Pointer to the primary vertex
+  CbmStsKFTrackFitter fKFFitter;  // Pointer to the Kalman Filter Fitter algorithm
 
   vector<string> fTrackCategories;  // Vector of track category names
 
 
   //#ifndef  __ROOTCLING__
-  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks,
-                                               Int_t eventNo,
-                                               Int_t index);
+  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index);
   map<string, LitTrackAcceptanceFunction>
     fTrackAcceptanceFunctions;  // maps track category name to track acceptance function
                                 //#endif
 
-  set<pair<Int_t, Int_t>>
-    fMCTrackIdForTofHits;  // Set of MC track IDs for all existing TOF hits
-  set<pair<Int_t, Int_t>>
-    fMCTrackIdForTofPoints;  // Set of MC track IDs for all existing TOF points
+  set<pair<Int_t, Int_t>> fMCTrackIdForTofHits;    // Set of MC track IDs for all existing TOF hits
+  set<pair<Int_t, Int_t>> fMCTrackIdForTofPoints;  // Set of MC track IDs for all existing TOF points
 
   ClassDef(CbmLitTofQa, 1)
 };

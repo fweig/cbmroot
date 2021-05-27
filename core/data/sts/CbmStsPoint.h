@@ -16,11 +16,11 @@
 #ifndef CBMSTSPOINT_H
 #define CBMSTSPOINT_H
 
+#include <FairMCPoint.h>  // for FairMCPoint
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Double32_t, Bool_t, Short_t
 #include <TVector3.h>    // for TVector3
-
-#include <FairMCPoint.h>  // for FairMCPoint
 
 #include <string>  // for string
 
@@ -46,19 +46,9 @@ public:
    *@param index    Index of point in TClonesArray
    *@param flag     +1 if entering, +2 if leaving the sensor
    **/
-  CbmStsPoint(Int_t trackID,
-              Int_t detID,
-              TVector3 posIn,
-              TVector3 posOut,
-              TVector3 momIn,
-              TVector3 momOut,
-              Double_t tof,
-              Double_t length,
-              Double_t eLoss,
-              Int_t pid     = 0,
-              Int_t eventId = 0,
-              Int_t index   = 0,
-              Short_t flag  = 3);
+  CbmStsPoint(Int_t trackID, Int_t detID, TVector3 posIn, TVector3 posOut, TVector3 momIn, TVector3 momOut,
+              Double_t tof, Double_t length, Double_t eLoss, Int_t pid = 0, Int_t eventId = 0, Int_t index = 0,
+              Short_t flag = 3);
 
 
   /** Copy constructor with event and epoch time 
@@ -67,10 +57,7 @@ public:
    *@param eventTime   MC event time [ns]
    *@param epochTime   epoch start time [ns]
    **/
-  CbmStsPoint(const CbmStsPoint& point,
-              Int_t eventId      = -1,
-              Double_t eventTime = 0.,
-              Double_t epochTime = 0.);
+  CbmStsPoint(const CbmStsPoint& point, Int_t eventId = -1, Double_t eventTime = 0., Double_t epochTime = 0.);
 
 
   /** Destructor **/
@@ -109,7 +96,8 @@ public:
   /** Modifiers **/
   void SetPositionOut(TVector3 pos);
   void SetMomentumOut(TVector3 mom);
-  virtual void SetTrackID(Int_t id) {
+  virtual void SetTrackID(Int_t id)
+  {
     //SetLink(kMCTrack, id);
     FairMCPoint::SetTrackID(id);
   };
@@ -131,14 +119,16 @@ protected:
 };
 
 
-inline void CbmStsPoint::SetPositionOut(TVector3 pos) {
+inline void CbmStsPoint::SetPositionOut(TVector3 pos)
+{
   fX_out = pos.X();
   fY_out = pos.Y();
   fZ_out = pos.Z();
 }
 
 
-inline void CbmStsPoint::SetMomentumOut(TVector3 mom) {
+inline void CbmStsPoint::SetMomentumOut(TVector3 mom)
+{
   fPx_out = mom.Px();
   fPy_out = mom.Py();
   fPz_out = mom.Pz();

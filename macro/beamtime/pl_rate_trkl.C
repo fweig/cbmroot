@@ -1,4 +1,5 @@
-void pl_rate_trkl() {
+void pl_rate_trkl()
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -25,7 +26,8 @@ void pl_rate_trkl() {
     gPad->SetLogz();
     can->cd(2);
     h2->ProjectionX()->Draw("");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -37,7 +39,8 @@ void pl_rate_trkl() {
     h2->Draw("colz");
     gPad->SetLogz();
     // h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -47,14 +50,12 @@ void pl_rate_trkl() {
   TH1* hDetRateRatioPx[10];
   Int_t iCol = 1;
   for (Int_t iDet = 0; iDet < NDet; iDet++) {
-    hDetRatePx[iDet] =
-      h2->ProjectionX(Form("hDetRatePx%d", iDet), iDet + 1, iDet + 1);
+    hDetRatePx[iDet] = h2->ProjectionX(Form("hDetRatePx%d", iDet), iDet + 1, iDet + 1);
 
     hDetRatePx[iDet]->SetLineColor(iCol++);
     if (iCol == 5) iCol++;
-    if (iDet == 0) {
-      hDetRatePx[iDet]->Draw();
-    } else {
+    if (iDet == 0) { hDetRatePx[iDet]->Draw(); }
+    else {
       hDetRatePx[iDet]->Draw("same");
     }
   }
@@ -70,7 +71,8 @@ void pl_rate_trkl() {
     if (iDet == 0) {
       hDetRateRatioPx[iDet]->Draw();
       hDetRateRatioPx[iDet]->SetMaximum(2.);
-    } else {
+    }
+    else {
       hDetRateRatioPx[iDet]->Draw("same");
     }
   }
@@ -83,7 +85,8 @@ void pl_rate_trkl() {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -95,7 +98,8 @@ void pl_rate_trkl() {
     h2->Draw("colz");
     gPad->SetLogz();
     // h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -105,22 +109,20 @@ void pl_rate_trkl() {
   TH1* hDetRateInSpillRatioPx[10];
 
   for (Int_t iDet = 0; iDet < NDet; iDet++) {
-    hDetRateInSpillPx[iDet] =
-      h2->ProjectionX(Form("hDetRateInSpillPx%d", iDet), iDet + 1, iDet + 1);
+    hDetRateInSpillPx[iDet] = h2->ProjectionX(Form("hDetRateInSpillPx%d", iDet), iDet + 1, iDet + 1);
   }
 
   for (Int_t iDet = 0; iDet < NDet; iDet++) {
-    hDetRateInSpillRatioPx[iDet] =
-      (TH1*) hDetRateInSpillPx[iDet]->Clone();  // copy
-    hDetRateInSpillRatioPx[iDet]->Divide(
-      hDetRateInSpillPx[iDet], hDetRateInSpillPx[0], 1., 1., "B");
+    hDetRateInSpillRatioPx[iDet] = (TH1*) hDetRateInSpillPx[iDet]->Clone();  // copy
+    hDetRateInSpillRatioPx[iDet]->Divide(hDetRateInSpillPx[iDet], hDetRateInSpillPx[0], 1., 1., "B");
 
     hDetRateInSpillRatioPx[iDet]->SetLineColor(iCol++);
     if (iCol == 5) iCol++;
     if (iDet == 0) {
       hDetRateInSpillRatioPx[iDet]->Draw();
       hDetRateInSpillRatioPx[iDet]->SetMaximum(2.);
-    } else {
+    }
+    else {
       hDetRateInSpillRatioPx[iDet]->Draw("same");
     }
   }

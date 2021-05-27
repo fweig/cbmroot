@@ -1,14 +1,14 @@
-enum enu_calibMode {
+enum enu_calibMode
+{
   etn_IMPORT,  // import calibration tables from the file and use them
   etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
   etn_NOCALIB,  // use linear function going from origin to (512, n) which means that the fine time is not calibrated
-  etn_IDEAL,  // use almost linear function - close to real calibration but idealized
-  etn_NOFINE  // ignore fine time counter at all
+  etn_IDEAL,    // use almost linear function - close to real calibration but idealized
+  etn_NOFINE    // ignore fine time counter at all
 };
 
-void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
-                          Int_t tdcN           = 0,
-                          Int_t inChannel      = 1) {
+void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE, Int_t tdcN = 0, Int_t inChannel = 1)
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
@@ -43,7 +43,8 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
     outputDir       = TString(gSystem->Getenv("OUTPUT_DIR"));
     runTitle        = TString(gSystem->Getenv("RUN_TITLE"));
     outHistoFile    = TString(gSystem->Getenv("OUTPUT_HISTO_FILE"));
-  } else {
+  }
+  else {
     TString hldFileDir;
 
     // --- Set the input files
@@ -51,9 +52,7 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
     if (tdcN == 0) {
       hldFileDir = "/data/TRBdata_May15/InvPol_Scan_direct_tdc_0010_refch_1/";
       switch (inChannel) {
-        case 1:
-          source->AddInputFile(hldFileDir + "te15134194201.hld");
-          break;  // Same file as 3!
+        case 1: source->AddInputFile(hldFileDir + "te15134194201.hld"); break;  // Same file as 3!
         case 3: source->AddInputFile(hldFileDir + "te15134194201.hld"); break;
         case 5: source->AddInputFile(hldFileDir + "te15134194452.hld"); break;
         case 7: source->AddInputFile(hldFileDir + "te15134194714.hld"); break;
@@ -69,16 +68,13 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
         case 27: source->AddInputFile(hldFileDir + "te15134201247.hld"); break;
         case 29: source->AddInputFile(hldFileDir + "te15134201507.hld"); break;
         case 31: source->AddInputFile(hldFileDir + "te15134201730.hld"); break;
-        default:
-          printf("Wrong channel defined as the macro parameter.\n");
-          return;
+        default: printf("Wrong channel defined as the macro parameter.\n"); return;
       }
-    } else if (tdcN == 1) {
+    }
+    else if (tdcN == 1) {
       hldFileDir = "/data/TRBdata_May15/InvPol_Scan_direct_tdc_0011_refch_1/";
       switch (inChannel) {
-        case 1:
-          source->AddInputFile(hldFileDir + "te15134202031.hld");
-          break;  // Same file as 3!
+        case 1: source->AddInputFile(hldFileDir + "te15134202031.hld"); break;  // Same file as 3!
         case 3: source->AddInputFile(hldFileDir + "te15134202031.hld"); break;
         case 5: source->AddInputFile(hldFileDir + "te15134202256.hld"); break;
         case 7: source->AddInputFile(hldFileDir + "te15134202522.hld"); break;
@@ -94,16 +90,13 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
         case 27: source->AddInputFile(hldFileDir + "te15134205159.hld"); break;
         case 29: source->AddInputFile(hldFileDir + "te15134205424.hld"); break;
         case 31: source->AddInputFile(hldFileDir + "te15134205653.hld"); break;
-        default:
-          printf("Wrong channel defined as the macro parameter.\n");
-          return;
+        default: printf("Wrong channel defined as the macro parameter.\n"); return;
       }
-    } else if (tdcN == 2) {
+    }
+    else if (tdcN == 2) {
       hldFileDir = "/data/TRBdata_May15/InvPol_Scan_direct_tdc_0012_refch_1/";
       switch (inChannel) {
-        case 1:
-          source->AddInputFile(hldFileDir + "te15134210142.hld");
-          break;  // Same file as 3!
+        case 1: source->AddInputFile(hldFileDir + "te15134210142.hld"); break;  // Same file as 3!
         case 3: source->AddInputFile(hldFileDir + "te15134210142.hld"); break;
         case 5: source->AddInputFile(hldFileDir + "te15134210405.hld"); break;
         case 7: source->AddInputFile(hldFileDir + "te15134210631.hld"); break;
@@ -119,16 +112,13 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
         case 27: source->AddInputFile(hldFileDir + "te15134213148.hld"); break;
         case 29: source->AddInputFile(hldFileDir + "te15134213413.hld"); break;
         case 31: source->AddInputFile(hldFileDir + "te15134213647.hld"); break;
-        default:
-          printf("Wrong channel defined as the macro parameter.\n");
-          return;
+        default: printf("Wrong channel defined as the macro parameter.\n"); return;
       }
-    } else if (tdcN == 3) {
+    }
+    else if (tdcN == 3) {
       hldFileDir = "/data/TRBdata_May15/InvPol_Scan_direct_tdc_0013_refch_1/";
       switch (inChannel) {
-        case 1:
-          source->AddInputFile(hldFileDir + "te15134214141.hld");
-          break;  // Same file as 3!
+        case 1: source->AddInputFile(hldFileDir + "te15134214141.hld"); break;  // Same file as 3!
         case 3: source->AddInputFile(hldFileDir + "te15134214141.hld"); break;
         case 5: source->AddInputFile(hldFileDir + "te15134214409.hld"); break;
         case 7: source->AddInputFile(hldFileDir + "te15134214636.hld"); break;
@@ -144,11 +134,10 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
         case 27: source->AddInputFile(hldFileDir + "te15134221058.hld"); break;
         case 29: source->AddInputFile(hldFileDir + "te15134221321.hld"); break;
         case 31: source->AddInputFile(hldFileDir + "te15134221537.hld"); break;
-        default:
-          printf("Wrong channel defined as the macro parameter.\n");
-          return;
+        default: printf("Wrong channel defined as the macro parameter.\n"); return;
       }
-    } else {
+    }
+    else {
       printf("Wrong TDC defined as the macro parameter.\n");
       return;
     }
@@ -162,13 +151,11 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
 
   CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
   fgCalibrator->SetCalibrationPeriod(50000000);
-  fgCalibrator->SetInputFilename(
-    "calibration_wu.root");  // does not actually import data - only defines
+  fgCalibrator->SetInputFilename("calibration_wu.root");  // does not actually import data - only defines
   // the file that will be used if you specify mode etn_IMPORT
   // Also note the (un)commented line in the end of the macro with export func
-  if (generateCalib) {
-    fgCalibrator->SetMode(etn_ONLINE);
-  } else {
+  if (generateCalib) { fgCalibrator->SetMode(etn_ONLINE); }
+  else {
     fgCalibrator->SetMode(etn_IMPORT);
   }
 
@@ -242,8 +229,7 @@ void run_analysis_wu_2_ip(Bool_t generateCalib = kFALSE,
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outRootFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

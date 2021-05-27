@@ -5,7 +5,8 @@
  * \date 2012
  */
 
-void qa_study_lmvm() {
+void qa_study_lmvm()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gROOT->LoadMacro("$VMCWORKDIR/macro/rich/cbmlibs.C");
@@ -34,8 +35,7 @@ void qa_study_lmvm() {
   names.push_back("TOF clustering");
   names.push_back("TRD&TOF smearing");
 
-  outputDir =
-    "/Users/slebedev/Development/cbm/data/lmvm/apr16_lmvm_study_report_8gev/";
+  outputDir = "/Users/slebedev/Development/cbm/data/lmvm/apr16_lmvm_study_report_8gev/";
 
   CbmAnaDielectronReports reports;
   reports.CreateStudyReport("LMVM", results, names, outputDir);

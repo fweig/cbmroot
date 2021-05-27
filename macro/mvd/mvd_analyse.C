@@ -1,12 +1,8 @@
 
 
-void mvd_analyse(TString input     = "auau.25gev",
-                 TString system    = "centr",
-                 Int_t nEvents     = 100,
-                 Int_t iVerbose    = 0,
-                 const char* setup = "sis300_electron",
-                 bool PileUp       = true,
-                 bool littrack     = false) {
+void mvd_analyse(TString input = "auau.25gev", TString system = "centr", Int_t nEvents = 100, Int_t iVerbose = 0,
+                 const char* setup = "sis300_electron", bool PileUp = true, bool littrack = false)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -16,33 +12,25 @@ void mvd_analyse(TString input     = "auau.25gev",
   TString mcFile = "data/mvd.mc.unigen." + input + "." + system + ".root";
   // Output file
   if (!PileUp) {
-    if (littrack)
-      TString recoFile =
-        "data/mvd.reco.unigen." + input + "." + system + ".littrack.root";
+    if (littrack) TString recoFile = "data/mvd.reco.unigen." + input + "." + system + ".littrack.root";
     else
-      TString recoFile =
-        "data/mvd.reco.unigen." + input + "." + system + ".l1.root";
-  } else if (littrack)
-    TString recoFile =
-      "data/mvd.reco.unigen." + input + "." + system + ".PileUp.littrack.root";
+      TString recoFile = "data/mvd.reco.unigen." + input + "." + system + ".l1.root";
+  }
+  else if (littrack)
+    TString recoFile = "data/mvd.reco.unigen." + input + "." + system + ".PileUp.littrack.root";
   else
-    TString recoFile =
-      "data/mvd.reco.unigen." + input + "." + system + ".PileUp.l1.root";
+    TString recoFile = "data/mvd.reco.unigen." + input + "." + system + ".PileUp.l1.root";
 
   // Output file
   if (!PileUp) {
-    if (littrack)
-      TString analysisFile =
-        "data/mvd.ana.unigen." + input + "." + system + ".littrack.root";
+    if (littrack) TString analysisFile = "data/mvd.ana.unigen." + input + "." + system + ".littrack.root";
     else
-      TString analysisFile =
-        "data/mvd.ana.unigen." + input + "." + system + ".l1.root";
-  } else if (littrack)
-    TString analysisFile =
-      "data/mvd.ana.unigen." + input + "." + system + ".PileUp.littrack.root";
+      TString analysisFile = "data/mvd.ana.unigen." + input + "." + system + ".l1.root";
+  }
+  else if (littrack)
+    TString analysisFile = "data/mvd.ana.unigen." + input + "." + system + ".PileUp.littrack.root";
   else
-    TString analysisFile =
-      "data/mvd.ana.unigen." + input + "." + system + ".PileUp.l1.root";
+    TString analysisFile = "data/mvd.ana.unigen." + input + "." + system + ".PileUp.l1.root";
 
   // Parameter file
 

@@ -5,15 +5,15 @@
 
 #include "CbmL1TrdTrackFinderSts.h"
 
-#include "CbmL1Def.h"
-
 #include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
+#include "CbmL1Def.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatch.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include "FairBaseParSet.h"
 #include "FairDetector.h"
 #include "FairRootManager.h"
@@ -98,7 +98,9 @@ CbmL1TrdTrackFinderSts::CbmL1TrdTrackFinderSts()
   ,  // Control histogramm
   fh_pully_plane_fake(0)
   ,  // Control histogramm
-  fLostTracks() {}
+  fLostTracks()
+{
+}
 // -----------------------------------------------------------------------
 
 
@@ -152,12 +154,15 @@ CbmL1TrdTrackFinderSts::CbmL1TrdTrackFinderSts(Int_t verbose)
   ,  // Control histogramm
   fh_pully_plane_fake(0)
   ,  // Control histogramm
-  fLostTracks() {}
+  fLostTracks()
+{
+}
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-CbmL1TrdTrackFinderSts::~CbmL1TrdTrackFinderSts() {
+CbmL1TrdTrackFinderSts::~CbmL1TrdTrackFinderSts()
+{
   // Destructor
   if (fArrayKFTrdHit) fArrayKFTrdHit->Delete();
   delete fArrayKFTrdHit;
@@ -171,7 +176,8 @@ CbmL1TrdTrackFinderSts::~CbmL1TrdTrackFinderSts() {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::Init() {
+void CbmL1TrdTrackFinderSts::Init()
+{
   // Initialisation of the algorithm
 
   // Create histogramms
@@ -187,8 +193,8 @@ void CbmL1TrdTrackFinderSts::Init() {
 
 
 // -----------------------------------------------------------------------
-Int_t CbmL1TrdTrackFinderSts::DoFind(TClonesArray* hitArray,
-                                     TClonesArray* trackArray) {
+Int_t CbmL1TrdTrackFinderSts::DoFind(TClonesArray* hitArray, TClonesArray* trackArray)
+{
   // Implementation of the track finding algorithm
   if (NULL == hitArray) { return 0; }
   fArrayTrdHit   = hitArray;
@@ -212,15 +218,14 @@ Int_t CbmL1TrdTrackFinderSts::DoFind(TClonesArray* hitArray,
     cout << "---------------------------------------" << endl
          << "-I-     CbmL1TrdTrackFinderSts      -I-" << endl
          << "-I-         Event summary           -I-" << endl
-         << "-I-        STS tracks : " << fArrayStsTrack->GetEntriesFast()
-         << endl
+         << "-I-        STS tracks : " << fArrayStsTrack->GetEntriesFast() << endl
          << "-I-  TRD tracks found : " << nTrdTracks << endl
          << "-I-  TRD tracks lost  : " << fLostTracks.size() << endl
          << "---------------------------------------" << endl
          << endl;
-  } else {
-    cout << "-I- CbmL1TrdTrackFinderSts::DoFind : " << nTrdTracks
-         << " TRD tracks found." << endl;
+  }
+  else {
+    cout << "-I- CbmL1TrdTrackFinderSts::DoFind : " << nTrdTracks << " TRD tracks found." << endl;
   }
 
   // Clear array of KF trd hits
@@ -230,8 +235,7 @@ Int_t CbmL1TrdTrackFinderSts::DoFind(TClonesArray* hitArray,
   fEvents += 1;
 
   // control output
-  cout << "-I- CbmL1TrdTrackFinder : " << fEvents << " events processed"
-       << endl;
+  cout << "-I- CbmL1TrdTrackFinder : " << fEvents << " events processed" << endl;
 
   // Return number of found TRD tracks
   return nTrdTracks;
@@ -240,7 +244,8 @@ Int_t CbmL1TrdTrackFinderSts::DoFind(TClonesArray* hitArray,
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::Process() {
+void CbmL1TrdTrackFinderSts::Process()
+{
   // Create TRD tracks from STS tracks, process them throug all stations
   // and move to the output array
 
@@ -288,10 +293,8 @@ void CbmL1TrdTrackFinderSts::Process() {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::Sts2Trd(Double_t pmin,
-                                     Double_t pmax,
-                                     Double_t chi2min,
-                                     Double_t chi2max) {
+void CbmL1TrdTrackFinderSts::Sts2Trd(Double_t pmin, Double_t pmax, Double_t chi2min, Double_t chi2max)
+{
   // Create TRD track from each STS track, that fullfill the selection
   // criteria
 
@@ -325,9 +328,7 @@ void CbmL1TrdTrackFinderSts::Sts2Trd(Double_t pmin,
     // Add it to the array
     fvTrdTrack.push_back(trdTrack);
     // Control output
-    if (fVerbose > 1) {
-      cout << "TRD track created from STS track " << iStsTrack << endl;
-    }
+    if (fVerbose > 1) { cout << "TRD track created from STS track " << iStsTrack << endl; }
   }
   //    sort(fvTrdTrack.begin(), fvTrdTrack.end(), CbmTrdTrack::CompareMomentum);
 }
@@ -335,7 +336,8 @@ void CbmL1TrdTrackFinderSts::Sts2Trd(Double_t pmin,
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::ProcessAllStations() {
+void CbmL1TrdTrackFinderSts::ProcessAllStations()
+{
   // Process all tracks through all stations
 
   // Loop over tracks
@@ -350,16 +352,15 @@ void CbmL1TrdTrackFinderSts::ProcessAllStations() {
       itr++;
     }
     Clear();
-    if (fVerbose > 0) {
-      cout << "track candidates: " << fvTrdTrack.size() << "." << endl;
-    }
+    if (fVerbose > 0) { cout << "track candidates: " << fvTrdTrack.size() << "." << endl; }
   }
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::MoveOut() {
+void CbmL1TrdTrackFinderSts::MoveOut()
+{
   // Move the tracks from temporary array to the output array
   vector<CbmTrdTrack*>::iterator iter;
   CbmTrdTrack* track;
@@ -378,8 +379,8 @@ void CbmL1TrdTrackFinderSts::MoveOut() {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
-                                            const Int_t& station) {
+void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack, const Int_t& station)
+{
   // Extrapolate track parameters to the layers of current station,
   // and pick up the closest hits
 
@@ -407,9 +408,8 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
 
   Int_t stsTrackIndex = pTrack->GetPreviousTrackId();
   if (stsTrackIndex < 0) { Fatal("ProcessStation", "Invalid track index"); }
-  CbmTrackMatch* stsM =
-    L1_DYNAMIC_CAST<CbmTrackMatch*>(fArrayStsTrackM->At(stsTrackIndex));
-  Int_t trackID = stsM->GetMCTrackId();
+  CbmTrackMatch* stsM = L1_DYNAMIC_CAST<CbmTrackMatch*>(fArrayStsTrackM->At(stsTrackIndex));
+  Int_t trackID       = stsM->GetMCTrackId();
 
   // Loop over layers in this station
   for (Int_t iLayer = 0; iLayer < fNoTrdPerStation; iLayer++) {
@@ -420,8 +420,7 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
     // Skip if no TRD hits
     if (fNoTrdHits[plane] < 1) continue;
     // Get z coordinate of plane
-    ze = (L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(fTrdHitIndex[plane][0])))
-           ->GetZ();
+    ze = (L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(fTrdHitIndex[plane][0])))->GetZ();
     // Extrapolate to the plane
     kfTrack.Extrapolate(ze, &qp0);
 
@@ -439,17 +438,15 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
       pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(hitIndex));
       // Get MC point
       pointIndex = pHit->GetRefId();
-      trdPoint = L1_DYNAMIC_CAST<CbmTrdPoint*>(fArrayTrdPoint->At(pointIndex));
+      trdPoint   = L1_DYNAMIC_CAST<CbmTrdPoint*>(fArrayTrdPoint->At(pointIndex));
       trdPoint->Position(pos);
 
       Double_t c1 = kfTrack.GetCovMatrix()[0];
       Double_t c2 = kfTrack.GetCovMatrix()[2];
-      if (finite(c1) && c1 > 1.e-10)
-        c1 = (T[0] - pos.X()) / TMath::Sqrt(c1);
+      if (finite(c1) && c1 > 1.e-10) c1 = (T[0] - pos.X()) / TMath::Sqrt(c1);
       else
         c1 = 100;
-      if (finite(c2) && c2 > 1.e-10)
-        c2 = (T[1] - pos.Y()) / TMath::Sqrt(c2);
+      if (finite(c2) && c2 > 1.e-10) c2 = (T[1] - pos.Y()) / TMath::Sqrt(c2);
       else
         c2 = 0;
 
@@ -469,7 +466,8 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
 		    fh_resx_mom_true->Fill(kfTrack.GetTrack()[0]-pos.X(), 1./TMath::Abs(qp0));
 		    fh_resy_mom_true->Fill(kfTrack.GetTrack()[1]-pos.Y(), 1./TMath::Abs(qp0));
 		}*/
-      } else {
+      }
+      else {
 
         fh_resx_plane_fake->Fill(T[0] - pos.X(), plane);
         fh_resy_plane_fake->Fill(T[1] - pos.Y(), plane);
@@ -480,14 +478,11 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
       if (kFALSE == Overlap(kfTrack, pHit)) {
         if (trdPoint->GetTrackID() == trackID) {
           if (fVerbose > 1) {
-            cout << "-W- Lost true hit:   plane:" << plane << "   track: ("
-                 << T[0] << ", " << T[1] << ") ("
+            cout << "-W- Lost true hit:   plane:" << plane << "   track: (" << T[0] << ", " << T[1] << ") ("
                  << TMath::Sqrt(TMath::Abs(kfTrack.GetCovMatrix()[0])) << ", "
-                 << TMath::Sqrt(TMath::Abs(kfTrack.GetCovMatrix()[2]))
-                 << "),   hit: (" << pHit->GetX() << ", " << pHit->GetY()
-                 << ") (" << pHit->GetDx() << ", " << pHit->GetDy()
-                 << "),   point: (" << pos.X() << ", " << pos.Y() << ")"
-                 << endl;
+                 << TMath::Sqrt(TMath::Abs(kfTrack.GetCovMatrix()[2])) << "),   hit: (" << pHit->GetX() << ", "
+                 << pHit->GetY() << ") (" << pHit->GetDx() << ", " << pHit->GetDy() << "),   point: (" << pos.X()
+                 << ", " << pos.Y() << ")" << endl;
           }
           fLostTracks[trackID] = kTRUE;
         }
@@ -508,9 +503,8 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
     }  // Loop over TRD hits
 
     // Add hit to the track
-    if (indexOfClosest != -1) {
-      pTrack->AddHit(indexOfClosest, kTRDHIT);
-    } else {
+    if (indexOfClosest != -1) { pTrack->AddHit(indexOfClosest, kTRDHIT); }
+    else {
       pTrack->SetFlag(1);
     }
   }  // Loop over layers
@@ -520,7 +514,8 @@ void CbmL1TrdTrackFinderSts::ProcessStation(CbmTrdTrack* pTrack,
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::UpdateTrack(Int_t station, CbmTrdTrack* pTrack) {
+void CbmL1TrdTrackFinderSts::UpdateTrack(Int_t station, CbmTrdTrack* pTrack)
+{
   // Update track parameters using Kalman Filter
 
   // Get number of hits
@@ -540,9 +535,7 @@ void CbmL1TrdTrackFinderSts::UpdateTrack(Int_t station, CbmTrdTrack* pTrack) {
   CbmTrdHit* pHit     = NULL;
   CbmKFTrdHit* pKFHit = NULL;
   Double_t qp0        = pTrack->GetParamLast()->GetQp();
-  for (Int_t iHit = static_cast<Int_t>(station * fNoTrdPerStation);
-       iHit < nHits;
-       iHit++) {
+  for (Int_t iHit = static_cast<Int_t>(station * fNoTrdPerStation); iHit < nHits; iHit++) {
     // Get hit index
     hitIndex = pTrack->GetHitIndex(iHit);
     // Get pointer to the hit
@@ -559,20 +552,18 @@ void CbmL1TrdTrackFinderSts::UpdateTrack(Int_t station, CbmTrdTrack* pTrack) {
   pTrack->SetChiSq(kfTrack.GetRefChi2());
   pTrack->SetNDF(kfTrack.GetRefNDF());
   if (station == (fNoTrdStations - 1)) {
-    if (pTrack->GetChiSq() / static_cast<Double_t>(pTrack->GetNDF()) > 100)
-      pTrack->SetFlag(1);
+    if (pTrack->GetChiSq() / static_cast<Double_t>(pTrack->GetNDF()) > 100) pTrack->SetFlag(1);
   }
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::Clear(const Option_t* a) {
+void CbmL1TrdTrackFinderSts::Clear(const Option_t* a)
+{
   // Delete bad tracks from track array
   CbmTrdTrack* track;
-  for (vector<CbmTrdTrack*>::iterator iter = fvTrdTrack.begin();
-       iter != fvTrdTrack.end();
-       iter++) {
+  for (vector<CbmTrdTrack*>::iterator iter = fvTrdTrack.begin(); iter != fvTrdTrack.end(); iter++) {
     track = *iter;
     if (0 != track->GetFlag()) {
       fvTrdTrack.erase(iter);
@@ -585,7 +576,8 @@ void CbmL1TrdTrackFinderSts::Clear(const Option_t* a) {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::RemoveFakes() {
+void CbmL1TrdTrackFinderSts::RemoveFakes()
+{
   // Remove ghost tracks from the track candidate array. Among two
   // tracks with common hits, priority has one with smaller chi2.
 
@@ -649,7 +641,8 @@ void CbmL1TrdTrackFinderSts::RemoveFakes() {
 
 
 // -----------------------------------------------------------------------
-Bool_t CbmL1TrdTrackFinderSts::Overlap(CbmKFTrack& track, CbmTrdHit* pHit) {
+Bool_t CbmL1TrdTrackFinderSts::Overlap(CbmKFTrack& track, CbmTrdHit* pHit)
+{
   // Check for geometrical overlap between track extrapolation and hit
   if (track.GetCovMatrix()[0] > 100) { return kFALSE; }
   if (track.GetCovMatrix()[2] > 100) { return kFALSE; }
@@ -674,7 +667,8 @@ Bool_t CbmL1TrdTrackFinderSts::Overlap(CbmKFTrack& track, CbmTrdHit* pHit) {
     Double_t y2      = pHit->GetY();
     Bool_t overlap_y = TMath::Abs(y1 - y2) < 7;
     overlap          = overlap_x && overlap_y;
-  } else {
+  }
+  else {
     /*	Double_t x1 = track.GetTrack()[0];
 	Double_t dx1 = TMath::Sqrt(track.GetCovMatrix()[0]);
 	Double_t x2 = pHit->GetX();
@@ -714,24 +708,24 @@ Bool_t CbmL1TrdTrackFinderSts::Overlap(CbmKFTrack& track, CbmTrdHit* pHit) {
 
 
 // -----------------------------------------------------------------------
-Double_t CbmL1TrdTrackFinderSts::GetChi2Hit(CbmKFTrack& track,
-                                            CbmTrdHit* pHit) {
+Double_t CbmL1TrdTrackFinderSts::GetChi2Hit(CbmKFTrack& track, CbmTrdHit* pHit)
+{
   // Get chi2 from track extrapolation to hit
   Double_t chi2 = 0.;
-  if (pHit->GetDx() < 1e-14 && pHit->GetDx() > pHit->GetDy()
-      && pHit->GetDy() < 1e-14) {
+  if (pHit->GetDx() < 1e-14 && pHit->GetDx() > pHit->GetDy() && pHit->GetDy() < 1e-14) {
     Double_t dx = track.GetTrack()[0] - pHit->GetX();
     Double_t dy = track.GetTrack()[1] - pHit->GetY();
     Double_t c0 = track.GetCovMatrix()[0];
     Double_t c1 = track.GetCovMatrix()[1];
     Double_t c2 = track.GetCovMatrix()[2];
-    chi2        = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2)
-           / (c0 * c2 - c1 * c1);
-  } else if (pHit->GetDx() < pHit->GetDy()) {
+    chi2        = 0.5 * (dx * dx * c0 - 2 * dx * dy * c1 + dy * dy * c2) / (c0 * c2 - c1 * c1);
+  }
+  else if (pHit->GetDx() < pHit->GetDy()) {
     Double_t dx = track.GetTrack()[0] - pHit->GetX();
     Double_t c0 = track.GetCovMatrix()[0] + pHit->GetDx() * pHit->GetDx();
     chi2        = dx * dx / c0;
-  } else {
+  }
+  else {
     Double_t dy = track.GetTrack()[1] - pHit->GetY();
     Double_t c2 = track.GetCovMatrix()[2] + pHit->GetDy() * pHit->GetDy();
     chi2        = dy * dy / c2;
@@ -742,48 +736,33 @@ Double_t CbmL1TrdTrackFinderSts::GetChi2Hit(CbmKFTrack& track,
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::CreateHistogramms() {
+void CbmL1TrdTrackFinderSts::CreateHistogramms()
+{
   // Create control histogramms
 
   // Normalized distance to hit
-  fh_chi2hit =
-    new TH1F("h_chi2hit", "Normalized distance to hit", 500, 0., 50.);
-  fh_chi2hit_plane = new TH2F("h_chi2hit_plane",
-                              "Normalized distance to hit vs. plane number",
-                              500,
-                              0.,
-                              50.,
-                              12,
-                              0.,
-                              12.);
+  fh_chi2hit = new TH1F("h_chi2hit", "Normalized distance to hit", 500, 0., 50.);
+  fh_chi2hit_plane =
+    new TH2F("h_chi2hit_plane", "Normalized distance to hit vs. plane number", 500, 0., 50., 12, 0., 12.);
 
-  fh_resx_plane_true =
-    new TH2F("h_resx_plane_true", "", 200, -10., 10., 12, 0., 12.);
-  fh_resy_plane_true =
-    new TH2F("h_resy_plane_true", "", 200, -10., 10., 12, 0., 12.);
-  fh_resx_plane_fake =
-    new TH2F("h_resx_plane_fake", "", 200, -10., 10., 12, 0., 12.);
-  fh_resy_plane_fake =
-    new TH2F("h_resy_plane_fake", "", 200, -10., 10., 12, 0., 12.);
-  fh_resx_mom_true =
-    new TH2F("h_resx_mom_true", "", 200, -10., 10., 100, 0., 10.);
-  fh_resy_mom_true =
-    new TH2F("h_resy_mom_true", "", 200, -10., 10., 100, 0., 10.);
+  fh_resx_plane_true = new TH2F("h_resx_plane_true", "", 200, -10., 10., 12, 0., 12.);
+  fh_resy_plane_true = new TH2F("h_resy_plane_true", "", 200, -10., 10., 12, 0., 12.);
+  fh_resx_plane_fake = new TH2F("h_resx_plane_fake", "", 200, -10., 10., 12, 0., 12.);
+  fh_resy_plane_fake = new TH2F("h_resy_plane_fake", "", 200, -10., 10., 12, 0., 12.);
+  fh_resx_mom_true   = new TH2F("h_resx_mom_true", "", 200, -10., 10., 100, 0., 10.);
+  fh_resy_mom_true   = new TH2F("h_resy_mom_true", "", 200, -10., 10., 100, 0., 10.);
 
-  fh_pullx_plane_true =
-    new TH2F("h_pullx_plane_true", "", 200, -10., 10., 12, 0., 12.);
-  fh_pully_plane_true =
-    new TH2F("h_pully_plane_true", "", 200, -10., 10., 12, 0., 12.);
-  fh_pullx_plane_fake =
-    new TH2F("h_pullx_plane_fake", "", 200, -10., 10., 12, 0., 12.);
-  fh_pully_plane_fake =
-    new TH2F("h_pully_plane_fake", "", 200, -10., 10., 12, 0., 12.);
+  fh_pullx_plane_true = new TH2F("h_pullx_plane_true", "", 200, -10., 10., 12, 0., 12.);
+  fh_pully_plane_true = new TH2F("h_pully_plane_true", "", 200, -10., 10., 12, 0., 12.);
+  fh_pullx_plane_fake = new TH2F("h_pullx_plane_fake", "", 200, -10., 10., 12, 0., 12.);
+  fh_pully_plane_fake = new TH2F("h_pully_plane_fake", "", 200, -10., 10., 12, 0., 12.);
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::DataBranches() {
+void CbmL1TrdTrackFinderSts::DataBranches()
+{
   // Initialisation
 
   // Get pointer to the ROOT manager
@@ -794,22 +773,19 @@ void CbmL1TrdTrackFinderSts::DataBranches() {
     return;
   }
   // Get pointer to the TRD points
-  fArrayTrdPoint =
-    L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("TrdPoint"));
+  fArrayTrdPoint = L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("TrdPoint"));
   if (NULL == fArrayTrdPoint) {
     cout << "-W- CbmL1TrdTrackFinderSts::DataBranches : "
          << "no TRD point array" << endl;
   }
   // Get pointer to the STS track array
-  fArrayStsTrack =
-    L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("StsTrack"));
+  fArrayStsTrack = L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("StsTrack"));
   if (NULL == fArrayStsTrack) {
     cout << "-W- CbmL1TrdTrackFinderSts::DataBranches : "
          << "no STS track array" << endl;
   }
   // Get pointer to the STS track match array
-  fArrayStsTrackM =
-    L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("StsTrackMatch"));
+  fArrayStsTrackM = L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("StsTrackMatch"));
   if (NULL == fArrayStsTrackM) {
     cout << "-W- CbmL1TrdTrackFinderSts::DataBranches : "
          << "no STS track match array" << endl;
@@ -819,7 +795,8 @@ void CbmL1TrdTrackFinderSts::DataBranches() {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::TrdLayout() {
+void CbmL1TrdTrackFinderSts::TrdLayout()
+{
   // Determine the actual TRD layout from the parameter file
 
   // Get the pointer to the singleton FairRunAna object
@@ -837,8 +814,7 @@ void CbmL1TrdTrackFinderSts::TrdLayout() {
     return;
   }
   // Get the pointer to container of base parameters
-  FairBaseParSet* baseParSet =
-    L1_DYNAMIC_CAST<FairBaseParSet*>(rtdb->getContainer("FairBaseParSet"));
+  FairBaseParSet* baseParSet = L1_DYNAMIC_CAST<FairBaseParSet*>(rtdb->getContainer("FairBaseParSet"));
   if (NULL == baseParSet) {
     cout << "-E- CbmL1TrdTrackFinderSts::TrdLayout :"
          << " no container of base parameters!" << endl;
@@ -852,8 +828,7 @@ void CbmL1TrdTrackFinderSts::TrdLayout() {
     return;
   }
   // Find TRD detector
-  FairDetector* trd =
-    L1_DYNAMIC_CAST<FairDetector*>(detList->FindObject("TRD"));
+  FairDetector* trd = L1_DYNAMIC_CAST<FairDetector*>(detList->FindObject("TRD"));
   if (NULL == trd) {
     cout << "-E- CbmL1TrdTrackFinderSts::TrdLayout :"
          << " no TRD detector!" << endl;
@@ -866,17 +841,20 @@ void CbmL1TrdTrackFinderSts::TrdLayout() {
          << " TRD geometry : 3x3." << endl;
     fNoTrdStations   = 3;
     fNoTrdPerStation = 3;
-  } else if (name.Contains("12")) {
+  }
+  else if (name.Contains("12")) {
     cout << "-I- CbmL1TrdTrackFinderSts::TrdLayout :"
          << " TRD geometry : 3x4." << endl;
     fNoTrdStations   = 3;
     fNoTrdPerStation = 4;
-  } else if (name.Contains("6x2")) {
+  }
+  else if (name.Contains("6x2")) {
     cout << "-I- CbmL1TrdTrackFinderSts::TrdLayout :"
          << " TRD geometry : 6x2." << endl;
     fNoTrdStations   = 6;
     fNoTrdPerStation = 2;
-  } else if (name.Contains("standard")) {
+  }
+  else if (name.Contains("standard")) {
     cout << "-I- CbmL1TrdTrackFinderSts::TrdLayout :"
          << " TRD geometry : 3x4 standard." << endl;
     fNoTrdStations   = 3;
@@ -887,7 +865,8 @@ void CbmL1TrdTrackFinderSts::TrdLayout() {
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::SortTrdHits() {
+void CbmL1TrdTrackFinderSts::SortTrdHits()
+{
   // Sort TRD hits by plane number
   for (Int_t i = 0; i < 12; i++) {
     fNoTrdHits[i] = 0;
@@ -921,15 +900,15 @@ void CbmL1TrdTrackFinderSts::SortTrdHits() {
   // Control output
   cout << endl << "-I- CbmL1TrdTrackFinderSts::SortTrdHits : " << endl;
   for (Int_t i = 0; i < (fNoTrdStations * fNoTrdPerStation); i++) {
-    cout << "TRD plane no. " << i << " has " << fNoTrdHits[i] << " hits"
-         << endl;
+    cout << "TRD plane no. " << i << " has " << fNoTrdHits[i] << " hits" << endl;
   }
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-void CbmL1TrdTrackFinderSts::WriteHistogramms() {
+void CbmL1TrdTrackFinderSts::WriteHistogramms()
+{
   // Write control histogramms to file
   fh_chi2hit->Write();
   fh_chi2hit_plane->Write();

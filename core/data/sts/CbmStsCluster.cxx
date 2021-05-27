@@ -23,7 +23,9 @@ CbmStsCluster::CbmStsCluster()
   , fPositionError(0.)
   , fTime(0.)
   , fTimeError(0.)
-  , fIndex(-1) {}
+  , fIndex(-1)
+{
+}
 
 
 // --- Destructor
@@ -31,11 +33,11 @@ CbmStsCluster::~CbmStsCluster() {}
 
 
 // --- String output
-string CbmStsCluster::ToString() const {
+string CbmStsCluster::ToString() const
+{
   stringstream ss;
-  ss << "StsCluster: address " << GetAddress() << " | digis " << GetNofDigis()
-     << " | charge " << fCharge << " | time " << fTime << " +- " << fTimeError
-     << " | position " << GetPosition() << " | error " << GetPositionError()
+  ss << "StsCluster: address " << GetAddress() << " | digis " << GetNofDigis() << " | charge " << fCharge << " | time "
+     << fTime << " +- " << fTimeError << " | position " << GetPosition() << " | error " << GetPositionError()
      << " | Index " << fIndex << "\n  " << CbmCluster::ToString();
   return ss.str();
 }

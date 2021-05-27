@@ -44,9 +44,7 @@ public:
     * \param[out] F Output transport matrix. If F == NULL than transport matrix is not calculated.
     * \return Extrapolation status.
     */
-  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
-                                CbmLitTrackParam* parOut,
-                                litfloat zOut,
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn, CbmLitTrackParam* parOut, litfloat zOut,
                                 std::vector<litfloat>* F = NULL) = 0;
 
   /**
@@ -56,9 +54,7 @@ public:
     * \param[out] F Output transport matrix. If F == NULL than transport matrix is not calculated.
     * \return Extrapolation status.
     */
-  virtual LitStatus Extrapolate(CbmLitTrackParam* par,
-                                litfloat zOut,
-                                std::vector<litfloat>* F = NULL) = 0;
+  virtual LitStatus Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F = NULL) = 0;
 };
 
 #endif

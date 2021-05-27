@@ -12,20 +12,16 @@
 #ifndef CBMMUCHPADRECTANGULAR_H
 #define CBMMUCHPADRECTANGULAR_H 1
 
+#include "CbmMuchPad.h"  // for CbmMuchPad
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 #include <TPave.h>       // for TPave
 
-#include "CbmMuchPad.h"  // for CbmMuchPad
-
 class CbmMuchPadRectangular : public CbmMuchPad, public TPave {
 public:
   CbmMuchPadRectangular();
-  CbmMuchPadRectangular(Int_t address,
-                        Double_t x0,
-                        Double_t y0,
-                        Double_t lx,
-                        Double_t ly);
+  CbmMuchPadRectangular(Int_t address, Double_t x0, Double_t y0, Double_t lx, Double_t ly);
   virtual ~CbmMuchPadRectangular() {};
   void DrawPad();
   void SetFired(Int_t iDigi, Int_t ADCcharge, Int_t nADCChannels = 256);

@@ -1,14 +1,11 @@
-void pl_time_resolution(UInt_t uTdcNumber1,
-                        UInt_t uChNumber1,
-                        UInt_t uTdcNumber2,
-                        UInt_t uChNumber2) {
+void pl_time_resolution(UInt_t uTdcNumber1, UInt_t uChNumber1, UInt_t uTdcNumber2, UInt_t uChNumber2)
+{
 
   delete gROOT->FindObjectAny("tHistogram");
 
   FairRootManager* tManager = FairRootManager::Instance();
   if (!tManager) {
-    cout << "FairRootManager could not be retrieved. Abort macro execution."
-         << endl;
+    cout << "FairRootManager could not be retrieved. Abort macro execution." << endl;
     return;
   }
 
@@ -42,8 +39,7 @@ void pl_time_resolution(UInt_t uTdcNumber1,
 
   Long64_t lBranchEntries = tBranch->GetEntries();
 
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     tArray->Clear("C");
 
     tBranch->GetEntry(lBranchEntry);
@@ -60,11 +56,10 @@ void pl_time_resolution(UInt_t uTdcNumber1,
 
       //      cout << "TDC event: " << lBranchEntry << ", TDC board: " << tCalibTdcData->GetBoard() << ", TDC channel: " << tCalibTdcData->GetChannel() << endl;
 
-      if (tCalibTdcData->GetBoard() == uTdcNumber1
-          && tCalibTdcData->GetChannel() == uChNumber1) {
+      if (tCalibTdcData->GetBoard() == uTdcNumber1 && tCalibTdcData->GetChannel() == uChNumber1) {
         iDataIndex1 = iArrayEntry;
-      } else if (tCalibTdcData->GetBoard() == uTdcNumber2
-                 && tCalibTdcData->GetChannel() == uChNumber2) {
+      }
+      else if (tCalibTdcData->GetBoard() == uTdcNumber2 && tCalibTdcData->GetChannel() == uChNumber2) {
         iDataIndex2 = iArrayEntry;
       }
       /*
@@ -79,12 +74,10 @@ void pl_time_resolution(UInt_t uTdcNumber1,
 */
     }
 
-    if (iDataIndex1 != -1
-        && iDataIndex2 != -1)  //&& iDataIndex3 != -1 && iDataIndex4 != -1)
+    if (iDataIndex1 != -1 && iDataIndex2 != -1)  //&& iDataIndex3 != -1 && iDataIndex4 != -1)
     {
-      tHistogram->Fill(
-        ((TTofCalibData*) tArray->At(iDataIndex1))->GetTime()
-        - ((TTofCalibData*) tArray->At(iDataIndex2))->GetTime());  //,
+      tHistogram->Fill(((TTofCalibData*) tArray->At(iDataIndex1))->GetTime()
+                       - ((TTofCalibData*) tArray->At(iDataIndex2))->GetTime());  //,
       //                       ((TTofCalibData*)tArray->At(iDataIndex3))->GetTime()-((TTofCalibData*)tArray->At(iDataIndex4))->GetTime() );
     }
   }

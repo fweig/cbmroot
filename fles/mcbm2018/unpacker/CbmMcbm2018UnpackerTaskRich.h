@@ -19,8 +19,7 @@ public:
   CbmMcbm2018UnpackerTaskRich();
 
   CbmMcbm2018UnpackerTaskRich(const CbmMcbm2018UnpackerTaskRich&) = delete;
-  CbmMcbm2018UnpackerTaskRich
-  operator=(const CbmMcbm2018UnpackerTaskRich&) = delete;
+  CbmMcbm2018UnpackerTaskRich operator=(const CbmMcbm2018UnpackerTaskRich&) = delete;
 
   virtual ~CbmMcbm2018UnpackerTaskRich();
 
@@ -43,9 +42,7 @@ public:
   virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
 
   /// Algo settings setters
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
   void DoTotCorr(Bool_t bDoToTCorr = kTRUE);
@@ -55,12 +52,9 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
 
   /// Statistics & first TS rejection
   uint64_t fulTsCounter;

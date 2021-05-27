@@ -52,12 +52,15 @@ CbmRichDigitizer::CbmRichDigitizer()
   , fDarkRatePerPixel(1000)
   , fPixelDeadTime(30.)
   , fFiredPixelsMap()
-  , fDoZShift(true) {}
+  , fDoZShift(true)
+{
+}
 
 CbmRichDigitizer::~CbmRichDigitizer() {}
 
 
-InitStatus CbmRichDigitizer::Init() {
+InitStatus CbmRichDigitizer::Init()
+{
 
   // Screen output
   std::cout << std::endl;
@@ -65,9 +68,8 @@ InitStatus CbmRichDigitizer::Init() {
   LOG(info) << GetName() << ": Initialisation";
 
   //FairTask* daq = FairRun::Instance()->GetTask("Daq");
-  if (!fEventMode) {
-    LOG(info) << "CbmRichDigitizer uses TimeBased mode.";
-  } else {
+  if (!fEventMode) { LOG(info) << "CbmRichDigitizer uses TimeBased mode."; }
+  else {
     LOG(info) << "CbmRichDigitizer uses Events mode.";
   }
 
@@ -79,14 +81,10 @@ InitStatus CbmRichDigitizer::Init() {
   CbmRichGeoManager::GetInstance();
 
   fRichPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmRichDigitizer::Init", "No RichPoint array!");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmRichDigitizer::Init", "No RichPoint array!"); }
 
   fMcTracks = (TClonesArray*) manager->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmRichDigitizer::Init", "No MCTrack array!");
-  }
+  if (NULL == fMcTracks) { Fatal("CbmRichDigitizer::Init", "No MCTrack array!"); }
 
   RegisterOutput();
 
@@ -98,7 +96,8 @@ InitStatus CbmRichDigitizer::Init() {
   return kSUCCESS;
 }
 
-void CbmRichDigitizer::Exec(Option_t* /*option*/) {
+void CbmRichDigitizer::Exec(Option_t* /*option*/)
+{
   TStopwatch timer;
   timer.Start();
 
@@ -116,11 +115,9 @@ void CbmRichDigitizer::Exec(Option_t* /*option*/) {
   Double_t oldEventTime = fCurrentEventTime;
   GetEventInfo();
 
-  LOG(debug) << fName << ": EventNumber: " << fCurrentEvent
-             << ", EventTime: " << fCurrentEventTime;
+  LOG(debug) << fName << ": EventNumber: " << fCurrentEvent << ", EventTime: " << fCurrentEventTime;
 
-  if (fProduceNoise)
-    GenerateNoiseBetweenEvents(oldEventTime, fCurrentEventTime);
+  if (fProduceNoise) GenerateNoiseBetweenEvents(oldEventTime, fCurrentEventTime);
 
   Int_t nPoints = ProcessMcEvent();
 
@@ -134,19 +131,16 @@ void CbmRichDigitizer::Exec(Option_t* /*option*/) {
   fTimeTot += timer.RealTime();
 
   // --- Event log
-  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right
-            << fCurrentEvent << " at " << fixed << setprecision(3)
-            << fCurrentEventTime << " ns, points: " << nPoints
-            << ", digis: " << nDigis << ". Exec time " << setprecision(6)
-            << timer.RealTime() << " s.";
+  LOG(info) << "+ " << setw(15) << GetName() << ": Event " << setw(6) << right << fCurrentEvent << " at " << fixed
+            << setprecision(3) << fCurrentEventTime << " ns, points: " << nPoints << ", digis: " << nDigis
+            << ". Exec time " << setprecision(6) << timer.RealTime() << " s.";
 }
 
-Int_t CbmRichDigitizer::ProcessMcEvent() {
+Int_t CbmRichDigitizer::ProcessMcEvent()
+{
   Int_t nofRichPoints = fRichPoints->GetEntriesFast();
-  LOG(debug) << fName << ": EventNum:" << fCurrentEvent
-             << " InputNum:" << fCurrentInput
-             << " EventTime:" << fCurrentEventTime
-             << " nofRichPoints:" << nofRichPoints;
+  LOG(debug) << fName << ": EventNum:" << fCurrentEvent << " InputNum:" << fCurrentInput
+             << " EventTime:" << fCurrentEventTime << " nofRichPoints:" << nofRichPoints;
 
   for (Int_t j = 0; j < nofRichPoints; j++) {
     CbmRichPoint* point = (CbmRichPoint*) fRichPoints->At(j);
@@ -159,30 +153,25 @@ Int_t CbmRichDigitizer::ProcessMcEvent() {
   return nofRichPoints;
 }
 
-void CbmRichDigitizer::GenerateNoiseBetweenEvents(Double_t oldEventTime,
-                                                  Double_t newEventTime) {
-  Int_t nofPixels =
-    CbmRichDigiMapManager::GetInstance().GetPixelAddresses().size();
+void CbmRichDigitizer::GenerateNoiseBetweenEvents(Double_t oldEventTime, Double_t newEventTime)
+{
+  Int_t nofPixels         = CbmRichDigiMapManager::GetInstance().GetPixelAddresses().size();
   Double_t dT             = newEventTime - oldEventTime;
   Double_t nofNoisePixels = nofPixels * dT * (fDarkRatePerPixel / 1.e9);
 
-  LOG(debug) << "CbmRichDigitizer::GenerateNoiseBetweenEvents deltaTime:" << dT
-             << " nofPixels:" << nofPixels
+  LOG(debug) << "CbmRichDigitizer::GenerateNoiseBetweenEvents deltaTime:" << dT << " nofPixels:" << nofPixels
              << " nofNoisePixels:" << nofNoisePixels;
 
   for (Int_t j = 0; j < nofNoisePixels; j++) {
-    Int_t address =
-      CbmRichDigiMapManager::GetInstance().GetRandomPixelAddress();
+    Int_t address = CbmRichDigiMapManager::GetInstance().GetRandomPixelAddress();
     CbmLink link(1., -1, -1, -1);
     Double_t time = gRandom->Uniform(oldEventTime, newEventTime);
     AddDigi(address, time, link);
   }
 }
 
-void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point,
-                                    Int_t pointId,
-                                    Int_t eventNum,
-                                    Int_t inputNum) {
+void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point, Int_t pointId, Int_t eventNum, Int_t inputNum)
+{
   // LOG(info) << "ProcessPoint " << pointId;
   //	TGeoNode* node = gGeoManager->FindNode(point->GetX(), point->GetY(), point->GetZ());
   // workaround for GEANT4, probably boundary problem
@@ -190,8 +179,7 @@ void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point,
   if (fDoZShift) zNew = zNew - 0.001;
   gGeoManager->FindNode(point->GetX(), point->GetY(), zNew);
   string path(gGeoManager->GetPath());
-  Int_t address =
-    CbmRichDigiMapManager::GetInstance().GetPixelAddressByPath(path);
+  Int_t address = CbmRichDigiMapManager::GetInstance().GetPixelAddressByPath(path);
 
   Int_t trackId = point->GetTrackID();
   if (trackId < 0) return;
@@ -206,10 +194,10 @@ void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point,
   if (gcode == 50000050) {
     TVector3 mom;
     point->Momentum(mom);
-    Double_t momTotal =
-      sqrt(mom.Px() * mom.Px() + mom.Py() * mom.Py() + mom.Pz() * mom.Pz());
-    isDetected = fPmt.isPhotonDetected(fDetectorType, momTotal);
-  } else {  // if not photon
+    Double_t momTotal = sqrt(mom.Px() * mom.Px() + mom.Py() * mom.Py() + mom.Pz() * mom.Pz());
+    isDetected        = fPmt.isPhotonDetected(fDetectorType, momTotal);
+  }
+  else {  // if not photon
     // worst case: assume that all charged particles crossing
     // the PMTplane leave Cherenkov light in the PMTglass which will be detected
     isDetected = true;
@@ -222,29 +210,24 @@ void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point,
 }
 
 
-void CbmRichDigitizer::Finish() {
+void CbmRichDigitizer::Finish()
+{
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Events processed    : " << fEventNum;
-  LOG(info) << "RichPoint / event   : " << setprecision(1)
-            << fNofPoints / Double_t(fEventNum);
+  LOG(info) << "RichPoint / event   : " << setprecision(1) << fNofPoints / Double_t(fEventNum);
   LOG(info) << "RichDigi / event    : " << fNofDigis / Double_t(fEventNum);
-  LOG(info) << "Digis per point     : " << setprecision(6)
-            << fNofDigis / fNofPoints;
-  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fEventNum)
-            << " s";
+  LOG(info) << "Digis per point     : " << setprecision(6) << fNofDigis / fNofPoints;
+  LOG(info) << "Real time per event : " << fTimeTot / Double_t(fEventNum) << " s";
   LOG(info) << "=====================================";
 }
 
-void CbmRichDigitizer::AddCrossTalkDigis(CbmRichDigi* digi) {
+void CbmRichDigitizer::AddCrossTalkDigis(CbmRichDigi* digi)
+{
   Bool_t crosstalkDigiDetected = false;
-  vector<Int_t> directPixels =
-    CbmRichDigiMapManager::GetInstance().GetDirectNeighbourPixels(
-      digi->GetAddress());
-  vector<Int_t> diagonalPixels =
-    CbmRichDigiMapManager::GetInstance().GetDiagonalNeighbourPixels(
-      digi->GetAddress());
+  vector<Int_t> directPixels   = CbmRichDigiMapManager::GetInstance().GetDirectNeighbourPixels(digi->GetAddress());
+  vector<Int_t> diagonalPixels = CbmRichDigiMapManager::GetInstance().GetDiagonalNeighbourPixels(digi->GetAddress());
 
   for (UInt_t i = 0; i < directPixels.size(); i++) {
     if (gRandom->Rndm() < fCrossTalkProbability && !crosstalkDigiDetected) {
@@ -256,8 +239,7 @@ void CbmRichDigitizer::AddCrossTalkDigis(CbmRichDigi* digi) {
 
   if (!crosstalkDigiDetected) {
     for (UInt_t i = 0; i < diagonalPixels.size(); i++) {
-      if (gRandom->Rndm() < fCrossTalkProbability / 4.
-          && !crosstalkDigiDetected) {
+      if (gRandom->Rndm() < fCrossTalkProbability / 4. && !crosstalkDigiDetected) {
         //FindRichHitPositionMAPMT(0., x + r, y, xHit, yHit, pmtID);
         crosstalkDigiDetected = true;
         break;
@@ -271,7 +253,8 @@ void CbmRichDigitizer::AddCrossTalkDigis(CbmRichDigi* digi) {
   }
 }
 
-Int_t CbmRichDigitizer::AddDigisToOutputArray() {
+Int_t CbmRichDigitizer::AddDigisToOutputArray()
+{
   Int_t nofDigis = 0;
 
   // fMaxNofHitsPerPmtCut is a maximum number of hits which can be registered per PMT per event.
@@ -279,8 +262,7 @@ Int_t CbmRichDigitizer::AddDigisToOutputArray() {
   map<Int_t, Int_t> digisPerPmtMap;
   for (auto const& dm : fDataMap) {
     CbmRichPixelData* pixelData =
-      CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(
-        dm.second.first->GetAddress());
+      CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(dm.second.first->GetAddress());
     if (nullptr == pixelData) continue;
     Int_t pmtId = pixelData->fPmtId;
     digisPerPmtMap[pmtId]++;
@@ -294,8 +276,7 @@ Int_t CbmRichDigitizer::AddDigisToOutputArray() {
   Int_t nofSkippedDigis = 0;
   for (auto const& dm : fDataMap) {
     CbmRichPixelData* pixelData =
-      CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(
-        dm.second.first->GetAddress());
+      CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(dm.second.first->GetAddress());
     if (nullptr == pixelData) continue;
     if (digisPerPmtMap[pixelData->fPmtId] > fMaxNofHitsPerPmtCut) {
       nofSkippedDigis++;
@@ -307,8 +288,7 @@ Int_t CbmRichDigitizer::AddDigisToOutputArray() {
     CbmMatch* digiMatch = new CbmMatch(*dm.second.second);
     digi->SetTime(dm.second.first->GetTime());
     //SendDigi(digi, digiMatch);
-    if (fCreateMatches)
-      SendData(digi, digiMatch);
+    if (fCreateMatches) SendData(digi, digiMatch);
     else
       SendData(digi);
     nofDigis++;
@@ -321,28 +301,24 @@ Int_t CbmRichDigitizer::AddDigisToOutputArray() {
   return nofDigis;
 }
 
-void CbmRichDigitizer::AddNoiseDigis(Int_t eventNum, Int_t inputNum) {
-  Int_t nofPixels =
-    CbmRichDigiMapManager::GetInstance().GetPixelAddresses().size();
+void CbmRichDigitizer::AddNoiseDigis(Int_t eventNum, Int_t inputNum)
+{
+  Int_t nofPixels        = CbmRichDigiMapManager::GetInstance().GetPixelAddresses().size();
   Double_t dT            = 50.;  //ns
   Double_t nofRichPoints = fRichPoints->GetEntriesFast();
-  Double_t nofNoiseDigis =
-    nofRichPoints * nofPixels * dT * (fNoiseDigiRate / 1.e9);
+  Double_t nofNoiseDigis = nofRichPoints * nofPixels * dT * (fNoiseDigiRate / 1.e9);
 
-  LOG(debug) << "CbmRichDigitizer::AddNoiseDigis NofAllPixels:" << nofPixels
-             << " nofNoiseDigis:" << nofNoiseDigis;
+  LOG(debug) << "CbmRichDigitizer::AddNoiseDigis NofAllPixels:" << nofPixels << " nofNoiseDigis:" << nofNoiseDigis;
   for (Int_t j = 0; j < nofNoiseDigis; j++) {
-    Int_t address =
-      CbmRichDigiMapManager::GetInstance().GetRandomPixelAddress();
+    Int_t address = CbmRichDigiMapManager::GetInstance().GetRandomPixelAddress();
     CbmLink link(1., -1, eventNum, inputNum);
     Double_t time = fCurrentEventTime + gRandom->Uniform(0, dT);
     AddDigi(address, time, link);
   }
 }
 
-void CbmRichDigitizer::AddDigi(Int_t address,
-                               Double_t time,
-                               const CbmLink& link) {
+void CbmRichDigitizer::AddDigi(Int_t address, Double_t time, const CbmLink& link)
+{
   Bool_t wasFired   = fFiredPixelsMap.count(address) > 0;
   Bool_t isDetected = true;
   if (!fEventMode && wasFired) {
@@ -353,13 +329,15 @@ void CbmRichDigitizer::AddDigi(Int_t address,
       //    LOG(info) << "CbmRichDigitizer::AddDigi pixel NOT registered: address:" << address << " cur-last=dT: "<< time << "-"
       //                                << lastFiredTime << "=" <<  dt << " fPixelDeadTime:" << fPixelDeadTime
       //                                << " fFiredPixelsMap.size():" << fFiredPixelsMap.size() << " link: " << link.GetIndex();
-    } else {
+    }
+    else {
       isDetected = true;
       //    LOG(info) << "CbmRichDigitizer::AddDigi pixel registered: address:" << address << " cur-last=dT: "<< time << "-"
       //                                << lastFiredTime << "=" <<  dt << " fPixelDeadTime:" << fPixelDeadTime
       //                                << " fFiredPixelsMap.size():" << fFiredPixelsMap.size() << " link: " << link.GetIndex();
     }
-  } else {
+  }
+  else {
     isDetected = true;
     // LOG(info) << "CbmRichDigitizer::AddDigi pixel was not fired before: address:" << address << " time:" << time
     //        << " fFiredPixelsMap.size():" << fFiredPixelsMap.size() << " link: " << link.GetIndex();
@@ -374,9 +352,9 @@ void CbmRichDigitizer::AddDigi(Int_t address,
       CbmMatch* match = new CbmMatch();
       match->AddLink(link);
       pair<CbmRichDigi*, CbmMatch*> value(digi, match);
-      fDataMap.insert(
-        pair<Int_t, pair<CbmRichDigi*, CbmMatch*>>(address, value));
-    } else {
+      fDataMap.insert(pair<Int_t, pair<CbmRichDigi*, CbmMatch*>>(address, value));
+    }
+    else {
       CbmMatch* match = it->second.second;
       match->AddLink(link);
     }

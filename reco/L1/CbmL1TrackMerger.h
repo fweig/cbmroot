@@ -19,8 +19,8 @@ private:
   CbmL1TrackMerger operator=(const CbmL1TrackMerger&);
 
 private:
-  Int_t fMethod;  // Merging method: 1 - based on StsTrackIndex from TRD track
-                  //                 2 - merging of tracks at the first
+  Int_t fMethod;                  // Merging method: 1 - based on StsTrackIndex from TRD track
+                                  //                 2 - merging of tracks at the first
   TClonesArray* fArrayStsTrackM;  // Array of STS track matches
   TClonesArray* fArrayTrdTrackM;  // Array of TRD track matches
   TH2F* fh_dx_true;               // Control histogramm
@@ -34,12 +34,8 @@ private:
 
   Double_t GetChi2XY(CbmKFTrack& kfTrack, FairTrackParam* trackParam);
   void CreateHistogramms();
-  Int_t MergeSimple(TClonesArray* stsTracks,
-                    TClonesArray* trdTracks,
-                    TClonesArray* glbTracks);
-  Int_t MergeImPlane(TClonesArray* stsTracks,
-                     TClonesArray* trdTracks,
-                     TClonesArray* glbTracks);
+  Int_t MergeSimple(TClonesArray* stsTracks, TClonesArray* trdTracks, TClonesArray* glbTracks);
+  Int_t MergeImPlane(TClonesArray* stsTracks, TClonesArray* trdTracks, TClonesArray* glbTracks);
 
 public:
   CbmL1TrackMerger();
@@ -47,9 +43,7 @@ public:
   virtual ~CbmL1TrackMerger();
 
   void Init();
-  Int_t DoMerge(TClonesArray* stsTracks,
-                TClonesArray* trdTracks,
-                TClonesArray* glbTracks);
+  Int_t DoMerge(TClonesArray* stsTracks, TClonesArray* trdTracks, TClonesArray* glbTracks);
   void WriteHistogramms();
 
   inline Int_t GetVerbose() const { return fVerbose; }

@@ -1,16 +1,5 @@
-#include "TClonesArray.h"
-#include "TFile.h"
-#include "TGraphErrors.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TLegend.h"
-#include "TMultiGraph.h"
-#include "TTree.h"
-
-#include "CbmMCTrack.h"
-#include "FairTrackParam.h"
-
 #include "CbmGlobalTrack.h"
+#include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmStsTrackMatch.h"
 #include "CbmTofHit.h"
@@ -18,16 +7,28 @@
 #include "CbmTrdTrack.h"
 #include "CbmTrdTrackMatch.h"
 
+#include "FairTrackParam.h"
+
 #include "TCanvas.h"
+#include "TClonesArray.h"
 #include "TDatabasePDG.h"
+#include "TFile.h"
+#include "TGraphErrors.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TLegend.h"
+#include "TMultiGraph.h"
 #include "TParticlePDG.h"
 #include "TSystem.h"
+#include "TTree.h"
 #include "TVector3.h"
+
 #include <iostream>
 
 using namespace std;
 
-int Tof_QA() {
+int Tof_QA()
+{
   // Open the files
 
   //  TFile *fileSIM  = new TFile("/d/cbm01/diego/CBM/FEB07/SIMUL/AUAU_CENT_25GEV/std_TOF_8gap_1000.root");
@@ -77,26 +78,19 @@ int Tof_QA() {
   //CbmGlobalTrack   *GlobTrack;
 
 
-  TH2F* p_mass = new TH2F(
-    "p_mass_single_target", "p_mass_single_target", 200, -0.5, 1.2, 200, 0, 10);
-  TH2F* p_mass_double = new TH2F(
-    "p_mass_double_target", "p_mass_double_target", 200, -0.5, 1.2, 200, 0, 10);
-  TH2F* p_mass_interf = new TH2F(
-    "p_mass_interf_target", "p_mass_interf_target", 200, -0.5, 1.2, 200, 0, 10);
-  TH2F* p_mass_all =
-    new TH2F("p_mass_all", "p_mass_all", 200, -0.5, 1.2, 200, 0, 10);
+  TH2F* p_mass        = new TH2F("p_mass_single_target", "p_mass_single_target", 200, -0.5, 1.2, 200, 0, 10);
+  TH2F* p_mass_double = new TH2F("p_mass_double_target", "p_mass_double_target", 200, -0.5, 1.2, 200, 0, 10);
+  TH2F* p_mass_interf = new TH2F("p_mass_interf_target", "p_mass_interf_target", 200, -0.5, 1.2, 200, 0, 10);
+  TH2F* p_mass_all    = new TH2F("p_mass_all", "p_mass_all", 200, -0.5, 1.2, 200, 0, 10);
 
-  TH2F* xy = new TH2F(
-    "xy_POINT_Flag1", "xy_POINT_Flag1", 200, -1000, 1000, 200, -1000, 1000);
-  TH1F* z    = new TH1F("z_POINT_Flag1", "z_POINT_Flag1", 40, 980, 1020);
-  TH1F* t    = new TH1F("tof_POINT_Flag1", "tof_POINT_Flag1", 1000, 30, 60);
-  TH1F* nreg = new TH1F("region_POINT_Flag1", "region_POINT_Flag1", 10, 0, 10);
-  TH1F* nmod =
-    new TH1F("module_POINT_Flag1", "module_POINT_Flag1", 200, 0, 200);
-  TH1F* ncel = new TH1F("cel_POINT_Flag1", "cel_POINT_Flag1", 200, 0, 200);
-  TH1F* ngap = new TH1F("gap_POINT_Flag1", "gap_POINT_Flag1", 20, 0, 20);
-  TH1F* detID =
-    new TH1F("detID_POINT_Flag1", "detID_POINT_Flag1", 10000, 0, 5e+6);
+  TH2F* xy    = new TH2F("xy_POINT_Flag1", "xy_POINT_Flag1", 200, -1000, 1000, 200, -1000, 1000);
+  TH1F* z     = new TH1F("z_POINT_Flag1", "z_POINT_Flag1", 40, 980, 1020);
+  TH1F* t     = new TH1F("tof_POINT_Flag1", "tof_POINT_Flag1", 1000, 30, 60);
+  TH1F* nreg  = new TH1F("region_POINT_Flag1", "region_POINT_Flag1", 10, 0, 10);
+  TH1F* nmod  = new TH1F("module_POINT_Flag1", "module_POINT_Flag1", 200, 0, 200);
+  TH1F* ncel  = new TH1F("cel_POINT_Flag1", "cel_POINT_Flag1", 200, 0, 200);
+  TH1F* ngap  = new TH1F("gap_POINT_Flag1", "gap_POINT_Flag1", 20, 0, 20);
+  TH1F* detID = new TH1F("detID_POINT_Flag1", "detID_POINT_Flag1", 10000, 0, 5e+6);
 
 
   TH1F* dx_pi1 = new TH1F("dx_pi1", "dx_pi1", 100, -10, 10);
@@ -114,14 +108,10 @@ int Tof_QA() {
   TH1F* dz_p1 = new TH1F("dz_p1", "dz_p1", 100, -3, 3);
   TH1F* dt_p1 = new TH1F("dt_p1", "dt_p1", 200, -1, 1);
 
-  TH1F* dx_all =
-    new TH1F("dx_all_full_range", "dx_all_full_range", 1000, -10, 10);
-  TH1F* dy_all =
-    new TH1F("dy_all_full_range", "dy_all_full_range", 1000, -10, 10);
-  TH1F* dz_all =
-    new TH1F("dz_all_full_range", "dz_all_full_range", 1000, -3, 3);
-  TH1F* dt_all =
-    new TH1F("dt_all_full_range", "dt_all_full_range", 2000, -1, 1);
+  TH1F* dx_all = new TH1F("dx_all_full_range", "dx_all_full_range", 1000, -10, 10);
+  TH1F* dy_all = new TH1F("dy_all_full_range", "dy_all_full_range", 1000, -10, 10);
+  TH1F* dz_all = new TH1F("dz_all_full_range", "dz_all_full_range", 1000, -3, 3);
+  TH1F* dt_all = new TH1F("dt_all_full_range", "dt_all_full_range", 2000, -1, 1);
 
   TH1F* eff_p_p1     = new TH1F("eff_p_p1", "eff_p_p1", 50, 0, 30);
   TH1F* eff_p_theta1 = new TH1F("eff_p_theta1", "eff_p_theta1", 50, 0, 90);
@@ -143,11 +133,10 @@ int Tof_QA() {
   TH1F* norm_p_x1     = new TH1F("norm_p_x1", "norm_p_x1", 50, -1000, 1000);
   TH1F* norm_p_y1     = new TH1F("norm_p_y1", "norm_p_y1", 50, -1000, 1000);
 
-  TH1F* norm_pi_p1 = new TH1F("norm_pi_p1", "norm_pi_p1", 50, 0, 30);
-  TH1F* norm_pi_theta1 =
-    new TH1F("norm_pi_theta1", "norm_pi_theta1", 50, 0, 90);
-  TH1F* norm_pi_x1 = new TH1F("norm_pi_x1", "norm_pi_x1", 50, -1000, 1000);
-  TH1F* norm_pi_y1 = new TH1F("norm_pi_y1", "norm_pi_y1", 50, -1000, 1000);
+  TH1F* norm_pi_p1     = new TH1F("norm_pi_p1", "norm_pi_p1", 50, 0, 30);
+  TH1F* norm_pi_theta1 = new TH1F("norm_pi_theta1", "norm_pi_theta1", 50, 0, 90);
+  TH1F* norm_pi_x1     = new TH1F("norm_pi_x1", "norm_pi_x1", 50, -1000, 1000);
+  TH1F* norm_pi_y1     = new TH1F("norm_pi_y1", "norm_pi_y1", 50, -1000, 1000);
 
   TH1F* norm_k_p1     = new TH1F("norm_k_p1", "norm_k_p1", 50, 0, 30);
   TH1F* norm_k_theta1 = new TH1F("norm_k_theta1", "norm_k_theta1", 50, 0, 90);
@@ -190,11 +179,10 @@ int Tof_QA() {
   TH1F* norm_p_x2     = new TH1F("norm_p_x2", "norm_p_x2", 50, -1000, 1000);
   TH1F* norm_p_y2     = new TH1F("norm_p_y2", "norm_p_y2", 50, -1000, 1000);
 
-  TH1F* norm_pi_p2 = new TH1F("norm_pi_p2", "norm_pi_p2", 50, 0, 30);
-  TH1F* norm_pi_theta2 =
-    new TH1F("norm_pi_theta2", "norm_pi_theta2", 50, 0, 90);
-  TH1F* norm_pi_x2 = new TH1F("norm_pi_x2", "norm_pi_x2", 50, -1000, 1000);
-  TH1F* norm_pi_y2 = new TH1F("norm_pi_y2", "norm_pi_y2", 50, -1000, 1000);
+  TH1F* norm_pi_p2     = new TH1F("norm_pi_p2", "norm_pi_p2", 50, 0, 30);
+  TH1F* norm_pi_theta2 = new TH1F("norm_pi_theta2", "norm_pi_theta2", 50, 0, 90);
+  TH1F* norm_pi_x2     = new TH1F("norm_pi_x2", "norm_pi_x2", 50, -1000, 1000);
+  TH1F* norm_pi_y2     = new TH1F("norm_pi_y2", "norm_pi_y2", 50, -1000, 1000);
 
   TH1F* norm_k_p2     = new TH1F("norm_k_p2", "norm_k_p2", 50, 0, 30);
   TH1F* norm_k_theta2 = new TH1F("norm_k_theta2", "norm_k_theta2", 50, 0, 90);
@@ -211,9 +199,8 @@ int Tof_QA() {
   Int_t region1 = 0, region2 = 1;
   Float_t norm = 0, eff = 0;
   Float_t delta_x, delta_y, delta_z, delta_tof;
-  Float_t delta_x_min = 1e+10, delta_x_max = 1e-10, delta_y_min = 1e+10,
-          delta_y_max = 1e-10, delta_z_min = 1e+10, delta_z_max = 1e-10,
-          delta_tof_min = 1e+10, delta_tof_max = 1e-10;
+  Float_t delta_x_min = 1e+10, delta_x_max = 1e-10, delta_y_min = 1e+10, delta_y_max = 1e-10, delta_z_min = 1e+10,
+          delta_z_max = 1e-10, delta_tof_min = 1e+10, delta_tof_max = 1e-10;
 
 
   Float_t C = 3.14159 / 180;
@@ -287,8 +274,7 @@ int Tof_QA() {
           momx_MC = mom3_MC.Px();
           momy_MC = mom3_MC.Py();
           momz_MC = mom3_MC.Pz();
-          mom_MC =
-            sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+          mom_MC  = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
 
           theta = 1 / C * acos(momz_MC / mom_MC);
 
@@ -432,9 +418,7 @@ int Tof_QA() {
         }
       }
 
-      if (
-        counter
-        == 0) {  //It was not detected. Search for the point corresponding to the MC track.
+      if (counter == 0) {  //It was not detected. Search for the point corresponding to the MC track.
 
         for (Int_t j = 0; j < nTofPoints; j++) {
           TofPoint = (CbmTofPoint*) TofPoints->At(j);
@@ -454,8 +438,7 @@ int Tof_QA() {
             momx_MC = mom3_MC.Px();
             momy_MC = mom3_MC.Py();
             momz_MC = mom3_MC.Pz();
-            mom_MC =
-              sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+            mom_MC  = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
 
             theta = 1 / C * acos(momz_MC / mom_MC);
 
@@ -527,9 +510,8 @@ int Tof_QA() {
         momx_MC  = mom3_MC.Px();
         momy_MC  = mom3_MC.Py();
         momz_MC  = mom3_MC.Pz();
-        mom_MC =
-          sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
-        mass = mom_MC * mom_MC * (1 / beta / beta - 1);
+        mom_MC   = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+        mass     = mom_MC * mom_MC * (1 / beta / beta - 1);
         p_mass_all->Fill(mass, mom_MC);
       }
 
@@ -541,19 +523,16 @@ int Tof_QA() {
           TofPoint  = (CbmTofPoint*) TofPoints->At(TofHit->GetRefIndex());
           McTrack   = (CbmMCTrack*) McTracks->At(TofPoint->GetTrackID());
           mother_ID = McTrack->GetMotherID();
-          if (mother_ID != -1)
-            continue;  //Note that I take only those from target
+          if (mother_ID != -1) continue;  //Note that I take only those from target
 
           beta    = (TofPoint->GetLength()) / (TofHit->GetTime()) / 30;
           mom3_MC = McTrack->GetMomentum();
           momx_MC = mom3_MC.Px();
           momy_MC = mom3_MC.Py();
           momz_MC = mom3_MC.Pz();
-          mom_MC =
-            sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
-          mass = mom_MC * mom_MC * (1 / beta / beta - 1);
+          mom_MC  = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+          mass    = mom_MC * mom_MC * (1 / beta / beta - 1);
           p_mass_double->Fill(mass, mom_MC);
-
         }
 
         //Flag>2, then now gives the RefIndex plus a 10 offset
@@ -563,34 +542,30 @@ int Tof_QA() {
           TofPoint  = (CbmTofPoint*) TofPoints->At(TofHit->GetRefIndex());
           McTrack   = (CbmMCTrack*) McTracks->At(TofPoint->GetTrackID());
           mother_ID = McTrack->GetMotherID();
-          if (mother_ID != -1)
-            continue;  //Note that I take only those from target
+          if (mother_ID != -1) continue;  //Note that I take only those from target
 
           beta    = (TofPoint2->GetLength()) / (TofHit->GetTime()) / 30;
           mom3_MC = McTrack->GetMomentum();
           momx_MC = mom3_MC.Px();
           momy_MC = mom3_MC.Py();
           momz_MC = mom3_MC.Pz();
-          mom_MC =
-            sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
-          mass = mom_MC * mom_MC * (1 / beta / beta - 1);
+          mom_MC  = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+          mass    = mom_MC * mom_MC * (1 / beta / beta - 1);
           p_mass_interf->Fill(mass, mom_MC);
 
           //The second one
           TofPoint2 = (CbmTofPoint*) TofPoints->At((TofHit->GetFlag() - 10));
           McTrack   = (CbmMCTrack*) McTracks->At(TofPoint2->GetTrackID());
           mother_ID = McTrack->GetMotherID();
-          if (mother_ID != -1)
-            continue;  //Note that I take only those from target
+          if (mother_ID != -1) continue;  //Note that I take only those from target
 
           beta    = (TofPoint2->GetLength()) / (TofHit->GetTime()) / 30;
           mom3_MC = McTrack->GetMomentum();
           momx_MC = mom3_MC.Px();
           momy_MC = mom3_MC.Py();
           momz_MC = mom3_MC.Pz();
-          mom_MC =
-            sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
-          mass = mom_MC * mom_MC * (1 / beta / beta - 1);
+          mom_MC  = sqrt(momx_MC * momx_MC + momy_MC * momy_MC + momz_MC * momz_MC);
+          mass    = mom_MC * mom_MC * (1 / beta / beta - 1);
         }
       }
     }
@@ -598,8 +573,7 @@ int Tof_QA() {
 
   //Point distributions
 
-  TCanvas* c2 =
-    new TCanvas("TOF point distributions", "TOF point distributions");
+  TCanvas* c2 = new TCanvas("TOF point distributions", "TOF point distributions");
 
   gPad->Divide(4, 2);
 
@@ -633,8 +607,7 @@ int Tof_QA() {
 
   //Residuals (region 1)
 
-  TCanvas* c3 = new TCanvas("Distributions of residuals of region 1",
-                            "Distribution of residuals of region 1");
+  TCanvas* c3 = new TCanvas("Distributions of residuals of region 1", "Distribution of residuals of region 1");
 
   gPad->Divide(2, 2);
 
@@ -700,8 +673,7 @@ int Tof_QA() {
 
   //Residuals (region 2)
 
-  TCanvas* c4 = new TCanvas("Distributions of residuals of region 2",
-                            "Distribution of residuals of region 2");
+  TCanvas* c4 = new TCanvas("Distributions of residuals of region 2", "Distribution of residuals of region 2");
 
   gPad->Divide(2, 2);
 
@@ -767,8 +739,7 @@ int Tof_QA() {
 
   //Residuals (all)
 
-  TCanvas* c5 = new TCanvas("Distributions of all residuals",
-                            "Distribution of all residuals");
+  TCanvas* c5 = new TCanvas("Distributions of all residuals", "Distribution of all residuals");
 
   gPad->Divide(2, 2);
 
@@ -794,8 +765,7 @@ int Tof_QA() {
 
   //Efficiencies of Hit production (region 1)
 
-  TCanvas* c6 = new TCanvas("Tof Hit creation efficiency in region 1",
-                            "Tof Hit creation efficiency in region 1");
+  TCanvas* c6 = new TCanvas("Tof Hit creation efficiency in region 1", "Tof Hit creation efficiency in region 1");
 
   gPad->Divide(2, 2);
 
@@ -865,8 +835,7 @@ int Tof_QA() {
 
   //Efficiencies of Hit production (region 2)
 
-  TCanvas* c7 = new TCanvas("Tof Hit creation efficiency in region 2",
-                            "Tof Hit creation efficiency in region 2");
+  TCanvas* c7 = new TCanvas("Tof Hit creation efficiency in region 2", "Tof Hit creation efficiency in region 2");
 
   gPad->Divide(2, 2);
 
@@ -934,8 +903,7 @@ int Tof_QA() {
   eff_k_y2->SetLineColor(4);  //blue
   eff_k_y2->SetLineStyle(2);
 
-  TCanvas* c8 =
-    new TCanvas("p vs mass2 for single hits", "p vs mass2 for single hits");
+  TCanvas* c8 = new TCanvas("p vs mass2 for single hits", "p vs mass2 for single hits");
 
   gPad->Divide(2, 2);
 
@@ -959,8 +927,7 @@ int Tof_QA() {
   p_mass_interf->SetXTitle("m^{2} (t_{hit}) [GeV/c]");
   p_mass_interf->Draw("colz");
 
-  cout << "Total efficiency of creation of a single hit in a cell =  "
-       << eff / norm << endl;
+  cout << "Total efficiency of creation of a single hit in a cell =  " << eff / norm << endl;
 
   return 1;
 }

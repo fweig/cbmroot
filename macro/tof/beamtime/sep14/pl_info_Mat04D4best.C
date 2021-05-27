@@ -102,9 +102,7 @@
       hMean->SetBinContent(iNbinsX - iBinL - 1, hDT04proY[iBinL]->GetMean());
 
       fFitRes[iBinL] = (TFitResultPtr) hDT04proY[iBinL]->Fit("Gaus", "S");
-      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ",
-                   iBinL,
-                   fFitRes[iBinL]->Parameter(2),
+      cout << Form("Fit with iBinL = %d : %6.1f, RMS : %6.1f ", iBinL, fFitRes[iBinL]->Parameter(2),
                    hDT04proY[iBinL]->GetRMS());
       cout << endl;
       hSigma->SetBinContent(iBinL, fFitRes[iBinL]->Parameter(2));
@@ -124,21 +122,16 @@
 
       Double_t param[3];
       gfit->GetParameters(param);
-      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[1]
-           << ", " << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
+      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[1] << ", "
+           << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
 
       Double_t BinWidth = hDT04proY[iBinL]->GetBinWidth(0);
 
-      hInt->SetBinContent(
-        iBinL, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
-      hInt->SetBinContent(iNbinsX - iBinL - 1,
-                          gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
+      hInt->SetBinContent(iBinL, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
+      hInt->SetBinContent(iNbinsX - iBinL - 1, gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
 
-      Double_t dOut =
-        hDT04proY[iBinL]->Integral(
-          0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
-        + hDT04proY[iBinL]->Integral(
-          hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
+      Double_t dOut = hDT04proY[iBinL]->Integral(0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
+                      + hDT04proY[iBinL]->Integral(hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
 
       //	           +(Double_t)gfit->Integral(param[1]+3.*param[2],DTMax,&param[0]);
 
@@ -158,7 +151,8 @@
         hDT04proY[iBinL]->SetLineColor(iCol++);
       }
     }
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -188,15 +182,10 @@
   Double_t dEff = NFinalHits / NEvents;
   cout << Form("<I> Efficiency: %6.3f, overall 1-sigma timing resolution: "
                "%6.1f ps, RMS: %6.1f ps",
-               dEff,
-               dTRes,
-               dTRMS)
+               dEff, dTRes, dTRMS)
        << endl;
   cout << Form("    D4best 1-sigma timing resolution at lower index %d: %6.1f "
                "ps, RMS: %6.1f ps from  %6.0f entries of %6.0f (%6.3f)",
-               BL,
-               BRes,
-               Brms,
-               BEntries)
+               BL, BRes, Brms, BEntries)
        << endl;
 }

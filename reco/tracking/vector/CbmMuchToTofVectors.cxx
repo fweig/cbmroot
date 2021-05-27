@@ -3,6 +3,7 @@
  *@since 2017
  **/
 #include "CbmMuchToTofVectors.h"
+
 #include "CbmDefs.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
@@ -46,7 +47,8 @@ CbmMuchToTofVectors::CbmMuchToTofVectors()
   , fErrX(1.0)
   , fErrY(1.0)
   , fCutChi2(24.0)  // chi2/ndf = 6 for 4 hits
-{}
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -54,7 +56,8 @@ CbmMuchToTofVectors::~CbmMuchToTofVectors() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchToTofVectors::Init() {
+InitStatus CbmMuchToTofVectors::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -69,14 +72,12 @@ InitStatus CbmMuchToTofVectors::Init() {
   fHits       = static_cast<TClonesArray*>(ioman->GetObject("TofHit"));
   fHitMatches = static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatch"));
   //fPoints = static_cast<TClonesArray*> (ioman->GetObject("TofPoint"));
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
   if (NULL == mcManager) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
-  fPoints = mcManager->InitBranch("TofPoint");
-  fDigis  = static_cast<TClonesArray*>(ioman->GetObject("TofDigi"));
-  fDigiMatches =
-    static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatchPoints"));
-  fMuchTracks = static_cast<TClonesArray*>(ioman->GetObject("MuchVectorTrack"));
+  fPoints      = mcManager->InitBranch("TofPoint");
+  fDigis       = static_cast<TClonesArray*>(ioman->GetObject("TofDigi"));
+  fDigiMatches = static_cast<TClonesArray*>(ioman->GetObject("TofDigiMatchPoints"));
+  fMuchTracks  = static_cast<TClonesArray*>(ioman->GetObject("MuchVectorTrack"));
 
   TString tag;
   CbmSetup::Instance()->GetGeoTag(kTof, tag);
@@ -97,7 +98,8 @@ InitStatus CbmMuchToTofVectors::Init() {
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmMuchToTofVectors::SetParContainers() {
+void CbmMuchToTofVectors::SetParContainers()
+{
   /*
   fDigiPar = (CbmTrdDigiPar*) FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdDigiPar");
   cout << " ******* digiPar ******** " << fDigiPar << endl;
@@ -107,7 +109,8 @@ void CbmMuchToTofVectors::SetParContainers() {
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchToTofVectors::Exec(Option_t* opt) {
+void CbmMuchToTofVectors::Exec(Option_t* opt)
+{
 
   fTrackArray->Delete();
 
@@ -139,7 +142,8 @@ void CbmMuchToTofVectors::Finish() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method GetHits   ----------------------------------------
-void CbmMuchToTofVectors::GetHits() {
+void CbmMuchToTofVectors::GetHits()
+{
   // Arrange hits according to their Phi-angle
 
   fHitX.clear();
@@ -173,11 +177,9 @@ void CbmMuchToTofVectors::GetHits() {
       for (Int_t ip = 0; ip < npoints; ++ip) {
         const CbmLink link1 = digiM->GetLink(ip);
         //CbmTofPoint *point = (CbmTofPoint*) fPoints->UncheckedAt(link1.GetIndex());
-        CbmTofPoint* point = (CbmTofPoint*) fPoints->Get(
-          link1.GetFile(), link1.GetEntry(), link1.GetIndex());
+        CbmTofPoint* point = (CbmTofPoint*) fPoints->Get(link1.GetFile(), link1.GetEntry(), link1.GetIndex());
         fHitIds[i].insert(point->GetTrackID());
-        if (fHitTime.find(i) == fHitTime.end())
-          fHitTime[i] = point->GetTime();
+        if (fHitTime.find(i) == fHitTime.end()) fHitTime[i] = point->GetTime();
         else
           fHitTime[i] = TMath::Min(point->GetTime(), fHitTime[i]);
         //cout << point->GetTrackID() << endl;
@@ -188,7 +190,8 @@ void CbmMuchToTofVectors::GetHits() {
 // -------------------------------------------------------------------------
 
 // -----   Private method MakeVectors   ------------------------------------
-void CbmMuchToTofVectors::MakeVectors() {
+void CbmMuchToTofVectors::MakeVectors()
+{
   // Make vectors (extrapolate MUCH vectors through the TOF thickness)
 
   const Int_t nMinSeg = 5;
@@ -214,19 +217,20 @@ void CbmMuchToTofVectors::MakeVectors() {
       if (i == 0) {
         line.SetX1(param.GetX() + param.GetTx() * dz);
         line.SetY1(param.GetY() + param.GetTy() * dz);
-      } else {
+      }
+      else {
         line.SetX2(param.GetX() + param.GetTx() * dz);
         line.SetY2(param.GetY() + param.GetTy() * dz);
       }
     }
-    fLineX.insert(
-      pair<Double_t, TLine>(TMath::Min(line.GetX1(), line.GetX2()), line));
+    fLineX.insert(pair<Double_t, TLine>(TMath::Min(line.GetX1(), line.GetX2()), line));
   }
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method MatchTofToMuch   ---------------------------------
-void CbmMuchToTofVectors::MatchTofToMuch() {
+void CbmMuchToTofVectors::MatchTofToMuch()
+{
   // Match TOF hits to MUCH vectors
 
   //const Double_t window = 30.0;
@@ -236,13 +240,9 @@ void CbmMuchToTofVectors::MatchTofToMuch() {
   map<pair<Int_t, Int_t>, pair<Double_t, Double_t>> dtdl;
   set<Int_t> setVec, setHit;
 
-  for (multimap<Double_t, TLine>::iterator mit = fLineX.begin();
-       mit != fLineX.end();
-       ++mit) {
+  for (multimap<Double_t, TLine>::iterator mit = fLineX.begin(); mit != fLineX.end(); ++mit) {
     Double_t rmin = 999999, dtmin = 0, dlmin = 0;
-    TVector3 trd(mit->second.GetX2() - mit->second.GetX1(),
-                 mit->second.GetY2() - mit->second.GetY1(),
-                 0.0);
+    TVector3 trd(mit->second.GetX2() - mit->second.GetX1(), mit->second.GetY2() - mit->second.GetY1(), 0.0);
     Double_t trdLeng = trd.Mag();
     Int_t indVec     = mit->second.GetUniqueID();
     CbmMuchTrack* tr = (CbmMuchTrack*) fMuchTracks->UncheckedAt(indVec);
@@ -250,34 +250,26 @@ void CbmMuchToTofVectors::MatchTofToMuch() {
 
     // Select TOF hits for matching (apply coordinate windows)
     mitb = fHitX.lower_bound(mit->first - window);
-    mite = fHitX.upper_bound(
-      TMath::Max(mit->second.GetX1(), mit->second.GetX2()) + window);
+    mite = fHitX.upper_bound(TMath::Max(mit->second.GetX1(), mit->second.GetX2()) + window);
     set<Int_t> inds;
     for (mit1 = mitb; mit1 != mite; ++mit1)
       inds.insert(mit1->second);
-    mitb = fHitY.lower_bound(
-      TMath::Min(mit->second.GetY1(), mit->second.GetY2()) - window);
-    mite = fHitY.upper_bound(
-      TMath::Max(mit->second.GetY1(), mit->second.GetY2()) + window);
+    mitb = fHitY.lower_bound(TMath::Min(mit->second.GetY1(), mit->second.GetY2()) - window);
+    mite = fHitY.upper_bound(TMath::Max(mit->second.GetY1(), mit->second.GetY2()) + window);
 
     for (mit1 = mitb; mit1 != mite; ++mit1) {
       if (inds.find(mit1->second) == inds.end()) continue;  // outside window
       CbmTofHit* hit = (CbmTofHit*) fHits->UncheckedAt(mit1->second);
-      TVector3 tof(hit->GetX() - mit->second.GetX1(),
-                   hit->GetY() - mit->second.GetY1(),
-                   0.0);
+      TVector3 tof(hit->GetX() - mit->second.GetX1(), hit->GetY() - mit->second.GetY1(), 0.0);
       Double_t dt = TMath::Abs(trd.Cross(tof).Z()) / trdLeng;
       Double_t dl = trd * tof / trdLeng;
-      if (dl > trdLeng)
-        dl -= trdLeng;
+      if (dl > trdLeng) dl -= trdLeng;
       else if (dl > 0)
         dl = 0;
       Double_t rad = dl * dl + dt * dt;
       // Save matches
-      rads.insert(pair<Double_t, pair<Int_t, Int_t>>(
-        rad, pair<Int_t, Int_t>(indVec, mit1->second)));
-      dtdl[pair<Int_t, Int_t>(indVec, mit1->second)] =
-        pair<Double_t, Double_t>(dt, dl);
+      rads.insert(pair<Double_t, pair<Int_t, Int_t>>(rad, pair<Int_t, Int_t>(indVec, mit1->second)));
+      dtdl[pair<Int_t, Int_t>(indVec, mit1->second)] = pair<Double_t, Double_t>(dt, dl);
       setVec.insert(indVec);
       setHit.insert(mit1->second);
       /*
@@ -308,13 +300,10 @@ void CbmMuchToTofVectors::MatchTofToMuch() {
   }  // for (multimap<Double_t,TLine>::iterator mit = fLineX.begin();
 
   // Create vectors
-  for (multimap<Double_t, pair<Int_t, Int_t>>::iterator rmit = rads.begin();
-       rmit != rads.end();
-       ++rmit) {
+  for (multimap<Double_t, pair<Int_t, Int_t>>::iterator rmit = rads.begin(); rmit != rads.end(); ++rmit) {
     Int_t indVec = rmit->second.first, ihit = rmit->second.second;
-    if (setVec.find(indVec) == setVec.end())
-      continue;                                       // already matched vector
-    if (setHit.find(ihit) == setHit.end()) continue;  // already matched hit
+    if (setVec.find(indVec) == setVec.end()) continue;  // already matched vector
+    if (setHit.find(ihit) == setHit.end()) continue;    // already matched hit
 
     Bool_t match     = kFALSE;
     CbmMuchTrack* tr = (CbmMuchTrack*) fMuchTracks->UncheckedAt(indVec);
@@ -344,7 +333,8 @@ void CbmMuchToTofVectors::MatchTofToMuch() {
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckParams   ------------------------------------
-void CbmMuchToTofVectors::CheckParams() {
+void CbmMuchToTofVectors::CheckParams()
+{
   // Remove vectors with wrong orientation
   // using empirical cuts for omega muons at 8 Gev
 
@@ -355,9 +345,8 @@ void CbmMuchToTofVectors::CheckParams() {
   for (Int_t iv = 0; iv < nvec; ++iv) {
     CbmMuchTrack* vec            = fVectors[iv];
     const FairTrackParam* params = vec->GetParamFirst();
-    Double_t dTx = params->GetTx() - params->GetX() / params->GetZ();
-    if (TMath::Abs(dTx) > cut[0])
-      vec->SetChiSq(-1.0);
+    Double_t dTx                 = params->GetTx() - params->GetX() / params->GetZ();
+    if (TMath::Abs(dTx) > cut[0]) vec->SetChiSq(-1.0);
     else {
       Double_t dTy = params->GetTy() - params->GetY() / params->GetZ();
       if (TMath::Abs(dTy) > cut[1]) vec->SetChiSq(-1.0);
@@ -371,13 +360,13 @@ void CbmMuchToTofVectors::CheckParams() {
       fVectors.erase(fVectors.begin() + iv);
     }
   }
-  cout << " Vectors after parameter check: " << nvec << " " << fVectors.size()
-       << endl;
+  cout << " Vectors after parameter check: " << nvec << " " << fVectors.size() << endl;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveClones   -----------------------------------
-void CbmMuchToTofVectors::RemoveClones() {
+void CbmMuchToTofVectors::RemoveClones()
+{
   // Remove clone vectors (having at least 3 the same hits)
 
   //Int_t nthr = 3, planes[20];
@@ -391,8 +380,7 @@ void CbmMuchToTofVectors::RemoveClones() {
 
   for (Int_t i = 0; i < nvec; ++i) {
     CbmMuchTrack* vec = fVectors[i];
-    Double_t qual =
-      vec->GetNofHits() + (99 - TMath::Min(vec->GetChiSq(), 99.0)) / 100;
+    Double_t qual     = vec->GetNofHits() + (99 - TMath::Min(vec->GetChiSq(), 99.0)) / 100;
     qMap.insert(pair<Double_t, CbmMuchTrack*>(-qual, vec));
   }
 
@@ -432,8 +420,7 @@ void CbmMuchToTofVectors::RemoveClones() {
       if (nsame >= nthr) {
         // Too many the same hits
         Int_t clone = 0;
-        if (nhits > nhits1 + 0)
-          clone = 1;
+        if (nhits > nhits1 + 0) clone = 1;
         else if (vec->GetChiSq() * 1 <= vec1->GetChiSq())
           clone = 1;  // the same number of hits on 2 tracks
         //else if (vec->GetChiSq() * 1.5 <= vec1->GetChiSq()) clone = 1; // the same number of hits on 2 tracks
@@ -449,13 +436,13 @@ void CbmMuchToTofVectors::RemoveClones() {
       fVectors.erase(fVectors.begin() + iv);
     }
   }
-  cout << " CbmTrdToTofVector:: Vectors after clones removed: " << nvec << " "
-       << fVectors.size() << endl;
+  cout << " CbmTrdToTofVector:: Vectors after clones removed: " << nvec << " " << fVectors.size() << endl;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method StoreVectors   -----------------------------------
-void CbmMuchToTofVectors::StoreVectors() {
+void CbmMuchToTofVectors::StoreVectors()
+{
   // Store vectors (CbmMuchTracks) into TClonesArray
 
   Int_t ntrs     = fTrackArray->GetEntriesFast();
@@ -465,8 +452,7 @@ void CbmMuchToTofVectors::StoreVectors() {
   Int_t nvec = fVectors.size();
 
   for (Int_t iv = 0; iv < nvec; ++iv) {
-    CbmMuchTrack* tr =
-      new ((*fTrackArray)[ntrs++]) CbmMuchTrack(*(fVectors[iv]));
+    CbmMuchTrack* tr = new ((*fTrackArray)[ntrs++]) CbmMuchTrack(*(fVectors[iv]));
     //cout << " Track: " << tr->GetNofHits() << endl;
     //for (Int_t j = 0; j < tr->GetNofHits(); ++j) cout << j << " " << tr->GetHitIndex(j) << " " << fVectors[ist][iv]->GetHitIndex(j) << endl;
     // Set hit flag (to check Lit tracking)
@@ -475,9 +461,7 @@ void CbmMuchToTofVectors::StoreVectors() {
     // Save IDs of contributing points to the hit
     CbmMatch* match = new CbmMatch;
     Int_t ihit      = fVectors[iv]->GetNDF();
-    for (set<Int_t>::iterator sit = fHitIds[ihit].begin();
-         sit != fHitIds[ihit].end();
-         ++sit)
+    for (set<Int_t>::iterator sit = fHitIds[ihit].begin(); sit != fHitIds[ihit].end(); ++sit)
       match->AddLink(1.0, *sit);
     tr->SetMatch(match);
   }
@@ -485,7 +469,8 @@ void CbmMuchToTofVectors::StoreVectors() {
 // -------------------------------------------------------------------------
 
 // -----   Private method ProcessPlane   -----------------------------------
-void CbmMuchToTofVectors::ProcessPlane(Int_t lay, Int_t patt, Int_t flag0) {
+void CbmMuchToTofVectors::ProcessPlane(Int_t lay, Int_t patt, Int_t flag0)
+{
   // Main processing engine (recursively adds layer hits to the vector)
 
   //const Double_t cut[2] = {0.8, 0.8}; // !!! empirical !!!
@@ -559,7 +544,8 @@ void CbmMuchToTofVectors::ProcessPlane(Int_t lay, Int_t patt, Int_t flag0) {
 // -------------------------------------------------------------------------
 
 // -----   Private method FindLine   ---------------------------------------
-void CbmMuchToTofVectors::FindLine(Int_t patt, Double_t* pars) {
+void CbmMuchToTofVectors::FindLine(Int_t patt, Double_t* pars)
+{
   // Fit of hits to the straight line
 
   // Solve system of linear equations
@@ -589,7 +575,8 @@ void CbmMuchToTofVectors::FindLine(Int_t patt, Double_t* pars) {
 // -------------------------------------------------------------------------
 
 // -----   Private method FindChi2   ---------------------------------------
-Double_t CbmMuchToTofVectors::FindChi2(Int_t patt, Double_t* pars) {
+Double_t CbmMuchToTofVectors::FindChi2(Int_t patt, Double_t* pars)
+{
   // Compute chi2 of the fit
 
   Double_t chi2 = 0, x = 0, y = 0;
@@ -613,7 +600,8 @@ Double_t CbmMuchToTofVectors::FindChi2(Int_t patt, Double_t* pars) {
 // -------------------------------------------------------------------------
 
 // -----   Private method AddVector   --------------------------------------
-void CbmMuchToTofVectors::AddVector(Int_t patt, Double_t chi2, Double_t* pars) {
+void CbmMuchToTofVectors::AddVector(Int_t patt, Double_t chi2, Double_t* pars)
+{
   // Add vector to the temporary container (as a MuchTrack)
 
   Bool_t refit = kFALSE;  //kTRUE;
@@ -654,7 +642,8 @@ void CbmMuchToTofVectors::AddVector(Int_t patt, Double_t chi2, Double_t* pars) {
 // -------------------------------------------------------------------------
 
 // -----   Private method SetTrackId   -------------------------------------
-void CbmMuchToTofVectors::SetTrackId(CbmMuchTrack* vec) {
+void CbmMuchToTofVectors::SetTrackId(CbmMuchTrack* vec)
+{
   // Set vector ID as its flag (maximum track ID of its poins)
 
   map<Int_t, Int_t> ids;

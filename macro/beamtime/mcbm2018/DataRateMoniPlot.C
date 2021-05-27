@@ -1,5 +1,6 @@
 
-Bool_t DataRateMoniPlot() {
+Bool_t DataRateMoniPlot()
+{
   const UInt_t kuNbFlimLinks = 12;
 
   /// 23/03/2019
@@ -10,8 +11,8 @@ Bool_t DataRateMoniPlot() {
     94,  95,  96,  97,  // Detectors parameters scan
     98,  99,  100, 101, 102,
     103, 104, 105, 106,  // Beam intensity and target scan (=> collision rate scan up, empty, no beam)
-    107, 109, 110,  // T0 threshold scan
-    111             // Cooldown run
+    107, 109, 110,       // T0 threshold scan
+    111                  // Cooldown run
   };
 
   /// Obtaining the plots
@@ -19,14 +20,12 @@ Bool_t DataRateMoniPlot() {
   TProfile* phMsSzTime[kuNbRuns][kuNbFlimLinks];
   TFile* pFile[kuNbRuns];
   for (UInt_t uRun = 0; uRun < kuNbRuns; ++uRun) {
-    pFile[uRun] =
-      TFile::Open(Form("data/HistosDataRates_%03u.root", uRunId[uRun]));
+    pFile[uRun] = TFile::Open(Form("data/HistosDataRates_%03u.root", uRunId[uRun]));
     gROOT->cd();
 
     for (UInt_t uLink = 0; uLink < kuNbFlimLinks; ++uLink) {
       phMsSzTime[uRun][uLink] = new TProfile();
-      tempProf                = (TProfile*) (pFile[uRun]->FindObjectAny(
-        Form("MsSzTime_link_%02u", uLink)));
+      tempProf                = (TProfile*) (pFile[uRun]->FindObjectAny(Form("MsSzTime_link_%02u", uLink)));
       if (NULL != tempProf) {
         tempProf->Copy(*(phMsSzTime[uRun][uLink]));  ///?
       }                                              //  if( NULL != tempH1 )
@@ -39,9 +38,8 @@ Bool_t DataRateMoniPlot() {
   TCanvas* cMsSzTime[kuNbRuns];
 
   for (UInt_t uRun = 0; uRun < kuNbRuns; ++uRun) {
-    cMsSzTime[uRun] = new TCanvas(
-      Form("cMsSzTime_%03u", uRunId[uRun]),
-      Form("Mean MS size in Bytes per link in run %3u", uRunId[uRun]));
+    cMsSzTime[uRun] = new TCanvas(Form("cMsSzTime_%03u", uRunId[uRun]),
+                                  Form("Mean MS size in Bytes per link in run %3u", uRunId[uRun]));
     cMsSzTime[uRun]->Divide(4, 4);
 
     for (UInt_t uLink = 0; uLink < kuNbFlimLinks; ++uLink) {

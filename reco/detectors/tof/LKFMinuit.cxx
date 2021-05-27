@@ -16,7 +16,8 @@ LKFMinuit* LKFMinuit::fInstance = 0;
 TFitter* LKFMinuit::fMyFit      = 0;
 TGraph2DErrors* LKFMinuit::fgr  = 0;
 
-int LKFMinuit::Initialize() {
+int LKFMinuit::Initialize()
+{
   LOG(info) << "LKFMinuit::Initialize ";
   fMyFit = new TFitter(2);
   fMyFit->SetFCN(LKFMinuit::minuitFunction);
@@ -28,7 +29,8 @@ int LKFMinuit::Initialize() {
   return 0;
 }
 
-int LKFMinuit::DoFit(TGraph2DErrors* gr, double pStart[]) {
+int LKFMinuit::DoFit(TGraph2DErrors* gr, double pStart[])
+{
   fgr = gr;
   //TFitter* min = new TFitter(2);
   TFitter* min = fMyFit;
@@ -49,8 +51,7 @@ int LKFMinuit::DoFit(TGraph2DErrors* gr, double pStart[]) {
   arglist[0] = 0;
   arglist[1] = 0;
   arglist[2] = 0;
-  min->ExecuteCommand(
-    "SET NOWarnings", arglist, 3);  //turn off warning messages
+  min->ExecuteCommand("SET NOWarnings", arglist, 3);  //turn off warning messages
   //if (minos) min->ExecuteCommand("MINOS",arglist,0);
   int nvpar, nparx;
   double amin, edm, errdef;
@@ -66,7 +67,8 @@ int LKFMinuit::DoFit(TGraph2DErrors* gr, double pStart[]) {
   return 0;
 }
 
-double LKFMinuit::myFunction(double /*par*/) {
+double LKFMinuit::myFunction(double /*par*/)
+{
   double result = 0;
 
   return result;
@@ -83,7 +85,8 @@ double LKFMinuit::myFunction(double /*par*/) {
 //
 
 // define the parameteric line equation
-void LKFMinuit::line(double t, double* p, double& x, double& y, double& z) {
+void LKFMinuit::line(double t, double* p, double& x, double& y, double& z)
+{
   // a parameteric line is define from 6 parameters but 4 are independent
   // x0,y0,z0,z1,y1,z1 which are the coordinates of two points on the line
   // can choose z0 = 0 if line not parallel to x-y plane and z1 = 1;
@@ -93,7 +96,8 @@ void LKFMinuit::line(double t, double* p, double& x, double& y, double& z) {
 }
 
 // calculate distance line-point
-double LKFMinuit::distance2(double x, double y, double z, double* p) {
+double LKFMinuit::distance2(double x, double y, double z, double* p)
+{
   // distance line point is D= | (xp-x0) cross  ux |
   // where ux is direction of line and x0 is a point in the line (like t = 0)
   XYZVector xp(x, y, z);
@@ -105,13 +109,8 @@ double LKFMinuit::distance2(double x, double y, double z, double* p) {
 }
 
 // calculate distance line-point with errors
-double LKFMinuit::distance2err(double x,
-                               double y,
-                               double z,
-                               double ex,
-                               double ey,
-                               double ez,
-                               double* p) {
+double LKFMinuit::distance2err(double x, double y, double z, double ex, double ey, double ez, double* p)
+{
   // distance line point is D= | (xp-x0) cross  ux |
   // where ux is direction of line and x0 is a point in the line (like t = 0)
   XYZVector xp(x, y, z);
@@ -144,11 +143,11 @@ double LKFMinuit::distance2err(double x,
 }
 
 bool first = true;
-double LKFMinuit::SumDistance2(double par[]) {
+double LKFMinuit::SumDistance2(double par[])
+{
   // the TGraph must be a global variable
   if (NULL == fgr) LOG(fatal) << "Invalid TGraph2Errors";
-  TGraph2DErrors* gr =
-    fgr;  //dynamic_cast<TGraph2D*>( (TVirtualFitter::GetFitter())->GetObjectFit() );
+  TGraph2DErrors* gr = fgr;  //dynamic_cast<TGraph2D*>( (TVirtualFitter::GetFitter())->GetObjectFit() );
   assert(gr != 0);
   double* x   = gr->GetX();
   double* y   = gr->GetY();
@@ -165,25 +164,19 @@ double LKFMinuit::SumDistance2(double par[]) {
     //#ifdef DEBUG
     if (0)
       if (first)
-        std::cout << " -D- LKFMinuit::SumDistance2: point " << i << "\t" << x[i]
-                  << "\t" << ex[i] << "\t" << y[i] << "\t" << ey[i] << "\t"
-                  << z[i] << "\t" << ez[i] << "\t" << std::sqrt(d) << std::endl;
+        std::cout << " -D- LKFMinuit::SumDistance2: point " << i << "\t" << x[i] << "\t" << ex[i] << "\t" << y[i]
+                  << "\t" << ey[i] << "\t" << z[i] << "\t" << ez[i] << "\t" << std::sqrt(d) << std::endl;
     //#endif
   }
   if (0)
-    if (first)
-      std::cout << " -D- LKFMinuit::SumDistance2: Total sum2 = " << sum
-                << std::endl;
+    if (first) std::cout << " -D- LKFMinuit::SumDistance2: Total sum2 = " << sum << std::endl;
   first = false;
   return sum;
 }
 
 
-void LKFMinuit::minuitFunction(int& /*nDim*/,
-                               double* /*gout*/,
-                               double& result,
-                               double par[],
-                               int /*flg*/) {
+void LKFMinuit::minuitFunction(int& /*nDim*/, double* /*gout*/, double& result, double par[], int /*flg*/)
+{
   //    result = LKF_obj->myFunction(par[0]);
   result = LKF_obj->SumDistance2(par);
 }
@@ -192,7 +185,8 @@ LKFMinuit::LKFMinuit()
   :  // fgr(NULL),
   //   fMyFit(NULL),
   fChi2(0.)
-  , fChi2DoF(0.) {
+  , fChi2DoF(0.)
+{
   //std::cout << "LKFMinuit at " << this << std::endl;
   LKF_obj = this;
   if (!fInstance) fInstance = this;

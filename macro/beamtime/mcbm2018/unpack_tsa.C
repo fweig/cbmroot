@@ -8,11 +8,9 @@
  */
 
 //void unpack_tsa(Int_t nEvt=100, TString FileId = "cosmic_2016110701_safe_4links_4")
-void unpack_tsa(Int_t nEvt       = 100000,
-                Double_t dDeltaT = 100.,
-                Int_t iReqDet    = 0,
-                TString cGeo     = "v18j_cosmicHD",
-                TString FileId   = "r0088_20180905_1602") {
+void unpack_tsa(Int_t nEvt = 100000, Double_t dDeltaT = 100., Int_t iReqDet = 0, TString cGeo = "v18j_cosmicHD",
+                TString FileId = "r0088_20180905_1602")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = "./input/";
   TString inDir  = "./input/" + FileId + "/";
@@ -100,7 +98,7 @@ void unpack_tsa(Int_t nEvt       = 100000,
       source->AddReqDigiAddr(0x00019016);  // request USTC 1 for output events
       source->AddReqDigiAddr(0x00009026);  // request USTC 1 for output events
       source->AddReqDigiAddr(0x00019026);  // request USTC 1 for output events
-      source->SetReqMode(1);  // request any of the detectors in the list
+      source->SetReqMode(1);               // request any of the detectors in the list
       break;
     default:
       if (iReqDet < 0) {
@@ -157,15 +155,13 @@ void unpack_tsa(Int_t nEvt       = 100000,
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa: Starting run..." << std::endl;
-  if (bEvt == -1)
-    run->Run(bEvt, 0);  // run until end of input file
+  if (bEvt == -1) run->Run(bEvt, 0);  // run until end of input file
   else
     run->Run(0, nEvents);  // process nEvents
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -173,8 +169,7 @@ void unpack_tsa(Int_t nEvt       = 100000,
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

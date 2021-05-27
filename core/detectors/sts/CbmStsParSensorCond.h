@@ -39,11 +39,7 @@ public:
      ** @param cCoupling     Coupling capacitance [pF]
      ** @param cInterstrip   Inter-strip capacitance [pF]
      **/
-  CbmStsParSensorCond(Double_t vFD,
-                      Double_t vBias,
-                      Double_t temperature,
-                      Double_t cCoupling,
-                      Double_t cInterstrip);
+  CbmStsParSensorCond(Double_t vFD, Double_t vBias, Double_t temperature, Double_t cCoupling, Double_t cInterstrip);
 
 
   /** @brief Copy constructor **/
@@ -75,7 +71,8 @@ public:
      **
      ** The cross-talk coefficient is derived from the capacitances.
      **/
-  Double_t GetCrossTalkCoeff() const {
+  Double_t GetCrossTalkCoeff() const
+  {
     assert(fIsInit);
     return fCrossTalkCoeff;
   }
@@ -131,11 +128,7 @@ public:
      ** @param cCoupling   Coupling capacitance [pF]
      ** @param cInterstrip Inter-strip capacitance [pF]
      **/
-  void SetParams(Double_t vFd,
-                 Double_t vBias,
-                 Double_t temperature,
-                 Double_t cCoupling,
-                 Double_t cInterstrip);
+  void SetParams(Double_t vFd, Double_t vBias, Double_t temperature, Double_t cCoupling, Double_t cInterstrip);
 
 
   /** @brief String output **/

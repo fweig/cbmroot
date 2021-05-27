@@ -1,10 +1,10 @@
-void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2) {
+void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2)
+{
   Int_t const kTdcChNb = 16;
 
   FairRootManager* tManager = FairRootManager::Instance();
   if (!tManager) {
-    cout << "FairRootManager could not be retrieved. Abort macro execution."
-         << endl;
+    cout << "FairRootManager could not be retrieved. Abort macro execution." << endl;
     return;
   }
 
@@ -40,21 +40,14 @@ void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2) {
   for (Int_t iHistogram = 0; iHistogram < kTdcChNb; iHistogram++) {
     delete gROOT->FindObjectAny(Form("tHistogram%u", iHistogram));
 
-    tHistograms[iHistogram] = new TH1D(Form("tHistogram%u", iHistogram),
-                                       Form("TDCs %u-%u,chs %u-%u",
-                                            uTdcNumber1,
-                                            uTdcNumber2,
-                                            iHistogram,
-                                            iHistogram),
-                                       400000,
-                                       0,
-                                       400000);
+    tHistograms[iHistogram] =
+      new TH1D(Form("tHistogram%u", iHistogram),
+               Form("TDCs %u-%u,chs %u-%u", uTdcNumber1, uTdcNumber2, iHistogram, iHistogram), 400000, 0, 400000);
   }
 
   Long64_t lBranchEntries = tBranch->GetEntries();
 
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     tArray->Clear("C");
 
     tBranch->GetEntry(lBranchEntry);
@@ -73,9 +66,8 @@ void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2) {
     for (Int_t iArrayEntry = 0; iArrayEntry < iArrayEntries; iArrayEntry++) {
       TTofCalibData* tCalibTdcData = (TTofCalibData*) tArray->At(iArrayEntry);
 
-      if (tCalibTdcData->GetBoard() == uTdcNumber1) {
-        iDataIndexTdc1[tCalibTdcData->GetChannel()] = iArrayEntry;
-      } else if (tCalibTdcData->GetBoard() == uTdcNumber2) {
+      if (tCalibTdcData->GetBoard() == uTdcNumber1) { iDataIndexTdc1[tCalibTdcData->GetChannel()] = iArrayEntry; }
+      else if (tCalibTdcData->GetBoard() == uTdcNumber2) {
         iDataIndexTdc2[tCalibTdcData->GetChannel()] = iArrayEntry;
       }
     }
@@ -83,15 +75,12 @@ void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2) {
     for (Int_t iTdcCh = 0; iTdcCh < kTdcChNb; iTdcCh++) {
       if (iDataIndexTdc1[iTdcCh] != -1 && iDataIndexTdc2[iTdcCh] != -1) {
         if (lBranchEntry < 10) {
-          cout
-            << ((TTofCalibData*) tArray->At(iDataIndexTdc1[iTdcCh]))->GetTime()
-                 - ((TTofCalibData*) tArray->At(iDataIndexTdc2[iTdcCh]))
-                     ->GetTime()
-            << endl;
+          cout << ((TTofCalibData*) tArray->At(iDataIndexTdc1[iTdcCh]))->GetTime()
+                    - ((TTofCalibData*) tArray->At(iDataIndexTdc2[iTdcCh]))->GetTime()
+               << endl;
         }
-        tHistograms[iTdcCh]->Fill(
-          ((TTofCalibData*) tArray->At(iDataIndexTdc1[iTdcCh]))->GetTime()
-          - ((TTofCalibData*) tArray->At(iDataIndexTdc2[iTdcCh]))->GetTime());
+        tHistograms[iTdcCh]->Fill(((TTofCalibData*) tArray->At(iDataIndexTdc1[iTdcCh]))->GetTime()
+                                  - ((TTofCalibData*) tArray->At(iDataIndexTdc2[iTdcCh]))->GetTime());
       }
     }
   }
@@ -104,9 +93,8 @@ void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2) {
   for (Int_t iHistogram = 0; iHistogram < kTdcChNb; iHistogram++) {
     tCanvas->cd(iHistogram + 1);
     gPad->SetLogy();
-    tHistograms[iHistogram]->GetXaxis()->SetRangeUser(
-      tHistograms[iHistogram]->GetMean(1) - 300,
-      tHistograms[iHistogram]->GetMean(1) + 300);
+    tHistograms[iHistogram]->GetXaxis()->SetRangeUser(tHistograms[iHistogram]->GetMean(1) - 300,
+                                                      tHistograms[iHistogram]->GetMean(1) + 300);
     tHistograms[iHistogram]->Draw();
   }
 

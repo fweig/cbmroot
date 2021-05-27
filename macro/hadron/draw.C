@@ -10,26 +10,28 @@
 
 #define C1 0.3989422804014327
 
-Double_t fun_m2_mc(Double_t* x, Double_t* par) {
+Double_t fun_m2_mc(Double_t* x, Double_t* par)
+{
   return (par[1] * C1 / par[0] * exp(-0.5 * pow((x[0] - M2PION) / par[0], 2))
           + par[2] * C1 / par[0] * exp(-0.5 * pow((x[0] - M2KAON) / par[0], 2))
-          + par[3] * C1 / par[0]
-              * exp(-0.5 * pow((x[0] - M2PROT) / par[0], 2)));
+          + par[3] * C1 / par[0] * exp(-0.5 * pow((x[0] - M2PROT) / par[0], 2)));
 }
 
-Double_t fun_m2_pika(Double_t* x, Double_t* par) {
+Double_t fun_m2_pika(Double_t* x, Double_t* par)
+{
   return (par[1] * C1 / par[0] * exp(-0.5 * pow((x[0] - par[3]) / par[0], 2))
-          + par[2] * C1 / par[0]
-              * exp(-0.5 * pow((x[0] - M2KAON) / par[0], 2)));
+          + par[2] * C1 / par[0] * exp(-0.5 * pow((x[0] - M2KAON) / par[0], 2)));
 }
 
-Double_t fun_m2(Double_t* x, Double_t* par) {
+Double_t fun_m2(Double_t* x, Double_t* par)
+{
   return (par[1] * C1 / par[0] * exp(-0.5 * pow((x[0] - par[2]) / par[0], 2)));
 }
 
 
 // ------------------------------------------------------------------
-void plot_hadron_m2mom(Int_t level) {
+void plot_hadron_m2mom(Int_t level)
+{
   // Check level
   // 1 - MC truth
   // 2 - RECO
@@ -44,16 +46,13 @@ void plot_hadron_m2mom(Int_t level) {
 
   // Define filenames
   char fileName[3][1000];
-  sprintf(fileName[0],
-          "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[0], "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.root",
           ver);
-  sprintf(fileName[1],
-          "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[1], "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
           ver);
-  sprintf(fileName[2],
-          "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[2], "/home/kresan/data/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
           ver);
 
@@ -69,9 +68,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   // Open the file
   TFile* file = new TFile(fileName[level - 1]);
   TH2F* h_m2mom;
-  if (level < 3) {
-    h_m2mom = (TH2F*) file->Get("h_m2mom_hadron");
-  } else if (3 == level) {
+  if (level < 3) { h_m2mom = (TH2F*) file->Get("h_m2mom_hadron"); }
+  else if (3 == level) {
     h_m2mom = (TH2F*) file->Get("h_m2mom_hadron_true");
   }
   Style(h_m2mom, "p (GeV/c)", "m^{2} (GeV^{2}/c^{4})");
@@ -87,8 +85,7 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   TString strNames[] = {"_1", "_3", "_5"};
   TH1D* h_m2[3];
   for (Int_t i = 0; i < 3; i++) {
-    h_m2[i] =
-      h_m2mom->ProjectionY(("h_m2" + strNames[i]).Data(), bins[i], bins[i]);
+    h_m2[i] = h_m2mom->ProjectionY(("h_m2" + strNames[i]).Data(), bins[i], bins[i]);
     Style(h_m2[i], "m^{2} (GeV^{2}/c^{4})", "dn/dm^{2}");
     h_m2[i]->Scale(0.1);
     h_m2[i]->GetXaxis()->SetRangeUser(-0.5, 1.5);
@@ -102,7 +99,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   if (level < 2) {
     f1 = new TF1("f1", fun_m2_mc, -0.5, 1.5, 4);
     f1->SetParameters(0.1, 150, 20, 80);
-  } else {
+  }
+  else {
     f_pika_f = new TF1("f_pika_f", fun_m2_pika, -0.2, 0.5, 4);
     f_pika_f->SetParameters(0.1, 1., 1., 0.001);
     f_prot_f = new TF1("f_prot_f", fun_m2, 0.7, 1.3, 3);
@@ -125,15 +123,15 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
     gStyle->SetPaperSize(32, 16);
     c1 = new TCanvas("c1", "", 10, 10, 1020, 510);
     c1->Divide(2, 1);
-  } else {
+  }
+  else {
     gStyle->SetPaperSize(32, 32);
     c1 = new TCanvas("c1", "", 10, 10, 1020, 1020);
     c1->Divide(2, 2);
   }
   TPostScript* ps1 = new TPostScript(psName[level - 1], -113);
-  if (level < 2) {
-    ps1->Range(32, 16);
-  } else {
+  if (level < 2) { ps1->Range(32, 16); }
+  else {
     ps1->Range(32, 32);
   }
   c1->cd(1);
@@ -143,8 +141,7 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   gPad->SetGridx();
   gPad->SetGridy();
   h_m2mom->Draw("colz");
-  TPaveLabel* l1 =
-    new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
+  TPaveLabel* l1 = new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
   Style(l1);
   l1->SetTextColor(2);
   l1->Draw();
@@ -173,7 +170,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
     leg1->AddEntry(f_kaon, "  K^{+}", "l");
     leg1->AddEntry(f_prot, "  p", "l");
     leg1->Draw();
-  } else {
+  }
+  else {
     for (Int_t i = 0; i < 3; i++) {
       c1->cd(i + 2);
       //	    c1->cd(2);
@@ -186,21 +184,15 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
       h_m2[i]->Draw();
       h_m2[i]->Fit(f_pika_f, "QNR+");
       h_m2[i]->Fit(f_prot_f, "QNR+");
-      f_pion->SetParameters(f_pika_f->GetParameter(0),
-                            f_pika_f->GetParameter(1),
-                            f_pika_f->GetParameter(3));
-      f_kaon->SetParameters(
-        f_pika_f->GetParameter(0), f_pika_f->GetParameter(2), M2KAON);
-      f_prot->SetParameters(f_prot_f->GetParameter(0),
-                            f_prot_f->GetParameter(1),
-                            f_prot_f->GetParameter(2));
+      f_pion->SetParameters(f_pika_f->GetParameter(0), f_pika_f->GetParameter(1), f_pika_f->GetParameter(3));
+      f_kaon->SetParameters(f_pika_f->GetParameter(0), f_pika_f->GetParameter(2), M2KAON);
+      f_prot->SetParameters(f_prot_f->GetParameter(0), f_prot_f->GetParameter(1), f_prot_f->GetParameter(2));
       f_pion->DrawClone("same");
       f_kaon->DrawClone("same");
       f_prot->DrawClone("same");
       // f_pika_f->SetLineColor(2);
       // f_pika_f->DrawClone("same");
-      TPaveLabel* l2 =
-        new TPaveLabel(0.41, 0.79, 0.73, 0.88, strBins[i], "NDC");
+      TPaveLabel* l2 = new TPaveLabel(0.41, 0.79, 0.73, 0.88, strBins[i], "NDC");
       Style(l2);
       l2->SetTextColor(4);
       l2->Draw();
@@ -221,7 +213,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
 
 
 // ------------------------------------------------------------------
-void plot_hadron_m2mom_simple(Int_t level) {
+void plot_hadron_m2mom_simple(Int_t level)
+{
   // Check level
   if (level < 1 || level > 4) return;
 
@@ -233,20 +226,16 @@ void plot_hadron_m2mom_simple(Int_t level) {
 
   // Define filenames
   char fileName[4][1000];
-  sprintf(fileName[0],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[0], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.root",
           ver);
-  sprintf(fileName[1],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[1], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.recoIdeal.root",
           ver);
-  sprintf(fileName[2],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[2], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
           ver);
-  sprintf(fileName[3],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[3], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
           ver);
 
@@ -263,9 +252,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   // Open the file
   TFile* file = new TFile(fileName[level - 1]);
   TH2F* h_m2mom;
-  if (level < 4) {
-    h_m2mom = (TH2F*) file->Get("h_m2mom_hadron");
-  } else if (4 == level) {
+  if (level < 4) { h_m2mom = (TH2F*) file->Get("h_m2mom_hadron"); }
+  else if (4 == level) {
     h_m2mom = (TH2F*) file->Get("h_m2mom_hadron_true");
   }
   Style(h_m2mom, "p (GeV/c)", "m^{2} (GeV^{2}/c^{4})");
@@ -296,7 +284,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
 
 
 // ------------------------------------------------------------------
-void plot_hadron_m2mom_GSI(Int_t level) {
+void plot_hadron_m2mom_GSI(Int_t level)
+{
   // Check level
   if (level < 1 || level > 3) return;
 
@@ -308,16 +297,13 @@ void plot_hadron_m2mom_GSI(Int_t level) {
 
   // Define filenames
   char fileName[3][1000];
-  sprintf(fileName[0],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[0], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.root",
           ver);
-  sprintf(fileName[1],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[1], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.recoIdeal.root",
           ver);
-  sprintf(fileName[2],
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[2], "/lustre/cbm/user/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
           ver);
 
@@ -346,8 +332,7 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   TString strNames[] = {"_1", "_3", "_5"};
   TH1D* h_m2[3];
   for (Int_t i = 0; i < 3; i++) {
-    h_m2[i] =
-      h_m2mom->ProjectionY(("h_m2" + strNames[i]).Data(), bins[i], bins[i]);
+    h_m2[i] = h_m2mom->ProjectionY(("h_m2" + strNames[i]).Data(), bins[i], bins[i]);
     Style(h_m2[i], "m^{2} (GeV^{2}/c^{4})", "dn/dm^{2}");
     h_m2[i]->Scale(0.1);
     h_m2[i]->GetXaxis()->SetRangeUser(-0.5, 1.5);
@@ -361,7 +346,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   if (level < 2) {
     f1 = new TF1("f1", fun_m2_mc, -0.5, 1.5, 4);
     f1->SetParameters(0.1, 150, 20, 80);
-  } else {
+  }
+  else {
     f_pika_f = new TF1("f_pika_f", fun_m2_pika, -0.5, 0.5, 3);
     f_pika_f->SetParameters(0.01, 1., 1.);
     f_prot_f = new TF1("f_prot_f", fun_m2, 0.7, 1.3, 3);
@@ -384,15 +370,15 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
     gStyle->SetPaperSize(32, 16);
     c1 = new TCanvas("c1", "", 10, 10, 1020, 510);
     c1->Divide(2, 1);
-  } else {
+  }
+  else {
     gStyle->SetPaperSize(32, 16);
     c1 = new TCanvas("c1", "", 10, 10, 1020, 510);
     c1->Divide(2, 1);
   }
   TPostScript* ps1 = new TPostScript(psName[level - 1], -113);
-  if (level < 2) {
-    ps1->Range(32, 16);
-  } else {
+  if (level < 2) { ps1->Range(32, 16); }
+  else {
     ps1->Range(32, 16);
   }
   c1->cd(1);
@@ -402,8 +388,7 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
   gPad->SetGridx();
   gPad->SetGridy();
   h_m2mom->Draw("colz");
-  TPaveLabel* l1 =
-    new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
+  TPaveLabel* l1 = new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
   Style(l1);
   l1->SetTextColor(2);
   l1->Draw();
@@ -432,7 +417,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
     leg1->AddEntry(f_kaon, "  K^{+}", "l");
     leg1->AddEntry(f_prot, "  p", "l");
     leg1->Draw();
-  } else {
+  }
+  else {
     for (Int_t i = 0; i < 1; i++) {
       c1->cd(i + 2);
       //	    c1->cd(2);
@@ -444,18 +430,13 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
       h_m2[i + 1]->Draw();
       h_m2[i + 1]->Fit(f_pika_f, "QNR+");
       h_m2[i + 1]->Fit(f_prot_f, "QNR+");
-      f_pion->SetParameters(
-        f_pika_f->GetParameter(0), f_pika_f->GetParameter(1), M2PION);
-      f_kaon->SetParameters(
-        f_pika_f->GetParameter(0), f_pika_f->GetParameter(2), M2KAON);
-      f_prot->SetParameters(f_prot_f->GetParameter(0),
-                            f_prot_f->GetParameter(1),
-                            f_prot_f->GetParameter(2));
+      f_pion->SetParameters(f_pika_f->GetParameter(0), f_pika_f->GetParameter(1), M2PION);
+      f_kaon->SetParameters(f_pika_f->GetParameter(0), f_pika_f->GetParameter(2), M2KAON);
+      f_prot->SetParameters(f_prot_f->GetParameter(0), f_prot_f->GetParameter(1), f_prot_f->GetParameter(2));
       f_pion->DrawClone("same");
       f_kaon->DrawClone("same");
       f_prot->DrawClone("same");
-      TPaveLabel* l2 =
-        new TPaveLabel(0.41, 0.79, 0.73, 0.88, strBins[i + 1], "NDC");
+      TPaveLabel* l2 = new TPaveLabel(0.41, 0.79, 0.73, 0.88, strBins[i + 1], "NDC");
       Style(l2);
       l2->SetTextColor(4);
       l2->Draw();
@@ -476,7 +457,8 @@ urqmd.auau.25gev.centr.80ps.m2mom.reco.root",
 
 
 // ------------------------------------------------------------------
-void plot_hadron_m2mom_ghost(Int_t level) {
+void plot_hadron_m2mom_ghost(Int_t level)
+{
   // Check level
   if (level < 1 || level > 3) return;
 
@@ -488,16 +470,13 @@ void plot_hadron_m2mom_ghost(Int_t level) {
 
   // Define filenames
   char fileName[3][1000];
-  sprintf(fileName[0],
-          "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[0], "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.root",
           ver);
-  sprintf(fileName[1],
-          "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[1], "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.recoIdeal.root",
           ver);
-  sprintf(fileName[2],
-          "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
+  sprintf(fileName[2], "/d/cbm02/kresan/hadron/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.reco.root",
           ver);
 
@@ -531,9 +510,7 @@ urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.reco.root",
   h_m2mom_ghost->GetZaxis()->SetRangeUser(1e-1, 1e2);
   h_m2mom_ghost->GetZaxis()->SetTitle("dn/dp/dm^{2}");
 
-  cout << h_m2mom_ghost->GetEntries()
-            / (h_m2mom->GetEntries() + h_m2mom_ghost->GetEntries()) * 100
-       << endl;
+  cout << h_m2mom_ghost->GetEntries() / (h_m2mom->GetEntries() + h_m2mom_ghost->GetEntries()) * 100 << endl;
 
   // Tracks with TOF double hits
   TH2F* h_m2mom_tdh = (TH2F*) file->Get("h_m2mom_tdh");
@@ -545,8 +522,7 @@ urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.reco.root",
   h_m2mom_tdh->GetZaxis()->SetTitle("dn/dp/dm^{2}");
 
   // Ghost tracks without TDH
-  TH2F* h_m2mom_gwtdh =
-    new TH2F("h_m2mom_gwtdh", "", 200, -10., 10., 900, -1.5, 3.0);
+  TH2F* h_m2mom_gwtdh = new TH2F("h_m2mom_gwtdh", "", 200, -10., 10., 900, -1.5, 3.0);
   Style(h_m2mom_gwtdh, "p (GeV/c)", "m^{2} (GeV^{2}/c^{4})");
   h_m2mom_gwtdh->Scale(1. / 10000.);
   h_m2mom_gwtdh->GetZaxis()->SetTitle("dn/dp/dm^{2}");
@@ -568,8 +544,7 @@ urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.reco.root",
   gPad->SetGridx();
   gPad->SetGridy();
   h_m2mom->Draw("colz");
-  TPaveLabel* l1 =
-    new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
+  TPaveLabel* l1 = new TPaveLabel(0.37, 0.90, 0.80, 0.98, label[level - 1], "NDC");
   Style(l1);
   l1->SetTextColor(2);
   l1->Draw();
@@ -610,16 +585,15 @@ urqmd.auau.25gev.centr.80ps.99percent.hadron.pdf.reco.root",
 
 
 // ------------------------------------------------------------------
-void plot_hadron_sm2() {
+void plot_hadron_sm2()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file   = new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.fitted.root");
-  TFile* file_r =
-    new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file_r = new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.fitted.reco.root");
-  TH1F* h_sm2 = (TH1F*) file->Get("h_sm2");
+  TH1F* h_sm2   = (TH1F*) file->Get("h_sm2");
   //    h_sm2->GetXaxis()->SetRangeUser(1., 5.);
   //    h_sm2->GetYaxis()->SetRangeUser(0., 0.6);
   TH1F* h_sm2_r = (TH1F*) file_r->Get("h_sm2");
@@ -654,17 +628,14 @@ urqmd.auau.25gev.centr.80ps.99percent.fitted.reco.root");
   //    leg1->Draw();
   f1->Draw("same");
   f2->Draw("same");
-  TPaveLabel* label1 =
-    new TPaveLabel(0.178, 0.402, 0.573, 0.475, "2#sigma separation", "NDC");
+  TPaveLabel* label1 = new TPaveLabel(0.178, 0.402, 0.573, 0.475, "2#sigma separation", "NDC");
   Style(label1);
   label1->Draw();
-  TPaveLabel* label2 =
-    new TPaveLabel(0.759, 0.317, 0.949, 0.376, "p and #pi", "NDC");
+  TPaveLabel* label2 = new TPaveLabel(0.759, 0.317, 0.949, 0.376, "p and #pi", "NDC");
   Style(label2);
   label2->SetTextColor(4);
   label2->Draw();
-  TPaveLabel* label3 =
-    new TPaveLabel(0.751, 0.164, 0.949, 0.226, "K and #pi", "NDC");
+  TPaveLabel* label3 = new TPaveLabel(0.751, 0.164, 0.949, 0.226, "K and #pi", "NDC");
   Style(label3);
   label3->SetTextColor(6);
   label3->Draw();
@@ -674,14 +645,13 @@ urqmd.auau.25gev.centr.80ps.99percent.fitted.reco.root");
 
 
 // ------------------------------------------------------------------
-void plot_hadron_kaoneff() {
+void plot_hadron_kaoneff()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file   = new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.fitted.root");
-  TFile* file_r =
-    new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file_r = new TFile("/d/cbm06/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.99percent.fitted.reco.root");
   TH1F* h_eff   = (TH1F*) file->Get("h_eff_ka");
   TH1F* h_eff_r = (TH1F*) file_r->Get("h_eff_ka");
@@ -708,11 +678,11 @@ urqmd.auau.25gev.centr.80ps.99percent.fitted.reco.root");
 
 
 // ------------------------------------------------------------------
-void plot_hadron_kaonmom() {
+void plot_hadron_kaonmom()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file = new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.90percent.hadron.spectra.root");
 
   TH1F* h_all  = (TH1F*) file->Get("h_mom_all_kap");
@@ -750,11 +720,11 @@ urqmd.auau.25gev.centr.80ps.90percent.hadron.spectra.root");
 
 
 // ------------------------------------------------------------------
-void plot_hadron_pty() {
+void plot_hadron_pty()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file       = new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   TH2F* h_all_pip   = (TH2F*) file->Get("h_pty_all_pip");
   TH2F* h_all_kap   = (TH2F*) file->Get("h_pty_all_kap");
@@ -872,34 +842,16 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   f_prot_3->SetLineWidth(2);
 
   cout << "pi" << endl;
-  cout << "Acceptance: "
-       << 100 * (Double_t) h_acc_pip->GetEntries()
-            / (Double_t) h_all_pip->GetEntries()
-       << endl;
-  cout << "RECO + PID: "
-       << 100 * (Double_t) h_rpid_pip->GetEntries()
-            / (Double_t) h_acc_pip->GetEntries()
-       << endl;
+  cout << "Acceptance: " << 100 * (Double_t) h_acc_pip->GetEntries() / (Double_t) h_all_pip->GetEntries() << endl;
+  cout << "RECO + PID: " << 100 * (Double_t) h_rpid_pip->GetEntries() / (Double_t) h_acc_pip->GetEntries() << endl;
   cout << endl;
   cout << "K" << endl;
-  cout << "Acceptance: "
-       << 100 * (Double_t) h_acc_kap->GetEntries()
-            / (Double_t) h_all_kap->GetEntries()
-       << endl;
-  cout << "RECO + PID: "
-       << 100 * (Double_t) h_rpid_kap->GetEntries()
-            / (Double_t) h_acc_kap->GetEntries()
-       << endl;
+  cout << "Acceptance: " << 100 * (Double_t) h_acc_kap->GetEntries() / (Double_t) h_all_kap->GetEntries() << endl;
+  cout << "RECO + PID: " << 100 * (Double_t) h_rpid_kap->GetEntries() / (Double_t) h_acc_kap->GetEntries() << endl;
   cout << endl;
   cout << "p" << endl;
-  cout << "Acceptance: "
-       << 100 * (Double_t) h_acc_prot->GetEntries()
-            / (Double_t) h_all_prot->GetEntries()
-       << endl;
-  cout << "RECO + PID: "
-       << 100 * (Double_t) h_rpid_prot->GetEntries()
-            / (Double_t) h_acc_prot->GetEntries()
-       << endl;
+  cout << "Acceptance: " << 100 * (Double_t) h_acc_prot->GetEntries() / (Double_t) h_all_prot->GetEntries() << endl;
+  cout << "RECO + PID: " << 100 * (Double_t) h_rpid_prot->GetEntries() / (Double_t) h_acc_prot->GetEntries() << endl;
   cout << endl;
 
   gStyle->SetPaperSize(48, 48);
@@ -912,28 +864,24 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   gPad->SetLeftMargin(0.2);
   gPad->SetRightMargin(0.);
   h_all_pip->Draw("col");
-  TPaveLabel* label_all =
-    new TPaveLabel(0.220, 0.788, 0.485, 0.981, "ALL", "NDC");
+  TPaveLabel* label_all = new TPaveLabel(0.220, 0.788, 0.485, 0.981, "ALL", "NDC");
   Style(label_all);
   label_all->Draw();
-  TPaveLabel* label_pip =
-    new TPaveLabel(0.821, 0.813, 0.987, 0.988, "#pi", "NDC");
+  TPaveLabel* label_pip = new TPaveLabel(0.821, 0.813, 0.987, 0.988, "#pi", "NDC");
   Style(label_pip);
   label_pip->Draw();
   c1->cd(2);
   gPad->SetLeftMargin(0.);
   gPad->SetRightMargin(0.);
   h_all_kap->Draw("col");
-  TPaveLabel* label_kap =
-    new TPaveLabel(0.821, 0.813, 0.987, 0.988, "K", "NDC");
+  TPaveLabel* label_kap = new TPaveLabel(0.821, 0.813, 0.987, 0.988, "K", "NDC");
   Style(label_kap);
   label_kap->Draw();
   c1->cd(3);
   gPad->SetLeftMargin(0.);
   gPad->SetRightMargin(0.01);
   h_all_prot->Draw("col");
-  TPaveLabel* label_prot =
-    new TPaveLabel(0.821, 0.813, 0.987, 0.988, "p", "NDC");
+  TPaveLabel* label_prot = new TPaveLabel(0.821, 0.813, 0.987, 0.988, "p", "NDC");
   Style(label_prot);
   label_prot->Draw();
 
@@ -943,8 +891,7 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   h_acc_pip->Draw("col");
   f_pi_27->Draw("same");
   f_pi_3->Draw("same");
-  TPaveLabel* label_acc =
-    new TPaveLabel(0.220, 0.788, 0.485, 0.981, "ACC", "NDC");
+  TPaveLabel* label_acc = new TPaveLabel(0.220, 0.788, 0.485, 0.981, "ACC", "NDC");
   Style(label_acc);
   label_acc->Draw();
   c1->cd(5);
@@ -967,8 +914,7 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   h_rpid_pip->Draw("col");
   f_pi_27->Draw("same");
   f_pi_3->Draw("same");
-  TPaveLabel* label_pid =
-    new TPaveLabel(0.220, 0.788, 0.485, 0.981, "PID", "NDC");
+  TPaveLabel* label_pid = new TPaveLabel(0.220, 0.788, 0.485, 0.981, "PID", "NDC");
   Style(label_pid);
   label_pid->Draw();
   c1->cd(8);
@@ -979,8 +925,7 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   f_ka_27->Draw("same");
   f_ka_3->Draw("same");
   f1->Draw("same");
-  TPaveLabel* label1 =
-    new TPaveLabel(0.39, 0.82, 0.90, 0.96, "p=5.0 GeV/c", "NDC");
+  TPaveLabel* label1 = new TPaveLabel(0.39, 0.82, 0.90, 0.96, "p=5.0 GeV/c", "NDC");
   Style(label1);
   label1->SetTextColor(2);
   label1->Draw();
@@ -999,11 +944,11 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
 
 
 // ------------------------------------------------------------------
-void plot_hadron_kaonpty0() {
+void plot_hadron_kaonpty0()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
+  TFile* file      = new TFile("/lustre/cbm/user/kresan/hadron/head/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
   TH2F* h_all_kap  = (TH2F*) file->Get("h_pty_all_kap");
   TH2F* h_acc_kap  = (TH2F*) file->Get("h_pty_acc_kap");
@@ -1047,10 +992,11 @@ urqmd.auau.25gev.centr.80ps.50percent.hadron.spectra.root");
 
 
 // ------------------------------------------------------------------
-void plot_hadron_kaonmt() {
+void plot_hadron_kaonmt()
+{
   TPstyle();
 
-  TFile* file = new TFile("/d/cbm02/kresan/hadron/JAN06/urqmd/auau/35gev/centr/\
+  TFile* file      = new TFile("/d/cbm02/kresan/hadron/JAN06/urqmd/auau/35gev/centr/\
 urqmd.auau.35gev.centr.80ps.99percent.hadron.spectra.root");
   TH2F* h_mty_all  = (TH2F*) file->Get("h_mty_all_kap");
   TH2F* h_mty_acc  = (TH2F*) file->Get("h_mty_acc_kap");
@@ -1095,11 +1041,11 @@ urqmd.auau.35gev.centr.80ps.99percent.hadron.spectra.root");
 
 
 // ------------------------------------------------------------------
-void plot_stseff() {
+void plot_stseff()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/misc/kresan/jan06/cbmroot2/macro/hadron/reco/histo.root");
+  TFile* file     = new TFile("/misc/kresan/jan06/cbmroot2/macro/hadron/reco/histo.root");
   TProfile* p_eff = (TProfile*) file->Get("p_eff_all_vs_mom");
   p_eff->SetLineColor(2);
   p_eff->SetMarkerColor(2);
@@ -1121,11 +1067,11 @@ void plot_stseff() {
 
 
 // ------------------------------------------------------------------
-void plot_stsmomres() {
+void plot_stsmomres()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/misc/kresan/jan06/cbmroot2/macro/hadron/reco/histo.root");
+  TFile* file    = new TFile("/misc/kresan/jan06/cbmroot2/macro/hadron/reco/histo.root");
   TH2F* h_momres = (TH2F*) file->Get("P_vs_P");
   Style(h_momres, "p (GeV/c)", "#deltap/p");
 
@@ -1167,11 +1113,11 @@ void plot_stsmomres() {
 
 
 // ------------------------------------------------------------------
-void plot_trdeff() {
+void plot_trdeff()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/d/cbm02/kresan/reco/JAN06/urqmd/auau/35gev/centr/80ps/\
+  TFile* file = new TFile("/d/cbm02/kresan/reco/JAN06/urqmd/auau/35gev/centr/80ps/\
 urqmd.auau.35gev.centr.0002.80ps.reco.root");
   TH1F* h_eff = (TH1F*) file->Get("h_mom_eff_good");
   Style(h_eff, "p (GeV/c)", "efficiency");
@@ -1197,11 +1143,11 @@ urqmd.auau.35gev.centr.0002.80ps.reco.root");
 
 
 // ------------------------------------------------------------------
-void plot_glbeff() {
+void plot_glbeff()
+{
   TPstyle();
 
-  TFile* file =
-    new TFile("/d/cbm02/kresan/reco/JAN06/urqmd/auau/35gev/centr/80ps/\
+  TFile* file = new TFile("/d/cbm02/kresan/reco/JAN06/urqmd/auau/35gev/centr/80ps/\
 urqmd.auau.35gev.centr.0002.80ps.reco.root");
   TH1F* h_eff = (TH1F*) file->Get("h_mom_eff_good_glb");
   Style(h_eff, "p (GeV/c)", "efficiency");
@@ -1226,19 +1172,20 @@ urqmd.auau.35gev.centr.0002.80ps.reco.root");
 // ------------------------------------------------------------------
 
 
-Double_t fun_pty_theta(Double_t* x, Double_t* par) {
+Double_t fun_pty_theta(Double_t* x, Double_t* par)
+{
   Double_t shy  = TMath::SinH(x[0]);
   Double_t chy  = TMath::CosH(x[0]);
   Double_t sint = TMath::Sin(par[1]);
   Double_t cost = TMath::Cos(par[1]);
   Double_t temp = cost * cost * chy * chy - shy * shy;
-  if (temp > 0)
-    return par[0] * sint * shy / TMath::Sqrt(temp);
+  if (temp > 0) return par[0] * sint * shy / TMath::Sqrt(temp);
   else
     return 2.6;
 }
 
-Double_t fun_pty_p(Double_t* x, Double_t* par) {
+Double_t fun_pty_p(Double_t* x, Double_t* par)
+{
   Double_t m2   = par[0] * par[0];
   Double_t p2   = par[1] * par[1];
   Double_t sh2y = TMath::Power(TMath::SinH(x[0]), 2);

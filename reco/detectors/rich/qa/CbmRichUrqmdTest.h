@@ -131,8 +131,7 @@ private:
   CbmMCEventList* fEventList;
 
   Int_t fEventNum;
-  Int_t
-    fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
+  Int_t fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
 
   // Number of hits in the MC RICH ring
   std::map<pair<Int_t, Int_t>, Int_t> fNofHitsInRingMap;

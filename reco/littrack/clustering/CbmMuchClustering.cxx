@@ -6,6 +6,7 @@
  */
 
 #include "CbmMuchClustering.h"
+
 #include "CbmClusteringA1.h"
 #include "CbmClusteringGeometry.h"
 #include "CbmClusteringSL.h"
@@ -25,15 +26,15 @@
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
 #include "CbmMuchStation.h"
-#include "FairRootManager.h"
-#include "TStopwatch.h"
+#include "draw/CbmDrawHist.h"
 
-#include "TClonesArray.h"
-#include "TMath.h"
+#include "FairRootManager.h"
 
 #include "TCanvas.h"
+#include "TClonesArray.h"
 #include "TH1F.h"
-#include "draw/CbmDrawHist.h"
+#include "TMath.h"
+#include "TStopwatch.h"
 #include <TFile.h>
 
 #include <cassert>
@@ -53,13 +54,15 @@ CbmMuchClustering::CbmMuchClustering(const char* digiFileName)
   , fScheme(CbmMuchGeoScheme::Instance())
   , fCluster()
   , fHit()
-  , fNofClusters() {
+  , fNofClusters()
+{
   fAlgorithmVersion = 2;
   fNofModules       = 0;
   fNofEvents        = 0;
 }
 
-CbmMuchClustering::~CbmMuchClustering() {
+CbmMuchClustering::~CbmMuchClustering()
+{
   if (fHit) {
     fHit->Delete();
     delete fHit;
@@ -70,7 +73,8 @@ CbmMuchClustering::~CbmMuchClustering() {
   }
 }
 
-InitStatus CbmMuchClustering::Init() {
+InitStatus CbmMuchClustering::Init()
+{
   std::cout << "CbmMuchClustering::Init" << std::endl;
 
   // Initialize GeoScheme
@@ -96,15 +100,15 @@ InitStatus CbmMuchClustering::Init() {
   return kSUCCESS;
 }
 
-void CbmMuchClustering::Exec(Option_t* /*opt*/) {
+void CbmMuchClustering::Exec(Option_t* /*opt*/)
+{
   //static Int_t eventNo = 0;
   TStopwatch timer;
   timer.Start();
   //std::cout << "CbmMuchClustering::Exec: event No=" << fNofEvents << std::endl;
   fNofEvents++;
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMuch) < 1) {
-    cout << "-I- " << GetName() << "::Exec: No digis found, event skipped. "
-         << endl;
+    cout << "-I- " << GetName() << "::Exec: No digis found, event skipped. " << endl;
     fNofEvents--;
     return;
   }
@@ -119,32 +123,25 @@ void CbmMuchClustering::Exec(Option_t* /*opt*/) {
   // Clear digi charges array
   ClearDigiCharges();
   timer.Stop();
-  std::cout << "CbmMuchClustering: time " << timer.RealTime()
-            << "; clusters:   " << fNofClusters << "\n";
+  std::cout << "CbmMuchClustering: time " << timer.RealTime() << "; clusters:   " << fNofClusters << "\n";
 }
 
-void CbmMuchClustering::Finish() {
-  std::cout << "CbmMuchClustering::Finish" << std::endl;
-}
+void CbmMuchClustering::Finish() { std::cout << "CbmMuchClustering::Finish" << std::endl; }
 
-void CbmMuchClustering::ReadDataBranches() {
+void CbmMuchClustering::ReadDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman != NULL);
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
   fCluster = new TClonesArray("CbmMuchCluster", 1000);
-  ioman->Register("MuchCluster",
-                  "Cluster in MUCH",
-                  fCluster,
-                  IsOutputBranchPersistent("MuchCluster"));
+  ioman->Register("MuchCluster", "Cluster in MUCH", fCluster, IsOutputBranchPersistent("MuchCluster"));
   fHit = new TClonesArray("CbmMuchPixelHit", 1000);
-  ioman->Register("MuchPixelHit",
-                  "Hit in MUCH",
-                  fHit,
-                  IsOutputBranchPersistent("MuchPixelHit"));
+  ioman->Register("MuchPixelHit", "Hit in MUCH", fHit, IsOutputBranchPersistent("MuchPixelHit"));
 }
 
-void CbmMuchClustering::CreateModulesGeometryArray() {
+void CbmMuchClustering::CreateModulesGeometryArray()
+{
   fNofModules = 0;
   fModulesGeometryArray.clear();
   Int_t iModule  = 0;
@@ -160,8 +157,7 @@ void CbmMuchClustering::CreateModulesGeometryArray() {
       fNofModules += nModules;
       for (Int_t iMod = 0; iMod < nModules; iMod++) {
         // Add special module geometry in array
-        fModulesGeometryArray.push_back(
-          new CbmClusteringGeometry(iSt, iL, 0, iMod, fScheme));
+        fModulesGeometryArray.push_back(new CbmClusteringGeometry(iSt, iL, 0, iMod, fScheme));
         // Add module index in map
         fModulesByDetId[fModulesGeometryArray[iModule]->GetDetId()] = iModule;
         iModule++;
@@ -171,8 +167,7 @@ void CbmMuchClustering::CreateModulesGeometryArray() {
       fNofModules += nModules;
       for (Int_t iMod = 0; iMod < nModules; iMod++) {
         // Add special module geometry in array
-        fModulesGeometryArray.push_back(
-          new CbmClusteringGeometry(iSt, iL, 1, iMod, fScheme));
+        fModulesGeometryArray.push_back(new CbmClusteringGeometry(iSt, iL, 1, iMod, fScheme));
         // Add module index in map
         fModulesByDetId[fModulesGeometryArray[iModule]->GetDetId()] = iModule;
         iModule++;
@@ -183,39 +178,36 @@ void CbmMuchClustering::CreateModulesGeometryArray() {
   }
 }
 
-void CbmMuchClustering::SetDigiCharges() {
-  for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kMuch);
-       iDigi++) {
+void CbmMuchClustering::SetDigiCharges()
+{
+  for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); iDigi++) {
     const CbmMuchDigi* muchDigi = fDigiMan->Get<CbmMuchDigi>(iDigi);
     Long64_t chId               = muchDigi->GetAddress();
-    Int_t detID = CbmMuchAddress::GetElementAddress(chId, kMuchModule);
-    Int_t iPad =
-      fModulesGeometryArray[fModulesByDetId[detID]]->GetPadByChannelId(chId);
-    fModulesGeometryArray[fModulesByDetId[detID]]->SetPadCharge(
-      iPad, muchDigi->GetAdc());
+    Int_t detID                 = CbmMuchAddress::GetElementAddress(chId, kMuchModule);
+    Int_t iPad                  = fModulesGeometryArray[fModulesByDetId[detID]]->GetPadByChannelId(chId);
+    fModulesGeometryArray[fModulesByDetId[detID]]->SetPadCharge(iPad, muchDigi->GetAdc());
     fModulesGeometryArray[fModulesByDetId[detID]]->SetDigiNum(iPad, iDigi);
     fModulesGeometryArray[fModulesByDetId[detID]]->SetAPadsPlusOne();
   }
 }
 
-void CbmMuchClustering::ClearDigiCharges() {
-  for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kMuch);
-       iDigi++) {
+void CbmMuchClustering::ClearDigiCharges()
+{
+  for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); iDigi++) {
     const CbmMuchDigi* muchDigi = fDigiMan->Get<CbmMuchDigi>(iDigi);
     Long64_t chId               = muchDigi->GetChannelId();
-    Int_t detID = CbmMuchAddress::GetElementAddress(chId, kMuchModule);
-    Int_t iPad =
-      fModulesGeometryArray[fModulesByDetId[detID]]->GetPadByChannelId(chId);
+    Int_t detID                 = CbmMuchAddress::GetElementAddress(chId, kMuchModule);
+    Int_t iPad                  = fModulesGeometryArray[fModulesByDetId[detID]]->GetPadByChannelId(chId);
     fModulesGeometryArray[fModulesByDetId[detID]]->SetPadCharge(iPad, 0);
     fModulesGeometryArray[fModulesByDetId[detID]]->SetDigiNum(iPad, 0);
     fModulesGeometryArray[fModulesByDetId[detID]]->SetAPadsNom(0);
   }
 }
 
-void CbmMuchClustering::ClusteringMainFunction() {
+void CbmMuchClustering::ClusteringMainFunction()
+{
   for (Int_t iMod = 0; iMod < fNofModules; iMod++) {
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*) fScheme->GetModuleByDetId(
-      fModulesGeometryArray[iMod]->GetDetId());
+    CbmMuchModuleGem* module = (CbmMuchModuleGem*) fScheme->GetModuleByDetId(fModulesGeometryArray[iMod]->GetDetId());
     // Switching clustering algorithm by function SetAlgorithmVersion
     switch (fAlgorithmVersion) {
       case 1: {  // 1 - Developed algorithm, using all neighbors
@@ -239,17 +231,13 @@ void CbmMuchClustering::ClusteringMainFunction() {
         std::cout << "CbmMuchClustering: Error! Algorithm not tested\n";
         break;
       }
-      default:
-        std::cout
-          << "CbmMuchClustering: Error! Wrong version of the algorithm.\n";
-        break;
+      default: std::cout << "CbmMuchClustering: Error! Wrong version of the algorithm.\n"; break;
     }
   }
 }
 
-void CbmMuchClustering::ClusteringA1(CbmClusteringGeometry* m1,
-                                     CbmMuchModuleGem* m2,
-                                     Int_t Ver) {
+void CbmMuchClustering::ClusteringA1(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2, Int_t Ver)
+{
   // Create developed algorithm class for module m1
   CbmClusteringA1* clustersA1 = new CbmClusteringA1(m1);
   // Start algorithm
@@ -260,8 +248,7 @@ void CbmMuchClustering::ClusteringA1(CbmClusteringGeometry* m1,
   vector<Int_t> digiIndices;
   for (Int_t iCl = 0; iCl < clustersA1->GetNofClusters(); iCl++) {
     digiIndices.clear();
-    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0,
-             sumdxy2 = 0, sumdt2 = 0;
+    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0, sumdt2 = 0;
     Double_t q = 0, x = 0, y = 0, t = 0, z = 0, dx = 0, dy = 0, dxy = 0, dt = 0;
     Double_t tmin   = -1;
     x               = clustersA1->GetX0(iCl);
@@ -274,8 +261,7 @@ void CbmMuchClustering::ClusteringA1(CbmClusteringGeometry* m1,
       Int_t iDigi                 = clustersA1->GetPadInCluster(iCl, iPad);
       const CbmMuchDigi* muchDigi = fDigiMan->Get<CbmMuchDigi>(iDigi);
       if (iPad == 0) {
-        address = CbmMuchAddress::GetElementAddress(muchDigi->GetAddress(),
-                                                    kMuchModule);
+        address = CbmMuchAddress::GetElementAddress(muchDigi->GetAddress(), kMuchModule);
         planeId = fScheme->GetLayerSideNr(address);
       }
       digiIndices.push_back(iDigi);
@@ -305,15 +291,13 @@ void CbmMuchClustering::ClusteringA1(CbmClusteringGeometry* m1,
     CbmMuchCluster* cluster = new ((*fCluster)[nCluster]) CbmMuchCluster();
     cluster->AddDigis(digiIndices);
     Int_t nHit = fHit->GetEntriesFast();
-    new ((*fHit)[nHit]) CbmMuchPixelHit(
-      address, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
+    new ((*fHit)[nHit]) CbmMuchPixelHit(address, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
   }
   delete clustersA1;
 }
 
-void CbmMuchClustering::ClusteringSL(CbmClusteringGeometry* m1,
-                                     CbmMuchModuleGem* m2,
-                                     Int_t Ver) {
+void CbmMuchClustering::ClusteringSL(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2, Int_t Ver)
+{
   // Create SL algorithm class for module m1
   CbmClusteringSL* clustersSL = new CbmClusteringSL(m1);
   // Start algorithm
@@ -324,8 +308,7 @@ void CbmMuchClustering::ClusteringSL(CbmClusteringGeometry* m1,
   vector<Int_t> digiIndices;
   for (Int_t iCl = 0; iCl < clustersSL->GetNofClusters(); iCl++) {
     digiIndices.clear();
-    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0,
-             sumdxy2 = 0, sumdt2 = 0;
+    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0, sumdt2 = 0;
     Double_t q = 0, x = 0, y = 0, t = 0, z = 0, dx = 0, dy = 0, dxy = 0, dt = 0;
     Double_t tmin   = -1;
     x               = clustersSL->GetX0(iCl);
@@ -338,8 +321,7 @@ void CbmMuchClustering::ClusteringSL(CbmClusteringGeometry* m1,
       Int_t iDigi                 = clustersSL->GetPadInCluster(iCl, iPad);
       const CbmMuchDigi* muchDigi = fDigiMan->Get<CbmMuchDigi>(iDigi);
       if (iPad == 0) {
-        address = CbmMuchAddress::GetElementAddress(muchDigi->GetAddress(),
-                                                    kMuchModule);
+        address = CbmMuchAddress::GetElementAddress(muchDigi->GetAddress(), kMuchModule);
         planeId = fScheme->GetLayerSideNr(address);
       }
       digiIndices.push_back(iDigi);
@@ -369,14 +351,13 @@ void CbmMuchClustering::ClusteringSL(CbmClusteringGeometry* m1,
     CbmMuchCluster* cluster = new ((*fCluster)[nCluster]) CbmMuchCluster();
     cluster->AddDigis(digiIndices);
     Int_t nHit = fHit->GetEntriesFast();
-    new ((*fHit)[nHit]) CbmMuchPixelHit(
-      address, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
+    new ((*fHit)[nHit]) CbmMuchPixelHit(address, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
   }
   delete clustersSL;
 }
 
-void CbmMuchClustering::ClusteringWard(CbmClusteringGeometry* m1,
-                                       CbmMuchModuleGem* m2) {
+void CbmMuchClustering::ClusteringWard(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2)
+{
   CbmClusteringWard* clustersWard = new CbmClusteringWard(m1, 1000);
   clustersWard->WardMainFunction(m1, 100000);
   fNofClusters += clustersWard->GetNofClusters();
@@ -386,8 +367,7 @@ void CbmMuchClustering::ClusteringWard(CbmClusteringGeometry* m1,
     //---
     //std::cout<<"=>Cluster "<<iCl<<"\n";
     Int_t detId   = m2->GetDetectorId();
-    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0,
-             sumdxy2 = 0, sumdt2 = 0;
+    Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0, sumdt2 = 0;
     Double_t q = 0, x = 0, y = 0, t = 0, z = 0, dx = 0, dy = 0, dxy = 0, dt = 0;
     //		std::cout<<">Values created\n";
     x = clustersWard->GetX0(iCl);
@@ -441,16 +421,14 @@ void CbmMuchClustering::ClusteringWard(CbmClusteringGeometry* m1,
     //---
     Int_t planeId = fScheme->GetLayerSideNr(detId);
     Int_t nHit    = fHit->GetEntriesFast();
-    std::cout << "\nCluster: " << nHit << "; detId: " << detId
-              << "; NofPads: " << clustersWard->GetNofPads(iCl) << "\n";
+    std::cout << "\nCluster: " << nHit << "; detId: " << detId << "; NofPads: " << clustersWard->GetNofPads(iCl)
+              << "\n";
     std::cout << "x: " << x << "; y: " << y << "; z: " << z << "\n";
     std::cout << "dx: " << dx << "; dy: " << dy << "; dxy: " << dxy << "\n";
-    std::cout << "planeId: " << planeId << "; t: " << t << "; dt: " << dt
-              << "\n";
+    std::cout << "planeId: " << planeId << "; t: " << t << "; dt: " << dt << "\n";
     std::cout << "-------\n";
     //		std::cout<<"-------Add Hit "<<nHit;
-    new ((*fHit)[nHit])
-      CbmMuchPixelHit(detId, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
+    new ((*fHit)[nHit]) CbmMuchPixelHit(detId, x, y, z, dx, dy, 0, dxy, nCluster, planeId, t, dt);
     //		std::cout<<" - ok\n";
   }
   delete clustersWard;

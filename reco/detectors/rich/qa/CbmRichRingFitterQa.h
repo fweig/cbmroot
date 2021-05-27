@@ -12,6 +12,7 @@
 
 #include "TMatrixD.h"
 #include "TObject.h"
+
 #include <vector>
 class TH1D;
 class CbmRichRingLight;
@@ -78,8 +79,7 @@ private:
   /**
 	 * \Calculate errors of the fit.
 	 */
-  void
-  CalculateFitErrors(CbmRichRingLight* ring, Double_t sigma, TMatrixD& cov);
+  void CalculateFitErrors(CbmRichRingLight* ring, Double_t sigma, TMatrixD& cov);
 
   /**
     * \brief Copy constructor.

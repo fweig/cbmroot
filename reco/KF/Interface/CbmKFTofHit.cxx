@@ -7,7 +7,6 @@
 
 #include "CbmKF.h"
 #include "CbmKFMaterial.h"
-
 #include "CbmTofHit.h"
 
 #include "TMath.h"
@@ -20,7 +19,8 @@ using std::endl;
 
 
 //  ------------------------ Create from CbmTofHit -----------------------
-void CbmKFTofHit::Create(CbmTofHit* hit) {
+void CbmKFTofHit::Create(CbmTofHit* hit)
+{
   // Get pointer to the Kalman filter
   CbmKF* KF = CbmKF::Instance();
   if (NULL == KF) {
@@ -58,9 +58,8 @@ void CbmKFTofHit::Create(CbmTofHit* hit) {
 
 
 //  ------------------------------ Filter --------------------------------
-Int_t CbmKFTofHit::Filter(CbmKFTrackInterface& track,
-                          Bool_t /*downstream*/,
-                          Double_t& QP0) {
+Int_t CbmKFTofHit::Filter(CbmKFTrackInterface& track, Bool_t /*downstream*/, Double_t& QP0)
+{
   Bool_t err = 0;
   /*
     Double_t zfst, zlst, zend;

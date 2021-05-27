@@ -1,4 +1,5 @@
-void run_reco(int index = -1) {
+void run_reco(int index = -1)
+{
   Int_t nEvents         = 1000;
   const char* setupName = "sis100_muon_jpsi";
   //const char* setupName = "sis100_electron";
@@ -36,26 +37,20 @@ void run_reco(int index = -1) {
   if (useBg) suffix += "." + trigger;
 
   if (useSig) {
-    if (sigAscii)
-      suffix += ".ascii";
+    if (sigAscii) suffix += ".ascii";
     else
       suffix += "." + part;
   }
 
   TString inOutDir;
 
-  if (index >= 0)
-    inOutDir =
-      "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
+  if (index >= 0) inOutDir = "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
   else
     inOutDir = "/data.local/cbmrootdata/";
 
-  TString inFile =
-    inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
-  TString globalParFile =
-    inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
-  TString outFile =
-    inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
+  TString inFile        = inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
+  TString globalParFile = inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
+  TString outFile       = inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
 
   TString myName = "run_reco_lx";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
@@ -100,37 +95,30 @@ void run_reco(int index = -1) {
   TList* parFileList = new TList();
 
   if (useIdeal) {
-    TString muchDigiFileName =
-      srcDir + "/parameters/much/much_v15c_digi_sector.root";
-    CbmMuchHitProducerIdeal* muchHPIdeal =
-      new CbmMuchHitProducerIdeal(muchDigiFileName.Data());
+    TString muchDigiFileName             = srcDir + "/parameters/much/much_v15c_digi_sector.root";
+    CbmMuchHitProducerIdeal* muchHPIdeal = new CbmMuchHitProducerIdeal(muchDigiFileName.Data());
     run->AddTask(muchHPIdeal);
 
     CbmTrdHitProducerIdeal* trdHPIdeal = new CbmTrdHitProducerIdeal;
     run->AddTask(trdHPIdeal);
-  } else {
+  }
+  else {
     TString geoTag;
 
     if (setup->GetGeoTag(kTrd, geoTag)) {
-      TObjString* trdFile =
-        new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+      TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
       parFileList->Add(trdFile);
-      std::cout << "-I- : Using parameter file " << trdFile->GetString()
-                << std::endl;
+      std::cout << "-I- : Using parameter file " << trdFile->GetString() << std::endl;
     }
 
     // - TOF digitisation parameters
     if (setup->GetGeoTag(kTof, geoTag)) {
-      TObjString* tofFile =
-        new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+      TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
       parFileList->Add(tofFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << tofFile->GetString() << std::endl;
-      TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_"
-                                              + geoTag + ".digibdf.par");
+      std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+      TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
       parFileList->Add(tofBdfFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << tofBdfFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
     }
     // ------------------------------------------------------------------------
 
@@ -138,8 +126,7 @@ void run_reco(int index = -1) {
     if (setup->IsActive(kMvd)) {
       FairTask* mvdDigi = new CbmMvdDigitizer("MVD Digitiser", 0);
       run->AddTask(mvdDigi);
-      std::cout << "-I- digitize: Added task " << mvdDigi->GetName()
-                << std::endl;
+      std::cout << "-I- digitize: Added task " << mvdDigi->GetName() << std::endl;
     }
     // -------------------------------------------------------------------------
 
@@ -147,14 +134,13 @@ void run_reco(int index = -1) {
     // -----   STS Digitiser   -------------------------------------------------
     if (setup->IsActive(kSts)) {
 
-      Double_t dynRange       = 40960.;  // Dynamic range [e]
-      Double_t threshold      = 4000.;   // Digitisation threshold [e]
-      Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-      Double_t timeResolution = 5.;      // time resolution [ns]
-      Double_t deadTime =
-        9999999.;            // infinite dead time (integrate entire event)
-      Double_t noise  = 0.;  // ENC [e]
-      Int_t digiModel = 1;   // User sensor type DSSD
+      Double_t dynRange       = 40960.;    // Dynamic range [e]
+      Double_t threshold      = 4000.;     // Digitisation threshold [e]
+      Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+      Double_t timeResolution = 5.;        // time resolution [ns]
+      Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+      Double_t noise          = 0.;        // ENC [e]
+      Int_t digiModel         = 1;         // User sensor type DSSD
 
       // The following settings correspond to a validated implementation.
       // Changing them is on your own risk.
@@ -164,10 +150,8 @@ void run_reco(int index = -1) {
       Bool_t useCrossTalk    = kFALSE;  // Deactivate cross talk
 
       CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-      stsDigi->SetProcesses(
-        eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
-      stsDigi->SetParameters(
-        dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+      stsDigi->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+      stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
       run->AddTask(stsDigi);
     }
     // -------------------------------------------------------------------------
@@ -180,21 +164,18 @@ void run_reco(int index = -1) {
       setup->GetGeoTag(kMuch, geoTag);
       std::cout << geoTag(0, 4) << std::endl;
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+      parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
 
       // --- Digitiser for GEM
       FairTask* gemDigi = new CbmMuchDigitizeGem(parFile.Data());
       run->AddTask(gemDigi);
-      std::cout << "-I- digitize: Added task " << gemDigi->GetName()
-                << std::endl;
+      std::cout << "-I- digitize: Added task " << gemDigi->GetName() << std::endl;
 
       // --- Digitiser for Straws
       FairTask* strawDigi = new CbmMuchDigitizeStraws(parFile.Data());
       run->AddTask(strawDigi);
-      std::cout << "-I- digitize: Added task " << strawDigi->GetName()
-                << std::endl;
+      std::cout << "-I- digitize: Added task " << strawDigi->GetName() << std::endl;
     }
     // -------------------------------------------------------------------------
 
@@ -204,16 +185,14 @@ void run_reco(int index = -1) {
       CbmTrdRadiator* radiator = new CbmTrdRadiator(kTRUE, "K++");
       FairTask* trdDigi        = new CbmTrdDigitizerPRF(radiator);
       run->AddTask(trdDigi);
-      std::cout << "-I- digitize: Added task " << trdDigi->GetName()
-                << std::endl;
+      std::cout << "-I- digitize: Added task " << trdDigi->GetName() << std::endl;
     }
     // -------------------------------------------------------------------------
 
     // -----   TOF Digitiser   -------------------------------------------------
     if (setup->IsActive(kTof)) {
-      Int_t iVerbose = 0;
-      CbmTofDigitizerBDF* tofDigi =
-        new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+      Int_t iVerbose              = 0;
+      CbmTofDigitizerBDF* tofDigi = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
       tofDigi->SetOutputBranchPersistent("TofDigi", kFALSE);
       tofDigi->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
       TString paramDir = gSystem->Getenv("VMCWORKDIR");
@@ -222,16 +201,14 @@ void run_reco(int index = -1) {
         + "/parameters/tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
       run->AddTask(tofDigi);
 
-      std::cout << "-I- digitize: Added task " << tofDigi->GetName()
-                << std::endl;
+      std::cout << "-I- digitize: Added task " << tofDigi->GetName() << std::endl;
     }
     // -------------------------------------------------------------------------
 
     // -----   Local reconstruction in MVD   ----------------------------------
     if (setup->IsActive(kMvd)) {
 
-      CbmMvdClusterfinder* mvdCluster =
-        new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+      CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
       run->AddTask(mvdCluster);
       std::cout << "-I- : Added task " << mvdCluster->GetName() << std::endl;
 
@@ -264,8 +241,7 @@ void run_reco(int index = -1) {
       setup->GetGeoTag(kMuch, geoTag);
       std::cout << geoTag(0, 4) << std::endl;
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+      parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
 
       // --- Hit finder for GEMs
@@ -273,16 +249,15 @@ void run_reco(int index = -1) {
       run->AddTask(muchHitGem);
 
       // --- Hit finder for Straws
-      CbmMuchFindHitsStraws* strawFindHits =
-        new CbmMuchFindHitsStraws(parFile.Data());
+      CbmMuchFindHitsStraws* strawFindHits = new CbmMuchFindHitsStraws(parFile.Data());
       run->AddTask(strawFindHits);
     }
 
     // -----   Local reconstruction in TRD   ----------------------------------
     if (setup->IsActive(kTrd)) {
 
-      Double_t triggerThreshold = 0.5e-6;  // SIS100
-      Bool_t triangularPads = false;  // Bucharest triangular pad-plane layout
+      Double_t triggerThreshold           = 0.5e-6;  // SIS100
+      Bool_t triangularPads               = false;   // Bucharest triangular pad-plane layout
       CbmTrdClusterFinderFast* trdCluster = new CbmTrdClusterFinderFast();
       trdCluster->SetNeighbourTrigger(true);
       trdCluster->SetTriggerThreshold(triggerThreshold);
@@ -301,8 +276,7 @@ void run_reco(int index = -1) {
 
     // -----   Local reconstruction in TOF   ----------------------------------
     if (setup->IsActive(kTof)) {
-      CbmTofSimpClusterizer* tofCluster =
-        new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+      CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
       tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
       tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
       run->AddTask(tofCluster);
@@ -320,7 +294,7 @@ void run_reco(int index = -1) {
     TString geoTag;
     setup->GetGeoTag(kMvd, geoTag);
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile = parFile + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
+    parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
     std::cout << "Using material budget file " << parFile << std::endl;
     l1->SetMvdMaterialBudgetFileName(parFile.Data());
   }
@@ -328,7 +302,7 @@ void run_reco(int index = -1) {
     TString geoTag;
     setup->GetGeoTag(kSts, geoTag);
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile = parFile + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
+    parFile         = parFile + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
     std::cout << "Using material budget file " << parFile << std::endl;
     l1->SetStsMaterialBudgetFileName(parFile.Data());
   }
@@ -336,8 +310,7 @@ void run_reco(int index = -1) {
   std::cout << "-I- : Added task " << l1->GetName() << std::endl;
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks =
-    new CbmStsFindTracks(0, stsTrackFinder, setup->IsActive(kMvd));
+  FairTask* stsFindTracks           = new CbmStsFindTracks(0, stsTrackFinder, setup->IsActive(kMvd));
   run->AddTask(stsFindTracks);
   std::cout << "-I- : Added task " << stsFindTracks->GetName() << std::endl;
   // -------------------------------------------------------------------------
@@ -347,12 +320,14 @@ void run_reco(int index = -1) {
   if (setupString.Contains("electron")) {
     LxTBTrdFinder* lxTbFinder = new LxTBTrdFinder;
     run->AddTask(lxTbFinder);
-  } else {
+  }
+  else {
     if (isML) {
       LxTBMLFinder* lxTbFinder = new LxTBMLFinder;
       lxTbFinder->SetEvByEv(isEvByEv);
       run->AddTask(lxTbFinder);
-    } else {
+    }
+    else {
       LxTBFinder* lxTbFinder = new LxTBFinder;
       lxTbFinder->SetEvByEv(isEvByEv);
       lxTbFinder->SetSignalParticle(part.Data());
@@ -391,8 +366,7 @@ void run_reco(int index = -1) {
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << inFile << endl;
   cout << "Parameter file is " << globalParFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 

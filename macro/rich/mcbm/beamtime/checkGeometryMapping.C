@@ -4,7 +4,8 @@
  ** ROOT macro to check the RICH Geometry and the Mapping in the Geo File
  */
 
-void checkGeometryMapping() {
+void checkGeometryMapping()
+{
   //TString buildDir = gSystem->Getenv("CBMROOT_BUILD");
   //gSystem->Load(buildDir + "/lib/libCbmRich.so");
 
@@ -32,9 +33,8 @@ void checkGeometryMapping() {
   int Pixelcnt = 0;
   for (Int_t dirich = 0x0000; dirich <= 0xFFFF; ++dirich) {
     for (Int_t ch = 1; ch < 33; ++ch) {
-      Int_t address = (dirich << 16) | (ch & 0x00FF);
-      CbmRichPixelData* data =
-        CbmRichMCbmDigiMapManager::GetInstance().GetPixelDataByAddress(address);
+      Int_t address          = (dirich << 16) | (ch & 0x00FF);
+      CbmRichPixelData* data = CbmRichMCbmDigiMapManager::GetInstance().GetPixelDataByAddress(address);
 
       if (data != nullptr) {
         pixelData.push_back(data);
@@ -51,8 +51,7 @@ void checkGeometryMapping() {
 
   std::cout << "Number of Ids: " << PmtIds.size() << std::endl;
   for (auto i : PmtIds) {
-    CbmRichPmtData* data =
-      CbmRichMCbmDigiMapManager::GetInstance().GetPmtDataById(i);
+    CbmRichPmtData* data = CbmRichMCbmDigiMapManager::GetInstance().GetPmtDataById(i);
     PmtData.push_back(data);
     //std::cout<<"CbmRichPmtData.fX|fY: "<<PmtData.back()->fX<<"   "<<PmtData.back()->fY<<std::endl;
     //std::cout<<"CbmRichPmtData.fPixelAddresses.size: "<<PmtData.back()->fPixelAddresses.size()<<std::endl;
@@ -66,16 +65,15 @@ void checkGeometryMapping() {
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   // ------------------------------------------------------------------------
 }
 
-void DrawPMTs(std::vector<CbmRichPmtData*> pmts) {
+void DrawPMTs(std::vector<CbmRichPmtData*> pmts)
+{
   TCanvas* c = new TCanvas("fhPmtMap", "fhPmtMap", 1000, 1000);
   c->SetGrid(true, true);
-  TH2D* pad =
-    new TH2D("PmtMap", "PmtMap;X [cm];Y [cm]", 100, -40., 40., 100, -40., 40.);
+  TH2D* pad = new TH2D("PmtMap", "PmtMap;X [cm];Y [cm]", 100, -40., 40., 100, -40., 40.);
   pad->SetStats(false);
   pad->Draw();
 
@@ -84,8 +82,7 @@ void DrawPMTs(std::vector<CbmRichPmtData*> pmts) {
     auto y      = pmt->fY;
     auto width  = pmt->fWidth;
     auto height = pmt->fHeight;
-    TBox* box =
-      new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+    TBox* box   = new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
     box->SetFillStyle(0);
     box->SetLineColor(kBlack);
     box->SetLineWidth(2);
@@ -98,12 +95,11 @@ void DrawPMTs(std::vector<CbmRichPmtData*> pmts) {
   }
 }
 
-void DrawFull(std::vector<CbmRichPmtData*> pmts,
-              std::vector<CbmRichPixelData*> pixels) {
+void DrawFull(std::vector<CbmRichPmtData*> pmts, std::vector<CbmRichPixelData*> pixels)
+{
   TCanvas* c = new TCanvas("fhPmtMapFull", "fhPmtMapFull", 1000, 1000);
   c->SetGrid(true, true);
-  TH2D* pad = new TH2D(
-    "PmtMapFull", "PmtMapFull;X [cm];Y [cm]", 100, -40., 40., 100, -40., 40.);
+  TH2D* pad = new TH2D("PmtMapFull", "PmtMapFull;X [cm];Y [cm]", 100, -40., 40., 100, -40., 40.);
   pad->SetStats(false);
   pad->Draw();
 
@@ -112,8 +108,7 @@ void DrawFull(std::vector<CbmRichPmtData*> pmts,
     auto y      = pmt->fY;
     auto width  = pmt->fWidth;
     auto height = pmt->fHeight;
-    TBox* box =
-      new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+    TBox* box   = new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
     box->SetFillStyle(0);
     box->SetLineColor(kBlack);
     box->SetLineWidth(2);
@@ -140,8 +135,7 @@ void DrawFull(std::vector<CbmRichPmtData*> pmts,
     //         ){
     //             width  = 0.625;//pmt->fWidth;
     //         }
-    TBox* box =
-      new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+    TBox* box = new TBox(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
     box->SetFillStyle(0);
     box->SetLineColor(kBlack);
     box->SetLineWidth(2);

@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void trd_sim_benchmark(Int_t nEvents = 50) {
+void trd_sim_benchmark(Int_t nEvents = 50)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -120,9 +121,8 @@ void trd_sim_benchmark(Int_t nEvents = 50) {
 
 
   // -----   Create magnetic field   ----------------------------------------
-  if (2 == fieldSymType) {
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     CbmFieldMap* magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -191,8 +191,7 @@ void trd_sim_benchmark(Int_t nEvents = 50) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   delete fRun;

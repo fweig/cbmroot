@@ -1,5 +1,5 @@
-void FitExpo(TString filename  = "sum_WLS_on_G1.root",
-             TString histoName = "ExponentaBudetTut") {
+void FitExpo(TString filename = "sum_WLS_on_G1.root", TString histoName = "ExponentaBudetTut")
+{
   TFile* f1 = new TFile(filename);
 
   TH1D* histo1 = (TH1D*) f1->Get(histoName);

@@ -4,10 +4,8 @@
 
 ClassImp(CbmKFUMeasurement)
 
-  void CbmKFUMeasurement::Set(Double_t z_,
-                              Double_t u_,
-                              Double_t phi_,
-                              Double_t sigma2_) {
+  void CbmKFUMeasurement::Set(Double_t z_, Double_t u_, Double_t phi_, Double_t sigma2_)
+{
   this->z      = z_;
   this->u      = u_;
   this->phi    = phi_;
@@ -19,7 +17,8 @@ ClassImp(CbmKFUMeasurement)
   phi_2sc      = 2. * phi_s * phi_c;
 }
 
-Int_t CbmKFUMeasurement::Filter(CbmKFTrackInterface& track) {
+Int_t CbmKFUMeasurement::Filter(CbmKFTrackInterface& track)
+{
 
   Double_t* T = track.GetTrack();
   Double_t* C = track.GetCovMatrix();
@@ -33,11 +32,8 @@ Int_t CbmKFUMeasurement::Filter(CbmKFTrackInterface& track) {
 
   track.GetRefChi2() += zeta * zeta * W;
   track.GetRefNDF() += 1;
-  Double_t K[5] = {phi_c * C[0] + phi_s * C[1],
-                   phi_c * C[1] + phi_s * C[2],
-                   phi_c * C[3] + phi_s * C[4],
-                   phi_c * C[6] + phi_s * C[7],
-                   phi_c * C[10] + phi_s * C[11]};
+  Double_t K[5] = {phi_c * C[0] + phi_s * C[1], phi_c * C[1] + phi_s * C[2], phi_c * C[3] + phi_s * C[4],
+                   phi_c * C[6] + phi_s * C[7], phi_c * C[10] + phi_s * C[11]};
 
   Double_t KW[5] = {K[0] * W, K[1] * W, K[2] * W, K[3] * W, K[4] * W};
 

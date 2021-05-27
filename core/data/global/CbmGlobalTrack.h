@@ -15,13 +15,13 @@
 #ifndef CBMGLOBALTRACK_H_
 #define CBMGLOBALTRACK_H_ 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
-#include <TObject.h>     // for TObject
+#include "CbmTrackParam.h"  // for CbmTrackParam
 
 #include <FairTrackParam.h>  // for FairTrackParam
 
-#include "CbmTrackParam.h"  // for CbmTrackParam
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
+#include <TObject.h>     // for TObject
 
 class CbmGlobalTrack : public TObject {
 
@@ -56,13 +56,9 @@ public:
   void SetMuchTrackIndex(Int_t iMuch) { fMuchTrack = iMuch; }
   void SetRichRingIndex(Int_t iRing) { fRichRing = iRing; }
   void SetTofHitIndex(Int_t iTofHit) { fTofHit = iTofHit; }
-  void SetParamFirst(const FairTrackParam* parFirst) {
-    fParamFirst = *parFirst;
-  }
+  void SetParamFirst(const FairTrackParam* parFirst) { fParamFirst = *parFirst; }
   void SetParamLast(const FairTrackParam* parLast) { fParamLast = *parLast; }
-  void SetParamPrimaryVertex(const FairTrackParam* parPV) {
-    fParamPrimaryVertex.Set(*parPV);
-  }
+  void SetParamPrimaryVertex(const FairTrackParam* parPV) { fParamPrimaryVertex.Set(*parPV); }
   void SetPidHypo(Int_t iPid) { fPidHypo = iPid; }
   void SetChi2(Double_t chi2) { fChi2 = chi2; }
   void SetNDF(Int_t ndf) { fNDF = ndf; }

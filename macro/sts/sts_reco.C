@@ -14,7 +14,8 @@
 // --------------------------------------------------------------------------
 
 #include <math.h>
-void sts_reco(Int_t nEvents = 1) {
+void sts_reco(Int_t nEvents = 1)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -93,8 +94,7 @@ void sts_reco(Int_t nEvents = 1) {
 
   // ---  STS Cluster Finder  ---------------------------------------------------------------------
 
-  CbmStsClusterFinder* findClusters =
-    new CbmStsClusterFinder("STSFindClusters", iVerbose);
+  CbmStsClusterFinder* findClusters = new CbmStsClusterFinder("STSFindClusters", iVerbose);
   run->AddTask(findClusters);
 
   // ---  STS hit finding   -------------------------------------------------

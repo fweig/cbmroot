@@ -5,8 +5,6 @@
 
 #include "CbmStsSimSensorDssd.h"
 
-#include <sstream>
-
 #include "CbmStsDefs.h"
 #include "CbmStsDigitize.h"
 #include "CbmStsParSensorCond.h"
@@ -15,6 +13,8 @@
 #include "CbmStsSetup.h"
 #include "CbmStsSimModule.h"
 
+#include <sstream>
+
 
 using std::string;
 using std::stringstream;
@@ -22,13 +22,13 @@ using namespace CbmSts;
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmStsSimSensorDssd::CbmStsSimSensorDssd(CbmStsElement* element)
-  : CbmStsSimSensor(element) {}
+CbmStsSimSensorDssd::CbmStsSimSensorDssd(CbmStsElement* element) : CbmStsSimSensor(element) {}
 // -------------------------------------------------------------------------
 
 
 // -----   Process one MC Point  -------------------------------------------
-Int_t CbmStsSimSensorDssd::CalculateResponse(CbmStsSensorPoint* point) {
+Int_t CbmStsSimSensorDssd::CalculateResponse(CbmStsSensorPoint* point)
+{
 
   // --- Catch if parameters are not set
   assert(fIsSet);
@@ -58,8 +58,7 @@ Int_t CbmStsSimSensorDssd::CalculateResponse(CbmStsSensorPoint* point) {
 
     for (Int_t strip = 0; strip < GetNofStrips(side); strip++) {
       if (fStripCharge[side][strip] > 0.) {
-        RegisterCharge(
-          side, strip, fStripCharge[side][strip], point->GetTime());
+        RegisterCharge(side, strip, fStripCharge[side][strip], point->GetTime());
         nCharges[side]++;
       }  //? charge in strip
     }    //# strips
@@ -75,25 +74,26 @@ Int_t CbmStsSimSensorDssd::CalculateResponse(CbmStsSensorPoint* point) {
 
 
 // -----   Charge status   -------------------------------------------------
-string CbmStsSimSensorDssd::ChargeStatus() const {
+string CbmStsSimSensorDssd::ChargeStatus() const
+{
   stringstream ss;
   ss << GetName() << ": Charge status: \n";
   for (Int_t side = 0; side < 2; side++) {
     for (Int_t strip = 0; strip < GetNofStrips(side); strip++) {
       if (fStripCharge[side][strip] > 0.)
-        ss << "          " << (side ? "Back  " : "Front ") << "strip " << strip
-           << "  charge " << fStripCharge[side][strip] << "\n";
+        ss << "          " << (side ? "Back  " : "Front ") << "strip " << strip << "  charge "
+           << fStripCharge[side][strip] << "\n";
     }  //# strips
   }    //# front and back side
-  ss << "          Total: front side " << (fStripCharge[0]).GetSum()
-     << ", back side " << (fStripCharge[1]).GetSum();
+  ss << "          Total: front side " << (fStripCharge[0]).GetSum() << ", back side " << (fStripCharge[1]).GetSum();
   return ss.str();
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Cross talk calculation   ----------------------------------------
-void CbmStsSimSensorDssd::CrossTalk(Double_t ctcoeff) {
+void CbmStsSimSensorDssd::CrossTalk(Double_t ctcoeff)
+{
 
   for (Int_t side = 0; side < 2; side++) {  // front and back side
 
@@ -101,25 +101,21 @@ void CbmStsSimSensorDssd::CrossTalk(Double_t ctcoeff) {
     Int_t nStrips = GetNofStrips(side);
 
     // First strip
-    Double_t qLeft    = 0.;
-    Double_t qCurrent = fStripCharge[side][0];
-    fStripCharge[side][0] =
-      (1. - ctcoeff) * qCurrent + ctcoeff * fStripCharge[side][1];
+    Double_t qLeft        = 0.;
+    Double_t qCurrent     = fStripCharge[side][0];
+    fStripCharge[side][0] = (1. - ctcoeff) * qCurrent + ctcoeff * fStripCharge[side][1];
 
     // Strips 1 to n-2
     for (Int_t strip = 1; strip < nStrips - 1; strip++) {
-      qLeft    = qCurrent;
-      qCurrent = fStripCharge[side][strip];
-      fStripCharge[side][strip] =
-        ctcoeff * (qLeft + fStripCharge[side][strip + 1])
-        + (1. - 2. * ctcoeff) * qCurrent;
+      qLeft                     = qCurrent;
+      qCurrent                  = fStripCharge[side][strip];
+      fStripCharge[side][strip] = ctcoeff * (qLeft + fStripCharge[side][strip + 1]) + (1. - 2. * ctcoeff) * qCurrent;
     }  //# strips
 
     // Last strip
-    qLeft    = qCurrent;
-    qCurrent = fStripCharge[side][nStrips - 1];
-    fStripCharge[side][nStrips - 1] =
-      ctcoeff * qLeft + (1. - ctcoeff) * qCurrent;
+    qLeft                           = qCurrent;
+    qCurrent                        = fStripCharge[side][nStrips - 1];
+    fStripCharge[side][nStrips - 1] = ctcoeff * qLeft + (1. - ctcoeff) * qCurrent;
 
   }  //# front and back side
 }
@@ -127,7 +123,8 @@ void CbmStsSimSensorDssd::CrossTalk(Double_t ctcoeff) {
 
 
 // -----   Check whether a point is inside the active area   ---------------
-Bool_t CbmStsSimSensorDssd::IsInside(Double_t x, Double_t y) {
+Bool_t CbmStsSimSensorDssd::IsInside(Double_t x, Double_t y)
+{
   if (x < -fDx / 2.) return kFALSE;
   if (x > fDx / 2.) return kFALSE;
   if (y < -fDy / 2.) return kFALSE;
@@ -138,9 +135,8 @@ Bool_t CbmStsSimSensorDssd::IsInside(Double_t x, Double_t y) {
 
 
 // -----   Lorentz shift   -------------------------------------------------
-Double_t CbmStsSimSensorDssd::LorentzShift(Double_t z,
-                                           Int_t chargeType,
-                                           Double_t bY) const {
+Double_t CbmStsSimSensorDssd::LorentzShift(Double_t z, Int_t chargeType, Double_t bY) const
+{
 
   assert(chargeType == 0 || chargeType == 1);
 
@@ -148,27 +144,24 @@ Double_t CbmStsSimSensorDssd::LorentzShift(Double_t z,
   // Electrons drift to the front side (z = d/2), holes to the back side (z = -d/2)
   assert(chargeType == 0 || chargeType == 1);
   Double_t driftZ = 0.;
-  if (chargeType == 0)
-    driftZ = fDz / 2. - z;  // electrons
+  if (chargeType == 0) driftZ = fDz / 2. - z;  // electrons
   else if (chargeType == 1)
     driftZ = fDz / 2. + z;  // holes
   else
     driftZ = 0.;
 
   // --- Hall mobility
-  Double_t vBias  = GetConditions()->GetVbias();
-  Double_t vFd    = GetConditions()->GetVfd();
-  Double_t eField = CbmStsPhysics::ElectricField(vBias, vFd, fDz, z + fDz / 2.);
+  Double_t vBias     = GetConditions()->GetVbias();
+  Double_t vFd       = GetConditions()->GetVfd();
+  Double_t eField    = CbmStsPhysics::ElectricField(vBias, vFd, fDz, z + fDz / 2.);
   Double_t eFieldMax = CbmStsPhysics::ElectricField(vBias, vFd, fDz, fDz);
   Double_t eFieldMin = CbmStsPhysics::ElectricField(vBias, vFd, fDz, 0.);
 
   Double_t muHall;
   if (chargeType == 0)  // electrons
-    muHall =
-      GetConditions()->GetHallMobility((eField + eFieldMax) / 2., chargeType);
+    muHall = GetConditions()->GetHallMobility((eField + eFieldMax) / 2., chargeType);
   else  // holes
-    muHall =
-      GetConditions()->GetHallMobility((eField + eFieldMin) / 2., chargeType);
+    muHall = GetConditions()->GetHallMobility((eField + eFieldMin) / 2., chargeType);
 
   // --- The direction of the shift is the same for electrons and holes.
   // --- Holes drift in negative z direction, the field is in
@@ -186,14 +179,14 @@ Double_t CbmStsSimSensorDssd::LorentzShift(Double_t z,
 
 
 // -----   Produce charge and propagate it to the readout strips   ---------
-void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point) {
+void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point)
+{
 
   // Energy-loss model
   CbmStsELoss eLossModel = fSettings->ELossModel();
 
   // Total charge created in the sensor: is calculated from the energy loss
-  Double_t chargeTotal =
-    point->GetELoss() / CbmStsPhysics::PairCreationEnergy();  // in e
+  Double_t chargeTotal = point->GetELoss() / CbmStsPhysics::PairCreationEnergy();  // in e
 
   // For ideal energy loss, just have all charge in the mid-point of the
   // trajectory
@@ -201,24 +194,20 @@ void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point) {
     Double_t xP = 0.5 * (point->GetX1() + point->GetX2());
     Double_t yP = 0.5 * (point->GetY1() + point->GetY2());
     Double_t zP = 0.5 * (point->GetZ1() + point->GetZ2());
-    PropagateCharge(
-      xP, yP, zP, chargeTotal, point->GetBy(), 0);  // front side (n)
-    PropagateCharge(
-      xP, yP, zP, chargeTotal, point->GetBy(), 1);  // back side (p)
+    PropagateCharge(xP, yP, zP, chargeTotal, point->GetBy(), 0);  // front side (n)
+    PropagateCharge(xP, yP, zP, chargeTotal, point->GetBy(), 1);  // back side (p)
     return;
   }
 
   // Kinetic energy
   Double_t mass = CbmStsPhysics::ParticleMass(point->GetPid());
-  Double_t eKin =
-    TMath::Sqrt(point->GetP() * point->GetP() + mass * mass) - mass;
+  Double_t eKin = TMath::Sqrt(point->GetP() * point->GetP() + mass * mass) - mass;
 
   // Length of trajectory inside sensor and its projections
-  Double_t trajLx = point->GetX2() - point->GetX1();
-  Double_t trajLy = point->GetY2() - point->GetY1();
-  Double_t trajLz = point->GetZ2() - point->GetZ1();
-  Double_t trajLength =
-    TMath::Sqrt(trajLx * trajLx + trajLy * trajLy + trajLz * trajLz);
+  Double_t trajLx     = point->GetX2() - point->GetX1();
+  Double_t trajLy     = point->GetY2() - point->GetY1();
+  Double_t trajLz     = point->GetZ2() - point->GetZ1();
+  Double_t trajLength = TMath::Sqrt(trajLx * trajLx + trajLy * trajLy + trajLz * trajLz);
 
   // The trajectory is sub-divided into equidistant steps, with a step size
   // close to 3 micrometer.
@@ -236,8 +225,7 @@ void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point) {
   // Stopping power, needed for energy loss fluctuations
   Double_t dedx = 0.;
 
-  if (eLossModel == CbmStsELoss::kUrban)
-    dedx = CbmStsPhysics::Instance()->StoppingPower(eKin, point->GetPid());
+  if (eLossModel == CbmStsELoss::kUrban) dedx = CbmStsPhysics::Instance()->StoppingPower(eKin, point->GetPid());
 
   // Stepping over the trajectory
   Double_t chargeSum = 0.;
@@ -253,15 +241,12 @@ void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point) {
     Double_t chargeInStep = chargePerStep;  // uniform energy loss
     if (eLossModel == CbmStsELoss::kUrban)  // energy loss fluctuations
       chargeInStep =
-        CbmStsPhysics::Instance()->EnergyLoss(stepSize, mass, eKin, dedx)
-        / CbmStsPhysics::PairCreationEnergy();
+        CbmStsPhysics::Instance()->EnergyLoss(stepSize, mass, eKin, dedx) / CbmStsPhysics::PairCreationEnergy();
     chargeSum += chargeInStep;
 
     // Propagate charge to strips
-    PropagateCharge(
-      xStep, yStep, zStep, chargeInStep, point->GetBy(), 0);  // front
-    PropagateCharge(
-      xStep, yStep, zStep, chargeInStep, point->GetBy(), 1);  // back
+    PropagateCharge(xStep, yStep, zStep, chargeInStep, point->GetBy(), 0);  // front
+    PropagateCharge(xStep, yStep, zStep, chargeInStep, point->GetBy(), 1);  // back
 
   }  //# steps of the trajectory
 
@@ -281,10 +266,8 @@ void CbmStsSimSensorDssd::ProduceCharge(CbmStsSensorPoint* point) {
 
 
 // -----   Register charge to the module  ----------------------------------
-void CbmStsSimSensorDssd::RegisterCharge(Int_t side,
-                                         Int_t strip,
-                                         Double_t charge,
-                                         Double_t time) const {
+void CbmStsSimSensorDssd::RegisterCharge(Int_t side, Int_t strip, Double_t charge, Double_t time) const
+{
 
   // --- Check existence of module
   assert(GetModule());

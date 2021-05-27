@@ -9,7 +9,8 @@
 
 /// extra Doxygen comment 10/11/2011 by DE
 
-void run_reco_smearing(Int_t nEvents = 2) {
+void run_reco_smearing(Int_t nEvents = 2)
+{
   gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
   gStyle->SetPadTickX(1);
@@ -21,10 +22,8 @@ void run_reco_smearing(Int_t nEvents = 2) {
   whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << digipar
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -57,8 +56,7 @@ void run_reco_smearing(Int_t nEvents = 2) {
   //  TObjString trdDigiFile =  paramDir + "/trd/trd_v10b.digi.par";
   //  parFileList->Add(&trdDigiFile);
 
-  TObjString trdDigiFile =
-    paramDir + "/trd/" + digipar + ".digi.par";  //"./trd.digi.par";
+  TObjString trdDigiFile = paramDir + "/trd/" + digipar + ".digi.par";  //"./trd.digi.par";
   parFileList->Add(&trdDigiFile);
 
   // In general, the following parts need not be touched
@@ -119,11 +117,9 @@ void run_reco_smearing(Int_t nEvents = 2) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
                                // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   /*

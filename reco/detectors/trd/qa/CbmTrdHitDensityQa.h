@@ -31,9 +31,7 @@ class CbmTrdHitDensityQa : public FairTask {
 public:
   // ---- Default constructor -------------------------------------------
   CbmTrdHitDensityQa();
-  CbmTrdHitDensityQa(Double_t TriggerThreshold,
-                     Double_t EventRate,
-                     Double_t ScaleCentral2mBias);
+  CbmTrdHitDensityQa(Double_t TriggerThreshold, Double_t EventRate, Double_t ScaleCentral2mBias);
   // ---- Destructor ----------------------------------------------------
   virtual ~CbmTrdHitDensityQa();
   /** Initialisation **/

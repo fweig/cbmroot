@@ -15,6 +15,7 @@
 /// Fairsoft (Root, Boost, ...) headers
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for UInt_t, Double_t, Int_t
+
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
@@ -50,11 +51,7 @@ public:
        * \param[in] uFlags   Flags/error pattern, 32b available.
        * \param[in] uPayload Optional error payload, 32b available.
        **/
-  CbmErrorMessage(ECbmModuleId sysId,
-                  Double_t dTime,
-                  UInt_t uAddress,
-                  UInt_t uFlags,
-                  UInt_t uPayload = 0);
+  CbmErrorMessage(ECbmModuleId sysId, Double_t dTime, UInt_t uAddress, UInt_t uFlags, UInt_t uPayload = 0);
 
 
   /** Destructor  **/
@@ -92,7 +89,8 @@ public:
 
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fModuleId;
     ar& fdTime;
     ar& fuAddress;

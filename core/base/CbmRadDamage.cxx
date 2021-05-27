@@ -26,7 +26,8 @@ CbmRadDamage::CbmRadDamage()
   , fNeff0(9.0e11)
   , fNeffC(2.5e-14)
   , fNeffGc(1.5e-2)
-  , fEpsilon(1.04e-12) {
+  , fEpsilon(1.04e-12)
+{
   Init();
 }
 // ========================================================================
@@ -38,9 +39,8 @@ CbmRadDamage::~CbmRadDamage() {}
 
 
 // =====   Get leakage current   ==========================================
-Double_t CbmRadDamage::GetLeakageCurrent(Double_t fluence,
-                                         Double_t volume,
-                                         Double_t temperature) {
+Double_t CbmRadDamage::GetLeakageCurrent(Double_t fluence, Double_t volume, Double_t temperature)
+{
 
   // --- Boltzmann constant in ev/K
   Double_t kB = TMath::K() / TMath::Qe();
@@ -49,13 +49,11 @@ Double_t CbmRadDamage::GetLeakageCurrent(Double_t fluence,
   Double_t i20 = fIAlpha * fluence * volume;
 
   // --- Gap energy at given temperature
-  Double_t eGap =
-    fEGap0 - fEGapAlpha * temperature * temperature / (temperature + fEGapBeta);
+  Double_t eGap = fEGap0 - fEGapAlpha * temperature * temperature / (temperature + fEGapBeta);
 
   // --- Leakage current at given temperature
   Double_t exponent = -1. * eGap / 2. / kB * (1. / temperature - 1. / 293.);
-  Double_t iLeak =
-    i20 * temperature * temperature / 85849. * TMath::Exp(exponent);
+  Double_t iLeak    = i20 * temperature * temperature / 85849. * TMath::Exp(exponent);
 
   return iLeak;
 }
@@ -63,7 +61,8 @@ Double_t CbmRadDamage::GetLeakageCurrent(Double_t fluence,
 
 
 // =====   Get NIEL factor   ==============================================
-Double_t CbmRadDamage::GetNiel(Int_t type, Double_t energy) {
+Double_t CbmRadDamage::GetNiel(Int_t type, Double_t energy)
+{
 
   // Convert energy to MeV like in table
   energy = energy * 1000.;
@@ -119,7 +118,8 @@ Double_t CbmRadDamage::GetNiel(Int_t type, Double_t energy) {
 
 
 // =====   Get full depletion voltage   ===================================
-Double_t CbmRadDamage::GetVfd(Double_t fluence, Double_t d) {
+Double_t CbmRadDamage::GetVfd(Double_t fluence, Double_t d)
+{
 
   // --- Calculate effective doping concentration at given fluence
   Double_t corr1 = 0.7 * fNeff0 * (1. - TMath::Exp(-1. * fNeffC * fluence));
@@ -135,7 +135,8 @@ Double_t CbmRadDamage::GetVfd(Double_t fluence, Double_t d) {
 
 
 // =====   Private method Init   ==========================================
-void CbmRadDamage::Init() {
+void CbmRadDamage::Init()
+{
 
   // --- Read NIEL tables
   ReadData("niel_neutrons.dat", niel_neutron);
@@ -173,8 +174,8 @@ void CbmRadDamage::Init() {
 
 
 // =====   Private method ReadData   ======================================
-void CbmRadDamage::ReadData(const char* file,
-                            std::map<Double_t, Double_t>& table) {
+void CbmRadDamage::ReadData(const char* file, std::map<Double_t, Double_t>& table)
+{
 
   TString wrkdir   = getenv("VMCWORKDIR");
   TString fileName = wrkdir + "/input/" + TString(file);
@@ -201,8 +202,8 @@ void CbmRadDamage::ReadData(const char* file,
   std::map<Double_t, Double_t>::iterator it2 = table.end();
   it2--;
 
-  LOG(info) << nEntries << " values read; energy range " << (*it1).first
-            << " to " << (*it2).first << " MeV; map size " << table.size();
+  LOG(info) << nEntries << " values read; energy range " << (*it1).first << " to " << (*it2).first << " MeV; map size "
+            << table.size();
 }
 // ========================================================================
 

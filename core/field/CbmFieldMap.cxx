@@ -56,7 +56,8 @@ CbmFieldMap::CbmFieldMap()
   , fBz(nullptr)
   , fBxOrigin(0.)
   , fByOrigin(0.)
-  , fBzOrigin(0.) {
+  , fBzOrigin(0.)
+{
   // Initilization of arrays is to my knowledge not
   // possible in member initalization lists
   for (Int_t i = 0; i < 2; i++) {
@@ -102,7 +103,8 @@ CbmFieldMap::CbmFieldMap(const char* mapName, const char* fileType)
   , fBz(nullptr)
   , fBxOrigin(0.)
   , fByOrigin(0.)
-  , fBzOrigin(0.) {
+  , fBzOrigin(0.)
+{
   // Initilization of arrays is to my knowledge not
   // possible in member initalization lists
   for (Int_t i = 0; i < 2; i++) {
@@ -121,9 +123,8 @@ CbmFieldMap::CbmFieldMap(const char* mapName, const char* fileType)
   fTitle      = "CbmFieldMap";
   TString dir = getenv("VMCWORKDIR");
   fFileName   = dir + "/input/" + mapName;
-  if (fileType[0] == 'R') {
-    fFileName += ".root";
-  } else {
+  if (fileType[0] == 'R') { fFileName += ".root"; }
+  else {
     fFileName += ".dat";
   }
   fType = 1;
@@ -157,7 +158,8 @@ CbmFieldMap::CbmFieldMap(CbmFieldPar* fieldPar)
   , fBz(nullptr)
   , fBxOrigin(0.)
   , fByOrigin(0.)
-  , fBzOrigin(0.) {
+  , fBzOrigin(0.)
+{
   // Initilization of arrays is to my knowledge not
   // possible in member initalization lists
   for (Int_t i = 0; i < 2; i++) {
@@ -174,10 +176,8 @@ CbmFieldMap::CbmFieldMap(CbmFieldPar* fieldPar)
   // class.
   fName = "";
   fType = 1;
-  if (!fieldPar) {
-    cerr << "-W- CbmFieldConst::CbmFieldMap: empty parameter container!"
-         << endl;
-  } else {
+  if (!fieldPar) { cerr << "-W- CbmFieldConst::CbmFieldMap: empty parameter container!" << endl; }
+  else {
     fieldPar->MapName(fName);
     fPosX       = fieldPar->GetPositionX();
     fPosY       = fieldPar->GetPositionY();
@@ -216,7 +216,8 @@ CbmFieldMap::CbmFieldMap(CbmFieldMapCreator* creator)
   , fBz(nullptr)
   , fBxOrigin(0.)
   , fByOrigin(0.)
-  , fBzOrigin(0.) {
+  , fBzOrigin(0.)
+{
   // Initilization of arrays is to my knowledge not
   // possible in member initalization lists
   for (Int_t i = 0; i < 2; i++) {
@@ -233,9 +234,8 @@ CbmFieldMap::CbmFieldMap(CbmFieldMapCreator* creator)
   // class.
   fName = "";
   fType = 1;
-  if (!creator) {
-    cerr << "-W- CbmFieldMap: no creator given!" << endl;
-  } else {
+  if (!creator) { cerr << "-W- CbmFieldMap: no creator given!" << endl; }
+  else {
     fType  = 1;
     fName  = creator->GetMapName();
     fXmin  = creator->GetXmin();
@@ -260,7 +260,8 @@ CbmFieldMap::CbmFieldMap(CbmFieldMapCreator* creator)
 
 
 // ------------   Destructor   --------------------------------------------
-CbmFieldMap::~CbmFieldMap() {
+CbmFieldMap::~CbmFieldMap()
+{
   if (fBx) delete fBx;
   if (fBy) delete fBy;
   if (fBz) delete fBz;
@@ -269,14 +270,13 @@ CbmFieldMap::~CbmFieldMap() {
 
 
 // -----------   Intialisation   ------------------------------------------
-void CbmFieldMap::Init() {
-  if (fFileName.EndsWith(".root"))
-    ReadRootFile(fFileName, fName);
+void CbmFieldMap::Init()
+{
+  if (fFileName.EndsWith(".root")) ReadRootFile(fFileName, fName);
   else if (fFileName.EndsWith(".dat"))
     ReadAsciiFile(fFileName);
   else {
-    cerr << "-E- CbmFieldMap::Init: No proper file name defined! (" << fFileName
-         << ")" << endl;
+    cerr << "-E- CbmFieldMap::Init: No proper file name defined! (" << fFileName << ")" << endl;
     Fatal("Init", "No proper file name");
   }
   // Fill values needed in the Print() function. This is needed to allow
@@ -291,18 +291,9 @@ void CbmFieldMap::Init() {
 
 
 // ----- Initialisation from arrays   -------------------------------------
-void CbmFieldMap::Init(Int_t nX,
-                       Double_t xMin,
-                       Double_t xMax,
-                       Int_t nY,
-                       Double_t yMin,
-                       Double_t yMax,
-                       Int_t nZ,
-                       Double_t zMin,
-                       Double_t zMax,
-                       TArrayF* bx,
-                       TArrayF* by,
-                       TArrayF* bz) {
+void CbmFieldMap::Init(Int_t nX, Double_t xMin, Double_t xMax, Int_t nY, Double_t yMin, Double_t yMax, Int_t nZ,
+                       Double_t zMin, Double_t zMax, TArrayF* bx, TArrayF* by, TArrayF* bz)
+{
 
   Reset();
   fNx           = nX;
@@ -318,8 +309,7 @@ void CbmFieldMap::Init(Int_t nX,
   assert(bx->GetSize() == by->GetSize());
   assert(bz->GetSize() == bx->GetSize());
   if (bx->GetSize() != nPoints) {
-    LOG(error) << "CbmFieldMap: array size " << bx->GetSize()
-               << " does not match number of grid points.";
+    LOG(error) << "CbmFieldMap: array size " << bx->GetSize() << " does not match number of grid points.";
     return;
   }
   fBx         = new TArrayF(nPoints);
@@ -351,7 +341,8 @@ void CbmFieldMap::Init(Int_t nX,
 
 
 // -----------   Get x component of the field   ---------------------------
-Double_t CbmFieldMap::GetBx(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMap::GetBx(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -382,7 +373,8 @@ Double_t CbmFieldMap::GetBx(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Get y component of the field   ---------------------------
-Double_t CbmFieldMap::GetBy(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMap::GetBy(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -413,7 +405,8 @@ Double_t CbmFieldMap::GetBy(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Get z component of the field   ---------------------------
-Double_t CbmFieldMap::GetBz(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMap::GetBz(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -444,15 +437,9 @@ Double_t CbmFieldMap::GetBz(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Check whether a point is inside the map   ----------------
-Bool_t CbmFieldMap::IsInside(Double_t x,
-                             Double_t y,
-                             Double_t z,
-                             Int_t& ix,
-                             Int_t& iy,
-                             Int_t& iz,
-                             Double_t& dx,
-                             Double_t& dy,
-                             Double_t& dz) {
+Bool_t CbmFieldMap::IsInside(Double_t x, Double_t y, Double_t z, Int_t& ix, Int_t& iy, Int_t& iz, Double_t& dx,
+                             Double_t& dy, Double_t& dz)
+{
 
   // --- Transform into local coordinate system
   Double_t xl = x - fPosX;
@@ -460,8 +447,7 @@ Bool_t CbmFieldMap::IsInside(Double_t x,
   Double_t zl = z - fPosZ;
 
   // ---  Check for being outside the map range
-  if (!(xl >= fXmin && xl < fXmax && yl >= fYmin && yl < fYmax && zl >= fZmin
-        && zl < fZmax)) {
+  if (!(xl >= fXmin && xl < fXmax && yl >= fYmin && yl < fYmax && zl >= fZmin && zl < fZmax)) {
     ix = iy = iz = 0;
     dx = dy = dz = 0.;
     return kFALSE;
@@ -484,7 +470,8 @@ Bool_t CbmFieldMap::IsInside(Double_t x,
 
 
 // ----------   Write the map to an ASCII file   --------------------------
-void CbmFieldMap::WriteAsciiFile(const char* fileName) {
+void CbmFieldMap::WriteAsciiFile(const char* fileName)
+{
 
   // Open file
   LOG(info) << "Writing field map to ASCII file " << fileName;
@@ -508,8 +495,7 @@ void CbmFieldMap::WriteAsciiFile(const char* fileName) {
   Double_t factor = 10. * fScale;  // Takes out scaling and converts kG->T
   cout << right;
   Int_t nTot = fNx * fNy * fNz;
-  cout << "-I- CbmFieldMap: " << fNx * fNy * fNz << " entries to write... "
-       << setw(3) << 0 << " % ";
+  cout << "-I- CbmFieldMap: " << fNx * fNy * fNz << " entries to write... " << setw(3) << 0 << " % ";
   Int_t index = 0;
   div_t modul;
   Int_t iDiv = TMath::Nint(nTot / 100.);
@@ -522,8 +508,7 @@ void CbmFieldMap::WriteAsciiFile(const char* fileName) {
           Double_t perc = TMath::Nint(100. * index / nTot);
           cout << "\b\b\b\b\b\b" << setw(3) << perc << " % " << flush;
         }
-        mapFile << fBx->At(index) / factor << " " << fBy->At(index) / factor
-                << " " << fBz->At(index) / factor << endl;
+        mapFile << fBx->At(index) / factor << " " << fBy->At(index) / factor << " " << fBz->At(index) / factor << endl;
       }  // z-Loop
     }    // y-Loop
   }      // x-Loop
@@ -534,7 +519,8 @@ void CbmFieldMap::WriteAsciiFile(const char* fileName) {
 
 
 // -------   Write field map to a ROOT file   -----------------------------
-void CbmFieldMap::WriteRootFile(const char* fileName, const char* mapName) {
+void CbmFieldMap::WriteRootFile(const char* fileName, const char* mapName)
+{
 
   CbmFieldMapData* data = new CbmFieldMapData(mapName, *this);
 
@@ -542,7 +528,7 @@ void CbmFieldMap::WriteRootFile(const char* fileName, const char* mapName) {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* file           = new TFile(fileName, "RECREATE");
+  TFile* file = new TFile(fileName, "RECREATE");
   data->Write();
   file->Close();
 
@@ -554,7 +540,8 @@ void CbmFieldMap::WriteRootFile(const char* fileName, const char* mapName) {
 
 
 // -----  Set the position of the field centre in global coordinates  -----
-void CbmFieldMap::SetPosition(Double_t x, Double_t y, Double_t z) {
+void CbmFieldMap::SetPosition(Double_t x, Double_t y, Double_t z)
+{
   fPosX = x;
   fPosY = y;
   fPosZ = z;
@@ -563,7 +550,8 @@ void CbmFieldMap::SetPosition(Double_t x, Double_t y, Double_t z) {
 
 
 // ---------   Screen output   --------------------------------------------
-void CbmFieldMap::Print(Option_t*) const {
+void CbmFieldMap::Print(Option_t*) const
+{
   TString type = "Map";
   if (fType == 2) type = "Map sym2";
   if (fType == 3) type = "Map sym3";
@@ -575,20 +563,19 @@ void CbmFieldMap::Print(Option_t*) const {
   cout << "----  Field type     : " << type << endl;
   cout << "----" << endl;
   cout << "----  Field map grid : " << endl;
-  cout << "----  x = " << setw(4) << fXmin << " to " << setw(4) << fXmax
-       << " cm, " << fNx << " grid points, dx = " << fXstep << " cm" << endl;
-  cout << "----  y = " << setw(4) << fYmin << " to " << setw(4) << fYmax
-       << " cm, " << fNy << " grid points, dy = " << fYstep << " cm" << endl;
-  cout << "----  z = " << setw(4) << fZmin << " to " << setw(4) << fZmax
-       << " cm, " << fNz << " grid points, dz = " << fZstep << " cm" << endl;
+  cout << "----  x = " << setw(4) << fXmin << " to " << setw(4) << fXmax << " cm, " << fNx
+       << " grid points, dx = " << fXstep << " cm" << endl;
+  cout << "----  y = " << setw(4) << fYmin << " to " << setw(4) << fYmax << " cm, " << fNy
+       << " grid points, dy = " << fYstep << " cm" << endl;
+  cout << "----  z = " << setw(4) << fZmin << " to " << setw(4) << fZmax << " cm, " << fNz
+       << " grid points, dz = " << fZstep << " cm" << endl;
   cout << endl;
-  cout << "----  Field centre position: ( " << setw(6) << fPosX << ", "
-       << setw(6) << fPosY << ", " << setw(6) << fPosZ << ") cm" << endl;
+  cout << "----  Field centre position: ( " << setw(6) << fPosX << ", " << setw(6) << fPosY << ", " << setw(6) << fPosZ
+       << ") cm" << endl;
   cout << "----  Field scaling factor: " << fScale << endl;
   cout << "----" << endl;
-  cout << "----  Field at origin is ( " << setw(6) << fBxOrigin << ", "
-       << setw(6) << fByOrigin << ", " << setw(6) << fBzOrigin << ") kG"
-       << endl;
+  cout << "----  Field at origin is ( " << setw(6) << fBxOrigin << ", " << setw(6) << fByOrigin << ", " << setw(6)
+       << fBzOrigin << ") kG" << endl;
 
   cout << "======================================================" << endl;
 }
@@ -596,7 +583,8 @@ void CbmFieldMap::Print(Option_t*) const {
 
 
 // ---------    Reset parameters and data (private)  ----------------------
-void CbmFieldMap::Reset() {
+void CbmFieldMap::Reset()
+{
   fPosX = fPosY = fPosZ = 0.;
   fXmin = fYmin = fZmin = 0.;
   fXmax = fYmax = fZmax = 0.;
@@ -620,7 +608,8 @@ void CbmFieldMap::Reset() {
 
 
 // -----   Read field map from ASCII file (private)   ---------------------
-void CbmFieldMap::ReadAsciiFile(const char* fileName) {
+void CbmFieldMap::ReadAsciiFile(const char* fileName)
+{
 
   Double_t bx = 0., by = 0., bz = 0.;
 
@@ -641,8 +630,7 @@ void CbmFieldMap::ReadAsciiFile(const char* fileName) {
   if (type == "sym3") iType = 3;
   if (fType != iType) {
     cout << "-E- CbmFieldMap::ReadAsciiFile: Incompatible map types!" << endl;
-    cout << "    Field map is of type " << fType
-         << " but map on file is of type " << iType << endl;
+    cout << "    Field map is of type " << fType << " but map on file is of type " << iType << endl;
     Fatal("ReadAsciiFile", "Incompatible map types");
   }
 
@@ -663,8 +651,7 @@ void CbmFieldMap::ReadAsciiFile(const char* fileName) {
   Double_t factor = fScale * 10.;  // Factor 10 for T -> kG
   cout << right;
   Int_t nTot = fNx * fNy * fNz;
-  cout << "-I- CbmFieldMap: " << nTot << " entries to read... " << setw(3) << 0
-       << " % ";
+  cout << "-I- CbmFieldMap: " << nTot << " entries to read... " << setw(3) << 0 << " % ";
   Int_t index = 0;
   div_t modul;
   Int_t iDiv = TMath::Nint(nTot / 100.);
@@ -703,7 +690,8 @@ void CbmFieldMap::ReadAsciiFile(const char* fileName) {
 
 
 // -------------   Read field map from ROOT file (private)  ---------------
-void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName) {
+void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -720,8 +708,7 @@ void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName) {
   CbmFieldMapData* data = nullptr;
   file->GetObject(mapName, data);
   if (!data) {
-    cout << "-E- CbmFieldMap::ReadRootFile: data object " << fileName
-         << " not found in file! " << endl;
+    cout << "-E- CbmFieldMap::ReadRootFile: data object " << fileName << " not found in file! " << endl;
     exit(-1);
   }
 
@@ -740,17 +727,18 @@ void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName) {
 
 
 // ------------   Set field parameters and data (private)  ----------------
-void CbmFieldMap::SetField(const CbmFieldMapData* data) {
+void CbmFieldMap::SetField(const CbmFieldMapData* data)
+{
 
   // Check compatibility
   if (data->GetType() != fType) {
     if (!((data->GetType() == 3) && (fType == 5)))  // E.Litvinenko
     {
       cout << "-E- CbmFieldMap::SetField: Incompatible map types!" << endl;
-      cout << "    Field map is of type " << fType
-           << " but map on file is of type " << data->GetType() << endl;
+      cout << "    Field map is of type " << fType << " but map on file is of type " << data->GetType() << endl;
       Fatal("SetField", "Incompatible map types");
-    } else
+    }
+    else
       cout << "   CbmFieldMap::SetField: Warning:  You are using PosDepScaled "
               "map (original map type = 3)"
            << endl;
@@ -794,7 +782,8 @@ void CbmFieldMap::SetField(const CbmFieldMapData* data) {
 
 
 // ------------   Interpolation in a grid cell (private)  -----------------
-Double_t CbmFieldMap::Interpolate(Double_t dx, Double_t dy, Double_t dz) {
+Double_t CbmFieldMap::Interpolate(Double_t dx, Double_t dy, Double_t dz)
+{
 
   // Interpolate in x coordinate
   fHb[0][0] = fHa[0][0][0] + (fHa[1][0][0] - fHa[0][0][0]) * dx;

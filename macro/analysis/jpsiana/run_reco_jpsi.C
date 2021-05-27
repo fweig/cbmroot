@@ -1,14 +1,12 @@
-void run_reco_jpsi(Int_t nEvents = 50) {
+void run_reco_jpsi(Int_t nEvents = 50)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   Int_t iVerbose = 0;
 
-  TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString stsMatBudgetFileName =
-    parDir
-    + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
+  TString script               = TString(gSystem->Getenv("SCRIPT"));
+  TString parDir               = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
 
   gRandom->SetSeed(10);
 
@@ -24,11 +22,9 @@ void run_reco_jpsi(Int_t nEvents = 50) {
                    "mc.auau.25gev.centr.00697.root";
 
   TString trdHitProducerType = "smearing";
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
-  TObjString trdDigiFile =
-    parDir + "/trd/trd_v14a_3e.digi.par";                      // TRD digi file
-  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";  // TOF digi file
+  TObjString stsDigiFile     = parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
+  TObjString trdDigiFile     = parDir + "/trd/trd_v14a_3e.digi.par";   // TRD digi file
+  TObjString tofDigiFile     = parDir + "/tof/tof_v13b.digi.par";      // TOF digi file
   if (script == "yes") {
     mcFile               = TString(gSystem->Getenv("MC_FILE"));
     recoFile             = TString(gSystem->Getenv("RECO_FILE"));
@@ -40,8 +36,7 @@ void run_reco_jpsi(Int_t nEvents = 50) {
     stsMatBudgetFileName = TString(gSystem->Getenv("STS_MATERIAL_BUDGET_FILE"));
   }
 
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir     = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TList* parFileList = new TList();
   if (stsDigiFile.GetString() != "") parFileList->Add(&stsDigiFile);
   if (trdDigiFile.GetString() != "") parFileList->Add(&trdDigiFile);
@@ -73,17 +68,16 @@ void run_reco_jpsi(Int_t nEvents = 50) {
   // ===                      STS local reconstruction                     ===
   // =========================================================================
 
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;  // Model: 1 = uniform charge distribution along track
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // Model: 1 = uniform charge distribution along track
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetParameters(
-    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
 
   FairTask* stsCluster = new CbmStsFindClusters();
@@ -100,8 +94,7 @@ void run_reco_jpsi(Int_t nEvents = 50) {
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
   Bool_t useMvd                     = kFALSE;
-  FairTask* stsFindTracks =
-    new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvd);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvd);
   run->AddTask(stsFindTracks);
 
   //   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
@@ -115,17 +108,18 @@ void run_reco_jpsi(Int_t nEvents = 50) {
     CbmTrdRadiator* radiator = new CbmTrdRadiator(kTRUE, "H++");
 
     if (trdHitProducerType == "smearing") {
-      CbmTrdHitProducerSmearing* trdHitProd =
-        new CbmTrdHitProducerSmearing(radiator);
+      CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
       trdHitProd->SetUseDigiPar(false);
       run->AddTask(trdHitProd);
-    } else if (trdHitProducerType == "digi") {
+    }
+    else if (trdHitProducerType == "digi") {
       CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer(radiator);
       run->AddTask(trdDigitizer);
 
       CbmTrdHitProducerDigi* trdHitProd = new CbmTrdHitProducerDigi();
       run->AddTask(trdHitProd);
-    } else if (trdHitProducerType == "clustering") {
+    }
+    else if (trdHitProducerType == "clustering") {
       CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
       run->AddTask(trdDigiPrf);
 
@@ -141,8 +135,7 @@ void run_reco_jpsi(Int_t nEvents = 50) {
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   if (IsTof(parFile)) {
-    CbmTofHitProducerNew* tofHitProd =
-      new CbmTofHitProducerNew("CbmTofHitProducerNew", iVerbose);
+    CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("CbmTofHitProducerNew", iVerbose);
     tofHitProd->SetInitFromAscii(kFALSE);
     run->AddTask(tofHitProd);
   }  //isTof
@@ -162,8 +155,8 @@ void run_reco_jpsi(Int_t nEvents = 50) {
 
 
   if (IsTrd(parFile)) {
-    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN(
-      "CbmTrdSetTracksPidANN", "CbmTrdSetTracksPidANN");
+    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+      new CbmTrdSetTracksPidANN("CbmTrdSetTracksPidANN", "CbmTrdSetTracksPidANN");
     trdSetTracksPidAnnTask->SetTRDGeometryType("h++");
     run->AddTask(trdSetTracksPidAnnTask);
   }  //isTrd

@@ -4,9 +4,8 @@
 #include "CbmLink.h"
 #include "CbmMatch.h"
 
-void compareMatchDataMembers(CbmMatch& testMatch,
-                             Int_t noflinks,
-                             Double_t weight) {
+void compareMatchDataMembers(CbmMatch& testMatch, Int_t noflinks, Double_t weight)
+{
   Int_t linkLength {-111};
   Double_t totalWeight {-111.};
 

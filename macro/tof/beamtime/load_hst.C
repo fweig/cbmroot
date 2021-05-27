@@ -1,4 +1,5 @@
-void load_hst(TString cstr = "hst/default.hst.root") {
+void load_hst(TString cstr = "hst/default.hst.root")
+{
   // Read histogramms from the file
   TFile fHist = TFile(cstr, "READ");
   TIter next(fHist.GetListOfKeys());

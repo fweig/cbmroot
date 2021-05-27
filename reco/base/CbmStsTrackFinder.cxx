@@ -7,11 +7,13 @@
 // Empty file, just there to please CINT
 
 #include "CbmStsTrackFinder.h"
+
 #include "CbmDigiManager.h"
 #include "CbmStsCluster.h"
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -24,9 +26,12 @@ CbmStsTrackFinder::CbmStsTrackFinder()
   , fStsHits(nullptr)
   , fTracks(nullptr)
   , fStsClusters(nullptr)
-  , fVerbose(0) {}
+  , fVerbose(0)
+{
+}
 
-double CbmStsTrackFinder::VecMedian(std::vector<double>& vec) {
+double CbmStsTrackFinder::VecMedian(std::vector<double>& vec)
+{
   if (vec.empty()) { return 0.; }
 
   auto mid = vec.size() / 2;
@@ -39,7 +44,8 @@ double CbmStsTrackFinder::VecMedian(std::vector<double>& vec) {
   return median;
 }
 
-double CbmStsTrackFinder::CalculateEloss(CbmStsTrack* cbmStsTrack) {
+double CbmStsTrackFinder::CalculateEloss(CbmStsTrack* cbmStsTrack)
+{
   if (!fStsClusters) {
     FairRootManager* ioman = FairRootManager::Instance();
     assert(ioman);
@@ -55,8 +61,7 @@ double CbmStsTrackFinder::CalculateEloss(CbmStsTrack* cbmStsTrack) {
   double dr = 1.;
   for (int iHit = 0; iHit < cbmStsTrack->GetNofStsHits(); ++iHit) {
     bool frontVeto = kFALSE, backVeto = kFALSE;
-    CbmStsHit* stsHit =
-      (CbmStsHit*) fStsHits->At(cbmStsTrack->GetStsHitIndex(iHit));
+    CbmStsHit* stsHit = (CbmStsHit*) fStsHits->At(cbmStsTrack->GetStsHitIndex(iHit));
 
     double x, y, z, xNext, yNext, zNext;
     x = stsHit->GetX();
@@ -64,38 +69,29 @@ double CbmStsTrackFinder::CalculateEloss(CbmStsTrack* cbmStsTrack) {
     z = stsHit->GetZ();
 
     if (iHit != cbmStsTrack->GetNofStsHits() - 1) {
-      CbmStsHit* stsHitNext =
-        (CbmStsHit*) fStsHits->At(cbmStsTrack->GetStsHitIndex(iHit + 1));
-      xNext = stsHitNext->GetX();
-      yNext = stsHitNext->GetY();
-      zNext = stsHitNext->GetZ();
-      dr    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y)
-                + (zNext - z) * (zNext - z))
+      CbmStsHit* stsHitNext = (CbmStsHit*) fStsHits->At(cbmStsTrack->GetStsHitIndex(iHit + 1));
+      xNext                 = stsHitNext->GetX();
+      yNext                 = stsHitNext->GetY();
+      zNext                 = stsHitNext->GetZ();
+      dr                    = sqrt((xNext - x) * (xNext - x) + (yNext - y) * (yNext - y) + (zNext - z) * (zNext - z))
            / (zNext - z);  // if *300um, you get real reconstructed dr
     }                      // else dr stay previous
 
-    CbmStsCluster* frontCluster =
-      (CbmStsCluster*) fStsClusters->At(stsHit->GetFrontClusterId());
-    CbmStsCluster* backCluster =
-      (CbmStsCluster*) fStsClusters->At(stsHit->GetBackClusterId());
+    CbmStsCluster* frontCluster = (CbmStsCluster*) fStsClusters->At(stsHit->GetFrontClusterId());
+    CbmStsCluster* backCluster  = (CbmStsCluster*) fStsClusters->At(stsHit->GetBackClusterId());
 
     if (!frontCluster || !backCluster) {
-      LOG(info)
-        << "CbmStsTrackFinder::CalculateEloss: no front or back cluster";
+      LOG(info) << "CbmStsTrackFinder::CalculateEloss: no front or back cluster";
       continue;
     }
 
     //check if at least one digi in a cluster has overflow --- charge is registered in the last ADC channel #31
     for (int iDigi = 0; iDigi < frontCluster->GetNofDigis(); ++iDigi) {
-      if (CbmStsTrackFinder::MaxAdcVal()
-          == (digiManager->Get<CbmStsDigi>(frontCluster->GetDigi(iDigi))
-                ->GetCharge()))
+      if (CbmStsTrackFinder::MaxAdcVal() == (digiManager->Get<CbmStsDigi>(frontCluster->GetDigi(iDigi))->GetCharge()))
         frontVeto = kTRUE;
     }
     for (int iDigi = 0; iDigi < backCluster->GetNofDigis(); ++iDigi) {
-      if (CbmStsTrackFinder::MaxAdcVal()
-          == (digiManager->Get<CbmStsDigi>(backCluster->GetDigi(iDigi))
-                ->GetCharge()))
+      if (CbmStsTrackFinder::MaxAdcVal() == (digiManager->Get<CbmStsDigi>(backCluster->GetDigi(iDigi))->GetCharge()))
         backVeto = kTRUE;
     }
 
@@ -108,7 +104,8 @@ double CbmStsTrackFinder::CalculateEloss(CbmStsTrack* cbmStsTrack) {
   return dEdXSTS;
 }
 
-void CbmStsTrackFinder::FillEloss() {
+void CbmStsTrackFinder::FillEloss()
+{
   Int_t nStsTracks = fTracks->GetEntriesFast();
   for (Int_t stsTrackIndex = 0; stsTrackIndex < nStsTracks; stsTrackIndex++) {
     CbmStsTrack* cbmStsTrack = (CbmStsTrack*) fTracks->At(stsTrackIndex);

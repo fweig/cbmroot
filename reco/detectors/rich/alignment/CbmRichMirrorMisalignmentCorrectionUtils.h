@@ -35,25 +35,21 @@ public:
 	    */
   //	   virtual void Init() { }
 
-  void Init(const string& s) {
+  void Init(const string& s)
+  {
     SetMirrorCorrectionParameterFile(s);
     tBoolCorrection = CheckMirrorCorrectionParameterFile();
-    if (tBoolCorrection) {
-      ReadAndStoreMirrorCorrectionParamMap(
-        fMirrorMisalignmentCorrectionParameterMap);
-    } else {
-      LOG(info)
-        << "CbmRichProjectionProducerAnalytical::Init() No correction table.";
+    if (tBoolCorrection) { ReadAndStoreMirrorCorrectionParamMap(fMirrorMisalignmentCorrectionParameterMap); }
+    else {
+      LOG(info) << "CbmRichProjectionProducerAnalytical::Init() No correction table.";
     }
   }
 
-  void SetMirrorCorrectionParameterFile(const string& s) {
-    fPathToMirrorMisalignmentCorrectionParameterFile = s;
-  }
+  void SetMirrorCorrectionParameterFile(const string& s) { fPathToMirrorMisalignmentCorrectionParameterFile = s; }
 
-  bool CheckMirrorCorrectionParameterFile() {
-    if (fPathToMirrorMisalignmentCorrectionParameterFile
-        == "/correction_table/correction_param_array.txt") {
+  bool CheckMirrorCorrectionParameterFile()
+  {
+    if (fPathToMirrorMisalignmentCorrectionParameterFile == "/correction_table/correction_param_array.txt") {
       return false;
     }
     ifstream corrFile;
@@ -66,24 +62,24 @@ public:
     return true;
   }
 
-  void ReadAndStoreMirrorCorrectionParamMap(
-    std::map<string, std::pair<Double_t, Double_t>>& mirrorCorrectionParamMap) {
+  void ReadAndStoreMirrorCorrectionParamMap(std::map<string, std::pair<Double_t, Double_t>>& mirrorCorrectionParamMap)
+  {
     string mirrorID = "", fileLine = "";
     Double_t misX = 0., misY = 0.;
     ifstream corrFile;
     corrFile.open(fPathToMirrorMisalignmentCorrectionParameterFile, ios::in);
     if (corrFile.is_open()) {
-      LOG(info)
-        << "CbmRichProjectionProducerUtils::CheckMirrorCorrectionParameterFile("
-           ") Correction table used at: "
-        << fPathToMirrorMisalignmentCorrectionParameterFile;
+      LOG(info) << "CbmRichProjectionProducerUtils::CheckMirrorCorrectionParameterFile("
+                   ") Correction table used at: "
+                << fPathToMirrorMisalignmentCorrectionParameterFile;
       cout << "mirrorID: \t\t\t (misY, misX): " << endl;
       while (corrFile >> mirrorID >> misY >> misX) {
         cout << mirrorID << " \t ; \t(" << misY << ", " << misX << ")" << endl;
         mirrorCorrectionParamMap[mirrorID] = std::make_pair(misX, misY);
       }
       corrFile.close();
-    } else {
+    }
+    else {
       Fatal("CbmRichMirrorMisalignmentCorrectionUtils::"
             "ReadAndStoreMirrorCorrectionParam:",
             "Wrong correction parameter path given!");
@@ -93,16 +89,14 @@ public:
     cout << "mirrorID: \t\t\t (misY, misX): " << endl;
     for (std::map<string, std::pair<Double_t, Double_t>>::iterator it =
            fMirrorMisalignmentCorrectionParameterMap.begin();
-         it != fMirrorMisalignmentCorrectionParameterMap.end();
-         ++it) {
-      cout << it->first << " \t ; \t(" << it->second.first << ", "
-           << it->second.second << ")" << endl;
+         it != fMirrorMisalignmentCorrectionParameterMap.end(); ++it) {
+      cout << it->first << " \t ; \t(" << it->second.first << ", " << it->second.second << ")" << endl;
     }
     cout << endl;
   }
 
-  std::map<string, std::pair<Double_t, Double_t>>
-  GetMirrorCorrectionParamMap() {
+  std::map<string, std::pair<Double_t, Double_t>> GetMirrorCorrectionParamMap()
+  {
     return fMirrorMisalignmentCorrectionParameterMap;
   }
 
@@ -111,8 +105,7 @@ public:
 private:
   bool tBoolCorrection;
   string fPathToMirrorMisalignmentCorrectionParameterFile;
-  std::map<string, pair<Double_t, Double_t>>
-    fMirrorMisalignmentCorrectionParameterMap;
+  std::map<string, pair<Double_t, Double_t>> fMirrorMisalignmentCorrectionParameterMap;
 };
 
 #endif

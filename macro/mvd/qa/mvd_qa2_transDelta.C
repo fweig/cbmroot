@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void mvd_qa2_transDelta(const char* setup = "sis100_electron") {
+void mvd_qa2_transDelta(const char* setup = "sis100_electron")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -80,7 +81,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron") {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -120,8 +121,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron") {
 
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   std::cout << target->ToString();
@@ -142,8 +142,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron") {
 
   // -----   Create PrimaryGenerator   --------------------------------------
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-  FairIonGenerator* fIongen =
-    new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., -1.);
+  FairIonGenerator* fIongen     = new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., -1.);
   primGen->AddGenerator(fIongen);
 
   fRun->SetGenerator(primGen);
@@ -184,8 +183,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron") {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
 

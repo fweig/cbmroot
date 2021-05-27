@@ -1,11 +1,8 @@
-void run_digi_geotest(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
-  int nEvents = 10000) {
+void run_digi_geotest(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
+                      const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
+                      const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
+                      int nEvents            = 10000)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
@@ -40,7 +37,6 @@ void run_digi_geotest(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Digi file is " << digiFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

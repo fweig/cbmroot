@@ -9,6 +9,10 @@
 #include "LitDetectorGeometryElectron.h"
 #include "LitHitDataElectron.h"
 //#include "../LitTrackSelection.h"
+#include <algorithm>
+#include <iostream>
+#include <limits>
+
 #include "../LitAddMaterial.h"
 #include "../LitExtrapolation.h"
 #include "../LitFieldGrid.h"
@@ -19,23 +23,20 @@
 #include "../LitTypes.h"
 #include "../LitVecPack.h"
 
-#include <algorithm>
-#include <iostream>
-#include <limits>
-
 
 lit::parallel::LitTrackFinderNNVecElectron::LitTrackFinderNNVecElectron()
   : fMaxNofMissingHits(4)
   , fSigmaCoef(5.)
   , fMaxCovSq(20. * 20.)
-  , fChiSqPixelHitCut(15.) {}
+  , fChiSqPixelHitCut(15.)
+{
+}
 
 lit::parallel::LitTrackFinderNNVecElectron::~LitTrackFinderNNVecElectron() {}
 
-void lit::parallel::LitTrackFinderNNVecElectron::DoFind(
-  const PixelHitArray& hits,
-  const TrackArray& trackSeeds,
-  TrackArray& tracks) {
+void lit::parallel::LitTrackFinderNNVecElectron::DoFind(const PixelHitArray& hits, const TrackArray& trackSeeds,
+                                                        TrackArray& tracks)
+{
   ArrangeHits(hits);
   InitTrackSeeds(trackSeeds);
   FollowTracks();
@@ -58,8 +59,8 @@ void lit::parallel::LitTrackFinderNNVecElectron::DoFind(
   fHitData.Clear();
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::ArrangeHits(
-  const PixelHitArray& hits) {
+void lit::parallel::LitTrackFinderNNVecElectron::ArrangeHits(const PixelHitArray& hits)
+{
   for (unsigned int iHit = 0; iHit < hits.size(); iHit++) {
     LitScalPixelHit* hit = hits[iHit];
     //       if (fUsedHitsSet.find(hit->GetRefId()) != fUsedHitsSet.end()) continue;
@@ -69,8 +70,8 @@ void lit::parallel::LitTrackFinderNNVecElectron::ArrangeHits(
   //   std::cout << fHitData;
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::InitTrackSeeds(
-  const TrackArray& trackSeeds) {
+void lit::parallel::LitTrackFinderNNVecElectron::InitTrackSeeds(const TrackArray& trackSeeds)
+{
   fscal QpCut = 1. / 0.1;
   for (unsigned int iTrack = 0; iTrack < trackSeeds.size(); iTrack++) {
     LitScalTrack* track = trackSeeds[iTrack];
@@ -82,7 +83,8 @@ void lit::parallel::LitTrackFinderNNVecElectron::InitTrackSeeds(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks() {
+void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks()
+{
   // Temporary arrays to store track indices from the fTracks array
   std::vector<unsigned int> tracksId1;
   std::vector<unsigned int> tracksId2;
@@ -93,13 +95,9 @@ void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks() {
   }
 
   //First propagate all tracks to the first station
-  unsigned int nofTracks = tracksId1.size();  // number of tracks
-  unsigned int nofTracksVec =
-    nofTracks / fvecLen;  // number of tracks grouped in vectors
-  unsigned int dTracks =
-    nofTracks
-    - fvecLen
-        * nofTracksVec;  // number of tracks remained after grouping in vectors
+  unsigned int nofTracks    = tracksId1.size();               // number of tracks
+  unsigned int nofTracksVec = nofTracks / fvecLen;            // number of tracks grouped in vectors
+  unsigned int dTracks = nofTracks - fvecLen * nofTracksVec;  // number of tracks remained after grouping in vectors
 
   // loop over fTracks, pack data and propagate to the first station
   for (unsigned int iTrack = 0; iTrack < nofTracksVec; iTrack++) {
@@ -137,26 +135,19 @@ void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks() {
   unsigned char nofStationGroups = fLayout.GetNofStationGroups();
   for (unsigned char iStationGroup = 0; iStationGroup < nofStationGroups;
        iStationGroup++) {  // loop over station groups
-    const LitStationGroupElectron<fvec>& stg =
-      fLayout.GetStationGroup(iStationGroup);
+    const LitStationGroupElectron<fvec>& stg = fLayout.GetStationGroup(iStationGroup);
 
     // Loop over stations, and propagate tracks from station to station
     unsigned char nofStations = stg.GetNofStations();
-    for (unsigned char iStation = 0; iStation < nofStations;
-         iStation++) {  // loop over stations
+    for (unsigned char iStation = 0; iStation < nofStations; iStation++) {  // loop over stations
 
-      unsigned int nofTracks = tracksId1.size();  // number of tracks
-      unsigned int nofTracksVec =
-        nofTracks / fvecLen;  // number of tracks grouped in vectors
-      unsigned int dTracks =
-        nofTracks
-        - fvecLen
-            * nofTracksVec;  // number of tracks remained after grouping in vectors
+      unsigned int nofTracks    = tracksId1.size();               // number of tracks
+      unsigned int nofTracksVec = nofTracks / fvecLen;            // number of tracks grouped in vectors
+      unsigned int dTracks = nofTracks - fvecLen * nofTracksVec;  // number of tracks remained after grouping in vectors
       //       std::cout << "iStation --> nofTracks=" << nofTracks << " nofTracksVec=" << nofTracksVec
       //          << " dTracks=" << dTracks << std::endl;
 
-      for (unsigned int iTrack = 0; iTrack < nofTracksVec;
-           iTrack++) {  // loop over tracks
+      for (unsigned int iTrack = 0; iTrack < nofTracksVec; iTrack++) {  // loop over tracks
         unsigned int start = fvecLen * iTrack;
         // Collect track group
         LitScalTrack* tracks[fvecLen];
@@ -189,9 +180,7 @@ void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks() {
       // Propagate further only tracks which pass the cut.
       for (unsigned int iTrack = 0; iTrack < tracksId1.size(); iTrack++) {
         unsigned int id = tracksId1[iTrack];
-        if (fTracks[id]->GetNofMissingHits() <= fMaxNofMissingHits) {
-          tracksId2.push_back(id);
-        }
+        if (fTracks[id]->GetNofMissingHits() <= fMaxNofMissingHits) { tracksId2.push_back(id); }
       }
       tracksId1.assign(tracksId2.begin(), tracksId2.end());
       tracksId2.clear();
@@ -199,8 +188,8 @@ void lit::parallel::LitTrackFinderNNVecElectron::FollowTracks() {
   }    // loop over station groups
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::PropagateToFirstStation(
-  LitScalTrack* tracks[]) {
+void lit::parallel::LitTrackFinderNNVecElectron::PropagateToFirstStation(LitScalTrack* tracks[])
+{
   // Pack track parameters
   LitTrackParamScal par[fvecLen];
   for (unsigned int i = 0; i < fvecLen; i++) {
@@ -218,11 +207,7 @@ void lit::parallel::LitTrackFinderNNVecElectron::PropagateToFirstStation(
     //      vp1.GetFieldGridMid().GetFieldValue(lpar.X, lpar.Y, v2);
     //      vp2.GetFieldGrid().GetFieldValue(lpar.X, lpar.Y, v3);
 
-    lit::parallel::LitRK4Extrapolation(lpar,
-                                       vp2.GetZ(),
-                                       vp1.GetFieldGrid(),
-                                       vp1.GetFieldGridMid(),
-                                       vp2.GetFieldGrid());
+    lit::parallel::LitRK4Extrapolation(lpar, vp2.GetZ(), vp1.GetFieldGrid(), vp1.GetFieldGridMid(), vp2.GetFieldGrid());
     lit::parallel::LitAddMaterial(lpar, vp2.GetMaterial());
   }
 
@@ -235,14 +220,12 @@ void lit::parallel::LitTrackFinderNNVecElectron::PropagateToFirstStation(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::ProcessStation(
-  LitScalTrack* tracks[],
-  unsigned char stationGroup,
-  unsigned char station) {
+void lit::parallel::LitTrackFinderNNVecElectron::ProcessStation(LitScalTrack* tracks[], unsigned char stationGroup,
+                                                                unsigned char station)
+{
   // std::cout << "Processing station " << (int) station << ":" << (int)stationGroup << std::endl;
-  const LitStationGroupElectron<fvec>& stg =
-    fLayout.GetStationGroup(stationGroup);
-  const LitStationElectron<fvec>& sta = stg.GetStation(station);
+  const LitStationGroupElectron<fvec>& stg = fLayout.GetStationGroup(stationGroup);
+  const LitStationElectron<fvec>& sta      = stg.GetStation(station);
 
   // Pack track parameters
   LitTrackParamScal par[fvecLen];
@@ -268,17 +251,14 @@ void lit::parallel::LitTrackFinderNNVecElectron::ProcessStation(
   }
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::CollectHits(
-  LitTrackParamScal* par,
-  LitScalTrack* track,
-  unsigned char stationGroup,
-  unsigned char station) {
+void lit::parallel::LitTrackFinderNNVecElectron::CollectHits(LitTrackParamScal* par, LitScalTrack* track,
+                                                             unsigned char stationGroup, unsigned char station)
+{
   PixelHitConstIteratorPair hits;
   track->SetParamLast(*par);
 
-  const std::vector<LitScalPixelHit*>& hitvec =
-    fHitData.GetHits(stationGroup, station);
-  fscal err = fHitData.GetMaxErr(stationGroup, station);
+  const std::vector<LitScalPixelHit*>& hitvec = fHitData.GetHits(stationGroup, station);
+  fscal err                                   = fHitData.GetMaxErr(stationGroup, station);
 
   MinMaxIndex(par, hitvec, err, hits.first, hits.second);
   unsigned int nofHits = std::distance(hits.first, hits.second);
@@ -289,12 +269,10 @@ void lit::parallel::LitTrackFinderNNVecElectron::CollectHits(
   if (!hitAdded) { track->IncNofMissingHits(); }
 }
 
-bool lit::parallel::LitTrackFinderNNVecElectron::AddNearestHit(
-  LitScalTrack* track,
-  const PixelHitConstIteratorPair& hits,
-  unsigned int nofHits,
-  int stationGroup,
-  int station) {
+bool lit::parallel::LitTrackFinderNNVecElectron::AddNearestHit(LitScalTrack* track,
+                                                               const PixelHitConstIteratorPair& hits,
+                                                               unsigned int nofHits, int stationGroup, int station)
+{
   bool hitAdded         = false;
   LitScalPixelHit* hita = NULL;
   LitTrackParamScal param;
@@ -308,17 +286,11 @@ bool lit::parallel::LitTrackFinderNNVecElectron::AddNearestHit(
   LitTrackParam<fvec> lpar;
   PackTrackParam(pars, lpar);
 
-  const std::vector<LitScalPixelHit*>& hitvec =
-    fHitData.GetHits(stationGroup, station);
-  unsigned int nofHitsVec =
-    nofHits / fvecLen;  // number of hits grouped in vectors
-  unsigned int dHits =
-    nofHits
-    - fvecLen
-        * nofHitsVec;  // number of hits remained after grouping in vectors
+  const std::vector<LitScalPixelHit*>& hitvec = fHitData.GetHits(stationGroup, station);
+  unsigned int nofHitsVec                     = nofHits / fvecLen;  // number of hits grouped in vectors
+  unsigned int dHits = nofHits - fvecLen * nofHitsVec;              // number of hits remained after grouping in vectors
   for (unsigned int iHit = 0; iHit < nofHitsVec; iHit++) {
-    unsigned int start =
-      std::distance(hitvec.begin(), hits.first) + fvecLen * iHit;
+    unsigned int start = std::distance(hitvec.begin(), hits.first) + fvecLen * iHit;
 
     // Pack hit
     LitScalPixelHit hit[fvecLen];
@@ -345,8 +317,7 @@ bool lit::parallel::LitTrackFinderNNVecElectron::AddNearestHit(
     }
   }
   if (dHits > 0) {
-    unsigned int start =
-      std::distance(hitvec.begin(), hits.first) + fvecLen * nofHitsVec;
+    unsigned int start = std::distance(hitvec.begin(), hits.first) + fvecLen * nofHitsVec;
     LitScalPixelHit hit[fvecLen];
     LitPixelHit<fvec> lhit;
     LitTrackParamScal pars[fvecLen];
@@ -391,12 +362,10 @@ bool lit::parallel::LitTrackFinderNNVecElectron::AddNearestHit(
   return hitAdded;
 }
 
-void lit::parallel::LitTrackFinderNNVecElectron::MinMaxIndex(
-  const LitTrackParamScal* par,
-  const PixelHitArray& hits,
-  fscal maxErr,
-  PixelHitConstIterator& first,
-  PixelHitConstIterator& last) {
+void lit::parallel::LitTrackFinderNNVecElectron::MinMaxIndex(const LitTrackParamScal* par, const PixelHitArray& hits,
+                                                             fscal maxErr, PixelHitConstIterator& first,
+                                                             PixelHitConstIterator& last)
+{
   first = hits.begin();
   last  = hits.begin();
   LitScalPixelHit hit;
@@ -404,9 +373,7 @@ void lit::parallel::LitTrackFinderNNVecElectron::MinMaxIndex(
   if (C0 > fMaxCovSq || C0 < 0.) { return; }
   fscal devX = fSigmaCoef * (std::sqrt(C0) + maxErr);
   hit.X      = par->X - devX;
-  first =
-    std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
-  hit.X = par->X + devX;
-  last =
-    std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
+  first      = std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
+  hit.X      = par->X + devX;
+  last       = std::lower_bound(hits.begin(), hits.end(), &hit, ComparePixelHitXLess());
 }

@@ -17,6 +17,7 @@
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TH1.h"
@@ -37,35 +38,31 @@ CbmKresTemperature::CbmKresTemperature()
   , MC_kaon_zero_Tempr(nullptr)
   , MC_kaon_plus_Tempr(nullptr)
   , MC_kaon_minus_Tempr(nullptr)
-  , MC_direct_photons_Tempr(nullptr) {}
+  , MC_direct_photons_Tempr(nullptr)
+{
+}
 
 CbmKresTemperature::~CbmKresTemperature() {}
 
-void CbmKresTemperature::Init() {
+void CbmKresTemperature::Init()
+{
   InitHistograms();
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmKresTemperature::Init", "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmKresTemperature::Init", "RootManager not instantised!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (nullptr == fMcTracks) {
-    Fatal("CbmKresTemperature::Init", "No MCTrack array!");
-  }
+  if (nullptr == fMcTracks) { Fatal("CbmKresTemperature::Init", "No MCTrack array!"); }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (nullptr == fGlobalTracks) {
-    Fatal("CbmKresTemperature::Init", "No GlobalTrack array!");
-  }
+  if (nullptr == fGlobalTracks) { Fatal("CbmKresTemperature::Init", "No GlobalTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (nullptr == fStsTracks) {
-    Fatal("CbmKresTemperature::Init", "No StsTrack array!");
-  }
+  if (nullptr == fStsTracks) { Fatal("CbmKresTemperature::Init", "No StsTrack array!"); }
 }
 
-void CbmKresTemperature::Exec(int fEventNumTempr) {
+void CbmKresTemperature::Exec(int fEventNumTempr)
+{
   cout << "CbmKresTemperature, event No. " << fEventNumTempr << endl;
 
   // ========================================================================================
@@ -78,8 +75,8 @@ void CbmKresTemperature::Exec(int fEventNumTempr) {
 
     TVector3 v, momentum;
 
-    if (mctrack->GetMotherId() == -1 && mctrack->GetRapidity() > 1.2
-        && mctrack->GetRapidity() < 4.0 && mctrack->GetPt() < 2.0) {
+    if (mctrack->GetMotherId() == -1 && mctrack->GetRapidity() > 1.2 && mctrack->GetRapidity() < 4.0
+        && mctrack->GetPt() < 2.0) {
 
       //***** pi0 analysis
       //if (TMath::Abs(mctrack->GetPdgCode()) == 111  && mctrack->GetMotherId() == -1) {
@@ -169,7 +166,8 @@ void CbmKresTemperature::Exec(int fEventNumTempr) {
   }
 }
 
-void CbmKresTemperature::Finish() {
+void CbmKresTemperature::Finish()
+{
   MC_pi_minus_Tempr->SetOption("P");
   MC_pi_minus_Tempr->SetMarkerStyle(20);
   MC_pi_plus_Tempr->SetOption("P");
@@ -201,68 +199,36 @@ void CbmKresTemperature::Finish() {
   gDirectory->cd("..");
 }
 
-void CbmKresTemperature::InitHistograms() {
+void CbmKresTemperature::InitHistograms()
+{
   MC_pi_minus_Tempr =
-    new TH1D("MC_pi_minus_Tempr",
-             "Monte Carlo,   primary #pi^{-}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_pi_minus_Tempr", "Monte Carlo,   primary #pi^{-}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_pi_minus_Tempr);
 
   MC_pi_plus_Tempr =
-    new TH1D("MC_pi_plus_Tempr",
-             "Monte Carlo,   primary #pi^{+}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_pi_plus_Tempr", "Monte Carlo,   primary #pi^{+}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_pi_plus_Tempr);
 
   MC_pi_zero_Tempr =
-    new TH1D("MC_pi_zero_Tempr",
-             "Monte Carlo,   primary #pi^{0}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_pi_zero_Tempr", "Monte Carlo,   primary #pi^{0}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_pi_zero_Tempr);
 
   MC_direct_photons_Tempr =
-    new TH1D("MC_direct_photons_Tempr",
-             "Monte Carlo,   direct #gamma; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_direct_photons_Tempr", "Monte Carlo,   direct #gamma; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_direct_photons_Tempr);
 
-  MC_proton_Tempr =
-    new TH1D("MC_proton_Tempr",
-             "Monte Carlo,   primary #p; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+  MC_proton_Tempr = new TH1D("MC_proton_Tempr", "Monte Carlo,   primary #p; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_proton_Tempr);
 
   MC_kaon_zero_Tempr =
-    new TH1D("MC_kaon_zero_Tempr",
-             "Monte Carlo,   primary #kaon^{S0}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_kaon_zero_Tempr", "Monte Carlo,   primary #kaon^{S0}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_kaon_zero_Tempr);
 
   MC_kaon_plus_Tempr =
-    new TH1D("MC_kaon_plus_Tempr",
-             "Monte Carlo,   primary #kaon^{+}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_kaon_plus_Tempr", "Monte Carlo,   primary #kaon^{+}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_kaon_plus_Tempr);
 
   MC_kaon_minus_Tempr =
-    new TH1D("MC_kaon_minus_Tempr",
-             "Monte Carlo,   primary #kaon^{-}; m_{t}-m_{0} distribution",
-             100,
-             0,
-             2);
+    new TH1D("MC_kaon_minus_Tempr", "Monte Carlo,   primary #kaon^{-}; m_{t}-m_{0} distribution", 100, 0, 2);
   fHistoList_MC.push_back(MC_kaon_minus_Tempr);
 }

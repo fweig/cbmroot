@@ -44,13 +44,10 @@ Int_t fieldSymType  = 0;
 
 TString defaultInputFile = "";
 
-void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
-                                TString system    = "centr",
-                                Int_t nEvents     = 1,
-                                Int_t iVerbose    = 0,
-                                const char* setup = "sis100_electron",
-                                bool PileUp       = false,
-                                bool littrack     = false) {
+void mvd_CbmUniGen_reco_cluster(TString input = "auau.25gev", TString system = "centr", Int_t nEvents = 1,
+                                Int_t iVerbose = 0, const char* setup = "sis100_electron", bool PileUp = false,
+                                bool littrack = false)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -77,11 +74,11 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
   outSystem += ".";
   outSystem += system;
   if (!PileUp) {
-    if (littrack)
-      TString outFile = outSystem + ".littrack.root";
+    if (littrack) TString outFile = outSystem + ".littrack.root";
     else
       TString outFile = outSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString outFile = outSystem + ".PileUp.littrack.root";
   else
     TString outFile = outSystem + ".PileUp.l1.root";
@@ -138,8 +135,7 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
   // ------------------------------------------------------------------------
 
   // -----   MVD Digitiser   ------------------------------------------------
-  CbmMvdDigitizer* mvdDigitise =
-    new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
 
   if (PileUp) {
     Int_t pileUpInMVD = 3;
@@ -156,15 +152,13 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
   // ----------------------------------------------------------------------
 
   // -----   MVD Clusterfinder   --------------------------------------------
-  CbmMvdClusterfinder* mvdCluster =
-    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   //mvdCluster->ShowDebugHistos();
   run->AddTask(mvdCluster);
   // ----------------------------------------------------------------------
 
   // -----   MVD Hit Finder   ---------------------------------------------
-  CbmMvdHitfinder* mvdHitfinder =
-    new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+  CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
   mvdHitfinder->UseClusterfinder(kTRUE);
   //mvdHitfinder->ShowDebugHistos();
   run->AddTask(mvdHitfinder);
@@ -173,13 +167,13 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
   // -----   The parameters of the STS digitizer are set such as to match
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;         // User sensor type DSSD
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // User sensor type DSSD
 
   // The following settings correspond to a validated implementation.
   // Changing them is on your own risk.
@@ -189,10 +183,8 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
   Bool_t useCrossTalk    = kFALSE;  // Deactivate cross talk
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetProcesses(
-    eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
-  stsDigi->SetParameters(
-    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+  stsDigi->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
   // -------------------------------------------------------------------------
 
@@ -219,8 +211,7 @@ void mvd_CbmUniGen_reco_cluster(TString input     = "auau.25gev",
 
   Bool_t useMvdInL1Tracking         = !littrack;
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks =
-    new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvdInL1Tracking);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvdInL1Tracking);
   run->AddTask(stsFindTracks);
   // ------------------------------------------------------------------------
 

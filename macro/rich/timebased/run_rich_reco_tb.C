@@ -1,5 +1,6 @@
 
-void run_rich_reco_tb() {
+void run_rich_reco_tb()
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
@@ -28,8 +29,7 @@ void run_rich_reco_tb() {
   //   gROOT->LoadMacro(geoSetupFile);
   //   gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
 
@@ -73,9 +73,7 @@ void run_rich_reco_tb() {
   CbmRichRecoTbQa* richRecoTbQa = new CbmRichRecoTbQa();
   run->AddTask(richRecoTbQa);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -108,8 +106,7 @@ void run_rich_reco_tb() {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

@@ -8,7 +8,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void hld_unpack(Int_t nEvents = 2) {
+void hld_unpack(Int_t nEvents = 2)
+{
   //  Parameter files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.

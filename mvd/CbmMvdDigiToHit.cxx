@@ -4,6 +4,7 @@
 
 // Includes from MVD
 #include "CbmMvdDigiToHit.h"
+
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
@@ -18,12 +19,10 @@
 // Includes from ROOT
 #include "TClonesArray.h"
 #include "TGeoManager.h"
-
 #include "TMath.h"
+#include "TStopwatch.h"
 #include "TString.h"
 
-
-#include "TStopwatch.h"
 #include <chrono>
 //#include <omp.h>
 #include <cstring>
@@ -51,7 +50,9 @@ CbmMvdDigiToHit::CbmMvdDigiToHit()
   , fHit(NULL)
   , fHitPluginNr()
   , fBranchName("")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -64,11 +65,14 @@ CbmMvdDigiToHit::CbmMvdDigiToHit(const char* name, Int_t iMode, Int_t iVerbose)
   , fHit(NULL)
   , fHitPluginNr(0)
   , fBranchName("MvdDigi")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdDigiToHit::~CbmMvdDigiToHit() {
+CbmMvdDigiToHit::~CbmMvdDigiToHit()
+{
 
   if (fHit) {
     fHit->Delete();
@@ -78,7 +82,8 @@ CbmMvdDigiToHit::~CbmMvdDigiToHit() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdDigiToHit::Exec(Option_t* /*opt*/) {
+void CbmMvdDigiToHit::Exec(Option_t* /*opt*/)
+{
   // --- Start timer
 
   fTimer.Start();
@@ -92,16 +97,10 @@ void CbmMvdDigiToHit::Exec(Option_t* /*opt*/) {
     fDetector->Exec(fHitPluginNr);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Hit" << endl;
-    fHit->AbsorbObjects(fDetector->GetOutputHits(),
-                        0,
-                        fDetector->GetOutputHits()->GetEntriesFast() - 1);
-    if (fVerbose)
-      cout << "Total of " << fHit->GetEntriesFast() << " Hit in this Event"
-           << endl;
-    if (fVerbose)
-      cout << "//----------------------------------------//" << endl;
-    LOG(info) << "+ " << setw(20) << GetName()
-              << ": Created: " << fHit->GetEntriesFast() << " Hit in " << fixed
+    fHit->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
+    if (fVerbose) cout << "Total of " << fHit->GetEntriesFast() << " Hit in this Event" << endl;
+    if (fVerbose) cout << "//----------------------------------------//" << endl;
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHit->GetEntriesFast() << " Hit in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
 
@@ -110,7 +109,8 @@ void CbmMvdDigiToHit::Exec(Option_t* /*opt*/) {
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdDigiToHit::Init() {
+InitStatus CbmMvdDigiToHit::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -134,17 +134,15 @@ InitStatus CbmMvdDigiToHit::Init() {
 
   // **********  Register output array
   fHit = new TClonesArray("CbmMvdHit", 10000);
-  ioman->Register(
-    "MvdHit", "Mvd Hit", fHit, IsOutputBranchPersistent("MvdHit"));
+  ioman->Register("MvdHit", "Mvd Hit", fHit, IsOutputBranchPersistent("MvdHit"));
 
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose)
-      cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
-  } else {
-    LOG(fatal)
-      << "Geometry couldn't be loaded from file. No MVD digitizer available.";
+    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+  }
+  else {
+    LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
   CbmMvdSensorDigiToHitTask* hitTask = new CbmMvdSensorDigiToHitTask();
@@ -170,7 +168,8 @@ InitStatus CbmMvdDigiToHit::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdDigiToHit::Finish() {
+void CbmMvdDigiToHit::Finish()
+{
   fDetector->Finish();
   PrintParameters();
 }
@@ -187,15 +186,13 @@ void CbmMvdDigiToHit::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigiToHit::PrintParameters() {
+void CbmMvdDigiToHit::PrintParameters()
+{
 
-  cout << "============================================================"
-       << endl;
+  cout << "============================================================" << endl;
   cout << "============== Parameters DigiToHit ====================" << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

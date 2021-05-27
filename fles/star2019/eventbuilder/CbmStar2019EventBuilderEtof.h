@@ -8,9 +8,9 @@
 #ifndef CbmStar2019EventBuilderEtof_H
 #define CbmStar2019EventBuilderEtof_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 #include "TStopwatch.h"
 #include "TString.h"
@@ -46,23 +46,14 @@ public:
 
   Bool_t ReInitContainers();
 
-  void SetSandboxMode(Bool_t bSandboxMode = kTRUE) {
-    fbSandboxMode = bSandboxMode;
-  }
+  void SetSandboxMode(Bool_t bSandboxMode = kTRUE) { fbSandboxMode = bSandboxMode; }
   void SetEventDumpEnable(Bool_t bDumpEna = kTRUE);
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
-  inline void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbDebugMonitorMode = bFlagIn;
-  }
-  inline void SetStoreLostEventMsg(Bool_t bFlagIn = kTRUE) {
-    fbStoreLostEventMsg = bFlagIn;
-  }
-  inline void SetAddStatusToEvent(Bool_t bFlagIn = kTRUE) {
-    fbAddStatusToEvent = bFlagIn;
-  }
-  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
+  inline void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) { fbDebugMonitorMode = bFlagIn; }
+  inline void SetStoreLostEventMsg(Bool_t bFlagIn = kTRUE) { fbStoreLostEventMsg = bFlagIn; }
+  inline void SetAddStatusToEvent(Bool_t bFlagIn = kTRUE) { fbAddStatusToEvent = bFlagIn; }
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax)
+  {
     fuMinTotPulser = uMin;
     fuMaxTotPulser = uMax;
   }
@@ -75,17 +66,12 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbStoreLostEventMsg;  //! Switch ON the insertion of the LostEvent messages from GET4s with the critical errors
-  Bool_t
-    fbAddStatusToEvent;  //! Switch ON the readout and insertion of STATUS pattern message (default is true)
-  Bool_t fbSandboxMode;  //! Switch OFF the emission of data toward the STAR DAQ
-  Bool_t
-    fbEventDumpEna;  //! Switch ON the dumping of the events to a binary file
+  Bool_t fbMonitorMode;        //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;   //! Switch ON the filling of a additional set of histograms
+  Bool_t fbStoreLostEventMsg;  //! Switch ON the insertion of the LostEvent messages from GET4s with the critical errors
+  Bool_t fbAddStatusToEvent;   //! Switch ON the readout and insertion of STATUS pattern message (default is true)
+  Bool_t fbSandboxMode;        //! Switch OFF the emission of data toward the STAR DAQ
+  Bool_t fbEventDumpEna;       //! Switch ON the dumping of the events to a binary file
 
   /// Parameters management
   TList* fParCList;

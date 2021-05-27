@@ -8,9 +8,9 @@
 #ifndef CBMDEVICEMCBMUNPACK_H_
 #define CBMDEVICEMCBMUNPACK_H_
 
-#include "FairMQDevice.h"
-
 #include "Timeslice.hpp"
+
+#include "FairMQDevice.h"
 
 #include "Rtypes.h"
 #include "TMessage.h"
@@ -49,8 +49,7 @@ private:
   static const uint16_t kusSysIdPsd  = 0x80;
 
   /// Control flags
-  Bool_t fbIgnoreOverlapMs =
-    false;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
+  Bool_t fbIgnoreOverlapMs       = false;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
   Bool_t fbComponentsAddedToList = kFALSE;
 
   /// User settings parameters
@@ -83,15 +82,12 @@ private:
   std::vector<std::string> fvsSetTimeOffs = {};
 
   /// TS MetaData storage
-  size_t fuNbCoreMsPerTs = 0;        //!
-  size_t fuNbOverMsPerTs = 0;        //!
-  Double_t fdMsSizeInNs  = 1280000;  //! Size of a single MS, [nanoseconds]
-  Double_t fdTsCoreSizeInNs =
-    -1.0;  //! Total size of the core MS in a TS, [nanoseconds]
-  Double_t fdTsOverSizeInNs =
-    -1.0;  //! Total size of the overlap MS in a TS, [nanoseconds]
-  Double_t fdTsFullSizeInNs =
-    -1.0;  //! Total size of all MS in a TS, [nanoseconds]
+  size_t fuNbCoreMsPerTs    = 0;        //!
+  size_t fuNbOverMsPerTs    = 0;        //!
+  Double_t fdMsSizeInNs     = 1280000;  //! Size of a single MS, [nanoseconds]
+  Double_t fdTsCoreSizeInNs = -1.0;     //! Total size of the core MS in a TS, [nanoseconds]
+  Double_t fdTsOverSizeInNs = -1.0;     //! Total size of the overlap MS in a TS, [nanoseconds]
+  Double_t fdTsFullSizeInNs = -1.0;     //! Total size of all MS in a TS, [nanoseconds]
   TimesliceMetaData* fTsMetaData;
 
   bool IsChannelNameAllowed(std::string channelName);
@@ -104,9 +100,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

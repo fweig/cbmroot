@@ -17,7 +17,8 @@
 //
 // --------------------------------------------------------------------------
 
-void run_reco100(Int_t nEvents = 2) {
+void run_reco100(Int_t nEvents = 2)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -151,8 +152,7 @@ void run_reco100(Int_t nEvents = 2) {
   // =========================================================================
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ void run_reco100(Int_t nEvents = 2) {
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ void run_reco100(Int_t nEvents = 2) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
   // ===                 End of STS local reconstruction                   ===
@@ -217,8 +217,7 @@ void run_reco100(Int_t nEvents = 2) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd =
-    new CbmTofHitProducer("TOF HitProducer", iVerbose);
+  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer", iVerbose);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
 
@@ -266,8 +265,7 @@ void run_reco100(Int_t nEvents = 2) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
-    new CbmTrdSetTracksPidANN("Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
   //run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 

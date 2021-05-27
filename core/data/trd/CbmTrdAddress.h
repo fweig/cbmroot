@@ -20,9 +20,11 @@
 #ifndef CBMTRDDETECTORID_H
 #define CBMTRDDETECTORID_H 1
 
-#include "CbmDefs.h"     // for kTrd
+#include "CbmDefs.h"  // for kTrd
+
 #include <RtypesCore.h>  // for UInt_t, Int_t
-#include <cassert>       // for assert
+
+#include <cassert>  // for assert
 
 class CbmTrdAddress {
 public:
@@ -35,19 +37,13 @@ public:
    * \param[in] columnId Column ID.
    * \return Address from system ID, layer, module, sector, row and column IDs.
    **/
-  static UInt_t GetAddress(Int_t layerId,
-                           Int_t moduleId,
-                           Int_t sectorId,
-                           Int_t rowId,
-                           Int_t columnId) {
-    assert(!(layerId < 0 || layerId > fgkLayerIdLength || moduleId < 0
-             || moduleId > fgkModuleIdLength || sectorId < 0
-             || sectorId > fgkSectorIdLength || rowId < 0
-             || rowId > fgkRowIdLength || columnId < 0
+  static UInt_t GetAddress(Int_t layerId, Int_t moduleId, Int_t sectorId, Int_t rowId, Int_t columnId)
+  {
+    assert(!(layerId < 0 || layerId > fgkLayerIdLength || moduleId < 0 || moduleId > fgkModuleIdLength || sectorId < 0
+             || sectorId > fgkSectorIdLength || rowId < 0 || rowId > fgkRowIdLength || columnId < 0
              || columnId > fgkColumnIdLength));
-    return (ToIntegralType(ECbmModuleId::kTrd) << fgkSystemIdShift)
-           | (layerId << fgkLayerIdShift) | (moduleId << fgkModuleIdShift)
-           | (sectorId << fgkSectorIdShift) | (rowId << fgkRowIdShift)
+    return (ToIntegralType(ECbmModuleId::kTrd) << fgkSystemIdShift) | (layerId << fgkLayerIdShift)
+           | (moduleId << fgkModuleIdShift) | (sectorId << fgkSectorIdShift) | (rowId << fgkRowIdShift)
            | (columnId << fgkColumnIdShift);
   }
 
@@ -56,9 +52,9 @@ public:
    * \param[in] address Unique channel address.
    * \return System identifier from address.
    **/
-  static UInt_t GetSystemId(UInt_t address) {
-    return (address & (fgkSystemIdLength << fgkSystemIdShift))
-           >> fgkSystemIdShift;
+  static UInt_t GetSystemId(UInt_t address)
+  {
+    return (address & (fgkSystemIdLength << fgkSystemIdShift)) >> fgkSystemIdShift;
   }
 
   /**
@@ -66,7 +62,8 @@ public:
    * \param[in] address Unique channel address.
    * \return Layer ID from address.
    **/
-  static UInt_t GetLayerId(UInt_t address) {
+  static UInt_t GetLayerId(UInt_t address)
+  {
     return (address & (fgkLayerIdLength << fgkLayerIdShift)) >> fgkLayerIdShift;
   }
 
@@ -75,9 +72,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Module ID from address.
    **/
-  static UInt_t GetModuleId(UInt_t address) {
-    return (address & (fgkModuleIdLength << fgkModuleIdShift))
-           >> fgkModuleIdShift;
+  static UInt_t GetModuleId(UInt_t address)
+  {
+    return (address & (fgkModuleIdLength << fgkModuleIdShift)) >> fgkModuleIdShift;
   }
 
   /**
@@ -85,9 +82,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Sector ID from address.
    **/
-  static UInt_t GetSectorId(UInt_t address) {
-    return (address & (fgkSectorIdLength << fgkSectorIdShift))
-           >> fgkSectorIdShift;
+  static UInt_t GetSectorId(UInt_t address)
+  {
+    return (address & (fgkSectorIdLength << fgkSectorIdShift)) >> fgkSectorIdShift;
   }
 
   /**
@@ -95,18 +92,16 @@ public:
    * \param[in] address Unique channel address.
    * \return Row ID from address.
    **/
-  static UInt_t GetRowId(UInt_t address) {
-    return (address & (fgkRowIdLength << fgkRowIdShift)) >> fgkRowIdShift;
-  }
+  static UInt_t GetRowId(UInt_t address) { return (address & (fgkRowIdLength << fgkRowIdShift)) >> fgkRowIdShift; }
 
   /**
    * \brief Return column ID from address.
    * \param[in] address Unique channel address.
    * \return Column ID from address.
    **/
-  static UInt_t GetColumnId(UInt_t address) {
-    return (address & (fgkColumnIdLength << fgkColumnIdShift))
-           >> fgkColumnIdShift;
+  static UInt_t GetColumnId(UInt_t address)
+  {
+    return (address & (fgkColumnIdLength << fgkColumnIdShift)) >> fgkColumnIdShift;
   }
 
   /**
@@ -114,9 +109,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Unique module ID from address.
    **/
-  static UInt_t GetModuleAddress(UInt_t address) {
-    return (address & (fgkModuleAddressLength << fgkModuleAddressStart))
-           >> fgkModuleAddressStart;
+  static UInt_t GetModuleAddress(UInt_t address)
+  {
+    return (address & (fgkModuleAddressLength << fgkModuleAddressStart)) >> fgkModuleAddressStart;
   }
 
   /**
@@ -124,9 +119,9 @@ public:
    * \param[in] address Unique channel address.
    * \return Unique sector ID from address.
    **/
-  static UInt_t GetSectorAddress(UInt_t address) {
-    return (address & (fgkSectorAddressLength << fgkSectorAddressStart))
-           >> fgkSectorAddressStart;
+  static UInt_t GetSectorAddress(UInt_t address)
+  {
+    return (address & (fgkSectorAddressLength << fgkSectorAddressStart)) >> fgkSectorAddressStart;
   }
 
   /**
@@ -135,13 +130,10 @@ public:
     * \param newLayerId New value for layer ID.
     * \return New address with modified layer ID.
     */
-  static UInt_t SetLayerId(UInt_t address, Int_t newLayerId) {
+  static UInt_t SetLayerId(UInt_t address, Int_t newLayerId)
+  {
     assert(!(newLayerId < 0 || newLayerId > fgkLayerIdLength));
-    return GetAddress(newLayerId,
-                      GetModuleId(address),
-                      GetSectorId(address),
-                      GetRowId(address),
-                      GetColumnId(address));
+    return GetAddress(newLayerId, GetModuleId(address), GetSectorId(address), GetRowId(address), GetColumnId(address));
   }
 
   /**
@@ -150,13 +142,10 @@ public:
     * \param newModuleId New value for module ID.
     * \return New address with modified module ID.
     */
-  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId) {
+  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId)
+  {
     assert(!(newModuleId < 0 || newModuleId > fgkModuleIdLength));
-    return GetAddress(GetLayerId(address),
-                      newModuleId,
-                      GetSectorId(address),
-                      GetRowId(address),
-                      GetColumnId(address));
+    return GetAddress(GetLayerId(address), newModuleId, GetSectorId(address), GetRowId(address), GetColumnId(address));
   }
 
   /**
@@ -165,13 +154,10 @@ public:
     * \param newSectorId New value for sector ID.
     * \return New address with modified sector ID.
     */
-  static UInt_t SetSectorId(UInt_t address, Int_t newSectorId) {
+  static UInt_t SetSectorId(UInt_t address, Int_t newSectorId)
+  {
     assert(!(newSectorId < 0 || newSectorId > fgkSectorIdLength));
-    return GetAddress(GetLayerId(address),
-                      GetModuleId(address),
-                      newSectorId,
-                      GetRowId(address),
-                      GetColumnId(address));
+    return GetAddress(GetLayerId(address), GetModuleId(address), newSectorId, GetRowId(address), GetColumnId(address));
   }
 
   /**
@@ -180,13 +166,10 @@ public:
     * \param newRowId New value for row ID.
     * \return New address with modified row ID.
     */
-  static UInt_t SetRowId(UInt_t address, Int_t newRowId) {
+  static UInt_t SetRowId(UInt_t address, Int_t newRowId)
+  {
     assert(!(newRowId < 0 || newRowId > fgkRowIdLength));
-    return GetAddress(GetLayerId(address),
-                      GetModuleId(address),
-                      GetSectorId(address),
-                      newRowId,
-                      GetColumnId(address));
+    return GetAddress(GetLayerId(address), GetModuleId(address), GetSectorId(address), newRowId, GetColumnId(address));
   }
 
   /**
@@ -195,13 +178,10 @@ public:
     * \param newColumnId New value for column ID.
     * \return New address with modified column ID.
     */
-  static UInt_t SetColumnId(UInt_t address, Int_t newColumnId) {
+  static UInt_t SetColumnId(UInt_t address, Int_t newColumnId)
+  {
     assert(!(newColumnId < 0 || newColumnId > fgkColumnIdLength));
-    return GetAddress(GetLayerId(address),
-                      GetModuleId(address),
-                      GetSectorId(address),
-                      GetRowId(address),
-                      newColumnId);
+    return GetAddress(GetLayerId(address), GetModuleId(address), GetSectorId(address), GetRowId(address), newColumnId);
   }
 
 private:

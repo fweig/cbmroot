@@ -111,31 +111,36 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd()
   , fvcWfmsChan(kuNbChanPsd, nullptr)
 {
 }
-CbmMcbm2018MonitorAlgoPsd::~CbmMcbm2018MonitorAlgoPsd() {
+CbmMcbm2018MonitorAlgoPsd::~CbmMcbm2018MonitorAlgoPsd()
+{
   /// Clear buffers
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoPsd::Init() {
+Bool_t CbmMcbm2018MonitorAlgoPsd::Init()
+{
   LOG(info) << "Initializing mCBM Psd 2019 monitor algo";
 
   return kTRUE;
 }
 void CbmMcbm2018MonitorAlgoPsd::Reset() {}
-void CbmMcbm2018MonitorAlgoPsd::Finish() {
+void CbmMcbm2018MonitorAlgoPsd::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoPsd::InitContainers() {
+Bool_t CbmMcbm2018MonitorAlgoPsd::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmMcbm2018MonitorAlgoPsd";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018MonitorAlgoPsd::ReInitContainers() {
+Bool_t CbmMcbm2018MonitorAlgoPsd::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmMcbm2018MonitorAlgoPsd";
 
@@ -146,14 +151,16 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmMcbm2018MonitorAlgoPsd::GetParList() {
+TList* CbmMcbm2018MonitorAlgoPsd::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmMcbm2018PsdPar("CbmMcbm2018PsdPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters() {
+Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters()
+{
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
 
@@ -169,8 +176,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of PSD  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of PSD  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
 
@@ -178,8 +184,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018MonitorAlgoPsd::AddMsComponentToList(size_t component,
-                                                     UShort_t usDetectorId) {
+void CbmMcbm2018MonitorAlgoPsd::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -187,13 +193,13 @@ void CbmMcbm2018MonitorAlgoPsd::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018MonitorAlgoPsd::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmMcbm2018MonitorAlgoPsd::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -210,10 +216,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -224,16 +229,14 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Clear the buffer of hits
 
@@ -253,24 +256,21 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
-                                            size_t uMsCompIdx,
-                                            size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
 
   fdMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
 
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
 
@@ -278,14 +278,12 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
   auto it = fGdpbIdIndexMap.find(fuCurrDpbId);
   if (it == fGdpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
 
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the PSD "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -311,7 +309,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
       if (fbSpillOn && fuCountsLastSecond < kuOffSpillCountLimit) {
         fbSpillOn = kFALSE;
         fuCurrentSpillIdx++;
-        fdStartTimeSpill   = fdMsTime;
+        fdStartTimeSpill = fdMsTime;
       }  // if( fbSpillOn && fuCountsLastSecond < kuOffSpillCountLimit )
       else if (kuOffSpillCountLimit < fuCountsLastSecond)
         fbSpillOn = kTRUE;
@@ -343,8 +341,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete nDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+  uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
   // Prepare variables for the loop on contents
   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
@@ -364,8 +361,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
     while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
       int ReadResult = PsdReader.ReadEventFles();
       if (PsdReader.EvHdrAb.uHitsNumber > kuNbChanPsd) {
-        LOG(error) << "too many triggered channels! In header: "
-                   << PsdReader.EvHdrAb.uHitsNumber
+        LOG(error) << "too many triggered channels! In header: " << PsdReader.EvHdrAb.uHitsNumber
                    << " in PSD: " << GetNbChanPsd();
         break;
       }
@@ -376,26 +372,23 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
         fuReadEvtCntInMs++;
 
         //hit loop
-        for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber;
-             hit_iter++) {
-          UInt_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-          UInt_t uSignalCharge =
-            PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
-          UInt_t uZeroLevel = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+        for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
+          UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+          UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+          UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
           std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
           if (uHitChannel >= kuNbChanPsd)  //uHitChannel numerated from 0
           {
-            LOG(error) << "hit channel number out of range! channel index: "
-                       << uHitChannel << " max: " << GetNbChanPsd();
+            LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
+                       << " max: " << GetNbChanPsd();
             break;
           }
           //Hit header
           fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
           fhHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);
-          fhChanHitMapEvo->Fill(
-            uHitChannel,
-            fdMsTime - fdStartTime);  //should be placed map(channel)
+          fhChanHitMapEvo->Fill(uHitChannel,
+                                fdMsTime - fdStartTime);  //should be placed map(channel)
 
           if (fbMonitorChanMode) {
 
@@ -480,22 +473,23 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
           }    //if (fbMonitorChanMode)
 
         }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
-
-      } else if (ReadResult == 1) {
+      }
+      else if (ReadResult == 1) {
         LOG(error) << "no event headers in message!";
         break;
-      } else if (ReadResult == 2) {
-        LOG(error) << "check number of waveform points! In header: "
-                   << PsdReader.HitHdr.uWfmPoints << " should be: " << 8;
+      }
+      else if (ReadResult == 2) {
+        LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmPoints
+                   << " should be: " << 8;
         break;
-      } else if (ReadResult == 3) {
-        LOG(error) << "wrong amount of hits read! In header: "
-                   << PsdReader.EvHdrAb.uHitsNumber
+      }
+      else if (ReadResult == 3) {
+        LOG(error) << "wrong amount of hits read! In header: " << PsdReader.EvHdrAb.uHitsNumber
                    << " in hit vector: " << PsdReader.VectHitHdr.size();
         break;
-      } else {
-        LOG(error)
-          << "PsdGbtReader.ReadEventFles() didn't return expected values";
+      }
+      else {
+        LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
         break;
       }
 
@@ -504,12 +498,10 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
     if (uNbMessages != PsdReader.GetTotalGbtWordsRead()) {
       fbPsdMissedData = kTRUE;
       LOG(error) << "Wrong amount of messages read!"
-                 << " in microslice " << uNbMessages << " by PsdReader "
-                 << PsdReader.GetTotalGbtWordsRead();
+                 << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead();
 
       if (fbFirstPackageError) {
-        std::ofstream error_log(Form("%llu_errorlog.txt", fulCurrentMsIdx),
-                                std::ofstream::out);
+        std::ofstream error_log(Form("%llu_errorlog.txt", fulCurrentMsIdx), std::ofstream::out);
         for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
           uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
           error_log << Form("%016llx\n", (long long int) ulData);
@@ -522,8 +514,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
 
     if (fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice)
       LOG(error) << "Wrong MS index!"
-                 << " in microslice " << fulCurrentMsIdx << " by PsdReader "
-                 << PsdReader.EvHdrAb.ulMicroSlice << "\n";
+                 << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice << "\n";
 
     fuMsgsCntInMs += uNbMessages;
     fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
@@ -531,11 +522,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
 
   }  //if(uSize != 0)
 
-  if (fdPrevMsTime < 0.)
-    fdPrevMsTime = fdMsTime;
+  if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
   else {
-    fhMsLengthEvo->Fill(fdMsTime - fdStartTime,
-                        1e9 * (fdMsTime - fdPrevMsTime));
+    fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
     fdPrevMsTime = fdMsTime;
   }
 
@@ -545,7 +534,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
+Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
+{
   std::string sFolder    = "MoniPsd";
   std::string sFitFolder = "PronyFit";
   LOG(info) << "create Histos for PSD monitoring ";
@@ -557,75 +547,37 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   double* dBinsLog                   = dBinsLogVector.data();
 
   fhHitChargeMap =
-    new TH2I("hHitChargeMap",
-             "Map of hits charges in PSD detector; Chan; Charge [adc counts]",
-             kuNbChanPsd,
-             0.,
-             kuNbChanPsd,
-             fviHistoChargeArgs.at(0),
-             fviHistoChargeArgs.at(1),
-             fviHistoChargeArgs.at(2));
+    new TH2I("hHitChargeMap", "Map of hits charges in PSD detector; Chan; Charge [adc counts]", kuNbChanPsd, 0.,
+             kuNbChanPsd, fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
   fhHitMapEvo     = new TH2I("hHitMapEvo",
                          "Map of hits in PSD detector electronics vs time in "
                          "run; Chan; Time in run [s]; Hits Count []",
-                         kuNbChanPsd,
-                         0.,
-                         kuNbChanPsd,
-                         fuHistoryHistoSize,
-                         0,
-                         fuHistoryHistoSize);
+                         kuNbChanPsd, 0., kuNbChanPsd, fuHistoryHistoSize, 0, fuHistoryHistoSize);
   fhChanHitMapEvo = new TH2I("hChanHitMapEvo",
                              "Map of hits in PSD detector vs time in run; "
                              "Chan; Time in run [s]; Hits Count []",
-                             kuNbChanPsd,
-                             0.,
-                             kuNbChanPsd,
-                             fuHistoryHistoSize,
-                             0,
-                             fuHistoryHistoSize);
+                             kuNbChanPsd, 0., kuNbChanPsd, fuHistoryHistoSize, 0, fuHistoryHistoSize);
 
 
   fhMissedData = new TH1I("hMissedData", "PSD Missed data", 2, 0, 2);
 
   fhAdcTime = new TH1I("hAdcTime", "ADC time; Adc time []", 100, 0, 160000);
 
-  fhMsLengthEvo = new TH2I(
-    "hMsLengthEvo",
-    "Evolution of MS length vs time in run; Time in run [s]; MS length [ns]",
-    fuHistoryHistoSize,
-    0,
-    fuHistoryHistoSize,
-    (Int_t) 1e2,
-    0,
-    1e8);
+  fhMsLengthEvo = new TH2I("hMsLengthEvo", "Evolution of MS length vs time in run; Time in run [s]; MS length [ns]",
+                           fuHistoryHistoSize, 0, fuHistoryHistoSize, (Int_t) 1e2, 0, 1e8);
 
-  fhMsgsCntPerMsEvo =
-    new TH2I("hMsgsCntPerMsEvo",
-             "Evolution of TotalMsgs counts, per MS vs time in run; Time in "
-             "run [s]; TotalMsgs Count/MS []; MS",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             iNbBinsLog,
-             dBinsLog);
-  fhReadMsgsCntPerMsEvo =
-    new TH2I("ReadMsgsCntPerMsEvo",
-             "Evolution of ReadMsgs counts, per MS vs time in run; Time in run "
-             "[s]; ReadMsgs Count/MS []; MS",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             iNbBinsLog,
-             dBinsLog);
-  fhLostMsgsCntPerMsEvo =
-    new TH2I("hLostMsgsCntPerMsEvo",
-             "Evolution of LostMsgs counts, per MS vs time in run; Time in run "
-             "[s]; LostMsgs Count/MS []; MS",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             iNbBinsLog,
-             dBinsLog);
+  fhMsgsCntPerMsEvo     = new TH2I("hMsgsCntPerMsEvo",
+                               "Evolution of TotalMsgs counts, per MS vs time in run; Time in "
+                               "run [s]; TotalMsgs Count/MS []; MS",
+                               fuHistoryHistoSize, 0, fuHistoryHistoSize, iNbBinsLog, dBinsLog);
+  fhReadMsgsCntPerMsEvo = new TH2I("ReadMsgsCntPerMsEvo",
+                                   "Evolution of ReadMsgs counts, per MS vs time in run; Time in run "
+                                   "[s]; ReadMsgs Count/MS []; MS",
+                                   fuHistoryHistoSize, 0, fuHistoryHistoSize, iNbBinsLog, dBinsLog);
+  fhLostMsgsCntPerMsEvo = new TH2I("hLostMsgsCntPerMsEvo",
+                                   "Evolution of LostMsgs counts, per MS vs time in run; Time in run "
+                                   "[s]; LostMsgs Count/MS []; MS",
+                                   fuHistoryHistoSize, 0, fuHistoryHistoSize, iNbBinsLog, dBinsLog);
   fhReadEvtsCntPerMsEvo = new TH2I("hReadEvtCntPerMsEvo",
                                    "Evolution of ReadEvents counts, per MS vs time in run; Time in "
                                    "run [s]; ReadEvents Count/MS []; MS",
@@ -748,8 +700,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
 
   /*******************************************************************/
   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-  fcSummary =
-    new TCanvas("cSummary", "Hit maps, Hit rate, Error fraction", w, h);
+  fcSummary = new TCanvas("cSummary", "Hit maps, Hit rate, Error fraction", w, h);
   fcSummary->Divide(2, 2);
 
   fcSummary->cd(1);
@@ -782,11 +733,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
 
   /*******************************************************************/
   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-  fcGenCntsPerMs = new TCanvas(
-    "cGenCntsPerMs",
-    "Messages and hit cnt per MS, Error and Evt Loss Fract. per MS ",
-    w,
-    h);
+  fcGenCntsPerMs = new TCanvas("cGenCntsPerMs", "Messages and hit cnt per MS, Error and Evt Loss Fract. per MS ", w, h);
   fcGenCntsPerMs->Divide(2, 2);
 
   fcGenCntsPerMs->cd(1);
@@ -986,7 +933,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms(Bool_t bResetTime)
       kvuWfmInRangeToChangeChan[uWfmIndex] = 0;
   }  // if(fbMonitorWfmMode)
 
-  fuCurrentSpillIdx  = 0;
+  fuCurrentSpillIdx = 0;
   fhHitChargeMap->Reset();
   fhHitMapEvo->Reset();
   fhChanHitMapEvo->Reset();

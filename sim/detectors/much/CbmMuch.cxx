@@ -9,11 +9,20 @@
 #include "CbmGeoMuch.h"
 #include "CbmGeoMuchPar.h"
 #include "CbmGeometryUtils.h"
+#include "CbmMuchAddress.h"
+#include "CbmMuchGeoScheme.h"
+#include "CbmMuchLayer.h"
+#include "CbmMuchLayerSide.h"
+#include "CbmMuchModule.h"
+#include "CbmMuchModuleGemRadial.h"
 #include "CbmMuchPoint.h"
-
+#include "CbmMuchStation.h"
 #include "CbmStack.h"
+
 #include "FairGeoInterface.h"
 #include "FairGeoLoader.h"
+#include "FairGeoMedia.h"
+#include "FairGeoMedium.h"
 #include "FairGeoNode.h"
 #include "FairGeoRootBuilder.h"
 #include "FairRootManager.h"
@@ -22,38 +31,25 @@
 #include "FairVolume.h"
 
 #include "TClonesArray.h"
-#include "TGeoMCGeometry.h"
-#include "TKey.h"
-#include "TObjArray.h"
-#include "TParticle.h"
-#include "TVirtualMC.h"
-
-#include "FairGeoMedia.h"
-#include "FairGeoMedium.h"
+#include "TGeoArb8.h"
 #include "TGeoBBox.h"
 #include "TGeoBoolNode.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoCone.h"
+#include "TGeoMCGeometry.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
 #include "TGeoTube.h"
 #include "TGeoVolume.h"
-
-#include "CbmMuchAddress.h"
-#include "CbmMuchGeoScheme.h"
-#include "CbmMuchLayer.h"
-#include "CbmMuchLayerSide.h"
-#include "CbmMuchModule.h"
-#include "CbmMuchModuleGemRadial.h"
-#include "CbmMuchStation.h"
-#include "TGeoMatrix.h"
+#include "TKey.h"
+#include "TObjArray.h"
+#include "TParticle.h"
+#include "TVirtualMC.h"
+#include <TFile.h>
 
 #include <cassert>
 #include <fstream>
 #include <iostream>
-
-#include "TGeoArb8.h"
-#include <TFile.h>
 
 using std::cout;
 using std::endl;
@@ -79,7 +75,8 @@ ClassImp(CbmMuch)
   , flGeoPar(new TList())
   , fPar(NULL)
   , fVolumeName("")
-  , fCombiTrans() {
+  , fCombiTrans()
+{
   ResetParameters();
   flGeoPar->SetName(GetName());
   fVerboseLevel = 1;
@@ -106,7 +103,8 @@ CbmMuch::CbmMuch(const char* name, Bool_t active)
   , flGeoPar(new TList())
   , fPar(NULL)
   , fVolumeName("")
-  , fCombiTrans() {
+  , fCombiTrans()
+{
 
   ResetParameters();
   flGeoPar->SetName(GetName());
@@ -115,7 +113,8 @@ CbmMuch::CbmMuch(const char* name, Bool_t active)
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuch::~CbmMuch() {
+CbmMuch::~CbmMuch()
+{
 
   if (flGeoPar) delete flGeoPar;
   if (fMuchCollection) {
@@ -128,7 +127,8 @@ CbmMuch::~CbmMuch() {
 // -----   Public method ProcessHits  --------------------------------------
 
 
-Bool_t CbmMuch::ProcessHits(FairVolume* vol) {
+Bool_t CbmMuch::ProcessHits(FairVolume* vol)
+{
   // cout<<" called process Hit******************     "<<endl;
   if (gMC->IsTrackEntering()) {
     fELoss  = 0.;
@@ -142,8 +142,7 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol) {
   fELoss += gMC->Edep();
 
   // Set additional parameters at exit of active volume. Create CbmMuchPoint.
-  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
-      || gMC->IsTrackDisappeared()) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop() || gMC->IsTrackDisappeared()) {
     fTrackID          = gMC->GetStack()->GetCurrentTrackNumber();
     fVolumeID         = vol->getMCid();
     Int_t fDetectorId = GetDetId(vol);
@@ -162,8 +161,7 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol) {
     gMC->TrackMomentum(fMomOut);
 
     assert(iStation >= 0 && iStation < fPar->GetNStations());
-    CbmMuchStation* station =
-      (CbmMuchStation*) fPar->GetStations()->At(iStation);
+    CbmMuchStation* station = (CbmMuchStation*) fPar->GetStations()->At(iStation);
     //cout<<" track # "<<fTrackID<<"   Rmin "<<station->GetRmin()<<"   Rmax  "<<station->GetRmax()<<" in perp "<<fPosIn.Perp()<<" out perp "<<fPosOut.Perp()<<"  eloss "<<fELoss<<endl;
     if (fPosIn.Perp() > station->GetRmax()) { return kFALSE; }
     if (fPosOut.Perp() > station->GetRmax()) { return kFALSE; }
@@ -172,15 +170,9 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol) {
 
 
     if (fELoss == 0.) return kFALSE;
-    AddHit(fTrackID,
-           fDetectorId,
-           TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
-           TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()),
-           TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()),
-           TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()),
-           fTime,
-           fLength,
-           fELoss);
+    AddHit(fTrackID, fDetectorId, TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
+           TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()), TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()),
+           TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()), fTime, fLength, fELoss);
 
     //if (fPosOut.Z()>250) printf("%f\n",fPosOut.Z());
 
@@ -196,7 +188,8 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol) {
 
 //-------------------------------------------------------------------------
 
-Int_t CbmMuch::GetDetId(FairVolume* vol) {
+Int_t CbmMuch::GetDetId(FairVolume* vol)
+{
   TString name         = vol->GetName();
   Char_t cStationNr[3] = {name[11], name[12], ' '};
   Int_t iStation       = atoi(cStationNr) - 1;
@@ -205,8 +198,7 @@ Int_t CbmMuch::GetDetId(FairVolume* vol) {
   Char_t cModuleNr[4]  = {name[26], name[27], name[28], ' '};
   Int_t iModule        = atoi(cModuleNr) - 1;
   if (iSide != 1 && iSide != 0) printf("side = %i", iSide);
-  Int_t detectorId =
-    CbmMuchAddress::GetAddress(iStation, iLayer, iSide, iModule);
+  Int_t detectorId = CbmMuchAddress::GetAddress(iStation, iLayer, iSide, iModule);
   assert(CbmMuchAddress::GetStationIndex(detectorId) == iStation);
   assert(CbmMuchAddress::GetLayerIndex(detectorId) == iLayer);
   assert(CbmMuchAddress::GetLayerSideIndex(detectorId) == iSide);
@@ -221,22 +213,20 @@ void CbmMuch::BeginEvent() {}
 
 
 // -------------------------------------------------------------------------
-void CbmMuch::EndOfEvent() {
+void CbmMuch::EndOfEvent()
+{
   if (fVerboseLevel) Print("");
   fMuchCollection->Delete();
   ResetParameters();
 }
 
 // -------------------------------------------------------------------------
-void CbmMuch::Register() {
-  FairRootManager::Instance()->Register(
-    "MuchPoint", GetName(), fMuchCollection, kTRUE);
-}
+void CbmMuch::Register() { FairRootManager::Instance()->Register("MuchPoint", GetName(), fMuchCollection, kTRUE); }
 
 // -------------------------------------------------------------------------
-TClonesArray* CbmMuch::GetCollection(Int_t iColl) const {
-  if (iColl == 0)
-    return fMuchCollection;
+TClonesArray* CbmMuch::GetCollection(Int_t iColl) const
+{
+  if (iColl == 0) return fMuchCollection;
   else
     return NULL;
 }
@@ -244,19 +234,22 @@ TClonesArray* CbmMuch::GetCollection(Int_t iColl) const {
 
 
 // -------------------------------------------------------------------------
-void CbmMuch::Print(Option_t*) const {
+void CbmMuch::Print(Option_t*) const
+{
   Int_t nHits = fMuchCollection->GetEntriesFast();
   LOG(info) << fName << ": " << nHits << " points registered in this event.";
 }
 
 // -------------------------------------------------------------------------
-void CbmMuch::Reset() {
+void CbmMuch::Reset()
+{
   fMuchCollection->Delete();
   ResetParameters();
 }
 
 // -------------------------------------------------------------------------
-void CbmMuch::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
+void CbmMuch::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset)
+{
   Int_t nEntries = cl1->GetEntriesFast();
   LOG(info) << fName << ": " << nEntries << " entries to add.";
   TClonesArray& clref    = *cl2;
@@ -274,37 +267,28 @@ void CbmMuch::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
 
 
 // -----   Private method AddHit   --------------------------------------------
-CbmMuchPoint* CbmMuch::AddHit(Int_t trackID,
-                              Int_t detID,
-                              TVector3 posIn,
-                              TVector3 posOut,
-                              TVector3 momIn,
-                              TVector3 momOut,
-                              Double_t time,
-                              Double_t length,
-                              Double_t eLoss) {
+CbmMuchPoint* CbmMuch::AddHit(Int_t trackID, Int_t detID, TVector3 posIn, TVector3 posOut, TVector3 momIn,
+                              TVector3 momOut, Double_t time, Double_t length, Double_t eLoss)
+{
 
   TClonesArray& clref = *fMuchCollection;
   Int_t size          = clref.GetEntriesFast();
   if (fVerboseLevel > 1)
-    LOG(info) << fName << ": Adding Point at (" << posIn.X() << ", "
-              << posIn.Y() << ", " << posIn.Z() << ") cm,  detector " << detID
-              << ", track " << trackID << ", energy loss " << eLoss * 1e06
-              << " keV";
+    LOG(info) << fName << ": Adding Point at (" << posIn.X() << ", " << posIn.Y() << ", " << posIn.Z()
+              << ") cm,  detector " << detID << ", track " << trackID << ", energy loss " << eLoss * 1e06 << " keV";
 
-  return new (clref[size]) CbmMuchPoint(
-    trackID, detID, posIn, posOut, momIn, momOut, time, length, eLoss);
+  return new (clref[size]) CbmMuchPoint(trackID, detID, posIn, posOut, momIn, momOut, time, length, eLoss);
 }
 
 // -----  ConstructGeometry  -----------------------------------------------
-void CbmMuch::ConstructGeometry() {
+void CbmMuch::ConstructGeometry()
+{
 
   TString fileName = GetGeometryFileName();
 
   // --- Only ROOT geometries are supported
   if (!fileName.EndsWith(".root")) {
-    LOG(fatal) << GetName() << ": Geometry format of file " << fileName.Data()
-               << " not supported.";
+    LOG(fatal) << GetName() << ": Geometry format of file " << fileName.Data() << " not supported.";
   }
 
   if (fileName.Contains("mcbm")) {
@@ -317,7 +301,8 @@ void CbmMuch::ConstructGeometry() {
 // -------------------------------------------------------------------------
 
 
-void CbmMuch::ConstructRootGeometry(TGeoMatrix*) {
+void CbmMuch::ConstructRootGeometry(TGeoMatrix*)
+{
   FairRun* fRun = FairRun::Instance();
   if (!fRun) {
     Fatal("CreateGeometry", "No FairRun found");
@@ -334,13 +319,12 @@ void CbmMuch::ConstructRootGeometry(TGeoMatrix*) {
   fGeoScheme->Init(stations, fFlagID);
 
   TGeoMatrix* tempMatrix {nullptr};
-  if (Cbm::GeometryUtils::IsNewGeometryFile(
-        fgeoName, fVolumeName, &tempMatrix)) {
+  if (Cbm::GeometryUtils::IsNewGeometryFile(fgeoName, fVolumeName, &tempMatrix)) {
     LOG(info) << "Importing MUCH geometry from ROOT file " << fgeoName.Data();
     Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this);
-  } else {
-    LOG(info) << "Constructing MUCH geometry from ROOT file "
-              << fgeoName.Data();
+  }
+  else {
+    LOG(info) << "Constructing MUCH geometry from ROOT file " << fgeoName.Data();
     FairModule::ConstructRootGeometry();
   }
 
@@ -399,13 +383,13 @@ void CbmMuch::ConstructRootGeometry(TGeoMatrix*) {
 
 
 // -----   CheckIfSensitive   -------------------------------------------------
-Bool_t CbmMuch::CheckIfSensitive(std::string name) {
+Bool_t CbmMuch::CheckIfSensitive(std::string name)
+{
   TString tsname = name;
 
 
   if (tsname.Contains("active")) {
-    LOG(debug1) << "CbmMuch::CheckIfSensitive: Register active volume: "
-                << tsname;
+    LOG(debug1) << "CbmMuch::CheckIfSensitive: Register active volume: " << tsname;
     return kTRUE;
   }
   return kFALSE;

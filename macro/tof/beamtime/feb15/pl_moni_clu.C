@@ -20,9 +20,8 @@
   gROOT->cd();
   TString hname = "Clus_ClusterSize";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -30,9 +29,8 @@
   gROOT->cd();
   TString hname = "Clus_DigSpacDifClust";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -40,9 +38,8 @@
   gROOT->cd();
   TString hname = "Clus_DigTimeDifClust";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,9 +47,8 @@
   gROOT->cd();
   TString hname = "Clus_ClusterSizeType";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 

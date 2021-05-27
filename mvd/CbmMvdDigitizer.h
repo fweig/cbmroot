@@ -8,9 +8,8 @@
 #ifndef CBMMVDDIGITIZER_H
 #define CBMMVDDIGITIZER_H 1
 
-#include "CbmDigitize.h"
-
 #include "CbmDefs.h"
+#include "CbmDigitize.h"
 
 #include "TStopwatch.h"
 #include "TString.h"
@@ -53,7 +52,8 @@ public:
   void SetDeltaName(TString fileName) { fDeltaFileName = fileName; }
   void SetBgBufferSize(Int_t nBuffer) { fBgBufferSize = nBuffer; }
   void SetDeltaBufferSize(Int_t nBuffer) { fDeltaBufferSize = nBuffer; }
-  void SetMisalignment(Float_t misalignment[3]) {
+  void SetMisalignment(Float_t misalignment[3])
+  {
     for (Int_t i = 0; i < 3; i++)
       epsilon[i] = misalignment[i];
   }  // set the misalignment in cm
@@ -80,9 +80,8 @@ private:
   TClonesArray* fInputPoints;
   TClonesArray* fMcPileUp;
 
-  TClonesArray*
-    fTmpMatch;             //! Temporary TClonesArray to absorb from MvdDetector
-  TClonesArray* fTmpDigi;  //! Temporary TClonesArray to absorb from MvdDetector
+  TClonesArray* fTmpMatch;  //! Temporary TClonesArray to absorb from MvdDetector
+  TClonesArray* fTmpDigi;   //! Temporary TClonesArray to absorb from MvdDetector
 
   std::vector<CbmMvdDigi*> fDigiVect;  //! Temporary storage for CbmDaq
   std::vector<CbmMatch*> fMatchVect;   //! Temporary storage for CbmDaq

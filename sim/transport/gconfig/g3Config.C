@@ -2,7 +2,8 @@
 //
 // Configuration macro for Geant3 VirtualMC
 
-void Config() {
+void Config()
+{
 
   std::cout << std::endl << std::endl;
   std::cout << "====  G3 Config macro  ===== " << std::endl;
@@ -13,7 +14,8 @@ void Config() {
   if (strncmp(gModel->Data(), "TGeo", 4) == 0) {
     geant3 = new TGeant3TGeo("C++ Interface to Geant3");
     cout << "-I- G3Config: Geant3 with TGeo has been created." << endl;
-  } else {
+  }
+  else {
     geant3 = new TGeant3("C++ Interface to Geant3");
     cout << "-I- G3Config: Geant3 native has been created." << endl;
   }
@@ -32,11 +34,9 @@ void Config() {
 
   geant3->SetRAYL(1);
   geant3->SetSTRA(0);
-  geant3->SetAUTO(
-    1);  //Select automatic STMIN etc... calc. (AUTO 1) or manual (AUTO 0)
+  geant3->SetAUTO(1);  //Select automatic STMIN etc... calc. (AUTO 1) or manual (AUTO 0)
   geant3->SetABAN(2);  //Restore 3.16 behaviour for abandoned tracks
-  geant3->SetOPTI(
-    2);  //Select optimisation level for GEANT geometry searches (0,1,2)
+  geant3->SetOPTI(2);  //Select optimisation level for GEANT geometry searches (0,1,2)
   geant3->SetERAN(5.e-7);
   geant3->SetCKOV(1);  // cerenkov photons
 

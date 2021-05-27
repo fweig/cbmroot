@@ -37,31 +37,31 @@ using std::endl;
 #include "../alignment/CbmRichMirrorMisalignmentCorrectionUtils.h"
 
 
-CbmRichProjectionProducerAnalytical::CbmRichProjectionProducerAnalytical()
-  : fTrackParams(NULL), fNHits(0), fEventNum(0) {}
+CbmRichProjectionProducerAnalytical::CbmRichProjectionProducerAnalytical() : fTrackParams(NULL), fNHits(0), fEventNum(0)
+{
+}
 
-CbmRichProjectionProducerAnalytical::~CbmRichProjectionProducerAnalytical() {
+CbmRichProjectionProducerAnalytical::~CbmRichProjectionProducerAnalytical()
+{
   FairRootManager* fManager = FairRootManager::Instance();
   fManager->Write();
 }
 
 
-void CbmRichProjectionProducerAnalytical::Init() {
+void CbmRichProjectionProducerAnalytical::Init()
+{
   LOG(info) << "CbmRichProjectionProducerAnalytical::Init()";
   FairRootManager* manager = FairRootManager::Instance();
 
   fTrackParams = (TClonesArray*) manager->GetObject("RichTrackParamZ");
-  if (NULL == fTrackParams) {
-    Fatal("CbmRichProjectionProducerAnalytical::Init:",
-          "No RichTrackParamZ array!");
-  }
+  if (NULL == fTrackParams) { Fatal("CbmRichProjectionProducerAnalytical::Init:", "No RichTrackParamZ array!"); }
 
-  fMirrorCorrectionParameterFile =
-    new CbmRichMirrorMisalignmentCorrectionUtils();
+  fMirrorCorrectionParameterFile = new CbmRichMirrorMisalignmentCorrectionUtils();
   fMirrorCorrectionParameterFile->Init(fPathToMirrorCorrectionParameterFile);
 }
 
-void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
+void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj)
+{
   fEventNum++;
   cout << "CbmRichProjectionProducerAnalytical:: event " << fEventNum << endl;
 
@@ -78,16 +78,14 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
       covMat(i, j) = 0;
     }
   }
-  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) =
-    1.e-4;
+  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) = 1.e-4;
 
   for (Int_t j = 0; j < fTrackParams->GetEntriesFast(); j++) {
     FairTrackParam* point = (FairTrackParam*) fTrackParams->At(j);
     new ((*richProj)[j]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
 
     // check if Array was filled
-    if (point->GetX() == 0 && point->GetY() == 0 && point->GetZ() == 0
-        && point->GetTx() == 0 && point->GetTy() == 0)
+    if (point->GetX() == 0 && point->GetY() == 0 && point->GetZ() == 0 && point->GetTx() == 0 && point->GetTy() == 0)
       continue;
     if (point->GetQp() == 0) continue;
 
@@ -97,16 +95,11 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
 
     Double_t p = 1. / TMath::Abs(point->GetQp());
     Double_t pz;
-    if ((1 + point->GetTx() * point->GetTx() + point->GetTy() * point->GetTy())
-        > 0.)
-      pz = p
-           / TMath::Sqrt(1 + point->GetTx() * point->GetTx()
-                         + point->GetTy() * point->GetTy());
+    if ((1 + point->GetTx() * point->GetTx() + point->GetTy() * point->GetTy()) > 0.)
+      pz = p / TMath::Sqrt(1 + point->GetTx() * point->GetTx() + point->GetTy() * point->GetTy());
     else {
       cout << " -E- RichProjectionProducer: strange value for calculating pz: "
-           << (1 + point->GetTx() * point->GetTx()
-               + point->GetTy() * point->GetTy())
-           << endl;
+           << (1 + point->GetTx() * point->GetTx() + point->GetTy() * point->GetTy()) << endl;
       pz = 0.;
       continue;
     }
@@ -114,9 +107,7 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
     Double_t py = pz * point->GetTy();
     momP.SetXYZ(px, py, pz);
     point->Position(startP);
-    if ((mirrorY * startP.y()) < 0)
-      mirrorY =
-        -mirrorY;  // check that mirror center and startP are in same hemisphere
+    if ((mirrorY * startP.y()) < 0) mirrorY = -mirrorY;  // check that mirror center and startP are in same hemisphere
 
     // calculation of intersection of track with selected mirror
     // corresponds to calculation of intersection between a straight line and a sphere:
@@ -127,22 +118,17 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
     // -> rho1 = (-RxP+sqrt(RxP^2-normP2*dist))/normP2  extrapolation factor for:
     // intersection point crossP = startP + rho1 * momP
     Double_t RxP =
-      (momP.x() * (startP.x() - mirrorX) + momP.y() * (startP.y() - mirrorY)
-       + momP.z() * (startP.z() - mirrorZ));
-    Double_t normP2 =
-      (momP.x() * momP.x() + momP.y() * momP.y() + momP.z() * momP.z());
-    Double_t dist =
-      (startP.x() * startP.x() + mirrorX * mirrorX + startP.y() * startP.y()
-       + mirrorY * mirrorY + startP.z() * startP.z() + mirrorZ * mirrorZ
-       - 2 * startP.x() * mirrorX - 2 * startP.y() * mirrorY
-       - 2 * startP.z() * mirrorZ - mirrorR * mirrorR);
+      (momP.x() * (startP.x() - mirrorX) + momP.y() * (startP.y() - mirrorY) + momP.z() * (startP.z() - mirrorZ));
+    Double_t normP2 = (momP.x() * momP.x() + momP.y() * momP.y() + momP.z() * momP.z());
+    Double_t dist   = (startP.x() * startP.x() + mirrorX * mirrorX + startP.y() * startP.y() + mirrorY * mirrorY
+                     + startP.z() * startP.z() + mirrorZ * mirrorZ - 2 * startP.x() * mirrorX - 2 * startP.y() * mirrorY
+                     - 2 * startP.z() * mirrorZ - mirrorR * mirrorR);
 
     if ((RxP * RxP - normP2 * dist) > 0.) {
-      if (normP2 != 0.)
-        rho1 = (-RxP + TMath::Sqrt(RxP * RxP - normP2 * dist)) / normP2;
-      if (normP2 == 0)
-        cout << " Error in track extrapolation: momentum = 0 " << endl;
-    } else {
+      if (normP2 != 0.) rho1 = (-RxP + TMath::Sqrt(RxP * RxP - normP2 * dist)) / normP2;
+      if (normP2 == 0) cout << " Error in track extrapolation: momentum = 0 " << endl;
+    }
+    else {
       //cout << " -E- RichProjectionProducer:  RxP*RxP-normP2*dist = " << RxP*RxP-normP2*dist << endl;
     }
 
@@ -155,23 +141,17 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
     // if not recalculate crossing point
     if ((mirrorY * crossP.y()) < 0) {
       mirrorY = -mirrorY;
-      RxP =
-        (momP.x() * (startP.x() - mirrorX) + momP.y() * (startP.y() - mirrorY)
-         + momP.z() * (startP.z() - mirrorZ));
-      normP2 =
-        (momP.x() * momP.x() + momP.y() * momP.y() + momP.z() * momP.z());
-      dist =
-        (startP.x() * startP.x() + mirrorX * mirrorX + startP.y() * startP.y()
-         + mirrorY * mirrorY + startP.z() * startP.z() + mirrorZ * mirrorZ
-         - 2 * startP.x() * mirrorX - 2 * startP.y() * mirrorY
-         - 2 * startP.z() * mirrorZ - mirrorR * mirrorR);
+      RxP = (momP.x() * (startP.x() - mirrorX) + momP.y() * (startP.y() - mirrorY) + momP.z() * (startP.z() - mirrorZ));
+      normP2 = (momP.x() * momP.x() + momP.y() * momP.y() + momP.z() * momP.z());
+      dist   = (startP.x() * startP.x() + mirrorX * mirrorX + startP.y() * startP.y() + mirrorY * mirrorY
+              + startP.z() * startP.z() + mirrorZ * mirrorZ - 2 * startP.x() * mirrorX - 2 * startP.y() * mirrorY
+              - 2 * startP.z() * mirrorZ - mirrorR * mirrorR);
 
       if ((RxP * RxP - normP2 * dist) > 0.) {
-        if (normP2 != 0.)
-          rho1 = (-RxP + TMath::Sqrt(RxP * RxP - normP2 * dist)) / normP2;
-        if (normP2 == 0)
-          cout << " Error in track extrapolation: momentum = 0 " << endl;
-      } else {
+        if (normP2 != 0.) rho1 = (-RxP + TMath::Sqrt(RxP * RxP - normP2 * dist)) / normP2;
+        if (normP2 == 0) cout << " Error in track extrapolation: momentum = 0 " << endl;
+      }
+      else {
         //cout << " -E- RichProjectionProducer:  RxP*RxP-normP2*dist = " << RxP*RxP-normP2*dist << endl;
       }
 
@@ -184,31 +164,24 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
     centerP.SetXYZ(mirrorX, mirrorY, mirrorZ);  // mirror center
 
     TVector3 crossPoint;
-    string volumeName = CbmRichNavigationUtil::FindIntersection(
-      point, crossPoint, "mirror_tile_");
+    string volumeName = CbmRichNavigationUtil::FindIntersection(point, crossPoint, "mirror_tile_");
     //cout << "CbmRichProjectionAnalytical: volume Name = " << volumeName << endl;
 
     TVector3 newCenterP;
     newCenterP = MirrorCenter(centerP, volumeName);
 
     //   calculate normal on crosspoint with mirror
-    TVector3 normP(crossP.x() - newCenterP.x(),
-                   crossP.y() - newCenterP.y(),
-                   crossP.z() - newCenterP.z());
+    TVector3 normP(crossP.x() - newCenterP.x(), crossP.y() - newCenterP.y(), crossP.z() - newCenterP.z());
     //        TVector3 normP(crossP.x()-centerP.x(),crossP.y()-centerP.y(),crossP.z()-centerP.z());
     normP = normP.Unit();
     // check that normal has same z-direction as momentum
-    if ((normP.z() * momP.z()) < 0.)
-      normP = TVector3(-1. * normP.x(), -1. * normP.y(), -1. * normP.z());
+    if ((normP.z() * momP.z()) < 0.) normP = TVector3(-1. * normP.x(), -1. * normP.y(), -1. * normP.z());
 
     // reflect track
-    Double_t np =
-      normP.x() * momP.x() + normP.y() * momP.y() + normP.z() * momP.z();
+    Double_t np = normP.x() * momP.x() + normP.y() * momP.y() + normP.z() * momP.z();
 
     TVector3 ref;
-    ref.SetXYZ(2 * np * normP.x() - momP.x(),
-               2 * np * normP.y() - momP.y(),
-               2 * np * normP.z() - momP.z());
+    ref.SetXYZ(2 * np * normP.x() - momP.x(), 2 * np * normP.y() - momP.y(), 2 * np * normP.z() - momP.z());
 
     if (ref.z() != 0.) {
 
@@ -223,33 +196,29 @@ void CbmRichProjectionProducerAnalytical::DoProjection(TClonesArray* richProj) {
         CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
 
         //cout << "inPoint:" << inPos.X() << " " << inPos.Y() << " " << inPos.Z() << " outPoint:" << outPos.X() << " " << outPos.Y() << " " << outPos.Z()  << endl;
-
-
-      } else if (gp->fGeometryType == CbmRichGeometryTypeTwoWings) {
+      }
+      else if (gp->fGeometryType == CbmRichGeometryTypeTwoWings) {
         GetPmtIntersectionPointTwoWings(&centerP, &crossP, &ref, &inPos);
         // Transform intersection point in same way as MCPoints were transformed in HitProducer before stored as Hit
         CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
-      } else {
+      }
+      else {
         Fatal("CbmRichProjectionProducerAnalytical ", "unknown geometry type");
       }
 
-      Bool_t isInsidePmt =
-        CbmRichGeoManager::GetInstance().IsPointInsidePmt(&outPos);
+      Bool_t isInsidePmt = CbmRichGeoManager::GetInstance().IsPointInsidePmt(&outPos);
 
       if (isInsidePmt) {
-        FairTrackParam richtrack(
-          outPos.x(), outPos.y(), outPos.z(), 0., 0., 0., covMat);
+        FairTrackParam richtrack(outPos.x(), outPos.y(), outPos.z(), 0., 0., 0., covMat);
         *(FairTrackParam*) (richProj->At(j)) = richtrack;
       }
     }  // if (refZ!=0.)
   }    // j
 }
 
-TVector3
-CbmRichProjectionProducerAnalytical::MirrorCenter(const TVector3 centerP,
-                                                  const string volumeName) {
-  if (volumeName == ""
-      || !(fMirrorCorrectionParameterFile->GetMirrorCorrectionParamBool())) {
+TVector3 CbmRichProjectionProducerAnalytical::MirrorCenter(const TVector3 centerP, const string volumeName)
+{
+  if (volumeName == "" || !(fMirrorCorrectionParameterFile->GetMirrorCorrectionParamBool())) {
     //cout << "center P: " << centerP.x() << ", " << centerP.y() << ", " << centerP.z() << endl;
     return (centerP);
   }
@@ -259,15 +228,11 @@ CbmRichProjectionProducerAnalytical::MirrorCenter(const TVector3 centerP,
   string mirrorID = GetMirrorID(volumeName);
 
   std::map<string, std::pair<Double_t, Double_t>> mirrorCorrectionParamMap;
-  mirrorCorrectionParamMap =
-    fMirrorCorrectionParameterFile->GetMirrorCorrectionParamMap();
-  for (std::map<string, std::pair<Double_t, Double_t>>::iterator it =
-         mirrorCorrectionParamMap.begin();
-       it != mirrorCorrectionParamMap.end();
-       ++it) {
+  mirrorCorrectionParamMap = fMirrorCorrectionParameterFile->GetMirrorCorrectionParamMap();
+  for (std::map<string, std::pair<Double_t, Double_t>>::iterator it = mirrorCorrectionParamMap.begin();
+       it != mirrorCorrectionParamMap.end(); ++it) {
     if (it->first == mirrorID) {
-      cout << "Map's first key: " << it->first
-           << " and pair: " << it->second.first << ", " << it->second.second
+      cout << "Map's first key: " << it->first << " and pair: " << it->second.first << ", " << it->second.second
            << endl;
       newCenterP.SetX(centerP.X() + it->second.first);
       newCenterP.SetY(centerP.Y() + it->second.second);
@@ -341,8 +306,8 @@ TVector3 CbmRichProjectionProducerAnalytical::MirrorCenter(
 }
 */
 
-string
-CbmRichProjectionProducerAnalytical::GetMirrorID(const string volumeName) {
+string CbmRichProjectionProducerAnalytical::GetMirrorID(const string volumeName)
+{
   string str1 = "mirror_tile_", str2 = "";
   std::size_t found = volumeName.find(str1);
   if (found != std::string::npos) {
@@ -355,11 +320,10 @@ CbmRichProjectionProducerAnalytical::GetMirrorID(const string volumeName) {
   return (str2);
 }
 
-void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(
-  const TVector3* centerP,
-  const TVector3* crossP,
-  const TVector3* ref,
-  TVector3* outPoint) {
+void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(const TVector3* centerP,
+                                                                          const TVector3* crossP, const TVector3* ref,
+                                                                          TVector3* outPoint)
+{
   // crosspoint whith photodetector plane:
   // calculate intersection between straight line and (tilted) plane:
   // normal on plane tilted by theta around x-axis: (0,-sin(theta),cos(theta)) = n
@@ -375,10 +339,9 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(
   CbmRichRecGeoPar* gp = CbmRichGeoManager::GetInstance().fGP;
 
   if (gp->fGeometryType != CbmRichGeometryTypeTwoWings) {
-    Fatal(
-      "CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings ",
-      "Wrong geometry, this method could be used only for "
-      "CbmRichGeometryTypeTwoWings");
+    Fatal("CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings ",
+          "Wrong geometry, this method could be used only for "
+          "CbmRichGeometryTypeTwoWings");
   }
 
   Double_t pmtPhi    = gp->fPmt.fPhi;
@@ -389,22 +352,18 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(
   Double_t rho2      = 0.;
 
   if (centerP->y() > 0) {
-    rho2 =
-      (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
-       - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneY - crossP->y())
-       + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
-      / (-TMath::Sin(pmtPhi) * ref->x()
-         - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
-         + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
+    rho2 = (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
+            - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneY - crossP->y())
+            + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
+           / (-TMath::Sin(pmtPhi) * ref->x() - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
+              + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
   }
   if (centerP->y() < 0) {
-    rho2 =
-      (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
-       - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * (-pmtPlaneY - crossP->y())
-       + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
-      / (-TMath::Sin(pmtPhi) * ref->x()
-         - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
-         + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
+    rho2 = (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
+            - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * (-pmtPlaneY - crossP->y())
+            + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
+           / (-TMath::Sin(pmtPhi) * ref->x() - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
+              + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
   }
 
   //rho2 = -1*(crossP.z() - fDetZ)/refZ;    // only for theta = 0, phi=0
@@ -415,22 +374,16 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(
   if (xX < 0) {
     if (centerP->y() > 0) {
       rho2 = (-TMath::Sin(-pmtPhi) * (-pmtPlaneX - crossP->x())
-              - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi)
-                  * (pmtPlaneY - crossP->y())
-              + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi)
-                  * (pmtPlaneZ - crossP->z()))
-             / (-TMath::Sin(-pmtPhi) * ref->x()
-                - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
+              - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneY - crossP->y())
+              + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneZ - crossP->z()))
+             / (-TMath::Sin(-pmtPhi) * ref->x() - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
                 + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi) * ref->z());
     }
     if (centerP->y() < 0) {
       rho2 = (-TMath::Sin(-pmtPhi) * (-pmtPlaneX - crossP->x())
-              - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi)
-                  * (-pmtPlaneY - crossP->y())
-              + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi)
-                  * (pmtPlaneZ - crossP->z()))
-             / (-TMath::Sin(-pmtPhi) * ref->x()
-                - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
+              - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * (-pmtPlaneY - crossP->y())
+              + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneZ - crossP->z()))
+             / (-TMath::Sin(-pmtPhi) * ref->x() - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
                 + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->z());
     }
 
@@ -443,11 +396,9 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointTwoWings(
 }
 
 
-void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(
-  const TVector3* centerP,
-  const TVector3* crossP,
-  const TVector3* ref,
-  TVector3* outPoint) {
+void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(const TVector3* centerP, const TVector3* crossP,
+                                                                     const TVector3* ref, TVector3* outPoint)
+{
   CbmRichRecGeoPar* gp = CbmRichGeoManager::GetInstance().fGP;
   if (gp->fGeometryType != CbmRichGeometryTypeCylindrical) {
     Fatal("CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl ",
@@ -459,9 +410,7 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(
   Double_t zZ;
   Double_t maxDist = 0.;
 
-  for (map<string, CbmRichRecGeoParPmt>::iterator it = gp->fPmtMap.begin();
-       it != gp->fPmtMap.end();
-       it++) {
+  for (map<string, CbmRichRecGeoParPmt>::iterator it = gp->fPmtMap.begin(); it != gp->fPmtMap.end(); it++) {
     Double_t pmtPlaneX = it->second.fPlaneX;
     Double_t pmtPlaneY = it->second.fPlaneY;
     Double_t pmtPlaneZ = it->second.fPlaneZ;
@@ -473,23 +422,17 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(
     double rho2 = 0.;
 
     if (centerP->y() > 0) {
-      rho2 =
-        (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
-         - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneY - crossP->y())
-         + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi)
-             * (pmtPlaneZ - crossP->z()))
-        / (-TMath::Sin(pmtPhi) * ref->x()
-           - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
-           + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
+      rho2 = (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
+              - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneY - crossP->y())
+              + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
+             / (-TMath::Sin(pmtPhi) * ref->x() - TMath::Sin(pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
+                + TMath::Cos(pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
     }
     if (centerP->y() < 0) {
       rho2 = (-TMath::Sin(pmtPhi) * (pmtPlaneX - crossP->x())
-              - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi)
-                  * (-pmtPlaneY - crossP->y())
-              + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi)
-                  * (pmtPlaneZ - crossP->z()))
-             / (-TMath::Sin(pmtPhi) * ref->x()
-                - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
+              - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * (-pmtPlaneY - crossP->y())
+              + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * (pmtPlaneZ - crossP->z()))
+             / (-TMath::Sin(pmtPhi) * ref->x() - TMath::Sin(-pmtTheta) * TMath::Cos(pmtPhi) * ref->y()
                 + TMath::Cos(-pmtTheta) * TMath::Cos(pmtPhi) * ref->z());
     }
 
@@ -500,22 +443,16 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(
     if (cxX < 0) {
       if (centerP->y() > 0) {
         rho2 = (-TMath::Sin(-pmtPhi) * (-pmtPlaneX - crossP->x())
-                - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi)
-                    * (pmtPlaneY - crossP->y())
-                + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi)
-                    * (pmtPlaneZ - crossP->z()))
-               / (-TMath::Sin(-pmtPhi) * ref->x()
-                  - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
+                - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneY - crossP->y())
+                + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneZ - crossP->z()))
+               / (-TMath::Sin(-pmtPhi) * ref->x() - TMath::Sin(pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
                   + TMath::Cos(pmtTheta) * TMath::Cos(-pmtPhi) * ref->z());
       }
       if (centerP->y() < 0) {
         rho2 = (-TMath::Sin(-pmtPhi) * (-pmtPlaneX - crossP->x())
-                - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi)
-                    * (-pmtPlaneY - crossP->y())
-                + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi)
-                    * (pmtPlaneZ - crossP->z()))
-               / (-TMath::Sin(-pmtPhi) * ref->x()
-                  - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
+                - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * (-pmtPlaneY - crossP->y())
+                + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi) * (pmtPlaneZ - crossP->z()))
+               / (-TMath::Sin(-pmtPhi) * ref->x() - TMath::Sin(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->y()
                   + TMath::Cos(-pmtTheta) * TMath::Cos(-pmtPhi) * ref->z());
       }
 
@@ -524,8 +461,7 @@ void CbmRichProjectionProducerAnalytical::GetPmtIntersectionPointCyl(
       czZ = crossP->z() + ref->z() * rho2;
     }
 
-    Double_t dP = TMath::Sqrt((crossP->x() - cxX) * (crossP->X() - cxX)
-                              + (crossP->y() - cyY) * (crossP->y() - cyY)
+    Double_t dP = TMath::Sqrt((crossP->x() - cxX) * (crossP->X() - cxX) + (crossP->y() - cyY) * (crossP->y() - cyY)
                               + (crossP->z() - czZ) * (crossP->Z() - czZ));
 
     if (dP >= maxDist) {

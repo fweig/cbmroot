@@ -35,9 +35,7 @@ public:
   //Float_t GetEdep(Int_t module) const { return fEdep[module]; }      // SELIM: simplification vector [49] -> simple double
   //void SetEdep(Float_t edep, Int_t module) {fEdep[module]=edep;}
 
-  Double_t GetEdep() const {
-    return fEdep;
-  }  // SELIM: simplification vector [49] -> simple double
+  Double_t GetEdep() const { return fEdep; }  // SELIM: simplification vector [49] -> simple double
   void SetEdep(Double_t edep) { fEdep = edep; }
 
   Int_t GetModuleID() const { return fModuleID; }
@@ -49,8 +47,7 @@ private:
   /**   Data members  **/
 
   Int_t fModuleID;
-  Double_t
-    fEdep;  //[49];    // SELIM: simplification vector [49] -> simple double
+  Double_t fEdep;  //[49];    // SELIM: simplification vector [49] -> simple double
 
 
   ClassDef(CbmPsdHit, 1);

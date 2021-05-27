@@ -49,14 +49,16 @@ CbmDigitization::CbmDigitization()
   , fMoniFile()
   , fOverwriteOutput(kFALSE)
   , fGenerateRunInfo(kTRUE)
-  , fRun(0) {
+  , fRun(0)
+{
   SetDefaultBranches();
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Destructor   -----------------------------------------------------
-CbmDigitization::~CbmDigitization() {
+CbmDigitization::~CbmDigitization()
+{
   LOG(debug) << "Destructing " << fName;
   for (auto it = fDigitizers.begin(); it != fDigitizers.end(); it++) {
     if (it->second) delete it->second;
@@ -68,12 +70,9 @@ CbmDigitization::~CbmDigitization() {
 
 
 // -----   Add an input file   ----------------------------------------------
-void CbmDigitization::AddInput(UInt_t inputId,
-                               TString fileName,
-                               Double_t eventRate,
-                               ECbmTreeAccess mode) {
-  if (gSystem->AccessPathName(fileName))
-    LOG(fatal) << fName << ": input file " << fileName << " does not exist!";
+void CbmDigitization::AddInput(UInt_t inputId, TString fileName, Double_t eventRate, ECbmTreeAccess mode)
+{
+  if (gSystem->AccessPathName(fileName)) LOG(fatal) << fName << ": input file " << fileName << " does not exist!";
   TChain* chain = new TChain("cbmsim");
   chain->Add(fileName.Data());
   fSource->AddInput(inputId, chain, eventRate, mode);
@@ -82,10 +81,10 @@ void CbmDigitization::AddInput(UInt_t inputId,
 
 
 // -----   Add an ASCII parameter file   ------------------------------------
-Bool_t CbmDigitization::AddParameterAsciiFile(TString fileName) {
+Bool_t CbmDigitization::AddParameterAsciiFile(TString fileName)
+{
   if (gSystem->AccessPathName(fileName.Data())) {
-    LOG(error) << fName << ": Parameter file " << fileName
-               << " does not exist!";
+    LOG(error) << fName << ": Parameter file " << fileName << " does not exist!";
     return kFALSE;
   }
   fParAsciiFiles.Add(new TObjString(fileName.Data()));
@@ -96,7 +95,8 @@ Bool_t CbmDigitization::AddParameterAsciiFile(TString fileName) {
 
 
 // -----   Check input file   -----------------------------------------------
-Int_t CbmDigitization::CheckInput() {
+Int_t CbmDigitization::CheckInput()
+{
 
   // --- Check presence of input data branch for the digitizers.
   // --- If the branch is not found, the digitizer will not be instantiated.
@@ -104,8 +104,7 @@ Int_t CbmDigitization::CheckInput() {
   for (auto const& entry : fDigitizers) {
     auto setIt = fSource->GetBranchList().find(entry.second->GetBranchName());
     if (setIt != fSource->GetBranchList().end()) {
-      LOG(info) << fName << ": Found branch " << entry.second->GetBranchName()
-                << " for system "
+      LOG(info) << fName << ": Found branch " << entry.second->GetBranchName() << " for system "
                 << CbmModuleList::GetModuleNameCaps(entry.first);
       entry.second->SetPresent();
       nBranches++;
@@ -134,7 +133,8 @@ Int_t CbmDigitization::CheckInput() {
 
 
 // -----   Create the digitisers   ------------------------------------------
-Int_t CbmDigitization::CreateDefaultDigitizers() {
+Int_t CbmDigitization::CreateDefaultDigitizers()
+{
   std::cout << "Create default digitisers" << std::endl;
 
   stringstream ss;
@@ -208,30 +208,27 @@ Int_t CbmDigitization::CreateDefaultDigitizers() {
 
 
 // -----   Deactivate a system   --------------------------------------------
-void CbmDigitization::Deactivate(ECbmModuleId system) {
-  if (fDigitizers.find(system) != fDigitizers.end())
-    fDigitizers[system]->SetActive(kFALSE);
+void CbmDigitization::Deactivate(ECbmModuleId system)
+{
+  if (fDigitizers.find(system) != fDigitizers.end()) fDigitizers[system]->SetActive(kFALSE);
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Deactivate all systems except one   ------------------------------
-void CbmDigitization::DeactivateAllBut(ECbmModuleId system) {
+void CbmDigitization::DeactivateAllBut(ECbmModuleId system)
+{
   for (auto& entry : fDigitizers)
     entry.second->SetActive(kFALSE);
-  if (fDigitizers.find(system) != fDigitizers.end())
-    fDigitizers[system]->SetActive(kTRUE);
+  if (fDigitizers.find(system) != fDigitizers.end()) fDigitizers[system]->SetActive(kTRUE);
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Embed an input file   --------------------------------------------
-void CbmDigitization::EmbedInput(UInt_t inputId,
-                                 TString fileName,
-                                 UInt_t targetInputId,
-                                 ECbmTreeAccess mode) {
-  if (gSystem->AccessPathName(fileName))
-    LOG(fatal) << fName << ": input file " << fileName << " does not exist!";
+void CbmDigitization::EmbedInput(UInt_t inputId, TString fileName, UInt_t targetInputId, ECbmTreeAccess mode)
+{
+  if (gSystem->AccessPathName(fileName)) LOG(fatal) << fName << ": input file " << fileName << " does not exist!";
   TChain* chain = new TChain("cbmsim");
   chain->Add(fileName.Data());
   fSource->EmbedInput(inputId, chain, targetInputId, mode);
@@ -240,7 +237,8 @@ void CbmDigitization::EmbedInput(UInt_t inputId,
 
 
 // -----   Get a system geometry tag   --------------------------------------
-TString CbmDigitization::GetGeoTag(ECbmModuleId system, TGeoManager* geo) {
+TString CbmDigitization::GetGeoTag(ECbmModuleId system, TGeoManager* geo)
+{
 
   assert(geo);
   TString geoTag;
@@ -262,7 +260,8 @@ TString CbmDigitization::GetGeoTag(ECbmModuleId system, TGeoManager* geo) {
 
 
 // -----   Get a system geometry tag   --------------------------------------
-void CbmDigitization::DefaultInit() {
+void CbmDigitization::DefaultInit()
+{
 
   // --- Run this method only once!
   if (fIsInit) return;
@@ -334,7 +333,8 @@ void CbmDigitization::DefaultInit() {
 
 
 // -----   Execute digitisation run   ---------------------------------------
-void CbmDigitization::Run(Int_t event1, Int_t event2) {
+void CbmDigitization::Run(Int_t event1, Int_t event2)
+{
 
   // --- Run info
   std::cout << std::endl << std::endl;
@@ -350,8 +350,7 @@ void CbmDigitization::Run(Int_t event1, Int_t event2) {
   if (fGenerateRunInfo) LOG(info) << fName << ": Run info will be generated.";
 
   // --- Create DAQ
-  if (fEventMode)
-    fDaq = new CbmDaq(kTRUE);
+  if (fEventMode) fDaq = new CbmDaq(kTRUE);
   else
     fDaq = new CbmDaq(fTimeSliceLength);
 
@@ -430,14 +429,13 @@ void CbmDigitization::Run(Int_t event1, Int_t event2) {
   LOG(info) << "===================================================";
   LOG(info) << fName << ": Starting run...";
   if (event2 < 0) {
-    if (event1 >= 0)
-      run->Run(0, event1 - 1);  // Run event1 events
+    if (event1 >= 0) run->Run(0, event1 - 1);  // Run event1 events
     else
       run->Run();  // Run all events in input
-  } else {
+  }
+  else {
     if (event1 < 0) event1 = 0;
-    if (event1 <= event2)
-      run->Run(event1, event2);  // Run from event1 to event2
+    if (event1 <= event2) run->Run(event1, event2);  // Run from event1 to event2
     else
       run->Run(event1, event1);  // Run only event1
   }
@@ -445,8 +443,7 @@ void CbmDigitization::Run(Int_t event1, Int_t event2) {
   LOG(info) << fName << ": Run finished.";
   LOG(info) << fName << ": Output file is    " << fOutFile;
   LOG(info) << fName << ": Parameter file is " << fParRootFile;
-  if (!fMoniFile.IsNull())
-    LOG(info) << fName << ": Monitor file is   " << fMoniFile;
+  if (!fMoniFile.IsNull()) LOG(info) << fName << ": Monitor file is   " << fMoniFile;
 
   LOG(info) << "===================================================";
 
@@ -477,37 +474,28 @@ void CbmDigitization::Run(Int_t event1, Int_t event2) {
 
 
 // -----   Set default info   -----------------------------------------------
-void CbmDigitization::SetDefaultBranches() {
-  fDigitizers[ECbmModuleId::kMvd] =
-    new CbmDigitizeInfo(ECbmModuleId::kMvd, "MvdPoint");
-  fDigitizers[ECbmModuleId::kSts] =
-    new CbmDigitizeInfo(ECbmModuleId::kSts, "StsPoint");
-  fDigitizers[ECbmModuleId::kRich] =
-    new CbmDigitizeInfo(ECbmModuleId::kRich, "RichPoint");
-  fDigitizers[ECbmModuleId::kMuch] =
-    new CbmDigitizeInfo(ECbmModuleId::kMuch, "MuchPoint");
-  fDigitizers[ECbmModuleId::kTrd] =
-    new CbmDigitizeInfo(ECbmModuleId::kTrd, "TrdPoint");
-  fDigitizers[ECbmModuleId::kTof] =
-    new CbmDigitizeInfo(ECbmModuleId::kTof, "TofPoint");
-  fDigitizers[ECbmModuleId::kPsd] =
-    new CbmDigitizeInfo(ECbmModuleId::kPsd, "PsdPoint");
+void CbmDigitization::SetDefaultBranches()
+{
+  fDigitizers[ECbmModuleId::kMvd]  = new CbmDigitizeInfo(ECbmModuleId::kMvd, "MvdPoint");
+  fDigitizers[ECbmModuleId::kSts]  = new CbmDigitizeInfo(ECbmModuleId::kSts, "StsPoint");
+  fDigitizers[ECbmModuleId::kRich] = new CbmDigitizeInfo(ECbmModuleId::kRich, "RichPoint");
+  fDigitizers[ECbmModuleId::kMuch] = new CbmDigitizeInfo(ECbmModuleId::kMuch, "MuchPoint");
+  fDigitizers[ECbmModuleId::kTrd]  = new CbmDigitizeInfo(ECbmModuleId::kTrd, "TrdPoint");
+  fDigitizers[ECbmModuleId::kTof]  = new CbmDigitizeInfo(ECbmModuleId::kTof, "TofPoint");
+  fDigitizers[ECbmModuleId::kPsd]  = new CbmDigitizeInfo(ECbmModuleId::kPsd, "PsdPoint");
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Set digitizer explicitly   ---------------------------------------
-void CbmDigitization::SetDigitizer(ECbmModuleId system,
-                                   CbmDigitizeBase* digitizer,
-                                   TString branch,
-                                   Bool_t persistent) {
+void CbmDigitization::SetDigitizer(ECbmModuleId system, CbmDigitizeBase* digitizer, TString branch, Bool_t persistent)
+{
 
   // Digitizer already present: replace
   if (fDigitizers.find(system) != fDigitizers.end()) {
     CbmDigitizeBase* oldDigitizer = fDigitizers[system]->GetDigitizer();
     if (oldDigitizer != nullptr) {
-      LOG(warn) << fName << ": replacing " << oldDigitizer->GetName() << " by "
-                << digitizer->GetName();
+      LOG(warn) << fName << ": replacing " << oldDigitizer->GetName() << " by " << digitizer->GetName();
       delete oldDigitizer;
     }
     if (!branch.IsNull()) fDigitizers[system]->SetBranchName(branch);
@@ -518,14 +506,14 @@ void CbmDigitization::SetDigitizer(ECbmModuleId system,
 
   // Digitizer not yet present: add
   else
-    fDigitizers[system] =
-      new CbmDigitizeInfo(system, branch, digitizer, kFALSE, kTRUE, persistent);
+    fDigitizers[system] = new CbmDigitizeInfo(system, branch, digitizer, kFALSE, kTRUE, persistent);
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Set the output file   --------------------------------------------
-void CbmDigitization::SetOutputFile(TString path, Bool_t overwrite) {
+void CbmDigitization::SetOutputFile(TString path, Bool_t overwrite)
+{
 
   // --- Protect against overwriting an existing file
   if ((!gSystem->AccessPathName(path.Data())) && (!overwrite)) {
@@ -538,8 +526,7 @@ void CbmDigitization::SetOutputFile(TString path, Bool_t overwrite) {
   if (gSystem->AccessPathName(directory)) {
     Int_t success = gSystem->mkdir(directory, kTRUE);
     if (success == -1)
-      LOG(fatal) << fName << ": output directory " << directory
-                 << " does not exist and cannot be created!";
+      LOG(fatal) << fName << ": output directory " << directory << " does not exist and cannot be created!";
     else
       LOG(info) << fName << ": created directory " << directory;
   }
@@ -550,17 +537,17 @@ void CbmDigitization::SetOutputFile(TString path, Bool_t overwrite) {
 
 
 // -----    Set the ROOT parameter file   -----------------------------------
-void CbmDigitization::SetParameterRootFile(TString fileName) {
-  if (gSystem->AccessPathName(fileName))
-    LOG(fatal) << fName << ": parameter file " << fileName
-               << " does not exist!";
+void CbmDigitization::SetParameterRootFile(TString fileName)
+{
+  if (gSystem->AccessPathName(fileName)) LOG(fatal) << fName << ": parameter file " << fileName << " does not exist!";
   fParRootFile = fileName;
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Get digitizer pointer if existing   ------------------------------
-CbmDigitizeBase* CbmDigitization::GetDigitizer(ECbmModuleId system) {
+CbmDigitizeBase* CbmDigitization::GetDigitizer(ECbmModuleId system)
+{
 
   // Digitizer already present: return it
   if (fDigitizers.find(system) != fDigitizers.end()) {

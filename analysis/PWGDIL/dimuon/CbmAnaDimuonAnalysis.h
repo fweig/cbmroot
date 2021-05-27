@@ -11,6 +11,7 @@
 #define CBMANADIMUONANALYSIS_H_ 1
 
 #include "FairTask.h"
+
 #include <vector>
 
 class CbmAnaDimuonAnalysis;
@@ -50,7 +51,8 @@ public:
   void SetNofMuchCut(Int_t cut) { fNofMuchCut = cut; }
   void SetNofStsCut(Int_t cut) { fNofStsCut = cut; }
   void SetNofTrdCut(Int_t cut) { fNofTrdCut = cut; }
-  void SetAnnCut(Double_t cut, Int_t neurons) {
+  void SetAnnCut(Double_t cut, Int_t neurons)
+  {
     fAnnCut  = cut;
     fNeurons = neurons;
   }
@@ -64,16 +66,8 @@ public:
   //  void SetEffFileName(TString name)   {fEffFileName = name; }
 
   Double_t CalculateAnnValue(CbmAnaMuonCandidate* mu);
-  Double_t CalculateAnnValue(Double_t P,
-                             Double_t M,
-                             Double_t Chi2Vertex,
-                             Double_t Chi2STS,
-                             Double_t Chi2MUCH,
-                             Double_t Chi2TRD,
-                             Int_t NofSTS,
-                             Int_t NofMUCH,
-                             Int_t NofTRD,
-                             Int_t NofTOF);
+  Double_t CalculateAnnValue(Double_t P, Double_t M, Double_t Chi2Vertex, Double_t Chi2STS, Double_t Chi2MUCH,
+                             Double_t Chi2TRD, Int_t NofSTS, Int_t NofMUCH, Int_t NofTRD, Int_t NofTOF);
 
   void FillProfile(TProfile* profile, Double_t param, Bool_t trigger);
 
@@ -127,10 +121,8 @@ private:
 
   CbmMuchGeoScheme* fGeoScheme;
 
-  TH2D *YPt_pluto, *YPt_StsAcc, *YPt_StsMuchAcc, *YPt_StsMuchTrdAcc,
-    *YPt_StsMuchTrdTofAcc;
-  TH2D *YPt_VtxReco, *YPt_VtxStsReco, *YPt_VtxStsMuchReco,
-    *YPt_VtxStsMuchTrdReco, *YPt_VtxStsMuchTrdTofReco;
+  TH2D *YPt_pluto, *YPt_StsAcc, *YPt_StsMuchAcc, *YPt_StsMuchTrdAcc, *YPt_StsMuchTrdTofAcc;
+  TH2D *YPt_VtxReco, *YPt_VtxStsReco, *YPt_VtxStsMuchReco, *YPt_VtxStsMuchTrdReco, *YPt_VtxStsMuchTrdTofReco;
   TH3D* YPtM;
 
   TProfile *acc_P[4][3], *acc_Theta[4][3];

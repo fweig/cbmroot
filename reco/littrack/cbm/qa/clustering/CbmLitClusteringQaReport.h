@@ -9,6 +9,7 @@
 #define CBMLITCLUSTERINGQAREPORT_H_
 
 #include "CbmSimulationReport.h"
+
 #include <string>
 using std::string;
 
@@ -30,8 +31,7 @@ public:
     */
   virtual ~CbmLitClusteringQaReport();
 
-  static Double_t
-  CalcEfficiency(const TH1* histRec, const TH1* histAcc, Double_t scale);
+  static Double_t CalcEfficiency(const TH1* histRec, const TH1* histAcc, Double_t scale);
 
 private:
   /**
@@ -66,9 +66,7 @@ private:
 
   void DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3, Double_t scale);
 
-  void CalculateEfficiencyHistos(const string& acc,
-                                 const string& rec,
-                                 const string& eff);
+  void CalculateEfficiencyHistos(const string& acc, const string& rec, const string& eff);
 
   ClassDef(CbmLitClusteringQaReport, 1)
 };

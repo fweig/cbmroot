@@ -36,7 +36,8 @@ Double_t& CbmKFTrackInterface::GetRefChi2() { return gTempD[21]; }
 Int_t& CbmKFTrackInterface::GetRefNDF() { return gTempI[0]; }
 
 
-Int_t CbmKFTrackInterface::Extrapolate(Double_t z_out, Double_t* QP0) {
+Int_t CbmKFTrackInterface::Extrapolate(Double_t z_out, Double_t* QP0)
+{
 
   Bool_t err          = 0;
   CbmKF* KF           = CbmKF::Instance();
@@ -48,21 +49,18 @@ Int_t CbmKFTrackInterface::Extrapolate(Double_t z_out, Double_t* QP0) {
   if (downstream_direction) {
     z = z_in;
     Z = z_out;
-  } else {
+  }
+  else {
     z = z_out;
     Z = z_in;
   }
 
   vector<CbmKFMaterial*>::iterator i, ibeg, iend;
-  ibeg = lower_bound(
-    KF->vMaterial.begin(), KF->vMaterial.end(), z, CbmKFMaterial::compareP_z);
-  iend = upper_bound(
-    KF->vMaterial.begin(), KF->vMaterial.end(), Z, CbmKFMaterial::compareP_Z);
-  if (iend != KF->vMaterial.end()
-      && (*iend)->ZReference - (*iend)->ZThickness / 2 < Z)
-    iend++;
-  if (downstream_direction) {
-  } else {
+  ibeg = lower_bound(KF->vMaterial.begin(), KF->vMaterial.end(), z, CbmKFMaterial::compareP_z);
+  iend = upper_bound(KF->vMaterial.begin(), KF->vMaterial.end(), Z, CbmKFMaterial::compareP_Z);
+  if (iend != KF->vMaterial.end() && (*iend)->ZReference - (*iend)->ZThickness / 2 < Z) iend++;
+  if (downstream_direction) {}
+  else {
     i    = ibeg;
     ibeg = iend;
     iend = i;
@@ -72,24 +70,18 @@ Int_t CbmKFTrackInterface::Extrapolate(Double_t z_out, Double_t* QP0) {
 
   for (i = ibeg; i != iend; downstream_direction ? ++i : --i) {
     Double_t zthick = (*i)->ZThickness, zcross = (*i)->ZReference;
-    if (CbmKFMath::GetThickness(z, Z, zcross, zthick, &zcross, &zthick))
-      continue;
+    if (CbmKFMath::GetThickness(z, Z, zcross, zthick, &zcross, &zthick)) continue;
 
-    double z0 =
-      (downstream_direction) ? zcross - zthick / 2. : zcross + zthick / 2.;
+    double z0 = (downstream_direction) ? zcross - zthick / 2. : zcross + zthick / 2.;
     double d  = (downstream_direction) ? 1 : -1;
     double dz = 1.E-1 * (*i)->RadLength;
     double z_ = 0;
     while (z_ + dz < zthick) {
-      err = err
-            || (*i)->Pass(
-              z0 + d * (z_ + dz / 2.), dz, *this, downstream_direction, qp0);
+      err = err || (*i)->Pass(z0 + d * (z_ + dz / 2.), dz, *this, downstream_direction, qp0);
       z_ += dz;
     }
     dz  = zthick - z_;
-    err = err
-          || (*i)->Pass(
-            z0 + d * (z_ + dz / 2.), dz, *this, downstream_direction, qp0);
+    err = err || (*i)->Pass(z0 + d * (z_ + dz / 2.), dz, *this, downstream_direction, qp0);
     //(*i)->Pass( zcross, zthick, *this, downstream_direction, qp0 );
   }
   err = err || Propagate(z_out, qp0);
@@ -98,7 +90,8 @@ Int_t CbmKFTrackInterface::Extrapolate(Double_t z_out, Double_t* QP0) {
 }
 
 
-Int_t CbmKFTrackInterface::Fit(Bool_t downstream) {
+Int_t CbmKFTrackInterface::Fit(Bool_t downstream)
+{
   CbmKF* KF   = CbmKF::Instance();
   Double_t* T = GetTrack();
   Double_t* C = GetCovMatrix();
@@ -149,7 +142,8 @@ Int_t CbmKFTrackInterface::Fit(Bool_t downstream) {
         err    = err || h->Filter(*this, downstream, qp0);
         istold = ist;
       }
-    } else {
+    }
+    else {
       CbmKFHit* h  = GetHit(NHits - 1);
       err          = h->Filter(*this, downstream, qp0);
       Int_t istold = h->MaterialIndex;
@@ -166,7 +160,8 @@ Int_t CbmKFTrackInterface::Fit(Bool_t downstream) {
     // correct NDF value to number of fitted track parameters (straight line(4) or helix(5) )
 
     GetRefNDF() -= (KF->GetMethod() == 0) ? 4 : 5;
-  } catch (...) {
+  }
+  catch (...) {
     GetRefChi2() = 0;
     GetRefNDF()  = 0;
     C[0]         = INF;
@@ -211,7 +206,8 @@ Int_t CbmKFTrackInterface::Fit(Bool_t downstream) {
 }
 
 
-void CbmKFTrackInterface::Smooth(Double_t Z) {
+void CbmKFTrackInterface::Smooth(Double_t Z)
+{
   CbmKF* KF = CbmKF::Instance();
 
   Double_t* T = GetTrack();
@@ -347,7 +343,8 @@ void CbmKFTrackInterface::Smooth(Double_t Z) {
   GetRefNDF() -= (KF->GetMethod() == 0) ? 4 : 5;
 }
 
-void CbmKFTrackInterface::Fit2Vertex(CbmKFVertexInterface& vtx) {
+void CbmKFTrackInterface::Fit2Vertex(CbmKFVertexInterface& vtx)
+{
   Double_t* T  = GetTrack();
   Double_t* C  = GetCovMatrix();
   Double_t* Cv = vtx.GetCovMatrix();
@@ -367,8 +364,7 @@ void CbmKFTrackInterface::Fit2Vertex(CbmKFVertexInterface& vtx) {
 
   Double_t zeta[2] = {x - T[0], y - T[1]};
 
-  Double_t CHt[5][2] = {
-    {C[0], C[1]}, {C[1], C[2]}, {C[3], C[4]}, {C[6], C[7]}, {C[10], C[11]}};
+  Double_t CHt[5][2] = {{C[0], C[1]}, {C[1], C[2]}, {C[3], C[4]}, {C[6], C[7]}, {C[10], C[11]}};
 
   for (Int_t iter = 0; iter < MaxIter; iter++) {
 
@@ -423,8 +419,7 @@ void CbmKFTrackInterface::Fit2Vertex(CbmKFVertexInterface& vtx) {
     T[5] = z;
 
     GetRefNDF() += 2;
-    GetRefChi2() += zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1]
-                    + zeta[1] * zeta[1] * S[2];
+    GetRefChi2() += zeta[0] * zeta[0] * S[0] + 2 * zeta[0] * zeta[1] * S[1] + zeta[1] * zeta[1] * S[2];
 
     //* New covariance matrix C -= K*(CH')'
 
@@ -446,10 +441,9 @@ void CbmKFTrackInterface::Fit2Vertex(CbmKFVertexInterface& vtx) {
   }
 }
 
-Int_t CbmKFTrackInterface::Propagate(Double_t z_out, Double_t QP0) {
+Int_t CbmKFTrackInterface::Propagate(Double_t z_out, Double_t QP0)
+{
   return CbmKF::Instance()->Propagate(GetTrack(), GetCovMatrix(), z_out, QP0);
 }
 
-Int_t CbmKFTrackInterface::Propagate(Double_t z_out) {
-  return Propagate(z_out, GetTrack()[4]);
-}
+Int_t CbmKFTrackInterface::Propagate(Double_t z_out) { return Propagate(z_out, GetTrack()[4]); }

@@ -4,7 +4,9 @@
 #include "CbmHistManager.h"
 #include "CbmMCDataArray.h"
 #include "CbmStsDigi.h"
+
 #include "FairTask.h"
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -56,8 +58,7 @@ private:
 
   Int_t fMaxScale;
   std::ofstream fOutFile;
-  std::vector<std::vector<std::vector<std::vector<std::vector<Int_t>>>>>
-    fnOfDigisChip;
+  std::vector<std::vector<std::vector<std::vector<std::vector<Int_t>>>>> fnOfDigisChip;
 
   CbmStsDigitizeQa(const CbmStsDigitizeQa&);
   CbmStsDigitizeQa& operator=(const CbmStsDigitizeQa&);

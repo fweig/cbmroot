@@ -3,7 +3,8 @@
 
 using namespace std;
 
-void run_ascii_generator_cosy17(Int_t nEvents = 100000) {
+void run_ascii_generator_cosy17(Int_t nEvents = 100000)
+{
 
   string outputAsciiFile = "proton_1.25gevc.ascii.dat";
   double minMomentum     = 1.25;
@@ -23,8 +24,7 @@ void run_ascii_generator_cosy17(Int_t nEvents = 100000) {
     double vy = gRandom->Gaus(0., 0.441);
 
     // Write out event header
-    file << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz
-         << endl;
+    file << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz << endl;
 
     int pdgProton = 2212;
 

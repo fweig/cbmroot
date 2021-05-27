@@ -1,9 +1,9 @@
-void save_hst(TString cstr = "status.hst.root") {
+void save_hst(TString cstr = "status.hst.root")
+{
 
   gROOT->cd();
 
-  cout << "Save all histos from directory " << gDirectory->GetName()
-       << " to file " << cstr.Data() << endl;
+  cout << "Save all histos from directory " << gDirectory->GetName() << " to file " << cstr.Data() << endl;
 
   TIter next(gDirectory->GetList());
   // Write histogramms to the file

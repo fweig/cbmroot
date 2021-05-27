@@ -78,36 +78,42 @@ CbmMcbm2018MonitorAlgoTofPulser::CbmMcbm2018MonitorAlgoTofPulser()
   , fhPulserTimeDiffRms(nullptr)
   , fhPulserTimeDiffRmsZoom(nullptr)
   , fhPulserRmsGdpbToRefEvo(nullptr)
-  , fhPulserRmsGbtxToRefEvo(nullptr) {}
-CbmMcbm2018MonitorAlgoTofPulser::~CbmMcbm2018MonitorAlgoTofPulser() {
+  , fhPulserRmsGbtxToRefEvo(nullptr)
+{
+}
+CbmMcbm2018MonitorAlgoTofPulser::~CbmMcbm2018MonitorAlgoTofPulser()
+{
   /// Clear buffers
   fvmEpSupprBuffer.clear();
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::Init() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::Init()
+{
   LOG(info) << "Initializing mCBM T0 2019 monitor algo";
 
   return kTRUE;
 }
 void CbmMcbm2018MonitorAlgoTofPulser::Reset() {}
-void CbmMcbm2018MonitorAlgoTofPulser::Finish() {
+void CbmMcbm2018MonitorAlgoTofPulser::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitContainers() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmMcbm2018MonitorAlgoTofPulser";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::ReInitContainers() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::ReInitContainers()
+{
   LOG(info) << "**********************************************";
-  LOG(info)
-    << "ReInit parameter containers for CbmMcbm2018MonitorAlgoTofPulser";
+  LOG(info) << "ReInit parameter containers for CbmMcbm2018MonitorAlgoTofPulser";
 
   fUnpackPar = (CbmMcbm2018TofPar*) fParCList->FindObject("CbmMcbm2018TofPar");
   if (nullptr == fUnpackPar) return kFALSE;
@@ -116,14 +122,16 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmMcbm2018MonitorAlgoTofPulser::GetParList() {
+TList* CbmMcbm2018MonitorAlgoTofPulser::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmMcbm2018TofPar("CbmMcbm2018TofPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitParameters() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitParameters()
+{
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
@@ -152,8 +160,7 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitParameters() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   /// Parameters for FLES containers processing
@@ -163,11 +170,9 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitParameters() {
   /// Check if user requested to monitor only a single selected gDPB
   if (-1 < fiGdpbIndex) {
     if (fuNrOfGdpbs <= static_cast<UInt_t>(fiGdpbIndex))
-      LOG(fatal) << "Selected gDPB out of bounds relative to parameter file: "
-                 << fiGdpbIndex << " VS " << fuNrOfGdpbs;
+      LOG(fatal) << "Selected gDPB out of bounds relative to parameter file: " << fiGdpbIndex << " VS " << fuNrOfGdpbs;
     else
-      LOG(info) << "Selected gDPB " << fiGdpbIndex
-                << " for single gDPB analysis";
+      LOG(info) << "Selected gDPB " << fiGdpbIndex << " for single gDPB analysis";
     fuNrOfGdpbs = 1;
     fGdpbIdIndexMap.clear();
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(fiGdpbIndex)] = 0;
@@ -189,9 +194,8 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018MonitorAlgoTofPulser::AddMsComponentToList(
-  size_t component,
-  UShort_t usDetectorId) {
+void CbmMcbm2018MonitorAlgoTofPulser::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -199,14 +203,13 @@ void CbmMcbm2018MonitorAlgoTofPulser::AddMsComponentToList(
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info)
-    << "CbmMcbm2018MonitorAlgoTofPulser::AddMsComponentToList => Component "
-    << component << " with detector ID 0x" << std::hex << usDetectorId
-    << std::dec << " added to list";
+  LOG(info) << "CbmMcbm2018MonitorAlgoTofPulser::AddMsComponentToList => Component " << component
+            << " with detector ID 0x" << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -219,10 +222,9 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -237,16 +239,14 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Fill histograms
     FillHistograms();
@@ -255,25 +255,22 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
-                                                  size_t uMsCompIdx,
-                                                  size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize   = msDescriptor.size;
   fulCurrentMsIdx  = msDescriptor.idx;
   fuCurrentMsSysId = static_cast<uint32_t>(msDescriptor.sys_id);
   fdMsTime         = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
   if (-1.0 == fdStartTime) fdStartTime = fdMsTime;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
@@ -282,13 +279,11 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
   auto it = fGdpbIdIndexMap.find(fuCurrDpbId);
   if (it == fGdpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the TOF "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -310,8 +305,7 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete nDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+  uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
   // Prepare variables for the loop on contents
   Int_t messageType       = -111;
@@ -335,10 +329,9 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
     if (0x90 == fuCurrentMsSysId) fuGet4Id = mess.getGdpbGenChipId();
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-    if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
-        && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS "
-                   << fuNrOfGet4PerGdpb << " set in parameters.";
+    if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb
+                   << " set in parameters.";
 
     switch (messageType) {
       case gdpbv100::MSG_HIT: {
@@ -374,8 +367,7 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
         break;
       }  // case not hit or epoch
       default:
-        LOG(fatal) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(fatal) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 data format.";
     }  // switch( mess.getMessageType() )
   }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
@@ -384,32 +376,31 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpochCycle(uint64_t ulCycleData) {
+void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpochCycle(uint64_t ulCycleData)
+{
   ULong64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (!(ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx]
         || ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx] + 1)
       && 0 < fulCurrentMsIdx) {
     LOG(warning) << "CbmMcbm2018MonitorAlgoTofPulser::ProcessEpochCycle => "
-                 << " Missmatch in epoch cycles detected for Gdpb "
-                 << fuCurrDpbIdx
+                 << " Missmatch in epoch cycles detected for Gdpb " << fuCurrDpbIdx
                  << ", probably fake cycles due to epoch index corruption! "
-                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX",
-                         fvulCurrentEpochCycle[fuCurrDpbIdx],
+                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                          ulEpochCycleVal);
   }  // if epoch cycle did not stay constant or increase by exactly 1, except if first MS of the TS
   if (ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx]) {
     LOG(info) << "CbmMcbm2018MonitorAlgoTofPulser::ProcessEpochCycle => "
               << " New epoch cycle for Gdpb " << fuCurrDpbIdx
-              << Form(": Current cycle 0x%09llX New cycle 0x%09llX",
-                      fvulCurrentEpochCycle[fuCurrDpbIdx],
+              << Form(": Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                       ulEpochCycleVal);
   }  // if( ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx] )
   fvulCurrentEpochCycle[fuCurrDpbIdx] = ulEpochCycleVal;
 
   return;
 }
-void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpoch(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpoch(gdpbv100::Message mess)
+{
   ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
   /*
    Bool_t bSyncFlag   = ( 1 == mess.getGdpbEpSync() );
@@ -419,20 +410,20 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpoch(gdpbv100::Message mess) {
 */
   fvulCurrentEpoch[fuCurrDpbIdx] = ulEpochNr;
   fvulCurrentEpochFull[fuCurrDpbIdx] =
-    ulEpochNr
-    + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
+    ulEpochNr + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
 
   /// Process the corresponding messages buffer for current gDPB
   ProcessEpSupprBuffer();
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpSupprBuffer() {
+void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpSupprBuffer()
+{
   Int_t iBufferSize = fvmEpSupprBuffer.size();
 
   if (0 == iBufferSize) return;
 
-  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx
-             << " with epoch number " << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
+  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx << " with epoch number "
+             << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
 
   /// Data are sorted between epochs, not inside => Epoch level ordering
   /// Sorting at lower bin precision level
@@ -451,16 +442,13 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpSupprBuffer() {
   for (Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++) {
     messageType = fvmEpSupprBuffer[iMsgIdx].getMessageType();
 
-    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(
-      fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId());
+    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId());
     /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
-    if (0x90 == fuCurrentMsSysId)
-      fuGet4Id = fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId();
+    if (0x90 == fuCurrentMsSysId) fuGet4Id = fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId();
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
     /// Store the full message in the proper buffer
-    gdpbv100::FullMessage fullMess(fvmEpSupprBuffer[iMsgIdx],
-                                   ulCurEpochGdpbGet4);
+    gdpbv100::FullMessage fullMess(fvmEpSupprBuffer[iMsgIdx], ulCurEpochGdpbGet4);
 
     /// Do other actions on it if needed
     switch (messageType) {
@@ -478,8 +466,7 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpSupprBuffer() {
         /// Should never appear there
         break;
       default:
-        LOG(error) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for( Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++ )
@@ -487,7 +474,8 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessEpSupprBuffer() {
   fvmEpSupprBuffer.clear();
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018MonitorAlgoTofPulser::ProcessHit(gdpbv100::FullMessage mess) {
+void CbmMcbm2018MonitorAlgoTofPulser::ProcessHit(gdpbv100::FullMessage mess)
+{
   UInt_t uChannel = mess.getGdpbHitChanId();
   UInt_t uTot     = mess.getGdpbHit32Tot();
 
@@ -498,9 +486,8 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessHit(gdpbv100::FullMessage mess) {
   //   UInt_t uCts     = mess.getGdpbHitFullTs() / 112;
 
   //   UInt_t uChannelNr         = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uChannelNrInFee =
-    (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uFeeNr = (fuGet4Id / fuNrOfGet4PerFee);
+  UInt_t uChannelNrInFee = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
+  UInt_t uFeeNr          = (fuGet4Id / fuNrOfGet4PerFee);
   //   UInt_t uFeeNrInSys        = fuCurrDpbIdx * fuNrOfFeePerGdpb + uFeeNr;
   //   UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan( uChannelNrInFee );
   UInt_t uRemappedChanNrInFee = fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
@@ -531,19 +518,16 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessHit(gdpbv100::FullMessage mess) {
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms()
+{
   std::string sFolder = "mTofMoni";
 
   LOG(info) << "create Histos for mTof monitoring ";
 
   /*******************************************************************/
-  UInt_t uNbBinsDt =
-    kuNbBinsDt
-    + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
-  dMinDt =
-    -1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) - gdpbv100::kdBinSize / 2.;
-  dMaxDt =
-    1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) + gdpbv100::kdBinSize / 2.;
+  UInt_t uNbBinsDt = kuNbBinsDt + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
+  dMinDt           = -1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) - gdpbv100::kdBinSize / 2.;
+  dMaxDt           = 1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) + gdpbv100::kdBinSize / 2.;
 
   std::cout << " Bin size " << gdpbv100::kdBinSize << std::endl;
   std::cout << " Epo bins " << gdpbv100::kuEpochInBins << std::endl;
@@ -661,16 +645,14 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms()
     /// If no hits in this FEE in this MS, just go to the next one
     if (kFALSE == fvvbFeeHitFound[uGdpbA][uFeeIdA]) continue;
 
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       UInt_t uGdpbB  = uFeeB / (fuNrOfFeePerGdpb);
       UInt_t uFeeIdB = uFeeB - (fuNrOfFeePerGdpb * uGdpbB);
 
       /// If no hits in this FEE in this MS, just go to the next one
       if (kFALSE == fvvbFeeHitFound[uGdpbB][uFeeIdB]) continue;
 
-      Double_t dTimeDiff =
-        1e3 * (fvvdFeeHits[uGdpbB][uFeeIdB] - fvvdFeeHits[uGdpbA][uFeeIdA]);
+      Double_t dTimeDiff = 1e3 * (fvvdFeeHits[uGdpbB][uFeeIdB] - fvvdFeeHits[uGdpbA][uFeeIdA]);
       if (TMath::Abs(dTimeDiff) < kdMaxDtPulserPs) {
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Fill(dTimeDiff);
       }  // if( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
@@ -753,44 +735,34 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::UpdateStats()
       fhPulserTimeDiffRms->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
       /// Read the peak position (bin with max counts) + total nb of entries
-      Int_t iBinWithMax =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
+      Int_t iBinWithMax  = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
       Double_t dNbCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
       /// Zoom the X axis to +/- ZoomWidth around the peak position
-      Double_t dPeakPos =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(
-          iBinWithMax);
-      fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(
-        dPeakPos - kdFitZoomWidthPs, dPeakPos + kdFitZoomWidthPs);
+      Double_t dPeakPos = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(iBinWithMax);
+      fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(dPeakPos - kdFitZoomWidthPs,
+                                                                        dPeakPos + kdFitZoomWidthPs);
 
       /// Read integral and check how much we lost due to the zoom (% loss allowed)
-      Double_t dZoomCounts =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+      Double_t dZoomCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
       /// Fill new RMS after zoom into summary histo
       if ((dZoomCounts / dNbCounts) < 0.8) {
         fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, 0.0);
         LOG(warning) << "CbmMcbm2018MonitorAlgoTofPulser::FillHistograms => "
                         "Zoom too strong, "
-                     << "more than 20% loss for FEE pair " << uFeeA << " and "
-                     << uFeeB << " !!! ";
+                     << "more than 20% loss for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
         continue;
       }  // if( ( dZoomCounts / dNbCounts ) < 0.8 )
       else
-        fhPulserTimeDiffRmsZoom->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+        fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
 
       /// Restore original axis state?
       fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->UnZoom();
 
-      LOG(info) << "Stats FEE A " << std::setw(3) << uFeeIndexA << " FEE B "
-                << std::setw(3) << uFeeIndexB
-                << Form(" %5.0f %f",
-                        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean(),
+      LOG(info) << "Stats FEE A " << std::setw(3) << uFeeIndexA << " FEE B " << std::setw(3) << uFeeIndexB
+                << Form(" %5.0f %f", fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean(),
                         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
     }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)

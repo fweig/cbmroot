@@ -1,10 +1,10 @@
-void pl_tot_per_channel(UInt_t uTdcNumber) {
+void pl_tot_per_channel(UInt_t uTdcNumber)
+{
   Int_t const kTdcChNb = 16;
 
   FairRootManager* tManager = FairRootManager::Instance();
   if (!tManager) {
-    cout << "FairRootManager could not be retrieved. Abort macro execution."
-         << endl;
+    cout << "FairRootManager could not be retrieved. Abort macro execution." << endl;
     return;
   }
 
@@ -41,17 +41,12 @@ void pl_tot_per_channel(UInt_t uTdcNumber) {
     delete gROOT->FindObjectAny(Form("tHistogram%u", iHistogram));
 
     tHistograms[iHistogram] =
-      new TH1D(Form("tHistogram%u", iHistogram),
-               Form("TOT TDC %u ch %u [ps]", uTdcNumber, iHistogram),
-               3000,
-               0,
-               30000);
+      new TH1D(Form("tHistogram%u", iHistogram), Form("TOT TDC %u ch %u [ps]", uTdcNumber, iHistogram), 3000, 0, 30000);
   }
 
   Long64_t lBranchEntries = tBranch->GetEntries();
 
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     tArray->Clear("C");
 
     tBranch->GetEntry(lBranchEntry);
@@ -67,15 +62,12 @@ void pl_tot_per_channel(UInt_t uTdcNumber) {
     for (Int_t iArrayEntry = 0; iArrayEntry < iArrayEntries; iArrayEntry++) {
       TTofCalibData* tCalibTdcData = (TTofCalibData*) tArray->At(iArrayEntry);
 
-      if (tCalibTdcData->GetBoard() == uTdcNumber) {
-        iDataIndexCh[tCalibTdcData->GetChannel()] = iArrayEntry;
-      }
+      if (tCalibTdcData->GetBoard() == uTdcNumber) { iDataIndexCh[tCalibTdcData->GetChannel()] = iArrayEntry; }
     }
 
     for (Int_t iTdcCh = 0; iTdcCh < kTdcChNb; iTdcCh++) {
       if (iDataIndexCh[iTdcCh] != -1) {
-        tHistograms[iTdcCh]->Fill(
-          ((TTofCalibData*) tArray->At(iDataIndexCh[iTdcCh]))->GetTot());
+        tHistograms[iTdcCh]->Fill(((TTofCalibData*) tArray->At(iDataIndexCh[iTdcCh]))->GetTot());
       }
     }
   }

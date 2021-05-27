@@ -8,9 +8,8 @@
 // 20130605 - checked by DE
 // --------------------------------------------------------------------------
 
-void run_pid_sim(Int_t nEvents     = 1,
-                 Double_t momentum = 2.0,
-                 Int_t PdgCode     = 11) {
+void run_pid_sim(Int_t nEvents = 1, Double_t momentum = 2.0, Int_t PdgCode = 11)
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -20,10 +19,8 @@ void run_pid_sim(Int_t nEvents     = 1,
   TString selectGeo;
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 8);
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -148,9 +145,8 @@ void run_pid_sim(Int_t nEvents     = 1,
 
 
   // -----   Create magnetic field   ----------------------------------------
-  if (2 == fieldSymType) {
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     CbmFieldMap* magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -237,8 +233,7 @@ void run_pid_sim(Int_t nEvents     = 1,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

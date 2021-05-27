@@ -121,23 +121,13 @@
 
 
   // -----   STS hit producers   --------------------------------------------
-  CbmStsMapsHitProducer* mapsHitProd =
-    new CbmStsMapsHitProducer(iMapsF,
-                              iMapsL,
-                              mapsSigmaX,
-                              mapsSigmaY,
-                              mapsEff,
-                              mapsFakeRate,
-                              mapsMergeDist,
-                              mapsPileUp,
-                              stsDigiVersion);
+  CbmStsMapsHitProducer* mapsHitProd = new CbmStsMapsHitProducer(
+    iMapsF, iMapsL, mapsSigmaX, mapsSigmaY, mapsEff, mapsFakeRate, mapsMergeDist, mapsPileUp, stsDigiVersion);
   mapsHitProd->SetPileupFileName(bgFile);
 
-  CbmStsHybridHitProducer* hybHitprod =
-    new CbmStsHybridHitProducer(iHybF, iHybL, hybLx, hybLy, stsDigiVersion);
+  CbmStsHybridHitProducer* hybHitprod = new CbmStsHybridHitProducer(iHybF, iHybL, hybLx, hybLy, stsDigiVersion);
 
-  CbmStsStripHitProducer* stripHitProd =
-    new CbmStsStripHitProducer(iStripF, iStripL, stsDigiVersion);
+  CbmStsStripHitProducer* stripHitProd = new CbmStsStripHitProducer(iStripF, iStripL, stsDigiVersion);
 
   fRun->AddTask(mapsHitProd);
   fRun->AddTask(hybHitprod);
@@ -146,8 +136,7 @@
 
 
   // -----   STS track finding   --------------------------------------------
-  CbmStsFindTracks* stsFindTracks =
-    new CbmStsFindTracks("Track Finder", "FairTask", stsTrackFinder);
+  CbmStsFindTracks* stsFindTracks = new CbmStsFindTracks("Track Finder", "FairTask", stsTrackFinder);
   fRun->AddTask(kalman);
   fRun->AddTask(l1);
   fRun->AddTask(stsFindTracks);
@@ -155,15 +144,13 @@
 
 
   // -----   STS track matching   -------------------------------------------
-  CbmStsMatchTracks* stsMatchTracks =
-    new CbmStsMatchTracks("Match tracks", "STS", iVerbose);
+  CbmStsMatchTracks* stsMatchTracks = new CbmStsMatchTracks("Match tracks", "STS", iVerbose);
   fRun->AddTask(stsMatchTracks);
   // ------------------------------------------------------------------------
 
 
   // -----   STS track fitting   --------------------------------------------
-  CbmStsFitTracks* stsFitTracks =
-    new CbmStsFitTracks("STS Track Fitter", "FairTask", stsTrackFitter);
+  CbmStsFitTracks* stsFitTracks = new CbmStsFitTracks("STS Track Fitter", "FairTask", stsTrackFitter);
   fRun->AddTask(stsFitTracks);
   // ------------------------------------------------------------------------
 

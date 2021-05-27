@@ -12,11 +12,11 @@
 #include "TText.h"
 //#include "conv.h"
 
+#include <iostream>
 #include <list>
 #include <map>
 #include <vector>
 
-#include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -104,9 +104,7 @@ private:
 public:
   /** Default constructor **/
 
-  CbmL1RichRingQa(const char* name  = "CbmL1RichRingQa",
-                  const char* title = "CbmL1RichRingQa",
-                  Int_t verbose     = 1);
+  CbmL1RichRingQa(const char* name = "CbmL1RichRingQa", const char* title = "CbmL1RichRingQa", Int_t verbose = 1);
 
   /** Destructor **/
   ~CbmL1RichRingQa();
@@ -120,10 +118,7 @@ public:
   /** Finish task **/
   void Finish();
 
-  void CirFit(std::list<std::pair<Double_t, Double_t>>& P,
-              Double_t* X,
-              Double_t* Y,
-              Double_t* R);
+  void CirFit(std::list<std::pair<Double_t, Double_t>>& P, Double_t* X, Double_t* Y, Double_t* R);
 
   ClassDef(CbmL1RichRingQa, 1)
 };

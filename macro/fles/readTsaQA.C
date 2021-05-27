@@ -17,7 +17,8 @@ void readTsaQA(TString inFile =
                "/opt/CBM/Daten/121_cern-fex.tsa"
                //"data/1076_cern2014.tsa"
                //"data/test.tsa"
-) {
+)
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -61,8 +62,7 @@ void readTsaQA(TString inFile =
   //  FairEventHeader* event = new CbmTbEvent();
   //  event->SetRunId(260);
 
-  CbmTrdTestBeamTools::Instance(
-    new CbmTrdTestBeamTools);  // change for your setup
+  CbmTrdTestBeamTools::Instance(new CbmTrdTestBeamTools);  // change for your setup
   //CbmTrdTestBeamTools::Instance(new CbmTrdLabTools);
 
   // --- Run
@@ -108,8 +108,7 @@ void readTsaQA(TString inFile =
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

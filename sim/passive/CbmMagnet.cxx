@@ -8,30 +8,25 @@
 //#include "TObjArray.h"
 #include "TGeoMatrix.h"
 
-CbmMagnet::CbmMagnet()
-  : FairModule("CbmMagnet", "CbmMagnet"), frot(NULL), fposrot(NULL) {}
+CbmMagnet::CbmMagnet() : FairModule("CbmMagnet", "CbmMagnet"), frot(NULL), fposrot(NULL) {}
 
-CbmMagnet::CbmMagnet(const char* name,
-                     const char* title,
-                     Double_t px,
-                     Double_t py,
-                     Double_t pz,
-                     Double_t rx,
-                     Double_t ry,
-                     Double_t rz)
+CbmMagnet::CbmMagnet(const char* name, const char* title, Double_t px, Double_t py, Double_t pz, Double_t rx,
+                     Double_t ry, Double_t rz)
   : FairModule(name, title)
   , frot(new TGeoRotation("", rx, ry, rz))
-  , fposrot(new TGeoCombiTrans(px, py, pz, frot)) {}
+  , fposrot(new TGeoCombiTrans(px, py, pz, frot))
+{
+}
 
 CbmMagnet::~CbmMagnet() {}
 
-void CbmMagnet::ConstructGeometry() {
+void CbmMagnet::ConstructGeometry()
+{
   TString fileName = GetGeometryFileName();
 
   if (fileName.EndsWith(".root")) {
 
-    LOG(info) << "Constructing MAGNET        from ROOT  file "
-              << fileName.Data();
+    LOG(info) << "Constructing MAGNET        from ROOT  file " << fileName.Data();
 
     // Quick and dirty fix: The top magnet volume of magnet_v18a is centred
     // at the origin of the GCS. It has to be shifted by 40 cm downstream
@@ -56,19 +51,18 @@ void CbmMagnet::ConstructGeometry() {
 
     else
       ConstructRootGeometry();  //? not v18a or v18b; no explicite shift
-
-
-  } else if (fileName.EndsWith(".gdml")) {
-    LOG(info) << "Constructing MAGNET        from GDML  file "
-              << fileName.Data();
+  }
+  else if (fileName.EndsWith(".gdml")) {
+    LOG(info) << "Constructing MAGNET        from GDML  file " << fileName.Data();
     ConstructGDMLGeometry(fposrot);
-  } else {
-    LOG(fatal) << "Geometry format of MAGNET file " << fileName.Data()
-               << " not supported.";
+  }
+  else {
+    LOG(fatal) << "Geometry format of MAGNET file " << fileName.Data() << " not supported.";
   }
 }
 
-Bool_t CbmMagnet::CheckIfSensitive(std::string) {
+Bool_t CbmMagnet::CheckIfSensitive(std::string)
+{
   // There are no sensitive volumes in the magnet
   return kFALSE;
 }

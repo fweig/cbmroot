@@ -1,12 +1,12 @@
-void trd_elid_reco(Int_t nEvents = 200) {
+void trd_elid_reco(Int_t nEvents = 200)
+{
   Int_t trdNFoils      = 70;
   Float_t trdDFoils    = 0.0014;
   Float_t trdDGap      = 0.04;
   Bool_t simpleTR      = kTRUE;
   TString radiatorType = "K++";
 
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   TString inFile = "/Users/slebedev/Development/cbm/data/simulations/trd/elid/"
                    "piel.0000.mc.root";
@@ -17,8 +17,7 @@ void trd_elid_reco(Int_t nEvents = 200) {
 
   TList* parFileList = new TList();
   //TObjString stsDigiFile = parDir + "/sts/sts_v12b_std.digi.par"; // STS digi file
-  TObjString trdDigiFile =
-    parDir + "/trd/trd_v14a_3e.digi.par";  // TRD digi file
+  TObjString trdDigiFile = parDir + "/trd/trd_v14a_3e.digi.par";  // TRD digi file
   parFileList->Add(&trdDigiFile);
 
   gDebug = 0;
@@ -38,17 +37,18 @@ void trd_elid_reco(Int_t nEvents = 200) {
   CbmTrdRadiator* radiator   = new CbmTrdRadiator(simpleTR, "K++");
   TString trdHitProducerType = "clustering";
   if (trdHitProducerType == "smearing") {
-    CbmTrdHitProducerSmearing* trdHitProd =
-      new CbmTrdHitProducerSmearing(radiator);
+    CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
     trdHitProd->SetUseDigiPar(false);
     run->AddTask(trdHitProd);
-  } else if (trdHitProducerType == "digi") {
+  }
+  else if (trdHitProducerType == "digi") {
     CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer(radiator);
     run->AddTask(trdDigitizer);
 
     CbmTrdHitProducerDigi* trdHitProd = new CbmTrdHitProducerDigi();
     run->AddTask(trdHitProd);
-  } else if (trdHitProducerType == "clustering") {
+  }
+  else if (trdHitProducerType == "clustering") {
     /*	CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
 		run->AddTask(trdDigiPrf);
 
@@ -68,9 +68,8 @@ void trd_elid_reco(Int_t nEvents = 200) {
     trdDigiPrf->SetTriangularPads(triangularPads);
     //trdDigiPrf->SetNoiseLevel(trdNoiseSigma_keV);
     //trdDigiPrf->SetNCluster(1); // limits the number of iterations per MC-point to one
-    trdDigiPrf->SetPadPlaneScanArea(
-      3,
-      3);  // limits the number of channels participating to the charge sharing (col,row)
+    trdDigiPrf->SetPadPlaneScanArea(3,
+                                    3);  // limits the number of channels participating to the charge sharing (col,row)
     run->AddTask(trdDigiPrf);
 
     CbmTrdClusterFinderFast* trdCluster = new CbmTrdClusterFinderFast();

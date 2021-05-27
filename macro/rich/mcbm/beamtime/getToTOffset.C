@@ -12,10 +12,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = nullptr;
 
-void getToTOffset(UInt_t uRunId   = 831,
-                  UInt_t nrEvents = 10000,
-                  TString outDir  = "./data/ToTOffset/",
-                  TString inDir   = "")  //1Event is 1TS
+void getToTOffset(UInt_t uRunId = 831, UInt_t nrEvents = 10000, TString outDir = "./data/ToTOffset/",
+                  TString inDir = "")  //1Event is 1TS
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -65,8 +63,7 @@ void getToTOffset(UInt_t uRunId   = 831,
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
 
   unpacker_rich->SetMonitorMode();
   unpacker_rich->SetIgnoreOverlapMs();
@@ -125,15 +122,15 @@ void getToTOffset(UInt_t uRunId   = 831,
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -141,8 +138,7 @@ void getToTOffset(UInt_t uRunId   = 831,
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

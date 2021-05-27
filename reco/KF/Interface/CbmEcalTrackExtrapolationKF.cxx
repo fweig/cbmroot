@@ -1,18 +1,20 @@
 
-#include <iostream>
-
-#include "TClonesArray.h"
+#include "CbmEcalTrackExtrapolationKF.h"
 
 #include "CbmEcalInf.h"
 #include "CbmEcalStructure.h"
-#include "CbmEcalTrackExtrapolationKF.h"
 #include "CbmGlobalTrack.h"
 #include "CbmKFTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmStsKFTrackFitter.h"
 #include "CbmStsTrack.h"
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+
+#include "TClonesArray.h"
+
+#include <iostream>
 
 using namespace std;
 
@@ -21,7 +23,8 @@ CbmEcalTrackExtrapolationKF::CbmEcalTrackExtrapolationKF()
   : CbmEcalTrackExtrapolation(1)
   , fTrackParamArray(NULL)
   , fSTSArray(NULL)
-  , iEx(-1) {
+  , iEx(-1)
+{
   ;
 }
 // -------------------------------------------------------------------------
@@ -32,7 +35,8 @@ CbmEcalTrackExtrapolationKF::CbmEcalTrackExtrapolationKF(Int_t verbose)
   : CbmEcalTrackExtrapolation(verbose)
   , fTrackParamArray(NULL)
   , fSTSArray(NULL)
-  , iEx(-1) {
+  , iEx(-1)
+{
   ;
 }
 // -------------------------------------------------------------------------
@@ -44,27 +48,23 @@ CbmEcalTrackExtrapolationKF::~CbmEcalTrackExtrapolationKF() { ; }
 
 
 // -----   Public method Init   --------------------------------------------
-void CbmEcalTrackExtrapolationKF::Init() {
+void CbmEcalTrackExtrapolationKF::Init()
+{
   CbmEcalTrackExtrapolation::Init();
   //Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
-  if (!ioman)
-    Fatal("CbmEcalTrackExtrapolationKF::Init()",
-          "Can't instantise Rootmanager");
+  if (!ioman) Fatal("CbmEcalTrackExtrapolationKF::Init()", "Can't instantise Rootmanager");
 
   //Get STS track array
   fSTSArray = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (!fSTSArray)
-    cout << "-W- CbmEcalTrackExtrapolationKF::Init: No sts track array!"
-         << endl;
+  if (!fSTSArray) cout << "-W- CbmEcalTrackExtrapolationKF::Init: No sts track array!" << endl;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method DoExtrapolate   ------------------------------------------
-Int_t CbmEcalTrackExtrapolationKF::DoExtrapolate(
-  TClonesArray* gTrackArray,
-  TClonesArray* fTrackParamArray_) {
+Int_t CbmEcalTrackExtrapolationKF::DoExtrapolate(TClonesArray* gTrackArray, TClonesArray* fTrackParamArray_)
+{
   if (!fTrackParamArray_) {
     cout << "-E- CbmEcalTrackExtrapolationKF::DoExtrapolate: ";
     cout << "TrackParamArray missing! " << endl;

@@ -4,7 +4,8 @@
 //
 //---------------------------------------------------
 
-void invM(TString dataSet = "muons") {
+void invM(TString dataSet = "muons")
+{
 
   TH1D* invM_sgn = new TH1D("invM_omega", "invM_omega", 400, 0, 4);
 
@@ -15,8 +16,7 @@ void invM(TString dataSet = "muons") {
   TTree* InputTree;
 
   TFile* f = new TFile(name);
-  if (f->IsZombie() || f->GetNkeys() < 1 || f->TestBit(TFile::kRecovered))
-    f->Close();
+  if (f->IsZombie() || f->GetNkeys() < 1 || f->TestBit(TFile::kRecovered)) f->Close();
 
   InputTree = (TTree*) f->Get("cbmsim");
   InputTree->SetBranchAddress("MuPlus", &MuPlus);

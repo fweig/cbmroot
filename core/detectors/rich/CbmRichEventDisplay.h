@@ -10,15 +10,15 @@
 #ifndef CBM_RICH_EVENT_DISPLAY
 #define CBM_RICH_EVENT_DISPLAY
 
+#include "CbmHistManager.h"  // IWYU pragma: keep needed by RootCling
+
+#include "FairTask.h"  // for FairTask, InitStatus
+
 #include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>    // for Option_t
 #include <TClonesArray.h>  // IWYU pragma: keep needed by RootCling
 
 #include <string>  // for string
-
-#include "FairTask.h"  // for FairTask, InitStatus
-
-#include "CbmHistManager.h"  // IWYU pragma: keep needed by RootCling
 
 class CbmRichRing;
 class TClonesArray;

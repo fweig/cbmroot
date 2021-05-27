@@ -1,4 +1,5 @@
-eventDisplay100() {
+eventDisplay100()
+{
 
   TString InputFile = "data/auaumbias.root";
   TString ParFile   = "data/params.root";
@@ -42,8 +43,7 @@ eventDisplay100() {
   FairEventManager* fMan = new FairEventManager();
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
   //  FairMCPointDraw *RichPoint =   new FairMCPointDraw ("RichPoint",kOrange,  kFullSquare);
-  FairMCPointDraw* TofPoint =
-    new FairMCPointDraw("TofPoint", kBlue, kFullSquare);
+  FairMCPointDraw* TofPoint = new FairMCPointDraw("TofPoint", kBlue, kFullSquare);
   //  FairMCPointDraw *TrdPoint= new FairMCPointDraw ("TrdPoint",kTeal,  kFullSquare);
   //FairMCPointDraw *EcalPoint =    new FairMCPointDraw ("EcalPoint",kYellow,  kFullSquare);
   //FairMCPointDraw *RefPlanePoint = new FairMCPointDraw ("RefPlanePoint",kPink,  kFullSquare);

@@ -6,8 +6,8 @@
 class L1TrackPar {
 
 public:
-  fvec x, y, tx, ty, qp, z, t, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33,
-    C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF;
+  fvec x, y, tx, ty, qp, z, t, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33, C40, C41, C42, C43, C44, C50, C51, C52,
+    C53, C54, C55, chi2, NDF;
 
 
   L1TrackPar()
@@ -91,7 +91,8 @@ public:
 
 // =============================================================================================
 
-inline void L1TrackPar::Print(int i) {
+inline void L1TrackPar::Print(int i)
+{
   std::cout.setf(std::ios::scientific, std::ios::floatfield);
   if (i == -1) {
     std::cout << "T = " << std::endl;
@@ -101,7 +102,8 @@ inline void L1TrackPar::Print(int i) {
     std::cout << ty << std::endl;
     std::cout << qp << std::endl;
     std::cout << z << std::endl;
-  } else {
+  }
+  else {
     std::cout << "T = ";
     std::cout << x[i] << " ";
     std::cout << y[i] << " ";
@@ -118,8 +120,8 @@ inline void L1TrackPar::Print(int i) {
   }
 }
 
-inline void
-L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const int i1) {
+inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const int i1)
+{
   x[i0]   = T1.x[i1];
   y[i0]   = T1.y[i1];
   tx[i0]  = T1.tx[i1];

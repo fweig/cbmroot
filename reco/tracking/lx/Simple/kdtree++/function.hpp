@@ -10,7 +10,8 @@
 
 #include <cstddef>
 
-namespace KDTree {
+namespace KDTree
+{
   template<typename _Val>
   struct _Bracket_accessor {
     typedef typename _Val::value_type result_type;
@@ -27,7 +28,8 @@ namespace KDTree {
   struct squared_difference {
     typedef _Dist distance_type;
 
-    distance_type operator()(const _Tp& __a, const _Tp& __b) const {
+    distance_type operator()(const _Tp& __a, const _Tp& __b) const
+    {
       distance_type d = __a - __b;
       return d * d;
     }
@@ -43,7 +45,8 @@ namespace KDTree {
 
     long& count() const { return _M_count; }
 
-    distance_type operator()(const _Tp& __a, const _Tp& __b) const {
+    distance_type operator()(const _Tp& __a, const _Tp& __b) const
+    {
       distance_type d = __a - __b;
       ++_M_count;
       return d * d;

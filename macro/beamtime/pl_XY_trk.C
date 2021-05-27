@@ -1,4 +1,5 @@
-void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
+void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -39,9 +40,8 @@ void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
       Double_t dMax = dThr * h2->GetMaximum();
       for (Int_t i = 0; i < (Int_t) h2->GetNbinsX(); i++)
         for (Int_t j = 0; j < (Int_t) h2->GetNbinsY(); j++) {
-          h2->GetBinContent(i + 1, j + 1) < dMax
-            ? h2acc->SetBinContent(i + 1, j + 1, 0.)
-            : h2acc->SetBinContent(i + 1, j + 1, 1.);
+          h2->GetBinContent(i + 1, j + 1) < dMax ? h2acc->SetBinContent(i + 1, j + 1, 0.)
+                                                 : h2acc->SetBinContent(i + 1, j + 1, 1.);
           //cout << "Bin "<<i<<","<<j<<": "<< h2->GetBinContent(i+1,j+1) <<" filled with "<<h2acc->GetBinContent(i+1,j+1)<<endl;
         }
       TH2D* h2aall = (TH2D*) h2->Clone(Form("ALL_acc%d", iSt));
@@ -59,9 +59,8 @@ void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
         h2missed->Multiply(h2m, h2acc, 1., 1., "B");
         Double_t NmisaI = h2missed->Integral();
         eff[iSt]        = 1. - NmisaI / (Nall + NmisaI);
-        cout << "Efficiency of Station " << iSt << ": all " << Nall << ", mis "
-             << Nmis << ", " << NmisI << ", " << NmisaI << " -> "
-             << Form("%6.3f", eff[iSt]) << endl;
+        cout << "Efficiency of Station " << iSt << ": all " << Nall << ", mis " << Nmis << ", " << NmisI << ", "
+             << NmisaI << " -> " << Form("%6.3f", eff[iSt]) << endl;
 
         can->cd(iCan++);
         hname       = Form("Efficiency_%d", iSt);
@@ -88,15 +87,15 @@ void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
           newpad->SetFillStyle(4000);
           newpad->Draw();
           newpad->cd();
-          TPaveLabel* tit = new TPaveLabel(
-            0.2, 0.75, 0.45, 0.9, Form(" <eff>: %5.3f", eff[iSt]));
+          TPaveLabel* tit = new TPaveLabel(0.2, 0.75, 0.45, 0.9, Form(" <eff>: %5.3f", eff[iSt]));
           tit->SetFillColor(0);
           tit->SetTextFont(52);
           tit->SetBorderSize(1);
           tit->Draw();
         }
       }
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

@@ -30,7 +30,8 @@ using std::stringstream;
 using std::vector;
 
 /* Set default styles for histograms. */
-void SetDefaultDrawStyle() {
+void SetDefaultDrawStyle()
+{
   gStyle->SetOptStat("rm");
   gStyle->SetOptFit(1);
   gStyle->SetOptTitle(0);
@@ -46,15 +47,9 @@ void SetDefaultDrawStyle() {
 }
 
 /* Draw TH1 histogram.*/
-void DrawH1(TH1* hist,
-            HistScale logx,
-            HistScale logy,
-            const string& drawOpt,
-            Int_t color,
-            Int_t lineWidth,
-            Int_t lineStyle,
-            Int_t markerSize,
-            Int_t markerStyle) {
+void DrawH1(TH1* hist, HistScale logx, HistScale logy, const string& drawOpt, Int_t color, Int_t lineWidth,
+            Int_t lineStyle, Int_t markerSize, Int_t markerStyle)
+{
   Double_t textSize = CbmDrawingOptions::TextSize();
   hist->SetLineColor(color);
   hist->SetLineWidth(lineWidth);
@@ -81,11 +76,8 @@ void DrawH1(TH1* hist,
 }
 
 /* Draw TH2 histogram.*/
-void DrawH2(TH2* hist,
-            HistScale logx,
-            HistScale logy,
-            HistScale logz,
-            const string& drawOpt) {
+void DrawH2(TH2* hist, HistScale logx, HistScale logy, HistScale logz, const string& drawOpt)
+{
   Double_t textSize = CbmDrawingOptions::TextSize();
   if (logx == kLog) { gPad->SetLogx(); }
   if (logy == kLog) { gPad->SetLogy(); }
@@ -112,16 +104,9 @@ void DrawH2(TH2* hist,
 }
 
 /* Draw several TH1 histograms. */
-void DrawH1(const vector<TH1*>& histos,
-            const vector<string>& histLabels,
-            HistScale logx,
-            HistScale logy,
-            Bool_t drawLegend,
-            Double_t x1,
-            Double_t y1,
-            Double_t x2,
-            Double_t y2,
-            const string& drawOpt) {
+void DrawH1(const vector<TH1*>& histos, const vector<string>& histLabels, HistScale logx, HistScale logy,
+            Bool_t drawLegend, Double_t x1, Double_t y1, Double_t x2, Double_t y2, const string& drawOpt)
+{
   assert(histos.size() != 0 && histLabels.size() == histos.size());
   Double_t max     = std::numeric_limits<Double_t>::min();
   UInt_t nofHistos = histos.size();
@@ -129,18 +114,9 @@ void DrawH1(const vector<TH1*>& histos,
   legend->SetFillColor(kWhite);
   for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
     TH1* hist  = histos[iHist];
-    string opt = (iHist == 0) ? drawOpt
-                              : (iHist == nofHistos - 1) ? "SAME" + drawOpt
-                                                         : "SAME" + drawOpt;
-    DrawH1(hist,
-           logx,
-           logy,
-           opt,
-           CbmDrawingOptions::Color(iHist),
-           CbmDrawingOptions::LineWidth(),
-           CbmDrawingOptions::LineStyle(0),
-           CbmDrawingOptions::MarkerSize(),
-           CbmDrawingOptions::MarkerStyle(iHist));
+    string opt = (iHist == 0) ? drawOpt : (iHist == nofHistos - 1) ? "SAME" + drawOpt : "SAME" + drawOpt;
+    DrawH1(hist, logx, logy, opt, CbmDrawingOptions::Color(iHist), CbmDrawingOptions::LineWidth(),
+           CbmDrawingOptions::LineStyle(0), CbmDrawingOptions::MarkerSize(), CbmDrawingOptions::MarkerStyle(iHist));
     max = std::max(max, hist->GetMaximum());
     legend->AddEntry(hist, histLabels[iHist].c_str(), "lp");
   }
@@ -148,15 +124,9 @@ void DrawH1(const vector<TH1*>& histos,
   if (drawLegend) { legend->Draw(); }
 }
 
-void DrawGraph(TGraph* graph,
-               HistScale logx,
-               HistScale logy,
-               const string& drawOpt,
-               Int_t color,
-               Int_t lineWidth,
-               Int_t lineStyle,
-               Int_t markerSize,
-               Int_t markerStyle) {
+void DrawGraph(TGraph* graph, HistScale logx, HistScale logy, const string& drawOpt, Int_t color, Int_t lineWidth,
+               Int_t lineStyle, Int_t markerSize, Int_t markerStyle)
+{
   Double_t textSize = CbmDrawingOptions::TextSize();
   graph->SetLineColor(color);
   graph->SetLineWidth(lineWidth);
@@ -183,15 +153,9 @@ void DrawGraph(TGraph* graph,
 
 
 /* Draw several TGraphs. */
-void DrawGraph(const vector<TGraph*>& graphs,
-               const vector<string>& graphLabels,
-               HistScale logx,
-               HistScale logy,
-               Bool_t drawLegend,
-               Double_t x1,
-               Double_t y1,
-               Double_t x2,
-               Double_t y2) {
+void DrawGraph(const vector<TGraph*>& graphs, const vector<string>& graphLabels, HistScale logx, HistScale logy,
+               Bool_t drawLegend, Double_t x1, Double_t y1, Double_t x2, Double_t y2)
+{
   assert(graphs.size() != 0 && graphs.size() == graphLabels.size());
 
   Double_t max    = std::numeric_limits<Double_t>::min();
@@ -202,14 +166,8 @@ void DrawGraph(const vector<TGraph*>& graphs,
   for (UInt_t iGraph = 0; iGraph < nofGraphs; iGraph++) {
     TGraph* graph = graphs[iGraph];
     string opt    = (iGraph == 0) ? "ACP" : "CP";
-    DrawGraph(graph,
-              logx,
-              logy,
-              opt,
-              CbmDrawingOptions::Color(iGraph),
-              CbmDrawingOptions::LineWidth(),
-              CbmDrawingOptions::LineStyle(iGraph),
-              CbmDrawingOptions::MarkerSize(),
+    DrawGraph(graph, logx, logy, opt, CbmDrawingOptions::Color(iGraph), CbmDrawingOptions::LineWidth(),
+              CbmDrawingOptions::LineStyle(iGraph), CbmDrawingOptions::MarkerSize(),
               CbmDrawingOptions::MarkerStyle(iGraph));
     max = std::max(graph->GetYaxis()->GetXmax(), max);
     min = std::min(graph->GetYaxis()->GetXmin(), min);
@@ -221,11 +179,8 @@ void DrawGraph(const vector<TGraph*>& graphs,
 }
 
 /* Draws 2D graph.*/
-void DrawGraph2D(TGraph2D* graph,
-                 HistScale logx,
-                 HistScale logy,
-                 HistScale logz,
-                 const string& drawOpt) {
+void DrawGraph2D(TGraph2D* graph, HistScale logx, HistScale logy, HistScale logz, const string& drawOpt)
+{
   Double_t textSize = CbmDrawingOptions::TextSize();
   if (logx == kLog) { gPad->SetLogx(); }
   if (logy == kLog) { gPad->SetLogy(); }
@@ -250,11 +205,8 @@ void DrawGraph2D(TGraph2D* graph,
   gPad->SetGrid(true, true);
 }
 
-void DrawTextOnPad(const string& text,
-                   Double_t x1,
-                   Double_t y1,
-                   Double_t x2,
-                   Double_t y2) {
+void DrawTextOnPad(const string& text, Double_t x1, Double_t y1, Double_t x2, Double_t y2)
+{
   TLegend* leg = new TLegend(x1, y1, x2, y2);
   leg->AddEntry(new TH2D(), text.c_str(), "");
   leg->SetFillColor(kWhite);
@@ -263,18 +215,14 @@ void DrawTextOnPad(const string& text,
   leg->Draw();
 }
 
-void DrawH1andFitGauss(TH1* hist,
-                       Bool_t drawResults,
-                       Bool_t doScale,
-                       Double_t userRangeMin,
-                       Double_t userRangeMax) {
+void DrawH1andFitGauss(TH1* hist, Bool_t drawResults, Bool_t doScale, Double_t userRangeMin, Double_t userRangeMax)
+{
   if (hist == nullptr) return;
 
   hist->GetYaxis()->SetTitle("Yield (a.u.)");
   DrawH1(hist, kLinear, kLinear, "hist");
   if (doScale) hist->Scale(1. / hist->Integral());
-  if (!(userRangeMin == 0. && userRangeMax == 0.))
-    hist->GetXaxis()->SetRangeUser(userRangeMin, userRangeMax);
+  if (!(userRangeMin == 0. && userRangeMax == 0.)) hist->GetXaxis()->SetRangeUser(userRangeMin, userRangeMax);
   hist->Fit("gaus", "Q");
   TF1* func = hist->GetFunction("gaus");
   if (func == nullptr) return;
@@ -284,8 +232,7 @@ void DrawH1andFitGauss(TH1* hist,
   if (drawResults) {
     double m    = func->GetParameter(1);
     double s    = func->GetParameter(2);
-    string txt1 = Cbm::NumberToString<Double_t>(m, 2) + " / "
-                  + Cbm::NumberToString<Double_t>(s, 2);
+    string txt1 = Cbm::NumberToString<Double_t>(m, 2) + " / " + Cbm::NumberToString<Double_t>(s, 2);
     TLatex text;
     text.SetTextAlign(21);
     text.SetTextSize(0.06);
@@ -293,12 +240,9 @@ void DrawH1andFitGauss(TH1* hist,
   }
 }
 
-void DrawH2WithProfile(TH2* hist,
-                       Bool_t doGaussFit,
-                       Bool_t drawOnlyMean,
-                       const string& drawOpt2D,
-                       Int_t profileColor,
-                       Int_t profileLineWidth) {
+void DrawH2WithProfile(TH2* hist, Bool_t doGaussFit, Bool_t drawOnlyMean, const string& drawOpt2D, Int_t profileColor,
+                       Int_t profileLineWidth)
+{
   if (hist == nullptr) return;
 
   // TProfile does not allow to fit individual slice with gauss
@@ -310,12 +254,9 @@ void DrawH2WithProfile(TH2* hist,
         DrawH1(profX, kLinear, kLinear, "same hist p", profileColor, profileLineWidth, 1, 1, kFullCircle);
     }*/
 
-  TH1D* hMean =
-    (TH1D*) hist->ProjectionX((string(hist->GetName()) + "_mean").c_str())
-      ->Clone();
+  TH1D* hMean   = (TH1D*) hist->ProjectionX((string(hist->GetName()) + "_mean").c_str())->Clone();
   string yTitle = (doGaussFit) ? "Mean and sigma. " : "Mean and RMS. ";
-  hMean->GetYaxis()->SetTitle(
-    (yTitle + string(hist->GetYaxis()->GetTitle())).c_str());
+  hMean->GetYaxis()->SetTitle((yTitle + string(hist->GetYaxis()->GetTitle())).c_str());
   for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
     stringstream ss;
     ss << string(hist->GetName()) << "_py" << i;
@@ -330,47 +271,27 @@ void DrawH2WithProfile(TH2* hist,
         m = func->GetParameter(1);
         s = func->GetParameter(2);
       }
-    } else {
+    }
+    else {
       m = pr->GetMean();
       s = pr->GetRMS();
     }
 
     hMean->SetBinContent(i, m);
-    if (!drawOnlyMean) {
-      hMean->SetBinError(i, s);
-    } else {
+    if (!drawOnlyMean) { hMean->SetBinError(i, s); }
+    else {
       hMean->SetBinError(i, 0.);
     }
   }
   DrawH2(hist, kLinear, kLinear, kLinear, drawOpt2D);
-  if (!drawOnlyMean) {
-    DrawH1(hMean,
-           kLinear,
-           kLinear,
-           "same",
-           profileColor,
-           profileLineWidth,
-           1,
-           1,
-           kOpenCircle);
-  } else {
-    DrawH1(hMean,
-           kLinear,
-           kLinear,
-           "same hist p",
-           profileColor,
-           profileLineWidth,
-           1,
-           1,
-           kFullCircle);
+  if (!drawOnlyMean) { DrawH1(hMean, kLinear, kLinear, "same", profileColor, profileLineWidth, 1, 1, kOpenCircle); }
+  else {
+    DrawH1(hMean, kLinear, kLinear, "same hist p", profileColor, profileLineWidth, 1, 1, kFullCircle);
   }
 }
 
-TH2D* DrawH3Profile(TH3* h,
-                    Bool_t drawMean,
-                    Bool_t doGaussFit,
-                    Double_t zMin,
-                    Double_t zMax) {
+TH2D* DrawH3Profile(TH3* h, Bool_t drawMean, Bool_t doGaussFit, Double_t zMin, Double_t zMax)
+{
   Int_t nBinsX = h->GetNbinsX();
   Int_t nBinsY = h->GetNbinsY();
   TH2D* h2     = (TH2D*) h->Project3D("yx")->Clone();
@@ -384,10 +305,9 @@ TH2D* DrawH3Profile(TH3* h,
       if (doGaussFit) {
         hz->Fit("gaus", "QO");
         TF1* func = hz->GetFunction("gaus");
-        if (func != nullptr) {
-          ms = (drawMean) ? func->GetParameter(1) : func->GetParameter(2);
-        }
-      } else {
+        if (func != nullptr) { ms = (drawMean) ? func->GetParameter(1) : func->GetParameter(2); }
+      }
+      else {
         ms = (drawMean) ? hz->GetMean() : hz->GetRMS();
       }
       h2->SetBinContent(x, y, ms);

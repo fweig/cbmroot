@@ -17,12 +17,10 @@ struct LitCudaMaterialInfo {
   // I = (Z > 16)? 10 * Z * 1e-9 : 16 * std::pow(Z, 0.9) * 1e-9;
   float I;
 
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const LitCudaMaterialInfo& mat) {
-    strm << "LitCudaMaterialinfo: Thickness=" << mat.Thickness
-         << ", X0=" << mat.X0 << ", Rho=" << mat.Rho << ", Z=" << mat.Z
-         << ", A=" << mat.A << ", Zpos=" << mat.Zpos << ", I=" << mat.I
-         << std::endl;
+  friend std::ostream& operator<<(std::ostream& strm, const LitCudaMaterialInfo& mat)
+  {
+    strm << "LitCudaMaterialinfo: Thickness=" << mat.Thickness << ", X0=" << mat.X0 << ", Rho=" << mat.Rho
+         << ", Z=" << mat.Z << ", A=" << mat.A << ", Zpos=" << mat.Zpos << ", I=" << mat.I << std::endl;
     return strm;
   }
 };

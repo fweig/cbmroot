@@ -15,21 +15,22 @@ ClassImp(CbmStsSimModule)
 
 
   // -----   Default constructor   -------------------------------------------
-  CbmStsSimModule::CbmStsSimModule(CbmStsElement* element,
-                                   const CbmStsParModule* params,
-                                   CbmStsDigitize* digitizer)
-  : fElement(element), fDigitizer(digitizer), fParams(params) {}
+  CbmStsSimModule::CbmStsSimModule(CbmStsElement* element, const CbmStsParModule* params, CbmStsDigitize* digitizer)
+  : fElement(element)
+  , fDigitizer(digitizer)
+  , fParams(params)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // --- Destructor   --------------------------------------------------------
-CbmStsSimModule::~CbmStsSimModule() {
+CbmStsSimModule::~CbmStsSimModule()
+{
 
   // --- Clean analog buffer
-  for (auto chanIt = fAnalogBuffer.begin(); chanIt != fAnalogBuffer.end();
-       chanIt++) {
-    for (auto sigIt = (chanIt->second).begin(); sigIt != (chanIt->second).end();
-         sigIt++) {
+  for (auto chanIt = fAnalogBuffer.begin(); chanIt != fAnalogBuffer.end(); chanIt++) {
+    for (auto sigIt = (chanIt->second).begin(); sigIt != (chanIt->second).end(); sigIt++) {
       delete (*sigIt);
     }
   }
@@ -38,12 +39,8 @@ CbmStsSimModule::~CbmStsSimModule() {
 
 
 // -----   Add a signal to the buffer   ------------------------------------
-void CbmStsSimModule::AddSignal(UShort_t channel,
-                                Double_t time,
-                                Double_t charge,
-                                Int_t index,
-                                Int_t entry,
-                                Int_t file) {
+void CbmStsSimModule::AddSignal(UShort_t channel, Double_t time, Double_t charge, Int_t index, Int_t entry, Int_t file)
+{
 
   // --- Check channel number
   assert(channel < GetNofChannels());
@@ -65,8 +62,7 @@ void CbmStsSimModule::AddSignal(UShort_t channel,
   Bool_t isMerged = kFALSE;
   sigset::iterator it;
   Double_t deadTime = fParams->GetParAsic(channel).GetDeadTime();
-  for (it = fAnalogBuffer[channel].begin(); it != fAnalogBuffer[channel].end();
-       it++) {
+  for (it = fAnalogBuffer[channel].begin(); it != fAnalogBuffer[channel].end(); it++) {
 
     // Time between new and old signal smaller than dead time: merge signals
     if (TMath::Abs((*it)->GetTime() - time) < deadTime) {
@@ -77,7 +73,7 @@ void CbmStsSimModule::AddSignal(UShort_t channel,
       (*it)->SetTime(TMath::Min((*it)->GetTime(), time));
       (*it)->AddLink(charge, index, entry, file);
       isMerged = kTRUE;  // mark new signal as merged
-      break;  // Merging should be necessary only for one buffer signal
+      break;             // Merging should be necessary only for one buffer signal
 
     }  //? Time difference smaller than dead time
 
@@ -95,9 +91,8 @@ void CbmStsSimModule::AddSignal(UShort_t channel,
 
 
 // -----   Status of analogue buffer   -------------------------------------
-void CbmStsSimModule::BufferStatus(Int_t& nofSignals,
-                                   Double_t& timeFirst,
-                                   Double_t& timeLast) {
+void CbmStsSimModule::BufferStatus(Int_t& nofSignals, Double_t& timeFirst, Double_t& timeLast)
+{
 
 
   Int_t nSignals   = 0;
@@ -106,12 +101,10 @@ void CbmStsSimModule::BufferStatus(Int_t& nofSignals,
   Double_t tSignal = -1.;
 
   // --- Loop over active channels
-  for (auto chanIt = fAnalogBuffer.begin(); chanIt != fAnalogBuffer.end();
-       chanIt++) {
+  for (auto chanIt = fAnalogBuffer.begin(); chanIt != fAnalogBuffer.end(); chanIt++) {
 
     // --- Loop over signals in channel
-    for (auto sigIt = (chanIt->second).begin(); sigIt != (chanIt->second).end();
-         sigIt++) {
+    for (auto sigIt = (chanIt->second).begin(); sigIt != (chanIt->second).end(); sigIt++) {
 
       tSignal = (*sigIt)->GetTime();
       nSignals++;
@@ -130,7 +123,8 @@ void CbmStsSimModule::BufferStatus(Int_t& nofSignals,
 
 
 // -----   Digitise an analogue charge signal   ----------------------------
-void CbmStsSimModule::Digitize(UShort_t channel, CbmStsSignal* signal) {
+void CbmStsSimModule::Digitize(UShort_t channel, CbmStsSignal* signal)
+{
 
   // --- Check channel number
   assert(channel < GetNofChannels());
@@ -150,8 +144,7 @@ void CbmStsSimModule::Digitize(UShort_t channel, CbmStsSignal* signal) {
 
   // --- Send the message to the digitiser task
   UInt_t address = fElement->GetAddress();
-  if (fDigitizer)
-    fDigitizer->CreateDigi(address, channel, dTime, adc, signal->GetMatch());
+  if (fDigitizer) fDigitizer->CreateDigi(address, channel, dTime, adc, signal->GetMatch());
 
   // --- If no digitiser task is present (debug mode): create a digi and
   // --- add it to the digi buffer.
@@ -162,7 +155,8 @@ void CbmStsSimModule::Digitize(UShort_t channel, CbmStsSignal* signal) {
 
 
 // -----   Generate noise   ------------------------------------------------
-Int_t CbmStsSimModule::GenerateNoise(Double_t t1, Double_t t2) {
+Int_t CbmStsSimModule::GenerateNoise(Double_t t1, Double_t t2)
+{
 
   assert(t2 > t1);
   Int_t nNoiseAll      = 0;
@@ -200,7 +194,8 @@ Int_t CbmStsSimModule::GenerateNoise(Double_t t1, Double_t t2) {
 
 
 // -----   Get the unique address from the sensor name (static)   ----------
-Int_t CbmStsSimModule::GetAddressFromName(TString name) {
+Int_t CbmStsSimModule::GetAddressFromName(TString name)
+{
 
   Bool_t isValid = kTRUE;
   if (name.Length() != 16) isValid = kFALSE;
@@ -223,7 +218,8 @@ Int_t CbmStsSimModule::GetAddressFromName(TString name) {
 
 
 // -----  Initialise the analogue buffer   ---------------------------------
-void CbmStsSimModule::InitAnalogBuffer() {
+void CbmStsSimModule::InitAnalogBuffer()
+{
 
   for (UShort_t channel = 0; channel < fParams->GetNofChannels(); channel++) {
     multiset<CbmStsSignal*, CbmStsSignal::Before> mset;
@@ -234,7 +230,8 @@ void CbmStsSimModule::InitAnalogBuffer() {
 
 
 // -----   Process the analogue buffer   -----------------------------------
-Int_t CbmStsSimModule::ProcessAnalogBuffer(Double_t readoutTime) {
+Int_t CbmStsSimModule::ProcessAnalogBuffer(Double_t readoutTime)
+{
 
   // --- Counter
   Int_t nDigis = 0;
@@ -260,8 +257,7 @@ Int_t CbmStsSimModule::ProcessAnalogBuffer(Double_t readoutTime) {
       // --- 5 times the time resolution (maximal deviation of signal time
       // --- from StsPoint time) minus the dead time, within which
       // --- interference of signals can happen.
-      Double_t timeLimit =
-        readoutTime - 5. * asic.GetTimeResol() - asic.GetDeadTime();
+      Double_t timeLimit = readoutTime - 5. * asic.GetTimeResol() - asic.GetDeadTime();
 
       // --- Digitise all signals up to the specified time limit
       sigIt = (chanIt.second).begin();
@@ -294,14 +290,14 @@ Int_t CbmStsSimModule::ProcessAnalogBuffer(Double_t readoutTime) {
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsSimModule::ToString() const {
+string CbmStsSimModule::ToString() const
+{
   stringstream ss;
   auto& asic = fParams->GetParAsic(0);
-  ss << "Module  " << fElement->GetName() << ": dynRange " << asic.GetDynRange()
-     << "e, thresh. " << asic.GetThreshold() << "e, nAdc " << asic.GetNofAdc()
-     << ", time res. " << asic.GetTimeResol() << "ns, dead time "
-     << asic.GetDeadTime() << "ns, noise " << asic.GetNoise()
-     << "e, zero noise rate " << asic.GetZeroNoiseRate() << "/ns";
+  ss << "Module  " << fElement->GetName() << ": dynRange " << asic.GetDynRange() << "e, thresh. " << asic.GetThreshold()
+     << "e, nAdc " << asic.GetNofAdc() << ", time res. " << asic.GetTimeResol() << "ns, dead time "
+     << asic.GetDeadTime() << "ns, noise " << asic.GetNoise() << "e, zero noise rate " << asic.GetZeroNoiseRate()
+     << "/ns";
   return ss.str();
 }
 // -------------------------------------------------------------------------

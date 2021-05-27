@@ -13,7 +13,8 @@
  * \param[in] name Detector name.
  * \return True if detector presents in the TGeo.
  */
-Bool_t CheckDetectorPresence(const TString& parFile, const char* name) {
+Bool_t CheckDetectorPresence(const TString& parFile, const char* name)
+{
   cout << "In CheckDetectorPresence for detector " << name << endl;
 
   TFile* currentfile = gFile;
@@ -63,7 +64,8 @@ Bool_t CheckDetectorPresence(const TString& parFile, const char* name) {
           return true;
         }
       }
-    } else {
+    }
+    else {
       // Find Pipe top node
       TObjArray* nodes = gGeoManager->GetTopNode()->GetNodes();
       for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
@@ -83,8 +85,7 @@ Bool_t CheckDetectorPresence(const TString& parFile, const char* name) {
               cout << "Node: " << nodeName2 << endl;
               // check if there is a mvd in the pipevac
               TObjArray* nodes3 = node2->GetNodes();
-              for (Int_t iiiNode = 0; iiiNode < nodes3->GetEntriesFast();
-                   iiiNode++) {
+              for (Int_t iiiNode = 0; iiiNode < nodes3->GetEntriesFast(); iiiNode++) {
                 TGeoNode* node3   = (TGeoNode*) nodes3->At(iiiNode);
                 TString nodeName3 = node3->GetName();
                 nodeName3.ToLower();
@@ -115,9 +116,7 @@ Bool_t CheckDetectorPresence(const TString& parFile, const char* name) {
  * \param[in] parFile Name of parameter file with TGeo.
  * \return True if TRD exists in TGeo.
  */
-Bool_t IsTrd(const TString& parFile) {
-  return CheckDetectorPresence(parFile, "trd");
-}
+Bool_t IsTrd(const TString& parFile) { return CheckDetectorPresence(parFile, "trd"); }
 
 /**
  * \function IsMuch
@@ -125,9 +124,7 @@ Bool_t IsTrd(const TString& parFile) {
  * \param[in] parFile Name of parameter file with TGeo.
  * \return True if MUCH exists in TGeo.
  */
-Bool_t IsMuch(const TString& parFile) {
-  return CheckDetectorPresence(parFile, "much");
-}
+Bool_t IsMuch(const TString& parFile) { return CheckDetectorPresence(parFile, "much"); }
 
 /**
  * \function IsTof
@@ -135,9 +132,7 @@ Bool_t IsMuch(const TString& parFile) {
  * \param[in] parFile Name of parameter file with TGeo.
  * \return True if TOF exists in TGeo.
  */
-Bool_t IsTof(const TString& parFile) {
-  return CheckDetectorPresence(parFile, "tof");
-}
+Bool_t IsTof(const TString& parFile) { return CheckDetectorPresence(parFile, "tof"); }
 
 /**
  * \function IsRich
@@ -145,9 +140,7 @@ Bool_t IsTof(const TString& parFile) {
  * \param[in] parFile Name of parameter file with TGeo.
  * \return True if RICH exists in TGeo.
  */
-Bool_t IsRich(const TString& parFile) {
-  return CheckDetectorPresence(parFile, "rich");
-}
+Bool_t IsRich(const TString& parFile) { return CheckDetectorPresence(parFile, "rich"); }
 
 /**
  * \function IsMvd
@@ -155,6 +148,4 @@ Bool_t IsRich(const TString& parFile) {
  * \param[in] parFile Name of the parameter file with TGeo.
  * \return True if MVD exists in TGeo.
  */
-Bool_t IsMvd(const TString& parFile) {
-  return CheckDetectorPresence(parFile, "mvd");
-}
+Bool_t IsMvd(const TString& parFile) { return CheckDetectorPresence(parFile, "mvd"); }

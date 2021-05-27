@@ -10,7 +10,8 @@
 // --------------------------------------------------------------------------
 
 #include <math.h>
-void sts_digi(Int_t nEvents = 1000) {
+void sts_digi(Int_t nEvents = 1000)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -57,8 +58,7 @@ void sts_digi(Int_t nEvents = 1000) {
   cout << "===    noiseWidth = " << noiseWidth << endl;
   cout << "===    nofBits    = " << nofBits << endl;
   cout << "===    minStep    = " << minStep << endl;
-  cout << "===    StripDeadTime    = " << StripDeadTime * 100. << "[ns] "
-       << endl;
+  cout << "===    StripDeadTime    = " << StripDeadTime * 100. << "[ns] " << endl;
   cout << "=============================================" << endl;
   cout << endl << endl;
   // ------------------------------------------------------------------------

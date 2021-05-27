@@ -12,7 +12,8 @@
 //
 // --------------------------------------------------------------------------
 
-void create_geometry_file_root_test(TString geoName = "trd_v15a_1e") {
+void create_geometry_file_root_test(TString geoName = "trd_v15a_1e")
+{
   TString inDir = gSystem->Getenv("VMCWORKDIR");
 
   TString outDir  = "data/";
@@ -24,8 +25,7 @@ void create_geometry_file_root_test(TString geoName = "trd_v15a_1e") {
   TString trdGeomOut = outDir + "geofile_" + geoName + ".root";
 
   // Function needed for CTest runtime dependency
-  TString depFile =
-    Remove_CTest_Dependency_File(outDir, "create_geometry_file_root_test");
+  TString depFile = Remove_CTest_Dependency_File(outDir, "create_geometry_file_root_test");
 
   FairRunSim* run = new FairRunSim();
   run->SetName("TGeant3");

@@ -8,7 +8,9 @@ class TH2D;
 class TH3D;
 
 #include "CbmMCTrack.h"
+
 #include <TClonesArray.h>
+
 #include <vector>
 
 using namespace std;
@@ -27,19 +29,11 @@ public:
   void Exec(int fEventNumRec);
   void Finish();
 
-  void MakeRecoAnalysis(vector<TVector3> RefMom,
-                        vector<CbmMCTrack*> MC,
-                        vector<Int_t> Id,
-                        vector<TH1*> gg,
-                        vector<TH1*> gee,
-                        vector<TH1*> eeee);
-  Double_t CalculateOpeningAngleBetweenGammas_MC(CbmMCTrack* mctrack1,
-                                                 CbmMCTrack* mctrack2,
-                                                 CbmMCTrack* mctrack3,
+  void MakeRecoAnalysis(vector<TVector3> RefMom, vector<CbmMCTrack*> MC, vector<Int_t> Id, vector<TH1*> gg,
+                        vector<TH1*> gee, vector<TH1*> eeee);
+  Double_t CalculateOpeningAngleBetweenGammas_MC(CbmMCTrack* mctrack1, CbmMCTrack* mctrack2, CbmMCTrack* mctrack3,
                                                  CbmMCTrack* mctrack4);
-  Double_t CalculateOpeningAngleBetweenGammas_Reco(TVector3 electron1,
-                                                   TVector3 electron2,
-                                                   TVector3 electron3,
+  Double_t CalculateOpeningAngleBetweenGammas_Reco(TVector3 electron1, TVector3 electron2, TVector3 electron3,
                                                    TVector3 electron4);
 
 
@@ -119,8 +113,7 @@ private:
   CbmKresConversionReconstruction(const CbmKresConversionReconstruction&);
 
   //***** brief Assignment operator.
-  CbmKresConversionReconstruction
-  operator=(const CbmKresConversionReconstruction&);
+  CbmKresConversionReconstruction operator=(const CbmKresConversionReconstruction&);
 
 
   ClassDef(CbmKresConversionReconstruction, 1)

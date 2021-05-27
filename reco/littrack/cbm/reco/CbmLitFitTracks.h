@@ -9,6 +9,7 @@
 #define CBMLITFITTRACKS_H_
 
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 class CbmLitFitTracks : public FairTask {

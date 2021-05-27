@@ -8,7 +8,8 @@ const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold
 
 #define cnst const fvec
 
-void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w) {
+void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -74,7 +75,8 @@ void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w) {
   C55 -= K5 * F5;
 }
 
-void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w) {
+void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -140,7 +142,8 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w) {
   C55 -= K5 * F5;
 }
 
-void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w) {
+void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w)
+{
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -206,7 +209,8 @@ void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w) {
   C55 -= K5 * F5;
 }
 
-void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w) {
+void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
+{
 
   cnst ZERO = 0.0, ONE = 1.;
   cnst c_light = 29.9792458;
@@ -216,7 +220,8 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w) {
   {
     const fvec zero = ZERO;
     initialised     = fvec(zero < *w);
-  } else {
+  }
+  else {
     const fvec one  = ONE;
     const fvec zero = ZERO;
     initialised     = fvec(zero < one);
@@ -262,7 +267,8 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w) {
   C55 = ((k1 * (C52 + c52) + k2 * (C53 + c53)) & initialised) + C55;
 }
 
-void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v) {
+void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
+{
 
   cnst ZERO = 0.0, ONE = 1.;
   cnst c_light = 29.9792458;
@@ -272,7 +278,8 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v) {
   {
     const fvec zero = ZERO;
     initialised     = fvec(zero < *w);
-  } else {
+  }
+  else {
     const fvec one  = ONE;
     const fvec zero = ZERO;
     initialised     = fvec(zero < one);
@@ -288,10 +295,8 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v) {
 
   ft += ((dz * sqrt(1 + ftx * ftx + fty * fty) / (v * c_light)) & initialised);
 
-  const fvec k1 =
-    ftx * dz / ((v * c_light) * sqrt((ftx * ftx) + (fty * fty) + 1));
-  const fvec k2 =
-    fty * dz / ((v * c_light) * sqrt((ftx * ftx) + (fty * fty) + 1));
+  const fvec k1 = ftx * dz / ((v * c_light) * sqrt((ftx * ftx) + (fty * fty) + 1));
+  const fvec k2 = fty * dz / ((v * c_light) * sqrt((ftx * ftx) + (fty * fty) + 1));
 
   const fvec dzC32_in = dz * C32;
 
@@ -326,12 +331,11 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v) {
   // cout << "fz = " << fz << endl;
 }
 
-void L1TrackParFit::
-  Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
-  (fvec z_out,  // extrapolate to this z position
-   fvec qp0,    // use Q/p linearisation at this value
-   const L1FieldRegion& F,
-   fvec* w) {
+void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,                   // extrapolate to this z position
+   fvec qp0,                     // use Q/p linearisation at this value
+   const L1FieldRegion& F, fvec* w)
+{
   //
   // Forth-order Runge-Kutta method for solution of the equation
   // of motion of a particle with parameter qp = Q /P
@@ -366,8 +370,7 @@ void L1TrackParFit::
 
   int step4;
   fvec k[20], x0[5], x[5], k1[20];
-  fvec Ax[4], Ay[4], Ax_tx[4], Ay_tx[4], Ax_ty[4], Ay_ty[4], At[4], At_tx[4],
-    At_ty[4];
+  fvec Ax[4], Ay[4], Ax_tx[4], Ay_tx[4], Ax_ty[4], Ay_ty[4], At[4], At_tx[4], At_ty[4];
 
   //----------------------------------------------------------------
 
@@ -399,9 +402,8 @@ void L1TrackParFit::
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 5; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k[step * 5 - 5 + i];
       }
     }
@@ -420,19 +422,13 @@ void L1TrackParFit::
     fvec tx2ty2qp = tx2ty2 * qp0;
 
     //     cout<<B[step][0]<<" B["<<step<<"][0] "<<B[step][2]<<" B["<<step<<"][2] "<<B[step][1]<<" B["<<step<<"][1]"<<endl;
-    Ax[step] =
-      (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
-    Ay[step] = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0])
-               * tx2ty2;
+    Ax[step] = (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
+    Ay[step] = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0]) * tx2ty2;
 
-    Ax_tx[step] = Ax[step] * tx * I_tx2ty21
-                  + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
-    Ax_ty[step] =
-      Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
-    Ay_tx[step] =
-      Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
-    Ay_ty[step] = Ay[step] * ty * I_tx2ty21
-                  + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
+    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
+    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
 
     fvec p2     = 1.f / (qp0 * qp0);
     fvec m2     = fMass2;
@@ -456,7 +452,8 @@ void L1TrackParFit::
   {
     const fvec zero = ZERO;
     initialised     = fvec(zero < *w);
-  } else {
+  }
+  else {
     const fvec one  = ONE;
     const fvec zero = ZERO;
     initialised     = fvec(zero < one);
@@ -471,25 +468,15 @@ void L1TrackParFit::
     //     cout << "initialised = " << initialised << "; ";
     //     cout << "fx = " << fx;
 
-    fx = ((x0[0] + c[0] * k[0] + c[1] * k[5 + 0] + c[2] * k[10 + 0]
-           + c[3] * k[15 + 0])
-          & initialised)
+    fx = ((x0[0] + c[0] * k[0] + c[1] * k[5 + 0] + c[2] * k[10 + 0] + c[3] * k[15 + 0]) & initialised)
          + ((!initialised) & fx);
-    fy = ((x0[1] + c[0] * k[1] + c[1] * k[5 + 1] + c[2] * k[10 + 1]
-           + c[3] * k[15 + 1])
-          & initialised)
+    fy = ((x0[1] + c[0] * k[1] + c[1] * k[5 + 1] + c[2] * k[10 + 1] + c[3] * k[15 + 1]) & initialised)
          + ((!initialised) & fy);
-    ftx = ((x0[2] + c[0] * k[2] + c[1] * k[5 + 2] + c[2] * k[10 + 2]
-            + c[3] * k[15 + 2])
-           & initialised)
+    ftx = ((x0[2] + c[0] * k[2] + c[1] * k[5 + 2] + c[2] * k[10 + 2] + c[3] * k[15 + 2]) & initialised)
           + ((!initialised) & ftx);
-    fty = ((x0[3] + c[0] * k[3] + c[1] * k[5 + 3] + c[2] * k[10 + 3]
-            + c[3] * k[15 + 3])
-           & initialised)
+    fty = ((x0[3] + c[0] * k[3] + c[1] * k[5 + 3] + c[2] * k[10 + 3] + c[3] * k[15 + 3]) & initialised)
           + ((!initialised) & fty);
-    ft = ((x0[4] + c[0] * k[4] + c[1] * k[5 + 4] + c[2] * k[10 + 4]
-           + c[3] * k[15 + 4])
-          & initialised)
+    ft = ((x0[4] + c[0] * k[4] + c[1] * k[5 + 4] + c[2] * k[10 + 4] + c[3] * k[15 + 4]) & initialised)
          + ((!initialised) & ft);
     fz = (z_out & initialised) + ((!initialised) & fz);
 
@@ -512,9 +499,8 @@ void L1TrackParFit::
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 5; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
         x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
       }
     }
@@ -530,12 +516,10 @@ void L1TrackParFit::
   fvec J[36];
 
   for (i = 0; i < 4; ++i) {
-    J[24 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i]
-                + c[3] * k1[15 + i];
+    J[24 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
   }
   J[28] = 1.;
-  J[29] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4]
-          + c[3] * k1[15 + 4];
+  J[29] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
   //
   //      end of derivatives dx/dqp
   //
@@ -555,9 +539,8 @@ void L1TrackParFit::
 
   for (step = 0; step < 4; ++step) {
     for (i = 0; i < 5; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];
-      } else if (i != 2) {
+      if (step == 0) { x[i] = x0[i]; }
+      else if (i != 2) {
         x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
       }
     }
@@ -570,16 +553,12 @@ void L1TrackParFit::
   }  // end of Runge-Kutta steps for derivatives dx/dtx
 
   for (i = 0; i < 4; ++i) {
-    if (i != 2) {
-      J[12 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i]
-                  + c[3] * k1[15 + i];
-    }
+    if (i != 2) { J[12 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i]; }
   }
   //      end of derivatives dx/dtx
   J[14] = 1.f;
   J[16] = 0.f;
-  J[17] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4]
-          + c[3] * k1[15 + 4];
+  J[17] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
 
   //     Derivatives    dx/ty
   //
@@ -598,7 +577,8 @@ void L1TrackParFit::
     for (i = 0; i < 5; ++i) {
       if (step == 0) {
         x[i] = x0[i];  // ty fixed
-      } else if (i != 3) {
+      }
+      else if (i != 3) {
         x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
       }
     }
@@ -611,14 +591,12 @@ void L1TrackParFit::
   }  // end of Runge-Kutta steps for derivatives dx/dty
 
   for (i = 0; i < 3; ++i) {
-    J[18 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i]
-                + c[3] * k1[15 + i];
+    J[18 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
   }
   //      end of derivatives dx/dty
   J[21] = 1.;
   J[22] = 0.;
-  J[23] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4]
-          + c[3] * k1[15 + 4];
+  J[23] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
   //
   //    derivatives dx/dx and dx/dy
 
@@ -662,52 +640,33 @@ void L1TrackParFit::
 
   const fvec c42 = C42, c43 = C43;
 
-  const fvec cj00 =
-    C00 + C20 * J[6 * 2 + 0] + C30 * J[6 * 3 + 0] + C40 * J[6 * 4 + 0];
-  const fvec cj10 =
-    C10 + C21 * J[6 * 2 + 0] + C31 * J[6 * 3 + 0] + C41 * J[6 * 4 + 0];
-  const fvec cj20 =
-    C20 + C22 * J[6 * 2 + 0] + C32 * J[6 * 3 + 0] + c42 * J[6 * 4 + 0];
-  const fvec cj30 =
-    C30 + C32 * J[6 * 2 + 0] + C33 * J[6 * 3 + 0] + c43 * J[6 * 4 + 0];
-  const fvec cj40 =
-    C40 + C42 * J[6 * 2 + 0] + C43 * J[6 * 3 + 0] + C44 * J[6 * 4 + 0];
-  const fvec cj50 =
-    C50 + C52 * J[6 * 2 + 0] + C53 * J[6 * 3 + 0] + C54 * J[6 * 4 + 0];
+  const fvec cj00 = C00 + C20 * J[6 * 2 + 0] + C30 * J[6 * 3 + 0] + C40 * J[6 * 4 + 0];
+  const fvec cj10 = C10 + C21 * J[6 * 2 + 0] + C31 * J[6 * 3 + 0] + C41 * J[6 * 4 + 0];
+  const fvec cj20 = C20 + C22 * J[6 * 2 + 0] + C32 * J[6 * 3 + 0] + c42 * J[6 * 4 + 0];
+  const fvec cj30 = C30 + C32 * J[6 * 2 + 0] + C33 * J[6 * 3 + 0] + c43 * J[6 * 4 + 0];
+  const fvec cj40 = C40 + C42 * J[6 * 2 + 0] + C43 * J[6 * 3 + 0] + C44 * J[6 * 4 + 0];
+  const fvec cj50 = C50 + C52 * J[6 * 2 + 0] + C53 * J[6 * 3 + 0] + C54 * J[6 * 4 + 0];
 
   //  const fvec cj01 = C10 + C20*J[6*2 + 1] + C30*J[6*3 + 1] + C40*J[6*4 + 1];
-  const fvec cj11 =
-    C11 + C21 * J[6 * 2 + 1] + C31 * J[6 * 3 + 1] + C41 * J[6 * 4 + 1];
-  const fvec cj21 =
-    C21 + C22 * J[6 * 2 + 1] + C32 * J[6 * 3 + 1] + c42 * J[6 * 4 + 1];
-  const fvec cj31 =
-    C31 + C32 * J[6 * 2 + 1] + C33 * J[6 * 3 + 1] + c43 * J[6 * 4 + 1];
-  const fvec cj41 =
-    C41 + C42 * J[6 * 2 + 1] + C43 * J[6 * 3 + 1] + C44 * J[6 * 4 + 1];
-  const fvec cj51 =
-    C51 + C52 * J[6 * 2 + 1] + C53 * J[6 * 3 + 1] + C54 * J[6 * 4 + 1];
+  const fvec cj11 = C11 + C21 * J[6 * 2 + 1] + C31 * J[6 * 3 + 1] + C41 * J[6 * 4 + 1];
+  const fvec cj21 = C21 + C22 * J[6 * 2 + 1] + C32 * J[6 * 3 + 1] + c42 * J[6 * 4 + 1];
+  const fvec cj31 = C31 + C32 * J[6 * 2 + 1] + C33 * J[6 * 3 + 1] + c43 * J[6 * 4 + 1];
+  const fvec cj41 = C41 + C42 * J[6 * 2 + 1] + C43 * J[6 * 3 + 1] + C44 * J[6 * 4 + 1];
+  const fvec cj51 = C51 + C52 * J[6 * 2 + 1] + C53 * J[6 * 3 + 1] + C54 * J[6 * 4 + 1];
 
   // const fvec cj02 = C20*J[6*2 + 2] + C30*J[6*3 + 2] + C40*J[6*4 + 2];
   // const fvec cj12 = C21*J[6*2 + 2] + C31*J[6*3 + 2] + C41*J[6*4 + 2];
-  const fvec cj22 =
-    C22 * J[6 * 2 + 2] + C32 * J[6 * 3 + 2] + c42 * J[6 * 4 + 2];
-  const fvec cj32 =
-    C32 * J[6 * 2 + 2] + C33 * J[6 * 3 + 2] + c43 * J[6 * 4 + 2];
-  const fvec cj42 =
-    C42 * J[6 * 2 + 2] + C43 * J[6 * 3 + 2] + C44 * J[6 * 4 + 2];
-  const fvec cj52 =
-    C52 * J[6 * 2 + 2] + C53 * J[6 * 3 + 2] + C54 * J[6 * 4 + 2];
+  const fvec cj22 = C22 * J[6 * 2 + 2] + C32 * J[6 * 3 + 2] + c42 * J[6 * 4 + 2];
+  const fvec cj32 = C32 * J[6 * 2 + 2] + C33 * J[6 * 3 + 2] + c43 * J[6 * 4 + 2];
+  const fvec cj42 = C42 * J[6 * 2 + 2] + C43 * J[6 * 3 + 2] + C44 * J[6 * 4 + 2];
+  const fvec cj52 = C52 * J[6 * 2 + 2] + C53 * J[6 * 3 + 2] + C54 * J[6 * 4 + 2];
 
   // const fvec cj03 = C20*J[6*2 + 3] + C30*J[6*3 + 3] + C40*J[6*4 + 3];
   // const fvec cj13 = C21*J[6*2 + 3] + C31*J[6*3 + 3] + C41*J[6*4 + 3];
-  const fvec cj23 =
-    C22 * J[6 * 2 + 3] + C32 * J[6 * 3 + 3] + c42 * J[6 * 4 + 3];
-  const fvec cj33 =
-    C32 * J[6 * 2 + 3] + C33 * J[6 * 3 + 3] + c43 * J[6 * 4 + 3];
-  const fvec cj43 =
-    C42 * J[6 * 2 + 3] + C43 * J[6 * 3 + 3] + C44 * J[6 * 4 + 3];
-  const fvec cj53 =
-    C52 * J[6 * 2 + 3] + C53 * J[6 * 3 + 3] + C54 * J[6 * 4 + 3];
+  const fvec cj23 = C22 * J[6 * 2 + 3] + C32 * J[6 * 3 + 3] + c42 * J[6 * 4 + 3];
+  const fvec cj33 = C32 * J[6 * 2 + 3] + C33 * J[6 * 3 + 3] + c43 * J[6 * 4 + 3];
+  const fvec cj43 = C42 * J[6 * 2 + 3] + C43 * J[6 * 3 + 3] + C44 * J[6 * 4 + 3];
+  const fvec cj53 = C52 * J[6 * 2 + 3] + C53 * J[6 * 3 + 3] + C54 * J[6 * 4 + 3];
 
   const fvec cj24 = C42;
   const fvec cj34 = C43;
@@ -722,29 +681,19 @@ void L1TrackParFit::
   const fvec cj55 = C55 + C52 * J[17] + C53 * J[23] + C54 * J[29];
 
 
-  C00 = ((cj00 + cj20 * J[12] + cj30 * J[18] + cj40 * J[24]) & initialised)
-        + ((!initialised) & C00);
+  C00 = ((cj00 + cj20 * J[12] + cj30 * J[18] + cj40 * J[24]) & initialised) + ((!initialised) & C00);
 
-  C10 = ((cj10 + cj20 * J[13] + cj30 * J[19] + cj40 * J[25]) & initialised)
-        + ((!initialised) & C10);
-  C11 = ((cj11 + cj21 * J[13] + cj31 * J[19] + cj41 * J[25]) & initialised)
-        + ((!initialised) & C11);
+  C10 = ((cj10 + cj20 * J[13] + cj30 * J[19] + cj40 * J[25]) & initialised) + ((!initialised) & C10);
+  C11 = ((cj11 + cj21 * J[13] + cj31 * J[19] + cj41 * J[25]) & initialised) + ((!initialised) & C11);
 
-  C20 = ((cj20 + cj30 * J[20] + cj40 * J[26]) & initialised)
-        + ((!initialised) & C20);
-  C21 = ((cj21 + cj31 * J[20] + cj41 * J[26]) & initialised)
-        + ((!initialised) & C21);
-  C22 = ((cj22 + cj32 * J[20] + cj42 * J[26]) & initialised)
-        + ((!initialised) & C22);
+  C20 = ((cj20 + cj30 * J[20] + cj40 * J[26]) & initialised) + ((!initialised) & C20);
+  C21 = ((cj21 + cj31 * J[20] + cj41 * J[26]) & initialised) + ((!initialised) & C21);
+  C22 = ((cj22 + cj32 * J[20] + cj42 * J[26]) & initialised) + ((!initialised) & C22);
 
-  C30 = ((cj30 + cj20 * J[15] + cj40 * J[27]) & initialised)
-        + ((!initialised) & C30);
-  C31 = ((cj31 + cj21 * J[15] + cj41 * J[27]) & initialised)
-        + ((!initialised) & C31);
-  C32 = ((cj32 + cj22 * J[15] + cj42 * J[27]) & initialised)
-        + ((!initialised) & C32);
-  C33 = ((cj33 + cj23 * J[15] + cj43 * J[27]) & initialised)
-        + ((!initialised) & C33);
+  C30 = ((cj30 + cj20 * J[15] + cj40 * J[27]) & initialised) + ((!initialised) & C30);
+  C31 = ((cj31 + cj21 * J[15] + cj41 * J[27]) & initialised) + ((!initialised) & C31);
+  C32 = ((cj32 + cj22 * J[15] + cj42 * J[27]) & initialised) + ((!initialised) & C32);
+  C33 = ((cj33 + cj23 * J[15] + cj43 * J[27]) & initialised) + ((!initialised) & C33);
 
   C40 = ((cj40) &initialised) + ((!initialised) & C40);
   C41 = ((cj41) &initialised) + ((!initialised) & C41);
@@ -752,18 +701,12 @@ void L1TrackParFit::
   C43 = ((cj43) &initialised) + ((!initialised) & C43);
   C44 = ((cj44) &initialised) + ((!initialised) & C44);
 
-  C50 = ((cj50 + cj20 * J[17] + cj30 * J[23] + cj40 * J[29]) & initialised)
-        + ((!initialised) & C50);
-  C51 = ((cj51 + cj21 * J[17] + cj31 * J[23] + cj41 * J[29]) & initialised)
-        + ((!initialised) & C51);
-  C52 = ((cj52 + cj22 * J[17] + cj32 * J[23] + cj42 * J[29]) & initialised)
-        + ((!initialised) & C52);
-  C53 = ((cj53 + cj23 * J[17] + cj33 * J[23] + cj43 * J[29]) & initialised)
-        + ((!initialised) & C53);
-  C54 = ((cj54 + cj24 * J[17] + cj34 * J[23] + cj44 * J[29]) & initialised)
-        + ((!initialised) & C54);
-  C55 = ((cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29]) & initialised)
-        + ((!initialised) & C55);
+  C50 = ((cj50 + cj20 * J[17] + cj30 * J[23] + cj40 * J[29]) & initialised) + ((!initialised) & C50);
+  C51 = ((cj51 + cj21 * J[17] + cj31 * J[23] + cj41 * J[29]) & initialised) + ((!initialised) & C51);
+  C52 = ((cj52 + cj22 * J[17] + cj32 * J[23] + cj42 * J[29]) & initialised) + ((!initialised) & C52);
+  C53 = ((cj53 + cj23 * J[17] + cj33 * J[23] + cj43 * J[29]) & initialised) + ((!initialised) & C53);
+  C54 = ((cj54 + cj24 * J[17] + cj34 * J[23] + cj44 * J[29]) & initialised) + ((!initialised) & C54);
+  C55 = ((cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29]) & initialised) + ((!initialised) & C55);
 }
 
 void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
@@ -785,11 +728,8 @@ void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
   fvec h2                 = h * h;
   fvec qp0t               = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f,
-       c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
-  fvec s0 =
-    (c1 + c2 * fvec(logRadThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2))
-    * qp0t;
+  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  fvec s0 = (c1 + c2 * fvec(logRadThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*RadThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * PipeRadThick * s0 * s0);
 
@@ -813,11 +753,9 @@ void L1TrackParFit::L1AddMaterial(fvec radThick, fvec qp0, fvec w)
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f,
-       c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
 
-  fvec s0 =
-    (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
+  fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*radThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
 
@@ -826,11 +764,8 @@ void L1TrackParFit::L1AddMaterial(fvec radThick, fvec qp0, fvec w)
   C33 += w * (ONE + tyty) * a;
 }
 
-void L1TrackParFit::L1AddThickMaterial(fvec radThick,
-                                       fvec qp0,
-                                       fvec w,
-                                       fvec thickness,
-                                       bool fDownstream) {
+void L1TrackParFit::L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
+{
   cnst ONE = 1.;
 
   fvec tx    = ftx;
@@ -843,11 +778,9 @@ void L1TrackParFit::L1AddThickMaterial(fvec radThick,
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f,
-       c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
 
-  fvec s0 =
-    (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
+  fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*radThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
 
@@ -885,11 +818,9 @@ void L1TrackParFit::L1AddMaterial(L1MaterialInfo& info, fvec qp0, fvec w)
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f,
-       c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
 
-  fvec s0 =
-    (c1 + c2 * info.logRadThick + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
+  fvec s0 = (c1 + c2 * info.logRadThick + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*info.RadThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * s0 * s0);
 
@@ -911,9 +842,9 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
   const fvec dE = bethe * radThick * tr * 2.33f * 9.34961f;
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init = fvec(!(corr == corr)) | fvec(w < 1);
-  corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   fqp *= corr;
@@ -936,8 +867,7 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   constexpr float radLen  = 1.758f;
 
   fvec i;
-  if (atomicZ < 13)
-    i = (12. * atomicZ + 7.) * 1.e-9;
+  if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
@@ -949,9 +879,9 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   fvec dE = bethe * radThick * tr * radLen * rho;
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init = fvec(!(corr == corr)) | fvec(w < 1);
-  corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   fqp *= corr;
@@ -1003,8 +933,7 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   constexpr float radLen  = 18.76f;
 
   fvec i;
-  if (atomicZ < 13)
-    i = (12. * atomicZ + 7.) * 1.e-9;
+  if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
@@ -1016,9 +945,9 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   fvec dE = bethe * radThick * tr * radLen * rho;
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init = fvec(!(corr == corr)) | fvec(w < 1);
-  corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   fqp *= corr;
@@ -1070,8 +999,7 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   constexpr float radLen  = 2.265f;
 
   fvec i;
-  if (atomicZ < 13)
-    i = (12. * atomicZ + 7.) * 1.e-9;
+  if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
@@ -1083,9 +1011,9 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   fvec dE = bethe * radThick * tr * radLen * rho;
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init = fvec(!(corr == corr)) | fvec(w < 1);
-  corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   fqp *= corr;

@@ -20,17 +20,20 @@ using namespace std;
 class CbmRichUtil {
 
 public:
-  static Double_t GetRingTrackDistance(Int_t globalTrackId) {
+  static Double_t GetRingTrackDistance(Int_t globalTrackId)
+  {
     vector<Double_t> v = GetRingTrackDistanceImpl(globalTrackId);
     return v[0];
   }
 
-  static Double_t GetRingTrackDistanceX(Int_t globalTrackId) {
+  static Double_t GetRingTrackDistanceX(Int_t globalTrackId)
+  {
     vector<Double_t> v = GetRingTrackDistanceImpl(globalTrackId);
     return v[1];
   }
 
-  static Double_t GetRingTrackDistanceY(Int_t globalTrackId) {
+  static Double_t GetRingTrackDistanceY(Int_t globalTrackId)
+  {
     vector<Double_t> v = GetRingTrackDistanceImpl(globalTrackId);
     return v[2];
   }
@@ -39,7 +42,8 @@ private:
   /**
 	 * \brief Return a vector with total distance and x, y components. [0] - total distance, [1] - x component, [2] - y component
 	 */
-  static vector<Double_t> GetRingTrackDistanceImpl(Int_t globalTrackId) {
+  static vector<Double_t> GetRingTrackDistanceImpl(Int_t globalTrackId)
+  {
     vector<Double_t> errorVec = {999., 999., 999.};
     FairRootManager* ioman    = FairRootManager::Instance();
     if (ioman == NULL) return errorVec;
@@ -53,7 +57,8 @@ private:
       globalTracks    = (TClonesArray*) ioman->GetObject("GlobalTrack");
       richRings       = (TClonesArray*) ioman->GetObject("RichRing");
       richProjections = (TClonesArray*) ioman->GetObject("RichProjection");
-    } else {
+    }
+    else {
       //cout << "globalTracks, richRings, richProjections NOT NULL" << endl;
     }
 
@@ -64,15 +69,13 @@ private:
       return errorVec;
     }
 
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(globalTracks->At(globalTrackId));
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(globalTracks->At(globalTrackId));
     if (globalTrack == NULL) return errorVec;
 
     Int_t stsId = globalTrack->GetStsTrackIndex();
     if (stsId < 0) return errorVec;
 
-    const FairTrackParam* pTrack =
-      static_cast<const FairTrackParam*>(richProjections->At(stsId));
+    const FairTrackParam* pTrack = static_cast<const FairTrackParam*>(richProjections->At(stsId));
     if (pTrack == NULL) return errorVec;
 
     if (pTrack->GetX() == 0 && pTrack->GetY() == 0) return errorVec;
@@ -80,8 +83,7 @@ private:
     Int_t richId = globalTrack->GetRichRingIndex();
     if (richId < 0) return errorVec;
 
-    const CbmRichRing* richRing =
-      static_cast<const CbmRichRing*>(richRings->At(richId));
+    const CbmRichRing* richRing = static_cast<const CbmRichRing*>(richRings->At(richId));
     if (richRing == NULL) return errorVec;
 
     Double_t xRing = richRing->GetCenterX();

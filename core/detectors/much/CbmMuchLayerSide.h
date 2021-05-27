@@ -49,22 +49,17 @@ public:
   Double_t GetZ() { return fZ; }
   void SetZ(Double_t z) { fZ = z; }
 
-  CbmMuchModule* GetModule(Int_t iModule) const {
-    return (CbmMuchModule*) fModules.At(iModule);
-  }
+  CbmMuchModule* GetModule(Int_t iModule) const { return (CbmMuchModule*) fModules.At(iModule); }
 
   /** Adds given CbmMuchModuleGem to the internal list.
    *@param module  CbmMuchModule which should be added to the array. **/
   void AddModule(CbmMuchModule* module);
 
-  void DrawModules(Color_t color         = kYellow,
-                   Bool_t modulesVisible = true,
-                   Bool_t sectorsVisible = true);
+  void DrawModules(Color_t color = kYellow, Bool_t modulesVisible = true, Bool_t sectorsVisible = true);
 
 protected:
-  Int_t fDetectorId;  // Unique detector ID
-  Double32_t
-    fZ;  // z position of layer side center (midplane) [cm] in global cs
+  Int_t fDetectorId;   // Unique detector ID
+  Double32_t fZ;       // z position of layer side center (midplane) [cm] in global cs
   TObjArray fModules;  // Array of CbmMuchModuleGem objects
 
   ClassDef(CbmMuchLayerSide, 1);

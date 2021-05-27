@@ -9,7 +9,8 @@
 using std::cout;
 using std::endl;
 
-void global_sim(Int_t nEvents = 10) {
+void global_sim(Int_t nEvents = 10)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
 
@@ -18,36 +19,31 @@ void global_sim(Int_t nEvents = 10) {
   TString setup = "electron";
 
   // Event parameters
-  Int_t nofMuonsPlus  = 0;  // number of embedded muons from FairBoxGenerator
-  Int_t nofMuonsMinus = 0;  // number of embedded muons from FairBoxGenerator
-  Int_t nofElectrons = 0;  // number of embedded electrons from FairBoxGenerator
-  Int_t nofPositrons = 0;  // number of embedded positrons from FairBoxGenerator
-  Int_t nofPionsPlus = 0;  // number of embedded pions from FairBoxGenerator
-  Int_t nofPionsMinus = 0;  // number of embedded pions from FairBoxGenerator
-  Int_t nofJPsiToMuons =
-    10;  // number of embedded J/Psi particles decaying to mu+ and mu-
-  Int_t nofJPsiToElectrons =
-    0;  // number of embedded J/Psi particles decaying to e+ and e-
-  Int_t nofAuIons = 0;      // number of generated Au ions
-  TString urqmd   = "yes";  // If "yes" than UrQMD will be used as background
-  TString unigen =
-    "yes";  // If "yes" than CbmUnigenGenerator will be used instead of FairUrqmdGenerator
-  TString pluto = "no";  // If "yes" PLUTO generator will be used
+  Int_t nofMuonsPlus       = 0;      // number of embedded muons from FairBoxGenerator
+  Int_t nofMuonsMinus      = 0;      // number of embedded muons from FairBoxGenerator
+  Int_t nofElectrons       = 0;      // number of embedded electrons from FairBoxGenerator
+  Int_t nofPositrons       = 0;      // number of embedded positrons from FairBoxGenerator
+  Int_t nofPionsPlus       = 0;      // number of embedded pions from FairBoxGenerator
+  Int_t nofPionsMinus      = 0;      // number of embedded pions from FairBoxGenerator
+  Int_t nofJPsiToMuons     = 10;     // number of embedded J/Psi particles decaying to mu+ and mu-
+  Int_t nofJPsiToElectrons = 0;      // number of embedded J/Psi particles decaying to e+ and e-
+  Int_t nofAuIons          = 0;      // number of generated Au ions
+  TString urqmd            = "yes";  // If "yes" than UrQMD will be used as background
+  TString unigen           = "yes";  // If "yes" than CbmUnigenGenerator will be used instead of FairUrqmdGenerator
+  TString pluto            = "no";   // If "yes" PLUTO generator will be used
 
   // Files
   // TString urqmdFile  = "/Users/andrey/Development/cbm/prod/gen/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root"; // input UrQMD file
   TString urqmdFile = "$VMCWORKDIR/input/urqmd.auau.10gev.centr.root";
-  TString dir    = "events/mvd_v14a/";  // Directory for output simulation files
-  TString mcFile = dir + "mc.0000.root";      //MC file name
-  TString parFile = dir + "param.0000.root";  //Parameter file name
-  TString plutoFile =
-    "/Users/andrey/Development/cbm/d/pluto/omega.25gev.1M.root";
+  TString dir       = "events/mvd_v14a/";       // Directory for output simulation files
+  TString mcFile    = dir + "mc.0000.root";     //MC file name
+  TString parFile   = dir + "param.0000.root";  //Parameter file name
+  TString plutoFile = "/Users/andrey/Development/cbm/d/pluto/omega.25gev.1M.root";
 
   // Geometries
   TString caveGeom = "",  //targetGeom = "",
-    pipeGeom = "", shieldGeom = "", mvdGeom = "", stsGeom = "", muchGeom = "",
-          richGeom = "", trdGeom = "", tofGeom = "", ecalGeom = "",
-          fieldMap = "", magnetGeom = "";
+    pipeGeom = "", shieldGeom = "", mvdGeom = "", stsGeom = "", muchGeom = "", richGeom = "", trdGeom = "",
+          tofGeom = "", ecalGeom = "", fieldMap = "", magnetGeom = "";
   if (setup == "muon") {
     caveGeom = "cave.geo";
     //targetGeom = "target/target_au_250mu.geo";
@@ -60,12 +56,12 @@ void global_sim(Int_t nEvents = 10) {
     tofGeom    = "";  //"tof/tof_v13b.geo.root";
     fieldMap   = "field_v12a";
     magnetGeom = "magnet/magnet_v12b.geo.root";
-  } else if (setup == "electron") {
+  }
+  else if (setup == "electron") {
     caveGeom = "cave.geo";
     //targetGeom = "target/target_au_250mu.geo";
-    pipeGeom = "pipe/pipe_v14y.geo.root";
-    mvdGeom =
-      "mvd/mvd_v14a.geo.root";  //"mvd/mvd_v14a.geo.root";//"mvd/mvd_v07a.geo.root";
+    pipeGeom   = "pipe/pipe_v14y.geo.root";
+    mvdGeom    = "mvd/mvd_v14a.geo.root";  //"mvd/mvd_v14a.geo.root";//"mvd/mvd_v07a.geo.root";
     stsGeom    = "sts/sts_v13d.geo.root";
     richGeom   = "";  //"rich/rich_v08a.geo";
     trdGeom    = "";  //"trd/trd_v14a_3e.geo.root";
@@ -82,19 +78,18 @@ void global_sim(Int_t nEvents = 10) {
     parFile   = TString(gSystem->Getenv("LIT_PAR_FILE"));
     plutoFile = TString(gSystem->Getenv("LIT_PLUTO_FILE"));
 
-    nofMuonsPlus   = TString(gSystem->Getenv("LIT_NOF_MUONS_PLUS")).Atoi();
-    nofMuonsMinus  = TString(gSystem->Getenv("LIT_NOF_MUONS_MINUS")).Atoi();
-    nofElectrons   = TString(gSystem->Getenv("LIT_NOF_ELECTRONS")).Atoi();
-    nofPositrons   = TString(gSystem->Getenv("LIT_NOF_POSITRONS")).Atoi();
-    nofPionsPlus   = TString(gSystem->Getenv("LIT_NOF_PIONS_PLUS")).Atoi();
-    nofPionsMinus  = TString(gSystem->Getenv("LIT_NOF_PIONS_MINUS")).Atoi();
-    nofJPsiToMuons = TString(gSystem->Getenv("LIT_NOF_JPSI_TO_MUONS")).Atoi();
-    nofJPsiToElectrons =
-      TString(gSystem->Getenv("LIT_NOF_JPSI_TO_ELECTRONS")).Atoi();
-    nofAuIons = TString(gSystem->Getenv("LIT_NOF_AU_IONS")).Atoi();
-    urqmd     = TString(gSystem->Getenv("LIT_URQMD"));
-    unigen    = TString(gSystem->Getenv("LIT_UNIGEN"));
-    pluto     = TString(gSystem->Getenv("LIT_PLUTO"));
+    nofMuonsPlus       = TString(gSystem->Getenv("LIT_NOF_MUONS_PLUS")).Atoi();
+    nofMuonsMinus      = TString(gSystem->Getenv("LIT_NOF_MUONS_MINUS")).Atoi();
+    nofElectrons       = TString(gSystem->Getenv("LIT_NOF_ELECTRONS")).Atoi();
+    nofPositrons       = TString(gSystem->Getenv("LIT_NOF_POSITRONS")).Atoi();
+    nofPionsPlus       = TString(gSystem->Getenv("LIT_NOF_PIONS_PLUS")).Atoi();
+    nofPionsMinus      = TString(gSystem->Getenv("LIT_NOF_PIONS_MINUS")).Atoi();
+    nofJPsiToMuons     = TString(gSystem->Getenv("LIT_NOF_JPSI_TO_MUONS")).Atoi();
+    nofJPsiToElectrons = TString(gSystem->Getenv("LIT_NOF_JPSI_TO_ELECTRONS")).Atoi();
+    nofAuIons          = TString(gSystem->Getenv("LIT_NOF_AU_IONS")).Atoi();
+    urqmd              = TString(gSystem->Getenv("LIT_URQMD"));
+    unigen             = TString(gSystem->Getenv("LIT_UNIGEN"));
+    pluto              = TString(gSystem->Getenv("LIT_PLUTO"));
 
     caveGeom = TString(gSystem->Getenv("LIT_CAVE_GEOM"));
     //targetGeom = TString(gSystem->Getenv("LIT_TARGET_GEOM"));
@@ -326,8 +321,7 @@ void global_sim(Int_t nEvents = 10) {
   }
 
   if (nofAuIons > 0) {
-    FairIonGenerator* AuGen =
-      new FairIonGenerator(79, 197, 79, nofAuIons, 0., 0., 25., 0., 0., -0.1);
+    FairIonGenerator* AuGen = new FairIonGenerator(79, 197, 79, nofAuIons, 0., 0., 25., 0., 0., -0.1);
     primGen->AddGenerator(AuGen);
   }
 

@@ -62,15 +62,15 @@ CbmStar2019EventBuilderEtof::CbmStar2019EventBuilderEtof(UInt_t /*uNbGdpb*/)
   , fhRealTimeDistr(nullptr)
   , fhRealTimeEvo(nullptr)
   , fhMeanRealTimeEvo(nullptr)
-  , fpBinDumpFile(nullptr) {
+  , fpBinDumpFile(nullptr)
+{
   fEventBuilderAlgo = new CbmStar2019EventBuilderEtofAlgo();
 }
 
-CbmStar2019EventBuilderEtof::~CbmStar2019EventBuilderEtof() {
-  delete fEventBuilderAlgo;
-}
+CbmStar2019EventBuilderEtof::~CbmStar2019EventBuilderEtof() { delete fEventBuilderAlgo; }
 
-Bool_t CbmStar2019EventBuilderEtof::Init() {
+Bool_t CbmStar2019EventBuilderEtof::Init()
+{
   LOG(info) << "CbmStar2019EventBuilderEtof::Init";
   LOG(info) << "Initializing STAR eTOF 2018 Event Builder";
 
@@ -80,7 +80,8 @@ Bool_t CbmStar2019EventBuilderEtof::Init() {
   return kTRUE;
 }
 
-void CbmStar2019EventBuilderEtof::SetParContainers() {
+void CbmStar2019EventBuilderEtof::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   fParCList = fEventBuilderAlgo->GetParList();
@@ -90,12 +91,11 @@ void CbmStar2019EventBuilderEtof::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -104,12 +104,13 @@ void CbmStar2019EventBuilderEtof::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmStar2019EventBuilderEtof::InitContainers() {
+Bool_t CbmStar2019EventBuilderEtof::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  CbmStar2019TofPar* pUnpackPar = dynamic_cast<CbmStar2019TofPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmStar2019TofPar"));
+  CbmStar2019TofPar* pUnpackPar =
+    dynamic_cast<CbmStar2019TofPar*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmStar2019TofPar"));
   if (nullptr == pUnpackPar) {
     LOG(error) << "Failed to obtain parameter container CbmStar2019TofPar";
     return kFALSE;
@@ -139,17 +140,14 @@ Bool_t CbmStar2019EventBuilderEtof::InitContainers() {
     initOK &= fEventBuilderAlgo->CreateHistograms();
 
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fEventBuilderAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fEventBuilderAlgo->GetHistoVector();
     /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
-    std::vector<std::pair<TCanvas*, std::string>> vCanvases =
-      fEventBuilderAlgo->GetCanvasVector();
+    std::vector<std::pair<TCanvas*, std::string>> vCanvases = fEventBuilderAlgo->GetCanvasVector();
 
     /// Register the histos in the HTTP server
     THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
     for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                       vHistos[uHisto].first);
+      server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
     for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
@@ -159,35 +157,23 @@ Bool_t CbmStar2019EventBuilderEtof::InitContainers() {
                        gROOT->FindObject((vCanvases[uCanv].first)->GetName()));
     }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
 
-    server->RegisterCommand("/Reset_EvtBuild_Hist",
-                            "bStarEtof2019EventBuilderResetHistos=kTRUE");
+    server->RegisterCommand("/Reset_EvtBuild_Hist", "bStarEtof2019EventBuilderResetHistos=kTRUE");
     server->Restrict("/Reset_EvtBuild_Hist", "allow=admin");
 
     if (fbDebugMonitorMode) {
       fhRealTimeDistr = new TH1I("hEvtBuildRealTimeDistr",
                                  "Realtime for processing a TS in event "
                                  "builder; Realtime [ms]; TS nb []",
-                                 100000,
-                                 0.0,
-                                 100.0);
-      fhRealTimeEvo   = new TH2I(
-        "hEvtBuildRealTimeEvo",
-        "Realtime Processing to duration ratio for processing a TS in event "
-        "builder vs TS index; TS []; Realtime ratio []; TS Nb []",
-        1000,
-        0,
-        100000,
-        10000,
-        0.0,
-        100.0);
+                                 100000, 0.0, 100.0);
+      fhRealTimeEvo   = new TH2I("hEvtBuildRealTimeEvo",
+                               "Realtime Processing to duration ratio for processing a TS in event "
+                               "builder vs TS index; TS []; Realtime ratio []; TS Nb []",
+                               1000, 0, 100000, 10000, 0.0, 100.0);
 
-      fhMeanRealTimeEvo = new TProfile(
-        "hEvtBuildMeanRealTimeEvo",
-        "Mean Realtime Processing to duration ratio for processing a TS in "
-        "event builder vs TS index; TS []; Mean Realtime ratio []; TS Nb []",
-        1000,
-        0,
-        100000);
+      fhMeanRealTimeEvo = new TProfile("hEvtBuildMeanRealTimeEvo",
+                                       "Mean Realtime Processing to duration ratio for processing a TS in "
+                                       "event builder vs TS index; TS []; Mean Realtime ratio []; TS Nb []",
+                                       1000, 0, 100000);
 
       server->Register("/EvtBuildTime", fhRealTimeDistr);
       server->Register("/EvtBuildTime", fhRealTimeEvo);
@@ -199,31 +185,29 @@ Bool_t CbmStar2019EventBuilderEtof::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmStar2019EventBuilderEtof::ReInitContainers() {
+Bool_t CbmStar2019EventBuilderEtof::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fEventBuilderAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmStar2019EventBuilderEtof::SetEventDumpEnable(Bool_t bDumpEna) {
+void CbmStar2019EventBuilderEtof::SetEventDumpEnable(Bool_t bDumpEna)
+{
   if (fbEventDumpEna != bDumpEna) {
     if (bDumpEna) {
       LOG(info) << "Enabling event dump to binary file which was disabled. "
                    "File will be opened.";
 
-      std::time_t cTimeCurrent =
-        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+      std::time_t cTimeCurrent = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
       char tempBuff[80];
-      std::strftime(
-        tempBuff, 80, "%Y_%m_%d_%H_%M_%S", localtime(&cTimeCurrent));
+      std::strftime(tempBuff, 80, "%Y_%m_%d_%H_%M_%S", localtime(&cTimeCurrent));
       TString sFileName = Form("event_dump_%s.bin", tempBuff);
-      fpBinDumpFile =
-        new std::fstream(sFileName, std::ios::out | std::ios::binary);
+      fpBinDumpFile     = new std::fstream(sFileName, std::ios::out | std::ios::binary);
 
       if (NULL == fpBinDumpFile) {
-        LOG(fatal) << "Failed to open new binary file for event dump at "
-                   << sFileName;
+        LOG(fatal) << "Failed to open new binary file for event dump at " << sFileName;
       }  // if( NULL == fpBinDumpFile )
       else
         LOG(info) << "Opened binary dump file at " << sFileName;
@@ -237,19 +221,18 @@ void CbmStar2019EventBuilderEtof::SetEventDumpEnable(Bool_t bDumpEna) {
   }    // if( fbEventDumpEna != bDumpEna )
 
   fbEventDumpEna = bDumpEna;
-  if (fbEventDumpEna)
-    LOG(info) << "Event dump to binary file is now ENABLED";
+  if (fbEventDumpEna) LOG(info) << "Event dump to binary file is now ENABLED";
   else
     LOG(info) << "Event dump to binary file is now DISABLED";
 }
 
-void CbmStar2019EventBuilderEtof::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmStar2019EventBuilderEtof::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fEventBuilderAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
-                                             size_t /*component*/) {
+Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   fTimer.Start();
 
   /// On first TS, extract the TS parameters from header (by definition stable over time)
@@ -277,13 +260,11 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
   }    // if( fbMonitorMode && bStarEtof2019EventBuilderResetHistos )
 
   if (kFALSE == fEventBuilderAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in event builder algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in event builder algorithm class";
     return kTRUE;
   }  // if( kFALSE == fEventBuilderAlgo->ProcessTs( ts ) )
 
-  std::vector<CbmTofStarSubevent2019>& eventBuffer =
-    fEventBuilderAlgo->GetEventBuffer();
+  std::vector<CbmTofStarSubevent2019>& eventBuffer = fEventBuilderAlgo->GetEventBuffer();
 
   for (UInt_t uEvent = 0; uEvent < eventBuffer.size(); ++uEvent) {
     /// Send the sub-event to the STAR systems
@@ -299,24 +280,17 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
              *
              *       trg_cmd|daq_cmd|tkn_hi|tkn_mid|tkn_lo
              */
-        star_rhicf_write(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(),
-                         pDataBuff,
-                         iBuffSzByte);
+        star_rhicf_write(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(), pDataBuff, iBuffSzByte);
       }  // if( kFALSE == fbSandboxMode )
 
       LOG(debug) << "Sent STAR event with size " << iBuffSzByte << " Bytes"
-                 << " and token "
-                 << eventBuffer[uEvent].GetTrigger().GetStarToken();
+                 << " and token " << eventBuffer[uEvent].GetTrigger().GetStarToken();
 
       if (kTRUE == fbEventDumpEna) {
-        fpBinDumpFile->write(reinterpret_cast<const char*>(&kuBinDumpBegWord),
-                             sizeof(UInt_t));
-        fpBinDumpFile->write(reinterpret_cast<const char*>(&iBuffSzByte),
-                             sizeof(Int_t));
-        fpBinDumpFile->write(reinterpret_cast<const char*>(pDataBuff),
-                             iBuffSzByte);
-        fpBinDumpFile->write(reinterpret_cast<const char*>(&kuBinDumpEndWord),
-                             sizeof(UInt_t));
+        fpBinDumpFile->write(reinterpret_cast<const char*>(&kuBinDumpBegWord), sizeof(UInt_t));
+        fpBinDumpFile->write(reinterpret_cast<const char*>(&iBuffSzByte), sizeof(Int_t));
+        fpBinDumpFile->write(reinterpret_cast<const char*>(pDataBuff), iBuffSzByte);
+        fpBinDumpFile->write(reinterpret_cast<const char*>(&kuBinDumpEndWord), sizeof(UInt_t));
       }  // if( kTRUE == fbEventDumpEna )
     }    // if( NULL != pDataBuff )
     else
@@ -326,8 +300,7 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
   fTimer.Stop();
   Double_t dRealT = fTimer.RealTime();
   if (fbDebugMonitorMode) {
-    LOG(debug2) << Form("Real time TS %12lu, Realtime: %12f ns",
-                        static_cast<unsigned long>(fulTsCounter),
+    LOG(debug2) << Form("Real time TS %12lu, Realtime: %12f ns", static_cast<unsigned long>(fulTsCounter),
                         dRealT * 1e9);
     fhRealTimeDistr->Fill(dRealT * 1e3);
     fhRealTimeEvo->Fill(fulTsCounter, dRealT / fdTsCoreSizeInSec);
@@ -338,20 +311,14 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
     if (fbDebugMonitorMode)
       LOG(debug) << Form("New min Real time TS %12lu, Real time: %9.6f ms Old "
                          "Min %9.6f Diff %.9f",
-                         static_cast<unsigned long>(fulTsCounter),
-                         dRealT,
-                         fdRealTimeMin,
-                         fdRealTimeMin - dRealT);
+                         static_cast<unsigned long>(fulTsCounter), dRealT, fdRealTimeMin, fdRealTimeMin - dRealT);
     fdRealTimeMin = dRealT;
   }  // if( dRealT < fdRealTimeMin )
   if (fdRealTimeMax < dRealT) {
     if (fbDebugMonitorMode)
       LOG(debug) << Form("New max Real time TS %12lu, Real time: %9.6f ms Old "
                          "Max %9.6f Diff %.9f",
-                         static_cast<unsigned long>(fulTsCounter),
-                         dRealT,
-                         fdRealTimeMax,
-                         fdRealTimeMax - dRealT);
+                         static_cast<unsigned long>(fulTsCounter), dRealT, fdRealTimeMax, fdRealTimeMax - dRealT);
     fdRealTimeMax = dRealT;
   }  // if( fdRealTimeMax < dRealT )
   fulNbEvents += eventBuffer.size();
@@ -361,10 +328,7 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
     fdRealTime /= 10000;
     LOG(info) << Form("Processed %12lu TS, Real time: %6.3f ms/TS (Min %6.3f, "
                       "Max %6.3f), Events: %12lu (%9lu since last print)",
-                      static_cast<unsigned long>(fulTsCounter),
-                      fdRealTime,
-                      fdRealTimeMin,
-                      fdRealTimeMax,
+                      static_cast<unsigned long>(fulTsCounter), fdRealTime, fdRealTimeMin, fdRealTimeMax,
                       static_cast<unsigned long>(fulNbEvents),
                       static_cast<unsigned long>(fulNbEventsSinceLastPrintout));
     fdRealTime                   = 0.0;
@@ -379,25 +343,22 @@ Bool_t CbmStar2019EventBuilderEtof::DoUnpack(const fles::Timeslice& ts,
 
 void CbmStar2019EventBuilderEtof::Reset() {}
 
-void CbmStar2019EventBuilderEtof::Finish() {
+void CbmStar2019EventBuilderEtof::Finish()
+{
   if (NULL != fpBinDumpFile) {
     LOG(info) << "Closing binary file used for event dump.";
     fpBinDumpFile->close();
   }  // if( NULL != fpBinDumpFile )
 
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
-  if (kTRUE == fbMonitorMode) {
-
-    SaveHistograms();
-  }  // if( kTRUE == fbMonitorMode )
+  if (kTRUE == fbMonitorMode) { SaveHistograms(); }  // if( kTRUE == fbMonitorMode )
 }
 
-bool CbmStar2019EventBuilderEtof::SaveHistograms() {
+bool CbmStar2019EventBuilderEtof::SaveHistograms()
+{
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos =
-    fEventBuilderAlgo->GetHistoVector();
-  std::vector<std::pair<TCanvas*, std::string>> vCanvas =
-    fEventBuilderAlgo->GetCanvasVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos  = fEventBuilderAlgo->GetHistoVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvas = fEventBuilderAlgo->GetCanvasVector();
 
   /// (Re-)Create ROOT file to store the histos
   TDirectory* oldDir = NULL;

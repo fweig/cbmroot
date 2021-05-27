@@ -37,9 +37,12 @@ public:
     , fIsTrdEl(false)
     , fIsTofEl(false)
     , fIsRecoTrackAccepted(false)
-    , fIsMismatch(false) {}
+    , fIsMismatch(false)
+  {
+  }
 
-  void ResetMcParams() {
+  void ResetMcParams()
+  {
     fIsMcSignalElectron = false;
     fIsMcPi0Electron    = false;
     fIsMcGammaElectron  = false;

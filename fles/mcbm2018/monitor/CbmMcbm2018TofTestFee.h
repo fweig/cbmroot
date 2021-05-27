@@ -9,6 +9,7 @@
 #define CbmMcbm2018TofTestFee_H
 
 #include "Timeslice.hpp"
+
 #include "gDpbMessv100.h"
 //#include "CbmTofStarData.h"
 //#include "CbmTofStarData2018.h"
@@ -49,25 +50,17 @@ public:
 
   Bool_t ReInitContainers();
 
-  void SetMsLimitLevel(size_t uAcceptBoundaryPct = 100) {
-    fuMsAcceptsPercent = uAcceptBoundaryPct;
-  }
+  void SetMsLimitLevel(size_t uAcceptBoundaryPct = 100) { fuMsAcceptsPercent = uAcceptBoundaryPct; }
   size_t GetMsLimitLevel() { return fuMsAcceptsPercent; }
 
   virtual void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
-  void SetIgnoreMsOverlap(Bool_t bEnaFlag = kTRUE) {
-    fbIgnoreOverlapMs = bEnaFlag;
-  }
+  void SetIgnoreMsOverlap(Bool_t bEnaFlag = kTRUE) { fbIgnoreOverlapMs = bEnaFlag; }
   void SetMsOverlap(size_t uOverlapMsNb = 1) { fuOverlapMsNb = uOverlapMsNb; }
   size_t GetMsOverlap() { return fuOverlapMsNb; }
 
-  inline void SelectTestFees(UInt_t uGdpbA,
-                             UInt_t uGbtxA,
-                             UInt_t uFeeA,
-                             UInt_t uGdpbB,
-                             UInt_t uGbtxB,
-                             UInt_t uFeeB) {
+  inline void SelectTestFees(UInt_t uGdpbA, UInt_t uGbtxA, UInt_t uFeeA, UInt_t uGdpbB, UInt_t uGbtxB, UInt_t uFeeB)
+  {
     fuGdpbA = uGdpbA;
     fuGbtxA = uGbtxA;
     fuFeeA  = uFeeA;
@@ -75,23 +68,15 @@ public:
     fuGbtxB = uGbtxB;
     fuFeeB  = uFeeB;
   }
-  inline void SetFitZoomWidthPs(Double_t inZoomWidth = 1000.0) {
-    fdFitZoomWidthPs = inZoomWidth;
-  }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
+  inline void SetFitZoomWidthPs(Double_t inZoomWidth = 1000.0) { fdFitZoomWidthPs = inZoomWidth; }
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
 
   void SaveAllHistos(TString sFileName = "");
   void ResetAllHistos();
   void ResetEvolutionHistograms();
-  void UpdateZoomedFit(std::vector<std::vector<TH1*>> phTimeDiff,
-                       TH2* phTimeRmsZoom,
-                       TH2* phTimeResFit);
+  void UpdateZoomedFit(std::vector<std::vector<TH1*>> phTimeDiff, TH2* phTimeRmsZoom, TH2* phTimeResFit);
 
-  void SetHistoFileName(TString sFileName = "data/HistosTofFeeTest.root") {
-    fsHistoFileFullname = sFileName;
-  }
+  void SetHistoFileName(TString sFileName = "data/HistosTofFeeTest.root") { fsHistoFileFullname = sFileName; }
 
   void UseDaqBuffer(Bool_t) {};
 
@@ -100,19 +85,16 @@ private:
   std::vector<size_t> fvMsComponentsList;  //!
   size_t fuNbCoreMsPerTs;                  //!
   size_t fuNbOverMsPerTs;                  //!
-  Bool_t
-    fbIgnoreOverlapMs;  //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  Bool_t fbIgnoreOverlapMs;                //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
 
   /// Histo File name and path
   TString fsHistoFileFullname;
 
   /// OLD, to be cleaned out !!!!!
-  size_t
-    fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
-  size_t fuTotalMsNb; /** Total nb of MS per link in timeslice **/
-  size_t
-    fuOverlapMsNb; /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-  size_t fuCoreMs; /** Number of non overlap MS at beginning of TS **/
+  size_t fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
+  size_t fuTotalMsNb;        /** Total nb of MS per link in timeslice **/
+  size_t fuOverlapMsNb;      /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  size_t fuCoreMs;           /** Number of non overlap MS at beginning of TS **/
   Double_t fdMsSizeInNs;
   Double_t fdTsCoreSizeInNs;
   UInt_t fuMinNbGdpb;
@@ -149,15 +131,12 @@ private:
   /** Running indices **/
   uint64_t fulCurrentTsIndex;  // Idx of the current TS
   size_t fuCurrentMs;          // Idx of the current MS in TS (0 to fuTotalMsNb)
-  size_t fuCurrentMsSysId;  // SysId of the current MS in TS (0 to fuTotalMsNb)
-  Double_t fdMsIndex;       // Time in ns of current MS from its index
-  UInt_t fuGdpbId;          // Id (hex number) of the GDPB for current message
-  UInt_t
-    fuGdpbNr;  // running number (0 to fuNrOfGdpbs) of the GDPB for current message
-  UInt_t
-    fuGet4Id;  // running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
-  UInt_t
-    fuGet4Nr;  // running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
+  size_t fuCurrentMsSysId;     // SysId of the current MS in TS (0 to fuTotalMsNb)
+  Double_t fdMsIndex;          // Time in ns of current MS from its index
+  UInt_t fuGdpbId;             // Id (hex number) of the GDPB for current message
+  UInt_t fuGdpbNr;             // running number (0 to fuNrOfGdpbs) of the GDPB for current message
+  UInt_t fuGet4Id;  // running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
+  UInt_t fuGet4Nr;  // running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
   Int_t fiEquipmentId;
   std::vector<int> fviMsgCounter;
 
@@ -178,11 +157,10 @@ private:
         * The correct array index is calculated using the function
         * GetArrayIndex(gdpbId, get4Id)
         **/
-  std::vector<ULong64_t> fvulCurrentEpoch;  //!
-  std::vector<Bool_t> fvbFirstEpochSeen;    //!
-  std::vector<ULong64_t>
-    fvulCurrentEpochCycle;  //! Epoch cycle from the Ms Start message and Epoch counter flip
-  std::vector<ULong64_t> fvulCurrentEpochFull;  //! Epoch + Epoch Cycle
+  std::vector<ULong64_t> fvulCurrentEpoch;       //!
+  std::vector<Bool_t> fvbFirstEpochSeen;         //!
+  std::vector<ULong64_t> fvulCurrentEpochCycle;  //! Epoch cycle from the Ms Start message and Epoch counter flip
+  std::vector<ULong64_t> fvulCurrentEpochFull;   //! Epoch + Epoch Cycle
 
   ULong64_t fulCurrentEpochTime; /** Time stamp of current epoch **/
 
@@ -193,10 +171,8 @@ private:
   std::vector<std::vector<gdpbv100::Message>> fvmEpSupprBuffer;
 
   /// Buffer for pulser channels
-  std::vector<std::vector<UInt_t>>
-    fvuFeeChanNbHitsLastMs;  //! [ fuFeeNr ][ ChanNr ]
-  std::vector<std::vector<Double_t>>
-    fvdFeeChanMsLastPulserHit;  //! [ fuFeeNr ][ ChanNr ]
+  std::vector<std::vector<UInt_t>> fvuFeeChanNbHitsLastMs;       //! [ fuFeeNr ][ ChanNr ]
+  std::vector<std::vector<Double_t>> fvdFeeChanMsLastPulserHit;  //! [ fuFeeNr ][ ChanNr ]
 
   /// Histograms and histogram control variables
   // Default value for nb bins in Pulser time difference histos
@@ -207,16 +183,12 @@ private:
   UInt_t fuNbFeePlot;
   UInt_t fuNbFeePlotsPerGdpb;
   // Evolution plots control
-  Double_t
-    fdStartTime; /** Time of first valid hit (epoch available), used as reference for evolution plots**/
-  Double_t
-    fdStartTimeLong; /** Time of first valid hit (epoch available), used as reference for evolution plots**/
-  Double_t
-    fdStartTimeMsSz; /** Time of first microslice, used as reference for evolution plots**/
-  UInt_t fuHistoryHistoSize; /** Size in seconds of the evolution histograms **/
-  UInt_t
-    fuHistoryHistoSizeLong; /** Size in minutes of the long evolution histograms **/
-                            // Pulser plots
+  Double_t fdStartTime;          /** Time of first valid hit (epoch available), used as reference for evolution plots**/
+  Double_t fdStartTimeLong;      /** Time of first valid hit (epoch available), used as reference for evolution plots**/
+  Double_t fdStartTimeMsSz;      /** Time of first microslice, used as reference for evolution plots**/
+  UInt_t fuHistoryHistoSize;     /** Size in seconds of the evolution histograms **/
+  UInt_t fuHistoryHistoSizeLong; /** Size in minutes of the long evolution histograms **/
+                                 // Pulser plots
   Double_t fdLastRmsUpdateTime;
   Double_t fdFitZoomWidthPs;
   // Flesnet
@@ -250,12 +222,11 @@ private:
   TH2* fhTimeRmsZoomFitPulsFeeB;                         //!
   TH2* fhTimeResFitPulsFeeB;                             //!
 
-  std::vector<std::vector<TH1*>>
-    fvhTimeDiffPulserFeeFee;        //! [ Ch FEE A ][ Ch FEE B ]
-  TH2* fhTimeMeanPulserFeeFee;      //!
-  TH2* fhTimeRmsPulserFeeFee;       //!
-  TH2* fhTimeRmsZoomFitPulsFeeFee;  //!
-  TH2* fhTimeResFitPulsFeeFee;      //!
+  std::vector<std::vector<TH1*>> fvhTimeDiffPulserFeeFee;  //! [ Ch FEE A ][ Ch FEE B ]
+  TH2* fhTimeMeanPulserFeeFee;                             //!
+  TH2* fhTimeRmsPulserFeeFee;                              //!
+  TH2* fhTimeRmsZoomFitPulsFeeFee;                         //!
+  TH2* fhTimeResFitPulsFeeFee;                             //!
 
   TH2* fhChanTotFeeA;
   TH2* fhChanTotFeeB;
@@ -282,9 +253,7 @@ private:
   void PrintGenInfo(gdpbv100::Message);
   void FillStarTrigInfo(gdpbv100::Message);
 
-  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) {
-    return gdpbId * fuNrOfGet4PerGdpb + get4Id;
-  }
+  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) { return gdpbId * fuNrOfGet4PerGdpb + get4Id; }
 
   ///* PADI channel to GET4 channel mapping and reverse *///
   std::vector<UInt_t> fvuPadiToGet4;
@@ -294,13 +263,13 @@ private:
   static const UInt_t kuNbGet4PerGbtx = 5 * 8;  /// 5 FEE with 8 GET4 each
   std::vector<UInt_t> fvuElinkToGet4;
   std::vector<UInt_t> fvuGet4ToElink;
-  inline UInt_t ConvertElinkToGet4(UInt_t uElinkIdx) {
-    return fvuElinkToGet4[uElinkIdx % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uElinkIdx / kuNbGet4PerGbtx);
+  inline UInt_t ConvertElinkToGet4(UInt_t uElinkIdx)
+  {
+    return fvuElinkToGet4[uElinkIdx % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uElinkIdx / kuNbGet4PerGbtx);
   }
-  inline UInt_t ConvertGet4ToElink(UInt_t uGet4Idx) {
-    return fvuGet4ToElink[uGet4Idx % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uGet4Idx / kuNbGet4PerGbtx);
+  inline UInt_t ConvertGet4ToElink(UInt_t uGet4Idx)
+  {
+    return fvuGet4ToElink[uGet4Idx % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uGet4Idx / kuNbGet4PerGbtx);
   }
 
   ///* Periodic histos saving *///

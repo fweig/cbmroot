@@ -1,11 +1,12 @@
-void run_reco_cosy17(Int_t nEvents = 500) {
+void run_reco_cosy17(Int_t nEvents = 500)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
   TString myName = "run_reco_geotest";
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
-  TString dir = "/Users/slebedev/Development/cbm/data/sim/rich/richprototype/";
+  TString dir      = "/Users/slebedev/Development/cbm/data/sim/rich/richprototype/";
   TString parFile  = dir + "/param.00001.root";
   TString recoFile = dir + "/reco.00001.root";
   TString mcFile   = dir + "/mc.00001.root";
@@ -82,8 +83,7 @@ void run_reco_cosy17(Int_t nEvents = 500) {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

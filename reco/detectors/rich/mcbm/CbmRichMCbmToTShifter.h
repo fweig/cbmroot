@@ -9,6 +9,7 @@ class TVector3;
 class CbmDigiManager;
 
 #include "TH1D.h"
+
 #include <map>
 #include <vector>
 
@@ -80,9 +81,9 @@ private:
   TH1* GetTotH1(Int_t tdc, Int_t channel);
 
 
-  uint16_t calcDirichAddr(uint32_t cnt) {
-    return (0x7 << 12) | ((cnt / 18) << 8) | (((cnt % 18) / 2) << 4)
-           | ((cnt % 2) << 0);
+  uint16_t calcDirichAddr(uint32_t cnt)
+  {
+    return (0x7 << 12) | ((cnt / 18) << 8) | (((cnt % 18) / 2) << 4) | ((cnt % 2) << 0);
   };
 
   /**
@@ -99,9 +100,7 @@ private:
   /**
      *  \brief Extract the Tdc Address from the encoded DiRICH Address.
      */
-  inline int getDirichAddress(const int dirich) {
-    return (dirich >> 16) & 0xffff;
-  }
+  inline int getDirichAddress(const int dirich) { return (dirich >> 16) & 0xffff; }
 
   /**
      *  \brief Extract the channel Address from the encoded DiRICH Address.

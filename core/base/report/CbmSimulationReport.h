@@ -7,13 +7,13 @@
 #ifndef CBMSIMULATIONREPORT_H_
 #define CBMSIMULATIONREPORT_H_
 
-#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
-
-#include <string>  // for string
-
 #include "CbmDrawHist.h"     // for kLinear, HistScale
 #include "CbmHistManager.h"  // for CbmHistManager
 #include "CbmReport.h"       // for CbmReport
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
+
+#include <string>  // for string
 
 class TH1;
 class TH2;
@@ -102,8 +102,7 @@ public:
     * \param[in] histNamePattern Name pattern for histogram.
     */
   void DrawH1ByPattern(const std::string& histNamePattern,
-                       std::string (*labelFormatter)(const std::string&,
-                                                     const CbmHistManager*));
+                       std::string (*labelFormatter)(const std::string&, const CbmHistManager*));
 
   /**
     * \brief Select by pattern TH2 histograms and draw each histogram on separate canvas.
@@ -113,11 +112,8 @@ public:
     * \param[in] logz Specify logarithmic or linear scale for Z axis.
     * \param[in] drawOpt Other drawing options (see ROOT documentation for details).
     */
-  void DrawH2ByPattern(const std::string& histNamePattern,
-                       HistScale logx             = kLinear,
-                       HistScale logy             = kLinear,
-                       HistScale logz             = kLinear,
-                       const std::string& drawOpt = "");
+  void DrawH2ByPattern(const std::string& histNamePattern, HistScale logx = kLinear, HistScale logy = kLinear,
+                       HistScale logz = kLinear, const std::string& drawOpt = "");
 
 private:
   CbmHistManager* fHM;  // Histogram manager

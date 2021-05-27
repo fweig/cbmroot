@@ -1,5 +1,6 @@
 
-Bool_t ratePlotHd() {
+Bool_t ratePlotHd()
+{
 
   // Open the unpacked data file
   //TString sInputFilenameScal = "unpack.out.root";
@@ -14,8 +15,7 @@ Bool_t ratePlotHd() {
   TString sInputFilenameScal = "../unpack_MbsTrbThu0036.out.root";
   TFile* fInputFileScal      = TFile::Open(sInputFilenameScal, "READ");
   if (!fInputFileScal || kFALSE == fInputFileScal->IsOpen()) {
-    cout << Form("Input file %s cannot be opened.", sInputFilenameScal.Data())
-         << endl;
+    cout << Form("Input file %s cannot be opened.", sInputFilenameScal.Data()) << endl;
     return kFALSE;
   }
 
@@ -61,33 +61,26 @@ Bool_t ratePlotHd() {
   TTofTriglogBoard* fTriglogBoard;
   TTofCalibScaler* fCalTrloBoard;
   // Find first MBS event with TRIGLOG
-  for (iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal;
-       iFirstGoodMbsEvent++) {
+  for (iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal; iFirstGoodMbsEvent++) {
     tInputTreeScal->GetEntry(iFirstGoodMbsEvent);
-    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-      0);  // Always only 1 TRIGLOG board!
+    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
     if (0 < fTriglogBoard->GetMbsTimeSec()) break;
   }  // for( iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal; iFirstGoodMbsEvent ++)
   tInputTreeScal->GetEntry(iFirstGoodMbsEvent);
-  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-    0);  // Always only 1 TRIGLOG board!
-  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-    0);  // TRIGLOG board always first!
+  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
   // Use TTimeStamp as an example, this give access to date and time in nice format
   // Direct use of the time is also possible!
   TTimeStamp tTimeFirstMbsEvent;
   tTimeFirstMbsEvent.SetSec(fTriglogBoard->GetMbsTimeSec());
   tTimeFirstMbsEvent.SetNanoSec(fTriglogBoard->GetMbsTimeMilliSec() * 1000000);
-  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec())
-                           + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
+  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec()) + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
 
   // Get time for MBS ending point
   tInputTreeScal->GetEntry(uNTreeEntriesScal - 1);
-  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-    0);  // Always only 1 TRIGLOG board!
-  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-    0);  // TRIGLOG board always first!
+  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
   TTimeStamp tTimeLastMbsEvent;
   tTimeLastMbsEvent.SetSec(fTriglogBoard->GetMbsTimeSec());
@@ -98,58 +91,37 @@ Bool_t ratePlotHd() {
   cout << "Time last MBS event:  " << tTimeLastMbsEvent.AsString() << endl;
 
   // Prepare histograms
-  Int_t iTimeIntervalsec =
-    tTimeLastMbsEvent.GetSec() - tTimeFirstMbsEvent.GetSec() + 1;
+  Int_t iTimeIntervalsec = tTimeLastMbsEvent.GetSec() - tTimeFirstMbsEvent.GetSec() + 1;
   cout << "Time interval with data: " << iTimeIntervalsec << " s (MBS)" << endl;
-  cout << "Time interval with data: " << iTimeIntervalSecClk << " s (clock)"
-       << endl;
+  cout << "Time interval with data: " << iTimeIntervalSecClk << " s (clock)" << endl;
 
   Int_t iBinSec = 10;
 
 
-  TProfile* hRateEvoScalMbs1 = new TProfile(
-    "hRateEvoScalMbs1",
-    "Triglog input scaler 2 (Back HD PMT); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
-  TProfile* hRateEvoScalMbs7 = new TProfile(
-    "hRateEvoScalMbs7",
-    "Triglog input scaler 8 (HD. Ref. RPC); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
-  TProfile* hRateEvoScalMbs10 = new TProfile(
-    "hRateEvoScalMbs10",
-    "Triglog input scaler 11 (HD Big RPC); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs1 =
+    new TProfile("hRateEvoScalMbs1", "Triglog input scaler 2 (Back HD PMT); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs7 =
+    new TProfile("hRateEvoScalMbs7", "Triglog input scaler 8 (HD. Ref. RPC); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs10 =
+    new TProfile("hRateEvoScalMbs10", "Triglog input scaler 11 (HD Big RPC); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
 
-  TProfile* hRateEvoScalMbs1w = new TProfile(
-    "hRateEvoScalMbs1w",
-    "Triglog input scaler 2 (Back HD PMT); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
-  TProfile* hRateEvoScalMbs7w = new TProfile(
-    "hRateEvoScalMbs7w",
-    "Triglog input scaler 8 (HD. Ref. RPC); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
-  TProfile* hRateEvoScalMbs10w = new TProfile(
-    "hRateEvoScalMbs10w",
-    "Triglog input scaler 11 (HD Big RPC); MBS Time [s]; Rate [kHz/cm2]",
-    iBinSec * iTimeIntervalsec,
-    0,
-    iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs1w =
+    new TProfile("hRateEvoScalMbs1w", "Triglog input scaler 2 (Back HD PMT); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs7w =
+    new TProfile("hRateEvoScalMbs7w", "Triglog input scaler 8 (HD. Ref. RPC); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs10w =
+    new TProfile("hRateEvoScalMbs10w", "Triglog input scaler 11 (HD Big RPC); MBS Time [s]; Rate [kHz/cm2]",
+                 iBinSec * iTimeIntervalsec, 0, iTimeIntervalsec);
 
 
   // To have a meaningfull plot using MBS time, we need the time in the first MBS event
   tInputTreeScal->GetEntry(0);
-  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec())
-                           + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
+  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec()) + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
 
 
   // Loop over MBS events
@@ -158,34 +130,26 @@ Bool_t ratePlotHd() {
   Double_t dRateKhzCm7  = 0;
   Double_t dRateKhzCm10 = 0;
 
-  for (uMbsEvtIndex = iFirstGoodMbsEvent; uMbsEvtIndex < uNTreeEntriesScal;
-       uMbsEvtIndex++) {
+  for (uMbsEvtIndex = iFirstGoodMbsEvent; uMbsEvtIndex < uNTreeEntriesScal; uMbsEvtIndex++) {
     // Get the event data
     tInputTreeScal->GetEntry(uMbsEvtIndex);
 
     // Get the TRIGLOG and SCALER object we want from the arrays
-    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-      0);  // Always only 1 TRIGLOG board!
-    fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-      0);  // TRIGLOG board always first!
+    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+    fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
     // Calculate current MBS time (use directly the time, knowing the date is not so important here)
     Double_t dCurrMbsTime =
-      (Double_t)(fTriglogBoard->GetMbsTimeSec())
-      + (Double_t)(fTriglogBoard->GetMbsTimeMilliSec()) / 1e3;
+      (Double_t)(fTriglogBoard->GetMbsTimeSec()) + (Double_t)(fTriglogBoard->GetMbsTimeMilliSec()) / 1e3;
 
     // Calculate rate per cm2
 
-    dRateKhzCm1 =
-      fCalTrloBoard->GetScalerValue(1) / 1000.0 / 44;  // back HD PMT (4cmx11cm)
-    dRateKhzCm7 = fCalTrloBoard->GetScalerValue(7) / 1000.0
-                  / 59.5;  // Ref HD RPC (16*0.93 x 4cm)
-    dRateKhzCm10 =
-      fCalTrloBoard->GetScalerValue(10) / 1000.0 / 2756;  //Big HD (53cm x 52cm)
+    dRateKhzCm1  = fCalTrloBoard->GetScalerValue(1) / 1000.0 / 44;     // back HD PMT (4cmx11cm)
+    dRateKhzCm7  = fCalTrloBoard->GetScalerValue(7) / 1000.0 / 59.5;   // Ref HD RPC (16*0.93 x 4cm)
+    dRateKhzCm10 = fCalTrloBoard->GetScalerValue(10) / 1000.0 / 2756;  //Big HD (53cm x 52cm)
 
     //      if( 0 < fCalTrloBoard->GetTimeToLast() )
-    if (1e-5 < fCalTrloBoard
-                 ->GetTimeToLast())  // avoid too low reference clock counts
+    if (1e-5 < fCalTrloBoard->GetTimeToLast())  // avoid too low reference clock counts
     //      if( 5e-5 < fCalTrloBoard->GetTimeToLast() ) // avoid too low reference clock counts
     {
       // Scale rate with time since last event for averaging
@@ -195,22 +159,15 @@ Bool_t ratePlotHd() {
       hRateEvoScalMbs7->Fill(dCurrMbsTime - dFirstMbsTime, dRateKhzCm7);
       hRateEvoScalMbs10->Fill(dCurrMbsTime - dFirstMbsTime, dRateKhzCm10);
 
-      hRateEvoScalMbs1w->Fill(dCurrMbsTime - dFirstMbsTime,
-                              dRateKhzCm1,
-                              fCalTrloBoard->GetTimeToLast());
-      hRateEvoScalMbs7w->Fill(dCurrMbsTime - dFirstMbsTime,
-                              dRateKhzCm7,
-                              fCalTrloBoard->GetTimeToLast());
-      hRateEvoScalMbs10w->Fill(dCurrMbsTime - dFirstMbsTime,
-                               dRateKhzCm10,
-                               fCalTrloBoard->GetTimeToLast());
+      hRateEvoScalMbs1w->Fill(dCurrMbsTime - dFirstMbsTime, dRateKhzCm1, fCalTrloBoard->GetTimeToLast());
+      hRateEvoScalMbs7w->Fill(dCurrMbsTime - dFirstMbsTime, dRateKhzCm7, fCalTrloBoard->GetTimeToLast());
+      hRateEvoScalMbs10w->Fill(dCurrMbsTime - dFirstMbsTime, dRateKhzCm10, fCalTrloBoard->GetTimeToLast());
     }
   }  // for( uMbsEvtIndex = 0; uMbsEvtIndex < uNTreeEntriesScal; uMbsEvtIndex ++)
 
 
   // Now need to be displayed
-  TCanvas* tCanvasA =
-    new TCanvas("tCanvasA", "Rate evolution: two case", 0, 0, 2000, 1000);
+  TCanvas* tCanvasA = new TCanvas("tCanvasA", "Rate evolution: two case", 0, 0, 2000, 1000);
   tCanvasA->SetFillColor(0);
   tCanvasA->SetGridx(0);
   tCanvasA->SetGridy(0);

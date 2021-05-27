@@ -8,6 +8,7 @@
 
 
 #include <Rtypes.h>
+
 #include <vector>
 
 class CbmStsCluster;
@@ -82,15 +83,9 @@ public:
      ** channelOffset. If connectEdge is specififed, the first channel
      ** and the last channel are considered neighbours.
      **/
-  Long64_t Exec(const std::vector<InputData>& input,
-                std::vector<CbmStsCluster>& output,
-                UInt_t address,
-                UShort_t nChannels,
-                UShort_t channelOffset,
-                Double_t timeCutSigma,
-                Double_t timeCutAbs,
-                Bool_t connectEdge,
-                const CbmStsParModule* modPar);
+  Long64_t Exec(const std::vector<InputData>& input, std::vector<CbmStsCluster>& output, UInt_t address,
+                UShort_t nChannels, UShort_t channelOffset, Double_t timeCutSigma, Double_t timeCutAbs,
+                Bool_t connectEdge, const CbmStsParModule* modPar);
 
 
 private:
@@ -101,7 +96,8 @@ private:
      ** In case of clustering round-the-edge, the left neighbour of the
      ** first channel is the last channel. Otherwise, it is -1.
      **/
-  Short_t ChanLeft(UShort_t channel) {
+  Short_t ChanLeft(UShort_t channel)
+  {
     if (fConnectEdge) return (channel == 0 ? fNofChannels - 1 : channel - 1);
     return channel - 1;
   }
@@ -114,7 +110,8 @@ private:
      ** In case of clustering round-the-edge, the right neighbour of the
      ** last channel is the first channel. Otherwise, it is the increment.
      **/
-  Short_t ChanRight(UShort_t channel) {
+  Short_t ChanRight(UShort_t channel)
+  {
     if (fConnectEdge) return (channel == fNofChannels - 1 ? 0 : channel + 1);
     return channel + 1;
   }
@@ -148,7 +145,8 @@ private:
      ** @param channel  Channel number
      ** @return kTRUE is the channel is active; else kFALSE
      **/
-  Bool_t IsActive(Short_t channel) {
+  Bool_t IsActive(Short_t channel)
+  {
     if (channel < 0 || channel >= fNofChannels) return kFALSE;
     return fStatus[channel].first > -1;
   }
@@ -178,11 +176,11 @@ private:
   std::vector<CbmStsCluster>* fOutput = nullptr;  //!
 
   // Required parameters
-  UInt_t fAddress                = 0;   ///< Unique module address for clusters
-  UShort_t fNofChannels          = 0;   ///< Number of channels
-  UShort_t fChannelOffset        = 0;   ///< Number of first channel
-  Double_t fTimeCutSig           = 0.;  ///< Time cut in multiples of error
-  Double_t fTimeCutAbs           = 0.;  ///< Absolute time cut [ns]
+  UInt_t fAddress                = 0;        ///< Unique module address for clusters
+  UShort_t fNofChannels          = 0;        ///< Number of channels
+  UShort_t fChannelOffset        = 0;        ///< Number of first channel
+  Double_t fTimeCutSig           = 0.;       ///< Time cut in multiples of error
+  Double_t fTimeCutAbs           = 0.;       ///< Absolute time cut [ns]
   Bool_t fConnectEdge            = kFALSE;   ///< Connect last and first channel
   const CbmStsParModule* fModPar = nullptr;  //! Module parameters
 };

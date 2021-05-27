@@ -8,7 +8,9 @@
 #define CBM_RICH_GEO_TEST_STUDY_REPORT
 
 #include "CbmStudyReport.h"
+
 #include "TSystem.h"
+
 #include <string>
 using std::string;
 

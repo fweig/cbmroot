@@ -1,4 +1,5 @@
-void pl_Datime(TString sysinfo = "") {
+void pl_Datime(TString sysinfo = "")
+{
   TCanvas* can = (TCanvas*) gROOT->FindObjectAny("can");
   //cout <<" got can = "<<can<<endl;
   if (NULL == can) return;

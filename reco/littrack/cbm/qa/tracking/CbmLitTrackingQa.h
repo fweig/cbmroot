@@ -9,8 +9,9 @@
 #define CBMLITTRACKINGQA_H_
 
 #include "CbmDefs.h"
-#include "FairTask.h"
 #include "cbm/base/CbmLitDetectorSetup.h"
+
+#include "FairTask.h"
 
 class CbmHistManager;
 class CbmTrackMatchNew;
@@ -57,57 +58,46 @@ public:
   virtual void Finish();
 
   /** Setters **/
-  void SetMinNofPointsSts(Int_t minNofPointsSts) {
-    fMinNofPointsSts = minNofPointsSts;
-  }
-  void SetMinNofPointsTrd(Int_t minNofPointsTrd) {
-    fMinNofPointsTrd = minNofPointsTrd;
-  }
-  void SetMinNofPointsMuch(Int_t minNofPointsMuch) {
-    fMinNofPointsMuch = minNofPointsMuch;
-  }
-  void SetMinNofPointsTof(Int_t minNofPointsTof) {
-    fMinNofPointsTof = minNofPointsTof;
-  }
-  void SetMinNofHitsRich(Int_t minNofHitsRich) {
-    fMinNofHitsRich = minNofHitsRich;
-  }
+  void SetMinNofPointsSts(Int_t minNofPointsSts) { fMinNofPointsSts = minNofPointsSts; }
+  void SetMinNofPointsTrd(Int_t minNofPointsTrd) { fMinNofPointsTrd = minNofPointsTrd; }
+  void SetMinNofPointsMuch(Int_t minNofPointsMuch) { fMinNofPointsMuch = minNofPointsMuch; }
+  void SetMinNofPointsTof(Int_t minNofPointsTof) { fMinNofPointsTof = minNofPointsTof; }
+  void SetMinNofHitsRich(Int_t minNofHitsRich) { fMinNofHitsRich = minNofHitsRich; }
   void SetQuota(Double_t quota) { fQuota = quota; }
   void SetQuotaRich(Double_t quotaRich) { fQuotaRich = quotaRich; }
   void SetMinNofHitsTrd(Int_t minNofHitsTrd) { fMinNofHitsTrd = minNofHitsTrd; }
-  void SetMinNofHitsMuch(Int_t minNofHitsMuch) {
-    fMinNofHitsMuch = minNofHitsMuch;
-  }
-  void SetUseConsecutivePointsInSts(Bool_t useConsecutivePointsInSts) {
+  void SetMinNofHitsMuch(Int_t minNofHitsMuch) { fMinNofHitsMuch = minNofHitsMuch; }
+  void SetUseConsecutivePointsInSts(Bool_t useConsecutivePointsInSts)
+  {
     fUseConsecutivePointsInSts = useConsecutivePointsInSts;
   }
   void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
-  void SetPRange(Int_t bins, Int_t min, Int_t max) {
+  void SetPRange(Int_t bins, Int_t min, Int_t max)
+  {
     fPRangeBins = bins;
     fPRangeMin  = min;
     fPRangeMax  = max;
   }
-  void SetYRange(Int_t bins, Int_t min, Int_t max) {
+  void SetYRange(Int_t bins, Int_t min, Int_t max)
+  {
     fYRangeBins = bins;
     fYRangeMin  = min;
     fYRangeMax  = max;
   }
-  void SetPtRange(Int_t bins, Int_t min, Int_t max) {
+  void SetPtRange(Int_t bins, Int_t min, Int_t max)
+  {
     fPtRangeBins = bins;
     fPtRangeMin  = min;
     fPtRangeMax  = max;
   }
-  void SetAngleRange(Double_t min, Double_t max, Int_t nofBins) {
+  void SetAngleRange(Double_t min, Double_t max, Int_t nofBins)
+  {
     fAngleRangeMin  = min;
     fAngleRangeMax  = max;
     fAngleRangeBins = nofBins;
   }
-  void SetTrackCategories(const vector<string>& trackCategories) {
-    fTrackCategories = trackCategories;
-  }
-  void SetRingCategories(const vector<string>& ringCategories) {
-    fRingCategories = ringCategories;
-  }
+  void SetTrackCategories(const vector<string>& trackCategories) { fTrackCategories = trackCategories; }
+  void SetRingCategories(const vector<string>& ringCategories) { fRingCategories = ringCategories; }
 
   void SetRichAnnCut(Double_t par) { fRichAnnCut = par; }
   void SetTrdAnnCut(Double_t par) { fTrdAnnCut = par; }
@@ -134,55 +124,25 @@ private:
   void FillTrackAndRingAcceptanceFunctions();
 
 
-  void CreateH1Efficiency(const string& name,
-                          const string& parameter,
-                          const string& xTitle,
-                          Int_t nofBins,
-                          Double_t minBin,
-                          Double_t maxBin,
-                          const string& opt);
+  void CreateH1Efficiency(const string& name, const string& parameter, const string& xTitle, Int_t nofBins,
+                          Double_t minBin, Double_t maxBin, const string& opt);
 
-  void CreateH2Efficiency(const string& name,
-                          const string& parameter,
-                          const string& xTitle,
-                          const string& yTitle,
-                          Int_t nofBinsX,
-                          Double_t minBinX,
-                          Double_t maxBinX,
-                          Int_t nofBinsY,
-                          Double_t minBinY,
-                          Double_t maxBinY,
-                          const string& opt);
+  void CreateH2Efficiency(const string& name, const string& parameter, const string& xTitle, const string& yTitle,
+                          Int_t nofBinsX, Double_t minBinX, Double_t maxBinX, Int_t nofBinsY, Double_t minBinY,
+                          Double_t maxBinY, const string& opt);
 
-  void CreateH1PionSuppression(const string& name,
-                               const string& parameter,
-                               const string& xTitle,
-                               Int_t nofBins,
-                               Double_t minBin,
-                               Double_t maxBin);
+  void CreateH1PionSuppression(const string& name, const string& parameter, const string& xTitle, Int_t nofBins,
+                               Double_t minBin, Double_t maxBin);
 
-  void CreateH1(const string& name,
-                const string& xTitle,
-                const string& yTitle,
-                Int_t nofBins,
-                Double_t minBin,
+  void CreateH1(const string& name, const string& xTitle, const string& yTitle, Int_t nofBins, Double_t minBin,
                 Double_t maxBin);
 
-  void CreateH2(const string& name,
-                const string& xTitle,
-                const string& yTitle,
-                const string& zTitle,
-                Int_t nofBinsX,
-                Double_t minBinX,
-                Double_t maxBinX,
-                Int_t nofBinsY,
-                Double_t minBinY,
-                Double_t maxBinY);
+  void CreateH2(const string& name, const string& xTitle, const string& yTitle, const string& zTitle, Int_t nofBinsX,
+                Double_t minBinX, Double_t maxBinX, Int_t nofBinsY, Double_t minBinY, Double_t maxBinY);
 
   void CreateTrackHitsHistogram(const string& detName);
 
-  vector<string>
-  CreateGlobalTrackingHistogramNames(const vector<string>& detectors);
+  vector<string> CreateGlobalTrackingHistogramNames(const vector<string>& detectors);
 
   vector<string> CreateGlobalTrackingHistogramNames();
 
@@ -213,8 +173,7 @@ private:
     */
   void ProcessMvd(Int_t stsId);
 
-  void FillTrackQualityHistograms(const CbmTrackMatchNew* trackMatch,
-                                  ECbmModuleId detId);
+  void FillTrackQualityHistograms(const CbmTrackMatchNew* trackMatch, ECbmModuleId detId);
 
   /**
     * \brief Loop over the MC tracks. Check track acceptance for different cases.
@@ -235,15 +194,9 @@ private:
     * \param[in] hist main name of the histograms to be filled.
     * \param[in] par Value that will be added in histogram (momentum or number of points).
     */
-  void FillGlobalReconstructionHistos(
-    Int_t mcEventId,
-    Int_t mcId,
-    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
-    const string& histName,
-    const string& histTypeName,
-    const string& effName,
-    const string& catName,
-    const vector<Double_t>& par);
+  void FillGlobalReconstructionHistos(Int_t mcEventId, Int_t mcId, const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+                                      const string& histName, const string& histTypeName, const string& effName,
+                                      const string& catName, const vector<Double_t>& par);
 
   /**
      * \brief Fill histograms of accepted and reconstructed rings tracks.
@@ -253,19 +206,11 @@ private:
      * \param[in] hist main name of the histograms to be filled.
      * \param[in] par Value that will be added in histogram (momentum or number of points)
      */
-  void FillGlobalReconstructionHistosRich(
-    Int_t mcEventId,
-    Int_t mcId,
-    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
-    const string& histName,
-    const string& histTypeName,
-    const string& effName,
-    const string& catName,
-    const vector<Double_t>& par);
+  void FillGlobalReconstructionHistosRich(Int_t mcEventId, Int_t mcId, const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+                                          const string& histName, const string& histTypeName, const string& effName,
+                                          const string& catName, const vector<Double_t>& par);
 
-  Bool_t ElectronId(Int_t mcEventId,
-                    Int_t mcId,
-                    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+  Bool_t ElectronId(Int_t mcEventId, Int_t mcId, const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
                     const string& effName);
 
   void PionSuppression();
@@ -285,16 +230,13 @@ private:
   Int_t fMinNofPointsTrd;   // Minimal number of MCPoints in TRD
   Int_t fMinNofPointsMuch;  // Minimal number of MCPoints in MUCH
   Int_t fMinNofPointsTof;   // Minimal number of MCPoints in TOF
-  Double_t
-    fQuota;  // True/all hits for track to be considered correctly reconstructed
+  Double_t fQuota;          // True/all hits for track to be considered correctly reconstructed
 
-  Bool_t
-    fUseConsecutivePointsInSts;  // Use consecutive MC points for STS normalization
+  Bool_t fUseConsecutivePointsInSts;  // Use consecutive MC points for STS normalization
 
   // Acceptance in RICH
   Int_t fMinNofHitsRich;  // Minimal number of hits in MC RICH ring
-  Double_t
-    fQuotaRich;  // True/all hits for ring to be considered correctly reconstructed
+  Double_t fQuotaRich;    // True/all hits for ring to be considered correctly reconstructed
 
   // Minimal number of hits in track to be considered as accepted.
   // This is needed because the definition of the correctly reconstructed track
@@ -307,25 +249,18 @@ private:
   Int_t fMinNofHitsTrd;   // for TRD track
   Int_t fMinNofHitsMuch;  // for MUCH track
 
-  Double_t
-    fPRangeMin;  // Minimum momentum for tracks for efficiency calculation [GeV/c]
-  Double_t
-    fPRangeMax;  // Maximum momentum for tracks for efficiency calculation [GeV/c]
-  Int_t fPRangeBins;  // Number of bins for efficiency vs. momentum histogram
-  Double_t
-    fPtRangeMin;  // Minimum Pt for tracks for efficiency calculation [GeV/c]
-  Double_t
-    fPtRangeMax;  // Maximum Pt for tracks for efficiency calculation [GeV/c]
-  Int_t fPtRangeBins;  // Number of bins for efficiency vs. Pt histogram
-  Double_t
-    fYRangeMin;  // Minimum rapidity for tracks for efficiency calculation [GeV/c]
-  Double_t
-    fYRangeMax;  // Maximum rapidity for tracks for efficiency calculation [GeV/c]
-  Int_t fYRangeBins;  // Number of bins for efficiency vs. rapidity histogram
+  Double_t fPRangeMin;      // Minimum momentum for tracks for efficiency calculation [GeV/c]
+  Double_t fPRangeMax;      // Maximum momentum for tracks for efficiency calculation [GeV/c]
+  Int_t fPRangeBins;        // Number of bins for efficiency vs. momentum histogram
+  Double_t fPtRangeMin;     // Minimum Pt for tracks for efficiency calculation [GeV/c]
+  Double_t fPtRangeMax;     // Maximum Pt for tracks for efficiency calculation [GeV/c]
+  Int_t fPtRangeBins;       // Number of bins for efficiency vs. Pt histogram
+  Double_t fYRangeMin;      // Minimum rapidity for tracks for efficiency calculation [GeV/c]
+  Double_t fYRangeMax;      // Maximum rapidity for tracks for efficiency calculation [GeV/c]
+  Int_t fYRangeBins;        // Number of bins for efficiency vs. rapidity histogram
   Double_t fAngleRangeMin;  // Minimum polar angle [grad]
   Double_t fAngleRangeMax;  // Maximum polar angle [grad]
-  Int_t
-    fAngleRangeBins;  // Number of bins for efficiency vs. polar angle histogram
+  Int_t fAngleRangeBins;    // Number of bins for efficiency vs. polar angle histogram
 
   // Pointers to data arrays
   CbmMCDataArray* fMCTracks;       // CbmMCTrack array
@@ -348,24 +283,16 @@ private:
   vector<string> fTrackCategories;     // Vector of track category names
   vector<string> fRingCategories;      // Vector of ring category names
   vector<string> fTrackCategoriesPID;  // Vector of track category names
-  vector<string>
-    fRingCategoriesPID;  // Vector of ring category names for REC+PID
+  vector<string> fRingCategoriesPID;   // Vector of ring category names for REC+PID
   vector<string> fPiSuppCategories;
   ;  // Vector of categories for pion suppression
 
   //#ifndef  __ROOTCLING__
-  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks,
-                                               Int_t eventNo,
-                                               Int_t index);
-  typedef Bool_t (*LitRingAcceptanceFunction)(CbmMCDataArray* mcTracks,
-                                              Int_t eventNo,
-                                              Int_t index,
+  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index);
+  typedef Bool_t (*LitRingAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index,
                                               Int_t nofHitsInRing);
-  typedef Bool_t (*LitPiSuppAcceptanceFunction)(
-    const TClonesArray* globalTracks,
-    const TClonesArray* stsMatches,
-    const TClonesArray* richMatches,
-    Int_t index);
+  typedef Bool_t (*LitPiSuppAcceptanceFunction)(const TClonesArray* globalTracks, const TClonesArray* stsMatches,
+                                                const TClonesArray* richMatches, Int_t index);
   map<string, LitTrackAcceptanceFunction>
     fTrackAcceptanceFunctions;  // maps track category name to track acceptance function
   map<string, LitRingAcceptanceFunction>

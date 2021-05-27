@@ -1,8 +1,9 @@
 #include "CbmMQChannels.h"
+
 #include "FairMQDevice.h"
 
-CbmMQChannels::CbmMQChannels(std::vector<std::string> allowedChannels)
-  : fAllowedChannels {allowedChannels} {
+CbmMQChannels::CbmMQChannels(std::vector<std::string> allowedChannels) : fAllowedChannels {allowedChannels}
+{
   fChannelsToSend.resize(fAllowedChannels.size());
   for (auto& entry : fChannelsToSend) {
     entry.push_back("");
@@ -10,32 +11,29 @@ CbmMQChannels::CbmMQChannels(std::vector<std::string> allowedChannels)
   fComponentsToSend.resize(fAllowedChannels.size());
 }
 
-bool CbmMQChannels::IsChannelNameAllowed(std::string channelName) {
+bool CbmMQChannels::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
     if (pos1 != std::string::npos) {
       const std::vector<std::string>::const_iterator pos =
         std::find(fAllowedChannels.begin(), fAllowedChannels.end(), entry);
-      const std::vector<std::string>::size_type idx =
-        pos - fAllowedChannels.begin();
+      const std::vector<std::string>::size_type idx = pos - fAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       fComponentsToSend[idx]++;
       // The array is initialized with one empty string. If the string has still teh value from initialization
       // exchnge the value by the new channel name. In any other case add one more entry to the vector
-      if (fChannelsToSend[idx].size() == 1
-          && fChannelsToSend[idx].at(0).empty()) {
+      if (fChannelsToSend[idx].size() == 1 && fChannelsToSend[idx].at(0).empty()) {
         fChannelsToSend[idx].at(0) = channelName;
-      } else {
+      }
+      else {
         fChannelsToSend[idx].push_back(channelName);
       }
       return true;
     }
   }
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(info) << "The allowed channels are: ";
   for (auto const& entry : fAllowedChannels) {
     LOG(info) << entry;
@@ -44,7 +42,8 @@ bool CbmMQChannels::IsChannelNameAllowed(std::string channelName) {
   return false;
 }
 
-bool CbmMQChannels::CheckChannels(FairMQDevice* device) {
+bool CbmMQChannels::CheckChannels(FairMQDevice* device)
+{
   // Get the information about created channels from the device
   // Check if the defined channels from the topology (by name)
   // are in the list of channels which are possible/allowed

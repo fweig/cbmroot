@@ -24,7 +24,9 @@
 #include "CbmDigiManager.h"
 #include "CbmStsDigi.h"
 #include "CbmTimeSlice.h"
+
 #include "FairSystemInfo.h"
+
 #include "TFile.h"
 #include "TStopwatch.h"
 #include "TSystem.h"
@@ -32,13 +34,13 @@
 #endif
 
 
-void test_timeslice(TString dataset = "test") {
+void test_timeslice(TString dataset = "test")
+{
 
   // --- Remove old CTest runtime dependency file
   TString dataDir  = gSystem->DirName(dataset);
   TString dataName = gSystem->BaseName(dataset);
-  TString depFile =
-    Remove_CTest_Dependency_File(dataDir, "test_timeslice", dataName);
+  TString depFile  = Remove_CTest_Dependency_File(dataDir, "test_timeslice", dataName);
 
   // --- Temporary variables
   //TClonesArray* digis = new TClonesArray("CbmStsDigi", 1e6);
@@ -108,13 +110,13 @@ void test_timeslice(TString dataset = "test") {
       // Check correct sorting in time-slice
       if (!slice->IsFlexible()) {
         if (digiTime < timeStart) {
-          std::cout << "!!! Error for digi " << iDigi << ": t=  " << digiTime
-                    << " is before time-slice start " << timeStart << std::endl;
+          std::cout << "!!! Error for digi " << iDigi << ": t=  " << digiTime << " is before time-slice start "
+                    << timeStart << std::endl;
           nError1++;
         }
         if (digiTime > timeEnd) {
-          std::cout << "!!! Error for digi " << iDigi << ": t = " << digiTime
-                    << " is after time-slice end " << timeEnd << std::endl;
+          std::cout << "!!! Error for digi " << iDigi << ": t = " << digiTime << " is after time-slice end " << timeEnd
+                    << std::endl;
           nError1++;
         }
       }
@@ -122,9 +124,8 @@ void test_timeslice(TString dataset = "test") {
       // Check correct time-ordering
       if (iEntry != 0 || iDigi != 0) {
         if (digiTime < digiTimeLast) {
-          std::cout << "!!! Error for digi " << iDigi << ": time is "
-                    << digiTime << ", previous time was " << digiTimeLast
-                    << " difference " << digiTime - digiTimeLast << std::endl
+          std::cout << "!!! Error for digi " << iDigi << ": time is " << digiTime << ", previous time was "
+                    << digiTimeLast << " difference " << digiTime - digiTimeLast << std::endl
                     << std::endl;
           nError2++;
         }  //? time before last digi
@@ -138,11 +139,9 @@ void test_timeslice(TString dataset = "test") {
         if (itChannel != itAddress->second.end()) {
           digiTimeChannel = channelTime[address][channel];
           if (digiTime - digiTimeChannel < deadTime) {
-            std::cout << "!!! Error for digi " << iDigi << ": time is "
-                      << digiTime << ", previous time in channel was "
-                      << digiTimeChannel << " difference "
-                      << digiTime - digiTimeChannel
-                      << " is larger than dead time " << deadTime << std::endl
+            std::cout << "!!! Error for digi " << iDigi << ": time is " << digiTime << ", previous time in channel was "
+                      << digiTimeChannel << " difference " << digiTime - digiTimeChannel << " is larger than dead time "
+                      << deadTime << std::endl
                       << std::endl;
             nError3++;
           }  //? time difference smaller than dead time
@@ -165,9 +164,8 @@ void test_timeslice(TString dataset = "test") {
   std::cout << "+++ Sorting errors   " << nError1 << std::endl;
   std::cout << "+++ Ordering errors  " << nError2 << std::endl;
   std::cout << "+++ Dead time errors " << nError3 << std::endl;
-  if (nError1 + nError2 + nError3) {
-    std::cout << "+++ Macro finished with errors" << std::endl;
-  } else {
+  if (nError1 + nError2 + nError3) { std::cout << "+++ Macro finished with errors" << std::endl; }
+  else {
     std::cout << " Test passed" << std::endl;
     std::cout << " All ok " << std::endl;
   }

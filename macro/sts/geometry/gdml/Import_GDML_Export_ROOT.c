@@ -1,4 +1,5 @@
-void Import_GDML_Export_ROOT() {
+void Import_GDML_Export_ROOT()
+{
   TGeoManager* gdml = new TGeoManager("gdml", "My 3D Project");
 
   TGDMLParse parser;

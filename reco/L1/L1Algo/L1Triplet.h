@@ -29,21 +29,17 @@ private:
 public:
   //  std::vector<unsigned int> neighbours;
 
-  static bool compare(const L1Triplet* a,
-                      const L1Triplet* b) {  // sort in back order
-    return ((a->GetLHit() > b->GetLHit()))
-           || ((a->GetLHit() == b->GetLHit()) && (a->GetMHit() < b->GetMHit()))
-           || ((a->GetLHit() == b->GetLHit()) && (a->GetMHit() == b->GetMHit())
-               && (a->GetRHit() < b->GetRHit()));
+  static bool compare(const L1Triplet* a, const L1Triplet* b)
+  {  // sort in back order
+    return ((a->GetLHit() > b->GetLHit())) || ((a->GetLHit() == b->GetLHit()) && (a->GetMHit() < b->GetMHit()))
+           || ((a->GetLHit() == b->GetLHit()) && (a->GetMHit() == b->GetMHit()) && (a->GetRHit() < b->GetRHit()));
     // return a.GetLHit() >  b.GetLHit();
   }
 
-  static bool compare(const L1Triplet& a,
-                      const L1Triplet& b) {  // sort in back order
-    return ((a.GetLHit() > b.GetLHit()))
-           || ((a.GetLHit() == b.GetLHit()) && (a.GetMHit() < b.GetMHit()))
-           || ((a.GetLHit() == b.GetLHit()) && (a.GetMHit() == b.GetMHit())
-               && (a.GetRHit() < b.GetRHit()));
+  static bool compare(const L1Triplet& a, const L1Triplet& b)
+  {  // sort in back order
+    return ((a.GetLHit() > b.GetLHit())) || ((a.GetLHit() == b.GetLHit()) && (a.GetMHit() < b.GetMHit()))
+           || ((a.GetLHit() == b.GetLHit()) && (a.GetMHit() == b.GetMHit()) && (a.GetRHit() < b.GetRHit()));
     // return a.GetLHit() >  b.GetLHit();
   }
 
@@ -52,13 +48,13 @@ public:
   //
   //   }
 
-  static bool compareLevel(const L1Triplet& a,
-                           const L1Triplet& b) {  // sort in back order
+  static bool compareLevel(const L1Triplet& a, const L1Triplet& b)
+  {  // sort in back order
     return (a.GetLevel() > b.GetLevel());
   }
 
-  static bool compareLevelT(const L1Triplet a,
-                            const L1Triplet b) {  // sort in back order
+  static bool compareLevelT(const L1Triplet a, const L1Triplet b)
+  {  // sort in back order
     return (a.GetLevel() > b.GetLevel());
   }
 
@@ -84,18 +80,10 @@ public:
     , Ctx(0)
     , Cty(0) {};
 
-  void Set(unsigned int iHitL,
-           unsigned int iHitM,
-           unsigned int iHitR,
-           unsigned int iStaL,
-           unsigned int iStaM,
-           unsigned int iStaR,
-           unsigned char Level,
-           fscal Qp,
-           fscal Chi2,
-           fscal /*time_*/ = 0,
-           fscal _Cqp      = 0,
-           int /*_n*/      = 0) {
+  void Set(unsigned int iHitL, unsigned int iHitM, unsigned int iHitR, unsigned int iStaL, unsigned int iStaM,
+           unsigned int iStaR, unsigned char Level, fscal Qp, fscal Chi2, fscal /*time_*/ = 0, fscal _Cqp = 0,
+           int /*_n*/ = 0)
+  {
     w0 = iHitL;
     w1 = iHitM;
     w2 = iHitR;
@@ -131,20 +119,23 @@ public:
   //   return w2;
   // }
 
-  unsigned char GetLevel() const {
+  unsigned char GetLevel() const
+  {
     //    return b0%8;
     return bl;
   }
 
   fscal GetQp() const { return b1; }
 
-  fscal GetChi2() const {
+  fscal GetChi2() const
+  {
     //  float x = (b0>>3)*3.5/31.;
     //  return x*x;
     return chi2double;
   }
 
-  fscal Time() const {
+  fscal Time() const
+  {
     //  float x = (b0>>3)*3.5/31.;
     //  return x*x;
     // return time;

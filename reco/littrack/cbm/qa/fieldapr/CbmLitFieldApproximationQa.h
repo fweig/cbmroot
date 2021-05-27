@@ -9,6 +9,7 @@
 #define CBMLITFIELDAPPROXIMATIONQA_H_
 
 #include "FairTask.h"
+
 #include <string>
 #include <vector>
 
@@ -59,12 +60,8 @@ public:
   virtual void Finish();
 
   /* Setters */
-  void SetSliceZPosition(const vector<Double_t>& zPos) {
-    fZSlicePosition = zPos;
-  }
-  void SetPolynomDegrees(const vector<UInt_t>& degrees) {
-    fPolynomDegrees = degrees;
-  }
+  void SetSliceZPosition(const vector<Double_t>& zPos) { fZSlicePosition = zPos; }
+  void SetPolynomDegrees(const vector<UInt_t>& degrees) { fPolynomDegrees = degrees; }
   void IsFixedBounds(Bool_t fixedBounds) { fFixedBounds = fixedBounds; }
   void SetAcceptanceAngleX(double xangle) { fAcceptanceAngleX = xangle; }
   void SetAcceptanceAngleY(double yangle) { fAcceptanceAngleY = yangle; }
@@ -72,9 +69,7 @@ public:
   void SetNofBinsY(int nofBinsY) { fNofBinsY = nofBinsY; }
   void SetUseEllipseAcc(bool useEllipseAcc) { fUseEllipseAcc = useEllipseAcc; }
   void SetOutputDir(const string& dir) { fOutputDir = dir; }
-  void SetPolynomDegreeIndex(unsigned int degreeIndex) {
-    fPolynomDegreeIndex = degreeIndex;
-  }
+  void SetPolynomDegreeIndex(unsigned int degreeIndex) { fPolynomDegreeIndex = degreeIndex; }
 
 private:
   /**

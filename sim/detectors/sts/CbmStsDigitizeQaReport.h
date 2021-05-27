@@ -10,9 +10,7 @@ class CbmStsSetup;
 
 class CbmStsDigitizeQaReport : public CbmSimulationReport {
 public:
-  CbmStsDigitizeQaReport(CbmStsSetup* setup,
-                         const CbmStsParSim* settings,
-                         const CbmStsParAsic* asicPar);
+  CbmStsDigitizeQaReport(CbmStsSetup* setup, const CbmStsParSim* settings, const CbmStsParAsic* asicPar);
   virtual ~CbmStsDigitizeQaReport();
 
 

@@ -79,33 +79,40 @@ CbmStar2019MonitorPulserAlgo::CbmStar2019MonitorPulserAlgo()
   , fhPulserTimeDiffRms(nullptr)
   , fhPulserTimeDiffRmsZoom(nullptr)
   , fhPulserRmsGdpbToRefEvo(nullptr)
-  , fhPulserRmsGbtxToRefEvo(nullptr) {}
-CbmStar2019MonitorPulserAlgo::~CbmStar2019MonitorPulserAlgo() {
+  , fhPulserRmsGbtxToRefEvo(nullptr)
+{
+}
+CbmStar2019MonitorPulserAlgo::~CbmStar2019MonitorPulserAlgo()
+{
   /// Clear buffers
   fvmEpSupprBuffer.clear();
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmStar2019MonitorPulserAlgo::Init() {
+Bool_t CbmStar2019MonitorPulserAlgo::Init()
+{
   LOG(info) << "Initializing mCBM T0 2019 monitor algo";
 
   return kTRUE;
 }
 void CbmStar2019MonitorPulserAlgo::Reset() {}
-void CbmStar2019MonitorPulserAlgo::Finish() {
+void CbmStar2019MonitorPulserAlgo::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmStar2019MonitorPulserAlgo::InitContainers() {
+Bool_t CbmStar2019MonitorPulserAlgo::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmStar2019MonitorPulserAlgo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmStar2019MonitorPulserAlgo::ReInitContainers() {
+Bool_t CbmStar2019MonitorPulserAlgo::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmStar2019MonitorPulserAlgo";
 
@@ -116,14 +123,16 @@ Bool_t CbmStar2019MonitorPulserAlgo::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmStar2019MonitorPulserAlgo::GetParList() {
+TList* CbmStar2019MonitorPulserAlgo::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmStar2019TofPar("CbmStar2019TofPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmStar2019MonitorPulserAlgo::InitParameters() {
+Bool_t CbmStar2019MonitorPulserAlgo::InitParameters()
+{
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
@@ -152,8 +161,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::InitParameters() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   /// Parameters for FLES containers processing
@@ -164,19 +172,17 @@ Bool_t CbmStar2019MonitorPulserAlgo::InitParameters() {
   if (-1 < fiSectorIndex) {
     fiSectorIndex -= fUnpackPar->GetGdpbToSectorOffset();
     if (fuNrOfGdpbs <= static_cast<UInt_t>(fiSectorIndex))
-      LOG(fatal) << "Selected sector out of bounds relative to parameter file: "
-                 << fiSectorIndex << " VS " << fuNrOfGdpbs;
+      LOG(fatal) << "Selected sector out of bounds relative to parameter file: " << fiSectorIndex << " VS "
+                 << fuNrOfGdpbs;
     else
-      LOG(info) << "Selected sector "
-                << fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset()
+      LOG(info) << "Selected sector " << fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset()
                 << " for single sector analysis";
     fuNrOfGdpbs = 1;
     fGdpbIdIndexMap.clear();
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(fiSectorIndex)] = 0;
   }  // if( -1 < fiSectorIndex )
 
-  if (fbEtofFeeIndexing)
-    LOG(info) << "Using eTOF indexing with only 3 FEE per GBTx instead of 5";
+  if (fbEtofFeeIndexing) LOG(info) << "Using eTOF indexing with only 3 FEE per GBTx instead of 5";
 
   /// Internal status initialization
   fvulCurrentEpoch.resize(fuNrOfGdpbs, 0);
@@ -194,8 +200,8 @@ Bool_t CbmStar2019MonitorPulserAlgo::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmStar2019MonitorPulserAlgo::AddMsComponentToList(size_t component,
-                                                        UShort_t usDetectorId) {
+void CbmStar2019MonitorPulserAlgo::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -203,14 +209,13 @@ void CbmStar2019MonitorPulserAlgo::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info)
-    << "CbmStar2019MonitorPulserAlgo::AddMsComponentToList => Component "
-    << component << " with detector ID 0x" << std::hex << usDetectorId
-    << std::dec << " added to list";
+  LOG(info) << "CbmStar2019MonitorPulserAlgo::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmStar2019MonitorPulserAlgo::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmStar2019MonitorPulserAlgo::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -223,10 +228,9 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -241,16 +245,14 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Fill histograms
     FillHistograms();
@@ -259,24 +261,21 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
-                                               size_t uMsCompIdx,
-                                               size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
   fdMsTime        = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
   if (-1.0 == fdStartTime) fdStartTime = fdMsTime;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
@@ -285,13 +284,11 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
   auto it = fGdpbIdIndexMap.find(fuCurrDpbId);
   if (it == fGdpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the TOF "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -313,8 +310,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete nDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+  uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
   // Prepare variables for the loop on contents
   Int_t messageType       = -111;
@@ -336,10 +332,9 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
     fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(mess.getGdpbGenChipId());
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-    if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
-        && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS "
-                   << fuNrOfGet4PerGdpb << " set in parameters.";
+    if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb
+                   << " set in parameters.";
 
     switch (messageType) {
       case gdpbv100::MSG_HIT: {
@@ -375,8 +370,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
         break;
       }  // case not hit or epoch
       default:
-        LOG(fatal) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(fatal) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 data format.";
     }  // switch( mess.getMessageType() )
   }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
@@ -385,32 +379,31 @@ Bool_t CbmStar2019MonitorPulserAlgo::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmStar2019MonitorPulserAlgo::ProcessEpochCycle(uint64_t ulCycleData) {
+void CbmStar2019MonitorPulserAlgo::ProcessEpochCycle(uint64_t ulCycleData)
+{
   ULong64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (!(ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx]
         || ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx] + 1)
       && 0 < fulCurrentMsIdx) {
     LOG(warning) << "CbmStar2019MonitorPulserAlgo::ProcessEpochCycle => "
-                 << " Missmatch in epoch cycles detected for Gdpb "
-                 << fuCurrDpbIdx
+                 << " Missmatch in epoch cycles detected for Gdpb " << fuCurrDpbIdx
                  << ", probably fake cycles due to epoch index corruption! "
-                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX",
-                         fvulCurrentEpochCycle[fuCurrDpbIdx],
+                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                          ulEpochCycleVal);
   }  // if epoch cycle did not stay constant or increase by exactly 1, except if first MS of the TS
   if (ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx]) {
     LOG(info) << "CbmStar2019EventBuilderEtofAlgo::ProcessEpochCycle => "
               << " New epoch cycle for Gdpb " << fuCurrDpbIdx
-              << Form(": Current cycle 0x%09llX New cycle 0x%09llX",
-                      fvulCurrentEpochCycle[fuCurrDpbIdx],
+              << Form(": Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                       ulEpochCycleVal);
   }  // if( ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx] )
   fvulCurrentEpochCycle[fuCurrDpbIdx] = ulEpochCycleVal;
 
   return;
 }
-void CbmStar2019MonitorPulserAlgo::ProcessEpoch(gdpbv100::Message mess) {
+void CbmStar2019MonitorPulserAlgo::ProcessEpoch(gdpbv100::Message mess)
+{
   ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
   /*
    Bool_t bSyncFlag   = ( 1 == mess.getGdpbEpSync() );
@@ -420,20 +413,20 @@ void CbmStar2019MonitorPulserAlgo::ProcessEpoch(gdpbv100::Message mess) {
 */
   fvulCurrentEpoch[fuCurrDpbIdx] = ulEpochNr;
   fvulCurrentEpochFull[fuCurrDpbIdx] =
-    ulEpochNr
-    + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
+    ulEpochNr + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
 
   /// Process the corresponding messages buffer for current gDPB
   ProcessEpSupprBuffer();
 }
 // -------------------------------------------------------------------------
-void CbmStar2019MonitorPulserAlgo::ProcessEpSupprBuffer() {
+void CbmStar2019MonitorPulserAlgo::ProcessEpSupprBuffer()
+{
   Int_t iBufferSize = fvmEpSupprBuffer.size();
 
   if (0 == iBufferSize) return;
 
-  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx
-             << " with epoch number " << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
+  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx << " with epoch number "
+             << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
 
   /// Data are sorted between epochs, not inside => Epoch level ordering
   /// Sorting at lower bin precision level
@@ -452,13 +445,11 @@ void CbmStar2019MonitorPulserAlgo::ProcessEpSupprBuffer() {
   for (Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++) {
     messageType = fvmEpSupprBuffer[iMsgIdx].getMessageType();
 
-    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(
-      fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId());
+    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(fvmEpSupprBuffer[iMsgIdx].getGdpbGenChipId());
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
     /// Store the full message in the proper buffer
-    gdpbv100::FullMessage fullMess(fvmEpSupprBuffer[iMsgIdx],
-                                   ulCurEpochGdpbGet4);
+    gdpbv100::FullMessage fullMess(fvmEpSupprBuffer[iMsgIdx], ulCurEpochGdpbGet4);
 
     /// Do other actions on it if needed
     switch (messageType) {
@@ -476,8 +467,7 @@ void CbmStar2019MonitorPulserAlgo::ProcessEpSupprBuffer() {
         /// Should never appear there
         break;
       default:
-        LOG(error) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for( Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++ )
@@ -485,7 +475,8 @@ void CbmStar2019MonitorPulserAlgo::ProcessEpSupprBuffer() {
   fvmEpSupprBuffer.clear();
 }
 // -------------------------------------------------------------------------
-void CbmStar2019MonitorPulserAlgo::ProcessHit(gdpbv100::FullMessage mess) {
+void CbmStar2019MonitorPulserAlgo::ProcessHit(gdpbv100::FullMessage mess)
+{
   UInt_t uChannel = mess.getGdpbHitChanId();
   UInt_t uTot     = mess.getGdpbHit32Tot();
 
@@ -496,9 +487,8 @@ void CbmStar2019MonitorPulserAlgo::ProcessHit(gdpbv100::FullMessage mess) {
   //   UInt_t uCts     = mess.getGdpbHitFullTs() / 112;
 
   //   UInt_t uChannelNr         = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uChannelNrInFee =
-    (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uFeeNr = (fuGet4Id / fuNrOfGet4PerFee);
+  UInt_t uChannelNrInFee = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
+  UInt_t uFeeNr          = (fuGet4Id / fuNrOfGet4PerFee);
   //   UInt_t uFeeNrInSys        = fuCurrDpbIdx * fuNrOfFeePerGdpb + uFeeNr;
   //   UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan( uChannelNrInFee );
   UInt_t uRemappedChanNrInFee = fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
@@ -515,15 +505,15 @@ void CbmStar2019MonitorPulserAlgo::ProcessHit(gdpbv100::FullMessage mess) {
   Double_t dHitTime = mess.GetFullTimeNs();
   //   Double_t dHitTot   = uTot;     // in bins
 
-  if (fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot
-      && uTot < fuPulserMaxTot) {
+  if (fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot && uTot < fuPulserMaxTot) {
     fvvbFeeHitFound[fuCurrDpbIdx][uFeeNr] = kTRUE;
     fvvdFeeHits[fuCurrDpbIdx][uFeeNr]     = dHitTime;
   }  // if( fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot && uTot < fuPulserMaxTot )
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
+Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms()
+{
   std::string sFolder = "eTofMoni";
 
   LOG(info) << "create Histos for eTOF monitoring ";
@@ -564,13 +554,9 @@ Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
    dBinsLog[ iNbBinsLog - 1 ] = std::pow( 10, iNbDecadesLog );
 */
   /*******************************************************************/
-  UInt_t uNbBinsDt =
-    kuNbBinsDt
-    + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
-  dMinDt =
-    -1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) - gdpbv100::kdBinSize / 2.;
-  dMaxDt =
-    1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) + gdpbv100::kdBinSize / 2.;
+  UInt_t uNbBinsDt = kuNbBinsDt + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
+  dMinDt           = -1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) - gdpbv100::kdBinSize / 2.;
+  dMaxDt           = 1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) + gdpbv100::kdBinSize / 2.;
 
   std::cout << " Bin size " << gdpbv100::kdBinSize << std::endl;
   std::cout << " Epo bins " << gdpbv100::kuEpochInBins << std::endl;
@@ -582,8 +568,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeA) {
     UInt_t uGdpbA   = uFeeA / (fuNrOfFeePerGdpb);
     UInt_t uSectorA = uGdpbA + fUnpackPar->GetGdpbToSectorOffset();
-    if (-1 != fiSectorIndex)
-      uSectorA = fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset();
+    if (-1 != fiSectorIndex) uSectorA = fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset();
     /// Standard
     UInt_t uFeeIndexA = uFeeA;
     if (fbEtofFeeIndexing) {
@@ -595,44 +580,30 @@ Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
     fvvhFeePairPulserTimeDiff[uFeeA].resize(fuNrOfFeePerGdpb * fuNrOfGdpbs);
     for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeB) {
 
-      if (uFeeA < uFeeB
-          && (!fbEtofFeeIndexing || ((uFeeA % 5) < 3 && (uFeeB % 5) < 3))) {
+      if (uFeeA < uFeeB && (!fbEtofFeeIndexing || ((uFeeA % 5) < 3 && (uFeeB % 5) < 3))) {
         /// Standard
         UInt_t uFeeIndexB = uFeeB;
         /// eTOF compressed
-        if (fbEtofFeeIndexing) {
-          uFeeIndexB = 3 * (uFeeB / 5) + (uFeeB % 5);
-        }  // if( fbEtofFeeIndexing )
+        if (fbEtofFeeIndexing) { uFeeIndexB = 3 * (uFeeB / 5) + (uFeeB % 5); }  // if( fbEtofFeeIndexing )
 
         UInt_t uGdpbB   = uFeeB / (fuNrOfFeePerGdpb);
         UInt_t uSectorB = uGdpbB + fUnpackPar->GetGdpbToSectorOffset();
-        if (-1 != fiSectorIndex)
-          uSectorB = fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset();
+        if (-1 != fiSectorIndex) uSectorB = fiSectorIndex + fUnpackPar->GetGdpbToSectorOffset();
         //            UInt_t uFeeIdB  = uFeeB - ( fuNrOfFeePerGdpb * uGdpbB );
         UInt_t uFeeIdB = uFeeIndexB - (3 * 6 * uGdpbB);
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB] =
-          new TH1I(Form("hFeePairPulserTimeDiff_s%02u_f%1u_s%02u_f%1u",
-                        uSectorA,
-                        uFeeIdA,
-                        uSectorB,
-                        uFeeIdB),
+          new TH1I(Form("hFeePairPulserTimeDiff_s%02u_f%1u_s%02u_f%1u", uSectorA, uFeeIdA, uSectorB, uFeeIdB),
                    Form("Time difference for pulser on sector %02u FEE %1u and "
                         "sector %02u FEE %1u; DeltaT [ps]; Counts",
-                        uSectorA,
-                        uFeeIdA,
-                        uSectorB,
-                        uFeeIdB),
-                   uNbBinsDt,
-                   dMinDt,
-                   dMaxDt);
+                        uSectorA, uFeeIdA, uSectorB, uFeeIdB),
+                   uNbBinsDt, dMinDt, dMaxDt);
 
-        AddHistoToVector(fvvhFeePairPulserTimeDiff[uFeeA][uFeeB],
-                         Form("TofDt/s%03u", uFeeIndexA));
+        AddHistoToVector(fvvhFeePairPulserTimeDiff[uFeeA][uFeeB], Form("TofDt/s%03u", uFeeIndexA));
       }  // if( uFeeA < uFeeB )
       else
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB] = NULL;
     }  // for( UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeB )
-  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeA )
+  }    // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeA )
 
   /// Preparing histo ranges
   UInt_t uTotalNbFee = fuNrOfFeePerGdpb * fuNrOfGdpbs;  /// Standard
@@ -643,82 +614,45 @@ Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
     //      dSectorMin = -0.5 + fUnpackPar->GetGdpbToSectorOffset();
     //      dSectorMax = fuNrOfGdpbs + dSectorMin;
   }  // if( fbEtofFeeIndexing )
-  fhPulserTimeDiffMean = new TH2D(
-    "hPulserTimeDiffMean",
-    "Time difference Mean for each FEE pairs; FEE A; FEE B ; Mean [ps]",
-    uTotalNbFee - 1,
-    -0.5,
-    uTotalNbFee - 1.5,
-    uTotalNbFee - 1,
-    0.5,
-    uTotalNbFee - 0.5);
+  fhPulserTimeDiffMean =
+    new TH2D("hPulserTimeDiffMean", "Time difference Mean for each FEE pairs; FEE A; FEE B ; Mean [ps]",
+             uTotalNbFee - 1, -0.5, uTotalNbFee - 1.5, uTotalNbFee - 1, 0.5, uTotalNbFee - 0.5);
 
   fhPulserTimeDiffRms =
-    new TH2D("hPulserTimeDiffRms",
-             "Time difference RMS for each FEE pairs; FEE A; FEE B ; RMS [ps]",
-             uTotalNbFee - 1,
-             -0.5,
-             uTotalNbFee - 1.5,
-             uTotalNbFee - 1,
-             0.5,
-             uTotalNbFee - 0.5);
+    new TH2D("hPulserTimeDiffRms", "Time difference RMS for each FEE pairs; FEE A; FEE B ; RMS [ps]", uTotalNbFee - 1,
+             -0.5, uTotalNbFee - 1.5, uTotalNbFee - 1, 0.5, uTotalNbFee - 0.5);
 
-  fhPulserTimeDiffRmsZoom =
-    new TH2D("hPulserTimeDiffRmsZoom",
-             "Time difference RMS for each FEE pairs after zoom on peak; FEE "
-             "A; FEE B ; RMS [ps]",
-             uTotalNbFee - 1,
-             -0.5,
-             uTotalNbFee - 1.5,
-             uTotalNbFee - 1,
-             0.5,
-             uTotalNbFee - 0.5);
+  fhPulserTimeDiffRmsZoom = new TH2D("hPulserTimeDiffRmsZoom",
+                                     "Time difference RMS for each FEE pairs after zoom on peak; FEE "
+                                     "A; FEE B ; RMS [ps]",
+                                     uTotalNbFee - 1, -0.5, uTotalNbFee - 1.5, uTotalNbFee - 1, 0.5, uTotalNbFee - 0.5);
 
   if (fbEtofFeeIndexing) {
     fhPulserRmsGdpbToRefEvo =
       new TH2D("hPulserRmsGdpbToRefEvo",
                "Evo. of Time difference RMS for selected FEE of each sector to "
                "the 1st; Time in run [s] A; Sector ; RMS [ps]",
-               fuHistoryHistoSize,
-               0,
-               fuHistoryHistoSize,
-               fuNrOfGdpbs + fUnpackPar->GetGdpbToSectorOffset() - 1,
-               0.5,
+               fuHistoryHistoSize, 0, fuHistoryHistoSize, fuNrOfGdpbs + fUnpackPar->GetGdpbToSectorOffset() - 1, 0.5,
                fuNrOfGdpbs + fUnpackPar->GetGdpbToSectorOffset() - 0.5);
 
-    fhPulserRmsGbtxToRefEvo = new TH2D(
-      "hPulserTimeDiffRmsZoom",
-      "Evo. of Time difference RMS for selected FEE pairs of each GBTx to the "
-      "1st in same sector; Time in run [s] A; FEE ; RMS [ps]",
-      fuHistoryHistoSize,
-      0,
-      fuHistoryHistoSize,
-      uTotalNbFee - 1,
-      0.5,
-      uTotalNbFee - 0.5);
+    fhPulserRmsGbtxToRefEvo =
+      new TH2D("hPulserTimeDiffRmsZoom",
+               "Evo. of Time difference RMS for selected FEE pairs of each GBTx to the "
+               "1st in same sector; Time in run [s] A; FEE ; RMS [ps]",
+               fuHistoryHistoSize, 0, fuHistoryHistoSize, uTotalNbFee - 1, 0.5, uTotalNbFee - 0.5);
   }  // if( fbEtofFeeIndexing )
   else {
     fhPulserRmsGdpbToRefEvo =
       new TH2D("hPulserRmsGdpbToRefEvo",
                "Evo. of Time difference RMS for selected FEE of each gDPb to "
                "the 1st; Time in run [s] A; gDPB ; RMS [ps]",
-               fuHistoryHistoSize,
-               0,
-               fuHistoryHistoSize,
-               fuNrOfGdpbs - 1,
-               0.5,
-               fuNrOfGdpbs - 0.5);
+               fuHistoryHistoSize, 0, fuHistoryHistoSize, fuNrOfGdpbs - 1, 0.5, fuNrOfGdpbs - 0.5);
 
-    fhPulserRmsGbtxToRefEvo = new TH2D(
-      "hPulserTimeDiffRmsZoom",
-      "Evo. of Time difference RMS for selected FEE pairs of each GBTx to the "
-      "1st in same gDPB; Time in run [s] A; FEE ; RMS [ps]",
-      fuHistoryHistoSize,
-      0,
-      fuHistoryHistoSize,
-      uTotalNbFee - 1,
-      0.5,
-      uTotalNbFee - 0.5);
+    fhPulserRmsGbtxToRefEvo =
+      new TH2D("hPulserTimeDiffRmsZoom",
+               "Evo. of Time difference RMS for selected FEE pairs of each GBTx to the "
+               "1st in same gDPB; Time in run [s] A; FEE ; RMS [ps]",
+               fuHistoryHistoSize, 0, fuHistoryHistoSize, uTotalNbFee - 1, 0.5, uTotalNbFee - 0.5);
   }  // if( fbEtofFeeIndexing )
 
   /// Add pointers to the vector with all histo for access by steering class
@@ -754,11 +688,11 @@ Bool_t CbmStar2019MonitorPulserAlgo::CreateHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
+Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms()
+{
   /// Update the Mean and RMS plots only every N TS in last MS
   /// => Need to be cleared before loop on pairs as we fill directly the value
-  if (1 == fulCurrentTsIdx % fuUpdateFreqTs
-      && fuNbCoreMsPerTs - 1 == fuMsIndex) {
+  if (1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex) {
     fhPulserTimeDiffMean->Reset();
     fhPulserTimeDiffRms->Reset();
     fhPulserTimeDiffRmsZoom->Reset();
@@ -771,23 +705,20 @@ Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
     /// If no hits in this FEE in this MS, just go to the next one
     if (kFALSE == fvvbFeeHitFound[uGdpbA][uFeeIdA]) continue;
 
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       UInt_t uGdpbB  = uFeeB / (fuNrOfFeePerGdpb);
       UInt_t uFeeIdB = uFeeB - (fuNrOfFeePerGdpb * uGdpbB);
 
       /// If no hits in this FEE in this MS, just go to the next one
       if (kFALSE == fvvbFeeHitFound[uGdpbB][uFeeIdB]) continue;
 
-      Double_t dTimeDiff =
-        1e3 * (fvvdFeeHits[uGdpbB][uFeeIdB] - fvvdFeeHits[uGdpbA][uFeeIdA]);
+      Double_t dTimeDiff = 1e3 * (fvvdFeeHits[uGdpbB][uFeeIdB] - fvvdFeeHits[uGdpbA][uFeeIdA]);
       if (TMath::Abs(dTimeDiff) < kdMaxDtPulserPs) {
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Fill(dTimeDiff);
       }  // f( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
 
       /// Update the Mean and RMS plots only every N TS in last MS
-      if (1 == fulCurrentTsIdx % fuUpdateFreqTs
-          && fuNbCoreMsPerTs - 1 == fuMsIndex) {
+      if (1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex) {
         /// Standard
         UInt_t uFeeIndexA = uFeeA;
         UInt_t uFeeIndexB = uFeeB;
@@ -796,31 +727,20 @@ Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
           uFeeIndexA = 3 * (uFeeA / 5) + (uFeeA % 5);
           uFeeIndexB = 3 * (uFeeB / 5) + (uFeeB % 5);
         }  // if( fbEtofFeeIndexing )
-        fhPulserTimeDiffMean->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
-        fhPulserTimeDiffRms->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+        fhPulserTimeDiffMean->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
+        fhPulserTimeDiffRms->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
         /// Read the peak position (bin with max counts) + total nb of entries
-        Int_t iBinWithMax =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
-        Double_t dNbCounts =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+        Int_t iBinWithMax  = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
+        Double_t dNbCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
         /// Zoom the X axis to +/- ZoomWidth around the peak position
-        Double_t dPeakPos =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(
-            iBinWithMax);
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(
-          dPeakPos - kdFitZoomWidthPs, dPeakPos + kdFitZoomWidthPs);
+        Double_t dPeakPos = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(iBinWithMax);
+        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(dPeakPos - kdFitZoomWidthPs,
+                                                                          dPeakPos + kdFitZoomWidthPs);
 
         /// Read integral and check how much we lost due to the zoom (% loss allowed)
-        Double_t dZoomCounts =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+        Double_t dZoomCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
         /// Fill new RMS after zoom into summary histo
         if ((dZoomCounts / dNbCounts) < 0.8) {
@@ -829,10 +749,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
           //                            << "more than 20% loss for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
         }  // if( ( dZoomCounts / dNbCounts ) < 0.8 )
         else
-          fhPulserTimeDiffRmsZoom->Fill(
-            uFeeIndexA,
-            uFeeIndexB,
-            fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+          fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
         /// Restore original axis state
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->UnZoom();
@@ -843,7 +760,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
                                             fvvhFeePairPulserTimeDiff[ uFeeA ][ uFeeB ]->GetRMS() );
 */
       }  // if( 1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex )
-    }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
+    }    // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
 
     /// Reset the flag for hit found in MS
     fvvbFeeHitFound[uGdpbA][uFeeIdA] = kFALSE;
@@ -851,7 +768,8 @@ Bool_t CbmStar2019MonitorPulserAlgo::FillHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmStar2019MonitorPulserAlgo::UpdateStats() {
+Bool_t CbmStar2019MonitorPulserAlgo::UpdateStats()
+{
   fhPulserTimeDiffMean->Reset();
   fhPulserTimeDiffRms->Reset();
   fhPulserTimeDiffRmsZoom->Reset();
@@ -860,8 +778,7 @@ Bool_t CbmStar2019MonitorPulserAlgo::UpdateStats() {
     UInt_t uGdpbA  = uFeeA / (fuNrOfFeePerGdpb);
     UInt_t uFeeIdA = uFeeA - (fuNrOfFeePerGdpb * uGdpbA);
 
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       //         UInt_t uGdpbB   = uFeeB / ( fuNrOfFeePerGdpb );
       //         UInt_t uFeeIdB  = uFeeB - ( fuNrOfFeePerGdpb * uGdpbB );
 
@@ -875,54 +792,37 @@ Bool_t CbmStar2019MonitorPulserAlgo::UpdateStats() {
         uFeeIndexA = 3 * (uFeeA / 5) + (uFeeA % 5);
         uFeeIndexB = 3 * (uFeeB / 5) + (uFeeB % 5);
       }  // if( fbEtofFeeIndexing )
-      fhPulserTimeDiffMean->Fill(
-        uFeeIndexA,
-        uFeeIndexB,
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
-      fhPulserTimeDiffRms->Fill(
-        uFeeIndexA,
-        uFeeIndexB,
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+      fhPulserTimeDiffMean->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
+      fhPulserTimeDiffRms->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
       /// Read the peak position (bin with max counts) + total nb of entries
-      Int_t iBinWithMax =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
+      Int_t iBinWithMax  = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
       Double_t dNbCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
       /// Zoom the X axis to +/- ZoomWidth around the peak position
-      Double_t dPeakPos =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(
-          iBinWithMax);
-      fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(
-        dPeakPos - kdFitZoomWidthPs, dPeakPos + kdFitZoomWidthPs);
+      Double_t dPeakPos = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(iBinWithMax);
+      fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(dPeakPos - kdFitZoomWidthPs,
+                                                                        dPeakPos + kdFitZoomWidthPs);
 
       /// Read integral and check how much we lost due to the zoom (% loss allowed)
-      Double_t dZoomCounts =
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+      Double_t dZoomCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
       /// Fill new RMS after zoom into summary histo
       if ((dZoomCounts / dNbCounts) < 0.8) {
         fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, 0.0);
-        LOG(warning)
-          << "CbmStar2019MonitorPulserAlgo::FillHistograms => Zoom too strong, "
-          << "more than 20% loss for FEE pair " << uFeeA << " and " << uFeeB
-          << " !!! ";
+        LOG(warning) << "CbmStar2019MonitorPulserAlgo::FillHistograms => Zoom too strong, "
+                     << "more than 20% loss for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
         continue;
       }  // if( ( dZoomCounts / dNbCounts ) < 0.8 )
       else
-        fhPulserTimeDiffRmsZoom->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+        fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
 
       /// Restore original axis state?
       fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->UnZoom();
 
-      LOG(info) << "Stats FEE A " << std::setw(3) << uFeeIndexA << " FEE B "
-                << std::setw(3) << uFeeIndexB
-                << Form(" %5.0f %f",
-                        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean(),
+      LOG(info) << "Stats FEE A " << std::setw(3) << uFeeIndexA << " FEE B " << std::setw(3) << uFeeIndexB
+                << Form(" %5.0f %f", fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean(),
                         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
     }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
@@ -933,13 +833,13 @@ Bool_t CbmStar2019MonitorPulserAlgo::UpdateStats() {
 
   return kTRUE;
 }
-Bool_t CbmStar2019MonitorPulserAlgo::ResetHistograms() {
+Bool_t CbmStar2019MonitorPulserAlgo::ResetHistograms()
+{
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Reset();
     }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+  }    // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
   fhPulserTimeDiffMean->Reset();
   fhPulserTimeDiffRms->Reset();
   fhPulserTimeDiffRmsZoom->Reset();

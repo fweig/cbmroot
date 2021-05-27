@@ -9,7 +9,8 @@
 //
 //---------------------------------------------------
 
-void InvariantMassSpectra_SE(Int_t energy = 8, Int_t NofFiles = 200) {
+void InvariantMassSpectra_SE(Int_t energy = 8, Int_t NofFiles = 200)
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -34,17 +35,7 @@ void InvariantMassSpectra_SE(Int_t energy = 8, Int_t NofFiles = 200) {
   invM_bg->SetMarkerColor(kRed);
   invM_bg->SetMarkerStyle(20);
 
-  TH3D* YPtM_bg = new TH3D("YPtM_bg",
-                           "YPtM_bg",
-                           NofBins,
-                           minY,
-                           maxY,
-                           NofBins,
-                           min,
-                           maxPt,
-                           NofBinsM,
-                           min,
-                           maxM);
+  TH3D* YPtM_bg = new TH3D("YPtM_bg", "YPtM_bg", NofBins, minY, maxY, NofBins, min, maxPt, NofBinsM, min, maxM);
 
   TString name;
 
@@ -64,8 +55,7 @@ void InvariantMassSpectra_SE(Int_t energy = 8, Int_t NofFiles = 200) {
   for (int k = 1; k < NofFiles + 1; k++) {
     name.Form("/lustre/cbm/prod/mc/OCT19/sis100_muon_lmvm/%dgev/centr/%d/"
               "muons.ana.root",
-              energy,
-              k);
+              energy, k);
 
     TFile* f = new TFile(name);
     if (f->IsZombie() || f->GetNkeys() < 1 || f->TestBit(TFile::kRecovered)) {
@@ -73,8 +63,7 @@ void InvariantMassSpectra_SE(Int_t energy = 8, Int_t NofFiles = 200) {
       continue;
     }
 
-    if (k % 100 == 0)
-      cout << "Input File " << k << " : " << f->GetName() << endl;
+    if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
     InputTree = (TTree*) f->Get("cbmsim");
     if (!InputTree) {

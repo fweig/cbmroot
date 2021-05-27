@@ -51,26 +51,16 @@ Bool_t unpack_tsa_mcbm_kronos(UInt_t uRunIdx       = 28,
 
   if (uRunId < 692) return kFALSE;
 
-  TString inFile =
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn02_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn04_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn05_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn06_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn08_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn10_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn11_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn12_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn13_*.tsa;", uRunId);
-  inFile +=
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn15_*.tsa", uRunId);
+  TString inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn02_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn04_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn05_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn06_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn08_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn10_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn11_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn12_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn13_*.tsa;", uRunId);
+  inFile += Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn15_*.tsa", uRunId);
 
   return unpack_tsa_mcbm(inFile, uRunId, uNbTimeslices, sOutDir, iSpillIndex, iSpillnumber, uSpillLimType);
 }

@@ -29,11 +29,7 @@ public:
   *@param nFake       Number of fake hits (not belonging to any MCTrack)
   *@param nTracks     Number of MCTracks with common hits
   **/
-  CbmTrackMatch(Int_t mcTrackID,
-                Int_t nTrue,
-                Int_t nWrong,
-                Int_t nFake,
-                Int_t nTracks);
+  CbmTrackMatch(Int_t mcTrackID, Int_t nTrue, Int_t nWrong, Int_t nFake, Int_t nTracks);
 
 
   /** Destructor **/

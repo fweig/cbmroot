@@ -24,7 +24,13 @@ class TCanvas;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2011
  */
-enum ReportType { kCoutReport, kHtmlReport, kLatexReport, kTextReport };
+enum ReportType
+{
+  kCoutReport,
+  kHtmlReport,
+  kLatexReport,
+  kTextReport
+};
 
 /**
  * \class CbmReport
@@ -97,8 +103,7 @@ protected:
     * Canvases created with this function will be automatically saved to image and
     * printed in the report.
     */
-  TCanvas*
-  CreateCanvas(const char* name, const char* title, Int_t ww, Int_t wh);
+  TCanvas* CreateCanvas(const char* name, const char* title, Int_t ww, Int_t wh);
 
   /**
     * \brief Save all canvases to images.

@@ -34,7 +34,8 @@ using namespace std;
 
 CbmRichGeoManager::CbmRichGeoManager() : fGP(nullptr) { InitGeometry(); }
 
-void CbmRichGeoManager::InitGeometry() {
+void CbmRichGeoManager::InitGeometry()
+{
 
   LOG(info) << "CbmRichGeoManager::InitGeometry";
 
@@ -47,10 +48,12 @@ void CbmRichGeoManager::InitGeometry() {
   if (fGP->fGeometryType == CbmRichGeometryTypeTwoWings) {
     LOG(info) << "CbmRichGeoManager: Init CbmRichGeometryTypeTwoWings";
     InitPmt();
-  } else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
+  }
+  else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
     LOG(info) << "CbmRichGeoManager: Init CbmRichGeometryTypeCylindrical";
     InitPmtCyl();
-  } else if (fGP->fGeometryType == CbmRichGeometryTypeNotDefined) {
+  }
+  else if (fGP->fGeometryType == CbmRichGeometryTypeNotDefined) {
     // Fatal("CbmRichGeoManager::InitGeometry()", " Geometry type is CbmRichGeometryTypeNotDefined. Geometry could not be defined automatically.");
     LOG(info);
     LOG(error) << "CbmRichGeoManager::InitGeometry(): Geometry type is "
@@ -63,7 +66,8 @@ void CbmRichGeoManager::InitGeometry() {
   //fGP->Print();
 }
 
-void CbmRichGeoManager::DetectGeometryType() {
+void CbmRichGeoManager::DetectGeometryType()
+{
   TGeoIterator geoIterator(gGeoManager->GetTopNode()->GetVolume());
   geoIterator.SetTopName("/cave_1");
   TGeoNode* curNode;
@@ -92,7 +96,8 @@ void CbmRichGeoManager::DetectGeometryType() {
   fGP->fGeometryType = CbmRichGeometryTypeNotDefined;
 }
 
-void CbmRichGeoManager::InitPmtCyl() {
+void CbmRichGeoManager::InitPmtCyl()
+{
   TGeoIterator geoIterator(gGeoManager->GetTopNode()->GetVolume());
   geoIterator.SetTopName("/cave_1");
   TGeoNode* curNode;
@@ -119,8 +124,7 @@ void CbmRichGeoManager::InitPmtCyl() {
       double rotY = TMath::ASin(-curNodeRot[2]);  // around Y
       //            double rotZ = TMath::ASin(curNodeRot[1]/TMath::Cos(TMath::ASin(-curNodeRot[2]))); // around Z
       //double rotX = TMath::ASin(curNodeRot[5]/TMath::Cos(TMath::ASin(-curNodeRot[2]))); // around X
-      double rotX = TMath::ACos(
-        curNodeRot[8] / TMath::Cos(TMath::ASin(-curNodeRot[2])));  // around X
+      double rotX = TMath::ACos(curNodeRot[8] / TMath::Cos(TMath::ASin(-curNodeRot[2])));  // around X
 
 
       //double rotX = TMath::ATan2(curNodeRot[5], curNodeRot[8]);          // around Y
@@ -131,8 +135,7 @@ void CbmRichGeoManager::InitPmtCyl() {
 
       fGP->fPmtMap[nodePathStr].fTheta = rotX;
       fGP->fPmtMap[nodePathStr].fPhi   = rotY;
-      const TGeoBBox* shape =
-        (const TGeoBBox*) (curNode->GetVolume()->GetShape());
+      const TGeoBBox* shape            = (const TGeoBBox*) (curNode->GetVolume()->GetShape());
 
       fGP->fPmtMap[nodePathStr].fWidth  = 2. * shape->GetDX();
       fGP->fPmtMap[nodePathStr].fHeight = 2. * shape->GetDY();
@@ -145,9 +148,7 @@ void CbmRichGeoManager::InitPmtCyl() {
   }
   std::sort(xCoord.begin(), xCoord.end());
 
-  for (map<string, CbmRichRecGeoParPmt>::iterator it = fGP->fPmtMap.begin();
-       it != fGP->fPmtMap.end();
-       it++) {
+  for (map<string, CbmRichRecGeoParPmt>::iterator it = fGP->fPmtMap.begin(); it != fGP->fPmtMap.end(); it++) {
     Double_t curX = TMath::Abs(it->second.fX);
     int pos       = -1;
     //int pos = find(xCoord.begin(), xCoord.end(), curX) - xCoord.begin();
@@ -195,9 +196,7 @@ void CbmRichGeoManager::InitPmtCyl() {
     }
   }
 
-  for (map<string, CbmRichRecGeoParPmt>::iterator it = fGP->fPmtMap.begin();
-       it != fGP->fPmtMap.end();
-       it++) {
+  for (map<string, CbmRichRecGeoParPmt>::iterator it = fGP->fPmtMap.begin(); it != fGP->fPmtMap.end(); it++) {
     it->second.fPlaneX = mapPmtPlaneMinMax[it->first].GetMeanX();
     it->second.fPlaneY = mapPmtPlaneMinMax[it->first].GetMeanY();
     it->second.fPlaneZ = mapPmtPlaneMinMax[it->first].GetMeanZ();
@@ -226,8 +225,7 @@ void CbmRichGeoManager::InitPmtCyl() {
       //            double pmtZ = curNodeTr[2];
 
       if (pmtX < 0 || pmtY < 0) continue;
-      const TGeoBBox* shape =
-        (const TGeoBBox*) (curNode->GetVolume()->GetShape());
+      const TGeoBBox* shape = (const TGeoBBox*) (curNode->GetVolume()->GetShape());
 
 
       double loc[3];
@@ -236,7 +234,8 @@ void CbmRichGeoManager::InitPmtCyl() {
         loc[1] = shape->GetDY() + shape->GetOrigin()[1];
         loc[2] = shape->GetDZ() + shape->GetOrigin()[2];
         curMatrix->LocalToMaster(loc, master1);
-      } else if (fGP->fPmtMap[nodePathStr].fPmtPositionIndexX == 2) {
+      }
+      else if (fGP->fPmtMap[nodePathStr].fPmtPositionIndexX == 2) {
         loc[0] = -shape->GetDX() + shape->GetOrigin()[0];
         loc[1] = shape->GetDY() + shape->GetOrigin()[1];
         loc[2] = shape->GetDZ() + shape->GetOrigin()[2];
@@ -246,15 +245,15 @@ void CbmRichGeoManager::InitPmtCyl() {
   }
   //cout  << master1[0] << " "<< master1[1] << " "<< master1[2]<< endl;
   //cout  << master2[0] << " "<< master2[1] << " "<< master2[2]<< endl;
-  double dist =
-    TMath::Sqrt((master1[0] - master2[0]) * (master1[0] - master2[0])
-                + (master1[1] - master2[1]) * (master1[1] - master2[1])
-                + (master1[2] - master2[2]) * (master1[2] - master2[2]));
+  double dist = TMath::Sqrt((master1[0] - master2[0]) * (master1[0] - master2[0])
+                            + (master1[1] - master2[1]) * (master1[1] - master2[1])
+                            + (master1[2] - master2[2]) * (master1[2] - master2[2]));
   //cout << "Gap:" << dist << endl;
   fGP->fPmtStripGap = dist;  // v17a = 0.3083394
 }
 
-void CbmRichGeoManager::InitPmt() {
+void CbmRichGeoManager::InitPmt()
+{
   TGeoIterator geoIterator(gGeoManager->GetTopNode()->GetVolume());
   TGeoNode* curNode;
 
@@ -281,8 +280,7 @@ void CbmRichGeoManager::InitPmt() {
         double rotY = TMath::ASin(-curNodeRot[2]);  // around Y
         //                double rotZ = TMath::ASin(curNodeRot[1]/TMath::Cos(TMath::ASin(-curNodeRot[2]))); // around Z
         //double rotX = TMath::ASin(curNodeRot[5]/TMath::Cos(TMath::ASin(-curNodeRot[2]))); // around X
-        double rotX = TMath::ACos(
-          curNodeRot[8] / TMath::Cos(TMath::ASin(-curNodeRot[2])));  // around X
+        double rotX = TMath::ACos(curNodeRot[8] / TMath::Cos(TMath::ASin(-curNodeRot[2])));  // around X
 
         fGP->fPmt.fTheta = rotX;
         fGP->fPmt.fPhi   = rotY;
@@ -313,19 +311,19 @@ void CbmRichGeoManager::InitPmt() {
       double pmtZ = curNodeTr[2];
 
       if (pmtX > 0. && pmtY > 0) {
-        const TGeoBBox* shape =
-          (const TGeoBBox*) (curNode->GetVolume()->GetShape());
-        fGP->fPmt.fWidth  = shape->GetDX();
-        fGP->fPmt.fHeight = shape->GetDY();
-        fGP->fPmt.fZ      = pmtZ;
-        fGP->fPmt.fX      = pmtX;
-        fGP->fPmt.fY      = pmtY;
+        const TGeoBBox* shape = (const TGeoBBox*) (curNode->GetVolume()->GetShape());
+        fGP->fPmt.fWidth      = shape->GetDX();
+        fGP->fPmt.fHeight     = shape->GetDY();
+        fGP->fPmt.fZ          = pmtZ;
+        fGP->fPmt.fX          = pmtX;
+        fGP->fPmt.fY          = pmtY;
       }
     }
   }
 }
 
-void CbmRichGeoManager::InitMirror() {
+void CbmRichGeoManager::InitMirror()
+{
 
   TGeoIterator geoIterator(gGeoManager->GetTopNode()->GetVolume());
   TGeoNode* curNode;
@@ -360,15 +358,11 @@ void CbmRichGeoManager::InitMirror() {
     TString nodeName(curNode->GetName());
     TString nodePath;
 
-    if (nodeName.Contains(mirrorName0) || nodeName.Contains(mirrorName1)
-        || nodeName.Contains(mirrorName2) || nodeName.Contains(mirrorName3)
-        || nodeName.Contains(mirrorMisAlignName0)
-        || nodeName.Contains(mirrorMisAlignName1)
-        || nodeName.Contains(mirrorMisAlignName2)
-        || nodeName.Contains(mirrorMisAlignName3)
-        || nodeName.Contains(mirrorMisAlignName4)
-        || nodeName.Contains(mirrorMisAlignName5)
-        || nodeName.Contains(mirrorMisAlignName6)
+    if (nodeName.Contains(mirrorName0) || nodeName.Contains(mirrorName1) || nodeName.Contains(mirrorName2)
+        || nodeName.Contains(mirrorName3) || nodeName.Contains(mirrorMisAlignName0)
+        || nodeName.Contains(mirrorMisAlignName1) || nodeName.Contains(mirrorMisAlignName2)
+        || nodeName.Contains(mirrorMisAlignName3) || nodeName.Contains(mirrorMisAlignName4)
+        || nodeName.Contains(mirrorMisAlignName5) || nodeName.Contains(mirrorMisAlignName6)
         || nodeName.Contains(mirrorMisAlignName7)) {
       geoIterator.GetPath(nodePath);
       const TGeoMatrix* curMatrix = geoIterator.GetCurrentMatrix();
@@ -377,87 +371,66 @@ void CbmRichGeoManager::InitMirror() {
       mirrorY                     = TMath::Abs(curNodeTr[1]);
       mirrorZ                     = TMath::Abs(curNodeTr[2]);
 
-      const TGeoSphere* shape =
-        dynamic_cast<const TGeoSphere*>(curNode->GetVolume()->GetShape());
+      const TGeoSphere* shape = dynamic_cast<const TGeoSphere*>(curNode->GetVolume()->GetShape());
       //const TGeoSphere* shape = (const TGeoSphere*)(curNode->GetVolume()->GetShape());
       if (shape != nullptr) {
         mirrorRadius = shape->GetRmin();
 
         double theta1 = shape->GetTheta1();
         double theta2 = shape->GetTheta2();
-        if (maxTheta < theta1 || maxTheta < theta2) {
-          maxTheta = TMath::Max(theta1, theta2);
-        }
-        if (minTheta > theta1 || minTheta > theta2) {
-          minTheta = TMath::Min(theta1, theta2);
-        }
+        if (maxTheta < theta1 || maxTheta < theta2) { maxTheta = TMath::Max(theta1, theta2); }
+        if (minTheta > theta1 || minTheta > theta2) { minTheta = TMath::Min(theta1, theta2); }
       }
     }
   }
 
-  fGP->fMirrorTheta = -((maxTheta + minTheta) / 2. - 90.)
-                      * TMath::DegToRad();  // rotation angle around x-axis
-  fGP->fMirrorX = mirrorX;
-  fGP->fMirrorY = mirrorY;
-  fGP->fMirrorZ = mirrorZ;
-  fGP->fMirrorR = mirrorRadius;
+  fGP->fMirrorTheta = -((maxTheta + minTheta) / 2. - 90.) * TMath::DegToRad();  // rotation angle around x-axis
+  fGP->fMirrorX     = mirrorX;
+  fGP->fMirrorY     = mirrorY;
+  fGP->fMirrorZ     = mirrorZ;
+  fGP->fMirrorR     = mirrorRadius;
 }
 
 
-void CbmRichGeoManager::RotatePoint(TVector3* inPos,
-                                    TVector3* outPos,
-                                    Bool_t noTilting) {
+void CbmRichGeoManager::RotatePoint(TVector3* inPos, TVector3* outPos, Bool_t noTilting)
+{
   if (fGP == nullptr) {
     LOG(error) << "CbmRichGeoManager::RotatePoint RICH geometry is not "
                   "initialized. fGP == nullptr";
   }
 
-  if (fGP->fGeometryType == CbmRichGeometryTypeTwoWings) {
-    RotatePointTwoWings(inPos, outPos, noTilting);
-  } else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
+  if (fGP->fGeometryType == CbmRichGeometryTypeTwoWings) { RotatePointTwoWings(inPos, outPos, noTilting); }
+  else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
     RotatePointCyl(inPos, outPos, noTilting);
-  } else {
+  }
+  else {
     outPos->SetXYZ(inPos->X(), inPos->Y(), inPos->Z());
   }
 }
 
-void CbmRichGeoManager::RotatePointTwoWings(TVector3* inPos,
-                                            TVector3* outPos,
-                                            Bool_t noTilting) {
+void CbmRichGeoManager::RotatePointTwoWings(TVector3* inPos, TVector3* outPos, Bool_t noTilting)
+{
   if (noTilting == false) {
-    RotatePointImpl(inPos,
-                    outPos,
-                    fGP->fPmt.fPhi,
-                    fGP->fPmt.fTheta,
-                    fGP->fPmt.fX,
-                    fGP->fPmt.fY,
-                    fGP->fPmt.fZ);
-  } else {
+    RotatePointImpl(inPos, outPos, fGP->fPmt.fPhi, fGP->fPmt.fTheta, fGP->fPmt.fX, fGP->fPmt.fY, fGP->fPmt.fZ);
+  }
+  else {
     outPos->SetXYZ(inPos->X(), inPos->Y(), inPos->Z());
   }
 }
 
 
-void CbmRichGeoManager::RotatePointCyl(TVector3* inPos,
-                                       TVector3* outPos,
-                                       Bool_t noTilting,
-                                       Bool_t noShift) {
+void CbmRichGeoManager::RotatePointCyl(TVector3* inPos, TVector3* outPos, Bool_t noTilting, Bool_t noShift)
+{
   if (noTilting == false) {
     //        TGeoNode* node = gGeoManager->FindNode(inPos->X(), inPos->Y(), inPos->Z());
     gGeoManager->FindNode(inPos->X(), inPos->Y(), inPos->Z());
     string path(gGeoManager->GetPath());
 
 
-    CbmRichRecGeoParPmt pmtPar =
-      fGP->GetGeoRecPmtByBlockPathOrClosest(path, inPos);
+    CbmRichRecGeoParPmt pmtPar = fGP->GetGeoRecPmtByBlockPathOrClosest(path, inPos);
 
-    RotatePointImpl(inPos,
-                    outPos,
-                    -TMath::Abs(pmtPar.fPhi),
-                    TMath::Abs(pmtPar.fTheta),
-                    TMath::Abs(pmtPar.fX),
-                    TMath::Abs(pmtPar.fY),
-                    TMath::Abs(pmtPar.fZ));
+    RotatePointImpl(inPos, outPos, -TMath::Abs(pmtPar.fPhi), TMath::Abs(pmtPar.fTheta), TMath::Abs(pmtPar.fX),
+                    TMath::Abs(pmtPar.fY), TMath::Abs(pmtPar.fZ));
 
     // After rotation wee need to shift point
     if (!noShift) {
@@ -470,39 +443,30 @@ void CbmRichGeoManager::RotatePointCyl(TVector3* inPos,
       // Calculate pmt block center after rotation
       TVector3 inPosPmt(pmtPar.fX, pmtPar.fY, pmtPar.fZ);
       TVector3 outPosPmt;
-      RotatePointImpl(&inPosPmt,
-                      &outPosPmt,
-                      -TMath::Abs(pmtPar.fPhi),
-                      TMath::Abs(pmtPar.fTheta),
-                      TMath::Abs(pmtPar.fX),
-                      TMath::Abs(pmtPar.fY),
-                      TMath::Abs(pmtPar.fZ));
+      RotatePointImpl(&inPosPmt, &outPosPmt, -TMath::Abs(pmtPar.fPhi), TMath::Abs(pmtPar.fTheta), TMath::Abs(pmtPar.fX),
+                      TMath::Abs(pmtPar.fY), TMath::Abs(pmtPar.fZ));
       //RotatePointCyl(&inPosPmt, &outPosPmt, false, true);
 
       // calculate ideal position assuming the same width for all pmt blocks
       //TODO:Actually we need to implement general solution if pmt-block widths are not the same
       Double_t gap     = fGP->fPmtStripGap;
       Double_t padding = gap / 2.;
-      Double_t idealX  = padding + 0.5 * pmtPar.fWidth
-                        + pmtPar.fPmtPositionIndexX * (pmtPar.fWidth + gap);
+      Double_t idealX  = padding + 0.5 * pmtPar.fWidth + pmtPar.fPmtPositionIndexX * (pmtPar.fWidth + gap);
       if (outPos->X() < 0) idealX = -idealX;
       Double_t dX = idealX - outPosPmt.X();
 
       outPos->SetX(outPos->X() + dX);
     }
-  } else {
+  }
+  else {
     outPos->SetXYZ(inPos->X(), inPos->Y(), inPos->Z());
   }
 }
 
 
-void CbmRichGeoManager::RotatePointImpl(TVector3* inPos,
-                                        TVector3* outPos,
-                                        Double_t phi,
-                                        Double_t theta,
-                                        Double_t pmtX,
-                                        Double_t pmtY,
-                                        Double_t pmtZ) {
+void CbmRichGeoManager::RotatePointImpl(TVector3* inPos, TVector3* outPos, Double_t phi, Double_t theta, Double_t pmtX,
+                                        Double_t pmtY, Double_t pmtZ)
+{
   Double_t xDet = 0., yDet = 0., zDet = 0.;
   Double_t x = inPos->X();
   Double_t y = inPos->Y();
@@ -528,8 +492,8 @@ void CbmRichGeoManager::RotatePointImpl(TVector3* inPos,
     yDet += pmtY;
     xDet += pmtX;
     zDet += pmtZ;
-
-  } else if (x > 0 && y < 0) {
+  }
+  else if (x > 0 && y < 0) {
     y += pmtY;
     x -= pmtX;
     z -= pmtZ;
@@ -544,7 +508,8 @@ void CbmRichGeoManager::RotatePointImpl(TVector3* inPos,
     yDet -= pmtY;
     xDet += pmtX;
     zDet += pmtZ;
-  } else if (x < 0 && y < 0) {
+  }
+  else if (x < 0 && y < 0) {
     y += pmtY;
     x += pmtX;
     z -= pmtZ;
@@ -559,7 +524,8 @@ void CbmRichGeoManager::RotatePointImpl(TVector3* inPos,
     yDet -= pmtY;
     xDet -= pmtX;
     zDet += pmtZ;
-  } else if (x < 0 && y > 0) {
+  }
+  else if (x < 0 && y > 0) {
     y -= pmtY;
     x += pmtX;
     z -= pmtZ;
@@ -575,13 +541,15 @@ void CbmRichGeoManager::RotatePointImpl(TVector3* inPos,
     yDet += pmtY;
     xDet -= pmtX;
     zDet += pmtZ;
-  } else {
+  }
+  else {
     outPos->SetXYZ(x, y, z);
   }
   outPos->SetXYZ(xDet, yDet, zDet);
 }
 
-Bool_t CbmRichGeoManager::IsPointInsidePmt(const TVector3* rotatedPoint) {
+Bool_t CbmRichGeoManager::IsPointInsidePmt(const TVector3* rotatedPoint)
+{
   if (fGP->fGeometryType == CbmRichGeometryTypeTwoWings) {
     CbmRichRecGeoPar* gp = CbmRichGeoManager::GetInstance().fGP;
     Double_t pmtPlaneX   = gp->fPmt.fPlaneX;
@@ -599,19 +567,18 @@ Bool_t CbmRichGeoManager::IsPointInsidePmt(const TVector3* rotatedPoint) {
 
     Double_t pmtXMin = -TMath::Abs(pmtPlaneX) - pmtWidth - marginX;
     Double_t pmtXMax = TMath::Abs(pmtPlaneX) + pmtWidth + marginX;
-    Bool_t isXOk =
-      (rotatedPoint->x() >= pmtXMin && rotatedPoint->x() <= pmtXMax);
+    Bool_t isXOk     = (rotatedPoint->x() >= pmtXMin && rotatedPoint->x() <= pmtXMax);
 
     return (isXOk && isYOk);
-  } else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
-    CbmRichRecGeoPar* gp = CbmRichGeoManager::GetInstance().fGP;
+  }
+  else if (fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
+    CbmRichRecGeoPar* gp                    = CbmRichGeoManager::GetInstance().fGP;
     map<string, CbmRichRecGeoParPmt> pmtMap = gp->fPmtMap;
 
     int maxIndex  = -1;
     string maxKey = "";
     for (auto const& entPmt : pmtMap) {
-      if (maxIndex < entPmt.second.fPmtPositionIndexX && entPmt.second.fX > 0
-          && entPmt.second.fY > 0) {
+      if (maxIndex < entPmt.second.fPmtPositionIndexX && entPmt.second.fX > 0 && entPmt.second.fY > 0) {
         maxKey   = entPmt.first;
         maxIndex = entPmt.second.fPmtPositionIndexX;
       }
@@ -642,12 +609,12 @@ Bool_t CbmRichGeoManager::IsPointInsidePmt(const TVector3* rotatedPoint) {
     Double_t pmtXMin = -TMath::Abs(outPmt.X()) - 0.5 * pmtWidth - marginX;
     Double_t pmtXMax = TMath::Abs(outPmt.X()) + 0.5 * pmtWidth + marginX;
     //cout << "pmtXMin:"<< pmtXMin << " pmtXMax:" << pmtXMax << endl;
-    Bool_t isXOk =
-      (rotatedPoint->x() >= pmtXMin && rotatedPoint->x() <= pmtXMax);
+    Bool_t isXOk = (rotatedPoint->x() >= pmtXMin && rotatedPoint->x() <= pmtXMax);
 
     return (isXOk && isYOk);
     // return true;
-  } else {
+  }
+  else {
     return false;
   }
 }

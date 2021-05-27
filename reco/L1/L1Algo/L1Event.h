@@ -2,10 +2,12 @@
 #define L1Event_H
 
 #include "CbmL1Track.h"
+
+#include <vector>
+
 #include "KFPTrackVector.h"
 #include "KFParticleTopoReconstructor.h"
 #include "KFTopoPerformance.h"
-#include <vector>
 
 using std::vector;
 
@@ -20,19 +22,19 @@ public:
   KFPTrackVector& getTracks() { return fKFPTrack; }
   const vector<int>& getHits() const { return fStsHit; }
   vector<int>& getHits() { return fStsHit; }
-  const KFParticleTopoReconstructor* getTopoReconstructor() const {
-    return &fTopoReconstructor;
-  }
+  const KFParticleTopoReconstructor* getTopoReconstructor() const { return &fTopoReconstructor; }
 
   L1Event(const L1Event& event)
     : fTopoReconstructor(event.fTopoReconstructor)
     , fKFPTrack(event.fKFPTrack)
-    , fStsHit(event.fStsHit) {
+    , fStsHit(event.fStsHit)
+  {
     fKFPTrack = event.fKFPTrack;
     fStsHit   = event.fStsHit;
   }
 
-  L1Event& operator=(const L1Event& event) {
+  L1Event& operator=(const L1Event& event)
+  {
     fTopoReconstructor = event.fTopoReconstructor;
     fKFPTrack          = event.fKFPTrack;
     fStsHit            = event.fStsHit;

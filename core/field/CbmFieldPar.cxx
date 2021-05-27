@@ -21,9 +21,7 @@ using std::endl;
 const int kMaxLen = 2048;
 
 // ------   Constructor   --------------------------------------------------
-CbmFieldPar::CbmFieldPar(const char* name,
-                         const char* title,
-                         const char* context)
+CbmFieldPar::CbmFieldPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fType(-1)
   , fXmin(0.)
@@ -42,7 +40,9 @@ CbmFieldPar::CbmFieldPar(const char* name,
   , fScale(0.)
   , fDistortionFilename("")
   , fParentName("")
-  , fTypeOfParent(0) {}
+  , fTypeOfParent(0)
+{
+}
 // -------------------------------------------------------------------------
 
 CbmFieldPar::CbmFieldPar()
@@ -64,7 +64,9 @@ CbmFieldPar::CbmFieldPar()
   , fScale(0.)
   , fDistortionFilename("")
   , fParentName("")
-  , fTypeOfParent(0) {}
+  , fTypeOfParent(0)
+{
+}
 // -------------------------------------------------------------------------
 
 // ------   Destructor   ---------------------------------------------------
@@ -73,7 +75,8 @@ CbmFieldPar::~CbmFieldPar() {}
 
 
 // ------   Put parameters   -----------------------------------------------
-void CbmFieldPar::putParams(FairParamList* list) {
+void CbmFieldPar::putParams(FairParamList* list)
+{
 
   if (!list) return;
 
@@ -109,7 +112,8 @@ void CbmFieldPar::putParams(FairParamList* list) {
 
 
 // --------   Get parameters   ---------------------------------------------
-Bool_t CbmFieldPar::getParams(FairParamList* list) {
+Bool_t CbmFieldPar::getParams(FairParamList* list)
+{
 
   if (!list) return kFALSE;
 
@@ -139,15 +143,12 @@ Bool_t CbmFieldPar::getParams(FairParamList* list) {
     if (fType == kTypeDistorted) {  // CbmFieldMapDistorted case
       Text_t tmp[kMaxLen];
       fDistortionFilename = "";
-      if (!list->fill("Field map distortion filename", tmp, kMaxLen))
-        return kFALSE;
+      if (!list->fill("Field map distortion filename", tmp, kMaxLen)) return kFALSE;
       fDistortionFilename = tmp;
       fParentName         = "";
-      if (!list->fill("Field name of parent field", tmp, kMaxLen))
-        return kFALSE;
+      if (!list->fill("Field name of parent field", tmp, kMaxLen)) return kFALSE;
       fParentName = tmp;
-      if (!list->fill("Field type of parent field", &fTypeOfParent))
-        return kFALSE;
+      if (!list->fill("Field type of parent field", &fTypeOfParent)) return kFALSE;
     }
   }
 
@@ -157,7 +158,8 @@ Bool_t CbmFieldPar::getParams(FairParamList* list) {
 
 
 // ---------   Set parameters from CbmField   ------------------------------
-void CbmFieldPar::SetParameters(FairField* field) {
+void CbmFieldPar::SetParameters(FairField* field)
+{
 
   if (!field) {
     cerr << "-W- CbmFieldPar::SetParameters: Empty field pointer!" << endl;
@@ -193,17 +195,14 @@ void CbmFieldPar::SetParameters(FairField* field) {
     fScale   = fieldMap->GetScale();
 
     if (fieldMap->GetType() == kTypeDistorted) {  // CbmFieldMapDistorted case
-      fDistortionFilename =
-        ((CbmFieldMapDistorted*) fieldMap)->GetDistortionFilename();
-      fParentName = ((CbmFieldMapDistorted*) fieldMap)->GetParent()->GetName();
-      fTypeOfParent =
-        ((CbmFieldMapDistorted*) fieldMap)->GetParent()->GetType();
+      fDistortionFilename = ((CbmFieldMapDistorted*) fieldMap)->GetDistortionFilename();
+      fParentName         = ((CbmFieldMapDistorted*) fieldMap)->GetParent()->GetName();
+      fTypeOfParent       = ((CbmFieldMapDistorted*) fieldMap)->GetParent()->GetType();
     }
   }
 
   else {
-    cerr << "-W- CbmFieldPar::SetParameters: Unknown field type " << fType
-         << "!" << endl;
+    cerr << "-W- CbmFieldPar::SetParameters: Unknown field type " << fType << "!" << endl;
     fBx = fBy = fBz = 0.;
     fXmin = fXmax = fYmin = fYmax = fZmin = fZmax = 0.;
     fMapName                                      = "";

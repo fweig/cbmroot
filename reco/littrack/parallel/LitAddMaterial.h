@@ -20,8 +20,10 @@
 #include "LitMath.h"
 #include "LitTrackParam.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn template<class T> inline void LitAddMaterial(LitTrackParam<T>& par, const LitMaterialInfo<T>& mat)
@@ -31,17 +33,16 @@ namespace lit {
  * \param[in] mat Reference to material
  */
     template<class T>
-    inline void LitAddMaterial(LitTrackParam<T>& par, T siliconThickness) {
+    inline void LitAddMaterial(LitTrackParam<T>& par, T siliconThickness)
+    {
       // Silicon properties
       static const T SILICON_DENSITY = 2.33;  // g*cm^-3
       //   static const T SILICON_A = 28.08855; // silicon atomic weight
       //   static const T SILICON_Z = 14.0; // silicon atomic number
-      static const T SILICON_Z_OVER_A =
-        0.4984;  //2.006325; // Z/A ratio for silicon
-      static const T SILICON_RAD_LENGTH = 9.365;  // cm
-      static const T SILICON_I = 173 * 1e-9;  // mean excitation energy [GeV]
-      static const T SILICON_I_SQ =
-        SILICON_I * SILICON_I;  // squared mean excitation energy
+      static const T SILICON_Z_OVER_A   = 0.4984;                 //2.006325; // Z/A ratio for silicon
+      static const T SILICON_RAD_LENGTH = 9.365;                  // cm
+      static const T SILICON_I          = 173 * 1e-9;             // mean excitation energy [GeV]
+      static const T SILICON_I_SQ       = SILICON_I * SILICON_I;  // squared mean excitation energy
 
       static const T ZERO = 0.0, ONE = 1., TWO = 2.;
       static const T mass   = 0.105658369;                // muon mass [GeV/c]
@@ -70,22 +71,19 @@ namespace lit {
 
       // Bethe-Block
       static const T K = 0.000307075;  // GeV * g^-1 * cm^2
-      T Tmax           = (2 * me * betaSq * gammaSq)
-               / (ONE + TWO * gamma * ratio + ratio * ratio);
+      T Tmax           = (2 * me * betaSq * gammaSq) / (ONE + TWO * gamma * ratio + ratio * ratio);
 
       // density correction
       T dc = ZERO;
       if (p > 0.5) {  // for particles above 1 Gev
         static const T c7 = 28.816;
         static const T c8 = 1e-9;
-        T hwp = c7 * sqrt(SILICON_DENSITY * SILICON_Z_OVER_A) * c8;  // GeV
-        dc    = log(hwp / SILICON_I) + log(beta * gamma) - C1_2;
+        T hwp             = c7 * sqrt(SILICON_DENSITY * SILICON_Z_OVER_A) * c8;  // GeV
+        dc                = log(hwp / SILICON_I) + log(beta * gamma) - C1_2;
       }
 
-      T bbLoss =
-        K * SILICON_Z_OVER_A * rcp(betaSq)
-        * (C1_2 * log(TWO * me * betaSq * gammaSq * Tmax / SILICON_I_SQ)
-           - betaSq - dc);
+      T bbLoss = K * SILICON_Z_OVER_A * rcp(betaSq)
+                 * (C1_2 * log(TWO * me * betaSq * gammaSq * Tmax / SILICON_I_SQ) - betaSq - dc);
 
       //   static const T bbc = 0.00354;
       //   T bbLoss = bbc * SILICON_Z_OVER_A;
@@ -116,7 +114,7 @@ namespace lit {
 
       // Calculate xi factor (KeV).
       static const T c4 = 153.5;
-      T XI = (c4 * SILICON_Z_OVER_A * thickness * SILICON_DENSITY) / betaSqnew;
+      T XI              = (c4 * SILICON_Z_OVER_A * thickness * SILICON_DENSITY) / betaSqnew;
 
       // Maximum energy transfer to atomic electron (KeV).
       T etanew          = betanew * gammanew;
@@ -188,8 +186,8 @@ namespace lit {
  * \param[in] mat Reference to material.
  */
     template<class T>
-    inline void LitAddMaterialElectron(LitTrackParam<T>& par,
-                                       T siliconThickness) {
+    inline void LitAddMaterialElectron(LitTrackParam<T>& par, T siliconThickness)
+    {
       // Silicon properties
       static const T SILICON_RAD_LENGTH = 9.365;  // cm
 
@@ -215,8 +213,7 @@ namespace lit {
     */
       par.Qp *= exp(radThick);
       //   par.C14 += par.Qp * par.Qp * mat.ElLoss; // no thickness scaling
-      par.C14 +=
-        (exp(radThick * C_LOG) - exp(-TWO * radThick));  // thickness scaling
+      par.C14 += (exp(radThick * C_LOG) - exp(-TWO * radThick));  // thickness scaling
       /*
     * End of energy loss corrections
     */

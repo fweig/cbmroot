@@ -14,12 +14,14 @@
 #ifndef STATION_H
 #define STATION_H
 
-#include "Bins.h"
 #include "CbmTrackParam2.h"
-#include "HitReader.h"
+
 #include <functional>
 #include <iostream>
 #include <set>
+
+#include "Bins.h"
+#include "HitReader.h"
 
 const Double_t cbmBinnedSigma   = 4;
 const Double_t cbmBinnedSigmaSq = cbmBinnedSigma * cbmBinnedSigma;
@@ -40,15 +42,17 @@ public:
       , end(endHit)
       , chiSq(cbmBinnedCrazyChiSq)
       , children()
-      , bestBranch(0) {}
+      , bestBranch(0)
+    {
+    }
     Segment(const Segment&) = default;
     Segment& operator=(const Segment&) = default;
   };
 
   struct SegmentComp {
-    bool operator()(const Segment& s1, const Segment& s2) const {
-      if (&s1.begin < &s2.begin)
-        return true;
+    bool operator()(const Segment& s1, const Segment& s2) const
+    {
+      if (&s1.begin < &s2.begin) return true;
       else if (&s1.end < &s2.end)
         return true;
       else
@@ -92,7 +96,8 @@ public:
         return result;
     }*/
 
-  CbmTrackParam2 Extrapolate(const CbmTrackParam2& parIn, Double_t zOut) {
+  CbmTrackParam2 Extrapolate(const CbmTrackParam2& parIn, Double_t zOut)
+  {
     CbmTrackParam2 parOut;
     parOut.SetZ(zOut);
     Double_t dz        = zOut - parIn.GetZ();
@@ -139,12 +144,11 @@ public:
     covOut[7]        = covOut6;
     covOut[10]       = covOut8;
     covOut[12]       = t24;
-    covOut[4] = covOut2 * timeCoeff + covOut3 * timeCoeff + dz * t18 + covIn[4];
-    covOut[8] = covOut5 * timeCoeff + covOut6 * timeCoeff + dz * t30 + covIn[8];
-    covOut[11] = timeCoeff * covOut[9] + t18 + t34;
-    covOut[13] = timeCoeff * covOut[12] + t30 + t34;
-    covOut[14] = timeCoeff * t18 + timeCoeff * t30 + covOut[11] * timeCoeff
-                 + covOut[13] * timeCoeff + covIn[14];
+    covOut[4]        = covOut2 * timeCoeff + covOut3 * timeCoeff + dz * t18 + covIn[4];
+    covOut[8]        = covOut5 * timeCoeff + covOut6 * timeCoeff + dz * t30 + covIn[8];
+    covOut[11]       = timeCoeff * covOut[9] + t18 + t34;
+    covOut[13]       = timeCoeff * covOut[12] + t30 + t34;
+    covOut[14]       = timeCoeff * t18 + timeCoeff * t30 + covOut[11] * timeCoeff + covOut[13] * timeCoeff + covIn[14];
 
     parOut.SetCovMatrix(covOut);
 
@@ -190,8 +194,8 @@ public:
         return parOut;
     }*/
 
-  static void
-  Update(CbmTrackParam2& par, const CbmPixelHit* hit, Double_t& chiSq) {
+  static void Update(CbmTrackParam2& par, const CbmPixelHit* hit, Double_t& chiSq)
+  {
     Double_t xIn    = par.GetX();
     Double_t yIn    = par.GetY();
     Double_t txIn   = par.GetTx();
@@ -242,11 +246,9 @@ public:
     Double_t t43 = dxy * t36;
     Double_t t46 = t1 * t5;
     Double_t t50 = t24 * t36;
-    Double_t t54 = -t1 * t11 + t4 * t1 + 2 * t43 * t10 + 2 * t50 * t10
-                   - t14 * t11 + t15 * t3 + t15 * t5 + t19 * t7 - t2 * t21
-                   - t2 * t29 - t21 * t7 - 2 * t23 * t24 + t27 * t5 - t29 * t7
-                   - t3 * t37 + t31 * t7 + t34 * t7 - t37 * t5 - 2 * t40 * t7
-                   + t46 * t7;
+    Double_t t54 = -t1 * t11 + t4 * t1 + 2 * t43 * t10 + 2 * t50 * t10 - t14 * t11 + t15 * t3 + t15 * t5 + t19 * t7
+                   - t2 * t21 - t2 * t29 - t21 * t7 - 2 * t23 * t24 + t27 * t5 - t29 * t7 - t3 * t37 + t31 * t7
+                   + t34 * t7 - t37 * t5 - 2 * t40 * t7 + t46 * t7;
     Double_t t55  = 1 / t54;
     Double_t t61  = dxy * t7 - t36 * t10 + t2 * t24 + t24 * t7 + t23;
     Double_t t63  = t24 * t61 * t55;
@@ -317,8 +319,8 @@ public:
     Double_t t13 = dxy * covOut[1];
     t14          = t12 * covOut[8];
     t15          = 2;
-    t5           = -t15 * (t14 * covOut[4] + t13 * (covOut[14] - t3)) - t10 * t3
-         - t11 * t2 - t4 * t6 - (t8 - t7 - t9 - t5) * covOut[14];
+    t5           = -t15 * (t14 * covOut[4] + t13 * (covOut[14] - t3)) - t10 * t3 - t11 * t2 - t4 * t6
+         - (t8 - t7 - t9 - t5) * covOut[14];
     t7  = yMes - yOut;
     t8  = -t12 * t3 + t12 * covOut[14] - covOut[4] * covOut[8];
     t9  = timeMes - timeOut;
@@ -333,10 +335,9 @@ public:
     par.SetTime(timeOut);
     par.SetCovMatrix(covOut);
 
-    chiSq +=
-      t1 * (t1 * (t2 * t3 - t2 * covOut[14] - t4) - t7 * t8 - t9 * t14) * t5
-      - t7 * (t1 * t8 - t7 * (t3 * t6 - t6 * covOut[14] - t11) + t9 * t12) * t5
-      - t9 * (t1 * t14 + t12 * t7 - t9 * (t13 * t15 - t10)) * t5;
+    chiSq += t1 * (t1 * (t2 * t3 - t2 * covOut[14] - t4) - t7 * t8 - t9 * t14) * t5
+             - t7 * (t1 * t8 - t7 * (t3 * t6 - t6 * covOut[14] - t11) + t9 * t12) * t5
+             - t9 * (t1 * t14 + t12 * t7 - t9 * (t13 * t15 - t10)) * t5;
   }
   /*static void Update(CbmTrackParam2& par, const CbmPixelHit* hit, Double_t& chiSq)
     {
@@ -421,12 +422,7 @@ public:
     }*/
 
 public:
-  CbmBinnedStation(ECbmModuleId stationType,
-                   Double_t minZ,
-                   Double_t maxZ,
-                   int nofYBins,
-                   int nofXBins,
-                   int nofTBins);
+  CbmBinnedStation(ECbmModuleId stationType, Double_t minZ, Double_t maxZ, int nofYBins, int nofXBins, int nofTBins);
   CbmBinnedStation(const CbmBinnedStation&) = delete;
   CbmBinnedStation& operator=(const CbmBinnedStation&) = delete;
 
@@ -443,7 +439,8 @@ public:
 
   void SetTBinSize(Double_t v) { fTBinSize = v; }
 
-  void SetMinT(Double_t v) {
+  void SetMinT(Double_t v)
+  {
     fMinT = v;
     fMaxT = fMinT + fNofTBins * fTBinSize;
   }
@@ -452,7 +449,8 @@ public:
 
   Double_t GetDx() const { return fDx; }
 
-  void SetDx(Double_t v) {
+  void SetDx(Double_t v)
+  {
     if (v > fDx) {
       fDx   = v;
       fDxSq = v * v;
@@ -461,7 +459,8 @@ public:
 
   Double_t GetDy() const { return fDy; }
 
-  void SetDy(Double_t v) {
+  void SetDy(Double_t v)
+  {
     if (v > fDy) {
       fDy   = v;
       fDySq = v * v;
@@ -470,7 +469,8 @@ public:
 
   Double_t GetDt() const { return fDt; }
 
-  void SetDt(Double_t v) {
+  void SetDt(Double_t v)
+  {
     if (v > fDt) {
       fDt   = v;
       fDtSq = v * v;
@@ -480,7 +480,8 @@ public:
   Double_t GetScatX() const { return fScatX; }
   Double_t GetScatXSq() const { return fScatXSq; }
 
-  void SetScatX(Double_t v) {
+  void SetScatX(Double_t v)
+  {
     fScatX   = v;
     fScatXSq = v * v;
   }
@@ -488,7 +489,8 @@ public:
   Double_t GetScatY() const { return fScatY; }
   Double_t GetScatYSq() const { return fScatYSq; }
 
-  void SetScatY(Double_t v) {
+  void SetScatY(Double_t v)
+  {
     fScatY   = v;
     fScatYSq = v * v;
   }
@@ -496,7 +498,8 @@ public:
   Double_t GetNofSigmaX() const { return fNofSigmasX; }
   Double_t GetNofSigmaXSq() const { return fNofSigmasXSq; }
 
-  void SetNofSigmaX(Double_t v) {
+  void SetNofSigmaX(Double_t v)
+  {
     fNofSigmasX   = v;
     fNofSigmasXSq = v * v;
   }
@@ -504,38 +507,39 @@ public:
   Double_t GetNofSigmaY() const { return fNofSigmasY; }
   Double_t GetNofSigmaYSq() const { return fNofSigmasYSq; }
 
-  void SetNofSigmaY(Double_t v) {
+  void SetNofSigmaY(Double_t v)
+  {
     fNofSigmasY   = v;
     fNofSigmasYSq = v * v;
   }
 
-  int GetXInd(Double_t v) const {
+  int GetXInd(Double_t v) const
+  {
     int ind = (v - fMinX) / fXBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofXBins)
       ind = fNofXBins - 1;
 
     return ind;
   }
 
-  int GetYInd(Double_t v) const {
+  int GetYInd(Double_t v) const
+  {
     int ind = (v - fMinY) / fYBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofYBins)
       ind = fNofYBins - 1;
 
     return ind;
   }
 
-  int GetTInd(Double_t v) const {
+  int GetTInd(Double_t v) const
+  {
     int ind = (v - fMinT) / fTBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofTBins)
       ind = fNofTBins - 1;
 
@@ -544,12 +548,14 @@ public:
 
   void SetStage(char v) { fStage = v; }
 
-  virtual void Init() {
+  virtual void Init()
+  {
     fYBinSize = (fMaxY - fMinY) / fNofYBins;
     fXBinSize = (fMaxX - fMinX) / fNofXBins;
   }
 
-  virtual void Clear() {
+  virtual void Clear()
+  {
     fDx                 = 0;
     fDxSq               = 0;
     fDy                 = 0;
@@ -561,46 +567,31 @@ public:
     fSegments.clear();
   }
 
-  virtual void
-  AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index) = 0;
-  virtual void
-  IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit) = 0;
-  virtual void
-  SearchHits(const CbmTrackParam2& stateVec,
-             Double_t stateZ,
-             std::function<void(CbmTBin::HitHolder&)> handleHit) = 0;
-  virtual void
-  SearchHits(Segment& segment,
-             std::function<void(CbmTBin::HitHolder&)> handleHit) = 0;
-  virtual void
-  SearchHits(Double_t minZ,
-             Double_t maxZ,
-             Double_t minY,
-             Double_t maxY,
-             Double_t minX,
-             Double_t maxX,
-             Double_t minT,
-             Double_t maxT,
-             std::function<void(CbmTBin::HitHolder&)> handleHit) = 0;
+  virtual void AddHit(ECbmModuleId type, const CbmPixelHit* hit, Int_t index)                               = 0;
+  virtual void IterateHits(std::function<void(CbmTBin::HitHolder&)> handleHit)                              = 0;
+  virtual void SearchHits(const CbmTrackParam2& stateVec, Double_t stateZ,
+                          std::function<void(CbmTBin::HitHolder&)> handleHit)                               = 0;
+  virtual void SearchHits(Segment& segment, std::function<void(CbmTBin::HitHolder&)> handleHit)             = 0;
+  virtual void SearchHits(Double_t minZ, Double_t maxZ, Double_t minY, Double_t maxY, Double_t minX, Double_t maxX,
+                          Double_t minT, Double_t maxT, std::function<void(CbmTBin::HitHolder&)> handleHit) = 0;
 
-  void IterateSegments(std::function<void(Segment&)> handleSegment) {
-    for (std::set<Segment, SegmentComp>::iterator i = fSegments.begin();
-         i != fSegments.end();
-         ++i)
+  void IterateSegments(std::function<void(Segment&)> handleSegment)
+  {
+    for (std::set<Segment, SegmentComp>::iterator i = fSegments.begin(); i != fSegments.end(); ++i)
       handleSegment(const_cast<Segment&>(*i));
   }
 
-  void CreateSegmentsFromHits() {
+  void CreateSegmentsFromHits()
+  {
     IterateHits([&](CbmTBin::HitHolder& hitHolder) -> void {
       Segment segment(&fVertexHolder, &hitHolder);
       fSegments.insert(segment);
     });
   }
 
-  void NulifySegments() {
-    for (std::set<Segment, SegmentComp>::iterator i = fSegments.begin();
-         i != fSegments.end();
-         ++i) {
+  void NulifySegments()
+  {
+    for (std::set<Segment, SegmentComp>::iterator i = fSegments.begin(); i != fSegments.end(); ++i) {
       Segment& segment = const_cast<Segment&>(*i);
       segment.chiSq    = 0;
     }

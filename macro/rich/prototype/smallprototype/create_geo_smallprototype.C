@@ -2,9 +2,15 @@
 using namespace std;
 
 
-enum RichGeomType { kGlassLense, kQuartzPlate, kAerogel };
+enum RichGeomType
+{
+  kGlassLense,
+  kQuartzPlate,
+  kAerogel
+};
 
-void create_geo_smallprototype() {
+void create_geo_smallprototype()
+{
   gSystem->Load("libGeom");
   //gGeoMan = gGeoManager;// (TGeoManager*)gROOT->FindObject("FAIRGeom");
   //new TGeoManager ("Testbox", "Testbox");
@@ -59,8 +65,7 @@ void create_geo_smallprototype() {
   if (medCsI == NULL) Fatal("Main", "Medium CsI not found");
 
   FairGeoMedium* mLenseGlass = geoMedia->getMedium("Rich_NBK7_glass");
-  if (mLenseGlass == NULL)
-    Fatal("Main", "FairMedium Rich_NBK7_glass not found");
+  if (mLenseGlass == NULL) Fatal("Main", "FairMedium Rich_NBK7_glass not found");
   geoBuild->createMedium(mLenseGlass);
   TGeoMedium* medLenseGlass = gGeoMan->GetMedium("Rich_NBK7_glass");
   if (medLenseGlass == NULL) Fatal("Main", "Medium Rich_NBK7_glass  not found");
@@ -78,8 +83,7 @@ void create_geo_smallprototype() {
   TGeoMedium* medElectronic = gGeoMan->GetMedium("air");
   if (medElectronic == NULL) Fatal("Main", "Medium air not found");
 
-  FairGeoMedium* mAerogel = geoMedia->getMedium(
-    "aerogel");  //aerogel medium in ../smallprototype/media.geo not perfect
+  FairGeoMedium* mAerogel = geoMedia->getMedium("aerogel");  //aerogel medium in ../smallprototype/media.geo not perfect
   if (mAerogel == NULL) Fatal("Main", "FairMedium aerogel not found");
   geoBuild->createMedium(mAerogel);
   TGeoMedium* medAerogel = gGeoMan->GetMedium("aerogel");
@@ -143,38 +147,28 @@ void create_geo_smallprototype() {
   TGeoRotation* rotBox    = new TGeoRotation("rotBox", 0., 0., 0.);
   TGeoTranslation* trCave = new TGeoTranslation(0., 0., 0.);
 
-  TGeoTranslation* trBox =
-    new TGeoTranslation(0., 0., 0.);  //Gasbox/Box Translation
-  TGeoTranslation* trSensPlane =
-    new TGeoTranslation(0., 0., boxLength / 2. + sensPlaneBoxDistance);
+  TGeoTranslation* trBox       = new TGeoTranslation(0., 0., 0.);  //Gasbox/Box Translation
+  TGeoTranslation* trSensPlane = new TGeoTranslation(0., 0., boxLength / 2. + sensPlaneBoxDistance);
 
   Double_t pmtPlaneZ = 0.;
-  if (richGeomType == kGlassLense) {
-    pmtPlaneZ = -(lenseRadius - lenseCThickness - lensePmtDistance);
-  } else if (richGeomType == kQuartzPlate) {
+  if (richGeomType == kGlassLense) { pmtPlaneZ = -(lenseRadius - lenseCThickness - lensePmtDistance); }
+  else if (richGeomType == kQuartzPlate) {
     //	pmtPlaneZ = quartzPmtDistance + quartzThickness / 2. + pmtThickness / 2.;
-  } else {
-    pmtPlaneZ = aerogelPmtDistance + aerogelLength / 2.
-                + pmtThickness / 2.;  // set pmtPlaneZ
+  }
+  else {
+    pmtPlaneZ = aerogelPmtDistance + aerogelLength / 2. + pmtThickness / 2.;  // set pmtPlaneZ
   }
 
-  Double_t pmtPlaneY            = pmtSize + pmtMatrixGap / 2. + pmtGap / 2.;
-  TGeoTranslation* trPmtPlaneUp = new TGeoTranslation(0., pmtPlaneY, pmtPlaneZ);
-  TGeoTranslation* trPmtPlaneDown =
-    new TGeoTranslation(0., -pmtPlaneY, pmtPlaneZ);
+  Double_t pmtPlaneY              = pmtSize + pmtMatrixGap / 2. + pmtGap / 2.;
+  TGeoTranslation* trPmtPlaneUp   = new TGeoTranslation(0., pmtPlaneY, pmtPlaneZ);
+  TGeoTranslation* trPmtPlaneDown = new TGeoTranslation(0., -pmtPlaneY, pmtPlaneZ);
 
-  TGeoTranslation* trPmt1 =
-    new TGeoTranslation(-pmtSize - pmtGap, pmtSizeHalf + pmtGapHalf, 0.);
-  TGeoTranslation* trPmt2 =
-    new TGeoTranslation(0., pmtSizeHalf + pmtGapHalf, 0.);
-  TGeoTranslation* trPmt3 =
-    new TGeoTranslation(pmtSize + pmtGap, pmtSizeHalf + pmtGapHalf, 0.);
-  TGeoTranslation* trPmt4 =
-    new TGeoTranslation(-pmtSize - pmtGap, -pmtSizeHalf - pmtGapHalf, 0.);
-  TGeoTranslation* trPmt5 =
-    new TGeoTranslation(0., -pmtSizeHalf - pmtGapHalf, 0.);
-  TGeoTranslation* trPmt6 =
-    new TGeoTranslation(pmtSize + pmtGap, -pmtSizeHalf - pmtGapHalf, 0.);
+  TGeoTranslation* trPmt1 = new TGeoTranslation(-pmtSize - pmtGap, pmtSizeHalf + pmtGapHalf, 0.);
+  TGeoTranslation* trPmt2 = new TGeoTranslation(0., pmtSizeHalf + pmtGapHalf, 0.);
+  TGeoTranslation* trPmt3 = new TGeoTranslation(pmtSize + pmtGap, pmtSizeHalf + pmtGapHalf, 0.);
+  TGeoTranslation* trPmt4 = new TGeoTranslation(-pmtSize - pmtGap, -pmtSizeHalf - pmtGapHalf, 0.);
+  TGeoTranslation* trPmt5 = new TGeoTranslation(0., -pmtSizeHalf - pmtGapHalf, 0.);
+  TGeoTranslation* trPmt6 = new TGeoTranslation(pmtSize + pmtGap, -pmtSizeHalf - pmtGapHalf, 0.);
 
   /*	TGeoTranslation trQuartzPlate(0., 0., 0. );
 	TGeoRotation rotQuartzPlate;
@@ -184,84 +178,51 @@ void create_geo_smallprototype() {
 
   TGeoTranslation* trAerogel = new TGeoTranslation(0., 0., 0.);
 
-  TGeoTranslation* trAbsorber = new TGeoTranslation(
-    0., 0., -(lenseRadius - lenseCThickness) + absorberThickness / 2);
+  TGeoTranslation* trAbsorber = new TGeoTranslation(0., 0., -(lenseRadius - lenseCThickness) + absorberThickness / 2);
 
   Double_t rotAngleLense = 0.;
-  TGeoTranslation trLense(
-    0., -lenseRadius * TMath::ASin(TMath::DegToRad() * rotAngleLense), 0.);
+  TGeoTranslation trLense(0., -lenseRadius * TMath::ASin(TMath::DegToRad() * rotAngleLense), 0.);
   TGeoRotation rotLense;
   rotLense.SetAngles(0., rotAngleLense, 0.);
   TGeoCombiTrans* combiTrLense = new TGeoCombiTrans(trLense, rotLense);
 
-  TGeoTranslation* trComp = new TGeoTranslation(
-    "trComp", 0., 0., -(lenseRadius - lenseCThickness) / 2 + 0.1);
+  TGeoTranslation* trComp = new TGeoTranslation("trComp", 0., 0., -(lenseRadius - lenseCThickness) / 2 + 0.1);
   trComp->RegisterYourself();
 
   //Virtual Topbox
   TGeoVolume* topVol = new TGeoVolumeAssembly("rich");
   gGeoMan->SetTopVolume(topVol);
 
-  TGeoVolume* caveVol = gGeoMan->MakeBox("rich_smallprototype_vTestBox",
-                                         medAl,
-                                         (boxWidth + boxThickness) / 2.,
-                                         (boxHeight + boxThickness) / 2.,
-                                         (boxLength + boxThickness) / 2.);
-  TGeoVolume* boxVol  = gGeoMan->MakeBox(
-    "Box", medNitrogen, boxWidth / 2., boxHeight / 2., boxLength / 2.);
-  TGeoVolume* gasVol     = gGeoMan->MakeBox("Gas",
-                                        medNitrogen,
-                                        boxWidth / 2 - wallWidth,
-                                        boxHeight / 2 - wallWidth,
+  TGeoVolume* caveVol    = gGeoMan->MakeBox("rich_smallprototype_vTestBox", medAl, (boxWidth + boxThickness) / 2.,
+                                         (boxHeight + boxThickness) / 2., (boxLength + boxThickness) / 2.);
+  TGeoVolume* boxVol     = gGeoMan->MakeBox("Box", medNitrogen, boxWidth / 2., boxHeight / 2., boxLength / 2.);
+  TGeoVolume* gasVol     = gGeoMan->MakeBox("Gas", medNitrogen, boxWidth / 2 - wallWidth, boxHeight / 2 - wallWidth,
                                         boxLength / 2 - wallWidth);
-  TGeoVolume* pmtContVol = gGeoMan->MakeBox("PmtContainer",
-                                            medCsI,
-                                            3 * pmtSizeHalf + pmtGap,
-                                            2 * pmtSizeHalf + pmtGap / 2.,
-                                            pmtThickness / 2.);
-  TGeoVolume* pmtVol     = gGeoMan->MakeBox(
-    "Pmt", medCsI, pmtSizeHalf, pmtSizeHalf, pmtThickness / 2.);
-  TGeoVolume* pmtPixelVol = gGeoMan->MakeBox("pmt_pixel",
-                                             medCsI,
-                                             pmtPixelSize / 2.,
-                                             pmtPixelSize / 2.,
-                                             pmtThickness / 2.);
+  TGeoVolume* pmtContVol = gGeoMan->MakeBox("PmtContainer", medCsI, 3 * pmtSizeHalf + pmtGap,
+                                            2 * pmtSizeHalf + pmtGap / 2., pmtThickness / 2.);
+  TGeoVolume* pmtVol     = gGeoMan->MakeBox("Pmt", medCsI, pmtSizeHalf, pmtSizeHalf, pmtThickness / 2.);
+  TGeoVolume* pmtPixelVol =
+    gGeoMan->MakeBox("pmt_pixel", medCsI, pmtPixelSize / 2., pmtPixelSize / 2., pmtThickness / 2.);
 
   //Aerogel box
-  TGeoVolume* aerogelVol = gGeoMan->MakeBox("AerogelBox",
-                                            medAerogel,
-                                            aerogelWidth / 2.,
-                                            aerogelHeight / 2.,
-                                            aerogelLength / 2.);
+  TGeoVolume* aerogelVol =
+    gGeoMan->MakeBox("AerogelBox", medAerogel, aerogelWidth / 2., aerogelHeight / 2., aerogelLength / 2.);
 
 
   // Lense composite shape
-  TGeoSphere* lenseCoatingVol = new TGeoSphere("LenseCoating",
-                                               lenseRadius,
-                                               lenseRadius + lenseCoating,
-                                               90.,
-                                               180.,
-                                               0.,
-                                               360.);
-  TGeoSphere* lenseVol =
-    new TGeoSphere("Lense", 0., lenseRadius, 90., 180., 0., 360.);
-  TGeoBBox* lenseCut = new TGeoBBox("LenseCutShape",
-                                    lenseRadius + lenseCoating,
-                                    lenseRadius + lenseCoating,
+  TGeoSphere* lenseCoatingVol =
+    new TGeoSphere("LenseCoating", lenseRadius, lenseRadius + lenseCoating, 90., 180., 0., 360.);
+  TGeoSphere* lenseVol = new TGeoSphere("Lense", 0., lenseRadius, 90., 180., 0., 360.);
+  TGeoBBox* lenseCut   = new TGeoBBox("LenseCutShape", lenseRadius + lenseCoating, lenseRadius + lenseCoating,
                                     (lenseRadius - lenseCThickness) / 2);
-  TGeoCompositeShape* lenseCompShape =
-    new TGeoCompositeShape("LenseCompShape", "Lense-LenseCutShape:trComp");
-  TGeoCompositeShape* lenseCoatingCompShape = new TGeoCompositeShape(
-    "LenseCoatingCompShape", "LenseCoating-LenseCutShape:trComp");
-  TGeoVolume* lenseCompVol =
-    new TGeoVolume("LenseComp", lenseCompShape, medLenseGlass);
-  TGeoVolume* lenseCoatingCompVol =
-    new TGeoVolume("LenseCoatingComp", lenseCoatingCompShape, medCoating);
+  TGeoCompositeShape* lenseCompShape = new TGeoCompositeShape("LenseCompShape", "Lense-LenseCutShape:trComp");
+  TGeoCompositeShape* lenseCoatingCompShape =
+    new TGeoCompositeShape("LenseCoatingCompShape", "LenseCoating-LenseCutShape:trComp");
+  TGeoVolume* lenseCompVol        = new TGeoVolume("LenseComp", lenseCompShape, medLenseGlass);
+  TGeoVolume* lenseCoatingCompVol = new TGeoVolume("LenseCoatingComp", lenseCoatingCompShape, medCoating);
 
-  TGeoVolume* absorberVol = gGeoMan->MakeTube(
-    "Absorber", medAl, 0., absorberRadius, absorberThickness / 2);
-  TGeoVolume* sensPlaneVol = gGeoMan->MakeBox(
-    "SensPlane", medCsI, sensPlaneSize / 2, sensPlaneSize / 2, 0.1);
+  TGeoVolume* absorberVol  = gGeoMan->MakeTube("Absorber", medAl, 0., absorberRadius, absorberThickness / 2);
+  TGeoVolume* sensPlaneVol = gGeoMan->MakeBox("SensPlane", medCsI, sensPlaneSize / 2, sensPlaneSize / 2, 0.1);
 
   // Quarz plate
   //	TGeoVolume *quartzVol = gGeoMan->MakeBox("QuarzPlate", medQuartz , quartzWidth / 2., quartzHeight / 2., quartzThickness / 2.);
@@ -277,9 +238,11 @@ void create_geo_smallprototype() {
   if (richGeomType == kGlassLense) {
     gasVol->AddNode(lenseCoatingCompVol, 1, combiTrLense);
     gasVol->AddNode(lenseCompVol, 1, combiTrLense);
-  } else if (richGeomType == kQuartzPlate) {
+  }
+  else if (richGeomType == kQuartzPlate) {
     //		gasVol->AddNode(quartzVol, 1, combiTrQuartzPlate);
-  } else {
+  }
+  else {
     gasVol->AddNode(aerogelVol, 1, trAerogel);
   }
 
@@ -300,10 +263,8 @@ void create_geo_smallprototype() {
   Int_t halfPmtNofPixels = pmtNofPixels / 2;
   for (Int_t i = 0; i < pmtNofPixels; i++) {
     for (Int_t j = 0; j < pmtNofPixels; j++) {
-      Double_t x =
-        (i - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
-      Double_t y =
-        (j - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
+      Double_t x = (i - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
+      Double_t y = (j - (halfPmtNofPixels - 1)) * pmtPixelSize - pmtPixelSizeHalf;
       cout << "x:" << x << "  ";
       TGeoTranslation* trij = new TGeoTranslation(x, y, 0.);
       pmtVol->AddNode(pmtPixelVol, pmtNofPixels * i + j + 1, trij);

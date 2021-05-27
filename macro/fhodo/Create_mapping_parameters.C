@@ -1,4 +1,5 @@
-void Create_mapping_parameters() {
+void Create_mapping_parameters()
+{
 
   FairLogger::GetLogger();
   // This code was copied from the Go4 analysis used for previous beamtimes
@@ -49,8 +50,7 @@ void Create_mapping_parameters() {
 
     // new code to resolve cabling problem during cern-oct12
     int ifiber_bis = ifiber;
-    if (ifiber <= 8)
-      ifiber_bis = ifiber + 56;
+    if (ifiber <= 8) ifiber_bis = ifiber + 56;
     else if (ifiber <= 16)
       ifiber_bis = ifiber + 40;
     else if (ifiber <= 24)
@@ -87,7 +87,8 @@ void Create_mapping_parameters() {
     if (counter < 9) {
       cout << fHodoFiber[i] << " ";
       counter++;
-    } else {
+    }
+    else {
       cout << fHodoFiber[i] << " \\" << endl;
       counter = 0;
     }
@@ -101,7 +102,8 @@ void Create_mapping_parameters() {
     if (counter < 9) {
       cout << fHodoPixel[i] << " ";
       counter++;
-    } else {
+    }
+    else {
       cout << fHodoPixel[i] << " \\" << endl;
       counter = 0;
     }
@@ -115,7 +117,8 @@ void Create_mapping_parameters() {
     if (counter < 9) {
       cout << fHodoPlane[i] << " ";
       counter++;
-    } else {
+    }
+    else {
       cout << fHodoPlane[i] << " \\" << endl;
       counter = 0;
     }

@@ -4,10 +4,13 @@
 #pragma GCC diagnostic ignored "-Weffc++"
 
 #include "CbmStsTrack.h"
-#include "LxSettings.h"
+
 #include "Rtypes.h"
+
 #include <list>
 #include <vector>
+
+#include "LxSettings.h"
 
 struct LxPoint;
 struct LxStsMCPoint;
@@ -17,8 +20,7 @@ struct LxMCPoint {
   Double_t p, q, x, y, z, px, py, pz;
   Int_t stationNumber, layerNumber;
   std::list<LxPoint*> lxPoints;
-  Int_t
-    trackId;  // Original track id -- an index (offset) in the array of MC tracks.
+  Int_t trackId;  // Original track id -- an index (offset) in the array of MC tracks.
   LxMCTrack* track;
 };
 

@@ -1,6 +1,25 @@
 
 #include "CbmRichRecoQa.h"
 
+#include "CbmDigiManager.h"
+#include "CbmDrawHist.h"
+#include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
+#include "CbmMCTrack.h"
+#include "CbmMatchRecoToMC.h"
+#include "CbmRichDraw.h"
+#include "CbmRichGeoManager.h"
+#include "CbmRichHit.h"
+#include "CbmRichPoint.h"
+#include "CbmRichRing.h"
+#include "CbmRichUtil.h"
+#include "CbmTrackMatchNew.h"
+#include "CbmUtils.h"
+#include "elid/CbmLitGlobalElectronId.h"
+
+#include "FairMCPoint.h"
+#include "FairTrackParam.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TEllipse.h"
@@ -12,26 +31,8 @@
 #include "TStyle.h"
 #include <TFile.h>
 
-#include "CbmDrawHist.h"
-#include "CbmGlobalTrack.h"
-#include "CbmMCTrack.h"
-#include "CbmMatchRecoToMC.h"
-#include "CbmRichDraw.h"
-#include "CbmRichGeoManager.h"
-#include "CbmRichHit.h"
-#include "CbmRichPoint.h"
-#include "CbmRichRing.h"
-#include "CbmRichUtil.h"
-#include "CbmTrackMatchNew.h"
-#include "FairMCPoint.h"
-#include "FairTrackParam.h"
-#include "elid/CbmLitGlobalElectronId.h"
-
-#include "CbmDigiManager.h"
-#include "CbmHistManager.h"
-#include "CbmUtils.h"
-
 #include <boost/assign/list_of.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -55,23 +56,22 @@ CbmRichRecoQa::CbmRichRecoQa()
   , fRichProjections(nullptr)
   , fDigiMan(nullptr)
   , fNofHitsInRingMap()
-  , fCanvas() {}
+  , fCanvas()
+{
+}
 
 
-InitStatus CbmRichRecoQa::Init() {
+InitStatus CbmRichRecoQa::Init()
+{
   cout << "CbmRichRecoQa::Init" << endl;
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmRichRecoQa::Init", "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmRichRecoQa::Init", "RootManager not instantised!"); }
 
   fMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
   if (nullptr == fMCTracks) { Fatal("CbmRichRecoQa::Init", "No MC Tracks!"); }
 
   fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (nullptr == fRichPoints) {
-    Fatal("CbmRichRecoQa::Init", "No Rich Points!");
-  }
+  if (nullptr == fRichPoints) { Fatal("CbmRichRecoQa::Init", "No Rich Points!"); }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
@@ -83,29 +83,19 @@ InitStatus CbmRichRecoQa::Init() {
   if (nullptr == fRichRings) { Fatal("CbmRichRecoQa::Init", "No RichRings!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (nullptr == fRichRingMatches) {
-    Fatal("CbmRichRecoQa::Init", "No RichRingMatch array!");
-  }
+  if (nullptr == fRichRingMatches) { Fatal("CbmRichRecoQa::Init", "No RichRingMatch array!"); }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (nullptr == fGlobalTracks) {
-    Fatal("CbmRichRecoQa::Init", "No GlobalTrack array!");
-  }
+  if (nullptr == fGlobalTracks) { Fatal("CbmRichRecoQa::Init", "No GlobalTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (nullptr == fStsTracks) {
-    Fatal("CbmRichRecoQa::Init", ": No StsTrack array!");
-  }
+  if (nullptr == fStsTracks) { Fatal("CbmRichRecoQa::Init", ": No StsTrack array!"); }
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (nullptr == fStsTrackMatches) {
-    Fatal("CbmRichRecoQa::Init", ": No StsTrackMatch array!");
-  }
+  if (nullptr == fStsTrackMatches) { Fatal("CbmRichRecoQa::Init", ": No StsTrackMatch array!"); }
 
   fRichProjections = (TClonesArray*) ioman->GetObject("RichProjection");
-  if (nullptr == fRichProjections) {
-    Fatal("CbmRichUrqmdTest::Init", "No fRichProjections array!");
-  }
+  if (nullptr == fRichProjections) { Fatal("CbmRichUrqmdTest::Init", "No fRichProjections array!"); }
 
   InitHistograms();
 
@@ -115,7 +105,8 @@ InitStatus CbmRichRecoQa::Init() {
   return kSUCCESS;
 }
 
-void CbmRichRecoQa::InitHistograms() {
+void CbmRichRecoQa::InitHistograms()
+{
   fHM = new CbmHistManager();
 
   // 2D histogramm XY
@@ -142,152 +133,62 @@ void CbmRichRecoQa::InitHistograms() {
     if (i == 3) s = "PrimelMinus";
 
     fHM->Create2<TH2D>("fhRingTrackDistVsMomTruematch" + s,
-                       "fhRingTrackDistVsMomTruematch" + s
-                         + ";P [GeV/c];Ring-track distance [cm];Yield (a.u.)",
-                       20,
-                       0.,
-                       10.,
-                       100,
-                       0.,
-                       5.);
+                       "fhRingTrackDistVsMomTruematch" + s + ";P [GeV/c];Ring-track distance [cm];Yield (a.u.)", 20, 0.,
+                       10., 100, 0., 5.);
     fHM->Create2<TH2D>("fhRingTrackDistVsMomWrongmatch" + s,
-                       "fhRingTrackDistVsMomWrongmatch" + s
-                         + ";P [GeV/c];Ring-track distance [cm];Yield (a.u.)",
-                       20,
-                       0.,
-                       10.,
-                       100,
-                       0.,
-                       5.);
+                       "fhRingTrackDistVsMomWrongmatch" + s + ";P [GeV/c];Ring-track distance [cm];Yield (a.u.)", 20,
+                       0., 10., 100, 0., 5.);
 
-    fHM->Create2<TH2D>(
-      "fhRingTrackDistVsNofHitsTruematch" + s,
-      "fhRingTrackDistVsNofHitsTruematch" + s
-        + ";Nof hits in found ring;Ring-track distance [cm];Yield (a.u.)",
-      40,
-      -.5,
-      39.5,
-      100,
-      0.,
-      5.);
+    fHM->Create2<TH2D>("fhRingTrackDistVsNofHitsTruematch" + s,
+                       "fhRingTrackDistVsNofHitsTruematch" + s
+                         + ";Nof hits in found ring;Ring-track distance [cm];Yield (a.u.)",
+                       40, -.5, 39.5, 100, 0., 5.);
     fHM->Create3<TH3D>("fhRingTrackDistVsXYTruematch" + s,
-                       "fhRingTrackDistVsXYTruematch" + s
-                         + ";X [cm];Y [cm];Ring-track distance [cm]",
-                       nBinsX,
-                       xMin,
-                       xMax,
-                       nBinsY,
-                       yMin,
-                       yMax,
-                       100,
-                       0.,
-                       5.);
+                       "fhRingTrackDistVsXYTruematch" + s + ";X [cm];Y [cm];Ring-track distance [cm]", nBinsX, xMin,
+                       xMax, nBinsY, yMin, yMax, 100, 0., 5.);
     fHM->Create2<TH2D>("fhRingTrackDistVsXTruematch" + s,
-                       "fhRingTrackDistVsXTruematch" + s
-                         + ";X [cm];Ring-track distance [cm]",
-                       nBinsX1,
-                       xMin1,
-                       xMax1,
-                       100,
-                       0.,
-                       5.);
+                       "fhRingTrackDistVsXTruematch" + s + ";X [cm];Ring-track distance [cm]", nBinsX1, xMin1, xMax1,
+                       100, 0., 5.);
     fHM->Create2<TH2D>("fhRingTrackDistVsYTruematch" + s,
-                       "fhRingTrackDistVsYTruematch" + s
-                         + ";Abs(Y) [cm];Ring-track distance [cm]",
-                       nBinsY1,
-                       yMin1,
-                       yMax1,
-                       100,
-                       0.,
-                       5.);
+                       "fhRingTrackDistVsYTruematch" + s + ";Abs(Y) [cm];Ring-track distance [cm]", nBinsY1, yMin1,
+                       yMax1, 100, 0., 5.);
   }
 
   // after electron identification
   fHM->Create2<TH2D>("fhRingTrackDistVsMomTruematchElId",
                      "fhRingTrackDistVsMomTruematchElId;P [GeV/c];Ring-track "
                      "distance [cm];Yield (a.u.)",
-                     20,
-                     0.,
-                     10.,
-                     100,
-                     0.,
-                     5.);
+                     20, 0., 10., 100, 0., 5.);
 
-  fHM->Create1<TH1D>("fhMismatchSource",
-                     "fhMismatchSource;Global track category;% from MC",
-                     13,
-                     -0.5,
-                     12.5);
+  fHM->Create1<TH1D>("fhMismatchSource", "fhMismatchSource;Global track category;% from MC", 13, -0.5, 12.5);
 
-  fHM->Create1<TH1D>("fhMismatchSourceMomMc",
-                     "fhMismatchSourceMomMc;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
+  fHM->Create1<TH1D>("fhMismatchSourceMomMc", "fhMismatchSourceMomMc;Momentum [GeV/c];Yield", 40, 0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomSts", "fhMismatchSourceMomSts;Momentum [GeV/c];Yield", 40, 0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsAccRich", "fhMismatchSourceMomStsAccRich;Momentum [GeV/c];Yield", 40, 0.,
                      10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomSts",
-                     "fhMismatchSourceMomSts;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsRich", "fhMismatchSourceMomStsRich;Momentum [GeV/c];Yield", 40, 0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichTrue", "fhMismatchSourceMomStsRichTrue;Momentum [GeV/c];Yield", 40, 0.,
                      10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsAccRich",
-                     "fhMismatchSourceMomStsAccRich;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRich", "fhMismatchSourceMomStsNoRich;Momentum [GeV/c];Yield", 40, 0.,
                      10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsRich",
-                     "fhMismatchSourceMomStsRich;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichRF", "fhMismatchSourceMomStsNoRichRF;Momentum [GeV/c];Yield", 40, 0.,
                      10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichTrue",
-                     "fhMismatchSourceMomStsRichTrue;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichRM", "fhMismatchSourceMomStsNoRichRM;Momentum [GeV/c];Yield", 40, 0.,
                      10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRich",
-                     "fhMismatchSourceMomStsNoRich;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichRF",
-                     "fhMismatchSourceMomStsNoRichRF;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichRM",
-                     "fhMismatchSourceMomStsNoRichRM;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichNoRF",
-                     "fhMismatchSourceMomStsNoRichNoRF;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>(
-    "fhMismatchSourceMomStsNoRichNoProj",
-    "fhMismatchSourceMomStsNoRichNoProj;Momentum [GeV/c];Yield",
-    40,
-    0.,
-    10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrong",
-                     "fhMismatchSourceMomStsRichWrong;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrongRF",
-                     "fhMismatchSourceMomStsRichWrongRF;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
-  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrongRM",
-                     "fhMismatchSourceMomStsRichWrongRM;Momentum [GeV/c];Yield",
-                     40,
-                     0.,
-                     10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichNoRF", "fhMismatchSourceMomStsNoRichNoRF;Momentum [GeV/c];Yield", 40,
+                     0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsNoRichNoProj", "fhMismatchSourceMomStsNoRichNoProj;Momentum [GeV/c];Yield",
+                     40, 0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrong", "fhMismatchSourceMomStsRichWrong;Momentum [GeV/c];Yield", 40,
+                     0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrongRF", "fhMismatchSourceMomStsRichWrongRF;Momentum [GeV/c];Yield",
+                     40, 0., 10.);
+  fHM->Create1<TH1D>("fhMismatchSourceMomStsRichWrongRM", "fhMismatchSourceMomStsRichWrongRM;Momentum [GeV/c];Yield",
+                     40, 0., 10.);
 }
 
-void CbmRichRecoQa::Exec(Option_t* /*option*/) {
+void CbmRichRecoQa::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   cout << "CbmRichRecoQa, event No. " << fEventNum << endl;
 
@@ -296,26 +197,26 @@ void CbmRichRecoQa::Exec(Option_t* /*option*/) {
   RingTrackMismatchSource();
 }
 
-void CbmRichRecoQa::FillRichRingNofHits() {
+void CbmRichRecoQa::FillRichRingNofHits()
+{
   fNofHitsInRingMap.clear();
   Int_t nofRichHits = fRichHits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofRichHits; iHit++) {
     CbmRichHit* hit = static_cast<CbmRichHit*>(fRichHits->At(iHit));
     if (nullptr == hit) continue;
 
-    vector<Int_t> motherIds = CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(
-      fDigiMan, hit, fRichPoints, fMCTracks);
+    vector<Int_t> motherIds = CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, hit, fRichPoints, fMCTracks);
     for (UInt_t i = 0; i < motherIds.size(); i++) {
       fNofHitsInRingMap[motherIds[i]]++;
     }
   }
 }
 
-void CbmRichRecoQa::RingTrackMismatchSource() {
+void CbmRichRecoQa::RingTrackMismatchSource()
+{
   Int_t nofMcTracks = fMCTracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofMcTracks; iTrack++) {
-    const CbmMCTrack* mcTrack =
-      static_cast<const CbmMCTrack*>(fMCTracks->At(iTrack));
+    const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->At(iTrack));
     if (mcTrack == nullptr) continue;
     bool isEl = IsMcPrimaryElectron(mcTrack);
     if (isEl) {
@@ -328,13 +229,11 @@ void CbmRichRecoQa::RingTrackMismatchSource() {
 
   Int_t nofGlobalTracks = fGlobalTracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofGlobalTracks; iTrack++) {
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
 
     Int_t stsId = globalTrack->GetStsTrackIndex();
     if (stsId < 0) continue;
-    const CbmTrackMatchNew* stsTrackMatch =
-      static_cast<const CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
+    const CbmTrackMatchNew* stsTrackMatch = static_cast<const CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
     if (stsTrackMatch == nullptr) continue;
     int stsMcTrackId = stsTrackMatch->GetMatchedLink().GetIndex();
 
@@ -369,7 +268,8 @@ void CbmRichRecoQa::RingTrackMismatchSource() {
         //STS-NoRich RF
         fHM->H1("fhMismatchSource")->Fill(6);
         fHM->H1("fhMismatchSourceMomStsNoRichRF")->Fill(mom);
-      } else {
+      }
+      else {
         //STS-NoRich NoRF
         fHM->H1("fhMismatchSource")->Fill(8);
         fHM->H1("fhMismatchSourceMomStsNoRichNoRF")->Fill(mom);
@@ -394,19 +294,18 @@ void CbmRichRecoQa::RingTrackMismatchSource() {
     fHM->H1("fhMismatchSource")->Fill(3);
     fHM->H1("fhMismatchSourceMomStsRich")->Fill(mom);
 
-    const CbmTrackMatchNew* richRingMatch =
-      static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
+    const CbmTrackMatchNew* richRingMatch = static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
     if (richRingMatch == nullptr) continue;
-    int richMcTrackId = richRingMatch->GetMatchedLink().GetIndex();
-    const CbmRichRing* ring =
-      static_cast<const CbmRichRing*>(fRichRings->At(richId));
+    int richMcTrackId       = richRingMatch->GetMatchedLink().GetIndex();
+    const CbmRichRing* ring = static_cast<const CbmRichRing*>(fRichRings->At(richId));
     if (nullptr == ring) continue;
 
     if (stsMcTrackId == richMcTrackId) {
       //STS-RICH true
       fHM->H1("fhMismatchSource")->Fill(4);
       fHM->H1("fhMismatchSourceMomStsRichTrue")->Fill(mom);
-    } else {
+    }
+    else {
       //STS-RICH wrong
       fHM->H1("fhMismatchSource")->Fill(10);
       fHM->H1("fhMismatchSourceMomStsRichWrong")->Fill(mom);
@@ -425,14 +324,13 @@ void CbmRichRecoQa::RingTrackMismatchSource() {
   }
 }
 
-bool CbmRichRecoQa::WasRingFound(Int_t mcTrackId) {
+bool CbmRichRecoQa::WasRingFound(Int_t mcTrackId)
+{
   Int_t nofRings = fRichRings->GetEntriesFast();
   for (Int_t iR = 0; iR < nofRings; iR++) {
-    const CbmRichRing* ring =
-      static_cast<const CbmRichRing*>(fRichRings->At(iR));
+    const CbmRichRing* ring = static_cast<const CbmRichRing*>(fRichRings->At(iR));
     if (ring == nullptr) continue;
-    const CbmTrackMatchNew* richRingMatch =
-      static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(iR));
+    const CbmTrackMatchNew* richRingMatch = static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(iR));
     if (richRingMatch == nullptr) continue;
     int richMcTrackId = richRingMatch->GetMatchedLink().GetIndex();
     if (richMcTrackId == mcTrackId) return true;
@@ -440,16 +338,15 @@ bool CbmRichRecoQa::WasRingFound(Int_t mcTrackId) {
   return false;
 }
 
-bool CbmRichRecoQa::WasRingMatched(Int_t mcTrackId) {
+bool CbmRichRecoQa::WasRingMatched(Int_t mcTrackId)
+{
   Int_t nofGlobalTracks = fGlobalTracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofGlobalTracks; iTrack++) {
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
 
     Int_t richId = globalTrack->GetRichRingIndex();
     if (richId < 0) continue;
-    const CbmTrackMatchNew* richRingMatch =
-      static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
+    const CbmTrackMatchNew* richRingMatch = static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
     if (richRingMatch == nullptr) continue;
     int richMcTrackId = richRingMatch->GetMatchedLink().GetIndex();
     if (richMcTrackId == mcTrackId) { return true; }
@@ -459,39 +356,36 @@ bool CbmRichRecoQa::WasRingMatched(Int_t mcTrackId) {
 }
 
 
-bool CbmRichRecoQa::HasRichProjection(Int_t stsTrackId) {
+bool CbmRichRecoQa::HasRichProjection(Int_t stsTrackId)
+{
   if (stsTrackId < 0) { return false; }
   FairTrackParam* pTrack = (FairTrackParam*) fRichProjections->At(stsTrackId);
   if (pTrack == nullptr) { return false; }
 
-  if (pTrack->GetX() == 0. && pTrack->GetY() == 0.) {
-    return false;
-  } else {
+  if (pTrack->GetX() == 0. && pTrack->GetY() == 0.) { return false; }
+  else {
     return true;
   }
 }
 
-void CbmRichRecoQa::FillRingTrackDistance() {
+void CbmRichRecoQa::FillRingTrackDistance()
+{
   Int_t nofGlobalTracks = fGlobalTracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nofGlobalTracks; iTrack++) {
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
 
     Int_t stsId  = globalTrack->GetStsTrackIndex();
     Int_t richId = globalTrack->GetRichRingIndex();
     if (stsId < 0 || richId < 0) continue;
 
-    const CbmTrackMatchNew* stsTrackMatch =
-      static_cast<const CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
+    const CbmTrackMatchNew* stsTrackMatch = static_cast<const CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
     if (stsTrackMatch == nullptr) continue;
     int stsMcTrackId = stsTrackMatch->GetMatchedLink().GetIndex();
 
-    const CbmTrackMatchNew* richRingMatch =
-      static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
+    const CbmTrackMatchNew* richRingMatch = static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
     if (richRingMatch == nullptr) continue;
-    int richMcTrackId = richRingMatch->GetMatchedLink().GetIndex();
-    const CbmRichRing* ring =
-      static_cast<const CbmRichRing*>(fRichRings->At(richId));
+    int richMcTrackId       = richRingMatch->GetMatchedLink().GetIndex();
+    const CbmRichRing* ring = static_cast<const CbmRichRing*>(fRichRings->At(richId));
     if (nullptr == ring) continue;
 
     double rtDistance = CbmRichUtil::GetRingTrackDistance(iTrack);
@@ -513,23 +407,25 @@ void CbmRichRecoQa::FillRingTrackDistance() {
 
     for (int i = 0; i < 2; i++) {
       if (i == 0) {
-        if (isEl) {
-          s = "Primel";
-        } else if (isPi) {
+        if (isEl) { s = "Primel"; }
+        else if (isPi) {
           s = "Pi";
-        } else {
+        }
+        else {
           continue;
         }
-      } else if (i == 1) {
+      }
+      else if (i == 1) {
         if (isEl) {
-          if (charge > 0) {
-            s = "PrimelPlus";
-          } else if (charge < 0) {
+          if (charge > 0) { s = "PrimelPlus"; }
+          else if (charge < 0) {
             s = "PrimelMinus";
-          } else {
+          }
+          else {
             continue;
           }
-        } else {
+        }
+        else {
           continue;
         }
       }
@@ -539,16 +435,15 @@ void CbmRichRecoQa::FillRingTrackDistance() {
         fHM->H3("fhRingTrackDistVsXYTruematch" + s)->Fill(xc, yc, rtDistance);
         fHM->H2("fhRingTrackDistVsXTruematch" + s)->Fill(xc, rtDistance);
         fHM->H2("fhRingTrackDistVsYTruematch" + s)->Fill(abs(yc), rtDistance);
-        fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s)
-          ->Fill(nofHits, rtDistance);
+        fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s)->Fill(nofHits, rtDistance);
 
         if (i == 0 && isEl) {
           //if (CbmLitGlobalElectronId::GetInstance().IsRichElectron(iTrack, mom)){
           fHM->H2("fhRingTrackDistVsMomTruematchElId")->Fill(mom, rtDistance);
           //}
         }
-
-      } else {
+      }
+      else {
         fHM->H2("fhRingTrackDistVsMomWrongmatch" + s)->Fill(mom, rtDistance);
       }
     }
@@ -556,7 +451,8 @@ void CbmRichRecoQa::FillRingTrackDistance() {
 }
 
 
-void CbmRichRecoQa::DrawHist() {
+void CbmRichRecoQa::DrawHist()
+{
   cout.precision(4);
 
 
@@ -565,57 +461,35 @@ void CbmRichRecoQa::DrawHist() {
 
   {
     fHM->CreateCanvas("fh_ring_track_distance_truematch_comparison_primel",
-                      "fh_ring_track_distance_truematch_comparison_primel",
-                      800,
-                      800);
-    TH1D* py_minus =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimelMinus")
-                 ->ProjectionY("fhRingTrackDistVsMomTruematchPrimelMinus_py")
-                 ->Clone());
+                      "fh_ring_track_distance_truematch_comparison_primel", 800, 800);
+    TH1D* py_minus = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimelMinus")
+                                ->ProjectionY("fhRingTrackDistVsMomTruematchPrimelMinus_py")
+                                ->Clone());
     py_minus->Scale(1. / py_minus->Integral());
-    TH1D* py_plus =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimelPlus")
-                 ->ProjectionY("fhRingTrackDistVsMomTruematchPrimelPlus_py")
-                 ->Clone());
+    TH1D* py_plus = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimelPlus")
+                               ->ProjectionY("fhRingTrackDistVsMomTruematchPrimelPlus_py")
+                               ->Clone());
     py_plus->Scale(1. / py_plus->Integral());
-    DrawH1(
-      {py_minus, py_plus},
-      {"e_{prim}^{-} (" + this->GetMeanRmsOverflowString(py_minus, false) + ")",
-       "e_{prim}^{+} (" + this->GetMeanRmsOverflowString(py_plus, false) + ")"},
-      kLinear,
-      kLog,
-      true,
-      0.5,
-      0.85,
-      0.99,
-      0.99);
+    DrawH1({py_minus, py_plus},
+           {"e_{prim}^{-} (" + this->GetMeanRmsOverflowString(py_minus, false) + ")",
+            "e_{prim}^{+} (" + this->GetMeanRmsOverflowString(py_plus, false) + ")"},
+           kLinear, kLog, true, 0.5, 0.85, 0.99, 0.99);
   }
 
   {
     fHM->CreateCanvas("fh_ring_track_distance_truematch_comparison_elpi",
-                      "fh_ring_track_distance_truematch_comparison_elpi",
-                      800,
-                      800);
-    TH1D* py_el =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimel")
-                 ->ProjectionY("fhRingTrackDistVsMomTruematchPrimel_py")
-                 ->Clone());
-    py_el->Scale(1. / py_el->Integral());
-    TH1D* py_pi = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPi")
-                             ->ProjectionY("fhRingTrackDistVsMomTruematchPi_py")
+                      "fh_ring_track_distance_truematch_comparison_elpi", 800, 800);
+    TH1D* py_el = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimel")
+                             ->ProjectionY("fhRingTrackDistVsMomTruematchPrimel_py")
                              ->Clone());
+    py_el->Scale(1. / py_el->Integral());
+    TH1D* py_pi =
+      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPi")->ProjectionY("fhRingTrackDistVsMomTruematchPi_py")->Clone());
     py_pi->Scale(1. / py_pi->Integral());
-    DrawH1(
-      {py_el, py_pi},
-      {"e_{prim}^{#pm} (" + this->GetMeanRmsOverflowString(py_el, false) + ")",
-       "#pi^{#pm} (" + this->GetMeanRmsOverflowString(py_pi, false) + ")"},
-      kLinear,
-      kLog,
-      true,
-      0.5,
-      0.85,
-      0.99,
-      0.99);
+    DrawH1({py_el, py_pi},
+           {"e_{prim}^{#pm} (" + this->GetMeanRmsOverflowString(py_el, false) + ")",
+            "#pi^{#pm} (" + this->GetMeanRmsOverflowString(py_pi, false) + ")"},
+           kLinear, kLog, true, 0.5, 0.85, 0.99, 0.99);
   }
 
   {
@@ -641,16 +515,13 @@ void CbmRichRecoQa::DrawHist() {
                              "STS-RICH wrong RF",
                              "STS-RICH wrong RM"};
     for (unsigned int i = 0; i < labels.size(); i++) {
-      fHM->H1("fhMismatchSource")
-        ->GetXaxis()
-        ->SetBinLabel(i + 1, labels[i].c_str());
+      fHM->H1("fhMismatchSource")->GetXaxis()->SetBinLabel(i + 1, labels[i].c_str());
     }
     fHM->H1("fhMismatchSource")->GetXaxis()->SetLabelSize(0.03);
   }
 
   {
-    fHM->CreateCanvas(
-      "fh_mismatch_source_mom", "fh_mismatch_source_mom", 1000, 800);
+    fHM->CreateCanvas("fh_mismatch_source_mom", "fh_mismatch_source_mom", 1000, 800);
     vector<string> labels = {"MC",
                              "STS",
                              "STS-Acc RICH",
@@ -689,101 +560,68 @@ void CbmRichRecoQa::DrawHist() {
 
   // before and after electron identification
   {
-    TCanvas* c = fHM->CreateCanvas("fh_ring_track_distance_truematch_elid",
-                                   "fh_ring_track_distance_truematch_elid",
-                                   1800,
-                                   600);
+    TCanvas* c =
+      fHM->CreateCanvas("fh_ring_track_distance_truematch_elid", "fh_ring_track_distance_truematch_elid", 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
-    DrawH2WithProfile(
-      fHM->H2("fhRingTrackDistVsMomTruematchPrimel"), false, true);
+    DrawH2WithProfile(fHM->H2("fhRingTrackDistVsMomTruematchPrimel"), false, true);
     c->cd(2);
-    DrawH2WithProfile(
-      fHM->H2("fhRingTrackDistVsMomTruematchElId"), false, true);
+    DrawH2WithProfile(fHM->H2("fhRingTrackDistVsMomTruematchElId"), false, true);
     c->cd(3);
-    TH1D* py =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimel")
-                 ->ProjectionY(
-                   string("fhRingTrackDistVsMomTruematchPrimel_py2").c_str())
-                 ->Clone());
-    TH1D* pyElId =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchElId")
-                 ->ProjectionY(
-                   string("fhRingTrackDistVsMomTruematchElId_py").c_str())
-                 ->Clone());
-    DrawH1(
-      {py, pyElId},
-      {string("before ElId (" + this->GetMeanRmsOverflowString(py) + ")"),
-       string("after ElId (" + this->GetMeanRmsOverflowString(pyElId) + ")")},
-      kLinear,
-      kLog,
-      true,
-      0.3,
-      0.75,
-      0.99,
-      0.99);
-    fHM->H2("fhRingTrackDistVsMomTruematchPrimel")
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
-    fHM->H2("fhRingTrackDistVsMomTruematchElId")
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
+    TH1D* py     = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchPrimel")
+                          ->ProjectionY(string("fhRingTrackDistVsMomTruematchPrimel_py2").c_str())
+                          ->Clone());
+    TH1D* pyElId = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematchElId")
+                              ->ProjectionY(string("fhRingTrackDistVsMomTruematchElId_py").c_str())
+                              ->Clone());
+    DrawH1({py, pyElId},
+           {string("before ElId (" + this->GetMeanRmsOverflowString(py) + ")"),
+            string("after ElId (" + this->GetMeanRmsOverflowString(pyElId) + ")")},
+           kLinear, kLog, true, 0.3, 0.75, 0.99, 0.99);
+    fHM->H2("fhRingTrackDistVsMomTruematchPrimel")->GetYaxis()->SetRangeUser(0., 2.);
+    fHM->H2("fhRingTrackDistVsMomTruematchElId")->GetYaxis()->SetRangeUser(0., 2.);
   }
 }
 
-string CbmRichRecoQa::GetMeanRmsOverflowString(TH1* h, Bool_t withOverflow) {
+string CbmRichRecoQa::GetMeanRmsOverflowString(TH1* h, Bool_t withOverflow)
+{
   if (withOverflow) {
     double overflow = h->GetBinContent(h->GetNbinsX() + 1);
-    return Cbm::NumberToString<Double_t>(h->GetMean(), 2) + " / "
-           + Cbm::NumberToString<Double_t>(h->GetRMS(), 2) + " / "
-           + Cbm::NumberToString<Double_t>(
-             100. * overflow / h->Integral(0, h->GetNbinsX() + 1), 2)
-           + "%";
-  } else {
-    return Cbm::NumberToString<Double_t>(h->GetMean(), 2) + " / "
-           + Cbm::NumberToString<Double_t>(h->GetRMS(), 2);
+    return Cbm::NumberToString<Double_t>(h->GetMean(), 2) + " / " + Cbm::NumberToString<Double_t>(h->GetRMS(), 2)
+           + " / " + Cbm::NumberToString<Double_t>(100. * overflow / h->Integral(0, h->GetNbinsX() + 1), 2) + "%";
+  }
+  else {
+    return Cbm::NumberToString<Double_t>(h->GetMean(), 2) + " / " + Cbm::NumberToString<Double_t>(h->GetRMS(), 2);
   }
 }
 
 
-void CbmRichRecoQa::DrawRingTrackDistHistWithSuffix(const string& s) {
+void CbmRichRecoQa::DrawRingTrackDistHistWithSuffix(const string& s)
+{
   {
-    TCanvas* c = fHM->CreateCanvas("fh_ring_track_distance_truematch_" + s,
-                                   "fh_ring_track_distance_truematch_" + s,
-                                   1800,
-                                   600);
+    TCanvas* c =
+      fHM->CreateCanvas("fh_ring_track_distance_truematch_" + s, "fh_ring_track_distance_truematch_" + s, 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
-    DrawH2WithProfile(
-      fHM->H2("fhRingTrackDistVsMomTruematch" + s), false, true);
+    DrawH2WithProfile(fHM->H2("fhRingTrackDistVsMomTruematch" + s), false, true);
     c->cd(2);
-    DrawH2WithProfile(
-      fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s), false, true);
+    DrawH2WithProfile(fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s), false, true);
     c->cd(3);
-    TH1D* py =
-      (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematch" + s)
-                 ->ProjectionY(("fhRingTrackDistVsMomTruematch_py" + s).c_str())
-                 ->Clone());
+    TH1D* py = (TH1D*) (fHM->H2("fhRingTrackDistVsMomTruematch" + s)
+                          ->ProjectionY(("fhRingTrackDistVsMomTruematch_py" + s).c_str())
+                          ->Clone());
     DrawH1(py);
     DrawTextOnPad(this->GetMeanRmsOverflowString(py), 0.2, 0.9, 0.8, 0.99);
     gPad->SetLogy(true);
 
-    fHM->H2("fhRingTrackDistVsMomTruematch" + s)
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
-    fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s)
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
+    fHM->H2("fhRingTrackDistVsMomTruematch" + s)->GetYaxis()->SetRangeUser(0., 2.);
+    fHM->H2("fhRingTrackDistVsNofHitsTruematch" + s)->GetYaxis()->SetRangeUser(0., 2.);
   }
 
   {
-    fHM->CreateCanvas("fh_ring_track_distance_wrongmatch" + s,
-                      "fh_ring_track_distance_wrongmatch" + s,
-                      600,
-                      600);
+    fHM->CreateCanvas("fh_ring_track_distance_wrongmatch" + s, "fh_ring_track_distance_wrongmatch" + s, 600, 600);
     TH1D* py = (TH1D*) (fHM->H2("fhRingTrackDistVsMomWrongmatch" + s)
-                          ->ProjectionY(
-                            ("fhRingTrackDistVsMomWrongmatch_py" + s).c_str())
+                          ->ProjectionY(("fhRingTrackDistVsMomWrongmatch_py" + s).c_str())
                           ->Clone());
     DrawH1(py);
     DrawTextOnPad(this->GetMeanRmsOverflowString(py), 0.2, 0.9, 0.8, 0.99);
@@ -792,41 +630,37 @@ void CbmRichRecoQa::DrawRingTrackDistHistWithSuffix(const string& s) {
 
   {
     TCanvas* c = fHM->CreateCanvas("fh_ring_track_distance_vs_xy_truematch" + s,
-                                   "fh_ring_track_distance_vs_xy_truematch" + s,
-                                   1800,
-                                   600);
+                                   "fh_ring_track_distance_vs_xy_truematch" + s, 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
-    DrawH3Profile(
-      fHM->H3("fhRingTrackDistVsXYTruematch" + s), true, false, 0., .4);
+    DrawH3Profile(fHM->H3("fhRingTrackDistVsXYTruematch" + s), true, false, 0., .4);
     c->cd(2);
     DrawH2WithProfile(fHM->H2("fhRingTrackDistVsXTruematch" + s), false, true);
-    fHM->H2("fhRingTrackDistVsXTruematch" + s)
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
+    fHM->H2("fhRingTrackDistVsXTruematch" + s)->GetYaxis()->SetRangeUser(0., 2.);
     c->cd(3);
     DrawH2WithProfile(fHM->H2("fhRingTrackDistVsYTruematch" + s), false, true);
-    fHM->H2("fhRingTrackDistVsYTruematch" + s)
-      ->GetYaxis()
-      ->SetRangeUser(0., 2.);
+    fHM->H2("fhRingTrackDistVsYTruematch" + s)->GetYaxis()->SetRangeUser(0., 2.);
   }
 }
 
-bool CbmRichRecoQa::IsMcPrimaryElectron(const CbmMCTrack* mctrack) {
+bool CbmRichRecoQa::IsMcPrimaryElectron(const CbmMCTrack* mctrack)
+{
   if (mctrack == nullptr) return false;
   int pdg = TMath::Abs(mctrack->GetPdgCode());
   if (mctrack->GetGeantProcessId() == kPPrimary && pdg == 11) return true;
   return false;
 }
 
-bool CbmRichRecoQa::IsMcPion(const CbmMCTrack* mctrack) {
+bool CbmRichRecoQa::IsMcPion(const CbmMCTrack* mctrack)
+{
   if (mctrack == nullptr) return false;
   int pdg = TMath::Abs(mctrack->GetPdgCode());
   if (pdg == 211) return true;
   return false;
 }
 
-void CbmRichRecoQa::Finish() {
+void CbmRichRecoQa::Finish()
+{
   DrawHist();
   fHM->SaveCanvasToImage(fOutputDir);
 
@@ -839,8 +673,8 @@ void CbmRichRecoQa::Finish() {
   gDirectory->cd(oldir->GetPath());
 }
 
-void CbmRichRecoQa::DrawFromFile(const string& fileName,
-                                 const string& outputDir) {
+void CbmRichRecoQa::DrawFromFile(const string& fileName, const string& outputDir)
+{
   fOutputDir = outputDir;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot

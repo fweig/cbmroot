@@ -11,20 +11,19 @@
 #include <complex>    // for complex numbers
 #include <cstring>    // for memcpy
 #include <iostream>
+#include <vector>  // for std::vector
+
 #include <stdint.h>  // for uint16_t
 #include <stdio.h>   // for printf
-#include <vector>    // for std::vector
 
-namespace PsdSignalFitting {
+namespace PsdSignalFitting
+{
   class PronyFitter {
 
   public:
     /**         Default constructor         **/
     PronyFitter() {};
-    PronyFitter(int model_order,
-                int exponent_number,
-                int gate_beg,
-                int gate_end);
+    PronyFitter(int model_order, int exponent_number, int gate_beg, int gate_end);
 
     /**         Default destructor         **/
     ~PronyFitter() { Clear(); };
@@ -36,19 +35,10 @@ namespace PsdSignalFitting {
     void CalculateFitHarmonics();
     void CalculateFitAmplitudes();
     void SolveSLEGauss(float* x, float** r, float* b, int n);
-    void SolveSLEGauss(std::complex<float>* x,
-                       std::complex<float>** r,
-                       std::complex<float>* b,
-                       int n);
+    void SolveSLEGauss(std::complex<float>* x, std::complex<float>** r, std::complex<float>* b, int n);
     void SolveSLECholesky(float* x, float** a, float* b, int n);
-    void CovarianceQRmod(float& rho_f,
-                         std::vector<float>& a_f,
-                         float& rho_b,
-                         std::vector<float>& a_b);
-    void CovarianceDirect(float& rho_f,
-                          std::vector<float>& a_f,
-                          float& rho_b,
-                          std::vector<float>& a_b);
+    void CovarianceQRmod(float& rho_f, std::vector<float>& a_f, float& rho_b, std::vector<float>& a_b);
+    void CovarianceDirect(float& rho_f, std::vector<float>& a_f, float& rho_b, std::vector<float>& a_b);
     float LevelBy2Points(float X1, float Y1, float X2, float Y2, float Y0);
     //
     //                           Setters
@@ -80,10 +70,7 @@ namespace PsdSignalFitting {
     std::vector<uint16_t> GetFitWfm() { return fuFitWfm; }
 
   private:
-    void Initialize(int model_order,
-                    int exponent_number,
-                    int gate_beg,
-                    int gate_end);
+    void Initialize(int model_order, int exponent_number, int gate_beg, int gate_end);
     void AllocData();
     void DeleteData();
     void Clear();

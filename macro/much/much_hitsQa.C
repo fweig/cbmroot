@@ -4,7 +4,8 @@
 // P. P. Bhaduri on 23.11.2017
 // flag = 0 for sis100 & flag = 1 for mcbm
 // --------------------------------------------------------------------------
-void much_hitsQa(Int_t flag = 1) {
+void much_hitsQa(Int_t flag = 1)
+{
   Int_t nEvents  = 2;
   Int_t iVerbose = 1;
 

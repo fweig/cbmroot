@@ -25,11 +25,8 @@ public:
   Double_t y;
   Double_t V[3];
   Int_t Filter(CbmKFTrackInterface& track);
-  static void FilterPDAF(CbmKFTrackInterface& track,
-                         std::vector<CbmKFPixelMeasurement*>& vm,
-                         double gateX,
-                         double gateY,
-                         std::vector<double>& vProb);
+  static void FilterPDAF(CbmKFTrackInterface& track, std::vector<CbmKFPixelMeasurement*>& vm, double gateX,
+                         double gateY, std::vector<double>& vProb);
 
   ClassDef(CbmKFPixelMeasurement, 1)
 };

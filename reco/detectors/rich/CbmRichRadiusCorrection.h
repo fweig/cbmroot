@@ -11,6 +11,7 @@
 #define CBM_RICH_RADIUS_CORRECTION
 
 #include "CbmRichRingLight.h"
+
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TH2D.h"
@@ -38,18 +39,15 @@ public:
     * \brief Perform A and B parameters correction.
     * \param[in] RICH ring.
     */
-  static void DoCorrection(CbmRichRingLight* ring) {
+  static void DoCorrection(CbmRichRingLight* ring)
+  {
     if (NULL == fhMapAaxisXY || NULL == fhMapBaxisXY) { Init(); }
     if (NULL == fhMapAaxisXY || NULL == fhMapBaxisXY) return;
 
     double centerX = ring->GetCenterX();
     double centerY = ring->GetCenterY();
-    double axisA =
-      ring->GetAaxis()
-      + fhMapAaxisXY->GetBinContent(fhMapAaxisXY->FindBin(centerX, centerY));
-    double axisB =
-      ring->GetBaxis()
-      + fhMapBaxisXY->GetBinContent(fhMapBaxisXY->FindBin(centerX, centerY));
+    double axisA   = ring->GetAaxis() + fhMapAaxisXY->GetBinContent(fhMapAaxisXY->FindBin(centerX, centerY));
+    double axisB   = ring->GetBaxis() + fhMapBaxisXY->GetBinContent(fhMapBaxisXY->FindBin(centerX, centerY));
 
     ring->SetAaxis(axisA);
     ring->SetBaxis(axisB);
@@ -61,7 +59,8 @@ private:
     * This procedure will be invoked automatically before first correction
     * is made.
     */
-  static void Init() {
+  static void Init()
+  {
     string fileName = gSystem->Getenv("VMCWORKDIR");
     fileName += "/parameters/rich/radius_correction_map_compact.root";
 
@@ -69,13 +68,14 @@ private:
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    TFile* file         = new TFile(fileName.c_str(), "READ");
+    TFile* file = new TFile(fileName.c_str(), "READ");
 
     if (NULL == file || !file->IsOpen()) {
       cout << " -E- Read correction maps " << endl;
       cout << " -E- Could not open input file " << fileName << endl;
       return;
-    } else {
+    }
+    else {
       cout << " -I- Map Correction input file: " << fileName << endl;
     }
 

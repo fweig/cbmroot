@@ -7,8 +7,10 @@
 */
 #include "../../littrack/utils/CbmLitDrawHist.cxx"
 #include "../../littrack/utils/CbmLitUtils.cxx"
+
 #include <vector>
-void run_radius_correction() {
+void run_radius_correction()
+{
   TStopwatch timer;
   timer.Start();
 
@@ -41,8 +43,7 @@ void run_radius_correction() {
   TFolder* fd              = f->Get("cbmout");
   TClonesArray* fRichRings = (TClonesArray*) fd->FindObjectAny("RichRing");
   t->SetBranchAddress(fRichRings->GetName(), &fRichRings);
-  TClonesArray* fRichMatches =
-    (TClonesArray*) fd->FindObjectAny("RichRingMatch");
+  TClonesArray* fRichMatches = (TClonesArray*) fd->FindObjectAny("RichRingMatch");
   t->SetBranchAddress(fRichMatches->GetName(), &fRichMatches);
 
   //Int_t fNofBinsX = 40;
@@ -64,46 +65,18 @@ void run_radius_correction() {
   TH2D* fh_axisBSigma;
   TH2D* mapaxisBXY;
 
-  mapaxisAXY      = new TH2D("fh_mapaxisAXY",
-                        "dA distribution (x,y);X, [cm];Y, [cm]",
-                        fNofBinsX,
-                        -200,
-                        200,
-                        fNofBinsY,
-                        -250,
-                        250);
-  mapaxisBXY      = new TH2D("fh_mapaxisBXY",
-                        "dB distribution (x,y);X, [cm];Y, [cm]",
-                        fNofBinsX,
-                        -200,
-                        200,
-                        fNofBinsY,
-                        -250,
-                        250);
-  fh_axisAXYCount = new TH2D(
-    "fh_axisAXYCount", "A Count", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
-  fh_axisAXYW =
-    new TH2D("fh_axisAXYW", "", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
-  fh_axisBXYCount = new TH2D(
-    "fh_axisBXYCount", "B Count", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
-  fh_axisBXYW =
-    new TH2D("fh_axisBXYW", "", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
-  fh_axisAXY = new TH2D("fh_axisAXY",
-                        "A distribution (x,y);X, [cm];Y, [cm]",
-                        fNofBinsX,
-                        -200,
-                        200,
-                        fNofBinsY,
-                        -250,
-                        250);
-  fh_axisBXY = new TH2D("fh_axisBXY",
-                        "B distribution (x,y);X, [cm];Y, [cm]",
-                        fNofBinsX,
-                        -200,
-                        200,
-                        fNofBinsY,
-                        -250,
-                        250);
+  mapaxisAXY =
+    new TH2D("fh_mapaxisAXY", "dA distribution (x,y);X, [cm];Y, [cm]", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  mapaxisBXY =
+    new TH2D("fh_mapaxisBXY", "dB distribution (x,y);X, [cm];Y, [cm]", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisAXYCount = new TH2D("fh_axisAXYCount", "A Count", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisAXYW     = new TH2D("fh_axisAXYW", "", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisBXYCount = new TH2D("fh_axisBXYCount", "B Count", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisBXYW     = new TH2D("fh_axisBXYW", "", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisAXY =
+    new TH2D("fh_axisAXY", "A distribution (x,y);X, [cm];Y, [cm]", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
+  fh_axisBXY =
+    new TH2D("fh_axisBXY", "B distribution (x,y);X, [cm];Y, [cm]", fNofBinsX, -200, 200, fNofBinsY, -250, 250);
 
   Double_t fMinAaxis = 4.5;
   Double_t fMaxAaxis = 7.5;
@@ -171,16 +144,16 @@ void run_radius_correction() {
   for (Int_t iX = 1; iX < mapaxisAXY->GetNbinsX() + 1; iX++) {
     for (Int_t iY = 1; iY < mapaxisAXY->GetNbinsY() + 1; iY++) {
       if (fh_axisAXYCount->GetBinContent(iX, iY) != 0) {
-        mapaxisAXY->SetBinContent(
-          iX, iY, fMeanAaxis - fh_axisAXY->GetBinContent(iX, iY));
-      } else {
+        mapaxisAXY->SetBinContent(iX, iY, fMeanAaxis - fh_axisAXY->GetBinContent(iX, iY));
+      }
+      else {
         mapaxisAXY->SetBinContent(iX, iY, -99999999.);
       }
 
       if (fh_axisBXYCount->GetBinContent(iX, iY) != 0) {
-        mapaxisBXY->SetBinContent(
-          iX, iY, fMeanBaxis - fh_axisBXY->GetBinContent(iX, iY));
-      } else {
+        mapaxisBXY->SetBinContent(iX, iY, fMeanBaxis - fh_axisBXY->GetBinContent(iX, iY));
+      }
+      else {
         mapaxisBXY->SetBinContent(iX, iY, -99999999.);
       }
     }
@@ -217,11 +190,9 @@ void run_radius_correction() {
 
 
   ///// Check correction procedure
-  TH1D* fh_Abefore =
-    new TH1D("fh_Abefore", "A before;A, [cm];yield", 300, 0., 9.);
+  TH1D* fh_Abefore = new TH1D("fh_Abefore", "A before;A, [cm];yield", 300, 0., 9.);
   ;
-  TH1D* fh_Bbefore =
-    new TH1D("fh_Bbefore", "B before;B, [cm];yield", 300, 0., 9.);
+  TH1D* fh_Bbefore = new TH1D("fh_Bbefore", "B before;B, [cm];yield", 300, 0., 9.);
   ;
 
   TH1D* fh_A = new TH1D("fh_A", "A after;A, [cm];yield", 300, 0., 9.);

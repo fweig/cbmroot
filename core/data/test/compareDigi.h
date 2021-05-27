@@ -1,11 +1,8 @@
 #ifndef COMPAREDIGI_H
 #define COMPAREDIGI_H 1
 
-void compareDigiDataMembers(CbmTestDigi& test,
-                            Int_t address,
-                            Double_t charge,
-                            Int_t systemid,
-                            Double_t time) {
+void compareDigiDataMembers(CbmTestDigi& test, Int_t address, Double_t charge, Int_t systemid, Double_t time)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
 

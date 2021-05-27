@@ -14,25 +14,17 @@
 #ifndef CBMLTRACKPARAM_H_
 #define CBMLTRACKPARAM_H_ 1
 
+#include <FairTrackParam.h>  // for FairTrackParam
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t
 
-#include <FairTrackParam.h>  // for FairTrackParam
-
 class CbmTrackParam : public FairTrackParam {
 public:
-  CbmTrackParam()
-    : fPx(0)
-    , fPy(0)
-    , fPz(0)
-    , fDpx(0)
-    , fDpy(0)
-    , fDpz(0)
-    , fTime(0.)
-    , fDTime(0.) {}
-  void
-  Set(const FairTrackParam& ftp, Double_t time = 0., Double_t timeError = 0.);
-  void SetTime(Double_t time, Double_t timeError = 0.) {
+  CbmTrackParam() : fPx(0), fPy(0), fPz(0), fDpx(0), fDpy(0), fDpz(0), fTime(0.), fDTime(0.) {}
+  void Set(const FairTrackParam& ftp, Double_t time = 0., Double_t timeError = 0.);
+  void SetTime(Double_t time, Double_t timeError = 0.)
+  {
     fTime  = time;
     fDTime = timeError;
   }

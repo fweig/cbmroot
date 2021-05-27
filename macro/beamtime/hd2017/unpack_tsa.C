@@ -8,11 +8,9 @@
  */
 
 //void unpack_tsa(Int_t nEvt=100, TString FileId = "cosmic_2016110701_safe_4links_4")
-void unpack_tsa(Int_t nEvt       = 10000,
-                Double_t dDeltaT = 50.,
-                Int_t iReqDet    = 2,
-                Bool_t bEpSupp   = kTRUE,
-                TString FileId   = "r0031_20170602_1343") {
+void unpack_tsa(Int_t nEvt = 10000, Double_t dDeltaT = 50., Int_t iReqDet = 2, Bool_t bEpSupp = kTRUE,
+                TString FileId = "r0031_20170602_1343")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = "./input/";
   //TString inDir  = "./input/" + FileId + "/";
@@ -73,8 +71,7 @@ void unpack_tsa(Int_t nEvt       = 10000,
   //  test_unpacker->CreateRawMessageOutput(kTRUE);
 
   // Get4 Unpacker
-  CbmTSUnpackTof* test_unpacker_tof =
-    new CbmTSUnpackTof(4);  //argument is number of gDpb
+  CbmTSUnpackTof* test_unpacker_tof = new CbmTSUnpackTof(4);  //argument is number of gDpb
   test_unpacker_tof->SetEpochSuppressedMode(bEpSupp);
 
   // --- Source task
@@ -100,8 +97,7 @@ void unpack_tsa(Int_t nEvt       = 10000,
       break;
     case 5:
       source->AddReqDigiAddr(0x00006006);  // request BUC SS 0 for output events
-      source->AddReqDigiAddr(
-        0x00019006);  // request USTC SS 1 for output events
+      source->AddReqDigiAddr(0x00019006);  // request USTC SS 1 for output events
       break;
     default: std::cout << "Request mode not implemented" << std::endl; return;
   }
@@ -136,15 +132,13 @@ void unpack_tsa(Int_t nEvt       = 10000,
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa: Starting run..." << std::endl;
-  if (bEvt == -1)
-    run->Run(bEvt, 0);  // run until end of input file
+  if (bEvt == -1) run->Run(bEvt, 0);  // run until end of input file
   else
     run->Run(0, nEvents);  // process nEvents
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -152,8 +146,7 @@ void unpack_tsa(Int_t nEvt       = 10000,
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -7,14 +7,13 @@
 
 using namespace std;
 
-int ImportGdmlExportRoot(const string& gdmlFileName,
-                         const string& rootFileName);
+int ImportGdmlExportRoot(const string& gdmlFileName, const string& rootFileName);
 void CreateSetupFile(const string& setupFilePath, const string& richGeoTag);
 
-void create_geos() {
+void create_geos()
+{
   // we need to use latest root version to work with gdml geometry
-  system(
-    string("source /usr/local/Cellar/root/6.16.00/bin/thisroot.sh").c_str());
+  system(string("source /usr/local/Cellar/root/6.16.00/bin/thisroot.sh").c_str());
 
   string templateFileName = "rich_opt_template.gdml";
   ifstream templateStream(templateFileName);
@@ -31,13 +30,12 @@ void create_geos() {
   system((string("mkdir -p ") + outputDir + "/gdml/").c_str());
   system((string("mkdir -p ") + outputDir + "/setup/").c_str());
 
-  std::ofstream paramFile(outputDir + "/rich_geoopt_param.txt",
-                          std::ofstream::out);
+  std::ofstream paramFile(outputDir + "/rich_geoopt_param.txt", std::ofstream::out);
 
   vector<double> mirrorTiltVec = {10., 12., 15.};
   vector<double> camTiltVec    = {0., 3., 6., 9., 12., 15., 18., 21.};
-  vector<double> camYVec = {-100., -75., -50., -25., 0., 25., 50., 75., 100.};
-  vector<double> camZVec = {-100., -75., -50., -25., 0., 25., 50., 75., 100.};
+  vector<double> camYVec       = {-100., -75., -50., -25., 0., 25., 50., 75., 100.};
+  vector<double> camZVec       = {-100., -75., -50., -25., 0., 25., 50., 75., 100.};
 
   for (auto const& mirrorTilt : mirrorTiltVec) {
     int counter = 0;
@@ -45,34 +43,25 @@ void create_geos() {
       for (auto const& camY : camYVec) {
         for (auto const& camZ : camZVec) {
           counter++;
-          std::string paramStr =
-            "<variable name=\"RICH_mirror_tilt_angle\" value=\""
-            + to_string(mirrorTilt) + "\"/>\n"
-            + "<variable name=\"RICH_camera_tilt_angle\" value=\""
-            + to_string(camTilt) + "\"/>\n"
-            + "<variable name=\"RICH_camera_shift_Y\" value=\""
-            + to_string(camY) + "\"/>\n"
-            + "<variable name=\"RICH_camera_shift_Z\" value=\""
-            + to_string(camZ) + "\"/>";
+          std::string paramStr = "<variable name=\"RICH_mirror_tilt_angle\" value=\"" + to_string(mirrorTilt) + "\"/>\n"
+                                 + "<variable name=\"RICH_camera_tilt_angle\" value=\"" + to_string(camTilt) + "\"/>\n"
+                                 + "<variable name=\"RICH_camera_shift_Y\" value=\"" + to_string(camY) + "\"/>\n"
+                                 + "<variable name=\"RICH_camera_shift_Z\" value=\"" + to_string(camZ) + "\"/>";
 
           string templateStrCopy(templateStr);
           size_t findPos = templateStrCopy.find(regexPattern);
           templateStrCopy.erase(findPos, regexPattern.length());
           templateStrCopy.insert(findPos, paramStr);
 
-          paramFile << counter << " " << mirrorTilt << " " << camTilt << " "
-                    << camY << " " << camZ << endl;
-          string richGeoTag =
-            "mirror" + to_string((int) mirrorTilt) + "_" + to_string(counter);
-          string fileName     = "rich_" + richGeoTag;
-          string gdmlFileName = outputDir + "/gdml/" + fileName + ".gdml";
-          string rootFileName = outputDir + "/root/" + fileName + ".geo.root";
-          string setupFileName =
-            outputDir + "/setup/setup_" + richGeoTag + ".C";
+          paramFile << counter << " " << mirrorTilt << " " << camTilt << " " << camY << " " << camZ << endl;
+          string richGeoTag    = "mirror" + to_string((int) mirrorTilt) + "_" + to_string(counter);
+          string fileName      = "rich_" + richGeoTag;
+          string gdmlFileName  = outputDir + "/gdml/" + fileName + ".gdml";
+          string rootFileName  = outputDir + "/root/" + fileName + ".geo.root";
+          string setupFileName = outputDir + "/setup/setup_" + richGeoTag + ".C";
 
 
-          cout << counter << " " << gdmlFileName << " " << rootFileName << " "
-               << setupFileName << endl;
+          cout << counter << " " << gdmlFileName << " " << rootFileName << " " << setupFileName << endl;
 
           std::ofstream file(gdmlFileName, std::ofstream::out);
           file << templateStrCopy;
@@ -86,8 +75,8 @@ void create_geos() {
   paramFile.close();
 }
 
-int ImportGdmlExportRoot(const string& gdmlFileName,
-                         const string& rootFileName) {
+int ImportGdmlExportRoot(const string& gdmlFileName, const string& rootFileName)
+{
   TGeoManager* gdml = new TGeoManager("gdml", "FAIRGeom");
 
   TGDMLParse parser;
@@ -114,7 +103,8 @@ int ImportGdmlExportRoot(const string& gdmlFileName,
   return nofOverlaps;
 }
 
-void CreateSetupFile(const string& setupFilePath, const string& richGeoTag) {
+void CreateSetupFile(const string& setupFilePath, const string& richGeoTag)
+{
   std::ofstream file(setupFilePath, std::ofstream::out);
 
   file << "void setup_" + richGeoTag + "() {" << endl;

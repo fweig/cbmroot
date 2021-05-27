@@ -3,17 +3,10 @@
 
 #include "compareMuchDigi.h"
 
-void compareMuchBeamTimeDigiDataMembers(CbmMuchBeamTimeDigi& test,
-                                        Int_t address,
-                                        ECbmModuleId systemid,
-                                        ULong64_t time,
-                                        Int_t charge,
-                                        Int_t padx,
-                                        Int_t pady,
-                                        Int_t rocid,
-                                        Int_t nxid,
-                                        Int_t nxch,
-                                        Int_t elink) {
+void compareMuchBeamTimeDigiDataMembers(CbmMuchBeamTimeDigi& test, Int_t address, ECbmModuleId systemid, ULong64_t time,
+                                        Int_t charge, Int_t padx, Int_t pady, Int_t rocid, Int_t nxid, Int_t nxch,
+                                        Int_t elink)
+{
   CbmMuchDigi bla = static_cast<CbmMuchDigi>(test);
   compareMuchDigiDataMembers(bla, address, systemid, time, charge);
 

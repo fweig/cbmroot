@@ -16,8 +16,7 @@ using std::pair;
 using std::vector;
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask()
-  : CbmMvdSensorClusterfinderTask(0, 0) {}
+CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask() : CbmMvdSensorClusterfinderTask(0, 0) {}
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
@@ -25,8 +24,7 @@ CbmMvdSensorClusterfinderTask::~CbmMvdSensorClusterfinderTask() { ; }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask(Int_t iMode,
-                                                             Int_t iVerbose)
+CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask(Int_t iMode, Int_t iVerbose)
   : CbmMvdSensorTask()
   , fAdcDynamic(200)
   , fAdcOffset(0)
@@ -76,11 +74,14 @@ CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask(Int_t iMode,
   , fHitPosErrY(0.0005)
   , fHitPosErrZ(0.0)
   , fBranchName("MvdHit")
-  , fAddNoise(kFALSE) {}
+  , fAddNoise(kFALSE)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----    Virtual private method Init   ----------------------------------
-void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor) {
+void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
+{
 
 
   fSensor = mysensor;
@@ -102,40 +103,18 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor) {
   initialized = kTRUE;
 
   if (fShowDebugHistos) {
-    fResolutionHistoX       = new TH1F("SinglePointResolution_X",
-                                 "SinglePointResolution_X",
-                                 10000,
-                                 -0.0100,
-                                 0.0100);
-    fResolutionHistoY       = new TH1F("SinglePointResolution_Y",
-                                 "SinglePointResolution_Y",
-                                 10000,
-                                 -0.0100,
-                                 0.0100);
-    fResolutionHistoCleanX  = new TH1F("SinglePointResolution_X_Clean",
-                                      "SinglePointResolution_X_Clean",
-                                      10000,
-                                      -0.0100,
-                                      0.0100);
-    fResolutionHistoCleanY  = new TH1F("SinglePointResolution_Y_Clean",
-                                      "SinglePointResolution_Y_Clean",
-                                      10000,
-                                      -0.0100,
-                                      0.0100);
-    fResolutionHistoMergedX = new TH1F("SinglePointResolution_X_Merged",
-                                       "SinglePointResolution_X_Merged",
-                                       10000,
-                                       -0.0100,
-                                       0.0100);
-    fResolutionHistoMergedY = new TH1F("SinglePointResolution_Y_Merged",
-                                       "SinglePointResolution_Y_Merged",
-                                       10000,
-                                       -0.0100,
-                                       0.0100);
-    fBadHitHisto            = new TH2F(
-      "BadHits", "Hits above 0.003cm", 1000, -2.5, 2.5, 1000, -2.5, 2.5);
-    fFullClusterHisto =
-      new TH1F("ChargeOfAllPixels", "ChargeOfAllPixels", 12000, 0, 12000);
+    fResolutionHistoX = new TH1F("SinglePointResolution_X", "SinglePointResolution_X", 10000, -0.0100, 0.0100);
+    fResolutionHistoY = new TH1F("SinglePointResolution_Y", "SinglePointResolution_Y", 10000, -0.0100, 0.0100);
+    fResolutionHistoCleanX =
+      new TH1F("SinglePointResolution_X_Clean", "SinglePointResolution_X_Clean", 10000, -0.0100, 0.0100);
+    fResolutionHistoCleanY =
+      new TH1F("SinglePointResolution_Y_Clean", "SinglePointResolution_Y_Clean", 10000, -0.0100, 0.0100);
+    fResolutionHistoMergedX =
+      new TH1F("SinglePointResolution_X_Merged", "SinglePointResolution_X_Merged", 10000, -0.0100, 0.0100);
+    fResolutionHistoMergedY =
+      new TH1F("SinglePointResolution_Y_Merged", "SinglePointResolution_Y_Merged", 10000, -0.0100, 0.0100);
+    fBadHitHisto      = new TH2F("BadHits", "Hits above 0.003cm", 1000, -2.5, 2.5, 1000, -2.5, 2.5);
+    fFullClusterHisto = new TH1F("ChargeOfAllPixels", "ChargeOfAllPixels", 12000, 0, 12000);
     //}
 
     TH1F* histo;
@@ -154,8 +133,7 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor) {
     fTotalChargeInNpixelsArray = new TObjArray();
     for (Int_t i = 0; i < 49; i++) {
       sprintf(histoTotalChargeName, "totalChargeInNPixels%i", i + 1);
-      histoTotalCharge =
-        new TH1F(histoTotalChargeName, histoTotalChargeName, 12000, 0, 12000);
+      histoTotalCharge = new TH1F(histoTotalChargeName, histoTotalChargeName, 12000, 0, 12000);
       fTotalChargeInNpixelsArray->AddLast(histoTotalCharge);
     };
 
@@ -166,24 +144,19 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor) {
     histo = new TH1F("ChargePixel9of49", "ChargePixel 9 Of 49", 200, 0, 14000);
     fPixelChargeHistos->AddLast(histo);
     //Number 51
-    histo =
-      new TH1F("ChargePixel25of49", "ChargePixel 25 Of 49", 200, 0, 14000);
+    histo = new TH1F("ChargePixel25of49", "ChargePixel 25 Of 49", 200, 0, 14000);
     fPixelChargeHistos->AddLast(histo);
     //Number 52
-    histo =
-      new TH1F("ChargePixel49of49", "ChargePixel 49 Of 49", 200, 0, 14000);
+    histo = new TH1F("ChargePixel49of49", "ChargePixel 49 Of 49", 200, 0, 14000);
     fPixelChargeHistos->AddLast(histo);
     //Number 53
-    histo = new TH1F(
-      "ChargePixel9of49Sorted", "ChargePixel 9 Of 49 Sorted", 200, 0, 14000);
+    histo = new TH1F("ChargePixel9of49Sorted", "ChargePixel 9 Of 49 Sorted", 200, 0, 14000);
     fPixelChargeHistos->AddLast(histo);
     //Number 54
-    histo = new TH1F(
-      "ChargePixel25of49Sorted", "ChargePixel 25 Of 49 Sorted", 200, 0, 14000);
+    histo = new TH1F("ChargePixel25of49Sorted", "ChargePixel 25 Of 49 Sorted", 200, 0, 14000);
     fPixelChargeHistos->AddLast(histo);
     //Number 55
-    histo = new TH1F(
-      "ChargePixel49of49Sorted", "ChargePixel 49 Of 49 Sorted", 49, 0.5, 49.5);
+    histo = new TH1F("ChargePixel49of49Sorted", "ChargePixel 49 Of 49 Sorted", 49, 0.5, 49.5);
     fPixelChargeHistos->AddLast(histo);
   }
   //cout << "-Finished- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
@@ -191,7 +164,8 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor) {
 // -------------------------------------------------------------------------
 
 // -----   Virtual public method Reinit   ----------------------------------
-Bool_t CbmMvdSensorClusterfinderTask::ReInit() {
+Bool_t CbmMvdSensorClusterfinderTask::ReInit()
+{
   cout << "-I- "
        << "CbmMvdSensorClusterfinderTask::ReInt---------------" << endl;
   return kTRUE;
@@ -203,7 +177,8 @@ void CbmMvdSensorClusterfinderTask::ExecChain() { Exec(); }
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------
-void CbmMvdSensorClusterfinderTask::Exec() {
+void CbmMvdSensorClusterfinderTask::Exec()
+{
   if (fInputBuffer->GetEntriesFast() > 0) {
     fOutputBuffer->Delete();
     inputSet                    = kFALSE;
@@ -237,9 +212,7 @@ void CbmMvdSensorClusterfinderTask::Exec() {
 
       digi  = (CbmMvdDigi*) fInputBuffer->At(k);
       refId = digi->GetRefId();
-      if (refId < 0) {
-        LOG(fatal) << "RefID of this digi is -1 this should not happend ";
-      }
+      if (refId < 0) { LOG(fatal) << "RefID of this digi is -1 this should not happend "; }
       //apply fNeighThreshold
 
       if (GetAdcCharge(digi->GetCharge()) < fNeighThreshold) continue;
@@ -250,16 +223,11 @@ void CbmMvdSensorClusterfinderTask::Exec() {
     };
 
 
-    if (gDebug > 0) {
-      cout << "\n-I- " << GetName() << ": VolumeId " << fSensor->GetVolumeId()
-           << endl;
-    }
+    if (gDebug > 0) { cout << "\n-I- " << GetName() << ": VolumeId " << fSensor->GetVolumeId() << endl; }
 
     for (iDigi = 0; iDigi < nDigis; iDigi++) {
 
-      if (gDebug > 0 && iDigi % 10000 == 0) {
-        cout << "-I- " << GetName() << " Digi:" << iDigi << endl;
-      };
+      if (gDebug > 0 && iDigi % 10000 == 0) { cout << "-I- " << GetName() << " Digi:" << iDigi << endl; };
 
       digi = (CbmMvdDigi*) fInputBuffer->At(iDigi);
       //cout << endl << "working with pixel x:" << digi->GetPixelX() << " y:" << digi->GetPixelY() << endl;
@@ -280,8 +248,7 @@ void CbmMvdSensorClusterfinderTask::Exec() {
              << "CbmMvdSensorFindHitTask: Checking for seed pixels..." << endl;
       }
 
-      if ((GetAdcCharge(digi->GetCharge()) >= fSeedThreshold)
-          && (pixelUsed->At(iDigi) == kFALSE)) {
+      if ((GetAdcCharge(digi->GetCharge()) >= fSeedThreshold) && (pixelUsed->At(iDigi) == kFALSE)) {
         clusterArray->clear();
         clusterArray->push_back(iDigi);
 
@@ -291,8 +258,7 @@ void CbmMvdSensorClusterfinderTask::Exec() {
         fDigiMapIt = fDigiMap.find(a);
         fDigiMap.erase(fDigiMapIt);
 
-        for (ULong64_t iCluster = 0; iCluster < clusterArray->size();
-             iCluster++) {
+        for (ULong64_t iCluster = 0; iCluster < clusterArray->size(); iCluster++) {
 
           if (gDebug > 0) {
             cout << "-I- "
@@ -313,17 +279,14 @@ void CbmMvdSensorClusterfinderTask::Exec() {
         Int_t clusterSize = clusterArray->size();
         Int_t nClusters   = fOutputBuffer->GetEntriesFast();
         //cout << endl << "new cluster: " << nClusters << endl;
-        CbmMvdCluster* clusterNew =
-          new ((*fOutputBuffer)[nClusters]) CbmMvdCluster();
+        CbmMvdCluster* clusterNew = new ((*fOutputBuffer)[nClusters]) CbmMvdCluster();
         clusterNew->SetAddress(fAddress);
 
         for (i = 0; i < clusterSize; i++) {
-          CbmMvdDigi* digiInCluster =
-            (CbmMvdDigi*) fInputBuffer->At(clusterArray->at(i));
+          CbmMvdDigi* digiInCluster = (CbmMvdDigi*) fInputBuffer->At(clusterArray->at(i));
           clusterNew->AddDigi(digiInCluster->GetRefId());
-          pixelCoords = std::make_pair(digiInCluster->GetPixelX(),
-                                       digiInCluster->GetPixelY());
-          pixelCharge = digiInCluster->GetCharge();
+          pixelCoords                = std::make_pair(digiInCluster->GetPixelX(), digiInCluster->GetPixelY());
+          pixelCharge                = digiInCluster->GetCharge();
           ftempPixelMap[pixelCoords] = pixelCharge;
         }
         clusterNew->SetPixelMap(ftempPixelMap);
@@ -343,18 +306,17 @@ void CbmMvdSensorClusterfinderTask::Exec() {
     fInputBuffer->Delete();
 
     fDigiMap.clear();
-  } else {  //cout << endl << "No input found." << endl;
+  }
+  else {  //cout << endl << "No input found." << endl;
   }
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensorClusterfinderTask::CheckForNeighbours(
-  vector<Int_t>* clusterArray,
-  Int_t clusterDigi,
-  TArrayS* pixelUsed) {
-  CbmMvdDigi* seed =
-    (CbmMvdDigi*) fInputBuffer->At(clusterArray->at(clusterDigi));
+void CbmMvdSensorClusterfinderTask::CheckForNeighbours(vector<Int_t>* clusterArray, Int_t clusterDigi,
+                                                       TArrayS* pixelUsed)
+{
+  CbmMvdDigi* seed = (CbmMvdDigi*) fInputBuffer->At(clusterArray->at(clusterDigi));
   //cout << endl << "pixel nr. " << clusterDigi << " is seed" << endl ;
 
 
@@ -416,7 +378,8 @@ void CbmMvdSensorClusterfinderTask::CheckForNeighbours(
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Int_t CbmMvdSensorClusterfinderTask::GetAdcCharge(Float_t charge) {
+Int_t CbmMvdSensorClusterfinderTask::GetAdcCharge(Float_t charge)
+{
 
   Int_t adcCharge;
 
@@ -429,7 +392,8 @@ Int_t CbmMvdSensorClusterfinderTask::GetAdcCharge(Float_t charge) {
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
+void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster)
+{
   /************************************************************
     Algorithm for cluster shapes
 
@@ -438,8 +402,8 @@ void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
   Float_t chargeArray[fChargeArraySize * fChargeArraySize];
   Short_t seedPixelOffset = fChargeArraySize / 2;  // 3 for 7, 2 for 5
   Int_t seedIndexX = 0, seedIndexY = 0;
-  Float_t seedCharge    = 0.;
-  Float_t clusterCharge = cluster->GetClusterCharge();
+  Float_t seedCharge                                  = 0.;
+  Float_t clusterCharge                               = cluster->GetClusterCharge();
   std::map<std::pair<Int_t, Int_t>, Int_t> clusterMap = cluster->GetPixelMap();
 
   for (Int_t k = 0; k < fChargeArraySize; k++) {
@@ -447,10 +411,7 @@ void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
       chargeArray3D[k][j] = gRandom->Gaus(0, fSigmaNoise);
     }
   }
-  for (std::map<std::pair<Int_t, Int_t>, Int_t>::iterator iter =
-         clusterMap.begin();
-       iter != clusterMap.end();
-       iter++) {
+  for (std::map<std::pair<Int_t, Int_t>, Int_t>::iterator iter = clusterMap.begin(); iter != clusterMap.end(); iter++) {
     if (iter->second > seedCharge) {
       seedCharge = iter->second;
       seedIndexX = iter->first.first;
@@ -458,26 +419,19 @@ void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
     }
   }
   //cout << endl << "seed pixel with " << seedCharge << " charge" << endl;
-  for (std::map<std::pair<Int_t, Int_t>, Int_t>::iterator iter =
-         clusterMap.begin();
-       iter != clusterMap.end();
-       iter++) {
+  for (std::map<std::pair<Int_t, Int_t>, Int_t>::iterator iter = clusterMap.begin(); iter != clusterMap.end(); iter++) {
 
     Int_t relativeX = iter->first.first + seedPixelOffset - seedIndexX;
     Int_t relativeY = iter->first.second + seedPixelOffset - seedIndexY;
 
-    if (fVerbose > 1)
-      cout << relativeX << " " << relativeY << " " << iter->first.first << " "
-           << seedIndexX << endl;
+    if (fVerbose > 1) cout << relativeX << " " << relativeY << " " << iter->first.first << " " << seedIndexX << endl;
 
 
-    if (relativeX >= 0 && relativeX < fChargeArraySize && relativeY >= 0
-        && relativeY < fChargeArraySize) {
+    if (relativeX >= 0 && relativeX < fChargeArraySize && relativeY >= 0 && relativeY < fChargeArraySize) {
       chargeArray3D[relativeX][relativeY] = iter->second;
     }
 
-    if ((relativeX - seedPixelOffset == 0)
-        && (relativeY - seedPixelOffset == 0)) {  //seed digiArray
+    if ((relativeX - seedPixelOffset == 0) && (relativeY - seedPixelOffset == 0)) {  //seed digiArray
     }
   }
 
@@ -545,8 +499,7 @@ void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
 
   Int_t orderArray[fChargeArraySize * fChargeArraySize];
 
-  TMath::Sort(
-    fChargeArraySize * fChargeArraySize, chargeArray, orderArray, kTRUE);
+  TMath::Sort(fChargeArraySize * fChargeArraySize, chargeArray, orderArray, kTRUE);
 
   Float_t qSort = 0;
   for (Int_t i = 0; i < 9; i++) {
@@ -570,15 +523,13 @@ void CbmMvdSensorClusterfinderTask::UpdateDebugHistos(CbmMvdCluster* cluster) {
 }
 
 //--------------------------------------------------------------------------
-void CbmMvdSensorClusterfinderTask::Finish() {
+void CbmMvdSensorClusterfinderTask::Finish()
+{
 
   if (fShowDebugHistos) {
-    cout << "\n============================================================"
-         << endl;
-    cout << "-I- " << GetName()
-         << "::Finish: Total events skipped: " << fCounter << endl;
-    cout << "============================================================"
-         << endl;
+    cout << "\n============================================================" << endl;
+    cout << "-I- " << GetName() << "::Finish: Total events skipped: " << fCounter << endl;
+    cout << "============================================================" << endl;
     cout << "-I- Parameters used" << endl;
     cout << "Gaussian noise [electrons]	: " << fSigmaNoise << endl;
     cout << "Noise simulated [Bool]	        : " << fAddNoise << endl;
@@ -587,8 +538,7 @@ void CbmMvdSensorClusterfinderTask::Finish() {
     cout << "ADC - Bits			: " << fAdcBits << endl;
     cout << "ADC - Dynamic [electrons]	: " << fAdcDynamic << endl;
     cout << "ADC - Offset [electrons]	: " << fAdcOffset << endl;
-    cout << "============================================================"
-         << endl;
+    cout << "============================================================" << endl;
 
 
     TH1F* histo;
@@ -597,14 +547,8 @@ void CbmMvdSensorClusterfinderTask::Finish() {
     canvas2->Divide(2, 2);
     canvas2->cd(1);
     if (fChargeArraySize <= 7) {
-      clusterShapeHistogram = new TH2F("MvdClusterShape",
-                                       "MvdClusterShape",
-                                       fChargeArraySize,
-                                       0,
-                                       fChargeArraySize,
-                                       fChargeArraySize,
-                                       0,
-                                       fChargeArraySize);
+      clusterShapeHistogram = new TH2F("MvdClusterShape", "MvdClusterShape", fChargeArraySize, 0, fChargeArraySize,
+                                       fChargeArraySize, 0, fChargeArraySize);
       for (Int_t i = 0; i < fChargeArraySize * fChargeArraySize; i++) {
         histo          = (TH1F*) fPixelChargeHistos->At(i);
         Float_t charge = histo->GetMean();
@@ -612,8 +556,7 @@ void CbmMvdSensorClusterfinderTask::Finish() {
         //histo->Fit("landau");
         //TF1* fitFunction= histo->GetFunction("landau");
         //Double_t MPV=fitFunction->GetParameter(1);
-        clusterShapeHistogram->Fill(
-          i % fChargeArraySize, i / fChargeArraySize, charge);
+        clusterShapeHistogram->Fill(i % fChargeArraySize, i / fChargeArraySize, charge);
       }
     }
     clusterShapeHistogram->Draw("Lego2");

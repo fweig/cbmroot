@@ -33,12 +33,11 @@ void matbudget_mc_mcbm_mvd(const char* inGeo,
   TString targetGeom = "";
   TString pipeGeom   = "";
   TString magnetGeom = "";
-  TString mvdGeom =
-    "mcbm/" + geoVersion + ".geo.root";  // "mcbm/mvd_v18a.geo.root";
-  TString stsGeom  = "";  // "mcbm/sts_" + geoVersion + ".geo.root";
-  TString richGeom = "";
-  TString trdGeom  = "";
-  TString tofGeom  = "";
+  TString mvdGeom    = "mcbm/" + geoVersion + ".geo.root";  // "mcbm/mvd_v18a.geo.root";
+  TString stsGeom    = "";                                  // "mcbm/sts_" + geoVersion + ".geo.root";
+  TString richGeom   = "";
+  TString trdGeom    = "";
+  TString tofGeom    = "";
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -184,8 +183,7 @@ void matbudget_mc_mcbm_mvd(const char* inGeo,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

@@ -25,23 +25,15 @@ class CbmTrdQa : public FairTask {
 
 public:
   CbmTrdQa(CbmTrdRadiator* radiator = NULL);
-  CbmTrdQa(const char* name,
-           const char* title         = "CBM Task",
-           const char* geo           = "",
-           Double_t triggerThreshold = 1.0e-6,
-           CbmTrdRadiator* radiator  = NULL);
+  CbmTrdQa(const char* name, const char* title = "CBM Task", const char* geo = "", Double_t triggerThreshold = 1.0e-6,
+           CbmTrdRadiator* radiator = NULL);
   virtual ~CbmTrdQa();
   virtual InitStatus ReInit();
   virtual InitStatus Init();
   virtual void SetParContainers();
   virtual void Exec(Option_t* option);
-  void CreateLayerView(std::map<Int_t, TH1*>& Map,
-                       TString folder,
-                       TString pics,
-                       TString zAxisTitle,
-                       Double_t fmax,
-                       Double_t fmin,
-                       Bool_t logScale);
+  void CreateLayerView(std::map<Int_t, TH1*>& Map, TString folder, TString pics, TString zAxisTitle, Double_t fmax,
+                       Double_t fmin, Bool_t logScale);
   virtual void FinishEvent();
   virtual void FinishTask();
   void Register();
@@ -54,12 +46,7 @@ private:
   TPolyLine* CreateTriangularPad(Int_t column, Int_t row, Double_t content);
   void NormalizeHistos();
   void CreateLayerView();
-  void GetPadInfos(Int_t moduleAddress,
-                   Double_t x,
-                   Double_t y,
-                   Int_t& iCol,
-                   Int_t& iRow,
-                   Double_t& padSizeX,
+  void GetPadInfos(Int_t moduleAddress, Double_t x, Double_t y, Int_t& iCol, Int_t& iRow, Double_t& padSizeX,
                    Double_t& padSizeY);
   Double_t GetTrackLength(CbmTrdPoint* point);
 

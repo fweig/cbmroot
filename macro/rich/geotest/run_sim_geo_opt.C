@@ -1,13 +1,12 @@
-void run_sim_geo_opt(Int_t nEvents = 200) {
+void run_sim_geo_opt(Int_t nEvents = 200)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   //TString inFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root";
-  TString outDir =
-    "/Users/slebedev/Development/cbm/data/simulations/rich/urqmdtest/";
+  TString outDir  = "/Users/slebedev/Development/cbm/data/simulations/rich/urqmdtest/";
   TString parFile = outDir + "25gev.centr.param.0000.root";
   TString outFile = outDir + "25gev.centr.mc.0000.root";
 
@@ -127,8 +126,7 @@ void run_sim_geo_opt(Int_t nEvents = 200) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }

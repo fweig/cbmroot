@@ -8,14 +8,15 @@
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmStsSensor::CbmStsSensor(UInt_t address,
-                           TGeoPhysicalNode* node,
-                           CbmStsElement* mother)
-  : CbmStsElement(address, kStsSensor, node, mother) {}
+CbmStsSensor::CbmStsSensor(UInt_t address, TGeoPhysicalNode* node, CbmStsElement* mother)
+  : CbmStsElement(address, kStsSensor, node, mother)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Get the unique address from the sensor name (static)   ----------
-UInt_t CbmStsSensor::GetAddressFromName(TString name) {
+UInt_t CbmStsSensor::GetAddressFromName(TString name)
+{
 
   Int_t unit    = 10 * (name[5] - '0') + name[6] - '0' - 1;
   Int_t ladder  = 10 * (name[9] - '0') + name[10] - '0' - 1;
@@ -29,7 +30,8 @@ UInt_t CbmStsSensor::GetAddressFromName(TString name) {
 
 
 // -----   String output   -------------------------------------------------
-std::string CbmStsSensor::ToString() const {
+std::string CbmStsSensor::ToString() const
+{
   std::stringstream ss;
   ss << GetName() << ", address " << CbmStsAddress::ToString(fAddress);
   return ss.str();

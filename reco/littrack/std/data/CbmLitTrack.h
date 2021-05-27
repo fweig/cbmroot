@@ -45,7 +45,9 @@ public:
     , fPDG(211)
     , fNofMissingHits(0)
     , fRefId(-1)
-    , fLength(-1.) {}
+    , fLength(-1.)
+  {
+  }
 
   /**
     * \brief Destructor.
@@ -64,9 +66,7 @@ public:
   Int_t GetLastStationId() const { return fLastStationId; };
   const CbmLitHit* GetHit(Int_t index) const { return fHits[index]; }
   const vector<const CbmLitHit*>& GetHits() const { return fHits; }
-  const CbmLitFitNode* GetFitNode(Int_t index) const {
-    return &fFitNodes[index];
-  }
+  const CbmLitFitNode* GetFitNode(Int_t index) const { return &fFitNodes[index]; }
   const vector<CbmLitFitNode>& GetFitNodes() const { return fFitNodes; }
   Int_t GetNofMissingHits() const { return fNofMissingHits; }
   Int_t GetRefId() const { return fRefId; }
@@ -84,9 +84,7 @@ public:
   void SetNofHits(Int_t nofHits) { fHits.resize(nofHits); }
   void SetLastStationId(Int_t lastPlaneId) { fLastStationId = lastPlaneId; }
   void SetFitNodes(const vector<CbmLitFitNode>& nodes) { fFitNodes = nodes; }
-  void SetNofMissingHits(Int_t nofMissingHits) {
-    fNofMissingHits = nofMissingHits;
-  }
+  void SetNofMissingHits(Int_t nofMissingHits) { fNofMissingHits = nofMissingHits; }
   void SetRefId(Int_t refId) { fRefId = refId; }
   void SetLength(litfloat length) { fLength = length; }
 
@@ -103,7 +101,8 @@ public:
   /**
     * \brief Remove hit and corresponding fit node.
     */
-  void RemoveHit(Int_t index) {
+  void RemoveHit(Int_t index)
+  {
     fHits.erase(fHits.begin() + index);
     if (!fFitNodes.empty()) { fFitNodes.erase(fFitNodes.begin() + index); };
   }
@@ -112,10 +111,10 @@ public:
     * \brief Sort hits by Z position.
     * \param[in] downstream If downstream is true than hits are sorted in downstream direction otherwise in upstream direction.
     */
-  void SortHits(Bool_t downstream = true) {
-    if (downstream) {
-      sort(fHits.begin(), fHits.end(), CompareHitPtrZLess());
-    } else {
+  void SortHits(Bool_t downstream = true)
+  {
+    if (downstream) { sort(fHits.begin(), fHits.end(), CompareHitPtrZLess()); }
+    else {
       sort(fHits.begin(), fHits.end(), CompareHitPtrZMore());
     }
   }
@@ -124,13 +123,12 @@ public:
     * \brief Return true if track parameters are correct.
     * \return True if track parameters are correct.
     */
-  Bool_t CheckParams() const {
+  Bool_t CheckParams() const
+  {
     std::vector<litfloat> covFirst(fParamFirst.GetCovMatrix());
     std::vector<litfloat> covLast(fParamLast.GetCovMatrix());
     for (Int_t i = 0; i < 21; i++) {
-      if (std::abs(covFirst[i]) > 10000. || std::abs(covLast[i]) > 10000.) {
-        return false;
-      }
+      if (std::abs(covFirst[i]) > 10000. || std::abs(covLast[i]) > 10000.) { return false; }
     }
     if (GetNofHits() < 1) { return false; }
     return true;
@@ -140,13 +138,12 @@ public:
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-  string ToString() const {
+  string ToString() const
+  {
     std::stringstream ss;
-    ss << "Track: quality=" << fQuality << ", chi2=" << fChi2
-       << ", ndf=" << fNDF << ", previousTrackId=" << fPreviousTrackId
-       << ", lastStationId=" << fLastStationId << ", pdg=" << fPDG
-       << ", nofHits=" << fHits.size() << ", nofFitNodes=" << fFitNodes.size()
-       << std::endl;
+    ss << "Track: quality=" << fQuality << ", chi2=" << fChi2 << ", ndf=" << fNDF
+       << ", previousTrackId=" << fPreviousTrackId << ", lastStationId=" << fLastStationId << ", pdg=" << fPDG
+       << ", nofHits=" << fHits.size() << ", nofFitNodes=" << fFitNodes.size() << std::endl;
     return ss.str();
   }
 
@@ -159,23 +156,21 @@ private:
   litfloat fChi2;                   // Chi-square
   Int_t fNDF;                       // Number of degrees of freedom
   Int_t fPreviousTrackId;           // Index of the previous track, i.e. STS
-  Int_t fLastStationId;   // Last detector station where track has a hit
-  Int_t fPDG;             // PDG code
-  Int_t fNofMissingHits;  // Number of missing hits
-  Int_t fRefId;           // Reference to MC
-  litfloat fLength;       // Track length
+  Int_t fLastStationId;             // Last detector station where track has a hit
+  Int_t fPDG;                       // PDG code
+  Int_t fNofMissingHits;            // Number of missing hits
+  Int_t fRefId;                     // Reference to MC
+  litfloat fLength;                 // Track length
 };
 
 /**
  * \brief Comparator for STL sorting algorithms.
  */
-class CompareTrackPtrChiSqOverNdfLess :
-  public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
+class CompareTrackPtrChiSqOverNdfLess : public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
 public:
-  Bool_t operator()(const CbmLitTrack* track1,
-                    const CbmLitTrack* track2) const {
-    return ((track1->GetChi2() / track1->GetNDF())
-            < (track2->GetChi2() / track2->GetNDF()));
+  Bool_t operator()(const CbmLitTrack* track1, const CbmLitTrack* track2) const
+  {
+    return ((track1->GetChi2() / track1->GetNDF()) < (track2->GetChi2() / track2->GetNDF()));
   }
 };
 
@@ -183,11 +178,10 @@ public:
 /**
  * \brief Comparator for STL sorting algorithms.
  */
-class CompareTrackPtrPrevTrackIdLess :
-  public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
+class CompareTrackPtrPrevTrackIdLess : public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
 public:
-  Bool_t operator()(const CbmLitTrack* track1,
-                    const CbmLitTrack* track2) const {
+  Bool_t operator()(const CbmLitTrack* track1, const CbmLitTrack* track2) const
+  {
     return track1->GetPreviousTrackId() < track2->GetPreviousTrackId();
   }
 };
@@ -196,11 +190,10 @@ public:
 /**
  * \brief Comparator for STL sorting algorithms.
  */
-class CompareTrackPtrNofHitsMore :
-  public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
+class CompareTrackPtrNofHitsMore : public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
 public:
-  Bool_t operator()(const CbmLitTrack* track1,
-                    const CbmLitTrack* track2) const {
+  Bool_t operator()(const CbmLitTrack* track1, const CbmLitTrack* track2) const
+  {
     return track1->GetNofHits() > track2->GetNofHits();
   }
 };
@@ -209,11 +202,10 @@ public:
 /**
  * \brief Comparator for STL sorting algorithms.
  */
-class CompareTrackPtrNofHitsLess :
-  public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
+class CompareTrackPtrNofHitsLess : public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
 public:
-  Bool_t operator()(const CbmLitTrack* track1,
-                    const CbmLitTrack* track2) const {
+  Bool_t operator()(const CbmLitTrack* track1, const CbmLitTrack* track2) const
+  {
     return track1->GetNofHits() < track2->GetNofHits();
   }
 };
@@ -222,11 +214,10 @@ public:
 /**
  * \brief Comparator for STL sorting algorithms.
  */
-class CompareTrackPtrLastStationIdMore :
-  public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
+class CompareTrackPtrLastStationIdMore : public std::binary_function<const CbmLitTrack*, const CbmLitTrack*, Bool_t> {
 public:
-  Bool_t operator()(const CbmLitTrack* track1,
-                    const CbmLitTrack* track2) const {
+  Bool_t operator()(const CbmLitTrack* track1, const CbmLitTrack* track2) const
+  {
     return track1->GetLastStationId() > track2->GetLastStationId();
   }
 };

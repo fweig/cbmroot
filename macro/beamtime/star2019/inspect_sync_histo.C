@@ -1,5 +1,5 @@
-void inspect_sync_histo(TString hFile        = "data/HistosMonitorTofSync.root",
-                        Double_t MaxMismatch = 1.) {
+void inspect_sync_histo(TString hFile = "data/HistosMonitorTofSync.root", Double_t MaxMismatch = 1.)
+{
   using namespace std;
 
   TFile* fHistFile = TFile::Open(hFile, "READ");
@@ -34,16 +34,16 @@ void inspect_sync_histo(TString hFile        = "data/HistosMonitorTofSync.root",
       }
 
       TDatime* pTime = new TDatime();
-      cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime()) << ": AFCK "
-           << iGdpb << " has " << NGet4 << " active GET4s" << endl;
+      cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime()) << ": AFCK " << iGdpb << " has " << NGet4
+           << " active GET4s" << endl;
       if (NGet4 < 130) {  // max: 6*24 = 144
         Int_t iSec = iGdpb + 13;
         gSystem->Exec(Form("/home/cbm/bin/prog_etof_sector.sh %d > "
                            "/home/cbm/starsoft/dpbcontrols/LOG/PROG%d ",
-                           iSec,
-                           iSec));
+                           iSec, iSec));
         bSectorFW[iGdpb] = kTRUE;
-      } else {
+      }
+      else {
         ;
       }
     }
@@ -57,9 +57,8 @@ void inspect_sync_histo(TString hFile        = "data/HistosMonitorTofSync.root",
 
   h24 = h2->ProjectionX("_px", 4, 4);  // get mismatch line
   cout << "<I> stop fles " << endl;
-  gSystem->Exec(
-    Form("cd /home/cbm/starsoft/startup_scripts; ./DisableDataOut.sh > "
-         "/dev/null; ./stop_fles.sh > /dev/null "));
+  gSystem->Exec(Form("cd /home/cbm/starsoft/startup_scripts; ./DisableDataOut.sh > "
+                     "/dev/null; ./stop_fles.sh > /dev/null "));
 
   Int_t NBad = 0;
   for (Int_t iGdpb = 0; iGdpb < NGdpb; iGdpb++) {
@@ -67,27 +66,23 @@ void inspect_sync_histo(TString hFile        = "data/HistosMonitorTofSync.root",
     if (h24->GetBinContent(iGdpb + 1) > MaxMismatch || bSectorFW[iGdpb]) {
       TDatime* pTime = new TDatime();
       cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime())
-           << Form(": Init Gdpb %d, sector %d with %d mismatches",
-                   iGdpb,
-                   iSec,
-                   (Int_t) h24->GetBinContent(iGdpb + 1))
+           << Form(": Init Gdpb %d, sector %d with %d mismatches", iGdpb, iSec, (Int_t) h24->GetBinContent(iGdpb + 1))
            << endl;
 
       gSystem->Exec(Form("cd /home/cbm/starsoft/dpbcontrols; nohup "
                          "./start_etof_sector.sh %d  > ./LOG/EtofSector%d & ",
-                         iSec,
-                         iSec));
+                         iSec, iSec));
 
       NBad++;
-    } else {
-      gSystem->Exec(
-        Form("cd /home/cbm/starsoft/dpbcontrols; rm ./LOG/BAD%d &> /dev/null",
-             iSec));
+    }
+    else {
+      gSystem->Exec(Form("cd /home/cbm/starsoft/dpbcontrols; rm ./LOG/BAD%d &> /dev/null", iSec));
     }
   }
   if (NBad == 0) {
     gSystem->Exec("rm /tmp/NoSync");  // done
-  } else {
+  }
+  else {
     cout << " Found " << NBad << " bad sectors " << endl;
   }
 

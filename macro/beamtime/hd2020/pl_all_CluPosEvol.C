@@ -1,4 +1,5 @@
-void pl_all_CluPosEvol(Int_t iNSt = 2, Int_t iTmax = 0) {
+void pl_all_CluPosEvol(Int_t iNSt = 2, Int_t iTmax = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -37,9 +38,8 @@ void pl_all_CluPosEvol(Int_t iNSt = 2, Int_t iTmax = 0) {
       for (Int_t iRp = 0; iRp < iRpcNum[iSt]; iRp++) {
         //cout << "plot rpc at station "<<iSt<<" with "<< iSmNum[iSt] <<" modules of "<<iRpcNum[iSt]<<" Rpcs each"<<endl;
         gROOT->cd();
-        TString hname =
-          Form("cl_SmT%01d_sm%03d_rpc%03d_PosEvol", iType[iSt], iSm, iRp);
-        h = (TH1*) gROOT->FindObjectAny(hname);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_PosEvol", iType[iSt], iSm, iRp);
+        h             = (TH1*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           can->cd(iCanv + 1);
           iCanv++;
@@ -51,7 +51,8 @@ void pl_all_CluPosEvol(Int_t iNSt = 2, Int_t iTmax = 0) {
           if (iTmax > 0) h->GetXaxis()->SetRange(0., iTmax);
           h->Draw("");
           //gPad->SetLogy();
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

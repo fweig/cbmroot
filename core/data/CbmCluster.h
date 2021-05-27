@@ -50,17 +50,13 @@ public:
 	 * \brief Add array of digi to cluster.
 	 * \param[in] indices Array of digi indices in TClonesArray.
 	 */
-  void AddDigis(const std::vector<Int_t>& indices) {
-    fDigis.insert(fDigis.end(), indices.begin(), indices.end());
-  }
+  void AddDigis(const std::vector<Int_t>& indices) { fDigis.insert(fDigis.end(), indices.begin(), indices.end()); }
 
   /**
 	 * \brief Set array of digi to cluster. Overwrites existing array.
 	 * \param[in] indices Array of digi indices in TClonesArray.
 	 */
-  void SetDigis(const std::vector<Int_t>& indices) {
-    fDigis.assign(indices.begin(), indices.end());
-  }
+  void SetDigis(const std::vector<Int_t>& indices) { fDigis.assign(indices.begin(), indices.end()); }
 
   /**
 	 * \brief Number of digis in cluster.

@@ -6,10 +6,8 @@
 // ----- mode=3  files with particle azimuthal distirbution (w.r.t. true reaction plane or reconstructed event plane) - kparticle finder output files  - produced by anaFlow.C in mode=2
 // -------------------------------------------------------------------------
 
-void MergeTTree(Int_t mode     = 2,
-                Double_t En    = 10.,
-                Int_t fQcorr   = 0,
-                Int_t fBarcorr = 0) {
+void MergeTTree(Int_t mode = 2, Double_t En = 10., Int_t fQcorr = 0, Int_t fBarcorr = 0)
+{
   //gROOT->Reset();
 
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -51,16 +49,14 @@ void MergeTTree(Int_t mode     = 2,
 
     TString dir = sServ + "test/ana/";
 
-    TString outName = dir + "ana_1Mevt" + smcreco + scutY_sub + sQcorr
-                      + sBarcorr + sFlatBin + ".root";
+    TString outName = dir + "ana_1Mevt" + smcreco + scutY_sub + sQcorr + sBarcorr + sFlatBin + ".root";
     cout << "output: " << outName << endl;
     TFile* outFile = new TFile(outName, "RECREATE");
 
     TChain* bTuple = new TChain("cbmsim");
     bTuple->SetDirectory(outFile);
 
-    TString inFiles = dir + "ana_0200evt_*" + smcreco + scutY_sub + sQcorr
-                      + sBarcorr + sFlatBin + ".root";
+    TString inFiles = dir + "ana_0200evt_*" + smcreco + scutY_sub + sQcorr + sBarcorr + sFlatBin + ".root";
     cout << "inFiles: " << inFiles << endl;
 
     bTuple->Add(inFiles);

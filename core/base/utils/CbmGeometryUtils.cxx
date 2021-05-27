@@ -28,9 +28,12 @@
 #include <string.h>  // for strcmp
 
 
-namespace Cbm {
-  namespace GeometryUtils {
-    void PrintMedia() {
+namespace Cbm
+{
+  namespace GeometryUtils
+  {
+    void PrintMedia()
+    {
       TList* media = gGeoManager->GetListOfMedia();
       TIter next1(media);
       TGeoMedium* med;
@@ -40,18 +43,19 @@ namespace Cbm {
       LOG(info) << "****";
     }
 
-    void PrintMaterials() {
+    void PrintMaterials()
+    {
       TList* material = gGeoManager->GetListOfMaterials();
       TIter next1(material);
       TGeoMaterial* mat;
       while ((mat = static_cast<TGeoMaterial*>(next1()))) {
-        LOG(info) << "Material " << mat->GetName() << " with ID "
-                  << mat->GetIndex();
+        LOG(info) << "Material " << mat->GetName() << " with ID " << mat->GetIndex();
       }
       LOG(info) << "****";
     }
 
-    void CorrectMediaId() {
+    void CorrectMediaId()
+    {
       TList* media = gGeoManager->GetListOfMedia();
       TIter next(media);
       TGeoMedium* med;
@@ -61,7 +65,8 @@ namespace Cbm {
       }
     }
 
-    void RemoveDuplicateMaterials() {
+    void RemoveDuplicateMaterials()
+    {
       // Revove duplicate materials
       TList* materials = gGeoManager->GetListOfMaterials();
       TIter next(materials);
@@ -73,13 +78,15 @@ namespace Cbm {
         if (mapMatName[mat->GetName()]) {
           LOG(debug) << "Removing duplicate material " << mat->GetName();
           materials->Remove(mat);
-        } else {
+        }
+        else {
           mapMatName[mat->GetName()] = kTRUE;
         }
       }
     }
 
-    void RemoveDuplicateMedia() {
+    void RemoveDuplicateMedia()
+    {
       // Revove duplicate media
       TList* media = gGeoManager->GetListOfMedia();
       TIter next(media);
@@ -91,13 +98,15 @@ namespace Cbm {
         if (mapMedName[med->GetName()]) {
           LOG(debug) << "Removing duplicate medium " << med->GetName();
           media->Remove(med);
-        } else {
+        }
+        else {
           mapMedName[med->GetName()] = kTRUE;
         }
       }
     }
 
-    void ReAssignMediaId() {
+    void ReAssignMediaId()
+    {
       // Initialise pointer to GeoBuilder
       FairGeoBuilder* geoBuilder = FairGeoLoader::Instance()->getGeoBuilder();
       // Get list of TGeo media
@@ -123,21 +132,23 @@ namespace Cbm {
         TGeoMaterial* mat = med->GetMaterial();
         if (mat) {
           //          mat->Print();
-        } else {
+        }
+        else {
           LOG(info) << "No Material found for medium " << med->GetName();
         }
       }
       gGeoManager->SetAllIndex();
     }
 
-    Bool_t IsNewGeometryFile(TString& filename) {
+    Bool_t IsNewGeometryFile(TString& filename)
+    {
       TString tempString {""};
       TGeoMatrix* tempMatrix {nullptr};
       return IsNewGeometryFile(filename, tempString, &tempMatrix);
     }
 
-    void
-    ImportRootGeometry(TString& filename, FairModule* mod, TGeoMatrix* mat) {
+    void ImportRootGeometry(TString& filename, FairModule* mod, TGeoMatrix* mat)
+    {
 
       TString fVolumeName {""};
       TGeoMatrix* tempMatrix {nullptr};
@@ -166,9 +177,8 @@ namespace Cbm {
       Cbm::GeometryUtils::RemoveDuplicateMaterials();
       Cbm::GeometryUtils::RemoveDuplicateMedia();
 
-      if (mat) {
-        gGeoManager->GetTopVolume()->AddNode(module1, 0, mat);
-      } else {
+      if (mat) { gGeoManager->GetTopVolume()->AddNode(module1, 0, mat); }
+      else {
         gGeoManager->GetTopVolume()->AddNode(module1, 0, tempMatrix);
       }
 
@@ -176,9 +186,8 @@ namespace Cbm {
       gGeoManager->SetAllIndex();
     }
 
-    Bool_t IsNewGeometryFile(TString& filename,
-                             TString& volumeName,
-                             TGeoMatrix** matrix) {
+    Bool_t IsNewGeometryFile(TString& filename, TString& volumeName, TGeoMatrix** matrix)
+    {
       // Save current gFile and gDirectory information
       TFile* oldFile           = gFile;
       TDirectory* oldDirectory = gDirectory;
@@ -188,8 +197,7 @@ namespace Cbm {
       Int_t numKeys = l->GetSize();
 
       if (2 != numKeys) {
-        LOG(debug)
-          << "Not exactly two keys in the file. File is not of new type.";
+        LOG(debug) << "Not exactly two keys in the file. File is not of new type.";
         return kFALSE;
       }
 
@@ -223,11 +231,9 @@ namespace Cbm {
       if (foundGeoVolume && foundGeoMatrix) {
         LOG(debug) << "Geometry file is of new type.";
         return kTRUE;
-      } else {
-        if (!foundGeoVolume) {
-          LOG(fatal)
-            << "No TGeoVolume found in geometry file. File is of unknown type.";
-        }
+      }
+      else {
+        if (!foundGeoVolume) { LOG(fatal) << "No TGeoVolume found in geometry file. File is of unknown type."; }
         if (!foundGeoMatrix) {
           LOG(fatal) << "No TGeoMatrix derived object found in geometry file. "
                         "File is of unknown type.";
@@ -237,15 +243,15 @@ namespace Cbm {
     }
 
 
-    void AssignMediumAtImport(TGeoVolume* v) {
+    void AssignMediumAtImport(TGeoVolume* v)
+    {
       /**
        * Assign medium to the the volume v, this has to be done in all cases:
        * case 1: For CAD converted volumes they have no mediums (only names)
        * case 2: TGeoVolumes, we need to be sure that the material is 
        *         defined in this session
        */
-      FairGeoMedia* Media =
-        FairGeoLoader::Instance()->getGeoInterface()->getMedia();
+      FairGeoMedia* Media      = FairGeoLoader::Instance()->getGeoInterface()->getMedia();
       FairGeoBuilder* geobuild = FairGeoLoader::Instance()->getGeoBuilder();
 
       TGeoMedium* med1 = v->GetMedium();
@@ -260,8 +266,7 @@ namespace Cbm {
         // newly created medium or material is added to the TGeomanger.
         // Create the medium and material only the first time.
         TString medName = static_cast<TString>(med1->GetName());
-        if ((medName.EqualTo("dummy"))
-            && (nullptr == gGeoManager->GetMedium(medName))) {
+        if ((medName.EqualTo("dummy")) && (nullptr == gGeoManager->GetMedium(medName))) {
           TGeoMaterial* dummyMaterial = new TGeoMaterial();
           dummyMaterial->SetName("dummy");
 
@@ -282,19 +287,21 @@ namespace Cbm {
           LOG(info) << "Create new material " << mat1->GetName();
           FairGeoMedium* FairMedium = Media->getMedium(mat1->GetName());
           if (!FairMedium) {
-            LOG(fatal) << "Material " << mat1->GetName()
-                       << "is neither defined in ASCII file nor in Root file.";
-          } else {
+            LOG(fatal) << "Material " << mat1->GetName() << "is neither defined in ASCII file nor in Root file.";
+          }
+          else {
             Int_t nmed = geobuild->createMedium(FairMedium);
             v->SetMedium(gGeoManager->GetMedium(nmed));
             gGeoManager->SetAllIndex();
           }
-        } else {
+        }
+        else {
           /**Material is already available in the TGeoManager and we can set it */
           TGeoMedium* med2 = gGeoManager->GetMedium(mat1->GetName());
           v->SetMedium(med2);
         }
-      } else {
+      }
+      else {
         if (strcmp(v->ClassName(), "TGeoVolumeAssembly") != 0) {
           LOG(fatal) << "The volume " << v->GetName()
                      << "has no medium information and is not an Assembly so "
@@ -303,7 +310,8 @@ namespace Cbm {
       }
     }
 
-    void ExpandNodes(TGeoVolume* vol, FairModule* mod) {
+    void ExpandNodes(TGeoVolume* vol, FairModule* mod)
+    {
 
       Cbm::GeometryUtils::AssignMediumAtImport(vol);
       TObjArray* NodeList = vol->GetNodes();
@@ -311,15 +319,11 @@ namespace Cbm {
         TGeoNode* fNode = (TGeoNode*) NodeList->At(Nod);
 
         TGeoVolume* v = fNode->GetVolume();
-        if (fNode->GetNdaughters() > 0) {
-          Cbm::GeometryUtils::ExpandNodes(v, mod);
-        }
+        if (fNode->GetNdaughters() > 0) { Cbm::GeometryUtils::ExpandNodes(v, mod); }
         Cbm::GeometryUtils::AssignMediumAtImport(v);
 
-        if ((mod->InheritsFrom("FairDetector"))
-            && mod->CheckIfSensitive(v->GetName())) {
-          LOG(debug) << "Module " << v->GetName() << " of detector "
-                     << mod->GetName() << " is sensitive";
+        if ((mod->InheritsFrom("FairDetector")) && mod->CheckIfSensitive(v->GetName())) {
+          LOG(debug) << "Module " << v->GetName() << " of detector " << mod->GetName() << " is sensitive";
           mod->AddSensitiveVolume(v);
         }
       }

@@ -4,11 +4,11 @@
  **/
 #include "CbmStsParSensorCond.h"
 
-#include <cmath>  // for pow
-
 #include <iostream>  // for operator<<, basic_ostream, stringstream
 #include <sstream>   // for stringstream
 #include <string>    // for char_traits
+
+#include <cmath>  // for pow
 
 using std::string;
 using std::stringstream;
@@ -16,21 +16,21 @@ using std::stringstream;
 ClassImp(CbmStsParSensorCond)
 
   // -----   Default constructor   -------------------------------------------
-  CbmStsParSensorCond::CbmStsParSensorCond() {}
+  CbmStsParSensorCond::CbmStsParSensorCond()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsParSensorCond::CbmStsParSensorCond(Double_t vFd,
-                                         Double_t vBias,
-                                         Double_t temperature,
-                                         Double_t cCoupling,
+CbmStsParSensorCond::CbmStsParSensorCond(Double_t vFd, Double_t vBias, Double_t temperature, Double_t cCoupling,
                                          Double_t cInterstrip)
   : fVfd(vFd)
   , fVbias(vBias)
   , fTemperature(temperature)
   , fCcoupling(cCoupling)
-  , fCinterstrip(cInterstrip) {
+  , fCinterstrip(cInterstrip)
+{
   Init();
 }
 // -------------------------------------------------------------------------
@@ -42,7 +42,8 @@ CbmStsParSensorCond::CbmStsParSensorCond(const CbmStsParSensorCond& other)
   , fVbias(other.fVbias)
   , fTemperature(other.fTemperature)
   , fCcoupling(other.fCcoupling)
-  , fCinterstrip(other.fCinterstrip) {
+  , fCinterstrip(other.fCinterstrip)
+{
   Init();
 }
 // -------------------------------------------------------------------------
@@ -54,12 +55,12 @@ CbmStsParSensorCond::~CbmStsParSensorCond() {}
 
 
 // -----  Calculate Hall mobility parameters   -----------------------------
-void CbmStsParSensorCond::Init() {
+void CbmStsParSensorCond::Init()
+{
 
   // Cross-talk coefficient
   fCrossTalkCoeff = 0.;
-  if (fCinterstrip + fCcoupling != 0.)
-    fCrossTalkCoeff = fCinterstrip / (fCinterstrip + fCcoupling);
+  if (fCinterstrip + fCcoupling != 0.) fCrossTalkCoeff = fCinterstrip / (fCinterstrip + fCcoupling);
 
   // These are the parameters needed for the calculation of the Hall
   // mobility, i.e. the mobility of charge carriers in the silicon
@@ -87,8 +88,8 @@ void CbmStsParSensorCond::Init() {
 
 
 // -----   Hall mobility   -------------------------------------------------
-Double_t CbmStsParSensorCond::GetHallMobility(Double_t eField,
-                                              Int_t chargeType) const {
+Double_t CbmStsParSensorCond::GetHallMobility(Double_t eField, Int_t chargeType) const
+{
 
   assert(fIsInit);
   assert(chargeType == 0 || chargeType == 1);
@@ -119,8 +120,8 @@ Double_t CbmStsParSensorCond::GetHallMobility(Double_t eField,
 
 
 // -----   Copy assignment operator   --------------------------------------
-CbmStsParSensorCond&
-CbmStsParSensorCond::operator=(const CbmStsParSensorCond& other) {
+CbmStsParSensorCond& CbmStsParSensorCond::operator=(const CbmStsParSensorCond& other)
+{
   fVfd         = other.fVfd;
   fTemperature = other.fTemperature;
   fCcoupling   = other.fCcoupling;
@@ -132,11 +133,9 @@ CbmStsParSensorCond::operator=(const CbmStsParSensorCond& other) {
 
 
 // -----   Set condition parameters   --------------------------------------
-void CbmStsParSensorCond::SetParams(Double_t vFd,
-                                    Double_t vBias,
-                                    Double_t temperature,
-                                    Double_t cCoupling,
-                                    Double_t cInterstrip) {
+void CbmStsParSensorCond::SetParams(Double_t vFd, Double_t vBias, Double_t temperature, Double_t cCoupling,
+                                    Double_t cInterstrip)
+{
   fVfd         = vFd;
   fVbias       = vBias;
   fTemperature = temperature;
@@ -148,16 +147,16 @@ void CbmStsParSensorCond::SetParams(Double_t vFd,
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsParSensorCond::ToString() const {
+string CbmStsParSensorCond::ToString() const
+{
   stringstream ss;
   if (fIsInit) {
-    ss << "VFD " << fVfd << " V | V(bias) " << fVbias << " V | T "
-       << fTemperature << " K | C(coupl.) " << fCcoupling << " pF | C(int.) "
-       << fCinterstrip << " pF | cross-talk coeff. " << fCrossTalkCoeff;
-  } else {
-    ss << "VFD " << fVfd << " V | V(bias) " << fVbias << " V | T "
-       << fTemperature << " K | C(coupl.) " << fCcoupling << " pF | C(int.) "
-       << fCinterstrip << " pF | not initialised!";
+    ss << "VFD " << fVfd << " V | V(bias) " << fVbias << " V | T " << fTemperature << " K | C(coupl.) " << fCcoupling
+       << " pF | C(int.) " << fCinterstrip << " pF | cross-talk coeff. " << fCrossTalkCoeff;
+  }
+  else {
+    ss << "VFD " << fVfd << " V | V(bias) " << fVbias << " V | T " << fTemperature << " K | C(coupl.) " << fCcoupling
+       << " pF | C(int.) " << fCinterstrip << " pF | not initialised!";
   }
   return ss.str();
 }

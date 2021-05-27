@@ -50,9 +50,7 @@ private:
       */
   void ReadAndCreateDataBranches();
 
-  void MergeRealisticTofPoints(const TClonesArray* tracks,
-                               const TClonesArray* points,
-                               TClonesArray* realisticPoints,
+  void MergeRealisticTofPoints(const TClonesArray* tracks, const TClonesArray* points, TClonesArray* realisticPoints,
                                TClonesArray* pointsMatches);
 
   CbmTofGeoHandler* fGeoHandler;
@@ -61,12 +59,9 @@ private:
   TClonesArray* fMcTracksColl;   // MC tracks
   TClonesArray* fTofPointsColl;  // CbmTofPoint array
 
-  std::map<Int_t, std::vector<Int_t>>
-    fTofPntTrkMap;  // map of TrkId + vector of PntId
-  TClonesArray*
-    fRealTofPoints;  // CbmTofPoint array for realistic TOF MC: 1 per (Trk, det) pair
-  TClonesArray*
-    fTofRealPntMatches;  // CbmMatch array for MC TOF Pnt -> Realistic MC TOF Point
+  std::map<Int_t, std::vector<Int_t>> fTofPntTrkMap;  // map of TrkId + vector of PntId
+  TClonesArray* fRealTofPoints;                       // CbmTofPoint array for realistic TOF MC: 1 per (Trk, det) pair
+  TClonesArray* fTofRealPntMatches;                   // CbmMatch array for MC TOF Pnt -> Realistic MC TOF Point
 
   CbmTofMergeMcPoints(const CbmTofMergeMcPoints&);
   CbmTofMergeMcPoints& operator=(const CbmTofMergeMcPoints&);

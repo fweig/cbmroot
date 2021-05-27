@@ -1,13 +1,10 @@
-void GDML_to_ROOT_Trans(float pmt_pos_y_addend = 0,
-                        float pmt_pos_z_addend = 0,
-                        int RotMir             = -10,
-                        float PMTrotX          = 5,
-                        float PMTrotY          = 5) {
+void GDML_to_ROOT_Trans(float pmt_pos_y_addend = 0, float pmt_pos_z_addend = 0, int RotMir = -10, float PMTrotX = 5,
+                        float PMTrotY = 5)
+{
 
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d", RotMir);
   }
 
@@ -20,33 +17,23 @@ void GDML_to_ROOT_Trans(float pmt_pos_y_addend = 0,
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   /////////////////////////////////// Translation in z
   char ZTransText[256];
-  if (pmt_pos_z_addend < 0) {
-    sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend);
-  } else {
+  if (pmt_pos_z_addend < 0) { sprintf(ZTransText, "Z_m%d", -1 * pmt_pos_z_addend); }
+  else {
     sprintf(ZTransText, "Z_p%d", pmt_pos_z_addend);
   }
   char YTransText[256];
-  if (pmt_pos_y_addend < 0) {
-    sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend);
-  } else {
+  if (pmt_pos_y_addend < 0) { sprintf(YTransText, "Y_m%d", -1 * pmt_pos_y_addend); }
+  else {
     sprintf(YTransText, "Y_p%d", pmt_pos_y_addend);
   }
 
   char GeoFileName[256];
-  sprintf(
-    GeoFileName,
-    "/geometry/rich/GeoOpt/TransPMT/rich_geo_%s_RotPMT_%s_%s_TransPMT_%s_%s",
-    RotMirText,
-    ShiftXTxt,
-    ShiftYTxt,
-    YTransText,
-    ZTransText);
+  sprintf(GeoFileName, "/geometry/rich/GeoOpt/TransPMT/rich_geo_%s_RotPMT_%s_%s_TransPMT_%s_%s", RotMirText, ShiftXTxt,
+          ShiftYTxt, YTransText, ZTransText);
 
   stringstream ss;
   ss << GeoFileName;

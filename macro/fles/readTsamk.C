@@ -21,7 +21,8 @@ void readTsamk(TString inFile
                //"/gluster/p_kohn01/buchcern15/264_ba2015.tsa"
                //"data/1076_cern2014.tsa"
                //"data/test.tsa"
-) {
+)
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -112,8 +113,7 @@ void readTsamk(TString inFile
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

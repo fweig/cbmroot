@@ -1,26 +1,27 @@
-enum enu_calibMode {
+enum enu_calibMode
+{
   etn_IMPORT,  // import calibration tables from the file and use them
   etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
   etn_NOCALIB,  // use linear function going from origin to (512, n) which means that the fine time is not calibrated
-  etn_IDEAL  // use almost linear function - close to real calibration but idealized
+  etn_IDEAL     // use almost linear function - close to real calibration but idealized
 };
 
-enum CbmRichAnaTypeEnum {
+enum CbmRichAnaTypeEnum
+{
   kCbmRichBeamEvent,         // hodoscope ( beam trigger)
   kCbmRichLaserPulserEvent,  // Laser pulser events
   kCbmRichLedPulserEvent     // UV LED events
 };
 
-void run_analysis() {
+void run_analysis()
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
-  std::string hldFileDir =
-    "";  //"/mnt/data/WLS/WLS_off/nonstretched/ringH2/offset00250/";
-  std::string hldFileName =
-    "/Users/slebedev/Development/cbm/data/cern_beamtime_2014/te14325234809.hld";
+  std::string hldFileDir  = "";  //"/mnt/data/WLS/WLS_off/nonstretched/ringH2/offset00250/";
+  std::string hldFileName = "/Users/slebedev/Development/cbm/data/cern_beamtime_2014/te14325234809.hld";
   std::string hldFullFileName;
   hldFullFileName = hldFileDir + hldFileName;
 
@@ -61,8 +62,7 @@ void run_analysis() {
   source->SetUseFingerSci(false);
 
   CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
-  fgCalibrator->SetInputFilename(
-    "calibration.root");  // does not actually import data - only defines
+  fgCalibrator->SetInputFilename("calibration.root");  // does not actually import data - only defines
   // the file that will be used if you specidy mode etn_IMPORT
   fgCalibrator->SetMode(etn_NOCALIB);
   // Also note the (un)commented line in the end of the macro with export func
@@ -91,7 +91,8 @@ void run_analysis() {
     qaReco->SetRunTitle(runTitle);
     qaReco->SetDrawHist(true);
     run->AddTask(qaReco);
-  } else {
+  }
+  else {
     CbmRichTrbPulserQa* qaPulser = new CbmRichTrbPulserQa();
     run->AddTask(qaPulser);
   }
@@ -119,8 +120,7 @@ void run_analysis() {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outRootFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

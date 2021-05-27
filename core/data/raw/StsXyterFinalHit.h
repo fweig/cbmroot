@@ -7,9 +7,11 @@
 
 // C/C++ headers
 #include <iostream>
+
 #include <stdint.h>
 
-namespace stsxyter {
+namespace stsxyter
+{
 
   class FinalHit {
   private:
@@ -28,26 +30,27 @@ namespace stsxyter {
       , fusAsicIdx(src.fusAsicIdx)
       , fusChanIdx(src.fusChanIdx)
       , fusDpbIdx(src.fusDpbIdx)
-      , fusCrobIdx(src.fusCrobIdx) {}
+      , fusCrobIdx(src.fusCrobIdx)
+    {
+    }
 
-    FinalHit(uint64_t ulLongTsIn,
-             uint16_t usRawAdcIn,
-             uint16_t usAsicIdxIn,
-             uint16_t usChanIdxIn,
-             uint16_t usDpbIdx  = 0,
-             uint16_t usCrobIdx = 0)
+    FinalHit(uint64_t ulLongTsIn, uint16_t usRawAdcIn, uint16_t usAsicIdxIn, uint16_t usChanIdxIn,
+             uint16_t usDpbIdx = 0, uint16_t usCrobIdx = 0)
       : fulLongTs(ulLongTsIn)
       , fusRawAdc(usRawAdcIn)
       , fusAsicIdx(usAsicIdxIn)
       , fusChanIdx(usChanIdxIn)
       , fusDpbIdx(usDpbIdx)
-      , fusCrobIdx(usCrobIdx) {}
+      , fusCrobIdx(usCrobIdx)
+    {
+    }
 
     FinalHit() : FinalHit(0, 0, 0, 0) {}
 
     ~FinalHit() {};
 
-    void assign(const FinalHit& src) {
+    void assign(const FinalHit& src)
+    {
       fulLongTs  = src.fulLongTs;
       fusRawAdc  = src.fusRawAdc;
       fusAsicIdx = src.fusAsicIdx;
@@ -56,15 +59,15 @@ namespace stsxyter {
       fusCrobIdx = src.fusCrobIdx;
     }
 
-    FinalHit& operator=(const FinalHit& src) {
+    FinalHit& operator=(const FinalHit& src)
+    {
       assign(src);
       return *this;
     }
-    bool operator<(const FinalHit& other) const {
-      return fulLongTs < other.fulLongTs;
-    }
+    bool operator<(const FinalHit& other) const { return fulLongTs < other.fulLongTs; }
 
-    inline void reset() {
+    inline void reset()
+    {
       fulLongTs  = 0;
       fusRawAdc  = 0;
       fusAsicIdx = 0;

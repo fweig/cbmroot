@@ -45,10 +45,8 @@ bool littrack    = false;
 Bool_t useMC     = kFALSE;
 
 
-void PairSelection(Int_t nEvents = 10,
-                   Int_t ProcID  = 1,
-                   bool PileUp   = false,
-                   Int_t PidTyp  = 0) {
+void PairSelection(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false, Int_t PidTyp = 0)
+{
   // -------------------------------------------------------------------------
 
 
@@ -60,80 +58,51 @@ void PairSelection(Int_t nEvents = 10,
   }
 
   // Input file (MC events)
-  TString mcFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root",
-                        input.Data(),
-                        inputGEV.Data(),
-                        nEvents,
-                        ProcID,
-                        signal.Data(),
-                        setup.Data());
+  TString mcFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                        ProcID, signal.Data(), setup.Data());
 
 
   // Parameter file
-  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
 
   // Reco file
-  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s",
-                          input.Data(),
-                          inputGEV.Data(),
-                          nEvents,
-                          ProcID,
-                          signal.Data(),
-                          setup.Data());
+  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s", input.Data(), inputGEV.Data(), nEvents, ProcID,
+                          signal.Data(), setup.Data());
   if (!PileUp) {
-    if (littrack)
-      TString rcFile = rcSystem + ".littrack.root";
+    if (littrack) TString rcFile = rcSystem + ".littrack.root";
     else
       TString rcFile = rcSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString rcFile = rcSystem + ".PileUp.littrack.root";
   else
     TString rcFile = rcSystem + ".PileUp.l1.root";
 
   // Output file
-  TString outSystem =
-    Form("data/opencharm.pairs.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-         input.Data(),
-         inputGEV.Data(),
-         nEvents,
-         ProcID,
-         signal.Data(),
-         setup.Data(),
-         pidMode.Data());
+  TString outSystem = Form("data/opencharm.pairs.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(), inputGEV.Data(),
+                           nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   if (useMC) outSystem += ".mcMode";
   if (!PileUp) {
-    if (littrack)
-      TString outFile = outSystem + ".littrack.root";
+    if (littrack) TString outFile = outSystem + ".littrack.root";
     else
       TString outFile = outSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString outFile = outSystem + ".PileUp.littrack.root";
   else
     TString outFile = outSystem + ".PileUp.l1.root";
 
 
   // Track file
-  TString trackSystem =
-    Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-         input.Data(),
-         inputGEV.Data(),
-         nEvents,
-         ProcID,
-         signal.Data(),
-         setup.Data(),
-         pidMode.Data());
+  TString trackSystem = Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(), inputGEV.Data(),
+                             nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   if (!PileUp) {
-    if (littrack)
-      TString trackFile = trackSystem + ".littrack.root";
+    if (littrack) TString trackFile = trackSystem + ".littrack.root";
     else
       TString trackFile = trackSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString trackFile = trackSystem + ".PileUp.littrack.root";
   else
     TString trackFile = trackSystem + ".PileUp.l1.root";
@@ -189,8 +158,7 @@ void PairSelection(Int_t nEvents = 10,
   CbmL1* l1 = new CbmL1();
   fRun->AddTask(l1);  // name     verbose  ipD0   SvZ
 
-  CbmD0CandidateSelection* D0selection =
-    new CbmD0CandidateSelection("d0selection", 1, 0.04, 0.01);
+  CbmD0CandidateSelection* D0selection = new CbmD0CandidateSelection("d0selection", 1, 0.04, 0.01);
   D0selection->SetTestMode(useMC);
 
   fRun->AddTask(D0selection);

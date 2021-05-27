@@ -10,9 +10,11 @@
 #define CBMNICACOMPRESSION_H_
 
 #include "FairTask.h"
+
+#include "TClonesArray.h"
+
 #include "NicaArray.h"
 #include "NicaTrackClones.h"
-#include "TClonesArray.h"
 
 class CbmNicaCompression : public FairTask {
   NicaTrackClones* fStsMatches;

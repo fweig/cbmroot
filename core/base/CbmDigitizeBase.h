@@ -6,14 +6,14 @@
 #ifndef CBMDIGITIZEBASE_H
 #define CBMDIGITIZEBASE_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Bool_t, Double_t, Int_t, kTRUE, ULong64_t
+#include "CbmDefs.h"  // for ECbmModuleId
 
 #include <FairTask.h>  // for FairTask
 
-#include <string>  // for string
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Bool_t, Double_t, Int_t, kTRUE, ULong64_t
 
-#include "CbmDefs.h"  // for ECbmModuleId
+#include <string>  // for string
 class CbmTimeSlice;
 
 /** @class CbmDigitizeBase
@@ -65,8 +65,7 @@ public:
      ** This method allows the digitizer to implement additional functionality
      ** than writing digis and match objects. It will be called from CbmDaq.
      **/
-  virtual void FillCustomData(Double_t /*fillTime*/, Bool_t /*limit*/ = kTRUE) {
-  }
+  virtual void FillCustomData(Double_t /*fillTime*/, Bool_t /*limit*/ = kTRUE) {}
 
 
   /** @brief Fill data into the current time slice

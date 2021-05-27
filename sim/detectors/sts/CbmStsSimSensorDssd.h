@@ -8,6 +8,7 @@
 
 
 #include "CbmStsSimSensor.h"
+
 #include <TArrayD.h>
 
 
@@ -128,8 +129,7 @@ protected:
      ** This method defines the mapping of the sensor strips to the
      ** readout channels in the module.
      **/
-  virtual Int_t
-  GetModuleChannel(Int_t strip, Int_t side, Int_t sensorId) const = 0;
+  virtual Int_t GetModuleChannel(Int_t strip, Int_t side, Int_t sensorId) const = 0;
 
 
   /** Check whether a point (x,y) is inside the active area.
@@ -178,12 +178,7 @@ protected:
      ** @param side    0 = front (n) side; 1 = back (p) side
      ** @param sensor  Pointer to sensor object
      **/
-  virtual void PropagateCharge(Double_t x,
-                               Double_t y,
-                               Double_t z,
-                               Double_t charge,
-                               Double_t bY,
-                               Int_t side) = 0;
+  virtual void PropagateCharge(Double_t x, Double_t y, Double_t z, Double_t charge, Double_t bY, Int_t side) = 0;
 
 
   /** @brief Register the produced charge in one strip to the module
@@ -195,8 +190,7 @@ protected:
      ** The charge in one strip resulting from the analogue response
      ** simulation is registered to the read-out chip (module).
      **/
-  void
-  RegisterCharge(Int_t side, Int_t strip, Double_t charge, Double_t time) const;
+  void RegisterCharge(Int_t side, Int_t strip, Double_t charge, Double_t time) const;
 
 
   ClassDef(CbmStsSimSensorDssd, 1);

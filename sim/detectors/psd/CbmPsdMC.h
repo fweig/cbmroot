@@ -10,6 +10,7 @@
 
 #include "FairDetector.h"
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
 #include "TLorentzVector.h"
 #include "TString.h"
@@ -47,9 +48,9 @@ public:
    ** The decision is based on the volume name (has to contain "scint").
    ** Virtual from FairModule.
    **/
-  virtual Bool_t CheckIfSensitive(std::string name) {
-    return (TString(name).Contains("scint", TString::kIgnoreCase) ? kTRUE
-                                                                  : kFALSE);
+  virtual Bool_t CheckIfSensitive(std::string name)
+  {
+    return (TString(name).Contains("scint", TString::kIgnoreCase) ? kTRUE : kFALSE);
   }
 
 
@@ -76,9 +77,7 @@ public:
    ** @param iColl Number of collection. Must be zero, since there is only one.
    ** @value Pointer to TClonesArray with CbmPsdPoints
    **/
-  virtual TClonesArray* GetCollection(Int_t iColl) const {
-    return (iColl ? nullptr : fPsdPoints);
-  }
+  virtual TClonesArray* GetCollection(Int_t iColl) const { return (iColl ? nullptr : fPsdPoints); }
 
 
   /** @brief Screen log
@@ -104,10 +103,7 @@ public:
    **
    ** Abstract from FairDetector.
    **/
-  virtual void Register() {
-    FairRootManager::Instance()->Register(
-      "PsdPoint", GetName(), fPsdPoints, kTRUE);
-  }
+  virtual void Register() { FairRootManager::Instance()->Register("PsdPoint", GetName(), fPsdPoints, kTRUE); }
 
 
   /** @brief Clear output array
@@ -126,7 +122,8 @@ public:
    ** the geometry file will be overridden with a translation by
    ** (xPos, 0, zPos) and a rotation around the y axis by rotY degrees.
    **/
-  void SetPosition(Double_t xPos, Double_t zPos, Double_t rotY) {
+  void SetPosition(Double_t xPos, Double_t zPos, Double_t rotY)
+  {
     fPosX          = xPos;
     fPosZ          = zPos;
     fRotY          = rotY;

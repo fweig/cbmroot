@@ -7,7 +7,8 @@
 /*
  * \brief Enumeration for different sources.
  */
-enum CbmAnaJpsiSourceTypes {
+enum CbmAnaJpsiSourceTypes
+{
   kJpsiSignal = 0,
   kJpsiBg     = 1,
   kJpsiPi0    = 2,
@@ -17,7 +18,8 @@ enum CbmAnaJpsiSourceTypes {
 /*
  * \brief Enumeration for analysis steps.
  */
-enum CbmAnaJpsiAnalysisSteps {
+enum CbmAnaJpsiAnalysisSteps
+{
   kJpsiMc       = 0,
   kJpsiAcc      = 1,
   kJpsiReco     = 2,

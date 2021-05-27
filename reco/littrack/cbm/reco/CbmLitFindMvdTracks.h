@@ -8,9 +8,10 @@
 #ifndef CBMLITFINDMVDTRACKS_H_
 #define CBMLITFINDMVDTRACKS_H_
 
-#include "FairTask.h"
 #include "base/CbmLitPtrTypes.h"
 #include "data/CbmLitHit.h"
+
+#include "FairTask.h"
 
 class CbmEvent;
 

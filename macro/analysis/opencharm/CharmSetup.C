@@ -1,4 +1,5 @@
-void CharmSetup() {
+void CharmSetup()
+{
   // Input Parameter
   input    = "nini";
   inputGEV = "15gev";

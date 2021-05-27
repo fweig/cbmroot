@@ -23,20 +23,23 @@
 //    Use $ROOTSYS/bin/hadd to merge many histogram files
 
 
-#include "Riostream.h"
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TKey.h"
 #include "TTree.h"
+
 #include <string.h>
+
+#include "Riostream.h"
 
 TList* FileList;
 TFile* Target;
 
 void MergeHistos(TDirectory* target, TList* sourcelist);
 
-void Merge(TString outfilename = "result.root") {
+void Merge(TString outfilename = "result.root")
+{
   // in an interactive ROOT session, edit the file names
   // Target and FileList, then
   // root > .L hadd.C
@@ -97,11 +100,11 @@ void Merge(TString outfilename = "result.root") {
       //cout << "       " << filename;
       TFile test = TFile(filename, "READ");
       if (test.IsOpen()) {
-        cout << "                         file " << filename
-             << ": added to TList" << endl;
+        cout << "                         file " << filename << ": added to TList" << endl;
         FileList->Add(TFile::Open(filename));
         test.Close();
-      } else {
+      }
+      else {
         //cout << ": not found!" << endl;
       }
     }
@@ -109,7 +112,8 @@ void Merge(TString outfilename = "result.root") {
 
   MergeHistos(Target, FileList);
 }
-void MergeHistos(TDirectory* target, TList* sourcelist) {
+void MergeHistos(TDirectory* target, TList* sourcelist)
+{
 
 
   cout << "Target path: " << target->GetPath() << endl;
@@ -151,19 +155,20 @@ void MergeHistos(TDirectory* target, TList* sourcelist) {
         //cout << "     File: " << nextsource->GetName() << endl;
         // make sure we are at the correct directory level by cd'ing to path
         nextsource->cd(path);
-        TKey* key2 =
-          (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
+        TKey* key2 = (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
         if (key2) {
           TH1* h2 = (TH1*) key2->ReadObj();
           h1->Add(h2);
           delete h2;
-        } else {
+        }
+        else {
           // damaged file
         }
 
         nextsource = (TFile*) sourcelist->After(nextsource);
       }
-    } else if (obj->IsA()->InheritsFrom(TTree::Class())) {
+    }
+    else if (obj->IsA()->InheritsFrom(TTree::Class())) {
       /*
       // loop over all source files create a chain of Trees "globChain"
       const char* obj_name= obj->GetName();
@@ -179,7 +184,8 @@ void MergeHistos(TDirectory* target, TList* sourcelist) {
       nextsource = (TFile*)sourcelist->After( nextsource );
       }
       */
-    } else if (obj->IsA()->InheritsFrom(TDirectory::Class())) {
+    }
+    else if (obj->IsA()->InheritsFrom(TDirectory::Class())) {
       // it's a subdirectory
 
       cout << "Found subdirectory " << obj->GetName() << endl;
@@ -192,12 +198,11 @@ void MergeHistos(TDirectory* target, TList* sourcelist) {
       // newdir still knows its depth within the target file via
       // GetPath(), so we can still figure out where we are in the recursion
       MergeHistos(newdir, sourcelist);
-
-    } else {
+    }
+    else {
 
       // object is of no type that we know or can handle
-      cout << "Unknown object type, name: " << obj->GetName()
-           << " title: " << obj->GetTitle() << endl;
+      cout << "Unknown object type, name: " << obj->GetName() << " title: " << obj->GetTitle() << endl;
     }
 
     // now write the merged histogram (which is "in" obj) to the target file

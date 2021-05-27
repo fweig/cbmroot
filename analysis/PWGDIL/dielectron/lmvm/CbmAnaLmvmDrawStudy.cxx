@@ -10,12 +10,6 @@
 #include "CbmHistManager.h"
 #include "CbmUtils.h"
 
-#include <iomanip>
-#include <iostream>
-#include <string>
-
-#include <boost/assign/list_of.hpp>
-
 #include "TCanvas.h"
 #include "TClass.h"
 #include "TEllipse.h"
@@ -31,15 +25,20 @@
 #include "TText.h"
 #include <TLegend.h>
 
+#include <boost/assign/list_of.hpp>
+
+#include <iomanip>
+#include <iostream>
+#include <string>
+
 using namespace std;
 using namespace Cbm;
 using boost::assign::list_of;
 
 
-void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames,
-                                       const vector<string>& fileNamesMean,
-                                       const vector<string>& studyNames,
-                                       const string& outputDir) {
+void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames, const vector<string>& fileNamesMean,
+                                       const vector<string>& studyNames, const string& outputDir)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -84,20 +83,15 @@ void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames,
   gDirectory = oldDir;
 }
 
-TCanvas* CbmAnaLmvmDrawStudy::CreateCanvas(const string& name,
-                                           const string& title,
-                                           int width,
-                                           int height) {
+TCanvas* CbmAnaLmvmDrawStudy::CreateCanvas(const string& name, const string& title, int width, int height)
+{
   TCanvas* c = new TCanvas(name.c_str(), title.c_str(), width, height);
   fCanvas.push_back(c);
   return c;
 }
 
-void CbmAnaLmvmDrawStudy::DrawTextOnHist(const string& text,
-                                         Double_t x1,
-                                         Double_t y1,
-                                         Double_t x2,
-                                         Double_t y2) {
+void CbmAnaLmvmDrawStudy::DrawTextOnHist(const string& text, Double_t x1, Double_t y1, Double_t x2, Double_t y2)
+{
   TLegend* leg = new TLegend(x1, y1, x2, y2);
   leg->AddEntry(new TH2D(), text.c_str(), "");
   leg->SetFillColor(kWhite);
@@ -106,29 +100,27 @@ void CbmAnaLmvmDrawStudy::DrawTextOnHist(const string& text,
   leg->Draw();
 }
 
-TH1D* CbmAnaLmvmDrawStudy::H1(int studyNum, const string& name) {
-  return (TH1D*) fHM[studyNum]->H1(name);
-}
+TH1D* CbmAnaLmvmDrawStudy::H1(int studyNum, const string& name) { return (TH1D*) fHM[studyNum]->H1(name); }
 
-TH2D* CbmAnaLmvmDrawStudy::H2(int studyNum, const string& name) {
-  return (TH2D*) fHM[studyNum]->H1(name);
-}
+TH2D* CbmAnaLmvmDrawStudy::H2(int studyNum, const string& name) { return (TH2D*) fHM[studyNum]->H1(name); }
 
-void CbmAnaLmvmDrawStudy::SaveCanvasToImage() {
+void CbmAnaLmvmDrawStudy::SaveCanvasToImage()
+{
   for (unsigned int i = 0; i < fCanvas.size(); i++) {
     Cbm::SaveCanvasAsImage(fCanvas[i], fOutputDir);
   }
 }
 
-void CbmAnaLmvmDrawStudy::SetAnalysisStepLabels(TH1* h) {
+void CbmAnaLmvmDrawStudy::SetAnalysisStepLabels(TH1* h)
+{
   h->GetXaxis()->SetLabelSize(0.06);
   for (Int_t step = 0; step < CbmLmvmHist::fNofAnaSteps; step++) {
-    h->GetXaxis()->SetBinLabel(step + 1,
-                               CbmLmvmHist::fAnaStepsLatex[step].c_str());
+    h->GetXaxis()->SetBinLabel(step + 1, CbmLmvmHist::fAnaStepsLatex[step].c_str());
   }
 }
 
-void CbmAnaLmvmDrawStudy::DrawMinv() {
+void CbmAnaLmvmDrawStudy::DrawMinv()
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -148,12 +140,10 @@ void CbmAnaLmvmDrawStudy::DrawMinv() {
     hPtCut[i]->SetMinimum(1e-6);
     //f->Close();
   }
-  CreateCanvas(
-    "lmvm_study_minv_bg_ttcut", "lmvm_study_minv_bg_ttcut", 600, 600);
+  CreateCanvas("lmvm_study_minv_bg_ttcut", "lmvm_study_minv_bg_ttcut", 600, 600);
   DrawH1(hTtCut, fStudyNames, kLinear, kLog, true, 0.70, 0.55, 0.99, 0.99, "");
 
-  CreateCanvas(
-    "lmvm_study_minv_bg_ptcut", "lmvm_study_minv_bg_ptcut", 600, 600);
+  CreateCanvas("lmvm_study_minv_bg_ptcut", "lmvm_study_minv_bg_ptcut", 600, 600);
   DrawH1(hPtCut, fStudyNames, kLinear, kLog, true, 0.70, 0.55, 0.99, 0.99, "");
 
 
@@ -178,9 +168,9 @@ void CbmAnaLmvmDrawStudy::DrawMinv() {
   gDirectory = oldDir;
 }
 
-void CbmAnaLmvmDrawStudy::DrawNofBgTracks() {
-  CreateCanvas(
-    "lmvm_study_nof_bg_tracks", "lmvm_study_nof_bg_tracks", 600, 600);
+void CbmAnaLmvmDrawStudy::DrawNofBgTracks()
+{
+  CreateCanvas("lmvm_study_nof_bg_tracks", "lmvm_study_nof_bg_tracks", 600, 600);
   vector<TH1*> hbg;
   hbg.resize(fNofStudies);
   for (int i = 0; i < fNofStudies; i++) {
@@ -197,9 +187,9 @@ void CbmAnaLmvmDrawStudy::DrawNofBgTracks() {
   }
 }
 
-void CbmAnaLmvmDrawStudy::DrawBgSourceTracks() {
-  TCanvas* c = CreateCanvas(
-    "lmvm_study_source_tracks_abs", "lmvm_study_source_tracks_abs", 1200, 400);
+void CbmAnaLmvmDrawStudy::DrawBgSourceTracks()
+{
+  TCanvas* c = CreateCanvas("lmvm_study_source_tracks_abs", "lmvm_study_source_tracks_abs", 1200, 400);
   c->Divide(3, 1);
   for (int iP = 0; iP < 3; iP++) {
     c->cd(iP + 1);
@@ -217,8 +207,7 @@ void CbmAnaLmvmDrawStudy::DrawBgSourceTracks() {
       habsPx[i]->GetYaxis()->SetTitle("Tracks per event x10^{-2}");
       habsPx[i]->Scale(100);
     }
-    DrawH1(
-      habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
+    DrawH1(habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
     SetAnalysisStepLabels(habsPx[0]);
     for (int i = 0; i < fNofStudies; i++) {
       habsPx[i]->SetMinimum(0.);
@@ -231,9 +220,9 @@ void CbmAnaLmvmDrawStudy::DrawBgSourceTracks() {
   }
 }
 
-void CbmAnaLmvmDrawStudy::DrawBgSourcePairs() {
-  TCanvas* c = CreateCanvas(
-    "lmvm_study_source_pairs_abs", "lmvm_study_source_pairs_abs", 1200, 800);
+void CbmAnaLmvmDrawStudy::DrawBgSourcePairs()
+{
+  TCanvas* c = CreateCanvas("lmvm_study_source_pairs_abs", "lmvm_study_source_pairs_abs", 1200, 800);
   c->Divide(3, 2);
   for (int iP = 0; iP < 6; iP++) {
     c->cd(iP + 1);
@@ -250,8 +239,7 @@ void CbmAnaLmvmDrawStudy::DrawBgSourcePairs() {
       habsPx[i]->GetYaxis()->SetTitle("Pairs per event x10^{-3}");
       habsPx[i]->Scale(1000);
     }
-    DrawH1(
-      habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
+    DrawH1(habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
     SetAnalysisStepLabels(habsPx[0]);
     for (int i = 0; i < fNofStudies; i++) {
       habsPx[i]->SetMinimum(0.);
@@ -264,7 +252,8 @@ void CbmAnaLmvmDrawStudy::DrawBgSourcePairs() {
   DrawBgSourcePairsStep(kTtCut);
 }
 
-void CbmAnaLmvmDrawStudy::DrawBgSourcePairsStep(int step) {
+void CbmAnaLmvmDrawStudy::DrawBgSourcePairsStep(int step)
+{
   stringstream ssC;
   ssC << "lmvm_study_source_pairs_" << CbmLmvmHist::fAnaSteps[step];
   CreateCanvas(ssC.str().c_str(), ssC.str().c_str(), 600, 600);
@@ -278,29 +267,23 @@ void CbmAnaLmvmDrawStudy::DrawBgSourcePairsStep(int step) {
     habsPx[i]->GetYaxis()->SetTitle("Pairs per event x10^{-3}");
     habsPx[i]->Scale(1000);
   }
-  DrawH1(
-    habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
+  DrawH1(habsPx, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
   for (int i = 0; i < fNofStudies; i++) {
     habsPx[i]->SetMinimum(0.);
     habsPx[i]->SetLineWidth(3.);
     for (UInt_t y = 1; y <= CbmLmvmHist::fBgPairSourceLatex.size(); y++) {
-      habsPx[i]->GetXaxis()->SetBinLabel(
-        y, CbmLmvmHist::fBgPairSourceLatex[y - 1].c_str());
+      habsPx[i]->GetXaxis()->SetBinLabel(y, CbmLmvmHist::fBgPairSourceLatex[y - 1].c_str());
     }
   }
 }
 
-void CbmAnaLmvmDrawStudy::DrawDistributions(const string& canvasName,
-                                            const string& histName,
-                                            int step,
-                                            int sourceType) {
+void CbmAnaLmvmDrawStudy::DrawDistributions(const string& canvasName, const string& histName, int step, int sourceType)
+{
   stringstream ssC;
-  ssC << canvasName << CbmLmvmHist::fAnaSteps[step] << "_"
-      << CbmLmvmHist::fSourceTypes[sourceType];
+  ssC << canvasName << CbmLmvmHist::fAnaSteps[step] << "_" << CbmLmvmHist::fSourceTypes[sourceType];
   CreateCanvas(ssC.str().c_str(), ssC.str().c_str(), 900, 900);
 
-  string s = histName + CbmLmvmHist::fAnaSteps[step] + "_"
-             + CbmLmvmHist::fSourceTypes[sourceType];
+  string s = histName + CbmLmvmHist::fAnaSteps[step] + "_" + CbmLmvmHist::fSourceTypes[sourceType];
   vector<TH1*> h;
   h.resize(fNofStudies);
   for (int i = 0; i < fNofStudies; i++) {
@@ -310,9 +293,9 @@ void CbmAnaLmvmDrawStudy::DrawDistributions(const string& canvasName,
   DrawH1(h, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
 }
 
-void CbmAnaLmvmDrawStudy::DrawBgSourceMinv() {
-  TCanvas* c = CreateCanvas(
-    "lmvm_study_source_minv_ptcut", "lmvm_study_source_minv_ptcut", 1200, 800);
+void CbmAnaLmvmDrawStudy::DrawBgSourceMinv()
+{
+  TCanvas* c = CreateCanvas("lmvm_study_source_minv_ptcut", "lmvm_study_source_minv_ptcut", 1200, 800);
   c->Divide(3, 2);
   for (int iP = 0; iP < CbmLmvmHist::fNofBgPairSources; iP++) {
     stringstream ss;
@@ -324,8 +307,7 @@ void CbmAnaLmvmDrawStudy::DrawBgSourceMinv() {
       habs[i] = (TH1D*) H1(i, ss.str())->Clone();
       habs[i]->Rebin(40);
     }
-    DrawH1(
-      habs, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
+    DrawH1(habs, fStudyNames, kLinear, kLinear, true, 0.70, 0.75, 0.99, 0.99, "");
     for (int i = 0; i < fNofStudies; i++) {
       habs[i]->SetMinimum(0.);
       habs[i]->SetLineWidth(3.);

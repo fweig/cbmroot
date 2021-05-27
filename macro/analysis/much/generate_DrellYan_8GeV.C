@@ -25,9 +25,8 @@ void DrellYan_SIS100()
 
   const double mp = 0.938, mmu = 0.106;
 
-  double Eb = 8;  // Speciy the beam energy in the lab frame
-  double Ecm =
-    sqrt(2. * mp * mp + 2. * mp * Eb);  //Get cm energy of the collision
+  double Eb  = 8;                                  // Speciy the beam energy in the lab frame
+  double Ecm = sqrt(2. * mp * mp + 2. * mp * Eb);  //Get cm energy of the collision
 
   double pbeam    = TMath::Sqrt(Eb * Eb - mp * mp);  // beam momentum
   double beta_CM  = pbeam / (Eb + mp);
@@ -58,11 +57,9 @@ void DrellYan_SIS100()
     TF1* f2 = new TF1("f2",
                       "x*TMath::Sqrt(x*x+[1]*[1])*TMath::BesselK1([0]*TMath::"
                       "Sqrt(x*x+[1]*[1]))",
-                      0.0,
-                      5.0);
+                      0.0, 5.0);
 
-    f2->SetParameter(
-      0, 7.69);  //6.67 corresponds to 150 MeV 5.88 to 170 MeV 7.69 to 130 MeV
+    f2->SetParameter(0, 7.69);  //6.67 corresponds to 150 MeV 5.88 to 170 MeV 7.69 to 130 MeV
     f2->SetParameter(1, mass);
 
     double pT = f2->GetRandom();
@@ -107,12 +104,11 @@ void DrellYan_SIS100()
 
 
     // Decay the mother particle in its rest frame
-    Double_t pDecay =
-      0.5 * TMath::Sqrt(mass * mass - 4. * mmu * mmu);  // Decay momentum
-    Double_t px1 = pDecay * TMath::Sin(theta) * TMath::Cos(phi);
-    Double_t py1 = pDecay * TMath::Sin(theta) * TMath::Sin(phi);
-    Double_t pz1 = pDecay * TMath::Cos(theta);
-    Double_t e1  = TMath::Sqrt(px1 * px1 + py1 * py1 + pz1 * pz1 + mmu * mmu);
+    Double_t pDecay = 0.5 * TMath::Sqrt(mass * mass - 4. * mmu * mmu);  // Decay momentum
+    Double_t px1    = pDecay * TMath::Sin(theta) * TMath::Cos(phi);
+    Double_t py1    = pDecay * TMath::Sin(theta) * TMath::Sin(phi);
+    Double_t pz1    = pDecay * TMath::Cos(theta);
+    Double_t e1     = TMath::Sqrt(px1 * px1 + py1 * py1 + pz1 * pz1 + mmu * mmu);
 
     //p1, p2 are 4-momentum of the two muons
     TLorentzVector p1(px1, py1, pz1, e1);
@@ -131,10 +127,8 @@ void DrellYan_SIS100()
 
 
     TLorentzRotation lt(
-      pxcm / E,
-      pycm / E,
-      pz
-        / E);  //Define Lorentz matix for the decay muons to boost tehm from mother rest frame to lab frame
+      pxcm / E, pycm / E,
+      pz / E);  //Define Lorentz matix for the decay muons to boost tehm from mother rest frame to lab frame
 
     p1 = lt * p1;  //L.T to lab frame
     p2 = lt * p2;  //L.Tto lab frame

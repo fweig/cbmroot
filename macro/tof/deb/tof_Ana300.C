@@ -1,4 +1,5 @@
-tof_Ana300(Int_t nEvents = 1000, Int_t iout = 0) {
+tof_Ana300(Int_t nEvents = 1000, Int_t iout = 0)
+{
 
   TString InputFile = "data/mc.0000.root";
   TString ParFile   = "data/param.0000.root";

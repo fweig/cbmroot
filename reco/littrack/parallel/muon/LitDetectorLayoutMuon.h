@@ -14,12 +14,14 @@
 #ifndef LITDETECTORLAYOUTMUON_H_
 #define LITDETECTORLAYOUTMUON_H_
 
-#include "LitStationGroupMuon.h"
-
 #include <vector>
 
-namespace lit {
-  namespace parallel {
+#include "LitStationGroupMuon.h"
+
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitDetectorLayoutMuon
@@ -44,24 +46,21 @@ namespace lit {
     * \brief Add station group to the layout.
     * \param stationGroup Station group to be added.
     */
-      void AddStationGroup(const LitStationGroupMuon<T>& stationGroup) {
-        fStationGroups.push_back(stationGroup);
-      }
+      void AddStationGroup(const LitStationGroupMuon<T>& stationGroup) { fStationGroups.push_back(stationGroup); }
 
       /**
     * \brief Return number of station groups.
     * \return Number of station groups.
     */
-      unsigned char GetNofStationGroups() const {
-        return fStationGroups.size();
-      }
+      unsigned char GetNofStationGroups() const { return fStationGroups.size(); }
 
       /**
     * \brief Return number of stations for specified station group.
     * \param[in] stationGroup Station group index.
     * \return Number of stations for specified station group.
     */
-      unsigned char GetNofStations(unsigned char stationGroup) const {
+      unsigned char GetNofStations(unsigned char stationGroup) const
+      {
         return fStationGroups[stationGroup].GetNofStations();
       }
 
@@ -71,11 +70,9 @@ namespace lit {
     * \param[in] station Station index.
     * \return Number of substations for specified station group and station.
     */
-      unsigned char GetNofSubstations(unsigned char stationGroup,
-                                      unsigned char station) const {
-        return fStationGroups[stationGroup]
-          .GetStation(station)
-          .GetNofSubstations();
+      unsigned char GetNofSubstations(unsigned char stationGroup, unsigned char station) const
+      {
+        return fStationGroups[stationGroup].GetStation(station).GetNofSubstations();
       }
 
       /**
@@ -83,8 +80,8 @@ namespace lit {
     * \param[in] stationGroup Station group index.
     * \return Station group for specified station group index.
     */
-      const LitStationGroupMuon<T>&
-      GetStationGroup(unsigned char stationGroup) const {
+      const LitStationGroupMuon<T>& GetStationGroup(unsigned char stationGroup) const
+      {
         return fStationGroups[stationGroup];
       }
 
@@ -94,8 +91,8 @@ namespace lit {
     * \param[in] station Station index.
     * \return Station for specified station group and station indices.
     */
-      const LitStationMuon<T>& GetStation(unsigned char stationGroup,
-                                          unsigned char station) const {
+      const LitStationMuon<T>& GetStation(unsigned char stationGroup, unsigned char station) const
+      {
         return fStationGroups[stationGroup].GetStation(station);
       }
 
@@ -106,25 +103,22 @@ namespace lit {
     * \param[in] substation Substation index.
     * \return[in] Substation for specified station group, station and substation indices.
     */
-      const LitSubstationMuon<T>&
-      GetSubstation(unsigned char stationGroup,
-                    unsigned char station,
-                    unsigned char substation) const {
-        return fStationGroups[stationGroup].GetStation(station).GetSubstation(
-          substation);
+      const LitSubstationMuon<T>& GetSubstation(unsigned char stationGroup, unsigned char station,
+                                                unsigned char substation) const
+      {
+        return fStationGroups[stationGroup].GetStation(station).GetSubstation(substation);
       }
 
       /**
     * \brief Return std::string representation of the class.
     * \return std::string representation of the class.
     */
-      std::string ToString() const {
+      std::string ToString() const
+      {
         std::string str =
-          "LitDetectorLayoutMuon: nofStationGroups="
-          + lit::parallel::ToString<int>((int) GetNofStationGroups()) + "\n";
+          "LitDetectorLayoutMuon: nofStationGroups=" + lit::parallel::ToString<int>((int) GetNofStationGroups()) + "\n";
         for (unsigned char i = 0; i < GetNofStationGroups(); i++) {
-          str += lit::parallel::ToString<int>((int) i) + " "
-                 + GetStationGroup(i).ToString();
+          str += lit::parallel::ToString<int>((int) i) + " " + GetStationGroup(i).ToString();
         }
         return str;
       }
@@ -133,15 +127,14 @@ namespace lit {
     * \brief Operator << for convenient output to std::ostream.
     * \return std::ostream for continuous output.
     */
-      friend std::ostream& operator<<(std::ostream& strm,
-                                      const LitDetectorLayoutMuon& layout) {
+      friend std::ostream& operator<<(std::ostream& strm, const LitDetectorLayoutMuon& layout)
+      {
         strm << layout.ToString();
         return strm;
       }
 
     private:
-      std::vector<LitStationGroupMuon<T>>
-        fStationGroups;  // Array of station groups
+      std::vector<LitStationGroupMuon<T>> fStationGroups;  // Array of station groups
     } _fvecalignment;
 
     /* Some typedefs for convenience */

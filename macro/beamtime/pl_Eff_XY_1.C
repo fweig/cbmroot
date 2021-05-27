@@ -1,8 +1,6 @@
-void pl_Eff_XY_1(Int_t iDut       = 910,
-                 Double_t dEffMin = 0.5,
-                 Double_t dEffMax = 1.,
-                 Double_t dThr    = 0.01,
-                 TString sysinfo  = "") {
+void pl_Eff_XY_1(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., Double_t dThr = 0.01,
+                 TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -43,10 +41,9 @@ void pl_Eff_XY_1(Int_t iDut       = 910,
     Int_t Nbins   = h2->GetNbinsX() * h2->GetNbinsY();
     Double_t dMax = dThr * h2->GetMaximum();
     for (Int_t i = 0; i < Nbins; i++)
-      h2->GetBinContent(i + 1) < dMax ? h2acc->SetBinContent(i + 1, 0.)
-                                      : h2acc->SetBinContent(i + 1, 1.);
-
-  } else {
+      h2->GetBinContent(i + 1) < dMax ? h2acc->SetBinContent(i + 1, 0.) : h2acc->SetBinContent(i + 1, 1.);
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -56,7 +53,8 @@ void pl_Eff_XY_1(Int_t iDut       = 910,
   if (h2 != NULL) {
     h2m = (TH2*) h2->Clone();
     h2m->Draw("colz");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -84,14 +82,10 @@ void pl_Eff_XY_1(Int_t iDut       = 910,
   h2Eff->SetMaximum(dEffMax);
 
   Double_t dEff = Nfound / (Nfound + Nmissed);
-  cout << Form("Average efficiency of Dut in acceptance: with thr %5.2f: %6.3f",
-               dThr,
-               dEff)
-       << endl;
+  cout << Form("Average efficiency of Dut in acceptance: with thr %5.2f: %6.3f", dThr, dEff) << endl;
 
   can->cd(4);
-  TPaveLabel* tit = new TPaveLabel(
-    0.1, 0.1, 0.9, 0.9, Form(" average efficiency of %03d: %5.3f", iDut, dEff));
+  TPaveLabel* tit = new TPaveLabel(0.1, 0.1, 0.9, 0.9, Form(" average efficiency of %03d: %5.3f", iDut, dEff));
   tit->SetFillColor(0);
   tit->SetTextFont(52);
   tit->SetBorderSize(0);

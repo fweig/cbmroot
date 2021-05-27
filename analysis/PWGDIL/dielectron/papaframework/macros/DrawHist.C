@@ -17,16 +17,16 @@
 /// \date Jun 08, 2015
 ///
 
-void DrawHist(TString fin = "./data/sis100_electron_TRDdigi.analysis.root") {
+void DrawHist(TString fin = "./data/sis100_electron_TRDdigi.analysis.root")
+{
   ///
   /// Draw histograms - Example macro (2 ways)
   ///
 
   /// files sed for QA trending
   const Int_t nfiles       = 2;
-  TString fileList[nfiles] = {
-    "./data/sis100_electron_TRDdigi.analysis.root",
-    "./data/sis100_electron_TRDclustering.analysis.root"};
+  TString fileList[nfiles] = {"./data/sis100_electron_TRDdigi.analysis.root",
+                              "./data/sis100_electron_TRDclustering.analysis.root"};
 
   ///  gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
   gErrorIgnoreLevel = kError;

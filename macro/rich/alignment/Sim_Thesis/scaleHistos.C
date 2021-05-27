@@ -1,42 +1,28 @@
 #include "TH3D.h"
+
 #include <string>
 
 int Counter   = 0;
 int flagHisto = 0;
 TH3D* LoadHisto(TString rootPath, TString histoName, TString dirName);
 void HistosQa(TH3D* h1, TH3D* h2, TH3D* h3);
-void HistosUpAndDown(TH3D* h1,
-                     TH3D* h2,
-                     TH3D* h3,
-                     TH3D* h4,
-                     TH3D* h5,
-                     TH3D* h6,
-                     Double_t range);
-void DrawRefHistos(TH2D* h1,
-                   TH2D* h2,
-                   TH2D* h3,
-                   TH2D* h4,
-                   TH2D* h5,
-                   TH2D* h6,
-                   TString str);
+void HistosUpAndDown(TH3D* h1, TH3D* h2, TH3D* h3, TH3D* h4, TH3D* h5, TH3D* h6, Double_t range);
+void DrawRefHistos(TH2D* h1, TH2D* h2, TH2D* h3, TH2D* h4, TH2D* h5, TH2D* h6, TString str);
 void Resize(TH2D* h1, TString str);
 void DrawDivide(TH2D* h1, TH2D* h2, TH2D* h3, TString str);
-TH2D* DrawH3Profile(TH3* h,
-                    Bool_t drawMean,
-                    Bool_t doGaussFit,
-                    Double_t zMin,
-                    Double_t zMax,
-                    Bool_t drawOpt);
+TH2D* DrawH3Profile(TH3* h, Bool_t drawMean, Bool_t doGaussFit, Double_t zMin, Double_t zMax, Bool_t drawOpt);
 void ShiftHisto(TH2D* h1);
 
-void scaleHistos() {
+void scaleHistos()
+{
   flagHisto = 3;
   TH3D *h1, *h2, *h3, *h4, *h5, *h6;
   TString dirName = "", histoName = "", histoNameUp = "", histoNameDown = "";
   if (flagHisto == 1) {
     dirName   = "HistosQa";
     histoName = "fhRingTrackDistVsXYTruematchPrimel";
-  } else if (flagHisto == 2 || flagHisto == 3) {
+  }
+  else if (flagHisto == 2 || flagHisto == 3) {
     dirName       = "HistosUpAndDown";
     histoNameUp   = "fhRingTrackDistVsXYHalfUpTruematchPrimel";
     histoNameDown = "fhRingTrackDistVsXYHalfDownTruematchPrimel";
@@ -54,7 +40,8 @@ void scaleHistos() {
     h2 = LoadHisto(rootPath2, histoName, dirName);
     h3 = LoadHisto(rootPath3, histoName, dirName);
     HistosQa(h1, h2, h3);
-  } else if (flagHisto == 2) {
+  }
+  else if (flagHisto == 2) {
     h1 = LoadHisto(rootPath1, histoNameUp, dirName);
     h2 = LoadHisto(rootPath2, histoNameUp, dirName);
     h3 = LoadHisto(rootPath3, histoNameUp, dirName);
@@ -62,7 +49,8 @@ void scaleHistos() {
     h5 = LoadHisto(rootPath2, histoNameDown, dirName);
     h6 = LoadHisto(rootPath3, histoNameDown, dirName);
     HistosUpAndDown(h1, h2, h3, h4, h5, h6, 1.);
-  } else if (flagHisto == 3) {
+  }
+  else if (flagHisto == 3) {
     h1 = LoadHisto(rootPath1, histoNameUp, dirName);
     h2 = LoadHisto(rootPath4, histoNameUp, dirName);
     h3 = LoadHisto(rootPath5, histoNameUp, dirName);
@@ -73,7 +61,8 @@ void scaleHistos() {
   }
 }
 
-TH3D* LoadHisto(TString rootPath, TString histoName, TString dirName) {
+TH3D* LoadHisto(TString rootPath, TString histoName, TString dirName)
+{
   TH3D* h1;
   TFile* Histograms = new TFile(rootPath, "READ");
   TDirectory* dir   = gFile->GetDirectory(dirName);
@@ -82,7 +71,8 @@ TH3D* LoadHisto(TString rootPath, TString histoName, TString dirName) {
   return (h1);
 }
 
-void HistosQa(TH3D* h1, TH3D* h2, TH3D* h3) {
+void HistosQa(TH3D* h1, TH3D* h2, TH3D* h3)
+{
   Double_t range = 1.;
   TH2D* h4       = (TH2D*) DrawH3Profile(h1, true, false, 0., range, false);
   TH2D* h5       = (TH2D*) DrawH3Profile(h2, true, false, 0., range, false);
@@ -108,13 +98,8 @@ void HistosQa(TH3D* h1, TH3D* h2, TH3D* h3) {
   DrawDivide(h7, h8, h9, "Histos_Down");
 }
 
-void HistosUpAndDown(TH3D* h1,
-                     TH3D* h2,
-                     TH3D* h3,
-                     TH3D* h4,
-                     TH3D* h5,
-                     TH3D* h6,
-                     Double_t range) {
+void HistosUpAndDown(TH3D* h1, TH3D* h2, TH3D* h3, TH3D* h4, TH3D* h5, TH3D* h6, Double_t range)
+{
   TH2D* h13 = (TH2D*) h1->Project3D("yx")->Clone();
   TH2D* h14 = (TH2D*) h2->Project3D("yx")->Clone();
   TH2D* h15 = (TH2D*) h3->Project3D("yx")->Clone();
@@ -145,20 +130,14 @@ void HistosUpAndDown(TH3D* h1,
   DrawDivide(h10, h11, h12, "Histos_Down_After_H3Profile");
 }
 
-void DrawRefHistos(TH2D* h1,
-                   TH2D* h2,
-                   TH2D* h3,
-                   TH2D* h4,
-                   TH2D* h5,
-                   TH2D* h6,
-                   TString str) {
+void DrawRefHistos(TH2D* h1, TH2D* h2, TH2D* h3, TH2D* h4, TH2D* h5, TH2D* h6, TString str)
+{
   stringstream ssName, ssTitle;
   ssName << "c1"
          << "_" << str << "_name";
   ssTitle << "c1"
           << "_" << str << "_title";
-  TCanvas* c1 =
-    new TCanvas(ssName.str().c_str(), ssTitle.str().c_str(), 1800, 900);
+  TCanvas* c1 = new TCanvas(ssName.str().c_str(), ssTitle.str().c_str(), 1800, 900);
   c1->Divide(3, 2);
   c1->cd(1);
   h1->Draw("colz");
@@ -174,23 +153,23 @@ void DrawRefHistos(TH2D* h1,
   h6->Draw("colz");
 }
 
-void Resize(TH2D* h1, TString str) {
-  if (str == "up") {
-    h1->GetYaxis()->SetRangeUser(110., 200.);
-  } else if (str == "down") {
+void Resize(TH2D* h1, TString str)
+{
+  if (str == "up") { h1->GetYaxis()->SetRangeUser(110., 200.); }
+  else if (str == "down") {
     h1->GetYaxis()->SetRangeUser(-200., -110.);
   }
 }
 
-void DrawDivide(TH2D* h1, TH2D* h2, TH2D* h3, TString str) {
+void DrawDivide(TH2D* h1, TH2D* h2, TH2D* h3, TString str)
+{
   stringstream ssName, ssTitle;
   ssName << "c" << Counter << "_" << str << "_name";
   ssTitle << "c" << Counter << "_" << str << "_title";
   TH2D* h4 = (TH2D*) h1->Clone();
   TH2D* h5 = (TH2D*) h1->Clone();
 
-  TCanvas* c =
-    new TCanvas(ssName.str().c_str(), ssTitle.str().c_str(), 1800, 900);
+  TCanvas* c = new TCanvas(ssName.str().c_str(), ssTitle.str().c_str(), 1800, 900);
   c->Divide(3, 2);
   c->cd(1);
   h1->Draw("colz");
@@ -209,12 +188,8 @@ void DrawDivide(TH2D* h1, TH2D* h2, TH2D* h3, TString str) {
   Counter++;
 }
 
-TH2D* DrawH3Profile(TH3* h,
-                    Bool_t drawMean,
-                    Bool_t doGaussFit,
-                    Double_t zMin,
-                    Double_t zMax,
-                    Bool_t drawOpt) {
+TH2D* DrawH3Profile(TH3* h, Bool_t drawMean, Bool_t doGaussFit, Double_t zMin, Double_t zMax, Bool_t drawOpt)
+{
   Int_t nBinsX = h->GetNbinsX();
   Int_t nBinsY = h->GetNbinsY();
   TH2D* h2     = (TH2D*) h->Project3D("yx")->Clone();
@@ -228,10 +203,9 @@ TH2D* DrawH3Profile(TH3* h,
       if (doGaussFit) {
         hz->Fit("gaus", "QO");
         TF1* func = hz->GetFunction("gaus");
-        if (func != NULL) {
-          ms = (drawMean) ? func->GetParameter(1) : func->GetParameter(2);
-        }
-      } else {
+        if (func != NULL) { ms = (drawMean) ? func->GetParameter(1) : func->GetParameter(2); }
+      }
+      else {
         ms = (drawMean) ? hz->GetMean() : hz->GetRMS();
       }
       h2->SetBinContent(x, y, ms);
@@ -250,7 +224,8 @@ TH2D* DrawH3Profile(TH3* h,
   return h2;
 }
 
-void ShiftHisto(TH2D* h1) {
+void ShiftHisto(TH2D* h1)
+{
   Int_t nBinsX   = h1->GetNbinsX();
   Int_t nBinsY   = h1->GetNbinsY();
   Double_t value = 0;
@@ -261,9 +236,7 @@ void ShiftHisto(TH2D* h1) {
       //		h1->SetBinContent(x, y, TMath::Abs(1-value) );
       if (value > 0) {
         if (flagHisto == 2) { h1->SetBinContent(x, y, TMath::Abs(1 - value)); }
-        if (flagHisto == 3) {
-          h1->SetBinContent(x, y, TMath::Abs(2.5 - value));
-        }
+        if (flagHisto == 3) { h1->SetBinContent(x, y, TMath::Abs(2.5 - value)); }
       }
     }
   }

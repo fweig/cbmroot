@@ -7,10 +7,10 @@
 #ifndef CBMTRDSPADIC_H
 #define CBMTRDSPADIC_H
 
+#include "FairTask.h"  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
-
-#include "FairTask.h"  // for FairTask, InitStatus
 
 class CbmTrdDigi;
 class CbmTrdGeoHandler;

@@ -6,9 +6,8 @@
 #ifndef CbmEbEventMatch_H
 #define CbmEbEventMatch_H
 
-#include <vector>
-
 #include <map>
+#include <vector>
 
 using std::map;
 using std::vector;
@@ -17,7 +16,8 @@ class CbmEbEventMatch {
 public:
   CbmEbEventMatch() : fMCEvent(), fNTracks(0), fTracks() {};
   bool IsGhost() { return fMCEvent.size() == 0; }
-  void Clear() {
+  void Clear()
+  {
     fMCEvent.clear();
     fNTracks = 0;
   }

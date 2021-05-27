@@ -14,10 +14,12 @@
 #include "CbmDefs.h"
 #include "CbmDigitize.h"
 #include "CbmTofDigi.h"
+
 #include "TH1.h"
 #include "TH2.h"
 #include "TStopwatch.h"
 #include "TTimeStamp.h"
+
 #include <vector>
 
 class TClonesArray;
@@ -74,21 +76,13 @@ public:
 
   Bool_t SetHistoFileName(TString sFilenameIn = "./tofDigiBdf.hst.root");
 
-  void SetMonitorHistograms(Bool_t bMonitor = kTRUE) {
-    fbMonitorHistos = bMonitor;
-  }
+  void SetMonitorHistograms(Bool_t bMonitor = kTRUE) { fbMonitorHistos = bMonitor; }
 
-  void UseMcTrackMonitoring(Bool_t bMcTrkMonitor = kTRUE) {
-    fbMcTrkMonitor = bMcTrkMonitor;
-  }
+  void UseMcTrackMonitoring(Bool_t bMcTrkMonitor = kTRUE) { fbMcTrkMonitor = bMcTrkMonitor; }
 
-  void AllowPointsWithoutTrack(Bool_t bAllow = kTRUE) {
-    fbAllowPointsWithoutTrack = bAllow;
-  }
+  void AllowPointsWithoutTrack(Bool_t bAllow = kTRUE) { fbAllowPointsWithoutTrack = bAllow; }
 
-  inline void SetDigiTimeConvFactor(Double_t dfac) {
-    fdDigiTimeConvFactor = dfac;
-  }
+  inline void SetDigiTimeConvFactor(Double_t dfac) { fdDigiTimeConvFactor = dfac; }
 
 
 private:
@@ -161,9 +155,7 @@ private:
   /**
        ** @brief Compute geometrical intersection area of a cluster and a channel
        **/
-  Double_t ComputeClusterAreaOnChannel(Int_t iChanId,
-                                       Double_t dClustRadius,
-                                       Double_t dClustCentX,
+  Double_t ComputeClusterAreaOnChannel(Int_t iChanId, Double_t dClustRadius, Double_t dClustCentX,
                                        Double_t dClustCentY);
 
   // Functions for a 2D Gauss cluster approximation
@@ -181,12 +173,7 @@ private:
   /**
        ** @brief Compute triangle area from its corners
        **/
-  Double_t TriangleArea(Double_t dXa,
-                        Double_t dYa,
-                        Double_t dXb,
-                        Double_t dYb,
-                        Double_t dXc,
-                        Double_t dYc);
+  Double_t TriangleArea(Double_t dXa, Double_t dYa, Double_t dXb, Double_t dYb, Double_t dXc, Double_t dYc);
   /**
        ** @brief Compute area of a disc section from the disc radius and the distance of the
        ** @brief section base to the disc center
@@ -199,10 +186,7 @@ private:
        ** @brief => Please check/insure before that it is the case!
        ** @brief Returns 0 if no intersection (neg. root) or 2 intersections
        **/
-  Double_t CircleIntersectPosX(Int_t iChanId,
-                               Double_t dClustRadius,
-                               Double_t dClustCentX,
-                               Double_t dClustCentY,
+  Double_t CircleIntersectPosX(Int_t iChanId, Double_t dClustRadius, Double_t dClustCentX, Double_t dClustCentY,
                                Bool_t bUpperSide);
   /**
        ** @brief Compute the y position of the intersection of a circle with the left or
@@ -210,10 +194,7 @@ private:
        ** @brief => Please check/insure before that it is the case!
        ** @brief Returns 0 if no intersection (neg. root) or 2 intersections
        **/
-  Double_t CircleIntersectPosY(Int_t iChanId,
-                               Double_t dClustRadius,
-                               Double_t dClustCentX,
-                               Double_t dClustCentY,
+  Double_t CircleIntersectPosY(Int_t iChanId, Double_t dClustRadius, Double_t dClustCentX, Double_t dClustCentY,
                                Bool_t bRightSide);
   /**
        ** @brief Compute the distance from the cluster center to the base of a disc
@@ -221,10 +202,7 @@ private:
        ** @brief Assumes that the endpoints are on the circle
        ** @brief => Please make sure of it before calling this method.
        **/
-  Double_t DistanceCircleToBase(Double_t dClustRadius,
-                                Double_t dBaseXa,
-                                Double_t dBaseYa,
-                                Double_t dBaseXb,
+  Double_t DistanceCircleToBase(Double_t dClustRadius, Double_t dBaseXa, Double_t dBaseYa, Double_t dBaseXb,
                                 Double_t dBaseYb);
 
   Bool_t CompareTimes(CbmTofDigi* p1, CbmTofDigi* p2);
@@ -256,8 +234,7 @@ private:
   std::vector<std::vector<std::vector<Double_t>>> fvdSignalVelocityRpc;
 
   // Channel variables [nbSmType][NbSm*NbRpc][NbChannel*NbSides]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fdChannelGain;  // <- Generated from parameter FeeGainSigma
+  std::vector<std::vector<std::vector<Double_t>>> fdChannelGain;  // <- Generated from parameter FeeGainSigma
 
   // ToF geometry variables
   CbmTofGeoHandler* fGeoHandler;
@@ -266,8 +243,7 @@ private:
   CbmTofCell* fChannelInfo;
   CbmTofDigiBdfPar* fDigiBdfPar;
   Int_t fiNbElecChTot;
-  std::vector<std::vector<std::vector<Int_t>>>
-    fvRpcChOffs;  // Offset in channel index for first channel of each RPC
+  std::vector<std::vector<std::vector<Int_t>>> fvRpcChOffs;  // Offset in channel index for first channel of each RPC
 
   // Input variables
   TClonesArray* fTofPointsColl;  // TOF MC points
@@ -275,21 +251,16 @@ private:
 
   // Intermediate storage variables
   // Store all digis to allow merging
-  std::vector<
-    std::vector<std::vector<std::vector<std::pair<CbmTofDigi*, CbmMatch*>>>>>
-    fStorDigi;  //[nbType][nbSm*nbRpc][nbCh*NbSide][nDigis]
-  std::vector<std::vector<std::vector<std::vector<Int_t>>>>
-    fStorDigiMatch;  //[nbType][nbSm*nbRpc][nbCh*NbSide][nDigis]
+  std::vector<std::vector<std::vector<std::vector<std::pair<CbmTofDigi*, CbmMatch*>>>>>
+    fStorDigi;                                                               //[nbType][nbSm*nbRpc][nbCh*NbSide][nDigis]
+  std::vector<std::vector<std::vector<std::vector<Int_t>>>> fStorDigiMatch;  //[nbType][nbSm*nbRpc][nbCh*NbSide][nDigis]
   // Temporary storing of the Track/Point/Digi info to make sure all gap/Tofpoint
   // linked to same track in same channel give same result (single cluster per track/channel pair)
-  std::vector<std::vector<ULong64_t>>
-    fvlTrckChAddr;  // [nbMcTracks][nbChannelFiredByTrk]
-    // Temporary storing of the Track/Rpc info to make sure all clusters
-    // linked to same track in same detector give the same results for timing
-  std::vector<std::vector<ULong64_t>>
-    fvlTrckRpcAddr;  // [nbMcTracks][nbRpcFiredByTrk]
-  std::vector<std::vector<Double_t>>
-    fvlTrckRpcTime;  // [nbMcTracks][nbRpcFiredByTrk]
+  std::vector<std::vector<ULong64_t>> fvlTrckChAddr;  // [nbMcTracks][nbChannelFiredByTrk]
+  // Temporary storing of the Track/Rpc info to make sure all clusters
+  // linked to same track in same detector give the same results for timing
+  std::vector<std::vector<ULong64_t>> fvlTrckRpcAddr;  // [nbMcTracks][nbRpcFiredByTrk]
+  std::vector<std::vector<Double_t>> fvlTrckRpcTime;   // [nbMcTracks][nbRpcFiredByTrk]
 
   // Output variables
   Int_t fiNbDigis;  // Index of the CbmTofDigi TClonesArray

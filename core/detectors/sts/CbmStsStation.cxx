@@ -43,14 +43,14 @@ CbmStsStation::CbmStsStation()
   , fDiffSensorD(kFALSE)
   , fFirstSensor(nullptr)
   , fNode(nullptr)
-  , fLadders() {}
+  , fLadders()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsStation::CbmStsStation(const char* name,
-                             const char* title,
-                             TGeoPhysicalNode* node)
+CbmStsStation::CbmStsStation(const char* name, const char* title, TGeoPhysicalNode* node)
   : TNamed(name, title)
   , fZ(0.)
   , fXmin(0.)
@@ -63,7 +63,9 @@ CbmStsStation::CbmStsStation(const char* name,
   , fDiffSensorD(kFALSE)
   , fFirstSensor(nullptr)
   , fNode(node)
-  , fLadders() {}
+  , fLadders()
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -73,7 +75,8 @@ CbmStsStation::~CbmStsStation() {}
 
 
 // -----   Add a ladder to the station   -----------------------------------
-void CbmStsStation::AddLadder(CbmStsElement* ladder) {
+void CbmStsStation::AddLadder(CbmStsElement* ladder)
+{
 
   // Check whether argument really is a ladder
   assert(ladder);
@@ -86,7 +89,8 @@ void CbmStsStation::AddLadder(CbmStsElement* ladder) {
 
 
 // -----   Initialise the station properties from sensors   ----------------
-void CbmStsStation::CheckSensorProperties() {
+void CbmStsStation::CheckSensorProperties()
+{
 
   Int_t nSensors = 0;         // sensor counter
   Double_t zMin  = 999999.;   // sensor z minimum
@@ -106,8 +110,7 @@ void CbmStsStation::CheckSensorProperties() {
 
         // --- Loop over sensors
         for (Int_t iSen = 0; iSen < modu->GetNofDaughters(); iSen++) {
-          CbmStsSensor* sensor =
-            dynamic_cast<CbmStsSensor*>(modu->GetDaughter(iSen));
+          CbmStsSensor* sensor = dynamic_cast<CbmStsSensor*>(modu->GetDaughter(iSen));
 
           // Set first sensor
           if (!nSensors) fFirstSensor = sensor;
@@ -121,7 +124,8 @@ void CbmStsStation::CheckSensorProperties() {
           if (!nSensors) {  // first sensor
             zMin = global[2];
             zMax = global[2];
-          } else {
+          }
+          else {
             zMin = TMath::Min(zMin, global[2]);
             zMax = TMath::Max(zMax, global[2]);
           }
@@ -130,8 +134,7 @@ void CbmStsStation::CheckSensorProperties() {
           TGeoBBox* sBox = dynamic_cast<TGeoBBox*>(sensorNode->GetShape());
           if (!sBox) LOG(fatal) << GetName() << ": sensor shape is not a box!";
           Double_t sD = 2. * sBox->GetDZ();
-          if (!nSensors)
-            fSensorD = sD;  // first sensor
+          if (!nSensors) fSensorD = sD;  // first sensor
           else {
             if (TMath::Abs(sD - fSensorD) > 0.0001) fDiffSensorD = kTRUE;
           }
@@ -149,22 +152,23 @@ void CbmStsStation::CheckSensorProperties() {
 
 
 // -----   Strip pitch    --------------------------------------------------
-Double_t CbmStsStation::GetSensorPitch(Int_t side) const {
+Double_t CbmStsStation::GetSensorPitch(Int_t side) const
+{
 
   assert(side == 0 || side == 1);
   assert(fFirstSensor);
   const CbmStsParSensor* parSensor = fFirstSensor->GetParams();
   assert(parSensor);
   CbmStsSensorClass sClass = parSensor->GetClass();
-  assert(sClass == CbmStsSensorClass::kDssdStereo
-         || sClass == CbmStsSensorClass::kDssdOrtho);
+  assert(sClass == CbmStsSensorClass::kDssdStereo || sClass == CbmStsSensorClass::kDssdOrtho);
   return parSensor->GetPar(side + 6);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Stereo angle    -------------------------------------------------
-Double_t CbmStsStation::GetSensorStereoAngle(Int_t side) const {
+Double_t CbmStsStation::GetSensorStereoAngle(Int_t side) const
+{
 
   assert(side == 0 || side == 1);
   assert(fFirstSensor);
@@ -178,7 +182,8 @@ Double_t CbmStsStation::GetSensorStereoAngle(Int_t side) const {
 
 
 // -----   Initialise station parameters   ---------------------------------
-void CbmStsStation::Init() {
+void CbmStsStation::Init()
+{
 
   // Determine x and y extensions of the station, in case it is present
   // as TGeoNode (for old geometries). This implementation assumes that
@@ -222,8 +227,7 @@ void CbmStsStation::Init() {
   CheckSensorProperties();
 
   // Warning if varying sensor properties are found
-  if (fDiffSensorD)
-    LOG(warn) << GetName() << ": Different values for sensor thickness!";
+  if (fDiffSensorD) LOG(warn) << GetName() << ": Different values for sensor thickness!";
 
   // Determine the rotation (in x-y) of the first sensor
   assert(fFirstSensor);
@@ -245,18 +249,17 @@ void CbmStsStation::Init() {
 
 
 // -----   Info   -----------------------------------------------------------
-string CbmStsStation::ToString() const {
+string CbmStsStation::ToString() const
+{
   stringstream ss;
-  ss << GetName() << ": " << fNofSensors << " sensors, z = " << fZ
-     << " cm, x = " << fXmin << " to " << fXmax << " cm, y = " << fYmin
-     << " to " << fYmax << " cm "
+  ss << GetName() << ": " << fNofSensors << " sensors, z = " << fZ << " cm, x = " << fXmin << " to " << fXmax
+     << " cm, y = " << fYmin << " to " << fYmax << " cm "
      << "\n\t\t"
      << " rotation " << fSensorRot * 180. / 3.1415927 << " degrees,"
      << " sensor thickness " << fSensorD << " cm";
   if (fFirstSensor && fFirstSensor->GetParams()) {
-    ss << ", pitch " << GetSensorPitch(0) << " cm / " << GetSensorPitch(1)
-       << " cm, stereo angle " << GetSensorStereoAngle(0) << " / "
-       << GetSensorStereoAngle(1);
+    ss << ", pitch " << GetSensorPitch(0) << " cm / " << GetSensorPitch(1) << " cm, stereo angle "
+       << GetSensorStereoAngle(0) << " / " << GetSensorStereoAngle(1);
   }
 
   return ss.str();

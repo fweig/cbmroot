@@ -33,6 +33,7 @@
 
 #include "CbmDefs.h"
 #include "CbmStackFilter.h"
+
 #include "FairGenericStack.h"
 
 #include <map>
@@ -77,24 +78,9 @@ public:
    ** This method is pure virtual in TVirtualMCStack. It is called by the
    ** by the transport engine for tracks generated during the transport.
    **/
-  virtual void PushTrack(Int_t toBeDone,
-                         Int_t parentId,
-                         Int_t pdgCode,
-                         Double_t px,
-                         Double_t py,
-                         Double_t pz,
-                         Double_t e,
-                         Double_t vx,
-                         Double_t vy,
-                         Double_t vz,
-                         Double_t time,
-                         Double_t polx,
-                         Double_t poly,
-                         Double_t polz,
-                         TMCProcess process,
-                         Int_t& ntr,
-                         Double_t weight,
-                         Int_t status);
+  virtual void PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode, Double_t px, Double_t py, Double_t pz,
+                         Double_t e, Double_t vx, Double_t vy, Double_t vz, Double_t time, Double_t polx, Double_t poly,
+                         Double_t polz, TMCProcess process, Int_t& ntr, Double_t weight, Int_t status);
 
 
   /** @brief Add a track to the stack (FairGenericStack)
@@ -125,24 +111,9 @@ public:
    ** decay is done in the generator itself. An example is the CbmPlutoGenerator.
    ** This parental relationship is preserved for the particles during transport.
    **/
-  virtual void PushTrack(Int_t toBeDone,
-                         Int_t parentId,
-                         Int_t pdgCode,
-                         Double_t px,
-                         Double_t py,
-                         Double_t pz,
-                         Double_t e,
-                         Double_t vx,
-                         Double_t vy,
-                         Double_t vz,
-                         Double_t time,
-                         Double_t polx,
-                         Double_t poly,
-                         Double_t polz,
-                         TMCProcess proc,
-                         Int_t& ntr,
-                         Double_t weight,
-                         Int_t is,
+  virtual void PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode, Double_t px, Double_t py, Double_t pz,
+                         Double_t e, Double_t vx, Double_t vy, Double_t vz, Double_t time, Double_t polx, Double_t poly,
+                         Double_t polz, TMCProcess proc, Int_t& ntr, Double_t weight, Int_t is,
                          Int_t generatorParentID);
 
 
@@ -237,7 +208,8 @@ public:
 
 
   /** @brief Set the stack filter class **/
-  void SetFilter(std::unique_ptr<CbmStackFilter>& filter) {
+  void SetFilter(std::unique_ptr<CbmStackFilter>& filter)
+  {
     fFilter.reset();
     fFilter = std::move(filter);
   }

@@ -21,19 +21,11 @@ public:
   CbmKFFieldMath() {}
   ~CbmKFFieldMath() {}
 
-  static void ExtrapolateLine(const Double_t T_in[],
-                              const Double_t C_in[],
-                              Double_t T_out[],
-                              Double_t C_out[],
+  static void ExtrapolateLine(const Double_t T_in[], const Double_t C_in[], Double_t T_out[], Double_t C_out[],
                               Double_t z_out);
 
-  static Int_t ExtrapolateRK4(const Double_t T_in[],
-                              const Double_t C_in[],
-                              Double_t T_out[],
-                              Double_t C_out[],
-                              Double_t z_out,
-                              Double_t qp0,
-                              FairField* MF);
+  static Int_t ExtrapolateRK4(const Double_t T_in[], const Double_t C_in[], Double_t T_out[], Double_t C_out[],
+                              Double_t z_out, Double_t qp0, FairField* MF);
   /*
   static void ExtrapolateAnalytic( const Double_t T_in[], const Double_t C_in[],
 				   Double_t T_out[], Double_t C_out[],
@@ -44,13 +36,8 @@ public:
 				   Double_t T_out[], Double_t C_out[],
 				   Double_t z_out, Double_t qp0, CbmMagField *MF);
   */
-  static Int_t ExtrapolateALight(const Double_t T_in[],
-                                 const Double_t C_in[],
-                                 Double_t T_out[],
-                                 Double_t C_out[],
-                                 Double_t z_out,
-                                 Double_t qp0,
-                                 FairField* MF);
+  static Int_t ExtrapolateALight(const Double_t T_in[], const Double_t C_in[], Double_t T_out[], Double_t C_out[],
+                                 Double_t z_out, Double_t qp0, FairField* MF);
   /*
   static void IntegrateField( 
 			     CbmMagField *MF,      

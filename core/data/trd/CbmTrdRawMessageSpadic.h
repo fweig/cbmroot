@@ -10,34 +10,35 @@
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t
 
-#include <cstdint>  // for int16_t, uint8_t, uint16_t, uint64_t
-#include <vector>   // for vector
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
 
-namespace Spadic {
+#include <cstdint>  // for int16_t, uint8_t, uint16_t, uint64_t
+#include <vector>   // for vector
+
+namespace Spadic
+{
   /** Spadic Message Types that can occur inside a Microslice.
 	 *
 	 *  A message is a 64bit word, its most significant bits (MSB) define the type.
 	**/
-  enum class MsMessageType : uint8_t {
-    kEPO =
-      0x40,  ///< Epoch Marker.              MSB: 01.. ....   uTS-MSB (bits 61-32) in clockcycles.
+  enum class MsMessageType : uint8_t
+  {
+    kEPO = 0x40,  ///< Epoch Marker.              MSB: 01.. ....   uTS-MSB (bits 61-32) in clockcycles.
     kSOM =
       0x20,  ///< Start of Message.          MSB: 001. ....   timestamp (bits 50-35) in clockcycles. Currently (Feb 2020) only 11 LSB in use.
     kRDA =
       0x80,  ///< Raw Data. Preceded by SOM. MSB: 1... ....   always 64bits, bits after last transmitted sample are filled with 0.
     kINF =
       0x10,  ///< Info  Message.             MSB: 0001 ....   The 20 LSBs of the 64bit word contain the 20 LSBs of a raw spadic InfoType frame e.g. BOM.
-    kNUL =
-      0x00,  ///< Microslice End.        0x0000000000000000   Last Word in a Microslice is 64 zeros.
-    kUNK = 0x01  ///< Unkown Word.
+    kNUL = 0x00,  ///< Microslice End.        0x0000000000000000   Last Word in a Microslice is 64 zeros.
+    kUNK = 0x01   ///< Unkown Word.
   };
 
   /** Hit Type of CbmTrdRawMessageSpadic, explains why a message was generated. */
-  enum class TriggerType : uint8_t {
+  enum class TriggerType : uint8_t
+  {
     kGlobal = 0,  ///< global trigger.
     kSelf   = 1,  ///< Self trigger.
     kNeigh  = 2,  ///< Neighbor trigger.
@@ -50,7 +51,8 @@ namespace Spadic {
 	 * Bitmap of an info message: 0001 eeee ee.. .... .... .... .... .... .... .... .... iiii iiii iiii iiii iiii
 	 *   e: E-Link ID, i: Info Message (see below)
 	 **/
-  enum class MsInfoType : uint8_t {
+  enum class MsInfoType : uint8_t
+  {
     kBOM,  ///< Buffer overflow count.  11nn nnnn nnnn nnnn cccc
     kMSB,  ///< Message build error.    010. .... .... .... cccc
     kBUF,  ///< Buffer full.            011b b... .... .... cccc
@@ -76,23 +78,16 @@ private:
   std::uint8_t fHitType;
   std::uint8_t fNrSamples;
   bool fMultiHit;
-  std::uint64_t fFullTime; /**< Fulltime in units of Clockcycles. */
-  std::vector<std::int16_t>
-    fSamples; /**< Holds up to 32 Samples from a Spadic Message. Valid values [-256,255] */
+  std::uint64_t fFullTime;            /**< Fulltime in units of Clockcycles. */
+  std::vector<std::int16_t> fSamples; /**< Holds up to 32 Samples from a Spadic Message. Valid values [-256,255] */
 
 public:
   /** Default Constructor */
   CbmTrdRawMessageSpadic();
 
   /** Constructor **/
-  CbmTrdRawMessageSpadic(std::uint8_t channelId,
-                         std::uint8_t elinkId,
-                         std::uint8_t crobId,
-                         std::uint16_t criId,
-                         std::uint8_t hitType,
-                         std::uint8_t nrSamples,
-                         bool multiHi,
-                         std::uint64_t fullTime,
+  CbmTrdRawMessageSpadic(std::uint8_t channelId, std::uint8_t elinkId, std::uint8_t crobId, std::uint16_t criId,
+                         std::uint8_t hitType, std::uint8_t nrSamples, bool multiHi, std::uint64_t fullTime,
                          std::vector<std::int16_t> samples);
 
   /** Copy Constructor **/
@@ -121,9 +116,7 @@ public:
   Double_t GetTime() const { return fFullTime * 62.5; }
 
   /** Set the full time in nanoseconds */
-  void SetTime(Double_t setvalue) {
-    fFullTime = (std::uint64_t)(setvalue / 62.5);
-  }
+  void SetTime(Double_t setvalue) { fFullTime = (std::uint64_t)(setvalue / 62.5); }
 
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();
@@ -139,7 +132,8 @@ public:
 
   /// Boost serialization function.
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fElinkID;
     ar& fChannelID;
     ar& fCrobId;

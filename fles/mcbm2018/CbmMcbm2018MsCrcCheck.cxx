@@ -26,19 +26,20 @@ CbmMcbm2018MsCrcCheck::CbmMcbm2018MsCrcCheck()
   , fFileCounter(0)
   , fTSNumber(0)
   , fTSCounter(0)
-  , fSource(nullptr) {}
+  , fSource(nullptr)
+{
+}
 
 CbmMcbm2018MsCrcCheck::~CbmMcbm2018MsCrcCheck() {}
 
-void CbmMcbm2018MsCrcCheck::Run() {
+void CbmMcbm2018MsCrcCheck::Run()
+{
   while (OpenNextFile()) {
     while (auto timeslice = fSource->get()) {
       const fles::Timeslice& ts = *timeslice;
       auto tsIndex              = ts.index();
 
-      if (0 == tsIndex % 1000) {
-        LOG(info) << "Reading Timeslice " << tsIndex;
-      }  // if( 0 == tsIndex % 1000 )
+      if (0 == tsIndex % 1000) { LOG(info) << "Reading Timeslice " << tsIndex; }  // if( 0 == tsIndex % 1000 )
 
       UInt_t fuNbCoreMsPerTs = ts.num_core_microslices();
       UInt_t fuNbComponents  = ts.num_components();
@@ -49,17 +50,14 @@ void CbmMcbm2018MsCrcCheck::Run() {
           bool bCrcOk = ts.get_microslice(uMsCompIdx, uMsIdx).check_crc();
 
           if (!bCrcOk) {
-            auto msDescriptor = ts.descriptor(uMsCompIdx, uMsIdx);
-            uint32_t uSize    = msDescriptor.size;
-            const uint8_t* msContent =
-              reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+            auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+            uint32_t uSize           = msDescriptor.size;
+            const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
             LOG(info) << "-----------------------------------------------------"
                          "----------";
             //                  LOG(info) << Form( " CRC error for TS %6llu MS %3u Component %2u, dump following", tsIndex, uMsIdx, uMsCompIdx );
             LOG(info) << " CRC error for TS " << FormatDecPrintout(tsIndex, 6)
-                      << Form(" MS %3u Component %2u, dump following",
-                              uMsIdx,
-                              uMsCompIdx);
+                      << Form(" MS %3u Component %2u, dump following", uMsIdx, uMsCompIdx);
             LOG(info) << "-----------------------------------------------------"
                          "----------";
             /*
@@ -81,8 +79,8 @@ void CbmMcbm2018MsCrcCheck::Run() {
             if (0 == uSize % 16) ss << "\n";
             LOG(info) << ss.str();
           }  // if( !bCrcOk )
-        }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fuNbComponents; ++uMsCompIdx )
-      }  // for( UInt_t uMsIdx = 0; uMsIdx < fuNbCoreMsPerTs; uMsIdx ++ )
+        }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fuNbComponents; ++uMsCompIdx )
+      }      // for( UInt_t uMsIdx = 0; uMsIdx < fuNbCoreMsPerTs; uMsIdx ++ )
 
       fTSCounter++;
       if (0 == fTSCounter % 10000) {
@@ -97,15 +95,15 @@ void CbmMcbm2018MsCrcCheck::Run() {
   }                    // while( OpenNextFile() )
 }
 
-Bool_t CbmMcbm2018MsCrcCheck::OpenNextFile() {
+Bool_t CbmMcbm2018MsCrcCheck::OpenNextFile()
+{
   // First Close and delete existing source
   if (nullptr != fSource) delete fSource;
 
   if (fFileCounter < fInputFileList.GetSize()) {
     // --- Open current input file
-    TObjString* tmp =
-      dynamic_cast<TObjString*>(fInputFileList.At(fFileCounter));
-    fFileName = tmp->GetString();
+    TObjString* tmp = dynamic_cast<TObjString*>(fInputFileList.At(fFileCounter));
+    fFileName       = tmp->GetString();
 
     LOG(info) << "Open the Flib input file " << fFileName;
     // Check if the input file exist
@@ -122,8 +120,7 @@ Bool_t CbmMcbm2018MsCrcCheck::OpenNextFile() {
     }
   }  // if( fFileCounter < fInputFileList.GetSize() )
   else {
-    LOG(info) << "End of files list reached: file counter is " << fFileCounter
-              << " for " << fInputFileList.GetSize()
+    LOG(info) << "End of files list reached: file counter is " << fFileCounter << " for " << fInputFileList.GetSize()
               << " entries in the file list.";
     return kFALSE;
   }  // else of if( fFileCounter < fInputFileList.GetSize() )

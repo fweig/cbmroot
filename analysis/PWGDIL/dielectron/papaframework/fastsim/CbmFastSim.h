@@ -3,6 +3,7 @@
 
 
 #include "FairTask.h"
+
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -10,6 +11,7 @@
 #include "TMatrixD.h"
 #include "TString.h"
 #include "TVector3.h"
+
 #include <list>
 #include <string>
 
@@ -27,9 +29,18 @@ class PairAnalysisFunction;
 class CbmFastSim : public FairTask {
 
 public:
-  enum EParticleType { kEle = 0, kPio, kKao, kPro, kMuo, kGam };
+  enum EParticleType
+  {
+    kEle = 0,
+    kPio,
+    kKao,
+    kPro,
+    kMuo,
+    kGam
+  };
 
-  enum EEfficiencyMethod {
+  enum EEfficiencyMethod
+  {
     kIgnoreFluct = 0,
     kInterpolate,
     kAverage,
@@ -64,7 +75,7 @@ public:
 private:
   TRandom3* fRand;
   TDatabasePDG* fdbPdg;
-  static const Int_t fgkNParts = 8;  // numer of different particle species
+  static const Int_t fgkNParts = 8;             // numer of different particle species
   EEfficiencyMethod fMethod    = kIgnoreFluct;  // efficiency caluclations
 
   /** function for selection and smearing **/

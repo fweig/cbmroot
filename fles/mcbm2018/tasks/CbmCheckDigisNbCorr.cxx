@@ -38,13 +38,15 @@ CbmCheckDigisNbCorr::CbmCheckDigisNbCorr()
   , fuMinTotPulserT0(90)
   , fuMaxTotPulserT0(100)
 
-{}
+{
+}
 
 // ---- Destructor ----------------------------------------------------
 CbmCheckDigisNbCorr::~CbmCheckDigisNbCorr() {}
 
 // ----  Initialisation  ----------------------------------------------
-void CbmCheckDigisNbCorr::SetParContainers() {
+void CbmCheckDigisNbCorr::SetParContainers()
+{
   // Load all necessary parameter containers from the runtime data base
   /*
   FairRunAna* ana = FairRunAna::Instance();
@@ -56,14 +58,14 @@ void CbmCheckDigisNbCorr::SetParContainers() {
 }
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmCheckDigisNbCorr::Init() {
+InitStatus CbmCheckDigisNbCorr::Init()
+{
 
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
   // Get a pointer to the previous already existing data level
-  fTsMetaData =
-    static_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
+  fTsMetaData = static_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
   if (!fTsMetaData) { LOG(info) << "No TClonesArray with TS meta data found."; }
   // DigiManager
   fDigiMan = CbmDigiManager::Instance();
@@ -76,32 +78,23 @@ InitStatus CbmCheckDigisNbCorr::Init() {
     if (!fT0DigiArr) { LOG(fatal) << "No TClonesArray with T0 digis found."; }
   }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
-    LOG(info) << "No TClonesArray with STS digis found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) { LOG(info) << "No TClonesArray with STS digis found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) {
-    LOG(info) << "No TClonesArray with MUCH digis found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) { LOG(info) << "No TClonesArray with MUCH digis found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) {
-    LOG(info) << "No TClonesArray with TOF digis found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) { LOG(info) << "No TClonesArray with TOF digis found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) {
-    LOG(info) << "No TClonesArray with RICH digis found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) { LOG(info) << "No TClonesArray with RICH digis found."; }
 
   CreateHistos();
 
   return kSUCCESS;
 }
 
-void CbmCheckDigisNbCorr::CalcNrBins() {
-  fiBinNb = fdTsLengthNs / fdBinWidthNs;
-}
+void CbmCheckDigisNbCorr::CalcNrBins() { fiBinNb = fdTsLengthNs / fdBinWidthNs; }
 
-void CbmCheckDigisNbCorr::CreateHistos() {
+void CbmCheckDigisNbCorr::CreateHistos()
+{
   /// Resize storage array
   CalcNrBins();
   fvuNbDigisPerBinT0.resize(fiBinNb, 0);
@@ -116,310 +109,176 @@ void CbmCheckDigisNbCorr::CreateHistos() {
 
   /// 2D correlations between systems
   // T0 vs. TST
-  fT0StsCorr =
-    new TH2F("fT0StsCorr",
-             Form("T0 - STS digis Nb correlation per %.0f ns time interval; Nb "
-                  "T0 Digis []; Nb STS Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fT0StsCorr = new TH2F("fT0StsCorr",
+                        Form("T0 - STS digis Nb correlation per %.0f ns time interval; Nb "
+                             "T0 Digis []; Nb STS Digis []; Counts",
+                             fdBinWidthNs),
+                        1000, 0, 1000, 1000, 0, 1000);
   // T0 vs. MUCH
-  fT0MuchCorr =
-    new TH2F("fT0MuchCorr",
-             Form("T0 - MUCH digis Nb correlation per %.0f ns time interval; "
-                  "Nb T0 Digis []; Nb MUCH Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fT0MuchCorr = new TH2F("fT0MuchCorr",
+                         Form("T0 - MUCH digis Nb correlation per %.0f ns time interval; "
+                              "Nb T0 Digis []; Nb MUCH Digis []; Counts",
+                              fdBinWidthNs),
+                         1000, 0, 1000, 1000, 0, 1000);
   // T0 vs. TOF
-  fT0TofCorr =
-    new TH2F("fT0TofCorr",
-             Form("T0 - TOF digis Nb correlation per %.0f ns time interval; Nb "
-                  "T0 Digis []; Nb TOF Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fT0TofCorr = new TH2F("fT0TofCorr",
+                        Form("T0 - TOF digis Nb correlation per %.0f ns time interval; Nb "
+                             "T0 Digis []; Nb TOF Digis []; Counts",
+                             fdBinWidthNs),
+                        1000, 0, 1000, 1000, 0, 1000);
   // T0 vs. RICH
-  fT0RichCorr =
-    new TH2F("fT0RichCorr",
-             Form("T0 - RICH digis Nb correlation per %.0f ns time interval; "
-                  "Nb T0 Digis []; Nb RICH Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fT0RichCorr = new TH2F("fT0RichCorr",
+                         Form("T0 - RICH digis Nb correlation per %.0f ns time interval; "
+                              "Nb T0 Digis []; Nb RICH Digis []; Counts",
+                              fdBinWidthNs),
+                         1000, 0, 1000, 1000, 0, 1000);
 
   // STS vs. MUCH
-  fStsMuchCorr =
-    new TH2F("fStsMuchCorr",
-             Form("STS - MUCH digis Nb correlation per %.0f ns time interval; "
-                  "Nb STS Digis []; Nb STS Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fStsMuchCorr = new TH2F("fStsMuchCorr",
+                          Form("STS - MUCH digis Nb correlation per %.0f ns time interval; "
+                               "Nb STS Digis []; Nb STS Digis []; Counts",
+                               fdBinWidthNs),
+                          1000, 0, 1000, 1000, 0, 1000);
   // STS vs. TOF
-  fStsTofCorr =
-    new TH2F("fStsTofCorr",
-             Form("STS - TOF digis Nb correlation per %.0f ns time interval; "
-                  "Nb STS Digis []; Nb TOF Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fStsTofCorr = new TH2F("fStsTofCorr",
+                         Form("STS - TOF digis Nb correlation per %.0f ns time interval; "
+                              "Nb STS Digis []; Nb TOF Digis []; Counts",
+                              fdBinWidthNs),
+                         1000, 0, 1000, 1000, 0, 1000);
   // STS vs. RICH
-  fStsRichCorr =
-    new TH2F("fStsRichCorr",
-             Form("STS - RICH digis Nb correlation per %.0f ns time interval; "
-                  "Nb STS Digis []; Nb RICH Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fStsRichCorr = new TH2F("fStsRichCorr",
+                          Form("STS - RICH digis Nb correlation per %.0f ns time interval; "
+                               "Nb STS Digis []; Nb RICH Digis []; Counts",
+                               fdBinWidthNs),
+                          1000, 0, 1000, 1000, 0, 1000);
 
   // MUCH vs. TOF
-  fMuchTofCorr =
-    new TH2F("fMuchTofCorr",
-             Form("MUCH - TOF digis Nb correlation per %.0f ns time interval; "
-                  "Nb MUCH Digis []; Nb TOF Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fMuchTofCorr = new TH2F("fMuchTofCorr",
+                          Form("MUCH - TOF digis Nb correlation per %.0f ns time interval; "
+                               "Nb MUCH Digis []; Nb TOF Digis []; Counts",
+                               fdBinWidthNs),
+                          1000, 0, 1000, 1000, 0, 1000);
   // MUCH vs. RICH
-  fMuchRichCorr =
-    new TH2F("fMuchRichCorr",
-             Form("MUCH - RICH digis Nb correlation per %.0f ns time interval; "
-                  "Nb MUCH Digis []; Nb RICH Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fMuchRichCorr = new TH2F("fMuchRichCorr",
+                           Form("MUCH - RICH digis Nb correlation per %.0f ns time interval; "
+                                "Nb MUCH Digis []; Nb RICH Digis []; Counts",
+                                fdBinWidthNs),
+                           1000, 0, 1000, 1000, 0, 1000);
 
   // TOF vs. RICH
-  fTofRichCorr =
-    new TH2F("fTofRichCorr",
-             Form("TOF - RICH digis Nb correlation per %.0f ns time interval; "
-                  "Nb TOF Digis []; Nb RICH Digis []; Counts",
-                  fdBinWidthNs),
-             1000,
-             0,
-             1000,
-             1000,
-             0,
-             1000);
+  fTofRichCorr = new TH2F("fTofRichCorr",
+                          Form("TOF - RICH digis Nb correlation per %.0f ns time interval; "
+                               "Nb TOF Digis []; Nb RICH Digis []; Counts",
+                               fdBinWidthNs),
+                          1000, 0, 1000, 1000, 0, 1000);
 
   /// Profile correlations between systems
   // T0 vs. TST
-  fT0StsCorrProf =
-    new TProfile("fT0StsCorrProf",
-                 Form("T0 - STS digis Nb correlation per %.0f ns time "
-                      "interval; Nb T0 Digis []; Nb STS Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fT0StsCorrProf = new TProfile("fT0StsCorrProf",
+                                Form("T0 - STS digis Nb correlation per %.0f ns time "
+                                     "interval; Nb T0 Digis []; Nb STS Digis []",
+                                     fdBinWidthNs),
+                                1000, 0, 1000);
   // T0 vs. MUCH
-  fT0MuchCorrProf =
-    new TProfile("fT0MuchCorrProf",
-                 Form("T0 - MUCH digis Nb correlation per %.0f ns time "
-                      "interval; Nb T0 Digis []; Nb MUCH Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fT0MuchCorrProf = new TProfile("fT0MuchCorrProf",
+                                 Form("T0 - MUCH digis Nb correlation per %.0f ns time "
+                                      "interval; Nb T0 Digis []; Nb MUCH Digis []",
+                                      fdBinWidthNs),
+                                 1000, 0, 1000);
   // T0 vs. TOF
-  fT0TofCorrProf =
-    new TProfile("fT0TofCorrProf",
-                 Form("T0 - TOF digis Nb correlation per %.0f ns time "
-                      "interval; Nb T0 Digis []; Nb TOF Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fT0TofCorrProf = new TProfile("fT0TofCorrProf",
+                                Form("T0 - TOF digis Nb correlation per %.0f ns time "
+                                     "interval; Nb T0 Digis []; Nb TOF Digis []",
+                                     fdBinWidthNs),
+                                1000, 0, 1000);
   // T0 vs. RICH
-  fT0RichCorrProf =
-    new TProfile("fT0RichCorrProf",
-                 Form("T0 - RICH digis Nb correlation per %.0f ns time "
-                      "interval; Nb T0 Digis []; Nb RICH Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fT0RichCorrProf = new TProfile("fT0RichCorrProf",
+                                 Form("T0 - RICH digis Nb correlation per %.0f ns time "
+                                      "interval; Nb T0 Digis []; Nb RICH Digis []",
+                                      fdBinWidthNs),
+                                 1000, 0, 1000);
 
   // STS vs. MUCH
-  fStsMuchCorrProf =
-    new TProfile("fStsMuchCorrProf",
-                 Form("STS - MUCH digis Nb correlation per %.0f ns time "
-                      "interval; Nb STS Digis []; Nb STS Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fStsMuchCorrProf = new TProfile("fStsMuchCorrProf",
+                                  Form("STS - MUCH digis Nb correlation per %.0f ns time "
+                                       "interval; Nb STS Digis []; Nb STS Digis []",
+                                       fdBinWidthNs),
+                                  1000, 0, 1000);
   // STS vs. TOF
-  fStsTofCorrProf =
-    new TProfile("fStsTofCorrProf",
-                 Form("STS - TOF digis Nb correlation per %.0f ns time "
-                      "interval; Nb STS Digis []; Nb TOF Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fStsTofCorrProf = new TProfile("fStsTofCorrProf",
+                                 Form("STS - TOF digis Nb correlation per %.0f ns time "
+                                      "interval; Nb STS Digis []; Nb TOF Digis []",
+                                      fdBinWidthNs),
+                                 1000, 0, 1000);
   // STS vs. RICH
-  fStsRichCorrProf =
-    new TProfile("fStsRichCorrProf",
-                 Form("STS - RICH digis Nb correlation per %.0f ns time "
-                      "interval; Nb STS Digis []; Nb RICH Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fStsRichCorrProf = new TProfile("fStsRichCorrProf",
+                                  Form("STS - RICH digis Nb correlation per %.0f ns time "
+                                       "interval; Nb STS Digis []; Nb RICH Digis []",
+                                       fdBinWidthNs),
+                                  1000, 0, 1000);
 
   // MUCH vs. TOF
-  fMuchTofCorrProf =
-    new TProfile("fMuchTofCorrProf",
-                 Form("MUCH - TOF digis Nb correlation per %.0f ns time "
-                      "interval; Nb MUCH Digis []; Nb TOF Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fMuchTofCorrProf = new TProfile("fMuchTofCorrProf",
+                                  Form("MUCH - TOF digis Nb correlation per %.0f ns time "
+                                       "interval; Nb MUCH Digis []; Nb TOF Digis []",
+                                       fdBinWidthNs),
+                                  1000, 0, 1000);
   // MUCH vs. RICH
-  fMuchRichCorrProf =
-    new TProfile("fMuchRichCorrProf",
-                 Form("MUCH - RICH digis Nb correlation per %.0f ns time "
-                      "interval; Nb MUCH Digis []; Nb RICH Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fMuchRichCorrProf = new TProfile("fMuchRichCorrProf",
+                                   Form("MUCH - RICH digis Nb correlation per %.0f ns time "
+                                        "interval; Nb MUCH Digis []; Nb RICH Digis []",
+                                        fdBinWidthNs),
+                                   1000, 0, 1000);
 
   // TOF vs. RICH
-  fTofRichCorrProf =
-    new TProfile("fTofRichCorrProf",
-                 Form("TOF - RICH digis Nb correlation per %.0f ns time "
-                      "interval; Nb TOF Digis []; Nb RICH Digis []",
-                      fdBinWidthNs),
-                 1000,
-                 0,
-                 1000);
+  fTofRichCorrProf = new TProfile("fTofRichCorrProf",
+                                  Form("TOF - RICH digis Nb correlation per %.0f ns time "
+                                       "interval; Nb TOF Digis []; Nb RICH Digis []",
+                                       fdBinWidthNs),
+                                  1000, 0, 1000);
 
   for (UInt_t uStsDpb = 0; uStsDpb < kuMaxNbStsDpbs; ++uStsDpb) {
-    fT0StsDpbCorr[uStsDpb] =
-      new TH2F(Form("fT0StsDpbCorr%02u", uStsDpb),
-               Form("T0 - STS digis Nb correlation per %.0f ns time interval, "
-                    "DPB %02u; Nb T0 Digis []; Nb STS Digis []; Counts",
-                    fdBinWidthNs,
-                    uStsDpb),
-               1000,
-               0,
-               1000,
-               1000,
-               0,
-               1000);
-    fStsMuchDpbCorr[uStsDpb] = new TH2F(
-      Form("fStsMuchDpbCorr%02u", uStsDpb),
-      Form("STS - MUCH digis Nb correlation per %.0f ns time interval, DPB "
-           "%02u; Nb STS Digis []; Nb STS Digis []; Counts",
-           fdBinWidthNs,
-           uStsDpb),
-      1000,
-      0,
-      1000,
-      1000,
-      0,
-      1000);
-    fStsTofDpbCorr[uStsDpb] =
-      new TH2F(Form("fStsTofDpbCorr%02u", uStsDpb),
-               Form("STS - TOF digis Nb correlation per %.0f ns time interval, "
-                    "DPB %02u; Nb STS Digis []; Nb TOF Digis []; Counts",
-                    fdBinWidthNs,
-                    uStsDpb),
-               1000,
-               0,
-               1000,
-               1000,
-               0,
-               1000);
-    fStsRichDpbCorr[uStsDpb] = new TH2F(
-      Form("fStsRichDpbCorr%02u", uStsDpb),
-      Form("STS - RICH digis Nb correlation per %.0f ns time interval, DPB "
-           "%02u; Nb STS Digis []; Nb RICH Digis []; Counts",
-           fdBinWidthNs,
-           uStsDpb),
-      1000,
-      0,
-      1000,
-      1000,
-      0,
-      1000);
+    fT0StsDpbCorr[uStsDpb]   = new TH2F(Form("fT0StsDpbCorr%02u", uStsDpb),
+                                      Form("T0 - STS digis Nb correlation per %.0f ns time interval, "
+                                           "DPB %02u; Nb T0 Digis []; Nb STS Digis []; Counts",
+                                           fdBinWidthNs, uStsDpb),
+                                      1000, 0, 1000, 1000, 0, 1000);
+    fStsMuchDpbCorr[uStsDpb] = new TH2F(Form("fStsMuchDpbCorr%02u", uStsDpb),
+                                        Form("STS - MUCH digis Nb correlation per %.0f ns time interval, DPB "
+                                             "%02u; Nb STS Digis []; Nb STS Digis []; Counts",
+                                             fdBinWidthNs, uStsDpb),
+                                        1000, 0, 1000, 1000, 0, 1000);
+    fStsTofDpbCorr[uStsDpb]  = new TH2F(Form("fStsTofDpbCorr%02u", uStsDpb),
+                                       Form("STS - TOF digis Nb correlation per %.0f ns time interval, "
+                                            "DPB %02u; Nb STS Digis []; Nb TOF Digis []; Counts",
+                                            fdBinWidthNs, uStsDpb),
+                                       1000, 0, 1000, 1000, 0, 1000);
+    fStsRichDpbCorr[uStsDpb] = new TH2F(Form("fStsRichDpbCorr%02u", uStsDpb),
+                                        Form("STS - RICH digis Nb correlation per %.0f ns time interval, DPB "
+                                             "%02u; Nb STS Digis []; Nb RICH Digis []; Counts",
+                                             fdBinWidthNs, uStsDpb),
+                                        1000, 0, 1000, 1000, 0, 1000);
 
-    fT0StsDpbCorrProf[uStsDpb] =
-      new TProfile(Form("fT0StsDpbCorrProf%02u", uStsDpb),
-                   Form("T0 - STS digis Nb correlation per %.0f ns time "
-                        "interval, DPB %02u; Nb T0 Digis []; Nb STS Digis []",
-                        fdBinWidthNs,
-                        uStsDpb),
-                   1000,
-                   0,
-                   1000);
-    fStsMuchDpbCorrProf[uStsDpb] =
-      new TProfile(Form("fStsMuchDpbCorrProf%02u", uStsDpb),
-                   Form("STS - MUCH digis Nb correlation per %.0f ns time "
-                        "interval, DPB %02u; Nb STS Digis []; Nb STS Digis []",
-                        fdBinWidthNs,
-                        uStsDpb),
-                   1000,
-                   0,
-                   1000);
-    fStsTofDpbCorrProf[uStsDpb] =
-      new TProfile(Form("fStsTofDpbCorrProf%02u", uStsDpb),
-                   Form("STS - TOF digis Nb correlation per %.0f ns time "
-                        "interval, DPB %02u; Nb STS Digis []; Nb TOF Digis []",
-                        fdBinWidthNs,
-                        uStsDpb),
-                   1000,
-                   0,
-                   1000);
-    fStsRichDpbCorrProf[uStsDpb] =
-      new TProfile(Form("fStsRichDpbCorrProf%02u", uStsDpb),
-                   Form("STS - RICH digis Nb correlation per %.0f ns time "
-                        "interval, DPB %02u; Nb STS Digis []; Nb RICH Digis []",
-                        fdBinWidthNs,
-                        uStsDpb),
-                   1000,
-                   0,
-                   1000);
+    fT0StsDpbCorrProf[uStsDpb]   = new TProfile(Form("fT0StsDpbCorrProf%02u", uStsDpb),
+                                              Form("T0 - STS digis Nb correlation per %.0f ns time "
+                                                   "interval, DPB %02u; Nb T0 Digis []; Nb STS Digis []",
+                                                   fdBinWidthNs, uStsDpb),
+                                              1000, 0, 1000);
+    fStsMuchDpbCorrProf[uStsDpb] = new TProfile(Form("fStsMuchDpbCorrProf%02u", uStsDpb),
+                                                Form("STS - MUCH digis Nb correlation per %.0f ns time "
+                                                     "interval, DPB %02u; Nb STS Digis []; Nb STS Digis []",
+                                                     fdBinWidthNs, uStsDpb),
+                                                1000, 0, 1000);
+    fStsTofDpbCorrProf[uStsDpb]  = new TProfile(Form("fStsTofDpbCorrProf%02u", uStsDpb),
+                                               Form("STS - TOF digis Nb correlation per %.0f ns time "
+                                                    "interval, DPB %02u; Nb STS Digis []; Nb TOF Digis []",
+                                                    fdBinWidthNs, uStsDpb),
+                                               1000, 0, 1000);
+    fStsRichDpbCorrProf[uStsDpb] = new TProfile(Form("fStsRichDpbCorrProf%02u", uStsDpb),
+                                                Form("STS - RICH digis Nb correlation per %.0f ns time "
+                                                     "interval, DPB %02u; Nb STS Digis []; Nb RICH Digis []",
+                                                     fdBinWidthNs, uStsDpb),
+                                                1000, 0, 1000);
   }  // for( UInt_t uStsDpb = 0; uStsDpb < kuMaxNbStsDpbs; ++uStsDpb )
 
   /// Register the histos in the HTTP server
@@ -475,7 +334,8 @@ void CbmCheckDigisNbCorr::CreateHistos() {
 InitStatus CbmCheckDigisNbCorr::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
+void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/)
+{
   /// Initialize the counters for each bin
   for (Int_t uBin = 0; uBin < fiBinNb; ++uBin) {
     fvuNbDigisPerBinT0[uBin]   = 0;
@@ -490,13 +350,11 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
   LOG(debug) << "executing TS " << fNrTs;
   Double_t dTsStart = fNrTs * fdTsLengthNs + 20393267200. - fdTsLengthNs;
   if (1 == fTsMetaData->GetEntriesFast())
-    dTsStart =
-      static_cast<TimesliceMetaData*>(fTsMetaData->At(0))->GetStartTime();
+    dTsStart = static_cast<TimesliceMetaData*>(fTsMetaData->At(0))->GetStartTime();
 
   LOG(debug) << "Begin";
   Int_t nrT0Digis = -1;
-  if (fT0DigiVec)
-    nrT0Digis = fT0DigiVec->size();
+  if (fT0DigiVec) nrT0Digis = fT0DigiVec->size();
   else if (fT0DigiArr)
     nrT0Digis = fT0DigiArr->GetEntriesFast();
   Int_t nrStsDigis  = fDigiMan->GetNofDigis(ECbmModuleId::kSts);
@@ -514,16 +372,13 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
   /// T0
   for (Int_t iDigi = 0; iDigi < nrT0Digis; ++iDigi) {
     const CbmTofDigi* pDigi = nullptr;
-    if (fT0DigiVec)
-      pDigi = &(fT0DigiVec->at(iDigi));
+    if (fT0DigiVec) pDigi = &(fT0DigiVec->at(iDigi));
     else if (fT0DigiArr)
       pDigi = dynamic_cast<const CbmTofDigi*>(fT0DigiArr->At(iDigi));
     assert(pDigi);
 
     /// Ignore pulser hits in T0
-    if (fuMinTotPulserT0 < pDigi->GetCharge()
-        && pDigi->GetCharge() < fuMaxTotPulserT0)
-      continue;
+    if (fuMinTotPulserT0 < pDigi->GetCharge() && pDigi->GetCharge() < fuMaxTotPulserT0) continue;
 
     Double_t dTime = pDigi->GetTime() - dTsStart;
     /// Jump hits with time before start of TS after offseting
@@ -611,8 +466,7 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
     }  // if( 0 < fvuNbDigisPerBinT0[   uBin ] || 0 < fvuNbDigisPerBinSts[  uBin ] )
     if (0 < fvuNbDigisPerBinT0[uBin] || 0 < fvuNbDigisPerBinMuch[uBin]) {
       fT0MuchCorr->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinMuch[uBin]);
-      fT0MuchCorrProf->Fill(fvuNbDigisPerBinT0[uBin],
-                            fvuNbDigisPerBinMuch[uBin]);
+      fT0MuchCorrProf->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinMuch[uBin]);
     }  // if( 0 < fvuNbDigisPerBinT0[   uBin ] || 0 < fvuNbDigisPerBinMuch[  uBin ] )
     if (0 < fvuNbDigisPerBinT0[uBin] || 0 < fvuNbDigisPerBinTof[uBin]) {
       fT0TofCorr->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinTof[uBin]);
@@ -620,73 +474,53 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
     }  // if( 0 < fvuNbDigisPerBinT0[   uBin ] || 0 < fvuNbDigisPerBinTof[  uBin ] )
     if (0 < fvuNbDigisPerBinT0[uBin] || 0 < fvuNbDigisPerBinRich[uBin]) {
       fT0RichCorr->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinRich[uBin]);
-      fT0RichCorrProf->Fill(fvuNbDigisPerBinT0[uBin],
-                            fvuNbDigisPerBinRich[uBin]);
+      fT0RichCorrProf->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinRich[uBin]);
     }  // if( 0 < fvuNbDigisPerBinT0[   uBin ] || 0 < fvuNbDigisPerBinRich[  uBin ] )
 
     if (0 < fvuNbDigisPerBinSts[uBin] || 0 < fvuNbDigisPerBinMuch[uBin]) {
       fStsMuchCorr->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinMuch[uBin]);
-      fStsMuchCorrProf->Fill(fvuNbDigisPerBinSts[uBin],
-                             fvuNbDigisPerBinMuch[uBin]);
+      fStsMuchCorrProf->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinMuch[uBin]);
     }  // if( 0 < fvuNbDigisPerBinSts[   uBin ] || 0 < fvuNbDigisPerBinMuch[  uBin ] )
     if (0 < fvuNbDigisPerBinSts[uBin] || 0 < fvuNbDigisPerBinTof[uBin]) {
       fStsTofCorr->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinTof[uBin]);
-      fStsTofCorrProf->Fill(fvuNbDigisPerBinSts[uBin],
-                            fvuNbDigisPerBinTof[uBin]);
+      fStsTofCorrProf->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinTof[uBin]);
     }  // if( 0 < fvuNbDigisPerBinSts[   uBin ] || 0 < fvuNbDigisPerBinTof[  uBin ] )
     if (0 < fvuNbDigisPerBinSts[uBin] || 0 < fvuNbDigisPerBinRich[uBin]) {
       fStsRichCorr->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinRich[uBin]);
-      fStsRichCorrProf->Fill(fvuNbDigisPerBinSts[uBin],
-                             fvuNbDigisPerBinRich[uBin]);
+      fStsRichCorrProf->Fill(fvuNbDigisPerBinSts[uBin], fvuNbDigisPerBinRich[uBin]);
     }  // if( 0 < fvuNbDigisPerBinSts[   uBin ] || 0 < fvuNbDigisPerBinRich[  uBin ] )
 
     if (0 < fvuNbDigisPerBinMuch[uBin] || 0 < fvuNbDigisPerBinTof[uBin]) {
       fMuchTofCorr->Fill(fvuNbDigisPerBinMuch[uBin], fvuNbDigisPerBinTof[uBin]);
-      fMuchTofCorrProf->Fill(fvuNbDigisPerBinMuch[uBin],
-                             fvuNbDigisPerBinTof[uBin]);
+      fMuchTofCorrProf->Fill(fvuNbDigisPerBinMuch[uBin], fvuNbDigisPerBinTof[uBin]);
     }  // if( 0 < fvuNbDigisPerBinMuch[   uBin ] || 0 < fvuNbDigisPerBinTof[  uBin ] )
     if (0 < fvuNbDigisPerBinMuch[uBin] || 0 < fvuNbDigisPerBinRich[uBin]) {
-      fMuchRichCorr->Fill(fvuNbDigisPerBinMuch[uBin],
-                          fvuNbDigisPerBinRich[uBin]);
-      fMuchRichCorrProf->Fill(fvuNbDigisPerBinMuch[uBin],
-                              fvuNbDigisPerBinRich[uBin]);
+      fMuchRichCorr->Fill(fvuNbDigisPerBinMuch[uBin], fvuNbDigisPerBinRich[uBin]);
+      fMuchRichCorrProf->Fill(fvuNbDigisPerBinMuch[uBin], fvuNbDigisPerBinRich[uBin]);
     }  // if( 0 < fvuNbDigisPerBinMuch[   uBin ] || 0 < fvuNbDigisPerBinRich[  uBin ] )
 
     if (0 < fvuNbDigisPerBinTof[uBin] || 0 < fvuNbDigisPerBinRich[uBin]) {
       fTofRichCorr->Fill(fvuNbDigisPerBinTof[uBin], fvuNbDigisPerBinRich[uBin]);
-      fTofRichCorrProf->Fill(fvuNbDigisPerBinTof[uBin],
-                             fvuNbDigisPerBinRich[uBin]);
+      fTofRichCorrProf->Fill(fvuNbDigisPerBinTof[uBin], fvuNbDigisPerBinRich[uBin]);
     }  // if( 0 < fvuNbDigisPerBinTof[   uBin ] || 0 < fvuNbDigisPerBinRich[  uBin ] )
 
     for (UInt_t uStsDpb = 0; uStsDpb < kuMaxNbStsDpbs; ++uStsDpb) {
-      if (0 < fvuNbDigisPerBinT0[uBin]
-          || 0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin]) {
-        fT0StsDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinT0[uBin],
-                                     fvuNbDigisPerBinStsDpb[uStsDpb][uBin]);
-        fT0StsDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinT0[uBin],
-                                         fvuNbDigisPerBinStsDpb[uStsDpb][uBin]);
+      if (0 < fvuNbDigisPerBinT0[uBin] || 0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin]) {
+        fT0StsDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinStsDpb[uStsDpb][uBin]);
+        fT0StsDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinT0[uBin], fvuNbDigisPerBinStsDpb[uStsDpb][uBin]);
       }  // if( 0 < fvuNbDigisPerBinT0[   uBin ] || 0 < fvuNbDigisPerBinStsDpb[uStsDpb][  uBin ] )
 
-      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin]
-          || 0 < fvuNbDigisPerBinMuch[uBin]) {
-        fStsMuchDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin],
-                                       fvuNbDigisPerBinMuch[uBin]);
-        fStsMuchDpbCorrProf[uStsDpb]->Fill(
-          fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinMuch[uBin]);
+      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin] || 0 < fvuNbDigisPerBinMuch[uBin]) {
+        fStsMuchDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinMuch[uBin]);
+        fStsMuchDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinMuch[uBin]);
       }  // if( 0 < fvuNbDigisPerBinStsDpb[uStsDpb][   uBin ] || 0 < fvuNbDigisPerBinMuch[  uBin ] )
-      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin]
-          || 0 < fvuNbDigisPerBinTof[uBin]) {
-        fStsTofDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin],
-                                      fvuNbDigisPerBinTof[uBin]);
-        fStsTofDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin],
-                                          fvuNbDigisPerBinTof[uBin]);
+      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin] || 0 < fvuNbDigisPerBinTof[uBin]) {
+        fStsTofDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinTof[uBin]);
+        fStsTofDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinTof[uBin]);
       }  // if( 0 < fvuNbDigisPerBinStsDpb[uStsDpb][   uBin ] || 0 < fvuNbDigisPerBinTof[  uBin ] )
-      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin]
-          || 0 < fvuNbDigisPerBinRich[uBin]) {
-        fStsRichDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin],
-                                       fvuNbDigisPerBinRich[uBin]);
-        fStsRichDpbCorrProf[uStsDpb]->Fill(
-          fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinRich[uBin]);
+      if (0 < fvuNbDigisPerBinStsDpb[uStsDpb][uBin] || 0 < fvuNbDigisPerBinRich[uBin]) {
+        fStsRichDpbCorr[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinRich[uBin]);
+        fStsRichDpbCorrProf[uStsDpb]->Fill(fvuNbDigisPerBinStsDpb[uStsDpb][uBin], fvuNbDigisPerBinRich[uBin]);
       }  // if( 0 < fvuNbDigisPerBinStsDpb[uStsDpb][   uBin ] || 0 < fvuNbDigisPerBinRich[  uBin ] )
     }    // for( UInt_t uStsDpb = 0; uStsDpb < kuMaxNbStsDpbs; ++uStsDpb )
   }      // for( UInt_t uBin = 0; uBin < fiBinNb; ++uBin )
@@ -698,7 +532,8 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
 // ---- Finish --------------------------------------------------------
 void CbmCheckDigisNbCorr::Finish() { WriteHistos(); }
 
-void CbmCheckDigisNbCorr::WriteHistos() {
+void CbmCheckDigisNbCorr::WriteHistos()
+{
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 

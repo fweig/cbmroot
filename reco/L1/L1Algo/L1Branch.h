@@ -18,8 +18,10 @@
 #define L1Branch_H
 
 #include "../CbmL1Def.h"
-#include "L1StsHit.h"
+
 #include <vector>
+
+#include "L1StsHit.h"
 
 class L1Triplet;
 
@@ -85,12 +87,12 @@ struct L1Branch {
   //
   //   }
 
-  inline static bool compareCand(const L1Branch& a, const L1Branch& b) {
+  inline static bool compareCand(const L1Branch& a, const L1Branch& b)
+  {
 
     if (a.NHits != b.NHits) return (a.NHits > b.NHits);
 
-    if (a.ista != b.ista)
-      return (a.ista < b.ista);
+    if (a.ista != b.ista) return (a.ista < b.ista);
 
     else
       return (a.chi2 < b.chi2);
@@ -115,7 +117,8 @@ struct L1Branch {
   // return (a.Quality > b.Quality );
   //}
 
-  void Set(unsigned char iStation, unsigned char Length, float Chi2, float Qp) {
+  void Set(unsigned char iStation, unsigned char Length, float Chi2, float Qp)
+  {
     NHits = Length;
     ista  = iStation;
     //  iN = ( (static_cast<unsigned char>( Chi2 ))<<3 ) + (Level%8);
@@ -145,12 +148,8 @@ struct L1Branch {
   //  static bool comparePChi2(const L1Branch *a, const L1Branch *b){
   //    return compareChi2(*a,*b);
   //  }
-  static bool compareMomentum(const L1Branch& a, const L1Branch& b) {
-    return (a.Momentum > b.Momentum);
-  }
-  static bool comparePMomentum(const L1Branch* a, const L1Branch* b) {
-    return compareMomentum(*a, *b);
-  }
+  static bool compareMomentum(const L1Branch& a, const L1Branch& b) { return (a.Momentum > b.Momentum); }
+  static bool comparePMomentum(const L1Branch* a, const L1Branch* b) { return compareMomentum(*a, *b); }
 };
 
 #endif

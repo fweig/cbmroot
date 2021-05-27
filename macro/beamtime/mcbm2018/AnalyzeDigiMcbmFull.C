@@ -1,14 +1,13 @@
 
-Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
-                           TString sInputFileName   = "data/unp_mcbm.root") {
+Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1, TString sInputFileName = "data/unp_mcbm.root")
+{
   Double_t dOffsetRunStartNs = 34062540800;
   Double_t dTsDurationNs     = 25600 * 4 * 100;
   Double_t dBinLengthNs      = 100;
   /// Add bins for the offset of STS/MUCH!
   UInt_t uExtraBins = 3000;
 
-  UInt_t uNbBinsTs = dTsDurationNs / dBinLengthNs
-                     + uExtraBins;  /// Add bins for the offset of STS/MUCH!
+  UInt_t uNbBinsTs = dTsDurationNs / dBinLengthNs + uExtraBins;  /// Add bins for the offset of STS/MUCH!
   std::vector<UInt_t> vuNbStsDigisBin(uNbBinsTs, 0);
   std::vector<UInt_t> vuNbMuchDigisBin(uNbBinsTs, 0);
   std::vector<UInt_t> vuNbTofDigisBin(uNbBinsTs, 0);
@@ -36,205 +35,109 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   std::vector<std::vector<Double_t>> vdT0DigiTimePerEvent;
 
   /// Histograms
-  std::vector<CbmTofDigi>* vDigisT0  = new std::vector<CbmTofDigi>();
-  std::vector<CbmStsDigi>* vDigisSts = new std::vector<CbmStsDigi>();
-  std::vector<CbmMuchBeamTimeDigi>* vDigisMuch =
-    new std::vector<CbmMuchBeamTimeDigi>();
-  std::vector<CbmTofDigi>* vDigisTof = new std::vector<CbmTofDigi>();
+  std::vector<CbmTofDigi>* vDigisT0            = new std::vector<CbmTofDigi>();
+  std::vector<CbmStsDigi>* vDigisSts           = new std::vector<CbmStsDigi>();
+  std::vector<CbmMuchBeamTimeDigi>* vDigisMuch = new std::vector<CbmMuchBeamTimeDigi>();
+  std::vector<CbmTofDigi>* vDigisTof           = new std::vector<CbmTofDigi>();
 
   /// Raw
   TH2* hDigisNbEvoTs = new TH2D("hDigisNbEvoTs",
                                 "Nb Digis vs Tree entry (TS), per system; "
                                 "Entry []; System []; Counts [Digis]",
-                                10000,
-                                0,
-                                10000,
-                                4,
-                                0,
-                                4);
+                                10000, 0, 10000, 4, 0, 4);
   TH2* hDigisNbEvo   = new TH2D("hDigisNbEvo",
                               "Nb Digis vs Tree entry (TS), per system; Time "
                               "in run [s]; System []; Counts [Digis]",
-                              12000,
-                              0,
-                              120,
-                              4,
-                              0,
-                              4);
+                              12000, 0, 120, 4, 0, 4);
   /// Counts in small time bins
-  TH2* hBinCntStsEvoTs = new TH2D("hBinCntStsEvoTs",
+  TH2* hBinCntStsEvoTs  = new TH2D("hBinCntStsEvoTs",
                                   "STS digi counts per time bin vs Tree entry "
                                   "(TS); Entry []; Digi counts []; Bins []",
-                                  10000,
-                                  0,
-                                  10000,
-                                  200,
-                                  0,
-                                  200);
-  TH2* hBinCntMuchEvoTs =
-    new TH2D("hBinCntMuchEvoTs",
-             "MUCH digi counts per time bin vs Tree entry (TS); Entry []; Digi "
-             "counts []; Bins []",
-             10000,
-             0,
-             10000,
-             200,
-             0,
-             200);
-  TH2* hBinCntTofEvoTs = new TH2D("hBinCntTofEvoTs",
+                                  10000, 0, 10000, 200, 0, 200);
+  TH2* hBinCntMuchEvoTs = new TH2D("hBinCntMuchEvoTs",
+                                   "MUCH digi counts per time bin vs Tree entry (TS); Entry []; Digi "
+                                   "counts []; Bins []",
+                                   10000, 0, 10000, 200, 0, 200);
+  TH2* hBinCntTofEvoTs  = new TH2D("hBinCntTofEvoTs",
                                   "TOF digi counts per time bin vs Tree entry "
                                   "(TS); Entry []; Digi counts []; Bins []",
-                                  10000,
-                                  0,
-                                  10000,
-                                  200,
-                                  0,
-                                  200);
-  TH2* hBinCntT0EvoTs  = new TH2D("hBinCntT0EvoTs",
+                                  10000, 0, 10000, 200, 0, 200);
+  TH2* hBinCntT0EvoTs   = new TH2D("hBinCntT0EvoTs",
                                  "T0 digi counts per time bin vs Tree entry "
                                  "(TS); Entry []; Digi counts []; Bins []",
-                                 10000,
-                                 0,
-                                 10000,
-                                 200,
-                                 0,
-                                 200);
-  TH2* hBinCntAllEvoTs =
-    new TH2D("hBinCntAllEvoTs",
-             "Global digi counts per time bin vs Tree entry (TS); Entry []; "
-             "Digi counts []; Bins []",
-             10000,
-             0,
-             10000,
-             200,
-             0,
-             200);
+                                 10000, 0, 10000, 200, 0, 200);
+  TH2* hBinCntAllEvoTs  = new TH2D("hBinCntAllEvoTs",
+                                  "Global digi counts per time bin vs Tree entry (TS); Entry []; "
+                                  "Digi counts []; Bins []",
+                                  10000, 0, 10000, 200, 0, 200);
 
-  TH2* hBinCntStsMuch =
-    new TH2D("hBinCntStsMuch",
-             "MUCH digi counts per time bin vs same for STS; STS Digi count "
-             "[]; MUCH Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
+  TH2* hBinCntStsMuch = new TH2D("hBinCntStsMuch",
+                                 "MUCH digi counts per time bin vs same for STS; STS Digi count "
+                                 "[]; MUCH Digi counts []; Bins []",
+                                 200, 0, 200, 200, 0, 200);
 
-  TH2* hBinCntStsTof =
-    new TH2D("hBinCntStsTof",
-             "TOF digi counts per time bin vs same for STS; STS Digi count []; "
-             "TOF Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
-  TH2* hBinCntMuchTof =
-    new TH2D("hBinCntMuchTof",
-             "TOF digi counts per time bin vs same for MUCH; MUCH Digi count "
-             "[]; TOF Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
+  TH2* hBinCntStsTof  = new TH2D("hBinCntStsTof",
+                                "TOF digi counts per time bin vs same for STS; STS Digi count []; "
+                                "TOF Digi counts []; Bins []",
+                                200, 0, 200, 200, 0, 200);
+  TH2* hBinCntMuchTof = new TH2D("hBinCntMuchTof",
+                                 "TOF digi counts per time bin vs same for MUCH; MUCH Digi count "
+                                 "[]; TOF Digi counts []; Bins []",
+                                 200, 0, 200, 200, 0, 200);
 
-  TH2* hBinCntStsAll =
-    new TH2D("hBinCntStsAll",
-             "Global digi counts per time bin vs same for STS; STS Digi count "
-             "[]; ALL Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
-  TH2* hBinCntMuchAll =
-    new TH2D("hBinCntMuchAll",
-             "Global digi counts per time bin vs same for MUCH; MUCH Digi "
-             "count []; ALL Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
-  TH2* hBinCntTofAll =
-    new TH2D("hBinCntTofAll",
-             "Global digi counts per time bin vs same for TOF; TOF Digi count "
-             "[]; ALL Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
-  TH2* hBinCntT0All =
-    new TH2D("hBinCntT0All",
-             "Global digi counts per time bin vs same for T0; T0 Digi count "
-             "[]; ALL Digi counts []; Bins []",
-             200,
-             0,
-             200,
-             200,
-             0,
-             200);
+  TH2* hBinCntStsAll  = new TH2D("hBinCntStsAll",
+                                "Global digi counts per time bin vs same for STS; STS Digi count "
+                                "[]; ALL Digi counts []; Bins []",
+                                200, 0, 200, 200, 0, 200);
+  TH2* hBinCntMuchAll = new TH2D("hBinCntMuchAll",
+                                 "Global digi counts per time bin vs same for MUCH; MUCH Digi "
+                                 "count []; ALL Digi counts []; Bins []",
+                                 200, 0, 200, 200, 0, 200);
+  TH2* hBinCntTofAll  = new TH2D("hBinCntTofAll",
+                                "Global digi counts per time bin vs same for TOF; TOF Digi count "
+                                "[]; ALL Digi counts []; Bins []",
+                                200, 0, 200, 200, 0, 200);
+  TH2* hBinCntT0All   = new TH2D("hBinCntT0All",
+                               "Global digi counts per time bin vs same for T0; T0 Digi count "
+                               "[]; ALL Digi counts []; Bins []",
+                               200, 0, 200, 200, 0, 200);
 
   /// Event detection
-  TH1* hEventSeedEvo = new TH1D(
-    "hEventSeedEvo",
-    "Nb of event seed vs time in run; Time in run [s]; Event seed Nb []",
-    12000,
-    0,
-    120);
+  TH1* hEventSeedEvo =
+    new TH1D("hEventSeedEvo", "Nb of event seed vs time in run; Time in run [s]; Event seed Nb []", 12000, 0, 120);
 
   /// Event Analysis
   TH1* hStsTofTimeCorr =
     new TH1D("hStsTofTimeCorr",
              "Time difference between each STS and TOF Digi pair in event; "
              "tSts - tTOF [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
   TH1* hMuchTofTimeCorr =
     new TH1D("hMuchTofTimeCorr",
              "Time difference between each MUCH and TOF Digi pair in event; "
              "tSts - tTOF [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
   TH1* hStsMuchTimeCorr =
     new TH1D("hStsMuchTimeCorr",
              "Time difference between each STS and MUCH Digi pair in event; "
              "tSts - tMUCH [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
 
   TH1* hStsT0TimeCorr =
     new TH1D("hStsT0TimeCorr",
              "Time difference between each STS and T0 Digi pair in event; tSts "
              "- tT0 [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
   TH1* hMuchT0TimeCorr =
     new TH1D("hMuchT0TimeCorr",
              "Time difference between each MUCH and T0 Digi pair in event; "
              "tSts - tT0 [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
   TH1* hTofT0TimeCorr =
     new TH1D("hTofT0TimeCorr",
              "Time difference between each Tof and T0 Digi pair in event; tTof "
              "- tT0 [ns]; Digi pairs []",
-             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5,
-             dEventWinToMeanMinNs,
-             dEventWinToMeanMaxNs);
+             (Int_t)(dEventWinToMeanMaxNs - dEventWinToMeanMinNs) / 5, dEventWinToMeanMinNs, dEventWinToMeanMaxNs);
 
   TFile* pFile = new TFile(sInputFileName, "READ");
   gROOT->cd();
@@ -249,11 +152,9 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   //read the number of entries in the tree
   Long64_t liNbEntries = pTree->GetEntries();
 
-  std::cout << " Nb Entries: " << liNbEntries << " Tree addr: " << pTree
-            << std::endl;
+  std::cout << " Nb Entries: " << liNbEntries << " Tree addr: " << pTree << std::endl;
 
-  if (-1 == liNbEntryToRead || liNbEntries < liNbEntryToRead)
-    liNbEntryToRead = liNbEntries;
+  if (-1 == liNbEntryToRead || liNbEntries < liNbEntryToRead) liNbEntryToRead = liNbEntries;
 
   for (Long64_t liEntry = 3; liEntry < liNbEntryToRead; liEntry++) {
     pTree->GetEntry(liEntry);
@@ -264,11 +165,9 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
     UInt_t uNbDigisTof  = vDigisTof->size();
 
     if (0 == liEntry % 1000)
-      std::cout << "Event " << std::setw(6) << liEntry << " Nb Sts digis is "
-                << std::setw(6) << uNbDigisSts << " Nb Much digis is "
-                << std::setw(6) << uNbDigisMuch << " Nb Tof digis is "
-                << std::setw(6) << uNbDigisTof << " Nb T0 digis is "
-                << std::setw(6) << uNbDigisT0 << std::endl;
+      std::cout << "Event " << std::setw(6) << liEntry << " Nb Sts digis is " << std::setw(6) << uNbDigisSts
+                << " Nb Much digis is " << std::setw(6) << uNbDigisMuch << " Nb Tof digis is " << std::setw(6)
+                << uNbDigisTof << " Nb T0 digis is " << std::setw(6) << uNbDigisT0 << std::endl;
 
     hDigisNbEvoTs->Fill(liEntry, 0., uNbDigisSts);
     hDigisNbEvoTs->Fill(liEntry, 1., uNbDigisMuch);
@@ -300,8 +199,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
                 << std::endl;
 */
     Double_t dTsStartNs =
-      dOffsetRunStartNs + liEntry * dTsDurationNs
-      - uExtraBins * dBinLengthNs;  /// Add bins for the offset of STS/MUCH!
+      dOffsetRunStartNs + liEntry * dTsDurationNs - uExtraBins * dBinLengthNs;  /// Add bins for the offset of STS/MUCH!
 
     for (UInt_t uStsDigi = 0; uStsDigi < uNbDigisSts; ++uStsDigi) {
       Double_t dTime = (vDigisT0->at(uStsDigi)).GetTime();
@@ -309,8 +207,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
 
       UInt_t uBin = (dTime - dTsStartNs) / dBinLengthNs;
       if (uNbBinsTs <= uBin) {
-        std::cout << "STS " << uBin << " / " << uNbBinsTs << " " << uStsDigi
-                  << " / " << uNbDigisSts << std::endl;
+        std::cout << "STS " << uBin << " / " << uNbBinsTs << " " << uStsDigi << " / " << uNbDigisSts << std::endl;
         continue;
       }  // if( uNbBinsTs <= uBin )
       vuNbStsDigisBin[uBin]++;
@@ -325,8 +222,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
 
       UInt_t uBin = (dTime - dTsStartNs) / dBinLengthNs;
       if (uNbBinsTs <= uBin) {
-        std::cout << "MUCH " << uBin << " / " << uNbBinsTs << " " << uMuchDigi
-                  << " / " << uNbDigisMuch << std::endl;
+        std::cout << "MUCH " << uBin << " / " << uNbBinsTs << " " << uMuchDigi << " / " << uNbDigisMuch << std::endl;
         continue;
       }  // if( uNbBinsTs <= uBin )
       vuNbMuchDigisBin[uBin]++;
@@ -341,8 +237,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
 
       UInt_t uBin = (dTime - dTsStartNs) / dBinLengthNs;
       if (uNbBinsTs <= uBin) {
-        std::cout << "TOF " << uBin << " / " << uNbBinsTs << " " << uTofDigi
-                  << " / " << uNbDigisTof << std::endl;
+        std::cout << "TOF " << uBin << " / " << uNbBinsTs << " " << uTofDigi << " / " << uNbDigisTof << std::endl;
         continue;
       }  // if( uNbBinsTs <= uBin )
       vuNbTofDigisBin[uBin]++;
@@ -357,8 +252,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
 
       UInt_t uBin = (dTime - dTsStartNs) / dBinLengthNs;
       if (uNbBinsTs <= uBin) {
-        std::cout << "T0 " << uBin << " / " << uNbBinsTs << " " << uT0Digi
-                  << " / " << uNbDigisT0 << std::endl;
+        std::cout << "T0 " << uBin << " / " << uNbBinsTs << " " << uT0Digi << " / " << uNbDigisT0 << std::endl;
         continue;
       }  // if( uNbBinsTs <= uBin )
       vuNbT0DigisBin[uBin]++;
@@ -371,18 +265,15 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
       if (0 < vuNbStsDigisBin[uBin]) {
         hBinCntStsEvoTs->Fill(liEntry, vuNbStsDigisBin[uBin]);
 
-        if (0 < vuNbMuchDigisBin[uBin])
-          hBinCntStsMuch->Fill(vuNbStsDigisBin[uBin], vuNbMuchDigisBin[uBin]);
+        if (0 < vuNbMuchDigisBin[uBin]) hBinCntStsMuch->Fill(vuNbStsDigisBin[uBin], vuNbMuchDigisBin[uBin]);
 
-        if (0 < vuNbTofDigisBin[uBin])
-          hBinCntStsTof->Fill(vuNbStsDigisBin[uBin], vuNbTofDigisBin[uBin]);
+        if (0 < vuNbTofDigisBin[uBin]) hBinCntStsTof->Fill(vuNbStsDigisBin[uBin], vuNbTofDigisBin[uBin]);
       }  // if( 0 < vuNbStsDigisBin[  uBin ] )
 
       if (0 < vuNbMuchDigisBin[uBin]) {
         hBinCntMuchEvoTs->Fill(liEntry, vuNbMuchDigisBin[uBin]);
 
-        if (0 < vuNbTofDigisBin[uBin])
-          hBinCntMuchTof->Fill(vuNbMuchDigisBin[uBin], vuNbTofDigisBin[uBin]);
+        if (0 < vuNbTofDigisBin[uBin]) hBinCntMuchTof->Fill(vuNbMuchDigisBin[uBin], vuNbTofDigisBin[uBin]);
       }  // if( 0 < vuNbMuchDigisBin[ uBin ] )
 
       if (0 < vuNbTofDigisBin[uBin]) {
@@ -403,21 +294,15 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
       }  // if( 0 < vuNbAllDigisBin[ uBin ] )
 
       /// Event detection
-      if (uThrNbStsDigi <= vuNbStsDigisBin[uBin]
-          && uThrNbMuchDigi <= vuNbMuchDigisBin[uBin]
-          && uThrNbTofDigi <= vuNbTofDigisBin[uBin]
-          && uThrNbT0Digi <= vuNbT0DigisBin[uBin]
+      if (uThrNbStsDigi <= vuNbStsDigisBin[uBin] && uThrNbMuchDigi <= vuNbMuchDigisBin[uBin]
+          && uThrNbTofDigi <= vuNbTofDigisBin[uBin] && uThrNbT0Digi <= vuNbT0DigisBin[uBin]
           && uThrNbAllDigi <= vuNbAllDigisBin[uBin]
           && (0 == vdBinsWithEventStopTime.size()
-              || vdBinsWithEventStopTime[vdBinsWithEventStopTime.size() - 1]
-                   < (dTsStartNs + uBin * dBinLengthNs))) {
+              || vdBinsWithEventStopTime[vdBinsWithEventStopTime.size() - 1] < (dTsStartNs + uBin * dBinLengthNs))) {
         vdBinsWithEventStartTime.push_back(dTsStartNs + uBin * dBinLengthNs);
-        vdBinsWithEventStopTime.push_back(dTsStartNs
-                                          + (uBin + 1) * dBinLengthNs);
-        vdMeanTimeEventSeeds.push_back(vdDigisMeanTimeBin[uBin]
-                                       / vuNbAllDigisBin[uBin]);
-        hEventSeedEvo->Fill(vdDigisMeanTimeBin[uBin] / vuNbAllDigisBin[uBin]
-                            * 1e-9);
+        vdBinsWithEventStopTime.push_back(dTsStartNs + (uBin + 1) * dBinLengthNs);
+        vdMeanTimeEventSeeds.push_back(vdDigisMeanTimeBin[uBin] / vuNbAllDigisBin[uBin]);
+        hEventSeedEvo->Fill(vdDigisMeanTimeBin[uBin] / vuNbAllDigisBin[uBin] * 1e-9);
       }  // if all thresholds passed
 
       vuNbStsDigisBin[uBin]    = 0;
@@ -542,13 +427,10 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   vdT0DigiTimePerEvent.resize(uNbEventSeeds);
   Long64_t liEntry = 3;
   for (UInt_t uEventSeed = 0; uEventSeed < uNbEventSeeds; ++uEventSeed) {
-    if (0 == uEventSeed % 1000)
-      std::cout << uEventSeed << " / " << uNbEventSeeds << std::endl;
+    if (0 == uEventSeed % 1000) std::cout << uEventSeed << " / " << uNbEventSeeds << std::endl;
 
-    Double_t dEvtStartTime =
-      vdMeanTimeEventSeeds[uEventSeed] + dEventWinToMeanMinNs;
-    Double_t dEvtStopTime =
-      vdMeanTimeEventSeeds[uEventSeed] + dEventWinToMeanMaxNs;
+    Double_t dEvtStartTime = vdMeanTimeEventSeeds[uEventSeed] + dEventWinToMeanMinNs;
+    Double_t dEvtStopTime  = vdMeanTimeEventSeeds[uEventSeed] + dEventWinToMeanMaxNs;
 
     Bool_t bStsDone  = kFALSE;
     Bool_t bMuchDone = kFALSE;
@@ -611,71 +493,49 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
         }  // if( dEvtStopTime <= dTime )
       }    // for( UInt_t uT0Digi = 0; uT0Digi < uNbDigisT0; ++uT0Digi )
 
-      if (kTRUE == bStsDone && kTRUE == bMuchDone && kTRUE == bTofDone
-          && kTRUE == bT0Done)
-        break;
+      if (kTRUE == bStsDone && kTRUE == bMuchDone && kTRUE == bTofDone && kTRUE == bT0Done) break;
     }  // for( ; liEntry < nentries; liEntry++)
 
-    for (UInt_t uStsTime = 0;
-         uStsTime < vdStsDigiTimePerEvent[uEventSeed].size();
-         ++uStsTime) {
-      for (UInt_t uMuchTime = 0;
-           uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size();
-           ++uMuchTime) {
+    for (UInt_t uStsTime = 0; uStsTime < vdStsDigiTimePerEvent[uEventSeed].size(); ++uStsTime) {
+      for (UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size(); ++uMuchTime) {
         hStsMuchTimeCorr->Fill(vdStsDigiTimePerEvent[uEventSeed][uStsTime]
                                - vdMuchDigiTimePerEvent[uEventSeed][uMuchTime]);
       }  // for( UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[ uEventSeed ].size(); ++uMuchTime )
 
-      for (UInt_t uTofTime = 0;
-           uTofTime < vdTofDigiTimePerEvent[uEventSeed].size();
-           ++uTofTime) {
+      for (UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[uEventSeed].size(); ++uTofTime) {
         hStsTofTimeCorr->Fill(vdStsDigiTimePerEvent[uEventSeed][uStsTime]
                               - vdTofDigiTimePerEvent[uEventSeed][uTofTime]);
       }  // for( UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[ uEventSeed ].size(); ++uTofTime )
-    }  // for( UInt_t uStsTime = 0; uStsTime < vdStsDigiTimePerEvent[ uEventSeed ].size(); ++uStsTime )
+    }    // for( UInt_t uStsTime = 0; uStsTime < vdStsDigiTimePerEvent[ uEventSeed ].size(); ++uStsTime )
 
-    for (UInt_t uMuchTime = 0;
-         uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size();
-         ++uMuchTime) {
-      for (UInt_t uTofTime = 0;
-           uTofTime < vdTofDigiTimePerEvent[uEventSeed].size();
-           ++uTofTime) {
+    for (UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size(); ++uMuchTime) {
+      for (UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[uEventSeed].size(); ++uTofTime) {
         hMuchTofTimeCorr->Fill(vdMuchDigiTimePerEvent[uEventSeed][uMuchTime]
                                - vdTofDigiTimePerEvent[uEventSeed][uTofTime]);
       }  // for( UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[ uEventSeed ].size(); ++uTofTime )
-    }  // for( UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[ uEventSeed ].size(); ++uMuchTime )
+    }    // for( UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[ uEventSeed ].size(); ++uMuchTime )
 
 
-    for (UInt_t uT0Time = 0; uT0Time < vdT0DigiTimePerEvent[uEventSeed].size();
-         ++uT0Time) {
-      for (UInt_t uStsTime = 0;
-           uStsTime < vdStsDigiTimePerEvent[uEventSeed].size();
-           ++uStsTime) {
-        hStsT0TimeCorr->Fill(vdStsDigiTimePerEvent[uEventSeed][uStsTime]
-                             - vdT0DigiTimePerEvent[uEventSeed][uT0Time]);
+    for (UInt_t uT0Time = 0; uT0Time < vdT0DigiTimePerEvent[uEventSeed].size(); ++uT0Time) {
+      for (UInt_t uStsTime = 0; uStsTime < vdStsDigiTimePerEvent[uEventSeed].size(); ++uStsTime) {
+        hStsT0TimeCorr->Fill(vdStsDigiTimePerEvent[uEventSeed][uStsTime] - vdT0DigiTimePerEvent[uEventSeed][uT0Time]);
       }  // for( UInt_t uStsTime = 0; uStsTime < vdStsDigiTimePerEvent[ uEventSeed ].size(); ++uStsTime )
 
-      for (UInt_t uMuchTime = 0;
-           uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size();
-           ++uMuchTime) {
+      for (UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[uEventSeed].size(); ++uMuchTime) {
         hMuchT0TimeCorr->Fill(vdMuchDigiTimePerEvent[uEventSeed][uMuchTime]
                               - vdT0DigiTimePerEvent[uEventSeed][uT0Time]);
       }  // for( UInt_t uMuchTime = 0; uMuchTime < vdMuchDigiTimePerEvent[ uEventSeed ].size(); ++uMuchTime )
 
-      for (UInt_t uTofTime = 0;
-           uTofTime < vdTofDigiTimePerEvent[uEventSeed].size();
-           ++uTofTime) {
-        hTofT0TimeCorr->Fill(vdTofDigiTimePerEvent[uEventSeed][uTofTime]
-                             - vdT0DigiTimePerEvent[uEventSeed][uT0Time]);
+      for (UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[uEventSeed].size(); ++uTofTime) {
+        hTofT0TimeCorr->Fill(vdTofDigiTimePerEvent[uEventSeed][uTofTime] - vdT0DigiTimePerEvent[uEventSeed][uT0Time]);
       }  // for( UInt_t uTofTime = 0; uTofTime < vdTofDigiTimePerEvent[ uEventSeed ].size(); ++uTofTime )
-    }  // for( UInt_t uT0Time = 0; uT0Time < vdT0DigiTimePerEvent[ uEventSeed ].size(); ++uT0Time )
-  }    // for( UInt_t uEventSeed = 0; uEventSeed < uNbEventSeeds; ++uEventSeed )
+    }    // for( UInt_t uT0Time = 0; uT0Time < vdT0DigiTimePerEvent[ uEventSeed ].size(); ++uT0Time )
+  }      // for( UInt_t uEventSeed = 0; uEventSeed < uNbEventSeeds; ++uEventSeed )
 
 
   pFile->Close();
 
-  TCanvas* cDigisNb = new TCanvas(
-    "cDigisNb", "Digis Nb, per system, vs TS index and time in run");
+  TCanvas* cDigisNb = new TCanvas("cDigisNb", "Digis Nb, per system, vs TS index and time in run");
   cDigisNb->Divide(2);
 
   cDigisNb->cd(1);
@@ -690,9 +550,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   gPad->SetLogz();
   hDigisNbEvo->Draw("colz");
 
-  TCanvas* cBinCntEvo =
-    new TCanvas("cBinCntEvo",
-                "Digis count per bin vs TS index and time in run, per system");
+  TCanvas* cBinCntEvo = new TCanvas("cBinCntEvo", "Digis count per bin vs TS index and time in run, per system");
   cBinCntEvo->Divide(3, 2);
 
   cBinCntEvo->cd(1);
@@ -725,8 +583,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   gPad->SetLogz();
   hBinCntAllEvoTs->Draw("colz");
 
-  TCanvas* cBinCntSts = new TCanvas(
-    "cBinCntSts", "Digis count per bin in each system vs same in STS");
+  TCanvas* cBinCntSts = new TCanvas("cBinCntSts", "Digis count per bin in each system vs same in STS");
   cBinCntSts->Divide(2, 2);
 
   cBinCntSts->cd(1);
@@ -747,8 +604,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   gPad->SetLogz();
   hBinCntStsTof->Draw("colz");
 
-  TCanvas* cBinCntAll = new TCanvas(
-    "cBinCntAll", "Global Digis count per bin vs same  in each system");
+  TCanvas* cBinCntAll = new TCanvas("cBinCntAll", "Global Digis count per bin vs same  in each system");
   cBinCntAll->Divide(2, 2);
 
   cBinCntAll->cd(1);
@@ -775,15 +631,13 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   gPad->SetLogz();
   hBinCntT0All->Draw("colz");
 
-  TCanvas* cEventSeedEvo =
-    new TCanvas("cEventSeedEvo", "Event seed number vs time in run");
+  TCanvas* cEventSeedEvo = new TCanvas("cEventSeedEvo", "Event seed number vs time in run");
   cEventSeedEvo->cd();
   gPad->SetGridx();
   gPad->SetGridy();
   hEventSeedEvo->Draw();
 
-  TCanvas* cEventTimeCorr =
-    new TCanvas("cEventTimeCorr", "Time correlation between systems in events");
+  TCanvas* cEventTimeCorr = new TCanvas("cEventTimeCorr", "Time correlation between systems in events");
   cEventTimeCorr->Divide(2, 2);
 
   cEventTimeCorr->cd(1);
@@ -801,8 +655,7 @@ Bool_t AnalyzeDigiMcbmFull(Long64_t liNbEntryToRead = -1,
   gPad->SetGridy();
   hStsMuchTimeCorr->Draw("");
 
-  TCanvas* cEventTimeCorrT0 = new TCanvas(
-    "cEventTimeCorrT0", "Time correlation between systems in events");
+  TCanvas* cEventTimeCorrT0 = new TCanvas("cEventTimeCorrT0", "Time correlation between systems in events");
   cEventTimeCorrT0->Divide(2, 2);
 
   cEventTimeCorrT0->cd(1);

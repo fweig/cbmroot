@@ -7,7 +7,8 @@
 //
 // --------------------------------------------------------------------------
 
-void run_sim_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
+void run_sim_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
+{
   if (nEvents > 500) nEvents = 500;
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -16,10 +17,8 @@ void run_sim_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << digipar
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -298,8 +297,7 @@ void run_sim_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

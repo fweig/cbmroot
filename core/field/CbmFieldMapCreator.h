@@ -17,13 +17,12 @@
 #ifndef CBMFIELDMAPCREATOR_H
 #define CBMFIELDMAPCREATOR_H 1
 
+#include <FairField.h>  // for FairField
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
-
-#include <TList.h>    // for TList
-#include <TString.h>  // for TString
-
-#include <FairField.h>  // for FairField
+#include <TList.h>       // for TList
+#include <TString.h>     // for TString
 
 class TArrayF;
 
@@ -50,15 +49,8 @@ public:
    **@param ymin,ymax  Extension in y coordinate
    **@param zmin,zmax  Extension in z coordinate
    **/
-  void SetGridParameters(Int_t nx,
-                         Double_t xmin,
-                         Double_t xmax,
-                         Int_t ny,
-                         Double_t ymin,
-                         Double_t ymax,
-                         Int_t nz,
-                         Double_t zmin,
-                         Double_t zmax);
+  void SetGridParameters(Int_t nx, Double_t xmin, Double_t xmax, Int_t ny, Double_t ymin, Double_t ymax, Int_t nz,
+                         Double_t zmin, Double_t zmax);
 
 
   /** Add an input field **/

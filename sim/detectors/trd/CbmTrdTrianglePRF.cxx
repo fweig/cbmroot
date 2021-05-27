@@ -5,10 +5,10 @@
  **/
 
 
+#include "CbmTrdTrianglePRF.h"
+
 #include <TF1.h>
 #include <TMath.h>
-
-#include "CbmTrdTrianglePRF.h"
 
 using std::cout;
 using std::endl;
@@ -34,7 +34,8 @@ CbmTrdTrianglePRF::CbmTrdTrianglePRF(Float_t W, Float_t H, Int_t n)
   , fX()
   , fY()
   , fPRFx(NULL)
-  , fPRFy(NULL) {
+  , fPRFy(NULL)
+{
   /**
  *  Build the map for triangular pad integration. The dimension of the map is given by the no of adjacent columns/rows considered in the map (default 5 columns and 3 rows)
 */
@@ -56,13 +57,10 @@ CbmTrdTrianglePRF::CbmTrdTrianglePRF(Float_t W, Float_t H, Int_t n)
           fY.push_back(yv);
 
           // compute pad type
-          Int_t up1 = GetSide(bx0 - jcol * W + dw - epsilon,
-                              by0 - jrow * H + epsilon),
-                up2 = GetSide(bx0 - jcol * W + epsilon,
-                              by0 - jrow * H + dh - epsilon);
+          Int_t up1 = GetSide(bx0 - jcol * W + dw - epsilon, by0 - jrow * H + epsilon),
+                up2 = GetSide(bx0 - jcol * W + epsilon, by0 - jrow * H + dh - epsilon);
           //printf("v(%5.2f %5.2f) lu(%5.2f %5.2f)[%d] rl(%5.2f %5.2f)[%d]\n", xv, yv, bx0-jcol*W, by0-jrow*H+fdH, up2, bx0-jcol*W+fdW, by0-jrow*H, up1);
-          if (up1 != up2)
-            fUp.push_back(0);
+          if (up1 != up2) fUp.push_back(0);
           else
             fUp.push_back(up1);
         }
@@ -75,21 +73,19 @@ CbmTrdTrianglePRF::CbmTrdTrianglePRF(Float_t W, Float_t H, Int_t n)
   fPRFx->SetParameters(1, 0., 0.46 * fW);  // TODO should be loaded from DB
   fPRFy = new TF1("prfy", "gaus", -(NR + .5) * fH, (NR + .5) * fH);
   fPRFy->SetParameters(1, 0., 0.46 * fW);  // TODO should be loaded from DB
-  fNorm = fPRFx->Integral(-(NC + .5) * fW, (NC + .5) * fW)
-          * fPRFy->Integral(-(NR + .5) * fH, (NR + .5) * fH);
+  fNorm = fPRFx->Integral(-(NC + .5) * fW, (NC + .5) * fW) * fPRFy->Integral(-(NR + .5) * fH, (NR + .5) * fH);
 }
 
 //___________________________________________________________________________
-CbmTrdTrianglePRF::~CbmTrdTrianglePRF() {
+CbmTrdTrianglePRF::~CbmTrdTrianglePRF()
+{
   if (fPRFy) delete fPRFy;
   if (fPRFx) delete fPRFx;
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::GetBin(Double_t x,
-                                 Double_t y,
-                                 Int_t& binx,
-                                 Int_t& biny) const {
+Bool_t CbmTrdTrianglePRF::GetBin(Double_t x, Double_t y, Int_t& binx, Int_t& biny) const
+{
   /**  
  * Function looks for the bin containing the point (x,y). The function is optimized for points in the center column/pad of the map. 
  */
@@ -148,18 +144,19 @@ Bool_t CbmTrdTrianglePRF::GetBin(Double_t x,
 }
 
 //_________________________________________________________
-Double_t CbmTrdTrianglePRF::GetChargeFraction() const {
+Double_t CbmTrdTrianglePRF::GetChargeFraction() const
+{
   /**
  * Compute charge fraction on the current bin
  */
 
   Int_t bin(fBinx * fN + fBiny) /*, bin0(fBinx0*fN+fBiny0)*/;
-  return fPRFx->Eval(fX[bin] - fX0) * fPRFy->Eval(fY[bin] - fY0) * 4 * fdW
-         * fdH;
+  return fPRFx->Eval(fX[bin] - fX0) * fPRFy->Eval(fY[bin] - fY0) * 4 * fdW * fdH;
 }
 
 //_________________________________________________________
-void CbmTrdTrianglePRF::GetCurrentPad(Int_t& col, Int_t& row, Int_t& u) const {
+void CbmTrdTrianglePRF::GetCurrentPad(Int_t& col, Int_t& row, Int_t& u) const
+{
   /**
  * Find the column/row for the current bin. The up parameter describe the pad holding the bin:\n
  *  -1 bottom pad\n
@@ -174,7 +171,8 @@ void CbmTrdTrianglePRF::GetCurrentPad(Int_t& col, Int_t& row, Int_t& u) const {
 }
 
 //_________________________________________________________
-Int_t CbmTrdTrianglePRF::GetSide(const Float_t x, const Float_t y) const {
+Int_t CbmTrdTrianglePRF::GetSide(const Float_t x, const Float_t y) const
+{
   /**
  *  Define the type of triangular pad for the current bin defined by the position in the local column coordinates.\n
  * Return 1 for the upper pad and -1 for the bottom
@@ -195,7 +193,8 @@ Int_t CbmTrdTrianglePRF::GetSide(const Float_t x, const Float_t y) const {
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::NextBinX() {
+Bool_t CbmTrdTrianglePRF::NextBinX()
+{
   /**
  * Move current bin to the right. Check we are still in the allocated map
  */
@@ -205,7 +204,8 @@ Bool_t CbmTrdTrianglePRF::NextBinX() {
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::NextBinY() {
+Bool_t CbmTrdTrianglePRF::NextBinY()
+{
   /**
  * Move current bin upwards. Check we are still in the allocated map
  */
@@ -215,7 +215,8 @@ Bool_t CbmTrdTrianglePRF::NextBinY() {
 }
 
 //_________________________________________________________
-void CbmTrdTrianglePRF::Print(Option_t* opt) const {
+void CbmTrdTrianglePRF::Print(Option_t* opt) const
+{
   printf("N=%d dw=%f dh=%f Slope=%f\n", fN, fdW, fdH, fSlope);
   if (strcmp(opt, "all") != 0) return;
   for (UInt_t i(0); i < fX.size(); i++) {
@@ -226,7 +227,8 @@ void CbmTrdTrianglePRF::Print(Option_t* opt) const {
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::PrevBinX() {
+Bool_t CbmTrdTrianglePRF::PrevBinX()
+{
   /**
  * Move current bin to the left. Check we are still in the allocated map
  */
@@ -236,7 +238,8 @@ Bool_t CbmTrdTrianglePRF::PrevBinX() {
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::PrevBinY() {
+Bool_t CbmTrdTrianglePRF::PrevBinY()
+{
   /**
  * Move current bin downwards. Check we are still in the allocated map
  */
@@ -246,7 +249,8 @@ Bool_t CbmTrdTrianglePRF::PrevBinY() {
 }
 
 //_________________________________________________________
-Bool_t CbmTrdTrianglePRF::SetOrigin(Double_t x, Double_t y) {
+Bool_t CbmTrdTrianglePRF::SetOrigin(Double_t x, Double_t y)
+{
   Bool_t ret;
   if ((ret = GetBin(x, y, fBinx0, fBiny0))) {
     fBinx = fBinx0;

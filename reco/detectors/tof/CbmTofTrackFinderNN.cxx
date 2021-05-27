@@ -37,8 +37,9 @@
 #include "CbmTofTrackFitter.h"
 #include "CbmTofTracklet.h"
 #include "CbmTofTrackletParam.h"
-#include "LKFMinuit.h"
 #include <CbmEvDisTracks.h>  // in eventdisplay/tof
+
+#include "LKFMinuit.h"
 
 // C++ includes
 #include <map>
@@ -68,7 +69,9 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN()
   , fChiMaxAccept(3.)
   , fPosYMaxScal(0.55)
   , fTracks()
-  , fvTrkVec() {}
+  , fvTrkVec()
+{
+}
 
 CbmTofTrackFinderNN::~CbmTofTrackFinderNN() {}
 
@@ -90,7 +93,8 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder)
   , fChiMaxAccept(3.)
   , fPosYMaxScal(0.55)
   , fTracks()
-  , fvTrkVec() {
+  , fvTrkVec()
+{
   // action
   fHits   = finder.fHits;
   fTracks = finder.fTracks;
@@ -98,15 +102,16 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder)
 }
 
 // assignment operator
-CbmTofTrackFinderNN&
-CbmTofTrackFinderNN::operator=(const CbmTofTrackFinderNN& /*fSource*/) {
+CbmTofTrackFinderNN& CbmTofTrackFinderNN::operator=(const CbmTofTrackFinderNN& /*fSource*/)
+{
   // do copy
   // ... (too lazy) ...
   // return the existing object
   return *this;
 }
 
-void CbmTofTrackFinderNN::Init() {
+void CbmTofTrackFinderNN::Init()
+{
   /*
   CbmTofFindTracks* fFindTracks = CbmTofFindTracks::Instance();
   fFitter = fFindTracks->GetFitter();
@@ -114,32 +119,26 @@ void CbmTofTrackFinderNN::Init() {
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
   fDigiPar            = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
-  if (NULL == fDigiPar) {
-    LOG(error)
-      << "CbmTofTrackFinderNN::Init => Could not obtain the CbmTofDigiPar ";
-  }
+  if (NULL == fDigiPar) { LOG(error) << "CbmTofTrackFinderNN::Init => Could not obtain the CbmTofDigiPar "; }
 
   LOG(info) << Form(" CbmTofTrackFinderNN::Init : Fitter at 0x%p", fFitter);
 
   fFindTracks = CbmTofFindTracks::Instance();
-  if (NULL == fFindTracks)
-    LOG(fatal) << Form(
-      " CbmTofTrackFinderNN::Init : no FindTracks instance found");
+  if (NULL == fFindTracks) LOG(fatal) << Form(" CbmTofTrackFinderNN::Init : no FindTracks instance found");
 
   fMinuit.Initialize();
 
   LOG(info) << "MaxTofTimeDifference = " << fMaxTofTimeDifference;
 }
 
-Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
-                                  TClonesArray* fTofTracks) {
+Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits, TClonesArray* fTofTracks)
+{
   fiNtrks    = 0;  // initialize
   fHits      = fTofHits;
   fOutTracks = fTofTracks;  //new TClonesArray("CbmTofTracklet");
   //fTracks = new TClonesArray("CbmTofTracklet");
   //if (0 == fFindTracks->GetStationType(0)){ // Generate Pseudo TofHit at origin
-  if (
-    0) {  //  == fFindTracks->GetAddrOfStation(0)) {  // generate new track seed, disabled
+  if (0) {  //  == fFindTracks->GetAddrOfStation(0)) {  // generate new track seed, disabled
     fFindTracks->SetStation(0, 0, 0, 0);
     const Int_t iDetId = CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 0);
     const TVector3 hitPos(0., 0., 0.);
@@ -147,17 +146,15 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
     const Double_t dTime0 = 0.;               // FIXME
 
     Int_t iNbHits = fHits->GetEntriesFast();
-    /*CbmTofHit *pHit0 =*/new ((*fHits)[iNbHits]) CbmTofHit(
-      iDetId,
-      hitPos,
-      hitPosErr,  // local detector coordinates
-      iNbHits,    // this number is used as reference!!
-      dTime0,     // Time of hit
-      0,  //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
-      0);
-    LOG(debug1)
-      << "CbmTofTrackFinderNN::DoFind: Fake Hit at origin added at position "
-      << iNbHits << Form(", DetId 0x%08x", iDetId);
+    /*CbmTofHit *pHit0 =*/new ((*fHits)[iNbHits])
+      CbmTofHit(iDetId, hitPos,
+                hitPosErr,  // local detector coordinates
+                iNbHits,    // this number is used as reference!!
+                dTime0,     // Time of hit
+                0,          //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
+                0);
+    LOG(debug1) << "CbmTofTrackFinderNN::DoFind: Fake Hit at origin added at position " << iNbHits
+                << Form(", DetId 0x%08x", iDetId);
   }
 
   //  fvTrkMap.resize(fHits->GetEntriesFast());
@@ -172,14 +169,10 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
   Int_t iNTrks = 0;
   Int_t iSt0   = -1;
   Int_t iSt1   = 0;
-  while (iSt0
-         < fFindTracks->GetNofStations()
-             - fFindTracks
-                 ->GetMinNofHits()) {  // seed loop, all combinations as seeds
+  while (iSt0 < fFindTracks->GetNofStations() - fFindTracks->GetMinNofHits()) {  // seed loop, all combinations as seeds
     iSt0++;
     iSt1 = iSt0;
-    while (iSt1
-           < fFindTracks->GetNofStations() - fFindTracks->GetMinNofHits() + 1) {
+    while (iSt1 < fFindTracks->GetNofStations() - fFindTracks->GetMinNofHits() + 1) {
       iSt1++;
       for (Int_t iHit = 0; iHit < fHits->GetEntriesFast(); iHit++) {  // loop over Hits
         CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
@@ -187,36 +180,15 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
         // Int_t iSmType = CbmTofAddress::GetSmType( iAddr );   (VF) not used
         if (HitUsed(iHit) == 1 && iAddr != fFindTracks->GetBeamCounter())
           continue;  // skip used Hits except for BeamCounter
-        LOG(debug1) << Form(
-          "<I> TofTracklet Chkseed St0 %2d, St1 %2d, Mul %2d, Hit %2d, addr = "
-          "0x%08x - X %6.2f, Y %6.2f Z %6.2f R %6.2f T %6.2f TM %lu",
-          iSt0,
-          iSt1,
-          fiNtrks,
-          iHit,
-          pHit->GetAddress(),
-          pHit->GetX(),
-          pHit->GetY(),
-          pHit->GetZ(),
-          pHit->GetR(),
-          pHit->GetTime(),
-          fvTrkVec[iHit].size());
-        if (iAddr
-            == fFindTracks->GetAddrOfStation(
-              iSt0)) {  // generate new track seed
-          LOG(debug) << Form(
-            "<I> TofTracklet seed St0 %2d, St1 %2d, Mul %2d, Hit %2d, addr = "
-            "0x%08x - X %6.2f, Y %6.2f Z %6.2f T %6.2f TM %lu",
-            iSt0,
-            iSt1,
-            fiNtrks,
-            iHit,
-            pHit->GetAddress(),
-            pHit->GetX(),
-            pHit->GetY(),
-            pHit->GetZ(),
-            pHit->GetTime(),
-            fvTrkVec[iHit].size());
+        LOG(debug1) << Form("<I> TofTracklet Chkseed St0 %2d, St1 %2d, Mul %2d, Hit %2d, addr = "
+                            "0x%08x - X %6.2f, Y %6.2f Z %6.2f R %6.2f T %6.2f TM %lu",
+                            iSt0, iSt1, fiNtrks, iHit, pHit->GetAddress(), pHit->GetX(), pHit->GetY(), pHit->GetZ(),
+                            pHit->GetR(), pHit->GetTime(), fvTrkVec[iHit].size());
+        if (iAddr == fFindTracks->GetAddrOfStation(iSt0)) {  // generate new track seed
+          LOG(debug) << Form("<I> TofTracklet seed St0 %2d, St1 %2d, Mul %2d, Hit %2d, addr = "
+                             "0x%08x - X %6.2f, Y %6.2f Z %6.2f T %6.2f TM %lu",
+                             iSt0, iSt1, fiNtrks, iHit, pHit->GetAddress(), pHit->GetX(), pHit->GetY(), pHit->GetZ(),
+                             pHit->GetTime(), fvTrkVec[iHit].size());
 
           Int_t iChId              = pHit->GetAddress();
           CbmTofCell* fChannelInfo = fDigiPar->GetCell(iChId);
@@ -231,13 +203,11 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                             "Pointer for ChId "
                          << Form(" 0x%08x ", iChId) << ", Ch " << iCh;
               //	continue;
-            } else {
+            }
+            else {
               /*TGeoNode *fNode= */  // prepare global->local trafo
-              gGeoManager->FindNode(fChannelInfo->GetX(),
-                                    fChannelInfo->GetY(),
-                                    fChannelInfo->GetZ());
-              if (fFindTracks->GetAddrOfStation(iSt0)
-                  != fFindTracks->GetBeamCounter()) {
+              gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
+              if (fFindTracks->GetAddrOfStation(iSt0) != fFindTracks->GetBeamCounter()) {
                 hitpos[0] = pHit->GetX();
                 hitpos[1] = pHit->GetY();
                 hitpos[2] = pHit->GetZ();
@@ -245,16 +215,10 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                 gGeoManager->MasterToLocal(hitpos, hitpos_local);
               }
               dSizey = fChannelInfo->GetSizey();
-              LOG(debug) << Form(
-                "<D> TofTracklet start %d, Hit %d - yloc %6.2f, dy %6.2f, Scal "
-                "%6.2f -> stations 0x%08x, 0x%08x,",
-                fiNtrks,
-                iHit,
-                hitpos_local[1],
-                dSizey,
-                fPosYMaxScal,
-                fFindTracks->GetAddrOfStation(iSt0),
-                fFindTracks->GetAddrOfStation(iSt1));
+              LOG(debug) << Form("<D> TofTracklet start %d, Hit %d - yloc %6.2f, dy %6.2f, Scal "
+                                 "%6.2f -> stations 0x%08x, 0x%08x,",
+                                 fiNtrks, iHit, hitpos_local[1], dSizey, fPosYMaxScal,
+                                 fFindTracks->GetAddrOfStation(iSt0), fFindTracks->GetAddrOfStation(iSt1));
             }
           }
 
@@ -266,9 +230,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
               // Int_t iSmType1 = CbmTofAddress::GetSmType( pHit1->GetAddress() & DetMask );   (VF) not used
               Int_t iAddr1 = (pHit1->GetAddress() & DetMask);
               //if (iSmType1 == fFindTracks->GetStationType(1)) { // generate new track seed
-              if (iAddr1
-                  == fFindTracks->GetAddrOfStation(
-                    iSt1)) {  // generate new track seed
+              if (iAddr1 == fFindTracks->GetAddrOfStation(iSt1)) {  // generate new track seed
                 Int_t iChId1              = pHit1->GetAddress();
                 CbmTofCell* fChannelInfo1 = fDigiPar->GetCell(iChId1);
                 Int_t iCh1                = CbmTofAddress::GetChannelId(iChId1);
@@ -280,11 +242,10 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                                 "Pointer for ChId "
                              << Form(" 0x%08x ", iChId1) << ", Ch " << iCh1;
                   //	    continue;
-                } else {
+                }
+                else {
                   /*TGeoNode *fNode1=*/  // prepare global->local trafo
-                  gGeoManager->FindNode(fChannelInfo1->GetX(),
-                                        fChannelInfo1->GetY(),
-                                        fChannelInfo1->GetZ());
+                  gGeoManager->FindNode(fChannelInfo1->GetX(), fChannelInfo1->GetY(), fChannelInfo1->GetZ());
                   hitpos1[0] = pHit1->GetX();
                   hitpos1[1] = pHit1->GetY();
                   hitpos1[2] = pHit1->GetZ();
@@ -298,72 +259,41 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                 Double_t dLz   = pHit1->GetZ() - pHit->GetZ();
                 Double_t dTx   = (pHit1->GetX() - pHit->GetX()) / dLz;
                 Double_t dTy   = (pHit1->GetY() - pHit->GetY()) / dLz;
-                Double_t dDist = TMath::Sqrt(
-                  TMath::Power((pHit->GetX() - pHit1->GetX()), 2)
-                  + TMath::Power((pHit->GetY() - pHit1->GetY()), 2)
-                  + TMath::Power((pHit->GetZ() - pHit1->GetZ()), 2));
-                LOG(debug1) << Form(
-                  "<I> TofTracklet %d, Hits %d, %d, add = 0x%08x,0x%08x - DT "
-                  "%6.2f, Tx %6.2f Ty %6.2f Tt %6.2f pos %6.2f %6.2f %6.2f ",
-                  fiNtrks,
-                  iHit,
-                  iHit1,
-                  pHit->GetAddress(),
-                  pHit1->GetAddress(),
-                  dDT,
-                  dTx,
-                  dTy,
-                  dDT / dLz,
-                  hitpos1_local[0],
-                  hitpos1_local[1],
-                  hitpos1_local[2]);
-                LOG(debug3)
-                  << Form("    selection: y %6.2f < %6.2f, T %6.2f < %6.2f, "
-                          "dTpos %6.2f < %6.2f, Abs(%6.2f - %6.2f) < %6.2f",
-                          hitpos1_local[1],
-                          dSizey1 * fPosYMaxScal,
-                          dDT / dLz,
-                          fMaxTofTimeDifference,
-                          dTx,
-                          fTxLIM,
-                          dTy,
-                          fTyMean,
-                          fTyLIM);
+                Double_t dDist = TMath::Sqrt(TMath::Power((pHit->GetX() - pHit1->GetX()), 2)
+                                             + TMath::Power((pHit->GetY() - pHit1->GetY()), 2)
+                                             + TMath::Power((pHit->GetZ() - pHit1->GetZ()), 2));
+                LOG(debug1) << Form("<I> TofTracklet %d, Hits %d, %d, add = 0x%08x,0x%08x - DT "
+                                    "%6.2f, Tx %6.2f Ty %6.2f Tt %6.2f pos %6.2f %6.2f %6.2f ",
+                                    fiNtrks, iHit, iHit1, pHit->GetAddress(), pHit1->GetAddress(), dDT, dTx, dTy,
+                                    dDT / dLz, hitpos1_local[0], hitpos1_local[1], hitpos1_local[2]);
+                LOG(debug3) << Form("    selection: y %6.2f < %6.2f, T %6.2f < %6.2f, "
+                                    "dTpos %6.2f < %6.2f, Abs(%6.2f - %6.2f) < %6.2f",
+                                    hitpos1_local[1], dSizey1 * fPosYMaxScal, dDT / dLz, fMaxTofTimeDifference, dTx,
+                                    fTxLIM, dTy, fTyMean, fTyLIM);
 
                 if (TMath::Abs(hitpos1_local[1]) < dSizey1 * fPosYMaxScal)
                   if (TMath::Abs(dDT / dLz) < fMaxTofTimeDifference
-                      && TMath::Abs(dDT / dDist)
-                           > 0.005  // FIXME: numeric constant in code
-                      && TMath::Abs(dTx - fTxMean) < fTxLIM
-                      && TMath::Abs(dTy - fTyMean) < fTyLIM) {
+                      && TMath::Abs(dDT / dDist) > 0.005  // FIXME: numeric constant in code
+                      && TMath::Abs(dTx - fTxMean) < fTxLIM && TMath::Abs(dTy - fTyMean) < fTyLIM) {
                     CbmTofTracklet* pTrk = new CbmTofTracklet();
                     fTracks.push_back(pTrk);
-                    pTrk->SetTofHitIndex(
-                      iHit, iAddr, pHit);  // store 1. Hit index
-                    pTrk->AddTofHitIndex(
-                      iHit1, iAddr1, pHit1);  // store 2. Hit index
+                    pTrk->SetTofHitIndex(iHit, iAddr, pHit);     // store 1. Hit index
+                    pTrk->AddTofHitIndex(iHit1, iAddr1, pHit1);  // store 2. Hit index
                     fiNtrks = fTracks.size();
 
                     fvTrkVec[iHit].push_back(pTrk);
                     fvTrkVec[iHit1].push_back(pTrk);
 
-                    pTrk->SetTime(
-                      pHit->GetTime());  // define reference time from 1. plane
+                    pTrk->SetTime(pHit->GetTime());  // define reference time from 1. plane
                     //Double_t dR  = pHit1->GetR() - pHit->GetR();
-                    Double_t dR = pTrk->Dist3D(pHit1, pHit);
-                    Double_t dTt =
-                      fFindTracks
-                        ->GetTtTarg();  // assume calibration target value
-                    if (0) {            //== iSmType) {  // disabled
+                    Double_t dR  = pTrk->Dist3D(pHit1, pHit);
+                    Double_t dTt = fFindTracks->GetTtTarg();  // assume calibration target value
+                    if (0) {                                  //== iSmType) {  // disabled
                       Double_t T0Fake = pHit->GetTime();
                       Double_t w      = fvTrkVec[iHit].size();
-                      T0Fake =
-                        (T0Fake * (w - 1.) + (pHit1->GetTime() - dTt * dR)) / w;
-                      LOG(debug1) << Form(
-                        "<I> TofTracklet %d, Fake T0, old %8.0f -> new %8.0f",
-                        fiNtrks,
-                        pHit->GetTime(),
-                        T0Fake);
+                      T0Fake          = (T0Fake * (w - 1.) + (pHit1->GetTime() - dTt * dR)) / w;
+                      LOG(debug1) << Form("<I> TofTracklet %d, Fake T0, old %8.0f -> new %8.0f", fiNtrks,
+                                          pHit->GetTime(), T0Fake);
                       pHit->SetTime(T0Fake);
                     }
                     Double_t dSign = 1.;
@@ -379,20 +309,11 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                     tPar->SetTx(dTx);
                     tPar->SetTy(dTy);
 
-                    LOG(debug)
-                      << Form("<I> TofTracklet %d, Hits %d, %d initialized, "
-                              "add 0x%08x,0x%08x, DT %6.3f, Sgn %2.0f, DR "
-                              "%6.3f, T0 %6.2f, Tt %6.4f ",
-                              fiNtrks,
-                              iHit,
-                              iHit1,
-                              pHit->GetAddress(),
-                              pHit1->GetAddress(),
-                              dDT,
-                              dSign,
-                              dR,
-                              pTrk->GetT0(),
-                              pTrk->GetTt())
+                    LOG(debug) << Form("<I> TofTracklet %d, Hits %d, %d initialized, "
+                                       "add 0x%08x,0x%08x, DT %6.3f, Sgn %2.0f, DR "
+                                       "%6.3f, T0 %6.2f, Tt %6.4f ",
+                                       fiNtrks, iHit, iHit1, pHit->GetAddress(), pHit1->GetAddress(), dDT, dSign, dR,
+                                       pTrk->GetT0(), pTrk->GetTt())
                       //		      << tPar->ToString()
                       ;
                   }
@@ -401,31 +322,25 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
         }  // iSt0 condition end
       }    // Loop on Hits end
 
-      if (iNTrks >= 0 && static_cast<size_t>(iNTrks) == fTracks.size())
-        continue;  // nothing new
+      if (iNTrks >= 0 && static_cast<size_t>(iNTrks) == fTracks.size()) continue;  // nothing new
       iNTrks = fTracks.size();
-      PrintStatus((char*) Form(
-        "after seeds of St0 %d, St1 %d, Mul %d", iSt0, iSt1, iNTrks));
+      PrintStatus((char*) Form("after seeds of St0 %d, St1 %d, Mul %d", iSt0, iSt1, iNTrks));
 
-      const Int_t MAXNCAND =
-        1000;  // Max number of hits matchable to current tracklets
+      const Int_t MAXNCAND = 1000;  // Max number of hits matchable to current tracklets
       // Propagate track seeds to remaining detectors
       for (Int_t iDet = iSt1 + 1; iDet < fFindTracks->GetNStations(); iDet++) {
         Int_t iNCand = 0;
         Int_t iHitInd[MAXNCAND];
         CbmTofTracklet* pTrkInd[MAXNCAND];
         Double_t dChi2[MAXNCAND];
-        for (size_t iTrk = 0; iTrk < fTracks.size();
-             iTrk++) {  // loop over Trackseeds
+        for (size_t iTrk = 0; iTrk < fTracks.size(); iTrk++) {  // loop over Trackseeds
           CbmTofTracklet* pTrk = (CbmTofTracklet*) fTracks[iTrk];
           LOG(debug3) << "     Propagate Loop " << iTrk << " pTrk " << pTrk
-                      << Form(" to station %d, addr: 0x%08x ",
-                              iDet,
-                              fFindTracks->GetAddrOfStation(iDet));
+                      << Form(" to station %d, addr: 0x%08x ", iDet, fFindTracks->GetAddrOfStation(iDet));
           if (NULL == pTrk) continue;
 
           for (Int_t iHit = 0; iHit < fHits->GetEntriesFast(); iHit++) {  // loop over Hits
-            if (HitUsed(iHit) == 1) continue;  // skip used Hits
+            if (HitUsed(iHit) == 1) continue;                             // skip used Hits
             CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
             Int_t iAddr     = (pHit->GetAddress() & DetMask);
             if (iAddr != fFindTracks->GetAddrOfStation(iDet)) continue;
@@ -441,14 +356,12 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
             if (NULL == fChannelInfo) {
               LOG(debug) << "CbmTofTrackFinderNN::DoFind: Invalid Channel "
                             "Pointer from Hit "
-                         << iHit << " for ChId " << Form(" 0x%08x ", iChId)
-                         << ", Ch " << iCh;
+                         << iHit << " for ChId " << Form(" 0x%08x ", iChId) << ", Ch " << iCh;
               //	continue;
-            } else {
+            }
+            else {
               /*TGeoNode *fNode=*/  // prepare global->local trafo
-              gGeoManager->FindNode(fChannelInfo->GetX(),
-                                    fChannelInfo->GetY(),
-                                    fChannelInfo->GetZ());
+              gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
               hitpos[0] = pHit->GetX();
               hitpos[1] = pHit->GetY();
               hitpos[2] = pHit->GetZ();
@@ -456,27 +369,19 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
               gGeoManager->MasterToLocal(hitpos, hitpos_local);
               dSizey = fChannelInfo->GetSizey();
             }
-            if (TMath::Abs(hitpos_local[1])
-                < dSizey
-                    * fPosYMaxScal) {  // extrapolate Tracklet to this station
-              if (pTrk->GetStationHitIndex(iAddr) > -1)
-                continue;  // Station already part of this tracklet
+            if (TMath::Abs(hitpos_local[1]) < dSizey * fPosYMaxScal) {  // extrapolate Tracklet to this station
+              if (pTrk->GetStationHitIndex(iAddr) > -1) continue;       // Station already part of this tracklet
               CbmTofTrackletParam* tPar = pTrk->GetTrackParameter();
               Int_t iHit0               = pTrk->GetTofHitIndex(0);
               Int_t iHit1               = pTrk->GetTofHitIndex(1);
               // CbmTofHit* pHit0 = (CbmTofHit*) fHits->At( iHit0 );   (VF) not used
               // CbmTofHit* pHit1 = (CbmTofHit*) fHits->At( iHit1 );   (VF) not used
               if (iHit0 < 0 || iHit0 >= fHits->GetEntriesFast())
-                LOG(fatal) << "CbmTofTrackFinderNN::DoFind Invalid Hit Index "
-                           << iHit0 << " for Track " << iTrk << "("
+                LOG(fatal) << "CbmTofTrackFinderNN::DoFind Invalid Hit Index " << iHit0 << " for Track " << iTrk << "("
                            << fTracks.size() << ")";
-              Double_t dDz = pHit->GetZ() - tPar->GetZ();
-              Double_t dXex =
-                tPar->GetX()
-                + tPar->GetTx() * dDz;  // pTrk->GetFitX(pHit->GetZ());
-              Double_t dYex =
-                tPar->GetY()
-                + tPar->GetTy() * dDz;  // pTrk->GetFitY(pHit->GetZ());
+              Double_t dDz  = pHit->GetZ() - tPar->GetZ();
+              Double_t dXex = tPar->GetX() + tPar->GetTx() * dDz;  // pTrk->GetFitX(pHit->GetZ());
+              Double_t dYex = tPar->GetY() + tPar->GetTy() * dDz;  // pTrk->GetFitY(pHit->GetZ());
               /*
 	    Double_t dDr  = pHit->GetR() - pHit0->GetR();
 	    Double_t dTex = pHit0->GetTime() + (pHit1->GetTime()-pHit0->GetTime())/(pHit1->GetR()-pHit0->GetR())*dDr;
@@ -485,58 +390,33 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
               // pTrk->GetFitT(pHit->GetR());
 
               Double_t dChi =
-                TMath::Sqrt((TMath::Power(TMath::Abs(dTex - pHit->GetTime())
-                                            / fFindTracks->GetSigT(iAddr),
-                                          2)
-                             + TMath::Power(TMath::Abs(dXex - pHit->GetX())
-                                              / fFindTracks->GetSigX(iAddr),
-                                            2)
-                             + TMath::Power(TMath::Abs(dYex - pHit->GetY())
-                                              / fFindTracks->GetSigY(iAddr),
-                                            2))
+                TMath::Sqrt((TMath::Power(TMath::Abs(dTex - pHit->GetTime()) / fFindTracks->GetSigT(iAddr), 2)
+                             + TMath::Power(TMath::Abs(dXex - pHit->GetX()) / fFindTracks->GetSigX(iAddr), 2)
+                             + TMath::Power(TMath::Abs(dYex - pHit->GetY()) / fFindTracks->GetSigY(iAddr), 2))
                             / 3);
 
-              LOG(debug1) << Form(
-                "<IP> TofTracklet %lu, HMul %d, Hits %d, %d check %d, Station "
-                "0x%08x: DT %f, DX %f, DY %f, Chi %f",
-                iTrk,
-                pTrk->GetNofHits(),
-                iHit0,
-                iHit1,
-                iHit,
-                iAddr,
-                (dTex - pHit->GetTime()) / fFindTracks->GetSigT(iAddr),
-                (dXex - pHit->GetX()) / fFindTracks->GetSigX(iAddr),
-                (dYex - pHit->GetY()) / fFindTracks->GetSigY(iAddr),
-                dChi);
+              LOG(debug1) << Form("<IP> TofTracklet %lu, HMul %d, Hits %d, %d check %d, Station "
+                                  "0x%08x: DT %f, DX %f, DY %f, Chi %f",
+                                  iTrk, pTrk->GetNofHits(), iHit0, iHit1, iHit, iAddr,
+                                  (dTex - pHit->GetTime()) / fFindTracks->GetSigT(iAddr),
+                                  (dXex - pHit->GetX()) / fFindTracks->GetSigX(iAddr),
+                                  (dYex - pHit->GetY()) / fFindTracks->GetSigY(iAddr), dChi);
 
-              if (
-                dChi
-                < fSIGLIM  // FIXME: should scale limit with material budget between hit and track reference
-                    * (pTrk->GetNofHits() < fFindTracks->GetNReqStations() - 1
-                         ? 1.
-                         : fSIGLIMMOD)) {  // extend and update tracklet
+              if (dChi < fSIGLIM  // FIXME: should scale limit with material budget between hit and track reference
+                           * (pTrk->GetNofHits() < fFindTracks->GetNReqStations() - 1
+                                ? 1.
+                                : fSIGLIMMOD)) {  // extend and update tracklet
                 LOG(debug) << Form("<IP> TofTracklet %lu, HMul %d, Hits %d, %d "
                                    "mark for extension by %d, add = 0x%08x, DT "
                                    "%6.2f, DX %6.2f, DY=%6.2f ",
-                                   iTrk,
-                                   pTrk->GetNofHits(),
-                                   iHit0,
-                                   iHit1,
-                                   iHit,
-                                   pHit->GetAddress(),
-                                   dTex - pHit->GetTime(),
-                                   dXex - pHit->GetX(),
-                                   dYex - pHit->GetY())
+                                   iTrk, pTrk->GetNofHits(), iHit0, iHit1, iHit, pHit->GetAddress(),
+                                   dTex - pHit->GetTime(), dXex - pHit->GetX(), dYex - pHit->GetY())
                            << tPar->ToString();
 
                 if (iNCand > 0) {
                   LOG(debug) << Form("CbmTofTrackFinderNN::DoFind new match %d "
                                      "of Hit %d, Trk %lu, chi2 = %f",
-                                     iNCand,
-                                     iHit,
-                                     iTrk,
-                                     dChi);
+                                     iNCand, iHit, iTrk, dChi);
                   iNCand++;
                   if (iNCand == MAXNCAND) iNCand--;  // Limit index to maximum
 
@@ -551,18 +431,15 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                       iHitInd[iCand] = iHit;
                       dChi2[iCand]   = dChi;
                       dChi2[iNCand]  = 1.E8;
-                      LOG(debug1)
-                        << Form(" <D> candidate inserted at pos %d", iCand);
+                      LOG(debug1) << Form(" <D> candidate inserted at pos %d", iCand);
                       break;
                     }
                   }
-                } else {
+                }
+                else {
                   LOG(debug) << Form("CbmTofTrackFinderNN::DoFind first match "
                                      "%d of Hit %d, Trk %p, chi2 = %f",
-                                     iNCand,
-                                     iHit,
-                                     pTrk,
-                                     dChi);
+                                     iNCand, iHit, pTrk, dChi);
                   pTrkInd[iNCand] = pTrk;
                   iHitInd[iNCand] = iHit;
                   dChi2[iNCand]   = dChi;  // relative quality measure
@@ -578,25 +455,16 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
         while (iNCand > 0) {  // at least one matching hit - trk pair found
           CbmTofTracklet* pTrk = pTrkInd[0];
           if (NULL == pTrk) continue;
-          LOG(debug) << Form(
-            "%d hit match candidates in station %d to %lu TofTracklets",
-            iNCand,
-            iDet,
-            fTracks.size());
+          LOG(debug) << Form("%d hit match candidates in station %d to %lu TofTracklets", iNCand, iDet, fTracks.size());
           for (Int_t iM = 0; iM < iNCand; iM++) {
             pTrk = (CbmTofTracklet*) pTrkInd[iM];
             if (NULL == pTrk) break;
-            std::vector<CbmTofTracklet*>::iterator it =
-              std::find(fTracks.begin(), fTracks.end(), pTrk);
+            std::vector<CbmTofTracklet*>::iterator it = std::find(fTracks.begin(), fTracks.end(), pTrk);
             if (it == fTracks.end()) break;  // track candidate not existing
 
             LOG(debug1) << "\t"
-                        << Form("Hit %d, Trk %p  with chi2 %f (%f)",
-                                iHitInd[iM],
-                                pTrkInd[iM],
-                                dChi2[iM],
-                                pTrk->GetMatChi2(
-                                  fFindTracks->GetAddrOfStation(iDet)));
+                        << Form("Hit %d, Trk %p  with chi2 %f (%f)", iHitInd[iM], pTrkInd[iM], dChi2[iM],
+                                pTrk->GetMatChi2(fFindTracks->GetAddrOfStation(iDet)));
           }
           PrintStatus((char*) "starting NCand");
 
@@ -622,27 +490,17 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
           // CbmTofTrackletParam *tPar = pTrk->GetTrackParameter();   (VF) not used
           Int_t iHit0 = pTrk->GetTofHitIndex(0);
           Int_t iHit1 = pTrk->GetTofHitIndex(1);
-          if (pTrk->GetNofHits() > fFindTracks->GetNStations()
-              || pTrk->GetNofHits() <= 0)
+          if (pTrk->GetNofHits() > fFindTracks->GetNStations() || pTrk->GetNofHits() <= 0)
             LOG(fatal) << " No or more Tracklet hits than stations ! Stop ";
           // check if tracklet already contains a hit of this layer
           Int_t iHit      = iHitInd[0];
           CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
           Int_t iAddr     = (pHit->GetAddress() & DetMask);
-          if (Double_t dLastChi2 =
-                pTrk->GetMatChi2(fFindTracks->GetAddrOfStation(iDet)) == -1.) {
-            LOG(debug1) << Form(
-              " -D- Add hit %d at %p, Addr 0x%08x, Chi2 %6.2f to size %u",
-              iHit,
-              pHit,
-              iAddr,
-              dChi2[0],
-              pTrk->GetNofHits());
-            pTrk->AddTofHitIndex(
-              iHit,
-              iAddr,
-              pHit,
-              dChi2[0]);  // store next Hit index with matching chi2
+          if (Double_t dLastChi2 = pTrk->GetMatChi2(fFindTracks->GetAddrOfStation(iDet)) == -1.) {
+            LOG(debug1) << Form(" -D- Add hit %d at %p, Addr 0x%08x, Chi2 %6.2f to size %u", iHit, pHit, iAddr,
+                                dChi2[0], pTrk->GetNofHits());
+            pTrk->AddTofHitIndex(iHit, iAddr, pHit,
+                                 dChi2[0]);  // store next Hit index with matching chi2
             //	  pTrk->PrintInfo();
             fvTrkVec[iHit].push_back(pTrk);
             Line3Dfit(pTrk);  // full MINUIT fit overwrites ParamLast!
@@ -650,9 +508,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
             if (pTrk->GetChiSq() > fChiMaxAccept) {
               LOG(debug) << Form("Add hit %d invalidates tracklet with Chi "
                                  "%6.2f > %6.2f -> undo ",
-                                 iHit,
-                                 pTrk->GetChiSq(),
-                                 fChiMaxAccept);
+                                 iHit, pTrk->GetChiSq(), fChiMaxAccept);
               fvTrkVec[iHit].pop_back();
               pTrk->RemoveTofHitIndex(iHit, iAddr, pHit, dChi2[0]);
               Line3Dfit(pTrk);  //restore old status
@@ -666,7 +522,8 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                 iHitInd[iCand] = iHitInd[iCand + 1];
                 dChi2[iCand]   = dChi2[iCand + 1];
               }
-            } else {  // update chi2 array
+            }
+            else {  // update chi2 array
               PrintStatus((char*) "before UpdateTrackList");
               UpdateTrackList(pTrk);
               Int_t iNCandNew = 0;
@@ -680,25 +537,17 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
               }
               iNCand = iNCandNew;
             }
-          } else {
+          }
+          else {
             if (dChi2[0] < dLastChi2) {  // replace hit index
-              LOG(fatal) << Form(
-                "-D- Replace %d, Addr 0x%08x, at %p, Chi2 %6.2f",
-                iHit,
-                iAddr,
-                pHit,
-                dChi2[0]);
+              LOG(fatal) << Form("-D- Replace %d, Addr 0x%08x, at %p, Chi2 %6.2f", iHit, iAddr, pHit, dChi2[0]);
               //cout << " -D- Replace " << endl;
               pTrk->ReplaceTofHitIndex(iHit, iAddr, pHit, dChi2[0]);
               // TODO remove tracklet assigment of old hit! FIXME
-            } else {
-              LOG(debug) << Form(
-                "    -D- Ignore %d, Det %d, Addr 0x%08x, at 0x%p, Chi2 %6.2f",
-                iHit,
-                iDet,
-                iAddr,
-                pHit,
-                dChi2[0]);
+            }
+            else {
+              LOG(debug) << Form("    -D- Ignore %d, Det %d, Addr 0x%08x, at 0x%p, Chi2 %6.2f", iHit, iDet, iAddr, pHit,
+                                 dChi2[0]);
               // Form new seeds
               //if (iDet<(fFindTracks->GetNStations()-1))	TrklSeed(fHits,fTracks,iHit);
               break;
@@ -712,8 +561,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
 
           //Line3Dfit(pTrk);                   // full MINUIT fit for debugging overwrites ParamLast!
 
-          pTrk->SetTime(
-            pTrk->UpdateT0());  // update reference time (and fake hit time)
+          pTrk->SetTime(pTrk->UpdateT0());  // update reference time (and fake hit time)
 
           //FairTrackParam paramExtr;
           //fFitter->Extrapolate(pTrk->GetParamLast(),0.,&paramExtr);
@@ -730,18 +578,10 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
 
           LOG(debug) << Form("<Res> TofTracklet %p, HMul %d, Hits %d, %d, %d, "
                              "NDF %d,  Chi2 %6.2f, T0 %6.2f, Tt %6.4f ",
-                             pTrk,
-                             pTrk->GetNofHits(),
-                             iHit0,
-                             iHit1,
-                             iHit,
-                             pTrk->GetNDF(),
-                             pTrk->GetChiSq(),
-                             pTrk->GetTime(),
-                             dTt);
+                             pTrk, pTrk->GetNofHits(), iHit0, iHit1, iHit, pTrk->GetNDF(), pTrk->GetChiSq(),
+                             pTrk->GetTime(), dTt);
           PrintStatus((char*) "<Res> ");
-          LOG(debug1) << " Match loop status: NCand " << iNCand << ", iDet "
-                      << iDet;
+          LOG(debug1) << " Match loop status: NCand " << iNCand << ", iDet " << iDet;
 
           /* live display insert 
 	if(fair::Logger::Logging(fair::Severity::debug3))  // update event display, if initialized 
@@ -775,12 +615,9 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
   fiNtrks = 0;
   for (size_t iTr = 0; iTr < fTracks.size(); iTr++) {
     if (fTracks[iTr] == NULL) continue;
-    if (fTracks[iTr]->GetNofHits() < 3)
-      continue;  // request minimum number of hits (3)
-    if (fTracks[iTr]->GetChiSq() > fChiMaxAccept)
-      continue;  // request minimum ChiSq (3)
-    CbmTofTracklet* pTrk =
-      new ((*fTofTracks)[fiNtrks++]) CbmTofTracklet(*fTracks[iTr]);
+    if (fTracks[iTr]->GetNofHits() < 3) continue;            // request minimum number of hits (3)
+    if (fTracks[iTr]->GetChiSq() > fChiMaxAccept) continue;  // request minimum ChiSq (3)
+    CbmTofTracklet* pTrk = new ((*fTofTracks)[fiNtrks++]) CbmTofTracklet(*fTracks[iTr]);
 
     if (fair::Logger::Logging(fair::Severity::debug)) {
       LOG(info) << "Found Trkl " << iTr << ", ";
@@ -789,10 +626,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
     for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {  // mark used Hit
       CbmTofHit* pHit = (CbmTofHit*) fHits->At(pTrk->GetHitIndex(iHit));
       pHit->SetFlag(pHit->GetFlag() + 100.);
-      LOG(debug) << Form(" hit %d at %d flagged to %d ",
-                         iHit,
-                         pTrk->GetHitIndex(iHit),
-                         pHit->GetFlag());
+      LOG(debug) << Form(" hit %d at %d flagged to %d ", iHit, pTrk->GetHitIndex(iHit), pHit->GetFlag());
     }
   }
   PrintStatus((char*) "<D> Final result");
@@ -808,24 +642,22 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
   return 0;
 }  // DoFind end
 
-void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
+void CbmTofTrackFinderNN::TrklSeed(Int_t iHit)
+{
   CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
   // Int_t iSmType   = CbmTofAddress::GetSmType( pHit->GetAddress() & DetMask );   (VF) not used
   Int_t iAddr = (pHit->GetAddress() & DetMask);
   //Int_t iDet      = fFindTracks->GetTypeStation(iSmType);
   Int_t iDet = fFindTracks->GetStationOfAddr(iAddr);
-  if (iDet == fFindTracks->GetNofStations())
-    return;                                       // hit not in tracking setup
-  for (Int_t iDet1 = 0; iDet1 < iDet; iDet1++) {  // build new seeds
+  if (iDet == fFindTracks->GetNofStations()) return;                   // hit not in tracking setup
+  for (Int_t iDet1 = 0; iDet1 < iDet; iDet1++) {                       // build new seeds
     for (Int_t iHit1 = 0; iHit1 < fHits->GetEntriesFast(); iHit1++) {  // loop over previous Hits
       CbmTofHit* pHit1 = (CbmTofHit*) fHits->At(iHit1);
       // Int_t iSmType1 = CbmTofAddress::GetSmType( pHit1->GetAddress() & DetMask );   (VF) not used
       Int_t iAddr1 = (pHit1->GetAddress() & DetMask);
       if (iAddr1 == iAddr) continue;
       //if (iSmType1 == fFindTracks->GetStationType(iDet1)) {      // generate candidate for new track seed
-      if (iAddr1
-          == fFindTracks->GetAddrOfStation(
-            iDet1)) {  // generate candidate for new track seed
+      if (iAddr1 == fFindTracks->GetAddrOfStation(iDet1)) {  // generate candidate for new track seed
         Int_t iChId1              = pHit1->GetAddress();
         CbmTofCell* fChannelInfo1 = fDigiPar->GetCell(iChId1);
         Int_t iCh1                = CbmTofAddress::GetChannelId(iChId1);
@@ -834,15 +666,13 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
         Double_t dSizey1          = 1.;
 
         if (NULL == fChannelInfo1) {
-          LOG(debug)
-            << "CbmTofTrackFinderNN::DoFindp: Invalid Channel Pointer for ChId "
-            << Form(" 0x%08x ", iChId1) << ", Ch " << iCh1;
+          LOG(debug) << "CbmTofTrackFinderNN::DoFindp: Invalid Channel Pointer for ChId " << Form(" 0x%08x ", iChId1)
+                     << ", Ch " << iCh1;
           //  continue;
-        } else {
+        }
+        else {
           /*TGeoNode *fNode1=*/  // prepare global->local trafo
-          gGeoManager->FindNode(fChannelInfo1->GetX(),
-                                fChannelInfo1->GetY(),
-                                fChannelInfo1->GetZ());
+          gGeoManager->FindNode(fChannelInfo1->GetX(), fChannelInfo1->GetY(), fChannelInfo1->GetZ());
           hitpos1[0] = pHit1->GetX();
           hitpos1[1] = pHit1->GetY();
           hitpos1[2] = pHit1->GetZ();
@@ -855,21 +685,11 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
         Double_t dTx = (pHit->GetX() - pHit1->GetX()) / dLz;
         Double_t dTy = (pHit->GetY() - pHit1->GetY()) / dLz;
         Int_t iUsed  = HitUsed(iHit1);
-        LOG(debug1) << Form(
-          "<ISeed> TofTracklet %d, Hits %d, %d, used %d check, add = "
-          "0x%08x,0x%08x - DT %6.2f, Tx %6.2f Ty %6.2f ",
-          fiNtrks,
-          iHit,
-          iHit1,
-          iUsed,
-          pHit->GetAddress(),
-          pHit1->GetAddress(),
-          dDT,
-          dTx,
-          dTy);
+        LOG(debug1) << Form("<ISeed> TofTracklet %d, Hits %d, %d, used %d check, add = "
+                            "0x%08x,0x%08x - DT %6.2f, Tx %6.2f Ty %6.2f ",
+                            fiNtrks, iHit, iHit1, iUsed, pHit->GetAddress(), pHit1->GetAddress(), dDT, dTx, dTy);
         if (TMath::Abs(hitpos1_local[1]) < dSizey1 * fPosYMaxScal)
-          if (TMath::Abs(dDT / dLz) < fMaxTofTimeDifference
-              && TMath::Abs(dTx - fTxMean) < fTxLIM
+          if (TMath::Abs(dDT / dLz) < fMaxTofTimeDifference && TMath::Abs(dTx - fTxMean) < fTxLIM
               && TMath::Abs(dTy - fTyMean) < fTyLIM && iUsed == 0) {
             //	  CbmTofTracklet* pTrk = new((*fTracks)[++fiNtrks]) CbmTofTracklet(); // generate new track seed
             CbmTofTracklet* pTrk = new CbmTofTracklet();
@@ -885,8 +705,7 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
             //fvTrkMap[iHit].insert(std::pair<CbmTofTracklet*,Int_t>(pTrk,NTrks));
             fvTrkVec[iHit].push_back(pTrk);
 
-            pTrk->SetTime(
-              pHit->GetTime());  // define reference time from 2. plane
+            pTrk->SetTime(pHit->GetTime());  // define reference time from 2. plane
             Double_t dR  = pHit->GetR() - pHit1->GetR();
             Double_t dTt = 1. / 30.;  // assume speed of light:  1 / 30 cm/ns
             // if( 0 == iSmType) pHit1->SetTime(pHit->GetTime() - dTt * dR);
@@ -903,11 +722,7 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
             tPar->SetTy(dTy);
             LOG(debug) << Form("<DSeed> TofTracklet %d, Hits %d, %d add "
                                "initialized, add = 0x%08x,0x%08x ",
-                               fiNtrks,
-                               iHit,
-                               iHit1,
-                               pHit->GetAddress(),
-                               pHit1->GetAddress());
+                               fiNtrks, iHit, iHit1, pHit->GetAddress(), pHit1->GetAddress());
             PrintStatus((char*) "after DSeed");
           }
       }
@@ -915,15 +730,15 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
   }    // Station loop end
 }
 
-Int_t CbmTofTrackFinderNN::HitUsed(Int_t iHit) {
+Int_t CbmTofTrackFinderNN::HitUsed(Int_t iHit)
+{
   // CbmTofHit* pHit = (CbmTofHit*) fHits->At( iHit );   (VF) not used
   //Int_t iSmType   = CbmTofAddress::GetSmType( pHit->GetAddress() & DetMask );
   //Int_t iDet    = fFindTracks->GetTypeStation(iSmType);
   Int_t iUsed = 0;
 
   //  LOG(debug1)<<"CbmTofTrackFinderNN::HitUsed of Hind "<<iHit<<", TrkMap.size "<<fvTrkMap[iHit].size()
-  LOG(DEBUG4) << "CbmTofTrackFinderNN::HitUsed of Hind " << iHit
-              << ", TrkVec.size " << fvTrkVec[iHit].size();
+  LOG(DEBUG4) << "CbmTofTrackFinderNN::HitUsed of Hind " << iHit << ", TrkVec.size " << fvTrkVec[iHit].size();
   /*
   for ( std::map<CbmTofTracklet*,Int_t>::iterator it=fvTrkMap[iHit].begin(); it != fvTrkMap[iHit].end(); it++){
     if(it->first->GetNofHits() > 2) return iUsed=1;
@@ -935,68 +750,51 @@ Int_t CbmTofTrackFinderNN::HitUsed(Int_t iHit) {
   return iUsed;
 }
 
-void CbmTofTrackFinderNN::UpdateTrackList(Int_t iTrk) {
+void CbmTofTrackFinderNN::UpdateTrackList(Int_t iTrk)
+{
   CbmTofTracklet* pTrk = (CbmTofTracklet*) fTracks[iTrk];
   UpdateTrackList(pTrk);
 }
 
-void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
-  for (Int_t iHit = 0; iHit < pTrk->GetNofHits();
-       iHit++) {                              // loop over Tracklet Hits
-    Int_t iHitInd = pTrk->GetHitIndex(iHit);  // Hit index in fHits
+void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk)
+{
+  for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {  // loop over Tracklet Hits
+    Int_t iHitInd = pTrk->GetHitIndex(iHit);                 // Hit index in fHits
     //Int_t NTrks=fvTrkMap[iHitInd].size();    // Number of tracks containing this hit
-    Int_t NTrks =
-      fvTrkVec[iHitInd].size();  // Number of tracks containing this hit
+    Int_t NTrks = fvTrkVec[iHitInd].size();  // Number of tracks containing this hit
     Int_t iAddr = (pTrk->GetTofHitPointer(iHit)->GetAddress() & DetMask);
-    if (iAddr == fFindTracks->GetBeamCounter())
-      continue;  // keep all tracklets from common beam reference counter
+    if (iAddr == fFindTracks->GetBeamCounter()) continue;  // keep all tracklets from common beam reference counter
 
     // Int_t iSmType = CbmTofAddress::GetSmType( iAddr );   (VF) not used
     //if(iSmType==0) continue;                          // keep all tracklets with common target faked hit
 
     if (NTrks == 0)
-      LOG(fatal) << "UpdateTrackList NTrks=0 for event "
-                 << fFindTracks->GetEventNumber() << ", pTrk " << pTrk
+      LOG(fatal) << "UpdateTrackList NTrks=0 for event " << fFindTracks->GetEventNumber() << ", pTrk " << pTrk
                  << ", iHit " << iHit;
     if (NTrks > 0) {
       //PrintStatus((char*)"UpdateTrackList::cleanup1");
       Int_t iterClean = 1;
       while (iterClean > 0) {
         LOG(debug2) << " <D1> UpdateTrackList for Trk " << pTrk
-                    << Form(
-                         ", %d.Hit(%d) at ind %d with %d(%d) registered tracks",
-                         iHit,
-                         pTrk->GetNofHits(),
-                         iHitInd,
-                         (int) fvTrkVec[iHitInd].size(),
-                         NTrks);
+                    << Form(", %d.Hit(%d) at ind %d with %d(%d) registered tracks", iHit, pTrk->GetNofHits(), iHitInd,
+                            (int) fvTrkVec[iHitInd].size(), NTrks);
         //if(fvTrkVec[iHitInd].size()==1) break;
-        for (std::vector<CbmTofTracklet*>::iterator iT =
-               fvTrkVec[iHitInd].begin();
-             iT != fvTrkVec[iHitInd].end();
+        for (std::vector<CbmTofTracklet*>::iterator iT = fvTrkVec[iHitInd].begin(); iT != fvTrkVec[iHitInd].end();
              iT++) {
           iterClean = 0;
           if (!Active(*iT)) break;  // check whether tracklet is still active
-          LOG(debug2) << " <D2>  process Trk " << *iT << " with "
-                      << (*iT)->GetNofHits() << " hits";
+          LOG(debug2) << " <D2>  process Trk " << *iT << " with " << (*iT)->GetNofHits() << " hits";
 
           for (Int_t iH = 0; iH < (*iT)->GetNofHits(); iH++) {
             if (!Active(*iT)) break;  // check whether tracklet is still active
             Int_t iHi = (*iT)->GetTofHitIndex(iH);
             LOG(debug2) << " <D3>  process Hit " << iH << " at index " << iHi;
-            Int_t iAddri =
-              ((*iT)->GetTofHitPointer(iH)->GetAddress() & DetMask);
-            LOG(debug2)
-              << "   --- iHitInd " << iHitInd << "(" << fvTrkVec.size()
-              << "), size " << fvTrkVec[iHitInd].size() << " - iH " << iH << "("
-              << (*iT)->GetNofHits() << "), iHi " << iHi << " Hi vec size "
-              << fvTrkVec[iHi].size()
-              << Form(" poi %p, iTpoi %p, SmAddr 0x%08x, 0x%08x, 0x%08x ",
-                      pTrk,
-                      *iT,
-                      (*iT)->GetTofHitPointer(iH)->GetAddress(),
-                      iAddri,
-                      fFindTracks->GetBeamCounter());
+            Int_t iAddri = ((*iT)->GetTofHitPointer(iH)->GetAddress() & DetMask);
+            LOG(debug2) << "   --- iHitInd " << iHitInd << "(" << fvTrkVec.size() << "), size "
+                        << fvTrkVec[iHitInd].size() << " - iH " << iH << "(" << (*iT)->GetNofHits() << "), iHi " << iHi
+                        << " Hi vec size " << fvTrkVec[iHi].size()
+                        << Form(" poi %p, iTpoi %p, SmAddr 0x%08x, 0x%08x, 0x%08x ", pTrk, *iT,
+                                (*iT)->GetTofHitPointer(iH)->GetAddress(), iAddri, fFindTracks->GetBeamCounter());
 
             if (iAddri == fFindTracks->GetBeamCounter()) {
               LOG(debug2) << " Hit in beam counter, continue ...";
@@ -1004,18 +802,13 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
             }
             if (fvTrkVec[iHi].size() == 0) {
               LOG(fatal) << "CbmTofTrackFinderNN::UpdateTrackList no track "
-                         << " for hit " << iH << ", Hind " << iHi << ", size "
-                         << fvTrkVec[iHi].size();
+                         << " for hit " << iH << ", Hind " << iHi << ", size " << fvTrkVec[iHi].size();
               break;
-            } else {  // loop over tracks  referenced by hit iHi
-              for (std::vector<CbmTofTracklet*>::iterator it =
-                     fvTrkVec[iHi].begin();
-                   it != fvTrkVec[iHi].end();
-                   it++) {
-                LOG(debug2)
-                  << "    UpdateTrackList for pTrk " << pTrk << " <-> " << *iT
-                  << " <-> " << *it << ", clean " << iterClean << ", hit "
-                  << iHi << ", size " << fvTrkVec[iHi].size();
+            }
+            else {  // loop over tracks  referenced by hit iHi
+              for (std::vector<CbmTofTracklet*>::iterator it = fvTrkVec[iHi].begin(); it != fvTrkVec[iHi].end(); it++) {
+                LOG(debug2) << "    UpdateTrackList for pTrk " << pTrk << " <-> " << *iT << " <-> " << *it << ", clean "
+                            << iterClean << ", hit " << iHi << ", size " << fvTrkVec[iHi].size();
                 if (*it != pTrk) {
                   size_t iTr = 0;
                   ;
@@ -1023,11 +816,7 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
                     if (fTracks[iTr] == *it) {
                       LOG(debug2) << Form("    found track entry %p(%d) at %lu "
                                           "of iHi %d, pTrk %p",
-                                          *it,
-                                          (int) fvTrkVec[iHi].size(),
-                                          iTr,
-                                          iHi,
-                                          pTrk);
+                                          *it, (int) fvTrkVec[iHi].size(), iTr, iHi, pTrk);
                       break;
                     }
                   }
@@ -1035,17 +824,13 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
                   if (iTr == fTracks.size()) {
                     LOG(fatal) << "CbmTofTrackFinderNN::UpdateTrackList: "
                                   "Invalid iTr for pTrk "
-                               << pTrk << ", iTr " << iTr << ", size "
-                               << fvTrkVec[iHi].size();
+                               << pTrk << ", iTr " << iTr << ", size " << fvTrkVec[iHi].size();
                     break;
                   }
 
                   LOG(debug2) << Form("<D4> number of registered hits %3d at "
                                       "%p while keeping iHi = %d, pTrk at %p",
-                                      (*it)->GetNofHits(),
-                                      (*it),
-                                      iHi,
-                                      pTrk);
+                                      (*it)->GetNofHits(), (*it), iHi, pTrk);
 
                   CbmTofTracklet* pKill = *it;
                   // remove track link registered for each associated hit to the track that is going to be removed
@@ -1053,43 +838,31 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
                     Int_t iHI = pKill->GetHitIndex(iht);
                     LOG(debug2) << Form("<D5> remove track link %p for hit iHi "
                                         "= %d, loop index %d: iHI = %3d ",
-                                        pKill,
-                                        iHi,
-                                        iht,
-                                        iHI);
+                                        pKill, iHi, iht, iHI);
 
-                    for (std::vector<CbmTofTracklet*>::iterator itt =
-                           fvTrkVec[iHI].begin();
-                         itt != fvTrkVec[iHI].end();
+                    for (std::vector<CbmTofTracklet*>::iterator itt = fvTrkVec[iHI].begin(); itt != fvTrkVec[iHI].end();
                          itt++) {
                       if ((*itt) == pTrk) continue;
                       if ((*itt) == pKill) {
                         LOG(debug2) << Form("<D6> remove track link %p for hit "
                                             "iHi = %d, iHI = %3d, #Trks %3d",
-                                            pKill,
-                                            iHi,
-                                            iHI,
-                                            (int) fvTrkVec[iHI].size());
+                                            pKill, iHi, iHI, (int) fvTrkVec[iHI].size());
                         if (fvTrkVec[iHI].size() == 1) {
-                          LOG(debug2)
-                            << "<D6a> clear vector fvTrkVec for " << iHI;
+                          LOG(debug2) << "<D6a> clear vector fvTrkVec for " << iHI;
                           fvTrkVec[iHI].clear();
                           //  it =fvTrkVec[iHi].begin();
                           break;
-                        } else {
+                        }
+                        else {
                           itt = fvTrkVec[iHI].erase(itt);  // costly operation
-                          LOG(debug2) << "<D6b> reduce fvTrkVec size of " << iHI
-                                      << " to " << fvTrkVec[iHI].size();
+                          LOG(debug2) << "<D6b> reduce fvTrkVec size of " << iHI << " to " << fvTrkVec[iHI].size();
                           break;
                         }
                       }
                     }
                     LOG(debug2) << Form("<D7> removed track link %p for hit "
                                         "iHi = %d, loop %d: iHI = %3d ",
-                                        pKill,
-                                        iHi,
-                                        iht,
-                                        iHI);
+                                        pKill, iHi, iht, iHI);
 
                     // PrintStatus((char*)"UpdateTrackList::Remove1");
                   }                 // loop on associated hits end
@@ -1098,9 +871,8 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
                   fTracks.erase(fTracks.begin() + iTr);
                   fiNtrks--;
 
-                  LOG(debug2)
-                    << "Erase1 for pTrk " << pTrk << ", at " << iTr << ", hit "
-                    << iHi << ", size " << fvTrkVec[iHi].size();
+                  LOG(debug2) << "Erase1 for pTrk " << pTrk << ", at " << iTr << ", hit " << iHi << ", size "
+                              << fvTrkVec[iHi].size();
 
                   PrintStatus((char*) "UpdateTrackList::Erase1");
 
@@ -1123,7 +895,8 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
                   //PrintStatus((char*)"UpdateTrackList::cleanup2");
                   iterClean = 2;
                   break;
-                } else {  // *it==pTrk
+                }
+                else {  // *it==pTrk
                   if (fvTrkVec[iHi].size() < 2) break;
                   // if(pTrk == *iT) goto loopclean;  //
                 }
@@ -1136,12 +909,10 @@ void CbmTofTrackFinderNN::UpdateTrackList(CbmTofTracklet* pTrk) {
   }
 }
 
-void CbmTofTrackFinderNN::PrintStatus(char* cComment) {
-  LOG(debug) << Form(
-    "<PS %s> for fiNtrks = %d tracks out of %d fTracks.size() ",
-    cComment,
-    fiNtrks,
-    (int) fTracks.size());
+void CbmTofTrackFinderNN::PrintStatus(char* cComment)
+{
+  LOG(debug) << Form("<PS %s> for fiNtrks = %d tracks out of %d fTracks.size() ", cComment, fiNtrks,
+                     (int) fTracks.size());
 
   for (size_t it = 0; it < fTracks.size(); it++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTracks[it];
@@ -1163,11 +934,7 @@ void CbmTofTrackFinderNN::PrintStatus(char* cComment) {
     Int_t iAddr     = (pHit->GetAddress() & DetMask);
     Int_t iSt       = fFindTracks->GetStationOfAddr(iAddr);
     TString sTrk    = "";
-    sTrk += Form("    Hit %lu, A 0x%08x, St %d, T %6.2f, Tracks(%d): ",
-                 ih,
-                 pHit->GetAddress(),
-                 iSt,
-                 pHit->GetTime(),
+    sTrk += Form("    Hit %lu, A 0x%08x, St %d, T %6.2f, Tracks(%d): ", ih, pHit->GetAddress(), iSt, pHit->GetTime(),
                  (int) fvTrkVec[ih].size());
     if (iSt < fFindTracks->GetNStations()) {
       for (size_t it = 0; it < fvTrkVec[ih].size(); it++) {
@@ -1179,7 +946,8 @@ void CbmTofTrackFinderNN::PrintStatus(char* cComment) {
   }
 }
 
-Bool_t CbmTofTrackFinderNN::Active(CbmTofTracklet* pCheck) {
+Bool_t CbmTofTrackFinderNN::Active(CbmTofTracklet* pCheck)
+{
   for (size_t it = 0; it < fTracks.size(); it++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTracks[it];
     if (NULL == pTrk) continue;
@@ -1188,7 +956,8 @@ Bool_t CbmTofTrackFinderNN::Active(CbmTofTracklet* pCheck) {
   return kFALSE;
 }
 
-void CbmTofTrackFinderNN::Line3Dfit(CbmTofTracklet* pTrk) {
+void CbmTofTrackFinderNN::Line3Dfit(CbmTofTracklet* pTrk)
+{
   TGraph2DErrors* gr = new TGraph2DErrors();
 
   // Fill the 2D graph
@@ -1204,9 +973,8 @@ void CbmTofTrackFinderNN::Line3Dfit(CbmTofTracklet* pTrk) {
     dy = (pTrk->GetTofHitPointer(N))->GetDy();
     dz = (pTrk->GetTofHitPointer(N))->GetDz();  //FIXME
     gr->SetPointError(N, dx, dy, dz);
-    LOG(debug) << "Line3Dfit add N = " << N << ",\t" << pTrk->GetTofHitIndex(N)
-               << ",\t" << x << ",\t" << y << ",\t" << z << ",\t" << dx << ",\t"
-               << dy << ",\t" << dz;
+    LOG(debug) << "Line3Dfit add N = " << N << ",\t" << pTrk->GetTofHitIndex(N) << ",\t" << x << ",\t" << y << ",\t"
+               << z << ",\t" << dx << ",\t" << dy << ",\t" << dz;
   }
   // fit the graph now
   Double_t pStart[4] = {0., 0., 0., 0.};
@@ -1214,17 +982,16 @@ void CbmTofTrackFinderNN::Line3Dfit(CbmTofTracklet* pTrk) {
   pStart[1]          = (pTrk->GetTrackParameter())->GetTx();
   pStart[2]          = pTrk->GetFitY(0.);
   pStart[3]          = (pTrk->GetTrackParameter())->GetTy();
-  LOG(debug) << "Line3Dfit init: X0 " << pStart[0] << ", TX " << pStart[1]
-             << ", Y0 " << pStart[2] << ", TY " << pStart[3];
+  LOG(debug) << "Line3Dfit init: X0 " << pStart[0] << ", TX " << pStart[1] << ", Y0 " << pStart[2] << ", TY "
+             << pStart[3];
 
   fMinuit.DoFit(gr, pStart);
   //gr->Draw("err p0");
   gr->Delete();
   Double_t* dRes;
   dRes = fMinuit.GetParFit();
-  LOG(debug) << "Line3Dfit result: " << gMinuit->fCstatu << " : X0 " << dRes[0]
-             << ", TX " << dRes[1] << ", Y0 " << dRes[2] << ", TY " << dRes[3]
-             << ", Chi2DoF: " << fMinuit.GetChi2DoF();
+  LOG(debug) << "Line3Dfit result: " << gMinuit->fCstatu << " : X0 " << dRes[0] << ", TX " << dRes[1] << ", Y0 "
+             << dRes[2] << ", TY " << dRes[3] << ", Chi2DoF: " << fMinuit.GetChi2DoF();
 
   (pTrk->GetTrackParameter())->SetX(dRes[0]);
   (pTrk->GetTrackParameter())->SetY(dRes[2]);

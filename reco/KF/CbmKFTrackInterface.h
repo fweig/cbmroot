@@ -38,8 +38,7 @@ public:
   /** I/O parameters for extrapolation routines
    */
 
-  virtual Double_t*
-  GetTrack();  /// array[6] of track parameters(x,y,tx,ty,qp,z)
+  virtual Double_t* GetTrack();      /// array[6] of track parameters(x,y,tx,ty,qp,z)
   virtual Double_t* GetCovMatrix();  /// array[15] of covariance matrix
 
   /** Parameters during and after the track fit

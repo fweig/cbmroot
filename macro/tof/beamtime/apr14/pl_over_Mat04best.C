@@ -25,9 +25,8 @@
   gROOT->cd();
   TString hname = "hDXDY04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -35,9 +34,8 @@
   gROOT->cd();
   TString hname = "hDXDT04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -45,9 +43,8 @@
   gROOT->cd();
   TString hname = "hDYDT04best";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -58,7 +55,8 @@
   if (h2 != NULL) {
     h2->Draw("colz");
     TH1D* hDT04 = h2->ProjectionY();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -70,7 +68,8 @@
   if (h1 != NULL) {
     h1->Draw();
     NFinalHits = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -82,7 +81,8 @@
     h1->Draw();
     gPad->SetLogy();
     NEvents = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -99,7 +99,8 @@
   if (h2 != NULL) {
     h2->Draw("colz");
     //  TH1D *hDT04=h2->ProjectionY();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -110,14 +111,10 @@
   if (h2 != NULL) {
     h2->Draw("colz");
     //  TH1D *hDT04=h2->ProjectionY();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   Double_t dEff = NFinalHits / NEvents;
-  cout << Form(
-    "<I> Efficiency: %6.3f, 1-sigma timing resolution: %6.1f ps, RMS: %6.1f ps",
-    dEff,
-    dTRes,
-    dTRMS)
-       << endl;
+  cout << Form("<I> Efficiency: %6.3f, 1-sigma timing resolution: %6.1f ps, RMS: %6.1f ps", dEff, dTRes, dTRMS) << endl;
 }

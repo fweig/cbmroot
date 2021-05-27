@@ -61,7 +61,9 @@ CbmDaq::CbmDaq(Bool_t eventMode)
   , fTimeSlice(nullptr)
   , fEventList()
   , fEventsCurrent(nullptr)
-  , fEventRange() {}
+  , fEventRange()
+{
+}
 // ===========================================================================
 
 
@@ -88,7 +90,9 @@ CbmDaq::CbmDaq(Double_t tsLength)
   , fTimeSlice(nullptr)
   , fEventList()
   , fEventsCurrent(nullptr)
-  , fEventRange() {}
+  , fEventRange()
+{
+}
 // ===========================================================================
 
 
@@ -98,7 +102,8 @@ CbmDaq::~CbmDaq() {}
 
 
 // =====   Check output for time sorting   ===================================
-Bool_t CbmDaq::CheckOutput() const {
+Bool_t CbmDaq::CheckOutput() const
+{
   Bool_t result = kTRUE;
   for (auto& digitizer : fDigitizers)
     result = (result && digitizer.second->CheckOutput());
@@ -108,13 +113,15 @@ Bool_t CbmDaq::CheckOutput() const {
 
 
 // =====   Close the current time slice and fill it to the tree   ============
-void CbmDaq::CloseTimeSlice() {
+void CbmDaq::CloseTimeSlice()
+{
 
   fNofTimeSlices++;
   if (fTimeSlice->IsEmpty()) {
     fNofTimeSlicesEmpty++;
     LOG(debug) << fName << ": Closing " << fTimeSlice->ToString();
-  } else
+  }
+  else
     LOG(info) << fName << ": Closing " << fTimeSlice->ToString();
 
   // --- No action if time slice is empty and empty slices are not stored
@@ -148,7 +155,8 @@ void CbmDaq::CloseTimeSlice() {
 
 
 // =====   Copy event list to output branch   ================================
-Int_t CbmDaq::CopyEventList() {
+Int_t CbmDaq::CopyEventList()
+{
 
   Int_t nMCEvents = 0;
   CbmMatch match  = fTimeSlice->GetMatch();
@@ -166,15 +174,16 @@ Int_t CbmDaq::CopyEventList() {
 
 
 // =====   Task execution   ==================================================
-void CbmDaq::Exec(Option_t*) {
+void CbmDaq::Exec(Option_t*)
+{
 
   // Start timer and digi counter
   fTimer.Start();
   Int_t nDigis = 0;
 
   // Event info
-  Int_t file  = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
-  Int_t event = FairRootManager::Instance()->GetEntryNr();
+  Int_t file         = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
+  Int_t event        = FairRootManager::Instance()->GetEntryNr();
   Double_t eventTime = FairRunAna::Instance()->GetEventHeader()->GetEventTime();
   fEventList.Insert(event, file, eventTime);
 
@@ -210,8 +219,7 @@ void CbmDaq::Exec(Option_t*) {
   fTimeEventPrevious = eventTime;
 
   // --- Event log
-  LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3)
-            << fTimer.RealTime() << " s]"
+  LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3) << fTimer.RealTime() << " s]"
             << " Transported digis: " << nDigis << ", " << GetBufferStatus();
 
   // --- Increase exec counter
@@ -222,10 +230,10 @@ void CbmDaq::Exec(Option_t*) {
 
 
 // =====   Fill current time slice with data from buffers   ==================
-ULong64_t CbmDaq::FillTimeSlice(Bool_t timeLimit, Double_t tMax) {
+ULong64_t CbmDaq::FillTimeSlice(Bool_t timeLimit, Double_t tMax)
+{
 
-  if (timeLimit)
-    LOG(debug) << GetName() << ": Fill time slice up to t = " << tMax << " ns";
+  if (timeLimit) LOG(debug) << GetName() << ": Fill time slice up to t = " << tMax << " ns";
   else
     LOG(debug) << GetName() << ": Fill time slice";
   LOG(debug) << GetName() << " " << GetBufferStatus(kTRUE);
@@ -237,15 +245,12 @@ ULong64_t CbmDaq::FillTimeSlice(Bool_t timeLimit, Double_t tMax) {
   ULong64_t nDataAll = 0;
   ULong64_t nData    = 0;
   for (auto digitizer : fDigitizers) {
-    if (timeLimit)
-      nData = digitizer.second->FillTimeSlice(fTimeSlice, tMax);
+    if (timeLimit) nData = digitizer.second->FillTimeSlice(fTimeSlice, tMax);
     else
       nData = digitizer.second->FillTimeSlice(fTimeSlice);
-    LOG(debug) << GetName() << ": "
-               << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
+    LOG(debug) << GetName() << ": " << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
                << fTimeSlice->ToString();
-    ss << " " << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
-       << nData;
+    ss << " " << CbmModuleList::GetModuleNameCaps(digitizer.first) << " " << nData;
     nDataAll += nData;
   }
   LOG(debug) << ss.str();
@@ -259,7 +264,8 @@ ULong64_t CbmDaq::FillTimeSlice(Bool_t timeLimit, Double_t tMax) {
 
 
 // =====   End-of-run action   ===============================================
-void CbmDaq::Finish() {
+void CbmDaq::Finish()
+{
 
   std::cout << std::endl;
   LOG(info) << fName << ": Finish run";
@@ -301,16 +307,14 @@ void CbmDaq::Finish() {
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Events:        " << setw(10) << right << fNofEvents;
-  LOG(info) << "Digis:         " << setw(10) << right << fNofDigis << " from "
-            << setw(10) << right << fixed << setprecision(1) << fTimeDigiFirst
-            << " ns  to " << setw(10) << right << fixed << setprecision(1)
+  LOG(info) << "Digis:         " << setw(10) << right << fNofDigis << " from " << setw(10) << right << fixed
+            << setprecision(1) << fTimeDigiFirst << " ns  to " << setw(10) << right << fixed << setprecision(1)
             << fTimeDigiLast << " ns";
   LOG(info) << "Digis ignored: " << setw(10) << right << fNofDigisIgnored;
   if (fTimeSlice->IsRegular())
-    LOG(info) << "Time slices:   " << setw(10) << right << fNofTimeSlices
-              << " from " << setw(10) << right << fixed << setprecision(1)
-              << fTimeSliceFirst << " ns  to " << setw(10) << right << fixed
-              << setprecision(1) << fTimeSliceLast << " ns";
+    LOG(info) << "Time slices:   " << setw(10) << right << fNofTimeSlices << " from " << setw(10) << right << fixed
+              << setprecision(1) << fTimeSliceFirst << " ns  to " << setw(10) << right << fixed << setprecision(1)
+              << fTimeSliceLast << " ns";
   else
     LOG(info) << "Time slices:   " << setw(10) << right << fNofTimeSlices;
   LOG(info) << "Empty slices:  " << setw(10) << right << fNofTimeSlicesEmpty;
@@ -324,7 +328,8 @@ void CbmDaq::Finish() {
 
 
 // =====   Number of data in DAQ buffers   ===================================
-ULong64_t CbmDaq::GetBufferSize() const {
+ULong64_t CbmDaq::GetBufferSize() const
+{
   ULong64_t nData = 0;
   for (auto& digitizer : fDigitizers)
     nData += digitizer.second->GetDaqBufferSize();
@@ -334,19 +339,19 @@ ULong64_t CbmDaq::GetBufferSize() const {
 
 
 // =====   DAQ buffer status to string   =====================================
-std::string CbmDaq::GetBufferStatus(Bool_t verbose) const {
+std::string CbmDaq::GetBufferStatus(Bool_t verbose) const
+{
   stringstream ss;
   if (IsDaqBufferEmpty()) {
     ss << "Buffer status: empty";
     return ss.str();
   }
-  ss << "Buffer status: " << GetBufferSize()
-     << " data from t = " << GetBufferTimeFirst() << " to "
+  ss << "Buffer status: " << GetBufferSize() << " data from t = " << GetBufferTimeFirst() << " to "
      << GetBufferTimeLast() << " ns";
   if (verbose) {
     for (auto& digitizer : fDigitizers)
-      ss << "\n       " << CbmModuleList::GetModuleNameCaps(digitizer.first)
-         << " " << digitizer.second->GetDaqBufferStatus();
+      ss << "\n       " << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
+         << digitizer.second->GetDaqBufferStatus();
   }
   return ss.str();
 }
@@ -354,12 +359,12 @@ std::string CbmDaq::GetBufferStatus(Bool_t verbose) const {
 
 
 // =====   Time of first datum in DAQ buffers   ==============================
-Double_t CbmDaq::GetBufferTimeFirst() const {
+Double_t CbmDaq::GetBufferTimeFirst() const
+{
   Double_t tMin = -1.;
   for (auto& digitizer : fDigitizers) {
     Double_t test = digitizer.second->GetDaqBufferTimeFirst();
-    if (tMin < 0.)
-      tMin = test;
+    if (tMin < 0.) tMin = test;
     else
       tMin = (tMin < test ? tMin : test);
   }
@@ -369,12 +374,12 @@ Double_t CbmDaq::GetBufferTimeFirst() const {
 
 
 // =====   Time of last datum in DAQ buffers   ===============================
-Double_t CbmDaq::GetBufferTimeLast() const {
+Double_t CbmDaq::GetBufferTimeLast() const
+{
   Double_t tMax = -1.;
   for (auto& digitizer : fDigitizers) {
     Double_t test = digitizer.second->GetDaqBufferTimeLast();
-    if (tMax < 0.)
-      tMax = test;
+    if (tMax < 0.) tMax = test;
     else
       tMax = (tMax > test ? tMax : test);
   }
@@ -384,7 +389,8 @@ Double_t CbmDaq::GetBufferTimeLast() const {
 
 
 // =====   Task initialisation   =============================================
-InitStatus CbmDaq::Init() {
+InitStatus CbmDaq::Init()
+{
 
   std::cout << std::endl;
   LOG(info) << "==========================================================";
@@ -395,12 +401,13 @@ InitStatus CbmDaq::Init() {
   if (fIsEventByEvent) {
     LOG(info) << fName << ": Event mode";
     fTimeSlice = new CbmTimeSlice(CbmTimeSlice::kEvent);
-  } else {
+  }
+  else {
     if (fTimeSliceLength > 0.) {
-      LOG(info) << fName << ": Time-based mode, time slice duration "
-                << fTimeSliceLength << " ns";
+      LOG(info) << fName << ": Time-based mode, time slice duration " << fTimeSliceLength << " ns";
       fTimeSlice = new CbmTimeSlice(0., fTimeSliceLength);
-    } else {
+    }
+    else {
       LOG(info) << fName << ": Time-based mode, flexible time slice";
       fTimeSlice = new CbmTimeSlice(CbmTimeSlice::kFlexible);
     }
@@ -414,8 +421,7 @@ InitStatus CbmDaq::Init() {
 
   // --- Register output branch MCEventList
   fEventsCurrent = new CbmMCEventList();
-  FairRootManager::Instance()->Register(
-    "MCEventList.", "DAQ", fEventsCurrent, kTRUE);
+  FairRootManager::Instance()->Register("MCEventList.", "DAQ", fEventsCurrent, kTRUE);
 
   LOG(info) << GetName() << ": Initialisation successful";
   LOG(info) << "==========================================================";
@@ -427,7 +433,8 @@ InitStatus CbmDaq::Init() {
 
 
 // =====   Check for empty DAQ buffers   =====================================
-Bool_t CbmDaq::IsDaqBufferEmpty() const {
+Bool_t CbmDaq::IsDaqBufferEmpty() const
+{
   Bool_t empty = kTRUE;
   for (auto digitizer : fDigitizers) {
     if (digitizer.second->GetDaqBufferSize()) {
@@ -441,7 +448,8 @@ Bool_t CbmDaq::IsDaqBufferEmpty() const {
 
 
 // =====   Print current event range   =======================================
-void CbmDaq::PrintCurrentEventRange() const {
+void CbmDaq::PrintCurrentEventRange() const
+{
 
   std::stringstream ss;
   ss << GetName() << ": Current MC event range: ";
@@ -455,8 +463,7 @@ void CbmDaq::PrintCurrentEventRange() const {
     Int_t file       = it->first;
     Int_t firstEvent = it->second.first;
     Int_t lastEvent  = it->second.second;
-    ss << "\n          Input file " << file << ", first event " << firstEvent
-       << ", last event " << lastEvent;
+    ss << "\n          Input file " << file << ", first event " << firstEvent << ", last event " << lastEvent;
     it++;
   }  //# inputs
   LOG(info) << ss.str();
@@ -465,7 +472,8 @@ void CbmDaq::PrintCurrentEventRange() const {
 
 
 // =====   Set the digitizer for a given system   ============================
-void CbmDaq::SetDigitizer(ECbmModuleId system, CbmDigitizeBase* digitizer) {
+void CbmDaq::SetDigitizer(ECbmModuleId system, CbmDigitizeBase* digitizer)
+{
   assert(digitizer);
   fDigitizers[system] = digitizer;
 }
@@ -473,13 +481,15 @@ void CbmDaq::SetDigitizer(ECbmModuleId system, CbmDigitizeBase* digitizer) {
 
 
 // =====   Start a new time slice   ==========================================
-void CbmDaq::StartNextTimeSlice() {
+void CbmDaq::StartNextTimeSlice()
+{
 
   // --- Reset the time slice header
   if (fTimeSlice->IsRegular()) {
     Double_t newStart = fTimeSlice->GetStartTime() + fTimeSliceLength;
     fTimeSlice->Reset(newStart, fTimeSliceLength);
-  } else
+  }
+  else
     fTimeSlice->Reset();
 
   // --- Reset event range and event list

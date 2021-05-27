@@ -9,7 +9,9 @@
 #include "CbmDefs.h"
 #include "CbmGeoSetup.h"
 #include "CbmGeoSetupModule.h"
+
 #include "TObject.h"
+
 #include <vector>
 
 /** @class CbmGeoSetupProvider
@@ -69,11 +71,9 @@ public:
   virtual std::vector<std::string> GetFieldTags() = 0;
 
   /** @brief Abstract method for constructing the setup by id and tag **/
-  virtual CbmGeoSetup GetSetupByTag(std::string setupTag,
-                                    std::string revision) = 0;
+  virtual CbmGeoSetup GetSetupByTag(std::string setupTag, std::string revision) = 0;
   /** @brief Abstract method for constructing the module by id and tag **/
-  virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId,
-                                           std::string tag) = 0;
+  virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId, std::string tag) = 0;
   /** @brief Abstract method for constructing the field by tag **/
   virtual CbmGeoSetupField GetFieldByTag(std::string tag) = 0;
   /** @brief Abstract method for constructing the media by tag **/

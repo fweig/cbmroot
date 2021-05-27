@@ -1,12 +1,9 @@
 #ifndef COMPARESTSDIGI_H
 #define COMPARESTSDIGI_H 1
 
-void compareStsDigiDataMembers(CbmStsDigi& test,
-                               Int_t address,
-                               UShort_t charge,
-                               UShort_t channel,
-                               ECbmModuleId systemid,
-                               Long64_t time) {
+void compareStsDigiDataMembers(CbmStsDigi& test, Int_t address, UShort_t charge, UShort_t channel,
+                               ECbmModuleId systemid, Long64_t time)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};

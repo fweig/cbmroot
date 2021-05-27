@@ -1,9 +1,6 @@
-void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
-                          int PMTtransY = 0,
-                          int PMTtransZ = 0,
-                          float PMTrotX = 2,
-                          float PMTrotY = 2,
-                          int RotMir    = -10) {
+void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10, int PMTtransY = 0, int PMTtransZ = 0, float PMTrotX = 2,
+                          float PMTrotY = 2, int RotMir = -10)
+{
 
   int GeoCase  = 2;
   int PtNotP   = 1;
@@ -13,8 +10,7 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
   if (script == "yes") {
-    cout << " ----------------- running with script --------------------"
-         << endl;
+    cout << " ----------------- running with script --------------------" << endl;
     nEvents   = TString(gSystem->Getenv("N_EVS")).Atof();
     RotMir    = TString(gSystem->Getenv("ROTMIR")).Atof();
     PMTrotX   = TString(gSystem->Getenv("PMT_ROTX")).Atof();
@@ -50,15 +46,12 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
   TString ExtraText = "_RegularTheta.";
   ExtraText         = ".";
 
-  TString ParFile = outDir + "Parameters_" + GeoText + "_" + RotMirText + "_"
-                    + PMTRotText + "_" + PMTTransText + "_" + MomText
+  TString ParFile = outDir + "Parameters_" + GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + PMTTransText + "_"
+                    + MomText + ExtraText + "root";
+  TString SimFile = outDir + "Sim_" + GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + PMTTransText + "_" + MomText
                     + ExtraText + "root";
-  TString SimFile = outDir + "Sim_" + GeoText + "_" + RotMirText + "_"
-                    + PMTRotText + "_" + PMTTransText + "_" + MomText
-                    + ExtraText + "root";
-  TString OutPutGeoFile = outDir + "OutPutGeo_" + GeoText + "_" + RotMirText
-                          + "_" + PMTRotText + "_" + PMTTransText + "_"
-                          + MomText + ExtraText + "root";
+  TString OutPutGeoFile = outDir + "OutPutGeo_" + GeoText + "_" + RotMirText + "_" + PMTRotText + "_" + PMTTransText
+                          + "_" + MomText + ExtraText + "root";
   gSystem->Exec(("rm " + ParFile).Data());
   gSystem->Exec(("rm " + SimFile).Data());
   gSystem->Exec(("rm " + OutPutGeoFile).Data());
@@ -121,8 +114,7 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
     //FairDetector* rich = new CbmRich("RICH", kTRUE);
     CbmRich* rich = new CbmRich("RICH", kTRUE);
     rich->SetGeometryFileName(richGeom);
-    rich->SetRegisterPhotonsOnSensitivePlane(
-      kTRUE);  // Cerenkov photons are also registered in the sim tree
+    rich->SetRegisterPhotonsOnSensitivePlane(kTRUE);  // Cerenkov photons are also registered in the sim tree
     fRun->AddModule(rich);
   }
 
@@ -137,9 +129,8 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
   float StartPhi = 90.1, EndPhi = 180.;
   float StartTheta = 2.5, EndTheta = 35.;
   FairBoxGenerator* boxGen1 = new FairBoxGenerator(11, 1);
-  if (PtNotP == 1) {
-    boxGen1->SetPtRange(MomMin, MomMax);
-  } else {
+  if (PtNotP == 1) { boxGen1->SetPtRange(MomMin, MomMax); }
+  else {
     boxGen1->SetPRange(MomMin, MomMax);
   }
   // boxGen1->SetPRange(0.,10.);
@@ -151,9 +142,8 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
   primGen->AddGenerator(boxGen1);
 
   FairBoxGenerator* boxGen2 = new FairBoxGenerator(-11, 1);
-  if (PtNotP == 1) {
-    boxGen2->SetPtRange(MomMin, MomMax);
-  } else {
+  if (PtNotP == 1) { boxGen2->SetPtRange(MomMin, MomMax); }
+  else {
     boxGen2->SetPRange(MomMin, MomMax);
   }
   // boxGen2->SetPtRange(0.,4.);
@@ -189,21 +179,20 @@ void Run_Sim_GeoOpt_Batch(Int_t nEvents = 10,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << SimFile << endl;
   cout << "Parameter file is " << ParFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
 ////////////////////////////////////////////
-TString GetMomText(int PtNotP, float MomMin, float MomMax) {
+TString GetMomText(int PtNotP, float MomMin, float MomMax)
+{
   TString Pstring = "P";
   if (PtNotP == 1) { Pstring = "Pt"; }
   if ((MomMax - MomMin) < 0.1) {}
   char Ptxt[256];
 
-  if ((MomMax - MomMin) < 0.1) {
-    sprintf(Ptxt, "%sFixed%d", Pstring.Data(), MomMax);
-  } else {
+  if ((MomMax - MomMin) < 0.1) { sprintf(Ptxt, "%sFixed%d", Pstring.Data(), MomMax); }
+  else {
     sprintf(Ptxt, "%s%dto%d", Pstring.Data(), MomMin, MomMax);
   }
   stringstream ss;
@@ -212,7 +201,8 @@ TString GetMomText(int PtNotP, float MomMin, float MomMax) {
 }
 
 ////////////////////////////////////////////
-TString GetGeoText(int GeoCase) {
+TString GetGeoText(int GeoCase)
+{
   //GeoCase=-2 ==> old geometry with rich_v08a.geo (RICH starts at 1600, Mirror tilt -1)
   //GeoCase=-1 ==> old geometry with rich_v14a.gdml (RICH starts at 1800, Mirror tilt -1)
   //GeoCase=0 ==> old geometry with *.geo (own creation)(RICH starts at 1600, Mirror tilt -1)
@@ -228,7 +218,8 @@ TString GetGeoText(int GeoCase) {
   if (GeoCase == 2) { return "RichGeo_NewGdml"; }
 }
 ////////////////////////////////////////////
-TString GetOutDir(int GeoCase) {
+TString GetOutDir(int GeoCase)
+{
   return "/data/GeoOpt/RotPMT/";
 
   return "/hera/cbm/users/tariq/GeoOptRootFiles/RotPMT/";
@@ -237,11 +228,11 @@ TString GetOutDir(int GeoCase) {
   // if(GeoCase==2){return "/data/GeoOpt/RotPMT/NewGeo/";}
 }
 ////////////////////////////////////////////
-TString GetMirText(int RotMir) {
+TString GetMirText(int RotMir)
+{
   char RotMir_txt[256];
-  if (RotMir < 0) {
-    sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMir_txt, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMir_txt, "RotMir_p%d", RotMir);
   }
 
@@ -250,7 +241,8 @@ TString GetMirText(int RotMir) {
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPMTRotText(float PMTrotX, float PMTrotY) {
+TString GetPMTRotText(float PMTrotX, float PMTrotY)
+{
   int ShiftXmod10     = (int(PMTrotX * 10)) % 10;
   int ShiftYmod10     = (int(PMTrotY * 10)) % 10;
   float IntegerXValue = PMTrotX - (float(ShiftXmod10)) / 10.;
@@ -260,16 +252,15 @@ TString GetPMTRotText(float PMTrotX, float PMTrotY) {
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   stringstream ss;
   ss << "RotPMT_" << ShiftXTxt << "_" << ShiftYTxt;
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPMTTransText(int PMTTransY, int PMTTransZ) {
+TString GetPMTTransText(int PMTTransY, int PMTTransZ)
+{
   // int ShiftXmod10=(int(PMTrotX*10)) % 10;
   // int ShiftYmod10=(int(PMTrotY*10)) % 10;
   // float IntegerXValue=PMTrotX-(float (ShiftXmod10))/10.;
@@ -277,14 +268,12 @@ TString GetPMTTransText(int PMTTransY, int PMTTransZ) {
 
   char ZTransText[256];
   char YTransText[256];
-  if (PMTTransY < 0) {
-    sprintf(YTransText, "Y_m%d", -1 * PMTTransY);
-  } else {
+  if (PMTTransY < 0) { sprintf(YTransText, "Y_m%d", -1 * PMTTransY); }
+  else {
     sprintf(YTransText, "Y_p%d", PMTTransY);
   }
-  if (PMTTransZ < 0) {
-    sprintf(ZTransText, "Z_m%d", -1 * PMTTransZ);
-  } else {
+  if (PMTTransZ < 0) { sprintf(ZTransText, "Z_m%d", -1 * PMTTransZ); }
+  else {
     sprintf(ZTransText, "Z_p%d", PMTTransZ);
   }
 
@@ -295,22 +284,21 @@ TString GetPMTTransText(int PMTTransY, int PMTTransZ) {
 }
 
 ////////////////////////////////////////////////////////
-TString
-GetRICH_GeoFile(char* RotMirText, TString PMTRotText, TString PMTTransText) {
+TString GetRICH_GeoFile(char* RotMirText, TString PMTRotText, TString PMTTransText)
+{
   TString Dir = "rich/GeoOpt/TransPMT/";
 
   TString Endung = ".root";
   stringstream ss;
-  ss << Dir << "rich_geo_" << RotMirText << "_" << PMTRotText << "_"
-     << PMTTransText << Endung;
+  ss << Dir << "rich_geo_" << RotMirText << "_" << PMTRotText << "_" << PMTTransText << Endung;
 
   return ss.str();
 }
 ////////////////////////////////////////////////////////
-TString GetPipe_GeoFile(int GeoCase) {
-  if (GeoCase == -2 || GeoCase == 0) {
-    return "pipe/pipe_standard.geo";
-  } else {
+TString GetPipe_GeoFile(int GeoCase)
+{
+  if (GeoCase == -2 || GeoCase == 0) { return "pipe/pipe_standard.geo"; }
+  else {
     return "pipe/pipe_v14h.root";
   }
 }

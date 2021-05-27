@@ -1,7 +1,8 @@
-#include "FairPrimaryGenerator.h"
-
 #include "CbmFastDecayer.h"
+
 #include "CbmStack.h"
+
+#include "FairPrimaryGenerator.h"
 
 #include "TMCProcess.h"
 #include "TSystem.h"
@@ -21,7 +22,8 @@ using std::stringstream;
 ClassImp(CbmFastDecayer)
   ///////////////////////////////////////////////////////////////////////////
   CbmFastDecayer::CbmFastDecayer()
-  : CbmFastDecayer("fastDecayer", "fastDecayer") {
+  : CbmFastDecayer("fastDecayer", "fastDecayer")
+{
   //
   // Default Construction
   //
@@ -29,7 +31,10 @@ ClassImp(CbmFastDecayer)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 CbmFastDecayer::CbmFastDecayer(const char* fileName, TString particle)
-  : FairGenerator(), fDecayPdgCodes(0), fGeantPdgCodes(0) {
+  : FairGenerator()
+  , fDecayPdgCodes(0)
+  , fGeantPdgCodes(0)
+{
   //
   // Standrad Construction
   //
@@ -37,7 +42,8 @@ CbmFastDecayer::CbmFastDecayer(const char* fileName, TString particle)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-CbmFastDecayer::~CbmFastDecayer() {
+CbmFastDecayer::~CbmFastDecayer()
+{
   //
   // Standard Destructor
   //
@@ -48,7 +54,8 @@ CbmFastDecayer::~CbmFastDecayer() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-Bool_t CbmFastDecayer::Init() {
+Bool_t CbmFastDecayer::Init()
+{
   //
   // Standard CbmGenerator Initializer - no input
   // 1) initialize decayer with default decay and particle table
@@ -75,7 +82,8 @@ Bool_t CbmFastDecayer::Init() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
+Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen)
+{
   //
   //Generate method - Input none - Output none
   //For each event:
@@ -113,10 +121,7 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
 
   nPrimStack  = fStack->GetNprimary();
   nTrackStack = fStack->GetNtrack();
-  Info("ReadEvent",
-       "nPrimaries = %d  and ntracks = %d before fast decayer",
-       nPrimStack,
-       nTrackStack);
+  Info("ReadEvent", "nPrimaries = %d  and ntracks = %d before fast decayer", nPrimStack, nTrackStack);
 
   /// allow tracking of decay products
   primGen->DoTracking(kTRUE);
@@ -133,18 +138,14 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
     Int_t pdg       = part->GetPdgCode();
 
     /// select certain particles for decay
-    it =
-      std::find(fDecayPdgCodes.begin(), fDecayPdgCodes.end(), TMath::Abs(pdg));
+    it = std::find(fDecayPdgCodes.begin(), fDecayPdgCodes.end(), TMath::Abs(pdg));
     if (it == fDecayPdgCodes.end()) continue;
 
     //check if particle is already decayed
     /// check for dalitz pi0, gamma, etc.
     //TODO: how?
     if (/*part->GetStatusCode() != 1 ||*/ part->GetNDaughters() > 0) {
-      Info("ReadEvent",
-           "Attention: particle %d is already decayed (code:%d,daughters:%d)!",
-           pdg,
-           part->GetStatusCode(),
+      Info("ReadEvent", "Attention: particle %d is already decayed (code:%d,daughters:%d)!", pdg, part->GetStatusCode(),
            part->GetNDaughters());
       continue;
     }
@@ -165,8 +166,7 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
     Int_t* trackIt = new Int_t[np];
     Int_t* pParent = new Int_t[np];
 
-    Info(
-      "ReadEvent", "number of products: np = %d for mother: %d", np - 1, pdg);
+    Info("ReadEvent", "number of products: np = %d for mother: %d", np - 1, pdg);
     //    mom->Print(); // debug
 
     for (int i = 0; i < np; i++) {
@@ -187,10 +187,8 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
         if (ks == 1) {
 
           /// select certain particles for decay
-          it = std::find(
-            fGeantPdgCodes.begin(), fGeantPdgCodes.end(), TMath::Abs(pdgd));
-          if (it == fGeantPdgCodes.end())
-            trackIt[i] = 1;
+          it = std::find(fGeantPdgCodes.begin(), fGeantPdgCodes.end(), TMath::Abs(pdgd));
+          if (it == fGeantPdgCodes.end()) trackIt[i] = 1;
           else
             continue;
         }
@@ -217,20 +215,14 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
       TParticle* iparticle = (TParticle*) particles->At(i);
       Int_t kf             = iparticle->GetPdgCode();
       Int_t ksc            = iparticle->GetStatusCode();
-      Int_t jpa            = iparticle->GetFirstMother()
-                  - 1;  //jpa = 0 for daughters ofmother particles
+      Int_t jpa            = iparticle->GetFirstMother() - 1;  //jpa = 0 for daughters ofmother particles
 
       /// NOTE: the first decay generation points to the generated particles (by e.g. UrQMD),
       ///       further generations (cascade daughters) have jpa indices > 0
       ///       and need to point to the correct previously added mother (not grandmother) -> (i-jpa)
       Int_t iparent = (jpa > 0) ? fStack->GetNtrack() - (i - jpa) : iTrack;
 
-      Info("ReadEvent",
-           "FirstMother = %d (iparent %d),  indicePart = %d,  pdg = %d ",
-           jpa,
-           iparent,
-           i,
-           kf);
+      Info("ReadEvent", "FirstMother = %d (iparent %d),  indicePart = %d,  pdg = %d ", jpa, iparent, i, kf);
 
       /// position and momentum of daughters
       och[0]      = origin0[0] + iparticle->Vx();  //[cm]
@@ -248,23 +240,9 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
       Info("ReadEvent",
            " Add track %d to primary Generator: pdg=%d with parent=%d and do "
            "tracking %d (stack primaries: %d, tracks: %d)",
-           i,
-           kf,
-           iparent,
-           trackIt[i],
-           fStack->GetNprimary(),
-           fStack->GetNtrack());
+           i, kf, iparent, trackIt[i], fStack->GetNprimary(), fStack->GetNtrack());
 
-      primGen->AddTrack(kf,
-                        pc[0],
-                        pc[1],
-                        pc[2],
-                        och[0],
-                        och[1],
-                        och[2],
-                        iparent - nTrackStack,
-                        trackIt[i],
-                        ee);
+      primGen->AddTrack(kf, pc[0], pc[1], pc[2], och[0], och[1], och[2], iparent - nTrackStack, trackIt[i], ee);
 
     }  // Particle loop
 
@@ -281,15 +259,15 @@ Bool_t CbmFastDecayer::ReadEvent(FairPrimaryGenerator* primGen) {
   return kTRUE;
 }
 
-void CbmFastDecayer::SetParticlesForDecay(char const* pdgs) {
+void CbmFastDecayer::SetParticlesForDecay(char const* pdgs)
+{
 
   stringstream ss(pdgs);
   int n;
   char ch;
 
   while (ss >> n) {
-    if (ss >> ch)
-      fDecayPdgCodes.push_back(n);
+    if (ss >> ch) fDecayPdgCodes.push_back(n);
     else
       fDecayPdgCodes.push_back(n);
   }
@@ -298,15 +276,15 @@ void CbmFastDecayer::SetParticlesForDecay(char const* pdgs) {
   //   std::cout << *i << ' ';
 }
 
-void CbmFastDecayer::SetParticlesForGeant(char const* pdgs) {
+void CbmFastDecayer::SetParticlesForGeant(char const* pdgs)
+{
 
   stringstream ss(pdgs);
   int n;
   char ch;
 
   while (ss >> n) {
-    if (ss >> ch)
-      fGeantPdgCodes.push_back(n);
+    if (ss >> ch) fGeantPdgCodes.push_back(n);
     else
       fGeantPdgCodes.push_back(n);
   }

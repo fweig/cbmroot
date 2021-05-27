@@ -7,6 +7,7 @@
 #define CBMSTSALGOANACLUSTER_H 1
 
 #include <TObject.h>
+
 #include <memory>
 
 class CbmDigiManager;

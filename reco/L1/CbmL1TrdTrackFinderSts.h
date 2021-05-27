@@ -6,9 +6,8 @@
 #ifndef CBM_L1_TRD_TRACK_FINDER_STS
 #define CBM_L1_TRD_TRACK_FINDER_STS
 
-#include "CbmTrdTrackFinder.h"
-
 #include "CbmTrdTrack.h"
+#include "CbmTrdTrackFinder.h"
 
 #include <map>
 #include <vector>
@@ -60,8 +59,7 @@ private:
   void TrdLayout();
   void SortTrdHits();
   void Process();
-  void
-  Sts2Trd(Double_t pmin, Double_t pmax, Double_t chi2min, Double_t chi2max);
+  void Sts2Trd(Double_t pmin, Double_t pmax, Double_t chi2min, Double_t chi2max);
   void ProcessAllStations();
   void MoveOut();
   void ProcessStation(CbmTrdTrack* pTrack, const Int_t& station);
@@ -82,9 +80,9 @@ public:
 
   inline void SetVerbose(Int_t verbose) { fVerbose = verbose; }
 
-  static Bool_t CompareChi2(const CbmTrdTrack* a, const CbmTrdTrack* b) {
-    return (a->GetChiSq() / static_cast<Double_t>(a->GetNDF())
-            < b->GetChiSq() / static_cast<Double_t>(b->GetNDF()));
+  static Bool_t CompareChi2(const CbmTrdTrack* a, const CbmTrdTrack* b)
+  {
+    return (a->GetChiSq() / static_cast<Double_t>(a->GetNDF()) < b->GetChiSq() / static_cast<Double_t>(b->GetNDF()));
   };
 
   ClassDef(CbmL1TrdTrackFinderSts, 1);

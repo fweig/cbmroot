@@ -24,10 +24,10 @@ using namespace std;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmStsModule::CbmStsModule(UInt_t address,
-                           TGeoPhysicalNode* node,
-                           CbmStsElement* mother)
-  : CbmStsElement(address, kStsModule, node, mother) {}
+CbmStsModule::CbmStsModule(UInt_t address, TGeoPhysicalNode* node, CbmStsElement* mother)
+  : CbmStsElement(address, kStsModule, node, mother)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -37,7 +37,8 @@ CbmStsModule::~CbmStsModule() {}
 
 
 // -----   Get the unique address from the sensor name (static)   ----------
-Int_t CbmStsModule::GetAddressFromName(TString name) {
+Int_t CbmStsModule::GetAddressFromName(TString name)
+{
 
   Bool_t isValid = kTRUE;
   if (name.Length() != 16) isValid = kFALSE;
@@ -63,7 +64,8 @@ Int_t CbmStsModule::GetAddressFromName(TString name) {
 
 
 // -----   Initialise daughters from geometry   ----------------------------
-void CbmStsModule::InitDaughters() {
+void CbmStsModule::InitDaughters()
+{
 
   // --- Catch absence of TGeoManager
   assert(gGeoManager);
@@ -85,8 +87,7 @@ void CbmStsModule::InitDaughters() {
       TGeoPhysicalNode* sensorNode = new TGeoPhysicalNode(daughterPath.Data());
 
       // Get or create element from setup and add it as daughter
-      Int_t address =
-        CbmStsAddress::SetElementId(fAddress, kStsSensor, GetNofDaughters());
+      Int_t address        = CbmStsAddress::SetElementId(fAddress, kStsSensor, GetNofDaughters());
       CbmStsSensor* sensor = new CbmStsSensor(address, sensorNode, this);
       fDaughters.push_back(sensor);
 
@@ -98,7 +99,8 @@ void CbmStsModule::InitDaughters() {
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsModule::ToString() const {
+string CbmStsModule::ToString() const
+{
   stringstream ss;
   ss << GetName() << ", address " << CbmStsAddress::ToString(fAddress);
   return ss.str();

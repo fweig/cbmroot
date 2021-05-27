@@ -1,4 +1,5 @@
 #include "Lx.h"
+
 #include "CbmKFParticle.h"
 #include "CbmKFTrack.h"
 #include "CbmMCTrack.h"
@@ -9,11 +10,15 @@
 #include "CbmMuchTrack.h"
 #include "CbmStsAddress.h"
 #include "CbmStsPoint.h"
-#include "LxDraw.h"
+
 #include "TDatabasePDG.h"
 #include "TGeoManager.h"
+
 #include <iostream>
+
 #include <sys/time.h>
+
+#include "LxDraw.h"
 
 ClassImp(LxFinderTriplet)
 
@@ -59,10 +64,8 @@ bool useMCPInsteadOfHits;
 bool calcMiddlePoints;
 Double_t cutCoeff;
 bool pPtCut;
-std::vector<LxMCPoint>
-  MCPoints;  // Points should lay here in the same order as in listMuchPts.
-std::vector<LxMCTrack>
-  MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
+std::vector<LxMCPoint> MCPoints;  // Points should lay here in the same order as in listMuchPts.
+std::vector<LxMCTrack> MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
 std::list<LxStsMCPoint> MCStsPoints;
 std::list<LxStsMCPoint*> MCStsPointsByStations[8];
 #ifdef MAKE_DISPERSE_2D_HISTOS
@@ -72,9 +75,8 @@ Double_t zCoordsByStations[LXSTATIONS][LXLAYERS];
 LxSpace caSpace;
 std::map<Int_t, std::map<Int_t, int>> particleCounts;
 #ifdef MAKE_EFF_CALC
-std::ofstream
-  incomplete_events;  // Events where not all tracks are reconstructed.
-#endif                //MAKE_EFF_CALC
+std::ofstream incomplete_events;  // Events where not all tracks are reconstructed.
+#endif  //MAKE_EFF_CALC
 Int_t eventNumber;
 #ifdef CALC_MUCH_DETECTORS_EFF
 Int_t mcPointsCount;
@@ -131,8 +133,8 @@ LxFinderTriplet::~LxFinderTriplet() {}
 
 TString lxFinderParticleType = "jpsi";
 
-static bool
-GetHistoRMS(const char* histoNameBase, Int_t histoNumber, Double_t& retVal) {
+static bool GetHistoRMS(const char* histoNameBase, Int_t histoNumber, Double_t& retVal)
+{
   char name[256];
   char dir_name[256];
   sprintf(dir_name, "configuration.%s", lxFinderParticleType.Data());
@@ -144,7 +146,7 @@ GetHistoRMS(const char* histoNameBase, Int_t histoNumber, Double_t& retVal) {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(name);
+  TFile* f = new TFile(name);
 
   if (!f->IsZombie()) {
     sprintf(name, "%s_%d", histoNameBase, histoNumber);
@@ -163,11 +165,8 @@ GetHistoRMS(const char* histoNameBase, Int_t histoNumber, Double_t& retVal) {
   return result;
 }
 
-static bool GetHistoCOV(const char* histoNameBase,
-                        Int_t histoNumber,
-                        Int_t axis1,
-                        Int_t axis2,
-                        Double_t& retVal) {
+static bool GetHistoCOV(const char* histoNameBase, Int_t histoNumber, Int_t axis1, Int_t axis2, Double_t& retVal)
+{
   char name[256];
   bool result = false;
   sprintf(name, "configuration/%s_%d.root", histoNameBase, histoNumber);
@@ -177,7 +176,7 @@ static bool GetHistoCOV(const char* histoNameBase,
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(name);
+  TFile* f = new TFile(name);
 
   if (!f->IsZombie()) {
     sprintf(name, "%s_%d", histoNameBase, histoNumber);
@@ -196,7 +195,8 @@ static bool GetHistoCOV(const char* histoNameBase,
   return result;
 }
 
-InitStatus LxFinderTriplet::Init() {
+InitStatus LxFinderTriplet::Init()
+{
   static Int_t nTimes = 1;
   cout << "LxFinderTriplet::Init() called at " << nTimes++ << " time" << endl;
 
@@ -204,20 +204,14 @@ InitStatus LxFinderTriplet::Init() {
 
   FairRootManager* fManager = FairRootManager::Instance();
 
-  muchPixelHits =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchPixelHit"));
-  listMCTracks = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MCTrack"));
-  listMuchPts =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchPoint"));
-  listMuchClusters =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchCluster"));
-  listMuchPixelDigiMatches =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchDigiMatch"));
-  listStsTracks =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsTrack"));
-  listStsMatches =
-    LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsTrackMatch"));
-  listStsPts = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsPoint"));
+  muchPixelHits            = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchPixelHit"));
+  listMCTracks             = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MCTrack"));
+  listMuchPts              = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchPoint"));
+  listMuchClusters         = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchCluster"));
+  listMuchPixelDigiMatches = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("MuchDigiMatch"));
+  listStsTracks            = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsTrack"));
+  listStsMatches           = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsTrackMatch"));
+  listStsPts               = LX_DYNAMIC_CAST<TClonesArray*>(fManager->GetObject("StsPoint"));
   //fPrimVtx = LX_DYNAMIC_CAST<CbmVertex*> (fManager->GetObject("PrimaryVertex"));
   /*
   // Get pointer to PrimaryVertex object from IOManager if it exists
@@ -240,11 +234,7 @@ InitStatus LxFinderTriplet::Init() {
     LxStation* aStation = caSpace.stations[i];
 
     for (Int_t j = 0; j < LXLAYERS; ++j) {
-      TString muchStLrPath =
-        Form("/cave_1/much_0/muchstation%02i_0/muchstation%02ilayer%01i_0",
-             i + 1,
-             i + 1,
-             j + 1);
+      TString muchStLrPath = Form("/cave_1/much_0/muchstation%02i_0/muchstation%02ilayer%01i_0", i + 1, i + 1, j + 1);
       gGeoManager->cd(muchStLrPath.Data());
       Double_t localCoords[3] = {0., 0., 0.};
       Double_t globalCoords[3];
@@ -259,71 +249,47 @@ InitStatus LxFinderTriplet::Init() {
 
     bool readHistoResult = true;
 
-    readHistoResult &=
-      GetHistoRMS("muchInStationXDispLeft", i, aStation->xDispLeft);
+    readHistoResult &= GetHistoRMS("muchInStationXDispLeft", i, aStation->xDispLeft);
     aStation->xDispLeft2 = aStation->xDispLeft * aStation->xDispLeft;
-    readHistoResult &=
-      GetHistoRMS("muchInStationYDispLeft", i, aStation->yDispLeft);
+    readHistoResult &= GetHistoRMS("muchInStationYDispLeft", i, aStation->yDispLeft);
     aStation->yDispLeft2 = aStation->yDispLeft * aStation->yDispLeft;
-    readHistoResult &=
-      GetHistoRMS("muchInStationXDispRight", i, aStation->xDispRight);
+    readHistoResult &= GetHistoRMS("muchInStationXDispRight", i, aStation->xDispRight);
     aStation->xDispRight2 = aStation->xDispRight * aStation->xDispRight;
-    readHistoResult &=
-      GetHistoRMS("muchInStationYDispRight", i, aStation->yDispRight);
+    readHistoResult &= GetHistoRMS("muchInStationYDispRight", i, aStation->yDispRight);
     aStation->yDispRight2 = aStation->yDispRight * aStation->yDispRight;
-    readHistoResult &=
-      GetHistoRMS("muchInStationXDispRL", i, aStation->xDispRL);
+    readHistoResult &= GetHistoRMS("muchInStationXDispRL", i, aStation->xDispRL);
     aStation->xDispRL2 = aStation->xDispRL * aStation->xDispRL;
-    readHistoResult &=
-      GetHistoRMS("muchInStationYDispRL", i, aStation->yDispRL);
+    readHistoResult &= GetHistoRMS("muchInStationYDispRL", i, aStation->yDispRL);
     aStation->yDispRL2 = aStation->yDispRL * aStation->yDispRL;
 
     if (i > 0) {
 #ifdef OUT_DISP_BY_TRIPLET_DIR
-      readHistoResult &= GetHistoRMS(
-        "muchOutStationXDispByTriplet", i, aStation->xOutDispTriplet);
-      aStation->xOutDispTriplet2 =
-        aStation->xOutDispTriplet * aStation->xOutDispTriplet;
-      readHistoResult &= GetHistoRMS(
-        "muchOutStationYDispByTriplet", i, aStation->yOutDispTriplet);
-      aStation->yOutDispTriplet2 =
-        aStation->yOutDispTriplet * aStation->yOutDispTriplet;
-#else   //OUT_DISP_BY_TRIPLET_DIR
-      readHistoResult &=
-        GetHistoRMS("muchOutStationXDispByVertex", i, aStation->xOutDispVertex);
-      aStation->xOutDispVertex2 =
-        aStation->xOutDispVertex * aStation->xOutDispVertex;
-      readHistoResult &=
-        GetHistoRMS("muchOutStationYDispByVertex", i, aStation->yOutDispVertex);
-      aStation->yOutDispVertex2 =
-        aStation->yOutDispVertex * aStation->yOutDispVertex;
+      readHistoResult &= GetHistoRMS("muchOutStationXDispByTriplet", i, aStation->xOutDispTriplet);
+      aStation->xOutDispTriplet2 = aStation->xOutDispTriplet * aStation->xOutDispTriplet;
+      readHistoResult &= GetHistoRMS("muchOutStationYDispByTriplet", i, aStation->yOutDispTriplet);
+      aStation->yOutDispTriplet2 = aStation->yOutDispTriplet * aStation->yOutDispTriplet;
+#else  //OUT_DISP_BY_TRIPLET_DIR
+      readHistoResult &= GetHistoRMS("muchOutStationXDispByVertex", i, aStation->xOutDispVertex);
+      aStation->xOutDispVertex2 = aStation->xOutDispVertex * aStation->xOutDispVertex;
+      readHistoResult &= GetHistoRMS("muchOutStationYDispByVertex", i, aStation->yOutDispVertex);
+      aStation->yOutDispVertex2 = aStation->yOutDispVertex * aStation->yOutDispVertex;
 #endif  //OUT_DISP_BY_TRIPLET_DIR
 
 #ifdef USE_SEGMENTS
       LxStation* anLStation = caSpace.stations[i - 1];
-      readHistoResult &=
-        GetHistoRMS("muchOutStationTxBreakLeft", i, anLStation->txBreakRight);
-      anLStation->txBreakRight2 =
-        anLStation->txBreakRight * anLStation->txBreakRight;
-      readHistoResult &=
-        GetHistoRMS("muchOutStationTyBreakLeft", i, anLStation->tyBreakRight);
-      anLStation->tyBreakRight2 =
-        anLStation->tyBreakRight * anLStation->tyBreakRight;
-      readHistoResult &=
-        GetHistoRMS("muchOutStationTxBreakRight", i, aStation->txBreakLeft);
+      readHistoResult &= GetHistoRMS("muchOutStationTxBreakLeft", i, anLStation->txBreakRight);
+      anLStation->txBreakRight2 = anLStation->txBreakRight * anLStation->txBreakRight;
+      readHistoResult &= GetHistoRMS("muchOutStationTyBreakLeft", i, anLStation->tyBreakRight);
+      anLStation->tyBreakRight2 = anLStation->tyBreakRight * anLStation->tyBreakRight;
+      readHistoResult &= GetHistoRMS("muchOutStationTxBreakRight", i, aStation->txBreakLeft);
       aStation->txBreakLeft2 = aStation->txBreakLeft * aStation->txBreakLeft;
-      readHistoResult &=
-        GetHistoRMS("muchOutStationTyBreakRight", i, aStation->tyBreakLeft);
+      readHistoResult &= GetHistoRMS("muchOutStationTyBreakRight", i, aStation->tyBreakLeft);
       aStation->tyBreakLeft2 = aStation->tyBreakLeft * aStation->tyBreakLeft;
-#else   //USE_SEGMENTS
-      readHistoResult &=
-        GetHistoRMS("muchTripletTxBreak", i, aStation->txInterTripletBreak);
-      aStation->txInterTripletBreak2 =
-        aStation->txInterTripletBreak * aStation->txInterTripletBreak;
-      readHistoResult &=
-        GetHistoRMS("muchTripletTyBreak", i, aStation->tyInterTripletBreak);
-      aStation->tyInterTripletBreak2 =
-        aStation->tyInterTripletBreak * aStation->tyInterTripletBreak;
+#else  //USE_SEGMENTS
+      readHistoResult &= GetHistoRMS("muchTripletTxBreak", i, aStation->txInterTripletBreak);
+      aStation->txInterTripletBreak2 = aStation->txInterTripletBreak * aStation->txInterTripletBreak;
+      readHistoResult &= GetHistoRMS("muchTripletTyBreak", i, aStation->tyInterTripletBreak);
+      aStation->tyInterTripletBreak2 = aStation->tyInterTripletBreak * aStation->tyInterTripletBreak;
 #endif  //USE_SEGMENTS
 
 #ifdef CLUSTER_MODE
@@ -350,14 +316,10 @@ InitStatus LxFinderTriplet::Init() {
 
 #ifdef USE_SEGMENTS
       if (i < LXSTATIONS - 1) {
-        readHistoResult &= GetHistoRMS(
-          "muchSegmentTxBreakHisto", i, aStation->txInterStationBreak);
-        aStation->txInterStationBreak2 =
-          aStation->txInterStationBreak * aStation->txInterStationBreak;
-        readHistoResult &= GetHistoRMS(
-          "muchSegmentTyBreakHisto", i, aStation->tyInterStationBreak);
-        aStation->tyInterStationBreak2 =
-          aStation->tyInterStationBreak * aStation->tyInterStationBreak;
+        readHistoResult &= GetHistoRMS("muchSegmentTxBreakHisto", i, aStation->txInterStationBreak);
+        aStation->txInterStationBreak2 = aStation->txInterStationBreak * aStation->txInterStationBreak;
+        readHistoResult &= GetHistoRMS("muchSegmentTyBreakHisto", i, aStation->tyInterStationBreak);
+        aStation->tyInterStationBreak2 = aStation->tyInterStationBreak * aStation->tyInterStationBreak;
       }
 #endif  //USE_SEGMENTS
     }
@@ -381,16 +343,13 @@ InitStatus LxFinderTriplet::Init() {
 
   // Create an output array.
   listRecoTracks = new TClonesArray("CbmMuchTrack", 100);
-  fManager->Register(
-    "MuchTrack", "Much", listRecoTracks, IsOutputBranchPersistent("MuchTrack"));
+  fManager->Register("MuchTrack", "Much", listRecoTracks, IsOutputBranchPersistent("MuchTrack"));
 
-  if (generateInvMass)
-    massHisto = new TH1F("jpsi_mass", "jpsi_mass", 100, 2., 4.);
+  if (generateInvMass) massHisto = new TH1F("jpsi_mass", "jpsi_mass", 100, 2., 4.);
 
   if (generateBackground) {
     //backgroundMassHisto = new TH1F("background_mass", "background_mass", 400, 2., 4.);
-    superEventTracks =
-      new TTree("SuperEventTracks", "Tracks for building a super event");
+    superEventTracks = new TTree("SuperEventTracks", "Tracks for building a super event");
     superEventTracks->Branch("tracks", "CbmStsTrack", &superEventData);
   }
 
@@ -398,8 +357,7 @@ InitStatus LxFinderTriplet::Init() {
   //{
   signalChi2Histo = new TH1F("signal_chi2", "signal_chi2", 200, 0., 20.);
   signalChi2Histo->StatOverflows();
-  backgroundChi2Histo =
-    new TH1F("background_chi2", "background_chi2", 200, 0., 20.);
+  backgroundChi2Histo = new TH1F("background_chi2", "background_chi2", 200, 0., 20.);
   backgroundChi2Histo->StatOverflows();
   unknownChi2Histo = new TH1F("unknown_chi2", "unknown_chi2", 200, 0., 20.);
   unknownChi2Histo->StatOverflows();
@@ -411,29 +369,21 @@ InitStatus LxFinderTriplet::Init() {
   for (int i = 0; i < 6; ++i) {
 #ifdef MAKE_DISPERSE_2D_HISTOS
     sprintf(histoName, "disperseL_%d", i);
-    disperseLHistos[i] =
-      new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
+    disperseLHistos[i] = new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
     disperseLHistos[i]->StatOverflows();
     sprintf(histoName, "disperseR_%d", i);
-    disperseRHistos[i] =
-      new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
+    disperseRHistos[i] = new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
     disperseRHistos[i]->StatOverflows();
     sprintf(histoName, "disperseD_%d", i);
-    disperseDHistos[i] =
-      new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
+    disperseDHistos[i] = new TProfile2D(histoName, histoName, 30, -3., 3., 30, -3., 3.);
     disperseDHistos[i]->StatOverflows();
 #endif  //MAKE_DISPERSE_2D_HISTOS
   }
 
 #endif  //MAKE_HISTOS
 
-  effByMomentumProfile = new TProfile("Reconstruction efficiency by momentum",
-                                      "Reconstruction efficiency by momentum",
-                                      100,
-                                      0.0,
-                                      50.0,
-                                      0.0,
-                                      100.0);
+  effByMomentumProfile = new TProfile("Reconstruction efficiency by momentum", "Reconstruction efficiency by momentum",
+                                      100, 0.0, 50.0, 0.0, 100.0);
 
   stsTrackChi2 = new TH1F("stsTrackChi2", "stsTrackChi2", 200, 0., 10.);
   stsTrackChi2->StatOverflows();
@@ -442,34 +392,21 @@ InitStatus LxFinderTriplet::Init() {
   stsTrackY = new TH1F("stsTrackY", "stsTrackY", 200, -0.2, 0.2);
   stsTrackY->StatOverflows();
 
-  signalInterTracksDistance = new TH1F("signalInterTracksDistance",
-                                       "Distance between signal tracks",
-                                       200,
-                                       0.0,
-                                       40.0);
+  signalInterTracksDistance = new TH1F("signalInterTracksDistance", "Distance between signal tracks", 200, 0.0, 40.0);
   signalInterTracksDistance->StatOverflows();
-  bgrInterTracksDistance = new TH1F("bgrInterTracksDistance",
-                                    "Distance between background tracks",
-                                    200,
-                                    0.0,
-                                    40.0);
+  bgrInterTracksDistance = new TH1F("bgrInterTracksDistance", "Distance between background tracks", 200, 0.0, 40.0);
   bgrInterTracksDistance->StatOverflows();
-  signalSignDefect =
-    new TH1F("signalSignDefect", "signalSignDefect", 200, -0.15, 0.15);
+  signalSignDefect = new TH1F("signalSignDefect", "signalSignDefect", 200, -0.15, 0.15);
   signalSignDefect->StatOverflows();
   bgrSignDefect = new TH1F("bgrSignDefect", "bgrSignDefect", 200, -0.15, 0.15);
   bgrSignDefect->StatOverflows();
-  signalYAtZ0 =
-    new TH1F("signalYAtZ0", "Signal track Y at Z=0", 200, -40.0, 40.0);
+  signalYAtZ0 = new TH1F("signalYAtZ0", "Signal track Y at Z=0", 200, -40.0, 40.0);
   signalYAtZ0->StatOverflows();
-  bgrYAtZ0 =
-    new TH1F("bgrYAtZ0", "Background track Y at Z=0", 200, -40.0, 40.0);
+  bgrYAtZ0 = new TH1F("bgrYAtZ0", "Background track Y at Z=0", 200, -40.0, 40.0);
   bgrYAtZ0->StatOverflows();
-  signalYAtZ0_2 =
-    new TH1F("signalYAtZ0_2", "Signal track Y at Z=0 (2)", 200, -40.0, 40.0);
+  signalYAtZ0_2 = new TH1F("signalYAtZ0_2", "Signal track Y at Z=0 (2)", 200, -40.0, 40.0);
   signalYAtZ0_2->StatOverflows();
-  bgrYAtZ0_2 =
-    new TH1F("bgrYAtZ0_2", "Background track Y at Z=0 (2)", 200, -40.0, 40.0);
+  bgrYAtZ0_2 = new TH1F("bgrYAtZ0_2", "Background track Y at Z=0 (2)", 200, -40.0, 40.0);
   bgrYAtZ0_2->StatOverflows();
 
 #ifdef MAKE_EFF_CALC
@@ -481,7 +418,8 @@ InitStatus LxFinderTriplet::Init() {
 
 static Int_t nTimes = 1;
 
-void LxFinderTriplet::Exec(Option_t*) {
+void LxFinderTriplet::Exec(Option_t*)
+{
   cout << "LxFinderTriplet::Exec() called at " << nTimes++ << " time" << endl;
   timeval bTime, eTime;
   int exeDuration;
@@ -526,13 +464,13 @@ void LxFinderTriplet::Exec(Option_t*) {
 
     root2lxmctrackmap[i] = mapCnt++;
 
-    mcTrack.q  = TDatabasePDG::Instance()->GetParticle(pdgCode)->Charge() / 3.0;
-    mcTrack.x  = mct->GetStartX();
-    mcTrack.y  = mct->GetStartY();
-    mcTrack.z  = mct->GetStartZ();
-    mcTrack.px = mct->GetPx();
-    mcTrack.py = mct->GetPy();
-    mcTrack.pz = mct->GetPz();
+    mcTrack.q             = TDatabasePDG::Instance()->GetParticle(pdgCode)->Charge() / 3.0;
+    mcTrack.x             = mct->GetStartX();
+    mcTrack.y             = mct->GetStartY();
+    mcTrack.z             = mct->GetStartZ();
+    mcTrack.px            = mct->GetPx();
+    mcTrack.py            = mct->GetPy();
+    mcTrack.pz            = mct->GetPz();
     mcTrack.mother_ID     = mct->GetMotherId();
     mcTrack.fUniqueID     = mct->GetUniqueID();
     mcTrack.pdg           = pdgCode;
@@ -563,19 +501,15 @@ void LxFinderTriplet::Exec(Option_t*) {
     stsMCPoint.py = P.Y();
     stsMCPoint.pz = P.Z();
     stsMCPoint.p =
-      sqrt(fabs(stsMCPoint.px * stsMCPoint.px + stsMCPoint.py * stsMCPoint.py
-                + stsMCPoint.pz * stsMCPoint.pz));
-    stsMCPoint.stationNumber =
-      CbmStsAddress::GetElementId(stsPt->GetDetectorID(), kStsStation);
-    Int_t trackId = root2lxmctrackmap[stsPt->GetTrackID()];
+      sqrt(fabs(stsMCPoint.px * stsMCPoint.px + stsMCPoint.py * stsMCPoint.py + stsMCPoint.pz * stsMCPoint.pz));
+    stsMCPoint.stationNumber = CbmStsAddress::GetElementId(stsPt->GetDetectorID(), kStsStation);
+    Int_t trackId            = root2lxmctrackmap[stsPt->GetTrackID()];
 
     if (-1 != trackId) {
       stsMCPoint.mcTrack = &MCTracks[trackId];
       MCStsPoints.push_back(stsMCPoint);
-      MCTracks[trackId].stsPoints[stsMCPoint.stationNumber].push_back(
-        &MCStsPoints.back());
-      MCStsPointsByStations[stsMCPoint.stationNumber].push_back(
-        &MCStsPoints.back());
+      MCTracks[trackId].stsPoints[stsMCPoint.stationNumber].push_back(&MCStsPoints.back());
+      MCStsPointsByStations[stsMCPoint.stationNumber].push_back(&MCStsPoints.back());
     }
   }
 
@@ -584,9 +518,8 @@ void LxFinderTriplet::Exec(Option_t*) {
   LxMCPoint mcPoint;
 
   MCPoints.reserve(nEnt);
-  Int_t* root2lxmcpointmap = new Int_t
-    [nEnt];  // Unfortunately we have to use this map because in the loop
-             // below some iterations can not to produce a point.
+  Int_t* root2lxmcpointmap = new Int_t[nEnt];  // Unfortunately we have to use this map because in the loop
+                                               // below some iterations can not to produce a point.
   mapCnt = 0;
   //  Int_t mcPtsCount = nEnt;
   Int_t maxReferencedPtsIndex = 0;
@@ -616,19 +549,17 @@ void LxFinderTriplet::Exec(Option_t*) {
     pt->Momentum(PI);
     pt->PositionOut(xyzO);
     pt->MomentumOut(PO);
-    TVector3 xyz = .5 * (xyzI + xyzO);
-    TVector3 P   = .5 * (PI + PO);
-    mcPoint.x    = xyz.X();
-    mcPoint.y    = xyz.Y();
-    mcPoint.z    = xyz.Z();
-    mcPoint.px   = P.X();
-    mcPoint.py   = P.Y();
-    mcPoint.pz   = P.Z();
-    mcPoint.p    = sqrt(fabs(mcPoint.px * mcPoint.px + mcPoint.py * mcPoint.py
-                          + mcPoint.pz * mcPoint.pz));
-    mcPoint.stationNumber =
-      CbmMuchGeoScheme::GetStationIndex(pt->GetDetectorId());
-    mcPoint.layerNumber = CbmMuchGeoScheme::GetLayerIndex(pt->GetDetectorId());
+    TVector3 xyz          = .5 * (xyzI + xyzO);
+    TVector3 P            = .5 * (PI + PO);
+    mcPoint.x             = xyz.X();
+    mcPoint.y             = xyz.Y();
+    mcPoint.z             = xyz.Z();
+    mcPoint.px            = P.X();
+    mcPoint.py            = P.Y();
+    mcPoint.pz            = P.Z();
+    mcPoint.p             = sqrt(fabs(mcPoint.px * mcPoint.px + mcPoint.py * mcPoint.py + mcPoint.pz * mcPoint.pz));
+    mcPoint.stationNumber = CbmMuchGeoScheme::GetStationIndex(pt->GetDetectorId());
+    mcPoint.layerNumber   = CbmMuchGeoScheme::GetLayerIndex(pt->GetDetectorId());
     MCPoints.push_back(mcPoint);
     Int_t ptId = root2lxmcpointmap[i];
 
@@ -640,15 +571,13 @@ void LxFinderTriplet::Exec(Option_t*) {
 
     MCTracks[trackId].Points.push_back(&MCPoints[ptId]);
 #ifdef MAKE_DISPERSE_2D_HISTOS
-    MCPointsByStations[mcPoint.stationNumber][mcPoint.layerNumber].push_back(
-      &MCPoints[ptId]);
+    MCPointsByStations[mcPoint.stationNumber][mcPoint.layerNumber].push_back(&MCPoints[ptId]);
 #endif  //MAKE_DISPERSE_2D_HISTOS
   }
 
 #ifdef MAKE_HISTOS
   // Build angle (tangent) breaks distribution <
-  for (vector<LxMCTrack>::iterator i = MCTracks.begin(); i != MCTracks.end();
-       ++i) {
+  for (vector<LxMCTrack>::iterator i = MCTracks.begin(); i != MCTracks.end(); ++i) {
     LxMCTrack& track = *i;
 
     if ((13 != track.pdg && -13 == track.pdg) || track.mother_ID >= 0) continue;
@@ -662,9 +591,7 @@ void LxFinderTriplet::Exec(Option_t*) {
     LxMCPoint* points[LXSTATIONS][LXLAYERS];
     memset(points, 0, sizeof(points));
 
-    for (vector<LxMCPoint*>::iterator j = track.Points.begin();
-         j != track.Points.end();
-         ++j) {
+    for (vector<LxMCPoint*>::iterator j = track.Points.begin(); j != track.Points.end(); ++j) {
       LxMCPoint* point                                 = *j;
       points[point->stationNumber][point->layerNumber] = point;
     }
@@ -680,12 +607,10 @@ void LxFinderTriplet::Exec(Option_t*) {
         Double_t y                = mPoint->y + ty * diffZ;
         list<LxMCPoint*>& lPoints = MCPointsByStations[j][0];
 
-        for (list<LxMCPoint*>::iterator k = lPoints.begin(); k != lPoints.end();
-             ++k) {
+        for (list<LxMCPoint*>::iterator k = lPoints.begin(); k != lPoints.end(); ++k) {
           LxMCPoint* lPoint = *k;
 
-          if (lPoint->trackId == mPoint->trackId)
-            disperseLHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 100.);
+          if (lPoint->trackId == mPoint->trackId) disperseLHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 100.);
           else
             disperseLHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 0.);
         }
@@ -695,12 +620,10 @@ void LxFinderTriplet::Exec(Option_t*) {
         y                         = mPoint->y + ty * diffZ;
         list<LxMCPoint*>& rPoints = MCPointsByStations[j][2];
 
-        for (list<LxMCPoint*>::iterator k = rPoints.begin(); k != rPoints.end();
-             ++k) {
+        for (list<LxMCPoint*>::iterator k = rPoints.begin(); k != rPoints.end(); ++k) {
           LxMCPoint* rPoint = *k;
 
-          if (rPoint->trackId == mPoint->trackId)
-            disperseRHistos[j]->Fill(rPoint->x - x, rPoint->y - y, 100.);
+          if (rPoint->trackId == mPoint->trackId) disperseRHistos[j]->Fill(rPoint->x - x, rPoint->y - y, 100.);
           else
             disperseRHistos[j]->Fill(rPoint->x - x, rPoint->y - y, 0.);
         }
@@ -715,19 +638,17 @@ void LxFinderTriplet::Exec(Option_t*) {
         Double_t y                = rPoint->y + ty * diffZ;
         list<LxMCPoint*>& lPoints = MCPointsByStations[j][0];
 
-        for (list<LxMCPoint*>::iterator k = lPoints.begin(); k != lPoints.end();
-             ++k) {
+        for (list<LxMCPoint*>::iterator k = lPoints.begin(); k != lPoints.end(); ++k) {
           LxMCPoint* lPoint = *k;
 
-          if (lPoint->trackId == rPoint->trackId)
-            disperseDHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 100.);
+          if (lPoint->trackId == rPoint->trackId) disperseDHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 100.);
           else
             disperseDHistos[j]->Fill(lPoint->x - x, lPoint->y - y, 0.);
         }
       }
 #endif  //MAKE_DISPERSE_2D_HISTOS
-    }   //for (int j = 0; j < LXSTATIONS; ++j)
-  }  //for (vector<LxMCTrack>::iterator i = MCTracks.begin(); i != MCTracks.end(); ++i)
+    }  //for (int j = 0; j < LXSTATIONS; ++j)
+  }    //for (vector<LxMCTrack>::iterator i = MCTracks.begin(); i != MCTracks.end(); ++i)
   // > angle (tangent) breaks distribution
 #endif  //MAKE_HISTOS
 
@@ -739,8 +660,7 @@ void LxFinderTriplet::Exec(Option_t*) {
   Double_t minYErr = 1000;
 
   for (Int_t i = 0; i < nEnt; ++i) {
-    CbmMuchPixelHit* mh =
-      LX_DYNAMIC_CAST<CbmMuchPixelHit*>(muchPixelHits->At(i));
+    CbmMuchPixelHit* mh = LX_DYNAMIC_CAST<CbmMuchPixelHit*>(muchPixelHits->At(i));
 
     Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(mh->GetAddress());
     Int_t layerNumber   = CbmMuchGeoScheme::GetLayerIndex(mh->GetAddress());
@@ -761,17 +681,15 @@ void LxFinderTriplet::Exec(Option_t*) {
     LxPoint* lxPoint = 0;
 
     if (!useMCPInsteadOfHits)
-      lxPoint = caSpace.AddPoint(
-        stationNumber, layerNumber, i, x, y, z, err.X(), err.Y(), err.Z());
+      lxPoint = caSpace.AddPoint(stationNumber, layerNumber, i, x, y, z, err.X(), err.Y(), err.Z());
 
-    Int_t clusterId = mh->GetRefId();
-    CbmMuchCluster* cluster =
-      LX_DYNAMIC_CAST<CbmMuchCluster*>(listMuchClusters->At(clusterId));
-    Int_t nDigis = cluster->GetNofDigis();
+    Int_t clusterId         = mh->GetRefId();
+    CbmMuchCluster* cluster = LX_DYNAMIC_CAST<CbmMuchCluster*>(listMuchClusters->At(clusterId));
+    Int_t nDigis            = cluster->GetNofDigis();
 
     for (Int_t j = 0; j < nDigis; ++j) {
-      CbmMuchDigiMatch* digiMatch = LX_DYNAMIC_CAST<CbmMuchDigiMatch*>(
-        listMuchPixelDigiMatches->At(cluster->GetDigi(j)));
+      CbmMuchDigiMatch* digiMatch =
+        LX_DYNAMIC_CAST<CbmMuchDigiMatch*>(listMuchPixelDigiMatches->At(cluster->GetDigi(j)));
       Int_t nMCs = digiMatch->GetNofLinks();
 
       for (Int_t k = 0; k < nMCs; ++k) {
@@ -787,17 +705,10 @@ void LxFinderTriplet::Exec(Option_t*) {
         if (!useMCPInsteadOfHits) {
           MCPoints[mcIndexMapped].lxPoints.push_back(lxPoint);
           lxPoint->mcPoints.push_back(&MCPoints[mcIndexMapped]);
-        } else if (MCPoints[mcIndexMapped].lxPoints.empty()) {
+        }
+        else if (MCPoints[mcIndexMapped].lxPoints.empty()) {
           LxMCPoint& mcp = MCPoints[mcIndexMapped];
-          lxPoint        = caSpace.AddPoint(stationNumber,
-                                     layerNumber,
-                                     i,
-                                     mcp.x,
-                                     mcp.y,
-                                     mcp.z,
-                                     err.X(),
-                                     err.Y(),
-                                     err.Z());
+          lxPoint = caSpace.AddPoint(stationNumber, layerNumber, i, mcp.x, mcp.y, mcp.z, err.X(), err.Y(), err.Z());
           MCPoints[mcIndexMapped].lxPoints.push_back(lxPoint);
           lxPoint->mcPoints.push_back(&MCPoints[mcIndexMapped]);
         }
@@ -809,8 +720,7 @@ void LxFinderTriplet::Exec(Option_t*) {
 
   // At last start invocation of CA procedures.
   gettimeofday(&eTime, 0);
-  exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration 1 was: " << exeDuration << endl;
 
   //if (calcMiddlePoints)
@@ -819,42 +729,38 @@ void LxFinderTriplet::Exec(Option_t*) {
   bTime.tv_sec  = eTime.tv_sec;
   bTime.tv_usec = eTime.tv_usec;
   gettimeofday(&eTime, 0);
-  exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration 2 was: " << exeDuration << endl;
 #ifdef CLUSTER_MODE
   caSpace.BuildRays2();
-#else   //CLUSTER_MODE
+#else  //CLUSTER_MODE
   //caSpace.BuildRays();
 #endif  //CLUSTER_MODE
   bTime.tv_sec  = eTime.tv_sec;
   bTime.tv_usec = eTime.tv_usec;
   gettimeofday(&eTime, 0);
-  exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration 3 was: " << exeDuration << endl;
 #ifdef CLUSTER_MODE
   caSpace.ConnectNeighbours2();
-#else   //CLUSTER_MODE
+#else  //CLUSTER_MODE
   //caSpace.ConnectNeighbours();
 #endif  //CLUSTER_MODE
   bTime.tv_sec  = eTime.tv_sec;
   bTime.tv_usec = eTime.tv_usec;
   gettimeofday(&eTime, 0);
-  exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration 4 was: " << exeDuration << endl;
 #ifdef CLUSTER_MODE
   caSpace.Reconstruct2();
-#else   //CLUSTER_MODE
+#else  //CLUSTER_MODE
   caSpace.Reconstruct();
 #endif  //CLUSTER_MODE
   //caSpace.FitTracks();
   bTime.tv_sec  = eTime.tv_sec;
   bTime.tv_usec = eTime.tv_usec;
   gettimeofday(&eTime, 0);
-  exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration 5 was: " << exeDuration << endl;
   caSpace.FitTracks();
   //cout << "maxReferencedPtsIndex=" << maxReferencedPtsIndex << " mcPtsCount=" << mcPtsCount << " GEF=" << listMuchPts->GetEntriesFast() << endl;
@@ -871,22 +777,17 @@ void LxFinderTriplet::Exec(Option_t*) {
   for (int i = 0; i < nEnt; ++i) {
     CbmStsTrack* stsTrack = LX_DYNAMIC_CAST<CbmStsTrack*>(listStsTracks->At(i));
 
-    Double_t lpa[5] = {stsTrack->GetParamLast()->GetX(),
-                       stsTrack->GetParamLast()->GetY(),
-                       stsTrack->GetParamLast()->GetTx(),
-                       stsTrack->GetParamLast()->GetTy(),
+    Double_t lpa[5] = {stsTrack->GetParamLast()->GetX(), stsTrack->GetParamLast()->GetY(),
+                       stsTrack->GetParamLast()->GetTx(), stsTrack->GetParamLast()->GetTy(),
                        stsTrack->GetParamLast()->GetQp()};
 
-    if (lpa[0] != lpa[0] || lpa[1] != lpa[1] || lpa[2] != lpa[2]
-        || lpa[3] != lpa[3] || lpa[4] != lpa[4])
-      continue;
+    if (lpa[0] != lpa[0] || lpa[1] != lpa[1] || lpa[2] != lpa[2] || lpa[3] != lpa[3] || lpa[4] != lpa[4]) continue;
 
     CbmStsTrack aTrack = *stsTrack;
 
     Int_t pdgHypo = 13;
 
-    if (stsTrack->GetParamLast()->GetTx() > stsTrack->GetParamFirst()->GetTx())
-      pdgHypo = -13;
+    if (stsTrack->GetParamLast()->GetTx() > stsTrack->GetParamFirst()->GetTx()) pdgHypo = -13;
 
     extFitter.DoFit(&aTrack, pdgHypo);
     Double_t chi2Prim = extFitter.GetChiToVertex(&aTrack, fPrimVtx);
@@ -914,10 +815,8 @@ void LxFinderTriplet::Exec(Option_t*) {
     extTrack.track = stsTrack;
     extTrack.extId = i;
 
-    CbmTrackMatch* match =
-      LX_DYNAMIC_CAST<CbmTrackMatch*>(listStsMatches->At(i));
-    Int_t numberOfHits = match->GetNofTrueHits() + match->GetNofWrongHits()
-                         + match->GetNofFakeHits();
+    CbmTrackMatch* match = LX_DYNAMIC_CAST<CbmTrackMatch*>(listStsMatches->At(i));
+    Int_t numberOfHits   = match->GetNofTrueHits() + match->GetNofWrongHits() + match->GetNofFakeHits();
 
     if (match->GetNofTrueHits() >= 0.7 * numberOfHits) {
       Int_t mcTrackId = match->GetMCTrackId();
@@ -999,12 +898,11 @@ void LxFinderTriplet::Exec(Option_t*) {
   ++eventNumber;
 }
 
-void LxFinderTriplet::SaveRecoTracks() {
+void LxFinderTriplet::SaveRecoTracks()
+{
   Int_t trackNo = listRecoTracks->GetEntriesFast();
 
-  for (list<LxTrack*>::iterator i = caSpace.tracks.begin();
-       i != caSpace.tracks.end();
-       ++i) {
+  for (list<LxTrack*>::iterator i = caSpace.tracks.begin(); i != caSpace.tracks.end(); ++i) {
     LxTrack* recoTrack   = *i;
     LxExtTrack* stsTrack = recoTrack->externalTrack;
 
@@ -1019,8 +917,7 @@ void LxFinderTriplet::SaveRecoTracks() {
     }
 
     muchTrack.SetChiSq(recoTrack->chi2);
-    muchTrack.SetNDF(
-      4 * LXSTATIONS);  // Probably need to calculate it more accurately.
+    muchTrack.SetNDF(4 * LXSTATIONS);  // Probably need to calculate it more accurately.
     muchTrack.SetPreviousTrackId(stsTrack->extId);
 
     FairTrackParam parFirst;
@@ -1035,10 +932,9 @@ void LxFinderTriplet::SaveRecoTracks() {
   }
 }
 
-void LxFinderTriplet::CalcInvMass() {
-  for (list<LxTrack*>::iterator i = caSpace.tracks.begin();
-       i != caSpace.tracks.end();
-       ++i) {
+void LxFinderTriplet::CalcInvMass()
+{
+  for (list<LxTrack*>::iterator i = caSpace.tracks.begin(); i != caSpace.tracks.end(); ++i) {
     LxTrack* firstTrack = *i;
     LxMCTrack* mcTrack1 = firstTrack->mcTrack;
 
@@ -1047,20 +943,17 @@ void LxFinderTriplet::CalcInvMass() {
     LxMCTrack* mcTrack2 = firstTrack->externalTrack->mcTrack;
 
     if (mcTrack1) {
-      Int_t pdg1 = mcTrack1 ? mcTrack1->pdg : 10000;
+      Int_t pdg1                              = mcTrack1 ? mcTrack1->pdg : 10000;
       map<Int_t, map<Int_t, int>>::iterator j = particleCounts.find(pdg1);
 
       if (j == particleCounts.end())
-        j = particleCounts
-              .insert(pair<Int_t, map<Int_t, int>>(pdg1, map<Int_t, int>()))
-              .first;
+        j = particleCounts.insert(pair<Int_t, map<Int_t, int>>(pdg1, map<Int_t, int>())).first;
 
       Int_t pdg2 = mcTrack2 ? mcTrack2->pdg : 10000;
 
       map<Int_t, int>::iterator k = j->second.find(pdg2);
 
-      if (k != j->second.end())
-        ++(k->second);
+      if (k != j->second.end()) ++(k->second);
       else
         j->second.insert(pair<Int_t, int>(pdg2, 1));
     }
@@ -1080,9 +973,7 @@ void LxFinderTriplet::CalcInvMass() {
       //backgroundChi2Histo->Fill(normalizedChi2);
     }
 
-    if (!mcTrack2 || (mcTrack2->pdg != 13 && mcTrack2->pdg != -13)
-        || mcTrack2->mother_ID >= 0)
-      continue;
+    if (!mcTrack2 || (mcTrack2->pdg != 13 && mcTrack2->pdg != -13) || mcTrack2->mother_ID >= 0) continue;
 
     extFitter.DoFit(&t1, 13);
     Double_t chi2Prim = extFitter.GetChiToVertex(&t1, fPrimVtx);
@@ -1100,18 +991,14 @@ void LxFinderTriplet::CalcInvMass() {
 
     CbmKFTrack muPlus(t1);
 
-    for (list<LxTrack*>::iterator j = caSpace.tracks.begin();
-         j != caSpace.tracks.end();
-         ++j) {
+    for (list<LxTrack*>::iterator j = caSpace.tracks.begin(); j != caSpace.tracks.end(); ++j) {
       LxTrack* secondTrack = *j;
 
       if (0 == secondTrack->externalTrack) continue;
 
       LxMCTrack* mcSecondTrack = secondTrack->externalTrack->mcTrack;
 
-      if (!mcSecondTrack
-          || (mcSecondTrack->pdg != 13 && mcSecondTrack->pdg != -13)
-          || mcSecondTrack->mother_ID >= 0)
+      if (!mcSecondTrack || (mcSecondTrack->pdg != 13 && mcSecondTrack->pdg != -13) || mcSecondTrack->mother_ID >= 0)
         continue;
 
       CbmStsTrack t2 = *secondTrack->externalTrack->track;
@@ -1146,7 +1033,8 @@ void LxFinderTriplet::CalcInvMass() {
 
 //#ifdef MAKE_HISTOS
 // It also deletes the histogram.
-static void SaveHisto(TH1* histo, const char* name) {
+static void SaveHisto(TH1* histo, const char* name)
+{
   TFile fh(name, "RECREATE");
   histo->Write();
   fh.Close();
@@ -1154,7 +1042,8 @@ static void SaveHisto(TH1* histo, const char* name) {
 }
 //#endif//MAKE_HISTOS
 
-void LxFinderTriplet::FinishTask() {
+void LxFinderTriplet::FinishTask()
+{
   if (generateInvMass) SaveInvMass();
 
   if (generateBackground) SaveBackground();
@@ -1228,7 +1117,8 @@ void LxFinderTriplet::FinishTask() {
   FairTask::FinishTask();
 }
 
-void LxFinderTriplet::SaveInvMass() {
+void LxFinderTriplet::SaveInvMass()
+{
   TFile* curFile = TFile::CurrentFile();
 
   TFile fh("jpsi_inv_mass_histo.root", "RECREATE");
@@ -1239,16 +1129,13 @@ void LxFinderTriplet::SaveInvMass() {
   TFile::CurrentFile() = curFile;
 }
 
-void LxFinderTriplet::SaveBackground() {
-  for (list<CbmStsTrack>::iterator i = positiveTracks.begin();
-       i != positiveTracks.end();
-       ++i) {
+void LxFinderTriplet::SaveBackground()
+{
+  for (list<CbmStsTrack>::iterator i = positiveTracks.begin(); i != positiveTracks.end(); ++i) {
     CbmStsTrack& t1 = *i;
     CbmKFTrack muPlus(t1);
 
-    for (list<CbmStsTrack>::iterator j = negativeTracks.begin();
-         j != negativeTracks.end();
-         ++j) {
+    for (list<CbmStsTrack>::iterator j = negativeTracks.begin(); j != negativeTracks.end(); ++j) {
       CbmStsTrack& t2 = *j;
       CbmKFTrack muMinus(t2);
       vector<CbmKFTrackInterface*> kfData;

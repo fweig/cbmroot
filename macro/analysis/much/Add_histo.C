@@ -7,9 +7,8 @@
 //
 //---------------------------------------------------
 
-void Add_histo(Int_t energy   = 8,
-               TString type   = "invM_mix",
-               Int_t NofFiles = 4000) {
+void Add_histo(Int_t energy = 8, TString type = "invM_mix", Int_t NofFiles = 4000)
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(6);
@@ -31,8 +30,7 @@ void Add_histo(Int_t energy   = 8,
     if (k % 100 == 0) cout << k << " - " << name << endl;
 
     TFile* f1 = new TFile(name);
-    if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1
-        || f1->TestBit(TFile::kRecovered)) {
+    if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1 || f1->TestBit(TFile::kRecovered)) {
       f1->Close();
       continue;
     }

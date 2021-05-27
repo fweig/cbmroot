@@ -9,7 +9,8 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco(Int_t nTimeslices = 10) {
+void mcbm_reco(Int_t nTimeslices = 10)
+{
 
 
   // --- Logger settings ----------------------------------------------------
@@ -19,7 +20,7 @@ void mcbm_reco(Int_t nTimeslices = 10) {
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_reco";  // this macro's name for screen output
+  TString myName = "mcbm_reco";                    // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
 
@@ -125,8 +126,7 @@ void mcbm_reco(Int_t nTimeslices = 10) {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

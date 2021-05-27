@@ -8,18 +8,19 @@
 #ifndef CBMMCBM2018MSCRCCHECK_H
 #define CBMMCBM2018MSCRCCHECK_H
 
+#include "TimesliceSubscriber.hpp"
+
 #include "TList.h"
 #include "TObjString.h"
 #include "TString.h"
-
-#include "TimesliceSubscriber.hpp"
 
 class CbmMcbm2018MsCrcCheck {
 public:
   CbmMcbm2018MsCrcCheck();
   virtual ~CbmMcbm2018MsCrcCheck();
 
-  void SetFileName(TString name) {
+  void SetFileName(TString name)
+  {
     fFileName = name;
     fInputFileList.Add(new TObjString(name));
   }

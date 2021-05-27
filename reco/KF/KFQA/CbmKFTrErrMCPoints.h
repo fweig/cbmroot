@@ -22,9 +22,11 @@
 #include <CbmStsHit.h>
 #include <CbmStsPoint.h>
 #include <CbmTofPoint.h>
+
 #include <FairMCPoint.h>
 
 #include "TClonesArray.h"
+
 #include <vector>
 
 class CbmMCTrack;
@@ -55,10 +57,7 @@ public:
   int GetNConsHitStations();
   int GetNHitStations();
   int GetNMaxMCPointsOnStation();
-  Bool_t IsReconstructable(CbmMCTrack* mcTr,
-                           int MinNStations,
-                           int PerformanceMode,
-                           float MinRecoMom);
+  Bool_t IsReconstructable(CbmMCTrack* mcTr, int MinNStations, int PerformanceMode, float MinRecoMom);
 
   double GetMvdPointX(int i) { return MvdArray[i]->FairMCPoint::GetX(); }
   double GetMvdPointY(int i) { return MvdArray[i]->FairMCPoint::GetY(); }

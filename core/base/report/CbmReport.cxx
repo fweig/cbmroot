@@ -29,35 +29,43 @@ CbmReport::CbmReport()
   , fReportType(kCoutReport)
   , fR(nullptr)
   , fOut(nullptr)
-  , fCanvases() {}
+  , fCanvases()
+{
+}
 
 CbmReport::~CbmReport() {}
 
-void CbmReport::CreateReportElement(ReportType reportType) {
+void CbmReport::CreateReportElement(ReportType reportType)
+{
   fReportType = reportType;
   if (nullptr != fR) delete fR;
   if (nullptr != fOut && fReportType != kCoutReport) delete fOut;
   if (reportType == kLatexReport) {
     fR   = new CbmLatexReportElement();
     fOut = new ofstream(string(GetOutputDir() + fReportName + ".tex").c_str());
-  } else if (reportType == kHtmlReport) {
+  }
+  else if (reportType == kHtmlReport) {
     fR   = new CbmHtmlReportElement();
     fOut = new ofstream(string(GetOutputDir() + fReportName + ".html").c_str());
-  } else if (reportType == kTextReport) {
+  }
+  else if (reportType == kTextReport) {
     fR   = new CbmTextReportElement();
     fOut = new ofstream(string(GetOutputDir() + fReportName + ".txt").c_str());
-  } else if (reportType == kCoutReport) {
+  }
+  else if (reportType == kCoutReport) {
     fR   = new CbmTextReportElement();
     fOut = &std::cout;
   }
 }
 
-void CbmReport::DeleteReportElement() {
+void CbmReport::DeleteReportElement()
+{
   //  if (nullptr != fR) delete fR;
   //  if (nullptr != fOut && fReportType != kCoutReport) delete fOut;
 }
 
-void CbmReport::CreateReports() {
+void CbmReport::CreateReports()
+{
   Draw();  // User has to implement this function!
   SaveCanvasesAsImages();
   //   WriteCanvases();
@@ -79,16 +87,15 @@ void CbmReport::CreateReports() {
   DeleteReportElement();
 }
 
-TCanvas* CbmReport::CreateCanvas(const char* name,
-                                 const char* title,
-                                 Int_t ww,
-                                 Int_t wh) {
+TCanvas* CbmReport::CreateCanvas(const char* name, const char* title, Int_t ww, Int_t wh)
+{
   TCanvas* canvas = new TCanvas(name, title, ww, wh);
   fCanvases.push_back(canvas);
   return canvas;
 }
 
-void CbmReport::SaveCanvasesAsImages() const {
+void CbmReport::SaveCanvasesAsImages() const
+{
   if (GetOutputDir() == "") return;
   Int_t nofCanvases = fCanvases.size();
   for (Int_t i = 0; i < nofCanvases; i++) {
@@ -98,7 +105,8 @@ void CbmReport::SaveCanvasesAsImages() const {
   }
 }
 
-void CbmReport::WriteCanvases() const {
+void CbmReport::WriteCanvases() const
+{
   if (GetOutputDir() == "") return;
   Int_t nofCanvases = fCanvases.size();
   for (Int_t i = 0; i < nofCanvases; i++) {
@@ -106,12 +114,12 @@ void CbmReport::WriteCanvases() const {
   }
 }
 
-void CbmReport::PrintCanvases() const {
+void CbmReport::PrintCanvases() const
+{
   Int_t nofCanvases = fCanvases.size();
   for (Int_t i = 0; i < nofCanvases; i++) {
     TCanvas* canvas = fCanvases[i];
-    Out() << R()->Image(canvas->GetName(),
-                        string("png/" + string(canvas->GetName())).c_str());
+    Out() << R()->Image(canvas->GetName(), string("png/" + string(canvas->GetName())).c_str());
   }
 }
 

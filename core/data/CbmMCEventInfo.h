@@ -62,7 +62,8 @@ public:
 
 
   /** @brief Comparison operator **/
-  bool operator<(const CbmMCEventInfo& other) const {
+  bool operator<(const CbmMCEventInfo& other) const
+  {
     if (fFileId == other.fFileId) return (fEventId < other.fEventId);
     return (fFileId < other.fFileId);
   }

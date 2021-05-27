@@ -4,13 +4,13 @@
 
 // Includes from MVD
 #include "CbmMvdHitfinder.h"
+
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 //#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+#include "CbmDigiManager.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"
 #include "tools/CbmMvdGeoHandler.h"
-
-#include "CbmDigiManager.h"
 
 
 // Includes from FAIR
@@ -43,7 +43,9 @@ CbmMvdHitfinder::CbmMvdHitfinder()
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(-1) {}
+  , fmode(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -57,7 +59,9 @@ CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t iVerbose)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(-1) {}
+  , fmode(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -71,13 +75,15 @@ CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t mode, Int_t iVerbose)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
-  , fmode(mode) {
+  , fmode(mode)
+{
   //    fmode = mode;
 }
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdHitfinder::~CbmMvdHitfinder() {
+CbmMvdHitfinder::~CbmMvdHitfinder()
+{
 
   if (fHits) {
     fHits->Delete();
@@ -87,42 +93,36 @@ CbmMvdHitfinder::~CbmMvdHitfinder() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdHitfinder::Exec(Option_t* /*opt*/) {
+void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
+{
 
   using namespace std;
 
   fHits->Clear();
   fTimer.Start();
   if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) {
-    if (fVerbose)
-      cout << endl << "//----------------------------------------//" << endl;
-    if (!useClusterfinder)
-      fDetector->SendInputDigis(fDigiMan);
+    if (fVerbose) cout << endl << "//----------------------------------------//" << endl;
+    if (!useClusterfinder) fDetector->SendInputDigis(fDigiMan);
     else
       fDetector->SendInputCluster(fInputCluster);
-    if (fVerbose)
-      cout << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr << endl;
+    if (fVerbose) cout << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr << endl;
     fDetector->Exec(fHitfinderPluginNr);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Hits" << endl;
-    fHits->AbsorbObjects(fDetector->GetOutputHits(),
-                         0,
-                         fDetector->GetOutputHits()->GetEntriesFast() - 1);
-    if (fVerbose)
-      cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
+    fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
+    if (fVerbose) cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
     if (fVerbose) cout << "Finished writing Hits" << endl;
-    if (fVerbose)
-      cout << "//----------------------------------------//" << endl << endl;
-    LOG(info) << "+ " << setw(20) << GetName()
-              << ": Created: " << fHits->GetEntriesFast() << " hits in "
-              << fixed << setprecision(6) << fTimer.RealTime() << " s";
+    if (fVerbose) cout << "//----------------------------------------//" << endl << endl;
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed
+              << setprecision(6) << fTimer.RealTime() << " s";
   }
   fTimer.Stop();
 }
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdHitfinder::Init() {
+InitStatus CbmMvdHitfinder::Init()
+{
 
   using namespace std;
 
@@ -147,7 +147,8 @@ InitStatus CbmMvdHitfinder::Init() {
                     "simulation. Switch this task off";
       return kERROR;
     }
-  } else {
+  }
+  else {
     fInputCluster = (TClonesArray*) ioman->GetObject("MvdCluster");
     if (!fInputCluster) {
       LOG(error) << "No MvdCluster branch found. There was no MVD in the "
@@ -159,8 +160,7 @@ InitStatus CbmMvdHitfinder::Init() {
 
   // **********  Register output array
   fHits = new TClonesArray("CbmMvdHit", 10000);
-  ioman->Register(
-    "MvdHit", "Mvd Hits", fHits, IsOutputBranchPersistent("MvdHit"));
+  ioman->Register("MvdHit", "Mvd Hits", fHits, IsOutputBranchPersistent("MvdHit"));
 
   fDetector = CbmMvdDetector::Instance();
 
@@ -210,19 +210,16 @@ void CbmMvdHitfinder::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdHitfinder::PrintParameters() {
+void CbmMvdHitfinder::PrintParameters()
+{
 
   using namespace std;
 
   cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters MvdHitfinder ====================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters MvdHitfinder =====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

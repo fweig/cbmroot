@@ -1,21 +1,24 @@
 #include "qa/CbmLitTestMatrixMath.h"
+
 #include "utils/CbmLitMatrixMath.h"
 
 #include "TMatrixT.h"
 #include "TMatrixTSym.h"
 #include "TRandom.h"
 
-#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#include <cmath>
 
 
 CbmLitTestMatrixMath::CbmLitTestMatrixMath() : fEpsilon(1e-6) {}
 
 CbmLitTestMatrixMath::~CbmLitTestMatrixMath() {}
 
-void CbmLitTestMatrixMath::RunTest() {
+void CbmLitTestMatrixMath::RunTest()
+{
   std::cout << "Start matrix math test..." << std::endl;
 
   TestInvSym15(1);
@@ -29,7 +32,8 @@ void CbmLitTestMatrixMath::RunTest() {
   std::cout << "Finish matrix math test..." << std::endl;
 }
 
-void CbmLitTestMatrixMath::TestInvSym15(int testId) {
+void CbmLitTestMatrixMath::TestInvSym15(int testId)
+{
   std::cout << "Test InvSym15 #" << testId << std::endl;
   std::vector<litfloat> input1(15);
   for (int i = 0; i < 15; i++) {
@@ -57,15 +61,14 @@ void CbmLitTestMatrixMath::TestInvSym15(int testId) {
       break;
     }
   }
-  if (testPassed) {
-    std::cout << "Test InvSym15 #" << testId << " PASSED" << std::endl;
-  } else {
-    std::cout << "Test InvSym15 #" << testId << " !!!NOT PASSED!!!"
-              << std::endl;
+  if (testPassed) { std::cout << "Test InvSym15 #" << testId << " PASSED" << std::endl; }
+  else {
+    std::cout << "Test InvSym15 #" << testId << " !!!NOT PASSED!!!" << std::endl;
   }
 }
 
-void CbmLitTestMatrixMath::TestMult15On5(int testId) {
+void CbmLitTestMatrixMath::TestMult15On5(int testId)
+{
   std::cout << "Test Mult15On5 #" << testId << std::endl;
   std::vector<litfloat> input1(15);
   for (int i = 0; i < 15; i++) {
@@ -102,15 +105,14 @@ void CbmLitTestMatrixMath::TestMult15On5(int testId) {
       break;
     }
   }
-  if (testPassed) {
-    std::cout << "Test Mult15On5 #" << testId << " PASSED" << std::endl;
-  } else {
-    std::cout << "Test Mult15On5 #" << testId << " !!!NOT PASSED!!!"
-              << std::endl;
+  if (testPassed) { std::cout << "Test Mult15On5 #" << testId << " PASSED" << std::endl; }
+  else {
+    std::cout << "Test Mult15On5 #" << testId << " !!!NOT PASSED!!!" << std::endl;
   }
 }
 
-void CbmLitTestMatrixMath::Convert15To25(const litfloat* a15, litfloat* a25) {
+void CbmLitTestMatrixMath::Convert15To25(const litfloat* a15, litfloat* a25)
+{
   a25[0]  = a15[0];
   a25[1]  = a15[1];
   a25[2]  = a15[2];
@@ -138,7 +140,8 @@ void CbmLitTestMatrixMath::Convert15To25(const litfloat* a15, litfloat* a25) {
   a25[24] = a15[14];
 }
 
-void CbmLitTestMatrixMath::Convert25To15(const litfloat* a25, litfloat* a15) {
+void CbmLitTestMatrixMath::Convert25To15(const litfloat* a25, litfloat* a15)
+{
   a15[0]  = a25[0];
   a15[1]  = a25[1];
   a15[2]  = a25[2];
@@ -156,8 +159,8 @@ void CbmLitTestMatrixMath::Convert25To15(const litfloat* a25, litfloat* a15) {
   a15[14] = a25[24];
 }
 
-std::string
-CbmLitTestMatrixMath::VectorToString(const std::vector<litfloat>& a) {
+std::string CbmLitTestMatrixMath::VectorToString(const std::vector<litfloat>& a)
+{
   std::stringstream out;
   for (int i = 0; i < a.size(); i++) {
     out << a[i] << " ";
@@ -166,7 +169,8 @@ CbmLitTestMatrixMath::VectorToString(const std::vector<litfloat>& a) {
   return out.str();
 }
 
-std::string CbmLitTestMatrixMath::ArrayToString(const litfloat* a, int n) {
+std::string CbmLitTestMatrixMath::ArrayToString(const litfloat* a, int n)
+{
   std::stringstream out;
   for (int i = 0; i < n; i++) {
     out << a[i] << " ";

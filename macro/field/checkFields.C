@@ -1,8 +1,6 @@
-int checkFields(const char* field_basename,
-                double field_Z_origin = 0,
-                double fixed_coord    = 170,
-                int flag_yx_zx_z      = 0,
-                double xyz_shift      = 0) {
+int checkFields(const char* field_basename, double field_Z_origin = 0, double fixed_coord = 170, int flag_yx_zx_z = 0,
+                double xyz_shift = 0)
+{
   // -------------------------------------------------------------------------------
   //
   // Macro to plot selected parts of magnetic field (map or B-splined) and auto save to pdf
@@ -27,8 +25,7 @@ int checkFields(const char* field_basename,
   Double_t fzmin = -50.;  // along z axis
   Double_t fzmax = 300.;
 
-  char big_title[200], stored_pdf_filename[200],
-    *ext_add[3] = {"xy", "xz", "z"};
+  char big_title[200], stored_pdf_filename[200], *ext_add[3] = {"xy", "xz", "z"};
 
 
   // -----   Load libraries   ---------------------------------------------
@@ -62,27 +59,22 @@ int checkFields(const char* field_basename,
   //     FieldSCmuon_16x13         - magnetic field map for muon mode with gap (in center) 1600x1300 mm^2  (Jul2009)
   //     FieldSC_16x13             - magnetic field map for rich mode with gap (in center) 1600x1300 mm^2  (Jul2009)
 
-  if (fieldName == "FieldActive" || fieldName == "FieldIron"
-      || fieldName == "FieldMuonMagnet") {
+  if (fieldName == "FieldActive" || fieldName == "FieldIron" || fieldName == "FieldMuonMagnet") {
     field = new CbmFieldMapSym3(field_basename);
-  } else {
+  }
+  else {
 
-    if (
-      fieldName == "FieldSC_16x13" || fieldName == "FieldSCmuon_16x13"
-      || fieldName == "FieldSC"
-      // 	    || fieldName == "FieldAlligator" ||  fieldName == "FieldDipole" || fieldName == "FieldHera" ||
-      // 	   fieldName == "FieldHeraP" || fieldName == "FieldHeraS" || fieldName == "FieldHermes"
+    if (fieldName == "FieldSC_16x13" || fieldName == "FieldSCmuon_16x13" || fieldName == "FieldSC"
+        // 	    || fieldName == "FieldAlligator" ||  fieldName == "FieldDipole" || fieldName == "FieldHera" ||
+        // 	   fieldName == "FieldHeraP" || fieldName == "FieldHeraS" || fieldName == "FieldHermes"
     )
       field = new CbmFieldMapSym2(field_basename);
     else {
-      if (fieldName == "FieldActive_Bs")
-        field = new CbmBsField(field_basename);
+      if (fieldName == "FieldActive_Bs") field = new CbmBsField(field_basename);
       else {
-        if (fieldName == "FieldProtvino" || fieldName == "FieldV04Pavel")
-          field = new CbmFieldMap(fieldName.Data());
+        if (fieldName == "FieldProtvino" || fieldName == "FieldV04Pavel") field = new CbmFieldMap(fieldName.Data());
         else {
-          cout << "=====> ERROR: Field map " << fieldName << " unknown!"
-               << endl;
+          cout << "=====> ERROR: Field map " << fieldName << " unknown!" << endl;
           exit;
         }
       }
@@ -95,15 +87,8 @@ int checkFields(const char* field_basename,
 
   field->SetPosition(0., 0., field_Z_origin);
 
-  sprintf(big_title,
-          "Map:    %s      Z_magnet_center = %.0f",
-          field_basename,
-          field_Z_origin);
-  sprintf(stored_pdf_filename,
-          "%s_1D_%s_%.0f_%.0f\.pdf",
-          field_basename,
-          ext_add[flag_yx_zx_z],
-          field_Z_origin,
+  sprintf(big_title, "Map:    %s      Z_magnet_center = %.0f", field_basename, field_Z_origin);
+  sprintf(stored_pdf_filename, "%s_1D_%s_%.0f_%.0f\.pdf", field_basename, ext_add[flag_yx_zx_z], field_Z_origin,
           fixed_coord);
 
   // ----------------------------------------------------------------------
@@ -131,11 +116,7 @@ int checkFields(const char* field_basename,
 
   Int_t i, j, k, bin;
   char name[200], *nnam[3] = {"x", "y", "z"}, *nnam1[3] = {"xz", "xy", "xyz"};
-  Int_t xyz[5]      = {-20 + xyz_shift,
-                  -10 + xyz_shift,
-                  0 + xyz_shift,
-                  10 + xyz_shift,
-                  20 + xyz_shift};
+  Int_t xyz[5]      = {-20 + xyz_shift, -10 + xyz_shift, 0 + xyz_shift, 10 + xyz_shift, 20 + xyz_shift};
   Int_t h_colors[5] = {kGray + 2, kCyan, kBlack, kBlue, kRed};  // 25,33,1,4,2};
 
   if (!flag_yx_zx_z)  // "yx"
@@ -145,7 +126,8 @@ int checkFields(const char* field_basename,
       if (!j) {
         minx = fymin;
         maxx = fymax;
-      } else {
+      }
+      else {
         minx = fxmin;
         maxx = fxmax;
       }
@@ -157,17 +139,8 @@ int checkFields(const char* field_basename,
           (h[k][i][j])->SetLineWidth(1 + (k < 2));
           (h[k][i][j])->SetStats(0);
         }
-        sprintf(name,
-                "hB%s (%s)   z=%.0f   %s=%d,%d,%d,%d,%d",
-                nnam[i],
-                nnam[1 - j],
-                z,
-                nnam[j],
-                xyz[0],
-                xyz[1],
-                xyz[2],
-                xyz[3],
-                xyz[4]);
+        sprintf(name, "hB%s (%s)   z=%.0f   %s=%d,%d,%d,%d,%d", nnam[i], nnam[1 - j], z, nnam[j], xyz[0], xyz[1],
+                xyz[2], xyz[3], xyz[4]);
         (h[0][i][j])->SetTitle(name);
       }
     }
@@ -190,8 +163,7 @@ int checkFields(const char* field_basename,
     }
 
     // ---> Loop over x axis
-    cout << "                           ... x axis: 4-5-6   " << fxmin << " "
-         << fdx << " " << fxmax << endl;
+    cout << "                           ... x axis: 4-5-6   " << fxmin << " " << fdx << " " << fxmax << endl;
     for (Int_t ix = 0; ix <= fnx; ix++) {
       x = fxmin + Double_t(ix) * fdx;
       for (k = 0; k < 5; k++) {
@@ -206,7 +178,8 @@ int checkFields(const char* field_basename,
         (h[k][2][1])->SetBinContent(bin, BB[2] / 10.);  // ix+1
       }
     }
-  } else  // "zx" or "z"
+  }
+  else  // "zx" or "z"
   {
     y = fixed_coord;
     Int_t j1;
@@ -215,7 +188,8 @@ int checkFields(const char* field_basename,
         minx = fzmin;
         maxx = fzmax;
         j1   = 0;
-      } else {
+      }
+      else {
         if (flag_yx_zx_z < 2)  // "zx"
         {
           minx = fxmin;
@@ -225,8 +199,7 @@ int checkFields(const char* field_basename,
       }
       for (i = 0; i < 3; i++) {
         for (k = 0; k < 5; k++) {
-          if ((flag_yx_zx_z < 2) || (j == 0))
-            sprintf(name, "hB%s_%s%d", nnam[i], nnam[j1], xyz[k]);
+          if ((flag_yx_zx_z < 2) || (j == 0)) sprintf(name, "hB%s_%s%d", nnam[i], nnam[j1], xyz[k]);
           else
             sprintf(name, "hB_%d_%s%d", k, nnam[i], xyz[k]);
           h[k][i][j] = new TH1D(name, name, fnx, minx, maxx);
@@ -235,29 +208,11 @@ int checkFields(const char* field_basename,
           (h[k][i][j])->SetStats(0);
         }
         if ((flag_yx_zx_z < 2) || (j == 0))
-          sprintf(name,
-                  "hB%s (%s)   y=%.0f   %s=%d,%d,%d,%d,%d",
-                  nnam[i],
-                  nnam[2 - j1],
-                  y,
-                  nnam[j1],
-                  xyz[0],
-                  xyz[1],
-                  xyz[2],
-                  xyz[3],
-                  xyz[4]);
+          sprintf(name, "hB%s (%s)   y=%.0f   %s=%d,%d,%d,%d,%d", nnam[i], nnam[2 - j1], y, nnam[j1], xyz[0], xyz[1],
+                  xyz[2], xyz[3], xyz[4]);
         else
-          sprintf(name,
-                  "|B%s| (%s)   y=%.0f   %s=%d,%d,%d,%d,%d",
-                  nnam1[i],
-                  nnam[2 - j1],
-                  y,
-                  nnam[j1],
-                  xyz[0],
-                  xyz[1],
-                  xyz[2],
-                  xyz[3],
-                  xyz[4]);
+          sprintf(name, "|B%s| (%s)   y=%.0f   %s=%d,%d,%d,%d,%d", nnam1[i], nnam[2 - j1], y, nnam[j1], xyz[0], xyz[1],
+                  xyz[2], xyz[3], xyz[4]);
         (h[0][i][j])->SetTitle(name);
       }
     }
@@ -295,8 +250,7 @@ int checkFields(const char* field_basename,
     {
       // ---> Loop over x axis
       //	  cout << "                           ... x axis: 4-5-6" << endl;
-      cout << "                           ... x axis: 4-5-6   " << fxmin << " "
-           << fdx << " " << fxmax << endl;
+      cout << "                           ... x axis: 4-5-6   " << fxmin << " " << fdx << " " << fxmax << endl;
       for (Int_t ix = 0; ix <= fnx; ix++) {
         x = fxmin + Double_t(ix) * fdx;
         for (k = 0; k < 5; k++) {

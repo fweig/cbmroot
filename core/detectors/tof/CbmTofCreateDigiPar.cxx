@@ -38,12 +38,13 @@ CbmTofCreateDigiPar::CbmTofCreateDigiPar()
   , fCellMap()
   , fCellMapIt()
   , fDigiPar(nullptr)
-  , fGeoHandler(new CbmTofGeoHandler()) {}
+  , fGeoHandler(new CbmTofGeoHandler())
+{
+}
 // --------------------------------------------------------------------
 
 // ---- Constructor ----------------------------------------------------
-CbmTofCreateDigiPar::CbmTofCreateDigiPar(const char* name,
-                                         const char* /*title*/)
+CbmTofCreateDigiPar::CbmTofCreateDigiPar(const char* name, const char* /*title*/)
   : FairTask(name)
   , fSMType(-1)
   , fSModule(-1)
@@ -61,7 +62,9 @@ CbmTofCreateDigiPar::CbmTofCreateDigiPar(const char* name,
   , fCellMap()
   , fCellMapIt()
   , fDigiPar(nullptr)
-  , fGeoHandler(new CbmTofGeoHandler()) {}
+  , fGeoHandler(new CbmTofGeoHandler())
+{
+}
 // --------------------------------------------------------------------
 
 // ---- Destructor ----------------------------------------------------
@@ -69,7 +72,8 @@ CbmTofCreateDigiPar::~CbmTofCreateDigiPar() {}
 // --------------------------------------------------------------------
 
 // ----  Initialisation  ----------------------------------------------
-void CbmTofCreateDigiPar::SetParContainers() {
+void CbmTofCreateDigiPar::SetParContainers()
+{
 
   LOG(info) << " * CbmTofCreateDigiPar:: SetParContainers() ";
 
@@ -85,7 +89,8 @@ void CbmTofCreateDigiPar::SetParContainers() {
 // --------------------------------------------------------------------
 
 // ---- ReInit  -------------------------------------------------------
-InitStatus CbmTofCreateDigiPar::ReInit() {
+InitStatus CbmTofCreateDigiPar::ReInit()
+{
 
   LOG(info) << " * CbmTofCreateDigiPar * :: ReInit() ";
 
@@ -101,7 +106,8 @@ InitStatus CbmTofCreateDigiPar::ReInit() {
 // --------------------------------------------------------------------
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmTofCreateDigiPar::Init() {
+InitStatus CbmTofCreateDigiPar::Init()
+{
 
   Int_t geoVersion = fGeoHandler->Init();
 
@@ -134,25 +140,19 @@ InitStatus CbmTofCreateDigiPar::Init() {
   for (Int_t iCell = 0; iCell < fDigiPar->GetNrOfModules(); iCell++) {
     Int_t iAddr              = fDigiPar->GetCellId(iCell);
     CbmTofCell* fChannelInfo = fDigiPar->GetCell(iAddr);
-    gGeoManager->FindNode(
-      fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
+    gGeoManager->FindNode(fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
     TGeoNode* tGeoNode = gGeoManager->GetCurrentNode();
     nodemap.insert(std::pair<Int_t, TGeoNode*>(iAddr, tGeoNode));
-    LOG(debug) << Form(
-      "Digipar for %d, addr 0x%08x: Node=%p, x %6.2f, y %6.2f, z %6.2f ",
-      iCell,
-      iAddr,
-      tGeoNode,
-      fChannelInfo->GetX(),
-      fChannelInfo->GetY(),
-      fChannelInfo->GetZ());
+    LOG(debug) << Form("Digipar for %d, addr 0x%08x: Node=%p, x %6.2f, y %6.2f, z %6.2f ", iCell, iAddr, tGeoNode,
+                       fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
   }
   fDigiPar->SetNodeMap(nodemap);
 
   return kSUCCESS;
 }
 // --------------------------------------------------------------------
-void CbmTofCreateDigiPar::FinishTask() {
+void CbmTofCreateDigiPar::FinishTask()
+{
 
   LOG(info) << " * CbmTofCreateDigiPar * :: FinishTask() ";
 
@@ -168,7 +168,8 @@ void CbmTofCreateDigiPar::FinishTask() {
 void CbmTofCreateDigiPar::Exec(Option_t* /*option*/) {}
 
 // --------------------------------------------------------------------
-void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
+void CbmTofCreateDigiPar::FillCellMapAsciiGeometry()
+{
 
   // The geometry structure is treelike with cave as
   // the top node. For the TOF there is a keeping volume
@@ -205,8 +206,7 @@ void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
       TString TofNode = node->GetName();
       LOG(info) << "Found keeping node " << TofNode;
       if (TString(((node->GetNodes())->At(0))->GetName()).Contains("Stand")) {
-        LOG(info) << " Found Tof Stand "
-                  << ((node->GetNodes())->At(0))->GetName();
+        LOG(info) << " Found Tof Stand " << ((node->GetNodes())->At(0))->GetName();
         node    = (TGeoNode*) (node->GetNodes())->At(0);
         TofNode = TofNode + "/" + node->GetName();
         LOG(info) << "Modified  keeping node " << TofNode;
@@ -223,8 +223,7 @@ void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
         TObjArray* modarray = keepvol->GetNodes();
 
         // Loop over the different found modules
-        for (Int_t imodule = 0; imodule < modarray->GetEntriesFast();
-             imodule++) {
+        for (Int_t imodule = 0; imodule < modarray->GetEntriesFast(); imodule++) {
           TGeoNode* module     = (TGeoNode*) modarray->At(imodule);
           TString ModuleNode   = module->GetName();
           TObjArray* cellarray = module->GetNodes();
@@ -246,9 +245,8 @@ void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
                 // Construct full path name for the gap
                 // Extract the necessary geometrical information and store
                 // this information in member variables
-                TString FullPath = "/" + TopNode + "/" + TofNode + "/"
-                                   + KeepNode + "/" + ModuleNode + "/"
-                                   + CellNode + "/" + GapNode;
+                TString FullPath =
+                  "/" + TopNode + "/" + TofNode + "/" + KeepNode + "/" + ModuleNode + "/" + CellNode + "/" + GapNode;
                 LOG(debug2) << "Path: " << FullPath;
                 FillCellInfoFromGeoHandler(FullPath);
 
@@ -264,9 +262,9 @@ void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
                   tofCell = new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
                   cellVector.clear();
                   cellVector.push_back(tofCell);
-                  fCellMap.insert(std::pair<Int_t, std::vector<CbmTofCell*>>(
-                    fCellID, cellVector));
-                } else {
+                  fCellMap.insert(std::pair<Int_t, std::vector<CbmTofCell*>>(fCellID, cellVector));
+                }
+                else {
                   // already existing cell
                   tofCell = new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
                   fCellMap[fCellID].push_back(tofCell);
@@ -282,7 +280,8 @@ void CbmTofCreateDigiPar::FillCellMapAsciiGeometry() {
   FillDigiPar();
 }
 
-void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
+void CbmTofCreateDigiPar::FillCellMapRootGeometry()
+{
 
   // The geometry structure is treelike with cave as
   // the top node. For the TOF there is a keeping volume
@@ -329,8 +328,7 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
       LOG(info) << "Found tof keeping volume: " << TofNode;
 
       if (TString(((node->GetNodes())->At(0))->GetName()).Contains("Stand")) {
-        LOG(info) << " Found Tof Stand "
-                  << ((node->GetNodes())->At(0))->GetName();
+        LOG(info) << " Found Tof Stand " << ((node->GetNodes())->At(0))->GetName();
         node    = (TGeoNode*) (node->GetNodes())->At(0);
         TofNode = TofNode + "/" + node->GetName();
         LOG(info) << "Modified  tof keeping node " << TofNode;
@@ -350,8 +348,7 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
         TObjArray* modpartarray = module->GetNodes();
 
         // Loop over the different parts of a module
-        for (Int_t imodpart = 0; imodpart < modpartarray->GetEntriesFast();
-             imodpart++) {
+        for (Int_t imodpart = 0; imodpart < modpartarray->GetEntriesFast(); imodpart++) {
           TGeoNode* modpart   = (TGeoNode*) modpartarray->At(imodpart);
           TString ModPartNode = modpart->GetName();
 
@@ -359,14 +356,12 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
             TObjArray* counterarray = modpart->GetNodes();
 
             // Loop over the different counters
-            for (Int_t icounter = 0; icounter < counterarray->GetEntriesFast();
-                 icounter++) {
+            for (Int_t icounter = 0; icounter < counterarray->GetEntriesFast(); icounter++) {
               TGeoNode* counter   = (TGeoNode*) counterarray->At(icounter);
               TString CounterNode = counter->GetName();
               if (!CounterNode.Contains("counter")) continue;
               TObjArray* gaparray = counter->GetNodes();
-              if (nullptr == gaparray)
-                LOG(error) << " no gaps for counter " << CounterNode;
+              if (nullptr == gaparray) LOG(error) << " no gaps for counter " << CounterNode;
               // Loop over the different gaps
               for (Int_t igap = 0; igap < gaparray->GetEntriesFast(); igap++) {
                 TGeoNode* gap   = (TGeoNode*) gaparray->At(igap);
@@ -375,18 +370,15 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
                   TObjArray* cellarray = gap->GetNodes();
 
                   // Loop over the different cells
-                  for (Int_t icell = 0; icell < cellarray->GetEntriesFast();
-                       icell++) {
+                  for (Int_t icell = 0; icell < cellarray->GetEntriesFast(); icell++) {
                     TGeoNode* cell   = (TGeoNode*) cellarray->At(icell);
                     TString CellNode = cell->GetName();
 
                     // Construct full path name for the gap
                     // Extract the necessary geometrical information and store
                     // this information in member variables
-                    TString FullPath = "/" + TopNode + "/" + TofNode + "/"
-                                       + +ModuleNode + "/" + ModPartNode + "/"
-                                       + CounterNode + "/" + GapNode + "/"
-                                       + CellNode;
+                    TString FullPath = "/" + TopNode + "/" + TofNode + "/" + +ModuleNode + "/" + ModPartNode + "/"
+                                       + CounterNode + "/" + GapNode + "/" + CellNode;
                     LOG(debug2) << "Path: " << FullPath;
 
                     FillCellInfoFromGeoHandler(FullPath);
@@ -400,17 +392,14 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
                     fCellMapIt = fCellMap.find(fCellID);
                     if (fCellMapIt == fCellMap.end()) {
                       // new tof cell
-                      tofCell =
-                        new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
+                      tofCell = new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
                       cellVector.clear();
                       cellVector.push_back(tofCell);
-                      fCellMap.insert(
-                        std::pair<Int_t, std::vector<CbmTofCell*>>(fCellID,
-                                                                   cellVector));
-                    } else {
+                      fCellMap.insert(std::pair<Int_t, std::vector<CbmTofCell*>>(fCellID, cellVector));
+                    }
+                    else {
                       // already existing cell
-                      tofCell =
-                        new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
+                      tofCell = new CbmTofCell(fCellID, fX, fY, fZ, fSizex, fSizey);
                       fCellMap[fCellID].push_back(tofCell);
                     }
                   }
@@ -426,7 +415,8 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
   FillDigiPar();
 }
 
-void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
+void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath)
+{
   // Calculate the unique detector ID including the gap information.
   // Since all gaps for a given cell are added up to one channel the
   // id and corresponding information stored in the parameter container
@@ -449,11 +439,9 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
   fZ = fGeoHandler->GetZ(FullPath);
 
   LOG(debug2) << "FCI: " << FullPath.Data();
-  LOG(debug2) << "FCI: X: " << fX << " Y: " << fY << " Z: " << fZ
-              << " SizeX: " << fSizex << " SizeY: " << fSizey;
-  LOG(debug2) << Form(" DetID: 0x%08x", fDetID) << " Region: " << fRegion
-              << " Counter: " << fCounter << " Gap: " << fGap
-              << " Cell: " << fCell;
+  LOG(debug2) << "FCI: X: " << fX << " Y: " << fY << " Z: " << fZ << " SizeX: " << fSizex << " SizeY: " << fSizey;
+  LOG(debug2) << Form(" DetID: 0x%08x", fDetID) << " Region: " << fRegion << " Counter: " << fCounter
+              << " Gap: " << fGap << " Cell: " << fCell;
 
   fCellID = fGeoHandler->GetCellId(fDetID);
 
@@ -464,18 +452,15 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
   fCell    = fGeoHandler->GetCell(fCellID);
   fRegion  = fGeoHandler->GetRegion(fCellID);
 
-  LOG(debug2) << "FCI: Cell ID: " << Form("0x%08x", fCellID) << " detId "
-              << Form("0x%08x", fDetID);
-  LOG(debug2) << " Region:  " << fGeoHandler->GetRegion(fCellID)
-              << " SMTYP:   " << fGeoHandler->GetSMType(fCellID)
-              << " SModule: " << fGeoHandler->GetSModule(fCellID)
-              << " Module:  " << fGeoHandler->GetCounter(fCellID)
-              << " Gap:     " << fGeoHandler->GetGap(fCellID)
-              << " Cell: " << fGeoHandler->GetCell(fCellID);
+  LOG(debug2) << "FCI: Cell ID: " << Form("0x%08x", fCellID) << " detId " << Form("0x%08x", fDetID);
+  LOG(debug2) << " Region:  " << fGeoHandler->GetRegion(fCellID) << " SMTYP:   " << fGeoHandler->GetSMType(fCellID)
+              << " SModule: " << fGeoHandler->GetSModule(fCellID) << " Module:  " << fGeoHandler->GetCounter(fCellID)
+              << " Gap:     " << fGeoHandler->GetGap(fCellID) << " Cell: " << fGeoHandler->GetCell(fCellID);
 }
 
 
-void CbmTofCreateDigiPar::FillDigiPar() {
+void CbmTofCreateDigiPar::FillDigiPar()
+{
 
   /*
   ofstream fout;
@@ -492,8 +477,7 @@ void CbmTofCreateDigiPar::FillDigiPar() {
   Int_t Nrcells = (Int_t) fCellMap.size();
   LOG(debug) << "FillDigiPar:: Nr. of tof cells: " << Nrcells;
   SetParContainers();
-  if (NULL == fDigiPar)
-    LOG(fatal) << "Tof Digi Parameter container not available ";
+  if (NULL == fDigiPar) LOG(fatal) << "Tof Digi Parameter container not available ";
   fDigiPar->SetNrOfCells(Nrcells);  //transfer info to DigiPar
 
   TArrayI* CellId = new TArrayI(Nrcells);
@@ -509,8 +493,7 @@ void CbmTofCreateDigiPar::FillDigiPar() {
   std::map<Int_t, CbmTofCell*> singleCellMap;
   CbmTofCell* singlecell;
 
-  for (fCellMapIt = fCellMap.begin(); fCellMapIt != fCellMap.end();
-       fCellMapIt++) {
+  for (fCellMapIt = fCellMap.begin(); fCellMapIt != fCellMap.end(); fCellMapIt++) {
 
     CellId->AddAt(fCellMapIt->first, iDigi);
 
@@ -548,11 +531,7 @@ void CbmTofCreateDigiPar::FillDigiPar() {
     CellDy->AddAt(sizey / vcell.size(), iDigi);
 
     /**/
-    singlecell = new CbmTofCell(cellId,
-                                x / vcell.size(),
-                                y / vcell.size(),
-                                z / vcell.size(),
-                                sizex / vcell.size(),
+    singlecell = new CbmTofCell(cellId, x / vcell.size(), y / vcell.size(), z / vcell.size(), sizex / vcell.size(),
                                 sizey / vcell.size());
     singleCellMap.insert(std::pair<Int_t, CbmTofCell*>(cellId, singlecell));
     /**/
@@ -564,12 +543,10 @@ void CbmTofCreateDigiPar::FillDigiPar() {
     fCell    = fGeoHandler->GetCell(cellId);
 
     if (0) {
-      LOG(info) << "FillDigiPar " << iDigi << ", cellId = " << cellId << ", t "
-                << fSMType << "  m " << fSModule << "  c " << fCounter << "  s "
-                << fCell << "   " << x / vcell.size() * 10 << "   "
-                << y / vcell.size() * 10 << "   " << z / vcell.size() * 10
-                << "   " << sizex / vcell.size() * 10 << "   "
-                << sizey / vcell.size() * 10;
+      LOG(info) << "FillDigiPar " << iDigi << ", cellId = " << cellId << ", t " << fSMType << "  m " << fSModule
+                << "  c " << fCounter << "  s " << fCell << "   " << x / vcell.size() * 10 << "   "
+                << y / vcell.size() * 10 << "   " << z / vcell.size() * 10 << "   " << sizex / vcell.size() * 10
+                << "   " << sizey / vcell.size() * 10;
     }
     iDigi++;
   }

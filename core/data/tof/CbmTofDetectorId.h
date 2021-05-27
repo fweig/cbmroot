@@ -13,9 +13,9 @@
 #ifndef CBMTOFDETECTORID_H
 #define CBMTOFDETECTORID_H 1
 
-#include <RtypesCore.h>  // for Int_t
-
 #include "CbmDefs.h"
+
+#include <RtypesCore.h>  // for Int_t
 
 class CbmTofDetectorInfo {
 
@@ -47,12 +47,7 @@ public:
     , fCell(cell)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(ECbmModuleId detsystem,
-                     Int_t smtype,
-                     Int_t smodule,
-                     Int_t counter,
-                     Int_t gap,
-                     Int_t cell,
+  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell,
                      Int_t counterType)
     : fDetectorSystem(ToIntegralType(detsystem))
     , fSMtype(smtype)

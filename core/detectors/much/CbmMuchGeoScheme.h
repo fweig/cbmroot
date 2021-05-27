@@ -14,6 +14,8 @@
 #ifndef CbmMuchGeoScheme_H
 #define CbmMuchGeoScheme_H 1
 
+#include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchLayer, kMuchLayerSide
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, Float_t, Char_t
 #include <TArrayC.h>     // for TArrayC
@@ -27,8 +29,6 @@
 
 #include <map>     // for map
 #include <vector>  // for vector
-
-#include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchLayer, kMuchLayerSide
 
 class CbmMuchLayer;
 class CbmMuchLayerSide;
@@ -54,10 +54,8 @@ public:
   CbmMuchStation* GetStation(Int_t iStation) const;
   //Int_t GetStation(const TString& path);
   CbmMuchLayer* GetLayer(Int_t iStation, Int_t iLayer) const;
-  CbmMuchLayerSide*
-  GetLayerSide(Int_t iStation, Int_t iLayer, Bool_t iSide) const;
-  CbmMuchModule*
-  GetModule(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule) const;
+  CbmMuchLayerSide* GetLayerSide(Int_t iStation, Int_t iLayer, Bool_t iSide) const;
+  CbmMuchModule* GetModule(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule) const;
 
   // Get geometry objects by detector id
   CbmMuchStation* GetStationByDetId(Int_t detId) const;
@@ -65,15 +63,9 @@ public:
   CbmMuchLayerSide* GetLayerSideByDetId(Int_t detId) const;
   CbmMuchModule* GetModuleByDetId(Int_t detId) const;
 
-  static Int_t GetStationIndex(Int_t address) {
-    return CbmMuchAddress::GetElementId(address, kMuchStation);
-  }
-  static Int_t GetLayerIndex(Int_t address) {
-    return CbmMuchAddress::GetElementId(address, kMuchLayer);
-  }
-  static Int_t GetLayerSideIndex(Int_t address) {
-    return CbmMuchAddress::GetElementId(address, kMuchLayerSide);
-  }
+  static Int_t GetStationIndex(Int_t address) { return CbmMuchAddress::GetElementId(address, kMuchStation); }
+  static Int_t GetLayerIndex(Int_t address) { return CbmMuchAddress::GetElementId(address, kMuchLayer); }
+  static Int_t GetLayerSideIndex(Int_t address) { return CbmMuchAddress::GetElementId(address, kMuchLayerSide); }
 
   //  fStations->GetEntriesFast();
   Int_t GetNStations() const { return fStations->GetEntriesFast(); }
@@ -84,15 +76,13 @@ public:
   Double_t GetMuchCaveZ0() const { return fMuchZ1 + fMuchCave->GetDz(); }
   //  Double_t   GetAbsorberZ0(Int_t i) const {return fMuchZ1+fAbsorberZ1[i]+((TGeoCone*) fAbsorbers->At(i))->GetDz();}
   Char_t GetAbsorberMat(Int_t i) const { return fAbsorberMat[i]; }
-  Double_t GetAbsorberZ0(Int_t i) {
-    if (i == 0)
-      return fMuchZ1 + fAbsorberZ1[i]
-             + ((TGeoBBox*) fAbsorbers->At(i))->GetDZ();
+  Double_t GetAbsorberZ0(Int_t i)
+  {
+    if (i == 0) return fMuchZ1 + fAbsorberZ1[i] + ((TGeoBBox*) fAbsorbers->At(i))->GetDZ();
     //return fMuchZ1+fAbsorberZ1[i]+((TGeoCone*)fAbsorbers->At(i))->GetDz();
 
     else
-      return fMuchZ1 + fAbsorberZ1[i]
-             + ((TGeoBBox*) fAbsorbers->At(i))->GetDZ();
+      return fMuchZ1 + fAbsorberZ1[i] + ((TGeoBBox*) fAbsorbers->At(i))->GetDZ();
   }
 
 
@@ -140,15 +130,8 @@ public:
   void ExtractGeoParameter(TGeoNode* muchNode, const char* volumeName);
   void StationNode(TGeoNode* MuchObjNode, TString MuchObjPath);
   void LayerNode(TGeoNode* StNode, Int_t iStation, TString StPath);
-  void ModuleNode(TGeoNode* layerNode,
-                  Int_t iStation,
-                  Int_t iLayer,
-                  TString layerPath);
-  void ActiveModuleNode(TGeoNode* moduleNode,
-                        Int_t iStation,
-                        Int_t iLayer,
-                        Int_t iModule,
-                        TString modulePath);
+  void ModuleNode(TGeoNode* layerNode, Int_t iStation, Int_t iLayer, TString layerPath);
+  void ActiveModuleNode(TGeoNode* moduleNode, Int_t iStation, Int_t iLayer, Int_t iModule, TString modulePath);
 
 
 private:
@@ -173,9 +156,8 @@ private:
   Int_t fGeoID;    // Id to distinguish geometry (mcbm/cbm)
 
   static CbmMuchGeoScheme* fInstance;
-  static Bool_t fInitialized;  // Defines whether the instance was initialized
-  static Bool_t
-    fModulesInitialized;  // Defines whether grid of the instance was initialized
+  static Bool_t fInitialized;         // Defines whether the instance was initialized
+  static Bool_t fModulesInitialized;  // Defines whether grid of the instance was initialized
 
   std::vector<std::vector<CbmMuchModule*>> fModules;   //!
   std::vector<std::vector<CbmMuchLayerSide*>> fSides;  //!
@@ -210,8 +192,7 @@ private:
   Double_t fSpacerPhi;        // Spacer width in Phi [cm]
   Double_t fOverlapR;         // Overlap in R direction [cm]
 
-  TArrayD
-    fAbsorberZ1;  // Absorber Zin position [cm] in the cave reference frame
+  TArrayD fAbsorberZ1;   // Absorber Zin position [cm] in the cave reference frame
   TArrayD fAbsorberLz;   // Absorber thickness [cm]
   TArrayC fAbsorberMat;  // Absorber material
   TArrayD fStationZ0;    // Station Zceneter [cm] in  the cave reference frame

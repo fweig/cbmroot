@@ -1,4 +1,5 @@
-void run_mc(int index = -1) {
+void run_mc(int index = -1)
+{
   Int_t nEvents = 1000;
   //const char* setupName = "sis100_electron";
   const char* setupName = "sis100_muon_jpsi";
@@ -36,50 +37,41 @@ void run_mc(int index = -1) {
   if (useBg) suffix += "." + trigger;
 
   if (useSig) {
-    if (sigAscii)
-      suffix += ".ascii";
+    if (sigAscii) suffix += ".ascii";
     else
       suffix += "." + part;
   }
 
   TString fsPrefix;
 
-  if (index >= 0)
-    fsPrefix = "/lustre/nyx";
+  if (index >= 0) fsPrefix = "/lustre/nyx";
   else
     fsPrefix = "/SAT/nyx";  //"/SAT/hera";
 
-  TString bgFile = fsPrefix + "/cbm/prod/gen/urqmd/" + system + "/" + beam + "/"
-                   + trigger + "/" + "urqmd." + system + "." + beam + "."
-                   + trigger + "." + TString(str) + ".root";
+  TString bgFile = fsPrefix + "/cbm/prod/gen/urqmd/" + system + "/" + beam + "/" + trigger + "/" + "urqmd." + system
+                   + "." + beam + "." + trigger + "." + TString(str) + ".root";
   TString outDir;
 
-  if (index >= 0)
-    outDir = "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
+  if (index >= 0) outDir = "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
   else
     outDir = "/data.local/cbmrootdata/";
 
   TString sigFile;
 
-  if (sigAscii)
-    sigFile = outDir + "muon_pairs.txt";
+  if (sigAscii) sigFile = outDir + "muon_pairs.txt";
   else
-    sigFile = fsPrefix + "/cbm/prod/gen/pluto/" + system + "/" + partDir + "/"
-              + beam + "/" + part + "/" + channel + "/pluto." + system + "."
-              + beam + "." + part + "." + channel + "." + TString(str2)
-              + ".root";
+    sigFile = fsPrefix + "/cbm/prod/gen/pluto/" + system + "/" + partDir + "/" + beam + "/" + part + "/" + channel
+              + "/pluto." + system + "." + beam + "." + part + "." + channel + "." + TString(str2) + ".root";
 
-  TString outFile =
-    outDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
-  TString parFile =
-    outDir + setupName + ".param." + system + "." + beam + suffix + ".root";
+  TString outFile = outDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
+  TString parFile = outDir + setupName + ".param." + system + "." + beam + suffix + ".root";
   TString geoFile = outDir + setupName + "_geofile.root";
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_sim";  // this macro's name for screen output
+  TString myName = "run_sim";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -105,7 +97,7 @@ void run_mc(int index = -1) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -190,8 +182,7 @@ void run_mc(int index = -1) {
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -213,8 +204,7 @@ void run_mc(int index = -1) {
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -242,7 +232,8 @@ void run_mc(int index = -1) {
     if (sigAscii) {
       FairAsciiGenerator* signalGen = new FairAsciiGenerator(sigFile);
       primGen->AddGenerator(signalGen);
-    } else {
+    }
+    else {
       CbmPlutoGenerator* plutoGen = new CbmPlutoGenerator(sigFile);
       primGen->AddGenerator(plutoGen);
     }
@@ -298,9 +289,7 @@ void run_mc(int index = -1) {
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

@@ -1,4 +1,5 @@
-void pl_over_Mat04D4best(Int_t iLog = 0) {
+void pl_over_Mat04D4best(Int_t iLog = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 1000, 800);
@@ -43,7 +44,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TFitResultPtr fResy = h2py->Fit("gaus", "S", "", -2., 2.);
     dMeanY              = fResy->Parameter(1);
     dSigY               = fResy->Parameter(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -54,7 +56,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -65,7 +68,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -111,7 +115,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     }
     //    gPad->SetOptFit(1);
     */
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -123,7 +128,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h1 != NULL) {
     h1->Draw();
     NFinalHits = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -135,7 +141,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     h1->Draw();
     gPad->SetLogy();
     NEvents = h1->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -156,7 +163,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h1 != NULL) {
     h1->Draw();
     //  Double_t NSel=h1->Integral(BL,h1->GetNbinsX(),"");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -169,7 +177,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -180,7 +189,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -193,7 +203,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     gPad->SetLogz();
     TProfile* h2pfx = h2->ProfileX();
     h2pfx->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -206,7 +217,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TProfile* h2pfxx = h2->ProfileX();
     h2pfxx->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -217,7 +229,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -228,7 +241,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -239,7 +253,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -253,7 +268,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TH1D* h2clu   = h2->ProjectionX("_px", 1, h2->GetNbinsY());
     dMeanCluSize0 = h2clu->GetMean();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -267,7 +283,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TH1D* h2clu   = h2->ProjectionX("_px", 1, h2->GetNbinsY());
     dMeanCluSize4 = h2clu->GetMean();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -281,7 +298,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TProfile* h2pfxt = h2->ProfileX();
     h2pfxt->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -294,7 +312,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
     TProfile* h2pfxt = h2->ProfileX();
     h2pfxt->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -305,7 +324,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -316,7 +336,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -327,7 +348,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -338,7 +360,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -349,7 +372,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -360,7 +384,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -371,7 +396,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -382,7 +408,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -393,7 +420,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("");
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -404,7 +432,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   if (h2 != NULL) {
     h2->Draw("");
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -413,17 +442,7 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
   cout << Form("<IRes> Efficiency: %6.3f(%7.0f) of %7.0f events, mean Dt %6.1f "
                "ps, 1-sig time res: %6.1f ps, RMS: %6.1f ps, DX %5.2f, DY "
                "%5.2f, SigX %5.2f, SigY %5.2f, CluSize %4.1f,%4.1f ",
-               dEff,
-               NFinalHits,
-               NEvents,
-               dTMean,
-               dTRes,
-               dTRMS,
-               dMeanX,
-               dMeanY,
-               dSigX,
-               dSigY,
-               dMeanCluSize0,
+               dEff, NFinalHits, NEvents, dTMean, dTRes, dTRMS, dMeanX, dMeanY, dSigX, dSigY, dMeanCluSize0,
                dMeanCluSize4)
        << endl;
 

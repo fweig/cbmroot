@@ -7,11 +7,12 @@
 #ifndef LITFIELDGRID_H_
 #define LITFIELDGRID_H_
 
-#include "LitFieldValue.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "LitFieldValue.h"
 
 using std::ostream;
 using std::right;
@@ -21,8 +22,10 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitFieldGrid
@@ -56,7 +59,9 @@ namespace lit {
         , fNofBinsY(0)
         , fBinSizeX(0.)
         , fBinSizeY(0.)
-        , fField() {}
+        , fField()
+      {
+      }
 
       /**
     * \brief Returns Z position of the grid.
@@ -86,13 +91,9 @@ namespace lit {
     * \param[in] nofBinsX Number of bins in X.
     * \param[in] nofBinsY Number of bins in Y.
     */
-      void SetField(const vector<vector<LitFieldValue<fscal>>>& field,
-                    fscal xmin,
-                    fscal xmax,
-                    fscal ymin,
-                    fscal ymax,
-                    int nofBinsX,
-                    int nofBinsY) {
+      void SetField(const vector<vector<LitFieldValue<fscal>>>& field, fscal xmin, fscal xmax, fscal ymin, fscal ymax,
+                    int nofBinsX, int nofBinsY)
+      {
         fField    = field;
         fXMin     = xmin;
         fXMax     = xmax;
@@ -110,7 +111,8 @@ namespace lit {
     * \param[in] y Y position.
     * \param[out] B Field value.
     */
-      void GetFieldValue(fscal x, fscal y, LitFieldValue<fscal>& B) const {
+      void GetFieldValue(fscal x, fscal y, LitFieldValue<fscal>& B) const
+      {
         // Check bound conditions and if out of bounds return zero field values.
         // Can be removed considering performance!
         if (x < fXMin || x > fXMax || y < fYMin || y > fXMax) {
@@ -174,7 +176,8 @@ namespace lit {
     * \param[in] y Y position.
     * \param[out] B Field value.
     */
-      void GetFieldValue(fvec x, fvec y, LitFieldValue<fvec>& B) const {
+      void GetFieldValue(fvec x, fvec y, LitFieldValue<fvec>& B) const
+      {
         LitFieldValue<fscal> v;
         // Get field value for each packed value
         for (unsigned int i = 0; i < fvecLen; i++) {
@@ -196,13 +199,12 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
-        ss << "LitFieldGrid: Z=" << fZ << " Xmin=" << fXMin << " Xmax=" << fXMax
-           << " Ymin=" << fYMin << " Ymax=" << fYMax
-           << " nofBinsX=" << fNofBinsX << " nofBinsY=" << fNofBinsY
-           << " binSizeX=" << fBinSizeX << " binSizeY=" << fBinSizeY
-           << " field.size=" << fField.size();
+        ss << "LitFieldGrid: Z=" << fZ << " Xmin=" << fXMin << " Xmax=" << fXMax << " Ymin=" << fYMin
+           << " Ymax=" << fYMax << " nofBinsX=" << fNofBinsX << " nofBinsY=" << fNofBinsY << " binSizeX=" << fBinSizeX
+           << " binSizeY=" << fBinSizeY << " field.size=" << fField.size();
         //      if (fNofBinsX > 0 && fNofBinsY > 0) {
         //         ss << "\nGrid:\n";
         //         unsigned int stepX = fNofBinsX / 10;
@@ -222,7 +224,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitFieldGrid& grid) {
+      friend ostream& operator<<(ostream& strm, const LitFieldGrid& grid)
+      {
         strm << grid.ToString();
         return strm;
       }

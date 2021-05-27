@@ -6,6 +6,7 @@
 #include "CbmRichRing.h"
 #include "CbmStsTrack.h"
 #include "CbmVertex.h"
+
 #include "TH2D.h"
 #include <TClonesArray.h>
 
@@ -26,26 +27,12 @@ public:
   void InitHistograms();
   void Finish();
 
-  void Exec(int fEventNumEta,
-            double OpeningAngleCut,
-            double GammaInvMassCut,
-            int RealPID);
+  void Exec(int fEventNumEta, double OpeningAngleCut, double GammaInvMassCut, int RealPID);
 
-  void SaveOutsideTracks(CbmMCTrack* mcTrack1,
-                         CbmStsTrack* stsTrack,
-                         double charge,
-                         int stsInd,
-                         int richInd,
-                         int stsMcTrackId,
-                         CbmRichRing* RING);
-  void SaveTargetTracks(CbmMCTrack* mcTrack1,
-                        CbmStsTrack* stsTrack,
-                        TVector3 refmom,
-                        double charge,
-                        int stsInd,
-                        int richInd,
-                        int stsMcTrackId,
-                        CbmRichRing* RING);
+  void SaveOutsideTracks(CbmMCTrack* mcTrack1, CbmStsTrack* stsTrack, double charge, int stsInd, int richInd,
+                         int stsMcTrackId, CbmRichRing* RING);
+  void SaveTargetTracks(CbmMCTrack* mcTrack1, CbmStsTrack* stsTrack, TVector3 refmom, double charge, int stsInd,
+                        int richInd, int stsMcTrackId, CbmRichRing* RING);
 
   int FindInRich(int richInd, int stsMcTrackId);
 
@@ -55,57 +42,31 @@ public:
 
   double CalculatePlaneAngle_first(CbmStsTrack* Sts_1, CbmStsTrack* Sts_2);
 
-  void FindGammasTarget(int EventNumEta,
-                        double AngleCut,
-                        double InvMassCut,
-                        int RealPID,
-                        vector<CbmMCTrack*> MCtracks_minus,
-                        vector<CbmMCTrack*> MCtracks_plus,
-                        vector<CbmStsTrack*> StsTrack_minus,
-                        vector<CbmStsTrack*> StsTrack_plus,
-                        vector<TVector3> Momenta_minus,
-                        vector<TVector3> Momenta_plus,
-                        std::vector<int> Rings_minus,
-                        std::vector<int> Rings_plus,
-                        std::vector<int> stsIndex_minus,
-                        std::vector<int> stsIndex_plus,
-                        vector<CbmRichRing*> richRing_minus,
-                        vector<CbmRichRing*> richRing_plus,
-                        vector<Int_t> MCIndex_minus,
-                        vector<Int_t> MCIndex_plus);
+  void FindGammasTarget(int EventNumEta, double AngleCut, double InvMassCut, int RealPID,
+                        vector<CbmMCTrack*> MCtracks_minus, vector<CbmMCTrack*> MCtracks_plus,
+                        vector<CbmStsTrack*> StsTrack_minus, vector<CbmStsTrack*> StsTrack_plus,
+                        vector<TVector3> Momenta_minus, vector<TVector3> Momenta_plus, std::vector<int> Rings_minus,
+                        std::vector<int> Rings_plus, std::vector<int> stsIndex_minus, std::vector<int> stsIndex_plus,
+                        vector<CbmRichRing*> richRing_minus, vector<CbmRichRing*> richRing_plus,
+                        vector<Int_t> MCIndex_minus, vector<Int_t> MCIndex_plus);
 
-  void FindGammasOutside(int EventNumEta,
-                         double AngleCut,
-                         double InvMassCut,
-                         int RealPID,
-                         vector<CbmMCTrack*> MCtracks_minus_Outside,
-                         vector<CbmMCTrack*> MCtracks_plus_Outside,
-                         vector<CbmStsTrack*> StsTrack_minus_Outside,
-                         vector<CbmStsTrack*> StsTrack_plus_Outside,
-                         std::vector<int> Rings_minus_Outside,
-                         std::vector<int> Rings_plus_Outside,
-                         std::vector<int> stsIndex_minus_Outside,
-                         std::vector<int> stsIndex_plus_Outside,
-                         vector<CbmRichRing*> richRing_minus_Outside,
-                         vector<CbmRichRing*> richRing_plus_Outside,
-                         vector<Int_t> MCIndex_minus_Outside,
-                         vector<Int_t> MCIndex_plus_Outside);
+  void FindGammasOutside(int EventNumEta, double AngleCut, double InvMassCut, int RealPID,
+                         vector<CbmMCTrack*> MCtracks_minus_Outside, vector<CbmMCTrack*> MCtracks_plus_Outside,
+                         vector<CbmStsTrack*> StsTrack_minus_Outside, vector<CbmStsTrack*> StsTrack_plus_Outside,
+                         std::vector<int> Rings_minus_Outside, std::vector<int> Rings_plus_Outside,
+                         std::vector<int> stsIndex_minus_Outside, std::vector<int> stsIndex_plus_Outside,
+                         vector<CbmRichRing*> richRing_minus_Outside, vector<CbmRichRing*> richRing_plus_Outside,
+                         vector<Int_t> MCIndex_minus_Outside, vector<Int_t> MCIndex_plus_Outside);
 
   void FindGammasBoth();
 
-  void FindEta(TString mod,
-               TString position,
-               vector<vector<TVector3>> Gammas,
-               vector<vector<int>> StsIndex,
-               vector<vector<int>> MCIndex,
-               vector<vector<CbmMCTrack*>> GammasMC,
-               vector<TH1*> gg,
+  void FindEta(TString mod, TString position, vector<vector<TVector3>> Gammas, vector<vector<int>> StsIndex,
+               vector<vector<int>> MCIndex, vector<vector<CbmMCTrack*>> GammasMC, vector<TH1*> gg,
                vector<TH1*> rap_pt_separation);
 
   void Mixing_Target();
   void Mixing_Outside();
-  void Mixing_Both(vector<TH1*> rap_pt_separation_all,
-                   vector<TH1*> rap_pt_separation_onetwo,
+  void Mixing_Both(vector<TH1*> rap_pt_separation_all, vector<TH1*> rap_pt_separation_onetwo,
                    vector<TH1*> rap_pt_separation_two);
 
 

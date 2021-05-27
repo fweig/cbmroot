@@ -57,25 +57,17 @@ public:
   virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
   void SetMsOverlap(size_t uOverlapMsNb = 1) { fuNbOverMsPerTs = uOverlapMsNb; }
   size_t GetMsOverlap() { return fuNbOverMsPerTs; }
-  void SetIgnoreMsOverlap(Bool_t bIgnoreOver = kTRUE) {
-    fbIgnoreOverlapMs = bIgnoreOver;
-  }
+  void SetIgnoreMsOverlap(Bool_t bIgnoreOver = kTRUE) { fbIgnoreOverlapMs = bIgnoreOver; }
 
   void ResetAllHistos();
   void SaveAllHistos(TString sFileName = "");
   void SavePulserHistos(TString sFileName = "");
-  void SetHistoFileName(TString sFileName = "data/SetupHistos.root") {
-    fsHistoFileFullname = sFileName;
-  }
+  void SetHistoFileName(TString sFileName = "data/SetupHistos.root") { fsHistoFileFullname = sFileName; }
 
   inline void SetDiamondDpbIdx(UInt_t uIdx = 2) { fuDiamondDpbIdx = uIdx; }
   inline void SetMuchDpbIdx(UInt_t uIdx = 1) { fuMuchDpbIdx = uIdx; }
-  inline void SetStsTofOffsetNs(Double_t dOffsetIn = 0.0) {
-    fdStsTofOffsetNs = dOffsetIn;
-  }
-  inline void SetMuchTofOffsetNs(Double_t dOffsetIn = 0.0) {
-    fdMuchTofOffsetNs = dOffsetIn;
-  }
+  inline void SetStsTofOffsetNs(Double_t dOffsetIn = 0.0) { fdStsTofOffsetNs = dOffsetIn; }
+  inline void SetMuchTofOffsetNs(Double_t dOffsetIn = 0.0) { fdMuchTofOffsetNs = dOffsetIn; }
 
   void UseDaqBuffer(Bool_t) {};
 
@@ -86,13 +78,11 @@ private:
   std::vector<size_t> fvMsComponentsListTof;  //!
   size_t fuNbCoreMsPerTs;                     //!
   size_t fuNbOverMsPerTs;                     //!
-  Bool_t
-    fbIgnoreOverlapMs;  //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-                        /// Unpacking and mapping parameters for STS
+  Bool_t fbIgnoreOverlapMs;          //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+                                     /// Unpacking and mapping parameters for STS
   CbmMcbm2018StsPar* fUnpackParSts;  //!
   UInt_t fuStsNrOfDpbs;              //! Total number of Sts DPBs in system
-  std::map<UInt_t, UInt_t>
-    fmStsDpbIdIndexMap;  //! Map of DPB Identifier to DPB index
+  std::map<UInt_t, UInt_t> fmStsDpbIdIndexMap;  //! Map of DPB Identifier to DPB index
   UInt_t fuMuchDpbIdx;
   /// Unpacking and mapping parameters for TOF
   CbmMcbm2018TofPar* fUnpackParTof;  //!
@@ -105,8 +95,7 @@ private:
   Double_t fdMuchTofOffsetNs;
 
   // Constants
-  static const UInt_t kuStsBytesPerMessage =
-    4;  //! TODO => move to the message class!!
+  static const UInt_t kuStsBytesPerMessage = 4;  //! TODO => move to the message class!!
   static const UInt_t kuTofBytesPerMessage = 8;
   static const UInt_t kuTimeBinSizeNs      = 10000;
   static const UInt_t kuTsSizeInNs         = 10400000;
@@ -124,15 +113,11 @@ private:
   ULong64_t fulCurrentTsStartTime;
   // Current data properties
   std::map<stsxyter::MessType, UInt_t> fmMsgCounter;
-  UInt_t
-    fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t
-    fuCurrDpbId;  //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t
-    fuCurrDpbIdx;  //! Index of the DPB from which the MS currently unpacked is coming
-  Int_t
-    fiRunStartDateTimeSec;  //! Start of run time since "epoch" in s, for the plots with date as X axis
-  Int_t fiBinSizeDatePlots;  //! Bin size in s for the plots with date as X axis
+  UInt_t fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
+  UInt_t fuCurrDpbId;           //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx;          //! Index of the DPB from which the MS currently unpacked is coming
+  Int_t fiRunStartDateTimeSec;  //! Start of run time since "epoch" in s, for the plots with date as X axis
+  Int_t fiBinSizeDatePlots;     //! Bin size in s for the plots with date as X axis
 
   /****************** STS Sync ******************************************/
   // Data format control
@@ -151,9 +136,7 @@ private:
   Bool_t ProcessStsMs(const fles::Timeslice& ts, size_t uMsComp, UInt_t uMsIdx);
 
   void FillStsHitInfo(stsxyter::Message mess, const UInt_t& uMsIdx);
-  void FillStsTsMsbInfo(stsxyter::Message mess,
-                        UInt_t uMessIdx = 0,
-                        UInt_t uMsIdx   = 0);
+  void FillStsTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx = 0, UInt_t uMsIdx = 0);
   void FillStsEpochInfo(stsxyter::Message mess);
   /****************** STS Sync ******************************************/
 
@@ -161,11 +144,10 @@ private:
 
   /// Running indices
   uint64_t fulTofCurrentTsIndex;  // Idx of the current TS
-  size_t fuTofCurrentMs;  // Idx of the current MS in TS (0 to fuTotalMsNb)
-  Double_t fdTofMsIndex;  // Time in ns of current MS from its index
-  UInt_t fuTofGdpbId;     // Id (hex number) of the GDPB for current message
-  UInt_t
-    fuTofGdpbNr;  // running number (0 to fuNrOfGdpbs) of the GDPB for current message
+  size_t fuTofCurrentMs;          // Idx of the current MS in TS (0 to fuTotalMsNb)
+  Double_t fdTofMsIndex;          // Time in ns of current MS from its index
+  UInt_t fuTofGdpbId;             // Id (hex number) of the GDPB for current message
+  UInt_t fuTofGdpbNr;             // running number (0 to fuNrOfGdpbs) of the GDPB for current message
   Int_t fiTofEquipmentId;
   std::vector<int> fviTofMsgCounter;
 

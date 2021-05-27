@@ -25,13 +25,17 @@
 #include "CbmRichRingLight.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmUtils.h"
+
 #include "FairTrackParam.h"
 #include "FairVolume.h"
+
 #include "TEllipse.h"
 #include "TGeoManager.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+
 #include <stdlib.h>
 //#include <stdio.h>
 #include "CbmGlobalTrack.h"
@@ -67,7 +71,8 @@ CbmRichPMTMapping::CbmRichPMTMapping()
   , fCopFit(NULL)
   , fTauFit(NULL)
   , fPathsMap()
-  , fPathsMapEllipse() {
+  , fPathsMapEllipse()
+{
   fCounterMapping = 0.;
   fMirrCounter    = 0.;
   for (int i = 0; i < 3; i++) {
@@ -77,132 +82,89 @@ CbmRichPMTMapping::CbmRichPMTMapping()
 
 CbmRichPMTMapping::~CbmRichPMTMapping() {}
 
-InitStatus CbmRichPMTMapping::Init() {
+InitStatus CbmRichPMTMapping::Init()
+{
   FairRootManager* manager = FairRootManager::Instance();
 
   fRichHits = (TClonesArray*) manager->GetObject("RichHit");
-  if (NULL == fRichHits) {
-    Fatal("CbmRichPMTMapping::Init", "No RichHit array !");
-  }
+  if (NULL == fRichHits) { Fatal("CbmRichPMTMapping::Init", "No RichHit array !"); }
 
   fRichRings = (TClonesArray*) manager->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichPMTMapping::Init", "No RichRing array !");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichPMTMapping::Init", "No RichRing array !"); }
 
   fRichProjections = (TClonesArray*) manager->GetObject("RichProjection");
-  if (NULL == fRichProjections) {
-    Fatal("CbmRichPMTMapping::Init", "No RichProjection array !");
-  }
+  if (NULL == fRichProjections) { Fatal("CbmRichPMTMapping::Init", "No RichProjection array !"); }
 
   fRichMirrorPoints = (TClonesArray*) manager->GetObject("RichMirrorPoint");
-  if (NULL == fRichMirrorPoints) {
-    Fatal("CbmRichPMTMapping::Init", "No RichMirrorPoints array !");
-  }
+  if (NULL == fRichMirrorPoints) { Fatal("CbmRichPMTMapping::Init", "No RichMirrorPoints array !"); }
 
   fRichMCPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichMCPoints) {
-    Fatal("CbmRichPMTMapping::Init", "No RichMCPoints array !");
-  }
+  if (NULL == fRichMCPoints) { Fatal("CbmRichPMTMapping::Init", "No RichMCPoints array !"); }
 
   fMCTracks = (TClonesArray*) manager->GetObject("MCTrack");
-  if (NULL == fMCTracks) {
-    Fatal("CbmRichPMTMapping::Init", "No MCTracks array !");
-  }
+  if (NULL == fMCTracks) { Fatal("CbmRichPMTMapping::Init", "No MCTracks array !"); }
 
   fRichRingMatches = (TClonesArray*) manager->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmRichPMTMapping::Init", "No RichRingMatches array !");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmRichPMTMapping::Init", "No RichRingMatches array !"); }
 
   fRichRefPlanePoints = (TClonesArray*) manager->GetObject("RefPlanePoint");
-  if (NULL == fRichRefPlanePoints) {
-    Fatal("CbmRichPMTMapping::Init", "No RichRefPlanePoint array !");
-  }
+  if (NULL == fRichRefPlanePoints) { Fatal("CbmRichPMTMapping::Init", "No RichRefPlanePoint array !"); }
 
   fRichPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmRichPMTMapping::Init", "No RichPoint array !");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmRichPMTMapping::Init", "No RichPoint array !"); }
 
   fGlobalTracks = (TClonesArray*) manager->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmAnaDielectronTask::Init", "No GlobalTrack array!");
-  }
+  if (NULL == fGlobalTracks) { Fatal("CbmAnaDielectronTask::Init", "No GlobalTrack array!"); }
 
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_53"] =
-    "2_53";
+            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_53"]    = "2_53";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_52"] =
-    "2_52";
+            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_52"]    = "2_52";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_1_51"] =
-    "1_51";
+            "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_1_51"]    = "1_51";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_77"] =
-    "2_77";
+            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_77"]    = "2_77";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_76"] =
-    "2_76";
+            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_76"]    = "2_76";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_1_75"] =
-    "1_75";
+            "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_1_75"]    = "1_75";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_29"] =
-    "2_29";
+            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_29"]    = "2_29";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_28"] =
-    "2_28";
+            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_28"]    = "2_28";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_1_27"] =
-    "1_27";
+            "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_1_27"]    = "1_27";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_3_15"] =
-    "3_15";
+            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_3_15"] = "3_15";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_16"] =
-    "2_16";
+            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_16"] = "2_16";
   fPathsMap["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_17"] =
-    "2_17";
+            "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_17"] = "2_17";
 
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_53"] =
-    "2_53";
+                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_53"]    = "2_53";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_52"] =
-    "2_52";
+                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_2_52"]    = "2_52";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_1_51"] =
-    "1_51";
+                   "RICH_mirror_and_support_belt_strip3_126/RICH_mirror_1_51"]    = "1_51";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_77"] =
-    "2_77";
+                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_77"]    = "2_77";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_76"] =
-    "2_76";
+                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_2_76"]    = "2_76";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_1_75"] =
-    "1_75";
+                   "RICH_mirror_and_support_belt_strip5_128/RICH_mirror_1_75"]    = "1_75";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_29"] =
-    "2_29";
+                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_29"]    = "2_29";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_28"] =
-    "2_28";
+                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_2_28"]    = "2_28";
   fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_1_27"] =
-    "1_27";
-  fPathsMapEllipse
-    ["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-     "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_3_15"] = "3_15";
-  fPathsMapEllipse
-    ["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-     "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_16"] = "2_16";
-  fPathsMapEllipse
-    ["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
-     "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_17"] = "2_17";
+                   "RICH_mirror_and_support_belt_strip1_124/RICH_mirror_1_27"]    = "1_27";
+  fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
+                   "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_3_15"] = "3_15";
+  fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
+                   "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_16"] = "2_16";
+  fPathsMapEllipse["/cave_1/rich1_0/RICH_gas_221/RICH_mirror_half_total_208/"
+                   "RICH_mirror_and_support_belt_strip_cut_123/RICH_mirror_2_17"] = "2_17";
 
   fCopFit = new CbmRichRingFitterCOP();
   fTauFit = new CbmRichRingFitterEllipseTau();
@@ -213,67 +175,41 @@ InitStatus CbmRichPMTMapping::Init() {
   return kSUCCESS;
 }
 
-void CbmRichPMTMapping::InitHist() {
+void CbmRichPMTMapping::InitHist()
+{
   fHM = new CbmHistManager();
-  for (std::map<string, string>::iterator it = fPathsMap.begin();
-       it != fPathsMap.end();
-       ++it) {  // Initialize all the histograms, using map IDs as inputs.
-    string name =
-      "fHMCPoints_"
-      + it->second;  // it->first gives the paths; it->second gives the ID.
-    fHM->Create2<TH2D>(name,
-                       name + ";X_Axis [];Y_Axis [];Entries",
-                       2001,
-                       -100.,
-                       100.,
-                       2001,
-                       60.,
-                       210.);
+  for (std::map<string, string>::iterator it = fPathsMap.begin(); it != fPathsMap.end();
+       ++it) {                                 // Initialize all the histograms, using map IDs as inputs.
+    string name = "fHMCPoints_" + it->second;  // it->first gives the paths; it->second gives the ID.
+    fHM->Create2<TH2D>(name, name + ";X_Axis [];Y_Axis [];Entries", 2001, -100., 100., 2001, 60., 210.);
   }
 
-  for (std::map<string, string>::iterator it = fPathsMapEllipse.begin();
-       it != fPathsMapEllipse.end();
-       ++it) {
+  for (std::map<string, string>::iterator it = fPathsMapEllipse.begin(); it != fPathsMapEllipse.end(); ++it) {
     string name = "fHPoints_Ellipse_" + it->second;
-    fHM->Create2<TH2D>(name,
-                       name + ";X_Axis [];Y_Axis [];Entries",
-                       2001,
-                       -100.,
-                       100.,
-                       2001,
-                       60.,
-                       210.);
+    fHM->Create2<TH2D>(name, name + ";X_Axis [];Y_Axis [];Entries", 2001, -100., 100., 2001, 60., 210.);
   }
 
   fHM->Create1<TH1D>("fhDistanceCenterToExtrapolatedTrack",
                      "fhDistanceCenterToExtrapolatedTrack;Distance fitted "
                      "center to extrapolated track;Number of entries",
-                     750,
-                     0.,
-                     20.);
+                     750, 0., 20.);
   //	fHM->Create1<TH1D>("fhDistanceCenterToExtrapolatedTrackInPlane", "fhDistanceCenterToExtrapolatedTrack;Distance fitted center to extrapolated track;Number of entries", 400, 0., 50.);
-  fHM->Create1<TH1D>(
-    "fhDistanceCenterToExtrapolatedTrackInPlane",
-    "fhDistanceCenterToExtrapolatedTrackInPlane;Distance fitted center to "
-    "extrapolated track plane;Number of entries",
-    750,
-    0.,
-    10.);
+  fHM->Create1<TH1D>("fhDistanceCenterToExtrapolatedTrackInPlane",
+                     "fhDistanceCenterToExtrapolatedTrackInPlane;Distance fitted center to "
+                     "extrapolated track plane;Number of entries",
+                     750, 0., 10.);
   fHM->Create1<TH1D>("fhDifferenceX",
                      "fhDifferenceX;Difference in X (fitted center - "
                      "extrapolated track);Number of entries",
-                     750,
-                     0.,
-                     10.);
+                     750, 0., 10.);
   fHM->Create1<TH1D>("fhDifferenceY",
                      "fhDifferenceY;Difference in Y (fitted center - "
                      "extrapolated track);Number of entries",
-                     750,
-                     0.,
-                     10.);
+                     750, 0., 10.);
 }
 
-void CbmRichPMTMapping::Exec(Option_t* /*option*/) {
+void CbmRichPMTMapping::Exec(Option_t* /*option*/)
+{
   cout << endl
        << "//"
           "--------------------------------------------------------------------"
@@ -295,10 +231,8 @@ void CbmRichPMTMapping::Exec(Option_t* /*option*/) {
   Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
-  cout << "Nb of rings in evt = " << nofRingsInEvent
-       << ", nb of mirror points = " << nofMirrorPoints
-       << ", nb of hits in evt = " << nofHitsInEvent
-       << ", nb of Monte-Carlo points = " << NofMCPoints
+  cout << "Nb of rings in evt = " << nofRingsInEvent << ", nb of mirror points = " << nofMirrorPoints
+       << ", nb of hits in evt = " << nofHitsInEvent << ", nb of Monte-Carlo points = " << NofMCPoints
        << " and nb of Monte-Carlo tracks = " << NofMCTracks << endl
        << endl;
 
@@ -318,9 +252,8 @@ void CbmRichPMTMapping::Exec(Option_t* /*option*/) {
        << endl
        << endl;
 
-  if (nofRingsInEvent == 0) {
-    cout << "Error no rings registered in event." << endl << endl;
-  } else {
+  if (nofRingsInEvent == 0) { cout << "Error no rings registered in event." << endl << endl; }
+  else {
     //MatchFinder();
     fGP = CbmRichHitProducer::Init();
     fGP.Print();
@@ -329,7 +262,8 @@ void CbmRichPMTMapping::Exec(Option_t* /*option*/) {
   }
 }
 
-void CbmRichPMTMapping::MatchFinder() {
+void CbmRichPMTMapping::MatchFinder()
+{
   cout << "//---------------------------------------- MATCH_FINDER Function "
           "----------------------------------------//"
        << endl;
@@ -382,11 +316,10 @@ void CbmRichPMTMapping::MatchFinder() {
       CbmRichConverter::CopyHitsToRingLight(ring, &ringL);
       //fCopFit->DoFit(&ringL);
       fTauFit->DoFit(&ringL);
-      CenterX = ringL.GetCenterX();
-      CenterY = ringL.GetCenterY();
-      CbmTrackMatchNew* richRingMatch =
-        static_cast<CbmTrackMatchNew*>(fRichRingMatches->At(iRing));
-      Int_t richMCID = richRingMatch->GetMatchedLink().GetIndex();
+      CenterX                         = ringL.GetCenterX();
+      CenterY                         = ringL.GetCenterY();
+      CbmTrackMatchNew* richRingMatch = static_cast<CbmTrackMatchNew*>(fRichRingMatches->At(iRing));
+      Int_t richMCID                  = richRingMatch->GetMatchedLink().GetIndex();
       //Int_t trackID2 = ring->GetTrackID();
       //cout << "Track ID from ring = " << richMCID << endl;
       if (richMCID == -1) continue;
@@ -394,13 +327,11 @@ void CbmRichPMTMapping::MatchFinder() {
       if (trackID == richMCID) {
 
         cout << "MATCH BETWEEN TRACK_ID AND RICH_MC_ID FOUND !" << endl;
-        cout << "Center X = " << CenterX << " and center Y = " << CenterY
-             << endl;
+        cout << "Center X = " << CenterX << " and center Y = " << CenterY << endl;
         x_Mirr = MirrPoint->GetX();
         y_Mirr = MirrPoint->GetY();
         z_Mirr = MirrPoint->GetZ();
-        cout << "x_Mirr: " << x_Mirr << ", y_Mirr: " << y_Mirr
-             << " and z_Mirr: " << z_Mirr << endl;
+        cout << "x_Mirr: " << x_Mirr << ", y_Mirr: " << y_Mirr << " and z_Mirr: " << z_Mirr << endl;
         mirr_node = gGeoManager->FindNode(x_Mirr, y_Mirr, z_Mirr);
         mirr_path = gGeoManager->GetPath();
         cout << "Mirror path: " << mirr_path << endl;
@@ -412,13 +343,11 @@ void CbmRichPMTMapping::MatchFinder() {
   }
 }
 
-void CbmRichPMTMapping::FillPMTMap(const Char_t* mirr_path,
-                                   CbmRichPoint* pPoint) {
+void CbmRichPMTMapping::FillPMTMap(const Char_t* mirr_path, CbmRichPoint* pPoint)
+{
   //cout << "//---------------------------------------- FILL_PMT_MAP Function ----------------------------------------//" << endl;
   string name = string(mirr_path);
-  for (std::map<string, string>::iterator it = fPathsMap.begin();
-       it != fPathsMap.end();
-       ++it) {
+  for (std::map<string, string>::iterator it = fPathsMap.begin(); it != fPathsMap.end(); ++it) {
     if (name.compare(it->first) == 0) {
       //cout << "IDENTICAL PATHS FOUND !" << endl;
       //cout << "Mirror ID: " << it->second << endl;
@@ -433,16 +362,13 @@ void CbmRichPMTMapping::FillPMTMap(const Char_t* mirr_path,
   }
 }
 
-void CbmRichPMTMapping::FillPMTMapEllipse(const Char_t* mirr_path,
-                                          Float_t CenterX,
-                                          Float_t CenterY) {
+void CbmRichPMTMapping::FillPMTMapEllipse(const Char_t* mirr_path, Float_t CenterX, Float_t CenterY)
+{
   cout << "//---------------------------------------- FILL_PMT_MAP_ELLIPSE "
           "Function ----------------------------------------//"
        << endl;
   string name = string(mirr_path);
-  for (std::map<string, string>::iterator it = fPathsMap.begin();
-       it != fPathsMap.end();
-       ++it) {
+  for (std::map<string, string>::iterator it = fPathsMap.begin(); it != fPathsMap.end(); ++it) {
     if (name.compare(it->first) == 0) {
       cout << "IDENTICAL PATHS FOUND !" << endl;
       //sleep(2);
@@ -454,7 +380,8 @@ void CbmRichPMTMapping::FillPMTMapEllipse(const Char_t* mirr_path,
   cout << endl;
 }
 
-void CbmRichPMTMapping::ProjectionProducer2() {
+void CbmRichPMTMapping::ProjectionProducer2()
+{
   cout << "//------------------------------ CbmRichPMTMapping: Projection "
           "Producer ------------------------------//"
        << endl
@@ -467,31 +394,25 @@ void CbmRichPMTMapping::ProjectionProducer2() {
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();
 
   // Declarations of intermediate calculated variables.
-  Double_t t1 = 0., t2 = 0., t3 = 0., k1 = 0., k2 = 0., checkCalc1 = 0.,
-           checkCalc2 = 0.;
+  Double_t t1 = 0., t2 = 0., t3 = 0., k1 = 0., k2 = 0., checkCalc1 = 0., checkCalc2 = 0.;
   // Declaration of points coordinates.
   Double_t sphereRadius = 0., constantePMT = 0.;
-  Double_t ptMirr[] = {0., 0., 0.}, ptC[] = {0., 0., 0.}, ptR1[] = {0., 0., 0.},
-           normalPMT[] = {0., 0., 0.}, normalMirr[] = {0., 0., 0.};
-  Double_t ptR2Mirr[] = {0., 0., 0.}, ptR2Center[] = {0., 0., 0.},
-           ptPMirr[] = {0., 0., 0.}, ptPR2[] = {0., 0., 0.};
+  Double_t ptMirr[] = {0., 0., 0.}, ptC[] = {0., 0., 0.}, ptR1[] = {0., 0., 0.}, normalPMT[] = {0., 0., 0.},
+           normalMirr[] = {0., 0., 0.};
+  Double_t ptR2Mirr[] = {0., 0., 0.}, ptR2Center[] = {0., 0., 0.}, ptPMirr[] = {0., 0., 0.}, ptPR2[] = {0., 0., 0.};
   Double_t reflectedPtCooVectSphereUnity[] = {0., 0., 0.};
   // Declaration of ring parameters.
-  Double_t ringCenter[] = {0., 0., 0.}, distToExtrapTrackHit = 0.,
-           distToExtrapTrackHitInPlane = 0.;
+  Double_t ringCenter[] = {0., 0., 0.}, distToExtrapTrackHit = 0., distToExtrapTrackHitInPlane = 0.;
   //Declarations related to geometry.
-  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1,
-        motherID = -100, pmtMotherID = -100;
+  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1, motherID = -100, pmtMotherID = -100;
   const Char_t *mirrPath, *topNodePath;
   CbmMCTrack *track = NULL, *track2 = NULL;
   TGeoNode* mirrNode;
   TGeoMatrix *mirrMatrix, *pmtMatrix, *richMatrix;
   TGeoShape* ptrShape;
 
-  GetPmtNormal(
-    NofPMTPoints, normalPMT[0], normalPMT[1], normalPMT[2], constantePMT);
-  cout << "Calculated normal vector to PMT plane = {" << normalPMT[0] << ", "
-       << normalPMT[1] << ", " << normalPMT[2]
+  GetPmtNormal(NofPMTPoints, normalPMT[0], normalPMT[1], normalPMT[2], constantePMT);
+  cout << "Calculated normal vector to PMT plane = {" << normalPMT[0] << ", " << normalPMT[1] << ", " << normalPMT[2]
        << "} and constante d = " << constantePMT << endl
        << endl;
 
@@ -503,8 +424,7 @@ void CbmRichPMTMapping::ProjectionProducer2() {
     if (mirrTrackID <= -1) {
       cout << "Mirror track ID <= 1 !!!" << endl;
       cout << "----------------------------------- End of loop N°" << iMirr + 1
-           << " on the mirror points. -----------------------------------"
-           << endl
+           << " on the mirror points. -----------------------------------" << endl
            << endl;
       continue;
     }
@@ -512,15 +432,13 @@ void CbmRichPMTMapping::ProjectionProducer2() {
     motherID = track->GetMotherId();
     if (motherID == -1) {
       //cout << "Mirror motherID == -1 !!!" << endl << endl;
-      ptMirr[0] = mirrPoint->GetX(), ptMirr[1] = mirrPoint->GetY(),
-      ptMirr[2] = mirrPoint->GetZ();
+      ptMirr[0] = mirrPoint->GetX(), ptMirr[1] = mirrPoint->GetY(), ptMirr[2] = mirrPoint->GetZ();
       //cout << "Mirror Point coordinates; x = " << ptMirr[0] << ", y = " << ptMirr[1] << " and z = " << ptMirr[2] << endl;
       mirrNode = gGeoManager->FindNode(ptMirr[0], ptMirr[1], ptMirr[2]);
       //mirrPath = gGeoManager->GetPath();
       mirrPath    = mirrNode->GetName();
       topNodePath = gGeoManager->GetTopNode()->GetName();
-      cout << "Top node path: " << topNodePath
-           << " and mirror path: " << mirrPath << endl;
+      cout << "Top node path: " << topNodePath << " and mirror path: " << mirrPath << endl;
       mirrMatrix = mirrNode->GetMatrix();
       cout << "Mirror matrix parameters: " << endl;
       mirrMatrix->Print();
@@ -528,62 +446,48 @@ void CbmRichPMTMapping::ProjectionProducer2() {
       cout << "Shape of the mirror tile:" << endl;
       ptrShape->Dump();
 
-      if (ptMirr[1] > 0) {
-        fIsMirrorUpperHalf = true;
-      } else {
+      if (ptMirr[1] > 0) { fIsMirrorUpperHalf = true; }
+      else {
         fIsMirrorUpperHalf = false;
       }
-      CalculateSphereParameters2(
-        mirrPath, ptC[0], ptC[1], ptC[2], sphereRadius);
+      CalculateSphereParameters2(mirrPath, ptC[0], ptC[1], ptC[2], sphereRadius);
       cout << endl
-           << "Sphere center coordinates of the rotated mirror tile = {"
-           << ptC[0] << ", " << ptC[1] << ", " << ptC[2]
+           << "Sphere center coordinates of the rotated mirror tile = {" << ptC[0] << ", " << ptC[1] << ", " << ptC[2]
            << "} and sphere inner radius = " << sphereRadius << endl;
 
       for (Int_t iRefl = 0; iRefl < NofRefPlanePoints; iRefl++) {
-        CbmRichPoint* refPlanePoint =
-          (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
-        refPlaneTrackID = refPlanePoint->GetTrackID();
+        CbmRichPoint* refPlanePoint = (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
+        refPlaneTrackID             = refPlanePoint->GetTrackID();
         //cout << "Reflective plane track ID = " << refPlaneTrackID << endl;
         if (mirrTrackID == refPlaneTrackID) {
           //cout << "IDENTICAL TRACK ID FOUND !!!" << endl << endl;
-          ptR1[0] = refPlanePoint->GetX(), ptR1[1] = refPlanePoint->GetY(),
-          ptR1[2] = refPlanePoint->GetZ();
-          cout << "Reflective Plane Point coordinates = {" << ptR1[0] << ", "
-               << ptR1[1] << ", " << ptR1[2] << "}" << endl;
-          cout << "Mirror Point coordinates = {" << ptMirr[0] << ", "
-               << ptMirr[1] << ", " << ptMirr[2] << "}" << endl
+          ptR1[0] = refPlanePoint->GetX(), ptR1[1] = refPlanePoint->GetY(), ptR1[2] = refPlanePoint->GetZ();
+          cout << "Reflective Plane Point coordinates = {" << ptR1[0] << ", " << ptR1[1] << ", " << ptR1[2] << "}"
+               << endl;
+          cout << "Mirror Point coordinates = {" << ptMirr[0] << ", " << ptMirr[1] << ", " << ptMirr[2] << "}" << endl
                << endl;
           normalMirr[0] = (ptC[0] - ptMirr[0])
-                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2)
-                                        + TMath::Power(ptC[1] - ptMirr[1], 2)
+                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2) + TMath::Power(ptC[1] - ptMirr[1], 2)
                                         + TMath::Power(ptC[2] - ptMirr[2], 2));
           normalMirr[1] = (ptC[1] - ptMirr[1])
-                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2)
-                                        + TMath::Power(ptC[1] - ptMirr[1], 2)
+                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2) + TMath::Power(ptC[1] - ptMirr[1], 2)
                                         + TMath::Power(ptC[2] - ptMirr[2], 2));
           normalMirr[2] = (ptC[2] - ptMirr[2])
-                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2)
-                                        + TMath::Power(ptC[1] - ptMirr[1], 2)
+                          / TMath::Sqrt(TMath::Power(ptC[0] - ptMirr[0], 2) + TMath::Power(ptC[1] - ptMirr[1], 2)
                                         + TMath::Power(ptC[2] - ptMirr[2], 2));
-          cout << "Calculated and normalized normal of mirror tile = {"
-               << normalMirr[0] << ", " << normalMirr[1] << ", "
-               << normalMirr[2] << "}" << endl;
+          cout << "Calculated and normalized normal of mirror tile = {" << normalMirr[0] << ", " << normalMirr[1]
+               << ", " << normalMirr[2] << "}" << endl;
 
-          t1 = ((ptR1[0] - ptMirr[0]) * (ptC[0] - ptMirr[0])
-                + (ptR1[1] - ptMirr[1]) * (ptC[1] - ptMirr[1])
+          t1 = ((ptR1[0] - ptMirr[0]) * (ptC[0] - ptMirr[0]) + (ptR1[1] - ptMirr[1]) * (ptC[1] - ptMirr[1])
                 + (ptR1[2] - ptMirr[2]) * (ptC[2] - ptMirr[2]))
-               / (TMath::Power(ptC[0] - ptMirr[0], 2)
-                  + TMath::Power(ptC[1] - ptMirr[1], 2)
+               / (TMath::Power(ptC[0] - ptMirr[0], 2) + TMath::Power(ptC[1] - ptMirr[1], 2)
                   + TMath::Power(ptC[2] - ptMirr[2], 2));
           ptR2Center[0] = 2 * (ptMirr[0] + t1 * (ptC[0] - ptMirr[0])) - ptR1[0];
           ptR2Center[1] = 2 * (ptMirr[1] + t1 * (ptC[1] - ptMirr[1])) - ptR1[1];
           ptR2Center[2] = 2 * (ptMirr[2] + t1 * (ptC[2] - ptMirr[2])) - ptR1[2];
-          t2            = ((ptR1[0] - ptC[0]) * (ptC[0] - ptMirr[0])
-                + (ptR1[1] - ptC[1]) * (ptC[1] - ptMirr[1])
+          t2            = ((ptR1[0] - ptC[0]) * (ptC[0] - ptMirr[0]) + (ptR1[1] - ptC[1]) * (ptC[1] - ptMirr[1])
                 + (ptR1[2] - ptC[2]) * (ptC[2] - ptMirr[2]))
-               / (TMath::Power(ptC[0] - ptMirr[0], 2)
-                  + TMath::Power(ptC[1] - ptMirr[1], 2)
+               / (TMath::Power(ptC[0] - ptMirr[0], 2) + TMath::Power(ptC[1] - ptMirr[1], 2)
                   + TMath::Power(ptC[2] - ptMirr[2], 2));
           ptR2Mirr[0] = 2 * (ptC[0] + t2 * (ptC[0] - ptMirr[0])) - ptR1[0];
           ptR2Mirr[1] = 2 * (ptC[1] + t2 * (ptC[1] - ptMirr[1])) - ptR1[1];
@@ -596,30 +500,24 @@ void CbmRichPMTMapping::ProjectionProducer2() {
           cout << "Coordinates of point R2 on reflective plane after "
                   "reflection on the mirror tile:"
                << endl;
-          cout << "* using mirror point M to define \U00000394: {"
-               << ptR2Center[0] << ", " << ptR2Center[1] << ", "
+          cout << "* using mirror point M to define \U00000394: {" << ptR2Center[0] << ", " << ptR2Center[1] << ", "
                << ptR2Center[2] << "}" << endl;
-          cout << "* using sphere center C to define \U00000394: {"
-               << ptR2Mirr[0] << ", " << ptR2Mirr[1] << ", " << ptR2Mirr[2]
-               << "}" << endl
+          cout << "* using sphere center C to define \U00000394: {" << ptR2Mirr[0] << ", " << ptR2Mirr[1] << ", "
+               << ptR2Mirr[2] << "}" << endl
                << endl;
           //cout << "Ref Pt Coo using unity Mirror-Sphere vector & sphere pt = {" << reflectedPtCooVectSphereUnity[0] << ", " << reflectedPtCooVectSphereUnity[1] << ", " << reflectedPtCooVectSphereUnity[2] << "}" << endl << endl;
           //cout << "NofPMTPoints = " << NofPMTPoints << endl;
 
           k1 = -1
-               * ((normalPMT[0] * ptMirr[0] + normalPMT[1] * ptMirr[1]
-                   + normalPMT[2] * ptMirr[2] + constantePMT)
-                  / (normalPMT[0] * (ptR2Mirr[0] - ptMirr[0])
-                     + normalPMT[1] * (ptR2Mirr[1] - ptMirr[1])
+               * ((normalPMT[0] * ptMirr[0] + normalPMT[1] * ptMirr[1] + normalPMT[2] * ptMirr[2] + constantePMT)
+                  / (normalPMT[0] * (ptR2Mirr[0] - ptMirr[0]) + normalPMT[1] * (ptR2Mirr[1] - ptMirr[1])
                      + normalPMT[2] * (ptR2Mirr[2] - ptMirr[2])));
           ptPMirr[0] = ptMirr[0] + k1 * (ptR2Mirr[0] - ptMirr[0]);
           ptPMirr[1] = ptMirr[1] + k1 * (ptR2Mirr[1] - ptMirr[1]);
           ptPMirr[2] = ptMirr[2] + k1 * (ptR2Mirr[2] - ptMirr[2]);
           k2         = -1
-               * ((normalPMT[0] * ptR2Mirr[0] + normalPMT[1] * ptR2Mirr[1]
-                   + normalPMT[2] * ptR2Mirr[2] + constantePMT)
-                  / (normalPMT[0] * (ptR2Mirr[0] - ptMirr[0])
-                     + normalPMT[1] * (ptR2Mirr[1] - ptMirr[1])
+               * ((normalPMT[0] * ptR2Mirr[0] + normalPMT[1] * ptR2Mirr[1] + normalPMT[2] * ptR2Mirr[2] + constantePMT)
+                  / (normalPMT[0] * (ptR2Mirr[0] - ptMirr[0]) + normalPMT[1] * (ptR2Mirr[1] - ptMirr[1])
                      + normalPMT[2] * (ptR2Mirr[2] - ptMirr[2])));
           ptPR2[0] = ptR2Mirr[0] + k2 * (ptR2Mirr[0] - ptMirr[0]);
           ptPR2[1] = ptR2Mirr[1] + k2 * (ptR2Mirr[1] - ptMirr[1]);
@@ -627,37 +525,26 @@ void CbmRichPMTMapping::ProjectionProducer2() {
           cout << "Coordinates of point P on PMT plane, after reflection on "
                   "the mirror tile and extrapolation to the PMT plane:"
                << endl;
-          cout << "* using mirror point M to define \U0001D49F ': {"
-               << ptPMirr[0] << ", " << ptPMirr[1] << ", " << ptPMirr[2] << "}"
-               << endl;
-          cout << "* using reflected point R2 to define \U0001D49F ': {"
-               << ptPR2[0] << ", " << ptPR2[1] << ", " << ptPR2[2] << "}"
-               << endl;
-          checkCalc1 = ptPMirr[0] * normalPMT[0] + ptPMirr[1] * normalPMT[1]
-                       + ptPMirr[2] * normalPMT[2] + constantePMT;
+          cout << "* using mirror point M to define \U0001D49F ': {" << ptPMirr[0] << ", " << ptPMirr[1] << ", "
+               << ptPMirr[2] << "}" << endl;
+          cout << "* using reflected point R2 to define \U0001D49F ': {" << ptPR2[0] << ", " << ptPR2[1] << ", "
+               << ptPR2[2] << "}" << endl;
+          checkCalc1 = ptPMirr[0] * normalPMT[0] + ptPMirr[1] * normalPMT[1] + ptPMirr[2] * normalPMT[2] + constantePMT;
           cout << "Check whether extrapolated track point on PMT plane "
                   "verifies its equation (value should be 0.):"
                << endl;
           cout << "* using mirror point M, checkCalc = " << checkCalc1 << endl;
-          checkCalc2 = ptPR2[0] * normalPMT[0] + ptPR2[1] * normalPMT[1]
-                       + ptPR2[2] * normalPMT[2] + constantePMT;
-          cout << "* using reflected point R2, checkCalc = " << checkCalc2
-               << endl;
+          checkCalc2 = ptPR2[0] * normalPMT[0] + ptPR2[1] * normalPMT[1] + ptPR2[2] * normalPMT[2] + constantePMT;
+          cout << "* using reflected point R2, checkCalc = " << checkCalc2 << endl;
 
           TVector3 pmtVector(ptPMirr[0], ptPMirr[1], ptPMirr[2]);
           TVector3 pmtVectorNew;
-          CbmRichHitProducer::TiltPoint(&pmtVector,
-                                        &pmtVectorNew,
-                                        fGP.fPmt.fPhi,
-                                        fGP.fPmt.fTheta,
-                                        fGP.fPmtZOrig);
+          CbmRichHitProducer::TiltPoint(&pmtVector, &pmtVectorNew, fGP.fPmt.fPhi, fGP.fPmt.fTheta, fGP.fPmtZOrig);
           cout << "New coordinates of point P on PMT plane, after PMT plane "
                   "rotation = {"
-               << pmtVectorNew.X() << ", " << pmtVectorNew.Y() << ", "
-               << pmtVectorNew.Z() << "}" << endl
+               << pmtVectorNew.X() << ", " << pmtVectorNew.Y() << ", " << pmtVectorNew.Z() << "}" << endl
                << endl;
-          ptPMirr[0] = pmtVectorNew.X(), ptPMirr[1] = pmtVectorNew.Y(),
-          ptPMirr[2] = pmtVectorNew.Z();
+          ptPMirr[0] = pmtVectorNew.X(), ptPMirr[1] = pmtVectorNew.Y(), ptPMirr[2] = pmtVectorNew.Z();
 
           /*for (Int_t iPmt = 0; iPmt < NofPMTPoints; iPmt++) {
 						CbmRichPoint *pmtPoint = (CbmRichPoint*) fRichPoints->At(iPmt);
@@ -688,8 +575,7 @@ void CbmRichPMTMapping::ProjectionProducer2() {
 
       for (Int_t iGlobalTrack = 0; iGlobalTrack < NofGTracks; iGlobalTrack++) {
         //cout << "Nb of global tracks = " << NofGTracks << " and iGlobalTrack = " << iGlobalTrack << endl;
-        CbmGlobalTrack* gTrack =
-          (CbmGlobalTrack*) fGlobalTracks->At(iGlobalTrack);
+        CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iGlobalTrack);
         if (NULL == gTrack) continue;
         Int_t richInd = gTrack->GetRichRingIndex();
         //cout << "Rich index = " << richInd << endl;
@@ -707,34 +593,23 @@ void CbmRichPMTMapping::ProjectionProducer2() {
         fTauFit->DoFit(&ringL);
         ringCenter[0] = ringL.GetCenterX();
         ringCenter[1] = ringL.GetCenterY();
-        ringCenter[2] = -1
-                        * ((normalPMT[0] * ringCenter[0]
-                            + normalPMT[1] * ringCenter[1] + constantePMT)
-                           / normalPMT[2]);
-        cout << "Ring center coordinates = {" << ringCenter[0] << ", "
-             << ringCenter[1] << ", " << ringCenter[2] << "}" << endl;
-        cout << "Difference in X = " << TMath::Abs(ringCenter[0] - ptPMirr[0])
-             << "\t"
-             << "Difference in Y = " << TMath::Abs(ringCenter[1] - ptPMirr[1])
-             << "\t"
-             << "Difference in Z = " << TMath::Abs(ringCenter[2] - ptPMirr[2])
+        ringCenter[2] =
+          -1 * ((normalPMT[0] * ringCenter[0] + normalPMT[1] * ringCenter[1] + constantePMT) / normalPMT[2]);
+        cout << "Ring center coordinates = {" << ringCenter[0] << ", " << ringCenter[1] << ", " << ringCenter[2] << "}"
              << endl;
+        cout << "Difference in X = " << TMath::Abs(ringCenter[0] - ptPMirr[0]) << "\t"
+             << "Difference in Y = " << TMath::Abs(ringCenter[1] - ptPMirr[1]) << "\t"
+             << "Difference in Z = " << TMath::Abs(ringCenter[2] - ptPMirr[2]) << endl;
         fHM->H1("fhDifferenceX")->Fill(TMath::Abs(ringCenter[0] - ptPMirr[0]));
         fHM->H1("fhDifferenceY")->Fill(TMath::Abs(ringCenter[1] - ptPMirr[1]));
         distToExtrapTrackHit =
-          TMath::Sqrt(TMath::Power(ringCenter[0] - ptPMirr[0], 2)
-                      + TMath::Power(ringCenter[1] - ptPMirr[1], 2)
+          TMath::Sqrt(TMath::Power(ringCenter[0] - ptPMirr[0], 2) + TMath::Power(ringCenter[1] - ptPMirr[1], 2)
                       + TMath::Power(ringCenter[2] - ptPMirr[2], 2));
         distToExtrapTrackHitInPlane =
-          TMath::Sqrt(TMath::Power(ringCenter[0] - ptPMirr[0], 2)
-                      + TMath::Power(ringCenter[1] - ptPMirr[1], 2));
-        fHM->H1("fhDistanceCenterToExtrapolatedTrack")
-          ->Fill(distToExtrapTrackHit);
-        fHM->H1("fhDistanceCenterToExtrapolatedTrackInPlane")
-          ->Fill(distToExtrapTrackHitInPlane);
-        cout
-          << "Distance between fitted ring center and extrapolated track hit = "
-          << distToExtrapTrackHit << endl;
+          TMath::Sqrt(TMath::Power(ringCenter[0] - ptPMirr[0], 2) + TMath::Power(ringCenter[1] - ptPMirr[1], 2));
+        fHM->H1("fhDistanceCenterToExtrapolatedTrack")->Fill(distToExtrapTrackHit);
+        fHM->H1("fhDistanceCenterToExtrapolatedTrackInPlane")->Fill(distToExtrapTrackHitInPlane);
+        cout << "Distance between fitted ring center and extrapolated track hit = " << distToExtrapTrackHit << endl;
         cout << "Distance between fitted ring center and extrapolated track "
                 "hit in plane = "
              << distToExtrapTrackHitInPlane << endl
@@ -743,7 +618,8 @@ void CbmRichPMTMapping::ProjectionProducer2() {
         //else { cout << "No identical ring mother ID and mirror track ID ..." << endl;}
       }
       cout << "End of loop on global tracks;" << endl;
-    } else {
+    }
+    else {
       cout << "Not a mother particle ..." << endl;
     }
     cout << "----------------------------------- "
@@ -753,7 +629,8 @@ void CbmRichPMTMapping::ProjectionProducer2() {
   }
 }
 
-void CbmRichPMTMapping::ProjectionProducer() {
+void CbmRichPMTMapping::ProjectionProducer()
+{
   cout << "//------------------------------ CbmRichPMTMapping: Projection "
           "Producer ------------------------------//"
        << endl
@@ -766,27 +643,21 @@ void CbmRichPMTMapping::ProjectionProducer() {
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();
 
   //Declarations of intermediate and calculated variables.
-  Double_t sphereX = 0., sphereY = 0., sphereZ = 0., sphereR = 0., normalX = 0.,
-           normalY = 0., normalZ = 0., normalCste = 0.;
+  Double_t sphereX = 0., sphereY = 0., sphereZ = 0., sphereR = 0., normalX = 0., normalY = 0., normalZ = 0.,
+           normalCste = 0.;
   Double_t CenterX = 0., CenterY = 0., CenterZ = 0., distToExtrapTrackHit = 0.;
   Double_t a1 = 0., a2 = 0., a3 = 0., a4 = 0., a5 = 0., t1 = 0., t2 = 0.;
   // Declaration of points coordinates.
   Double_t refPointCoo[] = {0., 0., 0.}, refPointMom[] = {0., 0., 0.};
-  Double_t reflectedPtCooNormMirr[]        = {0., 0., 0.},
-           reflectedPtCooNormSphere[]      = {0., 0., 0.};
-  Double_t reflectedPtCooVectMirr[]        = {0., 0., 0.},
-           reflectedPtCooVectSphere[]      = {0., 0., 0.};
-  Double_t reflectedPtCooVectSphereUnity[] = {0., 0., 0.},
-           vectMSUnity[]                   = {0., 0., 0.};
-  Double_t mirrPt[] = {0., 0., 0.}, mirrMom[] = {0., 0., 0.},
-           pmtPt[]          = {0., 0., 0.};
+  Double_t reflectedPtCooNormMirr[] = {0., 0., 0.}, reflectedPtCooNormSphere[] = {0., 0., 0.};
+  Double_t reflectedPtCooVectMirr[] = {0., 0., 0.}, reflectedPtCooVectSphere[] = {0., 0., 0.};
+  Double_t reflectedPtCooVectSphereUnity[] = {0., 0., 0.}, vectMSUnity[] = {0., 0., 0.};
+  Double_t mirrPt[] = {0., 0., 0.}, mirrMom[] = {0., 0., 0.}, pmtPt[] = {0., 0., 0.};
   Double_t computedNormal[] = {0., 0., 0.}, computedNormal2[] = {0., 0., 0.};
-  Double_t extrapolatedTrackCoo[]               = {0., 0., 0.},
-           extrapolatedTrackCooComputedNormal[] = {0., 0., 0.};
-  Double_t checkCalc                            = 0.;
+  Double_t extrapolatedTrackCoo[] = {0., 0., 0.}, extrapolatedTrackCooComputedNormal[] = {0., 0., 0.};
+  Double_t checkCalc = 0.;
   //Declarations related to geometries.
-  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1,
-        motherID = -100, pmtMotherID = -100;
+  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1, motherID = -100, pmtMotherID = -100;
   const Char_t *mirrPath, *topNodePath;
   CbmMCTrack *track = NULL, *track2 = NULL;
   TGeoNode* mirrNode;
@@ -804,9 +675,8 @@ void CbmRichPMTMapping::ProjectionProducer() {
 	   or if you want TVector  void Position(TVector3& pos)*/
 
   GetPmtNormal(NofPMTPoints, normalX, normalY, normalZ, normalCste);
-  cout << "Calculated normal vector to PMT plane = {" << normalX << ", "
-       << normalY << ", " << normalZ << "} and constante d = " << normalCste
-       << endl
+  cout << "Calculated normal vector to PMT plane = {" << normalX << ", " << normalY << ", " << normalZ
+       << "} and constante d = " << normalCste << endl
        << endl;
 
   for (Int_t iMirr = 0; iMirr < NofMirrorPoints; iMirr++) {
@@ -817,8 +687,7 @@ void CbmRichPMTMapping::ProjectionProducer() {
     if (mirrTrackID <= -1) {
       cout << "Mirror track ID <= 1 !!!" << endl;
       cout << "----------------------------------- End of loop N°" << iMirr + 1
-           << " on the mirror points. -----------------------------------"
-           << endl
+           << " on the mirror points. -----------------------------------" << endl
            << endl;
       continue;
     }
@@ -826,98 +695,73 @@ void CbmRichPMTMapping::ProjectionProducer() {
     motherID = track->GetMotherId();
     if (motherID == -1) {
       //cout << "Mirror motherID == -1 !!!" << endl << endl;
-      mirrPt[0] = mirrPoint->GetX(), mirrPt[1] = mirrPoint->GetY(),
-      mirrPt[2]  = mirrPoint->GetZ();
-      mirrMom[0] = mirrPoint->GetPx(), mirrMom[1] = mirrPoint->GetPy(),
-      mirrMom[2] = mirrPoint->GetPz();
+      mirrPt[0] = mirrPoint->GetX(), mirrPt[1] = mirrPoint->GetY(), mirrPt[2] = mirrPoint->GetZ();
+      mirrMom[0] = mirrPoint->GetPx(), mirrMom[1] = mirrPoint->GetPy(), mirrMom[2] = mirrPoint->GetPz();
       //cout << "Mirror Point coordinates; x = " << mirrPt[0] << ", y = " << mirrPt[1] << " and z = " << mirrPt[2] << endl;
       mirrNode = gGeoManager->FindNode(mirrPt[0], mirrPt[1], mirrPt[2]);
       //mirrPath = gGeoManager->GetPath();
       mirrPath    = mirrNode->GetName();
       topNodePath = gGeoManager->GetTopNode()->GetName();
-      cout << "Mirror path: " << mirrPath
-           << " and top node path: " << topNodePath << endl;
+      cout << "Mirror path: " << mirrPath << " and top node path: " << topNodePath << endl;
       mirrMatrix = mirrNode->GetMatrix();
       cout << "Mirror matrix parameters: " << endl;
       mirrMatrix->Print();
       ptrShape = mirrNode->GetVolume()->GetShape();
       ptrShape->Dump();
 
-      if (mirrPt[1] > 0) {
-        fIsMirrorUpperHalf = true;
-      } else {
+      if (mirrPt[1] > 0) { fIsMirrorUpperHalf = true; }
+      else {
         fIsMirrorUpperHalf = false;
       }
       Double_t sphere2X = 0., sphere2Y = 0., sphere2Z = 0., sphere2R = 0.;
-      CalculateSphereParameters(
-        mirrPath, sphere2X, sphere2Y, sphere2Z, sphere2R);
+      CalculateSphereParameters(mirrPath, sphere2X, sphere2Y, sphere2Z, sphere2R);
       cout << endl
-           << "Old sphere coordinates = {" << sphere2X << ", " << sphere2Y
-           << ", " << sphere2Z << "} and sphere inner radius = " << sphere2R
-           << endl;
+           << "Old sphere coordinates = {" << sphere2X << ", " << sphere2Y << ", " << sphere2Z
+           << "} and sphere inner radius = " << sphere2R << endl;
       CalculateSphereParameters2(mirrPath, sphereX, sphereY, sphereZ, sphereR);
-      cout << "New sphere coordinates = {" << sphereX << ", " << sphereY << ", "
-           << sphereZ << "} and sphere inner radius = " << sphereR << endl;
+      cout << "New sphere coordinates = {" << sphereX << ", " << sphereY << ", " << sphereZ
+           << "} and sphere inner radius = " << sphereR << endl;
 
       for (Int_t iRefl = 0; iRefl < NofRefPlanePoints; iRefl++) {
-        CbmRichPoint* refPlanePoint =
-          (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
-        refPlaneTrackID = refPlanePoint->GetTrackID();
+        CbmRichPoint* refPlanePoint = (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
+        refPlaneTrackID             = refPlanePoint->GetTrackID();
         //cout << "Reflective plane track ID = " << refPlaneTrackID << endl;
         if (mirrTrackID == refPlaneTrackID) {
           //cout << "IDENTICAL TRACK ID FOUND !!!" << endl << endl;
-          refPointCoo[0] = refPlanePoint->GetX(),
-          refPointCoo[1] = refPlanePoint->GetY(),
+          refPointCoo[0] = refPlanePoint->GetX(), refPointCoo[1] = refPlanePoint->GetY(),
           refPointCoo[2] = refPlanePoint->GetZ();
-          refPointMom[0] = refPlanePoint->GetPx(),
-          refPointMom[1] = refPlanePoint->GetPy(),
+          refPointMom[0] = refPlanePoint->GetPx(), refPointMom[1] = refPlanePoint->GetPy(),
           refPointMom[2] = refPlanePoint->GetPz();
-          cout << "Reflective Plane Point coordinates = {" << refPointCoo[0]
-               << ", " << refPointCoo[1] << ", " << refPointCoo[2]
-               << "} and momentum = {" << refPointMom[0] << ", "
-               << refPointMom[1] << ", " << refPointMom[2] << "}" << endl;
-          cout << "Mirror Point coordinates = {" << mirrPt[0] << ", "
-               << mirrPt[1] << ", " << mirrPt[2] << "} and momentum = {"
-               << mirrMom[0] << ", " << mirrMom[1] << ", " << mirrMom[2] << "}"
-               << endl
+          cout << "Reflective Plane Point coordinates = {" << refPointCoo[0] << ", " << refPointCoo[1] << ", "
+               << refPointCoo[2] << "} and momentum = {" << refPointMom[0] << ", " << refPointMom[1] << ", "
+               << refPointMom[2] << "}" << endl;
+          cout << "Mirror Point coordinates = {" << mirrPt[0] << ", " << mirrPt[1] << ", " << mirrPt[2]
+               << "} and momentum = {" << mirrMom[0] << ", " << mirrMom[1] << ", " << mirrMom[2] << "}" << endl
                << endl;
           ptrShape->ComputeNormal(refPointCoo, refPointMom, computedNormal);
-          cout << "Computed normal to mirror tile coordinates = {"
-               << computedNormal[0] << ", " << computedNormal[1] << ", "
-               << computedNormal[2] << "}" << endl;
+          cout << "Computed normal to mirror tile coordinates = {" << computedNormal[0] << ", " << computedNormal[1]
+               << ", " << computedNormal[2] << "}" << endl;
           /*ptrShape->ComputeNormal(mirrPt, mirrMom, computedNormal2);
 					cout << "Computed normal 2 to mirror tile coordinates = {" << computedNormal2[0] << ", " << computedNormal2[1] << ", " << computedNormal2[2] << "}" << endl;*/
-          vectMSUnity[0] =
-            (sphereX - mirrPt[0])
-            / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2)
-                          + TMath::Power(sphereY - mirrPt[1], 2)
-                          + TMath::Power(sphereZ - mirrPt[2], 2));
-          vectMSUnity[1] =
-            (sphereY - mirrPt[1])
-            / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2)
-                          + TMath::Power(sphereY - mirrPt[1], 2)
-                          + TMath::Power(sphereZ - mirrPt[2], 2));
-          vectMSUnity[2] =
-            (sphereZ - mirrPt[2])
-            / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2)
-                          + TMath::Power(sphereY - mirrPt[1], 2)
-                          + TMath::Power(sphereZ - mirrPt[2], 2));
-          cout << "Calculated unity Mirror-Sphere vector = {" << vectMSUnity[0]
-               << ", " << vectMSUnity[1] << ", " << vectMSUnity[2] << "}"
-               << endl;
+          vectMSUnity[0] = (sphereX - mirrPt[0])
+                           / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2) + TMath::Power(sphereY - mirrPt[1], 2)
+                                         + TMath::Power(sphereZ - mirrPt[2], 2));
+          vectMSUnity[1] = (sphereY - mirrPt[1])
+                           / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2) + TMath::Power(sphereY - mirrPt[1], 2)
+                                         + TMath::Power(sphereZ - mirrPt[2], 2));
+          vectMSUnity[2] = (sphereZ - mirrPt[2])
+                           / TMath::Sqrt(TMath::Power(sphereX - mirrPt[0], 2) + TMath::Power(sphereY - mirrPt[1], 2)
+                                         + TMath::Power(sphereZ - mirrPt[2], 2));
+          cout << "Calculated unity Mirror-Sphere vector = {" << vectMSUnity[0] << ", " << vectMSUnity[1] << ", "
+               << vectMSUnity[2] << "}" << endl;
 
-          a1 = (computedNormal[0] * (refPointCoo[0] - mirrPt[0])
-                + computedNormal[1] * (refPointCoo[1] - mirrPt[1])
+          a1 = (computedNormal[0] * (refPointCoo[0] - mirrPt[0]) + computedNormal[1] * (refPointCoo[1] - mirrPt[1])
                 + computedNormal[2] * (refPointCoo[2] - mirrPt[2]))
-               / (TMath::Power(computedNormal[0], 2)
-                  + TMath::Power(computedNormal[1], 2)
+               / (TMath::Power(computedNormal[0], 2) + TMath::Power(computedNormal[1], 2)
                   + TMath::Power(computedNormal[2], 2));
-          reflectedPtCooNormMirr[0] =
-            2 * (mirrPt[0] + a1 * computedNormal[0]) - refPointCoo[0];
-          reflectedPtCooNormMirr[1] =
-            2 * (mirrPt[1] + a1 * computedNormal[1]) - refPointCoo[1];
-          reflectedPtCooNormMirr[2] =
-            2 * (mirrPt[2] + a1 * computedNormal[2]) - refPointCoo[2];
+          reflectedPtCooNormMirr[0] = 2 * (mirrPt[0] + a1 * computedNormal[0]) - refPointCoo[0];
+          reflectedPtCooNormMirr[1] = 2 * (mirrPt[1] + a1 * computedNormal[1]) - refPointCoo[1];
+          reflectedPtCooNormMirr[2] = 2 * (mirrPt[2] + a1 * computedNormal[2]) - refPointCoo[2];
           /*a2 = (computedNormal[0]*(refPointCoo[0]-sphereX) + computedNormal[1]*(refPointCoo[1]-sphereY) + computedNormal[2]*(refPointCoo[2]-sphereZ))/(TMath::Power(computedNormal[0],2) + TMath::Power(computedNormal[1],2) + TMath::Power(computedNormal[2],2));
 					reflectedPtCooNormSphere[0] = 2*(mirrPt[0]+a2*computedNormal[0])-refPointCoo[0];
 					reflectedPtCooNormSphere[1] = 2*(mirrPt[1]+a2*computedNormal[1])-refPointCoo[1];
@@ -926,93 +770,67 @@ void CbmRichPMTMapping::ProjectionProducer() {
 					reflectedPtCooVectMirr[0] = 2*(sphereX+a3*(sphereX-mirrPt[0]))-refPointCoo[0];
 					reflectedPtCooVectMirr[1] = 2*(sphereY+a3*(sphereY-mirrPt[1]))-refPointCoo[1];
 					reflectedPtCooVectMirr[2] = 2*(sphereZ+a3*(sphereZ-mirrPt[2]))-refPointCoo[2];*/
-          a4 = ((refPointCoo[0] - sphereX) * (sphereX - mirrPt[0])
-                + (refPointCoo[1] - sphereY) * (sphereY - mirrPt[1])
+          a4 = ((refPointCoo[0] - sphereX) * (sphereX - mirrPt[0]) + (refPointCoo[1] - sphereY) * (sphereY - mirrPt[1])
                 + (refPointCoo[2] - sphereZ) * (sphereZ - mirrPt[2]))
-               / (TMath::Power(sphereX - mirrPt[0], 2)
-                  + TMath::Power(sphereY - mirrPt[1], 2)
+               / (TMath::Power(sphereX - mirrPt[0], 2) + TMath::Power(sphereY - mirrPt[1], 2)
                   + TMath::Power(sphereZ - mirrPt[2], 2));
-          reflectedPtCooVectSphere[0] =
-            2 * (sphereX + a4 * (sphereX - mirrPt[0])) - refPointCoo[0];
-          reflectedPtCooVectSphere[1] =
-            2 * (sphereY + a4 * (sphereY - mirrPt[1])) - refPointCoo[1];
-          reflectedPtCooVectSphere[2] =
-            2 * (sphereZ + a4 * (sphereZ - mirrPt[2])) - refPointCoo[2];
+          reflectedPtCooVectSphere[0] = 2 * (sphereX + a4 * (sphereX - mirrPt[0])) - refPointCoo[0];
+          reflectedPtCooVectSphere[1] = 2 * (sphereY + a4 * (sphereY - mirrPt[1])) - refPointCoo[1];
+          reflectedPtCooVectSphere[2] = 2 * (sphereZ + a4 * (sphereZ - mirrPt[2])) - refPointCoo[2];
           /*//SAME AS calculation of a4 above
 					a5 = ((refPointCoo[0]-sphereX)*(sphereX-mirrPt[0]) + (refPointCoo[1]-sphereY)*(sphereY-mirrPt[1]) + (refPointCoo[2]-sphereZ)*(sphereZ-mirrPt[2]))/TMath::Sqrt(TMath::Power(sphereX - mirrPt[0],2)+TMath::Power(sphereY - mirrPt[1],2)+TMath::Power(sphereZ - mirrPt[2],2));
 					reflectedPtCooVectSphereUnity[0] = 2*(sphereX+a5*(vectMSUnity[0]))-refPointCoo[0];
 					reflectedPtCooVectSphereUnity[1] = 2*(sphereY+a5*(vectMSUnity[1]))-refPointCoo[1];
 					reflectedPtCooVectSphereUnity[2] = 2*(sphereZ+a5*(vectMSUnity[2]))-refPointCoo[2];*/
 
-          cout << "Ref Pt Coo using computed normal & mirror pt = {"
-               << reflectedPtCooNormMirr[0] << ", " << reflectedPtCooNormMirr[1]
-               << ", " << reflectedPtCooNormMirr[2] << "}" << endl;
+          cout << "Ref Pt Coo using computed normal & mirror pt = {" << reflectedPtCooNormMirr[0] << ", "
+               << reflectedPtCooNormMirr[1] << ", " << reflectedPtCooNormMirr[2] << "}" << endl;
           //cout << "Ref Pt Coo using normal & sphere pt = {" << reflectedPtCooNormSphere[0] << ", " << reflectedPtCooNormSphere[1] << ", " << reflectedPtCooNormSphere[2] << "}" << endl;
           //cout << "Ref Pt Coo using MS vector & mirror pt = {" << reflectedPtCooVectMirr[0] << ", " << reflectedPtCooVectMirr[1] << ", " << reflectedPtCooVectMirr[2] << "}" << endl;
-          cout << "Ref Pt Coo using MS vector & sphere pt = {"
-               << reflectedPtCooVectSphere[0] << ", "
-               << reflectedPtCooVectSphere[1] << ", "
-               << reflectedPtCooVectSphere[2] << "}" << endl
+          cout << "Ref Pt Coo using MS vector & sphere pt = {" << reflectedPtCooVectSphere[0] << ", "
+               << reflectedPtCooVectSphere[1] << ", " << reflectedPtCooVectSphere[2] << "}" << endl
                << endl;
           //cout << "Ref Pt Coo using unity Mirror-Sphere vector & sphere pt = {" << reflectedPtCooVectSphereUnity[0] << ", " << reflectedPtCooVectSphereUnity[1] << ", " << reflectedPtCooVectSphereUnity[2] << "}" << endl << endl;
           //cout << "NofPMTPoints = " << NofPMTPoints << endl;
 
           t1 = -1
-               * ((normalX * reflectedPtCooVectSphere[0]
-                   + normalY * reflectedPtCooVectSphere[1]
+               * ((normalX * reflectedPtCooVectSphere[0] + normalY * reflectedPtCooVectSphere[1]
                    + normalZ * reflectedPtCooVectSphere[2] + normalCste)
                   / (normalX * (reflectedPtCooVectSphere[0] - mirrPt[0])
                      + normalY * (reflectedPtCooVectSphere[1] - mirrPt[1])
                      + normalZ * (reflectedPtCooVectSphere[2] - mirrPt[2])));
-          extrapolatedTrackCoo[0] =
-            reflectedPtCooVectSphere[0]
-            + t1 * (reflectedPtCooVectSphere[0] - mirrPt[0]);
-          extrapolatedTrackCoo[1] =
-            reflectedPtCooVectSphere[1]
-            + t1 * (reflectedPtCooVectSphere[1] - mirrPt[1]);
-          extrapolatedTrackCoo[2] =
-            reflectedPtCooVectSphere[2]
-            + t1 * (reflectedPtCooVectSphere[2] - mirrPt[2]);
-          cout << "Extrapolated track point on PMT plane using MS vector = {"
-               << extrapolatedTrackCoo[0] << ", " << extrapolatedTrackCoo[1]
-               << ", " << extrapolatedTrackCoo[2] << "}" << endl;
-          checkCalc = extrapolatedTrackCoo[0] * normalX
-                      + extrapolatedTrackCoo[1] * normalY
+          extrapolatedTrackCoo[0] = reflectedPtCooVectSphere[0] + t1 * (reflectedPtCooVectSphere[0] - mirrPt[0]);
+          extrapolatedTrackCoo[1] = reflectedPtCooVectSphere[1] + t1 * (reflectedPtCooVectSphere[1] - mirrPt[1]);
+          extrapolatedTrackCoo[2] = reflectedPtCooVectSphere[2] + t1 * (reflectedPtCooVectSphere[2] - mirrPt[2]);
+          cout << "Extrapolated track point on PMT plane using MS vector = {" << extrapolatedTrackCoo[0] << ", "
+               << extrapolatedTrackCoo[1] << ", " << extrapolatedTrackCoo[2] << "}" << endl;
+          checkCalc = extrapolatedTrackCoo[0] * normalX + extrapolatedTrackCoo[1] * normalY
                       + extrapolatedTrackCoo[2] * normalZ + normalCste;
           cout << "Check whether extrapolated track point on PMT plane "
                   "verifies its equation (extrapolation with MS vector method):"
                << endl;
           cout << "Check calculation = " << checkCalc << endl;
 
-          t2 = -1
-               * ((normalX * reflectedPtCooNormMirr[0]
-                   + normalY * reflectedPtCooNormMirr[1]
-                   + normalZ * reflectedPtCooNormMirr[2] + normalCste)
-                  / (normalX * (reflectedPtCooNormMirr[0] - mirrPt[0])
-                     + normalY * (reflectedPtCooNormMirr[1] - mirrPt[1])
-                     + normalZ * (reflectedPtCooNormMirr[2] - mirrPt[2])));
+          t2 =
+            -1
+            * ((normalX * reflectedPtCooNormMirr[0] + normalY * reflectedPtCooNormMirr[1]
+                + normalZ * reflectedPtCooNormMirr[2] + normalCste)
+               / (normalX * (reflectedPtCooNormMirr[0] - mirrPt[0]) + normalY * (reflectedPtCooNormMirr[1] - mirrPt[1])
+                  + normalZ * (reflectedPtCooNormMirr[2] - mirrPt[2])));
           extrapolatedTrackCooComputedNormal[0] =
-            reflectedPtCooNormMirr[0]
-            + t1 * (reflectedPtCooNormMirr[0] - mirrPt[0]);
+            reflectedPtCooNormMirr[0] + t1 * (reflectedPtCooNormMirr[0] - mirrPt[0]);
           extrapolatedTrackCooComputedNormal[1] =
-            reflectedPtCooNormMirr[1]
-            + t1 * (reflectedPtCooNormMirr[1] - mirrPt[1]);
+            reflectedPtCooNormMirr[1] + t1 * (reflectedPtCooNormMirr[1] - mirrPt[1]);
           extrapolatedTrackCooComputedNormal[2] =
-            reflectedPtCooNormMirr[2]
-            + t1 * (reflectedPtCooNormMirr[2] - mirrPt[2]);
-          cout
-            << "Extrapolated track point on PMT plane using computed normal = {"
-            << extrapolatedTrackCooComputedNormal[0] << ", "
-            << extrapolatedTrackCooComputedNormal[1] << ", "
-            << extrapolatedTrackCooComputedNormal[2] << "}" << endl;
-          checkCalc = extrapolatedTrackCooComputedNormal[0] * normalX
-                      + extrapolatedTrackCooComputedNormal[1] * normalY
-                      + extrapolatedTrackCooComputedNormal[2] * normalZ
-                      + normalCste;
-          cout
-            << "Check whether extrapolated track point on PMT plane verifies "
-               "its equation (extrapolation with computed normal method):"
-            << endl;
+            reflectedPtCooNormMirr[2] + t1 * (reflectedPtCooNormMirr[2] - mirrPt[2]);
+          cout << "Extrapolated track point on PMT plane using computed normal = {"
+               << extrapolatedTrackCooComputedNormal[0] << ", " << extrapolatedTrackCooComputedNormal[1] << ", "
+               << extrapolatedTrackCooComputedNormal[2] << "}" << endl;
+          checkCalc = extrapolatedTrackCooComputedNormal[0] * normalX + extrapolatedTrackCooComputedNormal[1] * normalY
+                      + extrapolatedTrackCooComputedNormal[2] * normalZ + normalCste;
+          cout << "Check whether extrapolated track point on PMT plane verifies "
+                  "its equation (extrapolation with computed normal method):"
+               << endl;
           cout << "Check calculation = " << checkCalc << endl << endl;
 
           /*for (Int_t iPmt = 0; iPmt < NofPMTPoints; iPmt++) {
@@ -1033,8 +851,7 @@ void CbmRichPMTMapping::ProjectionProducer() {
       }
       for (Int_t iGlobalTrack = 0; iGlobalTrack < NofGTracks; iGlobalTrack++) {
         //cout << "Nb of global tracks = " << NofGTracks << " and iGlobalTrack = " << iGlobalTrack << endl;
-        CbmGlobalTrack* gTrack =
-          (CbmGlobalTrack*) fGlobalTracks->At(iGlobalTrack);
+        CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iGlobalTrack);
         if (NULL == gTrack) continue;
         Int_t richInd = gTrack->GetRichRingIndex();
         //cout << "Rich index = " << richInd << endl;
@@ -1052,39 +869,28 @@ void CbmRichPMTMapping::ProjectionProducer() {
         fTauFit->DoFit(&ringL);
         CenterX = ringL.GetCenterX();
         CenterY = ringL.GetCenterY();
-        CenterZ =
-          -1 * ((normalX * CenterX + normalY * CenterY + normalCste) / normalZ);
-        cout << "Ring center coordinates = {" << CenterX << ", " << CenterY
-             << ", " << CenterZ << "}" << endl;
-        cout << "Difference in X = "
-             << TMath::Abs(CenterX - extrapolatedTrackCoo[0]) << endl;
-        cout << "Difference in Y = "
-             << TMath::Abs(CenterY - extrapolatedTrackCoo[1]) << endl;
-        cout << "Difference in Z = "
-             << TMath::Abs(CenterZ - extrapolatedTrackCoo[2]) << endl;
-        fHM->H1("fhDifferenceX")
-          ->Fill(TMath::Abs(CenterX - extrapolatedTrackCoo[0]));
-        fHM->H1("fhDifferenceY")
-          ->Fill(TMath::Abs(CenterY - extrapolatedTrackCoo[1]));
-        distToExtrapTrackHit =
-          TMath::Sqrt(TMath::Power(CenterX - extrapolatedTrackCoo[0], 2)
-                      + TMath::Power(CenterY - extrapolatedTrackCoo[1], 2)
-                      + TMath::Power(CenterZ - extrapolatedTrackCoo[2], 2));
-        fHM->H1("fhDistanceCenterToExtrapolatedTrack")
-          ->Fill(distToExtrapTrackHit);
+        CenterZ = -1 * ((normalX * CenterX + normalY * CenterY + normalCste) / normalZ);
+        cout << "Ring center coordinates = {" << CenterX << ", " << CenterY << ", " << CenterZ << "}" << endl;
+        cout << "Difference in X = " << TMath::Abs(CenterX - extrapolatedTrackCoo[0]) << endl;
+        cout << "Difference in Y = " << TMath::Abs(CenterY - extrapolatedTrackCoo[1]) << endl;
+        cout << "Difference in Z = " << TMath::Abs(CenterZ - extrapolatedTrackCoo[2]) << endl;
+        fHM->H1("fhDifferenceX")->Fill(TMath::Abs(CenterX - extrapolatedTrackCoo[0]));
+        fHM->H1("fhDifferenceY")->Fill(TMath::Abs(CenterY - extrapolatedTrackCoo[1]));
+        distToExtrapTrackHit = TMath::Sqrt(TMath::Power(CenterX - extrapolatedTrackCoo[0], 2)
+                                           + TMath::Power(CenterY - extrapolatedTrackCoo[1], 2)
+                                           + TMath::Power(CenterZ - extrapolatedTrackCoo[2], 2));
+        fHM->H1("fhDistanceCenterToExtrapolatedTrack")->Fill(distToExtrapTrackHit);
         fHM->H1("fhDistanceCenterToExtrapolatedTrackInPlane")
-          ->Fill(
-            TMath::Sqrt(TMath::Power(CenterX - extrapolatedTrackCoo[0], 2)
-                        + TMath::Power(CenterY - extrapolatedTrackCoo[1], 2)));
-        cout
-          << "Distance between fitted ring center and extrapolated track hit = "
-          << distToExtrapTrackHit << endl
-          << endl;
+          ->Fill(TMath::Sqrt(TMath::Power(CenterX - extrapolatedTrackCoo[0], 2)
+                             + TMath::Power(CenterY - extrapolatedTrackCoo[1], 2)));
+        cout << "Distance between fitted ring center and extrapolated track hit = " << distToExtrapTrackHit << endl
+             << endl;
         //}
         //else { cout << "No identical ring mother ID and mirror track ID ..." << endl;}
       }
       cout << "End of loop on global tracks;" << endl;
-    } else {
+    }
+    else {
       cout << "Not a mother particle ..." << endl;
     }
     cout << "----------------------------------- "
@@ -1094,17 +900,14 @@ void CbmRichPMTMapping::ProjectionProducer() {
   }
 }
 
-void CbmRichPMTMapping::GetPmtNormal(Int_t NofPMTPoints,
-                                     Double_t& normalX,
-                                     Double_t& normalY,
-                                     Double_t& normalZ,
-                                     Double_t& normalCste) {
+void CbmRichPMTMapping::GetPmtNormal(Int_t NofPMTPoints, Double_t& normalX, Double_t& normalY, Double_t& normalZ,
+                                     Double_t& normalCste)
+{
   //cout << endl << "//------------------------------ CbmRichPMTMapping: Calculate PMT Normal ------------------------------//" << endl << endl;
 
   Int_t pmtTrackID, pmtMotherID;
-  Double_t buffNormX = 0., buffNormY = 0., buffNormZ = 0., k = 0.,
-           scalarProd = 0.;
-  Double_t pmtPt[]    = {0., 0., 0.};
+  Double_t buffNormX = 0., buffNormY = 0., buffNormZ = 0., k = 0., scalarProd = 0.;
+  Double_t pmtPt[] = {0., 0., 0.};
   Double_t a[] = {0., 0., 0.}, b[] = {0., 0., 0.}, c[] = {0., 0., 0.};
   CbmMCTrack* track;
 
@@ -1128,8 +931,7 @@ void CbmRichPMTMapping::GetPmtNormal(Int_t NofPMTPoints,
     track                  = (CbmMCTrack*) fMCTracks->At(pmtTrackID);
     pmtMotherID            = track->GetMotherId();
     //cout << "PMT Point coordinates; x = " << pmtPoint->GetX() << ", y = " << pmtPoint->GetY() << " and z = " << pmtPoint->GetZ() << endl;
-    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2)
-                    + TMath::Power(a[1] - pmtPoint->GetY(), 2)
+    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2) + TMath::Power(a[1] - pmtPoint->GetY(), 2)
                     + TMath::Power(a[2] - pmtPoint->GetZ(), 2))
         > 7) {
       b[0] = pmtPoint->GetX(), b[1] = pmtPoint->GetY(), b[2] = pmtPoint->GetZ();
@@ -1143,12 +945,10 @@ void CbmRichPMTMapping::GetPmtNormal(Int_t NofPMTPoints,
     track                  = (CbmMCTrack*) fMCTracks->At(pmtTrackID);
     pmtMotherID            = track->GetMotherId();
     //cout << "PMT Point coordinates; x = " << pmtPoint->GetX() << ", y = " << pmtPoint->GetY() << " and z = " << pmtPoint->GetZ() << endl;
-    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2)
-                    + TMath::Power(a[1] - pmtPoint->GetY(), 2)
+    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2) + TMath::Power(a[1] - pmtPoint->GetY(), 2)
                     + TMath::Power(a[2] - pmtPoint->GetZ(), 2))
           > 7
-        && TMath::Sqrt(TMath::Power(b[0] - pmtPoint->GetX(), 2)
-                       + TMath::Power(b[1] - pmtPoint->GetY(), 2)
+        && TMath::Sqrt(TMath::Power(b[0] - pmtPoint->GetX(), 2) + TMath::Power(b[1] - pmtPoint->GetY(), 2)
                        + TMath::Power(b[2] - pmtPoint->GetZ(), 2))
              > 7) {
       c[0] = pmtPoint->GetX(), c[1] = pmtPoint->GetY(), c[2] = pmtPoint->GetZ();
@@ -1158,60 +958,45 @@ void CbmRichPMTMapping::GetPmtNormal(Int_t NofPMTPoints,
   }
 
   k = (b[0] - a[0]) / (c[0] - a[0]);
-  if ((b[1] - a[1]) - (k * (c[1] - a[1])) == 0
-      || (b[2] - a[2]) - (k * (c[2] - a[2])) == 0) {
-    cout << "Error in normal calculation, vect_AB and vect_AC are collinear."
-         << endl;
-  } else {
+  if ((b[1] - a[1]) - (k * (c[1] - a[1])) == 0 || (b[2] - a[2]) - (k * (c[2] - a[2])) == 0) {
+    cout << "Error in normal calculation, vect_AB and vect_AC are collinear." << endl;
+  }
+  else {
     buffNormX = (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]);
     buffNormY = (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]);
     buffNormZ = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
     normalX =
-      buffNormX
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormX / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
     normalY =
-      buffNormY
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormY / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
     normalZ =
-      buffNormZ
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormZ / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
   }
 
   CbmRichPoint* pmtPoint1 = (CbmRichPoint*) fRichPoints->At(20);
-  scalarProd              = normalX * (pmtPoint1->GetX() - a[0])
-               + normalY * (pmtPoint1->GetY() - a[1])
-               + normalZ * (pmtPoint1->GetZ() - a[2]);
+  scalarProd =
+    normalX * (pmtPoint1->GetX() - a[0]) + normalY * (pmtPoint1->GetY() - a[1]) + normalZ * (pmtPoint1->GetZ() - a[2]);
   //cout << "1st scalar product between vectAM and normale = " << scalarProd << endl;
   // To determine the constant term of the plane equation, inject the coordinates of a pmt point, which should solve it: a*x+b*y+c*z+d=0.
-  normalCste = -1
-               * (normalX * pmtPoint1->GetX() + normalY * pmtPoint1->GetY()
-                  + normalZ * pmtPoint1->GetZ());
+  normalCste = -1 * (normalX * pmtPoint1->GetX() + normalY * pmtPoint1->GetY() + normalZ * pmtPoint1->GetZ());
   CbmRichPoint* pmtPoint2 = (CbmRichPoint*) fRichPoints->At(15);
-  scalarProd              = normalX * (pmtPoint2->GetX() - a[0])
-               + normalY * (pmtPoint2->GetY() - a[1])
-               + normalZ * (pmtPoint2->GetZ() - a[2]);
+  scalarProd =
+    normalX * (pmtPoint2->GetX() - a[0]) + normalY * (pmtPoint2->GetY() - a[1]) + normalZ * (pmtPoint2->GetZ() - a[2]);
   //cout << "2nd scalar product between vectAM and normale = " << scalarProd << endl;
   CbmRichPoint* pmtPoint3 = (CbmRichPoint*) fRichPoints->At(25);
-  scalarProd              = normalX * (pmtPoint3->GetX() - a[0])
-               + normalY * (pmtPoint3->GetY() - a[1])
-               + normalZ * (pmtPoint3->GetZ() - a[2]);
+  scalarProd =
+    normalX * (pmtPoint3->GetX() - a[0]) + normalY * (pmtPoint3->GetY() - a[1]) + normalZ * (pmtPoint3->GetZ() - a[2]);
   //cout << "3nd scalar product between vectAM and normale = " << scalarProd << endl;
 }
 
-void CbmRichPMTMapping::CalculateSphereParameters(const Char_t* mirrID,
-                                                  Double_t& sphereX,
-                                                  Double_t& sphereY,
-                                                  Double_t& sphereZ,
-                                                  Double_t& sphereR) {
+void CbmRichPMTMapping::CalculateSphereParameters(const Char_t* mirrID, Double_t& sphereX, Double_t& sphereY,
+                                                  Double_t& sphereZ, Double_t& sphereR)
+{
   //cout << endl << "//------------------------------ CbmRichPMTMapping: Calculate Sphere Parameters ------------------------------//" << endl << endl;
 
   const Char_t* mirrorHalf;
-  if (fIsMirrorUpperHalf) {
-    mirrorHalf = "RICH_mirror_half_total_208";
-  } else {
+  if (fIsMirrorUpperHalf) { mirrorHalf = "RICH_mirror_half_total_208"; }
+  else {
     mirrorHalf = "RICH_mirror_half_total_207";
   }
   //cout << "Mirror half: " << mirrorHalf << " and mirrID = " << mirrID << endl;
@@ -1230,35 +1015,26 @@ void CbmRichPMTMapping::CalculateSphereParameters(const Char_t* mirrID,
           for (Int_t i3 = 0; i3 < nodes3->GetEntriesFast(); i3++) {
             TGeoNode* mirrorHalfNode = (TGeoNode*) nodes3->At(i3);
             if (TString(mirrorHalfNode->GetName()).Contains(mirrorHalf)) {
-              const Double_t* rotMirror =
-                mirrorHalfNode->GetMatrix()->GetRotationMatrix();
+              const Double_t* rotMirror = mirrorHalfNode->GetMatrix()->GetRotationMatrix();
               //gp.fMirrorTheta = TMath::ASin(rm[3]); // tilting angle around x-axis
               //gp.fPmtPhi = -1.*TMath::ASin(rm[2]); // tilting angle around y-axis
-              const Double_t* trHalfMirror =
-                mirrorHalfNode->GetMatrix()->GetTranslation();
-              const TGeoBBox* mirrorShape =
-                (const TGeoBBox*) (mirrorHalfNode->GetVolume()->GetShape());
-              TObjArray* nodes4 = mirrorHalfNode->GetNodes();
+              const Double_t* trHalfMirror = mirrorHalfNode->GetMatrix()->GetTranslation();
+              const TGeoBBox* mirrorShape  = (const TGeoBBox*) (mirrorHalfNode->GetVolume()->GetShape());
+              TObjArray* nodes4            = mirrorHalfNode->GetNodes();
               for (Int_t i4 = 0; i4 < nodes4->GetEntriesFast(); i4++) {
                 TGeoNode* suppBeltStripNode = (TGeoNode*) nodes4->At(i4);
-                if (TString(suppBeltStripNode->GetName())
-                      .Contains("RICH_mirror_and_support_belt_strip")) {
-                  const Double_t* trSuppBeltStrip =
-                    suppBeltStripNode->GetMatrix()->GetTranslation();
-                  TObjArray* nodes5 = suppBeltStripNode->GetNodes();
+                if (TString(suppBeltStripNode->GetName()).Contains("RICH_mirror_and_support_belt_strip")) {
+                  const Double_t* trSuppBeltStrip = suppBeltStripNode->GetMatrix()->GetTranslation();
+                  TObjArray* nodes5               = suppBeltStripNode->GetNodes();
                   for (Int_t i5 = 0; i5 < nodes5->GetEntriesFast(); i5++) {
                     TGeoNode* mirrorTileNode = (TGeoNode*) nodes5->At(i5);
                     //if( TString(mirrorTileNode->GetName()).Contains("RICH_mirror_1") || TString(mirrorTileNode->GetName()).Contains("RICH_mirror_2") || TString(mirrorTileNode->GetName()).Contains("RICH_mirror_3") ) {
                     if (TString(mirrorTileNode->GetName()).Contains(mirrID)) {
                       //cout << "mirrorTileNode->GetName() => " << mirrorTileNode->GetName() << endl;
-                      const Double_t* trMirrorTile =
-                        mirrorTileNode->GetMatrix()->GetTranslation();
-                      sphereX = trRich[0] + trGas[0] + trHalfMirror[0]
-                                + trSuppBeltStrip[0] + trMirrorTile[0];
-                      sphereY = trRich[1] + trGas[1] + trHalfMirror[1]
-                                + trSuppBeltStrip[1] + trMirrorTile[1];
-                      sphereZ = trRich[2] + trGas[2] + trHalfMirror[2]
-                                + trSuppBeltStrip[2]
+                      const Double_t* trMirrorTile = mirrorTileNode->GetMatrix()->GetTranslation();
+                      sphereX = trRich[0] + trGas[0] + trHalfMirror[0] + trSuppBeltStrip[0] + trMirrorTile[0];
+                      sphereY = trRich[1] + trGas[1] + trHalfMirror[1] + trSuppBeltStrip[1] + trMirrorTile[1];
+                      sphereZ = trRich[2] + trGas[2] + trHalfMirror[2] + trSuppBeltStrip[2]
                                 + trMirrorTile[2];  // + mirrorShape->GetDZ();
                       /*
 											 * The actual translation, using corrected transformation matrices.
@@ -1266,11 +1042,9 @@ void CbmRichPMTMapping::CalculateSphereParameters(const Char_t* mirrID,
 											 * sphereY = trRich[1] + trGas[1] + trHalfMirror[1] + trSuppBeltStrip[1] + trMirrorTile[2];
 											 * sphereZ = trRich[2] + trGas[2] + trHalfMirror[2] + trSuppBeltStrip[2] + trMirrorTile[0]; // + mirrorShape->GetDZ();
 											 */
-                      TGeoShape* ptrShape =
-                        mirrorTileNode->GetVolume()->GetShape();
-                      TGeoSphere* ptrSphere =
-                        static_cast<TGeoSphere*>(ptrShape);
-                      sphereR = ptrSphere->GetRmin();
+                      TGeoShape* ptrShape   = mirrorTileNode->GetVolume()->GetShape();
+                      TGeoSphere* ptrSphere = static_cast<TGeoSphere*>(ptrShape);
+                      sphereR               = ptrSphere->GetRmin();
                     }
                   }
                 }
@@ -1283,17 +1057,14 @@ void CbmRichPMTMapping::CalculateSphereParameters(const Char_t* mirrID,
   }
 }
 
-void CbmRichPMTMapping::CalculateSphereParameters2(const Char_t* mirrID,
-                                                   Double_t& sphereX,
-                                                   Double_t& sphereY,
-                                                   Double_t& sphereZ,
-                                                   Double_t& sphereR) {
+void CbmRichPMTMapping::CalculateSphereParameters2(const Char_t* mirrID, Double_t& sphereX, Double_t& sphereY,
+                                                   Double_t& sphereZ, Double_t& sphereR)
+{
   //cout << endl << "//------------------------------ CbmRichPMTMapping: Calculate Sphere Parameters ------------------------------//" << endl << endl;
 
   const Char_t* mirrorHalf;
-  if (fIsMirrorUpperHalf) {
-    mirrorHalf = "RICH_mirror_half_total_208";
-  } else {
+  if (fIsMirrorUpperHalf) { mirrorHalf = "RICH_mirror_half_total_208"; }
+  else {
     mirrorHalf = "RICH_mirror_half_total_207";
   }
   //cout << "Mirror half: " << mirrorHalf << " and mirrID = " << mirrID << endl;
@@ -1321,25 +1092,20 @@ void CbmRichPMTMapping::CalculateSphereParameters2(const Char_t* mirrID,
               TGeoMatrix* matMirrorHalf = mirrorHalfNode->GetMatrix();
               /*cout << "Matrix mirrorHalfNode:" << endl;
 							matMirrorHalf->Print();*/
-              const Double_t* rotMirrorHalf =
-                mirrorHalfNode->GetMatrix()->GetRotationMatrix();
+              const Double_t* rotMirrorHalf = mirrorHalfNode->GetMatrix()->GetRotationMatrix();
               //gp.fMirrorTheta = TMath::ASin(rm[3]); // tilting angle around x-axis
               //gp.fPmtPhi = -1.*TMath::ASin(rm[2]); // tilting angle around y-axis
-              const Double_t* trHalfMirror =
-                mirrorHalfNode->GetMatrix()->GetTranslation();
-              const TGeoBBox* mirrorShape =
-                (const TGeoBBox*) (mirrorHalfNode->GetVolume()->GetShape());
-              TObjArray* nodes4 = mirrorHalfNode->GetNodes();
+              const Double_t* trHalfMirror = mirrorHalfNode->GetMatrix()->GetTranslation();
+              const TGeoBBox* mirrorShape  = (const TGeoBBox*) (mirrorHalfNode->GetVolume()->GetShape());
+              TObjArray* nodes4            = mirrorHalfNode->GetNodes();
               for (Int_t i4 = 0; i4 < nodes4->GetEntriesFast(); i4++) {
                 TGeoNode* suppBeltStripNode = (TGeoNode*) nodes4->At(i4);
-                if (TString(suppBeltStripNode->GetName())
-                      .Contains("RICH_mirror_and_support_belt_strip")) {
+                if (TString(suppBeltStripNode->GetName()).Contains("RICH_mirror_and_support_belt_strip")) {
                   TGeoMatrix* matSuppBeltStrip = suppBeltStripNode->GetMatrix();
                   /*cout << "Matrix suppBeltStripNode:" << suppBeltStripNode->GetName() << endl;
 									matSuppBeltStrip->Print();*/
-                  const Double_t* trSuppBeltStrip =
-                    suppBeltStripNode->GetMatrix()->GetTranslation();
-                  TObjArray* nodes5 = suppBeltStripNode->GetNodes();
+                  const Double_t* trSuppBeltStrip = suppBeltStripNode->GetMatrix()->GetTranslation();
+                  TObjArray* nodes5               = suppBeltStripNode->GetNodes();
                   for (Int_t i5 = 0; i5 < nodes5->GetEntriesFast(); i5++) {
                     TGeoNode* mirrorTileNode = (TGeoNode*) nodes5->At(i5);
                     //if( TString(mirrorTileNode->GetName()).Contains("RICH_mirror_1") || TString(mirrorTileNode->GetName()).Contains("RICH_mirror_2") || TString(mirrorTileNode->GetName()).Contains("RICH_mirror_3") ) {
@@ -1348,22 +1114,15 @@ void CbmRichPMTMapping::CalculateSphereParameters2(const Char_t* mirrID,
                       /*TGeoMatrix* matMirrorTile = mirrorTileNode->GetMatrix();
 											cout << "Matrix mirrorTileNode:" << endl;
 											matMirrorTile->Print();*/
-                      const Double_t* trMirrorTile =
-                        mirrorTileNode->GetMatrix()->GetTranslation();
-                      const Double_t* rotMirrorTile =
-                        mirrorTileNode->GetMatrix()->GetRotationMatrix();
-                      sphereX = trRich[0] + trGas[0] + trHalfMirror[0]
-                                + trSuppBeltStrip[0] + trMirrorTile[1];
-                      sphereY = trRich[1] + trGas[1] + trHalfMirror[1]
-                                + trSuppBeltStrip[1] + trMirrorTile[2];
-                      sphereZ = trRich[2] + trGas[2] + trHalfMirror[2]
-                                + trSuppBeltStrip[2]
+                      const Double_t* trMirrorTile  = mirrorTileNode->GetMatrix()->GetTranslation();
+                      const Double_t* rotMirrorTile = mirrorTileNode->GetMatrix()->GetRotationMatrix();
+                      sphereX = trRich[0] + trGas[0] + trHalfMirror[0] + trSuppBeltStrip[0] + trMirrorTile[1];
+                      sphereY = trRich[1] + trGas[1] + trHalfMirror[1] + trSuppBeltStrip[1] + trMirrorTile[2];
+                      sphereZ = trRich[2] + trGas[2] + trHalfMirror[2] + trSuppBeltStrip[2]
                                 + trMirrorTile[0];  // + mirrorShape->GetDZ();
-                      TGeoShape* ptrShape =
-                        mirrorTileNode->GetVolume()->GetShape();
-                      TGeoSphere* ptrSphere =
-                        static_cast<TGeoSphere*>(ptrShape);
-                      sphereR = ptrSphere->GetRmin();
+                      TGeoShape* ptrShape   = mirrorTileNode->GetVolume()->GetShape();
+                      TGeoSphere* ptrSphere = static_cast<TGeoSphere*>(ptrShape);
+                      sphereR               = ptrSphere->GetRmin();
                     }
                   }
                 }
@@ -1376,8 +1135,8 @@ void CbmRichPMTMapping::CalculateSphereParameters2(const Char_t* mirrID,
   }
 }
 
-void CbmRichPMTMapping::RotateAndCopyHitsToRingLight(const CbmRichRing* ring1,
-                                                     CbmRichRingLight* ring2) {
+void CbmRichPMTMapping::RotateAndCopyHitsToRingLight(const CbmRichRing* ring1, CbmRichRingLight* ring2)
+{
   Int_t nofHits = ring1->GetNofHits();
 
   for (Int_t i = 0; i < nofHits; i++) {
@@ -1386,16 +1145,15 @@ void CbmRichPMTMapping::RotateAndCopyHitsToRingLight(const CbmRichRing* ring1,
     if (NULL == hit) continue;
     TVector3 inputHit(hit->GetX(), hit->GetY(), hit->GetZ());
     TVector3 outputHit;
-    CbmRichHitProducer::TiltPoint(
-      &inputHit, &outputHit, fGP.fPmt.fPhi, fGP.fPmt.fTheta, fGP.fPmtZOrig);
+    CbmRichHitProducer::TiltPoint(&inputHit, &outputHit, fGP.fPmt.fPhi, fGP.fPmt.fTheta, fGP.fPmtZOrig);
     CbmRichHitLight hl(outputHit.X(), outputHit.Y());
     ring2->AddHit(hl);
   }
 }
 
-void CbmRichPMTMapping::DrawHist() {
-  TCanvas* can = new TCanvas(
-    fRunTitle + "_Separated_Hits", fRunTitle + "_Separated_Hits", 1500, 900);
+void CbmRichPMTMapping::DrawHist()
+{
+  TCanvas* can = new TCanvas(fRunTitle + "_Separated_Hits", fRunTitle + "_Separated_Hits", 1500, 900);
   can->SetGridx(1);
   can->SetGridy(1);
   can->Divide(4, 3);
@@ -1425,10 +1183,7 @@ void CbmRichPMTMapping::DrawHist() {
   DrawH2(fHM->H2("fHMCPoints_1_75"));
   Cbm::SaveCanvasAsImage(can, string(fOutputDir.Data()), "png");
 
-  TCanvas* can2 = new TCanvas(fRunTitle + "_Separated_Ellipse",
-                              fRunTitle + "_Separated_Ellipse",
-                              1500,
-                              900);
+  TCanvas* can2 = new TCanvas(fRunTitle + "_Separated_Ellipse", fRunTitle + "_Separated_Ellipse", 1500, 900);
   can2->SetGridx(1);
   can2->SetGridy(1);
   can2->Divide(4, 3);
@@ -1458,10 +1213,7 @@ void CbmRichPMTMapping::DrawHist() {
   DrawH2(fHM->H2("fHPoints_Ellipse_1_75"));
   Cbm::SaveCanvasAsImage(can2, string(fOutputDir.Data()), "png");
 
-  TCanvas* can3 = new TCanvas(fRunTitle + "_Separated_Ellipse",
-                              fRunTitle + "_Separated_Ellipse",
-                              1500,
-                              900);
+  TCanvas* can3 = new TCanvas(fRunTitle + "_Separated_Ellipse", fRunTitle + "_Separated_Ellipse", 1500, 900);
   can3->Divide(2, 2);
   can3->cd(1);
   DrawH1(fHM->H1("fhDifferenceX"));
@@ -1473,7 +1225,8 @@ void CbmRichPMTMapping::DrawHist() {
   DrawH1(fHM->H1("fhDistanceCenterToExtrapolatedTrackInPlane"));
 }
 
-void CbmRichPMTMapping::DrawHistFromFile(TString fileName) {
+void CbmRichPMTMapping::DrawHistFromFile(TString fileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -1488,7 +1241,8 @@ void CbmRichPMTMapping::DrawHistFromFile(TString fileName) {
   gDirectory = oldDir;
 }
 
-void CbmRichPMTMapping::Finish() {
+void CbmRichPMTMapping::Finish()
+{
   // ---------------------------------------------------------------------------------------------------------------------------------------- //
   // -------------------------------------------------- Mapping for mirror - PMT relations -------------------------------------------------- //
   // ---------------------------------------------------------------------------------------------------------------------------------------- //

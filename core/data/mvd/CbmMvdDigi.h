@@ -8,14 +8,14 @@
 #ifndef CBMMVDDIGI_H
 #define CBMMVDDIGI_H 1
 
+#include "CbmDefs.h"           // for ECbmModuleId::kMvd
+#include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Float_t, Double_t
 #include <TObject.h>     // for TObject
 
 #include <string>  // for string
-
-#include "CbmDefs.h"           // for ECbmModuleId::kMvd
-#include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
 
 
 class CbmMvdDigi : public TObject, public CbmMvdDetectorId {
@@ -26,14 +26,8 @@ public:
 
   /** Constructor with all variables **/
 
-  CbmMvdDigi(Int_t iStation,
-             Int_t iChannelNrX,
-             Int_t iChannelNrY,
-             Float_t charge,
-             Float_t pixelSizeX,
-             Float_t pixelSizeY,
-             Float_t time = 0.0,
-             Int_t frame  = 0);
+  CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge, Float_t pixelSizeX,
+             Float_t pixelSizeY, Float_t time = 0.0, Int_t frame = 0);
   /**
      charge     : of each fired pixel in electrons
      PixelSize  : in cm

@@ -13,15 +13,15 @@
 #include <map>      // for map, map<>::iterator, operator!=, __m...
 #include <utility>  // for pair
 
-CbmTrdParSetDigi::CbmTrdParSetDigi(const char* name,
-                                   const char* title,
-                                   const char* context)
+CbmTrdParSetDigi::CbmTrdParSetDigi(const char* name, const char* title, const char* context)
   : CbmTrdParSet(name, title, context)
 
-{}
+{
+}
 
 //_______________________________________________________________________________
-Bool_t CbmTrdParSetDigi::getParams(FairParamList* l) {
+Bool_t CbmTrdParSetDigi::getParams(FairParamList* l)
+{
   if (!l) return kFALSE;
   if (!l->fill("NrOfModules", &fNrOfModules)) {
     LOG(error) << GetName() << "::getParams : Couldn't find \"NrOfModules\"";
@@ -60,9 +60,7 @@ Bool_t CbmTrdParSetDigi::getParams(FairParamList* l) {
   TString text;
   for (Int_t i = 0; i < fNrOfModules; i++) {
     if (!l->fill(Form("%d", moduleId[i]), &values)) {
-      LOG(error) << GetName()
-                 << "::getParams : Missing parameter definiton for module "
-                 << moduleId[i];
+      LOG(error) << GetName() << "::getParams : Missing parameter definiton for module " << moduleId[i];
       continue;
     }
     Int_t k(0);
@@ -83,32 +81,20 @@ Bool_t CbmTrdParSetDigi::getParams(FairParamList* l) {
       padSizeX.AddAt(values[k++], j);
       padSizeY.AddAt(values[k++], j);
     }
-    fModuleMap[moduleId[i]] = new CbmTrdParModDigi(x,
-                                                   y,
-                                                   z,
-                                                   sizex,
-                                                   sizey,
-                                                   sizez,
-                                                   maxSectors,
-                                                   orientation,
-                                                   sectorSizeX,
-                                                   sectorSizeY,
-                                                   padSizeX,
-                                                   padSizeY);
+    fModuleMap[moduleId[i]] = new CbmTrdParModDigi(x, y, z, sizex, sizey, sizez, maxSectors, orientation, sectorSizeX,
+                                                   sectorSizeY, padSizeX, padSizeY);
     fModuleMap[moduleId[i]]->SetModuleId(moduleId[i]);
-    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])
-      ->SetAnodeWireToPadPlaneDistance(awPP);  //>0?awPP:0.35);
-    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])
-      ->SetAnodeWireOffset(awOff);  //>0?awOff:0.375);
-    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])
-      ->SetAnodeWireSpacing(awPitch);  //>0?awPitch:0.25);
+    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])->SetAnodeWireToPadPlaneDistance(awPP);  //>0?awPP:0.35);
+    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])->SetAnodeWireOffset(awOff);             //>0?awOff:0.375);
+    ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])->SetAnodeWireSpacing(awPitch);          //>0?awPitch:0.25);
     if (fair::Logger::Logging(fair::Severity::debug)) fModuleMap[moduleId[i]]->Print();
   }
   return kTRUE;
 }
 
 //_____________________________________________________________________
-void CbmTrdParSetDigi::putParams(FairParamList* l) {
+void CbmTrdParSetDigi::putParams(FairParamList* l)
+{
   /**  
    Instead of a fixed number of values the number of values to
    store now depends on the maximum number of sectors per module
@@ -133,9 +119,7 @@ void CbmTrdParSetDigi::putParams(FairParamList* l) {
 
   Int_t maxSectors(0), idx(0);
   TArrayI moduleIdArray(fNrOfModules);
-  for (std::map<Int_t, CbmTrdParMod*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++) {
+  for (std::map<Int_t, CbmTrdParMod*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++) {
     moduleIdArray[idx++] = imod->first;
     Int_t sectors        = ((CbmTrdParModDigi*) imod->second)->GetNofSectors();
     if (sectors > maxSectors) maxSectors = sectors;

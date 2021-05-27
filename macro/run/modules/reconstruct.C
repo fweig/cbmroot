@@ -35,12 +35,15 @@
 #include "CbmTofSimpClusterizer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
+
 #include <FairRun.h>
+
 #include <TSystem.h>
 #endif
 
 
-Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
+Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE)
+{
 
   // -----   Get the run instance   ------------------------------------------
   FairRun* run = FairRun::Instance();
@@ -49,16 +52,14 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
     return kFALSE;
   }
   std::cout << std::endl;
-  std::cout << "-I- Macro reconstruct.C called for run " << run->GetName()
-            << std::endl;
+  std::cout << "-I- Macro reconstruct.C called for run " << run->GetName() << std::endl;
   // -------------------------------------------------------------------------
 
 
   // -----   Get the CBM setup instance   ------------------------------------
   CbmSetup* setup = CbmSetup::Instance();
   std::cout << std::endl;
-  std::cout << "-I- reconstruct: Found setup " << setup->GetTitle()
-            << std::endl;
+  std::cout << "-I- reconstruct: Found setup " << setup->GetTitle() << std::endl;
   // -------------------------------------------------------------------------
 
 
@@ -70,8 +71,7 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
   // -----   Local reconstruction in MVD   ----------------------------------
   if (setup->IsActive(ECbmModuleId::kMvd)) {
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
     std::cout << "-I- : Added task " << mvdCluster->GetName() << std::endl;
 
@@ -103,8 +103,7 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
 
     std::cout << geoTag(0, 4) << std::endl;
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile =
-      parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+    parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
     std::cout << "Using parameter file " << parFile << std::endl;
 
     // --- Hit finder for GEMs
@@ -139,8 +138,7 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
 
   // -----   Local reconstruction in TOF   ----------------------------------
   if (setup->IsActive(ECbmModuleId::kTof)) {
-    CbmTofSimpClusterizer* tofCluster =
-      new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
     tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
     tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
     run->AddTask(tofCluster);
@@ -170,22 +168,21 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = nullptr;
-  if (useMC)
-    l1 = new CbmL1("L1", 1, 3);
+  if (useMC) l1 = new CbmL1("L1", 1, 3);
   else
     l1 = new CbmL1("L1", 0);
   // --- Material budget file names
   TString mvdGeoTag;
   if (setup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+    parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
     std::cout << "Using material budget file " << parFile << std::endl;
     l1->SetMvdMaterialBudgetFileName(parFile.Data());
   }
   TString stsGeoTag;
   if (setup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
     TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile = parFile + "/parameters/sts/sts_matbudget_" + stsGeoTag + ".root";
+    parFile         = parFile + "/parameters/sts/sts_matbudget_" + stsGeoTag + ".root";
     std::cout << "Using material budget file " << parFile << std::endl;
     l1->SetStsMaterialBudgetFileName(parFile.Data());
   }
@@ -193,8 +190,7 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
   std::cout << "-I- : Added task " << l1->GetName() << std::endl;
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks           = new CbmStsFindTracksEvents(
-    stsTrackFinder, setup->IsActive(ECbmModuleId::kMvd));
+  FairTask* stsFindTracks           = new CbmStsFindTracksEvents(stsTrackFinder, setup->IsActive(ECbmModuleId::kMvd));
   run->AddTask(stsFindTracks);
   std::cout << "-I- : Added task " << stsFindTracks->GetName() << std::endl;
   // -------------------------------------------------------------------------

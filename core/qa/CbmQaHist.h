@@ -7,6 +7,7 @@
 #define CbmQaHist_H
 
 #include "CbmQaCanvas.h"
+
 #include "TFitResultPtr.h"
 #include "TH1D.h"
 #include "TH1F.h"
@@ -21,7 +22,8 @@ template<class HistTypeT>
 class CbmQaHist : public HistTypeT {
 public:
   /// Default constructor only for the streamer
-  CbmQaHist() : HistTypeT() {
+  CbmQaHist() : HistTypeT()
+  {
     // we don't call SetOptStatFit() here since it will call Clone()
     // which calls this default constructor in an endless recursion
     if (gStyle) {
@@ -31,14 +33,13 @@ public:
   }
 
   /// Copy constructor
-  CbmQaHist(const CbmQaHist& h) : HistTypeT(h) {
-    SetOptStatFit(h.fOptStat, h.fOptFit);
-  }
+  CbmQaHist(const CbmQaHist& h) : HistTypeT(h) { SetOptStatFit(h.fOptStat, h.fOptFit); }
 
   /// Reimplementation of all other HistTypeT constructors
   /// that creates a stat window with current gStyle options.
   template<typename... Types>
-  CbmQaHist(Types... args) : HistTypeT(args...) {
+  CbmQaHist(Types... args) : HistTypeT(args...)
+  {
     if (gStyle) { SetOptStatFit(gStyle->GetOptStat(), gStyle->GetOptFit()); }
   }
 
@@ -49,7 +50,8 @@ public:
   /// that suppresses an immediate drawing in the active window
   ///
   template<typename... Types>
-  TFitResultPtr Fit(Types... args) {
+  TFitResultPtr Fit(Types... args)
+  {
     TVirtualPad* padsav = gPad;
     GetCanvas().cd();
     auto ret = HistTypeT::Fit(args...);
@@ -73,7 +75,8 @@ public:
   void SetOptFit(Int_t fit = 1) { SetOptStatFit(fOptStat, fit); }
 
   /// Set stat & fit drawing options and resize the stat window
-  void SetOptStatFit(int stat, int fit) {
+  void SetOptStatFit(int stat, int fit)
+  {
     fOptStat = stat;
     fOptFit  = fit;
     if (!gStyle) { return; }
@@ -105,7 +108,8 @@ public:
 
 private:
   /// a static canvas for temporary drawing
-  static CbmQaCanvas& GetCanvas() {
+  static CbmQaCanvas& GetCanvas()
+  {
     /// the static variable will be initialised at the first call;
     /// deleted at the application end (c++11)
     static CbmQaCanvas tmp("CbmQaTempCanvas", "CbmQaTempCanvas", 1, 1);

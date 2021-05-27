@@ -6,10 +6,9 @@
 //
 // --------------------------------------------------------------------------
 
-void CbmDileptonPid(const char* inputFileNameMC,
-                    const char* inputFileNameRec,
-                    const char* outputFileName,
-                    const char* parFile) {
+void CbmDileptonPid(const char* inputFileNameMC, const char* inputFileNameRec, const char* outputFileName,
+                    const char* parFile)
+{
 
   // Load libraries
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -71,24 +70,12 @@ void CbmDileptonPid(const char* inputFileNameMC,
   CbmDileptonAssignPid* taskPid = new CbmDileptonAssignPid(1);
 
   Float_t aRichCuts[] = {
-    1.,
-    0.4,
-    0.,
-    130,
-    21.85,
-    4.35,
-    6.17,
-    0.14};  // Distance, SelectionNN, selection2D, Radial, NHitMean, NHitSigma, RMean, RSigma
-  taskPid->SetRichCuts(
-    true, true, aRichCuts);  //sMomentum, sSelection (true=NN, false=2D)
+    1.,    0.4,  0.,   130,
+    21.85, 4.35, 6.17, 0.14};  // Distance, SelectionNN, selection2D, Radial, NHitMean, NHitSigma, RMean, RSigma
+  taskPid->SetRichCuts(true, true, aRichCuts);  //sMomentum, sSelection (true=NN, false=2D)
 
-  Float_t aTrdCuts[] = {
-    1.5, 0.95, 1.1, 21., 0.9};  // Mom, PidLikeLow, PidLikeHigh, PidWkn, PidAnn
-  taskPid->SetTrdCuts(false,
-                      false,
-                      true,
-                      false,
-                      false,
+  Float_t aTrdCuts[] = {1.5, 0.95, 1.1, 21., 0.9};  // Mom, PidLikeLow, PidLikeHigh, PidWkn, PidAnn
+  taskPid->SetTrdCuts(false, false, true, false, false,
                       aTrdCuts);  //sMom, sAccept, sLike, sWkn, sAnn
 
   taskPid->SetTofCuts(true, false, 0.01);  //sMom, sAccept, Mass2

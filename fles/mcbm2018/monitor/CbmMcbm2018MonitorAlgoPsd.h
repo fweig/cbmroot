@@ -13,6 +13,7 @@
 
 // Data
 #include "CbmPsdDigi.h"
+
 #include "PronyFitter.h"
 #include "PsdGbtReader.h"
 
@@ -47,9 +48,7 @@ public:
   Bool_t InitParameters();
 
   Bool_t ProcessTs(const fles::Timeslice& ts);
-  Bool_t ProcessTs(const fles::Timeslice& ts, size_t /*component*/) {
-    return ProcessTs(ts);
-  }
+  Bool_t ProcessTs(const fles::Timeslice& ts, size_t /*component*/) { return ProcessTs(ts); }
   Bool_t ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
 
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
@@ -58,47 +57,38 @@ public:
   Bool_t FillHistograms();
   Bool_t ResetHistograms(Bool_t bResetTime = kTRUE);
 
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   inline void SetMonitorChanMode(Bool_t bFlagIn = kTRUE) { fbMonitorChanMode = bFlagIn; }
   inline void SetMonitorWfmMode(Bool_t bFlagIn = kTRUE) { fbMonitorWfmMode = bFlagIn; }
   inline void SetMonitorFitMode(Bool_t bFlagIn = kTRUE) { fbMonitorFitMode = bFlagIn; }
-  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
-    fuHistoryHistoSize = inHistorySizeSec;
-  }
-  inline void SetChargeHistoArgs(std::vector<Int_t> inVec) {
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) { fuHistoryHistoSize = inHistorySizeSec; }
+  inline void SetChargeHistoArgs(std::vector<Int_t> inVec)
+  {
     fviHistoChargeArgs = inVec;
     kvuWfmRanges.clear();
     for (uint8_t i = 0; i <= kuNbWfmRanges; ++i)
       kvuWfmRanges.push_back(fviHistoChargeArgs.at(1)
                              + i * (fviHistoChargeArgs.at(2) - fviHistoChargeArgs.at(1)) / kuNbWfmRanges);
   }
-  inline void SetAmplHistoArgs(std::vector<Int_t> inVec) {
-    fviHistoAmplArgs = inVec;
-  }
-  inline void SetZLHistoArgs(std::vector<Int_t> inVec) {
-    fviHistoZLArgs = inVec;
-  }
+  inline void SetAmplHistoArgs(std::vector<Int_t> inVec) { fviHistoAmplArgs = inVec; }
+  inline void SetZLHistoArgs(std::vector<Int_t> inVec) { fviHistoZLArgs = inVec; }
 
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t fbMonitorChanMode;  //! Switch ON the filling channelwise histograms
-  Bool_t fbMonitorWfmMode;   //! Switch ON the filling waveforms histograms
-  Bool_t fbMonitorFitMode;   //! Switch ON the filling waveform fitting histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbMonitorChanMode;   //! Switch ON the filling channelwise histograms
+  Bool_t fbMonitorWfmMode;    //! Switch ON the filling waveforms histograms
+  Bool_t fbMonitorFitMode;    //! Switch ON the filling waveform fitting histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
   std::vector<Bool_t> fvbMaskedComponents;
   Bool_t fbFirstPackageError;
   Bool_t fbPsdMissedData;
 
   /// Settings from parameter file
-  CbmMcbm2018PsdPar* fUnpackPar;  //!
-                                  /// Readout chain dimensions and mapping
-  UInt_t fuNrOfGdpbs;             //! Total number of GDPBs in the system
+  CbmMcbm2018PsdPar* fUnpackPar;             //!
+                                             /// Readout chain dimensions and mapping
+  UInt_t fuNrOfGdpbs;                        //! Total number of GDPBs in the system
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;  //! gDPB ID to index map
   UInt_t fuNrOfFeePerGdpb;                   //! Number of FEBs per GDPB
   UInt_t fuNrOfChannelsPerFee;               //! Number of channels in each FEE
@@ -114,36 +104,26 @@ private:
   /// TS/MS info
   ULong64_t fulCurrentTsIdx;
   ULong64_t fulCurrentMsIdx;
-  Double_t
-    fdTsStartTime;  //! Time in ns of current TS from the index of the first MS first component
-  Double_t
-    fdMsTime;  //! Start Time in ns of current MS from its index field in header
-  Double_t
-    fdPrevMsTime;  //! Start Time in ns of previous MS from its index field in header
-  UInt_t fuMsIndex;  //! Index of current MS within the TS
+  Double_t fdTsStartTime;  //! Time in ns of current TS from the index of the first MS first component
+  Double_t fdMsTime;       //! Start Time in ns of current MS from its index field in header
+  Double_t fdPrevMsTime;   //! Start Time in ns of previous MS from its index field in header
+  UInt_t fuMsIndex;        //! Index of current MS within the TS
 
   /// Current data properties
-  UInt_t
-    fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t
-    fuCurrDpbId;  //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t
-    fuCurrDpbIdx;  //! Index of the DPB from which the MS currently unpacked is coming
+  UInt_t fuCurrentEquipmentId;  //! Current equipment ID, tells from which DPB the current MS is originating
+  UInt_t fuCurrDpbId;           //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx;          //! Index of the DPB from which the MS currently unpacked is coming
 
   /// Starting state book-keeping
-  Double_t
-    fdStartTime; /** Time of first valid hit (epoch available), used as reference for evolution plots**/
+  Double_t fdStartTime; /** Time of first valid hit (epoch available), used as reference for evolution plots**/
   std::chrono::steady_clock::time_point
     ftStartTimeUnix; /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
   /// Histograms related variables
-  UInt_t fuHistoryHistoSize; /** Size in seconds of the evolution histograms **/
-  std::vector<Int_t>
-    fviHistoChargeArgs; /** Charge histogram arguments in adc counts **/
-  std::vector<Int_t>
-    fviHistoAmplArgs; /** Amplitude histogram arguments in adc counts **/
-  std::vector<Int_t>
-    fviHistoZLArgs; /** ZeroLevel histogram arguments in adc counts **/
+  UInt_t fuHistoryHistoSize;             /** Size in seconds of the evolution histograms **/
+  std::vector<Int_t> fviHistoChargeArgs; /** Charge histogram arguments in adc counts **/
+  std::vector<Int_t> fviHistoAmplArgs;   /** Amplitude histogram arguments in adc counts **/
+  std::vector<Int_t> fviHistoZLArgs;     /** ZeroLevel histogram arguments in adc counts **/
 
   /// Histograms
   UInt_t fuMsgsCntInMs;

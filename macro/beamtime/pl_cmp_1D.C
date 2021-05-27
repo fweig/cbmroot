@@ -1,11 +1,11 @@
-void pl_cmp_1D(
-  Int_t iOpt      = 1,
-  TString fNameMC = "/home/nh/KRONOS/mc/mcbm/"
-                    "mcbm_beam_2019_03.agau.1.58gev.mbias.reco_hst.root",
-  TString fNameData = "./hst/"
-                      "159.50.5.1.0_050_010020500_000_002012_022_0.9_2.5_"
-                      "trk001_Cal159.50.5.1.0_Ana.hst.root",
-  TString hname = "hTrklVelHMul") {
+void pl_cmp_1D(Int_t iOpt      = 1,
+               TString fNameMC = "/home/nh/KRONOS/mc/mcbm/"
+                                 "mcbm_beam_2019_03.agau.1.58gev.mbias.reco_hst.root",
+               TString fNameData = "./hst/"
+                                   "159.50.5.1.0_050_010020500_000_002012_022_0.9_2.5_"
+                                   "trk001_Cal159.50.5.1.0_Ana.hst.root",
+               TString hname = "hTrklVelHMul")
+{
   //plot initialisation
   TCanvas* can = new TCanvas("can", "can", 50, 50, 686, 686);
   can->Divide(1, 1, 0.01, 0.01);

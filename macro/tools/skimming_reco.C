@@ -1,21 +1,22 @@
-#include "Riostream.h"
+#include "TCollection.h"
 #include "TError.h"
 #include "TFile.h"
 #include "TFolder.h"
 #include "TGrid.h"
 #include "TLeaf.h"
-#include "TSystem.h"
-#include "TTree.h"
-
-#include "TCollection.h"
 #include "TList.h"
 #include "TObjArray.h"
 #include "TObjString.h"
+#include "TSystem.h"
+#include "TTree.h"
+
+#include "Riostream.h"
 
 
 void DisableBranches(TTree* tree);
 
-void skimming_reco(TString inFile) {
+void skimming_reco(TString inFile)
+{
 
   // I/O files
   TString outFile = inFile;
@@ -58,7 +59,8 @@ void skimming_reco(TString inFile) {
   delete oldfile;
 }
 
-void DisableBranches(TTree* tree) {
+void DisableBranches(TTree* tree)
+{
   TObjArray* list = tree->GetListOfLeaves();
   TIter next((TCollection*) list);
   TLeaf* leaf;

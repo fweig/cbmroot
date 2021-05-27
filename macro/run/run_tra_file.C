@@ -6,7 +6,9 @@
 // Includes needed for IDE
 #if !defined(__CLING__)
 #include "CbmTransport.h"
+
 #include "FairSystemInfo.h"
+
 #include "TStopwatch.h"
 #endif
 
@@ -60,11 +62,9 @@
  ** CbmTransport. For the options, consult the documentation of that class:
  ** http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmTransport.html
  **/
-void run_tra_file(const char* input  = "",
-                  Int_t nEvents      = 1,
-                  const char* output = "",
-                  const char* setup  = "sis100_electron",
-                  ECbmEngine engine  = kGeant3) {
+void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output = "",
+                  const char* setup = "sis100_electron", ECbmEngine engine = kGeant3)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -73,7 +73,7 @@ void run_tra_file(const char* input  = "",
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_tra_file";  // this macro's name for screen output
+  TString myName = "run_tra_file";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ void run_tra_file(const char* input  = "",
   // -----   Input file   ---------------------------------------------------
   // Use default input if not specified by the user
   TString defaultInput = srcDir + "/input/urqmd.auau.10gev.centr.root";
-  TString inFile = (strcmp(input, "") == 0 ? defaultInput : TString(input));
+  TString inFile       = (strcmp(input, "") == 0 ? defaultInput : TString(input));
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
 
@@ -139,9 +139,8 @@ void run_tra_file(const char* input  = "",
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
   run.SetEngine(engine);
-  if (inFile.Contains("pluto", TString::kIgnoreCase)) {
-    run.AddInput(inFile, kPluto);
-  } else
+  if (inFile.Contains("pluto", TString::kIgnoreCase)) { run.AddInput(inFile, kPluto); }
+  else
     run.AddInput(inFile, kUnigen);
   run.SetOutFileName(outFile);
   run.SetParFileName(parFile);
@@ -159,8 +158,7 @@ void run_tra_file(const char* input  = "",
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl;
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";

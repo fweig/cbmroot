@@ -13,7 +13,8 @@
 #ifndef CBMHIT_H_
 #define CBMHIT_H_
 
-enum HitType {
+enum HitType
+{
   kHIT,
   kPIXELHIT,
   kSTRIPHIT,
@@ -27,9 +28,9 @@ enum HitType {
   kECALHIT
 };
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
-#include <TObject.h>     // for TObject
+#include <TObject.h>  // for TObject
 
 #include <string>  // for string, basic_string
 
@@ -52,12 +53,7 @@ public:
 	 * \param[in] _time Hit time [ns].   
 	 * \param[in] _timeError Error of hit time [ns].	 
 	 */
-  CbmHit(HitType _type,
-         Double_t _z,
-         Double_t _dz,
-         Int_t _refId,
-         Int_t _address,
-         Double_t _time      = -1.,
+  CbmHit(HitType _type, Double_t _z, Double_t _dz, Int_t _refId, Int_t _address, Double_t _time = -1.,
          Double_t _timeError = -1.);
 
   /**
@@ -82,7 +78,8 @@ public:
   void SetAddress(Int_t address) { fAddress = address; }
   void SetMatch(CbmMatch* match);
   void SetTime(Double_t time) { fTime = time; }
-  void SetTime(Double_t time, Double_t error) {
+  void SetTime(Double_t time, Double_t error)
+  {
     fTime      = time;
     fTimeError = error;
   }
@@ -100,9 +97,7 @@ public:
 	 * \brief Virtual function. Must be implemented in derived class.
 	 * Has to return string representation of the object.
 	 **/
-  virtual std::string ToString() const {
-    return "Has to be implemented in derrived class";
-  }
+  virtual std::string ToString() const { return "Has to be implemented in derrived class"; }
 
 protected:
   /**
@@ -115,12 +110,12 @@ protected:
 
 
 private:
-  HitType fType;   ///< hit type
-  Double_t fZ;     ///< Z position of hit [cm]
-  Double_t fDz;    ///< Z position error [cm]
-  Int_t fRefId;    ///< some reference id (usually to cluster, digi or MC point)
-  Int_t fAddress;  ///< detector unique identifier
-  Double_t fTime;  ///< Hit time [ns]
+  HitType fType;        ///< hit type
+  Double_t fZ;          ///< Z position of hit [cm]
+  Double_t fDz;         ///< Z position error [cm]
+  Int_t fRefId;         ///< some reference id (usually to cluster, digi or MC point)
+  Int_t fAddress;       ///< detector unique identifier
+  Double_t fTime;       ///< Hit time [ns]
   Double_t fTimeError;  ///< Error of hit time [ns]
   CbmMatch* fMatch;     ///< Monte-Carlo information
 

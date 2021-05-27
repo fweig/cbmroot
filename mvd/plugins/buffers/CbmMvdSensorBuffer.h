@@ -17,8 +17,10 @@
 #define CBMMVDSENSORBUFFER_H 1
 
 
-#include "TObject.h"
 #include "plugins/CbmMvdSensorPlugin.h"
+
+#include "TObject.h"
+
 #include <iostream>
 
 

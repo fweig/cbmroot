@@ -19,8 +19,8 @@
 void mcbm_mc_gp(Int_t nEvents = 100,
                 //	     const char* setupName = "sis18_mcbm_25deg",
                 //           const char* setupName = "sis18_mcbm_20deg_short",
-                const char* setupName = "sis18_mcbm_20deg_long",
-                const char* inputFile = "") {
+                const char* setupName = "sis18_mcbm_20deg_long", const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -36,7 +36,7 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   //  TString defaultInputFile = "/input/urqmd.pau.4.5gev.mbias.00001.root";
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_mc";  // this macro's name for screen output
+  TString myName = "mcbm_mc";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -72,9 +72,8 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   Double_t targetPosX      = 0.;   // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;   // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;   // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
-  Double_t beamRotY =
-    20.;  // the primary beam is at 25 degrees to the left of the mCBM setup
+  Double_t targetRotY      = 0.;   // target rotation angle around the y axis [deg]
+  Double_t beamRotY        = 20.;  // the primary beam is at 25 degrees to the left of the mCBM setup
   //  Double_t beamRotY        = 25.;    // the primary beam is at 25 degrees to the left of the mCBM setup
   // ------------------------------------------------------------------------
 
@@ -143,7 +142,8 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInput;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -171,8 +171,7 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -221,8 +220,7 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   uniGen->SetEventPlane(0., 360.);
   primGen->AddGenerator(uniGen);
-  primGen->SetBeamAngle(
-    beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
+  primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
@@ -310,9 +308,7 @@ void mcbm_mc_gp(Int_t nEvents = 100,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

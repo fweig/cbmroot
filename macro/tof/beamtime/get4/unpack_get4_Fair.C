@@ -5,9 +5,8 @@
 // --------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void unpack_get4_Fair(Int_t nEvents    = 2,
-                      Int_t iFileNb    = 1,
-                      Int_t iFirstFile = 0) {
+void unpack_get4_Fair(Int_t nEvents = 2, Int_t iFileNb = 1, Int_t iFirstFile = 0)
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 3;
 
@@ -53,9 +52,7 @@ void unpack_get4_Fair(Int_t nEvents    = 2,
   FairLmdSource* source = new FairLmdSource();
   for (Int_t iFileIndex = iFirstFile; iFileIndex < iFileNb; iFileIndex++)
     //      source->AddFile( Form("/buffalo/lab2013/vftx_get4_plaraw/cosmic_130704_%04d.lmd", iFileIndex ) );
-    source->AddFile(
-      Form("/buffalo/lab2013/vftx_get4_cosmics_130728/cosmic_130728_%04d.lmd",
-           iFileIndex));
+    source->AddFile(Form("/buffalo/lab2013/vftx_get4_cosmics_130728/cosmic_130728_%04d.lmd", iFileIndex));
 
   TTriglogUnpackTof* tofTriglogUnpacker = new TTriglogUnpackTof(iVerbose);
   source->AddUnpacker(tofTriglogUnpacker);
@@ -77,8 +74,7 @@ void unpack_get4_Fair(Int_t nEvents    = 2,
   // ===                     Unpacker monitoring                           ===
   // =========================================================================
 
-  TMbsUnpTofMonitor* tofUnpMonitor =
-    new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
   run->AddTask(tofUnpMonitor);
 
   // ===                 End of Unpacker monitoring                        ===

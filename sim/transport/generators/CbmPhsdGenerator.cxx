@@ -19,7 +19,6 @@
 #include "TString.h"
 #include "TVirtualMCStack.h"
 
-
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -39,32 +38,27 @@ CbmPhsdGenerator::CbmPhsdGenerator()
   fBaryonsFile(nullptr)
   , fMesonsFile(nullptr)
   , fParticleTable()
-  , fFileName(nullptr) {}
+  , fFileName(nullptr)
+{
+}
 // ------------------------------------------------------------------------
 
 
 // -----   Standard constructor   -----------------------------------------
-CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput,
-                                   const char* fileNameBaryons,
-                                   const char* fileNameMesons)
+CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput, const char* fileNameBaryons, const char* fileNameMesons)
   : FairGenerator()
   , fBaryonsFile(nullptr)
   , fMesonsFile(nullptr)
   , fDatFile(nullptr)
-  , fParticleTable() {
+  , fParticleTable()
+{
   //  cout << "-I CbmPhsdGenerator: Opening input file " << fileNameInput << endl;
-  cout << "-I CbmPhsdGenerator: Opening HSD Baryons file " << fileNameBaryons
-       << endl;
+  cout << "-I CbmPhsdGenerator: Opening HSD Baryons file " << fileNameBaryons << endl;
   fBaryonsFile = fopen(fileNameBaryons, "r");
-  if (!fBaryonsFile) {
-    Fatal("FairHSDgenerator", "Cannot open HSD Baryons file.");
-  }
-  cout << "-I CbmPhsdGenerator: Opening HSD Mesons file " << fileNameMesons
-       << endl;
+  if (!fBaryonsFile) { Fatal("FairHSDgenerator", "Cannot open HSD Baryons file."); }
+  cout << "-I CbmPhsdGenerator: Opening HSD Mesons file " << fileNameMesons << endl;
   fMesonsFile = fopen(fileNameMesons, "r");
-  if (!fMesonsFile) {
-    Fatal("FairHSDgenerator", "Cannot open HSD Mesons file.");
-  }
+  if (!fMesonsFile) { Fatal("FairHSDgenerator", "Cannot open HSD Mesons file."); }
   ReadConversionTable();
   ReadCollisionData(fileNameInput);
   nextBaryon.init = false;
@@ -76,13 +70,13 @@ CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput,
 
 
 // -----   Standard constructor   -----------------------------------------
-CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput,
-                                   const char* fileNameDat)
+CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput, const char* fileNameDat)
   : FairGenerator()
   , fBaryonsFile(nullptr)
   , fMesonsFile(nullptr)
   , fDatFile(nullptr)
-  , fParticleTable() {
+  , fParticleTable()
+{
   //  cout << "-I CbmPhsdGenerator: Opening input file " << fileNameInput << endl;
   cout << "-I CbmPhsdGenerator: Opening phsd.dat file " << fileNameDat << endl;
   fDatFile = fopen(fileNameDat, "r");
@@ -95,7 +89,8 @@ CbmPhsdGenerator::CbmPhsdGenerator(const char* fileNameInput,
 
 
 // -----   Destructor   ---------------------------------------------------
-CbmPhsdGenerator::~CbmPhsdGenerator() {
+CbmPhsdGenerator::~CbmPhsdGenerator()
+{
   //  cout<<"Enter Destructor of CbmPhsdGenerator"<<endl;
   /*if ( fInputFile ) {
     fclose(fInputFile);
@@ -120,9 +115,9 @@ CbmPhsdGenerator::~CbmPhsdGenerator() {
 
 
 // -----   Public method ReadEvent   --------------------------------------
-Bool_t CbmPhsdGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
-  if (fReadDat)
-    return ReadEventDat(primGen);
+Bool_t CbmPhsdGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
+  if (fReadDat) return ReadEventDat(primGen);
   else
     return ReadEvent300(primGen);
 }
@@ -130,7 +125,8 @@ Bool_t CbmPhsdGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
 
 // -----   Public method ReadEventDat   -----------------------------------
-Bool_t CbmPhsdGenerator::ReadEventDat(FairPrimaryGenerator* primGen) {
+Bool_t CbmPhsdGenerator::ReadEventDat(FairPrimaryGenerator* primGen)
+{
 
   // ---> Check for input file
   if (!fDatFile) {
@@ -166,14 +162,7 @@ Bool_t CbmPhsdGenerator::ReadEventDat(FairPrimaryGenerator* primGen) {
   for (int i = 0; i < nTracks; ++i) {
     int ttype, tchr;
     double tmppz, tmppx, tmppy, tmpp0;
-    fscanf(fDatFile,
-           "%d%d%lf%lf%lf%lf%*[^\n]%*c",
-           &ttype,
-           &tchr,
-           &tmppx,
-           &tmppy,
-           &tmppz,
-           &tmpp0);
+    fscanf(fDatFile, "%d%d%lf%lf%lf%lf%*[^\n]%*c", &ttype, &tchr, &tmppx, &tmppy, &tmppz, &tmpp0);
 
     Int_t pdgID = ttype;
 
@@ -205,8 +194,8 @@ Bool_t CbmPhsdGenerator::ReadEventDat(FairPrimaryGenerator* primGen) {
     primGen->AddTrack(pdgID, px, py, pz, 0., 0., 0.);
   }
 
-  cout << "-I CbmPhsdGenerator: Event " << nextEvent << ",  b = " << b
-       << " fm,  multiplicity " << nTracks << ", ekin: " << ekin << endl;
+  cout << "-I CbmPhsdGenerator: Event " << nextEvent << ",  b = " << b << " fm,  multiplicity " << nTracks
+       << ", ekin: " << ekin << endl;
 
   nextEvent++;
 
@@ -216,7 +205,8 @@ Bool_t CbmPhsdGenerator::ReadEventDat(FairPrimaryGenerator* primGen) {
 
 
 // -----   Public method ReadEvent300   -----------------------------------
-Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
+Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen)
+{
 
   // ---> Check for input file
   if (!fBaryonsFile) {
@@ -249,34 +239,16 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
   }*/
 
   if (!nextBaryon.init) {
-    fscanf(fBaryonsFile,
-           "%d %d %d %d %lf %lf %lf %lf %lf",
-           &nextBaryon.id,
-           &nextBaryon.charge,
-           &nextBaryon.ISUB,
-           &nextBaryon.IRUN,
-           &nextBaryon.px,
-           &nextBaryon.py,
-           &nextBaryon.pz,
-           &nextBaryon.p0,
-           &nextBaryon.b);
+    fscanf(fBaryonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextBaryon.id, &nextBaryon.charge, &nextBaryon.ISUB,
+           &nextBaryon.IRUN, &nextBaryon.px, &nextBaryon.py, &nextBaryon.pz, &nextBaryon.p0, &nextBaryon.b);
     fscanf(fBaryonsFile, "%*[^\n]%*c");
     nextBaryon.globalEvent = (nextBaryon.ISUB - 1) * IRUNS + nextBaryon.IRUN;
     nextBaryon.init        = 1;
   }
 
   if (!nextMeson.init && !feof(fMesonsFile)) {
-    fscanf(fMesonsFile,
-           "%d %d %d %d %lf %lf %lf %lf %lf",
-           &nextMeson.id,
-           &nextMeson.charge,
-           &nextMeson.ISUB,
-           &nextMeson.IRUN,
-           &nextMeson.px,
-           &nextMeson.py,
-           &nextMeson.pz,
-           &nextMeson.p0,
-           &nextMeson.b);
+    fscanf(fMesonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextMeson.id, &nextMeson.charge, &nextMeson.ISUB,
+           &nextMeson.IRUN, &nextMeson.px, &nextMeson.py, &nextMeson.pz, &nextMeson.p0, &nextMeson.b);
     fscanf(fMesonsFile, "%*[^\n]%*c");
     nextMeson.globalEvent = (nextMeson.ISUB - 1) * IRUNS + nextMeson.IRUN;
     nextMeson.init        = 1;
@@ -298,9 +270,7 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
   while (nextBaryon.globalEvent == nextEvent) {
     // Convert HSD type and charge to unique pid identifier which is based on
     // HSD particle id and charge, calculated separately for baryons, anti-baryons and mesons
-    if (nextBaryon.id >= 0) {
-      pid = nextBaryon.id * 10 + (2 + nextBaryon.charge);
-    }
+    if (nextBaryon.id >= 0) { pid = nextBaryon.id * 10 + (2 + nextBaryon.charge); }
     // antibaryons
     else {
       pid = -(-nextBaryon.id * 10 + (2 - nextBaryon.charge));
@@ -308,24 +278,14 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
 
     // Convert Unique PID into PDG particle code
     if (fParticleTable.find(pid) == fParticleTable.end()) {
-      cout << "-W CbmPhsdGenerator: PID " << nextBaryon.id << " charge "
-           << nextBaryon.charge << " not found in table (" << pid << ")"
-           << endl;
+      cout << "-W CbmPhsdGenerator: PID " << nextBaryon.id << " charge " << nextBaryon.charge << " not found in table ("
+           << pid << ")" << endl;
       if (feof(fBaryonsFile)) {
         nextBaryon.init = 0;
         break;
       }
-      fscanf(fBaryonsFile,
-             "%d %d %d %d %lf %lf %lf %lf %lf",
-             &nextBaryon.id,
-             &nextBaryon.charge,
-             &nextBaryon.ISUB,
-             &nextBaryon.IRUN,
-             &nextBaryon.px,
-             &nextBaryon.py,
-             &nextBaryon.pz,
-             &nextBaryon.p0,
-             &nextBaryon.b);
+      fscanf(fBaryonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextBaryon.id, &nextBaryon.charge, &nextBaryon.ISUB,
+             &nextBaryon.IRUN, &nextBaryon.px, &nextBaryon.py, &nextBaryon.pz, &nextBaryon.p0, &nextBaryon.b);
       fscanf(fBaryonsFile, "%*[^\n]%*c");
       nextBaryon.globalEvent = (nextBaryon.ISUB - 1) * IRUNS + nextBaryon.IRUN;
       continue;
@@ -364,17 +324,8 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
       break;
     }
 
-    fscanf(fBaryonsFile,
-           "%d %d %d %d %lf %lf %lf %lf %lf",
-           &nextBaryon.id,
-           &nextBaryon.charge,
-           &nextBaryon.ISUB,
-           &nextBaryon.IRUN,
-           &nextBaryon.px,
-           &nextBaryon.py,
-           &nextBaryon.pz,
-           &nextBaryon.p0,
-           &nextBaryon.b);
+    fscanf(fBaryonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextBaryon.id, &nextBaryon.charge, &nextBaryon.ISUB,
+           &nextBaryon.IRUN, &nextBaryon.px, &nextBaryon.py, &nextBaryon.pz, &nextBaryon.p0, &nextBaryon.b);
     fscanf(fBaryonsFile, "%*[^\n]%*c");
     nextBaryon.globalEvent = (nextBaryon.ISUB - 1) * IRUNS + nextBaryon.IRUN;
   }
@@ -383,23 +334,16 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
   while (nextMeson.globalEvent == nextEvent) {
     // Convert HSD type and charge to unique pid identifier which is based on
     // HSD particle id and charge, calculated separately for baryons, anti-baryons and mesons
-    { pid = 1000 + nextMeson.id * 10 + (2 + nextMeson.charge); }
+    {
+      pid = 1000 + nextMeson.id * 10 + (2 + nextMeson.charge);
+    }
 
     // Convert Unique PID into PDG particle code
     if (fParticleTable.find(pid) == fParticleTable.end()) {
-      cout << "-W CbmPhsdGenerator: PID " << nextMeson.id << " charge "
-           << nextMeson.charge << " not found in table (" << pid << ")" << endl;
-      fscanf(fMesonsFile,
-             "%d %d %d %d %lf %lf %lf %lf %lf",
-             &nextMeson.id,
-             &nextMeson.charge,
-             &nextMeson.ISUB,
-             &nextMeson.IRUN,
-             &nextMeson.px,
-             &nextMeson.py,
-             &nextMeson.pz,
-             &nextMeson.p0,
-             &nextMeson.b);
+      cout << "-W CbmPhsdGenerator: PID " << nextMeson.id << " charge " << nextMeson.charge << " not found in table ("
+           << pid << ")" << endl;
+      fscanf(fMesonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextMeson.id, &nextMeson.charge, &nextMeson.ISUB,
+             &nextMeson.IRUN, &nextMeson.px, &nextMeson.py, &nextMeson.pz, &nextMeson.p0, &nextMeson.b);
       fscanf(fMesonsFile, "%*[^\n]%*c");
       nextMeson.globalEvent = (nextMeson.ISUB - 1) * IRUNS + nextMeson.IRUN;
       continue;
@@ -438,23 +382,14 @@ Bool_t CbmPhsdGenerator::ReadEvent300(FairPrimaryGenerator* primGen) {
       break;
     }
 
-    fscanf(fMesonsFile,
-           "%d %d %d %d %lf %lf %lf %lf %lf",
-           &nextMeson.id,
-           &nextMeson.charge,
-           &nextMeson.ISUB,
-           &nextMeson.IRUN,
-           &nextMeson.px,
-           &nextMeson.py,
-           &nextMeson.pz,
-           &nextMeson.p0,
-           &nextMeson.b);
+    fscanf(fMesonsFile, "%d %d %d %d %lf %lf %lf %lf %lf", &nextMeson.id, &nextMeson.charge, &nextMeson.ISUB,
+           &nextMeson.IRUN, &nextMeson.px, &nextMeson.py, &nextMeson.pz, &nextMeson.p0, &nextMeson.b);
     fscanf(fMesonsFile, "%*[^\n]%*c");
     nextMeson.globalEvent = (nextMeson.ISUB - 1) * IRUNS + nextMeson.IRUN;
   }
 
-  cout << "-I CbmPhsdGenerator: Event " << nextEvent << ",  b = " << b
-       << " fm,  multiplicity " << nTracks << ", ekin: " << ekin << endl;
+  cout << "-I CbmPhsdGenerator: Event " << nextEvent << ",  b = " << b << " fm,  multiplicity " << nTracks
+       << ", ekin: " << ekin << endl;
 
   nextEvent++;
 
@@ -531,7 +466,8 @@ Bool_t CbmPhsdGenerator::SkipEvents(Int_t count)
 // ------------------------------------------------------------------------
 
 // -----   Private method ReadConversionTable   ---------------------------
-void CbmPhsdGenerator::ReadConversionTable() {
+void CbmPhsdGenerator::ReadConversionTable()
+{
 
   TString work           = getenv("VMCWORKDIR");
   TString fileName       = work + "/input/hsd_pdg.dat";
@@ -563,7 +499,8 @@ void CbmPhsdGenerator::ReadConversionTable() {
 // ------------------------------------------------------------------------
 
 // -----   Private method ReadCollisionData   ----------------------------
-void CbmPhsdGenerator::ReadCollisionData(const char* fileNameInput) {
+void CbmPhsdGenerator::ReadCollisionData(const char* fileNameInput)
+{
 
   std::ifstream* inputf = new std::ifstream(fileNameInput);
 
@@ -579,8 +516,7 @@ void CbmPhsdGenerator::ReadCollisionData(const char* fileNameInput) {
     *inputf >> val >> name;
     tname = name.substr(0, 6);
     //cout << tname << endl;
-    if (tname == "MASSTA")
-      At = atoi(val.substr(0, val.size() - 1).c_str());
+    if (tname == "MASSTA") At = atoi(val.substr(0, val.size() - 1).c_str());
     else if (tname == "MSTAPR")
       Zt = atoi(val.substr(0, val.size() - 1).c_str());
     else if (tname == "MASSPR")

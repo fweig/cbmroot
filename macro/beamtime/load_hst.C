@@ -1,4 +1,5 @@
-void load_hst(TString cstr = "hst/default.hst.root") {
+void load_hst(TString cstr = "hst/default.hst.root")
+{
   // Read histogramms from the file
   TFile* fHist = TFile::Open(cstr, "READ");
   TIter next(fHist->GetListOfKeys());
@@ -14,7 +15,8 @@ void load_hst(TString cstr = "hst/default.hst.root") {
     if (cls->InheritsFrom(TH1::Class())) {
       obj = fHist->Get(key->GetName());
       dynamic_cast<TH1*>(obj)->SetDirectory(gROOT);
-    } else if (cls->InheritsFrom(TEfficiency::Class())) {
+    }
+    else if (cls->InheritsFrom(TEfficiency::Class())) {
       obj = fHist->Get(key->GetName());
       dynamic_cast<TEfficiency*>(obj)->SetDirectory(gROOT);
     }

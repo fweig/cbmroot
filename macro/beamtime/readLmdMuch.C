@@ -9,7 +9,8 @@
  */
 
 
-void readLmdMuch() {
+void readLmdMuch()
+{
 
   // --- Specify run
   TString runTag = "MUCH/dec16_run46_0002";
@@ -54,8 +55,7 @@ void readLmdMuch() {
   CbmROCUnpackMuch* unpackMuch            = new CbmROCUnpackMuch();
 
   // Create an event builder
-  CbmTbEventBuilderFixedTimeWindow* eventBuilder =
-    new CbmTbEventBuilderFixedTimeWindow();
+  CbmTbEventBuilderFixedTimeWindow* eventBuilder = new CbmTbEventBuilderFixedTimeWindow();
 
   // Create the correct mapping for the beamtime
   CbmDaqMapCosy2014Much* daqMap = new CbmDaqMapCosy2014Much();
@@ -124,8 +124,7 @@ void readLmdMuch() {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

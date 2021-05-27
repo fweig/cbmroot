@@ -29,10 +29,13 @@ class CbmDigiManager;
 #include "CbmTofTracklet.h"
 #include "CbmTofTrackletParam.h"
 #include "CbmTofTrackletTools.h"
+
 #include "FairTrackParam.h"
+
 #include "TH1.h"
 #include "TH2.h"
 #include "TMath.h"
+
 #include <vector>
 
 class TClonesArray;
@@ -76,20 +79,18 @@ private:
   TH1* fhCalDX0;
   TH1* fhCalDY0;
 
-  std::vector<TH2*> fhCalPosition;  // [nbDet]
-  std::vector<TH2*> fhCalPos;       // [nbDet]
-  std::vector<TH2*> fhCalTOff;      // [nbDet]
-  std::vector<TH2*> fhCalTot;       // [nbDet]
-  std::vector<std::vector<std::vector<TH2*>>>
-    fhCalWalk;  // [nbDet][nbCh][nSide]
+  std::vector<TH2*> fhCalPosition;                        // [nbDet]
+  std::vector<TH2*> fhCalPos;                             // [nbDet]
+  std::vector<TH2*> fhCalTOff;                            // [nbDet]
+  std::vector<TH2*> fhCalTot;                             // [nbDet]
+  std::vector<std::vector<std::vector<TH2*>>> fhCalWalk;  // [nbDet][nbCh][nSide]
 
-  std::vector<TH1*> fhCorPos;     // [nbDet]
-  std::vector<TH1*> fhCorTOff;    // [nbDet]
-  std::vector<TH1*> fhCorTot;     // [nbDet]
-  std::vector<TH1*> fhCorTotOff;  // [nbDet]
-  std::vector<TH1*> fhCorSvel;    // [nbDet]
-  std::vector<std::vector<std::vector<TH1*>>>
-    fhCorWalk;  // [nbDet][nbCh][nSide]
+  std::vector<TH1*> fhCorPos;                             // [nbDet]
+  std::vector<TH1*> fhCorTOff;                            // [nbDet]
+  std::vector<TH1*> fhCorTot;                             // [nbDet]
+  std::vector<TH1*> fhCorTotOff;                          // [nbDet]
+  std::vector<TH1*> fhCorSvel;                            // [nbDet]
+  std::vector<std::vector<std::vector<TH1*>>> fhCorWalk;  // [nbDet][nbCh][nSide]
 
   std::map<UInt_t, UInt_t> fDetIdIndexMap;
 

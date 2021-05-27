@@ -74,12 +74,12 @@ UInt_t shape = 0;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask()
-  : CbmMvdSensorDigiToHitTask(0, 0) {}
+CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask() : CbmMvdSensorDigiToHitTask(0, 0) {}
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-CbmMvdSensorDigiToHitTask::~CbmMvdSensorDigiToHitTask() {
+CbmMvdSensorDigiToHitTask::~CbmMvdSensorDigiToHitTask()
+{
   if (fOutputBuffer) {
     fOutputBuffer->Delete();
     delete fOutputBuffer;
@@ -88,8 +88,7 @@ CbmMvdSensorDigiToHitTask::~CbmMvdSensorDigiToHitTask() {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask(Int_t /*iMode*/,
-                                                     Int_t iVerbose)
+CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask(Int_t /*iMode*/, Int_t iVerbose)
   : CbmMvdSensorTask()
   , fAdcDynamic(200)
   , fAdcOffset(0)
@@ -108,11 +107,13 @@ CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask(Int_t /*iMode*/,
   , fHitPosErrY(0.0005)
   , fHitPosErrZ(0.0)
 
-{}
+{
+}
 // -------------------------------------------------------------------------
 
 // -----    Virtual private method Init   ----------------------------------
-void CbmMvdSensorDigiToHitTask::InitTask(CbmMvdSensor* mysensor) {
+void CbmMvdSensorDigiToHitTask::InitTask(CbmMvdSensor* mysensor)
+{
 
 
   fInputBuffer  = new TClonesArray("CbmMvdDigi", 100);
@@ -130,7 +131,8 @@ void CbmMvdSensorDigiToHitTask::InitTask(CbmMvdSensor* mysensor) {
 // -------------------------------------------------------------------------
 
 // -----   Virtual public method Reinit   ----------------------------------
-Bool_t CbmMvdSensorDigiToHitTask::ReInit() {
+Bool_t CbmMvdSensorDigiToHitTask::ReInit()
+{
   cout << "-I- "
        << "CbmMvdSensorDigiToHitTask::ReInt---------------" << endl;
   return kTRUE;
@@ -142,7 +144,8 @@ void CbmMvdSensorDigiToHitTask::ExecChain() { Exec(); }
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------
-void CbmMvdSensorDigiToHitTask::Exec() {
+void CbmMvdSensorDigiToHitTask::Exec()
+{
   int nDigis = fInputBuffer->GetEntriesFast();
   if (nDigis > 0) {
 
@@ -166,22 +169,18 @@ void CbmMvdSensorDigiToHitTask::Exec() {
     for (Int_t k = 0; k < nDigis; k++) {
       digi = (CbmMvdDigi*) fInputBuffer->At(k);
 
-      if (digi->GetRefId() < 0) {
-        LOG(fatal) << "RefID of this digi is -1 this should not happend ";
-      }
+      if (digi->GetRefId() < 0) { LOG(fatal) << "RefID of this digi is -1 this should not happend "; }
 
       //apply fNeighThreshold
       Float_t curr_digi_charge = digi->GetCharge();
 
       short dth_current_digi_X = digi->GetPixelX();
       short dth_current_digi_Y = digi->GetPixelY();
-      dth_coordArray.emplace_back(
-        std::make_pair(dth_current_digi_X, dth_current_digi_Y));
+      dth_coordArray.emplace_back(std::make_pair(dth_current_digi_X, dth_current_digi_Y));
 
       if (GetAdcCharge(curr_digi_charge) >= dth_fNeighThreshold) {
         //puts index into dth_grid.
-        dth_grid[dth_current_digi_X + 1][dth_current_digi_Y + 1] =
-          curr_digi_charge;
+        dth_grid[dth_current_digi_X + 1][dth_current_digi_Y + 1] = curr_digi_charge;
       }
     }
 
@@ -194,8 +193,7 @@ void CbmMvdSensorDigiToHitTask::Exec() {
       auto& dth_current_digi_Y = curr_coord.second;
 
 
-      auto& root_digi_pos_charge =
-        dth_grid[dth_current_digi_X + 1][dth_current_digi_Y + 1];
+      auto& root_digi_pos_charge = dth_grid[dth_current_digi_X + 1][dth_current_digi_Y + 1];
 
       if (GetAdcCharge(root_digi_pos_charge) >= dth_fSeedThreshold) {
 
@@ -223,12 +221,9 @@ void CbmMvdSensorDigiToHitTask::Exec() {
         lab[1] = 0;
         lab[2] = 0;
 
-        shape += TMath::Power(2,
-                              (4 * (dth_current_digi_Y - 1 - yIndex0 + 3))
-                                + (dth_current_digi_X - 1 - xIndex0));
+        shape += TMath::Power(2, (4 * (dth_current_digi_Y - 1 - yIndex0 + 3)) + (dth_current_digi_X - 1 - xIndex0));
         //shape &= 1 << ((4*(dth_current_digi_Y - 1 - yIndex0+3))+(dth_current_digi_X - 1 - xIndex0)) ;
-        fSensor->PixelToTop(
-          (dth_current_digi_X - 1), (dth_current_digi_Y - 1), lab);
+        fSensor->PixelToTop((dth_current_digi_X - 1), (dth_current_digi_Y - 1), lab);
 
         numeratorX += lab[0] * root_digi_pos_charge;
         numeratorY += lab[1] * root_digi_pos_charge;
@@ -254,9 +249,7 @@ void CbmMvdSensorDigiToHitTask::Exec() {
               lab[2] = 0;
 
               if (counter <= 3) {
-                shape += TMath::Power(2,
-                                      (4 * (channelY - 1 - yIndex0 + 3))
-                                        + (channelX - 1 - xIndex0));
+                shape += TMath::Power(2, (4 * (channelY - 1 - yIndex0 + 3)) + (channelX - 1 - xIndex0));
                 //shape &= 1 << ((4*(channelY - 1 - yIndex0+3))+(channelX - 1 - xIndex0)) ;
               }
 
@@ -296,7 +289,8 @@ void CbmMvdSensorDigiToHitTask::Exec() {
           fHitPosX = (numeratorX / denominator);
           fHitPosY = (numeratorY / denominator);
           fHitPosZ = layerPosZ;
-        } else {
+        }
+        else {
           fHitPosX = 0;
           fHitPosY = 0;
           fHitPosZ = 0;
@@ -415,9 +409,7 @@ void CbmMvdSensorDigiToHitTask::Exec() {
 
         // pos = center of gravity (labframe), dpos uncertaintycout<<setw(10)<<setprecision(2)<< VolumeShape->GetDX();
         pos.SetXYZ(fHitPosX, fHitPosY, fHitPosZ);
-        dpos.SetXYZ(TMath::Abs(sigmaOut[0]),
-                    TMath::Abs(sigmaOut[1]),
-                    TMath::Abs(sigmaOut[2]));
+        dpos.SetXYZ(TMath::Abs(sigmaOut[0]), TMath::Abs(sigmaOut[1]), TMath::Abs(sigmaOut[2]));
 
         //Create Hit
         //__________________________________________________________________________________________
@@ -431,8 +423,7 @@ void CbmMvdSensorDigiToHitTask::Exec() {
         fSensor->TopToPixel(local, indexX, indexY);
         Int_t nHits = fOutputBuffer->GetEntriesFast();
 
-        new ((*fOutputBuffer)[nHits])
-          CbmMvdHit(fSensor->GetStationNr(), pos, dpos, indexX, indexY, ID, 0);
+        new ((*fOutputBuffer)[nHits]) CbmMvdHit(fSensor->GetStationNr(), pos, dpos, indexX, indexY, ID, 0);
         CbmMvdHit* currentHit = (CbmMvdHit*) fOutputBuffer->At(nHits);
         currentHit->SetTime(fSensor->GetCurrentEventTime());
         currentHit->SetTimeError(fSensor->GetIntegrationtime() / 2);
@@ -454,30 +445,28 @@ void CbmMvdSensorDigiToHitTask::Exec() {
 
 
 // -------------------------------------------------------------------------
-float CbmMvdSensorDigiToHitTask::GetAdcCharge(Float_t curr_charge) {
+float CbmMvdSensorDigiToHitTask::GetAdcCharge(Float_t curr_charge)
+{
   int adcCharge;
 
   if (curr_charge < fAdcOffset) { return 0; };
 
   adcCharge = int((curr_charge - fAdcOffset) / dth_fAdcStepSize);
 
-  if (adcCharge > dth_fAdcSteps - 1) {
-    return dth_fAdcSteps - 1;
-  } else {
+  if (adcCharge > dth_fAdcSteps - 1) { return dth_fAdcSteps - 1; }
+  else {
     return adcCharge;
   }
 }
 
 
 //--------------------------------------------------------------------------
-void CbmMvdSensorDigiToHitTask::Finish() {
+void CbmMvdSensorDigiToHitTask::Finish()
+{
   if (fShowDebugHistos) {
-    cout << "\n============================================================"
-         << endl;
-    cout << "-I- " << GetName()
-         << "::Finish: Total events skipped: " << fCounter << endl;
-    cout << "============================================================"
-         << endl;
+    cout << "\n============================================================" << endl;
+    cout << "-I- " << GetName() << "::Finish: Total events skipped: " << fCounter << endl;
+    cout << "============================================================" << endl;
     cout << "-I- Parameters used" << endl;
     cout << "Gaussian noise [electrons]	: " << fSigmaNoise << endl;
     cout << "Noise simulated [Bool]	        : " << fAddNoise << endl;
@@ -486,8 +475,7 @@ void CbmMvdSensorDigiToHitTask::Finish() {
     cout << "ADC - Bits			: " << fAdcBits << endl;
     cout << "ADC - Dynamic [electrons]	: " << fAdcDynamic << endl;
     cout << "ADC - Offset [electrons]	: " << fAdcOffset << endl;
-    cout << "============================================================"
-         << endl;
+    cout << "============================================================" << endl;
 
 
     TH1F* histo;
@@ -496,14 +484,8 @@ void CbmMvdSensorDigiToHitTask::Finish() {
     canvas2->Divide(2, 2);
     canvas2->cd(1);
     if (fChargeArraySize <= 7) {
-      clusterShapeHistogram = new TH2F("MvdClusterShape",
-                                       "MvdClusterShape",
-                                       fChargeArraySize,
-                                       0,
-                                       fChargeArraySize,
-                                       fChargeArraySize,
-                                       0,
-                                       fChargeArraySize);
+      clusterShapeHistogram = new TH2F("MvdClusterShape", "MvdClusterShape", fChargeArraySize, 0, fChargeArraySize,
+                                       fChargeArraySize, 0, fChargeArraySize);
       for (Int_t i = 0; i < fChargeArraySize * fChargeArraySize; i++) {
         histo               = dth_fPixelChargeHistos[i];
         Float_t curr_charge = histo->GetMean();
@@ -511,8 +493,7 @@ void CbmMvdSensorDigiToHitTask::Finish() {
         //histo->Fit("landau");
         //TF1* fitFunction= histo->GetFunction("landau");
         //Double_t MPV=fitFunction->GetParameter(1);
-        clusterShapeHistogram->Fill(
-          i % fChargeArraySize, i / fChargeArraySize, curr_charge);
+        clusterShapeHistogram->Fill(i % fChargeArraySize, i / fChargeArraySize, curr_charge);
       }
     }
     clusterShapeHistogram->Draw("Lego2");

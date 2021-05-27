@@ -8,7 +8,9 @@
 #define CBMLITRESULTCHECKER_H_
 
 #include "TObject.h"
+
 #include <boost/property_tree/ptree.hpp>
+
 #include <map>
 #include <string>
 using boost::property_tree::ptree;
@@ -48,9 +50,7 @@ public:
     * \param[in] idealFile File name of predefined values.
     * \param[out] checkFile File name for output results.
     */
-  void DoCheck(const string& qaFile,
-               const string& idealFile,
-               const string& checkFile);
+  void DoCheck(const string& qaFile, const string& idealFile, const string& checkFile);
 
   /**
     * \brief Check reconstruction quality results.
@@ -67,9 +67,7 @@ private:
     * \param[in] pt Input property tree.
     * \param[out] mymap Output map<"property name", "value">.
     */
-  void PropertyTreeToMap(const string& path,
-                         const ptree& pt,
-                         map<string, Double_t>& mymap) const;
+  void PropertyTreeToMap(const string& path, const ptree& pt, map<string, Double_t>& mymap) const;
 };
 
 #endif /* CBMLITRESULTCHECKER_H_ */

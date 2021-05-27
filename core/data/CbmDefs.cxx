@@ -14,28 +14,30 @@
 // The opeartor takes care about the non continuous values for the enum
 // When it reaches the last detector it automatically continuous with the
 // first passive module
-ECbmModuleId& operator++(ECbmModuleId& e) {
-  if (e == ECbmModuleId::kLastModule) {
-    throw std::out_of_range("for ECbmModuleId& operator ++ (ECbmModuleId&)");
-  } else if (e == ECbmModuleId::kT0) {
+ECbmModuleId& operator++(ECbmModuleId& e)
+{
+  if (e == ECbmModuleId::kLastModule) { throw std::out_of_range("for ECbmModuleId& operator ++ (ECbmModuleId&)"); }
+  else if (e == ECbmModuleId::kT0) {
     e = ECbmModuleId::kMagnet;
-  } else {
-    e = ECbmModuleId(static_cast<std::underlying_type<ECbmModuleId>::type>(e)
-                     + 1);
+  }
+  else {
+    e = ECbmModuleId(static_cast<std::underlying_type<ECbmModuleId>::type>(e) + 1);
   }
   return e;
 }
 
 // operator << for convenient output to std::ostream.
 // Converts the enum value to a string which is put in the stream
-std::ostream& operator<<(std::ostream& strm, const ECbmModuleId& modId) {
+std::ostream& operator<<(std::ostream& strm, const ECbmModuleId& modId)
+{
   strm << std::to_string(ToIntegralType(modId));
   return strm;
 }
 
 // operator << for convenient output to std::ostream.
 // Converts the enum value to a string which is put in the stream
-std::ostream& operator<<(std::ostream& strm, const ECbmDataType& dataType) {
+std::ostream& operator<<(std::ostream& strm, const ECbmDataType& dataType)
+{
   strm << std::to_string(ToIntegralType(dataType));
   return strm;
 }

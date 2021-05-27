@@ -7,20 +7,23 @@
 
 
 #include "CbmMQTsaInfo.h"
+
 #include "CbmMQDefs.h"
+
+#include "TimesliceInputArchive.hpp"
+#include "TimesliceSubscriber.hpp"
 
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
 
-#include "TimesliceInputArchive.hpp"
-#include "TimesliceSubscriber.hpp"
+#include <thread>  // this_thread::sleep_for
 
 #include <boost/archive/binary_oarchive.hpp>
 
 #include <chrono>
 #include <ctime>
+
 #include <stdio.h>
-#include <thread>  // this_thread::sleep_for
 
 using namespace std;
 
@@ -42,9 +45,12 @@ CbmMQTsaInfo::CbmMQTsaInfo()
   , fTSNumber(0)
   , fTSCounter(0)
   , fMessageCounter(0)
-  , fTime() {}
+  , fTime()
+{
+}
 
-void CbmMQTsaInfo::InitTask() try {
+void CbmMQTsaInfo::InitTask()
+try {
   // Get the values from the command line options (via fConfig)
   fFileName      = fConfig->GetValue<string>("filename");
   fHost          = fConfig->GetValue<string>("flib-host");
@@ -70,8 +76,7 @@ void CbmMQTsaInfo::InitTask() try {
   LOG(info) << "Number of defined output channels: " << noChannel;
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
-    if (!IsChannelNameAllowed(entry.first))
-      throw InitTaskError("Channel name does not match.");
+    if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
   }
 
   if (0 == fFileName.size() && 0 != fHost.size()) {
@@ -79,7 +84,8 @@ void CbmMQTsaInfo::InitTask() try {
     LOG(info) << "Open TSPublisher at " << connector;
     fSource = new fles::TimesliceSubscriber(connector);
     if (!fSource) { throw InitTaskError("Could not connect to publisher."); }
-  } else {
+  }
+  else {
     LOG(info) << "Open the Flib input file " << fFileName;
     // Check if the input file exist
     FILE* inputFile = fopen(fFileName.c_str(), "r");
@@ -89,27 +95,28 @@ void CbmMQTsaInfo::InitTask() try {
     if (!fSource) { throw InitTaskError("Could not open input file."); }
   }
   fTime = std::chrono::steady_clock::now();
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmMQTsaInfo::IsChannelNameAllowed(std::string channelName) {
-  if (std::find(fAllowedChannels.begin(), fAllowedChannels.end(), channelName)
-      != fAllowedChannels.end()) {
-    LOG(info) << "Channel name " << channelName
-              << " found in list of allowed channel names.";
+bool CbmMQTsaInfo::IsChannelNameAllowed(std::string channelName)
+{
+  if (std::find(fAllowedChannels.begin(), fAllowedChannels.end(), channelName) != fAllowedChannels.end()) {
+    LOG(info) << "Channel name " << channelName << " found in list of allowed channel names.";
     return true;
-  } else {
-    LOG(info) << "Channel name " << channelName
-              << " not found in list of allowed channel names.";
+  }
+  else {
+    LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
     LOG(error) << "Stop device.";
     return false;
   }
 }
 
-bool CbmMQTsaInfo::ConditionalRun() {
+bool CbmMQTsaInfo::ConditionalRun()
+{
 
 
   auto timeslice = fSource->get();
@@ -122,18 +129,17 @@ bool CbmMQTsaInfo::ConditionalRun() {
     //    auto tsIndex = ts.index();
 
 
-    LOG(info) << "Found " << ts.num_components()
-              << " different components in timeslice";
+    LOG(info) << "Found " << ts.num_components() << " different components in timeslice";
 
     CheckTimeslice(ts);
 
-    if (fTSCounter < fMaxTimeslices) {
-      return true;
-    } else {
+    if (fTSCounter < fMaxTimeslices) { return true; }
+    else {
       CalcRuntime();
       return false;
     }
-  } else {
+  }
+  else {
     CalcRuntime();
     return false;
   }
@@ -142,46 +148,40 @@ bool CbmMQTsaInfo::ConditionalRun() {
 
 CbmMQTsaInfo::~CbmMQTsaInfo() {}
 
-void CbmMQTsaInfo::CalcRuntime() {
-  std::chrono::duration<double> run_time =
-    std::chrono::steady_clock::now() - fTime;
+void CbmMQTsaInfo::CalcRuntime()
+{
+  std::chrono::duration<double> run_time = std::chrono::steady_clock::now() - fTime;
 
   LOG(info) << "Runtime: " << run_time.count();
   LOG(info) << "No more input data";
 }
 
 
-void CbmMQTsaInfo::PrintMicroSliceDescriptor(
-  const fles::MicrosliceDescriptor& mdsc) {
-  LOG(info) << "Header ID: Ox" << std::hex << static_cast<int>(mdsc.hdr_id)
-            << std::dec;
-  LOG(info) << "Header version: Ox" << std::hex
-            << static_cast<int>(mdsc.hdr_ver) << std::dec;
+void CbmMQTsaInfo::PrintMicroSliceDescriptor(const fles::MicrosliceDescriptor& mdsc)
+{
+  LOG(info) << "Header ID: Ox" << std::hex << static_cast<int>(mdsc.hdr_id) << std::dec;
+  LOG(info) << "Header version: Ox" << std::hex << static_cast<int>(mdsc.hdr_ver) << std::dec;
   LOG(info) << "Equipement ID: " << mdsc.eq_id;
   LOG(info) << "Flags: " << mdsc.flags;
-  LOG(info) << "Sys ID: Ox" << std::hex << static_cast<int>(mdsc.sys_id)
-            << std::dec;
-  LOG(info) << "Sys version: Ox" << std::hex << static_cast<int>(mdsc.sys_ver)
-            << std::dec;
+  LOG(info) << "Sys ID: Ox" << std::hex << static_cast<int>(mdsc.sys_id) << std::dec;
+  LOG(info) << "Sys version: Ox" << std::hex << static_cast<int>(mdsc.sys_ver) << std::dec;
   LOG(info) << "Microslice Idx: " << mdsc.idx;
   LOG(info) << "Checksum: " << mdsc.crc;
   LOG(info) << "Size: " << mdsc.size;
   LOG(info) << "Offset: " << mdsc.offset;
 }
 
-bool CbmMQTsaInfo::CheckTimeslice(const fles::Timeslice& ts) {
+bool CbmMQTsaInfo::CheckTimeslice(const fles::Timeslice& ts)
+{
   if (0 == ts.num_components()) {
     LOG(error) << "No Component in TS " << ts.index();
     return 1;
   }
-  LOG(info) << "Found " << ts.num_components()
-            << " different components in timeslice";
+  LOG(info) << "Found " << ts.num_components() << " different components in timeslice";
 
   for (size_t c = 0; c < ts.num_components(); ++c) {
-    LOG(info) << "Found " << ts.num_microslices(c)
-              << " microslices in component " << c;
-    LOG(info) << "Component " << c << " has a size of " << ts.size_component(c)
-              << " bytes";
+    LOG(info) << "Found " << ts.num_microslices(c) << " microslices in component " << c;
+    LOG(info) << "Component " << c << " has a size of " << ts.size_component(c) << " bytes";
     LOG(info) << "Component " << c << " has the system id 0x" << std::hex
               << static_cast<int>(ts.descriptor(c, 0).sys_id) << std::dec;
 

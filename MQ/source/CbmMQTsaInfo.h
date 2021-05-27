@@ -54,9 +54,7 @@ private:
   fles::TimesliceSource* fSource;  //!
   std::chrono::steady_clock::time_point fTime;
 
-  std::vector<std::string> fAllowedChannels = {"stscomponent",
-                                               "trdcomponent",
-                                               "tofcomponent"};
+  std::vector<std::string> fAllowedChannels = {"stscomponent", "trdcomponent", "tofcomponent"};
 };
 
 #endif /* CBMMQTSAINFO_H_ */

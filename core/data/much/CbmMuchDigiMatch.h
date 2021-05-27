@@ -10,9 +10,9 @@
 #ifndef CBMMUCHDIGIMATCH_H
 #define CBMMUCHDIGIMATCH_H 1
 
-#include <Rtypes.h>  // for ClassDef
-
 #include "CbmMatch.h"  // for CbmMatch
+
+#include <Rtypes.h>  // for ClassDef
 
 class CbmMuchDigiMatch : public CbmMatch {
 

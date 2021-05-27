@@ -36,52 +36,30 @@ public:
   void Finish();
 
   void SetTracklistMC(std::vector<CbmMCTrack*> MCTracklist);
-  void SetTracklistReco(std::vector<CbmMCTrack*> MCTracklist,
-                        std::vector<TVector3> RecoTracklist1,
-                        std::vector<TVector3> RecoTracklist2,
-                        std::vector<int> ids,
-                        std::vector<Double_t> chi,
+  void SetTracklistReco(std::vector<CbmMCTrack*> MCTracklist, std::vector<TVector3> RecoTracklist1,
+                        std::vector<TVector3> RecoTracklist2, std::vector<int> ids, std::vector<Double_t> chi,
                         std::vector<Int_t> GlobalTrackId);
   void InvariantMassMC_all();
-  Double_t Invmass_4particles(const CbmMCTrack* mctrack1,
-                              const CbmMCTrack* mctrack2,
-                              const CbmMCTrack* mctrack3,
+  Double_t Invmass_4particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2, const CbmMCTrack* mctrack3,
                               const CbmMCTrack* mctrack4);
   Double_t SmearValue(Double_t value);
-  Double_t Invmass_4particlesRECO(const TVector3 part1,
-                                  const TVector3 part2,
-                                  const TVector3 part3,
+  Double_t Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                   const TVector3 part4);
   void InvariantMassTest_4epem();
-  void CutEfficiencyStudies(int e1,
-                            int e2,
-                            int e3,
-                            int e4,
-                            int motherE1,
-                            int motherE2,
-                            int motherE3,
-                            int motherE4,
+  void CutEfficiencyStudies(int e1, int e2, int e3, int e4, int motherE1, int motherE2, int motherE3, int motherE4,
                             int IsEta = 0);
   Int_t NofDaughters(Int_t motherId);
   Double_t CalculateOpeningAngleReco(TVector3 electron1, TVector3 electron2);
   Double_t CalculateOpeningAngleMC(CbmMCTrack* mctrack1, CbmMCTrack* mctrack2);
-  Double_t CalculateOpeningAngleBetweenGammasMC(CbmMCTrack* mctrack1,
-                                                CbmMCTrack* mctrack2,
-                                                CbmMCTrack* mctrack3,
+  Double_t CalculateOpeningAngleBetweenGammasMC(CbmMCTrack* mctrack1, CbmMCTrack* mctrack2, CbmMCTrack* mctrack3,
                                                 CbmMCTrack* mctrack4);
-  Double_t CalculateOpeningAngleBetweenGammasReco(TVector3 electron1,
-                                                  TVector3 electron2,
-                                                  TVector3 electron3,
+  Double_t CalculateOpeningAngleBetweenGammasReco(TVector3 electron1, TVector3 electron2, TVector3 electron3,
                                                   TVector3 electron4);
 
   void CalculateInvMassWithFullRecoCuts();
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1,
-                                                      const TVector3 electron2);
-  CbmLmvmKinematicParams
-  CalculateKinematicParams_4particles(const TVector3 part1,
-                                      const TVector3 part2,
-                                      const TVector3 part3,
-                                      const TVector3 part4);
+  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  CbmLmvmKinematicParams CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
+                                                             const TVector3 part3, const TVector3 part4);
 
   Bool_t IsRichElectronANN(Int_t globalTrackIndex, Double_t momentum);
   Double_t ElectronANNvalue(Int_t globalTrackIndex, Double_t momentum);
@@ -104,12 +82,9 @@ private:
   std::vector<TVector3> fRecoRefittedMomentum;
 
 
-  std::vector<TH1*>
-    fHistoList_MC;  // list of all histograms generated with MC data
-  std::vector<TH1*>
-    fHistoList_reco;  // list of all histograms generated with reconstructed data
-  std::vector<TH1*>
-    fHistoList_reco_mom;  // list of all histograms of reconstruction data (used momenta)
+  std::vector<TH1*> fHistoList_MC;        // list of all histograms generated with MC data
+  std::vector<TH1*> fHistoList_reco;      // list of all histograms generated with reconstructed data
+  std::vector<TH1*> fHistoList_reco_mom;  // list of all histograms of reconstruction data (used momenta)
   std::vector<TH1*> fHistoList_gg;
   std::vector<TH1*> fHistoList_gee;
   std::vector<TH1*> fHistoList_eeee;

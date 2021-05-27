@@ -110,7 +110,8 @@ TGeoVolume* create_tof_module(Int_t);
 
 void position_tof_modules(Int_t);  // STAR modules
 
-void Create_TOF_Geometry_mCBM_1() {
+void Create_TOF_Geometry_mCBM_1()
+{
   // Load the necessary FairRoot libraries
   //  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   //  basiclibs();
@@ -139,8 +140,7 @@ void Create_TOF_Geometry_mCBM_1() {
   TGeoVolume* tof = new TGeoVolumeAssembly(geoVersion);
   top->AddNode(tof, 1);
 
-  for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes;
-       counterType++) {
+  for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes; counterType++) {
     gCounter[counterType] = create_counter(counterType);
   }
 
@@ -173,7 +173,8 @@ void Create_TOF_Geometry_mCBM_1() {
   //  top->Raytrace();
 }
 
-void create_materials_from_media_file() {
+void create_materials_from_media_file()
+{
   // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
@@ -203,7 +204,8 @@ void create_materials_from_media_file() {
   geoBuild->createMedium(carbon);
 }
 
-TGeoVolume* create_counter(Int_t modType) {
+TGeoVolume* create_counter(Int_t modType)
+{
 
   //glass
   Float_t gdx = Glass_X[modType];
@@ -248,18 +250,15 @@ TGeoVolume* create_counter(Int_t modType) {
 
   // define counter volume
   TGeoBBox* counter_box = new TGeoBBox("", cdx / 2., cdy / 2., cdz / 2.);
-  TGeoVolume* counter =
-    new TGeoVolume("counter", counter_box, noActiveGasVolMed);
+  TGeoVolume* counter   = new TGeoVolume("counter", counter_box, noActiveGasVolMed);
   counter->SetLineColor(kCyan);  // set line color for the counter
   counter->SetTransparency(98);  // set transparency for the TOF
 
   // define single glass plate volume
-  TGeoBBox* glass_plate = new TGeoBBox("", gdx / 2., gdy / 2., gdz / 2.);
-  TGeoVolume* glass_plate_vol =
-    new TGeoVolume("tof_glass", glass_plate, glassPlateVolMed);
-  glass_plate_vol->SetLineColor(
-    kMagenta);                           // set line color for the glass plate
-  glass_plate_vol->SetTransparency(98);  // set transparency for the TOF
+  TGeoBBox* glass_plate       = new TGeoBBox("", gdx / 2., gdy / 2., gdz / 2.);
+  TGeoVolume* glass_plate_vol = new TGeoVolume("tof_glass", glass_plate, glassPlateVolMed);
+  glass_plate_vol->SetLineColor(kMagenta);  // set line color for the glass plate
+  glass_plate_vol->SetTransparency(98);     // set transparency for the TOF
   // define single gas gap volume
   TGeoBBox* gas_gap       = new TGeoBBox("", ggdx / 2., ggdy / 2., ggdz / 2.);
   TGeoVolume* gas_gap_vol = new TGeoVolume("Gap", gas_gap, activeGasVolMed);
@@ -276,16 +275,14 @@ TGeoVolume* create_counter(Int_t modType) {
     //    cout <<"Zpos(Glas): "<< zpos_glas << endl;
     //    cout <<"Zpos(Gas): "<< zpos_gas << endl;
 
-    TGeoTranslation* glass_plate_trans =
-      new TGeoTranslation("", 0., 0., zpos_glas);
-    TGeoTranslation* gas_gap_trans = new TGeoTranslation("", 0., 0., zpos_gas);
+    TGeoTranslation* glass_plate_trans = new TGeoTranslation("", 0., 0., zpos_glas);
+    TGeoTranslation* gas_gap_trans     = new TGeoTranslation("", 0., 0., zpos_gas);
     counter->AddNode(glass_plate_vol, igap, glass_plate_trans);
     counter->AddNode(gas_gap_vol, igap, gas_gap_trans);
   }
 
-  Float_t zpos_glas = startzposglas + (ngaps + 1) * dzpos;
-  TGeoTranslation* glass_plate_trans =
-    new TGeoTranslation("", 0., 0., zpos_glas);
+  Float_t zpos_glas                  = startzposglas + (ngaps + 1) * dzpos;
+  TGeoTranslation* glass_plate_trans = new TGeoTranslation("", 0., 0., zpos_glas);
   counter->AddNode(glass_plate_vol, ngaps, glass_plate_trans);
 
   // create and place the electronics above and below the glas stack
@@ -303,7 +300,8 @@ TGeoVolume* create_counter(Int_t modType) {
 }
 
 
-TGeoVolume* create_tof_module(Int_t modType) {
+TGeoVolume* create_tof_module(Int_t modType)
+{
   Int_t cType         = CounterTypeInModule[modType];
   Float_t dx          = Module_Size_X[modType];
   Float_t dy          = Module_Size_Y[modType];
@@ -313,8 +311,7 @@ TGeoVolume* create_tof_module(Int_t modType) {
   Float_t width_aluy  = Module_Thick_Alu_Y;
   Float_t width_aluz  = Module_Thick_Alu_Z;
 
-  Float_t shift_gas_box =
-    (Module_Thick_Alu_X_right - Module_Thick_Alu_X_left) / 2;
+  Float_t shift_gas_box = (Module_Thick_Alu_X_right - Module_Thick_Alu_X_left) / 2;
 
   Float_t dxpos     = CounterXDistance[modType];
   Float_t startxpos = CounterXStartPosition[modType];
@@ -331,38 +328,32 @@ TGeoVolume* create_tof_module(Int_t modType) {
   module->SetLineColor(kGreen);  // set line color for the alu box
   module->SetTransparency(90);   // set transparency for the TOF
 
-  TGeoBBox* gas_box = new TGeoBBox("",
-                                   (dx - (width_aluxl + width_aluxr)) / 2.,
-                                   (dy - 2 * width_aluy) / 2.,
-                                   (dz - 2 * width_aluz) / 2.);
-  TGeoVolume* gas_box_vol =
-    new TGeoVolume("gas_box", gas_box, noActiveGasVolMed);
+  TGeoBBox* gas_box =
+    new TGeoBBox("", (dx - (width_aluxl + width_aluxr)) / 2., (dy - 2 * width_aluy) / 2., (dz - 2 * width_aluz) / 2.);
+  TGeoVolume* gas_box_vol = new TGeoVolume("gas_box", gas_box, noActiveGasVolMed);
   gas_box_vol->SetLineColor(kBlue);  // set line color for the alu box
   gas_box_vol->SetTransparency(80);  // set transparency for the TOF
-  TGeoTranslation* gas_box_trans =
-    new TGeoTranslation("", shift_gas_box, 0., 0.);
+  TGeoTranslation* gas_box_trans = new TGeoTranslation("", shift_gas_box, 0., 0.);
   module->AddNode(gas_box_vol, 0, gas_box_trans);
 
-  for (Int_t j = 0; j < NCounterInModule[modType];
-       j++) {  //loop over counters (modules)
+  for (Int_t j = 0; j < NCounterInModule[modType]; j++) {  //loop over counters (modules)
     Float_t zpos;
 
     zpos = 0.;
 
-    TGeoTranslation* counter_trans =
-      new TGeoTranslation("", startxpos + j * dxpos, 0.0, zpos);
+    TGeoTranslation* counter_trans = new TGeoTranslation("", startxpos + j * dxpos, 0.0, zpos);
 
     TGeoRotation* counter_rot = new TGeoRotation();
     counter_rot->RotateY(rotangle);
-    TGeoCombiTrans* counter_combi_trans =
-      new TGeoCombiTrans(*counter_trans, *counter_rot);
+    TGeoCombiTrans* counter_combi_trans = new TGeoCombiTrans(*counter_trans, *counter_rot);
     gas_box_vol->AddNode(gCounter[cType], j, counter_combi_trans);
   }
 
   return module;
 }
 
-void position_tof_modules(Int_t modNType) {
+void position_tof_modules(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
 
   Int_t ii        = 0;
@@ -393,8 +384,7 @@ void position_tof_modules(Int_t modNType) {
       //    TGeoCombiTrans* module_combi_trans = NULL;
       //    module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
       //    gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_trans);
       modNum++;
     }
   }

@@ -8,6 +8,7 @@
 #include "CbmMcbm2019TimeWinEventBuilderAlgo.h"
 
 /// CBM headers
+#include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
@@ -16,9 +17,8 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
-#include "TimesliceMetaData.h"
 
-#include "CbmDigiManager.h"
+#include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
 #include "FairRootManager.h"
@@ -41,18 +41,16 @@ CbmMcbm2019TimeWinEventBuilderAlgo::CbmMcbm2019TimeWinEventBuilderAlgo() {}
 CbmMcbm2019TimeWinEventBuilderAlgo::~CbmMcbm2019TimeWinEventBuilderAlgo() {}
 
 // ---- Init -----------------------------------------------------------
-Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
-  LOG(info)
-    << "CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo => Starting sequence";
+Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo()
+{
+  LOG(info) << "CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo => Starting sequence";
 
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
-  if (fbUseMuchBeamtimeDigi) {
-    fDigiMan->UseMuchBeamTimeDigi();
-  }  // if (fbUseMuchBeamtimeDigi)
+  if (fbUseMuchBeamtimeDigi) { fDigiMan->UseMuchBeamTimeDigi(); }  // if (fbUseMuchBeamtimeDigi)
   fDigiMan->Init();
 
   /// Check if reference detector data are available
@@ -61,26 +59,21 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
   }  // if( kFALSE == CheckDataAvailable( fRefDet ) )
 
   /// Check if data for detectors in selection list are available
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if (kFALSE == CheckDataAvailable(*det)) {
-      LOG(fatal)
-        << "No digi input for one of selection detector, stopping there!";
+      LOG(fatal) << "No digi input for one of selection detector, stopping there!";
     }  // if( kFALSE == CheckDataAvailable( *det ) )
-  }  // for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
+  }    // for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
 
   /// Access the TS metadata to know TS start time if needed
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    fTimeSliceMetaDataArray =
-      dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
+    fTimeSliceMetaDataArray = dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
     if (!fTimeSliceMetaDataArray) {
-      LOG(fatal)
-        << "No TS metadata input found"
-        << " => Please check in the unpacking macro if the following line was "
-           "present!"
-        << std::endl
-        << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
+      LOG(fatal) << "No TS metadata input found"
+                 << " => Please check in the unpacking macro if the following line was "
+                    "present!"
+                 << std::endl
+                 << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
     }  // if (!fTimeSliceMetaDataArray)
   }    // if ( fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0 )
 
@@ -92,7 +85,8 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
 }
 
 // ---- ProcessTs ------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::ProcessTs() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::ProcessTs()
+{
   LOG_IF(info, fuNrTs % 1000 == 0) << "Begin of TS " << fuNrTs;
 
   InitTs();
@@ -117,12 +111,12 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::ProcessTs() {
 
   fuNrTs++;
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::ClearEventVector() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::ClearEventVector()
+{
   /// Need to delete the object the pointer points to first
   int counter = 0;
   for (CbmEvent* event : fEventVector) {
-    LOG(debug) << "Event " << counter << " has " << event->GetNofData()
-               << " digis";
+    LOG(debug) << "Event " << counter << " has " << event->GetNofData() << " digis";
     delete event;
     counter++;
   }  // for( CbmEvent* event: fEventVector)
@@ -130,13 +124,11 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::ClearEventVector() {
   fEventVector.clear();
 }
 // ---- Finish ---------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::Finish() {
-  LOG(info) << "Total errors: " << fuErrors;
-}
+void CbmMcbm2019TimeWinEventBuilderAlgo::Finish() { LOG(info) << "Total errors: " << fuErrors; }
 
 // ---------------------------------------------------------------------
-Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckDataAvailable(
-  EventBuilderDetector& det) {
+Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckDataAvailable(EventBuilderDetector& det)
+{
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -158,21 +150,21 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckDataAvailable(
   return kTRUE;
 }
 // ---------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::InitTs() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::InitTs()
+{
   /// Reset TS based variables (analysis per TS = no building over the border)
   /// Reference detector
   fRefDet.fuStartIndex = 0;
   fRefDet.fuEndIndex   = 0;
   /// Loop on detectors in selection list
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     (*det).fuStartIndex = 0;
     (*det).fuEndIndex   = 0;
   }  // for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
 }
 
-void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents()
+{
   /// Call LoopOnSeed with proper template argument
   switch (fRefDet.detId) {
     case ECbmModuleId::kSts: {
@@ -180,9 +172,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
       break;
     }  // case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) {
-        LoopOnSeeds<CbmMuchBeamTimeDigi>();
-      }  // if (fbUseMuchBeamtimeDigi)
+      if (fbUseMuchBeamtimeDigi) { LoopOnSeeds<CbmMuchBeamTimeDigi>(); }  // if (fbUseMuchBeamtimeDigi)
       else {
         LoopOnSeeds<CbmMuchDigi>();
       }  // else of if (fbUseMuchBeamtimeDigi)
@@ -210,22 +200,21 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
     }  // case ECbmModuleId::kT0:
     default: {
       LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents => "
-                 << "Trying to search event seeds with unsupported det: "
-                 << fRefDet.sName;
+                 << "Trying to search event seeds with unsupported det: " << fRefDet.sName;
       break;
     }  // default:
   }    // switch( *det )
 }
 
 template<class DigiSeed>
-void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds()
+{
   /// Access the TS metadata if needed to know TS start time and overlap size
   Double_t dTsStartTime  = fdTsStartTime;
   Double_t dOverlapStart = fdTsStartTime + fdTsLength;
   Double_t dOverlapSize  = fdTsOverLength;
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    pTsMetaData =
-      dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
+    pTsMetaData = dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
     if (nullptr == pTsMetaData)
       LOG(fatal) << Form("CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
                          "No TS metadata found for TS %6u.",
@@ -237,23 +226,17 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
   }  // if ( fdTsStartTime < 0 || fdTsLength < 0  || fdTsOverLength < 0 )
 
   /// Print warning in first TS if time window borders out of potential overlap
-  if ((0.0 < fdEarliestTimeWinBeg && dOverlapSize < fdLatestTimeWinEnd)
-      || (dOverlapSize < fdWidestTimeWinRange)) {
+  if ((0.0 < fdEarliestTimeWinBeg && dOverlapSize < fdLatestTimeWinEnd) || (dOverlapSize < fdWidestTimeWinRange)) {
     LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
                  << Form("Event window not fitting in TS overlap, risk of "
                          "incomplete events: %f %f %f %f",
-                         fdEarliestTimeWinBeg,
-                         fdLatestTimeWinEnd,
-                         fdWidestTimeWinRange,
-                         dOverlapSize);
+                         fdEarliestTimeWinBeg, fdLatestTimeWinEnd, fdWidestTimeWinRange, dOverlapSize);
   }  // if end of event window does not fit in overlap for a seed at edge of TS core
 
   /// Define an acceptance window for the seeds in order to use the overlap
   /// part of the TS to avoid incomplete events
-  Double_t dSeedWindowBeg =
-    dTsStartTime + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
-  Double_t dSeedWindowEnd =
-    dOverlapStart + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
+  Double_t dSeedWindowBeg = dTsStartTime + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
+  Double_t dSeedWindowEnd = dOverlapStart + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
   if (fbIgnoreTsOverlap) {
     dSeedWindowBeg = dTsStartTime;
     dSeedWindowEnd = dOverlapStart;
@@ -278,9 +261,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
                  << "T0 as reference detector but vector not found!";
   }  // if (ECbmModuleId::kT0 == fRefDet.detId)
   else {
-    UInt_t uNbRefDigis = (0 < fDigiMan->GetNofDigis(fRefDet.detId)
-                            ? fDigiMan->GetNofDigis(fRefDet.detId)
-                            : 0);
+    UInt_t uNbRefDigis = (0 < fDigiMan->GetNofDigis(fRefDet.detId) ? fDigiMan->GetNofDigis(fRefDet.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
       LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
@@ -290,9 +271,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
         Double_t dTime = pDigi->GetTime();
 
         /// Check if seed in acceptance window
-        if (dTime < dSeedWindowBeg) {
-          continue;
-        }  // if( dTime < dSeedWindowBeg )
+        if (dTime < dSeedWindowBeg) { continue; }  // if( dTime < dSeedWindowBeg )
         else if (dSeedWindowEnd < dTime) {
           break;
         }  // else if( dSeedWindowEnd < dTime )
@@ -301,16 +280,15 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
         CheckSeed(dTime, uDigi);
       }  // if( nullptr != pDigi )
     }    // for( UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi )
-  }  // else of if (ECbmModuleId::kT0 == fRefDet.detId) => Digi containers controlled by DigiManager
+  }      // else of if (ECbmModuleId::kT0 == fRefDet.detId) => Digi containers controlled by DigiManager
 }
 
-void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
-                                                   UInt_t uSeedDigiIdx) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
+{
   /// If previous event valid and event overlap not allowed, check if we are in overlap
   /// and react accordingly
   if (nullptr != fCurrentEvent
-      && (EOverlapMode::AllowOverlap != fOverMode
-          || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
+      && (EOverlapMode::AllowOverlap != fOverMode || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
       && dSeedTime - fdPrevEvtTime < fdWidestTimeWinRange) {
     /// Within overlap range
     switch (fOverMode) {
@@ -385,8 +363,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
       }  // case ECbmModuleId::kT0:
       default: {
         LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
-                   << "Trying to search matches with unsupported det: "
-                   << fRefDet.sName << std::endl
+                   << "Trying to search matches with unsupported det: " << fRefDet.sName << std::endl
                    << "You may want to add support for it in the method.";
         break;
       }  // default:
@@ -400,9 +377,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
   }  // else of if( fdRefTimeWinBeg < fdRefTimeWinEnd )
 
   /// Search for matches for each detector in selection list
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     switch ((*det).detId) {
       case ECbmModuleId::kSts: {
         SearchMatches<CbmStsDigi>(dSeedTime, *det);
@@ -439,13 +414,12 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
       }  // case ECbmModuleId::kT0:
       default: {
         LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
-                   << "Trying to search matches with unsupported det: "
-                   << (*det).sName << std::endl
+                   << "Trying to search matches with unsupported det: " << (*det).sName << std::endl
                    << "You may want to add support for it in the method.";
         break;
       }  // default:
     }    // switch( *det )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }      // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Check if event is filling trigger conditions and clear it if not
   if (HasTrigger(fCurrentEvent)) {
@@ -453,16 +427,13 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
 
     /// In case of NoOverlap or MergeOverlap, we can and should start checking the next window
     /// from end of current window in order to save CPU and avoid duplicating
-    if (EOverlapMode::NoOverlap == fOverMode
-        || EOverlapMode::MergeOverlap == fOverMode) {
+    if (EOverlapMode::NoOverlap == fOverMode || EOverlapMode::MergeOverlap == fOverMode) {
 
       /// Update reference detector
       fRefDet.fuStartIndex = fRefDet.fuEndIndex;
 
       /// Loop on selection detectors
-      for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-           det != fvDets.end();
-           ++det) {
+      for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
         (*det).fuStartIndex = (*det).fuEndIndex;
       }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
     }    // If no overlap or merge overlap
@@ -475,9 +446,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
 }
 
 template<class DigiCheck>
-void CbmMcbm2019TimeWinEventBuilderAlgo::SearchMatches(
-  Double_t dSeedTime,
-  EventBuilderDetector& detMatch) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SearchMatches(Double_t dSeedTime, EventBuilderDetector& detMatch)
+{
   /// This algo relies on time sorted vectors for the selected detectors
   UInt_t uLocalIndexStart = detMatch.fuStartIndex;
   UInt_t uLocalIndexEnd   = detMatch.fuStartIndex;
@@ -518,9 +488,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SearchMatches(
                  << "T0 as selection detector but vector not found!";
   }  // if( ECbmModuleId::kT0 == detMatch.detId )
   else {
-    UInt_t uNbSelDigis = (0 < fDigiMan->GetNofDigis(detMatch.detId)
-                            ? fDigiMan->GetNofDigis(detMatch.detId)
-                            : 0);
+    UInt_t uNbSelDigis = (0 < fDigiMan->GetNofDigis(detMatch.detId) ? fDigiMan->GetNofDigis(detMatch.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
       const DigiCheck* pDigi = fDigiMan->Get<DigiCheck>(uDigi);
@@ -529,11 +497,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SearchMatches(
         Double_t dTime     = pDigi->GetTime();
         Double_t dTimeDiff = dTime - dSeedTime;
 
-        LOG(debug4) << detMatch.sName
-                    << Form(" => Checking match %6u / %6u, dt %f",
-                            uDigi,
-                            uNbSelDigis,
-                            dTimeDiff);
+        LOG(debug4) << detMatch.sName << Form(" => Checking match %6u / %6u, dt %f", uDigi, uNbSelDigis, dTimeDiff);
 
         /// Check if within time window, update start/stop indices if needed
         if (dTimeDiff < detMatch.fdTimeWinBeg) {
@@ -562,22 +526,20 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SearchMatches(
   detMatch.fuEndIndex   = uLocalIndexEnd;
 }
 
-void CbmMcbm2019TimeWinEventBuilderAlgo::AddDigiToEvent(
-  EventBuilderDetector& det,
-  Int_t _entry) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::AddDigiToEvent(EventBuilderDetector& det, Int_t _entry)
+{
   fCurrentEvent->AddData(det.dataType, _entry);
 }
 
-Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::HasTrigger(CbmEvent* event) {
+Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::HasTrigger(CbmEvent* event)
+{
   /// Check first reference detector
   if (kFALSE == CheckTriggerConditions(event, fRefDet)) {
     return kFALSE;
   }  // if (kFALSE == CheckTriggerConditions(event, fRefDet) )
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if (kFALSE == CheckTriggerConditions(event, *det)) return kFALSE;
   }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
@@ -585,9 +547,8 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::HasTrigger(CbmEvent* event) {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
-  CbmEvent* event,
-  EventBuilderDetector& det) {
+Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(CbmEvent* event, EventBuilderDetector& det)
+{
   /// Check if both Trigger conditions disabled for this detector
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) {
     return kTRUE;
@@ -598,32 +559,30 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
     /// FIXME: special case to be removed once T0 supported by DigiManager
     if (!(fT0DigiVec)) {
       LOG(warning) << "Event does not have digis storage for T0"
-                   << " while the following trigger minimum are defined: "
-                   << det.fuTriggerMinDigis << " " << det.fiTriggerMaxDigis;
+                   << " while the following trigger minimum are defined: " << det.fuTriggerMinDigis << " "
+                   << det.fiTriggerMaxDigis;
       return kFALSE;
     }  // if( !(fT0DigiVec) )
   }    // if( ECbmDataType::kT0Digi == det.detId )
   else {
     if (!fDigiMan->IsPresent(det.detId)) {
       LOG(warning) << "Event does not have digis storage for " << det.sName
-                   << " while the following trigger min/max are defined: "
-                   << det.fuTriggerMinDigis << " " << det.fiTriggerMaxDigis;
+                   << " while the following trigger min/max are defined: " << det.fuTriggerMinDigis << " "
+                   << det.fiTriggerMaxDigis;
       return kFALSE;
     }  // if( !fDigiMan->IsPresent( det ) )
   }    // else of if( ECbmDataType::kT0Digi == det )
 
   /// Check trigger rejection by minimal number or absence
   Int_t iNbDigis = event->GetNofData(det.dataType);
-  if ((-1 == iNbDigis)
-      || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
-    LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs "
-                << det.fuTriggerMinDigis << " for " << det.sName;
+  if ((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
+    LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs " << det.fuTriggerMinDigis << " for "
+                << det.sName;
     return kFALSE;
   }  // if((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis))
   /// Check trigger rejection by maximal number
   else if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
-    LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs "
-                << det.fiTriggerMaxDigis << " for " << det.sName;
+    LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs " << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
   }  // else if( iNbDigis < det.fiTriggerMaxDigis )
   else {
@@ -631,7 +590,8 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
   }  // else of else if( iNbDigis < det.fiTriggerMaxDigis )
 }
 //----------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms()
+{
   /// FIXME: Disable clang formatting for histograms declaration for now
   /* clang-format off */
   fhEventTime = new TH1F("hEventTime",
@@ -685,13 +645,12 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms() {
   /// FIXME: Re-enable clang formatting after histograms declaration
   /* clang-format on */
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::FillHistos() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::FillHistos()
+{
   Double_t dPreEvtTime = -1.0;
   for (CbmEvent* evt : fEventVector) {
     fhEventTime->Fill(evt->GetStartTime() * 1e-9);
-    if (0.0 <= dPreEvtTime) {
-      fhEventDt->Fill(evt->GetStartTime() - dPreEvtTime);
-    }  // if( 0.0 <= dPreEvtTime )
+    if (0.0 <= dPreEvtTime) { fhEventDt->Fill(evt->GetStartTime() - dPreEvtTime); }  // if( 0.0 <= dPreEvtTime )
     fhEventSize->Fill(evt->GetNofData());
     fhNbDigiPerEvtTime->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData());
 
@@ -699,23 +658,21 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::FillHistos() {
     for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
       if (nullptr == fvhNbDigiPerEvtTimeDet[uDetIdx]) continue;
 
-      fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(
-        evt->GetStartTime() * 1e-9, evt->GetNofData(fvDets[uDetIdx].dataType));
+      fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData(fvDets[uDetIdx].dataType));
     }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
     dPreEvtTime = evt->GetStartTime();
   }  // for( CbmEvent * evt: fEventVector )
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::ResetHistograms(
-  Bool_t /*bResetTime*/) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::ResetHistograms(Bool_t /*bResetTime*/)
+{
   fhEventTime->Reset();
   fhEventDt->Reset();
   fhEventSize->Reset();
 
   fhNbDigiPerEvtTime->Reset();
   /// Loop on histograms
-  for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin();
-       itHist != fvhNbDigiPerEvtTimeDet.end();
+  for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
     (*itHist)->Reset();
   }  // for( std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end(); ++itHist )
@@ -729,82 +686,57 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::ResetHistograms(
 */
 }
 //----------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
-  ECbmModuleId refDet,
-  ECbmDataType dataTypeIn,
-  std::string sNameIn,
-  UInt_t uTriggerMinDigisIn,
-  Int_t iTriggerMaxDigisIn,
-  Double_t fdTimeWinBegIn,
-  Double_t fdTimeWinEndIn) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn,
+                                                              std::string sNameIn, UInt_t uTriggerMinDigisIn,
+                                                              Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn,
+                                                              Double_t fdTimeWinEndIn)
+{
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
-  SetReferenceDetector(EventBuilderDetector(refDet,
-                                            dataTypeIn,
-                                            sNameIn,
-                                            uTriggerMinDigisIn,
-                                            iTriggerMaxDigisIn,
-                                            fdTimeWinBegIn,
-                                            fdTimeWinEndIn));
+  SetReferenceDetector(EventBuilderDetector(refDet, dataTypeIn, sNameIn, uTriggerMinDigisIn, iTriggerMaxDigisIn,
+                                            fdTimeWinBegIn, fdTimeWinEndIn));
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet,
-                                                     ECbmDataType dataTypeIn,
-                                                     std::string sNameIn,
-                                                     UInt_t uTriggerMinDigisIn,
-                                                     Int_t iTriggerMaxDigisIn,
-                                                     Double_t fdTimeWinBegIn,
-                                                     Double_t fdTimeWinEndIn) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet, ECbmDataType dataTypeIn, std::string sNameIn,
+                                                     UInt_t uTriggerMinDigisIn, Int_t iTriggerMaxDigisIn,
+                                                     Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn)
+{
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
-  AddDetector(EventBuilderDetector(selDet,
-                                   dataTypeIn,
-                                   sNameIn,
-                                   uTriggerMinDigisIn,
-                                   iTriggerMaxDigisIn,
-                                   fdTimeWinBegIn,
+  AddDetector(EventBuilderDetector(selDet, dataTypeIn, sNameIn, uTriggerMinDigisIn, iTriggerMaxDigisIn, fdTimeWinBegIn,
                                    fdTimeWinEndIn));
 }
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
-  EventBuilderDetector refDetIn) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(EventBuilderDetector refDetIn)
+{
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == refDetIn) {
-      LOG(warning)
-        << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-           "Reference detector already in selection detector list!"
-        << refDetIn.sName;
-      LOG(warning)
-        << "                                                         => "
-           "It will be automatically removed from selection detector list!";
-      LOG(warning)
-        << "                                                         => "
-           "Please also remember to update the selection windows to store "
-           "clusters!";
+      LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+                      "Reference detector already in selection detector list!"
+                   << refDetIn.sName;
+      LOG(warning) << "                                                         => "
+                      "It will be automatically removed from selection detector list!";
+      LOG(warning) << "                                                         => "
+                      "Please also remember to update the selection windows to store "
+                      "clusters!";
       RemoveDetector(refDetIn);
     }  // if( (*det)  == refDetIn )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   if (fRefDet == refDetIn) {
-    LOG(warning)
-      << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-         "Doing nothing, identical reference detector already in use";
+    LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+                    "Doing nothing, identical reference detector already in use";
   }  // if( fRefDet == refDetIn )
   else {
     LOG(info) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-              << "Replacing " << fRefDet.sName << " with " << refDetIn.sName
-              << " as reference detector";
-    LOG(warning)
-      << "                                                         => "
-         "You may want to use AddDetector after this command to add in "
-         "selection "
-      << refDetIn.sName;
-    LOG(warning)
-      << "                                                         => "
-         "Please also remember to update the selection windows!";
+              << "Replacing " << fRefDet.sName << " with " << refDetIn.sName << " as reference detector";
+    LOG(warning) << "                                                         => "
+                    "You may want to use AddDetector after this command to add in "
+                    "selection "
+                 << refDetIn.sName;
+    LOG(warning) << "                                                         => "
+                    "Please also remember to update the selection windows!";
   }  // else of if( fRefDet == refDetIn )
   fRefDet = refDetIn;
 
@@ -813,8 +745,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(
-  EventBuilderDetector selDet) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(EventBuilderDetector selDet)
+{
   if (fRefDet == selDet) {
     LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => Cannot "
                   "add the reference detector as selection detector!"
@@ -824,16 +756,14 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == selDet) {
       LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => "
                       "Doing nothing, selection detector already in list!"
                    << selDet.sName;
       return;
     }  // if( (*det)  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   fvDets.push_back(selDet);
 
   /// Update the variables storing the earliest and latest time window boundaries
@@ -841,89 +771,74 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(
-  EventBuilderDetector selDet) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(EventBuilderDetector selDet)
+{
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == selDet) {
       fvDets.erase(det);
       return;
     }  // if( (*det)  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector => Doing "
                   "nothing, selection detector not in list!"
                << selDet.sName;
 }
 //----------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber(
-  ECbmModuleId selDet,
-  UInt_t uVal) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal)
+{
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fuTriggerMinDigis = uVal;
 
-    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to "
-               << uVal;
+    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to " << uVal;
 
     return;
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fuTriggerMinDigis = uVal;
 
-      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to "
-                 << uVal;
+      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to " << uVal;
 
       return;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
-  LOG(warning)
-    << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber => "
-       "Doing nothing, detector neither reference nor in selection list!"
-    << selDet;
+  LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber(
-  ECbmModuleId selDet,
-  Int_t iVal) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal)
+{
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fiTriggerMaxDigis = iVal;
 
-    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to "
-               << iVal;
+    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to " << iVal;
 
     return;
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fiTriggerMaxDigis = iVal;
 
-      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to "
-                 << iVal;
+      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to " << iVal;
 
       return;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
-  LOG(warning)
-    << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber => "
-       "Doing nothing, detector neither reference nor in selection list!"
-    << selDet;
+  LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow(ECbmModuleId selDet,
-                                                          Double_t dWinBeg,
-                                                          Double_t dWinEnd) {
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd)
+{
   /// Check if valid time window: end strictly after beginning
   if (dWinEnd <= dWinBeg)
     LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow => "
@@ -940,22 +855,19 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow(ECbmModuleId selDet,
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fdTimeWinBeg = dWinBeg;
       (*det).fdTimeWinEnd = dWinEnd;
 
       bFound = kTRUE;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   if (kFALSE == bFound) {
-    LOG(warning)
-      << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow => "
-         "Doing nothing, detector neither reference nor in selection list!"
-      << selDet;
+    LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow => "
+                    "Doing nothing, detector neither reference nor in selection list!"
+                 << selDet;
   }  // if( kFALSE == bFound )
 
   /// Update the variables storing the earliest and latest time window boundaries
@@ -963,29 +875,26 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow(ECbmModuleId selDet,
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::UpdateTimeWinBoundariesExtrema() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::UpdateTimeWinBoundariesExtrema()
+{
   /// Initialize with reference detector
   fdEarliestTimeWinBeg = fRefDet.fdTimeWinBeg;
   fdLatestTimeWinEnd   = fRefDet.fdTimeWinEnd;
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     fdEarliestTimeWinBeg = std::min(fdEarliestTimeWinBeg, (*det).fdTimeWinBeg);
     fdLatestTimeWinEnd   = std::max(fdLatestTimeWinEnd, (*det).fdTimeWinEnd);
   }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::UpdateWidestTimeWinRange() {
+void CbmMcbm2019TimeWinEventBuilderAlgo::UpdateWidestTimeWinRange()
+{
   /// Initialize with reference detector
   fdWidestTimeWinRange = fRefDet.fdTimeWinEnd - fRefDet.fdTimeWinBeg;
 
   /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
-    fdWidestTimeWinRange =
-      std::max(fdWidestTimeWinRange, (*det).fdTimeWinEnd - (*det).fdTimeWinBeg);
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+    fdWidestTimeWinRange = std::max(fdWidestTimeWinRange, (*det).fdTimeWinEnd - (*det).fdTimeWinBeg);
   }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 }
 //----------------------------------------------------------------------

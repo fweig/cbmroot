@@ -16,7 +16,8 @@
 // --------------------------------------------------------------------------
 
 #include <math.h>
-void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
+void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -92,21 +93,9 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
   char strParamFile[1000];
   char strOutputFile[1000];
 
-  sprintf(strInputFile,
-          "data/auau%1.0f/sts.mc.auau.%1.0fgev.centr.%4d.root",
-          energy,
-          energy,
-          index);
-  sprintf(strParamFile,
-          "data/auau%1.0f/params.auau.%1.0fgev.centr.%4d.root",
-          energy,
-          energy,
-          index);
-  sprintf(strOutputFile,
-          "data/auau%1.0f/sts.reco.auau.%1.0fgev.centr.%4d.root",
-          energy,
-          energy,
-          index);
+  sprintf(strInputFile, "data/auau%1.0f/sts.mc.auau.%1.0fgev.centr.%4d.root", energy, energy, index);
+  sprintf(strParamFile, "data/auau%1.0f/params.auau.%1.0fgev.centr.%4d.root", energy, energy, index);
+  sprintf(strOutputFile, "data/auau%1.0f/sts.reco.auau.%1.0fgev.centr.%4d.root", energy, energy, index);
   //sprintf(strOutputFile, "test.root",
   //	  energy, energy, index);
 
@@ -133,8 +122,7 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
   cout << "===    noiseWidth = " << noiseWidth << endl;
   cout << "===    nofBits    = " << nofBits << endl;
   cout << "===    electronsPerAdc    = " << electronsPerAdc << endl;
-  cout << "===    StripDeadTime    = " << StripDeadTime * 100. << "[ns] "
-       << endl;
+  cout << "===    StripDeadTime    = " << StripDeadTime * 100. << "[ns] " << endl;
   cout << "=============================================" << endl;
   cout << endl << endl;
   // ------------------------------------------------------------------------
@@ -162,8 +150,7 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
   run->AddTask(stsDigitize);
 
   // -----   STS cluster finding   ------------------------------------------------
-  CbmStsClusterFinder* findClusters =
-    new CbmStsClusterFinder("STSFindClusters", iVerbose);
+  CbmStsClusterFinder* findClusters = new CbmStsClusterFinder("STSFindClusters", iVerbose);
   run->AddTask(findClusters);
 
 
@@ -185,7 +172,7 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
   CbmL1* l1 = new CbmL1("L1", 1, 3, 0);
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // ------------------------------------------------------------------------
 
@@ -198,8 +185,7 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index) {
 
   // -----   STS track fitting   --------------------------------------------
   CbmStsTrackFitter* trackFitter = new CbmStsKFTrackFitter();
-  FairTask* fitTracks =
-    new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
+  FairTask* fitTracks            = new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
   run->AddTask(fitTracks);
   // ------------------------------------------------------------------------
 

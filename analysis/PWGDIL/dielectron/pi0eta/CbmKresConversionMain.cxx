@@ -22,10 +22,13 @@
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
+
 #include "TDirectory.h"
 
 #include <boost/assign/list_of.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -63,18 +66,17 @@ CbmKresConversionMain::CbmKresConversionMain()
   , fEventNum(0)
   , OpeningAngleCut(0.)
   , GammaInvMassCut(0.)
-  , fRealPID(0) {
+  , fRealPID(0)
+{
   OpeningAngleCut = 2.;    //  Opening angle cut for photon reconstruction
   GammaInvMassCut = 0.02;  //  Invariant mass for photon reconstruction
-  fRealPID =
-    1;  //  Particle identifiaction from detectors.    1 is Real !!!; 0 is MC.
+  fRealPID        = 1;     //  Particle identifiaction from detectors.    1 is Real !!!; 0 is MC.
 
-  DoKresGeneral        = 0;
-  DoKresReconstruction = 0;  //  estimation for eta and pi^0 reconstruction
-  DoKresManual         = 0;  //  central mode
-  DoKresPhotons        = 0;  //  photons  mode
-  DoKresCorrectedPhotons =
-    0;  //  photons  mode with apllying of acceptance (rough) correction
+  DoKresGeneral          = 0;
+  DoKresReconstruction   = 0;  //  estimation for eta and pi^0 reconstruction
+  DoKresManual           = 0;  //  central mode
+  DoKresPhotons          = 0;  //  photons  mode
+  DoKresCorrectedPhotons = 0;  //  photons  mode with apllying of acceptance (rough) correction
 
   DoKresKF          = 0;
   DoKresManualmbias = 1;  //  mbias  mode
@@ -90,7 +92,8 @@ CbmKresConversionMain::~CbmKresConversionMain() {}
 
 
 ///// initialization of task to be performed. The description of each is given in their files
-InitStatus CbmKresConversionMain::Init() {
+InitStatus CbmKresConversionMain::Init()
+{
 
   cout << "CbmKresConversionMain::Init" << endl;
 
@@ -199,9 +202,8 @@ InitStatus CbmKresConversionMain::Init() {
   cout << "\t CUTS : " << endl;
   cout << "\t        Gamma Invariant Mass cut = " << GammaInvMassCut << endl;
   cout << "\t        Gamma Opening Angle cut  = " << OpeningAngleCut << endl;
-  if (fRealPID == 1) {
-    cout << "\t        PID mode is             << RealPID >> " << endl;
-  } else {
+  if (fRealPID == 1) { cout << "\t        PID mode is             << RealPID >> " << endl; }
+  else {
     cout << "\t        PID mode is             << MCPID >> " << endl;
   }
   cout << endl;
@@ -216,7 +218,8 @@ InitStatus CbmKresConversionMain::Init() {
 void CbmKresConversionMain::InitHistograms() {}
 
 /////  main body of the class, where one performs the physics analysis.
-void CbmKresConversionMain::Exec(Option_t* /*option*/) {
+void CbmKresConversionMain::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   // cout << "CbmKresConversionMain, event No. " <<  fEventNum << endl;
 
@@ -225,59 +228,42 @@ void CbmKresConversionMain::Exec(Option_t* /*option*/) {
 
   if (DoKresReconstruction) { fKresReco->Exec(fEventNum); }
 
-  if (DoKresKF) {
-    fKresKF->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-  }
+  if (DoKresKF) { fKresKF->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID); }
 
-  if (DoKresManual) {
-    fKresManual->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-  }
+  if (DoKresManual) { fKresManual->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID); }
 
   if (DoKresManualmbias) {
-    fKresManualmbiasPart1->Exec(
-      fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-    fKresManualmbiasPart2->Exec(
-      fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-    fKresManualmbiasPart3->Exec(
-      fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-    fKresManualmbiasPart4->Exec(
-      fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
+    fKresManualmbiasPart1->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
+    fKresManualmbiasPart2->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
+    fKresManualmbiasPart3->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
+    fKresManualmbiasPart4->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
   }
 
   if (DoKresTemperature) { fKresTemperature->Exec(fEventNum); }
 
-  if (DoKresPhotons) {
-    fKresPhotons->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-  }
+  if (DoKresPhotons) { fKresPhotons->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID); }
 
-  if (DoKresCorrectedPhotons) {
-    fKresCorrectedPhotons->Exec(
-      fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-  }
+  if (DoKresCorrectedPhotons) { fKresCorrectedPhotons->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID); }
 
-  if (DoKresEtaMCAnalysis) {
-    fKresEtaMCAnalysis->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut);
-  }
+  if (DoKresEtaMCAnalysis) { fKresEtaMCAnalysis->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut); }
 
-  if (DoKresEta) {
-    fKresEta->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID);
-  }
+  if (DoKresEta) { fKresEta->Exec(fEventNum, OpeningAngleCut, GammaInvMassCut, fRealPID); }
 }
 
 ///// one needs to set KFparticle if one wants to use its features.
-void CbmKresConversionMain::SetKF(CbmKFParticleFinder* kfparticle,
-                                  CbmKFParticleFinderQA* kfparticleQA) {
+void CbmKresConversionMain::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+{
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;
-  if (fKFparticle) {
-    cout << "kf works" << endl;
-  } else {
+  if (fKFparticle) { cout << "kf works" << endl; }
+  else {
     cout << "kf works not" << endl;
   }
 }
 
 ///// this part is executed at the very end. Decicated for histogram saving into the file
-void CbmKresConversionMain::Finish() {
+void CbmKresConversionMain::Finish()
+{
   gDirectory->mkdir("conversionKres");
   gDirectory->cd("conversionKres");
 

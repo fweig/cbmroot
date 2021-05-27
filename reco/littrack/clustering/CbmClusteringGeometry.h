@@ -9,6 +9,7 @@
 #define CBMCLUSTERINGGEOMETRY_H_
 
 #include "CbmMuchGeoScheme.h"
+
 #include "FairTask.h"
 
 #include <map>
@@ -17,35 +18,15 @@
 class CbmClusteringGeometry {
 public:
   CbmClusteringGeometry();
-  CbmClusteringGeometry(Int_t nStation,
-                        Int_t nLayer,
-                        Bool_t nSide,
-                        Int_t nModule,
-                        CbmMuchGeoScheme* scheme);
-  void CbmClusteringSetPad(Int_t nPad,
-                           Float_t x,
-                           Float_t y,
-                           Float_t dx,
-                           Float_t dy,
-                           Double_t phi1,
-                           Double_t phi2,
-                           Float_t r1,
-                           Float_t r2,
-                           Int_t digiNum,
-                           UInt_t charge,
+  CbmClusteringGeometry(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule, CbmMuchGeoScheme* scheme);
+  void CbmClusteringSetPad(Int_t nPad, Float_t x, Float_t y, Float_t dx, Float_t dy, Double_t phi1, Double_t phi2,
+                           Float_t r1, Float_t r2, Int_t digiNum, UInt_t charge,
                            Long64_t chID);  //Addition of a single pad
   virtual ~CbmClusteringGeometry();
 
   //void SetMuchModuleGeometryRectangular(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule, CbmMuchGeoScheme* scheme);  //Old geometry version
-  void SetMuchModuleGeometryRadial(Int_t nStation,
-                                   Int_t nLayer,
-                                   Bool_t nSide,
-                                   Int_t nModule,
-                                   CbmMuchGeoScheme* scheme);
-  void SetMuchModuleGeometryRadialFast(Int_t nStation,
-                                       Int_t nLayer,
-                                       Bool_t nSide,
-                                       Int_t nModule,
+  void SetMuchModuleGeometryRadial(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule, CbmMuchGeoScheme* scheme);
+  void SetMuchModuleGeometryRadialFast(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule,
                                        CbmMuchGeoScheme* scheme);
 
   Int_t GetDetId() const { return fDetId; }

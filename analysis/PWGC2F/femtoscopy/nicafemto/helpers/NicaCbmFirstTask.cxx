@@ -7,15 +7,18 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "NicaCbmFirstTask.h"
+
 #include "FairRunAna.h"
 
 NicaCbmFirstTask::NicaCbmFirstTask() : fMagField(nullptr) {}
 
-InitStatus NicaCbmFirstTask::Init() {
+InitStatus NicaCbmFirstTask::Init()
+{
   if (fMagField != nullptr) {
     CbmHelix::SetField(fMagField);
     std::cout << "SET FIELD " << fMagField << std::endl;
-  } else {
+  }
+  else {
     CbmHelix::SetField(FairRunAna::Instance()->GetField());
   }
   return kSUCCESS;

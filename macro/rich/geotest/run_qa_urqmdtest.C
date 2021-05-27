@@ -1,17 +1,11 @@
 void run_qa_urqmdtest(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
-  const string& recoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/reco.00000.root",
-  const string& qaFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/qa.00000.root",
-  const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "results_urqmdtest_geant4/",
-  int nEvents             = 1000) {
+  const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
+  const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
+  const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
+  const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/reco.00000.root",
+  const string& qaFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/qa.00000.root",
+  const string& geoSetup = "sis100_electron", const string& resultDir = "results_urqmdtest_geant4/", int nEvents = 1000)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
@@ -29,8 +23,7 @@ void run_qa_urqmdtest(
 
   CbmSetup* setup = CbmSetup::Instance();
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
 
@@ -57,9 +50,7 @@ void run_qa_urqmdtest(
   run->AddTask(urqmdTest);
 
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -90,7 +81,6 @@ void run_qa_urqmdtest(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Reco file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

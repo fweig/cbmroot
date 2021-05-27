@@ -5,7 +5,8 @@ static Double_t fieldScale;
 #include <iostream>
 using namespace std;
 
-void run_sim(Int_t nEvents = 100000) {
+void run_sim(Int_t nEvents = 100000)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -20,7 +21,8 @@ void run_sim(Int_t nEvents = 100000) {
   if (script == "yes") {
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
     outDir    = TString(gSystem->Getenv("OUT_DIR"));
-  } else {
+  }
+  else {
     outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
   }
 
@@ -47,8 +49,7 @@ void run_sim(Int_t nEvents = 100000) {
     setupName  = TString(gSystem->Getenv("SETUP_NAME"));
     cout << "mcFile: " << TString(gSystem->Getenv("MC_FILE")) << endl
          << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
-         << "ascii_Input: " << TString(gSystem->Getenv("IN_ASCII_FILE"))
-         << endl;
+         << "ascii_Input: " << TString(gSystem->Getenv("IN_ASCII_FILE")) << endl;
   }
 
   /*    if (script == "yes") {
@@ -62,8 +63,7 @@ void run_sim(Int_t nEvents = 100000) {
 
     }
 */
-  std::cout << "-I- using geoSetupFile: " << geoSetupFile
-            << " and setupName: " << setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: " << setupName << std::endl;
 
   remove(parFile.Data());
   remove(mcFile.Data());
@@ -91,8 +91,7 @@ void run_sim(Int_t nEvents = 100000) {
 
   // -----   Load the geometry setup   --------------------------------------
   TString setupFunct = "geo()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -266,8 +265,7 @@ void run_sim(Int_t nEvents = 100000) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

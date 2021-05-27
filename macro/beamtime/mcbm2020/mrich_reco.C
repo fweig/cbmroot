@@ -1,13 +1,10 @@
-void mrich_reco(const string srcfolder =
-                  "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
-                  "macro/beamtime/mcbm2020/data",
+void mrich_reco(const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
+                                         "macro/beamtime/mcbm2020/data",
                 const unsigned int runId = 759,  // used for the output folder
-                int nEvents              = 1000,
-                const int taskId         = -1) {
-  const string& parFile =
-    Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
-  const string& digiFile =
-    Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
+                int nEvents = 1000, const int taskId = -1)
+{
+  const string& parFile  = Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
+  const string& digiFile = Form("%s/unp_mcbm_%d.root", srcfolder.c_str(), runId);
   const string& recoFile = Form("reco_mcbm_mar20_%d.root", runId);
 
   const Double_t eb_fixedTimeWindow {200.};
@@ -28,8 +25,7 @@ void mrich_reco(const string srcfolder =
   remove(recoFile.c_str());
 
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -108,9 +104,7 @@ void mrich_reco(const string srcfolder =
 
 
   // -----  Parameter database   --------------------------------------------
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
 
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   Bool_t kParameterMerged    = kTRUE;
@@ -138,9 +132,8 @@ void mrich_reco(const string srcfolder =
   //--- House Keeping -------------------------------------------------------
   // print all important infos in a file
   std::ofstream outfile;
-  if (taskId < 0) {
-    outfile.open(Form("result_run%d/run_info.dat", runId));
-  } else {
+  if (taskId < 0) { outfile.open(Form("result_run%d/run_info.dat", runId)); }
+  else {
     outfile.open(Form("result_run%d_%05d/run_info.dat", runId, taskId));
   }
   // write inputted data into the file.
@@ -171,7 +164,6 @@ void mrich_reco(const string srcfolder =
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

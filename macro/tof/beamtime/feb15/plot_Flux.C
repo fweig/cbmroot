@@ -23,14 +23,11 @@ const Int_t kiScalerIndex[kiNbScalers] = {1, 2, 3, 4, 5};
 const Int_t kiNbRpc              = 8;
 const Int_t kiRpcScalId[kiNbRpc] = {0, 0, 1, 1, 2, 2, 3, 4};
 // channels                            1-8     9-15   1-8    9-15   1-6   10-15   1-4    0-15
-const Double_t kdRpcArea[kiNbRpc] =
-  {648.0, 60.0, 100.0, 490.0, 648.0, 230.0, 864.0, 4.0};
-const TString ksRpcName[kiNbRpc] =
-  {"HDP2", "HDP5", "BREF", "BR13", "TSUS", "TSUP", "USTC", "DIAM"};
+const Double_t kdRpcArea[kiNbRpc] = {648.0, 60.0, 100.0, 490.0, 648.0, 230.0, 864.0, 4.0};
+const TString ksRpcName[kiNbRpc]  = {"HDP2", "HDP5", "BREF", "BR13", "TSUS", "TSUP", "USTC", "DIAM"};
 
-const Int_t kiNbOrChanRpc = 32;
-const Int_t kiNbAndChanRpc =
-  16;  // Not usable directly due to register map error
+const Int_t kiNbOrChanRpc  = 32;
+const Int_t kiNbAndChanRpc = 16;  // Not usable directly due to register map error
 const Int_t kiStartAndRpc  = 1;
 const Int_t kiMidAndRpc    = 9;
 const Int_t kiNbOrChanDiam = 16;
@@ -46,11 +43,9 @@ const Int_t kiSpillDistSec    = 30;     // Approximate value
 const Double_t kdSpillDiamThr = 100.0;  // 1/(s.cm^2)
 
 // Max nEvents: 198999999999
-void plot_Flux(TString sInputName     = "",
-               Int_t iNbSecPerBin     = 5,
-               Double_t dStartTimeMin = 0,
-               Double_t dStopTimeMin  = 15 * 60,
-               Int_t nEvents          = -1) {
+void plot_Flux(TString sInputName = "", Int_t iNbSecPerBin = 5, Double_t dStartTimeMin = 0,
+               Double_t dStopTimeMin = 15 * 60, Int_t nEvents = -1)
+{
   if ("" == sInputName) {
     cout << "Empty input filename!!!" << endl;
     return;
@@ -60,17 +55,13 @@ void plot_Flux(TString sInputName     = "",
 
   TTree* tTree = (TTree*) fInput->Get("cbmsim");
   if (!tTree) {
-    cout
-      << "Output tree could not be retrieved from file. Abort macro execution."
-      << endl;
+    cout << "Output tree could not be retrieved from file. Abort macro execution." << endl;
     return;
   }  // if(!tTree)
 
   TBranch* tBranchTrlo = tTree->GetBranch("TofTriglog");
   if (!tBranchTrlo) {
-    cout
-      << "Branch 'TofTriglog' not found in output tree. Abort macro execution."
-      << endl;
+    cout << "Branch 'TofTriglog' not found in output tree. Abort macro execution." << endl;
     return;
   }  // if(!tBranchTrlo)
 
@@ -102,25 +93,17 @@ void plot_Flux(TString sInputName     = "",
   TTofCalibScaler* tCalibTrloScal;
 
   // Prepare histos and variables
-  Int_t iNbBins = (Int_t)(dStopTimeMin - dStartTimeMin) * 60 / iNbSecPerBin;
-  Double_t dStartTime = dStartTimeMin * 60.0;
-  Double_t dStopTime  = dStopTimeMin * 60.0;
-  TProfile* tFluxHdP2 =
-    new TProfile("tFluxHdP2", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxHdP5 =
-    new TProfile("tFluxHdP5", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxBRef =
-    new TProfile("tFluxBRef", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxB13 =
-    new TProfile("tFluxB13", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxTsuS =
-    new TProfile("tFluxTsuS", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxTsuP =
-    new TProfile("tFluxTsuP", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxUstc =
-    new TProfile("tFluxUstc", "", iNbBins, dStartTime, dStopTime);
-  TProfile* tFluxDiam =
-    new TProfile("tFluxDiam", "", iNbBins, dStartTime, dStopTime);
+  Int_t iNbBins            = (Int_t)(dStopTimeMin - dStartTimeMin) * 60 / iNbSecPerBin;
+  Double_t dStartTime      = dStartTimeMin * 60.0;
+  Double_t dStopTime       = dStopTimeMin * 60.0;
+  TProfile* tFluxHdP2      = new TProfile("tFluxHdP2", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxHdP5      = new TProfile("tFluxHdP5", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxBRef      = new TProfile("tFluxBRef", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxB13       = new TProfile("tFluxB13", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxTsuS      = new TProfile("tFluxTsuS", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxTsuP      = new TProfile("tFluxTsuP", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxUstc      = new TProfile("tFluxUstc", "", iNbBins, dStartTime, dStopTime);
+  TProfile* tFluxDiam      = new TProfile("tFluxDiam", "", iNbBins, dStartTime, dStopTime);
   Double_t dLastTime       = 0;
   Double_t dLastTimeToLast = 0;
   Double_t dMeanFluxHdP2   = 0.0;
@@ -142,32 +125,21 @@ void plot_Flux(TString sInputName     = "",
   tFluxPmt[4] = new TProfile("tFluxPmtT", "", iNbBins, dStartTime, dStopTime);
   tFluxPmt[5] = new TProfile("tFluxPmtB", "", iNbBins, dStartTime, dStopTime);
 
-  Int_t iNbBinsSpill =
-    (Int_t)(dStopTimeMin - dStartTimeMin) * 60 / kiSpillDistSec;
+  Int_t iNbBinsSpill = (Int_t)(dStopTimeMin - dStartTimeMin) * 60 / kiSpillDistSec;
   TProfile* tSpillFluxRpc[kiNbRpc];
   for (Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++)
     tSpillFluxRpc[iRpc] =
-      new TProfile(Form("tSpillFlux%s", ksRpcName[iRpc].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tSpillFlux%s", ksRpcName[iRpc].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
   TProfile* tSpillFluxPmt[kiNbPmt];
   for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++)
     tSpillFluxPmt[iPmt] =
-      new TProfile(Form("tSpillFluxPmt%s", ksPmtName[iPmt].Data()),
-                   "",
-                   iNbBinsSpill,
-                   dStartTime,
-                   dStopTime);
+      new TProfile(Form("tSpillFluxPmt%s", ksPmtName[iPmt].Data()), "", iNbBinsSpill, dStartTime, dStopTime);
 
   // Loop over measurements
   Long64_t lBranchEntries = tBranch->GetEntries();
-  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries;
-       lBranchEntry++) {
+  for (Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++) {
     if (0 == lBranchEntry % 10000 && 0 < lBranchEntry)
-      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!"
-           << endl;
+      cout << "Event " << lBranchEntry << " / " << lBranchEntries << " done!" << endl;
     tArrayTrlo->Clear("C");
     tArray->Clear("C");
 
@@ -198,23 +170,16 @@ void plot_Flux(TString sInputName     = "",
     tCalibTrloScal = (TTofCalibScaler*) tArray->At(1 + kiNbScalers);
 
     for (Int_t iAndChan = kiStartAndRpc; iAndChan < kiMidAndRpc; iAndChan++) {
-      dMeanFluxHdP2 +=
-        tCalibScaler[kiRpcScalId[0]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxBRef +=
-        tCalibScaler[kiRpcScalId[2]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxTsuStr +=
-        tCalibScaler[kiRpcScalId[4]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxUstc +=
-        tCalibScaler[kiRpcScalId[6]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxHdP2 += tCalibScaler[kiRpcScalId[0]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxBRef += tCalibScaler[kiRpcScalId[2]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxTsuStr += tCalibScaler[kiRpcScalId[4]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxUstc += tCalibScaler[kiRpcScalId[6]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
 
     }  // for(Int_t iAndCHan = 0; iAndChan < kiNbAndChanRpc; iAndChan ++)
     for (Int_t iAndChan = kiMidAndRpc; iAndChan < kiNbAndChanRpc; iAndChan++) {
-      dMeanFluxHdP5 +=
-        tCalibScaler[kiRpcScalId[1]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxB2013 +=
-        tCalibScaler[kiRpcScalId[3]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
-      dMeanFluxTsuPad +=
-        tCalibScaler[kiRpcScalId[5]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxHdP5 += tCalibScaler[kiRpcScalId[1]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxB2013 += tCalibScaler[kiRpcScalId[3]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
+      dMeanFluxTsuPad += tCalibScaler[kiRpcScalId[5]]->GetScalerValue(kiNbOrChanRpc + iAndChan);
     }  // for(Int_t iAndCHan = 0; iAndChan < kiNbAndChanRpc; iAndChan ++)
     dMeanFluxHdP2 /= kdRpcArea[0];
     dMeanFluxHdP5 /= kdRpcArea[1];
@@ -228,22 +193,14 @@ void plot_Flux(TString sInputName     = "",
       dMeanFluxDiamA += tCalibScaler[kiRpcScalId[7]]->GetScalerValue(iOrChan);
     dMeanFluxDiamA /= kdRpcArea[7];
 
-    tFluxHdP2->Fill(tCalibScaler[kiRpcScalId[0]]->GetTimeToFirst(),
-                    dMeanFluxHdP2);
-    tFluxHdP5->Fill(tCalibScaler[kiRpcScalId[1]]->GetTimeToFirst(),
-                    dMeanFluxHdP5);
-    tFluxBRef->Fill(tCalibScaler[kiRpcScalId[2]]->GetTimeToFirst(),
-                    dMeanFluxBRef);
-    tFluxB13->Fill(tCalibScaler[kiRpcScalId[3]]->GetTimeToFirst(),
-                   dMeanFluxB2013);
-    tFluxTsuS->Fill(tCalibScaler[kiRpcScalId[4]]->GetTimeToFirst(),
-                    dMeanFluxTsuStr);
-    tFluxTsuP->Fill(tCalibScaler[kiRpcScalId[5]]->GetTimeToFirst(),
-                    dMeanFluxTsuPad);
-    tFluxUstc->Fill(tCalibScaler[kiRpcScalId[6]]->GetTimeToFirst(),
-                    dMeanFluxUstc);
-    tFluxDiam->Fill(tCalibScaler[kiRpcScalId[7]]->GetTimeToFirst(),
-                    dMeanFluxDiamA);
+    tFluxHdP2->Fill(tCalibScaler[kiRpcScalId[0]]->GetTimeToFirst(), dMeanFluxHdP2);
+    tFluxHdP5->Fill(tCalibScaler[kiRpcScalId[1]]->GetTimeToFirst(), dMeanFluxHdP5);
+    tFluxBRef->Fill(tCalibScaler[kiRpcScalId[2]]->GetTimeToFirst(), dMeanFluxBRef);
+    tFluxB13->Fill(tCalibScaler[kiRpcScalId[3]]->GetTimeToFirst(), dMeanFluxB2013);
+    tFluxTsuS->Fill(tCalibScaler[kiRpcScalId[4]]->GetTimeToFirst(), dMeanFluxTsuStr);
+    tFluxTsuP->Fill(tCalibScaler[kiRpcScalId[5]]->GetTimeToFirst(), dMeanFluxTsuPad);
+    tFluxUstc->Fill(tCalibScaler[kiRpcScalId[6]]->GetTimeToFirst(), dMeanFluxUstc);
+    tFluxDiam->Fill(tCalibScaler[kiRpcScalId[7]]->GetTimeToFirst(), dMeanFluxDiamA);
     //      tRateTestE->Fill( tCalibTrloScal->GetTimeToFirst(),  tCalibTrloScal->GetScalerValue( 3, 1 ) );
     for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++) {
       /*
@@ -251,10 +208,8 @@ void plot_Flux(TString sInputName     = "",
             dMeanFluxPmt[iPmt] = 0.0;
             else
             */
-      dMeanFluxPmt[iPmt] =
-        tCalibTrloScal->GetScalerValue(kiPlaScalId[iPmt], 1) / kdPmtArea[iPmt];
-      tFluxPmt[iPmt]->Fill(tCalibTrloScal->GetTimeToFirst(),
-                           dMeanFluxPmt[iPmt]);
+      dMeanFluxPmt[iPmt] = tCalibTrloScal->GetScalerValue(kiPlaScalId[iPmt], 1) / kdPmtArea[iPmt];
+      tFluxPmt[iPmt]->Fill(tCalibTrloScal->GetTimeToFirst(), dMeanFluxPmt[iPmt]);
     }  // for( Int_t iPmt = 0; iPmt < kiNbRpc; iPmt++)
 
     // In spill mean value
@@ -268,26 +223,21 @@ void plot_Flux(TString sInputName     = "",
     dMeanFluxRpc[7] = dMeanFluxDiamA;
     if (kdSpillDiamThr <= dMeanFluxDiamA) {
       for (Int_t iRpc = 0; iRpc < kiNbRpc; iRpc++)
-        tSpillFluxRpc[iRpc]->Fill(tCalibTrloScal->GetTimeToFirst(),
-                                  dMeanFluxRpc[iRpc]);
+        tSpillFluxRpc[iRpc]->Fill(tCalibTrloScal->GetTimeToFirst(), dMeanFluxRpc[iRpc]);
       for (Int_t iPmt = 0; iPmt < kiNbPmt; iPmt++)
-        tSpillFluxPmt[iPmt]->Fill(tCalibTrloScal->GetTimeToFirst(),
-                                  dMeanFluxPmt[iPmt]);
+        tSpillFluxPmt[iPmt]->Fill(tCalibTrloScal->GetTimeToFirst(), dMeanFluxPmt[iPmt]);
     }  // if( kdSpillDiamThr <= dMeanFluxDiamA )
 
     if (tCalibTrloScal->GetTimeToFirst() < dLastTime) {
-      cout << " Probably a counter cycle: " << dLastTime << " "
-           << tCalibTrloScal->GetTimeToFirst() << endl;
-      cout << "                           " << dLastTimeToLast << " "
-           << tCalibTrloScal->GetTimeToLast() << endl;
+      cout << " Probably a counter cycle: " << dLastTime << " " << tCalibTrloScal->GetTimeToFirst() << endl;
+      cout << "                           " << dLastTimeToLast << " " << tCalibTrloScal->GetTimeToLast() << endl;
     }
     dLastTime       = tCalibTrloScal->GetTimeToFirst();
     dLastTimeToLast = tCalibTrloScal->GetTimeToLast();
 
 
     if (0 == lBranchEntry % 10000 && 0 < lBranchEntry)
-      cout << "Event time: " << tTriglogBoard->GetMbsTimeSec() << " done!"
-           << endl;
+      cout << "Event time: " << tTriglogBoard->GetMbsTimeSec() << " done!" << endl;
   }  // for(Long64_t lBranchEntry = 0; lBranchEntry < lBranchEntries; lBranchEntry++)
 
 

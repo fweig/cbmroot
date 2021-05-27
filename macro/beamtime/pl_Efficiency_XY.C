@@ -1,10 +1,6 @@
-void pl_Eff_XY(Int_t iDut       = 910,
-               Double_t dEffMin = 0.5,
-               Double_t dEffMax = 1.,
-               TString sysinfo  = "") {
-  gROOT->LoadMacro(
-    ((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C")
-      .Data());
+void pl_Eff_XY(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., TString sysinfo = "")
+{
+  gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 700, 700);
@@ -39,7 +35,8 @@ void pl_Eff_XY(Int_t iDut       = 910,
     h2->Draw("colz");
     h2f    = (TH2*) h2->Clone();
     Nfound = h2f->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -50,7 +47,8 @@ void pl_Eff_XY(Int_t iDut       = 910,
     h2m     = (TH2*) h2->Clone();
     Nmissed = h2m->GetEntries();
     h2m->Draw("colz");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -74,8 +72,7 @@ void pl_Eff_XY(Int_t iDut       = 910,
   cout << "Average efficiency of Dut: " << Form("%6.3f", dEff) << endl;
 
   can->cd(4);
-  TPaveLabel* tit = new TPaveLabel(
-    0.1, 0.1, 0.9, 0.9, Form(" average efficiency of %d: %5.3f", iDut, dEff));
+  TPaveLabel* tit = new TPaveLabel(0.1, 0.1, 0.9, 0.9, Form(" average efficiency of %d: %5.3f", iDut, dEff));
   tit->SetFillColor(0);
   tit->SetTextFont(52);
   tit->SetBorderSize(0);

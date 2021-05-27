@@ -8,6 +8,7 @@
 #define CBMLITRADLENGTHQAREPORT_H_
 
 #include "CbmSimulationReport.h"
+
 #include <string>
 #include <vector>
 using std::string;

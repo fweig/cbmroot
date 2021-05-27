@@ -8,12 +8,12 @@
 #define CBMMODULELIST_H 1
 
 
-#include <map>  // for map
+#include "CbmDefs.h"  // for ECbmModuleId
 
 #include <RtypesCore.h>  // for ROOT data types
 #include <TString.h>     // for TString
 
-#include "CbmDefs.h"  // for ECbmModuleId
+#include <map>  // for map
 
 /** @class CbmModuleList
  ** @brief Manages module Ids and names

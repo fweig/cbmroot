@@ -1,5 +1,5 @@
-void entriesCounter_simple(TString filename       = "alphas.root",
-                           TString picturesFolder = "pictures") {
+void entriesCounter_simple(TString filename = "alphas.root", TString picturesFolder = "pictures")
+{
   char LINE[256];
 
   TH1F* hNum  = new TH1F("hNum", "hNum", 300, 0., 300.);
@@ -28,12 +28,7 @@ void entriesCounter_simple(TString filename       = "alphas.root",
       TString histoName = histo1->GetName();
       UInt_t tdc1, ch1, tdc2, ch2;
       strcpy(LINE, histoName.Data());
-      sscanf(LINE,
-             "LeadingEdgeDiff_TDC%d_ch%d_TDC%d_ch%d",
-             &tdc1,
-             &ch1,
-             &tdc2,
-             &ch2);
+      sscanf(LINE, "LeadingEdgeDiff_TDC%d_ch%d_TDC%d_ch%d", &tdc1, &ch1, &tdc2, &ch2);
       //         printf ("%d/%d - %d/%d\n", tdc1, ch1, tdc2, ch2);
 
       //         if ((tdc1==23 && ch1==14) || (tdc2==23 && ch2==14) ||
@@ -43,9 +38,7 @@ void entriesCounter_simple(TString filename       = "alphas.root",
 
       Double_t m = histo1->GetMean();
       //         printf("%f\t%f\n", m, m);
-      if ((m < -1.2 || m > 1.2)) {
-        printf("%s: %d\t%f\n", histoName.Data(), histo1->GetEntries(), m);
-      }
+      if ((m < -1.2 || m > 1.2)) { printf("%s: %d\t%f\n", histoName.Data(), histo1->GetEntries(), m); }
 
 
       hNum->Fill(histo1->GetEntries());

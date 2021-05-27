@@ -1,4 +1,5 @@
-void registerGeantDecays(int iDecay) {
+void registerGeantDecays(int iDecay)
+{
   KFPartEfficiencies eff;
 
   std::cout << "---- Executing macro registerGeantDecays -----" << std::endl;
@@ -9,25 +10,9 @@ void registerGeantDecays(int iDecay) {
     Int_t PDG         = eff.partPDG[iDecay];
     Double_t charge   = eff.partCharge[iDecay];
 
-    if (!(iDecay == eff.GetParticleIndex(429)
-          || iDecay == eff.GetParticleIndex(-429))) {
-      TVirtualMC::GetMC()->DefineParticle(PDG,
-                                          eff.partTitle[iDecay].data(),
-                                          kPTHadron,
-                                          mass,
-                                          charge,
-                                          lifetime,
-                                          "hadron",
-                                          0.0,
-                                          1,
-                                          1,
-                                          0,
-                                          1,
-                                          1,
-                                          0,
-                                          0,
-                                          1,
-                                          kFALSE);
+    if (!(iDecay == eff.GetParticleIndex(429) || iDecay == eff.GetParticleIndex(-429))) {
+      TVirtualMC::GetMC()->DefineParticle(PDG, eff.partTitle[iDecay].data(), kPTHadron, mass, charge, lifetime,
+                                          "hadron", 0.0, 1, 1, 0, 1, 1, 0, 0, 1, kFALSE);
 
       Int_t mode[6][3];
       Float_t bratio[6];
@@ -49,30 +34,14 @@ void registerGeantDecays(int iDecay) {
   }
 
   //Register hypernuclei from KF Particle Finder
-  for (int iP = eff.fFirstHypernucleusIndex; iP <= eff.fLastHypernucleusIndex;
-       iP++) {
+  for (int iP = eff.fFirstHypernucleusIndex; iP <= eff.fLastHypernucleusIndex; iP++) {
     Double_t lifetime = eff.partLifeTime[iP];  // lifetime
     Double_t mass     = eff.partMass[iP];
     Int_t PDG         = eff.partPDG[iP];
     Double_t charge   = eff.partCharge[iP];
 
-    TVirtualMC::GetMC()->DefineParticle(PDG,
-                                        eff.partTitle[iP].data(),
-                                        kPTHadron,
-                                        mass,
-                                        charge,
-                                        lifetime,
-                                        "hadron",
-                                        0.0,
-                                        1,
-                                        1,
-                                        0,
-                                        1,
-                                        1,
-                                        0,
-                                        0,
-                                        1,
-                                        kFALSE);
+    TVirtualMC::GetMC()->DefineParticle(PDG, eff.partTitle[iP].data(), kPTHadron, mass, charge, lifetime, "hadron", 0.0,
+                                        1, 1, 0, 1, 1, 0, 0, 1, kFALSE);
 
     Int_t mode[6][3];
     Float_t bratio[6];

@@ -17,8 +17,10 @@
 #include "LitStation.h"
 #include "LitVirtualStation.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitDetectorLayout
@@ -46,17 +48,13 @@ namespace lit {
     * \brief Add station to detector layout.
     * \param[in] station Station to be added.
     */
-      void AddStation(const LitStation<T>& station) {
-        fStations.push_back(station);
-      }
+      void AddStation(const LitStation<T>& station) { fStations.push_back(station); }
 
       /**
     * \brief Add virtual station to detector layout.
     * \param[in] virtualStation Virtual station to be added.
     */
-      void AddVirtualStation(const LitVirtualStation<T>& virtualStation) {
-        fVirtualStations.push_back(virtualStation);
-      }
+      void AddVirtualStation(const LitVirtualStation<T>& virtualStation) { fVirtualStations.push_back(virtualStation); }
 
       /**
     * \brief Return number of stations.
@@ -68,26 +66,22 @@ namespace lit {
     * \brief Return number of virtual stations.
     * \return Number of virtual stations.
     */
-      unsigned char GetNofVirtualStations() const {
-        return fVirtualStations.size();
-      }
+      unsigned char GetNofVirtualStations() const { return fVirtualStations.size(); }
 
       /**
     * \brief Return station by index.
     * \param[in] station Index of station.
     * \return Station by index.
     */
-      const LitStation<T>& GetStation(unsigned char station) const {
-        return fStations[station];
-      }
+      const LitStation<T>& GetStation(unsigned char station) const { return fStations[station]; }
 
       /**
     * \brief Return virtual station by index.
     * \param[in] station Virtual station index.
     * \return Virtual station by index.
     */
-      const LitVirtualStation<T>&
-      GetVirtualStation(unsigned char virtualStation) const {
+      const LitVirtualStation<T>& GetVirtualStation(unsigned char virtualStation) const
+      {
         return fVirtualStations[virtualStation];
       }
 
@@ -95,11 +89,11 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
         ss << "LitDetectorLayout: \n";
-        ss << "virtual stations: nofVirtualStations="
-           << (int) GetNofVirtualStations() << "\n";
+        ss << "virtual stations: nofVirtualStations=" << (int) GetNofVirtualStations() << "\n";
         for (unsigned char i = 0; i < GetNofVirtualStations(); i++) {
           ss << (int) i << " " << GetVirtualStation(i).ToString() << "\n";
         }
@@ -114,16 +108,15 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm,
-                                 const LitDetectorLayout& layout) {
+      friend ostream& operator<<(ostream& strm, const LitDetectorLayout& layout)
+      {
         strm << layout.ToString();
         return strm;
       }
 
     private:
-      vector<LitStation<T>> fStations;  // Array with stations
-      vector<LitVirtualStation<T>>
-        fVirtualStations;  // Array with virtual stations
+      vector<LitStation<T>> fStations;                // Array with stations
+      vector<LitVirtualStation<T>> fVirtualStations;  // Array with virtual stations
     } _fvecalignment;
 
     /**

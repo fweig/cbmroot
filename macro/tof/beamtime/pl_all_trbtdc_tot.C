@@ -1,4 +1,5 @@
-void pl_all_trbtdc_tot(Int_t iTdc = 34) {
+void pl_all_trbtdc_tot(Int_t iTdc = 34)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -30,7 +31,8 @@ void pl_all_trbtdc_tot(Int_t iTdc = 34) {
       h1->GetYaxis()->SetLabelSize(lsize);
       h1->Draw("");
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

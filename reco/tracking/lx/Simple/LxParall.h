@@ -1,8 +1,9 @@
 #ifndef LX_PARALL_INCLUDED
 
 #pragma GCC diagnostic ignored "-Weffc++"
-#include "LxSettings.h"
 #include "TString.h"
+
+#include "LxSettings.h"
 
 class LxParallFinder {
 public:

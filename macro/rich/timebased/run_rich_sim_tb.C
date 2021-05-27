@@ -1,11 +1,12 @@
 #include <stdio.h>
 
-void run_rich_sim_tb(Int_t nEvents = 1000) {
+void run_rich_sim_tb(Int_t nEvents = 1000)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
-  TString myName = "run_sim_tb";  // this macro's name for screen output
+  TString myName = "run_sim_tb";                   // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
   TString geoSetupFile = srcDir + "/macro/rich/geosetup/rich_setup_sis300_tb.C";
@@ -29,7 +30,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
 
   // primary vertex
@@ -53,8 +54,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
   TString setupFunct = "do_setup()";
-  std::cout << "-I- " << myName << ": Loading macro " << geoSetupFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Loading macro " << geoSetupFile << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   // You can modify the pre-defined setup by using
@@ -64,8 +64,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   // See the class documentation of CbmSetup.
 
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Setting media file" << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Setting media file" << std::endl;
   run->SetMaterials("media.geo");  // Materials
 
 
@@ -76,10 +75,8 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   gROOT->ProcessLine("registerSetup()");
 
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  std::cout << std::endl << "-I- " << myName << ": Registering target" << std::endl;
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -87,8 +84,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
 
 
   // Magnetic field
-  std::cout << std::endl
-            << "-I- " << myName << ": Registering magnetic field" << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Registering magnetic field" << std::endl;
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
   if (!magField) {
     std::cout << "-ERROR- : No valid field!";
@@ -98,9 +94,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
 
 
   //  PrimaryGenerator
-  std::cout << std::endl
-            << "-I- " << myName << ": Registering event generators"
-            << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Registering event generators" << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
@@ -164,9 +158,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   rtdb->print();
 
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Starting run" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Starting run" << std::endl;
   run->Run(nEvents);
 
 
@@ -180,9 +172,7 @@ void run_rich_sim_tb(Int_t nEvents = 1000) {
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

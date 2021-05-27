@@ -9,7 +9,8 @@
 using std::cout;
 using std::endl;
 
-void global_sim(Int_t nEvents = 100, Int_t seed = 555) {
+void global_sim(Int_t nEvents = 100, Int_t seed = 555)
+{
   gRandom->SetSeed(seed);
 
   TTree::SetMaxTreeSize(90000000000);
@@ -18,12 +19,10 @@ void global_sim(Int_t nEvents = 100, Int_t seed = 555) {
   // Files
   TString urqmdFile = "/Users/andrey/Development/cbm/d/urqmd/auau/25gev/centr/"
                       "urqmd.auau.25gev.centr.0000.ftn14";  // input UrQMD file
-  TString dir =
-    "events/much_anna_omega_8gev_10k/";  // Directory for output simulation files
-  TString mcFile  = dir + "mc.0000.root";     //MC file name
-  TString parFile = dir + "param.0000.root";  //Parameter file name
-  TString plutoFile =
-    "/Users/andrey/Development/cbm/d/pluto/omega.8gev.1M.root";
+  TString dir       = "events/much_anna_omega_8gev_10k/";   // Directory for output simulation files
+  TString mcFile    = dir + "mc.0000.root";                 //MC file name
+  TString parFile   = dir + "param.0000.root";              //Parameter file name
+  TString plutoFile = "/Users/andrey/Development/cbm/d/pluto/omega.8gev.1M.root";
 
   // Geometries
   TString caveGeom   = "cave.geo";

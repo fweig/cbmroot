@@ -12,14 +12,14 @@
 //
 // --------------------------------------------------------------------------
 
-void create_geometry_file_root(TString geoName = "trd_v13q") {
+void create_geometry_file_root(TString geoName = "trd_v13q")
+{
   TString outDir  = "data";
   TString outFile = outDir + "/test.mc." + geoName + ".root";
   TString parFile = outDir + "/params.root";
 
   TString caveGeom = "cave.geo";
-  TString trdGeom  = TString(gSystem->ExpandPathName("$VMCWORKDIR"))
-                    + "/geometry/trd/" + geoName + ".geo.root";
+  TString trdGeom  = TString(gSystem->ExpandPathName("$VMCWORKDIR")) + "/geometry/trd/" + geoName + ".geo.root";
   //   TString trdGeom    = "../macro/trd/geometry/trd.v13/" + geoName + ".root";
   //   TString trdGeom    = "../macro/trd/geometry/" + geoName + ".geo.root";
   TString trdGeomOut = "geofile_" + geoName + ".root";

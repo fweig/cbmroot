@@ -12,23 +12,27 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PStaticData.h"
+
 #include "PStdData.h"
 //#include "PUtils.h"
-#include "Pdefines.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TString.h"
 
+#include "Pdefines.h"
+
 //extern char*version_string;
 
-PStaticData& fStaticData() {
+PStaticData& fStaticData()
+{
   static PStaticData* ans = new PStaticData();
   return *ans;
 }
 
 PStaticData* makeStaticData() { return &fStaticData(); }
 
-PStaticData::PStaticData() {
+PStaticData::PStaticData()
+{
   if (!makeStdData()->fillDataBase()) {
     Error("PStaticData", "Data base could not be filled");
     exit(1);
@@ -159,20 +163,16 @@ PStaticData::PStaticData() {
 }
 
 
-int PStaticData::MakeDirectoryEntry(const char* name,
-                                    const char* n,
-                                    const char* l,
-                                    const char* ename) {
+int PStaticData::MakeDirectoryEntry(const char* name, const char* n, const char* l, const char* ename)
+{
   // Adds an entry of the form "dir"
   // if entry/dir is existing, the key w/o warning is returned
   // n and l are the data base columns of the list
 
   Int_t skey = -1;
 
-  if (makeDataBase()->GetParamInt(n) < 0)
-    makeDataBase()->MakeParamInt(n, "number of links");
-  if (makeDataBase()->GetParamInt(l) < 0)
-    makeDataBase()->MakeParamInt(l, "links");
+  if (makeDataBase()->GetParamInt(n) < 0) makeDataBase()->MakeParamInt(n, "number of links");
+  if (makeDataBase()->GetParamInt(l) < 0) makeDataBase()->MakeParamInt(l, "links");
 
   skey = makeDataBase()->GetEntry(name);
   if (skey < 0) skey = makeDataBase()->AddEntry(name);
@@ -191,33 +191,33 @@ int PStaticData::MakeDirectoryEntry(const char* name,
 }
 
 
-Double_t* PStaticData::GetBatchValue(const char* name, Int_t make_val) {
-  Int_t key_a =
-    MakeDirectoryEntry("batch_objects", NBATCH_NAME, LBATCH_NAME, name);
+Double_t* PStaticData::GetBatchValue(const char* name, Int_t make_val)
+{
+  Int_t key_a = MakeDirectoryEntry("batch_objects", NBATCH_NAME, LBATCH_NAME, name);
   //Check if double is existing
   Double_t* val;
   Int_t batch_value_param = makeDataBase()->GetParamDouble("batch_value");
   if (batch_value_param < 0)
-    batch_value_param = makeDataBase()->MakeParamDouble(
-      "batch_value", "Double storage for batch");
+    batch_value_param = makeDataBase()->MakeParamDouble("batch_value", "Double storage for batch");
   //cout << key_a << ":" << makeDataBase()->GetParamDouble(key_a ,batch_value_param,&val) << endl;
   if (!makeDataBase()->GetParamDouble(key_a, batch_value_param, &val)) {
     if (make_val) {
       Double_t* delme = new Double_t(0.);
       makeDataBase()->SetParamDouble(key_a, "batch_value", delme);
       return delme;
-    } else
+    }
+    else
       return nullptr;
   }
   return val;
 };
 
 
-int PStaticData::GetParticleID(const char* id, int warn) {
+int PStaticData::GetParticleID(const char* id, int warn)
+{
   // pid by name
   if (!id) return 0;
-  if (!makeDataBase()->GetParamInt(
-        makeDataBase()->GetEntry((char*) id), pid_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(makeDataBase()->GetEntry((char*) id), pid_param, &i_result)) {
     Int_t key = GetAliasParent(id);
     if (key < 0) {
       if (warn) { Warning("GetParticleID", "%s not found", id); }
@@ -228,7 +228,8 @@ int PStaticData::GetParticleID(const char* id, int warn) {
   return *i_result;
 };
 
-const char* PStaticData::GetParticleName(const int& id) {
+const char* PStaticData::GetParticleName(const int& id)
+{
   // name by pid
   Int_t key = -1;
   if ((key = makeDataBase()->GetEntryInt(pid_param, id)) < 0) {
@@ -239,38 +240,39 @@ const char* PStaticData::GetParticleName(const int& id) {
   return c_result;
 };
 
-int PStaticData::GetParticleIDByKey(int key) {
+int PStaticData::GetParticleIDByKey(int key)
+{
   // pid by key
   // -1 if unvalid
   if (!makeDataBase()->GetParamInt(key, pid_param, &i_result)) return -1;
   return *i_result;
 }
 
-int PStaticData::GetParticleKey(const int& id) {
+int PStaticData::GetParticleKey(const int& id)
+{
   // data base key by pid
   Int_t key = -1;
-  if ((key = makeDataBase()->GetEntryInt(pid_param, id)) < 0) {
-    Warning("GetParticleKey", "id %i not found", id);
-  }
+  if ((key = makeDataBase()->GetEntryInt(pid_param, id)) < 0) { Warning("GetParticleKey", "id %i not found", id); }
   return key;
 }
 
-int PStaticData::GetDecayKey(const int& id) {
+int PStaticData::GetDecayKey(const int& id)
+{
   // data base key by pid
   Int_t key = -1;
-  if ((key = makeDataBase()->GetEntryInt(didx_param, id)) < 0) {
-    Warning("GetDecayKey", "id %i not found", id);
-  }
+  if ((key = makeDataBase()->GetEntryInt(didx_param, id)) < 0) { Warning("GetDecayKey", "id %i not found", id); }
   return key;
 }
 
-int PStaticData::IsParticle(const int& id, const char* name) {
+int PStaticData::IsParticle(const int& id, const char* name)
+{
   // does pid correspond to given name?
   if (strcmp(name, GetParticleName(id)) == 0) return 1;
   return 0;
 };
 
-int PStaticData::IsParticleValid(const int& id) {
+int PStaticData::IsParticleValid(const int& id)
+{
   // check id range by id
   // Returns a "1" in any case if data base is filled with id
   // PFireball particles return 0;
@@ -285,7 +287,8 @@ int PStaticData::IsParticleValid(const int& id) {
   return 0;
 }
 
-int PStaticData::IsParticleValid(const char* n) {
+int PStaticData::IsParticleValid(const char* n)
+{
   // check id range by name
 
   if (!n) return 0;
@@ -295,7 +298,8 @@ int PStaticData::IsParticleValid(const char* n) {
   return IsParticleValid(pid);
 }
 
-int PStaticData::AddAlias(const char* old_name, const char* new_name) {
+int PStaticData::AddAlias(const char* old_name, const char* new_name)
+{
   //adds an alias to primary_key, ret value is alias key
   PDataBase* base = makeDataBase();
   Int_t pkey      = -1;
@@ -308,7 +312,8 @@ int PStaticData::AddAlias(const char* old_name, const char* new_name) {
   return pkey;
 }
 
-int PStaticData::GetAliasParent(const char* alias_name) {
+int PStaticData::GetAliasParent(const char* alias_name)
+{
   Int_t listkey = -1, *dummy;
   Int_t key     = makeDataBase()->GetEntry(alias_name);
   if (key < 0) return -1;
@@ -321,7 +326,8 @@ int PStaticData::GetAliasParent(const char* alias_name) {
   return -1;
 }
 
-int PStaticData::GetAliasParent(int key) {
+int PStaticData::GetAliasParent(int key)
+{
   Int_t listkey = -1, *dummy;
   if (key < 0) return -1;
   if (!makeDataBase()->GetParamInt(key, lalias_param, &dummy)) return -1;
@@ -334,7 +340,8 @@ int PStaticData::GetAliasParent(int key) {
   return -1;
 }
 
-int PStaticData::GetSecondaryKey(int key, int defkey) {
+int PStaticData::GetSecondaryKey(int key, int defkey)
+{
   Int_t listkey = -1;
 
   Int_t* dummy;
@@ -347,8 +354,7 @@ int PStaticData::GetSecondaryKey(int key, int defkey) {
     if (key < 0) return -1;  //avoid messages
   }
 
-  while (makeDataBase()->MakeListIterator(
-    key, nalias_param, lalias_param, &listkey)) {
+  while (makeDataBase()->MakeListIterator(key, nalias_param, lalias_param, &listkey)) {
 
     //cout << "listkey " << listkey << endl;
 
@@ -361,7 +367,8 @@ int PStaticData::GetSecondaryKey(int key, int defkey) {
 }
 
 
-int PStaticData::AddParticle(int pid, const char* name, double mass) {
+int PStaticData::AddParticle(int pid, const char* name, double mass)
+{
   clearFreezeOut();
   PDataBase* base = makeDataBase();
   Int_t pkey      = -1;
@@ -383,8 +390,7 @@ int PStaticData::AddParticle(int pid, const char* name, double mass) {
     while (makeDataBase()->GetEntryInt("pid", pid) >= 0) {
       pid++;
     }
-    if (*system_alloc_verbosity)
-      Info("AddParticle", "(%s) PID: %i", PRINT_AUTO_ALLOC, pid);
+    if (*system_alloc_verbosity) Info("AddParticle", "(%s) PID: %i", PRINT_AUTO_ALLOC, pid);
   }
 
   if ((pkey = base->AddListEntry("std_set", "snpart", "slink", name)) < 0) {
@@ -438,19 +444,17 @@ int PStaticData::AddParticle(int pid, const char* name, double mass) {
 }
 
 
-void PStaticData::PrintParticle(int pid) {
-  return PrintParticleByKey(makeDataBase()->GetEntryInt("pid", pid));
-};
+void PStaticData::PrintParticle(int pid) { return PrintParticleByKey(makeDataBase()->GetEntryInt("pid", pid)); };
 
 
-void PStaticData::PrintParticleByKey(int key) {
+void PStaticData::PrintParticleByKey(int key)
+{
   makeDataBase()->ListEntries(key, 0, "name,pid,width,mass");
 
   Int_t listkey = -1, alias_printed = 0;
   Int_t* dummy;
   if (makeDataBase()->GetParamInt(key, nalias_param, &dummy)) {
-    while (
-      makeDataBase()->MakeListIterator(key, "nalias", "lalias", &listkey)) {
+    while (makeDataBase()->MakeListIterator(key, "nalias", "lalias", &listkey)) {
       alias_printed = 1;
       cout << "Alias: " << makeDataBase()->GetName(listkey) << endl;
       ;
@@ -473,7 +477,8 @@ void PStaticData::PrintParticleByKey(int key) {
   }
 };
 
-int PStaticData::GetParticleKF(const int id) {
+int PStaticData::GetParticleKF(const int id)
+{
   // return Pythia6 kf code
   if (!id) return 0;
   if (!makeDataBase()->GetParamInt(pid_param, id, pkf_param, &i_result)) {
@@ -483,7 +488,8 @@ int PStaticData::GetParticleKF(const int id) {
   return *i_result;
 }
 
-int PStaticData::GetParticleIDbyKF(const int kf) {
+int PStaticData::GetParticleIDbyKF(const int kf)
+{
   // return Id corresponding to Pythia6 kf code
   if (!kf) return 0;
   int* id = nullptr;
@@ -498,7 +504,8 @@ int PStaticData::GetParticleIDbyKF(const int kf) {
 }
 
 
-int PStaticData::IsParticleMeson(const int& id) {
+int PStaticData::IsParticleMeson(const int& id)
+{
   // is meson?, by pid
   if (!id) return 0;
   if (!makeDataBase()->GetParamInt(pid_param, id, meson_param, &i_result)) {
@@ -508,13 +515,15 @@ int PStaticData::IsParticleMeson(const int& id) {
   return *i_result;
 };
 
-int PStaticData::IsParticleHadron(const int& id) {
+int PStaticData::IsParticleHadron(const int& id)
+{
   // is hadron?, by pid
   if (IsParticleMeson(id) || GetParticleBaryon(id)) return 1;
   return 0;
 };
 
-int PStaticData::GetParticleBaryon(const int& id) {
+int PStaticData::GetParticleBaryon(const int& id)
+{
   // baryon number by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, baryon_param, &i_result)) {
     // if not found obviously not a baryon
@@ -523,72 +532,73 @@ int PStaticData::GetParticleBaryon(const int& id) {
   return *i_result;
 };
 
-void PStaticData::SetParticleBaryon(const char* id, Int_t num) {
+void PStaticData::SetParticleBaryon(const char* id, Int_t num)
+{
   // baryon number by name
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), baryon_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), baryon_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "baryon", num);
   }
   *i_result = num;
 }
 
-void PStaticData::SetParticleMeson(const char* id, Int_t num) {
+void PStaticData::SetParticleMeson(const char* id, Int_t num)
+{
   // set meson number
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), meson_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), meson_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "meson", num);
   }
   *i_result = num;
 }
 
-void PStaticData::SetParticleLepton(const char* id, Int_t num) {
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), lepton_param, &i_result)) {
+void PStaticData::SetParticleLepton(const char* id, Int_t num)
+{
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), lepton_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "lepton", num);
   }
   *i_result = num;
 }
 
-void PStaticData::SetParticleCharge(const char* id, Int_t charge) {
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), charge_param, &i_result)) {
+void PStaticData::SetParticleCharge(const char* id, Int_t charge)
+{
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), charge_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "charge", charge);
   }
   *i_result = charge;
 }
 
-void PStaticData::SetParticleSpin(const char* id, Int_t spin) {
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), spin_param, &i_result)) {
+void PStaticData::SetParticleSpin(const char* id, Int_t spin)
+{
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), spin_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "spin", spin);
   }
   *i_result = spin;
 }
 
-void PStaticData::SetParticleIsospin(const char* id, Int_t isospin) {
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), ispin_param, &i_result)) {
+void PStaticData::SetParticleIsospin(const char* id, Int_t isospin)
+{
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), ispin_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "ispin", isospin);
   }
   *i_result = isospin;
 }
 
-void PStaticData::SetParticleParity(const char* id, Int_t parity) {
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID((char*) id), parity_param, &i_result)) {
+void PStaticData::SetParticleParity(const char* id, Int_t parity)
+{
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID((char*) id), parity_param, &i_result)) {
     // if not found, set param
     makeDataBase()->SetParamInt((char*) id, "parity", parity);
   }
   *i_result = parity;
 }
 
-int PStaticData::GetParticleLepton(const int& id) {
+int PStaticData::GetParticleLepton(const int& id)
+{
   // lepton number by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, lepton_param, &i_result)) {
     // if not found obviously not a lepton
@@ -597,7 +607,8 @@ int PStaticData::GetParticleLepton(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleCharge(const int& id) {
+int PStaticData::GetParticleCharge(const int& id)
+{
   // charge by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, charge_param, &i_result)) {
     cout << "PStaticData::Charge: " << id << " not found" << endl;
@@ -606,17 +617,18 @@ int PStaticData::GetParticleCharge(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleCharge(const char* id) {
+int PStaticData::GetParticleCharge(const char* id)
+{
   // charge by name
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID(id), charge_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID(id), charge_param, &i_result)) {
     cout << "PStaticData::Charge: " << id << " not found" << endl;
     return 0;
   }
   return *i_result;
 };
 
-int PStaticData::GetParticleSpin(const int& id) {
+int PStaticData::GetParticleSpin(const int& id)
+{
   // 2 x J by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, spin_param, &i_result)) {
     cout << "PStaticData::GetParticleSpin: " << id << " not found" << endl;
@@ -625,17 +637,18 @@ int PStaticData::GetParticleSpin(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleSpin(const char* id) {
+int PStaticData::GetParticleSpin(const char* id)
+{
   // 2 x J by name
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID(id), spin_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID(id), spin_param, &i_result)) {
     cout << "PStaticData::GetParticleSpin: " << id << " not found" << endl;
     return 0;
   }
   return *i_result;
 };
 
-int PStaticData::GetParticleIsospin(const int& id) {
+int PStaticData::GetParticleIsospin(const int& id)
+{
   // 2 x I by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, ispin_param, &i_result)) {
     cout << "PStaticData::GetParticleIsospin: " << id << " not found" << endl;
@@ -644,17 +657,18 @@ int PStaticData::GetParticleIsospin(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleIsospin(const char* id) {
+int PStaticData::GetParticleIsospin(const char* id)
+{
   // 2 x I by name
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID(id), ispin_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID(id), ispin_param, &i_result)) {
     cout << "PStaticData::GetParticleIsospin: " << id << " not found" << endl;
     return 0;
   }
   return *i_result;
 };
 
-int PStaticData::GetParticleParity(const int& id) {
+int PStaticData::GetParticleParity(const int& id)
+{
   // parity (0 if irrelevant)
   if (!makeDataBase()->GetParamInt(pid_param, id, parity_param, &i_result)) {
     cout << "PStaticData::GetParticleParity: " << id << " not found" << endl;
@@ -663,17 +677,18 @@ int PStaticData::GetParticleParity(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleParity(const char* id) {
+int PStaticData::GetParticleParity(const char* id)
+{
   // parity (0 if irrelevant)
-  if (!makeDataBase()->GetParamInt(
-        pid_param, GetParticleID(id), parity_param, &i_result)) {
+  if (!makeDataBase()->GetParamInt(pid_param, GetParticleID(id), parity_param, &i_result)) {
     cout << "PStaticData::GetParticleParity: " << id << " not found" << endl;
     return 0;
   }
   return *i_result;
 };
 
-double PStaticData::GetParticleMass(const int& id) {
+double PStaticData::GetParticleMass(const int& id)
+{
   // mass by id
 
   if (!makeDataBase()->GetParamDouble(pid_param, id, mass_param, &d_result)) {
@@ -683,17 +698,18 @@ double PStaticData::GetParticleMass(const int& id) {
   return *d_result;
 };
 
-double PStaticData::GetParticleMass(const char* id) {
+double PStaticData::GetParticleMass(const char* id)
+{
   // mass by name
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, GetParticleID(id), mass_param, &d_result)) {
+  if (!makeDataBase()->GetParamDouble(pid_param, GetParticleID(id), mass_param, &d_result)) {
     cout << "PStaticData::GetParticleMass: " << id << " not found" << endl;
     return 0;
   }
   return *d_result;
 };
 
-double PStaticData::GetParticleMassByKey(const int& id) {
+double PStaticData::GetParticleMassByKey(const int& id)
+{
   // mass by key
   if (!makeDataBase()->GetParamDouble(id, mass_param, &d_result)) {
     cout << "PStaticData::GetParticleMassByKey: " << id << " not found" << endl;
@@ -702,7 +718,8 @@ double PStaticData::GetParticleMassByKey(const int& id) {
   return *d_result;
 };
 
-void PStaticData::SetParticleMass(Int_t id, Float_t mass) {
+void PStaticData::SetParticleMass(Int_t id, Float_t mass)
+{
   //reset mass
   if (!makeDataBase()->GetParamDouble(pid_param, id, mass_param, &d_result)) {
     cout << "PStaticData::SetParticleMass: " << id << " not found" << endl;
@@ -710,34 +727,31 @@ void PStaticData::SetParticleMass(Int_t id, Float_t mass) {
   *d_result = mass;
 }
 
-void PStaticData::SetParticleMass(const char* id, Float_t mass) {
+void PStaticData::SetParticleMass(const char* id, Float_t mass)
+{
   //reset mass
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, GetParticleID(id), mass_param, &d_result)) {
+  if (!makeDataBase()->GetParamDouble(pid_param, GetParticleID(id), mass_param, &d_result)) {
     cout << "PStaticData::SetParticleMass: " << id << " not found" << endl;
   }
   *d_result = mass;
 }
 
 
-const char* PStaticData::GetDecayName(Int_t id) {
-  if (!makeDataBase()->GetParamString(didx_param, id, name_param, &c_result)) {
-    return "NONAME";
-  }
+const char* PStaticData::GetDecayName(Int_t id)
+{
+  if (!makeDataBase()->GetParamString(didx_param, id, name_param, &c_result)) { return "NONAME"; }
   return c_result;
 }
 
-const char* PStaticData::GetDecayNameByKey(Int_t key) {
-  if (!makeDataBase()->GetParamString(key, name_param, &c_result)) {
-    return "NONAME";
-  }
+const char* PStaticData::GetDecayNameByKey(Int_t key)
+{
+  if (!makeDataBase()->GetParamString(key, name_param, &c_result)) { return "NONAME"; }
   return c_result;
 }
 
-void PStaticData::SetParticleTotalWidth(const char* id,
-                                        Float_t wid) {  // set new total width
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, GetParticleID(id), width_param, &d_result)) {
+void PStaticData::SetParticleTotalWidth(const char* id, Float_t wid)
+{  // set new total width
+  if (!makeDataBase()->GetParamDouble(pid_param, GetParticleID(id), width_param, &d_result)) {
     cout << "PStaticData::SetTWidth: " << id << " not found" << endl;
   }
   *d_result = wid;
@@ -751,8 +765,8 @@ void PStaticData::SetParticleTotalWidth(const char* id,
   //printf("\n*** Warning:  Use only at start of macro! ***\n\n");
 }
 
-void PStaticData::SetParticleTotalWidth(Int_t id,
-                                        Float_t wid) {  // set new total width
+void PStaticData::SetParticleTotalWidth(Int_t id, Float_t wid)
+{  // set new total width
   if (!makeDataBase()->GetParamDouble(pid_param, id, width_param, &d_result)) {
     cout << "PStaticData::SetTWidth: " << id << " not found" << endl;
   }
@@ -765,7 +779,8 @@ void PStaticData::SetParticleTotalWidth(Int_t id,
 }
 
 
-int PStaticData::GetTWidx(const int& id) {
+int PStaticData::GetTWidx(const int& id)
+{
   // width flag from index
   // 0: static width only
   // 1: use dynamic width
@@ -778,7 +793,8 @@ int PStaticData::GetTWidx(const int& id) {
   return *i_result;
 }
 
-int PStaticData::GetPWidx(const int& id) {
+int PStaticData::GetPWidx(const int& id)
+{
   // width flag from index
   // 0: static width only
   // 1: use dynamic width
@@ -790,7 +806,8 @@ int PStaticData::GetPWidx(const int& id) {
   return *i_result;
 }
 
-void PStaticData::SetTWidx(const int& id, const int& v) {
+void PStaticData::SetTWidx(const int& id, const int& v)
+{
   // width flag from index
   // 0: static width only
   // 1: use dynamic width
@@ -801,7 +818,8 @@ void PStaticData::SetTWidx(const int& id, const int& v) {
   *i_result = v;
 }
 
-void PStaticData::SetPWidx(const int& id, const int& v) {
+void PStaticData::SetPWidx(const int& id, const int& v)
+{
   // width flag from index
   // 0: static width only
   // 1: use dynamic width
@@ -812,7 +830,8 @@ void PStaticData::SetPWidx(const int& id, const int& v) {
   *i_result = v;
 }
 
-void PStaticData::SetTWidthMesh(const int& id, PMesh* mesh) {
+void PStaticData::SetTWidthMesh(const int& id, PMesh* mesh)
+{
 
   Int_t key = makeDataBase()->GetEntryInt("pid", id);
   if (!makeDataBase()->SetParamTObj(key, "mesh", mesh)) {
@@ -821,7 +840,8 @@ void PStaticData::SetTWidthMesh(const int& id, PMesh* mesh) {
 };
 
 
-PMesh* PStaticData::GetTWidthMesh(const int& id) {
+PMesh* PStaticData::GetTWidthMesh(const int& id)
+{
   if (!makeDataBase()->GetParamTObj(pid_param, id, mesh_param, &t_result)) {
     cout << "PStaticData::GetTWidthMesh: " << id << " not found" << endl;
     return nullptr;
@@ -829,7 +849,8 @@ PMesh* PStaticData::GetTWidthMesh(const int& id) {
   return (PMesh*) t_result;
 };
 
-void PStaticData::SetPWidthMesh(const int& id, PMesh* mesh) {
+void PStaticData::SetPWidthMesh(const int& id, PMesh* mesh)
+{
   Int_t key = makeDataBase()->GetEntryInt("didx", id);
   if (!makeDataBase()->SetParamTObj(key, "mesh", mesh)) {
     cout << "PStaticData::SetPWidthMesh: " << id << " not possible" << endl;
@@ -837,7 +858,8 @@ void PStaticData::SetPWidthMesh(const int& id, PMesh* mesh) {
 };
 
 
-PMesh* PStaticData::GetPWidthMesh(const int& id) {
+PMesh* PStaticData::GetPWidthMesh(const int& id)
+{
   if (!makeDataBase()->GetParamTObj(didx_param, id, mesh_param, &t_result)) {
     cout << "PStaticData::GetPWidthMesh: " << id << " not found" << endl;
     return nullptr;
@@ -846,7 +868,8 @@ PMesh* PStaticData::GetPWidthMesh(const int& id) {
 };
 
 
-void PStaticData::SetTF1(const int& id, TF1* mesh) {
+void PStaticData::SetTF1(const int& id, TF1* mesh)
+{
   Int_t key = makeDataBase()->GetEntryInt("pid", id);
   if (!makeDataBase()->SetParamTObj(key, "tf1", mesh)) {
     cout << "PStaticData::SetTF1: " << id << " not possible" << endl;
@@ -854,7 +877,8 @@ void PStaticData::SetTF1(const int& id, TF1* mesh) {
 };
 
 
-TF1* PStaticData::GetTF1(const int& id) {
+TF1* PStaticData::GetTF1(const int& id)
+{
   if (!makeDataBase()->GetParamTObj(pid_param, id, tf1_param, &t_result)) {
     //	cout << "PStaticData::GetTF1: " << id << " not found" << endl;
     return nullptr;
@@ -863,23 +887,23 @@ TF1* PStaticData::GetTF1(const int& id) {
 };
 
 
-Double_t PStaticData::GetDecayEmin(const int& id) {
-  if (!makeDataBase()->GetParamDouble(
-        didx_param, id, ethreshold_param, &d_result)) {
+Double_t PStaticData::GetDecayEmin(const int& id)
+{
+  if (!makeDataBase()->GetParamDouble(didx_param, id, ethreshold_param, &d_result)) {
     cout << "PStaticData::GetDecayEmin: " << id << " not found" << endl;
     return 0;
   }
   return *d_result;
 }
 
-int PStaticData::GetDecayBRFlag(int didx) {
-  if (!makeDataBase()->GetParamInt(didx_param, didx, brflag_param, &i_result)) {
-    return 0;
-  }
+int PStaticData::GetDecayBRFlag(int didx)
+{
+  if (!makeDataBase()->GetParamInt(didx_param, didx, brflag_param, &i_result)) { return 0; }
   return *i_result;
 }
 
-void PStaticData::SetDecayBRFlag(int didx, int flag) {
+void PStaticData::SetDecayBRFlag(int didx, int flag)
+{
   //Set the BR flag for the "didx", thus the total normalization
   //is used (when flag=1) instead of the pole mass
   if (!makeDataBase()->GetParamInt(didx_param, didx, brflag_param, &i_result)) {
@@ -888,12 +912,14 @@ void PStaticData::SetDecayBRFlag(int didx, int flag) {
       delete ii;
       return;
     }
-  } else {
+  }
+  else {
     *i_result = flag;
   }
 }
 
-void PStaticData::SetTotalNormalization(char* p, int flag) {
+void PStaticData::SetTotalNormalization(char* p, int flag)
+{
   //Wrapper function which enables the total normalization
   //for a particle "p"
   Int_t listkey = -1;
@@ -910,38 +936,40 @@ void PStaticData::SetTotalNormalization(char* p, int flag) {
         delete ii;
         return;
       }
-    } else {
+    }
+    else {
       *i_result = flag;
     }
   }
 }
 
-void PStaticData::SetDecayEmin(const int& id, const double v) {
-  if (!makeDataBase()->GetParamDouble(
-        didx_param, id, ethreshold_param, &d_result)) {
+void PStaticData::SetDecayEmin(const int& id, const double v)
+{
+  if (!makeDataBase()->GetParamDouble(didx_param, id, ethreshold_param, &d_result)) {
     cout << "PStaticData::SetDecayEmin: " << id << " not found" << endl;
   }
   *d_result = v;
 }
 
-Double_t PStaticData::GetParticleEmin(const int& id) {
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, id, ethreshold_param, &d_result)) {
+Double_t PStaticData::GetParticleEmin(const int& id)
+{
+  if (!makeDataBase()->GetParamDouble(pid_param, id, ethreshold_param, &d_result)) {
     cout << "PStaticData::GetParticleEmin: " << id << " not found" << endl;
     return 0;
   }
   return *d_result;
 }
 
-void PStaticData::SetParticleEmin(const int& id, const double v) {
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, id, ethreshold_param, &d_result)) {
+void PStaticData::SetParticleEmin(const int& id, const double v)
+{
+  if (!makeDataBase()->GetParamDouble(pid_param, id, ethreshold_param, &d_result)) {
     cout << "PStaticData::SetParticleEmin: " << id << " not found" << endl;
   }
   *d_result = v;
 }
 
-Double_t PStaticData::GetParticleLMass(const int& id) {
+Double_t PStaticData::GetParticleLMass(const int& id)
+{
   if (!makeDataBase()->GetParamDouble(pid_param, id, lmass_param, &d_result)) {
     Warning("GetParticleLMass", "id %i not found", id);
     return 0;
@@ -949,9 +977,9 @@ Double_t PStaticData::GetParticleLMass(const int& id) {
   return *d_result;
 }
 
-void PStaticData::SetParticleLMass(const char* id, const double v) {
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, GetParticleID((char*) id), lmass_param, &d_result)) {
+void PStaticData::SetParticleLMass(const char* id, const double v)
+{
+  if (!makeDataBase()->GetParamDouble(pid_param, GetParticleID((char*) id), lmass_param, &d_result)) {
     // if not found, set param
     makeDataBase()->SetParamDouble((char*) id, "lmass", v);
     return;
@@ -959,7 +987,8 @@ void PStaticData::SetParticleLMass(const char* id, const double v) {
   *d_result = v;
 }
 
-Double_t PStaticData::GetParticleUMass(const int& id) {
+Double_t PStaticData::GetParticleUMass(const int& id)
+{
   if (!makeDataBase()->GetParamDouble(pid_param, id, umass_param, &d_result)) {
     Warning("GetParticleUMass", "id %i not found", id);
     return 0;
@@ -967,9 +996,9 @@ Double_t PStaticData::GetParticleUMass(const int& id) {
   return *d_result;
 }
 
-void PStaticData::SetParticleUMass(const char* id, const double v) {
-  if (!makeDataBase()->GetParamDouble(
-        pid_param, GetParticleID((char*) id), umass_param, &d_result)) {
+void PStaticData::SetParticleUMass(const char* id, const double v)
+{
+  if (!makeDataBase()->GetParamDouble(pid_param, GetParticleID((char*) id), umass_param, &d_result)) {
     // if not found, set param
     makeDataBase()->SetParamDouble((char*) id, "umass", v);
     return;
@@ -977,7 +1006,8 @@ void PStaticData::SetParticleUMass(const char* id, const double v) {
   *d_result = v;
 }
 
-int PStaticData::GetTDepth(const int& id) {
+int PStaticData::GetTDepth(const int& id)
+{
   if (!makeDataBase()->GetParamInt(pid_param, id, tdepth_param, &i_result)) {
     cout << "PStaticData::GetTDepth: " << id << " not found" << endl;
     return 0;
@@ -985,14 +1015,16 @@ int PStaticData::GetTDepth(const int& id) {
   return *i_result;
 }
 
-void PStaticData::SetTDepth(const int& id, const int& depth) {
+void PStaticData::SetTDepth(const int& id, const int& depth)
+{
   if (!makeDataBase()->GetParamInt(pid_param, id, tdepth_param, &i_result)) {
     cout << "PStaticData::GetTDepth: " << id << " not found" << endl;
   }
   *i_result = depth;
 }
 
-int PStaticData::GetHDepth(const int& id) {
+int PStaticData::GetHDepth(const int& id)
+{
   if (!makeDataBase()->GetParamInt(pid_param, id, hdepth_param, &i_result)) {
     cout << "PStaticData::GetHDepth: " << id << " not found" << endl;
     return 0;
@@ -1000,32 +1032,37 @@ int PStaticData::GetHDepth(const int& id) {
   return *i_result;
 }
 
-void PStaticData::SetHDepth(const int& id, const int& depth) {
+void PStaticData::SetHDepth(const int& id, const int& depth)
+{
   if (!makeDataBase()->GetParamInt(pid_param, id, hdepth_param, &i_result)) {
     cout << "PStaticData::GetHDepth: " << id << " not found" << endl;
   }
   *i_result = depth;
 }
 
-Double_t PStaticData::GetDecayBR(Int_t id) {
+Double_t PStaticData::GetDecayBR(Int_t id)
+{
   if (!makeDataBase()->GetParamDouble(didx_param, id, br_param, &d_result)) {
     cout << "PStaticData::GetDecayBR: " << id << " not found" << endl;
   }
   return *d_result;
 };
 
-Double_t PStaticData::GetDecayPartialWidth(Int_t id) {
+Double_t PStaticData::GetDecayPartialWidth(Int_t id)
+{
   double res = GetDecayBR(id) * GetParticleTotalWidth(GetDecayParent(id));
   return res;
 };
 
-Double_t PStaticData::GetDecayPartialWidthByKey(Int_t id) {
+Double_t PStaticData::GetDecayPartialWidthByKey(Int_t id)
+{
   double res = GetDecayBR(id) * GetParticleTotalWidth(GetDecayParentByKey(id));
   return res;
 };
 
 
-bool PStaticData::SetDecayBR(int didx, double br, int mode) {
+bool PStaticData::SetDecayBR(int didx, double br, int mode)
+{
   //Mode: see SetDecayBR(const char *parent, const char * daughters)
 
   clearFreezeOut();
@@ -1043,7 +1080,8 @@ bool PStaticData::SetDecayBR(int didx, double br, int mode) {
   return NormParticleBRbyKey(GetParticleKey(GetDecayParentByKey(key)));
 }
 
-bool PStaticData::SetDecayBRByKey(int key, double br, int mode) {
+bool PStaticData::SetDecayBRByKey(int key, double br, int mode)
+{
   //Mode: see SetDecayBR(const char *parent, const char * daughters)
   clearFreezeOut();
   Double_t* brorig;
@@ -1058,10 +1096,8 @@ bool PStaticData::SetDecayBRByKey(int key, double br, int mode) {
   return NormParticleBRbyKey(GetParticleKey(GetDecayParentByKey(key)));
 }
 
-bool PStaticData::SetDecayBR(const char* parent,
-                             const char* daughters,
-                             double br,
-                             int mode) {
+bool PStaticData::SetDecayBR(const char* parent, const char* daughters, double br, int mode)
+{
   // Resets the decay branching ratio of an existing decay
   // Handle this functon with care!
   // Do not use this function to change the weighting etc.
@@ -1081,8 +1117,7 @@ bool PStaticData::SetDecayBR(const char* parent,
   //get parent key
   Int_t parent_key = makeDataBase()->GetEntry(parent);
   if (parent_key < 0) {
-    cout << "PStaticData::SetDecayBR: parent " << parent
-         << " not found in data base" << endl;
+    cout << "PStaticData::SetDecayBR: parent " << parent << " not found in data base" << endl;
     return kFALSE;
   }
 
@@ -1128,14 +1163,16 @@ bool PStaticData::SetDecayBR(const char* parent,
 //   }
 //}
 
-bool PStaticData::NormParticleBR(Int_t id) {
+bool PStaticData::NormParticleBR(Int_t id)
+{
   // normalize branching ratios for particle id
   //TODO: check if this works
   Int_t key = makeDataBase()->GetEntryInt(pid_param, id);
   return NormParticleBRbyKey(key);
 }
 
-bool PStaticData::NormParticleBRbyKey(Int_t key) {
+bool PStaticData::NormParticleBRbyKey(Int_t key)
+{
   // normalize branching ratios for particle id
 
   Int_t listkey = -1;
@@ -1146,27 +1183,24 @@ bool PStaticData::NormParticleBRbyKey(Int_t key) {
   if (GetParticleNChannelsByKey(key) == 0) return kFALSE;
 
   while (makeDataBase()->MakeListIterator(key, "pnmodes", "link", &listkey)) {
-    if (!makeDataBase()->GetParamDouble(listkey, "brorig", &brorig))
-      return kFALSE;
+    if (!makeDataBase()->GetParamDouble(listkey, "brorig", &brorig)) return kFALSE;
     sum += *brorig;
   }
 
   listkey = -1;
   if (sum > 0.)
     while (makeDataBase()->MakeListIterator(key, "pnmodes", "link", &listkey)) {
-      if (!makeDataBase()->GetParamDouble(listkey, "brorig", &brorig))
-        return kFALSE;
+      if (!makeDataBase()->GetParamDouble(listkey, "brorig", &brorig)) return kFALSE;
       if (!makeDataBase()->GetParamDouble(listkey, "br", &br)) return kFALSE;
       *br = *brorig / sum;
-      if (makeDataBase()->GetParamDouble(listkey, "width", &width)) {
-        *width = *br * twidth;
-      }
+      if (makeDataBase()->GetParamDouble(listkey, "width", &width)) { *width = *br * twidth; }
     }
   return kTRUE;
 }
 
 
-void PStaticData::FreezeDecayBR(Int_t /*id*/, Int_t /*brn*/) {  // set BR static
+void PStaticData::FreezeDecayBR(Int_t /*id*/, Int_t /*brn*/)
+{  // set BR static
   Fatal("FreezeDecayBR", "not implemented");
 
   //TODO
@@ -1179,7 +1213,8 @@ void PStaticData::FreezeDecayBR(Int_t /*id*/, Int_t /*brn*/) {  // set BR static
   //   }
 }
 
-int PStaticData::GetParticleNChannels(const int& id) {
+int PStaticData::GetParticleNChannels(const int& id)
+{
   // number of decay channels by pid
   if (!makeDataBase()->GetParamInt(pid_param, id, pnmodes_param, &i_result)) {
     // if not found obviously no decay
@@ -1188,21 +1223,22 @@ int PStaticData::GetParticleNChannels(const int& id) {
   return *i_result;
 };
 
-int PStaticData::GetParticleNChannels(const char* id) {
+int PStaticData::GetParticleNChannels(const char* id)
+{
   // number of decay channels by name
-  if (!makeDataBase()->GetParamInt((char*) id, "pnmodes", &i_result)) {
-    return 0;
-  }
+  if (!makeDataBase()->GetParamInt((char*) id, "pnmodes", &i_result)) { return 0; }
   return *i_result;
 };
 
-int PStaticData::GetParticleNChannelsByKey(int key) {
+int PStaticData::GetParticleNChannelsByKey(int key)
+{
   // number of decay channels by key
   if (!makeDataBase()->GetParamInt(key, "pnmodes", &i_result)) { return 0; }
   return *i_result;
 };
 
-int PStaticData::IsDecayHadronic(Int_t didx) {
+int PStaticData::IsDecayHadronic(Int_t didx)
+{
   Int_t tid[11];
   tid[0] = 10;
 
@@ -1369,32 +1405,23 @@ int PStaticData::AddDecay(int didx, const char * name, const char *parent,
 }
 */
 
-void PStaticData::PrintDecayByKey(int key) {
+void PStaticData::PrintDecayByKey(int key)
+{
   Int_t products = GetDecayNProductsByKey(key);
   //  cout << products << endl;
-  if (products == 1)
-    makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name");
-  if (products == 2)
-    makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name");
-  if (products == 3)
-    makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name");
-  if (products == 4)
-    makeDataBase()->ListEntries(
-      key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name");
-  if (products == 5)
-    makeDataBase()->ListEntries(
-      key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name");
+  if (products == 1) makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name");
+  if (products == 2) makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name");
+  if (products == 3) makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name");
+  if (products == 4) makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name");
+  if (products == 5) makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name");
   if (products == 6)
-    makeDataBase()->ListEntries(
-      key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name,d6:name");
+    makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name,d6:name");
   if (products == 7)
-    makeDataBase()->ListEntries(
-      key,
-      0,
-      "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name,d6:name,d7:name");
+    makeDataBase()->ListEntries(key, 0, "name,didx,br,d1:name,d2:name,d3:name,d4:name,d5:name,d6:name,d7:name");
 };
 
-int PStaticData::GetDecayNProductsByKey(const int& key) {
+int PStaticData::GetDecayNProductsByKey(const int& key)
+{
   // retrieve number of products by mode key
   if (makeDataBase()->GetParamInt(key, d7_param, &i_result)) return 7;
   if (makeDataBase()->GetParamInt(key, d6_param, &i_result)) return 6;
@@ -1406,26 +1433,21 @@ int PStaticData::GetDecayNProductsByKey(const int& key) {
   return 0;
 };
 
-int PStaticData::GetDecayNProducts(const int& id) {
+int PStaticData::GetDecayNProducts(const int& id)
+{
   // retrieve number of products by mode index
-  if (makeDataBase()->GetParamInt(didx_param, id, d7_param, &i_result))
-    return 7;
-  if (makeDataBase()->GetParamInt(didx_param, id, d6_param, &i_result))
-    return 6;
-  if (makeDataBase()->GetParamInt(didx_param, id, d5_param, &i_result))
-    return 5;
-  if (makeDataBase()->GetParamInt(didx_param, id, d4_param, &i_result))
-    return 4;
-  if (makeDataBase()->GetParamInt(didx_param, id, d3_param, &i_result))
-    return 3;
-  if (makeDataBase()->GetParamInt(didx_param, id, d2_param, &i_result))
-    return 2;
-  if (makeDataBase()->GetParamInt(didx_param, id, d1_param, &i_result))
-    return 1;
+  if (makeDataBase()->GetParamInt(didx_param, id, d7_param, &i_result)) return 7;
+  if (makeDataBase()->GetParamInt(didx_param, id, d6_param, &i_result)) return 6;
+  if (makeDataBase()->GetParamInt(didx_param, id, d5_param, &i_result)) return 5;
+  if (makeDataBase()->GetParamInt(didx_param, id, d4_param, &i_result)) return 4;
+  if (makeDataBase()->GetParamInt(didx_param, id, d3_param, &i_result)) return 3;
+  if (makeDataBase()->GetParamInt(didx_param, id, d2_param, &i_result)) return 2;
+  if (makeDataBase()->GetParamInt(didx_param, id, d1_param, &i_result)) return 1;
   return 0;
 };
 
-int PStaticData::GetDecayNProducts(const char* id) {
+int PStaticData::GetDecayNProducts(const char* id)
+{
   // number of products by name
   if (makeDataBase()->GetParamInt((char*) id, "d7", &i_result)) return 7;
   if (makeDataBase()->GetParamInt((char*) id, "d6", &i_result)) return 6;
@@ -1437,7 +1459,8 @@ int PStaticData::GetDecayNProducts(const char* id) {
   return 0;
 }
 
-int PStaticData::GetDecayParent(const int& id) {
+int PStaticData::GetDecayParent(const int& id)
+{
   if (!makeDataBase()->GetParamInt(didx_param, id, ppid_param, &i_result)) {
     // if not found obviously no parent
     return 0;
@@ -1445,7 +1468,8 @@ int PStaticData::GetDecayParent(const int& id) {
   return *i_result;
 }
 
-int PStaticData::GetDecayParentByKey(const int& id) {
+int PStaticData::GetDecayParentByKey(const int& id)
+{
   if (!makeDataBase()->GetParamInt(id, ppid_param, &i_result)) {
     // if not found obviously no parent
     return 0;
@@ -1453,7 +1477,8 @@ int PStaticData::GetDecayParentByKey(const int& id) {
   return *i_result;
 }
 
-int PStaticData::GetDecayIdxByKey(int key) {
+int PStaticData::GetDecayIdxByKey(int key)
+{
   // return value is -1 on failure
 
   Int_t* pos;
@@ -1461,7 +1486,8 @@ int PStaticData::GetDecayIdxByKey(int key) {
   return *pos;
 }
 
-int PStaticData::GetDecayIdx(int* pid, int n) {
+int PStaticData::GetDecayIdx(int* pid, int n)
+{
   // decay-mode index from parent and product ids;
   // n is the size of the array
   // arguments: pointer to pid array of parent & products,
@@ -1473,7 +1499,8 @@ int PStaticData::GetDecayIdx(int* pid, int n) {
     if (!PStaticData::IsParticleValid(pid[i])) {
       cout << "PStaticData:: GetDecayIdx: id not found:" << pid[i] << endl;
       return -2;
-    } else if (i)
+    }
+    else if (i)
       nid[i - 1] = pid[i];  // make own copy of product array
   }
   isort(nid, n);  // sort the array entries
@@ -1481,9 +1508,7 @@ int PStaticData::GetDecayIdx(int* pid, int n) {
   int id = pid[0], *nm;  // parent id, number of decay modes
   //Get count info
 
-  if (!makeDataBase()->GetParamInt(pid_param, id, count_param, &nm)) {
-    return -3;
-  }
+  if (!makeDataBase()->GetParamInt(pid_param, id, count_param, &nm)) { return -3; }
   if (!nm) return -4;
   Int_t count;
   //now loop over decay modes
@@ -1507,7 +1532,8 @@ int PStaticData::GetDecayIdx(int* pid, int n) {
   return -1;
 }
 
-int PStaticData::GetDecayKey(int* pid, int n) {
+int PStaticData::GetDecayKey(int* pid, int n)
+{
   // decay-mode key from parent and product ids;
   // n is the size of the daughters array
   // arguments: pointer to pid array of parent & products,
@@ -1519,7 +1545,8 @@ int PStaticData::GetDecayKey(int* pid, int n) {
     if (!PStaticData::IsParticleValid(pid[i])) {
       Warning("GetDecayKey", "id %i not found", pid[i]);
       return -2;
-    } else if (i) {
+    }
+    else if (i) {
       nid[i - 1] = pid[i];  // make own copy of product array
     }
   }
@@ -1528,9 +1555,7 @@ int PStaticData::GetDecayKey(int* pid, int n) {
 
   int id = pid[0], *nm;  // parent id, number of decay modes
   //Get count info
-  if (!makeDataBase()->GetParamInt(pid_param, id, count_param, &nm)) {
-    return -3;
-  }
+  if (!makeDataBase()->GetParamInt(pid_param, id, count_param, &nm)) { return -3; }
   if (!nm) return -4;
   Int_t count;
   //now loop over decay modes
@@ -1555,7 +1580,8 @@ int PStaticData::GetDecayKey(int* pid, int n) {
 }
 
 
-void PStaticData::GetDecayMode(int idx, int* id) {
+void PStaticData::GetDecayMode(int idx, int* id)
+{
   // Retrieves the decay mode info for a given channel n.
   // _______________________________________________________________________
   // ARGUMENTS: 1. decay-mode index (PPosition),
@@ -1569,57 +1595,50 @@ void PStaticData::GetDecayMode(int idx, int* id) {
   // N should contain the maximum number of the array-size of before
   // calling this function
   // if the maximum is exceeded, or any other error occurs, N is set to 0
-  Int_t *d1_key, *d2_key, *d3_key, *d4_key, *d5_key, *d6_key, *d7_key,
-    found = 0;
+  Int_t *d1_key, *d2_key, *d3_key, *d4_key, *d5_key, *d6_key, *d7_key, found = 0;
   ;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d1_param, &d1_key))
-    found = 1;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d2_param, &d2_key))
-    found = 2;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d3_param, &d3_key))
-    found = 3;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d4_param, &d4_key))
-    found = 4;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d5_param, &d5_key))
-    found = 5;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d6_param, &d6_key))
-    found = 6;
-  if (makeDataBase()->GetParamInt(didx_param, idx, d7_param, &d7_key))
-    found = 7;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d1_param, &d1_key)) found = 1;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d2_param, &d2_key)) found = 2;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d3_param, &d3_key)) found = 3;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d4_param, &d4_key)) found = 4;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d5_param, &d5_key)) found = 5;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d6_param, &d6_key)) found = 6;
+  if (makeDataBase()->GetParamInt(didx_param, idx, d7_param, &d7_key)) found = 7;
 
   if (found > *id) {
     cout << "PStaticData:: size too low" << endl;
     *id = 0;
     return;
-  } else
+  }
+  else
     *id = found;
-  Int_t *d1_p = nullptr, *d2_p = nullptr, *d3_p = nullptr, *d4_p = nullptr,
-        *d5_p = nullptr, *d6_p = nullptr, *d7_p = nullptr;
+  Int_t *d1_p = nullptr, *d2_p = nullptr, *d3_p = nullptr, *d4_p = nullptr, *d5_p = nullptr, *d6_p = nullptr,
+        *d7_p = nullptr;
   if ((found > 0) && !makeDataBase()->GetParamInt(*d1_key, pid_param, &d1_p)) {
     cout << "PStaticData:: Mode: unable to unpack key1 " << *d1_key << endl;
     *id = 0;
-  } else if ((found > 1)
-             && !makeDataBase()->GetParamInt(*d2_key, pid_param, &d2_p)) {
+  }
+  else if ((found > 1) && !makeDataBase()->GetParamInt(*d2_key, pid_param, &d2_p)) {
     cout << "PStaticData:: Mode: unable to unpack key2 " << *d2_key << endl;
     *id = 0;
-  } else if ((found > 2)
-             && !makeDataBase()->GetParamInt(*d3_key, pid_param, &d3_p)) {
+  }
+  else if ((found > 2) && !makeDataBase()->GetParamInt(*d3_key, pid_param, &d3_p)) {
     cout << "PStaticData:: Mode: unable to unpack key3 " << *d3_key << endl;
     *id = 0;
-  } else if ((found > 3)
-             && !makeDataBase()->GetParamInt(*d4_key, pid_param, &d4_p)) {
+  }
+  else if ((found > 3) && !makeDataBase()->GetParamInt(*d4_key, pid_param, &d4_p)) {
     cout << "PStaticData:: Mode: unable to unpack key4 " << *d4_key << endl;
     *id = 0;
-  } else if ((found > 4)
-             && !makeDataBase()->GetParamInt(*d5_key, pid_param, &d5_p)) {
+  }
+  else if ((found > 4) && !makeDataBase()->GetParamInt(*d5_key, pid_param, &d5_p)) {
     cout << "PStaticData:: Mode: unable to unpack key5 " << *d5_key << endl;
     *id = 0;
-  } else if ((found > 5)
-             && !makeDataBase()->GetParamInt(*d6_key, pid_param, &d6_p)) {
+  }
+  else if ((found > 5) && !makeDataBase()->GetParamInt(*d6_key, pid_param, &d6_p)) {
     cout << "PStaticData:: Mode: unable to unpack key6 " << *d6_key << endl;
     *id = 0;
-  } else if ((found > 6)
-             && !makeDataBase()->GetParamInt(*d7_key, pid_param, &d7_p)) {
+  }
+  else if ((found > 6) && !makeDataBase()->GetParamInt(*d7_key, pid_param, &d7_p)) {
     cout << "PStaticData:: Mode: unable to unpack key7 " << *d7_key << endl;
     *id = 0;
   }
@@ -1633,10 +1652,10 @@ void PStaticData::GetDecayMode(int idx, int* id) {
 }
 
 
-void PStaticData::GetDecayModeByKey(int idx, int* id) {
+void PStaticData::GetDecayModeByKey(int idx, int* id)
+{
   //same as above, but by data base key
-  Int_t *d1_key, *d2_key, *d3_key, *d4_key, *d5_key, *d6_key, *d7_key,
-    found = 0;
+  Int_t *d1_key, *d2_key, *d3_key, *d4_key, *d5_key, *d6_key, *d7_key, found = 0;
   if (makeDataBase()->GetParamInt(idx, d1_param, &d1_key)) found = 1;
   if (makeDataBase()->GetParamInt(idx, d2_param, &d2_key)) found = 2;
   if (makeDataBase()->GetParamInt(idx, d3_param, &d3_key)) found = 3;
@@ -1649,44 +1668,38 @@ void PStaticData::GetDecayModeByKey(int idx, int* id) {
     cout << "PStaticData:: size too low" << endl;
     *id = 0;
     return;
-  } else
+  }
+  else
     *id = found;
   //   cout << "id is " << *id << endl;
-  Int_t *d1_p = nullptr, *d2_p = nullptr, *d3_p = nullptr, *d4_p = nullptr,
-        *d5_p = nullptr, *d6_p = nullptr, *d7_p = nullptr;
+  Int_t *d1_p = nullptr, *d2_p = nullptr, *d3_p = nullptr, *d4_p = nullptr, *d5_p = nullptr, *d6_p = nullptr,
+        *d7_p = nullptr;
   if (*id > 0 && !makeDataBase()->GetParamInt(*d1_key, pid_param, &d1_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key1 " << *d1_key
-         << endl;
+    cout << "PStaticData:: ModeByKey: unable to unpack key1 " << *d1_key << endl;
     *id = 0;
-  } else if (*id > 1
-             && !makeDataBase()->GetParamInt(*d2_key, pid_param, &d2_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key2 " << *d2_key
-         << endl;
+  }
+  else if (*id > 1 && !makeDataBase()->GetParamInt(*d2_key, pid_param, &d2_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key2 " << *d2_key << endl;
     *id = 0;
-  } else if (*id > 2
-             && !makeDataBase()->GetParamInt(*d3_key, pid_param, &d3_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key3 " << *d3_key
-         << endl;
+  }
+  else if (*id > 2 && !makeDataBase()->GetParamInt(*d3_key, pid_param, &d3_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key3 " << *d3_key << endl;
     *id = 0;
-  } else if (*id > 3
-             && !makeDataBase()->GetParamInt(*d4_key, pid_param, &d4_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key4 " << *d4_key
-         << endl;
+  }
+  else if (*id > 3 && !makeDataBase()->GetParamInt(*d4_key, pid_param, &d4_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key4 " << *d4_key << endl;
     *id = 0;
-  } else if (*id > 4
-             && !makeDataBase()->GetParamInt(*d5_key, pid_param, &d5_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key5 " << *d5_key
-         << endl;
+  }
+  else if (*id > 4 && !makeDataBase()->GetParamInt(*d5_key, pid_param, &d5_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key5 " << *d5_key << endl;
     *id = 0;
-  } else if (*id > 5
-             && !makeDataBase()->GetParamInt(*d6_key, pid_param, &d6_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key6 " << *d6_key
-         << endl;
+  }
+  else if (*id > 5 && !makeDataBase()->GetParamInt(*d6_key, pid_param, &d6_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key6 " << *d6_key << endl;
     *id = 0;
-  } else if (*id > 6
-             && !makeDataBase()->GetParamInt(*d7_key, pid_param, &d7_p)) {
-    cout << "PStaticData:: ModeByKey: unable to unpack key7 " << *d7_key
-         << endl;
+  }
+  else if (*id > 6 && !makeDataBase()->GetParamInt(*d7_key, pid_param, &d7_p)) {
+    cout << "PStaticData:: ModeByKey: unable to unpack key7 " << *d7_key << endl;
     *id = 0;
   }
   if (d1_p) id[1] = *d1_p;
@@ -1699,43 +1712,43 @@ void PStaticData::GetDecayModeByKey(int idx, int* id) {
 }
 
 
-double PStaticData::GetParticleTotalWidth(const int& id) {
+double PStaticData::GetParticleTotalWidth(const int& id)
+{
   // PWidth[id]
   if (!makeDataBase()->GetParamDouble(pid_param, id, width_param, &d_result)) {
-    cout << "PStaticData::GetParticleTotalWidth: " << id << " not found"
-         << endl;
+    cout << "PStaticData::GetParticleTotalWidth: " << id << " not found" << endl;
     return 0;
   }
   return *d_result;
 }
 
-double PStaticData::GetParticleTotalWidthByKey(const int& key) {
+double PStaticData::GetParticleTotalWidthByKey(const int& key)
+{
   // PWidth[id]
   if (!makeDataBase()->GetParamDouble(key, width_param, &d_result)) {
-    cout << "PStaticData::GetParticleTotalWidthByKey: " << key << " not found"
-         << endl;
+    cout << "PStaticData::GetParticleTotalWidthByKey: " << key << " not found" << endl;
     return 0;
   }
   return *d_result;
 }
 
 
-void listParticle(int id) {
+void listParticle(int id)
+{
 
   if (id < 0) {
     makeStaticData();  //this fill data base
     makeDataBase()->ListEntries(-1, 1, "pid,*name");
-  } else
+  }
+  else
     makeStaticData()->PrintParticle(id);
 }
 
 void listModes(int id) { makeStaticData()->PrintParticle(id); }
 
 
-Bool_t PStaticData::Tokenize(const char* options,
-                             const char* delimiter,
-                             char** array,
-                             int* size) {
+Bool_t PStaticData::Tokenize(const char* options, const char* delimiter, char** array, int* size)
+{
   for (int i = 0; i < *size; i++)
     array[i] = nullptr;
 
@@ -1747,8 +1760,7 @@ Bool_t PStaticData::Tokenize(const char* options,
 
   while (strstr(mystack, delimiter)) {
     if (pat == *size) {
-      cout << "Tokenize: size " << *size << " is too small for " << options
-           << " ,delim:" << delimiter << endl;
+      cout << "Tokenize: size " << *size << " is too small for " << options << " ,delim:" << delimiter << endl;
     }
     char* pos  = strstr(mystack, delimiter);
     *pos       = '\0';
@@ -1769,7 +1781,8 @@ Bool_t PStaticData::Tokenize(const char* options,
   return kTRUE;
 }
 
-void PStaticData::remove_spaces(char** partc) {
+void PStaticData::remove_spaces(char** partc)
+{
 
   while (**partc == ' ')
     (*partc)++;
@@ -1783,7 +1796,8 @@ void PStaticData::remove_spaces(char** partc) {
   }
 }
 
-void PStaticData::dsort(Double_t* a, int n) {
+void PStaticData::dsort(Double_t* a, int n)
+{
   // Sort in ascending order the first n entries of the array *a.
   int i, j, l, m, r, rt[20], lt[20], level = 1;
   Double_t x, w;
@@ -1795,8 +1809,7 @@ a:
   --level;
 b:
   if (r <= l) {
-    if (level > 0)
-      goto a;
+    if (level > 0) goto a;
     else
       return;
   }
@@ -1823,7 +1836,8 @@ c:
     lt[level - 1] = i;
     rt[level - 1] = r;
     r             = j;
-  } else {
+  }
+  else {
     lt[level - 1] = l;
     rt[level - 1] = j;
   }

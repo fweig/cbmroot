@@ -5,7 +5,8 @@
 #include <TGeant3.h>
 #include <TVirtualMC.h>
 
-void CbmGeant3Settings::Init(TVirtualMC* vmc) {
+void CbmGeant3Settings::Init(TVirtualMC* vmc)
+{
 
   CbmVMCSettings::Init(vmc);
 
@@ -26,7 +27,8 @@ void CbmGeant3Settings::Init(TVirtualMC* vmc) {
     vmcg3->SetDEBU(fDebugMinEvent, fDebugMaxEvent, 1);
     // IF (ISWIT(2).EQ.2) CALL GPCXYZ ! step by step printed debug
     vmcg3->SetSWIT(2, 2);
-  } else {
+  }
+  else {
     vmcg3->SetDEBU(0, 0, 1);
   }
 
@@ -50,8 +52,7 @@ void CbmGeant3Settings::Init(TVirtualMC* vmc) {
   vmcg3->SetOPTI(fTrackingOptimizationMethod);
 
   //  Control the cross section tabulations
-  vmcg3->SetERAN(
-    fCrossSectionMinEnergy, fCrossSectionMaxEnergy, fCrossSectionBins);
+  vmcg3->SetERAN(fCrossSectionMinEnergy, fCrossSectionMaxEnergy, fCrossSectionBins);
 }
 
 ClassImp(CbmGeant3Settings);

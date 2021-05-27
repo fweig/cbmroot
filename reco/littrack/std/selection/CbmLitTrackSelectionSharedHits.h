@@ -14,9 +14,7 @@
 #include "interface/CbmLitTrackSelection.h"
 #include "selection/CbmLitQualitySort.h"
 
-class CbmLitTrackSelectionSharedHits :
-  public CbmLitTrackSelection,
-  public CbmLitQualitySort {
+class CbmLitTrackSelectionSharedHits : public CbmLitTrackSelection, public CbmLitQualitySort {
 public:
   /* Constructor */
   CbmLitTrackSelectionSharedHits();

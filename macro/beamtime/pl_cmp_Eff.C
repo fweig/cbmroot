@@ -1,14 +1,11 @@
-void pl_cmp_Eff(
-  Int_t iDut       = 900,
-  Int_t iMode      = 4,
-  Double_t dEffMin = 0.,
-  Double_t dEffMax = 1.05,
-  TString AnaOpt = "DT50_Req0_910911500_921_911921_600_0.5_5.0_trk111_Calr0111_"
-                   "20161210_0646_DT50_Req1"
-  //TString AnaOpt="DT50_Req0_910911500_921_911921_600_0.5_7.0_trk100_Calr0111_20161210_0646_DT50_Req1"
-  //TString AnaOpt="DT50_Req0_910911500_921_911921_600_0.5_4.0_trk100_Calr0111_20161210_0646_DT50_Req1"
-  //TString AnaOpt="DT50_Req0_910911500_921_911921_601_0.5_5.0_trk111_Calr0096_20161209_2047_DT50_Req1"
-) {
+void pl_cmp_Eff(Int_t iDut = 900, Int_t iMode = 4, Double_t dEffMin = 0., Double_t dEffMax = 1.05,
+                TString AnaOpt = "DT50_Req0_910911500_921_911921_600_0.5_5.0_trk111_Calr0111_"
+                                 "20161210_0646_DT50_Req1"
+                //TString AnaOpt="DT50_Req0_910911500_921_911921_600_0.5_7.0_trk100_Calr0111_20161210_0646_DT50_Req1"
+                //TString AnaOpt="DT50_Req0_910911500_921_911921_600_0.5_4.0_trk100_Calr0111_20161210_0646_DT50_Req1"
+                //TString AnaOpt="DT50_Req0_910911500_921_911921_601_0.5_5.0_trk111_Calr0096_20161209_2047_DT50_Req1"
+)
+{
   // input files ...
   // const Int_t nF=6;
   // Int_t iRun[nF]={96,111,128,148,150,158};
@@ -67,12 +64,12 @@ void pl_cmp_Eff(
         if (AnaOpt.Contains("Cal")) {
           cout << "AnaOpt contains explicit calibration " << endl;
           cCmd = "ls -1 ./hst/" + cRun + AnaOpt + "_Ana.hst.root > Tmp.out";
-        } else {
+        }
+        else {
           cout << "AnaOpt does not contains explicit calibration, assume "
                   "native one "
                << endl;
-          cCmd = "ls -1 ./hst/" + cRun + AnaOpt + "Cal" + cRun
-                 + "_Ana.hst.root > Tmp.out";
+          cCmd = "ls -1 ./hst/" + cRun + AnaOpt + "Cal" + cRun + "_Ana.hst.root > Tmp.out";
         }
         //cout << "execute " << cCmd << endl;
         gSystem->Exec(cCmd);
@@ -85,20 +82,19 @@ void pl_cmp_Eff(
           cFname = inFile;
           //cFname = "./hst/" + cRun + "_" + AnaOpt + "_Ana.hst.root";
           f[i] = new TFile(cFname.Data(), "Read");
-          if (f[i] != NULL)
-            cout << cFname.Data() << " opened at " << f[i] << endl;
-        } else
+          if (f[i] != NULL) cout << cFname.Data() << " opened at " << f[i] << endl;
+        }
+        else
           f[i] = NULL;
       }
     case 1:
       Int_t i = 0;
       for (Int_t iPar1 = 0; iPar1 < nPar1; iPar1++) {
         for (Int_t iPar2 = 0; iPar2 < nPar2; iPar2++) {
-          hFname[i] = Form(hFileForm.Data(), cPar[iPar1].Data(), iPar[iPar2]);
-          cLegTxt[i] =
-            Form("Pat %s, \t Dut %d", cPar[iPar1].Data(), iPar[iPar2]);
-          f[i]     = new TFile(hFname[i].Data(), "Read");
-          iFDut[i] = iPar[iPar2];
+          hFname[i]  = Form(hFileForm.Data(), cPar[iPar1].Data(), iPar[iPar2]);
+          cLegTxt[i] = Form("Pat %s, \t Dut %d", cPar[iPar1].Data(), iPar[iPar2]);
+          f[i]       = new TFile(hFname[i].Data(), "Read");
+          iFDut[i]   = iPar[iPar2];
           i++;
         }
       }
@@ -192,7 +188,8 @@ void pl_cmp_Eff(
       hfound[iF]->SetMaximum(dYMax * 1.2);
       hfound[iF]->Draw();
       //gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Print ";
       hfound[iF]->Print();
       gPad->Update();
@@ -216,7 +213,8 @@ void pl_cmp_Eff(
       gPad->Update();
       gPad->SetGridx();
       gPad->SetGridy();
-    } else {
+    }
+    else {
       cout << "draw " << pEffDut[iF]->GetTitle() << endl;
       pEffDut[iF]->Draw("same");
     }

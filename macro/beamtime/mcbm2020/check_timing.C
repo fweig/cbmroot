@@ -1,7 +1,5 @@
-void check_timing(TString fileName,
-                  UInt_t uRunId  = 0,
-                  Int_t nEvents  = 0,
-                  TString outDir = "data/") {
+void check_timing(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir = "data/")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -41,9 +39,7 @@ void check_timing(TString fileName,
   timeChecker->SetPsdOffsetSearchRange(10000);
   timeChecker->SetT0PulserTotLimits(185, 191);
   timeChecker->SetNrTsForFit(-1);  //Positive values: iterative peak fitting
-  if (0 < uRunId)
-    timeChecker->SetOutFilename(
-      Form("%sHistosTimeCheck_%03u.root", outDir.Data(), uRunId));
+  if (0 < uRunId) timeChecker->SetOutFilename(Form("%sHistosTimeCheck_%03u.root", outDir.Data(), uRunId));
   fRun->AddTask(timeChecker);
 
   // -----  Parameter database   --------------------------------------------
@@ -64,7 +60,8 @@ void check_timing(TString fileName,
   cout << "Starting run" << endl;
   if (0 == nEvents) {
     fRun->Run(0, 0);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nEvents);  // process  N Events
   }
   // ------------------------------------------------------------------------

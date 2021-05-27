@@ -2,6 +2,7 @@
 #define PLATFORM_H
 
 #include "FairModule.h"
+
 #include <string>
 
 class TGeoCombiTrans;
@@ -19,8 +20,7 @@ public:
   virtual void ConstructAsciiGeometry();
 
 private:
-  TGeoCombiTrans*
-    fCombiTrans;  //! Transformation matrix for geometry positioning
+  TGeoCombiTrans* fCombiTrans;  //! Transformation matrix for geometry positioning
   std::string fVolumeName;
 
   ClassDef(CbmPlatform, 1)  //CBMPLATFORM

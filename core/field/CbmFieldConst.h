@@ -18,10 +18,10 @@
 #ifndef CBMFIELDCONST_H
 #define CBMFIELDCONST_H 1
 
+#include <FairField.h>  // for FairField
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Option_t
-
-#include <FairField.h>  // for FairField
 
 class CbmFieldPar;
 
@@ -39,16 +39,8 @@ public:
    ** @param zMin,zMax   z region of field (global coordinates)
    ** @param bX,bY,bZ    Field values [kG]
    **/
-  CbmFieldConst(const char* name,
-                Double_t xMin,
-                Double_t xMax,
-                Double_t yMin,
-                Double_t yMax,
-                Double_t zMin,
-                Double_t zMax,
-                Double_t bX,
-                Double_t bY,
-                Double_t bZ);
+  CbmFieldConst(const char* name, Double_t xMin, Double_t xMax, Double_t yMin, Double_t yMax, Double_t zMin,
+                Double_t zMax, Double_t bX, Double_t bY, Double_t bZ);
 
 
   /** Constructor from CbmFieldPar **/
@@ -64,12 +56,7 @@ public:
    ** @param yMin,yMax   y region of field (global coordinates)
    ** @param zMin,zMax   z region of field (global coordinates)
    **/
-  void SetFieldRegion(Double_t xMin,
-                      Double_t xMax,
-                      Double_t yMin,
-                      Double_t yMax,
-                      Double_t zMin,
-                      Double_t zMax);
+  void SetFieldRegion(Double_t xMin, Double_t xMax, Double_t yMin, Double_t yMax, Double_t zMin, Double_t zMax);
 
 
   /** Set the field values

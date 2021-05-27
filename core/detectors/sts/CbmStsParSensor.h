@@ -8,13 +8,13 @@
 
 #define NPARAMS 10
 
+#include "CbmStsDefs.h"  // for CbmStsSensorClass, CbmStsSensorClass::kDssdS...
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
 #include <RtypesCore.h>  // for UInt_t, Float_t, Int_t
 
 #include <array>   // for array
 #include <string>  // for string
-
-#include "CbmStsDefs.h"  // for CbmStsSensorClass, CbmStsSensorClass::kDssdS...
 
 /** @class CbmStsParSensor
  ** @brief Constructional parameters of a STS sensor
@@ -80,7 +80,8 @@ public:
      **
      ** No action if index is out of range.
      **/
-  void SetPar(UInt_t index, Float_t value) {
+  void SetPar(UInt_t index, Float_t value)
+  {
     if (index < fPar.size()) fPar[index] = value;
   }
 

@@ -1,4 +1,5 @@
-void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
+void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -36,18 +37,11 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
         can->cd(iCanv + 1);
         iCanv++;
         for (Int_t iSide = 0; iSide < 2; iSide++) {
-          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iTy,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iTy, iSm, iRp, iCh, iSide, cOpt.Data());
           h     = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) {
-            TProfile* hProf =
-              h->ProfileX(Form("%s_pfx%d%d", hname.Data(), iCh, iSide));
-            iCol = iSide + 2;
+            TProfile* hProf = h->ProfileX(Form("%s_pfx%d%d", hname.Data(), iCh, iSide));
+            iCol            = iSide + 2;
             hProf->SetLineColor(iCol);
             hProf->SetMarkerColor(iCol);
             hProf->SetMarkerStyle(20 + iSide);
@@ -57,7 +51,8 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
                 hProf->SetMinimum(-dMax);
               }
               hProf->Draw();
-            } else {
+            }
+            else {
               hProf->Draw("same");
             }
           }
@@ -71,13 +66,7 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
           can->cd(iCanv + 1);
           iCanv++;
           Int_t iSide = 0;
-          hname       = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iTy,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname       = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iTy, iSm, iRp, iCh, iSide, cOpt.Data());
           h           = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) {
             if (dMax > 0.) {
@@ -95,13 +84,7 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
           can->cd(iCanv + 1);
           iCanv++;
           Int_t iSide = 1;
-          hname       = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iTy,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname       = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iTy, iSm, iRp, iCh, iSide, cOpt.Data());
           h           = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) { h->Draw("colz"); }
         }
@@ -113,13 +96,7 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
           can->cd(iCanv + 1);
           iCanv++;
           Int_t iSide = 0;
-          hname       = Form("cl_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iTy,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname       = Form("cl_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iTy, iSm, iRp, iCh, iSide, cOpt.Data());
           h           = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) { h->Draw("colz"); }
         }
@@ -131,13 +108,7 @@ void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.) {
           can->cd(iCanv + 1);
           iCanv++;
           Int_t iSide = 1;
-          hname       = Form("cl_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iTy,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname       = Form("cl_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iTy, iSm, iRp, iCh, iSide, cOpt.Data());
           h           = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) { h->Draw("colz"); }
         }

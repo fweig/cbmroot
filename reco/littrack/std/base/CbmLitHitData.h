@@ -144,19 +144,15 @@ public:
 
 private:
   static const litfloat EPSILON;
-  vector<HitPtrVector> fHits;  // Array of hits for each station
-  vector<litfloat>
-    fMaxErrX;  // Array of maximum X position errors for each station
-  vector<litfloat>
-    fMaxErrY;  // Array of maximum Y position errors for each station
-  vector<litfloat>
-    fMaxErrT;  // Array of maximum time measurement errors for each station
+  vector<HitPtrVector> fHits;      // Array of hits for each station
+  vector<litfloat> fMaxErrX;       // Array of maximum X position errors for each station
+  vector<litfloat> fMaxErrY;       // Array of maximum Y position errors for each station
+  vector<litfloat> fMaxErrT;       // Array of maximum time measurement errors for each station
   Int_t fNofStations;              // Number of stations
   vector<set<litfloat>> fZPosSet;  // Set of Z positions of hits in each station
     // Temporarily used for Z different Z positions calculation
   //vector<vector<litfloat> > fZPos; // Array of Z positions of hits in each station
-  vector<vector<Int_t>>
-    fZPosBins;  // Array of Z positions bin number of hits in each station
+  vector<vector<Int_t>> fZPosBins;  // Array of Z positions bin number of hits in each station
 };
 
 #endif /*CBMLITHITDATA_H_*/

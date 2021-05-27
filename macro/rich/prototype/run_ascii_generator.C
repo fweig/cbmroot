@@ -2,7 +2,8 @@
 
 using namespace std;
 
-void run_ascii_generator(Int_t nEvents = 100000) {
+void run_ascii_generator(Int_t nEvents = 100000)
+{
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
@@ -30,8 +31,7 @@ void run_ascii_generator(Int_t nEvents = 100000) {
     double vy = gRandom->Gaus(0., 0.4);
 
     // Write out event header
-    (*file) << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz
-            << endl;
+    (*file) << 1 << " " << (iev + 1) << " " << vx << " " << vy << " " << vz << endl;
 
     // Select electron or pion
     double type = iev % 2;  //gRandom->Uniform(0., 1.);

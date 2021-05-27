@@ -1,12 +1,6 @@
-void ana_digi_nodia(Int_t nEvents   = 10000,
-                    Int_t calMode   = 0,
-                    Int_t calSel    = -1,
-                    Int_t calSmType = 2,
-                    Int_t RefSel    = 0,
-                    char* cFileId   = "Trb24Feb2028",
-                    Int_t iSet      = 0,
-                    Bool_t bOut     = 0,
-                    Int_t iSel2     = 0) {
+void ana_digi_nodia(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSmType = 2, Int_t RefSel = 0,
+                    char* cFileId = "Trb24Feb2028", Int_t iSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0)
+{
   Int_t iVerbose = 1;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -18,12 +12,11 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
   //TString logLevel = "DEBUG3";
   FairLogger* log;
 
-  TString workDir   = gSystem->Getenv("VMCWORKDIR");
-  TString paramDir  = workDir + "/macro/tof/beamtime/feb15";
-  TString ParFile   = paramDir + "/unpack_" + cFileId + ".params.root";
-  TString InputFile = paramDir + "/unpack_" + cFileId + ".out.root";
-  TString OutputFile =
-    paramDir + "/digi_" + cFileId + Form("_%02d%1d", iSet, iSel2) + ".out.root";
+  TString workDir    = gSystem->Getenv("VMCWORKDIR");
+  TString paramDir   = workDir + "/macro/tof/beamtime/feb15";
+  TString ParFile    = paramDir + "/unpack_" + cFileId + ".params.root";
+  TString InputFile  = paramDir + "/unpack_" + cFileId + ".out.root";
+  TString OutputFile = paramDir + "/digi_" + cFileId + Form("_%02d%1d", iSet, iSel2) + ".out.root";
 
   TList* parFileList = new TList();
 
@@ -39,16 +32,15 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
     FPar   = "tsu.";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof." + FPar + "digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -78,20 +70,15 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
 
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(3.);  // geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    20.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofTestBeamClust->SetCalSmType(
-    calSmType);  // select detectors for walk correction
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10000.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  //(12000.);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);     // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(500.);  // default cluster range in ps
+  tofTestBeamClust->SetCaldXdYMax(3.);        // geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(20.);     // Max Counter Cluster Multiplicity for filling calib histos
+  tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
+  tofTestBeamClust->SetTRefId(RefSel);        // reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10000.);        // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);            //(12000.);  // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);    // effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);        // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);     // default cluster range in ps
   //tofTestBeamClust->SetMaxTimeDist(0.);         //Deb// default cluster range in ps
   tofTestBeamClust->SetSel2Id(iSel2);
 
@@ -102,18 +89,12 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%1d_%02d_%01dtofTestBeamClust.hst.root",
-                        cFileId,
-                        iSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%1d_%02d_%01dtofTestBeamClust.hst.root", cFileId, iSet, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofTestBeamClust_%s_set%1d.hst.root", cFileId, iSet);
+  TString cOutFname = Form("tofTestBeamClust_%s_set%1d.hst.root", cFileId, iSet);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
 
-  TString cAnaFile =
-    Form("%s_%02d%1d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel2);
+  TString cAnaFile = Form("%s_%02d%1d_tofAnaTestBeam.hst.root", cFileId, iSet, iSel2);
 
   switch (calMode) {
     case 0:                                  // initial calibration
@@ -228,10 +209,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofTestBeamClust->SetTRefDifMax(500.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.7);     //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   switch (iSet) {
@@ -256,8 +234,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
   }
   run->AddTask(tofTestBeamClust);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetDXMean(0.);
@@ -267,12 +244,11 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
-  tofAnaTestbeam->SetDTDia(0.);    // Time difference to additional diamond
-  tofAnaTestbeam->SetCorMode(1);   // 1 - DTD4, 2 - X4
-  tofAnaTestbeam->SetMul0Max(10);  // Max Multiplicity in dut
-  tofAnaTestbeam->SetMul4Max(3);   // Max Multiplicity in HDRef - RPC
+  tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
+  tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
+  tofAnaTestbeam->SetMul0Max(10);    // Max Multiplicity in dut
+  tofAnaTestbeam->SetMul4Max(3);     // Max Multiplicity in HDRef - RPC
   tofAnaTestbeam->SetMulDMax(
     3);  // Max Multiplicity in Diamond    tofAnaTestbeam->SetHitDistMin(30.);  // initialization
   tofAnaTestbeam->SetTOffD4(15000.);   // initialization
@@ -293,10 +269,9 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(4);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  //
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
-      tofAnaTestbeam->SetCh4Sel(8.5);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetCh4Sel(8.5);   // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(7.);   // Width  of channel selection window
 
       break;
 
@@ -313,8 +288,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(1);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  // P2
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(38.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(35.);  // Width  of channel selection window
       break;
@@ -331,8 +305,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(4);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  //
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(12.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(11.);  // Width  of channel selection window
       break;
@@ -349,8 +322,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(4);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  // P2
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(12.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(11.);  // Width  of channel selection window
       break;
@@ -367,10 +339,9 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(7);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  // P2
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
-      tofAnaTestbeam->SetCh4Sel(8.5);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetCh4Sel(8.5);   // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(7.);   // Width  of channel selection window
       break;
 
     case 39:  // upper part of setup: P2 - THUstrip
@@ -385,8 +356,7 @@ void ana_digi_nodia(Int_t nEvents   = 10000,
       tofAnaTestbeam->SetMrpcRef(9);            // Reference RPC
       tofAnaTestbeam->SetBeamRefSmType(iSel2);  // P2
       tofAnaTestbeam->SetBeamRefSmId(0);
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(12.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(11.);  // Width  of channel selection window
       break;

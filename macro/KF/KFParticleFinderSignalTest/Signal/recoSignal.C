@@ -6,8 +6,8 @@
 // macro to reconstruct signal events for KFParticleFinder
 //_________________________________________________________________________________
 
-void recoSignal(Int_t nEvents         = 1000,
-                const char* setupName = "sis100_electron") {
+void recoSignal(Int_t nEvents = 1000, const char* setupName = "sis100_electron")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -45,23 +45,18 @@ void recoSignal(Int_t nEvents         = 1000,
 
   TString geoTag;
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdDigiFile =
-      new TObjString(paramDir + "/trd/trd_" + geoTag.Data() + ".digi.par");
+    TObjString* trdDigiFile = new TObjString(paramDir + "/trd/trd_" + geoTag.Data() + ".digi.par");
     parFileList->Add(trdDigiFile);
   }
 
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofDigiFile =
-      new TObjString(paramDir + "/tof/tof_" + geoTag.Data() + ".digi.par");
+    TObjString* tofDigiFile = new TObjString(paramDir + "/tof/tof_" + geoTag.Data() + ".digi.par");
     parFileList->Add(tofDigiFile);
-    std::cout << ": Using ToF parameter file " << tofDigiFile->GetString()
-              << std::endl;
+    std::cout << ": Using ToF parameter file " << tofDigiFile->GetString() << std::endl;
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(paramDir + "/tof/tof_" + geoTag.Data() + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(paramDir + "/tof/tof_" + geoTag.Data() + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
-    std::cout << ": Using Bdf parameter file " << tofDigiBdfFile->GetString()
-              << std::endl;
+    std::cout << ": Using Bdf parameter file " << tofDigiBdfFile->GetString() << std::endl;
   }
   // In general, the following parts need not be touched
   // ========================================================================
@@ -97,8 +92,7 @@ void recoSignal(Int_t nEvents         = 1000,
 
   if (setup->IsActive(kMvd)) {
     // -----   MVD Digitiser   -------------------------------------------------
-    CbmMvdDigitizer* mvdDigitise =
-      new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+    CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
     run->AddTask(mvdDigitise);
     // -------------------------------------------------------------------------
 
@@ -113,14 +107,13 @@ void recoSignal(Int_t nEvents         = 1000,
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
   if (setup->IsActive(kSts)) {
-    Double_t dynRange       = 40960.;  // Dynamic range [e]
-    Double_t threshold      = 4000.;   // Digitisation threshold [e]
-    Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-    Double_t timeResolution = 5.;      // time resolution [ns]
-    Double_t deadTime =
-      9999999.;            // infinite dead time (integrate entire event)
-    Double_t noise  = 0.;  // ENC [e]
-    Int_t digiModel = 1;   // Model: 1 = uniform charge distribution along track
+    Double_t dynRange       = 40960.;    // Dynamic range [e]
+    Double_t threshold      = 4000.;     // Digitisation threshold [e]
+    Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+    Double_t timeResolution = 5.;        // time resolution [ns]
+    Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+    Double_t noise          = 0.;        // ENC [e]
+    Int_t digiModel         = 1;         // Model: 1 = uniform charge distribution along track
 
     Int_t eLossModel       = 1;       // Energy loss model: uniform
     Bool_t useLorentzShift = kFALSE;  // Deactivate Lorentz shift
@@ -141,11 +134,9 @@ void recoSignal(Int_t nEvents         = 1000,
 
   // -----   MVD Hit Finder   ------------------------------------------------
   if (setup->IsActive(kMvd)) {
-    CbmMvdClusterfinder* mvdClusterFinder =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, iVerbose);
+    CbmMvdClusterfinder* mvdClusterFinder = new CbmMvdClusterfinder("MVD Cluster Finder", 0, iVerbose);
     run->AddTask(mvdClusterFinder);
-    CbmMvdHitfinder* mvdHitfinder =
-      new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+    CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
     mvdHitfinder->UseClusterfinder(kTRUE);
     run->AddTask(mvdHitfinder);
   }
@@ -186,36 +177,33 @@ void recoSignal(Int_t nEvents         = 1000,
   // ---  STS track finding   ------------------------------------------------
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
-  CbmL1* l1 = new CbmL1("CbmL1", 1, 3);
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  CbmL1* l1      = new CbmL1("CbmL1", 1, 3);
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   if (setup->IsActive(kMvd)) {
     cout << "****************  MVD IS ACTIVE ***************" << endl;
     setup->GetGeoTag(kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      parDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = parDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(kSts)) {
     setup->GetGeoTag(kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      parDir + "/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
   if (setup->IsActive(kTrd)) {
-    Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+    Bool_t simpleTR          = kTRUE;  // use fast and simple version for TR production
     CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
     //"K++" : micro structured POKALON
     //"H++" : PE foam foils
     //"G30" : ALICE fibers 30 layers
 
-    Bool_t triangularPads     = false;  // Bucharest triangular pad-plane layout
+    Bool_t triangularPads     = false;   // Bucharest triangular pad-plane layout
     Double_t triggerThreshold = 0.5e-6;  //SIS100
     //     Double_t triggerThreshold = 1.0e-6;//SIS300
     Double_t trdNoiseSigma_keV = 0.1;  //default best matching to test beam PRF
@@ -240,29 +228,25 @@ void recoSignal(Int_t nEvents         = 1000,
 
   if (setup->IsActive(kTof)) {
     // -----   TOF digitizer   -------------------------------------------------
-    CbmTofDigitizerBDF* tofDigi =
-      new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+    CbmTofDigitizerBDF* tofDigi = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
     tofDigi->SetOutputBranchPersistent("TofDigi", kFALSE);
     tofDigi->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
     TString paramDir = gSystem->Getenv("VMCWORKDIR");
     tofDigi->SetInputFileName(
-      paramDir
-      + "/parameters/tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+      paramDir + "/parameters/tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
     //      tofDigi->SetHistoFileName( digiOutFile ); // Uncomment to save control histograms
     run->AddTask(tofDigi);
     // -------------------------------------------------------------------------
 
     // ------ TOF hits --------------------------------------------------------
-    CbmTofSimpClusterizer* tofCluster =
-      new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
     tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
     tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
     run->AddTask(tofCluster);
     // ------------------------------------------------------------------------
   }
 
-  if (setup->IsActive(kRich) || setup->IsActive(kTrd)
-      || setup->IsActive(kTof)) {
+  if (setup->IsActive(kRich) || setup->IsActive(kTrd) || setup->IsActive(kTof)) {
     // ------ Global track reconstruction -------------------------------------
     CbmLitFindGlobalTracks* finder = new CbmLitFindGlobalTracks();
     //CbmLitFindGlobalTracksParallel* finder = new CbmLitFindGlobalTracksParallel();
@@ -299,14 +283,12 @@ void recoSignal(Int_t nEvents         = 1000,
 
   if (setup->IsActive(kTrd)) {
     // ----------- TRD track Pid ModWkn ----------------------
-    CbmTrdSetTracksPidModWkn* trdSetTracksPidModWknTask =
-      new CbmTrdSetTracksPidModWkn("Wkn", "Wkn");
+    CbmTrdSetTracksPidModWkn* trdSetTracksPidModWknTask = new CbmTrdSetTracksPidModWkn("Wkn", "Wkn");
     run->AddTask(trdSetTracksPidModWknTask);
     // ----------------------------------------------------
 
     // ----------- TRD track Pid Ann ----------------------
-    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
-      new CbmTrdSetTracksPidANN("Ann", "Ann");
+    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
     run->AddTask(trdSetTracksPidAnnTask);
   }
 
@@ -332,20 +314,12 @@ void recoSignal(Int_t nEvents         = 1000,
 
   //add ions to the TDatabasePDG
   KFPartEfficiencies eff;
-  for (int jParticle = eff.fFirstStableParticleIndex + 10;
-       jParticle <= eff.fLastStableParticleIndex;
-       jParticle++) {
+  for (int jParticle = eff.fFirstStableParticleIndex + 10; jParticle <= eff.fLastStableParticleIndex; jParticle++) {
     TDatabasePDG* pdgDB = TDatabasePDG::Instance();
 
     if (!pdgDB->GetParticle(eff.partPDG[jParticle])) {
-      pdgDB->AddParticle(eff.partTitle[jParticle].data(),
-                         eff.partTitle[jParticle].data(),
-                         eff.partMass[jParticle],
-                         kTRUE,
-                         0,
-                         eff.partCharge[jParticle] * 3,
-                         "Ion",
-                         eff.partPDG[jParticle]);
+      pdgDB->AddParticle(eff.partTitle[jParticle].data(), eff.partTitle[jParticle].data(), eff.partMass[jParticle],
+                         kTRUE, 0, eff.partCharge[jParticle] * 3, "Ion", eff.partPDG[jParticle]);
     }
   }
   cout << "Starting run" << endl;

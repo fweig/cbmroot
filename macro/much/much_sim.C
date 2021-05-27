@@ -12,17 +12,13 @@
 #include <iostream>
 using namespace std;
 
-void much_sim(TString inputSignal = "",
-              TString inputBgr    = "",
-              TString outFile     = "",
-              Int_t nEvents       = 3) {
+void much_sim(TString inputSignal = "", TString inputBgr = "", TString outFile = "", Int_t nEvents = 3)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
   TString inputdir = gSystem->Getenv("VMCWORKDIR");
-  if (inputSignal == "") {
-    inputSignal = inputdir + "/macro/much/data/jpsi.root";
-  }
+  if (inputSignal == "") { inputSignal = inputdir + "/macro/much/data/jpsi.root"; }
   if (inputBgr == "") {
     inputBgr = inputdir + "/input/urqmd.auau.10gev.centr.root";
     //  inputBgr = inputdir + "/input/urqmd.auau.8gev.centr.01000.root";
@@ -93,7 +89,7 @@ void much_sim(TString inputSignal = "",
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -147,8 +143,7 @@ void much_sim(TString inputSignal = "",
   }
 
   // --- Target
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   fRun->AddModule(target);

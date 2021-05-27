@@ -15,10 +15,12 @@
 ////////////////////////////////////////////////////////
 
 #include "PParticle.h"
+
 #include "TF1.h"
 #include "TMath.h"
 
-void PParticle::defaults(void) {
+void PParticle::defaults(void)
+{
 
   SetVertex(0., 0., 0., 0.);
   pParticle             = nullptr;
@@ -45,10 +47,7 @@ void PParticle::defaults(void) {
   ResetDaughters();
 }
 
-PParticle::PParticle(int /*id*/, Double_t /*T*/, Double_t /*w*/)
-  : TLorentzVector() {
-  defaults();
-}
+PParticle::PParticle(int /*id*/, Double_t /*T*/, Double_t /*w*/) : TLorentzVector() { defaults(); }
 
 /*
 PParticle::PParticle(const char * id, Double_t T, Double_t w):

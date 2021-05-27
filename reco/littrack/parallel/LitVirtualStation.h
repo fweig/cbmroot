@@ -8,14 +8,17 @@
 #ifndef LITVIRTUALSTATION_H_
 #define LITVIRTUALSTATION_H_
 
+#include <sstream>
+
 #include "LitFieldGrid.h"
 #include "LitMaterialGrid.h"
-#include <sstream>
 using std::ostream;
 using std::stringstream;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitVirtualStation
@@ -41,9 +44,7 @@ namespace lit {
       virtual ~LitVirtualStation() {}
 
       /* Setters */
-      void SetMaterial(const LitMaterialGrid& material) {
-        fMaterial = material;
-      }
+      void SetMaterial(const LitMaterialGrid& material) { fMaterial = material; }
       void SetField(const LitFieldGrid& field) { fField = field; }
       void SetZ(T z) { fZ = z; }
 
@@ -56,7 +57,8 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
         ss << "LitVirtualStation: Z=" << GetZ() << "\n";
         ss << "   material: " << GetMaterial().ToString() << "\n";
@@ -68,8 +70,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm,
-                                 const LitVirtualStation& station) {
+      friend ostream& operator<<(ostream& strm, const LitVirtualStation& station)
+      {
         strm << station.ToString();
         return strm;
       }

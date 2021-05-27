@@ -1,11 +1,11 @@
-void rec(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0) {
+void rec(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0)
+{
   Char_t filenr[4];
   sprintf(filenr, "%04d", file_nr);
   printf("Filenr: %s\n", filenr);
 
   TString signal;
-  if (s != 3312 && s != 3334)
-    signal = "la";
+  if (s != 3312 && s != 3334) signal = "la";
   else if (s == 3312)
     signal = "xi";
   else if (s == 3334)
@@ -70,14 +70,13 @@ void rec(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0) {
 
   // -----   STS track fitting   --------------------------------------------
   CbmStsTrackFitter* trackFitter = new CbmStsKFTrackFitter();
-  FairTask* fitTracks =
-    new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
+  FairTask* fitTracks            = new CbmStsFitTracks("STS Track Fitter", trackFitter, iVerbose);
   run->AddTask(fitTracks);
   // ------------------------------------------------------------------------
 
   // -----   Primary vertex finder   ----------------------------------------
   CbmPVFinderKF* vfinder = new CbmPVFinderKF();
-  FairTask* vTask = new CbmFindPrimaryVertex("PV finder", "FairTask", vfinder);
+  FairTask* vTask        = new CbmFindPrimaryVertex("PV finder", "FairTask", vfinder);
   run->AddTask(vTask);
   // ------------------------------------------------------------------------
 

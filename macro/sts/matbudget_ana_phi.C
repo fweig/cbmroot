@@ -1,4 +1,6 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
+#include "FairRadLenPoint.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFile.h"
@@ -10,8 +12,6 @@
 #include "TSystem.h"
 #include "TTree.h"
 #include "TVector3.h"
-
-#include "FairRadLenPoint.h"
 
 #include <iostream>
 #include <vector>
@@ -27,17 +27,16 @@ using std::vector;
 
 //Int_t matbudget_ana_phi(Int_t nEvents=100     , const char* stsGeo = "v15c")
 //Int_t matbudget_ana_phi(Int_t nEvents=1000000 , const char* stsGeo = "v15c")
-Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
+Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
+{
 
   // Input file (MC)
   TString stsVersion(stsGeo);
   TString inFile = "data/matbudget." + stsVersion + ".mc.root";
   TFile* input   = new TFile(inFile);
   if (!input) {
-    cout
-      << "*** matbudget_ana: Input file " << inFile << " not found!\n"
-      << "Be sure to run matbudget_mc.C before for the respective STS geometry!"
-      << endl;
+    cout << "*** matbudget_ana: Input file " << inFile << " not found!\n"
+         << "Be sure to run matbudget_mc.C before for the respective STS geometry!" << endl;
     exit;
   }
 
@@ -67,8 +66,7 @@ Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
     name += " Station ";
     name += i + 1;
     //    hStaRadLen[i] = new TProfile2D(name, name, nBins,-rMax, rMax, nBins,-rMax, rMax);
-    hStaRadLen[i] =
-      new TProfile2D(name, name, nBins, -phiMax, phiMax, nBins, 0, thetaMax);
+    hStaRadLen[i] = new TProfile2D(name, name, nBins, -phiMax, phiMax, nBins, 0, thetaMax);
     //    hStaRadLen[i] = new TProfile2D(name, name, nBins, -phiMax, phiMax, nBins, 0, radiusMax);
   }
 
@@ -79,17 +77,13 @@ Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
 
   // Event loop
   int firstEvent = 0;
-  for (Int_t event = firstEvent;
-       event < (firstEvent + nEvents) && event < tree->GetEntriesFast();
-       event++) {
+  for (Int_t event = firstEvent; event < (firstEvent + nEvents) && event < tree->GetEntriesFast(); event++) {
     tree->GetEntry(event);
     if (0 == event % 10000) cout << "*** Processing event " << event << endl;
 
     const int nTracks = 1;
-    std::vector<double> RadLengthOnTrack(
-      nTracks, 0.0);  //trackID, vector with points on track
-    std::vector<double> TrackLength(
-      nTracks, 0.0);  //trackID, vector with points on track
+    std::vector<double> RadLengthOnTrack(nTracks, 0.0);  //trackID, vector with points on track
+    std::vector<double> TrackLength(nTracks, 0.0);       //trackID, vector with points on track
 
     vector<double> RadThick(nStations, 0);
     double x, y;
@@ -114,16 +108,15 @@ Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
       const double z        = middle.Z() / 2;
 
       if (x == 0) {
-        if (y >= 0)
-          phi = 90;
+        if (y >= 0) phi = 90;
         else
           phi = -90;
-      } else
+      }
+      else
         phi = atan(y / x) * 180 / acos(-1.);
 
       if (x < 0) {
-        if (y >= 0)
-          phi += 180;
+        if (y >= 0) phi += 180;
         else
           phi -= 180;
       }
@@ -141,8 +134,7 @@ Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
       TrackLength[point->GetTrackID()] += posDif.Mag();
 
       // Determine station number
-      int iStation =
-        posIn.Z() / 10 - 3 + 0.5;  // suppose equidistant stations at 30-100 cm
+      int iStation    = posIn.Z() / 10 - 3 + 0.5;  // suppose equidistant stations at 30-100 cm
       int iStationOut = posOut.Z() / 10 - 3 + 0.5;
       if (iStationOut != iStation) continue;
       if (iStation >= nStations || iStation < 0) continue;
@@ -150,8 +142,7 @@ Int_t matbudget_ana_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c") {
       RadThick[iStation] += radThick;
       phiSta[iStation] = phi;
       //      thetaSta[iStation] = theta;
-      thetaSta[iStation] =
-        atan(radius / (iStation * 10 + 30)) * 180 / acos(-1.);
+      thetaSta[iStation] = atan(radius / (iStation * 10 + 30)) * 180 / acos(-1.);
 
       //      cout << "i: " << iStation << " phi: " << phi << " z: " << z << " theta: " << theta
       //           << " correct: " << atan (radius / (iStation *10 + 30)) * 180 / acos(-1.)

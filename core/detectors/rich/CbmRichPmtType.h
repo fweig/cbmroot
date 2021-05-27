@@ -8,7 +8,8 @@
 #ifndef RICH_DETECTOR_CBMRICHPMTTYPE_H_
 #define RICH_DETECTOR_CBMRICHPMTTYPE_H_
 
-enum CbmRichPmtTypeEnum {
+enum CbmRichPmtTypeEnum
+{
   // COSY 2017 measurements, NO WLS
   CbmRichPmtTypeCosy17NoWls = 20,
 
@@ -81,7 +82,6 @@ enum CbmRichPmtTypeEnum {
 
   //ideal detector
   CbmRichPmtTypeIdeal = 0
-
 };
 
 #endif /* RICH_DETECTOR_CBMRICHPMTType_H_ */

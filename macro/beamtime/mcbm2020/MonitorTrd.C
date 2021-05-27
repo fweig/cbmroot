@@ -13,15 +13,21 @@
 
 // This macro is based on the general tsa unpacker macro as used by mcbm2019 (/macro/beamtime/mcbm2019/unpack_tsa_mcbm.C) and suppose to allow unpacking of desy 2019 data with the new scheme for testing purpose of the new unpacker
 
-#include <vector>
-
 #include <TList.h>
 #include <TObjString.h>
 #include <TString.h>
 #include <TSystem.h>
 
+#include <vector>
+
 // Includes needed for IDE
 #if !defined(__CLING__)
+
+#include "CbmDefs.h"
+#include "CbmMcbm2018Source.h"
+#include "CbmMcbm2018UnpackerTaskTrdR.h"
+#include "CbmMcbmUnpack.h"
+#include "CbmSetup.h"
 
 #include "FairEventHeader.h"
 #include "FairLogger.h"
@@ -30,23 +36,14 @@
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
-#include "CbmDefs.h"
-#include "CbmMcbm2018Source.h"
-#include "CbmMcbm2018UnpackerTaskTrdR.h"
-#include "CbmMcbmUnpack.h"
-#include "CbmSetup.h"
-
 #endif
 
 FairRunOnline* run = nullptr;
 
-void MonitorTrd(TString inFile           = "",
-                TString sHostname        = "localhost",
-                Int_t iServerHttpPort    = 8080,
-                Int_t iServerRefreshRate = 100,
-                UInt_t uRunId            = 0,
-                UInt_t nrEvents          = 0,
-                std::string geoSetupTag  = "mcbm_beam_2020_03") {
+void MonitorTrd(TString inFile = "", TString sHostname = "localhost", Int_t iServerHttpPort = 8080,
+                Int_t iServerRefreshRate = 100, UInt_t uRunId = 0, UInt_t nrEvents = 0,
+                std::string geoSetupTag = "mcbm_beam_2020_03")
+{
 
   std::string myName = "MonitorTrd";
 
@@ -55,8 +52,7 @@ void MonitorTrd(TString inFile           = "",
   Int_t nEvents = -1;
 
 
-  if ("" == inFile && "" == sHostname)
-    inFile = "/local/dschmidt/tsa/pulser07.tsa";  // long pulser file
+  if ("" == inFile && "" == sHostname) inFile = "/local/dschmidt/tsa/pulser07.tsa";  // long pulser file
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -76,8 +72,7 @@ void MonitorTrd(TString inFile           = "",
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName.data() << ": Loading setup " << geoSetupTag
-            << std::endl;
+  std::cout << "-I- " << myName.data() << ": Loading setup " << geoSetupTag << std::endl;
   CbmSetup* geoSetup = CbmSetup::Instance();
   geoSetup->LoadSetup(geoSetupTag.data());
   // geoSetup->Print();
@@ -86,21 +81,18 @@ void MonitorTrd(TString inFile           = "",
   // ---- Trd ----
   TList* parFileList = new TList();
   TString geoTagTrd  = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  bool isActiveTrd   = (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
   if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    LOG(warning) << Form("TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+                         "can not be loaded correctly!",
+                         geoSetupTag.data());
+  }
+  else {
+    TString paramFilesTrd(Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
     CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
     for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+      parFileList->Add(new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
   }
 
@@ -114,8 +106,7 @@ void MonitorTrd(TString inFile           = "",
   std::cout << std::endl;
   std::cout << ">>> MonitorTrd: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
-    new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
 
   unpacker_trdR->SetMonitorMode();
   unpacker_trdR->SetDebugMonitorMode();
@@ -127,9 +118,7 @@ void MonitorTrd(TString inFile           = "",
   //   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if (0 < uRunId || "" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if (0 < uRunId || "" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
     source->SetSubscriberHwm(10);
@@ -176,7 +165,8 @@ void MonitorTrd(TString inFile           = "",
   std::cout << ">>> MonitorTrd: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
 
@@ -184,16 +174,14 @@ void MonitorTrd(TString inFile           = "",
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorTrd: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorTrd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> MonitorTrd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

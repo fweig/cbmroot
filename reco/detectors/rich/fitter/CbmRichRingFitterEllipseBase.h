@@ -39,7 +39,8 @@ protected:
     * \brief Calculate chi2 of the ellipse fit.
     * \param[in,out] ring Fitted RICH ring with ellipse fitter.
     */
-  virtual void CalcChi2(CbmRichRingLight* ring) {
+  virtual void CalcChi2(CbmRichRingLight* ring)
+  {
     int nofHits = ring->GetNofHits();
     if (nofHits <= 5) {
       ring->SetChi2(-1.);
@@ -84,13 +85,8 @@ protected:
     * \param[in] F F parameter of curve.
     * \param[in] ring Fitted RICH ring with ellipse fitter.
     */
-  virtual void CalcChi2(double A,
-                        double B,
-                        double C,
-                        double D,
-                        double E,
-                        double F,
-                        CbmRichRingLight* ring) {
+  virtual void CalcChi2(double A, double B, double C, double D, double E, double F, CbmRichRingLight* ring)
+  {
     int nofHits = ring->GetNofHits();
     if (nofHits <= 5) {
       ring->SetChi2(-1.);
@@ -102,8 +98,7 @@ protected:
       double y = ring->GetHit(iHit).fY;
 
       double d1 = fabs(A * x * x + B * x * y + C * y * y + D * x + E * y + F);
-      double d2 =
-        sqrt(pow(2 * A * x + B * y + D, 2) + pow(B * x + 2 * C * y + E, 2));
+      double d2 = sqrt(pow(2 * A * x + B * y + D, 2) + pow(B * x + 2 * C * y + E, 2));
 
       chi2 += (d1 * d1) / (d2 * d2);
     }

@@ -1,4 +1,5 @@
-void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
+void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -30,7 +31,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
     h2f->Draw("colz");
     //gPad->SetLogz();
     //h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -42,7 +44,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
     h2m->Draw("colz");
     //gPad->SetLogz();
     //h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -56,9 +59,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
       Double_t dMax = dThr * h2f->GetMaximum();
       for (Int_t i = 0; i < (Int_t) h2f->GetNbinsX(); i++)
         for (Int_t j = 0; j < (Int_t) h2f->GetNbinsY(); j++) {
-          h2f->GetBinContent(i + 1, j + 1) < dMax
-            ? h2acc->SetBinContent(i + 1, j + 1, 0.)
-            : h2acc->SetBinContent(i + 1, j + 1, 1.);
+          h2f->GetBinContent(i + 1, j + 1) < dMax ? h2acc->SetBinContent(i + 1, j + 1, 0.)
+                                                  : h2acc->SetBinContent(i + 1, j + 1, 1.);
         }
       TH2* h2aall = (TH2*) h2f->Clone(Form("hALL_accepted"));
       h2aall->Multiply(h2aall, h2acc, 1., 1., "B");
@@ -70,8 +72,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
         h2missed->Multiply(h2m, h2acc, 1., 1., "B");
         Double_t NmisaI = h2missed->Integral();
         eff             = 1. - NmisaI / (Nall + NmisaI);
-        cout << "Efficiency of Sut: all " << Nall << ", mis " << Nmis << ", "
-             << NmisI << ", " << NmisaI << " -> " << Form("%6.3f", eff) << endl;
+        cout << "Efficiency of Sut: all " << Nall << ", mis " << Nmis << ", " << NmisI << ", " << NmisaI << " -> "
+             << Form("%6.3f", eff) << endl;
 
         hname      = Form("Efficiency");
         TH2* h2eff = (TH2*) gROOT->FindObjectAny(hname);
@@ -104,7 +106,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
     //gPad->SetLogz();
     can->cd(7);
     h3->ProjectionZ()->Draw("");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -118,7 +121,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
     //gPad->SetLogz();
     can->cd(8);
     h3->ProjectionZ()->Draw("");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -132,7 +136,8 @@ void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.) {
     //gPad->SetLogz();
     can->cd(9);
     h3->ProjectionZ()->Draw("");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

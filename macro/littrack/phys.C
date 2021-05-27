@@ -1,22 +1,18 @@
 
-void phys(Int_t nEvents = 100) {
+void phys(Int_t nEvents = 100)
+{
   TStopwatch timer;
   timer.Start();
 
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   // Input and output data
-  TString dir =
-    "/Users/andrey/Development/cbm/d/events/nu/25gev/";  // Output directory
-  TString mcFile  = dir + "mc.0000.root";                // MC transport file
-  TString parFile = dir + "param.0000.root";             // Parameters file
-  TString globalRecoFile =
-    dir
-    + "global.reco.0000.root";  // Input file with reconstructed tracks and hits
-  TString analysisFile =
-    dir + "analysis.0000.root";  // Output file with analysis
+  TString dir            = "/Users/andrey/Development/cbm/d/events/nu/25gev/";  // Output directory
+  TString mcFile         = dir + "mc.0000.root";                                // MC transport file
+  TString parFile        = dir + "param.0000.root";                             // Parameters file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // Input file with reconstructed tracks and hits
+  TString analysisFile   = dir + "analysis.0000.root";     // Output file with analysis
 
   TList* parFileList     = new TList();
   TObjString stsDigiFile = parDir + "/sts/sts_v11a.digi.par";  // STS digi file
@@ -51,8 +47,7 @@ void phys(Int_t nEvents = 100) {
   CbmKFParticlesFinder* kfPartFinder = new CbmKFParticlesFinder(cuts, 2);
   run->AddTask(kfPartFinder);
 
-  CbmKFParticlesFinderQA* kfPartFinderQA =
-    new CbmKFParticlesFinderQA(kfPartFinder, 1, 3);
+  CbmKFParticlesFinderQA* kfPartFinderQA = new CbmKFParticlesFinderQA(kfPartFinder, 1, 3);
   kfPartFinderQA->SetOutFile("");
   run->AddTask(kfPartFinderQA);
 
@@ -73,6 +68,5 @@ void phys(Int_t nEvents = 100) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << analysisFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time=" << timer.RealTime()
-       << " seconds, CPU time=" << timer.CpuTime() << " seconds" << endl;
+  cout << "Real time=" << timer.RealTime() << " seconds, CPU time=" << timer.CpuTime() << " seconds" << endl;
 }

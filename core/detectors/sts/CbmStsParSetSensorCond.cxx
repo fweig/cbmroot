@@ -22,10 +22,10 @@ using std::string;
 ClassImp(CbmStsParSetSensorCond)
 
   // -----   Constructor   ----------------------------------------------------
-  CbmStsParSetSensorCond::CbmStsParSetSensorCond(const char* name,
-                                                 const char* title,
-                                                 const char* context)
-  : FairParGenericSet(name, title, context) {}
+  CbmStsParSetSensorCond::CbmStsParSetSensorCond(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -35,7 +35,8 @@ CbmStsParSetSensorCond::~CbmStsParSetSensorCond() {}
 
 
 // -----   Reset   ----------------------------------------------------------
-void CbmStsParSetSensorCond::clear() {
+void CbmStsParSetSensorCond::clear()
+{
   fParams.clear();
   fIsInit = kFALSE;
   fGlobal = kFALSE;
@@ -46,7 +47,8 @@ void CbmStsParSetSensorCond::clear() {
 
 
 // -----   Read parameters from ASCII file   --------------------------------
-Bool_t CbmStsParSetSensorCond::getParams(FairParamList*) {
+Bool_t CbmStsParSetSensorCond::getParams(FairParamList*)
+{
   LOG(fatal) << GetName() << ": ASCII input is not defined!";
   return kFALSE;
 }
@@ -54,8 +56,8 @@ Bool_t CbmStsParSetSensorCond::getParams(FairParamList*) {
 
 
 // -----   Get condition parameters of a sensor   ---------------------------
-const CbmStsParSensorCond&
-CbmStsParSetSensorCond::GetParSensor(UInt_t address) {
+const CbmStsParSensorCond& CbmStsParSetSensorCond::GetParSensor(UInt_t address)
+{
 
   if (!fIsInit) Init();
 
@@ -72,7 +74,8 @@ CbmStsParSetSensorCond::GetParSensor(UInt_t address) {
 
 
 // -----   Initialise the conditions   --------------------------------------
-void CbmStsParSetSensorCond::Init() {
+void CbmStsParSetSensorCond::Init()
+{
 
   // --- Global conditions
   fGlobalParams.Init();
@@ -87,23 +90,18 @@ void CbmStsParSetSensorCond::Init() {
 
 
 // -----   Write parameters from ASCII file   -------------------------------
-void CbmStsParSetSensorCond::putParams(FairParamList*) {
-  LOG(fatal) << GetName() << ": ASCII output is not defined!";
-}
+void CbmStsParSetSensorCond::putParams(FairParamList*) { LOG(fatal) << GetName() << ": ASCII output is not defined!"; }
 // --------------------------------------------------------------------------
 
 
 // -----   Set sensor conditions from file   --------------------------------
-UInt_t CbmStsParSetSensorCond::ReadParams(const char* fileName) {
+UInt_t CbmStsParSetSensorCond::ReadParams(const char* fileName)
+{
 
   // --- Warn against multiple initialisation
-  if (fGlobal) {
-    LOG(warn) << GetName()
-              << ": Previously defined global settings will be ignored.";
-  }
+  if (fGlobal) { LOG(warn) << GetName() << ": Previously defined global settings will be ignored."; }
   if (!fParams.empty()) {
-    LOG(warn) << GetName()
-              << ": Overwriting previously defined parameter sets.";
+    LOG(warn) << GetName() << ": Overwriting previously defined parameter sets.";
     fParams.clear();
   }
 
@@ -123,8 +121,7 @@ UInt_t CbmStsParSetSensorCond::ReadParams(const char* fileName) {
 
   // If still not open, throw an error
   if (!inFile.is_open()) {
-    LOG(fatal) << GetName() << ": Cannot read file " << fileName << " nor "
-               << inputFile;
+    LOG(fatal) << GetName() << ": Cannot read file " << fileName << " nor " << inputFile;
     return 0;
   }
 
@@ -143,35 +140,28 @@ UInt_t CbmStsParSetSensorCond::ReadParams(const char* fileName) {
     getline(inFile, input);
     if (input.empty() || input[0] == '#') continue;  // Comment line
     std::stringstream line(input);
-    line >> sName >> address >> vDep >> vBias >> temperature >> cCoupling
-      >> cInterstrip;
+    line >> sName >> address >> vDep >> vBias >> temperature >> cCoupling >> cInterstrip;
 
     // Check presence and validity of condition parameters
-    if (vDep < 1.e-9 || vBias < 1.e-9 || temperature < 1.e-9
-        || cCoupling < 1.e-9 || cInterstrip < 1.e-9) {
-      LOG(fatal) << GetName()
-                 << ": Missing or illegal condition parameters for address "
-                 << address << "; " << vDep << " " << vBias << " "
-                 << temperature << " " << cCoupling << " " << cInterstrip;
+    if (vDep < 1.e-9 || vBias < 1.e-9 || temperature < 1.e-9 || cCoupling < 1.e-9 || cInterstrip < 1.e-9) {
+      LOG(fatal) << GetName() << ": Missing or illegal condition parameters for address " << address << "; " << vDep
+                 << " " << vBias << " " << temperature << " " << cCoupling << " " << cInterstrip;
       continue;
     }
 
     // Check for double occurrences of addresses
     if (fParams.count(address)) {
-      LOG(fatal) << GetName() << ": Multiple occurence of address " << address
-                 << " in input file";
+      LOG(fatal) << GetName() << ": Multiple occurence of address " << address << " in input file";
       continue;
     }
 
     // Add sensor conditions to set
-    fParams[address].SetParams(
-      vDep, vBias, temperature, cCoupling, cInterstrip);
+    fParams[address].SetParams(vDep, vBias, temperature, cCoupling, cInterstrip);
     nSensors++;
   }  //# input lines
 
   inFile.close();
-  LOG(info) << GetName() << ": Read conditions of " << nSensors
-            << (nSensors == 1 ? " sensor" : " sensors") << " from "
+  LOG(info) << GetName() << ": Read conditions of " << nSensors << (nSensors == 1 ? " sensor" : " sensors") << " from "
             << inputFile;
 
   return nSensors;
@@ -180,13 +170,10 @@ UInt_t CbmStsParSetSensorCond::ReadParams(const char* fileName) {
 
 
 // -----   Set the global sensor conditions   -------------------------------
-void CbmStsParSetSensorCond::SetGlobalPar(Double_t vFd,
-                                          Double_t vBias,
-                                          Double_t temperature,
-                                          Double_t cCoupling,
-                                          Double_t cInterstrip) {
-  if (fGlobal)
-    LOG(warn) << GetName() << ": Overwriting current global settings!";
+void CbmStsParSetSensorCond::SetGlobalPar(Double_t vFd, Double_t vBias, Double_t temperature, Double_t cCoupling,
+                                          Double_t cInterstrip)
+{
+  if (fGlobal) LOG(warn) << GetName() << ": Overwriting current global settings!";
   fGlobalParams.SetParams(vFd, vBias, temperature, cCoupling, cInterstrip);
   fGlobal = kTRUE;
 }
@@ -194,8 +181,8 @@ void CbmStsParSetSensorCond::SetGlobalPar(Double_t vFd,
 
 
 // -----   Set the global sensor conditions   ------------------------------
-void CbmStsParSetSensorCond::SetGlobalPar(
-  const CbmStsParSensorCond& conditions) {
+void CbmStsParSetSensorCond::SetGlobalPar(const CbmStsParSensorCond& conditions)
+{
   Double_t vFd         = conditions.GetVfd();
   Double_t vBias       = conditions.GetVbias();
   Double_t temperature = conditions.GetTemperature();
@@ -207,11 +194,11 @@ void CbmStsParSetSensorCond::SetGlobalPar(
 
 
 // -----   Info to string   ------------------------------------------------
-std::string CbmStsParSetSensorCond::ToString() {
+std::string CbmStsParSetSensorCond::ToString()
+{
   if (!fIsInit) Init();
   std::stringstream ss;
-  if (!IsSet())
-    ss << "Empty";
+  if (!IsSet()) ss << "Empty";
   else if (fGlobal)
     ss << "(Global) " << fGlobalParams.ToString();
   else

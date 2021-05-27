@@ -10,16 +10,17 @@
 
 #include "CbmPsdMC.h"
 
-#include "TGeoManager.h"
-#include "TKey.h"
-#include "TVirtualMC.h"
-#include <cassert>
-#include <string>
-
 #include "CbmGeometryUtils.h"
 #include "CbmModuleList.h"
 #include "CbmPsdPoint.h"
 #include "CbmStack.h"
+
+#include "TGeoManager.h"
+#include "TKey.h"
+#include "TVirtualMC.h"
+
+#include <cassert>
+#include <string>
 
 
 // -----   Default constructor   -------------------------------------------
@@ -38,12 +39,15 @@ CbmPsdMC::CbmPsdMC(Bool_t active, const char* name)
   , fLength(-1.)
   , fEloss(-1.)
   , fLayerID(-1)
-  , fModuleID(-1) {}
+  , fModuleID(-1)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmPsdMC::~CbmPsdMC() {
+CbmPsdMC::~CbmPsdMC()
+{
   if (fPsdPoints) {
     fPsdPoints->Delete();
     delete fPsdPoints;
@@ -53,7 +57,8 @@ CbmPsdMC::~CbmPsdMC() {
 
 
 // -----   Construct the geometry from file   ------------------------------
-void CbmPsdMC::ConstructGeometry() {
+void CbmPsdMC::ConstructGeometry()
+{
 
 
   /*
@@ -144,7 +149,8 @@ void CbmPsdMC::ConstructGeometry() {
 
 
 // -----   End of event action   -------------------------------------------
-void CbmPsdMC::EndOfEvent() {
+void CbmPsdMC::EndOfEvent()
+{
   Print();  // Status output
   fPsdPoints->Delete();
 }
@@ -152,15 +158,16 @@ void CbmPsdMC::EndOfEvent() {
 
 
 // -----   Print   ---------------------------------------------------------
-void CbmPsdMC::Print(Option_t*) const {
-  LOG(info) << fName << ": " << fPsdPoints->GetEntriesFast()
-            << " points registered in this event.";
+void CbmPsdMC::Print(Option_t*) const
+{
+  LOG(info) << fName << ": " << fPsdPoints->GetEntriesFast() << " points registered in this event.";
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method ProcessHits  --------------------------------------
-Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
+Bool_t CbmPsdMC::ProcessHits(FairVolume*)
+{
 
   // No action for neutral particles
   if (TMath::Abs(gMC->TrackCharge()) <= 0) return kFALSE;
@@ -185,13 +192,12 @@ Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
   fEloss += gMC->Edep();
 
   // --- If track is leaving: get track parameters and create CbmstsPoint
-  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
-      || gMC->IsTrackDisappeared()) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop() || gMC->IsTrackDisappeared()) {
 
     // Create CbmPsdPoint
-    Int_t size            = fPsdPoints->GetEntriesFast();
-    CbmPsdPoint* psdPoint = new ((*fPsdPoints)[size]) CbmPsdPoint(
-      fTrackID, fAddress, fPos.Vect(), fMom.Vect(), fTime, fLength, fEloss);
+    Int_t size = fPsdPoints->GetEntriesFast();
+    CbmPsdPoint* psdPoint =
+      new ((*fPsdPoints)[size]) CbmPsdPoint(fTrackID, fAddress, fPos.Vect(), fMom.Vect(), fTime, fLength, fEloss);
     psdPoint->SetModuleID(fModuleID + 1);
 
     // --- Increment number of PsdPoints for this track in the stack
@@ -207,19 +213,17 @@ Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
 
 
 // -----   Register the sensitive volumes   --------------------------------
-void CbmPsdMC::RegisterSensitiveVolumes(TGeoNode* node) {
+void CbmPsdMC::RegisterSensitiveVolumes(TGeoNode* node)
+{
 
   TObjArray* daughters = node->GetVolume()->GetNodes();
-  for (Int_t iDaughter = 0; iDaughter < daughters->GetEntriesFast();
-       iDaughter++) {
+  for (Int_t iDaughter = 0; iDaughter < daughters->GetEntriesFast(); iDaughter++) {
     TGeoNode* daughter = dynamic_cast<TGeoNode*>(daughters->At(iDaughter));
     assert(daughter);
     if (daughter->GetNdaughters() > 0) RegisterSensitiveVolumes(daughter);
     TGeoVolume* daughterVolume = daughter->GetVolume();
-    if (CheckIfSensitive(daughterVolume->GetName())) {
-      AddSensitiveVolume(daughterVolume);
-    }  //? Sensitive volume
-  }    //# Daughter nodes
+    if (CheckIfSensitive(daughterVolume->GetName())) { AddSensitiveVolume(daughterVolume); }  //? Sensitive volume
+  }                                                                                           //# Daughter nodes
 }
 // -------------------------------------------------------------------------
 

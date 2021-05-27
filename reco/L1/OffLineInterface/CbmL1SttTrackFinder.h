@@ -3,6 +3,7 @@
 #define CBM_L1_STTTRACKFINDER_H
 
 #include "CbmStsKFTrackFitter.h"
+
 #include "FairTask.h"
 //#include "TLorentzVector.h"
 #include "TH1.h"
@@ -13,8 +14,7 @@ class TClonesArray;
 class CbmL1SttTrackFinder : public FairTask {
 public:
   /** Constructor **/
-  CbmL1SttTrackFinder(const char* name = "CbmL1SttTrackFinder",
-                      Int_t iVerbose   = 1);
+  CbmL1SttTrackFinder(const char* name = "CbmL1SttTrackFinder", Int_t iVerbose = 1);
 
   /** Destructor **/
   ~CbmL1SttTrackFinder();

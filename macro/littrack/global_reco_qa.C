@@ -18,31 +18,24 @@ void global_reco_qa(Int_t nEvents = 10, TString opt = "reco")
 {
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
-  TString dir       = "events/much_v13e/";      // Output directory
-  TString resultDir = "test/";                  // Output directory for results
-  TString mcFile    = dir + "mc.0000.root";     // MC transport file
-  TString parFile   = dir + "param.0000.root";  // Parameter file
-  TString globalRecoFile =
-    dir + "global.reco.0000.root";  // File with global tracks
+  TString dir            = "events/much_v13e/";            // Output directory
+  TString resultDir      = "test/";                        // Output directory for results
+  TString mcFile         = dir + "mc.0000.root";           // MC transport file
+  TString parFile        = dir + "param.0000.root";        // Parameter file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // File with global tracks
   TString globalHitsFile =
-    dir
-    + "global.hits.0000.root";  // File with reconstructed STS tracks, STS, MUCH, TRD and TOF hits and digis
-  TString globalTracksFile =
-    dir + "global.tracks.0000.root";      // Output file with global tracks
-  TString qaFile = dir + "qa.0000.root";  // Output file with histograms
+    dir + "global.hits.0000.root";  // File with reconstructed STS tracks, STS, MUCH, TRD and TOF hits and digis
+  TString globalTracksFile = dir + "global.tracks.0000.root";  // Output file with global tracks
+  TString qaFile           = dir + "qa.0000.root";             // Output file with histograms
 
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
-  TObjString trdDigiFile =
-    parDir + "/trd/trd_v13p_1e.digi.par";  // TRD digi file
-  TString muchDigiFile =
-    parDir + "/much/much_v13a.digi.root";  // MUCH digi file
+  TList* parFileList       = new TList();
+  TObjString stsDigiFile   = parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
+  TObjString trdDigiFile   = parDir + "/trd/trd_v13p_1e.digi.par";   // TRD digi file
+  TString muchDigiFile     = parDir + "/much/much_v13a.digi.root";   // MUCH digi file
   TString stsMatBudgetFile = parDir + "/sts/sts_matbudget_v13c.root";
-  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";  // TOF digi file
+  TObjString tofDigiFile   = parDir + "/tof/tof_v13b.digi.par";  // TOF digi file
 
   // Normalization for efficiency
   Int_t normStsPoints  = 4;
@@ -94,12 +87,14 @@ void global_reco_qa(Int_t nEvents = 10, TString opt = "reco")
     run->SetInputFile(mcFile);
     run->AddFriend(globalRecoFile);
     run->SetOutputFile(qaFile);
-  } else if (opt == "ht") {
+  }
+  else if (opt == "ht") {
     run->SetInputFile(mcFile);
     run->AddFriend(globalHitsFile);
     run->AddFriend(globalTracksFile);
     run->SetOutputFile(qaFile);
-  } else {
+  }
+  else {
     std::cout << "-E- Incorrect opt parameter" << std::endl;
     exit(0);
   }
@@ -176,8 +171,7 @@ void global_reco_qa(Int_t nEvents = 10, TString opt = "reco")
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << qaFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

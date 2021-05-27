@@ -6,14 +6,15 @@
 
 #include "CbmStsSimSensor.h"
 
-#include <FairField.h>
-#include <FairRun.h>
-#include <TGeoBBox.h>
-
 #include "CbmStsAddress.h"
 #include "CbmStsElement.cxx"
 #include "CbmStsPoint.h"
 #include "CbmStsSensorPoint.h"
+
+#include <FairField.h>
+#include <FairRun.h>
+
+#include <TGeoBBox.h>
 
 using std::vector;
 
@@ -22,12 +23,15 @@ ClassImp(CbmStsSimSensor)
 
   // -----   Constructor   ---------------------------------------------------
   CbmStsSimSensor::CbmStsSimSensor(CbmStsElement* element)
-  : fElement(element) {}
+  : fElement(element)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Get the unique address from the sensor name (static)   ----------
-UInt_t CbmStsSimSensor::GetAddressFromName(TString name) {
+UInt_t CbmStsSimSensor::GetAddressFromName(TString name)
+{
 
   Int_t unit    = 10 * (name[5] - '0') + name[6] - '0' - 1;
   Int_t ladder  = 10 * (name[9] - '0') + name[10] - '0' - 1;
@@ -41,7 +45,8 @@ UInt_t CbmStsSimSensor::GetAddressFromName(TString name) {
 
 
 // -----   Get the sensor Id within the module   ---------------------------
-Int_t CbmStsSimSensor::GetSensorId() const {
+Int_t CbmStsSimSensor::GetSensorId() const
+{
   assert(fElement);
   return CbmStsAddress::GetElementId(fElement->GetAddress(), kStsSensor);
 }
@@ -49,9 +54,8 @@ Int_t CbmStsSimSensor::GetSensorId() const {
 
 
 // -----   Process a CbmStsPoint  ------------------------------------------
-Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point,
-                                    Double_t eventTime,
-                                    CbmLink* link) {
+Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, CbmLink* link)
+{
 
   // --- Physical node
   assert(fElement);
@@ -113,7 +117,7 @@ Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point,
     rotMat.SetRotation(rot);
     rotMat.MasterToLocal(global, local);
     if (local[2] != 0.) {
-      ;  // should always be; else no correction
+      ;                                   // should always be; else no correction
       Double_t tX = local[0] / local[2];  // px/pz
       Double_t tY = local[1] / local[2];  // py/pz
 
@@ -121,8 +125,7 @@ Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point,
       Double_t xNew = 0.;
       Double_t yNew = 0.;
       Double_t zNew = 0.;
-      if (z1 > 0.)
-        zNew = dZ - 1.e-4;  // front plane, safety margin 1 mum
+      if (z1 > 0.) zNew = dZ - 1.e-4;  // front plane, safety margin 1 mum
       else
         zNew = 1.e-4 - dZ;  // back plane, safety margin 1 mum
       xNew = x1 + tX * (zNew - z1);
@@ -168,8 +171,7 @@ Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point,
     Double_t xNew = 0.;
     Double_t yNew = 0.;
     Double_t zNew = 0.;
-    if (z2 > 0.)
-      zNew = dZ - 1.e-4;  // front plane, safety margin 1 mum
+    if (z2 > 0.) zNew = dZ - 1.e-4;  // front plane, safety margin 1 mum
     else
       zNew = 1.e-4 - dZ;  // back plane, safety margin 1 mum
     xNew = x2 + tX * (zNew - z2);
@@ -193,27 +195,15 @@ Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point,
   global[1]          = 0.5 * (point->GetYIn() + point->GetYOut());
   global[2]          = 0.5 * (point->GetZIn() + point->GetZOut());
   Double_t bField[3] = {0., 0., 0.};
-  if (FairRun::Instance()->GetField())
-    FairRun::Instance()->GetField()->Field(global, bField);
+  if (FairRun::Instance()->GetField()) FairRun::Instance()->GetField()->Field(global, bField);
 
   // --- Absolute time of StsPoint
   Double_t pTime = eventTime + point->GetTime();
 
   // --- Create SensorPoint
   // Note: there is a conversion from kG to T in the field values.
-  CbmStsSensorPoint* sPoint = new CbmStsSensorPoint(x1,
-                                                    y1,
-                                                    z1,
-                                                    x2,
-                                                    y2,
-                                                    z2,
-                                                    p,
-                                                    point->GetEnergyLoss(),
-                                                    pTime,
-                                                    bField[0] / 10.,
-                                                    bField[1] / 10.,
-                                                    bField[2] / 10.,
-                                                    point->GetPid());
+  CbmStsSensorPoint* sPoint = new CbmStsSensorPoint(x1, y1, z1, x2, y2, z2, p, point->GetEnergyLoss(), pTime,
+                                                    bField[0] / 10., bField[1] / 10., bField[2] / 10., point->GetPid());
 
   // --- Calculate the detector response
   Int_t result = CalculateResponse(sPoint);

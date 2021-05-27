@@ -36,9 +36,7 @@ public:
    * @param z        new z-position
    * @param e_track  (return value) extrapolated track parameters
    */
-  void Extrapolate(const FairTrackParam* trackPar,
-                   Double_t z,
-                   FairTrackParam* e_track);
+  void Extrapolate(const FairTrackParam* trackPar, Double_t z, FairTrackParam* e_track);
   /*
     void Extrapolate( CbmTofTracklet* track, Double_t z, FairTrackParam *e_track );
     */

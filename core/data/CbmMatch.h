@@ -9,6 +9,8 @@
 #ifndef CBMMATCH_H_
 #define CBMMATCH_H_
 
+#include "CbmLink.h"  // for CbmLink
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t
 #include <TObject.h>     // for TObject
@@ -16,8 +18,6 @@
 #include <memory>  // for unique_ptr
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmLink.h"  // for CbmLink
 
 class CbmMatch : public TObject {
 public:
@@ -53,7 +53,7 @@ public:
 protected:
   std::vector<CbmLink> fLinks;  // List of links to MC
   Double_t fTotalWeight;        // Sum of all reference weights
-  Int_t fMatchedIndex;  // Index of the matched reference in fReferences array
+  Int_t fMatchedIndex;          // Index of the matched reference in fReferences array
 
   ClassDef(CbmMatch, 1);
 };

@@ -20,9 +20,8 @@
   gROOT->cd();
   TString hname = "Clus_NbDigiPerChan";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
   gPad->SetLogy();
@@ -31,9 +30,8 @@
   gROOT->cd();
   TString hname = "Clus_NbSameSide";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-  } else {
+  if (h1 != NULL) { h1->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
   gPad->SetLogy();

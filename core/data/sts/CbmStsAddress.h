@@ -6,14 +6,15 @@
 #ifndef CBMSTSADDRESS_H
 #define CBMSTSADDRESS_H 1
 
+#include "CbmDefs.h"  // for ECbmModuleId
+
 #include <RtypesCore.h>  // for Int_t, UInt_t
 
 #include <sstream>  // for string
 
-#include "CbmDefs.h"  // for ECbmModuleId
-
 /** Enumerator for the hierarchy levels of the STS setup **/
-enum EStsElementLevel {
+enum EStsElementLevel
+{
   kStsSystem,
   kStsUnit,
   kStsLadder,
@@ -42,7 +43,8 @@ enum EStsElementLevel {
  ** Unused            2                    26 - 27
  ** Version           4         16         28 - 31
  **/
-namespace CbmStsAddress {
+namespace CbmStsAddress
+{
 
   const UInt_t kCurrentVersion = 1;
 
@@ -63,13 +65,8 @@ namespace CbmStsAddress {
    ** @param channel      Channel number
    ** @return Unique element address
    **/
-  Int_t GetAddress(UInt_t unit       = 0,
-                   UInt_t ladder     = 0,
-                   UInt_t halfladder = 0,
-                   UInt_t module     = 0,
-                   UInt_t sensor     = 0,
-                   UInt_t side       = 0,
-                   UInt_t version    = kCurrentVersion);
+  Int_t GetAddress(UInt_t unit = 0, UInt_t ladder = 0, UInt_t halfladder = 0, UInt_t module = 0, UInt_t sensor = 0,
+                   UInt_t side = 0, UInt_t version = kCurrentVersion);
 
 
   /** @brief Construct address

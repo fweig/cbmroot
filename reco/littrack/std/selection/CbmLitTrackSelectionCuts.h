@@ -16,10 +16,7 @@ public:
   CbmLitTrackSelectionCuts();
 
   /* Constructor */
-  CbmLitTrackSelectionCuts(litfloat maxChiSq,
-                           int minLastPlaneId,
-                           int minNofHits,
-                           litfloat minMomentum);
+  CbmLitTrackSelectionCuts(litfloat maxChiSq, int minLastPlaneId, int minNofHits, litfloat minMomentum);
 
   /* Destructor */
   virtual ~CbmLitTrackSelectionCuts();
@@ -46,9 +43,7 @@ public:
   void SetMaxChiSq(litfloat maxChiSq) { fMaxChiSq = maxChiSq; }
 
   /* Sets last plane index cut */
-  void SetMinLastPlaneId(int minLastPlaneId) {
-    fMinLastPlaneId = minLastPlaneId;
-  }
+  void SetMinLastPlaneId(int minLastPlaneId) { fMinLastPlaneId = minLastPlaneId; }
 
   /* Sets number of hits cut */
   void SetMinNofHits(int minNofHits) { fMinNofHits = minNofHits; }

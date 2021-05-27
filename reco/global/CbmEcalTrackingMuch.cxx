@@ -1,13 +1,12 @@
 #include "CbmEcalTrackingMuch.h"
 
-#include "FairRootManager.h"
-#include "FairTrackParam.h"
-
+#include "CbmEcalInf.h"
+#include "CbmEcalStructure.h"
 #include "CbmStsKFTrackFitter.h"
 #include "CbmStsTrack.h"
 
-#include "CbmEcalInf.h"
-#include "CbmEcalStructure.h"
+#include "FairRootManager.h"
+#include "FairTrackParam.h"
 
 #include "TClonesArray.h"
 
@@ -19,7 +18,8 @@ using std::endl;
 using std::list;
 
 /** Loop procedure **/
-void CbmEcalTrackingMuch::Exec(Option_t*) {
+void CbmEcalTrackingMuch::Exec(Option_t*)
+{
   Int_t n = fStsTracks->GetEntriesFast();
   Int_t i = 0;
   CbmStsTrack* tr;
@@ -42,10 +42,13 @@ CbmEcalTrackingMuch::CbmEcalTrackingMuch(const char* name, const Int_t iVerbose)
   , fInf(NULL)
   , fCaloZ(0.)
   , fFitter(NULL)
-  , fTrackPar(NULL) {}
+  , fTrackPar(NULL)
+{
+}
 
 /** Initing routine **/
-InitStatus CbmEcalTrackingMuch::Init() {
+InitStatus CbmEcalTrackingMuch::Init()
+{
   FairRootManager* fManager = FairRootManager::Instance();
   if (!fManager) {
     Fatal("Init", "Can't find a Root Manager.");
@@ -62,10 +65,7 @@ InitStatus CbmEcalTrackingMuch::Init() {
     return kFATAL;
   }
   fTrackPar = new TClonesArray("FairTrackParam", 3000);
-  fManager->Register("EcalTrackParam",
-                     "ECAL",
-                     fTrackPar,
-                     IsOutputBranchPersistent("EcalTrackParam"));
+  fManager->Register("EcalTrackParam", "ECAL", fTrackPar, IsOutputBranchPersistent("EcalTrackParam"));
   fFitter = new CbmStsKFTrackFitter();
   fInf    = fStr->GetEcalInf();
   fCaloZ  = fInf->GetZPos();
@@ -74,7 +74,8 @@ InitStatus CbmEcalTrackingMuch::Init() {
 }
 
 /** Finishing routine **/
-void CbmEcalTrackingMuch::Finish() {
+void CbmEcalTrackingMuch::Finish()
+{
   fTrackPar->Delete();
   delete fTrackPar;
   delete fFitter;

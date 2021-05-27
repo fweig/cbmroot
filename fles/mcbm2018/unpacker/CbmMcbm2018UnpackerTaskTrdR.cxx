@@ -26,16 +26,16 @@ CbmMcbm2018UnpackerTaskTrdR::CbmMcbm2018UnpackerTaskTrdR()
   , fTrdDigiVector(nullptr)
   , fTrdRawMessageVector(nullptr)
   , fSpadicInfoMsgVector(nullptr)
-  , fUnpackerAlgo(nullptr) {
+  , fUnpackerAlgo(nullptr)
+{
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoTrdR();
 }
 
 /* Default Destructor */
-CbmMcbm2018UnpackerTaskTrdR::~CbmMcbm2018UnpackerTaskTrdR() {
-  delete fUnpackerAlgo;
-}
+CbmMcbm2018UnpackerTaskTrdR::~CbmMcbm2018UnpackerTaskTrdR() { delete fUnpackerAlgo; }
 
-Bool_t CbmMcbm2018UnpackerTaskTrdR::Init() {
+Bool_t CbmMcbm2018UnpackerTaskTrdR::Init()
+{
   LOG(info) << "Initializing CbmMcbm2018UnpackerTaskTrdR...";
   Bool_t initOK = 1;
 
@@ -48,49 +48,46 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::Init() {
   if (fTrdDigiVector) {
     ioman->RegisterAny("TrdDigi", fTrdDigiVector, fbWriteOutput);
     initOK &= fUnpackerAlgo->SetDigiOutputPointer(fTrdDigiVector);
-  } else {
+  }
+  else {
     LOG(fatal) << "fTrdDigiVector could not be registered at FairRootManager.";
   }
 
   /// Register RawMessage output vector, if DebugWrite is enabled.
   if (fbDebugWriteOutput) {
     fTrdRawMessageVector = new std::vector<CbmTrdRawMessageSpadic>();
-    fSpadicInfoMsgVector =
-      new std::vector<std::pair<std::uint64_t, std::uint64_t>>();
+    fSpadicInfoMsgVector = new std::vector<std::pair<std::uint64_t, std::uint64_t>>();
     if (fTrdRawMessageVector && fSpadicInfoMsgVector) {
-      ioman->RegisterAny(
-        "CbmTrdSpadicRawMessages", fTrdRawMessageVector, kTRUE);
-      ioman->RegisterAny(
-        "CbmTrdSpadicInfoMessages", fSpadicInfoMsgVector, kTRUE);
-      initOK &= fUnpackerAlgo->SetRawOutputPointer(fTrdRawMessageVector,
-                                                   fSpadicInfoMsgVector);
-    } else {
+      ioman->RegisterAny("CbmTrdSpadicRawMessages", fTrdRawMessageVector, kTRUE);
+      ioman->RegisterAny("CbmTrdSpadicInfoMessages", fSpadicInfoMsgVector, kTRUE);
+      initOK &= fUnpackerAlgo->SetRawOutputPointer(fTrdRawMessageVector, fSpadicInfoMsgVector);
+    }
+    else {
       LOG(fatal) << "[CbmMcbm2018UnpackerTaskTrdR::Init] Raw output could not "
                     "be registered at FairRootManager.";
     }
   }
 
-  fUnpackerAlgo->SetMsSizeInNs(
-    fdMsSizeInNs);  // TODO handle this with asic parameter files
+  fUnpackerAlgo->SetMsSizeInNs(fdMsSizeInNs);  // TODO handle this with asic parameter files
   fUnpackerAlgo->SetFirstChannelsElinkEven(fIsFirstChannelsElinkEven);
   initOK &= fUnpackerAlgo->Init();
 
   if (initOK) {
     LOG(info) << "Initialization of CbmMcbm2018UnpackerTaskTrdR and "
                  "CbmMcbm2018UnpackerAlgoTrdR successfull!";
-  } else {
+  }
+  else {
     LOG(fatal) << "Init of CbmMcbm2018UnpackerAlgoTrdR failed!";
   }
 
   return initOK;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskTrdR::DoUnpack(const fles::Timeslice& ts,
-                                             size_t /*component*/) {
+Bool_t CbmMcbm2018UnpackerTaskTrdR::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   /// Call the Algorithm to unpack the given TS.
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
-    LOG(error) << "CbmMcbm2018UnpackerTaskTrdR: Failed processing TS "
-               << ts.index() << " in unpacker algorithm class.";
+    LOG(error) << "CbmMcbm2018UnpackerTaskTrdR: Failed processing TS " << ts.index() << " in unpacker algorithm class.";
     return kFALSE;
   }
 
@@ -101,22 +98,22 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::Reset() {
+void CbmMcbm2018UnpackerTaskTrdR::Reset()
+{
   if (fTrdDigiVector) fTrdDigiVector->clear();
   if (fTrdRawMessageVector) fTrdRawMessageVector->clear();
   if (fSpadicInfoMsgVector) fSpadicInfoMsgVector->clear();
   if (fUnpackerAlgo) fUnpackerAlgo->Reset();
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::Finish() {
+void CbmMcbm2018UnpackerTaskTrdR::Finish()
+{
   LOG(info) << "Finish of CbmMcbm2018UnpackerTaskTrdR";
   fUnpackerAlgo->Finish();
 
-  if ((fbMonitorMode == kTRUE || fbDebugMonitorMode == kTRUE)
-      && fMonitorHistoFileName != "") {
+  if ((fbMonitorMode == kTRUE || fbDebugMonitorMode == kTRUE) && fMonitorHistoFileName != "") {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
@@ -148,7 +145,8 @@ void CbmMcbm2018UnpackerTaskTrdR::Finish() {
   }
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::SetParContainers() {
+void CbmMcbm2018UnpackerTaskTrdR::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* fParContList = fUnpackerAlgo->GetParList();
@@ -160,12 +158,10 @@ void CbmMcbm2018UnpackerTaskTrdR::SetParContainers() {
     std::string sParamName {tempObj->GetName()};
     delete tempObj;
     CbmTrdParSet* updatedParSet = nullptr;
-    updatedParSet               = dynamic_cast<CbmTrdParSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    updatedParSet = dynamic_cast<CbmTrdParSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (!updatedParSet) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iParCont;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iParCont;
       return;
     }
     fParContList->AddAt(updatedParSet, iParCont);
@@ -173,11 +169,11 @@ void CbmMcbm2018UnpackerTaskTrdR::SetParContainers() {
 
   // Get timeshift parameters
   fTimeshiftPar = dynamic_cast<CbmMcbm2020TrdTshiftPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer(
-      "CbmMcbm2020TrdTshiftPar"));
+    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2020TrdTshiftPar"));
 }
 
-Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers()
+{
   if (fUnpackerAlgo == nullptr) {
     LOG(error) << "CbmMcbm2018UnpackerTaskTrdR::InitContainers failed! No "
                   "Unpacker Algo.";
@@ -211,20 +207,19 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
     initOK &= fUnpackerAlgo->CreateHistograms();
 
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder).
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Register the histos in the HTTP server
     THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
     if (nullptr != server) {
       for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-        server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                         vHistos[uHisto].first);
+        server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
       }
       // FIXME: register the correct command
       //server->RegisterCommand("/Reset_UnpSts_Hist", "bMcbm2018UnpackerTaskStsResetHistos=kTRUE");
       //server->Restrict("/Reset_UnpSts_Hist", "allow=admin");
-    } else {
+    }
+    else {
       //			initOK &= 0;
       /// Avoid crash in other unpackers due to the FAIRROOT "feature" that a 0 return value goes on with the run without initializing
       /// tasks which are later in the alphabetical order
@@ -236,7 +231,8 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskTrdR::ReInitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskTrdR::ReInitContainers()
+{
   if (fUnpackerAlgo == nullptr) return kFALSE;
 
   LOG(info) << "ReInit parameter containers for CbmMcbm2018UnpackerTaskTrdR";
@@ -245,33 +241,31 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::ReInitContainers() {
   return initOK;
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmMcbm2018UnpackerTaskTrdR::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   if (usDetectorId != (UShort_t) fSystemIdentifier) {
     LOG(error) << "CbmMcbm2018UnpackerTaskTrdR::AddMsComponentToList : Wrong "
                   "Detector ID!";
     return;
   }
-  if (fUnpackerAlgo != nullptr)
-    fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
+  if (fUnpackerAlgo != nullptr) fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::SetNbMsInTs(size_t uCoreMsNb,
-                                              size_t uOverlapMsNb) {
-  if (fUnpackerAlgo != nullptr)
-    fUnpackerAlgo->SetNbMsInTs(uCoreMsNb, uOverlapMsNb);
+void CbmMcbm2018UnpackerTaskTrdR::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
+  if (fUnpackerAlgo != nullptr) fUnpackerAlgo->SetNbMsInTs(uCoreMsNb, uOverlapMsNb);
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::SetHistoFileName(TString filename) {
+void CbmMcbm2018UnpackerTaskTrdR::SetHistoFileName(TString filename)
+{
   fMonitorHistoFileName = filename;
   SetMonitorMode(kTRUE);
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::SetTimeOffsetNs(Double_t dOffsetIn) {
+void CbmMcbm2018UnpackerTaskTrdR::SetTimeOffsetNs(Double_t dOffsetIn)
+{
   if (fUnpackerAlgo != nullptr) fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskTrdR::SetIgnoreOverlapMs(Bool_t bFlagIn) {
-  fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
-}
+void CbmMcbm2018UnpackerTaskTrdR::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 ClassImp(CbmMcbm2018UnpackerTaskTrdR)

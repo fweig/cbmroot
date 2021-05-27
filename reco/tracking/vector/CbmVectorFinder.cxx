@@ -3,6 +3,7 @@
  *@since 2017
  **/
 #include "CbmVectorFinder.h"
+
 #include "CbmDefs.h"
 #include "CbmMuchFindVectors.h"
 #include "CbmMuchFindVectorsGem.h"
@@ -28,7 +29,8 @@ CbmVectorFinder::~CbmVectorFinder() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmVectorFinder::Init() {
+InitStatus CbmVectorFinder::Init()
+{
   //cout << " !!!!!!!!! AZ " << CbmSetup::Instance()->IsActive(kTrd) << endl;
   //cout << " !!!!!!!!! AZ " << CbmSetup::Instance()->IsActive(kRich) << endl;
   if (CbmSetup::Instance()->IsActive(kTrd)) {

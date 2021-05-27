@@ -1,11 +1,10 @@
 #include "CbmDigi.h"
-
 #include "CbmMatch.h"
+
+#include <utility>  // std::forward
 
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
-
-#include <utility>  // std::forward
 
 // Since CbmDigi is an abstract base class which can't be instantiated directly we have
 // to create a derived class without any data members which simply forwards the function
@@ -20,24 +19,22 @@ public:
   CbmTestDigi(const CbmTestDigi& digi) : CbmDigi(digi) { ; }
 
   /** Move constructor  **/
-  CbmTestDigi(CbmTestDigi&& digi) : CbmDigi(std::forward<CbmTestDigi>(digi)) {
-    ;
-  }
+  CbmTestDigi(CbmTestDigi&& digi) : CbmDigi(std::forward<CbmTestDigi>(digi)) { ; }
 
   /** Destructor  **/
   virtual ~CbmTestDigi() { ; }
 
   /** Assignment operator  **/
-  CbmTestDigi& operator=(const CbmTestDigi& other) {
+  CbmTestDigi& operator=(const CbmTestDigi& other)
+  {
     if (this != &other) { CbmDigi::operator=(other); }
     return *this;
   }
 
   /** Move Assignment operator  **/
-  CbmTestDigi& operator=(CbmTestDigi&& other) {
-    if (this != &other) {
-      CbmDigi::operator=(std::forward<CbmTestDigi>(other));
-    }
+  CbmTestDigi& operator=(CbmTestDigi&& other)
+  {
+    if (this != &other) { CbmDigi::operator=(std::forward<CbmTestDigi>(other)); }
     return *this;
   }
 
@@ -57,7 +54,8 @@ public:
 
 #include "compareDigi.h"
 
-TEST(_GTestCbmDigi, CheckDefaultConstructor) {
+TEST(_GTestCbmDigi, CheckDefaultConstructor)
+{
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -68,7 +66,8 @@ TEST(_GTestCbmDigi, CheckDefaultConstructor) {
   compareDigiDataMembers(*test1, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckCopyConstructor) {
+TEST(_GTestCbmDigi, CheckCopyConstructor)
+{
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -84,7 +83,8 @@ TEST(_GTestCbmDigi, CheckCopyConstructor) {
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckAssignmentOperator) {
+TEST(_GTestCbmDigi, CheckAssignmentOperator)
+{
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -112,7 +112,8 @@ TEST(_GTestCbmDigi, CheckAssignmentOperator) {
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckMoveConstructor) {
+TEST(_GTestCbmDigi, CheckMoveConstructor)
+{
   // Create abstract base class via derived class
   // After creation there is no CbmMatch added such
   // that the pointer is a nullptr
@@ -130,7 +131,8 @@ TEST(_GTestCbmDigi, CheckMoveConstructor) {
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckAssignmentMoveConstructor) {
+TEST(_GTestCbmDigi, CheckAssignmentMoveConstructor)
+{
   // Create abstract base class via derived class
   // After creation there is no CbmMatch added such
   // that the pointer is a nullptr
@@ -150,11 +152,11 @@ TEST(_GTestCbmDigi, CheckAssignmentMoveConstructor) {
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckToString) {
+TEST(_GTestCbmDigi, CheckToString)
+{
   CbmTestDigi test;
 
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 
-  EXPECT_STREQ("Digi: System -111 | address -111 | time -111 | charge 0",
-               test.ToString().c_str());
+  EXPECT_STREQ("Digi: System -111 | address -111 | time -111 | charge 0", test.ToString().c_str());
 }

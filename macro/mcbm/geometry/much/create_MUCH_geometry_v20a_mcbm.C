@@ -17,13 +17,11 @@
 #include "TGeoVolume.h"
 #include "TGeoXtru.h"
 #include "TList.h"
+#include "TMath.h"
+#include "TObjArray.h"
 #include "TRandom3.h"
 #include "TString.h"
 #include "TSystem.h"
-
-#include "TFile.h"
-#include "TMath.h"
-#include "TObjArray.h"
 
 #include <cassert>
 #include <fstream>
@@ -50,9 +48,9 @@ const TString FileNamePar  = geoVersion + tagVersion + "_mcbm.par.root";
 const TString KeepingVolumeMedium = "air";
 const TString activemedium        = "MUCHargon";
 const TString spacermedium        = "MUCHnoryl";
-const TString Al     = "aluminium";  //Al for cooling & support purpose
-const TString copper = "copper";
-const TString g10    = "G10";
+const TString Al                  = "aluminium";  //Al for cooling & support purpose
+const TString copper              = "copper";
+const TString g10                 = "G10";
 
 
 // Input parameters for MUCH stations
@@ -95,16 +93,15 @@ TGeoVolume* CreateLayers(int istn, int ily);
 
 
 fstream infoFile;
-void create_MUCH_geometry_v20a_mcbm() {
+void create_MUCH_geometry_v20a_mcbm()
+{
 
 
   // -------   Open info file   -----------------------------------------------
   TString infoFileName = FileNameSim;
   infoFileName.ReplaceAll("root", "info");
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "MUCH geometry created with create_MUCH_geometry_v20a_mcbm.C"
-           << endl
-           << endl;
+  infoFile << "MUCH geometry created with create_MUCH_geometry_v20a_mcbm.C" << endl << endl;
   infoFile << "Build a mMUCH setup for mCBM with 2 GEM." << endl;
   infoFile << "10 mm thick Al plates are used for support and cooling in the "
               "GEM modules."
@@ -146,8 +143,7 @@ void create_MUCH_geometry_v20a_mcbm() {
   infoFile << "           .................             |" << endl;
   infoFile << "          ...................            |" << endl;
   infoFile << "         .....................           |" << endl;
-  infoFile << "        .......................         " << 2 * dy << " cm"
-           << endl;
+  infoFile << "        .......................         " << 2 * dy << " cm" << endl;
   infoFile << "       .........................         |" << endl;
   infoFile << "      ...........................        |" << endl;
   infoFile << "     .............................       |" << endl;
@@ -200,9 +196,8 @@ void create_MUCH_geometry_v20a_mcbm() {
 
   much->Export(FileNameSim);  // an alternative way of writing the much
 
-  TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  TGeoTranslation* much_placement =
-    new TGeoTranslation("much_trans", -6., 0., 0.);
+  TFile* outfile                  = new TFile(FileNameSim, "UPDATE");
+  TGeoTranslation* much_placement = new TGeoTranslation("much_trans", -6., 0., 0.);
   much_placement->Write();
   outfile->Close();
 
@@ -218,7 +213,8 @@ void create_MUCH_geometry_v20a_mcbm() {
   parfile->Close();
 }
 
-void create_materials_from_media_file() {
+void create_materials_from_media_file()
+{
   // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
@@ -250,18 +246,16 @@ void create_materials_from_media_file() {
   geoBuild->createMedium(g10plate);
 }
 
-TGeoVolume* CreateStations(int ist) {
+TGeoVolume* CreateStations(int ist)
+{
 
-  TString stationName = Form("muchstation%02i", ist + 1);
-  TGeoVolumeAssembly* station =
-    new TGeoVolumeAssembly(stationName);  //, shStation, air);
+  TString stationName         = Form("muchstation%02i", ist + 1);
+  TGeoVolumeAssembly* station = new TGeoVolumeAssembly(stationName);  //, shStation, air);
 
   TGeoVolume* gLayer[fNlayers + 1];
   for (int ii = 0; ii < fNlayers; ii++) {  // 2 Layers
 
-    Double_t sideDz = fSupportLz[ii] / 2.
-                      + fActiveLzSector[ii]
-                          / 2.;  // distance between side's and layer's centers
+    Double_t sideDz = fSupportLz[ii] / 2. + fActiveLzSector[ii] / 2.;  // distance between side's and layer's centers
 
     muchLy = new CbmMuchLayer(ist, ii, fLayersZ0[ii], 0.);
     muchSt->AddLayer(muchLy);
@@ -274,7 +268,8 @@ TGeoVolume* CreateStations(int ist) {
   return station;
 }
 
-TGeoVolume* CreateLayers(int istn, int ily) {
+TGeoVolume* CreateLayers(int istn, int ily)
+{
 
   TString layerName = Form("muchstation%02ilayer%i", istn + 1, ily + 1);
 
@@ -322,8 +317,7 @@ TGeoVolume* CreateLayers(int istn, int ily) {
     // Now start adding the GEM modules
     for (Int_t iModule = 0; iModule < 1; iModule++) {
 
-      Double_t phi =
-        0;  // add 0.5 to not overlap with y-axis for left-right layer separation
+      Double_t phi  = 0;  // add 0.5 to not overlap with y-axis for left-right layer separation
       Bool_t isBack = iModule % 2;
       Char_t cside  = (isBack == 1) ? 'b' : 'f';
 
@@ -345,54 +339,33 @@ TGeoVolume* CreateLayers(int istn, int ily) {
 
       muchLySd = muchLy->GetSide(iSide);
 
-      TGeoMedium* argon = gGeoMan->GetMedium(activemedium);  // active medium
-      TGeoMedium* noryl = gGeoMan->GetMedium(spacermedium);  // spacer medium
-      TGeoMedium* copperplate =
-        gGeoMan->GetMedium(copper);                    // copper Drift medium
-      TGeoMedium* g10plate = gGeoMan->GetMedium(g10);  // G10 medium
-      TGeoMedium* coolMat  = gGeoMan->GetMedium(Al);
+      TGeoMedium* argon       = gGeoMan->GetMedium(activemedium);  // active medium
+      TGeoMedium* noryl       = gGeoMan->GetMedium(spacermedium);  // spacer medium
+      TGeoMedium* copperplate = gGeoMan->GetMedium(copper);        // copper Drift medium
+      TGeoMedium* g10plate    = gGeoMan->GetMedium(g10);           // G10 medium
+      TGeoMedium* coolMat     = gGeoMan->GetMedium(Al);
 
 
       // Define and place the shape of the modules
-      TGeoTrap* shapeGem =
-        new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
-      shapeGem->SetName(Form("shStation%02iLayer%i%cModule%03iActiveGemNoHole",
-                             istn,
-                             ily,
-                             cside,
-                             iModule));
+      TGeoTrap* shapeGem = new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+      shapeGem->SetName(Form("shStation%02iLayer%i%cModule%03iActiveGemNoHole", istn, ily, cside, iModule));
 
       //------------------------------------------------------Al Cooling Plate--------------------------------------------------------------------
       TGeoVolume* voActive;
       TGeoTrap* coolGem;
       TGeoVolume* voCool;
 
-      coolGem = new TGeoTrap(
-        SupportDz, 0, phi, sdy2, sdx1, sdx2, 0, sdy2, sdx1, sdx2, 0);
-      coolGem->SetName(Form(
-        "shStation%02iLayer%i%cModule%03icoolGem", istn, ily, cside, iModule));
-      TString CoolName = Form("muchstation%02ilayer%i%ccoolGem%03iAluminum",
-                              istn + 1,
-                              ily + 1,
-                              cside,
-                              iModule + 1);
+      coolGem = new TGeoTrap(SupportDz, 0, phi, sdy2, sdx1, sdx2, 0, sdy2, sdx1, sdx2, 0);
+      coolGem->SetName(Form("shStation%02iLayer%i%cModule%03icoolGem", istn, ily, cside, iModule));
+      TString CoolName = Form("muchstation%02ilayer%i%ccoolGem%03iAluminum", istn + 1, ily + 1, cside, iModule + 1);
       voCool           = new TGeoVolume(CoolName, coolGem, coolMat);
       voCool->SetLineColor(kYellow);
 
       //------------------------------------------------------Active Volume-----------------------------------------------------
       //GEM
-      TGeoTrap* shapeActive =
-        new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
-      shapeActive->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole",
-                                istn,
-                                ily,
-                                cside,
-                                iModule));
-      TString activeName = Form("muchstation%02ilayer%i%cactive%03igasArgon",
-                                istn + 1,
-                                ily + 1,
-                                cside,
-                                iMod + 1);
+      TGeoTrap* shapeActive = new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+      shapeActive->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole", istn, ily, cside, iModule));
+      TString activeName = Form("muchstation%02ilayer%i%cactive%03igasArgon", istn + 1, ily + 1, cside, iMod + 1);
       voActive           = new TGeoVolume(activeName, shapeActive, argon);
       voActive->SetLineColor(kGreen);
 
@@ -404,88 +377,40 @@ TGeoVolume* CreateLayers(int istn, int ily) {
       TGeoTrap *DriftGem[2], *G10Gem[2];
 
       for (int iPos = 0; iPos < 2; iPos++) {
-        Char_t cpos = (iPos == 0) ? 'i' : 'o';
-        DriftGem[iPos] =
-          new TGeoTrap(dz_sD, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
-        G10Gem[iPos] =
-          new TGeoTrap(dz_sG, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
-        DriftGem[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cDrift",
-                                     istn,
-                                     ily,
-                                     cside,
-                                     iModule,
-                                     cpos));
-        DriftName[iPos] = Form("muchstation%02ilayer%i%cside%03i%ccopperDrift",
-                               istn + 1,
-                               ily + 1,
-                               cside,
-                               iMod + 1,
-                               cpos);
-        G10Gem[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cG10",
-                                   istn,
-                                   ily,
-                                   cside,
-                                   iModule,
-                                   cpos));
-        G10Name[iPos] = Form("muchstation%02ilayer%i%cside%03i%cG10",
-                             istn + 1,
-                             ily + 1,
-                             cside,
-                             iMod + 1,
-                             cpos);
-        voDrift[iPos] =
-          new TGeoVolume(DriftName[iPos], DriftGem[iPos], copperplate);
+        Char_t cpos    = (iPos == 0) ? 'i' : 'o';
+        DriftGem[iPos] = new TGeoTrap(dz_sD, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+        G10Gem[iPos]   = new TGeoTrap(dz_sG, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+        DriftGem[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cDrift", istn, ily, cside, iModule, cpos));
+        DriftName[iPos] =
+          Form("muchstation%02ilayer%i%cside%03i%ccopperDrift", istn + 1, ily + 1, cside, iMod + 1, cpos);
+        G10Gem[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cG10", istn, ily, cside, iModule, cpos));
+        G10Name[iPos] = Form("muchstation%02ilayer%i%cside%03i%cG10", istn + 1, ily + 1, cside, iMod + 1, cpos);
+        voDrift[iPos] = new TGeoVolume(DriftName[iPos], DriftGem[iPos], copperplate);
         voDrift[iPos]->SetLineColor(kRed);
         voG10[iPos] = new TGeoVolume(G10Name[iPos], G10Gem[iPos], g10plate);
         voG10[iPos]->SetLineColor(28);
       }
       //------------------------------------------------------------Frame-----------------------------------------------------------------
       // Define the trapezoidal Frame
-      TGeoTrap* shapeFrame =
-        new TGeoTrap(sdz, 0, 0, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
-      shapeFrame->SetName(
-        Form("shStation%02iLayer%i%cModule%03iFullFrameGemNoHole",
-             istn,
-             ily,
-             cside,
-             iModule));
+      TGeoTrap* shapeFrame = new TGeoTrap(sdz, 0, 0, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+      shapeFrame->SetName(Form("shStation%02iLayer%i%cModule%03iFullFrameGemNoHole", istn, ily, cside, iModule));
 
 
-      TString expression =
-        Form("shStation%02iLayer%i%cModule%03iFullFrameGemNoHole-shStation%"
-             "02iLayer%i%cModule%03iActiveGemNoHole",
-             istn,
-             ily,
-             cside,
-             iModule,
-             istn,
-             ily,
-             cside,
-             iModule);
+      TString expression = Form("shStation%02iLayer%i%cModule%03iFullFrameGemNoHole-shStation%"
+                                "02iLayer%i%cModule%03iActiveGemNoHole",
+                                istn, ily, cside, iModule, istn, ily, cside, iModule);
 
       TGeoCompositeShape* shFrame = new TGeoCompositeShape(
-        Form("shStation%02iLayer%i%cModule%03iFinalFrameNoHole",
-             istn,
-             ily,
-             cside,
-             iModule),
-        expression);
-      TString frameName = Form("muchstation%02ilayer%i%csupport%03i",
-                               istn + 1,
-                               ily + 1,
-                               cside,
-                               iMod + 1);
+        Form("shStation%02iLayer%i%cModule%03iFinalFrameNoHole", istn, ily, cside, iModule), expression);
+      TString frameName = Form("muchstation%02ilayer%i%csupport%03i", istn + 1, ily + 1, cside, iMod + 1);
 
-      TGeoVolume* voFrame =
-        new TGeoVolume(frameName, shFrame, noryl);  // Frame for GEM
+      TGeoVolume* voFrame = new TGeoVolume(frameName, shFrame, noryl);  // Frame for GEM
       voFrame->SetLineColor(kMagenta);
 
 
       //----------------------------------------------------Placement----------------------------------------------------------------------
       // Calculate the phi angle of the sector where it has to be placed
-      Double_t angle =
-        180.0
-        - (180. / TMath::Pi() * phi0);  // convert angle phi from rad to deg
+      Double_t angle = 180.0 - (180. / TMath::Pi() * phi0);  // convert angle phi from rad to deg
 
 
       TGeoRotation* r2 = new TGeoRotation("r2");
@@ -513,19 +438,10 @@ TGeoVolume* CreateLayers(int istn, int ily) {
 
       TVector3 Position;
       Position.SetXYZ(pos[0], pos[1], pos[2]);
-      cout << pos[2] << "   " << pos[3] << "   " << pos[4] << "   " << pos[5]
-           << "   " << pos[6] << "   " << pos[7] << endl;
-      muchLySd->AddModule(new CbmMuchModuleGemRadial(fDetType[ily],
-                                                     istn,
-                                                     ily,
-                                                     iSide,
-                                                     iModule,
-                                                     Position,
-                                                     2 * dx1,
-                                                     2 * dx2,
-                                                     2 * dy,
-                                                     2 * dz,
-                                                     muchSt->GetRmin()));
+      cout << pos[2] << "   " << pos[3] << "   " << pos[4] << "   " << pos[5] << "   " << pos[6] << "   " << pos[7]
+           << endl;
+      muchLySd->AddModule(new CbmMuchModuleGemRadial(fDetType[ily], istn, ily, iSide, iModule, Position, 2 * dx1,
+                                                     2 * dx2, 2 * dy, 2 * dz, muchSt->GetRmin()));
     }
   }
 

@@ -34,7 +34,9 @@ CbmTrdModuleRecT::CbmTrdModuleRecT()
   , vse()
   , vt()
   , vx()
-  , vxe() {}
+  , vxe()
+{
+}
 
 //_______________________________________________________________________________
 CbmTrdModuleRecT::CbmTrdModuleRecT(Int_t mod, Int_t ly, Int_t rot)
@@ -46,17 +48,18 @@ CbmTrdModuleRecT::CbmTrdModuleRecT(Int_t mod, Int_t ly, Int_t rot)
   , vse()
   , vt()
   , vx()
-  , vxe() {
+  , vxe()
+{
   //printf("AddModuleT @ %d\n", mod); Config(1,0);
-  SetNameTitle(Form("TrdRecT%d", mod),
-               "Reconstructor for triangular read-out.");
+  SetNameTitle(Form("TrdRecT%d", mod), "Reconstructor for triangular read-out.");
 }
 
 //_______________________________________________________________________________
 CbmTrdModuleRecT::~CbmTrdModuleRecT() {}
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
+Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id)
+{
   /* Add digi to cluster fragments. At first clusters are ordered on pad rows and time. 
  * No channel ordering is assumed. The time condition for a digi to enter a cluster 
  * chunk is to have abs(dt)<5 wrt cluster t0 
@@ -67,16 +70,12 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
   Int_t ch = d->GetAddressChannel(), col, row = GetPadRowCol(ch, col), dtime;
   Double_t t, r = d->GetCharge(t, dtime);
   Int_t tm = d->GetTimeDAQ() - fT0, terminator(0);
-  if (dtime < 0)
-    tm += dtime;  // correct for the difference between tilt and rect
-  if (r < 1)
-    terminator = 1;
+  if (dtime < 0) tm += dtime;  // correct for the difference between tilt and rect
+  if (r < 1) terminator = 1;
   else if (t < 1)
     terminator = -1;
 
-  if (CWRITE())
-    printf(
-      "row[%2d] col[%2d] tm[%2d] terminator[%d]\n", row, col, tm, terminator);
+  if (CWRITE()) printf("row[%2d] col[%2d] tm[%2d] terminator[%d]\n", row, col, tm, terminator);
   CbmTrdCluster* cl(NULL);
 
   // get the link to saved clusters
@@ -91,8 +90,7 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
       UShort_t tc = (*itc)->GetStartTime();
       Int_t dt    = tc - tm;
 
-      if (dt < -5)
-        continue;
+      if (dt < -5) continue;
       else if (dt < 5) {
         if (CWRITE()) printf("match time dt=%d\n", dt);
         if ((*itc)->IsChannelInRange(ch) == 0) {
@@ -101,7 +99,8 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
           if (CWRITE()) cout << "          => Cl (Ad) " << (*itc)->ToString();
           break;
         }
-      } else {
+      }
+      else {
         if (CWRITE()) printf("break for time dt=%d\n", dt);
         break;
       }
@@ -110,26 +109,23 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
     if (!kINSERT) {
       if (itc != fBuffer[row].end() && itc != fBuffer[row].begin()) {
         itc--;
-        fBuffer[row].insert(
-          itc, cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
+        fBuffer[row].insert(itc, cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
         if (CWRITE()) cout << "          => Cl (I) " << cl->ToString();
-      } else {
-        fBuffer[row].push_back(
-          cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
+      }
+      else {
+        fBuffer[row].push_back(cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
         if (CWRITE()) cout << "          => Cl (Pb) " << cl->ToString();
       }
       cl->SetTrianglePads();
-      if (terminator < 0)
-        cl->SetProfileStart();
+      if (terminator < 0) cl->SetProfileStart();
       else if (terminator > 0)
         cl->SetProfileStop();
     }
-  } else {
-    fBuffer[row].push_back(cl =
-                             new CbmTrdCluster(fModAddress, id, ch, row, tm));
+  }
+  else {
+    fBuffer[row].push_back(cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
     cl->SetTrianglePads();
-    if (terminator < 0)
-      cl->SetProfileStart();
+    if (terminator < 0) cl->SetProfileStart();
     else if (terminator > 0)
       cl->SetProfileStop();
     if (CWRITE()) cout << "          => Cl (Nw) " << cl->ToString();
@@ -139,49 +135,41 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id) {
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::GetOverThreshold() const {
+Int_t CbmTrdModuleRecT::GetOverThreshold() const
+{
   Int_t nch(0);
-  for (std::map<Int_t, std::list<CbmTrdCluster*>>::const_iterator ir =
-         fBuffer.cbegin();
-       ir != fBuffer.cend();
-       ir++) {
-    for (std::list<CbmTrdCluster*>::const_iterator itc = (*ir).second.cbegin();
-         itc != (*ir).second.cend();
-         itc++)
+  for (std::map<Int_t, std::list<CbmTrdCluster*>>::const_iterator ir = fBuffer.cbegin(); ir != fBuffer.cend(); ir++) {
+    for (std::list<CbmTrdCluster*>::const_iterator itc = (*ir).second.cbegin(); itc != (*ir).second.cend(); itc++)
       nch += (*itc)->GetNCols();
   }
   return nch;
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::FindClusters() {
+Int_t CbmTrdModuleRecT::FindClusters()
+{
   CbmTrdCluster* cl(NULL);
 
   // get the link to saved clusters
   Int_t ncl(0);
   std::list<CbmTrdCluster*>::iterator itc0, itc1;
-  for (std::map<Int_t, std::list<CbmTrdCluster*>>::iterator ir =
-         fBuffer.begin();
-       ir != fBuffer.end();
-       ir++) {
+  for (std::map<Int_t, std::list<CbmTrdCluster*>>::iterator ir = fBuffer.begin(); ir != fBuffer.end(); ir++) {
     itc0 = (*ir).second.begin();
-    while ((*ir).second.size() > 1
-           && itc0 != (*ir).second.end()) {  // try merge clusters
+    while ((*ir).second.size() > 1 && itc0 != (*ir).second.end()) {  // try merge clusters
       itc1 = itc0;
       itc1++;
 
       Bool_t kMERGE = kFALSE;
       while (itc1 != (*ir).second.end()) {
-        if (CWRITE())
-          cout << "  base cl[0] : " << (*itc0)->ToString()
-               << "     + cl[1] : " << (*itc1)->ToString();
+        if (CWRITE()) cout << "  base cl[0] : " << (*itc0)->ToString() << "     + cl[1] : " << (*itc1)->ToString();
         if ((*itc0)->Merge((*itc1))) {
           if (CWRITE()) cout << "  SUM        : " << (*itc0)->ToString();
           kMERGE = kTRUE;
           delete (*itc1);
           itc1 = (*ir).second.erase(itc1);
           if (itc1 == (*ir).second.end()) break;
-        } else
+        }
+        else
           itc1++;
       }
       if (!kMERGE) itc0++;
@@ -205,7 +193,8 @@ Int_t CbmTrdModuleRecT::FindClusters() {
 Bool_t CbmTrdModuleRecT::MakeHits() { return kTRUE; }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::Finalize() {
+Bool_t CbmTrdModuleRecT::Finalize()
+{
   /*  Steering routine for classifying hits and apply further analysis
  * -> hit deconvolution (see Deconvolute)
  * -> hit merging for row-cross (see RowCross)
@@ -231,9 +220,8 @@ Bool_t CbmTrdModuleRecT::Finalize() {
 #include <TH1.h>
 #define NANODE 9
 //_______________________________________________________________________________
-CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
-                                     const CbmTrdCluster* cl,
-                                     std::vector<const CbmTrdDigi*>* digis) {
+CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vector<const CbmTrdDigi*>* digis)
+{
   if (!fgEdep) {  // first use initialization of PRF helppers
     LOG(info) << GetName() << "::MakeHit: Init static helpers. ";
     fgEdep = new TGraphErrors;
@@ -271,9 +259,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   vector<CbmTrdDigi*> vdgM;
   if (cl->GetNCols() != digis->size() && !MergeDigis(digis, &vdgM, &vmask)) {
     cout << cl->ToString();
-    for (vector<const CbmTrdDigi*>::iterator i = digis->begin();
-         i != digis->end();
-         i++)
+    for (vector<const CbmTrdDigi*>::iterator i = digis->begin(); i != digis->end(); i++)
       cout << (*i)->ToString();
     return NULL;
   }
@@ -283,9 +269,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   Int_t n0(0), ovf(0), cM;
   if (!(n0 = LoadDigis(digis, &vdgM, &vmask, t0, cM))) {
     cout << cl->ToString();
-    for (vector<const CbmTrdDigi*>::iterator i = digis->begin();
-         i != digis->end();
-         i++)
+    for (vector<const CbmTrdDigi*>::iterator i = digis->begin(); i != digis->end(); i++)
       cout << (*i)->ToString();
     return NULL;
   }
@@ -312,7 +296,8 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
         nL  = is;
         LS += vs[is];
       }
-    } else {  // select rectangular coupling
+    }
+    else {  // select rectangular coupling
       nr++;
       S += vs[is];
       if (vs[is] > max) {
@@ -330,8 +315,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   Int_t lr(0),        // max signal left-right asymmetry wrt central pad
     tr(0),            // left-right innequality for symmetric clusters
     nR(n0 + 1 - nL);  // no of signals to the right of maximum
-  if (nL < nR)
-    lr = 1;
+  if (nL < nR) lr = 1;
   else if (nL > nR)
     lr = -1;
   if (!lr && (n0 % 2)) tr = (LS < S ? -1 : 1);
@@ -382,8 +366,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
       dy = GetYoffset(n0);
       break;
   }
-  if (dx < -0.5
-      && cM > 0) {  // shift graph representation to fit dx[pw] in [-0.5, 0.5]
+  if (dx < -0.5 && cM > 0) {  // shift graph representation to fit dx[pw] in [-0.5, 0.5]
     dx += 1.;
     col -= 1;
     for (UInt_t idx(0); idx < vx.size(); idx++)
@@ -408,27 +391,25 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
       n0 == 4 || (n0 == 3 && ((tM && !lr) || (!tM && lr != 0))))
     typ = 1;  // RTR symm/asymm
   Double_t xcorr(0.);
-  Int_t nbins((NBINSCORRX - 1) >> 1), ii = nbins + TMath::Nint(dx / fgCorrXdx),
-                                      i0, i1;
+  Int_t nbins((NBINSCORRX - 1) >> 1), ii = nbins + TMath::Nint(dx / fgCorrXdx), i0, i1;
   if (ii < 0 || ii >= NBINSCORRX)
-    LOG(warn) << GetName() << "::MakeHit : Idx " << ii
-              << " outside range for displacement " << dx << ".";
+    LOG(warn) << GetName() << "::MakeHit : Idx " << ii << " outside range for displacement " << dx << ".";
   else {
     if (dx < fgCorrXdx * ii) {
       i0 = TMath::Max(0, ii - 1);
       i1 = ii;
-    } else {
+    }
+    else {
       i0 = ii;
       i1 = TMath::Min(NBINSCORRX - 1, ii + 1);
     }
-    Double_t DDx = (fgCorrXval[typ][i1] - fgCorrXval[typ][i0]),
-             a = DDx / fgCorrXdx, b = fgCorrXval[typ][i0] - DDx * (i0 - nbins);
-    xcorr = 0.1 * (b + a * dx);
+    Double_t DDx = (fgCorrXval[typ][i1] - fgCorrXval[typ][i0]), a = DDx / fgCorrXdx,
+             b = fgCorrXval[typ][i0] - DDx * (i0 - nbins);
+    xcorr      = 0.1 * (b + a * dx);
   }
   dx += xcorr;
   dy += xcorr;
-  if (dx > 0.5 * fDigiPar->GetPadSizeX(0))
-    dx = 0.5 * fDigiPar->GetPadSizeX(0);
+  if (dx > 0.5 * fDigiPar->GetPadSizeX(0)) dx = 0.5 * fDigiPar->GetPadSizeX(0);
   else if (dx < -0.5 * fDigiPar->GetPadSizeX(0))
     dx = -0.5 * fDigiPar->GetPadSizeX(0);
 
@@ -448,8 +429,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
     case 3:
       fdy  = fgCorrYval[0][0];
       yoff = fgCorrYval[0][1];
-      if (tM && !lr)
-        dy -= tr * 0.5 * fDigiPar->GetPadSizeY(0);
+      if (tM && !lr) dy -= tr * 0.5 * fDigiPar->GetPadSizeY(0);
       else if (lr)
         dy -= 0.5 * fDigiPar->GetPadSizeY(0);
       ;
@@ -476,8 +456,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   }
   dy *= fdy;
   dy += yoff;
-  if (dy > 0.5 * fDigiPar->GetPadSizeY(0))
-    dy = 0.5 * fDigiPar->GetPadSizeY(0);
+  if (dy > 0.5 * fDigiPar->GetPadSizeY(0)) dy = 0.5 * fDigiPar->GetPadSizeY(0);
   else if (dy < -0.5 * fDigiPar->GetPadSizeY(0))
     dy = -0.5 * fDigiPar->GetPadSizeY(0);
 
@@ -500,25 +479,11 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   if (CWRITE()) {
     printf("row[%2d] col[%2d] sz[%d%c] M[%d%c] dx[mm]=%6.3f dy[mm]=%6.3f "
            "t0[clk]=%llu OVF[%c]\n",
-           row,
-           col,
-           n0,
-           (lr ? (lr < 0 ? 'L' : 'R') : 'C'),
-           cM,
-           (tM ? 'T' : 'R'),
-           10 * dx,
-           10 * dy,
-           t0,
+           row, col, n0, (lr ? (lr < 0 ? 'L' : 'R') : 'C'), cM, (tM ? 'T' : 'R'), 10 * dx, 10 * dy, t0,
            (ovf ? 'y' : 'n'));
     for (UInt_t idx(0); idx < vs.size(); idx++) {
-      printf("%2d%cdt[%2d] s[ADC]=%6.1f+-%6.1f x[pw]=%5.2f+-%5.2f\n",
-             idx,
-             (UInt_t(nL) == idx ? '*' : ' '),
-             vt[idx],
-             vs[idx],
-             vse[idx],
-             vx[idx],
-             vxe[idx]);
+      printf("%2d%cdt[%2d] s[ADC]=%6.1f+-%6.1f x[pw]=%5.2f+-%5.2f\n", idx, (UInt_t(nL) == idx ? '*' : ' '), vt[idx],
+             vs[idx], vse[idx], vx[idx], vxe[idx]);
     }
   }
 
@@ -527,7 +492,8 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
     if (vxe[idx] > 0) {
       fgEdep->SetPoint(idx, vx[idx] + dy / fDigiPar->GetPadSizeY(0), vs[idx]);
       fgEdep->SetPointError(idx, vxe[idx], vse[idx]);
-    } else {
+    }
+    else {
       fgEdep->SetPoint(idx, vx[idx], vs[idx]);
       fgEdep->SetPointError(idx, vxe[idx], vse[idx]);
     }
@@ -575,14 +541,12 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
   Int_t srow, sector = fDigiPar->GetSectorRow(row, srow);
   fDigiPar->GetPadPosition(sector, col, srow, local_pad, local_pad_err);
   //printf("r[%2d] c[%2d] max[%d] lr[%d] n0[%d] cM[%d] nM[%d] dx[%7.4f] dy[%7.4f] loc[%6.2f %6.2f %6.2f] err[%6.2f %6.2f %6.2f] e[%f] chi[%f]\n", row, col, mtyp, lr, n0, cM, nM, dx, dy, local_pad[0], local_pad[1], local_pad[2], local_pad_err[0], local_pad_err[1], local_pad_err[2], e, chi);
-  Double_t local[3] = {local_pad[0] + dx, local_pad[1] + dy, local_pad[2]},
-           global[3], globalErr[3] = {edx, edy, 0.};
+  Double_t local[3] = {local_pad[0] + dx, local_pad[1] + dy, local_pad[2]}, global[3], globalErr[3] = {edx, edy, 0.};
   LocalToMaster(local, global);
 
   // process time profile
   for (Int_t idx(1); idx <= n0; idx++) {
-    Double_t dtFEE = fgDT[0] * (vs[idx] - fgDT[1]) * (vs[idx] - fgDT[1])
-                     / CbmTrdDigi::Clk(CbmTrdDigi::kFASP);
+    Double_t dtFEE = fgDT[0] * (vs[idx] - fgDT[1]) * (vs[idx] - fgDT[1]) / CbmTrdDigi::Clk(CbmTrdDigi::kFASP);
     if (vxe[idx] > 0) vx[idx] += dy / fDigiPar->GetPadSizeY(0);
     fgT->SetPoint(idx - 1, vx[idx], vt[idx] - dtFEE);
   }
@@ -607,17 +571,8 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
     cvs->cd(1);
     hf->Draw("p");
     hf->GetXaxis()->SetRangeUser(rangex, rangeX);
-    hf->SetTitle(Form(
-      "%d[%d] row[%d] col[%2d] an[%+d] m[%+4.2f] s[%4.2f] E[%7.2f] chi2[%7.2f]",
-      ic,
-      Int_t(vs.size()),
-      row,
-      col,
-      ia,
-      fgPRF->GetParameter(1),
-      fgPRF->GetParameter(2),
-      e,
-      chi));
+    hf->SetTitle(Form("%d[%d] row[%d] col[%2d] an[%+d] m[%+4.2f] s[%4.2f] E[%7.2f] chi2[%7.2f]", ic, Int_t(vs.size()),
+                      row, col, ia, fgPRF->GetParameter(1), fgPRF->GetParameter(2), e, chi));
     hf->GetXaxis()->SetRangeUser(rangex, rangeX);
     hf->GetYaxis()->SetRangeUser(-100., 4500);
     fgEdep->Draw("pl");
@@ -636,16 +591,13 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
     cvs->SaveAs(Form("cl_%02d_A%d.gif", ic, ia));
   }
 
-  Int_t nofHits  = fHits->GetEntriesFast();
-  CbmTrdHit* hit = new ((*fHits)[nofHits])
-    CbmTrdHit(fModAddress,
-              global,
-              globalErr,
-              0.,  // sxy chi,
-              ic,
-              e,  // energy
-              CbmTrdDigi::Clk(CbmTrdDigi::kFASP) * (t0 + time) - tdrift + 30.29,
-              edt);
+  Int_t nofHits = fHits->GetEntriesFast();
+  CbmTrdHit* hit =
+    new ((*fHits)[nofHits]) CbmTrdHit(fModAddress, global, globalErr,
+                                      0.,  // sxy chi,
+                                      ic,
+                                      e,  // energy
+                                      CbmTrdDigi::Clk(CbmTrdDigi::kFASP) * (t0 + time) - tdrift + 30.29, edt);
   hit->SetClassType();
   hit->SetMaxType(tM);
   if (ovf) hit->SetOverFlow();
@@ -654,7 +606,8 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic,
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetXoffset(Int_t n0) const {
+Double_t CbmTrdModuleRecT::GetXoffset(Int_t n0) const
+{
   Double_t dx(0.), R(0.);
   for (Int_t ir(1); ir <= n0; ir++) {
     if (vxe[ir] > 0) continue;  // select rectangular coupling
@@ -667,7 +620,8 @@ Double_t CbmTrdModuleRecT::GetXoffset(Int_t n0) const {
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetYoffset(Int_t n0) const {
+Double_t CbmTrdModuleRecT::GetYoffset(Int_t n0) const
+{
   Double_t dy(0.), T(0.);
   for (Int_t it(1); it <= n0; it++) {
     if (vxe[it] > 0) {  // select tilted coupling
@@ -681,11 +635,9 @@ Double_t CbmTrdModuleRecT::GetYoffset(Int_t n0) const {
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
-                                  vector<CbmTrdDigi*>* vdgM,
-                                  vector<Bool_t>* vmask,
-                                  ULong64_t& t0,
-                                  Int_t& cM) {
+Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask,
+                                  ULong64_t& t0, Int_t& cM)
+{
   /* Load digis information in working vectors. 
  * The digis as provided by the digitizer are replaced by the merged one 
  * according to the vmask map. Digis are represented in the normal coordinate system of
@@ -712,9 +664,7 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
   Int_t j(0), col0(-1), col1(0);
   const CbmTrdDigi* dg(NULL);
   vector<CbmTrdDigi*>::iterator idgM = vdgM->begin();
-  for (vector<const CbmTrdDigi*>::iterator i = digis->begin();
-       i != digis->end();
-       i++, j++) {
+  for (vector<const CbmTrdDigi*>::iterator i = digis->begin(); i != digis->end(); i++, j++) {
     dg = (*i);
     if ((*vmask)[j]) {
       dg = (*idgM);
@@ -722,8 +672,7 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
     }
     if (CWRITE()) cout << dg->ToString();
     r = dg->GetCharge(t, dt);
-    if (t0 == 0)
-      t0 = dg->GetTimeDAQ();  // set arbitrary t0 to avoid double digis loop
+    if (t0 == 0) t0 = dg->GetTimeDAQ();                         // set arbitrary t0 to avoid double digis loop
     if (col0 < 0) GetPadRowCol(dg->GetAddressChannel(), col0);  //  initialilze
     ddt = dg->GetTimeDAQ() - t0;
     if (ddt < dt0) dt0 = ddt;
@@ -731,8 +680,7 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
     // check column wise organization
     GetPadRowCol(dg->GetAddressChannel(), col1);
     if (col0 + j != col1) {
-      LOG(error) << GetName()
-                 << "::LoadDigis : digis in cluster not in increasing order !";
+      LOG(error) << GetName() << "::LoadDigis : digis in cluster not in increasing order !";
       return 0;
     }
 
@@ -749,7 +697,8 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
         max = t;
         cM  = j;
       }
-    } else
+    }
+    else
       err = 300.;
     vt.push_back(ddt);
     vs.push_back(t);
@@ -773,7 +722,8 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
         max = r;
         cM  = j;
       }
-    } else
+    }
+    else
       err = 300.;
     vt.push_back(ddt);
     vs.push_back(r);
@@ -784,9 +734,7 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
   }
 
   // remove merged digis if they were created
-  if (idgM != vdgM->end())
-    LOG(warn) << GetName()
-              << "::LoadDigis : not all merged digis have been consumed !";
+  if (idgM != vdgM->end()) LOG(warn) << GetName() << "::LoadDigis : not all merged digis have been consumed !";
   for (idgM = vdgM->begin(); idgM != vdgM->end(); idgM++)
     delete (*idgM);
 
@@ -820,9 +768,8 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis,
 }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis,
-                                    vector<CbmTrdDigi*>* vdgM,
-                                    vector<Bool_t>* vmask) {
+Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask)
+{
   /* Merge digis in the cluster if their topology within it allows it although cuts in the 
  * digi merger procedure (CbmTrdFASP::WriteDigi()) were not fulfilled. 
  * Normally this are boundary signals with large time delays wrt neighbors
@@ -837,9 +784,7 @@ Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis,
   Double_t r, t;
   Int_t colR, colT, dt, contor(0);
   Bool_t kFOUND(0);
-  for (vector<const CbmTrdDigi*>::iterator idig = digis->begin(),
-                                           jdig = idig + 1;
-       jdig != digis->end();
+  for (vector<const CbmTrdDigi*>::iterator idig = digis->begin(), jdig = idig + 1; jdig != digis->end();
        idig++, jdig++, contor++) {
     const CbmTrdDigi* dgT((*idig));  // tilt signal digi
     const CbmTrdDigi* dgR((*jdig));  // rect signal digi
@@ -872,8 +817,7 @@ Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis,
   }
 
   if (!kFOUND) {
-    LOG(warn) << GetName()
-              << "::MergeDigis : Digi to pads matching failed for cluster :";
+    LOG(warn) << GetName() << "::MergeDigis : Digi to pads matching failed for cluster :";
     return kFALSE;
   }
   return kTRUE;
@@ -881,40 +825,28 @@ Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis,
 
 Float_t CbmTrdModuleRecT::fgCorrXdx                 = 0.005;
 Float_t CbmTrdModuleRecT::fgCorrXval[2][NBINSCORRX] = {
-  {0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  -0.144, -0.091, -0.134, -0.185, -0.120, -0.115,
-   -0.125, -0.125, -0.124, -0.124, -0.122, -0.120, -0.119, -0.116, -0.114,
-   -0.113, -0.111, -0.109, -0.107, -0.105, -0.102, -0.100, -0.098, -0.097,
-   -0.093, -0.091, -0.089, -0.087, -0.084, -0.082, -0.079, -0.077, -0.074,
-   -0.072, -0.068, -0.065, -0.062, -0.059, -0.056, -0.053, -0.049, -0.046,
-   -0.043, -0.039, -0.036, -0.032, -0.029, -0.025, -0.022, -0.018, -0.015,
-   -0.011, -0.007, -0.003, 0.000,  0.003,  0.007,  0.011,  0.014,  0.018,
-   0.022,  0.025,  0.029,  0.032,  0.036,  0.039,  0.043,  0.046,  0.049,
-   0.053,  0.056,  0.059,  0.062,  0.065,  0.068,  0.071,  0.074,  0.077,
-   0.080,  0.082,  0.084,  0.087,  0.090,  0.091,  0.094,  0.096,  0.098,
-   0.100,  0.103,  0.104,  0.107,  0.108,  0.110,  0.113,  0.115,  0.116,
-   0.120,  0.121,  0.121,  0.123,  0.125,  0.124,  0.127,  0.140,  0.119,
-   0.114,  0.028,  0.049,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000},
-  {0.003,  0.013,  0.026,  0.039,  0.052,  0.065,  0.078,  0.091,  0.104,
-   0.118,  0.132,  0.145,  0.160,  0.174,  0.189,  0.203,  0.219,  0.234,
-   0.250,  0.267,  0.283,  0.301,  0.319,  0.338,  0.357,  0.375,  0.398,
-   0.419,  0.440,  0.464,  0.491,  0.514,  0.541,  0.569,  0.598,  0.623,
-   0.660,  0.696,  0.728,  0.763,  0.804,  0.847,  0.888,  0.930,  0.988,
-   1.015,  1.076,  1.128,  1.167,  1.228,  1.297,  1.374,  1.443,  1.511,
-   1.564,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
-   0.000,  -1.992, -1.884, -1.765, -1.703, -1.609, -1.572, -1.493, -1.426,
-   -1.356, -1.309, -1.243, -1.202, -1.109, -1.069, -1.026, -0.970, -0.933,
-   -0.881, -0.844, -0.803, -0.767, -0.721, -0.691, -0.659, -0.629, -0.596,
-   -0.569, -0.541, -0.514, -0.490, -0.466, -0.441, -0.419, -0.397, -0.377,
-   -0.357, -0.337, -0.319, -0.301, -0.283, -0.267, -0.250, -0.234, -0.218,
-   -0.203, -0.189, -0.174, -0.160, -0.145, -0.131, -0.119, -0.104, -0.091,
-   -0.078, -0.064, -0.052, -0.039, -0.026, -0.013, -0.002}};
+  {0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
+   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  -0.144, -0.091, -0.134, -0.185, -0.120, -0.115, -0.125,
+   -0.125, -0.124, -0.124, -0.122, -0.120, -0.119, -0.116, -0.114, -0.113, -0.111, -0.109, -0.107, -0.105, -0.102,
+   -0.100, -0.098, -0.097, -0.093, -0.091, -0.089, -0.087, -0.084, -0.082, -0.079, -0.077, -0.074, -0.072, -0.068,
+   -0.065, -0.062, -0.059, -0.056, -0.053, -0.049, -0.046, -0.043, -0.039, -0.036, -0.032, -0.029, -0.025, -0.022,
+   -0.018, -0.015, -0.011, -0.007, -0.003, 0.000,  0.003,  0.007,  0.011,  0.014,  0.018,  0.022,  0.025,  0.029,
+   0.032,  0.036,  0.039,  0.043,  0.046,  0.049,  0.053,  0.056,  0.059,  0.062,  0.065,  0.068,  0.071,  0.074,
+   0.077,  0.080,  0.082,  0.084,  0.087,  0.090,  0.091,  0.094,  0.096,  0.098,  0.100,  0.103,  0.104,  0.107,
+   0.108,  0.110,  0.113,  0.115,  0.116,  0.120,  0.121,  0.121,  0.123,  0.125,  0.124,  0.127,  0.140,  0.119,
+   0.114,  0.028,  0.049,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
+   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000},
+  {0.003,  0.013,  0.026,  0.039,  0.052,  0.065,  0.078,  0.091,  0.104,  0.118,  0.132,  0.145,  0.160,  0.174,
+   0.189,  0.203,  0.219,  0.234,  0.250,  0.267,  0.283,  0.301,  0.319,  0.338,  0.357,  0.375,  0.398,  0.419,
+   0.440,  0.464,  0.491,  0.514,  0.541,  0.569,  0.598,  0.623,  0.660,  0.696,  0.728,  0.763,  0.804,  0.847,
+   0.888,  0.930,  0.988,  1.015,  1.076,  1.128,  1.167,  1.228,  1.297,  1.374,  1.443,  1.511,  1.564,  0.000,
+   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
+   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,
+   0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  0.000,  -1.992, -1.884, -1.765, -1.703, -1.609, -1.572, -1.493,
+   -1.426, -1.356, -1.309, -1.243, -1.202, -1.109, -1.069, -1.026, -0.970, -0.933, -0.881, -0.844, -0.803, -0.767,
+   -0.721, -0.691, -0.659, -0.629, -0.596, -0.569, -0.541, -0.514, -0.490, -0.466, -0.441, -0.419, -0.397, -0.377,
+   -0.357, -0.337, -0.319, -0.301, -0.283, -0.267, -0.250, -0.234, -0.218, -0.203, -0.189, -0.174, -0.160, -0.145,
+   -0.131, -0.119, -0.104, -0.091, -0.078, -0.064, -0.052, -0.039, -0.026, -0.013, -0.002}};
 Float_t CbmTrdModuleRecT::fgCorrYval[NBINSCORRY][2] = {{2.421729, 0.},
                                                        {1.537359, 0.483472},
                                                        {1.1752, 0.},

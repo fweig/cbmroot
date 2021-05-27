@@ -24,28 +24,26 @@ using std::endl;
 
 static CbmFieldCreator gCbmFieldCreator;
 
-CbmFieldCreator::CbmFieldCreator() : FairFieldFactory(), fFieldPar(nullptr) {
-  fCreator = this;
-}
+CbmFieldCreator::CbmFieldCreator() : FairFieldFactory(), fFieldPar(nullptr) { fCreator = this; }
 
 CbmFieldCreator::~CbmFieldCreator() {}
 
-void CbmFieldCreator::SetParm() {
+void CbmFieldCreator::SetParm()
+{
   FairRunAna* Run      = FairRunAna::Instance();
   FairRuntimeDb* RunDB = Run->GetRuntimeDb();
   fFieldPar            = (CbmFieldPar*) RunDB->getContainer("CbmFieldPar");
 }
 
-FairField* CbmFieldCreator::createFairField() {
+FairField* CbmFieldCreator::createFairField()
+{
   FairField* fMagneticField = 0;
 
-  if (!fFieldPar) {
-    cerr << "-E-  No field parameters available!" << endl;
-  } else {
+  if (!fFieldPar) { cerr << "-E-  No field parameters available!" << endl; }
+  else {
     // Instantiate correct field type
     Int_t fType = fFieldPar->GetType();
-    if (fType == 0)
-      fMagneticField = new CbmFieldConst(fFieldPar);
+    if (fType == 0) fMagneticField = new CbmFieldConst(fFieldPar);
     else if (fType == 1)
       fMagneticField = new CbmFieldMap(fFieldPar);
     else if (fType == 2)

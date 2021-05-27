@@ -44,61 +44,51 @@ CbmRichEventDisplay::CbmRichEventDisplay()
   , fDrawRings(true)
   , fDrawHits(true)
   , fDrawPoints(true)
-  , fDrawProjections(true) {
+  , fDrawProjections(true)
+{
   SetDefaultDrawStyle();
 }
 
 CbmRichEventDisplay::~CbmRichEventDisplay() {}
 
 
-InitStatus CbmRichEventDisplay::Init() {
+InitStatus CbmRichEventDisplay::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmRichEventDisplay::Init", "RootManager not instantiated!");
-  }
+  if (nullptr == ioman) { Fatal("CbmRichEventDisplay::Init", "RootManager not instantiated!"); }
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (nullptr == fRichHits) {
-    Fatal("CbmRichEventDisplay::Init", "No RichHit array!");
-  }
+  if (nullptr == fRichHits) { Fatal("CbmRichEventDisplay::Init", "No RichHit array!"); }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (nullptr == fRichRings) {
-    Fatal("CbmRichEventDisplay::Init", "No RichRing array!");
-  }
+  if (nullptr == fRichRings) { Fatal("CbmRichEventDisplay::Init", "No RichRing array!"); }
 
   fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (nullptr == fRichPoints) {
-    Fatal("CbmRichEventDisplay::Init", "No RichPoint array!");
-  }
+  if (nullptr == fRichPoints) { Fatal("CbmRichEventDisplay::Init", "No RichPoint array!"); }
 
   fRichMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (nullptr == fRichMatches) {
-    Fatal("CbmRichEventDisplay::Init", "No RichRingMatch array!");
-  }
+  if (nullptr == fRichMatches) { Fatal("CbmRichEventDisplay::Init", "No RichRingMatch array!"); }
 
   fRichProjections = (TClonesArray*) ioman->GetObject("RichProjection");
-  if (nullptr == fRichProjections) {
-    Fatal("CbmRichEventDisplay::Init", "No RichProjection array!");
-  }
+  if (nullptr == fRichProjections) { Fatal("CbmRichEventDisplay::Init", "No RichProjection array!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (nullptr == fMcTracks) {
-    Fatal("CbmRichEventDisplay::Init", "No MCTrack array!");
-  }
+  if (nullptr == fMcTracks) { Fatal("CbmRichEventDisplay::Init", "No MCTrack array!"); }
 
   fHM = new CbmHistManager();
 
   return kSUCCESS;
 }
 
-void CbmRichEventDisplay::Exec(Option_t* /*opt*/) {
+void CbmRichEventDisplay::Exec(Option_t* /*opt*/)
+{
   fEventNum++;
   SetDefaultDrawStyle();
   DrawOneEvent();
 }
 
-void CbmRichEventDisplay::DrawOneEvent() {
+void CbmRichEventDisplay::DrawOneEvent()
+{
   stringstream ss;
   ss << "rich_event_display_event_" << fEventNum;
   TCanvas* c = fHM->CreateCanvas(ss.str().c_str(), ss.str().c_str(), 800, 800);
@@ -112,8 +102,7 @@ void CbmRichEventDisplay::DrawOneEvent() {
   DrawOnePmtPlane("up");
 
   c->cd(2);
-  TH2D* padD =
-    new TH2D("padD", ";x [cm];y [cm]", 1, -120., 120., 1, -210., -120.);
+  TH2D* padD = new TH2D("padD", ";x [cm];y [cm]", 1, -120., 120., 1, -210., -120.);
   DrawH2(padD);
   padD->GetYaxis()->SetTitleOffset(0.75);
   gPad->SetLeftMargin(0.1);
@@ -121,15 +110,15 @@ void CbmRichEventDisplay::DrawOneEvent() {
   DrawOnePmtPlane("down");
 }
 
-void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane) {
+void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane)
+{
   //Draw Track projections
   if (fDrawProjections) {
     int nofProjections = fRichProjections->GetEntriesFast();
     for (int iP = 0; iP < nofProjections; iP++) {
       FairTrackParam* pr = (FairTrackParam*) fRichProjections->At(iP);
       if (nullptr == pr) continue;
-      if ((plane == "up" && pr->GetY() >= 0.)
-          || (plane == "down" && pr->GetY() < 0.)) {
+      if ((plane == "up" && pr->GetY() >= 0.) || (plane == "down" && pr->GetY() < 0.)) {
         TMarker* m = new TMarker(pr->GetX(), pr->GetY(), 3.);
         m->SetMarkerSize(0.7);
         m->SetMarkerColor(kGreen + 3);
@@ -144,8 +133,7 @@ void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane) {
     for (int iH = 0; iH < nofHits; iH++) {
       CbmRichHit* hit = (CbmRichHit*) fRichHits->At(iH);
       if (nullptr == hit) continue;
-      if ((plane == "up" && hit->GetY() >= 0.)
-          || (plane == "down" && hit->GetY() < 0.)) {
+      if ((plane == "up" && hit->GetY() >= 0.) || (plane == "down" && hit->GetY() < 0.)) {
 
         TEllipse* hitDr = new TEllipse(hit->GetX(), hit->GetY(), 0.6);
         hitDr->SetFillColor(kRed);
@@ -161,8 +149,7 @@ void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane) {
     for (int iR = 0; iR < nofRings; iR++) {
       CbmRichRing* ring = (CbmRichRing*) fRichRings->At(iR);
       if (nullptr == ring) continue;
-      if ((plane == "up" && ring->GetCenterY() >= 0.)
-          || (plane == "down" && ring->GetCenterY() < 0.)) {
+      if ((plane == "up" && ring->GetCenterY() >= 0.) || (plane == "down" && ring->GetCenterY() < 0.)) {
         DrawCircle(ring);
       }
     }
@@ -174,8 +161,7 @@ void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane) {
     for (int iP = 0; iP < nofPoints; iP++) {
       CbmRichPoint* point = (CbmRichPoint*) fRichPoints->At(iP);
       if (nullptr == point) continue;
-      if ((plane == "up" && point->GetY() >= 0.)
-          || (plane == "down" && point->GetY() < 0.)) {
+      if ((plane == "up" && point->GetY() >= 0.) || (plane == "down" && point->GetY() < 0.)) {
         TEllipse* pointDr = new TEllipse(point->GetX(), point->GetY(), 0.4);
         pointDr->Draw();
       }
@@ -183,9 +169,9 @@ void CbmRichEventDisplay::DrawOnePmtPlane(const string& plane) {
   }
 }
 
-void CbmRichEventDisplay::DrawCircle(CbmRichRing* ring) {
-  TEllipse* circle =
-    new TEllipse(ring->GetCenterX(), ring->GetCenterY(), ring->GetRadius());
+void CbmRichEventDisplay::DrawCircle(CbmRichRing* ring)
+{
+  TEllipse* circle = new TEllipse(ring->GetCenterX(), ring->GetCenterY(), ring->GetRadius());
   circle->SetFillStyle(0);
   circle->SetLineWidth(2);
   circle->SetLineColor(kBlue);

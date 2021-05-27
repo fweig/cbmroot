@@ -1,4 +1,5 @@
-void eloss_sim(Int_t nEvents = 20000) {
+void eloss_sim(Int_t nEvents = 20000)
+{
   TString dir     = "/home/d/andrey/eloss/";
   TString outFile = dir + "eloss.mc.root";
   TString parFile = dir + "eloss.params.root";

@@ -14,8 +14,8 @@
 #include "CbmClusteringWard.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchModuleGem.h"
-#include "FairTask.h"
 
+#include "FairTask.h"
 
 #include "TH1F.h"
 
@@ -33,9 +33,7 @@ public:
   virtual void Exec(Option_t* opt);
   virtual void Finish();
 
-  void SetAlgorithmVersion(Int_t AlgorithmVersion) {
-    fAlgorithmVersion = AlgorithmVersion;
-  }
+  void SetAlgorithmVersion(Int_t AlgorithmVersion) { fAlgorithmVersion = AlgorithmVersion; }
 
   void CreateModulesGeometryArray();
   void SetDigiCharges();
@@ -69,8 +67,7 @@ private:
 
   void ClusteringA1(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2, Int_t Ver);
   void ClusteringSL(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2, Int_t Ver);
-  void ClusteringWard(CbmClusteringGeometry* m1,
-                      CbmMuchModuleGem* m2 /*, Int_t Ver*/);
+  void ClusteringWard(CbmClusteringGeometry* m1, CbmMuchModuleGem* m2 /*, Int_t Ver*/);
 
   CbmMuchClustering(const CbmMuchClustering&);
   CbmMuchClustering& operator=(const CbmMuchClustering&);

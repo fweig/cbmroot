@@ -29,7 +29,9 @@ CbmTrack::CbmTrack()
   , fChiSq(0.)
   , fNDF(0)
   , fPreviousTrackId(-1)
-  , fMatch(nullptr) {}
+  , fMatch(nullptr)
+{
+}
 
 // Only shallow copy needed
 CbmTrack::CbmTrack(const CbmTrack& rhs)
@@ -45,10 +47,13 @@ CbmTrack::CbmTrack(const CbmTrack& rhs)
   , fChiSq(rhs.fChiSq)
   , fNDF(rhs.fNDF)
   , fPreviousTrackId(rhs.fPreviousTrackId)
-  , fMatch(nullptr) {}
+  , fMatch(nullptr)
+{
+}
 
 // Only shallow copy needed
-CbmTrack& CbmTrack::operator=(const CbmTrack& rhs) {
+CbmTrack& CbmTrack::operator=(const CbmTrack& rhs)
+{
 
   if (this != &rhs) {
     TObject::operator=(rhs);
@@ -68,25 +73,28 @@ CbmTrack& CbmTrack::operator=(const CbmTrack& rhs) {
   return *this;
 }
 
-CbmTrack::~CbmTrack() {
+CbmTrack::~CbmTrack()
+{
   if (fMatch) delete fMatch;
 }
 
-void CbmTrack::AddHit(Int_t index, HitType type) {
+void CbmTrack::AddHit(Int_t index, HitType type)
+{
   fHitIndex.push_back(index);
   fHitType.push_back(type);
 }
 
-void CbmTrack::SetMatch(CbmMatch* match) {
+void CbmTrack::SetMatch(CbmMatch* match)
+{
   if (fMatch) delete fMatch;
   fMatch = match;
 }
 
-std::string CbmTrack::ToString() const {
+std::string CbmTrack::ToString() const
+{
   stringstream ss;
-  ss << "CbmTrack: nof hits=" << fHitIndex.size() << ", chiSq=" << fChiSq
-     << ", NDF=" << fNDF << ", pidHypo=" << fPidHypo
-     << ", previousTrackId=" << fPreviousTrackId << ", flag=" << fFlag << "\n";
+  ss << "CbmTrack: nof hits=" << fHitIndex.size() << ", chiSq=" << fChiSq << ", NDF=" << fNDF
+     << ", pidHypo=" << fPidHypo << ", previousTrackId=" << fPreviousTrackId << ", flag=" << fFlag << "\n";
   //	fParamFirst.Print();
   //	fParamLast.Print();
   return ss.str();

@@ -8,24 +8,25 @@
 #include <TArrayF.h>  // for TArrayF
 
 // -------------   Default constructor  ----------------------------------
-CbmFieldMapSym3::CbmFieldMapSym3()
-  : CbmFieldMap(), fHemiX(0.), fHemiY(0.), fHemiZ(0.) {
-  fType = 3;
-}
+CbmFieldMapSym3::CbmFieldMapSym3() : CbmFieldMap(), fHemiX(0.), fHemiY(0.), fHemiZ(0.) { fType = 3; }
 // ------------------------------------------------------------------------
 
 
 // -------------   Standard constructor   ---------------------------------
 CbmFieldMapSym3::CbmFieldMapSym3(const char* mapName, const char* fileType)
-  : CbmFieldMap(mapName, fileType), fHemiX(0.), fHemiY(0.), fHemiZ(0.) {
+  : CbmFieldMap(mapName, fileType)
+  , fHemiX(0.)
+  , fHemiY(0.)
+  , fHemiZ(0.)
+{
   fType = 3;
 }
 // ------------------------------------------------------------------------
 
 
 // -------------   Constructor from CbmFieldPar   -------------------------
-CbmFieldMapSym3::CbmFieldMapSym3(CbmFieldPar* fieldPar)
-  : CbmFieldMap(fieldPar), fHemiX(0.), fHemiY(0.), fHemiZ(0.) {
+CbmFieldMapSym3::CbmFieldMapSym3(CbmFieldPar* fieldPar) : CbmFieldMap(fieldPar), fHemiX(0.), fHemiY(0.), fHemiZ(0.)
+{
   fType = 3;
 }
 // ------------------------------------------------------------------------
@@ -37,7 +38,8 @@ CbmFieldMapSym3::~CbmFieldMapSym3() {}
 
 
 // -----------   Get x component of the field   ---------------------------
-Double_t CbmFieldMapSym3::GetBx(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapSym3::GetBx(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -68,7 +70,8 @@ Double_t CbmFieldMapSym3::GetBx(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Get y component of the field   ---------------------------
-Double_t CbmFieldMapSym3::GetBy(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapSym3::GetBy(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -99,7 +102,8 @@ Double_t CbmFieldMapSym3::GetBy(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Get z component of the field   ---------------------------
-Double_t CbmFieldMapSym3::GetBz(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapSym3::GetBz(Double_t x, Double_t y, Double_t z)
+{
 
   Int_t ix    = 0;
   Int_t iy    = 0;
@@ -130,15 +134,9 @@ Double_t CbmFieldMapSym3::GetBz(Double_t x, Double_t y, Double_t z) {
 
 
 // -----------   Check whether a point is inside the map   ----------------
-Bool_t CbmFieldMapSym3::IsInside(Double_t x,
-                                 Double_t y,
-                                 Double_t z,
-                                 Int_t& ix,
-                                 Int_t& iy,
-                                 Int_t& iz,
-                                 Double_t& dx,
-                                 Double_t& dy,
-                                 Double_t& dz) {
+Bool_t CbmFieldMapSym3::IsInside(Double_t x, Double_t y, Double_t z, Int_t& ix, Int_t& iy, Int_t& iz, Double_t& dx,
+                                 Double_t& dy, Double_t& dz)
+{
 
   // --- Transform into local coordinate system
   Double_t xl = x - fPosX;
@@ -161,8 +159,7 @@ Bool_t CbmFieldMapSym3::IsInside(Double_t x,
   }
 
   // ---  Check for being outside the map range
-  if (!(xl >= fXmin && xl < fXmax && yl >= fYmin && yl < fYmax && zl >= fZmin
-        && zl < fZmax)) {
+  if (!(xl >= fXmin && xl < fXmax && yl >= fYmin && yl < fYmax && zl >= fZmin && zl < fZmax)) {
     ix = iy = iz = 0;
     dx = dy = dz = 0.;
     return kFALSE;

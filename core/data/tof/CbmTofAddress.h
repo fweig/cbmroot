@@ -35,7 +35,8 @@
 #include "CbmDefs.h"                // for kTof
 #include "CbmTofDetectorId.h"       // for CbmTofDetectorInfo
 #include "CbmTofDetectorId_v12b.h"  // for CbmTofDetectorId_v12b
-#include <RtypesCore.h>             // for Int_t, UInt_t, Bool_t, kFALSE, kTRUE
+
+#include <RtypesCore.h>  // for Int_t, UInt_t, Bool_t, kFALSE, kTRUE
 
 class CbmTofAddress : public CbmAddress {
 public:
@@ -72,45 +73,38 @@ public:
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetSmId(UInt_t address) {
-    return ((address >> fgkSmIdOffset) & ((1 << fgkSmIdBits) - 1));
-  };
+  static Int_t GetSmId(UInt_t address) { return ((address >> fgkSmIdOffset) & ((1 << fgkSmIdBits) - 1)); };
   /** Get the Super Module Type from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetSmType(UInt_t address) {
-    return ((address >> fgkSmTypeOffset) & ((1 << fgkSmTypeBits) - 1));
-  };
+  static Int_t GetSmType(UInt_t address) { return ((address >> fgkSmTypeOffset) & ((1 << fgkSmTypeBits) - 1)); };
   /** Get the Rpc Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetRpcId(UInt_t address) {
-    return ((address >> fgkRpcIdOffset) & ((1 << fgkRpcIdBits) - 1));
-  };
+  static Int_t GetRpcId(UInt_t address) { return ((address >> fgkRpcIdOffset) & ((1 << fgkRpcIdBits) - 1)); };
   /** Get the Channel Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetChannelId(UInt_t address) {
+  static Int_t GetChannelId(UInt_t address)
+  {
     return ((address >> fgkChannelIdOffset) & ((1 << fgkChannelIdBits) - 1));
   };
   /** Get the Channel Side from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetChannelSide(UInt_t address) {
-    return ((address >> fgkChannelSideOffset)
-            & ((1 << fgkChannelSideBits) - 1));
+  static Int_t GetChannelSide(UInt_t address)
+  {
+    return ((address >> fgkChannelSideOffset) & ((1 << fgkChannelSideBits) - 1));
   };
   /** Get the module Full Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetModFullId(UInt_t address) {
-    return (address & fgkiModFullIdMask);
-  };
+  static Int_t GetModFullId(UInt_t address) { return (address & fgkiModFullIdMask); };
 
   /** Builder **/
   /** Get the unique address from all parameters
@@ -121,49 +115,41 @@ public:
           ** @param[in] Sm Type Super Module Type (optional).
           ** @return  address
           **/
-  static UInt_t GetUniqueAddress(UInt_t Sm,
-                                 UInt_t Rpc,
-                                 UInt_t Channel,
-                                 UInt_t Side    = 0,
-                                 UInt_t SmType  = 0,
-                                 UInt_t RpcType = 0) {
-    return (UInt_t)(
-      ((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
-      + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
-      + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
-      + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
-      + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
-      + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
-      + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
+  static UInt_t GetUniqueAddress(UInt_t Sm, UInt_t Rpc, UInt_t Channel, UInt_t Side = 0, UInt_t SmType = 0,
+                                 UInt_t RpcType = 0)
+  {
+    return (UInt_t)(((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
+                    + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
+                    + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
+                    + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
+                    + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
+                    + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
+                    + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
   };
 
-  static Bool_t SameModule(UInt_t addressA, UInt_t addressB) {
+  static Bool_t SameModule(UInt_t addressA, UInt_t addressB)
+  {
     return (GetModFullId(addressA) == GetModFullId(addressB)) ? kTRUE : kFALSE;
   };
 
-  static UInt_t ConvertCbmTofDetectorInfo(CbmTofDetectorInfo infoInput) {
+  static UInt_t ConvertCbmTofDetectorInfo(CbmTofDetectorInfo infoInput)
+  {
     // For now assume that the system ID will always be correct
     // Otherwise would need including CbmDetectorList.h
     //   if( kTof != infoInput.fDetectorSystem)
     //      return 0;
 
-    return GetUniqueAddress(infoInput.fSModule,
-                            infoInput.fCounter,
-                            infoInput.fCell,
-                            0,
-                            infoInput.fSMtype,
+    return GetUniqueAddress(infoInput.fSModule, infoInput.fCounter, infoInput.fCell, 0, infoInput.fSMtype,
                             infoInput.fCounterType);
   };
-  static UInt_t ConvertCbmTofDetectorId(Int_t detIdInput) {
+  static UInt_t ConvertCbmTofDetectorId(Int_t detIdInput)
+  {
     // For now assume that the system ID will always be correct
     // Otherwise would need including CbmDetectorList.h
     //         if( kTof != CbmTofDetectorId::GetSystemId( detIdInput ) )
     //            return 0;
     CbmTofDetectorId_v12b detId;
-    return GetUniqueAddress(detId.GetSModule(detIdInput),
-                            detId.GetCounter(detIdInput),
-                            detId.GetCell(detIdInput),
-                            0,
+    return GetUniqueAddress(detId.GetSModule(detIdInput), detId.GetCounter(detIdInput), detId.GetCell(detIdInput), 0,
                             detId.GetSMType(detIdInput));
   };
 

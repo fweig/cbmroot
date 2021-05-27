@@ -39,20 +39,13 @@ CbmTrdParModDigi::CbmTrdParModDigi()
   , fSectorSizeX()
   , fSectorSizeY()
   , fPadSizeX()
-  , fPadSizeY() {}
+  , fPadSizeY()
+{
+}
 //___________________________________________________________________
-CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
-                                   Double_t y,
-                                   Double_t z,
-                                   Double_t sizex,
-                                   Double_t sizey,
-                                   Double_t sizez,
-                                   Int_t nofSectors,
-                                   Int_t orientation,
-                                   const TArrayD& sectorSizeX,
-                                   const TArrayD& sectorSizeY,
-                                   const TArrayD& padSizeX,
-                                   const TArrayD& padSizeY)
+CbmTrdParModDigi::CbmTrdParModDigi(Double_t x, Double_t y, Double_t z, Double_t sizex, Double_t sizey, Double_t sizez,
+                                   Int_t nofSectors, Int_t orientation, const TArrayD& sectorSizeX,
+                                   const TArrayD& sectorSizeY, const TArrayD& padSizeX, const TArrayD& padSizeY)
   : CbmTrdParMod("CbmTrdParModDigi", "TRD read-out definition")
   , fNofSectors(nofSectors)
   , fOrientation(orientation)
@@ -75,7 +68,8 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
   , fSectorSizeX(sectorSizeX)
   , fSectorSizeY(sectorSizeY)
   , fPadSizeX(padSizeX)
-  , fPadSizeY(padSizeY) {
+  , fPadSizeY(padSizeY)
+{
   /**  
   Calculate the coordinates of the begin and the end of each sector
   as well as the coordinates of the center of the sector
@@ -94,7 +88,8 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
           beginy = 0.;
           endy   = sectorSizeY.GetAt(i);
           summed_sectsize += sectorSizeY.GetAt(i);
-        } else {
+        }
+        else {
           beginy = summed_sectsize;
           endy   = summed_sectsize += sectorSizeY.GetAt(i);
         }
@@ -106,12 +101,12 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
         fSectorY.AddAt(beginy + (sectorSizeY.GetAt(i) / 2.), i);
         fSectorZ.AddAt(fZ, i);
       }
-    } else {
+    }
+    else {
       LOG(warn) << GetName()
                 << "::CbmTrdParModDigi - detect different information on "
                    "module size x : geometry="
-                << std::setprecision(5) << 2 * sizex
-                << " CbmTrdPads.h=" << sectorSizeX.GetAt(0);
+                << std::setprecision(5) << 2 * sizex << " CbmTrdPads.h=" << sectorSizeX.GetAt(0);
       beginy          = 0;
       endy            = 2 * sizey;
       summed_sectsize = 0;
@@ -120,7 +115,8 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
           beginx = 0.;
           endx   = sectorSizeX.GetAt(i);
           summed_sectsize += sectorSizeX.GetAt(i);
-        } else {
+        }
+        else {
           beginx = summed_sectsize;
           endx   = summed_sectsize += sectorSizeX.GetAt(i);
         }
@@ -133,7 +129,8 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
         fSectorZ.AddAt(fZ, i);
       }
     }
-  } else {
+  }
+  else {
     fSectorBeginX.AddAt(0., 0);
     fSectorBeginY.AddAt(0., 0);
     fSectorEndX.AddAt(sectorSizeX.GetAt(0), 0);
@@ -145,100 +142,73 @@ CbmTrdParModDigi::CbmTrdParModDigi(Double_t x,
 }
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::Print(Option_t* opt) const {
+void CbmTrdParModDigi::Print(Option_t* opt) const
+{
   /** 
   Dump formated parameters for this module
 */
   printf(" CbmTrdParModDigi @ %5d ly[%d] idLy[%3d] rotation[%3ddeg] rows[%2d] "
          "cols[%3d]\n",
-         fModuleId,
-         CbmTrdAddress::GetLayerId(fModuleId),
-         CbmTrdAddress::GetModuleId(fModuleId),
-         fOrientation * 90,
-         GetNofRows(),
-         GetNofColumns());
+         fModuleId, CbmTrdAddress::GetLayerId(fModuleId), CbmTrdAddress::GetModuleId(fModuleId), fOrientation * 90,
+         GetNofRows(), GetNofColumns());
   if (strcmp(opt, "all") != 0) return;
   printf("        center   [%7.2f %7.2f %7.2f]\n"
          "        size     [%7.2f %7.2f %7.2f]\n"
          "        anode    pitch[%5.3f] d2PP[%5.3f] off[%5.3f]\n"
          "        pads    ",
-         fX,
-         fY,
-         fZ,
-         fSizeX,
-         fSizeY,
-         fSizeZ,
-         fAnodeWireSpacing,
-         fAnodeWireToPadPlaneDistance,
-         fAnodeWireOffset);
+         fX, fY, fZ, fSizeX, fSizeY, fSizeZ, fAnodeWireSpacing, fAnodeWireToPadPlaneDistance, fAnodeWireOffset);
   for (Int_t isec(0); isec < fNofSectors; isec++)
     printf(" [c(%3d) r(%2d)]x[w(%4.2f) h(%5.2f)] area[%5.2fx%5.2f] limits "
            "x[%5.2f %5.2f] y[%5.2f %5.2f]\n                ",
-           GetNofColumnsInSector(isec),
-           GetNofRowsInSector(isec),
-           fPadSizeX.At(isec),
-           fPadSizeY.At(isec),
-           fSectorSizeX[isec],
-           fSectorSizeY[isec],
-           fSectorBeginX[isec],
-           fSectorEndX[isec],
-           fSectorBeginY[isec],
+           GetNofColumnsInSector(isec), GetNofRowsInSector(isec), fPadSizeX.At(isec), fPadSizeY.At(isec),
+           fSectorSizeX[isec], fSectorSizeY[isec], fSectorBeginX[isec], fSectorEndX[isec], fSectorBeginY[isec],
            fSectorEndY[isec]);
   printf("\n");
 }
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::ProjectPositionToNextAnodeWire(
-  Double_t* local_point) const {
+void CbmTrdParModDigi::ProjectPositionToNextAnodeWire(Double_t* local_point) const
+{
   /**
   Move the local point along y to the next anode wire position.
 
   20131009 - DE - checked OK
 */
 
-  if (/*fAnodeWireOffset > 0.0 && */ fAnodeWireSpacing
-      > 0.0) {  // wires must be defined defined
+  if (/*fAnodeWireOffset > 0.0 && */ fAnodeWireSpacing > 0.0) {  // wires must be defined defined
 
     // check, if the input is within the allowed range
     if (fabs(local_point[1]) - fSizeY > 1.e-3)
       LOG(error) << "CbmTrdParModDigi::ProjectPositionToNextAnodeWire - local "
                     "point must be within gas volume, y="
-                 << std::setprecision(5) << local_point[1] << " module size "
-                 << fSizeY;
+                 << std::setprecision(5) << local_point[1] << " module size " << fSizeY;
 
     Double_t ypos = local_point[1];
 
-    LOG(debug2) << "local y before projection: " << std::setprecision(5)
-                << local_point[1] << " cm";
+    LOG(debug2) << "local y before projection: " << std::setprecision(5) << local_point[1] << " cm";
 
     // make sure, local_point[1] is not negative (due to module center coordinate)
     // therefore transform to local corner first and then back at the end of operation
     local_point[1] += fSizeY;  // transform to module corner coordinates
 
-    local_point[1] =
-      Int_t(((local_point[1] - fAnodeWireOffset) / fAnodeWireSpacing) + 0.5)
-        * fAnodeWireSpacing
-      + fAnodeWireOffset;  // find closest anode wire
+    local_point[1] = Int_t(((local_point[1] - fAnodeWireOffset) / fAnodeWireSpacing) + 0.5) * fAnodeWireSpacing
+                     + fAnodeWireOffset;  // find closest anode wire
 
     if (local_point[1] > 2 * fSizeY - fAnodeWireOffset)
-      local_point[1] =
-        2 * fSizeY - fAnodeWireOffset;  // move inwards to the last anode wire
+      local_point[1] = 2 * fSizeY - fAnodeWireOffset;  // move inwards to the last anode wire
 
     local_point[1] -= fSizeY;  // transform back to module center coordinates
 
-    LOG(debug2) << "local y after  projection: " << std::setprecision(5)
-                << local_point[1] << " cm";
+    LOG(debug2) << "local y after  projection: " << std::setprecision(5) << local_point[1] << " cm";
 
     // check, if we have left the anode wire grid
     if (fabs(local_point[1]) > fSizeY - fAnodeWireOffset)
       LOG(error) << "CbmTrdParModDigi::ProjectPositionToNextAnodeWire - local "
                     "point projected outside anode wire plane, from "
-                 << std::setprecision(5) << ypos << " to "
-                 << std::setprecision(5) << local_point[1]
-                 << " - last anode wire at " << std::setprecision(5)
-                 << fSizeY - fAnodeWireOffset;
-
-  } else {
+                 << std::setprecision(5) << ypos << " to " << std::setprecision(5) << local_point[1]
+                 << " - last anode wire at " << std::setprecision(5) << fSizeY - fAnodeWireOffset;
+  }
+  else {
     LOG(error) << "CbmTrdParModDigi::ProjectPositionToNextAnodeWire: "
                   "fAnodeWireOffset and fAnodeWireSpacing not set. "
                   "ProjectPositionToNextAnodeWire can not be used.";
@@ -246,7 +216,8 @@ void CbmTrdParModDigi::ProjectPositionToNextAnodeWire(
 }
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetSector(const Double_t* local_point) const {
+Int_t CbmTrdParModDigi::GetSector(const Double_t* local_point) const
+{
   /**
   Calculate the position in the chamber 
   with the origin of the local coordinate system 
@@ -258,51 +229,44 @@ Int_t CbmTrdParModDigi::GetSector(const Double_t* local_point) const {
 
   TransformToLocalCorner(local_point, posx, posy);
   for (Int_t i = 0; i < fNofSectors; i++) {
-    if (posx >= fSectorBeginX[i] && posx <= fSectorEndX[i]
-        && posy >= fSectorBeginY[i] && posy <= fSectorEndY[i]) {
+    if (posx >= fSectorBeginX[i] && posx <= fSectorEndX[i] && posy >= fSectorBeginY[i] && posy <= fSectorEndY[i]) {
       return i;
     }
   }
 
-  LOG(error) << "CbmTrdParModDigi::GetSector: Could not find local point ["
-             << local_point[0] << " " << local_point[1]
+  LOG(error) << "CbmTrdParModDigi::GetSector: Could not find local point [" << local_point[0] << " " << local_point[1]
              << "] in any of the sectors";
   Print("all");
   return -1;  // This should be never reached
 }
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetSector(Int_t npady, Int_t& rowId) const {
+Int_t CbmTrdParModDigi::GetSector(Int_t npady, Int_t& rowId) const
+{
   /**  
   Calculate the pad coordinates in this sector from pad coordinates in the module e.g. in which sector is pad (20/28)
 */
 
   if ((npady < 0) || (npady > GetNofRows() - 1)) {
-    LOG(error) << "CbmTrdParModDigi::GetSector - there is no such row number: "
-               << npady;
+    LOG(error) << "CbmTrdParModDigi::GetSector - there is no such row number: " << npady;
     return -1;
   }
 
   Int_t secRows = 0;  // number of rows in sector
   Int_t nofRows = 0;  // number of rows in total
 
-  if (fSectorSizeY.At(0) < fSizeY) {  // if there are sectors in y direction
-    for (Int_t iSector = 0; iSector < fNofSectors;
-         iSector++) {  // for each sector
-      secRows = (Int_t)(fSectorSizeY.At(iSector) / fPadSizeY.At(iSector)
-                        + 0.5);  // need to round for correct result
-      if (npady
-          < nofRows + secRows) {  // if we are in the sector containing the pad
+  if (fSectorSizeY.At(0) < fSizeY) {                                              // if there are sectors in y direction
+    for (Int_t iSector = 0; iSector < fNofSectors; iSector++) {                   // for each sector
+      secRows = (Int_t)(fSectorSizeY.At(iSector) / fPadSizeY.At(iSector) + 0.5);  // need to round for correct result
+      if (npady < nofRows + secRows) {  // if we are in the sector containing the pad
         // note nypad = 12 is not in sector 0, with rowIds 0..11
         rowId = npady - nofRows;
 
-        LOG(debug2) << "npady   : " << npady << " <= " << nofRows + secRows
-                    << "  rowId " << rowId << "  nRows(sec-1) " << nofRows
-                    << "  sec " << iSector;
+        LOG(debug2) << "npady   : " << npady << " <= " << nofRows + secRows << "  rowId " << rowId << "  nRows(sec-1) "
+                    << nofRows << "  sec " << iSector;
 
         if ((rowId < 0) || (rowId > GetNofRowsInSector(iSector) - 1))
-          LOG(fatal) << "CbmTrdParModDigi::GetModuleRow rowId " << rowId
-                     << " of "
+          LOG(fatal) << "CbmTrdParModDigi::GetModuleRow rowId " << rowId << " of "
                      << GetNofRowsInSector(iSector) - 1
                      //<< " in moduleAddress " << fModuleAddress
                      << " is out of bounds!";
@@ -312,14 +276,14 @@ Int_t CbmTrdParModDigi::GetSector(Int_t npady, Int_t& rowId) const {
       nofRows += secRows;  // sum up new total number of rows
     }
   }
-  LOG(error)
-    << "CbmTrdParModDigi::GetSector: Could not find pad in any of the sectors";
+  LOG(error) << "CbmTrdParModDigi::GetSector: Could not find pad in any of the sectors";
   return -1;  // This should be never reached
 }
 
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetNofColumns() const {
+Int_t CbmTrdParModDigi::GetNofColumns() const
+{
   /**
  * Get total number of pad columns in module  
  */
@@ -327,56 +291,55 @@ Int_t CbmTrdParModDigi::GetNofColumns() const {
   Int_t nofColumns = 0;
   if (fSectorSizeX.At(0) < fSizeX) {
     for (Int_t i = 0; i < fNofSectors; i++) {
-      nofColumns += (Int_t)(fSectorSizeX.At(i) / fPadSizeX.At(i)
-                            + 0.5);  // need to round for correct result
+      nofColumns += (Int_t)(fSectorSizeX.At(i) / fPadSizeX.At(i) + 0.5);  // need to round for correct result
     }
-  } else {
-    nofColumns = (Int_t)(fSectorSizeX.At(0) / fPadSizeX.At(0)
-                         + 0.5);  // need to round for correct result
+  }
+  else {
+    nofColumns = (Int_t)(fSectorSizeX.At(0) / fPadSizeX.At(0) + 0.5);  // need to round for correct result
   }
   return nofColumns;
 }
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetNofRows() const {
+Int_t CbmTrdParModDigi::GetNofRows() const
+{
   /** 
  * Get total number of pad rows in module  
 */
   Int_t nofRows = 0;
   if (fSectorSizeY.At(0) < fSizeY) {
     for (Int_t i = 0; i < fNofSectors; i++) {
-      nofRows += (Int_t)(fSectorSizeY.At(i) / fPadSizeY.At(i)
-                         + 0.5);  // need to round for correct result
+      nofRows += (Int_t)(fSectorSizeY.At(i) / fPadSizeY.At(i) + 0.5);  // need to round for correct result
     }
-  } else {
-    nofRows = (Int_t)(fSectorSizeY.At(0) / fPadSizeY.At(0)
-                      + 0.5);  // need to round for correct result
+  }
+  else {
+    nofRows = (Int_t)(fSectorSizeY.At(0) / fPadSizeY.At(0) + 0.5);  // need to round for correct result
   }
   return nofRows;
 }
 
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetNofColumnsInSector(Int_t i) const {
-  return (Int_t)(fSectorSizeX.At(i) / fPadSizeX.At(i)
-                 + 0.5);  // need to round for correct result
+Int_t CbmTrdParModDigi::GetNofColumnsInSector(Int_t i) const
+{
+  return (Int_t)(fSectorSizeX.At(i) / fPadSizeX.At(i) + 0.5);  // need to round for correct result
 }
 
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetNofRowsInSector(Int_t i) const {
-  return (Int_t)(fSectorSizeY.At(i) / fPadSizeY.At(i)
-                 + 0.5);  // need to round for correct result
+Int_t CbmTrdParModDigi::GetNofRowsInSector(Int_t i) const
+{
+  return (Int_t)(fSectorSizeY.At(i) / fPadSizeY.At(i) + 0.5);  // need to round for correct result
 }
 
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetModuleRow(Int_t& sectorId, Int_t& rowId) const {
+Int_t CbmTrdParModDigi::GetModuleRow(Int_t& sectorId, Int_t& rowId) const
+{
 
   // check limits
   if ((sectorId < 0) || (sectorId > GetNofSectors() - 1))
-    LOG(fatal) << "CbmTrdParModDigi::GetModuleRow sectorId " << sectorId
-               << " of "
+    LOG(fatal) << "CbmTrdParModDigi::GetModuleRow sectorId " << sectorId << " of "
                << GetNofSectors() - 1
                //<< " in moduleAddress " << fModuleAddress
                << " is out of bounds!";
@@ -392,8 +355,7 @@ Int_t CbmTrdParModDigi::GetModuleRow(Int_t& sectorId, Int_t& rowId) const {
 
   // calculate row number within module
   for (Int_t iSector = 0; iSector < sectorId; iSector++) {
-    moduleRowId +=
-      (Int_t)(fSectorSizeY.At(iSector) / fPadSizeY.At(iSector) + 0.5);
+    moduleRowId += (Int_t)(fSectorSizeY.At(iSector) / fPadSizeY.At(iSector) + 0.5);
     //     LOG(info) << "adding sector "   << iSector << " of " << sectorId;
   }
 
@@ -409,7 +371,8 @@ Int_t CbmTrdParModDigi::GetModuleRow(Int_t& sectorId, Int_t& rowId) const {
 
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetSectorRow(Int_t growId, Int_t& rowId) const {
+Int_t CbmTrdParModDigi::GetSectorRow(Int_t growId, Int_t& rowId) const
+{
   // check limits
   if ((growId < 0) || (growId >= GetNofRows()))
     LOG(fatal) << "CbmTrdParModDigi::GetSectorRow rowId " << growId << " of "
@@ -423,8 +386,7 @@ Int_t CbmTrdParModDigi::GetSectorRow(Int_t growId, Int_t& rowId) const {
   Int_t iSector(0);
   for (; iSector < 3; iSector++) {
     Int_t nr(GetNofRowsInSector(iSector));
-    if (rowId - nr + 1 > 0)
-      rowId -= nr;
+    if (rowId - nr + 1 > 0) rowId -= nr;
     else
       break;
   }
@@ -434,23 +396,19 @@ Int_t CbmTrdParModDigi::GetSectorRow(Int_t growId, Int_t& rowId) const {
 
 
 //___________________________________________________________________________
-Bool_t CbmTrdParModDigi::GetPadInfo(const Double_t* local_point,
-                                    Int_t& sectorId,
-                                    Int_t& columnId,
-                                    Int_t& rowId) const {
+Bool_t CbmTrdParModDigi::GetPadInfo(const Double_t* local_point, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const
+{
   // check, if the input is within the allowed range
   if (fabs(local_point[0]) > fSizeX) {
     LOG(error) << "CbmTrdParModDigi::GetPadInfo - local point x must be within "
                   "gas volume, x="
-               << std::setprecision(8) << local_point[0]
-               << " fSizeX=" << std::setprecision(8) << fSizeX;
+               << std::setprecision(8) << local_point[0] << " fSizeX=" << std::setprecision(8) << fSizeX;
     return kFALSE;
   }
   if (fabs(local_point[1]) > fSizeY) {
     LOG(error) << "CbmTrdParModDigi::GetPadInfo - local point y must be within "
                   "gas volume, y="
-               << std::setprecision(8) << local_point[1]
-               << " fSizeY=" << std::setprecision(8) << fSizeY;
+               << std::setprecision(8) << local_point[1] << " fSizeY=" << std::setprecision(8) << fSizeY;
     return kFALSE;
   }
 
@@ -467,10 +425,8 @@ Bool_t CbmTrdParModDigi::GetPadInfo(const Double_t* local_point,
 }
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
-                                  Int_t& sectorId,
-                                  Int_t& columnId,
-                                  Int_t& rowId) const {
+void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const
+{
   /**  
   Calculate point in the middle of the detector. This is
   for safety reasons, because the point at exit is slightly
@@ -510,18 +466,15 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
   // 20131009 - DE - debuging output to check module orientation 0,1,2,3 with box generator
   if (fair::Logger::Logging(fair::Severity::debug2)) {
     // print module orientation
-    LOG(debug2) << "module orientation: " << std::setprecision(5)
-                << fOrientation;
+    LOG(debug2) << "module orientation: " << std::setprecision(5) << fOrientation;
 
     // print global coordinate
-    LOG(debug2) << "global x: " << std::setprecision(5) << global_point[0]
-                << " y: " << std::setprecision(5) << global_point[1]
-                << " z: " << std::setprecision(5) << global_point[2];
+    LOG(debug2) << "global x: " << std::setprecision(5) << global_point[0] << " y: " << std::setprecision(5)
+                << global_point[1] << " z: " << std::setprecision(5) << global_point[2];
 
     // print local coordinate - relative to module center
-    LOG(debug2) << "local  x: " << std::setprecision(5) << local_point[0]
-                << " y: " << std::setprecision(5) << local_point[1]
-                << " z: " << std::setprecision(5) << local_point[2];
+    LOG(debug2) << "local  x: " << std::setprecision(5) << local_point[0] << " y: " << std::setprecision(5)
+                << local_point[1] << " z: " << std::setprecision(5) << local_point[2];
 
     // test projection to next anode wire
     Double_t proj_point[3];
@@ -532,26 +485,21 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
     ProjectPositionToNextAnodeWire(proj_point);
 
     // print local coordinate - relative to module center
-    LOG(debug2) << "proj   x: " << std::setprecision(5) << proj_point[0]
-                << " y: " << std::setprecision(5) << proj_point[1]
-                << " z: " << std::setprecision(5) << proj_point[2];
+    LOG(debug2) << "proj   x: " << std::setprecision(5) << proj_point[0] << " y: " << std::setprecision(5)
+                << proj_point[1] << " z: " << std::setprecision(5) << proj_point[2];
 
     Double_t corner_point[3];
     corner_point[2] = local_point[2];
     TransformToLocalCorner(local_point, corner_point[0], corner_point[1]);
 
     // print local coordinate - relative to module corner
-    LOG(debug2) << "corner x: " << std::setprecision(5) << corner_point[0]
-                << " y: " << std::setprecision(5) << corner_point[1]
-                << " z: " << std::setprecision(5) << corner_point[2];
+    LOG(debug2) << "corner x: " << std::setprecision(5) << corner_point[0] << " y: " << std::setprecision(5)
+                << corner_point[1] << " z: " << std::setprecision(5) << corner_point[2];
 
-    LOG(debug2) << "pos    x: " << std::setprecision(5) << fX
-                << " y: " << std::setprecision(5) << fY
-                << " z: " << std::setprecision(5) << fZ
-                << " ori: " << std::setprecision(5) << fOrientation;
+    LOG(debug2) << "pos    x: " << std::setprecision(5) << fX << " y: " << std::setprecision(5) << fY
+                << " z: " << std::setprecision(5) << fZ << " ori: " << std::setprecision(5) << fOrientation;
 
-    LOG(debug2) << "size/2 x: " << std::setprecision(5) << fSizeX
-                << " y: " << std::setprecision(5) << fSizeY
+    LOG(debug2) << "size/2 x: " << std::setprecision(5) << fSizeX << " y: " << std::setprecision(5) << fSizeY
                 << " z: " << std::setprecision(5) << fSizeZ;
 
     Double_t sector_point[3];
@@ -559,9 +507,8 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
     TransformToLocalSector(local_point, sector_point[0], sector_point[1]);
 
     // print local coordinate - relative to module sector
-    LOG(debug2) << "sector x: " << std::setprecision(5) << sector_point[0]
-                << " y: " << std::setprecision(5) << sector_point[1]
-                << " z: " << std::setprecision(5) << sector_point[2];
+    LOG(debug2) << "sector x: " << std::setprecision(5) << sector_point[0] << " y: " << std::setprecision(5)
+                << sector_point[1] << " z: " << std::setprecision(5) << sector_point[2];
 
     // calculate in which sector the point is
     sectorId = GetSector(local_point);
@@ -571,14 +518,11 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
     LOG(debug2) << "nrow    : " << std::setprecision(5) << GetNofRows();
 
     // print local coordinate - relative to module sector
-    LOG(debug2) << "sec2   x: " << std::setprecision(5)
-                << fSectorBeginX.GetAt(2) << " y: " << std::setprecision(5)
+    LOG(debug2) << "sec2   x: " << std::setprecision(5) << fSectorBeginX.GetAt(2) << " y: " << std::setprecision(5)
                 << fSectorBeginY.GetAt(2);
-    LOG(debug2) << "sec1   x: " << std::setprecision(5)
-                << fSectorBeginX.GetAt(1) << " y: " << std::setprecision(5)
+    LOG(debug2) << "sec1   x: " << std::setprecision(5) << fSectorBeginX.GetAt(1) << " y: " << std::setprecision(5)
                 << fSectorBeginY.GetAt(1);
-    LOG(debug2) << "sec0   x: " << std::setprecision(5)
-                << fSectorBeginX.GetAt(0) << " y: " << std::setprecision(5)
+    LOG(debug2) << "sec0   x: " << std::setprecision(5) << fSectorBeginX.GetAt(0) << " y: " << std::setprecision(5)
                 << fSectorBeginY.GetAt(0);
 
     // get pad information
@@ -594,9 +538,8 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
 
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::TransformToLocalCorner(const Double_t* local_point,
-                                              Double_t& posX,
-                                              Double_t& posY) const {
+void CbmTrdParModDigi::TransformToLocalCorner(const Double_t* local_point, Double_t& posX, Double_t& posY) const
+{
   /**  
   Transformation from local coordinate system 
   with origin in the middle of the module 
@@ -612,9 +555,8 @@ void CbmTrdParModDigi::TransformToLocalCorner(const Double_t* local_point,
 }
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::TransformToLocalSector(const Double_t* local_point,
-                                              Double_t& posX,
-                                              Double_t& posY) const {
+void CbmTrdParModDigi::TransformToLocalSector(const Double_t* local_point, Double_t& posX, Double_t& posY) const
+{
   /**
    Transformation of the module coordinate system 
   with origin in the middle of the module 
@@ -632,9 +574,8 @@ void CbmTrdParModDigi::TransformToLocalSector(const Double_t* local_point,
 
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::TransformToLocalPad(const Double_t* local_point,
-                                           Double_t& posX,
-                                           Double_t& posY) const {
+void CbmTrdParModDigi::TransformToLocalPad(const Double_t* local_point, Double_t& posX, Double_t& posY) const
+{
   /**
   Transformation of the local module coordinate system 
   with origin in the middle of the module  
@@ -648,10 +589,10 @@ void CbmTrdParModDigi::TransformToLocalPad(const Double_t* local_point,
   //   TransformToLocalCorner(local_point, posX, posY);
   Int_t sectorId = GetSector(local_point);
 
-  Double_t padx = (Int_t(sector_point[0] / fPadSizeX.At(sectorId)) + 0.5)
-                  * fPadSizeX.At(sectorId);  // x position of pad center
-  Double_t pady = (Int_t(sector_point[1] / fPadSizeY.At(sectorId)) + 0.5)
-                  * fPadSizeY.At(sectorId);  // y position of pad center
+  Double_t padx =
+    (Int_t(sector_point[0] / fPadSizeX.At(sectorId)) + 0.5) * fPadSizeX.At(sectorId);  // x position of pad center
+  Double_t pady =
+    (Int_t(sector_point[1] / fPadSizeY.At(sectorId)) + 0.5) * fPadSizeY.At(sectorId);  // y position of pad center
 
   posX = sector_point[0] - padx;
   posY = sector_point[1] - pady;
@@ -674,7 +615,8 @@ void CbmTrdParModDigi::TransformToLocalPad(const Double_t* local_point,
 
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::TransformHitError(TVector3& hitErr) const {
+void CbmTrdParModDigi::TransformHitError(TVector3& hitErr) const
+{
   Double_t x, y;  // ,z;
   x = hitErr.X();
   y = hitErr.Y();
@@ -695,10 +637,8 @@ void CbmTrdParModDigi::TransformHitError(TVector3& hitErr) const {
 //___________________________________________________________________________
 void CbmTrdParModDigi::GetModuleInformation(
   //Int_t moduleAddress,
-  const Double_t* local_point,
-  Int_t& sectorId,
-  Int_t& columnId,
-  Int_t& rowId) const {
+  const Double_t* local_point, Int_t& sectorId, Int_t& columnId, Int_t& rowId) const
+{
   // safety check. Up to now always correct, so could be removed.
   //   if (fModuleAddress != moduleAddress) {
   //     LOG(error) << "CbmTrdParModDigi::GetModuleInformation: This is wrong!";
@@ -716,11 +656,9 @@ void CbmTrdParModDigi::GetModuleInformation(
 
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::GetPadPosition(const Int_t sector,
-                                      const Int_t col,
-                                      const Int_t row,
-                                      TVector3& padPos,
-                                      TVector3& padPosErr) const {
+void CbmTrdParModDigi::GetPadPosition(const Int_t sector, const Int_t col, const Int_t row, TVector3& padPos,
+                                      TVector3& padPosErr) const
+{
   /** 
  * Get address of a pad, return position relative to module center
  */
@@ -749,13 +687,9 @@ void CbmTrdParModDigi::GetPadPosition(const Int_t sector,
   posZ = 0;
 
   // check limits
-  if (fabs(posX) > fSizeX)
-    LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posX=" << posX
-               << " is out of bounds!";
+  if (fabs(posX) > fSizeX) LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posX=" << posX << " is out of bounds!";
   // check limits
-  if (fabs(posY) > fSizeY)
-    LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posY=" << posY
-               << " is out of bounds!";
+  if (fabs(posY) > fSizeY) LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posY=" << posY << " is out of bounds!";
 
   padPos.SetXYZ(posX, posY, posZ);
   padPosErr.SetXYZ(padsizex / 2., padsizey / 2., 0.);
@@ -763,9 +697,8 @@ void CbmTrdParModDigi::GetPadPosition(const Int_t sector,
 
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress,
-                                      TVector3& padPos,
-                                      TVector3& padPosErr) const {
+void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress, TVector3& padPos, TVector3& padPosErr) const
+{
   /** 
  * Get address of a pad, return position relative to module center
  */
@@ -782,10 +715,9 @@ void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress,
 }
 
 //___________________________________________________________________________
-void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress,
-                                      bool isCbmTrdDigiAddress,
-                                      TVector3& padPos,
-                                      TVector3& padPosErr) const {
+void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress, bool isCbmTrdDigiAddress, TVector3& padPos,
+                                      TVector3& padPosErr) const
+{
   /** 
  * Get address of a pad, based on the channel address stored in the CbmTrdDigi
  */
@@ -806,11 +738,8 @@ void CbmTrdParModDigi::GetPadPosition(const Int_t padAddress,
 //___________________________________________________________________________
 void CbmTrdParModDigi::GetPosition(
   //         Int_t moduleAddress,
-  Int_t sectorId,
-  Int_t columnId,
-  Int_t rowId,
-  TVector3& padPos,
-  TVector3& padSize) const {
+  Int_t sectorId, Int_t columnId, Int_t rowId, TVector3& padPos, TVector3& padSize) const
+{
   /**  
   Calculate position in global coordinates 
   from digi information (sectorId, columnId, rowId).
@@ -823,16 +752,13 @@ void CbmTrdParModDigi::GetPosition(
 
   // check limits
   if ((sectorId < 0) || (sectorId > GetNofSectors() - 1))
-    LOG(fatal) << "CbmTrdParModDigi::GetPosition sectorId " << sectorId
-               << " of "
-               << GetNofSectors()
-                    - 1  //<< " in moduleAddress " << moduleAddress
+    LOG(fatal) << "CbmTrdParModDigi::GetPosition sectorId " << sectorId << " of "
+               << GetNofSectors() - 1  //<< " in moduleAddress " << moduleAddress
                << " is out of bounds!";
 
   // check limits
   if ((columnId < 0) || (columnId > GetNofColumnsInSector(sectorId) - 1))
-    LOG(fatal) << "CbmTrdParModDigi::GetPosition columnId " << columnId
-               << " of "
+    LOG(fatal) << "CbmTrdParModDigi::GetPosition columnId " << columnId << " of "
                << GetNofColumnsInSector(sectorId) - 1
                //<< " in moduleAddress " << moduleAddress
                << " is out of bounds!";
@@ -900,7 +826,8 @@ void CbmTrdParModDigi::GetPosition(
 }
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetPadColumn(const Int_t channelNumber) const {
+Int_t CbmTrdParModDigi::GetPadColumn(const Int_t channelNumber) const
+{
   // calculate the pad column based on
   // the channeNumber as defined in the
   // CbmTrdDigi
@@ -912,7 +839,8 @@ Int_t CbmTrdParModDigi::GetPadColumn(const Int_t channelNumber) const {
 }
 
 //___________________________________________________________________________
-Int_t CbmTrdParModDigi::GetPadRow(const Int_t channelNumber) const {
+Int_t CbmTrdParModDigi::GetPadRow(const Int_t channelNumber) const
+{
   // calculate the pad row based on
   // the channeNumber as defined in the
   // CbmTrdDigi

@@ -1,9 +1,10 @@
-{}
+{
+}
 
-void rootlogon_nh() {
+void rootlogon_nh()
+{
   pTime = new TDatime();
-  cout << " Executing rootlogon.C (nh) at " << pTime->GetDate() << ", "
-       << pTime->GetTime() << endl;
+  cout << " Executing rootlogon.C (nh) at " << pTime->GetDate() << ", " << pTime->GetTime() << endl;
   gStyle->SetOptStat(111);
   gStyle->SetLineWidth(2.);
   gStyle->SetFrameLineWidth(2.);
@@ -36,49 +37,29 @@ void rootlogon_nh() {
 
   gStyle->SetLineScalePS(1.0);
 
-  gSystem->AddIncludePath(
-    Form("-I%s/include", gSystem->Getenv("FAIRROOTPATH")));
+  gSystem->AddIncludePath(Form("-I%s/include", gSystem->Getenv("FAIRROOTPATH")));
 
   gSystem->AddIncludePath(Form("-I%s/roclight", gSystem->Getenv("VMCWORKDIR")));
   gSystem->AddIncludePath(Form("-I%s/data", gSystem->Getenv("VMCWORKDIR")));
   gSystem->AddIncludePath(Form("-I%s/data/tof", gSystem->Getenv("VMCWORKDIR")));
   gSystem->AddIncludePath(Form("-I%s/base ", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/hadaq", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/tdc", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/tdc/v1290", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/tdc/vftx", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/tdc/trb", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/tdc/get4", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/scalers", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/scalers/triglog", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/scalers/scalormu", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/scalers/scal2014", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/scalers/orgen", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/unpMoni", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/calib", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/calib/tdc", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/calib/scaler", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/mapping", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/output", gSystem->Getenv("VMCWORKDIR")));
-  gSystem->AddIncludePath(
-    Form("-I%s/beamtime/tof/display", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/hadaq", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/tdc", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/tdc/v1290", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/tdc/vftx", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/tdc/trb", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/tdc/get4", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/scalers", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/scalers/triglog", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/scalers/scalormu", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/scalers/scal2014", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/scalers/orgen", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/unpMoni", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/calib", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/calib/tdc", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/calib/scaler", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/mapping", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/output", gSystem->Getenv("VMCWORKDIR")));
+  gSystem->AddIncludePath(Form("-I%s/beamtime/tof/display", gSystem->Getenv("VMCWORKDIR")));
 }

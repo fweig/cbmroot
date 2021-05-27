@@ -11,12 +11,14 @@
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmRichRing.h"
+#include "CbmRichUtil.h"
 #include "CbmTrackMatchNew.h"
+#include "CbmUtils.h"
+
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
 
-#include "CbmRichUtil.h"
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TH1D.h"
@@ -25,14 +27,13 @@
 #include "TString.h"
 #include "TSystem.h"
 
-#include "CbmUtils.h"
-
 #include <boost/assign/list_of.hpp>
 
-#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <cmath>
 
 class CbmStsTrack;
 
@@ -80,7 +81,8 @@ CbmRichTrainAnnElectrons::CbmRichTrainAnnElectrons()
   , fhAaxisVsMom()
   , fhBaxisVsMom()
   , fhPhiVsRadAng()
-  , fHists() {
+  , fHists()
+{
   fhAaxis.resize(2);
   fhBaxis.resize(2);
   //  fhAaxisCor.resize(2);
@@ -101,147 +103,85 @@ CbmRichTrainAnnElectrons::CbmRichTrainAnnElectrons()
     if (i == 0) ss = "Electron";
     if (i == 1) ss = "Pion";
     // difference between electrons and pions
-    fhAaxis[i] = new TH1D(string("fhAaxis" + ss).c_str(),
-                          "fhAaxis;A axis [cm];Counter",
-                          50,
-                          0.,
-                          8.);
+    fhAaxis[i] = new TH1D(string("fhAaxis" + ss).c_str(), "fhAaxis;A axis [cm];Counter", 50, 0., 8.);
     fHists.push_back(fhAaxis[i]);
-    fhBaxis[i] = new TH1D(string("fhBAxis" + ss).c_str(),
-                          "fhBAxis;B axis [cm];Counter",
-                          50,
-                          0.,
-                          8.);
+    fhBaxis[i] = new TH1D(string("fhBAxis" + ss).c_str(), "fhBAxis;B axis [cm];Counter", 50, 0., 8.);
     fHists.push_back(fhBaxis[i]);
     // fhAaxisCor[i] = new TH1D(string("fhAaxisCor"+ss).c_str(), "fhAaxisCor;A axis [cm];Counter", 30,3,8);
     // fHists.push_back(fhAaxisCor[i]);
     // fhBaxisCor[i] = new TH1D(string("fhBAxisCor"+ss).c_str(), "fhBAxisCor;B axis [cm];Counter", 30,3,8);
     // fHists.push_back(fhBaxisCor[i]);
     fhDistTrueMatch[i] =
-      new TH1D(string("fhDistTrueMatch" + ss).c_str(),
-               "fhDistTrueMatch;Ring-track distance [cm];Counter",
-               50,
-               0.,
-               5.);
+      new TH1D(string("fhDistTrueMatch" + ss).c_str(), "fhDistTrueMatch;Ring-track distance [cm];Counter", 50, 0., 5.);
     fHists.push_back(fhDistTrueMatch[i]);
     fhDistMisMatch[i] =
-      new TH1D(string("fhDistMisMatch" + ss).c_str(),
-               "fhDistMisMatch;Ring-track distance [cm];Counter",
-               50,
-               0.,
-               5.);
+      new TH1D(string("fhDistMisMatch" + ss).c_str(), "fhDistMisMatch;Ring-track distance [cm];Counter", 50, 0., 5.);
     fHists.push_back(fhDistMisMatch[i]);
-    fhNofHits[i] = new TH1D(string("fhNofHits" + ss).c_str(),
-                            "fhNofHits;Number of hits;Counter",
-                            50,
-                            0,
-                            50);
+    fhNofHits[i] = new TH1D(string("fhNofHits" + ss).c_str(), "fhNofHits;Number of hits;Counter", 50, 0, 50);
     fHists.push_back(fhNofHits[i]);
-    fhChi2[i] = new TH1D(
-      string("fhChi2" + ss).c_str(), "fhChi2;#Chi^{2};Counter", 100, 0., 1.);
+    fhChi2[i] = new TH1D(string("fhChi2" + ss).c_str(), "fhChi2;#Chi^{2};Counter", 100, 0., 1.);
     fHists.push_back(fhChi2[i]);
-    fhRadPos[i] = new TH1D(string("fhRadPos" + ss).c_str(),
-                           "fhRadPos;Radial position [cm];Counter",
-                           150,
-                           0.,
-                           150.);
+    fhRadPos[i] = new TH1D(string("fhRadPos" + ss).c_str(), "fhRadPos;Radial position [cm];Counter", 150, 0., 150.);
     fHists.push_back(fhRadPos[i]);
-    fhAaxisVsMom[i] = new TH2D(string("fhAaxisVsMom" + ss).c_str(),
-                               "fhAaxisVsMom;P [GeV/c];A axis [cm]",
-                               30,
-                               0,
-                               15,
-                               50,
-                               0,
-                               10);
+    fhAaxisVsMom[i] =
+      new TH2D(string("fhAaxisVsMom" + ss).c_str(), "fhAaxisVsMom;P [GeV/c];A axis [cm]", 30, 0, 15, 50, 0, 10);
     fHists.push_back(fhAaxisVsMom[i]);
-    fhBaxisVsMom[i] = new TH2D(string("fhBAxisVsMom" + ss).c_str(),
-                               "fhBAxisVsMom;P [GeV/c];B axis [cm]",
-                               30,
-                               0,
-                               15,
-                               50,
-                               0,
-                               10);
+    fhBaxisVsMom[i] =
+      new TH2D(string("fhBAxisVsMom" + ss).c_str(), "fhBAxisVsMom;P [GeV/c];B axis [cm]", 30, 0, 15, 50, 0, 10);
     fHists.push_back(fhBaxisVsMom[i]);
-    fhPhiVsRadAng[i] = new TH2D(string("fhPhiVsRadAng" + ss).c_str(),
-                                "fhPhiVsRadAng;Phi [rad];Radial angle [rad]",
-                                50,
-                                -2.,
-                                2.,
-                                50,
-                                0.,
-                                6.3);
+    fhPhiVsRadAng[i] = new TH2D(string("fhPhiVsRadAng" + ss).c_str(), "fhPhiVsRadAng;Phi [rad];Radial angle [rad]", 50,
+                                -2., 2., 50, 0., 6.3);
     fHists.push_back(fhPhiVsRadAng[i]);
     // ANN outputs
-    fhAnnOutput[i] = new TH1D(string("fhAnnOutput" + ss).c_str(),
-                              "ANN output;ANN output;Counter",
-                              100,
-                              -1.2,
-                              1.2);
+    fhAnnOutput[i] = new TH1D(string("fhAnnOutput" + ss).c_str(), "ANN output;ANN output;Counter", 100, -1.2, 1.2);
     fHists.push_back(fhAnnOutput[i]);
-    fhCumProb[i] = new TH1D(string("fhCumProb" + ss).c_str(),
-                            "ANN output;ANN output;Cumulative probability",
-                            100,
-                            -1.2,
-                            1.2);
+    fhCumProb[i] =
+      new TH1D(string("fhCumProb" + ss).c_str(), "ANN output;ANN output;Cumulative probability", 100, -1.2, 1.2);
     fHists.push_back(fhCumProb[i]);
   }
 }
 
 CbmRichTrainAnnElectrons::~CbmRichTrainAnnElectrons() {}
 
-InitStatus CbmRichTrainAnnElectrons::Init() {
+InitStatus CbmRichTrainAnnElectrons::Init()
+{
   cout << "InitStatus CbmRichTrainAnnElectrons::Init()" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmRichTrainAnnElectrons::Init", "RootManager not instantised!"); }
 
   //fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
   //if ( NULL == fRichHits) { Fatal("CbmRichTrainAnnElectrons::Init","No RichHit array!");}
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No RichRing array!");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichTrainAnnElectrons::Init", "No RichRing array!"); }
 
   //fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
   //if ( NULL == fRichPoints) { Fatal("CbmRichTrainAnnElectrons::Init","No RichPoint array!");}
 
   fMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMCTracks) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No MCTrack array!");
-  }
+  if (NULL == fMCTracks) { Fatal("CbmRichTrainAnnElectrons::Init", "No MCTrack array!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No RichRingMatch array!");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmRichTrainAnnElectrons::Init", "No RichRingMatch array!"); }
 
   // fRichProj = (TClonesArray*) ioman->GetObject("RichProjection");
   // if ( NULL == fRichProj) { Fatal("CbmRichTrainAnnElectrons::Init","No RichProjection array!");}
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fStsTrackMatches) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No track match array!");
-  }
+  if (NULL == fStsTrackMatches) { Fatal("CbmRichTrainAnnElectrons::Init", "No track match array!"); }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No global track array!");
-  }
+  if (NULL == fGlobalTracks) { Fatal("CbmRichTrainAnnElectrons::Init", "No global track array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmRichTrainAnnElectrons::Init", "No  STSTrack array!");
-  }
+  if (NULL == fStsTracks) { Fatal("CbmRichTrainAnnElectrons::Init", "No  STSTrack array!"); }
 
   return kSUCCESS;
 }
 
-void CbmRichTrainAnnElectrons::Exec(Option_t* /*option*/) {
+void CbmRichTrainAnnElectrons::Exec(Option_t* /*option*/)
+{
   cout << endl << "-I- CbmRichTrainAnnElectrons, event " << fEventNum << endl;
   DiffElandPi();
   fEventNum++;
@@ -249,7 +189,8 @@ void CbmRichTrainAnnElectrons::Exec(Option_t* /*option*/) {
   cout << "Nof Pions = " << fRElIdParams[1].size() << endl;
 }
 
-void CbmRichTrainAnnElectrons::DiffElandPi() {
+void CbmRichTrainAnnElectrons::DiffElandPi()
+{
   Int_t nGlTracks = fGlobalTracks->GetEntriesFast();
 
   for (Int_t iTrack = 0; iTrack < nGlTracks; iTrack++) {
@@ -259,8 +200,7 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
     if (stsIndex == -1) continue;
     CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsIndex);
     if (NULL == stsTrack) continue;
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatches->At(stsIndex);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(stsIndex);
     if (NULL == stsTrackMatch) continue;
     Int_t mcIdSts = stsTrackMatch->GetMatchedLink().GetIndex();
 
@@ -268,8 +208,7 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
     if (richIndex == -1) continue;
     CbmRichRing* ring = (CbmRichRing*) fRichRings->At(richIndex);
     if (NULL == ring) continue;
-    CbmTrackMatchNew* richRingMatch =
-      (CbmTrackMatchNew*) fRichRingMatches->At(richIndex);
+    CbmTrackMatchNew* richRingMatch = (CbmTrackMatchNew*) fRichRingMatches->At(richIndex);
     if (NULL == richRingMatch) continue;
     Int_t mcIdRich = richRingMatch->GetMatchedLink().GetIndex();
 
@@ -282,13 +221,9 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
     //        Double_t axisACor = ring->GetAaxisCor();
     //        Double_t axisBCor= ring->GetBaxisCor();
 
-    Int_t lFoundHits =
-      richRingMatch->GetNofTrueHits() + richRingMatch->GetNofWrongHits();
+    Int_t lFoundHits   = richRingMatch->GetNofTrueHits() + richRingMatch->GetNofWrongHits();
     Double_t lPercTrue = 0;
-    if (lFoundHits >= 3) {
-      lPercTrue =
-        (Double_t) richRingMatch->GetNofTrueHits() / (Double_t) lFoundHits;
-    }
+    if (lFoundHits >= 3) { lPercTrue = (Double_t) richRingMatch->GetNofTrueHits() / (Double_t) lFoundHits; }
     Bool_t isTrueFound = (lPercTrue > fQuota);
 
     RingElectronParam p;
@@ -305,8 +240,7 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
     if (p.fAaxis > 9. || p.fBaxis > 9.) continue;
 
     // electrons
-    if (pdg == 11 && motherId == -1 && isTrueFound && mcIdSts == mcIdRich
-        && mcIdRich != -1) {
+    if (pdg == 11 && motherId == -1 && isTrueFound && mcIdSts == mcIdRich && mcIdRich != -1) {
       fhAaxis[0]->Fill(p.fAaxis);
       fhBaxis[0]->Fill(p.fBaxis);
       // fhAaxisCor[0]->Fill(axisACor);
@@ -321,8 +255,7 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
       fRElIdParams[0].push_back(p);
     }
 
-    if (pdg == 11 && motherId == -1 && isTrueFound && mcIdSts != mcIdRich
-        && mcIdRich != -1) {
+    if (pdg == 11 && motherId == -1 && isTrueFound && mcIdSts != mcIdRich && mcIdRich != -1) {
       fhDistMisMatch[0]->Fill(p.fDistance);
     }
 
@@ -337,7 +270,8 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
         fhDistTrueMatch[1]->Fill(p.fDistance);
         fhAaxisVsMom[1]->Fill(momentum, p.fAaxis);
         fhBaxisVsMom[1]->Fill(momentum, p.fBaxis);
-      } else {
+      }
+      else {
         fhDistMisMatch[1]->Fill(p.fDistance);
       }
       fhNofHits[1]->Fill(p.fNofHits);
@@ -350,7 +284,8 @@ void CbmRichTrainAnnElectrons::DiffElandPi() {
   }  // global tracks
 }
 
-void CbmRichTrainAnnElectrons::TrainAndTestAnn() {
+void CbmRichTrainAnnElectrons::TrainAndTestAnn()
+{
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
   Double_t x[9];
   Double_t xOut;
@@ -390,8 +325,7 @@ void CbmRichTrainAnnElectrons::TrainAndTestAnn() {
     }
   }
 
-  TMultiLayerPerceptron network(
-    "x0,x1,x2,x3,x4,x5,x6,x7,x8:18:xOut", simu, "Entry$+1");
+  TMultiLayerPerceptron network("x0,x1,x2,x3,x4,x5,x6,x7,x8:18:xOut", simu, "Entry$+1");
   //network.LoadWeights("");
   network.Train(300, "text,update=10");
   network.DumpWeights("rich_v17a_elid_ann_weights.txt");
@@ -431,14 +365,14 @@ void CbmRichTrainAnnElectrons::TrainAndTestAnn() {
   }
 }
 
-void CbmRichTrainAnnElectrons::Draw(Option_t*) {
+void CbmRichTrainAnnElectrons::Draw(Option_t*)
+{
   cout << "nof electrons = " << fRElIdParams[0].size() << endl;
   cout << "nof pions = " << fRElIdParams[1].size() << endl;
   cout << "Pions like electrons = " << fNofPiLikeEl
-       << ", pi supp = " << (Double_t) fRElIdParams[1].size() / fNofPiLikeEl
-       << endl;
-  cout << "Electrons like pions = " << fNofElLikePi << ", el lost eff = "
-       << 100. * (Double_t) fNofElLikePi / fRElIdParams[0].size() << endl;
+       << ", pi supp = " << (Double_t) fRElIdParams[1].size() / fNofPiLikeEl << endl;
+  cout << "Electrons like pions = " << fNofElLikePi
+       << ", el lost eff = " << 100. * (Double_t) fNofElLikePi / fRElIdParams[0].size() << endl;
   cout << "ANN cut = " << fAnnCut << endl;
 
   Double_t cumProbFake = 0.;
@@ -456,58 +390,26 @@ void CbmRichTrainAnnElectrons::Draw(Option_t*) {
   SetDefaultDrawStyle();
   {
     //        TCanvas* c = CreateCanvas("ann_electrons_ann_output", "ann_electrons_ann_output", 500, 500);
-    CreateCanvas(
-      "ann_electrons_ann_output", "ann_electrons_ann_output", 500, 500);
-    DrawH1(list_of(fhAnnOutput[0])(fhAnnOutput[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
-           0.99);
+    CreateCanvas("ann_electrons_ann_output", "ann_electrons_ann_output", 500, 500);
+    DrawH1(list_of(fhAnnOutput[0])(fhAnnOutput[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8,
+           0.99, 0.99);
   }
 
   {
     //        TCanvas* c = CreateCanvas("ann_electrons_cum_prob", "ann_electrons_cum_prob", 500, 500);
     CreateCanvas("ann_electrons_cum_prob", "ann_electrons_cum_prob", 500, 500);
-    DrawH1(list_of(fhCumProb[0])(fhCumProb[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLinear,
-           true,
-           0.8,
-           0.8,
-           0.99,
+    DrawH1(list_of(fhCumProb[0])(fhCumProb[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLinear, true, 0.8, 0.8, 0.99,
            0.99);
   }
 
   {
     int i      = 1;
-    TCanvas* c = CreateCanvas(
-      "ann_electrons_params_ab", "ann_electrons_params_ab", 1200, 600);
+    TCanvas* c = CreateCanvas("ann_electrons_params_ab", "ann_electrons_params_ab", 1200, 600);
     c->Divide(2, 1);
     c->cd(i++);
-    DrawH1(list_of(fhAaxis[0])(fhAaxis[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
-           0.99);
+    DrawH1(list_of(fhAaxis[0])(fhAaxis[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
     c->cd(i++);
-    DrawH1(list_of(fhBaxis[0])(fhBaxis[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
-           0.99);
+    DrawH1(list_of(fhBaxis[0])(fhBaxis[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
     //   c3->cd(c++);
     //   DrawH1(list_of(fhAaxisCor[0])(fhAaxisCor[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
     //   c3->cd(c++);
@@ -516,8 +418,7 @@ void CbmRichTrainAnnElectrons::Draw(Option_t*) {
 
   {
     int i      = 1;
-    TCanvas* c = CreateCanvas(
-      "ann_electrons_params_1", "ann_electrons_params_1", 1500, 600);
+    TCanvas* c = CreateCanvas("ann_electrons_params_1", "ann_electrons_params_1", 1500, 600);
     c->Divide(3, 1);
     c->cd(i++);
     //fhAaxisVsMom[0]->SetLineColor(kRed);
@@ -531,60 +432,28 @@ void CbmRichTrainAnnElectrons::Draw(Option_t*) {
     DrawH2(fhBaxisVsMom[0], kLinear, kLinear, kLinear);
 
     c->cd(i++);
-    DrawH1(list_of(fhDistTrueMatch[0])(fhDistMisMatch[0])(fhDistTrueMatch[1])(
-             fhDistMisMatch[1]),
-           list_of("e^{#pm} true match")("e^{#pm} mis match")(
-             "#pi^{#pm} true match")("#pi^{#pm} mis match"),
-           kLinear,
-           kLog,
-           true,
-           0.6,
-           0.7,
-           0.99,
-           0.99);
+    DrawH1(list_of(fhDistTrueMatch[0])(fhDistMisMatch[0])(fhDistTrueMatch[1])(fhDistMisMatch[1]),
+           list_of("e^{#pm} true match")("e^{#pm} mis match")("#pi^{#pm} true match")("#pi^{#pm} mis match"), kLinear,
+           kLog, true, 0.6, 0.7, 0.99, 0.99);
   }
 
   {
     int i      = 1;
-    TCanvas* c = CreateCanvas(
-      "ann_electrons_params_2", "ann_electrons_params_2", 1500, 600);
+    TCanvas* c = CreateCanvas("ann_electrons_params_2", "ann_electrons_params_2", 1500, 600);
     c->Divide(3, 1);
     c->cd(i++);
-    DrawH1(list_of(fhNofHits[0])(fhNofHits[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
+    DrawH1(list_of(fhNofHits[0])(fhNofHits[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99,
            0.99);
     c->cd(i++);
-    DrawH1(list_of(fhChi2[0])(fhChi2[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
-           0.99);
+    DrawH1(list_of(fhChi2[0])(fhChi2[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99);
     c->cd(i++);
-    DrawH1(list_of(fhRadPos[0])(fhRadPos[1]),
-           list_of("e^{#pm}")("#pi^{#pm}"),
-           kLinear,
-           kLog,
-           true,
-           0.8,
-           0.8,
-           0.99,
+    DrawH1(list_of(fhRadPos[0])(fhRadPos[1]), list_of("e^{#pm}")("#pi^{#pm}"), kLinear, kLog, true, 0.8, 0.8, 0.99,
            0.99);
   }
 
   {
     int i      = 1;
-    TCanvas* c = CreateCanvas(
-      "ann_electrons_params_2d", "ann_electrons_params_2d", 600, 900);
+    TCanvas* c = CreateCanvas("ann_electrons_params_2d", "ann_electrons_params_2d", 600, 900);
     c->Divide(2, 3);
     c->cd(i++);
     DrawH2(fhAaxisVsMom[0]);
@@ -609,7 +478,8 @@ void CbmRichTrainAnnElectrons::Draw(Option_t*) {
   //   DrawH2(fhAaxisVsMom[0]);
 }
 
-void CbmRichTrainAnnElectrons::FinishTask() {
+void CbmRichTrainAnnElectrons::FinishTask()
+{
   TrainAndTestAnn();
   Draw();
 
@@ -621,16 +491,15 @@ void CbmRichTrainAnnElectrons::FinishTask() {
   SaveCanvasToImage();
 }
 
-TCanvas* CbmRichTrainAnnElectrons::CreateCanvas(const string& name,
-                                                const string& title,
-                                                int width,
-                                                int height) {
+TCanvas* CbmRichTrainAnnElectrons::CreateCanvas(const string& name, const string& title, int width, int height)
+{
   TCanvas* c = new TCanvas(name.c_str(), title.c_str(), width, height);
   fCanvas.push_back(c);
   return c;
 }
 
-void CbmRichTrainAnnElectrons::SaveCanvasToImage() {
+void CbmRichTrainAnnElectrons::SaveCanvasToImage()
+{
   for (unsigned int i = 0; i < fCanvas.size(); i++) {
     Cbm::SaveCanvasAsImage(fCanvas[i], fOutputDir);
   }

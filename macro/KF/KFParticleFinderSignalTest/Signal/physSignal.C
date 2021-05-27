@@ -6,8 +6,8 @@
 // macro to reconstruct particles from signal events by KFParticleFinder
 //_________________________________________________________________________________
 
-void physSignal(Int_t nEvents         = 1000,
-                const char* setupName = "sis100_electron") {
+void physSignal(Int_t nEvents = 1000, const char* setupName = "sis100_electron")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -46,11 +46,11 @@ void physSignal(Int_t nEvents         = 1000,
       return;
     }
     if (treeMC->GetEntriesFast() < nEvents) {
-      std::cout << "[FATAL  ]  Simulation is incomplete. N mc events = "
-                << treeMC->GetEntriesFast() << std::endl;
+      std::cout << "[FATAL  ]  Simulation is incomplete. N mc events = " << treeMC->GetEntriesFast() << std::endl;
       return;
     }
-  } else {
+  }
+  else {
     std::cout << "[FATAL  ]  MC file does not exist." << std::endl;
     return;
   }
@@ -63,11 +63,12 @@ void physSignal(Int_t nEvents         = 1000,
       return;
     }
     if (treeReco->GetEntriesFast() < nEvents) {
-      std::cout << "[FATAL  ]  Reconstruction is incomplete. N reco events = "
-                << treeReco->GetEntriesFast() << std::endl;
+      std::cout << "[FATAL  ]  Reconstruction is incomplete. N reco events = " << treeReco->GetEntriesFast()
+                << std::endl;
       return;
     }
-  } else {
+  }
+  else {
     std::cout << "[FATAL  ]  Reco file does not exist." << std::endl;
     return;
   }
@@ -90,14 +91,12 @@ void physSignal(Int_t nEvents         = 1000,
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);
   if (setup->IsActive(kMvd)) {
     setup->GetGeoTag(kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(kSts)) {
     setup->GetGeoTag(kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -120,10 +119,7 @@ void physSignal(Int_t nEvents         = 1000,
 
   // ----- KF Particle Finder QA --------------------------------------------
   CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA",
-                              0,
-                              kfParticleFinder->GetTopoReconstructor(),
-                              histoFile.Data());
+    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(100);  //nEvents);
   //  kfParticleFinderQA->SetSuperEventAnalysis(); // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());
@@ -153,20 +149,12 @@ void physSignal(Int_t nEvents         = 1000,
   rtdb->print();
 
   KFPartEfficiencies eff;
-  for (int jParticle = eff.fFirstStableParticleIndex + 10;
-       jParticle <= eff.fLastStableParticleIndex;
-       jParticle++) {
+  for (int jParticle = eff.fFirstStableParticleIndex + 10; jParticle <= eff.fLastStableParticleIndex; jParticle++) {
     TDatabasePDG* pdgDB = TDatabasePDG::Instance();
 
     if (!pdgDB->GetParticle(eff.partPDG[jParticle])) {
-      pdgDB->AddParticle(eff.partTitle[jParticle].data(),
-                         eff.partTitle[jParticle].data(),
-                         eff.partMass[jParticle],
-                         kTRUE,
-                         0,
-                         eff.partCharge[jParticle] * 3,
-                         "Ion",
-                         eff.partPDG[jParticle]);
+      pdgDB->AddParticle(eff.partTitle[jParticle].data(), eff.partTitle[jParticle].data(), eff.partMass[jParticle],
+                         kTRUE, 0, eff.partCharge[jParticle] * 3, "Ion", eff.partPDG[jParticle]);
     }
   }
   run->Run(firstEventToRun, lastEventToRun + 1);

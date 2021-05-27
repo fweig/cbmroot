@@ -30,7 +30,8 @@ ClassImp(CbmTrdContFact)
 
   static CbmTrdContFact gCbmTrdContFact;
 
-CbmTrdContFact::CbmTrdContFact() {
+CbmTrdContFact::CbmTrdContFact()
+{
   // Constructor (called when the library is loaded)
   fName  = "CbmTrdContFact";
   fTitle = "Factory for parameter containers in libTrd";
@@ -38,35 +39,31 @@ CbmTrdContFact::CbmTrdContFact() {
   FairRuntimeDb::instance()->addContFactory(this);
 }
 
-void CbmTrdContFact::setAllContainers() {
+void CbmTrdContFact::setAllContainers()
+{
   /** Creates the Container objects with all accepted contexts and adds them to
    *  the list of containers for the STS library.*/
 
   // AB
   FairContainer* par(nullptr);
   // ASIC parametsr
-  par = new FairContainer(
-    "CbmTrdParSetAsic", "Trd ASIC Parameters", "TestDefaultContext");
+  par = new FairContainer("CbmTrdParSetAsic", "Trd ASIC Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
   // read-out parameters
-  par = new FairContainer(
-    "CbmTrdParSetDigi", "Trd Read-Out Parameters", "TestDefaultContext");
+  par = new FairContainer("CbmTrdParSetDigi", "Trd Read-Out Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
   // gas parameters
-  par = new FairContainer(
-    "CbmTrdParSetGas", "Trd Gas Parameters", "TestDefaultContext");
+  par = new FairContainer("CbmTrdParSetGas", "Trd Gas Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
   // gain parameters
-  par = new FairContainer(
-    "CbmTrdParSetGain", "Trd Gain Parameters", "TestDefaultContext");
+  par = new FairContainer("CbmTrdParSetGain", "Trd Gain Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
   // geometry parameters
-  par = new FairContainer(
-    "CbmTrdParSetGeo", "Trd Geometry Parameters", "TestDefaultContext");
+  par = new FairContainer("CbmTrdParSetGeo", "Trd Geometry Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
 
@@ -76,7 +73,8 @@ void CbmTrdContFact::setAllContainers() {
   containers->Add(pTrd);
 }
 
-FairParSet* CbmTrdContFact::createContainer(FairContainer* c) {
+FairParSet* CbmTrdContFact::createContainer(FairContainer* c)
+{
   /** Calls the constructor of the corresponding parameter container.
    * For an actual context, which is not an empty string and not the default context
    * of this container, the name is concatinated with the context. */
@@ -85,20 +83,15 @@ FairParSet* CbmTrdContFact::createContainer(FairContainer* c) {
 
   FairParSet* p(nullptr);
   if (strcmp(name, "CbmTrdParSetAsic") == 0)
-    p = new CbmTrdParSetAsic(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTrdParSetAsic(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmTrdParSetDigi") == 0)
-    p = new CbmTrdParSetDigi(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTrdParSetDigi(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmTrdParSetGas") == 0)
-    p = new CbmTrdParSetGas(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTrdParSetGas(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmTrdParSetGain") == 0)
-    p = new CbmTrdParSetGain(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTrdParSetGain(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmTrdParSetGeo") == 0)
-    p = new CbmTrdParSetGeo(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmTrdParSetGeo(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmMcbm2020TrdTshiftPar") == 0) {
     p = new CbmMcbm2020TrdTshiftPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }

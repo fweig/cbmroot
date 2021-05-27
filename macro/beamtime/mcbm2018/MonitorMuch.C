@@ -10,12 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorMuch(TString inFile           = "",
-                 TString sHostname        = "en02",
-                 Int_t iServerRefreshRate = 100,
-                 Int_t iServerHttpPort    = 8080,
-                 Int_t iStartFile         = -1,
-                 Int_t iStopFile          = -1) {
+void MonitorMuch(TString inFile = "", TString sHostname = "en02", Int_t iServerRefreshRate = 100,
+                 Int_t iServerHttpPort = 8080, Int_t iStartFile = -1, Int_t iStopFile = -1)
+{
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -105,8 +102,7 @@ void MonitorMuch(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -116,8 +112,7 @@ void MonitorMuch(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorSts: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorSts: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

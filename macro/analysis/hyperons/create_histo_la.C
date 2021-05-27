@@ -1,4 +1,5 @@
-void create_histo_la(Int_t file_nr = 0) {
+void create_histo_la(Int_t file_nr = 0)
+{
   Int_t iVerbose     = 2;
   Double_t mMin      = 1.10;
   Double_t mMax      = 1.13;
@@ -72,27 +73,19 @@ void create_histo_la(Int_t file_nr = 0) {
   TH1D* hSigK0MLS = new TH1D("hSigK0MLS", "", 60, 0.30, 0.60);
   TH2D* hAP       = new TH2D("hAP", "", 50, -1, 1, 50, 0., 0.25);
 
-  Int_t nBins = 100;
-  title       = ";b_{p} [cm];b_{#pi^{ -}} [cm]";
-  TH2D* hBgdB1B2 =
-    new TH2D("hBgdB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
-  TH2D* hSigB1B2 =
-    new TH2D("hSigB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
-  title = ";#chi^{2}_{p};#chi^{2}_{#pi^{ -}}";
-  TH2D* hBgdChi1Chi2 =
-    new TH2D("hBgdChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
-  TH2D* hSigChi1Chi2 =
-    new TH2D("hSigChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
-  title = ";#chi^{2};Distance of closest approach [cm]";
-  TH2D* hBgdChiDca =
-    new TH2D("hBgdChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
-  TH2D* hSigChiDca =
-    new TH2D("hSigChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
-  title = ";z-vertex [cm];b_{#Xi^{ -}} [cm]";
-  TH2D* hBgdPcaBmo =
-    new TH2D("hBgdPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
-  TH2D* hSigPcaBmo =
-    new TH2D("hSigPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
+  Int_t nBins         = 100;
+  title               = ";b_{p} [cm];b_{#pi^{ -}} [cm]";
+  TH2D* hBgdB1B2      = new TH2D("hBgdB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
+  TH2D* hSigB1B2      = new TH2D("hSigB1B2", title, nBins, 0., b1Max, nBins, 0., b2Max);
+  title               = ";#chi^{2}_{p};#chi^{2}_{#pi^{ -}}";
+  TH2D* hBgdChi1Chi2  = new TH2D("hBgdChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
+  TH2D* hSigChi1Chi2  = new TH2D("hSigChi1Chi2", title, nBins, 0., chi1Max, nBins, 0., chi2Max);
+  title               = ";#chi^{2};Distance of closest approach [cm]";
+  TH2D* hBgdChiDca    = new TH2D("hBgdChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
+  TH2D* hSigChiDca    = new TH2D("hSigChiDca", title, nBins, 0., chiMax, nBins, 0., dcaMax);
+  title               = ";z-vertex [cm];b_{#Xi^{ -}} [cm]";
+  TH2D* hBgdPcaBmo    = new TH2D("hBgdPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
+  TH2D* hSigPcaBmo    = new TH2D("hSigPcaBmo", title, nBins, 0., pcaMax, nBins, 0., bmoMax);
   title               = ";M_{inv} [GeV/c^{2}];pairs / 0.6 MeV";
   TH1D* hAllM         = new TH1D("hAllM", title, 50, mMin, mMax);
   TH1D* hBgdM         = new TH1D("hBgdM", title, 50, mMin, mMax);
@@ -132,8 +125,7 @@ void create_histo_la(Int_t file_nr = 0) {
       Double_t m        = mo->fMass;
 
       if (iVerbose > 3 || sig) {
-        if (sig)
-          printf("+");
+        if (sig) printf("+");
         else
           printf(" ");
         printf("  (%4i,%4i) m=%7.3f", mo->fId1, mo->fId2, m);
@@ -152,13 +144,12 @@ void create_histo_la(Int_t file_nr = 0) {
             hSigB1B2M->Fill(m);
             if (dca < cutDca && chi < cutChi) {
               hSigChiDcaM->Fill(m);
-              if (pca > cutPca && pca < cutPcaMax && bmo < cutBmo) {
-                hSigPcaBmoM->Fill(m);
-              }
+              if (pca > cutPca && pca < cutPcaMax && bmo < cutBmo) { hSigPcaBmoM->Fill(m); }
             }
           }
         }
-      } else {
+      }
+      else {
         hBgdM->Fill(m);
         if (chi1 > cutChi1 && chi2 > cutChi2) {
           hBgdChi1Chi2M->Fill(m);
@@ -166,9 +157,7 @@ void create_histo_la(Int_t file_nr = 0) {
             hBgdB1B2M->Fill(m);
             if (dca < cutDca && chi < cutChi) {
               hBgdChiDcaM->Fill(m);
-              if (pca > cutPca && pca < cutPcaMax && bmo < cutBmo) {
-                hBgdPcaBmoM->Fill(m);
-              }
+              if (pca > cutPca && pca < cutPcaMax && bmo < cutBmo) { hBgdPcaBmoM->Fill(m); }
             }
           }
         }
@@ -176,29 +165,25 @@ void create_histo_la(Int_t file_nr = 0) {
 
       if (!(m > cutMmin && m < cutMmax)) continue;
 
-      if (sig)
-        hSigChi1Chi2->Fill(chi1, chi2);
+      if (sig) hSigChi1Chi2->Fill(chi1, chi2);
       else
         hBgdChi1Chi2->Fill(chi1, chi2);
 
       if (!(chi1 > cutChi1 && chi2 > cutChi2)) continue;
 
-      if (sig)
-        hSigB1B2->Fill(b1, b2);
+      if (sig) hSigB1B2->Fill(b1, b2);
       else
         hBgdB1B2->Fill(b1, b2);
 
       if (!(b1 > cutB1 && b2 > cutB2)) continue;
 
-      if (sig)
-        hSigChiDca->Fill(chi, dca);
+      if (sig) hSigChiDca->Fill(chi, dca);
       else
         hBgdChiDca->Fill(chi, dca);
 
       if (!(dca < cutDca && chi < cutChi)) continue;
 
-      if (sig)
-        hSigPcaBmo->Fill(pca, bmo);
+      if (sig) hSigPcaBmo->Fill(pca, bmo);
       else
         hBgdPcaBmo->Fill(pca, bmo);
 

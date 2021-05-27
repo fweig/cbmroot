@@ -1,11 +1,11 @@
 #include "CbmMuchDigi.h"
 
+#include "compareMuchDigi.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareMuchDigi.h"
-
-TEST(_GTestCbmMuchDigi, CheckDefaultConstructor) {
+TEST(_GTestCbmMuchDigi, CheckDefaultConstructor)
+{
   // Create object
   CbmMuchDigi test;
 
@@ -17,7 +17,8 @@ TEST(_GTestCbmMuchDigi, CheckDefaultConstructor) {
 }
 
 
-TEST(_GTestCbmMuchDigi, CheckStandardConstructor) {
+TEST(_GTestCbmMuchDigi, CheckStandardConstructor)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -28,7 +29,8 @@ TEST(_GTestCbmMuchDigi, CheckStandardConstructor) {
   compareMuchDigiDataMembers(*test1, 111, ECbmModuleId::kMuch, 987654321, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckCopyConstructor) {
+TEST(_GTestCbmMuchDigi, CheckCopyConstructor)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -46,7 +48,8 @@ TEST(_GTestCbmMuchDigi, CheckCopyConstructor) {
   compareMuchDigiDataMembers(test, 111, ECbmModuleId::kMuch, 987654321, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckAssignmentOperator) {
+TEST(_GTestCbmMuchDigi, CheckAssignmentOperator)
+{
 
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
@@ -65,7 +68,8 @@ TEST(_GTestCbmMuchDigi, CheckAssignmentOperator) {
   compareMuchDigiDataMembers(test, 111, ECbmModuleId::kMuch, 987654321, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckMoveConstructor) {
+TEST(_GTestCbmMuchDigi, CheckMoveConstructor)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -79,7 +83,8 @@ TEST(_GTestCbmMuchDigi, CheckMoveConstructor) {
   compareMuchDigiDataMembers(test, 111, ECbmModuleId::kMuch, 987654321, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckAssignmentMoveConstructor) {
+TEST(_GTestCbmMuchDigi, CheckAssignmentMoveConstructor)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -97,7 +102,8 @@ TEST(_GTestCbmMuchDigi, CheckAssignmentMoveConstructor) {
 }
 
 
-TEST(_GTestCbmMuchDigi, CheckToString) {
+TEST(_GTestCbmMuchDigi, CheckToString)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -106,7 +112,8 @@ TEST(_GTestCbmMuchDigi, CheckToString) {
   EXPECT_STREQ("", test.ToString().c_str());
 }
 
-TEST(_GTestCbmMuchDigi, CheckGetClassName) {
+TEST(_GTestCbmMuchDigi, CheckGetClassName)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -115,7 +122,8 @@ TEST(_GTestCbmMuchDigi, CheckGetClassName) {
   EXPECT_STREQ("CbmMuchDigi", test.GetClassName());
 }
 
-TEST(_GTestCbmMuchDigi, CheckSetTime) {
+TEST(_GTestCbmMuchDigi, CheckSetTime)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -126,7 +134,8 @@ TEST(_GTestCbmMuchDigi, CheckSetTime) {
   compareMuchDigiDataMembers(test, 111, ECbmModuleId::kMuch, 12345678, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckSetAddress) {
+TEST(_GTestCbmMuchDigi, CheckSetAddress)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -134,11 +143,11 @@ TEST(_GTestCbmMuchDigi, CheckSetAddress) {
 
   test.SetAddress(12341234);
 
-  compareMuchDigiDataMembers(
-    test, 12341234, ECbmModuleId::kMuch, 987654321, 23);
+  compareMuchDigiDataMembers(test, 12341234, ECbmModuleId::kMuch, 987654321, 23);
 }
 
-TEST(_GTestCbmMuchDigi, CheckSetAdc) {
+TEST(_GTestCbmMuchDigi, CheckSetAdc)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -149,7 +158,8 @@ TEST(_GTestCbmMuchDigi, CheckSetAdc) {
   compareMuchDigiDataMembers(test, 111, ECbmModuleId::kMuch, 987654321, 12);
 }
 
-TEST(_GTestCbmMuchDigi, CheckGetChannelId) {
+TEST(_GTestCbmMuchDigi, CheckGetChannelId)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -158,7 +168,8 @@ TEST(_GTestCbmMuchDigi, CheckGetChannelId) {
   EXPECT_EQ(111, test.GetChannelId());
 }
 
-TEST(_GTestCbmMuchDigi, CheckGetAdcCharge) {
+TEST(_GTestCbmMuchDigi, CheckGetAdcCharge)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 
@@ -167,7 +178,8 @@ TEST(_GTestCbmMuchDigi, CheckGetAdcCharge) {
   EXPECT_EQ(23, test.GetADCCharge());
 }
 
-TEST(_GTestCbmMuchDigi, CheckGetDTime) {
+TEST(_GTestCbmMuchDigi, CheckGetDTime)
+{
   // Create object
   CbmMuchDigi test(111, 23, 987654321);
 

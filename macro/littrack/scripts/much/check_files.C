@@ -1,18 +1,17 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "TTree.h"
+
 #include <sstream>
 
-TH1* hFileSizeMC = new TH1F("h_file_size_mc", "h_file_size_mc", 1000, 0, 0);
-TH1* hTreeSizeMC = new TH1F("h_tree_size_mc", "h_tree_size_mc", 1000, 0, 0);
-TH1* hFileSizeReco =
-  new TH1F("h_file_size_reco", "h_file_size_reco", 1000, 0, 0);
-TH1* hTreeSizeReco =
-  new TH1F("h_tree_size_reco", "h_tree_size_reco", 1000, 0, 0);
+TH1* hFileSizeMC   = new TH1F("h_file_size_mc", "h_file_size_mc", 1000, 0, 0);
+TH1* hTreeSizeMC   = new TH1F("h_tree_size_mc", "h_tree_size_mc", 1000, 0, 0);
+TH1* hFileSizeReco = new TH1F("h_file_size_reco", "h_file_size_reco", 1000, 0, 0);
+TH1* hTreeSizeReco = new TH1F("h_tree_size_reco", "h_tree_size_reco", 1000, 0, 0);
 
-void check_files() {
-  std::string dir =
-    "/hera/cbm/users/vassilie/mc/sts_rich_tof/urqmd/auau/6gev/mbias/";
+void check_files()
+{
+  std::string dir          = "/hera/cbm/users/vassilie/mc/sts_rich_tof/urqmd/auau/6gev/mbias/";
   std::string fileNameMC   = dir + "mc.auau.6gev.mbias.";
   std::string fileNameReco = dir + "reco.auau.6gev.mbias.";
 
@@ -52,7 +51,8 @@ void check_files() {
   hTreeSizeReco->Draw();
 }
 
-void process_file(TFile* file, Int_t index, const string& opt) {
+void process_file(TFile* file, Int_t index, const string& opt)
+{
   if (file == NULL) {
     std::cout << "-E- NULL file with index " << index << std::endl;
     return;
@@ -61,8 +61,7 @@ void process_file(TFile* file, Int_t index, const string& opt) {
   TFolder* folder = (TFolder*) file->Get("cbmroot");
   if (folder == NULL) folder = (TFolder*) file->Get("cbmout");
   if (folder == NULL) {
-    std::cout << "-E- No cbmsim or cbmout TTree found in file "
-              << file->GetName() << std::endl;
+    std::cout << "-E- No cbmsim or cbmout TTree found in file " << file->GetName() << std::endl;
     return;
   }
 
@@ -72,7 +71,8 @@ void process_file(TFile* file, Int_t index, const string& opt) {
   if (opt == "mc") {
     hFileSizeMC->Fill(fileSize);
     hTreeSizeMC->Fill(treeSize);
-  } else if (opt == "reco") {
+  }
+  else if (opt == "reco") {
     hFileSizeReco->Fill(fileSize);
     hTreeSizeReco->Fill(treeSize);
   }

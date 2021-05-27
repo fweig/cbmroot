@@ -1,18 +1,15 @@
-enum enu_calibMode {
+enum enu_calibMode
+{
   etn_IMPORT,  // import calibration tables from the file and use them
   etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
   etn_NOCALIB,  // use linear function going from origin to (512, n) which means that the fine time is not calibrated
-  etn_IDEAL,  // use almost linear function - close to real calibration but idealized
-  etn_NOFINE  // ignore fine time counter at all
+  etn_IDEAL,    // use almost linear function - close to real calibration but idealized
+  etn_NOFINE    // ignore fine time counter at all
 };
 
-void run_analysis_calibrate(Bool_t generateCalib = kTRUE,
-                            TString inputFile,
-                            TString outputFile,
-                            TString calibFile,
-                            TString histoFile,
-                            TString histo2File,
-                            TString fileBasename) {
+void run_analysis_calibrate(Bool_t generateCalib = kTRUE, TString inputFile, TString outputFile, TString calibFile,
+                            TString histoFile, TString histo2File, TString fileBasename)
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
@@ -49,9 +46,8 @@ void run_analysis_calibrate(Bool_t generateCalib = kTRUE,
   //fgCalibrator->SetCorrInputFilename("/store/Wuppertal_data_jul2015/Corrections3.txt");
   // Corrections are imported only in IMPORT mode
 
-  if (generateCalib) {
-    fgCalibrator->SetMode(etn_ONLINE);
-  } else {
+  if (generateCalib) { fgCalibrator->SetMode(etn_ONLINE); }
+  else {
     fgCalibrator->SetMode(etn_IMPORT);
   }
 
@@ -110,8 +106,7 @@ void run_analysis_calibrate(Bool_t generateCalib = kTRUE,
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outputFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

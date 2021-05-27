@@ -4,7 +4,8 @@
  ** Alignment
  */
 
-void alignment(Int_t runID, Int_t fileID) {
+void alignment(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy2014
 
   TString runN    = TString::Itoa(runID, 10);
@@ -57,8 +58,7 @@ void alignment(Int_t runID, Int_t fileID) {
   StsAlignment* align = new StsAlignment();
   // align->SetChi2Cut(200.,200.);
   align->SetNofDetectors(3);
-  if (cutFile != "")
-    align->SetCutFileName(cutFile);
+  if (cutFile != "") align->SetCutFileName(cutFile);
   else {
     align->SetTimeLimit(t_limits);
     align->SetTimeShift(t_shifts);
@@ -80,8 +80,7 @@ void alignment(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> alignment: Macro finished successfully." << std::endl;
   std::cout << ">>> alignment: Output file is " << outFile << std::endl;
-  std::cout << ">>> alignment: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> alignment: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

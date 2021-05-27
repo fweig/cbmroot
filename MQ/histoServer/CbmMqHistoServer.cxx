@@ -50,11 +50,14 @@ CbmMqHistoServer::CbmMqHistoServer()
   , fvCanvas()
   , fNMessages(0)
   , fServer(nullptr)
-  , fStopThread(false) {}
+  , fStopThread(false)
+{
+}
 
 CbmMqHistoServer::~CbmMqHistoServer() {}
 
-void CbmMqHistoServer::InitTask() {
+void CbmMqHistoServer::InitTask()
+{
   /// Read options from executable
   LOG(info) << "Init options for CbmMqHistoServer.";
   fsChannelNameHistosInput  = fConfig->GetValue<std::string>("ChNameIn");
@@ -83,7 +86,8 @@ void CbmMqHistoServer::InitTask() {
   //fServer->Restrict("/Save_Hist", "allow=admin");
 }
 
-bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
+bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
+{
   TObject* tempObject = nullptr;
 
   Deserialize<RootSerializer>(*msg, tempObject);
@@ -95,8 +99,7 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
       TObject* pObj = arrayHisto->At(i);
 
       if (nullptr != dynamic_cast<TProfile*>(pObj)) {
-        if (!ReadHistogram<TProfile>(dynamic_cast<TProfile*>(pObj)))
-          return false;
+        if (!ReadHistogram<TProfile>(dynamic_cast<TProfile*>(pObj))) return false;
       }  // if( nullptr != dynamic_cast< TProfile *>( pObj ) )
       else if (nullptr != dynamic_cast<TH2*>(pObj)) {
         if (!ReadHistogram<TH2>(dynamic_cast<TH2*>(pObj))) return false;
@@ -124,9 +127,7 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
     }    // if( !fbAllCanvasReady )
   }      // if (TString(tempObject->ClassName()).EqualTo("TObjArray"))
   else
-    LOG(fatal)
-      << "CbmMqHistoServer::ReceiveData => Wrong object type at input: "
-      << tempObject->ClassName();
+    LOG(fatal) << "CbmMqHistoServer::ReceiveData => Wrong object type at input: " << tempObject->ClassName();
 
   fNMessages += 1;
 
@@ -151,15 +152,13 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
   return true;
 }
 
-bool CbmMqHistoServer::ReceiveHistoConfig(FairMQMessagePtr& msg,
-                                          int /*index*/) {
+bool CbmMqHistoServer::ReceiveHistoConfig(FairMQMessagePtr& msg, int /*index*/)
+{
   std::pair<std::string, std::string> tempObject;
 
-  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg,
-                                                                    tempObject);
+  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
 
-  LOG(info) << " Received configuration for histo " << tempObject.first << " : "
-            << tempObject.second;
+  LOG(info) << " Received configuration for histo " << tempObject.first << " : " << tempObject.second;
 
   /// Check if histo name already received in previous messages
   /// Linear search should be ok as config is shared only at startup
@@ -183,15 +182,13 @@ bool CbmMqHistoServer::ReceiveHistoConfig(FairMQMessagePtr& msg,
   return true;
 }
 
-bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg,
-                                           int /*index*/) {
+bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg, int /*index*/)
+{
   std::pair<std::string, std::string> tempObject;
 
-  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg,
-                                                                    tempObject);
+  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
 
-  LOG(info) << " Received configuration for canvas " << tempObject.first
-            << " : " << tempObject.second;
+  LOG(info) << " Received configuration for canvas " << tempObject.first << " : " << tempObject.second;
 
   /// Check if canvas name already received in previous messages
   /// Linear search should be ok as config is shared only at startup
@@ -217,12 +214,14 @@ bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg,
   return true;
 }
 
-void CbmMqHistoServer::PreRun() {
+void CbmMqHistoServer::PreRun()
+{
   fStopThread = false;
   fThread     = std::thread(&CbmMqHistoServer::UpdateHttpServer, this);
 }
 
-void CbmMqHistoServer::UpdateHttpServer() {
+void CbmMqHistoServer::UpdateHttpServer()
+{
   while (!fStopThread) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     std::lock_guard<std::mutex> lk(mtx);
@@ -231,13 +230,15 @@ void CbmMqHistoServer::UpdateHttpServer() {
   }
 }
 
-void CbmMqHistoServer::PostRun() {
+void CbmMqHistoServer::PostRun()
+{
   fStopThread = true;
   fThread.join();
 }
 
 template<class HistoT>
-bool CbmMqHistoServer::ReadHistogram(HistoT* pHist) {
+bool CbmMqHistoServer::ReadHistogram(HistoT* pHist)
+{
   int index1 = FindHistogram(pHist->GetName());
   if (-1 == index1) {
     HistoT* histogram_new = static_cast<HistoT*>(pHist->Clone());
@@ -253,14 +254,12 @@ bool CbmMqHistoServer::ReadHistogram(HistoT* pHist) {
 
         /// Check if name matches one in config for others
         if (fvpsHistosFolder[uHist].first == histogram_new->GetName()) {
-          fvHistos[uHist] = std::pair<TNamed*, std::string>(
-            histogram_new, fvpsHistosFolder[uHist].second);
-          fServer->Register(Form("/%s", fvHistos[uHist].second.data()),
-                            fvHistos[uHist].first);
+          fvHistos[uHist] = std::pair<TNamed*, std::string>(histogram_new, fvpsHistosFolder[uHist].second);
+          fServer->Register(Form("/%s", fvHistos[uHist].second.data()), fvHistos[uHist].first);
           fvbHistoRegistered[uHist] = true;
 
-          LOG(info) << "registered histo " << fvHistos[uHist].first->GetName()
-                    << " in folder " << fvHistos[uHist].second;
+          LOG(info) << "registered histo " << fvHistos[uHist].first->GetName() << " in folder "
+                    << fvHistos[uHist].second;
 
 
           /// Update flag telling whether all known histos are registered
@@ -270,19 +269,18 @@ bool CbmMqHistoServer::ReadHistogram(HistoT* pHist) {
               fbAllHistosRegistered = false;
               break;
             }  // if( !fvbHistoRegistered[ uIdx ] )
-          }  // for( uint32_t uIdx = 0; uIdx < fvbHistoRegistered.size(); ++uIdx )
+          }    // for( uint32_t uIdx = 0; uIdx < fvbHistoRegistered.size(); ++uIdx )
 
           break;
         }  // if( fvpsHistosFolder[ uHist ].first == histogram_new->GetName() )
-      }  // for( uint32_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv )
-    }    // if( !fbAllCanvasReady )
-  }      // if (-1 == index1)
+      }    // for( uint32_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv )
+    }      // if( !fbAllCanvasReady )
+  }        // if (-1 == index1)
   else {
     HistoT* histogram_existing = dynamic_cast<HistoT*>(fArrayHisto.At(index1));
     if (nullptr == histogram_existing) {
       LOG(error) << "CbmMqHistoServer::ReadHistogram => "
-                 << "Incompatible type found during update for histo "
-                 << pHist->GetName();
+                 << "Incompatible type found during update for histo " << pHist->GetName();
       return false;
     }  // if( nullptr == histogram_existing )
 
@@ -291,25 +289,25 @@ bool CbmMqHistoServer::ReadHistogram(HistoT* pHist) {
   return true;
 }
 
-int CbmMqHistoServer::FindHistogram(const std::string& name) {
+int CbmMqHistoServer::FindHistogram(const std::string& name)
+{
   for (int iHist = 0; iHist < fArrayHisto.GetEntriesFast(); ++iHist) {
     TObject* obj = fArrayHisto.At(iHist);
-    if (TString(obj->GetName()).EqualTo(name)) {
-      return iHist;
-    }  // if( TString( obj->GetName() ).EqualTo( name ) )
-  }    // for( int iHist = 0; iHist < fArrayHisto.GetEntriesFast(); ++iHist )
+    if (TString(obj->GetName()).EqualTo(name)) { return iHist; }  // if( TString( obj->GetName() ).EqualTo( name ) )
+  }  // for( int iHist = 0; iHist < fArrayHisto.GetEntriesFast(); ++iHist )
   return -1;
 }
 
-bool CbmMqHistoServer::ResetHistograms() {
+bool CbmMqHistoServer::ResetHistograms()
+{
   for (int iHist = 0; iHist < fArrayHisto.GetEntriesFast(); ++iHist) {
     dynamic_cast<TH1*>(fArrayHisto.At(iHist))->Reset();
   }  // for( int iHist = 0; iHist < fArrayHisto.GetEntriesFast(); ++iHist )
   return true;
 }
-bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx) {
-  CanvasConfig conf(
-    ExtractCanvasConfigFromString(fvpsCanvasConfig[uCanvIdx].second));
+bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx)
+{
+  CanvasConfig conf(ExtractCanvasConfigFromString(fvpsCanvasConfig[uCanvIdx].second));
 
   /// First check if all objects to be drawn are present
   uint32_t uNbPads(conf.GetNbPads());
@@ -327,8 +325,7 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx) {
   }        // for( uint32_t uPadIdx = 0; uPadIdx < uNbPads; ++uPadIdx )
 
   /// Create new canvas and pads
-  TCanvas* pNewCanv =
-    new TCanvas(conf.GetName().data(), conf.GetTitle().data());
+  TCanvas* pNewCanv = new TCanvas(conf.GetName().data(), conf.GetTitle().data());
   pNewCanv->Divide(conf.GetNbPadsX(), conf.GetNbPadsY());
 
   /// Loop on pads
@@ -349,31 +346,26 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx) {
         TObject* pObj = fArrayHisto[FindHistogram(sName)];
 
         if (nullptr != dynamic_cast<TProfile*>(pObj)) {
-          dynamic_cast<TProfile*>(pObj)->Draw(
-            conf.GetOption(uPadIdx, uObjIdx).data());
+          dynamic_cast<TProfile*>(pObj)->Draw(conf.GetOption(uPadIdx, uObjIdx).data());
         }  // if( nullptr != dynamic_cast< TProfile *>( pObj ) )
         else if (nullptr != dynamic_cast<TH2*>(pObj)) {
-          dynamic_cast<TH2*>(pObj)->Draw(
-            conf.GetOption(uPadIdx, uObjIdx).data());
+          dynamic_cast<TH2*>(pObj)->Draw(conf.GetOption(uPadIdx, uObjIdx).data());
         }  // if( nullptr != dynamic_cast< TH2 *>( pObj ) )
         else if (nullptr != dynamic_cast<TH1*>(pObj)) {
-          dynamic_cast<TH1*>(pObj)->Draw(
-            conf.GetOption(uPadIdx, uObjIdx).data());
+          dynamic_cast<TH1*>(pObj)->Draw(conf.GetOption(uPadIdx, uObjIdx).data());
         }  // if( nullptr != dynamic_cast< TH1 *>( pObj ) )
         else
-          LOG(warning) << "Unsupported object type for " << sName
-                       << " when preparing canvas " << conf.GetName();
+          LOG(warning) << "Unsupported object type for " << sName << " when preparing canvas " << conf.GetName();
       }  // if( "nullptr" != sName )
     }    // for( uint32_t uObjIdx = 0; uObjIdx < uNbObj; ++uObjIdx )
   }      // for( uint32_t uPadIdx = 0; uPadIdx < uNbPads; ++uPadIdx )
 
   fvCanvas[uCanvIdx] = std::pair<TCanvas*, std::string>(pNewCanv, "canvases");
-  fServer->Register(Form("/%s", fvCanvas[uCanvIdx].second.data()),
-                    fvCanvas[uCanvIdx].first);
+  fServer->Register(Form("/%s", fvCanvas[uCanvIdx].second.data()), fvCanvas[uCanvIdx].first);
   fvbCanvasRegistered[uCanvIdx] = true;
 
-  LOG(info) << "registered canvas " << fvCanvas[uCanvIdx].first->GetName()
-            << " in folder " << fvCanvas[uCanvIdx].second;
+  LOG(info) << "registered canvas " << fvCanvas[uCanvIdx].first->GetName() << " in folder "
+            << fvCanvas[uCanvIdx].second;
 
   /// Update flag telling whether all known canvases are registered
   fbAllCanvasRegistered = true;
@@ -387,7 +379,8 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx) {
   return true;
 }
 
-bool CbmMqHistoServer::SaveHistograms() {
+bool CbmMqHistoServer::SaveHistograms()
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;

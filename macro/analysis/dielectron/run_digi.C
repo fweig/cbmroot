@@ -1,11 +1,8 @@
-void run_digi(
-  const string& mcFile =
-    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
-  const string& parFile =
-    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
-  const string& digiFile =
-    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
-  int nEvents = 1000) {
+void run_digi(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
+              const string& parFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
+              const string& digiFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
+              int nEvents            = 1000)
+{
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -34,7 +31,6 @@ void run_digi(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Digi file is " << digiFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

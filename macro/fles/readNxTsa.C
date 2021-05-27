@@ -1,4 +1,5 @@
-void readNxTsa() {
+void readNxTsa()
+{
 
   // --- Specify input file name (this is just an example)
   TString inFile = "nxdata.tsa";
@@ -56,8 +57,7 @@ void readNxTsa() {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

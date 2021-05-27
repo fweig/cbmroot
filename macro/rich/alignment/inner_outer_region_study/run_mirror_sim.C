@@ -1,20 +1,15 @@
-void run_mirror_sim(Int_t nEvents = 5000,
-                    TString tile  = "",
-                    TString axis  = "",
-                    TString numb  = "")
+void run_mirror_sim(Int_t nEvents = 5000, TString tile = "", TString axis = "", TString numb = "")
 // !!! DEFINE NEW ROTATION ANGLE IN THE GEO FILE AND RUN IMPORT_EXPORT_GEO MACRO BEFORE RUNNING RUN_SIM !!!
 {
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   //gRandom->SetSeed(10);
 
-  TString urqmdFile =
-    "/data/Cbm_Root/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root";
+  TString urqmdFile = "/data/Cbm_Root/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.00001.root";
 
   //	TString outDir = "/data/misalignment_correction/Sim_Outputs/Alignment_Correction/Test/";
   //	TString outDir = "/data/misalignment_correction/Sim_Outputs/Mirror_Sorting/First/";
@@ -26,11 +21,9 @@ void run_mirror_sim(Int_t nEvents = 5000,
   //	TString tile = "1_4";
   //	TString tile = "2_1";
   //	numb = "test", axis = "", tile = "";
-  TString parFile =
-    outDir + "param." + numb + "_" + axis + "_" + tile + ".root";
-  TString mcFile = outDir + "mc." + numb + "_" + axis + "_" + tile + ".root";
-  TString geoFile =
-    outDir + "geofilefull." + numb + "_" + axis + "_" + tile + ".root";
+  TString parFile = outDir + "param." + numb + "_" + axis + "_" + tile + ".root";
+  TString mcFile  = outDir + "mc." + numb + "_" + axis + "_" + tile + ".root";
+  TString geoFile = outDir + "geofilefull." + numb + "_" + axis + "_" + tile + ".root";
   TString outFile = outDir + "out." + numb + axis + tile + ".root";
 
   /*	TString outDir = "/data/misalignment_correction/event_display/test/"; // For eventDisplay and run_rich_event_display macros
@@ -53,16 +46,14 @@ void run_mirror_sim(Int_t nEvents = 5000,
   TString tofGeom  = "";  //"tof_v16a_1e.geo.root";
   TString mvdGeom  = "";  //"mvd_v15a.geo.root";
 
-  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                         + "/macro/rich/run/geosetup/geosetup_25gev.C";
+  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/geosetup_25gev.C";
 
-  TString electrons =
-    "yes";                // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 1;  // number of e- to be generated
-  Int_t NPOSITRONS  = 1;  // number of e+ to be generated
-  TString urqmd     = "no";  // If "yes" then UrQMD will be used as background
-  TString pluto     = "no";  // If "yes" PLUTO particles will be embedded
-  TString plutoFile = "";
+  TString electrons     = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS      = 1;      // number of e- to be generated
+  Int_t NPOSITRONS      = 1;      // number of e+ to be generated
+  TString urqmd         = "no";   // If "yes" then UrQMD will be used as background
+  TString pluto         = "no";   // If "yes" PLUTO particles will be embedded
+  TString plutoFile     = "";
   TString plutoParticle = "";
 
   if (script == "yes") {
@@ -70,9 +61,8 @@ void run_mirror_sim(Int_t nEvents = 5000,
     mcFile    = TString(gSystem->Getenv("MC_FILE"));
     parFile   = TString(gSystem->Getenv("PAR_FILE"));
 
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/run/geosetup/"
-                   + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+    geoSetupFile =
+      TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/" + TString(gSystem->Getenv("GEO_SETUP_FILE"));
 
     NELECTRONS    = TString(gSystem->Getenv("NELECTRONS")).Atoi();
     NPOSITRONS    = TString(gSystem->Getenv("NPOSITRONS")).Atoi();
@@ -109,7 +99,7 @@ void run_mirror_sim(Int_t nEvents = 5000,
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // creation of the primary vertex
   Bool_t smearVertexXY = kTRUE;
@@ -141,8 +131,7 @@ void run_mirror_sim(Int_t nEvents = 5000,
     fRun->AddModule(pipe);
   }
 
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   fRun->AddModule(target);
@@ -187,9 +176,8 @@ void run_mirror_sim(Int_t nEvents = 5000,
   // Create magnetic field
   cout << "fieldSymType=" << fieldSymType << endl;
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     CbmFieldMap* magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -316,8 +304,7 @@ void run_mirror_sim(Int_t nEvents = 5000,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

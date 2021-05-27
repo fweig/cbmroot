@@ -2,9 +2,8 @@
 // calib = 1 - see results after calibration
 // ind = [0;15] - index of the canvas to plot
 
-void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root",
-                   Int_t ind        = 0,
-                   Int_t calib      = 1) {
+void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root", Int_t ind = 0, Int_t calib = 1)
+{
   TFile* f = new TFile(filename);
 
   //f->ls();

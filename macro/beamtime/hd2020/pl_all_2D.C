@@ -1,4 +1,5 @@
-void pl_all_2D(Int_t iOpt = 0, Int_t iNSt = 2) {
+void pl_all_2D(Int_t iOpt = 0, Int_t iNSt = 2)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -50,18 +51,17 @@ void pl_all_2D(Int_t iOpt = 0, Int_t iNSt = 2) {
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname = Form(
-          "cl_SmT%01d_sm%03d_rpc%03d_%s", iType[iSt], iSm, iRp, cOpt.Data());
-        h = (TH2*) gROOT->FindObjectAny(hname);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_%s", iType[iSt], iSm, iRp, cOpt.Data());
+        h             = (TH2*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
-          if (iOpt == 6) {
-            h->Draw();
-          } else {
+          if (iOpt == 6) { h->Draw(); }
+          else {
             gPad->SetLogz();
             h->Draw("colz");
             h->ProfileX()->Draw("same");
           }
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

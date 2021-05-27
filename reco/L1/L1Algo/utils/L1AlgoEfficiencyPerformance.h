@@ -11,11 +11,12 @@
 #include "CbmL1.h"
 #include "CbmL1Counters.h"
 #include "CbmL1Def.h"
-#include "L1Algo/L1Algo.h"
-#include "L1Algo/L1StsHit.h"
 
 #include <iostream>
 #include <vector>
+
+#include "L1Algo/L1Algo.h"
+#include "L1Algo/L1StsHit.h"
 
 using std::cout;
 using std::endl;
@@ -28,14 +29,12 @@ class L1Tracklet {
 public:
   L1Tracklet() : mcTrackId(-1), iStation(-1) {};
 
-  static bool compare(const L1Tracklet<NHits>& a, const L1Tracklet<NHits>& b) {
-    return (a.mcTrackId < b.mcTrackId)
-           || ((a.mcTrackId == b.mcTrackId) && (a.iStation < b.iStation));
+  static bool compare(const L1Tracklet<NHits>& a, const L1Tracklet<NHits>& b)
+  {
+    return (a.mcTrackId < b.mcTrackId) || ((a.mcTrackId == b.mcTrackId) && (a.iStation < b.iStation));
   }
 
-  bool operator==(const L1Tracklet<NHits>& a) {
-    return ((a.mcTrackId == mcTrackId) && (a.iStation == iStation));
-  }
+  bool operator==(const L1Tracklet<NHits>& a) { return ((a.mcTrackId == mcTrackId) && (a.iStation == iStation)); }
   bool operator!=(const L1Tracklet<NHits>& a) { return !operator==(a); }
   bool operator<(const L1Tracklet<NHits>& a) { return compare(*this, a); }
 
@@ -48,21 +47,19 @@ template<int NHits>
 class L1RTracklet : public L1Tracklet<NHits> {
 public:
   L1RTracklet() {}
-  L1RTracklet(THitI* ih_) : L1Tracklet<NHits>() {
+  L1RTracklet(THitI* ih_) : L1Tracklet<NHits>()
+  {
     for (int iih = 0; iih < NHits; iih++) {
       i[iih] = ih_[iih];
     }
   };
 
-  bool IsGhost() {
-    return L1Tracklet<NHits>::mcTrackId < 0;
-  };  // is it ghost or reconstructed
+  bool IsGhost() { return L1Tracklet<NHits>::mcTrackId < 0; };  // is it ghost or reconstructed
 
-  bool operator!=(const L1Tracklet<NHits>& a) {
-    return L1Tracklet<NHits>::operator!=(a);
-  }
+  bool operator!=(const L1Tracklet<NHits>& a) { return L1Tracklet<NHits>::operator!=(a); }
 
-  bool operator==(const L1RTracklet<NHits>& a) {
+  bool operator==(const L1RTracklet<NHits>& a)
+  {
     bool flag = 1;
     //     flag &= L1Tracklet<NHits>::operator==(a);
     for (int ih = 0; ih < NHits; ih++) {
@@ -84,30 +81,24 @@ public:
   void AddReconstructed(int recoId) { recoIds.push_back(recoId); };
   void SetAsReconstructable() { isReconstructable = true; };
 
-  int GetNClones() {
-    return (recoIds.size() > 1) ? recoIds.size() - 1 : 0;
-  };  // number of created clones
-  bool IsReconstructed() { return recoIds.size(); };  // is it reconstructed
-  bool IsReconstructable() {
-    return isReconstructable;
-  };  // is it possible to reconstruct
-  bool IsPrimary() {
-    return mcMotherTrackId < 0;
-  };  // is it primary or secondary
+  int GetNClones() { return (recoIds.size() > 1) ? recoIds.size() - 1 : 0; };  // number of created clones
+  bool IsReconstructed() { return recoIds.size(); };                           // is it reconstructed
+  bool IsReconstructable() { return isReconstructable; };                      // is it possible to reconstruct
+  bool IsPrimary() { return mcMotherTrackId < 0; };                            // is it primary or secondary
 
   int mcMotherTrackId;
   float p;              // momentum
   vector<int> recoIds;  // indices of reco tracklets in sorted recoArray
 
-  vector<int>
-    hitIds[NHits];  // indices of hits in L1::vStsHits. Separated by stations
+  vector<int> hitIds[NHits];  // indices of hits in L1::vStsHits. Separated by stations
 private:
   bool isReconstructable;  // is it reconstructed
 };
 
 // tracklets categories
 struct TL1AlgoEfficiencies : public TL1Efficiencies {
-  TL1AlgoEfficiencies() : TL1Efficiencies() {
+  TL1AlgoEfficiencies() : TL1Efficiencies()
+  {
     AddCounter("total", "Allset    efficiency");
     AddCounter("fast", "Refset    efficiency");
     AddCounter("fast_prim", "RefPrim   efficiency");
@@ -127,8 +118,7 @@ public:
   L1AlgoEfficiencyPerformance() {};
   void Init();
 
-  bool AddOne(
-    THitI* ih_);  // add one recoTracklets. Return is it reconstructed or not
+  bool AddOne(THitI* ih_);  // add one recoTracklets. Return is it reconstructed or not
   void CalculateEff();
   void Print();  // Print efficiencies
   void Print(TString title = "Triplets performance statistic",
@@ -153,7 +143,8 @@ private:
 // ===================================================================================
 
 template<int NHits>
-void L1AlgoEfficiencyPerformance<NHits>::Init() {
+void L1AlgoEfficiencyPerformance<NHits>::Init()
+{
   fL1 = CbmL1::Instance();
   recoTracklets.clear();
   mcTracklets.clear();
@@ -166,19 +157,17 @@ void L1AlgoEfficiencyPerformance<NHits>::Init() {
 };
 
 template<int NHits>
-void L1AlgoEfficiencyPerformance<NHits>::FillMC() {
-  for (vector<CbmL1MCTrack>::iterator mtraIt = fL1->vMCTracks.begin();
-       mtraIt != fL1->vMCTracks.end();
-       mtraIt++) {
+void L1AlgoEfficiencyPerformance<NHits>::FillMC()
+{
+  for (vector<CbmL1MCTrack>::iterator mtraIt = fL1->vMCTracks.begin(); mtraIt != fL1->vMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
     //     if( ! mtra.IsReconstructable() ) continue;
 
     const int NMCPoints = mtra.Points.size();
     //    const int NIter = mtra.NStations()-NHits+1; // number of possible tracklets
     int lastIterSta = -1;
-    for (int iterOffset = 0; iterOffset < NMCPoints;
-         iterOffset++) {  // first mcPoint on the station
-                          //      const int iterMcId = mtra.Points[iterOffset];
+    for (int iterOffset = 0; iterOffset < NMCPoints; iterOffset++) {  // first mcPoint on the station
+      //      const int iterMcId = mtra.Points[iterOffset];
       int iterSta = fL1->vMCPoints[mtra.Points[iterOffset]].iStation;
       if (iterSta == lastIterSta) continue;  // find offset for next station
       lastIterSta = iterSta;
@@ -187,9 +176,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC() {
       // take all points on each station
       // TODO: Should we create all possible tracklets?
       L1MCTracklet trlet;  // TODO: don't use hits in mcTracklet
-      for (int is = 0, offset = iterOffset;
-           ((offset < NMCPoints) && (is < NHits));
-           offset++) {
+      for (int is = 0, offset = iterOffset; ((offset < NMCPoints) && (is < NHits)); offset++) {
         const int mcId     = mtra.Points[offset];
         CbmL1MCPoint* mcPs = &(fL1->vMCPoints[mcId]);
         is                 = mcPs->iStation - iterSta;
@@ -221,7 +208,8 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC() {
 
 
 template<int NHits>
-bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits) {
+bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits)
+{
   L1RecoTracklet trlet(iHits);
 
   // --- check is all hits belong to one mcTrack ---
@@ -259,8 +247,7 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits) {
   for (unsigned int i = 0; i < mcsN.size(); i++) {
     if (mcsN[i] >= 0) {
       trlet.mcTrackId = mcsN[i];
-      trlet.iStation =
-        fL1->vMCPoints[fL1->vStsHits[iHits[0]].mcPointIds[0]].iStation;
+      trlet.iStation  = fL1->vMCPoints[fL1->vStsHits[iHits[0]].mcPointIds[0]].iStation;
       break;
     }
   }
@@ -274,10 +261,9 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits) {
 
 
 template<int NHits>
-void L1AlgoEfficiencyPerformance<NHits>::
-  MatchTracks() {  // TODO: If we create all possible tracklets on NHits station - addapt to it.
-  std::sort(
-    recoTracklets.begin(), recoTracklets.end(), L1Tracklet<NHits>::compare);
+void L1AlgoEfficiencyPerformance<NHits>::MatchTracks()
+{  // TODO: If we create all possible tracklets on NHits station - addapt to it.
+  std::sort(recoTracklets.begin(), recoTracklets.end(), L1Tracklet<NHits>::compare);
   std::sort(mcTracklets.begin(), mcTracklets.end(), L1Tracklet<NHits>::compare);
 
   const int NRecoTrlets = recoTracklets.size();
@@ -292,11 +278,11 @@ void L1AlgoEfficiencyPerformance<NHits>::
     //       << iReco << " " << recoTrlet.iStation << " "  << recoTrlet.mcTrackId << " " << endl;
 
     if (recoTrlet != mcTrlet) {
-      if (recoTrlet < mcTrlet)
-        iReco++;
+      if (recoTrlet < mcTrlet) iReco++;
       else
         iMC++;
-    } else {
+    }
+    else {
       //       cout << iMC << " " << mcTrlet.iStation << " "  << mcTrlet.mcTrackId << " "  << mcTrlet.p  << " | "
       //            << iReco << " " << recoTrlet.iStation << " "  << recoTrlet.mcTrackId << " " << endl;
       // check if same tracklet has been matched, and save it if not.
@@ -313,7 +299,8 @@ void L1AlgoEfficiencyPerformance<NHits>::
 }  // void L1AlgoEfficiencyPerformance::MatchTracks()
 
 template<int NHits>
-void L1AlgoEfficiencyPerformance<NHits>::CalculateEff() {
+void L1AlgoEfficiencyPerformance<NHits>::CalculateEff()
+{
   MatchTracks();
 
   const int NRecoTrlets = recoTracklets.size();
@@ -352,15 +339,17 @@ void L1AlgoEfficiencyPerformance<NHits>::CalculateEff() {
         //             cout << endl;
         //           }
         //         }
-
-      } else {  // reference secondary
+      }
+      else {  // reference secondary
         ntra_sta[iSta].Inc(reco, "fast_sec");
       }
-    } else {  // extra set of tracks
+    }
+    else {  // extra set of tracks
       ntra_sta[iSta].Inc(reco, "slow");
       if (mtra.IsPrimary()) {  // extra primary
         ntra_sta[iSta].Inc(reco, "slow_prim");
-      } else {
+      }
+      else {
         ntra_sta[iSta].Inc(reco, "slow_sec");
       }
     }                                            // if extra
@@ -380,8 +369,8 @@ void L1AlgoEfficiencyPerformance<NHits>::CalculateEff() {
 
 
 template<int NHits>
-inline void L1AlgoEfficiencyPerformance<NHits>::Print(TString title,
-                                                      bool stations) {
+inline void L1AlgoEfficiencyPerformance<NHits>::Print(TString title, bool stations)
+{
   //   cout << endl;
   //   cout << "-------- Triplets performance ----------" << endl;
   //   ntra.PrintEff();

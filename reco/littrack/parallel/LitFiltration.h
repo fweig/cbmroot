@@ -15,8 +15,10 @@
 #include "LitStripHit.h"
 #include "LitTrackParam.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \fn template<class T> inline void LitFiltration (LitTrackParam<T>& par, const LitPixelHit<T> &hit, T& chiSq)
@@ -30,8 +32,8 @@ namespace lit {
  * \param[out] chiSq Contribution to chi-square.
  */
     template<class T>
-    inline void
-    LitFiltration(LitTrackParam<T>& par, const LitPixelHit<T>& hit, T& chiSq) {
+    inline void LitFiltration(LitTrackParam<T>& par, const LitPixelHit<T>& hit, T& chiSq)
+    {
       static const T ONE = 1., TWO = 2.;
 
       T dxx = hit.Dx * hit.Dx;
@@ -44,8 +46,8 @@ namespace lit {
 
       // Calculate and inverse residual covariance matrix
       T t = ONE
-            / (dxx * dyy + dxx * par.C5 + dyy * par.C0 + par.C0 * par.C5
-               - dxy * dxy - TWO * dxy * par.C1 - par.C1 * par.C1);
+            / (dxx * dyy + dxx * par.C5 + dyy * par.C0 + par.C0 * par.C5 - dxy * dxy - TWO * dxy * par.C1
+               - par.C1 * par.C1);
       T R00 = (dyy + par.C5) * t;
       T R01 = -(dxy + par.C1) * t;
       T R11 = (dxx + par.C0) * t;
@@ -70,21 +72,8 @@ namespace lit {
       par.Qp += K40 * dx + K41 * dy;
 
       // Calculate filtered covariance matrix
-      T cIn[15] = {par.C0,
-                   par.C1,
-                   par.C2,
-                   par.C3,
-                   par.C4,
-                   par.C5,
-                   par.C6,
-                   par.C7,
-                   par.C8,
-                   par.C9,
-                   par.C10,
-                   par.C11,
-                   par.C12,
-                   par.C13,
-                   par.C14};
+      T cIn[15] = {par.C0, par.C1, par.C2,  par.C3,  par.C4,  par.C5,  par.C6, par.C7,
+                   par.C8, par.C9, par.C10, par.C11, par.C12, par.C13, par.C14};
 
       par.C0 += -K00 * cIn[0] - K01 * cIn[1];
       par.C1 += -K00 * cIn[1] - K01 * cIn[5];
@@ -107,13 +96,13 @@ namespace lit {
       par.C14 += -K40 * cIn[4] - K41 * cIn[8];
 
       // Calculate chi-square
-      T xmx  = hit.X - par.X;
-      T ymy  = hit.Y - par.Y;
-      T norm = dxx * dyy - dxx * par.C5 - dyy * par.C0 + par.C0 * par.C5
-               - dxy * dxy + TWO * dxy * par.C1 - par.C1 * par.C1;
-      chiSq = ((xmx * (dyy - par.C5) - ymy * (dxy - par.C1)) * xmx
-               + (-xmx * (dxy - par.C1) + ymy * (dxx - par.C0)) * ymy)
-              / norm;
+      T xmx = hit.X - par.X;
+      T ymy = hit.Y - par.Y;
+      T norm =
+        dxx * dyy - dxx * par.C5 - dyy * par.C0 + par.C0 * par.C5 - dxy * dxy + TWO * dxy * par.C1 - par.C1 * par.C1;
+      chiSq =
+        ((xmx * (dyy - par.C5) - ymy * (dxy - par.C1)) * xmx + (-xmx * (dxy - par.C1) + ymy * (dxx - par.C0)) * ymy)
+        / norm;
     }
 
     /**
@@ -128,8 +117,8 @@ namespace lit {
  * \param[out] chiSq Contribution to chi-square.
  */
     template<class T>
-    inline void
-    LitFiltration(LitTrackParam<T>& par, const LitStripHit<T>& hit, T& chiSq) {
+    inline void LitFiltration(LitTrackParam<T>& par, const LitStripHit<T>& hit, T& chiSq)
+    {
       static const T ONE = 1., TWO = 2.;
 
       T duu        = hit.Du * hit.Du;
@@ -138,9 +127,8 @@ namespace lit {
       T phi2SinCos = TWO * hit.phiCos * hit.phiSin;
 
       // residual
-      T r = hit.U - par.C0 * hit.phiCos - par.C1 * hit.phiSin;
-      T norm =
-        duu + par.C0 * phiCosSq + phi2SinCos * par.C1 + par.C5 * phiSinSq;
+      T r    = hit.U - par.C0 * hit.phiCos - par.C1 * hit.phiSin;
+      T norm = duu + par.C0 * phiCosSq + phi2SinCos * par.C1 + par.C5 * phiSinSq;
       //  myf norm = duu + cIn[0] * phiCos + cIn[5] * phiSin;
       T R = rcp(norm);
 
@@ -186,10 +174,8 @@ namespace lit {
       par.C14 -= KR4 * K4;
 
       // Calculate chi-square
-      T ru = hit.U - par.X * hit.phiCos - par.Y * hit.phiSin;
-      chiSq =
-        (ru * ru)
-        / (duu - phiCosSq * par.C0 - phi2SinCos * par.C1 - phiSinSq * par.C5);
+      T ru  = hit.U - par.X * hit.phiCos - par.Y * hit.phiSin;
+      chiSq = (ru * ru) / (duu - phiCosSq * par.C0 - phi2SinCos * par.C1 - phiSinSq * par.C5);
     }
 
     /**
@@ -199,9 +185,8 @@ namespace lit {
  * \param[in] hit Reference to scalar pixel hit.
  * \param[out] chiSq Contribution to chi-square.
  */
-    inline void LitFiltration(LitTrackParamScal& par,
-                              const LitScalPixelHit& hit,
-                              fscal& chiSq) {
+    inline void LitFiltration(LitTrackParamScal& par, const LitScalPixelHit& hit, fscal& chiSq)
+    {
       LitPixelHitScal pixelHit;
       pixelHit.X   = hit.X;
       pixelHit.Y   = hit.Y;

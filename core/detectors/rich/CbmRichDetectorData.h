@@ -25,15 +25,15 @@ public:
 
 class CbmRichPmtData {
 public:
-  Bool_t ContainsPixel(Int_t address) {
-    return std::find(fPixelAddresses.begin(), fPixelAddresses.end(), address)
-           != fPixelAddresses.end();
+  Bool_t ContainsPixel(Int_t address)
+  {
+    return std::find(fPixelAddresses.begin(), fPixelAddresses.end(), address) != fPixelAddresses.end();
   }
 
-  std::string ToString() {
-    return "id:" + std::to_string(fId) + " nofPixels:"
-           + std::to_string(fPixelAddresses.size()) + " x:" + std::to_string(fX)
-           + " y:" + std::to_string(fY) + " z:" + std::to_string(fZ)
+  std::string ToString()
+  {
+    return "id:" + std::to_string(fId) + " nofPixels:" + std::to_string(fPixelAddresses.size())
+           + " x:" + std::to_string(fX) + " y:" + std::to_string(fY) + " z:" + std::to_string(fZ)
            + " W:" + std::to_string(fWidth) + " H:" + std::to_string(fHeight);
   }
   Int_t fId;

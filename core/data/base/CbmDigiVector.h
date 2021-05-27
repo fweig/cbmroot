@@ -27,7 +27,8 @@ public:
   /** @brief Constructor
      ** @param hasMatches  If true, a match vector will be managed.
      **/
-  CbmDigiVector(Bool_t hasMatches = kFALSE) : fHasMatches(hasMatches) {
+  CbmDigiVector(Bool_t hasMatches = kFALSE) : fHasMatches(hasMatches)
+  {
     TString name = Digi::GetClassName();
     name += "_vector";
     SetName(name.Data());
@@ -45,7 +46,8 @@ public:
      ** After the first call to GetDigi or GetMatch, the vector is locked;
      ** adding more digis is then not possible.
      **/
-  virtual void AddDigi(boost::any digi, const CbmMatch* match = nullptr) {
+  virtual void AddDigi(boost::any digi, const CbmMatch* match = nullptr)
+  {
     if (fIsLocked) {
       LOG(fatal) << GetName() << "::AddDigi: Vector is locked.";
       return;
@@ -71,7 +73,8 @@ public:
      **
      ** Abstract from base class; no implementation here.
      **/
-  virtual Bool_t ConnectToTree() {
+  virtual Bool_t ConnectToTree()
+  {
     LOG(fatal) << "Digi vector cannot be connected to a TTree!";
     return false;
   }
@@ -83,7 +86,8 @@ public:
      **
      ** Returns a null pointer if index is out of range.
      **/
-  virtual boost::any GetDigi(UInt_t index) {
+  virtual boost::any GetDigi(UInt_t index)
+  {
     fIsLocked          = kTRUE;
     const Digi* result = nullptr;
     if (index < fDigis.size()) result = &(fDigis[index]);
@@ -98,7 +102,8 @@ public:
      ** Returns a null pointer if matches are not present or
      ** index is out of range.
      **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index) {
+  virtual const CbmMatch* GetDigiMatch(UInt_t index)
+  {
     fIsLocked              = kTRUE;
     const CbmMatch* result = nullptr;
     if (fHasMatches && index < fMatches.size()) result = &(fMatches[index]);
@@ -115,7 +120,8 @@ public:
   /** @brief Number of digis in the vector
      ** @return Number of digi objects
      **/
-  virtual ULong64_t GetNofDigis() const {
+  virtual ULong64_t GetNofDigis() const
+  {
     if (fHasMatches) assert(fMatches.size() == fDigis.size());
     return static_cast<ULong64_t>(fDigis.size());
   }
@@ -124,7 +130,8 @@ public:
   /** @brief String output
      ** @brief Info to string
      **/
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
     ss << GetName() << ", size " << fDigis.size();
     if (HasMatches()) ss << ", matches present";

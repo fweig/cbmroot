@@ -18,13 +18,10 @@
 #include <TObject.h>
 
 template<typename T>
-void CheckValueInRange(const T& value,
-                       const T& low,
-                       const T& high,
-                       std::string functionName) {
+void CheckValueInRange(const T& value, const T& low, const T& high, std::string functionName)
+{
   if ((value < low) || (value > high)) {
-    LOG(fatal) << "You try to set the value " << value
-               << "which is out of the bounds(" << low << "," << high
+    LOG(fatal) << "You try to set the value " << value << "which is out of the bounds(" << low << "," << high
                << ") for the function " << functionName;
   }
 }
@@ -55,7 +52,8 @@ public:
    **     = 2 Pair production without generation of secondary e+/e-
    ** @endcode
    **/
-  void SetProcessPairProduction(Int_t val) {
+  void SetProcessPairProduction(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessPairProduction");
     fProcessPairProduction = val;
   }
@@ -69,7 +67,8 @@ public:
    **     = 2 Compton scattering without production of e-
    ** @endcode
    **/
-  void SetProcessComptonScattering(Int_t val) {
+  void SetProcessComptonScattering(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessComptonScattering");
     fProcessComptonScattering = val;
   }
@@ -83,7 +82,8 @@ public:
    **     = 2 photo-electric effect without production of e-
    ** @endcode
    **/
-  void SetProcessPhotoEffect(Int_t val) {
+  void SetProcessPhotoEffect(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessPhotoEffect");
     fProcessPhotoEffect = val;
   }
@@ -97,7 +97,8 @@ public:
    **     = 2 photo-fission without generation of secondaries
    ** @endcode
    **/
-  void SetProcessPhotoFission(Int_t val) {
+  void SetProcessPhotoFission(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessPhotoFission");
     fProcessPhotoFission = val;
   }
@@ -111,7 +112,8 @@ public:
    **     = 2 delta ray production without generation of e-
    ** @endcode
    **/
-  void SetProcessDeltaRay(Int_t val) {
+  void SetProcessDeltaRay(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessDeltaRay");
     fProcessDeltaRay = val;
   }
@@ -125,7 +127,8 @@ public:
    **     = 2 positron annihilation without generation of photons 
    ** @endcode
    **/
-  void SetProcessAnnihilation(Int_t val) {
+  void SetProcessAnnihilation(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessAnnihilation");
     fProcessAnnihilation = val;
   }
@@ -139,7 +142,8 @@ public:
    **     = 2 bremsstrahlung without generation of gammas
    ** @endcode
    **/
-  void SetProcessBremsstrahlung(Int_t val) {
+  void SetProcessBremsstrahlung(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessBremsstrahlung");
     fProcessBremsstrahlung = val;
   }
@@ -155,7 +159,8 @@ public:
    **     = 5 hadronic interactions using the gcalor package
    ** @endcode
    **/
-  void SetProcessHadronicInteraction(Int_t val) {
+  void SetProcessHadronicInteraction(Int_t val)
+  {
     CheckValueInRange(val, 0, 5, "SetProcessHadronicInteraction");
     fProcessHadronicInteraction = val;
   }
@@ -169,7 +174,8 @@ public:
    **     = 2 muon-nucleus interactions without generation of secondaries
    ** @endcode
    **/
-  void SetProcessMuonNuclearInteraction(Int_t val) {
+  void SetProcessMuonNuclearInteraction(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessMuonNuclearInteraction");
     fProcessMuonNuclearInteraction = val;
   }
@@ -183,7 +189,8 @@ public:
    **     = 2 decay in flight without generation of secondaries
    ** @endcode
    **/
-  void SetProcessDecay(Int_t val) {
+  void SetProcessDecay(Int_t val)
+  {
     CheckValueInRange(val, 0, 2, "SetProcessDecay");
     fProcessDecay = val;
   }
@@ -202,7 +209,8 @@ public:
    **     = 4 Energy loss without fluctuations. The value obtained from the tables is used directly
    ** @endcode
    **/
-  void SetProcessEnergyLossModel(Int_t val) {
+  void SetProcessEnergyLossModel(Int_t val)
+  {
     CheckValueInRange(val, 0, 4, "SetProcessEnergyLossModel");
     fProcessEnergyLossModel = val;
   }
@@ -217,7 +225,8 @@ public:
    **     = 3 pure gaussian scattering according to the Rossi formula
    ** @endcode
    **/
-  void SetProcessMultipleScattering(Int_t val) {
+  void SetProcessMultipleScattering(Int_t val)
+  {
     CheckValueInRange(val, 0, 3, "SetProcessMultipleScattering");
     fProcessMultipleScattering = val;
   }
@@ -227,7 +236,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutGammas(Double_t val) {
+  void SetEnergyCutGammas(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutGammas");
     fEnergyCutGammas = val;
   }
@@ -237,7 +247,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutElectrons(Double_t val) {
+  void SetEnergyCutElectrons(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectrons");
     fEnergyCutElectrons = val;
   }
@@ -247,7 +258,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutNeutralHadrons(Double_t val) {
+  void SetEnergyCutNeutralHadrons(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutNeutralHadrons");
     fEnergyCutNeutralHadrons = val;
   }
@@ -257,7 +269,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutChargedHadrons(Double_t val) {
+  void SetEnergyCutChargedHadrons(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutChargedHadrons");
     fEnergyCutChargedHadrons = val;
   }
@@ -267,7 +280,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutMuons(Double_t val) {
+  void SetEnergyCutMuons(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuons");
     fEnergyCutMuons = val;
   }
@@ -277,7 +291,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutElectronBremsstrahlung(Double_t val) {
+  void SetEnergyCutElectronBremsstrahlung(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectronBremsstrahlung");
     fEnergyCutElectronBremsstrahlung = val;
   }
@@ -287,7 +302,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutMuonHadronBremsstrahlung(Double_t val) {
+  void SetEnergyCutMuonHadronBremsstrahlung(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonHadronBremsstrahlung");
     fEnergyCutMuonHadronBremsstrahlung = val;
   }
@@ -297,7 +313,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutElectronDeltaRay(Double_t val) {
+  void SetEnergyCutElectronDeltaRay(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectronDeltaRay");
     fEnergyCutElectronDeltaRay = val;
   }
@@ -307,7 +324,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutMuonDeltaRay(Double_t val) {
+  void SetEnergyCutMuonDeltaRay(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonDeltaRay");
     fEnergyCutMuonDeltaRay = val;
   }
@@ -317,7 +335,8 @@ public:
    **
    ** The parameter is the kinetic energy in GeV
    **/
-  void SetEnergyCutMuonPairProduction(Double_t val) {
+  void SetEnergyCutMuonPairProduction(Double_t val)
+  {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonPairProduction");
     fEnergyCutMuonPairProduction = val;
   }
@@ -327,7 +346,8 @@ public:
    **
    ** The parameter is the time in s
    **/
-  void SetTimeCutTof(Double_t val) {
+  void SetTimeCutTof(Double_t val)
+  {
     CheckValueInRange(val, 0., 2., "SetTimeCutTof");
     fTimeCutTof = val;
   }

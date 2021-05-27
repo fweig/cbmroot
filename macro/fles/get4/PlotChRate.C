@@ -9,12 +9,10 @@
   //   gROOT->cd();
 
   for (UInt_t uChipIndex = 0; uChipIndex < 24; uChipIndex++)
-    pGet4Histos[uChipIndex] =
-      (TH2D*) (gROOT->FindObject(Form("hGet4ChDataCntEvo_%03u", uChipIndex)));
+    pGet4Histos[uChipIndex] = (TH2D*) (gROOT->FindObject(Form("hGet4ChDataCntEvo_%03u", uChipIndex)));
 
   for (UInt_t uChipIndex = 64; uChipIndex < 88; uChipIndex++)
-    pGet4Histos[uChipIndex - 40] =
-      (TH2D*) (gROOT->FindObject(Form("hGet4ChDataCntEvo_%03u", uChipIndex)));
+    pGet4Histos[uChipIndex - 40] = (TH2D*) (gROOT->FindObject(Form("hGet4ChDataCntEvo_%03u", uChipIndex)));
 
   Int_t iNbTdcFound = 0;
   for (Int_t iTdcIdx = 0; iTdcIdx < iNbGet4; iTdcIdx++)
@@ -31,21 +29,15 @@
   TH1* hMinChannelRate  = new TH1D("hMinChannelRate",
                                   "Minimal rate as function of time among all "
                                   "GET4 channels; Time [s]; Rate [1/s]",
-                                  iNbBinsPlot,
-                                  dStartTime,
-                                  dStopTime);
+                                  iNbBinsPlot, dStartTime, dStopTime);
   TH1* hMeanChannelRate = new TH1D("hMeanChannelRate",
                                    "Mean rate as function of time among all "
                                    "GET4 channels; Time [s]; Rate [1/s]",
-                                   iNbBinsPlot,
-                                   dStartTime,
-                                   dStopTime);
+                                   iNbBinsPlot, dStartTime, dStopTime);
   TH1* hMaxChannelRate  = new TH1D("hMaxChannelRate",
                                   "Maximum rate as function of time among all "
                                   "GET4 channels; Time [s]; Rate [1/s]",
-                                  iNbBinsPlot,
-                                  dStartTime,
-                                  dStopTime);
+                                  iNbBinsPlot, dStartTime, dStopTime);
 
   Double_t dMinRate           = 1e15;  // crazy value to start
   Double_t dMeanRate          = 0.0;
@@ -76,9 +68,7 @@
     //cout<<dMinRate<<" "<<dMeanRate<<" "<<dNbNonZeroChannels<<" "<<dMaxRate<<endl;
 
     if (0 < dMinRate) hMinChannelRate->Fill(dBinSize * (iBinIdx - 1), dMinRate);
-    if (0 < dNbNonZeroChannels)
-      hMeanChannelRate->Fill(dBinSize * (iBinIdx - 1),
-                             dMeanRate / dNbNonZeroChannels);
+    if (0 < dNbNonZeroChannels) hMeanChannelRate->Fill(dBinSize * (iBinIdx - 1), dMeanRate / dNbNonZeroChannels);
     if (0 < dMaxRate) hMaxChannelRate->Fill(dBinSize * (iBinIdx - 1), dMaxRate);
   }  // for( Int_t iBinIdx = 1; iBinIdx < iNbBinsPlot + 1; iBinIdx++)
 

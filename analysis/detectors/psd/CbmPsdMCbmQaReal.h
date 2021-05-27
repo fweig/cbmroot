@@ -3,6 +3,7 @@
 
 #include "CbmEvent.h"
 #include "CbmHistManager.h"
+
 #include "FairTask.h"
 
 class TClonesArray;

@@ -46,32 +46,22 @@ const TString DiamondMedium       = "silicon";  // to get active material
 //  8 THU Pad
 //  9 THU strip
 // 10 Diamond (4-segment mosaic pcCVD-DD)
-const Int_t NumberOfDifferentCounterTypes = 11;
-const Float_t Glass_X[NumberOfDifferentCounterTypes] =
-  {32., 52., 15.04, 18., 2., 2., 40.4, 28.8, 17.4, 25., 1.};
-const Float_t Glass_Y[NumberOfDifferentCounterTypes] =
-  {26.9, 53., 4., 4.6, 2., 2., 9.6, 9.6, 2.0, 26.7, 1.};
-const Float_t Glass_Z[NumberOfDifferentCounterTypes] =
-  {0.1, 0.1, 0.1, 0.1, 0.01, 0.1, 0.05, 0.05, 0.07, 0.1, 0.1};
+const Int_t NumberOfDifferentCounterTypes            = 11;
+const Float_t Glass_X[NumberOfDifferentCounterTypes] = {32., 52., 15.04, 18., 2., 2., 40.4, 28.8, 17.4, 25., 1.};
+const Float_t Glass_Y[NumberOfDifferentCounterTypes] = {26.9, 53., 4., 4.6, 2., 2., 9.6, 9.6, 2.0, 26.7, 1.};
+const Float_t Glass_Z[NumberOfDifferentCounterTypes] = {0.1, 0.1, 0.1, 0.1, 0.01, 0.1, 0.05, 0.05, 0.07, 0.1, 0.1};
 
-const Float_t GasGap_X[NumberOfDifferentCounterTypes] =
-  {32., 52., 15.04, 18., 2., 2., 40.4, 28.8, 17.4, 25., 1.};
-const Float_t GasGap_Y[NumberOfDifferentCounterTypes] =
-  {26.9, 53., 4., 4.6, 2., 2., 9.6, 9.6, 2.0, 26.7, 1.};
-const Float_t GasGap_Z[NumberOfDifferentCounterTypes] =
-  {0.022, 0.022, 0.022, 0.014, 0.02, 0.03, 0.014, 0.014, 0.025, 0.025, 0.018};
+const Float_t GasGap_X[NumberOfDifferentCounterTypes] = {32., 52., 15.04, 18., 2., 2., 40.4, 28.8, 17.4, 25., 1.};
+const Float_t GasGap_Y[NumberOfDifferentCounterTypes] = {26.9, 53., 4., 4.6, 2., 2., 9.6, 9.6, 2.0, 26.7, 1.};
+const Float_t GasGap_Z[NumberOfDifferentCounterTypes] = {0.022, 0.022, 0.022, 0.014, 0.02, 0.03,
+                                                         0.014, 0.014, 0.025, 0.025, 0.018};
 
-const Int_t NumberOfGaps[NumberOfDifferentCounterTypes] =
-  {8, 8, 6, 10, 6, 1, 10, 8, 10, 10, 1};
-const Int_t NumberOfReadoutStrips[NumberOfDifferentCounterTypes] =
-  {32, 56, 16, 72, 1, 16, 40, 40, 8, 24, 4};
+const Int_t NumberOfGaps[NumberOfDifferentCounterTypes]          = {8, 8, 6, 10, 6, 1, 10, 8, 10, 10, 1};
+const Int_t NumberOfReadoutStrips[NumberOfDifferentCounterTypes] = {32, 56, 16, 72, 1, 16, 40, 40, 8, 24, 4};
 
-const Float_t Electronics_X[NumberOfDifferentCounterTypes] =
-  {34.0, 53.0, 15.5, 18.5, 2., 2., 30.5, 30.5, 0.2, 26., 1.};
-const Float_t Electronics_Y[NumberOfDifferentCounterTypes] =
-  {5.0, 5.0, 1.0, 1., 0.5, 0.1, 0.5, 0.5, 0.2, 5., 0.1};
-const Float_t Electronics_Z[NumberOfDifferentCounterTypes] =
-  {0.3, 0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.3, 0.3, 0.3, 0.1};
+const Float_t Electronics_X[NumberOfDifferentCounterTypes] = {34.0, 53.0, 15.5, 18.5, 2., 2., 30.5, 30.5, 0.2, 26., 1.};
+const Float_t Electronics_Y[NumberOfDifferentCounterTypes] = {5.0, 5.0, 1.0, 1., 0.5, 0.1, 0.5, 0.5, 0.2, 5., 0.1};
+const Float_t Electronics_Z[NumberOfDifferentCounterTypes] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.3, 0.3, 0.3, 0.1};
 
 const Int_t NofModuleTypes = 11;
 // Aluminum box for all supermodule types
@@ -86,44 +76,29 @@ const Int_t NofModuleTypes = 11;
 //  8 THU Pad
 //  9 Star 2-counter module
 // 10 Diamond (4-segment mosaic pcCVD-DD)
-const Float_t Module_Size_X[NofModuleTypes] =
-  {120., 35., 9., 50., 30., 9., 50., 70., 29., 100., 8.};
-const Float_t Module_Size_Y[NofModuleTypes] =
-  {74., 18., 7., 49., 16., 5., 30., 35., 33., 49., 5.};
-const Float_t Module_Size_Z[NofModuleTypes] =
-  {10., 10., 2., 10., 10., 1., 15., 20., 10., 11., 1.};
+const Float_t Module_Size_X[NofModuleTypes] = {120., 35., 9., 50., 30., 9., 50., 70., 29., 100., 8.};
+const Float_t Module_Size_Y[NofModuleTypes] = {74., 18., 7., 49., 16., 5., 30., 35., 33., 49., 5.};
+const Float_t Module_Size_Z[NofModuleTypes] = {10., 10., 2., 10., 10., 1., 15., 20., 10., 11., 1.};
 
-const Float_t Module_Thick_Alu_X_left[NofModuleTypes] =
-  {0.1, 0.1, 0.1, 0.1, 1., 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-const Float_t Module_Thick_Alu_X_right[NofModuleTypes] =
-  {1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.};
-const Float_t Module_Thick_Alu_Y[NofModuleTypes] =
-  {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-const Float_t Module_Thick_Alu_Z[NofModuleTypes] =
-  {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+const Float_t Module_Thick_Alu_X_left[NofModuleTypes]  = {0.1, 0.1, 0.1, 0.1, 1., 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+const Float_t Module_Thick_Alu_X_right[NofModuleTypes] = {1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.};
+const Float_t Module_Thick_Alu_Y[NofModuleTypes]       = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+const Float_t Module_Thick_Alu_Z[NofModuleTypes]       = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 
 //Type of Counter for module
-const Int_t CounterTypeInModule[NofModuleTypes] =
-  {1, 3, 4, 0, 2, 5, 6, 7, 8, 0, 10};
-const Int_t NCounterInModule[NofModuleTypes] =
-  {1, 1, 1, 1, 1, 1, 2, 4, 6, 2, 1};
+const Int_t CounterTypeInModule[NofModuleTypes] = {1, 3, 4, 0, 2, 5, 6, 7, 8, 0, 10};
+const Int_t NCounterInModule[NofModuleTypes]    = {1, 1, 1, 1, 1, 1, 2, 4, 6, 2, 1};
 
 // Placement of the counter inside the gas box
 //const Float_t CounterXStartPosition[NofModuleTypes] = {-10.0,  0.0, 0.0,  0.0, 0.0, 0., 0., -15., 0.,  0., 0.};
-const Float_t CounterXStartPosition[NofModuleTypes] =
-  {-12.45, -2.45, -2.45, -2.45, -2., -2.45, -2.45, -17.45, -2.45, -2.45, -2.45};
-const Float_t CounterXDistance[NofModuleTypes] =
-  {30.0, 30.6, 0.0, 30.0, 0.0, 0., 3.4, 30., 0., 0., 0.};
-const Float_t CounterYStartPosition[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -7., 0., 0.};
-const Float_t CounterYDistance[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 2.2, 0., 0.};
-const Float_t CounterZStartPosition[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 2.5, 0.0, 0., -2., -8., 0., -2., 0.};
-const Float_t CounterZDistance[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 2.5, 0.0, 0., 4., 5., 4., 4., 0.};
-const Float_t CounterRotationAngle[NofModuleTypes] =
-  {0., 0.0, 0.0, 0., 0.0, 0., 0., 0., 0., 0., 0.};
+const Float_t CounterXStartPosition[NofModuleTypes] = {-12.45, -2.45,  -2.45, -2.45, -2.,  -2.45,
+                                                       -2.45,  -17.45, -2.45, -2.45, -2.45};
+const Float_t CounterXDistance[NofModuleTypes]      = {30.0, 30.6, 0.0, 30.0, 0.0, 0., 3.4, 30., 0., 0., 0.};
+const Float_t CounterYStartPosition[NofModuleTypes] = {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -7., 0., 0.};
+const Float_t CounterYDistance[NofModuleTypes]      = {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 2.2, 0., 0.};
+const Float_t CounterZStartPosition[NofModuleTypes] = {0.0, 0.0, 0.0, 2.5, 0.0, 0., -2., -8., 0., -2., 0.};
+const Float_t CounterZDistance[NofModuleTypes]      = {0.0, 0.0, 0.0, 2.5, 0.0, 0., 4., 5., 4., 4., 0.};
+const Float_t CounterRotationAngle[NofModuleTypes]  = {0., 0.0, 0.0, 0., 0.0, 0., 0., 0., 0., 0., 0.};
 
 
 // Position for module placement
@@ -142,8 +117,7 @@ const Float_t HDRef_X_Offset             = 0.7;
 const Float_t HDRef_rotate_Z             = 180.;
 const Int_t HDRef_NTypes                 = 1;
 const Float_t HDRef_Types[HDRef_NTypes]  = {4.};  // this is the SmType!
-const Float_t HDRef_Number[HDRef_NTypes] = {
-  1.};  // evtl. double for split signals
+const Float_t HDRef_Number[HDRef_NTypes] = {1.};  // evtl. double for split signals
 
 const Float_t Dia_Z_Position             = -1.;
 const Float_t Dia_DeltaZ_Position        = -2.;
@@ -236,7 +210,8 @@ void position_THU(Int_t);
 void position_Star2(Int_t);
 
 
-void Create_TOF_Geometry_v15c() {
+void Create_TOF_Geometry_v15c()
+{
   // Load needed material definition from media.geo file
   create_materials_from_media_file();
 
@@ -251,8 +226,7 @@ void Create_TOF_Geometry_v15c() {
   TGeoVolume* tof = new TGeoVolumeAssembly(geoVersion);
   top->AddNode(tof, 1);
 
-  for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes;
-       counterType++) {
+  for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes; counterType++) {
     gCounter[counterType] = create_new_counter(counterType);
   }
 
@@ -294,7 +268,8 @@ void Create_TOF_Geometry_v15c() {
   //  top->Raytrace();
 }
 
-void create_materials_from_media_file() {
+void create_materials_from_media_file()
+{
   // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
@@ -326,7 +301,8 @@ void create_materials_from_media_file() {
   geoBuild->createMedium(silicon);
 }
 
-TGeoVolume* create_new_counter(Int_t iCounterType) {
+TGeoVolume* create_new_counter(Int_t iCounterType)
+{
 
   //glass
   Float_t gdx = Glass_X[iCounterType];
@@ -372,23 +348,20 @@ TGeoVolume* create_new_counter(Int_t iCounterType) {
 
   // define counter volume
   TGeoBBox* counter_box = new TGeoBBox("", cdx / 2., cdy / 2., cdz / 2.);
-  TGeoVolume* counter =
-    new TGeoVolume("counter", counter_box, noActiveGasVolMed);
+  TGeoVolume* counter   = new TGeoVolume("counter", counter_box, noActiveGasVolMed);
   counter->SetLineColor(kCyan);  // set line color for the counter
   counter->SetTransparency(70);  // set transparency for the TOF
 
   // define single glass plate volume
-  TGeoBBox* glass_plate = new TGeoBBox("", gdx / 2., gdy / 2., gdz / 2.);
-  TGeoVolume* glass_plate_vol =
-    new TGeoVolume("tof_glass", glass_plate, glassPlateVolMed);
+  TGeoBBox* glass_plate       = new TGeoBBox("", gdx / 2., gdy / 2., gdz / 2.);
+  TGeoVolume* glass_plate_vol = new TGeoVolume("tof_glass", glass_plate, glassPlateVolMed);
   glass_plate_vol->SetLineColor(kYellow);  // set line color for the glass plate
   glass_plate_vol->SetTransparency(0);     // set transparency for the TOF
   // define single gas gap volume
   TGeoBBox* gas_gap       = new TGeoBBox("", ggdx / 2., ggdy / 2., ggdz / 2.);
   TGeoVolume* gas_gap_vol = NULL;
-  if (5 == iCounterType || 10 == iCounterType) {
-    gas_gap_vol = new TGeoVolume("Gap", gas_gap, DiamondVolMed);
-  } else {
+  if (5 == iCounterType || 10 == iCounterType) { gas_gap_vol = new TGeoVolume("Gap", gas_gap, DiamondVolMed); }
+  else {
     gas_gap_vol = new TGeoVolume("Gap", gas_gap, activeGasVolMed);
   }
 
@@ -409,7 +382,8 @@ TGeoVolume* create_new_counter(Int_t iCounterType) {
     gas_gap_vol->AddNode(tPadVolume, 2, tPadTrans2);
     gas_gap_vol->AddNode(tPadVolume, 3, tPadTrans3);
     gas_gap_vol->AddNode(tPadVolume, 4, tPadTrans4);
-  } else {
+  }
+  else {
     gas_gap_vol->Divide("Cell", 1, nstrips, -ggdx / 2., 0);
   }
 
@@ -425,17 +399,15 @@ TGeoVolume* create_new_counter(Int_t iCounterType) {
     //    cout <<"Zpos(Glas): "<< zpos_glas << endl;
     //    cout <<"Zpos(Gas): "<< zpos_gas << endl;
 
-    TGeoTranslation* glass_plate_trans =
-      new TGeoTranslation("", 0., 0., zpos_glas);
-    TGeoTranslation* gas_gap_trans = new TGeoTranslation("", 0., 0., zpos_gas);
+    TGeoTranslation* glass_plate_trans = new TGeoTranslation("", 0., 0., zpos_glas);
+    TGeoTranslation* gas_gap_trans     = new TGeoTranslation("", 0., 0., zpos_gas);
     counter->AddNode(glass_plate_vol, igap, glass_plate_trans);
     counter->AddNode(gas_gap_vol, igap, gas_gap_trans);
   }
 
   //  Float_t zpos_glas = startzposglas + (ngaps+1)*dzpos; // FIXME
-  Float_t zpos_glas = startzposglas + ngaps * dzpos;
-  TGeoTranslation* glass_plate_trans =
-    new TGeoTranslation("", 0., 0., zpos_glas);
+  Float_t zpos_glas                  = startzposglas + ngaps * dzpos;
+  TGeoTranslation* glass_plate_trans = new TGeoTranslation("", 0., 0., zpos_glas);
   counter->AddNode(glass_plate_vol, ngaps, glass_plate_trans);
 
   // create and place the electronics above and below the glas stack
@@ -454,7 +426,8 @@ TGeoVolume* create_new_counter(Int_t iCounterType) {
 }
 
 
-TGeoVolume* create_new_tof_module(Int_t modType) {
+TGeoVolume* create_new_tof_module(Int_t modType)
+{
   Int_t cType         = CounterTypeInModule[modType];
   Float_t dx          = Module_Size_X[modType];
   Float_t dy          = Module_Size_Y[modType];
@@ -483,24 +456,18 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
   module->SetLineColor(kGreen);  // set line color for the alu box
   module->SetTransparency(20);   // set transparency for the TOF
 
-  TGeoBBox* gas_box = new TGeoBBox("",
-                                   (dx - (width_aluxl + width_aluxr)) / 2.,
-                                   (dy - 2 * width_aluy) / 2.,
-                                   (dz - 2 * width_aluz) / 2.);
-  TGeoVolume* gas_box_vol =
-    new TGeoVolume("gas_box", gas_box, noActiveGasVolMed);
+  TGeoBBox* gas_box =
+    new TGeoBBox("", (dx - (width_aluxl + width_aluxr)) / 2., (dy - 2 * width_aluy) / 2., (dz - 2 * width_aluz) / 2.);
+  TGeoVolume* gas_box_vol = new TGeoVolume("gas_box", gas_box, noActiveGasVolMed);
   gas_box_vol->SetLineColor(kBlue);  // set line color for the alu box
   gas_box_vol->SetTransparency(50);  // set transparency for the TOF
-  TGeoTranslation* gas_box_trans =
-    new TGeoTranslation("", shift_gas_box, 0., 0.);
+  TGeoTranslation* gas_box_trans = new TGeoTranslation("", shift_gas_box, 0., 0.);
   module->AddNode(gas_box_vol, 0, gas_box_trans);
 
-  for (Int_t j = 0; j < NCounterInModule[modType];
-       j++) {  //loop over counters (modules)
+  for (Int_t j = 0; j < NCounterInModule[modType]; j++) {  //loop over counters (modules)
     Float_t xpos, ypos, zpos;
-    if (0 == modType || 3 == modType || 4 == modType || 5 == modType) {
-      zpos = dzoff *= -1;
-    } else {
+    if (0 == modType || 3 == modType || 4 == modType || 5 == modType) { zpos = dzoff *= -1; }
+    else {
       zpos = CounterZStartPosition[modType] + j * dzoff;
     }
     if (8 == modType) {  // ThuPad
@@ -524,14 +491,13 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
       ypos         = startypos + Float_t((Int_t) j % 2) * dypos;
       zpos         = CounterZStartPosition[modType] + zsh[j] * dzoff;
     }
-    cout << "Add new counter " << cType << " at " << startxpos + j * dxpos
-         << ", " << startypos + j * dypos << ", " << zpos << endl;
+    cout << "Add new counter " << cType << " at " << startxpos + j * dxpos << ", " << startypos + j * dypos << ", "
+         << zpos << endl;
 
     TGeoTranslation* counter_trans = new TGeoTranslation("", xpos, ypos, zpos);
     TGeoRotation* counter_rot      = new TGeoRotation();
     counter_rot->RotateY(rotangle);
-    TGeoCombiTrans* counter_combi_trans =
-      new TGeoCombiTrans(*counter_trans, *counter_rot);
+    TGeoCombiTrans* counter_combi_trans = new TGeoCombiTrans(*counter_trans, *counter_rot);
     gas_box_vol->AddNode(gCounter[cType], j, counter_combi_trans);
   }
 
@@ -539,7 +505,8 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
 }
 
 
-void position_HDsmall(Int_t modNType) {
+void position_HDsmall(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(HDsmall_rotate_Z);
@@ -557,14 +524,14 @@ void position_HDsmall(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_Star2(Int_t modNType) {
+void position_Star2(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(Star2_rotate_Z);
@@ -582,8 +549,7 @@ void position_Star2(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
       yPos += Star2_Delta_Y_Position;
       zPos += Star2_Delta_Z_Position;
@@ -591,7 +557,8 @@ void position_Star2(Int_t modNType) {
   }
 }
 
-void position_BucRef(Int_t modNType) {
+void position_BucRef(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(BucRef_rotate_Z);
@@ -609,14 +576,14 @@ void position_BucRef(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_HDRef(Int_t modNType) {
+void position_HDRef(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(HDRef_rotate_Z);
@@ -634,14 +601,14 @@ void position_HDRef(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_Dia(Int_t modNType) {
+void position_Dia(Int_t modNType)
+{
   TGeoTranslation* module_trans      = NULL;
   TGeoRotation* module_rot           = NULL;
   TGeoCombiTrans* module_combi_trans = NULL;
@@ -661,8 +628,7 @@ void position_Dia(Int_t modNType) {
       module_rot   = new TGeoRotation();
       module_rot->RotateZ(Dia_rotate_Z[j]);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       /*
     // use node name "module_5" for both pad and strip diamond detectors
     if( 10 == modType )
@@ -676,7 +642,8 @@ void position_Dia(Int_t modNType) {
   }
 }
 
-void position_Buc2012(Int_t modNType) {
+void position_Buc2012(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(Buc2012_rotate_Z);
@@ -694,14 +661,14 @@ void position_Buc2012(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_Buc2015(Int_t modNType) {
+void position_Buc2015(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(Buc2015_rotate_Z);
@@ -719,14 +686,14 @@ void position_Buc2015(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_USTC(Int_t modNType) {
+void position_USTC(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(USTC_rotate_Z);
@@ -744,14 +711,14 @@ void position_USTC(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_THU(Int_t modNType) {
+void position_THU(Int_t modNType)
+{
   TGeoTranslation* module_trans = NULL;
   TGeoRotation* module_rot      = new TGeoRotation();
   module_rot->RotateZ(THU_rotate_Z);
@@ -769,14 +736,14 @@ void position_THU(Int_t modNType) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }
 }
 
-void position_cer_modules(Int_t modNType) {
+void position_cer_modules(Int_t modNType)
+{
   Int_t ii     = 0;
   Int_t modNum = 0;
   for (Int_t j = 0; j < modNType; j++) {
@@ -791,14 +758,12 @@ void position_cer_modules(Int_t modNType) {
 
     for (Int_t i = 0; i < Cer_Number[j]; i++) {
       ii++;
-      cout << "Position Ceramic Module " << i << " of " << Cer_Number[j]
-           << " Type " << modType << " at X = " << xPos << ", Y = " << yPos
-           << ", Z = " << zPos << endl;
+      cout << "Position Ceramic Module " << i << " of " << Cer_Number[j] << " Type " << modType << " at X = " << xPos
+           << ", Y = " << yPos << ", Z = " << zPos << endl;
       // Front staggered module (Top if pair), top
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
       module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      gGeoMan->GetVolume(geoVersion)
-        ->AddNode(gModules[modType], modNum, module_combi_trans);
+      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
     }
   }

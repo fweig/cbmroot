@@ -53,18 +53,9 @@ public:
 
   Int_t Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0);
 
-  Int_t PassMaterial(CbmKFTrackInterface& track,
-                     Double_t& QP0,
-                     Int_t ifst,
-                     Int_t ilst);
-  Int_t PassMaterialBetween(CbmKFTrackInterface& track,
-                            Double_t& QP0,
-                            Int_t ifst,
-                            Int_t ilst);
-  Int_t PassMaterialBetween(CbmKFTrackInterface& track,
-                            Double_t& QP0,
-                            CbmKFHit* fst,
-                            CbmKFHit* lst);
+  Int_t PassMaterial(CbmKFTrackInterface& track, Double_t& QP0, Int_t ifst, Int_t ilst);
+  Int_t PassMaterialBetween(CbmKFTrackInterface& track, Double_t& QP0, Int_t ifst, Int_t ilst);
+  Int_t PassMaterialBetween(CbmKFTrackInterface& track, Double_t& QP0, CbmKFHit* fst, CbmKFHit* lst);
 
   /// * Stored materials
 

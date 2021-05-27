@@ -1,21 +1,19 @@
 #include "PronyFitter.h"
+
 #include "PolynomComplexRoots.h"
 #include "PolynomRealRoots.h"
 
-namespace PsdSignalFitting {
+namespace PsdSignalFitting
+{
 
 
-  PronyFitter::PronyFitter(int model_order,
-                           int exponent_number,
-                           int gate_beg,
-                           int gate_end) {
+  PronyFitter::PronyFitter(int model_order, int exponent_number, int gate_beg, int gate_end)
+  {
     Initialize(model_order, exponent_number, gate_beg, gate_end);
   }
 
-  void PronyFitter::Initialize(int model_order,
-                               int exponent_number,
-                               int gate_beg,
-                               int gate_end) {
+  void PronyFitter::Initialize(int model_order, int exponent_number, int gate_beg, int gate_end)
+  {
     fModelOrder = model_order;
     fExpNumber  = exponent_number;
     fGateBeg    = gate_beg;
@@ -23,7 +21,8 @@ namespace PsdSignalFitting {
     AllocData();
   }
 
-  void PronyFitter::AllocData() {
+  void PronyFitter::AllocData()
+  {
     fz = new std::complex<float>[fExpNumber + 1];
     fh = new std::complex<float>[fExpNumber + 1];
     for (int i = 0; i < fExpNumber + 1; i++) {
@@ -32,26 +31,27 @@ namespace PsdSignalFitting {
     }
   }
 
-  void PronyFitter::SetWaveform(std::vector<uint16_t>& uWfm,
-                                uint16_t uZeroLevel) {
+  void PronyFitter::SetWaveform(std::vector<uint16_t>& uWfm, uint16_t uZeroLevel)
+  {
     fuWfm        = uWfm;
     fuZeroLevel  = uZeroLevel;
     fSampleTotal = fuWfm.size();
     fuFitWfm.resize(fSampleTotal);
   }
 
-  int PronyFitter::CalcSignalBegin(float front_time_beg_03,
-                                   float front_time_end) {
+  int PronyFitter::CalcSignalBegin(float front_time_beg_03, float front_time_end)
+  {
     return std::ceil((3 * front_time_beg_03 - front_time_end) / 2.);
   }
 
-  void PronyFitter::SetSignalBegin(int SignalBeg) {
+  void PronyFitter::SetSignalBegin(int SignalBeg)
+  {
     fSignalBegin = SignalBeg;
-    if (fIsDebug)
-      printf("\nsignal begin %i  zero level %u\n", fSignalBegin, fuZeroLevel);
+    if (fIsDebug) printf("\nsignal begin %i  zero level %u\n", fSignalBegin, fuZeroLevel);
   }
 
-  void PronyFitter::CalculateFitHarmonics() {
+  void PronyFitter::CalculateFitHarmonics()
+  {
     float rho_f = 999;
     float rho_b = 999;
     std::vector<float> a_f;
@@ -104,8 +104,7 @@ namespace PsdSignalFitting {
 
     std::complex<float>* z_arr = new std::complex<float>[fExpNumber + 1];
     for (int i = 0; i < fExpNumber; i++) {
-      if (std::isfinite(zr[i]))
-        z_arr[i + 1] = {zr[i], zi[i]};
+      if (std::isfinite(zr[i])) z_arr[i + 1] = {zr[i], zi[i]};
       else
         z_arr[i + 1] = 0.;
     }
@@ -119,10 +118,9 @@ namespace PsdSignalFitting {
     delete[] z_arr;
   }
 
-  void PronyFitter::CovarianceDirect(float& /*rho_f*/,
-                                     std::vector<float>& a_f,
-                                     float& /*rho_b*/,
-                                     std::vector<float>& /*a_b*/) {
+  void PronyFitter::CovarianceDirect(float& /*rho_f*/, std::vector<float>& a_f, float& /*rho_b*/,
+                                     std::vector<float>& /*a_b*/)
+  {
     std::vector<int32_t> kiWfmSignal;
     //filtering constant fraction
     for (int sample_curr = fSignalBegin; sample_curr <= fGateEnd; sample_curr++)
@@ -144,13 +142,11 @@ namespace PsdSignalFitting {
     for (int i = 1; i <= fModelOrder; i++)
       for (int j = 1; j <= fModelOrder; j++)
         for (int sample_curr = fModelOrder; sample_curr < n; sample_curr++)
-          Rkm_arr[i - 1][j - 1] += (float) (kiWfmSignal.at(sample_curr - i)
-                                            * kiWfmSignal.at(sample_curr - j));
+          Rkm_arr[i - 1][j - 1] += (float) (kiWfmSignal.at(sample_curr - i) * kiWfmSignal.at(sample_curr - j));
 
     for (int i = 1; i <= fModelOrder; i++)
       for (int sample_curr = fModelOrder; sample_curr < n; sample_curr++)
-        R0k_arr[i - 1] -= (float) (kiWfmSignal.at(sample_curr)
-                                   * kiWfmSignal.at(sample_curr - i));
+        R0k_arr[i - 1] -= (float) (kiWfmSignal.at(sample_curr) * kiWfmSignal.at(sample_curr - i));
 
     if (fIsDebug) {
       printf("system forward\n");
@@ -185,10 +181,8 @@ namespace PsdSignalFitting {
     delete[] a;
   }
 
-  void PronyFitter::CovarianceQRmod(float& rho_f,
-                                    std::vector<float>& a_f,
-                                    float& rho_b,
-                                    std::vector<float>& a_b) {
+  void PronyFitter::CovarianceQRmod(float& rho_f, std::vector<float>& a_f, float& rho_b, std::vector<float>& a_b)
+  {
 
     /*
 % Copyright (c) 2019 by S. Lawrence Marple Jr.
@@ -232,8 +226,7 @@ parameters
       kiWfmSignal.push_back(fuWfm.at(sample_curr) - fuZeroLevel);
     int n = kiWfmSignal.size();
     if (2 * fModelOrder + 1 > n) {
-      if (fIsDebug)
-        printf("ERROR: Order too high; will make solution singular\n");
+      if (fIsDebug) printf("ERROR: Order too high; will make solution singular\n");
       return;
     }
 
@@ -421,12 +414,13 @@ parameters
     }
   }
 
-  void PronyFitter::SetHarmonics(std::complex<float>* z) {
+  void PronyFitter::SetHarmonics(std::complex<float>* z)
+  {
     std::memcpy(fz, z, (fExpNumber + 1) * sizeof(std::complex<float>));
   }
 
-  void PronyFitter::SetExternalHarmonics(std::complex<float> z1,
-                                         std::complex<float> z2) {
+  void PronyFitter::SetExternalHarmonics(std::complex<float> z1, std::complex<float> z2)
+  {
     std::complex<float>* z_arr = new std::complex<float>[fExpNumber + 1];
     for (int i = 0; i <= fExpNumber; i++)
       z_arr[i] = {0., 0.};
@@ -443,7 +437,8 @@ parameters
 
   void PronyFitter::MakePileUpRejection(int /*time_max*/) {}
 
-  void PronyFitter::CalculateFitAmplitudes() {
+  void PronyFitter::CalculateFitAmplitudes()
+  {
     std::complex<float>** Zik_arr = new std::complex<float>*[fExpNumber + 1];
     for (int i = 0; i < fExpNumber + 1; i++) {
       Zik_arr[i] = new std::complex<float>[fExpNumber + 1];
@@ -462,10 +457,10 @@ parameters
       for (int j = 0; j <= fExpNumber; j++) {
         std::complex<float> temp = std::conj(fz[i]) * fz[j];
         if (std::abs(temp - unit) > 1e-3) {
-          Zik_arr[i][j] = static_cast<std::complex<float>>(
-            (std::pow(temp, static_cast<float>(samples_in_gate)) - unit)
-            / (temp - unit));
-        } else {
+          Zik_arr[i][j] = static_cast<std::complex<float>>((std::pow(temp, static_cast<float>(samples_in_gate)) - unit)
+                                                           / (temp - unit));
+        }
+        else {
           Zik_arr[i][j] = static_cast<std::complex<float>>(samples_in_gate);
         }
       }
@@ -476,10 +471,8 @@ parameters
       z_power[i] = unit;
 
     for (int i = 0; i <= fExpNumber; i++) {
-      for (int sample_curr = fSignalBegin; sample_curr <= fGateEnd;
-           sample_curr++) {
-        Zyk_arr[i] += (std::complex<float>) (std::conj(z_power[i])
-                                             * (float) fuWfm.at(sample_curr));
+      for (int sample_curr = fSignalBegin; sample_curr <= fGateEnd; sample_curr++) {
+        Zyk_arr[i] += (std::complex<float>) (std::conj(z_power[i]) * (float) fuWfm.at(sample_curr));
         z_power[i] *= fz[i];
       }
     }
@@ -488,10 +481,8 @@ parameters
       printf("\nampl calculation\n");
       for (int i = 0; i <= fExpNumber; i++) {
         for (int j = 0; j <= fExpNumber; j++)
-          printf(
-            "%e%+ei   ", std::real(Zik_arr[i][j]), std::imag(Zik_arr[i][j]));
-        printf(
-          "        %e%+ei\n", std::real(Zyk_arr[i]), std::imag(Zyk_arr[i]));
+          printf("%e%+ei   ", std::real(Zik_arr[i][j]), std::imag(Zik_arr[i][j]));
+        printf("        %e%+ei\n", std::real(Zyk_arr[i]), std::imag(Zyk_arr[i]));
       }
     }
 
@@ -517,7 +508,8 @@ parameters
           z_power[i] *= fz[i];
         }
         fuFitWfm.at(sample_curr) = (uint16_t) std::real(fit_ampl_in_sample);
-      } else
+      }
+      else
         fuFitWfm.at(sample_curr) = fuFitZeroLevel;
     }
 
@@ -543,7 +535,8 @@ parameters
 
   std::complex<float>* PronyFitter::GetAmplitudes() { return fh; }
 
-  float PronyFitter::GetIntegral(int gate_beg, int gate_end) {
+  float PronyFitter::GetIntegral(int gate_beg, int gate_end)
+  {
     float integral = 0.;
     for (int sample_curr = gate_beg; sample_curr <= gate_end; sample_curr++)
       integral += (float) fuFitWfm.at(sample_curr) - fuFitZeroLevel;
@@ -552,13 +545,14 @@ parameters
     return 0;
   }
 
-  uint16_t PronyFitter::GetFitValue(int sample_number) {
-    if (std::isfinite(fuFitWfm.at(sample_number)))
-      return fuFitWfm.at(sample_number);
+  uint16_t PronyFitter::GetFitValue(int sample_number)
+  {
+    if (std::isfinite(fuFitWfm.at(sample_number))) return fuFitWfm.at(sample_number);
     return 0;
   }
 
-  float PronyFitter::GetFitValue(float x) {
+  float PronyFitter::GetFitValue(float x)
+  {
     std::complex<float> amplitude = {0., 0.};
     if (x < GetSignalBeginFromPhase()) return std::real(fh[0]);
     amplitude += fh[0];
@@ -571,43 +565,36 @@ parameters
 
   float PronyFitter::GetZeroLevel() { return (float) fuFitZeroLevel; }
 
-  float PronyFitter::GetSignalMaxTime() {
+  float PronyFitter::GetSignalMaxTime()
+  {
     return fSignalBegin
-           + std::real(
-             (std::log(-fh[2] * std::log(fz[2])) - std::log(fh[1] * log(fz[1])))
-             / (std::log(fz[1]) - std::log(fz[2])));
+           + std::real((std::log(-fh[2] * std::log(fz[2])) - std::log(fh[1] * log(fz[1])))
+                       / (std::log(fz[1]) - std::log(fz[2])));
   }
 
-  float PronyFitter::GetSignalBeginFromPhase() {
+  float PronyFitter::GetSignalBeginFromPhase()
+  {
     if (std::real(fh[2] / fh[1]) < 0)
-      return fSignalBegin
-             + std::real(std::log(-fh[2] / fh[1]) / std::log(fz[1] / fz[2]));
+      return fSignalBegin + std::real(std::log(-fh[2] / fh[1]) / std::log(fz[1] / fz[2]));
     return -999.;
   }
 
-  float PronyFitter::GetMaxAmplitude() {
-    return GetFitValue(GetSignalMaxTime());
-  }
+  float PronyFitter::GetMaxAmplitude() { return GetFitValue(GetSignalMaxTime()); }
 
-  float PronyFitter::GetX(float level, int first_sample, int last_sample) {
+  float PronyFitter::GetX(float level, int first_sample, int last_sample)
+  {
     int step = 0;
-    if (first_sample < last_sample)
-      step = 1;
+    if (first_sample < last_sample) step = 1;
     else
       step = -1;
     float result_sample  = 0.;
     int sample_to_check  = first_sample;
     float amplitude      = 0.;
     float amplitude_prev = GetFitValue(sample_to_check - step);
-    while ((first_sample - sample_to_check) * (last_sample - sample_to_check)
-           <= 0) {
+    while ((first_sample - sample_to_check) * (last_sample - sample_to_check) <= 0) {
       amplitude = GetFitValue(sample_to_check);
       if ((level - amplitude) * (level - amplitude_prev) <= 0) {
-        result_sample = LevelBy2Points(sample_to_check,
-                                       amplitude,
-                                       sample_to_check - step,
-                                       amplitude_prev,
-                                       level);
+        result_sample = LevelBy2Points(sample_to_check, amplitude, sample_to_check - step, amplitude_prev, level);
         return result_sample;
       }
       amplitude_prev = amplitude;
@@ -617,25 +604,18 @@ parameters
     return 0;
   }
 
-  float PronyFitter::GetX(float level,
-                          int first_sample,
-                          int last_sample,
-                          float step) {
+  float PronyFitter::GetX(float level, int first_sample, int last_sample, float step)
+  {
     float result_sample                = 0.;
     float sample_to_check              = (float) first_sample;
     std::complex<float> amplitude      = {0., 0.};
     std::complex<float> amplitude_prev = GetFitValue(sample_to_check - step);
-    while ((first_sample - sample_to_check) * (last_sample - sample_to_check)
-           <= 0) {
+    while ((first_sample - sample_to_check) * (last_sample - sample_to_check) <= 0) {
       amplitude = GetFitValue(sample_to_check);
-      if ((level - std::real(amplitude)) * (level - std::real(amplitude_prev))
-          <= 0) {
+      if ((level - std::real(amplitude)) * (level - std::real(amplitude_prev)) <= 0) {
         if (amplitude != amplitude_prev)
-          result_sample = LevelBy2Points(sample_to_check,
-                                         std::real(amplitude),
-                                         sample_to_check - step,
-                                         std::real(amplitude_prev),
-                                         level);
+          result_sample = LevelBy2Points(sample_to_check, std::real(amplitude), sample_to_check - step,
+                                         std::real(amplitude_prev), level);
         return result_sample;
       }
       amplitude_prev = amplitude;
@@ -645,15 +625,13 @@ parameters
     return 0;
   }
 
-  float PronyFitter::LevelBy2Points(float X1,
-                                    float Y1,
-                                    float X2,
-                                    float Y2,
-                                    float Y0) {
+  float PronyFitter::LevelBy2Points(float X1, float Y1, float X2, float Y2, float Y0)
+  {
     return (X1 * Y0 - X1 * Y2 - X2 * Y0 + X2 * Y1) / (Y1 - Y2);
   }
 
-  float PronyFitter::GetRSquare(int gate_beg, int gate_end) {
+  float PronyFitter::GetRSquare(int gate_beg, int gate_end)
+  {
     float R2          = 0.;
     float RSS         = 0.;
     float TSS         = 0.;
@@ -670,19 +648,16 @@ parameters
       TSS += std::pow(fuWfm.at(sample_curr) - average, 2);
     }
     if (TSS == 0) return 999;
-    R2 =
-      RSS
-      / TSS;  // correct definition is R2=1.-RSS/TSS, but R2=RSS/TSS is more convenient
+    R2 = RSS / TSS;  // correct definition is R2=1.-RSS/TSS, but R2=RSS/TSS is more convenient
 
     float R2_adj = R2 * (m - 1) / (m - params_number);
     return R2_adj;
   }
 
-  float PronyFitter::GetRSquareSignal() {
-    return GetRSquare(fSignalBegin, fGateEnd);
-  }
+  float PronyFitter::GetRSquareSignal() { return GetRSquare(fSignalBegin, fGateEnd); }
 
-  float PronyFitter::GetChiSquare(int gate_beg, int gate_end, int time_max) {
+  float PronyFitter::GetChiSquare(int gate_beg, int gate_end, int time_max)
+  {
     float chi2          = 0.;
     int freedom_counter = 0;
     int regions_number  = 10;
@@ -701,23 +676,18 @@ parameters
 
     for (int sample_curr = gate_beg; sample_curr <= gate_end; sample_curr++) {
       for (int i = 0; i < regions_number; i++) {
-        if ((std::abs(fuWfm.at(sample_curr) - fuZeroLevel)
-             > amplitude_regions[i])
-            && (std::abs(fuWfm.at(sample_curr) - fuZeroLevel)
-                <= amplitude_regions[i + 1]))
+        if ((std::abs(fuWfm.at(sample_curr) - fuZeroLevel) > amplitude_regions[i])
+            && (std::abs(fuWfm.at(sample_curr) - fuZeroLevel) <= amplitude_regions[i + 1]))
           probability_exp[i]++;
-        if ((std::abs(fuFitWfm.at(sample_curr) - fuFitZeroLevel)
-             > amplitude_regions[i])
-            && (std::abs(fuFitWfm.at(sample_curr) - fuFitZeroLevel)
-                <= amplitude_regions[i + 1]))
+        if ((std::abs(fuFitWfm.at(sample_curr) - fuFitZeroLevel) > amplitude_regions[i])
+            && (std::abs(fuFitWfm.at(sample_curr) - fuFitZeroLevel) <= amplitude_regions[i + 1]))
           probability_theor[i]++;
       }
     }
 
     for (int i = 0; i < regions_number; i++) {
       if (probability_exp[i] > 0) {
-        chi2 += std::pow(probability_exp[i] - probability_theor[i], 2.)
-                / (probability_exp[i]);
+        chi2 += std::pow(probability_exp[i] - probability_theor[i], 2.) / (probability_exp[i]);
         freedom_counter++;
       }
     }
@@ -730,9 +700,7 @@ parameters
     return chi2;
   }
 
-  float PronyFitter::GetDeltaInSample(int sample) {
-    return fuFitWfm.at(sample) - fuWfm.at(sample);
-  }
+  float PronyFitter::GetDeltaInSample(int sample) { return fuFitWfm.at(sample) - fuWfm.at(sample); }
 
   /*
 void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
@@ -757,27 +725,24 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
 }
 */
 
-  int PronyFitter::ChooseBestSignalBeginHarmonics(int first_sample,
-                                                  int last_sample) {
+  int PronyFitter::ChooseBestSignalBeginHarmonics(int first_sample, int last_sample)
+  {
     float best_R2         = 0.;
     int best_signal_begin = 0;
     bool IsReasonableRoot;
     bool IsGoodFit       = false;
     int good_fit_counter = 0;
 
-    for (int signal_begin = first_sample; signal_begin <= last_sample;
-         signal_begin++) {
+    for (int signal_begin = first_sample; signal_begin <= last_sample; signal_begin++) {
       SetSignalBegin(signal_begin);
       CalculateFitHarmonics();
       IsReasonableRoot = true;
       for (int j = 0; j < fExpNumber; j++)
-        IsReasonableRoot = IsReasonableRoot && (std::abs(fz[j + 1]) > 1e-6)
-                           && (std::abs(fz[j + 1]) < 1e1);
+        IsReasonableRoot = IsReasonableRoot && (std::abs(fz[j + 1]) > 1e-6) && (std::abs(fz[j + 1]) < 1e1);
       IsGoodFit = (fTotalPolRoots > 0) && (IsReasonableRoot);
 
       if (IsGoodFit) {
-        if (fIsDebug)
-          printf("good fit candidate at signal begin %i\n", signal_begin);
+        if (fIsDebug) printf("good fit candidate at signal begin %i\n", signal_begin);
         good_fit_counter++;
         CalculateFitAmplitudes();
         float R2 = GetRSquare(fGateBeg, fGateEnd);
@@ -795,12 +760,12 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
     return best_signal_begin;
   }
 
-  int PronyFitter::ChooseBestSignalBegin(int first_sample, int last_sample) {
+  int PronyFitter::ChooseBestSignalBegin(int first_sample, int last_sample)
+  {
     float best_R2         = 0.;
     int best_signal_begin = first_sample;
 
-    for (int signal_begin = first_sample; signal_begin <= last_sample;
-         signal_begin++) {
+    for (int signal_begin = first_sample; signal_begin <= last_sample; signal_begin++) {
       SetSignalBegin(signal_begin);
       CalculateFitAmplitudes();
       float R2 = GetRSquare(fGateBeg, fGateEnd);
@@ -814,7 +779,8 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
     return best_signal_begin;
   }
 
-  void PronyFitter::SolveSLEGauss(float* x, float** r, float* b, int n) {
+  void PronyFitter::SolveSLEGauss(float* x, float** r, float* b, int n)
+  {
     bool solvable = true;
     int maxRow;
     float maxEl, tmp, c;
@@ -854,8 +820,7 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
       for (int k = i + 1; k < n; k++) {
         c = -a[k][i] / a[i][i];
         for (int j = i; j < n + 1; j++) {
-          if (i == j)
-            a[k][j] = 0.;
+          if (i == j) a[k][j] = 0.;
           else
             a[k][j] += c * a[i][j];
         }
@@ -878,10 +843,8 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
     delete[] a;
   }
 
-  void PronyFitter::SolveSLEGauss(std::complex<float>* x,
-                                  std::complex<float>** r,
-                                  std::complex<float>* b,
-                                  int n) {
+  void PronyFitter::SolveSLEGauss(std::complex<float>* x, std::complex<float>** r, std::complex<float>* b, int n)
+  {
     bool solvable = true;
     int maxRow;
     float maxEl;
@@ -922,8 +885,7 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
       for (int k = i + 1; k < n; k++) {
         c = -a[k][i] / a[i][i];
         for (int j = i; j < n + 1; j++) {
-          if (i == j)
-            a[k][j] = 0.;
+          if (i == j) a[k][j] = 0.;
           else
             a[k][j] += c * a[i][j];
         }
@@ -946,7 +908,8 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
     delete[] a;
   }
 
-  void PronyFitter::SolveSLECholesky(float* x, float** a, float* b, int n) {
+  void PronyFitter::SolveSLECholesky(float* x, float** a, float* b, int n)
+  {
     float temp;
     float** u = new float*[n];
     for (int i = 0; i < n; i++) {
@@ -992,12 +955,14 @@ void PronyFitter::DrawFit(TObjArray *check_fit_arr, TString hist_title)
     delete[] y;
   }
 
-  void PronyFitter::DeleteData() {
+  void PronyFitter::DeleteData()
+  {
     delete[] fz;
     delete[] fh;
   }
 
-  void PronyFitter::Clear() {
+  void PronyFitter::Clear()
+  {
     fModelOrder    = 0;
     fExpNumber     = 0;
     fGateBeg       = 0;

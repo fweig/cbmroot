@@ -1,11 +1,6 @@
-void ana_digi_ini(Int_t nEvents = 10000,
-                  Int_t calMode = 0,
-                  Int_t calSel  = -1,
-                  Int_t calSm   = 200,
-                  Int_t RefSel  = 1,
-                  char* cFileId = "CernSps05Mar0041",
-                  Int_t iSet    = 0,
-                  Int_t iBRef   = 500) {
+void ana_digi_ini(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
+                  char* cFileId = "CernSps05Mar0041", Int_t iSet = 0, Int_t iBRef = 500)
+{
   Int_t iVerbose = 1;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -30,9 +25,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
 
   TString TofGeo = "v15b";
   TString FId    = cFileId;
-  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) {
-    TofGeo = "v15b";
-  }
+  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) { TofGeo = "v15b"; }
   if (FId.Contains("CernSps28Feb")) { TofGeo = "v15a"; }
   cout << "Geometry version " << TofGeo << endl;
 
@@ -43,16 +36,15 @@ void ana_digi_ini(Int_t nEvents = 10000,
     FPar   = "tsu.";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof." + FPar + "digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -82,31 +74,22 @@ void ana_digi_ini(Int_t nEvents = 10000,
 
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(3.);  // geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    20.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofTestBeamClust->SetCalRpc(calSm);  // select detector for calibration update
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10000.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  //(12000.);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);     // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(500.);  // default cluster range in ps
+  tofTestBeamClust->SetCaldXdYMax(3.);      // geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(20.);   // Max Counter Cluster Multiplicity for filling calib histos
+  tofTestBeamClust->SetCalRpc(calSm);       // select detector for calibration update
+  tofTestBeamClust->SetTRefId(RefSel);      // reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10000.);      // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);          //(12000.);  // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);  // effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);      // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);   // default cluster range in ps
   //tofTestBeamClust->SetMaxTimeDist(0.);       //Deb// default cluster range in ps
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root",
-                        cFileId,
-                        iSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%06d_%02d_%01dtofTestBeamClust.hst.root", cFileId, iSet, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
+  TString cOutFname = Form("tofTestBeamClust_%s_set%06d.hst.root", cFileId, iSet);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
 
   TString cAnaFile = Form("%s_%06d_tofAnaTestBeam.hst.root", cFileId, iSet);
@@ -236,16 +219,12 @@ void ana_digi_ini(Int_t nEvents = 10000,
       tofTestBeamClust->SetTRefDifMax(500.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.7);     //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofTestBeamClust);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetDXMean(0.);
@@ -255,8 +234,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
   tofAnaTestbeam->SetDYWidth(0.4);
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosY4Sel(0.5);    // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetDTDia(0.);        // Time difference to additional diamond
   tofAnaTestbeam->SetCorMode(1);       // 1 - DTD4, 2 - X4
   tofAnaTestbeam->SetMul0Max(10);      // Max Multiplicity in dut
@@ -264,8 +242,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
   tofAnaTestbeam->SetMulDMax(5);       // Max Multiplicity in Diamond
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
 
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
   tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
   tofAnaTestbeam->SetTShift(0.);      // Shift DTD4 to 0
@@ -331,17 +308,15 @@ void ana_digi_ini(Int_t nEvents = 10000,
       break;
 
     case 900700:
-    case 97:  // upper part of setup: P2 - USTC
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
-      tofAnaTestbeam->SetCh4Sel(8.5);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
+    case 97:                            // upper part of setup: P2 - USTC
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetCh4Sel(8.5);   // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(7.);   // Width  of channel selection window
       break;
 
     case 39:  // upper part of setup: P2 - THUstrip
     case 300900:
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(12.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(11.);  // Width  of channel selection window
       break;
@@ -349,8 +324,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
     case 400900:
     case 49:  // upper part of setup: P2 - THUstrip
 
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
       tofAnaTestbeam->SetCh4Sel(12.5);  // Center of channel selection window
       tofAnaTestbeam->SetDCh4Sel(11.);  // Width  of channel selection window
       break;

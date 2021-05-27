@@ -15,6 +15,7 @@
 #include "CbmRichDigi.h"
 #include "CbmRichPmt.h"
 #include "CbmRichPmtType.h"
+
 #include <map>
 
 class TClonesArray;
@@ -70,9 +71,7 @@ public:
   /**
     * \brief Set crosstalk probability.
     */
-  void SetCrossTalkProbability(Double_t crosstalk) {
-    fCrossTalkProbability = crosstalk;
-  }
+  void SetCrossTalkProbability(Double_t crosstalk) { fCrossTalkProbability = crosstalk; }
 
   /**
     * \brief Set detector type
@@ -88,9 +87,7 @@ public:
   /**
     * \brief Set collection efficiency for photoelectrons in PMT optics.
     */
-  void SetCollectionEfficiency(Double_t collEff) {
-    fPmt.SetCollectionEfficiency(collEff);
-  }
+  void SetCollectionEfficiency(Double_t collEff) { fPmt.SetCollectionEfficiency(collEff); }
 
   /**
     * \brief Set additional smearing of MC Points due to light scattering in mirror.
@@ -111,9 +108,7 @@ public:
   /**
     * \brief Set Maximum nimber of hits per PMT cut.
     */
-  void SetMaxNofHitsPerPmtCut(Double_t nofHits) {
-    fMaxNofHitsPerPmtCut = nofHits;
-  }
+  void SetMaxNofHitsPerPmtCut(Double_t nofHits) { fMaxNofHitsPerPmtCut = nofHits; }
 
   /**
    * \brief Set if you want to shift z MC point value (workaround for GEANT4).
@@ -134,23 +129,19 @@ private:
   Double_t fTimeTot;    // sum of execution time
 
   CbmRichPmt fPmt;
-  Double_t
-    fCrossTalkProbability;  // probability of the crosstalk for direct neighbor for one pixel
-  Double_t
-    fNoiseDigiRate;  // noise rate per McRichPoint / per  pixel / per second :
+  Double_t fCrossTalkProbability;  // probability of the crosstalk for direct neighbor for one pixel
+  Double_t fNoiseDigiRate;         // noise rate per McRichPoint / per  pixel / per second :
   // hofNoiseDigis = nofRichPoints * nofPixels * dT(50 ns) * (fNoiseDigiRate / 1.e9);
   CbmRichPmtTypeEnum fDetectorType;
-  Int_t
-    fMaxNofHitsPerPmtCut;  // maximum number of hits which can be registered per PMT per event.
-                           // If more then the whole PMT is skipped
+  Int_t fMaxNofHitsPerPmtCut;  // maximum number of hits which can be registered per PMT per event.
+                               // If more then the whole PMT is skipped
 
   map<Int_t, pair<CbmRichDigi*, CbmMatch*>> fDataMap;
 
-  Double_t fTimeResolution;    // in ns
-  Double_t fDarkRatePerPixel;  // dark rate per pixel in Hz
-  Double_t fPixelDeadTime;     // in ns, during this time pixel can not be fired
-  map<Int_t, Double_t>
-    fFiredPixelsMap;  // first: pixel address, second: last fired time.
+  Double_t fTimeResolution;              // in ns
+  Double_t fDarkRatePerPixel;            // dark rate per pixel in Hz
+  Double_t fPixelDeadTime;               // in ns, during this time pixel can not be fired
+  map<Int_t, Double_t> fFiredPixelsMap;  // first: pixel address, second: last fired time.
   Bool_t
     fDoZShift;  // Set if you want to shift z MC point value (workaround for GEANT4). Must be set to true if one runs full RICH geoemtry with GEANT4, fot mCBM set to false
 
@@ -167,10 +158,7 @@ private:
   /*
     * \brief Process CbmRichPoint. Main method which is calle dfor all CbmRichPoints.
     */
-  void ProcessPoint(CbmRichPoint* point,
-                    Int_t pointId,
-                    Int_t eventNum,
-                    Int_t inputNum);
+  void ProcessPoint(CbmRichPoint* point, Int_t pointId, Int_t eventNum, Int_t inputNum);
 
   /*
     * \brief Add all the fired digis to the output array

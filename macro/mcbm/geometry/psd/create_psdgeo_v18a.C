@@ -23,37 +23,34 @@ using std::right;
 using std::setw;
 
 // Forward declarations
-TGeoVolume* ConstructModule(const char* name,
-                            Double_t moduleSize,
-                            Int_t nLayers,
-                            fstream* info = 0);
+TGeoVolume* ConstructModule(const char* name, Double_t moduleSize, Int_t nLayers, fstream* info = 0);
 
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_psdgeo_v18a() {
+void create_psdgeo_v18a()
+{
 
   // -----   Steering variables   ---------------------------------------------
   const char* geoTag = "v18a_mcbm";  // geometry tag
 
-  Double_t psdX    = 0.;  // x position is automatically determined from psdRotY
-  Double_t psdY    = -155.;   // y position of PSD in cave
-  Double_t psdZ    = 160.;    // z position of PSD in cave (back side)
-  Double_t psdRotX = 0.;      // Rotation of PSD around x axis [degrees]
-  Double_t psdRotY = 20.;     // Rotation of PSD around y axis [degrees]
-  Double_t moduleSize = 20.;  // Module size [cm]
-  Int_t nModulesX     = 1;    // Number of modules in a row (x direction)
-  Int_t nModulesY     = 1;    // Number of modules in a row (x direction)
+  Double_t psdX       = 0.;     // x position is automatically determined from psdRotY
+  Double_t psdY       = -155.;  // y position of PSD in cave
+  Double_t psdZ       = 160.;   // z position of PSD in cave (back side)
+  Double_t psdRotX    = 0.;     // Rotation of PSD around x axis [degrees]
+  Double_t psdRotY    = 20.;    // Rotation of PSD around y axis [degrees]
+  Double_t moduleSize = 20.;    // Module size [cm]
+  Int_t nModulesX     = 1;      // Number of modules in a row (x direction)
+  Int_t nModulesY     = 1;      // Number of modules in a row (x direction)
   // --------------------------------------------------------------------------
 
 
   // ---- Number of modules per row/column must be uneven ---------------------
   // Otherwise, the central one (to be skipped) is not defined.
   if (nModulesX % 2 != 1 || nModulesY % 2 != 1) {
-    cout << "Error: number of modules per row and column must be uneven! "
-         << nModulesX << " " << nModulesY << endl;
+    cout << "Error: number of modules per row and column must be uneven! " << nModulesX << " " << nModulesY << endl;
     return;
   }
   // --------------------------------------------------------------------------
@@ -64,16 +61,11 @@ void create_psdgeo_v18a() {
   infoFileName         = infoFileName + geoTag + ".geo.info";
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "PSD geometry " << geoTag << " created with create_psdgeo.C"
-           << endl
-           << endl;
+  infoFile << "PSD geometry " << geoTag << " created with create_psdgeo.C" << endl << endl;
   infoFile << "Number of modules: " << nModulesX << " x " << nModulesY << endl;
-  infoFile << "Module size: " << moduleSize << " cm x " << moduleSize << " cm"
-           << endl;
-  infoFile << "PSD translation in cave: (" << psdX << ", " << psdY << ", "
-           << psdZ << ") cm" << endl;
-  infoFile << "PSD rotation around y axis: " << psdRotY << " degrees" << endl
-           << endl;
+  infoFile << "Module size: " << moduleSize << " cm x " << moduleSize << " cm" << endl;
+  infoFile << "PSD translation in cave: (" << psdX << ", " << psdY << ", " << psdZ << ") cm" << endl;
+  infoFile << "PSD rotation around y axis: " << psdRotY << " degrees" << endl << endl;
   // --------------------------------------------------------------------------
 
 
@@ -171,14 +163,12 @@ void create_psdgeo_v18a() {
 
   TString psdName = "psd_";
   psdName += geoTag;
-  TGeoVolume* psd =
-    gGeoManager->MakeBox(psdName, psdMedium, psdSizeX, psdSizeY, psdSizeZ);
+  TGeoVolume* psd = gGeoManager->MakeBox(psdName, psdMedium, psdSizeX, psdSizeY, psdSizeZ);
   cout << "Module array is " << nModulesX << " x " << nModulesY << endl;
-  cout << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY
-       << " cm x " << 2. * psdSizeZ << " cm" << endl;
+  cout << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY << " cm x " << 2. * psdSizeZ << " cm" << endl;
   infoFile << endl
-           << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY
-           << " cm x " << 2. * psdSizeZ << " cm" << endl;
+           << "PSD size is " << 2. * psdSizeX << " cm x " << 2. * psdSizeY << " cm x " << 2. * psdSizeZ << " cm"
+           << endl;
   // --------------------------------------------------------------------------
 
 
@@ -204,12 +194,10 @@ void create_psdgeo_v18a() {
       Int_t iNode = 100 * iModX + iModY;
 
       // Position of module inside PSD
-      TGeoTranslation* trans =
-        new TGeoTranslation(xModCurrent, yModCurrent, 0.);
+      TGeoTranslation* trans = new TGeoTranslation(xModCurrent, yModCurrent, 0.);
 
       psd->AddNode(module2060, iNode, trans);
-      cout << "Adding module " << setw(5) << right << iNode
-           << " at x = " << setw(6) << right << xModCurrent
+      cout << "Adding module " << setw(5) << right << iNode << " at x = " << setw(6) << right << xModCurrent
            << " cm , y = " << setw(6) << right << yModCurrent << " cm" << endl;
       nModules++;
 
@@ -229,16 +217,14 @@ void create_psdgeo_v18a() {
 
   // calculate mPSD x-position
   psdX = psdZ * tan(psdRotY * acos(-1) / 180);
-  cout << "psdX at " << psdRotY << " degree angle: x= " << psdX << " cm"
-       << endl;
+  cout << "psdX at " << psdRotY << " degree angle: x= " << psdX << " cm" << endl;
 
   // rotate around x axis
   psdRotX = atan(psdY / sqrt(psdX * psdX + psdZ * psdZ)) * 180 / acos(-1);
   psdRot->RotateX(-psdRotX);
 
   cout << "angle around x: " << psdRotX << " deg" << endl;
-  cout << "y " << psdY << " t " << sqrt(psdX * psdX + psdZ * psdZ) << " cm"
-       << endl;
+  cout << "y " << psdY << " t " << sqrt(psdX * psdX + psdZ * psdZ) << " cm" << endl;
 
   // rotate around y axis
   //  psdRotY = atan( psdX / psdZ ) * 180 / acos(-1);  // psdX is already calculated accordingly
@@ -275,8 +261,7 @@ void create_psdgeo_v18a() {
   TFile* geoFile = new TFile(geoFileName, "UPDATE");
   psdTrans->Write();
   cout << endl;
-  cout << "==> Geometry " << psd->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "==> Geometry " << psd->GetName() << " written to " << geoFileName << endl;
   cout << "==> Info written to " << infoFileName << endl;
   geoFile->Close();
   infoFile.close();
@@ -289,10 +274,7 @@ void create_psdgeo_v18a() {
   TFile* geoManFile      = new TFile(geoManFileName, "RECREATE");
   gGeoManager->Write();
   geoManFile->Close();
-  cout << "==> TGeoManager " << gGeoManager->GetName() << " written to "
-       << geoManFileName << endl
-       << endl
-       << endl;
+  cout << "==> TGeoManager " << gGeoManager->GetName() << " written to " << geoManFileName << endl << endl << endl;
   // --------------------------------------------------------------------------
 
 
@@ -306,10 +288,8 @@ void create_psdgeo_v18a() {
 
 
 /** ======================================================================= **/
-TGeoVolume* ConstructModule(const char* name,
-                            Double_t sizeXY,
-                            Int_t nLayers,
-                            fstream* info) {
+TGeoVolume* ConstructModule(const char* name, Double_t sizeXY, Int_t nLayers, fstream* info)
+{
 
   // The module consists of nLayers of scintillators covered with Tyvek.
   // Between each two scintillators, there is a lead layer (total nLayers -1).
@@ -319,8 +299,7 @@ TGeoVolume* ConstructModule(const char* name,
   // there is a thick iron layer (the back one acting as first absorber)
   // for constructional reasons.
 
-  cout << "===> Creating Module " << name << ", size " << sizeXY << " cm with "
-       << nLayers << " layers...." << endl;
+  cout << "===> Creating Module " << name << ", size " << sizeXY << " cm with " << nLayers << " layers...." << endl;
 
   // -----   Constructional parameters   ----------------------------
   Double_t leadD     = 1.60;  // Thickness of lead layer
@@ -343,11 +322,9 @@ TGeoVolume* ConstructModule(const char* name,
     (*info) << "Thickness of lead layers: " << leadD << " cm" << endl;
     (*info) << "Thickness of scintillators: " << scintD << " cm" << endl;
     (*info) << "Thickness of Tyvek wrap: " << tyvekD << " cm" << endl;
-    (*info) << "Thickness of iron box: (" << boxDx << " / " << boxDy << " / "
-            << boxDz << ") cm" << endl;
+    (*info) << "Thickness of iron box: (" << boxDx << " / " << boxDy << " / " << boxDz << ") cm" << endl;
     (*info) << "Height of fibre channel: " << chanDy << " cm" << endl;
-    (*info) << "Distance of channel from edges: left " << chanDistL
-            << " cm, right " << chanDistR << " cm" << endl;
+    (*info) << "Distance of channel from edges: left " << chanDistL << " cm, right " << chanDistR << " cm" << endl;
   }
   // ------------------------------------------------------------------------
 
@@ -372,10 +349,8 @@ TGeoVolume* ConstructModule(const char* name,
   // Module length: nLayers of scintillators, nLayers - 1 of lead
   // plus the iron box front and back.
   // Material is iron.
-  Double_t moduleLength =
-    2. * boxDz + nLayers * (scintD + 2. * tyvekD) + (nLayers - 1) * leadD;
-  TGeoVolume* module = gGeoManager->MakeBox(
-    name, medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * moduleLength);
+  Double_t moduleLength = 2. * boxDz + nLayers * (scintD + 2. * tyvekD) + (nLayers - 1) * leadD;
+  TGeoVolume* module    = gGeoManager->MakeBox(name, medIron, 0.5 * sizeXY, 0.5 * sizeXY, 0.5 * moduleLength);
   module->SetLineColor(kRed);
   module->Print();
   cout << endl;
@@ -387,11 +362,10 @@ TGeoVolume* ConstructModule(const char* name,
   // The Tyvek/scintillator layers and the fibre channel will be placed
   // inside.
   // Dimensions are half-lengths.
-  Double_t leadLx = 0.5 * sizeXY - boxDx;
-  Double_t leadLy = 0.5 * sizeXY - boxDy;
-  Double_t leadLz = 0.5 * moduleLength - boxDz;
-  TGeoVolume* lead =
-    gGeoManager->MakeBox("lead", medLead, leadLx, leadLy, leadLz);
+  Double_t leadLx  = 0.5 * sizeXY - boxDx;
+  Double_t leadLy  = 0.5 * sizeXY - boxDy;
+  Double_t leadLz  = 0.5 * moduleLength - boxDz;
+  TGeoVolume* lead = gGeoManager->MakeBox("lead", medLead, leadLx, leadLy, leadLz);
   lead->SetLineColor(kBlue);
   // ------------------------------------------------------------------------
 
@@ -404,16 +378,14 @@ TGeoVolume* ConstructModule(const char* name,
   // lead edges.
   Double_t chanLx = leadLx - 0.5 * chanDistL - 0.5 * chanDistR;
   if (chanLx < 0.) {
-    cout << "Error: lead volume is not large enough to host fibre channel!"
-         << endl;
-    cout << "Lead width: " << 2. * leadLx << ", distance from left edge "
-         << chanDistL << ", distance from right edge " << chanDistR << endl;
+    cout << "Error: lead volume is not large enough to host fibre channel!" << endl;
+    cout << "Lead width: " << 2. * leadLx << ", distance from left edge " << chanDistL << ", distance from right edge "
+         << chanDistR << endl;
     return 0;
   }
-  Double_t chanLy = 0.5 * chanDy;
-  Double_t chanLz = leadLz;
-  TGeoVolume* channel =
-    gGeoManager->MakeBox("channel", medFibre, chanLx, chanLy, chanLz);
+  Double_t chanLy     = 0.5 * chanDy;
+  Double_t chanLz     = leadLz;
+  TGeoVolume* channel = gGeoManager->MakeBox("channel", medFibre, chanLx, chanLy, chanLz);
   channel->SetLineColor(kMagenta);
   // ------------------------------------------------------------------------
 
@@ -431,15 +403,13 @@ TGeoVolume* ConstructModule(const char* name,
   // The scintillator will be placed inside this, leaving only the thin
   // Tyvek as a wrapper. Since these layers will be placed in the lead filler,
   // there has to be a cut-out for the fibre channel.
-  Double_t tyvekLz = 0.5 * scintD + tyvekD;  // half-length
-  TGeoBBox* tyv1   = new TGeoBBox("psdTyv1", leadLx, leadLy, tyvekLz);
-  TGeoBBox* tyv2   = new TGeoBBox("psdTyv2", chanLx, chanLy, tyvekLz);
-  TGeoTranslation* trans1 =
-    new TGeoTranslation("tPsd1", chanShiftX, chanShiftY, 0.);
+  Double_t tyvekLz        = 0.5 * scintD + tyvekD;  // half-length
+  TGeoBBox* tyv1          = new TGeoBBox("psdTyv1", leadLx, leadLy, tyvekLz);
+  TGeoBBox* tyv2          = new TGeoBBox("psdTyv2", chanLx, chanLy, tyvekLz);
+  TGeoTranslation* trans1 = new TGeoTranslation("tPsd1", chanShiftX, chanShiftY, 0.);
   trans1->RegisterYourself();
-  TGeoCompositeShape* tyvekShape =
-    new TGeoCompositeShape("psdTyv1-psdTyv2:tPsd1");
-  TGeoVolume* tyvek = new TGeoVolume("tyvek", tyvekShape, medTyvek);
+  TGeoCompositeShape* tyvekShape = new TGeoCompositeShape("psdTyv1-psdTyv2:tPsd1");
+  TGeoVolume* tyvek              = new TGeoVolume("tyvek", tyvekShape, medTyvek);
   tyvek->SetLineColor(kGreen);
   // ------------------------------------------------------------------------
 
@@ -448,22 +418,20 @@ TGeoVolume* ConstructModule(const char* name,
   // The scintillator layer is embedded (as daughter) into the Tyvek layer.
   // It is also a box minus the cut-out for the fibres. The cut-out is
   // slightly smaller than for the Tyvek volume.
-  Double_t scintLx   = leadLx - tyvekD;
-  Double_t scintLy   = leadLy - tyvekD;
-  Double_t scintLz   = 0.5 * scintD;
-  TGeoBBox* sci1     = new TGeoBBox("sci1", scintLx, scintLy, scintLz);
-  Double_t cutLx     = chanLx;
-  Double_t cutLy     = chanLy - tyvekD;
-  Double_t cutLz     = scintLz;
-  TGeoBBox* sci2     = new TGeoBBox("sci2", cutLx, cutLy, cutLz);
-  Double_t cutShiftX = chanShiftX;
-  Double_t cutShiftY = scintLy - cutLy;
-  TGeoTranslation* trans2 =
-    new TGeoTranslation("tPsd2", cutShiftX, cutShiftY, 0.);
+  Double_t scintLx        = leadLx - tyvekD;
+  Double_t scintLy        = leadLy - tyvekD;
+  Double_t scintLz        = 0.5 * scintD;
+  TGeoBBox* sci1          = new TGeoBBox("sci1", scintLx, scintLy, scintLz);
+  Double_t cutLx          = chanLx;
+  Double_t cutLy          = chanLy - tyvekD;
+  Double_t cutLz          = scintLz;
+  TGeoBBox* sci2          = new TGeoBBox("sci2", cutLx, cutLy, cutLz);
+  Double_t cutShiftX      = chanShiftX;
+  Double_t cutShiftY      = scintLy - cutLy;
+  TGeoTranslation* trans2 = new TGeoTranslation("tPsd2", cutShiftX, cutShiftY, 0.);
   trans2->RegisterYourself();
-  TGeoCompositeShape* scintShape =
-    new TGeoCompositeShape("scintShape", "sci1-sci2:tPsd2");
-  TGeoVolume* scint = new TGeoVolume("scint", scintShape, medScint);
+  TGeoCompositeShape* scintShape = new TGeoCompositeShape("scintShape", "sci1-sci2:tPsd2");
+  TGeoVolume* scint              = new TGeoVolume("scint", scintShape, medScint);
   scint->SetLineColor(kBlack);
   // ------------------------------------------------------------------------
 
@@ -480,15 +448,13 @@ TGeoVolume* ConstructModule(const char* name,
   Double_t zFirst = 0.;
   Double_t zLast  = 0.;
   for (Int_t iLayer = 0; iLayer < nLayers; iLayer++) {
-    Double_t zPos =
-      -1. * leadLz + iLayer * leadD + (2. * iLayer + 1.) * tyvekLz;
+    Double_t zPos = -1. * leadLz + iLayer * leadD + (2. * iLayer + 1.) * tyvekLz;
     if (iLayer == 0) zFirst = zPos;
     if (iLayer == nLayers - 1) zLast = zPos;
     lead->AddNode(tyvek, iLayer, new TGeoTranslation(0., 0., zPos));
   }
-  cout << module->GetName() << ": Positioned " << nLayers
-       << " Tyvek layers; first at z = " << zFirst << ", last at z = " << zLast
-       << endl;
+  cout << module->GetName() << ": Positioned " << nLayers << " Tyvek layers; first at z = " << zFirst
+       << ", last at z = " << zLast << endl;
 
   // ---> Lead into module
   module->AddNode(lead, 0);

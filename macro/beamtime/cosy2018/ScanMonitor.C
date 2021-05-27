@@ -10,11 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void ScanMonitor(TString inFile           = "",
-                 Int_t iServerRefreshRate = 100,
-                 Int_t iServerHttpPort    = 8080,
-                 Int_t iStartFile         = -1,
-                 Int_t iStopFile          = -1) {
+void ScanMonitor(TString inFile = "", Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
+                 Int_t iStartFile = -1, Int_t iStopFile = -1)
+{
   /*
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
@@ -121,8 +119,7 @@ void ScanMonitor(TString inFile           = "",
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -132,8 +129,7 @@ void ScanMonitor(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

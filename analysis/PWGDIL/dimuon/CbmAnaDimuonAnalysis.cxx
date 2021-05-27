@@ -10,6 +10,7 @@
 #define MBINNING 400, 0., 4.
 
 #include "CbmAnaDimuonAnalysis.h"
+
 #include "CbmAnaMuonCandidate.h"
 #include "CbmGlobalTrack.h"
 #include "CbmGlobalTrackFitterKF.h"
@@ -49,14 +50,13 @@
 #include "TVector3.h"
 
 #include "PParticle.h"
-
 #include "vector"
 using std::vector;
 
-#include <sys/stat.h>
-
 #include <fstream>
 #include <iostream>
+
+#include <sys/stat.h>
 using namespace std;
 
 // -----   Default constructor   -------------------------------------------
@@ -110,7 +110,8 @@ void CbmAnaDimuonAnalysis::SetParContainers() {}
 
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmAnaDimuonAnalysis::Init() {
+InitStatus CbmAnaDimuonAnalysis::Init()
+{
   // Get and check FairRootManager
   FairRootManager* fManager = FairRootManager::Instance();
   fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
@@ -119,18 +120,14 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   fStsTracks = (TClonesArray*) fManager->GetObject("StsTrack");
   if (nullptr == fStsTracks) LOG(FATAL) << "No StsTrack in input";
 
-  if (fUseMC)
-    fStsTrackMatches = (TClonesArray*) fManager->GetObject("StsTrackMatch");
-  if (nullptr == fStsTrackMatches && fUseMC)
-    LOG(FATAL) << "No StsTrackMatch in input";
+  if (fUseMC) fStsTrackMatches = (TClonesArray*) fManager->GetObject("StsTrackMatch");
+  if (nullptr == fStsTrackMatches && fUseMC) LOG(FATAL) << "No StsTrackMatch in input";
 
   fMuchTracks = (TClonesArray*) fManager->GetObject("MuchTrack");
   if (nullptr == fMuchTracks) LOG(FATAL) << "No MuchTrack in input";
 
-  if (fUseMC)
-    fMuchTrackMatches = (TClonesArray*) fManager->GetObject("MuchTrackMatch");
-  if (nullptr == fMuchTrackMatches && fUseMC)
-    LOG(FATAL) << "No MuchTrackMatch in input";
+  if (fUseMC) fMuchTrackMatches = (TClonesArray*) fManager->GetObject("MuchTrackMatch");
+  if (nullptr == fMuchTrackMatches && fUseMC) LOG(FATAL) << "No MuchTrackMatch in input";
 
   fGlobalTracks = (TClonesArray*) fManager->GetObject("GlobalTrack");
   if (nullptr == fGlobalTracks) LOG(FATAL) << "No GlobalTrack in input";
@@ -186,8 +183,7 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
         TLorentzVector mom1 = Part1->Vect4();
         TLorentzVector mom2 = Part2->Vect4();
         TLorentzVector Mom  = mom1 + mom2;
-        YPt_pluto->Fill(
-          Mom.Rapidity(), Mom.Pt(), 1. / (Double_t) fInputTree->GetEntries());
+        YPt_pluto->Fill(Mom.Rapidity(), Mom.Pt(), 1. / (Double_t) fInputTree->GetEntries());
       }
 
       /// Restore old global file and folder pointer to avoid messing with FairRoot
@@ -212,8 +208,7 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   YPt_StsMuchTrdTofAcc = (TH2D*) YPt_StsAcc->Clone("YPt_StsMuchTrdTofAcc");
   YPt_StsMuchTrdTofAcc->SetTitle(title4);
 
-  YPtM = new TH3D(
-    "YPtM", "Reconstrcuted YPtM spectrum", YBINNING, PTBINNING, MBINNING);
+  YPtM = new TH3D("YPtM", "Reconstrcuted YPtM spectrum", YBINNING, PTBINNING, MBINNING);
 
   acc_P[0][0] = new TProfile("signal_accP_Sts", title1, PBINNING);
   acc_P[0][0]->GetXaxis()->SetTitle("P (GeV/c)");
@@ -230,14 +225,11 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   acc_Theta[0][0]->GetXaxis()->SetTitle("#Theta (#circ)");
   acc_Theta[0][0]->GetYaxis()->SetTitle("%");
 
-  acc_Theta[1][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuch");
+  acc_Theta[1][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuch");
   acc_Theta[1][0]->SetTitle(title2);
-  acc_Theta[2][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuchTrd");
+  acc_Theta[2][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuchTrd");
   acc_Theta[2][0]->SetTitle(title3);
-  acc_Theta[3][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuchTrdTof");
+  acc_Theta[3][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_accTheta_StsMuchTrdTof");
   acc_Theta[3][0]->SetTitle(title4);
 
   title1 = "STS accepted MC #mu+";
@@ -258,11 +250,9 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   acc_Theta[0][1]->SetTitle(title1);
   acc_Theta[1][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_accTheta_StsMuch");
   acc_Theta[1][1]->SetTitle(title2);
-  acc_Theta[2][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_accTheta_StsMuchTrd");
+  acc_Theta[2][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_accTheta_StsMuchTrd");
   acc_Theta[2][1]->SetTitle(title3);
-  acc_Theta[3][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_accTheta_StsMuchTrdTof");
+  acc_Theta[3][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_accTheta_StsMuchTrdTof");
   acc_Theta[3][1]->SetTitle(title4);
 
   title1 = "STS accepted MC #mu-";
@@ -283,47 +273,35 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   acc_Theta[0][2]->SetTitle(title1);
   acc_Theta[1][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_accTheta_StsMuch");
   acc_Theta[1][2]->SetTitle(title2);
-  acc_Theta[2][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_accTheta_StsMuchTrd");
+  acc_Theta[2][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_accTheta_StsMuchTrd");
   acc_Theta[2][2]->SetTitle(title3);
-  acc_Theta[3][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_accTheta_StsMuchTrdTof");
+  acc_Theta[3][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_accTheta_StsMuchTrdTof");
   acc_Theta[3][2]->SetTitle(title4);
 
-  TString title0 =
-    "reconstructed MC signal after primary vertex cut (PVC)";  // PVC: chi2 of STS track in target
-  title1 =
-    "reconstructed MC signal after PVC and STS cuts (StsCs)";  // StsCs: chi2 of STS track and number of STS hits
+  TString title0 = "reconstructed MC signal after primary vertex cut (PVC)";  // PVC: chi2 of STS track in target
+  title1 = "reconstructed MC signal after PVC and STS cuts (StsCs)";  // StsCs: chi2 of STS track and number of STS hits
   title2 =
     "reconstructed MC signal after PVC+StsCs and MUCH cuts (MuchCs)";  // MuchCs: chi2 of MUCH track and number of MUCH hits
-  title3 =
-    "reconstructed MC signal after PVC+StsCs+MuchCs and TRD cut (TrdC)";  // TrdC: number of TRD hits
+  title3 = "reconstructed MC signal after PVC+StsCs+MuchCs and TRD cut (TrdC)";  // TrdC: number of TRD hits
   title4 =
     "reconstructed MC signal after PVC+StsCs+MuchCs+TrdC and TOF cut";  // TOF: cut using mass distribution from time measurement
 
   effReco_P[0][0] = (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxSts");
   effReco_P[0][0]->SetTitle(title1);
-  effReco_P[1][0] =
-    (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuch");
+  effReco_P[1][0] = (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuch");
   effReco_P[1][0]->SetTitle(title2);
-  effReco_P[2][0] =
-    (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuchTrd");
+  effReco_P[2][0] = (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuchTrd");
   effReco_P[2][0]->SetTitle(title3);
-  effReco_P[3][0] =
-    (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuchTrdTof");
+  effReco_P[3][0] = (TProfile*) acc_P[0][0]->Clone("signal_effRecoP_VtxStsMuchTrdTof");
   effReco_P[3][0]->SetTitle(title4);
 
-  effReco_Theta[0][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxSts");
+  effReco_Theta[0][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxSts");
   effReco_Theta[0][0]->SetTitle(title1);
-  effReco_Theta[1][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuch");
+  effReco_Theta[1][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuch");
   effReco_Theta[1][0]->SetTitle(title2);
-  effReco_Theta[2][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuchTrd");
+  effReco_Theta[2][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuchTrd");
   effReco_Theta[2][0]->SetTitle(title3);
-  effReco_Theta[3][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuchTrdTof");
+  effReco_Theta[3][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_effRecoTheta_VtxStsMuchTrdTof");
   effReco_Theta[3][0]->SetTitle(title4);
 
   eff4pi_P[0][0] = (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_Vtx");
@@ -332,27 +310,20 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   eff4pi_P[1][0]->SetTitle(title1);
   eff4pi_P[2][0] = (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_VtxStsMuch");
   eff4pi_P[2][0]->SetTitle(title2);
-  eff4pi_P[3][0] =
-    (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_VtxStsMuchTrd");
+  eff4pi_P[3][0] = (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_VtxStsMuchTrd");
   eff4pi_P[3][0]->SetTitle(title3);
-  eff4pi_P[4][0] =
-    (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_VtxStsMuchTrdTof");
+  eff4pi_P[4][0] = (TProfile*) acc_P[0][0]->Clone("signal_eff4piP_VtxStsMuchTrdTof");
   eff4pi_P[4][0]->SetTitle(title4);
 
-  eff4pi_Theta[0][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_Vtx");
+  eff4pi_Theta[0][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_Vtx");
   eff4pi_Theta[0][0]->SetTitle(title0);
-  eff4pi_Theta[1][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxSts");
+  eff4pi_Theta[1][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxSts");
   eff4pi_Theta[1][0]->SetTitle(title1);
-  eff4pi_Theta[2][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuch");
+  eff4pi_Theta[2][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuch");
   eff4pi_Theta[2][0]->SetTitle(title2);
-  eff4pi_Theta[3][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuchTrd");
+  eff4pi_Theta[3][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuchTrd");
   eff4pi_Theta[3][0]->SetTitle(title3);
-  eff4pi_Theta[4][0] =
-    (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuchTrdTof");
+  eff4pi_Theta[4][0] = (TProfile*) acc_Theta[0][0]->Clone("signal_eff4piTheta_VtxStsMuchTrdTof");
   eff4pi_Theta[4][0]->SetTitle(title4);
 
   YPt_VtxReco = (TH2D*) YPt_StsAcc->Clone("YPt_VtxReco");
@@ -363,8 +334,7 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   YPt_VtxStsMuchReco->SetTitle(title2);
   YPt_VtxStsMuchTrdReco = (TH2D*) YPt_StsAcc->Clone("YPt_VtxStsMuchTrdReco");
   YPt_VtxStsMuchTrdReco->SetTitle(title3);
-  YPt_VtxStsMuchTrdTofReco =
-    (TH2D*) YPt_StsAcc->Clone("YPt_VtxStsMuchTrdTofReco");
+  YPt_VtxStsMuchTrdTofReco = (TH2D*) YPt_StsAcc->Clone("YPt_VtxStsMuchTrdTofReco");
   YPt_VtxStsMuchTrdTofReco->SetTitle(title4);
 
   title0 = "reconstructed MC #mu+ after primary vertex cut (PVC)";
@@ -377,24 +347,18 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   effReco_P[0][1]->SetTitle(title1);
   effReco_P[1][1] = (TProfile*) acc_P[0][0]->Clone("muPl_effRecoP_VtxStsMuch");
   effReco_P[1][1]->SetTitle(title2);
-  effReco_P[2][1] =
-    (TProfile*) acc_P[0][0]->Clone("muPl_effRecoP_VtxStsMuchTrd");
+  effReco_P[2][1] = (TProfile*) acc_P[0][0]->Clone("muPl_effRecoP_VtxStsMuchTrd");
   effReco_P[2][1]->SetTitle(title3);
-  effReco_P[3][1] =
-    (TProfile*) acc_P[0][0]->Clone("muPl_effRecoP_VtxStsMuchTrdTof");
+  effReco_P[3][1] = (TProfile*) acc_P[0][0]->Clone("muPl_effRecoP_VtxStsMuchTrdTof");
   effReco_P[3][1]->SetTitle(title4);
 
-  effReco_Theta[0][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxSts");
+  effReco_Theta[0][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxSts");
   effReco_Theta[0][1]->SetTitle(title1);
-  effReco_Theta[1][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuch");
+  effReco_Theta[1][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuch");
   effReco_Theta[1][1]->SetTitle(title2);
-  effReco_Theta[2][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuchTrd");
+  effReco_Theta[2][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuchTrd");
   effReco_Theta[2][1]->SetTitle(title3);
-  effReco_Theta[3][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuchTrdTof");
+  effReco_Theta[3][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_effRecoTheta_VtxStsMuchTrdTof");
   effReco_Theta[3][1]->SetTitle(title4);
 
   eff4pi_P[0][1] = (TProfile*) acc_P[0][0]->Clone("muPl_eff4piP_Vtx");
@@ -405,24 +369,18 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   eff4pi_P[2][1]->SetTitle(title2);
   eff4pi_P[3][1] = (TProfile*) acc_P[0][0]->Clone("muPl_eff4piP_VtxStsMuchTrd");
   eff4pi_P[3][1]->SetTitle(title3);
-  eff4pi_P[4][1] =
-    (TProfile*) acc_P[0][0]->Clone("muPl_eff4piP_VtxStsMuchTrdTof");
+  eff4pi_P[4][1] = (TProfile*) acc_P[0][0]->Clone("muPl_eff4piP_VtxStsMuchTrdTof");
   eff4pi_P[4][1]->SetTitle(title4);
 
-  eff4pi_Theta[0][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_Vtx");
+  eff4pi_Theta[0][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_Vtx");
   eff4pi_Theta[0][1]->SetTitle(title0);
-  eff4pi_Theta[1][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxSts");
+  eff4pi_Theta[1][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxSts");
   eff4pi_Theta[1][1]->SetTitle(title1);
-  eff4pi_Theta[2][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuch");
+  eff4pi_Theta[2][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuch");
   eff4pi_Theta[2][1]->SetTitle(title2);
-  eff4pi_Theta[3][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuchTrd");
+  eff4pi_Theta[3][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuchTrd");
   eff4pi_Theta[3][1]->SetTitle(title3);
-  eff4pi_Theta[4][1] =
-    (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuchTrdTof");
+  eff4pi_Theta[4][1] = (TProfile*) acc_Theta[0][0]->Clone("muPl_eff4piTheta_VtxStsMuchTrdTof");
   eff4pi_Theta[4][1]->SetTitle(title4);
 
   title0 = "reconstructed MC #mu- after primary vertex cut (PVC)";
@@ -435,24 +393,18 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   effReco_P[0][2]->SetTitle(title1);
   effReco_P[1][2] = (TProfile*) acc_P[0][0]->Clone("muMn_effRecoP_VtxStsMuch");
   effReco_P[1][2]->SetTitle(title2);
-  effReco_P[2][2] =
-    (TProfile*) acc_P[0][0]->Clone("muMn_effRecoP_VtxStsMuchTrd");
+  effReco_P[2][2] = (TProfile*) acc_P[0][0]->Clone("muMn_effRecoP_VtxStsMuchTrd");
   effReco_P[2][2]->SetTitle(title3);
-  effReco_P[3][2] =
-    (TProfile*) acc_P[0][0]->Clone("muMn_effRecoP_VtxStsMuchTrdTof");
+  effReco_P[3][2] = (TProfile*) acc_P[0][0]->Clone("muMn_effRecoP_VtxStsMuchTrdTof");
   effReco_P[3][2]->SetTitle(title4);
 
-  effReco_Theta[0][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxSts");
+  effReco_Theta[0][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxSts");
   effReco_Theta[0][2]->SetTitle(title1);
-  effReco_Theta[1][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuch");
+  effReco_Theta[1][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuch");
   effReco_Theta[1][2]->SetTitle(title2);
-  effReco_Theta[2][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuchTrd");
+  effReco_Theta[2][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuchTrd");
   effReco_Theta[2][2]->SetTitle(title3);
-  effReco_Theta[3][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuchTrdTof");
+  effReco_Theta[3][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_effRecoTheta_VtxStsMuchTrdTof");
   effReco_Theta[3][2]->SetTitle(title4);
 
   eff4pi_P[0][2] = (TProfile*) acc_P[0][0]->Clone("muMn_eff4piP_Vtx");
@@ -463,24 +415,18 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   eff4pi_P[2][2]->SetTitle(title2);
   eff4pi_P[3][2] = (TProfile*) acc_P[0][0]->Clone("muMn_eff4piP_VtxStsMuchTrd");
   eff4pi_P[3][2]->SetTitle(title3);
-  eff4pi_P[4][2] =
-    (TProfile*) acc_P[0][0]->Clone("muMn_eff4piP_VtxStsMuchTrdTof");
+  eff4pi_P[4][2] = (TProfile*) acc_P[0][0]->Clone("muMn_eff4piP_VtxStsMuchTrdTof");
   eff4pi_P[4][2]->SetTitle(title4);
 
-  eff4pi_Theta[0][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_Vtx");
+  eff4pi_Theta[0][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_Vtx");
   eff4pi_Theta[0][2]->SetTitle(title0);
-  eff4pi_Theta[1][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxSts");
+  eff4pi_Theta[1][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxSts");
   eff4pi_Theta[1][2]->SetTitle(title1);
-  eff4pi_Theta[2][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuch");
+  eff4pi_Theta[2][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuch");
   eff4pi_Theta[2][2]->SetTitle(title2);
-  eff4pi_Theta[3][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuchTrd");
+  eff4pi_Theta[3][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuchTrd");
   eff4pi_Theta[3][2]->SetTitle(title3);
-  eff4pi_Theta[4][2] =
-    (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuchTrdTof");
+  eff4pi_Theta[4][2] = (TProfile*) acc_Theta[0][0]->Clone("muMn_eff4piTheta_VtxStsMuchTrdTof");
   eff4pi_Theta[4][2]->SetTitle(title4);
 
   BgSup[0] = new TH1D("h0", "all STS tracks", PBINNING);
@@ -504,9 +450,9 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   BgSup[5] = (TH1D*) BgSup[0]->Clone("h5");
   BgSup[5]->SetTitle(title4);
 
-  TString dir  = getenv("VMCWORKDIR");
-  TString name = dir + "/parameters/much/TOF8gev_fitParam_sigma"
-                 + std::to_string(fSigmaTofCut) + "." + fSetupName + ".root";
+  TString dir = getenv("VMCWORKDIR");
+  TString name =
+    dir + "/parameters/much/TOF8gev_fitParam_sigma" + std::to_string(fSigmaTofCut) + "." + fSetupName + ".root";
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
@@ -531,11 +477,9 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   gDirectory = oldDir;
 
   if (fNeurons > 0)
-    fFileAnnName = dir + "/parameters/much/muid_ann_" + std::to_string(fNeurons)
-                   + "_" + +fSetupName + "_weights.txt";
+    fFileAnnName = dir + "/parameters/much/muid_ann_" + std::to_string(fNeurons) + "_" + +fSetupName + "_weights.txt";
   else
-    fFileAnnName =
-      dir + "/parameters/much/muid_ann_16_sis100_muon_lmvm_weights.txt";
+    fFileAnnName = dir + "/parameters/much/muid_ann_16_sis100_muon_lmvm_weights.txt";
 
   FILE* file = fopen(fFileAnnName.Data(), "r");
   char buffer[100];
@@ -544,11 +488,9 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
     LOG(info) << "======================================================";
     LOG(info) << "The ANN weights file " << fFileAnnName << " does not exist";
 
-    fFileAnnName =
-      dir + "/parameters/much/muid_ann_16_sis100_muon_lmvm_weights.txt";
+    fFileAnnName = dir + "/parameters/much/muid_ann_16_sis100_muon_lmvm_weights.txt";
 
-    LOG(info) << "The default ANN weights file " << fFileAnnName
-              << " will be used";
+    LOG(info) << "The default ANN weights file " << fFileAnnName << " will be used";
     LOG(info) << "======================================================";
     fNeurons = 16;
   }
@@ -561,7 +503,8 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
+void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/)
+{
   Int_t nMCTracks     = fMCTracks->GetEntriesFast();
   Int_t nStsTracks    = fStsTracks->GetEntriesFast();
   Int_t nMuchTracks   = fMuchTracks->GetEntriesFast();
@@ -569,9 +512,8 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
 
   LOG(DEBUG) << "------------------------";
   LOG(DEBUG) << GetName() << ": Event " << fEvent;
-  LOG(DEBUG) << "Number of tracks: MC - " << nMCTracks << ", global - "
-             << nGlobalTracks << ", STS - " << nStsTracks << ", MUCH - "
-             << nMuchTracks;
+  LOG(DEBUG) << "Number of tracks: MC - " << nMCTracks << ", global - " << nGlobalTracks << ", STS - " << nStsTracks
+             << ", MUCH - " << nMuchTracks;
   LOG(DEBUG) << "------------------------";
 
   TLorentzVector pMC1, pMC2, M;
@@ -593,7 +535,8 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       , Ntof(kFALSE)
       , Chi2V(kFALSE)
       , Chi2sts(kFALSE)
-      , Chi2much(kFALSE) {
+      , Chi2much(kFALSE)
+    {
       ;
     }
   };
@@ -604,10 +547,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
     Bool_t Nmuch;
     Bool_t Ntrd;
     Bool_t Ntof;
-    CbmMuonMC()
-      : Mu(kFALSE), Nsts(kFALSE), Nmuch(kFALSE), Ntrd(kFALSE), Ntof(kFALSE) {
-      ;
-    }
+    CbmMuonMC() : Mu(kFALSE), Nsts(kFALSE), Nmuch(kFALSE), Ntrd(kFALSE), Ntof(kFALSE) { ; }
   };
   //----------------- Sort MC tracks for acceptance histograms
 
@@ -631,12 +571,12 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
           muMn_mc.Nmuch = kTRUE;
           if (mcTrack->GetNPoints(ECbmModuleId::kTrd) >= fNofTrdCut) {
             muMn_mc.Ntrd = kTRUE;
-            if (mcTrack->GetNPoints(ECbmModuleId::kTof) >= 1)
-              muMn_mc.Ntof = kTRUE;
+            if (mcTrack->GetNPoints(ECbmModuleId::kTof) >= 1) muMn_mc.Ntof = kTRUE;
           }
         }
       }
-    } else {
+    }
+    else {
       muPl_mc.Mu = kTRUE;
       if (mcTrack->GetNPoints(ECbmModuleId::kSts) >= fNofStsCut) {
         muPl_mc.Nsts = kTRUE;
@@ -644,8 +584,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
           muPl_mc.Nmuch = kTRUE;
           if (mcTrack->GetNPoints(ECbmModuleId::kTrd) >= fNofTrdCut) {
             muPl_mc.Ntrd = kTRUE;
-            if (mcTrack->GetNPoints(ECbmModuleId::kTof) >= 1)
-              muPl_mc.Ntof = kTRUE;
+            if (mcTrack->GetNPoints(ECbmModuleId::kTof) >= 1) muPl_mc.Ntof = kTRUE;
           }
         }
       }
@@ -690,8 +629,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
     Int_t nStsHits      = stsTrack->GetNofHits();
     Double_t chi2vertex = fFitter->GetChiToVertex(stsTrack);
     Double_t chi2sts    = 1000;
-    if (stsTrack->GetNDF() != 0)
-      chi2sts = stsTrack->GetChiSq() / stsTrack->GetNDF();
+    if (stsTrack->GetNDF() != 0) chi2sts = stsTrack->GetChiSq() / stsTrack->GetNDF();
 
     FairTrackParam par;
     TLorentzVector mom;
@@ -716,8 +654,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       CbmMuchTrack* muchTrack = (CbmMuchTrack*) fMuchTracks->At(iMuchTrack);
       if (muchTrack) {
         nMuchHits = muchTrack->GetNofHits();
-        if (muchTrack->GetNDF() != 0)
-          chi2much = muchTrack->GetChiSq() / muchTrack->GetNDF();
+        if (muchTrack->GetNDF() != 0) chi2much = muchTrack->GetChiSq() / muchTrack->GetNDF();
       }
     }
 
@@ -730,9 +667,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTracks->At(iTrdTrack);
       if (trdTrack) {
         nTrdHits = trdTrack->GetNofHits();
-        if (trdTrack->GetNDF() != 0)
-          chi2trd =
-            trdTrack->GetChiSq() / trdTrack->GetNDF();  // study of TRD chi2 !
+        if (trdTrack->GetNDF() != 0) chi2trd = trdTrack->GetChiSq() / trdTrack->GetNDF();  // study of TRD chi2 !
       }
     }
 
@@ -747,8 +682,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
         nTofHits = 1;
 
         Double_t time = th->GetTime();
-        Double_t beta =
-          globalTrack->GetLength() * 0.01 / (time * 1e-9 * TMath::C());
+        Double_t beta = globalTrack->GetLength() * 0.01 / (time * 1e-9 * TMath::C());
 
         TVector3 momL;
 
@@ -765,8 +699,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
 
     if (fUseMC) {
 
-      CbmTrackMatchNew* stsMatch =
-        (CbmTrackMatchNew*) fStsTrackMatches->At(iStsTrack);
+      CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(iStsTrack);
 
       if (stsMatch) {
         if (stsMatch->GetNofLinks() != 0) {
@@ -792,17 +725,15 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
                       if (nTrdHits >= fNofTrdCut) {
                         muMn_reco.Ntrd = kTRUE;
 
-                        if (mass > (p0min + p1min * momentum
-                                    + p2min * momentum * momentum)
-                            && mass < (p0max + p1max * momentum
-                                       + p2max * momentum * momentum)
-                            && fAnnCut < 0)
+                        if (mass > (p0min + p1min * momentum + p2min * momentum * momentum)
+                            && mass < (p0max + p1max * momentum + p2max * momentum * momentum) && fAnnCut < 0)
                           muMn_reco.Ntof = kTRUE;
                       }
                     }
                   }
                 }
-              } else {
+              }
+              else {
                 muPl_reco.Mu = kTRUE;
                 if (chi2vertex <= fChi2VertexCut) {
                   muPl_reco.Chi2V = kTRUE;
@@ -816,11 +747,8 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
                       if (nTrdHits >= fNofTrdCut) {
                         muPl_reco.Ntrd = kTRUE;
 
-                        if (mass > (p0min + p1min * momentum
-                                    + p2min * momentum * momentum)
-                            && mass < (p0max + p1max * momentum
-                                       + p2max * momentum * momentum)
-                            && fAnnCut < 0)
+                        if (mass > (p0min + p1min * momentum + p2min * momentum * momentum)
+                            && mass < (p0max + p1max * momentum + p2max * momentum * momentum) && fAnnCut < 0)
                           muPl_reco.Ntof = kTRUE;
                       }
                     }
@@ -837,8 +765,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
     if (muPl_reco.Nsts && muMn_reco.Nsts) signal_reco.Nsts = kTRUE;
     if (muPl_reco.Nmuch && muMn_reco.Nmuch) signal_reco.Nmuch = kTRUE;
     if (muPl_reco.Ntrd && muMn_reco.Ntrd) signal_reco.Ntrd = kTRUE;
-    if (muPl_reco.Ntof && muMn_reco.Ntof && fAnnCut < 0)
-      signal_reco.Ntof = kTRUE;
+    if (muPl_reco.Ntof && muMn_reco.Ntof && fAnnCut < 0) signal_reco.Ntof = kTRUE;
 
     if (chi2vertex <= fChi2VertexCut) {
       BgSup[1]->Fill(momentum);
@@ -853,9 +780,7 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
             BgSup[4]->Fill(momentum);
 
             if (mass > (p0min + p1min * momentum + p2min * momentum * momentum)
-                && mass
-                     < (p0max + p1max * momentum + p2max * momentum * momentum)
-                && fAnnCut < 0)
+                && mass < (p0max + p1max * momentum + p2max * momentum * momentum) && fAnnCut < 0)
               BgSup[5]->Fill(momentum);
           }
         }
@@ -865,33 +790,21 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
     //----------------- Muon track candidates
     Double_t id = -1;
 
-    if (!fUseCuts && fAnnCut < 0)
-      analysis = kTRUE;
+    if (!fUseCuts && fAnnCut < 0) analysis = kTRUE;
     else if (fUseCuts) {
-      if (nStsHits >= fNofStsCut && nMuchHits >= fNofMuchCut
-          && nTrdHits >= fNofTrdCut && nTofHits >= 1
-          && chi2vertex <= fChi2VertexCut && chi2sts <= fChi2StsCut
-          && chi2much <= fChi2MuchCut
+      if (nStsHits >= fNofStsCut && nMuchHits >= fNofMuchCut && nTrdHits >= fNofTrdCut && nTofHits >= 1
+          && chi2vertex <= fChi2VertexCut && chi2sts <= fChi2StsCut && chi2much <= fChi2MuchCut
           && (mass > (p0min + p1min * momentum + p2min * momentum * momentum)
-              && mass
-                   < (p0max + p1max * momentum + p2max * momentum * momentum)))
+              && mass < (p0max + p1max * momentum + p2max * momentum * momentum)))
         analysis = kTRUE;
-    } else if (!fUseCuts && fAnnCut > 0) {
-      id = CalculateAnnValue(mom.P(),
-                             mass,
-                             chi2vertex,
-                             chi2sts,
-                             chi2much,
-                             chi2trd,
-                             nStsHits,
-                             nMuchHits,
-                             nTrdHits,
+    }
+    else if (!fUseCuts && fAnnCut > 0) {
+      id = CalculateAnnValue(mom.P(), mass, chi2vertex, chi2sts, chi2much, chi2trd, nStsHits, nMuchHits, nTrdHits,
                              nTofHits);
       if (id > fAnnCut) {
         analysis = kTRUE;
         BgSup[5]->Fill(momentum);
-        if (isMu == 1 && q > 0)
-          muPl_reco.Ntof = kTRUE;
+        if (isMu == 1 && q > 0) muPl_reco.Ntof = kTRUE;
         else if (isMu == 1 && q < 0)
           muMn_reco.Ntof = kTRUE;
         if (muPl_reco.Ntof && muMn_reco.Ntof) signal_reco.Ntof = kTRUE;
@@ -904,7 +817,8 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
     if (q > 0) {
       new ((*fMuPlus)[iMuPlus++]) CbmAnaMuonCandidate();
       mu = (CbmAnaMuonCandidate*) (*fMuPlus)[iMuPlus - 1];
-    } else {
+    }
+    else {
       new ((*fMuMinus)[iMuMinus++]) CbmAnaMuonCandidate();
       mu = (CbmAnaMuonCandidate*) (*fMuMinus)[iMuMinus - 1];
     }
@@ -960,37 +874,25 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       FillProfile(acc_P[1][1], mom2.P(), muPl_mc.Nmuch);
       FillProfile(acc_P[2][1], mom2.P(), muPl_mc.Ntrd);
       FillProfile(acc_P[3][1], mom2.P(), muPl_mc.Ntof);
-      FillProfile(
-        acc_Theta[0][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Nsts);
-      FillProfile(
-        acc_Theta[1][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Nmuch);
-      FillProfile(
-        acc_Theta[2][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Ntrd);
-      FillProfile(
-        acc_Theta[3][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Ntof);
+      FillProfile(acc_Theta[0][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Nsts);
+      FillProfile(acc_Theta[1][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Nmuch);
+      FillProfile(acc_Theta[2][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Ntrd);
+      FillProfile(acc_Theta[3][1], mom2.Theta() * TMath::RadToDeg(), muPl_mc.Ntof);
       if (muPl_mc.Nsts) {
         FillProfile(effReco_P[0][1], mom2.P(), muPl_reco.Nsts);
-        FillProfile(effReco_Theta[0][1],
-                    mom2.Theta() * TMath::RadToDeg(),
-                    muPl_reco.Nsts);
+        FillProfile(effReco_Theta[0][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nsts);
       }
       if (muPl_mc.Nmuch) {
         FillProfile(effReco_P[1][1], mom2.P(), muPl_reco.Nmuch);
-        FillProfile(effReco_Theta[1][1],
-                    mom2.Theta() * TMath::RadToDeg(),
-                    muPl_reco.Nmuch);
+        FillProfile(effReco_Theta[1][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nmuch);
       }
       if (muPl_mc.Ntrd) {
         FillProfile(effReco_P[2][1], mom2.P(), muPl_reco.Ntrd);
-        FillProfile(effReco_Theta[2][1],
-                    mom2.Theta() * TMath::RadToDeg(),
-                    muPl_reco.Ntrd);
+        FillProfile(effReco_Theta[2][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntrd);
       }
       if (muPl_mc.Ntof) {
         FillProfile(effReco_P[3][1], mom2.P(), muPl_reco.Ntof);
-        FillProfile(effReco_Theta[3][1],
-                    mom2.Theta() * TMath::RadToDeg(),
-                    muPl_reco.Ntof);
+        FillProfile(effReco_Theta[3][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntof);
       }
     }
 
@@ -1000,16 +902,11 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       FillProfile(eff4pi_P[2][1], mom2.P(), muPl_reco.Nmuch);
       FillProfile(eff4pi_P[3][1], mom2.P(), muPl_reco.Ntrd);
       FillProfile(eff4pi_P[4][1], mom2.P(), muPl_reco.Ntof);
-      FillProfile(
-        eff4pi_Theta[0][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Chi2V);
-      FillProfile(
-        eff4pi_Theta[1][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nsts);
-      FillProfile(
-        eff4pi_Theta[2][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nmuch);
-      FillProfile(
-        eff4pi_Theta[3][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntrd);
-      FillProfile(
-        eff4pi_Theta[4][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntof);
+      FillProfile(eff4pi_Theta[0][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Chi2V);
+      FillProfile(eff4pi_Theta[1][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nsts);
+      FillProfile(eff4pi_Theta[2][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Nmuch);
+      FillProfile(eff4pi_Theta[3][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntrd);
+      FillProfile(eff4pi_Theta[4][1], mom2.Theta() * TMath::RadToDeg(), muPl_reco.Ntof);
     }
 
     if (muMn_mc.Mu) {
@@ -1017,37 +914,25 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       FillProfile(acc_P[1][2], mom1.P(), muMn_mc.Nmuch);
       FillProfile(acc_P[2][2], mom1.P(), muMn_mc.Ntrd);
       FillProfile(acc_P[3][2], mom1.P(), muMn_mc.Ntof);
-      FillProfile(
-        acc_Theta[0][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Nsts);
-      FillProfile(
-        acc_Theta[1][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Nmuch);
-      FillProfile(
-        acc_Theta[2][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Ntrd);
-      FillProfile(
-        acc_Theta[3][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Ntof);
+      FillProfile(acc_Theta[0][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Nsts);
+      FillProfile(acc_Theta[1][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Nmuch);
+      FillProfile(acc_Theta[2][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Ntrd);
+      FillProfile(acc_Theta[3][2], mom1.Theta() * TMath::RadToDeg(), muMn_mc.Ntof);
       if (muMn_mc.Nsts) {
         FillProfile(effReco_P[0][2], mom1.P(), muMn_reco.Nsts);
-        FillProfile(effReco_Theta[0][2],
-                    mom1.Theta() * TMath::RadToDeg(),
-                    muMn_reco.Nsts);
+        FillProfile(effReco_Theta[0][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nsts);
       }
       if (muMn_mc.Nmuch) {
         FillProfile(effReco_P[1][2], mom1.P(), muMn_reco.Nmuch);
-        FillProfile(effReco_Theta[1][2],
-                    mom1.Theta() * TMath::RadToDeg(),
-                    muMn_reco.Nmuch);
+        FillProfile(effReco_Theta[1][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nmuch);
       }
       if (muMn_mc.Ntrd) {
         FillProfile(effReco_P[2][2], mom1.P(), muMn_reco.Ntrd);
-        FillProfile(effReco_Theta[2][2],
-                    mom1.Theta() * TMath::RadToDeg(),
-                    muMn_reco.Ntrd);
+        FillProfile(effReco_Theta[2][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntrd);
       }
       if (muMn_mc.Ntof) {
         FillProfile(effReco_P[3][2], mom1.P(), muMn_reco.Ntof);
-        FillProfile(effReco_Theta[3][2],
-                    mom1.Theta() * TMath::RadToDeg(),
-                    muMn_reco.Ntof);
+        FillProfile(effReco_Theta[3][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntof);
       }
     }
 
@@ -1057,16 +942,11 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       FillProfile(eff4pi_P[2][2], mom1.P(), muMn_reco.Nmuch);
       FillProfile(eff4pi_P[3][2], mom1.P(), muMn_reco.Ntrd);
       FillProfile(eff4pi_P[4][2], mom1.P(), muMn_reco.Ntof);
-      FillProfile(
-        eff4pi_Theta[0][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Chi2V);
-      FillProfile(
-        eff4pi_Theta[1][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nsts);
-      FillProfile(
-        eff4pi_Theta[2][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nmuch);
-      FillProfile(
-        eff4pi_Theta[3][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntrd);
-      FillProfile(
-        eff4pi_Theta[4][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntof);
+      FillProfile(eff4pi_Theta[0][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Chi2V);
+      FillProfile(eff4pi_Theta[1][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nsts);
+      FillProfile(eff4pi_Theta[2][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Nmuch);
+      FillProfile(eff4pi_Theta[3][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntrd);
+      FillProfile(eff4pi_Theta[4][2], mom1.Theta() * TMath::RadToDeg(), muMn_reco.Ntof);
     }
 
     TLorentzVector Mom = mom1 + mom2;
@@ -1075,40 +955,28 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       FillProfile(acc_P[1][0], Mom.P(), signal_mc.Nmuch);
       FillProfile(acc_P[2][0], Mom.P(), signal_mc.Ntrd);
       FillProfile(acc_P[3][0], Mom.P(), signal_mc.Ntof);
-      FillProfile(
-        acc_Theta[0][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Nsts);
-      FillProfile(
-        acc_Theta[1][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Nmuch);
-      FillProfile(
-        acc_Theta[2][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Ntrd);
-      FillProfile(
-        acc_Theta[3][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Ntof);
+      FillProfile(acc_Theta[0][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Nsts);
+      FillProfile(acc_Theta[1][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Nmuch);
+      FillProfile(acc_Theta[2][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Ntrd);
+      FillProfile(acc_Theta[3][0], Mom.Theta() * TMath::RadToDeg(), signal_mc.Ntof);
       if (signal_mc.Nsts) {
         FillProfile(effReco_P[0][0], Mom.P(), signal_reco.Nsts);
-        FillProfile(effReco_Theta[0][0],
-                    Mom.Theta() * TMath::RadToDeg(),
-                    signal_reco.Nsts);
+        FillProfile(effReco_Theta[0][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nsts);
         YPt_StsAcc->Fill(Mom.Rapidity(), Mom.Pt());
       }
       if (signal_mc.Nmuch) {
         FillProfile(effReco_P[1][0], Mom.P(), signal_reco.Nmuch);
-        FillProfile(effReco_Theta[1][0],
-                    Mom.Theta() * TMath::RadToDeg(),
-                    signal_reco.Nmuch);
+        FillProfile(effReco_Theta[1][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nmuch);
         YPt_StsMuchAcc->Fill(Mom.Rapidity(), Mom.Pt());
       }
       if (signal_mc.Ntrd) {
         FillProfile(effReco_P[2][0], Mom.P(), signal_reco.Ntrd);
-        FillProfile(effReco_Theta[2][0],
-                    Mom.Theta() * TMath::RadToDeg(),
-                    signal_reco.Ntrd);
+        FillProfile(effReco_Theta[2][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntrd);
         YPt_StsMuchTrdAcc->Fill(Mom.Rapidity(), Mom.Pt());
       }
       if (signal_mc.Ntof) {
         FillProfile(effReco_P[3][0], Mom.P(), signal_reco.Ntof);
-        FillProfile(effReco_Theta[3][0],
-                    Mom.Theta() * TMath::RadToDeg(),
-                    signal_reco.Ntof);
+        FillProfile(effReco_Theta[3][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntof);
         YPt_StsMuchTrdTofAcc->Fill(Mom.Rapidity(), Mom.Pt());
       }
     }
@@ -1116,26 +984,19 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
       if (signal_reco.Chi2V) YPt_VtxReco->Fill(Mom.Rapidity(), Mom.Pt());
       if (signal_reco.Nsts) YPt_VtxStsReco->Fill(Mom.Rapidity(), Mom.Pt());
       if (signal_reco.Nmuch) YPt_VtxStsMuchReco->Fill(Mom.Rapidity(), Mom.Pt());
-      if (signal_reco.Ntrd)
-        YPt_VtxStsMuchTrdReco->Fill(Mom.Rapidity(), Mom.Pt());
-      if (signal_reco.Ntof)
-        YPt_VtxStsMuchTrdTofReco->Fill(Mom.Rapidity(), Mom.Pt());
+      if (signal_reco.Ntrd) YPt_VtxStsMuchTrdReco->Fill(Mom.Rapidity(), Mom.Pt());
+      if (signal_reco.Ntof) YPt_VtxStsMuchTrdTofReco->Fill(Mom.Rapidity(), Mom.Pt());
     }
     FillProfile(eff4pi_P[0][0], Mom.P(), signal_reco.Chi2V);
     FillProfile(eff4pi_P[1][0], Mom.P(), signal_reco.Nsts);
     FillProfile(eff4pi_P[2][0], Mom.P(), signal_reco.Nmuch);
     FillProfile(eff4pi_P[3][0], Mom.P(), signal_reco.Ntrd);
     FillProfile(eff4pi_P[4][0], Mom.P(), signal_reco.Ntof);
-    FillProfile(
-      eff4pi_Theta[0][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Chi2V);
-    FillProfile(
-      eff4pi_Theta[1][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nsts);
-    FillProfile(
-      eff4pi_Theta[2][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nmuch);
-    FillProfile(
-      eff4pi_Theta[3][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntrd);
-    FillProfile(
-      eff4pi_Theta[4][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntof);
+    FillProfile(eff4pi_Theta[0][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Chi2V);
+    FillProfile(eff4pi_Theta[1][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nsts);
+    FillProfile(eff4pi_Theta[2][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Nmuch);
+    FillProfile(eff4pi_Theta[3][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntrd);
+    FillProfile(eff4pi_Theta[4][0], Mom.Theta() * TMath::RadToDeg(), signal_reco.Ntof);
   }
   fEvent++;
 }
@@ -1143,7 +1004,8 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/) {
 // used default ANN (16 neurons) weights generated for 8 GeV/c Au beam (UrQMD) and omega->µµ (PLUTO)
 // sis100_muon_lmvm setup
 //
-Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(CbmAnaMuonCandidate* mu) {
+Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(CbmAnaMuonCandidate* mu)
+{
 
   Double_t ID = -1;
   Double_t Chi2Vertex, Chi2STS, Chi2MUCH, Chi2TRD;
@@ -1165,8 +1027,7 @@ Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(CbmAnaMuonCandidate* mu) {
   Double_t STSchi2  = 10.;
   Double_t Vchi2    = 10.;
 
-  if ((Chi2Vertex <= Vchi2 && Chi2Vertex >= 0)
-      && (Chi2STS <= STSchi2 && Chi2STS >= 0)
+  if ((Chi2Vertex <= Vchi2 && Chi2Vertex >= 0) && (Chi2STS <= STSchi2 && Chi2STS >= 0)
       && (Chi2MUCH <= MUCHchi2 && Chi2MUCH >= 0) && NofTOF > 0) {
     Double_t params[9];
 
@@ -1184,10 +1045,9 @@ Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(CbmAnaMuonCandidate* mu) {
 
     simu->Fill();
 
-    TMultiLayerPerceptron* mlp =
-      new TMultiLayerPerceptron("@P,@M,@Chi2Vertex,@Chi2STS,@Chi2MUCH,@Chi2TRD,"
-                                "@NofSTS,@NofMUCH,@NofTRD:16:type",
-                                simu);
+    TMultiLayerPerceptron* mlp = new TMultiLayerPerceptron("@P,@M,@Chi2Vertex,@Chi2STS,@Chi2MUCH,@Chi2TRD,"
+                                                           "@NofSTS,@NofMUCH,@NofTRD:16:type",
+                                                           simu);
     mlp->LoadWeights(fFileAnnName);
 
     params[0] = P;
@@ -1208,16 +1068,10 @@ Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(CbmAnaMuonCandidate* mu) {
   return ID;
 }
 // -------------------------------------------------------------------------
-Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(Double_t P,
-                                                 Double_t M,
-                                                 Double_t Chi2Vertex,
-                                                 Double_t Chi2STS,
-                                                 Double_t Chi2MUCH,
-                                                 Double_t Chi2TRD,
-                                                 Int_t NofSTS,
-                                                 Int_t NofMUCH,
-                                                 Int_t NofTRD,
-                                                 Int_t NofTOF) {
+Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(Double_t P, Double_t M, Double_t Chi2Vertex, Double_t Chi2STS,
+                                                 Double_t Chi2MUCH, Double_t Chi2TRD, Int_t NofSTS, Int_t NofMUCH,
+                                                 Int_t NofTRD, Int_t NofTOF)
+{
 
   Double_t ID = -1;
 
@@ -1225,8 +1079,7 @@ Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(Double_t P,
   Double_t STSchi2  = 10.;
   Double_t Vchi2    = 10.;
 
-  if ((Chi2Vertex <= Vchi2 && Chi2Vertex >= 0)
-      && (Chi2STS <= STSchi2 && Chi2STS >= 0)
+  if ((Chi2Vertex <= Vchi2 && Chi2Vertex >= 0) && (Chi2STS <= STSchi2 && Chi2STS >= 0)
       && (Chi2MUCH <= MUCHchi2 && Chi2MUCH >= 0) && NofTOF > 0) {
     Int_t type;
     Double_t params[9];
@@ -1271,16 +1124,15 @@ Double_t CbmAnaDimuonAnalysis::CalculateAnnValue(Double_t P,
   return ID;
 }
 // -------------------------------------------------------------------------
-void CbmAnaDimuonAnalysis::FillProfile(TProfile* profile,
-                                       Double_t param,
-                                       Bool_t trigger) {
-  if (trigger)
-    profile->Fill(param, 100);
+void CbmAnaDimuonAnalysis::FillProfile(TProfile* profile, Double_t param, Bool_t trigger)
+{
+  if (trigger) profile->Fill(param, 100);
   else
     profile->Fill(param, 0);
 }
 // -----   Public method Finish   ------------------------------------------
-void CbmAnaDimuonAnalysis::Finish() {
+void CbmAnaDimuonAnalysis::Finish()
+{
 
   TString name;
 
@@ -1290,8 +1142,7 @@ void CbmAnaDimuonAnalysis::Finish() {
 
   if (fPlutoFileName != "") {
 
-    if (fAnnCut > 0)
-      name = Form("YPt_histo_ANN_%1.2f.root", fAnnCut);
+    if (fAnnCut > 0) name = Form("YPt_histo_ANN_%1.2f.root", fAnnCut);
     else
       name = "YPt_histo.root";
 
@@ -1324,8 +1175,7 @@ void CbmAnaDimuonAnalysis::Finish() {
 
     f->Close();
 
-    if (fAnnCut > 0)
-      name = Form("eff_histo_ANN_%1.2f.root", fAnnCut);
+    if (fAnnCut > 0) name = Form("eff_histo_ANN_%1.2f.root", fAnnCut);
     else
       name = "eff_histo.root";
     TFile* ff = new TFile(name, "recreate");
@@ -1416,9 +1266,9 @@ void CbmAnaDimuonAnalysis::Finish() {
 
     ff->Close();
     //  fPlutoFile->Close();
-  } else {
-    if (fAnnCut > 0)
-      name = Form("sup_histo_ANN_%1.2f.root", fAnnCut);
+  }
+  else {
+    if (fAnnCut > 0) name = Form("sup_histo_ANN_%1.2f.root", fAnnCut);
     else
       name = "sup_histo.root";
     TFile* f = new TFile(name, "recreate");
@@ -1430,8 +1280,7 @@ void CbmAnaDimuonAnalysis::Finish() {
     f->Close();
   }
 
-  if (fAnnCut > 0)
-    name = Form("YPtM_ANN_%1.2f.root", fAnnCut);
+  if (fAnnCut > 0) name = Form("YPtM_ANN_%1.2f.root", fAnnCut);
   else
     name = "YPtM.root";
   TFile* f = new TFile(name, "recreate");

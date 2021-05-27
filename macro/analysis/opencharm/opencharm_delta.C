@@ -51,28 +51,19 @@ TString setup    = "sis100_electron";
 bool littrack    = false;
 Bool_t useMC     = kFALSE;
 
-void opencharm_delta(Int_t nEvents = 100, Int_t ProcID = 1) {
+void opencharm_delta(Int_t nEvents = 100, Int_t ProcID = 1)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // Output file
-  TString outFile = Form("data/opencharm.mc.delta..%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString outFile = Form("data/opencharm.mc.delta..%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
   // ------------------------------------------------------------------------
 
   // Parameter file name
-  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
   // ------------------------------------------------------------------------
 
   TString inDir = gSystem->Getenv("VMCWORKDIR");
@@ -163,11 +154,11 @@ void opencharm_delta(Int_t nEvents = 100, Int_t ProcID = 1) {
 
   // -----   Create magnetic field   ---------------------------------------
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     magField = new CbmFieldMapSym3(fieldMap);
-  } else
+  }
+  else
     magField = new CbmFieldMapSym1(fieldMap);
 
   magField->SetPosition(0., 0., fieldZ);
@@ -184,8 +175,7 @@ void opencharm_delta(Int_t nEvents = 100, Int_t ProcID = 1) {
   // -----   Create PrimaryGenerator   --------------------------------------
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // FairIonGenerator*     fIongen   = new FairIonGenerator(58, 59, 58,1, 0.,0., 15, 0.,0.,-1.);   // Nickel
-  FairIonGenerator* fIongen =
-    new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., -1.);  // Gold
+  FairIonGenerator* fIongen = new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., -1.);  // Gold
   primGen->AddGenerator(fIongen);
   fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
@@ -223,7 +213,6 @@ void opencharm_delta(Int_t nEvents = 100, Int_t ProcID = 1) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

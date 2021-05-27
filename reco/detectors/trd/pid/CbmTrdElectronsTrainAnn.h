@@ -22,7 +22,8 @@ class TGraph;
 class TRandom;
 //class TMultiLayerPerceptron;
 
-enum IdMethod {
+enum IdMethod
+{
   kANN        = 0,
   kBDT        = 1,
   kMEDIAN     = 2,
@@ -42,8 +43,7 @@ class TrdEloss {
 public:
   TrdEloss() : TrdEloss(0., 0., 0.) {}
 
-  TrdEloss(double eloss, double dedx = 0., double tr = 0.)
-    : fEloss(eloss), fdEdX(dedx), fTR(tr) {}
+  TrdEloss(double eloss, double dedx = 0., double tr = 0.) : fEloss(eloss), fdEdX(dedx), fTR(tr) {}
 
   double fEloss;
   double fdEdX;
@@ -155,15 +155,9 @@ public:
 
   void SetSigmaError(Double_t sigma) { fSigmaError = sigma; }
 
-  void SetBeamDataFile(std::string beamDataFile) {
-    fBeamDataFile = beamDataFile;
-  }
-  void SetBeamDataPiHist(std::string beamDataPiHist) {
-    fBeamDataPiHist = beamDataPiHist;
-  }
-  void SetBeamDataElHist(std::string beamDataElHist) {
-    fBeamDataElHist = beamDataElHist;
-  }
+  void SetBeamDataFile(std::string beamDataFile) { fBeamDataFile = beamDataFile; }
+  void SetBeamDataPiHist(std::string beamDataPiHist) { fBeamDataPiHist = beamDataPiHist; }
+  void SetBeamDataElHist(std::string beamDataElHist) { fBeamDataElHist = beamDataElHist; }
 
   void RunBeamData();
 
@@ -185,13 +179,11 @@ private:
 
   std::vector<TH1*> fHists;  //store all pointers to histograms
 
-  TH1*
-    fhResults;  // histograms for the results storing: pi suppression, el efficiency etc.
+  TH1* fhResults;  // histograms for the results storing: pi suppression, el efficiency etc.
 
   // [0] = electrons, [1] = pions
-  std::vector<TH1*>
-    fhMeanEloss;  // sum of energy losses in all layers divided by number of layers
-  std::vector<TH1*> fhEloss;  // energy losses in one layer
+  std::vector<TH1*> fhMeanEloss;  // sum of energy losses in all layers divided by number of layers
+  std::vector<TH1*> fhEloss;      // energy losses in one layer
 
   // store sorted energy losses and cumulative probability for each TRD layer
   // 1st index -> [0] = electrons, [1] = pions
@@ -200,15 +192,13 @@ private:
 
   Int_t fEventNum;         // event number
   std::string fOutputDir;  // output directory
-  Double_t fSigmaError;  // additional sigma error for energy loss measurements
-  Bool_t fIsDoTrain;     // do you want to run training procedure?
-  Int_t fTransformType;  // Energy loss transformation type
+  Double_t fSigmaError;    // additional sigma error for energy loss measurements
+  Bool_t fIsDoTrain;       // do you want to run training procedure?
+  Int_t fTransformType;    // Energy loss transformation type
 
-  std::string
-    fBeamDataFile;  // path to file with beamtime data for energy losses
+  std::string fBeamDataFile;    // path to file with beamtime data for energy losses
   std::string fBeamDataPiHist;  // histogram name with energy losses for pions
-  std::string
-    fBeamDataElHist;  // histogram name with energy losses for electrons
+  std::string fBeamDataElHist;  // histogram name with energy losses for electrons
 
   std::vector<Float_t> fAnnInput;  // input vector for ANN
   Float_t fXOut;                   // output value from ANN
@@ -227,11 +217,9 @@ private:
 
   // Histograms for testing
   // [0] = electron, [1] = pion
-  std::vector<TH1*> fhOutput;  // algorithm output
-  std::vector<TH1*>
-    fhCumProbOutput;  // Cumulative probabilities for algorithm's output
-  std::vector<std::vector<TH1*>>
-    fhInput;  // Input data for algorithm for each input
+  std::vector<TH1*> fhOutput;              // algorithm output
+  std::vector<TH1*> fhCumProbOutput;       // Cumulative probabilities for algorithm's output
+  std::vector<std::vector<TH1*>> fhInput;  // Input data for algorithm for each input
 
   CbmTrdElectronsTrainAnn(const CbmTrdElectronsTrainAnn&);
   CbmTrdElectronsTrainAnn& operator=(const CbmTrdElectronsTrainAnn&);

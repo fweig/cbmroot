@@ -1,13 +1,13 @@
 #include "CbmLink.h"
 #include "CbmMatch.h"
 
+#include "compareLink.h"
+#include "compareMatch.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareLink.h"
-#include "compareMatch.h"
-
-TEST(_GTestCbmMatch, CheckDefaultConstructor) {
+TEST(_GTestCbmMatch, CheckDefaultConstructor)
+{
   CbmMatch test;
   {
     SCOPED_TRACE("CheckDefaultConstructor");
@@ -15,7 +15,8 @@ TEST(_GTestCbmMatch, CheckDefaultConstructor) {
   }
 }
 
-TEST(_GTestCbmMatch, AddLink1) {
+TEST(_GTestCbmMatch, AddLink1)
+{
   CbmMatch test;
   {
     SCOPED_TRACE("AddLink1: Initial Test");
@@ -41,7 +42,8 @@ TEST(_GTestCbmMatch, AddLink1) {
   }
 }
 
-TEST(_GTestCbmMatch, AddLink2) {
+TEST(_GTestCbmMatch, AddLink2)
+{
 
   CbmMatch test;
   {
@@ -80,7 +82,8 @@ TEST(_GTestCbmMatch, AddLink2) {
   }
 }
 
-CbmMatch TestAddLinks3() {
+CbmMatch TestAddLinks3()
+{
   CbmMatch test;
 
   CbmLink testLink1 {};
@@ -127,7 +130,8 @@ CbmMatch TestAddLinks3() {
   return test;
 }
 
-TEST(_GTestCbmMatch, AddLink3) {
+TEST(_GTestCbmMatch, AddLink3)
+{
 
   CbmMatch test = TestAddLinks3();
   CbmMatch test2;
@@ -139,7 +143,8 @@ TEST(_GTestCbmMatch, AddLink3) {
   }
 }
 
-TEST(_GTestCbmMatch, ClearLink) {
+TEST(_GTestCbmMatch, ClearLink)
+{
 
   CbmMatch test = TestAddLinks3();
   {
@@ -155,7 +160,8 @@ TEST(_GTestCbmMatch, ClearLink) {
 }
 
 
-TEST(_GTestCbmMatch, GetLink) {
+TEST(_GTestCbmMatch, GetLink)
+{
 
   CbmMatch test = TestAddLinks3();
   {
@@ -189,7 +195,8 @@ TEST(_GTestCbmMatch, GetLink) {
   }
 }
 
-TEST(_GTestCbmMatch, GetLinks) {
+TEST(_GTestCbmMatch, GetLinks)
+{
 
   CbmMatch test = TestAddLinks3();
   {
@@ -224,7 +231,8 @@ TEST(_GTestCbmMatch, GetLinks) {
   }
 }
 
-TEST(_GTestCbmMatch, GetMatchedLink) {
+TEST(_GTestCbmMatch, GetMatchedLink)
+{
 
   CbmMatch test = TestAddLinks3();
   {
@@ -242,12 +250,12 @@ TEST(_GTestCbmMatch, GetMatchedLink) {
 }
 
 
-TEST(_GTestCbmMatch, CheckToString) {
+TEST(_GTestCbmMatch, CheckToString)
+{
 
   CbmMatch test;
 
-  EXPECT_STREQ("CbmMatch: nofLinks=0\n totalWeight=0, matchedIndex=-1\n",
-               test.ToString().c_str());
+  EXPECT_STREQ("CbmMatch: nofLinks=0\n totalWeight=0, matchedIndex=-1\n", test.ToString().c_str());
 
   CbmLink testLink {-8., -3, -2, -2};
   test.AddLink(testLink);

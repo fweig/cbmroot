@@ -1,12 +1,11 @@
-void draw_histo(
-  TString input = "sis100_muon_lmvm/8gev/centr_010_sup_histo.root") {
+void draw_histo(TString input = "sis100_muon_lmvm/8gev/centr_010_sup_histo.root")
+{
   gStyle->SetHistLineWidth(6);
   gStyle->SetOptStat(0);
 
   Int_t type;
 
-  if (input.Contains("sup"))
-    type = 0;
+  if (input.Contains("sup")) type = 0;
   else if (input.Contains("eff"))
     type = 1;
   else if (input.Contains("YPt"))
@@ -49,96 +48,60 @@ void draw_histo(
     h1->Draw("same");
 
     legend->Draw();
-
-  } else if (type == 1) {
+  }
+  else if (type == 1) {
 
     TProfile* p1 = (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_Sts");
-    TProfile* p2 =
-      (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuch");
-    TProfile* p3 =
-      (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuchTrd");
-    TProfile* p4 =
-      (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuchTrdTof");
+    TProfile* p2 = (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuch");
+    TProfile* p3 = (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuchTrd");
+    TProfile* p4 = (TProfile*) f->Get("mu Plus/accepted mu Plus/muPl_accP_StsMuchTrdTof");
 
     p1->Add((TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_Sts"));
     p2->Add((TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_StsMuch"));
-    p3->Add(
-      (TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_StsMuchTrd"));
-    p4->Add(
-      (TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_StsMuchTrdTof"));
+    p3->Add((TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_StsMuchTrd"));
+    p4->Add((TProfile*) f->Get("mu Minus/accepted mu Minus/muMn_accP_StsMuchTrdTof"));
 
-    TProfile* p1a =
-      (TProfile*) f->Get("signal/accepted signal/signal_accP_Sts");
-    TProfile* p2a =
-      (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuch");
-    TProfile* p3a =
-      (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuchTrd");
-    TProfile* p4a =
-      (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuchTrdTof");
+    TProfile* p1a = (TProfile*) f->Get("signal/accepted signal/signal_accP_Sts");
+    TProfile* p2a = (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuch");
+    TProfile* p3a = (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuchTrd");
+    TProfile* p4a = (TProfile*) f->Get("signal/accepted signal/signal_accP_StsMuchTrdTof");
 
     //-------------------------------------------------------------------------------
 
-    TProfile* pp1 =
-      (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxSts");
-    TProfile* pp2 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuch");
-    TProfile* pp3 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuchTrd");
-    TProfile* pp4 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuchTrdTof");
+    TProfile* pp1 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxSts");
+    TProfile* pp2 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuch");
+    TProfile* pp3 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuchTrd");
+    TProfile* pp4 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_effRecoP_VtxStsMuchTrdTof");
 
-    pp1->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxSts"));
-    pp2->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuch"));
-    pp3->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuchTrd"));
-    pp4->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuchTrdTof"));
+    pp1->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxSts"));
+    pp2->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuch"));
+    pp3->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuchTrd"));
+    pp4->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_effRecoP_VtxStsMuchTrdTof"));
 
-    TProfile* pp1a =
-      (TProfile*) f->Get("signal/reconstructed signal/signal_effRecoP_VtxSts");
-    TProfile* pp2a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_effRecoP_VtxStsMuch");
-    TProfile* pp3a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_effRecoP_VtxStsMuchTrd");
-    TProfile* pp4a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_effRecoP_VtxStsMuchTrdTof");
+    TProfile* pp1a = (TProfile*) f->Get("signal/reconstructed signal/signal_effRecoP_VtxSts");
+    TProfile* pp2a = (TProfile*) f->Get("signal/reconstructed signal/signal_effRecoP_VtxStsMuch");
+    TProfile* pp3a = (TProfile*) f->Get("signal/reconstructed signal/signal_effRecoP_VtxStsMuchTrd");
+    TProfile* pp4a = (TProfile*) f->Get("signal/reconstructed signal/signal_effRecoP_VtxStsMuchTrdTof");
 
     //-------------------------------------------------------------------------------
 
-    TProfile* ppp0 =
-      (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_Vtx");
-    TProfile* ppp1 =
-      (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxSts");
-    TProfile* ppp2 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuch");
-    TProfile* ppp3 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuchTrd");
-    TProfile* ppp4 = (TProfile*) f->Get(
-      "mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuchTrdTof");
+    TProfile* ppp0 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_Vtx");
+    TProfile* ppp1 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxSts");
+    TProfile* ppp2 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuch");
+    TProfile* ppp3 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuchTrd");
+    TProfile* ppp4 = (TProfile*) f->Get("mu Plus/reconstructed mu Plus/muPl_eff4piP_VtxStsMuchTrdTof");
 
-    ppp0->Add(
-      (TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_Vtx"));
-    ppp1->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxSts"));
-    ppp2->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuch"));
-    ppp3->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuchTrd"));
-    ppp4->Add((TProfile*) f->Get(
-      "mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuchTrdTof"));
+    ppp0->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_Vtx"));
+    ppp1->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxSts"));
+    ppp2->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuch"));
+    ppp3->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuchTrd"));
+    ppp4->Add((TProfile*) f->Get("mu Minus/reconstructed mu Minus/muMn_eff4piP_VtxStsMuchTrdTof"));
 
-    TProfile* ppp0a =
-      (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_Vtx");
-    TProfile* ppp1a =
-      (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_VtxSts");
-    TProfile* ppp2a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_eff4piP_VtxStsMuch");
-    TProfile* ppp3a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_eff4piP_VtxStsMuchTrd");
-    TProfile* ppp4a = (TProfile*) f->Get(
-      "signal/reconstructed signal/signal_eff4piP_VtxStsMuchTrdTof");
+    TProfile* ppp0a = (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_Vtx");
+    TProfile* ppp1a = (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_VtxSts");
+    TProfile* ppp2a = (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_VtxStsMuch");
+    TProfile* ppp3a = (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_VtxStsMuchTrd");
+    TProfile* ppp4a = (TProfile*) f->Get("signal/reconstructed signal/signal_eff4piP_VtxStsMuchTrdTof");
 
     //-------------------------------------------------------------------------------
 
@@ -350,8 +313,8 @@ void draw_histo(
     ppp3a->Draw("same");
     ppp4a->Draw("same");
     legend3->Draw();
-
-  } else if (type == 2) {
+  }
+  else if (type == 2) {
     TH2D* h0 = (TH2D*) f->Get("YPt_pluto");
 
     TH2D* h1 = (TH2D*) f->Get("YPt_StsAcc");

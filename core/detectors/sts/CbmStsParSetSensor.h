@@ -7,15 +7,15 @@
 #ifndef CBMSTSPARSETSENSOR_H
 #define CBMSTSPARSETSENSOR_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
+#include "CbmStsParSensor.h"  // for CbmStsParSensor
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
+
 #include <map>     // for map
 #include <string>  // for string
-
-#include "CbmStsParSensor.h"  // for CbmStsParSensor
 
 class FairParamList;
 
@@ -35,8 +35,7 @@ public:
      ** @param title Parameter container factory name
      ** @param context  No idea
      **/
-  CbmStsParSetSensor(const char* name    = "CbmParSetSensor",
-                     const char* title   = "STS parameters",
+  CbmStsParSetSensor(const char* name = "CbmParSetSensor", const char* title = "STS parameters",
                      const char* context = "Default");
 
 
@@ -88,7 +87,8 @@ public:
   /** @brief Set global parameters (for all modules)
      ** @param conditions  Module parameter object
      **/
-  void SetGlobalPar(const CbmStsParSensor& params) {
+  void SetGlobalPar(const CbmStsParSensor& params)
+  {
     fGlobalParams = params;
     fUseGlobal    = kTRUE;
   }

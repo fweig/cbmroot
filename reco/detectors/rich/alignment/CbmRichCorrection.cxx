@@ -25,13 +25,17 @@
 #include "CbmRichRingLight.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmUtils.h"
+
 #include "FairTrackParam.h"
 #include "FairVolume.h"
+
 #include "TEllipse.h"
 #include "TGeoManager.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+
 #include <stdlib.h>
 //#include <stdio.h>
 #include "CbmGlobalTrack.h"
@@ -49,6 +53,7 @@ class TGeoMatrix;
 #include <boost/assign/list_of.hpp>
 using boost::assign::list_of;
 #include "TStyle.h"
+
 #include <sstream>
 
 CbmRichCorrection::CbmRichCorrection()
@@ -77,62 +82,45 @@ CbmRichCorrection::CbmRichCorrection()
   , fIsReconstruction(kFALSE)
   , fCopFit(NULL)
   , fTauFit(NULL)
-  , fPhi() {}
+  , fPhi()
+{
+}
 
 CbmRichCorrection::~CbmRichCorrection() {}
 
-InitStatus CbmRichCorrection::Init() {
+InitStatus CbmRichCorrection::Init()
+{
   FairRootManager* manager = FairRootManager::Instance();
 
   fRichHits = (TClonesArray*) manager->GetObject("RichHit");
-  if (NULL == fRichHits) {
-    Fatal("CbmRichCorrection::Init", "No RichHit array !");
-  }
+  if (NULL == fRichHits) { Fatal("CbmRichCorrection::Init", "No RichHit array !"); }
 
   fRichRings = (TClonesArray*) manager->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichCorrection::Init", "No RichRing array !");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichCorrection::Init", "No RichRing array !"); }
 
   fRichProjections = (TClonesArray*) manager->GetObject("RichProjection");
-  if (NULL == fRichProjections) {
-    Fatal("CbmRichCorrection::Init", "No RichProjection array !");
-  }
+  if (NULL == fRichProjections) { Fatal("CbmRichCorrection::Init", "No RichProjection array !"); }
 
   fRichMirrorPoints = (TClonesArray*) manager->GetObject("RichMirrorPoint");
-  if (NULL == fRichMirrorPoints) {
-    Fatal("CbmRichCorrection::Init", "No RichMirrorPoints array !");
-  }
+  if (NULL == fRichMirrorPoints) { Fatal("CbmRichCorrection::Init", "No RichMirrorPoints array !"); }
 
   fRichMCPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichMCPoints) {
-    Fatal("CbmRichCorrection::Init", "No RichMCPoints array !");
-  }
+  if (NULL == fRichMCPoints) { Fatal("CbmRichCorrection::Init", "No RichMCPoints array !"); }
 
   fMCTracks = (TClonesArray*) manager->GetObject("MCTrack");
-  if (NULL == fMCTracks) {
-    Fatal("CbmRichCorrection::Init", "No MCTracks array !");
-  }
+  if (NULL == fMCTracks) { Fatal("CbmRichCorrection::Init", "No MCTracks array !"); }
 
   fRichRingMatches = (TClonesArray*) manager->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmRichCorrection::Init", "No RichRingMatches array !");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmRichCorrection::Init", "No RichRingMatches array !"); }
 
   fRichRefPlanePoints = (TClonesArray*) manager->GetObject("RefPlanePoint");
-  if (NULL == fRichRefPlanePoints) {
-    Fatal("CbmRichCorrection::Init", "No RichRefPlanePoint array !");
-  }
+  if (NULL == fRichRefPlanePoints) { Fatal("CbmRichCorrection::Init", "No RichRefPlanePoint array !"); }
 
   fRichPoints = (TClonesArray*) manager->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmRichCorrection::Init", "No RichPoint array !");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmRichCorrection::Init", "No RichPoint array !"); }
 
   fGlobalTracks = (TClonesArray*) manager->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmRichCorrection::Init", "No GlobalTrack array!");
-  }
+  if (NULL == fGlobalTracks) { Fatal("CbmRichCorrection::Init", "No GlobalTrack array!"); }
 
   fCopFit = new CbmRichRingFitterCOP();
   fTauFit = new CbmRichRingFitterEllipseTau();
@@ -143,7 +131,8 @@ InitStatus CbmRichCorrection::Init() {
   return kSUCCESS;
 }
 
-void CbmRichCorrection::InitHistProjection() {
+void CbmRichCorrection::InitHistProjection()
+{
   fHM = new CbmHistManager();
   /*	for (std::map<string,string>::iterator it=fPathsMap.begin(); it!=fPathsMap.end(); ++it) {		// Initialize all the histograms, using map IDs as inputs.
 		string name = "fHMCPoints_" + it->second;														// it->first gives the paths; it->second gives the ID.
@@ -155,82 +144,39 @@ void CbmRichCorrection::InitHistProjection() {
   fHM->Create1<TH1D>("fhDistanceCenterToExtrapolatedTrack",
                      "fhDistanceCenterToExtrapolatedTrack;Distance fitted "
                      "center to extrapolated track;Number of entries",
-                     bin,
-                     0.,
-                     2.);
-  fHM->Create1<TH1D>("fhDistanceCorrected",
-                     "fhDistanceCorrected;Distance a [cm];A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
-  fHM->Create1<TH1D>(
-    "fhDifferenceX",
-    "fhDifferenceX;Difference in X (fitted center - extrapolated track);A.U.",
-    bin,
-    0.,
-    upperScaleLimit);
-  fHM->Create1<TH1D>(
-    "fhDifferenceY",
-    "fhDifferenceY;Difference in Y (fitted center - extrapolated track);A.U.",
-    bin,
-    0.,
-    upperScaleLimit);
+                     bin, 0., 2.);
+  fHM->Create1<TH1D>("fhDistanceCorrected", "fhDistanceCorrected;Distance a [cm];A.U.", bin, 0., upperScaleLimit);
+  fHM->Create1<TH1D>("fhDifferenceX", "fhDifferenceX;Difference in X (fitted center - extrapolated track);A.U.", bin,
+                     0., upperScaleLimit);
+  fHM->Create1<TH1D>("fhDifferenceY", "fhDifferenceY;Difference in Y (fitted center - extrapolated track);A.U.", bin,
+                     0., upperScaleLimit);
 
-  fHM->Create1<TH1D>("fhDistanceUncorrected",
-                     "fhDistanceUncorrected;Distance a [cm];A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
-  fHM->Create1<TH1D>(
-    "fhDifferenceXUncorrected",
-    "fhDifferenceXUncorrected;Difference in X uncorrected [cm];A.U.",
-    bin,
-    0.,
-    upperScaleLimit);
-  fHM->Create1<TH1D>(
-    "fhDifferenceYUncorrected",
-    "fhDifferenceYUncorrected;Difference in Y uncorrected [cm];A.U.",
-    bin,
-    0.,
-    upperScaleLimit);
+  fHM->Create1<TH1D>("fhDistanceUncorrected", "fhDistanceUncorrected;Distance a [cm];A.U.", bin, 0., upperScaleLimit);
+  fHM->Create1<TH1D>("fhDifferenceXUncorrected", "fhDifferenceXUncorrected;Difference in X uncorrected [cm];A.U.", bin,
+                     0., upperScaleLimit);
+  fHM->Create1<TH1D>("fhDifferenceYUncorrected", "fhDifferenceYUncorrected;Difference in Y uncorrected [cm];A.U.", bin,
+                     0., upperScaleLimit);
 
-  fHM->Create1<TH1D>("fhDistanceIdeal",
-                     "fhDistanceIdeal;Distance a [cm];A.U.",
-                     bin,
-                     0.,
+  fHM->Create1<TH1D>("fhDistanceIdeal", "fhDistanceIdeal;Distance a [cm];A.U.", bin, 0., upperScaleLimit);
+  fHM->Create1<TH1D>("fhDifferenceXIdeal", "fhDifferenceXIdeal;Difference in X ideal [cm];A.U.", bin, 0.,
                      upperScaleLimit);
-  fHM->Create1<TH1D>("fhDifferenceXIdeal",
-                     "fhDifferenceXIdeal;Difference in X ideal [cm];A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
-  fHM->Create1<TH1D>("fhDifferenceYIdeal",
-                     "fhDifferenceYIdeal;Difference in Y ideal [cm];A.U.",
-                     bin,
-                     0.,
+  fHM->Create1<TH1D>("fhDifferenceYIdeal", "fhDifferenceYIdeal;Difference in Y ideal [cm];A.U.", bin, 0.,
                      upperScaleLimit);
 
   fHM->Create1<TH1D>("fHistoDiffX",
                      "fHistoDiffX;Histogram difference between corrected and "
                      "ideal X positions;A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
+                     bin, 0., upperScaleLimit);
   fHM->Create1<TH1D>("fHistoDiffY",
                      "fHistoDiffY;Histogram difference between corrected and "
                      "ideal Y positions;A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
+                     bin, 0., upperScaleLimit);
 
-  fHM->Create1<TH1D>("fHistoBoA",
-                     "fHistoBoA;Histogram B axis over A axis;A.U.",
-                     bin,
-                     0.,
-                     upperScaleLimit);
+  fHM->Create1<TH1D>("fHistoBoA", "fHistoBoA;Histogram B axis over A axis;A.U.", bin, 0., upperScaleLimit);
 }
 
-void CbmRichCorrection::Exec(Option_t* /*option*/) {
+void CbmRichCorrection::Exec(Option_t* /*option*/)
+{
   cout << endl
        << "//"
           "--------------------------------------------------------------------"
@@ -252,23 +198,21 @@ void CbmRichCorrection::Exec(Option_t* /*option*/) {
   Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
-  cout << "Nb of rings in evt = " << nofRingsInEvent
-       << ", nb of mirror points = " << nofMirrorPoints
-       << ", nb of hits in evt = " << nofHitsInEvent
-       << ", nb of Monte-Carlo points = " << NofMCPoints
+  cout << "Nb of rings in evt = " << nofRingsInEvent << ", nb of mirror points = " << nofMirrorPoints
+       << ", nb of hits in evt = " << nofHitsInEvent << ", nb of Monte-Carlo points = " << NofMCPoints
        << " and nb of Monte-Carlo tracks = " << NofMCTracks << endl
        << endl;
 
   TClonesArray* projectedPoint;
 
-  if (nofRingsInEvent == 0) {
-    cout << "Error no rings registered in event." << endl << endl;
-  } else {
+  if (nofRingsInEvent == 0) { cout << "Error no rings registered in event." << endl << endl; }
+  else {
     ProjectionProducer();
   }
 }
 
-void CbmRichCorrection::ProjectionProducer() {
+void CbmRichCorrection::ProjectionProducer()
+{
   cout << "//------------------------------ CbmRichCorrection: Projection "
           "Producer ------------------------------//"
        << endl
@@ -282,20 +226,16 @@ void CbmRichCorrection::ProjectionProducer() {
 
   // Declaration of points coordinates.
   Double_t sphereRadius = 300., constantePMT = 0.;
-  vector<Double_t> ptM(3), ptMNew(3), ptC(3), ptCNew(3), ptR1(3), momR1(3),
-    normalPMT(3), ptR2Mirr(3), ptR2Center(3), ptPMirr(3), ptPR2(3),
-    ptTileCenter(3);
-  vector<Double_t> ptCIdeal(3), ptR2CenterUnCorr(3), ptR2CenterIdeal(3),
-    ptR2MirrUnCorr(3), ptR2MirrIdeal(3), ptPMirrUnCorr(3), ptPMirrIdeal(3),
-    ptPR2UnCorr(3), ptPR2Ideal(3);
+  vector<Double_t> ptM(3), ptMNew(3), ptC(3), ptCNew(3), ptR1(3), momR1(3), normalPMT(3), ptR2Mirr(3), ptR2Center(3),
+    ptPMirr(3), ptPR2(3), ptTileCenter(3);
+  vector<Double_t> ptCIdeal(3), ptR2CenterUnCorr(3), ptR2CenterIdeal(3), ptR2MirrUnCorr(3), ptR2MirrIdeal(3),
+    ptPMirrUnCorr(3), ptPMirrIdeal(3), ptPR2UnCorr(3), ptPR2Ideal(3);
   Double_t reflectedPtCooVectSphereUnity[] = {0., 0., 0.};
   TVector3 outPos, outPosUnCorr, outPosIdeal;
   // Declaration of ring parameters.
-  Double_t ringCenter[] = {0., 0., 0.}, distToExtrapTrackHit = 0.,
-           distToExtrapTrackHitInPlane = 0.;
+  Double_t ringCenter[] = {0., 0., 0.}, distToExtrapTrackHit = 0., distToExtrapTrackHitInPlane = 0.;
   //Declarations related to geometry.
-  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1,
-        motherID = -100, pmtMotherID = -100;
+  Int_t mirrTrackID = -1, pmtTrackID = -1, refPlaneTrackID = -1, motherID = -100, pmtMotherID = -100;
   CbmMCTrack* track = NULL;
   TGeoNavigator* navi;
   TGeoNode* mirrNode;
@@ -308,9 +248,8 @@ void CbmRichCorrection::ProjectionProducer() {
   Double_t pmtHeight   = gp->fPmt.fHeight;
 
   GetPmtNormal(NofPMTPoints, normalPMT, constantePMT);
-  cout << "Calculated normal vector to PMT plane = {" << normalPMT.at(0) << ", "
-       << normalPMT.at(1) << ", " << normalPMT.at(2)
-       << "} and constante d = " << constantePMT << endl
+  cout << "Calculated normal vector to PMT plane = {" << normalPMT.at(0) << ", " << normalPMT.at(1) << ", "
+       << normalPMT.at(2) << "} and constante d = " << constantePMT << endl
        << endl;
 
   for (Int_t iMirr = 0; iMirr < NofMirrorPoints; iMirr++) {
@@ -321,8 +260,7 @@ void CbmRichCorrection::ProjectionProducer() {
     if (mirrTrackID <= -1) {
       cout << "Mirror track ID <= 1 !!!" << endl;
       cout << "----------------------------------- End of loop N°" << iMirr + 1
-           << " on the mirror points. -----------------------------------"
-           << endl
+           << " on the mirror points. -----------------------------------" << endl
            << endl;
       continue;
     }
@@ -330,8 +268,7 @@ void CbmRichCorrection::ProjectionProducer() {
     motherID = track->GetMotherId();
     if (motherID == -1) {
       //cout << "Mirror motherID == -1 !!!" << endl << endl;
-      ptM.at(0) = mirrPoint->GetX(), ptM.at(1) = mirrPoint->GetY(),
-      ptM.at(2) = mirrPoint->GetZ();
+      ptM.at(0) = mirrPoint->GetX(), ptM.at(1) = mirrPoint->GetY(), ptM.at(2) = mirrPoint->GetZ();
       //cout << "Mirror Point coordinates; x = " << ptM.at(0) << ", y = " << ptM.at(1) << " and z = " << ptM.at(2) << endl;
       mirrNode = gGeoManager->FindNode(ptM.at(0), ptM.at(1), ptM.at(2));
       if (mirrNode) {
@@ -341,9 +278,8 @@ void CbmRichCorrection::ProjectionProducer() {
         cout << "Coordinates of sphere center: " << endl;
         navi->GetCurrentMatrix()->Print();
         if (fIsMeanCenter)
-          GetMeanSphereCenter(
-            navi,
-            ptC);  //IF NO INFORMATION ON MIRRORS ARE KNOWN (TO BE USED IN RECONSTRUCTION STEP) !!!
+          GetMeanSphereCenter(navi,
+                              ptC);  //IF NO INFORMATION ON MIRRORS ARE KNOWN (TO BE USED IN RECONSTRUCTION STEP) !!!
         else {
           ptCIdeal.at(0) = navi->GetCurrentMatrix()->GetTranslation()[0];
           ptCIdeal.at(1) = navi->GetCurrentMatrix()->GetTranslation()[1];
@@ -352,37 +288,31 @@ void CbmRichCorrection::ProjectionProducer() {
         cout << "Coordinates of tile center: " << endl;
         navi->GetMotherMatrix()->Print();
         ptC.at(0) = 0., ptC.at(1) = 132.594000, ptC.at(2) = 54.267226;
-        cout
-          << "Sphere center coordinates of the aligned mirror tile, ideal = {"
-          << ptCIdeal.at(0) << ", " << ptCIdeal.at(1) << ", " << ptCIdeal.at(2)
-          << "}" << endl;
+        cout << "Sphere center coordinates of the aligned mirror tile, ideal = {" << ptCIdeal.at(0) << ", "
+             << ptCIdeal.at(1) << ", " << ptCIdeal.at(2) << "}" << endl;
         cout << "Sphere center coordinates of the rotated mirror tile, w/ "
                 "GeoManager, = {"
-             << ptC.at(0) << ", " << ptC.at(1) << ", " << ptC.at(2)
-             << "} and sphere inner radius = " << sphereRadius << endl
+             << ptC.at(0) << ", " << ptC.at(1) << ", " << ptC.at(2) << "} and sphere inner radius = " << sphereRadius
+             << endl
              << endl;
         //ptCNew = RotateSphereCenter(ptTileCenter, ptC, navi);
 
         for (Int_t iRefl = 0; iRefl < NofRefPlanePoints; iRefl++) {
           //new((*projectedPoint)[iRefl]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
-          CbmRichPoint* refPlanePoint =
-            (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
-          refPlaneTrackID = refPlanePoint->GetTrackID();
+          CbmRichPoint* refPlanePoint = (CbmRichPoint*) fRichRefPlanePoints->At(iRefl);
+          refPlaneTrackID             = refPlanePoint->GetTrackID();
           //cout << "Reflective plane track ID = " << refPlaneTrackID << endl;
           if (mirrTrackID == refPlaneTrackID) {
             //cout << "IDENTICAL TRACK ID FOUND !!!" << endl << endl;
-            ptR1.at(0)  = refPlanePoint->GetX(),
-            ptR1.at(1)  = refPlanePoint->GetY(),
-            ptR1.at(2)  = refPlanePoint->GetZ();
-            momR1.at(0) = refPlanePoint->GetPx(),
-            momR1.at(1) = refPlanePoint->GetPy(),
+            ptR1.at(0) = refPlanePoint->GetX(), ptR1.at(1) = refPlanePoint->GetY(), ptR1.at(2) = refPlanePoint->GetZ();
+            momR1.at(0) = refPlanePoint->GetPx(), momR1.at(1) = refPlanePoint->GetPy(),
             momR1.at(2) = refPlanePoint->GetPz();
-            cout << "Reflective Plane Point coordinates = {" << ptR1.at(0)
-                 << ", " << ptR1.at(1) << ", " << ptR1.at(2) << "}" << endl;
-            cout << "And reflective Plane Point momenta = {" << momR1.at(0)
-                 << ", " << momR1.at(1) << ", " << momR1.at(2) << "}" << endl;
-            cout << "Mirror Point coordinates = {" << ptM.at(0) << ", "
-                 << ptM.at(1) << ", " << ptM.at(2) << "}" << endl;
+            cout << "Reflective Plane Point coordinates = {" << ptR1.at(0) << ", " << ptR1.at(1) << ", " << ptR1.at(2)
+                 << "}" << endl;
+            cout << "And reflective Plane Point momenta = {" << momR1.at(0) << ", " << momR1.at(1) << ", "
+                 << momR1.at(2) << "}" << endl;
+            cout << "Mirror Point coordinates = {" << ptM.at(0) << ", " << ptM.at(1) << ", " << ptM.at(2) << "}"
+                 << endl;
             CalculateMirrorIntersection(ptM, ptCIdeal, ptMNew);
 
             if (fIsMeanCenter) {
@@ -391,55 +321,27 @@ void CbmRichCorrection::ProjectionProducer() {
               // => Compare distance of ptM to tile centers
             }
 
-            ComputeR2(ptR2CenterUnCorr,
-                      ptR2MirrUnCorr,
-                      ptM,
-                      ptC,
-                      ptR1,
-                      navi,
-                      "Uncorrected");
+            ComputeR2(ptR2CenterUnCorr, ptR2MirrUnCorr, ptM, ptC, ptR1, navi, "Uncorrected");
             ComputeR2(ptR2Center, ptR2Mirr, ptM, ptC, ptR1, navi, "Corrected");
-            ComputeR2(ptR2CenterIdeal,
-                      ptR2MirrIdeal,
-                      ptM,
-                      ptCIdeal,
-                      ptR1,
-                      navi,
-                      "Uncorrected");
+            ComputeR2(ptR2CenterIdeal, ptR2MirrIdeal, ptM, ptCIdeal, ptR1, navi, "Uncorrected");
 
-            ComputeP(ptPMirrUnCorr,
-                     ptPR2UnCorr,
-                     normalPMT,
-                     ptM,
-                     ptR2MirrUnCorr,
-                     constantePMT);
+            ComputeP(ptPMirrUnCorr, ptPR2UnCorr, normalPMT, ptM, ptR2MirrUnCorr, constantePMT);
             ComputeP(ptPMirr, ptPR2, normalPMT, ptM, ptR2Mirr, constantePMT);
-            ComputeP(ptPMirrIdeal,
-                     ptPR2Ideal,
-                     normalPMT,
-                     ptM,
-                     ptR2MirrIdeal,
-                     constantePMT);
+            ComputeP(ptPMirrIdeal, ptPR2Ideal, normalPMT, ptM, ptR2MirrIdeal, constantePMT);
 
-            TVector3 inPosUnCorr(
-              ptPMirrUnCorr.at(0), ptPMirrUnCorr.at(1), ptPMirrUnCorr.at(2));
-            CbmRichGeoManager::GetInstance().RotatePoint(&inPosUnCorr,
-                                                         &outPosUnCorr);
+            TVector3 inPosUnCorr(ptPMirrUnCorr.at(0), ptPMirrUnCorr.at(1), ptPMirrUnCorr.at(2));
+            CbmRichGeoManager::GetInstance().RotatePoint(&inPosUnCorr, &outPosUnCorr);
             cout << endl
-                 << "New mirror points coordinates = {" << outPosUnCorr.x()
-                 << ", " << outPosUnCorr.y() << ", " << outPosUnCorr.z() << "}"
-                 << endl;
+                 << "New mirror points coordinates = {" << outPosUnCorr.x() << ", " << outPosUnCorr.y() << ", "
+                 << outPosUnCorr.z() << "}" << endl;
             TVector3 inPos(ptPMirr.at(0), ptPMirr.at(1), ptPMirr.at(2));
             CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
-            cout << "New mirror points coordinates = {" << outPos.x() << ", "
-                 << outPos.y() << ", " << outPos.z() << "}" << endl;
-            TVector3 inPosIdeal(
-              ptPMirrIdeal.at(0), ptPMirrIdeal.at(1), ptPMirrIdeal.at(2));
-            CbmRichGeoManager::GetInstance().RotatePoint(&inPosIdeal,
-                                                         &outPosIdeal);
-            cout << "New mirror points coordinates = {" << outPosIdeal.x()
-                 << ", " << outPosIdeal.y() << ", " << outPosIdeal.z() << "}"
-                 << endl
+            cout << "New mirror points coordinates = {" << outPos.x() << ", " << outPos.y() << ", " << outPos.z() << "}"
+                 << endl;
+            TVector3 inPosIdeal(ptPMirrIdeal.at(0), ptPMirrIdeal.at(1), ptPMirrIdeal.at(2));
+            CbmRichGeoManager::GetInstance().RotatePoint(&inPosIdeal, &outPosIdeal);
+            cout << "New mirror points coordinates = {" << outPosIdeal.x() << ", " << outPosIdeal.y() << ", "
+                 << outPosIdeal.z() << "}" << endl
                  << endl;
 
             /*for (Int_t iPmt = 0; iPmt < NofPMTPoints; iPmt++) {
@@ -469,13 +371,9 @@ void CbmRichCorrection::ProjectionProducer() {
 					cout << outputPoint.X() << "\t" << outputPoint.Y() << "\t" << outputPoint.Z() << endl;
 				}*/
 
-        FillHistProjection(outPosIdeal,
-                           outPosUnCorr,
-                           outPos,
-                           NofGTracks,
-                           normalPMT,
-                           constantePMT);
-      } else {
+        FillHistProjection(outPosIdeal, outPosUnCorr, outPos, NofGTracks, normalPMT, constantePMT);
+      }
+      else {
         cout << "Not a mother particle ..." << endl;
       }
       cout << "----------------------------------- "
@@ -486,15 +384,13 @@ void CbmRichCorrection::ProjectionProducer() {
   }
 }
 
-void CbmRichCorrection::GetPmtNormal(Int_t NofPMTPoints,
-                                     vector<Double_t>& normalPMT,
-                                     Double_t& normalCste) {
+void CbmRichCorrection::GetPmtNormal(Int_t NofPMTPoints, vector<Double_t>& normalPMT, Double_t& normalCste)
+{
   //cout << endl << "//------------------------------ CbmRichCorrection: Calculate PMT Normal ------------------------------//" << endl << endl;
 
   Int_t pmtTrackID, pmtMotherID;
-  Double_t buffNormX = 0., buffNormY = 0., buffNormZ = 0., k = 0.,
-           scalarProd = 0.;
-  Double_t pmtPt[]    = {0., 0., 0.};
+  Double_t buffNormX = 0., buffNormY = 0., buffNormZ = 0., k = 0., scalarProd = 0.;
+  Double_t pmtPt[] = {0., 0., 0.};
   Double_t a[] = {0., 0., 0.}, b[] = {0., 0., 0.}, c[] = {0., 0., 0.};
   CbmMCTrack* track;
 
@@ -518,8 +414,7 @@ void CbmRichCorrection::GetPmtNormal(Int_t NofPMTPoints,
     track                  = (CbmMCTrack*) fMCTracks->At(pmtTrackID);
     pmtMotherID            = track->GetMotherId();
     //cout << "PMT Point coordinates; x = " << pmtPoint->GetX() << ", y = " << pmtPoint->GetY() << " and z = " << pmtPoint->GetZ() << endl;
-    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2)
-                    + TMath::Power(a[1] - pmtPoint->GetY(), 2)
+    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2) + TMath::Power(a[1] - pmtPoint->GetY(), 2)
                     + TMath::Power(a[2] - pmtPoint->GetZ(), 2))
         > 7) {
       b[0] = pmtPoint->GetX(), b[1] = pmtPoint->GetY(), b[2] = pmtPoint->GetZ();
@@ -533,12 +428,10 @@ void CbmRichCorrection::GetPmtNormal(Int_t NofPMTPoints,
     track                  = (CbmMCTrack*) fMCTracks->At(pmtTrackID);
     pmtMotherID            = track->GetMotherId();
     //cout << "PMT Point coordinates; x = " << pmtPoint->GetX() << ", y = " << pmtPoint->GetY() << " and z = " << pmtPoint->GetZ() << endl;
-    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2)
-                    + TMath::Power(a[1] - pmtPoint->GetY(), 2)
+    if (TMath::Sqrt(TMath::Power(a[0] - pmtPoint->GetX(), 2) + TMath::Power(a[1] - pmtPoint->GetY(), 2)
                     + TMath::Power(a[2] - pmtPoint->GetZ(), 2))
           > 7
-        && TMath::Sqrt(TMath::Power(b[0] - pmtPoint->GetX(), 2)
-                       + TMath::Power(b[1] - pmtPoint->GetY(), 2)
+        && TMath::Sqrt(TMath::Power(b[0] - pmtPoint->GetX(), 2) + TMath::Power(b[1] - pmtPoint->GetY(), 2)
                        + TMath::Power(b[2] - pmtPoint->GetZ(), 2))
              > 7) {
       c[0] = pmtPoint->GetX(), c[1] = pmtPoint->GetY(), c[2] = pmtPoint->GetZ();
@@ -548,52 +441,41 @@ void CbmRichCorrection::GetPmtNormal(Int_t NofPMTPoints,
   }
 
   k = (b[0] - a[0]) / (c[0] - a[0]);
-  if ((b[1] - a[1]) - (k * (c[1] - a[1])) == 0
-      || (b[2] - a[2]) - (k * (c[2] - a[2])) == 0) {
-    cout << "Error in normal calculation, vect_AB and vect_AC are collinear."
-         << endl;
-  } else {
+  if ((b[1] - a[1]) - (k * (c[1] - a[1])) == 0 || (b[2] - a[2]) - (k * (c[2] - a[2])) == 0) {
+    cout << "Error in normal calculation, vect_AB and vect_AC are collinear." << endl;
+  }
+  else {
     buffNormX = (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]);
     buffNormY = (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]);
     buffNormZ = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
     normalPMT.at(0) =
-      buffNormX
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormX / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
     normalPMT.at(1) =
-      buffNormY
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormY / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
     normalPMT.at(2) =
-      buffNormZ
-      / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2)
-                    + TMath::Power(buffNormZ, 2));
+      buffNormZ / TMath::Sqrt(TMath::Power(buffNormX, 2) + TMath::Power(buffNormY, 2) + TMath::Power(buffNormZ, 2));
   }
 
   CbmRichPoint* pmtPoint1 = (CbmRichPoint*) fRichPoints->At(20);
-  scalarProd              = normalPMT.at(0) * (pmtPoint1->GetX() - a[0])
-               + normalPMT.at(1) * (pmtPoint1->GetY() - a[1])
+  scalarProd              = normalPMT.at(0) * (pmtPoint1->GetX() - a[0]) + normalPMT.at(1) * (pmtPoint1->GetY() - a[1])
                + normalPMT.at(2) * (pmtPoint1->GetZ() - a[2]);
   //cout << "1st scalar product between vectAM and normale = " << scalarProd << endl;
   // To determine the constant term of the plane equation, inject the coordinates of a pmt point, which should solve it: a*x+b*y+c*z+d=0.
   normalCste =
     -1
-    * (normalPMT.at(0) * pmtPoint1->GetX() + normalPMT.at(1) * pmtPoint1->GetY()
-       + normalPMT.at(2) * pmtPoint1->GetZ());
+    * (normalPMT.at(0) * pmtPoint1->GetX() + normalPMT.at(1) * pmtPoint1->GetY() + normalPMT.at(2) * pmtPoint1->GetZ());
   CbmRichPoint* pmtPoint2 = (CbmRichPoint*) fRichPoints->At(15);
-  scalarProd              = normalPMT.at(0) * (pmtPoint2->GetX() - a[0])
-               + normalPMT.at(1) * (pmtPoint2->GetY() - a[1])
+  scalarProd              = normalPMT.at(0) * (pmtPoint2->GetX() - a[0]) + normalPMT.at(1) * (pmtPoint2->GetY() - a[1])
                + normalPMT.at(2) * (pmtPoint2->GetZ() - a[2]);
   //cout << "2nd scalar product between vectAM and normale = " << scalarProd << endl;
   CbmRichPoint* pmtPoint3 = (CbmRichPoint*) fRichPoints->At(25);
-  scalarProd              = normalPMT.at(0) * (pmtPoint3->GetX() - a[0])
-               + normalPMT.at(1) * (pmtPoint3->GetY() - a[1])
+  scalarProd              = normalPMT.at(0) * (pmtPoint3->GetX() - a[0]) + normalPMT.at(1) * (pmtPoint3->GetY() - a[1])
                + normalPMT.at(2) * (pmtPoint3->GetZ() - a[2]);
   //cout << "3nd scalar product between vectAM and normale = " << scalarProd << endl;
 }
 
-void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi,
-                                            vector<Double_t>& ptC) {
+void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi, vector<Double_t>& ptC)
+{
   const Char_t* topNodePath;
   topNodePath = gGeoManager->GetTopNode()->GetName();
   cout << "Top node path: " << topNodePath << endl;
@@ -604,10 +486,8 @@ void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi,
   TGeoIterator nextNode(rootTop);
   TGeoNode* curNode;
   const TGeoMatrix* curMatrix;
-  const Double_t*
-    curNodeTranslation;  // 3 components - pointers to some memory which is provided by ROOT
-  const Double_t*
-    curNodeRotationM;  // 9 components - pointers to some memory which is provided by ROOT
+  const Double_t* curNodeTranslation;  // 3 components - pointers to some memory which is provided by ROOT
+  const Double_t* curNodeRotationM;    // 9 components - pointers to some memory which is provided by ROOT
   TString filterName0("mirror_tile_type0");
   TString filterName1("mirror_tile_type1");
   TString filterName2("mirror_tile_type2");
@@ -623,12 +503,9 @@ void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi,
 
     // Filter using volume name, not node name
     // But you can do 'if (nodeName.Contains("filter"))'
-    if (curNode->GetVolume()->GetName() == filterName0
-        || curNode->GetVolume()->GetName() == filterName1
-        || curNode->GetVolume()->GetName() == filterName2
-        || curNode->GetVolume()->GetName() == filterName3
-        || curNode->GetVolume()->GetName() == filterName4
-        || curNode->GetVolume()->GetName() == filterName5) {
+    if (curNode->GetVolume()->GetName() == filterName0 || curNode->GetVolume()->GetName() == filterName1
+        || curNode->GetVolume()->GetName() == filterName2 || curNode->GetVolume()->GetName() == filterName3
+        || curNode->GetVolume()->GetName() == filterName4 || curNode->GetVolume()->GetName() == filterName5) {
       if (curNode->GetNdaughters() == 0) {
         // All deepest nodes of mirror tiles here (leaves)
         // Thus we get spherical surface centers
@@ -637,12 +514,8 @@ void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi,
         curNodeTranslation = curMatrix->GetTranslation();
         curNodeRotationM   = curMatrix->GetRotationMatrix();
         printf("%s tr:\t", nodePath.Data());
-        printf("%08f\t%08f\t%08f\t\n",
-               curNodeTranslation[0],
-               curNodeTranslation[1],
-               curNodeTranslation[2]);
-        if (curNodeTranslation[1]
-            > 0) {  // CONDITION FOR UPPER MIRROR WALL STUDY
+        printf("%08f\t%08f\t%08f\t\n", curNodeTranslation[0], curNodeTranslation[1], curNodeTranslation[2]);
+        if (curNodeTranslation[1] > 0) {  // CONDITION FOR UPPER MIRROR WALL STUDY
           sphereXTot += curNodeTranslation[0];
           sphereYTot += curNodeTranslation[1];
           sphereZTot += curNodeTranslation[2];
@@ -659,37 +532,32 @@ void CbmRichCorrection::GetMeanSphereCenter(TGeoNavigator* navi,
   nextNode.Reset();
 }
 
-void CbmRichCorrection::GetMirrorIntersection(vector<Double_t>& ptM,
-                                              vector<Double_t> ptR1,
-                                              vector<Double_t> momR1,
-                                              vector<Double_t> ptC,
-                                              Double_t sphereRadius) {
+void CbmRichCorrection::GetMirrorIntersection(vector<Double_t>& ptM, vector<Double_t> ptR1, vector<Double_t> momR1,
+                                              vector<Double_t> ptC, Double_t sphereRadius)
+{
   Double_t a = 0., b = 0., c = 0., d = 0., k0 = 0., k1 = 0., k2 = 0.;
 
-  a = TMath::Power(momR1.at(0), 2) + TMath::Power(momR1.at(1), 2)
-      + TMath::Power(momR1.at(2), 2);
+  a = TMath::Power(momR1.at(0), 2) + TMath::Power(momR1.at(1), 2) + TMath::Power(momR1.at(2), 2);
   b = 2
-      * (momR1.at(0) * (ptR1.at(0) - ptC.at(0))
-         + momR1.at(1) * (ptR1.at(1) - ptC.at(1))
+      * (momR1.at(0) * (ptR1.at(0) - ptC.at(0)) + momR1.at(1) * (ptR1.at(1) - ptC.at(1))
          + momR1.at(2) * (ptR1.at(2) - ptC.at(2)));
-  c = TMath::Power(ptR1.at(0) - ptC.at(0), 2)
-      + TMath::Power(ptR1.at(1) - ptC.at(1), 2)
+  c = TMath::Power(ptR1.at(0) - ptC.at(0), 2) + TMath::Power(ptR1.at(1) - ptC.at(1), 2)
       + TMath::Power(ptR1.at(2) - ptC.at(2), 2) - TMath::Power(sphereRadius, 2);
   d = b * b - 4 * a * c;
   cout << "d = " << d << endl;
 
   if (d < 0) {
-    cout
-      << "Error no solution to degree 2 equation found ; discriminant below 0."
-      << endl;
+    cout << "Error no solution to degree 2 equation found ; discriminant below 0." << endl;
     ptM.at(0) = 0., ptM.at(1) = 0., ptM.at(2) = 0.;
-  } else if (d == 0) {
+  }
+  else if (d == 0) {
     cout << "One solution to degree 2 equation found." << endl;
     k0        = -b / (2 * a);
     ptM.at(0) = ptR1.at(0) + k0 * momR1.at(0);
     ptM.at(1) = ptR1.at(1) + k0 * momR1.at(1);
     ptM.at(2) = ptR1.at(2) + k0 * momR1.at(2);
-  } else if (d > 0) {
+  }
+  else if (d > 0) {
     cout << "Two solutions to degree 2 equation found." << endl;
     k1 = ((-b - TMath::Sqrt(d)) / (2 * a));
     k2 = ((-b + TMath::Sqrt(d)) / (2 * a));
@@ -698,7 +566,8 @@ void CbmRichCorrection::GetMirrorIntersection(vector<Double_t>& ptM,
       ptM.at(0) = ptR1.at(0) + k1 * momR1.at(0);
       ptM.at(1) = ptR1.at(1) + k1 * momR1.at(1);
       ptM.at(2) = ptR1.at(2) + k1 * momR1.at(2);
-    } else if (ptR1.at(2) + k1 * momR1.at(2) < ptR1.at(2) + k2 * momR1.at(2)) {
+    }
+    else if (ptR1.at(2) + k1 * momR1.at(2) < ptR1.at(2) + k2 * momR1.at(2)) {
       ptM.at(0) = ptR1.at(0) + k2 * momR1.at(0);
       ptM.at(1) = ptR1.at(1) + k2 * momR1.at(1);
       ptM.at(2) = ptR1.at(2) + k2 * momR1.at(2);
@@ -706,14 +575,12 @@ void CbmRichCorrection::GetMirrorIntersection(vector<Double_t>& ptM,
   }
 }
 
-vector<Double_t> CbmRichCorrection::RotateSphereCenter(vector<Double_t> ptM,
-                                                       vector<Double_t> ptC,
-                                                       TGeoNavigator* navi) {
+vector<Double_t> CbmRichCorrection::RotateSphereCenter(vector<Double_t> ptM, vector<Double_t> ptC, TGeoNavigator* navi)
+{
   vector<Double_t> ptCNew(3), ptCNew2(3), ptCNew3(3);
-  Double_t cosPhi = 0., sinPhi = 0., cosTheta = 0., sinTheta = 0., phi2 = 0.,
-           theta2 = 0.;
-  Double_t diff[3], transfoMat[3][3], invMat[3][3], corrMat[3][3], buff1[3][3],
-    buff2[3][3], buff3[3][3], buff4[3][3], buff5[3][3], RotX[3][3], RotY[3][3];
+  Double_t cosPhi = 0., sinPhi = 0., cosTheta = 0., sinTheta = 0., phi2 = 0., theta2 = 0.;
+  Double_t diff[3], transfoMat[3][3], invMat[3][3], corrMat[3][3], buff1[3][3], buff2[3][3], buff3[3][3], buff4[3][3],
+    buff5[3][3], RotX[3][3], RotY[3][3];
   Double_t corrMat2[3][3], RotX2[3][3], RotY2[3][3];
   InvertMatrix(transfoMat, invMat, navi);
   /*for (Int_t i=0; i<3; i++) {
@@ -732,14 +599,13 @@ vector<Double_t> CbmRichCorrection::RotateSphereCenter(vector<Double_t> ptM,
       corr_file >> outputFit.at(i);
     }
     corr_file.close();
-  } else {
-    cout << "Error in CbmRichCorrection: unable to open parameter file!" << endl
-         << endl;
+  }
+  else {
+    cout << "Error in CbmRichCorrection: unable to open parameter file!" << endl << endl;
     sleep(5);
   }
-  cout << "Misalignment parameters read from file = [" << outputFit.at(0)
-       << " ; " << outputFit.at(1) << " ; " << outputFit.at(2) << " ; "
-       << outputFit.at(3) << "]" << endl;
+  cout << "Misalignment parameters read from file = [" << outputFit.at(0) << " ; " << outputFit.at(1) << " ; "
+       << outputFit.at(2) << " ; " << outputFit.at(3) << "]" << endl;
 
   // Initializing the matrices used for further calculations.
   for (Int_t i = 0; i < 3; i++) {
@@ -834,10 +700,8 @@ vector<Double_t> CbmRichCorrection::RotateSphereCenter(vector<Double_t> ptM,
   // Calculating the theoretical rotation angles to be applied to the translated point S, to get the point along the Z axis (should obtain a {0; 0; -300} coo).
   phi2   = TMath::ATan2(diff[1], -1 * diff[2]);
   theta2 = TMath::ATan2(diff[0], -1 * diff[2]);
-  cout << "Calculated Phi (= arctan(y/-z)), in degrees: "
-       << TMath::RadToDeg() * phi2
-       << " and calculated Theta (= arctan(x/-z)), in degrees: "
-       << TMath::RadToDeg() * theta2 << endl;
+  cout << "Calculated Phi (= arctan(y/-z)), in degrees: " << TMath::RadToDeg() * phi2
+       << " and calculated Theta (= arctan(x/-z)), in degrees: " << TMath::RadToDeg() * theta2 << endl;
   // Defining the rotation matrices accordingly:
   // Rotation around X axis, with Z towards Y.
   RotX2[0][0] = 1;
@@ -904,31 +768,25 @@ vector<Double_t> CbmRichCorrection::RotateSphereCenter(vector<Double_t> ptM,
     ptCNew2.at(i) += ptM.at(i);
     ptCNew3.at(i) += ptM.at(i);
   }
-  cout << "diff = {" << diff[0] << ", " << diff[1] << ", " << diff[2] << "}"
-       << endl;
+  cout << "diff = {" << diff[0] << ", " << diff[1] << ", " << diff[2] << "}" << endl;
   cout << "New coordinates of the rotated tile sphere center (using angles "
           "from text file) = {"
-       << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}"
-       << endl;
+       << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}" << endl;
   cout << "New coordinates of the rotated tile sphere center (using calculated "
           "angles) = {"
-       << ptCNew2.at(0) << ", " << ptCNew2.at(1) << ", " << ptCNew2.at(2) << "}"
-       << endl;
+       << ptCNew2.at(0) << ", " << ptCNew2.at(1) << ", " << ptCNew2.at(2) << "}" << endl;
   cout << "Tile coordinates after translation, invMat and rotations around X "
           "and Y axes = {"
-       << ptCNew3.at(0) << ", " << ptCNew3.at(1) << ", " << ptCNew3.at(2) << "}"
-       << endl
+       << ptCNew3.at(0) << ", " << ptCNew3.at(1) << ", " << ptCNew3.at(2) << "}" << endl
        << endl;
 
   return ptCNew;
 }
 
-void CbmRichCorrection::InvertMatrix(Double_t mat[3][3],
-                                     Double_t invMat[3][3],
-                                     TGeoNavigator* navi) {
-  Double_t deter = 0., det11 = 0., det12 = 0., det13 = 0., det21 = 0.,
-           det22 = 0., det23 = 0., det31 = 0., det32 = 0., det33 = 0.,
-           buff[3][3], prodMat[3][3];
+void CbmRichCorrection::InvertMatrix(Double_t mat[3][3], Double_t invMat[3][3], TGeoNavigator* navi)
+{
+  Double_t deter = 0., det11 = 0., det12 = 0., det13 = 0., det21 = 0., det22 = 0., det23 = 0., det31 = 0., det32 = 0.,
+           det33 = 0., buff[3][3], prodMat[3][3];
 
   //Filling the transformation matrix of the tile.
   // STANDARD FILL:
@@ -974,25 +832,17 @@ void CbmRichCorrection::InvertMatrix(Double_t mat[3][3],
         invMat[i][j] = 0;
       }
     }
-  } else {
-    buff[0][0] =
-      TMath::Power(-1, 2) * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]);
-    buff[0][1] =
-      TMath::Power(-1, 3) * (mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]);
-    buff[0][2] =
-      TMath::Power(-1, 4) * (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]);
-    buff[1][0] =
-      TMath::Power(-1, 3) * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]);
-    buff[1][1] =
-      TMath::Power(-1, 4) * (mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]);
-    buff[1][2] =
-      TMath::Power(-1, 5) * (mat[0][0] * mat[1][2] - mat[0][2] * mat[1][0]);
-    buff[2][0] =
-      TMath::Power(-1, 4) * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]);
-    buff[2][1] =
-      TMath::Power(-1, 5) * (mat[0][0] * mat[2][1] - mat[0][1] * mat[2][0]);
-    buff[2][2] =
-      TMath::Power(-1, 6) * (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]);
+  }
+  else {
+    buff[0][0] = TMath::Power(-1, 2) * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]);
+    buff[0][1] = TMath::Power(-1, 3) * (mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]);
+    buff[0][2] = TMath::Power(-1, 4) * (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]);
+    buff[1][0] = TMath::Power(-1, 3) * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]);
+    buff[1][1] = TMath::Power(-1, 4) * (mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]);
+    buff[1][2] = TMath::Power(-1, 5) * (mat[0][0] * mat[1][2] - mat[0][2] * mat[1][0]);
+    buff[2][0] = TMath::Power(-1, 4) * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]);
+    buff[2][1] = TMath::Power(-1, 5) * (mat[0][0] * mat[2][1] - mat[0][1] * mat[2][0]);
+    buff[2][2] = TMath::Power(-1, 6) * (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]);
 
     for (Int_t i = 0; i < 3; i++) {
       for (Int_t j = 0; j < 3; j++) {
@@ -1019,29 +869,25 @@ void CbmRichCorrection::InvertMatrix(Double_t mat[3][3],
   }
 }
 
-void CbmRichCorrection::CalculateMirrorIntersection(vector<Double_t> ptM,
-                                                    vector<Double_t> ptCIdeal,
-                                                    vector<Double_t>& ptMNew) {
+void CbmRichCorrection::CalculateMirrorIntersection(vector<Double_t> ptM, vector<Double_t> ptCIdeal,
+                                                    vector<Double_t>& ptMNew)
+{
   Double_t t = 0., diffX = 0., diffY = 0., diffZ = 0.;
   diffX = ptM.at(0) - ptCIdeal.at(0);
   diffY = ptM.at(1) - ptCIdeal.at(1);
   diffZ = ptM.at(2) - ptCIdeal.at(2);
-  t = TMath::Sqrt(300 * 300 / (diffX * diffX + diffY * diffY + diffZ * diffZ));
+  t     = TMath::Sqrt(300 * 300 / (diffX * diffX + diffY * diffY + diffZ * diffZ));
 
   ptMNew.at(0) = t * diffX + ptCIdeal.at(0);
   ptMNew.at(1) = t * diffY + ptCIdeal.at(1);
   ptMNew.at(2) = t * diffZ + ptCIdeal.at(2);
-  cout << "New coordinates of point M = {" << ptMNew.at(0) << ", "
-       << ptMNew.at(1) << ", " << ptMNew.at(2) << "}" << endl;
+  cout << "New coordinates of point M = {" << ptMNew.at(0) << ", " << ptMNew.at(1) << ", " << ptMNew.at(2) << "}"
+       << endl;
 }
 
-void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center,
-                                  vector<Double_t>& ptR2Mirr,
-                                  vector<Double_t> ptM,
-                                  vector<Double_t> ptC,
-                                  vector<Double_t> ptR1,
-                                  TGeoNavigator* navi,
-                                  TString s) {
+void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center, vector<Double_t>& ptR2Mirr, vector<Double_t> ptM,
+                                  vector<Double_t> ptC, vector<Double_t> ptR1, TGeoNavigator* navi, TString s)
+{
   cout << endl
        << "//------------------------------ CbmRichCorrection: ComputeR2 "
           "------------------------------//"
@@ -1056,8 +902,7 @@ void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center,
     // Reading misalignment information from correction_param.txt text file.
     vector<Double_t> outputFit(4);
     ifstream corr_file;
-    TString str =
-      fOutputDir + "correction_param_array___" + fNumbAxis + fTile + ".txt";
+    TString str = fOutputDir + "correction_param_array___" + fNumbAxis + fTile + ".txt";
     corr_file.open(str);
     if (corr_file.is_open()) {
       for (Int_t i = 0; i < 4; i++) {
@@ -1065,15 +910,14 @@ void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center,
       }
       //for (Int_t i=0; i<2; i++) {corr_file >> outputFit.at(i);}
       corr_file.close();
-    } else {
-      cout << "Error in CbmRichCorrection: unable to open parameter file!"
-           << endl;
+    }
+    else {
+      cout << "Error in CbmRichCorrection: unable to open parameter file!" << endl;
       cout << "Parameter file path = " << str << endl << endl;
       sleep(5);
     }
-    cout << "Misalignment parameters read from file = [" << outputFit.at(0)
-         << " ; " << outputFit.at(1) << " ; " << outputFit.at(2) << " ; "
-         << outputFit.at(3) << "]" << endl;
+    cout << "Misalignment parameters read from file = [" << outputFit.at(0) << " ; " << outputFit.at(1) << " ; "
+         << outputFit.at(2) << " ; " << outputFit.at(3) << "]" << endl;
 
     //ptCNew.at(0) = TMath::Abs(ptC.at(0) - TMath::Abs(outputFit.at(3)));
     //ptCNew.at(1) = TMath::Abs(ptC.at(1) - TMath::Abs(outputFit.at(2)));
@@ -1083,80 +927,65 @@ void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center,
     ptTileCenter.at(0) = navi->GetMotherMatrix()->GetTranslation()[0];
     ptTileCenter.at(1) = navi->GetMotherMatrix()->GetTranslation()[1];
     ptTileCenter.at(2) = navi->GetMotherMatrix()->GetTranslation()[2];
-    cout << "Mirror tile center coordinates = {" << ptTileCenter.at(0) << ", "
-         << ptTileCenter.at(1) << ", " << ptTileCenter.at(2) << "}" << endl;
+    cout << "Mirror tile center coordinates = {" << ptTileCenter.at(0) << ", " << ptTileCenter.at(1) << ", "
+         << ptTileCenter.at(2) << "}" << endl;
     Double_t x = 0., y = 0., z = 0., dist = 0., dist2 = 0., z2 = 0.;
     x    = TMath::Power(ptCNew.at(0) - ptTileCenter.at(0), 2);
     y    = TMath::Power(ptCNew.at(1) - ptTileCenter.at(1), 2);
     z    = TMath::Power(ptCNew.at(2) - ptTileCenter.at(2), 2);
     dist = TMath::Sqrt(x + y + z);
-    z2   = ptTileCenter.at(2) - TMath::Sqrt(TMath::Power(300, 2) - x - y)
-         - ptCNew.at(2);
-    cout << "{x, y, z} = {" << x << ", " << y << ", " << z
-         << "}, dist = " << dist << " and z2 = " << z2 << endl;
+    z2   = ptTileCenter.at(2) - TMath::Sqrt(TMath::Power(300, 2) - x - y) - ptCNew.at(2);
+    cout << "{x, y, z} = {" << x << ", " << y << ", " << z << "}, dist = " << dist << " and z2 = " << z2 << endl;
     dist2 = TMath::Sqrt(x + y + TMath::Power(z2 - ptTileCenter.at(2), 2));
     cout << "dist2 = " << dist2 << endl;
     ptCNew.at(2) += z2;
     cout << "Sphere center coordinates of the rotated mirror tile, after "
             "correction, = {"
-         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}"
-         << endl;
-  } else if (s == "Uncorrected") {
+         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}" << endl;
+  }
+  else if (s == "Uncorrected") {
     // Keep the same tile sphere center, with no correction information.
     ptCNew = ptC;
     cout << "Sphere center coordinates of the rotated mirror tile, without "
             "correction = {"
-         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}"
-         << endl;
-  } else {
+         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}" << endl;
+  }
+  else {
     cout << "No input given in function ComputeR2! Uncorrected parameters for "
             "the sphere center of the tile will be used!"
          << endl;
     ptCNew = ptC;
     cout << "Sphere center coordinates of the rotated mirror tile, without "
             "correction = {"
-         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}"
-         << endl;
+         << ptCNew.at(0) << ", " << ptCNew.at(1) << ", " << ptCNew.at(2) << "}" << endl;
   }
 
   normalMirr.at(0) = (ptCNew.at(0) - ptM.at(0))
-                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2)
-                                   + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
+                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2) + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
                                    + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
   normalMirr.at(1) = (ptCNew.at(1) - ptM.at(1))
-                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2)
-                                   + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
+                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2) + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
                                    + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
   normalMirr.at(2) = (ptCNew.at(2) - ptM.at(2))
-                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2)
-                                   + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
+                     / TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0), 2) + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
                                    + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
   //cout << "Calculated and normalized normal of mirror tile = {" << normalMirr.at(0) << ", " << normalMirr.at(1) << ", " << normalMirr.at(2) << "}" << endl;
 
-  t1 = ((ptR1.at(0) - ptM.at(0)) * (ptCNew.at(0) - ptM.at(0))
-        + (ptR1.at(1) - ptM.at(1)) * (ptCNew.at(1) - ptM.at(1))
+  t1 = ((ptR1.at(0) - ptM.at(0)) * (ptCNew.at(0) - ptM.at(0)) + (ptR1.at(1) - ptM.at(1)) * (ptCNew.at(1) - ptM.at(1))
         + (ptR1.at(2) - ptM.at(2)) * (ptCNew.at(2) - ptM.at(2)))
-       / (TMath::Power(ptCNew.at(0) - ptM.at(0), 2)
-          + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
+       / (TMath::Power(ptCNew.at(0) - ptM.at(0), 2) + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
           + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
-  ptR2Center.at(0) =
-    2 * (ptM.at(0) + t1 * (ptCNew.at(0) - ptM.at(0))) - ptR1.at(0);
-  ptR2Center.at(1) =
-    2 * (ptM.at(1) + t1 * (ptCNew.at(1) - ptM.at(1))) - ptR1.at(1);
-  ptR2Center.at(2) =
-    2 * (ptM.at(2) + t1 * (ptCNew.at(2) - ptM.at(2))) - ptR1.at(2);
-  t2 = ((ptR1.at(0) - ptCNew.at(0)) * (ptCNew.at(0) - ptM.at(0))
-        + (ptR1.at(1) - ptCNew.at(1)) * (ptCNew.at(1) - ptM.at(1))
-        + (ptR1.at(2) - ptCNew.at(2)) * (ptCNew.at(2) - ptM.at(2)))
-       / (TMath::Power(ptCNew.at(0) - ptM.at(0), 2)
-          + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
-          + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
-  ptR2Mirr.at(0) =
-    2 * (ptCNew.at(0) + t2 * (ptCNew.at(0) - ptM.at(0))) - ptR1.at(0);
-  ptR2Mirr.at(1) =
-    2 * (ptCNew.at(1) + t2 * (ptCNew.at(1) - ptM.at(1))) - ptR1.at(1);
-  ptR2Mirr.at(2) =
-    2 * (ptCNew.at(2) + t2 * (ptCNew.at(2) - ptM.at(2))) - ptR1.at(2);
+  ptR2Center.at(0) = 2 * (ptM.at(0) + t1 * (ptCNew.at(0) - ptM.at(0))) - ptR1.at(0);
+  ptR2Center.at(1) = 2 * (ptM.at(1) + t1 * (ptCNew.at(1) - ptM.at(1))) - ptR1.at(1);
+  ptR2Center.at(2) = 2 * (ptM.at(2) + t1 * (ptCNew.at(2) - ptM.at(2))) - ptR1.at(2);
+  t2 =
+    ((ptR1.at(0) - ptCNew.at(0)) * (ptCNew.at(0) - ptM.at(0)) + (ptR1.at(1) - ptCNew.at(1)) * (ptCNew.at(1) - ptM.at(1))
+     + (ptR1.at(2) - ptCNew.at(2)) * (ptCNew.at(2) - ptM.at(2)))
+    / (TMath::Power(ptCNew.at(0) - ptM.at(0), 2) + TMath::Power(ptCNew.at(1) - ptM.at(1), 2)
+       + TMath::Power(ptCNew.at(2) - ptM.at(2), 2));
+  ptR2Mirr.at(0) = 2 * (ptCNew.at(0) + t2 * (ptCNew.at(0) - ptM.at(0))) - ptR1.at(0);
+  ptR2Mirr.at(1) = 2 * (ptCNew.at(1) + t2 * (ptCNew.at(1) - ptM.at(1))) - ptR1.at(1);
+  ptR2Mirr.at(2) = 2 * (ptCNew.at(2) + t2 * (ptCNew.at(2) - ptM.at(2))) - ptR1.at(2);
   /*//SAME AS calculation of t2 above
 	t3 = ((ptR1.at(0)-ptCNew.at(0))*(ptCNew.at(0)-ptM.at(0)) + (ptR1.at(1)-ptCNew.at(1))*(ptCNew.at(1)-ptM.at(1)) + (ptR1.at(2)-ptCNew.at(2))*(ptCNew.at(2)-ptM.at(2)))/TMath::Sqrt(TMath::Power(ptCNew.at(0) - ptM.at(0),2)+TMath::Power(ptCNew.at(1) - ptM.at(1),2)+TMath::Power(ptCNew.at(2) - ptM.at(2),2));
 	reflectedPtCooVectSphereUnity[0] = 2*(ptCNew.at(0)+t3*(normalMirr.at(0)))-ptR1.at(0);
@@ -1166,18 +995,15 @@ void CbmRichCorrection::ComputeR2(vector<Double_t>& ptR2Center,
           "mirror tile:"
        << endl;
   //cout << "* using mirror point M to define \U00000394: {" << ptR2Center.at(0) << ", " << ptR2Center.at(1) << ", " << ptR2Center.at(2) << "}" << endl;
-  cout << "* using sphere center C to define \U00000394: {" << ptR2Mirr.at(0)
-       << ", " << ptR2Mirr.at(1) << ", " << ptR2Mirr.at(2) << "}" << endl;
+  cout << "* using sphere center C to define \U00000394: {" << ptR2Mirr.at(0) << ", " << ptR2Mirr.at(1) << ", "
+       << ptR2Mirr.at(2) << "}" << endl;
   //cout << "Ref Pt Coo using unity Mirror-Sphere vector & sphere pt = {" << reflectedPtCooVectSphereUnity[0] << ", " << reflectedPtCooVectSphereUnity[1] << ", " << reflectedPtCooVectSphereUnity[2] << "}" << endl << endl;
   //cout << "NofPMTPoints = " << NofPMTPoints << endl;
 }
 
-void CbmRichCorrection::ComputeP(vector<Double_t>& ptPMirr,
-                                 vector<Double_t>& ptPR2,
-                                 vector<Double_t> normalPMT,
-                                 vector<Double_t> ptM,
-                                 vector<Double_t> ptR2Mirr,
-                                 Double_t constantePMT) {
+void CbmRichCorrection::ComputeP(vector<Double_t>& ptPMirr, vector<Double_t>& ptPR2, vector<Double_t> normalPMT,
+                                 vector<Double_t> ptM, vector<Double_t> ptR2Mirr, Double_t constantePMT)
+{
   cout << endl
        << "//------------------------------ CbmRichCorrection: ComputeP "
           "------------------------------//"
@@ -1187,19 +1013,16 @@ void CbmRichCorrection::ComputeP(vector<Double_t>& ptPMirr,
   Double_t k1 = 0., k2 = 0., checkCalc1 = 0., checkCalc2 = 0.;
 
   k1 = -1
-       * ((normalPMT.at(0) * ptM.at(0) + normalPMT.at(1) * ptM.at(1)
-           + normalPMT.at(2) * ptM.at(2) + constantePMT)
-          / (normalPMT.at(0) * (ptR2Mirr.at(0) - ptM.at(0))
-             + normalPMT.at(1) * (ptR2Mirr.at(1) - ptM.at(1))
+       * ((normalPMT.at(0) * ptM.at(0) + normalPMT.at(1) * ptM.at(1) + normalPMT.at(2) * ptM.at(2) + constantePMT)
+          / (normalPMT.at(0) * (ptR2Mirr.at(0) - ptM.at(0)) + normalPMT.at(1) * (ptR2Mirr.at(1) - ptM.at(1))
              + normalPMT.at(2) * (ptR2Mirr.at(2) - ptM.at(2))));
   ptPMirr.at(0) = ptM.at(0) + k1 * (ptR2Mirr.at(0) - ptM.at(0));
   ptPMirr.at(1) = ptM.at(1) + k1 * (ptR2Mirr.at(1) - ptM.at(1));
   ptPMirr.at(2) = ptM.at(2) + k1 * (ptR2Mirr.at(2) - ptM.at(2));
   k2            = -1
-       * ((normalPMT.at(0) * ptR2Mirr.at(0) + normalPMT.at(1) * ptR2Mirr.at(1)
-           + normalPMT.at(2) * ptR2Mirr.at(2) + constantePMT)
-          / (normalPMT.at(0) * (ptR2Mirr.at(0) - ptM.at(0))
-             + normalPMT.at(1) * (ptR2Mirr.at(1) - ptM.at(1))
+       * ((normalPMT.at(0) * ptR2Mirr.at(0) + normalPMT.at(1) * ptR2Mirr.at(1) + normalPMT.at(2) * ptR2Mirr.at(2)
+           + constantePMT)
+          / (normalPMT.at(0) * (ptR2Mirr.at(0) - ptM.at(0)) + normalPMT.at(1) * (ptR2Mirr.at(1) - ptM.at(1))
              + normalPMT.at(2) * (ptR2Mirr.at(2) - ptM.at(2))));
   ptPR2.at(0) = ptR2Mirr.at(0) + k2 * (ptR2Mirr.at(0) - ptM.at(0));
   ptPR2.at(1) = ptR2Mirr.at(1) + k2 * (ptR2Mirr.at(1) - ptM.at(1));
@@ -1207,31 +1030,26 @@ void CbmRichCorrection::ComputeP(vector<Double_t>& ptPMirr,
   cout << "Coordinates of point P on PMT plane, after reflection on the mirror "
           "tile and extrapolation to the PMT plane:"
        << endl;
-  cout << "* using mirror point M to define \U0001D49F ': {" << ptPMirr.at(0)
-       << ", " << ptPMirr.at(1) << ", " << ptPMirr.at(2) << "}" << endl;
+  cout << "* using mirror point M to define \U0001D49F ': {" << ptPMirr.at(0) << ", " << ptPMirr.at(1) << ", "
+       << ptPMirr.at(2) << "}" << endl;
   //cout << "* using reflected point R2 to define \U0001D49F ': {" << ptPR2.at(0) << ", " << ptPR2.at(1) << ", " << ptPR2.at(2) << "}" << endl;
-  checkCalc1 = ptPMirr.at(0) * normalPMT.at(0) + ptPMirr.at(1) * normalPMT.at(1)
-               + ptPMirr.at(2) * normalPMT.at(2) + constantePMT;
+  checkCalc1 =
+    ptPMirr.at(0) * normalPMT.at(0) + ptPMirr.at(1) * normalPMT.at(1) + ptPMirr.at(2) * normalPMT.at(2) + constantePMT;
   cout << "Check whether extrapolated track point on PMT plane verifies its "
           "equation (value should be 0.):"
        << endl;
   cout << "* using mirror point M, checkCalc = " << checkCalc1 << endl;
-  checkCalc2 = ptPR2.at(0) * normalPMT.at(0) + ptPR2.at(1) * normalPMT.at(1)
-               + ptPR2.at(2) * normalPMT.at(2) + constantePMT;
+  checkCalc2 =
+    ptPR2.at(0) * normalPMT.at(0) + ptPR2.at(1) * normalPMT.at(1) + ptPR2.at(2) * normalPMT.at(2) + constantePMT;
   //cout << "* using reflected point R2, checkCalc = " << checkCalc2 << endl;
 }
 
-void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal,
-                                           TVector3 outPosUnCorr,
-                                           TVector3 outPos,
-                                           Int_t NofGTracks,
-                                           vector<Double_t> normalPMT,
-                                           Double_t constantePMT) {
+void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal, TVector3 outPosUnCorr, TVector3 outPos,
+                                           Int_t NofGTracks, vector<Double_t> normalPMT, Double_t constantePMT)
+{
   CbmMCTrack* track2    = NULL;
-  Double_t ringCenter[] = {0, 0, 0}, distToExtrapTrackHit = 0,
-           distToExtrapTrackHitInPlane       = 0,
-           distToExtrapTrackHitInPlaneUnCorr = 0,
-           distToExtrapTrackHitInPlaneIdeal  = 0;
+  Double_t ringCenter[] = {0, 0, 0}, distToExtrapTrackHit = 0, distToExtrapTrackHitInPlane = 0,
+           distToExtrapTrackHitInPlaneUnCorr = 0, distToExtrapTrackHitInPlaneIdeal = 0;
 
   for (Int_t iGlobalTrack = 0; iGlobalTrack < NofGTracks; iGlobalTrack++) {
     //cout << "Nb of global tracks = " << NofGTracks << " and iGlobalTrack = " << iGlobalTrack << endl;
@@ -1252,29 +1070,23 @@ void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal,
     //fTauFit->DoFit(&ringL);
     ringCenter[0] = ringL.GetCenterX();
     ringCenter[1] = ringL.GetCenterY();
-    ringCenter[2] = -1
-                    * ((normalPMT.at(0) * ringCenter[0]
-                        + normalPMT.at(1) * ringCenter[1] + constantePMT)
-                       / normalPMT.at(2));
+    ringCenter[2] =
+      -1 * ((normalPMT.at(0) * ringCenter[0] + normalPMT.at(1) * ringCenter[1] + constantePMT) / normalPMT.at(2));
 
     vector<Double_t> r(3),
       p(3);  // Absolute coordinates of fitted ring Center r and PMT extrapolated point p
-    r.at(0) = TMath::Abs(ringCenter[0]), r.at(1) = TMath::Abs(ringCenter[1]),
-    r.at(2) = TMath::Abs(ringCenter[2]);
-    p.at(0) = TMath::Abs(outPos.x()), p.at(1) = TMath::Abs(outPos.y()),
-    p.at(2) = TMath::Abs(outPos.z());
-    cout << "Ring center coordinates = {" << ringCenter[0] << ", "
-         << ringCenter[1] << ", " << ringCenter[2] << "}" << endl;
+    r.at(0) = TMath::Abs(ringCenter[0]), r.at(1) = TMath::Abs(ringCenter[1]), r.at(2) = TMath::Abs(ringCenter[2]);
+    p.at(0) = TMath::Abs(outPos.x()), p.at(1) = TMath::Abs(outPos.y()), p.at(2) = TMath::Abs(outPos.z());
+    cout << "Ring center coordinates = {" << ringCenter[0] << ", " << ringCenter[1] << ", " << ringCenter[2] << "}"
+         << endl;
     cout << "Difference in X = " << TMath::Abs(r.at(0) - p.at(0)) << "; \t"
          << "Difference in Y = " << TMath::Abs(r.at(1) - p.at(1)) << "; \t"
          << "Difference in Z = " << TMath::Abs(r.at(2) - p.at(2)) << endl;
     fHM->H1("fhDifferenceX")->Fill(TMath::Abs(r.at(0) - p.at(0)));
     fHM->H1("fhDifferenceY")->Fill(TMath::Abs(r.at(1) - p.at(1)));
-    distToExtrapTrackHit        = TMath::Sqrt(TMath::Power(r.at(0) - p.at(0), 2)
-                                       + TMath::Power(r.at(1) - p.at(1), 2)
+    distToExtrapTrackHit        = TMath::Sqrt(TMath::Power(r.at(0) - p.at(0), 2) + TMath::Power(r.at(1) - p.at(1), 2)
                                        + TMath::Power(r.at(2) - p.at(2), 2));
-    distToExtrapTrackHitInPlane = TMath::Sqrt(
-      TMath::Power(r.at(0) - p.at(0), 2) + TMath::Power(r.at(1) - p.at(1), 2));
+    distToExtrapTrackHitInPlane = TMath::Sqrt(TMath::Power(r.at(0) - p.at(0), 2) + TMath::Power(r.at(1) - p.at(1), 2));
     fHM->H1("fhDistanceCenterToExtrapolatedTrack")->Fill(distToExtrapTrackHit);
     fHM->H1("fhDistanceCorrected")->Fill(distToExtrapTrackHitInPlane);
     //cout << "Distance between fitted ring center and extrapolated track hit = " << distToExtrapTrackHit << endl;
@@ -1282,33 +1094,24 @@ void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal,
             "plane = "
          << distToExtrapTrackHitInPlane << endl;
 
-    vector<Double_t> pUnCorr(
-      3);  // Absolute coordinates of fitted ring Center r and PMT extrapolated point p
-    pUnCorr.at(0) = TMath::Abs(outPosUnCorr.x()),
-    pUnCorr.at(1) = TMath::Abs(outPosUnCorr.y()),
+    vector<Double_t> pUnCorr(3);  // Absolute coordinates of fitted ring Center r and PMT extrapolated point p
+    pUnCorr.at(0) = TMath::Abs(outPosUnCorr.x()), pUnCorr.at(1) = TMath::Abs(outPosUnCorr.y()),
     pUnCorr.at(2) = TMath::Abs(outPosUnCorr.z());
     //cout << "Ring center coordinates = {" << ringCenter[0] << ", " << ringCenter[1] << ", " << ringCenter[2] << "}" << endl;
-    cout << "Difference in X = " << TMath::Abs(r.at(0) - pUnCorr.at(0))
-         << "; \t"
-         << "Difference in Y = " << TMath::Abs(r.at(1) - pUnCorr.at(1))
-         << "; \t"
+    cout << "Difference in X = " << TMath::Abs(r.at(0) - pUnCorr.at(0)) << "; \t"
+         << "Difference in Y = " << TMath::Abs(r.at(1) - pUnCorr.at(1)) << "; \t"
          << "Difference in Z = " << TMath::Abs(r.at(2) - pUnCorr.at(2)) << endl;
-    fHM->H1("fhDifferenceXUncorrected")
-      ->Fill(TMath::Abs(r.at(0) - pUnCorr.at(0)));
-    fHM->H1("fhDifferenceYUncorrected")
-      ->Fill(TMath::Abs(r.at(1) - pUnCorr.at(1)));
+    fHM->H1("fhDifferenceXUncorrected")->Fill(TMath::Abs(r.at(0) - pUnCorr.at(0)));
+    fHM->H1("fhDifferenceYUncorrected")->Fill(TMath::Abs(r.at(1) - pUnCorr.at(1)));
     distToExtrapTrackHitInPlaneUnCorr =
-      TMath::Sqrt(TMath::Power(r.at(0) - pUnCorr.at(0), 2)
-                  + TMath::Power(r.at(1) - pUnCorr.at(1), 2));
+      TMath::Sqrt(TMath::Power(r.at(0) - pUnCorr.at(0), 2) + TMath::Power(r.at(1) - pUnCorr.at(1), 2));
     fHM->H1("fhDistanceUncorrected")->Fill(distToExtrapTrackHitInPlaneUnCorr);
     cout << "Distance between fitted ring center and extrapolated track hit in "
             "plane = "
          << distToExtrapTrackHitInPlaneUnCorr << endl;
 
-    vector<Double_t> pIdeal(
-      3);  // Absolute coordinates of fitted ring Center r and PMT extrapolated point p
-    pIdeal.at(0) = TMath::Abs(outPosIdeal.x()),
-    pIdeal.at(1) = TMath::Abs(outPosIdeal.y()),
+    vector<Double_t> pIdeal(3);  // Absolute coordinates of fitted ring Center r and PMT extrapolated point p
+    pIdeal.at(0) = TMath::Abs(outPosIdeal.x()), pIdeal.at(1) = TMath::Abs(outPosIdeal.y()),
     pIdeal.at(2) = TMath::Abs(outPosIdeal.z());
     //cout << "Ring center coordinates = {" << ringCenter[0] << ", " << ringCenter[1] << ", " << ringCenter[2] << "}" << endl;
     cout << "Difference in X = " << TMath::Abs(r.at(0) - pIdeal.at(0)) << "; \t"
@@ -1317,8 +1120,7 @@ void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal,
     fHM->H1("fhDifferenceXIdeal")->Fill(TMath::Abs(r.at(0) - pIdeal.at(0)));
     fHM->H1("fhDifferenceYIdeal")->Fill(TMath::Abs(r.at(1) - pIdeal.at(1)));
     distToExtrapTrackHitInPlaneIdeal =
-      TMath::Sqrt(TMath::Power(r.at(0) - pIdeal.at(0), 2)
-                  + TMath::Power(r.at(1) - pIdeal.at(1), 2));
+      TMath::Sqrt(TMath::Power(r.at(0) - pIdeal.at(0), 2) + TMath::Power(r.at(1) - pIdeal.at(1), 2));
     fHM->H1("fhDistanceIdeal")->Fill(distToExtrapTrackHitInPlaneIdeal);
     cout << "Distance between fitted ring center and extrapolated track hit in "
             "plane = "
@@ -1330,14 +1132,13 @@ void CbmRichCorrection::FillHistProjection(TVector3 outPosIdeal,
   cout << "End of loop on global tracks;" << endl;
 }
 
-void CbmRichCorrection::DrawHistProjection() {
+void CbmRichCorrection::DrawHistProjection()
+{
   char leg[128];
   int colorInd = 1;
 
   TCanvas* can3 = new TCanvas(fRunTitle + "_Distance_Histos_" + fAxisRotTitle,
-                              fRunTitle + "_Distance_Histos_" + fAxisRotTitle,
-                              1500,
-                              400);
+                              fRunTitle + "_Distance_Histos_" + fAxisRotTitle, 1500, 400);
   can3->SetGrid(1, 1);
   can3->Divide(2, 1);
   can3->cd(1)->SetGrid(1, 1);
@@ -1541,7 +1342,8 @@ void CbmRichCorrection::DrawHistProjection() {
 	cout << "Mean Y corrected = " << meanY_corr << " and mean Y ideal = " << meanY_ideal << endl;*/
 }
 
-void CbmRichCorrection::DrawHistFromFile(TString fileName) {
+void CbmRichCorrection::DrawHistFromFile(TString fileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -1556,7 +1358,8 @@ void CbmRichCorrection::DrawHistFromFile(TString fileName) {
   gDirectory = oldDir;
 }
 
-void CbmRichCorrection::Finish() {
+void CbmRichCorrection::Finish()
+{
   // ---------------------------------------------------------------------------------------------------------------------------------------- //
   // -------------------------------------------------- Mapping for mirror - PMT relations -------------------------------------------------- //
   // ---------------------------------------------------------------------------------------------------------------------------------------- //

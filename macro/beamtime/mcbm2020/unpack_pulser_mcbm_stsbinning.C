@@ -10,12 +10,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
-                                   TString sHostname        = "localhost",
-                                   UInt_t nrEvents          = 0,
-                                   TString outDir           = "data",
-                                   Int_t iServerRefreshRate = 100,
-                                   Int_t iServerHttpPort    = 8080) {
+void unpack_pulser_mcbm_stsbinning(UInt_t uRunId = 0, TString sHostname = "localhost", UInt_t nrEvents = 0,
+                                   TString outDir = "data", Int_t iServerRefreshRate = 100,
+                                   Int_t iServerHttpPort = 8080)
+{
   if (uRunId < 353 && 0 != uRunId) return kFALSE;
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
@@ -55,21 +53,18 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
 
   // ---- Trd ----
   TString geoTagTrd = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  bool isActiveTrd  = (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
   if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    LOG(warning) << Form("TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+                         "can not be loaded correctly!",
+                         geoSetupTag.data());
+  }
+  else {
+    TString paramFilesTrd(Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
     CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
     for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+      parFileList->Add(new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
   }
 
@@ -96,15 +91,12 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
-    new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
-    new CbmMcbm2018UnpackerTaskTrdR();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd   = new CbmMcbm2018UnpackerTaskPsd();
 
   unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
@@ -242,8 +234,7 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
   inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn15_0003.tsa", uRunId );
 */
 
-  TString inFile =
-    Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn02_*.tsa;", uRunId);
+  TString inFile = Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn02_*.tsa;", uRunId);
   inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn04_*.tsa;", uRunId);
   inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn05_*.tsa;", uRunId);
   inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn06_*.tsa;", uRunId);
@@ -256,22 +247,14 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
 
   if (415 < uRunId) {
     inFile = Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn02_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn04_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn05_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn06_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn08_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn10_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn11_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn12_*.tsa;", uRunId);
-    inFile +=
-      Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn13_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn04_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn05_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn06_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn08_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn10_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn11_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn12_*.tsa;", uRunId);
+    inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn13_*.tsa;", uRunId);
     inFile += Form("/scratch/mcbm_data/mcbm_all/pulser/%3u_pn15_*.tsa", uRunId);
   }  // if( 415 < uRunId )
   if (430 < uRunId) {
@@ -297,23 +280,20 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
     inFile += Form("/local/data/raw/%3u_pn15_*.tsa", uRunId);
   }  // if( 430 < uRunId )
 
-  if (0 < uRunId) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if (0 < uRunId) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
     source->SetSubscriberHwm(10);
   }  // else of if( "" != inFile )
 
   //  source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
-  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  //MUCH xyter
-  if (isActiveTrd)
-    source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
-  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
-  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
-  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
-  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);    //PSD
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);                    //STS xyter
+  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);                  //MUCH xyter
+  if (isActiveTrd) source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);                    //gDPB A & B & C
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);                    //gDPB T0 A & B
+  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);                  //RICH trb
+  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);                    //PSD
 
 
   // --- Run
@@ -348,9 +328,7 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
   //  pulserChecker->SetRichOffsetSearchRange( 1000000 );
   pulserChecker->SetPsdOffsetSearchRange(1000000);
 
-  if (0 < uRunId)
-    pulserChecker->SetOutFilename(
-      Form("data/HistosPulserCheck_%03u.root", uRunId));
+  if (0 < uRunId) pulserChecker->SetOutFilename(Form("data/HistosPulserCheck_%03u.root", uRunId));
 
   /// mCBM 2019-2020
   //  pulserChecker->SetStsAddress( 0x99999999 );
@@ -376,15 +354,15 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -392,8 +370,7 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId            = 0,
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

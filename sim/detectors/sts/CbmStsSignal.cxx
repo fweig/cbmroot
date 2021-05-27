@@ -7,12 +7,11 @@
 
 
 // -----   Default constructor   -------------------------------------------
-CbmStsSignal::CbmStsSignal(Double_t time,
-                           Double_t charge,
-                           Int_t index,
-                           Int_t entry,
-                           Int_t file)
-  : TObject(), fTime(time), fMatch() {
+CbmStsSignal::CbmStsSignal(Double_t time, Double_t charge, Int_t index, Int_t entry, Int_t file)
+  : TObject()
+  , fTime(time)
+  , fMatch()
+{
   fMatch.AddLink(charge, index, entry, file);
 }
 // -------------------------------------------------------------------------

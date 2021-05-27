@@ -8,7 +8,9 @@
 #define CBMSTACKFILTER_H 1
 
 #include "CbmDefs.h"
+
 #include "Rtypes.h"
+
 #include <map>
 #include <vector>
 
@@ -89,8 +91,7 @@ public:
      ** in its array and the detector identifier (EcbmModuleId).
      ** The return vector must have the same size as the TClonesArray.
      **/
-  virtual const std::vector<Bool_t>& Select(const TClonesArray& particles,
-                                            const PointMap& points);
+  virtual const std::vector<Bool_t>& Select(const TClonesArray& particles, const PointMap& points);
 
 
   /** @brief Set the minimum kinetic energy
@@ -123,7 +124,8 @@ public:
      ** By default, the cut values are 1 for all detectors except for
      ** the PSD, where the cut value is 5.
      **/
-  void SetMinNofPoints(ECbmModuleId detector, UInt_t minimum) {
+  void SetMinNofPoints(ECbmModuleId detector, UInt_t minimum)
+  {
     if (detector >= ECbmModuleId::kNofSystems) return;
     fMinNofPoints[detector] = minimum;
   }
@@ -161,19 +163,16 @@ public:
      **
      ** By default, storage of decay daughters is deactivated.
      **/
-  void SetStoreAllPrimaryDecays(Bool_t choice = kTRUE) {
-    fStoreAllDecays = choice;
-  }
+  void SetStoreAllPrimaryDecays(Bool_t choice = kTRUE) { fStoreAllDecays = choice; }
 
 
 private:
-  Bool_t fStoreAllPrimaries;  ///< Flag for storage of primaries
-  Bool_t fStoreAllMothers;    ///< Flag for storage of mothers
-  Bool_t fStoreAllDecays;  ///< Flag for storage of all primary decay daughters
-  std::map<ECbmModuleId, UInt_t>
-    fMinNofPoints;             ///< Cut values for the number of points
-  Double_t fMinEkin;           ///< Cut value for kinetic energy
-  std::vector<Bool_t> fStore;  ///< Vector with storage decision
+  Bool_t fStoreAllPrimaries;                     ///< Flag for storage of primaries
+  Bool_t fStoreAllMothers;                       ///< Flag for storage of mothers
+  Bool_t fStoreAllDecays;                        ///< Flag for storage of all primary decay daughters
+  std::map<ECbmModuleId, UInt_t> fMinNofPoints;  ///< Cut values for the number of points
+  Double_t fMinEkin;                             ///< Cut value for kinetic energy
+  std::vector<Bool_t> fStore;                    ///< Vector with storage decision
 
   ClassDef(CbmStackFilter, 2);
 };

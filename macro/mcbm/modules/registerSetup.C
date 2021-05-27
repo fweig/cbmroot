@@ -8,14 +8,14 @@
  **/
 
 
-void registerSetup() {
+void registerSetup()
+{
 
   // --- Get the setup singleton. Check whether it was defined (has at
   // --- least one module).
   CbmSetup* setup = CbmSetup::Instance();
   if (!setup->GetNofModules()) {
-    std::cerr << "-E- registerSetup: setup " << setup->GetTitle()
-              << " is empty!" << std::endl;
+    std::cerr << "-E- registerSetup: setup " << setup->GetTitle() << " is empty!" << std::endl;
     return;
   }
 
@@ -40,8 +40,7 @@ void registerSetup() {
   // --- Register magnet
   if (setup->GetGeoFileName(kMagnet, fileName)) {
     setup->GetGeoTag(kMagnet, geoTag);
-    std::cout << "-I- registerSetup: Registering MAGNET " << geoTag << " using "
-              << fileName << std::endl;
+    std::cout << "-I- registerSetup: Registering MAGNET " << geoTag << " using " << fileName << std::endl;
     FairModule* magnet = new CbmMagnet("MAGNET");
     magnet->SetGeometryFileName(fileName.Data());
     run->AddModule(magnet);
@@ -50,8 +49,7 @@ void registerSetup() {
   // --- Register beam pipe
   if (setup->GetGeoFileName(kPipe, fileName)) {
     setup->GetGeoTag(kPipe, geoTag);
-    std::cout << "-I- registerSetup: Registering PIPE " << geoTag << " using "
-              << fileName << std::endl;
+    std::cout << "-I- registerSetup: Registering PIPE " << geoTag << " using " << fileName << std::endl;
     FairModule* pipe = new CbmPipe("PIPE");
     pipe->SetGeometryFileName(fileName.Data());
     run->AddModule(pipe);
@@ -64,10 +62,8 @@ void registerSetup() {
     if (setup->GetGeoTag(moduleId, geoTag)) {
       setup->GetGeoFileName(moduleId, fileName);
       isActive = setup->IsActive(moduleId);
-      std::cout << "-I- registerSetup: Registering "
-                << CbmModuleList::GetModuleNameCaps(moduleId) << " " << geoTag
-                << (isActive ? " -ACTIVE- " : " - INACTIVE- ") << " using "
-                << fileName << std::endl;
+      std::cout << "-I- registerSetup: Registering " << CbmModuleList::GetModuleNameCaps(moduleId) << " " << geoTag
+                << (isActive ? " -ACTIVE- " : " - INACTIVE- ") << " using " << fileName << std::endl;
       FairModule* module = NULL;
       switch (moduleId) {
         case kMvd: {
@@ -86,10 +82,7 @@ void registerSetup() {
           //				case kEcal: module = new CbmEcal("Ecal", isActive); break;
         case kPsd: module = new CbmPsdMC(isActive); break;
         case kPlatform: module = new CbmPlatform("PLATFORM"); break;
-        default:
-          std::cout << "-E- registerSetup: Unknown module ID " << moduleId
-                    << std::endl;
-          break;
+        default: std::cout << "-E- registerSetup: Unknown module ID " << moduleId << std::endl; break;
       }  //? known moduleId
       if (module) {
         module->SetGeometryFileName(fileName.Data());

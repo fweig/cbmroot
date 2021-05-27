@@ -7,12 +7,12 @@
 #ifndef CbmMcbm2018UnpackerTaskTrdR_H
 #define CbmMcbm2018UnpackerTaskTrdR_H
 
-#include "TString.h"
-
 #include "CbmMcbm2020TrdTshiftPar.h"
 #include "CbmMcbmUnpack.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdRawMessageSpadic.h"
+
+#include "TString.h"
 
 class CbmMcbm2018UnpackerAlgoTrdR;
 
@@ -69,16 +69,10 @@ public:
   virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
 
   void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
-  void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbDebugMonitorMode = bFlagIn;
-  }
+  void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) { fbDebugMonitorMode = bFlagIn; }
   void SetWriteOutput(Bool_t bFlagIn = kTRUE) { fbWriteOutput = bFlagIn; }
-  void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) {
-    fbDebugWriteOutput = bFlagIn;
-  }
-  void SetDebugSortOutput(Bool_t bFlagIn = kTRUE) {
-    fbDebugSortOutput = bFlagIn;
-  }
+  void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
+  void SetDebugSortOutput(Bool_t bFlagIn = kTRUE) { fbDebugSortOutput = bFlagIn; }
   void SetSystemIdentifier(std::uint8_t id) { fSystemIdentifier = id; }
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
 
@@ -87,37 +81,27 @@ public:
 	 **/
   void SetBaselineAvg(Bool_t bFlagIn = kTRUE) { fbBaselineAvg = bFlagIn; }
 
-  void SetActiveHistograms(std::vector<bool> isActiveHistoVec) {
-    fIsActiveHistoVec = isActiveHistoVec;
-  }
+  void SetActiveHistograms(std::vector<bool> isActiveHistoVec) { fIsActiveHistoVec = isActiveHistoVec; }
   void SetHistoFileName(TString filename);
 
-  void SetMsSizeInNs(Double_t msSizeInNs) {
-    fdMsSizeInNs = msSizeInNs;
-  }  // TODO handle this with asic parameter files
+  void SetMsSizeInNs(Double_t msSizeInNs) { fdMsSizeInNs = msSizeInNs; }  // TODO handle this with asic parameter files
 
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
 
-  void SetFirstChannelsElinkEven(bool isEven) {
+  void SetFirstChannelsElinkEven(bool isEven)
+  {
     fIsFirstChannelsElinkEven = isEven;
   }  /// < Set wether channels 00..15 are on the even (true) or the odd (false and default) elink
 
 private:
   // Control flags
-  Bool_t
-    fbMonitorMode;  ///< Switch ON the filling of a minimal set of histograms.
-  Bool_t
-    fbDebugMonitorMode;  ///< Switch ON the filling of a additional set of histograms.
-  Bool_t
-    fbWriteOutput;  ///< If ON the output Vector of digis is written to disk.
-  Bool_t
-    fbDebugWriteOutput;  ///< If ON the output vector of raw messages is filled and written to disk.
-  Bool_t fbDebugSortOutput =
-    kTRUE;  ///< If ON the output vector of raw messages is sorted in time.
-  Bool_t
-    fbBaselineAvg;  ///< Set to true if Baseline Averaging is activated in Spadic.
-  std::uint8_t
-    fSystemIdentifier;  ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
+  Bool_t fbMonitorMode;              ///< Switch ON the filling of a minimal set of histograms.
+  Bool_t fbDebugMonitorMode;         ///< Switch ON the filling of a additional set of histograms.
+  Bool_t fbWriteOutput;              ///< If ON the output Vector of digis is written to disk.
+  Bool_t fbDebugWriteOutput;         ///< If ON the output vector of raw messages is filled and written to disk.
+  Bool_t fbDebugSortOutput = kTRUE;  ///< If ON the output vector of raw messages is sorted in time.
+  Bool_t fbBaselineAvg;              ///< Set to true if Baseline Averaging is activated in Spadic.
+  std::uint8_t fSystemIdentifier;    ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
   Double_t
     fdMsSizeInNs;  ///< microslice size in ns to be passed to the unpacker // TODO handle this with asic parameter files
 

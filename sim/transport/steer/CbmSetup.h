@@ -25,7 +25,11 @@ class FairModule;
 class FairRunSim;
 class CbmFieldMap;
 
-enum ECbmSetupSource { kRepo, kDb };
+enum ECbmSetupSource
+{
+  kRepo,
+  kDb
+};
 
 // TODO: This class is a singleton, so it can be used when including
 // a ROOT macro from another one. Since this is the only reason,
@@ -57,15 +61,11 @@ public:
 
   /** Get materials (media) file path
      **/
-  std::string GetMediaFilePath() {
-    return fProvider->GetSetup().GetMedia().GetFilePath();
-  }
+  std::string GetMediaFilePath() { return fProvider->GetSetup().GetMedia().GetFilePath(); }
 
   /** Set materials (media) file path
      **/
-  void SetMediaFilePath(std::string filePath) {
-    fProvider->GetSetup().GetMedia().SetFilePath(filePath);
-  }
+  void SetMediaFilePath(std::string filePath) { fProvider->GetSetup().GetMedia().SetFilePath(filePath); }
 
   /** Create the field map using the given settings **/
   CbmFieldMap* CreateFieldMap();
@@ -90,9 +90,7 @@ public:
   /** Get number of modules in the setup
      ** @value  Number of modules in setup
      **/
-  Int_t GetNofModules() const {
-    return fProvider->GetSetup().GetModuleMap().size();
-  }
+  Int_t GetNofModules() const { return fProvider->GetSetup().GetModuleMap().size(); }
 
 
   /** Get singleton instance of CbmSetup **/
@@ -144,11 +142,7 @@ public:
      ** field map and magnet geometry is within the responsibility of the
      ** user.
      **/
-  void SetField(const char* tag,
-                Double_t scale = 1.,
-                Double_t xPos  = 0.,
-                Double_t yPos  = 0.,
-                Double_t zPos  = 0.);
+  void SetField(const char* tag, Double_t scale = 1., Double_t xPos = 0., Double_t yPos = 0., Double_t zPos = 0.);
 
 
   /** Set the field scaling factor
@@ -157,9 +151,7 @@ public:
      ** The currently selected field map will be scaled by the specified
      ** factor.
      **/
-  void SetFieldScale(Double_t scale) {
-    fProvider->GetSetup().GetField().SetScale(scale);
-  }
+  void SetFieldScale(Double_t scale) { fProvider->GetSetup().GetField().SetScale(scale); }
 
 
   /** Add a module to the setup
@@ -170,8 +162,7 @@ public:
      ** The module / detector will be added to the setup. If a detector is flagged active,
      ** its ProcessHits method will be called during the transport simulation.
      **/
-  void
-  SetModule(ECbmModuleId moduleId, const char* geoTag, Bool_t active = kTRUE);
+  void SetModule(ECbmModuleId moduleId, const char* geoTag, Bool_t active = kTRUE);
 
 
   /** @brief Info to string **/
@@ -192,7 +183,8 @@ public:
      ** @param value provider 
      ** This class takes the ownership of the provider
      **/
-  void SetProvider(CbmGeoSetupProvider* value) {
+  void SetProvider(CbmGeoSetupProvider* value)
+  {
     delete fProvider;
     fProvider = value;
   };
@@ -200,8 +192,7 @@ public:
 private:
   static CbmSetup* fgInstance;  ///< Pointer to static instance
 
-  CbmGeoSetupProvider* fProvider {
-    new CbmGeoSetupRepoProvider()};  ///! Setup provider
+  CbmGeoSetupProvider* fProvider {new CbmGeoSetupRepoProvider()};  ///! Setup provider
 
 
   /** Default constructor **/

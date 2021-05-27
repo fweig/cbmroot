@@ -28,7 +28,6 @@
 #include <Logger.h>
 
 // ROOT Classes and includes
-#include "Riostream.h"
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -37,6 +36,8 @@
 #include "TROOT.h"
 #include "TRandom.h"
 #include "TString.h"
+
+#include "Riostream.h"
 
 //___________________________________________________________________
 //
@@ -63,7 +64,8 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam()
   , fTofDigiMatchColl(NULL)
   , fTofHitsColl(NULL)
   , fStart()
-  , fStop() {
+  , fStop()
+{
   cout << "CbmTofTests: Task started " << endl;
 }
 // ------------------------------------------------------------------
@@ -87,17 +89,21 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
   , fTofDigiMatchColl(NULL)
   , fTofHitsColl(NULL)
   , fStart()
-  , fStop() {}
+  , fStop()
+{
+}
 // ------------------------------------------------------------------
 
 // ------------------------------------------------------------------
-CbmTofAnaTestbeam::~CbmTofAnaTestbeam() {
+CbmTofAnaTestbeam::~CbmTofAnaTestbeam()
+{
   // Destructor
 }
 // ------------------------------------------------------------------
 /************************************************************************************/
 // FairTasks inherited functions
-InitStatus CbmTofAnaTestbeam::Init() {
+InitStatus CbmTofAnaTestbeam::Init()
+{
   if (kFALSE == RegisterInputs()) return kFATAL;
 
   //   fTofId = new ( CbmTofDetectorId )CbmTofDetectorId_v14a();
@@ -110,7 +116,8 @@ InitStatus CbmTofAnaTestbeam::Init() {
   return kSUCCESS;
 }
 
-void CbmTofAnaTestbeam::SetParContainers() {
+void CbmTofAnaTestbeam::SetParContainers()
+{
   LOG(info) << " CbmTofAnaTestbeam => Get the digi parameters for tof";
   return;
   // Get Base Container
@@ -122,7 +129,8 @@ void CbmTofAnaTestbeam::SetParContainers() {
   fDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
 }
 
-void CbmTofAnaTestbeam::Exec(Option_t* /*option*/) {
+void CbmTofAnaTestbeam::Exec(Option_t* /*option*/)
+{
   // Task execution
 
   LOG(debug) << " CbmTofAnaTestbeam => New event";
@@ -139,10 +147,10 @@ void CbmTofAnaTestbeam::Exec(Option_t* /*option*/) {
   fEvents += 1;
 }
 
-void CbmTofAnaTestbeam::Finish() {
+void CbmTofAnaTestbeam::Finish()
+{
   // Normalisations
-  cout << "CbmTofAnaTestbeam::Finish up with " << fEvents << " analyzed events "
-       << endl;
+  cout << "CbmTofAnaTestbeam::Finish up with " << fEvents << " analyzed events " << endl;
 
   WriteHistos();
   // Prevent them from being sucked in by the CbmHadronAnalysis WriteHistograms method
@@ -151,13 +159,13 @@ void CbmTofAnaTestbeam::Finish() {
 
 /************************************************************************************/
 // Functions common for all clusters approximations
-Bool_t CbmTofAnaTestbeam::RegisterInputs() {
+Bool_t CbmTofAnaTestbeam::RegisterInputs()
+{
   FairRootManager* fManager = FairRootManager::Instance();
 
   fTofDigisColl = (TClonesArray*) fManager->GetObject("CbmTofDigiExp");
 
-  if (NULL == fTofDigisColl)
-    fTofDigisColl = (TClonesArray*) fManager->GetObject("CbmTofDigi");
+  if (NULL == fTofDigisColl) fTofDigisColl = (TClonesArray*) fManager->GetObject("CbmTofDigi");
 
   if (NULL == fTofDigisColl) {
     LOG(error) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the "
@@ -182,7 +190,8 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs() {
   return kTRUE;
 }
 /************************************************************************************/
-Bool_t CbmTofAnaTestbeam::InitParameters() {
+Bool_t CbmTofAnaTestbeam::InitParameters()
+{
 
   // Initialize the TOF GeoHandler
   Bool_t isSimulation = kFALSE;
@@ -211,7 +220,8 @@ Bool_t CbmTofAnaTestbeam::InitParameters() {
   return kTRUE;
 }
 /************************************************************************************/
-Bool_t CbmTofAnaTestbeam::LoadGeometry() {
+Bool_t CbmTofAnaTestbeam::LoadGeometry()
+{
   // Count the total number of channels and
   // generate an array with the global channel index of the first channe in each RPC
 
@@ -219,26 +229,24 @@ Bool_t CbmTofAnaTestbeam::LoadGeometry() {
 }
 /************************************************************************************/
 // ------------------------------------------------------------------
-Bool_t CbmTofAnaTestbeam::CreateHistos() {
+Bool_t CbmTofAnaTestbeam::CreateHistos()
+{
   // Create histogramms
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  gROOT
-    ->cd();  // <= To prevent histos from being sucked in by the param file of the TRootManager !
+  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gROOT->cd();                     // <= To prevent histos from being sucked in by the param file of the TRootManager !
 
   // define histos here
 
 
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
 
   return kTRUE;
 }
 
 // ------------------------------------------------------------------
-Bool_t CbmTofAnaTestbeam::FillHistos() {
+Bool_t CbmTofAnaTestbeam::FillHistos()
+{
   // Constants, TODO => put as parameter !!!
 
   Int_t kTOF = 6;
@@ -301,7 +309,8 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 }
 // ------------------------------------------------------------------
 
-Bool_t CbmTofAnaTestbeam::WriteHistos() {
+Bool_t CbmTofAnaTestbeam::WriteHistos()
+{
   // TODO: add sub-folders
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -309,7 +318,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
   TDirectory* oldDir = gDirectory;
 
   // Write histogramms to the file
-  TFile* fHist      = new TFile("./tofTests.hst.root", "RECREATE");
+  TFile* fHist = new TFile("./tofTests.hst.root", "RECREATE");
   fHist->cd();
 
   // Mapping
@@ -330,7 +339,8 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
 
   return kTRUE;
 }
-Bool_t CbmTofAnaTestbeam::DeleteHistos() {
+Bool_t CbmTofAnaTestbeam::DeleteHistos()
+{
   // Test class performance
 
   // Mapping

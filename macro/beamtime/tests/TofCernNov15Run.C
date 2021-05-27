@@ -1,5 +1,6 @@
 
-void TofCernNov15Run(Int_t nEvents = 2) {
+void TofCernNov15Run(Int_t nEvents = 2)
+{
   TString outDir = "data/";
 
   // Function needed for CTest runtime dependency
@@ -26,8 +27,7 @@ void TofCernNov15Run(Int_t nEvents = 2) {
 
   cout << "Process FileId  " << sDataDir << " " << sFileId << endl;
 
-  TString sCom =
-    Form("setup_unpack(1,\"%s\",\"%s\")", sDataDir.Data(), sFileId.Data());
+  TString sCom = Form("setup_unpack(1,\"%s\",\"%s\")", sDataDir.Data(), sFileId.Data());
   cout << "Processline " << sCom << endl;
   gInterpreter->ProcessLine(sCom);
   run->Run(nEvents, 0);
@@ -39,8 +39,7 @@ void TofCernNov15Run(Int_t nEvents = 2) {
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> TofCernNov15: Macro finished successfully." << std::endl;
-  std::cout << ">>> TofCernNov15: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> TofCernNov15: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// -----   Resource monitoring in automatic tests  ------------------

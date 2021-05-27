@@ -29,21 +29,21 @@ CbmStsElement::CbmStsElement()
   , fLevel(kStsNofLevels)
   , fNode(nullptr)
   , fDaughters()
-  , fMother(nullptr) {}
+  , fMother(nullptr)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsElement::CbmStsElement(Int_t address,
-                             Int_t level,
-                             TGeoPhysicalNode* node,
-                             CbmStsElement* mother)
+CbmStsElement::CbmStsElement(Int_t address, Int_t level, TGeoPhysicalNode* node, CbmStsElement* mother)
   : TNamed()
   , fAddress(address)
   , fLevel(kStsSystem)
   , fNode(node)
   , fDaughters()
-  , fMother(mother) {
+  , fMother(mother)
+{
   SetLevel(level);
   SetName(ConstructName(address, fLevel).Data());
 }
@@ -51,7 +51,8 @@ CbmStsElement::CbmStsElement(Int_t address,
 
 
 // ----- Construct the name of an element   --------------------------------
-void CbmStsElement::ConstructName() {
+void CbmStsElement::ConstructName()
+{
 
   // Set the name for the STS system
   if (GetLevel() == kStsSystem) {
@@ -87,7 +88,8 @@ void CbmStsElement::ConstructName() {
 
 
 // -----   Construct name from address   -----------------------------------
-TString CbmStsElement::ConstructName(Int_t address, EStsElementLevel level) {
+TString CbmStsElement::ConstructName(Int_t address, EStsElementLevel level)
+{
 
   TString result = "STS";
   if (level >= kStsUnit) {
@@ -117,7 +119,8 @@ TString CbmStsElement::ConstructName(Int_t address, EStsElementLevel level) {
 
 
 // -----   Get a daughter element   ----------------------------------------
-CbmStsElement* CbmStsElement::GetDaughter(Int_t index) const {
+CbmStsElement* CbmStsElement::GetDaughter(Int_t index) const
+{
   if (index < 0 || index >= GetNofDaughters()) return nullptr;
   return fDaughters[index];
 }
@@ -125,11 +128,11 @@ CbmStsElement* CbmStsElement::GetDaughter(Int_t index) const {
 
 
 // -----   Get number of elements at lower hierarchy levels   --------------
-Int_t CbmStsElement::GetNofElements(Int_t level) const {
+Int_t CbmStsElement::GetNofElements(Int_t level) const
+{
 
   Int_t nElements = 0;
-  if (level <= fLevel)
-    nElements = 0;
+  if (level <= fLevel) nElements = 0;
   else if (level == fLevel + 1)
     nElements = GetNofDaughters();
   else
@@ -142,7 +145,8 @@ Int_t CbmStsElement::GetNofElements(Int_t level) const {
 
 
 // -----   Recursively read daughters from geometry   ----------------------
-void CbmStsElement::InitDaughters() {
+void CbmStsElement::InitDaughters()
+{
 
   // --- Catch absence of TGeoManager
   assert(gGeoManager);
@@ -163,24 +167,18 @@ void CbmStsElement::InitDaughters() {
 
     // Check name of daughter node for level name
     TString dName = mNode->GetDaughter(iNode)->GetName();
-    if (dName.Contains(CbmStsSetup::Instance()->GetLevelName(fLevel + 1),
-                       TString::kIgnoreCase)) {
+    if (dName.Contains(CbmStsSetup::Instance()->GetLevelName(fLevel + 1), TString::kIgnoreCase)) {
 
       // Create physical node
       TString dPath           = mPath + "/" + dName;
       TGeoPhysicalNode* pNode = new TGeoPhysicalNode(dPath.Data());
 
       // Create element and add it as daughter
-      UInt_t address =
-        CbmStsAddress::SetElementId(fAddress, fLevel + 1, GetNofDaughters());
+      UInt_t address          = CbmStsAddress::SetElementId(fAddress, fLevel + 1, GetNofDaughters());
       CbmStsElement* dElement = nullptr;
       switch (fLevel) {
-        case kStsHalfLadder:
-          dElement = new CbmStsModule(address, pNode, this);
-          break;
-        default:
-          dElement = new CbmStsElement(address, fLevel + 1, pNode, this);
-          break;
+        case kStsHalfLadder: dElement = new CbmStsModule(address, pNode, this); break;
+        default: dElement = new CbmStsElement(address, fLevel + 1, pNode, this); break;
       }
       fDaughters.push_back(dElement);
 
@@ -195,10 +193,10 @@ void CbmStsElement::InitDaughters() {
 
 
 // -----   Print   ---------------------------------------------------------
-void CbmStsElement::Print(Option_t* opt) const {
-  LOG(info) << setw(10) << right << fAddress << "  " << setw(12) << left
-            << fName << "  type " << setw(22) << fTitle << "  path "
-            << fNode->GetName() << "  " << fNode->GetTitle();
+void CbmStsElement::Print(Option_t* opt) const
+{
+  LOG(info) << setw(10) << right << fAddress << "  " << setw(12) << left << fName << "  type " << setw(22) << fTitle
+            << "  path " << fNode->GetName() << "  " << fNode->GetTitle();
   if (opt[0] == 'R') {
     for (Int_t iDaughter = 0; iDaughter < GetNofDaughters(); iDaughter++)
       GetDaughter(iDaughter)->Print("R");
@@ -208,7 +206,8 @@ void CbmStsElement::Print(Option_t* opt) const {
 
 
 // -----   Set element level   ---------------------------------------------
-void CbmStsElement::SetLevel(Int_t level) {
+void CbmStsElement::SetLevel(Int_t level)
+{
   switch (level) {
     case kStsSystem: fLevel = kStsSystem; break;
     case kStsUnit: fLevel = kStsUnit; break;

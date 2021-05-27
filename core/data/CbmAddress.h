@@ -40,9 +40,7 @@ public:
      ** @param address  Unique address
      ** @return  systemId
      **/
-  static Int_t GetSystemId(UInt_t address) {
-    return address & ((1 << fgkSystemBits) - 1);
-  }
+  static Int_t GetSystemId(UInt_t address) { return address & ((1 << fgkSystemBits) - 1); }
 
 
 protected:

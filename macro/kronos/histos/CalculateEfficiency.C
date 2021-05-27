@@ -1,4 +1,5 @@
-void CalculateEfficiency(TString inputDir) {
+void CalculateEfficiency(TString inputDir)
+{
 
   TStopwatch timer;
   timer.Start();

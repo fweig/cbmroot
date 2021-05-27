@@ -1,5 +1,6 @@
 #include "CbmTrdOccupancyQa.h"
 
+#include "CbmDigiManager.h"
 #include "CbmTrdAddress.h"
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
@@ -13,7 +14,6 @@
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
 
-#include "CbmDigiManager.h"
 #include <TBox.h>
 #include <TCanvas.h>
 #include <TClonesArray.h>
@@ -29,9 +29,9 @@
 #include <TProfile2D.h>
 #include <TStopwatch.h>
 
+#include <iostream>
 
 #include <cmath>
-#include <iostream>
 
 using std::cin;
 using std::cout;
@@ -39,21 +39,16 @@ using std::endl;
 using std::fabs;
 using std::pair;
 
-CbmTrdOccupancyQa::CbmTrdOccupancyQa()
-  : CbmTrdOccupancyQa("TrdOccupancy", "", "", 1e-6, kFALSE) {}
+CbmTrdOccupancyQa::CbmTrdOccupancyQa() : CbmTrdOccupancyQa("TrdOccupancy", "", "", 1e-6, kFALSE) {}
 
-CbmTrdOccupancyQa::CbmTrdOccupancyQa(const char* name,
-                                     const char*,
-                                     const char* geo,
-                                     Double_t triggerThreshold,
+CbmTrdOccupancyQa::CbmTrdOccupancyQa(const char* name, const char*, const char* geo, Double_t triggerThreshold,
                                      Bool_t plotMergedResults)
   : FairTask(name)
   , fClusters(NULL)
   , fDigiPar(NULL)
   , fGeoPar(NULL)
   , fGeoHandler(new CbmTrdGeoHandler())
-  , fDigiChargeSpectrum(
-      new TH1I("DigiChargeSpectrum", "DigiChargeSpectrum", 1e6, 0, 1.0e-3))
+  , fDigiChargeSpectrum(new TH1I("DigiChargeSpectrum", "DigiChargeSpectrum", 1e6, 0, 1.0e-3))
   , fLayerDummy(new TH2I("LayerDummy", "", 1200, -400, 400, 1000, -300, 300))
   , fmin(0)
   , fmax(13)
@@ -70,7 +65,8 @@ CbmTrdOccupancyQa::CbmTrdOccupancyQa(const char* name,
   , fTriggerThreshold(triggerThreshold)
   , fNeigbourReadout(true)
   , fPlotMergedResults(plotMergedResults)
-  , fGeo(geo) {
+  , fGeo(geo)
+{
   fLayerDummy->SetXTitle("x-coordinate [cm]");
   fLayerDummy->SetYTitle("y-coordinate [cm]");
   fLayerDummy->GetXaxis()->SetLabelSize(0.02);
@@ -84,14 +80,14 @@ CbmTrdOccupancyQa::CbmTrdOccupancyQa(const char* name,
   fLayerDummy->GetZaxis()->SetTitleOffset(-2);
   fLayerDummy->SetContour(99);
   fLayerDummy->GetZaxis()->SetRangeUser(fmin, fmax);
-  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
-       fModuleOccupancyMapIt != fModuleOccupancyMap.end();
+  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
        ++fModuleOccupancyMapIt) {
     //delete fModuleOccupancyMapIt->second;
   }
 }
 
-CbmTrdOccupancyQa::~CbmTrdOccupancyQa() {
+CbmTrdOccupancyQa::~CbmTrdOccupancyQa()
+{
 
   FairRootManager* ioman = FairRootManager::Instance();
   ioman->Write();
@@ -103,53 +99,52 @@ CbmTrdOccupancyQa::~CbmTrdOccupancyQa() {
   if (fDigiPar) delete fDigiPar;
   //   if(fModuleInfo)
   //     delete fModuleInfo;
-  for (fModuleMapIt = fModuleMap.begin(); fModuleMapIt != fModuleMap.end();
-       ++fModuleMapIt) {
+  for (fModuleMapIt = fModuleMap.begin(); fModuleMapIt != fModuleMap.end(); ++fModuleMapIt) {
     delete fModuleMapIt->second;
   }
   fModuleMap.clear();
-  for (fLayerOccupancyMapIt = fLayerOccupancyMap.begin();
-       fLayerOccupancyMapIt != fLayerOccupancyMap.end();
+  for (fLayerOccupancyMapIt = fLayerOccupancyMap.begin(); fLayerOccupancyMapIt != fLayerOccupancyMap.end();
        ++fLayerOccupancyMapIt) {
     delete fLayerOccupancyMapIt->second;
   }
   fLayerOccupancyMap.clear();
-  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
-       fModuleOccupancyMapIt != fModuleOccupancyMap.end();
+  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
        ++fModuleOccupancyMapIt) {
     delete fModuleOccupancyMapIt->second;
   }
   fModuleOccupancyMap.clear();
   for (fModuleOccupancyMemoryMapIt = fModuleOccupancyMemoryMap.begin();
-       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end();
-       ++fModuleOccupancyMemoryMapIt) {
+       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end(); ++fModuleOccupancyMemoryMapIt) {
     delete fModuleOccupancyMemoryMapIt->second;
   }
   fModuleOccupancyMemoryMap.clear();
   delete fDigiChargeSpectrum;
   delete fLayerDummy;
 }
-void CbmTrdOccupancyQa::SetParContainers() {
+void CbmTrdOccupancyQa::SetParContainers()
+{
   cout << " * CbmTrdOccupancyQa * :: SetParContainers() " << endl;
   // Get Base Container
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
-  fDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
-  fGeoPar  = (CbmTrdParSetGeo*) (rtdb->getContainer("CbmTrdParSetGeo"));
+  fDigiPar            = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
+  fGeoPar             = (CbmTrdParSetGeo*) (rtdb->getContainer("CbmTrdParSetGeo"));
 }
 // ---- ReInit  -------------------------------------------------------
-InitStatus CbmTrdOccupancyQa::ReInit() {
+InitStatus CbmTrdOccupancyQa::ReInit()
+{
   cout << " * CbmTrdClusterizer * :: ReInit() " << endl;
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
-  fDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
-  fGeoPar  = (CbmTrdParSetGeo*) (rtdb->getContainer("CbmTrdParSetGeo"));
+  fDigiPar            = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
+  fGeoPar             = (CbmTrdParSetGeo*) (rtdb->getContainer("CbmTrdParSetGeo"));
   return kSUCCESS;
 }
 // --------------------------------------------------------------------
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmTrdOccupancyQa::Init() {
+InitStatus CbmTrdOccupancyQa::Init()
+{
   cout << " * CbmTrdOccupancyQa * :: Init() " << endl;
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -167,12 +162,11 @@ InitStatus CbmTrdOccupancyQa::Init() {
   return kSUCCESS;
 }
 // --------------------------------------------------------------------
-void CbmTrdOccupancyQa::SetNeighbourTrigger(Bool_t trigger) {
-  fNeigbourReadout = trigger;
-}
+void CbmTrdOccupancyQa::SetNeighbourTrigger(Bool_t trigger) { fNeigbourReadout = trigger; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmTrdOccupancyQa::Exec(Option_t*) {
+void CbmTrdOccupancyQa::Exec(Option_t*)
+{
   printf("================CbmTrdOccupancyQa=====================\n");
   //fTriggerThreshold = CbmTrdClusterFinderFast::GetTriggerThreshold();
   printf("TriggerThreshold: %.2E\n", fTriggerThreshold);
@@ -203,42 +197,33 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
     Int_t nCluster = fClusters->GetEntriesFast();
     for (Int_t iCluster = 0; iCluster < nCluster; iCluster++) {
       //cout << iCluster << endl;
-      cluster = (CbmTrdCluster*) fClusters->At(
-        iCluster);  //pointer to the acvit cluster
+      cluster               = (CbmTrdCluster*) fClusters->At(iCluster);  //pointer to the acvit cluster
       Int_t nDigisInCluster = cluster->GetNofDigis();
       for (Int_t iDigi = 0; iDigi < nDigisInCluster; iDigi++) {
-        digi =
-          CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
+        digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
         //digi = (CbmTrdDigi*)fDigis->At(cluster->GetDigi(iDigi));
-        if (digi->GetCharge() > fTriggerThreshold)
-          digiTriggerCounter++;
+        if (digi->GetCharge() > fTriggerThreshold) digiTriggerCounter++;
         else
           digiCounter++;
         Int_t digiAddress   = digi->GetAddress();
         Int_t moduleAddress = CbmTrdAddress::GetModuleAddress(digiAddress);
         //	Int_t moduleId = CbmTrdAddress::GetModuleId(moduleAddress);
-        Int_t Station = CbmTrdAddress::GetLayerId(moduleAddress) / 4
-                        + 1;  //fGeoHandler->GetStation(moduleId);
-        Int_t Layer = CbmTrdAddress::GetLayerId(moduleAddress) % 4
-                      + 1;  //fGeoHandler->GetLayer(moduleId);
+        Int_t Station = CbmTrdAddress::GetLayerId(moduleAddress) / 4 + 1;  //fGeoHandler->GetStation(moduleId);
+        Int_t Layer   = CbmTrdAddress::GetLayerId(moduleAddress) % 4 + 1;  //fGeoHandler->GetLayer(moduleId);
         Int_t combiId = 10 * Station + Layer;
-        CbmTrdParModDigi* fModuleInfo =
-          (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
-        CbmTrdParModGeo* fModuleGeo =
-          (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
-        Int_t nRows = fModuleInfo->GetNofRows();
-        Int_t nCols = fModuleInfo->GetNofColumns();
-        if (fModuleOccupancyMap.find(moduleAddress)
-            == fModuleOccupancyMap.end()) {
+        CbmTrdParModDigi* fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
+        CbmTrdParModGeo* fModuleGeo   = (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
+        Int_t nRows                   = fModuleInfo->GetNofRows();
+        Int_t nCols                   = fModuleInfo->GetNofColumns();
+        if (fModuleOccupancyMap.find(moduleAddress) == fModuleOccupancyMap.end()) {
           title.Form("Module_%i", moduleAddress);
           //fModuleOccupancyMap[moduleAddress] = (TH2F*)outFile->Get(title);
           //if (!fModuleOccupancyMap[moduleAddress])
-          fModuleOccupancyMap[moduleAddress] = new TH2I(
-            title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
+          fModuleOccupancyMap[moduleAddress] =
+            new TH2I(title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
           //fModuleOccupancyMap[moduleAddress]->Reset();
           title.Form("M_%i", moduleAddress);
-          fModuleOccupancyMemoryMap[moduleAddress] =
-            new TH1F(title, title, 10000, 0, 100);
+          fModuleOccupancyMemoryMap[moduleAddress]   = new TH1F(title, title, 10000, 0, 100);
           fModuleMap[moduleAddress]                  = new OccupancyModule();
           fModuleMap[moduleAddress]->Station         = Station;
           fModuleMap[moduleAddress]->Layer           = Layer;
@@ -258,57 +243,47 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
           fLayerDummy->DrawCopy("colz");
           title.Form("Station%i_Layer%i", Station, Layer);
           printf("       new %s\n", title.Data());
-          fLayerAverageOccupancyMap[combiId] =
-            new TProfile(title, title, 1e6, 0, 1.0e-3);
-          fLayerAverageOccupancyMap[combiId]->SetYTitle(
-            "Average layer occupancy [%]");
+          fLayerAverageOccupancyMap[combiId] = new TProfile(title, title, 1e6, 0, 1.0e-3);
+          fLayerAverageOccupancyMap[combiId]->SetYTitle("Average layer occupancy [%]");
           fLayerAverageOccupancyMap[combiId]->SetXTitle("Trigger threshold");
         }
 
-        Int_t iCol(CbmTrdAddress::GetColumnId(digiAddress)),
-          iRow(CbmTrdAddress::GetRowId(digiAddress)),
+        Int_t iCol(CbmTrdAddress::GetColumnId(digiAddress)), iRow(CbmTrdAddress::GetRowId(digiAddress)),
           iSec(CbmTrdAddress::GetSectorId(digiAddress));
         iRow = fModuleInfo->GetModuleRow(iSec, iRow);
         Int_t ixBin(iCol + 1), iyBin(iRow + 1);
-        if (fModuleOccupancyMap[moduleAddress]->GetBinContent(ixBin, iyBin)
-            == 0)
+        if (fModuleOccupancyMap[moduleAddress]->GetBinContent(ixBin, iyBin) == 0)
           fModuleOccupancyMap[moduleAddress]->Fill(iCol, iRow);
       }
     }
-  } else {
+  }
+  else {
     for (Int_t iDigi = 0; iDigi < nEntries; iDigi++) {
       digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(iDigi);
       //      digi = (CbmTrdDigi*) fDigis->At(iDigi);
 
-      Int_t moduleAddress = CbmTrdAddress::GetModuleAddress(
-        digi->GetAddress());  //digi->GetDetId();
-      Int_t Station = CbmTrdAddress::GetLayerId(moduleAddress) / 4
-                      + 1;  //fGeoHandler->GetStation(moduleId);
-      Int_t Layer = CbmTrdAddress::GetLayerId(moduleAddress) % 4
-                    + 1;  //fGeoHandler->GetLayer(moduleId);
-      Int_t combiId = 10 * Station + Layer;
+      Int_t moduleAddress = CbmTrdAddress::GetModuleAddress(digi->GetAddress());  //digi->GetDetId();
+      Int_t Station       = CbmTrdAddress::GetLayerId(moduleAddress) / 4 + 1;     //fGeoHandler->GetStation(moduleId);
+      Int_t Layer         = CbmTrdAddress::GetLayerId(moduleAddress) % 4 + 1;     //fGeoHandler->GetLayer(moduleId);
+      Int_t combiId       = 10 * Station + Layer;
       //printf("Station %i Layer %i combiId %i\n", Station, Layer, combiId);
-      CbmTrdParModDigi* fModuleInfo =
-        (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
-      CbmTrdParModGeo* fModuleGeo =
-        (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
-      Int_t nRows = fModuleInfo->GetNofRows();
-      Int_t nCols = fModuleInfo->GetNofColumns();
+      CbmTrdParModDigi* fModuleInfo = (CbmTrdParModDigi*) fDigiPar->GetModulePar(moduleAddress);
+      CbmTrdParModGeo* fModuleGeo   = (CbmTrdParModGeo*) fGeoPar->GetModulePar(moduleAddress);
+      Int_t nRows                   = fModuleInfo->GetNofRows();
+      Int_t nCols                   = fModuleInfo->GetNofColumns();
       fDigiChargeSpectrum->Fill(digi->GetCharge());
       if (digi->GetCharge() > fTriggerThreshold) {
         digiTriggerCounter++;
         digiCounter++;
-        if (fModuleOccupancyMap.find(moduleAddress)
-            == fModuleOccupancyMap.end()) {
+        if (fModuleOccupancyMap.find(moduleAddress) == fModuleOccupancyMap.end()) {
           title.Form("Module_%i", moduleAddress);
           //fModuleOccupancyMap[moduleAddress] = (TH2F*)outFile->Get(title);
           //if (!fModuleOccupancyMap[moduleAddress])
-          fModuleOccupancyMap[moduleAddress] = new TH2I(
-            title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
+          fModuleOccupancyMap[moduleAddress] =
+            new TH2I(title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
           //fModuleOccupancyMap[moduleAddress]->Reset();
           title.Form("M_%i", moduleAddress);
-          fModuleOccupancyMemoryMap[moduleAddress] =
-            new TH1F(title, title, 10000, 0, 100);
+          fModuleOccupancyMemoryMap[moduleAddress]   = new TH1F(title, title, 10000, 0, 100);
           fModuleMap[moduleAddress]                  = new OccupancyModule();
           fModuleMap[moduleAddress]->Station         = Station;
           fModuleMap[moduleAddress]->Layer           = Layer;
@@ -327,21 +302,16 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
           fLayerDummy->DrawCopy("colz");
           title.Form("Station%i_Layer%i", Station, Layer);
           printf("       new %s\n", title.Data());
-          fLayerAverageOccupancyMap[combiId] =
-            new TProfile(title, title, 1e6, 0, 1.0e-3);
-          fLayerAverageOccupancyMap[combiId]->SetYTitle(
-            "Average layer occupancy [%]");
+          fLayerAverageOccupancyMap[combiId] = new TProfile(title, title, 1e6, 0, 1.0e-3);
+          fLayerAverageOccupancyMap[combiId]->SetYTitle("Average layer occupancy [%]");
           fLayerAverageOccupancyMap[combiId]->SetXTitle("Trigger threshold");
         }
 
-        Int_t digiAddress(digi->GetAddress()),
-          iCol(CbmTrdAddress::GetColumnId(digiAddress)),
-          iRow(CbmTrdAddress::GetRowId(digiAddress)),
-          iSec(CbmTrdAddress::GetSectorId(digiAddress));
+        Int_t digiAddress(digi->GetAddress()), iCol(CbmTrdAddress::GetColumnId(digiAddress)),
+          iRow(CbmTrdAddress::GetRowId(digiAddress)), iSec(CbmTrdAddress::GetSectorId(digiAddress));
         iRow = fModuleInfo->GetModuleRow(iSec, iRow);
         Int_t ixBin(iCol + 1), iyBin(iRow + 1);
-        if (fModuleOccupancyMap[moduleAddress]->GetBinContent(ixBin, iyBin)
-            == 0)
+        if (fModuleOccupancyMap[moduleAddress]->GetBinContent(ixBin, iyBin) == 0)
           fModuleOccupancyMap[moduleAddress]->Fill(iCol, iRow);
         /*
 	  if(fNeigbourReadout) {
@@ -371,10 +341,7 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
       }
     }
   }
-  printf(
-    "%6i primary triggered digis\n%6i including neigbouring triggered digis\n",
-    digiTriggerCounter,
-    digiCounter);
+  printf("%6i primary triggered digis\n%6i including neigbouring triggered digis\n", digiTriggerCounter, digiCounter);
   CopyEvent2MemoryMap();
   //CreateLayerView();
   //SaveHistos2File();
@@ -387,47 +354,46 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
   printf("*********************************************************\n\n");
 }
 // ---- FinishTask-----------------------------------------------------
-void CbmTrdOccupancyQa::FinishEvent() {
+void CbmTrdOccupancyQa::FinishEvent()
+{
   if (fClusters) {
     fClusters->Clear("C");
     fClusters->Delete();
   }
-  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
-       fModuleOccupancyMapIt != fModuleOccupancyMap.end();
+  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
        ++fModuleOccupancyMapIt) {
     fModuleOccupancyMapIt->second->Reset();
   }
 }
-void CbmTrdOccupancyQa::FinishTask() {
+void CbmTrdOccupancyQa::FinishTask()
+{
   CreateLayerView();
   SaveHistos2File();
 }
 // ---- Register ------------------------------------------------------
-void CbmTrdOccupancyQa::Register() {
+void CbmTrdOccupancyQa::Register()
+{
   //FairRootManager::Instance()->Register("TrdDigi","Trd Digi", fDigiCollection, IsOutputBranchPersistent("TrdDigi"));
   //FairRootManager::Instance()->Register("TrdDigiMatch","Trd Digi Match", fDigiMatchCollection, IsOutputBranchPersistent("TrdDigiMatch"));
 }
 // --------------------------------------------------------------------
-void CbmTrdOccupancyQa::CopyEvent2MemoryMap() {
-  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
-       fModuleOccupancyMapIt != fModuleOccupancyMap.end();
+void CbmTrdOccupancyQa::CopyEvent2MemoryMap()
+{
+  for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
        ++fModuleOccupancyMapIt) {
     fModuleOccupancyMemoryMap[fModuleOccupancyMapIt->first]->Fill(
       Float_t(fModuleOccupancyMapIt->second->Integral())
-      / Float_t(fModuleOccupancyMapIt->second->GetNbinsX()
-                * fModuleOccupancyMapIt->second->GetNbinsY())
-      * 100.);
-    fLayerAverageOccupancyMap
-      [10 * (fModuleMap[fModuleOccupancyMapIt->first]->Station)
-       + (fModuleMap[fModuleOccupancyMapIt->first]->Layer)]
-        ->Fill(fTriggerThreshold,
-               Float_t(fModuleOccupancyMapIt->second->Integral())
-                 / Float_t(fModuleOccupancyMapIt->second->GetNbinsX()
-                           * fModuleOccupancyMapIt->second->GetNbinsY())
-                 * 100.);
+      / Float_t(fModuleOccupancyMapIt->second->GetNbinsX() * fModuleOccupancyMapIt->second->GetNbinsY()) * 100.);
+    fLayerAverageOccupancyMap[10 * (fModuleMap[fModuleOccupancyMapIt->first]->Station)
+                              + (fModuleMap[fModuleOccupancyMapIt->first]->Layer)]
+      ->Fill(fTriggerThreshold,
+             Float_t(fModuleOccupancyMapIt->second->Integral())
+               / Float_t(fModuleOccupancyMapIt->second->GetNbinsX() * fModuleOccupancyMapIt->second->GetNbinsY())
+               * 100.);
   }
 }
-void CbmTrdOccupancyQa::SwitchToMergedFile() {
+void CbmTrdOccupancyQa::SwitchToMergedFile()
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -436,17 +402,16 @@ void CbmTrdOccupancyQa::SwitchToMergedFile() {
   TFile* Target    = new TFile(filename, "READ");
   if (Target) {
     gDirectory = Target->CurrentDirectory();
-    for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
-         fModuleOccupancyMapIt != fModuleOccupancyMap.end();
+    for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
          ++fModuleOccupancyMapIt) {
       TString histName = fModuleOccupancyMapIt->second->GetName();
       std::cout << histName << std::endl;
       ;
       fModuleOccupancyMap[fModuleOccupancyMapIt->first] =
-        (TH2I*) Target->Get("TrdOccupancy/Module/" + histName)
-          ->Clone(histName + "_result");
+        (TH2I*) Target->Get("TrdOccupancy/Module/" + histName)->Clone(histName + "_result");
     }
-  } else {
+  }
+  else {
     cout << "No merged data/result.root found" << endl;
   }
 
@@ -454,7 +419,8 @@ void CbmTrdOccupancyQa::SwitchToMergedFile() {
   gFile      = oldFile;
   gDirectory = oldDir;
 }
-void CbmTrdOccupancyQa::CreateLayerView() {
+void CbmTrdOccupancyQa::CreateLayerView()
+{
   if (fPlotMergedResults) SwitchToMergedFile();
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -473,8 +439,7 @@ void CbmTrdOccupancyQa::CreateLayerView() {
   Bool_t debug = false;
   TString title;
   for (fModuleOccupancyMemoryMapIt = fModuleOccupancyMemoryMap.begin();
-       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end();
-       ++fModuleOccupancyMemoryMapIt) {
+       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end(); ++fModuleOccupancyMemoryMapIt) {
     /*
       TBox *b = new TBox(
       fModuleMap[fModuleOccupancyMapIt->first]->ModulePositionX - fModuleMap[fModuleOccupancyMapIt->first]->ModuleSizeX,
@@ -494,15 +459,14 @@ void CbmTrdOccupancyQa::CreateLayerView() {
     if (debug) printf(" <O>:%6.2f  ", occupancy);
     title.Form("%.1f#pm%.1f%%", occupancy, occupancyE);
     if (debug) printf("%s\n", title.Data());
-    TPaveText* text = new TPaveText(
-      fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionX
-        - fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeX,
-      fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionY
-        - fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeY,
-      fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionX
-        + fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeX,
-      fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionY
-        + fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeY);
+    TPaveText* text = new TPaveText(fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionX
+                                      - fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeX,
+                                    fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionY
+                                      - fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeY,
+                                    fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionX
+                                      + fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeX,
+                                    fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModulePositionY
+                                      + fModuleMap[fModuleOccupancyMemoryMapIt->first]->ModuleSizeY);
     text->SetFillStyle(1001);
     text->SetLineColor(1);
 
@@ -512,8 +476,7 @@ void CbmTrdOccupancyQa::CreateLayerView() {
     for (Int_t i = 0; i < TColor::GetNumberOfColors(); i++) {
       fColors.push_back(TColor::GetColorPalette(i));
       //fZLevel.push_back(min + TMath::Power(10, TMath::Log10(max) / TColor::GetNumberOfColors() * i));// log scale
-      fZLevel.push_back(
-        fmin + (fmax / TColor::GetNumberOfColors() * i));  // lin scale
+      fZLevel.push_back(fmin + (fmax / TColor::GetNumberOfColors() * i));  // lin scale
     }
     //    Int_t color(0), j(0);
     Int_t j(0);
@@ -586,8 +549,7 @@ void CbmTrdOccupancyQa::CreateLayerView() {
       if (occupancy > 30)
       text->SetFillColor(kRed);
     */
-    fLayerOccupancyMap[fModuleMap[fModuleOccupancyMemoryMapIt->first]->Station
-                         * 10
+    fLayerOccupancyMap[fModuleMap[fModuleOccupancyMemoryMapIt->first]->Station * 10
                        + fModuleMap[fModuleOccupancyMemoryMapIt->first]->Layer]
       ->cd();
     //b->Draw("same");
@@ -616,27 +578,21 @@ void CbmTrdOccupancyQa::CreateLayerView() {
   }
   Triggerdir->cd();
   gDirectory->pwd();
-  for (fLayerOccupancyMapIt = fLayerOccupancyMap.begin();
-       fLayerOccupancyMapIt != fLayerOccupancyMap.end();
+  for (fLayerOccupancyMapIt = fLayerOccupancyMap.begin(); fLayerOccupancyMapIt != fLayerOccupancyMap.end();
        ++fLayerOccupancyMapIt) {
     fLayerOccupancyMapIt->second->Write("", TObject::kOverwrite);
-    title.Form("pics/Occupancy_%.2E_%s_%s.pdf",
-               fTriggerThreshold,
-               TString(fLayerOccupancyMapIt->second->GetTitle()).Data(),
-               fGeo.Data());
+    title.Form("pics/Occupancy_%.2E_%s_%s.pdf", fTriggerThreshold,
+               TString(fLayerOccupancyMapIt->second->GetTitle()).Data(), fGeo.Data());
     fLayerOccupancyMapIt->second->SaveAs(title);
-    title.Form("pics/Occupancy_%.2E_%s_%s.png",
-               fTriggerThreshold,
-               TString(fLayerOccupancyMapIt->second->GetTitle()).Data(),
-               fGeo.Data());
+    title.Form("pics/Occupancy_%.2E_%s_%s.png", fTriggerThreshold,
+               TString(fLayerOccupancyMapIt->second->GetTitle()).Data(), fGeo.Data());
     fLayerOccupancyMapIt->second->SaveAs(title);
   }
   gDirectory->Cd("..");
   TCanvas* c    = new TCanvas("c", "c", 800, 600);
   Int_t counter = 0;
   for (fLayerAverageOccupancyMapIt = fLayerAverageOccupancyMap.begin();
-       fLayerAverageOccupancyMapIt != fLayerAverageOccupancyMap.end();
-       ++fLayerAverageOccupancyMapIt) {
+       fLayerAverageOccupancyMapIt != fLayerAverageOccupancyMap.end(); ++fLayerAverageOccupancyMapIt) {
     fLayerAverageOccupancyMapIt->second->Write("", TObject::kOverwrite);
 
     counter++;
@@ -646,11 +602,11 @@ void CbmTrdOccupancyQa::CreateLayerView() {
     c->cd()->SetLogy(1);
     c->cd()->SetLogx(1);
     if (fLayerAverageOccupancyMapIt == fLayerAverageOccupancyMap.begin()) {
-      fLayerAverageOccupancyMapIt->second->GetXaxis()->SetRangeUser(1.0e-10,
-                                                                    1.0e-3);
+      fLayerAverageOccupancyMapIt->second->GetXaxis()->SetRangeUser(1.0e-10, 1.0e-3);
       fLayerAverageOccupancyMapIt->second->GetYaxis()->SetRangeUser(0.1, 100);
       fLayerAverageOccupancyMapIt->second->DrawCopy();
-    } else
+    }
+    else
       fLayerAverageOccupancyMapIt->second->DrawCopy("same");
   }
   title.Form("pics/Occupancy_%.2E_%s.pdf", fTriggerThreshold, fGeo.Data());
@@ -667,13 +623,10 @@ void CbmTrdOccupancyQa::CreateLayerView() {
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }
-void CbmTrdOccupancyQa::SetNeighbourReadout(Bool_t neighbourReadout) {
-  fNeigbourReadout = neighbourReadout;
-}
-void CbmTrdOccupancyQa::SetTriggerThreshold(Double_t triggerthreshold) {
-  fTriggerThreshold = triggerthreshold;
-}
-void CbmTrdOccupancyQa::SaveHistos2File() {
+void CbmTrdOccupancyQa::SetNeighbourReadout(Bool_t neighbourReadout) { fNeigbourReadout = neighbourReadout; }
+void CbmTrdOccupancyQa::SetTriggerThreshold(Double_t triggerthreshold) { fTriggerThreshold = triggerthreshold; }
+void CbmTrdOccupancyQa::SaveHistos2File()
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
@@ -733,8 +686,7 @@ void CbmTrdOccupancyQa::SaveHistos2File() {
   gDirectory->pwd();
 
   for (fModuleOccupancyMemoryMapIt = fModuleOccupancyMemoryMap.begin();
-       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end();
-       ++fModuleOccupancyMemoryMapIt) {
+       fModuleOccupancyMemoryMapIt != fModuleOccupancyMemoryMap.end(); ++fModuleOccupancyMemoryMapIt) {
     fModuleOccupancyMemoryMapIt->second->Write("", TObject::kOverwrite);
   }
   gDirectory->Cd("..");

@@ -8,8 +8,9 @@
 #ifndef CBMRICHRINGLIGHT_H_
 #define CBMRICHRINGLIGHT_H_
 
-#include <cmath>
 #include <vector>
+
+#include <cmath>
 
 class CbmRichHitLight {
 public:
@@ -28,8 +29,7 @@ public:
     * \param x X coordinate of hit.
     * \param y Y coordinate of hit.
     */
-  CbmRichHitLight(float x, float y, unsigned int hitId = 0)
-    : fX(x), fY(y), fId(hitId) {}
+  CbmRichHitLight(float x, float y, unsigned int hitId = 0) : fX(x), fY(y), fId(hitId) {}
 
   float fX;          // x coordinate of the hit
   float fY;          // y coordinate of the hit
@@ -91,7 +91,8 @@ public:
     * \param[in] hitId index of hit in TClonesArray.
     * \return true if hit was removed, false if hit was NOT removed.
     */
-  bool RemoveHit(int hitId) {
+  bool RemoveHit(int hitId)
+  {
     std::vector<CbmRichHitLight>::iterator it;
     for (it = fHits.begin(); it != fHits.end(); it++) {
       if (hitId >= 0 && hitId == int(it->fId)) {
@@ -129,7 +130,8 @@ public:
     * \param[in] y Y coordinate of circle center.
     * \param[in] r Radius of circle.
     */
-  void SetXYR(float x, float y, float r) {
+  void SetXYR(float x, float y, float r)
+  {
     fCenterX = x;
     fCenterY = y;
     fRadius  = r;
@@ -143,7 +145,8 @@ public:
     * \param[in] b Minor half axis of ellipse.
     * \param[in] p Rotation angle of ellipse [rad].
     */
-  void SetXYABP(float x, float y, float a, float b, float p) {
+  void SetXYABP(float x, float y, float a, float b, float p)
+  {
     fCenterX = x;
     fCenterY = y;
     fAaxis   = a;
@@ -170,7 +173,8 @@ public:
   /**
     * \brief Calculate and return X coordinate of the first focus.
     */
-  double GetXF1() const {
+  double GetXF1() const
+  {
     double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
     double xc = c * cos(fabs(fPhi));
 
@@ -180,12 +184,12 @@ public:
   /**
     * \brief Calculate and return Y coordinate of the first focus.
     */
-  double GetYF1() const {
+  double GetYF1() const
+  {
     double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
     double yc = c * sin(fabs(fPhi));
-    if (fPhi >= 0) {
-      return fCenterY + yc;
-    } else {
+    if (fPhi >= 0) { return fCenterY + yc; }
+    else {
       return fCenterY - yc;
     }
   }
@@ -193,7 +197,8 @@ public:
   /**
     * \brief Calculate and return X coordinate of the second focus.
     */
-  double GetXF2() const {
+  double GetXF2() const
+  {
     double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
     double xc = c * cos(fabs(fPhi));
 
@@ -203,12 +208,12 @@ public:
   /**
     * \brief Calculate and return Y coordinate of the second focus.
     */
-  double GetYF2() const {
+  double GetYF2() const
+  {
     double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
     double yc = c * sin(fabs(fPhi));
-    if (fPhi >= 0) {
-      return fCenterY - yc;
-    } else {
+    if (fPhi >= 0) { return fCenterY - yc; }
+    else {
       return fCenterY + yc;
     }
   }
@@ -222,7 +227,8 @@ public:
     * \param[in] e E parameter.
     * \param[in] f F parameter.
     */
-  void SetABCDEF(float a, float b, float c, float d, float e, float f) {
+  void SetABCDEF(float a, float b, float c, float d, float e, float f)
+  {
     fAPar = a;
     fBPar = b;
     fCPar = c;
@@ -244,13 +250,11 @@ public:
   /**
 	 * \brief Return radial position of the ring.
 	 */
-  float GetRadialPosition() const {
-    if (fCenterY > 0.f) {
-      return sqrt(fCenterX * fCenterX
-                  + (fCenterY - 110.f) * (fCenterY - 110.f));
-    } else {
-      return sqrt(fCenterX * fCenterX
-                  + (fCenterY + 110.f) * (fCenterY + 110.f));
+  float GetRadialPosition() const
+  {
+    if (fCenterY > 0.f) { return sqrt(fCenterX * fCenterX + (fCenterY - 110.f) * (fCenterY - 110.f)); }
+    else {
+      return sqrt(fCenterX * fCenterX + (fCenterY + 110.f) * (fCenterY + 110.f));
     };
     return 0.;
   }

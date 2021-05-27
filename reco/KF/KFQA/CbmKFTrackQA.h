@@ -24,31 +24,19 @@ class CbmMCDataArray;
 class CbmKFTrackQA : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFTrackQA(const char* name    = "CbmKFTrackQA",
-               Int_t iVerbose      = 0,
-               TString outFileName = "CbmKFTrackQA.root");
+  CbmKFTrackQA(const char* name = "CbmKFTrackQA", Int_t iVerbose = 0, TString outFileName = "CbmKFTrackQA.root");
   ~CbmKFTrackQA();
 
-  void SetStsTrackBranchName(const TString& name) {
-    fStsTrackBranchName = name;
-  }
-  void SetGlobalTrackBranchName(const TString& name) {
-    fGlobalTrackBranchName = name;
-  }
+  void SetStsTrackBranchName(const TString& name) { fStsTrackBranchName = name; }
+  void SetGlobalTrackBranchName(const TString& name) { fGlobalTrackBranchName = name; }
   void SetTofBranchName(const TString& name) { fTofBranchName = name; }
   void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
-  void SetTrackMatchBranchName(const TString& name) {
-    fStsTrackMatchBranchName = name;
-  }
-  void SetMuchTrackMatchBranchName(const TString& name) {
-    fMuchTrackMatchBranchName = name;
-  }
+  void SetTrackMatchBranchName(const TString& name) { fStsTrackMatchBranchName = name; }
+  void SetMuchTrackMatchBranchName(const TString& name) { fMuchTrackMatchBranchName = name; }
   void SetTrdBranchName(const TString& name) { fTrdBranchName = name; }
   void SetTrdHitBranchName(const TString& name) { fTrdHitBranchName = name; }
   void SetRichBranchName(const TString& name) { fRichBranchName = name; }
-  void SetMuchTrackBranchName(const TString& name) {
-    fMuchTrackBranchName = name;
-  }
+  void SetMuchTrackBranchName(const TString& name) { fMuchTrackBranchName = name; }
   Int_t GetZtoNStation(Double_t getZ);
 
   virtual InitStatus Init();
@@ -105,9 +93,7 @@ private:
   //histograms
   //STS
   static const int NStsHisto = 3;
-  TH1F* hStsHisto
-    [8]
-    [NStsHisto];  //All tracks, electrons, muons, pion, kaon, protons, fragments, ghost
+  TH1F* hStsHisto[8][NStsHisto];  //All tracks, electrons, muons, pion, kaon, protons, fragments, ghost
   TH1F* hStsFitHisto[8][10];
   //Much
   static const int NMuchHisto = 5;
@@ -117,7 +103,7 @@ private:
   TH2F* hRichRingHisto2D
     [10]
     [NRichRingHisto2D];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost track, ghost ring
-    //Trd
+  //Trd
   static const int NTrdHisto = 2;
   TH1F* hTrdHisto
     [14]

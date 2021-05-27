@@ -5,7 +5,8 @@
  * \date 2012
  */
 
-void qa_simulation_report() {
+void qa_simulation_report()
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 

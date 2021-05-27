@@ -6,11 +6,11 @@
 
 #include "CbmTrdClusterizerFastQa.h"
 
+#include "CbmMCTrack.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmMCTrack.h"
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -23,15 +23,14 @@
 using std::cout;
 using std::endl;
 
-CbmTrdClusterizerFastQa::CbmTrdClusterizerFastQa()
-  : CbmTrdClusterizerFastQa("TrdClusterizerFastQa", "") {}
+CbmTrdClusterizerFastQa::CbmTrdClusterizerFastQa() : CbmTrdClusterizerFastQa("TrdClusterizerFastQa", "") {}
 
-CbmTrdClusterizerFastQa::CbmTrdClusterizerFastQa(const char* name, const char*)
-  : FairTask(name) {}
+CbmTrdClusterizerFastQa::CbmTrdClusterizerFastQa(const char* name, const char*) : FairTask(name) {}
 
 CbmTrdClusterizerFastQa::~CbmTrdClusterizerFastQa() {}
 
-InitStatus CbmTrdClusterizerFastQa::Init() {
+InitStatus CbmTrdClusterizerFastQa::Init()
+{
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
     cout << "-E- CbmTrdClusterizerFastQa::Init : "
@@ -44,7 +43,8 @@ InitStatus CbmTrdClusterizerFastQa::Init() {
 void CbmTrdClusterizerFastQa::Exec(Option_t*) {}
 void CbmTrdClusterizerFastQa::Finish() { WriteHistograms(); }
 void CbmTrdClusterizerFastQa::PrepareHistograms() {}
-void CbmTrdClusterizerFastQa::WriteHistograms() {
+void CbmTrdClusterizerFastQa::WriteHistograms()
+{
   gDirectory->mkdir("CbmTrdClusterizerFastQa");
   gDirectory->cd("CbmTrdClusterizerFastQa");
   gDirectory->cd("..");

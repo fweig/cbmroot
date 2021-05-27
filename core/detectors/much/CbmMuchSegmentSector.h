@@ -12,16 +12,16 @@
 #ifndef CbmMuchSegmentSector_H
 #define CbmMuchSegmentSector_H 1
 
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TString.h>     // for TString
+#include <typeinfo>      // for bad_cast
 
-#include <fstream>   // for string, getline, char_traits, basic_istream
-#include <map>       // for map
-#include <typeinfo>  // for bad_cast
-#include <vector>    // for vector
-
-#include <FairTask.h>  // for FairTask, InitStatus
+#include <fstream>  // for string, getline, char_traits, basic_istream
+#include <map>      // for map
+#include <vector>   // for vector
 
 class CbmGeoMuchPar;
 class CbmMuchLayerSide;
@@ -54,29 +54,24 @@ public:
   void DebugSwitchOn() { fDebug = 1; }
 
 private:
-  CbmGeoMuchPar* fGeoPar;  // Geometry parameters container
-  Int_t fNStations;        // Number of stations
-  Int_t fFlag;             // falg for geometry
-  TObjArray* fStations;    // Array of stations
-  TString fInputFileName;  // Name of the file with input parameters
-  TString fDigiFileName;   // Name of the file with segmentation parameters
-  std::map<Int_t, Int_t>
-    fNRegions;  // Map from a station index to a number of circled regions in the station
-  std::map<Int_t, std::vector<Double_t>>
-    fRadii;  // Map from a station index to a vector of circled regions radii
+  CbmGeoMuchPar* fGeoPar;            // Geometry parameters container
+  Int_t fNStations;                  // Number of stations
+  Int_t fFlag;                       // falg for geometry
+  TObjArray* fStations;              // Array of stations
+  TString fInputFileName;            // Name of the file with input parameters
+  TString fDigiFileName;             // Name of the file with segmentation parameters
+  std::map<Int_t, Int_t> fNRegions;  // Map from a station index to a number of circled regions in the station
+  std::map<Int_t, std::vector<Double_t>> fRadii;  // Map from a station index to a vector of circled regions radii
   std::map<Int_t, std::vector<Double_t>>
     fAngles;  // Map from a station index to a vector of single pad angles for given regions
   std::map<Int_t, std::vector<Double_t>>
     fSecLx;  // Map from a station index to a vector of sector widths for each region
   std::map<Int_t, std::vector<Double_t>>
-    fSecLy;  // Map from a station index to a vector of sector lengths for each region
-  std::map<Int_t, Int_t>
-    fNChannels;  // Map from a station index to a number of channels per sector
-  std::map<Int_t, std::vector<Int_t>>
-    fNCols;  // Map from a station index to a vector of number of columns in a sector
-  std::map<Int_t, std::vector<Int_t>>
-    fNRows;  // Map from a station index to a vector of number of rows in a sector
-  Int_t fDebug;  // Debug info switch
+    fSecLy;                                    // Map from a station index to a vector of sector lengths for each region
+  std::map<Int_t, Int_t> fNChannels;           // Map from a station index to a number of channels per sector
+  std::map<Int_t, std::vector<Int_t>> fNCols;  // Map from a station index to a vector of number of columns in a sector
+  std::map<Int_t, std::vector<Int_t>> fNRows;  // Map from a station index to a vector of number of rows in a sector
+  Int_t fDebug;                                // Debug info switch
 
   /** Get parameter containers **/
   virtual void SetParContainers();
@@ -100,8 +95,7 @@ private:
      * @param module  Module which contains the given sector
      * @param sector  Sector to segment
      */
-  void SegmentSector(CbmMuchModuleGemRadial* module,
-                     CbmMuchSectorRadial* sector);
+  void SegmentSector(CbmMuchModuleGemRadial* module, CbmMuchSectorRadial* sector);
 
   /** Reads input parameters for the segmentation. */
   void ReadInputFile();
@@ -110,28 +104,29 @@ private:
   void DrawSegmentation();
 
   // -------------------- Methods for working with strings --------------------------
-  void Trim(std::string& str) {
+  void Trim(std::string& str)
+  {
     std::string::size_type pos1 = str.find_first_not_of(' ');
     std::string::size_type pos2 = str.find_last_not_of(' ');
-    str = str.substr(pos1 == std::string::npos ? 0 : pos1,
-                     pos2 == std::string::npos ? str.length() - 1
-                                               : pos2 - pos1 + 1);
+    str =
+      str.substr(pos1 == std::string::npos ? 0 : pos1, pos2 == std::string::npos ? str.length() - 1 : pos2 - pos1 + 1);
   }
 
-  Bool_t IsDummyLine(std::string& str) {
+  Bool_t IsDummyLine(std::string& str)
+  {
     Trim(str);
-    return str[0] == '#' || str.length() == 0 || str[0] == '\0'
-           || str[0] == '\n';
+    return str[0] == '#' || str.length() == 0 || str[0] == '\0' || str[0] == '\n';
   }
 
-  void OmitDummyLines(std::ifstream& infile, std::string& str) {
+  void OmitDummyLines(std::ifstream& infile, std::string& str)
+  {
     getline(infile, str);
     while (IsDummyLine(str))
       getline(infile, str);
   }
 
-  std::vector<std::string>&
-  Split(const std::string& s, char delim, std::vector<std::string>& elems) {
+  std::vector<std::string>& Split(const std::string& s, char delim, std::vector<std::string>& elems)
+  {
     std::stringstream ss(s);
     std::string item;
     while (getline(ss, item, delim)) {
@@ -141,18 +136,22 @@ private:
   }
 
 
-  std::vector<std::string> Split(const std::string& s, char delim) {
+  std::vector<std::string> Split(const std::string& s, char delim)
+  {
     std::vector<std::string> elems;
     return Split(s, delim, elems);
   }
 
   template<class T>
-  void StrToNum(std::string& str, T& number) {
+  void StrToNum(std::string& str, T& number)
+  {
     try {
       std::stringstream ss(str);
-      if ((ss >> number).fail() || !(ss >> std::ws).eof())
-        throw std::bad_cast();
-    } catch (const std::bad_cast& exc) { Fatal("", "Invalid cast.\n"); }
+      if ((ss >> number).fail() || !(ss >> std::ws).eof()) throw std::bad_cast();
+    }
+    catch (const std::bad_cast& exc) {
+      Fatal("", "Invalid cast.\n");
+    }
   }
   // --------------------------------------------------------------------------------
 

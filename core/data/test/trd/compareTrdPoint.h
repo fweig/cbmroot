@@ -3,21 +3,13 @@
 
 #include "compareFairMCPoint.h"
 
-void compareTrdPointDataMembers(CbmTrdPoint& test,
-                                Int_t trackID,
-                                Int_t detID,
-                                TVector3 posin,
-                                TVector3 momin,
-                                TVector3 posout,
-                                TVector3 momout,
-                                Double_t tof,
-                                Double_t length,
-                                Double_t eLoss,
-                                Int_t eventid) {
+void compareTrdPointDataMembers(CbmTrdPoint& test, Int_t trackID, Int_t detID, TVector3 posin, TVector3 momin,
+                                TVector3 posout, TVector3 momout, Double_t tof, Double_t length, Double_t eLoss,
+                                Int_t eventid)
+{
 
   FairMCPoint test1 = static_cast<FairMCPoint>(test);
-  compareFairMCPointDataMembers(
-    test1, trackID, detID, posin, momin, tof, length, eLoss, eventid);
+  compareFairMCPointDataMembers(test1, trackID, detID, posin, momin, tof, length, eLoss, eventid);
 
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};

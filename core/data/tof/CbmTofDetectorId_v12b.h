@@ -28,7 +28,8 @@
 #define CBMTOFDETECTORID_V12B_H 1
 
 #include "CbmTofDetectorId.h"  // for CbmTofDetectorId, CbmTofDetectorInfo
-#include <RtypesCore.h>        // for Int_t
+
+#include <RtypesCore.h>  // for Int_t
 
 class CbmTofDetectorId_v12b : public CbmTofDetectorId {
 

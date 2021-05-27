@@ -15,18 +15,14 @@
  */
 
 #include "CbmL1MCTrack.h"
+
 #include "CbmL1.h"
 #include "CbmL1Constants.h"
+
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1StsHit.h"
 
-CbmL1MCTrack::CbmL1MCTrack(double mass_,
-                           double q_,
-                           TVector3 vr,
-                           TLorentzVector vp,
-                           int _ID,
-                           int _mother_ID,
-                           int _pdg)
+CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector vp, int _ID, int _mother_ID, int _pdg)
   : mass(mass_)
   , q(q_)
   , p(0)
@@ -54,7 +50,8 @@ CbmL1MCTrack::CbmL1MCTrack(double mass_,
   , isReconstructable(0)
   , isAdditional()
   , rTracks()
-  , tTracks() {
+  , tTracks()
+{
   x  = vr.X();
   y  = vr.Y();
   z  = vr.Z();
@@ -80,7 +77,8 @@ CbmL1MCTrack::CbmL1MCTrack(double mass_,
 //   p = sqrt( fabs(px*px + py*py + pz*pz ));
 // };
 
-void CbmL1MCTrack::Init() {
+void CbmL1MCTrack::Init()
+{
   CbmL1* L1 = CbmL1::Instance();
   // get stsHits
   StsHits.clear();
@@ -88,8 +86,7 @@ void CbmL1MCTrack::Init() {
     CbmL1MCPoint* point = &(L1->vMCPoints[Points[iP]]);
     for (unsigned int iH = 0; iH < point->hitIds.size(); iH++) {
       const int iih = point->hitIds[iH];
-      if (std::find(StsHits.begin(), StsHits.end(), iih) == StsHits.end())
-        StsHits.push_back(iih);
+      if (std::find(StsHits.begin(), StsHits.end(), iih) == StsHits.end()) StsHits.push_back(iih);
     }
   }
 
@@ -101,7 +98,8 @@ void CbmL1MCTrack::Init() {
 }  // void CbmL1MCTrack::Init()
 
 
-float CbmL1MCTrack::Fraction_MC() {
+float CbmL1MCTrack::Fraction_MC()
+{
   //     if ( Points.size() == 0 ) return 0;
 
   CbmL1* L1   = CbmL1::Instance();
@@ -113,7 +111,8 @@ float CbmL1MCTrack::Fraction_MC() {
 }
 
 
-void CbmL1MCTrack::CalculateMCCont() {
+void CbmL1MCTrack::CalculateMCCont()
+{
   CbmL1* L1 = CbmL1::Instance();
 
   int nPoints     = Points.size();
@@ -122,8 +121,7 @@ void CbmL1MCTrack::CalculateMCCont() {
   for (int ih = 0; ih < nPoints; ih++) {
     CbmL1MCPoint& h = L1->vMCPoints[Points[ih]];
     int ista        = h.iStation;
-    if (ista - istaold == 1)
-      ncont++;
+    if (ista - istaold == 1) ncont++;
     else if (ista - istaold > 1) {
       if (nMCContStations < ncont) nMCContStations = ncont;
       ncont = 1;
@@ -134,7 +132,8 @@ void CbmL1MCTrack::CalculateMCCont() {
   if (nMCContStations < ncont) nMCContStations = ncont;
 };  // void CbmL1MCTrack::CalculateMCCont()
 
-void CbmL1MCTrack::CalculateHitCont() {
+void CbmL1MCTrack::CalculateHitCont()
+{
   CbmL1* L1    = CbmL1::Instance();
   L1Algo* algo = L1->algo;
 
@@ -147,16 +146,13 @@ void CbmL1MCTrack::CalculateHitCont() {
       const L1StsHit& h = (*algo->vStsHits)[jh];
       int ista          = (*algo->vSFlag)[h.f] / 4;
 
-      if (ista - istaold == 1)
-        ncont++;
+      if (ista - istaold == 1) ncont++;
       else if (ista - istaold > 1) {
         if (nHitContStations < ncont) nHitContStations = ncont;
         ncont = 1;
       }
 
-      if (
-        !(ista
-          >= istaold)) {  // tracks going in backward direction are not reconstructable
+      if (!(ista >= istaold)) {  // tracks going in backward direction are not reconstructable
         nHitContStations = 0;
         return;
       }
@@ -169,7 +165,8 @@ void CbmL1MCTrack::CalculateHitCont() {
 
 };  // void CbmL1MCTrack::CalculateHitCont()
 
-void CbmL1MCTrack::CalculateMaxNStaHits() {
+void CbmL1MCTrack::CalculateMaxNStaHits()
+{
   CbmL1* L1 = CbmL1::Instance();
 
   maxNStaHits         = 0;
@@ -178,12 +175,9 @@ void CbmL1MCTrack::CalculateMaxNStaHits() {
   int cur_maxNStaHits = 0;
   for (unsigned int iH = 0; iH < StsHits.size(); iH++) {
     CbmL1HitStore& sh = L1->vHitStore[StsHits[iH]];
-    if (sh.iStation == lastSta) {
-      cur_maxNStaHits++;
-    } else {  // new station
-      if (
-        !(sh.iStation
-          > lastSta)) {  // tracks going in backward direction are not reconstructable
+    if (sh.iStation == lastSta) { cur_maxNStaHits++; }
+    else {                             // new station
+      if (!(sh.iStation > lastSta)) {  // tracks going in backward direction are not reconstructable
         maxNStaHits = 0;
         return;
       }
@@ -197,7 +191,8 @@ void CbmL1MCTrack::CalculateMaxNStaHits() {
   //   cout << pdg << " " << p << " " << StsHits.size() << " > " << maxNStaHits << endl;
 };  // void CbmL1MCTrack::CalculateHitCont()
 
-void CbmL1MCTrack::CalculateMaxNStaMC() {
+void CbmL1MCTrack::CalculateMaxNStaMC()
+{
   CbmL1* L1 = CbmL1::Instance();
 
   maxNStaMC         = 0;
@@ -208,8 +203,7 @@ void CbmL1MCTrack::CalculateMaxNStaMC() {
   int cur_maxNStaMC = 0, cur_maxNSensorMC = 0;
   for (unsigned int iH = 0; iH < Points.size(); iH++) {
     CbmL1MCPoint& mcP = L1->vMCPoints[Points[iH]];
-    if (mcP.iStation == lastSta)
-      cur_maxNStaMC++;
+    if (mcP.iStation == lastSta) cur_maxNStaMC++;
     else {  // new station
       if (cur_maxNStaMC > maxNStaMC) maxNStaMC = cur_maxNStaMC;
       cur_maxNStaMC = 1;
@@ -231,7 +225,8 @@ void CbmL1MCTrack::CalculateMaxNStaMC() {
 };  // void CbmL1MCTrack::CalculateMaxNStaMC()
 
 
-void CbmL1MCTrack::CalculateIsReconstructable() {
+void CbmL1MCTrack::CalculateIsReconstructable()
+{
   CbmL1* L1 = CbmL1::Instance();
 
   bool f = 1;
@@ -246,24 +241,17 @@ void CbmL1MCTrack::CalculateIsReconstructable() {
   f &= (maxNStaMC <= 4);
   //   f &= (maxNSensorMC <= 1);
   if (L1->fPerformance == 4)
-    isReconstructable = f & (nMCContStations >= CbmL1Constants::MinNStations)
-                        & (Fraction_MC() > 0.5);
-  if (L1->fPerformance == 3)
-    isReconstructable =
-      f & (nMCContStations >= CbmL1Constants::MinNStations);  // L1-MC
-  if (L1->fPerformance == 2)
-    isReconstructable =
-      f & (nStations >= CbmL1Constants::MinNStations);  // QA definition
+    isReconstructable = f & (nMCContStations >= CbmL1Constants::MinNStations) & (Fraction_MC() > 0.5);
+  if (L1->fPerformance == 3) isReconstructable = f & (nMCContStations >= CbmL1Constants::MinNStations);  // L1-MC
+  if (L1->fPerformance == 2) isReconstructable = f & (nStations >= CbmL1Constants::MinNStations);  // QA definition
   if (L1->fPerformance == 1)
-    isReconstructable =
-      f & (nHitContStations >= CbmL1Constants::MinNStations);  // L1 definition
+    isReconstructable = f & (nHitContStations >= CbmL1Constants::MinNStations);  // L1 definition
 
   if (Points.size() > 0) {
-    isAdditional = f & (nHitContStations == nStations)
-                   & (nMCContStations == nStations) & (nMCStations == nStations)
-                   & (nHitContStations >= 3)
-                   & (L1->vMCPoints[Points[0]].iStation == 0);
+    isAdditional = f & (nHitContStations == nStations) & (nMCContStations == nStations) & (nMCStations == nStations)
+                   & (nHitContStations >= 3) & (L1->vMCPoints[Points[0]].iStation == 0);
     isAdditional &= !isReconstructable;
-  } else
+  }
+  else
     isAdditional = 0;
 };  // bool CbmL1MCTrack::IsReconstructable()

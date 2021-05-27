@@ -1,14 +1,12 @@
-void run_analysis_jpsi(Int_t nEvents = 1000) {
+void run_analysis_jpsi(Int_t nEvents = 1000)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   Int_t iVerbose = 0;
 
-  TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString stsMatBudgetFileName =
-    parDir
-    + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
+  TString script               = TString(gSystem->Getenv("SCRIPT"));
+  TString parDir               = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v13d.root";  // Material budget file for L1 STS tracking
 
   gRandom->SetSeed(10);
 
@@ -22,17 +20,14 @@ void run_analysis_jpsi(Int_t nEvents = 1000) {
   //TString recoFile ="/hera/cbm/users/adrian/data/test/reco.0001.root";
   //TString anaFile ="/hera/cbm/users/adrian/data/test/analysis.0001.root";
 
-  TString parFile = "/Users/slebedev/Development/cbm/data/jpsi/param.0001.root";
+  TString parFile  = "/Users/slebedev/Development/cbm/data/jpsi/param.0001.root";
   TString recoFile = "/Users/slebedev/Development/cbm/data/jpsi/reco.0001.root";
   TString mcFile   = "/Users/slebedev/Development/cbm/data/jpsi/mc.0001.root";
-  TString anaFile =
-    "/Users/slebedev/Development/cbm/data/jpsi/analysis.0001.root";
+  TString anaFile  = "/Users/slebedev/Development/cbm/data/jpsi/analysis.0001.root";
 
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
-  TObjString trdDigiFile =
-    parDir + "/trd/trd_v14a_3e.digi.par";                      // TRD digi file
-  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";  // TOF digi file
+  TObjString stsDigiFile = parDir + "/sts/sts_v13d_std.digi.par";  // STS digi file
+  TObjString trdDigiFile = parDir + "/trd/trd_v14a_3e.digi.par";   // TRD digi file
+  TObjString tofDigiFile = parDir + "/tof/tof_v13b.digi.par";      // TOF digi file
   Double_t trdAnnCut     = 0.85;
   Int_t minNofPointsTrd  = 6;
   if (script == "yes") {
@@ -46,8 +41,7 @@ void run_analysis_jpsi(Int_t nEvents = 1000) {
     stsMatBudgetFileName = TString(gSystem->Getenv("STS_MATERIAL_BUDGET_FILE"));
   }
 
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir     = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TList* parFileList = new TList();
   if (stsDigiFile.GetString() != "") parFileList->Add(&stsDigiFile);
   if (trdDigiFile.GetString() != "") parFileList->Add(&trdDigiFile);

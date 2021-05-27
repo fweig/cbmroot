@@ -14,14 +14,21 @@
 #ifndef CBMTOFGEOHANDLER_H
 #define CBMTOFGEOHANDLER_H 1
 
-enum TofGeometryVersions { k07a, k12a, k12b, k14a, k21a };
-
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Float_t, Bool_t, kFALSE, Double_t
-#include <TObject.h>     // for TObject
-#include <TString.h>     // for TString
+enum TofGeometryVersions
+{
+  k07a,
+  k12a,
+  k12b,
+  k14a,
+  k21a
+};
 
 #include "CbmTofDetectorId.h"  // for CbmTofDetectorId (ptr only), CbmTofDet...
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Float_t, Bool_t, kFALSE, Double_t
+#include <TObject.h>  // for TObject
+#include <TString.h>  // for TString
 
 class TGeoBBox;
 class TGeoHMatrix;

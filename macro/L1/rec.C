@@ -1,4 +1,5 @@
-void rec() {
+void rec()
+{
 
   TStopwatch timer;
   timer.Start();
@@ -76,22 +77,19 @@ void rec() {
   //CbmStsTrackFinderIdeal* trackFinder = new CbmStsTrackFinderIdeal();
   CbmL1StsTrackFinder* trackFinder = new CbmL1StsTrackFinder();
 
-  CbmStsFindTracks* findTask =
-    new CbmStsFindTracks("finderTask", "FairTask", trackFinder);
+  CbmStsFindTracks* findTask = new CbmStsFindTracks("finderTask", "FairTask", trackFinder);
   fRun->AddTask(findTask);
 
   //****************** track fitter *************
 
   CbmStsKFTrackFitter* kalman = new CbmStsKFTrackFitter;
-  CbmStsFitTracks* fitTask =
-    new CbmStsFitTracks("Kalman fitter", "FairTask", kalman);
+  CbmStsFitTracks* fitTask    = new CbmStsFitTracks("Kalman fitter", "FairTask", kalman);
   fRun->AddTask(fitTask);
 
   //****************** vertex finder *************
 
-  CbmPVFinderKF* vfinder = new CbmPVFinderKF;
-  CbmFindPrimaryVertex* vTask =
-    new CbmFindPrimaryVertex("Kalman PV finder", "FairTask", vfinder);
+  CbmPVFinderKF* vfinder      = new CbmPVFinderKF;
+  CbmFindPrimaryVertex* vTask = new CbmFindPrimaryVertex("Kalman PV finder", "FairTask", vfinder);
   fRun->AddTask(vTask);
 
   //***************** Sts<->MC track match *********
@@ -106,8 +104,7 @@ void rec() {
 
   //***************** performance fitter ********
 
-  CbmStsFitPerformanceTask* fitperf =
-    new CbmStsFitPerformanceTask("FitPerformance");
+  CbmStsFitPerformanceTask* fitperf = new CbmStsFitPerformanceTask("FitPerformance");
   fitperf->DoTrackAnalysis();
   fitperf->DoVertexAnalysis(1);
   fitperf->DoD0Analysis(0);

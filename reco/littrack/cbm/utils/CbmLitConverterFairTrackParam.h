@@ -30,15 +30,16 @@
 #include "TClonesArray.h"
 
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <set>
+
+#include <cmath>
 
 
 class CbmLitConverterFairTrackParam {
 public:
-  static void FairTrackParamToCbmLitTrackParam(const FairTrackParam* par,
-                                               CbmLitTrackParam* litPar) {
+  static void FairTrackParamToCbmLitTrackParam(const FairTrackParam* par, CbmLitTrackParam* litPar)
+  {
     litPar->SetX((litfloat) par->GetX());
     litPar->SetY((litfloat) par->GetY());
     litPar->SetZ((litfloat) par->GetZ());
@@ -72,8 +73,8 @@ public:
     litPar->SetCovMatrix(covVec);
   }
 
-  static void FairTrackParamToCbmLitTrackParam(const CbmTrackParam* par,
-                                               CbmLitTrackParam* litPar) {
+  static void FairTrackParamToCbmLitTrackParam(const CbmTrackParam* par, CbmLitTrackParam* litPar)
+  {
     litPar->SetX((litfloat) par->GetX());
     litPar->SetY((litfloat) par->GetY());
     litPar->SetZ((litfloat) par->GetZ());
@@ -107,8 +108,8 @@ public:
     litPar->SetCovMatrix(covVec);
   }
 
-  static void CbmLitTrackParamToFairTrackParam(const CbmLitTrackParam* litPar,
-                                               FairTrackParam* par) {
+  static void CbmLitTrackParamToFairTrackParam(const CbmLitTrackParam* litPar, FairTrackParam* par)
+  {
     par->SetX(litPar->GetX());
     par->SetY(litPar->GetY());
     par->SetZ(litPar->GetZ());

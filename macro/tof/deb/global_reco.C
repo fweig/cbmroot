@@ -13,26 +13,23 @@ using std::cout;
 using std::endl;
 
 void global_reco(Int_t nEvents = 100,  // number of events
-                 Int_t seed    = 555) {
+                 Int_t seed    = 555)
+{
   gRandom->SetSeed(seed);
 
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   // Input and output data
   //TString dir = "/Users/andrey/Development/cbm/d/events/sts_tof/"; // Output directory
-  TString dir     = "data/";                  // Output directory
-  TString mcFile  = dir + "mc.0000.root";     // MC transport file
-  TString parFile = dir + "param.0000.root";  // Parameters file
-  TString globalRecoFile =
-    dir
-    + "global.reco.0000.root";  // Output file with reconstructed tracks and hits
+  TString dir            = "data/";                        // Output directory
+  TString mcFile         = dir + "mc.0000.root";           // MC transport file
+  TString parFile        = dir + "param.0000.root";        // Parameters file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // Output file with reconstructed tracks and hits
 
   // Digi files
-  TList* parFileList = new TList();
-  TObjString stsDigiFile =
-    parDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
+  TList* parFileList           = new TList();
+  TObjString stsDigiFile       = parDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
   TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v12b.root";
 
   TString TofGeoPar = "/parameters/tof/par_tof_V13b.txt";  // 10 m version
@@ -95,8 +92,7 @@ void global_reco(Int_t nEvents = 100,  // number of events
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
 
   FairTask* stsFindHits = new CbmStsFindHits("STS Hit Finder", iVerbose);
@@ -221,8 +217,7 @@ void global_reco(Int_t nEvents = 100,  // number of events
   cout << " All ok " << endl;
   cout << "Output file is " << globalRecoFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

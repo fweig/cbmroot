@@ -1,11 +1,8 @@
 #ifndef COMPARETOFDIGI_H
 #define COMPARETOFDIGI_H 1
 
-void compareTofDigiDataMembers(CbmTofDigi& test,
-                               Int_t address,
-                               ECbmModuleId systemid,
-                               Double_t time,
-                               Double_t tot) {
+void compareTofDigiDataMembers(CbmTofDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t tot)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};

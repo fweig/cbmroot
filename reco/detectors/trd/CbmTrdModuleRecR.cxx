@@ -24,23 +24,27 @@ constexpr Double_t CbmTrdModuleRecR::kxVar_Value[2][5];
 constexpr Double_t CbmTrdModuleRecR::kyVar_Value[2][5];
 
 //_______________________________________________________________________________
-CbmTrdModuleRecR::CbmTrdModuleRecR()
-  : CbmTrdModuleRec(), fDigiCounter(0), fDigiMap(), fClusterMap() {
+CbmTrdModuleRecR::CbmTrdModuleRecR() : CbmTrdModuleRec(), fDigiCounter(0), fDigiMap(), fClusterMap()
+{
   SetNameTitle("TrdModuleRecR", "Reconstructor for rectangular pad TRD module");
 }
 
 //_______________________________________________________________________________
 CbmTrdModuleRecR::CbmTrdModuleRecR(Int_t mod, Int_t ly, Int_t rot)
-  : CbmTrdModuleRec(mod, ly, rot), fDigiCounter(0), fDigiMap(), fClusterMap() {
-  SetNameTitle(Form("TrdModuleRecR%02d", mod),
-               "Reconstructor for rectangular pad TRD module");
+  : CbmTrdModuleRec(mod, ly, rot)
+  , fDigiCounter(0)
+  , fDigiMap()
+  , fClusterMap()
+{
+  SetNameTitle(Form("TrdModuleRecR%02d", mod), "Reconstructor for rectangular pad TRD module");
 }
 
 //_______________________________________________________________________________
 CbmTrdModuleRecR::~CbmTrdModuleRecR() {}
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecR::AddDigi(const CbmTrdDigi* digi, Int_t id) {
+Bool_t CbmTrdModuleRecR::AddDigi(const CbmTrdDigi* digi, Int_t id)
+{
 
   // fill the digimap
   fDigiMap.push_back(std::make_tuple(id, false, digi));
@@ -49,7 +53,8 @@ Bool_t CbmTrdModuleRecR::AddDigi(const CbmTrdDigi* digi, Int_t id) {
 }
 
 //_______________________________________________________________________________
-void CbmTrdModuleRecR::Clear(Option_t* opt) {
+void CbmTrdModuleRecR::Clear(Option_t* opt)
+{
   if (strcmp(opt, "cls") == 0) {
     fDigiMap.erase(fDigiMap.begin(), fDigiMap.end());
     fClusterMap.erase(fClusterMap.begin(), fClusterMap.end());
@@ -59,47 +64,45 @@ void CbmTrdModuleRecR::Clear(Option_t* opt) {
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecR::FindClusters() {
+Int_t CbmTrdModuleRecR::FindClusters()
+{
 
   std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
     mainit;  // subiterator for the deques in each module; searches for
              // main-trigger to then add the neighbors
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
-    FNit;  // last
-           // iterator to
-           // find the FN
-           // digis which
-           // correspond
-           // to the main
-           // trigger or
-           // the
-           // adjacent
-           // main
-           // triggers
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
-    start;  // marker to
-            // erase
-            // already
-            // processed
-            // entries
-            // from the
-            // map to
-            // reduce the
-            // complexity
-            // of the
-            // algorithm
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
-    stop;  // marker to
-           // erase
-           // already
-           // processed
-           // entries
-           // from the
-           // map to
-           // reduce the
-           // complexity
-           // of the
-           // algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator FNit;   // last
+                                                                             // iterator to
+                                                                             // find the FN
+                                                                             // digis which
+                                                                             // correspond
+                                                                             // to the main
+                                                                             // trigger or
+                                                                             // the
+                                                                             // adjacent
+                                                                             // main
+                                                                             // triggers
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator start;  // marker to
+                                                                             // erase
+                                                                             // already
+                                                                             // processed
+                                                                             // entries
+                                                                             // from the
+                                                                             // map to
+                                                                             // reduce the
+                                                                             // complexity
+                                                                             // of the
+                                                                             // algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator stop;   // marker to
+                                                                             // erase
+                                                                             // already
+                                                                             // processed
+                                                                             // entries
+                                                                             // from the
+                                                                             // map to
+                                                                             // reduce the
+                                                                             // complexity
+                                                                             // of the
+                                                                             // algorithm
 
   // reset time information; used to erase processed digis from the map
   Double_t time     = 0;
@@ -126,9 +129,8 @@ Int_t CbmTrdModuleRecR::FindClusters() {
       Int_t ncols     = fDigiPar->GetNofColumns();
       Int_t triggerId = digi->GetTriggerType();
 
-      std::cout << " module: " << fModAddress << "   time: " << ptime
-                << "   charge: " << Charge << "   col: " << channel % ncols
-                << "   row: " << channel / ncols << "   trigger: " << triggerId
+      std::cout << " module: " << fModAddress << "   time: " << ptime << "   charge: " << Charge
+                << "   col: " << channel % ncols << "   row: " << channel / ncols << "   trigger: " << triggerId
                 << "  ncols: " << ncols << std::endl;
     }
   }
@@ -196,27 +198,24 @@ Int_t CbmTrdModuleRecR::FindClusters() {
     std::tuple<const CbmTrdDigi*, const CbmTrdDigi*, const CbmTrdDigi*> botdigi;
 
     // //some logical flags to reject unnecessary steps
-    Bool_t finished =
-      false;  // is turned true either if the implemented trigger
-              // logic is fullfilled or if there are no more
-              // adjacend pads due to edges,etc.
-    Bool_t sealtopcol =
-      false;  // the "seal" bools register when the logical end
-              // of the cluster was found
+    Bool_t finished = false;    // is turned true either if the implemented trigger
+                                // logic is fullfilled or if there are no more
+                                // adjacend pads due to edges,etc.
+    Bool_t sealtopcol = false;  // the "seal" bools register when the logical end
+                                // of the cluster was found
     Bool_t sealbotcol = false;
     Bool_t sealtoprow = false;
     Bool_t sealbotrow = false;
-    Bool_t rowchange = false;  // flags that there is a possible two row cluster
-    Bool_t addtop = false;  // adds the buffered information of the second row
-    Bool_t addbot = false;
+    Bool_t rowchange  = false;  // flags that there is a possible two row cluster
+    Bool_t addtop     = false;  // adds the buffered information of the second row
+    Bool_t addbot     = false;
 
     // //deque which contains the actual cluster
     std::deque<std::pair<Int_t, const CbmTrdDigi*>> cluster;
     cluster.push_back(std::make_pair(digiId, digi));
     if (print)
-      std::cout << " module: " << fModAddress << "   time: " << time
-                << "   charge: " << Charge << "   col: " << channel % ncols
-                << "   row: " << channel / ncols << "   trigger: " << triggerId
+      std::cout << " module: " << fModAddress << "   time: " << time << "   charge: " << Charge
+                << "   col: " << channel % ncols << "   row: " << channel / ncols << "   trigger: " << triggerId
                 << "  ncols: " << ncols << std::endl;
     //    std::cout<<" module: " << fModAddress<<"   time: " << time<<"
     //    charge: " << Charge<<"   col: " << channel % ncols<<"   trigger: " <<
@@ -256,8 +255,7 @@ Int_t CbmTrdModuleRecR::FindClusters() {
           // multiple row processing
           // first buffering
 
-          if (ch == channel - ncols && !rowchange
-              && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (ch == channel - ncols && !rowchange && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
             rowchange    = true;
             bufferbot[0] = charge;
             counterbot++;
@@ -273,8 +271,7 @@ Int_t CbmTrdModuleRecR::FindClusters() {
             counterbot++;
             std::get<2>(botdigi) = d;
           }
-          if (ch == channel + ncols && !rowchange
-              && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (ch == channel + ncols && !rowchange && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
             rowchange    = true;
             buffertop[0] = charge;
             countertop++;
@@ -304,72 +301,53 @@ Int_t CbmTrdModuleRecR::FindClusters() {
 
           // then the calculation of the center of gravity with the
           // identification of common CoGs
-          if (countertop == 3) {
-            CoGtop =
-              (buffertop[2] / buffertop[0]) - (buffertop[1] / buffertop[0]);
-          }
-          if (counterbot == 3) {
-            CoGbot =
-              (bufferbot[2] / bufferbot[0]) - (bufferbot[1] / bufferbot[0]);
-          }
-          if (counterrow == 3) {
-            CoGrow =
-              (bufferrow[2] / bufferrow[0]) - (bufferrow[1] / bufferrow[0]);
-          }
-          if (countertop == 3 && counterrow == 3 && !addtop
-              && TMath::Abs((CoGtop - CoGrow)) < 0.25 * CoGrow) {
+          if (countertop == 3) { CoGtop = (buffertop[2] / buffertop[0]) - (buffertop[1] / buffertop[0]); }
+          if (counterbot == 3) { CoGbot = (bufferbot[2] / bufferbot[0]) - (bufferbot[1] / bufferbot[0]); }
+          if (counterrow == 3) { CoGrow = (bufferrow[2] / bufferrow[0]) - (bufferrow[1] / bufferrow[0]); }
+          if (countertop == 3 && counterrow == 3 && !addtop && TMath::Abs((CoGtop - CoGrow)) < 0.25 * CoGrow) {
             addtop = true;
           }
-          if (counterbot == 3 && counterrow == 3 && !addbot
-              && TMath::Abs((CoGbot - CoGrow)) < 0.25 * CoGrow) {
+          if (counterbot == 3 && counterrow == 3 && !addbot && TMath::Abs((CoGbot - CoGrow)) < 0.25 * CoGrow) {
             addbot = true;
           }
         }
 
         // logical implementation of the trigger logic in the same row as the
         // main trigger
-        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kSelf
-            && !std::get<1>(*FNit)) {
+        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
           cluster.push_back(std::make_pair(digiid, d));
           lowcol = ch;
           dmain++;
           std::get<1>(*FNit) = true;
           if (print)
-            std::cout << " time: " << newtime << " charge: " << charge
-                      << "   col: " << col << "   row: " << ch / ncols
+            std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == highcol + 1 && trigger == CbmTrdDigi::kSelf
-            && !std::get<1>(*FNit)) {
+        if (ch == highcol + 1 && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
           cluster.push_back(std::make_pair(digiid, d));
           highcol = ch;
           dmain++;
           std::get<1>(*FNit) = true;
           if (print)
-            std::cout << " time: " << newtime << " charge: " << charge
-                      << "   col: " << col << "   row: " << ch / ncols
+            std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == highcol + 1 && trigger == CbmTrdDigi::kNeighbor
-            && !std::get<1>(*FNit) && !sealtopcol) {
+        if (ch == highcol + 1 && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit) && !sealtopcol) {
           cluster.push_back(std::make_pair(digiid, d));
           sealtopcol = true;
           dmain++;
           std::get<1>(*FNit) = true;
           if (print)
-            std::cout << " time: " << newtime << " charge: " << charge
-                      << "   col: " << col << "   row: " << ch / ncols
+            std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kNeighbor
-            && !std::get<1>(*FNit) && !sealbotcol) {
+        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit) && !sealbotcol) {
           cluster.push_back(std::make_pair(digiid, d));
           sealbotcol = true;
           dmain++;
           std::get<1>(*FNit) = true;
           if (print)
-            std::cout << " time: " << newtime << " charge: " << charge
-                      << "   col: " << col << "   row: " << ch / ncols
+            std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
         if (col == ncols) { sealtopcol = true; }
@@ -391,31 +369,29 @@ Int_t CbmTrdModuleRecR::FindClusters() {
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == lowrow - 1 && lowrow != channel
-              && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (rowchange && ch == lowrow - 1 && lowrow != channel && trigger == CbmTrdDigi::kSelf
+              && !std::get<1>(*FNit)) {
             cluster.push_back(std::make_pair(digiid, d));
             lowrow = ch;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == highrow + 1 && highrow != channel
-              && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (rowchange && ch == highrow + 1 && highrow != channel && trigger == CbmTrdDigi::kSelf
+              && !std::get<1>(*FNit)) {
             cluster.push_back(std::make_pair(digiid, d));
             highrow = ch;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == highrow + 1 && highrow != channel
-              && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit)
-              && !sealtoprow) {
+          if (rowchange && ch == highrow + 1 && highrow != channel && trigger == CbmTrdDigi::kNeighbor
+              && !std::get<1>(*FNit) && !sealtoprow) {
             cluster.push_back(std::make_pair(digiid, d));
             sealtoprow = true;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == lowrow - 1 && lowrow != channel
-              && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit)
-              && !sealbotrow) {
+          if (rowchange && ch == lowrow - 1 && lowrow != channel && trigger == CbmTrdDigi::kNeighbor
+              && !std::get<1>(*FNit) && !sealbotrow) {
             cluster.push_back(std::make_pair(digiid, d));
             sealbotrow = true;
             dmain++;
@@ -425,10 +401,8 @@ Int_t CbmTrdModuleRecR::FindClusters() {
       }
 
       // some finish criteria
-      if (((sealbotcol && sealtopcol) && !rowchange) || dmain == 0)
-        finished = true;
-      if ((sealbotcol && sealtopcol && sealtoprow && sealbotrow) || dmain == 0)
-        finished = true;
+      if (((sealbotcol && sealtopcol) && !rowchange) || dmain == 0) finished = true;
+      if ((sealbotcol && sealtopcol && sealtoprow && sealbotrow) || dmain == 0) finished = true;
       //      finished=true;
       if (print) std::cout << dmain << std::endl;
     }  // end of cluster completion
@@ -451,17 +425,15 @@ Int_t CbmTrdModuleRecR::FindClusters() {
 }
 
 //_____________________________________________________________________
-void CbmTrdModuleRecR::addClusters(
-  std::deque<std::pair<Int_t, const CbmTrdDigi*>> cluster) {
+void CbmTrdModuleRecR::addClusters(std::deque<std::pair<Int_t, const CbmTrdDigi*>> cluster)
+{
   // create vector for indice matching
   std::vector<Int_t> digiIndices(cluster.size());
   Int_t idigi = 0;
 
   CbmDigiManager::Instance()->Init();
 
-  for (std::deque<std::pair<Int_t, const CbmTrdDigi*>>::iterator iDigi =
-         cluster.begin();
-       iDigi != cluster.end();
+  for (std::deque<std::pair<Int_t, const CbmTrdDigi*>>::iterator iDigi = cluster.begin(); iDigi != cluster.end();
        iDigi++) {
     // add digi id to vector
     digiIndices[idigi] = iDigi->first;
@@ -486,9 +458,9 @@ void CbmTrdModuleRecR::addClusters(
 Bool_t CbmTrdModuleRecR::MakeHits() { return kTRUE; }
 
 //_______________________________________________________________________________
-CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
-                                     const CbmTrdCluster* /*cluster*/,
-                                     std::vector<const CbmTrdDigi*>* digis) {
+CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId, const CbmTrdCluster* /*cluster*/,
+                                     std::vector<const CbmTrdDigi*>* digis)
+{
 
   TVector3 hit_posV;
   TVector3 local_pad_posV;
@@ -509,9 +481,7 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
   Int_t errorclass = 0.;
   Bool_t EB        = false;
   Bool_t EBP       = false;
-  for (std::vector<const CbmTrdDigi*>::iterator id = digis->begin();
-       id != digis->end();
-       id++) {
+  for (std::vector<const CbmTrdDigi*>::iterator id = digis->begin(); id != digis->end(); id++) {
     const CbmTrdDigi* digi = (*id);
     if (!digi) {
       continue;
@@ -532,8 +502,7 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
 
     totalCharge += digi->GetCharge();
 
-    fDigiPar->GetPadPosition(
-      digi->GetAddressChannel(), true, local_pad_posV, local_pad_dposV);
+    fDigiPar->GetPadPosition(digi->GetAddressChannel(), true, local_pad_posV, local_pad_dposV);
 
     Double_t xMin = local_pad_posV[0] - local_pad_dposV[0];
     Double_t xMax = local_pad_posV[0] + local_pad_dposV[0];
@@ -560,10 +529,9 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
   if (EB) {
     xVar = kxVar_Value[0][errorclass];
     yVar = kyVar_Value[0][errorclass];
-  } else {
-    if (EBP)
-      time -=
-        46;  //due to the event time of 0 in the EB mode and the ULong in the the digi time
+  }
+  else {
+    if (EBP) time -= 46;  //due to the event time of 0 in the EB mode and the ULong in the the digi time
     //TODO: move to parameter file
     xVar = kxVar_Value[1][errorclass];
     yVar = kyVar_Value[1][errorclass];
@@ -586,7 +554,8 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
   // TODO: get momentum for more exact spacial error
   if ((fDigiPar->GetOrientation() == 1) || (fDigiPar->GetOrientation() == 3)) {
     cluster_pad_dposV[0] = sqrt(fDigiPar->GetPadSizeY(1));
-  } else {
+  }
+  else {
     cluster_pad_dposV[1] = sqrt(fDigiPar->GetPadSizeY(1));
   }
 
@@ -596,30 +565,17 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
   //  cluster_pad_dposV, 0, clusterId,0, 0,
   //  totalCharge/1e6,time,Double_t(CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)));
   return new ((*fHits)[nofHits])
-    CbmTrdHit(fModAddress,
-              global,
-              cluster_pad_dposV,
-              0,
-              clusterId,
-              totalCharge / 1e6,
-              time,
+    CbmTrdHit(fModAddress, global, cluster_pad_dposV, 0, clusterId, totalCharge / 1e6, time,
               Double_t(8.5));  // TODO: move to parameter file
 }
 
-Double_t CbmTrdModuleRecR::GetSpaceResolution(Double_t val) {
+Double_t CbmTrdModuleRecR::GetSpaceResolution(Double_t val)
+{
 
-  std::pair<Double_t, Double_t> res[12] = {std::make_pair(0.5, 0.4),
-                                           std::make_pair(1, 0.35),
-                                           std::make_pair(2, 0.3),
-                                           std::make_pair(2.5, 0.3),
-                                           std::make_pair(3.5, 0.28),
-                                           std::make_pair(4.5, 0.26),
-                                           std::make_pair(5.5, 0.26),
-                                           std::make_pair(6.5, 0.26),
-                                           std::make_pair(7.5, 0.26),
-                                           std::make_pair(8.5, 0.26),
-                                           std::make_pair(8.5, 0.26),
-                                           std::make_pair(9.5, 0.26)};
+  std::pair<Double_t, Double_t> res[12] = {
+    std::make_pair(0.5, 0.4),  std::make_pair(1, 0.35),   std::make_pair(2, 0.3),    std::make_pair(2.5, 0.3),
+    std::make_pair(3.5, 0.28), std::make_pair(4.5, 0.26), std::make_pair(5.5, 0.26), std::make_pair(6.5, 0.26),
+    std::make_pair(7.5, 0.26), std::make_pair(8.5, 0.26), std::make_pair(8.5, 0.26), std::make_pair(9.5, 0.26)};
 
   Double_t selval = 0.;
 

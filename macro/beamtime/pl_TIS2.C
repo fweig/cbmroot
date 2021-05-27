@@ -1,4 +1,5 @@
-void pl_TIS2(Double_t dTmin = 0., Double_t dTmax = 1., TString sysinfo = "") {
+void pl_TIS2(Double_t dTmin = 0., Double_t dTmax = 1., TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -33,7 +34,8 @@ void pl_TIS2(Double_t dTmin = 0., Double_t dTmax = 1., TString sysinfo = "") {
     hhpfx = (TProfile*) h2->ProfileX();
     //h1->SetLineColor(3);
     //h1->GetXaxis()->SetTitle("time [s]");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -46,7 +48,8 @@ void pl_TIS2(Double_t dTmin = 0., Double_t dTmax = 1., TString sysinfo = "") {
     gPad->SetLogz();
     htpx  = (TH1*) h2->ProjectionX("htpx", 2, -1);
     htpfx = (TProfile*) h2->ProfileX();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

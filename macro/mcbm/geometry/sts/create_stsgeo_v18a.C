@@ -102,15 +102,15 @@
 // Re-definiton of station from new ladders
 
 
-#include "TGeoManager.h"
-#include <iomanip>
-#include <iostream>
-
 #include "TGeoCompositeShape.h"
 #include "TGeoCone.h"
+#include "TGeoManager.h"
 #include "TGeoPara.h"
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
+
+#include <iomanip>
+#include <iostream>
 
 
 // -------------   Steering variables       -----------------------------------
@@ -171,35 +171,21 @@ void CheckVolume(TGeoVolume* volume);
 void CheckVolume(TGeoVolume* volume, fstream& file);
 Double_t BeamPipeRadius(Double_t z);
 TGeoVolume* ConstructCone(Double_t coneDz);
-TGeoVolume*
-ConstructFrameBox(const TString& name, TGeoVolume* frameBoxVol, Double_t x);
-TGeoVolume*
-ConstructFrameElement(const TString& name, TGeoVolume* frameBoxVol, Double_t x);
+TGeoVolume* ConstructFrameBox(const TString& name, TGeoVolume* frameBoxVol, Double_t x);
+TGeoVolume* ConstructFrameElement(const TString& name, TGeoVolume* frameBoxVol, Double_t x);
 TGeoVolume* ConstructSmallCone(Double_t coneDz);
 TGeoVolume* ConstructBigCone(Double_t coneDz);
-TGeoVolume* ConstructHalfLadder(const TString& name,
-                                Int_t nSectors,
-                                Int_t* sectorTypes,
-                                char align);
-TGeoVolume* ConstructLadder(const char* name,
-                            TGeoVolume* halfLadderU,
-                            TGeoVolume* halfLadderD,
-                            Double_t shiftZ);
-TGeoVolume* ConstructLadderWithGap(const char* name,
-                                   TGeoVolume* halfLadderU,
-                                   TGeoVolume* halfLadderD,
-                                   Double_t gapY);
-TGeoVolume* ConstructStation(const char* name,
-                             Int_t iStation,
-                             Int_t nLadders,
-                             Int_t* ladderTypes,
-                             Double_t rHole);
+TGeoVolume* ConstructHalfLadder(const TString& name, Int_t nSectors, Int_t* sectorTypes, char align);
+TGeoVolume* ConstructLadder(const char* name, TGeoVolume* halfLadderU, TGeoVolume* halfLadderD, Double_t shiftZ);
+TGeoVolume* ConstructLadderWithGap(const char* name, TGeoVolume* halfLadderU, TGeoVolume* halfLadderD, Double_t gapY);
+TGeoVolume* ConstructStation(const char* name, Int_t iStation, Int_t nLadders, Int_t* ladderTypes, Double_t rHole);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_stsgeo_v18a(const char* geoTag = "v18a") {
+void create_stsgeo_v18a(const char* geoTag = "v18a")
+{
 
   // -------   Geometry file name (output)   ----------------------------------
   TString geoFileName = "sts_";
@@ -214,30 +200,19 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   infoFile.open(infoFileName.Data(), fstream::out);
   infoFile << "STS geometry created with create_stsgeo_v18a.C" << endl << endl;
   infoFile << "Global variables: " << endl;
-  infoFile << "Sensor thickness                   = " << gkSensorThickness
-           << " cm" << endl;
-  infoFile << "Vertical gap in sensor chain       = " << gkChainGapY << " cm"
-           << endl;
-  infoFile << "Vertical overlap of sensors        = " << gkSectorOverlapY
-           << " cm" << endl;
-  infoFile << "Gap in z between neighbour sensors = " << gkSectorGapZ << " cm"
-           << endl;
-  infoFile << "Horizontal overlap of sensors      = " << gkLadderOverlapX
-           << " cm" << endl;
-  infoFile << "Gap in z between neighbour ladders = " << gkLadderGapZ << " cm"
-           << endl;
-  if (gkConstructCables)
-    infoFile << "Cable thickness                    = " << gkCableThickness
-             << " cm" << endl;
+  infoFile << "Sensor thickness                   = " << gkSensorThickness << " cm" << endl;
+  infoFile << "Vertical gap in sensor chain       = " << gkChainGapY << " cm" << endl;
+  infoFile << "Vertical overlap of sensors        = " << gkSectorOverlapY << " cm" << endl;
+  infoFile << "Gap in z between neighbour sensors = " << gkSectorGapZ << " cm" << endl;
+  infoFile << "Horizontal overlap of sensors      = " << gkLadderOverlapX << " cm" << endl;
+  infoFile << "Gap in z between neighbour ladders = " << gkLadderGapZ << " cm" << endl;
+  if (gkConstructCables) infoFile << "Cable thickness                    = " << gkCableThickness << " cm" << endl;
   else
     infoFile << "No cables" << endl;
   infoFile << endl;
-  infoFile << "Beam pipe: R1 = " << gkPipeR1 << " cm at z = " << gkPipeZ1
-           << " cm" << endl;
-  infoFile << "Beam pipe: R2 = " << gkPipeR2 << " cm at z = " << gkPipeZ2
-           << " cm" << endl;
-  infoFile << "Beam pipe: R3 = " << gkPipeR3 << " cm at z = " << gkPipeZ3
-           << " cm" << endl;
+  infoFile << "Beam pipe: R1 = " << gkPipeR1 << " cm at z = " << gkPipeZ1 << " cm" << endl;
+  infoFile << "Beam pipe: R2 = " << gkPipeR2 << " cm at z = " << gkPipeZ2 << " cm" << endl;
+  infoFile << "Beam pipe: R3 = " << gkPipeR3 << " cm at z = " << gkPipeZ3 << " cm" << endl;
   // --------------------------------------------------------------------------
 
 
@@ -388,8 +363,7 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   //  ladderTypes[5] = 2;
   //  ladderTypes[6] = 2;
   //  ladderTypes[7] = 3;
-  TGeoVolume* station01 =
-    ConstructStation("Station01", 0, nLadders, ladderTypes, rHole);
+  TGeoVolume* station01 = ConstructStation("Station01", 0, nLadders, ladderTypes, rHole);
   CheckVolume(station01);
   CheckVolume(station01, infoFile);
   infoFile << "Position z = " << statPos[0] << endl;
@@ -411,8 +385,7 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   //  ladderTypes[9]  = 3;
   //  ladderTypes[10] = 3;
   //  ladderTypes[11] = 4;
-  TGeoVolume* station02 =
-    ConstructStation("Station02", 1, nLadders, ladderTypes, rHole);
+  TGeoVolume* station02 = ConstructStation("Station02", 1, nLadders, ladderTypes, rHole);
   CheckVolume(station02);
   CheckVolume(station02, infoFile);
   infoFile << "Position z = " << statPos[1] << endl;
@@ -624,23 +597,13 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   //  cutout->DefineSection(0, z1, 0., r1);
   //  cutout->DefineSection(1, z2, 0., r2);
   //  cutout->DefineSection(2, z3, 0., r3);
-  new TGeoTrd2("stsCone1",
-               r1,
-               r2,
-               r1,
-               r2,
+  new TGeoTrd2("stsCone1", r1, r2, r1, r2,
                (z2 - z1) / 2. + .1);  // add .1 in z length for a clean cutout
-  TGeoTranslation* trans1 =
-    new TGeoTranslation("trans1", 0., 0., -(z3 - z1) / 2. + (z2 - z1) / 2.);
+  TGeoTranslation* trans1 = new TGeoTranslation("trans1", 0., 0., -(z3 - z1) / 2. + (z2 - z1) / 2.);
   trans1->RegisterYourself();
-  new TGeoTrd2("stsCone2",
-               r2,
-               r3,
-               r2,
-               r3,
+  new TGeoTrd2("stsCone2", r2, r3, r2, r3,
                (z3 - z2) / 2. + .1);  // add .1 in z length for a clean cutout
-  TGeoTranslation* trans2 =
-    new TGeoTranslation("trans2", 0., 0., +(z3 - z1) / 2. - (z3 - z2) / 2.);
+  TGeoTranslation* trans2 = new TGeoTranslation("trans2", 0., 0., +(z3 - z1) / 2. - (z3 - z2) / 2.);
   trans2->RegisterYourself();
 
   //DE   Double_t z1 = statPos[0] - 0.5 * stsBorder;  // start of STS box
@@ -656,9 +619,8 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   // --- Create STS volume
   TString stsName = "sts_";
   stsName += geoTag;
-  TGeoShape* stsShape = new TGeoCompositeShape(
-    "stsShape", "stsBox-stsCone1:trans1-stsCone2:trans2");
-  TGeoVolume* sts = new TGeoVolume(stsName.Data(), stsShape, gStsMedium);
+  TGeoShape* stsShape = new TGeoCompositeShape("stsShape", "stsBox-stsCone1:trans1-stsCone2:trans2");
+  TGeoVolume* sts     = new TGeoVolume(stsName.Data(), stsShape, gStsMedium);
 
   // --- Place stations in the STS
   for (Int_t iStation = 1; iStation <= 2; iStation++) {
@@ -689,8 +651,7 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << geoFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << geoFileName << endl;
   geoFile->Close();
 
   TString geoFileName_ = "sts_";
@@ -723,7 +684,8 @@ void create_stsgeo_v18a(const char* geoTag = "v18a") {
  **
  ** Not used for the time being
  **/
-Int_t CreateMedia() {
+Int_t CreateMedia()
+{
 
   Int_t nMedia     = 0;
   Double_t density = 0.;
@@ -774,7 +736,8 @@ Int_t CreateMedia() {
  ** Sensors are created as volumes with box shape and active silicon as medium.
  ** Four kinds of sensors: 3.2x2.2, 6.2x2.2, 6.2x4.2, 6.2x6.2
  **/
-Int_t CreateSensors() {
+Int_t CreateSensors()
+{
 
   Int_t nSensors = 0;
 
@@ -785,53 +748,47 @@ Int_t CreateSensors() {
 
 
   // --- Sensor Type 01: Half small sensor (4 cm x 2.5 cm)
-  xSize = 4.0;
-  ySize = 2.5;
-  TGeoBBox* shape_sensor01 =
-    new TGeoBBox("sensor01", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 4.0;
+  ySize                    = 2.5;
+  TGeoBBox* shape_sensor01 = new TGeoBBox("sensor01", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor01", shape_sensor01, silicon);
   nSensors++;
 
 
   // --- Sensor type 02: Small sensor (6.2 cm x 2.2 cm)
-  xSize = 6.2092;
-  ySize = 2.2;
-  TGeoBBox* shape_sensor02 =
-    new TGeoBBox("sensor02", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 6.2092;
+  ySize                    = 2.2;
+  TGeoBBox* shape_sensor02 = new TGeoBBox("sensor02", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor02", shape_sensor02, silicon);
   nSensors++;
 
 
   // --- Sensor type 03: Medium sensor (6.2 cm x 4.2 cm)
-  xSize = 6.2092;
-  ySize = 4.2;
-  TGeoBBox* shape_sensor03 =
-    new TGeoBBox("sensor03", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 6.2092;
+  ySize                    = 4.2;
+  TGeoBBox* shape_sensor03 = new TGeoBBox("sensor03", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor03", shape_sensor03, silicon);
   nSensors++;
 
 
   // ---  Sensor type 04: Big sensor (6.2 cm x 6.2 cm)
-  xSize = 6.2092;
-  ySize = 6.2;
-  TGeoBBox* shape_sensor04 =
-    new TGeoBBox("sensor04", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 6.2092;
+  ySize                    = 6.2;
+  TGeoBBox* shape_sensor04 = new TGeoBBox("sensor04", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor04", shape_sensor04, silicon);
   nSensors++;
 
   // ---  Sensor type 05: Additional "in hole" sensor (3.1 cm x 4.2 cm)
-  xSize = 3.1;
-  ySize = 4.2;
-  TGeoBBox* shape_sensor05 =
-    new TGeoBBox("sensor05", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 3.1;
+  ySize                    = 4.2;
+  TGeoBBox* shape_sensor05 = new TGeoBBox("sensor05", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor05", shape_sensor05, silicon);
   nSensors++;
 
   // ---  Sensor type 06: Mini Medium sensor (1.5 cm x 4.2 cm)
-  xSize = 1.5;
-  ySize = 4.2;
-  TGeoBBox* shape_sensor06 =
-    new TGeoBBox("sensor06", xSize / 2., ySize / 2., zSize / 2.);
+  xSize                    = 1.5;
+  ySize                    = 4.2;
+  TGeoBBox* shape_sensor06 = new TGeoBBox("sensor06", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("Sensor06", shape_sensor06, silicon);
   nSensors++;
 
@@ -851,7 +808,8 @@ Int_t CreateSensors() {
  ** - two chained sensors of type 4
  ** - three chained sensors of type 4
  **/
-Int_t CreateSectors() {
+Int_t CreateSectors()
+{
 
   Int_t nSectors = 0;
 
@@ -890,8 +848,8 @@ Int_t CreateSectors() {
   // --- Sector type 5: two sensors of type 4
   TGeoVolumeAssembly* sector05 = new TGeoVolumeAssembly("Sector05");
   Double_t shift5              = 0.5 * gkChainGapY + box4->GetDY();
-  TGeoTranslation* transD5 = new TGeoTranslation("td", 0., -1. * shift5, 0.);
-  TGeoTranslation* transU5 = new TGeoTranslation("tu", 0., shift5, 0.);
+  TGeoTranslation* transD5     = new TGeoTranslation("td", 0., -1. * shift5, 0.);
+  TGeoTranslation* transU5     = new TGeoTranslation("tu", 0., shift5, 0.);
   sector05->AddNode(sensor04, 1, transD5);
   sector05->AddNode(sensor04, 2, transU5);
   sector05->GetShape()->ComputeBBox();
@@ -925,7 +883,8 @@ Int_t CreateSectors() {
  ** is rotated in the x-y plane by 180 degrees and displaced
  ** in z direction.
  **/
-Int_t CreateLadders() {
+Int_t CreateLadders()
+{
 
   Int_t nLadders = 0;
 
@@ -953,10 +912,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder01u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder01d", nSectors, sectorTypes, 'r');
+  halfLadderU    = ConstructHalfLadder("HalfLadder01u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder01d", nSectors, sectorTypes, 'r');
   ConstructLadder("Ladder01", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -972,10 +929,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU    = ConstructHalfLadder(
-    "HalfLadder21u", nSectors, sectorTypes, 'r');  // mirrored
-  halfLadderD = ConstructHalfLadder(
-    "HalfLadder21d", nSectors, sectorTypes, 'l');  // mirrored
+  halfLadderU    = ConstructHalfLadder("HalfLadder21u", nSectors, sectorTypes, 'r');  // mirrored
+  halfLadderD    = ConstructHalfLadder("HalfLadder21d", nSectors, sectorTypes, 'l');  // mirrored
   ConstructLadder("Ladder21", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -986,12 +941,11 @@ Int_t CreateLadders() {
   sectorTypes[1] = 4;
   sectorTypes[2] = 4;
   //  sectorTypes[3] = 4;
-  s0name = Form("Sector%02d", sectorTypes[0]);
-  s0vol  = gGeoMan->GetVolume(s0name);
-  shape  = (TGeoBBox*) s0vol->GetShape();
-  shiftZ = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder02u", nSectors, sectorTypes, 'l');
+  s0name      = Form("Sector%02d", sectorTypes[0]);
+  s0vol       = gGeoMan->GetVolume(s0name);
+  shape       = (TGeoBBox*) s0vol->GetShape();
+  shiftZ      = 2. * shape->GetDZ() + gkSectorGapZ;
+  halfLadderU = ConstructHalfLadder("HalfLadder02u", nSectors, sectorTypes, 'l');
   //  halfLadderD = ConstructHalfLadder("HalfLadder02d", nSectors, sectorTypes, 'r');
   halfLadderD = ConstructHalfLadder("HalfLadder02d", 0, sectorTypes, 'r');
   ConstructLadder("Ladder02", halfLadderU, halfLadderD, shiftZ);
@@ -1009,10 +963,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder03u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder03d", nSectors, sectorTypes, 'r');
+  halfLadderU    = ConstructHalfLadder("HalfLadder03u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder03d", nSectors, sectorTypes, 'r');
   ConstructLadder("Ladder03", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1025,10 +977,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder04u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder04d", nSectors, sectorTypes, 'r');
+  halfLadderU    = ConstructHalfLadder("HalfLadder04u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder04d", nSectors, sectorTypes, 'r');
   ConstructLadder("Ladder04", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1044,10 +994,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder05u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder05d", nSectors, sectorTypes, 'r');
+  halfLadderU    = ConstructHalfLadder("HalfLadder05u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder05d", nSectors, sectorTypes, 'r');
   ConstructLadder("Ladder05", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1063,10 +1011,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU    = ConstructHalfLadder(
-    "HalfLadder22u", nSectors, sectorTypes, 'r');  // mirrored
-  halfLadderD = ConstructHalfLadder(
-    "HalfLadder22d", nSectors, sectorTypes, 'l');  // mirrored
+  halfLadderU    = ConstructHalfLadder("HalfLadder22u", nSectors, sectorTypes, 'r');  // mirrored
+  halfLadderD    = ConstructHalfLadder("HalfLadder22d", nSectors, sectorTypes, 'l');  // mirrored
   ConstructLadder("Ladder22", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1081,11 +1027,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder06u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder06d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder06u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder06d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder06", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1100,10 +1044,8 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   shiftZ         = 2. * shape->GetDZ() + gkSectorGapZ;
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder07u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder07d", nSectors, sectorTypes, 'r');
+  halfLadderU    = ConstructHalfLadder("HalfLadder07u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder07d", nSectors, sectorTypes, 'r');
   ConstructLadder("Ladder07", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1116,11 +1058,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder08u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder08d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder08u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder08d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder08", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1132,11 +1072,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder09u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder09d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder09u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder09d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder09", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1151,11 +1089,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder10u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder10d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder10u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder10d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder10", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1170,11 +1106,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU    = ConstructHalfLadder(
-    "HalfLadder23u", nSectors, sectorTypes, 'r');  // mirrored
-  halfLadderD = ConstructHalfLadder(
-    "HalfLadder23d", nSectors, sectorTypes, 'l');  // mirrored
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder23u", nSectors, sectorTypes, 'r');  // mirrored
+  halfLadderD    = ConstructHalfLadder("HalfLadder23d", nSectors, sectorTypes, 'l');  // mirrored
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder23", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1189,11 +1123,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder11u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder11d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder11u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder11d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder11", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1207,11 +1139,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder12u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder12d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder12u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder12d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder12", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1224,11 +1154,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder13u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder13d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder13u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder13d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder13", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1240,11 +1168,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder14u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder14d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder14u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder14d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder14", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1259,12 +1185,10 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder15u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder15d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
-  gapY  = 4.4;
+  halfLadderU    = ConstructHalfLadder("HalfLadder15u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder15d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
+  gapY           = 4.4;
   ConstructLadderWithGap("Ladder15", halfLadderU, halfLadderD, 2 * gapY);
   nLadders++;
 
@@ -1279,11 +1203,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder16u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder16d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder16u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder16d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder16", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1294,11 +1216,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder17u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder17d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder17u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder17d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder17", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1312,12 +1232,10 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder18u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder18d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
-  gapY  = 4.57;
+  halfLadderU    = ConstructHalfLadder("HalfLadder18u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder18d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
+  gapY           = 4.57;
   ConstructLadderWithGap("Ladder18", halfLadderU, halfLadderD, 2 * gapY);
   nLadders++;
 
@@ -1332,11 +1250,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder19u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder19d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder19u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder19d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder19", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1351,11 +1267,9 @@ Int_t CreateLadders() {
   s0vol          = gGeoMan->GetVolume(s0name);
   shape          = (TGeoBBox*) s0vol->GetShape();
   ladderY        = 2. * shape->GetDY();
-  halfLadderU =
-    ConstructHalfLadder("HalfLadder20u", nSectors, sectorTypes, 'l');
-  halfLadderD =
-    ConstructHalfLadder("HalfLadder20d", nSectors, sectorTypes, 'r');
-  shape = (TGeoBBox*) halfLadderU->GetShape();
+  halfLadderU    = ConstructHalfLadder("HalfLadder20u", nSectors, sectorTypes, 'l');
+  halfLadderD    = ConstructHalfLadder("HalfLadder20d", nSectors, sectorTypes, 'r');
+  shape          = (TGeoBBox*) halfLadderU->GetShape();
   ConstructLadder("Ladder20", halfLadderU, halfLadderD, shiftZ);
   nLadders++;
 
@@ -1392,8 +1306,8 @@ Int_t CreateLadders() {
  **            sector           pointer to sector volume
  **            cableLength      length of cable
  **/
-TGeoVolume*
-ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
+TGeoVolume* ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength)
+{
 
   // --- Check sector volume
   if (!sector) Fatal("CreateModule", "Sector volume not found!");
@@ -1413,8 +1327,7 @@ ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
   Double_t moduleX   = TMath::Max(sectorX, cableX);
   Double_t moduleY   = sectorY + cableLength;
   Double_t moduleZ   = TMath::Max(sectorZ, cableZ);
-  TGeoVolume* module = gGeoManager->MakeBox(
-    name, gStsMedium, moduleX / 2., moduleY / 2., moduleZ / 2.);
+  TGeoVolume* module = gGeoManager->MakeBox(name, gStsMedium, moduleX / 2., moduleY / 2., moduleZ / 2.);
 
   // --- Position of sector in module
   // --- Sector is centred in x and z and aligned to the bottom
@@ -1433,8 +1346,7 @@ ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
     Double_t sensorXpos        = 0.;
     Double_t sensorYpos        = sectorYpos + xSensTrans[1];
     Double_t sensorZpos        = 0.;
-    TGeoTranslation* sensTrans =
-      new TGeoTranslation("sensTrans", sensorXpos, sensorYpos, sensorZpos);
+    TGeoTranslation* sensTrans = new TGeoTranslation("sensTrans", sensorXpos, sensorYpos, sensorZpos);
 
     // --- Add sensor volume to module
     TGeoVolume* sensVol = sensor->GetVolume();
@@ -1449,16 +1361,14 @@ ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
     TString cableName       = TString(name) + "_cable";
     TGeoMedium* cableMedium = gGeoMan->GetMedium("STScable");
     if (!cableMedium) Fatal("CreateModule", "Medium STScable not found!");
-    TGeoVolume* cable = gGeoManager->MakeBox(
-      cableName.Data(), cableMedium, cableX / 2., cableY / 2., cableZ / 2.);
+    TGeoVolume* cable = gGeoManager->MakeBox(cableName.Data(), cableMedium, cableX / 2., cableY / 2., cableZ / 2.);
     // add color to cables
     cable->SetLineColor(kOrange);
     cable->SetTransparency(60);
-    Double_t cableXpos = 0.;
-    Double_t cableYpos = sectorY + 0.5 * cableY - 0.5 * moduleY;
-    Double_t cableZpos = 0.;
-    TGeoTranslation* cableTrans =
-      new TGeoTranslation("cableTrans", cableXpos, cableYpos, cableZpos);
+    Double_t cableXpos          = 0.;
+    Double_t cableYpos          = sectorY + 0.5 * cableY - 0.5 * moduleY;
+    Double_t cableZpos          = 0.;
+    TGeoTranslation* cableTrans = new TGeoTranslation("cableTrans", cableXpos, cableYpos, cableZpos);
     module->AddNode(cable, 1, cableTrans);
     module->GetShape()->ComputeBBox();
   }
@@ -1494,10 +1404,8 @@ ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
  **            sectorTypes      array with sector types
  **            align            horizontal alignment of sectors
  **/
-TGeoVolume* ConstructHalfLadder(const TString& name,
-                                Int_t nSectors,
-                                Int_t* sectorTypes,
-                                char align) {
+TGeoVolume* ConstructHalfLadder(const TString& name, Int_t nSectors, Int_t* sectorTypes, char align)
+{
 
   // --- Create half ladder volume assembly
   TGeoVolumeAssembly* halfLadder = new TGeoVolumeAssembly(name);
@@ -1509,9 +1417,7 @@ TGeoVolume* ConstructHalfLadder(const TString& name,
   for (Int_t iSector = 0; iSector < nSectors; iSector++) {
     TString sectorName = Form("Sector%02d", sectorTypes[iSector]);
     TGeoVolume* sector = gGeoMan->GetVolume(sectorName);
-    if (!sector)
-      Fatal("ConstructHalfLadder",
-            Form("Volume %s not found", sectorName.Data()));
+    if (!sector) Fatal("ConstructHalfLadder", Form("Volume %s not found", sectorName.Data()));
     TGeoBBox* box = (TGeoBBox*) sector->GetShape();
     // --- Ladder x size equals largest sector x size
     ladderX = TMath::Max(ladderX, 2. * box->GetDX());
@@ -1538,25 +1444,22 @@ TGeoVolume* ConstructHalfLadder(const TString& name,
     Double_t sectorZ   = 2. * box->GetDZ();
     yPosSect += 0.5 * sectorY;  // Position of sector in ladder
     Double_t cableLength = 0.5 * ladderY - yPosSect - 0.5 * sectorY;
-    TString moduleName = name + "_" + Form("Module%02d", sectorTypes[iSector]);
-    TGeoVolume* module =
-      ConstructModule(moduleName.Data(), sector, cableLength);
+    TString moduleName   = name + "_" + Form("Module%02d", sectorTypes[iSector]);
+    TGeoVolume* module   = ConstructModule(moduleName.Data(), sector, cableLength);
 
     TGeoBBox* shapeMod = (TGeoBBox*) module->GetShape();
     Double_t moduleX   = 2. * shapeMod->GetDX();
     Double_t moduleY   = 2. * shapeMod->GetDY();
     Double_t moduleZ   = 2. * shapeMod->GetDZ();
     Double_t xPosMod   = 0.;
-    if (align == 'l')
-      xPosMod = 0.5 * (moduleX - ladderX);  // left aligned
+    if (align == 'l') xPosMod = 0.5 * (moduleX - ladderX);  // left aligned
     else if (align == 'r')
       xPosMod = 0.5 * (ladderX - moduleX);  // right aligned
     else
       xPosMod = 0.;                                // centred in x
     Double_t yPosMod = 0.5 * (ladderY - moduleY);  // top aligned
     zPosMod += 0.5 * moduleZ;
-    TGeoTranslation* trans =
-      new TGeoTranslation("t", xPosMod, yPosMod, zPosMod);
+    TGeoTranslation* trans = new TGeoTranslation("t", xPosMod, yPosMod, zPosMod);
     halfLadder->AddNode(module, iSector + 1, trans);
     halfLadder->GetShape()->ComputeBBox();
     yPosSect += 0.5 * sectorY - gkSectorOverlapY;
@@ -1584,10 +1487,8 @@ TGeoVolume* ConstructHalfLadder(const TString& name,
  **            halfLadderD      pointer to lower half ladder
  **            shiftZ           relative displacement along the z axis
  **/
-TGeoVolume* ConstructLadder(const char* name,
-                            TGeoVolume* halfLadderU,
-                            TGeoVolume* halfLadderD,
-                            Double_t shiftZ) {
+TGeoVolume* ConstructLadder(const char* name, TGeoVolume* halfLadderU, TGeoVolume* halfLadderD, Double_t shiftZ)
+{
 
   // --- Some variables
   TGeoBBox* shape = NULL;
@@ -1642,10 +1543,8 @@ TGeoVolume* ConstructLadder(const char* name,
  **            halfLadderD      pointer to lower half ladder
  **            gapY             vertical gap
  **/
-TGeoVolume* ConstructLadderWithGap(const char* name,
-                                   TGeoVolume* halfLadderU,
-                                   TGeoVolume* halfLadderD,
-                                   Double_t gapY) {
+TGeoVolume* ConstructLadderWithGap(const char* name, TGeoVolume* halfLadderU, TGeoVolume* halfLadderD, Double_t gapY)
+{
 
   // --- Some variables
   TGeoBBox* shape = NULL;
@@ -1705,11 +1604,8 @@ TGeoVolume* ConstructLadderWithGap(const char* name,
  **            ladderTypes      array of ladder types
  **            rHole            radius of inner hole
  **/
-TGeoVolume* ConstructStation(const char* name,
-                             Int_t iStation,
-                             Int_t nLadders,
-                             Int_t* ladderTypes,
-                             Double_t rHole) {
+TGeoVolume* ConstructStation(const char* name, Int_t iStation, Int_t nLadders, Int_t* ladderTypes, Double_t rHole)
+{
 
   // --- Some local variables
   TGeoShape* statShape  = NULL;
@@ -1729,13 +1625,11 @@ TGeoVolume* ConstructStation(const char* name,
     Int_t ladderType = ladderTypes[iLadder];
     ladderName       = Form("Ladder%02d", ladderType);
     ladder           = gGeoManager->GetVolume(ladderName);
-    if (!ladder)
-      Fatal("ConstructStation", Form("Volume %s not found", ladderName.Data()));
+    if (!ladder) Fatal("ConstructStation", Form("Volume %s not found", ladderName.Data()));
     shape = (TGeoBBox*) ladder->GetShape();
     statX += 2. * shape->GetDX();
     statY = TMath::Max(statY, 2. * shape->GetDY());
-    if (iLadder % 2)
-      statZeven = TMath::Max(statZeven, 2. * shape->GetDZ());
+    if (iLadder % 2) statZeven = TMath::Max(statZeven, 2. * shape->GetDZ());
     else
       statZodd = TMath::Max(statZodd, 2. * shape->GetDZ());
   }
@@ -1770,8 +1664,7 @@ TGeoVolume* ConstructStation(const char* name,
     yPos              = 0.;  // vertically centred
     TGeoRotation* rot = new TGeoRotation();
 
-    if (iStation % 2
-        == 0)  // flip ladders for even stations to reproduce CAD layout
+    if (iStation % 2 == 0)  // flip ladders for even stations to reproduce CAD layout
     // even station 0,2,4,6
     {
       // --- Unrotated ladders
@@ -1783,13 +1676,12 @@ TGeoVolume* ConstructStation(const char* name,
       else {
         zPos = -0.5 * gkLadderGapZ - shape->GetDZ();
       }
-    } else
+    }
+    else
     // odd station 1,3,5,7
     {
       // --- Unrotated ladders
-      if ((nLadders / 2 + iLadder) % 2) {
-        zPos = -0.5 * gkLadderGapZ - shape->GetDZ();
-      }
+      if ((nLadders / 2 + iLadder) % 2) { zPos = -0.5 * gkLadderGapZ - shape->GetDZ(); }
       // --- Rotated ladders
       else {
         zPos = 0.5 * gkLadderGapZ + shape->GetDZ();
@@ -1812,17 +1704,15 @@ TGeoVolume* ConstructStation(const char* name,
 /** ===========================================================================
  ** Volume information for debugging
  **/
-void CheckVolume(TGeoVolume* volume) {
+void CheckVolume(TGeoVolume* volume)
+{
 
   TGeoBBox* shape = (TGeoBBox*) volume->GetShape();
-  cout << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7)
-       << 2. * shape->GetDX() << " x " << setw(7) << 2. * shape->GetDY()
-       << " x " << setw(7) << 2. * shape->GetDZ();
-  if (volume->IsAssembly())
-    cout << ", assembly";
+  cout << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7) << 2. * shape->GetDX() << " x "
+       << setw(7) << 2. * shape->GetDY() << " x " << setw(7) << 2. * shape->GetDZ();
+  if (volume->IsAssembly()) cout << ", assembly";
   else {
-    if (volume->GetMedium())
-      cout << ", medium " << volume->GetMedium()->GetName();
+    if (volume->GetMedium()) cout << ", medium " << volume->GetMedium()->GetName();
     else
       cout << ", "
            << "\033[31m"
@@ -1835,15 +1725,12 @@ void CheckVolume(TGeoVolume* volume) {
     for (Int_t iNode = 0; iNode < volume->GetNdaughters(); iNode++) {
       TGeoNode* node  = volume->GetNode(iNode);
       TGeoBBox* shape = (TGeoBBox*) node->GetVolume()->GetShape();
-      cout << setw(15) << node->GetName() << ", size " << fixed
-           << setprecision(3) << setw(6) << 2. * shape->GetDX() << " x "
-           << setw(6) << 2. * shape->GetDY() << " x " << setw(6)
-           << 2. * shape->GetDZ() << ", position ( ";
+      cout << setw(15) << node->GetName() << ", size " << fixed << setprecision(3) << setw(6) << 2. * shape->GetDX()
+           << " x " << setw(6) << 2. * shape->GetDY() << " x " << setw(6) << 2. * shape->GetDZ() << ", position ( ";
       TGeoMatrix* matrix  = node->GetMatrix();
       const Double_t* pos = matrix->GetTranslation();
       cout << setfill(' ');
-      cout << fixed << setw(8) << pos[0] << ", " << setw(8) << pos[1] << ", "
-           << setw(8) << pos[2] << " )" << endl;
+      cout << fixed << setw(8) << pos[0] << ", " << setw(8) << pos[1] << ", " << setw(8) << pos[2] << " )" << endl;
     }
   }
 }
@@ -1853,19 +1740,17 @@ void CheckVolume(TGeoVolume* volume) {
 /** ===========================================================================
  ** Volume information for output to file
  **/
-void CheckVolume(TGeoVolume* volume, fstream& file) {
+void CheckVolume(TGeoVolume* volume, fstream& file)
+{
 
   if (!file) return;
 
   TGeoBBox* shape = (TGeoBBox*) volume->GetShape();
-  file << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7)
-       << 2. * shape->GetDX() << " x " << setw(7) << 2. * shape->GetDY()
-       << " x " << setw(7) << 2. * shape->GetDZ();
-  if (volume->IsAssembly())
-    file << ", assembly";
+  file << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7) << 2. * shape->GetDX() << " x "
+       << setw(7) << 2. * shape->GetDY() << " x " << setw(7) << 2. * shape->GetDZ();
+  if (volume->IsAssembly()) file << ", assembly";
   else {
-    if (volume->GetMedium())
-      file << ", medium " << volume->GetMedium()->GetName();
+    if (volume->GetMedium()) file << ", medium " << volume->GetMedium()->GetName();
     else
       file << ", "
            << "\033[31m"
@@ -1886,7 +1771,8 @@ void CheckVolume(TGeoVolume* volume, fstream& file) {
 /** ===========================================================================
  ** Calculate beam pipe outer radius for a given z                             
  **/
-Double_t BeamPipeRadius(Double_t z) {
+Double_t BeamPipeRadius(Double_t z)
+{
   if (z < gkPipeZ2) return gkPipeR1;
   Double_t slope = (gkPipeR3 - gkPipeR2) / (gkPipeZ3 - gkPipeZ2);
   return gkPipeR2 + slope * (z - gkPipeZ2);

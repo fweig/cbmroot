@@ -50,30 +50,30 @@ inline fvec L1Fit::BetheBlochCarbon(const float qp)
 {
 
   constexpr float K = 0.000307075;  // GeV * g^-1 * cm^2
-  float z = (qp > 0.) ? 1 : -1.;
+  float z           = (qp > 0.) ? 1 : -1.;
   constexpr float Z = 6;
   constexpr float A = 12.011;
 
   constexpr float M = 0.10565f;
-  float p       = fabs(1. / qp);  //GeV
-  float E       = sqrt(M * M + p * p);
-  float beta    = p / E;
-  float betaSq  = beta * beta;
-  float gamma   = E / M;
-  float gammaSq = gamma * gamma;
+  float p           = fabs(1. / qp);  //GeV
+  float E           = sqrt(M * M + p * p);
+  float beta        = p / E;
+  float betaSq      = beta * beta;
+  float gamma       = E / M;
+  float gammaSq     = gamma * gamma;
 
   const float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
   constexpr float me    = 0.000511;  // GeV
   constexpr float ratio = me / M;
-  float Tmax  = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
+  float Tmax            = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
 
   // density correction
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
     constexpr float rho = 2.265;
     const float hwp     = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
-    dc        = log(hwp / I) + log(beta * gamma) - 0.5;
+    dc                  = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
   return K * z * z * (Z / A) * (1. / betaSq) * (0.5 * log(2 * me * betaSq * gammaSq * Tmax / (I * I)) - betaSq - dc);
@@ -83,30 +83,30 @@ inline fvec L1Fit::BetheBlochAl(const float qp)
 {
 
   constexpr float K = 0.000307075;  // GeV * g^-1 * cm^2
-  float z = (qp > 0.) ? 1 : -1.;
+  float z           = (qp > 0.) ? 1 : -1.;
   constexpr float Z = 13;
   constexpr float A = 26.981;
 
   constexpr float M = 0.10565f;
-  float p       = fabs(1. / qp);  //GeV
-  float E       = sqrt(M * M + p * p);
-  float beta    = p / E;
-  float betaSq  = beta * beta;
-  float gamma   = E / M;
-  float gammaSq = gamma * gamma;
+  float p           = fabs(1. / qp);  //GeV
+  float E           = sqrt(M * M + p * p);
+  float beta        = p / E;
+  float betaSq      = beta * beta;
+  float gamma       = E / M;
+  float gammaSq     = gamma * gamma;
 
   const float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
   constexpr float me    = 0.000511;  // GeV
   constexpr float ratio = me / M;
-  float Tmax  = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
+  float Tmax            = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
 
   // density correction
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
     constexpr float rho = 2.70;
     const float hwp     = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
-    dc        = log(hwp / I) + log(beta * gamma) - 0.5;
+    dc                  = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
   return K * z * z * (Z / A) * (1. / betaSq) * (0.5 * log(2 * me * betaSq * gammaSq * Tmax / (I * I)) - betaSq - dc);
@@ -141,7 +141,7 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
   const fvec x1        = kp2 * 2.303f;
   const fvec mI        = kp3;
   const fvec mZA       = kp4;
-  const fvec maxT  = _2me * bg2;  // neglecting the electron mass
+  const fvec maxT      = _2me * bg2;  // neglecting the electron mass
 
   //*** Density effect
   fvec d2(0.f);
@@ -150,10 +150,10 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
 
   fvec init = x > x1;
 
-  d2            = fvec(init & (lhwI + x - 0.5f));
-  const fvec r  = (x1 - x) / (x1 - x0);
-  init          = (x > x0) & (x1 > x);
-  d2            = fvec(init & (lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r)) + fvec((!init) & d2);
+  d2           = fvec(init & (lhwI + x - 0.5f));
+  const fvec r = (x1 - x) / (x1 - x0);
+  init         = (x > x0) & (x1 > x);
+  d2           = fvec(init & (lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r)) + fvec((!init) & d2);
 
   return mK * mZA * (fvec(1.f) + bg2) / bg2
          * (0.5f * log(_2me * bg2 * maxT / (mI * mI)) - bg2 / (fvec(1.f) + bg2) - d2);
@@ -184,12 +184,12 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const
 
   constexpr float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
   constexpr float _2me = 1.022e-3f;     // [GeV/c^2]
-  const fvec& rho  = kp0;
-  const fvec x0    = kp1 * 2.303f;
-  const fvec x1    = kp2 * 2.303f;
-  const fvec& mI   = kp3;
-  const fvec& mZA  = kp4;
-  const fvec maxT  = _2me * bg2;  // neglecting the electron mass
+  const fvec& rho      = kp0;
+  const fvec x0        = kp1 * 2.303f;
+  const fvec x1        = kp2 * 2.303f;
+  const fvec& mI       = kp3;
+  const fvec& mZA      = kp4;
+  const fvec maxT      = _2me * bg2;  // neglecting the electron mass
 
   //*** Density effect
   fvec d2(0.f);
@@ -198,10 +198,10 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const
 
   fvec init = x > x1;
 
-  d2            = fvec(init & (lhwI + x - 0.5f));
-  const fvec r  = (x1 - x) / (x1 - x0);
-  init          = (x > x0) & (x1 > x);
-  d2            = fvec(init & (lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r)) + fvec((!init) & d2);
+  d2           = fvec(init & (lhwI + x - 0.5f));
+  const fvec r = (x1 - x) / (x1 - x0);
+  init         = (x > x0) & (x1 > x);
+  d2           = fvec(init & (lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r)) + fvec((!init) & d2);
 
   return mK * mZA * (fvec(1.f) + bg2) / bg2
          * (0.5f * log(_2me * bg2 * maxT / (mI * mI)) - bg2 / (fvec(1.f) + bg2) - d2);
@@ -228,10 +228,10 @@ inline void L1Fit::EnergyLossCorrection(L1TrackPar& T, const fvec& radThick, fve
   // dE = fabs(dE_);//dE2;//bethe * radThick*tr * 9.34961f*2.33f ;
 
 
-  const fvec E2Corrected  = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr               = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init               = fvec(!(corr == corr)) | fvec(w < 1);
-  corr                    = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
 
   qp0 *= corr;
@@ -282,10 +282,10 @@ inline void L1Fit::EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, f
   fvec dE = bethe * radThick * tr * radLen * rho;
 
 
-  const fvec E2Corrected  = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr               = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init               = fvec(!(corr == corr)) | fvec(w < 1);
-  corr                    = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   //      fvec dqp = CalcQpAfterEloss(qp[0], (direction*dE)[0], fMass2[0]);
@@ -369,10 +369,10 @@ inline void L1Fit::EnergyLossCorrectionCarbon(L1TrackPar& T, const fvec& radThic
   fvec dE = bethe * radThick * tr * rho * radLen;
   //   fvec dE2 = bethe2 * radThick*tr*2.70f* 18.76f;
 
-  const fvec E2Corrected  = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr               = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init               = fvec(!(corr == corr)) | fvec(w < 1);
-  corr                    = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   T.qp *= corr;
@@ -454,10 +454,10 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
   fvec dE = bethe * radThick * tr * radLen * rho;
   //fvec dE2 = bethe2 * radThick*tr * 1.758f*2.33;
 
-  const fvec E2Corrected  = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr               = sqrt(p2 / (E2Corrected - fMass2));
-  fvec init               = fvec(!(corr == corr)) | fvec(w < 1);
-  corr                    = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
+  fvec init              = fvec(!(corr == corr)) | fvec(w < 1);
+  corr                   = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
 
   qp0 *= corr;
   T.qp *= corr;

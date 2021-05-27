@@ -7,14 +7,12 @@
 
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
+#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
+#include "tools/CbmMvdGeoHandler.h"
 
 #include "FairModule.h"
 #include "FairRootManager.h"
 #include <Logger.h>
-
-#include "tools/CbmMvdGeoHandler.h"
-
-#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 
 // Includes from ROOT
 #include "TClonesArray.h"
@@ -22,6 +20,7 @@
 
 // Includes from C++
 #include "../base/CbmDaqBuffer.h"
+
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -30,14 +29,11 @@
 using namespace ::std;
 
 // -----   Default constructor   ------------------------------------------
-CbmMvdDigitizerTB::CbmMvdDigitizerTB()
-  : CbmMvdDigitizerTB("MVDDigitizerTB", 0, 0) {}
+CbmMvdDigitizerTB::CbmMvdDigitizerTB() : CbmMvdDigitizerTB("MVDDigitizerTB", 0, 0) {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdDigitizerTB::CbmMvdDigitizerTB(const char* name,
-                                     Int_t iMode,
-                                     Int_t iVerbose)
+CbmMvdDigitizerTB::CbmMvdDigitizerTB(const char* name, Int_t iMode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , eventNumber(0)
@@ -53,11 +49,14 @@ CbmMvdDigitizerTB::CbmMvdDigitizerTB(const char* name,
   , fFakeRate(-1.)
   , epsilon()
   , fBranchName("MvdPoint")
-  , fTimer() {}
+  , fTimer()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdDigitizerTB::~CbmMvdDigitizerTB() {
+CbmMvdDigitizerTB::~CbmMvdDigitizerTB()
+{
 
   if (fDigis) {
     fDigis->Delete();
@@ -67,7 +66,8 @@ CbmMvdDigitizerTB::~CbmMvdDigitizerTB() {
 // -----------------------------------------------------------------------------
 
 // -----   Exec   --------------------------------------------------------------
-void CbmMvdDigitizerTB::Exec(Option_t* /*opt*/) {
+void CbmMvdDigitizerTB::Exec(Option_t* /*opt*/)
+{
 
   fTimer.Start();
 
@@ -82,17 +82,15 @@ void CbmMvdDigitizerTB::Exec(Option_t* /*opt*/) {
     LOG(debug) << "End Chain";
     LOG(debug) << "Start writing Digis";
     fDigis->AbsorbObjects(fDetector->GetOutputDigis());
-    LOG(debug) << "Total of " << fDigis->GetEntriesFast()
-               << " digis in this Event";
+    LOG(debug) << "Total of " << fDigis->GetEntriesFast() << " digis in this Event";
     for (Int_t i = 0; i < fDigis->GetEntriesFast(); ++i) {
       CbmMvdDigi* digi = static_cast<CbmMvdDigi*>(fDigis->At(i)->Clone());
       CbmDaqBuffer::Instance()->InsertData(digi);
     }
   }
   // --- Event log
-  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
-            << eventNumber << ", real time " << fixed << setprecision(6)
-            << fTimer.RealTime() << " s, digis: " << fDigis->GetEntriesFast();
+  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right << eventNumber << ", real time " << fixed
+            << setprecision(6) << fTimer.RealTime() << " s, digis: " << fDigis->GetEntriesFast();
   fTimer.Stop();
 
   ++eventNumber;
@@ -100,7 +98,8 @@ void CbmMvdDigitizerTB::Exec(Option_t* /*opt*/) {
 // -----------------------------------------------------------------------------
 
 // -----   Init   --------------------------------------------------------------
-InitStatus CbmMvdDigitizerTB::Init() {
+InitStatus CbmMvdDigitizerTB::Init()
+{
   cout << "-I- " << GetName() << ": Initialisation..." << endl;
   cout << endl;
   cout << "---------------------------------------------" << endl;
@@ -156,7 +155,8 @@ InitStatus CbmMvdDigitizerTB::ReInit() { return kSUCCESS; }
 
 
 // -----   Virtual method Finish   -----------------------------------------
-void CbmMvdDigitizerTB::Finish() {
+void CbmMvdDigitizerTB::Finish()
+{
   // cout<< endl << "finishing" << endl;
   fDetector->Finish();
   PrintParameters();
@@ -174,19 +174,16 @@ void CbmMvdDigitizerTB::GetMvdGeometry() {}
 
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigitizerTB::PrintParameters() {
+void CbmMvdDigitizerTB::PrintParameters()
+{
 
   using namespace std;
 
   cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================"
-       << endl;
-  cout << "============== Parameters MvdDigitizer ====================="
-       << endl;
-  cout << "============================================================"
-       << endl;
-  cout << "=============== End Task ==================================="
-       << endl;
+  cout << "============================================================" << endl;
+  cout << "============== Parameters MvdDigitizer =====================" << endl;
+  cout << "============================================================" << endl;
+  cout << "=============== End Task ===================================" << endl;
 }
 // -------------------------------------------------------------------------
 

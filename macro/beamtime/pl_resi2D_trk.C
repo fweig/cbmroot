@@ -1,4 +1,5 @@
-void pl_resi2D_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
+void pl_resi2D_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -55,7 +56,8 @@ void pl_resi2D_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
       gPad->SetLogz();
       gPad->SetGridx();
       gPad->SetGridy();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

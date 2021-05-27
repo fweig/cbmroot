@@ -19,7 +19,8 @@
 // Anna Senger a.senger@gsi.de
 //
 //---------------------------------------------------
-void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
+void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000)
+{
   TDatabasePDG* dataBase = TDatabasePDG::Instance();
   Int_t iEvent;
   Double_t nEvents;
@@ -41,10 +42,8 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   chanName.Form("mpmm");
   cktName.Form("cktA");
 
-  TString sgn[] = {
-    "rho0", "omega", "omegaD", "phi", "eta", "etaD", "rapp.qgp", "jpsi"};
-  TString sgnsgn[] = {
-    "rho0", "omega", "omega", "phi", "eta", "eta", "rapp.qgp", "jpsi"};
+  TString sgn[]    = {"rho0", "omega", "omegaD", "phi", "eta", "etaD", "rapp.qgp", "jpsi"};
+  TString sgnsgn[] = {"rho0", "omega", "omega", "phi", "eta", "eta", "rapp.qgp", "jpsi"};
 
   partName     = sgn[part];
   partpartName = sgnsgn[part];
@@ -73,16 +72,10 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   Double_t multQGP    = 3.2e-3;
   Double_t multJPsi   = 1e-6;
 
-  Double_t partMulti[] = {multRho * brRho,
-                          multOmega * brOmega,
-                          multOmegaD * brOmegaD,
-                          multPhi * brPhi,
-                          multEta * brEta,
-                          multEtaD * brEtaD,
-                          multQGP,
-                          multJPsi * brJPsi};
-  Double_t multi[]     = {
-    multRho, multOmega, multOmegaD, multPhi, multEta, multEtaD, 1, multJPsi};
+  Double_t partMulti[] = {multRho * brRho, multOmega * brOmega, multOmegaD * brOmegaD,
+                          multPhi * brPhi, multEta * brEta,     multEtaD * brEtaD,
+                          multQGP,         multJPsi * brJPsi};
+  Double_t multi[]     = {multRho, multOmega, multOmegaD, multPhi, multEta, multEtaD, 1, multJPsi};
 
   cout << "**********************" << endl;
   cout << partName << " - " << partMulti[part] << endl;
@@ -104,14 +97,7 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   TString histoName;
   histoName.Form("YPt_%s", partName.Data());
 
-  TH2D* YPt_part = new TH2D(histoName.Data(),
-                            histoName.Data(),
-                            NofBins,
-                            minY,
-                            maxY,
-                            NofBins,
-                            min,
-                            maxPt);
+  TH2D* YPt_part = new TH2D(histoName.Data(), histoName.Data(), NofBins, minY, maxY, NofBins, min, maxPt);
   (YPt_part->GetXaxis())->SetTitle("y");
   (YPt_part->GetYaxis())->SetTitle("p_{t} (GeV/c)");
   (YPt_part->GetZaxis())->SetTitle("counts/events");
@@ -120,8 +106,7 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   //----------------------------------
   histoName.Form("invM_%s", partName.Data());
 
-  TH1D* invM_part =
-    new TH1D(histoName.Data(), histoName.Data(), NofBinsM, min, maxM);
+  TH1D* invM_part = new TH1D(histoName.Data(), histoName.Data(), NofBinsM, min, maxM);
   (invM_part->GetXaxis())->SetTitle("m_{inv}(GeV/c^{2}");
   (invM_part->GetYaxis())->SetTitle("counts/(events #times 10 MeV/c^{2})");
   invM_part->SetLineColor(kRed);
@@ -130,8 +115,7 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   //----------------------------------
   histoName.Form("P_%s", partName.Data());
 
-  TH1D* P_part =
-    new TH1D(histoName.Data(), histoName.Data(), NofBins, min, maxP);
+  TH1D* P_part = new TH1D(histoName.Data(), histoName.Data(), NofBins, min, maxP);
   (P_part->GetXaxis())->SetTitle("p (GeV/c)");
   (P_part->GetYaxis())->SetTitle("counts/events");
   P_part->SetLineColor(kRed);
@@ -140,8 +124,7 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   //----------------------------------
   histoName.Form("Pt_%s", partName.Data());
 
-  TH1D* Pt_part =
-    new TH1D(histoName.Data(), histoName.Data(), NofBins, min, maxPt);
+  TH1D* Pt_part = new TH1D(histoName.Data(), histoName.Data(), NofBins, min, maxPt);
   (Pt_part->GetXaxis())->SetTitle("p_{t} (GeV/c)");
   (Pt_part->GetYaxis())->SetTitle("counts/events");
   Pt_part->SetLineColor(kRed);
@@ -150,8 +133,7 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   //----------------------------------
   histoName.Form("Y_%s", partName.Data());
 
-  TH1D* Y_part =
-    new TH1D(histoName.Data(), histoName.Data(), NofBins, minY, maxY);
+  TH1D* Y_part = new TH1D(histoName.Data(), histoName.Data(), NofBins, minY, maxY);
   (Y_part->GetXaxis())->SetTitle("y");
   (Y_part->GetYaxis())->SetTitle("counts/events");
   Y_part->SetLineColor(kRed);
@@ -160,17 +142,8 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
   //----------------------------------
   histoName.Form("YPtM_%s", partName.Data());
 
-  TH3D* YPtM_part = new TH3D(histoName.Data(),
-                             histoName.Data(),
-                             NofBins,
-                             minY,
-                             maxY,
-                             NofBins,
-                             min,
-                             maxPt,
-                             NofBinsM,
-                             min,
-                             maxM);
+  TH3D* YPtM_part =
+    new TH3D(histoName.Data(), histoName.Data(), NofBins, minY, maxY, NofBins, min, maxPt, NofBinsM, min, maxM);
 
   //----------------------------------
 
@@ -184,14 +157,8 @@ void Pluto_analysis(int part = 0, int energy = 8, int NofFiles = 5000) {
     }
     fileName.Form("/lustre/cbm/prod/gen/pluto/auau/%s/%dgev/%s/%s/"
                   "pluto.auau.%dgev.%s.%s.%s.root",
-                  cktName.Data(),
-                  energy,
-                  partpartName.Data(),
-                  chanName.Data(),
-                  energy,
-                  partpartName.Data(),
-                  chanName.Data(),
-                  str);
+                  cktName.Data(), energy, partpartName.Data(), chanName.Data(), energy, partpartName.Data(),
+                  chanName.Data(), str);
     TFile* InputFile = new TFile(fileName.Data());
     TTree* InputTree = (TTree*) InputFile->Get("data");
     InputTree->SetBranchAddress("Particles", &fParticles);

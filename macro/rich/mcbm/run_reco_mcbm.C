@@ -1,4 +1,5 @@
-void run_reco_mcbm(Int_t nEvents = 1000) {
+void run_reco_mcbm(Int_t nEvents = 1000)
+{
 
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
@@ -7,8 +8,7 @@ void run_reco_mcbm(Int_t nEvents = 1000) {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
   //   TString geoSetupFile = srcDir + "/macro/rich/geosetup/rich_setup_sis18_mcbm_20deg_long.C";
-  TString geoSetupFile =
-    srcDir + "/geometry/setup/setup_sis18_mcbm_20deg_long.C";
+  TString geoSetupFile = srcDir + "/geometry/setup/setup_sis18_mcbm_20deg_long.C";
 
   TString outDir = "/Users/slebedev/Development/cbm/data/sim/rich/mcbm/";
   // TString outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
@@ -58,25 +58,19 @@ void run_reco_mcbm(Int_t nEvents = 1000) {
 
   // TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   TStopwatch timer;
@@ -115,12 +109,10 @@ void run_reco_mcbm(Int_t nEvents = 1000) {
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully" << std::endl;
 
   CbmMatchRecoToMC* match = new CbmMatchRecoToMC();
   run->AddTask(match);
@@ -158,8 +150,7 @@ void run_reco_mcbm(Int_t nEvents = 1000) {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

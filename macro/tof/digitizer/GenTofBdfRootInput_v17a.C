@@ -5,7 +5,8 @@
  * simulations with the CbmTofDigitizerBDF class.
  */
 
-Bool_t GenTofBdfRootInput_v17a() {
+Bool_t GenTofBdfRootInput_v17a()
+{
   /*********************++++++ Configuration ++++++**********************/
   /// Tag of the output file, e.g. "v17a"
   /// => This will be used to the output file name, e.g. "bdf_input_v17a.root"
@@ -17,40 +18,28 @@ Bool_t GenTofBdfRootInput_v17a() {
   /// => The matching should be set in the "SmTypeInpMapp" field in the
   ///    "XXXXX.digibdf.par" file
   const UInt_t kuNbSmType          = 6;
-  Double_t dEffPercent[kuNbSmType] = {
-    0.99999, 0.99999, 0.99999, 0.99999, 0.99999, 0.99999};
-  Double_t dTimeResNs[kuNbSmType] = {0.057, 0.057, 0.057, 0.057, 0.057, 0.057};
+  Double_t dEffPercent[kuNbSmType] = {0.99999, 0.99999, 0.99999, 0.99999, 0.99999, 0.99999};
+  Double_t dTimeResNs[kuNbSmType]  = {0.057, 0.057, 0.057, 0.057, 0.057, 0.057};
   /// Path to the file holding the histograms from the beamtime analysis
   /// => 1 filename per type, same file can be used in each of them
   TString sHistosSourceFile[kuNbSmType] = {
-    "../../../parameters/tof/test_bdf_input.root",
-    "../../../parameters/tof/test_bdf_input.root",
-    "../../../parameters/tof/test_bdf_input.root",
-    "../../../parameters/tof/test_bdf_input.root",
-    "../../../parameters/tof/test_bdf_input.root",
-    "../../../parameters/tof/test_bdf_input.root"};
+    "../../../parameters/tof/test_bdf_input.root", "../../../parameters/tof/test_bdf_input.root",
+    "../../../parameters/tof/test_bdf_input.root", "../../../parameters/tof/test_bdf_input.root",
+    "../../../parameters/tof/test_bdf_input.root", "../../../parameters/tof/test_bdf_input.root"};
   /// Name of the histogram with the cluster size distribution for each type
   /// => (sub)folder(s) not needed, dimensions should be: (size [strips], # clusters[])
   ///    The size of the X axis should not matter as it is just used to reconstruct a
   ///    probability map
-  TString sSizeHistSourceName[kuNbSmType] = {"h1ClusterSizeType000",
-                                             "h1ClusterSizeType000",
-                                             "h1ClusterSizeType000",
-                                             "h1ClusterSizeType000",
-                                             "h1ClusterSizeType000",
-                                             "h1ClusterSizeType000"};
+  TString sSizeHistSourceName[kuNbSmType] = {"h1ClusterSizeType000", "h1ClusterSizeType000", "h1ClusterSizeType000",
+                                             "h1ClusterSizeType000", "h1ClusterSizeType000", "h1ClusterSizeType000"};
   /// Name of the histogram with the cluster TOT distribution for each type
   /// => (sub)folder(s) not needed, dimensions should be: (cluster TOT [ps], # clusters[])
   ///    The size of the X axis should not matter as it is just used to reconstruct a
   ///    probability map
   /// => If ns are used instead of ps, the CbmTofDigitizerBDF method called "LoadBeamtimeValues"
   ///    will need to be modified around l.661 ===> BACKWARD COMPATIBILITY BREAKING!
-  TString sTotHistSourceName[kuNbSmType] = {"h1ClusterTot000",
-                                            "h1ClusterTot000",
-                                            "h1ClusterTot000",
-                                            "h1ClusterTot000",
-                                            "h1ClusterTot000",
-                                            "h1ClusterTot000"};
+  TString sTotHistSourceName[kuNbSmType] = {"h1ClusterTot000", "h1ClusterTot000", "h1ClusterTot000",
+                                            "h1ClusterTot000", "h1ClusterTot000", "h1ClusterTot000"};
   /*********************+++++++++++++++++++++++++++**********************/
 
   // Create and fill the two TArrayD
@@ -74,10 +63,8 @@ Bool_t GenTofBdfRootInput_v17a() {
     // Open source file
     pSourceFile = new TFile(sHistosSourceFile[uSmType], "READ");
     if (NULL == pSourceFile) {
-      std::cerr << "ERROR: Failed to open the histograms source file for type "
-                << uSmType
-                << ", stopping there. filename = " << sHistosSourceFile[uSmType]
-                << std::endl;
+      std::cerr << "ERROR: Failed to open the histograms source file for type " << uSmType
+                << ", stopping there. filename = " << sHistosSourceFile[uSmType] << std::endl;
       return kFALSE;
     }  // if( NULL == pSourceFile )
     gROOT->cd();
@@ -85,17 +72,12 @@ Bool_t GenTofBdfRootInput_v17a() {
     pTemp = NULL;
     pTemp = (TH1D*) (pSourceFile->FindObjectAny(sSizeHistSourceName[uSmType]));
     if (NULL != pTemp) {
-      apClusterSize[uSmType] =
-        (TH1D*) (pTemp->Clone(Form("h1ClusterSizeType%03u", uSmType)));
-      apClusterSize[uSmType]->SetTitle(
-        Form("Cluster Size distribution for RPC type %03u in Strips", uSmType));
+      apClusterSize[uSmType] = (TH1D*) (pTemp->Clone(Form("h1ClusterSizeType%03u", uSmType)));
+      apClusterSize[uSmType]->SetTitle(Form("Cluster Size distribution for RPC type %03u in Strips", uSmType));
     }  // if( NULL != pTemp )
     else {
-      std::cerr
-        << "ERROR: Failed to recover the cluster size histogram for type "
-        << uSmType
-        << ", stopping there. histo name = " << sSizeHistSourceName[uSmType]
-        << std::endl;
+      std::cerr << "ERROR: Failed to recover the cluster size histogram for type " << uSmType
+                << ", stopping there. histo name = " << sSizeHistSourceName[uSmType] << std::endl;
       pSourceFile->Close();
       return kFALSE;
     }  // else of if( NULL != pTemp )
@@ -103,18 +85,13 @@ Bool_t GenTofBdfRootInput_v17a() {
     pTemp = NULL;
     pTemp = (TH1D*) (pSourceFile->FindObjectAny(sTotHistSourceName[uSmType]));
     if (NULL != pTemp) {
-      apClusterTot[uSmType] =
-        (TH1D*) (pTemp->Clone(Form("h1ClusterTot%03u", uSmType)));
+      apClusterTot[uSmType] = (TH1D*) (pTemp->Clone(Form("h1ClusterTot%03u", uSmType)));
       apClusterTot[uSmType]->SetTitle(
-        Form("Cluster Total Charge distribution for RPC type %03u as Tot in ps",
-             uSmType));
+        Form("Cluster Total Charge distribution for RPC type %03u as Tot in ps", uSmType));
     }  // if( NULL != pTemp )
     else {
-      std::cerr
-        << "ERROR: Failed to recover the cluster tot histogram for type "
-        << uSmType
-        << ", stopping there. histo name = " << sTotHistSourceName[uSmType]
-        << std::endl;
+      std::cerr << "ERROR: Failed to recover the cluster tot histogram for type " << uSmType
+                << ", stopping there. histo name = " << sTotHistSourceName[uSmType] << std::endl;
       pSourceFile->Close();
       return kFALSE;
     }  // else of if( NULL != pTemp )

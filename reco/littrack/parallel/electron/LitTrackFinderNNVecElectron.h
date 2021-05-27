@@ -16,8 +16,10 @@
 #include "LitDetectorGeometryElectron.h"
 #include "LitHitDataElectron.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitTrackFinderNNVecElectron
@@ -54,15 +56,14 @@ namespace lit {
     * \param[in] Track seed array.
     * \param[out] Output array with reconstructed tracks.
     */
-      void DoFind(const PixelHitArray& hits,
-                  const TrackArray& trackSeeds,
-                  TrackArray& tracks);
+      void DoFind(const PixelHitArray& hits, const TrackArray& trackSeeds, TrackArray& tracks);
 
       /*
     * \brief Set detector layout.
     * \param[in] layout Detector layout to be set.
     */
-      void SetDetectorLayout(const LitDetectorLayoutElectron<fvec>& layout) {
+      void SetDetectorLayout(const LitDetectorLayoutElectron<fvec>& layout)
+      {
         fLayout = layout;
         fHitData.SetDetectorLayout(layout);
       }
@@ -86,35 +87,24 @@ namespace lit {
       /*
     * TODO Add comments
     */
-      void CollectHits(LitTrackParamScal* par,
-                       LitScalTrack* track,
-                       unsigned char stationGroup,
-                       unsigned char station);
+      void CollectHits(LitTrackParamScal* par, LitScalTrack* track, unsigned char stationGroup, unsigned char station);
 
       /* TODO: Add comment
     *
     */
-      inline void ProcessStation(LitScalTrack* tracks[],
-                                 unsigned char stationGroup,
-                                 unsigned char station);
+      inline void ProcessStation(LitScalTrack* tracks[], unsigned char stationGroup, unsigned char station);
 
       /*
     *
     */
-      bool AddNearestHit(LitScalTrack* track,
-                         const PixelHitConstIteratorPair& hits,
-                         unsigned int nofHits,
-                         int stationGroup,
-                         int station);
+      bool AddNearestHit(LitScalTrack* track, const PixelHitConstIteratorPair& hits, unsigned int nofHits,
+                         int stationGroup, int station);
 
       /*
     *
     */
-      void MinMaxIndex(const LitTrackParamScal* par,
-                       const PixelHitArray& hits,
-                       fscal maxErr,
-                       PixelHitConstIterator& first,
-                       PixelHitConstIterator& last);
+      void MinMaxIndex(const LitTrackParamScal* par, const PixelHitArray& hits, fscal maxErr,
+                       PixelHitConstIterator& first, PixelHitConstIterator& last);
 
     private:
       /* Local copy of tracks */

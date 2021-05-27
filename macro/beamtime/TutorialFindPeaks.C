@@ -25,7 +25,8 @@
 #include "TVirtualFitter.h"
 
 Int_t npeaks = 30;
-Double_t fpeaks(Double_t* x, Double_t* par) {
+Double_t fpeaks(Double_t* x, Double_t* par)
+{
   Double_t result = par[0] + par[1] * x[0];
   for (Int_t p = 0; p < npeaks; p++) {
     Double_t norm  = par[3 * p + 2];
@@ -36,7 +37,8 @@ Double_t fpeaks(Double_t* x, Double_t* par) {
   return result;
 }
 
-void TutorialFindPeaks(Int_t np = 10) {
+void TutorialFindPeaks(Int_t np = 10)
+{
   npeaks  = TMath::Abs(np);
   TH1F* h = new TH1F("h", "test", 500, 0, 1000);
   //generate n peaks at random

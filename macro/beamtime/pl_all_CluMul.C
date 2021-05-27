@@ -1,4 +1,5 @@
-void pl_all_CluMul(Int_t iNSt = 6) {
+void pl_all_CluMul(Int_t iNSt = 6)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -25,24 +26,23 @@ void pl_all_CluMul(Int_t iNSt = 6) {
   // if (h!=NULL) h->Delete();
 
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
-    cout << "plot station " << iSt << " with " << iSmNum[iSt] << " modules of "
-         << iRpcNum[iSt] << " Rpcs each" << endl;
+    cout << "plot station " << iSt << " with " << iSmNum[iSt] << " modules of " << iRpcNum[iSt] << " Rpcs each" << endl;
     for (Int_t iSm = 0; iSm < iSmNum[iSt]; iSm++) {
-      cout << "plot module at station " << iSt << " with " << iSmNum[iSt]
-           << " modules of " << iRpcNum[iSt] << " Rpcs each" << endl;
+      cout << "plot module at station " << iSt << " with " << iSmNum[iSt] << " modules of " << iRpcNum[iSt]
+           << " Rpcs each" << endl;
       for (Int_t iRp = 0; iRp < iRpcNum[iSt]; iRp++) {
-        cout << "plot rpc at station " << iSt << " with " << iSmNum[iSt]
-             << " modules of " << iRpcNum[iSt] << " Rpcs each" << endl;
+        cout << "plot rpc at station " << iSt << " with " << iSmNum[iSt] << " modules of " << iRpcNum[iSt]
+             << " Rpcs each" << endl;
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname =
-          Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iType[iSt], iSm, iRp);
-        h = (TH1*) gROOT->FindObjectAny(hname);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iType[iSt], iSm, iRp);
+        h             = (TH1*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           h->Draw("");
           gPad->SetLogy();
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
         if (iRp == 10) break;

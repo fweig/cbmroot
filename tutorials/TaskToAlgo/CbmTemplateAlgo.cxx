@@ -11,32 +11,32 @@
 // -------------------------------------------------------------------------
 CbmTemplateAlgo::CbmTemplateAlgo() : CbmAlgo() {}
 
-CbmTemplateAlgo::~CbmTemplateAlgo() {
+CbmTemplateAlgo::~CbmTemplateAlgo()
+{
   /// Clear buffers
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmTemplateAlgo::Init() {
+Bool_t CbmTemplateAlgo::Init()
+{
   LOG(info) << "Initializing tutorial template algo";
 
   return kTRUE;
 }
-void CbmTemplateAlgo::Reset() {
-  LOG(info) << "In Reset function of tutorial template algo";
-}
+void CbmTemplateAlgo::Reset() { LOG(info) << "In Reset function of tutorial template algo"; }
 
-void CbmTemplateAlgo::Finish() {
-  LOG(info) << "In Finish function of tutorial template algo";
-}
+void CbmTemplateAlgo::Finish() { LOG(info) << "In Finish function of tutorial template algo"; }
 
 // -------------------------------------------------------------------------
-Bool_t CbmTemplateAlgo::InitContainers() {
+Bool_t CbmTemplateAlgo::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmTemplateAlgo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmTemplateAlgo::ReInitContainers() {
+Bool_t CbmTemplateAlgo::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmTemplateAlgo";
 
@@ -51,7 +51,8 @@ Bool_t CbmTemplateAlgo::ReInitContainers() {
   return initOK;
 }
 
-TList* CbmTemplateAlgo::GetParList() {
+TList* CbmTemplateAlgo::GetParList()
+{
   if (nullptr == fParCList) { fParCList = new TList(); }
 
   // Here the parameter container is created and passed to the
@@ -65,13 +66,15 @@ TList* CbmTemplateAlgo::GetParList() {
 
   return fParCList;
 }
-Bool_t CbmTemplateAlgo::InitParameters() {
+Bool_t CbmTemplateAlgo::InitParameters()
+{
   LOG(info) << "In InitParameters function of tutorial template algo";
   return kTRUE;
 }
 // -------------------------------------------------------------------------
 
-std::vector<CbmStsHit> ProcessInputData(const std::vector<CbmStsPoint>&) {
+std::vector<CbmStsHit> ProcessInputData(const std::vector<CbmStsPoint>&)
+{
   std::vector<CbmStsHit> outputVect {};
   return outputVect;
 }

@@ -9,7 +9,6 @@
 //  20131028 - DE - patch for digi.par files now containing fOrientation
 //
 
-#include "Riostream.h"
 #include "TCanvas.h"
 #include "TH2.h"
 #include "TPaveText.h"
@@ -17,15 +16,18 @@
 #include "TRint.h"
 #include "TString.h"
 #include "TStyle.h"
-#include <cmath>
+
 #include <fstream>
 #include <iostream>
 #include <map>
 
-void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
-                         Int_t nlines       = 1,
-                         Int_t nrows_in_sec = 0,
-                         Int_t alllayers    = 1) {
+#include <cmath>
+
+#include "Riostream.h"
+
+void plot_hollow_modules(TString digiPar = "trd.v13/trd_v13g.digi.par", Int_t nlines = 1, Int_t nrows_in_sec = 0,
+                         Int_t alllayers = 1)
+{
 
   gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
@@ -35,8 +37,7 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
   gStyle->SetOptTitle(kFALSE);
 
   Bool_t read       = false;
-  TH2I* fLayerDummy = new TH2I(
-    "LayerDummy", "", 800, -400, 400, 600, -300, 300);  // for station 1 alone
+  TH2I* fLayerDummy = new TH2I("LayerDummy", "", 800, -400, 400, 600, -300, 300);  // for station 1 alone
   //  TH2I *fLayerDummy = new TH2I("LayerDummy","",1200,-600,600,1000,-500,500);  // for stations 1-3
   fLayerDummy->SetXTitle("x-coordinate [cm]");
   fLayerDummy->SetYTitle("y-coordinate [cm]");
@@ -94,8 +95,7 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
 
       if (startCounter == 12)  // sector 1 size in y
         sec1 = buffer.Atof();
-      if (startCounter
-          == 13)  // position of pad size in x - do not take the backslash (@14)
+      if (startCounter == 13)  // position of pad size in x - do not take the backslash (@14)
         ps1X = buffer.Atof();
       if (startCounter == 15)  // position of pad size in y
         ps1Y = buffer.Atof();
@@ -105,12 +105,12 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
       if (startCounter == 18)  // position of pad size in x
       {
         ps2X = buffer.Atof();
-        psX = ps2X;  // for backwards compatibility - sector 2 is default sector
+        psX  = ps2X;  // for backwards compatibility - sector 2 is default sector
       }
       if (startCounter == 19)  // position of pad size in y
       {
         ps2Y = buffer.Atof();
-        psY = ps2Y;  // for backwards compatibility - sector 2 is default sector
+        psY  = ps2Y;  // for backwards compatibility - sector 2 is default sector
       }
 
       if (startCounter == 21)  // sector 3 size in y
@@ -136,8 +136,7 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
         startCounter = 0;        // reset
 
         if (alllayers == 0)
-          if (!((layerId == 0) || (layerId == 4)
-                || (layerId == 8)))  // plot only 1 layer per station
+          if (!((layerId == 0) || (layerId == 4) || (layerId == 8)))  // plot only 1 layer per station
             continue;
 
         row1 = sec1 / ps1Y;
@@ -154,8 +153,7 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
           // now print cm2 in the center
           layerView[mpZ]->cd();
           title.Form("cm^{2}");  // print cm2
-          TPaveText* text =
-            new TPaveText(0 - 28.5, 0 - 28.5, 0 + 28.5, 0 + 28.5);
+          TPaveText* text = new TPaveText(0 - 28.5, 0 - 28.5, 0 + 28.5, 0 + 28.5);
           text->SetFillStyle(1001);
           text->SetLineColor(1);
           text->SetFillColor(kWhite);
@@ -167,8 +165,7 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
         layerView[mpZ]->cd();
         //	title.Form("%2.0fcm^{2}",psX*psY);  // print pad size
         //	title.Form("%.0f",psX*psY);  // print pad size - 1 digit
-        TPaveText* text =
-          new TPaveText(mpX - msX, mpY - msY, mpX + msX, mpY + msY);
+        TPaveText* text = new TPaveText(mpX - msX, mpY - msY, mpX + msX, mpY + msY);
         text->SetFillStyle(1);
         text->SetLineColor(1);
         //        text->SetFillColor(kViolet);
@@ -179,35 +176,36 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
         //          text->SetFillColor(kOrange + 9);
         //        }
         //        else
-        if (psX * psY <= 1.1) {
-          text->SetFillColor(kOrange + 10);
-        } else if (psX * psY <= 2.1) {
+        if (psX * psY <= 1.1) { text->SetFillColor(kOrange + 10); }
+        else if (psX * psY <= 2.1) {
           text->SetFillColor(kOrange - 3);
-        } else if (psX * psY <= 3.1) {
+        }
+        else if (psX * psY <= 3.1) {
           text->SetFillColor(kOrange - 4);
-        } else if (psX * psY <= 5) {
+        }
+        else if (psX * psY <= 5) {
           text->SetFillColor(kOrange + 10 - ((int) (psX * psY + .5) - 1) * 2);
           //        printf("%2.1f: %d\n", psX*psY, 10 - ((int)(psX*psY+.5)-1) * 2);
-        } else if (psX * psY <= 10) {
+        }
+        else if (psX * psY <= 10) {
           text->SetFillColor(kSpring + 10 - ((int) (psX * psY + .5) - 4) * 2);
           //        printf("%2.1f: %d\n", psX*psY, 10 - ((int)(psX*psY+.5)-4) * 2);
-        } else if (psX * psY > 10) {
+        }
+        else if (psX * psY > 10) {
           text->SetFillColor(kGreen);
           //        printf("%2.1f: %s\n", psX*psY, "green");
         }
 
         if (nrows_in_sec == 1)  // print number of rows in sector
         {
-          title1.Form("%3.1f - %2.0f",
-                      ps1X * ps1Y,
+          title1.Form("%3.1f - %2.0f", ps1X * ps1Y,
                       row1);  // print pad size and nrows - 2 digits - sector 1
-          title2.Form("%3.1f - %2.0f",
-                      ps2X * ps2Y,
+          title2.Form("%3.1f - %2.0f", ps2X * ps2Y,
                       row2);  // print pad size and nrows - 2 digits - sector 2
-          title3.Form("%3.1f - %2.0f",
-                      ps3X * ps3Y,
+          title3.Form("%3.1f - %2.0f", ps3X * ps3Y,
                       row3);  // print pad size and nrows - 2 digits - sector 3
-        } else {
+        }
+        else {
           title1.Form("%3.1f",
                       ps1X * ps1Y);  // print pad size - 2 digits - sector 1
           title2.Form("%3.1f",
@@ -219,7 +217,8 @@ void plot_hollow_modules(TString digiPar    = "trd.v13/trd_v13g.digi.par",
         if (nlines == 1)  // plot pad size for central sector only
         {
           //	  text->AddText(title2);
-        } else  // plot pad size for all 3 sectors
+        }
+        else  // plot pad size for all 3 sectors
         {
           text->AddText(title1);
           text->AddText(title2);

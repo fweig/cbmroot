@@ -26,6 +26,7 @@
 
 //#include <stddef.h>                     // for NULL
 #include <iostream>  // for operator<<, basic_ostream, etc
+
 #include <sys/stat.h>
 
 // -----   Default constructor   ------------------------------------------
@@ -37,7 +38,9 @@ CbmPlutoGenerator::CbmPlutoGenerator()
   , fFileName(nullptr)
   , fInputChain(nullptr)
   , fParticles(nullptr)
-  , fPDGmanual(0) {}
+  , fPDGmanual(0)
+{
+}
 // ------------------------------------------------------------------------
 
 // -----   Standard constructor   -----------------------------------------
@@ -49,7 +52,8 @@ CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName)
   , fFileName(fileName)
   , fInputChain(nullptr)
   , fParticles(new TClonesArray("PParticle", 100))
-  , fPDGmanual(0) {
+  , fPDGmanual(0)
+{
   fInputChain = new TChain("data");
 
   if (Cbm::File::IsRootFile(fileName)) {
@@ -72,7 +76,8 @@ CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
   , fFileName()
   , fInputChain(nullptr)
   , fParticles(new TClonesArray("PParticle", 100))
-  , fPDGmanual(0) {
+  , fPDGmanual(0)
+{
   fInputChain = new TChain("data");
   for (const auto& name : fileNames) {
     if (Cbm::File::IsRootFile(name)) {
@@ -89,7 +94,8 @@ CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
 
 
 // -----   Destructor   ---------------------------------------------------
-CbmPlutoGenerator::~CbmPlutoGenerator() {
+CbmPlutoGenerator::~CbmPlutoGenerator()
+{
   // remove Pluto database
   delete fdata;
   delete fbase;
@@ -99,7 +105,8 @@ CbmPlutoGenerator::~CbmPlutoGenerator() {
 
 
 // -----   Public method ReadEvent   --------------------------------------
-Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
+Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
 
   // Check for input file
   if (!fInputChain) {
@@ -126,17 +133,15 @@ Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
     PParticle* part = (PParticle*) fParticles->At(iPart);
 
     Int_t* pdgType = 0x0;
-    Bool_t found = fbase->GetParamInt("pid", part->ID(), "pythiakf", &pdgType);
+    Bool_t found   = fbase->GetParamInt("pid", part->ID(), "pythiakf", &pdgType);
     // TODO: replace by fdata->GetParticleKF(part->ID()); as soon as FairSoft uses pluto version 5.43 or higher and remove fbase
 
     // Check if particle type is known to database
     if (!found) {
-      LOG(warn) << "CbmPlutoGenerator: Unknown type " << part->ID()
-                << ", skipping particle.";
+      LOG(warn) << "CbmPlutoGenerator: Unknown type " << part->ID() << ", skipping particle.";
       continue;
     }
-    LOG(info) << iPart << " Particle (geant " << part->ID() << " PDG "
-              << *pdgType << " -> "
+    LOG(info) << iPart << " Particle (geant " << part->ID() << " PDG " << *pdgType << " -> "
               << dataBase->GetParticle(*pdgType)->GetName();
 
     // set PDG by hand for pluto dilepton pairs and other not defined codes in pluto
@@ -145,7 +150,8 @@ Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
     if (fPDGmanual && *pdgType == 0) {
       pdgType = &fPDGmanual;
       LOG(warn) << "PDG code changed by user defintion to " << *pdgType;
-    } else if (part->ID() == 51)
+    }
+    else if (part->ID() == 51)
       pdgType = &dielectron;
     else if (part->ID() == 50)
       pdgType = &dimuon;
@@ -169,12 +175,10 @@ Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
     Bool_t wanttracking = kTRUE;
     if (idx > -1) wanttracking = kFALSE;  // only tracking for decay products
     Int_t parent = parIdx;
-    LOG(info) << "Add particle with parent at index " << parIdx
-              << " and do tracking " << wanttracking;
+    LOG(info) << "Add particle with parent at index " << parIdx << " and do tracking " << wanttracking;
 
     // Give track to PrimaryGenerator
-    primGen->AddTrack(
-      *pdgType, px, py, pz, vx, vy, vz, parent, wanttracking, ee);
+    primGen->AddTrack(*pdgType, px, py, pz, vx, vy, vz, parent, wanttracking, ee);
 
   }  //  Loop over particle in event
 
@@ -184,7 +188,8 @@ Bool_t CbmPlutoGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
 
 // -----   Private method CloseInput   ------------------------------------
-void CbmPlutoGenerator::CloseInput() {
+void CbmPlutoGenerator::CloseInput()
+{
   if (fInputChain) {
     LOG(info) << "CbmPlutoGenerator: Closing input file " << fFileName;
     delete fInputChain;

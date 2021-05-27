@@ -7,13 +7,13 @@
 #ifndef CBMTRDCLUSTER_H
 #define CBMTRDCLUSTER_H
 
+#include "CbmCluster.h"  // for CbmCluster
+
 #include <Rtypes.h>      // for CLRBIT, SETBIT, TESTBIT, ClassDefr
 #include <RtypesCore.h>  // for Int_t, UShort_t, Bool_t, kTRUE, UChar_t, Opt...
 
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmCluster.h"  // for CbmCluster
 
 /**
  * \class CbmTrdCluster
@@ -22,11 +22,12 @@
  */
 class CbmTrdCluster : public CbmCluster {
 public:
-  enum CbmTrdClusterDef {
+  enum CbmTrdClusterDef
+  {
     kTriang = 5  ///< set type of pads on which the cluster is reconstructed
-    ,
+      ,
     kProfileStart  ///< only for triangular if no T in first col
-    ,
+      ,
     kProfileStop  ///< only for triangular if no R in last col
   };
   /**
@@ -56,8 +57,7 @@ public:
    * \param[in] dt update start time of cluster if current digi is prompt
    * \return true if successful
    */
-  Bool_t
-  AddDigi(Int_t idx, Int_t channel = -1, Int_t terminator = 0, Int_t dt = 0);
+  Bool_t AddDigi(Int_t idx, Int_t channel = -1, Int_t terminator = 0, Int_t dt = 0);
   /** \brief reset cluster data*/
   void Clear(Option_t*);
   /** Accessors **/
@@ -89,27 +89,21 @@ public:
   void ReInit(Int_t address, Int_t row, Int_t time);
   /** Setters **/
   void SetNCols(UShort_t ncols) { fNCols = ncols; }
-  void SetNRows(UShort_t nrows) {
+  void SetNRows(UShort_t nrows)
+  {
     fNRows &= (7 << 5);
     fNRows |= (nrows & 0x1f);
   }
-  void SetTrianglePads(Bool_t set = kTRUE) {
-    set ? SETBIT(fNRows, kTriang) : CLRBIT(fNRows, kTriang);
-  }
-  void SetProfileStart(Bool_t set = kTRUE) {
-    set ? SETBIT(fNRows, kProfileStart) : CLRBIT(fNRows, kProfileStart);
-  }
-  void SetProfileStop(Bool_t set = kTRUE) {
-    set ? SETBIT(fNRows, kProfileStop) : CLRBIT(fNRows, kProfileStop);
-  }
+  void SetTrianglePads(Bool_t set = kTRUE) { set ? SETBIT(fNRows, kTriang) : CLRBIT(fNRows, kTriang); }
+  void SetProfileStart(Bool_t set = kTRUE) { set ? SETBIT(fNRows, kProfileStart) : CLRBIT(fNRows, kProfileStart); }
+  void SetProfileStop(Bool_t set = kTRUE) { set ? SETBIT(fNRows, kProfileStop) : CLRBIT(fNRows, kProfileStop); }
 
   /** \brief Extended functionality*/
   virtual std::string ToString() const;
 
 protected:
-  UChar_t fNCols;  // number of columns with charge above threshold
-  UChar_t
-    fNRows;  // cluster row info plus extra. Use dedicated getters for the correct value
+  UChar_t fNCols;       // number of columns with charge above threshold
+  UChar_t fNRows;       // cluster row info plus extra. Use dedicated getters for the correct value
   UShort_t fStartCh;    //! channel address of first channel
   UShort_t fStartTime;  //! start time of cluster in clk units wrt buffer start
 

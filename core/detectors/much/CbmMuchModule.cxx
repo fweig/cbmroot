@@ -24,23 +24,16 @@ CbmMuchModule::CbmMuchModule()
   , fPoints(nullptr)
   , fHits(nullptr)
   , fClusters(nullptr)
-  , fDigis() {}
+  , fDigis()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMuchModule::CbmMuchModule(Int_t iStation,
-                             Int_t iLayer,
-                             Bool_t iSide,
-                             Int_t iModule,
-                             TVector3 position,
-                             TVector3 size,
-                             Double_t cutRadius)
-  : TPave(position[0] - size[0] / 2,
-          position[1] - size[1] / 2,
-          position[0] + size[0] / 2,
-          position[1] + size[1] / 2,
-          1)
+CbmMuchModule::CbmMuchModule(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position,
+                             TVector3 size, Double_t cutRadius)
+  : TPave(position[0] - size[0] / 2, position[1] - size[1] / 2, position[0] + size[0] / 2, position[1] + size[1] / 2, 1)
   , fDetectorId(CbmMuchAddress::GetAddress(iStation, iLayer, iSide, iModule))
   , fDetectorType(-1)
   , fCutRadius(cutRadius)
@@ -49,7 +42,9 @@ CbmMuchModule::CbmMuchModule(Int_t iStation,
   , fPoints(nullptr)
   , fHits(nullptr)
   , fClusters(nullptr)
-  , fDigis() {}
+  , fDigis()
+{
+}
 // -------------------------------------------------------------------------
 
 

@@ -65,34 +65,30 @@ private:
   CbmTofDetectorId* fTofId;
   CbmTofCell* fChannelInfo;
   Int_t iNbSmTot;
-  std::vector<Int_t>
-    fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
+  std::vector<Int_t> fvTypeSmOffs;  // Offset in SM index for first SM of each SM type
   Int_t iNbRpcTot;
-  std::vector<std::vector<Int_t>>
-    fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
+  std::vector<std::vector<Int_t>> fvSmRpcOffs;  // Offset in RPC index for first RPC of each SM
   Int_t iNbChTot;
-  std::vector<std::vector<std::vector<Int_t>>>
-    fvRpcChOffs;  // Offset in channel index for first channel of each RPC
+  std::vector<std::vector<std::vector<Int_t>>> fvRpcChOffs;  // Offset in channel index for first channel of each RPC
 
   // Parameters
   CbmTofDigiPar* fDigiPar;
   CbmTofDigiBdfPar* fDigiBdfPar;
 
-  TClonesArray* fTofPointsColl;  // TOF MC points
-  TClonesArray* fMcTracksColl;   // MC tracks
-  TClonesArray* fTofDigisColl;   // TOF Digis
-  TClonesArray* fTofHitsColl;    // TOF hits
-  TClonesArray*
-    fTofHitMatchColl;  // // Indices of MC original points for each hit with TOT weight (CbmMatch)
-                       //    TClonesArray *fStsPoints;     // STS points
-                       //    TClonesArray *fStsHits;       // STS hits
-                       //    TClonesArray *fStsTracks;     // STS tracks
-                       //    TClonesArray *fGlobalTracks;  // Global tracks
-                       //    TClonesArray *fHadrons;       // Hadrons
-                       //    TClonesArray *fRichHits;      // RICH hits
-                       //    Bool_t        fbRichThere;    // RICH flag
-                       //    TClonesArray *fTrdHits;       // TRD hits
-                       //    Bool_t        fbTrdThere;     // TRD flag
+  TClonesArray* fTofPointsColl;    // TOF MC points
+  TClonesArray* fMcTracksColl;     // MC tracks
+  TClonesArray* fTofDigisColl;     // TOF Digis
+  TClonesArray* fTofHitsColl;      // TOF hits
+  TClonesArray* fTofHitMatchColl;  // // Indices of MC original points for each hit with TOT weight (CbmMatch)
+                                   //    TClonesArray *fStsPoints;     // STS points
+                                   //    TClonesArray *fStsHits;       // STS hits
+                                   //    TClonesArray *fStsTracks;     // STS tracks
+                                   //    TClonesArray *fGlobalTracks;  // Global tracks
+                                   //    TClonesArray *fHadrons;       // Hadrons
+                                   //    TClonesArray *fRichHits;      // RICH hits
+                                   //    Bool_t        fbRichThere;    // RICH flag
+                                   //    TClonesArray *fTrdHits;       // TRD hits
+                                   //    Bool_t        fbTrdThere;     // TRD flag
 
   // Histograms
   // Test class performance

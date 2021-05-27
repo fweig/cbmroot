@@ -8,6 +8,7 @@
 #include "CbmDeviceMcbmMonitorPulser.h"
 
 #include "CbmMQDefs.h"
+
 #include "TimesliceMetaData.h"
 
 //#include "CbmMcbm2018MonitorAlgoTof.h"
@@ -15,11 +16,9 @@
 
 #include "StorableTimeslice.hpp"
 
-#include "BoostSerializer.h"
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
 #include "FairParGenericSet.h"
-#include "RootSerializer.h"
 
 #include "TCanvas.h"
 #include "TFile.h"
@@ -27,14 +26,16 @@
 #include "TList.h"
 #include "TNamed.h"
 
-#include <array>
-#include <iomanip>
-#include <string>
-
+#include "BoostSerializer.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
 
+#include <array>
+#include <iomanip>
 #include <stdexcept>
+#include <string>
+
+#include "RootSerializer.h"
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -45,9 +46,11 @@ using namespace std;
 
 CbmDeviceMcbmMonitorPulser::CbmDeviceMcbmMonitorPulser()
 //   : fMonitorAlgo{ new CbmMcbm2018MonitorAlgoTof() }
-{}
+{
+}
 
-void CbmDeviceMcbmMonitorPulser::InitTask() try {
+void CbmDeviceMcbmMonitorPulser::InitTask()
+try {
   /// Read options from executable
   LOG(info) << "Init options for CbmMqStarHistoServer.";
 
@@ -66,10 +69,8 @@ void CbmDeviceMcbmMonitorPulser::InitTask() try {
   fsAllowedChannels[0]      = fsChannelNameDataInput;
 
   LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
-  LOG(info) << "Histograms publication min. interval in s: "
-            << fdMinPublishTime;
-  LOG(info) << "Histograms publication max. interval in s: "
-            << fdMaxPublishTime;
+  LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
+  LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
 
   /// Set the Monitor Algo in Absolute time scale
   //   fMonitorAlgo->UseAbsoluteTime();
@@ -89,40 +90,38 @@ void CbmDeviceMcbmMonitorPulser::InitTask() try {
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
     if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
-      if (!IsChannelNameAllowed(entry.first))
-        throw InitTaskError("Channel name does not match.");
+      if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
       OnData(entry.first, &CbmDeviceMcbmMonitorPulser::HandleData);
     }  // if( std::string::npos != entry.first.find( fsChannelNameDataInput ) )
   }    // for( auto const &entry : fChannels )
   InitContainers();
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceMcbmMonitorPulser::IsChannelNameAllowed(std::string channelName) {
+bool CbmDeviceMcbmMonitorPulser::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fsAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
     if (pos1 != std::string::npos) {
       const vector<std::string>::const_iterator pos =
         std::find(fsAllowedChannels.begin(), fsAllowedChannels.end(), entry);
-      const vector<std::string>::size_type idx =
-        pos - fsAllowedChannels.begin();
+      const vector<std::string>::size_type idx = pos - fsAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       return true;
     }  // if (pos1!=std::string::npos)
   }    // for(auto const &entry : fsAllowedChannels)
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
 }
 
-Bool_t CbmDeviceMcbmMonitorPulser::InitContainers() {
+Bool_t CbmDeviceMcbmMonitorPulser::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmDeviceMcbmMonitorPulser.";
   Bool_t initOK = kTRUE;
   /*
@@ -245,11 +244,11 @@ Bool_t CbmDeviceMcbmMonitorPulser::InitContainers() {
 
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceMcbmMonitorPulser::HandleData(FairMQParts& parts, int /*index*/) {
+bool CbmDeviceMcbmMonitorPulser::HandleData(FairMQParts& parts, int /*index*/)
+{
   fulNumMessages++;
 
-  LOG(debug) << "Received message " << fulNumMessages << " with "
-             << parts.Size() << " parts"
+  LOG(debug) << "Received message " << fulNumMessages << " with " << parts.Size() << " parts"
              << ", size0: " << parts.At(0)->GetSize();
 
   uint32_t uPartIdx = 0;
@@ -266,50 +265,43 @@ bool CbmDeviceMcbmMonitorPulser::HandleData(FairMQParts& parts, int /*index*/) {
   Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
   ++uPartIdx;
 
-  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                       (parts.At(uPartIdx))->GetSize());
+  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issT0(msgStrT0);
   boost::archive::binary_iarchive inputArchiveT0(issT0);
   inputArchiveT0 >> fvDigiT0;
   ++uPartIdx;
 
-  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issSts(msgStrSts);
   boost::archive::binary_iarchive inputArchiveSts(issSts);
   inputArchiveSts >> fvDigiSts;
   ++uPartIdx;
 
-  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                         (parts.At(uPartIdx))->GetSize());
+  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issMuch(msgStrMuch);
   boost::archive::binary_iarchive inputArchiveMuch(issMuch);
   inputArchiveMuch >> fvDigiMuch;
   ++uPartIdx;
 
-  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issTrd(msgStrTrd);
   boost::archive::binary_iarchive inputArchiveTrd(issTrd);
   inputArchiveTrd >> fvDigiTrd;
   ++uPartIdx;
 
-  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issTof(msgStrTof);
   boost::archive::binary_iarchive inputArchiveTof(issTof);
   inputArchiveTof >> fvDigiTof;
   ++uPartIdx;
 
-  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                         (parts.At(uPartIdx))->GetSize());
+  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issRich(msgStrRich);
   boost::archive::binary_iarchive inputArchiveRich(issRich);
   inputArchiveRich >> fvDigiRich;
   ++uPartIdx;
 
-  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()),
-                        (parts.At(uPartIdx))->GetSize());
+  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
   std::istringstream issPsd(msgStrPsd);
   boost::archive::binary_iarchive inputArchivePsd(issPsd);
   inputArchivePsd >> fvDigiPsd;
@@ -360,7 +352,8 @@ bool CbmDeviceMcbmMonitorPulser::HandleData(FairMQParts& parts, int /*index*/) {
   return true;
 }
 
-bool CbmDeviceMcbmMonitorPulser::SendHistograms() {
+bool CbmDeviceMcbmMonitorPulser::SendHistograms()
+{
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
   Serialize<RootSerializer>(*message, &fArrayHisto);

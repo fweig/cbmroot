@@ -65,8 +65,7 @@
   field1->Init();
   creator->AddField(field1);
 
-  CbmField* field2 =
-    new CbmFieldConst("field2", -20., 20., -20., 20., -20., 20., 0., 10., 0.);
+  CbmField* field2 = new CbmFieldConst("field2", -20., 20., -20., 20., -20., 20., 0., 10., 0.);
   creator->AddField(field2);
   // ========================================================================
 

@@ -18,10 +18,11 @@
 #include "CbmStsTrack.h"
 #include "CbmTrdTrack.h"
 #include "CbmVertex.h"
+#include "cbm/qa/mc/CbmLitMCTrackCreator.h"
+
 #include "FairBaseParSet.h"
 #include "FairMCEventHeader.h"
 #include "FairTask.h"
-#include "cbm/qa/mc/CbmLitMCTrackCreator.h"
 
 #include <fstream>
 #include <map>
@@ -69,13 +70,8 @@ public:
      * \param[in] min Minimum value.
      * \param[in] max Maximum value.
      */
-  void CreateAnalysisStepsH1(std::vector<TH1D*>& hist,
-                             const std::string& name,
-                             const std::string& axisX,
-                             const std::string& axisY,
-                             double nBins,
-                             double min,
-                             double max);
+  void CreateAnalysisStepsH1(std::vector<TH1D*>& hist, const std::string& name, const std::string& axisX,
+                             const std::string& axisY, double nBins, double min, double max);
 
 
   /*
@@ -92,17 +88,9 @@ public:
      * \param[in] minY Minimum value for Y axis.
      * \param[in] maxY Maximum value for Y axis.
      */
-  void CreateAnalysisStepsH2(std::vector<TH2D*>& hist,
-                             const std::string& name,
-                             const std::string& axisX,
-                             const std::string& axisY,
-                             const std::string& axisZ,
-                             double nBinsX,
-                             double minX,
-                             double maxX,
-                             double nBinsY,
-                             double minY,
-                             double maxY);
+  void CreateAnalysisStepsH2(std::vector<TH2D*>& hist, const std::string& name, const std::string& axisX,
+                             const std::string& axisY, const std::string& axisZ, double nBinsX, double minX,
+                             double maxX, double nBinsY, double minY, double maxY);
 
   /*
      * \brief Creates 1D histograms for different track source types.
@@ -114,13 +102,8 @@ public:
      * \param[in] min Minimum value.
      * \param[in] max Maximum value.
      */
-  void CreateSourceTypesH1(std::vector<TH1D*>& hist,
-                           const std::string& name,
-                           const std::string& axisX,
-                           const std::string& axisY,
-                           double nBins,
-                           double min,
-                           double max);
+  void CreateSourceTypesH1(std::vector<TH1D*>& hist, const std::string& name, const std::string& axisX,
+                           const std::string& axisY, double nBins, double min, double max);
 
 
   /*
@@ -137,17 +120,9 @@ public:
      * \param[in] minY Minimum value for Y axis.
      * \param[in] maxY Maximum value for Y axis.
      */
-  void CreateSourceTypesH2(std::vector<TH2D*>& hist,
-                           const std::string& name,
-                           const std::string& axisX,
-                           const std::string& axisY,
-                           const std::string& axisZ,
-                           double nBinsX,
-                           double minX,
-                           double maxX,
-                           double nBinsY,
-                           double minY,
-                           double maxY);
+  void CreateSourceTypesH2(std::vector<TH2D*>& hist, const std::string& name, const std::string& axisX,
+                           const std::string& axisY, const std::string& axisZ, double nBinsX, double minX, double maxX,
+                           double nBinsY, double minY, double maxY);
 
 
   /*
@@ -157,9 +132,7 @@ public:
      * \param[in] step Enumeration AnalysisSteps, specify analysis step.
      * \param[in] parRec Kinematic parameters for reconstructed pair.
      */
-  void PairSource(CbmLmvmCandidate* candP,
-                  CbmLmvmCandidate* candM,
-                  CbmLmvmAnalysisSteps step,
+  void PairSource(CbmLmvmCandidate* candP, CbmLmvmCandidate* candM, CbmLmvmAnalysisSteps step,
                   CbmLmvmKinematicParams* parRec);
 
   /*
@@ -170,14 +143,10 @@ public:
      * \param[in] parRec Reconstructed kinematic parameters.
      * \param[in] step Enumeration AnalysisSteps, specify analysis step.
      */
-  void FillPairHists(CbmLmvmCandidate* candP,
-                     CbmLmvmCandidate* candM,
-                     CbmLmvmKinematicParams* parMc,
-                     CbmLmvmKinematicParams* parRec,
-                     CbmLmvmAnalysisSteps step);
+  void FillPairHists(CbmLmvmCandidate* candP, CbmLmvmCandidate* candM, CbmLmvmKinematicParams* parMc,
+                     CbmLmvmKinematicParams* parRec, CbmLmvmAnalysisSteps step);
 
-  void
-  TrackSource(CbmLmvmCandidate* cand, CbmLmvmAnalysisSteps step, Int_t pdg);
+  void TrackSource(CbmLmvmCandidate* cand, CbmLmvmAnalysisSteps step, Int_t pdg);
 
   void SingleParticleAcceptance();
 
@@ -198,8 +167,7 @@ public:
 
   void AssignMcToCandidates();
 
-  void
-  AssignMcToTopologyCandidates(std::vector<CbmLmvmCandidate>& cutCandidates);
+  void AssignMcToTopologyCandidates(std::vector<CbmLmvmCandidate>& cutCandidates);
 
   void DifferenceSignalAndBg();
 
@@ -219,21 +187,15 @@ public:
      * \param[in] mvdStationNum MVD station number.
      * \param[in, out] hist Vector of histograms for different source types.
      */
-  void CheckClosestMvdHit(Int_t mvdStationNum,
-                          std::vector<TH2D*>& hist,
-                          std::vector<TH1D*>& histQa);
+  void CheckClosestMvdHit(Int_t mvdStationNum, std::vector<TH2D*>& hist, std::vector<TH1D*>& histQa);
 
   /*
      * \brief Set cut values and fill histograms for topology cut
      * \param[in] cutName ST or TT
      */
-  void CheckTopologyCut(const std::string& cutName,
-                        const std::vector<CbmLmvmCandidate>& cutCandidates,
-                        const std::vector<TH2D*>& hcut,
-                        const std::vector<TH2D*>& hcutPion,
-                        const std::vector<TH2D*>& hcutTruepair,
-                        Double_t angleCut,
-                        Double_t ppCut);
+  void CheckTopologyCut(const std::string& cutName, const std::vector<CbmLmvmCandidate>& cutCandidates,
+                        const std::vector<TH2D*>& hcut, const std::vector<TH2D*>& hcutPion,
+                        const std::vector<TH2D*>& hcutTruepair, Double_t angleCut, Double_t ppCut);
 
   void CalculateNofTopologyPairs(TH1D* h_nof_pairs, const std::string& source);
 
@@ -257,8 +219,7 @@ private:
 
   Bool_t IsGhost(CbmLmvmCandidate* cand);
 
-  void
-  IsElectron(Int_t globalTrackIndex, Double_t momentum, CbmLmvmCandidate* cand);
+  void IsElectron(Int_t globalTrackIndex, Double_t momentum, CbmLmvmCandidate* cand);
 
   FairMCEventHeader* fMCEventHeader;
   TClonesArray* fMCTracks;
@@ -292,8 +253,7 @@ private:
   Bool_t fUseTof;
 
   std::vector<CbmLmvmCandidate> fCandidates;
-  std::vector<CbmLmvmCandidate>
-    fSTCandidates;  // STCut Segmented tracks, reconstructed only in STS
+  std::vector<CbmLmvmCandidate> fSTCandidates;  // STCut Segmented tracks, reconstructed only in STS
   std::vector<CbmLmvmCandidate>
     fTTCandidates;  // TTCut Reconstructed tracks, reconstructed in all detectors but not identified as electrons
   std::vector<CbmLmvmCandidate>
@@ -301,8 +261,7 @@ private:
 
   Double_t fWeight;  //Multiplicity*BR
 
-  Double_t
-    fPionMisidLevel;  // For the ideal particle identification cases, set to -1 for real PID
+  Double_t fPionMisidLevel;  // For the ideal particle identification cases, set to -1 for real PID
   TRandom3* fRandom3;
 
   //Bool_t fUseMcMomentum;
@@ -351,25 +310,20 @@ private:
   std::vector<TH2D*> fh_pi0_minv_pt;     // Invariant mass vs. MC Pt
 
 
-  std::vector<TH1D*>
-    fh_bg_truematch_minv;  // Invariant mass for truly matched tracks
-  std::vector<TH1D*>
-    fh_bg_truematch_el_minv;  // Invariant mass for truly matched electron tracks
-  std::vector<TH1D*>
-    fh_bg_truematch_notel_minv;  // Invariant mass for truly matched tracks, not 2 electrons
-  std::vector<TH1D*>
-    fh_bg_mismatch_minv;  // Invariant mass for mis matches tracks
+  std::vector<TH1D*> fh_bg_truematch_minv;        // Invariant mass for truly matched tracks
+  std::vector<TH1D*> fh_bg_truematch_el_minv;     // Invariant mass for truly matched electron tracks
+  std::vector<TH1D*> fh_bg_truematch_notel_minv;  // Invariant mass for truly matched tracks, not 2 electrons
+  std::vector<TH1D*> fh_bg_mismatch_minv;         // Invariant mass for mis matches tracks
 
   //G-Gamma, P-Pi0, O-other
   //e-e+
   //[0]=G-G, [1]=P-P, [2]=O-O, [3]=G-P, [4]=G-O, [5]=P-O
-  std::vector<std::vector<TH1D*>>
-    fh_source_bg_minv;  // Invariant mass for different source
+  std::vector<std::vector<TH1D*>> fh_source_bg_minv;  // Invariant mass for different source
 
 
   //Index is the source type: [0]-signal, [1]-bg, [2]-pi0, [3]-gamma
   //Use SourceTypes enumeration for access.
-  std::vector<TH1D*> fh_pt;  // Transverse momentum of single track distribution
+  std::vector<TH1D*> fh_pt;        // Transverse momentum of single track distribution
   std::vector<TH1D*> fh_mom;       //Momentum of the single track
   std::vector<TH1D*> fh_chi2sts;   // Chi2 of the STS tracks
   std::vector<TH1D*> fh_chi2prim;  // Chi2 of the primary vertex
@@ -390,10 +344,10 @@ private:
 
   std::vector<TH1D*> fh_nofMvdHits;  // number of MVD hits
   std::vector<TH1D*> fh_nofStsHits;  // number of STS hits
-  std::vector<TH2D*> fh_mvd1xy;  // hit distribution in the first MVD station
-  std::vector<TH1D*> fh_mvd1r;   // r = x^2+y^2
-  std::vector<TH2D*> fh_mvd2xy;  // hit distribution in the second MVD station
-  std::vector<TH1D*> fh_mvd2r;   // r = x^2+y^2
+  std::vector<TH2D*> fh_mvd1xy;      // hit distribution in the first MVD station
+  std::vector<TH1D*> fh_mvd1r;       // r = x^2+y^2
+  std::vector<TH2D*> fh_mvd2xy;      // hit distribution in the second MVD station
+  std::vector<TH1D*> fh_mvd2r;       // r = x^2+y^2
 
   //Distant to MVD hit from the same  MotherId
   TH1D* fh_mvd1cut_mc_dist_gamma;

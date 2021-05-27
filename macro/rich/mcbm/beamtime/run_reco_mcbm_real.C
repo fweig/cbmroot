@@ -1,11 +1,8 @@
 
-void run_reco_mcbm_real(
-  const string& parFile =
-    "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_params_159.root",
-  const string& digiFile =
-    "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_159.root",
-  const string& recoFile = "reco_mcbm.root",
-  int nEvents            = 10) {
+void run_reco_mcbm_real(const string& parFile  = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_params_159.root",
+                        const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_159.root",
+                        const string& recoFile = "reco_mcbm.root", int nEvents = 10)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TTree::SetMaxTreeSize(90000000000);
@@ -20,8 +17,7 @@ void run_reco_mcbm_real(
   //    gROOT->LoadMacro(setupFile);
   //    gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -60,9 +56,7 @@ void run_reco_mcbm_real(
   CbmRichMCbmQaReal* qaTask = new CbmRichMCbmQaReal();
   run->AddTask(qaTask);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -93,7 +87,6 @@ void run_reco_mcbm_real(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

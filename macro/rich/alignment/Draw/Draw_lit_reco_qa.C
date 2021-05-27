@@ -1,11 +1,11 @@
 #include <string>
 
-void draw_lit_reco_qa(bool lit, bool reco) {
+void draw_lit_reco_qa(bool lit, bool reco)
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
-  string dir1 =
-    "/lustre/nyx/cbm/users/jbendar/Sim_Outputs/Ring_Track_VS_Position/";
+  string dir1     = "/lustre/nyx/cbm/users/jbendar/Sim_Outputs/Ring_Track_VS_Position/";
   string fileName = "", outputDirTracking = "", outputDirRecoQa = "";
 
   for (int i = 1; i < 3; i++)
@@ -46,15 +46,10 @@ void draw_lit_reco_qa(bool lit, bool reco) {
 */
 }
 
-void PrepareInputs(int Flag,
-                   string dir,
-                   string& fileName,
-                   string& outputDirTracking,
-                   string& outputDirRecoQa) {
+void PrepareInputs(int Flag, string dir, string& fileName, string& outputDirTracking, string& outputDirRecoQa)
+{
   string folder = "";
-  if (Flag == 0) {
-    folder = "Aligned/";
-  }
+  if (Flag == 0) { folder = "Aligned/"; }
 
   else if (Flag == 1) {
     folder = "Misaligned_1mrad_Full/";
@@ -89,7 +84,5 @@ void PrepareInputs(int Flag,
   outputDirRecoQa   = dir + folder + "results_RecoQa/";
 
   std::cout << "fileName, outputDirTracking, outputDirRecoQa:" << std::endl;
-  std::cout << fileName << std::endl
-            << outputDirTracking << std::endl
-            << outputDirRecoQa << std::endl;
+  std::cout << fileName << std::endl << outputDirTracking << std::endl << outputDirRecoQa << std::endl;
 }

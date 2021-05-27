@@ -25,6 +25,7 @@
 #define CBMLITPOLARIZEDGENERATOR_H
 
 #include "FairGenerator.h"
+
 #include "TF1.h"
 #include "TVector3.h"
 
@@ -32,8 +33,17 @@ class FairPrimaryGenerator;
 
 class CbmLitPolarizedGenerator : public FairGenerator {
 public:
-  typedef enum { kNoPol = 0, kColSop = 1, kHelicity = 2 } Frame_t;
-  typedef enum { kDiElectron = 1, kDiMuon = 2 } DecayMode_t;
+  typedef enum
+  {
+    kNoPol    = 0,
+    kColSop   = 1,
+    kHelicity = 2
+  } Frame_t;
+  typedef enum
+  {
+    kDiElectron = 1,
+    kDiMuon     = 2
+  } DecayMode_t;
 
   /** Default constructor. */
   CbmLitPolarizedGenerator();
@@ -54,24 +64,27 @@ public:
   inline void SetMultiplicity(Int_t mult) { fMult = mult; };
 
   // Set temperature for transverse momentum distribution in GeV
-  inline void SetDistributionPt(Double_t T = 0.154319, Double_t mass = -1.) {
+  inline void SetDistributionPt(Double_t T = 0.154319, Double_t mass = -1.)
+  {
     fT          = T;
     fPtDistMass = mass;
   };
 
   // Set rapidity distribution parameters (y0 - mid rapidity, sigma - Gaussian width)
-  inline void SetDistributionY(Double_t y0    = 1.98604,
-                               Double_t sigma = 0.617173) {
+  inline void SetDistributionY(Double_t y0 = 1.98604, Double_t sigma = 0.617173)
+  {
     fY0    = y0;
     fSigma = sigma;
   };
 
   // Set range
-  inline void SetRangePt(Double_t ptMin = 0, Double_t ptMax = 3) {
+  inline void SetRangePt(Double_t ptMin = 0, Double_t ptMax = 3)
+  {
     fPtMin = ptMin;
     fPtMax = ptMax;
   };
-  inline void SetRangeY(Double_t yMin = 0, Double_t yMax = 4) {
+  inline void SetRangeY(Double_t yMin = 0, Double_t yMax = 4)
+  {
     fYMin = yMin;
     fYMax = yMax;
   };
@@ -85,9 +98,7 @@ public:
   inline void SetRefFrame(Frame_t frame = kColSop) { fFrame = frame; }
 
   /** Set decay mode (kDiMuon/kDiElectron) */
-  inline void SetDecayMode(DecayMode_t decayMode = kDiMuon) {
-    fDecayMode = decayMode;
-  }
+  inline void SetDecayMode(DecayMode_t decayMode = kDiMuon) { fDecayMode = decayMode; }
 
   /** Set beam momentum (used in Collins-Soper reference frame)
    * @param mom  beam momentum in GeV/c 
@@ -125,7 +136,7 @@ private:
   DecayMode_t fDecayMode;  //< Reference system for polarization
   Double_t fBeamMomentum;  //< Beam momentum in lab frame
   TF1* fPol;               //! Polarization function
-  Bool_t fBox;  // fBox = 1 Box generator, fBox = 0 - termal pt and gaussian y
+  Bool_t fBox;             // fBox = 1 Box generator, fBox = 0 - termal pt and gaussian y
 
   CbmLitPolarizedGenerator(const CbmLitPolarizedGenerator&);
   CbmLitPolarizedGenerator& operator=(const CbmLitPolarizedGenerator&);

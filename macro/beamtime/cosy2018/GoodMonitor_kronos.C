@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void GoodMonitor_kronos(Int_t iRunIdx = 84) {
+void GoodMonitor_kronos(Int_t iRunIdx = 84)
+{
   const Int_t kiNbRuns        = 89;
   TString sFilePath[kiNbRuns] = {"/lustre/nyx/cbm/prod/beamtime/2018/02/cosy/"
                                  "r0001_20180220_1034/r0001_20180220_1034",
@@ -190,12 +191,10 @@ void GoodMonitor_kronos(Int_t iRunIdx = 84) {
                                  "r0088_20180304_1807/r0088_20180304_1807",
                                  "/lustre/nyx/cbm/prod/beamtime/2018/02/cosy/"
                                  "r0089_20180304_1826/r0089_20180304_1826"};
-  Int_t iTsaFileNb[kiNbRuns]  = {
-    1,  1,  1,  3,  3,  2,  2,  14, 41, 26, 37, 25, 45, 13, 36, 7,  4,  6,
-    6,  11, 10, 12, 11, 8,  11, 26, 1,  8,  9,  8,  3,  3,  22, 17, 6,  4,
-    5,  4,  1,  5,  5,  5,  9,  13, 27, 45, 6,  9,  4,  10, 5,  4,  3,  5,
-    4,  5,  7,  56, 34, 13, 13, 18, 6,  10, 7,  6,  8,  9,  3,  8,  10, 11,
-    11, 11, 6,  6,  8,  6,  6,  9,  1,  3,  39, 44, 15, 35, 6,  7,  10};
+  Int_t iTsaFileNb[kiNbRuns]  = {1, 1,  1,  3,  3,  2, 2, 14, 41, 26, 37, 25, 45, 13, 36, 7,  4,  6,  6, 11, 10, 12, 11,
+                                8, 11, 26, 1,  8,  9, 8, 3,  3,  22, 17, 6,  4,  5,  4,  1,  5,  5,  5, 9,  13, 27, 45,
+                                6, 9,  4,  10, 5,  4, 3, 5,  4,  5,  7,  56, 34, 13, 13, 18, 6,  10, 7, 6,  8,  9,  3,
+                                8, 10, 11, 11, 11, 6, 6, 8,  6,  6,  9,  1,  3,  39, 44, 15, 35, 6,  7, 10};
 
   if (iRunIdx <= 0 || kiNbRuns < iRunIdx) return;
 
@@ -299,8 +298,7 @@ void GoodMonitor_kronos(Int_t iRunIdx = 84) {
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   run->Finish();
 
@@ -310,8 +308,7 @@ void GoodMonitor_kronos(Int_t iRunIdx = 84) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

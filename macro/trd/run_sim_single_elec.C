@@ -8,7 +8,8 @@
 // 20130605 - checked by DE
 // --------------------------------------------------------------------------
 
-void run_sim_single_elec(Int_t nEvents = 1) {
+void run_sim_single_elec(Int_t nEvents = 1)
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -19,10 +20,8 @@ void run_sim_single_elec(Int_t nEvents = 1) {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 9);
   digipar.ReplaceAll(".", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -165,8 +164,7 @@ void run_sim_single_elec(Int_t nEvents = 1) {
   eminus->SetPDGType(11);
   eminus->SetMultiplicity(1);
   //  eminus->SetBoxXYZ(-400.,-400.,400.,400.,405.);  // z=405 for SIS100 setup
-  eminus->SetBoxXYZ(
-    32., -32., 32., -32., 405.);  // shoot at corner of diagonal modules
+  eminus->SetBoxXYZ(32., -32., 32., -32., 405.);  // shoot at corner of diagonal modules
   eminus->SetPRange(2., 2.);
   eminus->SetPhiRange(0., 360.);
   eminus->SetThetaRange(0., 0.);
@@ -184,8 +182,7 @@ void run_sim_single_elec(Int_t nEvents = 1) {
   FairBoxGenerator* e3 = new FairBoxGenerator();
   e3->SetPDGType(11);
   e3->SetMultiplicity(1);
-  e3->SetBoxXYZ(
-    -82., 82., -82., 82., 405.);  // shoot at corner of diagonal module
+  e3->SetBoxXYZ(-82., 82., -82., 82., 405.);  // shoot at corner of diagonal module
   e3->SetPRange(2., 2.);
   e3->SetPhiRange(0., 360.);
   e3->SetThetaRange(0., 0.);
@@ -253,8 +250,7 @@ void run_sim_single_elec(Int_t nEvents = 1) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

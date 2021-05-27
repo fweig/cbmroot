@@ -2,6 +2,7 @@
 #define L1MaterialInfo_h
 
 #include "../CbmL1Def.h"
+
 #include <vector>
 
 class L1MaterialInfo {
@@ -21,13 +22,15 @@ public:
   // static const float RMax = 60.f;
   // static const float iD = 0.5*NBins/60.f;//RMax!;
 
-  void SetBins(int n, float r) {
+  void SetBins(int n, float r)
+  {
     NBins = n;
     RMax  = r;
     iD    = 0.5 * NBins / RMax;
   }
 
-  float GetRadThick(float x, float y) {
+  float GetRadThick(float x, float y)
+  {
     x     = (x < RMax && x >= -RMax) ? x : 0;
     y     = (y < RMax && y >= -RMax) ? y : 0;
     int i = static_cast<int>((x + RMax) * iD);
@@ -38,7 +41,8 @@ public:
   }
 
 
-  fvec GetRadThick(fvec x, fvec y) {
+  fvec GetRadThick(fvec x, fvec y)
+  {
     fvec r;
     for (int i = 0; i < fvecLen; i++)
       r[i] = GetRadThick(x[i], y[i]);

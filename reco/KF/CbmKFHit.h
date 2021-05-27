@@ -21,8 +21,7 @@ public:
 
   Int_t MaterialIndex;
 
-  virtual Int_t
-  Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0) = 0;
+  virtual Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0) = 0;
 
   ClassDef(CbmKFHit, 1)
 };

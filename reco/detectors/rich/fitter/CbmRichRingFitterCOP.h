@@ -11,8 +11,9 @@
 
 #include "CbmRichRingFitterBase.h"
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;

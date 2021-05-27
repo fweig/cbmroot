@@ -29,9 +29,7 @@ public:
   /**
     * brief Default constructor.
     */
-  CbmRichProjectionProducerBase()
-    : fPathToMirrorCorrectionParameterFile("")
-    , fMirrorCorrectionParameterFile(NULL) {}
+  CbmRichProjectionProducerBase() : fPathToMirrorCorrectionParameterFile(""), fMirrorCorrectionParameterFile(NULL) {}
 
   /**
     * \brief Destructor.
@@ -50,9 +48,7 @@ public:
     **/
   virtual void DoProjection(TClonesArray* richProj) = 0;
 
-  virtual void SetMirrorCorrectionParameterFile(const string& s) {
-    fPathToMirrorCorrectionParameterFile = s;
-  }
+  virtual void SetMirrorCorrectionParameterFile(const string& s) { fPathToMirrorCorrectionParameterFile = s; }
 
 
 protected:
@@ -68,8 +64,7 @@ private:
   /**
     * \brief Assignment operator.
     */
-  CbmRichProjectionProducerBase&
-  operator=(const CbmRichProjectionProducerBase&);
+  CbmRichProjectionProducerBase& operator=(const CbmRichProjectionProducerBase&);
 };
 
 #endif

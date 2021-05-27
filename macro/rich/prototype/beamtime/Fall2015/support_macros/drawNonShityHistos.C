@@ -2,8 +2,8 @@
 
 #define KOEF 2  // Rebinning koef
 
-void drawNonShityHistos(TString filename       = "../output/sum_WLS_off.root",
-                        TString picturesFolder = "pictures") {
+void drawNonShityHistos(TString filename = "../output/sum_WLS_off.root", TString picturesFolder = "pictures")
+{
   TH1D* hDevi = new TH1D("hDevi", "hDevi", 400, -2., 2.);
 
   TCanvas* c = new TCanvas("canvas", "", 1000, 800);
@@ -48,9 +48,7 @@ void drawNonShityHistos(TString filename       = "../output/sum_WLS_off.root",
       Double_t maxInWin2 = histo1->GetBinContent(maxInWin2bin);
 
       // Window 1 - from -3.0ns to -1.5ns
-      for (UInt_t i = glMaxBin - (2 * 150 / KOEF) + 1;
-           i < glMaxBin - (150 / KOEF);
-           i++) {
+      for (UInt_t i = glMaxBin - (2 * 150 / KOEF) + 1; i < glMaxBin - (150 / KOEF); i++) {
         if (histo1->GetBinContent(i) > maxInWin1) {
           maxInWin1bin = i;
           maxInWin1    = histo1->GetBinContent(maxInWin1bin);
@@ -58,9 +56,7 @@ void drawNonShityHistos(TString filename       = "../output/sum_WLS_off.root",
       }
 
       // Window 2 - from 1.5ns to 3.0ns
-      for (UInt_t i = glMaxBin + (150 / KOEF) + 1;
-           i < glMaxBin + (2 * 150 / KOEF);
-           i++) {
+      for (UInt_t i = glMaxBin + (150 / KOEF) + 1; i < glMaxBin + (2 * 150 / KOEF); i++) {
         if (histo1->GetBinContent(i) > maxInWin2) {
           maxInWin2bin = i;
           maxInWin2    = histo1->GetBinContent(maxInWin2bin);
@@ -73,7 +69,8 @@ void drawNonShityHistos(TString filename       = "../output/sum_WLS_off.root",
       if (maxInWin2 > maxInWin1) {
         maxPercnt   = 100. * maxInWin2 / glMax;
         IsRightPeak = kTRUE;
-      } else {
+      }
+      else {
         maxPercnt   = 100. * maxInWin1 / glMax;
         IsRightPeak = kFALSE;
       }
@@ -88,14 +85,9 @@ void drawNonShityHistos(TString filename       = "../output/sum_WLS_off.root",
       //TODO choose > - shity or <= - nonShity
       if (maxPercnt > THRESHOLD) {
 
-        Double_t devia =
-          ((Double_t) glMaxBin * KOEF / 100. - 30.) - histo1->GetMean();
-        printf("%s\t%d\t%.6f\t%.6f\t%.6f\n",
-               histoName.Data(),
-               glMaxBin,
-               histo1->GetMean(),
-               ((Double_t) glMaxBin * KOEF / 100. - 30.),
-               devia);
+        Double_t devia = ((Double_t) glMaxBin * KOEF / 100. - 30.) - histo1->GetMean();
+        printf("%s\t%d\t%.6f\t%.6f\t%.6f\n", histoName.Data(), glMaxBin, histo1->GetMean(),
+               ((Double_t) glMaxBin * KOEF / 100. - 30.), devia);
         hDevi->Fill(devia);
         /*
             canvasTitle.Form("canvas_%s", histoName.Data());

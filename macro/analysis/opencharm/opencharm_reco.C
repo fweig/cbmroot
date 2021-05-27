@@ -56,56 +56,37 @@ TString setup    = "sis100_electron";
 bool littrack    = false;
 Bool_t useMC     = kFALSE;
 
-void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
+void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // Input file (MC events)
-  TString inFile    = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root",
-                        input.Data(),
-                        inputGEV.Data(),
-                        nEvents,
-                        ProcID,
-                        signal.Data(),
-                        setup.Data());
+  TString inFile    = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                        ProcID, signal.Data(), setup.Data());
   TString deltaFile = Form("data/opencharm.mc.delta.%i.root", ProcID);
-  TString bgFile    = Form("data/opencharm.mc.urqmd.bg.%s.%s.%i.%i.%s.%s.root",
-                        input.Data(),
-                        inputGEV.Data(),
-                        nEvents,
-                        ProcID,
-                        signal.Data(),
-                        setup.Data());
+  TString bgFile    = Form("data/opencharm.mc.urqmd.bg.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                        ProcID, signal.Data(), setup.Data());
 
   // Output file
-  TString outSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s",
-                           input.Data(),
-                           inputGEV.Data(),
-                           nEvents,
-                           ProcID,
-                           signal.Data(),
-                           setup.Data());
+  TString outSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s", input.Data(), inputGEV.Data(), nEvents,
+                           ProcID, signal.Data(), setup.Data());
 
   if (!PileUp) {
-    if (littrack)
-      TString outFile = outSystem + ".littrack.root";
+    if (littrack) TString outFile = outSystem + ".littrack.root";
     else
       TString outFile = outSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString outFile = outSystem + ".PileUp.littrack.root";
   else
     TString outFile = outSystem + ".PileUp.l1.root";
 
 
   // Parameter file
-  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
 
   //  Digitisation files.
   // Add TObjectString containing the different file names to
@@ -159,8 +140,7 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
   // ------------------------------------------------------------------------
 
   // -----   MVD Digitiser   ------------------------------------------------
-  CbmMvdDigitizer* mvdDigitise =
-    new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
 
   if (PileUp) {
     Int_t pileUpInMVD = 3;
@@ -177,15 +157,13 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
   // ----------------------------------------------------------------------
 
   // -----   MVD Clusterfinder   --------------------------------------------
-  CbmMvdClusterfinder* mvdCluster =
-    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   //mvdCluster->ShowDebugHistos();
   run->AddTask(mvdCluster);
   // ----------------------------------------------------------------------
 
   // -----   MVD Hit Finder   ---------------------------------------------
-  CbmMvdHitfinder* mvdHitfinder =
-    new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+  CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
   mvdHitfinder->UseClusterfinder(kTRUE);
   //mvdHitfinder->ShowDebugHistos();
   run->AddTask(mvdHitfinder);
@@ -196,13 +174,13 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
   // -----   The parameters of the STS digitizer are set such as to match
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;         // User sensor type DSSD
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // User sensor type DSSD
 
   // The following settings correspond to a validated implementation.
   // Changing them is on your own risk.
@@ -212,10 +190,8 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
   Bool_t useCrossTalk    = kFALSE;  // Deactivate cross talk
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetProcesses(
-    eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
-  stsDigi->SetParameters(
-    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+  stsDigi->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
   // -------------------------------------------------------------------------
 
@@ -243,8 +219,7 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
 
   Bool_t useMvdInL1Tracking         = !littrack;
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks =
-    new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvdInL1Tracking);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder, useMvdInL1Tracking);
   run->AddTask(stsFindTracks);
   // ------------------------------------------------------------------------
 
@@ -257,7 +232,7 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  Bool_t simpleTR          = kTRUE;  // use fast and simple version for TR production
   CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
@@ -296,8 +271,7 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducerNew* tofHitProd =
-    new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
+  CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
   tofHitProd->SetInitFromAscii(kFALSE);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------

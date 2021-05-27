@@ -16,17 +16,25 @@
 
 #include "CbmDefs.h"
 #include "CbmSetup.h"
+
 #include "FairParGenericSet.h"
 #include "FairParamList.h"
+
 #include "TArrayD.h"
-#include <list>
 #include <tuple>
 
-enum EPrimaryParticleId { ppiNone, ppiJpsi };
+#include <list>
+
+enum EPrimaryParticleId
+{
+  ppiNone,
+  ppiJpsi
+};
 
 class CbmBinnedSettings : public FairParGenericSet {
 public:
-  static CbmBinnedSettings* Instance() {
+  static CbmBinnedSettings* Instance()
+  {
     static CbmBinnedSettings* theInstance = 0;
 
     if (0 == theInstance) theInstance = new CbmBinnedSettings;
@@ -36,9 +44,7 @@ public:
 
 public:
   CbmBinnedSettings()
-    : FairParGenericSet("CbmBinnedSettings",
-                        "Binned tracker reconstruction parameters",
-                        "Default")
+    : FairParGenericSet("CbmBinnedSettings", "Binned tracker reconstruction parameters", "Default")
     , fIsConfiguring(false)
     , fIsOnlyPrimary(true)
     , fNofStsStations(0)
@@ -47,7 +53,8 @@ public:
     , fNofStations(0)
     , fXScats()
     , fYScats()
-    , fPrimaryParticleIds() {
+    , fPrimaryParticleIds()
+  {
     std::fill_n(fUseModules, int(ECbmModuleId::kLastModule), true);
     fPrimaryParticleIds.push_back(ppiNone);
   }
@@ -55,13 +62,15 @@ public:
   CbmBinnedSettings(const CbmBinnedSettings&) = delete;
   CbmBinnedSettings& operator=(const CbmBinnedSettings&) = delete;
 
-  void clear() {
+  void clear()
+  {
     status = kFALSE;
     resetInputVersions();
   }
 
   // Overridden virtual methods
-  void putParams(FairParamList* l) {
+  void putParams(FairParamList* l)
+  {
     if (0 == l) return;
 
     l->add("OnlyPrimary", fIsOnlyPrimary);
@@ -102,7 +111,8 @@ public:
     l->add("StationYScats", stationYScatArray);
   }
 
-  Bool_t getParams(FairParamList* l) {
+  Bool_t getParams(FairParamList* l)
+  {
     if (0 == l) return kFALSE;
 
     Int_t op = 0;
@@ -161,17 +171,12 @@ public:
   void SetConfiguring(bool v) { fIsConfiguring = v; }
   bool IsOnlyPrimary() const { return fIsOnlyPrimary; }
   void SetOnlyPrimary(bool v) { fIsOnlyPrimary = v; }
-  bool Use(ECbmModuleId m) const {
-    return fUseModules[ToIntegralType(m)] && CbmSetup::Instance()->IsActive(m);
-  }
+  bool Use(ECbmModuleId m) const { return fUseModules[ToIntegralType(m)] && CbmSetup::Instance()->IsActive(m); }
   void SetUse(Int_t m, bool v) { fUseModules[m] = v; }
-  void SetUse(bool v) {
-    std::fill_n(fUseModules, int(ECbmModuleId::kLastModule), v);
-  }
-  void SetUse(bool useModules[ToIntegralType(ECbmModuleId::kLastModule)]) {
-    std::copy(useModules,
-              useModules + ToIntegralType(ECbmModuleId::kLastModule),
-              fUseModules);
+  void SetUse(bool v) { std::fill_n(fUseModules, int(ECbmModuleId::kLastModule), v); }
+  void SetUse(bool useModules[ToIntegralType(ECbmModuleId::kLastModule)])
+  {
+    std::copy(useModules, useModules + ToIntegralType(ECbmModuleId::kLastModule), fUseModules);
   }
   Int_t GetNofStsStations() const { return fNofStsStations; }
   void SetNofStsStations(Int_t v) { fNofStsStations = v; }
@@ -187,41 +192,35 @@ public:
     Double_t GetYError(int stationNumber) const { return std::get<1> (fStationErrors[stationNumber]); }
     Double_t GetTError(int stationNumber) const { return std::get<2> (fStationErrors[stationNumber]); }*/
 
-  void AddStationScats(Double_t x, Double_t y) {
+  void AddStationScats(Double_t x, Double_t y)
+  {
     fXScats.push_back(x);
     fYScats.push_back(y);
     ++fNofStations;
   }
 
-  Double_t GetXScat(size_t stationNumber) const {
-    return stationNumber < fXScats.size() ? fXScats[stationNumber] : 0;
-  }
-  Double_t GetYScat(size_t stationNumber) const {
-    return stationNumber < fYScats.size() ? fYScats[stationNumber] : 0;
-  }
+  Double_t GetXScat(size_t stationNumber) const { return stationNumber < fXScats.size() ? fXScats[stationNumber] : 0; }
+  Double_t GetYScat(size_t stationNumber) const { return stationNumber < fYScats.size() ? fYScats[stationNumber] : 0; }
 
-  void ResetScats() {
+  void ResetScats()
+  {
     fXScats.clear();
     fYScats.clear();
   }
 
-  const std::list<EPrimaryParticleId> GetPrimaryParticles() const {
-    return fPrimaryParticleIds;
-  }
+  const std::list<EPrimaryParticleId> GetPrimaryParticles() const { return fPrimaryParticleIds; }
 
-  void SetPrimaryParticle(EPrimaryParticleId v) {
+  void SetPrimaryParticle(EPrimaryParticleId v)
+  {
     fPrimaryParticleIds.clear();
     fPrimaryParticleIds.push_back(v);
   }
 
-  void AddPrimaryParticle(EPrimaryParticleId v) {
-    fPrimaryParticleIds.push_back(v);
-  }
+  void AddPrimaryParticle(EPrimaryParticleId v) { fPrimaryParticleIds.push_back(v); }
 
-  void SetPrimaryParticles(const std::list<EPrimaryParticleId> v) {
-    fPrimaryParticleIds = v;
-  }
-  void AddPrimaryParticles(const std::list<EPrimaryParticleId> v) {
+  void SetPrimaryParticles(const std::list<EPrimaryParticleId> v) { fPrimaryParticleIds = v; }
+  void AddPrimaryParticles(const std::list<EPrimaryParticleId> v)
+  {
     fPrimaryParticleIds.insert(fPrimaryParticleIds.end(), v.begin(), v.end());
   }
 

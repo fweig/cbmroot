@@ -3,6 +3,7 @@
  *@since 2014
  **/
 #include "CbmMuchMergeVectors.h"
+
 #include "CbmKFTrack.h"
 #include "CbmMuchDigiMatch.h"
 #include "CbmMuchFindVectorsGem.h"
@@ -63,17 +64,18 @@ CbmMuchMergeVectors::CbmMuchMergeVectors()
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuchMergeVectors::~CbmMuchMergeVectors() {
+CbmMuchMergeVectors::~CbmMuchMergeVectors()
+{
   fTrackArray->Delete();
 
-  for (map<Int_t, TMatrixDSym*>::iterator it = fMatr.begin(); it != fMatr.end();
-       ++it)
+  for (map<Int_t, TMatrixDSym*>::iterator it = fMatr.begin(); it != fMatr.end(); ++it)
     delete it->second;
 }
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchMergeVectors::Init() {
+InitStatus CbmMuchMergeVectors::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -83,9 +85,7 @@ InitStatus CbmMuchMergeVectors::Init() {
   fTrackArray = new TClonesArray("CbmMuchTrack", 100);
   ioman->Register("MuchVectorTrack", "Much", fTrackArray, kTRUE);
 
-  CbmMuchFindHitsStraws* hitFinder =
-    (CbmMuchFindHitsStraws*) FairRun::Instance()->GetTask(
-      "CbmMuchFindHitsStraws");
+  CbmMuchFindHitsStraws* hitFinder = (CbmMuchFindHitsStraws*) FairRun::Instance()->GetTask("CbmMuchFindHitsStraws");
   //if (hitFinder == NULL) Fatal("Init", "CbmMuchFindHitsStraws not run!");
   //fDiam = hitFinder->GetDiam(0);
 
@@ -104,8 +104,7 @@ InitStatus CbmMuchMergeVectors::Init() {
     fRmin[i]           = st->GetRmin();
     fRmax[i]           = st->GetRmax();
     if (mod->GetDetectorType() == 2) {
-      if (fStatFirst < 0)
-        fStatFirst = CbmMuchAddress::GetStationIndex(st->GetDetectorId());
+      if (fStatFirst < 0) fStatFirst = CbmMuchAddress::GetStationIndex(st->GetDetectorId());
       //cout << " First station: " << fStatFirst << endl;
       Int_t nLays = st->GetNLayers();
       fNdoubl     = nLays;
@@ -133,16 +132,14 @@ InitStatus CbmMuchMergeVectors::Init() {
   FairTask* vecFinder = FairRun::Instance()->GetTask("VectorFinder");
   vecFinder->GetListOfTasks()->ls();
   CbmMuchFindVectorsGem* gemFinder =
-    (CbmMuchFindVectorsGem*) vecFinder->GetListOfTasks()->FindObject(
-      "MuchFindVectorsGem");
+    (CbmMuchFindVectorsGem*) vecFinder->GetListOfTasks()->FindObject("MuchFindVectorsGem");
   if (gemFinder == NULL) Fatal("Init", "CbmMuchFindVectorsGem not run!");
 
   Int_t nAbs = gemFinder->GetAbsorbers(fZabs0, fX0abs);
 
   cout << " \n !!! MUCH Absorbers: " << nAbs << "\n Zbeg, Zend, X0:";
   for (Int_t j = 0; j < nAbs; ++j)
-    cout << " " << std::setprecision(4) << fZabs0[j][0] << ", " << fZabs0[j][1]
-         << ", " << fX0abs[j] << ";";
+    cout << " " << std::setprecision(4) << fZabs0[j][0] << ", " << fZabs0[j][1] << ", " << fX0abs[j] << ";";
   cout << endl << endl;
 
   return kSUCCESS;
@@ -154,7 +151,8 @@ void CbmMuchMergeVectors::SetParContainers() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchMergeVectors::Exec(Option_t* opt) {
+void CbmMuchMergeVectors::Exec(Option_t* opt)
+{
 
   //gErrorIgnoreLevel = kInfo; //debug level
   //gErrorIgnoreLevel = kWarning; //debug level
@@ -183,17 +181,18 @@ void CbmMuchMergeVectors::Exec(Option_t* opt) {
 // -------------------------------------------------------------------------
 
 // -----   Public method Finish   ------------------------------------------
-void CbmMuchMergeVectors::Finish() {
+void CbmMuchMergeVectors::Finish()
+{
   fTrackArray->Clear();
 
-  for (map<Int_t, TMatrixDSym*>::iterator it = fMatr.begin(); it != fMatr.end();
-       ++it)
+  for (map<Int_t, TMatrixDSym*>::iterator it = fMatr.begin(); it != fMatr.end(); ++it)
     delete it->second;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method GetVectors   -------------------------------------
-void CbmMuchMergeVectors::GetVectors() {
+void CbmMuchMergeVectors::GetVectors()
+{
   // Group vectors according to the station number
 
   std::map<Int_t, CbmMuchTrack*>::iterator it;
@@ -233,17 +232,14 @@ void CbmMuchMergeVectors::GetVectors() {
     //if (ppp < pMin + 0.1) continue; // too low momentum
     if (ppp < pMin + 0.05) continue;  // too low momentum
     CbmKFTrack kfTrack = CbmKFTrack(*tr, 0);
-    if (kfTrack.Extrapolate(fZabs0[ista][0]))
-      continue;  // extrapolation error to absorber front face
+    if (kfTrack.Extrapolate(fZabs0[ista][0])) continue;  // extrapolation error to absorber front face
     kfTrack.GetTrackParam(param);
-    if (kfTrack.Extrapolate(fZabs0[ista][1]))
-      continue;  // extrapolation error to absorber rear face
+    if (kfTrack.Extrapolate(fZabs0[ista][1])) continue;  // extrapolation error to absorber rear face
     kfTrack.GetTrackParam(parRear);
     Double_t r2 = param.GetX() * param.GetX() + param.GetY() * param.GetY();
     if (TMath::Sqrt(r2) > fRmax[0]) continue;  // outside outer acceptance
     // Take into account track angle
-    Double_t cos2th =
-      1.0 + param.GetTx() * param.GetTx() + param.GetTy() * param.GetTy();
+    Double_t cos2th = 1.0 + param.GetTx() * param.GetTx() + param.GetTy() * param.GetTy();
     //if (ppp / TMath::Sqrt(cos2th) < pMin + 0.1) continue; // too low momentum
     if (ppp / TMath::Sqrt(cos2th) < pMin + 0.05) continue;  // too low momentum
     CbmMuchTrack* vec = new CbmMuchTrack();
@@ -256,13 +252,14 @@ void CbmMuchMergeVectors::GetVectors() {
     //CbmTrackMatch *trMatch = (CbmTrackMatch*) fTrStsMatch->UncheckedAt(i);
     //vec->SetFlag(trMatch->GetMCTrackId());
     if (fTrStsMatch) {
-      CbmTrackMatchNew* trMatch =
-        (CbmTrackMatchNew*) fTrStsMatch->UncheckedAt(i);
+      CbmTrackMatchNew* trMatch = (CbmTrackMatchNew*) fTrStsMatch->UncheckedAt(i);
       vec->SetFlag(trMatch->GetMatchedLink().GetIndex());
       //} else vec->SetFlag(SetStsTrackId(i));
-    } else if (tr->GetMatch() && tr->GetMatch()->GetNofLinks()) {
+    }
+    else if (tr->GetMatch() && tr->GetMatch()->GetNofLinks()) {
       vec->SetFlag(tr->GetMatch()->GetMatchedLink().GetIndex());
-    } else
+    }
+    else
       vec->SetFlag(-1);
     fVectors[ista].insert(pair<Int_t, CbmMuchTrack*>(i + nVecs, vec));
     //cout << " Before absorber: " << i << " " << nVecs << " " << i+nVecs << endl;
@@ -325,7 +322,8 @@ Int_t CbmMuchMergeVectors::SetStsTrackId(Int_t indx)
 // -------------------------------------------------------------------------
 
 // -----   Private method MatchVectors   -----------------------------------
-void CbmMuchMergeVectors::MatchVectors() {
+void CbmMuchMergeVectors::MatchVectors()
+{
   // Match vectors (CbmMuchTracks) from 2 stations going upstream -
   // remove vectors without matching
 
@@ -334,14 +332,12 @@ void CbmMuchMergeVectors::MatchVectors() {
   TMatrixF unit(TMatrixF::kUnit, matr);
   map<Int_t, CbmMuchTrack*>::iterator it, it1;
   multimap<Double_t, pair<Int_t, CbmMuchTrack*>> xMap[2];
-  multimap<Double_t, pair<Int_t, CbmMuchTrack*>>::iterator mit, mit1, mitb,
-    mite;
+  multimap<Double_t, pair<Int_t, CbmMuchTrack*>>::iterator mit, mit1, mitb, mite;
   map<CbmMuchTrack*, Int_t> matchOK[2];
   TMatrixFSym cov(5);
 
   //AZ for (Int_t iabs = 2; iabs >= 0; --iabs) { // last absorber has been checked already
-  for (Int_t iabs = 3; iabs >= 0;
-       --iabs) {  // last absorber has been checked already
+  for (Int_t iabs = 3; iabs >= 0; --iabs) {  // last absorber has been checked already
     Double_t window = window0;
     if (iabs == fgkStat - 2) window = window0 * 2.0;
     //Int_t ibeg = fTrackArray->GetEntriesFast();
@@ -372,17 +368,14 @@ void CbmMuchMergeVectors::MatchVectors() {
           TMatrixF cf(cov, TMatrixF::kMult, ff);
           TMatrixF fcf(ff, TMatrixF::kTransposeMult, cf);
           cov.SetMatrixArray(fcf.GetMatrixArray());
-          if (ist == 0 && iabs > 0)
-            PassAbsorber(
-              ist + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 0);
+          if (ist == 0 && iabs > 0) PassAbsorber(ist + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 0);
           //if (ist) cov.Print(); ;
         }
         cov.Invert();  // weight matrix
         parFirst.SetCovMatrix(cov);
         //tr->SetParamFirst(&parFirst);
         tr->SetParamLast(&parFirst);
-        xMap[ist].insert(
-          pair<Double_t, pair<Int_t, CbmMuchTrack*>>(parFirst.GetX(), *it));
+        xMap[ist].insert(pair<Double_t, pair<Int_t, CbmMuchTrack*>>(parFirst.GetX(), *it));
         matchOK[ist][tr] = -1;
       }
     }  // for (Int_t ist = 0; ist < 2;
@@ -395,10 +388,7 @@ void CbmMuchMergeVectors::MatchVectors() {
       FairTrackParam par1  = *tr1->GetParamLast();
       TMatrixFSym w1(5);
       par1.CovMatrix(w1);
-      Float_t pars1[5] = {(Float_t) par1.GetX(),
-                          (Float_t) par1.GetY(),
-                          (Float_t) par1.GetTx(),
-                          (Float_t) par1.GetTy(),
+      Float_t pars1[5] = {(Float_t) par1.GetX(), (Float_t) par1.GetY(), (Float_t) par1.GetTx(), (Float_t) par1.GetTy(),
                           1.0};
       TMatrixF p1(5, 1, pars1);
       TMatrixF wp1(w1, TMatrixF::kTransposeMult, p1);
@@ -414,11 +404,8 @@ void CbmMuchMergeVectors::MatchVectors() {
         TMatrixFSym w2(5);
         par2.CovMatrix(w2);
         TMatrixFSym w20  = w2;
-        Float_t pars2[5] = {(Float_t) par2.GetX(),
-                            (Float_t) par2.GetY(),
-                            (Float_t) par2.GetTx(),
-                            (Float_t) par2.GetTy(),
-                            1.0};
+        Float_t pars2[5] = {(Float_t) par2.GetX(), (Float_t) par2.GetY(), (Float_t) par2.GetTx(),
+                            (Float_t) par2.GetTy(), 1.0};
         TMatrixF p2(5, 1, pars2);
         TMatrixF wp2(w2, TMatrixF::kTransposeMult, p2);
         wp2 += wp1;
@@ -462,15 +449,15 @@ void CbmMuchMergeVectors::MatchVectors() {
         if (ista == 0) delete tr;
         fVectors[ista].erase(it);
       }
-      cout << " MergeVectors: vectors after matching in station " << ista
-           << ": " << fVectors[ista].size() << endl;
+      cout << " MergeVectors: vectors after matching in station " << ista << ": " << fVectors[ista].size() << endl;
     }
   }  // for (Int_t iabs = 2; iabs >= 0;
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method MergeVectors   -----------------------------------
-void CbmMuchMergeVectors::MergeVectors() {
+void CbmMuchMergeVectors::MergeVectors()
+{
   // Match vectors (CbmMuchTracks) from 2 stations
 
   const Double_t window0 = 5.0;  //10.0; //
@@ -489,12 +476,9 @@ void CbmMuchMergeVectors::MergeVectors() {
       // Propagate vectors to the absorber faces
       Int_t ista = iabs - 1 + ist + 1;
       //if (iabs == 1 && ist == 0) --ista; // !!! take extrapolated STS tracks - skip first station
-      Int_t imerged = (fVectors[ista].begin()->first < 0)
-                        ? 1
-                        : 0;  // merged vectors stored with negative station No.
+      Int_t imerged = (fVectors[ista].begin()->first < 0) ? 1 : 0;  // merged vectors stored with negative station No.
       for (it = fVectors[ista].begin(); it != fVectors[ista].end(); ++it) {
-        if (imerged && it->first >= 0)
-          break;  // for merged vectors: skip original (unmerged) vectors
+        if (imerged && it->first >= 0) break;  // for merged vectors: skip original (unmerged) vectors
         CbmMuchTrack* tr        = it->second;
         FairTrackParam parFirst = *tr->GetParamFirst();
         //if (ist == 0) parFirst = *tr->GetParamLast();
@@ -524,24 +508,17 @@ void CbmMuchMergeVectors::MergeVectors() {
         //if (ist) { cov.Print(); cout << " -0- " << endl; }
         //AZ if (ist == 0) {
         if (ist == 0 && iabs > 0) {
-          if (iabs == 1)
-            PassAbsorber(ist + iabs * 2,
-                         fZabs0[iabs],
-                         fX0abs[iabs],
-                         parFirst,
-                         cov,
-                         1);  // STS track
+          if (iabs == 1) PassAbsorber(ist + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov,
+                                      1);  // STS track
           else
-            PassAbsorber(
-              ist + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 1);
+            PassAbsorber(ist + iabs * 2, fZabs0[iabs], fX0abs[iabs], parFirst, cov, 1);
         }
         //if (ist) cov.Print(); ;
         cov.Invert();  // weight matrix
         parFirst.SetCovMatrix(cov);
         //tr->SetParamFirst(&parFirst);
         tr->SetParamLast(&parFirst);
-        xMap[ist].insert(
-          pair<Double_t, pair<Int_t, CbmMuchTrack*>>(parFirst.GetX(), *it));
+        xMap[ist].insert(pair<Double_t, pair<Int_t, CbmMuchTrack*>>(parFirst.GetX(), *it));
 
         //Info("MergeVectors", "Absorber %i, station %i, trID %i, X = %f, Y = %f, Z = %f", iabs,ista,
         //   tr->GetFlag(),parFirst.GetX(),parFirst.GetY(),parFirst.GetZ());
@@ -567,10 +544,7 @@ void CbmMuchMergeVectors::MergeVectors() {
       FairTrackParam par1 = *tr1->GetParamLast();
       TMatrixFSym w1(5);
       par1.CovMatrix(w1);
-      Float_t pars1[5] = {(Float_t) par1.GetX(),
-                          (Float_t) par1.GetY(),
-                          (Float_t) par1.GetTx(),
-                          (Float_t) par1.GetTy(),
+      Float_t pars1[5] = {(Float_t) par1.GetX(), (Float_t) par1.GetY(), (Float_t) par1.GetTx(), (Float_t) par1.GetTy(),
                           1.0};
       TMatrixF p1(5, 1, pars1);
       TMatrixF wp1(w1, TMatrixF::kTransposeMult, p1);
@@ -589,11 +563,8 @@ void CbmMuchMergeVectors::MergeVectors() {
         TMatrixFSym w2(5);
         par2.CovMatrix(w2);
         TMatrixFSym w20  = w2;
-        Float_t pars2[5] = {(Float_t) par2.GetX(),
-                            (Float_t) par2.GetY(),
-                            (Float_t) par2.GetTx(),
-                            (Float_t) par2.GetTy(),
-                            1.0};
+        Float_t pars2[5] = {(Float_t) par2.GetX(), (Float_t) par2.GetY(), (Float_t) par2.GetTx(),
+                            (Float_t) par2.GetTy(), 1.0};
         TMatrixF p2(5, 1, pars2);
         TMatrixF wp2(w2, TMatrixF::kTransposeMult, p2);
         wp2 += wp1;
@@ -621,12 +592,7 @@ void CbmMuchMergeVectors::MergeVectors() {
         parOk.SetTx(pMerge(2, 0));
         parOk.SetTy(pMerge(3, 0));
         parOk.SetCovMatrix(w2);
-        AddTrack(ista0,
-                 tr1,
-                 tr2,
-                 mit->second.first,
-                 mit1->second.first,
-                 parOk,
+        AddTrack(ista0, tr1, tr2, mit->second.first, mit1->second.first, parOk,
                  c2);  // add track
         Int_t evNo = FairRun::Instance()->GetEventHeader()->GetMCEntryNumber();
         //fprintf(lun1,"%6d %6d %6d %10.3e \n",evNo,tr1->GetFlag(),tr2->GetFlag(),c2);
@@ -655,12 +621,9 @@ void CbmMuchMergeVectors::MergeVectors() {
 // -------------------------------------------------------------------------
 
 // -----   Private method PassAbsorber   -----------------------------------
-void CbmMuchMergeVectors::PassAbsorber(Int_t ist,
-                                       Double_t* zabs,
-                                       Double_t x0,
-                                       FairTrackParam& parFirst,
-                                       TMatrixFSym& cov,
-                                       Int_t pFlag) {
+void CbmMuchMergeVectors::PassAbsorber(Int_t ist, Double_t* zabs, Double_t x0, FairTrackParam& parFirst,
+                                       TMatrixFSym& cov, Int_t pFlag)
+{
   // Go thru absorber
 
   Double_t x  = parFirst.GetX();
@@ -714,10 +677,7 @@ void CbmMuchMergeVectors::PassAbsorber(Int_t ist,
   covMS *= aaa;
 
   Double_t dxx0 = l / x0, angle = 0.0;
-  if (pFlag == 0)
-    angle =
-      0.0136 / 0.985 / 0.6
-      * (1. + 0.038 * TMath::Log(dxx0));  // mu at p = 0.6 - peak at 8A GeV
+  if (pFlag == 0) angle = 0.0136 / 0.985 / 0.6 * (1. + 0.038 * TMath::Log(dxx0));  // mu at p = 0.6 - peak at 8A GeV
   //if (pFlag == 0) angle = 0.0136 / 0.997 / 1.3 * (1. + 0.038 * TMath::Log(dxx0)); // mu at p = 1.3 GeV
   else {
     Double_t pmom = 1.0 / TMath::Abs(parFirst.GetQp());
@@ -738,13 +698,9 @@ void CbmMuchMergeVectors::PassAbsorber(Int_t ist,
 // -------------------------------------------------------------------------
 
 // -----   Private method AddTrack   ---------------------------------------
-void CbmMuchMergeVectors::AddTrack(Int_t ista0,
-                                   CbmMuchTrack* tr1,
-                                   CbmMuchTrack* tr2,
-                                   Int_t indx1,
-                                   Int_t indx2,
-                                   FairTrackParam& parOk,
-                                   Double_t c2) {
+void CbmMuchMergeVectors::AddTrack(Int_t ista0, CbmMuchTrack* tr1, CbmMuchTrack* tr2, Int_t indx1, Int_t indx2,
+                                   FairTrackParam& parOk, Double_t c2)
+{
   // Store merged vector (CbmMuchTracks) into TClonesArray
 
   Int_t ntrs = fTrackArray->GetEntriesFast();
@@ -756,7 +712,8 @@ void CbmMuchMergeVectors::AddTrack(Int_t ista0,
     // Exclude STS track chi2
     track->SetChiSq(c2 + tr2->GetChiSq());
     track->SetNDF(4 + tr2->GetNDF());
-  } else {
+  }
+  else {
     track->SetChiSq(c2 + tr1->GetChiSq() + tr2->GetChiSq());
     track->SetNDF(4 + tr1->GetNDF() + tr2->GetNDF());
   }
@@ -769,17 +726,16 @@ void CbmMuchMergeVectors::AddTrack(Int_t ista0,
     else
       track->AddHit(tr1->GetPreviousTrackId(), kHIT);  // add STS track index
     //if (indx2 < 0) track->SetPreviousTrackId(-indx2 - 1); // index of previous track
-  } else {
+  }
+  else {
     // Merged track
     Int_t nmerged = tr1->GetNofHits();
     for (Int_t j = 0; j < nmerged; ++j)
       track->AddHit(tr1->GetHitIndex(j),
-                    tr1->GetHitType(j));  // add vector index
-    if (indx1 < 0)
-      track->SetPreviousTrackId(-indx1 - 1);  // index of previous track
+                    tr1->GetHitType(j));                   // add vector index
+    if (indx1 < 0) track->SetPreviousTrackId(-indx1 - 1);  // index of previous track
   }
-  if (indx2 >= 0)
-    track->AddHit(indx2, kMUCHSTRAWHIT);  // add vector index
+  if (indx2 >= 0) track->AddHit(indx2, kMUCHSTRAWHIT);  // add vector index
   else {
     // Merged track
     Int_t nmerged = tr2->GetNofHits();
@@ -787,8 +743,7 @@ void CbmMuchMergeVectors::AddTrack(Int_t ista0,
       track->AddHit(tr2->GetHitIndex(j),
                     tr2->GetHitType(j));  // add vector index
   }
-  if (tr1->GetFlag() == tr2->GetFlag())
-    track->SetFlag(tr1->GetFlag());
+  if (tr1->GetFlag() == tr2->GetFlag()) track->SetFlag(tr1->GetFlag());
   else
     track->SetFlag(-1);
 
@@ -796,18 +751,13 @@ void CbmMuchMergeVectors::AddTrack(Int_t ista0,
   gLogger->Info(MESSAGE_ORIGIN,
                 "CbmMuchMergeVectors::AddTrack: ista=%i, trID1=%i, trID2=%i, "
                 "chi2=%f, merged vectors %i",
-                ista0,
-                tr1->GetFlag(),
-                tr2->GetFlag(),
-                track->GetChiSq(),
-                track->GetNofHits());
+                ista0, tr1->GetFlag(), tr2->GetFlag(), track->GetChiSq(), track->GetNofHits());
 }
 // -------------------------------------------------------------------------
 
 // -----   Private method RemoveClones   -----------------------------------
-void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
-                                       Int_t iabs,
-                                       map<Int_t, CbmMuchTrack*>& mapMerged) {
+void CbmMuchMergeVectors::RemoveClones(Int_t ibeg, Int_t iabs, map<Int_t, CbmMuchTrack*>& mapMerged)
+{
   // Remove clone tracks (having at least 1 the same vector)
 
   Int_t ntrs = fTrackArray->GetEntriesFast();
@@ -823,9 +773,7 @@ void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
 	qual = trLit->GetNofHits() + (499 - TMath::Min(tr1->GetChiSq(),499.0)) / 500;
       } else qual = tr1->GetNofHits() + (499 - TMath::Min(tr1->GetChiSq(),499.0)) / 500;
       */
-      Double_t qual =
-        tr1->GetNofHits()
-        + (499 - TMath::Min(tr1->GetChiSq() / tr1->GetNDF(), 499.0)) / 500;
+      Double_t qual = tr1->GetNofHits() + (499 - TMath::Min(tr1->GetChiSq() / tr1->GetNDF(), 499.0)) / 500;
       c2merge.insert(pair<Double_t, Int_t>(-qual, i1));
     }
 
@@ -837,8 +785,7 @@ void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
 
       it1 = it;
       for (++it1; it1 != c2merge.end(); ++it1) {
-        CbmMuchTrack* tr2 =
-          (CbmMuchTrack*) fTrackArray->UncheckedAt(it1->second);
+        CbmMuchTrack* tr2 = (CbmMuchTrack*) fTrackArray->UncheckedAt(it1->second);
         if (tr2 == NULL) continue;
         Int_t nvecs2 = tr2->GetNofHits();
         if (tr2->GetUniqueID() != tr1->GetUniqueID()) continue;
@@ -854,9 +801,8 @@ void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
             if (tr1->GetHitIndex(iv1) != tr2->GetHitIndex(iv2)) continue;
             // Count number of overlaps for the given vector
             if (iv2) {
-              CbmMuchTrack* vec =
-                (CbmMuchTrack*) fVecArray->UncheckedAt(tr2->GetHitIndex(iv2));
-              Int_t clones = vec->GetPreviousTrackId();
+              CbmMuchTrack* vec = (CbmMuchTrack*) fVecArray->UncheckedAt(tr2->GetHitIndex(iv2));
+              Int_t clones      = vec->GetPreviousTrackId();
               ++clones;
               if (clones == 0) ++clones;
               vec->SetPreviousTrackId(clones);
@@ -864,12 +810,7 @@ void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
             gLogger->Info(MESSAGE_ORIGIN,
                           "CbmMuchMergeVectors:RemoveClones: qual1 %f, qual2 "
                           "%f, trID1 %i, trID2 %i, ista %i, p1 %f, p2 %f",
-                          it->first,
-                          it1->first,
-                          tr1->GetFlag(),
-                          tr2->GetFlag(),
-                          iv1,
-                          1 / tr1->GetParamFirst()->GetQp(),
+                          it->first, it1->first, tr1->GetFlag(), tr2->GetFlag(), iv1, 1 / tr1->GetParamFirst()->GetQp(),
                           1 / tr2->GetParamFirst()->GetQp());
             fTrackArray->RemoveAt(it1->second);
             over = kTRUE;
@@ -892,7 +833,8 @@ void CbmMuchMergeVectors::RemoveClones(Int_t ibeg,
 // -------------------------------------------------------------------------
 
 // -----   Private method SelectTracks   -----------------------------------
-void CbmMuchMergeVectors::SelectTracks() {
+void CbmMuchMergeVectors::SelectTracks()
+{
   // Remove ghost tracks (having at least N the same hits (i.e. fired tubes))
 
   const Int_t nMax[2] = {2, 2}, nPl = 40;
@@ -911,9 +853,7 @@ void CbmMuchMergeVectors::SelectTracks() {
       qual = trLit->GetNofHits() + (499 - TMath::Min(tr->GetChiSq(),499.0)) / 500;
     } else qual = tr->GetNofHits() + (499 - TMath::Min(tr->GetChiSq(),499.0)) / 500;
     */
-    Double_t qual =
-      tr->GetNofHits()
-      + (499 - TMath::Min(tr->GetChiSq() / tr->GetNDF(), 499.0)) / 500;
+    Double_t qual = tr->GetNofHits() + (499 - TMath::Min(tr->GetChiSq() / tr->GetNDF(), 499.0)) / 500;
     c2merge.insert(pair<Double_t, Int_t>(-qual, i));
   }
   if (c2merge.size() < 2) return;
@@ -932,8 +872,7 @@ void CbmMuchMergeVectors::SelectTracks() {
         planes[nPl - 1] = tr1->GetHitIndex(iv);
         continue;
       }
-      CbmMuchTrack* vec =
-        (CbmMuchTrack*) fVecArray->UncheckedAt(tr1->GetHitIndex(iv));
+      CbmMuchTrack* vec  = (CbmMuchTrack*) fVecArray->UncheckedAt(tr1->GetHitIndex(iv));
       TClonesArray* hits = fHits;
       if (vec->GetUniqueID() < 2 || fStatFirst < 0) hits = fGemHits;
       Int_t nh = vec->GetNofHits();
@@ -960,19 +899,14 @@ void CbmMuchMergeVectors::SelectTracks() {
             gLogger->Info(MESSAGE_ORIGIN,
                           "Track quality: qual1 %f, qual2 %f, trID1 %i, trID2 "
                           "%i, the same STS track: %i",
-                          it->first,
-                          it1->first,
-                          tr1->GetFlag(),
-                          tr2->GetFlag(),
-                          tr2->GetHitIndex(iv));
+                          it->first, it1->first, tr1->GetFlag(), tr2->GetFlag(), tr2->GetHitIndex(iv));
             fTrackArray->RemoveAt(it1->second);
             break;
           }
           if (tr2->GetUniqueID() != tr1->GetUniqueID()) break;
           continue;
         }
-        CbmMuchTrack* vec =
-          (CbmMuchTrack*) fVecArray->UncheckedAt(tr2->GetHitIndex(iv));
+        CbmMuchTrack* vec  = (CbmMuchTrack*) fVecArray->UncheckedAt(tr2->GetHitIndex(iv));
         Int_t nh           = vec->GetNofHits();
         TClonesArray* hits = fHits;
         if (vec->GetUniqueID() < 2 || fStatFirst < 0) hits = fGemHits;
@@ -981,8 +915,7 @@ void CbmMuchMergeVectors::SelectTracks() {
           Int_t ipl   = hit->GetPlaneId() - 1;
           if (planes[ipl] < 0) continue;
           if (planes[ipl] == vec->GetHitIndex(ih)) {
-            if (hits == fGemHits)
-              ++nover[0];
+            if (hits == fGemHits) ++nover[0];
             else
               ++nover[1];
             if (nover[0] >= nMax[0] || nover[1] >= nMax[1]) {
@@ -990,12 +923,7 @@ void CbmMuchMergeVectors::SelectTracks() {
               gLogger->Info(MESSAGE_ORIGIN,
                             "Track quality: qual1 %f, qual2 %f, trID1 %i, "
                             "trID2 %i, overlaps: %i, %i",
-                            it->first,
-                            it1->first,
-                            tr1->GetFlag(),
-                            tr2->GetFlag(),
-                            nover[0],
-                            nover[1]);
+                            it->first, it1->first, tr1->GetFlag(), tr2->GetFlag(), nover[0], nover[1]);
               fTrackArray->RemoveAt(it1->second);
               over = kTRUE;
               break;
@@ -1012,7 +940,8 @@ void CbmMuchMergeVectors::SelectTracks() {
 // -------------------------------------------------------------------------
 
 // ------   Private method AddStation1   -----------------------------------
-void CbmMuchMergeVectors::AddStation1() {
+void CbmMuchMergeVectors::AddStation1()
+{
   // Add vector from the first station as a filter
 
   const Int_t nVecsMin = 4;
@@ -1022,8 +951,7 @@ void CbmMuchMergeVectors::AddStation1() {
 
   if (fVectors[0].size() == 0) return;
   //if (fVectors[0].begin()->first >= 0) return; // no merged tracks were found
-  if (fVectors[0].begin()->second->GetNofHits() != nVecsMin)
-    return;  // no long tracks were found
+  if (fVectors[0].begin()->second->GetNofHits() != nVecsMin) return;  // no long tracks were found
 
   for (Int_t ist = 0; ist < 1; ++ist) {
 
@@ -1057,7 +985,7 @@ void CbmMuchMergeVectors::AddStation1() {
   // Get STS tracks extrapolated through the first absorber
   Int_t nvecs = fVecArray->GetEntriesFast();
   for (it = fVectors[0].begin(); it != fVectors[0].end(); ++it) {
-    if (it->first >= 0) break;  // no merged tracks anymore
+    if (it->first >= 0) break;                         // no merged tracks anymore
     Int_t indSts      = (it->second)->GetHitIndex(0);  // STS track index
     CbmMuchTrack* tr1 = fVectors[0][nvecs + indSts];
     //cout << " STS index: " << indSts << " " << tr1->GetParamFirst()->GetX() << " " << tr1->GetParamFirst()->GetY() << endl;
@@ -1068,10 +996,7 @@ void CbmMuchMergeVectors::AddStation1() {
     TMatrixFSym w1(5);
     par1.CovMatrix(w1);
     w1.Invert();  // weight matrix
-    Float_t pars1[5] = {(Float_t) par1.GetX(),
-                        (Float_t) par1.GetY(),
-                        (Float_t) par1.GetTx(),
-                        (Float_t) par1.GetTy(),
+    Float_t pars1[5] = {(Float_t) par1.GetX(), (Float_t) par1.GetY(), (Float_t) par1.GetTx(), (Float_t) par1.GetTy(),
                         1.0};
     TMatrixF p1(5, 1, pars1);
     TMatrixF wp1(w1, TMatrixF::kTransposeMult, p1);
@@ -1091,10 +1016,7 @@ void CbmMuchMergeVectors::AddStation1() {
       par2.CovMatrix(w2);
       //w2.Invert(); // weight matrix
       TMatrixFSym w20  = w2;
-      Float_t pars2[5] = {(Float_t) par2.GetX(),
-                          (Float_t) par2.GetY(),
-                          (Float_t) par2.GetTx(),
-                          (Float_t) par2.GetTy(),
+      Float_t pars2[5] = {(Float_t) par2.GetX(), (Float_t) par2.GetY(), (Float_t) par2.GetTx(), (Float_t) par2.GetTy(),
                           1.0};
       TMatrixF p2(5, 1, pars2);
       TMatrixF wp2(w2, TMatrixF::kTransposeMult, p2);
@@ -1120,10 +1042,10 @@ void CbmMuchMergeVectors::AddStation1() {
       //AddTrack(0, tr1, tr2, it->first, it1->first, parOk, c2); // add track
     }  // for (it1 = fVectors[ista1].begin();
     if (c2min / 4 > 5) {
-      gLogger->Info(
-        MESSAGE_ORIGIN, "Stat.1: removed track: c2min %f", c2min / 4);
+      gLogger->Info(MESSAGE_ORIGIN, "Stat.1: removed track: c2min %f", c2min / 4);
       fTrackArray->RemoveAt(-it->first - 1);
-    } else
+    }
+    else
       cout << " Chi2: " << c2min / 4 << endl;
   }  // for (it = fVectors[0].begin();
   fTrackArray->Compress();
@@ -1131,13 +1053,9 @@ void CbmMuchMergeVectors::AddStation1() {
 // -------------------------------------------------------------------------
 
 // -----   Private method AddTrack1   --------------------------------------
-void CbmMuchMergeVectors::AddTrack1(Int_t ista0,
-                                    CbmMuchTrack* tr1,
-                                    CbmMuchTrack* tr2,
-                                    Int_t indx1,
-                                    Int_t indx2,
-                                    FairTrackParam& parOk,
-                                    Double_t c2) {
+void CbmMuchMergeVectors::AddTrack1(Int_t ista0, CbmMuchTrack* tr1, CbmMuchTrack* tr2, Int_t indx1, Int_t indx2,
+                                    FairTrackParam& parOk, Double_t c2)
+{
   // Store merged vector (CbmMuchTracks) into TClonesArray
 
   Int_t ntrs = fTrackArray->GetEntriesFast();
@@ -1152,23 +1070,17 @@ void CbmMuchMergeVectors::AddTrack1(Int_t ista0,
   // Add vectors
   Int_t nmerged = tr1->GetNofHits();
   for (Int_t j = 0; j < nmerged; ++j) {
-    if (j == 0)
-      track->AddHit(tr1->GetHitIndex(j), tr1->GetHitType(j));  // STS
+    if (j == 0) track->AddHit(tr1->GetHitIndex(j), tr1->GetHitType(j));  // STS
     else if (j == 1)
       track->AddHit(indx2, kMUCHSTRAWHIT);  // add stat.1 vector index
     else
       track->AddHit(tr1->GetHitIndex(j - 1), tr1->GetHitType(j - 1));
   }
-  if (tr1->GetFlag() == tr2->GetFlag())
-    track->SetFlag(tr1->GetFlag());
+  if (tr1->GetFlag() == tr2->GetFlag()) track->SetFlag(tr1->GetFlag());
   else
     track->SetFlag(-1);
 
-  Info("AddTrack",
-       "trID1=%i, trID2=%i, chi2=%f, merged vectors %i",
-       tr1->GetFlag(),
-       tr2->GetFlag(),
-       track->GetChiSq(),
+  Info("AddTrack", "trID1=%i, trID2=%i, chi2=%f, merged vectors %i", tr1->GetFlag(), tr2->GetFlag(), track->GetChiSq(),
        track->GetNofHits());
 }
 // -------------------------------------------------------------------------

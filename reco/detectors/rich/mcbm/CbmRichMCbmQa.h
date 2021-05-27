@@ -1,9 +1,9 @@
 #ifndef MCBM_RICH_QA
 #define MCBM_RICH_QA
 
-#include "FairTask.h"
-
 #include "CbmHistManager.h"  // for ROOTCLING
+
+#include "FairTask.h"
 
 class TClonesArray;
 class CbmRichRing;

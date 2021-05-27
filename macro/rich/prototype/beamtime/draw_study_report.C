@@ -1,5 +1,6 @@
 
-void draw_study_report() {
+void draw_study_report()
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 

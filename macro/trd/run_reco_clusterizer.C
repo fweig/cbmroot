@@ -18,7 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_clusterizer(Int_t nEvents = 1) {
+void run_reco_clusterizer(Int_t nEvents = 1)
+{
 
   gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
@@ -31,10 +32,8 @@ void run_reco_clusterizer(Int_t nEvents = 1) {
   whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << digipar
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -220,8 +219,7 @@ void run_reco_clusterizer(Int_t nEvents = 1) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
                                // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
   /*
   CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
@@ -229,16 +227,13 @@ void run_reco_clusterizer(Int_t nEvents = 1) {
 
   // -----   TRD clusterizer     ----------------------------------------------
 
-  CbmTrdClusterizer* trdClustering =
-    new CbmTrdClusterizer("TRD Clusterizer", "TRD task", radiator);
+  CbmTrdClusterizer* trdClustering = new CbmTrdClusterizer("TRD Clusterizer", "TRD task", radiator);
   run->AddTask(trdClustering);
 
-  CbmTrdClusterFinderFast* trdClusterfindingfast =
-    new CbmTrdClusterFinderFast();
+  CbmTrdClusterFinderFast* trdClusterfindingfast = new CbmTrdClusterFinderFast();
   run->AddTask(trdClusterfindingfast);
 
-  CbmTrdHitProducerCluster* trdClusterHitProducer =
-    new CbmTrdHitProducerCluster();
+  CbmTrdHitProducerCluster* trdClusterHitProducer = new CbmTrdHitProducerCluster();
   run->AddTask(trdClusterHitProducer);
 
   // -------------------------------------------------------------------------

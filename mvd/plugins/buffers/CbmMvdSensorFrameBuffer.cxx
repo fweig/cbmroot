@@ -5,6 +5,7 @@
 #include "CbmMvdSensorFrameBuffer.h"
 
 #include "CbmMvdPoint.h"
+
 #include "TClonesArray.h"
 #include "TObjArray.h"
 
@@ -18,20 +19,23 @@ CbmMvdSensorFrameBuffer::CbmMvdSensorFrameBuffer()
   , thisFrame(-1)
   , fSensorData(NULL)
   , bOverflow(kFALSE)
-  , currentTime(0.) {
+  , currentTime(0.)
+{
   fBuffer = NULL;
   bFlag   = false;
 }
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdSensorFrameBuffer::~CbmMvdSensorFrameBuffer() {
+CbmMvdSensorFrameBuffer::~CbmMvdSensorFrameBuffer()
+{
   fBuffer->Delete();
   delete fBuffer;
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorFrameBuffer::InitBuffer(CbmMvdSensor* mySensor) {
+void CbmMvdSensorFrameBuffer::InitBuffer(CbmMvdSensor* mySensor)
+{
 
   bOverflow   = false;
   bFlag       = false;
@@ -44,18 +48,18 @@ void CbmMvdSensorFrameBuffer::InitBuffer(CbmMvdSensor* mySensor) {
   fOutputPoints = new TClonesArray("CbmMvdPoint", 1000);
 
 
-  cout << "-I- " << GetName() << ": Initialisation of sensor "
-       << fSensor->GetName() << endl;
+  cout << "-I- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
 
   lastFrame = 0;
 };
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorFrameBuffer::ExecChain() {
+void CbmMvdSensorFrameBuffer::ExecChain()
+{
 
   SetPluginReady(false);
   currentTime = fSensor->GetCurrentEventTime();
-  thisFrame = fSensor->GetFrameNumber(fSensorData->GetNPixelsY(), currentTime);
+  thisFrame   = fSensor->GetFrameNumber(fSensorData->GetNPixelsY(), currentTime);
 
   if (thisFrame > lastFrame) {
     //cout << endl << "Detected full Frame "<< lastFrame << " on sensor " << fSensor->GetName() << endl;
@@ -76,7 +80,8 @@ void CbmMvdSensorFrameBuffer::ExecChain() {
 
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorFrameBuffer::SendInputArray(TClonesArray* inputStream) {
+void CbmMvdSensorFrameBuffer::SendInputArray(TClonesArray* inputStream)
+{
 
   CbmMvdPoint* point;
   Int_t nEntries = inputStream->GetEntriesFast();
@@ -86,8 +91,7 @@ void CbmMvdSensorFrameBuffer::SendInputArray(TClonesArray* inputStream) {
     //cout << endl <<"check if point belongs to this sensor" << endl;
     if (point->GetDetectorID() == fSensor->GetDetectorID()) {
 
-      new ((*fBuffer)[fBuffer->GetEntriesFast()])
-        CbmMvdPoint(*((CbmMvdPoint*) inputStream->At(i)));
+      new ((*fBuffer)[fBuffer->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) inputStream->At(i)));
       nEntries = inputStream->GetEntriesFast();
       // cout << endl << "New Input registered at " << fSensor->GetName() << endl;
     };
@@ -97,14 +101,15 @@ void CbmMvdSensorFrameBuffer::SendInputArray(TClonesArray* inputStream) {
 
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorFrameBuffer::SetInput(CbmMvdPoint* point) {
+void CbmMvdSensorFrameBuffer::SetInput(CbmMvdPoint* point)
+{
 
-  new ((*fBuffer)[fBuffer->GetEntriesFast()])
-    CbmMvdPoint(*((CbmMvdPoint*) point));
+  new ((*fBuffer)[fBuffer->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorFrameBuffer::BuildMimosaFrame(Int_t frameNumber) {
+void CbmMvdSensorFrameBuffer::BuildMimosaFrame(Int_t frameNumber)
+{
 
   /**Builds a new event in TClonesArray.
    * Important notes:
@@ -145,9 +150,7 @@ void CbmMvdSensorFrameBuffer::BuildMimosaFrame(Int_t frameNumber) {
     pointFrameNumber = fSensor->GetFrameNumber(pixelY, point->GetAbsTime());
     // cout << endl << "current pointFrameNumber " << pointFrameNumber << endl;
 
-    if (pointFrameNumber < frameNumber) {
-      cout << endl << "super error" << endl;
-    }
+    if (pointFrameNumber < frameNumber) { cout << endl << "super error" << endl; }
 
     // if it belongs to the frame, copy it to the event buffer
     if (pointFrameNumber == frameNumber) {
@@ -164,7 +167,8 @@ void CbmMvdSensorFrameBuffer::BuildMimosaFrame(Int_t frameNumber) {
   };
 };
 
-void CbmMvdSensorFrameBuffer::ClearFrame(Int_t frameNumber) {
+void CbmMvdSensorFrameBuffer::ClearFrame(Int_t frameNumber)
+{
 
   /**Builds a new event in TClonesArray.
    * 
@@ -204,16 +208,15 @@ void CbmMvdSensorFrameBuffer::ClearFrame(Int_t frameNumber) {
   fBuffer->Compress();  //defrag buffer
 };
 
-void CbmMvdSensorFrameBuffer::ClearTimeSlice(Double_t tStart, Double_t tStop) {
+void CbmMvdSensorFrameBuffer::ClearTimeSlice(Double_t tStart, Double_t tStop)
+{
 
   CbmMvdPoint* point;
 
   for (Int_t i = 0; i < fBuffer->GetEntriesFast(); i++) {
 
     point = (CbmMvdPoint*) fBuffer->At(i);
-    if ((point->GetTime() > tStart) && (point->GetTime() < tStop)) {
-      fBuffer->RemoveAt(i);
-    }
+    if ((point->GetTime() > tStart) && (point->GetTime() < tStop)) { fBuffer->RemoveAt(i); }
   };
 
   fBuffer->Compress();  // defrag

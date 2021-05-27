@@ -8,7 +8,8 @@
  */
 
 
-void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa") {
+void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
+{
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
@@ -91,8 +92,7 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa") {
   run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -100,8 +100,7 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> FHodoLabSetup: Macro finished successfully." << std::endl;
   std::cout << ">>> FHodoLabSetup: Output file is " << outFile << std::endl;
-  std::cout << ">>> FHodoLabSetup: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> FHodoLabSetup: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

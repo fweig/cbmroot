@@ -17,10 +17,9 @@
 #include <stdio.h>  // for printf
 
 //________________________________________________________________________________________
-CbmTrdParSetGeo::CbmTrdParSetGeo(const char* name,
-                                 const char* title,
-                                 const char* context)
-  : CbmTrdParSet(name, title, context) {
+CbmTrdParSetGeo::CbmTrdParSetGeo(const char* name, const char* title, const char* context)
+  : CbmTrdParSet(name, title, context)
+{
   LOG(debug) << "Constructor of CbmTrdParSetGeo";
   Init();
   LOG(debug) << "Constructor of CbmTrdParSetGeo --- finished";
@@ -30,7 +29,8 @@ CbmTrdParSetGeo::CbmTrdParSetGeo(const char* name,
 CbmTrdParSetGeo::~CbmTrdParSetGeo(void) {}
 
 //________________________________________________________________________________________
-Bool_t CbmTrdParSetGeo::Init() {
+Bool_t CbmTrdParSetGeo::Init()
+{
   CbmTrdGeoHandler geo;
   TGeoNode* topNode = gGeoManager->GetTopNode();
   TObjArray* nodes  = topNode->GetNodes();
@@ -48,8 +48,7 @@ Bool_t CbmTrdParSetGeo::Init() {
     TObjArray* layers = station->GetNodes();
     for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
       TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
-      if (!TString(layer->GetName()).Contains("layer", TString::kIgnoreCase))
-        continue;  // only layers
+      if (!TString(layer->GetName()).Contains("layer", TString::kIgnoreCase)) continue;  // only layers
 
       TObjArray* modules = layer->GetNodes();
       for (Int_t iModule = 0; iModule < modules->GetEntriesFast(); iModule++) {
@@ -57,23 +56,20 @@ Bool_t CbmTrdParSetGeo::Init() {
         TObjArray* parts = module->GetNodes();
         for (Int_t iPart = 0; iPart < parts->GetEntriesFast(); iPart++) {
           TGeoNode* part = static_cast<TGeoNode*>(parts->At(iPart));
-          if (!TString(part->GetName()).Contains("gas", TString::kIgnoreCase))
-            continue;  // only active gas volume
+          if (!TString(part->GetName()).Contains("gas", TString::kIgnoreCase)) continue;  // only active gas volume
 
           // Put together the full path to the interesting volume, which
           // is needed to navigate with the geomanager to this volume.
           // Extract the geometry information (size, global position)
           // from this volume.
-          TString path = TString("/") + topNode->GetName() + "/"
-                         + station->GetName() + "/" + layer->GetName() + "/"
+          TString path = TString("/") + topNode->GetName() + "/" + station->GetName() + "/" + layer->GetName() + "/"
                          + module->GetName() + "/" + part->GetName();
 
           LOG(debug) << "Adding detector with path " << path.Data();
           // Generate a physical node which has all needed information
           gGeoManager->cd(path.Data());
-          Int_t address = geo.GetModuleAddress();
-          fModuleMap[address] =
-            new CbmTrdParModGeo(Form("TRD_%d", address), path.Data());
+          Int_t address       = geo.GetModuleAddress();
+          fModuleMap[address] = new CbmTrdParModGeo(Form("TRD_%d", address), path.Data());
         }
       }
     }
@@ -82,7 +78,8 @@ Bool_t CbmTrdParSetGeo::Init() {
 }
 
 //________________________________________________________________________________________
-void CbmTrdParSetGeo::Print(Option_t*) const {
+void CbmTrdParSetGeo::Print(Option_t*) const
+{
   std::map<Int_t, CbmTrdParMod*>::const_iterator imod = fModuleMap.begin();
   CbmTrdParModGeo* mod(nullptr);
   while (imod != fModuleMap.end()) {
@@ -91,12 +88,7 @@ void CbmTrdParSetGeo::Print(Option_t*) const {
     printf("  %s[%s]\n", mod->GetName(), mod->GetPath());
     Double_t xyz[3];
     mod->GetXYZ(xyz);
-    printf("  X[%.2f] Y[%.2f] Z[%.2f] DX[%.2f] DY[%.2f] DZ[%.2f]\n",
-           xyz[0],
-           xyz[1],
-           xyz[2],
-           mod->GetDX(),
-           mod->GetDY(),
+    printf("  X[%.2f] Y[%.2f] Z[%.2f] DX[%.2f] DY[%.2f] DZ[%.2f]\n", xyz[0], xyz[1], xyz[2], mod->GetDX(), mod->GetDY(),
            mod->GetDZ());
     imod++;
   }

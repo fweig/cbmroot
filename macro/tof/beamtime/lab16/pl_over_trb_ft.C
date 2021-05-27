@@ -1,4 +1,5 @@
-void pl_over_trb_ft(Int_t iBoard = 0) {
+void pl_over_trb_ft(Int_t iBoard = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -25,7 +26,8 @@ void pl_over_trb_ft(Int_t iBoard = 0) {
     if (h1 != NULL) {
       can->cd(iCh + 1);
       h1->Draw("");
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

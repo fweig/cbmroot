@@ -27,31 +27,32 @@ using std::endl;
 
 
 // ------------------------------------------------------------------
-CbmFitGlobalTracks::CbmFitGlobalTracks()
-  : FairTask(), fVerbose(0), fFitter(NULL), fArrayGlbTrack(NULL) {}
+CbmFitGlobalTracks::CbmFitGlobalTracks() : FairTask(), fVerbose(0), fFitter(NULL), fArrayGlbTrack(NULL) {}
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-CbmFitGlobalTracks::CbmFitGlobalTracks(const char* name,
-                                       Int_t verbose,
-                                       CbmGlobalTrackFitter* fitter)
+CbmFitGlobalTracks::CbmFitGlobalTracks(const char* name, Int_t verbose, CbmGlobalTrackFitter* fitter)
   : FairTask(name, verbose)
   , fVerbose(verbose)
   , fFitter(fitter)
-  , fArrayGlbTrack(NULL) {}
+  , fArrayGlbTrack(NULL)
+{
+}
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-CbmFitGlobalTracks::~CbmFitGlobalTracks() {
+CbmFitGlobalTracks::~CbmFitGlobalTracks()
+{
   // Destructor
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-InitStatus CbmFitGlobalTracks::Init() {
+InitStatus CbmFitGlobalTracks::Init()
+{
   // Initialisation of the task. Initialise fitter
   if (NULL == fFitter) {
     cout << "-E- CbmFitGlobalTracks::Init : "
@@ -77,12 +78,12 @@ InitStatus CbmFitGlobalTracks::Init() {
 
 
 // ------------------------------------------------------------------
-void CbmFitGlobalTracks::Exec(Option_t*) {
+void CbmFitGlobalTracks::Exec(Option_t*)
+{
   // Task execution. Call DoFit of the fitter for each global track
   if (NULL != fArrayGlbTrack) {
     CbmGlobalTrack* glbTrack;
-    for (Int_t iGlbTrack = 0; iGlbTrack < fArrayGlbTrack->GetEntriesFast();
-         iGlbTrack++) {
+    for (Int_t iGlbTrack = 0; iGlbTrack < fArrayGlbTrack->GetEntriesFast(); iGlbTrack++) {
       // Get pointer to the global track
       glbTrack = (CbmGlobalTrack*) fArrayGlbTrack->At(iGlbTrack);
       if (NULL == glbTrack) continue;
@@ -95,7 +96,8 @@ void CbmFitGlobalTracks::Exec(Option_t*) {
 
 
 // ------------------------------------------------------------------
-void CbmFitGlobalTracks::Finish() {
+void CbmFitGlobalTracks::Finish()
+{
   // Finish of the task execution
 }
 // ------------------------------------------------------------------

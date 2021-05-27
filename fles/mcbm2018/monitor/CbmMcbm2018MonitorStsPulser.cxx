@@ -34,6 +34,7 @@
 // C/C++
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bCosy2018ResetPulser = kFALSE;
@@ -113,11 +114,14 @@ CbmCosy2018MonitorPulser::CbmCosy2018MonitorPulser()
   , fhPulserTsLsbMatchPerAsicPair()
   , fhPulserTsMsbMatchPerAsicPair()
   , fhPulserIntervalAsic()
-  , fhPulserIntervalLongAsic() {}
+  , fhPulserIntervalLongAsic()
+{
+}
 
 CbmCosy2018MonitorPulser::~CbmCosy2018MonitorPulser() {}
 
-Bool_t CbmCosy2018MonitorPulser::Init() {
+Bool_t CbmCosy2018MonitorPulser::Init()
+{
   LOG(info) << "Initializing flib StsXyter unpacker for STS";
 
   FairRootManager* ioman = FairRootManager::Instance();
@@ -126,16 +130,16 @@ Bool_t CbmCosy2018MonitorPulser::Init() {
   return kTRUE;
 }
 
-void CbmCosy2018MonitorPulser::SetParContainers() {
+void CbmCosy2018MonitorPulser::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
   fUnpackParHodo =
-    (CbmCern2017UnpackParHodo*) (FairRun::Instance()
-                                   ->GetRuntimeDb()
-                                   ->getContainer("CbmCern2017UnpackParHodo"));
+    (CbmCern2017UnpackParHodo*) (FairRun::Instance()->GetRuntimeDb()->getContainer("CbmCern2017UnpackParHodo"));
 }
 
 
-Bool_t CbmCosy2018MonitorPulser::InitContainers() {
+Bool_t CbmCosy2018MonitorPulser::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   Bool_t bReInit = ReInitContainers();
@@ -144,7 +148,8 @@ Bool_t CbmCosy2018MonitorPulser::InitContainers() {
   return bReInit;
 }
 
-Bool_t CbmCosy2018MonitorPulser::ReInitContainers() {
+Bool_t CbmCosy2018MonitorPulser::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   fuNrOfDpbs       = fUnpackParHodo->GetNrOfDpbs();
@@ -159,15 +164,12 @@ Bool_t CbmCosy2018MonitorPulser::ReInitContainers() {
   fvuElinkToAsic.resize(fuNrOfDpbs);
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fDpbIdIndexMap[fUnpackParHodo->GetDpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = "
-              << std::setw(4) << std::hex << fUnpackParHodo->GetDpbId(uDpb)
-              << std::dec << " => "
-              << fDpbIdIndexMap[fUnpackParHodo->GetDpbId(uDpb)];
+    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = " << std::setw(4) << std::hex
+              << fUnpackParHodo->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[fUnpackParHodo->GetDpbId(uDpb)];
 
     fvuElinkToAsic[uDpb].resize(fuNbElinksPerDpb);
     for (UInt_t uElink = 0; uElink < fuNbElinksPerDpb; ++uElink)
-      fvuElinkToAsic[uDpb][uElink] =
-        fUnpackParHodo->GetElinkToAsicIdx(uDpb * fuNbElinksPerDpb + uElink);
+      fvuElinkToAsic[uDpb][uElink] = fUnpackParHodo->GetElinkToAsicIdx(uDpb * fuNbElinksPerDpb + uElink);
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   LOG(info) << "Nr. eLinks per DPB:    " << fuNbElinksPerDpb;
@@ -252,15 +254,16 @@ Bool_t CbmCosy2018MonitorPulser::ReInitContainers() {
   return kTRUE;
 }
 
-void CbmCosy2018MonitorPulser::SetCoincidenceBorder(Double_t dCenterPos,
-                                                    Double_t dBorderVal) {
+void CbmCosy2018MonitorPulser::SetCoincidenceBorder(Double_t dCenterPos, Double_t dBorderVal)
+{
   fdCoincCenter = dCenterPos;
   fdCoincBorder = dBorderVal;
   fdCoincMin    = dCenterPos - dBorderVal;
   fdCoincMax    = dCenterPos + dBorderVal;
 }
 
-void CbmCosy2018MonitorPulser::CreateHistograms() {
+void CbmCosy2018MonitorPulser::CreateHistograms()
+{
   TString sHistName {""};
   TString title {""};
 
@@ -289,10 +292,9 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
    hSysMessType->GetXaxis()->SetBinLabel(1 + 16, "GET4 Hack 32B");
 */
 
-  sHistName = "hPulserMessageTypePerDpb";
-  title     = "Nb of message of each type for each DPB; DPB; Type";
-  fhPulserMessTypePerDpb =
-    new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 5, 0., 5.);
+  sHistName              = "hPulserMessageTypePerDpb";
+  title                  = "Nb of message of each type for each DPB; DPB; Type";
+  fhPulserMessTypePerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 5, 0., 5.);
   fhPulserMessTypePerDpb->GetYaxis()->SetBinLabel(1, "Dummy");
   fhPulserMessTypePerDpb->GetYaxis()->SetBinLabel(2, "Hit");
   fhPulserMessTypePerDpb->GetYaxis()->SetBinLabel(3, "TsMsb");
@@ -306,10 +308,9 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
    fhPulserMessType->GetYaxis()->SetBinLabel(1 + stsxyter::MessType::Ack,         "Ack");
 */
 
-  sHistName = "hPulserSysMessTypePerDpb";
-  title = "Nb of system message of each type for each DPB; DPB; System Type";
-  fhPulserSysMessTypePerDpb =
-    new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 17, 0., 17.);
+  sHistName                 = "hPulserSysMessTypePerDpb";
+  title                     = "Nb of system message of each type for each DPB; DPB; System Type";
+  fhPulserSysMessTypePerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 17, 0., 17.);
   /*
    hSysMessType->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_START,       "DAQ START");
    hSysMessType->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_FINISH,      "DAQ FINISH");
@@ -318,14 +319,8 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
 
   sHistName = "hPulserMessageTypePerElink";
   title     = "Nb of message of each type for each eLink; eLink; Type";
-  fhPulserMessTypePerElink = new TH2I(sHistName,
-                                      title,
-                                      fuNrOfDpbs * fuNbElinksPerDpb,
-                                      0,
-                                      fuNrOfDpbs * fuNbElinksPerDpb,
-                                      5,
-                                      0.,
-                                      5.);
+  fhPulserMessTypePerElink =
+    new TH2I(sHistName, title, fuNrOfDpbs * fuNbElinksPerDpb, 0, fuNrOfDpbs * fuNbElinksPerDpb, 5, 0., 5.);
   fhPulserMessTypePerElink->GetYaxis()->SetBinLabel(1, "Dummy");
   fhPulserMessTypePerElink->GetYaxis()->SetBinLabel(2, "Hit");
   fhPulserMessTypePerElink->GetYaxis()->SetBinLabel(3, "TsMsb");
@@ -340,16 +335,9 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
 */
 
   sHistName = "hPulserSysMessTypePerElink";
-  title =
-    "Nb of system message of each type for each eLink; eLink; System Type";
-  fhPulserSysMessTypePerElink = new TH2I(sHistName,
-                                         title,
-                                         fuNrOfDpbs * fuNbElinksPerDpb,
-                                         0,
-                                         fuNrOfDpbs * fuNbElinksPerDpb,
-                                         17,
-                                         0.,
-                                         17.);
+  title     = "Nb of system message of each type for each eLink; eLink; System Type";
+  fhPulserSysMessTypePerElink =
+    new TH2I(sHistName, title, fuNrOfDpbs * fuNbElinksPerDpb, 0, fuNrOfDpbs * fuNbElinksPerDpb, 17, 0., 17.);
   /*
    fhPulserSysMessTypePerElink->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_START,       "DAQ START");
    fhPulserSysMessTypePerElink->GetYaxis()->SetBinLabel(1 + ngdpb::SYSMSG_DAQ_FINISH,      "DAQ FINISH");
@@ -363,8 +351,7 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   const Int_t iNbDecadesRate    = 9;
   const Int_t iNbStepsDecade    = 9;
   const Int_t iNbSubStepsInStep = 10;
-  const Int_t iNbBinsRate =
-    iNbStepsDecade + iNbStepsDecade * iNbSubStepsInStep * iNbDecadesRate + 1;
+  const Int_t iNbBinsRate       = iNbStepsDecade + iNbStepsDecade * iNbSubStepsInStep * iNbDecadesRate + 1;
   Double_t dBinsRate[iNbBinsRate];
   // First fill sub-unit decade
   for (Int_t iSubU = 0; iSubU < iNbStepsDecade; iSubU++)
@@ -373,96 +360,65 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   // Then fill the main decades
   Double_t dSubstepSize = 1.0 / iNbSubStepsInStep;
   for (Int_t iDecade = 0; iDecade < iNbDecadesRate; iDecade++) {
-    Double_t dBase = std::pow(10, iDecade);
-    Int_t iDecadeIdx =
-      iNbStepsDecade + iDecade * iNbStepsDecade * iNbSubStepsInStep;
+    Double_t dBase   = std::pow(10, iDecade);
+    Int_t iDecadeIdx = iNbStepsDecade + iDecade * iNbStepsDecade * iNbSubStepsInStep;
     for (Int_t iStep = 0; iStep < iNbStepsDecade; iStep++) {
       Int_t iStepIdx = iDecadeIdx + iStep * iNbSubStepsInStep;
       for (Int_t iSubStep = 0; iSubStep < iNbSubStepsInStep; iSubStep++) {
-        dBinsRate[iStepIdx + iSubStep] =
-          dBase * (1 + iStep) + dBase * dSubstepSize * iSubStep;
+        dBinsRate[iStepIdx + iSubStep] = dBase * (1 + iStep) + dBase * dSubstepSize * iSubStep;
       }  // for( Int_t iSubStep = 0; iSubStep < iNbSubStepsInStep; iSubStep++ )
     }    // for( Int_t iStep = 0; iStep < iNbStepsDecade; iStep++ )
   }      // for( Int_t iDecade = 0; iDecade < iNbDecadesRate; iDecade ++)
   dBinsRate[iNbBinsRate - 1] = std::pow(10, iNbDecadesRate);
 
   ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
-  UInt_t uAlignedLimit =
-    fuLongHistoNbSeconds - (fuLongHistoNbSeconds % fuLongHistoBinSizeSec);
-  fuLongHistoBinNb = uAlignedLimit / fuLongHistoBinSizeSec;
+  UInt_t uAlignedLimit = fuLongHistoNbSeconds - (fuLongHistoNbSeconds % fuLongHistoBinSizeSec);
+  fuLongHistoBinNb     = uAlignedLimit / fuLongHistoBinSizeSec;
 
-  UInt_t uNbBinEvo = (32768 + 1) * 2;
-  Double_t dMaxEdgeEvo =
-    stsxyter::kdClockCycleNs * static_cast<Double_t>(uNbBinEvo) / 2.0;
+  UInt_t uNbBinEvo     = (32768 + 1) * 2;
+  Double_t dMaxEdgeEvo = stsxyter::kdClockCycleNs * static_cast<Double_t>(uNbBinEvo) / 2.0;
   Double_t dMinEdgeEvo = dMaxEdgeEvo * -1.0;
 
-  UInt_t uNbBinDt =
-    static_cast<UInt_t>((fdCoincMax - fdCoincMin) / stsxyter::kdClockCycleNs);
+  UInt_t uNbBinDt = static_cast<UInt_t>((fdCoincMax - fdCoincMin) / stsxyter::kdClockCycleNs);
 
   for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx) {
     // Channel counts
     sHistName = Form("hPulserChanCntRaw_%03u", uXyterIdx);
-    title     = Form("Hits Count per channel, StsXyter #%03u; Channel; Hits []",
-                 uXyterIdx);
-    fhPulserChanCntRaw.push_back(
-      new TH1I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
+    title     = Form("Hits Count per channel, StsXyter #%03u; Channel; Hits []", uXyterIdx);
+    fhPulserChanCntRaw.push_back(new TH1I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     sHistName = Form("hPulserChanCntRawGood_%03u", uXyterIdx);
-    title     = Form(
-      "Hits Count per channel in good MS, StsXyter #%03u; Channel; Hits []",
-      uXyterIdx);
-    fhPulserChanCntRawGood.push_back(
-      new TH1I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
+    title     = Form("Hits Count per channel in good MS, StsXyter #%03u; Channel; Hits []", uXyterIdx);
+    fhPulserChanCntRawGood.push_back(new TH1I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     // Raw Adc Distribution
     sHistName = Form("hPulserChanAdcRaw_%03u", uXyterIdx);
-    title = Form("Raw Adc distribution per channel, StsXyter #%03u; Channel "
+    title     = Form("Raw Adc distribution per channel, StsXyter #%03u; Channel "
                  "[]; Adc []; Hits []",
                  uXyterIdx);
-    fhPulserChanAdcRaw.push_back(new TH2I(sHistName,
-                                          title,
-                                          fuNbChanPerAsic,
-                                          -0.5,
-                                          fuNbChanPerAsic - 0.5,
-                                          stsxyter::kuHitNbAdcBins,
-                                          -0.5,
-                                          stsxyter::kuHitNbAdcBins - 0.5));
+    fhPulserChanAdcRaw.push_back(new TH2I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5,
+                                          stsxyter::kuHitNbAdcBins, -0.5, stsxyter::kuHitNbAdcBins - 0.5));
 
     // Raw Adc Distribution profile
     sHistName = Form("hPulserChanAdcRawProfc_%03u", uXyterIdx);
-    title =
-      Form("Raw Adc prodile per channel, StsXyter #%03u; Channel []; Adc []",
-           uXyterIdx);
-    fhPulserChanAdcRawProf.push_back(new TProfile(
-      sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
+    title     = Form("Raw Adc prodile per channel, StsXyter #%03u; Channel []; Adc []", uXyterIdx);
+    fhPulserChanAdcRawProf.push_back(new TProfile(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     // Raw Ts Distribution
     sHistName = Form("hPulserChanRawTs_%03u", uXyterIdx);
     title     = Form("Raw Timestamp distribution per channel, StsXyter #%03u; "
                  "Channel []; Ts []; Hits []",
                  uXyterIdx);
-    fhPulserChanRawTs.push_back(new TH2I(sHistName,
-                                         title,
-                                         fuNbChanPerAsic,
-                                         -0.5,
-                                         fuNbChanPerAsic - 0.5,
-                                         stsxyter::kuHitNbTsBins,
-                                         -0.5,
-                                         stsxyter::kuHitNbTsBins - 0.5));
+    fhPulserChanRawTs.push_back(new TH2I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5,
+                                         stsxyter::kuHitNbTsBins, -0.5, stsxyter::kuHitNbTsBins - 0.5));
 
     // Missed event flag
     sHistName = Form("hPulserChanMissEvt_%03u", uXyterIdx);
-    title = Form("Missed Event flags per channel, StsXyter #%03u; Channel []; "
+    title     = Form("Missed Event flags per channel, StsXyter #%03u; Channel []; "
                  "Miss Evt []; Hits []",
                  uXyterIdx);
-    fhPulserChanMissEvt.push_back(new TH2I(sHistName,
-                                           title,
-                                           fuNbChanPerAsic,
-                                           -0.5,
-                                           fuNbChanPerAsic - 0.5,
-                                           2,
-                                           -0.5,
-                                           1.5));
+    fhPulserChanMissEvt.push_back(
+      new TH2I(sHistName, title, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5, 2, -0.5, 1.5));
 
     // Missed event flag counts evolution
 
@@ -470,14 +426,8 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
     title     = Form("Missed Evt flags per second & channel in StsXyter #%03u; "
                  "Time [s]; Channel []; Missed Evt flags []",
                  uXyterIdx);
-    fhPulserChanMissEvtEvo.push_back(new TH2I(sHistName,
-                                              title,
-                                              1800,
-                                              0,
-                                              1800,
-                                              fuNbChanPerAsic,
-                                              -0.5,
-                                              fuNbChanPerAsic - 0.5));
+    fhPulserChanMissEvtEvo.push_back(
+      new TH2I(sHistName, title, 1800, 0, 1800, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     // Missed event flag counts evo per StsXyter
 
@@ -492,19 +442,12 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
     title     = Form("Hits per second & channel in StsXyter #%03u; Time [s]; "
                  "Channel []; Hits []",
                  uXyterIdx);
-    fhPulserChanHitRateEvo.push_back(new TH2I(sHistName,
-                                              title,
-                                              1800,
-                                              0,
-                                              1800,
-                                              fuNbChanPerAsic,
-                                              -0.5,
-                                              fuNbChanPerAsic - 0.5));
+    fhPulserChanHitRateEvo.push_back(
+      new TH2I(sHistName, title, 1800, 0, 1800, fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     // Hit rates evo per StsXyter
     sHistName = Form("hPulserFebRateEvo_%03u", uXyterIdx);
-    title =
-      Form("Hits per second in StsXyter #%03u; Time [s]; Hits []", uXyterIdx);
+    title     = Form("Hits per second in StsXyter #%03u; Time [s]; Hits []", uXyterIdx);
     fhPulserFebRateEvo.push_back(new TH1I(sHistName, title, 1800, 0, 1800));
 
     // Hit rates evo per channel, 1 minute bins, 24h
@@ -512,117 +455,71 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
     title     = Form("Hits per second & channel in StsXyter #%03u; Time [min]; "
                  "Channel []; Hits []",
                  uXyterIdx);
-    fhPulserChanHitRateEvoLong.push_back(new TH2D(sHistName,
-                                                  title,
-                                                  fuLongHistoBinNb,
-                                                  -0.5,
-                                                  uAlignedLimit - 0.5,
-                                                  fuNbChanPerAsic,
-                                                  -0.5,
-                                                  fuNbChanPerAsic - 0.5));
+    fhPulserChanHitRateEvoLong.push_back(new TH2D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5,
+                                                  fuNbChanPerAsic, -0.5, fuNbChanPerAsic - 0.5));
 
     // Hit rates evo per StsXyter, 1 minute bins, 24h
     sHistName = Form("hPulserFebRateEvoLong_%03u", uXyterIdx);
-    title =
-      Form("Hits per second in StsXyter #%03u; Time [min]; Hits []", uXyterIdx);
-    fhPulserFebRateEvoLong.push_back(
-      new TH1D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5));
+    title     = Form("Hits per second in StsXyter #%03u; Time [min]; Hits []", uXyterIdx);
+    fhPulserFebRateEvoLong.push_back(new TH1D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5));
 
     /// Coincidences inside each detector ----------------------------///
     sHistName = Form("fhPulserTimeDiffPerAsic_%03u", uXyterIdx);
-    title = Form("Time diff for pulser hits between ASIC %03u and other ASICs; "
+    title     = Form("Time diff for pulser hits between ASIC %03u and other ASICs; "
                  "tn - t%03u [ns]; ASIC n; Counts",
-                 uXyterIdx,
-                 uXyterIdx);
-    fhPulserTimeDiffPerAsic.push_back(new TH2I(sHistName,
-                                               title,
-                                               uNbBinEvo,
-                                               dMinEdgeEvo,
-                                               dMaxEdgeEvo,
-                                               fuNbStsXyters,
-                                               -0.5,
-                                               fuNbStsXyters - 0.5));
+                 uXyterIdx, uXyterIdx);
+    fhPulserTimeDiffPerAsic.push_back(
+      new TH2I(sHistName, title, uNbBinEvo, dMinEdgeEvo, dMaxEdgeEvo, fuNbStsXyters, -0.5, fuNbStsXyters - 0.5));
 
     for (UInt_t uXyterIdxB = 0; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB) {
       if (uXyterIdxB == uXyterIdx) {
         sHistName = Form("fhPulserTimeDiffSameAsic_%03u", uXyterIdx);
-        title     = Form(
-          "Time diff for consecutive hits in ASIC %03u; tn - t [ns]; Counts",
-          uXyterIdx);
+        title     = Form("Time diff for consecutive hits in ASIC %03u; tn - t [ns]; Counts", uXyterIdx);
       }  // if( uXyterIdxB == uXyterIdx )
       else {
-        sHistName =
-          Form("fhPulserTimeDiffPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
-        title = Form("Time diff for pulser hits in ASIC %03u and %03u; tn - t "
+        sHistName = Form("fhPulserTimeDiffPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
+        title     = Form("Time diff for pulser hits in ASIC %03u and %03u; tn - t "
                      "[ns]; Counts",
-                     uXyterIdx,
-                     uXyterIdxB);
+                     uXyterIdx, uXyterIdxB);
       }  // else of if( uXyterIdxB == uXyterIdx )
-      fhPulserTimeDiffPerAsicPair[uXyterIdx].push_back(
-        new TH1I(sHistName, title, uNbBinEvo, dMinEdgeEvo, dMaxEdgeEvo));
+      fhPulserTimeDiffPerAsicPair[uXyterIdx].push_back(new TH1I(sHistName, title, uNbBinEvo, dMinEdgeEvo, dMaxEdgeEvo));
 
       if (uXyterIdxB == uXyterIdx) {
         sHistName = Form("fhPulserTimeDiffEvoSameAsic_%03u", uXyterIdx);
-        title = Form("Time diff for consecutive hits in ASIC %03u; Time in run "
+        title     = Form("Time diff for consecutive hits in ASIC %03u; Time in run "
                      "[s]; tn - t [ns]; Counts",
                      uXyterIdx);
       }  // if( uXyterIdxB == uXyterIdx )
       else {
-        sHistName = Form(
-          "fhPulserTimeDiffEvoPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
-        title = Form("Time diff for pulser hits in ASIC %03u and %03u; Time in "
+        sHistName = Form("fhPulserTimeDiffEvoPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
+        title     = Form("Time diff for pulser hits in ASIC %03u and %03u; Time in "
                      "run [s]; tn - t [ns]; Counts",
-                     uXyterIdx,
-                     uXyterIdxB);
+                     uXyterIdx, uXyterIdxB);
       }  // else of if( uXyterIdxB == uXyterIdx )
-      fhPulserTimeDiffEvoPerAsicPair[uXyterIdx].push_back(
-        new TH2I(sHistName,
-                 title,
-                 3600,
-                 0,
-                 18000,
-                 200,
-                 -100 * stsxyter::kdClockCycleNs,
-                 100 * stsxyter::kdClockCycleNs));
+      fhPulserTimeDiffEvoPerAsicPair[uXyterIdx].push_back(new TH2I(
+        sHistName, title, 3600, 0, 18000, 200, -100 * stsxyter::kdClockCycleNs, 100 * stsxyter::kdClockCycleNs));
 
-      sHistName =
-        Form("fhPulserTsLsbMatchPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
-      title = Form("TS LSB for pulser hits in ASIC %03u and %03u; TS LSB %03u "
+      sHistName = Form("fhPulserTsLsbMatchPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
+      title     = Form("TS LSB for pulser hits in ASIC %03u and %03u; TS LSB %03u "
                    "[bin]; TS LSB %03u [bin]",
-                   uXyterIdx,
-                   uXyterIdxB,
-                   uXyterIdx,
-                   uXyterIdxB);
+                   uXyterIdx, uXyterIdxB, uXyterIdx, uXyterIdxB);
       fhPulserTsLsbMatchPerAsicPair[uXyterIdx].push_back(
         new TH2I(sHistName, title, 256, -0.5, 255.5, 256, -0.5, 255.5));
 
-      sHistName =
-        Form("fhPulserTsMsbMatchPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
-      title = Form("TS MSB for pulser hits in ASIC %03u and %03u; TS MSB %03u "
+      sHistName = Form("fhPulserTsMsbMatchPerAsicPair_%03u_%03u", uXyterIdx, uXyterIdxB);
+      title     = Form("TS MSB for pulser hits in ASIC %03u and %03u; TS MSB %03u "
                    "[bin]; TS MSB %03u [bin]",
-                   uXyterIdx,
-                   uXyterIdxB,
-                   uXyterIdx,
-                   uXyterIdxB);
-      fhPulserTsMsbMatchPerAsicPair[uXyterIdx].push_back(
-        new TH2I(sHistName, title, 64, -0.5, 63.5, 64, -0.5, 63.5));
+                   uXyterIdx, uXyterIdxB, uXyterIdx, uXyterIdxB);
+      fhPulserTsMsbMatchPerAsicPair[uXyterIdx].push_back(new TH2I(sHistName, title, 64, -0.5, 63.5, 64, -0.5, 63.5));
     }  // for( UInt_t uXyterIdxB = 0; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB )
 
     sHistName = Form("fhPulserIntervalAsic_%03u", uXyterIdx);
-    title =
-      Form("Time diff between consecutive hits in ASIC %03us; dt [ns];  Counts",
-           uXyterIdx,
-           uXyterIdx);
-    fhPulserIntervalAsic.push_back(
-      new TH1I(sHistName, title, 200, 0, 200 * stsxyter::kdClockCycleNs));
+    title     = Form("Time diff between consecutive hits in ASIC %03us; dt [ns];  Counts", uXyterIdx, uXyterIdx);
+    fhPulserIntervalAsic.push_back(new TH1I(sHistName, title, 200, 0, 200 * stsxyter::kdClockCycleNs));
 
     sHistName = Form("fhPulserIntervalLongAsic_%03u", uXyterIdx);
-    title =
-      Form("Time diff between consecutive hits in ASIC %03us; dt [ns];  Counts",
-           uXyterIdx,
-           uXyterIdx);
-    fhPulserIntervalLongAsic.push_back(
-      new TH1I(sHistName, title, 1e5, 0, 1e6 * stsxyter::kdClockCycleNs));
+    title     = Form("Time diff between consecutive hits in ASIC %03us; dt [ns];  Counts", uXyterIdx, uXyterIdx);
+    fhPulserIntervalLongAsic.push_back(new TH1I(sHistName, title, 1e5, 0, 1e6 * stsxyter::kdClockCycleNs));
 
     ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
   }  // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
@@ -670,22 +567,15 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
       server->Register("/DtAsic", fhPulserTimeDiffPerAsic[uXyterIdx]);
       for (UInt_t uXyterIdxB = 0; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB) {
         if (uXyterIdxB == uXyterIdx) {
-          server->Register("/DtChan",
-                           fhPulserTimeDiffPerAsicPair[uXyterIdx][uXyterIdxB]);
-          server->Register(
-            "/DtChan", fhPulserTimeDiffEvoPerAsicPair[uXyterIdx][uXyterIdxB]);
+          server->Register("/DtChan", fhPulserTimeDiffPerAsicPair[uXyterIdx][uXyterIdxB]);
+          server->Register("/DtChan", fhPulserTimeDiffEvoPerAsicPair[uXyterIdx][uXyterIdxB]);
         }  // if( uXyterIdxB == uXyterIdx )
         else {
-          server->Register("/DtAsicPair",
-                           fhPulserTimeDiffPerAsicPair[uXyterIdx][uXyterIdxB]);
-          server->Register(
-            "/DtAsicPair",
-            fhPulserTimeDiffEvoPerAsicPair[uXyterIdx][uXyterIdxB]);
+          server->Register("/DtAsicPair", fhPulserTimeDiffPerAsicPair[uXyterIdx][uXyterIdxB]);
+          server->Register("/DtAsicPair", fhPulserTimeDiffEvoPerAsicPair[uXyterIdx][uXyterIdxB]);
         }  // else of if( uXyterIdxB == uXyterIdx )
-        server->Register("/TsMatch",
-                         fhPulserTsLsbMatchPerAsicPair[uXyterIdx][uXyterIdxB]);
-        server->Register("/TsMatch",
-                         fhPulserTsMsbMatchPerAsicPair[uXyterIdx][uXyterIdxB]);
+        server->Register("/TsMatch", fhPulserTsLsbMatchPerAsicPair[uXyterIdx][uXyterIdxB]);
+        server->Register("/TsMatch", fhPulserTsMsbMatchPerAsicPair[uXyterIdx][uXyterIdxB]);
       }  // for( UInt_t uXyterIdxB = 0; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB )
       server->Register("/DtPulses", fhPulserIntervalAsic[uXyterIdx]);
       server->Register("/DtPulses", fhPulserIntervalLongAsic[uXyterIdx]);
@@ -706,10 +596,7 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   // Summary per StsXyter
   for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx) {
     TCanvas* cStsSumm =
-      new TCanvas(Form("cStsSum_%03u", uXyterIdx),
-                  Form("Summary plots for StsXyter %03u", uXyterIdx),
-                  w,
-                  h);
+      new TCanvas(Form("cStsSum_%03u", uXyterIdx), Form("Summary plots for StsXyter %03u", uXyterIdx), w, h);
     cStsSumm->Divide(2, 2);
 
     cStsSumm->cd(1);
@@ -732,8 +619,7 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   //====================================================================//
 
   //====================================================================//
-  TCanvas* cDtPerAsic =
-    new TCanvas("cDtPerAsic", "Time Differences per ASIC", w, h);
+  TCanvas* cDtPerAsic = new TCanvas("cDtPerAsic", "Time Differences per ASIC", w, h);
   cDtPerAsic->Divide(fuNbStsXyters / 2 + fuNbStsXyters % 2, 2);
 
   for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx) {
@@ -746,8 +632,7 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
      //====================================================================//
 
   //====================================================================//
-  TCanvas* cDtInAsic =
-    new TCanvas("cDtInAsic", "Time Differences in ASIC", w, h);
+  TCanvas* cDtInAsic = new TCanvas("cDtInAsic", "Time Differences in ASIC", w, h);
   cDtInAsic->Divide(fuNbStsXyters / 2 + fuNbStsXyters % 2, 2);
 
   for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx) {
@@ -759,15 +644,12 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
      //====================================================================//
 
   //====================================================================//
-  TCanvas* cDtAsicPairs =
-    new TCanvas("cDtAsicPairs", "Time Differences in ASIC", w, h);
+  TCanvas* cDtAsicPairs = new TCanvas("cDtAsicPairs", "Time Differences in ASIC", w, h);
   //   cDtAsicPairs->Divide( fuNbStsXyters / 3, 3 );
   cDtAsicPairs->Divide(3);
 
-  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3;
-       ++uXyterIdx) {
-    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters;
-         ++uXyterIdxB) {
+  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3; ++uXyterIdx) {
+    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB) {
       cDtAsicPairs->cd(uXyterIdx + uXyterIdxB);
       gPad->SetGridx();
       gPad->SetLogy();
@@ -777,15 +659,12 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
        //====================================================================//
 
   //====================================================================//
-  TCanvas* cTsLsbAsicPairs =
-    new TCanvas("cTsLsbAsicPairs", "Time Differences in ASIC", w, h);
+  TCanvas* cTsLsbAsicPairs = new TCanvas("cTsLsbAsicPairs", "Time Differences in ASIC", w, h);
   //   cDtAsicPairs->Divide( fuNbStsXyters / 3, 3 );
   cTsLsbAsicPairs->Divide(3);
 
-  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3;
-       ++uXyterIdx) {
-    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters;
-         ++uXyterIdxB) {
+  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3; ++uXyterIdx) {
+    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB) {
       cTsLsbAsicPairs->cd(uXyterIdx + uXyterIdxB);
       gPad->SetGridx();
       gPad->SetGridy();
@@ -796,15 +675,12 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
        //====================================================================//
 
   //====================================================================//
-  TCanvas* cTsMsbAsicPairs =
-    new TCanvas("cTsMsbAsicPairs", "Time Differences in ASIC", w, h);
+  TCanvas* cTsMsbAsicPairs = new TCanvas("cTsMsbAsicPairs", "Time Differences in ASIC", w, h);
   //   cDtAsicPairs->Divide( fuNbStsXyters / 3, 3 );
   cTsMsbAsicPairs->Divide(3);
 
-  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3;
-       ++uXyterIdx) {
-    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters;
-         ++uXyterIdxB) {
+  for (UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters && uXyterIdx < 3; ++uXyterIdx) {
+    for (UInt_t uXyterIdxB = uXyterIdx + 1; uXyterIdxB < fuNbStsXyters; ++uXyterIdxB) {
       cTsMsbAsicPairs->cd(uXyterIdx + uXyterIdxB);
       gPad->SetGridx();
       gPad->SetGridy();
@@ -820,8 +696,7 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   // If not existing, create it
   fcMsSizeAll = dynamic_cast<TCanvas*>(gROOT->FindObject("cMsSizeAll"));
   if (NULL == fcMsSizeAll) {
-    fcMsSizeAll =
-      new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
+    fcMsSizeAll = new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
     fcMsSizeAll->Divide(4, 4);
     LOG(info) << "Created MS size canvas in STS monitor";
   }  // if( NULL == fcMsSizeAll )
@@ -832,8 +707,8 @@ void CbmCosy2018MonitorPulser::CreateHistograms() {
   /*****************************/
 }
 
-Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
-                                          size_t component) {
+Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
 
   if (bCosy2018ResetPulser) {
@@ -845,24 +720,18 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
     bCosy2018WritePulser = kFALSE;
   }  // if( bCosy2018WritePulser )
 
-  LOG(debug) << "Timeslice contains " << ts.num_microslices(component)
-             << "microslices.";
+  LOG(debug) << "Timeslice contains " << ts.num_microslices(component) << "microslices.";
 
   if (component < kiMaxNbFlibLinks)
     if (NULL == fhMsSz[component]) {
-      TString sMsSzName = Form("MsSz_link_%02lu", component);
-      TString sMsSzTitle =
-        Form("Size of MS for nDPB of link %02lu; Ms Size [bytes]", component);
-      fhMsSz[component] =
-        new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
+      TString sMsSzName  = Form("MsSz_link_%02lu", component);
+      TString sMsSzTitle = Form("Size of MS for nDPB of link %02lu; Ms Size [bytes]", component);
+      fhMsSz[component]  = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
       fHM->Add(sMsSzName.Data(), fhMsSz[component]);
       if (server) server->Register("/FlibRaw", fhMsSz[component]);
-      sMsSzName  = Form("MsSzTime_link_%02lu", component);
-      sMsSzTitle = Form(
-        "Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]",
-        component);
-      fhMsSzTime[component] =
-        new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 15000, 0., 300.);
+      sMsSzName             = Form("MsSzTime_link_%02lu", component);
+      sMsSzTitle            = Form("Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]", component);
+      fhMsSzTime[component] = new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 15000, 0., 300.);
       fHM->Add(sMsSzName.Data(), fhMsSzTime[component]);
       if (server) server->Register("/FlibRaw", fhMsSzTime[component]);
       if (NULL != fcMsSizeAll) {
@@ -870,8 +739,7 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
         gPad->SetLogy();
         fhMsSzTime[component]->Draw("hist le0");
       }  // if( NULL != fcMsSizeAll )
-      LOG(info) << "Added MS size histo for component: " << component
-                << " (DPB)";
+      LOG(info) << "Added MS size histo for component: " << component << " (DPB)";
     }  // if( NULL == fhMsSz[ component ] )
 
   //   Int_t messageType = -111;
@@ -905,10 +773,9 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
           fvusChanLastHitAdcInMs[uXyterIdx][uChan][uMsIdx] = 0;
         }  // for( UInt_t uMsIdx = 0; uMsIdx < fuMaxNbMicroslices; ++uMsIdx )
       }    // for( UInt_t uChan = 0; uChan < fuNbChanPerAsic; ++uChan )
-    }  // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
-    LOG(info)
-      << "CbmCosy2018MonitorPulser::DoUnpack => Changed fvuChanNbHitsInMs size "
-      << fvuChanNbHitsInMs.size() << " VS " << fuNbStsXyters;
+    }      // for( UInt_t uXyterIdx = 0; uXyterIdx < fuNbStsXyters; ++uXyterIdx )
+    LOG(info) << "CbmCosy2018MonitorPulser::DoUnpack => Changed fvuChanNbHitsInMs size " << fvuChanNbHitsInMs.size()
+              << " VS " << fuNbStsXyters;
     LOG(info) << "CbmCosy2018MonitorPulser::DoUnpack =>  Changed "
                  "fvuChanNbHitsInMs size "
               << fvuChanNbHitsInMs[0].size() << " VS " << fuNbChanPerAsic;
@@ -921,16 +788,15 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
     // Ignore overlap ms if number defined by user
     if (numCompMsInTs - fuOverlapMsNb <= m) continue;
 
-    auto msDescriptor    = ts.descriptor(component, m);
-    fuCurrentEquipmentId = msDescriptor.eq_id;
-    const uint8_t* msContent =
-      reinterpret_cast<const uint8_t*>(ts.content(component, m));
+    auto msDescriptor        = ts.descriptor(component, m);
+    fuCurrentEquipmentId     = msDescriptor.eq_id;
+    const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(component, m));
 
     uint32_t size    = msDescriptor.size;
     fulCurrentMsIdx  = msDescriptor.idx;
     Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-    LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-               << fuCurrentEquipmentId << std::dec << " has size: " << size;
+    LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+               << " has size: " << size;
 
     fuCurrDpbId  = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
     fuCurrDpbIdx = fDpbIdIndexMap[fuCurrDpbId];
@@ -950,8 +816,7 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
                  << "contain only complete nDPB messages!";
 
     // Compute the number of complete messages in the input microslice buffer
-    uint32_t uNbMessages =
-      (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
+    uint32_t uNbMessages = (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
 
     // Prepare variables for the loop on contents
     const uint32_t* pInBuff = reinterpret_cast<const uint32_t*>(msContent);
@@ -968,8 +833,7 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
       stsxyter::MessType typeMess = mess.GetMessType();
       fmMsgCounter[typeMess]++;
       fhPulserMessType->Fill(static_cast<uint16_t>(typeMess));
-      fhPulserMessTypePerDpb->Fill(fuCurrDpbIdx,
-                                   static_cast<uint16_t>(typeMess));
+      fhPulserMessTypePerDpb->Fill(fuCurrDpbIdx, static_cast<uint16_t>(typeMess));
 
       switch (typeMess) {
         case stsxyter::MessType::Hit: {
@@ -977,12 +841,9 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
           UShort_t usElinkIdx = mess.GetLinkIndex();
           if (fuNbElinksPerDpb <= usElinkIdx) {
             LOG(fatal) << "CbmCosy2018MonitorPulser::DoUnpack => "
-                       << "eLink index out of bounds!" << usElinkIdx << " VS "
-                       << fuNbElinksPerDpb;
+                       << "eLink index out of bounds!" << usElinkIdx << " VS " << fuNbElinksPerDpb;
           }  // if( fuNbElinksPerDpb <= usElinkIdx )
-          fhPulserMessTypePerElink->Fill(fuCurrDpbIdx * fuNbElinksPerDpb
-                                           + usElinkIdx,
-                                         static_cast<uint16_t>(typeMess));
+          fhPulserMessTypePerElink->Fill(fuCurrDpbIdx * fuNbElinksPerDpb + usElinkIdx, static_cast<uint16_t>(typeMess));
 
           UInt_t uAsicIdx = fvuElinkToAsic[fuCurrDpbIdx][usElinkIdx];
 
@@ -999,8 +860,7 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
 
           if (0 < uIdx)
             LOG(info) << "CbmCosy2018MonitorPulser::DoUnpack => "
-                      << "EPOCH message at unexpected position in MS: message "
-                      << uIdx << " VS message 0 expected!";
+                      << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
           break;
         }  // case stsxyter::MessType::TsMsb :
         case stsxyter::MessType::Empty: {
@@ -1011,9 +871,8 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
           break;
         }  // case stsxyter::MessType::Dummy / ReadDataAck / Ack :
         default: {
-          LOG(fatal)
-            << "CbmCosy2018MonitorPulser::DoUnpack => "
-            << "Unknown message type, should never happen, stopping here!";
+          LOG(fatal) << "CbmCosy2018MonitorPulser::DoUnpack => "
+                     << "Unknown message type, should never happen, stopping here!";
         }
       }  // switch( mess.GetMessType() )
     }    // for( uint32_t uIdx = 0; uIdx < uNbMessages; ++uIdx )
@@ -1033,23 +892,18 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
       std::vector<stsxyter::FinalHit>::iterator it;
       std::vector<stsxyter::FinalHit>::iterator itB;
 
-      std::chrono::steady_clock::time_point tNow =
-        std::chrono::steady_clock::now();
-      Double_t dUnixTimeInRun =
-        std::chrono::duration_cast<std::chrono::seconds>(tNow - ftStartTimeUnix)
-          .count();
+      std::chrono::steady_clock::time_point tNow = std::chrono::steady_clock::now();
+      Double_t dUnixTimeInRun = std::chrono::duration_cast<std::chrono::seconds>(tNow - ftStartTimeUnix).count();
 
-      for (
-        it = fvmHitsInTs.begin(); it != fvmHitsInTs.end();
-        //              it != fvmHitsInTs.end() && (*it).GetTs() < ulLastHitTime - 320; // 320 * 3.125 ns = 1000 ns
-        ++it) {
+      for (it = fvmHitsInTs.begin(); it != fvmHitsInTs.end();
+           //              it != fvmHitsInTs.end() && (*it).GetTs() < ulLastHitTime - 320; // 320 * 3.125 ns = 1000 ns
+           ++it) {
         UShort_t usAsicIdx = (*it).GetAsic();
         UShort_t usChanIdx = (*it).GetChan();
         ULong64_t ulHitTs  = (*it).GetTs();
         UShort_t usHitAdc  = (*it).GetAdc();
 
-        Double_t dTimeSinceStartSec =
-          (ulHitTs * stsxyter::kdClockCycleNs - fdStartTime) * 1e-9;
+        Double_t dTimeSinceStartSec = (ulHitTs * stsxyter::kdClockCycleNs - fdStartTime) * 1e-9;
 
         fvmAsicHitsInTs[usAsicIdx].push_back((*it));
       }  // loop on time sorted hits and split per asic
@@ -1058,40 +912,29 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
       fvmHitsInTs.erase(fvmHitsInTs.begin(), it);
 
       for (UInt_t uAsic = 0; uAsic < fuNbStsXyters; uAsic++) {
-        for (it = fvmAsicHitsInTs[uAsic].begin();
-             it != fvmAsicHitsInTs[uAsic].end();
-             ++it) {
+        for (it = fvmAsicHitsInTs[uAsic].begin(); it != fvmAsicHitsInTs[uAsic].end(); ++it) {
           UShort_t usChanIdx = (*it).GetChan();
-          if (0.0 == fdStartTs)
-            fdStartTs = (*it).GetTs() * stsxyter::kdClockCycleNs;
-          Double_t dTimeSinceStartSec =
-            ((*it).GetTs() * stsxyter::kdClockCycleNs - fdStartTs) * 1e-9;
+          if (0.0 == fdStartTs) fdStartTs = (*it).GetTs() * stsxyter::kdClockCycleNs;
+          Double_t dTimeSinceStartSec = ((*it).GetTs() * stsxyter::kdClockCycleNs - fdStartTs) * 1e-9;
 
           for (UInt_t uAsicB = uAsic; uAsicB < fuNbStsXyters; uAsicB++) {
-            for (itB = fvmAsicHitsInTs[uAsicB].begin();
-                 itB != fvmAsicHitsInTs[uAsicB].end();
-                 ++itB) {
+            for (itB = fvmAsicHitsInTs[uAsicB].begin(); itB != fvmAsicHitsInTs[uAsicB].end(); ++itB) {
               UShort_t usChanIdxB = (*itB).GetChan();
-              Double_t dDt        = (static_cast<Double_t>((*itB).GetTs())
-                              - static_cast<Double_t>((*it).GetTs()))
+              Double_t dDt        = (static_cast<Double_t>((*itB).GetTs()) - static_cast<Double_t>((*it).GetTs()))
                              * stsxyter::kdClockCycleNs;
 
               fhPulserTimeDiffPerAsic[uAsic]->Fill(dDt, uAsicB);
               fhPulserTimeDiffPerAsicPair[uAsic][uAsicB]->Fill(dDt);
-              fhPulserTimeDiffEvoPerAsicPair[uAsic][uAsicB]->Fill(
-                dTimeSinceStartSec, dDt);
+              fhPulserTimeDiffEvoPerAsicPair[uAsic][uAsicB]->Fill(dTimeSinceStartSec, dDt);
 
-              fhPulserTsLsbMatchPerAsicPair[uAsic][uAsicB]->Fill(
-                (*it).GetTs() & 0x000FF, (*itB).GetTs() & 0x000FF);
-              fhPulserTsMsbMatchPerAsicPair[uAsic][uAsicB]->Fill(
-                ((*it).GetTs() & 0x03F00) >> 8,
-                ((*itB).GetTs() & 0x03F00) >> 8);
+              fhPulserTsLsbMatchPerAsicPair[uAsic][uAsicB]->Fill((*it).GetTs() & 0x000FF, (*itB).GetTs() & 0x000FF);
+              fhPulserTsMsbMatchPerAsicPair[uAsic][uAsicB]->Fill(((*it).GetTs() & 0x03F00) >> 8,
+                                                                 ((*itB).GetTs() & 0x03F00) >> 8);
             }  // for( it  = fvmAsicHitsInTs[ uAsicB ].begin(); it != fvmAsicHitsInTs[ uAsicB ].end(); ++it )
           }    // for( UInt_t uAsic = 0; uAsic < fuNbStsXyters; uAsic++)
 
           Double_t dDtPulse =
-            (static_cast<Double_t>((*it).GetTs())
-             - static_cast<Double_t>(fvmLastHitAsic[uAsic].GetTs()))
+            (static_cast<Double_t>((*it).GetTs()) - static_cast<Double_t>(fvmLastHitAsic[uAsic].GetTs()))
             * stsxyter::kdClockCycleNs;
           fhPulserIntervalAsic[uAsic]->Fill(dDtPulse);
           fhPulserIntervalLongAsic[uAsic]->Fill(dDtPulse);
@@ -1111,28 +954,24 @@ Bool_t CbmCosy2018MonitorPulser::DoUnpack(const fles::Timeslice& ts,
   if (0 == ts.index() % 1000 && fuCurrDpbIdx == fuNrOfDpbs - 1) {
     for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
       Double_t dTsMsbTime =
-        static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-          * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+        static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
         + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
             * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
       dTsMsbTime *= stsxyter::kdClockCycleNs * 1e-9;
 
-      LOG(info) << "End of TS " << std::setw(7) << ts.index() << " eDPB "
-                << std::setw(2) << uDpb << " current TS MSB counter is "
-                << std::setw(12) << fvulCurrentTsMsb[uDpb]
-                << " current TS MSB cycle counter is " << std::setw(12)
-                << fvuCurrentTsMsbCycle[uDpb] << " current TS MSB time is "
-                << std::setw(12) << dTsMsbTime << " s";
+      LOG(info) << "End of TS " << std::setw(7) << ts.index() << " eDPB " << std::setw(2) << uDpb
+                << " current TS MSB counter is " << std::setw(12) << fvulCurrentTsMsb[uDpb]
+                << " current TS MSB cycle counter is " << std::setw(12) << fvuCurrentTsMsbCycle[uDpb]
+                << " current TS MSB time is " << std::setw(12) << dTsMsbTime << " s";
     }
   }  // if( 0 == ts.index() % 1000 && fuCurrDpbIdx == fuNrOfDpbs - 1 )
 
   return kTRUE;
 }
 
-void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
-                                           const UShort_t& usElinkIdx,
-                                           const UInt_t& uAsicIdx,
-                                           const UInt_t& uMsIdx) {
+void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess, const UShort_t& usElinkIdx, const UInt_t& uAsicIdx,
+                                           const UInt_t& uMsIdx)
+{
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
   //   UShort_t usFullTs = mess.GetHitTimeFull();
@@ -1153,16 +992,13 @@ void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
   fvulChanLastHitTime[uAsicIdx][usChan] = usRawTs;
 
   fvulChanLastHitTime[uAsicIdx][usChan] +=
-    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-      * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-        * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   //   fvuElinkLastTsHit[fuCurrDpbIdx] = usRawTs;
 
   // Convert the Hit time in bins to Hit time in ns
-  Double_t dHitTimeNs =
-    fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
+  Double_t dHitTimeNs = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
   /*
    // If needed fill the hit interval plots
    if( fbChanHitDtEna )
@@ -1176,8 +1012,7 @@ void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
    } // if( fbChanHitDtEna )
 */
   // Store new value of Hit time in ns
-  fvdChanLastHitTime[uAsicIdx][usChan] =
-    fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
+  fvdChanLastHitTime[uAsicIdx][usChan] = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
   /*
    LOG(info) << " Asic " << std::setw( 2 ) << uAsicIdx
              << " Channel " << std::setw( 3 ) << usChan
@@ -1192,8 +1027,7 @@ void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
    fvmChanHitsInTs[        uAsicIdx ][ usChan ].insert( stsxyter::FinalHit( fvulChanLastHitTime[ uAsicIdx ][ usChan ],
                                                                             usRawAdc, uAsicIdx, usChan ) );
 */
-  fvmHitsInTs.push_back(stsxyter::FinalHit(
-    fvulChanLastHitTime[uAsicIdx][usChan], usRawAdc, uAsicIdx, usChan));
+  fvmHitsInTs.push_back(stsxyter::FinalHit(fvulChanLastHitTime[uAsicIdx][usChan], usRawAdc, uAsicIdx, usChan));
 
   /*
       LOG(info) << " TS " << std::setw( 12 ) << fulCurrentTsIdx
@@ -1213,13 +1047,11 @@ void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
   if (-1 == fdStartTime) fdStartTime = fvdChanLastHitTime[uAsicIdx][usChan];
 
   // Fill histos with time as X axis
-  Double_t dTimeSinceStartSec =
-    (fvdChanLastHitTime[uAsicIdx][usChan] - fdStartTime) * 1e-9;
+  Double_t dTimeSinceStartSec = (fvdChanLastHitTime[uAsicIdx][usChan] - fdStartTime) * 1e-9;
   Double_t dTimeSinceStartMin = dTimeSinceStartSec / 60.0;
   fhPulserChanHitRateEvo[uAsicIdx]->Fill(dTimeSinceStartSec, usChan);
   fhPulserFebRateEvo[uAsicIdx]->Fill(dTimeSinceStartSec);
-  fhPulserChanHitRateEvoLong[uAsicIdx]->Fill(
-    dTimeSinceStartMin, usChan, 1.0 / 60.0);
+  fhPulserChanHitRateEvoLong[uAsicIdx]->Fill(dTimeSinceStartMin, usChan, 1.0 / 60.0);
   fhPulserFebRateEvoLong[uAsicIdx]->Fill(dTimeSinceStartMin, 1.0 / 60.0);
   if (mess.IsHitMissedEvts()) {
     fhPulserChanMissEvtEvo[uAsicIdx]->Fill(dTimeSinceStartSec, usChan);
@@ -1236,9 +1068,8 @@ void CbmCosy2018MonitorPulser::FillHitInfo(stsxyter::Message mess,
 */
 }
 
-void CbmCosy2018MonitorPulser::FillTsMsbInfo(stsxyter::Message mess,
-                                             UInt_t uMessIdx,
-                                             UInt_t uMsIdx) {
+void CbmCosy2018MonitorPulser::FillTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx, UInt_t uMsIdx)
+{
   UInt_t uVal = mess.GetTsMsbVal();
   /*
    if( 0 == fuCurrDpbIdx )
@@ -1268,12 +1099,10 @@ void CbmCosy2018MonitorPulser::FillTsMsbInfo(stsxyter::Message mess,
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " DPB " << std::setw(2)
-              << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5)
-              << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb "
-              << std::setw(5) << uVal;
+    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " DPB "
+              << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx]
+              << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb " << std::setw(5)
+              << uVal;
 
     fvuCurrentTsMsbCycle[fuCurrDpbIdx]++;
   }  // if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
@@ -1289,13 +1118,12 @@ void CbmCosy2018MonitorPulser::FillTsMsbInfo(stsxyter::Message mess,
   //   fhStsAsicTsMsb->Fill( fvulCurrentTsMsb[fuCurrDpbIdx], uAsicIdx );
 
   ULong64_t ulNewTsMsbTime =
-    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-      * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-        * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 }
 
-void CbmCosy2018MonitorPulser::FillEpochInfo(stsxyter::Message mess) {
+void CbmCosy2018MonitorPulser::FillEpochInfo(stsxyter::Message mess)
+{
   UInt_t uVal = mess.GetTsMsbVal();
   /*
    // Update Status counters
@@ -1309,20 +1137,16 @@ void CbmCosy2018MonitorPulser::FillEpochInfo(stsxyter::Message mess) {
 
 void CbmCosy2018MonitorPulser::Reset() {}
 
-void CbmCosy2018MonitorPulser::Finish() {
+void CbmCosy2018MonitorPulser::Finish()
+{
 
   LOG(info) << "-------------------------------------";
   LOG(info) << "CbmCosy2018MonitorPulser statistics are ";
-  LOG(info) << " Hit      messages: " << fmMsgCounter[stsxyter::MessType::Hit]
-            << "\n"
-            << " Ts MSB   messages: " << fmMsgCounter[stsxyter::MessType::TsMsb]
-            << "\n"
-            << " Dummy    messages: " << fmMsgCounter[stsxyter::MessType::Dummy]
-            << "\n"
-            << " Epoch    messages: " << fmMsgCounter[stsxyter::MessType::Epoch]
-            << "\n"
-            << " Empty    messages: "
-            << fmMsgCounter[stsxyter::MessType::Empty];
+  LOG(info) << " Hit      messages: " << fmMsgCounter[stsxyter::MessType::Hit] << "\n"
+            << " Ts MSB   messages: " << fmMsgCounter[stsxyter::MessType::TsMsb] << "\n"
+            << " Dummy    messages: " << fmMsgCounter[stsxyter::MessType::Dummy] << "\n"
+            << " Epoch    messages: " << fmMsgCounter[stsxyter::MessType::Epoch] << "\n"
+            << " Empty    messages: " << fmMsgCounter[stsxyter::MessType::Empty];
 
   LOG(info) << "-------------------------------------";
 
@@ -1331,12 +1155,13 @@ void CbmCosy2018MonitorPulser::Finish() {
 }
 
 
-void CbmCosy2018MonitorPulser::SaveAllHistos(TString sFileName) {
+void CbmCosy2018MonitorPulser::SaveAllHistos(TString sFileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* histoFile   = NULL;
+  TFile* histoFile = NULL;
   if ("" != sFileName) {
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
@@ -1393,8 +1218,7 @@ void CbmCosy2018MonitorPulser::SaveAllHistos(TString sFileName) {
   TH1* pMissedTsH1 = dynamic_cast<TH1*>(gROOT->FindObjectAny("Missed_TS"));
   if (NULL != pMissedTsH1) pMissedTsH1->Write();
 
-  TProfile* pMissedTsEvoP =
-    dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
+  TProfile* pMissedTsEvoP = dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
   if (NULL != pMissedTsEvoP) pMissedTsEvoP->Write();
 
   gDirectory->cd("..");
@@ -1409,7 +1233,8 @@ void CbmCosy2018MonitorPulser::SaveAllHistos(TString sFileName) {
   gFile      = oldFile;
   gDirectory = oldDir;
 }
-void CbmCosy2018MonitorPulser::ResetAllHistos() {
+void CbmCosy2018MonitorPulser::ResetAllHistos()
+{
   LOG(info) << "Reseting all STS histograms.";
 
   fhPulserMessType->Reset();
@@ -1463,19 +1288,17 @@ void CbmCosy2018MonitorPulser::ResetAllHistos() {
   fdStartTimeMsSz = -1;
 }
 
-void CbmCosy2018MonitorPulser::SetRunStart(Int_t dateIn,
-                                           Int_t timeIn,
-                                           Int_t iBinSize) {
+void CbmCosy2018MonitorPulser::SetRunStart(Int_t dateIn, Int_t timeIn, Int_t iBinSize)
+{
   TDatime* fRunStartDateTime = new TDatime(dateIn, timeIn);
   fiRunStartDateTimeSec      = fRunStartDateTime->Convert();
   fiBinSizeDatePlots         = iBinSize;
 
-  LOG(info) << "Assigned new MUCH Run Start Date-Time: "
-            << fRunStartDateTime->AsString();
+  LOG(info) << "Assigned new MUCH Run Start Date-Time: " << fRunStartDateTime->AsString();
 }
 
-void CbmCosy2018MonitorPulser::SetLongDurationLimits(UInt_t uDurationSeconds,
-                                                     UInt_t uBinSize) {
+void CbmCosy2018MonitorPulser::SetLongDurationLimits(UInt_t uDurationSeconds, UInt_t uBinSize)
+{
   fbLongHistoEnable     = kTRUE;
   fuLongHistoNbSeconds  = uDurationSeconds;
   fuLongHistoBinSizeSec = uBinSize;

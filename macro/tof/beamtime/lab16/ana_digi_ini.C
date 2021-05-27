@@ -1,11 +1,6 @@
-void ana_digi_ini(Int_t nEvents = 10000,
-                  Int_t calMode = 0,
-                  Int_t calSel  = -1,
-                  Int_t calSm   = 200,
-                  Int_t RefSel  = 1,
-                  char* cFileId = "CbmTofPiHd_22Aug1616",
-                  Int_t iCalSet = 0,
-                  Int_t iBRef   = 500) {
+void ana_digi_ini(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
+                  char* cFileId = "CbmTofPiHd_22Aug1616", Int_t iCalSet = 0, Int_t iBRef = 500)
+{
 
   Int_t iVerbose = 1;
 
@@ -33,9 +28,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
 
   TString TofGeo = "v15d";
   TString FId    = cFileId;
-  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) {
-    TofGeo = "v15b";
-  }
+  if (FId.Contains("CernSps02Mar") || FId.Contains("CernSps03Mar")) { TofGeo = "v15b"; }
   if (FId.Contains("CernSps28Feb")) { TofGeo = "v15a"; }
 
   cout << "Geometry version " << TofGeo << endl;
@@ -47,12 +40,10 @@ void ana_digi_ini(Int_t nEvents = 10000,
     FPar   = "tsu.";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
+  TObjString tofDigiBdfFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
   TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -100,32 +91,21 @@ void ana_digi_ini(Int_t nEvents = 10000,
   // CbmTofTestBeamClusterizer defaults
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(
-    500.);  // 3.   		// Geometrical matching window in cm
-  tofTestBeamClust->SetCalCluMulMax(
-    20.);  // Max counter cluster multiplicity for filling calib histos
-  tofTestBeamClust->SetCalRpc(calSm);  // Select detector for calibration update
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // Reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10000.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  // (12000.); Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // Effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);  // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(
-    500.);  //50000.	// Default cluster range in ps, aa: cluster building radius
+  tofTestBeamClust->SetCaldXdYMax(500.);    // 3.   		// Geometrical matching window in cm
+  tofTestBeamClust->SetCalCluMulMax(20.);   // Max counter cluster multiplicity for filling calib histos
+  tofTestBeamClust->SetCalRpc(calSm);       // Select detector for calibration update
+  tofTestBeamClust->SetTRefId(RefSel);      // Reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10000.);      // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);          // (12000.); Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);  // Effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);      // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);   //50000.	// Default cluster range in ps, aa: cluster building radius
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%09d_%02d_%01dtofTestBeamClust.hst.root",
-                        cFileId,
-                        iCalSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%09d_%02d_%01dtofTestBeamClust.hst.root", cFileId, iCalSet, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofTestBeamClust_%s_set%09d.hst.root", cFileId, iCalSet);
+  TString cOutFname = Form("tofTestBeamClust_%s_set%09d.hst.root", cFileId, iCalSet);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
   TString cAnaFile = Form("%s_%09d_tofAnaTestBeam.hst.root", cFileId, iCalSet);
 
@@ -267,10 +247,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
       tofTestBeamClust->SetTRefDifMax(500.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.7);     // in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }  // end-switch(calMode)
   run->AddTask(tofTestBeamClust);
 
@@ -278,8 +255,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
   /* **************************************************************************
 									TOF TestBeam Analysis (Optional)
 	************************************************************************** */
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
 
   tofAnaTestbeam->SetDXMean(0.);  //CbmTofAnaTestbeam Defaults:
   tofAnaTestbeam->SetDYMean(0.);
@@ -290,20 +266,18 @@ void ana_digi_ini(Int_t nEvents = 10000,
   tofAnaTestbeam->SetDTWidth(80.);  // in ps
 
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5);  // Y Position selection in fraction of strip length
-  tofAnaTestbeam->SetDTDia(0.);   // Time difference to additional diamond
-  tofAnaTestbeam->SetCorMode(1);  // 1 - DTD4, 2 - X4
+  tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
+  tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
 
   tofAnaTestbeam->SetMul0Max(10);  // Max Multiplicity in dut
   tofAnaTestbeam->SetMul4Max(5);   // Max Multiplicity in HDRef - RPC
   tofAnaTestbeam->SetMulDMax(5);   // Max Multiplicity in Diamond
 
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
-  tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
-  tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
+  tofAnaTestbeam->SetPosYS2Sel(0.5);   // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetChS2Sel(0.);      // Center of channel selection window
+  tofAnaTestbeam->SetDChS2Sel(100.);   // Width  of channel selection window
 
   /* *************************************************************************  
 		 								iRSel, iRSelSm, iRSelRpc
@@ -315,8 +289,7 @@ void ana_digi_ini(Int_t nEvents = 10000,
   Int_t iRSelSm  = iRSel % 10;
   iRSel          = (iRSel - iRSelSm) / 10;
 
-  cout << "dispatch: Set BeamRefId to " << iRSel << ", " << iRSelSm << ", "
-       << iRSelRpc << endl;
+  cout << "dispatch: Set BeamRefId to " << iRSel << ", " << iRSelSm << ", " << iRSelRpc << endl;
 
   tofTestBeamClust->SetBeamRefId(iRSel);      // define Beam reference counter
   tofTestBeamClust->SetBeamRefSm(iRSelSm);    // define Beam reference counter
@@ -362,14 +335,10 @@ void ana_digi_ini(Int_t nEvents = 10000,
   tofAnaTestbeam->SetChi2Lim(100.);  // initialization of Chi2 selection limit
 
   cout << endl;
-  cout << "dispatch: iCalSet = " << iCalSet << ", iSet = " << iSet
-       << ", iBRef = " << iBRef << endl;
-  cout << "dispatch: iRSel = " << iRSel << ", iRSelSm = " << iRSelSm
-       << ", iRSelRpc = " << iRSelRpc << endl;
-  cout << "dispatch:  iDut = " << iDut << ",  iDutSm = " << iDutSm
-       << ",   iDutRpc = " << iDutRpc << endl;
-  cout << "dispatch:  iRef = " << iRef << ",  iRefSm = " << iRefSm
-       << ",   iRefRpc = " << iRefRpc << endl;
+  cout << "dispatch: iCalSet = " << iCalSet << ", iSet = " << iSet << ", iBRef = " << iBRef << endl;
+  cout << "dispatch: iRSel = " << iRSel << ", iRSelSm = " << iRSelSm << ", iRSelRpc = " << iRSelRpc << endl;
+  cout << "dispatch:  iDut = " << iDut << ",  iDutSm = " << iDutSm << ",   iDutRpc = " << iDutRpc << endl;
+  cout << "dispatch:  iRef = " << iRef << ",  iRefSm = " << iRefSm << ",   iRefRpc = " << iRefRpc << endl;
 
   /* **************************************************************************
 	Remember in init_calib.sh the parmeter iCalSet=iDutiMRefiBRef==920921400, so
@@ -542,8 +511,6 @@ void ana_digi_ini(Int_t nEvents = 10000,
       gInterpreter->ProcessLine("pl_all_dTSel()");
       break;
 
-    default:
-      cout << "iSet = " << iSet << "\tnot found for plotting..." << endl;
-      ;
+    default: cout << "iSet = " << iSet << "\tnot found for plotting..." << endl; ;
   }  //end-switch(iSet)
 }  //end-macro

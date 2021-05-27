@@ -6,10 +6,10 @@
 #define CBMSTSHITPRODUCERIDEALWRAPPER_H 1
 
 
-#include "FairTask.h"
-
 #include "CbmStsHitProducerIdealAlgo.h"
 #include "CbmStsPoint.h"
+
+#include "FairTask.h"
 
 #include <vector>
 
@@ -23,8 +23,7 @@ public:
   CbmStsHitProducerIdealWrapper();
 
   CbmStsHitProducerIdealWrapper(const CbmStsHitProducerIdealWrapper&) = delete;
-  CbmStsHitProducerIdealWrapper&
-  operator=(const CbmStsHitProducerIdealWrapper&) = delete;
+  CbmStsHitProducerIdealWrapper& operator=(const CbmStsHitProducerIdealWrapper&) = delete;
 
   /** Destructor **/
   ~CbmStsHitProducerIdealWrapper();

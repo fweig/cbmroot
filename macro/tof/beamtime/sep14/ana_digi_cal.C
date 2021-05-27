@@ -1,10 +1,6 @@
-void ana_digi_cal(Int_t nEvents   = 1000000,
-                  Int_t calMode   = 0,
-                  Int_t calSel    = -1,
-                  Int_t calSmType = 2,
-                  Int_t RefSel    = 1,
-                  char* cFileId   = "MbsTrbThu1715",
-                  Int_t iSet      = 0) {
+void ana_digi_cal(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSmType = 2, Int_t RefSel = 1,
+                  char* cFileId = "MbsTrbThu1715", Int_t iSet = 0)
+{
   Int_t iVerbose = 1;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -34,16 +30,15 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
     TofGeo = "v14a_tsu";
   }
 
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -74,26 +69,21 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
 
   tofTestBeamClust->SetCalMode(calMode);
   tofTestBeamClust->SetCalSel(calSel);
-  tofTestBeamClust->SetCaldXdYMax(3.);    // geometrical matching window in cm
-  tofTestBeamClust->SetdTRefMax(50000.);  // obsolete, not used any more
-  tofTestBeamClust->SetCalSmType(
-    calSmType);  // select detectors for walk correction
+  tofTestBeamClust->SetCaldXdYMax(3.);        // geometrical matching window in cm
+  tofTestBeamClust->SetdTRefMax(50000.);      // obsolete, not used any more
+  tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
   //tofTestBeamClust->SetTRefDetId(20486);      //0x00005006; big Diamond
   //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
   //tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
-  tofTestBeamClust->SetTRefId(
-    RefSel);  // reference trigger for offset calculation
-  tofTestBeamClust->SetTotMax(10000.);  // Tot upper limit for walk corection
-  tofTestBeamClust->SetTotMin(
-    1.);  //(12000.);  // Tot lower limit for walk correction
-  tofTestBeamClust->SetTotPreRange(
-    5000.);  // effective lower Tot limit  in ps from peak position
-  tofTestBeamClust->SetTotMean(2000.);     // Tot calibration target value in ps
-  tofTestBeamClust->SetMaxTimeDist(500.);  // default cluster range in ps
+  tofTestBeamClust->SetTRefId(RefSel);      // reference trigger for offset calculation
+  tofTestBeamClust->SetTotMax(10000.);      // Tot upper limit for walk corection
+  tofTestBeamClust->SetTotMin(1.);          //(12000.);  // Tot lower limit for walk correction
+  tofTestBeamClust->SetTotPreRange(5000.);  // effective lower Tot limit  in ps from peak position
+  tofTestBeamClust->SetTotMean(2000.);      // Tot calibration target value in ps
+  tofTestBeamClust->SetMaxTimeDist(500.);   // default cluster range in ps
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname =
-    Form("%s_%02d_%01dtofTestBeamClust.hst.root", cFileId, calMode, calSelRead);
+  TString cFname = Form("%s_%02d_%01dtofTestBeamClust.hst.root", cFileId, calMode, calSelRead);
   tofTestBeamClust->SetCalParFileName(cFname);
   TString cOutFname = Form("tofTestBeamClust_%s.hst.root", cFileId);
   tofTestBeamClust->SetOutHstFileName(cOutFname);
@@ -207,15 +197,11 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
       tofTestBeamClust->SetTRefDifMax(600.);  // in ps
       tofTestBeamClust->PosYMaxScal(0.7);     //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
   run->AddTask(tofTestBeamClust);
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
   switch (cFileId) {
     case "MbsTrbSat2035":
@@ -233,19 +219,16 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
           tofAnaTestbeam->SetDYWidth(0.40);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul4Max(1);   // Max Multiplicity in HDRef - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
-          tofAnaTestbeam->SetCorMode(1);  // 1 - DTD4, 2 - X4
-          tofAnaTestbeam->SetDut(3);      // Device under test
-          tofAnaTestbeam->SetMrpcRef(4);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(1);     // Max Multiplicity in HDRef - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
+          tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
+          tofAnaTestbeam->SetDut(3);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(4);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(0);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         case 1:  // upper part of setup: Buc2013 - BucRef
           tofTestBeamClust->SetDutId(6.);
@@ -257,20 +240,16 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
           tofAnaTestbeam->SetDYWidth(0.5);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in Ref - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(
-            35.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.5);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            500.);  // Time difference to additional diamond
-          tofAnaTestbeam->SetCorMode(1);  // 1 - DTD4, 2 - X4
-          tofAnaTestbeam->SetDut(6);      // Device under test
-          tofAnaTestbeam->SetMrpcRef(1);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in Ref - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(35.);   // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.5);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(500.);    // Time difference to additional diamond
+          tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
+          tofAnaTestbeam->SetDut(6);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(1);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(2);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         default:;
       }  // end of different subsets for Sat1805
@@ -288,19 +267,16 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
           tofAnaTestbeam->SetDYWidth(0.40);
           tofAnaTestbeam->SetDTWidth(80.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in HDRef - RPC
-          tofAnaTestbeam->SetCh4Sel(8.);   // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(7.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.4);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(1.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetDTDia(
-            0.);  // Time difference to additional diamond
-          tofAnaTestbeam->SetCorMode(1);  // 1 - DTD4, 2 - X4
-          tofAnaTestbeam->SetDut(3);      // Device under test
-          tofAnaTestbeam->SetMrpcRef(4);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in HDRef - RPC
+          tofAnaTestbeam->SetCh4Sel(8.);     // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(7.);    // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.4);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(1.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
+          tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
+          tofAnaTestbeam->SetDut(3);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(4);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(0);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         case 1:  // TSU pad
           tofTestBeamClust->SetDutId(8.);
@@ -313,22 +289,17 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
           tofAnaTestbeam->SetDYWidth(2.49);
           tofAnaTestbeam->SetDTWidth(90.);  // in ps
           tofAnaTestbeam->SetCalParFileName(cAnaFile);
-          tofAnaTestbeam->SetMul0Max(
-            3.);  // Max Multiplicity in THU - Pad - RPC
-          tofAnaTestbeam->SetMul4Max(1.);  // Max Multiplicity in BucRef - RPC
-          tofAnaTestbeam->SetCh4Sel(38.);  // Center of channel selection window
-          tofAnaTestbeam->SetDCh4Sel(
-            15.);  // Width  of channel selection window
-          tofAnaTestbeam->SetPosY4Sel(
-            0.4);  // Y Position selection in fraction of strip length
-          tofAnaTestbeam->SetMulDMax(2.);  // Max Multiplicity in Diamond
-          tofAnaTestbeam->SetCorMode(1);   // 1 - DTD4, 2 - X4
-          tofAnaTestbeam->SetDTDia(
-            0.);                      // Time difference to additional diamond
-          tofAnaTestbeam->SetDut(8);  // Device under test
-          tofAnaTestbeam->SetMrpcRef(1);  // Reference RPC
-          tofAnaTestbeam->SetPlaSelect(
-            2);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+          tofAnaTestbeam->SetMul0Max(3.);    // Max Multiplicity in THU - Pad - RPC
+          tofAnaTestbeam->SetMul4Max(1.);    // Max Multiplicity in BucRef - RPC
+          tofAnaTestbeam->SetCh4Sel(38.);    // Center of channel selection window
+          tofAnaTestbeam->SetDCh4Sel(15.);   // Width  of channel selection window
+          tofAnaTestbeam->SetPosY4Sel(0.4);  // Y Position selection in fraction of strip length
+          tofAnaTestbeam->SetMulDMax(2.);    // Max Multiplicity in Diamond
+          tofAnaTestbeam->SetCorMode(1);     // 1 - DTD4, 2 - X4
+          tofAnaTestbeam->SetDTDia(0.);      // Time difference to additional diamond
+          tofAnaTestbeam->SetDut(8);         // Device under test
+          tofAnaTestbeam->SetMrpcRef(1);     // Reference RPC
+          tofAnaTestbeam->SetPlaSelect(2);   // Select attached plastics (0 - HD-P2, 2 - Buc2013)
           break;
         default:;
       }
@@ -346,8 +317,7 @@ void ana_digi_cal(Int_t nEvents   = 1000000,
       tofAnaTestbeam->SetCorMode(1);    // 1 - DTD4, 2 - X4
       tofAnaTestbeam->SetDut(2);        // Device under test
       tofAnaTestbeam->SetMrpcRef(4);    // Reference RPC
-      tofAnaTestbeam->SetPlaSelect(
-        0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
+      tofAnaTestbeam->SetPlaSelect(0);  // Select attached plastics (0 - HD-P2, 2 - Buc2013)
   }
 
   run->AddTask(tofAnaTestbeam);

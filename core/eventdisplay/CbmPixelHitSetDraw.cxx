@@ -11,10 +11,10 @@ CbmPixelHitSetDraw::CbmPixelHitSetDraw() {}
 
 CbmPixelHitSetDraw::~CbmPixelHitSetDraw() {}
 
-TVector3 CbmPixelHitSetDraw::GetVector(TObject* obj) {
+TVector3 CbmPixelHitSetDraw::GetVector(TObject* obj)
+{
   CbmPixelHit* p = (CbmPixelHit*) obj;
-  LOG(debug) << "-I- CbmPixelHitSetDraw::GetVector: " << p->GetX() << " "
-             << p->GetY() << " " << p->GetZ();
+  LOG(debug) << "-I- CbmPixelHitSetDraw::GetVector: " << p->GetX() << " " << p->GetY() << " " << p->GetZ();
   return TVector3(p->GetX(), p->GetY(), p->GetZ());
 }
 

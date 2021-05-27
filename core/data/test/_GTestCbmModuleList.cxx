@@ -3,7 +3,8 @@
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-TEST(_GTestCbmModuleList, CheckDefaultConstructor) {
+TEST(_GTestCbmModuleList, CheckDefaultConstructor)
+{
   {
     SCOPED_TRACE("CheckDefaultConstructor");
     CbmModuleList test;

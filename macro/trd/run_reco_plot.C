@@ -19,7 +19,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_plot(Int_t nEvents = 100, Int_t urqmd = 0000) {
+void run_reco_plot(Int_t nEvents = 100, Int_t urqmd = 0000)
+{
   gStyle->SetNumberContours(99);
   gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
@@ -34,10 +35,8 @@ void run_reco_plot(Int_t nEvents = 100, Int_t urqmd = 0000) {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 11);
   digipar.ReplaceAll(".ge", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";

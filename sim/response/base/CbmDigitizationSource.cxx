@@ -8,10 +8,12 @@
 #include "CbmDigitizationSource.h"
 
 #include "FairRootManager.h"
+
 #include "TChain.h"
 #include "TFolder.h"
 #include "TROOT.h"
 #include <TFile.h>
+
 #include <cassert>
 #include <iomanip>
 #include <utility>
@@ -34,12 +36,15 @@ CbmDigitizationSource::CbmDigitizationSource()
   , fFirstCall(kTRUE)
   , fEventMode(kFALSE)
   , fCurrentInputSet(nullptr)
-  , fSwitchInputSet(kFALSE) {}
+  , fSwitchInputSet(kFALSE)
+{
+}
 // ---------------------------------------------------------------------------
 
 
 // -----   Destructor   ------------------------------------------------------
-CbmDigitizationSource::~CbmDigitizationSource() {
+CbmDigitizationSource::~CbmDigitizationSource()
+{
   for (auto const& inputSet : fInputSets)
     if (inputSet) delete inputSet;
   fBranches.clear();
@@ -48,8 +53,8 @@ CbmDigitizationSource::~CbmDigitizationSource() {
 
 
 // -----   Set the branch address of a branch   -----------------------------
-Bool_t CbmDigitizationSource::ActivateObject(TObject** object,
-                                             const char* branchName) {
+Bool_t CbmDigitizationSource::ActivateObject(TObject** object, const char* branchName)
+{
 
   // The branch address has to be set for each input chain of each input set
   for (auto const& inputSet : fInputSets)
@@ -61,15 +66,12 @@ Bool_t CbmDigitizationSource::ActivateObject(TObject** object,
 
 
 // -----   Add a transport input   -------------------------------------------
-void CbmDigitizationSource::AddInput(UInt_t inputId,
-                                     TChain* chain,
-                                     Double_t rate,
-                                     ECbmTreeAccess mode) {
+void CbmDigitizationSource::AddInput(UInt_t inputId, TChain* chain, Double_t rate, ECbmTreeAccess mode)
+{
 
   // Catch input ID already being used
   if (fInputMap.find(inputId) != fInputMap.end()) {
-    LOG(fatal) << "DigitizationSource: Input ID " << inputId
-               << " is already defined!";
+    LOG(fatal) << "DigitizationSource: Input ID " << inputId << " is already defined!";
     return;
   }  //? Input ID already in use
 
@@ -78,9 +80,7 @@ void CbmDigitizationSource::AddInput(UInt_t inputId,
   inputSet->AddInput(inputId, chain, mode);
 
   // If it is the first input set, it defines the reference branch list.
-  if (fInputSets.size() == 0) {
-    fBranches = inputSet->GetBranchList();
-  }  //? First input set
+  if (fInputSets.size() == 0) { fBranches = inputSet->GetBranchList(); }  //? First input set
 
   // If it is not the first set, check compatibility of branch list.
   else {
@@ -94,25 +94,22 @@ void CbmDigitizationSource::AddInput(UInt_t inputId,
   fInputSets.push_back(inputSet);
   fInputMap[inputId] = inputSet;
 
-  LOG(info) << "DigitizationSource: Added input " << inputId << " with rate "
-            << rate << " / s, mode: "
-            << (mode == ECbmTreeAccess::kRegular
-                  ? "regular"
-                  : (mode == ECbmTreeAccess::kRepeat ? "repeat" : "random"));
+  LOG(info) << "DigitizationSource: Added input " << inputId << " with rate " << rate << " / s, mode: "
+            << (mode == ECbmTreeAccess::kRegular ? "regular" : (mode == ECbmTreeAccess::kRepeat ? "repeat" : "random"));
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Check the branch list of an input   -------------------------------
-Bool_t CbmDigitizationSource::CheckBranchList(CbmMCInputSet* inputSet) {
+Bool_t CbmDigitizationSource::CheckBranchList(CbmMCInputSet* inputSet)
+{
 
   assert(inputSet);
   Bool_t success = kTRUE;
   for (auto const& entry : fBranches) {
     auto it = inputSet->GetBranchList().find(entry);
     if (it == inputSet->GetBranchList().end()) {
-      LOG(debug) << "DigitizationSource: required branch " << entry
-                 << " not present in input set!";
+      LOG(debug) << "DigitizationSource: required branch " << entry << " not present in input set!";
       success = kFALSE;
       break;
     }  //? Global branch not in input
@@ -138,13 +135,13 @@ Bool_t CbmDigitizationSource::CheckBranchList(CbmMCInputSet* inputSet) {
 
 
 // -----   Check the maximal entry the source can run to   -------------------
-Int_t CbmDigitizationSource::CheckMaxEventNo(Int_t) {
+Int_t CbmDigitizationSource::CheckMaxEventNo(Int_t)
+{
 
   // Catch the case when no input is connected
   if (fInputSets.empty()) return 0;
 
-  Int_t maxEvents =
-    (fInputSets.size() == 1 ? fInputSets.front()->GetMaxNofEvents() : -1);
+  Int_t maxEvents = (fInputSets.size() == 1 ? fInputSets.front()->GetMaxNofEvents() : -1);
 
   // If the maximal number of events is not defined, the method returns a
   // practically infinite number. The run will proceed until one of the
@@ -158,22 +155,19 @@ Int_t CbmDigitizationSource::CheckMaxEventNo(Int_t) {
 
 
 // -----   Embed a transport input   -----------------------------------------
-void CbmDigitizationSource::EmbedInput(UInt_t inputId,
-                                       TChain* chain,
-                                       UInt_t targetInputId,
-                                       ECbmTreeAccess mode) {
+void CbmDigitizationSource::EmbedInput(UInt_t inputId, TChain* chain, UInt_t targetInputId, ECbmTreeAccess mode)
+{
 
   // Catch input ID already being used
   if (fInputMap.find(inputId) != fInputMap.end()) {
-    LOG(fatal) << "DigitizationSource: Input ID " << inputId
-               << " is already defined!";
+    LOG(fatal) << "DigitizationSource: Input ID " << inputId << " is already defined!";
     return;
   }  //? Input ID already in use
 
   // Catch target input not existing
   if (fInputMap.find(targetInputId) == fInputMap.end()) {
-    LOG(fatal) << "DigitizationSource: Target input ID " << targetInputId
-               << " for input " << inputId << " does not exist!";
+    LOG(fatal) << "DigitizationSource: Target input ID " << targetInputId << " for input " << inputId
+               << " does not exist!";
     return;
   }  //? Target input does not exist
 
@@ -181,31 +175,29 @@ void CbmDigitizationSource::EmbedInput(UInt_t inputId,
   fInputMap[targetInputId]->AddInput(inputId, chain, mode);
   fInputMap[inputId] = fInputMap[targetInputId];
 
-  LOG(info) << "DigitizationSource: Embedded input " << inputId
-            << " into input " << targetInputId << ", mode: "
-            << (mode == ECbmTreeAccess::kRegular
-                  ? "regular"
-                  : (mode == ECbmTreeAccess::kRepeat ? "repeat" : "random"));
+  LOG(info) << "DigitizationSource: Embedded input " << inputId << " into input " << targetInputId << ", mode: "
+            << (mode == ECbmTreeAccess::kRegular ? "regular" : (mode == ECbmTreeAccess::kRepeat ? "repeat" : "random"));
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Fill the event header   -------------------------------------------
-void CbmDigitizationSource::FillEventHeader(FairEventHeader* event) {
+void CbmDigitizationSource::FillEventHeader(FairEventHeader* event)
+{
   assert(event);
   event->SetEventTime(fCurrentTime);
   event->SetMCEntryNumber(fCurrentEntryId);
   event->SetInputFileId(fCurrentInputId);
   event->SetRunId(fCurrentRunId);
-  LOG(debug) << "DigitizationSource: Event with RunId " << fCurrentRunId
-             << ", input " << fCurrentInputId << ", entry " << fCurrentEntryId
-             << ", time " << fCurrentTime << " ns";
+  LOG(debug) << "DigitizationSource: Event with RunId " << fCurrentRunId << ", input " << fCurrentInputId << ", entry "
+             << fCurrentEntryId << ", time " << fCurrentTime << " ns";
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Get an input   ----------------------------------------------------
-CbmMCInput* CbmDigitizationSource::GetFirstInput() {
+CbmMCInput* CbmDigitizationSource::GetFirstInput()
+{
   assert(!fInputMap.empty());
   return fInputMap.begin()->second->GetFirstInput().second;
 }
@@ -213,7 +205,8 @@ CbmMCInput* CbmDigitizationSource::GetFirstInput() {
 
 
 // -----   Initialisation   --------------------------------------------------
-Bool_t CbmDigitizationSource::Init() {
+Bool_t CbmDigitizationSource::Init()
+{
 
   // Catch missing or too many input sets
   if (fInputSets.empty()) {
@@ -252,8 +245,7 @@ Bool_t CbmDigitizationSource::Init() {
     for (size_t iSet = 0; iSet < fInputSets.size(); iSet++) {
       CbmMCInputSet* inputSet = fInputSets.at(iSet);
       Double_t time           = fTimeStart + inputSet->GetDeltaT();
-      LOG(info) << "First time for input set " << iSet << " is " << time
-                << " ns.";
+      LOG(info) << "First time for input set " << iSet << " is " << time << " ns.";
       fNextEvent.insert(std::make_pair(time, inputSet));
     }  //# Input sets
   }
@@ -268,7 +260,8 @@ Bool_t CbmDigitizationSource::Init() {
 
 
 // -----   Define one input event   ------------------------------------------
-Int_t CbmDigitizationSource::ReadEvent(UInt_t event) {
+Int_t CbmDigitizationSource::ReadEvent(UInt_t event)
+{
 
   // Before the actual run, ReadEvent is once called from FairRunAna::Init().
   // This is to get the run ID needed for setting the parameter containers.
@@ -309,15 +302,13 @@ Int_t CbmDigitizationSource::ReadEvent(UInt_t event) {
   fCurrentInputId = std::get<1>(result);
   fCurrentEntryId = std::get<2>(result);
   std::cout << std::endl;
-  LOG(info) << "DigitizationSource: Event " << event << " at t = " << std::fixed
-            << std::setprecision(3) << fCurrentTime << " ns"
-            << " from input " << fCurrentInputId << " (entry "
-            << fCurrentEntryId << ")";
+  LOG(info) << "DigitizationSource: Event " << event << " at t = " << std::fixed << std::setprecision(3) << fCurrentTime
+            << " ns"
+            << " from input " << fCurrentInputId << " (entry " << fCurrentEntryId << ")";
 
   // Stop the run if the number of entries in this input is reached
   if (fCurrentEntryId < 0) {
-    LOG(info) << "DigitizationSource: No more entries in input "
-              << fCurrentInputId;
+    LOG(info) << "DigitizationSource: No more entries in input " << fCurrentInputId;
     return 1;
   }
 
@@ -327,7 +318,8 @@ Int_t CbmDigitizationSource::ReadEvent(UInt_t event) {
 
 
 // -----   Read event in the event-by-event mode   ---------------------------
-Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event) {
+Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event)
+{
 
   // There should be only one input set with one input
   auto result       = fInputSets.front()->GetFirstInput();
@@ -338,9 +330,8 @@ Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event) {
   // In mode kRegular: Get requested entry number
   if (input->GetMode() == ECbmTreeAccess::kRegular) {
     if (event >= input->GetNofEntries()) {
-      LOG(info) << "DigitizationSource: Requested event " << event
-                << " exceeds number of entries in input " << fCurrentInputId
-                << "( " << input->GetNofEntries() << " )";
+      LOG(info) << "DigitizationSource: Requested event " << event << " exceeds number of entries in input "
+                << fCurrentInputId << "( " << input->GetNofEntries() << " )";
       return 1;
     }
     input->GetChain()->GetEntry(event);
@@ -353,10 +344,8 @@ Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event) {
 
   // Set entry properties
   fCurrentTime = 0.;
-  LOG(info) << "DigitizationSource: Event " << event
-            << " at t = " << fCurrentTime << " ns"
-            << " from input " << fCurrentInputId << " (entry "
-            << fCurrentEntryId << ")";
+  LOG(info) << "DigitizationSource: Event " << event << " at t = " << fCurrentTime << " ns"
+            << " from input " << fCurrentInputId << " (entry " << fCurrentEntryId << ")";
 
   return 0;
 }
@@ -364,7 +353,8 @@ Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event) {
 
 
 // -----   Read run ID   -----------------------------------------------------
-void CbmDigitizationSource::ReadRunId() {
+void CbmDigitizationSource::ReadRunId()
+{
 
   auto firstInput   = fInputSets.front()->GetFirstInput();
   fCurrentInputId   = firstInput.first;

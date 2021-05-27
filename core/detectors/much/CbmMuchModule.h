@@ -34,12 +34,7 @@ public:
    *@param size      Size of the module (all dimensions in [cm])
    *@param cutRadius Radius of the cut (if any, otherwise = -1.) [cm]
    **/
-  CbmMuchModule(Int_t iStation,
-                Int_t iLayer,
-                Bool_t iSide,
-                Int_t iModule,
-                TVector3 position,
-                TVector3 size,
+  CbmMuchModule(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position, TVector3 size,
                 Double_t cutRadius);
   /** Destructor **/
   virtual ~CbmMuchModule() {}
@@ -61,24 +56,21 @@ public:
   void SetHits(TClonesArray* hits) { fHits = hits; }
   void SetClusters(TClonesArray* clusters) { fClusters = clusters; }
   /** */
-  void AddDigi(Double_t time, Int_t id) {
-    fDigis.insert(std::pair<Double_t, Int_t>(time, id));
-  }
+  void AddDigi(Double_t time, Int_t id) { fDigis.insert(std::pair<Double_t, Int_t>(time, id)); }
   /** */
   void ClearDigis() { fDigis.clear(); }
   /** */
   std::multimap<Double_t, Int_t> GetDigis() { return fDigis; }
 
 protected:
-  Int_t fDetectorId;    // Unique detector ID
-  Int_t fDetectorType;  // Detector type
-  Double_t fCutRadius;  // Radius of the cut (if any, otherwise = -1.) [cm]
-  TVector3 fSize;       // Size vector of the module (all dimensions in [cm])
-  TVector3
-    fPosition;  // Location vector of the module center in global c.s. (all dimensions in [cm])
-  TClonesArray* fPoints;                  //!
-  TClonesArray* fHits;                    //!
-  TClonesArray* fClusters;                //!
+  Int_t fDetectorId;        // Unique detector ID
+  Int_t fDetectorType;      // Detector type
+  Double_t fCutRadius;      // Radius of the cut (if any, otherwise = -1.) [cm]
+  TVector3 fSize;           // Size vector of the module (all dimensions in [cm])
+  TVector3 fPosition;       // Location vector of the module center in global c.s. (all dimensions in [cm])
+  TClonesArray* fPoints;    //!
+  TClonesArray* fHits;      //!
+  TClonesArray* fClusters;  //!
   std::multimap<Double_t, Int_t> fDigis;  //!
 
 private:

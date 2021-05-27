@@ -75,8 +75,7 @@
   rtdb->setFirstInput(io1);
 
   // ---- define TestSim task to run ---------
-  CbmRichTestSim* tsim =
-    new CbmRichTestSim("RichTestSim", "RichTestSim", iVerbose);
+  CbmRichTestSim* tsim = new CbmRichTestSim("RichTestSim", "RichTestSim", iVerbose);
   fRun->AddTask(tsim);
 
   // -----   Intialise and run   --------------------------------------------
@@ -121,8 +120,7 @@
   c1->SetFillColor(10);
   c1->SetGrid(0, 0);
 
-  TPaveLabel* title =
-    new TPaveLabel(0.1, 0.92, 0.9, 0.98, "Test RICH for file  " + inFile);
+  TPaveLabel* title = new TPaveLabel(0.1, 0.92, 0.9, 0.98, "Test RICH for file  " + inFile);
   title->SetFillColor(10);
   title->SetLineStyle(1);
   title->Draw();

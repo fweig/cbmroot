@@ -22,22 +22,14 @@ void eventDisplay(const char* setup = "mcbm_beam_2019_03")
   FairEventManager* fMan = new FairEventManager();
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
-  FairMCPointDraw* MvdPoint =
-    new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
-  FairMCPointDraw* StsPoint =
-    new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
-  FairMCPointDraw* MuchPoint =
-    new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
-  FairMCPointDraw* TrdPoint =
-    new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
-  FairMCPointDraw* TofPoint =
-    new FairMCPointDraw("TofPoint", kRed, kFullSquare);
-  FairMCPointDraw* EcalPoint =
-    new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
-  FairMCPointDraw* RefPlanePoint =
-    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+  FairMCPointDraw* MvdPoint      = new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
+  FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
+  FairMCPointDraw* MuchPoint     = new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RichPoint     = new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
+  FairMCPointDraw* TrdPoint      = new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
+  FairMCPointDraw* TofPoint      = new FairMCPointDraw("TofPoint", kRed, kFullSquare);
+  FairMCPointDraw* EcalPoint     = new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
+  FairMCPointDraw* RefPlanePoint = new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
 
   fMan->AddTask(Track);
 

@@ -22,8 +22,8 @@
 /// C/C++ headers
 
 // ---- Default constructor -------------------------------------------
-CbmMcbmCheckTimingTask::CbmMcbmCheckTimingTask()
-  : FairTask("CbmMcbmCheckTimingTask") {
+CbmMcbmCheckTimingTask::CbmMcbmCheckTimingTask() : FairTask("CbmMcbmCheckTimingTask")
+{
   /// Create Algo. To be made generic/switchable when more event building algo are available!
   fpAlgo = new CbmMcbmCheckTimingAlgo();
 }
@@ -32,15 +32,16 @@ CbmMcbmCheckTimingTask::CbmMcbmCheckTimingTask()
 CbmMcbmCheckTimingTask::~CbmMcbmCheckTimingTask() {}
 
 // ----  Initialisation  ----------------------------------------------
-void CbmMcbmCheckTimingTask::SetParContainers() {
+void CbmMcbmCheckTimingTask::SetParContainers()
+{
   /// Nothing to do
 }
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmMcbmCheckTimingTask::Init() {
+InitStatus CbmMcbmCheckTimingTask::Init()
+{
   /// Call Algo Init method
-  if (kTRUE == fpAlgo->Init())
-    return kSUCCESS;
+  if (kTRUE == fpAlgo->Init()) return kSUCCESS;
   else
     return kFATAL;
 }
@@ -49,7 +50,8 @@ InitStatus CbmMcbmCheckTimingTask::Init() {
 InitStatus CbmMcbmCheckTimingTask::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmMcbmCheckTimingTask::Exec(Option_t* /*option*/) {
+void CbmMcbmCheckTimingTask::Exec(Option_t* /*option*/)
+{
   LOG(debug2) << "CbmMcbmCheckTimingTask::Exec => Starting sequence";
   /// Call Algo ProcessTs method
   fpAlgo->ProcessTs();
@@ -59,14 +61,16 @@ void CbmMcbmCheckTimingTask::Exec(Option_t* /*option*/) {
 
 
 // ---- Finish --------------------------------------------------------
-void CbmMcbmCheckTimingTask::Finish() {
+void CbmMcbmCheckTimingTask::Finish()
+{
   SaveHistos();
 
   /// Call Algo finish method
   fpAlgo->Finish();
 }
 //----------------------------------------------------------------------
-void CbmMcbmCheckTimingTask::SaveHistos() {
+void CbmMcbmCheckTimingTask::SaveHistos()
+{
   fpAlgo->WriteHistos();
   /*
    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
@@ -104,45 +108,28 @@ void CbmMcbmCheckTimingTask::SaveHistos() {
 */
 }
 //----------------------------------------------------------------------
-void CbmMcbmCheckTimingTask::SetOutFilename(TString sNameIn) {
+void CbmMcbmCheckTimingTask::SetOutFilename(TString sNameIn)
+{
   fsOutFileName = sNameIn;
   fpAlgo->SetOutFilename(fsOutFileName);
 }
 //----------------------------------------------------------------------
-void CbmMcbmCheckTimingTask::SetReferenceDetector(ECbmModuleId refDetIn,
-                                                  std::string sNameIn,
-                                                  Double_t dTimeRangeBegIn,
-                                                  Double_t dTimeRangeEndIn,
-                                                  UInt_t uRangeNbBinsIn,
-                                                  UInt_t uChargeCutMinIn,
-                                                  UInt_t uChargeCutMaxIn) {
-  fpAlgo->SetReferenceDetector(refDetIn,
-                               sNameIn,
-                               dTimeRangeBegIn,
-                               dTimeRangeEndIn,
-                               uRangeNbBinsIn,
-                               uChargeCutMinIn,
+void CbmMcbmCheckTimingTask::SetReferenceDetector(ECbmModuleId refDetIn, std::string sNameIn, Double_t dTimeRangeBegIn,
+                                                  Double_t dTimeRangeEndIn, UInt_t uRangeNbBinsIn,
+                                                  UInt_t uChargeCutMinIn, UInt_t uChargeCutMaxIn)
+{
+  fpAlgo->SetReferenceDetector(refDetIn, sNameIn, dTimeRangeBegIn, dTimeRangeEndIn, uRangeNbBinsIn, uChargeCutMinIn,
                                uChargeCutMaxIn);
 }
-void CbmMcbmCheckTimingTask::AddCheckDetector(ECbmModuleId detIn,
-                                              std::string sNameIn,
-                                              Double_t dTimeRangeBegIn,
-                                              Double_t dTimeRangeEndIn,
-                                              UInt_t uRangeNbBinsIn,
-                                              UInt_t uChargeCutMinIn,
-                                              UInt_t uChargeCutMaxIn) {
-  fpAlgo->AddCheckDetector(detIn,
-                           sNameIn,
-                           dTimeRangeBegIn,
-                           dTimeRangeEndIn,
-                           uRangeNbBinsIn,
-                           uChargeCutMinIn,
+void CbmMcbmCheckTimingTask::AddCheckDetector(ECbmModuleId detIn, std::string sNameIn, Double_t dTimeRangeBegIn,
+                                              Double_t dTimeRangeEndIn, UInt_t uRangeNbBinsIn, UInt_t uChargeCutMinIn,
+                                              UInt_t uChargeCutMaxIn)
+{
+  fpAlgo->AddCheckDetector(detIn, sNameIn, dTimeRangeBegIn, dTimeRangeEndIn, uRangeNbBinsIn, uChargeCutMinIn,
                            uChargeCutMaxIn);
 }
 
-void CbmMcbmCheckTimingTask::RemoveCheckDetector(ECbmModuleId detIn) {
-  fpAlgo->RemoveCheckDetector(detIn);
-}
+void CbmMcbmCheckTimingTask::RemoveCheckDetector(ECbmModuleId detIn) { fpAlgo->RemoveCheckDetector(detIn); }
 
 //----------------------------------------------------------------------
 ClassImp(CbmMcbmCheckTimingTask)

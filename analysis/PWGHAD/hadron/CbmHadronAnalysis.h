@@ -6,6 +6,7 @@
 #define _CBMHADRONANALYSIS_H_
 
 #include "CbmStsKFTrackFitter.h"
+
 #include "FairTask.h"
 
 class FairMCEventHeader;
@@ -63,8 +64,7 @@ private:
   TClonesArray* fGlobalTracks;            // Global tracks
   TClonesArray* fHadrons;                 // Hadrons
   CbmVertex* fPrimVertex;                 // Pointer to the primary vertex
-  CbmStsKFTrackFitter
-    fTrackFitter;  // Pointer to the Kalman Filter Fitter algorithm
+  CbmStsKFTrackFitter fTrackFitter;       // Pointer to the Kalman Filter Fitter algorithm
 
   TH2F* fa_ptm_rap_gen_pip;
   TH2F* fa_ptm_rap_gen_pim;
@@ -425,25 +425,17 @@ private:
   TH1F* fhTofTrkDysel;
 
   Bool_t bRecSec;
-  Double_t
-    fdDistPrimLim;  // =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries
-  Double_t
-    fdDistPrimLim2;  //=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries
-  Double_t
-    fdDistSecLim2;  //=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries
-  Double_t
-    fdD0ProtLim;  //=0.4;     // Ext Parameter: Min impact parameter for secondary proton
-  Double_t
-    fdOpAngMin;  //=0.01;     // Ext Parameter: Min opening angle for accepting pair
-  Double_t
-    fdDCALim;  //=0.2;        // Ext Parameter: Max DCA for accepting pair
-  Double_t
-    fdVLenMin;  //=25.;       // Ext Parameter: Min Lambda flight path length for accepting pair
-  Double_t
-    fdVLenMax;  //=25.;       // Ext Parameter: Max Lambda flight path length for accepting pair
-  Double_t fdDistTRD;     // max accepted distance of Trd Hit from STS-TOF line
-  Double_t fdTRDHmulMin;  // min associated Trd Hits to Track candidates
-  UInt_t fNMixedEvents;   //=10;    // Number of events to be mixed with
+  Double_t fdDistPrimLim;   // =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries
+  Double_t fdDistPrimLim2;  //=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries
+  Double_t fdDistSecLim2;   //=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries
+  Double_t fdD0ProtLim;     //=0.4;     // Ext Parameter: Min impact parameter for secondary proton
+  Double_t fdOpAngMin;      //=0.01;     // Ext Parameter: Min opening angle for accepting pair
+  Double_t fdDCALim;        //=0.2;        // Ext Parameter: Max DCA for accepting pair
+  Double_t fdVLenMin;       //=25.;       // Ext Parameter: Min Lambda flight path length for accepting pair
+  Double_t fdVLenMax;       //=25.;       // Ext Parameter: Max Lambda flight path length for accepting pair
+  Double_t fdDistTRD;       // max accepted distance of Trd Hit from STS-TOF line
+  Double_t fdTRDHmulMin;    // min associated Trd Hits to Track candidates
+  UInt_t fNMixedEvents;     //=10;    // Number of events to be mixed with
 
   void CreateHistogramms();
   InitStatus ReadPdfFile();

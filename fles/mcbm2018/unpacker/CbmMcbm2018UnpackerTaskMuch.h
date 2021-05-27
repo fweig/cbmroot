@@ -8,11 +8,11 @@
 #ifndef CbmMcbm2018UnpackerTaskMuch_H
 #define CbmMcbm2018UnpackerTaskMuch_H
 
-#include "Timeslice.hpp"
-
 #include "CbmErrorMessage.h"
 #include "CbmMcbmUnpack.h"
 #include "CbmMuchBeamTimeDigi.h"
+
+#include "Timeslice.hpp"
 
 class CbmMcbm2018UnpackerAlgoMuch;
 //class TClonesArray;
@@ -28,8 +28,7 @@ public:
   CbmMcbm2018UnpackerTaskMuch(UInt_t uNbSdpb = 1);
 
   CbmMcbm2018UnpackerTaskMuch(const CbmMcbm2018UnpackerTaskMuch&) = delete;
-  CbmMcbm2018UnpackerTaskMuch
-  operator=(const CbmMcbm2018UnpackerTaskMuch&) = delete;
+  CbmMcbm2018UnpackerTaskMuch operator=(const CbmMcbm2018UnpackerTaskMuch&) = delete;
 
   virtual ~CbmMcbm2018UnpackerTaskMuch();
 
@@ -49,9 +48,7 @@ public:
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
 
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
@@ -71,12 +68,9 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
 
   /// Temporary storage of user parameters
   std::vector<MuchFebChanMask> fvChanMasks;

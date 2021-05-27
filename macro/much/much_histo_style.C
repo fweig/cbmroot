@@ -1,6 +1,7 @@
 #include "TStyle.h"
 
-void much_histo_style() {
+void much_histo_style()
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(2);

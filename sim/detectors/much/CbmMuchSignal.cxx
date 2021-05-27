@@ -22,9 +22,11 @@
  **
  **/
 #include "CbmMuchSignal.h"
+
 #include "CbmMuchAddress.h"
 #include "CbmMuchDigi.h"
 #include "CbmMuchDigiMatch.h"
+
 #include "TMath.h"
 #include "TRandom.h"
 
@@ -55,7 +57,9 @@ CbmMuchSignal::CbmMuchSignal(const CbmMuchSignal& rhs)
   fPileUpCount(rhs.fPileUpCount)
   ,
   //fSignalShape(rhs.fSignalShape),
-  fMatch(rhs.fMatch) {}
+  fMatch(rhs.fMatch)
+{
+}
 /*
 CbmMuchSignal& CbmMuchSignal::operator=(const CbmMuchSignal& rhs)
 {
@@ -86,15 +90,15 @@ CbmMuchSignal& CbmMuchSignal::operator=(const CbmMuchSignal& rhs)
 // -------------------------------------------------------------------------
 //Below function will add the Signal shapes of 2 signal
 
-void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal) {
+void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal)
+{
   fPileUpCount++;
   fPileUpCount += signal->GetPileUpCount();
   Long_t StartDiff  = signal->GetTimeStart() - fTimeStart;
   Long_t StopDiff   = signal->GetTimeStop() - fTimeStop;
   Bool_t MeFirst    = kTRUE;
   Long_t PileUpTime = 0;
-  LOG(debug4) << " Start Difference " << StartDiff << " Stop Difference "
-              << StopDiff;
+  LOG(debug4) << " Start Difference " << StartDiff << " Stop Difference " << StopDiff;
   if (StopDiff > 0)
     fTimeStop =
       signal
@@ -106,16 +110,14 @@ void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal) {
     //StartDiff = (-1)*StartDiff;
     PileUpTime = fTimeStart;
     fTimeStart = signal->GetTimeStart();
-  } else {
+  }
+  else {
     PileUpTime = signal->GetTimeStart();
   }
   Long_t PileUpDiff = PileUpTime - fTimeStart;
-  if (PileUpDiff < 0) {
-    LOG(info) << GetName() << " Problem: Check this particular pile up case.";
-  }
-  if (PileUpDiff < SLOWSHAPERPEAK) {
-    fCharge += signal->GetCharge();
-  } else if (!MeFirst)
+  if (PileUpDiff < 0) { LOG(info) << GetName() << " Problem: Check this particular pile up case."; }
+  if (PileUpDiff < SLOWSHAPERPEAK) { fCharge += signal->GetCharge(); }
+  else if (!MeFirst)
     fCharge = signal->GetCharge();
 
   /*TArrayD SecondSignalShape = signal->GetSignalShape();
@@ -128,7 +130,8 @@ void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal) {
 */
 }
 
-void CbmMuchSignal::AddNoise(UInt_t meanNoise) {
+void CbmMuchSignal::AddNoise(UInt_t meanNoise)
+{
   fCharge += TMath::Abs(meanNoise * gRandom->Gaus());
   //	for (Int_t i=0;i<fSignalShape.GetSize();i++){
   //		fSignalShape[i]+=TMath::Abs(meanNoise*gRandom->Gaus());

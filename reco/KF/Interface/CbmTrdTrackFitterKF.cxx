@@ -6,9 +6,9 @@
 
 #include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
-
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -29,8 +29,8 @@ using std::vector;
 
 
 // -----------------------------------------------------------------------
-CbmTrdTrackFitterKF::CbmTrdTrackFitterKF()
-  : fArrayTrdHit(0), fVerbose(1), fPid(211), fKfTrack(0) {
+CbmTrdTrackFitterKF::CbmTrdTrackFitterKF() : fArrayTrdHit(0), fVerbose(1), fPid(211), fKfTrack(0)
+{
   fKfTrack = new CbmKFTrack();
 }
 // -----------------------------------------------------------------------
@@ -38,7 +38,11 @@ CbmTrdTrackFitterKF::CbmTrdTrackFitterKF()
 
 // -----------------------------------------------------------------------
 CbmTrdTrackFitterKF::CbmTrdTrackFitterKF(Int_t verbose, Int_t pid)
-  : fArrayTrdHit(0), fVerbose(verbose), fPid(pid), fKfTrack(0) {
+  : fArrayTrdHit(0)
+  , fVerbose(verbose)
+  , fPid(pid)
+  , fKfTrack(0)
+{
   // Standard constructor
   fArrayTrdHit = NULL;
   fVerbose     = verbose;
@@ -49,7 +53,8 @@ CbmTrdTrackFitterKF::CbmTrdTrackFitterKF(Int_t verbose, Int_t pid)
 
 
 // -----------------------------------------------------------------------
-CbmTrdTrackFitterKF::~CbmTrdTrackFitterKF() {
+CbmTrdTrackFitterKF::~CbmTrdTrackFitterKF()
+{
   // Destructor
   delete fKfTrack;
 }
@@ -57,7 +62,8 @@ CbmTrdTrackFitterKF::~CbmTrdTrackFitterKF() {
 
 
 // -----------------------------------------------------------------------
-void CbmTrdTrackFitterKF::Init() {
+void CbmTrdTrackFitterKF::Init()
+{
   // Initialisation
 
   // Get the pointer to FairRootManager
@@ -80,7 +86,8 @@ void CbmTrdTrackFitterKF::Init() {
 
 
 // -----------------------------------------------------------------------
-Int_t CbmTrdTrackFitterKF::DoFit(CbmTrdTrack* pTrack) {
+Int_t CbmTrdTrackFitterKF::DoFit(CbmTrdTrack* pTrack)
+{
   // Implementation of the fitting algorithm
   if (NULL == fArrayTrdHit) return 1;
 
@@ -111,31 +118,27 @@ Int_t CbmTrdTrackFitterKF::DoFit(CbmTrdTrack* pTrack) {
     // Add to the KFTrack
     fKfTrack->fHits.push_back(pKFHit);
     if (fVerbose > 2) {
-      cout << "   TRD hit : (" << pHit->GetX() << ", " << pHit->GetY() << ", "
-           << pHit->GetZ() << ") "
+      cout << "   TRD hit : (" << pHit->GetX() << ", " << pHit->GetY() << ", " << pHit->GetZ() << ") "
            << " is added to track. matidx=" << materialIndex << endl;
     }
   }  // Loop over TRD hits
 
   fKfTrack->GetRefChi2() = 0.;
   fKfTrack->GetRefNDF()  = 0;
-  fKfTrack->SetTrackParam(
-    *(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
+  fKfTrack->SetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
   fKfTrack->SetPID(fPid);
 
   fKfTrack->Fit(0);
   fKfTrack->Fit(1);
   fKfTrack->Fit(0);
   // Store parameters at first layer
-  fKfTrack->GetTrackParam(
-    *(const_cast<FairTrackParam*>(pTrack->GetParamFirst())));
+  fKfTrack->GetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamFirst())));
   if (fVerbose > 2) {
     //        pTrack->GetParamFirst()->Print();
   }
   fKfTrack->Fit(1);
   // Store parameters at last layer
-  fKfTrack->GetTrackParam(
-    *(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
+  fKfTrack->GetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
   if (fVerbose > 2) {
     //        pTrack->GetParamLast()->Print();
   }
@@ -156,8 +159,7 @@ Int_t CbmTrdTrackFitterKF::DoFit(CbmTrdTrack* pTrack) {
   fKfTrack->fHits.clear();
 
   if (fVerbose > 1) {
-    cout << "TRD track fitted. chi2/ndf = "
-         << pTrack->GetChiSq() / pTrack->GetNDF() << endl;
+    cout << "TRD track fitted. chi2/ndf = " << pTrack->GetChiSq() / pTrack->GetNDF() << endl;
     if (fVerbose > 2) { cout << endl << endl; }
   }
 

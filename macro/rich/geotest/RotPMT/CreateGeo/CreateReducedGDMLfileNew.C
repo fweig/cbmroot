@@ -1,8 +1,7 @@
 #include <fstream>
 #include <iostream>
-void CreateReducedGDMLfileNew(float PMTrotX = 5,
-                              float PMTrotY = 5,
-                              int RotMir    = -10) {
+void CreateReducedGDMLfileNew(float PMTrotX = 5, float PMTrotY = 5, int RotMir = -10)
+{
 
 
   float Mirror_angle = RotMir;
@@ -24,9 +23,8 @@ void CreateReducedGDMLfileNew(float PMTrotX = 5,
   if (RotMir == -1) { DefaultRotX = 14.952765.; }
 
   char RotMirText[256];
-  if (RotMir < 0) {
-    sprintf(RotMirText, "RotMir_m%d", RotMir * -1);
-  } else {
+  if (RotMir < 0) { sprintf(RotMirText, "RotMir_m%d", RotMir * -1); }
+  else {
     sprintf(RotMirText, "RotMir_p%d", RotMir);
   }
 
@@ -46,9 +44,7 @@ void CreateReducedGDMLfileNew(float PMTrotX = 5,
   char ShiftYTxt[256];
   sprintf(ShiftXTxt, "Xpos%dpoint%d", IntegerXValue, ShiftXmod10);
   sprintf(ShiftYTxt, "Ypos%dpoint%d", IntegerYValue, ShiftYmod10);
-  if (PMTrotY < 0) {
-    sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10);
-  }
+  if (PMTrotY < 0) { sprintf(ShiftYTxt, "Yneg%dpoint%d", -1. * IntegerYValue, -1. * ShiftYmod10); }
 
   std::ifstream infile1(InFileUpper);
   std::ifstream infile2(InFileLower);
@@ -56,9 +52,7 @@ void CreateReducedGDMLfileNew(float PMTrotX = 5,
   sprintf(GeoFileName,
           "/data/cbmroot/geometry/rich/GeoOpt/RotPMT/NewGeo/"
           "rich_geo_%s_RotPMT_%s_%s.gdml",
-          RotMirText,
-          ShiftXTxt,
-          ShiftYTxt);
+          RotMirText, ShiftXTxt, ShiftYTxt);
 
   cout << GeoFileName << endl;  //continue;
   //return;
@@ -71,25 +65,17 @@ void CreateReducedGDMLfileNew(float PMTrotX = 5,
   }
 
   outfile << "                  " << std::endl;
-  outfile << "<variable name=\"Mirror_angle\" value=\"" << Mirror_angle
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"PMT_X_addend\" value=\"" << PMT_X_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"PMT_Y_addend\" value=\"" << PMT_Y_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"PMT_Z_addend\" value=\"" << PMT_Z_addend
-          << "\"/>" << std::endl;
-  outfile << "<variable name=\"PMT_X_rot_addend\" value=\""
-          << PMTrotX - DefaultRotX << "\"/>";
+  outfile << "<variable name=\"Mirror_angle\" value=\"" << Mirror_angle << "\"/>" << std::endl;
+  outfile << "<variable name=\"PMT_X_addend\" value=\"" << PMT_X_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"PMT_Y_addend\" value=\"" << PMT_Y_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"PMT_Z_addend\" value=\"" << PMT_Z_addend << "\"/>" << std::endl;
+  outfile << "<variable name=\"PMT_X_rot_addend\" value=\"" << PMTrotX - DefaultRotX << "\"/>";
   outfile << " <!-- rot x =" << PMTrotX << " --> " << std::endl;
-  outfile << "<variable name=\"PMT_Y_rot_addend\" value=\""
-          << PMTrotY - DefaultRotY << "\"/>";
+  outfile << "<variable name=\"PMT_Y_rot_addend\" value=\"" << PMTrotY - DefaultRotY << "\"/>";
   outfile << " <!-- rot y =" << PMTrotY << " --> " << std::endl;
 
-  outfile << "<variable name=\"PMT_width\" value=\"" << PMT_width << "\"/>"
-          << std::endl;
-  outfile << "<variable name=\"PMT_height\" value=\"" << PMT_height << "\"/>"
-          << std::endl;
+  outfile << "<variable name=\"PMT_width\" value=\"" << PMT_width << "\"/>" << std::endl;
+  outfile << "<variable name=\"PMT_height\" value=\"" << PMT_height << "\"/>" << std::endl;
   outfile << "                  " << std::endl;
   while (getline(infile2, line)) {
     outfile << line << std::endl;

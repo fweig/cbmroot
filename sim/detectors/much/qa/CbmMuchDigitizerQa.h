@@ -125,10 +125,9 @@ private:
   std::vector<TH2F*> fvUsPadsFiredXY;  // fired pads vs XY, per station
 
   // output histograms
-  TH1F* fhTrackCharge    = nullptr;  /// MC point charge
-  TH1F* fhTrackChargeLog = nullptr;  /// MC point charge log scale
-  TH1F* fhTrackChargePr_1GeV_3mm =
-    nullptr;  /// MC point charge for selected protons
+  TH1F* fhTrackCharge            = nullptr;  /// MC point charge
+  TH1F* fhTrackChargeLog         = nullptr;  /// MC point charge log scale
+  TH1F* fhTrackChargePr_1GeV_3mm = nullptr;  /// MC point charge for selected protons
 
   TH1F* fhTrackLength   = nullptr;
   TH1F* fhTrackLengthPi = nullptr;

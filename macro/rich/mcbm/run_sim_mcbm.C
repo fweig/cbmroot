@@ -1,14 +1,14 @@
 
-void run_sim_mcbm(Int_t nEvents = 10) {
+void run_sim_mcbm(Int_t nEvents = 10)
+{
   TTree::SetMaxTreeSize(90000000000);
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
-  TString myName = "run_sim_mcbm";  // this macro's name for screen output
+  TString myName = "run_sim_mcbm";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
-  TString geoSetupFile =
-    srcDir + "/macro/rich/geosetup/rich_setup_sis18_mcbm_20deg_long.C";
+  TString geoSetupFile = srcDir + "/macro/rich/geosetup/rich_setup_sis18_mcbm_20deg_long.C";
   //    TString geoSetupFile = srcDir +"/geometry/setup/setup_sis18_mcbm_20deg_long.C";
 
   //TString inFile = srcDir + "/input/urqmd.auau.1.24gev.centr.00000.root";
@@ -40,9 +40,8 @@ void run_sim_mcbm(Int_t nEvents = 10) {
   Double_t targetPosX      = 0.;   // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;   // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;   // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
-  Double_t beamRotY =
-    20.;  // the primary beam is at 25 degrees to the left of the mCBM setup
+  Double_t targetRotY      = 0.;   // target rotation angle around the y axis [deg]
+  Double_t beamRotY        = 20.;  // the primary beam is at 25 degrees to the left of the mCBM setup
   //  Double_t beamRotY        = 25.;    // the primary beam is at 25 degrees to the left of the mCBM setup
 
   //primary vertex
@@ -67,13 +66,11 @@ void run_sim_mcbm(Int_t nEvents = 10) {
 
 
   TString setupFunct = "do_setup()";
-  std::cout << "-I- " << myName << ": Loading macro " << geoSetupFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Loading macro " << geoSetupFile << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Setting media file" << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Setting media file" << std::endl;
   run->SetMaterials("media.geo");  // Materials
 
   // Register setup
@@ -86,8 +83,7 @@ void run_sim_mcbm(Int_t nEvents = 10) {
 
   // Create and register the target
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -126,8 +122,7 @@ void run_sim_mcbm(Int_t nEvents = 10) {
   CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   uniGen->SetEventPlane(0., 360.);
   primGen->AddGenerator(uniGen);
-  primGen->SetBeamAngle(
-    beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
+  primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
@@ -196,9 +191,7 @@ void run_sim_mcbm(Int_t nEvents = 10) {
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
   //    gGeoManager->CheckOverlaps();

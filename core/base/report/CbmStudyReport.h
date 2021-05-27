@@ -7,13 +7,13 @@
 #ifndef CBMSTUDYREPORT_H_
 #define CBMSTUDYREPORT_H_
 
+#include "CbmReport.h"  // for CbmReport
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t
 
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmReport.h"  // for CbmReport
 
 class CbmHistManager;
 
@@ -48,8 +48,7 @@ public:
     * \param[in] studyNames Names of studies.
     * \param[in] outputDir name of the output directory.
     */
-  void Create(const std::vector<CbmHistManager*>& histManagers,
-              const std::vector<std::string>& studyNames,
+  void Create(const std::vector<CbmHistManager*>& histManagers, const std::vector<std::string>& studyNames,
               const std::string& outputDir);
 
   /**
@@ -61,8 +60,7 @@ public:
     * \param[in] studyNames Names of studies.
     * \param[in] outputDir name of the output directory.
     */
-  void Create(const std::vector<std::string>& fileNames,
-              const std::vector<std::string>& studyNames,
+  void Create(const std::vector<std::string>& fileNames, const std::vector<std::string>& studyNames,
               const std::string& outputDir);
 
   /**
@@ -74,9 +72,7 @@ public:
   const std::vector<CbmHistManager*>& HM() const { return fHM; }
   CbmHistManager* HM(Int_t index) const { return fHM[index]; }
   const std::vector<std::string>& GetStudyNames() const { return fStudyNames; }
-  const std::string& GetStudyName(Int_t index) const {
-    return fStudyNames[index];
-  }
+  const std::string& GetStudyName(Int_t index) const { return fStudyNames[index]; }
 
 private:
   std::vector<CbmHistManager*> fHM;      // Histogram managers for each study

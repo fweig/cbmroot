@@ -26,9 +26,9 @@
 #ifndef CBMTOFDETECTORID_V07A_H
 #define CBMTOFDETECTORID_V07A_H 1
 
-#include <RtypesCore.h>  // for Int_t
-
 #include "CbmTofDetectorId.h"  // for CbmTofDetectorId, CbmTofDetectorInfo
+
+#include <RtypesCore.h>  // for Int_t
 
 class CbmTofDetectorId_v07a : public CbmTofDetectorId {
 

@@ -23,14 +23,17 @@ using std::ios;
 ClassImp(CbmGeoCave)
 
   CbmGeoCave::CbmGeoCave()
-  : FairGeoSet(), name("cave") {
+  : FairGeoSet()
+  , name("cave")
+{
   // Constructor
   fName = "cave";
   //  name="cave";
   maxModules = 1;
 }
 
-Bool_t CbmGeoCave::read(fstream& fin, FairGeoMedia* media) {
+Bool_t CbmGeoCave::read(fstream& fin, FairGeoMedia* media)
+{
   // Reads the geometry from file
   if (!media) return kFALSE;
   const Int_t maxbuf = 256;
@@ -49,8 +52,7 @@ Bool_t CbmGeoCave::read(fstream& fin, FairGeoMedia* media) {
         fin.getline(buf, maxbuf);
         TString shape(buf);
         FairGeoBasicShape* sh = pShapes->selectShape(shape);
-        if (sh)
-          volu->setShape(sh);
+        if (sh) volu->setShape(sh);
         else
           rc = kFALSE;
         fin.getline(buf, maxbuf);
@@ -63,14 +65,16 @@ Bool_t CbmGeoCave::read(fstream& fin, FairGeoMedia* media) {
         Int_t n = 0;
         if (sh) n = sh->readPoints(&fin, volu);
         if (n <= 0) rc = kFALSE;
-      } else
+      }
+      else
         rc = kFALSE;
     }
   } while (rc && !volu && !fin.eof());
   if (volu && rc) {
     volumes->Add(volu);
     masterNodes->Add(new FairGeoNode(*volu));
-  } else {
+  }
+  else {
     delete volu;
     volu = 0;
     rc   = kFALSE;
@@ -78,13 +82,15 @@ Bool_t CbmGeoCave::read(fstream& fin, FairGeoMedia* media) {
   return rc;
 }
 
-void CbmGeoCave::addRefNodes() {
+void CbmGeoCave::addRefNodes()
+{
   // Adds the reference node
   FairGeoNode* volu = getVolume(name);
   if (volu) masterNodes->Add(new FairGeoNode(*volu));
 }
 
-void CbmGeoCave::write(fstream& fout) {
+void CbmGeoCave::write(fstream& fout)
+{
   // Writes the geometry to file
   fout.setf(ios::fixed, ios::floatfield);
   FairGeoNode* volu = getVolume(name);
@@ -92,24 +98,21 @@ void CbmGeoCave::write(fstream& fout) {
     FairGeoBasicShape* sh = volu->getShapePointer();
     FairGeoMedium* med    = volu->getMedium();
     if (sh && med) {
-      fout << volu->GetName() << '\n'
-           << sh->GetName() << '\n'
-           << med->GetName() << '\n';
+      fout << volu->GetName() << '\n' << sh->GetName() << '\n' << med->GetName() << '\n';
       sh->writePoints(&fout, volu);
     }
   }
 }
 
-void CbmGeoCave::print() {
+void CbmGeoCave::print()
+{
   // Prints the geometry
   FairGeoNode* volu = getVolume(name);
   if (volu) {
     FairGeoBasicShape* sh = volu->getShapePointer();
     FairGeoMedium* med    = volu->getMedium();
     if (sh && med) {
-      cout << volu->GetName() << '\n'
-           << sh->GetName() << '\n'
-           << med->GetName() << '\n';
+      cout << volu->GetName() << '\n' << sh->GetName() << '\n' << med->GetName() << '\n';
       sh->printPoints(volu);
     }
   }

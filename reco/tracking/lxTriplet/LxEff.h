@@ -3,11 +3,13 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
-#include "LxSettings.h"
 #include "Rtypes.h"
+
 #include <iostream>
 #include <list>
 #include <map>
+
+#include "LxSettings.h"
 
 class LxFinderTriplet;
 class LxPoint;
@@ -15,13 +17,10 @@ class LxPoint;
 struct LxEff {
   explicit LxEff(LxFinderTriplet& owner);
   void CalcRecoEff(bool joinExt);
-  void AnalyzeNotMatchedMC(std::ofstream& out,
-                           std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatchedMC(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
 #ifdef CLUSTER_MODE
-  void AnalyzeNotMatched(std::ofstream& out,
-                         std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
-  void AnalyzeNotMatched2(std::ofstream& out,
-                          std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatched(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatched2(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
   void DumpNotMatchedMC(std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
 #endif  //CLUSTER_MODE
   LxFinderTriplet& finder;

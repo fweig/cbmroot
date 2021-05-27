@@ -1,4 +1,5 @@
-void pl_loc_XY(Int_t iNDet = 10) {
+void pl_loc_XY(Int_t iNDet = 10)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -40,7 +41,8 @@ void pl_loc_XY(Int_t iNDet = 10) {
     h2->UseCurrentStyle();
     h2->GetYaxis()->SetLabelSize(lsize);
     h2->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 
@@ -52,7 +54,8 @@ void pl_loc_XY(Int_t iNDet = 10) {
     h2->UseCurrentStyle();
     h2->GetYaxis()->SetLabelSize(lsize);
     h2->Draw("colz");
-  } else {
+  }
+  else {
     cout << "Histogram " << hname << " not existing. " << endl;
   }
 }

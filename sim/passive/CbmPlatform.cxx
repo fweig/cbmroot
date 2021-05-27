@@ -3,6 +3,7 @@
 
 #include "CbmGeoPassivePar.h"
 #include "CbmGeoPlatform.h"
+#include "CbmGeometryUtils.h"
 
 #include "FairGeoInterface.h"
 #include "FairGeoLoader.h"
@@ -10,45 +11,44 @@
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
 
-#include "CbmGeometryUtils.h"
-
-#include "TList.h"
-#include "TObjArray.h"
-
 #include "TFile.h"
 #include "TGeoManager.h"
 #include "TKey.h"
+#include "TList.h"
+#include "TObjArray.h"
 
 
 CbmPlatform::CbmPlatform() : FairModule(), fCombiTrans(), fVolumeName("") {}
 
-CbmPlatform::CbmPlatform(const char* name, const char* title)
-  : FairModule(name, title), fCombiTrans(), fVolumeName("") {}
+CbmPlatform::CbmPlatform(const char* name, const char* title) : FairModule(name, title), fCombiTrans(), fVolumeName("")
+{
+}
 
 CbmPlatform::~CbmPlatform() {}
 
-void CbmPlatform::ConstructGeometry() {
+void CbmPlatform::ConstructGeometry()
+{
   TString fileName = GetGeometryFileName();
   if (fileName.EndsWith(".root")) {
     if (Cbm::GeometryUtils::IsNewGeometryFile(fgeoName)) {
-      LOG(info) << "Importing Platform geometry from ROOT file "
-                << fgeoName.Data();
+      LOG(info) << "Importing Platform geometry from ROOT file " << fgeoName.Data();
       Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this, fCombiTrans);
-    } else {
-      LOG(info) << "Constructing Platform geometry from ROOT file "
-                << fgeoName.Data();
+    }
+    else {
+      LOG(info) << "Constructing Platform geometry from ROOT file " << fgeoName.Data();
       FairModule::ConstructRootGeometry();
     }
-  } else if (fileName.EndsWith(".geo")) {
-    LOG(info) << "Constructing PLATFORM      from ASCII file "
-              << fileName.Data();
+  }
+  else if (fileName.EndsWith(".geo")) {
+    LOG(info) << "Constructing PLATFORM      from ASCII file " << fileName.Data();
     ConstructAsciiGeometry();
-  } else
-    LOG(fatal) << "Geometry format of PLATFORM file " << fileName.Data()
-               << " not supported.";
+  }
+  else
+    LOG(fatal) << "Geometry format of PLATFORM file " << fileName.Data() << " not supported.";
 }
 
-void CbmPlatform::ConstructAsciiGeometry() {
+void CbmPlatform::ConstructAsciiGeometry()
+{
   FairGeoLoader* loader          = FairGeoLoader::Instance();
   FairGeoInterface* GeoInterface = loader->getGeoInterface();
   CbmGeoPlatform* MGeo           = new CbmGeoPlatform();
@@ -59,10 +59,9 @@ void CbmPlatform::ConstructAsciiGeometry() {
 
   TList* volList = MGeo->getListOfVolumes();
   // store geo parameter
-  FairRun* fRun       = FairRun::Instance();
-  FairRuntimeDb* rtdb = FairRun::Instance()->GetRuntimeDb();
-  CbmGeoPassivePar* par =
-    (CbmGeoPassivePar*) (rtdb->getContainer("CbmGeoPassivePar"));
+  FairRun* fRun         = FairRun::Instance();
+  FairRuntimeDb* rtdb   = FairRun::Instance()->GetRuntimeDb();
+  CbmGeoPassivePar* par = (CbmGeoPassivePar*) (rtdb->getContainer("CbmGeoPassivePar"));
   TObjArray* fSensNodes = par->GetGeoSensitiveNodes();
   TObjArray* fPassNodes = par->GetGeoPassiveNodes();
 
@@ -72,9 +71,8 @@ void CbmPlatform::ConstructAsciiGeometry() {
 
   while ((node = (FairGeoNode*) iter.Next())) {
     aVol = dynamic_cast<FairGeoVolume*>(node);
-    if (node->isSensitive()) {
-      fSensNodes->AddLast(aVol);
-    } else {
+    if (node->isSensitive()) { fSensNodes->AddLast(aVol); }
+    else {
       fPassNodes->AddLast(aVol);
     }
   }

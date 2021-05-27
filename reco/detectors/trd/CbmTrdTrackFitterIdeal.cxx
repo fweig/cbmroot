@@ -28,8 +28,7 @@ using std::endl;
 
 
 // -------------------------------------------------------------------------
-CbmTrdTrackFitterIdeal::CbmTrdTrackFitterIdeal()
-  : CbmTrdTrackFitter(), fArrayTrdPoint(NULL), fArrayTrdHit(NULL) {}
+CbmTrdTrackFitterIdeal::CbmTrdTrackFitterIdeal() : CbmTrdTrackFitter(), fArrayTrdPoint(NULL), fArrayTrdHit(NULL) {}
 // -------------------------------------------------------------------------
 
 
@@ -39,7 +38,8 @@ CbmTrdTrackFitterIdeal::~CbmTrdTrackFitterIdeal() {}
 
 
 // -------------------------------------------------------------------------
-void CbmTrdTrackFitterIdeal::Init() {
+void CbmTrdTrackFitterIdeal::Init()
+{
   // Task initialisation
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
@@ -64,7 +64,8 @@ void CbmTrdTrackFitterIdeal::Init() {
 
 
 // -------------------------------------------------------------------------
-Int_t CbmTrdTrackFitterIdeal::DoFit(CbmTrdTrack* pTrack) {
+Int_t CbmTrdTrackFitterIdeal::DoFit(CbmTrdTrack* pTrack)
+{
   // Implementation of the fitting algorithm
   if (NULL == fArrayTrdPoint || NULL == fArrayTrdHit) return 0;
 
@@ -100,8 +101,8 @@ Int_t CbmTrdTrackFitterIdeal::DoFit(CbmTrdTrack* pTrack) {
 
 
 // -------------------------------------------------------------------------
-void CbmTrdTrackFitterIdeal::SetTrackParam(CbmTrdPoint* point,
-                                           FairTrackParam* trackParam) {
+void CbmTrdTrackFitterIdeal::SetTrackParam(CbmTrdPoint* point, FairTrackParam* trackParam)
+{
   // Set track parameters from the MC point
   TVector3 pos;
   TVector3 mom;

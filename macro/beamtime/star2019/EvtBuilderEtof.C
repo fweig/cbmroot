@@ -12,13 +12,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void EvtBuilderEtof(TString inFile           = "",
-                    TString sHostname        = "localhost",
-                    Int_t iServerRefreshRate = 100,
-                    Int_t iServerHttpPort    = 8081,
-                    Bool_t bSandbox          = kFALSE,
-                    Bool_t bAddStatusToEvent = kTRUE,
-                    UInt_t nrEvents          = 0) {
+void EvtBuilderEtof(TString inFile = "", TString sHostname = "localhost", Int_t iServerRefreshRate = 100,
+                    Int_t iServerHttpPort = 8081, Bool_t bSandbox = kFALSE, Bool_t bAddStatusToEvent = kTRUE,
+                    UInt_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -53,16 +50,13 @@ void EvtBuilderEtof(TString inFile           = "",
   std::cout << ">>> EvtBuilderEtof: Initialising..." << std::endl;
 
   // Get4 Unpacker
-  CbmStar2019EventBuilderEtof* etofEventBuilder =
-    new CbmStar2019EventBuilderEtof();
+  CbmStar2019EventBuilderEtof* etofEventBuilder = new CbmStar2019EventBuilderEtof();
   etofEventBuilder->SetSandboxMode(bSandbox);
   etofEventBuilder->SetAddStatusToEvent(bAddStatusToEvent);
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -92,22 +86,21 @@ void EvtBuilderEtof(TString inFile           = "",
   std::cout << ">>> EvtBuilderEtof: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> EvtBuilderEtof: Macro finished successfully." << std::endl;
-  std::cout << ">>> EvtBuilderEtof: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> EvtBuilderEtof: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 }

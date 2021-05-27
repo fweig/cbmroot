@@ -22,8 +22,8 @@ CbmTextReportElement::CbmTextReportElement() : fColW(25) {}
 
 CbmTextReportElement::~CbmTextReportElement() {}
 
-string CbmTextReportElement::TableBegin(const string& caption,
-                                        const vector<string>& colNames) const {
+string CbmTextReportElement::TableBegin(const string& caption, const vector<string>& colNames) const
+{
   stringstream ss;
   ss << caption << endl;
   ss << right;
@@ -37,14 +37,15 @@ string CbmTextReportElement::TableBegin(const string& caption,
   return ss.str();
 }
 
-string CbmTextReportElement::TableEnd() const {
+string CbmTextReportElement::TableEnd() const
+{
   stringstream ss;
   ss << endl;
   return ss.str();
 }
 
-string CbmTextReportElement::TableEmptyRow(Int_t nofCols,
-                                           const string& name) const {
+string CbmTextReportElement::TableEmptyRow(Int_t nofCols, const string& name) const
+{
   stringstream ss;
   ss << setfill('-') << left;
   ss << setw(nofCols * fColW) << name << endl;
@@ -52,7 +53,8 @@ string CbmTextReportElement::TableEmptyRow(Int_t nofCols,
   return ss.str();
 }
 
-string CbmTextReportElement::TableRow(const vector<string>& row) const {
+string CbmTextReportElement::TableRow(const vector<string>& row) const
+{
   stringstream ss;
   ss << right;
   for (UInt_t i = 0; i < row.size(); i++) {
@@ -62,12 +64,10 @@ string CbmTextReportElement::TableRow(const vector<string>& row) const {
   return ss.str();
 }
 
-string CbmTextReportElement::Image(const string& /*title*/,
-                                   const string& /*file*/) const {
-  return "";
-}
+string CbmTextReportElement::Image(const string& /*title*/, const string& /*file*/) const { return ""; }
 
-string CbmTextReportElement::DocumentBegin() const {
+string CbmTextReportElement::DocumentBegin() const
+{
   stringstream ss;
   ss << "------------------------------------------------" << endl;
   return ss.str();
@@ -75,16 +75,16 @@ string CbmTextReportElement::DocumentBegin() const {
 
 string CbmTextReportElement::DocumentEnd() const { return ""; }
 
-string CbmTextReportElement::Title(Int_t /*size*/, const string& title) const {
-  return title;
-}
+string CbmTextReportElement::Title(Int_t /*size*/, const string& title) const { return title; }
 
-string CbmTextReportElement::FormatCell(const string& cell) const {
+string CbmTextReportElement::FormatCell(const string& cell) const
+{
   if (static_cast<Int_t>(cell.size()) <= fColW) {
     stringstream ss;
     ss << setw(fColW) << cell;
     return ss.str();
-  } else {
+  }
+  else {
     string str = cell;
     str.resize(fColW - 3);
     str.insert(fColW - 3, "...");

@@ -1,4 +1,5 @@
-tof_Ana104(Int_t nEvents = 1000, Int_t iout = 1) {
+tof_Ana104(Int_t nEvents = 1000, Int_t iout = 1)
+{
 
   TString InputFile = "data/auaumbias4.mc.root";
   TString ParFile   = "data/auaumbias4.params.root";

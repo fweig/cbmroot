@@ -1,5 +1,6 @@
 
-void set_plot_style() {
+void set_plot_style()
+{
   const Int_t NRGBs = 5;
   const Int_t NCont = 255;
 
@@ -12,14 +13,9 @@ void set_plot_style() {
   cout << "set_plot_style finished" << endl;
 }
 
-void pl_rel_ratio(TString hname    = "hDutDTLH_DD_Found_911",
-                  Int_t iRefBin    = 1,
-                  Int_t iDim       = 0,
-                  Int_t iDisBin    = 0xFF,
-                  Double_t yRange  = 1.,
-                  Double_t dYShift = 0.1,
-                  Double_t Xmin    = 0.,
-                  Double_t Xmax    = 10.) {
+void pl_rel_ratio(TString hname = "hDutDTLH_DD_Found_911", Int_t iRefBin = 1, Int_t iDim = 0, Int_t iDisBin = 0xFF,
+                  Double_t yRange = 1., Double_t dYShift = 0.1, Double_t Xmin = 0., Double_t Xmax = 10.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 600, 800);
@@ -48,7 +44,8 @@ void pl_rel_ratio(TString hname    = "hDutDTLH_DD_Found_911",
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
     return;
   }
@@ -60,8 +57,7 @@ void pl_rel_ratio(TString hname    = "hDutDTLH_DD_Found_911",
   switch (iDim) {
     case 0:
       iNBins = h2->GetNbinsX();
-      href =
-        h2->ProjectionX(Form("%sRef", hname.Data()), iRefBin + 1, iRefBin + 1);
+      href   = h2->ProjectionX(Form("%sRef", hname.Data()), iRefBin + 1, iRefBin + 1);
       href->Scale(1. / href->GetEntries());
       break;
     case 1: iNBins = h2->GetNbinsY(); break;
@@ -69,8 +65,7 @@ void pl_rel_ratio(TString hname    = "hDutDTLH_DD_Found_911",
   href->Draw();
 
   for (Int_t iBin = 0; iBin < iNBins; iBin++) {
-    hbin =
-      h2->ProjectionX(Form("%sBin%d", hname.Data(), iBin), iBin + 1, iBin + 1);
+    hbin = h2->ProjectionX(Form("%sBin%d", hname.Data(), iBin), iBin + 1, iBin + 1);
     hbin->Scale(1. / hbin->GetEntries());
     hbin->Divide(hbin, href, 1, 1, "E");
     hbin->SetLineColor(iBin + 1);
@@ -79,7 +74,8 @@ void pl_rel_ratio(TString hname    = "hDutDTLH_DD_Found_911",
       hbin->SetMinimum(0.);
       hbin->SetMaximum(yRange + iNBins * dYShift);
       hbin->GetXaxis()->SetRangeUser(Xmin, Xmax);
-    } else {
+    }
+    else {
       Int_t bit = 1;
       if (iDisBin & (bit <<= iBin)) hbin->Draw("same Lhist");
     }

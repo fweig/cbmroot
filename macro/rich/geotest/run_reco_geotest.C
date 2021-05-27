@@ -1,16 +1,12 @@
 
-void run_reco_geotest(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
-  const string& recoFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
-  const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "rich_pipe_v1",  // "results_geotest_test/",
-  int nEvents             = 10000) {
+void run_reco_geotest(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
+                      const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
+                      const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
+                      const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
+                      const string& geoSetup = "sis100_electron",
+                      const string& resultDir = "rich_pipe_v1",  // "results_geotest_test/",
+                      int nEvents             = 10000)
+{
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TTree::SetMaxTreeSize(90000000000);
@@ -25,8 +21,7 @@ void run_reco_geotest(
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -62,9 +57,7 @@ void run_reco_geotest(
   // geoTest->SetOutputDir(resultDir);
   // run->AddTask(geoTest);
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -95,7 +88,6 @@ void run_reco_geotest(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

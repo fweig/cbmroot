@@ -33,9 +33,8 @@
   gROOT->cd();
   TString hname = "hCalHits2";
   hCal          = (TH1*) gROOT->FindObjectAny(hname);
-  if (hCal != NULL) {
-    hCal->Draw();
-  } else {
+  if (hCal != NULL) { hCal->Draw(); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -43,9 +42,8 @@
   gROOT->cd();
   TString hname = "tof_ty0_sm000_rpc000_ch_evt_mul";
   hMap0         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hMap0 != NULL) {
-    hMap0->Draw("colz");
-  } else {
+  if (hMap0 != NULL) { hMap0->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -53,9 +51,8 @@
   gROOT->cd();
   TString hname = "tof_ty4_sm000_rpc000_ch_tot_mul";
   hMap1         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hMap1 != NULL) {
-    hMap1->Draw("colz");
-  } else {
+  if (hMap1 != NULL) { hMap1->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -63,9 +60,8 @@
   gROOT->cd();
   TString hname = "tof_ty2_sm000_rpc000_ch_tot_mul";
   hMap2         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hMap2 != NULL) {
-    hMap2->Draw("colz");
-  } else {
+  if (hMap2 != NULL) { hMap2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -73,9 +69,8 @@
   gROOT->cd();
   TString hname = "tof_ty2_sm001_rpc000_ch_tot_mul";
   hMap2         = (TH2*) gROOT->FindObjectAny(hname);
-  if (hMap2 != NULL) {
-    hMap2->Draw("colz");
-  } else {
+  if (hMap2 != NULL) { hMap2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

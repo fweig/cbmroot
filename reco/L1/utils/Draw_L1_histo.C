@@ -1,36 +1,38 @@
 #include <unistd.h>  // for dir navigation
 
 const int textFont = 22;  // TNewRoman
-const bool divide =
-  0;  // = 0 - each histo in separate file\screen. = 1 - all in one file\screen
+const bool divide  = 0;   // = 0 - each histo in separate file\screen. = 1 - all in one file\screen
 
 
-void FitHistoGaus(TH1* hist, float* sigma = 0) {
+void FitHistoGaus(TH1* hist, float* sigma = 0)
+{
   if (hist && (hist->GetEntries() != 0)) {
     TF1* fit = new TF1("fit", "gaus");
     fit->SetLineColor(2);
     fit->SetLineWidth(3);
-    hist->Fit(
-      "fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+    hist->Fit("fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
     if (sigma) *sigma = fit->GetParameter(2);
-  } else {
+  }
+  else {
     std::cout << " E: Read hists error! " << std::endl;
   }
 }
 
-void FitHistoLine(TH1* hist) {
+void FitHistoLine(TH1* hist)
+{
   if (hist && (hist->GetEntries() != 0)) {
     TF1* fit = new TF1("fit", "[0]");
     fit->SetLineColor(2);
     fit->SetLineWidth(3);
-    hist->Fit(
-      "fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
-  } else {
+    hist->Fit("fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+  }
+  else {
     std::cout << " E: Read hists error! " << std::endl;
   }
 }
 
-void makeUpHisto(TH1* hist, TString title) {
+void makeUpHisto(TH1* hist, TString title)
+{
   if (hist && (hist->GetEntries() != 0)) {
 
     hist->GetXaxis()->SetLabelFont(textFont);
@@ -41,15 +43,16 @@ void makeUpHisto(TH1* hist, TString title) {
     hist->GetXaxis()->SetTitle(title);
     hist->GetXaxis()->SetTitleOffset(1);
     hist->GetYaxis()->SetTitle("Entries");
-    hist->GetYaxis()->SetTitleOffset(
-      1.05);  // good then entries per bit <= 9999
-  } else {
+    hist->GetYaxis()->SetTitleOffset(1.05);  // good then entries per bit <= 9999
+  }
+  else {
     std::cout << " E: Read hists error! " << std::endl;
   }
 }
 
 
-void makeUpHisto(TH2* hist, TString title) {
+void makeUpHisto(TH2* hist, TString title)
+{
   if (hist && (hist->GetEntries() != 0)) {
     // hist->GetXaxis()->SetLabelFont(textFont);
     // hist->GetXaxis()->SetTitleFont(textFont);
@@ -62,12 +65,14 @@ void makeUpHisto(TH2* hist, TString title) {
     // hist->GetYaxis()->SetTitleOffset(1.05); // good then entries per bit <= 9999
 
     hist->SetOption("CONTZ");
-  } else {
+  }
+  else {
     std::cout << " E: Read hists error! " << std::endl;
   }
 }
 
-void makeUpProfile(TProfile* prof, TString titleX, TString titleY) {
+void makeUpProfile(TProfile* prof, TString titleX, TString titleY)
+{
   if (prof && (prof->GetEntries() != 0)) {
     prof->SetMarkerColor(kRed);
     prof->SetLineColor(kRed);
@@ -81,16 +86,17 @@ void makeUpProfile(TProfile* prof, TString titleX, TString titleY) {
     prof->GetXaxis()->SetTitleFont(textFont);
     prof->GetYaxis()->SetLabelFont(textFont);
     prof->GetYaxis()->SetTitleFont(textFont);
-  } else {
+  }
+  else {
     std::cout << " E: Read profile error! " << std::endl;
   }
 }
 
-void Draw_L1_histo() {
+void Draw_L1_histo()
+{
 
   // ============================ Set Styles ============================
-  TStyle* histoStyle =
-    new TStyle("histoStyle", "Plain Style(no colors/fill areas)");
+  TStyle* histoStyle = new TStyle("histoStyle", "Plain Style(no colors/fill areas)");
   //   TStyle *histoStyle = gStyle;
 
   histoStyle->SetTextFont(textFont);
@@ -135,8 +141,7 @@ void Draw_L1_histo() {
 
   histoStyle->SetPalette(1);  // for 2D
 
-  TStyle* profStyle =
-    new TStyle("profStyle", "Plain Style(no colors/fill areas)");
+  TStyle* profStyle = new TStyle("profStyle", "Plain Style(no colors/fill areas)");
   //   TStyle *profStyle = gStyle;
 
   profStyle->SetTextFont(textFont);
@@ -180,35 +185,24 @@ void Draw_L1_histo() {
     char* title;  // for X-axis
   };
   const THistoData histoData[nHisto] = {
-    {"fst_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {
-      "fst_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {
+    {"fst_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {"fst_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {
       "fst_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [10^{-3}]"} {
-      "fst_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [10^{-3}]"} {
-      "fst_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {"fst_px", "Pull x"} {
-      "fst_py", "Pull y"} {"fst_ptx", "Pull t_{x}"} {"fst_pty", "Pull t_{y}"} {
-      "fst_pQP", "Pull q/p"}
+      "fst_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [10^{-3}]"} {"fst_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {
+      "fst_px", "Pull x"} {"fst_py", "Pull y"} {"fst_ptx", "Pull t_{x}"} {"fst_pty", "Pull t_{y}"} {"fst_pQP",
+                                                                                                    "Pull q/p"}
 
-    {"lst_pQP", "Pull q/p"} {"lst_ptx", "Pull t_{x}"} {
-      "lst_pty", "Pull t_{y}"} {"lst_px", "Pull x"} {"lst_py", "Pull y"} {
-      "lst_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {
-      "lst_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {
-      "lst_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
-      "lst_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {
-      "lst_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {"svrt_pQP", "Pull q/p"} {
-      "svrt_ptx", "Pull t_{x}"} {"svrt_pty", "Pull t_{y}"} {"svrt_px",
-                                                            "Pull x"} {
+    {"lst_pQP", "Pull q/p"} {"lst_ptx", "Pull t_{x}"} {"lst_pty", "Pull t_{y}"} {"lst_px", "Pull x"} {
+      "lst_py", "Pull y"} {"lst_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {
+      "lst_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {"lst_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
+      "lst_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {"lst_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {
+      "svrt_pQP", "Pull q/p"} {"svrt_ptx", "Pull t_{x}"} {"svrt_pty", "Pull t_{y}"} {"svrt_px", "Pull x"} {
       "svrt_py", "Pull y"} {"svrt_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {
-      "svrt_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {
-      "svrt_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
-      "svrt_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {
-      "svrt_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {"pvrt_pQP", "Pull q/p"} {
-      "pvrt_ptx", "Pull t_{x}"} {"pvrt_pty", "Pull t_{y}"} {"pvrt_px",
-                                                            "Pull x"} {
+      "svrt_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {"svrt_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
+      "svrt_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {"svrt_y", "Residual (y^{reco}-y^{mc}) [#mum]"} {
+      "pvrt_pQP", "Pull q/p"} {"pvrt_ptx", "Pull t_{x}"} {"pvrt_pty", "Pull t_{y}"} {"pvrt_px", "Pull x"} {
       "pvrt_py", "Pull y"} {"pvrt_P", "Resolution (p^{reco}-p^{mc})/p^{mc}"} {
-      "pvrt_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {
-      "pvrt_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
-      "pvrt_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {
-      "pvrt_y", "Residual (y^{reco}-y^{mc}) [#mum]"}};
+      "pvrt_tx", "Residual (t_{x}^{reco}-t_{x}^{mc}) [mrad]"} {"pvrt_ty", "Residual (t_{y}^{reco}-t_{y}^{mc}) [mrad]"} {
+      "pvrt_x", "Residual (x^{reco}-x^{mc}) [#mum]"} {"pvrt_y", "Residual (y^{reco}-y^{mc}) [#mum]"}};
 
   TH1F* histo[nHisto];
 
@@ -229,8 +223,7 @@ void Draw_L1_histo() {
        << "\t"
        << " RMS " << endl;
   for (int i = 0; i < nHisto; i++) {
-    cout << histoData[i].name << "   \t" << charat[i][0] << "\t" << charat[i][1]
-         << endl;
+    cout << histoData[i].name << "   \t" << charat[i][0] << "\t" << charat[i][1] << endl;
   }
   // ------------ hits, strips -----------
 
@@ -241,8 +234,7 @@ void Draw_L1_histo() {
   const int nHistoInput = 4;
 
   const THistoData histoDataInput[nHisto] = {{"Px", "Pull x"} {"Py", "Pull y"} {
-    "x", "Residual (x^{hit}-x^{mc}) [#mum]"} {
-    "y", "Residual (y^{hit}-y^{mc}) [#mum]"}};
+    "x", "Residual (x^{hit}-x^{mc}) [#mum]"} {"y", "Residual (y^{hit}-y^{mc}) [#mum]"}};
 
   TH1F* histoInput[nHistoInput];
 
@@ -261,35 +253,24 @@ void Draw_L1_histo() {
   const int nHistoOther = 15;
 
   const THistoData histoDataOther[nHisto] = {
-    {"h_acc_MCmom", "Momentum of tracks"} {"h_reco_MCmom",
-                                           "Momentum of tracks"} {
-      "h_unreco_MCmom", "Momentum of tracks"} {"h_ghost_Rmom",
-                                               "Momentum of tracks"} {
-      "h_acc_prim_MCmom", "Momentum of tracks"} {"h_reco_prim_MCmom",
-                                                 "Momentum of tracks"} {
-      "h_unreco_prim_MCmom", "Momentum of tracks"} {"h_ghost_Rmom",
-                                                    "Momentum of tracks"} {
-      "h_acc_sec_MCmom", "Momentum of tracks"} {"h_reco_sec_MCmom",
-                                                "Momentum of tracks"} {
-      "h_unreco_sec_MCmom", "Momentum of tracks"} {"h_ghost_Rmom",
-                                                   "Momentum of tracks"}
+    {"h_acc_MCmom", "Momentum of tracks"} {"h_reco_MCmom", "Momentum of tracks"} {
+      "h_unreco_MCmom", "Momentum of tracks"} {"h_ghost_Rmom", "Momentum of tracks"} {
+      "h_acc_prim_MCmom", "Momentum of tracks"} {"h_reco_prim_MCmom", "Momentum of tracks"} {
+      "h_unreco_prim_MCmom", "Momentum of tracks"} {"h_ghost_Rmom", "Momentum of tracks"} {
+      "h_acc_sec_MCmom", "Momentum of tracks"} {"h_reco_sec_MCmom", "Momentum of tracks"} {
+      "h_unreco_sec_MCmom", "Momentum of tracks"} {"h_ghost_Rmom", "Momentum of tracks"}
     //  reg,acc,reco,ghost distribution always have to be first
-    {"h_reco_prob", "Prob of reco track"} {
-      "h_ghost_prob", "Prob of ghost track"} {"h_rest_prob",
-                                              "Prob of reco rest track"}};
+    {"h_reco_prob", "Prob of reco track"} {"h_ghost_prob", "Prob of ghost track"} {"h_rest_prob",
+                                                                                   "Prob of reco rest track"}};
 
   TH1F* histoOther[nHistoOther];
 
   for (int i = 0; i < 12; i++) {
-    if (i % 4 != 2)
-      histoOther[i] = (TH1F*) dirOther->Get(histoDataOther[i].name);
+    if (i % 4 != 2) histoOther[i] = (TH1F*) dirOther->Get(histoDataOther[i].name);
     else {
-      histoOther[i] = new TH1F(
-        histoDataOther[i].name, "Not reconstructed tracks", 100, 0.0, 5.0);
+      histoOther[i] = new TH1F(histoDataOther[i].name, "Not reconstructed tracks", 100, 0.0, 5.0);
       for (j = 0; j < histoOther[i]->GetNbinsX(); j++) {
-        histoOther[i]->SetBinContent(j,
-                                     histoOther[i - 2]->GetBinContent(j)
-                                       - histoOther[i - 1]->GetBinContent(j));
+        histoOther[i]->SetBinContent(j, histoOther[i - 2]->GetBinContent(j) - histoOther[i - 1]->GetBinContent(j));
       }
     }
     makeUpHisto(histoOther[i], histoDataOther[i].title);
@@ -339,10 +320,8 @@ void Draw_L1_histo() {
     char* titleY;  // for Y-axis
   };
   const TProfData profData[nProf] = {
-    {"p_eff_all_vs_mom", "Momentum [GeV/c]", "Efficiency [%]"} {
-      "p_eff_all_vs_nhits", "NMCHits", "Efficiency [%]"} {
-      "p_eff_prim_vs_nhits", "NMCHits", "Efficiency [%]"} {
-      "p_eff_sec_vs_nhits", "NMCHits", "Efficiency [%]"}};
+    {"p_eff_all_vs_mom", "Momentum [GeV/c]", "Efficiency [%]"} {"p_eff_all_vs_nhits", "NMCHits", "Efficiency [%]"} {
+      "p_eff_prim_vs_nhits", "NMCHits", "Efficiency [%]"} {"p_eff_sec_vs_nhits", "NMCHits", "Efficiency [%]"}};
 
   TProfile* profile[nProf];
 
@@ -413,8 +392,7 @@ void Draw_L1_histo() {
           break;
         case 3: histoOther[iH]->SetLineColor(kBlack); break;
       }
-      if (i == 0)
-        histoOther[iH]->Draw();
+      if (i == 0) histoOther[iH]->Draw();
       else
         histoOther[iH]->Draw("same");
       leg1->AddEntry(histoOther[iH], histoOther[iH]->GetTitle());

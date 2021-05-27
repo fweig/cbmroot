@@ -9,6 +9,7 @@
 #define CBMMUCHHITPRODUCERIDEAL_H_
 
 #include "FairTask.h"
+
 #include "TString.h"
 
 class TClonesArray;

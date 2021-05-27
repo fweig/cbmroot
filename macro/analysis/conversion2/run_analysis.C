@@ -16,10 +16,9 @@
 // --------------------------------------------------------------------------
 
 
-void run_analysis(Int_t nEvents     = 2,
-                  TString setupName = "sis100_electron",
-                  const char* index = "00001",
-                  TString dataset   = "data/test") {
+void run_analysis(Int_t nEvents = 2, TString setupName = "sis100_electron", const char* index = "00001",
+                  TString dataset = "data/test")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -31,7 +30,7 @@ void run_analysis(Int_t nEvents     = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_event";  // this macro's name for screen output
+  TString myName = "run_reco_event";               // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -66,26 +65,20 @@ void run_analysis(Int_t nEvents     = 2,
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -124,14 +117,12 @@ void run_analysis(Int_t nEvents     = 2,
   CbmL1* l1 = new CbmL1();
   if (CbmSetup::Instance()->IsActive(kMvd)) {
     CbmSetup::Instance()->GetGeoTag(kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (CbmSetup::Instance()->IsActive(kSts)) {
     CbmSetup::Instance()->GetGeoTag(kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -183,8 +174,7 @@ void run_analysis(Int_t nEvents     = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

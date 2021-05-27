@@ -1,11 +1,7 @@
-void pl_TIR(Double_t Tstart   = 0.,
-            Double_t Tend     = 1000.,
-            Double_t dFracMin = 0.0,
-            Double_t dFracMax = 1.05,
-            TString sysinfo   = "") {
-  gROOT->LoadMacro(
-    ((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C")
-      .Data());
+void pl_TIR(Double_t Tstart = 0., Double_t Tend = 1000., Double_t dFracMin = 0.0, Double_t dFracMax = 1.05,
+            TString sysinfo = "")
+{
+  gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 600, 600);
@@ -35,7 +31,8 @@ void pl_TIR(Double_t Tstart   = 0.,
     h1->Draw("");
     h1->SetLineColor(3);
     h1->GetXaxis()->SetTitle("time [s]");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIR_all = (TH1*) h1->Clone();
@@ -43,7 +40,8 @@ void pl_TIR(Double_t Tstart   = 0.,
   if (NULL != hTIR_all) {
     hTIR_all->SetMinimum(hTIR_all->GetMaximum() / 1.E3);
     hTIR_all->Draw();
-  } else
+  }
+  else
     return;
 
   hname = "TIR_sel";
@@ -52,7 +50,8 @@ void pl_TIR(Double_t Tstart   = 0.,
     h1->Draw("same");
     h1->GetXaxis()->SetTitle("time [s]");
     gPad->SetLogy();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIR_sel = (TH1*) h1->Clone();
@@ -64,7 +63,8 @@ void pl_TIR(Double_t Tstart   = 0.,
     h1->SetLineColor(2);
     //   hTIR_all->SetMinimum( h1->GetMinimum() );
     //   gPad->Update();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIR_sel1 = (TH1*) h1->Clone();
@@ -74,7 +74,8 @@ void pl_TIR(Double_t Tstart   = 0.,
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(7);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIR_sel2 = (TH1*) h1->Clone();

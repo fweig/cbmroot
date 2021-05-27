@@ -9,6 +9,7 @@
 #define CBMLITTYPES_H_
 
 #include "data/CbmLitFitNode.h"
+
 #include <vector>
 using std::pair;
 using std::vector;

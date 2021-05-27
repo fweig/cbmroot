@@ -12,9 +12,7 @@
 #include <vector>
 
 /**********************************************************************/
-std::vector<double> GenerateLogBinArray(uint32_t uNbDecadesLog,
-                                        uint32_t uNbStepsDecade,
-                                        uint32_t uNbSubStepsInStep,
+std::vector<double> GenerateLogBinArray(uint32_t uNbDecadesLog, uint32_t uNbStepsDecade, uint32_t uNbSubStepsInStep,
                                         uint32_t& uNbBinsLog);
 /**********************************************************************/
 

@@ -13,15 +13,15 @@
 
 #include "CbmKresSelectAnn.h"
 
+#include "TMath.h"
+#include "TSystem.h"
+#include "TTree.h"
+
 #include <boost/assign/list_of.hpp>
 
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "TMath.h"
-#include "TSystem.h"
-#include "TTree.h"
 
 
 using namespace std;
@@ -30,7 +30,8 @@ CbmKresSelectAnn::CbmKresSelectAnn() : fAnnWeights(), fNN(nullptr) {}
 
 CbmKresSelectAnn::~CbmKresSelectAnn() {}
 
-void CbmKresSelectAnn::Init() {
+void CbmKresSelectAnn::Init()
+{
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
   Double_t x[6];
   Double_t xOut;
@@ -45,32 +46,22 @@ void CbmKresSelectAnn::Init() {
 
   fNN = new TMultiLayerPerceptron("x0,x1,x2,x3,x4,x5:12:xOut", simu);
 
-  fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                + "/analysis/conversion2/KresAnalysis_ann_weights.txt";
-  cout << "-I- CbmKresSelectAnn: get ANN weight parameters from: "
-       << fAnnWeights << endl;
+  fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/analysis/conversion2/KresAnalysis_ann_weights.txt";
+  cout << "-I- CbmKresSelectAnn: get ANN weight parameters from: " << fAnnWeights << endl;
   fNN->LoadWeights(fAnnWeights.c_str());
 }
 
-double CbmKresSelectAnn::DoSelect(double InvariantMass,
-                                  double OpeningAngle,
-                                  double PlaneAngle_last,
-                                  double ZPos,
-                                  TVector3 Momentum1,
-                                  TVector3 Momentum2) {
+double CbmKresSelectAnn::DoSelect(double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos,
+                                  TVector3 Momentum1, TVector3 Momentum2)
+{
   double AnnValue = 0;
 
   double p1 =
-    TMath::Sqrt(Momentum1.X() * Momentum1.X() + Momentum1.Y() * Momentum1.Y()
-                + Momentum1.Z() * Momentum1.Z());
+    TMath::Sqrt(Momentum1.X() * Momentum1.X() + Momentum1.Y() * Momentum1.Y() + Momentum1.Z() * Momentum1.Z());
   double p2 =
-    TMath::Sqrt(Momentum2.X() * Momentum2.X() + Momentum2.Y() * Momentum2.Y()
-                + Momentum2.Z() * Momentum2.Z());
+    TMath::Sqrt(Momentum2.X() * Momentum2.X() + Momentum2.Y() * Momentum2.Y() + Momentum2.Z() * Momentum2.Z());
 
-  if (InvariantMass > 0.5 || OpeningAngle > 45 || ZPos > 100 || p1 > 10
-      || p2 > 10) {
-    return AnnValue = -1;
-  }
+  if (InvariantMass > 0.5 || OpeningAngle > 45 || ZPos > 100 || p1 > 10 || p2 > 10) { return AnnValue = -1; }
 
 
   double params[6];

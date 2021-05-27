@@ -21,17 +21,13 @@ class TObject;
 class CbmKFParticleFinderQA : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFParticleFinderQA(const char* name = "CbmKFParticleFinderQA",
-                        Int_t iVerbose   = 0,
-                        const KFParticleTopoReconstructor* tr = 0,
-                        TString outFileName = "CbmKFParticleFinderQA.root");
+  CbmKFParticleFinderQA(const char* name = "CbmKFParticleFinderQA", Int_t iVerbose = 0,
+                        const KFParticleTopoReconstructor* tr = 0, TString outFileName = "CbmKFParticleFinderQA.root");
   ~CbmKFParticleFinderQA();
 
   void SetEffFileName(const TString& name) { fEfffileName = name; }
   void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
-  void SetTrackMatchBranchName(const TString& name) {
-    fTrackMatchBranchName = name;
-  }
+  void SetTrackMatchBranchName(const TString& name) { fTrackMatchBranchName = name; }
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);
@@ -56,8 +52,7 @@ private:
   CbmKFParticleFinderQA(const CbmKFParticleFinderQA&);
 
   void WriteHistosCurFile(TObject* obj);
-  void FitDecayQAHistograms(float sigma[14],
-                            const bool saveReferenceResults = false) const;
+  void FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults = false) const;
   void CheckDecayQA();
 
   //names of input branches

@@ -15,6 +15,7 @@
 #include "TClonesArray.h"
 #include "TMath.h"
 #include "TStopwatch.h"
+
 #include <iomanip>
 #include <iostream>
 
@@ -25,19 +26,18 @@
 #error NoSseFound
 #endif  // HAVE_SSE
 
-#include <cmath>
 #include <vector>
+
+#include <cmath>
 using std::cout;
 using std::endl;
 
 // -----   Default constructor   -------------------------------------------
-CbmTrdSetTracksPidModWkn::CbmTrdSetTracksPidModWkn()
-  : CbmTrdSetTracksPidModWkn("TrdSetTracksPidModWkn", "") {}
+CbmTrdSetTracksPidModWkn::CbmTrdSetTracksPidModWkn() : CbmTrdSetTracksPidModWkn("TrdSetTracksPidModWkn", "") {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmTrdSetTracksPidModWkn::CbmTrdSetTracksPidModWkn(const char* name,
-                                                   const char*)
+CbmTrdSetTracksPidModWkn::CbmTrdSetTracksPidModWkn(const char* name, const char*)
   : FairTask(name)
   , fTrackArray(NULL)
   , fTrdHitArray(NULL)
@@ -50,7 +50,9 @@ CbmTrdSetTracksPidModWkn::CbmTrdSetTracksPidModWkn(const char* name,
   , fWmin(0)
   , fWmax(0)
   , fDiff(0)
-  , fSISType("sis300") {}
+  , fSISType("sis300")
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -60,7 +62,8 @@ CbmTrdSetTracksPidModWkn::~CbmTrdSetTracksPidModWkn() {}
 
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmTrdSetTracksPidModWkn::Init() {
+InitStatus CbmTrdSetTracksPidModWkn::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -92,7 +95,8 @@ InitStatus CbmTrdSetTracksPidModWkn::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmTrdSetTracksPidModWkn::Exec(Option_t*) {
+void CbmTrdSetTracksPidModWkn::Exec(Option_t*)
+{
 
   TStopwatch timer;
   timer.Start();
@@ -116,8 +120,7 @@ void CbmTrdSetTracksPidModWkn::Exec(Option_t*) {
 
   for (unsigned short itr = 0; itr < nTracks; itr++) {
     CbmTrdTrack* pTr = (CbmTrdTrack*) fTrackArray->At(itr);
-    if ((pTr->GetNofHits()) > fnSet - 1)
-      nTrue++;
+    if ((pTr->GetNofHits()) > fnSet - 1) nTrue++;
     else
       pTr->SetPidWkn(-2.);
   }
@@ -130,10 +133,8 @@ void CbmTrdSetTracksPidModWkn::Exec(Option_t*) {
     numTr[iV]           = itrack;
     mom                 = fabs(1.f / pTrack->GetParamFirst()->GetQp());
 
-    fEmp = 0.0002598 * mom * mom * mom - 0.008862 * mom * mom + 0.1176 * mom
-           + 0.9129;
-    fXi = 0.00008938 * mom * mom * mom - 0.003022 * mom * mom + 0.03999 * mom
-          + 0.5292;
+    fEmp = 0.0002598 * mom * mom * mom - 0.008862 * mom * mom + 0.1176 * mom + 0.9129;
+    fXi  = 0.00008938 * mom * mom * mom - 0.003022 * mom * mom + 0.03999 * mom + 0.5292;
 
     for (Int_t iHit = 0; iHit < NHits; iHit++) {
       Int_t TRDindex    = pTrack->GetHitIndex(iHit);
@@ -193,13 +194,12 @@ void CbmTrdSetTracksPidModWkn::Exec(Option_t*) {
   ctime += timer.CpuTime();
   cout << endl << endl;
   cout << "--CbmTrdSetTracksPidModWkn--" << endl;
-  cout << "Real time " << (rtime / Double_t(nEv)) << " s, CPU time "
-       << (ctime / Double_t(nEv)) << "s" << endl
-       << endl;
+  cout << "Real time " << (rtime / Double_t(nEv)) << " s, CPU time " << (ctime / Double_t(nEv)) << "s" << endl << endl;
 }
 
 
-void CbmTrdSetTracksPidModWkn::SetParameters() {
+void CbmTrdSetTracksPidModWkn::SetParameters()
+{
   if (fSISType == "sis300") {
     fnSet   = 5;  //  number of the layers with TR
     fdegWkn = 4;  //  statistics degree
@@ -218,7 +218,8 @@ void CbmTrdSetTracksPidModWkn::SetParameters() {
 
 
 // -----   Public method Finish   ------------------------------------------
-void CbmTrdSetTracksPidModWkn::Finish() {
+void CbmTrdSetTracksPidModWkn::Finish()
+{
   //fmom->Write();
 }
 // -------------------------------------------------------------------------

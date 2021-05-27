@@ -4,21 +4,22 @@
  **/
 #include "CbmMuchTrackFinderIdeal.h"
 
+#include "CbmMCTrack.h"
 #include "CbmMuchCluster.h"
 #include "CbmMuchDigiMatch.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchTrack.h"
 
-#include "CbmMCTrack.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
 
 #include "TClonesArray.h"
 
-#include <cmath>
 #include <iostream>
 #include <map>
+
+#include <cmath>
 
 CbmMuchTrackFinderIdeal::CbmMuchTrackFinderIdeal()
   : CbmMuchTrackFinder()
@@ -30,38 +31,36 @@ CbmMuchTrackFinderIdeal::CbmMuchTrackFinderIdeal()
   , fClusters(NULL)
   , fTrackMap()
   , fVerbose(1)
-  , fEvents(0) {}
+  , fEvents(0)
+{
+}
 
 CbmMuchTrackFinderIdeal::~CbmMuchTrackFinderIdeal() {}
 
-void CbmMuchTrackFinderIdeal::Init() {
+void CbmMuchTrackFinderIdeal::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL)
-    Fatal("CbmMuchTrackFinderIdeal::Init", "No FairRootManager!");
+  if (ioman == NULL) Fatal("CbmMuchTrackFinderIdeal::Init", "No FairRootManager!");
 
   fMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (fMCTracks == NULL)
-    Fatal("CbmMuchTrackFinderIdeal::Init", "No MCTrack array!");
+  if (fMCTracks == NULL) Fatal("CbmMuchTrackFinderIdeal::Init", "No MCTrack array!");
 
   fMCPoints = (TClonesArray*) ioman->GetObject("MuchPoint");
-  if (fMCPoints == NULL)
-    Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchPoint array!");
+  if (fMCPoints == NULL) Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchPoint array!");
 
   fPixelHits = (TClonesArray*) ioman->GetObject("MuchPixelHit");
-  if (fPixelHits == NULL)
-    Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchPixelHit array!");
+  if (fPixelHits == NULL) Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchPixelHit array!");
 
   fPixelDigiMatches = (TClonesArray*) ioman->GetObject("MuchDigiMatch");
-  if (fPixelDigiMatches == NULL)
-    Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchDigiMatch array!");
+  if (fPixelDigiMatches == NULL) Fatal("CbmMuchTrackFinderIdeal::Init", "No MuchDigiMatch array!");
 
   fClusters = (TClonesArray*) ioman->GetObject("MuchCluster");
   if (fClusters == NULL)
-    Info("CbmMuchTrackFinderIdeal::Init",
-         "No cluster array -- simple hit to digi matching will be used");
+    Info("CbmMuchTrackFinderIdeal::Init", "No cluster array -- simple hit to digi matching will be used");
 }
 
-Int_t CbmMuchTrackFinderIdeal::DoFind(TClonesArray* trackArray) {
+Int_t CbmMuchTrackFinderIdeal::DoFind(TClonesArray* trackArray)
+{
   fTracks = trackArray;
 
   fTrackMap.clear();
@@ -85,8 +84,7 @@ Int_t CbmMuchTrackFinderIdeal::DoFind(TClonesArray* trackArray) {
     Int_t clusterId         = hit->GetRefId();
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(clusterId);
     for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
-      ProcessDigiMatches(
-        fPixelDigiMatches, cluster->GetDigi(iDigi), iHit, kMUCHPIXELHIT);
+      ProcessDigiMatches(fPixelDigiMatches, cluster->GetDigi(iDigi), iHit, kMUCHPIXELHIT);
     }  // loop over digis in cluster
   }    // loop over hits
 
@@ -94,11 +92,9 @@ Int_t CbmMuchTrackFinderIdeal::DoFind(TClonesArray* trackArray) {
   return nofTracks;
 }
 
-void CbmMuchTrackFinderIdeal::ProcessDigiMatches(
-  const TClonesArray* digiMatches,
-  Int_t digiIndex,
-  Int_t hitIndex,
-  HitType hitType) {
+void CbmMuchTrackFinderIdeal::ProcessDigiMatches(const TClonesArray* digiMatches, Int_t digiIndex, Int_t hitIndex,
+                                                 HitType hitType)
+{
   CbmMuchDigiMatch* digiMatch = (CbmMuchDigiMatch*) digiMatches->At(digiIndex);
   if (!digiMatch) return;
 
@@ -122,16 +118,14 @@ void CbmMuchTrackFinderIdeal::ProcessDigiMatches(
   }  // loop over digis
 }
 
-void CbmMuchTrackFinderIdeal::SetTrackParam(const CbmMCTrack* mcTrack,
-                                            const FairMCPoint* mcPoint,
-                                            CbmMuchTrack* track) {
+void CbmMuchTrackFinderIdeal::SetTrackParam(const CbmMCTrack* mcTrack, const FairMCPoint* mcPoint, CbmMuchTrack* track)
+{
   FairTrackParam par;
   par.SetX(mcPoint->GetX());
   par.SetY(mcPoint->GetY());
   par.SetTx(mcPoint->GetPx() / mcPoint->GetPz());
   par.SetTy(mcPoint->GetPy() / mcPoint->GetPz());
-  if (mcTrack->GetPdgCode() == 13)
-    par.SetQp(-1. / mcTrack->GetP());
+  if (mcTrack->GetPdgCode() == 13) par.SetQp(-1. / mcTrack->GetP());
   else if (mcTrack->GetPdgCode() == -13)
     par.SetQp(1. / mcTrack->GetP());
   par.SetZ(mcPoint->GetZ());

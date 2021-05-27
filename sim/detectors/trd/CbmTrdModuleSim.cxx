@@ -18,7 +18,8 @@ CbmTrdModuleSim::CbmTrdModuleSim()
   , fDigitizer(nullptr)
   , fRadiator(NULL)
   , fDigiMap()
-  , fBuffer() {
+  , fBuffer()
+{
   memset(fXYZ, 0, 3 * sizeof(Double_t));
 }
 
@@ -31,12 +32,14 @@ CbmTrdModuleSim::CbmTrdModuleSim(Int_t mod, Int_t ly, Int_t rot)
   , fDigitizer(nullptr)
   , fRadiator(NULL)
   , fDigiMap()
-  , fBuffer() {
+  , fBuffer()
+{
   memset(fXYZ, 0, 3 * sizeof(Double_t));
 }
 
 //_______________________________________________________________________________
-CbmTrdModuleSim::~CbmTrdModuleSim() {
+CbmTrdModuleSim::~CbmTrdModuleSim()
+{
   LOG(debug) << GetName() << "::delete[" << GetTitle() << "]";
   //if(fAsicPar) delete fAsicPar;
 }

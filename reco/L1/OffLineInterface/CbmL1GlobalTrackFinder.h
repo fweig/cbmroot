@@ -26,7 +26,9 @@
 #include "CbmStsTrack.h"
 #include "CbmTofTrack.h"
 #include "CbmTrdTrack.h"
+
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 class TClonesArray;
@@ -90,12 +92,8 @@ private:
    **/
   Int_t CopyL1Tracks(CbmEvent* event = NULL);
 
-  Int_t CreateGlobalTrackArray(CbmEvent* event,
-                               TClonesArray* globalTracks,
-                               TClonesArray* stsTracks,
-                               TClonesArray* trdTracks,
-                               TClonesArray* muchTracks,
-                               TClonesArray* tofTracks);
+  Int_t CreateGlobalTrackArray(CbmEvent* event, TClonesArray* globalTracks, TClonesArray* stsTracks,
+                               TClonesArray* trdTracks, TClonesArray* muchTracks, TClonesArray* tofTracks);
 
 
   ClassDef(CbmL1GlobalTrackFinder, 1);

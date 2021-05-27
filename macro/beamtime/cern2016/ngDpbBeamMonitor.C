@@ -10,7 +10,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void ngDpbBeamMonitor(TString inFile = "") {
+void ngDpbBeamMonitor(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
   //  TString inDir  = "/lustre/nyx/cbm/prod/beamtime/2016/11/cern/";
@@ -64,10 +65,8 @@ void ngDpbBeamMonitor(TString inFile = "") {
   // Get4 Unpacker
   CbmTSMonitorTof* test_monitor_tof = new CbmTSMonitorTof();
   test_monitor_tof->SetDiamondChannels();
-  test_monitor_tof->SetDiamondPerTsSpillOnThr(
-    50);  // 2 at 600 mV, 10 at 500 mV, 50 at 400 mV
-  test_monitor_tof->SetDiamondPerTsSpillOffThr(
-    10);  // 1 at 600-500 mV, 10 at 400 mV
+  test_monitor_tof->SetDiamondPerTsSpillOnThr(50);   // 2 at 600 mV, 10 at 500 mV, 50 at 400 mV
+  test_monitor_tof->SetDiamondPerTsSpillOffThr(10);  // 1 at 600-500 mV, 10 at 400 mV
   test_monitor_tof->SetDiamondTsNbSpillOffThr(50);
   test_monitor_tof->SetEpochSuppressedMode();
   test_monitor_tof->SetBeamTuningMode();
@@ -76,8 +75,7 @@ void ngDpbBeamMonitor(TString inFile = "") {
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("cbmflib20d");
     source->SetPortNumber(5556);
@@ -121,8 +119,7 @@ void ngDpbBeamMonitor(TString inFile = "") {
 
   run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -130,8 +127,7 @@ void ngDpbBeamMonitor(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitor: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitor: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitor: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

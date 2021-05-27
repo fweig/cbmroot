@@ -1,7 +1,8 @@
 
 #include "CbmFormatDecHexPrintout.h"
 
-std::string FormatDecPrintout(uint64_t ulVal, char cFill, uint uWidth) {
+std::string FormatDecPrintout(uint64_t ulVal, char cFill, uint uWidth)
+{
   std::stringstream ss;
 
   /// Set fill character and/or width if provided by user
@@ -17,8 +18,8 @@ std::string FormatDecPrintout(uint64_t ulVal, char cFill, uint uWidth) {
   return ss.str();
 }
 
-std::string
-FormatHexPrintout(uint64_t ulVal, char cFill, uint uWidth, bool bUppercase) {
+std::string FormatHexPrintout(uint64_t ulVal, char cFill, uint uWidth, bool bUppercase)
+{
   std::stringstream ss;
 
   /// Set hex printout mode

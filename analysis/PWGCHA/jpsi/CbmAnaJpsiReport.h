@@ -35,15 +35,11 @@ protected:
 
   void DrawAnalysisStepsH2(const std::string& hName, bool DoDrawEfficiency);
 
-  void DrawAnalysisStepsH1(const std::string& hName,
-                           bool doScale,
-                           double min = -1.,
-                           double max = -1.);
+  void DrawAnalysisStepsH1(const std::string& hName, bool doScale, double min = -1., double max = -1.);
 
   void DrawSourceTypesH1(const std::string& hName, bool doScale = false);
 
-  void
-  DrawCutH1(const std::string& hName, double cutValue, bool doScale = false);
+  void DrawCutH1(const std::string& hName, double cutValue, bool doScale = false);
 
   void Draw2DCut(const std::string& hist);
 
@@ -79,9 +75,7 @@ protected:
 
   void DrawPairSource();
 
-  void DrawBgSource2D(const std::string& histName,
-                      const std::vector<std::string>& yLabels,
-                      const std::string& zTitle);
+  void DrawBgSource2D(const std::string& histName, const std::vector<std::string>& yLabels, const std::string& zTitle);
 
 
   ClassDef(CbmAnaJpsiReport, 1);

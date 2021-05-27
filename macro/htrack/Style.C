@@ -6,7 +6,8 @@
 //////////////////////////////////////////////////////////////////////
 
 
-void Style() {
+void Style()
+{
 
   gSystem->Load("libPostscript.so");
   gStyle->SetCanvasBorderMode(-1);

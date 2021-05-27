@@ -7,19 +7,22 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmNicaCompression.h"
+
 #include "CbmMCTrack.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
-CbmNicaCompression::CbmNicaCompression()
-  : fAllDep(kFALSE), fStsLinks(nullptr), fTofLinks(nullptr) {
+CbmNicaCompression::CbmNicaCompression() : fAllDep(kFALSE), fStsLinks(nullptr), fTofLinks(nullptr)
+{
   fStsMatches = new NicaTrackClones("CbmTrackMatchNew", "StsTrackMatch", "STS");
   fTofMatches = new NicaTrackClones("CbmTrackMatchNew", "TofHitMatch", "TOF");
   fMCTracks   = new NicaTrackClones("CbmMCTrack", "MCTrack", "MC");
 }
 
-InitStatus CbmNicaCompression::Init() {
+InitStatus CbmNicaCompression::Init()
+{
   FairRootManager* mngr = FairRootManager::Instance();
   fTofMatches->GetFromTree();
   fStsMatches->GetFromTree();
@@ -34,10 +37,7 @@ InitStatus CbmNicaCompression::Init() {
   fTofLinks = new TClonesArray("CbmTrackMatchNew");
   mngr->Register("StsTrackMatch", "STS", fStsLinks, kTRUE);
   mngr->Register("TofHitMatch", "TOF", fTofLinks, kTRUE);
-  mngr->Register("PrimaryVertex.",
-                 "PV",
-                 (CbmVertex*) mngr->GetObject("PrimaryVertex."),
-                 kTRUE);
+  mngr->Register("PrimaryVertex.", "PV", (CbmVertex*) mngr->GetObject("PrimaryVertex."), kTRUE);
   TClonesArray* sts_tracks  = (TClonesArray*) mngr->GetObject("StsTrack");
   TClonesArray* tof_tracks  = (TClonesArray*) mngr->GetObject("TofHit");
   TClonesArray* glob_tracks = (TClonesArray*) mngr->GetObject("GlobalTrack");
@@ -49,7 +49,8 @@ InitStatus CbmNicaCompression::Init() {
   return kSUCCESS;
 }
 
-void CbmNicaCompression::Exec(Option_t* opt) {
+void CbmNicaCompression::Exec(Option_t* opt)
+{
   fMapUse.MakeBigger(fMCTracks->GetEntriesFast());
   fMapIndex.MakeBigger(fMCTracks->GetEntriesFast());
   fStsLinks->Clear();
@@ -60,14 +61,14 @@ void CbmNicaCompression::Exec(Option_t* opt) {
     fMapUse[i]   = 0;
     fMapIndex[i] = -2;
   }
-  if (fAllDep) {
-    WithDep();
-  } else {
+  if (fAllDep) { WithDep(); }
+  else {
     NoDep();
   }
 }
 
-void CbmNicaCompression::NoDep() {
+void CbmNicaCompression::NoDep()
+{
   for (int i = 0; i < fStsMatches->GetEntriesFast(); i++) {
     CbmTrackMatchNew* match = (CbmTrackMatchNew*) fStsMatches->UncheckedAt(i);
     int index               = match->GetMatchedLink().GetIndex();
@@ -85,7 +86,8 @@ void CbmNicaCompression::NoDep() {
     if (fMapUse[i] == 1) {
       fMapIndex[i] = count;
       ++count;
-    } else {
+    }
+    else {
       fMCTracks->GetArray()->RemoveAt(i);
     }
   }
@@ -98,11 +100,9 @@ void CbmNicaCompression::NoDep() {
 
   //ok let's fix matches
   for (int iTrack = 0; iTrack < fStsMatches->GetEntriesFast(); iTrack++) {
-    CbmTrackMatchNew* match =
-      (CbmTrackMatchNew*) fStsMatches->UncheckedAt(iTrack);
-    CbmLink link = match->GetMatchedLink();
-    CbmTrackMatchNew* match2 =
-      (CbmTrackMatchNew*) fStsLinks->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match  = (CbmTrackMatchNew*) fStsMatches->UncheckedAt(iTrack);
+    CbmLink link             = match->GetMatchedLink();
+    CbmTrackMatchNew* match2 = (CbmTrackMatchNew*) fStsLinks->UncheckedAt(iTrack);
     match2->ClearLinks();
     int index = link.GetIndex();
     if (index >= 0) {
@@ -112,11 +112,9 @@ void CbmNicaCompression::NoDep() {
     match2->AddLink(link);
   }
   for (int iTrack = 0; iTrack < fTofMatches->GetEntriesFast(); iTrack++) {
-    CbmTrackMatchNew* match =
-      (CbmTrackMatchNew*) fTofMatches->UncheckedAt(iTrack);
-    CbmTrackMatchNew* match2 =
-      (CbmTrackMatchNew*) fTofLinks->UncheckedAt(iTrack);
-    CbmLink link = match->GetMatchedLink();
+    CbmTrackMatchNew* match  = (CbmTrackMatchNew*) fTofMatches->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match2 = (CbmTrackMatchNew*) fTofLinks->UncheckedAt(iTrack);
+    CbmLink link             = match->GetMatchedLink();
     match2->ClearLinks();
     int index = link.GetIndex();
     if (index >= 0) {
@@ -127,7 +125,8 @@ void CbmNicaCompression::NoDep() {
   }
 }
 
-void CbmNicaCompression::WithDep() {
+void CbmNicaCompression::WithDep()
+{
   for (int i = 0; i < fStsMatches->GetEntriesFast(); i++) {
     CbmTrackMatchNew* match = (CbmTrackMatchNew*) fStsMatches->UncheckedAt(i);
     for (int j = 0; j < match->GetNofLinks(); j++) {
@@ -147,7 +146,8 @@ void CbmNicaCompression::WithDep() {
     if (fMapUse[i] == 1) {
       fMapIndex[i] = count;
       ++count;
-    } else {
+    }
+    else {
       fMCTracks->GetArray()->RemoveAt(i);
     }
   }
@@ -160,10 +160,8 @@ void CbmNicaCompression::WithDep() {
 
   //ok let's fix matches
   for (int iTrack = 0; iTrack < fStsMatches->GetEntriesFast(); iTrack++) {
-    CbmTrackMatchNew* match =
-      (CbmTrackMatchNew*) fStsMatches->UncheckedAt(iTrack);
-    CbmTrackMatchNew* match2 =
-      (CbmTrackMatchNew*) fStsLinks->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match  = (CbmTrackMatchNew*) fStsMatches->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match2 = (CbmTrackMatchNew*) fStsLinks->UncheckedAt(iTrack);
     match2->ClearLinks();
     for (int iLink = 0; iLink < match->GetNofLinks(); iLink++) {
       CbmLink link = match->GetLink(iLink);
@@ -173,10 +171,8 @@ void CbmNicaCompression::WithDep() {
     }
   }
   for (int iTrack = 0; iTrack < fTofMatches->GetEntriesFast(); iTrack++) {
-    CbmTrackMatchNew* match =
-      (CbmTrackMatchNew*) fTofMatches->UncheckedAt(iTrack);
-    CbmTrackMatchNew* match2 =
-      (CbmTrackMatchNew*) fTofLinks->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match  = (CbmTrackMatchNew*) fTofMatches->UncheckedAt(iTrack);
+    CbmTrackMatchNew* match2 = (CbmTrackMatchNew*) fTofLinks->UncheckedAt(iTrack);
     match2->ClearLinks();
     for (int iLink = 0; iLink < match->GetNofLinks(); iLink++) {
       CbmLink link = match->GetLink(iLink);

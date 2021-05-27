@@ -1,5 +1,6 @@
 
-void Import_GDML_Export_ROOT() {
+void Import_GDML_Export_ROOT()
+{
   // we need to use latest root version to work with gdml geometry
   // system(string("source /usr/local/Cellar/root/6.20.04_1/bin/thisroot.sh").c_str());
 
@@ -23,8 +24,7 @@ void Import_GDML_Export_ROOT() {
   // Define your position HERE
   // Z coordinate for v16a = 270, for v17a = 258.75, for v18a = 0.
   TGeoRotation* rot      = new TGeoRotation("rot", 0., 0., 0.);
-  TGeoCombiTrans* posrot = new TGeoCombiTrans(
-    0., 0., 258.75, rot);  // v16a - 270, v17a - 258.75, v18a - 0
+  TGeoCombiTrans* posrot = new TGeoCombiTrans(0., 0., 258.75, rot);  // v16a - 270, v17a - 258.75, v18a - 0
 
   rootTop->AddNode(gdmlTop, 1, posrot);
 
@@ -39,9 +39,9 @@ void Import_GDML_Export_ROOT() {
   // Extract name to form output file name
   TString richGeoOutFilename;
   if (richGeoFilename.EndsWith(".gdml")) {
-    richGeoOutFilename =
-      richGeoFilename(0, richGeoFilename.Length() - 5) + ".geo.root";
-  } else {
+    richGeoOutFilename = richGeoFilename(0, richGeoFilename.Length() - 5) + ".geo.root";
+  }
+  else {
     richGeoOutFilename = richGeoFilename + ".geo.root";
   }
 

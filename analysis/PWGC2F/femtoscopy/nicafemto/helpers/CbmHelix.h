@@ -12,8 +12,11 @@
 
 #include "CbmGlobalTrack.h"
 #include "CbmStsTrack.h"
+
 #include "FairField.h"
+
 #include <TObject.h>
+
 #include <iostream>
 /**
  * smmaerl version of CbmKFTrack
@@ -31,9 +34,7 @@ protected:
   Double_t Tx() const { return fT[2]; }
   Double_t Ty() const { return fT[3]; }
   static FairField* fgField;
-  Int_t indexS(Int_t i, Int_t j) {
-    return (j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i;
-  }
+  Int_t indexS(Int_t i, Int_t j) { return (j <= i) ? i * (i + 1) / 2 + j : j * (j + 1) / 2 + i; }
   void multQtSQ(const Int_t N, Double_t Q[]);
   void ExtrapolateLine(Double_t z_out);
   Int_t ExtrapolateRK4(Double_t z_out);
@@ -50,14 +51,9 @@ public:
   void Build(const CbmGlobalTrack* tr);
   void Build(const CbmStsTrack* tr, Bool_t first);
   void Build(const TVector3& pos, const TVector3& mom, Double_t charge);
-  void PrintInfo() const {
-    std::cout << Form("T={%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f}",
-                      fT[0],
-                      fT[1],
-                      fT[2],
-                      fT[3],
-                      fT[4],
-                      fT[5])
+  void PrintInfo() const
+  {
+    std::cout << Form("T={%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f}", fT[0], fT[1], fT[2], fT[3], fT[4], fT[5])
               << std::endl;
   }
   Double_t* GetTrack() { return fT; }

@@ -504,7 +504,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     if (ISUNLIKELY(EmptyFvec(validRing))) continue;
 
       ///////////
-#if 0   // TODO 1
+#if 0  // TODO 1
     {
       ENNRingV &ringV = rings_tmp[nRings_tmp++];
     
@@ -649,7 +649,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Store ring").Stop();
 #endif  // PRINT_TIMING
-  }     // i_main
+  }  // i_main
 #ifdef PRINT_TIMING
   GetTimer("Ring finding").Stop();
 
@@ -887,7 +887,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     else
       i->skip = 1;
   }
-#else   // NEW_SELECTION
+#else  // NEW_SELECTION
 
   const int NHitsV = HitsV.size();
   for (int ih = 0; ih < NHitsV; ih++)

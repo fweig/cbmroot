@@ -37,7 +37,8 @@ ClassImp(CbmStsPhysics)
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmStsPhysics::CbmStsPhysics() {
+CbmStsPhysics::CbmStsPhysics()
+{
   // --- Read the energy loss data tables
   LOG(info) << "Instantiating STS Physics... ";
   ReadDataTablesStoppingPower();
@@ -55,20 +56,16 @@ CbmStsPhysics::~CbmStsPhysics() {}
 
 
 // -----   Diffusion width   -----------------------------------------------
-Double_t CbmStsPhysics::DiffusionWidth(Double_t z,
-                                       Double_t d,
-                                       Double_t vBias,
-                                       Double_t vFd,
-                                       Double_t temperature,
-                                       Int_t chargeType) {
+Double_t CbmStsPhysics::DiffusionWidth(Double_t z, Double_t d, Double_t vBias, Double_t vFd, Double_t temperature,
+                                       Int_t chargeType)
+{
 
   // --- Check parameters. A tolerance of 0.1 micrometer on the sensor borders
   // --- is used to avoid crashes due to rounding errors.
   if (z < 0. && z > -0.00001) z = 0.;
   if (z > d && z < d + 0.00001) z = d;
   if (z < 0. || z > d) {
-    LOG(error) << "StsPhysics: z coordinate " << z
-               << " not inside sensor (d = " << d << ")";
+    LOG(error) << "StsPhysics: z coordinate " << z << " not inside sensor (d = " << d << ")";
     return -1.;
   }
   if (temperature < 0.) {
@@ -84,11 +81,12 @@ Double_t CbmStsPhysics::DiffusionWidth(Double_t z,
   // For the formula, see the STS digitiser note.
   Double_t tau = 0.;
   if (chargeType == 0) {  // electrons, drift to n (front) side
-    tau = 0.5 * d * d / vFd
-          * log((vBias + (1. - 2. * z / d) * vFd) / (vBias - vFd));
-  } else if (chargeType == 1) {  // holes, drift to the p (back) side
+    tau = 0.5 * d * d / vFd * log((vBias + (1. - 2. * z / d) * vFd) / (vBias - vFd));
+  }
+  else if (chargeType == 1) {  // holes, drift to the p (back) side
     tau = -0.5 * d * d / vFd * log(1. - 2. * vFd * z / d / (vBias + vFd));
-  } else {
+  }
+  else {
     LOG(error) << "StsPhysics: Illegal charge type " << chargeType;
     return -1.;
   }
@@ -99,20 +97,16 @@ Double_t CbmStsPhysics::DiffusionWidth(Double_t z,
 
 
 // -----   Electric field   ------------------------------------------------
-Double_t CbmStsPhysics::ElectricField(Double_t vBias,
-                                      Double_t vFd,
-                                      Double_t dZ,
-                                      Double_t z) {
+Double_t CbmStsPhysics::ElectricField(Double_t vBias, Double_t vFd, Double_t dZ, Double_t z)
+{
   return (vBias + vFd * (2. * z / dZ - 1.)) / dZ;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Energy loss from fluctuation model   ----------------------------
-Double_t CbmStsPhysics::EnergyLoss(Double_t dz,
-                                   Double_t mass,
-                                   Double_t eKin,
-                                   Double_t dedx) const {
+Double_t CbmStsPhysics::EnergyLoss(Double_t dz, Double_t mass, Double_t eKin, Double_t dedx) const
+{
 
   // Gamma and beta
   Double_t gamma = (eKin + mass) / mass;
@@ -122,15 +116,12 @@ Double_t CbmStsPhysics::EnergyLoss(Double_t dz,
   Double_t xAux = 2. * mass * beta2 * gamma * gamma;
 
   // Mean energy losses (PHYS333 2.4 eqs. (2) and (3))
-  Double_t sigma1 = dedx * fUrbanF1 / fUrbanE1
-                    * (TMath::Log(xAux / fUrbanE1) - beta2)
+  Double_t sigma1 = dedx * fUrbanF1 / fUrbanE1 * (TMath::Log(xAux / fUrbanE1) - beta2)
                     / (TMath::Log(xAux / fUrbanI) - beta2) * (1. - fUrbanR);
-  Double_t sigma2 = dedx * fUrbanF2 / fUrbanE2
-                    * (TMath::Log(xAux / fUrbanE2) - beta2)
+  Double_t sigma2 = dedx * fUrbanF2 / fUrbanE2 * (TMath::Log(xAux / fUrbanE2) - beta2)
                     / (TMath::Log(xAux / fUrbanI) - beta2) * (1. - fUrbanR);
-  Double_t sigma3 = dedx * fUrbanEmax * fUrbanR
-                    / (fUrbanI * (fUrbanEmax + fUrbanI))
-                    / TMath::Log((fUrbanEmax + fUrbanI) / fUrbanI);
+  Double_t sigma3 =
+    dedx * fUrbanEmax * fUrbanR / (fUrbanI * (fUrbanEmax + fUrbanI)) / TMath::Log((fUrbanEmax + fUrbanI) / fUrbanI);
 
   // Sample number of processes Poissonian energy loss distribution
   // (PHYS333 2.4 eq. (6))
@@ -152,7 +143,8 @@ Double_t CbmStsPhysics::EnergyLoss(Double_t dz,
 
 
 // ----- Get static instance   ---------------------------------------------
-CbmStsPhysics* CbmStsPhysics::Instance() {
+CbmStsPhysics* CbmStsPhysics::Instance()
+{
   if (!fgInstance) fgInstance = new CbmStsPhysics();
   return fgInstance;
 }
@@ -160,8 +152,8 @@ CbmStsPhysics* CbmStsPhysics::Instance() {
 
 
 // -----   Interpolate a value from a data table   -------------------------
-Double_t CbmStsPhysics::InterpolateDataTable(Double_t eEquiv,
-                                             map<Double_t, Double_t>& table) {
+Double_t CbmStsPhysics::InterpolateDataTable(Double_t eEquiv, map<Double_t, Double_t>& table)
+{
 
   std::map<Double_t, Double_t>::iterator it = table.lower_bound(eEquiv);
 
@@ -184,7 +176,8 @@ Double_t CbmStsPhysics::InterpolateDataTable(Double_t eEquiv,
 
 
 // -----   Landau Width   ------------------------------------------------
-Double_t CbmStsPhysics::LandauWidth(Double_t mostProbableCharge) {
+Double_t CbmStsPhysics::LandauWidth(Double_t mostProbableCharge)
+{
 
   // --- Get interpolated value from the data table
   return InterpolateDataTable(mostProbableCharge, fLandauWidth);
@@ -193,7 +186,8 @@ Double_t CbmStsPhysics::LandauWidth(Double_t mostProbableCharge) {
 
 
 // -----    Particle charge for PDG PID   ----------------------------------
-Double_t CbmStsPhysics::ParticleCharge(Int_t pid) {
+Double_t CbmStsPhysics::ParticleCharge(Int_t pid)
+{
 
   Double_t charge = 0.;
 
@@ -214,7 +208,8 @@ Double_t CbmStsPhysics::ParticleCharge(Int_t pid) {
 
 
 // -----    Particle mass for PDG PID   ------------------------------------
-Double_t CbmStsPhysics::ParticleMass(Int_t pid) {
+Double_t CbmStsPhysics::ParticleMass(Int_t pid)
+{
 
   Double_t mass = -1.;
 
@@ -235,7 +230,8 @@ Double_t CbmStsPhysics::ParticleMass(Int_t pid) {
 
 
 // -----   Read data tables for stopping power   ---------------------------
-void CbmStsPhysics::ReadDataTablesLandauWidth() {
+void CbmStsPhysics::ReadDataTablesLandauWidth()
+{
 
   // The table with errors for Landau distribution:
   // MP charge (e) --> half width of charge distribution (e)
@@ -256,16 +252,17 @@ void CbmStsPhysics::ReadDataTablesLandauWidth() {
       fLandauWidth[q] = err;
     }
     inFile.close();
-    LOG(info) << "StsPhysics: " << setw(5) << right << fLandauWidth.size()
-              << " values read from " << errFileName;
-  } else
+    LOG(info) << "StsPhysics: " << setw(5) << right << fLandauWidth.size() << " values read from " << errFileName;
+  }
+  else
     LOG(fatal) << "StsPhysics: Could not read from " << errFileName;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Read data tables for stopping power   ---------------------------
-void CbmStsPhysics::ReadDataTablesStoppingPower() {
+void CbmStsPhysics::ReadDataTablesStoppingPower()
+{
 
   // The data tables are obtained from the NIST ESTAR and PSTAR databases:
   // http://www.nist.gov/pml/data/star/index.cfm
@@ -293,9 +290,9 @@ void CbmStsPhysics::ReadDataTablesStoppingPower() {
       fStoppingElectron[e] = dedx;
     }
     inFile.close();
-    LOG(info) << "StsPhysics: " << setw(5) << right << fStoppingElectron.size()
-              << " values read from " << eFileName;
-  } else
+    LOG(info) << "StsPhysics: " << setw(5) << right << fStoppingElectron.size() << " values read from " << eFileName;
+  }
+  else
     LOG(fatal) << "StsPhysics: Could not read from " << eFileName;
 
   // --- Read proton stopping power
@@ -310,16 +307,17 @@ void CbmStsPhysics::ReadDataTablesStoppingPower() {
       fStoppingProton[e] = dedx;
     }
     inFile.close();
-    LOG(info) << "StsPhysics: " << setw(5) << right << fStoppingProton.size()
-              << " values read from " << pFileName;
-  } else
+    LOG(info) << "StsPhysics: " << setw(5) << right << fStoppingProton.size() << " values read from " << pFileName;
+  }
+  else
     LOG(fatal) << "StsPhysics: Could not read from " << pFileName;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set the parameters for the Urban model   ------------------------
-void CbmStsPhysics::SetUrbanParameters(Double_t z) {
+void CbmStsPhysics::SetUrbanParameters(Double_t z)
+{
 
   // --- Mean ionisation potential according to PHYS333 2.1
   fUrbanI = 1.6e-8 * TMath::Power(z, 0.9);  // in GeV
@@ -338,24 +336,23 @@ void CbmStsPhysics::SetUrbanParameters(Double_t z) {
 
   // --- Energy levels [GeV]
   fUrbanE2 = 1.e-8 * z * z;
-  fUrbanE1 =
-    TMath::Power(fUrbanI / TMath::Power(fUrbanE2, fUrbanF2), 1. / fUrbanF1);
+  fUrbanE1 = TMath::Power(fUrbanI / TMath::Power(fUrbanE2, fUrbanF2), 1. / fUrbanF1);
 
   // --- Relative weight excitation / ionisation
   fUrbanR = 0.4;
 
   // --- Screen output
   LOG(info) << "StsPhysics: Urban parameters for z = " << z << " :";
-  LOG(info) << "I = " << fUrbanI * 1.e9 << " eV, Emax = " << fUrbanEmax * 1.e9
-            << " eV, E1 = " << fUrbanE1 * 1.e9
-            << " eV, E2 = " << fUrbanE2 * 1.e9 << " eV, f1 = " << fUrbanF1
-            << ", f2 = " << fUrbanF2 << ", r = " << fUrbanR;
+  LOG(info) << "I = " << fUrbanI * 1.e9 << " eV, Emax = " << fUrbanEmax * 1.e9 << " eV, E1 = " << fUrbanE1 * 1.e9
+            << " eV, E2 = " << fUrbanE2 * 1.e9 << " eV, f1 = " << fUrbanF1 << ", f2 = " << fUrbanF2
+            << ", r = " << fUrbanR;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Stopping power   ------------------------------------------------
-Double_t CbmStsPhysics::StoppingPower(Double_t eKin, Int_t pid) {
+Double_t CbmStsPhysics::StoppingPower(Double_t eKin, Int_t pid)
+{
 
   Double_t mass = ParticleMass(pid);
   if (mass < 0.) return 0.;
@@ -368,15 +365,12 @@ Double_t CbmStsPhysics::StoppingPower(Double_t eKin, Int_t pid) {
 
 
 // -----   Stopping power   ------------------------------------------------
-Double_t CbmStsPhysics::StoppingPower(Double_t energy,
-                                      Double_t mass,
-                                      Double_t charge,
-                                      Bool_t isElectron) {
+Double_t CbmStsPhysics::StoppingPower(Double_t energy, Double_t mass, Double_t charge, Bool_t isElectron)
+{
 
   // --- Get interpolated value from data table
   Double_t stopPower = -1.;
-  if (isElectron)
-    stopPower = InterpolateDataTable(energy, fStoppingElectron);
+  if (isElectron) stopPower = InterpolateDataTable(energy, fStoppingElectron);
   else {
     Double_t eEquiv = energy * kProtonMass / mass;  // equiv. proton energy
     stopPower       = InterpolateDataTable(eEquiv, fStoppingProton);

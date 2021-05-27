@@ -18,15 +18,12 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco_gp(
-  Int_t nEvents  = 100,
-  TString cSys   = "nini",
-  TString cEbeam = "1.93gev",
-  TString cCentr = "mbias",
-  Int_t iRun     = 1,
-  //             const char* setupName = "sis18_mcbm_25deg")
-  //             const char* setupName = "sis18_mcbm_20deg_short")
-  const char* setupName = "sis18_mcbm_20deg_long") {
+void mcbm_reco_gp(Int_t nEvents = 100, TString cSys = "nini", TString cEbeam = "1.93gev", TString cCentr = "mbias",
+                  Int_t iRun = 1,
+                  //             const char* setupName = "sis18_mcbm_25deg")
+                  //             const char* setupName = "sis18_mcbm_20deg_short")
+                  const char* setupName = "sis18_mcbm_20deg_long")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -37,7 +34,7 @@ void mcbm_reco_gp(
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_new";  // this macro's name for screen output
+  TString myName = "run_reco_new";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -48,15 +45,13 @@ void mcbm_reco_gp(
   cout << "directories set!" << endl;
   TString outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
 
-  TString inFile =
-    outDir + setupName + "_test10.mc.root";  // Input file (MC events)
+  TString inFile  = outDir + setupName + "_test10.mc.root";   // Input file (MC events)
   TString parFile = outDir + setupName + "_params10.root";    // Parameter file
   TString outFile = outDir + setupName + "_test10.eds.root";  // Output file
 
   TString geoFile = outDir + setupName + "_geofile_full.root";
 
-  TString resultDir =
-    "/home/aghoehne/Documents/CbmRoot/Gregor/results_mcbm_rich";
+  TString resultDir = "/home/aghoehne/Documents/CbmRoot/Gregor/results_mcbm_rich";
 
   //  TString inFile  = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root"; // Input file (MC events)
   //  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";  // Parameter file
@@ -89,25 +84,19 @@ void mcbm_reco_gp(
 
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
 
@@ -233,12 +222,10 @@ void mcbm_reco_gp(
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully" << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -281,8 +268,7 @@ void mcbm_reco_gp(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

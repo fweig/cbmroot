@@ -1,8 +1,6 @@
 
-void fitm2(Float_t beamMomentum,
-           Float_t timeResolution,
-           Float_t purity,
-           Int_t level) {
+void fitm2(Float_t beamMomentum, Float_t timeResolution, Float_t purity, Int_t level)
+{
   if (level < 1 || level > 3) return;
 
   // Load libraries
@@ -33,36 +31,24 @@ void fitm2(Float_t beamMomentum,
 
   char* ver = getenv("CBMVER");
 
-  sprintf(strOutputFile,
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
+  sprintf(strOutputFile, "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
 auau/%1.0fgev/centr",
-          ver,
-          beamMomentum);
+          ver, beamMomentum);
   sprintf(strMkdir, "mkdir -p %s", strOutputFile);
   system(strMkdir);
-  sprintf(strParamFile,
-          "/lustre/cbm/user/kresan/mc/%s/urqmd/\
+  sprintf(strParamFile, "/lustre/cbm/user/kresan/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.mc.param.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
-  sprintf(strInputFile,
-          "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
+          ver, beamMomentum, beamMomentum);
+  sprintf(strInputFile, "/lustre/cbm/user/kresan/hadron/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%1.0fps.m2mom",
-          ver,
-          beamMomentum,
-          beamMomentum,
-          timeResolution);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.fitted",
-          strOutputFile,
-          beamMomentum,
-          timeResolution,
-          purity);
+          ver, beamMomentum, beamMomentum, timeResolution);
+  sprintf(strOutputFile, "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.%1.0fpercent.fitted", strOutputFile, beamMomentum,
+          timeResolution, purity);
   if (2 == level) {
     sprintf(strInputFile, "%s.recoIdeal", strInputFile);
     sprintf(strOutputFile, "%s.recoIdeal", strOutputFile);
-  } else if (3 == level) {
+  }
+  else if (3 == level) {
     sprintf(strInputFile, "%s.reco", strInputFile);
     sprintf(strOutputFile, "%s.reco", strOutputFile);
   }

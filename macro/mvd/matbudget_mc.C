@@ -16,7 +16,8 @@
 
 // void matbudget_mc(Int_t nEvents = 10      , const char* mvdGeo = "v17a_tr")
 // void matbudget_mc(Int_t nEvents = 10000 , const char* mvdGeo = "v17a_tr")
-void matbudget_mc(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
+void matbudget_mc(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -189,8 +190,7 @@ void matbudget_mc(Int_t nEvents = 10000000, const char* mvdGeo = "v17a_tr") {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

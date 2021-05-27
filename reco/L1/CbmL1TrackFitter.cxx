@@ -13,7 +13,12 @@
  *
  */
 
+#include "CbmKF.h"
+#include "CbmKFMath.h"
+#include "CbmKFPrimaryVertexFinder.h"
 #include "CbmL1.h"
+
+#include "TStopwatch.h"
 
 #include "L1Algo/L1AddMaterial.h"
 #include "L1Algo/L1Algo.h"
@@ -22,13 +27,8 @@
 #include "L1Algo/L1StsHit.h"
 #include "L1Algo/L1TrackPar.h"
 
-#include "CbmKF.h"
-#include "CbmKFMath.h"
-#include "CbmKFPrimaryVertexFinder.h"
-
-#include "TStopwatch.h"
-
-void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V) {
+void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
+{
   TStopwatch timer;
   timer.Start();
   /*

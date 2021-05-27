@@ -5,7 +5,8 @@ static Double_t fieldScale;
 #include <iostream>
 using namespace std;
 
-void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
+void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -15,60 +16,72 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
   // -----   In- and output file names   ------------------------------------
   TString setupName = "", outDir = "";
   //    if (geom == 0) {setupName = "setup_align";}
-  if (geom == 0) {
-    setupName = "setup_test_1";
-  } else if (geom == 1) {
+  if (geom == 0) { setupName = "setup_test_1"; }
+  else if (geom == 1) {
     setupName = "setup_misalign_gauss_sigma_1";
-  } else if (geom == 2) {
+  }
+  else if (geom == 2) {
     setupName = "setup_misalign_gauss_sigma_2";
-  } else if (geom == 3) {
+  }
+  else if (geom == 3) {
     setupName = "setup_misalign_gauss_sigma_3";
-  } else if (geom == 4) {
+  }
+  else if (geom == 4) {
     setupName = "setup_misalign_gauss_sigma_5";
   }
 
   if (script == "yes") {
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
     outDir    = TString(gSystem->Getenv("OUT_DIR"));
-  } else {
+  }
+  else {
     if (input == 1) {
       // if (geom == 0) {outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/Only_e_p/";}
-      if (geom == 0) {
-        outDir = "/data/Sim_Outputs/Sim_Thesis/Only_e_p/";
-      } else if (geom == 1) {
+      if (geom == 0) { outDir = "/data/Sim_Outputs/Sim_Thesis/Only_e_p/"; }
+      else if (geom == 1) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_1mrad/Only_e_p/";
-      } else if (geom == 2) {
+      }
+      else if (geom == 2) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_2mrad/Only_e_p/";
-      } else if (geom == 3) {
+      }
+      else if (geom == 3) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_3mrad/Only_e_p/";
-      } else if (geom == 4) {
+      }
+      else if (geom == 4) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_5mrad/Only_e_p/";
       }
-    } else if (input == 2) {
-      if (geom == 0) {
-        outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/AuAu_10AGeV/";
-      } else if (geom == 1) {
+    }
+    else if (input == 2) {
+      if (geom == 0) { outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/AuAu_10AGeV/"; }
+      else if (geom == 1) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_1mrad/AuAu_10AGeV/";
-      } else if (geom == 2) {
+      }
+      else if (geom == 2) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_2mrad/AuAu_10AGeV/";
-      } else if (geom == 3) {
+      }
+      else if (geom == 3) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_3mrad/AuAu_10AGeV/";
-      } else if (geom == 4) {
+      }
+      else if (geom == 4) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_5mrad/AuAu_10AGeV/";
       }
-    } else if (input == 3) {
-      if (geom == 0) {
-        outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/AuAu_8AGeV/";
-      } else if (geom == 1) {
+    }
+    else if (input == 3) {
+      if (geom == 0) { outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/AuAu_8AGeV/"; }
+      else if (geom == 1) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_1mrad/AuAu_8AGeV/";
-      } else if (geom == 2) {
+      }
+      else if (geom == 2) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_2mrad/AuAu_8AGeV/";
-      } else if (geom == 3) {
+      }
+      else if (geom == 3) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_3mrad/AuAu_8AGeV/";
-      } else if (geom == 4) {
+      }
+      else if (geom == 4) {
         outDir = "/data/Sim_Outputs/Sim_Thesis/Misaligned_5mrad/AuAu_8AGeV/";
       }
-    } else if (input == 4) {
+    }
+    else if (input == 4) {
       outDir = "/data/Sim_Outputs/Sim_Thesis/Aligned/AuAu_25AGeV/";
     }
   }
@@ -84,22 +97,20 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
                  "misalignment_correction/Sim_Thesis/geosetup/"
                  + setupName + ".C";
 
-  TString boxGen = "yes";  // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 5;   // number of e- to be generated
-  Int_t NPOSITRONS  = 5;   // number of e+ to be generated
+  TString boxGen    = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS  = 5;      // number of e- to be generated
+  Int_t NPOSITRONS  = 5;      // number of e+ to be generated
   TString urqmd     = "";
   TString urqmdFile = "";
-  if (input == 2 || input == 3 || input == 4) {
-    urqmd = "yes";
-  }  // If "yes" then UrQMD will be used as background
+  if (input == 2 || input == 3 || input == 4) { urqmd = "yes"; }  // If "yes" then UrQMD will be used as background
   else {
     urqmd = "no";
   }
-  if (input == 2) {
-    urqmdFile = "/data/ROOT6/trunk/input/urqmd.auau.10gev.centr.00010.root";
-  } else if (input == 3) {
+  if (input == 2) { urqmdFile = "/data/ROOT6/trunk/input/urqmd.auau.10gev.centr.00010.root"; }
+  else if (input == 3) {
     urqmdFile = "/data/ROOT6/trunk/input/urqmd.auau.8gev.centr.00010.root";
-  } else if (input == 4) {
+  }
+  else if (input == 4) {
     urqmdFile = "/data/ROOT6/trunk/input/urqmd.auau.25gev.centr.00010.root";
   }
   cout << "urqmd: " << urqmd << endl;
@@ -118,8 +129,7 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
          << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
          << "urqmdFile: " << TString(gSystem->Getenv("URQMD_FILE")) << endl;
 
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/matching/geosetup/"
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/matching/geosetup/"
                    + TString(gSystem->Getenv("GEO_SETUP_FILE"));
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
 
@@ -132,8 +142,7 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
     //        plutoParticle = TString(gSystem->Getenv("PLUTO_PARTICLE"));
   }
 
-  std::cout << "-I- using geoSetupFile: " << geoSetupFile
-            << " and setupName: " << setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: " << setupName << std::endl;
 
   remove(parFile.Data());
   remove(mcFile.Data());
@@ -163,8 +172,7 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -210,11 +218,10 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -329,8 +336,7 @@ void run_sim(Int_t nEvents = 200, Int_t input = 1, Int_t geom = 0) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

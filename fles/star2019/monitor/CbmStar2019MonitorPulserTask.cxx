@@ -46,22 +46,23 @@ CbmStar2019MonitorPulserTask::CbmStar2019MonitorPulserTask()
   , fuHistoryHistoSize(1800)
   , fParCList(nullptr)
   , fulTsCounter(0)
-  , fMonitorPulserAlgo(nullptr) {
+  , fMonitorPulserAlgo(nullptr)
+{
   fMonitorPulserAlgo = new CbmStar2019MonitorPulserAlgo();
 }
 
-CbmStar2019MonitorPulserTask::~CbmStar2019MonitorPulserTask() {
-  delete fMonitorPulserAlgo;
-}
+CbmStar2019MonitorPulserTask::~CbmStar2019MonitorPulserTask() { delete fMonitorPulserAlgo; }
 
-Bool_t CbmStar2019MonitorPulserTask::Init() {
+Bool_t CbmStar2019MonitorPulserTask::Init()
+{
   LOG(info) << "CbmStar2019MonitorPulserTask::Init";
   LOG(info) << "Initializing eTOF 2019 Monitor task";
 
   return kTRUE;
 }
 
-void CbmStar2019MonitorPulserTask::SetParContainers() {
+void CbmStar2019MonitorPulserTask::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   fParCList = fMonitorPulserAlgo->GetParList();
@@ -71,12 +72,11 @@ void CbmStar2019MonitorPulserTask::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -85,12 +85,13 @@ void CbmStar2019MonitorPulserTask::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmStar2019MonitorPulserTask::InitContainers() {
+Bool_t CbmStar2019MonitorPulserTask::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  CbmStar2019TofPar* pUnpackPar = dynamic_cast<CbmStar2019TofPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmStar2019TofPar"));
+  CbmStar2019TofPar* pUnpackPar =
+    dynamic_cast<CbmStar2019TofPar*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmStar2019TofPar"));
   if (nullptr == pUnpackPar) {
     LOG(error) << "Failed to obtain parameter container CbmStar2019TofPar";
     return kFALSE;
@@ -110,11 +111,9 @@ Bool_t CbmStar2019MonitorPulserTask::InitContainers() {
   initOK &= fMonitorPulserAlgo->CreateHistograms();
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos =
-    fMonitorPulserAlgo->GetHistoVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorPulserAlgo->GetHistoVector();
   /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
-  std::vector<std::pair<TCanvas*, std::string>> vCanvases =
-    fMonitorPulserAlgo->GetCanvasVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = fMonitorPulserAlgo->GetCanvasVector();
 
   /// Register the histos in the HTTP server
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
@@ -122,8 +121,7 @@ Bool_t CbmStar2019MonitorPulserTask::InitContainers() {
     for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
       //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
       //                   << " in " << vHistos[ uHisto ].second.data();
-      server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                       vHistos[uHisto].first);
+      server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
     for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
@@ -133,10 +131,8 @@ Bool_t CbmStar2019MonitorPulserTask::InitContainers() {
                        gROOT->FindObject((vCanvases[uCanv].first)->GetName()));
     }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
 
-    server->RegisterCommand("/Reset_Pulser_Hist",
-                            "bStar2019MonitorPulserTaskResetHistos=kTRUE");
-    server->RegisterCommand("/Save_Pulser_Hist",
-                            "bStar2019MonitorPulserTaskSaveHistos=kTRUE");
+    server->RegisterCommand("/Reset_Pulser_Hist", "bStar2019MonitorPulserTaskResetHistos=kTRUE");
+    server->RegisterCommand("/Save_Pulser_Hist", "bStar2019MonitorPulserTaskSaveHistos=kTRUE");
 
     server->Restrict("/Reset_Moni_Hist", "allow=admin");
     server->Restrict("/Save_Pulser_Hist", "allow=admin");
@@ -145,20 +141,21 @@ Bool_t CbmStar2019MonitorPulserTask::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmStar2019MonitorPulserTask::ReInitContainers() {
+Bool_t CbmStar2019MonitorPulserTask::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fMonitorPulserAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmStar2019MonitorPulserTask::AddMsComponentToList(size_t component,
-                                                        UShort_t usDetectorId) {
+void CbmStar2019MonitorPulserTask::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fMonitorPulserAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmStar2019MonitorPulserTask::DoUnpack(const fles::Timeslice& ts,
-                                              size_t /*component*/) {
+Bool_t CbmStar2019MonitorPulserTask::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   if (bStar2019MonitorPulserTaskResetHistos) {
     LOG(info) << "Reset Monitor histos ";
     fMonitorPulserAlgo->ResetHistograms();
@@ -172,8 +169,7 @@ Bool_t CbmStar2019MonitorPulserTask::DoUnpack(const fles::Timeslice& ts,
   }  // if( bStar2019MonitorPulserTaskSaveHistos )
 
   if (kFALSE == fMonitorPulserAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fMonitorPulserAlgo->ProcessTs( ts ) )
 
@@ -181,8 +177,7 @@ Bool_t CbmStar2019MonitorPulserTask::DoUnpack(const fles::Timeslice& ts,
   std::vector<CbmTofDigi> vDigi = fMonitorPulserAlgo->GetVector();
   fMonitorPulserAlgo->ClearVector();
 
-  if (0 == fulTsCounter % 10000)
-    LOG(info) << "Processed " << fulTsCounter << "TS";
+  if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << "TS";
   fulTsCounter++;
 
   return kTRUE;
@@ -190,21 +185,22 @@ Bool_t CbmStar2019MonitorPulserTask::DoUnpack(const fles::Timeslice& ts,
 
 void CbmStar2019MonitorPulserTask::Reset() {}
 
-void CbmStar2019MonitorPulserTask::Finish() {
+void CbmStar2019MonitorPulserTask::Finish()
+{
   fMonitorPulserAlgo->UpdateStats();
   SaveHistograms();
 }
 
-void CbmStar2019MonitorPulserTask::SetIgnoreOverlapMs(Bool_t bFlagIn) {
+void CbmStar2019MonitorPulserTask::SetIgnoreOverlapMs(Bool_t bFlagIn)
+{
   fMonitorPulserAlgo->SetIgnoreOverlapMs(bFlagIn);
 }
 
-Bool_t CbmStar2019MonitorPulserTask::SaveHistograms() {
+Bool_t CbmStar2019MonitorPulserTask::SaveHistograms()
+{
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos =
-    fMonitorPulserAlgo->GetHistoVector();
-  std::vector<std::pair<TCanvas*, std::string>> vCanvas =
-    fMonitorPulserAlgo->GetCanvasVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos  = fMonitorPulserAlgo->GetHistoVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvas = fMonitorPulserAlgo->GetCanvasVector();
 
   /// (Re-)Create ROOT file to store the histos
   TDirectory* oldDir = NULL;

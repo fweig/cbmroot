@@ -10,9 +10,10 @@
 
 #include "FairTask.h"
 
+#include <tuple>
+
 #include <map>
 #include <set>
-#include <tuple>
 #include <vector>
 
 
@@ -40,21 +41,11 @@ public:
   //    virtual void FinishEvent();
 
   void SetEventWindow(Double_t dWindow) { fdEventWindow = dWindow; }
-  void SetTriggerCounter(Int_t iModuleType,
-                         Int_t iModuleIndex,
-                         Int_t iCounterIndex,
-                         Int_t iNCounterSides);
-  void SetTriggerMultiplicity(Int_t iMultiplicity) {
-    fiTriggerMultiplicity = iMultiplicity;
-  }
-  void SetPreserveMCBacklinks(Bool_t bPreserve) {
-    fbPreserveMCBacklinks = bPreserve;
-  }
+  void SetTriggerCounter(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex, Int_t iNCounterSides);
+  void SetTriggerMultiplicity(Int_t iMultiplicity) { fiTriggerMultiplicity = iMultiplicity; }
+  void SetPreserveMCBacklinks(Bool_t bPreserve) { fbPreserveMCBacklinks = bPreserve; }
   void SetDigiTotOffset(Double_t dOffset) { fdDigiToTOffset = dOffset; }
-  void SetIgnoreCounterSide(Int_t iModuleType,
-                            Int_t iModuleIndex,
-                            Int_t iCounterIndex,
-                            Int_t iCounterSide);
+  void SetIgnoreCounterSide(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex, Int_t iCounterSide);
 
 
 protected:
@@ -81,8 +72,7 @@ private:
   CbmMCEventList* fOutputMCEventList;
   TClonesArray* fTofEventDigis;
   Double_t fdEventWindow;
-  std::map<std::tuple<Int_t, Int_t, Int_t>, UChar_t>
-    fNominalTriggerCounterMultiplicity;
+  std::map<std::tuple<Int_t, Int_t, Int_t>, UChar_t> fNominalTriggerCounterMultiplicity;
   Int_t fiTriggerMultiplicity;
   Bool_t fbPreserveMCBacklinks;
   Bool_t fbMCEventBuilding;

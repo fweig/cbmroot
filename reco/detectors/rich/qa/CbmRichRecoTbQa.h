@@ -72,28 +72,19 @@ private:
 
   Int_t GetNofPrimaryMcTracks(Int_t iEv);
 
-  Bool_t
-  IsCherenkovPhoton(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
+  Bool_t IsCherenkovPhoton(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
 
-  Bool_t IsCherenkovPhotonFromPrimaryElectron(const CbmRichPoint* point,
-                                              Int_t fileId,
-                                              Int_t eventId);
+  Bool_t IsCherenkovPhotonFromPrimaryElectron(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
 
-  Bool_t IsCherenkovPhotonFromSecondaryElectron(const CbmRichPoint* point,
-                                                Int_t fileId,
-                                                Int_t eventId);
+  Bool_t IsCherenkovPhotonFromSecondaryElectron(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
 
   Bool_t IsMcPrimaryElectron(const CbmMCTrack* mctrack);
 
-  Bool_t IsCherenkovPhotonFromPion(const CbmRichPoint* point,
-                                   Int_t fileId,
-                                   Int_t eventId);
+  Bool_t IsCherenkovPhotonFromPion(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
 
   Bool_t IsMcPion(const CbmMCTrack* mctrack);
 
-  void DrawTimeLog(const string& hMainName,
-                   Int_t nofLogEvents,
-                   bool withNoise = false);
+  void DrawTimeLog(const string& hMainName, Int_t nofLogEvents, bool withNoise = false);
 
   /**
      * \brief Copy constructor.

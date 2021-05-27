@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------
 
 #include "CbmMvdPixelCharge.h"
+
 #include <iostream>
 
 
@@ -30,7 +31,8 @@ CbmMvdPixelCharge::CbmMvdPixelCharge()
   , fPointX()
   , fPointY()
   , fDominatorIndex(0)
-  , fPixelTime(-1.) {
+  , fPixelTime(-1.)
+{
   for (Int_t i = 0; i < 5; i++) {
     fTrackId[i] = -1;
     fPointId[i] = -1;
@@ -39,25 +41,18 @@ CbmMvdPixelCharge::CbmMvdPixelCharge()
   }
 }
 // -------------------------------------------------------------------------
-Bool_t CbmMvdPixelCharge::TestXY(Int_t channelNrX, Int_t channelNrY) {
+Bool_t CbmMvdPixelCharge::TestXY(Int_t channelNrX, Int_t channelNrY)
+{
 
-  if ((channelNrX == fChannelNrX) && (channelNrY == fChannelNrY)) {
-    return 1;
-  } else {
+  if ((channelNrX == fChannelNrX) && (channelNrY == fChannelNrY)) { return 1; }
+  else {
     return 0;
   };
 }
 
 // -----   Constructor with parameters   -----------------------------------
-CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge,
-                                     Int_t channelNrX,
-                                     Int_t channelNrY,
-                                     Int_t pointId,
-                                     Int_t trackId,
-                                     Float_t pointPosX,
-                                     Float_t pointPosY,
-                                     Float_t time,
-                                     Int_t frame)
+CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t channelNrY, Int_t pointId, Int_t trackId,
+                                     Float_t pointPosX, Float_t pointPosY, Float_t time, Int_t frame)
   : TObject()
   , fFrame(frame)
   , fCharge(0.)
@@ -76,7 +71,8 @@ CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge,
   , fPointX()
   , fPointY()
   , fDominatorIndex(0)
-  , fPixelTime(time) {
+  , fPixelTime(time)
+{
   for (Int_t i = 0; i < 5; i++) {
     fTrackId[i]     = -1;
     fPointId[i]     = -1;
@@ -98,10 +94,8 @@ CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge,
 // all segments of a track). Checks if a new track contributed charge to the pixel
 // Checks if the new track is dominant
 
-void CbmMvdPixelCharge::DigestCharge(Float_t pointX,
-                                     Float_t pointY,
-                                     Int_t pointId,
-                                     Int_t trackId) {
+void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Int_t pointId, Int_t trackId)
+{
   Float_t chargeContr = fTrackCharge;
 
   for (Int_t i = 0; i < fContributors; i++) {
@@ -122,7 +116,8 @@ void CbmMvdPixelCharge::DigestCharge(Float_t pointX,
       fPointY[fContributors]      = pointY;
       fPointWeight[fContributors] = chargeContr;
       fContributors               = fContributors + 1;
-    } else {
+    }
+    else {
       // 			cout << "-W- " << GetName() << " Nr of Digi Contributors is bigger than 5!!!" << endl;
     }
   }

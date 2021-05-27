@@ -15,7 +15,8 @@
 
 /// C/C++ headers
 
-CbmOffsetDigiTimeTester::CbmOffsetDigiTimeTester() {
+CbmOffsetDigiTimeTester::CbmOffsetDigiTimeTester()
+{
   CbmOffsetDigiTimeSts stsDigiCal("CbmStsDigi");
   CbmOffsetDigiTimeTof tofDigiCal("CbmTofDigi");
   CbmOffsetDigiTimeMuch muchDigiCal("CbmMuchBeamTimeDigi");

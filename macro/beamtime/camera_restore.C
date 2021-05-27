@@ -6,7 +6,8 @@ void camera_restore(const char* fname, int mode = 0)
 }
 */
 
-void writeCurrentCamera(const char* fname) {
+void writeCurrentCamera(const char* fname)
+{
   TGLCamera& c = gEve->GetDefaultGLViewer()->CurrentCamera();
   TFile* f     = TFile::Open(fname, "RECREATE");
   c.Write();
@@ -14,7 +15,8 @@ void writeCurrentCamera(const char* fname) {
 }
 
 
-void readCurrentCamera(const char* fname) {
+void readCurrentCamera(const char* fname)
+{
   TGLCamera& c = gEve->GetDefaultGLViewer()->CurrentCamera();
   TFile* f     = TFile::Open(fname, "READ");
   if (!f) return;

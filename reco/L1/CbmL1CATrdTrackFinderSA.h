@@ -12,11 +12,11 @@
 #ifndef CBML1CATRDTRACKFINDERSA_HITS
 #define CBML1CATRDTRACKFINDERSA_HITS
 
+#include "CbmTrdTrack.h"
 #include "CbmTrdTrackFinder.h"
 
-#include "CbmTrdTrack.h"
-
 #include "TStopwatch.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -70,8 +70,7 @@ public:
 
   /**  Structure contains trd hits divided per given station **/
   struct LayerWithHits {
-    LayerWithHits()
-      : hitIndex(0), mcTrackID(0), X(0), Y(0), Z(0), DX(0), DY(0), planeID(0) {}
+    LayerWithHits() : hitIndex(0), mcTrackID(0), X(0), Y(0), Z(0), DX(0), DY(0), planeID(0) {}
     Int_t hitIndex;
     Int_t mcTrackID;
     Double_t X;
@@ -117,9 +116,7 @@ private:
   std::vector<CbmTrdTrack*> fvTempArray;
   std::vector<CbmTrdTrack*> fvFoundTracks;
 
-  inline static Bool_t CompareY(LayerWithHits A, LayerWithHits B) {
-    return (A.Y < B.Y);
-  };
+  inline static Bool_t CompareY(LayerWithHits A, LayerWithHits B) { return (A.Y < B.Y); };
 
   /** Structure contains temporary values of track candidates **/
   struct TempTrackStruct {
@@ -128,9 +125,7 @@ private:
     Int_t M[12];
   } tempTrack;
 
-  inline static Bool_t CompareChi2(TempTrackStruct A, TempTrackStruct B) {
-    return (A.Chi2 < B.Chi2);
-  };
+  inline static Bool_t CompareChi2(TempTrackStruct A, TempTrackStruct B) { return (A.Chi2 < B.Chi2); };
 
 
   // iterators to vectors
@@ -152,47 +147,31 @@ private:
   CbmKFTrack* fKfTrack;  // KF track
 
   /** To check time comsumption of procedures **/
-  TStopwatch createSegments, findNeighbour, createSPs, createSPs_SL, sortSPs,
-    doFind, sortHits, tagTracks, createTracks, selectTracks, delTime,
-    secondLoopTime, refittingKF, thirdLoopTime;
+  TStopwatch createSegments, findNeighbour, createSPs, createSPs_SL, sortSPs, doFind, sortHits, tagTracks, createTracks,
+    selectTracks, delTime, secondLoopTime, refittingKF, thirdLoopTime;
 
-  Double_t totCreateSegments, totFindNeighbour, totCreateSPs, totCreateSPs_SL,
-    totSortSPs, totDoFind, totSortHits, totTagTracks, totCreateTracks,
-    totDelTime, totSecondLoopTime, totThirdLoopTime, totSelectTracks,
-    totRefittingKF;
+  Double_t totCreateSegments, totFindNeighbour, totCreateSPs, totCreateSPs_SL, totSortSPs, totDoFind, totSortHits,
+    totTagTracks, totCreateTracks, totDelTime, totSecondLoopTime, totThirdLoopTime, totSelectTracks, totRefittingKF;
 
   void DeleteTracklets(std::vector<CbmL1TrdTracklet4*> vect);
   void DeleteTracklets(std::vector<CbmL1TrdTracklet*> vect);
 
-  Double_t
-  DistTwoTrackletsX(Int_t iIndexFirst, Int_t iIndexSecond, Double_t zed);
+  Double_t DistTwoTrackletsX(Int_t iIndexFirst, Int_t iIndexSecond, Double_t zed);
 
-  Double_t
-  DistTwoTrackletsY(Int_t iIndexFirst, Int_t iIndexSecond, Double_t zed);
+  Double_t DistTwoTrackletsY(Int_t iIndexFirst, Int_t iIndexSecond, Double_t zed);
 
-  void CreateSpacePoints(std::vector<LayerWithHits> vTrdHitArrayA,
-                         std::vector<LayerWithHits> vTrdHitArrayB,
-                         std::vector<CbmL1TrdTracklet*>& clSpacePointsAB,
-                         Double_t sigmaA,
-                         Double_t sigmaB);
+  void CreateSpacePoints(std::vector<LayerWithHits> vTrdHitArrayA, std::vector<LayerWithHits> vTrdHitArrayB,
+                         std::vector<CbmL1TrdTracklet*>& clSpacePointsAB, Double_t sigmaA, Double_t sigmaB);
 
-  void CreateSegments(std::vector<CbmL1TrdTracklet*> clSpacePointsAB,
-                      std::vector<CbmL1TrdTracklet*> clSpacePointsCD,
-                      std::vector<CbmL1TrdTracklet4*>& clTrackletsAD,
-                      Double_t dX,
-                      Double_t dY);
+  void CreateSegments(std::vector<CbmL1TrdTracklet*> clSpacePointsAB, std::vector<CbmL1TrdTracklet*> clSpacePointsCD,
+                      std::vector<CbmL1TrdTracklet4*>& clTrackletsAD, Double_t dX, Double_t dY);
 
-  void TagSegments(std::vector<CbmL1TrdTracklet4*>& clTrackletsA,
-                   std::vector<CbmL1TrdTracklet4*>& clTrackletsB,
+  void TagSegments(std::vector<CbmL1TrdTracklet4*>& clTrackletsA, std::vector<CbmL1TrdTracklet4*>& clTrackletsB,
                    Int_t noCombSegments = 0);
 
-  void CreateTracks(std::vector<CbmL1TrdTracklet4*> clTracklets14,
-                    std::vector<CbmL1TrdTracklet4*> clTracklets58,
-                    std::vector<CbmL1TrdTracklet4*> clTracklets912,
-                    std::set<Int_t>& setUsedHits,
-                    Bool_t removeUsedHits,
-                    Bool_t competition = true,
-                    Int_t nrLoop       = 0);
+  void CreateTracks(std::vector<CbmL1TrdTracklet4*> clTracklets14, std::vector<CbmL1TrdTracklet4*> clTracklets58,
+                    std::vector<CbmL1TrdTracklet4*> clTracklets912, std::set<Int_t>& setUsedHits, Bool_t removeUsedHits,
+                    Bool_t competition = true, Int_t nrLoop = 0);
 
   void CreateAndManageSegments(std::vector<CbmL1TrdTracklet4*> clTracklets14,
                                std::vector<CbmL1TrdTracklet4*> clTracklets58,
@@ -200,9 +179,7 @@ private:
 
   Bool_t OverlapsHitsXY(Int_t posA, Int_t posB);
 
-  void FindNeighbour(std::vector<CbmL1TrdTracklet4*>& v1,
-                     std::vector<CbmL1TrdTracklet4*>& v2,
-                     Double_t dY,
+  void FindNeighbour(std::vector<CbmL1TrdTracklet4*>& v1, std::vector<CbmL1TrdTracklet4*>& v2, Double_t dY,
                      Double_t dX);
 
   /** Fitting procedures **/
@@ -303,10 +280,9 @@ public:
   std::map<Int_t, Int_t> fTotHits;
 
   /** Function for sorting **/
-  static Bool_t CompareChi2TrdTrack(const CbmTrdTrack* a,
-                                    const CbmTrdTrack* b) {
-    return (a->GetChiSq() / static_cast<Double_t>(a->GetNDF())
-            < b->GetChiSq() / static_cast<Double_t>(b->GetNDF()));
+  static Bool_t CompareChi2TrdTrack(const CbmTrdTrack* a, const CbmTrdTrack* b)
+  {
+    return (a->GetChiSq() / static_cast<Double_t>(a->GetNDF()) < b->GetChiSq() / static_cast<Double_t>(b->GetNDF()));
   };
 
   ClassDef(CbmL1CATrdTrackFinderSA, 1);

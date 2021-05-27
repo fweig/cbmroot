@@ -1,4 +1,5 @@
-void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
+void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -116,10 +117,7 @@ void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
       //    if (100>hDT04proY[iBinL]->GetEntries()) continue; // limit stat. fluctuations
 
       fFitRes[iBinL] = (TFitResultPtr) hDT04proY[iBinL]->Fit("Gaus", "S");
-      cout << Form("Fit with iBinL = %d : %6.1f, Lim %6.1f, RMS : %6.1f ",
-                   iBinL,
-                   fFitRes[iBinL]->Parameter(2),
-                   BRes,
+      cout << Form("Fit with iBinL = %d : %6.1f, Lim %6.1f, RMS : %6.1f ", iBinL, fFitRes[iBinL]->Parameter(2), BRes,
                    hDT04proY[iBinL]->GetRMS());
       cout << endl;
 
@@ -136,17 +134,14 @@ void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
 
       Double_t param[3];
       gfit->GetParameters(param);
-      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[2]
-           << ", " << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
+      cout << "Fit Res: " << param[0] << ", " << param[1] << ", " << param[2] << ", "
+           << gfit->Integral(-DTMax, DTMax, &param[0]) << endl;
 
       Double_t BinWidth = hDT04proY[iBinL]->GetBinWidth(0);
 
 
-      Double_t dOut =
-        hDT04proY[iBinL]->Integral(
-          0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
-        + hDT04proY[iBinL]->Integral(
-          hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
+      Double_t dOut = hDT04proY[iBinL]->Integral(0, hDT04proY[iBinL]->FindBin(param[1] - 3. * param[2]))
+                      + hDT04proY[iBinL]->Integral(hDT04proY[iBinL]->FindBin(param[1] + 3. * param[2]), iNbinsX - 1);
 
       cout << "dOut =" << dOut << endl;
 
@@ -160,8 +155,7 @@ void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
         hSigma->SetBinContent(iB, fFitRes[iBinL]->Parameter(2));
         hGMean->SetBinContent(iB, fFitRes[iBinL]->Parameter(1));
         hCnts->SetBinContent(iB, hDT04proY[iBinL]->Integral());
-        hInt->SetBinContent(
-          iB, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
+        hInt->SetBinContent(iB, (Double_t) gfit->Integral(-DTMax, DTMax, &param[0]) / BinWidth);
         hOut->SetBinContent(iB, dOut / hInt->GetBinContent(iBinL));
       }
 
@@ -182,7 +176,8 @@ void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
     }
   }
 */
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -211,17 +206,10 @@ void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1) {
   Double_t dEff = NFinalHits / NEvents;
   cout << Form("<I> Efficiency: %6.3f, overall 1-sigma timing resolution: "
                "%6.1f ps, RMS: %6.1f ps",
-               dEff,
-               dTRes,
-               dTRMS)
+               dEff, dTRes, dTRMS)
        << endl;
   cout << Form("    D4best 1-sigma timing resolution at lower index %d: %6.1f "
                "ps, RMS: %6.1f ps from  %6.0f entries of %6.0f (%6.3f)",
-               BL,
-               BRes,
-               Brms,
-               BEntries,
-               NEvents,
-               BEntries / NEvents)
+               BL, BRes, Brms, BEntries, NEvents, BEntries / NEvents)
        << endl;
 }

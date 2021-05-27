@@ -40,10 +40,9 @@ Double_t fieldZ     = 0.;
 Double_t fieldScale = 0.;
 Int_t fieldSymType  = 0;
 
-void mvd_CbmUniGen_sim_cluster(const char* input  = "auau.25gev",
-                               const char* system = "centr",
-                               Int_t nEvents      = 1,
-                               const char* setup  = "sis100_electron") {
+void mvd_CbmUniGen_sim_cluster(const char* input = "auau.25gev", const char* system = "centr", Int_t nEvents = 1,
+                               const char* setup = "sis100_electron")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -171,9 +170,8 @@ void mvd_CbmUniGen_sim_cluster(const char* input  = "auau.25gev",
 
 
   // -----   Create magnetic field   ---------------------------------------
-  if (2 == fieldSymType) {
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     CbmFieldMap* magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -222,7 +220,6 @@ void mvd_CbmUniGen_sim_cluster(const char* input  = "auau.25gev",
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

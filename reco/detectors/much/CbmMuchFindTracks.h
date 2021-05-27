@@ -27,9 +27,7 @@ public:
 	*@param title  Task title
 	*@param finder Pointer to STS track finder concrete class
 	**/
-  CbmMuchFindTracks(const char* name,
-                    const char* title          = "FairTask",
-                    CbmMuchTrackFinder* finder = NULL);
+  CbmMuchFindTracks(const char* name, const char* title = "FairTask", CbmMuchTrackFinder* finder = NULL);
 
   /** Destructor **/
   virtual ~CbmMuchFindTracks();

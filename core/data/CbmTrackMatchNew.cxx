@@ -15,12 +15,12 @@
 using std::make_pair;
 using std::stringstream;
 
-CbmTrackMatchNew::CbmTrackMatchNew()
-  : CbmMatch(), fNofTrueHits(0), fNofWrongHits(0) {}
+CbmTrackMatchNew::CbmTrackMatchNew() : CbmMatch(), fNofTrueHits(0), fNofWrongHits(0) {}
 
 CbmTrackMatchNew::~CbmTrackMatchNew() {}
 
-std::string CbmTrackMatchNew::ToString() const {
+std::string CbmTrackMatchNew::ToString() const
+{
   stringstream ss;
   ss << "CbmMatch: ";
   Int_t nofLinks = GetNofLinks();
@@ -29,9 +29,8 @@ std::string CbmTrackMatchNew::ToString() const {
     const CbmLink& link = fLinks[i];
     ss << link.ToString();
   }
-  ss << "| totalWeight=" << fTotalWeight << ", matchedIndex=" << fMatchedIndex
-     << " nofTrueHits=" << fNofTrueHits << " nofWrongHits=" << fNofWrongHits
-     << std::endl;
+  ss << "| totalWeight=" << fTotalWeight << ", matchedIndex=" << fMatchedIndex << " nofTrueHits=" << fNofTrueHits
+     << " nofWrongHits=" << fNofWrongHits << std::endl;
   return ss.str();
 }
 

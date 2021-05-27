@@ -112,10 +112,8 @@ CbmMcbm2018MonitorTofPulser::CbmMcbm2018MonitorTofPulser()
   , fdTsLastPulserHit()
   , fvuCoincNbHitsLastMs()
   , fvdCoincTsLastHit()
-  , dMinDt(-1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.)
-           - gdpbv100::kdBinSize / 2.)
-  , dMaxDt(1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.)
-           + gdpbv100::kdBinSize / 2.)
+  , dMinDt(-1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) - gdpbv100::kdBinSize / 2.)
+  , dMaxDt(1. * (kuNbBinsDt * gdpbv100::kdBinSize / 2.) + gdpbv100::kdBinSize / 2.)
   , fuNbFeePlot(2)
   , fuNbFeePlotsPerGdpb(0)
   , fdStartTime(-1.)
@@ -141,29 +139,30 @@ CbmMcbm2018MonitorTofPulser::CbmMcbm2018MonitorTofPulser()
   , fvuGet4ToPadi()
   , fvuElinkToGet4()
   , fvuGet4ToElink()
-  , fTimeLastHistoSaving() {}
+  , fTimeLastHistoSaving()
+{
+}
 
 CbmMcbm2018MonitorTofPulser::~CbmMcbm2018MonitorTofPulser() {}
 
-Bool_t CbmMcbm2018MonitorTofPulser::Init() {
+Bool_t CbmMcbm2018MonitorTofPulser::Init()
+{
   LOG(info) << "Initializing Get4 monitor";
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL) {
-    LOG(fatal) << "No FairRootManager instance";
-  }  // if( ioman == NULL )
+  if (ioman == NULL) { LOG(fatal) << "No FairRootManager instance"; }  // if( ioman == NULL )
 
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorTofPulser::SetParContainers() {
+void CbmMcbm2018MonitorTofPulser::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
-  fUnpackPar =
-    (CbmMcbm2018TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer(
-      "CbmMcbm2018TofPar"));
+  fUnpackPar = (CbmMcbm2018TofPar*) (FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018TofPar"));
 }
 
-Bool_t CbmMcbm2018MonitorTofPulser::InitContainers() {
+Bool_t CbmMcbm2018MonitorTofPulser::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
   Bool_t initOK = ReInitContainers();
 
@@ -184,7 +183,8 @@ Bool_t CbmMcbm2018MonitorTofPulser::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
+Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
@@ -215,8 +215,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   fuNrOfGbtx = fUnpackPar->GetNrOfGbtx();
@@ -265,8 +264,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
   fuCoreMs         = fuTotalMsNb - fuOverlapMsNb;
   fdMsSizeInNs     = fUnpackPar->GetSizeMsInNs();
   fdTsCoreSizeInNs = fdMsSizeInNs * fuCoreMs;
-  LOG(info) << "Timeslice parameters: " << fuTotalMsNb
-            << " MS per link, of which " << fuOverlapMsNb
+  LOG(info) << "Timeslice parameters: " << fuTotalMsNb << " MS per link, of which " << fuOverlapMsNb
             << " overlap MS, each MS is " << fdMsSizeInNs << " ns";
 
   /// STAR Trigger decoding and monitoring
@@ -313,14 +311,12 @@ Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
 */
   /// From NH files, for Fall 2018 detectors
   UInt_t uGet4topadi[32] = {4,  3,  2,  1,  // provided by Jochen
-                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15,
-                            14, 13, 20, 19, 18, 17, 24, 23, 22, 21,
-                            28, 27, 26, 25, 32, 31, 30, 29};
+                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15, 14, 13, 20, 19,
+                            18, 17, 24, 23, 22, 21, 28, 27, 26, 25, 32, 31, 30, 29};
 
   UInt_t uPaditoget4[32] = {4,  3,  2,  1,  // provided by Jochen
-                            12, 11, 10, 9,  20, 19, 18, 17, 28, 27,
-                            26, 25, 32, 31, 30, 29, 8,  7,  6,  5,
-                            16, 15, 14, 13, 24, 23, 22, 21};
+                            12, 11, 10, 9, 20, 19, 18, 17, 28, 27, 26, 25, 32, 31,
+                            30, 29, 8,  7, 6,  5,  16, 15, 14, 13, 24, 23, 22, 21};
 
   for (UInt_t uChan = 0; uChan < fuNrOfChannelsPerFee; ++uChan) {
     fvuPadiToGet4[uChan] = uPaditoget4[uChan] - 1;
@@ -331,14 +327,12 @@ Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
   /// TODO: move these constants somewhere shared, e.g the parameter file
   fvuElinkToGet4.resize(kuNbGet4PerGbtx);
   fvuGet4ToElink.resize(kuNbGet4PerGbtx);
-  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {
-    27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
-    10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
-    18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
-  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {
-    24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
-    13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
-    30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
+  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
+                                           10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
+                                           18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
+  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
+                                           13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
+                                           30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
 
   for (UInt_t uLinkAsic = 0; uLinkAsic < kuNbGet4PerGbtx; ++uLinkAsic) {
     fvuElinkToGet4[uLinkAsic] = kuElinkToGet4[uLinkAsic];
@@ -349,9 +343,8 @@ Bool_t CbmMcbm2018MonitorTofPulser::ReInitContainers() {
 }
 
 
-void CbmMcbm2018MonitorTofPulser::AddMsComponentToList(
-  size_t component,
-  UShort_t /*usDetectorId*/) {
+void CbmMcbm2018MonitorTofPulser::AddMsComponentToList(size_t component, UShort_t /*usDetectorId*/)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -361,22 +354,15 @@ void CbmMcbm2018MonitorTofPulser::AddMsComponentToList(
 
   /// Create MS size monitoring histos
   if (NULL == fvhMsSzPerLink[component]) {
-    TString sMsSzName = Form("MsSz_link_%02lu", component);
-    TString sMsSzTitle =
-      Form("Size of MS from link %02lu; Ms Size [bytes]", component);
-    fvhMsSzPerLink[component] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
+    TString sMsSzName         = Form("MsSz_link_%02lu", component);
+    TString sMsSzTitle        = Form("Size of MS from link %02lu; Ms Size [bytes]", component);
+    fvhMsSzPerLink[component] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
 
     sMsSzName  = Form("MsSzTime_link_%02lu", component);
-    sMsSzTitle = Form(
-      "Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]",
-      component);
-    fvhMsSzTimePerLink[component] = new TProfile(sMsSzName.Data(),
-                                                 sMsSzTitle.Data(),
-                                                 100 * fuHistoryHistoSize,
-                                                 0.,
-                                                 2 * fuHistoryHistoSize);
-    THttpServer* server           = FairRunOnline::Instance()->GetHttpServer();
+    sMsSzTitle = Form("Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]", component);
+    fvhMsSzTimePerLink[component] =
+      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 100 * fuHistoryHistoSize, 0., 2 * fuHistoryHistoSize);
+    THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
     if (server) {
       server->Register("/FlibRaw", fvhMsSzPerLink[component]);
       server->Register("/FlibRaw", fvhMsSzTimePerLink[component]);
@@ -389,15 +375,16 @@ void CbmMcbm2018MonitorTofPulser::AddMsComponentToList(
     LOG(info) << "Added MS size histo for component (link): " << component;
   }  // if( NULL == fvhMsSzPerLink[ component ] )
 }
-void CbmMcbm2018MonitorTofPulser::SetNbMsInTs(size_t uCoreMsNb,
-                                              size_t uOverlapMsNb) {
+void CbmMcbm2018MonitorTofPulser::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
   fuNbCoreMsPerTs = uCoreMsNb;
   fuNbOverMsPerTs = uOverlapMsNb;
 
   //   UInt_t uNbMsTotal = fuNbCoreMsPerTs + fuNbOverMsPerTs;
 }
 
-void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
+void CbmMcbm2018MonitorTofPulser::CreateHistograms()
+{
   LOG(info) << "create Histos for " << fuNrOfGdpbs << " gDPBs ";
 
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
@@ -406,12 +393,9 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   TString title {""};
 
   // Full Fee time difference test
-  UInt_t uNbBinsDt =
-    kuNbBinsDt
-    + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
+  UInt_t uNbBinsDt = kuNbBinsDt + 1;  // To account for extra bin due to shift by 1/2 bin of both ranges
 
-  fuNbFeePlotsPerGdpb = fuNrOfFeePerGdpb / fuNbFeePlot
-                        + (0 != fuNrOfFeePerGdpb % fuNbFeePlot ? 1 : 0);
+  fuNbFeePlotsPerGdpb = fuNrOfFeePerGdpb / fuNbFeePlot + (0 != fuNrOfFeePerGdpb % fuNbFeePlot ? 1 : 0);
   Double_t dBinSzG4v2 = (6250. / 112.);
   dMinDt              = -1. * (kuNbBinsDt * dBinSzG4v2 / 2.) - dBinSzG4v2 / 2.;
   dMaxDt              = 1. * (kuNbBinsDt * dBinSzG4v2 / 2.) + dBinSzG4v2 / 2.;
@@ -559,8 +543,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   if (server) {
     for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
       for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-        if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB])
-          server->Register("/TofDt", fvhTimeDiffPulser[uFeeA][uFeeB]);
+        if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) server->Register("/TofDt", fvhTimeDiffPulser[uFeeA][uFeeB]);
 
     server->Register("/TofRaw", fhTimeMeanPulser);
     server->Register("/TofRaw", fhTimeRmsPulser);
@@ -569,18 +552,12 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
 
     for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
       for (UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx)
-        if (NULL
-            != fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1)
-                                            + uGbtx])
-          server->Register(
-            "/TofDtEvo",
-            fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1)
-                                         + uGbtx]);
+        if (NULL != fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx])
+          server->Register("/TofDtEvo", fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]);
 
       for (UInt_t uGdpbB = uGdpb + 1; uGdpbB < fuNrOfGdpbs; ++uGdpbB)
         if (NULL != fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB])
-          server->Register("/TofDtEvo",
-                           fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB]);
+          server->Register("/TofDtEvo", fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB]);
     }  // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
 
     for (UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++) {
@@ -589,18 +566,12 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
       server->Register("/DnlInl", fhFeeFtNormInl[uFee]);
     }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
 
-    server->RegisterCommand("/Reset_All_eTOF",
-                            "bMcbmMoniTofPulserResetHistos=kTRUE");
-    server->RegisterCommand("/Save_All_eTof",
-                            "bMcbmMoniTofPulserSaveHistos=kTRUE");
-    server->RegisterCommand("/Update_PulsFit",
-                            "bMcbmMoniTofPulserUpdateZoomedFit=kTRUE");
-    server->RegisterCommand("/Print_Raw_Data",
-                            "bMcbmMoniTofPulserRawDataPrint=kTRUE");
-    server->RegisterCommand("/Print_AllHits",
-                            "bMcbmMoniTofPulserPrintAllHitsEna=kTRUE");
-    server->RegisterCommand("/Print_AllEps",
-                            "bMcbmMoniTofPulserPrintAllEpochsEna=kTRUE");
+    server->RegisterCommand("/Reset_All_eTOF", "bMcbmMoniTofPulserResetHistos=kTRUE");
+    server->RegisterCommand("/Save_All_eTof", "bMcbmMoniTofPulserSaveHistos=kTRUE");
+    server->RegisterCommand("/Update_PulsFit", "bMcbmMoniTofPulserUpdateZoomedFit=kTRUE");
+    server->RegisterCommand("/Print_Raw_Data", "bMcbmMoniTofPulserRawDataPrint=kTRUE");
+    server->RegisterCommand("/Print_AllHits", "bMcbmMoniTofPulserPrintAllHitsEna=kTRUE");
+    server->RegisterCommand("/Print_AllEps", "bMcbmMoniTofPulserPrintAllEpochsEna=kTRUE");
 
     server->Restrict("/Reset_All_eTof", "allow=admin");
     server->Restrict("/Save_All_eTof", "allow=admin");
@@ -616,11 +587,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   Double_t h = 10;
 
   /** Create Pulser check Canvas for STAR 2018 **/
-  TCanvas* cPulser = new TCanvas(
-    "cPulser",
-    "Time difference RMS for pulser channels when FEE pulser mode is ON",
-    w,
-    h);
+  TCanvas* cPulser = new TCanvas("cPulser", "Time difference RMS for pulser channels when FEE pulser mode is ON", w, h);
   cPulser->Divide(2, 2);
 
   cPulser->cd(1);
@@ -645,11 +612,8 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   /*****************************/
 
   /** Create Pulser evo Canvas for gDPB to gDPB **/
-  TCanvas* cPulserEvo = new TCanvas(
-    "cPulserEvo",
-    "Time difference evolution between 1st FEE of 1st GBTx of gDPB pairs",
-    w,
-    h);
+  TCanvas* cPulserEvo =
+    new TCanvas("cPulserEvo", "Time difference evolution between 1st FEE of 1st GBTx of gDPB pairs", w, h);
   cPulserEvo->Divide(1, fuNrOfGdpbs - 1);
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs - 1; uGdpb++) {
     cPulserEvo->cd(1 + uGdpb);
@@ -662,13 +626,9 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   /*****************************/
   /** Create Pulser evo Canvas within gDPB **/
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; uGdpb++) {
-    TCanvas* cPulserEvoGbtx = new TCanvas(
-      Form("cPulserEvoGbtx%02u", uGdpb),
-      Form(
-        "Time difference evolution between 1st FEE of GBTx pairs in gDPB %02u",
-        uGdpb),
-      w,
-      h);
+    TCanvas* cPulserEvoGbtx =
+      new TCanvas(Form("cPulserEvoGbtx%02u", uGdpb),
+                  Form("Time difference evolution between 1st FEE of GBTx pairs in gDPB %02u", uGdpb), w, h);
     cPulserEvoGbtx->Divide(1, kuNbGbtxPerGdpb - 1);
 
     for (UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx) {
@@ -676,11 +636,8 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
       gPad->SetGridx();
       gPad->SetGridy();
 
-      if (NULL
-          != fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1)
-                                          + uGbtx])
-        fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]
-          ->Draw();
+      if (NULL != fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx])
+        fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]->Draw();
     }  // for( UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx )
   }    // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; uGdpb ++)
   /*****************************/
@@ -690,8 +647,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   // If not existing, create it
   fcMsSizeAll = dynamic_cast<TCanvas*>(gROOT->FindObject("cMsSizeAll"));
   if (NULL == fcMsSizeAll) {
-    fcMsSizeAll =
-      new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
+    fcMsSizeAll = new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
     fcMsSizeAll->Divide(4, 3);
     LOG(info) << "Created MS size canvas in TOF monitor";
   }  // if( NULL == fcMsSizeAll )
@@ -701,8 +657,8 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   LOG(info) << "Leaving CreateHistograms";
 }
 
-Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
-                                             size_t component) {
+Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
   if (bMcbmMoniTofPulserResetHistos) {
     LOG(info) << "Reset eTOF STAR histos ";
     ResetAllHistos();
@@ -735,18 +691,15 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
   }  // if( bMcbmMoniTofPulserPrintAllEpochsEna )
 
   /// Periodically save the histograms
-  std::chrono::time_point<std::chrono::system_clock> timeCurrent =
-    std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed_seconds =
-    timeCurrent - fTimeLastHistoSaving;
+  std::chrono::time_point<std::chrono::system_clock> timeCurrent = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds                  = timeCurrent - fTimeLastHistoSaving;
   if (0 == fTimeLastHistoSaving.time_since_epoch().count()) {
     fTimeLastHistoSaving = timeCurrent;
     //      fulNbBuiltSubEventLastPrintout = fulNbBuiltSubEvent;
     //      fulNbStarSubEventLastPrintout  = fulNbStarSubEvent;
   }  // if( 0 == fTimeLastHistoSaving.time_since_epoch().count() )
   else if (300 < elapsed_seconds.count()) {
-    std::time_t cTimeCurrent =
-      std::chrono::system_clock::to_time_t(timeCurrent);
+    std::time_t cTimeCurrent = std::chrono::system_clock::to_time_t(timeCurrent);
     char tempBuff[80];
     std::strftime(tempBuff, 80, "%F %T", localtime(&cTimeCurrent));
     /*
@@ -761,8 +714,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
     SaveAllHistos("data/histos_tof_pulser.root");
   }  // else if( 300 < elapsed_seconds.count() )
 
-  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component)
-              << "microslices.";
+  LOG(debug1) << "Timeslice contains " << ts.num_microslices(component) << "microslices.";
 
   /// Ignore overlap ms if flag set by user
   UInt_t uNbMsLoop = fuNbCoreMsPerTs;
@@ -778,8 +730,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
     fuCurrentMs = uMsIdx;
 
     if (0 == fulCurrentTsIndex && 0 == uMsIdx) {
-      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-           ++uMsCompIdx) {
+      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
         UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
         auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
         /*
@@ -796,23 +747,19 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
     }    // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
 
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       constexpr uint32_t kuBytesPerMessage = 8;
 
-      UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
-      auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
-      fiEquipmentId     = msDescriptor.eq_id;
-      fdMsIndex         = static_cast<double>(msDescriptor.idx);
-      fuCurrentMsSysId  = static_cast<unsigned int>(msDescriptor.sys_id);
-      const uint8_t* msContent =
-        reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
+      UInt_t uMsComp           = fvMsComponentsList[uMsCompIdx];
+      auto msDescriptor        = ts.descriptor(uMsComp, uMsIdx);
+      fiEquipmentId            = msDescriptor.eq_id;
+      fdMsIndex                = static_cast<double>(msDescriptor.idx);
+      fuCurrentMsSysId         = static_cast<unsigned int>(msDescriptor.sys_id);
+      const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsComp, uMsIdx));
 
       uint32_t size = msDescriptor.size;
       //    fulLastMsIdx = msDescriptor.idx;
-      if (size > 0)
-        LOG(debug) << "Microslice: " << msDescriptor.idx
-                   << " has size: " << size;
+      if (size > 0) LOG(debug) << "Microslice: " << msDescriptor.idx << " has size: " << size;
       /*
          if( numCompMsInTs - fuOverlapMsNb <= m )
          {
@@ -829,8 +776,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
         fvhMsSzTimePerLink[uMsComp]->Reset();
         fdStartTimeMsSz = (1e-9) * fdMsIndex;
       }  // if( 2 * fuHistoryHistoSize < (1e-9) * fdMsIndex - fdStartTimeMsSz )
-      fvhMsSzTimePerLink[uMsComp]->Fill((1e-9) * fdMsIndex - fdStartTimeMsSz,
-                                        size);
+      fvhMsSzTimePerLink[uMsComp]->Fill((1e-9) * fdMsIndex - fdStartTimeMsSz, size);
 
       // If not integer number of message in input buffer, print warning/error
       if (0 != (size % kuBytesPerMessage))
@@ -838,8 +784,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
                    << "contain only complete nDPB messages!";
 
       // Compute the number of complete messages in the input microslice buffer
-      uint32_t uNbMessages =
-        (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
+      uint32_t uNbMessages = (size - (size % kuBytesPerMessage)) / kuBytesPerMessage;
 
       // Get the gDPB ID from the MS header
       fuGdpbId = fiEquipmentId;
@@ -847,8 +792,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
       /// Check if this gDPB ID was declared in parameter file and stop there if not
       auto it = fGdpbIdIndexMap.find(fuGdpbId);
       if (it == fGdpbIdIndexMap.end()) {
-        LOG(info)
-          << "---------------------------------------------------------------";
+        LOG(info) << "---------------------------------------------------------------";
         /*
              LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
              LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
@@ -859,10 +803,9 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
                                msDescriptor.size, msDescriptor.offset );
 */
         LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-        LOG(warning) << "Could not find the gDPB index for AFCK id 0x"
-                     << std::hex << fuGdpbId << std::dec << " in timeslice "
-                     << fulCurrentTsIndex << " in microslice " << fdMsIndex
-                     << " component " << uMsCompIdx << "\n"
+        LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuGdpbId << std::dec
+                     << " in timeslice " << fulCurrentTsIndex << " in microslice " << fdMsIndex << " component "
+                     << uMsCompIdx << "\n"
                      << "If valid this index has to be added in the TOF "
                         "parameter file in the RocIdArray field";
         continue;
@@ -897,20 +840,16 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
         ///         fuGet4Id = mess.getGdpbGenChipId();
         fuGet4Id = ConvertElinkToGet4(mess.getGdpbGenChipId());
         /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
-        if (fuGdpbNr == fuDiamondDpbIdx || 0x90 == fuCurrentMsSysId)
-          fuGet4Id = mess.getGdpbGenChipId();
+        if (fuGdpbNr == fuDiamondDpbIdx || 0x90 == fuCurrentMsSysId) fuGet4Id = mess.getGdpbGenChipId();
         fuGet4Nr = (fuGdpbNr * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
-            && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id
-                       << " VS " << fuNrOfGet4PerGdpb << " set in parameters.";
+        if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+          LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb
+                       << " set in parameters.";
 
         switch (messageType) {
           case gdpbv100::MSG_HIT: {
-            if (mess.getGdpbHitIs24b()) {
-              PrintGenInfo(mess);
-            }  // if( getGdpbHitIs24b() )
+            if (mess.getGdpbHitIs24b()) { PrintGenInfo(mess); }  // if( getGdpbHitIs24b() )
             else {
               fvmEpSupprBuffer[fuGet4Nr].push_back(mess);
             }  // else of if( getGdpbHitIs24b() )
@@ -918,8 +857,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
           }  // case gdpbv100::MSG_HIT:
           case gdpbv100::MSG_EPOCH: {
             if (gdpbv100::kuChipIdMergedEpoch == fuGet4Id) {
-              for (uint32_t uGet4Index = 0; uGet4Index < fuNrOfGet4PerGdpb;
-                   uGet4Index++) {
+              for (uint32_t uGet4Index = 0; uGet4Index < fuNrOfGet4PerGdpb; uGet4Index++) {
                 fuGet4Id = uGet4Index;
                 fuGet4Nr = (fuGdpbNr * fuNrOfGet4PerGdpb) + fuGet4Id;
                 gdpbv100::Message tmpMess(mess);
@@ -930,14 +868,10 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
 
               if (kTRUE == fbPrintAllEpochsEnable) {
                 LOG(info) << "Epoch: " << Form("0x%08x ", fuGdpbId) << ", Merg"
-                          << ", Link " << std::setw(1) << mess.getGdpbEpLinkId()
-                          << ", epoch " << std::setw(8)
-                          << mess.getGdpbEpEpochNb() << ", Sync "
-                          << std::setw(1) << mess.getGdpbEpSync()
-                          << ", Data loss " << std::setw(1)
-                          << mess.getGdpbEpDataLoss() << ", Epoch loss "
-                          << std::setw(1) << mess.getGdpbEpEpochLoss()
-                          << ", Epoch miss " << std::setw(1)
+                          << ", Link " << std::setw(1) << mess.getGdpbEpLinkId() << ", epoch " << std::setw(8)
+                          << mess.getGdpbEpEpochNb() << ", Sync " << std::setw(1) << mess.getGdpbEpSync()
+                          << ", Data loss " << std::setw(1) << mess.getGdpbEpDataLoss() << ", Epoch loss "
+                          << std::setw(1) << mess.getGdpbEpEpochLoss() << ", Epoch miss " << std::setw(1)
                           << mess.getGdpbEpMissmatch();
               }  // if( kTRUE == fbPrintAllEpochsEnable )
             }    // if this epoch message is a merged one valid for all chips
@@ -945,16 +879,11 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
               FillEpochInfo(mess);
 
               if (kTRUE == fbPrintAllEpochsEnable) {
-                LOG(info) << "Epoch: " << Form("0x%08x ", fuGdpbId) << ", "
-                          << std::setw(4) << fuGet4Nr << ", Link "
-                          << std::setw(1) << mess.getGdpbEpLinkId()
-                          << ", epoch " << std::setw(8)
-                          << mess.getGdpbEpEpochNb() << ", Sync "
-                          << std::setw(1) << mess.getGdpbEpSync()
-                          << ", Data loss " << std::setw(1)
-                          << mess.getGdpbEpDataLoss() << ", Epoch loss "
-                          << std::setw(1) << mess.getGdpbEpEpochLoss()
-                          << ", Epoch miss " << std::setw(1)
+                LOG(info) << "Epoch: " << Form("0x%08x ", fuGdpbId) << ", " << std::setw(4) << fuGet4Nr << ", Link "
+                          << std::setw(1) << mess.getGdpbEpLinkId() << ", epoch " << std::setw(8)
+                          << mess.getGdpbEpEpochNb() << ", Sync " << std::setw(1) << mess.getGdpbEpSync()
+                          << ", Data loss " << std::setw(1) << mess.getGdpbEpDataLoss() << ", Epoch loss "
+                          << std::setw(1) << mess.getGdpbEpEpochLoss() << ", Epoch miss " << std::setw(1)
                           << mess.getGdpbEpMissmatch();
               }  // if( kTRUE == fbPrintAllEpochsEnable )
             }    // if single chip epoch message
@@ -1008,12 +937,11 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
             FillStarTrigInfo(mess);
             break;
           default:
-            LOG(error) << "Message type " << std::hex << std::setw(2)
-                       << static_cast<uint16_t>(messageType)
+            LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                        << " not included in Get4 unpacker.";
         }  // switch( mess.getMessageType() )
       }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }      // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     ///* Pulser monitoring *///
     /// Fill the corresponding histos if the time difference is reasonnable
@@ -1032,8 +960,7 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
         if (kuRefFeeEvoIdx[uFeeRef] == uFeeA) uFeeRefIndexA = uFeeRef;
 
       /// Update the difference to all other FEE with higher indices
-      for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-           ++uFeeB) {
+      for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeB) {
         if (1 != fvuFeeNbHitsLastMs[uFeeB]) continue;
 
         if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) {
@@ -1041,19 +968,17 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
           for (UInt_t uFeeRef = 0; uFeeRef < kuNbRefFeeEvo; ++uFeeRef)
             if (kuRefFeeEvoIdx[uFeeRef] == uFeeB) uFeeRefIndexB = uFeeRef;
 
-          Double_t dTimeDiff =
-            1e3 * (fdTsLastPulserHit[uFeeB] - fdTsLastPulserHit[uFeeA]);
+          Double_t dTimeDiff = 1e3 * (fdTsLastPulserHit[uFeeB] - fdTsLastPulserHit[uFeeA]);
           if (TMath::Abs(dTimeDiff) < kdMaxDtPulserPs) {
             fvhTimeDiffPulser[uFeeA][uFeeB]->Fill(dTimeDiff);
 
             if (uFeeRefIndexA < kuNbRefFeeEvo)
-              fvvhPulserTimeDiffEvoFeeFee[uFeeRefIndexA][uFeeB]->Fill(
-                1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime), dTimeDiff);
+              fvvhPulserTimeDiffEvoFeeFee[uFeeRefIndexA][uFeeB]->Fill(1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime),
+                                                                      dTimeDiff);
 
             if (uFeeRefIndexB < kuNbRefFeeEvo)
-              fvvhPulserTimeDiffEvoFeeFee[uFeeRefIndexB][uFeeA]->Fill(
-                1e-9 * (fdTsLastPulserHit[uFeeB] - fdStartTime),
-                -1.0 * dTimeDiff);
+              fvvhPulserTimeDiffEvoFeeFee[uFeeRefIndexB][uFeeA]->Fill(1e-9 * (fdTsLastPulserHit[uFeeB] - fdStartTime),
+                                                                      -1.0 * dTimeDiff);
 
             /// Dt Evo plots only for first FEE in each GBTx
             if (0 == uFeeA % kuNbFeePerGbtx && 0 == uFeeB % kuNbFeePerGbtx) {
@@ -1063,27 +988,24 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
               /// Evo of GBTx inside same DPB
               if (uGdpbNr == uGdpbNrB) {
                 if (0 == uGbtxNr) {
-                  UInt_t uPlotIdx =
-                    uGdpbNr * (kuNbGbtxPerGdpb - 1) + uGbtxNrB - 1;
-                  fvhPulserTimeDiffEvoGbtxGbtx[uPlotIdx]->Fill(
-                    1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime), dTimeDiff);
+                  UInt_t uPlotIdx = uGdpbNr * (kuNbGbtxPerGdpb - 1) + uGbtxNrB - 1;
+                  fvhPulserTimeDiffEvoGbtxGbtx[uPlotIdx]->Fill(1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime),
+                                                               dTimeDiff);
                 }   // if( 0 == uGbtxNr  )
               }     // if( uGdpbNr == uFeeB / fuNrOfFeePerGdpb )
               else  // if( NULL != fvvhPulserTimeDiffEvoGdpbGdpb[ uFeeB / fuNrOfFeePerGdpb ][ uGdpbNr ] )
               {
                 /// Evo of DPBs if both first FEE in First GBTx
                 if (0 == uGbtxNr && 0 == uGbtxNrB)
-                  fvvhPulserTimeDiffEvoGdpbGdpb[uGdpbNr][uFeeB
-                                                         / fuNrOfFeePerGdpb]
-                    ->Fill(1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime),
-                           dTimeDiff);
+                  fvvhPulserTimeDiffEvoGdpbGdpb[uGdpbNr][uFeeB / fuNrOfFeePerGdpb]->Fill(
+                    1e-9 * (fdTsLastPulserHit[uFeeA] - fdStartTime), dTimeDiff);
               }  // else of if( uGdpbNr == uFeeB / fuNrOfFeePerGdpb )
-            }  // if( 0 == uFeeA % kuNbFeePerGbtx && 0 == uFeeB % kuNbFeePerGbtx )
-          }    // if( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
-               //               else if( 10 == uFeeA && 20 == uFeeB )
-               //                  LOG(info) << "new in 10 " << dTimeDiff;
-        }      // if( NULL != fvhTimeDiffPulser[uFeeA][uFeeB] )
-      }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeB)
+            }    // if( 0 == uFeeA % kuNbFeePerGbtx && 0 == uFeeB % kuNbFeePerGbtx )
+          }      // if( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
+                 //               else if( 10 == uFeeA && 20 == uFeeB )
+                 //                  LOG(info) << "new in 10 " << dTimeDiff;
+        }        // if( NULL != fvhTimeDiffPulser[uFeeA][uFeeB] )
+      }          // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeB)
 
       /// Done with this FEE, we can reset the hit counter
       fvuFeeNbHitsLastMs[uFeeA] = 0;
@@ -1099,10 +1021,8 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
     for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
       for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
         if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) {
-          fhTimeMeanPulser->Fill(
-            uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetMean());
-          fhTimeRmsPulser->Fill(
-            uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
+          fhTimeMeanPulser->Fill(uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetMean());
+          fhTimeRmsPulser->Fill(uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
         }  // for( UInt_t uChan = 0; uChan < kuNbChanTest - 1; uChan++)
     fdLastRmsUpdateTime = dTsStartTime;
   }  // if( 10.0 < dTsStartTime - fdLastRmsUpdateTime )
@@ -1112,18 +1032,17 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorTofPulser::ProcessEpochCycle(uint64_t ulCycleData) {
+void CbmMcbm2018MonitorTofPulser::ProcessEpochCycle(uint64_t ulCycleData)
+{
   uint64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging(fair::Severity::debug2)) {
-    LOG(info)
-      << "CbmMcbm2018MonitorTofPulser::ProcessEpochCyle => "
-      //                 << Form( " TS %5llu MS %3lu In data 0x%016llX Cycle 0x%016llX",
-      //                           fulCurrentTsIndex, fuCurrentMs, ulCycleData, ulEpochCycleVal );
-      << " TS " << FormatDecPrintout(fulCurrentTsIndex, 5) << " MS "
-      << FormatDecPrintout(fuCurrentMs, 3) << " In data 0x"
-      << FormatHexPrintout(ulCycleData, 16, '0', true) << " Cycle 0x"
-      << FormatHexPrintout(ulEpochCycleVal, 16, '0', true);
+    LOG(info) << "CbmMcbm2018MonitorTofPulser::ProcessEpochCyle => "
+              //                 << Form( " TS %5llu MS %3lu In data 0x%016llX Cycle 0x%016llX",
+              //                           fulCurrentTsIndex, fuCurrentMs, ulCycleData, ulEpochCycleVal );
+              << " TS " << FormatDecPrintout(fulCurrentTsIndex, 5) << " MS " << FormatDecPrintout(fuCurrentMs, 3)
+              << " In data 0x" << FormatHexPrintout(ulCycleData, 16, '0', true) << " Cycle 0x"
+              << FormatHexPrintout(ulEpochCycleVal, 16, '0', true);
     fuRawDataPrintMsgIdx++;
   }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging( fair::Severity::debug2 ) )
 
@@ -1142,7 +1061,8 @@ void CbmMcbm2018MonitorTofPulser::ProcessEpochCycle(uint64_t ulCycleData) {
   return;
 }
 
-void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess)
+{
   UInt_t uChannel = mess.getGdpbHitChanId();
   UInt_t uTot     = mess.getGdpbHit32Tot();
   UInt_t uFts     = mess.getGdpbHitFineTs();
@@ -1150,16 +1070,14 @@ void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess) {
   ULong64_t ulCurEpochGdpbGet4 = fvulCurrentEpoch[fuGet4Nr];
 
   // In Ep. Suppr. Mode, receive following epoch instead of previous
-  if (0 < ulCurEpochGdpbGet4)
-    ulCurEpochGdpbGet4--;
+  if (0 < ulCurEpochGdpbGet4) ulCurEpochGdpbGet4--;
   else
     ulCurEpochGdpbGet4 = gdpbv100::kuEpochCounterSz;  // Catch epoch cycle!
 
   //   UInt_t uChannelNr   = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uChannelNrInFee =
-    (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uFeeNr      = (fuGet4Id / fuNrOfGet4PerFee);
-  UInt_t uFeeNrInSys = fuGdpbNr * fuNrOfFeePerGdpb + uFeeNr;
+  UInt_t uChannelNrInFee = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
+  UInt_t uFeeNr          = (fuGet4Id / fuNrOfGet4PerFee);
+  UInt_t uFeeNrInSys     = fuGdpbNr * fuNrOfFeePerGdpb + uFeeNr;
   //   UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fvuGet4ToPadi[ uChannelNrInFee ];
   /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
   //   if( fuGdpbNr == fuDiamondDpbIdx || 0x90 == fuCurrentMsSysId )
@@ -1201,15 +1119,13 @@ void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess) {
   /// Save last hist time if pulser channel
   /// Fill the corresponding histos if the time difference is reasonnable )
   if (92 < uTot && uTot < 95) {
-    if (gdpbv100::kuFeePulserChannel == uChannelNrInFee
-        && fuGdpbNr != fuDiamondDpbIdx && 0x90 != fuCurrentMsSysId) {
+    if (gdpbv100::kuFeePulserChannel == uChannelNrInFee && fuGdpbNr != fuDiamondDpbIdx && 0x90 != fuCurrentMsSysId) {
       fdTsLastPulserHit[uFeeNrInSys] = dHitTime;
       fvuFeeNbHitsLastMs[uFeeNrInSys]++;
       fvhPulserCountEvoPerFeeGdpb[fuGdpbNr]->Fill(dHitTime * 1e-9, uFeeNr);
     }  // if( gdpbv100::kuFeePulserChannel == uChannelNrInFee && fuGdpbNr != fuDiamondDpbIdx && 0x90 != fuCurrentMsSysId )
        /// Diamond FEE have pulser on channel 0!
-    else if ((fuGdpbNr == fuDiamondDpbIdx || 0x90 == fuCurrentMsSysId)
-             && 0 == uChannelNrInFee) {
+    else if ((fuGdpbNr == fuDiamondDpbIdx || 0x90 == fuCurrentMsSysId) && 0 == uChannelNrInFee) {
       fdTsLastPulserHit[uFeeNrInSys] = dHitTime;
       fvuFeeNbHitsLastMs[uFeeNrInSys]++;
       fvhPulserCountEvoPerFeeGdpb[fuGdpbNr]->Fill(dHitTime * 1e-9, uFeeNr);
@@ -1237,43 +1153,39 @@ void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess) {
    } // if (0 <= fdStartTimeLong)
 */
   if (kTRUE == fbPrintAllHitsEnable) {
-    LOG(info) << "Hit: " << Form("0x%08x ", fuGdpbId) << ", " << std::setw(2)
-              << fuGet4Nr << ", " << std::setw(3) << uChannel << ", "
-              << std::setw(3) << uTot << ", epoch " << std::setw(3)
-              << ulCurEpochGdpbGet4 << ", FullTime Clk "
-              << Form("%12lu ", ulHitTime) << ", FullTime s "
-              << Form("%12.9f ", dHitTime / 1e9) << ", FineTime " << uFts;
+    LOG(info) << "Hit: " << Form("0x%08x ", fuGdpbId) << ", " << std::setw(2) << fuGet4Nr << ", " << std::setw(3)
+              << uChannel << ", " << std::setw(3) << uTot << ", epoch " << std::setw(3) << ulCurEpochGdpbGet4
+              << ", FullTime Clk " << Form("%12lu ", ulHitTime) << ", FullTime s " << Form("%12.9f ", dHitTime / 1e9)
+              << ", FineTime " << uFts;
   }  // if( kTRUE == fbPrintAllHitsEnable )
 }
 
-void CbmMcbm2018MonitorTofPulser::FillEpochInfo(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorTofPulser::FillEpochInfo(gdpbv100::Message mess)
+{
   ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
   /*
    if( fvulCurrentEpoch[fuGet4Nr] < ulEpochNr )
       fvulCurrentEpochCycle[fuGet4Nr]++;
 */
-  fvulCurrentEpoch[fuGet4Nr] = ulEpochNr;
-  fvulCurrentEpochFull[fuGet4Nr] =
-    ulEpochNr + gdpbv100::kulEpochCycleBins * fvulCurrentEpochCycle[fuGet4Nr];
+  fvulCurrentEpoch[fuGet4Nr]     = ulEpochNr;
+  fvulCurrentEpochFull[fuGet4Nr] = ulEpochNr + gdpbv100::kulEpochCycleBins * fvulCurrentEpochCycle[fuGet4Nr];
 
   fulCurrentEpochTime = mess.getMsgFullTime(ulEpochNr);
 
   /// Re-align the epoch number of the message in case it will be used later:
   /// We received the epoch after the data instead of the one before!
-  if (0 < ulEpochNr)
-    mess.setGdpbEpEpochNb(ulEpochNr - 1);
+  if (0 < ulEpochNr) mess.setGdpbEpEpochNb(ulEpochNr - 1);
   else
     mess.setGdpbEpEpochNb(gdpbv100::kuEpochCounterSz);
 
   Int_t iBufferSize = fvmEpSupprBuffer[fuGet4Nr].size();
   if (0 < iBufferSize) {
-    LOG(debug) << "Now processing stored messages for for get4 " << fuGet4Nr
-               << " with epoch number " << (fvulCurrentEpoch[fuGet4Nr] - 1);
+    LOG(debug) << "Now processing stored messages for for get4 " << fuGet4Nr << " with epoch number "
+               << (fvulCurrentEpoch[fuGet4Nr] - 1);
 
     /// Data are sorted between epochs, not inside => Epoch level ordering
     /// Sorting at lower bin precision level
-    std::stable_sort(fvmEpSupprBuffer[fuGet4Nr].begin(),
-                     fvmEpSupprBuffer[fuGet4Nr].begin());
+    std::stable_sort(fvmEpSupprBuffer[fuGet4Nr].begin(), fvmEpSupprBuffer[fuGet4Nr].begin());
 
     for (Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++) {
       FillHitInfo(fvmEpSupprBuffer[fuGet4Nr][iMsgIdx]);
@@ -1283,7 +1195,8 @@ void CbmMcbm2018MonitorTofPulser::FillEpochInfo(gdpbv100::Message mess) {
   }  // if( 0 < fvmEpSupprBuffer[fuGet4Nr] )
 }
 
-void CbmMcbm2018MonitorTofPulser::PrintSlcInfo(gdpbv100::Message /*mess*/) {
+void CbmMcbm2018MonitorTofPulser::PrintSlcInfo(gdpbv100::Message /*mess*/)
+{
   /*
    if (fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find(fuGdpbId))
    {
@@ -1301,68 +1214,53 @@ void CbmMcbm2018MonitorTofPulser::PrintSlcInfo(gdpbv100::Message /*mess*/) {
 */
 }
 
-void CbmMcbm2018MonitorTofPulser::PrintGenInfo(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorTofPulser::PrintGenInfo(gdpbv100::Message mess)
+{
   Int_t mType    = mess.getMessageType();
   Int_t channel  = mess.getGdpbHitChanId();
   uint64_t uData = mess.getData();
 
-  LOG(debug) << "Get4 MSG type " << mType << " from gdpbId " << fuGdpbId
-             << ", getId " << fuGet4Id << ", (hit channel) " << channel
-             << " data " << std::hex << uData;
+  LOG(debug) << "Get4 MSG type " << mType << " from gdpbId " << fuGdpbId << ", getId " << fuGet4Id << ", (hit channel) "
+             << channel << " data " << std::hex << uData;
 }
 
-void CbmMcbm2018MonitorTofPulser::PrintSysInfo(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorTofPulser::PrintSysInfo(gdpbv100::Message mess)
+{
   if (fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find(fuGdpbId))
-    LOG(debug) << "GET4 System message,       epoch "
-               << static_cast<Int_t>(fvulCurrentEpoch[fuGet4Nr]) << ", time "
-               << std::setprecision(9) << std::fixed
-               << Double_t(fulCurrentEpochTime) * 1.e-9 << " s "
-               << " for board ID " << std::hex << std::setw(4) << fuGdpbId
-               << std::dec;
+    LOG(debug) << "GET4 System message,       epoch " << static_cast<Int_t>(fvulCurrentEpoch[fuGet4Nr]) << ", time "
+               << std::setprecision(9) << std::fixed << Double_t(fulCurrentEpochTime) * 1.e-9 << " s "
+               << " for board ID " << std::hex << std::setw(4) << fuGdpbId << std::dec;
 
   switch (mess.getGdpbSysSubType()) {
     case gdpbv100::SYS_GET4_ERROR: {
       uint32_t uData = mess.getGdpbSysErrData();
-      if (gdpbv100::GET4_V2X_ERR_TOT_OVERWRT == uData
-          || gdpbv100::GET4_V2X_ERR_TOT_RANGE == uData
-          || gdpbv100::GET4_V2X_ERR_EVT_DISCARD == uData
-          || gdpbv100::GET4_V2X_ERR_ADD_RIS_EDG == uData
-          || gdpbv100::GET4_V2X_ERR_UNPAIR_FALL == uData
-          || gdpbv100::GET4_V2X_ERR_SEQUENCE_ER == uData)
-        LOG(debug) << " +++++++ > gDPB: " << std::hex << std::setw(4)
-                   << fuGdpbId << std::dec << ", Chip = " << std::setw(2)
-                   << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
-                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1)
-                   << mess.getGdpbSysErrEdge() << ", Empt = " << std::setw(1)
-                   << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
-                   << std::setw(2) << uData << std::dec
-                   << " -- GET4 V1 Error Event";
+      if (gdpbv100::GET4_V2X_ERR_TOT_OVERWRT == uData || gdpbv100::GET4_V2X_ERR_TOT_RANGE == uData
+          || gdpbv100::GET4_V2X_ERR_EVT_DISCARD == uData || gdpbv100::GET4_V2X_ERR_ADD_RIS_EDG == uData
+          || gdpbv100::GET4_V2X_ERR_UNPAIR_FALL == uData || gdpbv100::GET4_V2X_ERR_SEQUENCE_ER == uData)
+        LOG(debug) << " +++++++ > gDPB: " << std::hex << std::setw(4) << fuGdpbId << std::dec
+                   << ", Chip = " << std::setw(2) << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
+                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1) << mess.getGdpbSysErrEdge()
+                   << ", Empt = " << std::setw(1) << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
+                   << std::setw(2) << uData << std::dec << " -- GET4 V1 Error Event";
       else
-        LOG(debug) << " +++++++ >gDPB: " << std::hex << std::setw(4) << fuGdpbId
-                   << std::dec << ", Chip = " << std::setw(2)
-                   << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
-                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1)
-                   << mess.getGdpbSysErrEdge() << ", Empt = " << std::setw(1)
-                   << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
-                   << std::setw(2) << uData << std::dec
-                   << " -- GET4 V1 Error Event ";
+        LOG(debug) << " +++++++ >gDPB: " << std::hex << std::setw(4) << fuGdpbId << std::dec
+                   << ", Chip = " << std::setw(2) << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
+                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1) << mess.getGdpbSysErrEdge()
+                   << ", Empt = " << std::setw(1) << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
+                   << std::setw(2) << uData << std::dec << " -- GET4 V1 Error Event ";
       break;
     }  // case gdpbv100::SYSMSG_GET4_EVENT
     case gdpbv100::SYS_GDPB_UNKWN: {
-      LOG(debug) << "Unknown GET4 message, data: " << std::hex << std::setw(8)
-                 << mess.getGdpbSysUnkwData() << std::dec
-                 << " Full message: " << std::hex << std::setw(16)
-                 << mess.getData() << std::dec;
+      LOG(debug) << "Unknown GET4 message, data: " << std::hex << std::setw(8) << mess.getGdpbSysUnkwData() << std::dec
+                 << " Full message: " << std::hex << std::setw(16) << mess.getData() << std::dec;
       break;
     }  // case gdpbv100::SYS_GDPB_UNKWN:
     case gdpbv100::SYS_GET4_SYNC_MISS: {
       if (mess.getGdpbSysFwErrResync())
-        LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ",
-                          mess.getGdpbGenChipId())
-                  << std::hex << std::setw(4) << fuGdpbId << std::dec;
+        LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ", mess.getGdpbGenChipId()) << std::hex << std::setw(4)
+                  << fuGdpbId << std::dec;
       else
-        LOG(info) << "GET4 synchronization pulse missing in gDPB " << std::hex
-                  << std::setw(4) << fuGdpbId << std::dec;
+        LOG(info) << "GET4 synchronization pulse missing in gDPB " << std::hex << std::setw(4) << fuGdpbId << std::dec;
       break;
     }  // case gdpbv100::SYS_GET4_SYNC_MISS:
     case gdpbv100::SYS_PATTERN: {
@@ -1370,15 +1268,15 @@ void CbmMcbm2018MonitorTofPulser::PrintSysInfo(gdpbv100::Message mess) {
       break;
     }  // case gdpbv100::SYS_PATTERN:
     default: {
-      LOG(debug) << "Crazy system message, subtype "
-                 << mess.getGdpbSysSubType();
+      LOG(debug) << "Crazy system message, subtype " << mess.getGdpbSysSubType();
       break;
     }  // default
 
   }  // switch( getGdpbSysSubType() )
 }
 
-void CbmMcbm2018MonitorTofPulser::FillPattInfo(gdpbv100::Message /*mess*/) {
+void CbmMcbm2018MonitorTofPulser::FillPattInfo(gdpbv100::Message /*mess*/)
+{
   /*
    uint16_t usType   = mess.getGdpbSysPattType();
    uint16_t usIndex  = mess.getGdpbSysPattIndex();
@@ -1438,7 +1336,8 @@ void CbmMcbm2018MonitorTofPulser::FillPattInfo(gdpbv100::Message /*mess*/) {
   return;
 }
 
-void CbmMcbm2018MonitorTofPulser::FillStarTrigInfo(gdpbv100::Message mess) {
+void CbmMcbm2018MonitorTofPulser::FillStarTrigInfo(gdpbv100::Message mess)
+{
   Int_t iMsgIndex = mess.getStarTrigMsgIndex();
 
   switch (iMsgIndex) {
@@ -1450,32 +1349,26 @@ void CbmMcbm2018MonitorTofPulser::FillStarTrigInfo(gdpbv100::Message mess) {
     case 2: fvulStarTsMid[fuGdpbNr] = mess.getStarTsMidStarC(); break;
     case 3: {
 
-      ULong64_t ulNewGdpbTsFull =
-        (fvulGdpbTsMsb[fuGdpbNr] << 24) + (fvulGdpbTsLsb[fuGdpbNr]);
-      ULong64_t ulNewStarTsFull = (fvulStarTsMsb[fuGdpbNr] << 48)
-                                  + (fvulStarTsMid[fuGdpbNr] << 8)
-                                  + mess.getStarTsLsbStarD();
+      ULong64_t ulNewGdpbTsFull = (fvulGdpbTsMsb[fuGdpbNr] << 24) + (fvulGdpbTsLsb[fuGdpbNr]);
+      ULong64_t ulNewStarTsFull =
+        (fvulStarTsMsb[fuGdpbNr] << 48) + (fvulStarTsMid[fuGdpbNr] << 8) + mess.getStarTsLsbStarD();
       UInt_t uNewToken   = mess.getStarTokenStarD();
       UInt_t uNewDaqCmd  = mess.getStarDaqCmdStarD();
       UInt_t uNewTrigCmd = mess.getStarTrigCmdStarD();
 
-      if ((uNewToken == fvuStarTokenLast[fuGdpbNr])
-          && (ulNewGdpbTsFull == fvulGdpbTsFullLast[fuGdpbNr])
-          && (ulNewStarTsFull == fvulStarTsFullLast[fuGdpbNr])
-          && (uNewDaqCmd == fvuStarDaqCmdLast[fuGdpbNr])
+      if ((uNewToken == fvuStarTokenLast[fuGdpbNr]) && (ulNewGdpbTsFull == fvulGdpbTsFullLast[fuGdpbNr])
+          && (ulNewStarTsFull == fvulStarTsFullLast[fuGdpbNr]) && (uNewDaqCmd == fvuStarDaqCmdLast[fuGdpbNr])
           && (uNewTrigCmd == fvuStarTrigCmdLast[fuGdpbNr])) {
         UInt_t uTrigWord = ((fvuStarTrigCmdLast[fuGdpbNr] & 0x00F) << 16)
-                           + ((fvuStarDaqCmdLast[fuGdpbNr] & 0x00F) << 12)
-                           + ((fvuStarTokenLast[fuGdpbNr] & 0xFFF));
+                           + ((fvuStarDaqCmdLast[fuGdpbNr] & 0x00F) << 12) + ((fvuStarTokenLast[fuGdpbNr] & 0xFFF));
         LOG(warning) << "Possible error: identical STAR tokens found twice in "
                         "a row => ignore 2nd! "
-                     << " TS " << fulCurrentTsIndex << " gDBB #" << fuGdpbNr
-                     << " " << Form("token = %5u ", fvuStarTokenLast[fuGdpbNr])
+                     << " TS " << fulCurrentTsIndex << " gDBB #" << fuGdpbNr << " "
+                     << Form("token = %5u ", fvuStarTokenLast[fuGdpbNr])
                      << Form("gDPB ts  = %12llu ", fvulGdpbTsFullLast[fuGdpbNr])
                      << Form("STAR ts = %12llu ", fvulStarTsFullLast[fuGdpbNr])
                      << Form("DAQ cmd = %2u ", fvuStarDaqCmdLast[fuGdpbNr])
-                     << Form("TRG cmd = %2u ", fvuStarTrigCmdLast[fuGdpbNr])
-                     << Form("TRG Wrd = %5x ", uTrigWord);
+                     << Form("TRG cmd = %2u ", fvuStarTrigCmdLast[fuGdpbNr]) << Form("TRG Wrd = %5x ", uTrigWord);
         return;
       }  // if exactly same message repeated
          /*
@@ -1492,12 +1385,9 @@ void CbmMcbm2018MonitorTofPulser::FillStarTrigInfo(gdpbv100::Message mess) {
 */
       // STAR TS counter reset detection
       if (ulNewStarTsFull < fvulStarTsFullLast[fuGdpbNr])
-        LOG(debug) << "Probable reset of the STAR TS: old = "
-                   << Form("%16llu", fvulStarTsFullLast[fuGdpbNr])
-                   << " new = " << Form("%16llu", ulNewStarTsFull)
-                   << " Diff = -"
-                   << Form("%8llu",
-                           fvulStarTsFullLast[fuGdpbNr] - ulNewStarTsFull);
+        LOG(debug) << "Probable reset of the STAR TS: old = " << Form("%16llu", fvulStarTsFullLast[fuGdpbNr])
+                   << " new = " << Form("%16llu", ulNewStarTsFull) << " Diff = -"
+                   << Form("%8llu", fvulStarTsFullLast[fuGdpbNr] - ulNewStarTsFull);
 
       /*
          LOG(info) << "Updating  trigger token for " << fuGdpbNr
@@ -1543,7 +1433,8 @@ void CbmMcbm2018MonitorTofPulser::FillStarTrigInfo(gdpbv100::Message mess) {
 
 void CbmMcbm2018MonitorTofPulser::Reset() {}
 
-void CbmMcbm2018MonitorTofPulser::Finish() {
+void CbmMcbm2018MonitorTofPulser::Finish()
+{
   // Printout some stats on what was unpacked
   TString message_type;
   for (unsigned int i = 0; i < fviMsgCounter.size(); ++i) {
@@ -1567,9 +1458,8 @@ void CbmMcbm2018MonitorTofPulser::Finish() {
   LOG(info) << "-------------------------------------";
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     for (UInt_t j = 0; j < fuNrOfGet4PerGdpb; ++j) {
-      LOG(info) << "Last epoch for gDPB: " << std::hex << std::setw(4) << i
-                << std::dec << " , GET4  " << std::setw(4) << j << " => "
-                << fvulCurrentEpoch[GetArrayIndex(i, j)];
+      LOG(info) << "Last epoch for gDPB: " << std::hex << std::setw(4) << i << std::dec << " , GET4  " << std::setw(4)
+                << j << " => " << fvulCurrentEpoch[GetArrayIndex(i, j)];
     }  // for (UInt_t j = 0; j < fuNrOfGet4PerGdpb; ++j)
   }    // for (UInt_t i = 0; i < fuNrOfGdpbs; ++i)
   LOG(info) << "-------------------------------------";
@@ -1583,10 +1473,8 @@ void CbmMcbm2018MonitorTofPulser::Finish() {
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
     for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
       if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) {
-        fhTimeMeanPulser->Fill(
-          uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetMean());
-        fhTimeRmsPulser->Fill(
-          uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
+        fhTimeMeanPulser->Fill(uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetMean());
+        fhTimeRmsPulser->Fill(uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
       }  // for( UInt_t uChan = 0; uChan < kuNbChanTest - 1; uChan++)
 
   /// Update zoomed RMS and pulser fit plots
@@ -1601,12 +1489,13 @@ void CbmMcbm2018MonitorTofPulser::Finish() {
 
 void CbmMcbm2018MonitorTofPulser::FillOutput(CbmDigi* /*digi*/) {}
 
-void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
+void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* histoFile   = NULL;
+  TFile* histoFile = NULL;
   if ("" != sFileName) {
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
@@ -1628,8 +1517,7 @@ void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
   gDirectory->cd("TofDt");
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
     for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-      if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB])
-        fvhTimeDiffPulser[uFeeA][uFeeB]->Write();
+      if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) fvhTimeDiffPulser[uFeeA][uFeeB]->Write();
   gDirectory->cd("..");
 
   ///* Pulser evolution monitoring *///
@@ -1638,8 +1526,7 @@ void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
     fvhPulserCountEvoPerFeeGdpb[uGdpb]->Write();
     for (UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx)
-      fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]
-        ->Write();
+      fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]->Write();
 
     for (UInt_t uGdpbB = uGdpb + 1; uGdpbB < fuNrOfGdpbs; ++uGdpbB)
       fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB]->Write();
@@ -1675,8 +1562,7 @@ void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
   TH1* pMissedTsH1 = dynamic_cast<TH1*>(gROOT->FindObjectAny("Missed_TS"));
   if (NULL != pMissedTsH1) pMissedTsH1->Write();
 
-  TProfile* pMissedTsEvoP =
-    dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
+  TProfile* pMissedTsEvoP = dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
   if (NULL != pMissedTsEvoP) pMissedTsEvoP->Write();
 
   gDirectory->cd("..");
@@ -1692,15 +1578,15 @@ void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
   gDirectory = oldDir;
 }
 
-void CbmMcbm2018MonitorTofPulser::ResetAllHistos() {
+void CbmMcbm2018MonitorTofPulser::ResetAllHistos()
+{
   LOG(info) << "Reseting all TOF histograms.";
 
 
   ///* Pulser monitoring *///
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
     for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-      if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB])
-        fvhTimeDiffPulser[uFeeA][uFeeB]->Reset();
+      if (NULL != fvhTimeDiffPulser[uFeeA][uFeeB]) fvhTimeDiffPulser[uFeeA][uFeeB]->Reset();
 
   fhTimeMeanPulser->Reset();
   fhTimeRmsPulser->Reset();
@@ -1710,8 +1596,7 @@ void CbmMcbm2018MonitorTofPulser::ResetAllHistos() {
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
     fvhPulserCountEvoPerFeeGdpb[uGdpb]->Reset();
     for (UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx)
-      fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]
-        ->Reset();
+      fvhPulserTimeDiffEvoGbtxGbtx[uGdpb * (kuNbGbtxPerGdpb - 1) + uGbtx]->Reset();
 
     for (UInt_t uGdpbB = uGdpb + 1; uGdpbB < fuNrOfGdpbs; ++uGdpbB)
       fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB]->Reset();
@@ -1740,16 +1625,11 @@ void CbmMcbm2018MonitorTofPulser::ResetAllHistos() {
   fdStartTimeLong = -1;
   fdStartTimeMsSz = -1;
 }
-void CbmMcbm2018MonitorTofPulser::ResetEvolutionHistograms() {
+void CbmMcbm2018MonitorTofPulser::ResetEvolutionHistograms() { fdStartTime = -1; }
+void CbmMcbm2018MonitorTofPulser::ResetLongEvolutionHistograms() { fdStartTimeLong = -1; }
 
-  fdStartTime = -1;
-}
-void CbmMcbm2018MonitorTofPulser::ResetLongEvolutionHistograms() {
-
-  fdStartTimeLong = -1;
-}
-
-void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
+void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit()
+{
   // Only do something is the user defined the width he want for the zoom
   if (0.0 < fdFitZoomWidthPs) {
     // Reset summary histograms for safety
@@ -1757,8 +1637,7 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
     fhTimeResFitPuls->Reset();
 
     Double_t dRes = 0;
-    TF1* fitFuncPairs[fuNrOfFeePerGdpb * fuNrOfGdpbs]
-                     [fuNrOfFeePerGdpb * fuNrOfGdpbs];
+    TF1* fitFuncPairs[fuNrOfFeePerGdpb * fuNrOfGdpbs][fuNrOfFeePerGdpb * fuNrOfGdpbs];
 
     for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
       for (UInt_t uFeeB = 0; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
@@ -1767,9 +1646,8 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
           if (0 == fvhTimeDiffPulser[uFeeA][uFeeB]->GetEntries()) {
             fhTimeRmsZoomFitPuls->Fill(uFeeA, uFeeB, 0.0);
             fhTimeResFitPuls->Fill(uFeeA, uFeeB, 0.0);
-            LOG(info)
-              << "CbmMcbm2018MonitorTofPulser::UpdateZoomedFit => Empty input "
-              << "for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
+            LOG(info) << "CbmMcbm2018MonitorTofPulser::UpdateZoomedFit => Empty input "
+                      << "for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
             continue;
           }  // if( 0 == fvhTimeDiffPulser[uFeeA][uFeeB]->GetEntries() )
 
@@ -1778,11 +1656,9 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
           Double_t dNbCounts = fvhTimeDiffPulser[uFeeA][uFeeB]->Integral();
 
           // Zoom the X axis to +/- ZoomWidth around the peak position
-          Double_t dPeakPos =
-            fvhTimeDiffPulser[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(
-              iBinWithMax);
-          fvhTimeDiffPulser[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(
-            dPeakPos - fdFitZoomWidthPs, dPeakPos + fdFitZoomWidthPs);
+          Double_t dPeakPos = fvhTimeDiffPulser[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(iBinWithMax);
+          fvhTimeDiffPulser[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(dPeakPos - fdFitZoomWidthPs,
+                                                                    dPeakPos + fdFitZoomWidthPs);
 
           // Read integral and check how much we lost due to the zoom (% loss allowed)
           Double_t dZoomCounts = fvhTimeDiffPulser[uFeeA][uFeeB]->Integral();
@@ -1791,31 +1667,24 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
             fhTimeResFitPuls->Fill(uFeeA, uFeeB, 0.0);
             LOG(warning) << "CbmMcbm2018MonitorTofPulser::UpdateZoomedFit => "
                             "Zoom too strong, "
-                         << "more than 1% loss for FEE pair " << uFeeA
-                         << " and " << uFeeB << " !!! ";
+                         << "more than 1% loss for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
             continue;
           }  // if( ( dZoomCounts / dNbCounts ) < 0.99 )
 
           // Fill new RMS after zoom into summary histo
-          fhTimeRmsZoomFitPuls->Fill(
-            uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
+          fhTimeRmsZoomFitPuls->Fill(uFeeA, uFeeB, fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS());
 
 
           // Fit using zoomed boundaries + starting gaussian width, store into summary histo
-          dRes = 0;
-          fitFuncPairs[uFeeA][uFeeB] =
-            new TF1(Form("fPair_%02d_%02d", uFeeA, uFeeB),
-                    "gaus",
-                    dPeakPos - fdFitZoomWidthPs,
-                    dPeakPos + fdFitZoomWidthPs);
+          dRes                       = 0;
+          fitFuncPairs[uFeeA][uFeeB] = new TF1(Form("fPair_%02d_%02d", uFeeA, uFeeB), "gaus",
+                                               dPeakPos - fdFitZoomWidthPs, dPeakPos + fdFitZoomWidthPs);
           // Fix the Mean fit value around the Histogram Mean
           fitFuncPairs[uFeeA][uFeeB]->SetParameter(0, dZoomCounts);
           fitFuncPairs[uFeeA][uFeeB]->SetParameter(1, dPeakPos);
-          fitFuncPairs[uFeeA][uFeeB]->SetParameter(
-            2, 200.0);  // Hardcode start with ~4*BinWidth, do better later
+          fitFuncPairs[uFeeA][uFeeB]->SetParameter(2, 200.0);  // Hardcode start with ~4*BinWidth, do better later
           // Using integral instead of bin center seems to lead to unrealistic values => no "I"
-          fvhTimeDiffPulser[uFeeA][uFeeB]->Fit(
-            Form("fPair_%02d_%02d", uFeeA, uFeeB), "QRM0");
+          fvhTimeDiffPulser[uFeeA][uFeeB]->Fit(Form("fPair_%02d_%02d", uFeeA, uFeeB), "QRM0");
           // Get Sigma
           dRes = fitFuncPairs[uFeeA][uFeeB]->GetParameter(2);
           // Cleanup memory
@@ -1826,14 +1695,13 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
 
           LOG(info) << "CbmMcbm2018MonitorTofPulser::UpdateZoomedFit => "
                     << "For FEE pair " << uFeeA << " and " << uFeeB
-                    << " we have zoomed RMS = "
-                    << fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS()
-                    << " and a resolution of " << dRes / TMath::Sqrt2();
+                    << " we have zoomed RMS = " << fvhTimeDiffPulser[uFeeA][uFeeB]->GetRMS() << " and a resolution of "
+                    << dRes / TMath::Sqrt2();
 
           // Restore original axis state?
           fvhTimeDiffPulser[uFeeA][uFeeB]->GetXaxis()->UnZoom();
         }  // loop on uFeeA and uFeeB + check if corresponding fvhTimeDiffPulser exists
-  }  // if( 0.0 < fdFitZoomWidthPs )
+  }        // if( 0.0 < fdFitZoomWidthPs )
   else {
     LOG(error) << "CbmMcbm2018MonitorTofPulser::UpdateZoomedFit => Zoom width "
                   "not defined, "
@@ -1846,7 +1714,7 @@ void CbmMcbm2018MonitorTofPulser::UpdateNormedDnlInl()
   TDirectory* oldDir = gDirectory;
 
   gROOT->cd();
-  TF1* constantVal    = new TF1("constant", "1", 0, gdpbv100::kdFtBinsNb);
+  TF1* constantVal = new TF1("constant", "1", 0, gdpbv100::kdFtBinsNb);
   for (UInt_t uFeeNrInSys = 0; uFeeNrInSys < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeNrInSys++) {
     fhFeeFtNormDnl[uFeeNrInSys]->Reset();
     fhFeeFtNormInl[uFeeNrInSys]->Reset();

@@ -13,12 +13,7 @@
 
 CbmHit::CbmHit() : CbmHit(kHIT, 0., 0., -1, -1, -1., -1.) {}
 
-CbmHit::CbmHit(HitType _type,
-               Double_t _z,
-               Double_t _dz,
-               Int_t _refId,
-               Int_t _address,
-               Double_t _time,
+CbmHit::CbmHit(HitType _type, Double_t _z, Double_t _dz, Int_t _refId, Int_t _address, Double_t _time,
                Double_t _timeError)
   : TObject()
   , fType(_type)
@@ -28,7 +23,9 @@ CbmHit::CbmHit(HitType _type,
   , fAddress(_address)
   , fTime(_time)
   , fTimeError(_timeError)
-  , fMatch(nullptr) {}
+  , fMatch(nullptr)
+{
+}
 
 // Only shallow copy needed
 CbmHit::CbmHit(const CbmHit& rhs)
@@ -40,10 +37,13 @@ CbmHit::CbmHit(const CbmHit& rhs)
   , fAddress(rhs.fAddress)
   , fTime(rhs.fTime)
   , fTimeError(rhs.fTimeError)
-  , fMatch(nullptr) {}
+  , fMatch(nullptr)
+{
+}
 
 // Only shallow copy needed
-CbmHit& CbmHit::operator=(const CbmHit& rhs) {
+CbmHit& CbmHit::operator=(const CbmHit& rhs)
+{
 
   if (this != &rhs) {
     TObject::operator=(rhs);
@@ -59,11 +59,13 @@ CbmHit& CbmHit::operator=(const CbmHit& rhs) {
   return *this;
 }
 
-CbmHit::~CbmHit() {
+CbmHit::~CbmHit()
+{
   if (fMatch) delete fMatch;
 }
 
-void CbmHit::SetMatch(CbmMatch* match) {
+void CbmHit::SetMatch(CbmMatch* match)
+{
   if (fMatch) delete fMatch;
   fMatch = match;
 }

@@ -29,14 +29,16 @@ public:
     , fMvd1CutP(0.)
     , fMvd1CutD(0.)
     , fMvd2CutP(0.)
-    , fMvd2CutD(0.) {
+    , fMvd2CutD(0.)
+  {
     SetDefaultCuts();
   }
 
   /*
 	 * Set default electron ID and analysis cuts.
 	 */
-  void SetDefaultCuts() {
+  void SetDefaultCuts()
+  {
     //electron ID cuts, we use CbmLitGlobalElectronId for identification
     fMomentumCut = -1.;  // if cut < 0 it is not used
 
@@ -83,22 +85,18 @@ public:
   /*
 	 * Print out cuts.
 	 */
-  void Print() {
+  void Print()
+  {
     std::cout << "Used cuts:" << std::endl
               << "fChiPrimCut = " << fChiPrimCut << std::endl
               << "fPtCut = " << fPtCut << std::endl
               << "fAngleCut = " << fAngleCut << std::endl
               << "fGammaCut = " << fGammaCut << std::endl
-              << "fStCut (ang,pp) = (" << fStCutAngle << "," << fStCutPP << ")"
-              << std::endl
-              << "fRtCut (ang,pp) = (" << fRtCutAngle << "," << fRtCutPP << ")"
-              << std::endl
-              << "fTtCut (ang,pp) = (" << fTtCutAngle << "," << fTtCutPP << ")"
-              << std::endl
-              << "fMvd1Cut (p,d) = (" << fMvd1CutP << "," << fMvd1CutD << ")"
-              << std::endl
-              << "fMvd2Cut (p,d) = (" << fMvd2CutP << "," << fMvd2CutD << ")"
-              << std::endl
+              << "fStCut (ang,pp) = (" << fStCutAngle << "," << fStCutPP << ")" << std::endl
+              << "fRtCut (ang,pp) = (" << fRtCutAngle << "," << fRtCutPP << ")" << std::endl
+              << "fTtCut (ang,pp) = (" << fTtCutAngle << "," << fTtCutPP << ")" << std::endl
+              << "fMvd1Cut (p,d) = (" << fMvd1CutP << "," << fMvd1CutD << ")" << std::endl
+              << "fMvd2Cut (p,d) = (" << fMvd2CutP << "," << fMvd2CutD << ")" << std::endl
               << "fMomentumCut = " << fMomentumCut << std::endl;
   }
 

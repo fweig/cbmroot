@@ -6,18 +6,16 @@
 // a node gets a wrong media information.
 
 // Forward declaration
-std::pair<int, int>
-loop_over_nodes(const std::vector<std::pair<TString, TString>>&,
-                TString&,
-                TString&);
+std::pair<int, int> loop_over_nodes(const std::vector<std::pair<TString, TString>>&, TString&, TString&);
 std::pair<int, int> CheckGeometry(TString);
 
-void check_media(const char* dataset = "test") {
+void check_media(const char* dataset = "test")
+{
   TString geoFile = TString(dataset) + ".geo.root";
   TFile* f        = new TFile(geoFile);
   if (!f->IsOpen()) {
-    std::cout << "check_media_1: geometry file " << geoFile
-              << " with the ROOT TGeoManager is not accessible!" << std::endl;
+    std::cout << "check_media_1: geometry file " << geoFile << " with the ROOT TGeoManager is not accessible!"
+              << std::endl;
     return;
   }
 
@@ -39,8 +37,7 @@ void check_media(const char* dataset = "test") {
       return;
     }
     wrong_media += retval.second;
-    std::cout << "Checked " << retval.first << " sub nodes from " << nodename
-              << " and found " << retval.second
+    std::cout << "Checked " << retval.first << " sub nodes from " << nodename << " and found " << retval.second
               << " with wrongly assigned media" << std::endl;
   }
 
@@ -48,16 +45,17 @@ void check_media(const char* dataset = "test") {
     std::cout << std::endl;
     std::cout << "Test passed" << std::endl;
     std::cout << "All ok" << std::endl;
-  } else {
+  }
+  else {
     std::cout << std::endl;
     std::cout << "Test failed" << std::endl;
-    std::cout << "Found in total " << wrong_media
-              << " nodes with wrongly assigned media" << std::endl;
+    std::cout << "Found in total " << wrong_media << " nodes with wrongly assigned media" << std::endl;
   }
   RemoveGeoManager();
 }
 
-std::pair<int, int> CheckGeometry(TString geoname) {
+std::pair<int, int> CheckGeometry(TString geoname)
+{
   // All TOF geometries v16c have the equal internal structure,
   // only the position in the cave is different so we use the
   // same input file with the media at creation
@@ -68,19 +66,18 @@ std::pair<int, int> CheckGeometry(TString geoname) {
   if (geoname.Contains("tof_v16c")) {
     filename.Remove(filename.Length() - 5, 5);
     substitution.Remove(substitution.Length() - 2, 2);
-    filename =
-      srcDir + "/input/geometry_check/" + filename + "_1h_geometrycheck.root";
+    filename  = srcDir + "/input/geometry_check/" + filename + "_1h_geometrycheck.root";
     toReplace = "tof_v16c_1h";
-  } else if (geoname.Contains("trd_v17n")) {
+  }
+  else if (geoname.Contains("trd_v17n")) {
     filename.Remove(filename.Length() - 5, 5);
     substitution.Remove(substitution.Length() - 2, 2);
-    filename =
-      srcDir + "/input/geometry_check/" + filename + "_1e_geometrycheck.root";
+    filename  = srcDir + "/input/geometry_check/" + filename + "_1e_geometrycheck.root";
     toReplace = "trd_v17n_1e";
-  } else {
+  }
+  else {
     filename.Remove(filename.Length() - 2, 2);
-    filename =
-      srcDir + "/input/geometry_check/" + filename + "_geometrycheck.root";
+    filename     = srcDir + "/input/geometry_check/" + filename + "_geometrycheck.root";
     substitution = "";
     toReplace    = "";
   }
@@ -93,21 +90,18 @@ std::pair<int, int> CheckGeometry(TString geoname) {
   }
   CbmMediaList* matlistPtr {nullptr};
   infile->GetObject("CbmMediaList", matlistPtr);
-  const std::vector<std::pair<TString, TString>>& matlist =
-    matlistPtr->GetVector();
+  const std::vector<std::pair<TString, TString>>& matlist = matlistPtr->GetVector();
 
-  std::pair<int, int> retval =
-    loop_over_nodes(matlist, substitution, toReplace);
+  std::pair<int, int> retval = loop_over_nodes(matlist, substitution, toReplace);
 
   infile->Close();
 
   return retval;
 }
 
-std::pair<int, int>
-loop_over_nodes(const std::vector<std::pair<TString, TString>>& matlist,
-                TString& substitution,
-                TString& toReplace) {
+std::pair<int, int> loop_over_nodes(const std::vector<std::pair<TString, TString>>& matlist, TString& substitution,
+                                    TString& toReplace)
+{
   int media_checked {0};
   int wrong_media {0};
   TGeoNode* node {nullptr};
@@ -117,16 +111,13 @@ loop_over_nodes(const std::vector<std::pair<TString, TString>>& matlist,
   for (auto material : matlist) {
     media_checked++;
     nodename = material.first;
-    if (toReplace.Length() > 0) {
-      nodename = material.first.ReplaceAll(toReplace, substitution);
-    }
+    if (toReplace.Length() > 0) { nodename = material.first.ReplaceAll(toReplace, substitution); }
     if (gGeoManager->cd(nodename)) {
       node    = gGeoManager->GetCurrentNode();
       medName = node->GetMedium()->GetName();
       if (medName.CompareTo(material.second)) {
         wrong_media++;
-        std::cout << "Medium for " << material.first << " is wrong."
-                  << std::endl;
+        std::cout << "Medium for " << material.first << " is wrong." << std::endl;
         std::cout << "Expected: " << material.second << std::endl;
         std::cout << "Found   : " << medName << std::endl;
         std::cout << std::endl;

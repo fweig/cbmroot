@@ -37,9 +37,7 @@ public:
    *@param branchName name of branch to be buffered
    *@param nEvents    Number of pile-up events
    **/
-  CbmMvdPileupManager(TString fileName,
-                      TString branchName = "MVDPoint",
-                      Int_t nEvents      = 500);
+  CbmMvdPileupManager(TString fileName, TString branchName = "MVDPoint", Int_t nEvents = 500);
 
 
   /** Destructor **/

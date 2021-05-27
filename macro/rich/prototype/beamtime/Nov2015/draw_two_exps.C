@@ -1,8 +1,6 @@
-void draw_two_exps(TString filename1,
-                   TString filename2,
-                   TString histoName1 = "ExponentaBudetTut",
-                   TString histoName2 = "ExponentaBudetTut",
-                   TString outFolder  = "pictures") {
+void draw_two_exps(TString filename1, TString filename2, TString histoName1 = "ExponentaBudetTut",
+                   TString histoName2 = "ExponentaBudetTut", TString outFolder = "pictures")
+{
   TFile* f1 = new TFile(filename1);
   TFile* f2 = new TFile(filename2);
 

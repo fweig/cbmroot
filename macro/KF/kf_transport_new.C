@@ -27,11 +27,9 @@
  ** @param inputFile  Name of input file
  ** @param iDecay     Decay mode from KFPartEfficiencies
  **/
-void kf_transport_new(Int_t nEvents         = 2,
-                      const char* setupName = "sis100_electron",
-                      const char* output    = "test",
-                      const char* inputFile = "",
-                      Int_t iDecay          = -1) {
+void kf_transport_new(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* output = "test",
+                      const char* inputFile = "", Int_t iDecay = -1)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -40,7 +38,7 @@ void kf_transport_new(Int_t nEvents         = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "kf_transport";  // this macro's name for screen output
+  TString myName = "kf_transport";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -53,8 +51,7 @@ void kf_transport_new(Int_t nEvents         = 2,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if (strcmp(inputFile, "") == 0)
-    inFile = defaultInputFile;
+  if (strcmp(inputFile, "") == 0) inFile = defaultInputFile;
   else
     inFile = inputFile;
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -84,33 +81,29 @@ void kf_transport_new(Int_t nEvents         = 2,
 
     KFPartEfficiencies eff;
     Int_t pdgid = eff.partPDG[iDecay];
-    std::cout << "-I- " << myName << ": Setting decay " << iDecay << " ( "
-              << eff.partTitle[iDecay] << ", pdg " << pdgid << " )"
-              << std::endl;
+    std::cout << "-I- " << myName << ": Setting decay " << iDecay << " ( " << eff.partTitle[iDecay] << ", pdg " << pdgid
+              << " )" << std::endl;
 
     // Check if particle is in TDatabasePDG. If yes, it is probably known to the VMC.
     // Unfortunately, there is no better check available
     if (!TDatabasePDG::Instance()->GetParticle(pdgid)) {
-      auto particle = new FairParticle(pdgid,  // PDG code
+      auto particle = new FairParticle(pdgid,                         // PDG code
                                        eff.partTitle[iDecay].data(),  // name
                                        kPTHadron,                     // type
                                        eff.partMass[iDecay],          // mass
                                        eff.partCharge[iDecay],        // charge
-                                       eff.partLifeTime[iDecay],  // life time
-                                       "hadron",                  // type string
-                                       0.,                        // width
-                                       1,
-                                       1,
+                                       eff.partLifeTime[iDecay],      // life time
+                                       "hadron",                      // type string
+                                       0.,                            // width
+                                       1, 1,
                                        0,  // spin, parity, conjugation
-                                       1,
-                                       1,
+                                       1, 1,
                                        0,  // isospin, isospin-z, g-Parity
                                        0,
                                        1,        // lepton number, baryon number
                                        kFALSE);  // stable
       FairRunSim::Instance()->AddNewParticle(particle);
-      std::cout << "-I- " << myName << ": Registering particle "
-                << eff.partTitle[iDecay] << " with PDG code " << pdgid
+      std::cout << "-I- " << myName << ": Registering particle " << eff.partTitle[iDecay] << " with PDG code " << pdgid
                 << " for transport." << std::endl;
     }  //? Not in PDG database
 
@@ -152,9 +145,7 @@ void kf_transport_new(Int_t nEvents         = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

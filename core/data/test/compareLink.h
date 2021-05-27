@@ -3,11 +3,8 @@
 
 #include "CbmLink.h"
 
-void compareLinkDataMembers(CbmLink& test,
-                            Int_t file,
-                            Int_t entry,
-                            Int_t index,
-                            Double_t weight) {
+void compareLinkDataMembers(CbmLink& test, Int_t file, Int_t entry, Int_t index, Double_t weight)
+{
   Int_t intRetVal {-111};
   Float_t floatRetVal {-111};
 

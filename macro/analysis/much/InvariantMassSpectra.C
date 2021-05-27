@@ -15,11 +15,9 @@
 //
 //---------------------------------------------------
 
-void InvariantMassSpectra(
-  Int_t energy     = 8,
-  Int_t NofFiles   = 1000,
-  Int_t NofSignals = 7,
-  TString dir      = "/lustre/cbm/prod/mc/OCT19/sis100_muon_lmvm") {
+void InvariantMassSpectra(Int_t energy = 8, Int_t NofFiles = 1000, Int_t NofSignals = 7,
+                          TString dir = "/lustre/cbm/prod/mc/OCT19/sis100_muon_lmvm")
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -30,25 +28,11 @@ void InvariantMassSpectra(
 
   Int_t color[] = {2, 3, 4, 6, 7, 5, 14, 28};
 
-  TString sgn[] = {
-    "omega", "omegaD", "eta", "etaD", "rho0", "phi", "qgp", "jpsi"};
-  TString sgnLtx[] = {"#omega",
-                      "#omega_{D}",
-                      "#eta",
-                      "#eta_{D}",
-                      "#rho_{0}",
-                      "#phi",
-                      "qgp",
-                      "J/#psi"};
+  TString sgn[]    = {"omega", "omegaD", "eta", "etaD", "rho0", "phi", "qgp", "jpsi"};
+  TString sgnLtx[] = {"#omega", "#omega_{D}", "#eta", "#eta_{D}", "#rho_{0}", "#phi", "qgp", "J/#psi"};
 
-  Double_t sgn_mult[] = {19 * 9 * 1e-5,
-                         19. * 1.3e-4,
-                         16. * 5.8e-6,
-                         16. * 3.1e-4,
-                         9. * 4.55e-5,
-                         0.12 * 2.87e-4,
-                         3.2e-3,
-                         0.06 * 1e-6};
+  Double_t sgn_mult[] = {19 * 9 * 1e-5, 19. * 1.3e-4,   16. * 5.8e-6, 16. * 3.1e-4,
+                         9. * 4.55e-5,  0.12 * 2.87e-4, 3.2e-3,       0.06 * 1e-6};
 
   Int_t NofBins  = 100;
   Int_t NofBinsM = 400;
@@ -114,8 +98,7 @@ void InvariantMassSpectra(
 
   TH2D* YPt[NofSignals];
 
-  YPt[0] = new TH2D(
-    "YPt_omega", "YPt_omega", NofBins, minY, maxY, NofBins, min, maxPt);
+  YPt[0] = new TH2D("YPt_omega", "YPt_omega", NofBins, minY, maxY, NofBins, min, maxPt);
   (YPt[0]->GetXaxis())->SetTitle("Y");
   (YPt[0]->GetYaxis())->SetTitle("P_{t} (GeV/c)");
   YPt[0]->GetXaxis()->SetTitleSize(0.05);
@@ -132,17 +115,7 @@ void InvariantMassSpectra(
   }
 
   TH3D* YPtM_sgn[NofSignals];
-  YPtM_sgn[0] = new TH3D("YPtM_omega",
-                         "YPtM_omega",
-                         NofBins,
-                         minY,
-                         maxY,
-                         NofBins,
-                         min,
-                         maxPt,
-                         NofBinsM,
-                         min,
-                         maxM);
+  YPtM_sgn[0] = new TH3D("YPtM_omega", "YPtM_omega", NofBins, minY, maxY, NofBins, min, maxPt, NofBinsM, min, maxM);
   for (int i = 1; i < NofSignals; i++) {
     name        = "YPtM_" + sgn[i];
     YPtM_sgn[i] = (TH3D*) YPtM_sgn[0]->Clone(name);
@@ -160,12 +133,7 @@ void InvariantMassSpectra(
 
   for (int i = 0; i < NofSignals + 1; i++) {
     for (int k = 1; k < NofFiles + 1; k++) {
-      if (i < NofSignals)
-        name.Form("%s/%dgev/%s/%d/muons.ana.root",
-                  dir.Data(),
-                  energy,
-                  sgn[i].Data(),
-                  k);
+      if (i < NofSignals) name.Form("%s/%dgev/%s/%d/muons.ana.root", dir.Data(), energy, sgn[i].Data(), k);
       else
         name.Form("%s/%dgev/centr/%d/muons.ana.root", dir.Data(), energy, k);
 
@@ -175,8 +143,7 @@ void InvariantMassSpectra(
         continue;
       }
 
-      if (k % 100 == 0)
-        cout << "Input File " << k << " : " << f->GetName() << endl;
+      if (k % 100 == 0) cout << "Input File " << k << " : " << f->GetName() << endl;
 
       InputTree = (TTree*) f->Get("cbmsim");
 
@@ -203,13 +170,11 @@ void InvariantMassSpectra(
           CbmAnaMuonCandidate* mu_pl = (CbmAnaMuonCandidate*) MuPlus->At(iPart);
           TLorentzVector* P_pl       = mu_pl->GetMomentum();
           for (int jPart = 0; jPart < NofMinus; jPart++) {
-            CbmAnaMuonCandidate* mu_mn =
-              (CbmAnaMuonCandidate*) MuMinus->At(jPart);
-            TLorentzVector* P_mn = mu_mn->GetMomentum();
+            CbmAnaMuonCandidate* mu_mn = (CbmAnaMuonCandidate*) MuMinus->At(jPart);
+            TLorentzVector* P_mn       = mu_mn->GetMomentum();
             TLorentzVector M(*P_pl + *P_mn);
             if (i < NofSignals) {
-              invM_sgn[i]->Fill(
-                M.M(), sgn_mult[i] / 10.);  // normalized with bin value
+              invM_sgn[i]->Fill(M.M(), sgn_mult[i] / 10.);  // normalized with bin value
 
               YPtM_sgn[i]->Fill(M.Rapidity(), M.Pt(), M.M(), sgn_mult[i]);
 
@@ -217,7 +182,8 @@ void InvariantMassSpectra(
                 invM_MCsgn[i]->Fill(M.M(), sgn_mult[i] / 10.);
                 YPt[i]->Fill(M.Rapidity(), M.Pt());
               }
-            } else {
+            }
+            else {
               invM_bg->Fill(M.M(), 1. / 10.);
               YPtM_bg->Fill(M.Rapidity(), M.Pt(), M.M());
             }
@@ -234,7 +200,8 @@ void InvariantMassSpectra(
       invM_MCsgn[i]->Scale(1. / NofEvents[i]);
       invM_full->Add(invM_sgn[i]);
       YPtM_sgn[i]->Scale(1. / NofEvents[i]);
-    } else {
+    }
+    else {
       invM_bg->Scale(1. / NofEvents[i]);
       invM_full->Add(invM_bg);
       YPtM_bg->Scale(1. / NofEvents[i]);
@@ -251,8 +218,7 @@ void InvariantMassSpectra(
 
   for (int i = 0; i < NofBinsM; i++) {
     Double_t bg = invM_full->GetBinContent(i) - invM_sgnAllMC->GetBinContent(i);
-    if (bg != 0)
-      SBratio->SetBinContent(i, invM_sgnAllMC->GetBinContent(i) / bg);
+    if (bg != 0) SBratio->SetBinContent(i, invM_sgnAllMC->GetBinContent(i) / bg);
   }
 
   TCanvas* c1;
@@ -285,8 +251,7 @@ void InvariantMassSpectra(
   SBratio->SetStats(kFALSE);
   SBratio->Draw("L HIST");
 
-  if (NofSignals == 1)
-    name.Form("invM_bg_omega_%dgev.root", energy);
+  if (NofSignals == 1) name.Form("invM_bg_omega_%dgev.root", energy);
   else
     name.Form("invM_bg_signals_%dgev.root", energy);
 

@@ -36,9 +36,7 @@ public:
     * \param tracks Output vector of TOF tracks.
     * \return Status code.
     */
-  virtual LitStatus DoMerge(HitPtrVector& hits,
-                            TrackPtrVector& tracks,
-                            TofTrackPtrVector& tofTracks) = 0;
+  virtual LitStatus DoMerge(HitPtrVector& hits, TrackPtrVector& tracks, TofTrackPtrVector& tofTracks) = 0;
 };
 
 #endif /* CBMLITHITTOTRACKMERGER_H_ */

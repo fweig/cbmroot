@@ -1,25 +1,12 @@
 #include "CbmRichMCbmAerogelAna.h"
 
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TEllipse.h"
-#include "TF1.h"
-#include "TGeoBBox.h"
-#include "TGeoManager.h"
-#include "TGeoNode.h"
-#include "TH1.h"
-#include "TH1D.h"
-#include "TLine.h"
-#include "TMarker.h"
-#include "TMath.h"
-#include "TStyle.h"
-#include <TFile.h>
-
 #include "CbmDigiManager.h"
 #include "CbmDrawHist.h"
 #include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
 #include "CbmMatchRecoToMC.h"
+#include "CbmRichConverter.h"
 #include "CbmRichDigi.h"
 #include "CbmRichDraw.h"
 #include "CbmRichGeoManager.h"
@@ -33,18 +20,31 @@
 #include "CbmTofTracklet.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdTrack.h"
-#include "TLatex.h"
-
-#include "CbmRichConverter.h"
-
-#include "CbmHistManager.h"
 #include "CbmUtils.h"
 
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TEllipse.h"
+#include "TF1.h"
+#include "TGeoBBox.h"
+#include "TGeoManager.h"
+#include "TGeoNode.h"
+#include "TH1.h"
+#include "TH1D.h"
+#include "TLatex.h"
+#include "TLine.h"
+#include "TMarker.h"
+#include "TMath.h"
+#include "TStyle.h"
+#include <TFile.h>
+
 #include <boost/assign/list_of.hpp>
-#include <cmath>
+
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include <cmath>
 
 using namespace std;
 using boost::assign::list_of;
@@ -62,34 +62,29 @@ CbmRichMCbmAerogelAna::CbmRichMCbmAerogelAna()
   , fNofDrawnRings(0)
   , fNofDrawnRichTofEv(0)
   , fNofDrawnEvents(0)
-  , fOutputDir("result") {}
+  , fOutputDir("result")
+{
+}
 
-InitStatus CbmRichMCbmAerogelAna::Init() {
+InitStatus CbmRichMCbmAerogelAna::Init()
+{
   cout << "CbmRichMCbmAerogelAna::Init" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) {
-    Fatal("CbmRichMCbmQaReal::Init", "RootManager not instantised!");
-  }
+  if (nullptr == ioman) { Fatal("CbmRichMCbmQaReal::Init", "RootManager not instantised!"); }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich))
-    Fatal("CbmRichMCbmQaReal::Init", "No Rich Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) Fatal("CbmRichMCbmQaReal::Init", "No Rich Digis!");
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof))
-    Fatal("CbmRichMCbmQaReal::Init", "No Tof Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) Fatal("CbmRichMCbmQaReal::Init", "No Tof Digis!");
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (nullptr == fRichHits) {
-    Fatal("CbmRichMCbmAerogelAna::Init", "No Rich Hits!");
-  }
+  if (nullptr == fRichHits) { Fatal("CbmRichMCbmAerogelAna::Init", "No Rich Hits!"); }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (nullptr == fRichRings) {
-    Fatal("CbmRichMCbmAerogelAna::Init", "No Rich Rings!");
-  }
+  if (nullptr == fRichRings) { Fatal("CbmRichMCbmAerogelAna::Init", "No Rich Rings!"); }
 
 
   //    fTofHits =(TClonesArray*) ioman->GetObject("TofHit");
@@ -111,149 +106,66 @@ InitStatus CbmRichMCbmAerogelAna::Init() {
   return kSUCCESS;
 }
 
-void CbmRichMCbmAerogelAna::InitHistograms() {
+void CbmRichMCbmAerogelAna::InitHistograms()
+{
   fHM = new CbmHistManager();
 
   fHM->Create1<TH1D>("fhNofEvents", "fhNofEvents;Entries", 1, 0.5, 1.5);
   fHM->Create1<TH1D>("fhNofCbmEvents", "fhNofCbmEvents;Entries", 1, 0.5, 1.5);
-  fHM->Create1<TH1D>(
-    "fhNofCbmEventsRing", "fhNofCbmEventsRing;Entries", 1, 0.5, 1.5);
+  fHM->Create1<TH1D>("fhNofCbmEventsRing", "fhNofCbmEventsRing;Entries", 1, 0.5, 1.5);
 
-  fHM->Create1<TH1D>(
-    "fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
+  fHM->Create1<TH1D>("fhHitsInTimeslice", "fhHitsInTimeslice;Timeslice;#Hits", 200, 1, 200);
 
   // nof objects per timeslice
-  fHM->Create1<TH1D>(
-    "fhNofRichDigisInTimeslice",
-    "fhNofRichDigisInTimeslice;# RICH digis / timeslice;Entries",
-    100,
-    -0.5,
-    999.5);
-  fHM->Create1<TH1D>("fhNofRichHitsInTimeslice",
-                     "fhNofRichHitsInTimeslice;# RICH hits / timeslice;Entries",
-                     100,
-                     -0.5,
+  fHM->Create1<TH1D>("fhNofRichDigisInTimeslice", "fhNofRichDigisInTimeslice;# RICH digis / timeslice;Entries", 100,
+                     -0.5, 999.5);
+  fHM->Create1<TH1D>("fhNofRichHitsInTimeslice", "fhNofRichHitsInTimeslice;# RICH hits / timeslice;Entries", 100, -0.5,
                      999.5);
-  fHM->Create1<TH1D>(
-    "fhNofRichRingsInTimeslice",
-    "fhNofRichRingsInTimeslice;# RICH rings / timeslice;Entries",
-    10,
-    -0.5,
-    9.5);
+  fHM->Create1<TH1D>("fhNofRichRingsInTimeslice", "fhNofRichRingsInTimeslice;# RICH rings / timeslice;Entries", 10,
+                     -0.5, 9.5);
 
   // RICH hits
-  fHM->Create2<TH2D>("fhRichHitXY",
-                     "fhRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     84,
-                     -25.2,
-                     25.2);
-  fHM->Create2<TH2D>("fhEventRichHitXY",
-                     "fhEventRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
-                     20.1 + fXOffsetHisto,
-                     84,
-                     -25.2,
-                     25.2);
-  fHM->Create1<TH1D>("fhEventRichHitX",
-                     "fhEventRichHitX;RICH hit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
+  fHM->Create2<TH2D>("fhRichHitXY", "fhRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries", 67, -20.1 + fXOffsetHisto,
+                     20.1 + fXOffsetHisto, 84, -25.2, 25.2);
+  fHM->Create2<TH2D>("fhEventRichHitXY", "fhEventRichHitXY;RICH hit X [cm];RICH hit Y [cm];Entries", 67,
+                     -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
+  fHM->Create1<TH1D>("fhEventRichHitX", "fhEventRichHitX;RICH hit X [cm];Entries", 67, -20.1 + fXOffsetHisto,
                      20.1 + fXOffsetHisto);
-  fHM->Create1<TH1D>("fhEventRichHitY",
-                     "fhEventRichHitY;RICH hit Y [cm];Entries",
-                     84,
-                     -25.2,
-                     25.2);
-  fHM->Create1<TH1D>("fhRichHitX",
-                     "fhRichHitX;RICH hit X [cm];Entries",
-                     67,
-                     -20.1 + fXOffsetHisto,
+  fHM->Create1<TH1D>("fhEventRichHitY", "fhEventRichHitY;RICH hit Y [cm];Entries", 84, -25.2, 25.2);
+  fHM->Create1<TH1D>("fhRichHitX", "fhRichHitX;RICH hit X [cm];Entries", 67, -20.1 + fXOffsetHisto,
                      20.1 + fXOffsetHisto);
-  fHM->Create1<TH1D>(
-    "fhRichHitY", "fhRichHitY;RICH hit Y [cm];Entries", 84, -25.2, 25.2);
+  fHM->Create1<TH1D>("fhRichHitY", "fhRichHitY;RICH hit Y [cm];Entries", 84, -25.2, 25.2);
 
   //ToT
-  fHM->Create1<TH1D>(
-    "fhRichDigisToT", "fhRichDigisToT;ToT [ns];Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>(
-    "fhRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRichDigisToT", "fhRichDigisToT;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
 
   // RICH rings
-  fHM->Create2<TH2D>(
-    "fhRichRingXY",
-    "fhRichRingXY;Ring center X [cm];Ring center Y [cm];Entries",
-    100,
-    -20 + fXOffsetHisto,
-    20 + fXOffsetHisto,
-    100,
-    -20,
-    20);
-  fHM->Create1<TH1D>("fhRichRingRadius",
-                     "fhRichRingRadius;Ring radius [cm];Entries",
-                     100,
-                     0.,
-                     7.);
-  fHM->Create1<TH1D>("fhNofHitsInRing",
-                     "fhNofHitsInRing;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
+  fHM->Create2<TH2D>("fhRichRingXY", "fhRichRingXY;Ring center X [cm];Ring center Y [cm];Entries", 100,
+                     -20 + fXOffsetHisto, 20 + fXOffsetHisto, 100, -20, 20);
+  fHM->Create1<TH1D>("fhRichRingRadius", "fhRichRingRadius;Ring radius [cm];Entries", 100, 0., 7.);
+  fHM->Create1<TH1D>("fhNofHitsInRing", "fhNofHitsInRing;# hits in ring;Entries", 50, -0.5, 49.5);
 
   // RICH rings aerogel/ Event
-  fHM->Create2<TH2D>(
-    "fhEventRichRingXY",
-    "fhEventRichRingXY;Ring center X [cm];Ring center Y [cm];Entries",
-    100,
-    -20 + fXOffsetHisto,
-    20 + fXOffsetHisto,
-    100,
-    -20,
-    20);
-  fHM->Create1<TH1D>("fhEventRichRingRadius",
-                     "fhEventRichRingRadius;Ring radius [cm];Entries",
-                     100,
-                     0.,
-                     7.);
-  fHM->Create1<TH1D>("fhEventNofHitsInRing",
-                     "fhEventNofHitsInRing;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
-  fHM->Create1<TH1D>("fhEventNofHitsInRingTop",
-                     "fhEventNofHitsInRingTop;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
-  fHM->Create1<TH1D>("fhEventNofHitsInRingBottom",
-                     "fhEventNofHitsInRingBottom;# hits in ring;Entries",
-                     50,
-                     -0.5,
-                     49.5);
+  fHM->Create2<TH2D>("fhEventRichRingXY", "fhEventRichRingXY;Ring center X [cm];Ring center Y [cm];Entries", 100,
+                     -20 + fXOffsetHisto, 20 + fXOffsetHisto, 100, -20, 20);
+  fHM->Create1<TH1D>("fhEventRichRingRadius", "fhEventRichRingRadius;Ring radius [cm];Entries", 100, 0., 7.);
+  fHM->Create1<TH1D>("fhEventNofHitsInRing", "fhEventNofHitsInRing;# hits in ring;Entries", 50, -0.5, 49.5);
+  fHM->Create1<TH1D>("fhEventNofHitsInRingTop", "fhEventNofHitsInRingTop;# hits in ring;Entries", 50, -0.5, 49.5);
+  fHM->Create1<TH1D>("fhEventNofHitsInRingBottom", "fhEventNofHitsInRingBottom;# hits in ring;Entries", 50, -0.5, 49.5);
 
-  fHM->Create1<TH1D>(
-    "fhEventRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhEventRichHitToT", "fhRichHitToT;ToT [ns];Entries", 601, 9.975, 40.025);
 
-  fHM->Create1<TH1D>("fhEventRichRingRadiusTop",
-                     "fhEventRichRingRadiusTop;Ring radius [cm];Entries",
-                     100,
-                     0.,
-                     7.);
-  fHM->Create1<TH1D>("fhEventRichRingRadiusBottom",
-                     "fhEventRichRingRadiusBottom;Ring radius [cm];Entries",
-                     100,
-                     0.,
+  fHM->Create1<TH1D>("fhEventRichRingRadiusTop", "fhEventRichRingRadiusTop;Ring radius [cm];Entries", 100, 0., 7.);
+  fHM->Create1<TH1D>("fhEventRichRingRadiusBottom", "fhEventRichRingRadiusBottom;Ring radius [cm];Entries", 100, 0.,
                      7.);
 
-  fHM->Create1<TH1D>(
-    "fhNofRingsTopBottom", "fhNofRingsTopBottom;Entries", 2, -0.5, 1.5);
+  fHM->Create1<TH1D>("fhNofRingsTopBottom", "fhNofRingsTopBottom;Entries", 2, -0.5, 1.5);
 }
 
 
-void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
+void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   fHM->H1("fhNofEvents")->Fill(1);
   cout << "CbmRichMCbmAerogelAna, event No. " << fEventNum << endl;
@@ -331,12 +243,10 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
 
       //loop over rings in CbmEvent
       for (unsigned int rings = 0; rings < ringIndx.size(); rings++) {
-        CbmRichRing* ring =
-          static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
+        CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(ringIndx[rings]));
         if (ring == nullptr) continue;
 
-        fHM->H2("fhEventRichRingXY")
-          ->Fill(ring->GetCenterX(), ring->GetCenterY());
+        fHM->H2("fhEventRichRingXY")->Fill(ring->GetCenterX(), ring->GetCenterY());
         fHM->H1("fhEventRichRingRadius")->Fill(ring->GetRadius());
         fHM->H1("fhEventNofHitsInRing")->Fill(ring->GetNofHits());
 
@@ -345,7 +255,8 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
           fHM->H1("fhEventNofHitsInRingTop")->Fill(ring->GetNofHits());
           fHM->H1("fhEventRichRingRadiusTop")->Fill(ring->GetRadius());
           fHM->H1("fhNofRingsTopBottom")->Fill(0);
-        } else {  // Aerogel from Mar2019
+        }
+        else {  // Aerogel from Mar2019
           fHM->H1("fhEventNofHitsInRingBottom")->Fill(ring->GetNofHits());
           fHM->H1("fhEventRichRingRadiusBottom")->Fill(ring->GetRadius());
           fHM->H1("fhNofRingsTopBottom")->Fill(1);
@@ -361,7 +272,8 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
   RichRings();
 }
 
-void CbmRichMCbmAerogelAna::RichRings() {
+void CbmRichMCbmAerogelAna::RichRings()
+{
   int nofRichRings = fRichRings->GetEntriesFast();
   //fHM->H1("fhNofRichRingsInTimeslice")->Fill(nofRichRings);
   for (int i = 0; i < nofRichRings; i++) {
@@ -375,7 +287,8 @@ void CbmRichMCbmAerogelAna::RichRings() {
 }
 
 
-void CbmRichMCbmAerogelAna::DrawHist() {
+void CbmRichMCbmAerogelAna::DrawHist()
+{
   cout.precision(4);
 
   //SetDefaultDrawStyle();
@@ -383,20 +296,17 @@ void CbmRichMCbmAerogelAna::DrawHist() {
   fHM->ScaleByPattern("fh_.*", 1. / nofEvents);
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofCbmEvents", "rich_mcbm_fhNofCbmEvents", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofCbmEvents", "rich_mcbm_fhNofCbmEvents", 600, 600);
     DrawH1(fHM->H1("fhNofCbmEvents"));
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofCbmEventsRing", "rich_mcbm_fhNofCbmEventsRing", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofCbmEventsRing", "rich_mcbm_fhNofCbmEventsRing", 600, 600);
     DrawH1(fHM->H1("fhNofCbmEventsRing"));
   }
 
   {
-    fHM->CreateCanvas(
-      "rich_mcbm_fhNofEvents", "rich_mcbm_fhNofEvents", 600, 600);
+    fHM->CreateCanvas("rich_mcbm_fhNofEvents", "rich_mcbm_fhNofEvents", 600, 600);
     DrawH1(fHM->H1("fhNofEvents"));
   }
 
@@ -412,8 +322,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
 
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "rich_mcbm_XY_inEvent", "rich_mcbm_XY_inEvent", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_XY_inEvent", "rich_mcbm_XY_inEvent", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH2(fHM->H2("fhEventRichHitXY"));
@@ -423,8 +332,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
 
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "rich_mcbm_X_and_Y_inEvent", "rich_mcbm_X_and_Y_inEvent", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_X_and_Y_inEvent", "rich_mcbm_X_and_Y_inEvent", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhRichHitX"));
@@ -433,10 +341,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_mcbm_X_and_Y_inEventWithRing",
-                                   "rich_mcbm_X_and_Y_inEventWithRing",
-                                   1200,
-                                   600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_X_and_Y_inEventWithRing", "rich_mcbm_X_and_Y_inEventWithRing", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhEventRichHitX"));
@@ -454,8 +359,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
   }
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_ToT_Event", "rich_ToT_Event", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_ToT_Event", "rich_ToT_Event", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhRichHitToT"));
@@ -465,8 +369,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
 
 
   {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_mcbm_rings", "rich_mcbm_rings", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_rings", "rich_mcbm_rings", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhRichRingRadius"));
@@ -475,8 +378,7 @@ void CbmRichMCbmAerogelAna::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas(
-      "rich_mcbm_rings_inEvent", "rich_mcbm_rings_inEvent", 1200, 600);
+    TCanvas* c = fHM->CreateCanvas("rich_mcbm_rings_inEvent", "rich_mcbm_rings_inEvent", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhEventRichRingRadius"));
@@ -485,17 +387,13 @@ void CbmRichMCbmAerogelAna::DrawHist() {
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_Aerogel_Top_Bottom_Hits",
-                                   "rich_Aerogel_Top_Bottom_Hits",
-                                   1200,
-                                   600);
+    TCanvas* c = fHM->CreateCanvas("rich_Aerogel_Top_Bottom_Hits", "rich_Aerogel_Top_Bottom_Hits", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhEventNofHitsInRingTop"));
     unsigned int sumHitsTop = 0;
     for (unsigned int i = 1; i <= 50; i++) {
-      sumHitsTop +=
-        fHM->H1("fhEventNofHitsInRingTop")->GetBinContent(i) * (i - 1);
+      sumHitsTop += fHM->H1("fhEventNofHitsInRingTop")->GetBinContent(i) * (i - 1);
     }
     std::cout << "Sum Hits Top: " << sumHitsTop << std::endl;
 
@@ -503,17 +401,13 @@ void CbmRichMCbmAerogelAna::DrawHist() {
     DrawH1(fHM->H1("fhEventNofHitsInRingBottom"));
     unsigned int sumHitsBottom = 0;
     for (unsigned int i = 1; i <= 50; i++) {
-      sumHitsBottom +=
-        fHM->H1("fhEventNofHitsInRingBottom")->GetBinContent(i) * (i - 1);
+      sumHitsBottom += fHM->H1("fhEventNofHitsInRingBottom")->GetBinContent(i) * (i - 1);
     }
     std::cout << "Sum Hits Bottom: " << sumHitsBottom << std::endl;
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_Aerogel_Top_Bottom_Radius",
-                                   "rich_Aerogel_Top_Bottom_Radius",
-                                   1200,
-                                   600);
+    TCanvas* c = fHM->CreateCanvas("rich_Aerogel_Top_Bottom_Radius", "rich_Aerogel_Top_Bottom_Radius", 1200, 600);
     c->Divide(2, 1);
     c->cd(1);
     DrawH1(fHM->H1("fhEventRichRingRadiusTop"));
@@ -523,16 +417,14 @@ void CbmRichMCbmAerogelAna::DrawHist() {
 
 
   {
-    fHM->CreateCanvas("rich_Aerogel_#RingsTopVsBottom",
-                      "rich_Aerogel_#RingsTopVsBottom",
-                      1200,
-                      600);
+    fHM->CreateCanvas("rich_Aerogel_#RingsTopVsBottom", "rich_Aerogel_#RingsTopVsBottom", 1200, 600);
     fHM->H1("fhNofRingsTopBottom")->Draw("HIST TEXT");
   }
 }
 
 
-void CbmRichMCbmAerogelAna::Finish() {
+void CbmRichMCbmAerogelAna::Finish()
+{
   //std::cout<<"Tracks:  "<< fTofTracks->GetEntriesFast() <<std::endl;
   std::cout << "Drawing Hists...";
   DrawHist();
@@ -548,8 +440,8 @@ void CbmRichMCbmAerogelAna::Finish() {
     TFile* oldFile    = gFile;
     TDirectory* oldir = gDirectory;
 
-    std::string s     = fOutputDir + "/RecoHists.root";
-    TFile* outFile    = new TFile(s.c_str(), "RECREATE");
+    std::string s  = fOutputDir + "/RecoHists.root";
+    TFile* outFile = new TFile(s.c_str(), "RECREATE");
     if (outFile->IsOpen()) {
       fHM->WriteToFile();
       std::cout << "Written to Root-file \"" << s << "\"  ...";
@@ -563,8 +455,8 @@ void CbmRichMCbmAerogelAna::Finish() {
 }
 
 
-void CbmRichMCbmAerogelAna::DrawFromFile(const string& fileName,
-                                         const string& outputDir) {
+void CbmRichMCbmAerogelAna::DrawFromFile(const string& fileName, const string& outputDir)
+{
   fOutputDir = outputDir;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -586,7 +478,8 @@ void CbmRichMCbmAerogelAna::DrawFromFile(const string& fileName,
 }
 
 
-bool CbmRichMCbmAerogelAna::doToT(CbmRichHit* hit) {
+bool CbmRichMCbmAerogelAna::doToT(CbmRichHit* hit)
+{
   bool check = false;
   if ((hit->GetToT() > 23.7) && (hit->GetToT() < 30.0)) check = true;
 
@@ -594,7 +487,8 @@ bool CbmRichMCbmAerogelAna::doToT(CbmRichHit* hit) {
 }
 
 
-Bool_t CbmRichMCbmAerogelAna::cutRadius(CbmRichRing* ring) {
+Bool_t CbmRichMCbmAerogelAna::cutRadius(CbmRichRing* ring)
+{
   if (ring->GetRadius() > 1. && ring->GetRadius() < 100.) return true;
 
   return false;

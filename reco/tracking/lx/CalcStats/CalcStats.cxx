@@ -25,7 +25,8 @@ struct LxStatTrack {
 
 LxCalcStats::LxCalcStats() : fMCTracks(0), fMuchPoints(0), fTrdPoints(0) {}
 
-InitStatus LxCalcStats::Init() {
+InitStatus LxCalcStats::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (0 == ioman) LOG(fatal) << "No FairRootManager";
@@ -34,8 +35,7 @@ InitStatus LxCalcStats::Init() {
   fMuchPoints = static_cast<TClonesArray*>(ioman->GetObject("MuchPoint"));
   fTrdPoints  = static_cast<TClonesArray*>(ioman->GetObject("TrdPoint"));
 
-  if (0 == fMCTracks || (0 == fMuchPoints && 0 == fTrdPoints))
-    LOG(fatal) << "No MC tracks or points";
+  if (0 == fMCTracks || (0 == fMuchPoints && 0 == fTrdPoints)) LOG(fatal) << "No MC tracks or points";
 
   char buf[128];
 
@@ -58,17 +58,16 @@ InitStatus LxCalcStats::Init() {
   return kSUCCESS;
 }
 
-void LxCalcStats::Exec(Option_t* /*opt*/) {
+void LxCalcStats::Exec(Option_t* /*opt*/)
+{
   map<Int_t, LxStatTrack> eNoiseTracks;
   Int_t nofMuchPoints = 0 == fMuchPoints ? 0 : fMuchPoints->GetEntriesFast();
 
   for (Int_t i = 0; i < nofMuchPoints; ++i) {
-    const CbmMuchPoint* point =
-      static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
-    Int_t stationNumber =
-      CbmMuchGeoScheme::GetStationIndex(point->GetDetectorId());
-    Int_t layerNumber = CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorId());
-    Int_t trackId     = point->GetTrackID();
+    const CbmMuchPoint* point              = static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
+    Int_t stationNumber                    = CbmMuchGeoScheme::GetStationIndex(point->GetDetectorId());
+    Int_t layerNumber                      = CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorId());
+    Int_t trackId                          = point->GetTrackID();
     map<Int_t, LxStatTrack>::iterator trIt = eNoiseTracks.find(trackId);
 
     if (trIt == eNoiseTracks.end()) eNoiseTracks[trackId] = LxStatTrack();
@@ -77,15 +76,12 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
   }
 
   for (Int_t i = 0; i < nofMuchPoints; ++i) {
-    const CbmMuchPoint* point =
-      static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
-    Int_t stationNumber =
-      CbmMuchGeoScheme::GetStationIndex(point->GetDetectorId());
-    Int_t layerNumber = CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorId());
-    Int_t trackId     = point->GetTrackID();
-    const CbmMCTrack* track =
-      static_cast<const CbmMCTrack*>(fMCTracks->At(trackId));
-    Int_t pdgCode = track->GetPdgCode();
+    const CbmMuchPoint* point = static_cast<const CbmMuchPoint*>(fMuchPoints->At(i));
+    Int_t stationNumber       = CbmMuchGeoScheme::GetStationIndex(point->GetDetectorId());
+    Int_t layerNumber         = CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorId());
+    Int_t trackId             = point->GetTrackID();
+    const CbmMCTrack* track   = static_cast<const CbmMCTrack*>(fMCTracks->At(trackId));
+    Int_t pdgCode             = track->GetPdgCode();
 
     if (11 == pdgCode) {
       Double_t x     = (point->GetXIn() + point->GetXOut()) / 2;
@@ -93,19 +89,14 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
       Int_t parentId = track->GetMotherId();
 
       while (parentId >= 0) {
-        const CbmMCTrack* parent =
-          static_cast<const CbmMCTrack*>(fMCTracks->At(parentId));
-        const list<Int_t> parentPts =
-          eNoiseTracks[parentId].muchPoints[stationNumber][layerNumber];
+        const CbmMCTrack* parent    = static_cast<const CbmMCTrack*>(fMCTracks->At(parentId));
+        const list<Int_t> parentPts = eNoiseTracks[parentId].muchPoints[stationNumber][layerNumber];
 
-        for (list<Int_t>::const_iterator j = parentPts.begin();
-             j != parentPts.end();
-             ++j) {
-          Int_t parentPtId = *j;
-          const CbmMuchPoint* parentPt =
-            static_cast<const CbmMuchPoint*>(fMuchPoints->At(parentPtId));
-          Double_t pX = (parentPt->GetXIn() + parentPt->GetXOut()) / 2;
-          Double_t pY = (parentPt->GetYIn() + parentPt->GetYOut()) / 2;
+        for (list<Int_t>::const_iterator j = parentPts.begin(); j != parentPts.end(); ++j) {
+          Int_t parentPtId             = *j;
+          const CbmMuchPoint* parentPt = static_cast<const CbmMuchPoint*>(fMuchPoints->At(parentPtId));
+          Double_t pX                  = (parentPt->GetXIn() + parentPt->GetXOut()) / 2;
+          Double_t pY                  = (parentPt->GetYIn() + parentPt->GetYOut()) / 2;
           xHistos[stationNumber][layerNumber]->Fill(x - pX);
           yHistos[stationNumber][layerNumber]->Fill(y - pY);
         }
@@ -119,12 +110,10 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
   Int_t nofTrdPoints = 0 == fTrdPoints ? 0 : fTrdPoints->GetEntriesFast();
 
   for (Int_t i = 0; i < nofTrdPoints; ++i) {
-    const CbmTrdPoint* point =
-      static_cast<const CbmTrdPoint*>(fTrdPoints->At(i));
-    Int_t layerNumber = CbmTrdAddress::GetLayerId(point->GetModuleAddress());
-    Int_t trackId     = point->GetTrackID();
-    const CbmMCTrack* track =
-      static_cast<const CbmMCTrack*>(fMCTracks->At(trackId));
+    const CbmTrdPoint* point = static_cast<const CbmTrdPoint*>(fTrdPoints->At(i));
+    Int_t layerNumber        = CbmTrdAddress::GetLayerId(point->GetModuleAddress());
+    Int_t trackId            = point->GetTrackID();
+    const CbmMCTrack* track  = static_cast<const CbmMCTrack*>(fMCTracks->At(trackId));
 
     if (-11 != track->GetPdgCode() && 11 != track->GetPdgCode()) continue;
 
@@ -132,8 +121,7 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
 
     if (0 > motherId) continue;
 
-    const CbmMCTrack* mother =
-      static_cast<const CbmMCTrack*>(fMCTracks->At(motherId));
+    const CbmMCTrack* mother = static_cast<const CbmMCTrack*>(fMCTracks->At(motherId));
 
     if (443 != mother->GetPdgCode()) continue;
 
@@ -144,36 +132,29 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
     jPsiMuTracks[trackId].trdPoints[layerNumber].push_back(i);
   }
 
-  for (map<Int_t, LxStatTrack>::const_iterator i = jPsiMuTracks.begin();
-       i != jPsiMuTracks.end();
-       ++i) {
+  for (map<Int_t, LxStatTrack>::const_iterator i = jPsiMuTracks.begin(); i != jPsiMuTracks.end(); ++i) {
     const LxStatTrack& track = i->second;
 
     for (int j = 1; j < 4; ++j) {
       const list<Int_t>& lPoints = track.trdPoints[j - 1];
       const list<Int_t>& rPoints = track.trdPoints[j];
 
-      for (list<Int_t>::const_iterator k = rPoints.begin(); k != rPoints.end();
-           ++k) {
-        const CbmTrdPoint* rPoint =
-          static_cast<const CbmTrdPoint*>(fTrdPoints->At(*k));
-        Double_t rX  = (rPoint->GetXIn() + rPoint->GetXOut()) / 2;
-        Double_t rY  = (rPoint->GetYIn() + rPoint->GetYOut()) / 2;
-        Double_t rZ  = (rPoint->GetZIn() + rPoint->GetZOut()) / 2;
-        Double_t rTx = rX / rZ;
-        Double_t rTy = rY / rZ;
+      for (list<Int_t>::const_iterator k = rPoints.begin(); k != rPoints.end(); ++k) {
+        const CbmTrdPoint* rPoint = static_cast<const CbmTrdPoint*>(fTrdPoints->At(*k));
+        Double_t rX               = (rPoint->GetXIn() + rPoint->GetXOut()) / 2;
+        Double_t rY               = (rPoint->GetYIn() + rPoint->GetYOut()) / 2;
+        Double_t rZ               = (rPoint->GetZIn() + rPoint->GetZOut()) / 2;
+        Double_t rTx              = rX / rZ;
+        Double_t rTy              = rY / rZ;
 
-        for (list<Int_t>::const_iterator l = lPoints.begin();
-             l != lPoints.end();
-             ++l) {
-          const CbmTrdPoint* lPoint =
-            static_cast<const CbmTrdPoint*>(fTrdPoints->At(*l));
-          Double_t lX     = (lPoint->GetXIn() + lPoint->GetXOut()) / 2;
-          Double_t lY     = (lPoint->GetYIn() + lPoint->GetYOut()) / 2;
-          Double_t lZ     = (lPoint->GetZIn() + lPoint->GetZOut()) / 2;
-          Double_t deltaZ = lZ - rZ;
-          Double_t x      = rX + rTx * deltaZ;
-          Double_t y      = rY + rTy * deltaZ;
+        for (list<Int_t>::const_iterator l = lPoints.begin(); l != lPoints.end(); ++l) {
+          const CbmTrdPoint* lPoint = static_cast<const CbmTrdPoint*>(fTrdPoints->At(*l));
+          Double_t lX               = (lPoint->GetXIn() + lPoint->GetXOut()) / 2;
+          Double_t lY               = (lPoint->GetYIn() + lPoint->GetYOut()) / 2;
+          Double_t lZ               = (lPoint->GetZIn() + lPoint->GetZOut()) / 2;
+          Double_t deltaZ           = lZ - rZ;
+          Double_t x                = rX + rTx * deltaZ;
+          Double_t y                = rY + rTy * deltaZ;
           trdDeltaThetaXHistos[j - 1]->Fill((lX - x) / deltaZ);
           trdDeltaThetaYHistos[j - 1]->Fill((lY - y) / deltaZ);
         }
@@ -182,7 +163,8 @@ void LxCalcStats::Exec(Option_t* /*opt*/) {
   }
 }
 
-static void SaveHisto(TH1F* h) {
+static void SaveHisto(TH1F* h)
+{
   TFile* curFile = TFile::CurrentFile();
   char name[128];
   sprintf(name, "%s.root", h->GetName());
@@ -193,7 +175,8 @@ static void SaveHisto(TH1F* h) {
   TFile::CurrentFile() = curFile;
 }
 
-void LxCalcStats::Finish() {
+void LxCalcStats::Finish()
+{
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 3; ++j) {
       SaveHisto(xHistos[i][j]);

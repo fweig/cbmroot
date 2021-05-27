@@ -18,14 +18,15 @@
 #include <map>      // for map, map<>::iterator, operator!=, __m...
 #include <utility>  // for pair
 
-CbmTrdParSetGas::CbmTrdParSetGas(const char* name,
-                                 const char* title,
-                                 const char* context)
-  : CbmTrdParSet(name, title, context) {}
+CbmTrdParSetGas::CbmTrdParSetGas(const char* name, const char* title, const char* context)
+  : CbmTrdParSet(name, title, context)
+{
+}
 
 
 //_______________________________________________________________________________
-Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
+Bool_t CbmTrdParSetGas::getParams(FairParamList* l)
+{
   if (!l) return kFALSE;
   if (!l->fill("NrOfModules", &fNrOfModules)) return kFALSE;
   Text_t gasMix[100];
@@ -61,16 +62,10 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
   TArrayI value(4);
   for (Int_t i = 0; i < fNrOfModules; i++) {
     if (!l->fill(Form("%d", moduleId[i]), &value)) return kFALSE;
-    fModuleMap[moduleId[i]] =
-      new CbmTrdParModGas(Form("Module/%d/Ua/%d/Ud/%d/Gas/%s",
-                               moduleId[i],
-                               value[0],
-                               value[1],
-                               ((TObjString*) (*so)[0])->GetName()));
+    fModuleMap[moduleId[i]] = new CbmTrdParModGas(
+      Form("Module/%d/Ua/%d/Ud/%d/Gas/%s", moduleId[i], value[0], value[1], ((TObjString*) (*so)[0])->GetName()));
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])
-      ->SetDriftMap(
-        GetDriftMap(((TObjString*) (*so)[0])->GetName(), value[0], value[1]),
-        cwd);
+      ->SetDriftMap(GetDriftMap(((TObjString*) (*so)[0])->GetName(), value[0], value[1]), cwd);
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])->SetNobleGas(1.e-2 * pgas);
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])->SetDetType(value[2]);
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])->SetPidType(value[3]);
@@ -91,15 +86,14 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
 }
 
 //_____________________________________________________________________
-void CbmTrdParSetGas::putParams(FairParamList* l) {
+void CbmTrdParSetGas::putParams(FairParamList* l)
+{
   if (!l) return;
   LOG(info) << GetName() << "::putParams(FairParamList*)";
 
   TArrayI moduleId(fNrOfModules);
   Int_t idx(0);
-  for (std::map<Int_t, CbmTrdParMod*>::iterator imod = fModuleMap.begin();
-       imod != fModuleMap.end();
-       imod++) {
+  for (std::map<Int_t, CbmTrdParMod*>::iterator imod = fModuleMap.begin(); imod != fModuleMap.end(); imod++) {
     moduleId[idx++] = imod->first;
   }
   CbmTrdParModGas* mod = (CbmTrdParModGas*) fModuleMap[moduleId[0]];
@@ -123,15 +117,13 @@ void CbmTrdParSetGas::putParams(FairParamList* l) {
 }
 
 //_______________________________________________________________________________
-TH2F* CbmTrdParSetGas::GetDriftMap(const Char_t* g,
-                                   const Int_t ua,
-                                   const Int_t ud) {
+TH2F* CbmTrdParSetGas::GetDriftMap(const Char_t* g, const Int_t ua, const Int_t ud)
+{
   TString smap = Form("%s_%4d_%3d", g, ua, ud);
   TH2F* hm     = (TH2F*) gFile->Get(smap.Data());
   if (hm) return hm;
 
-  LOG(debug) << GetName() << "::GetDriftMap() : Interpolate drift map for " << g
-             << " Ua[" << ua << "]"
+  LOG(debug) << GetName() << "::GetDriftMap() : Interpolate drift map for " << g << " Ua[" << ua << "]"
              << " Ud[" << ud << "]";
 
   return (TH2F*) gFile->Get(Form("%s_1500_300", g));

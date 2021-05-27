@@ -1,7 +1,5 @@
-void pl_Track2D(Int_t iOpt       = 1,
-                Int_t iCounterId = 22,
-                Int_t iStrip     = -1,
-                Double_t TotMax  = 10.) {
+void pl_Track2D(Int_t iOpt = 1, Int_t iCounterId = 22, Int_t iStrip = -1, Double_t TotMax = 10.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
   TCanvas* can = new TCanvas("can", "can", 48, 56, 900, 900);
@@ -63,17 +61,10 @@ void pl_Track2D(Int_t iOpt       = 1,
           if (iStrip > -1)
             if (iCh != iStrip) continue;
           cout << "CS " << iCh << iSide << endl;
-          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iType,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iType, iSm, iRp, iCh, iSide, cOpt.Data());
           h     = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) {
-            TProfile* hProf =
-              h->ProfileX(Form("%s_pfx%d%d", hname.Data(), iCh, iSide));
+            TProfile* hProf = h->ProfileX(Form("%s_pfx%d%d", hname.Data(), iCh, iSide));
             hProf->SetLineColor(iCol);
             hProf->SetLineStyle(1);
             hProf->SetMarkerColor(iCol);
@@ -85,7 +76,8 @@ void pl_Track2D(Int_t iOpt       = 1,
               hProf->SetMinimum(-0.4);
               hProf->GetXaxis()->SetRangeUser(0., TotMax);
               hProf->Draw("LP");
-            } else {
+            }
+            else {
               hProf->Draw("LPsame");
             }
             iDraw++;
@@ -100,27 +92,15 @@ void pl_Track2D(Int_t iOpt       = 1,
         for (Int_t iCh = 0; iCh < 32; iCh++) {
           if (iStrip > -1)
             if (iCh != iStrip) continue;
-          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s",
-                       iType,
-                       iSm,
-                       iRp,
-                       iCh,
-                       iSide,
-                       cOpt.Data());
+          hname = Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_%s", iType, iSm, iRp, iCh, iSide, cOpt.Data());
           h     = (TH2*) gROOT->FindObjectAny(hname);
           if (h != NULL) {
             can->cd(iCanv++);
             h->Draw("colz");
             gPad->SetLogz();
             h->ProfileX()->Draw("same");
-            TString hName2 =
-              Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_Walk_px",
-                   iType,
-                   iSm,
-                   iRp,
-                   iCh,
-                   iSide);
-            TH1* hCor = (TH1*) gROOT->FindObjectAny(hName2);
+            TString hName2 = Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_Walk_px", iType, iSm, iRp, iCh, iSide);
+            TH1* hCor      = (TH1*) gROOT->FindObjectAny(hName2);
             if (NULL != hCor) {
               hCor->SetLineColor(6);
               hCor->Draw("same");
@@ -130,9 +110,8 @@ void pl_Track2D(Int_t iOpt       = 1,
     } break;
 
     default:
-      hname =
-        Form("cal_SmT%01d_sm%03d_rpc%03d_%s", iType, iSm, iRp, cOpt.Data());
-      h = (TH2*) gROOT->FindObjectAny(hname);
+      hname = Form("cal_SmT%01d_sm%03d_rpc%03d_%s", iType, iSm, iRp, cOpt.Data());
+      h     = (TH2*) gROOT->FindObjectAny(hname);
       if (h != NULL) {
         if (iOpt == 2 || iOpt == 2) { gPad->SetLogz(); }
         h->Draw("colz");

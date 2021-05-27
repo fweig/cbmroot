@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------
 #include "CbmL1TofMerger.h"
 
-#include "CbmL1Def.h"
-
 #include "CbmGlobalTrack.h"
 #include "CbmKFTrack.h"
+#include "CbmL1Def.h"
 #include "CbmTofHit.h"
 #include "CbmTrdTrack.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -35,14 +35,16 @@ using std::pair;
 
 
 // ------------------------------------------------------------------
-CbmL1TofMerger::CbmL1TofMerger() : fArrayTrdTrack(0) {
+CbmL1TofMerger::CbmL1TofMerger() : fArrayTrdTrack(0)
+{
   // Default constructor
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-CbmL1TofMerger::CbmL1TofMerger(Int_t) : fArrayTrdTrack(0) {
+CbmL1TofMerger::CbmL1TofMerger(Int_t) : fArrayTrdTrack(0)
+{
   // Standard constructor
   fVerbose = 1;
 }
@@ -50,14 +52,16 @@ CbmL1TofMerger::CbmL1TofMerger(Int_t) : fArrayTrdTrack(0) {
 
 
 // ------------------------------------------------------------------
-CbmL1TofMerger::~CbmL1TofMerger() {
+CbmL1TofMerger::~CbmL1TofMerger()
+{
   // Destructor
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-void CbmL1TofMerger::Init() {
+void CbmL1TofMerger::Init()
+{
   // Initialisation
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
@@ -65,8 +69,7 @@ void CbmL1TofMerger::Init() {
          << "ROOT manager is not instantiated!" << endl;
     return;
   }
-  fArrayTrdTrack =
-    L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("TrdTrack"));
+  fArrayTrdTrack = L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("TrdTrack"));
   if (NULL == fArrayTrdTrack) {
     cout << "-W- CbmL1TofMerger::Init: "
          << "no TRD track array" << endl;
@@ -76,7 +79,8 @@ void CbmL1TofMerger::Init() {
 
 
 // ------------------------------------------------------------------
-Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
+Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits)
+{
   // Implementation of the merging algorithm
   Int_t nMerged = 0;
 
@@ -136,16 +140,14 @@ Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
 
       // Get TRD track
       trdTrackIndex = track->GetTrdTrackIndex();
-      trdTrack =
-        L1_DYNAMIC_CAST<CbmTrdTrack*>(fArrayTrdTrack->At(trdTrackIndex));
+      trdTrack      = L1_DYNAMIC_CAST<CbmTrdTrack*>(fArrayTrdTrack->At(trdTrackIndex));
       if (NULL == trdTrack) {
         mapTrack.erase(iTrack);
         continue;
       }
 
       // Set track parameters
-      kfTrack.SetTrackParam(
-        *(const_cast<FairTrackParam*>(trdTrack->GetParamLast())));
+      kfTrack.SetTrackParam(*(const_cast<FairTrackParam*>(trdTrack->GetParamLast())));
       chi2min        = 1e16;
       indexOfClosest = -1;
 
@@ -179,8 +181,7 @@ Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
           if (chi2min < mapTofHitChi2[indexOfClosest]) {
             // Force previous track to be reprocessed
             oldTrackIndex = mapTofHitTrack[indexOfClosest];
-            track2 =
-              L1_DYNAMIC_CAST<CbmGlobalTrack*>(glbTracks->At(oldTrackIndex));
+            track2        = L1_DYNAMIC_CAST<CbmGlobalTrack*>(glbTracks->At(oldTrackIndex));
             track2->SetTofHitIndex(-1);
             mapTrack[oldTrackIndex] = kTRUE;
             nMerged -= 1;
@@ -192,11 +193,13 @@ Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
             mapTofHitTrack[indexOfClosest] = iTrack;
             mapTrack.erase(iTrack);
             nMerged += 1;
-          } else {
+          }
+          else {
             // Forbid this combination
             mapForbidden[make_pair(iTrack, indexOfClosest)] = kTRUE;
           }
-        } else {
+        }
+        else {
           track->SetTofHitIndex(indexOfClosest);
           mapTofHitUsed[indexOfClosest]  = kTRUE;
           mapTofHitChi2[indexOfClosest]  = chi2min;
@@ -204,7 +207,8 @@ Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
           mapTrack.erase(iTrack);
           nMerged += 1;
         }
-      } else {
+      }
+      else {
         mapTrack.erase(iTrack);
       }
 
@@ -218,7 +222,8 @@ Int_t CbmL1TofMerger::DoMerge(TClonesArray* glbTracks, TClonesArray* tofHits) {
 
 
 // ------------------------------------------------------------------
-Bool_t CbmL1TofMerger::Overlap(CbmKFTrack& track, const CbmTofHit* tofHit) {
+Bool_t CbmL1TofMerger::Overlap(CbmKFTrack& track, const CbmTofHit* tofHit)
+{
   // Check for geometrical overlap between track extrapolation
   // and TOF hit
   Double_t x1      = track.GetTrack()[0];
@@ -235,8 +240,8 @@ Bool_t CbmL1TofMerger::Overlap(CbmKFTrack& track, const CbmTofHit* tofHit) {
 
 
 // ------------------------------------------------------------------
-Double_t CbmL1TofMerger::GetChi2ToHit(CbmKFTrack& track,
-                                      const CbmTofHit* tofHit) {
+Double_t CbmL1TofMerger::GetChi2ToHit(CbmKFTrack& track, const CbmTofHit* tofHit)
+{
   // Get chi2 from the track extrapolation to the TOF hit
   Double_t dx = track.GetTrack()[0] - tofHit->GetX();
   Double_t dy = track.GetTrack()[1] - tofHit->GetY();

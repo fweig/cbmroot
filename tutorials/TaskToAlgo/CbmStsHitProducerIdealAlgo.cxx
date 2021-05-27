@@ -15,12 +15,14 @@
 // -------------------------------------------------------------------------
 CbmStsHitProducerIdealAlgo::CbmStsHitProducerIdealAlgo() : CbmAlgo() {}
 
-CbmStsHitProducerIdealAlgo::~CbmStsHitProducerIdealAlgo() {
+CbmStsHitProducerIdealAlgo::~CbmStsHitProducerIdealAlgo()
+{
   /// Clear buffers
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmStsHitProducerIdealAlgo::Init() {
+Bool_t CbmStsHitProducerIdealAlgo::Init()
+{
   LOG(info) << "Initializing tutorial StsHitProducerIdeal algo";
 
   return kTRUE;
@@ -31,18 +33,19 @@ void CbmStsHitProducerIdealAlgo::Reset() {}
 void CbmStsHitProducerIdealAlgo::Finish() {}
 
 // -------------------------------------------------------------------------
-Bool_t CbmStsHitProducerIdealAlgo::InitContainers() {
+Bool_t CbmStsHitProducerIdealAlgo::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmStsHitProducerIdealAlgo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmStsHitProducerIdealAlgo::ReInitContainers() {
+Bool_t CbmStsHitProducerIdealAlgo::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmStsHitProducerIdealAlgo";
 
-  fTrdGasPar =
-    static_cast<CbmTrdParSetGas*>(fParCList->FindObject("CbmTrdParSetGas"));
+  fTrdGasPar = static_cast<CbmTrdParSetGas*>(fParCList->FindObject("CbmTrdParSetGas"));
   if (nullptr == fTrdGasPar) return kFALSE;
 
   fTrdGasPar->Dump();
@@ -51,7 +54,8 @@ Bool_t CbmStsHitProducerIdealAlgo::ReInitContainers() {
   return initOK;
 }
 
-TList* CbmStsHitProducerIdealAlgo::GetParList() {
+TList* CbmStsHitProducerIdealAlgo::GetParList()
+{
 
   if (nullptr == fParCList) { fParCList = new TList(); }
 
@@ -64,8 +68,8 @@ TList* CbmStsHitProducerIdealAlgo::GetParList() {
 Bool_t CbmStsHitProducerIdealAlgo::InitParameters() { return kTRUE; }
 // -------------------------------------------------------------------------
 
-std::vector<CbmStsHit> CbmStsHitProducerIdealAlgo::ProcessInputData(
-  const std::vector<CbmStsPoint>& pointVect) {
+std::vector<CbmStsHit> CbmStsHitProducerIdealAlgo::ProcessInputData(const std::vector<CbmStsPoint>& pointVect)
+{
   fTrdGasPar->Print();
 
   // Declare some variables

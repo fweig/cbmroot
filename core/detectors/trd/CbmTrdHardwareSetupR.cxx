@@ -29,28 +29,26 @@
 #include <vector>   // for vector
 
 // ---- Default constructor -------------------------------------------
-CbmTrdHardwareSetupR::CbmTrdHardwareSetupR(/* args */)
-  : fComponentIdMap(), fParameterFileName("") {}
+CbmTrdHardwareSetupR::CbmTrdHardwareSetupR(/* args */) : fComponentIdMap(), fParameterFileName("") {}
 
 // ---- Destructor ----------------------------------------------------
 CbmTrdHardwareSetupR::~CbmTrdHardwareSetupR() {}
 
 // ---- GetComponentId ----------------------------------------------------
-std::uint64_t
-CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress,
-                                     ECbmTrdHardwareSetupVersion hwSetup) {
+std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress, ECbmTrdHardwareSetupVersion hwSetup)
+{
   SelectComponentIdMap(hwSetup);
   return GetComponentId(asicAddress);
 }
 
 // ---- GetComponentId ---------- -----------------------------------------
-std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress) {
+std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress)
+{
   std::uint64_t componentId(-1);
   if (fComponentIdMap.empty()) {
-    LOG(error) << Form(
-      "Seems like the component map is empty. If you selected a hardware "
-      "setup, check that there is a correct map for this setup. Else select a "
-      "hardware setup before calling this function.");
+    LOG(error) << Form("Seems like the component map is empty. If you selected a hardware "
+                       "setup, check that there is a correct map for this setup. Else select a "
+                       "hardware setup before calling this function.");
     return componentId;
   }
   componentId = fComponentIdMap.find(asicAddress)->second;
@@ -58,12 +56,11 @@ std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress) {
 }
 
 // ---- CreateHwToSwAsicAddressTranslatorMap --------------------------------------
-std::map<std::uint64_t, Int_t>
-CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(
-  bool isLoadedParameters) {
-  FairRuntimeDb* rtdb                 = FairRuntimeDb::instance();
-  CbmTrdParSetAsic* moduleAsicParSets = (CbmTrdParSetAsic*) rtdb->getContainer(
-    "CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets;
+std::map<std::uint64_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters)
+{
+  FairRuntimeDb* rtdb = FairRuntimeDb::instance();
+  CbmTrdParSetAsic* moduleAsicParSets =
+    (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets;
 
   if (!isLoadedParameters) {
     FairParAsciiFileIo parInAsic;
@@ -92,29 +89,23 @@ CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(
 
   for (Int_t iModule = 0; iModule < nModuleAsicParSets; iModule++) {
     currentUniqueModuleId = uniqueModuleIds[iModule];
-    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(
-      currentUniqueModuleId);
+    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(currentUniqueModuleId);
     std::vector<Int_t> asicAddresses;
     moduleAsicsParSet->GetAsicAddresses(&asicAddresses);
     for (auto iAsicIt : asicAddresses) {
-      currentSpadicPar =
-        (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
+      currentSpadicPar    = (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
       currentSpadicCompId = currentSpadicPar->GetComponentId();
 
-      if (currentSpadicPar->GetElinkId(0)
-          < 98)  // Don't add not connected asics to the map
+      if (currentSpadicPar->GetElinkId(0) < 98)  // Don't add not connected asics to the map
       {
-        LOG(debug4)
-          << "CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap - "
-             "Adding asic with address "
-          << iAsicIt << " and componentIds " << currentSpadicCompId << "/"
-          << currentSpadicCompId + 1 << " to spadicHwMap";
-        spadicHwMap.emplace(
-          currentSpadicCompId,
-          iAsicIt);  // Asic channels connected to the first elink of the spadic
-        spadicHwMap.emplace(
-          (currentSpadicCompId + 1),
-          iAsicIt);  // Asic channels connected to the first elink of the spadic
+        LOG(debug4) << "CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap - "
+                       "Adding asic with address "
+                    << iAsicIt << " and componentIds " << currentSpadicCompId << "/" << currentSpadicCompId + 1
+                    << " to spadicHwMap";
+        spadicHwMap.emplace(currentSpadicCompId,
+                            iAsicIt);  // Asic channels connected to the first elink of the spadic
+        spadicHwMap.emplace((currentSpadicCompId + 1),
+                            iAsicIt);  // Asic channels connected to the first elink of the spadic
       }
     }
   }
@@ -125,11 +116,11 @@ CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(
 }
 
 // ---- CreateAsicChannelMap --------------------------------------
-std::map<Int_t, std::vector<Int_t>>
-CbmTrdHardwareSetupR::CreateAsicChannelMap(bool isLoadedParameters) {
-  FairRuntimeDb* rtdb                 = FairRuntimeDb::instance();
-  CbmTrdParSetAsic* moduleAsicParSets = (CbmTrdParSetAsic*) rtdb->getContainer(
-    "CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets;
+std::map<Int_t, std::vector<Int_t>> CbmTrdHardwareSetupR::CreateAsicChannelMap(bool isLoadedParameters)
+{
+  FairRuntimeDb* rtdb = FairRuntimeDb::instance();
+  CbmTrdParSetAsic* moduleAsicParSets =
+    (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets;
 
   if (!isLoadedParameters) {
     FairParAsciiFileIo parInAsic;
@@ -157,23 +148,18 @@ CbmTrdHardwareSetupR::CreateAsicChannelMap(bool isLoadedParameters) {
   std::vector<Int_t> channelAddressVec;
   for (Int_t iModule = 0; iModule < nModuleAsicParSets; iModule++) {
     currentUniqueModuleId = uniqueModuleIds[iModule];
-    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(
-      currentUniqueModuleId);
+    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(currentUniqueModuleId);
     std::vector<Int_t> asicAddresses;
     moduleAsicsParSet->GetAsicAddresses(&asicAddresses);
     for (auto iAsicIt : asicAddresses) {
-      currentSpadicPar =
-        (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
-      if (currentSpadicPar->GetElinkId(0)
-          < 98)  // Don't add not connected asics to the map
+      currentSpadicPar = (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
+      if (currentSpadicPar->GetElinkId(0) < 98)  // Don't add not connected asics to the map
       {
         channelAddressVec = currentSpadicPar->GetChannelAddresses();
         spadicChannelsMap.emplace(iAsicIt, channelAddressVec);
-        LOG(debug4)
-          << "CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap - "
-             "Adding channel address vector (size"
-          << channelAddressVec.size() << ") for asic with address " << iAsicIt
-          << " to spadicChannelsMap";
+        LOG(debug4) << "CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap - "
+                       "Adding channel address vector (size"
+                    << channelAddressVec.size() << ") for asic with address " << iAsicIt << " to spadicChannelsMap";
       }
     }
   }
@@ -184,12 +170,12 @@ CbmTrdHardwareSetupR::CreateAsicChannelMap(bool isLoadedParameters) {
 }
 
 // ---- WriteComponentIdsToParams -----------------------------------------
-bool CbmTrdHardwareSetupR::WriteComponentIdsToParams() {
+bool CbmTrdHardwareSetupR::WriteComponentIdsToParams()
+{
   if (fComponentIdMap.empty()) {
-    LOG(error) << Form(
-      "Seems like the component map is empty. If you selected a hardware "
-      "setup, check that there is a correct map for this setup. Else select a "
-      "hardware setup before calling this function.");
+    LOG(error) << Form("Seems like the component map is empty. If you selected a hardware "
+                       "setup, check that there is a correct map for this setup. Else select a "
+                       "hardware setup before calling this function.");
     return false;
   }
 
@@ -204,9 +190,9 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams() {
   parInAsic.open(fParameterFileName, "in");
   rtdb->setFirstInput(&parInAsic);
 
-  CbmTrdParSetAsic* moduleAsicParSets = (CbmTrdParSetAsic*) rtdb->getContainer(
-    "CbmTrdParSetAsic");    // Container for all ParSets of Module AsicParSets
-  rtdb->initContainers(0);  // no run defined for the time being
+  CbmTrdParSetAsic* moduleAsicParSets =
+    (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets
+  rtdb->initContainers(0);                                       // no run defined for the time being
   parInAsic.close();
 
   FairParAsciiFileIo parOutAsic;
@@ -230,13 +216,11 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams() {
 
   for (Int_t iModule = 0; iModule < nModuleAsicParSets; iModule++) {
     currentUniqueModuleId = uniqueModuleIds[iModule];
-    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(
-      currentUniqueModuleId);
+    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(currentUniqueModuleId);
     std::vector<Int_t> asicAddresses;
     moduleAsicsParSet->GetAsicAddresses(&asicAddresses);
     for (auto iAsicIt : asicAddresses) {
-      currentSpadicPar =
-        (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
+      currentSpadicPar = (CbmTrdParSpadic*) moduleAsicsParSet->GetAsicPar(iAsicIt);
       currentSpadicPar->SetComponentId(GetComponentId(iAsicIt));
     }
   }
@@ -248,32 +232,30 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams() {
 }
 
 // ---- SelectComponentIdMap ----------------------------------------------------
-void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag) {
-  ECbmTrdHardwareSetupVersion hwSetupVersion(
-    ECbmTrdHardwareSetupVersion::kUndefined);
-  if (geoTag.Contains("mcbm")) {
-    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020;
-  } else if (geoTag.Contains("trd_ikfLabOneSpadic")) {
+void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag)
+{
+  ECbmTrdHardwareSetupVersion hwSetupVersion(ECbmTrdHardwareSetupVersion::kUndefined);
+  if (geoTag.Contains("mcbm")) { hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020; }
+  else if (geoTag.Contains("trd_ikfLabOneSpadic")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kLabIkfOneSpadic;
-  } else if (geoTag.Contains("trd_Desy2019")) {
+  }
+  else if (geoTag.Contains("trd_Desy2019")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kDesy2019;
-  } else if (geoTag.Contains("trd_v")) {
+  }
+  else if (geoTag.Contains("trd_v")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kCbm2025;
-  } else {
-    LOG(fatal) << Form(
-      "CbmTrdHardwareSetupR::SelectComponentIdMap(%s), unknown geoTag",
-      geoTag.Data());
+  }
+  else {
+    LOG(fatal) << Form("CbmTrdHardwareSetupR::SelectComponentIdMap(%s), unknown geoTag", geoTag.Data());
   }
   SelectComponentIdMap(hwSetupVersion);
 }
 
 // ---- SelectComponentIdMap ----------------------------------------------------
-void CbmTrdHardwareSetupR::SelectComponentIdMap(
-  ECbmTrdHardwareSetupVersion hwSetup) {
+void CbmTrdHardwareSetupR::SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSetup)
+{
   switch (hwSetup) {
-    case ECbmTrdHardwareSetupVersion::kUndefined:
-      fComponentIdMap = {{0, 0}};
-      break;
+    case ECbmTrdHardwareSetupVersion::kUndefined: fComponentIdMap = {{0, 0}}; break;
     case ECbmTrdHardwareSetupVersion::kMcbm2020:
       // REMARK eLinkId status from 03/24/2020. CriId status 03/24/3030.  Needs to be filled with correct values, whenever they are known.
       fComponentIdMap = {// Module 5
@@ -332,14 +314,12 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(
       break;
     case ECbmTrdHardwareSetupVersion::kLabIkfOneSpadic:
       // REMARK This map is incomplete! Spadic position is random and not yet correlated to the true position in the lab.
-      fComponentIdMap = {
-        // Module 5
-        {5000, 4352000000}, {5001, 100098}, {5002, 100098}, {5003, 100098},
-        {5004, 100098},     {5005, 100098}, {5006, 100098}, {5007, 100098},
-        {5008, 100098},     {5009, 100098}, {5010, 100098}, {5011, 100098},
-        {5012, 100098},     {5013, 100098}, {5014, 100098}, {5015, 100098},
-        {5016, 100098},     {5017, 100098}, {5018, 100098}, {5019, 100098},
-        {5020, 100098},     {5021, 100098}, {5022, 100098}, {5023, 100098}};
+      fComponentIdMap = {// Module 5
+                         {5000, 4352000000}, {5001, 100098}, {5002, 100098}, {5003, 100098}, {5004, 100098},
+                         {5005, 100098},     {5006, 100098}, {5007, 100098}, {5008, 100098}, {5009, 100098},
+                         {5010, 100098},     {5011, 100098}, {5012, 100098}, {5013, 100098}, {5014, 100098},
+                         {5015, 100098},     {5016, 100098}, {5017, 100098}, {5018, 100098}, {5019, 100098},
+                         {5020, 100098},     {5021, 100098}, {5022, 100098}, {5023, 100098}};
       break;
     case ECbmTrdHardwareSetupVersion::kDesy2019:
       // Map for the DESY 2019 beamtime setup, 5012 - in beam, 5006 - Fe source.
@@ -10885,8 +10865,7 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(
                            (Int_t) hwSetup);
       break;
   }
-  LOG(info) << Form("Info - componentIdMap initiated and has size %lu\n",
-                    fComponentIdMap.size());
+  LOG(info) << Form("Info - componentIdMap initiated and has size %lu\n", fComponentIdMap.size());
 }
 
 ClassImp(CbmTrdHardwareSetupR)

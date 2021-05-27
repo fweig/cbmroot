@@ -9,7 +9,8 @@
 
 /// extra Doxygen comment 10/11/2011 by DE
 
-void run_trd_reco(Int_t nEvents = 5) {
+void run_trd_reco(Int_t nEvents = 5)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -105,11 +106,9 @@ void run_trd_reco(Int_t nEvents = 5) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
                                // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdDigitizer* trdDigitizer =
-    new CbmTrdDigitizer("TRD Digitizer", "TRD task", radiator);
+  CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer("TRD Digitizer", "TRD task", radiator);
   trdDigitizer->RunTimeBased();
   run->AddTask(trdDigitizer);
 

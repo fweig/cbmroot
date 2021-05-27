@@ -10,7 +10,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void unpack_trb(Int_t nEvents = 2) {
+void unpack_trb(Int_t nEvents = 2)
+{
   //  Parameter files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
@@ -55,8 +56,7 @@ void unpack_trb(Int_t nEvents = 2) {
   Int_t iNbTestFiles = 85;
   Int_t iStartIndex  = 1;
   for (Int_t iFileIndex = 0; iFileIndex < iNbTestFiles; iFileIndex++)
-    source->AddFile(Form("/home/palsec/trbData/MbsTrb2Pul_%04d.lmd",
-                         iStartIndex + iFileIndex));
+    source->AddFile(Form("/home/palsec/trbData/MbsTrb2Pul_%04d.lmd", iStartIndex + iFileIndex));
 
   TTriglogUnpackTof* tofTriglogUnpacker = new TTriglogUnpackTof();
   source->AddUnpacker(tofTriglogUnpacker);

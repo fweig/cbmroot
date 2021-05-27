@@ -1,4 +1,5 @@
-void eloss_ana(Int_t nEvents = 20000) {
+void eloss_ana(Int_t nEvents = 20000)
+{
   TString dir     = "/home/d/andrey/eloss/";
   TString inFile  = dir + "eloss.mc.root";
   TString outFile = dir + "eloss.ana.root";
@@ -28,8 +29,7 @@ void eloss_ana(Int_t nEvents = 20000) {
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

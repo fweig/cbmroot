@@ -26,7 +26,9 @@ CbmMuchLayer::CbmMuchLayer()
   , fSupportDx(0.)
   , fSupportDy(0.)
   , fSupportDz(0.)
-  , fZtoStationCenter() {}
+  , fZtoStationCenter()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
@@ -39,7 +41,8 @@ CbmMuchLayer::CbmMuchLayer(Int_t detId, Double_t z, Double_t zRel)
   , fSupportDx(0.)
   , fSupportDy(0.)
   , fSupportDz(0.)
-  , fZtoStationCenter(zRel) {
+  , fZtoStationCenter(zRel)
+{
   Int_t iStation = CbmMuchAddress::GetStationIndex(detId);
   Int_t iLayer   = CbmMuchAddress::GetLayerIndex(detId);
   fSideF         = CbmMuchLayerSide(iStation, iLayer, 0, z);
@@ -48,10 +51,7 @@ CbmMuchLayer::CbmMuchLayer(Int_t detId, Double_t z, Double_t zRel)
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMuchLayer::CbmMuchLayer(Int_t iStation,
-                           Int_t iLayer,
-                           Double_t z,
-                           Double_t zRel)
+CbmMuchLayer::CbmMuchLayer(Int_t iStation, Int_t iLayer, Double_t z, Double_t zRel)
   : TObject()
   , fDetectorId(CbmMuchAddress::GetAddress(iStation, iLayer))
   , fZ(z)
@@ -74,7 +74,8 @@ CbmMuchLayer::~CbmMuchLayer() {}
 
 
 // -------------------------------------------------------------------------
-Double_t CbmMuchLayer::GetDz() {
+Double_t CbmMuchLayer::GetDz()
+{
   Double_t dzmax = fSupportDz;
 
   for (Int_t s = 0; s < 2; s++) {

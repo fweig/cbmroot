@@ -8,11 +8,10 @@
 #ifndef CBMDEVICEMSTSHITPRODUCERIDEAL_H_
 #define CBMDEVICEMSTSHITPRODUCERIDEAL_H_
 
-#include "FairMQDevice.h"
-
 #include "CbmMQChannels.h"
-
 #include "CbmStsHitProducerIdealAlgo.h"
+
+#include "FairMQDevice.h"
 
 #include "TMessage.h"
 
@@ -61,9 +60,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

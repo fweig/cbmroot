@@ -9,11 +9,9 @@
 //
 //---------------------------------------------------
 
-void InvariantMassSpectra_mix(Int_t energy    = 8,
-                              TString type    = "invM_mix",
-                              Int_t NofFiles  = 5000,
-                              Int_t NofEvents = 1e8,
-                              Int_t index     = 0) {
+void InvariantMassSpectra_mix(Int_t energy = 8, TString type = "invM_mix", Int_t NofFiles = 5000, Int_t NofEvents = 1e8,
+                              Int_t index = 0)
+{
   gStyle->SetCanvasColor(10);
   gStyle->SetFrameFillColor(10);
   gStyle->SetHistLineWidth(4);
@@ -38,17 +36,7 @@ void InvariantMassSpectra_mix(Int_t energy    = 8,
   invM_bg->SetMarkerColor(kBlack);
   invM_bg->SetMarkerStyle(20);
 
-  TH3D* YPtM_bg = new TH3D("YPtM_bg",
-                           "YPtM_bg",
-                           NofBins,
-                           minY,
-                           maxY,
-                           NofBins,
-                           min,
-                           maxPt,
-                           NofBinsM,
-                           min,
-                           maxM);
+  TH3D* YPtM_bg = new TH3D("YPtM_bg", "YPtM_bg", NofBins, minY, maxY, NofBins, min, maxPt, NofBinsM, min, maxM);
 
   TString name;
 
@@ -65,24 +53,20 @@ void InvariantMassSpectra_mix(Int_t energy    = 8,
 
     name.Form("/lustre/cbm/prod/mc/OCT19/sis100_muon_lmvm/%dgev/centr/%d/"
               "muons.ana.root",
-              energy,
-              k1);
+              energy, k1);
 
     TFile* f1 = new TFile(name);
-    if (f1->IsZombie() || f1->GetNkeys() < 1
-        || f1->TestBit(TFile::kRecovered)) {
+    if (f1->IsZombie() || f1->GetNkeys() < 1 || f1->TestBit(TFile::kRecovered)) {
       f1->Close();
       continue;
     }
 
     name.Form("/lustre/cbm/prod/mc/OCT19/sis100_muon_lmvm/%dgev/centr/%d/"
               "muons.ana.root",
-              energy,
-              k2);
+              energy, k2);
 
     TFile* f2 = new TFile(name);
-    if (f2->IsZombie() || f2->GetNkeys() < 1
-        || f2->TestBit(TFile::kRecovered)) {
+    if (f2->IsZombie() || f2->GetNkeys() < 1 || f2->TestBit(TFile::kRecovered)) {
       f2->Close();
       continue;
     }
@@ -123,9 +107,8 @@ void InvariantMassSpectra_mix(Int_t energy    = 8,
         CbmAnaMuonCandidate* mu_pl = (CbmAnaMuonCandidate*) MuPlus->At(iPart);
         TLorentzVector* P_pl       = mu_pl->GetMomentum();
         for (int jPart = 0; jPart < NofMinus; jPart++) {
-          CbmAnaMuonCandidate* mu_mn =
-            (CbmAnaMuonCandidate*) MuMinus->At(jPart);
-          TLorentzVector* P_mn = mu_mn->GetMomentum();
+          CbmAnaMuonCandidate* mu_mn = (CbmAnaMuonCandidate*) MuMinus->At(jPart);
+          TLorentzVector* P_mn       = mu_mn->GetMomentum();
           TLorentzVector M(*P_pl + *P_mn);
           invM_bg->Fill(M.M(), 1. / 10.);  // normalized with bin value
           YPtM_bg->Fill(M.Rapidity(), M.Pt(), M.M());

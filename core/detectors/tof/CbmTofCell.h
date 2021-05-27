@@ -21,12 +21,7 @@ public:
    *@param sizey     cell size in y [cm]
    **/
 
-  CbmTofCell(Int_t detId,
-             Double_t x,
-             Double_t y,
-             Double_t z,
-             Double_t sizex,
-             Double_t sizey);
+  CbmTofCell(Int_t detId, Double_t x, Double_t y, Double_t z, Double_t sizex, Double_t sizey);
 
   /** Destructor **/
   virtual ~CbmTofCell();

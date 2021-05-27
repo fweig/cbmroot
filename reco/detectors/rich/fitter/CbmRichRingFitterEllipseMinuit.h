@@ -11,10 +11,11 @@
 
 #include "CbmRichRingFitterEllipseBase.h"
 
-#include "Math/IFunction.h"
 #include "Rtypes.h"
 
 #include <vector>
+
+#include "Math/IFunction.h"
 
 using std::vector;
 
@@ -23,10 +24,10 @@ private:
   vector<Double_t> fX;  // vector of X coordinates
   vector<Double_t> fY;  // vector of Y coordinates
 public:
-  FCNEllipse2(vector<Double_t> x, vector<Double_t> y)
-    : ROOT::Math::IBaseFunctionMultiDim(), fX(x), fY(y) {}
+  FCNEllipse2(vector<Double_t> x, vector<Double_t> y) : ROOT::Math::IBaseFunctionMultiDim(), fX(x), fY(y) {}
 
-  double DoEval(const double* x) const {
+  double DoEval(const double* x) const
+  {
     Double_t r = 0.;
     for (UInt_t i = 0; i < fX.size(); i++) {
       Double_t ri = calcE(i, x);
@@ -35,20 +36,17 @@ public:
     return r;
   }
 
-  Double_t calcE(Int_t i, const double* par) const {
-    Double_t d1 = sqrt((fX[i] - par[0]) * (fX[i] - par[0])
-                       + (fY[i] - par[1]) * (fY[i] - par[1]));
-    Double_t d2 = sqrt((fX[i] - par[2]) * (fX[i] - par[2])
-                       + (fY[i] - par[3]) * (fY[i] - par[3]));
+  Double_t calcE(Int_t i, const double* par) const
+  {
+    Double_t d1 = sqrt((fX[i] - par[0]) * (fX[i] - par[0]) + (fY[i] - par[1]) * (fY[i] - par[1]));
+    Double_t d2 = sqrt((fX[i] - par[2]) * (fX[i] - par[2]) + (fY[i] - par[3]) * (fY[i] - par[3]));
     Double_t ri = d1 + d2 - 2 * par[4];
     return ri;
   }
 
   unsigned int NDim() const { return 5; }
 
-  ROOT::Math::IBaseFunctionMultiDim* Clone() const {
-    return new FCNEllipse2(fX, fY);
-  }
+  ROOT::Math::IBaseFunctionMultiDim* Clone() const { return new FCNEllipse2(fX, fY); }
 };
 
 

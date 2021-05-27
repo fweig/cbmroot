@@ -23,6 +23,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
@@ -76,8 +77,10 @@ CbmMcbm2018UnpackerAlgoMuch::CbmMcbm2018UnpackerAlgoMuch()
    fhEventNbPerTs( nullptr ),
    fcTimeToTrigRaw( nullptr )
 */
-{}
-CbmMcbm2018UnpackerAlgoMuch::~CbmMcbm2018UnpackerAlgoMuch() {
+{
+}
+CbmMcbm2018UnpackerAlgoMuch::~CbmMcbm2018UnpackerAlgoMuch()
+{
   /// Clear buffers
   fvmHitsInMs.clear();
   /*
@@ -92,55 +95,58 @@ CbmMcbm2018UnpackerAlgoMuch::~CbmMcbm2018UnpackerAlgoMuch() {
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoMuch::Init() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::Init()
+{
   LOG(info) << "Initializing mCBM MUCH 2019 unpacker algo";
 
   return kTRUE;
 }
 void CbmMcbm2018UnpackerAlgoMuch::Reset() {}
-void CbmMcbm2018UnpackerAlgoMuch::Finish() {
+void CbmMcbm2018UnpackerAlgoMuch::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoMuch::InitContainers() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmMcbm2018UnpackerAlgoMuch";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018UnpackerAlgoMuch::ReInitContainers() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmMcbm2018UnpackerAlgoMuch";
 
-  fUnpackPar =
-    (CbmMcbm2018MuchPar*) fParCList->FindObject("CbmMcbm2018MuchPar");
+  fUnpackPar = (CbmMcbm2018MuchPar*) fParCList->FindObject("CbmMcbm2018MuchPar");
   if (nullptr == fUnpackPar) return kFALSE;
 
   Bool_t initOK = InitParameters();
 
   return initOK;
 }
-TList* CbmMcbm2018UnpackerAlgoMuch::GetParList() {
+TList* CbmMcbm2018UnpackerAlgoMuch::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmMcbm2018MuchPar("CbmMcbm2018MuchPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters()
+{
   fuNrOfDpbs = fUnpackPar->GetNrOfDpbs();
   LOG(info) << "Nr. of MUCH DPBs:       " << fuNrOfDpbs;
 
   fDpbIdIndexMap.clear();
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x"
-              << std::setw(4) << std::hex << fUnpackPar->GetDpbId(uDpb)
-              << std::dec << " => "
-              << fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)];
+    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
+              << fUnpackPar->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)];
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   fuNbFebs = fUnpackPar->GetNrOfFebs();
@@ -156,19 +162,15 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters() {
   fvbCrobActiveFlag.resize(fuNrOfDpbs);
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fvbCrobActiveFlag[uDpb].resize(fUnpackPar->GetNbCrobsPerDpb());
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      fvbCrobActiveFlag[uDpb][uCrobIdx] =
-        fUnpackPar->IsCrobActive(uDpb, uCrobIdx);
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      fvbCrobActiveFlag[uDpb][uCrobIdx] = fUnpackPar->IsCrobActive(uDpb, uCrobIdx);
     }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
   }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     TString sPrintoutLine = Form("DPB #%02u CROB Active ?:       ", uDpb);
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      sPrintoutLine +=
-        Form("%1u", (fvbCrobActiveFlag[uDpb][uCrobIdx] == kTRUE));
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      sPrintoutLine += Form("%1u", (fvbCrobActiveFlag[uDpb][uCrobIdx] == kTRUE));
     }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
     LOG(info) << sPrintoutLine;
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
@@ -196,8 +198,7 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters() {
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 */
 
-  if (fbBinningFw)
-    LOG(info) << "Unpacking data in bin sorter FW mode";
+  if (fbBinningFw) LOG(info) << "Unpacking data in bin sorter FW mode";
   else
     LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
 
@@ -224,8 +225,8 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018UnpackerAlgoMuch::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmMcbm2018UnpackerAlgoMuch::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -233,13 +234,13 @@ void CbmMcbm2018UnpackerAlgoMuch::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018UnpackerAlgoMuch::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmMcbm2018UnpackerAlgoMuch::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -252,10 +253,9 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -270,24 +270,21 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Sort the buffers of hits
     /// => Commented out as for now problems at MS borders due to offsets
     //      std::sort( fvmHitsInMs.begin(), fvmHitsInMs.end() );
 
     /// Add the hits to the output buffer as Digis
-    for (auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end();
-         ++itHitIn) {
+    for (auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end(); ++itHitIn) {
       /// For generating MUCH Digi and Address calling a function. Do local MUCH related things in that only.
 
       CbmMuchBeamTimeDigi* digi = CreateMuchDigi(&(*itHitIn));
@@ -310,12 +307,9 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts) {
 */
 
   /// Sort the buffers of hits due to the time offsets applied
-  std::sort(
-    fDigiVect.begin(),
-    fDigiVect.end(),
-    [](const CbmMuchBeamTimeDigi& a, const CbmMuchBeamTimeDigi& b) -> bool {
-      return a.GetTime() < b.GetTime();
-    });
+  std::sort(fDigiVect.begin(), fDigiVect.end(), [](const CbmMuchBeamTimeDigi& a, const CbmMuchBeamTimeDigi& b) -> bool {
+    return a.GetTime() < b.GetTime();
+  });
 
   /// Fill plots if in monitor mode
   if (fbMonitorMode) {
@@ -337,8 +331,8 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessTs(const fles::Timeslice& ts) {
 }
 
 // -------------------------------------------------------------------------
-CbmMuchBeamTimeDigi*
-CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn) {
+CbmMuchBeamTimeDigi* CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn)
+{
   /*
          UInt_t uFebIdx =  itHitIn->GetAsic() / fUnpackPar->GetNbAsicsPerFeb()
                           + ( itHitIn->GetDpb() * fUnpackPar->GetNbCrobsPerDpb() + itHitIn->GetCrob() )
@@ -350,23 +344,19 @@ CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn) {
   /// Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
   Int_t iFebId = fUnpackPar->GetFebId(itHitIn->GetAsic());
 
-  Short_t station = 0;  // for mCBM setup only one station
-  Short_t layer   = fUnpackPar->GetModule(
-    itHitIn->GetAsic());  // 0 for Module GEM-A and 1 for Module GEM-B
-  Short_t layerside = 0;    // 0 in mCBM
-  Short_t module    = 0;    // 0 in mCBM
-  Short_t sSector =
-    0;  //channel values are from 0-96 therefore as per CbmMuchAddress it is sector
-  Short_t sChannel =
-    0;  //sector values are from 0-22 therefore as per CbmMuchAddress it is channel
+  Short_t station   = 0;                                          // for mCBM setup only one station
+  Short_t layer     = fUnpackPar->GetModule(itHitIn->GetAsic());  // 0 for Module GEM-A and 1 for Module GEM-B
+  Short_t layerside = 0;                                          // 0 in mCBM
+  Short_t module    = 0;                                          // 0 in mCBM
+  Short_t sSector   = 0;  //channel values are from 0-96 therefore as per CbmMuchAddress it is sector
+  Short_t sChannel  = 0;  //sector values are from 0-22 therefore as per CbmMuchAddress it is channel
 
   Int_t usChan = itHitIn->GetChan();
 
   // ----------------------------- //
   // Channel flip in stsXYTER v2.1 : 0<->1, 2<->3, 3<->4 and so on...
   if (fiFlag == 1) {
-    if (usChan % 2 == 0)
-      usChan = usChan + 1;
+    if (usChan % 2 == 0) usChan = usChan + 1;
     else
       usChan = usChan - 1;
   }
@@ -377,38 +367,37 @@ CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn) {
   //in few FEB positioned these flex connectors are flipped so below correction applied.
   if (fiFlag == 1 && layer == 0) {  // First layer (GEM1) has old readout PCB
 
-    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4
-        || iFebId == 8 || iFebId == 9 || iFebId == 10 || iFebId == 11
-        || iFebId == 17) {
+    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+        || iFebId == 10 || iFebId == 11 || iFebId == 17) {
       sSector  = fUnpackPar->GetPadXA(iFebId, 127 - usChan);
       sChannel = fUnpackPar->GetPadYA(iFebId, 127 - usChan);
-    } else {
+    }
+    else {
       sSector  = fUnpackPar->GetPadXA(iFebId, usChan);
       sChannel = fUnpackPar->GetPadYA(iFebId, usChan);
     }
   }  // if( fiFlag == 1 && layer == 0 )
 
-  else if (fiFlag == 1
-           && layer == 1) {  // second layer (GEM2) has new readout PCB
+  else if (fiFlag == 1 && layer == 1) {  // second layer (GEM2) has new readout PCB
 
-    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4
-        || iFebId == 8 || iFebId == 9 || iFebId == 10 || iFebId == 11
-        || iFebId == 17) {
+    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+        || iFebId == 10 || iFebId == 11 || iFebId == 17) {
       sSector  = fUnpackPar->GetPadXB(iFebId, 127 - usChan);
       sChannel = fUnpackPar->GetPadYB(iFebId, 127 - usChan);
-    } else {
+    }
+    else {
       sSector  = fUnpackPar->GetPadXB(iFebId, usChan);
       sChannel = fUnpackPar->GetPadYB(iFebId, usChan);
     }
   }  // else if( fiFlag == 1 && layer == 1 )
 
   else {  // Both layer with same type of PCB
-    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4
-        || iFebId == 8 || iFebId == 9 || iFebId == 10 || iFebId == 11
-        || iFebId == 17) {
+    if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+        || iFebId == 10 || iFebId == 11 || iFebId == 17) {
       sSector  = fUnpackPar->GetPadXA(iFebId, 127 - usChan);
       sChannel = fUnpackPar->GetPadYA(iFebId, 127 - usChan);
-    } else {
+    }
+    else {
       sSector  = fUnpackPar->GetPadXA(iFebId, itHitIn->GetChan());
       sChannel = fUnpackPar->GetPadYA(iFebId, itHitIn->GetChan());
     }
@@ -417,28 +406,23 @@ CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn) {
 
   // Checking for the not connected or misconnected pads
   if (sSector < 0 || sChannel < 0) {
-    LOG(debug)
-      << "Sector " << sSector << " channel " << sChannel
-      << " is not connected or misconnected to pad. Skipping this hit message.";
+    LOG(debug) << "Sector " << sSector << " channel " << sChannel
+               << " is not connected or misconnected to pad. Skipping this hit message.";
     return NULL;
   }
   //Creating Unique address of the particular channel of GEM
-  UInt_t address = CbmMuchAddress::GetAddress(
-    station, layer, layerside, module, sChannel, sSector);
-  Double_t dTimeInNs =
-    itHitIn->GetTs() * stsxyter::kdClockCycleNs - fdTimeOffsetNs;
-  if (uAsicIdx < fvdTimeOffsetNsAsics.size())
-    dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
+  UInt_t address     = CbmMuchAddress::GetAddress(station, layer, layerside, module, sChannel, sSector);
+  Double_t dTimeInNs = itHitIn->GetTs() * stsxyter::kdClockCycleNs - fdTimeOffsetNs;
+  if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
   ULong64_t ulTimeInNs = static_cast<ULong64_t>(dTimeInNs);
 
   /// With Main MUCH digi
   //         fDigiVect.push_back( CbmMuchDigi( address, itHitIn->GetAdc(), ulTimeInNs ) );
 
   /// With Beamtime MUCH digi
-  CbmMuchBeamTimeDigi* digi =
-    new CbmMuchBeamTimeDigi(address, itHitIn->GetAdc(), ulTimeInNs);
-  LOG(debug) << "Sector " << sSector << " channel " << sChannel << " layer "
-             << layer << " Address " << address << " Time " << ulTimeInNs;
+  CbmMuchBeamTimeDigi* digi = new CbmMuchBeamTimeDigi(address, itHitIn->GetAdc(), ulTimeInNs);
+  LOG(debug) << "Sector " << sSector << " channel " << sChannel << " layer " << layer << " Address " << address
+             << " Time " << ulTimeInNs;
 
   digi->SetPadX(sSector);
   digi->SetPadY(sChannel);
@@ -452,22 +436,19 @@ CbmMcbm2018UnpackerAlgoMuch::CreateMuchDigi(stsxyter::FinalHit* itHitIn) {
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
-                                              size_t uMsCompIdx,
-                                              size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
   //   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
@@ -476,8 +457,7 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
   auto it = fDpbIdIndexMap.find(fuCurrDpbId);
   if (it == fDpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       /*
           LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
           LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
@@ -488,10 +468,9 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
                             msDescriptor.size, msDescriptor.offset );
 */
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the MUCH "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -509,45 +488,33 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
     fuCurrDpbIdx = fDpbIdIndexMap[fuCurrDpbId];
 
   /** Check the current TS_MSb cycle and correct it if wrong **/
-  UInt_t uTsMsbCycleHeader = std::floor(
-    fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
+  UInt_t uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
-    uTsMsbCycleHeader = std::floor(
-      fulCurrentMsIdx
-      / (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs));
+    uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs));
 
   if (0 == uMsIdx) {
     if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx])
-      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-                << std::setw(12) << fulCurrentMsIdx << " MS Idx "
-                << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0
-                << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb "
-                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx]
-                << " Old MsbCy " << std::setw(5)
-                << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy "
-                << uTsMsbCycleHeader;
+      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = 0;
   }  // if( 0 == uMsIdx )
   else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]) {
     if (4194303 == fvulCurrentTsMsb[fuCurrDpbIdx]) {
-      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-                << std::setw(12) << fulCurrentMsIdx << " MS Idx "
-                << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0
-                << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb "
-                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx]
-                << " Old MsbCy " << std::setw(5)
-                << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy "
-                << uTsMsbCycleHeader;
-    } else {
-      LOG(warning)
-        << "TS MSB cycle from MS header does not match current cycle from data "
-        << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-        << std::setw(12) << fulCurrentMsIdx << " MsInTs " << std::setw(3)
-        << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
-        << uTsMsbCycleHeader;
+      LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
+    }
+    else {
+      LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                   << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                   << " MsInTs " << std::setw(3) << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
+                   << uTsMsbCycleHeader;
     }  // else of if( 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] )
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
   }  // else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
@@ -558,12 +525,10 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete sDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % sizeof(stsxyter::Message))) / sizeof(stsxyter::Message);
+  uint32_t uNbMessages = (uSize - (uSize % sizeof(stsxyter::Message))) / sizeof(stsxyter::Message);
 
   // Prepare variables for the loop on contents
-  const stsxyter::Message* pMess =
-    reinterpret_cast<const stsxyter::Message*>(msContent);
+  const stsxyter::Message* pMess = reinterpret_cast<const stsxyter::Message*>(msContent);
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
     /// Get message type
     stsxyter::MessType typeMess = pMess[uIdx].GetMessType();
@@ -576,8 +541,7 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
         // Extract the eLink and Asic indices => Should GO IN the fill method now that obly hits are link/asic specific!
         UShort_t usElinkIdx = pMess[uIdx].GetLinkIndex();
         /// => Quick and dirty hack for binning FW!!!
-        if (kTRUE == fbBinningFw)
-          usElinkIdx = pMess[uIdx].GetLinkIndexHitBinning();
+        if (kTRUE == fbBinningFw) usElinkIdx = pMess[uIdx].GetLinkIndexHitBinning();
         //            fhStsMessTypePerElink->Fill( usElinkIdx, static_cast< uint16_t > (typeMess) );
         //            fhStsHitsElinkPerDpb->Fill( fuCurrDpbIdx, usElinkIdx );
 
@@ -586,15 +550,12 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
 
         if (-1 == uFebIdx) {
           LOG(warning) << "CbmMcbm2018UnpackerAlgoMuch::DoUnpack => "
-                       << "Wrong elink Idx! Elink raw "
-                       << Form("%d remap %d", usElinkIdx, uFebIdx);
+                       << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
           continue;
         }  // if( -1 == uFebIdx )
 
-        UInt_t uAsicIdx =
-          (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx)
-            * fUnpackPar->GetNbAsicsPerCrob()
-          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
+        UInt_t uAsicIdx = (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackPar->GetNbAsicsPerCrob()
+                          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
 
         ProcessHitInfo(pMess[uIdx], usElinkIdx, uAsicIdx, uMsIdx);
         break;
@@ -613,8 +574,7 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
 
         if (0 < uIdx)
           LOG(info) << "CbmMcbm2018UnpackerAlgoMuch::DoUnpack => "
-                    << "EPOCH message at unexpected position in MS: message "
-                    << uIdx << " VS message 0 expected!";
+                    << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Status: {
@@ -625,15 +585,12 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
 
         if (-1 == uFebIdx) {
           LOG(warning) << "CbmMcbm2018UnpackerAlgoMuch::DoUnpack => "
-                       << "Wrong elink Idx! Elink raw "
-                       << Form("%d remap %d", usElinkIdx, uFebIdx);
+                       << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
           continue;
         }  // if( -1 == uFebIdx )
 
-        UInt_t uAsicIdx =
-          (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx)
-            * fUnpackPar->GetNbAsicsPerCrob()
-          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
+        UInt_t uAsicIdx = (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackPar->GetNbAsicsPerCrob()
+                          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
 
         ProcessStatusInfo(pMess[uIdx], uAsicIdx);
         break;
@@ -645,11 +602,8 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
       }  // case stsxyter::MessType::Empty :
       case stsxyter::MessType::EndOfMs: {
         if (pMess[uIdx].IsMsErrorFlagOn()) {
-          fErrVect.push_back(CbmErrorMessage(ECbmModuleId::kMuch,
-                                             fulCurrentMsIdx,
-                                             fuCurrDpbIdx,
-                                             0x20,
-                                             pMess[uIdx].GetMsErrorType()));
+          fErrVect.push_back(
+            CbmErrorMessage(ECbmModuleId::kMuch, fulCurrentMsIdx, fuCurrDpbIdx, 0x20, pMess[uIdx].GetMsErrorType()));
         }  // if( pMess[uIdx].IsMsErrorFlagOn() )
         break;
       }  // case stsxyter::MessType::EndOfMs :
@@ -670,10 +624,9 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess,
-                                                 const UShort_t& usElinkIdx,
-                                                 const UInt_t& uAsicIdx,
-                                                 const UInt_t& /*uMsIdx*/) {
+void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess, const UShort_t& usElinkIdx,
+                                                 const UInt_t& uAsicIdx, const UInt_t& /*uMsIdx*/)
+{
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
   //   UShort_t usFullTs = mess.GetHitTimeFull();
@@ -699,21 +652,17 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess,
   //   UInt_t uChanInFeb = usChan + fUnpackPar->GetNbChanPerAsic() * (uAsicIdx % fUnpackPar->GetNbAsicsPerFeb());
 
   /// Duplicate hits rejection
-  if (
-    usRawTs == fvvusLastTsChan[uAsicIdx][usChan] &&
-    //       usRawAdc                           == fvvusLastAdcChan[ uAsicIdx ][ usChan ] &&
-    fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan]
-      < kuMaxTsMsbDiffDuplicates
-    && fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-         == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
+  if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan] &&
+      //       usRawAdc                           == fvvusLastAdcChan[ uAsicIdx ][ usChan ] &&
+      fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
+      && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
     /// FIXME: add plots to check what is done in this rejection
     return;
   }  // if same TS, ADC, TS MSB, TS MSB cycle!
-  fvvusLastTsChan[uAsicIdx][usChan]    = usRawTs;
-  fvvusLastAdcChan[uAsicIdx][usChan]   = usRawAdc;
-  fvvusLastTsMsbChan[uAsicIdx][usChan] = fvulCurrentTsMsb[fuCurrDpbIdx];
-  fvvusLastTsMsbCycleChan[uAsicIdx][usChan] =
-    fvuCurrentTsMsbCycle[fuCurrDpbIdx];
+  fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
+  fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
+  fvvusLastTsMsbChan[uAsicIdx][usChan]      = fvulCurrentTsMsb[fuCurrDpbIdx];
+  fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
 
   /*
    Double_t dCalAdc = fvdFebAdcOffs[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ]
@@ -731,17 +680,15 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess,
   // Compute the Full time stamp
   // Use TS w/o overlap bits as they will anyway come from the TS_MSB
   Long64_t ulHitTime = usRawTs;
-  ulHitTime += static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-                 * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-               + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-                   * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+  ulHitTime +=
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
     ulHitTime =
       usRawTs
-      + static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning)
-          * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+      + static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
       + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBinsBinning)
           * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
@@ -753,21 +700,16 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess,
   if (fdAdcCut < usRawAdc) {
     /// Store only if masking is disabled or if channeld is not masked
     /// 2D vector is safe as always right size if masking enabled
-    if (kFALSE == fbUseChannelMask
-        || false == fvvbMaskedChannels[uAsicIdx][usChan])
-      fvmHitsInMs.push_back(stsxyter::FinalHit(
-        ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
+    if (kFALSE == fbUseChannelMask || false == fvvbMaskedChannels[uAsicIdx][usChan])
+      fvmHitsInMs.push_back(stsxyter::FinalHit(ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
   }  // if( 0 != fviFebAddress[ uFebIdx ] )
 
   // fvmHitsInMs.push_back( stsxyter::FinalHit( ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx ) );
 
   /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
   if (mess.IsHitMissedEvts())
-    fErrVect.push_back(CbmErrorMessage(ECbmModuleId::kMuch,
-                                       dHitTimeNs,
-                                       uAsicIdx,
-                                       1 << stsxyter::kusLenStatStatus,
-                                       usChan));
+    fErrVect.push_back(
+      CbmErrorMessage(ECbmModuleId::kMuch, dHitTimeNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
 
   // Check Starting point of histos with time as X axis
   if (-1 == fdStartTime) fdStartTime = dHitTimeNs;
@@ -803,10 +745,8 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo(const stsxyter::Message& mess,
 */
 }
 
-void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo(
-  const stsxyter::Message& mess,
-  UInt_t uMessIdx,
-  UInt_t uMsIdx) {
+void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo(const stsxyter::Message& mess, UInt_t uMessIdx, UInt_t uMsIdx)
+{
   UInt_t uVal = mess.GetTsMsbVal();
 
   /// => Quick and dirty hack for binning FW!!!
@@ -831,39 +771,31 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo(
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5)
-              << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb "
-              << std::setw(5) << uVal;
+    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+              << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
 
     fvuCurrentTsMsbCycle[fuCurrDpbIdx]++;
   }  // if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
   if (
-    uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1
-    && !(0 == uVal && 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx])
+    uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 && !(0 == uVal && 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx])
     &&                /// Case where we reach a normal cycle edge
     1 != uMessIdx &&  /// First TS_MSB in MS may jump if TS dropped by DAQ
-    !(0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
-    &&  /// case with cycle et edge of 2 MS
+    !(0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx) &&  /// case with cycle et edge of 2 MS
     uVal < fvulCurrentTsMsb
         [fuCurrDpbIdx]  /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
   ) {
     LOG(info) << "TS MSb Jump in "
-              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb "
-              << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
+              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " => Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
               << std::setw(5) << uVal;
   }  // if( uVal + 1 != fvulCurrentTsMsb[fuCurrDpbIdx] && 4194303 != uVal && 0 != fvulCurrentTsMsb[fuCurrDpbIdx] )
 
   /// Catch case where previous MS ended up on a TS MSB cycle as it is then
   /// already updated from the MS index
-  if (4194303 == uVal && 1 == uMessIdx)
-    fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
+  if (4194303 == uVal && 1 == uMessIdx) fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
   else
     fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
   /*
@@ -883,8 +815,8 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo(
 */
 }
 
-void CbmMcbm2018UnpackerAlgoMuch::ProcessEpochInfo(
-  const stsxyter::Message& /*mess*/) {
+void CbmMcbm2018UnpackerAlgoMuch::ProcessEpochInfo(const stsxyter::Message& /*mess*/)
+{
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
 
@@ -898,9 +830,8 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessEpochInfo(
 */
 }
 
-void CbmMcbm2018UnpackerAlgoMuch::ProcessStatusInfo(
-  const stsxyter::Message& mess,
-  const UInt_t& uAsicIdx) {
+void CbmMcbm2018UnpackerAlgoMuch::ProcessStatusInfo(const stsxyter::Message& mess, const UInt_t& uAsicIdx)
+{
   /*
    UShort_t usStatusField = mess.GetStatusStatus();
 
@@ -915,54 +846,36 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessStatusInfo(
   /// Compute the Full time stamp
   /// Use TS w/o overlap bits as they will anyway come from the TS_MSB
   Long64_t ulTime =
-    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-      * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-        * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
-    ulTime = static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning)
-               * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-             + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBinsBinning)
-                 * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+    ulTime =
+      static_cast<ULong64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+      + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBinsBinning)
+          * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   /// Convert the time in bins to Hit time in ns
   Double_t dTimeNs = ulTime * stsxyter::kdClockCycleNs;
 
-  fErrVect.push_back(CbmErrorMessage(ECbmModuleId::kMuch,
-                                     dTimeNs,
-                                     uAsicIdx,
-                                     mess.GetStatusStatus(),
-                                     mess.GetData()));
+  fErrVect.push_back(CbmErrorMessage(ECbmModuleId::kMuch, dTimeNs, uAsicIdx, mess.GetStatusStatus(), mess.GetData()));
 }
 
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoMuch::CreateHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::CreateHistograms()
+{
   /// Create General unpacking histograms
   fhDigisTimeInRun =
-    new TH1I("hMuchDigisTimeInRun",
-             "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []",
-             36000,
-             0,
-             3600);
+    new TH1I("hMuchDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 36000, 0, 3600);
   AddHistoToVector(fhDigisTimeInRun, "");
 
-  fhVectorSize =
-    new TH1I("fhVectorSize",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   fhVectorCapacity =
-    new TH1I("fhVectorCapacity",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+    new TH1I("fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   AddHistoToVector(fhVectorSize, "");
   AddHistoToVector(fhVectorCapacity, "");
 
@@ -1203,13 +1116,15 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::CreateHistograms() {
 */
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoMuch::FillHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::FillHistograms()
+{
   for (auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit) {
     fhDigisTimeInRun->Fill(itHit->GetTime() * 1e-9);
   }  // for( auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit)
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoMuch::ResetHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoMuch::ResetHistograms()
+{
   fhDigisTimeInRun->Reset();
   /*
    for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
@@ -1246,8 +1161,8 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ResetHistograms() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018UnpackerAlgoMuch::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
-                                                      Double_t dOffsetIn) {
+void CbmMcbm2018UnpackerAlgoMuch::SetTimeOffsetNsAsic(UInt_t uAsicIdx, Double_t dOffsetIn)
+{
   if (uAsicIdx >= fvdTimeOffsetNsAsics.size()) {
     fvdTimeOffsetNsAsics.resize(uAsicIdx + 1, 0.0);
   }  // if( uAsicIdx < fvdTimeOffsetNsAsics.size() )
@@ -1255,9 +1170,8 @@ void CbmMcbm2018UnpackerAlgoMuch::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
   fvdTimeOffsetNsAsics[uAsicIdx] = dOffsetIn;
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel(UInt_t uFeb,
-                                                   UInt_t uChan,
-                                                   Bool_t bMasked) {
+void CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel(UInt_t uFeb, UInt_t uChan, Bool_t bMasked)
+{
   if (kFALSE == fbUseChannelMask) {
     fbUseChannelMask = kTRUE;
     fvvbMaskedChannels.resize(fuNbFebs);
@@ -1265,15 +1179,10 @@ void CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel(UInt_t uFeb,
       fvvbMaskedChannels[uFebIdx].resize(fUnpackPar->GetNbChanPerFeb(), false);
     }  // for( UInt_t uFeb = 0; uFeb < fuNbFebs; ++uFeb )
   }    // if( kFALSE == fbUseChannelMask )
-  if (uFeb < fuNbFebs && uChan < fUnpackPar->GetNbChanPerFeb())
-    fvvbMaskedChannels[uFeb][uChan] = bMasked;
+  if (uFeb < fuNbFebs && uChan < fUnpackPar->GetNbChanPerFeb()) fvvbMaskedChannels[uFeb][uChan] = bMasked;
   else
     LOG(fatal) << "CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel => Invalid "
                   "FEB and/or CHAN index:"
-               << Form(" %u vs %u and %u vs %u",
-                       uFeb,
-                       fuNbFebs,
-                       uChan,
-                       fUnpackPar->GetNbChanPerFeb());
+               << Form(" %u vs %u and %u vs %u", uFeb, fuNbFebs, uChan, fUnpackPar->GetNbChanPerFeb());
 }
 // -------------------------------------------------------------------------

@@ -27,14 +27,11 @@ class CbmPointSetArray : public TEvePointSetArray {
   CbmPointSetArray& operator=(const CbmPointSetArray&);  // Not implemented
 
 public:
-  CbmPointSetArray(const char* name  = "CbmPointSetArray",
-                   const char* title = "");
+  CbmPointSetArray(const char* name = "CbmPointSetArray", const char* title = "");
   virtual ~CbmPointSetArray();
 
-  void
-  InitValues(Int_t npoints);  // Init arrays for storing of time,cluSize,...
-  void
-  FillValues(Int_t id, Double_t time, Double_t tot, Int_t cluSize, Int_t index);
+  void InitValues(Int_t npoints);  // Init arrays for storing of time,cluSize,...
+  void FillValues(Int_t id, Double_t time, Double_t tot, Int_t cluSize, Int_t index);
   // fill time[id],... index[id] to use information for later color-coding
   void ApplyColorMode();   // apply colorcoding according to fColorMode
   void ApplyMarkerMode();  // apply markercoding according to fMarkerMode
@@ -54,14 +51,12 @@ private:
   Double_t* fTime;    // array for times of hits stored in PointSetArray
   Int_t* fCluSize;    // array for CluSizes of hits stored in PointSetArray
   Double_t* fToT;     // array for ToTs of hits stored in PointSetArray
-  Int_t*
-    fIndex;  // array of bin-indices in which hits of PointSetArray are stored
-  Int_t fNPoints;  // number of points stored in PointSetArray
+  Int_t* fIndex;      // array of bin-indices in which hits of PointSetArray are stored
+  Int_t fNPoints;     // number of points stored in PointSetArray
 
 
-  ClassDef(
-    CbmPointSetArray,
-    0);  //CbmPointSetArray to implement Additional ColorCoding and other functionalities
+  ClassDef(CbmPointSetArray,
+           0);  //CbmPointSetArray to implement Additional ColorCoding and other functionalities
   // Array of TEvePointSet's filled via a common point-source; range of displayed TEvePointSet's can be controlled, based on a separating quantity provided on fill-time by a user.
 };
 

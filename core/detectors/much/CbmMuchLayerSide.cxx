@@ -14,24 +14,21 @@
 #include <TObjArray.h>  // for TObjArray
 
 // -----   Default constructor   -------------------------------------------
-CbmMuchLayerSide::CbmMuchLayerSide()
-  : TObject(), fDetectorId(0), fZ(0.), fModules() {}
+CbmMuchLayerSide::CbmMuchLayerSide() : TObject(), fDetectorId(0), fZ(0.), fModules() {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMuchLayerSide::CbmMuchLayerSide(Int_t detId, Double_t z)
-  : TObject(), fDetectorId(detId), fZ(z), fModules() {}
+CbmMuchLayerSide::CbmMuchLayerSide(Int_t detId, Double_t z) : TObject(), fDetectorId(detId), fZ(z), fModules() {}
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-CbmMuchLayerSide::CbmMuchLayerSide(Int_t iStation,
-                                   Int_t iLayer,
-                                   Bool_t iSide,
-                                   Double_t z)
+CbmMuchLayerSide::CbmMuchLayerSide(Int_t iStation, Int_t iLayer, Bool_t iSide, Double_t z)
   : TObject()
   , fDetectorId(CbmMuchAddress::GetAddress(iStation, iLayer, iSide))
   , fZ(z)
-  , fModules() {}
+  , fModules()
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -39,14 +36,11 @@ CbmMuchLayerSide::~CbmMuchLayerSide() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method AddModule   ---------------------------------------
-void CbmMuchLayerSide::AddModule(CbmMuchModule* module) {
-  fModules.Add(module);
-}
+void CbmMuchLayerSide::AddModule(CbmMuchModule* module) { fModules.Add(module); }
 // -------------------------------------------------------------------------
 
-void CbmMuchLayerSide::DrawModules(Color_t color,
-                                   Bool_t modulesVisible,
-                                   Bool_t) {
+void CbmMuchLayerSide::DrawModules(Color_t color, Bool_t modulesVisible, Bool_t)
+{
   for (Int_t m = 0; m < GetNModules(); m++) {
     CbmMuchModule* module = GetModule(m);
     if (modulesVisible) {

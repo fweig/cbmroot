@@ -1,9 +1,11 @@
 #include "TH1.h"
 #include "TH2D.h"
+
 #include <iomanip>
 #include <vector>
 
-void Comp_Hist() {
+void Comp_Hist()
+{
   TH2D* Aligned;
   TH2D *Misaligned_1mrad, *Misaligned_5mrad;
   //	TString Histo_Name = "fhRingTrackDistVsMomTruematchPi";
@@ -33,20 +35,14 @@ void Comp_Hist() {
   Misaligned_5mrad->Draw("colz");
   cout << "Size misaligned histo: " << Misaligned_5mrad->GetSize() << endl;
 
-  Int_t nbin_range_X_ali =
-    Aligned->GetXaxis()->FindBin(10.0) - Aligned->GetXaxis()->FindBin(0.);
-  Int_t nbin_range_Y_ali =
-    Aligned->GetYaxis()->FindBin(3.0) - Aligned->GetYaxis()->FindBin(0.);
-  Int_t nbin_range_X_mis = Misaligned_5mrad->GetXaxis()->FindBin(10.0)
-                           - Misaligned_5mrad->GetXaxis()->FindBin(0.);
-  Int_t nbin_range_Y_mis = Misaligned_5mrad->GetYaxis()->FindBin(3.0)
-                           - Misaligned_5mrad->GetYaxis()->FindBin(0.);
+  Int_t nbin_range_X_ali = Aligned->GetXaxis()->FindBin(10.0) - Aligned->GetXaxis()->FindBin(0.);
+  Int_t nbin_range_Y_ali = Aligned->GetYaxis()->FindBin(3.0) - Aligned->GetYaxis()->FindBin(0.);
+  Int_t nbin_range_X_mis = Misaligned_5mrad->GetXaxis()->FindBin(10.0) - Misaligned_5mrad->GetXaxis()->FindBin(0.);
+  Int_t nbin_range_Y_mis = Misaligned_5mrad->GetYaxis()->FindBin(3.0) - Misaligned_5mrad->GetYaxis()->FindBin(0.);
   cout << "Aligned:" << endl;
-  cout << "nbin X = " << nbin_range_X_ali
-       << " and nbin Y = " << nbin_range_Y_ali << endl;
+  cout << "nbin X = " << nbin_range_X_ali << " and nbin Y = " << nbin_range_Y_ali << endl;
   cout << "Misaligned 5 mrad:" << endl;
-  cout << "nbin X = " << nbin_range_X_mis
-       << " and nbin Y = " << nbin_range_Y_mis << endl;
+  cout << "nbin X = " << nbin_range_X_mis << " and nbin Y = " << nbin_range_Y_mis << endl;
 
   Can->cd(3);
   TH2D* Diff = new TH2D("Diff", "Diff", 50, 0., 10., 100, 0., 3.);

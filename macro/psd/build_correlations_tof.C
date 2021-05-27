@@ -1,16 +1,15 @@
 //#include <FairParIo.h>
 #include <FairRuntimeDb.h>
 
-void build_correlations_tof(
-  const string& digiFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/"
-                           "beamtime/mcbm2020/data/unp_mcbm_582.root",
-  const string& parFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/"
-                          "mcbm2020/data/unp_mcbm_params_582.root",
-  const string& outDir =
-    "/home/nikolay/FairRoot/cbmroot_trunk/macro/psd/Results/",
-  const string& outFile     = "reco_mcbm_mar20.root",
-  const unsigned int uRunId = 582,  // used for the output folder
-  int nEvents               = 100) {
+void build_correlations_tof(const string& digiFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/"
+                                                     "beamtime/mcbm2020/data/unp_mcbm_582.root",
+                            const string& parFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/"
+                                                    "mcbm2020/data/unp_mcbm_params_582.root",
+                            const string& outDir      = "/home/nikolay/FairRoot/cbmroot_trunk/macro/psd/Results/",
+                            const string& outFile     = "reco_mcbm_mar20.root",
+                            const unsigned int uRunId = 582,  // used for the output folder
+                            int nEvents               = 100)
+{
 
   // ==========================   Adjustments   =============================
 
@@ -48,28 +47,20 @@ void build_correlations_tof(
   //void save_hst(TString cstr, Bool_t bROOT);
 
   //TString TofFileFolder = Form("/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2019/%s",cFileId.Data());
-  TString TofFileFolder =
-    Form("/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2019/%s",
-         cFileId.Data());
+  TString TofFileFolder = Form("/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2019/%s", cFileId.Data());
 
-  TString TofGeo = "v19b_mcbm";
-  TObjString* tofDigiFile =
-    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");
+  TString TofGeo          = "v19b_mcbm";
+  TObjString* tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");
   std::cout << std::endl
-            << "-I- digi.par file : " << workDir << "/parameters/tof/tof_"
-            << TofGeo << ".digi.par" << std::endl;
+            << "-I- digi.par file : " << workDir << "/parameters/tof/tof_" << TofGeo << ".digi.par" << std::endl;
   parFileList->Add(tofDigiFile);
 
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+  TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   std::cout << std::endl
-            << "-I- digibdf.par file : " << workDir << "/parameters/tof/tof_"
-            << TofGeo << ".digibdf.par" << std::endl;
+            << "-I- digibdf.par file : " << workDir << "/parameters/tof/tof_" << TofGeo << ".digibdf.par" << std::endl;
   parFileList->Add(tofDigiBdfFile);
 
-  TString geoFile =
-    workDir
-    + "/macro/mcbm/data/mcbm_beam_2019_12.geo.root";  //has to be generated
+  TString geoFile     = workDir + "/macro/mcbm/data/mcbm_beam_2019_12.geo.root";  //has to be generated
   TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
@@ -125,25 +116,20 @@ void build_correlations_tof(
 
   // Starting with ToF
 
-  CbmTofEventClusterizer* tofClust =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", 1, 0);
+  CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer", 1, 0);
   tofClust->SetCalMode(calMode);
   tofClust->SetCalSel(calSel);
-  tofClust->SetCaldXdYMax(10.);  // geometrical matching window in cm
-  tofClust->SetCalCluMulMax(
-    3.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofClust->SetCalRpc(calSm);   // select detector for calibration update
-  tofClust->SetTRefId(RefSel);  // reference trigger for offset calculation
-  tofClust->SetTotMax(20.);     // Tot upper limit for walk corection
-  tofClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
-  tofClust->SetTotPreRange(
-    5.);  // effective lower Tot limit  in ns from peak position
-  tofClust->SetTotMean(5.);       // Tot calibration target value in ns
-  tofClust->SetMaxTimeDist(1.0);  // default cluster range in ns
-  tofClust->SetDelTofMax(
-    10.);  // acceptance range for cluster distance in ns (!)
-  tofClust->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+  tofClust->SetCaldXdYMax(10.);             // geometrical matching window in cm
+  tofClust->SetCalCluMulMax(3.);            // Max Counter Cluster Multiplicity for filling calib histos
+  tofClust->SetCalRpc(calSm);               // select detector for calibration update
+  tofClust->SetTRefId(RefSel);              // reference trigger for offset calculation
+  tofClust->SetTotMax(20.);                 // Tot upper limit for walk corection
+  tofClust->SetTotMin(0.01);                //(12000.);  // Tot lower limit for walk correction
+  tofClust->SetTotPreRange(5.);             // effective lower Tot limit  in ns from peak position
+  tofClust->SetTotMean(5.);                 // Tot calibration target value in ns
+  tofClust->SetMaxTimeDist(1.0);            // default cluster range in ns
+  tofClust->SetDelTofMax(10.);              // acceptance range for cluster distance in ns (!)
+  tofClust->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kFALSE);
   //tofClust->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -152,14 +138,9 @@ void build_correlations_tof(
   //tofClust->SetDeadStrips(15,23);   // declare dead strip for T0M3,Rpc0,Strip 23
 
 
-  TString cCalibFname = Form("/%s_set%09d_%02d_%01dtofClust.hst.root",
-                             cFileId.Data(),
-                             iCalSet,
-                             calMode,
-                             calSelRead);
+  TString cCalibFname = Form("/%s_set%09d_%02d_%01dtofClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
   tofClust->SetCalParFileName(TofFileFolder + cCalibFname);
-  TString cOutFname =
-    Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+  TString cOutFname = Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
   tofClust->SetOutHstFileName(cOutFname);
 
   switch (calMode) {
@@ -167,10 +148,7 @@ void build_correlations_tof(
       tofClust->SetTRefDifMax(1.5);  // in ns
       tofClust->PosYMaxScal(0.75);   //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   fRun->AddTask(tofClust);
@@ -184,7 +162,8 @@ void build_correlations_tof(
   iRSel          = iBRef;  // use diamond
   if (iSel2 == 0) {
     // iSel2=iBRef;
-  } else {
+  }
+  else {
     if (iSel2 < 0) iSel2 = -iSel2;
   }
 
@@ -231,19 +210,18 @@ void build_correlations_tof(
   tofClust->SetSelSm(iRefSm);
   tofClust->SetSelRpc(iRefRpc);
 
-  cout << "Run mTof Clusterizer with iRSel = " << iRSel
-       << ", iSel2 = " << iSel2in << endl;
+  cout << "Run mTof Clusterizer with iRSel = " << iRSel << ", iSel2 = " << iSel2in << endl;
 
 
   //----------------------------------------------------------------------
 
   // mTof Tracker Initialization
-  TString cTrkFile = Form("/%s_tofFindTracks.hst.root", cFileId.Data());
+  TString cTrkFile                  = Form("/%s_tofFindTracks.hst.root", cFileId.Data());
   CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
   tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
   tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-  tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-  tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+  tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+  tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
 
   CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
   TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
@@ -253,25 +231,21 @@ void build_correlations_tof(
   tofFindTracks->UseFitter(tofTrackFitter);
   Int_t iGenCor = 1;
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-  tofFindTracks->SetTtTarg(
-    0.057);  // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetTtTarg(0.057);     // target value for inverse velocity, > 0.033 ns/cm!
   //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
-  tofFindTracks->SetCalParFileName(
-    TofFileFolder + cTrkFile);  // Tracker parameter value file name
+  tofFindTracks->SetCalParFileName(TofFileFolder + cTrkFile);  // Tracker parameter value file name
   std::cout << "TrackCalParFile: " << TofFileFolder << cTrkFile << std::endl;
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-  tofFindTracks->SetStationMaxHMul(
-    30);  // Max Hit Multiplicity in any used station
+  tofFindTracks->SetStationMaxHMul(30);    // Max Hit Multiplicity in any used station
 
-  tofFindTracks->SetT0MAX(1.);            // in ns
-  tofFindTracks->SetSIGT(0.08);           // default in ns
-  tofFindTracks->SetSIGX(0.3);            // default in cm
-  tofFindTracks->SetSIGY(0.6);            // default in cm
-  tofFindTracks->SetSIGZ(0.05);           // default in cm
-  tofFindTracks->SetUseSigCalib(kFALSE);  // ignore resolutions in CalPar file
-  Double_t dChi2Lim2 = 3.5;               //100;//3.5;
-  tofTrackFinder->SetSIGLIM(dChi2Lim2
-                            * 2.);  // matching window in multiples of chi2
+  tofFindTracks->SetT0MAX(1.);                 // in ns
+  tofFindTracks->SetSIGT(0.08);                // default in ns
+  tofFindTracks->SetSIGX(0.3);                 // default in cm
+  tofFindTracks->SetSIGY(0.6);                 // default in cm
+  tofFindTracks->SetSIGZ(0.05);                // default in cm
+  tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+  Double_t dChi2Lim2 = 3.5;                    //100;//3.5;
+  tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
 
@@ -402,7 +376,8 @@ void build_correlations_tof(
   cout << "Starting run" << endl;
   if (0 == nEvents) {
     fRun->Run(0, 0);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nEvents);  // process  2000 Events
   }
   // ------------------------------------------------------------------------

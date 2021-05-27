@@ -17,13 +17,13 @@
 #ifndef CBMMVDPOINT_H
 #define CBMMVDPOINT_H 1
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
-#include <TVector3.h>    // for TVector3
+#include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
 
 #include <FairMCPoint.h>  // for FairMCPoint
 
-#include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
+#include <TVector3.h>    // for TVector3
 
 class CbmMvdPoint : public FairMCPoint, CbmMvdDetectorId {
 
@@ -45,17 +45,8 @@ public:
    *@param eLoss      Energy deposit [GeV]
    *@param frame      Number of frame this point is registered in
    **/
-  CbmMvdPoint(Int_t trackId,
-              Int_t pdgCode,
-              Int_t detId,
-              TVector3 posIn,
-              TVector3 posOut,
-              TVector3 momIn,
-              TVector3 momOut,
-              Double_t tof,
-              Double_t length,
-              Double_t eLoss,
-              Int_t frame = 0);
+  CbmMvdPoint(Int_t trackId, Int_t pdgCode, Int_t detId, TVector3 posIn, TVector3 posOut, TVector3 momIn,
+              TVector3 momOut, Double_t tof, Double_t length, Double_t eLoss, Int_t frame = 0);
 
 
   /** Copy constructor **/
@@ -76,7 +67,8 @@ public:
   Int_t GetPdgCode() const { return fPdgCode; }
   Int_t GetSystemId() const { return SystemId(fDetectorID); }
   Int_t GetStationNr() const { return StationNr(fDetectorID); }
-  Int_t GetPointId() const {
+  Int_t GetPointId() const
+  {
     return fPointId;
   }  // Returns index of this object in its TClonesArray.
      // By default not filled. Used internally in the MvdDigitizer.
@@ -100,10 +92,8 @@ public:
 protected:
   Double32_t fX_out, fY_out, fZ_out;
   Double32_t fPx_out, fPy_out, fPz_out;
-  Int_t
-    fPdgCode;  // index of the object in its TClonesArray. By default not filled => -1.
-  Int_t
-    fPointId;  // index of the object in its TClonesArray. By default not filled => -1.
+  Int_t fPdgCode;  // index of the object in its TClonesArray. By default not filled => -1.
+  Int_t fPointId;  // index of the object in its TClonesArray. By default not filled => -1.
   Int_t fFrame;
   Double_t fStartTime;
 
@@ -111,14 +101,16 @@ protected:
 };
 
 
-inline void CbmMvdPoint::SetPositionOut(TVector3 pos) {
+inline void CbmMvdPoint::SetPositionOut(TVector3 pos)
+{
   fX_out = pos.X();
   fY_out = pos.Y();
   fZ_out = pos.Z();
 }
 
 
-inline void CbmMvdPoint::SetMomentumOut(TVector3 mom) {
+inline void CbmMvdPoint::SetMomentumOut(TVector3 mom)
+{
   fPx_out = mom.Px();
   fPy_out = mom.Py();
   fPz_out = mom.Pz();

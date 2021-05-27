@@ -25,10 +25,10 @@
 #ifndef CBMMAGFIELDMAPSYM2_H
 #define CBMMAGFIELDMAPSYM2_H 1
 
+#include "CbmFieldMap.h"  // for CbmFieldMap
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
-
-#include "CbmFieldMap.h"  // for CbmFieldMap
 
 class CbmFieldPar;
 
@@ -70,15 +70,8 @@ public:
    ** @param dx,dy,dz (return)  Distance from grid point [cm] if inside
    ** @value kTRUE if inside map, else kFALSE
    **/
-  virtual Bool_t IsInside(Double_t x,
-                          Double_t y,
-                          Double_t z,
-                          Int_t& ix,
-                          Int_t& iy,
-                          Int_t& iz,
-                          Double_t& dx,
-                          Double_t& dy,
-                          Double_t& dz);
+  virtual Bool_t IsInside(Double_t x, Double_t y, Double_t z, Int_t& ix, Int_t& iy, Int_t& iz, Double_t& dx,
+                          Double_t& dy, Double_t& dz);
 
 
 protected:

@@ -1,4 +1,5 @@
-void eff_draw(char* fileName = "la.ef.root") {
+void eff_draw(char* fileName = "la.ef.root")
+{
   gROOT->LoadMacro("$VMCWORKDIR/analysis/hyperon/hyperon_style.C");
   hyperon_style();
   gSystem->mkdir("eps");
@@ -9,10 +10,8 @@ void eff_draw(char* fileName = "la.ef.root") {
   printf("AC: %i\n", hAC->GetEntries());
   printf("RC: %i\n", hRC->GetEntries());
 
-  TH2D* hAccYPt =
-    new TH2D("hAccYPt", ";Rapidity;p_t [GeV/c]", 20, 0, 4, 20, 0, 2);
-  TH2D* hRcEffYPt =
-    new TH2D("hRcEffYPt", ";Rapidity;p_t [GeV/c]", 20, 0, 4, 20, 0, 2);
+  TH2D* hAccYPt   = new TH2D("hAccYPt", ";Rapidity;p_t [GeV/c]", 20, 0, 4, 20, 0, 2);
+  TH2D* hRcEffYPt = new TH2D("hRcEffYPt", ";Rapidity;p_t [GeV/c]", 20, 0, 4, 20, 0, 2);
   hAccYPt->Divide(hAC, hMC);
   hRcEffYPt->Divide(hRC, hAC);
   hAccYPt->Write();

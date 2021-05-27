@@ -19,9 +19,12 @@
 //CBM class headers
 #include "CbmMCTrack.h"
 #include "CbmStack.h"
+
 #include "PairAnalysisHelper.h"
 
 //ROOT class headers
+#include "CbmFastSim.h"
+
 #include <TClonesArray.h>
 #include <TDatabasePDG.h>
 #include <TF1.h>
@@ -42,9 +45,6 @@
 #include <TVirtualMC.h>
 
 
-#include "CbmFastSim.h"
-
-
 using std::cout;
 using std::endl;
 using std::ifstream;
@@ -55,7 +55,8 @@ using std::string;
 CbmFastSim::CbmFastSim(bool persist)
   : FairTask("Cbm Fast Simulation")
   , fRand(new TRandom3(0))
-  , fdbPdg(TDatabasePDG::Instance()) {
+  , fdbPdg(TDatabasePDG::Instance())
+{
   ///
   /// default constructor
   ///
@@ -71,7 +72,8 @@ CbmFastSim::CbmFastSim(bool persist)
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmFastSim::~CbmFastSim() {
+CbmFastSim::~CbmFastSim()
+{
   ///
   /// destructor
   ///
@@ -87,13 +89,13 @@ CbmFastSim::~CbmFastSim() {
 // -------------------------------------------------------------------------
 
 
-void CbmFastSim::Register() {
+void CbmFastSim::Register()
+{
   ///
   /// register output
   ///
   fFastTracks = new TClonesArray("TParticle");
-  FairRootManager::Instance()->Register(
-    "FastTrack", "FastSim", fFastTracks, kTRUE);
+  FairRootManager::Instance()->Register("FastTrack", "FastSim", fFastTracks, kTRUE);
 }
 
 
@@ -101,16 +103,14 @@ void CbmFastSim::Register() {
 void CbmFastSim::InitTask() { Init(); }
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmFastSim::Init() {
+InitStatus CbmFastSim::Init()
+{
 
   /// loop over all particle species
   for (Int_t idx = 0; idx < fgkNParts; idx++) {  ///TODO: include muons
 
     if (fEFF[idx] && fEFFdenom[idx]) {
-      Info("Init",
-           "Prepare efficiency map and projections for index %d and method %d",
-           idx,
-           fMethod);
+      Info("Init", "Prepare efficiency map and projections for index %d and method %d", idx, fMethod);
       //      fEFF[idx]->Print("a");
 
       // first get projections and calculate integrated effiencies
@@ -139,9 +139,7 @@ InitStatus CbmFastSim::Init() {
 
             // factoring using last dimension!=1 histograms
             if (fMethod == kFactorize && j > 0)
-              fEFFproj[idx][j]->Scale(1.
-                                      / fEFFproj[idx][j]->GetBinContent(
-                                        fEFFproj[idx][j]->GetMaximumBin()));
+              fEFFproj[idx][j]->Scale(1. / fEFFproj[idx][j]->GetBinContent(fEFFproj[idx][j]->GetMaximumBin()));
 
             if (den) delete den;
           } break;
@@ -181,7 +179,8 @@ InitStatus CbmFastSim::Init() {
   return kSUCCESS;
 }
 
-void CbmFastSim::SetParContainers() {
+void CbmFastSim::SetParContainers()
+{
 
   // Get run and runtime database
   FairRun* run = FairRun::Instance();
@@ -192,7 +191,8 @@ void CbmFastSim::SetParContainers() {
 }
 // -------------------------------------------------------------------------
 
-void CbmFastSim::SetSeed(unsigned int seed) {
+void CbmFastSim::SetSeed(unsigned int seed)
+{
   ///
   /// set random seed by hand
   ///
@@ -200,7 +200,8 @@ void CbmFastSim::SetSeed(unsigned int seed) {
 }
 
 // -----   Public method Finish   --------------------------------------------
-void CbmFastSim::Finish() {
+void CbmFastSim::Finish()
+{
   ///
   /// finish
   ///
@@ -208,7 +209,8 @@ void CbmFastSim::Finish() {
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmFastSim::Exec(Option_t* opt) {
+void CbmFastSim::Exec(Option_t* opt)
+{
   ///
   /// exec, executed once per event
   ///
@@ -256,7 +258,8 @@ void CbmFastSim::Exec(Option_t* opt) {
         && fStack->GetParticle(t->GetMother(0))->GetPdgCode() == 22) {
       if (!PassEfficiencyFilter(22, vals, coord)) continue;
       iConv++;
-    } else {
+    }
+    else {
       if (!PassEfficiencyFilter(pdg, vals, coord)) continue;
     }
 
@@ -273,20 +276,8 @@ void CbmFastSim::Exec(Option_t* opt) {
 
     /// Add smeared track to output tree
     /// IMPORTANT NOTE: set MC index as FirstMother
-    new ((*fFastTracks)[iKeep]) TParticle(pdg,
-                                          t->GetStatusCode(),
-                                          iTrack,
-                                          0,
-                                          0,
-                                          0,
-                                          p4.Px(),
-                                          p4.Py(),
-                                          p4.Pz(),
-                                          p4.Energy(),
-                                          t->Vx(),
-                                          t->Vy(),
-                                          t->Vz(),
-                                          0);
+    new ((*fFastTracks)[iKeep]) TParticle(pdg, t->GetStatusCode(), iTrack, 0, 0, 0, p4.Px(), p4.Py(), p4.Pz(),
+                                          p4.Energy(), t->Vx(), t->Vy(), t->Vz(), 0);
 
     iKeep++;
 
@@ -301,8 +292,8 @@ void CbmFastSim::Exec(Option_t* opt) {
   Info("Exec", "kept converison tracks: \t %d \n", iConv);
 }
 
-Bool_t
-CbmFastSim::PassEfficiencyFilter(Int_t pdg, Double_t* vals, Int_t* coord) {
+Bool_t CbmFastSim::PassEfficiencyFilter(Int_t pdg, Double_t* vals, Int_t* coord)
+{
   //
   // check if partilce passed the reconstruction cuts
   //
@@ -334,8 +325,7 @@ CbmFastSim::PassEfficiencyFilter(Int_t pdg, Double_t* vals, Int_t* coord) {
   Double_t eff = 0.0;
   Double_t err = 0.0;
   if (bin > 0) {
-    eff =
-      fEFF[idx]->GetBinContent(bin, coord);  // write bin coordinates into coord
+    eff = fEFF[idx]->GetBinContent(bin, coord);  // write bin coordinates into coord
 
     /// check statistical fluctuations
     if (fMethod != kIgnoreFluct) {
@@ -356,13 +346,13 @@ CbmFastSim::PassEfficiencyFilter(Int_t pdg, Double_t* vals, Int_t* coord) {
 
   Double_t rndm = fRand->Rndm();
 
-  if (rndm > eff)
-    return kFALSE;
+  if (rndm > eff) return kFALSE;
   else
     return kTRUE;
 }
 
-Bool_t CbmFastSim::Smearing(TLorentzVector* p4, Int_t pdg) {
+Bool_t CbmFastSim::Smearing(TLorentzVector* p4, Int_t pdg)
+{
   ///
   /// smear the momentum components of the tlorentzvector
   /// according to a TH2 disttributions
@@ -406,7 +396,8 @@ Bool_t CbmFastSim::Smearing(TLorentzVector* p4, Int_t pdg) {
   return kTRUE;
 }
 
-Double_t CbmFastSim::AnalyzeMap(TH2F* map, Double_t refValue) {
+Double_t CbmFastSim::AnalyzeMap(TH2F* map, Double_t refValue)
+{
   ///
   /// smear the refValue
   /// according to a TH2 map
@@ -426,24 +417,20 @@ Double_t CbmFastSim::AnalyzeMap(TH2F* map, Double_t refValue) {
   /// by this electrons are handled without bremsstrahlung (TODO: add crystal ball smearing)
   /// NOTE: in general this should not happen often, you have to provide smearing maps
   ///       with large momentum ranges
-  if (binGen < 1 || binGen > yGen->GetNbins()) {
-    return (fRand->Gaus(refValue, refValue * 0.02));
-  }
+  if (binGen < 1 || binGen > yGen->GetNbins()) { return (fRand->Gaus(refValue, refValue * 0.02)); }
 
   /// get histogram array and calculate offset
   Float_t* arrayh = map->GetArray();
   Int_t offset    = (yGen->GetNbins() + 2) * (binGen) + 1;
 
   /// get randomly smeared value: y-axis translates into x-axis (generated into reconstructed)
-  Float_t r1 = fRand->Rndm();
-  Int_t binRec =
-    TMath::BinarySearch(xRec->GetNbins() + 2, arrayh + offset - 1, r1);
+  Float_t r1   = fRand->Rndm();
+  Int_t binRec = TMath::BinarySearch(xRec->GetNbins() + 2, arrayh + offset - 1, r1);
 
   Double_t smearedValue = xRec->GetBinLowEdge(binRec + 1);
   if (r1 > arrayh[offset - 1 + binRec])
-    smearedValue +=
-      xRec->GetBinWidth(binRec + 1) * (r1 - arrayh[offset - 1 + binRec])
-      / (arrayh[offset - 1 + binRec + 1] - arrayh[offset - 1 + binRec]);
+    smearedValue += xRec->GetBinWidth(binRec + 1) * (r1 - arrayh[offset - 1 + binRec])
+                    / (arrayh[offset - 1 + binRec + 1] - arrayh[offset - 1 + binRec]);
 
   // printf("binGen: %d, binRec: %d , offset: %d , \t r1: %f \t in: %f --> out: %f \n",
   // 	 binGen,binRec,offset, r1,refValue,smearedValue);
@@ -452,15 +439,13 @@ Double_t CbmFastSim::AnalyzeMap(TH2F* map, Double_t refValue) {
 }
 
 
-void CbmFastSim::SetLookupEfficiency(THnBase* nom,
-                                     THnBase* denom,
-                                     EParticleType part) {
+void CbmFastSim::SetLookupEfficiency(THnBase* nom, THnBase* denom, EParticleType part)
+{
   ///
   /// calculate lookup efficiencies
   ///
 
-  if (!nom || !denom)
-    Fatal("SetLookupEfficiency", "Either nominator or denominator is NULL ");
+  if (!nom || !denom) Fatal("SetLookupEfficiency", "Either nominator or denominator is NULL ");
   fEFF[part]      = nom;
   fEFFdenom[part] = denom;
   /*
@@ -520,7 +505,8 @@ void CbmFastSim::SetLookupEfficiency(THnBase* nom,
   */
 }
 
-Double_t CbmFastSim::GetEfficiency(Int_t idx, Double_t* vals, Int_t* coord) {
+Double_t CbmFastSim::GetEfficiency(Int_t idx, Double_t* vals, Int_t* coord)
+{
   ///
   /// Calculate the efficieny from the integrated projections of the map
   ///
@@ -537,8 +523,7 @@ Double_t CbmFastSim::GetEfficiency(Int_t idx, Double_t* vals, Int_t* coord) {
     if (!fEFFproj[idx][j]) continue;
 
     /// find bin or use coordinates
-    if (coord)
-      eff = fEFFproj[idx][j]->GetBinContent(coord[j]);
+    if (coord) eff = fEFFproj[idx][j]->GetBinContent(coord[j]);
     else
       eff = fEFFproj[idx][j]->GetBinContent(fEFFproj[idx][j]->FindBin(vals[j]));
     //    Info("GetEfficiency","int eff for j:%d and idx:%d and value: %.2e is %.2e!",j,idx,vals[j],eff);
@@ -554,27 +539,24 @@ Double_t CbmFastSim::GetEfficiency(Int_t idx, Double_t* vals, Int_t* coord) {
             if (coord[c] == 0) coord[c] += 2;
             if (coord[c] == 1) coord[c] += 1;
             if (coord[c] == fEFF[idx]->GetAxis(c)->GetNbins()) coord[c] -= 2;
-            if (coord[c] == fEFF[idx]->GetAxis(c)->GetNbins() - 1)
-              coord[c] -= 1;
+            if (coord[c] == fEFF[idx]->GetAxis(c)->GetNbins() - 1) coord[c] -= 1;
           }
-          eff = fEFFproj[idx][j]->Interpolate(
-            fEFFproj[idx][j]->GetXaxis()->GetBinCenter(coord[0]),
-            fEFFproj[idx][j]->GetYaxis()->GetBinCenter(coord[1]),
-            fEFFproj[idx][j]->GetZaxis()->GetBinCenter(coord[2]));
-        } else
+          eff = fEFFproj[idx][j]->Interpolate(fEFFproj[idx][j]->GetXaxis()->GetBinCenter(coord[0]),
+                                              fEFFproj[idx][j]->GetYaxis()->GetBinCenter(coord[1]),
+                                              fEFFproj[idx][j]->GetZaxis()->GetBinCenter(coord[2]));
+        }
+        else
           eff = fEFFproj[idx][j]->Interpolate(vals[0], vals[1], vals[2]);
         return eff;
       } break;
       case kAverage:
       case kLastDim:
-        if (eff < 1.e-10)
-          return 0.;  /// efficiency is 0. for this particle (e.g. outside acceptance)
+        if (eff < 1.e-10) return 0.;  /// efficiency is 0. for this particle (e.g. outside acceptance)
         meanEff += eff;
         ndim++;
         break;
       case kFactorize:
-        if (eff < 1.e-10)
-          return 0.;  /// efficiency is 0. for this particle (e.g. outside acceptance)
+        if (eff < 1.e-10) return 0.;  /// efficiency is 0. for this particle (e.g. outside acceptance)
         meanEff *= eff;
         ndim = 1;  //      ndim++;
         break;
@@ -591,7 +573,8 @@ Double_t CbmFastSim::GetEfficiency(Int_t idx, Double_t* vals, Int_t* coord) {
   return (meanEff / ndim);
 }
 
-Bool_t CbmFastSim::IsSelected(TObject* sel, Int_t opt) {
+Bool_t CbmFastSim::IsSelected(TObject* sel, Int_t opt)
+{
   //
   // check if partilce passed the cuts
   //
@@ -610,8 +593,7 @@ Bool_t CbmFastSim::IsSelected(TObject* sel, Int_t opt) {
     case kPiPlus: idx = CbmFastSim::kPio; break;
     case kKPlus: idx = CbmFastSim::kKao; break;
     case kProton: idx = CbmFastSim::kPro; break;
-    default: /*Warning("IsSelected","Pdg code %d not supported, particle will not be processed",pdg);*/
-      return kFALSE;
+    default: /*Warning("IsSelected","Pdg code %d not supported, particle will not be processed",pdg);*/ return kFALSE;
   }
 
   // Double_t rndm2 = fRand->Rndm();
@@ -644,8 +626,7 @@ Bool_t CbmFastSim::IsSelected(TObject* sel, Int_t opt) {
   Double_t rndm = fRand->Rndm();
 
 
-  if (rndm > eff)
-    return kFALSE;
+  if (rndm > eff) return kFALSE;
   else
     return kTRUE;
 }

@@ -11,20 +11,20 @@
 #ifndef CBMDEVICEUNPACKTOFMCBM2018_H_
 #define CBMDEVICEUNPACKTOFMCBM2018_H_
 
-#include "FairMQDevice.h"
-
-#include "gDpbMessv100.h"
+#include "CbmMcbm2018TofPar.h"
 
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 
+#include "FairMQDevice.h"
+
 #include "Rtypes.h"
 #include "TMessage.h"
 
-#include "CbmMcbm2018TofPar.h"
-
 #include <map>
 #include <vector>
+
+#include "gDpbMessv100.h"
 
 class CbmMcbm2018UnpackerAlgoTof;
 class CbmMcbm2018TofPar;
@@ -61,16 +61,12 @@ private:
   uint64_t fiPulTotMin;
   uint64_t fiPulTotMax;
 
-  std::vector<std::string> fAllowedChannels             = {"tofcomponent",
-                                               "parameters",
-                                               "tofdigis",
-                                               "syscmd"};
+  std::vector<std::string> fAllowedChannels             = {"tofcomponent", "parameters", "tofdigis", "syscmd"};
   std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}, {}};
 
-  size_t fuTotalMsNb; /** Total nb of MS per link in timeslice **/
-  size_t
-    fuOverlapMsNb; /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-  size_t fuCoreMs; /** Number of non overlap MS at beginning of TS **/
+  size_t fuTotalMsNb;   /** Total nb of MS per link in timeslice **/
+  size_t fuOverlapMsNb; /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  size_t fuCoreMs;      /** Number of non overlap MS at beginning of TS **/
   Double_t fdMsSizeInNs;
   Double_t fdTsCoreSizeInNs;
   UInt_t fuMinNbGdpb;
@@ -88,12 +84,9 @@ private:
   const UInt_t kuNbGbtxPerGdpb = 6;
 
   UInt_t fuGdpbId;  // Id (hex number) of the GDPB for current message
-  UInt_t
-    fuGdpbNr;  // running number (0 to fNrOfGdpbs) of the GDPB for current message
-  UInt_t
-    fuGet4Id;  // running number (0 to fNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
-  UInt_t
-    fuGet4Nr;  // running number (0 to fNrOfGet4) of the Get4 chip in the system for current message
+  UInt_t fuGdpbNr;  // running number (0 to fNrOfGdpbs) of the GDPB for current message
+  UInt_t fuGet4Id;  // running number (0 to fNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
+  UInt_t fuGet4Nr;  // running number (0 to fNrOfGet4) of the Get4 chip in the system for current message
 
   std::vector<int> fMsgCounter;
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;
@@ -141,9 +134,7 @@ private:
   //Bool_t fbDetChanThere[64]; // FIXME
   TH2* fhDetChanCoinc;
 
-  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) {
-    return gdpbId * fuNrOfGet4PerGdpb + get4Id;
-  }
+  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) { return gdpbId * fuNrOfGet4PerGdpb + get4Id; }
 
   ///* PADI channel to GET4 channel mapping and reverse *///
   std::vector<UInt_t> fvuPadiToGet4;
@@ -153,13 +144,13 @@ private:
   static const UInt_t kuNbGet4PerGbtx = 5 * 8;  /// 5 FEE with 8 GET4 each
   std::vector<UInt_t> fvuElinkToGet4;
   std::vector<UInt_t> fvuGet4ToElink;
-  inline UInt_t ConvertElinkToGet4(UInt_t uElinkIdx) {
-    return fvuElinkToGet4[uElinkIdx % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uElinkIdx / kuNbGet4PerGbtx);
+  inline UInt_t ConvertElinkToGet4(UInt_t uElinkIdx)
+  {
+    return fvuElinkToGet4[uElinkIdx % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uElinkIdx / kuNbGet4PerGbtx);
   }
-  inline UInt_t ConvertGet4ToElink(UInt_t uGet4Idx) {
-    return fvuGet4ToElink[uGet4Idx % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uGet4Idx / kuNbGet4PerGbtx);
+  inline UInt_t ConvertGet4ToElink(UInt_t uGet4Idx)
+  {
+    return fvuGet4ToElink[uGet4Idx % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uGet4Idx / kuNbGet4PerGbtx);
   }
   std::vector<Int_t> fviRpcType;
   std::vector<Int_t> fviModuleId;
@@ -199,16 +190,13 @@ private:
   // Bool_t fbWriteOutput; //! If ON the output TClonesArray of digi is written to disk
 
   CbmDeviceUnpackTofMcbm2018(const CbmDeviceUnpackTofMcbm2018&) = delete;
-  CbmDeviceUnpackTofMcbm2018
-  operator=(const CbmDeviceUnpackTofMcbm2018&) = delete;
+  CbmDeviceUnpackTofMcbm2018 operator=(const CbmDeviceUnpackTofMcbm2018&) = delete;
 };
 
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICEUNPACKTOFMCBM2018_H_ */

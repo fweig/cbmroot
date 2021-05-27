@@ -6,11 +6,11 @@
 #ifndef CBMMCDATAMANAGER_H
 #define CBMMCDATAMANAGER_H 1
 
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Option_t
 #include <TString.h>     // for TString
-
-#include <FairTask.h>  // for FairTask, InitStatus
 
 #include <list>    // for list
 #include <map>     // for map
@@ -61,9 +61,7 @@ public:
 		 ** @param chainNum1 a number of chain for which AddFriend is called
 		 ** @param chainNum2 number of chain which became a friend
 		 **/
-  void AddFriend(Int_t chainNum1, Int_t chainNum2) {
-    fFriends[chainNum1] = chainNum2;
-  }
+  void AddFriend(Int_t chainNum1, Int_t chainNum2) { fFriends[chainNum1] = chainNum2; }
 
   /** Execution (empty; just to match FairTask structure) **/
   virtual void Exec(Option_t* /*option*/) {};

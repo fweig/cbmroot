@@ -1,4 +1,5 @@
-void pl_calib_trk() {
+void pl_calib_trk()
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -28,7 +29,8 @@ void pl_calib_trk() {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -43,7 +45,8 @@ void pl_calib_trk() {
     TH1D* hTOff = h2->ProjectionY();
     dTOff       = hTOff->GetMean();
     dTRMS       = hTOff->GetRMS();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -55,7 +58,8 @@ void pl_calib_trk() {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -67,7 +71,8 @@ void pl_calib_trk() {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -79,7 +84,8 @@ void pl_calib_trk() {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -91,7 +97,8 @@ void pl_calib_trk() {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -102,7 +109,8 @@ void pl_calib_trk() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -114,7 +122,8 @@ void pl_calib_trk() {
     h1->Draw();
     h1->SetMaximum(1.);
     h1->SetMinimum(-1.);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TString hname = Form("hPullY_Smt_Off");
@@ -122,14 +131,16 @@ void pl_calib_trk() {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else
+  }
+  else
     cout << hname << " not found" << endl;
   TString hname = Form("hPullZ_Smt_Off");
   h1            = (TH1*) gROOT->FindObjectAny(hname);
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(3);
-  } else
+  }
+  else
     cout << hname << " not found" << endl;
 
   can->cd(9);
@@ -144,7 +155,8 @@ void pl_calib_trk() {
   if (h1 != NULL) {
     h1->Draw();
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -156,7 +168,8 @@ void pl_calib_trk() {
     h1->Draw();
     h1->SetMaximum(5.);
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TString hname = Form("hPullY_Smt_Width");
@@ -164,14 +177,16 @@ void pl_calib_trk() {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else
+  }
+  else
     cout << hname << " not found" << endl;
   TString hname = Form("hPullZ_Smt_Width");
   h1            = (TH1*) gROOT->FindObjectAny(hname);
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(3);
-  } else
+  }
+  else
     cout << hname << " not found" << endl;
 
 
@@ -182,15 +197,15 @@ void pl_calib_trk() {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
 
   dTOff       = TMath::Abs(dTOff);
   Int_t iTOff = (Int_t) dTOff * 100000 + (Int_t) dTRMS;
-  cout << " dTOff = " << dTOff << ", dRMS = " << dTRMS
-       << " -> iTOff = " << iTOff << endl;
+  cout << " dTOff = " << dTOff << ", dRMS = " << dTRMS << " -> iTOff = " << iTOff << endl;
 
   gROOT->ProcessLine(Form(".! echo %d  > TCalib.res", iTOff));
 

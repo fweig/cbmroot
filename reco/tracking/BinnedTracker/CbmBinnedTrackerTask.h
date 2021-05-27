@@ -15,7 +15,9 @@
 #define CBMBINNEDTRACKERTASK_H
 
 #include "CbmPixelHit.h"
+
 #include "FairTask.h"
+
 #include "Tracker.h"
 
 class CbmBinnedTrackerTask : public FairTask {
@@ -23,9 +25,7 @@ public:
   static CbmBinnedTrackerTask* Instance() { return fInstance; }
 
 public:
-  CbmBinnedTrackerTask(bool useAllDetectors,
-                       Double_t beamWidthX,
-                       Double_t beamWidthY);
+  CbmBinnedTrackerTask(bool useAllDetectors, Double_t beamWidthX, Double_t beamWidthY);
   CbmBinnedTrackerTask(const CbmBinnedTrackerTask&) = delete;
   CbmBinnedTrackerTask& operator=(const CbmBinnedTrackerTask&) = delete;
   ~CbmBinnedTrackerTask();

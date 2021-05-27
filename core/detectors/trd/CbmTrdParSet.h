@@ -1,12 +1,12 @@
 #ifndef CBMTRDPARSET_H
 #define CBMTRDPARSET_H
 
+#include "FairParGenericSet.h"  // for FairParGenericSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t
 
 #include <map>  // for map
-
-#include "FairParGenericSet.h"  // for FairParGenericSet
 
 class CbmTrdParMod;
 class FairParamList;
@@ -19,8 +19,7 @@ class CbmTrdParMod;
 class CbmTrdParSet : public FairParGenericSet {
 public:
   /** Standard constructor **/
-  CbmTrdParSet(const char* name    = "CbmTrdParSet",
-               const char* title   = "TRD parameters",
+  CbmTrdParSet(const char* name = "CbmTrdParSet", const char* title = "TRD parameters",
                const char* context = "Default");
 
   /** \brief Destructor **/

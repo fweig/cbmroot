@@ -1,5 +1,6 @@
 
-void set_plot_style() {
+void set_plot_style()
+{
   const Int_t NRGBs = 5;
   const Int_t NCont = 255;
 
@@ -12,13 +13,9 @@ void set_plot_style() {
   cout << "set_plot_style finished" << endl;
 }
 
-void pl_cor_walk(Int_t SmT        = 9,
-                 Int_t iSm        = 0,
-                 Int_t iRpc       = 1,
-                 Double_t yRange  = 1.,
-                 Double_t dYShift = 0.1,
-                 Double_t Xmin    = 0.,
-                 Double_t Xmax    = 10.) {
+void pl_cor_walk(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 1, Double_t yRange = 1., Double_t dYShift = 0.1,
+                 Double_t Xmin = 0., Double_t Xmax = 10.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -50,14 +47,14 @@ void pl_cor_walk(Int_t SmT        = 9,
     //  h1->Draw("colz");
     // gPad->SetLogz();
     iNch = h1->GetNbinsX();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
-    TString hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
-    h2 = (TH2*) gDirectory->FindObjectAny(hname);
+    TString hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
+    h2            = (TH2*) gDirectory->FindObjectAny(hname);
     if (h2 != NULL) {
       h2->SetLineColor(iCh + 1);
       if (iCh == 0) {
@@ -65,27 +62,27 @@ void pl_cor_walk(Int_t SmT        = 9,
         h2->SetMinimum(-yRange);
         h2->SetMaximum(yRange + iNch * dYShift);
         h2->GetXaxis()->SetRangeUser(Xmin, Xmax);
-      } else {
+      }
+      else {
         h2C       = (TH2*) h2->Clone();
         Int_t iNB = h2C->GetNbinsX();
         for (Int_t iB = 0; iB < iNB; iB++) {
-          h2C->SetBinContent(iB + 1,
-                             h2C->GetBinContent(iB + 1) + dYShift * iCh);
+          h2C->SetBinContent(iB + 1, h2C->GetBinContent(iB + 1) + dYShift * iCh);
         }
         h2C->Draw("same Lhist");
       }
       //  h2->UseCurrentStyle();
       //  gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
 
   can->cd(2);
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
-    TString hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
-    h2 = (TH2*) gDirectory->FindObjectAny(hname);
+    TString hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
+    h2            = (TH2*) gDirectory->FindObjectAny(hname);
     if (h2 != NULL) {
       h2->SetLineColor(iCh + 1);
       if (iCh == 0) {
@@ -93,17 +90,18 @@ void pl_cor_walk(Int_t SmT        = 9,
         h2->SetMinimum(-yRange);
         h2->SetMaximum(yRange + iNch * dYShift);
         h2->GetXaxis()->SetRangeUser(Xmin, Xmax);
-      } else {
+      }
+      else {
         h2C       = (TH2*) h2->Clone();
         Int_t iNB = h2C->GetNbinsX();
         for (Int_t iB = 0; iB < iNB; iB++) {
-          h2C->SetBinContent(iB + 1,
-                             h2C->GetBinContent(iB + 1) + dYShift * iCh);
+          h2C->SetBinContent(iB + 1, h2C->GetBinContent(iB + 1) + dYShift * iCh);
         }
         h2C->Draw("same Lhist");
       }
       //  gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }

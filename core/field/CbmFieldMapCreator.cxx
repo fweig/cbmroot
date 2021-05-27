@@ -33,7 +33,9 @@ CbmFieldMapCreator::CbmFieldMapCreator()
   , fBy(nullptr)
   , fBz(nullptr)
   , fFieldList()
-  , fInit(kFALSE) {}
+  , fInit(kFALSE)
+{
+}
 // ------------------------------------------------------------------------
 
 
@@ -55,12 +57,14 @@ CbmFieldMapCreator::CbmFieldMapCreator(const char* mapName)
   , fFieldList()
   , fInit(kFALSE)
 
-{}
+{
+}
 // ------------------------------------------------------------------------
 
 
 // ------------   Destructor   --------------------------------------------
-CbmFieldMapCreator::~CbmFieldMapCreator() {
+CbmFieldMapCreator::~CbmFieldMapCreator()
+{
   if (fBx) delete fBx;
   if (fBy) delete fBy;
   if (fBz) delete fBz;
@@ -70,15 +74,9 @@ CbmFieldMapCreator::~CbmFieldMapCreator() {
 
 
 // -------------   Public method SetGridParameters   ----------------------
-void CbmFieldMapCreator::SetGridParameters(Int_t nx,
-                                           Double_t xmin,
-                                           Double_t xmax,
-                                           Int_t ny,
-                                           Double_t ymin,
-                                           Double_t ymax,
-                                           Int_t nz,
-                                           Double_t zmin,
-                                           Double_t zmax) {
+void CbmFieldMapCreator::SetGridParameters(Int_t nx, Double_t xmin, Double_t xmax, Int_t ny, Double_t ymin,
+                                           Double_t ymax, Int_t nz, Double_t zmin, Double_t zmax)
+{
   fNx   = nx;
   fNy   = ny;
   fNz   = nz;
@@ -94,7 +92,8 @@ void CbmFieldMapCreator::SetGridParameters(Int_t nx,
 
 
 // -----------   Public method CreateMap   --------------------------------
-Bool_t CbmFieldMapCreator::CreateMap(const char* fileName) {
+Bool_t CbmFieldMapCreator::CreateMap(const char* fileName)
+{
 
   // Define output file name
   TString outFileName = fileName;
@@ -128,12 +127,9 @@ Bool_t CbmFieldMapCreator::CreateMap(const char* fileName) {
 
   // Control output
   cout.precision(2);
-  cout << "-I- CbmFieldMapCreator: Grid step sizes are " << xStep << ", "
-       << yStep << ", " << zStep << " cm" << endl;
-  cout << "                        Using " << fFieldList.GetSize()
-       << " input fields." << endl;
-  cout << "                        Total number of grid points is "
-       << fNx * fNy * fNz << endl;
+  cout << "-I- CbmFieldMapCreator: Grid step sizes are " << xStep << ", " << yStep << ", " << zStep << " cm" << endl;
+  cout << "                        Using " << fFieldList.GetSize() << " input fields." << endl;
+  cout << "                        Total number of grid points is " << fNx * fNy * fNz << endl;
 
   // Triple loop over grid points
   Double_t x = 0.;
@@ -175,8 +171,7 @@ Bool_t CbmFieldMapCreator::CreateMap(const char* fileName) {
   // Delete new field map
   delete fieldMap;
 
-  cout << "-I- CbmFieldMapCreator: Field map " << fMapName << " was stored in "
-       << outFileName << endl;
+  cout << "-I- CbmFieldMapCreator: Field map " << fMapName << " was stored in " << outFileName << endl;
   return kTRUE;
 }
 // ------------------------------------------------------------------------

@@ -34,15 +34,15 @@ CbmFindGlobalTracks::CbmFindGlobalTracks()
   , fNStsOnly(0)
   , fNTrdOnly(0)
   , fNWithRich(0)
-  , fNWithTof(0) {}
+  , fNWithTof(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmFindGlobalTracks::CbmFindGlobalTracks(CbmTrackMerger* trackMerger,
-                                         CbmRichMerger* richMerger,
-                                         CbmTofMerger* tofMerger,
-                                         Int_t iVerbose)
+CbmFindGlobalTracks::CbmFindGlobalTracks(CbmTrackMerger* trackMerger, CbmRichMerger* richMerger,
+                                         CbmTofMerger* tofMerger, Int_t iVerbose)
   : FairTask("Global Tracker")
   , fTrackMerger(trackMerger)
   , fRichMerger(richMerger)
@@ -57,17 +57,15 @@ CbmFindGlobalTracks::CbmFindGlobalTracks(CbmTrackMerger* trackMerger,
   , fNStsOnly(0)
   , fNTrdOnly(0)
   , fNWithRich(0)
-  , fNWithTof(0) {}
+  , fNWithTof(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Constructor with name and title   -------------------------------
-CbmFindGlobalTracks::CbmFindGlobalTracks(const char* name,
-                                         const char*,
-                                         CbmTrackMerger* trackMerger,
-                                         CbmRichMerger* richMerger,
-                                         CbmTofMerger* tofMerger,
-                                         Int_t iVerbose)
+CbmFindGlobalTracks::CbmFindGlobalTracks(const char* name, const char*, CbmTrackMerger* trackMerger,
+                                         CbmRichMerger* richMerger, CbmTofMerger* tofMerger, Int_t iVerbose)
   : FairTask(name)
   , fTrackMerger(trackMerger)
   , fRichMerger(richMerger)
@@ -82,12 +80,15 @@ CbmFindGlobalTracks::CbmFindGlobalTracks(const char* name,
   , fNStsOnly(0)
   , fNTrdOnly(0)
   , fNWithRich(0)
-  , fNWithTof(0) {}
+  , fNWithTof(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmFindGlobalTracks::~CbmFindGlobalTracks() {
+CbmFindGlobalTracks::~CbmFindGlobalTracks()
+{
   if (fGlobalTracks) {
     fGlobalTracks->Delete();
     delete fGlobalTracks;
@@ -97,7 +98,8 @@ CbmFindGlobalTracks::~CbmFindGlobalTracks() {
 
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmFindGlobalTracks::Init() {
+InitStatus CbmFindGlobalTracks::Init()
+{
 
   // Check for Track merger
   if (!fTrackMerger) {
@@ -106,14 +108,10 @@ InitStatus CbmFindGlobalTracks::Init() {
   }
 
   // Check for Rich merger
-  if (!fRichMerger) {
-    cout << "-W- CbmFindGlobalTracks::Init: No RICH merger selected!" << endl;
-  }
+  if (!fRichMerger) { cout << "-W- CbmFindGlobalTracks::Init: No RICH merger selected!" << endl; }
 
   // Check for Tof merger
-  if (!fTofMerger) {
-    cout << "-W- CbmFindGlobalTracks::Init: No TOF merger selected!" << endl;
-  }
+  if (!fTofMerger) { cout << "-W- CbmFindGlobalTracks::Init: No TOF merger selected!" << endl; }
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -125,34 +123,23 @@ InitStatus CbmFindGlobalTracks::Init() {
 
   // Get StsTrack array
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (!fStsTracks) {
-    cout << "-W- CbmStsFindTracks::Init: No StsTrack array!" << endl;
-  }
+  if (!fStsTracks) { cout << "-W- CbmStsFindTracks::Init: No StsTrack array!" << endl; }
 
   // Get TrdTrack array
   fTrdTracks = (TClonesArray*) ioman->GetObject("TrdTrack");
-  if (!fTrdTracks) {
-    cout << "-W- CbmStsFindTracks::Init: No TrdTrack array!" << endl;
-  }
+  if (!fTrdTracks) { cout << "-W- CbmStsFindTracks::Init: No TrdTrack array!" << endl; }
 
   // Get RichRing array
   fRichRings = (TClonesArray*) ioman->GetObject("RICHRing");
-  if (!fRichRings) {
-    cout << "-W- CbmStsFindTracks::Init: No RichRing array!" << endl;
-  }
+  if (!fRichRings) { cout << "-W- CbmStsFindTracks::Init: No RichRing array!" << endl; }
 
   // Get TofHit array
   fTofHits = (TClonesArray*) ioman->GetObject("TofHit");
-  if (!fTofHits) {
-    cout << "-W- CbmFindGlobalTracks::Init: No TofHit array!" << endl;
-  }
+  if (!fTofHits) { cout << "-W- CbmFindGlobalTracks::Init: No TofHit array!" << endl; }
 
   // Create and register GlobalTrack array
   fGlobalTracks = new TClonesArray("CbmGlobalTrack", 100);
-  ioman->Register("GlobalTrack",
-                  "Global",
-                  fGlobalTracks,
-                  IsOutputBranchPersistent("GlobalTrack"));
+  ioman->Register("GlobalTrack", "Global", fGlobalTracks, IsOutputBranchPersistent("GlobalTrack"));
 
 
   // Set verbosities of mergers
@@ -172,7 +159,8 @@ InitStatus CbmFindGlobalTracks::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmFindGlobalTracks::Exec(Option_t*) {
+void CbmFindGlobalTracks::Exec(Option_t*)
+{
   fGlobalTracks->Clear();
   Int_t nSts  = 0;
   Int_t nTrd  = 0;
@@ -183,12 +171,9 @@ void CbmFindGlobalTracks::Exec(Option_t*) {
   if (fRichRings) nRich = fRichRings->GetEntriesFast();
   //  if ( fTofHits   ) nTof  = fTofHits->GetEntriesFast();
   Int_t nMergedTracks = 0;
-  if (fTrackMerger)
-    nMergedTracks =
-      fTrackMerger->DoMerge(fStsTracks, fTrdTracks, fGlobalTracks);
+  if (fTrackMerger) nMergedTracks = fTrackMerger->DoMerge(fStsTracks, fTrdTracks, fGlobalTracks);
   Int_t nMergedRings = 0;
-  if (fRichMerger)
-    nMergedRings = fRichMerger->DoMerge(fGlobalTracks, fRichRings);
+  if (fRichMerger) nMergedRings = fRichMerger->DoMerge(fGlobalTracks, fRichRings);
   Int_t nMergedTofHits = 0;
   if (fTofMerger) nMergedTofHits = fTofMerger->DoMerge(fGlobalTracks, fTofHits);
   Int_t nAll = fGlobalTracks->GetEntriesFast();
@@ -203,10 +188,10 @@ void CbmFindGlobalTracks::Exec(Option_t*) {
     cout << "RICH rings attached     : " << nMergedRings << endl
          << "TOF hits attached       : " << nMergedTofHits << endl;
     cout << "--------------------------------------------------------" << endl;
-  } else
-    cout << "-I- CbmFindGlobalTracks: " << nAll << " global tracks, "
-         << nMergedTracks << " merged, " << nMergedRings << " with RICH ring, "
-         << nMergedTofHits << " with TOF hit" << endl;
+  }
+  else
+    cout << "-I- CbmFindGlobalTracks: " << nAll << " global tracks, " << nMergedTracks << " merged, " << nMergedRings
+         << " with RICH ring, " << nMergedTofHits << " with TOF hit" << endl;
 }
 // -------------------------------------------------------------------------
 

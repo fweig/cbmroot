@@ -4,17 +4,17 @@
 // ------------------------------------------------------------------
 #include "CbmGlobalTrackFitterKF.h"
 
+#include "CbmGlobalTrack.h"
 #include "CbmKFStsHit.h"
 #include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
-
-#include "CbmGlobalTrack.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
 #include "CbmTofHit.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
 #include "CbmVertex.h"
+
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -43,7 +43,8 @@ CbmGlobalTrackFitterKF::CbmGlobalTrackFitterKF()
   , fArrayStsTrack(NULL)
   , fArrayTrdTrack(NULL)
   , fPrimVertex(NULL)
-  , fKfTrack(NULL) {
+  , fKfTrack(NULL)
+{
   // Default constructor
 
   fKfTrack = new CbmKFTrack();
@@ -55,7 +56,8 @@ CbmGlobalTrackFitterKF::CbmGlobalTrackFitterKF()
 
 
 // ------------------------------------------------------------------
-CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF() {
+CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF()
+{
   // Destructor
   delete fKfTrack;
 }
@@ -63,7 +65,8 @@ CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF() {
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterKF::Init() {
+void CbmGlobalTrackFitterKF::Init()
+{
   // Initialisation
 
   // Get pointer to the ROOT I/O manager
@@ -105,9 +108,7 @@ void CbmGlobalTrackFitterKF::Init() {
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
   fPrimVertex = dynamic_cast<CbmVertex*>(rootMgr->GetObject("PrimaryVertex."));
-  if (nullptr == fPrimVertex) {
-    fPrimVertex = dynamic_cast<CbmVertex*>(rootMgr->GetObject("PrimaryVertex"));
-  }
+  if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(rootMgr->GetObject("PrimaryVertex")); }
   if (nullptr == fPrimVertex) {
     cout << "-W- CbmGlobalTrackFitterKF::Init : "
          << "no Primary Vertex!" << endl;
@@ -117,10 +118,11 @@ void CbmGlobalTrackFitterKF::Init() {
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack) {
+void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
+{
   // Implementation of the fitting algorithm
-  if (NULL == glbTrack || NULL == fArrayStsTrack || NULL == fArrayTrdTrack
-      || NULL == fArrayStsHit || NULL == fArrayTrdHit || NULL == fPrimVertex)
+  if (NULL == glbTrack || NULL == fArrayStsTrack || NULL == fArrayTrdTrack || NULL == fArrayStsHit
+      || NULL == fArrayTrdHit || NULL == fPrimVertex)
     return;
 
 
@@ -189,9 +191,8 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack) {
     y_new = fKfTrack->GetTrack()[1];
     z_new = z;
 
-    length += TMath::Sqrt(TMath::Power(x_new - x_old, 2)
-                          + TMath::Power(y_new - y_old, 2)
-                          + TMath::Power(z_new - z_old, 2));
+    length +=
+      TMath::Sqrt(TMath::Power(x_new - x_old, 2) + TMath::Power(y_new - y_old, 2) + TMath::Power(z_new - z_old, 2));
     x_old = x_new;
     y_old = y_new;
     z_old = z_new;
@@ -208,14 +209,14 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack) {
     if (trdHit->GetDx() > trdHit->GetDy()) {
       x_new = fKfTrack->GetTrack()[0];
       y_new = trdHit->GetY();
-    } else {
+    }
+    else {
       x_new = trdHit->GetX();
       y_new = fKfTrack->GetTrack()[1];
     }
     z_new = z;
-    length += TMath::Sqrt(TMath::Power(x_new - x_old, 2)
-                          + TMath::Power(y_new - y_old, 2)
-                          + TMath::Power(z_new - z_old, 2));
+    length +=
+      TMath::Sqrt(TMath::Power(x_new - x_old, 2) + TMath::Power(y_new - y_old, 2) + TMath::Power(z_new - z_old, 2));
     x_old = x_new;
     y_old = y_new;
     z_old = z_new;
@@ -229,8 +230,7 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack) {
   y_new             = tofHit->GetY();
   z_new             = tofHit->GetZ();
   length +=
-    TMath::Sqrt(TMath::Power(x_new - x_old, 2) + TMath::Power(y_new - y_old, 2)
-                + TMath::Power(z_new - z_old, 2));
+    TMath::Sqrt(TMath::Power(x_new - x_old, 2) + TMath::Power(y_new - y_old, 2) + TMath::Power(z_new - z_old, 2));
 
 
   glbTrack->SetLength(length);

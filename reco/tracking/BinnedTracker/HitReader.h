@@ -15,11 +15,14 @@
 #define HITREADER_H
 
 #include "CbmPixelHit.h"
-#include "Settings.h"
+
 #include "TClonesArray.h"
+
 #include <map>
 #include <string>
 #include <vector>
+
+#include "Settings.h"
 
 class CbmBinnedStation;
 
@@ -35,14 +38,10 @@ public:
   CbmBinnedHitReader(const CbmBinnedHitReader&) = delete;
   CbmBinnedHitReader& operator=(const CbmBinnedHitReader&) = delete;
   virtual ~CbmBinnedHitReader();
-  virtual void AddStation(CbmBinnedStation* station) {
-    fStations.push_back(station);
-  }
+  virtual void AddStation(CbmBinnedStation* station) { fStations.push_back(station); }
   virtual void Read() = 0;
-  virtual void Handle() {
-  }  // Called optionally and is not implemented by the most of readers.
-  virtual void Finish() {
-  }  // Called optionally and is not implemented by the most of readers.
+  virtual void Handle() {}  // Called optionally and is not implemented by the most of readers.
+  virtual void Finish() {}  // Called optionally and is not implemented by the most of readers.
 
 protected:
   std::vector<CbmBinnedStation*> fStations;

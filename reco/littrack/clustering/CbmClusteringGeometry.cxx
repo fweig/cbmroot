@@ -6,6 +6,7 @@
  */
 
 #include "CbmClusteringGeometry.h"
+
 #include "CbmMCTrack.h"
 #include "CbmMuchAddress.h"
 #include "CbmMuchDigi.h"
@@ -36,16 +37,15 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-CbmClusteringGeometry::CbmClusteringGeometry() : fDetId(), fPadList() {
+CbmClusteringGeometry::CbmClusteringGeometry() : fDetId(), fPadList()
+{
   fNofPads       = 0;
   fNofActivePads = 0;
 }
 
-CbmClusteringGeometry::CbmClusteringGeometry(Int_t nStation,
-                                             Int_t nLayer,
-                                             Bool_t nSide,
-                                             Int_t nModule,
-                                             CbmMuchGeoScheme* scheme) {
+CbmClusteringGeometry::CbmClusteringGeometry(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule,
+                                             CbmMuchGeoScheme* scheme)
+{
   SetMuchModuleGeometryRadialFast(nStation, nLayer, nSide, nModule, scheme);
   //	switch(geoVersion){
   //	case 1:
@@ -67,18 +67,10 @@ CbmClusteringGeometry::CbmClusteringGeometry(Int_t nStation,
 }
 
 //Addition of a single pad
-void CbmClusteringGeometry::CbmClusteringSetPad(Int_t nPad,
-                                                Float_t x,
-                                                Float_t y,
-                                                Float_t dx,
-                                                Float_t dy,
-                                                Double_t phi1,
-                                                Double_t phi2,
-                                                Float_t r1,
-                                                Float_t r2,
-                                                Int_t digiNum,
-                                                UInt_t charge,
-                                                Long64_t chID) {
+void CbmClusteringGeometry::CbmClusteringSetPad(Int_t nPad, Float_t x, Float_t y, Float_t dx, Float_t dy, Double_t phi1,
+                                                Double_t phi2, Float_t r1, Float_t r2, Int_t digiNum, UInt_t charge,
+                                                Long64_t chID)
+{
   fPadList[nPad].fDigiNum  = digiNum;
   fPadList[nPad].fCharge   = charge;
   fPadList[nPad].fX        = x;
@@ -169,41 +161,33 @@ CbmClusteringGeometry::~CbmClusteringGeometry() { delete[] fPadList; }
 	}
 }*/
 
-void CbmClusteringGeometry::SetMuchModuleGeometryRadial(
-  Int_t nStation,
-  Int_t nLayer,
-  Bool_t nSide,
-  Int_t nModule,
-  CbmMuchGeoScheme* scheme) {
-  CbmMuchModuleGemRadial* module = (CbmMuchModuleGemRadial*) scheme->GetModule(
-    nStation, nLayer, nSide, nModule);
-  fNofPads          = module->GetNPads();
-  fDetId            = module->GetDetectorId();
-  fPadList          = new PadInformation[fNofPads];
-  fNofActivePads    = 0;
-  Int_t nofSectors  = module->GetNSectors();
-  Int_t padIterator = 0;
+void CbmClusteringGeometry::SetMuchModuleGeometryRadial(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule,
+                                                        CbmMuchGeoScheme* scheme)
+{
+  CbmMuchModuleGemRadial* module = (CbmMuchModuleGemRadial*) scheme->GetModule(nStation, nLayer, nSide, nModule);
+  fNofPads                       = module->GetNPads();
+  fDetId                         = module->GetDetectorId();
+  fPadList                       = new PadInformation[fNofPads];
+  fNofActivePads                 = 0;
+  Int_t nofSectors               = module->GetNSectors();
+  Int_t padIterator              = 0;
   for (Int_t iSector = 0; iSector < nofSectors; iSector++) {
-    CbmMuchSectorRadial* sector =
-      (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
-    Int_t nofPadsInSector = sector->GetNChannels();
+    CbmMuchSectorRadial* sector = (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
+    Int_t nofPadsInSector       = sector->GetNChannels();
     for (Int_t iPad = 0; iPad < nofPadsInSector; iPad++) {
-      CbmMuchPadRadial* pad =
-        (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
+      CbmMuchPadRadial* pad          = (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
       fPadList[padIterator].fDigiNum = 0;
       fPadList[padIterator].fCharge  = 0;
       fPadList[padIterator].fPhi1    = pad->GetPhi1();
       fPadList[padIterator].fPhi2    = pad->GetPhi2();
       fPadList[padIterator].fR1      = pad->GetR1();
       fPadList[padIterator].fR2      = pad->GetR2();
-      Float_t r = (fPadList[padIterator].fR1 + fPadList[padIterator].fR2) / 2;
-      Double_t phi =
-        (fPadList[padIterator].fPhi1 + fPadList[padIterator].fPhi2) / 2;
-      fPadList[padIterator].fX = r * cos(phi);
-      fPadList[padIterator].fY = r * sin(phi);
+      Float_t r                      = (fPadList[padIterator].fR1 + fPadList[padIterator].fR2) / 2;
+      Double_t phi                   = (fPadList[padIterator].fPhi1 + fPadList[padIterator].fPhi2) / 2;
+      fPadList[padIterator].fX       = r * cos(phi);
+      fPadList[padIterator].fY       = r * sin(phi);
       fPadList[padIterator].fNeighbors.clear();
-      fPadList[padIterator].channelID =
-        CbmMuchAddress::GetElementAddress(pad->GetAddress(), kMuchChannel);
+      fPadList[padIterator].channelID    = CbmMuchAddress::GetElementAddress(pad->GetAddress(), kMuchChannel);
       fPadByChannelId[pad->GetAddress()] = padIterator;
       fPadList[padIterator].nSector      = iSector;
       padIterator++;
@@ -215,27 +199,20 @@ void CbmClusteringGeometry::SetMuchModuleGeometryRadial(
   for (Int_t iPadMain = 0; iPadMain < fNofPads; iPadMain++) {
     fPadList[iPadMain].fNofNeighbors     = 0;
     fPadList[iPadMain].fNofGoodNeighbors = 0;
-    Double_t Left_1 =
-      GetMin(fPadList[iPadMain].fPhi1, fPadList[iPadMain].fPhi2);
-    Double_t Right_1 =
-      GetMax(fPadList[iPadMain].fPhi1, fPadList[iPadMain].fPhi2);
-    Float_t Down_1 = GetMin(fPadList[iPadMain].fR1, fPadList[iPadMain].fR2);
-    Float_t Up_1   = GetMax(fPadList[iPadMain].fR1, fPadList[iPadMain].fR2);
-    Double_t dPhi =
-      fabs(fPadList[iPadMain].fPhi1 - fPadList[iPadMain].fPhi2) * 0.1;
-    Float_t dR    = fabs(fPadList[iPadMain].fR1 - fPadList[iPadMain].fR2) * 0.1;
-    Double_t lPhi = (Left_1 - Right_1) * 0.01;
-    Float_t lR    = (Down_1 - Up_1) * 0.01;
+    Double_t Left_1                      = GetMin(fPadList[iPadMain].fPhi1, fPadList[iPadMain].fPhi2);
+    Double_t Right_1                     = GetMax(fPadList[iPadMain].fPhi1, fPadList[iPadMain].fPhi2);
+    Float_t Down_1                       = GetMin(fPadList[iPadMain].fR1, fPadList[iPadMain].fR2);
+    Float_t Up_1                         = GetMax(fPadList[iPadMain].fR1, fPadList[iPadMain].fR2);
+    Double_t dPhi                        = fabs(fPadList[iPadMain].fPhi1 - fPadList[iPadMain].fPhi2) * 0.1;
+    Float_t dR                           = fabs(fPadList[iPadMain].fR1 - fPadList[iPadMain].fR2) * 0.1;
+    Double_t lPhi                        = (Left_1 - Right_1) * 0.01;
+    Float_t lR                           = (Down_1 - Up_1) * 0.01;
     for (Int_t iPadNeighbor = 0; iPadNeighbor < fNofPads; iPadNeighbor++) {
       if (iPadMain == iPadNeighbor) continue;
-      Double_t Left_2 =
-        GetMin(fPadList[iPadNeighbor].fPhi1, fPadList[iPadNeighbor].fPhi2);
-      Double_t Right_2 =
-        GetMax(fPadList[iPadNeighbor].fPhi1, fPadList[iPadNeighbor].fPhi2);
-      Float_t Down_2 =
-        GetMin(fPadList[iPadNeighbor].fR1, fPadList[iPadNeighbor].fR2);
-      Float_t Up_2 =
-        GetMax(fPadList[iPadNeighbor].fR1, fPadList[iPadNeighbor].fR2);
+      Double_t Left_2  = GetMin(fPadList[iPadNeighbor].fPhi1, fPadList[iPadNeighbor].fPhi2);
+      Double_t Right_2 = GetMax(fPadList[iPadNeighbor].fPhi1, fPadList[iPadNeighbor].fPhi2);
+      Float_t Down_2   = GetMin(fPadList[iPadNeighbor].fR1, fPadList[iPadNeighbor].fR2);
+      Float_t Up_2     = GetMax(fPadList[iPadNeighbor].fR1, fPadList[iPadNeighbor].fR2);
       if ((Left_1 == Right_2) || (Right_1 == Left_2)) {
         if (((Down_1 - lR) < Up_2) && ((Up_1 + lR) > Down_2)) {
           fPadList[iPadMain].fNeighbors.push_back(iPadNeighbor);
@@ -249,15 +226,12 @@ void CbmClusteringGeometry::SetMuchModuleGeometryRadial(
         }
       }
       fPadList[iPadMain].fNofNeighbors = fPadList[iPadMain].fNofGoodNeighbors;
-      if (((Left_1 == Right_2) && (Up_1 == Down_2))
-          || ((Left_1 == Right_2) && (Up_2 == Down_1))
-          || ((Left_2 == Right_1) && (Up_1 == Down_2))
-          || ((Left_2 == Right_1) && (Up_2 == Down_1))) {
+      if (((Left_1 == Right_2) && (Up_1 == Down_2)) || ((Left_1 == Right_2) && (Up_2 == Down_1))
+          || ((Left_2 == Right_1) && (Up_1 == Down_2)) || ((Left_2 == Right_1) && (Up_2 == Down_1))) {
         diagonalNeighbors.push_back(iPadNeighbor);
       }
     }
-    for (Int_t iNeighbor = 0; iNeighbor < diagonalNeighbors.size();
-         iNeighbor++) {
+    for (Int_t iNeighbor = 0; iNeighbor < diagonalNeighbors.size(); iNeighbor++) {
       fPadList[iPadMain].fNeighbors.push_back(diagonalNeighbors[iNeighbor]);
       fPadList[iPadMain].fNofNeighbors++;
     }
@@ -265,45 +239,37 @@ void CbmClusteringGeometry::SetMuchModuleGeometryRadial(
   }
 }
 
-void CbmClusteringGeometry::SetMuchModuleGeometryRadialFast(
-  Int_t nStation,
-  Int_t nLayer,
-  Bool_t nSide,
-  Int_t nModule,
-  CbmMuchGeoScheme* scheme) {
-  CbmMuchModuleGemRadial* module = (CbmMuchModuleGemRadial*) scheme->GetModule(
-    nStation, nLayer, nSide, nModule);
-  fNofPads          = module->GetNPads();
-  fDetId            = module->GetDetectorId();
-  fPadList          = new PadInformation[fNofPads];
-  fNofActivePads    = 0;
-  Int_t nofSectors  = module->GetNSectors();
-  Int_t padIterator = 0;
+void CbmClusteringGeometry::SetMuchModuleGeometryRadialFast(Int_t nStation, Int_t nLayer, Bool_t nSide, Int_t nModule,
+                                                            CbmMuchGeoScheme* scheme)
+{
+  CbmMuchModuleGemRadial* module = (CbmMuchModuleGemRadial*) scheme->GetModule(nStation, nLayer, nSide, nModule);
+  fNofPads                       = module->GetNPads();
+  fDetId                         = module->GetDetectorId();
+  fPadList                       = new PadInformation[fNofPads];
+  fNofActivePads                 = 0;
+  Int_t nofSectors               = module->GetNSectors();
+  Int_t padIterator              = 0;
   for (Int_t iSector = 0; iSector < nofSectors; iSector++) {
-    CbmMuchSectorRadial* sector =
-      (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
-    Int_t nofPadsInSector = sector->GetNChannels();
+    CbmMuchSectorRadial* sector = (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
+    Int_t nofPadsInSector       = sector->GetNChannels();
     for (Int_t iPad = 0; iPad < nofPadsInSector; iPad++) {
-      CbmMuchPadRadial* pad =
-        (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
+      CbmMuchPadRadial* pad          = (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
       fPadList[padIterator].fDigiNum = 0;
       fPadList[padIterator].fCharge  = 0;
       fPadList[padIterator].fPhi1    = pad->GetPhi1();
       fPadList[padIterator].fPhi2    = pad->GetPhi2();
       fPadList[padIterator].fR1      = pad->GetR1();
       fPadList[padIterator].fR2      = pad->GetR2();
-      Float_t r = (fPadList[padIterator].fR1 + fPadList[padIterator].fR2) / 2;
-      Double_t phi =
-        (fPadList[padIterator].fPhi1 + fPadList[padIterator].fPhi2) / 2;
-      fPadList[padIterator].fX = r * cos(phi);
-      fPadList[padIterator].fY = r * sin(phi);
+      Float_t r                      = (fPadList[padIterator].fR1 + fPadList[padIterator].fR2) / 2;
+      Double_t phi                   = (fPadList[padIterator].fPhi1 + fPadList[padIterator].fPhi2) / 2;
+      fPadList[padIterator].fX       = r * cos(phi);
+      fPadList[padIterator].fY       = r * sin(phi);
       fPadList[padIterator].fNeighbors.clear();
       fPadList[padIterator].fNofNeighbors     = 0;
       fPadList[padIterator].fNofGoodNeighbors = 0;
-      fPadList[padIterator].channelID =
-        CbmMuchAddress::GetElementAddress(pad->GetAddress(), kMuchChannel);
-      fPadByChannelId[pad->GetAddress()] = padIterator;
-      fPadList[padIterator].nSector      = iSector;
+      fPadList[padIterator].channelID         = CbmMuchAddress::GetElementAddress(pad->GetAddress(), kMuchChannel);
+      fPadByChannelId[pad->GetAddress()]      = padIterator;
+      fPadList[padIterator].nSector           = iSector;
       padIterator++;
     }
   }
@@ -311,49 +277,33 @@ void CbmClusteringGeometry::SetMuchModuleGeometryRadialFast(
   vector<UInt_t> diagonalNeighbors;
   diagonalNeighbors.clear();
   for (Int_t iSector = 0; iSector < nofSectors; iSector++) {
-    CbmMuchSectorRadial* sector =
-      (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
-    Int_t nofPadsInSector = sector->GetNChannels();
+    CbmMuchSectorRadial* sector = (CbmMuchSectorRadial*) module->GetSectorByIndex(iSector);
+    Int_t nofPadsInSector       = sector->GetNChannels();
     for (Int_t iPad = 0; iPad < nofPadsInSector; iPad++) {
-      Double_t dPhi = fabs(fPadList[iPad].fPhi1 - fPadList[iPad].fPhi2) * 0.1;
-      Float_t dR    = fabs(fPadList[iPad].fR1 - fPadList[iPad].fR2) * 0.1;
-      CbmMuchPadRadial* pad =
-        (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
+      Double_t dPhi                       = fabs(fPadList[iPad].fPhi1 - fPadList[iPad].fPhi2) * 0.1;
+      Float_t dR                          = fabs(fPadList[iPad].fR1 - fPadList[iPad].fR2) * 0.1;
+      CbmMuchPadRadial* pad               = (CbmMuchPadRadial*) sector->GetPadByChannelIndex(iPad);
       vector<CbmMuchPad*> neighborsVector = pad->GetNeighbours();
-      for (Int_t iNeighbor = 0; iNeighbor < neighborsVector.size();
-           iNeighbor++) {
-        Int_t padNeighbor =
-          fPadByChannelId[neighborsVector.at(iNeighbor)->GetAddress()];
-        if ((SubEqual(
-               fPadList[padIterator].fPhi1, fPadList[padNeighbor].fPhi2, dPhi)
-             && SubEqual(
-               fPadList[padIterator].fR1, fPadList[padNeighbor].fR2, dR))
-            || (SubEqual(fPadList[padIterator].fPhi1,
-                         fPadList[padNeighbor].fPhi2,
-                         dPhi)
-                && SubEqual(
-                  fPadList[padIterator].fR2, fPadList[padNeighbor].fR1, dR))
-            || (SubEqual(fPadList[padIterator].fPhi2,
-                         fPadList[padNeighbor].fPhi1,
-                         dPhi)
-                && SubEqual(
-                  fPadList[padIterator].fR1, fPadList[padNeighbor].fR2, dR))
-            || (SubEqual(fPadList[padIterator].fPhi2,
-                         fPadList[padNeighbor].fPhi1,
-                         dPhi)
-                && SubEqual(
-                  fPadList[padIterator].fR2, fPadList[padNeighbor].fR1, dR))) {
+      for (Int_t iNeighbor = 0; iNeighbor < neighborsVector.size(); iNeighbor++) {
+        Int_t padNeighbor = fPadByChannelId[neighborsVector.at(iNeighbor)->GetAddress()];
+        if ((SubEqual(fPadList[padIterator].fPhi1, fPadList[padNeighbor].fPhi2, dPhi)
+             && SubEqual(fPadList[padIterator].fR1, fPadList[padNeighbor].fR2, dR))
+            || (SubEqual(fPadList[padIterator].fPhi1, fPadList[padNeighbor].fPhi2, dPhi)
+                && SubEqual(fPadList[padIterator].fR2, fPadList[padNeighbor].fR1, dR))
+            || (SubEqual(fPadList[padIterator].fPhi2, fPadList[padNeighbor].fPhi1, dPhi)
+                && SubEqual(fPadList[padIterator].fR1, fPadList[padNeighbor].fR2, dR))
+            || (SubEqual(fPadList[padIterator].fPhi2, fPadList[padNeighbor].fPhi1, dPhi)
+                && SubEqual(fPadList[padIterator].fR2, fPadList[padNeighbor].fR1, dR))) {
           diagonalNeighbors.push_back(padNeighbor);
-        } else {
+        }
+        else {
           fPadList[padIterator].fNeighbors.push_back(padNeighbor);
           fPadList[padIterator].fNofGoodNeighbors++;
           fPadList[padIterator].fNofNeighbors++;
         }
       }
-      for (Int_t iNeighbor = 0; iNeighbor < diagonalNeighbors.size();
-           iNeighbor++) {
-        fPadList[padIterator].fNeighbors.push_back(
-          diagonalNeighbors.at(iNeighbor));
+      for (Int_t iNeighbor = 0; iNeighbor < diagonalNeighbors.size(); iNeighbor++) {
+        fPadList[padIterator].fNeighbors.push_back(diagonalNeighbors.at(iNeighbor));
         fPadList[padIterator].fNofNeighbors++;
       }
       diagonalNeighbors.clear();
@@ -370,89 +320,63 @@ Float_t CbmClusteringGeometry::GetDy(Int_t iPad) { return fPadList[iPad].fDy; }
 
 Float_t CbmClusteringGeometry::GetY0(Int_t iPad) { return fPadList[iPad].fY; }
 
-Int_t CbmClusteringGeometry::GetDigiNum(Int_t iPad) {
-  return fPadList[iPad].fDigiNum;
-}
+Int_t CbmClusteringGeometry::GetDigiNum(Int_t iPad) { return fPadList[iPad].fDigiNum; }
 
-void CbmClusteringGeometry::SetDigiNum(Int_t iPad, Int_t iDigi) {
-  fPadList[iPad].fDigiNum = iDigi;
-}
+void CbmClusteringGeometry::SetDigiNum(Int_t iPad, Int_t iDigi) { fPadList[iPad].fDigiNum = iDigi; }
 
-Int_t CbmClusteringGeometry::GetNeighborsNum(Int_t iPad) {
-  return fPadList[iPad].fNofNeighbors;
-}
+Int_t CbmClusteringGeometry::GetNeighborsNum(Int_t iPad) { return fPadList[iPad].fNofNeighbors; }
 
-Int_t CbmClusteringGeometry::GetGoodNeighborsNum(Int_t iPad) {
-  return fPadList[iPad].fNofGoodNeighbors;
-}
+Int_t CbmClusteringGeometry::GetGoodNeighborsNum(Int_t iPad) { return fPadList[iPad].fNofGoodNeighbors; }
 
-Int_t CbmClusteringGeometry::GetNeighbor(Int_t iPad, Int_t iNeighbor) {
-  return fPadList[iPad].fNeighbors[iNeighbor];
-}
+Int_t CbmClusteringGeometry::GetNeighbor(Int_t iPad, Int_t iNeighbor) { return fPadList[iPad].fNeighbors[iNeighbor]; }
 
-Long64_t CbmClusteringGeometry::GetPadID(Int_t iPad) {
-  return fPadList[iPad].channelID;
-}
+Long64_t CbmClusteringGeometry::GetPadID(Int_t iPad) { return fPadList[iPad].channelID; }
 
-UInt_t CbmClusteringGeometry::GetPadCharge(Int_t iPad) {
-  return fPadList[iPad].fCharge;
-}
+UInt_t CbmClusteringGeometry::GetPadCharge(Int_t iPad) { return fPadList[iPad].fCharge; }
 
-void CbmClusteringGeometry::SetPadCharge(Int_t iPad, UInt_t iCharge) {
-  fPadList[iPad].fCharge = iCharge;
-}
+void CbmClusteringGeometry::SetPadCharge(Int_t iPad, UInt_t iCharge) { fPadList[iPad].fCharge = iCharge; }
 
 void CbmClusteringGeometry::SetAPadsNom(Int_t nPads) { fNofActivePads = nPads; }
 
 void CbmClusteringGeometry::SetAPadsPlusOne() { fNofActivePads++; }
 
 template<typename T1>
-T1 CbmClusteringGeometry::GetMin(T1& a, T1& b) {
-  if (a > b) {
-    return b;
-  } else {
+T1 CbmClusteringGeometry::GetMin(T1& a, T1& b)
+{
+  if (a > b) { return b; }
+  else {
     return a;
   }
 }
 
 template<typename T2>
-T2 CbmClusteringGeometry::GetMax(T2& a, T2& b) {
-  if (a < b) {
-    return b;
-  } else {
+T2 CbmClusteringGeometry::GetMax(T2& a, T2& b)
+{
+  if (a < b) { return b; }
+  else {
     return a;
   }
 }
 
-Bool_t CbmClusteringGeometry::SubEqual(Double_t x1, Double_t x2, Double_t l) {
+Bool_t CbmClusteringGeometry::SubEqual(Double_t x1, Double_t x2, Double_t l)
+{
   //l = l * 0.1;
-  if ((x1 < (x2 + l)) && (x1 > (x2 - l))) {
-    return 1;
-  } else {
+  if ((x1 < (x2 + l)) && (x1 > (x2 - l))) { return 1; }
+  else {
     return 0;
   }
 }
 
-Int_t CbmClusteringGeometry::GetPadByChannelId(Long64_t chId) {
-  return fPadByChannelId[chId];
-}
+Int_t CbmClusteringGeometry::GetPadByChannelId(Long64_t chId) { return fPadByChannelId[chId]; }
 
-Double_t CbmClusteringGeometry::GetPhi1(Int_t iPad) {
-  return fPadList[iPad].fPhi1;
-}
+Double_t CbmClusteringGeometry::GetPhi1(Int_t iPad) { return fPadList[iPad].fPhi1; }
 
-Double_t CbmClusteringGeometry::GetPhi2(Int_t iPad) {
-  return fPadList[iPad].fPhi2;
-}
+Double_t CbmClusteringGeometry::GetPhi2(Int_t iPad) { return fPadList[iPad].fPhi2; }
 
 Float_t CbmClusteringGeometry::GetR1(Int_t iPad) { return fPadList[iPad].fR1; }
 
 Float_t CbmClusteringGeometry::GetR2(Int_t iPad) { return fPadList[iPad].fR2; }
 
-vector<Int_t> CbmClusteringGeometry::GetNeighbors(Int_t iPad) {
-  return fPadList[iPad].fNeighbors;
-}
+vector<Int_t> CbmClusteringGeometry::GetNeighbors(Int_t iPad) { return fPadList[iPad].fNeighbors; }
 
-Long64_t CbmClusteringGeometry::GetChannelID(Int_t iPad) {
-  return fPadList[iPad].channelID;
-}
+Long64_t CbmClusteringGeometry::GetChannelID(Int_t iPad) { return fPadList[iPad].channelID; }

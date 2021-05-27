@@ -11,7 +11,8 @@
 //
 // --------------------------------------------------------------------------
 
-Int_t runHoughStsTrackFinder(Int_t nEvents = 2) {
+Int_t runHoughStsTrackFinder(Int_t nEvents = 2)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -32,20 +33,16 @@ Int_t runHoughStsTrackFinder(Int_t nEvents = 2) {
   TString trigger = "centr";
 
   // Input file (MC events)
-  TString inFile =
-    inputFolder + "/" + system + "." + beam + "." + trigger + ".mc.root";
+  TString inFile = inputFolder + "/" + system + "." + beam + "." + trigger + ".mc.root";
 
   // Output file
-  TString outFile =
-    outputFolder + "/" + system + "." + beam + "." + trigger + ".reco.root";
+  TString outFile = outputFolder + "/" + system + "." + beam + "." + trigger + ".reco.root";
 
   // Parameter file
-  TString parFile =
-    inputFolder + "/" + system + "." + beam + "." + trigger + ".params.root";
+  TString parFile = inputFolder + "/" + system + "." + beam + "." + trigger + ".params.root";
 
   // Analysis file
-  TString anaFile =
-    outputFolder + "/" + system + "." + beam + "." + trigger + ".ana.root";
+  TString anaFile = outputFolder + "/" + system + "." + beam + "." + trigger + ".ana.root";
 
   // Digitisation file
   TString digiFile = "sts_v13d_std.digi.par";
@@ -111,8 +108,7 @@ Int_t runHoughStsTrackFinder(Int_t nEvents = 2) {
   // ------------------------------------------------------------------------
 
   // ---  STS Track finding   -------------------------------------------------
-  CbmStsFindTracks* findTracks =
-    new CbmStsFindTracks(iVerbose, NULL, kFALSE, "STS Track Finder");
+  CbmStsFindTracks* findTracks = new CbmStsFindTracks(iVerbose, NULL, kFALSE, "STS Track Finder");
   fRun->AddTask(findTracks);
   // ------------------------------------------------------------------------
 

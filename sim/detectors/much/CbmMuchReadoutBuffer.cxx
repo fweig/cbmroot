@@ -18,18 +18,16 @@ CbmMuchReadoutBuffer* CbmMuchReadoutBuffer::fgInstance = NULL;
 //SignalStart time and SignalEnd time is already modified.
 //ADC has to be summed up
 //Matches of two also be joined.
-Int_t CbmMuchReadoutBuffer::Merge(CbmMuchSignal* oldData1,
-                                  CbmMuchSignal* oldData2,
-                                  std::vector<CbmMuchSignal*>& newDataList) {
+Int_t CbmMuchReadoutBuffer::Merge(CbmMuchSignal* oldData1, CbmMuchSignal* oldData2,
+                                  std::vector<CbmMuchSignal*>& newDataList)
+{
 
   //std::cout << "Modify: old data 1 at t = " << oldData1->GetTimeStart()
   //                      << " to " << oldData1->GetTimeStop();
   //std::cout << "Modify: old data 2 at t = " << oldData2->GetTimeStart()
   //                      << " to " << oldData2->GetTimeStop();
-  LOG(debug4) << "Modify: old data 1 at t = " << oldData1->GetTimeStart()
-              << " to " << oldData1->GetTimeStop();
-  LOG(debug4) << "Modify: old data 2 at t = " << oldData2->GetTimeStart()
-              << " to " << oldData2->GetTimeStop();
+  LOG(debug4) << "Modify: old data 1 at t = " << oldData1->GetTimeStart() << " to " << oldData1->GetTimeStop();
+  LOG(debug4) << "Modify: old data 2 at t = " << oldData2->GetTimeStart() << " to " << oldData2->GetTimeStop();
 
   CbmMuchSignal* firstData  = oldData1;
   CbmMuchSignal* secondData = oldData2;
@@ -59,8 +57,7 @@ Int_t CbmMuchReadoutBuffer::Merge(CbmMuchSignal* oldData1,
   //newData->MergeSignal(firstData);
   newData->MergeSignal(secondData);
 
-  Double_t stopTime =
-    std::max(oldData1->GetTimeStop(), oldData2->GetTimeStop());
+  Double_t stopTime = std::max(oldData1->GetTimeStop(), oldData2->GetTimeStop());
   newData->SetTimeStop(stopTime);
 
   //Merge matches of both data, created signal is new therefore contain nothing in the fMatch variable.
@@ -70,8 +67,7 @@ Int_t CbmMuchReadoutBuffer::Merge(CbmMuchSignal* oldData1,
   (newData->GetMatch())->AddLinks(*(secondData->GetMatch()));
 
 
-  LOG(debug4) << "Modify: new data at t = " << newData->GetTimeStart() << " to "
-              << newData->GetTimeStop();
+  LOG(debug4) << "Modify: new data at t = " << newData->GetTimeStart() << " to " << newData->GetTimeStop();
   //Add new data object to the result list
   newDataList.push_back(newData);
 
@@ -79,7 +75,8 @@ Int_t CbmMuchReadoutBuffer::Merge(CbmMuchSignal* oldData1,
 }
 
 // -----   Instance   --------------------------------------------------------
-CbmMuchReadoutBuffer* CbmMuchReadoutBuffer::Instance() {
+CbmMuchReadoutBuffer* CbmMuchReadoutBuffer::Instance()
+{
   if (!fgInstance) fgInstance = new CbmMuchReadoutBuffer();
   return fgInstance;
 }

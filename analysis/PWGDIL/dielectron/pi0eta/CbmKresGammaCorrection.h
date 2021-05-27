@@ -15,11 +15,8 @@ public:
   virtual ~CbmKresGammaCorrection();
 
 
-  void Init(std::vector<std::vector<double>>& vect_all,
-            std::vector<std::vector<double>>& vect_two,
-            std::vector<std::vector<double>>& vect_onetwo,
-            double OA,
-            double IM);
+  void Init(std::vector<std::vector<double>>& vect_all, std::vector<std::vector<double>>& vect_two,
+            std::vector<std::vector<double>>& vect_onetwo, double OA, double IM);
   void Finish();
   void InitHistograms();
 

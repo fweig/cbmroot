@@ -19,7 +19,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_TB(Int_t nEvents = 1) {
+void run_reco_TB(Int_t nEvents = 1)
+{
 
   gStyle->SetNumberContours(99);
   gStyle->SetPalette(1, 0);
@@ -35,10 +36,8 @@ void run_reco_TB(Int_t nEvents = 1) {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 11);
   digipar.ReplaceAll(".ge", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -136,8 +135,7 @@ void run_reco_TB(Int_t nEvents = 1) {
   Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
   // -----   TRD hit producer   ----------------------------------------------
   Double_t triggerThreshold = 0.5e-6;  //SIS100
@@ -234,8 +232,7 @@ void run_reco_TB(Int_t nEvents = 1) {
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-  cout << "Real time " << rtime / 60 << " min, CPU time " << ctime / 60
-       << " min" << endl;
+  cout << "Real time " << rtime / 60 << " min, CPU time " << ctime / 60 << " min" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 

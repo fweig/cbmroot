@@ -19,7 +19,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco(Int_t nEvents = 2) {
+void run_reco(Int_t nEvents = 2)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -33,8 +34,7 @@ void run_reco(Int_t nEvents = 2) {
   //  TString inFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.mc.root";
   // Parameter file
   //  TString parFile = "data/25agev.params.root";
-  TString parFile =
-    "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
+  TString parFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
   //  TString parFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.params.root";
 
   // Output file
@@ -121,8 +121,7 @@ void run_reco(Int_t nEvents = 2) {
 
   /**/
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf =
-    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   run->AddTask(tofDigitizerBdf);
@@ -133,8 +132,7 @@ void run_reco(Int_t nEvents = 2) {
 
   /**/
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder =
-    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
+  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
   /**/
@@ -149,8 +147,7 @@ void run_reco(Int_t nEvents = 2) {
 
   /**/
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder =
-    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
+  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -173,7 +170,7 @@ void run_reco(Int_t nEvents = 2) {
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder);
+  FairTask* stsFindTracks           = new CbmStsFindTracks(iVerbose, stsTrackFinder);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
 
@@ -186,7 +183,7 @@ void run_reco(Int_t nEvents = 2) {
 
   // ---   STS track fitting   -----------------------------------------------
   CbmStsTrackFitter* stsTrackFitter = new CbmStsKFTrackFitter();
-  FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
+  FairTask* stsFitTracks            = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
   /**/
@@ -205,11 +202,9 @@ void run_reco(Int_t nEvents = 2) {
   Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator* radiator =
-    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd =
-    new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
   /**/
   // -------------------------------------------------------------------------
@@ -222,8 +217,7 @@ void run_reco(Int_t nEvents = 2) {
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kTRUE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
   run->AddTask(tofSimpClust);
@@ -276,14 +270,12 @@ void run_reco(Int_t nEvents = 2) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
-    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
-    new CbmTrdSetTracksPidANN("Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
@@ -334,16 +326,14 @@ void run_reco(Int_t nEvents = 2) {
   // (taken from hadron/produceDST.C)
   /**/
   CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks* fitGlobal =
-    new CbmFitGlobalTracks("FitGlobalTracks", iVerbose, globalTrackFitter);
+  CbmFitGlobalTracks* fitGlobal             = new CbmFitGlobalTracks("FitGlobalTracks", iVerbose, globalTrackFitter);
   run->AddTask(fitGlobal);
 
   /**/
   CbmProduceDst* produceDst = new CbmProduceDst(iVerbose);  // in hadron
   run->AddTask(produceDst);
 
-  CbmHadronAnalysis* HadronAna =
-    new CbmHadronAnalysis("HadronAnalysis", iVerbose);  // in hadron
+  CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis("HadronAnalysis", iVerbose);  // in hadron
   run->AddTask(HadronAna);
   /**/
   // ===                   End of TOF evaluation                           ===

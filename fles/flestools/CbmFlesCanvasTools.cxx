@@ -1,9 +1,9 @@
 #include "CbmFlesCanvasTools.h"
 
-#include <iostream>
-
 #include "TCanvas.h"
 #include "TH1.h"
+
+#include <iostream>
 
 /**********************************************************************/
 CanvasConfig::CanvasConfig()
@@ -18,11 +18,10 @@ CanvasConfig::CanvasConfig()
   , fvbLogy()
   , fvbLogz()
   , fvvsObjName()
-  , fvvsOptions() {}
-CanvasConfig::CanvasConfig(std::string sName,
-                           std::string sTitle,
-                           uint32_t uNbPadsX,
-                           uint32_t uNbPadsY)
+  , fvvsOptions()
+{
+}
+CanvasConfig::CanvasConfig(std::string sName, std::string sTitle, uint32_t uNbPadsX, uint32_t uNbPadsY)
   : fsName(sName)
   , fsTitle(sTitle)
   , fuNbPads(uNbPadsX * uNbPadsY)
@@ -34,9 +33,12 @@ CanvasConfig::CanvasConfig(std::string sName,
   , fvbLogy(fuNbPads, false)
   , fvbLogz(fuNbPads, false)
   , fvvsObjName(fuNbPads)
-  , fvvsOptions(fuNbPads) {}
+  , fvvsOptions(fuNbPads)
+{
+}
 
-CanvasConfig::~CanvasConfig() {
+CanvasConfig::~CanvasConfig()
+{
   /// Clear potential leftovers
   fvbGridx.clear();
   fvbGridy.clear();
@@ -52,79 +54,68 @@ CanvasConfig::~CanvasConfig() {
 }
 
 /// accessors
-bool CanvasConfig::GetGridx(uint32_t uPadIdx) const {
+bool CanvasConfig::GetGridx(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvbGridx[uPadIdx];
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvbGridx[uPadIdx]; }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetGridx => Pad index out of bounds, returning false! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetGridx => Pad index out of bounds, returning false! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 }
-bool CanvasConfig::GetGridy(uint32_t uPadIdx) const {
+bool CanvasConfig::GetGridy(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvbGridy[uPadIdx];
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvbGridy[uPadIdx]; }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetGridy => Pad index out of bounds, returning false! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetGridy => Pad index out of bounds, returning false! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 }
-bool CanvasConfig::GetLogx(uint32_t uPadIdx) const {
+bool CanvasConfig::GetLogx(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvbLogx[uPadIdx];
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvbLogx[uPadIdx]; }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetLogx => Pad index out of bounds, returning false! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetLogx => Pad index out of bounds, returning false! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 }
-bool CanvasConfig::GetLogy(uint32_t uPadIdx) const {
+bool CanvasConfig::GetLogy(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvbLogy[uPadIdx];
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvbLogy[uPadIdx]; }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetLogy => Pad index out of bounds, returning false! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetLogy => Pad index out of bounds, returning false! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 }
-bool CanvasConfig::GetLogz(uint32_t uPadIdx) const {
+bool CanvasConfig::GetLogz(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvbLogz[uPadIdx];
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvbLogz[uPadIdx]; }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetLogz => Pad index out of bounds, returning false! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetLogz => Pad index out of bounds, returning false! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 }
-uint32_t CanvasConfig::GetNbObjsInPad(uint32_t uPadIdx) const {
+uint32_t CanvasConfig::GetNbObjsInPad(uint32_t uPadIdx) const
+{
   /// Check first if in-boundary
-  if (uPadIdx < fuNbPads) {
-    return fvvsObjName[uPadIdx].size();
-  }  // if( uPadIdx < fuNbPads )
+  if (uPadIdx < fuNbPads) { return fvvsObjName[uPadIdx].size(); }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr
-      << "CanvasConfig::GetLogz => Pad index out of bounds, returning 0! "
-      << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::GetLogz => Pad index out of bounds, returning 0! " << uPadIdx << " VS " << fuNbPads
+              << std::endl;
     return 0;
   }  // else of if( uPadIdx < fuNbPads )
 }
-std::string CanvasConfig::GetObjName(uint32_t uPadIdx, uint32_t uObjIdx) const {
+std::string CanvasConfig::GetObjName(uint32_t uPadIdx, uint32_t uObjIdx) const
+{
   /// Check first if in-boundary
   if (uPadIdx >= fuNbPads) {
     std::cerr << "CanvasConfig::GetObjName => Pad index out of bounds, "
@@ -140,12 +131,12 @@ std::string CanvasConfig::GetObjName(uint32_t uPadIdx, uint32_t uObjIdx) const {
   {
     std::cerr << "CanvasConfig::GetObjName => Object index out of bounds, "
                  "returning nullptr! "
-              << "Pad " << uPadIdx << " " << uObjIdx << " VS "
-              << GetNbObjsInPad(uPadIdx) << std::endl;
+              << "Pad " << uPadIdx << " " << uObjIdx << " VS " << GetNbObjsInPad(uPadIdx) << std::endl;
     return std::string("nullptr");
   }  // else of if( uObjIdx < GetNbObjsInPad( uPadIdx ) )
 }
-std::string CanvasConfig::GetOption(uint32_t uPadIdx, uint32_t uObjIdx) const {
+std::string CanvasConfig::GetOption(uint32_t uPadIdx, uint32_t uObjIdx) const
+{
   /// Check first if in-boundary
   if (uPadIdx >= fuNbPads) {
     std::cerr << "CanvasConfig::GetObjName => Pad index out of bounds, "
@@ -161,14 +152,14 @@ std::string CanvasConfig::GetOption(uint32_t uPadIdx, uint32_t uObjIdx) const {
   {
     std::cerr << "CanvasConfig::GetObjName => Object index out of bounds, "
                  "returning nullptr! "
-              << "Pad " << uPadIdx << " " << uObjIdx << " VS "
-              << GetNbObjsInPad(uPadIdx) << std::endl;
+              << "Pad " << uPadIdx << " " << uObjIdx << " VS " << GetNbObjsInPad(uPadIdx) << std::endl;
     return std::string("nullptr");
   }  // else of if( uObjIdx < GetNbObjsInPad( uPadIdx ) )
 }
 
 /// setters
-void CanvasConfig::SetNbPadsX(uint32_t uNbColumns) {
+void CanvasConfig::SetNbPadsX(uint32_t uNbColumns)
+{
   if (fuNbPadsX != uNbColumns) {
     /// Print warning in case some pads were already defined
     if (0 < fuNbPads)
@@ -185,7 +176,8 @@ void CanvasConfig::SetNbPadsX(uint32_t uNbColumns) {
     ResizeFields();
   }  // if( fuNbPadsX != uNbColumns )
 }
-void CanvasConfig::SetNbPadsY(uint32_t uNbRows) {
+void CanvasConfig::SetNbPadsY(uint32_t uNbRows)
+{
   if (fuNbPadsY != uNbRows) {
     /// Print warning in case some pads were already defined
     if (0 < fuNbPads)
@@ -203,14 +195,9 @@ void CanvasConfig::SetNbPadsY(uint32_t uNbRows) {
   }  // if( fuNbPadsY != uNbRows )
 }
 
-bool CanvasConfig::SetConfig(uint32_t uPadIdx,
-                             bool bGridx,
-                             bool bGridy,
-                             bool bLogx,
-                             bool bLogy,
-                             bool bLogz,
-                             std::vector<std::string> vsObjName,
-                             std::vector<std::string> vsOptions) {
+bool CanvasConfig::SetConfig(uint32_t uPadIdx, bool bGridx, bool bGridy, bool bLogx, bool bLogy, bool bLogz,
+                             std::vector<std::string> vsObjName, std::vector<std::string> vsOptions)
+{
   if (uPadIdx < fuNbPads) {
     /// Assign PAD config values
     fvbGridx[uPadIdx]    = bGridx;
@@ -222,15 +209,15 @@ bool CanvasConfig::SetConfig(uint32_t uPadIdx,
     fvvsOptions[uPadIdx] = vsOptions;
   }  // if( uPadIdx < fuNbPads )
   else {
-    std::cerr << "CanvasConfig::SetConfig => Pad index out of bounds! "
-              << uPadIdx << " VS " << fuNbPads << std::endl;
+    std::cerr << "CanvasConfig::SetConfig => Pad index out of bounds! " << uPadIdx << " VS " << fuNbPads << std::endl;
     return false;
   }  // else of if( uPadIdx < fuNbPads )
 
   return true;
 }
 
-void CanvasConfig::ResizeFields() {
+void CanvasConfig::ResizeFields()
+{
   /// First clear potential leftovers
   fvbGridx.clear();
   fvbGridy.clear();
@@ -255,17 +242,16 @@ void CanvasConfig::ResizeFields() {
 }
 /**********************************************************************/
 
-void GetNbPadsXY(TPad* pPad, uint32_t& uNbPadsX, uint32_t& uNbPadsY) {
+void GetNbPadsXY(TPad* pPad, uint32_t& uNbPadsX, uint32_t& uNbPadsY)
+{
   uint32_t uNbPads = 1;  /// start from 1
   uNbPadsX         = 0;  /// start from 0
   uNbPadsY         = 0;  /// start from 0
   pPad->cd();            // set current (mother) pad
 
   /// Previous Canvas geom
-  double_t dPrevX =
-    -1.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
-  double_t dPrevY =
-    2.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
+  double_t dPrevX = -1.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
+  double_t dPrevY = 2.0;   // relative scale from 0 to 1, go over to avoid problem if not margin
 
   /// Loop until we run out of Pads
   while (pPad->GetPad(uNbPads)) {
@@ -293,7 +279,8 @@ void GetNbPadsXY(TPad* pPad, uint32_t& uNbPadsX, uint32_t& uNbPadsY) {
 
 /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
 /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),(HistoName1,DrawOptions1),...,(HistoNameZ,DrawOptionsZ)"
-std::string GenerateCanvasConfigString(TCanvas* pCanv) {
+std::string GenerateCanvasConfigString(TCanvas* pCanv)
+{
   if (nullptr == pCanv) return std::string("");
 
   /// Add name to config
@@ -312,10 +299,8 @@ std::string GenerateCanvasConfigString(TCanvas* pCanv) {
   pCanv->cd();                  // set current (mother) pad
 
   /// Previous Canvas geom
-  double_t dPrevX =
-    -1.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
-  double_t dPrevY =
-    2.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
+  double_t dPrevX = -1.0;  // relative scale from 0 to 1, go over to avoid problem if not margin
+  double_t dPrevY = 2.0;   // relative scale from 0 to 1, go over to avoid problem if not margin
 
   /// Loop until we run out of Pads
   while (pCanv->GetPad(uNbPads)) {
@@ -336,12 +321,8 @@ std::string GenerateCanvasConfigString(TCanvas* pCanv) {
 
     /// Get Pad properties
     /// GridX, GridY, LogX, LogY, LogZ
-    sPadsConfig += Form("%d,%d,%d,%d,%d",
-                        gPad->GetGridx(),
-                        gPad->GetGridy(),
-                        gPad->GetLogx(),
-                        gPad->GetLogy(),
-                        gPad->GetLogz());
+    sPadsConfig +=
+      Form("%d,%d,%d,%d,%d", gPad->GetGridx(), gPad->GetGridy(), gPad->GetLogx(), gPad->GetLogy(), gPad->GetLogz());
     /// Histogram(s) name and draw option
     TObjLink* lnkHist = gPad->GetListOfPrimitives()->FirstLink();
 
@@ -350,8 +331,7 @@ std::string GenerateCanvasConfigString(TCanvas* pCanv) {
 
     while (lnkHist) {
       if (nullptr != dynamic_cast<TH1*>(lnkHist->GetObject()))
-        sPadsConfig += Form(
-          ",(%s,%s)", lnkHist->GetObject()->GetName(), lnkHist->GetOption());
+        sPadsConfig += Form(",(%s,%s)", lnkHist->GetObject()->GetName(), lnkHist->GetOption());
       lnkHist = lnkHist->Next();
     }  // else while( lnkHist ) of if( nullptr == lnkHist )
 
@@ -370,7 +350,8 @@ std::string GenerateCanvasConfigString(TCanvas* pCanv) {
 
 /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
 /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),(HistoName1,DrawOptions1),...,(HistoNameZ,DrawOptionsZ)"
-CanvasConfig ExtractCanvasConfigFromString(std::string sFullConfig) {
+CanvasConfig ExtractCanvasConfigFromString(std::string sFullConfig)
+{
   /// Temp storage
   std::string sName  = "";
   std::string sTitle = "";
@@ -419,10 +400,9 @@ CanvasConfig ExtractCanvasConfigFromString(std::string sFullConfig) {
   /// Loop on pads
   for (UInt_t uPadIdx = 0; uPadIdx < uNbPads; ++uPadIdx) {
     if (0 == sNext.size()) {
-      std::cerr
-        << "ExtractCanvasConfigFromString => Empty configuration string while "
-        << uPadIdx << " over " << uNbPads << " pads remain! "
-        << "last ones will have default config!" << std::endl;
+      std::cerr << "ExtractCanvasConfigFromString => Empty configuration string while " << uPadIdx << " over "
+                << uNbPads << " pads remain! "
+                << "last ones will have default config!" << std::endl;
     }  // if( 0 == sNext.size() )
 
     /// Extract Pad config
@@ -471,10 +451,8 @@ CanvasConfig ExtractCanvasConfigFromString(std::string sFullConfig) {
       charPosClBrkt++;
 
       /// Extract fields
-      std::string sObjName =
-        sObjs.substr(charPosOpBrkt, charPosComma - charPosOpBrkt - 1);
-      std::string sObjOpt =
-        sObjs.substr(charPosComma, charPosClBrkt - charPosComma - 1);
+      std::string sObjName = sObjs.substr(charPosOpBrkt, charPosComma - charPosOpBrkt - 1);
+      std::string sObjOpt  = sObjs.substr(charPosComma, charPosClBrkt - charPosComma - 1);
 
       vsObjName.push_back(sObjName);
       vsOptions.push_back(sObjOpt);
@@ -490,8 +468,7 @@ CanvasConfig ExtractCanvasConfigFromString(std::string sFullConfig) {
     sNext = sNext.substr(charPosDel);
 
     /// Load Pad config
-    conf.SetConfig(
-      uPadIdx, bGridx, bGridy, bLogx, bLogy, bLogz, vsObjName, vsOptions);
+    conf.SetConfig(uPadIdx, bGridx, bGridy, bLogx, bLogy, bLogz, vsObjName, vsOptions);
 
     /// Clear objects vectors
     vsObjName.clear();

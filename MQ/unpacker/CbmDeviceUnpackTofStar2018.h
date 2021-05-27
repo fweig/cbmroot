@@ -8,18 +8,18 @@
 #ifndef CBMDEVICEUNPACKTOFSTAR2018_H_
 #define CBMDEVICEUNPACKTOFSTAR2018_H_
 
-#include "FairMQDevice.h"
-
-#include "rocMess_wGet4v1.h"
-
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
+
+#include "FairMQDevice.h"
 
 #include "Rtypes.h"
 #include "TMessage.h"
 
 #include <map>
 #include <vector>
+
+#include "rocMess_wGet4v1.h"
 
 class CbmTofUnpackPar;
 class CbmTbDaqBuffer;
@@ -43,10 +43,8 @@ private:
   std::vector<std::string> fAllowedChannels = {"tofcomponent", "parameters"};
 
 
-  size_t
-    fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
-  size_t
-    fuOverlapMsNb; /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  size_t fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
+  size_t fuOverlapMsNb;      /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
   UInt_t fuMinNbGdpb;
   UInt_t fuCurrNbGdpb;
 
@@ -64,12 +62,9 @@ private:
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;
 
   UInt_t fuGdpbId;  // Id (hex number) of the GDPB for current message
-  UInt_t
-    fuGdpbNr;  // running number (0 to fNrOfGdpbs) of the GDPB for current message
-  UInt_t
-    fuGet4Id;  // running number (0 to fNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
-  UInt_t
-    fuGet4Nr;  // running number (0 to fNrOfGet4) of the Get4 chip in the system for current message
+  UInt_t fuGdpbNr;  // running number (0 to fNrOfGdpbs) of the GDPB for current message
+  UInt_t fuGet4Id;  // running number (0 to fNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
+  UInt_t fuGet4Nr;  // running number (0 to fNrOfGet4) of the Get4 chip in the system for current message
 
   //   CbmHistManager* fHM;  ///< Histogram manager
 
@@ -150,17 +145,13 @@ private:
   Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
 
 
-  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) {
-    return gdpbId * fuNrOfGet4PerGdpb + get4Id;
-  }
+  inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) { return gdpbId * fuNrOfGet4PerGdpb + get4Id; }
 };
 
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

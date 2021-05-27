@@ -8,8 +8,9 @@
 #ifndef CBMLITFINDGLOBALTRACKSIDEAL_H_
 #define CBMLITFINDGLOBALTRACKSIDEAL_H_
 
-#include "FairTask.h"
 #include "base/CbmLitDetectorSetup.h"
+
+#include "FairTask.h"
 
 #include <map>
 

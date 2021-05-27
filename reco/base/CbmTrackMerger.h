@@ -49,9 +49,7 @@ public:
    **
    *@value Number of merged STS+TRD tracks
    **/
-  virtual Int_t DoMerge(TClonesArray* stsTracks,
-                        TClonesArray* trdTracks,
-                        TClonesArray* glbTracks) = 0;
+  virtual Int_t DoMerge(TClonesArray* stsTracks, TClonesArray* trdTracks, TClonesArray* glbTracks) = 0;
 
 
   /** Set verbosity 

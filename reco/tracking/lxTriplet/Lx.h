@@ -7,15 +7,19 @@
 #include "CbmStsKFTrackFitter.h"
 #include "CbmTrackMatch.h"
 #include "CbmVertex.h"
+
 #include "FairTask.h"
-#include "LxCATriplets.h"
-#include "LxEff.h"
-#include "LxMC.h"
+
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
+
 #include <fstream>
+
+#include "LxCATriplets.h"
+#include "LxEff.h"
+#include "LxMC.h"
 
 #ifdef FAST_CODE
 #define LX_DYNAMIC_CAST static_cast
@@ -50,7 +54,8 @@ public:
 
   void SetCutCoeff(Double_t value) { cutCoeff = value; }
 
-  void SetParticleType(TString v) {
+  void SetParticleType(TString v)
+  {
     //particleType = v;
     lxFinderParticleType = v;
 
@@ -78,8 +83,7 @@ private:
   TClonesArray* listMuchPixelDigiMatches;
   TClonesArray* listStsTracks;
   TClonesArray* listStsMatches;
-  TClonesArray*
-    listStsPts;  // STS MC-points array. Used for experiments with STS matching.
+  TClonesArray* listStsPts;      // STS MC-points array. Used for experiments with STS matching.
   TClonesArray* listRecoTracks;  // It is an output array.
   LxEff effCounter;
   static TH1F* massHisto;
@@ -111,10 +115,8 @@ private:
   bool calcMiddlePoints;
   Double_t cutCoeff;
   bool pPtCut;
-  std::vector<LxMCPoint>
-    MCPoints;  // Points should lay here in the same order as in listMuchPts.
-  std::vector<LxMCTrack>
-    MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
+  std::vector<LxMCPoint> MCPoints;  // Points should lay here in the same order as in listMuchPts.
+  std::vector<LxMCTrack> MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
   std::list<LxStsMCPoint> MCStsPoints;
   std::list<LxStsMCPoint*> MCStsPointsByStations[8];
 #ifdef MAKE_DISPERSE_2D_HISTOS
@@ -124,9 +126,8 @@ private:
   LxSpace caSpace;
   std::map<Int_t, std::map<Int_t, int>> particleCounts;
 #ifdef MAKE_EFF_CALC
-  std::ofstream
-    incomplete_events;  // Events where not all tracks are reconstructed.
-#endif                  //MAKE_EFF_CALC
+  std::ofstream incomplete_events;  // Events where not all tracks are reconstructed.
+#endif  //MAKE_EFF_CALC
   Int_t eventNumber;
 #ifdef CALC_MUCH_DETECTORS_EFF
   Int_t mcPointsCount;

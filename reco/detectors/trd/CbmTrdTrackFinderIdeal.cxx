@@ -6,12 +6,12 @@
 // CBM includes
 #include "CbmTrdTrackFinderIdeal.h"
 
-#include "CbmTrdHit.h"
-#include "CbmTrdTrack.h"
-
 #include "CbmDigiManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdTrack.h"
+
 #include "FairBaseParSet.h"
 #include "FairDetector.h"
 #include "FairMCPoint.h"
@@ -37,47 +37,42 @@ CbmTrdTrackFinderIdeal::CbmTrdTrackFinderIdeal()
   , fTrdPoints(NULL)
   , fTrdHitMatches(NULL)
   , fTrdHitProducerType("")
-  , fEventNum(-1) {}
+  , fEventNum(-1)
+{
+}
 
 
 CbmTrdTrackFinderIdeal::~CbmTrdTrackFinderIdeal() {}
 
 
-void CbmTrdTrackFinderIdeal::Init() {
+void CbmTrdTrackFinderIdeal::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman)
-    Fatal("-E- CbmTrdTrackFinderIdeal::Init", "RootManager not instantised!");
+  if (NULL == ioman) Fatal("-E- CbmTrdTrackFinderIdeal::Init", "RootManager not instantised!");
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks)
-    Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No MCTrack array!");
+  if (NULL == fMcTracks) Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No MCTrack array!");
 
   fTrdPoints = (TClonesArray*) ioman->GetObject("TrdPoint");
-  if (NULL == fTrdPoints)
-    Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No TrdPoint array!");
+  if (NULL == fTrdPoints) Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No TrdPoint array!");
 
   TClonesArray* digis = (TClonesArray*) ioman->GetObject("TrdDigi");
-  if (NULL == digis) {
-    fTrdHitProducerType = "smearing";
-  } else {
+  if (NULL == digis) { fTrdHitProducerType = "smearing"; }
+  else {
     fTrdHitProducerType = "digi";
     fTrdHitMatches      = (TClonesArray*) ioman->GetObject("TrdHitMatch");
-    if (NULL == fTrdHitMatches)
-      Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No TrdHitMatch array!");
+    if (NULL == fTrdHitMatches) Fatal("-E- CbmTrdTrackFinderIdeal::Init", "No TrdHitMatch array!");
   }
 
   fEventNum = 1;
 }
 
-Int_t CbmTrdTrackFinderIdeal::DoFind(TClonesArray* trdHits,
-                                     TClonesArray* trdTracks) {
-  cout << "CbmTrdTrackFinderIdeal, event no. " << fEventNum << " "
-       << fTrdHitProducerType << endl;
+Int_t CbmTrdTrackFinderIdeal::DoFind(TClonesArray* trdHits, TClonesArray* trdTracks)
+{
+  cout << "CbmTrdTrackFinderIdeal, event no. " << fEventNum << " " << fTrdHitProducerType << endl;
   fEventNum++;
-  if (NULL == trdHits)
-    Fatal("-E- CbmTrdTrackFinderIdeal::DoFind", "No TrdHitArray!");
-  if (NULL == trdTracks)
-    Fatal("-E- CbmTrdTrackFinderIdeal::DoFind", "No TrdTrackArray!");
+  if (NULL == trdHits) Fatal("-E- CbmTrdTrackFinderIdeal::DoFind", "No TrdHitArray!");
+  if (NULL == trdTracks) Fatal("-E- CbmTrdTrackFinderIdeal::DoFind", "No TrdTrackArray!");
 
   Int_t nofTrdHits = trdHits->GetEntriesFast();
 
@@ -88,29 +83,23 @@ Int_t CbmTrdTrackFinderIdeal::DoFind(TClonesArray* trdHits,
     if (NULL == trdHit) continue;
 
     int trdPointInd = -1;
-    if (fTrdHitProducerType == "smearing") {
-      trdPointInd = trdHit->GetRefId();
-    } else if (fTrdHitProducerType == "digi") {
-      const CbmMatch* trdHitMatch =
-        static_cast<const CbmMatch*>(fTrdHitMatches->At(iHit));
-      trdPointInd = trdHitMatch->GetMatchedLink().GetIndex();
+    if (fTrdHitProducerType == "smearing") { trdPointInd = trdHit->GetRefId(); }
+    else if (fTrdHitProducerType == "digi") {
+      const CbmMatch* trdHitMatch = static_cast<const CbmMatch*>(fTrdHitMatches->At(iHit));
+      trdPointInd                 = trdHitMatch->GetMatchedLink().GetIndex();
     }
 
     if (trdPointInd < 0) continue;  // fake or background hit
-    FairMCPoint* trdPoint =
-      static_cast<FairMCPoint*>(fTrdPoints->At(trdPointInd));
+    FairMCPoint* trdPoint = static_cast<FairMCPoint*>(fTrdPoints->At(trdPointInd));
     if (NULL == trdPoint) continue;
 
     int mcTrackInd = trdPoint->GetTrackID();
-    if (NULL == mcTrackToTrdTrack[mcTrackInd])
-      mcTrackToTrdTrack[mcTrackInd] = new CbmTrdTrack();
+    if (NULL == mcTrackToTrdTrack[mcTrackInd]) mcTrackToTrdTrack[mcTrackInd] = new CbmTrdTrack();
     mcTrackToTrdTrack[mcTrackInd]->AddHit(iHit, kTRDHIT);
   }
 
   int trackCount = 0;
-  for (map<int, CbmTrdTrack*>::iterator it = mcTrackToTrdTrack.begin();
-       it != mcTrackToTrdTrack.end();
-       ++it) {
+  for (map<int, CbmTrdTrack*>::iterator it = mcTrackToTrdTrack.begin(); it != mcTrackToTrdTrack.end(); ++it) {
     new ((*trdTracks)[trackCount]) CbmTrdTrack(*it->second);
     trackCount++;
   }

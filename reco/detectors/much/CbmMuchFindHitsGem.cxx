@@ -8,6 +8,7 @@
  //@author : Ekata Nandy (ekata@vecc.gov.in) since 21-06-19- Drift time correction for GEM and RPC have been done separately.
  */
 #include "CbmMuchFindHitsGem.h"
+
 #include "CbmDigiManager.h"
 #include "CbmMuchCluster.h"
 #include "CbmMuchGeoScheme.h"
@@ -15,7 +16,9 @@
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchPixelHit.h"
+
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TMath.h"
@@ -24,6 +27,7 @@
 #include "CbmMuchAddress.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -63,10 +67,13 @@ CbmMuchFindHitsGem::CbmMuchFindHitsGem(const char* digiFileName, Int_t flag)
   // fDaq(),
   // fTimeSlice(NULL),
   // fDigiData(),
-  fuClusters(0) {}
+  fuClusters(0)
+{
+}
 
 // -----   Private method Init   -------------------------------------------
-InitStatus CbmMuchFindHitsGem::Init() {
+InitStatus CbmMuchFindHitsGem::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
   //if (fDaq) fTimeSlice = (CbmTimeSlice*) ioman->GetObject("TimeSlice.");
   //else      fDigis     = (TClonesArray*) ioman->GetObject("MuchDigi");
@@ -90,31 +97,21 @@ InitStatus CbmMuchFindHitsGem::Init() {
 
   // Implementation of Event by event execution after TimeSlice Mode and Event Building should have one Event branch.
 
-  fEvents = dynamic_cast<TClonesArray*>(
-    FairRootManager::Instance()->GetObject("Event"));
-  if (!fEvents)
-    fEvents = dynamic_cast<TClonesArray*>(
-      FairRootManager::Instance()->GetObject("CbmEvent"));
+  fEvents = dynamic_cast<TClonesArray*>(FairRootManager::Instance()->GetObject("Event"));
+  if (!fEvents) fEvents = dynamic_cast<TClonesArray*>(FairRootManager::Instance()->GetObject("CbmEvent"));
 
   if (!fEvents) {
     LOG(info) << GetName() << ": No event branch present.";
     // return kfatal;
-  } else {
+  }
+  else {
     fEventMode = kTRUE;
     //fMode=kCbmEvent;
-    LOG(info)
-      << GetName()
-      << "TimeSlice: Event-by-event mode after Event Building selected. ";
+    LOG(info) << GetName() << "TimeSlice: Event-by-event mode after Event Building selected. ";
   }
 
-  ioman->Register("MuchCluster",
-                  "Cluster in MUCH",
-                  fClusters,
-                  IsOutputBranchPersistent("MuchCluster"));
-  ioman->Register("MuchPixelHit",
-                  "Hit in MUCH",
-                  fHits,
-                  IsOutputBranchPersistent("MuchPixelHit"));
+  ioman->Register("MuchCluster", "Cluster in MUCH", fClusters, IsOutputBranchPersistent("MuchCluster"));
+  ioman->Register("MuchPixelHit", "Hit in MUCH", fHits, IsOutputBranchPersistent("MuchPixelHit"));
 
   // Initialize GeoScheme
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -135,7 +132,8 @@ InitStatus CbmMuchFindHitsGem::Init() {
 // -------------------------------------------------------------------------
 
 // -----   Task execution   ------------------------------------------------
-void CbmMuchFindHitsGem::Exec(Option_t*) {
+void CbmMuchFindHitsGem::Exec(Option_t*)
+{
   TStopwatch timer;
   timer.Start();
   // fDigiData.clear();
@@ -160,8 +158,7 @@ void CbmMuchFindHitsGem::Exec(Option_t*) {
 
   // Clear output array
   if (fHits) fHits->Clear();
-  if (fClusters)
-    fClusters->Delete();  //Clear(); // Delete because of memory escape
+  if (fClusters) fClusters->Delete();  //Clear(); // Delete because of memory escape
 
   fuClusters = 0;
   // --- Time-slice mode: process entire array
@@ -169,13 +166,11 @@ void CbmMuchFindHitsGem::Exec(Option_t*) {
   if (!fEventMode) {
     //if ( fMode == kCbmTimeslice ){
     ProcessData(nullptr);
-    LOG(info) << setw(20) << left << GetName() << ": processing time is "
-              << timer.RealTime() << " Time Slice Number is " << fNofTimeslices
-              << " digis "
+    LOG(info) << setw(20) << left << GetName() << ": processing time is " << timer.RealTime()
+              << " Time Slice Number is " << fNofTimeslices << " digis "
               << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
               //<< "s digis " <<  fDigis->GetEntriesFast()
-              << " clusters " << fClusters->GetEntriesFast() << " total hits "
-              << fHits->GetEntriesFast();
+              << " clusters " << fClusters->GetEntriesFast() << " total hits " << fHits->GetEntriesFast();
   }
   // --- Event mode: loop over events
   else {
@@ -184,33 +179,27 @@ void CbmMuchFindHitsGem::Exec(Option_t*) {
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
       CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
       assert(event);
-      Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kMuchDigi)
-                            : fDigiManager->GetNofDigis(ECbmModuleId::kMuch));
+      Int_t nDigis =
+        (event ? event->GetNofData(ECbmDataType::kMuchDigi) : fDigiManager->GetNofDigis(ECbmModuleId::kMuch));
       //: fDigis->GetEntriesFast() );
       //if (event) LOG(debug)<<" Timeslice "<< fNofTimeslices <<" event : " << event->GetNumber() <<" nDigi : " << nDigis;
       ProcessData(event);
       LOG(debug) << setw(20) << left
                  << GetName()
                  //<< ": Processing Time for an event is " << timer.RealTime()
-                 << ": Time slice " << fNofTimeslices << " with " << nEvents
-                 << (nEvents == 1 ? " event" : " events")
+                 << ": Time slice " << fNofTimeslices << " with " << nEvents << (nEvents == 1 ? " event" : " events")
                  << " and processing event nubmer " << iEvent << " digis "
                  << nDigis
                  //<< "s digis " <<  fDigis->GetEntriesFast()
-                 << " and created cluster "
-                 << event->GetNofData(ECbmDataType::kMuchCluster)
-                 << " and created hit "
+                 << " and created cluster " << event->GetNofData(ECbmDataType::kMuchCluster) << " and created hit "
                  << event->GetNofData(ECbmDataType::kMuchPixelHit);
     }  //# events
-    LOG(info) << setw(20) << left << GetName() << ": Processing Time is "
-              << timer.RealTime() << ": Time slice " << fNofTimeslices
-              << " with " << nEvents << (nEvents == 1 ? " event" : " events")
-              << "s digis "
+    LOG(info) << setw(20) << left << GetName() << ": Processing Time is " << timer.RealTime() << ": Time slice "
+              << fNofTimeslices << " with " << nEvents << (nEvents == 1 ? " event" : " events") << "s digis "
               << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
               //<< "s digis " <<  fDigis->GetEntriesFast()
               << " and event wise total "
-              << " clusters " << fClusters->GetEntriesFast() << " total hits "
-              << fHits->GetEntriesFast();
+              << " clusters " << fClusters->GetEntriesFast() << " total hits " << fHits->GetEntriesFast();
 
   }  //? event mode
   fNofTimeslices++;
@@ -218,7 +207,8 @@ void CbmMuchFindHitsGem::Exec(Option_t*) {
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchFindHitsGem::ProcessData(CbmEvent* event) {
+void CbmMuchFindHitsGem::ProcessData(CbmEvent* event)
+{
   TStopwatch EventTimer;
   EventTimer.Start();
 
@@ -226,15 +216,10 @@ void CbmMuchFindHitsGem::ProcessData(CbmEvent* event) {
   //LOG(debug3)<<" Start creating cluster ";
   // Find clusters
   FindClusters(event);
-  Int_t NuOfClusterInEvent =
-    (event ? event->GetNofData(ECbmDataType::kMuchCluster)
-           : fClusters->GetEntriesFast());
+  Int_t NuOfClusterInEvent = (event ? event->GetNofData(ECbmDataType::kMuchCluster) : fClusters->GetEntriesFast());
 
-  for (Int_t clusterIndex = 0; clusterIndex < NuOfClusterInEvent;
-       ++clusterIndex) {
-    UInt_t iCluster =
-      (event ? event->GetIndex(ECbmDataType::kMuchCluster, clusterIndex)
-             : clusterIndex);
+  for (Int_t clusterIndex = 0; clusterIndex < NuOfClusterInEvent; ++clusterIndex) {
+    UInt_t iCluster         = (event ? event->GetIndex(ECbmDataType::kMuchCluster, clusterIndex) : clusterIndex);
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(iCluster);
     switch (fAlgorithm) {
         // Hit
@@ -255,8 +240,7 @@ void CbmMuchFindHitsGem::ProcessData(CbmEvent* event) {
         break;
       }
       default: {
-        Fatal("CbmMuchFindHitsGem::Exec:",
-              "The algorithm index does not exist.");
+        Fatal("CbmMuchFindHitsGem::Exec:", "The algorithm index does not exist.");
         break;
       }
     }
@@ -268,44 +252,34 @@ void CbmMuchFindHitsGem::ProcessData(CbmEvent* event) {
 
 
 // -----   Private method FindClusters  ------------------------------------
-void CbmMuchFindHitsGem::FindClusters(CbmEvent* event) {
+void CbmMuchFindHitsGem::FindClusters(CbmEvent* event)
+{
 
-  Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kMuchDigi)
-                        : fDigiManager->GetNofDigis(ECbmModuleId::kMuch));
+  Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kMuchDigi) : fDigiManager->GetNofDigis(ECbmModuleId::kMuch));
   //: fDigis->GetEntriesFast() );
   if (event)
-    LOG(debug2) << " Timeslice " << fNofTimeslices
-                << " event : " << event->GetNumber() << " nDigi : " << nDigis;
+    LOG(debug2) << " Timeslice " << fNofTimeslices << " event : " << event->GetNumber() << " nDigi : " << nDigis;
   if (nDigis < 0) return;
   if (fAlgorithm == 0) {
     for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-      UInt_t digiIndex =
-        (event ? event->GetIndex(ECbmDataType::kMuchDigi, iDigi) : iDigi);
+      UInt_t digiIndex = (event ? event->GetIndex(ECbmDataType::kMuchDigi, iDigi) : iDigi);
       fDigiIndices.clear();
       fDigiIndices.push_back(digiIndex);
       //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(digiIndex);
       const CbmMuchDigi* digi;
-      if (!bBeamTimeDigi)
-        digi = static_cast<const CbmMuchDigi*>(
-          fDigiManager->Get<CbmMuchDigi>(digiIndex));
+      if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(digiIndex));
       else
-        digi = static_cast<const CbmMuchDigi*>(
-          fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
+        digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
       //const CbmMuchDigi* digi = static_cast<const CbmMuchDigi*>(fDigis->At(digiIndex));
-      CbmMuchCluster* cluster =
-        new ((*fClusters)[fuClusters++]) CbmMuchCluster();
-      Int_t address = CbmMuchAddress::GetAddress(
-        CbmMuchAddress::GetStationIndex(digi->GetAddress()),
-        CbmMuchAddress::GetLayerIndex(digi->GetAddress()),
-        CbmMuchAddress::GetLayerSideIndex(digi->GetAddress()),
-        CbmMuchAddress::GetModuleIndex(digi->GetAddress()));
+      CbmMuchCluster* cluster = new ((*fClusters)[fuClusters++]) CbmMuchCluster();
+      Int_t address           = CbmMuchAddress::GetAddress(
+        CbmMuchAddress::GetStationIndex(digi->GetAddress()), CbmMuchAddress::GetLayerIndex(digi->GetAddress()),
+        CbmMuchAddress::GetLayerSideIndex(digi->GetAddress()), CbmMuchAddress::GetModuleIndex(digi->GetAddress()));
       cluster->SetAddress(address);
       cluster->AddDigis(fDigiIndices);
       // --- In event-by-event mode after event building: register clusters to event using ECbmDataType::kMuchCluster
       //Uncomment below code
-      if (event) {
-        event->AddData(ECbmDataType::kMuchCluster, fuClusters - 1);
-      }  //? Event object
+      if (event) { event->AddData(ECbmDataType::kMuchCluster, fuClusters - 1); }  //? Event object
     }
     return;
   }
@@ -319,17 +293,13 @@ void CbmMuchFindHitsGem::FindClusters(CbmEvent* event) {
   // Fill array of digis in the modules. Digis are automatically sorted in time
 
   for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-    UInt_t digiIndex =
-      (event ? event->GetIndex(ECbmDataType::kMuchDigi, iDigi) : iDigi);
+    UInt_t digiIndex = (event ? event->GetIndex(ECbmDataType::kMuchDigi, iDigi) : iDigi);
     //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(digiIndex);
     //const auto * digi;
     const CbmMuchDigi* digi;
-    if (!bBeamTimeDigi)
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchDigi>(digiIndex));
+    if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(digiIndex));
     else
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
+      digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
     //const CbmMuchDigi* digi =static_cast<const CbmMuchDigi*>(fDigis->At(digiIndex));
     Double_t time = digi->GetTime();
     //    Double_t chanid = digi->GetChannelId();
@@ -361,12 +331,9 @@ void CbmMuchFindHitsGem::FindClusters(CbmEvent* event) {
         //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(iDigi);
         const CbmMuchDigi* digi;
         //const auto * digi;
-        if (!bBeamTimeDigi)
-          digi = static_cast<const CbmMuchDigi*>(
-            fDigiManager->Get<CbmMuchDigi>(iDigi));
+        if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(iDigi));
         else
-          digi = static_cast<const CbmMuchDigi*>(
-            fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
+          digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
         //const CbmMuchDigi* digi = static_cast<const CbmMuchDigi*>(fDigis->At(iDigi));
         CbmMuchPad* pad = module->GetPad(digi->GetAddress());
         pad->SetDigiIndex(iDigi);
@@ -382,26 +349,19 @@ void CbmMuchFindHitsGem::FindClusters(CbmEvent* event) {
         //const auto * digi;
         const CbmMuchDigi* digi;
         if (!bBeamTimeDigi)
-          digi = static_cast<const CbmMuchDigi*>(
-            fDigiManager->Get<CbmMuchDigi>(fDigiIndices.front()));
+          digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(fDigiIndices.front()));
         else
-          digi = static_cast<const CbmMuchDigi*>(
-            fDigiManager->Get<CbmMuchBeamTimeDigi>(fDigiIndices.front()));
+          digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(fDigiIndices.front()));
 
-        CbmMuchCluster* cluster =
-          new ((*fClusters)[fuClusters++]) CbmMuchCluster();
-        Int_t address = CbmMuchAddress::GetAddress(
-          CbmMuchAddress::GetStationIndex(digi->GetAddress()),
-          CbmMuchAddress::GetLayerIndex(digi->GetAddress()),
-          CbmMuchAddress::GetLayerSideIndex(digi->GetAddress()),
-          CbmMuchAddress::GetModuleIndex(digi->GetAddress()));
+        CbmMuchCluster* cluster = new ((*fClusters)[fuClusters++]) CbmMuchCluster();
+        Int_t address           = CbmMuchAddress::GetAddress(
+          CbmMuchAddress::GetStationIndex(digi->GetAddress()), CbmMuchAddress::GetLayerIndex(digi->GetAddress()),
+          CbmMuchAddress::GetLayerSideIndex(digi->GetAddress()), CbmMuchAddress::GetModuleIndex(digi->GetAddress()));
 
         cluster->SetAddress(address);
         cluster->AddDigis(fDigiIndices);
         // --- In event-by-event mode after event building: register clusters to event using ECbmDataType::kMuchCluster
-        if (event) {
-          event->AddData(ECbmDataType::kMuchCluster, fuClusters - 1);
-        }  //? Event object
+        if (event) { event->AddData(ECbmDataType::kMuchCluster, fuClusters - 1); }  //? Event object
       }
     }
   }
@@ -410,7 +370,8 @@ void CbmMuchFindHitsGem::FindClusters(CbmEvent* event) {
 
 
 // -----   Private method CreateCluster  -----------------------------------
-void CbmMuchFindHitsGem::CreateCluster(CbmMuchPad* pad) {
+void CbmMuchFindHitsGem::CreateCluster(CbmMuchPad* pad)
+{
   Int_t digiIndex = pad->GetDigiIndex();
   if (digiIndex < 0) return;
   fDigiIndices.push_back(digiIndex);
@@ -423,18 +384,14 @@ void CbmMuchFindHitsGem::CreateCluster(CbmMuchPad* pad) {
 
 
 // -----   Private method ExecClusteringSimple  ----------------------------
-void CbmMuchFindHitsGem::ExecClusteringSimple(CbmMuchCluster* cluster,
-                                              Int_t iCluster,
-                                              CbmEvent* event) {
+void CbmMuchFindHitsGem::ExecClusteringSimple(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event)
+{
   //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(cluster->GetDigi(0));
   //const auto * digi;
   const CbmMuchDigi* digi;
-  if (!bBeamTimeDigi)
-    digi = static_cast<const CbmMuchDigi*>(
-      fDigiManager->Get<CbmMuchDigi>(cluster->GetDigi(0)));
+  if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(cluster->GetDigi(0)));
   else
-    digi = static_cast<const CbmMuchDigi*>(
-      fDigiManager->Get<CbmMuchBeamTimeDigi>(cluster->GetDigi(0)));
+    digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(cluster->GetDigi(0)));
   //CbmMuchDigi* digi = static_cast<CbmMuchDigi*>(fDigis->At(cluster->GetDigi(0)));
   CbmMuchModule* m         = fGeoScheme->GetModuleByDetId(digi->GetAddress());
   CbmMuchModuleGem* module = (CbmMuchModuleGem*) m;
@@ -444,12 +401,9 @@ void CbmMuchFindHitsGem::ExecClusteringSimple(CbmMuchCluster* cluster,
   for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
     Int_t digiIndex = cluster->GetDigi(iDigi);
     //digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(digiIndex);
-    if (!bBeamTimeDigi)
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchDigi>(digiIndex));
+    if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(digiIndex));
     else
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
+      digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
     //digi = static_cast<CbmMuchDigi*> (fDigis->At(digiIndex));
     Int_t charge = digi->GetAdc();
     if (charge > maxCharge) maxCharge = charge;
@@ -462,12 +416,9 @@ void CbmMuchFindHitsGem::ExecClusteringSimple(CbmMuchCluster* cluster,
   for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
     Int_t digiIndex = cluster->GetDigi(iDigi);
     //digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(digiIndex);
-    if (!bBeamTimeDigi)
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchDigi>(digiIndex));
+    if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(digiIndex));
     else
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
+      digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(digiIndex));
     //digi = static_cast<CbmMuchDigi*> (fDigis->At(digiIndex));
     if (digi->GetAdc() <= threshold) continue;
     CbmMuchPad* pad = module->GetPad(digi->GetAddress());
@@ -487,9 +438,8 @@ void CbmMuchFindHitsGem::ExecClusteringSimple(CbmMuchCluster* cluster,
 
 
 // -------------------------------------------------------------------------
-void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster,
-                                             Int_t iCluster,
-                                             CbmEvent* event) {
+void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event)
+{
   Int_t nDigis = cluster->GetNofDigis();
   if (nDigis <= 2) {
     CreateHits(cluster, iCluster, event);
@@ -507,18 +457,14 @@ void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster,
     //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(iDigi);
     //const auto * digi;
     const CbmMuchDigi* digi;
-    if (!bBeamTimeDigi)
-      digi =
-        static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(iDigi));
+    if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(iDigi));
     else
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
+      digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
     //const CbmMuchDigi* digi = static_cast<const CbmMuchDigi*>(fDigis->At(iDigi));
-    UInt_t address = digi->GetAddress();
-    CbmMuchModuleGem* module =
-      (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
-    CbmMuchPad* pad = module->GetPad(address);
-    Int_t adc       = digi->GetAdc();
+    UInt_t address           = digi->GetAddress();
+    CbmMuchModuleGem* module = (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
+    CbmMuchPad* pad          = module->GetPad(address);
+    Int_t adc                = digi->GetAdc();
     fClusterPads.push_back(pad);
     fClusterCharges.push_back(adc);
     fLocalMax.push_back(1);
@@ -530,9 +476,8 @@ void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster,
     vector<CbmMuchPad*> neighbours = pad->GetNeighbours();
     vector<Int_t> selected_neighbours;
     for (UInt_t ip = 0; ip < neighbours.size(); ip++) {
-      CbmMuchPad* p = neighbours[ip];
-      vector<CbmMuchPad*>::iterator it =
-        find(fClusterPads.begin(), fClusterPads.end(), p);
+      CbmMuchPad* p                    = neighbours[ip];
+      vector<CbmMuchPad*>::iterator it = find(fClusterPads.begin(), fClusterPads.end(), p);
       if (it == fClusterPads.end()) continue;
       selected_neighbours.push_back(it - fClusterPads.begin());
     }
@@ -572,12 +517,10 @@ void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster,
 
 
 // -----   Private method CreateHits  --------------------------------------
-void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster,
-                                    Int_t iCluster,
-                                    CbmEvent* event) {
+void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event)
+{
   Int_t nDigis  = cluster->GetNofDigis();
-  Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0,
-           sumdxy2 = 0, sumdt2 = 0;
+  Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0, sumdt2 = 0;
   Double_t q = 0, x = 0, y = 0, t = 0, z = 0, dx = 0, dy = 0, dxy = 0, dt = 0;
   Double_t nX = 0, nY = 0, nZ = 0;
   Int_t address            = 0;
@@ -591,44 +534,34 @@ void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster,
     //const CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(iDigi);
     //const auto * digi;
     const CbmMuchDigi* digi;
-    if (!bBeamTimeDigi)
-      digi =
-        static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(iDigi));
+    if (!bBeamTimeDigi) digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchDigi>(iDigi));
     else
-      digi = static_cast<const CbmMuchDigi*>(
-        fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
+      digi = static_cast<const CbmMuchDigi*>(fDigiManager->Get<CbmMuchBeamTimeDigi>(iDigi));
     //const CbmMuchDigi* digi = static_cast<const CbmMuchDigi*>(fDigis->At(iDigi));
     if (i == 0) {
-      address =
-        CbmMuchAddress::GetElementAddress(digi->GetAddress(), kMuchModule);
+      address = CbmMuchAddress::GetElementAddress(digi->GetAddress(), kMuchModule);
       planeId = fGeoScheme->GetLayerSideNr(address);
       module  = (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
       z       = module->GetPosition()[2];
     }
 
-    CbmMuchModule* moduleDet =
-      fGeoScheme->GetModuleByDetId(digi->GetAddress());  /// added
+    CbmMuchModule* moduleDet = fGeoScheme->GetModuleByDetId(digi->GetAddress());  /// added
 
     CbmMuchPad* pad = module->GetPad(digi->GetAddress());
     x               = pad->GetX();
     y               = pad->GetY();
 
     /// -----------------------------Drift time correction for GEM and RPC hits------------------------
-    Double_t gemDriftTimeCorrc =
-      15.0;  // Drift time mean for GEM is 15 ns. Drift vel =100um/ns and drift width 3mm.
-    Double_t rpcDriftTimeCorrc =
-      8.33;  // Drift time mean for RPC is 8.33 ns. Drift vel =120um/ns and drift width 2mm.
-    Double_t gemHitTimeError =
-      4.0;  // Hit time error for GEM = 4.0 as residual dist width is 4, to make pull width 1.
+    Double_t gemDriftTimeCorrc = 15.0;  // Drift time mean for GEM is 15 ns. Drift vel =100um/ns and drift width 3mm.
+    Double_t rpcDriftTimeCorrc = 8.33;  // Drift time mean for RPC is 8.33 ns. Drift vel =120um/ns and drift width 2mm.
+    Double_t gemHitTimeError = 4.0;  // Hit time error for GEM = 4.0 as residual dist width is 4, to make pull width 1.
     Double_t rpcHitTimeError =
       2.3;  // Hit time error for RPC = 2.3 ns, as residual dist width is 2.3. This is made to make pull dist width ~1
-    Double_t timeShift =
-      0.5;  // this is added because residual time dist is shifted by -0.5 from 0.
+    Double_t timeShift = 0.5;  // this is added because residual time dist is shifted by -0.5 from 0.
 
     if (moduleDet->GetDetectorType() == 3)  ///GEM
     {
-      if (fFlag == 0)
-        t = digi->GetTime() - gemDriftTimeCorrc + timeShift;
+      if (fFlag == 0) t = digi->GetTime() - gemDriftTimeCorrc + timeShift;
       else
         t = digi->GetTime();  // Not correcting Drift Time for mCBM data
       dt = gemHitTimeError;
@@ -674,16 +607,13 @@ void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster,
   nZ = z;
 
   if (fFlag == 1) {
-    new ((*fHits)[iHit]) CbmMuchPixelHit(
-      address, nX, nY, nZ, dx, dy, 0, dxy, iCluster, planeId, t, dt);  //mCbm
-  } else {
-    new ((*fHits)[iHit]) CbmMuchPixelHit(
-      address, x, y, z, dx, dy, 0, dxy, iCluster, planeId, t, dt);  //Cbm
+    new ((*fHits)[iHit]) CbmMuchPixelHit(address, nX, nY, nZ, dx, dy, 0, dxy, iCluster, planeId, t, dt);  //mCbm
+  }
+  else {
+    new ((*fHits)[iHit]) CbmMuchPixelHit(address, x, y, z, dx, dy, 0, dxy, iCluster, planeId, t, dt);  //Cbm
   }
   //Adding CbmMuchPixelHit entries in the CbmEvent
-  if (event) {
-    event->AddData(ECbmDataType::kMuchPixelHit, iHit);
-  }  //? Event object
+  if (event) { event->AddData(ECbmDataType::kMuchPixelHit, iHit); }  //? Event object
 }
 // ---------------------------------------------------------------------------------
 

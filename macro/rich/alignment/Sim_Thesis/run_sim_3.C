@@ -5,7 +5,8 @@ static Double_t fieldScale;
 #include <iostream>
 using namespace std;
 
-void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
+void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3)
+{
   TTree::SetMaxTreeSize(90000000000);
   Int_t iVerbose = 0;
 
@@ -19,21 +20,24 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
   if (script == "yes") {
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
     outDir    = TString(gSystem->Getenv("OUT_DIR"));
-  } else {
+  }
+  else {
     if (geom == 0) {
       outDir = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/"
                "4mrad_X_2mrad_Y_5_3/standard/";
       setupName = "setup_4mrad_X_2mrad_Y_5_3";
-    } else if (geom == 1) {
+    }
+    else if (geom == 1) {
       string s1 = "Y";
       string s2 = "17";
-      outDir = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/" + s1 + "_5_3/"
-               + s2 + "mrad_" + s1 + "_5_3/";
+      outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/" + s1 + "_5_3/" + s2 + "mrad_" + s1 + "_5_3/";
       setupName = "setup_" + s2 + "mrad_" + s1 + "_5_3";
-    } else if (geom == 2) {
+    }
+    else if (geom == 2) {
       outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/12mrad_5_3/";
       setupName = "setup_12mrad_5_3";
-    } else if (geom == 3) {
+    }
+    else if (geom == 3) {
       outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/4mrad_5_3/";
       setupName = "setup_4mrad_5_3";
     }
@@ -51,13 +55,13 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
                  "misalignment_correction/Sim_Thesis/geosetup/"
                  + setupName + ".C";
 
-  TString boxGen = "yes";  // If "yes" then primary electrons will be generated
-  Int_t NELECTRONS  = 1;   // number of e- to be generated
-  Int_t NPOSITRONS  = 0;   // number of e+ to be generated
-  TString urqmd     = "no";  // If "yes" then UrQMD will be used as background
-  TString urqmdFile = "no";
-  TString pluto     = "no";  // If "yes" PLUTO particles will be embedded
-  TString plutoFile = "";
+  TString boxGen        = "yes";  // If "yes" then primary electrons will be generated
+  Int_t NELECTRONS      = 1;      // number of e- to be generated
+  Int_t NPOSITRONS      = 0;      // number of e+ to be generated
+  TString urqmd         = "no";   // If "yes" then UrQMD will be used as background
+  TString urqmdFile     = "no";
+  TString pluto         = "no";  // If "yes" PLUTO particles will be embedded
+  TString plutoFile     = "";
   TString plutoParticle = "";
   // ------------------------------------------------------------------------
 
@@ -71,8 +75,7 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
          << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
          << "urqmdFile: " << TString(gSystem->Getenv("URQMD_FILE")) << endl;
 
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/matching/geosetup/"
+    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/matching/geosetup/"
                    + TString(gSystem->Getenv("GEO_SETUP_FILE"));
     setupName = TString(gSystem->Getenv("SETUP_NAME"));
 
@@ -85,8 +88,7 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
     //        plutoParticle = TString(gSystem->Getenv("PLUTO_PARTICLE"));
   }
 
-  std::cout << "-I- using geoSetupFile: " << geoSetupFile
-            << " and setupName: " << setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: " << setupName << std::endl;
 
   remove(parFile.Data());
   remove(mcFile.Data());
@@ -116,8 +118,7 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   std::cout << "Geometry initialized!" << std::endl;
@@ -163,11 +164,10 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -284,8 +284,7 @@ void run_sim_3(Int_t nEvents = 2500, Int_t geom = 3) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << mcFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;

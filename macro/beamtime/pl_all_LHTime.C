@@ -1,6 +1,5 @@
-void pl_all_LHTime(Int_t iNDet     = 22,
-                   Double_t Tstart = 1.,
-                   Double_t Tend   = 1000.) {
+void pl_all_LHTime(Int_t iNDet = 22, Double_t Tstart = 1., Double_t Tend = 1000.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -29,7 +28,8 @@ void pl_all_LHTime(Int_t iNDet     = 22,
     if (h != NULL) {
       //     h->GetXaxis()->SetRange(Tstart,Tend);
       h->Draw("colz");
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }

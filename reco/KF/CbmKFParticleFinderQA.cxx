@@ -3,6 +3,7 @@
 
 // Cbm Headers ----------------------
 #include "CbmKFParticleFinderQA.h"
+
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCEventList.h"
@@ -30,17 +31,15 @@
 #include "TSystem.h"
 
 //c++ and std headers
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 using std::vector;
 
-CbmKFParticleFinderQA::CbmKFParticleFinderQA(
-  const char* name,
-  Int_t iVerbose,
-  const KFParticleTopoReconstructor* tr,
-  TString outFileName)
+CbmKFParticleFinderQA::CbmKFParticleFinderQA(const char* name, Int_t iVerbose, const KFParticleTopoReconstructor* tr,
+                                             TString outFileName)
   : FairTask(name, iVerbose)
   , fMCTracksBranchName("MCTrack")
   , fTrackMatchBranchName("StsTrackMatch")
@@ -65,7 +64,8 @@ CbmKFParticleFinderQA::CbmKFParticleFinderQA(
   , fReferenceResults("./")
   , fDecayToAnalyse(-1)
   , fCheckDecayQA(false)
-  , fTestOk(false) {
+  , fTestOk(false)
+{
   for (Int_t i = 0; i < 5; i++)
     fTime[i] = 0;
 
@@ -75,20 +75,17 @@ CbmKFParticleFinderQA::CbmKFParticleFinderQA(
   TFile* curFile           = gFile;
   TDirectory* curDirectory = gDirectory;
 
-  if (!(fOutFileName == ""))
-    fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
+  if (!(fOutFileName == "")) fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
   else
     fOutFile = gFile;
-  fTopoPerformance->CreateHistos(
-    "KFTopoReconstructor",
-    fOutFile,
-    tr->GetKFParticleFinder()->GetReconstructionList());
+  fTopoPerformance->CreateHistos("KFTopoReconstructor", fOutFile, tr->GetKFParticleFinder()->GetReconstructionList());
 
   gFile      = curFile;
   gDirectory = curDirectory;
 }
 
-CbmKFParticleFinderQA::~CbmKFParticleFinderQA() {
+CbmKFParticleFinderQA::~CbmKFParticleFinderQA()
+{
   if (fTopoPerformance) delete fTopoPerformance;
 
   if (fSaveParticles) fRecParticles->Delete();
@@ -98,7 +95,8 @@ CbmKFParticleFinderQA::~CbmKFParticleFinderQA() {
   }
 }
 
-InitStatus CbmKFParticleFinderQA::Init() {
+InitStatus CbmKFParticleFinderQA::Init()
+{
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -113,11 +111,9 @@ InitStatus CbmKFParticleFinderQA::Init() {
 
   //MC Tracks
   if (fTimeSliceMode) {
-    FairRootManager* fManger = FairRootManager::Instance();
-    CbmMCDataManager* mcManager =
-      (CbmMCDataManager*) fManger->GetObject("MCDataManager");
-    if (mcManager == 0)
-      Error("CbmKFParticleFinderQA::Init", "MC Data Manager not found!");
+    FairRootManager* fManger    = FairRootManager::Instance();
+    CbmMCDataManager* mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
+    if (mcManager == 0) Error("CbmKFParticleFinderQA::Init", "MC Data Manager not found!");
 
     fMCTrackArray = mcManager->InitBranch("MCTrack");
 
@@ -131,7 +127,8 @@ InitStatus CbmKFParticleFinderQA::Init() {
       Error("CbmKFParticleFinderQA::Init", "MC Event List not found!");
       return kERROR;
     }
-  } else {
+  }
+  else {
     fMCTrackArrayEvent = (TClonesArray*) ioman->GetObject("MCTrack");
   }
 
@@ -145,31 +142,23 @@ InitStatus CbmKFParticleFinderQA::Init() {
   if (fSaveParticles) {
     // create and register TClonesArray with output reco particles
     fRecParticles = new TClonesArray("KFParticle", 100);
-    ioman->Register("RecoParticles",
-                    "KFParticle",
-                    fRecParticles,
-                    IsOutputBranchPersistent("RecoParticles"));
+    ioman->Register("RecoParticles", "KFParticle", fRecParticles, IsOutputBranchPersistent("RecoParticles"));
   }
 
   if (fSaveMCParticles) {
     // create and register TClonesArray with output MC particles
     fMCParticles = new TClonesArray("KFMCParticle", 100);
-    ioman->Register("KFMCParticles",
-                    "KFParticle",
-                    fMCParticles,
-                    IsOutputBranchPersistent("KFMCParticles"));
+    ioman->Register("KFMCParticles", "KFParticle", fMCParticles, IsOutputBranchPersistent("KFMCParticles"));
 
     // create and register TClonesArray with matching between reco and MC particles
     fMatchParticles = new TClonesArray("KFParticleMatch", 100);
-    ioman->Register("KFParticleMatch",
-                    "KFParticle",
-                    fMatchParticles,
-                    IsOutputBranchPersistent("KFParticleMatch"));
+    ioman->Register("KFParticleMatch", "KFParticle", fMatchParticles, IsOutputBranchPersistent("KFParticleMatch"));
   }
   return kSUCCESS;
 }
 
-void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
+void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/)
+{
   if (!fSuperEventAnalysis) {
     if (fSaveParticles) fRecParticles->Delete();
     if (fSaveMCParticles) {
@@ -188,8 +177,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
 
     for (int iMCEvent = 0; iMCEvent < nMCEvents; iMCEvent++) {
       int nMCTracks = 0;
-      if (fTimeSliceMode)
-        nMCTracks = fMCTrackArray->Size(0, iMCEvent);
+      if (fTimeSliceMode) nMCTracks = fMCTrackArray->Size(0, iMCEvent);
       else
         nMCTracks = fMCTrackArrayEvent->GetEntriesFast();
 
@@ -197,8 +185,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
 
       for (Int_t iMC = 0; iMC < nMCTracks; iMC++) {
         CbmMCTrack* cbmMCTrack;
-        if (fTimeSliceMode)
-          cbmMCTrack = (CbmMCTrack*) fMCTrackArray->Get(0, iMCEvent, iMC);
+        if (fTimeSliceMode) cbmMCTrack = (CbmMCTrack*) fMCTrackArray->Get(0, iMCEvent, iMC);
         else
           cbmMCTrack = (CbmMCTrack*) fMCTrackArrayEvent->At(iMC);
 
@@ -212,8 +199,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
 
         Int_t pdg  = cbmMCTrack->GetPdgCode();
         Double_t q = 1;
-        if (pdg < 9999999
-            && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
+        if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
           q = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
         else if (pdg == 1000010020)
           q = 1;
@@ -235,8 +221,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
           q = 0;
         Double_t p = cbmMCTrack->GetP();
 
-        if (cbmMCTrack->GetMotherId() >= 0)
-          kfMCTrack.SetMotherId(cbmMCTrack->GetMotherId() + mcIndexOffset);
+        if (cbmMCTrack->GetMotherId() >= 0) kfMCTrack.SetMotherId(cbmMCTrack->GetMotherId() + mcIndexOffset);
         else
           kfMCTrack.SetMotherId(-iMCEvent - 1);
         kfMCTrack.SetQP(q / p);
@@ -255,8 +240,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
     vector<int> trackMatch(ntrackMatches, -1);
 
     for (int iTr = 0; iTr < ntrackMatches; iTr++) {
-      CbmTrackMatchNew* stsTrackMatch =
-        (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
+      CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
 
       if (stsTrackMatch->GetNofLinks() == 0) continue;
       Float_t bestWeight  = 0.f;
@@ -270,8 +254,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
           int iMCTrack = stsTrackMatch->GetLink(iLink).GetIndex();
           link         = stsTrackMatch->GetLink(iLink);
 
-          if (fTimeSliceMode)
-            mcTrackId = indexMap[link.GetFile()][link.GetEntry()][iMCTrack];
+          if (fTimeSliceMode) mcTrackId = indexMap[link.GetFile()][link.GetEntry()][iMCTrack];
           else
             mcTrackId = stsTrackMatch->GetLink(iLink).GetIndex();
         }
@@ -306,48 +289,36 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
       fTime[iT] += fTopoPerformance->GetTopoReconstructor()->StatTime(iT);
     if (fNEvents % fPrintFrequency == 0) {
       std::cout << "Topo reconstruction time"
-                << " Real = " << std::setw(10) << fTime[4] / fNEvents * 1.e3
-                << " ms" << std::endl;
-      std::cout << "    Init                " << fTime[0] / fNEvents * 1.e3
-                << " ms" << std::endl;
-      std::cout << "    PV Finder           " << fTime[1] / fNEvents * 1.e3
-                << " ms" << std::endl;
-      std::cout << "    Sort Tracks         " << fTime[2] / fNEvents * 1.e3
-                << " ms" << std::endl;
-      std::cout << "    KF Particle Finder  " << fTime[3] / fNEvents * 1.e3
-                << " ms" << std::endl;
+                << " Real = " << std::setw(10) << fTime[4] / fNEvents * 1.e3 << " ms" << std::endl;
+      std::cout << "    Init                " << fTime[0] / fNEvents * 1.e3 << " ms" << std::endl;
+      std::cout << "    PV Finder           " << fTime[1] / fNEvents * 1.e3 << " ms" << std::endl;
+      std::cout << "    Sort Tracks         " << fTime[2] / fNEvents * 1.e3 << " ms" << std::endl;
+      std::cout << "    KF Particle Finder  " << fTime[3] / fNEvents * 1.e3 << " ms" << std::endl;
     }
 
     // save particles to a ROOT file
     if (fSaveParticles) {
-      for (unsigned int iP = 0;
-           iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size();
-           iP++) {
-        new ((*fRecParticles)[iP]) KFParticle(
-          fTopoPerformance->GetTopoReconstructor()->GetParticles()[iP]);
+      for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
+        new ((*fRecParticles)[iP]) KFParticle(fTopoPerformance->GetTopoReconstructor()->GetParticles()[iP]);
       }
     }
 
     if (fSaveMCParticles) {
-      for (unsigned int iP = 0;
-           iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size();
-           iP++) {
+      for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
         new ((*fMatchParticles)[iP]) KFParticleMatch();
         KFParticleMatch* p = (KFParticleMatch*) (fMatchParticles->At(iP));
 
         Short_t matchType = 0;
         int iMCPart       = -1;
-        if (!(fTopoPerformance->ParticlesMatch()[iP]
-                .IsMatchedWithPdg()))  //background
+        if (!(fTopoPerformance->ParticlesMatch()[iP].IsMatchedWithPdg()))  //background
         {
           if (fTopoPerformance->ParticlesMatch()[iP].IsMatched()) {
-            iMCPart =
-              fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
+            iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
             matchType = 1;
           }
-        } else {
-          iMCPart =
-            fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
+        }
+        else {
+          iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
           matchType = 2;
         }
 
@@ -355,22 +326,20 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/) {
         p->SetMatchType(matchType);
       }
 
-      for (unsigned int iP = 0; iP < fTopoPerformance->MCParticles().size();
-           iP++) {
-        new ((*fMCParticles)[iP])
-          KFMCParticle(fTopoPerformance->MCParticles()[iP]);
+      for (unsigned int iP = 0; iP < fTopoPerformance->MCParticles().size(); iP++) {
+        new ((*fMCParticles)[iP]) KFMCParticle(fTopoPerformance->MCParticles()[iP]);
       }
     }
   }
 }
 
-void CbmKFParticleFinderQA::Finish() {
+void CbmKFParticleFinderQA::Finish()
+{
   if (fSuperEventAnalysis) {
     fTopoPerformance->SetPrintEffFrequency(1);
 
     vector<KFMCTrack> mcTracks(0);
-    Int_t ntrackMatches =
-      fTopoPerformance->GetTopoReconstructor()->GetParticles().size();
+    Int_t ntrackMatches = fTopoPerformance->GetTopoReconstructor()->GetParticles().size();
     vector<int> trackMatch(ntrackMatches, -1);
 
     fTopoPerformance->SetMCTracks(mcTracks);
@@ -384,16 +353,11 @@ void CbmKFParticleFinderQA::Finish() {
       fTime[iT] += fTopoPerformance->GetTopoReconstructor()->StatTime(iT);
 
     std::cout << "Topo reconstruction time"
-              << " Real = " << std::setw(10) << fTime[4] * 1.e3 << " ms"
-              << std::endl;
-    std::cout << "    Init                " << fTime[0] * 1.e3 << " ms"
-              << std::endl;
-    std::cout << "    PV Finder           " << fTime[1] * 1.e3 << " ms"
-              << std::endl;
-    std::cout << "    Sort Tracks         " << fTime[2] * 1.e3 << " ms"
-              << std::endl;
-    std::cout << "    KF Particle Finder  " << fTime[3] * 1.e3 << " ms"
-              << std::endl;
+              << " Real = " << std::setw(10) << fTime[4] * 1.e3 << " ms" << std::endl;
+    std::cout << "    Init                " << fTime[0] * 1.e3 << " ms" << std::endl;
+    std::cout << "    PV Finder           " << fTime[1] * 1.e3 << " ms" << std::endl;
+    std::cout << "    Sort Tracks         " << fTime[2] * 1.e3 << " ms" << std::endl;
+    std::cout << "    KF Particle Finder  " << fTime[3] * 1.e3 << " ms" << std::endl;
   }
 
   TDirectory* curr   = gDirectory;
@@ -404,9 +368,7 @@ void CbmKFParticleFinderQA::Finish() {
   WriteHistosCurFile(fTopoPerformance->GetHistosDirectory());
 
   if (fCheckDecayQA && fDecayToAnalyse > -1) {
-    if (fDecayToAnalyse < 0)
-      Error("CbmKFParticleFinderQA::Finish",
-            "Please specify the decay to be analysed.");
+    if (fDecayToAnalyse < 0) Error("CbmKFParticleFinderQA::Finish", "Please specify the decay to be analysed.");
     else
       CheckDecayQA();
   }
@@ -423,9 +385,9 @@ void CbmKFParticleFinderQA::Finish() {
   eff.close();
 }
 
-void CbmKFParticleFinderQA::WriteHistosCurFile(TObject* obj) {
-  if (!obj->IsFolder())
-    obj->Write();
+void CbmKFParticleFinderQA::WriteHistosCurFile(TObject* obj)
+{
+  if (!obj->IsFolder()) obj->Write();
   else {
     TDirectory* cur    = gDirectory;
     TFile* currentFile = gFile;
@@ -442,14 +404,14 @@ void CbmKFParticleFinderQA::WriteHistosCurFile(TObject* obj) {
   }
 }
 
-void CbmKFParticleFinderQA::SetPrintEffFrequency(Int_t n) {
+void CbmKFParticleFinderQA::SetPrintEffFrequency(Int_t n)
+{
   fTopoPerformance->SetPrintEffFrequency(n);
   fPrintFrequency = n;
 }
 
-void CbmKFParticleFinderQA::FitDecayQAHistograms(
-  float sigma[14],
-  const bool saveReferenceResults) const {
+void CbmKFParticleFinderQA::FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults) const
+{
   static const int nParameters       = 7;
   TString parameterName[nParameters] = {"X", "Y", "Z", "Px", "Py", "Pz", "E"};
 
@@ -457,60 +419,43 @@ void CbmKFParticleFinderQA::FitDecayQAHistograms(
   TF1* fit[nParameters * 2];
 
   for (int iParameter = 0; iParameter < nParameters; iParameter++) {
-    TString cloneResidualName =
-      TString("hResidual") + parameterName[iParameter];
+    TString cloneResidualName = TString("hResidual") + parameterName[iParameter];
     histogram[iParameter] =
-      (TH1F*) (fTopoPerformance->GetDecayResidual(fDecayToAnalyse, iParameter)
-                 ->Clone(cloneResidualName.Data()));
+      (TH1F*) (fTopoPerformance->GetDecayResidual(fDecayToAnalyse, iParameter)->Clone(cloneResidualName.Data()));
     fit[iParameter] =
-      new TF1(TString("fitResidual") + parameterName[iParameter],
-              "gaus",
-              histogram[iParameter]->GetXaxis()->GetXmin(),
+      new TF1(TString("fitResidual") + parameterName[iParameter], "gaus", histogram[iParameter]->GetXaxis()->GetXmin(),
               histogram[iParameter]->GetXaxis()->GetXmax());
     fit[iParameter]->SetLineColor(kRed);
-    histogram[iParameter]->Fit(TString("fitResidual")
-                                 + parameterName[iParameter],
-                               "QN",
-                               "",
+    histogram[iParameter]->Fit(TString("fitResidual") + parameterName[iParameter], "QN", "",
                                histogram[iParameter]->GetXaxis()->GetXmin(),
                                histogram[iParameter]->GetXaxis()->GetXmax());
     sigma[iParameter] = fit[iParameter]->GetParameter(2);
 
     TString clonePullName = TString("hPull") + parameterName[iParameter];
     histogram[iParameter + nParameters] =
-      (TH1F*) (fTopoPerformance->GetDecayPull(fDecayToAnalyse, iParameter)
-                 ->Clone(clonePullName.Data()));
-    fit[iParameter + nParameters] =
-      new TF1(TString("fitPull") + parameterName[iParameter],
-              "gaus",
-              histogram[iParameter + nParameters]->GetXaxis()->GetXmin(),
-              histogram[iParameter + nParameters]->GetXaxis()->GetXmax());
+      (TH1F*) (fTopoPerformance->GetDecayPull(fDecayToAnalyse, iParameter)->Clone(clonePullName.Data()));
+    fit[iParameter + nParameters] = new TF1(TString("fitPull") + parameterName[iParameter], "gaus",
+                                            histogram[iParameter + nParameters]->GetXaxis()->GetXmin(),
+                                            histogram[iParameter + nParameters]->GetXaxis()->GetXmax());
     fit[iParameter + nParameters]->SetLineColor(kRed);
-    histogram[iParameter + nParameters]->Fit(
-      TString("fitPull") + parameterName[iParameter],
-      "QN",
-      "",
-      histogram[iParameter + nParameters]->GetXaxis()->GetXmin(),
-      histogram[iParameter + nParameters]->GetXaxis()->GetXmax());
-    sigma[iParameter + nParameters] =
-      fit[iParameter + nParameters]->GetParameter(2);
+    histogram[iParameter + nParameters]->Fit(TString("fitPull") + parameterName[iParameter], "QN", "",
+                                             histogram[iParameter + nParameters]->GetXaxis()->GetXmin(),
+                                             histogram[iParameter + nParameters]->GetXaxis()->GetXmax());
+    sigma[iParameter + nParameters] = fit[iParameter + nParameters]->GetParameter(2);
   }
 
   if (saveReferenceResults) {
     TCanvas fitCanvas("fitCanvas", "fitCanvas", 1600, 800);
     fitCanvas.Divide(4, 4);
 
-    int padMap[nParameters * 2] = {
-      1, 2, 3, 9, 10, 11, 12, 5, 6, 7, 13, 14, 15, 16};
+    int padMap[nParameters * 2] = {1, 2, 3, 9, 10, 11, 12, 5, 6, 7, 13, 14, 15, 16};
     for (int iHisto = 0; iHisto < nParameters * 2; iHisto++) {
       fitCanvas.cd(padMap[iHisto]);
       histogram[iHisto]->Draw();
       fit[iHisto]->Draw("same");
     }
 
-    TString canvasFile = TString("FitQA_")
-                         + fTopoPerformance->fParteff.partName[fDecayToAnalyse]
-                         + TString(".pdf");
+    TString canvasFile = TString("FitQA_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse] + TString(".pdf");
     fitCanvas.SaveAs(canvasFile.Data());
   }
 
@@ -518,21 +463,18 @@ void CbmKFParticleFinderQA::FitDecayQAHistograms(
     if (fit[iHisto]) delete fit[iHisto];
 }
 
-void CbmKFParticleFinderQA::CheckDecayQA() {
+void CbmKFParticleFinderQA::CheckDecayQA()
+{
   float sigma[14];
   FitDecayQAHistograms(sigma, true);
 
   TString referenceFileName =
-    fReferenceResults + TString("/qa_")
-    + fTopoPerformance->fParteff.partName[fDecayToAnalyse] + TString(".root");
-  TString qaFileName = TString("qa_")
-                       + fTopoPerformance->fParteff.partName[fDecayToAnalyse]
-                       + TString(".root");
+    fReferenceResults + TString("/qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse] + TString(".root");
+  TString qaFileName = TString("qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse] + TString(".root");
 
   int iQAFile = 2;
   while (!gSystem->AccessPathName(qaFileName)) {
-    qaFileName =
-      TString("qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse];
+    qaFileName = TString("qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse];
     qaFileName += iQAFile;
     qaFileName += TString(".root");
     iQAFile++;
@@ -542,36 +484,21 @@ void CbmKFParticleFinderQA::CheckDecayQA() {
   TDirectory* curDirectory = gDirectory;
   TFile* qaFile            = new TFile(qaFileName.Data(), "RECREATE");
 
-  TString qaHistoName =
-    TString("qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse];
-  TH1F* qaHisto = new TH1F(qaHistoName.Data(), qaHistoName.Data(), 16, 0, 16);
+  TString qaHistoName = TString("qa_") + fTopoPerformance->fParteff.partName[fDecayToAnalyse];
+  TH1F* qaHisto       = new TH1F(qaHistoName.Data(), qaHistoName.Data(), 16, 0, 16);
 
-  TString binLabel[16] = {"#sigma_{x}",
-                          "#sigma_{y}",
-                          "#sigma_{z}",
-                          "#sigma_{p_{x}}",
-                          "#sigma_{p_{y}}",
-                          "#sigma_{p_{z}}",
-                          "#sigma_{E}",
-                          "P_{x}",
-                          "P_{y}",
-                          "P_{z}",
-                          "P_{p_{x}}",
-                          "P_{p_{y}}",
-                          "P_{p_{z}}",
-                          "P_{E}",
-                          "#varepsilon_{4#pi}",
-                          "#varepsilon_{KFP}"};
+  TString binLabel[16] = {"#sigma_{x}",     "#sigma_{y}",     "#sigma_{z}",         "#sigma_{p_{x}}",
+                          "#sigma_{p_{y}}", "#sigma_{p_{z}}", "#sigma_{E}",         "P_{x}",
+                          "P_{y}",          "P_{z}",          "P_{p_{x}}",          "P_{p_{y}}",
+                          "P_{p_{z}}",      "P_{E}",          "#varepsilon_{4#pi}", "#varepsilon_{KFP}"};
   for (int iBin = 0; iBin < 16; iBin++)
     qaHisto->GetXaxis()->SetBinLabel(iBin + 1, binLabel[iBin].Data());
 
   for (int iSigma = 0; iSigma < 14; iSigma++)
     qaHisto->SetBinContent(iSigma + 1, sigma[iSigma]);
 
-  qaHisto->SetBinContent(
-    15, fTopoPerformance->fParteff.GetTotal4piEfficiency(fDecayToAnalyse));
-  qaHisto->SetBinContent(
-    16, fTopoPerformance->fParteff.GetTotalKFPEfficiency(fDecayToAnalyse));
+  qaHisto->SetBinContent(15, fTopoPerformance->fParteff.GetTotal4piEfficiency(fDecayToAnalyse));
+  qaHisto->SetBinContent(16, fTopoPerformance->fParteff.GetTotalKFPEfficiency(fDecayToAnalyse));
 
   qaHisto->Write();
 
@@ -582,20 +509,17 @@ void CbmKFParticleFinderQA::CheckDecayQA() {
     if (referenceHisto) {
       fTestOk = true;
       for (int iBin = 1; iBin <= 7; iBin++)
-        fTestOk &= fabs(referenceHisto->GetBinContent(iBin)
-                        - qaHisto->GetBinContent(iBin))
-                     / referenceHisto->GetBinContent(iBin)
-                   < 0.25;
+        fTestOk &=
+          fabs(referenceHisto->GetBinContent(iBin) - qaHisto->GetBinContent(iBin)) / referenceHisto->GetBinContent(iBin)
+          < 0.25;
       for (int iBin = 8; iBin <= 14; iBin++)
-        fTestOk &= fabs(referenceHisto->GetBinContent(iBin)
-                        - qaHisto->GetBinContent(iBin))
-                     / referenceHisto->GetBinContent(iBin)
-                   < 0.25;
+        fTestOk &=
+          fabs(referenceHisto->GetBinContent(iBin) - qaHisto->GetBinContent(iBin)) / referenceHisto->GetBinContent(iBin)
+          < 0.25;
       for (int iBin = 15; iBin <= 16; iBin++)
-        fTestOk &= fabs(referenceHisto->GetBinContent(iBin)
-                        - qaHisto->GetBinContent(iBin))
-                     / referenceHisto->GetBinContent(iBin)
-                   < 0.1;
+        fTestOk &=
+          fabs(referenceHisto->GetBinContent(iBin) - qaHisto->GetBinContent(iBin)) / referenceHisto->GetBinContent(iBin)
+          < 0.1;
     }
     referenceFile->Close();
     referenceFile->Delete();

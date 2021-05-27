@@ -7,10 +7,11 @@
 #define CBMSTSSIMSENSORFACTORY_H 1
 
 
-#include <Rtypes.h>
-#include <memory>
-
 #include "CbmStsSimSensor.h"
+
+#include <Rtypes.h>
+
+#include <memory>
 
 class CbmStsParSensor;
 

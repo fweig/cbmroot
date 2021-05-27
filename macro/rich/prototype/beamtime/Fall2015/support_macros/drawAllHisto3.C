@@ -2,11 +2,9 @@
 // calib = 1 - see results after calibration
 // ind = [0;15] - index of the canvas to plot
 
-void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root",
-                   TString tdcN,
-                   TString pictureFolder,
-                   Int_t ind   = 0,
-                   Int_t calib = 0) {
+void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root", TString tdcN, TString pictureFolder,
+                   Int_t ind = 0, Int_t calib = 0)
+{
   TFile* f = new TFile(filename);
 
   //f->ls();
@@ -26,11 +24,7 @@ void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root",
       for (Int_t k = 0; k < 4; k++) {
         if (j * 4 + k >= i) {
           c[i]->cd(j * 4 + k + 1);
-          histoName.Form("LeadingEdgeDiff_TDC%s_%d_%d;%d",
-                         tdcN.Data(),
-                         i,
-                         j * 4 + k,
-                         calib + 1);
+          histoName.Form("LeadingEdgeDiff_TDC%s_%d_%d;%d", tdcN.Data(), i, j * 4 + k, calib + 1);
           histo = (TH1D*) f->Get(histoName);
           if (histo->GetEntries() > 100) {
             histo->Rebin(4);
@@ -41,8 +35,7 @@ void drawAllHisto3(TString filename = "Wuppertal_analysis.histo.root",
     }
 
     TString outFileName;
-    outFileName.Form(
-      "%s/canvas_TDC%s_%d.png", pictureFolder.Data(), tdcN.Data(), i);
+    outFileName.Form("%s/canvas_TDC%s_%d.png", pictureFolder.Data(), tdcN.Data(), i);
     c[i]->SaveAs(outFileName);
   }
 }

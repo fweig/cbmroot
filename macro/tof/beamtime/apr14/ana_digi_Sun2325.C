@@ -1,9 +1,6 @@
-void ana_digi_Sun2325(Int_t nEvents   = 1000000,
-                      Int_t calMode   = 0,
-                      Int_t calTrg    = -1,
-                      Int_t calSmType = 2,
-                      Int_t RefTrg    = 1,
-                      char* cFileId   = "MbsTrbSun2325") {
+void ana_digi_Sun2325(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calTrg = -1, Int_t calSmType = 2,
+                      Int_t RefTrg = 1, char* cFileId = "MbsTrbSun2325")
+{
   Int_t iVerbose = 3;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -26,17 +23,16 @@ void ana_digi_Sun2325(Int_t nEvents   = 1000000,
   TObjString mapParFile = paramDir + "/parMapApr2014MbsTrbBeam.txt";
   parFileList->Add(&mapParFile);
 
-  TString TofGeo = "v14a";
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TString TofGeo         = "v14a";
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -69,8 +65,7 @@ void ana_digi_Sun2325(Int_t nEvents   = 1000000,
   tofTestBeamClust->SetCalTrg(calTrg);
   tofTestBeamClust->SetCaldXdYMax(1.);  // geometrical matching window
   tofTestBeamClust->SetdTRefMax(5000.);
-  tofTestBeamClust->SetCalSmType(
-    calSmType);  // select detectors for walk correction
+  tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
   //tofTestBeamClust->SetTRefDetId(20486);        //0x00005006; big Diamond
   //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
   // tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
@@ -81,157 +76,129 @@ void ana_digi_Sun2325(Int_t nEvents   = 1000000,
       tofTestBeamClust->PosYMaxScal(200.);       //in % of length
       break;
     case 1:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_01tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_01tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(5000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.0);      // in % of length
       break;
     case 11:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_11tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_11tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(5000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.0);      // in % of length
       break;
     case 21:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_21tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_21tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(4000.);  // in ps
       tofTestBeamClust->PosYMaxScal(2.0);      // in % of length
       break;
     case 31:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_31tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_31tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(2000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.0);      // in % of length
       break;
     case 41:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_41tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_41tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(1000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.0);      // in % of length
       break;
     case 2:  // time difference calibration
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_02tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_02tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(10.);        //in % of length
       break;
     case 12:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_12tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_12tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(5.);         //in % of length
       break;
     case 22:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_22tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_22tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(4.);         //in % of length
       break;
     case 32:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_32tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_32tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(3.);         //in % of length
       break;
     case 42:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_42tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_42tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(2.);         //in % of length
       break;
     case 52:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_52tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_52tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);         //in % of length
       break;
     case 62:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_62tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_62tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(5000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.5);      //in % of length
       break;
     case 3:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_03tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_03tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(200000.);  // in ps
       tofTestBeamClust->PosYMaxScal(5.);         //in % of length
       break;
     case 13:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_13tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_13tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(100000.);  // in ps
       tofTestBeamClust->PosYMaxScal(2.5);        //in % of length
       break;
     case 23:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_23tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_23tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(50000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.5);       //in % of length
       break;
     case 33:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_33tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_33tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(25000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);        //in % of length
       break;
     case 43:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_43tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_43tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(12000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);        //in % of length
       break;
     case 53:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_53tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_53tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(5000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
     case 63:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_63tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_63tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(2500.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
     case 73:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_73tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_73tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(1000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
     case 83:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_83tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_83tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(700.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);      //in % of length
       break;
     case 4:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_04tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_04tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(2500.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
     case 14:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_14tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_14tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(2000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
     case 24:
-      tofTestBeamClust->SetCalParFileName(
-        "MbsTrbSun2325_24tofTestBeamClust.hst.root");
+      tofTestBeamClust->SetCalParFileName("MbsTrbSun2325_24tofTestBeamClust.hst.root");
       tofTestBeamClust->SetTRefDifMax(1000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
   run->AddTask(tofTestBeamClust);
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
   tofAnaTestbeam->SetDXMean(-0.06);
   tofAnaTestbeam->SetDYMean(-0.63);
   tofAnaTestbeam->SetDTMean(34.5);  // in ps

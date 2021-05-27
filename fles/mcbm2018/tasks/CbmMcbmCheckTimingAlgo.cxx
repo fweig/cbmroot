@@ -38,7 +38,8 @@ CbmMcbmCheckTimingAlgo::CbmMcbmCheckTimingAlgo() {}
 CbmMcbmCheckTimingAlgo::~CbmMcbmCheckTimingAlgo() {}
 
 // ----  Initialisation  ----------------------------------------------
-void CbmMcbmCheckTimingAlgo::SetParContainers() {
+void CbmMcbmCheckTimingAlgo::SetParContainers()
+{
   // Load all necessary parameter containers from the runtime data base
   /*
   FairRunAna* ana = FairRunAna::Instance();
@@ -50,14 +51,13 @@ void CbmMcbmCheckTimingAlgo::SetParContainers() {
 }
 
 // ---- Init ----------------------------------------------------------
-Bool_t CbmMcbmCheckTimingAlgo::Init() {
+Bool_t CbmMcbmCheckTimingAlgo::Init()
+{
   /// Check if all required data input storage are present
   /// Reference detector
   CheckDataPresence(fRefDet);
   /// Checked detectors
-  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     CheckDataPresence(*det);
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
@@ -66,7 +66,8 @@ Bool_t CbmMcbmCheckTimingAlgo::Init() {
   return kTRUE;
 }
 
-void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck) {
+void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck)
+{
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
   fDigiMan               = CbmDigiManager::Instance();
@@ -83,12 +84,12 @@ void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck) {
     }  // if ( ! fpT0DigiVec )
   }    // if( ECbmModuleId::kT0 == detToCheck.detId )
   else if (!fDigiMan->IsPresent(detToCheck.detId)) {
-    LOG(fatal) << "No " << detToCheck.sName
-               << " digis found while it should be used. Stopping there!";
+    LOG(fatal) << "No " << detToCheck.sName << " digis found while it should be used. Stopping there!";
   }  // else if ( ! fDigiMan->IsPresent( detToCheck.detId ) ) of if( ECbmModuleId::kT0 == detToCheck.detId )
 }
 
-void CbmMcbmCheckTimingAlgo::CreateHistos() {
+void CbmMcbmCheckTimingAlgo::CreateHistos()
+{
   /// FIXME: Disable clang formatting for histograms declaration for now
   /* clang-format off */
 
@@ -176,7 +177,8 @@ void CbmMcbmCheckTimingAlgo::CreateHistos() {
 Bool_t CbmMcbmCheckTimingAlgo::ReInit() { return kTRUE; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmMcbmCheckTimingAlgo::ProcessTs() {
+void CbmMcbmCheckTimingAlgo::ProcessTs()
+{
   LOG(debug) << "executing TS " << fuNbTs;
 
   switch (fRefDet.detId) {
@@ -210,8 +212,7 @@ void CbmMcbmCheckTimingAlgo::ProcessTs() {
     }  // case ECbmModuleId::kT0:
     default: {
       LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
-                 << "Trying to search matches with unsupported det: "
-                 << fRefDet.sName;
+                 << "Trying to search matches with unsupported det: " << fRefDet.sName;
       break;
     }  // default:
   }    // switch( fRefDet )
@@ -220,13 +221,12 @@ void CbmMcbmCheckTimingAlgo::ProcessTs() {
 }
 
 template<class DigiRef>
-void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
+void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
+{
   UInt_t uNbRefDigis = 0;
   switch (fRefDet.detId) {
     case ECbmModuleId::kNotExist: {
-      LOG(fatal)
-        << "CbmMcbmCheckTimingAlgo::Exec => Unknow reference detector enum! "
-        << fRefDet.sName;
+      LOG(fatal) << "CbmMcbmCheckTimingAlgo::Exec => Unknow reference detector enum! " << fRefDet.sName;
       break;
     }  // Digi containers controlled by DigiManager
     case ECbmModuleId::kT0: {
@@ -240,9 +240,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
   }    // switch( fRefDet.detId )
 
   /// Re-initialize array references
-  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     (*det).iPrevRefFirstDigi = 0;
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
@@ -268,15 +266,13 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
     if (fRefDet.uChargeCutMin != fRefDet.uChargeCutMax) {
       if (fRefDet.uChargeCutMin < fRefDet.uChargeCutMax) {
         /// Cut charges between Min and Max to reject pulser
-        if (fRefDet.uChargeCutMin < dRefCharge
-            && dRefCharge < fRefDet.uChargeCutMax) {
+        if (fRefDet.uChargeCutMin < dRefCharge && dRefCharge < fRefDet.uChargeCutMax) {
           continue;
         }  // if( fRefDet.uChargeCutMin < dRefCharge && dRefCharge < fRefDet.uChargeCutMax )
       }    // if( fRefDet.uChargeCutMin < fRefDet.uChargeCutMax )
       else {
         /// Select charges between Max and Min to select pulser (Min and Max swapped!!)
-        if (fRefDet.uChargeCutMin < dRefCharge
-            || dRefCharge < fRefDet.uChargeCutMax) {
+        if (fRefDet.uChargeCutMin < dRefCharge || dRefCharge < fRefDet.uChargeCutMax) {
           continue;
         }  // if( fRefDet.uChargeCutMin < dRefCharge || dRefCharge < fRefDet.uChargeCutMax )
       }    // else of if( fRefDet.uChargeCutMin < fRefDet.uChargeCutMax )
@@ -290,8 +286,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
           break;
         }  // case ECbmModuleId::kSts:
         case ECbmModuleId::kMuch: {
-          FillTimeOffsetHistos<CbmMuchBeamTimeDigi>(
-            dRefTime, dRefCharge, uDetIdx);
+          FillTimeOffsetHistos<CbmMuchBeamTimeDigi>(dRefTime, dRefCharge, uDetIdx);
           break;
         }  // case ECbmModuleId::kMuch:
         case ECbmModuleId::kTrd: {
@@ -316,8 +311,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
         }  // case ECbmModuleId::kT0:
         default: {
           LOG(fatal) << "CbmMcbmCheckTimingAlgo::CheckInterSystemOffset => "
-                     << "Trying to search matches with unsupported det: "
-                     << fvDets[uDetIdx].sName;
+                     << "Trying to search matches with unsupported det: " << fvDets[uDetIdx].sName;
           break;
         }  // default:
       }    // switch( fvDets[ uDetIdx ].detId )
@@ -326,9 +320,8 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset() {
 }
 
 template<class Digi>
-void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime,
-                                                  const Double_t dRefCharge,
-                                                  UInt_t uDetIdx) {
+void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const Double_t dRefCharge, UInt_t uDetIdx)
+{
   UInt_t uNbDigis = 0;
   switch (fvDets[uDetIdx].detId) {
     case ECbmModuleId::kNotExist: {
@@ -349,8 +342,7 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime,
 
   UInt_t uFirstDigiInWin = fvDets[uDetIdx].iPrevRefFirstDigi;
 
-  for (UInt_t uDigiIdx = fvDets[uDetIdx].iPrevRefFirstDigi; uDigiIdx < uNbDigis;
-       ++uDigiIdx) {
+  for (UInt_t uDigiIdx = fvDets[uDetIdx].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx) {
     Double_t dTime   = 0;
     Double_t dCharge = 0;
     if (ECbmModuleId::kT0 == fvDets[uDetIdx].detId) {
@@ -384,19 +376,17 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime,
     if (fvDets[uDetIdx].uChargeCutMin != fvDets[uDetIdx].uChargeCutMax) {
       if (fvDets[uDetIdx].uChargeCutMin < fvDets[uDetIdx].uChargeCutMax) {
         /// Cut charges between Min and Max to reject pulser
-        if (fvDets[uDetIdx].uChargeCutMin < dCharge
-            && dCharge < fvDets[uDetIdx].uChargeCutMax) {
+        if (fvDets[uDetIdx].uChargeCutMin < dCharge && dCharge < fvDets[uDetIdx].uChargeCutMax) {
           continue;
         }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge && dCharge < fvDets[ uDetIdx ].uChargeCutMax )
-      }  // if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
+      }    // if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
       else {
         /// Select charges between Max and Min to select pulser (Min and Max swapped!!)
-        if (fvDets[uDetIdx].uChargeCutMin < dCharge
-            || dCharge < fvDets[uDetIdx].uChargeCutMax) {
+        if (fvDets[uDetIdx].uChargeCutMin < dCharge || dCharge < fvDets[uDetIdx].uChargeCutMax) {
           continue;
         }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge || dCharge < fvDets[ uDetIdx ].uChargeCutMax )
-      }  // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
-    }  // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
+      }    // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
+    }      // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
 
     /// Fill histos
     fvhDetToRefDiff[uDetIdx]->Fill(dDiffTime);
@@ -411,11 +401,10 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime,
 }
 
 // ---- Finish --------------------------------------------------------
-void CbmMcbmCheckTimingAlgo::Finish() {
-  LOG(info) << Form("Checked %6d Timeslices", fuNbTs);
-}
+void CbmMcbmCheckTimingAlgo::Finish() { LOG(info) << Form("Checked %6d Timeslices", fuNbTs); }
 
-void CbmMcbmCheckTimingAlgo::WriteHistos() {
+void CbmMcbmCheckTimingAlgo::WriteHistos()
+{
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
@@ -443,13 +432,10 @@ void CbmMcbmCheckTimingAlgo::WriteHistos() {
 }
 
 // ---- Finish --------------------------------------------------------
-void CbmMcbmCheckTimingAlgo::SetReferenceDetector(ECbmModuleId refDetIn,
-                                                  std::string sNameIn,
-                                                  Double_t dTimeRangeBegIn,
-                                                  Double_t dTimeRangeEndIn,
-                                                  UInt_t uRangeNbBinsIn,
-                                                  UInt_t uChargeCutMinIn,
-                                                  UInt_t uChargeCutMaxIn) {
+void CbmMcbmCheckTimingAlgo::SetReferenceDetector(ECbmModuleId refDetIn, std::string sNameIn, Double_t dTimeRangeBegIn,
+                                                  Double_t dTimeRangeEndIn, UInt_t uRangeNbBinsIn,
+                                                  UInt_t uChargeCutMinIn, UInt_t uChargeCutMaxIn)
+{
   fRefDet.detId         = refDetIn;
   fRefDet.sName         = sNameIn;
   fRefDet.dTimeRangeBeg = dTimeRangeBegIn;
@@ -458,19 +444,15 @@ void CbmMcbmCheckTimingAlgo::SetReferenceDetector(ECbmModuleId refDetIn,
   fRefDet.uChargeCutMin = uChargeCutMinIn;
   fRefDet.uChargeCutMax = uChargeCutMaxIn;
 }
-void CbmMcbmCheckTimingAlgo::AddCheckDetector(ECbmModuleId detIn,
-                                              std::string sNameIn,
-                                              Double_t dTimeRangeBegIn,
-                                              Double_t dTimeRangeEndIn,
-                                              UInt_t uRangeNbBinsIn,
-                                              UInt_t uChargeCutMinIn,
-                                              UInt_t uChargeCutMaxIn) {
+void CbmMcbmCheckTimingAlgo::AddCheckDetector(ECbmModuleId detIn, std::string sNameIn, Double_t dTimeRangeBegIn,
+                                              Double_t dTimeRangeEndIn, UInt_t uRangeNbBinsIn, UInt_t uChargeCutMinIn,
+                                              UInt_t uChargeCutMaxIn)
+{
   std::vector<CheckTimingDetector>::iterator det;
   for (det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == detIn) {
-      LOG(warning)
-        << "CbmMcbmCheckTimingAlgo::AddCheckDetector => Detector already in "
-           "list, this call will only update the parameters!";
+      LOG(warning) << "CbmMcbmCheckTimingAlgo::AddCheckDetector => Detector already in "
+                      "list, this call will only update the parameters!";
 
       (*det).dTimeRangeBeg = dTimeRangeBegIn;
       (*det).dTimeRangeEnd = dTimeRangeEndIn;
@@ -494,15 +476,14 @@ void CbmMcbmCheckTimingAlgo::AddCheckDetector(ECbmModuleId detIn,
   }  // if( fvDets.end() == det )
 }
 
-void CbmMcbmCheckTimingAlgo::RemoveCheckDetector(ECbmModuleId detIn) {
-  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+void CbmMcbmCheckTimingAlgo::RemoveCheckDetector(ECbmModuleId detIn)
+{
+  for (std::vector<CheckTimingDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == detIn) {
       fvDets.erase(det);
       break;
     }  // if( (*det).detId == detIn )
-  }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 }
 
 ClassImp(CbmMcbmCheckTimingAlgo)

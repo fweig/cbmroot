@@ -78,66 +78,52 @@ CbmAnaConversionTest2::CbmAnaConversionTest2()
   , fhTest2_3rich_electrons_theta_included(NULL)
   , fhTest2_3rich_electrons_theta_missing(NULL)
   , fhTest2_3rich_electrons_thetaVSp_included(NULL)
-  , fhTest2_3rich_electrons_thetaVSp_missing(NULL) {}
+  , fhTest2_3rich_electrons_thetaVSp_missing(NULL)
+{
+}
 
 CbmAnaConversionTest2::~CbmAnaConversionTest2() {}
 
 
-void CbmAnaConversionTest2::Init() {
+void CbmAnaConversionTest2::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmAnaConversion::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmAnaConversion::Init", "RootManager not instantised!"); }
 
   fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmAnaConversion::Init", "No RichPoint array!");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmAnaConversion::Init", "No RichPoint array!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmAnaConversion::Init", "No MCTrack array!");
-  }
+  if (NULL == fMcTracks) { Fatal("CbmAnaConversion::Init", "No MCTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmAnaConversion::Init", "No StsTrack array!");
-  }
+  if (NULL == fStsTracks) { Fatal("CbmAnaConversion::Init", "No StsTrack array!"); }
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fStsTrackMatches) {
-    Fatal("CbmAnaConversion::Init", "No StsTrackMatch array!");
-  }
+  if (NULL == fStsTrackMatches) { Fatal("CbmAnaConversion::Init", "No StsTrackMatch array!"); }
 
   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmAnaConversion::Init", "No GlobalTrack array!");
-  }
+  if (NULL == fGlobalTracks) { Fatal("CbmAnaConversion::Init", "No GlobalTrack array!"); }
 
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
   fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex."));
-  if (nullptr == fPrimVertex) {
-    fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex"));
-  }
+  if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex")); }
   if (nullptr == fPrimVertex) { LOG(fatal) << "No PrimaryVertex array!"; }
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmAnaConversion::Init", "No RichRing array!");
-  }
+  if (NULL == fRichRings) { Fatal("CbmAnaConversion::Init", "No RichRing array!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmAnaConversion::Init", "No RichRingMatch array!");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmAnaConversion::Init", "No RichRingMatch array!"); }
 
   InitHistos();
 }
 
 
-void CbmAnaConversionTest2::InitHistos() {
+void CbmAnaConversionTest2::InitHistos()
+{
   fHistoList_test2.clear();
 
   Double_t invmassSpectra_nof   = 800;
@@ -145,79 +131,46 @@ void CbmAnaConversionTest2::InitHistos() {
   Double_t invmassSpectra_end   = 1.99875;
 
 
-  fhTest2_invmass_RICHindex0 = new TH1D(
-    "fhTest2_invmass_RICHindex0",
-    "fhTest2_invmass_RICHindex0; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
-    600,
-    -0.0025,
-    2.9975);
+  fhTest2_invmass_RICHindex0 =
+    new TH1D("fhTest2_invmass_RICHindex0", "fhTest2_invmass_RICHindex0; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
+             600, -0.0025, 2.9975);
   fHistoList_test2.push_back(fhTest2_invmass_RICHindex0);
-  fhTest2_invmass_RICHindex1 = new TH1D(
-    "fhTest2_invmass_RICHindex1",
-    "fhTest2_invmass_RICHindex1; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
-    600,
-    -0.0025,
-    2.9975);
+  fhTest2_invmass_RICHindex1 =
+    new TH1D("fhTest2_invmass_RICHindex1", "fhTest2_invmass_RICHindex1; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
+             600, -0.0025, 2.9975);
   fHistoList_test2.push_back(fhTest2_invmass_RICHindex1);
-  fhTest2_invmass_RICHindex2 = new TH1D(
-    "fhTest2_invmass_RICHindex2",
-    "fhTest2_invmass_RICHindex2; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
-    600,
-    -0.0025,
-    2.9975);
+  fhTest2_invmass_RICHindex2 =
+    new TH1D("fhTest2_invmass_RICHindex2", "fhTest2_invmass_RICHindex2; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
+             600, -0.0025, 2.9975);
   fHistoList_test2.push_back(fhTest2_invmass_RICHindex2);
-  fhTest2_invmass_RICHindex3 = new TH1D(
-    "fhTest2_invmass_RICHindex3",
-    "fhTest2_invmass_RICHindex3; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
-    600,
-    -0.0025,
-    2.9975);
+  fhTest2_invmass_RICHindex3 =
+    new TH1D("fhTest2_invmass_RICHindex3", "fhTest2_invmass_RICHindex3; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
+             600, -0.0025, 2.9975);
   fHistoList_test2.push_back(fhTest2_invmass_RICHindex3);
-  fhTest2_invmass_RICHindex4 = new TH1D(
-    "fhTest2_invmass_RICHindex4",
-    "fhTest2_invmass_RICHindex4; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
-    600,
-    -0.0025,
-    2.9975);
+  fhTest2_invmass_RICHindex4 =
+    new TH1D("fhTest2_invmass_RICHindex4", "fhTest2_invmass_RICHindex4; invariant mass of 4 e^{#pm} in GeV/c^{2}; #",
+             600, -0.0025, 2.9975);
   fHistoList_test2.push_back(fhTest2_invmass_RICHindex4);
 
 
-  fhTest2_invmass_gee_mc = new TH1D(
-    "fhTest2_invmass_gee_mc",
-    "fhTest2_invmass_gee_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_invmass_gee_refitted = new TH1D(
-    "fhTest2_invmass_gee_refitted",
-    "fhTest2_invmass_gee_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
+  fhTest2_invmass_gee_mc =
+    new TH1D("fhTest2_invmass_gee_mc", "fhTest2_invmass_gee_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_invmass_gee_refitted =
+    new TH1D("fhTest2_invmass_gee_refitted", "fhTest2_invmass_gee_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
   fhTest2_invmass_gg_mc =
-    new TH1D("fhTest2_invmass_gg_mc",
-             "fhTest2_invmass_gg_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-             invmassSpectra_nof,
-             invmassSpectra_start,
-             invmassSpectra_end);
-  fhTest2_invmass_gg_refitted = new TH1D(
-    "fhTest2_invmass_gg_refitted",
-    "fhTest2_invmass_gg_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_invmass_all_mc = new TH1D(
-    "fhTest2_invmass_all_mc",
-    "fhTest2_invmass_all_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_invmass_all_refitted = new TH1D(
-    "fhTest2_invmass_all_refitted",
-    "fhTest2_invmass_all_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
+    new TH1D("fhTest2_invmass_gg_mc", "fhTest2_invmass_gg_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_invmass_gg_refitted =
+    new TH1D("fhTest2_invmass_gg_refitted", "fhTest2_invmass_gg_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_invmass_all_mc =
+    new TH1D("fhTest2_invmass_all_mc", "fhTest2_invmass_all_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_invmass_all_refitted =
+    new TH1D("fhTest2_invmass_all_refitted", "fhTest2_invmass_all_refitted;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
   fHistoList_test2.push_back(fhTest2_invmass_gee_mc);
   fHistoList_test2.push_back(fhTest2_invmass_gee_refitted);
   fHistoList_test2.push_back(fhTest2_invmass_gg_mc);
@@ -226,99 +179,48 @@ void CbmAnaConversionTest2::InitHistos() {
   fHistoList_test2.push_back(fhTest2_invmass_all_refitted);
 
   fhTest2_pt_vs_rap_gee =
-    new TH2D("fhTest2_pt_vs_rap_gee",
-             "fhTest2_pt_vs_rap_gee;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhTest2_pt_vs_rap_gee", "fhTest2_pt_vs_rap_gee;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
   fhTest2_pt_vs_rap_gg =
-    new TH2D("fhTest2_pt_vs_rap_gg",
-             "fhTest2_pt_vs_rap_gg;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhTest2_pt_vs_rap_gg", "fhTest2_pt_vs_rap_gg;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
   fhTest2_pt_vs_rap_all =
-    new TH2D("fhTest2_pt_vs_rap_all",
-             "fhTest2_pt_vs_rap_all;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhTest2_pt_vs_rap_all", "fhTest2_pt_vs_rap_all;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
   fHistoList_test2.push_back(fhTest2_pt_vs_rap_gee);
   fHistoList_test2.push_back(fhTest2_pt_vs_rap_gg);
   fHistoList_test2.push_back(fhTest2_pt_vs_rap_all);
 
   fhTest2_startvertexElectrons_gee =
-    new TH1D("fhTest2_startvertexElectrons_gee",
-             "fhTest2_startvertexElectrons_gee;z in cm;#",
-             411,
-             -5.25,
-             200.25);
+    new TH1D("fhTest2_startvertexElectrons_gee", "fhTest2_startvertexElectrons_gee;z in cm;#", 411, -5.25, 200.25);
   fhTest2_startvertexElectrons_gg =
-    new TH1D("fhTest2_startvertexElectrons_gg",
-             "fhTest2_startvertexElectrons_gg;z in cm;#",
-             411,
-             -5.25,
-             200.25);
+    new TH1D("fhTest2_startvertexElectrons_gg", "fhTest2_startvertexElectrons_gg;z in cm;#", 411, -5.25, 200.25);
   fhTest2_startvertexElectrons_all =
-    new TH1D("fhTest2_startvertexElectrons_all",
-             "fhTest2_startvertexElectrons_all;z in cm;#",
-             411,
-             -5.25,
-             200.25);
+    new TH1D("fhTest2_startvertexElectrons_all", "fhTest2_startvertexElectrons_all;z in cm;#", 411, -5.25, 200.25);
   fHistoList_test2.push_back(fhTest2_startvertexElectrons_gee);
   fHistoList_test2.push_back(fhTest2_startvertexElectrons_gg);
   fHistoList_test2.push_back(fhTest2_startvertexElectrons_all);
 
 
   // 2 leptons in RICH
-  fhTest2_2rich_invmass_gee_mc = new TH1D(
-    "fhTest2_2rich_invmass_gee_mc",
-    "fhTest2_2rich_invmass_gee_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_2rich_invmass_gee_refitted =
-    new TH1D("fhTest2_2rich_invmass_gee_refitted",
-             "fhTest2_2rich_invmass_gee_refitted;invariant mass of 4 e^{#pm} "
-             "in GeV/c^{2};#",
-             invmassSpectra_nof,
-             invmassSpectra_start,
-             invmassSpectra_end);
-  fhTest2_2rich_invmass_gg_mc = new TH1D(
-    "fhTest2_2rich_invmass_gg_mc",
-    "fhTest2_2rich_invmass_gg_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_2rich_invmass_gg_refitted =
-    new TH1D("fhTest2_2rich_invmass_gg_refitted",
-             "fhTest2_2rich_invmass_gg_refitted;invariant mass of 4 e^{#pm} in "
-             "GeV/c^{2};#",
-             invmassSpectra_nof,
-             invmassSpectra_start,
-             invmassSpectra_end);
-  fhTest2_2rich_invmass_all_mc = new TH1D(
-    "fhTest2_2rich_invmass_all_mc",
-    "fhTest2_2rich_invmass_all_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
-    invmassSpectra_nof,
-    invmassSpectra_start,
-    invmassSpectra_end);
-  fhTest2_2rich_invmass_all_refitted =
-    new TH1D("fhTest2_2rich_invmass_all_refitted",
-             "fhTest2_2rich_invmass_all_refitted;invariant mass of 4 e^{#pm} "
-             "in GeV/c^{2};#",
-             invmassSpectra_nof,
-             invmassSpectra_start,
-             invmassSpectra_end);
+  fhTest2_2rich_invmass_gee_mc =
+    new TH1D("fhTest2_2rich_invmass_gee_mc", "fhTest2_2rich_invmass_gee_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_2rich_invmass_gee_refitted = new TH1D("fhTest2_2rich_invmass_gee_refitted",
+                                                "fhTest2_2rich_invmass_gee_refitted;invariant mass of 4 e^{#pm} "
+                                                "in GeV/c^{2};#",
+                                                invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_2rich_invmass_gg_mc =
+    new TH1D("fhTest2_2rich_invmass_gg_mc", "fhTest2_2rich_invmass_gg_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_2rich_invmass_gg_refitted = new TH1D("fhTest2_2rich_invmass_gg_refitted",
+                                               "fhTest2_2rich_invmass_gg_refitted;invariant mass of 4 e^{#pm} in "
+                                               "GeV/c^{2};#",
+                                               invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_2rich_invmass_all_mc =
+    new TH1D("fhTest2_2rich_invmass_all_mc", "fhTest2_2rich_invmass_all_mc;invariant mass of 4 e^{#pm} in GeV/c^{2};#",
+             invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
+  fhTest2_2rich_invmass_all_refitted = new TH1D("fhTest2_2rich_invmass_all_refitted",
+                                                "fhTest2_2rich_invmass_all_refitted;invariant mass of 4 e^{#pm} "
+                                                "in GeV/c^{2};#",
+                                                invmassSpectra_nof, invmassSpectra_start, invmassSpectra_end);
   fHistoList_test2.push_back(fhTest2_2rich_invmass_gee_mc);
   fHistoList_test2.push_back(fhTest2_2rich_invmass_gee_refitted);
   fHistoList_test2.push_back(fhTest2_2rich_invmass_gg_mc);
@@ -328,107 +230,50 @@ void CbmAnaConversionTest2::InitHistos() {
 
 
   fhTest2_2rich_pt_vs_rap_gee =
-    new TH2D("fhTest2_2rich_pt_vs_rap_gee",
-             "fhTest2_2rich_pt_vs_rap_gee;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
-  fhTest2_2rich_pt_vs_rap_gg =
-    new TH2D("fhTest2_2rich_pt_vs_rap_gg",
-             "fhTest2_2rich_pt_vs_rap_gg;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhTest2_2rich_pt_vs_rap_gee", "fhTest2_2rich_pt_vs_rap_gee;p_{t} in GeV/c; rapidity y", 240, -2., 10.,
+             270, -2., 7.);
+  fhTest2_2rich_pt_vs_rap_gg = new TH2D(
+    "fhTest2_2rich_pt_vs_rap_gg", "fhTest2_2rich_pt_vs_rap_gg;p_{t} in GeV/c; rapidity y", 240, -2., 10., 270, -2., 7.);
   fhTest2_2rich_pt_vs_rap_all =
-    new TH2D("fhTest2_2rich_pt_vs_rap_all",
-             "fhTest2_2rich_pt_vs_rap_all;p_{t} in GeV/c; rapidity y",
-             240,
-             -2.,
-             10.,
-             270,
-             -2.,
-             7.);
+    new TH2D("fhTest2_2rich_pt_vs_rap_all", "fhTest2_2rich_pt_vs_rap_all;p_{t} in GeV/c; rapidity y", 240, -2., 10.,
+             270, -2., 7.);
   fHistoList_test2.push_back(fhTest2_2rich_pt_vs_rap_gee);
   fHistoList_test2.push_back(fhTest2_2rich_pt_vs_rap_gg);
   fHistoList_test2.push_back(fhTest2_2rich_pt_vs_rap_all);
 
 
   // further tests
-  fhTest2_electrons_pt_vs_p =
-    new TH2D("fhTest2_electrons_pt_vs_p",
-             "fhTest2_electrons_pt_vs_p;p_{t} in GeV/c; p in GeV/c",
-             240,
-             -2.,
-             10.,
-             360,
-             -2.,
-             16.);
+  fhTest2_electrons_pt_vs_p = new TH2D(
+    "fhTest2_electrons_pt_vs_p", "fhTest2_electrons_pt_vs_p;p_{t} in GeV/c; p in GeV/c", 240, -2., 10., 360, -2., 16.);
   fHistoList_test2.push_back(fhTest2_electrons_pt_vs_p);
   fhTest2_electrons_pt_vs_p_withRICH =
-    new TH2D("fhTest2_electrons_pt_vs_p_withRICH",
-             "fhTest2_electrons_pt_vs_p_withRICH;p_{t} in GeV/c; p in GeV/c",
-             240,
-             -2.,
-             10.,
-             360,
-             -2.,
-             16.);
+    new TH2D("fhTest2_electrons_pt_vs_p_withRICH", "fhTest2_electrons_pt_vs_p_withRICH;p_{t} in GeV/c; p in GeV/c", 240,
+             -2., 10., 360, -2., 16.);
   fHistoList_test2.push_back(fhTest2_electrons_pt_vs_p_withRICH);
   fhTest2_electrons_pt_vs_p_noRICH =
-    new TH2D("fhTest2_electrons_pt_vs_p_noRICH",
-             "fhTest2_electrons_pt_vs_p_noRICH;p_{t} in GeV/c; p in GeV/c",
-             240,
-             -2.,
-             10.,
-             360,
-             -2.,
-             16.);
+    new TH2D("fhTest2_electrons_pt_vs_p_noRICH", "fhTest2_electrons_pt_vs_p_noRICH;p_{t} in GeV/c; p in GeV/c", 240,
+             -2., 10., 360, -2., 16.);
   fHistoList_test2.push_back(fhTest2_electrons_pt_vs_p_noRICH);
 
-  fhTest2_3rich_electrons_theta_included =
-    new TH1D("fhTest2_3rich_electrons_theta_included",
-             "fhTest2_3rich_electrons_theta_included;theta angle [deg];#",
-             90,
-             0,
-             90);
+  fhTest2_3rich_electrons_theta_included = new TH1D(
+    "fhTest2_3rich_electrons_theta_included", "fhTest2_3rich_electrons_theta_included;theta angle [deg];#", 90, 0, 90);
   fHistoList_test2.push_back(fhTest2_3rich_electrons_theta_included);
-  fhTest2_3rich_electrons_theta_missing =
-    new TH1D("fhTest2_3rich_electrons_theta_missing",
-             "fhTest2_3rich_electrons_theta_missing;theta angle [deg];#",
-             90,
-             0,
-             90);
+  fhTest2_3rich_electrons_theta_missing = new TH1D(
+    "fhTest2_3rich_electrons_theta_missing", "fhTest2_3rich_electrons_theta_missing;theta angle [deg];#", 90, 0, 90);
   fHistoList_test2.push_back(fhTest2_3rich_electrons_theta_missing);
-  fhTest2_3rich_electrons_thetaVSp_included = new TH2D(
-    "fhTest2_3rich_electrons_thetaVSp_included",
-    "fhTest2_3rich_electrons_thetaVSp_included;theta angle [deg];p in GeV/c",
-    90,
-    0,
-    90,
-    540,
-    -2.,
-    16.);
+  fhTest2_3rich_electrons_thetaVSp_included =
+    new TH2D("fhTest2_3rich_electrons_thetaVSp_included",
+             "fhTest2_3rich_electrons_thetaVSp_included;theta angle [deg];p in GeV/c", 90, 0, 90, 540, -2., 16.);
   fHistoList_test2.push_back(fhTest2_3rich_electrons_thetaVSp_included);
-  fhTest2_3rich_electrons_thetaVSp_missing = new TH2D(
-    "fhTest2_3rich_electrons_thetaVSp_missing",
-    "fhTest2_3rich_electrons_thetaVSp_missing;theta angle [deg];p in GeV/c",
-    90,
-    0,
-    90,
-    540,
-    -2.,
-    16.);
+  fhTest2_3rich_electrons_thetaVSp_missing =
+    new TH2D("fhTest2_3rich_electrons_thetaVSp_missing",
+             "fhTest2_3rich_electrons_thetaVSp_missing;theta angle [deg];p in GeV/c", 90, 0, 90, 540, -2., 16.);
   fHistoList_test2.push_back(fhTest2_3rich_electrons_thetaVSp_missing);
 }
 
 
-void CbmAnaConversionTest2::Finish() {
+void CbmAnaConversionTest2::Finish()
+{
   //gDirectory->cd("analysis-conversion");
   gDirectory->mkdir("Test2");
   gDirectory->cd("Test2");
@@ -439,7 +284,8 @@ void CbmAnaConversionTest2::Finish() {
 }
 
 
-void CbmAnaConversionTest2::Exec() {
+void CbmAnaConversionTest2::Exec()
+{
   fVector_gt.clear();
   fVector_momenta.clear();
   fVector_mctrack.clear();
@@ -457,8 +303,7 @@ void CbmAnaConversionTest2::Exec() {
     if (stsInd < 0) continue;
     CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsInd);
     if (stsTrack == NULL) continue;
-    CbmTrackMatchNew* stsMatch =
-      (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
+    CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
     if (stsMatch == NULL) continue;
     if (stsMatch->GetNofLinks() <= 0) continue;
     int stsMcTrackId = stsMatch->GetMatchedLink().GetIndex();
@@ -493,12 +338,10 @@ void CbmAnaConversionTest2::Exec() {
     vector<int> pidHypo_electron;
     pidHypo_electron.push_back(11);
     fPFFitter_electron.Fit(stsTracks_electron, pidHypo_electron);
-    fPFFitter_electron.GetChiToVertex(
-      stsTracks_electron, vField_electron, chiPrim_electron, fKFVertex, 3e6);
+    fPFFitter_electron.GetChiToVertex(stsTracks_electron, vField_electron, chiPrim_electron, fKFVertex, 3e6);
 
     TVector3 refittedMomentum_electron;
-    const FairTrackParam* vtxTrack_electron =
-      stsTracks_electron[0].GetParamFirst();
+    const FairTrackParam* vtxTrack_electron = stsTracks_electron[0].GetParamFirst();
     vtxTrack_electron->Momentum(refittedMomentum_electron);
     //float result_chi_electron = chiPrim_electron[0];
     //float result_ndf_electron = stsTracks_electron[0].GetNDF();
@@ -508,15 +351,12 @@ void CbmAnaConversionTest2::Exec() {
     Int_t pdg = mcTrack1->GetPdgCode();
 
     if (TMath::Abs(pdg) == 11) {
-      fhTest2_electrons_pt_vs_p->Fill(refittedMomentum_electron.Perp(),
-                                      refittedMomentum_electron.Mag());
+      fhTest2_electrons_pt_vs_p->Fill(refittedMomentum_electron.Perp(), refittedMomentum_electron.Mag());
       if (richInd > 0) {
-        fhTest2_electrons_pt_vs_p_withRICH->Fill(
-          refittedMomentum_electron.Perp(), refittedMomentum_electron.Mag());
+        fhTest2_electrons_pt_vs_p_withRICH->Fill(refittedMomentum_electron.Perp(), refittedMomentum_electron.Mag());
       }
       if (richInd < 0) {
-        fhTest2_electrons_pt_vs_p_noRICH->Fill(refittedMomentum_electron.Perp(),
-                                               refittedMomentum_electron.Mag());
+        fhTest2_electrons_pt_vs_p_noRICH->Fill(refittedMomentum_electron.Perp(), refittedMomentum_electron.Mag());
       }
 
 
@@ -529,8 +369,7 @@ void CbmAnaConversionTest2::Exec() {
         fVector_richIndex.push_back(0);
         continue;
       }
-      CbmTrackMatchNew* richMatch =
-        (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
+      CbmTrackMatchNew* richMatch = (CbmTrackMatchNew*) fRichRingMatches->At(richInd);
       if (richMatch == NULL) {
         fVector_richIndex.push_back(0);
         continue;
@@ -559,20 +398,15 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
 // Calculating invariant mass of 4 ep/em, using MC data AND reconstructed momentum
 {
   cout << "CbmAnaConversionTest2: InvariantMassTest_3RICH - Start..." << endl;
-  cout << "CbmAnaConversionTest2: InvariantMassTest_3RICH - "
-       << fVector_mctrack.size() << endl;
+  cout << "CbmAnaConversionTest2: InvariantMassTest_3RICH - " << fVector_mctrack.size() << endl;
   int fill = 0;
   if (fVector_mctrack.size() < 4) return;
   for (unsigned int i = 0; i < fVector_mctrack.size() - 3; i++) {
-    if (i % 10 == 0)
-      cout << "CbmAnaConversionTest2: InvariantMassTest_3RICH - iteration i = "
-           << i << endl;
+    if (i % 10 == 0) cout << "CbmAnaConversionTest2: InvariantMassTest_3RICH - iteration i = " << i << endl;
     for (unsigned int j = i + 1; j < fVector_mctrack.size() - 2; j++) {
       for (unsigned int k = j + 1; k < fVector_mctrack.size() - 1; k++) {
         for (unsigned int l = k + 1; l < fVector_mctrack.size(); l++) {
-          if (fVector_mctrack[i]->GetPdgCode()
-                + fVector_mctrack[j]->GetPdgCode()
-                + fVector_mctrack[k]->GetPdgCode()
+          if (fVector_mctrack[i]->GetPdgCode() + fVector_mctrack[j]->GetPdgCode() + fVector_mctrack[k]->GetPdgCode()
                 + fVector_mctrack[l]->GetPdgCode()
               != 0)
             continue;
@@ -611,10 +445,8 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
           int motherId4 = fVector_mctrack[l]->GetMotherId();
 
 
-          if ((motherId1 == motherId2 && motherId3 == motherId4)
-              || (motherId1 == motherId3 && motherId2 == motherId4)
-              || (motherId1 == motherId4
-                  && motherId2 == motherId3)) {  // start 1
+          if ((motherId1 == motherId2 && motherId3 == motherId4) || (motherId1 == motherId3 && motherId2 == motherId4)
+              || (motherId1 == motherId4 && motherId2 == motherId3)) {  // start 1
 
 
             int grandmotherId1 = -1;
@@ -639,8 +471,7 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
               grandmotherId1 = mother1->GetMotherId();
               if (grandmotherId1 != -1) {
                 grandmother1 = (CbmMCTrack*) fMcTracks->At(grandmotherId1);
-                if (NULL != grandmother1)
-                  mcGrandmotherPdg1 = grandmother1->GetPdgCode();
+                if (NULL != grandmother1) mcGrandmotherPdg1 = grandmother1->GetPdgCode();
               }
             }
             if (motherId2 != -1) {
@@ -674,8 +505,7 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
             if (grandmotherId1 == -1) continue;
 
             if (motherId1 == motherId2 && motherId3 == motherId4) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId3) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId3) != 2) continue;
               if ((grandmotherId1 == motherId3 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId3 && mcMotherPdg1 == 111)) {
 
@@ -688,25 +518,17 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_startvertexElectrons_all->Fill(pi0start_k.Z());
                 fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -715,17 +537,14 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
-                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
+                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
 
                 IsPi0 = true;
               }
             }
             if (motherId1 == motherId3 && motherId2 == motherId4) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2) continue;
               if ((grandmotherId1 == motherId2 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId2 && mcMotherPdg1 == 111)) {
 
@@ -738,25 +557,17 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_startvertexElectrons_all->Fill(pi0start_k.Z());
                 fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -765,17 +576,14 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
-                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
+                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
 
                 IsPi0 = true;
               }
             }
             if (motherId1 == motherId4 && motherId2 == motherId3) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2) continue;
               if ((grandmotherId1 == motherId2 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId2 && mcMotherPdg1 == 111)) {
 
@@ -788,25 +596,17 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_startvertexElectrons_all->Fill(pi0start_k.Z());
                 fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -815,10 +615,8 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
                 fhTest2_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
-                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt,
-                                            params_reco.fRapidity);
+                fhTest2_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
 
                 IsPi0 = true;
               }
@@ -827,8 +625,7 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
 
             // ===================================================================================================
             // HERE DECAY pi0 -> gamma gamma -> e+e- e+e-
-            if (grandmotherId1 == grandmotherId2
-                && grandmotherId1 == grandmotherId3
+            if (grandmotherId1 == grandmotherId2 && grandmotherId1 == grandmotherId3
                 && grandmotherId1 == grandmotherId4) {
               if (mcGrandmotherPdg1 != 111) continue;  // 111 = pi0, 221 = eta
 
@@ -846,24 +643,16 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
 
 
               // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-              if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1
-                  || pi0start_l.Z() > 1)
-                continue;
+              if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
               Double_t invmass_mc   = 0;
               Double_t invmass_reco = 0;
               CbmAnaConversionKinematicParams params_mc =
-                CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
-                  fVector_mctrack[i],
-                  fVector_mctrack[j],
-                  fVector_mctrack[k],
-                  fVector_mctrack[l]);
+                CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(fVector_mctrack[i], fVector_mctrack[j],
+                                                                               fVector_mctrack[k], fVector_mctrack[l]);
               CbmAnaConversionKinematicParams params_reco =
-                CbmAnaConversionKinematicParams::
-                  KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                  fVector_momenta[j],
-                                                  fVector_momenta[k],
-                                                  fVector_momenta[l]);
+                CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                  fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
               invmass_mc   = params_mc.fMinv;
               invmass_reco = params_reco.fMinv;
 
@@ -872,10 +661,8 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
               fhTest2_invmass_all_mc->Fill(invmass_mc);
               fhTest2_invmass_all_refitted->Fill(invmass_reco);
 
-              fhTest2_pt_vs_rap_gg->Fill(params_reco.fPt,
-                                         params_reco.fRapidity);
-              fhTest2_pt_vs_rap_all->Fill(params_reco.fPt,
-                                          params_reco.fRapidity);
+              fhTest2_pt_vs_rap_gg->Fill(params_reco.fPt, params_reco.fRapidity);
+              fhTest2_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
 
               IsPi0 = true;
 
@@ -888,92 +675,60 @@ void CbmAnaConversionTest2::InvariantMassTest_3RICH()
 
 
             if (richIndex1 <= 0 && IsPi0) {
-              fhTest2_3rich_electrons_theta_missing->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_thetaVSp_missing->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[i].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[j].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[k].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[l].Mag());
+              fhTest2_3rich_electrons_theta_missing->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_thetaVSp_missing->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi(),
+                                                             fVector_momenta[i].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[j].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[k].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[l].Mag());
             }
             if (richIndex2 <= 0 && IsPi0) {
-              fhTest2_3rich_electrons_theta_missing->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_thetaVSp_missing->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[j].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[i].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[k].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[l].Mag());
+              fhTest2_3rich_electrons_theta_missing->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_thetaVSp_missing->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi(),
+                                                             fVector_momenta[j].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[i].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[k].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[l].Mag());
             }
             if (richIndex3 <= 0 && IsPi0) {
-              fhTest2_3rich_electrons_theta_missing->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_thetaVSp_missing->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[k].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[i].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[j].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[l].Mag());
+              fhTest2_3rich_electrons_theta_missing->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_thetaVSp_missing->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi(),
+                                                             fVector_momenta[k].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[i].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[j].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[l].Mag());
             }
             if (richIndex4 <= 0 && IsPi0) {
-              fhTest2_3rich_electrons_theta_missing->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_theta_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi());
-              fhTest2_3rich_electrons_thetaVSp_missing->Fill(
-                fVector_momenta[l].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[l].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[i].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[i].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[j].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[j].Mag());
-              fhTest2_3rich_electrons_thetaVSp_included->Fill(
-                fVector_momenta[k].Theta() * 180 / TMath::Pi(),
-                fVector_momenta[k].Mag());
+              fhTest2_3rich_electrons_theta_missing->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_theta_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi());
+              fhTest2_3rich_electrons_thetaVSp_missing->Fill(fVector_momenta[l].Theta() * 180 / TMath::Pi(),
+                                                             fVector_momenta[l].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[i].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[i].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[j].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[j].Mag());
+              fhTest2_3rich_electrons_thetaVSp_included->Fill(fVector_momenta[k].Theta() * 180 / TMath::Pi(),
+                                                              fVector_momenta[k].Mag());
             }
 
           }  // end 1
@@ -988,20 +743,15 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 // Calculating invariant mass of 4 ep/em, using MC data AND reconstructed momentum
 {
   cout << "CbmAnaConversionTest2: InvariantMassTest_2RICH - Start..." << endl;
-  cout << "CbmAnaConversionTest2: InvariantMassTest_2RICH - "
-       << fVector_mctrack.size() << endl;
+  cout << "CbmAnaConversionTest2: InvariantMassTest_2RICH - " << fVector_mctrack.size() << endl;
   int fill = 0;
   if (fVector_mctrack.size() < 4) return;
   for (unsigned int i = 0; i < fVector_mctrack.size() - 3; i++) {
-    if (i % 10 == 0)
-      cout << "CbmAnaConversionTest2: InvariantMassTest_2RICH - iteration i = "
-           << i << endl;
+    if (i % 10 == 0) cout << "CbmAnaConversionTest2: InvariantMassTest_2RICH - iteration i = " << i << endl;
     for (unsigned int j = i + 1; j < fVector_mctrack.size() - 2; j++) {
       for (unsigned int k = j + 1; k < fVector_mctrack.size() - 1; k++) {
         for (unsigned int l = k + 1; l < fVector_mctrack.size(); l++) {
-          if (fVector_mctrack[i]->GetPdgCode()
-                + fVector_mctrack[j]->GetPdgCode()
-                + fVector_mctrack[k]->GetPdgCode()
+          if (fVector_mctrack[i]->GetPdgCode() + fVector_mctrack[j]->GetPdgCode() + fVector_mctrack[k]->GetPdgCode()
                 + fVector_mctrack[l]->GetPdgCode()
               != 0)
             continue;
@@ -1038,8 +788,7 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
           int motherId4 = fVector_mctrack[l]->GetMotherId();
 
 
-          if ((motherId1 == motherId2 && motherId3 == motherId4)
-              || (motherId1 == motherId3 && motherId2 == motherId4)
+          if ((motherId1 == motherId2 && motherId3 == motherId4) || (motherId1 == motherId3 && motherId2 == motherId4)
               || (motherId1 == motherId4 && motherId2 == motherId3)) {
 
 
@@ -1065,8 +814,7 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
               grandmotherId1 = mother1->GetMotherId();
               if (grandmotherId1 != -1) {
                 grandmother1 = (CbmMCTrack*) fMcTracks->At(grandmotherId1);
-                if (NULL != grandmother1)
-                  mcGrandmotherPdg1 = grandmother1->GetPdgCode();
+                if (NULL != grandmother1) mcGrandmotherPdg1 = grandmother1->GetPdgCode();
               }
             }
             if (motherId2 != -1) {
@@ -1100,8 +848,7 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
             if (grandmotherId1 == -1) continue;
 
             if (motherId1 == motherId2 && motherId3 == motherId4) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId3) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId3) != 2) continue;
               if ((grandmotherId1 == motherId3 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId3 && mcMotherPdg1 == 111)) {
                 /*
@@ -1115,25 +862,17 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 								fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
 								*/
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -1142,15 +881,12 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
                 fhTest2_2rich_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_2rich_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
-                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
               }
             }
             if (motherId1 == motherId3 && motherId2 == motherId4) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2) continue;
               if ((grandmotherId1 == motherId2 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId2 && mcMotherPdg1 == 111)) {
                 /*
@@ -1164,25 +900,17 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 								fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
 								*/
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -1191,15 +919,12 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
                 fhTest2_2rich_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_2rich_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
-                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
               }
             }
             if (motherId1 == motherId4 && motherId2 == motherId3) {
-              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2)
-                continue;
+              if (NofDaughters(motherId1) != 2 || NofDaughters(motherId2) != 2) continue;
               if ((grandmotherId1 == motherId2 && mcGrandmotherPdg1 == 111)
                   || (motherId1 == grandmotherId2 && mcMotherPdg1 == 111)) {
                 /*
@@ -1213,25 +938,17 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 								fhTest2_startvertexElectrons_all->Fill(pi0start_l.Z());
 								*/
                 // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1
-                    || pi0start_k.Z() > 1 || pi0start_l.Z() > 1)
-                  continue;
+                if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
 
                 Double_t invmass_mc   = 0;
                 Double_t invmass_reco = 0;
                 CbmAnaConversionKinematicParams params_mc =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_MC(fVector_mctrack[i],
-                                                  fVector_mctrack[j],
-                                                  fVector_mctrack[k],
-                                                  fVector_mctrack[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
+                    fVector_mctrack[i], fVector_mctrack[j], fVector_mctrack[k], fVector_mctrack[l]);
                 CbmAnaConversionKinematicParams params_reco =
-                  CbmAnaConversionKinematicParams::
-                    KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                    fVector_momenta[j],
-                                                    fVector_momenta[k],
-                                                    fVector_momenta[l]);
+                  CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                    fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
                 invmass_mc   = params_mc.fMinv;
                 invmass_reco = params_reco.fMinv;
 
@@ -1240,18 +957,15 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
                 fhTest2_2rich_invmass_all_mc->Fill(invmass_mc);
                 fhTest2_2rich_invmass_all_refitted->Fill(invmass_reco);
 
-                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
-                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt,
-                                                  params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_gee->Fill(params_reco.fPt, params_reco.fRapidity);
+                fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
               }
             }
 
 
             // ===================================================================================================
             // HERE DECAY pi0 -> gamma gamma -> e+e- e+e-
-            if (grandmotherId1 == grandmotherId2
-                && grandmotherId1 == grandmotherId3
+            if (grandmotherId1 == grandmotherId2 && grandmotherId1 == grandmotherId3
                 && grandmotherId1 == grandmotherId4) {
               if (mcGrandmotherPdg1 != 111) continue;  // 111 = pi0, 221 = eta
 
@@ -1269,24 +983,16 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 						*/
 
               // consider only electrons from the target (only then the momenta are correctly refitted/reconstructed)
-              if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1
-                  || pi0start_l.Z() > 1)
-                continue;
+              if (pi0start_i.Z() > 1 || pi0start_j.Z() > 1 || pi0start_k.Z() > 1 || pi0start_l.Z() > 1) continue;
 
               Double_t invmass_mc   = 0;
               Double_t invmass_reco = 0;
               CbmAnaConversionKinematicParams params_mc =
-                CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(
-                  fVector_mctrack[i],
-                  fVector_mctrack[j],
-                  fVector_mctrack[k],
-                  fVector_mctrack[l]);
+                CbmAnaConversionKinematicParams::KinematicParams_4particles_MC(fVector_mctrack[i], fVector_mctrack[j],
+                                                                               fVector_mctrack[k], fVector_mctrack[l]);
               CbmAnaConversionKinematicParams params_reco =
-                CbmAnaConversionKinematicParams::
-                  KinematicParams_4particles_Reco(fVector_momenta[i],
-                                                  fVector_momenta[j],
-                                                  fVector_momenta[k],
-                                                  fVector_momenta[l]);
+                CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
+                  fVector_momenta[i], fVector_momenta[j], fVector_momenta[k], fVector_momenta[l]);
               invmass_mc   = params_mc.fMinv;
               invmass_reco = params_reco.fMinv;
 
@@ -1295,10 +1001,8 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
               fhTest2_2rich_invmass_all_mc->Fill(invmass_mc);
               fhTest2_2rich_invmass_all_refitted->Fill(invmass_reco);
 
-              fhTest2_2rich_pt_vs_rap_gg->Fill(params_reco.fPt,
-                                               params_reco.fRapidity);
-              fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt,
-                                                params_reco.fRapidity);
+              fhTest2_2rich_pt_vs_rap_gg->Fill(params_reco.fPt, params_reco.fRapidity);
+              fhTest2_2rich_pt_vs_rap_all->Fill(params_reco.fPt, params_reco.fRapidity);
 
               cout << "########################################################"
                       "##############"
@@ -1314,7 +1018,8 @@ void CbmAnaConversionTest2::InvariantMassTest_2RICH()
 }
 
 
-Int_t CbmAnaConversionTest2::NofDaughters(Int_t motherId) {
+Int_t CbmAnaConversionTest2::NofDaughters(Int_t motherId)
+{
   Int_t nofDaughters = 0;
   for (unsigned int i = 0; i < fVector_mctrack.size(); i++) {
     Int_t motherId_temp = fVector_mctrack[i]->GetMotherId();

@@ -12,7 +12,8 @@
  ** If this is changed, the initialisation of the static members
  ** of CbmMuchAddress must be changed accordingly!
  **/
-enum MuchElementLevel {
+enum MuchElementLevel
+{
   kMuchSystem,     //!< System = MUCH
   kMuchStation,    //!< Station
   kMuchLayer,      //!< Layer
@@ -58,11 +59,7 @@ public:
      ** @param channel      Channel number
      ** @return Unique element address
      **/
-  static UInt_t GetAddress(Int_t station = 0,
-                           Int_t layer   = 0,
-                           Int_t side    = 0,
-                           Int_t module  = 0,
-                           Int_t sector  = 0,
+  static UInt_t GetAddress(Int_t station = 0, Int_t layer = 0, Int_t side = 0, Int_t module = 0, Int_t sector = 0,
                            Int_t channel = 0);
 
 
@@ -80,7 +77,8 @@ public:
      ** @param level  Requested element level
      ** @return       Number of bits in address field
      **/
-  static Int_t GetNofBits(Int_t level) {
+  static Int_t GetNofBits(Int_t level)
+  {
     if (level < 0 || level >= kMuchNofLevels) return 0;
     return fgkBits[level];
   }
@@ -91,38 +89,24 @@ public:
      ** @param level Hierarchy level
      ** @return Element index
      **/
-  static Int_t GetElementId(UInt_t address, Int_t level) {
+  static Int_t GetElementId(UInt_t address, Int_t level)
+  {
     if (level < 0 || level >= kMuchNofLevels) return -1;
     return (address & (fgkMask[level] << fgkShift[level])) >> fgkShift[level];
   }
 
   /** Derivatives */
-  static Int_t GetSystemIndex(Int_t address) {
-    return GetElementId(address, kMuchSystem);
-  }
-  static Int_t GetStationIndex(Int_t address) {
-    return GetElementId(address, kMuchStation);
-  }
-  static Int_t GetLayerIndex(Int_t address) {
-    return GetElementId(address, kMuchLayer);
-  }
-  static Int_t GetLayerSideIndex(Int_t address) {
-    return GetElementId(address, kMuchLayerSide);
-  }
-  static Int_t GetModuleIndex(Int_t address) {
-    return GetElementId(address, kMuchModule);
-  }
-  static Int_t GetSectorIndex(Int_t address) {
-    return GetElementId(address, kMuchSector);
-  }
-  static Int_t GetChannelIndex(Int_t address) {
-    return GetElementId(address, kMuchChannel);
-  }
+  static Int_t GetSystemIndex(Int_t address) { return GetElementId(address, kMuchSystem); }
+  static Int_t GetStationIndex(Int_t address) { return GetElementId(address, kMuchStation); }
+  static Int_t GetLayerIndex(Int_t address) { return GetElementId(address, kMuchLayer); }
+  static Int_t GetLayerSideIndex(Int_t address) { return GetElementId(address, kMuchLayerSide); }
+  static Int_t GetModuleIndex(Int_t address) { return GetElementId(address, kMuchModule); }
+  static Int_t GetSectorIndex(Int_t address) { return GetElementId(address, kMuchSector); }
+  static Int_t GetChannelIndex(Int_t address) { return GetElementId(address, kMuchChannel); }
 
-  static Int_t GetElementAddress(Int_t address, Int_t level) {
-    Int_t mask =
-      (1 << (CbmMuchAddress::fgkShift[level] + CbmMuchAddress::fgkBits[level]))
-      - 1;
+  static Int_t GetElementAddress(Int_t address, Int_t level)
+  {
+    Int_t mask = (1 << (CbmMuchAddress::fgkShift[level] + CbmMuchAddress::fgkBits[level])) - 1;
     return address & mask;
   }
 
@@ -137,15 +121,15 @@ public:
      ** @param newId   New element index
      ** @return New address
      **/
-  static UInt_t SetElementId(UInt_t address, Int_t level, Int_t newId) {
+  static UInt_t SetElementId(UInt_t address, Int_t level, Int_t newId)
+  {
     if (level < 0 || level >= kMuchNofLevels) return address;
     if (newId >= (1 << fgkBits[level])) {
-      LOG(error) << "Id " << newId << " for MUCH level " << level
-                 << " exceeds maximum (" << (1 << fgkBits[level]) - 1 << ")";
+      LOG(error) << "Id " << newId << " for MUCH level " << level << " exceeds maximum (" << (1 << fgkBits[level]) - 1
+                 << ")";
       return 0;
     }
-    return (address & (~(fgkMask[level] << fgkShift[level])))
-           | (newId << fgkShift[level]);
+    return (address & (~(fgkMask[level] << fgkShift[level]))) | (newId << fgkShift[level]);
   }
 
 private:

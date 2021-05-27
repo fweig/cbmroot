@@ -8,6 +8,7 @@
 #define CBMLITTRACKINGQASTUDYREPORT_H_
 
 #include "CbmStudyReport.h"
+
 #include <string>
 using std::string;
 class TH1;
@@ -56,9 +57,7 @@ protected:
      * \param[in] cellFormatter Function formats cell string.
      * \return Formated string with table of numbers.
      */
-  string PrintTable(const string& tableName,
-                    const string& pattern,
-                    string (*rowNameFormatter)(const string&),
+  string PrintTable(const string& tableName, const string& pattern, string (*rowNameFormatter)(const string&),
                     string (*cellFormatter)(const TH1*, Int_t)) const;
 
   /**
@@ -67,8 +66,7 @@ protected:
      * \param[in] pattern Pattern of histogram name.
      * \return Formated string with table of efficiency numbers.
      */
-  string PrintEfficiencyTable(const string& tableName,
-                              const string& pattern) const;
+  string PrintEfficiencyTable(const string& tableName, const string& pattern) const;
 
   /**
      * \brief Divide two histograms.
@@ -101,8 +99,7 @@ protected:
      * \param[in] histos Vector of histograms.
      * \param[in] efficiencies Vector of efficiency numbers.
      */
-  void DrawMeanEfficiencyLines(const std::vector<TH1*>& histos,
-                               const std::vector<Double_t>& efficiencies);
+  void DrawMeanEfficiencyLines(const std::vector<TH1*>& histos, const std::vector<Double_t>& efficiencies);
 
   /**
      * \brief Draw accepted and reconstructed tracks histograms.
@@ -117,9 +114,7 @@ protected:
      * \param[in] histAcc Acceptance histogram.
      * \param[in] scale Scaling factor for efficiency.
      */
-  Double_t CalcEfficiency(const TH1* histRec,
-                          const TH1* histAcc,
-                          Double_t scale = 1.) const;
+  Double_t CalcEfficiency(const TH1* histRec, const TH1* histAcc, Double_t scale = 1.) const;
 
   ClassDef(CbmLitTrackingQaStudyReport, 1)
 };

@@ -38,15 +38,15 @@ CbmMcbm2018UnpackerTaskMuch::CbmMcbm2018UnpackerTaskMuch(UInt_t /*uNbGdpb*/)
   , fbWriteOutput(kTRUE)
   , fvChanMasks()
   , fulTsCounter(0)
-  , fUnpackerAlgo(nullptr) {
+  , fUnpackerAlgo(nullptr)
+{
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoMuch();
 }
 
-CbmMcbm2018UnpackerTaskMuch::~CbmMcbm2018UnpackerTaskMuch() {
-  delete fUnpackerAlgo;
-}
+CbmMcbm2018UnpackerTaskMuch::~CbmMcbm2018UnpackerTaskMuch() { delete fUnpackerAlgo; }
 
-Bool_t CbmMcbm2018UnpackerTaskMuch::Init() {
+Bool_t CbmMcbm2018UnpackerTaskMuch::Init()
+{
   LOG(info) << "CbmMcbm2018UnpackerTaskMuch::Init";
   LOG(info) << "Initializing mCBM MUCH 2018 Unpacker";
 
@@ -64,7 +64,8 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::Init() {
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskMuch::SetParContainers() {
+void CbmMcbm2018UnpackerTaskMuch::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* fParCList = fUnpackerAlgo->GetParList();
@@ -74,12 +75,11 @@ void CbmMcbm2018UnpackerTaskMuch::SetParContainers() {
     fParCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -88,12 +88,13 @@ void CbmMcbm2018UnpackerTaskMuch::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmMcbm2018UnpackerTaskMuch::InitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskMuch::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  CbmMcbm2018MuchPar* pUnpackPar = dynamic_cast<CbmMcbm2018MuchPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018MuchPar"));
+  CbmMcbm2018MuchPar* pUnpackPar =
+    dynamic_cast<CbmMcbm2018MuchPar*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018MuchPar"));
   if (nullptr == pUnpackPar) {
     LOG(error) << "Failed to obtain parameter container CbmMcbm2018MuchPar";
     return kFALSE;
@@ -115,19 +116,16 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::InitContainers() {
     initOK &= fUnpackerAlgo->CreateHistograms();
 
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Register the histos in the HTTP server
     THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
     if (nullptr != server) {
       for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-        server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                         vHistos[uHisto].first);
+        server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
       }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-      server->RegisterCommand("/Reset_UnpMuch_Hist",
-                              "bMcbm2018UnpackerTaskMuchResetHistos=kTRUE");
+      server->RegisterCommand("/Reset_UnpMuch_Hist", "bMcbm2018UnpackerTaskMuchResetHistos=kTRUE");
       server->Restrict("/Reset_UnpMuch_Hist", "allow=admin");
     }  // if( nullptr != server )
 
@@ -135,28 +133,27 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::InitContainers() {
 
   fUnpackerAlgo->SetMonitorMode(fbMonitorMode);
 
-  for (std::vector<MuchFebChanMask>::iterator it = fvChanMasks.begin();
-       it < fvChanMasks.end();
-       ++it)
+  for (std::vector<MuchFebChanMask>::iterator it = fvChanMasks.begin(); it < fvChanMasks.end(); ++it)
     fUnpackerAlgo->MaskNoisyChannel((*it).uFeb, (*it).uChan, (*it).bMasked);
 
   return initOK;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskMuch::ReInitContainers() {
+Bool_t CbmMcbm2018UnpackerTaskMuch::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fUnpackerAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmMcbm2018UnpackerTaskMuch::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmMcbm2018UnpackerTaskMuch::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmMcbm2018UnpackerTaskMuch::DoUnpack(const fles::Timeslice& ts,
-                                             size_t /*component*/) {
+Bool_t CbmMcbm2018UnpackerTaskMuch::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   if (fbMonitorMode && bMcbm2018UnpackerTaskMuchResetHistos) {
     LOG(info) << "Reset MUCH unpacker histos ";
     fUnpackerAlgo->ResetHistograms();
@@ -164,8 +161,7 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::DoUnpack(const fles::Timeslice& ts,
   }  // if( fbMonitorMode && bMcbm2018UnpackerTaskMuchResetHistos )
 
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
 
@@ -179,24 +175,24 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::DoUnpack(const fles::Timeslice& ts,
         });
 */
 
-  if (0 == fulTsCounter % 10000)
-    LOG(info) << "Processed " << fulTsCounter << "TS";
+  if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << "TS";
   fulTsCounter++;
 
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskMuch::Reset() {
+void CbmMcbm2018UnpackerTaskMuch::Reset()
+{
   fUnpackerAlgo->ClearVector();
   fUnpackerAlgo->ClearErrorVector();
 }
 
-void CbmMcbm2018UnpackerTaskMuch::Finish() {
+void CbmMcbm2018UnpackerTaskMuch::Finish()
+{
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
   if (kTRUE == fbMonitorMode) {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fUnpackerAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
 
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
@@ -229,37 +225,26 @@ void CbmMcbm2018UnpackerTaskMuch::Finish() {
   }  // if( kTRUE == fbMonitorMode )
 }
 
-void CbmMcbm2018UnpackerTaskMuch::SetIgnoreOverlapMs(Bool_t bFlagIn) {
-  fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
-}
+void CbmMcbm2018UnpackerTaskMuch::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 
-void CbmMcbm2018UnpackerTaskMuch::SetTimeOffsetNs(Double_t dOffsetIn) {
-  fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
-}
+void CbmMcbm2018UnpackerTaskMuch::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
 
-void CbmMcbm2018UnpackerTaskMuch::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
-                                                      Double_t dOffsetIn) {
+void CbmMcbm2018UnpackerTaskMuch::SetTimeOffsetNsAsic(UInt_t uAsicIdx, Double_t dOffsetIn)
+{
   return fUnpackerAlgo->SetTimeOffsetNsAsic(uAsicIdx, dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskMuch::EnableAsicType(Int_t fiFlag) {
-  fUnpackerAlgo->EnableAsicType(fiFlag);
-}
+void CbmMcbm2018UnpackerTaskMuch::EnableAsicType(Int_t fiFlag) { fUnpackerAlgo->EnableAsicType(fiFlag); }
 
-void CbmMcbm2018UnpackerTaskMuch::SetBinningFwFlag(Bool_t bEnable) {
-  fUnpackerAlgo->SetBinningFwFlag(bEnable);
-}
+void CbmMcbm2018UnpackerTaskMuch::SetBinningFwFlag(Bool_t bEnable) { fUnpackerAlgo->SetBinningFwFlag(bEnable); }
 
-void CbmMcbm2018UnpackerTaskMuch::MaskNoisyChannel(UInt_t uFeb,
-                                                   UInt_t uChan,
-                                                   Bool_t bMasked) {
+void CbmMcbm2018UnpackerTaskMuch::MaskNoisyChannel(UInt_t uFeb, UInt_t uChan, Bool_t bMasked)
+{
 
   fvChanMasks.push_back(MuchFebChanMask {uFeb, uChan, bMasked});
 }
 
-void CbmMcbm2018UnpackerTaskMuch::SetAdcCut(UInt_t uAdc) {
-  fUnpackerAlgo->SetAdcCut(uAdc);
-}
+void CbmMcbm2018UnpackerTaskMuch::SetAdcCut(UInt_t uAdc) { fUnpackerAlgo->SetAdcCut(uAdc); }
 
 
 ClassImp(CbmMcbm2018UnpackerTaskMuch)

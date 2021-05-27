@@ -7,6 +7,7 @@
 #define CBMSTSSENSORPOINT_H 1
 
 #include "Rtypes.h"
+
 #include <string>
 
 /** @class CbmStsSensorPoint
@@ -34,19 +35,8 @@ public:
      ** @param bz        Mag. Field (z component) at midpoint [T]
      ** @param pid       Particle ty[e [PDG code]
      **/
-  CbmStsSensorPoint(Double_t x1,
-                    Double_t y1,
-                    Double_t z1,
-                    Double_t x2,
-                    Double_t y2,
-                    Double_t z2,
-                    Double_t p,
-                    Double_t eLoss,
-                    Double_t time,
-                    Double_t bx = 0.,
-                    Double_t by = 0.,
-                    Double_t bz = 0.,
-                    Int_t pid   = 0);
+  CbmStsSensorPoint(Double_t x1, Double_t y1, Double_t z1, Double_t x2, Double_t y2, Double_t z2, Double_t p,
+                    Double_t eLoss, Double_t time, Double_t bx = 0., Double_t by = 0., Double_t bz = 0., Int_t pid = 0);
 
   /** Destructor  **/
   virtual ~CbmStsSensorPoint();

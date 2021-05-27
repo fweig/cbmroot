@@ -1,15 +1,7 @@
-void ana_digi_cal(Int_t nEvents      = 10000000,
-                  Int_t calMode      = 53,
-                  Int_t calSel       = 0,
-                  Int_t calSm        = 900,
-                  Int_t RefSel       = 1,
-                  TString cFileId    = "Test",
-                  Int_t iCalSet      = 910601600,
-                  Bool_t bOut        = 0,
-                  Int_t iSel2        = 0,
-                  Double_t dDeadtime = 50,
-                  TString cCalId     = "XXX",
-                  Int_t iPlot        = 1) {
+void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0, Int_t calSm = 900, Int_t RefSel = 1,
+                  TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0, Int_t iSel2 = 0,
+                  Double_t dDeadtime = 50, TString cCalId = "XXX", Int_t iPlot = 1)
+{
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -30,13 +22,11 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
    cout << "workdir = "<< workDir.Data() << endl;
    return;
   */
-  TString paramDir  = workDir + "/macro/beamtime/mcbm2018/";
-  TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
-  TString InputFile = paramDir + "data/" + cFileId + ".root";
-  TString OutputFile =
-    paramDir + "data/digidev_" + cFileId
-    + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime) + cCalId
-    + ".out.root";
+  TString paramDir   = workDir + "/macro/beamtime/mcbm2018/";
+  TString ParFile    = paramDir + "data/" + cFileId + ".params.root";
+  TString InputFile  = paramDir + "data/" + cFileId + ".root";
+  TString OutputFile = paramDir + "data/digidev_" + cFileId + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime)
+                       + cCalId + ".out.root";
 
   TString shcmd = "rm -v " + ParFile;
   gSystem->Exec(shcmd.Data());
@@ -52,13 +42,12 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   parFileList->Add(tofDigiFile);
 */
   //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+  TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   parFileList->Add(tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -79,27 +68,22 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   //run->SetSink( new FairRootFileSink( OutputFile.Data() ) );
   run->SetUserOutputFileName(OutputFile.Data());
   run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
-  CbmTofEventClusterizer* tofClust =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
+  CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer", iVerbose, bOut);
 
   tofClust->SetCalMode(calMode);
   tofClust->SetCalSel(calSel);
-  tofClust->SetCaldXdYMax(10.);  // geometrical matching window in cm
-  tofClust->SetCalCluMulMax(
-    3.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofClust->SetCalRpc(calSm);   // select detector for calibration update
-  tofClust->SetTRefId(RefSel);  // reference trigger for offset calculation
-  tofClust->SetTotMax(20.);     // Tot upper limit for walk corection
-  tofClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
-  tofClust->SetTotPreRange(
-    5.);  // effective lower Tot limit  in ns from peak position
+  tofClust->SetCaldXdYMax(10.);   // geometrical matching window in cm
+  tofClust->SetCalCluMulMax(3.);  // Max Counter Cluster Multiplicity for filling calib histos
+  tofClust->SetCalRpc(calSm);     // select detector for calibration update
+  tofClust->SetTRefId(RefSel);    // reference trigger for offset calculation
+  tofClust->SetTotMax(20.);       // Tot upper limit for walk corection
+  tofClust->SetTotMin(0.01);      //(12000.);  // Tot lower limit for walk correction
+  tofClust->SetTotPreRange(5.);   // effective lower Tot limit  in ns from peak position
   tofClust->SetTotMean(5.);       // Tot calibration target value in ns
   tofClust->SetMaxTimeDist(1.0);  // default cluster range in ns
   //tofClust->SetMaxTimeDist(0.);       //Deb// default cluster range in ns
-  tofClust->SetDelTofMax(
-    10.);  // acceptance range for cluster distance in ns (!)
-  tofClust->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+  tofClust->SetDelTofMax(10.);              // acceptance range for cluster distance in ns (!)
+  tofClust->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kFALSE);
   //tofClust->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -114,24 +98,14 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                        cFileId.Data(),
-                        iCalSet,
-                        calMode,
-                        calSelRead);
+  TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
   if (cCalId != "XXX")
-    cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                  cCalId.Data(),
-                  iCalSet,
-                  calMode,
-                  calSelRead);
+    cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root", cCalId.Data(), iCalSet, calMode, calSelRead);
   tofClust->SetCalParFileName(cFname);
-  TString cOutFname =
-    Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+  TString cOutFname = Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
   tofClust->SetOutHstFileName(cOutFname);
 
-  TString cAnaFile =
-    Form("%s_%09d%03d_tofAna.hst.root", cFileId.Data(), iCalSet, iSel2);
+  TString cAnaFile = Form("%s_%09d%03d_tofAna.hst.root", cFileId.Data(), iCalSet, iSel2);
 
   switch (calMode) {
     case -1:                      // initial check of raw data
@@ -272,10 +246,7 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
       tofClust->SetTRefDifMax(1.5);  // in ns
       tofClust->PosYMaxScal(0.7);    //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofClust);
@@ -289,7 +260,8 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   iRSel          = iBRef;  // use diamond
   if (iSel2 == 0) {
     // iSel2=iBRef;
-  } else {
+  }
+  else {
     if (iSel2 < 0) iSel2 = -iSel2;
   }
 
@@ -451,9 +423,6 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
         ;
     }
   }
-  TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")",
-                       iCalSet,
-                       iSel2in,
-                       cCalId.Data());
+  TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")", iCalSet, iSel2in, cCalId.Data());
   gInterpreter->ProcessLine(FSave.Data());
 }

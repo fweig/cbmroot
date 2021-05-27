@@ -6,13 +6,13 @@
 #ifndef CBMGEOSETUPMODULE_H
 #define CBMGEOSETUPMODULE_H 1
 
+#include "CbmDefs.h"  // for ECbmModuleId
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t
 #include <TGeoMatrix.h>  // for TGeoHMatrix
 
 #include <string>  // for string
-
-#include "CbmDefs.h"  // for ECbmModuleId
 
 /** @class CbmGeoSetup
  ** @brief Data transfer object to represent the CBM Detector setup module

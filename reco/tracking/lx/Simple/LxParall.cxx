@@ -1,8 +1,11 @@
 #include "LxParall.h"
-#include "Lx.h"
+
 #include <iostream>
+
 #include <omp.h>
 #include <sys/time.h>
+
+#include "Lx.h"
 
 using namespace std;
 
@@ -18,14 +21,17 @@ ClassImp(LxParallFinder)
   , cutCoeff(4.0)
   , ev_start(0)
   , ev_end(0)
-  , hitFileName("") {}
+  , hitFileName("")
+{
+}
 
 class FinderCapsule {
   friend class LxParallFinder;
 
 public:
   FinderCapsule() : finder(0) {}
-  ~FinderCapsule() {
+  ~FinderCapsule()
+  {
     if (finder) {
       finder->FinishTask();
       delete finder;
@@ -40,7 +46,8 @@ private:
 
 //#define LXPARALL_SEPARATE_SINGLE
 
-Double_t LxParallFinder::Reconstruct(Int_t numThreads) {
+Double_t LxParallFinder::Reconstruct(Int_t numThreads)
+{
   omp_set_num_threads(numThreads);
 
   timeval bTime, eTime;
@@ -74,7 +81,8 @@ Double_t LxParallFinder::Reconstruct(Int_t numThreads) {
       finderCapsule.finder->Exec(reinterpret_cast<Option_t*>(&runTime));
       totalRunTime += runTime;
     }
-  } else {
+  }
+  else {
 #endif  //LXPARALL_SEPARATE_SINGLE
 #pragma omp parallel for firstprivate(finderCapsule)
     for (i = ev_start; i < ev_end; ++i) {
@@ -105,8 +113,7 @@ Double_t LxParallFinder::Reconstruct(Int_t numThreads) {
 #endif  //LXPARALL_SEPARATE_SINGLE
 
   gettimeofday(&eTime, 0);
-  int exeDuration =
-    (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
+  int exeDuration = (eTime.tv_sec - bTime.tv_sec) * 1000000 + eTime.tv_usec - bTime.tv_usec;
   cout << "Execution duration was: " << exeDuration << endl;
   cout << "Created finder instances: " << createdFinderInstances << endl;
   cout << "Total run time: " << totalRunTime << endl;

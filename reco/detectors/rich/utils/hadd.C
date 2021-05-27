@@ -1,10 +1,12 @@
-#include "Riostream.h"
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TKey.h"
 #include "TTree.h"
+
 #include <string.h>
+
+#include "Riostream.h"
 
 TList* FileList;
 TFile* Target;
@@ -12,7 +14,8 @@ TFile* Target;
 void MergeRootfile(TDirectory* target, TList* sourcelist);
 
 
-void hadd() {
+void hadd()
+{
   // in an interactive ROOT session, edit the file names
   // Target and FileList, then
   // root > .L hadd.C
@@ -27,7 +30,8 @@ void hadd() {
   MergeRootfile(Target, FileList);
 }
 
-void MergeRootfile(TDirectory* target, TList* sourcelist) {
+void MergeRootfile(TDirectory* target, TList* sourcelist)
+{
 
   //  cout << "Target path: " << target->GetPath() << endl;
   TString path((char*) strstr(target->GetPath(), ":"));
@@ -66,8 +70,7 @@ void MergeRootfile(TDirectory* target, TList* sourcelist) {
 
         // make sure we are at the correct directory level by cd'ing to path
         nextsource->cd(path);
-        TKey* key2 =
-          (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
+        TKey* key2 = (TKey*) gDirectory->GetListOfKeys()->FindObject(h1->GetName());
         if (key2) {
           TH1* h2 = (TH1*) key2->ReadObj();
           h1->Add(h2);
@@ -76,7 +79,8 @@ void MergeRootfile(TDirectory* target, TList* sourcelist) {
 
         nextsource = (TFile*) sourcelist->After(nextsource);
       }
-    } else if (obj->IsA()->InheritsFrom(TTree::Class())) {
+    }
+    else if (obj->IsA()->InheritsFrom(TTree::Class())) {
 
       // loop over all source files create a chain of Trees "globChain"
       const char* obj_name = obj->GetName();
@@ -91,8 +95,8 @@ void MergeRootfile(TDirectory* target, TList* sourcelist) {
         globChain->Add(nextsource->GetName());
         nextsource = (TFile*) sourcelist->After(nextsource);
       }
-
-    } else if (obj->IsA()->InheritsFrom(TDirectory::Class())) {
+    }
+    else if (obj->IsA()->InheritsFrom(TDirectory::Class())) {
       // it's a subdirectory
 
       cout << "Found subdirectory " << obj->GetName() << endl;
@@ -105,12 +109,11 @@ void MergeRootfile(TDirectory* target, TList* sourcelist) {
       // newdir still knows its depth within the target file via
       // GetPath(), so we can still figure out where we are in the recursion
       MergeRootfile(newdir, sourcelist);
-
-    } else {
+    }
+    else {
 
       // object is of no type that we know or can handle
-      cout << "Unknown object type, name: " << obj->GetName()
-           << " title: " << obj->GetTitle() << endl;
+      cout << "Unknown object type, name: " << obj->GetName() << " title: " << obj->GetTitle() << endl;
     }
 
     // now write the merged histogram (which is "in" obj) to the target file
@@ -121,8 +124,7 @@ void MergeRootfile(TDirectory* target, TList* sourcelist) {
       target->cd();
 
       //!!if the object is a tree, it is stored in globChain...
-      if (obj->IsA()->InheritsFrom(TTree::Class()))
-        globChain->Merge(target->GetFile(), 0, "keep");
+      if (obj->IsA()->InheritsFrom(TTree::Class())) globChain->Merge(target->GetFile(), 0, "keep");
       else
         obj->Write(key->GetName());
     }

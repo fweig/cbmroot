@@ -55,11 +55,7 @@ public:
      ** @param stereoF Stereo angle front side [degrees]
      ** @param stereoB Stereo angle back side [degrees]
      **/
-  CbmStsSimSensorDssdStereo(Double_t dy,
-                            Int_t nStrips,
-                            Double_t pitch,
-                            Double_t stereoF,
-                            Double_t stereoB,
+  CbmStsSimSensorDssdStereo(Double_t dy, Int_t nStrips, Double_t pitch, Double_t stereoF, Double_t stereoB,
                             CbmStsElement* element = nullptr);
 
 
@@ -68,8 +64,7 @@ public:
 
 
   /** @brief Assignment operator (disabled)  **/
-  CbmStsSimSensorDssdStereo&
-  operator=(const CbmStsSimSensorDssdStereo& rhs) = delete;
+  CbmStsSimSensorDssdStereo& operator=(const CbmStsSimSensorDssdStereo& rhs) = delete;
 
 
   /** Destructor  **/
@@ -87,9 +82,7 @@ public:
      ** @param side  0 = front side, 1 = back side
      ** @value Stereo angle [degrees] on the specified sensor side
      **/
-  Double_t GetStereoAngle(Int_t side) const {
-    return (side == 0 ? fStereoF : fStereoB);
-  }
+  Double_t GetStereoAngle(Int_t side) const { return (side == 0 ? fStereoF : fStereoB); }
 
 
   /** @brief Initialisation
@@ -148,12 +141,7 @@ protected:
      ** Edge effects are neglected, i.e. diffusion into the inactive area is
      ** allowed.
      **/
-  virtual void Diffusion(Double_t x,
-                         Double_t y,
-                         Double_t sigma,
-                         Int_t side,
-                         Double_t& fracL,
-                         Double_t& fracC,
+  virtual void Diffusion(Double_t x, Double_t y, Double_t sigma, Int_t side, Double_t& fracL, Double_t& fracC,
                          Double_t& fracR);
 
 
@@ -187,12 +175,7 @@ protected:
      ** @param side    0 = front (n) side; 1 = back (p) side
      ** @param sensor  Pointer to sensor object
      **/
-  virtual void PropagateCharge(Double_t x,
-                               Double_t y,
-                               Double_t z,
-                               Double_t charge,
-                               Double_t bY,
-                               Int_t side);
+  virtual void PropagateCharge(Double_t x, Double_t y, Double_t z, Double_t charge, Double_t bY, Int_t side);
 
 
   ClassDef(CbmStsSimSensorDssdStereo, 1);

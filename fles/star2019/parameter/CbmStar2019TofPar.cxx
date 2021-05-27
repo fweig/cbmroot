@@ -15,9 +15,7 @@
 #include "gDpbMessv100.h"
 
 // -----   Standard constructor   ------------------------------------------
-CbmStar2019TofPar::CbmStar2019TofPar(const char* name,
-                                     const char* title,
-                                     const char* context)
+CbmStar2019TofPar::CbmStar2019TofPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fvdPadiThrCodeToValue(GetNrOfPadiThrCodes(), 0.0)
   , fiMonitorMode(0)
@@ -34,7 +32,8 @@ CbmStar2019TofPar::CbmStar2019TofPar(const char* name,
   , fdStarTriggAllowedSpread(0.0)
   , fdStarTriggerDeadtime()
   , fdStarTriggerDelay()
-  , fdStarTriggerWinSize() {
+  , fdStarTriggerWinSize()
+{
   detName = "Tof";
 
   /// PADI threshold measures and extrapolated code to value map
@@ -43,18 +42,15 @@ CbmStar2019TofPar::CbmStar2019TofPar(const char* name,
 
     /// Linear extrapolation between measured points
     if (uPadiPoint + 1 < kuNbThrMeasPoints) {
-      UInt_t uNbSteps =
-        kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
-      Double_t dValStep =
-        (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
-      UInt_t uCode = kuThrMeasCode[uPadiPoint];
+      UInt_t uNbSteps   = kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
+      Double_t dValStep = (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
+      UInt_t uCode      = kuThrMeasCode[uPadiPoint];
       for (UInt_t uStep = 1; uStep < uNbSteps; ++uStep) {
         uCode++;
-        fvdPadiThrCodeToValue[uCode] =
-          kdThrMeasVal[uPadiPoint] + dValStep * uStep;
+        fvdPadiThrCodeToValue[uCode] = kdThrMeasVal[uPadiPoint] + dValStep * uStep;
       }  // for( UInt_t uStep = 1; uStep < uNbSteps; ++uStep)
     }    // if( uPadiPoint + 1 < kuNbThrMeasPoints )
-  }  // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
+  }      // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
 }
 // -------------------------------------------------------------------------
 
@@ -65,7 +61,8 @@ CbmStar2019TofPar::~CbmStar2019TofPar() {}
 
 
 // -----   Public method clear   -------------------------------------------
-void CbmStar2019TofPar::clear() {
+void CbmStar2019TofPar::clear()
+{
   status = kFALSE;
   resetInputVersions();
 }
@@ -73,7 +70,8 @@ void CbmStar2019TofPar::clear() {
 
 // -------------------------------------------------------------------------
 
-void CbmStar2019TofPar::putParams(FairParamList* l) {
+void CbmStar2019TofPar::putParams(FairParamList* l)
+{
   if (!l) return;
   l->add("MonitorMode", fiMonitorMode);
   l->add("DebugMonitorMode", fiDebugMonitorMode);
@@ -94,7 +92,8 @@ void CbmStar2019TofPar::putParams(FairParamList* l) {
 
 //------------------------------------------------------
 
-Bool_t CbmStar2019TofPar::getParams(FairParamList* l) {
+Bool_t CbmStar2019TofPar::getParams(FairParamList* l)
+{
 
   LOG(info) << "CbmStar2019TofPar::getParams";
 
@@ -127,8 +126,7 @@ Bool_t CbmStar2019TofPar::getParams(FairParamList* l) {
 
   if (!l->fill("SizeMsInNs", &fdSizeMsInNs)) return kFALSE;
 
-  if (!l->fill("StarTriggAllowedSpread", &fdStarTriggAllowedSpread))
-    return kFALSE;
+  if (!l->fill("StarTriggAllowedSpread", &fdStarTriggAllowedSpread)) return kFALSE;
 
   fdStarTriggerDeadtime.Set(fiNrOfGdpb);
   fdStarTriggerDelay.Set(fiNrOfGdpb);
@@ -143,137 +141,126 @@ Bool_t CbmStar2019TofPar::getParams(FairParamList* l) {
 }
 
 // -------------------------------------------------------------------------
-Int_t CbmStar2019TofPar::Get4ChanToPadiChan(UInt_t uChannelInFee) {
-  if (uChannelInFee < GetNrOfChannelsPerFee())
-    return kuGet4topadi[uChannelInFee] - 1;
+Int_t CbmStar2019TofPar::Get4ChanToPadiChan(UInt_t uChannelInFee)
+{
+  if (uChannelInFee < GetNrOfChannelsPerFee()) return kuGet4topadi[uChannelInFee] - 1;
   else {
-    LOG(fatal)
-      << "CbmStar2019TofPar::Get4ChanToPadiChan => Index out of bound, "
-      << uChannelInFee << " vs " << GetNrOfChannelsPerFee()
-      << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::Get4ChanToPadiChan => Index out of bound, " << uChannelInFee << " vs "
+               << GetNrOfChannelsPerFee() << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < GetNrOfChannelsPerFee() )
 }
-Int_t CbmStar2019TofPar::PadiChanToGet4Chan(UInt_t uChannelInFee) {
-  if (uChannelInFee < GetNrOfChannelsPerFee())
-    return kuPaditoget4[uChannelInFee] - 1;
+Int_t CbmStar2019TofPar::PadiChanToGet4Chan(UInt_t uChannelInFee)
+{
+  if (uChannelInFee < GetNrOfChannelsPerFee()) return kuPaditoget4[uChannelInFee] - 1;
   else {
-    LOG(fatal)
-      << "CbmStar2019TofPar::PadiChanToGet4Chan => Index out of bound, "
-      << uChannelInFee << " vs " << GetNrOfChannelsPerFee()
-      << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::PadiChanToGet4Chan => Index out of bound, " << uChannelInFee << " vs "
+               << GetNrOfChannelsPerFee() << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < GetNrOfChannelsPerFee() )
 }
 // -------------------------------------------------------------------------
-Int_t CbmStar2019TofPar::ElinkIdxToGet4Idx(UInt_t uElink) {
-  if (gdpbv100::kuChipIdMergedEpoch == uElink)
-    return uElink;
+Int_t CbmStar2019TofPar::ElinkIdxToGet4Idx(UInt_t uElink)
+{
+  if (gdpbv100::kuChipIdMergedEpoch == uElink) return uElink;
   else if (uElink < GetNrOfGet4PerGdpb())
-    return kuElinkToGet4[uElink % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uElink / kuNbGet4PerGbtx);
+    return kuElinkToGet4[uElink % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uElink / kuNbGet4PerGbtx);
   else {
-    LOG(fatal) << "CbmStar2019TofPar::ElinkIdxToGet4Idx => Index out of bound, "
-               << uElink << " vs " << GetNrOfGet4PerGdpb()
-               << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::ElinkIdxToGet4Idx => Index out of bound, " << uElink << " vs "
+               << GetNrOfGet4PerGdpb() << ", returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbGet4PerGbtx )
 }
-Int_t CbmStar2019TofPar::Get4IdxToElinkIdx(UInt_t uGet4) {
-  if (gdpbv100::kuChipIdMergedEpoch == uGet4)
-    return uGet4;
+Int_t CbmStar2019TofPar::Get4IdxToElinkIdx(UInt_t uGet4)
+{
+  if (gdpbv100::kuChipIdMergedEpoch == uGet4) return uGet4;
   else if (uGet4 < GetNrOfGet4PerGdpb())
-    return kuGet4ToElink[uGet4 % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uGet4 / kuNbGet4PerGbtx);
+    return kuGet4ToElink[uGet4 % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uGet4 / kuNbGet4PerGbtx);
   else {
-    LOG(fatal) << "CbmStar2019TofPar::Get4IdxToElinkIdx => Index out of bound, "
-               << uGet4 << " vs " << GetNrOfGet4PerGdpb()
-               << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::Get4IdxToElinkIdx => Index out of bound, " << uGet4 << " vs "
+               << GetNrOfGet4PerGdpb() << ", returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbGet4PerGbtx )
 }
 // -------------------------------------------------------------------------
-Double_t CbmStar2019TofPar::GetPadiThresholdVal(UInt_t uCode) {
-  if (uCode < GetNrOfPadiThrCodes())
-    return fvdPadiThrCodeToValue[uCode];
+Double_t CbmStar2019TofPar::GetPadiThresholdVal(UInt_t uCode)
+{
+  if (uCode < GetNrOfPadiThrCodes()) return fvdPadiThrCodeToValue[uCode];
   else {
-    LOG(error)
-      << "CbmStar2019TofPar::GetPadiThresholdVal => Code out of bound, "
-      << uCode << " vs " << GetNrOfPadiThrCodes() << ", returning crazy value!";
+    LOG(error) << "CbmStar2019TofPar::GetPadiThresholdVal => Code out of bound, " << uCode << " vs "
+               << GetNrOfPadiThrCodes() << ", returning crazy value!";
     return 1e9;
   }  // else of if( uCode < GetNrOfPadiThrCodes() )
 }
 // -------------------------------------------------------------------------
-Int_t CbmStar2019TofPar::GetNrOfRpc(UInt_t uGbtx) {
+Int_t CbmStar2019TofPar::GetNrOfRpc(UInt_t uGbtx)
+{
   // safe to cast as anyway Nb of GBTx cannot exceed Int limits
-  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx)
-    return fiNrOfRpc[uGbtx];
+  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx) return fiNrOfRpc[uGbtx];
   else {
-    LOG(fatal) << "CbmStar2019TofPar::GetNrOfRpc => Index out of bound, "
-               << uGbtx << " vs " << fiNrOfGbtx << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetNrOfRpc => Index out of bound, " << uGbtx << " vs " << fiNrOfGbtx
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGbtx ) < fiNrOfGbtx )
 }
-Int_t CbmStar2019TofPar::GetRpcType(UInt_t uGbtx) {
+Int_t CbmStar2019TofPar::GetRpcType(UInt_t uGbtx)
+{
   // safe to cast as anyway Nb of GBTx cannot exceed Int limits
-  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx)
-    return fiRpcType[uGbtx];
+  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx) return fiRpcType[uGbtx];
   else {
-    LOG(fatal) << "CbmStar2019TofPar::GetRpcType => Index out of bound, "
-               << uGbtx << " vs " << fiNrOfGbtx << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetRpcType => Index out of bound, " << uGbtx << " vs " << fiNrOfGbtx
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGbtx ) < fiNrOfGbtx )
 }
-Int_t CbmStar2019TofPar::GetRpcSide(UInt_t uGbtx) {
+Int_t CbmStar2019TofPar::GetRpcSide(UInt_t uGbtx)
+{
   // safe to cast as anyway Nb of GBTx cannot exceed Int limits
-  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx)
-    return fiRpcSide[uGbtx];
+  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx) return fiRpcSide[uGbtx];
   else {
-    LOG(fatal) << "CbmStar2019TofPar::GetRpcSide => Index out of bound, "
-               << uGbtx << " vs " << fiNrOfGbtx << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetRpcSide => Index out of bound, " << uGbtx << " vs " << fiNrOfGbtx
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGbtx ) < fiNrOfGbtx )
 }
-Int_t CbmStar2019TofPar::GetModuleId(UInt_t uGbtx) {
+Int_t CbmStar2019TofPar::GetModuleId(UInt_t uGbtx)
+{
   // safe to cast as anyway Nb of GBTx cannot exceed Int limits
-  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx)
-    return fiModuleId[uGbtx];
+  if (static_cast<Int_t>(uGbtx) < fiNrOfGbtx) return fiModuleId[uGbtx];
   else {
-    LOG(fatal) << "CbmStar2019TofPar::GetModuleId => Index out of bound, "
-               << uGbtx << " vs " << fiNrOfGbtx << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetModuleId => Index out of bound, " << uGbtx << " vs " << fiNrOfGbtx
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGbtx ) < fiNrOfGbtx )
 }
 // -------------------------------------------------------------------------
-Double_t CbmStar2019TofPar::GetStarTriggDeadtime(UInt_t uGdpb) {
+Double_t CbmStar2019TofPar::GetStarTriggDeadtime(UInt_t uGdpb)
+{
   // safe to cast as anyway Nb of gDPB cannot exceed Int limits
-  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb)
-    return fdStarTriggerDeadtime[uGdpb];
+  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb) return fdStarTriggerDeadtime[uGdpb];
   else {
-    LOG(fatal)
-      << "CbmStar2019TofPar::GetStarTriggDeadtime => Index out of bound, "
-      << uGdpb << " vs " << fiNrOfGdpb << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetStarTriggDeadtime => Index out of bound, " << uGdpb << " vs " << fiNrOfGdpb
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGdpb ) < fiNrOfGdpb )
 }
-Double_t CbmStar2019TofPar::GetStarTriggDelay(UInt_t uGdpb) {
+Double_t CbmStar2019TofPar::GetStarTriggDelay(UInt_t uGdpb)
+{
   // safe to cast as anyway Nb of gDPB cannot exceed Int limits
-  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb)
-    return fdStarTriggerDelay[uGdpb];
+  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb) return fdStarTriggerDelay[uGdpb];
   else {
-    LOG(fatal) << "CbmStar2019TofPar::GetStarTriggDelay => Index out of bound, "
-               << uGdpb << " vs " << fiNrOfGdpb << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetStarTriggDelay => Index out of bound, " << uGdpb << " vs " << fiNrOfGdpb
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGdpb ) < fiNrOfGdpb )
 }
-Double_t CbmStar2019TofPar::GetStarTriggWinSize(UInt_t uGdpb) {
+Double_t CbmStar2019TofPar::GetStarTriggWinSize(UInt_t uGdpb)
+{
   // safe to cast as anyway Nb of gDPB cannot exceed Int limits
-  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb)
-    return fdStarTriggerWinSize[uGdpb];
+  if (static_cast<Int_t>(uGdpb) < fiNrOfGdpb) return fdStarTriggerWinSize[uGdpb];
   else {
-    LOG(fatal)
-      << "CbmStar2019TofPar::GetStarTriggWinSize => Index out of bound, "
-      << uGdpb << " vs " << fiNrOfGdpb << ", returning crazy value!";
+    LOG(fatal) << "CbmStar2019TofPar::GetStarTriggWinSize => Index out of bound, " << uGdpb << " vs " << fiNrOfGdpb
+               << ", returning crazy value!";
     return -1;
   }  // else of if( static_cast< Int_t >( uGdpb ) < fiNrOfGdpb )
 }

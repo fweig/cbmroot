@@ -1,6 +1,7 @@
 //void eventDisplay(const char* setup = "sis18_mcbm_25deg")
 //void eventDisplay(const char* setup = "sis18_mcbm_20deg_short")
-void eventDisplay(const char* setup = "sis18_mcbm_20deg_long") {
+void eventDisplay(const char* setup = "sis18_mcbm_20deg_long")
+{
   TString dataDir = "/Users/slebedev/Development/cbm/data/sim/rich/mcbm/";
   //TString dataDir   = "/home/aghoehne/Documents/CbmRoot/Gregor/";
   TString InputFile = dataDir + setup + "_test.mc.root";
@@ -20,22 +21,14 @@ void eventDisplay(const char* setup = "sis18_mcbm_20deg_long") {
   FairEventManager* fMan = new FairEventManager();
   FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
-  FairMCPointDraw* MvdPoint =
-    new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
-  FairMCPointDraw* StsPoint =
-    new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
-  FairMCPointDraw* MuchPoint =
-    new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
-  FairMCPointDraw* RichPoint =
-    new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
-  FairMCPointDraw* TrdPoint =
-    new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
-  FairMCPointDraw* TofPoint =
-    new FairMCPointDraw("TofPoint", kRed, kFullSquare);
-  FairMCPointDraw* EcalPoint =
-    new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
-  FairMCPointDraw* RefPlanePoint =
-    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+  FairMCPointDraw* MvdPoint      = new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
+  FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
+  FairMCPointDraw* MuchPoint     = new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RichPoint     = new FairMCPointDraw("RichPoint", kGreen, kFullSquare);
+  FairMCPointDraw* TrdPoint      = new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
+  FairMCPointDraw* TofPoint      = new FairMCPointDraw("TofPoint", kRed, kFullSquare);
+  FairMCPointDraw* EcalPoint     = new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
+  FairMCPointDraw* RefPlanePoint = new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
 
   fMan->AddTask(Track);
 

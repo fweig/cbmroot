@@ -1,6 +1,7 @@
 // Macro for running Cbm  with Geant3  or Geant4 (M. Al-Turany , D. Bertini)
 // Modified 22/06/2005 D.Bertini
-run_pluto(Int_t pluto_example = 1) {
+run_pluto(Int_t pluto_example = 1)
+{
   TStopwatch timer;
   timer.Start();
   gDebug = 0;
@@ -105,7 +106,8 @@ run_pluto(Int_t pluto_example = 1) {
     //*********** Example 1: Inline style Pluto input (elementary reaction)
     //This is just an example, please replace the reaction ctor as you like
     PReaction* reaction = new PReaction(8.0, "p", "p", "p p eta [pi+ pi- pi0]");
-  } else if (2 == pluto_example) {
+  }
+  else if (2 == pluto_example) {
     //*********** Example 2: Inline style Pluto input (fireball "omega Dalitz")
     //This example is taken from the macro path of Pluto (thermal_w_dalitz.C)
     //test thermal source of w's
@@ -122,7 +124,8 @@ run_pluto(Int_t pluto_example = 1) {
     PChannel* c15           = new PChannel(omegdecayb, 2, 1, 1);
     PChannel* cc[]          = {c, c15};
     PReaction* reaction     = new PReaction(cc, 2);  //array, number of channels
-  } else if (3 == pluto_example) {
+  }
+  else if (3 == pluto_example) {
     //*********** Example 3: Inline style Pluto input (fireball "J/Psi")
     //This example was provided by A. Kotynia
     Float_t Eb    = 25;     // to jest AGeV - ile GeV na nukleon
@@ -136,8 +139,7 @@ run_pluto(Int_t pluto_example = 1) {
     // optional flow (v1,v2).
     //
 
-    PFireball* source_JPsi =
-      new PFireball("J/Psi", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
+    PFireball* source_JPsi = new PFireball("J/Psi", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
     source_JPsi->setSigma(0.23);
     source_JPsi->Print();
 
@@ -153,13 +155,13 @@ run_pluto(Int_t pluto_example = 1) {
     PChannel* cc_JPsi[]     = {c_sJPsi, c_JPsidimu};
 
     PReaction* reaction = new PReaction(cc_JPsi, 2);
-  } else if (4 == pluto_example) {
+  }
+  else if (4 == pluto_example) {
     //*********** Example 4: Adds embedded particles (e.g. for detector studies)
     // in this case we embed the particles into an eta dalitz
     //This example is taken from the macro path of Pluto (embeddedParticles.C)
     // + added decay of the di-electrons
-    PReaction* reaction =
-      new PReaction(8.0, "p", "p", "p p eta [dilepton [e+ e-] g]");
+    PReaction* reaction = new PReaction(8.0, "p", "p", "p p eta [dilepton [e+ e-] g]");
 
     //Construct the bulk container:
     PEmbeddedParticles* embedded = new PEmbeddedParticles();
@@ -179,9 +181,9 @@ run_pluto(Int_t pluto_example = 1) {
     //Add our container to the reaction:
     reaction.AddBulk(embedded);
 
-    reaction->setDecayAll(
-      1.);  // decay all particles with tau < 1 ns (this decays our embedded dilepton)
-  } else {
+    reaction->setDecayAll(1.);  // decay all particles with tau < 1 ns (this decays our embedded dilepton)
+  }
+  else {
     cout << "There are only 4 (1-4) examples how to use the pluto reaction "
             "generator. You tried to run the non existing example"
          << pluto_example << endl;
@@ -189,8 +191,7 @@ run_pluto(Int_t pluto_example = 1) {
 
   reaction->Print();
   //feed the reaction into FAIR-ROOT:
-  FairPlutoReactionGenerator* plutoGen =
-    new FairPlutoReactionGenerator(reaction);
+  FairPlutoReactionGenerator* plutoGen = new FairPlutoReactionGenerator(reaction);
   primGen->AddGenerator(plutoGen);
 
 

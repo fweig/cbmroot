@@ -12,7 +12,9 @@
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingLight.h"
+
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
 
 #include <iostream>
@@ -38,8 +40,8 @@ public:
      * \param[in] ring1 CbmRichRing from which hits are copied
      * \param[out] ring2 RICH ring to which hits are added.
      */
-  static void CopyHitsToRingLight(const CbmRichRing* ring1,
-                                  CbmRichRingLight* ring2) {
+  static void CopyHitsToRingLight(const CbmRichRing* ring1, CbmRichRingLight* ring2)
+  {
     if (NULL == fRichHits) { Init(); }
     if (NULL == fRichHits) return;
     int nofHits = ring1->GetNofHits();
@@ -58,9 +60,8 @@ public:
      * \param[in] hitY Vector of Y coordinates.
      * \param[out] ring RICH ring to which hits are added.
      */
-  static void CopyHitsToRingLight(const vector<double>& hitX,
-                                  const vector<double>& hitY,
-                                  CbmRichRingLight* ring) {
+  static void CopyHitsToRingLight(const vector<double>& hitX, const vector<double>& hitY, CbmRichRingLight* ring)
+  {
     int nofHits = hitX.size();
     for (int i = 0; i < nofHits; i++) {
       CbmRichHitLight hl(hitX[i], hitY[i]);
@@ -73,8 +74,8 @@ public:
      * \param[in] ring1 CbmRichRingLight from which parameters are copied.
      * \param[out] ring2 CbmRichRing to which parameters are copied.
      */
-  static void CopyParamsToRing(const CbmRichRingLight* ring1,
-                               CbmRichRing* ring2) {
+  static void CopyParamsToRing(const CbmRichRingLight* ring1, CbmRichRing* ring2)
+  {
     ring2->SetCenterX(ring1->GetCenterX());
     ring2->SetCenterY(ring1->GetCenterY());
     ring2->SetChi2(ring1->GetChi2());
@@ -90,17 +91,15 @@ public:
   /**
      * \brief Initialize array of RICH hits.
      */
-  static void Init() {
+  static void Init()
+  {
     FairRootManager* ioman = FairRootManager::Instance();
     if (NULL == ioman) {
-      cout << "-E- CbmRichConverter::Init, RootManager not instantised!"
-           << endl;
+      cout << "-E- CbmRichConverter::Init, RootManager not instantised!" << endl;
       return;
     }
     fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-    if (NULL == fRichHits) {
-      cout << "-W- CbmRichConverter::Init, No RichHit array" << endl;
-    }
+    if (NULL == fRichHits) { cout << "-W- CbmRichConverter::Init, No RichHit array" << endl; }
   }
 };
 

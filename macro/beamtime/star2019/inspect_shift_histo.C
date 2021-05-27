@@ -1,4 +1,5 @@
-void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
+void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root")
+{
   using namespace std;
 
   TFile* fHistFile = TFile::Open(hFile, "READ");
@@ -53,22 +54,15 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
   const Double_t CTSMAX = 1.E6;
   cout << "High score list of Get4s" << endl;
   for (Int_t i = 0; i < NHIGH; i++) {
-    cout << " # " << i << ", Get4 " << iHighCts_Get4[i]
-         << ", counts: " << dHighCts[i] << endl;
+    cout << " # " << i << ", Get4 " << iHighCts_Get4[i] << ", counts: " << dHighCts[i] << endl;
     if (dHighCts[i] > CTSMAX) {
       Int_t iGet4    = iHighCts_Get4[i] % 40;
       Int_t iGbtx    = ((iHighCts_Get4[i] - iGet4) / 40) % 6;
       Int_t iGdpb    = (iHighCts_Get4[i] - iGet4 - iGbtx * 40) / 240;
       TDatime* pTime = new TDatime();
       cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime())
-           << Form(
-                ": Disable Get4 %d %d %d %e ", iGdpb, iGbtx, iGet4, dHighCts[i])
-           << endl;
-      gSystem->Exec(
-        Form("/home/cbm/starsoft/dpbcontrols/mask_get4.sh %d %d %d ",
-             iGdpb,
-             iGbtx,
-             iGet4));
+           << Form(": Disable Get4 %d %d %d %e ", iGdpb, iGbtx, iGet4, dHighCts[i]) << endl;
+      gSystem->Exec(Form("/home/cbm/starsoft/dpbcontrols/mask_get4.sh %d %d %d ", iGdpb, iGbtx, iGet4));
       // cout << Form("%d,%d",pTime->GetDate(),pTime->GetTime()) << Form(": Disable all Get4s in  %d %d %d %e ",iGdpb,iGbtx,iGet4,dHighCts[i]) << endl;
       // gSystem->Exec(Form("/home/cbm/starsoft/dpbcontrols/mask_gbtx.sh %d %d %d ",iGdpb,iGbtx,iGet4));
     }
@@ -99,8 +93,8 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
             aGet4[2] = iGet4 - iStart;
             vMisGet4.push_back(aGet4);
             TDatime* pTime = new TDatime();
-            cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime())
-                 << Form(": Reconfig Get4 %d %d ", iSec, iGet4) << endl;
+            cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime()) << Form(": Reconfig Get4 %d %d ", iSec, iGet4)
+                 << endl;
             //gSystem->Exec(Form("/home/cbm/starsoft/dpbcontrols/etc/etof/scripts/reconfig_get4.sh %d %d > /home/cbm/starsoft/dpbcontrols/LOG/ReconfigGet4_%d_%d",iSec,iGet4,iSec,iGet4));
           }
         }
@@ -115,31 +109,25 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
     }
     if (iMissingGet4s != iMissedGet4) {  // notify star log
       TDatime* pTime = new TDatime();
-      cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime())
-           << ": Number of missing Get4s changed from " << iMissedGet4 << " to "
-           << iMissingGet4s << endl;
-      TString Notify =
-        Form("/home/tonko/rtsLog -d WARN -p 8008 -c etofEvb \"ETOF number of "
-             "missing Get4s changed: %d -> %d \"",
-             iMissedGet4,
-             iMissingGet4s);
+      cout << Form("%d,%d", pTime->GetDate(), pTime->GetTime()) << ": Number of missing Get4s changed from "
+           << iMissedGet4 << " to " << iMissingGet4s << endl;
+      TString Notify = Form("/home/tonko/rtsLog -d WARN -p 8008 -c etofEvb \"ETOF number of "
+                            "missing Get4s changed: %d -> %d \"",
+                            iMissedGet4, iMissingGet4s);
       cout << Notify.Data() << endl;
       gSystem->Exec(Notify.Data());
       for (Int_t i = 0; i < iMissingGet4s; i++) {
         Notify = Form("/home/tonko/rtsLog -d WARN -p 8008 -c etofEvb \"ETOF "
                       "Get4 inactive in sector %d, gbtx %d, get4# %d \"",
-                      vMisGet4[i][0],
-                      vMisGet4[i][1],
-                      vMisGet4[i][2]);
+                      vMisGet4[i][0], vMisGet4[i][1], vMisGet4[i][2]);
         cout << Notify.Data() << endl;
         gSystem->Exec(Notify.Data());
       }
     }
     gSystem->Exec(Form("echo %d > %s", iMissingGet4s, Fname.Data()));
     if (iMissingGet4s > 7) {  // most likely a full GBTX missing, try to revive
-      gSystem->Exec(
-        "nohup /home/cbm/software2020/startup_scripts/request_tune.sh > "
-        "/home/cbm/logs/2020/RequestTune.log &");
+      gSystem->Exec("nohup /home/cbm/software2020/startup_scripts/request_tune.sh > "
+                    "/home/cbm/logs/2020/RequestTune.log &");
     }
   }
 
@@ -160,13 +148,13 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
           if (h1->GetBinContent(iGet4) > 0) NGet4++;
         }
         if (NGet4 < 8) {
-          cout << "AFCK " << iGdpb << ", Gbtx " << iGbtx << ", low active Get4 "
-               << NGet4 << endl;
+          cout << "AFCK " << iGdpb << ", Gbtx " << iGbtx << ", low active Get4 " << NGet4 << endl;
           // if(iGdpb == 9 && iGbtx == 2) continue;  // sector 22, module 2
           //gSystem->Exec(Form("/home/cbm/starsoft/dpbcontrols/afck_reinit_gbtx.sh %d %d &",iGdpb,iGbtx));
           gSystem->Exec(Form("rm /tmp/GBTX-OK%d; rm /tmp/GBTX-OK", iGdpb + 13));
           break;  // continue with next gdpb
-        } else {
+        }
+        else {
           //if(NGet4 != 24)
           ;
         }
@@ -185,7 +173,7 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
       return;
     }
     for (Int_t iGdpb = 0; iGdpb < NGdpb; iGdpb++) {
-      h1 = h2->ProjectionX("_px", iGdpb + 1, iGdpb + 1);  // get gdpb line
+      h1         = h2->ProjectionX("_px", iGdpb + 1, iGdpb + 1);  // get gdpb line
       Int_t iSec = iGdpb + 13;
       for (Int_t iGbtx = 0; iGbtx < NGbTx; iGbtx++) {
         Int_t iStart = iGbtx * 40;
@@ -193,12 +181,8 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
         for (Int_t iGet4 = iStart; iGet4 < iStart + 32; iGet4++) {
           if (h1->GetBinContent(iGet4 + 1) > 1.E4) NBad++;
         }
-        if (NBad > 0)
-          cout << NBad << "Get4 with high rate mismatches in Gdpb " << iGdpb
-               << ", GBTx " << iGbtx << endl;
-        if (NBad > 8) {
-          gSystem->Exec(Form("rm /tmp/GBTX-OK; rm /tmp/GBTX-OK%d;", iSec));
-        }
+        if (NBad > 0) cout << NBad << "Get4 with high rate mismatches in Gdpb " << iGdpb << ", GBTx " << iGbtx << endl;
+        if (NBad > 8) { gSystem->Exec(Form("rm /tmp/GBTX-OK; rm /tmp/GBTX-OK%d;", iSec)); }
       }
     }
   }
@@ -213,8 +197,8 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
     }
     Int_t NBad = 0;
     for (Int_t iGdpb = 0; iGdpb < NGdpb; iGdpb++) {
-      h1 = h2->ProjectionX("_px", iGdpb + 1, iGdpb + 1);  // get gdpb line
-      Int_t NbadGbtx = 0;  // counter for bad GBTXs
+      h1             = h2->ProjectionX("_px", iGdpb + 1, iGdpb + 1);  // get gdpb line
+      Int_t NbadGbtx = 0;                                             // counter for bad GBTXs
       // fill histograms
       const Double_t DEADMAX = 0.5;
       for (Int_t iGbtx = 0; iGbtx < NGbTx; iGbtx++) {
@@ -232,15 +216,11 @@ void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root") {
       //cout << "AFCK " << iGdpb+13 << " has " << NbadGbtx << " bad GBTX " << endl;
       if (NbadGbtx > 3) {  // request firmware reload
         NBad++;
-        gSystem->Exec(
-          Form("touch /tmp/MissingSync%d; rm /tmp/GBTX-OK; rm /tmp/GBTX-OK%d;",
-               iGdpb,
-               iGdpb + 13));
+        gSystem->Exec(Form("touch /tmp/MissingSync%d; rm /tmp/GBTX-OK; rm /tmp/GBTX-OK%d;", iGdpb, iGdpb + 13));
       }
     }
     if (NBad > 0)
-      gSystem->Exec(
-        "nohup /home/cbm/software2020/startup_scripts/request_tune.sh > "
-        "/home/cbm/logs/2020/RequestTune.log &");
+      gSystem->Exec("nohup /home/cbm/software2020/startup_scripts/request_tune.sh > "
+                    "/home/cbm/logs/2020/RequestTune.log &");
   }
 }

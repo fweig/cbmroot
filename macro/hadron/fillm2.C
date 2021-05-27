@@ -1,5 +1,6 @@
 
-void fillm2(Float_t beamMomentum, Float_t timeResolution, Int_t level) {
+void fillm2(Float_t beamMomentum, Float_t timeResolution, Int_t level)
+{
   if (level < 1 || level > 2) return;
   Int_t nEvents = 1000;
 
@@ -31,45 +32,29 @@ void fillm2(Float_t beamMomentum, Float_t timeResolution, Int_t level) {
 
   char* ver = getenv("CBMVER");
 
-  sprintf(strOutputFile,
-          "/home/kresan/data/hadron/%s/urqmd/\
+  sprintf(strOutputFile, "/home/kresan/data/hadron/%s/urqmd/\
 auau/%1.0fgev/centr",
-          ver,
-          beamMomentum);
-  sprintf(strOutputFile,
-          "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.m2mom",
-          strOutputFile,
-          beamMomentum,
-          timeResolution);
+          ver, beamMomentum);
+  sprintf(strOutputFile, "%s/urqmd.auau.%1.0fgev.centr.%1.0fps.m2mom", strOutputFile, beamMomentum, timeResolution);
   if (2 == level) { sprintf(strOutputFile, "%s.reco", strOutputFile); }
   sprintf(strOutputFile, "%s.root", strOutputFile);
 
-  sprintf(strMCFile,
-          "/home/kresan/data/mc/%s/urqmd/\
+  sprintf(strMCFile, "/home/kresan/data/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.mc.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
-  sprintf(strParamFile,
-          "/home/kresan/data/mc/%s/urqmd/\
+          ver, beamMomentum, beamMomentum);
+  sprintf(strParamFile, "/home/kresan/data/mc/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.mc.param.root",
-          ver,
-          beamMomentum,
-          beamMomentum);
+          ver, beamMomentum, beamMomentum);
   if (2 == level) {
-    sprintf(strHadronFile,
-            "/home/kresan/data/dst/%s/urqmd/\
+    sprintf(strHadronFile, "/home/kresan/data/dst/%s/urqmd/\
 auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.0000.dst.root",
-            ver,
-            beamMomentum,
-            beamMomentum);
+            ver, beamMomentum, beamMomentum);
   }
 
 
   FairRunAna* fRun = new FairRunAna();
-  if (1 == level) {
-    fRun->SetInputFile(strMCFile);
-  } else {
+  if (1 == level) { fRun->SetInputFile(strMCFile); }
+  else {
     fRun->SetInputFile(strHadronFile);
   }
   /*
@@ -109,8 +94,7 @@ auau/%1.0fgev/centr/urqmd.auau.%1.0fgev.centr.%4d.dst.root",
 
   // --------- Hadron Identification -----------------------
   // create and add hadronTask
-  CbmFillM2* hadronTask =
-    new CbmFillM2("FillM2", 1, 450, -1.5, 3.0, 100, 0., 10.);
+  CbmFillM2* hadronTask = new CbmFillM2("FillM2", 1, 450, -1.5, 3.0, 100, 0., 10.);
   hadronTask->SetCoutBunch(10);
   hadronTask->SetTimeResolution(timeResolution * 1e-3);
   hadronTask->SetLevel(level);

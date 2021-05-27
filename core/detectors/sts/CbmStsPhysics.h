@@ -42,11 +42,7 @@ public:
      **
      ** For the reference to the formulae, see the STS digitiser note.
      **/
-  static Double_t DiffusionWidth(Double_t z,
-                                 Double_t d,
-                                 Double_t vBias,
-                                 Double_t vFd,
-                                 Double_t temperature,
+  static Double_t DiffusionWidth(Double_t z, Double_t d, Double_t vBias, Double_t vFd, Double_t temperature,
                                  Int_t chargeType);
 
 
@@ -57,8 +53,7 @@ public:
      ** @param z      z coordinate, measured from the p side [cm]
      ** @return       z component of electric field [V/cm]
      **/
-  static Double_t
-  ElectricField(Double_t vBias, Double_t vFd, Double_t dZ, Double_t z);
+  static Double_t ElectricField(Double_t vBias, Double_t vFd, Double_t dZ, Double_t z);
 
 
   /** @brief Energy loss in a Silicon layer
@@ -71,8 +66,7 @@ public:
      ** The energy loss is sampled from the Urban fluctuation model
      ** described in the GEANT3 manual (PHYS333 2.4, pp. 262-264).
      */
-  Double_t
-  EnergyLoss(Double_t dz, Double_t mass, Double_t eKin, Double_t dedx) const;
+  Double_t EnergyLoss(Double_t dz, Double_t mass, Double_t eKin, Double_t dedx) const;
 
 
   /** @brief Accessor to singleton instance
@@ -142,10 +136,7 @@ public:
      ** (average specific energy loss) in Silicon of a particle
      ** with given mass and charge.
      **/
-  Double_t StoppingPower(Double_t energy,
-                         Double_t mass,
-                         Double_t charge,
-                         Bool_t isElectron);
+  Double_t StoppingPower(Double_t energy, Double_t mass, Double_t charge, Bool_t isElectron);
 
 
 private:
@@ -170,8 +161,7 @@ private:
      ** The eEquiv is below the tabulated range, the first table value is
      ** returned; if it is above the range, the last value is returned.
      **/
-  Double_t InterpolateDataTable(Double_t eKin,
-                                std::map<Double_t, Double_t>& table);
+  Double_t InterpolateDataTable(Double_t eKin, std::map<Double_t, Double_t>& table);
 
 
   /** @brief Read stopping power data table from file **/
@@ -194,21 +184,17 @@ private:
   static CbmStsPhysics* fgInstance;  ///< Singleton instance
 
   // --- Parameters for the Urban model
-  Double_t fUrbanI = 0.;  ///< Urban model: mean ionisation potential of Silicon
-  Double_t fUrbanE1 = 0.;  ///< Urban model: first atomic energy level
-  Double_t fUrbanE2 = 0.;  ///< Urban model: second atomic energy level
-  Double_t fUrbanF1 = 0.;  ///< Urban model: oscillator strength first level
-  Double_t fUrbanF2 = 0.;  ///< Urban model: oscillator strength second level
-  Double_t fUrbanEmax =
-    0.;  ///< Urban model: cut-off energy (delta-e threshold)
-  Double_t fUrbanR =
-    0.;  ///< Urban model: weight parameter excitation/ionisation
+  Double_t fUrbanI    = 0.;  ///< Urban model: mean ionisation potential of Silicon
+  Double_t fUrbanE1   = 0.;  ///< Urban model: first atomic energy level
+  Double_t fUrbanE2   = 0.;  ///< Urban model: second atomic energy level
+  Double_t fUrbanF1   = 0.;  ///< Urban model: oscillator strength first level
+  Double_t fUrbanF2   = 0.;  ///< Urban model: oscillator strength second level
+  Double_t fUrbanEmax = 0.;  ///< Urban model: cut-off energy (delta-e threshold)
+  Double_t fUrbanR    = 0.;  ///< Urban model: weight parameter excitation/ionisation
 
   // --- Data tables for stopping power
-  std::map<Double_t, Double_t>
-    fStoppingElectron {};  ///< E [GeV] -> <-dE/dx> [GeV*g/cm^2]
-  std::map<Double_t, Double_t>
-    fStoppingProton {};  ///< E [GeV] -> <-dE/dx> [GeV*g/cm^2]
+  std::map<Double_t, Double_t> fStoppingElectron {};  ///< E [GeV] -> <-dE/dx> [GeV*g/cm^2]
+  std::map<Double_t, Double_t> fStoppingProton {};    ///< E [GeV] -> <-dE/dx> [GeV*g/cm^2]
 
   // --- Data tables for width of Landau distribution
   std::map<Double_t, Double_t> fLandauWidth;  ///< q [e] -> width [e]

@@ -1,7 +1,5 @@
-void pl_all_TOffDTLastHits(Int_t iNSt      = 6,
-                           Int_t iSel      = 0,
-                           Double_t Tstart = 1.,
-                           Double_t Tend   = 100.) {
+void pl_all_TOffDTLastHits(Int_t iNSt = 6, Int_t iSel = 0, Double_t Tstart = 1., Double_t Tend = 100.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -36,18 +34,15 @@ void pl_all_TOffDTLastHits(Int_t iNSt      = 6,
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_TOff_DTLH",
-                             iType[iSt],
-                             iSm,
-                             iRp,
-                             iSel);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_TOff_DTLH", iType[iSt], iSm, iRp, iSel);
         h             = (TH2*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           h->GetXaxis()->SetRange(Tstart, Tend);
           h->Draw("colz");
           h->ProfileX()->Draw("same");
           gPad->SetLogz();
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
         if (iRp == 10) break;

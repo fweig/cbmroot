@@ -10,12 +10,13 @@
 #ifndef CBM_RICH_RING_SELECT_IMPL
 #define CBM_RICH_RING_SELECT_IMPL
 
+#include "CbmRichRingLight.h"
+
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <vector>
 
-#include "CbmRichRingLight.h"
+#include <cmath>
 
 /**
 * \class CbmRichRingSelectImpl
@@ -33,7 +34,8 @@ public:
   /**
     * \brief Standard constructor.
     */
-  CbmRichRingSelectImpl() : fAlpha(), fPhi() {
+  CbmRichRingSelectImpl() : fAlpha(), fPhi()
+  {
     fAlpha.resize(kMAX_NOF_HITS);
     fPhi.resize(kMAX_NOF_HITS);
   };
@@ -47,7 +49,8 @@ public:
     * Calculates number of hits on a ring.
     * \param[in] ring Found and fitted ring.
     */
-  int GetNofHitsOnRingCircle(CbmRichRingLight* ring) {
+  int GetNofHitsOnRingCircle(CbmRichRingLight* ring)
+  {
     int count = 0;
     int nHits = ring->GetNofHits();
     for (int iH = 0; iH < nHits; iH++) {
@@ -64,7 +67,8 @@ public:
 	 * Calculates the sum of 3 biggest angles between neighboring hits.
 	 * \param[in] ring Found and fitted ring.
 	 */
-  float GetAngle(CbmRichRingLight* ring) {
+  float GetAngle(CbmRichRingLight* ring)
+  {
     int nHits = ring->GetNofHits();
     if (nHits > kMAX_NOF_HITS) return 0.2f;
     if (nHits < 4) return 999.f;
@@ -83,15 +87,14 @@ public:
       if (yHit - yRing == 0 || xHit - xRing == 0) continue;
 
       if (xHit > xRing) {
-        if (yHit > yRing) {
-          fAlpha[iH] = atan(fabs((yHit - yRing) / (xHit - xRing)));
-        } else {
+        if (yHit > yRing) { fAlpha[iH] = atan(fabs((yHit - yRing) / (xHit - xRing))); }
+        else {
           fAlpha[iH] = TwoPi - atan(fabs((yHit - yRing) / (xHit - xRing)));
         }
-      } else {
-        if (yHit > yRing) {
-          fAlpha[iH] = Pi - atan(fabs((yHit - yRing) / (xHit - xRing)));
-        } else {
+      }
+      else {
+        if (yHit > yRing) { fAlpha[iH] = Pi - atan(fabs((yHit - yRing) / (xHit - xRing))); }
+        else {
           fAlpha[iH] = Pi + atan(fabs((yHit - yRing) / (xHit - xRing)));
         }
       }

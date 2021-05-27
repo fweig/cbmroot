@@ -8,16 +8,17 @@
 #ifndef CBMMCBM2018EVENTBUILDER_H
 #define CBMMCBM2018EVENTBUILDER_H
 
-#include "FairTask.h"
-
 #include "CbmDefs.h"
 #include "CbmEvent.h"
-
 #include "CbmTofDigi.h"
+
+#include "FairTask.h"
+
+#include <tuple>
+
 #include <array>
 #include <map>
 #include <set>
-#include <tuple>
 #include <vector>
 
 class TClonesArray;
@@ -26,7 +27,11 @@ class TH2;
 class CbmDigiManager;
 
 
-enum class EventBuilderAlgo { FixedTimeWindow, MaximumTimeGap };
+enum class EventBuilderAlgo
+{
+  FixedTimeWindow,
+  MaximumTimeGap
+};
 
 //typedef std::tuple<ECbmModuleId, Int_t> digituple;
 
@@ -80,10 +85,7 @@ public:
   void SetFillHistos(Bool_t var) { fFillHistos = var; }
   void SetOutFilename(TString sNameIn) { fOutFileName = sNameIn; }
 
-  void SetEventBuilderAlgo(
-    EventBuilderAlgo algo = EventBuilderAlgo::FixedTimeWindow) {
-    fEventBuilderAlgo = algo;
-  }
+  void SetEventBuilderAlgo(EventBuilderAlgo algo = EventBuilderAlgo::FixedTimeWindow) { fEventBuilderAlgo = algo; }
   void SetFixedTimeWindow(Double_t val) { fFixedTimeWindow = val; }
   void SetMaximumTimeGap(Double_t val) { fMaximumTimeGap = val; }
 
@@ -141,8 +143,8 @@ private:
   Bool_t fbUseBaseMuchDigi                  = kFALSE;
   CbmDigiManager* fDigiMan                  = nullptr;  //!
   const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //!
-  TClonesArray* fT0DigiArr = nullptr;  //! input container of TO digis
-  TClonesArray* fEvents    = nullptr;  //! output container of CbmEvents
+  TClonesArray* fT0DigiArr                  = nullptr;  //! input container of TO digis
+  TClonesArray* fEvents                     = nullptr;  //! output container of CbmEvents
 
   std::array<TClonesArray*, ToIntegralType(ECbmModuleId::kNofSystems)>
     fLinkArray;  //! array with pointers to input containers
@@ -152,34 +154,22 @@ private:
 
   std::vector<std::pair<ECbmModuleId, Int_t>> fVect;  //!
 
-  CbmEvent* fCurrentEvent {
-    nullptr};  //! pointer to the event which is currently build
+  CbmEvent* fCurrentEvent {nullptr};    //! pointer to the event which is currently build
   std::vector<CbmEvent*> fEventVector;  //! vector with all created events
 
-  TH1* fDiffTime {
-    nullptr};  //! histogram with the time difference between two consecutive digis
-  TH1* fhEventTime {nullptr};  //! histogram with the seed time of the events
-  TH1* fhEventDt {
-    nullptr};  //! histogram with the interval in seed time of consecutive events
-  TH1* fhEventSize {
-    nullptr};  //! histogram with the nb of all  digis in the event
-  TH2* fhNbDigiPerEvtTime {
-    nullptr};  //! histogram with the nb of all  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeT0 {
-    nullptr};  //! histogram with the nb of T0   digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeSts {
-    nullptr};  //! histogram with the nb of STS  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeMuch {
-    nullptr};  //! histogram with the nb of MUCH digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeTrd {
-    nullptr};  //! histogram with the nb of TRD  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeTof {
-    nullptr};  //! histogram with the nb of TOF  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeRich {
-    nullptr};  //! histogram with the nb of RICH digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimePsd {
-    nullptr};  //! histogram with the nb of PSD  digis per event vs seed time of the events
-  Bool_t fFillHistos {kTRUE};  //! Switch ON/OFF filling of histograms
+  TH1* fDiffTime {nullptr};               //! histogram with the time difference between two consecutive digis
+  TH1* fhEventTime {nullptr};             //! histogram with the seed time of the events
+  TH1* fhEventDt {nullptr};               //! histogram with the interval in seed time of consecutive events
+  TH1* fhEventSize {nullptr};             //! histogram with the nb of all  digis in the event
+  TH2* fhNbDigiPerEvtTime {nullptr};      //! histogram with the nb of all  digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeT0 {nullptr};    //! histogram with the nb of T0   digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeSts {nullptr};   //! histogram with the nb of STS  digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeMuch {nullptr};  //! histogram with the nb of MUCH digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeTrd {nullptr};   //! histogram with the nb of TRD  digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeTof {nullptr};   //! histogram with the nb of TOF  digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimeRich {nullptr};  //! histogram with the nb of RICH digis per event vs seed time of the events
+  TH2* fhNbDigiPerEvtTimePsd {nullptr};   //! histogram with the nb of PSD  digis per event vs seed time of the events
+  Bool_t fFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
 
   /** Used event building algorithm **/
   EventBuilderAlgo fEventBuilderAlgo {EventBuilderAlgo::FixedTimeWindow};

@@ -9,10 +9,11 @@
 
 #include "FairTrackParam.h"
 //#include "TMatrixD.h"
+#include <type_traits>
+
 #include <algorithm>
 #include <iostream>
 #include <iterator>
-#include <type_traits>
 
 /*static inline std::ostream& operator<< (std::ostream& os, const TMatrixD& matrix)
 {
@@ -84,12 +85,8 @@ public:
   void SetCovTT(Double_t v) { SetCovariance(4, 4, v); }
 
 private:
-  Double_t GetCovariance(Int_t i, Int_t j) const {
-    return FairTrackParam::GetCovariance(i, j);
-  }
-  void SetCovariance(Int_t i, Int_t j, Double_t val) {
-    FairTrackParam::SetCovariance(i, j, val);
-  }
+  Double_t GetCovariance(Int_t i, Int_t j) const { return FairTrackParam::GetCovariance(i, j); }
+  void SetCovariance(Int_t i, Int_t j, Double_t val) { FairTrackParam::SetCovariance(i, j, val); }
 
 private:
   ClassDef(CbmTrackParam2, 1);

@@ -1,42 +1,25 @@
 #include "CbmTrdPoint.h"
 
+#include "compareTrdPoint.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareTrdPoint.h"
-
-TEST(_GTestCbmTrdPoint, CheckDefaultConstructor) {
+TEST(_GTestCbmTrdPoint, CheckDefaultConstructor)
+{
   // Create object
   CbmTrdPoint test;
 
-  compareTrdPointDataMembers(test,
-                             -1,
-                             -1,
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             0.,
-                             0.,
-                             0.,
-                             0);
+  compareTrdPointDataMembers(test, -1, -1, TVector3(0., 0., 0.), TVector3(0., 0., 0.), TVector3(0., 0., 0.),
+                             TVector3(0., 0., 0.), 0., 0., 0., 0);
 
   CbmTrdPoint* test1 = new CbmTrdPoint();
 
-  compareTrdPointDataMembers(*test1,
-                             -1,
-                             -1,
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             0.,
-                             0.,
-                             0.,
-                             0);
+  compareTrdPointDataMembers(*test1, -1, -1, TVector3(0., 0., 0.), TVector3(0., 0., 0.), TVector3(0., 0., 0.),
+                             TVector3(0., 0., 0.), 0., 0., 0., 0);
 }
 
-TEST(_GTestCbmTrdPoint, CheckStandardConstructor) {
+TEST(_GTestCbmTrdPoint, CheckStandardConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -48,38 +31,17 @@ TEST(_GTestCbmTrdPoint, CheckStandardConstructor) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
-  CbmTrdPoint* test1 = new CbmTrdPoint(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint* test1 = new CbmTrdPoint(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(*test1,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(*test1, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 }
 
-TEST(_GTestCbmTrdPoint, CheckCopyConstructor) {
+TEST(_GTestCbmTrdPoint, CheckCopyConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -91,53 +53,23 @@ TEST(_GTestCbmTrdPoint, CheckCopyConstructor) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
   // test should not be changed
   CbmTrdPoint test2 {test};
 
-  compareTrdPointDataMembers(test2,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test2, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Test if the original object wasn't changed
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 }
 
-TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator) {
+TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -149,20 +81,9 @@ TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
@@ -170,33 +91,14 @@ TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator) {
   CbmTrdPoint test2 {};
   test2 = test;
 
-  compareTrdPointDataMembers(test2,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test2, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Test if the original object wasn't changed
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 }
 
-TEST(_GTestCbmTrdPoint, CheckMoveConstructor) {
+TEST(_GTestCbmTrdPoint, CheckMoveConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -208,54 +110,24 @@ TEST(_GTestCbmTrdPoint, CheckMoveConstructor) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
   // test should not be changed
   CbmTrdPoint test2 {std::move(test)};
 
-  compareTrdPointDataMembers(test2,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test2, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // For objects with simple types move fall back to copy so
   // the original object is kept unchanged
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 }
 
-TEST(_GTestCbmTrdPoint, CheckAssignmentOperator) {
+TEST(_GTestCbmTrdPoint, CheckAssignmentOperator)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -267,20 +139,9 @@ TEST(_GTestCbmTrdPoint, CheckAssignmentOperator) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
@@ -288,34 +149,15 @@ TEST(_GTestCbmTrdPoint, CheckAssignmentOperator) {
   CbmTrdPoint test2 {};
   test2 = std::move(test);
 
-  compareTrdPointDataMembers(test2,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test2, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   // For objects with simple types move fall back to copy so
   // the original object is kept unchanged
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 }
 
-TEST(_GTestCbmTrdPoint, CheckPrint) {
+TEST(_GTestCbmTrdPoint, CheckPrint)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -327,20 +169,9 @@ TEST(_GTestCbmTrdPoint, CheckPrint) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
   testing::internal::CaptureStdout();
   test.Print("");
@@ -355,7 +186,8 @@ TEST(_GTestCbmTrdPoint, CheckPrint) {
 }
 
 
-TEST(_GTestCbmTrdPoint, CheckPositionOut) {
+TEST(_GTestCbmTrdPoint, CheckPositionOut)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -367,20 +199,9 @@ TEST(_GTestCbmTrdPoint, CheckPositionOut) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
 
   TVector3 testVect {0., 0., 0.};
@@ -392,7 +213,8 @@ TEST(_GTestCbmTrdPoint, CheckPositionOut) {
   EXPECT_FLOAT_EQ(posout.Z(), testVect.Z());
 }
 
-TEST(_GTestCbmTrdPoint, CheckMomentumOut) {
+TEST(_GTestCbmTrdPoint, CheckMomentumOut)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
@@ -404,20 +226,9 @@ TEST(_GTestCbmTrdPoint, CheckMomentumOut) {
   Double_t eloss {0.4567};
   Int_t eventid {0};
   // Create object
-  CbmTrdPoint test(
-    trackid, detid, posin, momin, posout, momout, tof, length, eloss);
+  CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
-  compareTrdPointDataMembers(test,
-                             trackid,
-                             detid,
-                             posin,
-                             momin,
-                             posout,
-                             momout,
-                             tof,
-                             length,
-                             eloss,
-                             eventid);
+  compareTrdPointDataMembers(test, trackid, detid, posin, momin, posout, momout, tof, length, eloss, eventid);
 
 
   TVector3 testVect {0., 0., 0.};

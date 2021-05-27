@@ -8,6 +8,7 @@
 
 #include "CbmEvent.h"
 #include "CbmStsTrack.h"
+
 #include "FairTask.h"
 
 #include "TString.h"
@@ -29,32 +30,21 @@ class TObject;
 class CbmEventBuilderQA : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmEventBuilderQA(const char* name    = "CbmEventBuilderQA",
-                    Int_t iVerbose      = 0,
+  CbmEventBuilderQA(const char* name = "CbmEventBuilderQA", Int_t iVerbose = 0,
                     TString outFileName = "CbmEventBuilderQA.root");
   const CbmEventBuilderQA& operator=(const CbmEventBuilderQA&) = delete;
   CbmEventBuilderQA(const CbmEventBuilderQA&)                  = delete;
   ~CbmEventBuilderQA();
 
-  void SetStsTrackBranchName(const TString& name) {
-    fStsTrackBranchName = name;
-  }
-  void SetGlobalTrackBranchName(const TString& name) {
-    fGlobalTrackBranchName = name;
-  }
+  void SetStsTrackBranchName(const TString& name) { fStsTrackBranchName = name; }
+  void SetGlobalTrackBranchName(const TString& name) { fGlobalTrackBranchName = name; }
   void SetTofBranchName(const TString& name) { fTofBranchName = name; }
   void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
-  void SetTrackMatchBranchName(const TString& name) {
-    fStsTrackMatchBranchName = name;
-  }
-  void SetMuchTrackMatchBranchName(const TString& name) {
-    fMuchTrackMatchBranchName = name;
-  }
+  void SetTrackMatchBranchName(const TString& name) { fStsTrackMatchBranchName = name; }
+  void SetMuchTrackMatchBranchName(const TString& name) { fMuchTrackMatchBranchName = name; }
   void SetTrdBranchName(const TString& name) { fTrdBranchName = name; }
   void SetRichBranchName(const TString& name) { fRichBranchName = name; }
-  void SetMuchTrackBranchName(const TString& name) {
-    fMuchTrackBranchName = name;
-  }
+  void SetMuchTrackBranchName(const TString& name) { fMuchTrackBranchName = name; }
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);
@@ -71,14 +61,13 @@ private:
     SortEvents() : Event(nullptr), track() {}
   };
 
-  static bool CompareTrackTime(const SortEvents& a, const SortEvents& b) {
+  static bool CompareTrackTime(const SortEvents& a, const SortEvents& b)
+  {
     return (a.track.GetTime() < b.track.GetTime());
   }
 
-  bool CalculateIsReconstructable(
-    const int iMCFile,
-    const int iMCEvent,
-    const int iMCTrack);  // bool CbmL1MCTrack::IsReconstructable()
+  bool CalculateIsReconstructable(const int iMCFile, const int iMCEvent,
+                                  const int iMCTrack);  // bool CbmL1MCTrack::IsReconstructable()
 
   void WriteHistosCurFile(TObject* obj);
 
@@ -120,9 +109,7 @@ private:
   //histograms
   //STS
   static const int NStsHisto = 3;
-  TH1F* hStsHisto
-    [8]
-    [NStsHisto];  //All tracks, electrons, muons, pion, kaon, protons, fragments, ghost
+  TH1F* hStsHisto[8][NStsHisto];  //All tracks, electrons, muons, pion, kaon, protons, fragments, ghost
   TH1F* hStsFitHisto[8][10];
   //Much
   static const int NMuchHisto = 5;

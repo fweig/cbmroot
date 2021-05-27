@@ -38,18 +38,16 @@
 // 040315 040315
 //   0252   1717
 
-const Int_t kiNbFiles               = 3 + 2 + 4 + 2 + 2 + 5 + 12 + 3 + 2;
-const TString ksFilesDay[kiNbFiles] = {
-  "240215", "240215", "240215", "250215", "250215", "260215", "260215",
-  "260215", "260215", "270215", "270215", "280215", "280215", "010315",
-  "010315", "010315", "010315", "010315", "020315", "020315", "020315",
-  "020315", "020315", "020315", "020315", "020315", "020315", "020315",
-  "020315", "020315", "030315", "030315", "030315", "040315", "040315"};
-const TString ksFilesHour[kiNbFiles] = {
-  "0957", "1941", "2224", "1026", "2024", "0018", "0949", "1420", "1831",
-  "0930", "1715", "1401", "2133", "0947", "1509", "1512", "2022", "2332",
-  "1102", "1417", "1940", "2002", "2025", "2032", "2045", "2056", "2144",
-  "2202", "2228", "2248", "0141", "1423", "2214", "0252", "1717"};
+const Int_t kiNbFiles                = 3 + 2 + 4 + 2 + 2 + 5 + 12 + 3 + 2;
+const TString ksFilesDay[kiNbFiles]  = {"240215", "240215", "240215", "250215", "250215", "260215", "260215",
+                                       "260215", "260215", "270215", "270215", "280215", "280215", "010315",
+                                       "010315", "010315", "010315", "010315", "020315", "020315", "020315",
+                                       "020315", "020315", "020315", "020315", "020315", "020315", "020315",
+                                       "020315", "020315", "030315", "030315", "030315", "040315", "040315"};
+const TString ksFilesHour[kiNbFiles] = {"0957", "1941", "2224", "1026", "2024", "0018", "0949", "1420", "1831",
+                                        "0930", "1715", "1401", "2133", "0947", "1509", "1512", "2022", "2332",
+                                        "1102", "1417", "1940", "2002", "2025", "2032", "2045", "2056", "2144",
+                                        "2202", "2228", "2248", "0141", "1423", "2214", "0252", "1717"};
 
 /************************ Boards definitions ************************/
 const Int_t kiNbBoardsUsed = 8;
@@ -60,18 +58,8 @@ std::streampos kiSlotSzOff[kiNbBoardsUsed] = {0, 0, 0, 0, 2, 2, 0, 1};
 
 /*********************** Detectors definitions **********************/
 const Int_t kiNbRpc         = 12;
-TString sChNameRpc[kiNbRpc] = {"HD_P2",
-                               "HD_P5",
-                               "------",
-                               "USTC",
-                               "TS_STR",
-                               "TS_PAD",
-                               "BUC_Ref",
-                               "BUC_2013",
-                               "B_2012_1",
-                               "B_2012_2",
-                               "B_2012_3",
-                               "B_2012_4"};
+TString sChNameRpc[kiNbRpc] = {"HD_P2",   "HD_P5",    "------",   "USTC",     "TS_STR",   "TS_PAD",
+                               "BUC_Ref", "BUC_2013", "B_2012_1", "B_2012_2", "B_2012_3", "B_2012_4"};
 Int_t iSlotRpcNeg[kiNbRpc]  = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1};
 Int_t iBdIdxRpcNeg[kiNbRpc] = {0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4};
 Int_t iChIdxRpcNeg[kiNbRpc] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
@@ -81,28 +69,14 @@ Int_t iChIdxRpcPos[kiNbRpc] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
 
 const Int_t kiPmtOffset     = 20;
 const Int_t kiNbPmt         = 11;
-TString sChNamePmt[kiNbPmt] = {"HFL",
-                               "HFR",
-                               "calo",
-                               "HBL",
-                               "HBR",
-                               "BFL",
-                               "BFR",
-                               "BBL",
-                               "BBR",
-                               "PMT5",
-                               "Dia_PMT"};
+TString sChNamePmt[kiNbPmt] = {"HFL", "HFR", "calo", "HBL", "HBR", "BFL", "BFR", "BBL", "BBR", "PMT5", "Dia_PMT"};
 Int_t iSlotPmtNeg[kiNbPmt]  = {4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
 Int_t iBdIdxPmtNeg[kiNbPmt] = {13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14};
 Int_t iChIdxPmtNeg[kiNbPmt] = {0, 1, 2, 4, 5, 0, 1, 2, 3, 4, 5};
 
 const Int_t kiTrdOffset     = 40;
 const Int_t kiNbTrd         = 5;
-TString sChNameTrd[kiNbTrd] = {"T_2010",
-                               "T_2012_1",
-                               "T_2012_2",
-                               "T_2012_3",
-                               "T_2012_4"};
+TString sChNameTrd[kiNbTrd] = {"T_2010", "T_2012_1", "T_2012_2", "T_2012_3", "T_2012_4"};
 Int_t iSlotTrdNeg[kiNbTrd]  = {6, 6, 6, 6, 6};
 Int_t iBdIdxTrdNeg[kiNbTrd] = {8, 8, 8, 8, 8};
 Int_t iChIdxTrdNeg[kiNbTrd] = {0, 1, 1, 1, 1};
@@ -114,7 +88,8 @@ const Int_t kiSpillDistSec      = 30;    // Approximate value, now just default
 const Double_t kdSpillDiamThr   = 1e-4;  // µA
 const Double_t kdNoSpillDiamThr = 1e-5;  // µA
 
-void PrintHelp() {
+void PrintHelp()
+{
   cout << "Please provide a detector index, a data, a start time and a stop "
           "time as input!!!!"
        << endl;

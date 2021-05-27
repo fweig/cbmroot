@@ -1,19 +1,21 @@
 // Includes from TRD
 #include "CbmTrdRawToDigiR.h"
+
 #include "CbmTrdAddress.h"
 #include "CbmTrdDigi.h"
+
 #include "TMath.h"
 //#include "CbmSpadicRawMessage22.h"
-#include <string>
-
-
-#include "assert.h"
 #include <TFile.h>
 #include <TProfile.h>
 #include <TProfile2D.h>
+
 #include <chrono>
 #include <iostream>
+#include <string>
 #include <vector>
+
+#include "assert.h"
 
 using namespace std::chrono;
 
@@ -25,7 +27,9 @@ CbmTrdRawToDigiR::CbmTrdRawToDigiR()
   , fElookupAsym()
   , fElookupA()
   , fElookupBig()
-  , fElookup() {}
+  , fElookup()
+{
+}
 
 //_________________________________________________________________________________
 CbmTrdRawToDigiR::CbmTrdRawToDigiR(std::string readfile)
@@ -35,7 +39,8 @@ CbmTrdRawToDigiR::CbmTrdRawToDigiR(std::string readfile)
   , fElookupAsym()
   , fElookupA()
   , fElookupBig()
-  , fElookup() {
+  , fElookup()
+{
   SetReadFile(readfile);
 }
 
@@ -48,7 +53,8 @@ CbmTrdRawToDigiR::CbmTrdRawToDigiR(Double_t cal, Double_t tau, Int_t mode)
   , fElookupAsym()
   , fElookupA()
   , fElookupBig()
-  , fElookup() {
+  , fElookup()
+{
   SetCalibration(cal);
   SetTau(tau);
   SetRecoMode(mode);
@@ -57,16 +63,15 @@ CbmTrdRawToDigiR::CbmTrdRawToDigiR(Double_t cal, Double_t tau, Int_t mode)
 
 
 //_________________________________________________________________________________
-CbmTrdRawToDigiR::CbmTrdRawToDigiR(Double_t cal,
-                                   Double_t tau,
-                                   std::vector<Int_t> mask)
+CbmTrdRawToDigiR::CbmTrdRawToDigiR(Double_t cal, Double_t tau, std::vector<Int_t> mask)
   : TObject()
   , fSampleMask()
   , fElookupSmall()
   , fElookupAsym()
   , fElookupA()
   , fElookupBig()
-  , fElookup() {
+  , fElookup()
+{
   SetCalibration(cal);
   SetTau(tau);
   SetRecoMask(mask);
@@ -74,10 +79,8 @@ CbmTrdRawToDigiR::CbmTrdRawToDigiR(Double_t cal,
 }
 
 
-void CbmTrdRawToDigiR::SetPars(Int_t mode,
-                               Double_t cal,
-                               Double_t tau,
-                               std::vector<Int_t> mask) {
+void CbmTrdRawToDigiR::SetPars(Int_t mode, Double_t cal, Double_t tau, std::vector<Int_t> mask)
+{
 
   //default
   if (mode == 0) {
@@ -87,8 +90,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
     fTau         = tau;
     Double_t sum = 0;
     for (UInt_t i = 0; i < mask.size(); i++)
-      sum += fCalibration
-             * CalcResponse(mask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(mask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
     fEReco = sum;
     FillLookUps();
   }
@@ -100,9 +102,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
     fLookUp      = 0;
     Double_t sum = 0;
     for (UInt_t i = 0; i < fSampleMask.size(); i++)
-      sum +=
-        fCalibration
-        * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
     fEReco     = sum;
     auto start = high_resolution_clock::now();
     FillLookUps();
@@ -111,8 +111,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
     if (fDebug)
       std::cout << std::endl
                 << std::endl
-                << "filling took: " << duration.count() << "  microseconds "
-                << std::endl
+                << "filling took: " << duration.count() << "  microseconds " << std::endl
                 << fEReco << std::endl
                 << std::endl
                 << std::endl;
@@ -120,9 +119,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
   if (mode == 2) {
     Double_t sum = 0;
     for (UInt_t i = 0; i < fSampleMask.size(); i++)
-      sum +=
-        fCalibration
-        * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
     fEReco     = sum;
     auto start = high_resolution_clock::now();
     FillLookUps();
@@ -131,8 +128,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
     if (fDebug)
       std::cout << std::endl
                 << std::endl
-                << "filling took: " << duration.count() << "  microseconds "
-                << std::endl
+                << "filling took: " << duration.count() << "  microseconds " << std::endl
                 << fEReco << std::endl
                 << std::endl
                 << std::endl;
@@ -140,17 +136,15 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode,
 }
 
 
-void CbmTrdRawToDigiR::Init() {
+void CbmTrdRawToDigiR::Init()
+{
   //default
   Double_t sum = 0;
   for (UInt_t i = 0; i < fSampleMask.size(); i++)
-    sum +=
-      fCalibration
-      * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+    sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
   fEReco     = sum;
   auto start = high_resolution_clock::now();
-  if (fReadFile == "")
-    FillLookUps(fWriteFile);
+  if (fReadFile == "") FillLookUps(fWriteFile);
   else
     ReadMaps(fReadFile);
   if (fLookUp == 4) FillLookUps("");
@@ -159,8 +153,7 @@ void CbmTrdRawToDigiR::Init() {
   if (fDebug)
     std::cout << std::endl
               << std::endl
-              << "filling took: " << duration.count() << "  microseconds "
-              << std::endl
+              << "filling took: " << duration.count() << "  microseconds " << std::endl
               << fEReco << std::endl
               << std::endl
               << std::endl;
@@ -169,29 +162,21 @@ void CbmTrdRawToDigiR::Init() {
 }
 
 
-void CbmTrdRawToDigiR::FillLookUps(std::string write) {
+void CbmTrdRawToDigiR::FillLookUps(std::string write)
+{
 
   if (fLookUp == 1) {
-    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC);
-         shift++) {
+    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC); shift++) {
       Double_t sum = 0;
       for (Int_t i = fMinBin; i <= fMaxBin; i++)
-        sum += fCalibration
-               * CalcResponse(
-                 fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-      fEReco = sum;
-      Float_t temp =
-        fCalibration
-        * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+      fEReco       = sum;
+      Float_t temp = fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
 
       for (Int_t max = 0; max < fDynamicRange; max++) {
         Float_t energy = max * 1.0 / temp;
-        Int_t a        = energy * fCalibration
-                  * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)
-                                 + shift);
-        Int_t b = energy * fCalibration
-                  * CalcResponse(
-                    (fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t a        = energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t b        = energy * fCalibration * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
 
         Int_t mina = a - fExtrapolate * a;
         Int_t maxa = a + fExtrapolate * a;
@@ -199,10 +184,8 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
         Int_t maxb = b + fExtrapolate * b;
         if (!(fElookupAsym[max][a][b] > 0)) fElookupAsym[max][a][b] = shift;
         fElookupSmall[shift][max] = energy;
-        if (fDebug)
-          fQA->CreateHist("Asym", 512, -12.0, 500.0, 512, -12.0, 500.0);
-        if (fDebug && max == 200 && fQA->GetCont2D("Asym", a, b) == 0.)
-          fQA->Fill("Asym", a, b, shift);
+        if (fDebug) fQA->CreateHist("Asym", 512, -12.0, 500.0, 512, -12.0, 500.0);
+        if (fDebug && max == 200 && fQA->GetCont2D("Asym", a, b) == 0.) fQA->Fill("Asym", a, b, shift);
         if (fDebug) fQA->CreateHist("Look", 63, -0.5, 62.5, 512, -12.0, 500.0);
         if (fDebug) fQA->Fill("Look", shift, max, energy);
         Int_t extrapolate = 0;
@@ -210,35 +193,22 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
           extrapolate++;
           if ((b - extrapolate) <= minb || (a - extrapolate) <= mina) break;
           if (fElookupAsym[max][a - extrapolate][b - extrapolate] > 0) continue;
-          fElookupAsym[max][a - extrapolate][b - extrapolate] =
-            fElookupAsym[max][a][b];
-          if (fDebug && max == 200)
-            fQA->Fill("Asym",
-                      a - extrapolate,
-                      b - extrapolate,
-                      fElookupAsym[max][a][b]);
+          fElookupAsym[max][a - extrapolate][b - extrapolate] = fElookupAsym[max][a][b];
+          if (fDebug && max == 200) fQA->Fill("Asym", a - extrapolate, b - extrapolate, fElookupAsym[max][a][b]);
           Int_t count = 1;
-          if (!(fElookupAsym[max][a - extrapolate - count][b - extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a - extrapolate - count][b - extrapolate] > 0)) {
             fElookupAsym[max][a - extrapolate - count][b - extrapolate] =
               fElookupAsym[max][a - extrapolate][b - extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a - extrapolate - count,
-                        b - extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a - extrapolate - count, b - extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
           count = 1;
-          if (!(fElookupAsym[max][a - extrapolate + count][b - extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a - extrapolate + count][b - extrapolate] > 0)) {
             fElookupAsym[max][a - extrapolate + count][b - extrapolate] =
               fElookupAsym[max][a - extrapolate][b - extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a - extrapolate + count,
-                        b - extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a - extrapolate + count, b - extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
         }
@@ -247,35 +217,22 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
           extrapolate++;
           if ((b + extrapolate) >= maxb || (a + extrapolate) >= maxa) break;
           if (fElookupAsym[max][a + extrapolate][b + extrapolate] > 0) continue;
-          fElookupAsym[max][a + extrapolate][b + extrapolate] =
-            fElookupAsym[max][a][b];
-          if (fDebug && max == 200)
-            fQA->Fill("Asym",
-                      a + extrapolate,
-                      b + extrapolate,
-                      fElookupAsym[max][a][b]);
+          fElookupAsym[max][a + extrapolate][b + extrapolate] = fElookupAsym[max][a][b];
+          if (fDebug && max == 200) fQA->Fill("Asym", a + extrapolate, b + extrapolate, fElookupAsym[max][a][b]);
           Int_t count = 1;
-          if (!(fElookupAsym[max][a + extrapolate - count][b + extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a + extrapolate - count][b + extrapolate] > 0)) {
             fElookupAsym[max][a + extrapolate - count][b + extrapolate] =
               fElookupAsym[max][a + extrapolate][b + extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a + extrapolate - count,
-                        b + extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a + extrapolate - count, b + extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
           count = 1;
-          if (!(fElookupAsym[max][a + extrapolate + count][b + extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a + extrapolate + count][b + extrapolate] > 0)) {
             fElookupAsym[max][a + extrapolate + count][b + extrapolate] =
               fElookupAsym[max][a + extrapolate][b + extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a + extrapolate + count,
-                        b + extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a + extrapolate + count, b + extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
         }
@@ -284,26 +241,17 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
     if (write != "") WriteMaps(write);
   }
   if (fLookUp == 2) {
-    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC);
-         shift++) {
+    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC); shift++) {
       Double_t sum = 0;
       for (Int_t i = fMinBin; i <= fMaxBin; i++)
-        sum += fCalibration
-               * CalcResponse(
-                 fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-      fEReco = sum;
-      Float_t temp =
-        fCalibration
-        * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+      fEReco            = sum;
+      Float_t temp      = fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
       Int_t extrapolate = 0;
       for (Int_t max = 0; max < fDynamicRange; max++) {
         Float_t energy = max * 1.0 / temp;
-        Int_t a        = energy * fCalibration
-                  * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)
-                                 + shift);
-        Int_t b = energy * fCalibration
-                  * CalcResponse(
-                    (fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t a        = energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t b        = energy * fCalibration * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
 
         Int_t mina = a - fExtrapolate * a;
         Int_t maxa = a + fExtrapolate * a;
@@ -312,16 +260,11 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
         if (!(fElookupAsym[max][a][b] > 0)) fElookupAsym[max][a][b] = shift;
         sum = 0.;
         for (UInt_t i = 0; i < fSampleMask.size(); i++)
-          sum +=
-            energy * fCalibration
-            * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)
-                           + shift);
+          sum += energy * fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
 
         fElookupSmall[shift][sum] = energy;
-        if (fDebug)
-          fQA->CreateHist("Asym", 512, -12.0, 500.0, 512, -12.0, 500.0);
-        if (fDebug && max == 200 && fQA->GetCont2D("Asym", a, b) == 0.)
-          fQA->Fill("Asym", a, b, shift);
+        if (fDebug) fQA->CreateHist("Asym", 512, -12.0, 500.0, 512, -12.0, 500.0);
+        if (fDebug && max == 200 && fQA->GetCont2D("Asym", a, b) == 0.) fQA->Fill("Asym", a, b, shift);
         if (fDebug) fQA->CreateHist("Look", 63, -0.5, 62.5, 512, -12.0, 2000.0);
         if (fDebug) fQA->Fill("Look", shift, sum, energy);
         extrapolate = 0;
@@ -329,35 +272,22 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
           extrapolate++;
           if ((b - extrapolate) <= minb || (a - extrapolate) <= mina) break;
           if (fElookupAsym[max][a - extrapolate][b - extrapolate] > 0) continue;
-          fElookupAsym[max][a - extrapolate][b - extrapolate] =
-            fElookupAsym[max][a][b];
-          if (fDebug && max == 200)
-            fQA->Fill("Asym",
-                      a - extrapolate,
-                      b - extrapolate,
-                      fElookupAsym[max][a][b]);
+          fElookupAsym[max][a - extrapolate][b - extrapolate] = fElookupAsym[max][a][b];
+          if (fDebug && max == 200) fQA->Fill("Asym", a - extrapolate, b - extrapolate, fElookupAsym[max][a][b]);
           Int_t count = 1;
-          if (!(fElookupAsym[max][a - extrapolate - count][b - extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a - extrapolate - count][b - extrapolate] > 0)) {
             fElookupAsym[max][a - extrapolate - count][b - extrapolate] =
               fElookupAsym[max][a - extrapolate][b - extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a - extrapolate - count,
-                        b - extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a - extrapolate - count, b - extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
           count = 1;
-          if (!(fElookupAsym[max][a - extrapolate + count][b - extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a - extrapolate + count][b - extrapolate] > 0)) {
             fElookupAsym[max][a - extrapolate + count][b - extrapolate] =
               fElookupAsym[max][a - extrapolate][b - extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a - extrapolate + count,
-                        b - extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a - extrapolate + count, b - extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
         }
@@ -366,35 +296,22 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
           extrapolate++;
           if ((b + extrapolate) >= maxb || (a + extrapolate) >= maxa) break;
           if (fElookupAsym[max][a + extrapolate][b + extrapolate] > 0) continue;
-          fElookupAsym[max][a + extrapolate][b + extrapolate] =
-            fElookupAsym[max][a][b];
-          if (fDebug && max == 200)
-            fQA->Fill("Asym",
-                      a + extrapolate,
-                      b + extrapolate,
-                      fElookupAsym[max][a][b]);
+          fElookupAsym[max][a + extrapolate][b + extrapolate] = fElookupAsym[max][a][b];
+          if (fDebug && max == 200) fQA->Fill("Asym", a + extrapolate, b + extrapolate, fElookupAsym[max][a][b]);
           Int_t count = 1;
-          if (!(fElookupAsym[max][a + extrapolate - count][b + extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a + extrapolate - count][b + extrapolate] > 0)) {
             fElookupAsym[max][a + extrapolate - count][b + extrapolate] =
               fElookupAsym[max][a + extrapolate][b + extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a + extrapolate - count,
-                        b + extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a + extrapolate - count, b + extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
           count = 1;
-          if (!(fElookupAsym[max][a + extrapolate + count][b + extrapolate]
-                > 0)) {
+          if (!(fElookupAsym[max][a + extrapolate + count][b + extrapolate] > 0)) {
             fElookupAsym[max][a + extrapolate + count][b + extrapolate] =
               fElookupAsym[max][a + extrapolate][b + extrapolate];
             if (fDebug && max == 200)
-              fQA->Fill("Asym",
-                        a + extrapolate + count,
-                        b + extrapolate,
-                        fElookupAsym[max][a][b]);
+              fQA->Fill("Asym", a + extrapolate + count, b + extrapolate, fElookupAsym[max][a][b]);
             count++;
           }
         }
@@ -404,13 +321,11 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
   }
   if (fLookUp == 4) {
     for (Int_t max = 0; max < fDynamicRange; max++) {
-      Float_t energy =
-        max
-        / (fCalibration
-           * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)));
-      fElookup[max] = energy;
+      Float_t energy = max / (fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)));
+      fElookup[max]  = energy;
     }
-  } else {
+  }
+  else {
     Int_t range = fDynamicRange * fSampleMask.size();
     for (Int_t n = 0; n <= range; n++) {
       Float_t value = n / fEReco;
@@ -420,35 +335,28 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write) {
 }
 
 
-void CbmTrdRawToDigiR::ReadMaps(std::string file) {
+void CbmTrdRawToDigiR::ReadMaps(std::string file)
+{
   if (fLookUp == 3) {
     TFile f(file.data(), "OPEN");
     TProfile2D* h;
     h = (TProfile2D*) f.Get("MAX ADC");
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
-        fElookupSmall[h->GetXaxis()->GetBinCenter(x)]
-                     [h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        fElookupSmall[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        if (fDebug) fQA->CreateHist("Read Small", 63, -0.5, 62.5, 512, -12., 500.);
         if (fDebug)
-          fQA->CreateHist("Read Small", 63, -0.5, 62.5, 512, -12., 500.);
-        if (fDebug)
-          fQA->Fill("Read Small",
-                    h->GetXaxis()->GetBinCenter(x),
-                    h->GetYaxis()->GetBinCenter(y),
+          fQA->Fill("Read Small", h->GetXaxis()->GetBinCenter(x), h->GetYaxis()->GetBinCenter(y),
                     h->GetBinContent(x, y));
       }
     }
     h = (TProfile2D*) f.Get("ASYM MAP");
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
-        fElookupA[h->GetXaxis()->GetBinCenter(x)]
-                 [h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        fElookupA[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        if (fDebug) fQA->CreateHist("Read Asym", 512, 0., 512., 512, -12., 500.);
         if (fDebug)
-          fQA->CreateHist("Read Asym", 512, 0., 512., 512, -12., 500.);
-        if (fDebug)
-          fQA->Fill("Read Asym",
-                    h->GetXaxis()->GetBinCenter(x),
-                    h->GetYaxis()->GetBinCenter(y),
+          fQA->Fill("Read Asym", h->GetXaxis()->GetBinCenter(x), h->GetYaxis()->GetBinCenter(y),
                     h->GetBinContent(x, y));
       }
     }
@@ -460,28 +368,20 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file) {
     h = (TProfile2D*) f.Get("MAX ADC");
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
-        fElookupSmall[h->GetXaxis()->GetBinCenter(x)]
-                     [h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        fElookupSmall[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        if (fDebug) fQA->CreateHist("Read Small", 63, -0.5, 62.5, 512, -12., 500.);
         if (fDebug)
-          fQA->CreateHist("Read Small", 63, -0.5, 62.5, 512, -12., 500.);
-        if (fDebug)
-          fQA->Fill("Read Small",
-                    h->GetXaxis()->GetBinCenter(x),
-                    h->GetYaxis()->GetBinCenter(y),
+          fQA->Fill("Read Small", h->GetXaxis()->GetBinCenter(x), h->GetYaxis()->GetBinCenter(y),
                     h->GetBinContent(x, y));
       }
     }
     h = (TProfile2D*) f.Get("ASYM MAP");
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
-        fElookupA[h->GetXaxis()->GetBinCenter(x)]
-                 [h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        fElookupA[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
+        if (fDebug) fQA->CreateHist("Read Asym", 512, 0., 512., 512, -12., 500.);
         if (fDebug)
-          fQA->CreateHist("Read Asym", 512, 0., 512., 512, -12., 500.);
-        if (fDebug)
-          fQA->Fill("Read Asym",
-                    h->GetXaxis()->GetBinCenter(x),
-                    h->GetYaxis()->GetBinCenter(y),
+          fQA->Fill("Read Asym", h->GetXaxis()->GetBinCenter(x), h->GetYaxis()->GetBinCenter(y),
                     h->GetBinContent(x, y));
       }
     }
@@ -489,11 +389,9 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file) {
   }
 }
 
-CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples,
-                                       Int_t channel,
-                                       Int_t uniqueModuleId,
-                                       ULong64_t time,
-                                       Bool_t FN) {
+CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples, Int_t channel, Int_t uniqueModuleId, ULong64_t time,
+                                       Bool_t FN)
+{
   Float_t digicharge = 0;
   Int_t samplesum    = 0;
   for (size_t i = 0; i < fSampleMask.size(); i++) {
@@ -501,46 +399,39 @@ CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples,
   }
   if (fReadFile == "") {
     if (fLookUp == 1) {
-      digicharge =
-        fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]]
-                                  [samples[fHighBin]]][samples[fMaxBin]];
+      digicharge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samples[fMaxBin]];
     }
     if (fLookUp == 2) {
-      digicharge =
-        fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]]
-                                  [samples[fHighBin]]][samplesum];
-    } else {
+      digicharge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samplesum];
+    }
+    else {
       digicharge = fElookup[samplesum];
     }
-  } else {
-    if (fLookUp == 3) {
-      digicharge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]]
-                                [samples[fMaxBin]];
-    }
+  }
+  else {
+    if (fLookUp == 3) { digicharge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]][samples[fMaxBin]]; }
     if (fLookUp == 4 && !FN) {
-      digicharge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]]
-                                [samples[fMaxBin]];
+      digicharge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]][samples[fMaxBin]];
     }
     if (fLookUp == 4 && FN) { digicharge = fElookup[samples[fMaxBin]]; }
   }
 
-  CbmTrdDigi* digi =
-    new CbmTrdDigi(channel, uniqueModuleId, digicharge, time, 0, 0);
+  CbmTrdDigi* digi = new CbmTrdDigi(channel, uniqueModuleId, digicharge, time, 0, 0);
 
   return digi;
 }
 
-Float_t CbmTrdRawToDigiR::GetTimeShift(std::vector<Int_t> samples) {
+Float_t CbmTrdRawToDigiR::GetTimeShift(std::vector<Int_t> samples)
+{
 
   Float_t shift = 0;
   if (fReadFile == "") {
-    if (fLookUp == 1) {
-      shift =
-        fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]];
-    } else {
+    if (fLookUp == 1) { shift = fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]; }
+    else {
       return 0.;
     }
-  } else {
+  }
+  else {
     if (fLookUp == 3) { shift = fElookupA[samples[fMinBin]][samples[fMaxBin]]; }
     if (fLookUp == 4) { shift = fElookupA[samples[fMinBin]][samples[fMaxBin]]; }
   }
@@ -548,46 +439,39 @@ Float_t CbmTrdRawToDigiR::GetTimeShift(std::vector<Int_t> samples) {
   return shift;
 }
 
-Double_t CbmTrdRawToDigiR::GetCharge(std::vector<Int_t> samples, Int_t shift) {
+Double_t CbmTrdRawToDigiR::GetCharge(std::vector<Int_t> samples, Int_t shift)
+{
 
   Float_t charge = 0;
   if (fReadFile == "") {
     if (fLookUp == 1) {
-      if (shift > -1)
-        charge = fElookupSmall[shift][samples[fMaxBin]];
+      if (shift > -1) charge = fElookupSmall[shift][samples[fMaxBin]];
       else
-        charge =
-          fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]]
-                                    [samples[fHighBin]]][samples[fMaxBin]];
+        charge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samples[fMaxBin]];
     }
     if (fLookUp == 2) {
       Int_t samplesum = 0;
       for (size_t i = 0; i < fSampleMask.size(); i++) {
         samplesum += samples[fSampleMask[i]];
       }
-      if (shift > -1)
-        charge = fElookupSmall[shift][samples[fMaxBin]];
+      if (shift > -1) charge = fElookupSmall[shift][samples[fMaxBin]];
       else
-        charge =
-          fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]]
-                                    [samples[fHighBin]]][samples[fMaxBin]];
-    } else {
+        charge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samples[fMaxBin]];
+    }
+    else {
       return 0.;
     }
-  } else {
+  }
+  else {
     if (fLookUp == 3) {
-      if (shift > -1)
-        charge = fElookupSmall[shift][samples[fMaxBin]];
+      if (shift > -1) charge = fElookupSmall[shift][samples[fMaxBin]];
       else
-        charge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]]
-                              [samples[fMaxBin]];
+        charge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]][samples[fMaxBin]];
     }
     if (fLookUp == 4) {
-      if (shift > -1)
-        charge = fElookupSmall[shift][samples[fMaxBin]];
+      if (shift > -1) charge = fElookupSmall[shift][samples[fMaxBin]];
       else
-        charge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]]
-                              [samples[fMaxBin]];
+        charge = fElookupSmall[fElookupA[samples[fMinBin]][samples[fMaxBin]]][samples[fMaxBin]];
     }
   }
 
@@ -596,11 +480,11 @@ Double_t CbmTrdRawToDigiR::GetCharge(std::vector<Int_t> samples, Int_t shift) {
 
 
 //_______________________________________________________________________________
-Double_t CbmTrdRawToDigiR::CalcResponse(Double_t t) {
+Double_t CbmTrdRawToDigiR::CalcResponse(Double_t t)
+{
 
   if (fShapingOrder == 1) return (t / fTau) * TMath::Exp(-(t / fTau));
-  if (fShapingOrder == 2)
-    return (t / fTau) * (t / fTau) * TMath::Exp(-(t / fTau));
+  if (fShapingOrder == 2) return (t / fTau) * (t / fTau) * TMath::Exp(-(t / fTau));
 
   return 0.;
 }

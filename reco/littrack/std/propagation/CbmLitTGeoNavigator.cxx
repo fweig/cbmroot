@@ -13,17 +13,17 @@
 #include "TGeoNode.h"
 #include "TGeoVolume.h"
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 CbmLitTGeoNavigator::CbmLitTGeoNavigator() {}
 
 CbmLitTGeoNavigator::~CbmLitTGeoNavigator() {}
 
-LitStatus
-CbmLitTGeoNavigator::FindIntersections(const CbmLitTrackParam* par,
-                                       litfloat zOut,
-                                       std::vector<CbmLitMaterialInfo>& inter) {
+LitStatus CbmLitTGeoNavigator::FindIntersections(const CbmLitTrackParam* par, litfloat zOut,
+                                                 std::vector<CbmLitMaterialInfo>& inter)
+{
   Bool_t downstream = zOut >= par->GetZ();
   // std::cout << "zOut=" << zOut << " Z=" << par->GetZ() << " downstream=" << downstream << std::endl;
 
@@ -46,23 +46,22 @@ CbmLitTGeoNavigator::FindIntersections(const CbmLitTrackParam* par,
       return kLITERROR;
     }
     // Check for NaN values
-    if (std::isnan(gGeoManager->GetCurrentPoint()[0])
-        || std::isnan(gGeoManager->GetCurrentPoint()[1])
+    if (std::isnan(gGeoManager->GetCurrentPoint()[0]) || std::isnan(gGeoManager->GetCurrentPoint()[1])
         || std::isnan(gGeoManager->GetCurrentPoint()[2])) {
       //         std::cout << "Error! CbmLitTGeoNavigator::FindIntersections: NaN values.\n";
       gGeoManager->PopDummy();
       return kLITERROR;
     }
     // Check if we currently at the output position
-    Bool_t away =
-      (downstream) ? stepInfo.GetZpos() >= zOut : stepInfo.GetZpos() <= zOut;
+    Bool_t away = (downstream) ? stepInfo.GetZpos() >= zOut : stepInfo.GetZpos() <= zOut;
     if (away) {  //|| gGeoManager->IsNullStep()){
       gGeoManager->PopPoint();
       litfloat l = CalcLength(zOut);
       stepInfo.SetLength(l);
       stepInfo.SetZpos(zOut);
       last = true;
-    } else {
+    }
+    else {
       gGeoManager->PopDummy();
     }
     inter.push_back(stepInfo);
@@ -70,8 +69,8 @@ CbmLitTGeoNavigator::FindIntersections(const CbmLitTrackParam* par,
   return kLITSUCCESS;
 }
 
-void CbmLitTGeoNavigator::InitTrack(const CbmLitTrackParam* par,
-                                    Bool_t downstream) const {
+void CbmLitTGeoNavigator::InitTrack(const CbmLitTrackParam* par, Bool_t downstream) const
+{
   litfloat nx, ny, nz;
   par->GetDirCos(nx, ny, nz);
   // Change track direction for upstream
@@ -83,7 +82,8 @@ void CbmLitTGeoNavigator::InitTrack(const CbmLitTrackParam* par,
   gGeoManager->InitTrack(par->GetX(), par->GetY(), par->GetZ(), nx, ny, nz);
 }
 
-CbmLitMaterialInfo CbmLitTGeoNavigator::MakeStep(litfloat step) const {
+CbmLitMaterialInfo CbmLitTGeoNavigator::MakeStep(litfloat step) const
+{
   // fill current material information and then make a step
   CbmLitMaterialInfo matInfo;
   TGeoMaterial* mat = gGeoManager->GetCurrentNode()->GetMedium()->GetMaterial();
@@ -94,9 +94,9 @@ CbmLitMaterialInfo CbmLitTGeoNavigator::MakeStep(litfloat step) const {
   matInfo.SetName(gGeoManager->GetCurrentNode()->GetName());
 
   if (step == 0.) {
-    gGeoManager->FindNextBoundaryAndStep(
-      lit::CbmLitDefaultSettings::MAXIMUM_TGEO_NAVIGATION_DISTANCE);
-  } else {
+    gGeoManager->FindNextBoundaryAndStep(lit::CbmLitDefaultSettings::MAXIMUM_TGEO_NAVIGATION_DISTANCE);
+  }
+  else {
     gGeoManager->SetStep(step);
     gGeoManager->Step(kFALSE);
   }
@@ -107,7 +107,8 @@ CbmLitMaterialInfo CbmLitTGeoNavigator::MakeStep(litfloat step) const {
   return matInfo;
 }
 
-litfloat CbmLitTGeoNavigator::CalcLength(litfloat zOut) const {
+litfloat CbmLitTGeoNavigator::CalcLength(litfloat zOut) const
+{
   //find intersection point of straight line with plane
   litfloat nx = gGeoManager->GetCurrentDirection()[0];
   litfloat ny = gGeoManager->GetCurrentDirection()[1];

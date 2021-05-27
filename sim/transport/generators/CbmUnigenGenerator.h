@@ -8,9 +8,11 @@
 
 
 #include "FairGenerator.h"
+
 #include "TMath.h"
 #include "TString.h"
 #include "TVector3.h"
+
 #include <map>
 
 class TFile;
@@ -45,7 +47,8 @@ class CbmUnigenGenerator : public FairGenerator {
 
 public:
   /** @brief Mode enumerator **/
-  enum EMode {
+  enum EMode
+  {
     kStandard,     ///< Rotate events to zero event plane (default)
     kNoRotation,   ///< No event rotation
     kRotateFixed,  ///< Rotate events around z by a fixed angle
@@ -88,18 +91,18 @@ public:
 
 
 private:
-  TString fFileName;    ///< Input file name
-  EMode fMode;          ///< Rotation mode
-  Double_t fPhi;        ///< Event plane rotation angle
-  Bool_t fIsInit;       ///< Flag whether generator is initialised
-  TFile* fFile;         //!< Input ROOT file
-  TTree* fTree;         //!< Input ROOT tree
-  Int_t fCurrentEntry;  ///< Current entry number
-  UEvent* fEvent;       //!< Current input event
-  Int_t fNofPrimaries;  //!< Number of primaries registered in current event
-  Int_t fNofEvents;     ///< Number of processed events
-  Double_t fBetaCM;     ///< CM velocity in the lab frame
-  Double_t fGammaCM;    ///< Gamma factor of CM in lab frame
+  TString fFileName;                    ///< Input file name
+  EMode fMode;                          ///< Rotation mode
+  Double_t fPhi;                        ///< Event plane rotation angle
+  Bool_t fIsInit;                       ///< Flag whether generator is initialised
+  TFile* fFile;                         //!< Input ROOT file
+  TTree* fTree;                         //!< Input ROOT tree
+  Int_t fCurrentEntry;                  ///< Current entry number
+  UEvent* fEvent;                       //!< Current input event
+  Int_t fNofPrimaries;                  //!< Number of primaries registered in current event
+  Int_t fNofEvents;                     ///< Number of processed events
+  Double_t fBetaCM;                     ///< CM velocity in the lab frame
+  Double_t fGammaCM;                    ///< Gamma factor of CM in lab frame
   std::map<TString, FairIon*> fIonMap;  //!< Map from ion name to FairIon
 
   // Constants for decimal decomposition of ion PDG.
@@ -116,9 +119,7 @@ private:
      ** @param pdgCode  Particle ID (PDG code)
      ** @param momentum Momentum vector [GeV]
      **/
-  void AddPrimary(FairPrimaryGenerator* primGen,
-                  Int_t pdgCode,
-                  const TVector3& momentum);
+  void AddPrimary(FairPrimaryGenerator* primGen, Int_t pdgCode, const TVector3& momentum);
 
 
   /** @brief Close the input file **/
@@ -131,9 +132,7 @@ private:
      **
      ** For ions the PDG code is +-10LZZZAAAI, with ZZZ the number of protons
      **/
-  Int_t GetIonCharge(Int_t pdgCode) const {
-    return (pdgCode % kPdgLambda) / kPdgCharge;
-  }
+  Int_t GetIonCharge(Int_t pdgCode) const { return (pdgCode % kPdgLambda) / kPdgCharge; }
 
 
   /** @brief Number of Lambdas in an ion
@@ -142,9 +141,7 @@ private:
      **
      ** For ions the PDG code is +-10LZZZAAAI, with L the number of Lambdas
      **/
-  Int_t GetIonLambdas(Int_t pdgCode) const {
-    return (pdgCode % (10 * kPdgLambda)) / kPdgLambda;
-  }
+  Int_t GetIonLambdas(Int_t pdgCode) const { return (pdgCode % (10 * kPdgLambda)) / kPdgLambda; }
 
 
   /** @brief Mass number of an ion
@@ -153,9 +150,7 @@ private:
      **
      ** For ions the PDG code is +-10LZZZAAAI, with AAA the mass number
      **/
-  Int_t GetIonMass(Int_t pdgCode) const {
-    return (pdgCode % kPdgCharge) / kPdgMass;
-  }
+  Int_t GetIonMass(Int_t pdgCode) const { return (pdgCode % kPdgCharge) / kPdgMass; }
 
 
   /** @brief Get next entry from input tree
@@ -183,9 +178,7 @@ private:
      ** by GEANT4. Hyper-nuclei are thus replaced by their non-strange
      ** analogue, and neutral ions are decomposed into neutrons.
      **/
-  void ProcessIon(FairPrimaryGenerator* primGen,
-                  Int_t pdgCode,
-                  const TVector3& momentum);
+  void ProcessIon(FairPrimaryGenerator* primGen, Int_t pdgCode, const TVector3& momentum);
 
 
   /** @brief Register ions to the simulation

@@ -34,13 +34,11 @@
 #include "TGeoVolume.h"
 #include "TGeoXtru.h"
 #include "TList.h"
+#include "TMath.h"
+#include "TObjArray.h"
 #include "TRandom3.h"
 #include "TString.h"
 #include "TSystem.h"
-
-#include "TFile.h"
-#include "TMath.h"
-#include "TObjArray.h"
 
 #include <cassert>
 #include <fstream>
@@ -102,11 +100,11 @@ Double_t fOverlapR  = 0.0;  // Overlap in R direction [cm]
 
 Double_t fStationZ0 = 80;
 //Double_t fStationZ0=70;   // DE - move 10 cm upstream
-Int_t fNlayers     = 3;   // Number of layers
-Double_t fLayersDz = 10;  // distance between the layers
-Double_t fCoolLz  = 1.0;  // thickness of the cooling plate also used as support
-Double_t fDriftDz = 0.0035;  //35 micron copper Drift & Readout
-Double_t fG10Dz   = 0.3;     // 3 mm G10
+Int_t fNlayers     = 3;       // Number of layers
+Double_t fLayersDz = 10;      // distance between the layers
+Double_t fCoolLz   = 1.0;     // thickness of the cooling plate also used as support
+Double_t fDriftDz  = 0.0035;  //35 micron copper Drift & Readout
+Double_t fG10Dz    = 0.3;     // 3 mm G10
 /* 
    1 - detailed design (modules at two sides)
    * 0 - simple design (1 module per layer) 
@@ -125,7 +123,8 @@ TGeoVolume* CreateStations(int ist);
 TGeoVolume* CreateLayers(int istn, int ily);
 
 
-void create_MUCH_geometry_v18h() {
+void create_MUCH_geometry_v18h()
+{
 
   // Load needed material definition from media.geo file
   create_materials_from_media_file();
@@ -142,8 +141,7 @@ void create_MUCH_geometry_v18h() {
   TString topName  = geoVersion + tagVersion;
   TGeoVolume* much = new TGeoVolumeAssembly(topName);
   top->AddNode(much, 1);
-  TGeoVolume* sttn =
-    new TGeoVolumeAssembly("station");  //change name from Station ->station
+  TGeoVolume* sttn = new TGeoVolumeAssembly("station");  //change name from Station ->station
   much->AddNode(sttn, 1);
 
   for (Int_t istn = 0; istn < 1; istn++) {  // 1 Station
@@ -161,9 +159,8 @@ void create_MUCH_geometry_v18h() {
 
   much->Export(FileNameSim);  // an alternative way of writing the much
 
-  TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  TGeoTranslation* much_placement =
-    new TGeoTranslation("much_trans", 0., 0., 0.);
+  TFile* outfile                  = new TFile(FileNameSim, "UPDATE");
+  TGeoTranslation* much_placement = new TGeoTranslation("much_trans", 0., 0., 0.);
   much_placement->Write();
   outfile->Close();
 
@@ -174,7 +171,8 @@ void create_MUCH_geometry_v18h() {
   top->Draw("ogl");
 }
 
-void create_materials_from_media_file() {
+void create_materials_from_media_file()
+{
   // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
@@ -220,12 +218,12 @@ void create_materials_from_media_file() {
 }
 
 
-TGeoVolume* CreateStations(int ist) {
+TGeoVolume* CreateStations(int ist)
+{
 
   TString stationName = Form("muchstation%02i", ist + 1);
 
-  TGeoVolumeAssembly* station =
-    new TGeoVolumeAssembly(stationName);  //, shStation, air);
+  TGeoVolumeAssembly* station = new TGeoVolumeAssembly(stationName);  //, shStation, air);
 
 
   TGeoVolume* gLayer[4];
@@ -241,33 +239,29 @@ TGeoVolume* CreateStations(int ist) {
 }
 
 
-TGeoVolume* CreateLayers(int istn, int ily) {
+TGeoVolume* CreateLayers(int istn, int ily)
+{
 
-  TString layerName = Form("muchstation%02ilayer%i", istn + 1, ily + 1);
+  TString layerName           = Form("muchstation%02ilayer%i", istn + 1, ily + 1);
   TGeoVolumeAssembly* volayer = new TGeoVolumeAssembly(layerName);
 
   //Double_t DeltaR=80.0; // transverse dimension of the module
 
-  Double_t stGlobalZ0 =
-    fStationZ0 + fMuchZ1;  //z position of station center (midplane) [cm]
-  Double_t stDz =
-    ((fNlayers - 1) * fLayersDz + fCoolLz + 2 * fActiveLzSector) / 2.;
+  Double_t stGlobalZ0 = fStationZ0 + fMuchZ1;  //z position of station center (midplane) [cm]
+  Double_t stDz       = ((fNlayers - 1) * fLayersDz + fCoolLz + 2 * fActiveLzSector) / 2.;
   Double_t stGlobalZ2 = stGlobalZ0 + stDz;
   Double_t stGlobalZ1 = stGlobalZ0 - stDz;
 
   //Double_t rmin = stGlobalZ1 * fAcceptanceTanMin;
   // Double_t rmax = rmin+ fSpacerR + DeltaR;
 
-  Int_t Nsector =
-    16.0;  // need to be hard coded to match with station 1 of SIS100
+  Int_t Nsector = 16.0;  // need to be hard coded to match with station 1 of SIS100
 
   //cout<<" Nsector "<<Nsector<<endl;
 
   Double_t layerZ0       = (ily - (fNlayers - 1) / 2.) * fLayersDz;
   Double_t layerGlobalZ0 = layerZ0 + stGlobalZ0;
-  Double_t sideDz =
-    fCoolLz / 2.
-    + fActiveLzSector / 2.;  // distance between side's and layer's centers
+  Double_t sideDz        = fCoolLz / 2. + fActiveLzSector / 2.;  // distance between side's and layer's centers
 
 
   Double_t moduleZ = sideDz;  // Z position of the module center in the layer cs
@@ -282,11 +276,9 @@ TGeoVolume* CreateLayers(int istn, int ily) {
   //Use hard coded values for mini-cbm
   Double_t dy = 40.0;  //(ymax-ymin)/2.; //y (length)
 
-  Double_t dx1 =
-    3.75;  //ymin*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0);  // large x
-  Double_t dx2 =
-    20;  //ymax*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0); // small x
-  Double_t dz = fActiveLzSector / 2.;  // thickness
+  Double_t dx1 = 3.75;                  //ymin*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0);  // large x
+  Double_t dx2 = 20;                    //ymax*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0); // small x
+  Double_t dz  = fActiveLzSector / 2.;  // thickness
 
 
   //define the spacer dimensions
@@ -339,131 +331,75 @@ TGeoVolume* CreateLayers(int istn, int ily) {
     //  pos[2] = (isBack ? 1 : -1)*moduleZ + layerGlobalZ0;
     pos[2] = layerGlobalZ0;
 
-    TGeoMedium* argon     = gGeoMan->GetMedium(activemedium);  // active medium
-    TGeoMedium* noryl     = gGeoMan->GetMedium(spacermedium);  // spacer medium
-    TGeoMedium* aluminium = gGeoMan->GetMedium(coolmedium);    // cool medium
-    TGeoMedium* g10plate  = gGeoMan->GetMedium(g10);           // G10 medium
-    TGeoMedium* copperplate =
-      gGeoMan->GetMedium(copper);  // copper Drift medium
+    TGeoMedium* argon       = gGeoMan->GetMedium(activemedium);  // active medium
+    TGeoMedium* noryl       = gGeoMan->GetMedium(spacermedium);  // spacer medium
+    TGeoMedium* aluminium   = gGeoMan->GetMedium(coolmedium);    // cool medium
+    TGeoMedium* g10plate    = gGeoMan->GetMedium(g10);           // G10 medium
+    TGeoMedium* copperplate = gGeoMan->GetMedium(copper);        // copper Drift medium
 
 
     //Front G10 and copper Drift
-    TGeoTrap* frontG10 =
-      new TGeoTrap(dz_sG, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
+    TGeoTrap* frontG10 = new TGeoTrap(dz_sG, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
 
-    frontG10->SetName(
-      Form("shStation%02iLayer%i%cModule%03ifront", istn, ily, cside, iModule));
+    frontG10->SetName(Form("shStation%02iLayer%i%cModule%03ifront", istn, ily, cside, iModule));
 
-    TString fG10Name   = Form("muchstation%02ilayer%i%cfront%03iG10",
-                            istn + 1,
-                            ily + 1,
-                            cside,
-                            iModule + 1);
+    TString fG10Name   = Form("muchstation%02ilayer%i%cfront%03iG10", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* vofG10 = new TGeoVolume(fG10Name, frontG10, g10plate);
     vofG10->SetLineColor(28);
 
 
-    TGeoTrap* frontDrift =
-      new TGeoTrap(dz_sD, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
+    TGeoTrap* frontDrift = new TGeoTrap(dz_sD, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
 
-    frontDrift->SetName(
-      Form("shStation%02iLayer%i%cModule%03ifront", istn, ily, cside, iModule));
+    frontDrift->SetName(Form("shStation%02iLayer%i%cModule%03ifront", istn, ily, cside, iModule));
 
-    TString fDriftName   = Form("muchstation%02ilayer%i%ccopper%03iDrift",
-                              istn + 1,
-                              ily + 1,
-                              cside,
-                              iModule + 1);
+    TString fDriftName   = Form("muchstation%02ilayer%i%ccopper%03iDrift", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* vofDrift = new TGeoVolume(fDriftName, frontDrift, copperplate);
     vofDrift->SetLineColor(kRed);
 
 
     //Back G10 and copper Readout
-    TGeoTrap* backG10 =
-      new TGeoTrap(dz_sG, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
+    TGeoTrap* backG10 = new TGeoTrap(dz_sG, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
 
-    backG10->SetName(
-      Form("shStation%02iLayer%i%cModule%03iback", istn, ily, cside, iModule));
+    backG10->SetName(Form("shStation%02iLayer%i%cModule%03iback", istn, ily, cside, iModule));
 
-    TString bG10Name   = Form("muchstation%02ilayer%i%cback%03iG10",
-                            istn + 1,
-                            ily + 1,
-                            cside,
-                            iModule + 1);
+    TString bG10Name   = Form("muchstation%02ilayer%i%cback%03iG10", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* vobG10 = new TGeoVolume(bG10Name, backG10, g10plate);
     vobG10->SetLineColor(28);
 
 
-    TGeoTrap* backDrift =
-      new TGeoTrap(dz_sD, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
+    TGeoTrap* backDrift = new TGeoTrap(dz_sD, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
 
-    backDrift->SetName(
-      Form("shStation%02iLayer%i%cModule%03iback", istn, ily, cside, iModule));
+    backDrift->SetName(Form("shStation%02iLayer%i%cModule%03iback", istn, ily, cside, iModule));
 
-    TString bDriftName   = Form("muchstation%02ilayer%i%ccooper%03iReadout",
-                              istn + 1,
-                              ily + 1,
-                              cside,
-                              iModule + 1);
+    TString bDriftName   = Form("muchstation%02ilayer%i%ccooper%03iReadout", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* vobDrift = new TGeoVolume(bDriftName, backDrift, copperplate);
     vobDrift->SetLineColor(kRed);
 
 
     // Define and place the trapezoidal GEM module in X-Y plane
-    TGeoTrap* shape =
-      new TGeoTrap(dz, 0, phi, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+    TGeoTrap* shape = new TGeoTrap(dz, 0, phi, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
 
     // TGeoTrap* shape = new TGeoTrap(dz,0,0,dy,dx1,dx2,0,dy,dx1,dx2,0);
 
 
-    shape->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole",
-                        istn,
-                        ily,
-                        cside,
-                        iModule));
-    TString activeName   = Form("muchstation%02ilayer%i%cactive%03igasArgon",
-                              istn + 1,
-                              ily + 1,
-                              cside,
-                              iModule + 1);
+    shape->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole", istn, ily, cside, iModule));
+    TString activeName   = Form("muchstation%02ilayer%i%cactive%03igasArgon", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* voActive = new TGeoVolume(activeName, shape, argon);
     voActive->SetLineColor(kGreen);
 
     // Define the trapezoidal spacers
-    TGeoTrap* shapeFrame =
-      new TGeoTrap(sdz, 0, phi, sdy1, sdx1, sdx2, 0, sdy2, sdx1, sdx2, 0);
+    TGeoTrap* shapeFrame = new TGeoTrap(sdz, 0, phi, sdy1, sdx1, sdx2, 0, sdy2, sdx1, sdx2, 0);
 
     //TGeoTrap* shapeFrame = new TGeoTrap(sdz,0,0,sdy,sdx1,sdx2,0,sdy,sdx1,sdx2,0);
 
-    shapeFrame->SetName(Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole",
-                             istn,
-                             ily,
-                             cside,
-                             iModule));
-    TString expression = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-"
+    shapeFrame->SetName(Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole", istn, ily, cside, iModule));
+    TString expression          = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-"
                               "shStation%02iLayer%i%cModule%03iActiveNoHole",
-                              istn,
-                              ily,
-                              cside,
-                              iModule,
-                              istn,
-                              ily,
-                              cside,
-                              iModule);
-    TGeoCompositeShape* shFrame =
-      new TGeoCompositeShape(Form("shStation%02iLayer%i%cModule%03iFrameNoHole",
-                                  istn,
-                                  ily,
-                                  cside,
-                                  iModule),
-                             expression);
-    TString frameName = Form("muchstation%02ilayer%i%csupport%03i",
-                             istn + 1,
-                             ily + 1,
-                             cside,
-                             iModule + 1);
-    TGeoVolume* voFrame =
-      new TGeoVolume(frameName, shFrame, noryl);  // add a name to the frame
+                              istn, ily, cside, iModule, istn, ily, cside, iModule);
+    TGeoCompositeShape* shFrame = new TGeoCompositeShape(
+      Form("shStation%02iLayer%i%cModule%03iFrameNoHole", istn, ily, cside, iModule), expression);
+    TString frameName   = Form("muchstation%02ilayer%i%csupport%03i", istn + 1, ily + 1, cside, iModule + 1);
+    TGeoVolume* voFrame = new TGeoVolume(frameName, shFrame, noryl);  // add a name to the frame
     voFrame->SetLineColor(kMagenta);
 
 
@@ -471,17 +407,11 @@ TGeoVolume* CreateLayers(int istn, int ily) {
 
     // TGeoTrap* cool = new TGeoTrap(dz_s,0,phi,dy_s,dx1_s,dx2_s,0,dy_s,dx1_s,dx2_s,0);
 
-    TGeoTrap* cool =
-      new TGeoTrap(dz_s, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
+    TGeoTrap* cool = new TGeoTrap(dz_s, 0, phi, dy_s, dx1_s, dx2_s, 0, dy_s, dx1_s, dx2_s, 0);
 
-    cool->SetName(
-      Form("shStation%02iLayer%i%cModule%03icool", istn, ily, cside, iModule));
+    cool->SetName(Form("shStation%02iLayer%i%cModule%03icool", istn, ily, cside, iModule));
 
-    TString CoolName   = Form("muchstation%02ilayer%i%ccool%03iAluminum",
-                            istn + 1,
-                            ily + 1,
-                            cside,
-                            iModule + 1);
+    TString CoolName   = Form("muchstation%02ilayer%i%ccool%03iAluminum", istn + 1, ily + 1, cside, iModule + 1);
     TGeoVolume* voCool = new TGeoVolume(CoolName, cool, aluminium);
     voCool->SetLineColor(kYellow);
 
@@ -493,35 +423,24 @@ TGeoVolume* CreateLayers(int istn, int ily) {
     //   cout<<"posY   "<<pos[1]<<endl;
     //   cout<<"RMin  "<<RMin<<"   RMax  "<<RMax<<endl;
     // Calculate the phi angle of the sector where it has to be placed
-    Double_t angle =
-      180. / TMath::Pi() * phi;  // convert angle phi from rad to deg
+    Double_t angle = 180. / TMath::Pi() * phi;  // convert angle phi from rad to deg
 
-    TGeoTranslation* trans2 =
-      new TGeoTranslation("", pos[0], pos[1], pos[2]);  //for module and frame
+    TGeoTranslation* trans2 = new TGeoTranslation("", pos[0], pos[1], pos[2]);  //for module and frame
 
-    TGeoTranslation* trans3 = new TGeoTranslation(
-      "",
-      pos[0],
-      pos[1],
-      pos[2] + dz + 2 * dz_sD + 2 * dz_sG + dz_s);  //Aluminum plate
+    TGeoTranslation* trans3 = new TGeoTranslation("", pos[0], pos[1],
+                                                  pos[2] + dz + 2 * dz_sD + 2 * dz_sG + dz_s);  //Aluminum plate
 
-    TGeoTranslation* transfG10 = new TGeoTranslation(
-      "", pos[0], pos[1], pos[2] - dz - 2 * dz_sD - dz_sG);  //Front G10
-    TGeoTranslation* transfDrift = new TGeoTranslation(
-      "", pos[0], pos[1], pos[2] - dz - dz_sD);  //Front copper Drift
-    TGeoTranslation* transbG10 = new TGeoTranslation(
-      "", pos[0], pos[1], pos[2] + dz + 2 * dz_sD + dz_sG);  //Back G10
-    TGeoTranslation* transbDrift = new TGeoTranslation(
-      "", pos[0], pos[1], pos[2] + dz + dz_sD);  //Back copper Readout
+    TGeoTranslation* transfG10 = new TGeoTranslation("", pos[0], pos[1], pos[2] - dz - 2 * dz_sD - dz_sG);  //Front G10
+    TGeoTranslation* transfDrift = new TGeoTranslation("", pos[0], pos[1], pos[2] - dz - dz_sD);  //Front copper Drift
+    TGeoTranslation* transbG10   = new TGeoTranslation("", pos[0], pos[1], pos[2] + dz + 2 * dz_sD + dz_sG);  //Back G10
+    TGeoTranslation* transbDrift = new TGeoTranslation("", pos[0], pos[1], pos[2] + dz + dz_sD);  //Back copper Readout
 
     //cout<<"FrontG10: "<<pos[2]-dz-2*dz_sD-dz_sG<<" FrontCopper: "<<pos[2]-dz-dz_sD<<" Active: "<<pos[2]<<" BackCopper: "<<pos[2]+dz+dz_sD<<" BackG10: "<<pos[2]+dz+2*dz_sD+dz_sG<<" Alumi: "<<pos[2]+dz+2*dz_sD+2*dz_sG+dz_s<<endl;
     TGeoRotation* r2 = new TGeoRotation("r2");
     //rotate in the vertical plane (per to z axis) with angle
     //      r2->RotateZ(angle);
     // r2->RotateZ(180.0);  // DE - 6 o'clock position
-    r2->RotateZ(180.0
-                - (180. / TMath::Pi()
-                   * phi0));  // DE - 6 o'clock position, left side vertical
+    r2->RotateZ(180.0 - (180. / TMath::Pi() * phi0));  // DE - 6 o'clock position, left side vertical
 
     // r2->RotateZ(180.0-11.25);  // DE - 6 o'clock position, left side vertical
 

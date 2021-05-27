@@ -16,16 +16,15 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_mc(
-  Int_t nEvents = 3,
-  //             Double_t beamRotY = 25., const char* setupName = "sis18_mcbm_25deg_long",
-  //// March 2019 setup
-  Double_t beamRotY     = 25.,
-  const char* setupName = "mcbm_beam_2019_03",
-  //// November 2018 setup
-  //             Double_t beamRotY = 25., const char* setupName = "mcbm_beam_2018_11",
-  //             Double_t beamRotY = 25., const char* setupName = "sis18_mcbm_25deg_cosmic_2018",
-  const char* inputFile = "") {
+void mcbm_mc(Int_t nEvents = 3,
+             //             Double_t beamRotY = 25., const char* setupName = "sis18_mcbm_25deg_long",
+             //// March 2019 setup
+             Double_t beamRotY = 25., const char* setupName = "mcbm_beam_2019_03",
+             //// November 2018 setup
+             //             Double_t beamRotY = 25., const char* setupName = "mcbm_beam_2018_11",
+             //             Double_t beamRotY = 25., const char* setupName = "sis18_mcbm_25deg_cosmic_2018",
+             const char* inputFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -41,7 +40,7 @@ void mcbm_mc(
   //  TString defaultInputFile = "/input/urqmd.pau.4.5gev.mbias.00001.root";
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_mc";  // this macro's name for screen output
+  TString myName = "mcbm_mc";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -77,11 +76,9 @@ void mcbm_mc(
   //  Double_t targetDiameter  = 0.5;    // diameter in cm
   //  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 
-  Double_t targetThickness =
-    0.025;  // mCBM thin gold target 0.25 mm = 0.025 cm thickness
-  Double_t targetDiameter = 1.5;  // mCBM target width 15 mm = 1.5 cm
-  Double_t targetRotY =
-    beamRotY;  // target rotation angle around the y axis [deg]
+  Double_t targetThickness = 0.025;     // mCBM thin gold target 0.25 mm = 0.025 cm thickness
+  Double_t targetDiameter  = 1.5;       // mCBM target width 15 mm = 1.5 cm
+  Double_t targetRotY      = beamRotY;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
   // --- Define the creation of the primary vertex   ------------------------
@@ -149,7 +146,8 @@ void mcbm_mc(
   if (inFile.IsNull()) {               // Not defined in the macro explicitly
     if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
       inFile = defaultInput;
-    } else
+    }
+    else
       inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -177,8 +175,7 @@ void mcbm_mc(
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target =
-    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -227,8 +224,7 @@ void mcbm_mc(
   CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   uniGen->SetEventPlane(0., 360.);
   primGen->AddGenerator(uniGen);
-  primGen->SetBeamAngle(
-    beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
+  primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180., 0, 0, 0);  // set direction of beam
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
@@ -316,9 +312,7 @@ void mcbm_mc(
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

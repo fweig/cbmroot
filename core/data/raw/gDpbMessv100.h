@@ -2,9 +2,11 @@
 #define GDPB_MESS_V1_00_DEF_H
 
 #include <iostream>
+
 #include <stdint.h>
 
-namespace gdpbv100 {
+namespace gdpbv100
+{
   // Size of one clock cycle (=1 coarse bin)
   const double kdClockCycleSize   = 6250.0;                     //[ps]
   const double kdClockCycleSizeNs = kdClockCycleSize / 1000.0;  //[ns]
@@ -17,11 +19,10 @@ namespace gdpbv100 {
   const uint32_t kuCtShift    = 7;           // Coarse Counter offset
   const uint32_t kuCtSize     = 12;          // Coarse Counter size in bits
 
-  const uint32_t kuFineCounterSize   = ((kuFineTime >> kuFtShift) + 1);
-  const uint32_t kuCoarseCounterSize = ((kuCoarseTime >> kuCtShift) + 1);
-  const uint32_t kuCoarseOverflowTest =
-    kuCoarseCounterSize / 2;  // Limit for overflow check
-  const uint32_t kuTotCounterSize = 256;
+  const uint32_t kuFineCounterSize    = ((kuFineTime >> kuFtShift) + 1);
+  const uint32_t kuCoarseCounterSize  = ((kuCoarseTime >> kuCtShift) + 1);
+  const uint32_t kuCoarseOverflowTest = kuCoarseCounterSize / 2;  // Limit for overflow check
+  const uint32_t kuTotCounterSize     = 256;
 
   const double kdFtSize   = kuFineCounterSize;
   const double kdFtBinsNb = 112.;
@@ -32,30 +33,26 @@ namespace gdpbv100 {
   const uint32_t kuEpochInBins = kuCoarseCounterSize * kdFtBinsNb;
   // Epoch Size in ps
   // alternatively: (kiCoarseTime>>kiCtShift + 1)*kdClockCycleSize
-  const double kdEpochInPs =
-    static_cast<double>(kuCoarseCounterSize) * kdClockCycleSize;
+  const double kdEpochInPs = static_cast<double>(kuCoarseCounterSize) * kdClockCycleSize;
   const double kdEpochInNs = kdEpochInPs / 1000.0;
 
   // Epoch counter size in epoch
   const uint32_t kuEpochCounterSz = 0x7FFFFFFF;
   // Epoch counter size in bin
-  const uint64_t kulEpochCycleBins =
-    static_cast<uint64_t>(kuEpochCounterSz + 1) * kuEpochInBins;
+  const uint64_t kulEpochCycleBins = static_cast<uint64_t>(kuEpochCounterSz + 1) * kuEpochInBins;
   // Epoch counter size in s
-  const double kdEpochCycleInS =
-    static_cast<double>(kuEpochCounterSz + 1) * (kdEpochInNs / 1e9);
+  const double kdEpochCycleInS = static_cast<double>(kuEpochCounterSz + 1) * (kdEpochInNs / 1e9);
 
   // Epoch Cycle MS start message size in bits
   const uint64_t kulEpochCycleFieldSz = 0x1FFFFF;  // 21 bits
 
   const uint32_t kuChipIdMergedEpoch = 255;  // 0xFF
 
-  const uint32_t kuFeePulserChannel =
-    3;  // Channel where a pulser can be set ON at 20 ns 500 Hz
-  const uint32_t kuFeePulserChannelDiam =
-    0;  // Channel where a pulser can be set ON at 20 ns 500 Hz
+  const uint32_t kuFeePulserChannel     = 3;  // Channel where a pulser can be set ON at 20 ns 500 Hz
+  const uint32_t kuFeePulserChannelDiam = 0;  // Channel where a pulser can be set ON at 20 ns 500 Hz
 
-  enum MessageTypes {
+  enum MessageTypes
+  {
     MSG_HIT        = 0,
     MSG_EPOCH      = 1,
     MSG_SLOWC      = 2,
@@ -66,45 +63,48 @@ namespace gdpbv100 {
     MSG_STAR_TRI_D = 7
   };
 
-  enum SysMessageTypes {
-    SYS_GET4_ERROR = 0,  // GET4 error event
-    SYS_GDPB_UNKWN =
-      1,  // Raw data from gDPB in case of unknown message type from GET4
-    SYS_GET4_SYNC_MISS =
-      2,  // Added when GET4 is missing the SYNC flag when it is expected
+  enum SysMessageTypes
+  {
+    SYS_GET4_ERROR     = 0,  // GET4 error event
+    SYS_GDPB_UNKWN     = 1,  // Raw data from gDPB in case of unknown message type from GET4
+    SYS_GET4_SYNC_MISS = 2,  // Added when GET4 is missing the SYNC flag when it is expected
     //      SYS_SYNC_ERROR     = 3  // added to data stream when the closy-sync-strobe does not match the gDPB 160MHz timestamp counter
-    SYS_PATTERN =
-      3  // added to data stream when one of the ASIC patterns (missmatch, enable, resync) changed
+    SYS_PATTERN = 3  // added to data stream when one of the ASIC patterns (missmatch, enable, resync) changed
   };
 
-  enum PattMessageTypes {
+  enum PattMessageTypes
+  {
     PATT_MISSMATCH = 0,  // Missmatch pattern, 1 bit per ASIC
     PATT_ENABLE    = 1,  // Enable pattern, 1 bit per ASIC
     PATT_RESYNC    = 2,  // Resync request pattern, 1 bit per ASIC
     PATT_STATUS    = 3   // Status pattern, 1 bit per ASIC (SW only)
   };
 
-  enum MessagePrintMask {
+  enum MessagePrintMask
+  {
     msg_print_Prefix = 1,
     msg_print_Data   = 2,
     msg_print_Hex    = 4,
     msg_print_Human  = 8
   };
 
-  enum MessagePrintType {
+  enum MessagePrintType
+  {
     msg_print_Cout    = 1,
     msg_print_FairLog = 2,
     msg_print_File    = 3
   };
 
-  enum Get4Message32bSlC {
+  enum Get4Message32bSlC
+  {
     GET4_32B_SLC_SCALER    = 0,
     GET4_32B_SLC_DEADT     = 1,
     GET4_32B_SLC_SPIREAD   = 2,
     GET4_32B_SLC_START_SEU = 3
   };
 
-  enum Get4Message32bErrors {
+  enum Get4Message32bErrors
+  {
     GET4_V2X_ERR_READ_INIT   = 0x00,
     GET4_V2X_ERR_SYNC        = 0x01,
     GET4_V2X_ERR_EP_CNT_SYNC = 0x02,
@@ -118,16 +118,14 @@ namespace gdpbv100 {
     GET4_V2X_ERR_SPI         = 0x0A,
     GET4_V2X_ERR_DLL_LOCK    = 0x0B,
     GET4_V2X_ERR_DLL_RESET   = 0x0C,
-    GET4_V2X_ERR_TOT_OVERWRT =
-      0x11,  // Not there anymore in manual for Get4 v2.00?
+    GET4_V2X_ERR_TOT_OVERWRT = 0x11,  // Not there anymore in manual for Get4 v2.00?
     GET4_V2X_ERR_TOT_RANGE   = 0x12,
     GET4_V2X_ERR_EVT_DISCARD = 0x13,
     GET4_V2X_ERR_ADD_RIS_EDG = 0x14,
     GET4_V2X_ERR_UNPAIR_FALL = 0x15,
     GET4_V2X_ERR_SEQUENCE_ER = 0x16,
-    GET4_V2X_ERR_EPOCH_OVERF =
-      0x17,  // New in manual for Get4 v2.00, no description?
-    GET4_V2X_ERR_UNKNOWN = 0x7F
+    GET4_V2X_ERR_EPOCH_OVERF = 0x17,  // New in manual for Get4 v2.00, no description?
+    GET4_V2X_ERR_UNKNOWN     = 0x7F
   };
 
   class Message {
@@ -146,7 +144,8 @@ namespace gdpbv100 {
 
     void assign(const Message& src) { data = src.data; }
 
-    Message& operator=(const Message& src) {
+    Message& operator=(const Message& src)
+    {
       assign(src);
       return *this;
     }
@@ -156,48 +155,47 @@ namespace gdpbv100 {
     inline uint64_t getData() const { return data; }
     inline void setData(uint64_t value) { data = value; }
 
-    inline uint64_t getFieldLong(uint32_t shift, uint32_t len) const {
+    inline uint64_t getFieldLong(uint32_t shift, uint32_t len) const
+    {
       return (data >> shift) & (((static_cast<uint64_t>(1)) << len) - 1);
     }
 
-    inline uint32_t getField(uint32_t shift, uint32_t len) const {
+    inline uint32_t getField(uint32_t shift, uint32_t len) const
+    {
       return (data >> shift) & (((static_cast<uint64_t>(1)) << len) - 1);
     }
 
-    inline void setField(uint32_t shift, uint32_t len, uint32_t value) {
+    inline void setField(uint32_t shift, uint32_t len, uint32_t value)
+    {
       uint64_t mask = (((static_cast<uint64_t>(1)) << len) - 1);
-      data          = (data & ~(mask << shift))
-             | ((static_cast<uint64_t>(value) & mask) << shift);
+      data          = (data & ~(mask << shift)) | ((static_cast<uint64_t>(value) & mask) << shift);
     }
 
-    inline void setFieldLong(uint32_t shift, uint32_t len, uint64_t value) {
+    inline void setFieldLong(uint32_t shift, uint32_t len, uint64_t value)
+    {
       uint64_t mask = (((static_cast<uint64_t>(1)) << len) - 1);
       data          = (data & ~(mask << shift)) | ((value & mask) << shift);
     }
 
     inline uint8_t getBit(uint32_t shift) const { return (data >> shift) & 1; }
 
-    inline void setBit(uint32_t shift, uint8_t value) {
-      data = value ? (data | ((static_cast<uint64_t>(1)) << shift))
-                   : (data & ~((static_cast<uint64_t>(1)) << shift));
+    inline void setBit(uint32_t shift, uint8_t value)
+    {
+      data = value ? (data | ((static_cast<uint64_t>(1)) << shift)) : (data & ~((static_cast<uint64_t>(1)) << shift));
     }
 
 
-    inline uint32_t getFieldBE(uint32_t shift, uint32_t len) const {
+    inline uint32_t getFieldBE(uint32_t shift, uint32_t len) const
+    {
       return (dataBE() >> shift) & (((static_cast<uint32_t>(1)) << len) - 1);
     }
-    inline uint8_t getBitBE(uint32_t shift) const {
-      return (dataBE() >> shift) & 1;
-    }
-    inline uint64_t dataBE() const {
-      return ((data & 0x00000000000000FF) << 56)
-             + ((data & 0x000000000000FF00) << 40)
-             + ((data & 0x0000000000FF0000) << 24)
-             + ((data & 0x00000000FF000000) << 8)
-             + ((data >> 8) & 0x00000000FF000000)
-             + ((data >> 24) & 0x0000000000FF0000)
-             + ((data >> 40) & 0x000000000000FF00)
-             + ((data >> 56) & 0x00000000000000FF);
+    inline uint8_t getBitBE(uint32_t shift) const { return (dataBE() >> shift) & 1; }
+    inline uint64_t dataBE() const
+    {
+      return ((data & 0x00000000000000FF) << 56) + ((data & 0x000000000000FF00) << 40)
+             + ((data & 0x0000000000FF0000) << 24) + ((data & 0x00000000FF000000) << 8)
+             + ((data >> 8) & 0x00000000FF000000) + ((data >> 24) & 0x0000000000FF0000)
+             + ((data >> 40) & 0x000000000000FF00) + ((data >> 56) & 0x00000000000000FF);
     }
 
     // --------------------------- common fields ---------------------------------
@@ -272,9 +270,7 @@ namespace gdpbv100 {
     //++++//
     inline uint64_t getStarTsLsbStarD() const { return getFieldLong(36, 8); }
     /// 12 bits in between are set to 0
-    inline uint32_t getStarFillerD() const {
-      return getField(24, 12);
-    }  // Should be always 0
+    inline uint32_t getStarFillerD() const { return getField(24, 12); }  // Should be always 0
     inline uint32_t getStarTrigCmdStarD() const { return getField(20, 4); }
     inline uint32_t getStarDaqCmdStarD() const { return getField(16, 4); }
     inline uint32_t getStarTokenStarD() const { return getField(4, 12); }
@@ -292,24 +288,14 @@ namespace gdpbv100 {
     // ---------- STAR Trigger messages setter methods ------------------------
     inline void setStarTrigMsgIndex(uint8_t v) { setField(0, 2, v); }
     //++++//
-    inline void setGdpbTsMsbStarA(uint64_t fullGdpbTs) {
-      setFieldLong(4, 40, (fullGdpbTs >> 24));
-    }
+    inline void setGdpbTsMsbStarA(uint64_t fullGdpbTs) { setFieldLong(4, 40, (fullGdpbTs >> 24)); }
     //++++//
-    inline void setGdpbTsLsbStarB(uint64_t fullGdpbTs) {
-      setFieldLong(20, 24, (fullGdpbTs));
-    }
-    inline void setStarTsMsbStarB(uint64_t fullStarTs) {
-      setFieldLong(4, 16, (fullStarTs >> 48));
-    }
+    inline void setGdpbTsLsbStarB(uint64_t fullGdpbTs) { setFieldLong(20, 24, (fullGdpbTs)); }
+    inline void setStarTsMsbStarB(uint64_t fullStarTs) { setFieldLong(4, 16, (fullStarTs >> 48)); }
     //++++//
-    inline void setStarTsMidStarC(uint64_t fullStarTs) {
-      setFieldLong(4, 40, (fullStarTs >> 8));
-    }
+    inline void setStarTsMidStarC(uint64_t fullStarTs) { setFieldLong(4, 40, (fullStarTs >> 8)); }
     //++++//
-    inline void setStarTsLsbStarD(uint64_t fullStarTs) {
-      setFieldLong(36, 8, (fullStarTs));
-    }
+    inline void setStarTsLsbStarD(uint64_t fullStarTs) { setFieldLong(36, 8, (fullStarTs)); }
     /// 12 bits in between are set to 0
     inline void setStarFillerD() { setField(24, 12, 0); }  // Should be always 0
     inline void setStarTrigCmdStarD(uint8_t v) { setField(20, 4, v); }
@@ -326,18 +312,12 @@ namespace gdpbv100 {
     //! Returns \a true is message type is #MSG_SYST (system message)
     inline bool isSysMsg() const { return getMessageType() == MSG_SYST; }
     //! Returns \a true is message type is #MSG_STAR_TRI_A, _B, _C, _D (STAR Trigger message)
-    inline bool isStarTrigger() const {
-      return MSG_STAR_TRI_A <= getMessageType();
-    }
+    inline bool isStarTrigger() const { return MSG_STAR_TRI_A <= getMessageType(); }
 
-    void printDataCout(unsigned kind  = msg_print_Prefix | msg_print_Data,
-                       uint32_t epoch = 0) const;
-    void printDataLog(unsigned kind  = msg_print_Prefix | msg_print_Data,
-                      uint32_t epoch = 0) const;
+    void printDataCout(unsigned kind = msg_print_Prefix | msg_print_Data, uint32_t epoch = 0) const;
+    void printDataLog(unsigned kind = msg_print_Prefix | msg_print_Data, uint32_t epoch = 0) const;
 
-    void printData(unsigned outType = msg_print_Cout,
-                   unsigned kind    = msg_print_Human,
-                   uint32_t epoch   = 0,
+    void printData(unsigned outType = msg_print_Cout, unsigned kind = msg_print_Human, uint32_t epoch = 0,
                    std::ostream& os = std::cout) const;
 
     uint64_t getMsgFullTime(uint64_t epoch) const;
@@ -345,9 +325,7 @@ namespace gdpbv100 {
     double getMsgFullTimeD(uint64_t epoch) const;
 
     //! Expanded timestamp for 160 MHz * 19 bit (12 + 7) epochs
-    inline static uint64_t FullTimeStamp(uint64_t epoch, uint32_t ts) {
-      return (epoch << 19) | (ts & 0x7ffff);
-    }
+    inline static uint64_t FullTimeStamp(uint64_t epoch, uint32_t ts) { return (epoch << 19) | (ts & 0x7ffff); }
 
 
     static uint64_t CalcDistance(uint64_t start, uint64_t stop);
@@ -361,43 +339,40 @@ namespace gdpbv100 {
 
   class FullMessage : public Message {
   protected:
-    uint64_t
-      fulExtendedEpoch;  // Epoch of the message, extended with 32b epoch cycle counter
+    uint64_t fulExtendedEpoch;  // Epoch of the message, extended with 32b epoch cycle counter
 
   public:
     FullMessage() : Message(), fulExtendedEpoch(0) {}
 
-    FullMessage(const Message& src, uint64_t uEpIn = 0)
-      : Message(src), fulExtendedEpoch(uEpIn) {}
+    FullMessage(const Message& src, uint64_t uEpIn = 0) : Message(src), fulExtendedEpoch(uEpIn) {}
 
-    FullMessage(const FullMessage& src)
-      : Message(src), fulExtendedEpoch(src.fulExtendedEpoch) {}
+    FullMessage(const FullMessage& src) : Message(src), fulExtendedEpoch(src.fulExtendedEpoch) {}
 
-    void assign(const FullMessage& src) {
+    void assign(const FullMessage& src)
+    {
       Message::assign(src);
       fulExtendedEpoch = src.fulExtendedEpoch;
     }
 
-    FullMessage& operator=(const FullMessage& src) {
+    FullMessage& operator=(const FullMessage& src)
+    {
       assign(src);
       return *this;
     }
 
     bool operator<(const FullMessage& other) const;
 
-    inline void reset() {
+    inline void reset()
+    {
       Message::reset();
       fulExtendedEpoch = 0;
     }
 
     inline uint64_t getExtendedEpoch() const { return fulExtendedEpoch; }
 
-    inline double GetFullTimeNs() const {
-      return getMsgFullTimeD(fulExtendedEpoch);
-    }
+    inline double GetFullTimeNs() const { return getMsgFullTimeD(fulExtendedEpoch); }
 
-    void PrintMessage(unsigned outType = msg_print_Cout,
-                      unsigned kind    = msg_print_Human) const;
+    void PrintMessage(unsigned outType = msg_print_Cout, unsigned kind = msg_print_Human) const;
   };
 
 }  // namespace gdpbv100

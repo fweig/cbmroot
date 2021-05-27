@@ -3,13 +3,10 @@
 using std::cout;
 using std::endl;
 
-void radlength_sim(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/radlen/mc.ac.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/radlen/param.ac.root",
-  const string& geoSetup = "sis100_electron_rich_pal_bcarb",
-  Int_t nofEvents        = 0) {
+void radlength_sim(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/mc.ac.root",
+                   const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/param.ac.root",
+                   const string& geoSetup = "sis100_electron_rich_pal_bcarb", Int_t nofEvents = 0)
+{
 
   TTree::SetMaxTreeSize(90000000000);
 
@@ -86,7 +83,6 @@ void radlength_sim(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "MC file is " << mcFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << "s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;
   std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

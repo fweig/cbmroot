@@ -1,23 +1,19 @@
 
-void run_reco_geo_opt(Int_t nEvents = 30000) {
+void run_reco_geo_opt(Int_t nEvents = 30000)
+{
   TTree::SetMaxTreeSize(90000000000);
-  TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString stsMatBudgetFileName =
-    parDir
-    + "/sts/sts_matbudget_v12b.root";  // Material budget file for L1 STS tracking
+  TString script               = TString(gSystem->Getenv("SCRIPT"));
+  TString parDir               = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString stsMatBudgetFileName = parDir + "/sts/sts_matbudget_v12b.root";  // Material budget file for L1 STS tracking
   gRandom->SetSeed(10);
 
-  TString outDir =
-    "/Users/slebedev/Development/cbm/data/simulations/rich/urqmdtest/";
+  TString outDir        = "/Users/slebedev/Development/cbm/data/simulations/rich/urqmdtest/";
   TString mcFile        = outDir + "25gev.centr.mc.0000.root";
   TString parFile       = outDir + "25gev.centr.param.0000.root";
   TString recFile       = outDir + "25gev.centr.reco.0000.root";
   std::string resultDir = "results_urqmd_25gev_centr/";
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TList* parFileList = new TList();
+  TString parDir        = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TList* parFileList    = new TList();
   //TObjString stsDigiFile = parDir + "/sts/sts_v13d_std.digi.par"; // STS digi file
   //parFileList->Add(&stsDigiFile);
 

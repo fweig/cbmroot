@@ -11,7 +11,8 @@
 
 #include "node.hpp"
 
-namespace KDTree {
+namespace KDTree
+{
 
   template<typename _Tp, typename _Alloc>
   class _Alloc_base {
@@ -30,13 +31,13 @@ namespace KDTree {
       _Node_* new_node;
 
     public:
-      NoLeakAlloc(_Alloc_base* b)
-        : base(b), new_node(base->_M_allocate_node()) {}
+      NoLeakAlloc(_Alloc_base* b) : base(b), new_node(base->_M_allocate_node()) {}
 
       _Node_* get() { return new_node; }
       void disconnect() { new_node = NULL; }
 
-      ~NoLeakAlloc() {
+      ~NoLeakAlloc()
+      {
         if (new_node) base->_M_deallocate_node(new_node);
       }
     };
@@ -47,15 +48,11 @@ namespace KDTree {
 
     _Node_* _M_allocate_node() { return _M_node_allocator.allocate(1); }
 
-    void _M_deallocate_node(_Node_* const __P) {
-      return _M_node_allocator.deallocate(__P, 1);
-    }
+    void _M_deallocate_node(_Node_* const __P) { return _M_node_allocator.deallocate(__P, 1); }
 
-    void _M_construct_node(_Node_* __p,
-                           _Tp const __V            = _Tp(),
-                           _Base_ptr const __PARENT = NULL,
-                           _Base_ptr const __LEFT   = NULL,
-                           _Base_ptr const __RIGHT  = NULL) {
+    void _M_construct_node(_Node_* __p, _Tp const __V = _Tp(), _Base_ptr const __PARENT = NULL,
+                           _Base_ptr const __LEFT = NULL, _Base_ptr const __RIGHT = NULL)
+    {
       new (__p) _Node_(__V, __PARENT, __LEFT, __RIGHT);
     }
 

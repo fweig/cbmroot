@@ -15,8 +15,11 @@
 #define CBMGLOBALTRACKINGTOF_H
 
 #include "CbmGlobalTrackingDefs.h"
+
 #include "FairTrackParam.h"
+
 #include "TClonesArray.h"
+
 #include <list>
 #include <map>
 #include <set>
@@ -46,8 +49,7 @@ public:
   CbmGlobalTrackingTofGeometry();
 
   CbmGlobalTrackingTofGeometry(const CbmGlobalTrackingTofGeometry&) = delete;
-  CbmGlobalTrackingTofGeometry&
-  operator=(const CbmGlobalTrackingTofGeometry&) = delete;
+  CbmGlobalTrackingTofGeometry& operator=(const CbmGlobalTrackingTofGeometry&) = delete;
 
   ~CbmGlobalTrackingTofGeometry();
   bool Read();
@@ -56,44 +58,44 @@ public:
 
   void SetChi2Cut(Double_t v) { fChi2Cut = v; }
 
-  int GetXInd(scaltype x) const {
+  int GetXInd(scaltype x) const
+  {
     int ind = (x - fMinX) / fXBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofXBins)
       ind = fNofXBins - 1;
 
     return ind;
   }
 
-  int GetYInd(scaltype y) const {
+  int GetYInd(scaltype y) const
+  {
     int ind = (y - fMinY) / fYBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofYBins)
       ind = fNofYBins - 1;
 
     return ind;
   }
 
-  int GetZInd(scaltype z) const {
+  int GetZInd(scaltype z) const
+  {
     int ind = (z - fMinZ) / fZBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofZBins)
       ind = fNofZBins - 1;
 
     return ind;
   }
 
-  int GetTInd(timetype t) const {
+  int GetTInd(timetype t) const
+  {
     int ind = (t - fStartTime) / fTBinSize;
 
-    if (ind < 0)
-      ind = 0;
+    if (ind < 0) ind = 0;
     else if (ind >= fNofTBins)
       ind = fNofTBins - 1;
 
@@ -110,11 +112,7 @@ public:
 
   void Clear();
   void Prepare(timetype startTime);
-  void Find(FairTrackParam& trackParams,
-            timetype trackTime,
-            timetype errT,
-            Int_t& tofHitInd,
-            Double_t& length);
+  void Find(FairTrackParam& trackParams, timetype trackTime, timetype errT, Int_t& tofHitInd, Double_t& length);
 
 private:
   scaltype fC;

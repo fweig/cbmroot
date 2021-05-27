@@ -8,9 +8,11 @@
 #define CBMLITMCPOINT_H_
 
 #include "TObject.h"
-#include <cmath>
+
 #include <sstream>
 #include <string>
+
+#include <cmath>
 
 /**
  * \class CbmLitMCPoint
@@ -38,7 +40,9 @@ public:
     , fPzOut(0.)
     , fRefId(-1)
     , fStationId(-1)
-    , fQ(1.) {}
+    , fQ(1.)
+  {
+  }
 
   /*
     * \brief Destructor.
@@ -54,10 +58,9 @@ public:
   Double_t GetPz() const { return (fPzIn + fPzOut) / 2.; }
   Double_t GetTx() const { return GetPx() / GetPz(); }
   Double_t GetTy() const { return GetPy() / GetPz(); }
-  Double_t GetP() const {
-    return std::sqrt(GetPx() * GetPx() + GetPy() * GetPy() + GetPz() * GetPz());
-  }
-  Double_t GetQp() const {
+  Double_t GetP() const { return std::sqrt(GetPx() * GetPx() + GetPy() * GetPy() + GetPz() * GetPz()); }
+  Double_t GetQp() const
+  {
     Double_t p   = GetP();
     Double_t res = (p != 0.) ? fQ / p : 0.;
     return res;
@@ -70,10 +73,9 @@ public:
   Double_t GetPzIn() const { return fPzIn; }
   Double_t GetTxIn() const { return fPxIn / fPzIn; }
   Double_t GetTyIn() const { return fPyIn / fPzIn; }
-  Double_t GetPIn() const {
-    return std::sqrt(fPxIn * fPxIn + fPyIn * fPyIn + fPzIn * fPzIn);
-  }
-  Double_t GetQpIn() const {
+  Double_t GetPIn() const { return std::sqrt(fPxIn * fPxIn + fPyIn * fPyIn + fPzIn * fPzIn); }
+  Double_t GetQpIn() const
+  {
     Double_t p   = GetPIn();
     Double_t res = (p != 0.) ? fQ / p : 0.;
     return res;
@@ -86,10 +88,9 @@ public:
   Double_t GetPzOut() const { return fPzOut; }
   Double_t GetTxOut() const { return fPxOut / fPzOut; }
   Double_t GetTyOut() const { return fPyOut / fPzOut; }
-  Double_t GetPOut() const {
-    return std::sqrt(fPxOut * fPxOut + fPyOut * fPyOut + fPzOut * fPzOut);
-  }
-  Double_t GetQpOut() const {
+  Double_t GetPOut() const { return std::sqrt(fPxOut * fPxOut + fPyOut * fPyOut + fPzOut * fPzOut); }
+  Double_t GetQpOut() const
+  {
     Double_t p   = GetPOut();
     Double_t res = (p != 0.) ? fQ / p : 0.;
     return res;
@@ -119,12 +120,12 @@ public:
     * \brief Returns std::string representation of the class.
     * \return Class representation as std::string.
     */
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
     ss << "MCPoint: pos=(" << GetX() << "," << GetY() << "," << GetZ() << ") "
        << "mom=(" << GetPx() << "," << GetPy() << "," << GetPz() << ") "
-       << "refId=" << GetRefId() << " stationId=" << GetStationId()
-       << std::endl;
+       << "refId=" << GetRefId() << " stationId=" << GetStationId() << std::endl;
     return ss.str();
   }
 
@@ -132,8 +133,8 @@ public:
     * \brief Operator << for convenient output to std::ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const CbmLitMCPoint& point) {
+  friend std::ostream& operator<<(std::ostream& strm, const CbmLitMCPoint& point)
+  {
     strm << point.ToString();
     return strm;
   }
@@ -141,7 +142,7 @@ public:
 private:
   Double_t fXIn, fYIn, fZIn;  // Space coordinates on entrance plane [cm].
   Double_t fPxIn, fPyIn,
-    fPzIn;  // Momentum components on entrance plane. [GeV/c]
+    fPzIn;                       // Momentum components on entrance plane. [GeV/c]
   Double_t fXOut, fYOut, fZOut;  // Space coordinates on exit plane [cm].
   Double_t fPxOut, fPyOut,
     fPzOut;          // Momentum components on exit plane. [GeV/c]

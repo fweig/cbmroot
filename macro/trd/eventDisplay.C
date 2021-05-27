@@ -1,6 +1,7 @@
 // 20130605 - checked by DE
 
-eventDisplay() {
+eventDisplay()
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -11,10 +12,8 @@ eventDisplay() {
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
   TString digipar = selectGeo(0, 11);
   digipar.ReplaceAll(".ge", "");
-  cout
-    << "selected geometry : >> " << selectGeo
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << selectGeo
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -46,12 +45,10 @@ eventDisplay() {
   rtdb->setSecondInput(parInput2);
   // ------------------------------------------------------------------------
 
-  FairEventManager* fMan = new FairEventManager();
-  FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
-  FairMCPointDraw* TrdPoints =
-    new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
-  CbmPixelHitSetDraw* TrdHits =
-    new CbmPixelHitSetDraw("TrdHit", kRed, kFullSquare);
+  FairEventManager* fMan      = new FairEventManager();
+  FairMCTracks* Track         = new FairMCTracks("Monte-Carlo Tracks");
+  FairMCPointDraw* TrdPoints  = new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
+  CbmPixelHitSetDraw* TrdHits = new CbmPixelHitSetDraw("TrdHit", kRed, kFullSquare);
   //  CbmTrdDigiDraw     *TrdDigis  = new CbmTrdDigiDraw     ("TrdDigi" ,kGreen, kFullSquare);
 
   //  TrdDigis->SetLayerStation1(kTRUE,kTRUE,kTRUE,kTRUE);

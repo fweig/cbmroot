@@ -5,7 +5,8 @@
 // V. Friese   13/01/2006
 //
 // --------------------------------------------------------------------------
-void run_qa_old(Int_t nEvents = 1, const char* setupName = "sis100_electron") {
+void run_qa_old(Int_t nEvents = 1, const char* setupName = "sis100_electron")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -16,8 +17,7 @@ void run_qa_old(Int_t nEvents = 1, const char* setupName = "sis100_electron") {
   TString outDir = "data/";
 
   // MC file
-  TString simFile =
-    outDir + setupName + "_test.mc.root";  // Input file (MC events)
+  TString simFile = outDir + setupName + "_test.mc.root";  // Input file (MC events)
 
   // Reco file
   TString recFile = outDir + setupName + "_test.eds.root";  // Output file

@@ -1,5 +1,6 @@
 
-void draw_analysis() {
+void draw_analysis()
+{
   TStopwatch timer;
   timer.Start();
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");

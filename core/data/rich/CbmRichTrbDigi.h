@@ -8,12 +8,7 @@
 class CbmRichTrbDigi : public TObject {
 public:
   CbmRichTrbDigi();
-  CbmRichTrbDigi(UInt_t TDCid,
-                 Bool_t hasLedge,
-                 Bool_t hasTedge,
-                 UInt_t Lch,
-                 UInt_t Tch,
-                 Double_t Ltimestamp,
+  CbmRichTrbDigi(UInt_t TDCid, Bool_t hasLedge, Bool_t hasTedge, UInt_t Lch, UInt_t Tch, Double_t Ltimestamp,
                  Double_t Ttimestamp);
   virtual ~CbmRichTrbDigi();
 

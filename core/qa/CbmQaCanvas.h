@@ -32,7 +32,9 @@ public:
   /// Reimplementation of any existing TCanvas constructor
   /// It sets the batch mode ON and then calls the constructor
   template<typename... Types>
-  CbmQaCanvas(Types... args) : CbmQaCanvas(SetBatchModeOn(), args...) {}
+  CbmQaCanvas(Types... args) : CbmQaCanvas(SetBatchModeOn(), args...)
+  {
+  }
 
   /// Destructor
   virtual ~CbmQaCanvas() {}
@@ -47,7 +49,8 @@ private:
 
   /// Constructor which calls TCanvas constructor and restores the bach mode
   template<typename... Types>
-  CbmQaCanvas(MyBoolean oldBatchMode, Types... args) : TCanvas(args...) {
+  CbmQaCanvas(MyBoolean oldBatchMode, Types... args) : TCanvas(args...)
+  {
     // prevent automatic deletion of this canvas
     // when another canvas with the same name is created somewhere else
     gROOT->GetListOfCanvases()->Remove(this);
@@ -56,7 +59,8 @@ private:
   }
 
   /// Set batch mode ON and return its old value
-  static MyBoolean SetBatchModeOn() {
+  static MyBoolean SetBatchModeOn()
+  {
     MyBoolean oldBatchMode = (MyBoolean) gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
     return oldBatchMode;

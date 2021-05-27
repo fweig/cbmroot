@@ -16,9 +16,8 @@
 using std::cout;
 using std::endl;
 
-void run_recoqa_tb_track(TString dataSet = "test",
-                         Int_t nSlices   = -1,
-                         TString setup   = "sis100_electron") {
+void run_recoqa_tb_track(TString dataSet = "test", Int_t nSlices = -1, TString setup = "sis100_electron")
+{
 
   // =========================================================================
   // ===                      Settings                                     ===
@@ -91,10 +90,8 @@ void run_recoqa_tb_track(TString dataSet = "test",
   run->AddTask(match1);
 
   // -- CbmRecoQa
-  CbmRecoQa* recoqa = new CbmRecoQa({{"sts", {5, 50, 500, 20}},
-                                     {"mvd", {5, 100, 1000, 40}},
-                                     {"much", {10, 50, 50, 50}}},
-                                    std::string(dataSet.Data()));
+  CbmRecoQa* recoqa = new CbmRecoQa(
+    {{"sts", {5, 50, 500, 20}}, {"mvd", {5, 100, 1000, 40}}, {"much", {10, 50, 50, 50}}}, std::string(dataSet.Data()));
   run->AddTask(recoqa);
 
   // -----   Initialise and run   --------------------------------------------
@@ -105,8 +102,7 @@ void run_recoqa_tb_track(TString dataSet = "test",
   rtdb->print();
 
   cout << "Starting run " << gGeoManager << endl;
-  if (nSlices < 0)
-    run->Run();
+  if (nSlices < 0) run->Run();
   else
     run->Run(nSlices);
   // ------------------------------------------------------------------------

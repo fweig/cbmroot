@@ -52,9 +52,8 @@ TString setup    = "sis100_electron";
 bool littrack    = false;
 Bool_t useMC     = kFALSE;
 
-void opencharm_sim(Int_t nEvents             = 10,
-                   Int_t ProcID              = 1,
-                   bool backgroundProduction = false) {
+void opencharm_sim(Int_t nEvents = 10, Int_t ProcID = 1, bool backgroundProduction = false)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
   TString inDir = gSystem->Getenv("VMCWORKDIR");
@@ -62,46 +61,26 @@ void opencharm_sim(Int_t nEvents             = 10,
 
   // Input file
 
-  TString inFile = Form("%s/input/urqmd.%s.%s.%s.root",
-                        inDir.Data(),
-                        input.Data(),
-                        inputGEV.Data(),
-                        system.Data(),
-                        input.Data(),
-                        inputGEV.Data(),
-                        system.Data());
+  TString inFile = Form("%s/input/urqmd.%s.%s.%s.root", inDir.Data(), input.Data(), inputGEV.Data(), system.Data(),
+                        input.Data(), inputGEV.Data(), system.Data());
   // ------------------------------------------------------------------------
 
   if (!backgroundProduction) {
     // Output file
-    TString outFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root",
-                           input.Data(),
-                           inputGEV.Data(),
-                           nEvents,
-                           ProcID,
-                           signal.Data(),
-                           setup.Data());
+    TString outFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                           ProcID, signal.Data(), setup.Data());
     // ------------------------------------------------------------------------
-  } else {
+  }
+  else {
     // Output file
-    TString outFile = Form("data/opencharm.mc.urqmd.bg.%s.%s.%i.%i.%s.%s.root",
-                           input.Data(),
-                           inputGEV.Data(),
-                           nEvents,
-                           ProcID,
-                           signal.Data(),
-                           setup.Data());
+    TString outFile = Form("data/opencharm.mc.urqmd.bg.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                           ProcID, signal.Data(), setup.Data());
     // ------------------------------------------------------------------------
   }
 
   // Parameter file name
-  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
   // ------------------------------------------------------------------------
 
   TString setupFile  = inDir + "/geometry/setup/" + setup + "_setup.C";
@@ -190,11 +169,11 @@ void opencharm_sim(Int_t nEvents             = 10,
 
   // -----   Create magnetic field   ---------------------------------------
   CbmFieldMap* magField = NULL;
-  if (2 == fieldSymType) {
-    magField = new CbmFieldMapSym2(fieldMap);
-  } else if (3 == fieldSymType) {
+  if (2 == fieldSymType) { magField = new CbmFieldMapSym2(fieldMap); }
+  else if (3 == fieldSymType) {
     magField = new CbmFieldMapSym3(fieldMap);
-  } else
+  }
+  else
     magField = new CbmFieldMapSym1(fieldMap);
 
   magField->SetPosition(0., 0., fieldZ);
@@ -235,8 +214,7 @@ void opencharm_sim(Int_t nEvents             = 10,
   makeStaticData()->SetParticleSpin("Dm+", 1);
 
   // 0.8581   8008012     "Dm+ --> K- + pi+ + pi+"
-  makeStaticData()->AddDecay(
-    -1, "Dm+ -> K- + pi+ + pi+", "Dm+", "K-,pi+,pi+", 1);
+  makeStaticData()->AddDecay(-1, "Dm+ -> K- + pi+ + pi+", "Dm+", "K-,pi+,pi+", 1);
 
 
   //D- Meson
@@ -248,8 +226,7 @@ void opencharm_sim(Int_t nEvents             = 10,
   makeStaticData()->SetParticleSpin("Dm-", 1);
 
   // 0.8581   9009011     "Dm- --> K+ + pi- + pi-"
-  makeStaticData()->AddDecay(
-    -1, "Dm- -> K+ + pi- + pi-", "Dm-", "K+,pi-,pi-", 1);
+  makeStaticData()->AddDecay(-1, "Dm- -> K+ + pi- + pi-", "Dm-", "K+,pi-,pi-", 1);
 
 
   //D0 Meson
@@ -267,8 +244,7 @@ void opencharm_sim(Int_t nEvents             = 10,
 
 
   if (signal == "dplus") {  // D+
-    PFireball* source_Dmp =
-      new PFireball("Dm+", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
+    PFireball* source_Dmp = new PFireball("Dm+", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
     source_Dmp->setTrueThermal(kTRUE);
     source_Dmp->Print();
 
@@ -289,8 +265,7 @@ void opencharm_sim(Int_t nEvents             = 10,
   }
 
   else if (signal == "dminus") {  // D-
-    PFireball* source_Dmm =
-      new PFireball("Dm-", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
+    PFireball* source_Dmm = new PFireball("Dm-", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
     source_Dmm->setTrueThermal(kTRUE);
     source_Dmm->Print();
 
@@ -310,8 +285,7 @@ void opencharm_sim(Int_t nEvents             = 10,
   }
 
   else if (signal == "d0") {  // D0 two body
-    PFireball* source_Dm0 =
-      new PFireball("Dm0", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
+    PFireball* source_Dm0 = new PFireball("Dm0", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
     source_Dm0->setTrueThermal(kTRUE);
     source_Dm0->Print();
 
@@ -327,12 +301,10 @@ void opencharm_sim(Int_t nEvents             = 10,
 
     PChannel* cc_Dm0kp[] = {c_sDm0, c_sDm0kp};
     PReaction* reaction  = new PReaction(cc_Dm0kp, 2);
-
   }
 
   else if (signal == "d0_4B") {  // D0 four body
-    PFireball* source_Dm0 =
-      new PFireball("Dm0", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
+    PFireball* source_Dm0 = new PFireball("Dm0", Eb, T1, T2, 1., blast, 0., 0., 0., 0.);
     source_Dm0->setTrueThermal(kTRUE);
     source_Dm0->Print();
 
@@ -345,18 +317,16 @@ void opencharm_sim(Int_t nEvents             = 10,
     PParticle* Dm0piplus2 = new PParticle("pi+");
     PParticle* Dm0piminus = new PParticle("pi-");
 
-    PParticle* s_Dm0kppp[] = {
-      Dm0, Dm0kminus, Dm0piplus1, Dm0piplus2, Dm0piminus};
-    PChannel* c_sDm0kppp = new PChannel(s_Dm0kppp, 4, 1);
+    PParticle* s_Dm0kppp[] = {Dm0, Dm0kminus, Dm0piplus1, Dm0piplus2, Dm0piminus};
+    PChannel* c_sDm0kppp   = new PChannel(s_Dm0kppp, 4, 1);
 
     PChannel* cc_Dm0kppp[] = {c_sDm0, c_sDm0kppp};
     PReaction* reaction    = new PReaction(cc_Dm0kppp, 2);
-  } else
+  }
+  else
     exit(-1);
 
-  if (!backgroundProduction)
-    CbmPlutoReactionGenerator* plutoGen =
-      new CbmPlutoReactionGenerator(reaction);
+  if (!backgroundProduction) CbmPlutoReactionGenerator* plutoGen = new CbmPlutoReactionGenerator(reaction);
   if (!backgroundProduction) primGen->AddGenerator(plutoGen);
 
   fRun->SetGenerator(primGen);
@@ -391,7 +361,6 @@ void opencharm_sim(Int_t nEvents             = 10,
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 }

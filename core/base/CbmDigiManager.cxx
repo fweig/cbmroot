@@ -4,9 +4,8 @@
  **/
 #include "CbmDigiManager.h"
 
-#include "CbmDefs.h"        // for kMuch
-#include "CbmDigiBranch.h"  // for CbmDigiBranch
-
+#include "CbmDefs.h"              // for kMuch
+#include "CbmDigiBranch.h"        // for CbmDigiBranch
 #include "CbmMuchBeamTimeDigi.h"  // for CbmMuchBeamTimeDigi
 #include "CbmMuchDigi.h"          // for CbmMuchDigi
 #include "CbmMvdDigi.h"           // for CbmMvdDigi
@@ -28,11 +27,10 @@
 using std::string;
 
 // -----   Initialisation of static variables   ----------------------------
-CbmDigiManager* CbmDigiManager::fgInstance = nullptr;
-std::map<ECbmModuleId, CbmDigiBranchBase*> CbmDigiManager::fBranches =
-  std::map<ECbmModuleId, CbmDigiBranchBase*>();
-Bool_t CbmDigiManager::fIsInitialised       = kFALSE;
-Bool_t CbmDigiManager::fUseMuchBeamTimeDigi = kFALSE;
+CbmDigiManager* CbmDigiManager::fgInstance                           = nullptr;
+std::map<ECbmModuleId, CbmDigiBranchBase*> CbmDigiManager::fBranches = std::map<ECbmModuleId, CbmDigiBranchBase*>();
+Bool_t CbmDigiManager::fIsInitialised                                = kFALSE;
+Bool_t CbmDigiManager::fUseMuchBeamTimeDigi                          = kFALSE;
 // -------------------------------------------------------------------------
 
 
@@ -42,7 +40,8 @@ CbmDigiManager::CbmDigiManager() {}
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmDigiManager::~CbmDigiManager() {
+CbmDigiManager::~CbmDigiManager()
+{
   for (auto& entry : fBranches) {
     if (entry.second) delete entry.second;
   }
@@ -51,15 +50,16 @@ CbmDigiManager::~CbmDigiManager() {
 
 
 // -----   Get a match object   --------------------------------------------
-const CbmMatch* CbmDigiManager::GetMatch(ECbmModuleId systemId,
-                                         UInt_t index) const {
+const CbmMatch* CbmDigiManager::GetMatch(ECbmModuleId systemId, UInt_t index) const
+{
   assert(fIsInitialised);
   if (fBranches.find(systemId) == fBranches.end()) return nullptr;
   return fBranches[systemId]->GetDigiMatch(index);
 }
 
 // -----   Get number of digis in branch   ---------------------------------
-Int_t CbmDigiManager::GetNofDigis(ECbmModuleId systemId) {
+Int_t CbmDigiManager::GetNofDigis(ECbmModuleId systemId)
+{
   assert(fIsInitialised);
   if (fBranches.find(systemId) == fBranches.end()) return -1;
   return fBranches[systemId]->GetNofDigis();
@@ -68,7 +68,8 @@ Int_t CbmDigiManager::GetNofDigis(ECbmModuleId systemId) {
 
 
 // -----   Initialisation   ------------------------------------------------
-InitStatus CbmDigiManager::Init() {
+InitStatus CbmDigiManager::Init()
+{
 
   if (fIsInitialised) return kSUCCESS;
 
@@ -79,8 +80,7 @@ InitStatus CbmDigiManager::Init() {
   SetBranch<CbmMvdDigi>();
   SetBranch<CbmStsDigi>();
   SetBranch<CbmRichDigi>();
-  if (fUseMuchBeamTimeDigi)
-    SetBranch<CbmMuchBeamTimeDigi>();
+  if (fUseMuchBeamTimeDigi) SetBranch<CbmMuchBeamTimeDigi>();
   else
     SetBranch<CbmMuchDigi>();
   SetBranch<CbmTrdDigi>();
@@ -101,7 +101,8 @@ InitStatus CbmDigiManager::Init() {
 
 
 // -----   Check presence of a match branch   ------------------------------
-Bool_t CbmDigiManager::IsMatchPresent(ECbmModuleId systemId) {
+Bool_t CbmDigiManager::IsMatchPresent(ECbmModuleId systemId)
+{
   if (fBranches.find(systemId) == fBranches.end()) return kFALSE;
   return fBranches[systemId]->HasMatches();
 }
@@ -109,7 +110,8 @@ Bool_t CbmDigiManager::IsMatchPresent(ECbmModuleId systemId) {
 
 
 // -----   Check presence of a digi branch   -------------------------------
-Bool_t CbmDigiManager::IsPresent(ECbmModuleId systemId) {
+Bool_t CbmDigiManager::IsPresent(ECbmModuleId systemId)
+{
   if (fBranches.find(systemId) == fBranches.end()) return kFALSE;
   return kTRUE;
 }
@@ -118,20 +120,19 @@ Bool_t CbmDigiManager::IsPresent(ECbmModuleId systemId) {
 
 // -----   Set a digi branch   ---------------------------------------------
 template<class Digi>
-void CbmDigiManager::SetBranch() {
+void CbmDigiManager::SetBranch()
+{
 
   // Get system ID and class name from digi class.
   ECbmModuleId systemId = Digi::GetSystem();
   string className      = Digi::GetClassName();
 
   // TODO: Remove ugly fix for CbmMuchBeamTimeDigi once class has disappeared.
-  if (systemId == ECbmModuleId::kMuch && fUseMuchBeamTimeDigi)
-    className = "CbmMuchBeamTimeDigi";
+  if (systemId == ECbmModuleId::kMuch && fUseMuchBeamTimeDigi) className = "CbmMuchBeamTimeDigi";
 
   // --- Catch branch being already set
   if (fBranches.find(systemId) != fBranches.end()) {
-    LOG(warn) << "DigiManager: Branch for system " << systemId
-              << " is already set.";
+    LOG(warn) << "DigiManager: Branch for system " << systemId << " is already set.";
     return;
   }  //? branch already present
 
@@ -142,8 +143,7 @@ void CbmDigiManager::SetBranch() {
     branchName = fBranchNames[systemId];
   }  //? branch name explicitly set
   else {
-    if (className.substr(0, 3) == "Cbm")
-      branchName = className.substr(3);
+    if (className.substr(0, 3) == "Cbm") branchName = className.substr(3);
     else
       branchName = className;
   }  //? Branch name not explicitly set
@@ -151,12 +151,11 @@ void CbmDigiManager::SetBranch() {
   // --- Add branch object and connect it to the tree
   CbmDigiBranchBase* branch = new CbmDigiBranch<Digi>(branchName.c_str());
   if (branch->ConnectToTree()) {
-    LOG(info) << "DigiManager: Search branch " << branchName << " for class "
-              << className << ": successful";
+    LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": successful";
     fBranches[systemId] = branch;
-  } else {
-    LOG(info) << "DigiManager: Search branch " << branchName << " for class "
-              << className << ": failed";
+  }
+  else {
+    LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": failed";
     delete branch;
   }
 
@@ -166,12 +165,11 @@ void CbmDigiManager::SetBranch() {
       branchName = "TofCalDigi";
       branch     = new CbmDigiBranch<Digi>(branchName.c_str());
       if (branch->ConnectToTree()) {
-        LOG(info) << "DigiManager: Search branch " << branchName
-                  << " for class " << className << ": successful";
+        LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": successful";
         fBranches[systemId] = branch;
-      } else {
-        LOG(info) << "DigiManager: Search branch " << branchName
-                  << " for class " << className << ": failed";
+      }
+      else {
+        LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": failed";
         delete branch;
       }
     }
@@ -179,20 +177,18 @@ void CbmDigiManager::SetBranch() {
       branchName = "CbmTofDigi";
       branch     = new CbmDigiBranch<Digi>(branchName.c_str());
       if (branch->ConnectToTree()) {
-        LOG(info) << "DigiManager: Search branch " << branchName
-                  << " for class " << className << ": successful";
+        LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": successful";
         fBranches[systemId] = branch;
-      } else {
-        LOG(info) << "DigiManager: Search branch " << branchName
-                  << " for class " << className << ": failed";
+      }
+      else {
+        LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": failed";
         delete branch;
       }
     }
     if (fBranches.find(systemId) == fBranches.end()) {
       branchName = "CbmTofCalDigi";
       branch     = new CbmDigiBranch<Digi>(branchName.c_str());
-      if (branch->ConnectToTree())
-        fBranches[systemId] = branch;
+      if (branch->ConnectToTree()) fBranches[systemId] = branch;
       else
         delete branch;
     }

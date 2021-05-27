@@ -17,11 +17,7 @@ public:
 
 
   void Init();
-  double DoSelect(double InvariantMass,
-                  double OpeningAngle,
-                  double PlaneAngle_last,
-                  double ZPos,
-                  TVector3 Momentum1,
+  double DoSelect(double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos, TVector3 Momentum1,
                   TVector3 Momentum2);
 
 

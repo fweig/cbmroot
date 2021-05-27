@@ -18,12 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco(Int_t nEvents         = 2,
-               TString cSys          = "nini",
-               TString cEbeam        = "1.93gev",
-               TString cCentr        = "mbias",
-               Int_t iRun            = 1,
-               const char* setupName = "sis18_mcbm_25deg_long")
+void mcbm_reco(Int_t nEvents = 2, TString cSys = "nini", TString cEbeam = "1.93gev", TString cCentr = "mbias",
+               Int_t iRun = 1, const char* setupName = "sis18_mcbm_25deg_long")
 //               const char* setupName = "sis18_mcbm_20deg_long")
 {
   // ========================================================================
@@ -36,7 +32,7 @@ void mcbm_reco(Int_t nEvents         = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_new";  // this macro's name for screen output
+  TString myName = "run_reco_new";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -44,8 +40,7 @@ void mcbm_reco(Int_t nEvents         = 2,
   // -----   In- and output file names   ------------------------------------
   TString outDir = "data/";
 
-  TString inFile =
-    outDir + setupName + "_test.tra.root";  // Input file (MC events)
+  TString inFile  = outDir + setupName + "_test.tra.root";  // Input file (MC events)
   TString parFile = outDir + setupName + "_test.par.root";  // Parameter file
   TString outFile = outDir + setupName + "_test.eds.root";  // Output file
 
@@ -80,20 +75,16 @@ void mcbm_reco(Int_t nEvents         = 2,
 
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -157,12 +148,10 @@ void mcbm_reco(Int_t nEvents         = 2,
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
   if (!recoSuccess) {
-    std::cerr << "-E- " << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E- " << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I- " << myName << ": " << macroName << " executed successfully"
-            << std::endl;
+  std::cout << "-I- " << myName << ": " << macroName << " executed successfully" << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -204,8 +193,7 @@ void mcbm_reco(Int_t nEvents         = 2,
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

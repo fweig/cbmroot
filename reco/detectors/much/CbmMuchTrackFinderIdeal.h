@@ -9,9 +9,8 @@
 #ifndef CBMMUCHTRACKFINDERIDEAL_H_
 #define CBMMUCHTRACKFINDERIDEAL_H_ 1
 
-#include "CbmMuchTrackFinder.h"
-
 #include "CbmHit.h"
+#include "CbmMuchTrackFinder.h"
 
 #include <map>
 
@@ -30,14 +29,9 @@ public:
   Int_t DoFind(TClonesArray* trackArray);
 
 private:
-  void ProcessDigiMatches(const TClonesArray* digiMatches,
-                          Int_t digiIndex,
-                          Int_t hitIndex,
-                          HitType hitType);
+  void ProcessDigiMatches(const TClonesArray* digiMatches, Int_t digiIndex, Int_t hitIndex, HitType hitType);
 
-  void SetTrackParam(const CbmMCTrack* mcTrack,
-                     const FairMCPoint* mcPoint,
-                     CbmMuchTrack* track);
+  void SetTrackParam(const CbmMCTrack* mcTrack, const FairMCPoint* mcPoint, CbmMuchTrack* track);
 
   TClonesArray* fMCTracks;
   TClonesArray* fMCPoints;

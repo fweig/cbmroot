@@ -35,14 +35,14 @@ using std::fixed;
 using std::setprecision;
 
 // ---- Default constructor -------------------------------------------
-CbmMcbm2019CheckDtInDet::CbmMcbm2019CheckDtInDet()
-  : FairTask("CbmMcbm2019CheckDtInDet") {}
+CbmMcbm2019CheckDtInDet::CbmMcbm2019CheckDtInDet() : FairTask("CbmMcbm2019CheckDtInDet") {}
 
 // ---- Destructor ----------------------------------------------------
 CbmMcbm2019CheckDtInDet::~CbmMcbm2019CheckDtInDet() {}
 
 // ----  Initialisation  ----------------------------------------------
-void CbmMcbm2019CheckDtInDet::SetParContainers() {
+void CbmMcbm2019CheckDtInDet::SetParContainers()
+{
   // Load all necessary parameter containers from the runtime data base
   /*
   FairRunAna* ana = FairRunAna::Instance();
@@ -54,7 +54,8 @@ void CbmMcbm2019CheckDtInDet::SetParContainers() {
 }
 
 // ---- Init ----------------------------------------------------------
-InitStatus CbmMcbm2019CheckDtInDet::Init() {
+InitStatus CbmMcbm2019CheckDtInDet::Init()
+{
 
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -75,43 +76,32 @@ InitStatus CbmMcbm2019CheckDtInDet::Init() {
     }  //? CbmTofDigi derives from TObject
   }    //? No vector for T0 digis
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
-    LOG(info) << "No STS digi input found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) { LOG(info) << "No STS digi input found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) {
-    LOG(info) << "No MUCH digi input found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) { LOG(info) << "No MUCH digi input found."; }
 
   if (!fDigiMan->IsPresent(ECbmModuleId::kTrd)) {
     LOG(info) << "No TRD digi input found.";
   }  // if ( ! fDigiMan->IsPresent( ECbmModuleId::kTrd) )
   else {
     /// The TRD digi time is relative to the TS start, so we need the metadata to offset it
-    fTimeSliceMetaDataArray =
-      dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
-    if (!fTimeSliceMetaDataArray)
-      LOG(fatal) << "No TS metadata input found while TRD needs it.";
+    fTimeSliceMetaDataArray = dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
+    if (!fTimeSliceMetaDataArray) LOG(fatal) << "No TS metadata input found while TRD needs it.";
   }  // else of if ( ! fDigiMan->IsPresent( ECbmModuleId::kTrd) )
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) {
-    LOG(info) << "No TOF digi input found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) { LOG(info) << "No TOF digi input found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) {
-    LOG(info) << "No RICH digi input found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) { LOG(info) << "No RICH digi input found."; }
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd)) {
-    LOG(info) << "No PSD digi input found.";
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kPsd)) { LOG(info) << "No PSD digi input found."; }
 
   CreateHistos();
 
   return kSUCCESS;
 }
 
-void CbmMcbm2019CheckDtInDet::CreateHistos() {
+void CbmMcbm2019CheckDtInDet::CreateHistos()
+{
   /// Logarithmic bining for self time comparison
   uint32_t iNbBinsLog = 0;
   /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
@@ -121,171 +111,74 @@ void CbmMcbm2019CheckDtInDet::CreateHistos() {
 
   /// Proportion of hits with same time
   // T0 vs. T0
-  fT0T0SameTime = new TH1F(
-    "fT0T0SameTime", "Fract. same time T0;Same Time? [];Counts", 2, -0.5, 1.5);
+  fT0T0SameTime = new TH1F("fT0T0SameTime", "Fract. same time T0;Same Time? [];Counts", 2, -0.5, 1.5);
   // sts vs. Sts
-  fStsStsSameTime = new TH1F("fStsStsSameTime",
-                             "Fract. same time Sts;Same Time? [];Counts",
-                             2,
-                             -0.5,
-                             1.5);
+  fStsStsSameTime = new TH1F("fStsStsSameTime", "Fract. same time Sts;Same Time? [];Counts", 2, -0.5, 1.5);
   // Much vs. Much
-  fMuchMuchSameTime = new TH1F("fMuchMuchSameTime",
-                               "Fract. same time Much;Same Time? [];Counts",
-                               2,
-                               -0.5,
-                               1.5);
+  fMuchMuchSameTime = new TH1F("fMuchMuchSameTime", "Fract. same time Much;Same Time? [];Counts", 2, -0.5, 1.5);
   // Trd vs. Trd
-  fTrdTrdSameTime = new TH1F("fTrdTrdSameTime",
-                             "Fract. same time Trd;Same Time? [];Counts",
-                             2,
-                             -0.5,
-                             1.5);
+  fTrdTrdSameTime = new TH1F("fTrdTrdSameTime", "Fract. same time Trd;Same Time? [];Counts", 2, -0.5, 1.5);
   // Tof vs. Tof
-  fTofTofSameTime = new TH1F("fTofTofSameTime",
-                             "Fract. same time Tof;Same Time? [];Counts",
-                             2,
-                             -0.5,
-                             1.5);
+  fTofTofSameTime = new TH1F("fTofTofSameTime", "Fract. same time Tof;Same Time? [];Counts", 2, -0.5, 1.5);
   // Rich vs. Rich
-  fRichRichSameTime = new TH1F("fRichRichSameTime",
-                               "Fract. same time Rich;Same Time? [];Counts",
-                               2,
-                               -0.5,
-                               1.5);
+  fRichRichSameTime = new TH1F("fRichRichSameTime", "Fract. same time Rich;Same Time? [];Counts", 2, -0.5, 1.5);
   // Psd vs. Psd
-  fPsdPsdSameTime = new TH1F("fPsdPsdSameTime",
-                             "Fract. same time Psd;Same Time? [];Counts",
-                             2,
-                             -0.5,
-                             1.5);
+  fPsdPsdSameTime = new TH1F("fPsdPsdSameTime", "Fract. same time Psd;Same Time? [];Counts", 2, -0.5, 1.5);
 
   /// Per detector
   // T0 vs. T0
-  fT0T0Diff = new TH1F(
-    "fT0T0Diff", "T0-T0_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
+  fT0T0Diff = new TH1F("fT0T0Diff", "T0-T0_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // sts vs. Sts
-  fStsStsDiff = new TH1F(
-    "fStsStsDiff", "Sts-Sts_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
+  fStsStsDiff = new TH1F("fStsStsDiff", "Sts-Sts_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // Much vs. Much
-  fMuchMuchDiff = new TH1F("fMuchMuchDiff",
-                           "Much-Much_prev;time diff [ns];Counts",
-                           10001,
-                           -0.5,
-                           10000.5);
+  fMuchMuchDiff = new TH1F("fMuchMuchDiff", "Much-Much_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // Trd vs. Trd
-  fTrdTrdDiff = new TH1F(
-    "fTrdTrdDiff", "Trd-Trd_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
+  fTrdTrdDiff = new TH1F("fTrdTrdDiff", "Trd-Trd_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // Tof vs. Tof
-  fTofTofDiff = new TH1F(
-    "fTofTofDiff", "Tof-Tof_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
+  fTofTofDiff = new TH1F("fTofTofDiff", "Tof-Tof_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // Rich vs. Rich
-  fRichRichDiff = new TH1F("fRichRichDiff",
-                           "Rich-Rich_prev;time diff [ns];Counts",
-                           10001,
-                           -0.5,
-                           10000.5);
+  fRichRichDiff = new TH1F("fRichRichDiff", "Rich-Rich_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // Psd vs. Psd
-  fPsdPsdDiff = new TH1F(
-    "fPsdPsdDiff", "Psd-Psd_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
+  fPsdPsdDiff = new TH1F("fPsdPsdDiff", "Psd-Psd_prev;time diff [ns];Counts", 10001, -0.5, 10000.5);
   // T0 vs. T0
-  fT0T0DiffLog = new TH1F(
-    "fT0T0DiffLog", "T0-T0_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
+  fT0T0DiffLog = new TH1F("fT0T0DiffLog", "T0-T0_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // sts vs. Sts
-  fStsStsDiffLog = new TH1F("fStsStsDiffLog",
-                            "Sts-Sts_prev;time diff [ns];Counts",
-                            iNbBinsLog,
-                            dBinsLog);
+  fStsStsDiffLog = new TH1F("fStsStsDiffLog", "Sts-Sts_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // Much vs. Much
-  fMuchMuchDiffLog = new TH1F("fMuchMuchDiffLog",
-                              "Much-Much_prev;time diff [ns];Counts",
-                              iNbBinsLog,
-                              dBinsLog);
+  fMuchMuchDiffLog = new TH1F("fMuchMuchDiffLog", "Much-Much_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // Trd vs. Trd
-  fTrdTrdDiffLog = new TH1F("fTrdTrdDiffLog",
-                            "Trd-Trd_prev;time diff [ns];Counts",
-                            iNbBinsLog,
-                            dBinsLog);
+  fTrdTrdDiffLog = new TH1F("fTrdTrdDiffLog", "Trd-Trd_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // Tof vs. Tof
-  fTofTofDiffLog = new TH1F("fTofTofDiffLog",
-                            "Tof-Tof_prev;time diff [ns];Counts",
-                            iNbBinsLog,
-                            dBinsLog);
+  fTofTofDiffLog = new TH1F("fTofTofDiffLog", "Tof-Tof_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // Rich vs. Rich
-  fRichRichDiffLog = new TH1F("fRichRichDiffLog",
-                              "Rich-Rich_prev;time diff [ns];Counts",
-                              iNbBinsLog,
-                              dBinsLog);
+  fRichRichDiffLog = new TH1F("fRichRichDiffLog", "Rich-Rich_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
   // Psd vs. Psd
-  fPsdPsdDiffLog = new TH1F("fPsdPsdDiffLog",
-                            "Psd-Psd_prev;time diff [ns];Counts",
-                            iNbBinsLog,
-                            dBinsLog);
+  fPsdPsdDiffLog = new TH1F("fPsdPsdDiffLog", "Psd-Psd_prev;time diff [ns];Counts", iNbBinsLog, dBinsLog);
 
   /// Per channel
   // T0 vs. T0
-  fT0T0DiffPerChan =
-    new TH2F("fT0T0DiffPerChan",
-             "T0-T0_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanT0,
-             0,
-             fuNbChanT0);
+  fT0T0DiffPerChan = new TH2F("fT0T0DiffPerChan", "T0-T0_prev Per Channel;time diff [ns]; Channel [];Counts",
+                              iNbBinsLog, dBinsLog, fuNbChanT0, 0, fuNbChanT0);
   // sts vs. Sts
-  fStsStsDiffPerChan =
-    new TH2F("fStsStsDiffPerChan",
-             "Sts-Sts_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanSts,
-             0,
-             fuNbChanSts);
+  fStsStsDiffPerChan = new TH2F("fStsStsDiffPerChan", "Sts-Sts_prev Per Channel;time diff [ns]; Channel [];Counts",
+                                iNbBinsLog, dBinsLog, fuNbChanSts, 0, fuNbChanSts);
   // Much vs. Much
   fMuchMuchDiffPerChan =
-    new TH2F("fMuchMuchDiffPerChan",
-             "Much-Much_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanMuch,
-             0,
-             fuNbChanMuch);
+    new TH2F("fMuchMuchDiffPerChan", "Much-Much_prev Per Channel;time diff [ns]; Channel [];Counts", iNbBinsLog,
+             dBinsLog, fuNbChanMuch, 0, fuNbChanMuch);
   // Trd vs. Trd
-  fTrdTrdDiffPerChan =
-    new TH2F("fTrdTrdDiffPerChan",
-             "Trd-Trd_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanTrd,
-             0,
-             fuNbChanTrd);
+  fTrdTrdDiffPerChan = new TH2F("fTrdTrdDiffPerChan", "Trd-Trd_prev Per Channel;time diff [ns]; Channel [];Counts",
+                                iNbBinsLog, dBinsLog, fuNbChanTrd, 0, fuNbChanTrd);
   // Tof vs. Tof
-  fTofTofDiffPerChan =
-    new TH2F("fTofTofDiffPerChan",
-             "Tof-Tof_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanTof,
-             0,
-             fuNbChanTof);
+  fTofTofDiffPerChan = new TH2F("fTofTofDiffPerChan", "Tof-Tof_prev Per Channel;time diff [ns]; Channel [];Counts",
+                                iNbBinsLog, dBinsLog, fuNbChanTof, 0, fuNbChanTof);
   // Rich vs. Rich
   fRichRichDiffPerChan =
-    new TH2F("fRichRichDiffPerChan",
-             "Rich-Rich_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanRich,
-             0,
-             fuNbChanRich);
+    new TH2F("fRichRichDiffPerChan", "Rich-Rich_prev Per Channel;time diff [ns]; Channel [];Counts", iNbBinsLog,
+             dBinsLog, fuNbChanRich, 0, fuNbChanRich);
   // Psd vs. Psd
-  fPsdPsdDiffPerChan =
-    new TH2F("fPsdPsdDiffPerChan",
-             "Psd-Psd_prev Per Channel;time diff [ns]; Channel [];Counts",
-             iNbBinsLog,
-             dBinsLog,
-             fuNbChanPsd,
-             0,
-             fuNbChanPsd);
+  fPsdPsdDiffPerChan = new TH2F("fPsdPsdDiffPerChan", "Psd-Psd_prev Per Channel;time diff [ns]; Channel [];Counts",
+                                iNbBinsLog, dBinsLog, fuNbChanPsd, 0, fuNbChanPsd);
 
   /// Register the histos in the HTTP server
   FairRunOnline* run = FairRunOnline::Instance();
@@ -323,17 +216,16 @@ void CbmMcbm2019CheckDtInDet::CreateHistos() {
 InitStatus CbmMcbm2019CheckDtInDet::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
-void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/) {
+void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/)
+{
   LOG(debug) << "executing TS " << fNrTs;
 
-  if (0 < fNrTs && 0 == fNrTs % 1000)
-    LOG(info) << Form("Processing TS %6d", fNrTs);
+  if (0 < fNrTs && 0 == fNrTs % 1000) LOG(info) << Form("Processing TS %6d", fNrTs);
 
   /// Get nb entries per detector
   LOG(debug) << "Begin";
   Int_t nrT0Digis = 0;
-  if (fT0DigiVector)
-    nrT0Digis = fT0DigiVector->size();
+  if (fT0DigiVector) nrT0Digis = fT0DigiVector->size();
   else if (fT0DigiArray)
     nrT0Digis = fT0DigiArray->GetEntriesFast();
   LOG(debug) << "T0Digis: " << nrT0Digis;
@@ -353,8 +245,7 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/) {
     if (iT0 % 1000 == 0) LOG(debug) << "Executing entry " << iT0;
 
     const CbmTofDigi* T0Digi = nullptr;
-    if (fT0DigiVector)
-      T0Digi = &(fT0DigiVector->at(iT0));
+    if (fT0DigiVector) T0Digi = &(fT0DigiVector->at(iT0));
     else if (fT0DigiArray)
       T0Digi = dynamic_cast<CbmTofDigi*>(fT0DigiArray->At(iT0));
     assert(T0Digi);
@@ -378,36 +269,14 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/) {
   }  // for( Int_t iT0 = 0; iT0 < nrT0Digis; ++iT0 )
 
   /// Check dT in the other channels
-  FillHistosPerDet<CbmStsDigi>(fStsStsSameTime,
-                               fStsStsDiff,
-                               fStsStsDiffLog,
-                               fStsStsDiffPerChan,
-                               ECbmModuleId::kSts);
-  FillHistosPerDet<CbmMuchBeamTimeDigi>(fMuchMuchSameTime,
-                                        fMuchMuchDiff,
-                                        fMuchMuchDiffLog,
-                                        fMuchMuchDiffPerChan,
+  FillHistosPerDet<CbmStsDigi>(fStsStsSameTime, fStsStsDiff, fStsStsDiffLog, fStsStsDiffPerChan, ECbmModuleId::kSts);
+  FillHistosPerDet<CbmMuchBeamTimeDigi>(fMuchMuchSameTime, fMuchMuchDiff, fMuchMuchDiffLog, fMuchMuchDiffPerChan,
                                         ECbmModuleId::kMuch);
-  FillHistosPerDet<CbmTrdDigi>(fTrdTrdSameTime,
-                               fTrdTrdDiff,
-                               fTrdTrdDiffLog,
-                               fTrdTrdDiffPerChan,
-                               ECbmModuleId::kTrd);
-  FillHistosPerDet<CbmTofDigi>(fTofTofSameTime,
-                               fTofTofDiff,
-                               fTofTofDiffLog,
-                               fTofTofDiffPerChan,
-                               ECbmModuleId::kTof);
-  FillHistosPerDet<CbmRichDigi>(fRichRichSameTime,
-                                fRichRichDiff,
-                                fRichRichDiffLog,
-                                fRichRichDiffPerChan,
+  FillHistosPerDet<CbmTrdDigi>(fTrdTrdSameTime, fTrdTrdDiff, fTrdTrdDiffLog, fTrdTrdDiffPerChan, ECbmModuleId::kTrd);
+  FillHistosPerDet<CbmTofDigi>(fTofTofSameTime, fTofTofDiff, fTofTofDiffLog, fTofTofDiffPerChan, ECbmModuleId::kTof);
+  FillHistosPerDet<CbmRichDigi>(fRichRichSameTime, fRichRichDiff, fRichRichDiffLog, fRichRichDiffPerChan,
                                 ECbmModuleId::kRich);
-  FillHistosPerDet<CbmPsdDigi>(fPsdPsdSameTime,
-                               fPsdPsdDiff,
-                               fPsdPsdDiffLog,
-                               fPsdPsdDiffPerChan,
-                               ECbmModuleId::kPsd);
+  FillHistosPerDet<CbmPsdDigi>(fPsdPsdSameTime, fPsdPsdDiff, fPsdPsdDiffLog, fPsdPsdDiffPerChan, ECbmModuleId::kPsd);
 
   fNrTs++;
 
@@ -416,11 +285,9 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/) {
 
 
 template<class Digi>
-void CbmMcbm2019CheckDtInDet::FillHistosPerDet(TH1* histoSameTime,
-                                               TH1* histoDt,
-                                               TH1* histoDtLog,
-                                               TH2* /*histoDtPerChan*/,
-                                               ECbmModuleId iDetId) {
+void CbmMcbm2019CheckDtInDet::FillHistosPerDet(TH1* histoSameTime, TH1* histoDt, TH1* histoDtLog,
+                                               TH2* /*histoDtPerChan*/, ECbmModuleId iDetId)
+{
   UInt_t uNrDigis = fDigiMan->GetNofDigis(iDetId);
 
   Double_t dPrevTime = -1;
@@ -509,7 +376,8 @@ void CbmMcbm2019CheckDtInDet::FillHistosPerDet(TH1* histoSameTime,
 // ---- Finish --------------------------------------------------------
 void CbmMcbm2019CheckDtInDet::Finish() { WriteHistos(); }
 
-void CbmMcbm2019CheckDtInDet::WriteHistos() {
+void CbmMcbm2019CheckDtInDet::WriteHistos()
+{
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 

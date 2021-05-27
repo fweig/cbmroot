@@ -24,11 +24,11 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Option_t
 //#include <TEveTrackPropagator.h> // IWYU pragma: keep needed by cint
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <TClonesArray.h>  // IWYU pragma: keep needed by cliong
 #include <TEveVector.h>    // for TEveVector
 #include <TString.h>       // for TString
-
-#include <FairTask.h>  // for FairTask, InitStatus
 
 class CbmPixelHit;
 class CbmStsTrack;
@@ -69,13 +69,9 @@ public:
   TEveTrackList* GetTrGroup(TParticle* P);
 
 protected:
-  void HandlePixelHit(TEveTrack* eveTrack,
-                      Int_t& n,
-                      const CbmPixelHit* hit,
-                      TEveVector* pMom);
+  void HandlePixelHit(TEveTrack* eveTrack, Int_t& n, const CbmPixelHit* hit, TEveVector* pMom);
   void HandleTrack(TEveTrack* eveTrack, Int_t& n, const CbmTrack* recoTrack);
-  void
-  HandleStsTrack(TEveTrack* eveTrack, Int_t& n, const CbmStsTrack* stsTrack);
+  void HandleStsTrack(TEveTrack* eveTrack, Int_t& n, const CbmStsTrack* stsTrack);
 
   TClonesArray* fGlobalTracks;
   TClonesArray* fMvdHits;

@@ -5,15 +5,10 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void ana_calib_hits(Int_t nEvents     = 10,
-                    Int_t iGenCor     = 1,
-                    TString cFileId   = "CbmTofSps_27Nov1728",
-                    TString cCalSet   = "920921510_000",
-                    Int_t iDut        = 920,
-                    Int_t iRef        = 921,
-                    Int_t iBRef       = 510,
-                    Int_t iSel2       = 0,
-                    Double_t dScalFac = 1.) {
+void ana_calib_hits(Int_t nEvents = 10, Int_t iGenCor = 1, TString cFileId = "CbmTofSps_27Nov1728",
+                    TString cCalSet = "920921510_000", Int_t iDut = 920, Int_t iRef = 921, Int_t iBRef = 510,
+                    Int_t iSel2 = 0, Double_t dScalFac = 1.)
+{
   TStopwatch timer;
   timer.Start();
 
@@ -38,10 +33,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
 
   TString geoFile = srcDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
 
-  TObjString tofDigiParFile =
-    (srcDir + "/parameters/tof/tof_" + TofGeo + ".digi.par").Data();
-  TObjString tofDigiBdfParFile =
-    (srcDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par").Data();
+  TObjString tofDigiParFile    = (srcDir + "/parameters/tof/tof_" + TofGeo + ".digi.par").Data();
+  TObjString tofDigiBdfParFile = (srcDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par").Data();
 
   TString InputFile     = "../../../unpack_" + cFileId + ".out.root";
   TString InputDigiFile = "../../digi_" + cFileId + "_" + cCalSet + ".out.root";
@@ -97,8 +90,7 @@ void ana_calib_hits(Int_t nEvents     = 10,
   rtdb->setFirstInput(parIo1);
 
 
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", 1);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", 1);
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetDXMean(0.);
   tofAnaTestbeam->SetDYMean(0.);
@@ -107,22 +99,19 @@ void ana_calib_hits(Int_t nEvents     = 10,
   tofAnaTestbeam->SetDYWidth(1.0);
   tofAnaTestbeam->SetDTWidth(0.1);  // in ns
 
-  tofAnaTestbeam->SetPosY4Sel(
-    0.5 * dScalFac);  // Y Position selection in fraction of strip length
-  tofAnaTestbeam->SetDTDia(0.);         // Time difference to additional diamond
-  tofAnaTestbeam->SetCorMode(iGenCor);  // 1 - DTD4, 2 - X4, 3 - Y4, 4 - Texp
-  tofAnaTestbeam->SetMul0Max(10);       // Max Multiplicity in dut
-  tofAnaTestbeam->SetMul4Max(10);       // Max Multiplicity in Ref - RPC
-  tofAnaTestbeam->SetMulDMax(10);       // Max Multiplicity in Diamond
+  tofAnaTestbeam->SetPosY4Sel(0.5 * dScalFac);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetDTDia(0.);                 // Time difference to additional diamond
+  tofAnaTestbeam->SetCorMode(iGenCor);          // 1 - DTD4, 2 - X4, 3 - Y4, 4 - Texp
+  tofAnaTestbeam->SetMul0Max(10);               // Max Multiplicity in dut
+  tofAnaTestbeam->SetMul4Max(10);               // Max Multiplicity in Ref - RPC
+  tofAnaTestbeam->SetMulDMax(10);               // Max Multiplicity in Diamond
   //tofAnaTestbeam->SetMul0Max(200);
   //tofAnaTestbeam->SetMul4Max(3);
   //tofAnaTestbeam->SetMulDMax(20);
   tofAnaTestbeam->SetHitDistMin(30.);  // initialization
-  tofAnaTestbeam->SetDTD4MAX(
-    6.);  // initialization of Max time difference Ref - BRef
+  tofAnaTestbeam->SetDTD4MAX(6.);      // initialization of Max time difference Ref - BRef
 
-  tofAnaTestbeam->SetPosYS2Sel(
-    0.5);  // Y Position selection in fraction of strip length
+  tofAnaTestbeam->SetPosYS2Sel(0.5);  // Y Position selection in fraction of strip length
   tofAnaTestbeam->SetChS2Sel(0.);     // Center of channel selection window
   tofAnaTestbeam->SetDChS2Sel(100.);  // Width  of channel selection window
 
@@ -131,9 +120,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
   //tofAnaTestbeam->SetSel2TOff(0.);
   tofAnaTestbeam->SetTOffD4(10.);  // initialization
 
-  tofAnaTestbeam->SetChi2Lim(5.);  // initialization of Chi2 selection limit
-  tofAnaTestbeam->SetChi2Lim2(
-    2.);  // initialization of Chi2 selection limit for Mref-Sel2 pair
+  tofAnaTestbeam->SetChi2Lim(5.);   // initialization of Chi2 selection limit
+  tofAnaTestbeam->SetChi2Lim2(2.);  // initialization of Chi2 selection limit for Mref-Sel2 pair
 
   tofAnaTestbeam->SetSIGLIM(3.);  // max matching chi2
   tofAnaTestbeam->SetSIGT(0.1);   // in ns
@@ -160,8 +148,7 @@ void ana_calib_hits(Int_t nEvents     = 10,
   tofAnaTestbeam->SetCalOutFileName(OutputAnaCalibFile);
 
 
-  cout << "dispatch iSel = " << iSel << ", iSel2 = " << iSel2
-       << ", iRSel = " << iRSel << endl;
+  cout << "dispatch iSel = " << iSel << ", iSel2 = " << iSel2 << ", iRSel = " << iRSel << endl;
 
   switch (iSel) {
     case 400300:
@@ -189,9 +176,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
         default:;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
     case 900300:
@@ -223,9 +209,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
         default:;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
     case 300920:
@@ -256,8 +241,7 @@ void ana_calib_hits(Int_t nEvents     = 10,
               break;
 
             case 4:
-              tofAnaTestbeam->SetSel2TOff(
-                -0.050);  // Shift Sel2 time peak to 0	   break
+              tofAnaTestbeam->SetSel2TOff(-0.050);  // Shift Sel2 time peak to 0	   break
               break;
 
             case 9:
@@ -265,19 +249,16 @@ void ana_calib_hits(Int_t nEvents     = 10,
                 case 2:
                   switch (iSel2Rpc) {
                     case 0:
-                      tofAnaTestbeam->SetSel2TOff(
-                        0.030);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(0.030);  // Shift Sel2 time peak to 0
                       break;
 
                     case 1:
-                      tofAnaTestbeam->SetSel2TOff(
-                        0.140);  // Shift Sel2 time peak to 0	   break  //921
+                      tofAnaTestbeam->SetSel2TOff(0.140);  // Shift Sel2 time peak to 0	   break  //921
                       break;
 
                     default:
-                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                           << iSel2Rpc << " not configured yet as iSel2"
-                           << endl;
+                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc
+                           << " not configured yet as iSel2" << endl;
                       return;
                   }
                   break;
@@ -285,26 +266,23 @@ void ana_calib_hits(Int_t nEvents     = 10,
                 case 0:
                   switch (iSel2Rpc) {
                     case 0:
-                      tofAnaTestbeam->SetSel2TOff(
-                        0.);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
                       break;
 
                     case 1:
-                      tofAnaTestbeam->SetSel2TOff(
-                        -0.010);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(-0.010);  // Shift Sel2 time peak to 0
                       break;
 
                     default:
-                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                           << iSel2Rpc << " not configured yet as iSel2"
-                           << endl;
+                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc
+                           << " not configured yet as iSel2" << endl;
                       return;
                   }
                   break;
 
                 default:
-                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                       << iSel2Rpc << " not configured yet as iSel2" << endl;
+                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                       << endl;
                   return;
               }
               break;
@@ -335,9 +313,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
           ;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
 
@@ -374,13 +351,12 @@ void ana_calib_hits(Int_t nEvents     = 10,
             case 9:
               switch (iSel2Sm) {
                 case 2:
-                  tofAnaTestbeam->SetSel2TOff(
-                    -0.17);  // Shift Sel2 time peak to 0   //920
+                  tofAnaTestbeam->SetSel2TOff(-0.17);  // Shift Sel2 time peak to 0   //920
                   break;
 
                 default:
-                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                       << iSel2Rpc << " not configured yet as iSel2" << endl;
+                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                       << endl;
                   return;
               }
               break;
@@ -411,9 +387,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
           ;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
     case 300901:
@@ -438,13 +413,12 @@ void ana_calib_hits(Int_t nEvents     = 10,
             case 9:
               switch (iSel2Sm) {
                 case 0:
-                  tofAnaTestbeam->SetSel2TOff(
-                    0.02);  // Shift Sel2 time peak to 0   //900
+                  tofAnaTestbeam->SetSel2TOff(0.02);  // Shift Sel2 time peak to 0   //900
                   break;
 
                 default:
-                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                       << iSel2Rpc << " not configured yet as iSel2" << endl;
+                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                       << endl;
                   return;
               }
               break;
@@ -465,9 +439,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
           ;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
     case 300900:
@@ -492,13 +465,12 @@ void ana_calib_hits(Int_t nEvents     = 10,
             case 9:
               switch (iSel2Sm) {
                 case 0:
-                  tofAnaTestbeam->SetSel2TOff(
-                    0.02);  // Shift Sel2 time peak to 0   //901
+                  tofAnaTestbeam->SetSel2TOff(0.02);  // Shift Sel2 time peak to 0   //901
                   break;
 
                 default:
-                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                       << iSel2Rpc << " not configured yet as iSel2" << endl;
+                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                       << endl;
                   return;
               }
               break;
@@ -519,9 +491,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
           ;
       }
 
-      tofAnaTestbeam->SetCh4Sel(15);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        15 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(15);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(15 * dScalFac);  // Width  of channel selection window
       break;
 
     case 300400:
@@ -551,19 +522,16 @@ void ana_calib_hits(Int_t nEvents     = 10,
                 case 2:
                   switch (iSel2Rpc) {
                     case 0:
-                      tofAnaTestbeam->SetSel2TOff(
-                        0.03);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(0.03);  // Shift Sel2 time peak to 0
                       break;
 
                     case 1:
-                      tofAnaTestbeam->SetSel2TOff(
-                        0.124);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(0.124);  // Shift Sel2 time peak to 0
                       break;
 
                     default:
-                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                           << iSel2Rpc << " not configured yet as iSel2"
-                           << endl;
+                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc
+                           << " not configured yet as iSel2" << endl;
                       return;
                   }
                   break;
@@ -571,33 +539,30 @@ void ana_calib_hits(Int_t nEvents     = 10,
                 case 0:
                   switch (iSel2Rpc) {
                     case 0:
-                      tofAnaTestbeam->SetSel2TOff(
-                        -0.040);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(-0.040);  // Shift Sel2 time peak to 0
                       break;
 
                     case 1:
-                      tofAnaTestbeam->SetSel2TOff(
-                        -0.045);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(-0.045);  // Shift Sel2 time peak to 0
                       break;
 
                     default:
-                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                           << iSel2Rpc << " not configured yet as iSel2"
-                           << endl;
+                      cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc
+                           << " not configured yet as iSel2" << endl;
                       return;
                   }
                   break;
 
                 default:
-                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", "
-                       << iSel2Rpc << " not configured yet as iSel2" << endl;
+                  cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                       << endl;
                   return;
               }
               break;
 
             default:
-              cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc
-                   << " not configured yet as iSel2" << endl;
+              cout << "Counter " << iSel2 << ", " << iSel2Sm << ", " << iSel2Rpc << " not configured yet as iSel2"
+                   << endl;
               return;
           }
           break;
@@ -615,9 +580,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
           ;
       }
 
-      tofAnaTestbeam->SetCh4Sel(8);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        8 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(8);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(8 * dScalFac);  // Width  of channel selection window
       break;
 
     case 100600:
@@ -699,8 +663,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
         case 7:
           switch (iSel2Rpc) {
             case 0:
-              tofAnaTestbeam->SetTShift(-0.038);  // Shift DTD4 to 0
-              tofAnaTestbeam->SetTOffD4(15.);  // Shift DTD4 to physical value
+              tofAnaTestbeam->SetTShift(-0.038);    // Shift DTD4 to 0
+              tofAnaTestbeam->SetTOffD4(15.);       // Shift DTD4 to physical value
               tofAnaTestbeam->SetSel2TOff(-0.042);  // Shift Sel2 time peak to 0
               break;
           }
@@ -709,9 +673,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
         default: cout << "Define setup! " << endl; return;
       }
 
-      tofAnaTestbeam->SetCh4Sel(16);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        16 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(16);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(16 * dScalFac);  // Width  of channel selection window
       break;
 
     case 100601:
@@ -777,9 +740,8 @@ void ana_calib_hits(Int_t nEvents     = 10,
         default: cout << "Define setup! " << endl; return;
       }
 
-      tofAnaTestbeam->SetCh4Sel(16);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        16 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(16);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(16 * dScalFac);  // Width  of channel selection window
       break;
 
     case 200100:
@@ -808,13 +770,11 @@ void ana_calib_hits(Int_t nEvents     = 10,
             case 6:
               switch (iSel2Rpc) {
                 case 0:
-                  tofAnaTestbeam->SetSel2TOff(
-                    2.);  // Shift Sel2 time peak to 0 // 600
+                  tofAnaTestbeam->SetSel2TOff(2.);  // Shift Sel2 time peak to 0 // 600
                   break;
 
                 case 1:
-                  tofAnaTestbeam->SetSel2TOff(
-                    0.);  // Shift Sel2 time peak to 0 // 601
+                  tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0 // 601
                   break;
               }
               break;
@@ -825,18 +785,16 @@ void ana_calib_hits(Int_t nEvents     = 10,
 
         case 6:
           //tofTestBeamClust->SetBeamAddRefMul(1);
-          tofAnaTestbeam->SetTShift(-3.);  // Shift DTD4 to 0
-          tofAnaTestbeam->SetTOffD4(17.);  // Shift DTD4 to physical value
-          tofAnaTestbeam->SetSel2TOff(
-            -2.9);  // Shift Sel2 time peak to 0 for 601
+          tofAnaTestbeam->SetTShift(-3.);     // Shift DTD4 to 0
+          tofAnaTestbeam->SetTOffD4(17.);     // Shift DTD4 to physical value
+          tofAnaTestbeam->SetSel2TOff(-2.9);  // Shift Sel2 time peak to 0 for 601
           break;
 
         default: cout << "Define setup! " << endl; return;
       }
 
-      tofAnaTestbeam->SetCh4Sel(32);  // Center of channel selection window
-      tofAnaTestbeam->SetDCh4Sel(
-        32 * dScalFac);  // Width  of channel selection window
+      tofAnaTestbeam->SetCh4Sel(32);              // Center of channel selection window
+      tofAnaTestbeam->SetDCh4Sel(32 * dScalFac);  // Width  of channel selection window
       break;
 
     default: cout << "Define analysis setup! " << endl; return;

@@ -1,5 +1,6 @@
 
-Bool_t T0CoincPlotSingleRun(UInt_t uRunId) {
+Bool_t T0CoincPlotSingleRun(UInt_t uRunId)
+{
   /// Obtaining the plots
   TH1* tempH1 = NULL;
   TH1* phStsT0;
@@ -46,14 +47,10 @@ Bool_t T0CoincPlotSingleRun(UInt_t uRunId) {
     return kFALSE;
 
   /// Plotting: THStacks with all available detectors VS T0
-  TCanvas* cT0Coinc =
-    new TCanvas(Form("cT0Coinc_%03u", uRunId),
-                Form("Time Coincidence with T0 in run %3u", uRunId));
+  TCanvas* cT0Coinc = new TCanvas(Form("cT0Coinc_%03u", uRunId), Form("Time Coincidence with T0 in run %3u", uRunId));
 
   THStack* pStacksT0Coinc = new THStack(
-    Form("stackT0Coinc_%02u", uRunId),
-    Form("Time Coincidence with T0 in run %02u; tT0 - Tdet [ns]; Pairs []",
-         uRunId));
+    Form("stackT0Coinc_%02u", uRunId), Form("Time Coincidence with T0 in run %02u; tT0 - Tdet [ns]; Pairs []", uRunId));
   TLegend* legend = new TLegend(0.1, 0.7, 0.3, 0.9);
 
   phStsT0->SetLineColor(kBlack);
@@ -108,14 +105,12 @@ Bool_t T0CoincPlotSingleRun(UInt_t uRunId) {
   phRescaledRichT0->Scale(1 / dBaselineRich);
 
   TCanvas* cT0CoincRescale =
-    new TCanvas(Form("cT0CoincRescale_%03u", uRunId),
-                Form("Time Coincidence with T0 in run %3u", uRunId));
+    new TCanvas(Form("cT0CoincRescale_%03u", uRunId), Form("Time Coincidence with T0 in run %3u", uRunId));
 
   THStack* pStacksT0CoincRescale =
-    new THStack(Form("stackT0CoincRescale_%02u", uRunId),
-                Form("Time Coincidence with T0 in run %02u; tT0 - Tdet [ns]; "
-                     "Pairs nb rescaled [1/baseline]",
-                     uRunId));
+    new THStack(Form("stackT0CoincRescale_%02u", uRunId), Form("Time Coincidence with T0 in run %02u; tT0 - Tdet [ns]; "
+                                                               "Pairs nb rescaled [1/baseline]",
+                                                               uRunId));
   TLegend* legendRescale = new TLegend(0.1, 0.7, 0.3, 0.9);
 
   phRescaledStsT0->SetLineColor(kBlack);

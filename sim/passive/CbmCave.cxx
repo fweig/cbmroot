@@ -14,7 +14,8 @@
 #include "TList.h"
 #include "TObjArray.h"
 
-ClassImp(CbmCave) void CbmCave::ConstructGeometry() {
+ClassImp(CbmCave) void CbmCave::ConstructGeometry()
+{
   FairGeoLoader* loader          = FairGeoLoader::Instance();
   FairGeoInterface* GeoInterface = loader->getGeoInterface();
   CbmGeoCave* MGeo               = new CbmGeoCave();
@@ -25,10 +26,9 @@ ClassImp(CbmCave) void CbmCave::ConstructGeometry() {
 
   TList* volList = MGeo->getListOfVolumes();
   // store geo parameter
-  FairRun* fRun       = FairRun::Instance();
-  FairRuntimeDb* rtdb = FairRun::Instance()->GetRuntimeDb();
-  CbmGeoPassivePar* par =
-    (CbmGeoPassivePar*) (rtdb->getContainer("CbmGeoPassivePar"));
+  FairRun* fRun         = FairRun::Instance();
+  FairRuntimeDb* rtdb   = FairRun::Instance()->GetRuntimeDb();
+  CbmGeoPassivePar* par = (CbmGeoPassivePar*) (rtdb->getContainer("CbmGeoPassivePar"));
   TObjArray* fSensNodes = par->GetGeoSensitiveNodes();
   TObjArray* fPassNodes = par->GetGeoPassiveNodes();
 
@@ -38,9 +38,8 @@ ClassImp(CbmCave) void CbmCave::ConstructGeometry() {
 
   while ((node = (FairGeoNode*) iter.Next())) {
     aVol = dynamic_cast<FairGeoVolume*>(node);
-    if (node->isSensitive()) {
-      fSensNodes->AddLast(aVol);
-    } else {
+    if (node->isSensitive()) { fSensNodes->AddLast(aVol); }
+    else {
       fPassNodes->AddLast(aVol);
     }
   }
@@ -50,8 +49,8 @@ ClassImp(CbmCave) void CbmCave::ConstructGeometry() {
 CbmCave::CbmCave() : FairModule(), world() {}
 
 CbmCave::~CbmCave() {}
-CbmCave::CbmCave(const char* name, const char* Title)
-  : FairModule(name, Title), world() {
+CbmCave::CbmCave(const char* name, const char* Title) : FairModule(name, Title), world()
+{
   world[0] = 0;
   world[1] = 0;
   world[2] = 0;

@@ -12,10 +12,10 @@ using std::string;
 using std::stringstream;
 
 // --- String output
-string CbmStsDigi::ToString() const {
+string CbmStsDigi::ToString() const
+{
   stringstream ss;
-  ss << "StsDigi: address " << fAddress << " | channel " << fChannel
-     << " | charge " << fCharge << " | time " << fTime;
+  ss << "StsDigi: address " << fAddress << " | channel " << fChannel << " | charge " << fCharge << " | time " << fTime;
   return ss.str();
 }
 

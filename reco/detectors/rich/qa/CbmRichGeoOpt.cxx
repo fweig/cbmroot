@@ -6,6 +6,17 @@
  **/
 
 #include "CbmRichGeoOpt.h"
+
+#include "CbmDrawHist.h"
+#include "CbmMCTrack.h"
+#include "CbmRichGeoManager.h"
+#include "CbmRichHit.h"
+#include "CbmRichRing.h"
+#include "CbmRichRingLight.h"
+#include "CbmTrackMatchNew.h"
+
+#include "FairTrackParam.h"
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -13,16 +24,8 @@
 #include "TH2D.h"
 #include "TH3D.h"
 
-#include "CbmDrawHist.h"
-#include "CbmMCTrack.h"
-#include "CbmRichGeoManager.h"
-#include "CbmRichHit.h"
-#include "CbmRichRing.h"
-#include "CbmTrackMatchNew.h"
-#include "FairTrackParam.h"
-
-#include "CbmRichRingLight.h"
 #include <boost/assign/list_of.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -165,22 +168,17 @@ CbmRichGeoOpt::CbmRichGeoOpt()
 
 CbmRichGeoOpt::~CbmRichGeoOpt() {}
 
-InitStatus CbmRichGeoOpt::Init() {
+InitStatus CbmRichGeoOpt::Init()
+{
   cout << "CbmRichGeoOpt::Init" << endl;
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichGeoOpt::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmRichGeoOpt::Init", "RootManager not instantised!"); }
 
   fRichPoints = (TClonesArray*) ioman->GetObject("RichPoint");
-  if (NULL == fRichPoints) {
-    Fatal("CbmRichGeoOpt::Init", "No RichPoint array!");
-  }
+  if (NULL == fRichPoints) { Fatal("CbmRichGeoOpt::Init", "No RichPoint array!"); }
 
   fRefPoints = (TClonesArray*) ioman->GetObject("RefPlanePoint");
-  if (NULL == fRefPoints) {
-    Fatal("CbmRichGeoOpt::Init", "No fRefPoints array!");
-  }
+  if (NULL == fRefPoints) { Fatal("CbmRichGeoOpt::Init", "No fRefPoints array!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
   if (NULL == fMcTracks) { Fatal("CbmRichGeoOpt::Init", "No MCTrack array!"); }
@@ -190,14 +188,10 @@ InitStatus CbmRichGeoOpt::Init() {
 
   ///////////////////////////////////////////
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) {
-    Fatal("CbmRichGeoTest::Init", "No RichRing array!");
-  }
+  if (NULL == fRichRings) { Fatal("CbmRichGeoTest::Init", "No RichRing array!"); }
 
   fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) {
-    Fatal("CbmRichGeoTest::Init", "No RichRingMatch array!");
-  }
+  if (NULL == fRichRingMatches) { Fatal("CbmRichGeoTest::Init", "No RichRingMatch array!"); }
 
   /////////////// need three points on the PMT plane to determine its equation
   //cout<<" initializing points values -1000"<<endl;
@@ -221,19 +215,21 @@ InitStatus CbmRichGeoOpt::Init() {
   return kSUCCESS;
 }
 
-void CbmRichGeoOpt::Exec(Option_t* /*option*/) {
+void CbmRichGeoOpt::Exec(Option_t* /*option*/)
+{
   fEventNum++;
   // cout << "#################### CbmRichGeoOpt, event No. " <<  fEventNum << endl;
 
   if (PMTPointsFilled == 0) {
     for (unsigned int p = 1; p < PMTPlanePoints.size(); p++) {
       if (PMTPlanePoints[p].X() == PMTPlanePoints[p - 1].X()) {
-        cout << "PMTPlanePoints[" << p << "].X == PMTPlanePoints[" << p - 1
-             << "].X ==" << PMTPlanePoints[p - 1].X() << endl;
+        cout << "PMTPlanePoints[" << p << "].X == PMTPlanePoints[" << p - 1 << "].X ==" << PMTPlanePoints[p - 1].X()
+             << endl;
         cout << "Calling FillPointsAtPMT()" << endl;
         FillPointsAtPMT();
         PMTPointsFilled = 0;
-      } else {
+      }
+      else {
         PMTPointsFilled = 1;
       }
     }
@@ -243,7 +239,8 @@ void CbmRichGeoOpt::Exec(Option_t* /*option*/) {
       if (SensPlanePoints[p].X() == SensPlanePoints[p - 1].X()) {
         FillPointsAtPMTSensPlane();
         SensPointsFilled = 0;
-      } else {
+      }
+      else {
         SensPointsFilled = 1;
       }
     }
@@ -264,9 +261,8 @@ void CbmRichGeoOpt::Exec(Option_t* /*option*/) {
   if (PMTPointsFilled == 1) {
     if (fEventNum < 10) {
       for (unsigned int p = 0; p < PMTPlanePoints.size(); p++) {
-        cout << "Point " << p << ": (" << PMTPlanePoints[p].X() << " , "
-             << PMTPlanePoints[p].Y() << " , " << PMTPlanePoints[p].Z() << ")"
-             << endl;
+        cout << "Point " << p << ": (" << PMTPlanePoints[p].X() << " , " << PMTPlanePoints[p].Y() << " , "
+             << PMTPlanePoints[p].Z() << ")" << endl;
       }
 
       PMT_r1   = PMTPlanePoints[1] - PMTPlanePoints[0];
@@ -275,14 +271,10 @@ void CbmRichGeoOpt::Exec(Option_t* /*option*/) {
       MirrorCenter.SetX(gp->fMirrorX);
       MirrorCenter.SetY(gp->fMirrorY);
       MirrorCenter.SetZ(gp->fMirrorZ);
-      cout << "MirrorCenter=(" << MirrorCenter.X() << "," << MirrorCenter.Y()
-           << "," << MirrorCenter.Z() << ")" << endl;
-      cout << "PMT_r1=(" << PMT_r1.X() << "," << PMT_r1.Y() << "," << PMT_r1.Z()
-           << ")" << endl;
-      cout << "PMT_r2=(" << PMT_r2.X() << "," << PMT_r2.Y() << "," << PMT_r2.Z()
-           << ")" << endl;
-      cout << "PMT_norm=(" << PMT_norm.X() << "," << PMT_norm.Y() << ","
-           << PMT_norm.Z() << ")" << endl;
+      cout << "MirrorCenter=(" << MirrorCenter.X() << "," << MirrorCenter.Y() << "," << MirrorCenter.Z() << ")" << endl;
+      cout << "PMT_r1=(" << PMT_r1.X() << "," << PMT_r1.Y() << "," << PMT_r1.Z() << ")" << endl;
+      cout << "PMT_r2=(" << PMT_r2.X() << "," << PMT_r2.Y() << "," << PMT_r2.Z() << ")" << endl;
+      cout << "PMT_norm=(" << PMT_norm.X() << "," << PMT_norm.Y() << "," << PMT_norm.Z() << ")" << endl;
     }
     // //HitsAndPointsWithRef();
     HitsAndPoints();
@@ -294,7 +286,8 @@ void CbmRichGeoOpt::Exec(Option_t* /*option*/) {
   // cout<<" ========== PMT_ROTX = "<<TString(gSystem->Getenv("PMT_ROTX")).Atof()<<endl;
 }
 /////// Get data of hits and points
-void CbmRichGeoOpt::HitsAndPoints() {
+void CbmRichGeoOpt::HitsAndPoints()
+{
   //***********************************************************
   //**** points
   //***************
@@ -310,22 +303,13 @@ void CbmRichGeoOpt::HitsAndPoints() {
     PosAtDetIn.SetX(point->GetX());
     PosAtDetIn.SetY(point->GetY());
     PosAtDetIn.SetZ(point->GetZ());
-    bool Checked =
-      CheckPointLiesOnPlane(PosAtDetIn, PMTPlanePoints[0], PMT_norm);
+    bool Checked = CheckPointLiesOnPlane(PosAtDetIn, PMTPlanePoints[0], PMT_norm);
     if (!Checked) continue;
     H_PointsIn_XY->Fill(PosAtDetIn.X(), PosAtDetIn.Y());
-    if (PosAtDetIn.X() <= PMTPlaneCenterX) {
-      H_PointsIn_XY_LeftHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y());
-    }
-    if (PosAtDetIn.X() > PMTPlaneCenterX) {
-      H_PointsIn_XY_RightHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y());
-    }
-    if (PosAtDetIn.X() <= PMTPlaneThirdX) {
-      H_PointsIn_XY_Left2Thirds->Fill(PosAtDetIn.X(), PosAtDetIn.Y());
-    }
-    if (PosAtDetIn.X() > PMTPlaneThirdX) {
-      H_PointsIn_XY_RightThird->Fill(PosAtDetIn.X(), PosAtDetIn.Y());
-    }
+    if (PosAtDetIn.X() <= PMTPlaneCenterX) { H_PointsIn_XY_LeftHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y()); }
+    if (PosAtDetIn.X() > PMTPlaneCenterX) { H_PointsIn_XY_RightHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y()); }
+    if (PosAtDetIn.X() <= PMTPlaneThirdX) { H_PointsIn_XY_Left2Thirds->Fill(PosAtDetIn.X(), PosAtDetIn.Y()); }
+    if (PosAtDetIn.X() > PMTPlaneThirdX) { H_PointsIn_XY_RightThird->Fill(PosAtDetIn.X(), PosAtDetIn.Y()); }
 
     CbmRichGeoManager::GetInstance().RotatePoint(&PosAtDetIn, &PosAtDetOut);
     H_PointsOut_XY->Fill(PosAtDetOut.X(), PosAtDetOut.Y());
@@ -339,18 +323,16 @@ void CbmRichGeoOpt::HitsAndPoints() {
 
     Int_t PointMCTrackId = point->GetTrackID();
     if (PointMCTrackId < 0) continue;
-    CbmMCTrack* PointTrack =
-      static_cast<CbmMCTrack*>(fMcTracks->At(PointMCTrackId));
+    CbmMCTrack* PointTrack = static_cast<CbmMCTrack*>(fMcTracks->At(PointMCTrackId));
     if (NULL == PointTrack) continue;
     TVector3 PointMom;
     PointTrack->GetMomentum(PointMom);
 
     Int_t PointMotherId = PointTrack->GetMotherId();
     if (PointMotherId == -1) { continue; }
-    CbmMCTrack* motherTrack =
-      static_cast<CbmMCTrack*>(fMcTracks->At(PointMotherId));
-    int pdg      = TMath::Abs(motherTrack->GetPdgCode());
-    int motherId = motherTrack->GetMotherId();
+    CbmMCTrack* motherTrack = static_cast<CbmMCTrack*>(fMcTracks->At(PointMotherId));
+    int pdg                 = TMath::Abs(motherTrack->GetPdgCode());
+    int motherId            = motherTrack->GetMotherId();
     TVector3 ElMom;
     Double_t ElTheta = 0.;
     if (pdg == 11 && motherId == -1) {
@@ -364,31 +346,26 @@ void CbmRichGeoOpt::HitsAndPoints() {
     if (PosAtDetIn.X() < 0. && PosAtDetIn.Y() > 0) {
       if (ElTheta <= 25) {
         H_Alpha_UpLeft_RegularTheta->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RegularTheta->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RegularTheta->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       H_Alpha_UpLeft->Fill(Alpha2InDeg);
       H_Alpha_XYposAtDet->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
 
       if (PosAtDetIn.X() <= PMTPlaneCenterX) {
         H_Alpha_UpLeft_LeftHalf->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_LeftHalf->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_LeftHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() > PMTPlaneCenterX) {
         H_Alpha_UpLeft_RightHalf->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RightHalf->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RightHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() <= PMTPlaneThirdX) {
         H_Alpha_UpLeft_Left2Thirds->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_Left2Thirds->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_Left2Thirds->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() > PMTPlaneThirdX) {
         H_Alpha_UpLeft_RightThird->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RightThird->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RightThird->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
     }
 
@@ -416,18 +393,10 @@ void CbmRichGeoOpt::HitsAndPoints() {
     CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
     H_Hits_XY->Fill(hit->GetX(), hit->GetY());
 
-    if (hit->GetX() <= PMTPlaneCenterX) {
-      H_Hits_XY_LeftHalf->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() > PMTPlaneCenterX) {
-      H_Hits_XY_RightHalf->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() <= PMTPlaneThirdX) {
-      H_Hits_XY_Left2Thirds->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() > PMTPlaneThirdX) {
-      H_Hits_XY_RightThird->Fill(hit->GetX(), hit->GetY());
-    }
+    if (hit->GetX() <= PMTPlaneCenterX) { H_Hits_XY_LeftHalf->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() > PMTPlaneCenterX) { H_Hits_XY_RightHalf->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() <= PMTPlaneThirdX) { H_Hits_XY_Left2Thirds->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() > PMTPlaneThirdX) { H_Hits_XY_RightThird->Fill(hit->GetX(), hit->GetY()); }
 
     H_DiffXhit->Fill(hit->GetX() - outPos.X());
     H_DiffYhit->Fill(hit->GetY() - outPos.Y());
@@ -435,7 +404,8 @@ void CbmRichGeoOpt::HitsAndPoints() {
 }
 
 /////// Get data of hits and points
-void CbmRichGeoOpt::HitsAndPointsWithRef() {
+void CbmRichGeoOpt::HitsAndPointsWithRef()
+{
   Int_t nofRefPoints = fRefPoints->GetEntriesFast();
   Int_t nofPoints    = fRichPoints->GetEntriesFast();
   if (nofPoints == 0 || nofRefPoints == 0) { return; }
@@ -453,15 +423,11 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
     if (RefPoint == NULL) continue;
     int RefPointTrackId = RefPoint->GetTrackID();
     if (RefPointTrackId < 0) { continue; }
-    CbmMCTrack* RefPointTrack =
-      static_cast<CbmMCTrack*>(fMcTracks->At(RefPointTrackId));
-    int pdg0 = RefPointTrack->GetPdgCode();
+    CbmMCTrack* RefPointTrack = static_cast<CbmMCTrack*>(fMcTracks->At(RefPointTrackId));
+    int pdg0                  = RefPointTrack->GetPdgCode();
     if (TMath::Abs(pdg0) == 11) { continue; }
     RefPoint->Position(PosAtRefl);
-    int Zpos =
-      int(10.
-          * PosAtRefl
-              .Z());  //3037 0r 3038  -->take 3038 which is the entrance point
+    int Zpos = int(10. * PosAtRefl.Z());  //3037 0r 3038  -->take 3038 which is the entrance point
     //of the REFLECTED photon into the sensitive plane
     cout << PosAtRefl.Z() << "    " << Zpos << endl;
     //if(Zpos==3037){continue;}
@@ -479,9 +445,8 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
     float MagMomAtPMT = MomAtPMT.Mag();
     //point->GetMomentum(MomAtPMT);
 
-    Int_t PointMCTrackId = point->GetTrackID();
-    CbmMCTrack* PointTrack =
-      static_cast<CbmMCTrack*>(fMcTracks->At(PointMCTrackId));
+    Int_t PointMCTrackId   = point->GetTrackID();
+    CbmMCTrack* PointTrack = static_cast<CbmMCTrack*>(fMcTracks->At(PointMCTrackId));
     if (NULL == PointTrack) continue;
     TVector3 PointMom;
     PointTrack->GetMomentum(PointMom);
@@ -489,22 +454,19 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
     Int_t PointMotherId = PointTrack->GetMotherId();
     if (PointMotherId == -1) { continue; }
 
-    CbmMCTrack* motherTrack =
-      static_cast<CbmMCTrack*>(fMcTracks->At(PointMotherId));
-    int pdg      = TMath::Abs(motherTrack->GetPdgCode());
-    int motherId = motherTrack->GetMotherId();
+    CbmMCTrack* motherTrack = static_cast<CbmMCTrack*>(fMcTracks->At(PointMotherId));
+    int pdg                 = TMath::Abs(motherTrack->GetPdgCode());
+    int motherId            = motherTrack->GetMotherId();
     TVector3 ElMom;
     Double_t ElTheta = 0.;  //float ElMomentum=0.;
     if (pdg == 11 && motherId == -1) {
       motherTrack->GetMomentum(ElMom);
-      ElTheta =
-        ElMom.Theta() * 180 / TMath::Pi();  //ElMomentum=motherTrack->GetP();
+      ElTheta = ElMom.Theta() * 180 / TMath::Pi();  //ElMomentum=motherTrack->GetP();
       //cout<<"ElTheta = "<<ElTheta<<", ElMomentum = "<<ElMomentum<<endl;
     }
 
     ////////////////////////////////////////////////////
-    bool Checked =
-      CheckPointLiesOnPlane(PosAtDetIn, PMTPlanePoints[0], PMT_norm);
+    bool Checked = CheckPointLiesOnPlane(PosAtDetIn, PMTPlanePoints[0], PMT_norm);
     if (!Checked)
       continue;  //cout<<" point not on plane: ("<<point->GetX()<<","<<point->GetY()<<","<<point->GetZ()<<")"<<endl; continue;
 
@@ -531,8 +493,7 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
     if (PosAtDetIn.X() < 0. && PosAtDetIn.Y() > 0) {
       if (ElTheta <= 25) {
         H_Alpha_UpLeft_RegularTheta->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RegularTheta->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RegularTheta->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       H_Alpha_UpLeft->Fill(Alpha2InDeg);
       H_Alpha_UpLeft_II->Fill(AlphaInDeg);
@@ -540,23 +501,19 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
 
       if (PosAtDetIn.X() <= PMTPlaneCenterX) {
         H_Alpha_UpLeft_LeftHalf->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_LeftHalf->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_LeftHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() > PMTPlaneCenterX) {
         H_Alpha_UpLeft_RightHalf->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RightHalf->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RightHalf->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() <= PMTPlaneThirdX) {
         H_Alpha_UpLeft_Left2Thirds->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_Left2Thirds->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_Left2Thirds->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
       if (PosAtDetIn.X() > PMTPlaneThirdX) {
         H_Alpha_UpLeft_RightThird->Fill(Alpha2InDeg);
-        H_Alpha_XYposAtDet_RightThird->Fill(
-          PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
+        H_Alpha_XYposAtDet_RightThird->Fill(PosAtDetIn.X(), PosAtDetIn.Y(), Alpha2InDeg);
       }
     }
   }
@@ -579,18 +536,10 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
     CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
     H_Hits_XY->Fill(hit->GetX(), hit->GetY());
 
-    if (hit->GetX() <= PMTPlaneCenterX) {
-      H_Hits_XY_LeftHalf->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() > PMTPlaneCenterX) {
-      H_Hits_XY_RightHalf->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() <= PMTPlaneThirdX) {
-      H_Hits_XY_Left2Thirds->Fill(hit->GetX(), hit->GetY());
-    }
-    if (hit->GetX() > PMTPlaneThirdX) {
-      H_Hits_XY_RightThird->Fill(hit->GetX(), hit->GetY());
-    }
+    if (hit->GetX() <= PMTPlaneCenterX) { H_Hits_XY_LeftHalf->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() > PMTPlaneCenterX) { H_Hits_XY_RightHalf->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() <= PMTPlaneThirdX) { H_Hits_XY_Left2Thirds->Fill(hit->GetX(), hit->GetY()); }
+    if (hit->GetX() > PMTPlaneThirdX) { H_Hits_XY_RightThird->Fill(hit->GetX(), hit->GetY()); }
 
     H_DiffXhit->Fill(hit->GetX() - outPos.X());
     H_DiffYhit->Fill(hit->GetY() - outPos.Y());
@@ -598,7 +547,8 @@ void CbmRichGeoOpt::HitsAndPointsWithRef() {
 }
 
 ///////////////////////////////
-void CbmRichGeoOpt::RingParameters() {
+void CbmRichGeoOpt::RingParameters()
+{
   Int_t nofRings = fRichRings->GetEntriesFast();
   for (Int_t iR = 0; iR < nofRings; iR++) {
     CbmRichRing* ring = (CbmRichRing*) fRichRings->At(iR);
@@ -653,9 +603,7 @@ void CbmRichGeoOpt::RingParameters() {
 
     ///////////////////////////////////
     float radius = ring->GetRadius();
-    if (radius <= 0.) {
-      continue;
-    }  //with ideal finder --> many rings with radius -1.
+    if (radius <= 0.) { continue; }  //with ideal finder --> many rings with radius -1.
     //Test if radius is a NAN:
     if (!(radius <= 1. || radius > 1.)) { continue; }
     float aA = ring->GetAaxis();
@@ -673,9 +621,7 @@ void CbmRichGeoOpt::RingParameters() {
     H_RingCenter_Aaxis->Fill(CentX, CentY, aA);
     H_RingCenter_Baxis->Fill(CentX, CentY, bA);
     //cout << "PMT size in x and y [cm]: " << fGP.fPmtWidthX << "  " << fGP.fPmtWidthY << endl;
-    if (theta <= 25 && theta >= 24.9) {
-      H_Mom_XY_Theta25->Fill(CentX, CentY, momentum);
-    }
+    if (theta <= 25 && theta >= 24.9) { H_Mom_XY_Theta25->Fill(CentX, CentY, momentum); }
 
     H_RingCenter_boa->Fill(CentX, CentY, bA / aA);
     if (theta <= 25) {
@@ -709,13 +655,9 @@ void CbmRichGeoOpt::RingParameters() {
       CbmRichHit* hit = (CbmRichHit*) fRichHits->At(ring->GetHit(iH));
       double xH       = hit->GetX();
       double yH       = hit->GetY();
-      double dRaa     = aA
-                    - TMath::Sqrt((CentX - xH) * (CentX - xH)
-                                  + (CentY - yH) * (CentY - yH));
+      double dRaa     = aA - TMath::Sqrt((CentX - xH) * (CentX - xH) + (CentY - yH) * (CentY - yH));
       H_dR_aa->Fill(dRaa);
-      double dR = radius
-                  - TMath::Sqrt((CentX - xH) * (CentX - xH)
-                                + (CentY - yH) * (CentY - yH));
+      double dR = radius - TMath::Sqrt((CentX - xH) * (CentX - xH) + (CentY - yH) * (CentY - yH));
       H_dR->Fill(dR);
       H_RingCenter_dR->Fill(CentX, CentY, dR);
       if (theta <= 25) {
@@ -743,7 +685,8 @@ void CbmRichGeoOpt::RingParameters() {
 }
 
 ////////////////////////////////
-void CbmRichGeoOpt::FillMcHist() {
+void CbmRichGeoOpt::FillMcHist()
+{
   for (Int_t i = 0; i < fMcTracks->GetEntriesFast(); i++) {
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMcTracks->At(i);
     if (!mcTrack) continue;
@@ -767,574 +710,175 @@ void CbmRichGeoOpt::FillMcHist() {
 }
 
 ////////////////////////////////
-void CbmRichGeoOpt::InitHistograms() {
+void CbmRichGeoOpt::InitHistograms()
+{
   //  int nBinsX = 28; double xMin = -110.; double xMax = 110.;
   //  int nBinsY = 40; double yMin = -200; double yMax = 200.;
 
   H_Diff_LineRefPMT_MomAtPMT =
-    new TH1D("H_Diff_LineRefPMT_MomAtPMT",
-             "H_Diff_LineRefPMT_MomAtPMT;#Delta [cm]; Yield",
-             100,
-             -10.,
-             10.);
+    new TH1D("H_Diff_LineRefPMT_MomAtPMT", "H_Diff_LineRefPMT_MomAtPMT;#Delta [cm]; Yield", 100, -10., 10.);
 
-  H_Theta_TwoVectors = new TH1D("H_Theta_TwoVectors",
-                                "H_Theta_TwoVectors;#theta [deg]; Yield",
-                                100,
-                                0.,
-                                10.);
-  H_MomRing = new TH1D("H_MomRing", "H_MomRing;p [GeV]; Yield", 49, 0., 12.);
-  H_MomPrim = new TH1D("H_MomPrim", "H_MomPrim;p [GeV]; Yield", 49, 0., 12.);
-  H_PtPrim  = new TH1D("H_PtPrim", "H_PtPrim;p [GeV]; Yield", 81, 0., 4.);
-  H_MomPt   = new TH2D(
-    "H_MomPt", "H_MomPt;p [GeV];pt [GeV]; Yield", 101, 0., 10., 81, 0., 4.);
-  H_Mom_Theta_MC = new TH2D("H_Mom_Theta_MC",
-                            "H_Mom_Theta_MC;p [GeV];theta [deg]; Yield",
-                            40,
-                            0.,
-                            10.,
-                            50,
-                            0,
-                            25.);
-  H_Pt_Theta_MC  = new TH2D("H_Pt_Theta_MC",
-                           "H_Pt_Theta_MC;pt [GeV];theta [deg]; Yield",
-                           16,
-                           0.,
-                           4.,
-                           50,
-                           0,
-                           25.);
+  H_Theta_TwoVectors = new TH1D("H_Theta_TwoVectors", "H_Theta_TwoVectors;#theta [deg]; Yield", 100, 0., 10.);
+  H_MomRing          = new TH1D("H_MomRing", "H_MomRing;p [GeV]; Yield", 49, 0., 12.);
+  H_MomPrim          = new TH1D("H_MomPrim", "H_MomPrim;p [GeV]; Yield", 49, 0., 12.);
+  H_PtPrim           = new TH1D("H_PtPrim", "H_PtPrim;p [GeV]; Yield", 81, 0., 4.);
+  H_MomPt            = new TH2D("H_MomPt", "H_MomPt;p [GeV];pt [GeV]; Yield", 101, 0., 10., 81, 0., 4.);
+  H_Mom_Theta_MC     = new TH2D("H_Mom_Theta_MC", "H_Mom_Theta_MC;p [GeV];theta [deg]; Yield", 40, 0., 10., 50, 0, 25.);
+  H_Pt_Theta_MC      = new TH2D("H_Pt_Theta_MC", "H_Pt_Theta_MC;pt [GeV];theta [deg]; Yield", 16, 0., 4., 50, 0, 25.);
 
-  H_Mom_Theta_Rec = new TH2D("H_Mom_Theta_Rec",
-                             "H_Mom_Theta_Rec;p [GeV];theta [deg]; Yield",
-                             40,
-                             0.,
-                             10.,
-                             50,
-                             0,
-                             25.);
-  H_Pt_Theta_Rec  = new TH2D("H_Pt_Theta_Rec",
-                            "H_Pt_Theta_Rec;pt [GeV];theta [deg]; Yield",
-                            16,
-                            0.,
-                            4.,
-                            50,
-                            0,
-                            25.);
-  H_Mom_Theta_Acc = new TH2D("H_Mom_Theta_Acc",
-                             "H_Mom_Theta_Acc;p [GeV];theta [deg]; Yield",
-                             40,
-                             0.,
-                             10.,
-                             50,
-                             0,
-                             25.);
-  H_Pt_Theta_Acc  = new TH2D("H_Pt_Theta_Acc",
-                            "H_Pt_Theta_Acc;pt [GeV];theta [deg]; Yield",
-                            16,
-                            0.,
-                            4.,
-                            50,
-                            0,
-                            25.);
+  H_Mom_Theta_Rec = new TH2D("H_Mom_Theta_Rec", "H_Mom_Theta_Rec;p [GeV];theta [deg]; Yield", 40, 0., 10., 50, 0, 25.);
+  H_Pt_Theta_Rec  = new TH2D("H_Pt_Theta_Rec", "H_Pt_Theta_Rec;pt [GeV];theta [deg]; Yield", 16, 0., 4., 50, 0, 25.);
+  H_Mom_Theta_Acc = new TH2D("H_Mom_Theta_Acc", "H_Mom_Theta_Acc;p [GeV];theta [deg]; Yield", 40, 0., 10., 50, 0, 25.);
+  H_Pt_Theta_Acc  = new TH2D("H_Pt_Theta_Acc", "H_Pt_Theta_Acc;pt [GeV];theta [deg]; Yield", 16, 0., 4., 50, 0, 25.);
 
-  H_MomPrim_RegularTheta = new TH1D("H_MomPrim_RegularTheta",
-                                    "H_MomPrim_RegularTheta;p [GeV]; Yield",
-                                    49,
-                                    0.,
-                                    12.);
+  H_MomPrim_RegularTheta = new TH1D("H_MomPrim_RegularTheta", "H_MomPrim_RegularTheta;p [GeV]; Yield", 49, 0., 12.);
   H_acc_mom_el_RegularTheta =
-    new TH1D("H_acc_mom_el_RegularTheta",
-             "H_acc_mom_el_RegularTheta;p [GeV/c];Yield",
-             49,
-             0.,
-             12.);
+    new TH1D("H_acc_mom_el_RegularTheta", "H_acc_mom_el_RegularTheta;p [GeV/c];Yield", 49, 0., 12.);
 
 
-  H_Hits_XY            = new TH2D("H_Hits_XY",
-                       "H_Hits_XY;X [cm];Y [cm];Counter",
-                       151,
-                       -150.,
-                       0.,
-                       351,
-                       0.,
-                       350.);
-  H_Hits_XY_LeftHalf   = new TH2D("H_Hits_XY_LeftHalf",
-                                "H_Hits_XY_LeftHalf;X [cm];Y [cm];Counter",
-                                151,
-                                -150.,
-                                0.,
-                                351,
-                                0.,
-                                350.);
-  H_Hits_XY_RightHalf  = new TH2D("H_Hits_XY_RightHalf",
-                                 "H_Hits_XY_RightHalf;X [cm];Y [cm];Counter",
-                                 151,
-                                 -150.,
-                                 0.,
-                                 351,
-                                 0.,
-                                 350.);
-  H_Hits_XY_RightThird = new TH2D("H_Hits_XY_RightThird",
-                                  "H_Hits_XY_RightThird;X [cm];Y [cm];Counter",
-                                  151,
-                                  -150.,
-                                  0.,
-                                  351,
-                                  0.,
-                                  350.);
+  H_Hits_XY = new TH2D("H_Hits_XY", "H_Hits_XY;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
+  H_Hits_XY_LeftHalf =
+    new TH2D("H_Hits_XY_LeftHalf", "H_Hits_XY_LeftHalf;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
+  H_Hits_XY_RightHalf =
+    new TH2D("H_Hits_XY_RightHalf", "H_Hits_XY_RightHalf;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
+  H_Hits_XY_RightThird =
+    new TH2D("H_Hits_XY_RightThird", "H_Hits_XY_RightThird;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
   H_Hits_XY_Left2Thirds =
-    new TH2D("H_Hits_XY_Left2Thirds",
-             "H_Hits_XY_Left2Thirds;X [cm];Y [cm];Counter",
-             151,
-             -150.,
-             0.,
-             351,
-             0.,
-             350.);
+    new TH2D("H_Hits_XY_Left2Thirds", "H_Hits_XY_Left2Thirds;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
 
-  H_PointsIn_XY = new TH2D("H_PointsIn_XY",
-                           "H_PointsIn_XY;X [cm];Y [cm];Counter",
-                           151,
-                           -150.,
-                           0.,
-                           251,
-                           50.,
-                           250.);
+  H_PointsIn_XY = new TH2D("H_PointsIn_XY", "H_PointsIn_XY;X [cm];Y [cm];Counter", 151, -150., 0., 251, 50., 250.);
   H_PointsIn_XY_LeftHalf =
-    new TH2D("H_PointsIn_XY_LeftHalf",
-             "H_PointsIn_XY_LeftHalf;X [cm];Y [cm];Counter",
-             151,
-             -150.,
-             0.,
-             251,
-             50.,
-             250.);
-  H_PointsIn_XY_RightHalf =
-    new TH2D("H_PointsIn_XY_RightHalf",
-             "H_PointsIn_XY_RightHalf;X [cm];Y [cm];Counter",
-             151,
-             -150.,
-             0.,
-             251,
-             50.,
-             250.);
-  H_PointsIn_XY_RightThird =
-    new TH2D("H_PointsIn_XY_RightThird",
-             "H_PointsIn_XY_RightThird;X [cm];Y [cm];Counter",
-             151,
-             -150.,
-             0.,
-             251,
-             50.,
-             250.);
-  H_PointsIn_XY_Left2Thirds =
-    new TH2D("H_PointsIn_XY_Left2Thirds",
-             "H_PointsIn_XY_Left2Thirds;X [cm];Y [cm];Counter",
-             151,
-             -150.,
-             0.,
-             251,
-             50.,
-             250.);
+    new TH2D("H_PointsIn_XY_LeftHalf", "H_PointsIn_XY_LeftHalf;X [cm];Y [cm];Counter", 151, -150., 0., 251, 50., 250.);
+  H_PointsIn_XY_RightHalf  = new TH2D("H_PointsIn_XY_RightHalf", "H_PointsIn_XY_RightHalf;X [cm];Y [cm];Counter", 151,
+                                     -150., 0., 251, 50., 250.);
+  H_PointsIn_XY_RightThird = new TH2D("H_PointsIn_XY_RightThird", "H_PointsIn_XY_RightThird;X [cm];Y [cm];Counter", 151,
+                                      -150., 0., 251, 50., 250.);
+  H_PointsIn_XY_Left2Thirds = new TH2D("H_PointsIn_XY_Left2Thirds", "H_PointsIn_XY_Left2Thirds;X [cm];Y [cm];Counter",
+                                       151, -150., 0., 251, 50., 250.);
 
-  H_PointsOut_XY = new TH2D("H_PointsOut_XY",
-                            "H_PointsOut_XY;X [cm];Y [cm];Counter",
-                            151,
-                            -150.,
-                            0.,
-                            351,
-                            0.,
-                            350.);
+  H_PointsOut_XY = new TH2D("H_PointsOut_XY", "H_PointsOut_XY;X [cm];Y [cm];Counter", 151, -150., 0., 351, 0., 350.);
   //cout<<" init hist H_NofPhotonsPerEv"<<endl;
   H_NofPhotonsPerEv =
-    new TH1D("H_NofPhotonsPerEv",
-             "H_NofPhotonsPerEv;Number of photons per event;Yield",
-             500,
-             0.,
-             1000.);
+    new TH1D("H_NofPhotonsPerEv", "H_NofPhotonsPerEv;Number of photons per event;Yield", 500, 0., 1000.);
   H_NofPhotonsPerHit =
-    new TH1D("H_NofPhotonsPerHit",
-             "H_NofPhotonsPerHit;Number of photons per hit;Yield",
-             10,
-             -0.5,
-             9.5);
+    new TH1D("H_NofPhotonsPerHit", "H_NofPhotonsPerHit;Number of photons per hit;Yield", 10, -0.5, 9.5);
   H_NofPhotonsSmallerThan30 =
-    new TH1D("H_NofPhotonsSmallerThan30",
-             "H_NofPhotonsSmallerThan30 ;Number of photons;Yield",
-             10,
-             -0.5,
-             9.5);
-  H_DiffXhit = new TH1D(
-    "H_DiffXhit", "H_DiffXhit;Y_{point}-Y_{hit} [cm];Yield", 200, -1., 1.);
-  H_DiffYhit = new TH1D(
-    "H_DiffYhit", "H_DiffYhit;Y_{point}-Y_{hit} [cm];Yield", 200, -1., 1.);
+    new TH1D("H_NofPhotonsSmallerThan30", "H_NofPhotonsSmallerThan30 ;Number of photons;Yield", 10, -0.5, 9.5);
+  H_DiffXhit = new TH1D("H_DiffXhit", "H_DiffXhit;Y_{point}-Y_{hit} [cm];Yield", 200, -1., 1.);
+  H_DiffYhit = new TH1D("H_DiffYhit", "H_DiffYhit;Y_{point}-Y_{hit} [cm];Yield", 200, -1., 1.);
 
-  H_Alpha = new TH1D(
-    "H_Alpha", "H_Alpha;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
-  H_Alpha_UpLeft = new TH1D("H_Alpha_UpLeft",
-                            "H_Alpha_UpLeft;#alpha_{photon-PMT} [deg];Yield",
-                            180,
-                            0.,
-                            180.);
-  H_Alpha_UpLeft_II =
-    new TH1D("H_Alpha_UpLeft_II",
-             "H_Alpha_UpLeft_II;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
-  H_Alpha_UpLeft_RegularTheta =
-    new TH1D("H_Alpha_UpLeft_RegularTheta",
-             "H_Alpha_UpLeft_RegularTheta;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
+  H_Alpha           = new TH1D("H_Alpha", "H_Alpha;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
+  H_Alpha_UpLeft    = new TH1D("H_Alpha_UpLeft", "H_Alpha_UpLeft;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
+  H_Alpha_UpLeft_II = new TH1D("H_Alpha_UpLeft_II", "H_Alpha_UpLeft_II;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
+  H_Alpha_UpLeft_RegularTheta = new TH1D("H_Alpha_UpLeft_RegularTheta",
+                                         "H_Alpha_UpLeft_RegularTheta;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
 
   H_Alpha_UpLeft_LeftHalf =
-    new TH1D("H_Alpha_UpLeft_LeftHalf",
-             "H_Alpha_UpLeft_LeftHalf;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
+    new TH1D("H_Alpha_UpLeft_LeftHalf", "H_Alpha_UpLeft_LeftHalf;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
   H_Alpha_UpLeft_RightHalf =
-    new TH1D("H_Alpha_UpLeft_RightHalf",
-             "H_Alpha_UpLeft_RightHalf;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
+    new TH1D("H_Alpha_UpLeft_RightHalf", "H_Alpha_UpLeft_RightHalf;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
   H_Alpha_UpLeft_Left2Thirds =
-    new TH1D("H_Alpha_UpLeft_Left2Thirds",
-             "H_Alpha_UpLeft_Left2Thirds;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
+    new TH1D("H_Alpha_UpLeft_Left2Thirds", "H_Alpha_UpLeft_Left2Thirds;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
   H_Alpha_UpLeft_RightThird =
-    new TH1D("H_Alpha_UpLeft_RightThird",
-             "H_Alpha_UpLeft_RightThird;#alpha_{photon-PMT} [deg];Yield",
-             180,
-             0.,
-             180.);
+    new TH1D("H_Alpha_UpLeft_RightThird", "H_Alpha_UpLeft_RightThird;#alpha_{photon-PMT} [deg];Yield", 180, 0., 180.);
 
   //cout<<" init hist H_Alpha_XYposAtDet"<<endl;
-  H_Alpha_XYposAtDet = new TH3D(
-    "H_Alpha_XYposAtDet",
-    "H_Alpha_XYposAtDet; X [cm]; Y [cm];#alpha_{photon-PMT} [deg];Yield",
-    151,
-    -150.,
-    0.,
-    251,
-    50,
-    250,
-    180,
-    0.,
-    180.);
-  H_Alpha_XYposAtDet_RegularTheta =
-    new TH3D("H_Alpha_XYposAtDet_RegularTheta",
-             "H_Alpha_XYposAtDet_RegularTheta; X [cm]; Y "
-             "[cm];#alpha_{photon-PMT} [deg];Yield",
-             151,
-             -150.,
-             0.,
-             251,
-             50,
-             250,
-             180,
-             0.,
-             180.);
-  H_Alpha_XYposAtDet_LeftHalf =
-    new TH3D("H_Alpha_XYposAtDet_LeftHalf",
-             "H_Alpha_XYposAtDet_LeftHalf; X [cm]; Y [cm];#alpha_{photon-PMT} "
-             "[deg];Yield",
-             151,
-             -150.,
-             0.,
-             251,
-             50,
-             250,
-             180,
-             0.,
-             180.);
-  H_Alpha_XYposAtDet_RightHalf =
-    new TH3D("H_Alpha_XYposAtDet_RightHalf",
-             "H_Alpha_XYposAtDet_RightHalf; X [cm]; Y [cm];#alpha_{photon-PMT} "
-             "[deg];Yield",
-             151,
-             -150.,
-             0.,
-             251,
-             50,
-             250,
-             180,
-             0.,
-             180.);
-  H_Alpha_XYposAtDet_Left2Thirds =
-    new TH3D("H_Alpha_XYposAtDet_Left2Thirds",
-             "H_Alpha_XYposAtDet_Left2Thirds; X [cm]; Y "
-             "[cm];#alpha_{photon-PMT} [deg];Yield",
-             151,
-             -150.,
-             0.,
-             251,
-             50,
-             250,
-             180,
-             0.,
-             180.);
-  H_Alpha_XYposAtDet_RightThird =
-    new TH3D("H_Alpha_XYposAtDet_RightThird",
-             "H_Alpha_XYposAtDet_RightThird; X [cm]; Y "
-             "[cm];#alpha_{photon-PMT} [deg];Yield",
-             151,
-             -150.,
-             0.,
-             251,
-             50,
-             250,
-             180,
-             0.,
-             180.);
+  H_Alpha_XYposAtDet =
+    new TH3D("H_Alpha_XYposAtDet", "H_Alpha_XYposAtDet; X [cm]; Y [cm];#alpha_{photon-PMT} [deg];Yield", 151, -150., 0.,
+             251, 50, 250, 180, 0., 180.);
+  H_Alpha_XYposAtDet_RegularTheta = new TH3D("H_Alpha_XYposAtDet_RegularTheta",
+                                             "H_Alpha_XYposAtDet_RegularTheta; X [cm]; Y "
+                                             "[cm];#alpha_{photon-PMT} [deg];Yield",
+                                             151, -150., 0., 251, 50, 250, 180, 0., 180.);
+  H_Alpha_XYposAtDet_LeftHalf     = new TH3D("H_Alpha_XYposAtDet_LeftHalf",
+                                         "H_Alpha_XYposAtDet_LeftHalf; X [cm]; Y [cm];#alpha_{photon-PMT} "
+                                         "[deg];Yield",
+                                         151, -150., 0., 251, 50, 250, 180, 0., 180.);
+  H_Alpha_XYposAtDet_RightHalf    = new TH3D("H_Alpha_XYposAtDet_RightHalf",
+                                          "H_Alpha_XYposAtDet_RightHalf; X [cm]; Y [cm];#alpha_{photon-PMT} "
+                                          "[deg];Yield",
+                                          151, -150., 0., 251, 50, 250, 180, 0., 180.);
+  H_Alpha_XYposAtDet_Left2Thirds  = new TH3D("H_Alpha_XYposAtDet_Left2Thirds",
+                                            "H_Alpha_XYposAtDet_Left2Thirds; X [cm]; Y "
+                                            "[cm];#alpha_{photon-PMT} [deg];Yield",
+                                            151, -150., 0., 251, 50, 250, 180, 0., 180.);
+  H_Alpha_XYposAtDet_RightThird   = new TH3D("H_Alpha_XYposAtDet_RightThird",
+                                           "H_Alpha_XYposAtDet_RightThird; X [cm]; Y "
+                                           "[cm];#alpha_{photon-PMT} [deg];Yield",
+                                           151, -150., 0., 251, 50, 250, 180, 0., 180.);
 
   //////////////////////////////////////
-  H_dFocalPoint_Delta = new TH1D("H_dFocalPoint_Delta",
-                                 "H_dFocalPoint_Delta;#Delta_{f} [mm];Yield",
-                                 80,
-                                 -20.,
-                                 20.);
-  H_dFocalPoint_Rho   = new TH1D("H_dFocalPoint_Rho",
-                               "H_dFocalPoint_Rho;#rho_{f} [mm];Yield",
-                               150,
-                               50.,
-                               200.);
+  H_dFocalPoint_Delta = new TH1D("H_dFocalPoint_Delta", "H_dFocalPoint_Delta;#Delta_{f} [mm];Yield", 80, -20., 20.);
+  H_dFocalPoint_Rho   = new TH1D("H_dFocalPoint_Rho", "H_dFocalPoint_Rho;#rho_{f} [mm];Yield", 150, 50., 200.);
 
   //cout<<" init hist H_acc_mom_el"<<endl;
 
   //////////////////////////////////////
   // Detector acceptance efficiency vs. (pt,y) and p
-  H_acc_mom_el =
-    new TH1D("H_acc_mom_el", "H_acc_mom_el;p [GeV/c];Yield", 49, 0., 12.);
-  H_acc_pty_el     = new TH2D("H_acc_pty_el",
-                          "H_acc_pty_el;Rapidity;P_{t} [GeV/c];Yield",
-                          25,
-                          0.,
-                          4.,
-                          61,
-                          0.,
-                          10.);
-  H_Mom_XY_Theta25 = new TH3D("H_Mom_XY_Theta25",
-                              "H_Mom_XY_Theta25",
-                              151,
-                              -150,
-                              0,
-                              351,
-                              0,
-                              350,
-                              121,
-                              0.,
+  H_acc_mom_el     = new TH1D("H_acc_mom_el", "H_acc_mom_el;p [GeV/c];Yield", 49, 0., 12.);
+  H_acc_pty_el     = new TH2D("H_acc_pty_el", "H_acc_pty_el;Rapidity;P_{t} [GeV/c];Yield", 25, 0., 4., 61, 0., 10.);
+  H_Mom_XY_Theta25 = new TH3D("H_Mom_XY_Theta25", "H_Mom_XY_Theta25", 151, -150, 0, 351, 0, 350, 121, 0.,
                               12.);  //25, 0., 4., 61, 0., 10.);
   //////////////////////////////////
 
-  H_NofHitsAll = new TH1D(
-    "H_NofHitsAll", "H_NofHitsAll;Nof hits in ring;Yield", 50, 0., 50.);
-  H_NofRings =
-    new TH1D("H_NofRings", "H_NofRings;Nof rings per event;Yield", 10, 0., 10.);
-  H_NofRings_NofHits =
-    new TH2D("H_NofRings_NofHits",
-             "H_NofRings_NofHits;Nof rings per event, Nof hits per ring;Yield",
-             10,
-             0.,
-             10.,
-             50,
-             0.,
-             50.);
+  H_NofHitsAll       = new TH1D("H_NofHitsAll", "H_NofHitsAll;Nof hits in ring;Yield", 50, 0., 50.);
+  H_NofRings         = new TH1D("H_NofRings", "H_NofRings;Nof rings per event;Yield", 10, 0., 10.);
+  H_NofRings_NofHits = new TH2D("H_NofRings_NofHits", "H_NofRings_NofHits;Nof rings per event, Nof hits per ring;Yield",
+                                10, 0., 10., 50, 0., 50.);
 
   /////////////////////////////////////////////
-  H_Radius = new TH1D("H_Radius", "H_Radius", 401, 2., 6.);
-  H_aAxis  = new TH1D("H_aAxis", "H_aAxis", 401, 2., 10.);
-  H_bAxis  = new TH1D("H_bAxis", "H_bAxis", 401, 2., 10.);
-  H_boa    = new TH1D("H_boa", "H_boa", 51, 0.5, 1.);
-  H_boa_RegularTheta =
-    new TH1D("H_boa_RegularTheta", "H_boa_RegularTheta", 51, 0.5, 1.);
-  H_boa_LeftHalf  = new TH1D("H_boa_LeftHalf", "H_boa_LeftHalf", 51, 0.5, 1.);
-  H_boa_RightHalf = new TH1D("H_boa_RightHalf", "H_boa_RightHalf", 51, 0.5, 1.);
-  H_boa_Left2Thirds =
-    new TH1D("H_boa_Left2Thirds", "H_boa_Left2Thirds", 51, 0.5, 1.);
-  H_boa_RightThird =
-    new TH1D("H_boa_RightThird", "H_boa_RightThird", 51, 0.5, 1.);
+  H_Radius           = new TH1D("H_Radius", "H_Radius", 401, 2., 6.);
+  H_aAxis            = new TH1D("H_aAxis", "H_aAxis", 401, 2., 10.);
+  H_bAxis            = new TH1D("H_bAxis", "H_bAxis", 401, 2., 10.);
+  H_boa              = new TH1D("H_boa", "H_boa", 51, 0.5, 1.);
+  H_boa_RegularTheta = new TH1D("H_boa_RegularTheta", "H_boa_RegularTheta", 51, 0.5, 1.);
+  H_boa_LeftHalf     = new TH1D("H_boa_LeftHalf", "H_boa_LeftHalf", 51, 0.5, 1.);
+  H_boa_RightHalf    = new TH1D("H_boa_RightHalf", "H_boa_RightHalf", 51, 0.5, 1.);
+  H_boa_Left2Thirds  = new TH1D("H_boa_Left2Thirds", "H_boa_Left2Thirds", 51, 0.5, 1.);
+  H_boa_RightThird   = new TH1D("H_boa_RightThird", "H_boa_RightThird", 51, 0.5, 1.);
 
 
-  H_dR_aa = new TH1D("H_dR_aa", "H_dR_aa", 61, -3., 3.);
-  H_dR    = new TH1D("H_dR", "H_dR", 61, -3., 3.);
-  H_dR_RegularTheta =
-    new TH1D("H_dR_RegularTheta", "H_dR_RegularTheta", 61, -3., 3.);
-  H_dR_LeftHalf  = new TH1D("H_dR_LeftHalf", "H_dR_LeftHalf", 61, -3., 3.);
-  H_dR_RightHalf = new TH1D("H_dR_RightHalf", "H_dR_RightHalf", 61, -3., 3.);
-  H_dR_Left2Thirds =
-    new TH1D("H_dR_Left2Thirds", "H_dR_Left2Thirds", 61, -3., 3.);
-  H_dR_RightThird = new TH1D("H_dR_RightThird", "H_dR_RightThird", 61, -3., 3.);
+  H_dR_aa           = new TH1D("H_dR_aa", "H_dR_aa", 61, -3., 3.);
+  H_dR              = new TH1D("H_dR", "H_dR", 61, -3., 3.);
+  H_dR_RegularTheta = new TH1D("H_dR_RegularTheta", "H_dR_RegularTheta", 61, -3., 3.);
+  H_dR_LeftHalf     = new TH1D("H_dR_LeftHalf", "H_dR_LeftHalf", 61, -3., 3.);
+  H_dR_RightHalf    = new TH1D("H_dR_RightHalf", "H_dR_RightHalf", 61, -3., 3.);
+  H_dR_Left2Thirds  = new TH1D("H_dR_Left2Thirds", "H_dR_Left2Thirds", 61, -3., 3.);
+  H_dR_RightThird   = new TH1D("H_dR_RightThird", "H_dR_RightThird", 61, -3., 3.);
 
   //cout<<" init hist H_RingCenter"<<endl;
 
-  H_RingCenter =
-    new TH2D("H_RingCenter", "H_RingCenter", 201, -100., 0., 351, 0., 350.);
+  H_RingCenter = new TH2D("H_RingCenter", "H_RingCenter", 201, -100., 0., 351, 0., 350.);
 
-  H_RingCenter_Aaxis            = new TH3D("H_RingCenter_Aaxis",
-                                "H_RingCenter_Aaxis",
-                                151,
-                                -150,
-                                0,
-                                351,
-                                0,
-                                350,
-                                80,
-                                2.,
-                                10.);
-  H_RingCenter_Baxis            = new TH3D("H_RingCenter_Baxis",
-                                "H_RingCenter_Baxis",
-                                151,
-                                -150,
-                                0,
-                                351,
-                                0,
-                                350,
-                                80,
-                                2.,
-                                10.);
-  H_RingCenter_boa              = new TH3D("H_RingCenter_boa",
-                              "H_RingCenter_boa",
-                              151,
-                              -150,
-                              0,
-                              351,
-                              0,
-                              350,
-                              51,
-                              0.5,
-                              1.);
-  H_RingCenter_boa_RegularTheta = new TH3D("H_RingCenter_boa_RegularTheta",
-                                           "H_RingCenter_boa_RegularTheta",
-                                           151,
-                                           -150,
-                                           0,
-                                           351,
-                                           0,
-                                           350,
-                                           51,
-                                           0.5,
-                                           1.);
-  H_RingCenter_boa_LeftHalf     = new TH3D("H_RingCenter_boa_LeftHalf",
-                                       "H_RingCenter_boa_LeftHalf",
-                                       151,
-                                       -150,
-                                       0,
-                                       351,
-                                       0,
-                                       350,
-                                       51,
-                                       0.5,
-                                       1.);
-  H_RingCenter_boa_RightHalf    = new TH3D("H_RingCenter_boa_RightHalf",
-                                        "H_RingCenter_boa_RightHalf",
-                                        151,
-                                        -150,
-                                        0,
-                                        351,
-                                        0,
-                                        350,
-                                        51,
-                                        0.5,
-                                        1.);
-  H_RingCenter_boa_Left2Thirds  = new TH3D("H_RingCenter_boa_Left2Thirds",
-                                          "H_RingCenter_boa_Left2Thirds",
-                                          151,
-                                          -150,
-                                          0,
-                                          351,
-                                          0,
-                                          350,
-                                          51,
-                                          0.5,
-                                          1.);
-  H_RingCenter_boa_RightThird   = new TH3D("H_RingCenter_boa_RightThird",
-                                         "H_RingCenter_boa_RightThird",
-                                         151,
-                                         -150,
-                                         0,
-                                         351,
-                                         0,
-                                         350,
-                                         51,
-                                         0.5,
-                                         1.);
+  H_RingCenter_Aaxis = new TH3D("H_RingCenter_Aaxis", "H_RingCenter_Aaxis", 151, -150, 0, 351, 0, 350, 80, 2., 10.);
+  H_RingCenter_Baxis = new TH3D("H_RingCenter_Baxis", "H_RingCenter_Baxis", 151, -150, 0, 351, 0, 350, 80, 2., 10.);
+  H_RingCenter_boa   = new TH3D("H_RingCenter_boa", "H_RingCenter_boa", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
+  H_RingCenter_boa_RegularTheta =
+    new TH3D("H_RingCenter_boa_RegularTheta", "H_RingCenter_boa_RegularTheta", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
+  H_RingCenter_boa_LeftHalf =
+    new TH3D("H_RingCenter_boa_LeftHalf", "H_RingCenter_boa_LeftHalf", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
+  H_RingCenter_boa_RightHalf =
+    new TH3D("H_RingCenter_boa_RightHalf", "H_RingCenter_boa_RightHalf", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
+  H_RingCenter_boa_Left2Thirds =
+    new TH3D("H_RingCenter_boa_Left2Thirds", "H_RingCenter_boa_Left2Thirds", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
+  H_RingCenter_boa_RightThird =
+    new TH3D("H_RingCenter_boa_RightThird", "H_RingCenter_boa_RightThird", 151, -150, 0, 351, 0, 350, 51, 0.5, 1.);
 
-  H_RingCenter_dR              = new TH3D("H_RingCenter_dR",
-                             "H_RingCenter_dR",
-                             151,
-                             -150,
-                             0,
-                             351,
-                             0,
-                             350,
-                             61,
-                             -3.,
-                             3.);
-  H_RingCenter_dR_RegularTheta = new TH3D("H_RingCenter_dR_RegularTheta",
-                                          "H_RingCenter_dR_RegularTheta",
-                                          151,
-                                          -150,
-                                          0,
-                                          351,
-                                          0,
-                                          350,
-                                          61,
-                                          -3.,
-                                          3.);
-  H_RingCenter_dR_LeftHalf     = new TH3D("H_RingCenter_dR_LeftHalf",
-                                      "H_RingCenter_dR_LeftHalf",
-                                      151,
-                                      -150,
-                                      0,
-                                      351,
-                                      0,
-                                      350,
-                                      61,
-                                      -3.,
-                                      3.);
-  H_RingCenter_dR_RightHalf    = new TH3D("H_RingCenter_dR_RightHalf",
-                                       "H_RingCenter_dR_RightHalf",
-                                       151,
-                                       -150,
-                                       0,
-                                       351,
-                                       0,
-                                       350,
-                                       61,
-                                       -3.,
-                                       3.);
-  H_RingCenter_dR_Left2Thirds  = new TH3D("H_RingCenter_dR_Left2Thirds",
-                                         "H_RingCenter_dR_Left2Thirds",
-                                         151,
-                                         -150,
-                                         0,
-                                         351,
-                                         0,
-                                         350,
-                                         61,
-                                         -3.,
-                                         3.);
-  H_RingCenter_dR_RightThird   = new TH3D("H_RingCenter_dR_RightThird",
-                                        "H_RingCenter_dR_RightThird",
-                                        151,
-                                        -150,
-                                        0,
-                                        351,
-                                        0,
-                                        350,
-                                        61,
-                                        -3.,
-                                        3.);
+  H_RingCenter_dR = new TH3D("H_RingCenter_dR", "H_RingCenter_dR", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
+  H_RingCenter_dR_RegularTheta =
+    new TH3D("H_RingCenter_dR_RegularTheta", "H_RingCenter_dR_RegularTheta", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
+  H_RingCenter_dR_LeftHalf =
+    new TH3D("H_RingCenter_dR_LeftHalf", "H_RingCenter_dR_LeftHalf", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
+  H_RingCenter_dR_RightHalf =
+    new TH3D("H_RingCenter_dR_RightHalf", "H_RingCenter_dR_RightHalf", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
+  H_RingCenter_dR_Left2Thirds =
+    new TH3D("H_RingCenter_dR_Left2Thirds", "H_RingCenter_dR_Left2Thirds", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
+  H_RingCenter_dR_RightThird =
+    new TH3D("H_RingCenter_dR_RightThird", "H_RingCenter_dR_RightThird", 151, -150, 0, 351, 0, 350, 61, -3., 3.);
 }
 //////////////////////////////////////////////////////////
-void CbmRichGeoOpt::WriteHistograms() {
+void CbmRichGeoOpt::WriteHistograms()
+{
 
   H_Diff_LineRefPMT_MomAtPMT->Write();
   H_Theta_TwoVectors->Write();
@@ -1437,35 +981,31 @@ void CbmRichGeoOpt::WriteHistograms() {
 }
 //////////////////////////////////////////////////////////////
 ///////////////////////////////
-CbmRichPoint* CbmRichGeoOpt::GetPMTPoint(int TrackIdOfSensPlane) {
+CbmRichPoint* CbmRichGeoOpt::GetPMTPoint(int TrackIdOfSensPlane)
+{
   Int_t nofPoints = fRichPoints->GetEntriesFast();
   for (Int_t ip = 0; ip < nofPoints; ip++) {
     CbmRichPoint* point = (CbmRichPoint*) fRichPoints->At(ip);
     if (NULL == point) continue;
     int trackId = point->GetTrackID();
     if (trackId < 0) continue;
-    if (
-      trackId
-      == TrackIdOfSensPlane) {  //cout<<"In Function: got corresponding trackid:"<<trackId<<endl;
+    if (trackId == TrackIdOfSensPlane) {  //cout<<"In Function: got corresponding trackid:"<<trackId<<endl;
       return point;
     }
   }
   return NULL;
 }
 //////////////////////////////////////////////////////////////
-void CbmRichGeoOpt::FillPointsAtPMT() {
+void CbmRichGeoOpt::FillPointsAtPMT()
+{
 
   for (unsigned int p = 0; p < PMTPlanePoints.size(); p++) {
     if (PMTPlanePoints[p].X() != -1000.) {
-      if (p == 0) {
-        continue;
-      } else {
+      if (p == 0) { continue; }
+      else {
         int PointFilled = 1;
         for (int p2 = p - 1; p2 > -1; p2--) {
-          if (TMath::Abs(PMTPlanePoints[p2].X() - PMTPlanePoints[p].X())
-              < 1.0) {
-            PointFilled = 0;
-          }
+          if (TMath::Abs(PMTPlanePoints[p2].X() - PMTPlanePoints[p].X()) < 1.0) { PointFilled = 0; }
         }
         if (PointFilled == 1) { continue; }
       }
@@ -1478,9 +1018,8 @@ void CbmRichGeoOpt::FillPointsAtPMT() {
       int trackId = point->GetTrackID();
       if (trackId < 0) continue;
       if (point->GetX() >= 0 || point->GetY() <= 0) { continue; }
-      cout << "FillPointsAtPMT: Fillinf point #" << p << " --> "
-           << point->GetX() << ", " << point->GetY() << ", " << point->GetZ()
-           << endl;
+      cout << "FillPointsAtPMT: Fillinf point #" << p << " --> " << point->GetX() << ", " << point->GetY() << ", "
+           << point->GetZ() << endl;
       PMTPlanePoints[p].SetX(point->GetX());
       PMTPlanePoints[p].SetY(point->GetY());
       PMTPlanePoints[p].SetZ(point->GetZ());
@@ -1489,19 +1028,16 @@ void CbmRichGeoOpt::FillPointsAtPMT() {
   }
 }
 //////////////////////////////////////////////////////////////
-void CbmRichGeoOpt::FillPointsAtPMTSensPlane() {
+void CbmRichGeoOpt::FillPointsAtPMTSensPlane()
+{
 
   for (unsigned int p = 0; p < SensPlanePoints.size(); p++) {
     if (SensPlanePoints[p].X() != -1000.) {
-      if (p == 0) {
-        continue;
-      } else {
+      if (p == 0) { continue; }
+      else {
         int PointFilled = 1;
         for (int p2 = p - 1; p2 > -1; p2--) {
-          if (TMath::Abs(SensPlanePoints[p2].X() - SensPlanePoints[p].X())
-              < 1.0) {
-            PointFilled = 0;
-          }
+          if (TMath::Abs(SensPlanePoints[p2].X() - SensPlanePoints[p].X()) < 1.0) { PointFilled = 0; }
         }
         if (PointFilled == 1) { continue; }
       }
@@ -1528,10 +1064,8 @@ void CbmRichGeoOpt::FillPointsAtPMTSensPlane() {
 
 
 //////////////////////////////////////////////////////
-float CbmRichGeoOpt::GetIntersectionPointsLS(TVector3 MirrCenter,
-                                             TVector3 G_P1,
-                                             TVector3 G_P2,
-                                             float R) {
+float CbmRichGeoOpt::GetIntersectionPointsLS(TVector3 MirrCenter, TVector3 G_P1, TVector3 G_P2, float R)
+{
   float A = (G_P1 - MirrCenter) * (G_P1 - MirrCenter);
   float B = (G_P2 - G_P1) * (G_P2 - G_P1);
   float P = 2. * ((G_P1 - MirrCenter) * (G_P2 - G_P1)) / (B);
@@ -1555,46 +1089,38 @@ float CbmRichGeoOpt::GetIntersectionPointsLS(TVector3 MirrCenter,
   IntersectP2.SetZ(G_P1.Z() + t2 * (G_P2.Z() - G_P1.Z()));
 
   TVector3 Line1 = IntersectP1 - G_P1;
-  float Length1  = TMath::Sqrt(Line1.X() * Line1.X() + Line1.Y() * Line1.Y()
-                              + Line1.Z() * Line1.Z());
+  float Length1  = TMath::Sqrt(Line1.X() * Line1.X() + Line1.Y() * Line1.Y() + Line1.Z() * Line1.Z());
   TVector3 Line2 = IntersectP2 - G_P1;
-  float Length2  = TMath::Sqrt(Line2.X() * Line2.X() + Line2.Y() * Line2.Y()
-                              + Line2.Z() * Line2.Z());
+  float Length2  = TMath::Sqrt(Line2.X() * Line2.X() + Line2.Y() * Line2.Y() + Line2.Z() * Line2.Z());
 
   //return Length1<Length2 ?  Length1 :  Length2;
-  if (Length1 < Length2) {
-    return Length1;
-  } else {
+  if (Length1 < Length2) { return Length1; }
+  else {
     return Length2;
   }
 }
 //////////////////////////////////////////////////////
-float CbmRichGeoOpt::GetDistanceMirrorCenterToPMTPoint(TVector3 PMTpoint) {
-  float XTerm =
-    (PMTpoint.X() - MirrorCenter.X()) * (PMTpoint.X() - MirrorCenter.X());
-  float YTerm =
-    (PMTpoint.Y() - MirrorCenter.Y()) * (PMTpoint.Y() - MirrorCenter.Y());
-  float ZTerm =
-    (PMTpoint.Z() - MirrorCenter.Z()) * (PMTpoint.Z() - MirrorCenter.Z());
+float CbmRichGeoOpt::GetDistanceMirrorCenterToPMTPoint(TVector3 PMTpoint)
+{
+  float XTerm = (PMTpoint.X() - MirrorCenter.X()) * (PMTpoint.X() - MirrorCenter.X());
+  float YTerm = (PMTpoint.Y() - MirrorCenter.Y()) * (PMTpoint.Y() - MirrorCenter.Y());
+  float ZTerm = (PMTpoint.Z() - MirrorCenter.Z()) * (PMTpoint.Z() - MirrorCenter.Z());
   return TMath::Sqrt(XTerm + YTerm + ZTerm);
 }
 //////////////////////////////////////////////////////
-bool CbmRichGeoOpt::CheckPointLiesOnPlane(TVector3 Point,
-                                          TVector3 p0,
-                                          TVector3 norm) {
-  double TolaratedDiff = 0.001;
-  double ProdP0WithNorm =
-    p0.Dot(norm);  //cout<<"ProdP0WithNorm = "<<ProdP0WithNorm;
-  double ProdPWithNorm =
-    Point.Dot(norm);  //cout<<"  ProdPWithNorm = "<<ProdPWithNorm<<endl;
+bool CbmRichGeoOpt::CheckPointLiesOnPlane(TVector3 Point, TVector3 p0, TVector3 norm)
+{
+  double TolaratedDiff  = 0.001;
+  double ProdP0WithNorm = p0.Dot(norm);     //cout<<"ProdP0WithNorm = "<<ProdP0WithNorm;
+  double ProdPWithNorm  = Point.Dot(norm);  //cout<<"  ProdPWithNorm = "<<ProdPWithNorm<<endl;
   return TMath::Abs(ProdP0WithNorm - ProdPWithNorm)
-         <= ((TMath::Abs(ProdP0WithNorm) < TMath::Abs(ProdPWithNorm)
-                ? TMath::Abs(ProdPWithNorm)
-                : TMath::Abs(ProdP0WithNorm))
+         <= ((TMath::Abs(ProdP0WithNorm) < TMath::Abs(ProdPWithNorm) ? TMath::Abs(ProdPWithNorm)
+                                                                     : TMath::Abs(ProdP0WithNorm))
              * TolaratedDiff);
 }
 //////////////////////////////////////////////////////
-void CbmRichGeoOpt::GetPMTRotAngels() {
+void CbmRichGeoOpt::GetPMTRotAngels()
+{
   CbmRichRecGeoPar* gp = CbmRichGeoManager::GetInstance().fGP;
   RotX                 = gp->fPmt.fTheta;
   RotY                 = gp->fPmt.fPhi;
@@ -1610,15 +1136,12 @@ void CbmRichGeoOpt::GetPMTRotAngels() {
 bool CbmRichGeoOpt::CheckPointLiesOnSphere(TVector3 /*Point*/) { return true; }
 
 //////////////////////////////////////////////////////
-bool CbmRichGeoOpt::CheckLineIntersectsPlane(TVector3 /*Point*/) {
-  return true;
-}
+bool CbmRichGeoOpt::CheckLineIntersectsPlane(TVector3 /*Point*/) { return true; }
 //////////////////////////////////////////////////////
-bool CbmRichGeoOpt::CheckLineIntersectsSphere(TVector3 /*Point*/) {
-  return true;
-}
+bool CbmRichGeoOpt::CheckLineIntersectsSphere(TVector3 /*Point*/) { return true; }
 //////////////////////////////////////////////////////
-void CbmRichGeoOpt::Finish() {
+void CbmRichGeoOpt::Finish()
+{
   // cout<<nPhotonsNotOnPlane<<" out of "<<nTotalPhorons<<" are not on the plane("<<float(nPhotonsNotOnPlane)/float(nTotalPhorons)<<")"<<endl;
   // cout<<nPhotonsNotOnSphere<<" out of "<<nTotalPhorons<<" are not on the ideal sphere("<<float(nPhotonsNotOnSphere)/float(nTotalPhorons)<<")"<<endl;
   WriteHistograms();

@@ -1,13 +1,13 @@
 #include "CbmL1RichRingQa.h"
 
 #include "CbmL1Def.h"
-
 #include "CbmMCTrack.h"
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingFitterEllipseTau.h"
 #include "CbmRichRingLight.h"
+
 #include "FairRootManager.h"
 #include "FairTask.h"
 
@@ -25,15 +25,14 @@
 #include "TStyle.h"
 #include "TText.h"
 
-
-#include <cmath>
 #include <iostream>
 #include <list>
 #include <map>
+#include <sstream>
 #include <vector>
 
+#include <cmath>
 #include <ctype.h>
-#include <sstream>
 #include <stdio.h>
 
 using namespace std;
@@ -103,11 +102,7 @@ ClassImp(CbmL1RichRingQa)
   Chi2Ref->SetXTitle("Chi2 Ref");
   Chi2Ref->SetYTitle("Enteric");
 
-  Chi2All = new TH1F("Chi2 for reconstructed rings",
-                     "Chi2 for reconstructed rings",
-                     100,
-                     0.f,
-                     1.f);
+  Chi2All = new TH1F("Chi2 for reconstructed rings", "Chi2 for reconstructed rings", 100, 0.f, 1.f);
   Chi2All->SetXTitle("Chi2 reco rings");
   Chi2All->SetYTitle("Enteric");
 
@@ -115,13 +110,11 @@ ClassImp(CbmL1RichRingQa)
   Chi2Clone->SetXTitle("Chi2 Clone");
   Chi2Clone->SetYTitle("Enteric");
 
-  Chi2NhitsGhost = new TH2F(
-    "Chi2 Ghost vs Nhits", "Chi2 vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
+  Chi2NhitsGhost = new TH2F("Chi2 Ghost vs Nhits", "Chi2 vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
   Chi2NhitsGhost->SetXTitle("Ghost Nhits");
   Chi2NhitsGhost->SetYTitle("Ghost Chi2");
 
-  Chi2NhitsAll = new TH2F(
-    "Chi2 All vs Nhits", "Chi2 vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
+  Chi2NhitsAll = new TH2F("Chi2 All vs Nhits", "Chi2 vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
   Chi2NhitsAll->SetXTitle("Nhits All");
   Chi2NhitsAll->SetYTitle("Chi2 All");
 
@@ -129,43 +122,35 @@ ClassImp(CbmL1RichRingQa)
   RPi    = new TH1F("RPi", "RPi", 100, 0.f, 7.f);
   RGhost = new TH1F("RGhost", "RGhost", 100, 0.f, 7.f);
   //  Chi2NhitsGhost = new TH2F("Chi2 Ghost vs Nhits", "Chi2 Ghost vs Nhits", 30, 4.5f, 34.5f,100, 0.f, 1.f);
-  Chi2NhitsPi = new TH2F(
-    "Chi2 Pi vs Nhits", "Chi2 Pi vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
+  Chi2NhitsPi = new TH2F("Chi2 Pi vs Nhits", "Chi2 Pi vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
   Chi2NhitsPi->SetXTitle("Nhits Pi");
   Chi2NhitsPi->SetYTitle("Chi2 Pi");
 
-  Chi2NhitsEll = new TH2F(
-    "Chi2 Ell vs Nhits", "Chi2 Ell vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
+  Chi2NhitsEll = new TH2F("Chi2 Ell vs Nhits", "Chi2 Ell vs Nhits", 30, 4.5f, 34.5f, 100, 0.f, 1.f);
   Chi2NhitsEll->SetXTitle("Nhits Ell");
   Chi2NhitsEll->SetYTitle("Chi2 Ell");
 
-  RNhitsGhost = new TH2F(
-    "R Ghost vs Nhits", "R Ghost vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
+  RNhitsGhost = new TH2F("R Ghost vs Nhits", "R Ghost vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
   RNhitsGhost->SetXTitle("Nhits Ghost");
   RNhitsGhost->SetYTitle("R Ghost");
 
-  RNhitsPi =
-    new TH2F("R Pi vs Nhits", "R Pi vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
+  RNhitsPi = new TH2F("R Pi vs Nhits", "R Pi vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
   RNhitsPi->SetXTitle("Nhits Pi");
   RNhitsPi->SetYTitle("R Pi");
 
-  RNhitsEll = new TH2F(
-    "R Ell vs Nhits", "R Ell vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
+  RNhitsEll = new TH2F("R Ell vs Nhits", "R Ell vs Nhits", 30, 4.5f, 34.5f, 100, 2.f, 8.f);
   RNhitsEll->SetXTitle("Nhits electrons");
   RNhitsEll->SetYTitle("R electrons");
 
-  RChi2Ghost = new TH2F(
-    "R Ghost vs Chi2", "R Ghost vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
+  RChi2Ghost = new TH2F("R Ghost vs Chi2", "R Ghost vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
   RChi2Ghost->SetXTitle("Chi2 Ghost");
   RChi2Ghost->SetYTitle("R Ghost");
 
-  RChi2Pi =
-    new TH2F("R Pi vs Chi2", "R Pi vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
+  RChi2Pi = new TH2F("R Pi vs Chi2", "R Pi vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
   RChi2Pi->SetXTitle("Chi2 Pi");
   RChi2Pi->SetYTitle("R Pi");
 
-  RChi2Ell =
-    new TH2F("R Ell vs Chi2", "R Ell vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
+  RChi2Ell = new TH2F("R Ell vs Chi2", "R Ell vs Chi2", 100, 0.f, 1.f, 100, 2.f, 8.f);
   RChi2Ell->SetXTitle("Chi2 Electrons");
   RChi2Ell->SetYTitle("R Electrons");
 
@@ -177,50 +162,32 @@ ClassImp(CbmL1RichRingQa)
   NSameHits->SetXTitle("N Same Hits");
   NSameHits->SetYTitle("Enteric");
 
-  NSameHitsVsP = new TH2F(
-    "MC Hits % vs P(MC)", "MC Hits % vs P(MC)", 100, 0.f, 10.f, 100, 0.f, 1.f);
+  NSameHitsVsP = new TH2F("MC Hits % vs P(MC)", "MC Hits % vs P(MC)", 100, 0.f, 10.f, 100, 0.f, 1.f);
   NSameHitsVsP->SetXTitle("P MC");
   NSameHitsVsP->SetYTitle("MC Hits, %");
 
-  NHitsVsMCP = new TH2F(
-    "Same Hits vs P(MC)", "Same Hits vs P(MC)", 100, 0.f, 20.f, 100, 0.f, 30.f);
+  NHitsVsMCP = new TH2F("Same Hits vs P(MC)", "Same Hits vs P(MC)", 100, 0.f, 20.f, 100, 0.f, 30.f);
   NHitsVsMCP->SetXTitle("P MC");
   NHitsVsMCP->SetYTitle("Same Hits");
 
-  RadiusVsPForClone =
-    new TH2F(" Radius Vs P ", " Radius Vs P ", 100, 0.f, 12.f, 100, 0.f, 3.f);
+  RadiusVsPForClone = new TH2F(" Radius Vs P ", " Radius Vs P ", 100, 0.f, 12.f, 100, 0.f, 3.f);
   RadiusVsPForClone->SetXTitle("P Clone");
   RadiusVsPForClone->SetYTitle("R1-R2");
 
-  DistanceVsPClone = new TH2F(
-    " Distance Vs P ", " Distance Vs P ", 100, 0.f, 12.f, 100, 0.f, 5.f);
+  DistanceVsPClone = new TH2F(" Distance Vs P ", " Distance Vs P ", 100, 0.f, 12.f, 100, 0.f, 5.f);
   DistanceVsPClone->SetXTitle("P Clone");
   DistanceVsPClone->SetYTitle("Distance");
 
-  Chi2VsPClone =
-    new TH2F(" Chi2 Vs P ", " Chi2 Vs P ", 100, 0.f, 12.f, 100, 0.f, 1.f);
+  Chi2VsPClone = new TH2F(" Chi2 Vs P ", " Chi2 Vs P ", 100, 0.f, 12.f, 100, 0.f, 1.f);
   Chi2VsPClone->SetXTitle("P Clone");
   Chi2VsPClone->SetYTitle("Chi2");
 
-  RadiusVsDistanceClone = new TH2F(" Radius Vs Distance ",
-                                   " Radius Vs Distance ",
-                                   100,
-                                   0.f,
-                                   5.f,
-                                   100,
-                                   0.f,
-                                   3.f);
+  RadiusVsDistanceClone = new TH2F(" Radius Vs Distance ", " Radius Vs Distance ", 100, 0.f, 5.f, 100, 0.f, 3.f);
   RadiusVsDistanceClone->SetXTitle("Distance");
   RadiusVsDistanceClone->SetYTitle("R1-R2");
 
-  NHitsRecoVsNHitsMC = new TH2F(" N Hits Reco Vs N Hits MC ",
-                                " N Hits Reco Vs N Hits MC ",
-                                100,
-                                0.f,
-                                35.f,
-                                100,
-                                0.f,
-                                35.f);
+  NHitsRecoVsNHitsMC =
+    new TH2F(" N Hits Reco Vs N Hits MC ", " N Hits Reco Vs N Hits MC ", 100, 0.f, 35.f, 100, 0.f, 35.f);
   NHitsRecoVsNHitsMC->SetXTitle("N Hits MC");
   NHitsRecoVsNHitsMC->SetYTitle("N Hits Reco");
 
@@ -230,7 +197,8 @@ ClassImp(CbmL1RichRingQa)
 // -----   Destructor   ----------------------------------------------------
 CbmL1RichRingQa::~CbmL1RichRingQa() {}
 
-InitStatus CbmL1RichRingQa::Init() {
+InitStatus CbmL1RichRingQa::Init()
+{
 
   // Get and check FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -242,9 +210,7 @@ InitStatus CbmL1RichRingQa::Init() {
 
   // Get hit Array
   fHitArray = L1_DYNAMIC_CAST<TClonesArray*>(ioman->GetObject("RichHit"));
-  if (!fHitArray) {
-    cout << "-W- CbmL1RichRingQa::Init: No RichHit array!" << endl;
-  }
+  if (!fHitArray) { cout << "-W- CbmL1RichRingQa::Init: No RichHit array!" << endl; }
 
   // Get RichRing Array
   fRingArray = L1_DYNAMIC_CAST<TClonesArray*>(ioman->GetObject("RichRing"));
@@ -270,14 +236,11 @@ InitStatus CbmL1RichRingQa::Init() {
   return kSUCCESS;
 }
 
-void CbmL1RichRingQa::CirFit(list<pair<Double_t, Double_t>>& P,
-                             Double_t* X,
-                             Double_t* Y,
-                             Double_t* R) {
+void CbmL1RichRingQa::CirFit(list<pair<Double_t, Double_t>>& P, Double_t* X, Double_t* Y, Double_t* R)
+{
   Double_t S[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   Int_t n       = 0;
-  for (list<pair<Double_t, Double_t>>::iterator i = P.begin(); i != P.end();
-       ++i) {
+  for (list<pair<Double_t, Double_t>>::iterator i = P.begin(); i != P.end(); ++i) {
     Double_t& x = i->first;
     Double_t& y = i->second;
     Double_t r2 = x * x + y * y;
@@ -305,7 +268,8 @@ void CbmL1RichRingQa::CirFit(list<pair<Double_t, Double_t>>& P,
   *R = sqrt(R2);
 }
 
-void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
+void CbmL1RichRingQa::Exec(Option_t* /*option*/)
+{
   // histogramms
   //anagai
   map<void*, int> pHitIndex;
@@ -384,8 +348,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     textn->Draw();
     */
     Up->cd(2);
-    TArc* AllRingsDown =
-      new TArc(ArrRingX[i], ArrRingY[i], ArrRingR[i], 0, 360);
+    TArc* AllRingsDown = new TArc(ArrRingX[i], ArrRingY[i], ArrRingR[i], 0, 360);
     AllRingsDown->SetLineWidth(1);
     AllRingsDown->SetLineColor(1);
     AllRingsDown->SetFillStyle(0);
@@ -402,9 +365,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
   //anagai
 
-  static TH1F *h_MC_radius, *h_MC_nhits, *h_MC_primary_nhits, *h_MC_momentum,
-    *h_MC_primary_momentum, *h_MC_resolution, *h_MC_ref_resolution,
-    *h_MC_extra_resolution, *h_ghost_nhits;
+  static TH1F *h_MC_radius, *h_MC_nhits, *h_MC_primary_nhits, *h_MC_momentum, *h_MC_primary_momentum, *h_MC_resolution,
+    *h_MC_ref_resolution, *h_MC_extra_resolution, *h_ghost_nhits;
 
   static TH2F* h_MC_primary_res_vs_momentum;
 
@@ -419,58 +381,24 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     TDirectory* histodir   = gROOT->mkdir("CbmL1RichRingQaHisto");
     histodir->cd();
 
-    h_MC_radius = new TH1F("h_MC_radius", "MC ring radius (cm)", 100, 0.0, 10.);
-    h_MC_nhits  = new TH1F("h_MC_nhits", "Hits per MC ring", 50, 0.0, 50.);
-    h_MC_primary_nhits =
-      new TH1F("h_MC_primary_nhits", "Hits per primary MC ring", 50, 0.0, 50.);
-    h_MC_momentum =
-      new TH1F("h_MC_momentum", "MC track momentum (GeV)", 100, 0.0, 15.);
-    h_MC_primary_momentum = new TH1F("h_MC_primary_momentum",
-                                     "MC primary track momentum (GeV)",
-                                     100,
-                                     0.0,
-                                     15.);
-    h_MC_resolution       = new TH1F(
-      "h_MC_resolution", "Hit deviation from MC ring (cm)", 500, -5.0, 5.0);
-    h_MC_ref_resolution   = new TH1F("h_MC_ref_resolution",
-                                   "Hit deviation from REF MC ring (cm)",
-                                   500,
-                                   -5.0,
-                                   5.0);
-    h_MC_extra_resolution = new TH1F("h_MC_extra_resolution",
-                                     "Hit deviation from EXTRA MC ring (cm)",
-                                     500,
-                                     -5.0,
-                                     5.0);
+    h_MC_radius           = new TH1F("h_MC_radius", "MC ring radius (cm)", 100, 0.0, 10.);
+    h_MC_nhits            = new TH1F("h_MC_nhits", "Hits per MC ring", 50, 0.0, 50.);
+    h_MC_primary_nhits    = new TH1F("h_MC_primary_nhits", "Hits per primary MC ring", 50, 0.0, 50.);
+    h_MC_momentum         = new TH1F("h_MC_momentum", "MC track momentum (GeV)", 100, 0.0, 15.);
+    h_MC_primary_momentum = new TH1F("h_MC_primary_momentum", "MC primary track momentum (GeV)", 100, 0.0, 15.);
+    h_MC_resolution       = new TH1F("h_MC_resolution", "Hit deviation from MC ring (cm)", 500, -5.0, 5.0);
+    h_MC_ref_resolution   = new TH1F("h_MC_ref_resolution", "Hit deviation from REF MC ring (cm)", 500, -5.0, 5.0);
+    h_MC_extra_resolution = new TH1F("h_MC_extra_resolution", "Hit deviation from EXTRA MC ring (cm)", 500, -5.0, 5.0);
 
-    h_ghost_nhits =
-      new TH1F("h_ghost_nhits", "Hits per ghost ring", 50, 0.0, 50.);
+    h_ghost_nhits = new TH1F("h_ghost_nhits", "Hits per ghost ring", 50, 0.0, 50.);
 
-    h_MC_primary_res_vs_momentum =
-      new TH2F("h_MC_primary_res_vs_momentum",
-               "Hit deviation from ptimary MC ring (cm) vs P",
-               100,
-               0.,
-               15.,
-               500,
-               -5.0,
-               5.0);
+    h_MC_primary_res_vs_momentum = new TH2F(
+      "h_MC_primary_res_vs_momentum", "Hit deviation from ptimary MC ring (cm) vs P", 100, 0., 15., 500, -5.0, 5.0);
 
-    p_ref_eff_vs_nhits = new TProfile("p_ref_eff_vs_nhits",
-                                      "Refset efficiency vs N Hits",
-                                      100,
-                                      0.0,
-                                      50.0,
-                                      0.0,
-                                      1.0);
+    p_ref_eff_vs_nhits = new TProfile("p_ref_eff_vs_nhits", "Refset efficiency vs N Hits", 100, 0.0, 50.0, 0.0, 1.0);
 
-    p_extra_eff_vs_nhits = new TProfile("p_extra_eff_vs_nhits",
-                                        "Extraset efficiency vs N Hits",
-                                        100,
-                                        0.0,
-                                        50.0,
-                                        0.0,
-                                        1.0);
+    p_extra_eff_vs_nhits =
+      new TProfile("p_extra_eff_vs_nhits", "Extraset efficiency vs N Hits", 100, 0.0, 50.0, 0.0, 1.0);
 
     // ----- Create list of all histogram pointers
     listHisto = gDirectory->GetList();
@@ -502,15 +430,12 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     hit.y         = phit->GetY();
     Int_t pointID = phit->GetRefId();
     if (pointID < 0) continue;
-    CbmRichPoint* point =
-      L1_DYNAMIC_CAST<CbmRichPoint*>(fMCPointArray->At(pointID));
+    CbmRichPoint* point = L1_DYNAMIC_CAST<CbmRichPoint*>(fMCPointArray->At(pointID));
     if (!point) continue;
     Int_t trackID = point->GetTrackID();
     if (trackID < 0) continue;
-    CbmMCTrack* track =
-      L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(trackID));
-    if (!track || track->GetPdgCode() != 50000050)
-      continue;  // select only Cherenkov photons
+    CbmMCTrack* track = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(trackID));
+    if (!track || track->GetPdgCode() != 50000050) continue;  // select only Cherenkov photons
     hit.MCTrackID = track->GetMotherId();
   }
 
@@ -536,24 +461,15 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
   // fit MC rings & set parameters
   Int_t NMCRings = 0;
-  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end();
-       ++i) {
+  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end(); ++i) {
     NMCRings++;
   }
 
-  TH2F* h_e = new TH2F("MC ring radius (cm) vs MC track momentum (GeV)",
-                       "",
-                       100,
-                       0.f,
-                       12.f,
-                       100,
-                       0.f,
-                       6.f);
+  TH2F* h_e = new TH2F("MC ring radius (cm) vs MC track momentum (GeV)", "", 100, 0.f, 12.f, 100, 0.f, 6.f);
   h_e->SetXTitle("MC track momentum (GeV)");
   h_e->SetYTitle("MC ring R1/R2");
 
-  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end();
-       ++i) {
+  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end(); ++i) {
     vector<Double_t> hitX;
     vector<Double_t> hitY;
     //     CbmRichRing *Ellipse = new CbmRichRing();
@@ -570,8 +486,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     // find momentum
     if (!fMCTrackArray || ring.MCTrackID < 0) continue;
 
-    CbmMCTrack* pm =
-      L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(ring.MCTrackID));
+    CbmMCTrack* pm = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(ring.MCTrackID));
     if (pm) {
       ring.PDG = pm->GetPdgCode();  // get PDG code of mother
 
@@ -588,8 +503,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
     list<pair<Double_t, Double_t>> L;
     Int_t in = 0;
-    for (vector<int>::iterator j = ring.Hits.begin(); j != ring.Hits.end();
-         ++j) {
+    for (vector<int>::iterator j = ring.Hits.begin(); j != ring.Hits.end(); ++j) {
       L.push_back(pair<Double_t, Double_t>(Hits[(*j)].x, Hits[(*j)].y));
       hitX.push_back(Hits[(*j)].x);
       hitY.push_back(Hits[(*j)].y);
@@ -630,11 +544,11 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 //End of Use Fitter EllipseTau to fit MC Rings
 #endif  //DRAW
     if (ring.r > 3. && ring.r < 7. && ring.NHits >= 7 /* && ring.P > 0.2 */) {
-      if (ring.NHits >= 15 && ring.primary) {
-        ring.kind = 2;
-      } else
+      if (ring.NHits >= 15 && ring.primary) { ring.kind = 2; }
+      else
         ring.kind = 1;
-    } else
+    }
+    else
       ring.kind = 0;
 
 #ifdef DRAW
@@ -644,17 +558,20 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     if (ring.PDG == 11 || ring.PDG == -11) {
       MCUp->SetLineColor(2);  // electron MC Ring
       if (ring.kind != 0) NeMC++;
-    } else if (ring.PDG == 211 || ring.PDG == -211 || ring.PDG == 111) {
+    }
+    else if (ring.PDG == 211 || ring.PDG == -211 || ring.PDG == 111) {
       MCUp->SetLineColor(28);  // pion MC Ring
       if (ring.kind != 0) NpiMC++;
-    } else
+    }
+    else
       MCUp->SetLineColor(5);  // other MC Ring
     MCUp->SetFillStyle(0);
 
     if (ring.kind == 0) {
       MCUp->SetLineStyle(3);
       MCUp->SetLineWidth(1);
-    } else
+    }
+    else
       MCUp->SetLineStyle(1);
 
     // Draw NHits and P for MC rings
@@ -683,8 +600,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
     TArc* MCDown = new TArc(ring.x, -ring.y, ring.r, 0, 360);
     MCDown->SetLineWidth(2);
-    if (ring.PDG == 11 || ring.PDG == -11)
-      MCDown->SetLineColor(2);  //electron MC Ring
+    if (ring.PDG == 11 || ring.PDG == -11) MCDown->SetLineColor(2);  //electron MC Ring
     else if (ring.PDG == 211 || ring.PDG == -211)
       MCDown->SetLineColor(28);  //pion MC Ring
     else
@@ -693,72 +609,57 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     if (ring.kind == 0) {
       MCDown->SetLineStyle(3);
       MCDown->SetLineWidth(1);
-    } else
+    }
+    else
       MCDown->SetLineStyle(1);
     MCDown->Draw("*");
 
     for (Int_t i1 = 0; i1 < fRingArray->GetEntriesFast(); i1++) {
       // Reco Rings
-      if (((sqrt((ArrRingX[i1] - ring.x) * (ArrRingX[i1] - ring.x)
-                 + (ArrRingY[i1] + ring.y) * (ArrRingY[i1] + ring.y))
+      if (((sqrt((ArrRingX[i1] - ring.x) * (ArrRingX[i1] - ring.x) + (ArrRingY[i1] + ring.y) * (ArrRingY[i1] + ring.y))
             < 0.15 * ring.r)
-           && (sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r))
-               < 0.15 * ring.r)
-           && (ring.k == 0))
+           && (sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r)) < 0.15 * ring.r) && (ring.k == 0))
           || ((sqrt((ArrRingX[i1] - ring.x) * (ArrRingX[i1] - ring.x)
                     + (ArrRingY[i1] + ring.y) * (ArrRingY[i1] + ring.y))
                < 0.2 * ring.r)
-              && (sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r))
-                  < 0.05 * ring.r)
-              && (ring.k == 0))) {
+              && (sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r)) < 0.05 * ring.r) && (ring.k == 0))) {
         Up->cd(1);
-        TArc* RecoRingUp =
-          new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
+        TArc* RecoRingUp = new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
         NGostmy--;
         ring.k = 1;
         if (ring.r > 3 && ring.r < 7 && ring.NHits >= 5) NRecoG++;
         RecoRingUp->SetLineWidth(1);
         RecoRingUp->SetLineColor(4);
-        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5)
-          RecoRingUp->SetLineColor(5);
+        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5) RecoRingUp->SetLineColor(5);
         RecoRingUp->SetFillStyle(0);
         RecoRingUp->Draw("*");
         Up->cd(2);
-        TArc* RecoRingDown =
-          new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
+        TArc* RecoRingDown = new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
         RecoRingDown->SetLineWidth(1);
         RecoRingDown->SetLineColor(4);
-        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5)
-          RecoRingDown->SetLineColor(5);
+        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5) RecoRingDown->SetLineColor(5);
         RecoRingDown->SetFillStyle(0);
         RecoRingDown->Draw("*");
       }
       // Good Reco Rings
-      if (sqrt((ArrRingX[i1] - ring.x) * (ArrRingX[i1] - ring.x)
-               + (ArrRingY[i1] + ring.y) * (ArrRingY[i1] + ring.y))
+      if (sqrt((ArrRingX[i1] - ring.x) * (ArrRingX[i1] - ring.x) + (ArrRingY[i1] + ring.y) * (ArrRingY[i1] + ring.y))
             < 0.05 * ring.r
-          && sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r))
-               < 0.05 * ring.r
-          && ring.k != 2) {
+          && sqrt((ArrRingR[i1] - ring.r) * (ArrRingR[i1] - ring.r)) < 0.05 * ring.r && ring.k != 2) {
         Up->cd(1);
         if (ring.k == 1) NRecoG--;
         if (ring.r > 3 && ring.r < 7 && ring.NHits >= 5) NRecoEx++;
-        TArc* GoodRecoRingUp =
-          new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
+        TArc* GoodRecoRingUp = new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
         GoodRecoRingUp->SetLineWidth(1);
         GoodRecoRingUp->SetLineColor(3);
-        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5)
-          GoodRecoRingUp->SetLineColor(5);
+        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5) GoodRecoRingUp->SetLineColor(5);
         GoodRecoRingUp->SetFillStyle(0);
         ring.k = 2;
         GoodRecoRingUp->Draw("*");
         Up->cd(2);
-        TArc* GoodRecoRingDown =
-          new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
+        TArc* GoodRecoRingDown = new TArc(ArrRingX[i1], ArrRingY[i1], ArrRingR[i1], 0, 360);
         GoodRecoRingDown->SetLineWidth(1);
         GoodRecoRingDown->SetLineColor(3);
-        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5)
-          GoodRecoRingDown->SetLineColor(5);
+        if (ring.r < 3 || ring.r > 7 || ring.NHits < 5) GoodRecoRingDown->SetLineColor(5);
         GoodRecoRingDown->SetFillStyle(0);
         GoodRecoRingDown->Draw("*");
       }
@@ -784,26 +685,22 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     //     local_r[ir] = r->GetRadius();
     Int_t nh = r->GetNofHits();
     for (int ih = 0; ih < nh; ih++) {
-      CbmRichHit* h =
-        L1_DYNAMIC_CAST<CbmRichHit*>(fHitArray->At(r->GetHit(ih)));
-      Int_t jh = pHitIndex[h];
-      int ID   = Hits[jh].MCTrackID;
-      if (hitmap.find(ID) == hitmap.end())
-        hitmap.insert(pair<Int_t, Int_t>(ID, 0));
+      CbmRichHit* h = L1_DYNAMIC_CAST<CbmRichHit*>(fHitArray->At(r->GetHit(ih)));
+      Int_t jh      = pHitIndex[h];
+      int ID        = Hits[jh].MCTrackID;
+      if (hitmap.find(ID) == hitmap.end()) hitmap.insert(pair<Int_t, Int_t>(ID, 0));
       hitmap[ID]++;
     }
     Bool_t ghost = 1;
     Int_t CurrentMCTrack;
-    for (map<Int_t, Int_t>::iterator j = hitmap.begin(); j != hitmap.end();
-         ++j) {
+    for (map<Int_t, Int_t>::iterator j = hitmap.begin(); j != hitmap.end(); ++j) {
       if ((static_cast<Double_t>(j->second)) < 0.7 * nh) continue;
       CurrentMCTrack = j->first;
       MCRecoCor[ir]  = MCRingMap[j->first].MCTrackID;
       MCRingMap[j->first].Reconstructed++;
       if ((static_cast<Int_t>(j->second)) > MCRingMap[j->first].NHitsBestReco) {
-        MCRingMap[j->first].NHitsBestReco = (static_cast<Int_t>(j->second));
-        MCRingMap[j->first].NHitsBestvsNHitsMC =
-          (static_cast<Double_t>(j->second)) / MCRingMap[j->first].NHits;
+        MCRingMap[j->first].NHitsBestReco      = (static_cast<Int_t>(j->second));
+        MCRingMap[j->first].NHitsBestvsNHitsMC = (static_cast<Double_t>(j->second)) / MCRingMap[j->first].NHits;
       }
       ghost = 0;
       break;
@@ -816,7 +713,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
       RGhost->Fill(r->GetRadius());
       RNhitsGhost->Fill(r->GetNofHits(), r->GetRadius());
       RChi2Ghost->Fill(r->GetChi2(), r->GetRadius());
-    } else {
+    }
+    else {
       Chi2All->Fill(r->GetChi2());
       Chi2NhitsAll->Fill(r->GetNofHits(), r->GetChi2());
       MCRing& ring_mc = MCRingMap[CurrentMCTrack];
@@ -826,8 +724,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
         Chi2NhitsEll->Fill(r->GetNofHits(), r->GetChi2());
         RNhitsEll->Fill(r->GetNofHits(), r->GetRadius());
         RChi2Ell->Fill(r->GetChi2(), r->GetRadius());
-      } else if (ring_mc.PDG == 211 || ring_mc.PDG == -211
-                 || ring_mc.PDG == 111) {
+      }
+      else if (ring_mc.PDG == 211 || ring_mc.PDG == -211 || ring_mc.PDG == 111) {
         RPi->Fill(ring_mc.r);
         Chi2NhitsPi->Fill(r->GetNofHits(), r->GetChi2());
         RNhitsPi->Fill(r->GetNofHits(), r->GetRadius());
@@ -873,19 +771,14 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
         CloneFlag[j] = MCRecoCor[j];
         myNClone++;
         double dist = 0;
-        dist        = sqrt((r1->GetCenterX() - r2->GetCenterX())
-                      * (r1->GetCenterX() - r2->GetCenterX())
-                    + (r1->GetCenterY() - r2->GetCenterY())
-                        * (r1->GetCenterY() - r2->GetCenterY()));
+        dist        = sqrt((r1->GetCenterX() - r2->GetCenterX()) * (r1->GetCenterX() - r2->GetCenterX())
+                    + (r1->GetCenterY() - r2->GetCenterY()) * (r1->GetCenterY() - r2->GetCenterY()));
         double dr;
-        if (r1->GetRadius() >= r2->GetRadius())
-          dr = r1->GetRadius() - r2->GetRadius();
+        if (r1->GetRadius() >= r2->GetRadius()) dr = r1->GetRadius() - r2->GetRadius();
         else
           dr = r2->GetRadius() - r1->GetRadius();
         RadiusVsDistanceClone->Fill(dist, dr);
-        for (map<Int_t, MCRing>::iterator MC = MCRingMap.begin();
-             MC != MCRingMap.end();
-             ++MC) {
+        for (map<Int_t, MCRing>::iterator MC = MCRingMap.begin(); MC != MCRingMap.end(); ++MC) {
           MCRing& ring = MC->second;
           if (ring.MCTrackID == -1) continue;
           if (ring.MCTrackID == MCRecoCor[j]) {
@@ -904,9 +797,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   for (Int_t i = 0; i < NReco; i++) {
     if (CloneFlag[i] == 0) continue;
     CbmRichRing* r = L1_DYNAMIC_CAST<CbmRichRing*>(fRingArray->At(i));
-    for (map<Int_t, MCRing>::iterator MC = MCRingMap.begin();
-         MC != MCRingMap.end();
-         ++MC) {
+    for (map<Int_t, MCRing>::iterator MC = MCRingMap.begin(); MC != MCRingMap.end(); ++MC) {
       MCRing& ring = MC->second;
       if (CloneFlag[i] != 0) {
         if (CloneFlag[i] == ring.MCTrackID) {
@@ -924,15 +815,13 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
           ///MCringDown->Draw("*"); //Draw MC ring for clone
         }
         Up->cd(1);
-        TArc* CloneUp =
-          new TArc(r->GetCenterX(), -r->GetCenterY(), r->GetRadius(), 0, 360);
+        TArc* CloneUp = new TArc(r->GetCenterX(), -r->GetCenterY(), r->GetRadius(), 0, 360);
         CloneUp->SetLineWidth(1);
         CloneUp->SetLineColor(7);
         CloneUp->SetFillStyle(0);
         CloneUp->Draw("*");
         Up->cd(2);
-        TArc* CloneDown =
-          new TArc(r->GetCenterX(), -r->GetCenterY(), r->GetRadius(), 0, 360);
+        TArc* CloneDown = new TArc(r->GetCenterX(), -r->GetCenterY(), r->GetRadius(), 0, 360);
         CloneDown->SetLineWidth(1);
         CloneDown->SetLineColor(7);
         CloneDown->SetFillStyle(0);
@@ -942,10 +831,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   }
   // End of Draw Clones
   // get statistics from MC rings
-  Int_t NAll = 0, NRef = 0, NExtra = 0, NAllReco = 0, NRefReco = 0,
-        NExtraReco = 0, NClone = 0;
-  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end();
-       ++i) {
+  Int_t NAll = 0, NRef = 0, NExtra = 0, NAllReco = 0, NRefReco = 0, NExtraReco = 0, NClone = 0;
+  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end(); ++i) {
     MCRing& ring = i->second;
     if (ring.NHitsBestvsNHitsMC != 0.0) {
       NHitsMC->Fill(ring.NHitsBestvsNHitsMC);
@@ -964,8 +851,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
       //       fl = NClone;
       NAllReco++;
       NClone += i->second.Reconstructed - 1;
-      if (ring.kind == 2)
-        NRefReco++;
+      if (ring.kind == 2) NRefReco++;
       else
         NExtraReco++;
     }
@@ -999,9 +885,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
   // accumulated statistics
 
-  static Int_t S_NAll = 0, S_NRef = 0, S_NExtra = 0, S_NReco = 0,
-               S_NAllReco = 0, S_NRefReco = 0, S_NExtraReco = 0, S_NClone = 0,
-               S_NGhost = 0, S_NEvents = 0;
+  static Int_t S_NAll = 0, S_NRef = 0, S_NExtra = 0, S_NReco = 0, S_NAllReco = 0, S_NRefReco = 0, S_NExtraReco = 0,
+               S_NClone = 0, S_NGhost = 0, S_NEvents = 0;
 
   S_NAll += NAll;
   S_NRef += NRef;
@@ -1023,10 +908,9 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   cout.precision(4);
 
 
-  Double_t p_all = (NAll > 0) ? static_cast<Double_t>(NAllReco) / NAll : 0.;
-  Double_t p_ref = (NRef > 0) ? static_cast<Double_t>(NRefReco) / NRef : 0.;
-  Double_t p_extra =
-    (NExtra > 0) ? static_cast<Double_t>(NExtraReco) / NExtra : 0.;
+  Double_t p_all   = (NAll > 0) ? static_cast<Double_t>(NAllReco) / NAll : 0.;
+  Double_t p_ref   = (NRef > 0) ? static_cast<Double_t>(NRefReco) / NRef : 0.;
+  Double_t p_extra = (NExtra > 0) ? static_cast<Double_t>(NExtraReco) / NExtra : 0.;
   Double_t p_clone = (NReco > 0) ? static_cast<Double_t>(NClone) / NReco : 0.;
   Double_t p_ghost = (NReco > 0) ? static_cast<Double_t>(NGhost) / NReco : 0.;
   //  Double_t N_all = double(NRecoG+NRecoEx)/double(NMC37);
@@ -1065,16 +949,11 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
   cout << endl;
 
-  Double_t S_p_all =
-    (S_NAll > 0) ? static_cast<Double_t>(S_NAllReco) / S_NAll : 0.;
-  Double_t S_p_ref =
-    (S_NRef > 0) ? static_cast<Double_t>(S_NRefReco) / S_NRef : 0.;
-  Double_t S_p_extra =
-    (S_NExtra > 0) ? static_cast<Double_t>(S_NExtraReco) / S_NExtra : 0.;
-  Double_t S_p_clone =
-    (S_NReco > 0) ? static_cast<Double_t>(S_NClone) / S_NReco : 0.;
-  Double_t S_p_ghost =
-    (S_NReco > 0) ? static_cast<Double_t>(S_NGhost) / S_NReco : 0.;
+  Double_t S_p_all   = (S_NAll > 0) ? static_cast<Double_t>(S_NAllReco) / S_NAll : 0.;
+  Double_t S_p_ref   = (S_NRef > 0) ? static_cast<Double_t>(S_NRefReco) / S_NRef : 0.;
+  Double_t S_p_extra = (S_NExtra > 0) ? static_cast<Double_t>(S_NExtraReco) / S_NExtra : 0.;
+  Double_t S_p_clone = (S_NReco > 0) ? static_cast<Double_t>(S_NClone) / S_NReco : 0.;
+  Double_t S_p_ghost = (S_NReco > 0) ? static_cast<Double_t>(S_NGhost) / S_NReco : 0.;
 
   cout << "ACCUMULATED STAT : " << S_NEvents << " EVENTS " << endl << endl;
 
@@ -1084,17 +963,12 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
        << "Reco"
        << "	| "
        << "MC" << endl;
-  cout << "Refset efficiency      : " << S_p_ref << " | " << S_NRefReco << "	| "
-       << S_NRef << endl;
-  cout << "Allset efficiency      : " << S_p_all << " | " << S_NAllReco << "	| "
-       << S_NAll << endl;
-  cout << "Extra  efficiency      : " << S_p_extra << " | " << S_NExtraReco
-       << "	| " << S_NExtra << endl;
+  cout << "Refset efficiency      : " << S_p_ref << " | " << S_NRefReco << "	| " << S_NRef << endl;
+  cout << "Allset efficiency      : " << S_p_all << " | " << S_NAllReco << "	| " << S_NAll << endl;
+  cout << "Extra  efficiency      : " << S_p_extra << " | " << S_NExtraReco << "	| " << S_NExtra << endl;
   cout << "clone  probability     : " << S_p_clone << " | " << S_NClone << endl;
   cout << "ghost  probability     : " << S_p_ghost << " | " << S_NGhost << endl;
-  cout << "MC rings/event found   : "
-       << Int_t(static_cast<Double_t>(S_NAllReco)
-                / static_cast<Double_t>(S_NEvents))
+  cout << "MC rings/event found   : " << Int_t(static_cast<Double_t>(S_NAllReco) / static_cast<Double_t>(S_NEvents))
        << endl;
   cout << endl;
   cout << "Reco time (ms)         : " << 0. * 1000. / S_NEvents << endl;
@@ -1104,8 +978,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
 
   // fill histogramms
 
-  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end();
-       ++i) {
+  for (map<Int_t, MCRing>::iterator i = MCRingMap.begin(); i != MCRingMap.end(); ++i) {
     MCRing& ring = i->second;
 
     h_MC_radius->Fill(ring.r);
@@ -1116,8 +989,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
       h_MC_primary_momentum->Fill(ring.P);
     }
 
-    for (vector<int>::iterator j = ring.Hits.begin(); j != ring.Hits.end();
-         ++j) {
+    for (vector<int>::iterator j = ring.Hits.begin(); j != ring.Hits.end(); ++j) {
       Double_t dx  = Hits[(*j)].x - ring.x;
       Double_t dy  = Hits[(*j)].y - ring.y;
       Double_t res = sqrt(dx * dx + dy * dy) - ring.r;
@@ -1135,7 +1007,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
-  TFile* outfile   = new TFile("L1RingQaHisto.root", "RECREATE");
+  TFile* outfile     = new TFile("L1RingQaHisto.root", "RECREATE");
   outfile->cd();
   TIter hiter(listHisto);
   while (TObject* obj = hiter())
@@ -1146,7 +1018,8 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   gDirectory = oldDir;
 }
 
-void CbmL1RichRingQa::Finish() {
+void CbmL1RichRingQa::Finish()
+{
   TStyle plain("Plain", "Plain Style(no colors/fill areas)");
   plain.SetPadColor(0);
   plain.SetCanvasColor(0);

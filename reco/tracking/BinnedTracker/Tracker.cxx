@@ -6,14 +6,14 @@
 
 #include "CbmBinnedTrackerTask.h"
 
-CbmBinnedTracker* CbmBinnedTracker::Instance() {
+CbmBinnedTracker* CbmBinnedTracker::Instance()
+{
   static CbmBinnedTracker* theInstance = 0;
 
   if (0 == theInstance) {
     if (CbmBinnedTrackerTask::Instance())
-      theInstance =
-        new CbmBinnedTracker(CbmBinnedTrackerTask::Instance()->GetBeamDx(),
-                             CbmBinnedTrackerTask::Instance()->GetBeamDy());
+      theInstance = new CbmBinnedTracker(CbmBinnedTrackerTask::Instance()->GetBeamDx(),
+                                         CbmBinnedTrackerTask::Instance()->GetBeamDy());
     else
       theInstance = new CbmBinnedTracker(0.1, 0.1);
   }

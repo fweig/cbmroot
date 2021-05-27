@@ -26,10 +26,8 @@
  ** Derived/inspired by the Flesnet MicrosliceDescriptorDump class (Found in TimesliceDebugger.xpp)
  **/
 
-std::string
-FormatMsHeaderPrintout(const fles::MicrosliceDescriptor& msDescriptor);
+std::string FormatMsHeaderPrintout(const fles::MicrosliceDescriptor& msDescriptor);
 
-std::ostream& operator<<(std::ostream& os,
-                         const fles::MicrosliceDescriptor& msDescriptor);
+std::ostream& operator<<(std::ostream& os, const fles::MicrosliceDescriptor& msDescriptor);
 
 #endif  // CbmFormatMsHeaderPrintout_H

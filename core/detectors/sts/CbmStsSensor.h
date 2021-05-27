@@ -8,15 +8,15 @@
 
 #ifndef CBMSTSSENSOR_H
 #define CBMSTSSENSOR_H 1
+#include "CbmStsAddress.h"        // for GetElementId, kStsSensor
+#include "CbmStsElement.h"        // for CbmStsElement
+#include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, UInt_t, Bool_t, kTRUE
 #include <TString.h>     // for TString
 
 #include <string>  // for string
-
-#include "CbmStsAddress.h"        // for GetElementId, kStsSensor
-#include "CbmStsElement.h"        // for CbmStsElement
-#include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
 
 class CbmEvent;
 class CbmStsCluster;
@@ -43,9 +43,7 @@ public:
      ** @param node    Pointer to geometry node
      ** @param mother  Pointer to mother element (module)
      **/
-  CbmStsSensor(UInt_t address         = 0,
-               TGeoPhysicalNode* node = nullptr,
-               CbmStsElement* mother  = nullptr);
+  CbmStsSensor(UInt_t address = 0, TGeoPhysicalNode* node = nullptr, CbmStsElement* mother = nullptr);
 
 
   /** Destructor  **/
@@ -90,15 +88,14 @@ public:
      ** running number, starting wth 0. The sensor with ID 0
      ** is the topmost one.
      **/
-  Int_t GetSensorId() const {
-    return CbmStsAddress::GetElementId(fAddress, kStsSensor);
-  }
+  Int_t GetSensorId() const { return CbmStsAddress::GetElementId(fAddress, kStsSensor); }
 
 
   /** @brief Set sensor address
      ** @param address STS element address
      **/
-  void SetAddress(Int_t address) {
+  void SetAddress(Int_t address)
+  {
     fAddress = address;
     fName    = CbmStsElement::ConstructName(address, kStsSensor);
   }
@@ -110,9 +107,9 @@ public:
      ** The operating conditions are e.g. temperature, voltages
      ** and capacitances.
      **/
-  void SetConditions(const CbmStsParSensorCond* conditions) {
-    if (!fConditions)
-      fConditions = new CbmStsParSensorCond(*conditions);
+  void SetConditions(const CbmStsParSensorCond* conditions)
+  {
+    if (!fConditions) fConditions = new CbmStsParSensorCond(*conditions);
     else
       *fConditions = *conditions;
   }

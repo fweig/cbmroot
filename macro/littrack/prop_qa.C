@@ -9,10 +9,11 @@
 using std::cout;
 using std::endl;
 
-void prop_qa(Int_t nEvents = 1000) {
+void prop_qa(Int_t nEvents = 1000)
+{
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
 
-  TString dir = "/data.local1/andrey/events/events_propagation_qa_electrons/";
+  TString dir               = "/data.local1/andrey/events/events_propagation_qa_electrons/";
   TString mcFile            = dir + "mc.0000.root";
   TString globalTracksFile  = dir + "global.reco.0000.root";
   TString parFile           = dir + "param.0000.root";
@@ -23,15 +24,14 @@ void prop_qa(Int_t nEvents = 1000) {
   Int_t testFastPropagation = 0;
 
   if (script == "yes") {
-    mcFile           = TString(gSystem->Getenv("LIT_MC_FILE"));
-    parFile          = TString(gSystem->Getenv("LIT_PAR_FILE"));
-    globalTracksFile = TString(gSystem->Getenv("LIT_GLOBAL_TRACKS_IDEAL_FILE"));
-    resultDir        = TString(gSystem->Getenv("LIT_RESULT_DIR"));
-    propAnaFile      = TString(gSystem->Getenv("LIT_PROP_ANA_FILE"));
-    nofHits          = TString(gSystem->Getenv("LIT_NOF_HITS")).Atoi();
-    pdg              = TString(gSystem->Getenv("LIT_PDG")).Atoi();
-    testFastPropagation =
-      TString(gSystem->Getenv("LIT_TEST_FAST_PROPAGATION")).Atoi();
+    mcFile              = TString(gSystem->Getenv("LIT_MC_FILE"));
+    parFile             = TString(gSystem->Getenv("LIT_PAR_FILE"));
+    globalTracksFile    = TString(gSystem->Getenv("LIT_GLOBAL_TRACKS_IDEAL_FILE"));
+    resultDir           = TString(gSystem->Getenv("LIT_RESULT_DIR"));
+    propAnaFile         = TString(gSystem->Getenv("LIT_PROP_ANA_FILE"));
+    nofHits             = TString(gSystem->Getenv("LIT_NOF_HITS")).Atoi();
+    pdg                 = TString(gSystem->Getenv("LIT_PDG")).Atoi();
+    testFastPropagation = TString(gSystem->Getenv("LIT_TEST_FAST_PROPAGATION")).Atoi();
   }
 
   TStopwatch timer;
@@ -57,8 +57,7 @@ void prop_qa(Int_t nEvents = 1000) {
   propQa->SetFixedBounds(true);
   run->AddTask(propQa);
   // -------------------------------------------------------------------------
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir      = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString stsDigiFile = parDir + "/sts/sts_standard.digi.par";
   // -----  Parameter database   --------------------------------------------
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
@@ -83,8 +82,7 @@ void prop_qa(Int_t nEvents = 1000) {
   cout << "Macro finished successfully." << endl;
   cout << "Output file is " << propAnaFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

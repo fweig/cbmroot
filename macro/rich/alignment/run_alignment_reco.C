@@ -1,11 +1,11 @@
-void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
+void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5")
+{
   TTree::SetMaxTreeSize(90000000000);
 
   Int_t iVerbose = 0;
 
   TString script = TString(gSystem->Getenv("SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
 
   gRandom->SetSeed(10);
 
@@ -26,19 +26,17 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
   TString mcFile       = outDir + "mc." + numb + axis + tile + ".root";
   TString recoFile     = outDir + "reco." + numb + axis + tile + ".root";
 
-  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                         + "/macro/rich/run/geosetup/geosetup_25gev.C";
+  TString geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/geosetup_25gev.C";
 
   std::string resultDir = "recqa_0001/";
 
   if (script == "yes") {
-    mcFile       = TString(gSystem->Getenv("MC_FILE"));
-    recoFile     = TString(gSystem->Getenv("RECO_FILE"));
-    parFile      = TString(gSystem->Getenv("PAR_FILE"));
-    resultDir    = TString(gSystem->Getenv("LIT_RESULT_DIR"));
-    geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
-                   + "/macro/rich/run/geosetup/"
-                   + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+    mcFile    = TString(gSystem->Getenv("MC_FILE"));
+    recoFile  = TString(gSystem->Getenv("RECO_FILE"));
+    parFile   = TString(gSystem->Getenv("PAR_FILE"));
+    resultDir = TString(gSystem->Getenv("LIT_RESULT_DIR"));
+    geoSetupFile =
+      TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/run/geosetup/" + TString(gSystem->Getenv("GEO_SETUP_FILE"));
   }
 
   remove(recoFile.Data());
@@ -86,17 +84,14 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
 
   Bool_t useMvdInTracking = kFALSE;
   if (isMvd) {
-    CbmMvdDigitizer* mvdDigitise =
-      new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+    CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
     run->AddTask(mvdDigitise);
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
     run->AddTask(mvdCluster);
 
 
-    CbmMvdHitfinder* mvdHitfinder =
-      new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+    CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
     mvdHitfinder->UseClusterfinder(kTRUE);
     run->AddTask(mvdHitfinder);
 
@@ -107,13 +102,13 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
   // =========================================================================
   // ===                      STS local reconstruction                     ===
   // =========================================================================
-  Double_t dynRange       = 40960.;  // Dynamic range [e]
-  Double_t threshold      = 4000.;   // Digitisation threshold [e]
-  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
-  Double_t timeResolution = 5.;      // time resolution [ns]
-  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise    = 0.;        // ENC [e]
-  Int_t digiModel   = 1;         // User sensor type DSSD
+  Double_t dynRange       = 40960.;    // Dynamic range [e]
+  Double_t threshold      = 4000.;     // Digitisation threshold [e]
+  Int_t nAdc              = 4096;      // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;        // time resolution [ns]
+  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise          = 0.;        // ENC [e]
+  Int_t digiModel         = 1;         // User sensor type DSSD
 
   // The following settings correspond to a validated implementation.
   // Changing them is on your own risk.
@@ -123,10 +118,8 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
   Bool_t useCrossTalk    = kFALSE;  // Deactivate cross talk
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetProcesses(
-    eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
-  stsDigi->SetParameters(
-    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+  stsDigi->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
 
   FairTask* stsClusterFinder = new CbmStsFindClusters();
@@ -139,8 +132,7 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();
   l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
-  if (mvdMatBudgetFileName != "")
-    l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
+  if (mvdMatBudgetFileName != "") l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   run->AddTask(l1);
 
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
@@ -213,8 +205,8 @@ void run_alignment_reco(Int_t nEvents = 5000, TString Rot = "5") {
 
 
   if (isTrd) {
-    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN(
-      "CbmTrdSetTracksPidANN", "CbmTrdSetTracksPidANN");
+    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+      new CbmTrdSetTracksPidANN("CbmTrdSetTracksPidANN", "CbmTrdSetTracksPidANN");
     trdSetTracksPidAnnTask->SetTRDGeometryType("h++");
     run->AddTask(trdSetTracksPidAnnTask);
   }  //isTrd

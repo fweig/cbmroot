@@ -4,19 +4,20 @@
  * \date 2009
  **/
 #include "base/CbmLitFieldFitter.h"
+
 #include "CbmUtils.h"
 
 #include "FairField.h"
 #include "FairRunAna.h"
 
 //#include "TFitterMinuit.h"
-#include "Math/IFunction.h"
-#include "Minuit2/Minuit2Minimizer.h"
-
 #include "TMatrixD.h"
 #include "TVectorD.h"
 
 #include <cmath>
+
+#include "Math/IFunction.h"
+#include "Minuit2/Minuit2Minimizer.h"
 
 /**
  * \class CbmLitPolynom0
@@ -68,9 +69,7 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
-    return c[0] + c[1] * x + c[2] * y;
-  }
+  double Calculate(double x, double y, double c[]) const { return c[0] + c[1] * x + c[2] * y; }
 
   /**
     * \brief Inherited from CbmLitPolynom.
@@ -99,9 +98,9 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
-    return c[0] + c[1] * x + c[2] * y + c[3] * x * x + c[4] * x * y
-           + c[5] * y * y;
+  double Calculate(double x, double y, double c[]) const
+  {
+    return c[0] + c[1] * x + c[2] * y + c[3] * x * x + c[4] * x * y + c[5] * y * y;
   }
 
   /**
@@ -131,7 +130,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
     double x2  = x * x;
     double y2  = y * y;
     double x2y = x2 * y;
@@ -139,8 +139,8 @@ public:
     double x3  = x2 * x;
     double y3  = y2 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * x * y + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * x * y + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3;
   }
 
   /**
@@ -170,7 +170,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -187,9 +188,8 @@ public:
     double x2y2 = x2 * y2;
     double x3y  = x3 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4;
   }
 
   /**
@@ -219,7 +219,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -243,11 +244,9 @@ public:
     double x3y2 = x3 * y2;
     double x4y  = x4 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5;
   }
 
   /**
@@ -277,7 +276,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -309,12 +309,10 @@ public:
     double x4y2 = x4 * y2;
     double x5y  = x5 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2 + c[24] * x3y3
-           + c[25] * x2y4 + c[26] * xy5 + c[27] * y6;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2
+           + c[24] * x3y3 + c[25] * x2y4 + c[26] * xy5 + c[27] * y6;
   }
 
   /**
@@ -344,7 +342,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -385,14 +384,11 @@ public:
     double x5y2 = x5 * y2;
     double x6y  = x6 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2 + c[24] * x3y3
-           + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y
-           + c[30] * x5y2 + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5
-           + c[34] * xy6 + c[35] * y7;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2
+           + c[24] * x3y3 + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y + c[30] * x5y2
+           + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5 + c[34] * xy6 + c[35] * y7;
   }
 
   /**
@@ -422,7 +418,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -473,16 +470,12 @@ public:
     double x6y2 = x6 * y2;
     double x7y  = x7 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2 + c[24] * x3y3
-           + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y
-           + c[30] * x5y2 + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5
-           + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y + c[38] * x6y2
-           + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6
-           + c[43] * xy7 + c[44] * y8;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2
+           + c[24] * x3y3 + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y + c[30] * x5y2
+           + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5 + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y
+           + c[38] * x6y2 + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6 + c[43] * xy7 + c[44] * y8;
   }
 
   /**
@@ -512,7 +505,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
 
     double x2 = x * x;
     double y2 = y * y;
@@ -574,17 +568,13 @@ public:
     double x7y2 = x7 * y2;
     double x8y  = x8 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2 + c[24] * x3y3
-           + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y
-           + c[30] * x5y2 + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5
-           + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y + c[38] * x6y2
-           + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6
-           + c[43] * xy7 + c[44] * y8 + c[45] * x9 + c[46] * x8y + c[47] * x7y2
-           + c[48] * x6y3 + c[49] * x5y4 + c[50] * x4y5 + c[51] * x3y6
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2
+           + c[24] * x3y3 + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y + c[30] * x5y2
+           + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5 + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y
+           + c[38] * x6y2 + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6 + c[43] * xy7 + c[44] * y8
+           + c[45] * x9 + c[46] * x8y + c[47] * x7y2 + c[48] * x6y3 + c[49] * x5y4 + c[50] * x4y5 + c[51] * x3y6
            + c[52] * x2y7 + c[53] * xy8 + c[54] * y9;
   }
 
@@ -615,7 +605,8 @@ public:
   /**
     * \brief Inherited from CbmLitPolynom.
     */
-  double Calculate(double x, double y, double c[]) const {
+  double Calculate(double x, double y, double c[]) const
+  {
     double x2 = x * x;
     double y2 = y * y;
     double xy = x * y;
@@ -688,21 +679,15 @@ public:
     double x8y2 = x8 * y2;
     double x9y  = x9 * y;
 
-    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2
-           + c[6] * x3 + c[7] * x2y + c[8] * xy2 + c[9] * y3 + c[10] * x4
-           + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5
-           + c[16] * x4y + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4
-           + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2 + c[24] * x3y3
-           + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y
-           + c[30] * x5y2 + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5
-           + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y + c[38] * x6y2
-           + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6
-           + c[43] * xy7 + c[44] * y8 + c[45] * x9 + c[46] * x8y + c[47] * x7y2
-           + c[48] * x6y3 + c[49] * x5y4 + c[50] * x4y5 + c[51] * x3y6
-           + c[52] * x2y7 + c[53] * xy8 + c[54] * y9 + c[55] * x10 + c[56] * x9y
-           + c[57] * x8y2 + c[58] * x7y3 + c[59] * x6y4 + c[60] * x5y5
-           + c[61] * x4y6 + c[62] * x3y7 + c[63] * x2y8 + c[64] * xy9
-           + c[65] * y10;
+    return c[0] + c[1] * x + c[2] * y + c[3] * x2 + c[4] * xy + c[5] * y2 + c[6] * x3 + c[7] * x2y + c[8] * xy2
+           + c[9] * y3 + c[10] * x4 + c[11] * x3y + c[12] * x2y2 + c[13] * xy3 + c[14] * y4 + c[15] * x5 + c[16] * x4y
+           + c[17] * x3y2 + c[18] * x2y3 + c[19] * xy4 + c[20] * y5 + c[21] * x6 + c[22] * x5y + c[23] * x4y2
+           + c[24] * x3y3 + c[25] * x2y4 + c[26] * xy5 + c[27] * y6 + c[28] * x7 + c[29] * x6y + c[30] * x5y2
+           + c[31] * x4y3 + c[32] * x3y4 + c[33] * x2y5 + c[34] * xy6 + c[35] * y7 + c[36] * x8 + c[37] * x7y
+           + c[38] * x6y2 + c[39] * x5y3 + c[40] * x4y4 + c[41] * x3y5 + c[42] * x2y6 + c[43] * xy7 + c[44] * y8
+           + c[45] * x9 + c[46] * x8y + c[47] * x7y2 + c[48] * x6y3 + c[49] * x5y4 + c[50] * x4y5 + c[51] * x3y6
+           + c[52] * x2y7 + c[53] * xy8 + c[54] * y9 + c[55] * x10 + c[56] * x9y + c[57] * x8y2 + c[58] * x7y3
+           + c[59] * x6y4 + c[60] * x5y5 + c[61] * x4y6 + c[62] * x3y7 + c[63] * x2y8 + c[64] * xy9 + c[65] * y10;
   }
 
   /**
@@ -723,11 +708,14 @@ public:
   /**
     * \brief Constructor.
     */
-  FCNPolynom(const std::vector<double>& x,
-             const std::vector<double>& y,
-             const std::vector<double>& z,
+  FCNPolynom(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& z,
              CbmLitPolynom* polynom)
-    : fX(x), fY(y), fZ(z), fPolynom(polynom) {}
+    : fX(x)
+    , fY(y)
+    , fZ(z)
+    , fPolynom(polynom)
+  {
+  }
 
   /**
     * \brief Destructor.
@@ -745,7 +733,8 @@ public:
 
   //   virtual double operator()(
   //    const std::vector<double>& par) const
-  Double_t DoEval(const Double_t* x) const {
+  Double_t DoEval(const Double_t* x) const
+  {
     //       double* p = const_cast<double*>(&par[0]);
     double* p = const_cast<double*>(x);
     double r  = 0.;
@@ -765,9 +754,7 @@ public:
 
   unsigned int NDim() const { return fPolynom->GetNofCoefficients(); }
 
-  ROOT::Math::IBaseFunctionMultiDim* Clone() const {
-    return new FCNPolynom(fX, fY, fZ, fPolynom);
-  }
+  ROOT::Math::IBaseFunctionMultiDim* Clone() const { return new FCNPolynom(fX, fY, fZ, fPolynom); }
 
   /**
     * \brief Return polynomial which is used for minimization.
@@ -789,7 +776,8 @@ CbmLitFieldFitter::CbmLitFieldFitter(unsigned int polynomDegree)
   , fNofBinsX(100)
   , fNofBinsY(100)
   , fUseEllipseAcc(true)
-  , fPolynomDegree(polynomDegree) {
+  , fPolynomDegree(polynomDegree)
+{
   fField = FairRunAna::Instance()->GetField();
 
   switch (polynomDegree) {
@@ -810,8 +798,8 @@ CbmLitFieldFitter::CbmLitFieldFitter(unsigned int polynomDegree)
 CbmLitFieldFitter::~CbmLitFieldFitter() {}
 
 template<class T>
-void CbmLitFieldFitter::FitSlice(float Z,
-                                 lit::parallel::LitFieldSlice<T>& slice) {
+void CbmLitFieldFitter::FitSlice(float Z, lit::parallel::LitFieldSlice<T>& slice)
+{
   std::vector<double> aparBx, aparBy, aparBz;
   FitSlice(Z, aparBx, aparBy, aparBz);
 
@@ -824,29 +812,21 @@ void CbmLitFieldFitter::FitSlice(float Z,
   slice.SetCoefficients(aparBxT, aparByT, aparBzT);
 }
 
-void CbmLitFieldFitter::FitSliceScal(
-  float Z,
-  lit::parallel::LitFieldSlice<fscal>& slice) {
-  FitSlice<fscal>(Z, slice);
-}
+void CbmLitFieldFitter::FitSliceScal(float Z, lit::parallel::LitFieldSlice<fscal>& slice) { FitSlice<fscal>(Z, slice); }
 
-void CbmLitFieldFitter::FitSliceVec(float Z,
-                                    lit::parallel::LitFieldSlice<fvec>& slice) {
-  FitSlice<fvec>(Z, slice);
-}
+void CbmLitFieldFitter::FitSliceVec(float Z, lit::parallel::LitFieldSlice<fvec>& slice) { FitSlice<fvec>(Z, slice); }
 
-void CbmLitFieldFitter::FitSlice(double Z,
-                                 std::vector<double>& parBx,
-                                 std::vector<double>& parBy,
-                                 std::vector<double>& parBz) {
+void CbmLitFieldFitter::FitSlice(double Z, std::vector<double>& parBx, std::vector<double>& parBy,
+                                 std::vector<double>& parBz)
+{
   double tanXangle = std::tan(fXangle * 3.14159265 / 180.);  //
   double tanYangle = std::tan(fYangle * 3.14159265 / 180.);  //
 
   double Xmax = Z * tanXangle;
   double Ymax = Z * tanYangle;
 
-  std::cout << "Fit slice. Xmax=" << Xmax << " Ymax=" << Ymax << " Z=" << Z
-            << " Xanlge=" << fXangle << " Yangle=" << fYangle << std::endl;
+  std::cout << "Fit slice. Xmax=" << Xmax << " Ymax=" << Ymax << " Z=" << Z << " Xanlge=" << fXangle
+            << " Yangle=" << fYangle << std::endl;
 
   double HX = 2 * Xmax / fNofBinsX;  // step size for X position
   double HY = 2 * Ymax / fNofBinsY;  // step size for Y position
@@ -883,10 +863,9 @@ void CbmLitFieldFitter::FitSlice(double Z,
   FitSlice(x, y, Bz, parBz);
 }
 
-void CbmLitFieldFitter::FitSlice(const std::vector<double>& x,
-                                 const std::vector<double>& y,
-                                 const std::vector<double>& z,
-                                 std::vector<double>& par) {
+void CbmLitFieldFitter::FitSlice(const std::vector<double>& x, const std::vector<double>& y,
+                                 const std::vector<double>& z, std::vector<double>& par)
+{
   FCNPolynom* theFCN = new FCNPolynom(x, y, z, fPolynom);
 
   //   TFitterMinuit theMinuit;
@@ -914,10 +893,9 @@ void CbmLitFieldFitter::FitSlice(const std::vector<double>& x,
 }
 
 
-void CbmLitFieldFitter::FitSliceMy(double Z,
-                                   std::vector<double>& parBx,
-                                   std::vector<double>& parBy,
-                                   std::vector<double>& parBz) {
+void CbmLitFieldFitter::FitSliceMy(double Z, std::vector<double>& parBx, std::vector<double>& parBy,
+                                   std::vector<double>& parBz)
+{
   const int M = fPolynomDegree;  //5; // polinom order
   const int N = (M + 1) * (M + 2) / 2;
 
@@ -954,8 +932,7 @@ void CbmLitFieldFitter::FitSliceMy(double Z,
   }
   for (double x = -Xmax; x <= Xmax; x += dx) {
     for (double y = -Ymax; y <= Ymax; y += dy) {
-      double r =
-        std::sqrt(std::fabs(x * x / Xmax / Xmax + y / Ymax * y / Ymax));
+      double r = std::sqrt(std::fabs(x * x / Xmax / Xmax + y / Ymax * y / Ymax));
       if (r > 1.) { continue; }
       Double_t w    = 1. / (r * r + 1);
       Double_t p[3] = {x, y, Z};

@@ -24,10 +24,7 @@ public:
   /**
     * \brief Constructor.
     */
-  CbmLitStripHit()
-    : fU(0.), fDu(0.), fPhi(0.), fCosPhi(0.), fSinPhi(0.), fSegment(0) {
-    SetHitType(kLITSTRIPHIT);
-  }
+  CbmLitStripHit() : fU(0.), fDu(0.), fPhi(0.), fCosPhi(0.), fSinPhi(0.), fSegment(0) { SetHitType(kLITSTRIPHIT); }
 
   /**
     * \brief Destructor.
@@ -54,12 +51,11 @@ public:
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-  virtual std::string ToString() const {
+  virtual std::string ToString() const
+  {
     std::stringstream ss;
-    ss << "StripHit: pos=(" << GetU() << "," << GetZ() << ") err=(" << GetDu()
-       << "," << GetDz() << ") "
-       << " phi=" << GetPhi() << " cosPhi=" << GetCosPhi()
-       << " sinPhi=" << GetSinPhi() << " refId=" << GetRefId()
+    ss << "StripHit: pos=(" << GetU() << "," << GetZ() << ") err=(" << GetDu() << "," << GetDz() << ") "
+       << " phi=" << GetPhi() << " cosPhi=" << GetCosPhi() << " sinPhi=" << GetSinPhi() << " refId=" << GetRefId()
        << " hitType=" << GetType() << " station=" << GetStation() << std::endl;
     return ss.str();
   }

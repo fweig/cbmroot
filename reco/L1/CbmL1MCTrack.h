@@ -18,8 +18,10 @@
 #define CbmL1MCTrack_H
 
 #include "CbmL1MCPoint.h"
+
 #include "TLorentzVector.h"
 #include "TVector3.h"
+
 #include <iostream>
 #include <vector>
 using std::vector;
@@ -92,13 +94,7 @@ public:
     , isAdditional(0)
     , rTracks()
     , tTracks() {};
-  CbmL1MCTrack(double mass,
-               double q,
-               TVector3 vr,
-               TLorentzVector vp,
-               int ID,
-               int mother_ID,
-               int pdg);
+  CbmL1MCTrack(double mass, double q, TVector3 vr, TLorentzVector vp, int ID, int mother_ID, int pdg);
   //   CbmL1MCTrack(TmpMCPoints &mcPoint, TVector3 vr, TLorentzVector vp, int ID, int mother_ID);
 
   bool IsPrimary() const { return mother_ID < 0; };

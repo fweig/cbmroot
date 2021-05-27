@@ -10,11 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
-                                UInt_t uRunId   = 0,
-                                UInt_t nrEvents = 0,
-                                TString outDir  = "data",
-                                TString inDir   = "") {
+void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents = 0, TString outDir = "data",
+                                TString inDir = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -42,8 +40,7 @@ void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
 
   TString paramFileMuch = paramDir + "mMuchPar.par";
   /// Special parameter files for runs 353-374 (November19) and 380-408 (December19)
-  if (uRunId >= 353 && uRunId <= 374)
-    paramFileMuch = paramDir + "mMuchPar_Nov19.par";
+  if (uRunId >= 353 && uRunId <= 374) paramFileMuch = paramDir + "mMuchPar_Nov19.par";
   else if (374 < uRunId)
     paramFileMuch = paramDir + "mMuchPar_Dec19.par";
   TObjString* parMuchFileName = new TObjString(paramFileMuch);
@@ -73,13 +70,11 @@ void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
-    new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd   = new CbmMcbm2018UnpackerTaskPsd();
 
   unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
@@ -244,8 +239,8 @@ void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
   //  source->SetInputDir(inDir);
   source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
   source->AddUnpacker(unpacker_much, 0x40, ECbmModuleId::kMuch);  //MUCH xyter
-  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
-  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);    //gDPB A & B & C
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);    //gDPB T0 A & B
   source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
   source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);    //PSD
 
@@ -283,15 +278,15 @@ void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -299,8 +294,7 @@ void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

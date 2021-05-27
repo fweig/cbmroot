@@ -22,12 +22,8 @@ public:
   virtual ~CbmLitMapField() {};
 
   /* Inherited from CbmLitField */
-  void GetFieldValue(litfloat x,
-                     litfloat y,
-                     litfloat z,
-                     litfloat& Bx,
-                     litfloat& By,
-                     litfloat& Bz) const {
+  void GetFieldValue(litfloat x, litfloat y, litfloat z, litfloat& Bx, litfloat& By, litfloat& Bz) const
+  {
     double pos[3] = {x, y, z};
     double B[3];
     fField->GetFieldValue(pos, B);

@@ -38,9 +38,7 @@ public:
 
 
   /** Do the track merging **/
-  virtual Int_t DoMerge(TClonesArray* stsTracks,
-                        TClonesArray* trdTracks,
-                        TClonesArray* glbTracks);
+  virtual Int_t DoMerge(TClonesArray* stsTracks, TClonesArray* trdTracks, TClonesArray* glbTracks);
 
 
 private:

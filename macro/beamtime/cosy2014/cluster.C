@@ -4,7 +4,8 @@
  ** Clusters
  */
 
-void cluster(Int_t runID, Int_t fileID) {
+void cluster(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy2014
 
   TString runN    = TString::Itoa(runID, 10);
@@ -41,7 +42,7 @@ void cluster(Int_t runID, Int_t fileID) {
   std::cout << ">>> cluster: Initialising..." << std::endl;
 
   // --- Sets
-  Bool_t trigger = kTRUE;  // kFALSE - self-trigger; kTRUE - external trigger
+  Bool_t trigger          = kTRUE;  // kFALSE - self-trigger; kTRUE - external trigger
   Int_t triggered_station = 1;
 
   // --- Time parameterts if Set-function will be used here (for run 105)
@@ -65,8 +66,7 @@ void cluster(Int_t runID, Int_t fileID) {
   sts_clust->SetTriggeredMode(trigger);
   sts_clust->SetTriggeredStation(triggered_station);
 
-  if (cutFile != "")
-    sts_clust->SetCutFileName(cutFile);
+  if (cutFile != "") sts_clust->SetCutFileName(cutFile);
   else {
     sts_clust->SetTimeLimit(t_limits);
     sts_clust->SetTimeShift(t_shifts);
@@ -91,8 +91,7 @@ void cluster(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> cluster: Macro finished successfully." << std::endl;
   std::cout << ">>> cluster: Output file is " << outFile << std::endl;
-  std::cout << ">>> cluster: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> cluster: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

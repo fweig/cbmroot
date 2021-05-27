@@ -10,12 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorShiftStar2018(TString inFile           = "",
-                          Bool_t bGet4v2Mode       = kTRUE,
-                          Bool_t b24bModeOn        = kFALSE,
-                          Bool_t bMergedEpochsOn   = kFALSE,
-                          Int_t iServerRefreshRate = 100,
-                          Int_t iServerHttpPort    = 8080) {
+void MonitorShiftStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24bModeOn = kFALSE,
+                          Bool_t bMergedEpochsOn = kFALSE, Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //  TString inDir  = srcDir + "/input/";
   //  if( "" != inFile )
@@ -57,8 +54,7 @@ void MonitorShiftStar2018(TString inFile           = "",
   std::cout << ">>> ngDpbMonitorLab: Initialising..." << std::endl;
 
   // Get4 Unpacker
-  CbmTofStarMonitorShift2018* test_monitor_tof =
-    new CbmTofStarMonitorShift2018();
+  CbmTofStarMonitorShift2018* test_monitor_tof = new CbmTofStarMonitorShift2018();
 
   test_monitor_tof->SetFitZoomWidthPs();
   test_monitor_tof->SetMsOverlap();
@@ -67,8 +63,7 @@ void MonitorShiftStar2018(TString inFile           = "",
 
   // --- Source task
   CbmTofStar2018Source* source = new CbmTofStar2018Source();
-  if ("" != inFile)
-    source->SetFileName(inFile);
+  if ("" != inFile) source->SetFileName(inFile);
   else {
     source->SetHostName("localhost");
     source->SetPortNumber(5556);
@@ -109,8 +104,7 @@ void MonitorShiftStar2018(TString inFile           = "",
 
   run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -118,8 +112,7 @@ void MonitorShiftStar2018(TString inFile           = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
-  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

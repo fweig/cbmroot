@@ -25,8 +25,7 @@ public:
   virtual std::vector<std::string> GetMediaTags();
 
   virtual CbmGeoSetup GetSetupByTag(std::string setupTag, std::string revision);
-  virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId,
-                                           std::string tag);
+  virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId, std::string tag);
   virtual CbmGeoSetupField GetFieldByTag(std::string tag);
   virtual CbmGeoSetupMedia GetMediaByTag(std::string tag);
 

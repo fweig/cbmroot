@@ -10,9 +10,8 @@
 FairRunOnline* run = new FairRunOnline();
 
 // Max nEvents: 198999999999
-void tdcref_monitoring_auto(Int_t nEvents    = 100000,
-                            char* cFileId    = "CbmTofSps_28Nov0041",
-                            Bool_t bCalibRun = kFALSE) {
+void tdcref_monitoring_auto(Int_t nEvents = 100000, char* cFileId = "CbmTofSps_28Nov0041", Bool_t bCalibRun = kFALSE)
+{
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
   logLevel         = "ERROR";
@@ -55,8 +54,7 @@ void tdcref_monitoring_auto(Int_t nEvents    = 100000,
   //   FairMbsStreamSource* source = new FairMbsStreamSource("trbdaq:21704");
 
   CbmHldSource* source = new CbmHldSource();
-  source->AddPath("/hera/cbm/users/tofGsiApr14/cern-nov15/production/",
-                  Form("%s*.hld", cFileId));
+  source->AddPath("/hera/cbm/users/tofGsiApr14/cern-nov15/production/", Form("%s*.hld", cFileId));
   //   source->AddFile("/home/cbmlyserv/DataTemp/CbmTofSps_26Nov1421_15330142142.hld");
 
   // = 1 TRB3: TTrbUnpackTof(0,0,31,0,0)

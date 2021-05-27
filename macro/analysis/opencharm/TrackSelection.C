@@ -45,10 +45,8 @@ TString setup    = "sis100_electron";
 bool littrack    = false;
 Bool_t useMC     = kFALSE;
 
-void TrackSelection(Int_t nEvents = 10,
-                    Int_t ProcID  = 1,
-                    bool PileUp   = false,
-                    Int_t PidTyp  = 0) {
+void TrackSelection(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false, Int_t PidTyp = 0)
+{
 
   switch (PidTyp) {
     case 0: TString pidMode = "NONE"; break;
@@ -59,57 +57,35 @@ void TrackSelection(Int_t nEvents = 10,
 
   // ------------------------------------------------------------
   // Monte Carlo file
-  TString mcFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root",
-                        input.Data(),
-                        inputGEV.Data(),
-                        nEvents,
-                        ProcID,
-                        signal.Data(),
-                        setup.Data());
+  TString mcFile = Form("data/opencharm.mc.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                        ProcID, signal.Data(), setup.Data());
 
   // Parameter file
-  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root",
-                         input.Data(),
-                         inputGEV.Data(),
-                         nEvents,
-                         ProcID,
-                         signal.Data(),
-                         setup.Data());
+  TString parFile = Form("data/paramsunigen.urqmd.%s.%s.%i.%i.%s.%s.root", input.Data(), inputGEV.Data(), nEvents,
+                         ProcID, signal.Data(), setup.Data());
 
   // Reco file
-  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s",
-                          input.Data(),
-                          inputGEV.Data(),
-                          nEvents,
-                          ProcID,
-                          signal.Data(),
-                          setup.Data());
+  TString rcSystem = Form("data/opencharm.reco.urqmd.%s.%s.%i.%i.%s.%s", input.Data(), inputGEV.Data(), nEvents, ProcID,
+                          signal.Data(), setup.Data());
   if (!PileUp) {
-    if (littrack)
-      TString rcFile = rcSystem + ".littrack.root";
+    if (littrack) TString rcFile = rcSystem + ".littrack.root";
     else
       TString rcFile = rcSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString rcFile = rcSystem + ".PileUp.littrack.root";
   else
     TString rcFile = rcSystem + ".PileUp.l1.root";
 
   // Output file
-  TString outSystem =
-    Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s",
-         input.Data(),
-         inputGEV.Data(),
-         nEvents,
-         ProcID,
-         signal.Data(),
-         setup.Data(),
-         pidMode.Data());
+  TString outSystem = Form("data/opencharm.tracks.urqmd.%s.%s.%i.%i.%s.%s.pidMode_%s", input.Data(), inputGEV.Data(),
+                           nEvents, ProcID, signal.Data(), setup.Data(), pidMode.Data());
   if (!PileUp) {
-    if (littrack)
-      TString outFile = outSystem + ".littrack.root";
+    if (littrack) TString outFile = outSystem + ".littrack.root";
     else
       TString outFile = outSystem + ".l1.root";
-  } else if (littrack)
+  }
+  else if (littrack)
     TString outFile = outSystem + ".PileUp.littrack.root";
   else
     TString outFile = outSystem + ".PileUp.l1.root";
@@ -154,8 +130,7 @@ void TrackSelection(Int_t nEvents = 10,
   // ========================================================================
 
   // name, Verbose,  cutP,  cutPt, cutChi2, cutIP )
-  CbmD0TrackSelection* dSelect =
-    new CbmD0TrackSelection("Selection", 1, 0.0, 0.0, 3., 10000.000);
+  CbmD0TrackSelection* dSelect = new CbmD0TrackSelection("Selection", 1, 0.0, 0.0, 3., 10000.000);
   dSelect->SetNHitsOfLongTracks(4);  // suppress short tracks
   dSelect->SetPIDMode(pidMode);      // set PID mode
   dSelect->SetUseMcInfo(kFALSE);     // set usage of MC information for D0

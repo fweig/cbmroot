@@ -9,28 +9,27 @@
 
 #include "CbmMvdDigi.h"
 #include "CbmMvdPoint.h"
+#include "CbmMvdSensor.h"
+#include "CbmMvdSensorTask.h"
+
 #include "FairTask.h"
 
 #include "TArrayS.h"
 #include "TCanvas.h"
-#include "TObjArray.h"
-#include "TRefArray.h"
-
-
 #include "TH1.h"
 #include "TH1F.h"
 #include "TH2.h"
 #include "TMath.h"
+#include "TObjArray.h"
 #include "TRandom3.h"
+#include "TRefArray.h"
 #include "TStopwatch.h"
 #include "TString.h"
+
 #include <list>
 #include <map>
 #include <utility>
 #include <vector>
-
-#include "CbmMvdSensor.h"
-#include "CbmMvdSensorTask.h"
 
 class TClonesArray;
 class TRandom3;
@@ -61,9 +60,9 @@ public:
   /** Intialisation **/
   void InitTask(CbmMvdSensor* mySensor);
 
-  virtual void SetInputDigi(CbmMvdDigi* digi) {
-    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()])
-      CbmMvdDigi(*((CbmMvdDigi*) digi));
+  virtual void SetInputDigi(CbmMvdDigi* digi)
+  {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdDigi(*((CbmMvdDigi*) digi));
     inputSet = kTRUE;
   }
 
@@ -71,14 +70,13 @@ public:
   //Double_t GetSigmaX()        const { return fSigmaX;     };
 
   /** Modifiers **/
-  void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise) {
+  void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise)
+  {
     fSigmaNoise = sigmaNoise;
     fAddNoise   = addNoise;
   }
   void SetSeedThreshold(Double_t seedCharge) { fSeedThreshold = seedCharge; }
-  void SetNeighbourThreshold(Double_t neighCharge) {
-    fNeighThreshold = neighCharge;
-  }
+  void SetNeighbourThreshold(Double_t neighCharge) { fNeighThreshold = neighCharge; }
   /**
 
         proba(%) to have 1 fake hit  | Number of sigmas (of noise distr)
@@ -174,8 +172,7 @@ private:
   TString fBranchName;
 
   Int_t fDigisInCluster;
-  static const Short_t fChargeArraySize =
-    7;  //must be an odd number >3, recommended numbers= 5 or 7
+  static const Short_t fChargeArraySize = 7;  //must be an odd number >3, recommended numbers= 5 or 7
 
   Bool_t fAddNoise;
 
@@ -206,18 +203,11 @@ private:
   void SetMvdGeometry(Int_t detId);
   void AddNoiseToDigis(CbmMvdDigi* digi);
   // void GenerateFakeDigis(Double_t pixelSizeX, Double_t pixelSizeY);
-  void CheckForNeighbours(std::vector<Int_t>* clusterArray,
-                          Int_t clusterDigi,
-                          TArrayS* pixelUsed);
+  void CheckForNeighbours(std::vector<Int_t>* clusterArray, Int_t clusterDigi, TArrayS* pixelUsed);
 
-  void
-  CreateHit(std::vector<Int_t>* clusterArray, TVector3& pos, TVector3& dpos);
-  void ComputeCenterOfGravity(std::vector<Int_t>* clusterArray,
-                              TVector3& pos,
-                              TVector3& dpos);
-  void UpdateDebugHistos(std::vector<Int_t>* clusterArray,
-                         Int_t seedIndexX,
-                         Int_t seedIndexY);
+  void CreateHit(std::vector<Int_t>* clusterArray, TVector3& pos, TVector3& dpos);
+  void ComputeCenterOfGravity(std::vector<Int_t>* clusterArray, TVector3& pos, TVector3& dpos);
+  void UpdateDebugHistos(std::vector<Int_t>* clusterArray, Int_t seedIndexX, Int_t seedIndexY);
 
 private:
   CbmMvdSensorFindHitTask(const CbmMvdSensorFindHitTask&);

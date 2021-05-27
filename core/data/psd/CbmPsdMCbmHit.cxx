@@ -12,20 +12,18 @@
 using namespace std;
 
 // -----   Default constructor
-CbmPsdMCbmHit::CbmPsdMCbmHit()
-  : TObject(), fuModuleId(0), fuSectionId(0), fdEdep(-1.), fdTime(-1.) {}
+CbmPsdMCbmHit::CbmPsdMCbmHit() : TObject(), fuModuleId(0), fuSectionId(0), fdEdep(-1.), fdTime(-1.) {}
 
 
 // -----   Constructor with parameters
-CbmPsdMCbmHit::CbmPsdMCbmHit(UInt_t ModuleId,
-                             UInt_t SectionId,
-                             Double_t Edep,
-                             Double_t Time)
+CbmPsdMCbmHit::CbmPsdMCbmHit(UInt_t ModuleId, UInt_t SectionId, Double_t Edep, Double_t Time)
   : TObject()
   , fuModuleId(ModuleId)
   , fuSectionId(SectionId)
   , fdEdep(Edep)
-  , fdTime(Time) {}
+  , fdTime(Time)
+{
+}
 
 
 // -----   Destructor
@@ -33,7 +31,8 @@ CbmPsdMCbmHit::~CbmPsdMCbmHit() {}
 
 
 // --- String output
-string CbmPsdMCbmHit::ToString() const {
+string CbmPsdMCbmHit::ToString() const
+{
   stringstream ss;
   //ss << "PsdHit: address " << GetAddress() << " | time " << GetTime()
   //   << " +- " << GetTimeError();

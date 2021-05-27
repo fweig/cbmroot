@@ -38,9 +38,8 @@ public:
    ** @param[in] physicsLists Define the physiscs lists (default QGSP_BERT_EMV+optical)
    ** @Param[in] specialProcesses Define special processes (default stepLimiter)
    **/
-  void SetG4RunConfig(std::string navigationEngine,
-                      std::string physicsLists,
-                      std::string specialProcesses) {
+  void SetG4RunConfig(std::string navigationEngine, std::string physicsLists, std::string specialProcesses)
+  {
     fG4RunConfig[0] = navigationEngine;
     fG4RunConfig[1] = physicsLists;
     fG4RunConfig[2] = specialProcesses;
@@ -56,7 +55,8 @@ public:
    ** remove the current list of commands
    ** @param[in] Geant4 command string
    **/
-  void SetG4Command(std::string command) {
+  void SetG4Command(std::string command)
+  {
     fG4Commands.clear();
     fG4Commands.push_back(command);
   }
@@ -74,14 +74,12 @@ public:
   void SetMaximumNumberOfSteps(Int_t numSteps) { fMaxNumSteps = numSteps; }
 
 private:
-  std::array<std::string, 3> fG4RunConfig {
-    {"geomRoot", "QGSP_BERT_EMV+optical", "stepLimiter"}};
+  std::array<std::string, 3> fG4RunConfig {{"geomRoot", "QGSP_BERT_EMV+optical", "stepLimiter"}};
 
-  std::vector<std::string> fG4Commands {
-    "/process/optical/verbose 0",
-    "/process/optical/defaults/cerenkov/setMaxPhotons 20",
-    "/process/optical/defaults/cerenkov/setMaxBetaChange 0.1",
-    "/process/optical/setTrackSecondariesFirst Cerenkov false"};
+  std::vector<std::string> fG4Commands {"/process/optical/verbose 0",
+                                        "/process/optical/defaults/cerenkov/setMaxPhotons 20",
+                                        "/process/optical/defaults/cerenkov/setMaxBetaChange 0.1",
+                                        "/process/optical/setTrackSecondariesFirst Cerenkov false"};
 
   Int_t fMaxNumSteps {10000000};
 

@@ -17,15 +17,15 @@ struct InOutStructure {
 };
 
 // This is the derived class for the parameterized test cases.
-class CbmTrdDetectorIdParamTest :
-  public ::testing::TestWithParam<InOutStructure> {
+class CbmTrdDetectorIdParamTest : public ::testing::TestWithParam<InOutStructure> {
 protected:
   CbmTrdDetectorId fTrdId;
   Int_t detInfo_array[6];
   Int_t result;
   Int_t uniqueId;
 
-  virtual void SetUp() {
+  virtual void SetUp()
+  {
     InOutStructure const& p = GetParam();
 
     detInfo_array[0] = p.system;
@@ -39,7 +39,8 @@ protected:
 };
 
 
-TEST_P(CbmTrdDetectorIdParamTest, checkUniqueIdCreation) {
+TEST_P(CbmTrdDetectorIdParamTest, checkUniqueIdCreation)
+{
   uniqueId = fTrdId.SetDetectorInfo(detInfo_array);
   EXPECT_EQ(result, uniqueId);
 }
@@ -58,17 +59,5 @@ InOutStructure val11 = {0, 0, 0, 8, 0, 0, 32768};
 InOutStructure val12 = {kTRD, 2, 3, 5, 17, 2, 69359173};
 
 
-INSTANTIATE_TEST_CASE_P(TestAllParameters,
-                        CbmTrdDetectorIdParamTest,
-                        ::testing::Values(val1,
-                                          val2,
-                                          val3,
-                                          val4,
-                                          val5,
-                                          val6,
-                                          val7,
-                                          val8,
-                                          val9,
-                                          val10,
-                                          val11,
-                                          val12));
+INSTANTIATE_TEST_CASE_P(TestAllParameters, CbmTrdDetectorIdParamTest,
+                        ::testing::Values(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));

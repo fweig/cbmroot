@@ -5,12 +5,12 @@
 
 #include "CbmTrdHitProducerQa.h"
 
+#include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 
-#include "CbmMCTrack.h"
 #include "FairBaseParSet.h"
 #include "FairDetector.h"
 #include "FairRootManager.h"
@@ -28,8 +28,7 @@ using std::endl;
 
 // ---- Default constructor -------------------------------------------------
 
-CbmTrdHitProducerQa::CbmTrdHitProducerQa()
-  : CbmTrdHitProducerQa("TrdHitProducerQa", "") {}
+CbmTrdHitProducerQa::CbmTrdHitProducerQa() : CbmTrdHitProducerQa("TrdHitProducerQa", "") {}
 // --------------------------------------------------------------------------
 
 
@@ -46,24 +45,19 @@ CbmTrdHitProducerQa::CbmTrdHitProducerQa(const char* name, const char*)
   , fHitPoolsX(new TH1F("fHitPoolsX", "", 500, -50, 50))
   , fHitPoolsY(new TH1F("fHitPoolsY", "", 500, -50, 50))
   , S1L1eTR15(new TH1F("S1L1eTR15", "TR of e- for first layer ", 600, 0., 60.))
-  , S1L1edEdx15(
-      new TH1F("S1L1edEdx15", "dEdx of e- for first layer ", 600, 0., 60.))
-  , S1L1edE15(
-      new TH1F("S1L1edE15", "dEdx+TR of e- for first layer ", 600, 0., 60.))
-  , S1L1edEall(
-      new TH1F("S1L1edEall", "dEdx+TR of e- for first layer ", 600, 0., 60.))
-  , S1L1pidE15(
-      new TH1F("S1L1pidE15", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
-  , S1L1pidEall(
-      new TH1F("S1L1pidEall", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
+  , S1L1edEdx15(new TH1F("S1L1edEdx15", "dEdx of e- for first layer ", 600, 0., 60.))
+  , S1L1edE15(new TH1F("S1L1edE15", "dEdx+TR of e- for first layer ", 600, 0., 60.))
+  , S1L1edEall(new TH1F("S1L1edEall", "dEdx+TR of e- for first layer ", 600, 0., 60.))
+  , S1L1pidE15(new TH1F("S1L1pidE15", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
+  , S1L1pidEall(new TH1F("S1L1pidEall", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
   , S3L4eTR15(NULL)
   , S3L4edEdx15(NULL)
   , S3L4edE15(NULL)
-  , S3L4edEall(
-      new TH1F("S3L4edEall", "dEdx+TR of e- for layer 12", 600, 0., 60.))
+  , S3L4edEall(new TH1F("S3L4edEall", "dEdx+TR of e- for layer 12", 600, 0., 60.))
   , S3L4pidE15(NULL)
-  , S3L4pidEall(
-      new TH1F("S3L4pidEall", "dEdx+TR of pi- for layer 12", 600, 0., 60.)) {}
+  , S3L4pidEall(new TH1F("S3L4pidEall", "dEdx+TR of pi- for layer 12", 600, 0., 60.))
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -73,7 +67,8 @@ CbmTrdHitProducerQa::~CbmTrdHitProducerQa() {}
 
 
 // ---- Initialisation ------------------------------------------------------
-InitStatus CbmTrdHitProducerQa::Init() {
+InitStatus CbmTrdHitProducerQa::Init()
+{
   // Get pointer to the ROOT I/O manager
   FairRootManager* rootMgr = FairRootManager::Instance();
   if (NULL == rootMgr) {
@@ -128,7 +123,8 @@ InitStatus CbmTrdHitProducerQa::Init() {
 
 
 // ---- Task execution ------------------------------------------------------
-void CbmTrdHitProducerQa::Exec(Option_t*) {
+void CbmTrdHitProducerQa::Exec(Option_t*)
+{
   // Declare variables
   CbmTrdHit* trdHit = NULL;
   //    CbmTrdDigi* trdDigi = NULL;
@@ -167,55 +163,40 @@ void CbmTrdHitProducerQa::Exec(Option_t*) {
     trdDigiMatch = (CbmMatch*) fTrdDigiMatchCollection->At(trdHit->GetRefId());
     if (NULL == trdDigiMatch) continue;
 
-    trdPoint = (CbmTrdPoint*) fTrdPointCollection->At(
-      trdDigiMatch->GetMatchedLink().GetIndex());
+    trdPoint = (CbmTrdPoint*) fTrdPointCollection->At(trdDigiMatch->GetMatchedLink().GetIndex());
     if (NULL == trdPoint) continue;
 
     plane = trdHit->GetPlaneId();
 
     if (plane == 1) {
 
-      partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))
-                  ->GetPdgCode());
+      partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
 
-      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx())
-                             + (trdPoint->GetPy() * trdPoint->GetPy())
+      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
                              + (trdPoint->GetPz() * trdPoint->GetPz()));
 
-      if ((TMath::Abs(partID) == 11) && (momentum > 1.25)
-          && (momentum < 1.75)) {
+      if ((TMath::Abs(partID) == 11) && (momentum > 1.25) && (momentum < 1.75)) {
 
         S1L1eTR15->Fill(0);  //(trdHit->GetELossTR())*1000000);
         S1L1edEdx15->Fill((trdHit->GetELoss()) * 1000000);
         S1L1edE15->Fill((trdHit->GetELoss()) * 1000000);
       }
-      if (TMath::Abs(partID) == 11) {
-        S1L1edEall->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if ((TMath::Abs(partID) == 211) && (momentum > 1.25)
-          && (momentum < 1.75)) {
+      if (TMath::Abs(partID) == 11) { S1L1edEall->Fill((trdHit->GetELoss()) * 1000000); }
+      if ((TMath::Abs(partID) == 211) && (momentum > 1.25) && (momentum < 1.75)) {
         S1L1pidE15->Fill((trdHit->GetELoss()) * 1000000);
       }
-      if (TMath::Abs(partID) == 211) {
-        S1L1pidEall->Fill((trdHit->GetELoss()) * 1000000);
-      }
+      if (TMath::Abs(partID) == 211) { S1L1pidEall->Fill((trdHit->GetELoss()) * 1000000); }
     }
 
     if (plane == 12) {
 
-      partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))
-                  ->GetPdgCode());
+      partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
 
-      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx())
-                             + (trdPoint->GetPy() * trdPoint->GetPy())
+      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
                              + (trdPoint->GetPz() * trdPoint->GetPz()));
 
-      if (TMath::Abs(partID) == 11) {
-        S3L4edEall->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if (TMath::Abs(partID) == 211) {
-        S3L4pidEall->Fill((trdHit->GetELoss()) * 1000000);
-      }
+      if (TMath::Abs(partID) == 11) { S3L4edEall->Fill((trdHit->GetELoss()) * 1000000); }
+      if (TMath::Abs(partID) == 211) { S3L4pidEall->Fill((trdHit->GetELoss()) * 1000000); }
     }
 
 
@@ -292,7 +273,8 @@ void CbmTrdHitProducerQa::PrepareHistograms()
 
 // ---- Write test histograms ------------------------------------------------
 
-void CbmTrdHitProducerQa::WriteHistograms() {
+void CbmTrdHitProducerQa::WriteHistograms()
+{
   if (fHitPoolsX) fHitPoolsX->Write();
   if (fHitPoolsY) fHitPoolsY->Write();
 

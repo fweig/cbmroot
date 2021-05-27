@@ -1,7 +1,6 @@
-void draw_two_exps(TString filename1  = "sum_WLS_off_G1.root",
-                   TString filename2  = "sum_WLS_on_G1.root",
-                   TString histoName1 = "ExponentaBudetTut",
-                   TString histoName2 = "ExponentaBudetTut") {
+void draw_two_exps(TString filename1 = "sum_WLS_off_G1.root", TString filename2 = "sum_WLS_on_G1.root",
+                   TString histoName1 = "ExponentaBudetTut", TString histoName2 = "ExponentaBudetTut")
+{
   TFile* f1 = new TFile(filename1);
   TFile* f2 = new TFile(filename2);
 

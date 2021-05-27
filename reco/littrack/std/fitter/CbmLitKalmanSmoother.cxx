@@ -15,7 +15,8 @@ CbmLitKalmanSmoother::CbmLitKalmanSmoother() {}
 
 CbmLitKalmanSmoother::~CbmLitKalmanSmoother() {}
 
-LitStatus CbmLitKalmanSmoother::Fit(CbmLitTrack* track, bool downstream) {
+LitStatus CbmLitKalmanSmoother::Fit(CbmLitTrack* track, bool downstream)
+{
   int n = track->GetNofHits();
 
   FitNodeVector nodes = track->GetFitNodes();
@@ -29,8 +30,7 @@ LitStatus CbmLitKalmanSmoother::Fit(CbmLitTrack* track, bool downstream) {
   // Calculate the chi2 of the track
   track->SetChi2(0.);
   for (int i = 0; i < n; i++) {
-    litfloat chi2Hit =
-      lit::ChiSq(nodes[i].GetSmoothedParam(), track->GetHit(i));
+    litfloat chi2Hit = lit::ChiSq(nodes[i].GetSmoothedParam(), track->GetHit(i));
     nodes[i].SetChiSqSmoothed(chi2Hit);
     track->SetChi2(track->GetChi2() + chi2Hit);
   }
@@ -44,13 +44,12 @@ LitStatus CbmLitKalmanSmoother::Fit(CbmLitTrack* track, bool downstream) {
 
 // We are going in the upstream direction
 // this Node (k) , prevNode (k+1)
-void CbmLitKalmanSmoother::Smooth(CbmLitFitNode* thisNode,
-                                  const CbmLitFitNode* prevNode) {
+void CbmLitKalmanSmoother::Smooth(CbmLitFitNode* thisNode, const CbmLitFitNode* prevNode)
+{
   // TMatrixDSym invPrevPredC(5);
   // prevNode->GetPredictedParam()->GetCovMatrix(invPrevPredC);
   // invPrevPredC.Invert();
-  std::vector<litfloat> invPrevPredC(
-    prevNode->GetPredictedParam()->GetCovMatrix());
+  std::vector<litfloat> invPrevPredC(prevNode->GetPredictedParam()->GetCovMatrix());
   InvSym15(invPrevPredC);
 
   // TMatrixD Ft(5, 5);
@@ -61,8 +60,7 @@ void CbmLitKalmanSmoother::Smooth(CbmLitFitNode* thisNode,
 
   // TMatrixDSym thisUpdC(5);
   // thisNode->GetUpdatedParam()->GetCovMatrix(thisUpdC);
-  const std::vector<litfloat>& thisUpdC =
-    thisNode->GetUpdatedParam()->GetCovMatrix();
+  const std::vector<litfloat>& thisUpdC = thisNode->GetUpdatedParam()->GetCovMatrix();
 
   // TMatrixD A(5, 5);
   // A = thisUpdC * Ft * invPrevPredC;
@@ -77,12 +75,9 @@ void CbmLitKalmanSmoother::Smooth(CbmLitFitNode* thisNode,
   // prevNode->GetPredictedParam()->GetStateVector(prevPredX);
   // TVectorD thisSmoothedX(thisUpdX + A * (prevSmoothedX - prevPredX));
 
-  const std::vector<litfloat>& thisUpdX =
-    thisNode->GetUpdatedParam()->GetStateVector();
-  const std::vector<litfloat>& prevSmoothedX =
-    prevNode->GetSmoothedParam()->GetStateVector();
-  const std::vector<litfloat>& prevPredX =
-    prevNode->GetPredictedParam()->GetStateVector();
+  const std::vector<litfloat>& thisUpdX      = thisNode->GetUpdatedParam()->GetStateVector();
+  const std::vector<litfloat>& prevSmoothedX = prevNode->GetSmoothedParam()->GetStateVector();
+  const std::vector<litfloat>& prevPredX     = prevNode->GetPredictedParam()->GetStateVector();
 
   std::vector<litfloat> temp2(7), temp3(7);
   Subtract(prevSmoothedX, prevPredX, temp2);
@@ -96,10 +91,8 @@ void CbmLitKalmanSmoother::Smooth(CbmLitFitNode* thisNode,
   // prevNode->GetPredictedParam()->GetCovMatrix(prevPredC);
   // Cdiff = prevSmoothedC - prevPredC;
 
-  const std::vector<litfloat>& prevSmoothedC =
-    prevNode->GetSmoothedParam()->GetCovMatrix();
-  const std::vector<litfloat>& prevPredC =
-    prevNode->GetPredictedParam()->GetCovMatrix();
+  const std::vector<litfloat>& prevSmoothedC = prevNode->GetSmoothedParam()->GetCovMatrix();
+  const std::vector<litfloat>& prevPredC     = prevNode->GetPredictedParam()->GetCovMatrix();
   std::vector<litfloat> temp4(15);
   Subtract(prevSmoothedC, prevPredC, temp4);
 

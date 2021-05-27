@@ -31,14 +31,14 @@ using std::vector;
 
 CbmGlobalTrackingQA::CbmGlobalTrackingQA() {}
 
-InitStatus CbmGlobalTrackingQA::Init() {
+InitStatus CbmGlobalTrackingQA::Init()
+{
   // FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (nullptr == ioman) LOG(fatal) << "No FairRootManager";
 
   // MC data
-  CbmMCDataManager* mcManager =
-    static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  CbmMCDataManager* mcManager = static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
   if (nullptr == mcManager) LOG(fatal) << "No MC data manager";
   fMCTracks = mcManager->InitBranch("MCTrack");
   if (nullptr == fMCTracks) LOG(fatal) << "No MC tracks";
@@ -51,8 +51,7 @@ InitStatus CbmGlobalTrackingQA::Init() {
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
   if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) LOG(fatal) << "No STS digis";
-  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kSts))
-    LOG(fatal) << "No STS digi matches";
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kSts)) LOG(fatal) << "No STS digi matches";
   if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) LOG(fatal) << "No ToF digis";
 
   // STS data
@@ -84,19 +83,17 @@ InitStatus CbmGlobalTrackingQA::Init() {
     vector<TrackData>& evTracks = fTracks[i];
 
     for (int j = 0; j < nofTracks; ++j) {
-      TrackData& track = evTracks[j];
-      track.hasSts     = false;
-      track.z          = -1000;
-      track.use        = false;
-      track.evN        = i;
-      track.ind        = j;
-      track.used       = false;
-      const CbmMCTrack* mcTrack =
-        static_cast<const CbmMCTrack*>(fMCTracks->Get(0, i, j));
-      int motherId = mcTrack->GetMotherId();
+      TrackData& track          = evTracks[j];
+      track.hasSts              = false;
+      track.z                   = -1000;
+      track.use                 = false;
+      track.evN                 = i;
+      track.ind                 = j;
+      track.used                = false;
+      const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->Get(0, i, j));
+      int motherId              = mcTrack->GetMotherId();
 
-      if (motherId < 0)
-        track.parent = 0;
+      if (motherId < 0) track.parent = 0;
       else {
         track.parent = &evTracks[motherId];
         evTracks[motherId].offsprings.push_back(&track);
@@ -115,19 +112,18 @@ InitStatus CbmGlobalTrackingQA::Init() {
     vector<PointData>& evPoints = fStsPoints[i];
 
     for (int j = 0; j < nofStsPoints; ++j) {
-      PointData& point = evPoints[j];
-      point.evN        = i;
-      point.ind        = j;
-      const CbmStsPoint* stsPoint =
-        static_cast<const CbmStsPoint*>(fStsMCPoints->Get(0, i, j));
-      Int_t trackId              = stsPoint->GetTrackID();
-      fTracks[i][trackId].hasSts = true;
-      TrackData& track           = fTracks[i][trackId];
-      point.track                = &track;
-      point.x = (stsPoint->GetXIn() + stsPoint->GetXOut()) / 2;
-      point.y = (stsPoint->GetYIn() + stsPoint->GetYOut()) / 2;
-      point.z = (stsPoint->GetZIn() + stsPoint->GetZOut()) / 2;
-      point.t = stsPoint->GetTime();
+      PointData& point            = evPoints[j];
+      point.evN                   = i;
+      point.ind                   = j;
+      const CbmStsPoint* stsPoint = static_cast<const CbmStsPoint*>(fStsMCPoints->Get(0, i, j));
+      Int_t trackId               = stsPoint->GetTrackID();
+      fTracks[i][trackId].hasSts  = true;
+      TrackData& track            = fTracks[i][trackId];
+      point.track                 = &track;
+      point.x                     = (stsPoint->GetXIn() + stsPoint->GetXOut()) / 2;
+      point.y                     = (stsPoint->GetYIn() + stsPoint->GetYOut()) / 2;
+      point.z                     = (stsPoint->GetZIn() + stsPoint->GetZOut()) / 2;
+      point.t                     = stsPoint->GetTime();
     }
   }
 
@@ -142,18 +138,17 @@ InitStatus CbmGlobalTrackingQA::Init() {
     vector<PointData>& evPoints = fTofPoints[i];
 
     for (int j = 0; j < nofTofPoints; ++j) {
-      PointData& point = evPoints[j];
-      point.evN        = i;
-      point.ind        = j;
-      const CbmTofPoint* tofPoint =
-        static_cast<const CbmTofPoint*>(fTofMCPoints->Get(0, i, j));
-      Int_t trackId    = tofPoint->GetTrackID();
-      TrackData& track = fTracks[i][trackId];
-      point.track      = &track;
-      point.x          = tofPoint->GetX();
-      point.y          = tofPoint->GetY();
-      point.z          = tofPoint->GetZ();
-      point.t          = tofPoint->GetTime();
+      PointData& point            = evPoints[j];
+      point.evN                   = i;
+      point.ind                   = j;
+      const CbmTofPoint* tofPoint = static_cast<const CbmTofPoint*>(fTofMCPoints->Get(0, i, j));
+      Int_t trackId               = tofPoint->GetTrackID();
+      TrackData& track            = fTracks[i][trackId];
+      point.track                 = &track;
+      point.x                     = tofPoint->GetX();
+      point.y                     = tofPoint->GetY();
+      point.z                     = tofPoint->GetZ();
+      point.t                     = tofPoint->GetTime();
       track.tofPoints.push_back(&point);
 
       if (track.z > 0 && !track.use) {
@@ -168,14 +163,12 @@ InitStatus CbmGlobalTrackingQA::Init() {
   return kSUCCESS;
 }
 
-bool CbmGlobalTrackingQA::CheckMatch(const TrackData* stsMCTrack,
-                                     Int_t tofHitInd,
-                                     bool deepSearch) const {
+bool CbmGlobalTrackingQA::CheckMatch(const TrackData* stsMCTrack, Int_t tofHitInd, bool deepSearch) const
+{
   set<TrackData*> tofMCTracks;
 
-  const CbmMatch* tofHitMatch =
-    static_cast<const CbmMatch*>(fTofHitMatches->At(tofHitInd));
-  int nofTofPoints = tofHitMatch->GetNofLinks();
+  const CbmMatch* tofHitMatch = static_cast<const CbmMatch*>(fTofHitMatches->At(tofHitInd));
+  int nofTofPoints            = tofHitMatch->GetNofLinks();
 
   for (Int_t j = 0; j < nofTofPoints; ++j) {
     const CbmLink& pointLnk = tofHitMatch->GetLink(j);
@@ -185,29 +178,26 @@ bool CbmGlobalTrackingQA::CheckMatch(const TrackData* stsMCTrack,
   }
 
 
-  for (set<TrackData*>::const_iterator i = tofMCTracks.begin();
-       i != tofMCTracks.end();
-       ++i) {
+  for (set<TrackData*>::const_iterator i = tofMCTracks.begin(); i != tofMCTracks.end(); ++i) {
     const TrackData* tofMCTrack = *i;
 
     if (deepSearch) {
-      for (const TrackData* mcTrack = tofMCTrack; 0 != mcTrack;
-           mcTrack                  = mcTrack->parent) {
+      for (const TrackData* mcTrack = tofMCTrack; 0 != mcTrack; mcTrack = mcTrack->parent) {
         if (mcTrack == stsMCTrack) return true;
       }
-    } else if (tofMCTrack == stsMCTrack)
+    }
+    else if (tofMCTrack == stsMCTrack)
       return true;
   }
 
   return false;
 }
 
-bool CbmGlobalTrackingQA::SemiTofTrack(const TrackData* mcTrack) const {
+bool CbmGlobalTrackingQA::SemiTofTrack(const TrackData* mcTrack) const
+{
   if (!mcTrack->tofPoints.empty()) return true;
 
-  for (list<TrackData*>::const_iterator i = mcTrack->offsprings.begin();
-       i != mcTrack->offsprings.end();
-       ++i) {
+  for (list<TrackData*>::const_iterator i = mcTrack->offsprings.begin(); i != mcTrack->offsprings.end(); ++i) {
     if (SemiTofTrack(*i)) return true;
   }
 
@@ -228,14 +218,14 @@ int nofNonTofTracks          = 0;
 int nofMergedNonTofTracks    = 0;
 int nofNonMergedNonTofTracks = 0;
 
-void CbmGlobalTrackingQA::Exec(Option_t*) {
+void CbmGlobalTrackingQA::Exec(Option_t*)
+{
   Int_t nofHits = fTofHits->GetEntriesFast();
 
   for (int i = 0; i < nofHits; ++i) {
-    const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHits->At(i));
-    const CbmMatch* hitMatch =
-      static_cast<const CbmMatch*>(fTofHitMatches->At(i));
-    int nofPoints = hitMatch->GetNofLinks();
+    const CbmTofHit* tofHit  = static_cast<const CbmTofHit*>(fTofHits->At(i));
+    const CbmMatch* hitMatch = static_cast<const CbmMatch*>(fTofHitMatches->At(i));
+    int nofPoints            = hitMatch->GetNofLinks();
     for (Int_t k = 0; k < nofPoints; ++k) {
       const CbmLink& pointLnk = hitMatch->GetLink(k);
       Int_t evN               = pointLnk.GetEntry() - 1;
@@ -248,46 +238,38 @@ void CbmGlobalTrackingQA::Exec(Option_t*) {
   int nofGlobalTracks = fGlobalTracks->GetEntriesFast();
 
   for (int i = 0; i < nofGlobalTracks; ++i) {
-    const CbmGlobalTrack* globalTrack =
-      static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(i));
-    int stsTrackInd = globalTrack->GetStsTrackIndex();
+    const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(i));
+    int stsTrackInd                   = globalTrack->GetStsTrackIndex();
 
     if (stsTrackInd < 0) continue;
 
-    const CbmStsTrack* stsTrack =
-      static_cast<const CbmStsTrack*>(fStsTracks->At(stsTrackInd));
+    const CbmStsTrack* stsTrack = static_cast<const CbmStsTrack*>(fStsTracks->At(stsTrackInd));
     map<TrackData*, int> stsMCTracks;
     int nofStsHits    = stsTrack->GetNofHits();
     int nofStsMatches = 0;
 
     for (int j = 0; j < nofStsHits; ++j) {
-      int stsHitInd = stsTrack->GetHitIndex(j);
-      const CbmStsHit* stsHit =
-        static_cast<const CbmStsHit*>(fStsHits->At(stsHitInd));
-      int frontClusterInd = stsHit->GetFrontClusterId();
-      int backClusterInd  = stsHit->GetBackClusterId();
-      const CbmStsCluster* frontCluster =
-        static_cast<const CbmStsCluster*>(fStsClusters->At(frontClusterInd));
-      const CbmStsCluster* backCluster =
-        static_cast<const CbmStsCluster*>(fStsClusters->At(backClusterInd));
-      int nofFrontDigis = frontCluster->GetNofDigis();
+      int stsHitInd                     = stsTrack->GetHitIndex(j);
+      const CbmStsHit* stsHit           = static_cast<const CbmStsHit*>(fStsHits->At(stsHitInd));
+      int frontClusterInd               = stsHit->GetFrontClusterId();
+      int backClusterInd                = stsHit->GetBackClusterId();
+      const CbmStsCluster* frontCluster = static_cast<const CbmStsCluster*>(fStsClusters->At(frontClusterInd));
+      const CbmStsCluster* backCluster  = static_cast<const CbmStsCluster*>(fStsClusters->At(backClusterInd));
+      int nofFrontDigis                 = frontCluster->GetNofDigis();
 
       for (int k = 0; k < nofFrontDigis; ++k) {
-        int stsDigiInd = frontCluster->GetDigi(k);
-        const CbmMatch* stsDigiMatch =
-          fDigiMan->GetMatch(ECbmModuleId::kSts, stsDigiInd);
-        int nofLinks = stsDigiMatch->GetNofLinks();
+        int stsDigiInd               = frontCluster->GetDigi(k);
+        const CbmMatch* stsDigiMatch = fDigiMan->GetMatch(ECbmModuleId::kSts, stsDigiInd);
+        int nofLinks                 = stsDigiMatch->GetNofLinks();
 
         for (int l = 0; l < nofLinks; ++l) {
           const CbmLink& link = stsDigiMatch->GetLink(l);
           int eventId         = link.GetEntry();
           int mcPointId       = link.GetIndex();
           ++nofStsMatches;
-          map<TrackData*, int>::iterator iter =
-            stsMCTracks.find(fStsPoints[eventId][mcPointId].track);
+          map<TrackData*, int>::iterator iter = stsMCTracks.find(fStsPoints[eventId][mcPointId].track);
 
-          if (iter != stsMCTracks.end())
-            ++iter->second;
+          if (iter != stsMCTracks.end()) ++iter->second;
           else
             stsMCTracks[fStsPoints[eventId][mcPointId].track] = 1;
         }
@@ -296,21 +278,18 @@ void CbmGlobalTrackingQA::Exec(Option_t*) {
       int nofBackDigis = backCluster->GetNofDigis();
 
       for (int k = 0; k < nofBackDigis; ++k) {
-        int stsDigiInd = backCluster->GetDigi(k);
-        const CbmMatch* stsDigiMatch =
-          fDigiMan->GetMatch(ECbmModuleId::kSts, stsDigiInd);
-        int nofLinks = stsDigiMatch->GetNofLinks();
+        int stsDigiInd               = backCluster->GetDigi(k);
+        const CbmMatch* stsDigiMatch = fDigiMan->GetMatch(ECbmModuleId::kSts, stsDigiInd);
+        int nofLinks                 = stsDigiMatch->GetNofLinks();
 
         for (int l = 0; l < nofLinks; ++l) {
           const CbmLink& link = stsDigiMatch->GetLink(l);
           int eventId         = link.GetEntry();
           int mcPointId       = link.GetIndex();
           ++nofStsMatches;
-          map<TrackData*, int>::iterator iter =
-            stsMCTracks.find(fStsPoints[eventId][mcPointId].track);
+          map<TrackData*, int>::iterator iter = stsMCTracks.find(fStsPoints[eventId][mcPointId].track);
 
-          if (iter != stsMCTracks.end())
-            ++iter->second;
+          if (iter != stsMCTracks.end()) ++iter->second;
           else
             stsMCTracks[fStsPoints[eventId][mcPointId].track] = 1;
         }
@@ -331,25 +310,23 @@ void CbmGlobalTrackingQA::Exec(Option_t*) {
         ++nofSemiTofTracks;
 
         if (tofHitInd >= 0) {
-          if (CheckMatch(lastStsTrackIter->first, tofHitInd, true))
-            ++nofCorMergedSemiTofTracks;
+          if (CheckMatch(lastStsTrackIter->first, tofHitInd, true)) ++nofCorMergedSemiTofTracks;
           else
             ++nofWroMergedSemiTofTracks;
-        } else
+        }
+        else
           ++nofNonMergedSemiTofTracks;
-      } else {
+      }
+      else {
         ++nofNonTofTracks;
 
-        if (tofHitInd >= 0)
-          ++nofMergedNonTofTracks;
+        if (tofHitInd >= 0) ++nofMergedNonTofTracks;
         else
           ++nofNonMergedNonTofTracks;
       }
     }
 
-    if (lastStsTrackIter->first->tofPoints.empty()
-        || lastStsTrackIter->first->tofHits.empty())
-      continue;
+    if (lastStsTrackIter->first->tofPoints.empty() || lastStsTrackIter->first->tofHits.empty()) continue;
 
     ++nofReferenceTofTracks;
 
@@ -358,54 +335,48 @@ void CbmGlobalTrackingQA::Exec(Option_t*) {
       continue;
     }
 
-    if (CheckMatch(lastStsTrackIter->first, tofHitInd))
-      ++nofCorMergedReferenceTofTracks;
+    if (CheckMatch(lastStsTrackIter->first, tofHitInd)) ++nofCorMergedReferenceTofTracks;
     else
       ++nofWroMergedReferenceTofTracks;
   }  //for (int i = 0; i < nofGlobalTracks; ++i)
 }
 
-void CbmGlobalTrackingQA::Finish() {
+void CbmGlobalTrackingQA::Finish()
+{
   double eff = 100 * nofCorMergedReferenceTofTracks;
   eff /= nofReferenceTofTracks;
-  cout << "The correctly merged reference tracks: " << eff << " % ["
-       << nofCorMergedReferenceTofTracks << " / " << nofReferenceTofTracks
-       << " ]" << endl;
+  cout << "The correctly merged reference tracks: " << eff << " % [" << nofCorMergedReferenceTofTracks << " / "
+       << nofReferenceTofTracks << " ]" << endl;
   eff = 100 * nofWroMergedReferenceTofTracks;
   eff /= nofReferenceTofTracks;
-  cout << "The incorrectly merged reference tracks: " << eff << " % ["
-       << nofWroMergedReferenceTofTracks << " / " << nofReferenceTofTracks
-       << " ]" << endl;
+  cout << "The incorrectly merged reference tracks: " << eff << " % [" << nofWroMergedReferenceTofTracks << " / "
+       << nofReferenceTofTracks << " ]" << endl;
   eff = 100 * nofNonMergedReferenceTofTracks;
   eff /= nofReferenceTofTracks;
-  cout << "The non merged reference tracks: " << eff << " % ["
-       << nofNonMergedReferenceTofTracks << " / " << nofReferenceTofTracks
-       << " ]" << endl;
+  cout << "The non merged reference tracks: " << eff << " % [" << nofNonMergedReferenceTofTracks << " / "
+       << nofReferenceTofTracks << " ]" << endl;
 
   eff = 100 * nofCorMergedSemiTofTracks;
   eff /= nofSemiTofTracks;
-  cout << "The correctly merged semi ToF tracks: " << eff << " % ["
-       << nofCorMergedSemiTofTracks << " / " << nofSemiTofTracks << " ]"
-       << endl;
+  cout << "The correctly merged semi ToF tracks: " << eff << " % [" << nofCorMergedSemiTofTracks << " / "
+       << nofSemiTofTracks << " ]" << endl;
   eff = 100 * nofWroMergedSemiTofTracks;
   eff /= nofSemiTofTracks;
-  cout << "The incorrectly merged semi ToF tracks: " << eff << " % ["
-       << nofWroMergedSemiTofTracks << " / " << nofSemiTofTracks << " ]"
-       << endl;
+  cout << "The incorrectly merged semi ToF tracks: " << eff << " % [" << nofWroMergedSemiTofTracks << " / "
+       << nofSemiTofTracks << " ]" << endl;
   eff = 100 * nofNonMergedReferenceTofTracks;
   eff /= nofSemiTofTracks;
-  cout << "The non merged semi ToF tracks: " << eff << " % ["
-       << nofNonMergedReferenceTofTracks << " / " << nofSemiTofTracks << " ]"
-       << endl;
+  cout << "The non merged semi ToF tracks: " << eff << " % [" << nofNonMergedReferenceTofTracks << " / "
+       << nofSemiTofTracks << " ]" << endl;
 
   eff = 100 * nofMergedNonTofTracks;
   eff /= nofNonTofTracks;
-  cout << "The merged non ToF tracks: " << eff << " % ["
-       << nofMergedNonTofTracks << " / " << nofNonTofTracks << " ]" << endl;
+  cout << "The merged non ToF tracks: " << eff << " % [" << nofMergedNonTofTracks << " / " << nofNonTofTracks << " ]"
+       << endl;
   eff = 100 * nofNonMergedNonTofTracks;
   eff /= nofNonTofTracks;
-  cout << "The non merged non ToF tracks: " << eff << " % ["
-       << nofNonMergedNonTofTracks << " / " << nofNonTofTracks << " ]" << endl;
+  cout << "The non merged non ToF tracks: " << eff << " % [" << nofNonMergedNonTofTracks << " / " << nofNonTofTracks
+       << " ]" << endl;
 }
 
 ClassImp(CbmGlobalTrackingQA)

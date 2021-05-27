@@ -6,7 +6,8 @@ using std::vector;
 
 ClassImp(CbmKFPixelMeasurement);
 
-Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track) {
+Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track)
+{
 
   Bool_t err = 0;
 
@@ -24,15 +25,12 @@ Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track) {
   Double_t W[3]    = {w * (C[2] + V[2]), -w * (C[1] + V[1]), w * (C[0] + V[0])};
   Double_t zeta[2] = {T[0] - x, T[1] - y};
 
-  track.GetRefChi2() += zeta[0] * zeta[0] * W[0] + 2 * zeta[0] * zeta[1] * W[1]
-                        + zeta[1] * zeta[1] * W[2];
+  track.GetRefChi2() += zeta[0] * zeta[0] * W[0] + 2 * zeta[0] * zeta[1] * W[1] + zeta[1] * zeta[1] * W[2];
   track.GetRefNDF() += 2;
 
   Double_t K[5][2] = {
-    {C[0] * W[0] + C[1] * W[1], C[0] * W[1] + C[1] * W[2]},
-    {C[1] * W[0] + C[2] * W[1], C[1] * W[1] + C[2] * W[2]},
-    {C[3] * W[0] + C[4] * W[1], C[3] * W[1] + C[4] * W[2]},
-    {C[6] * W[0] + C[7] * W[1], C[6] * W[1] + C[7] * W[2]},
+    {C[0] * W[0] + C[1] * W[1], C[0] * W[1] + C[1] * W[2]},     {C[1] * W[0] + C[2] * W[1], C[1] * W[1] + C[2] * W[2]},
+    {C[3] * W[0] + C[4] * W[1], C[3] * W[1] + C[4] * W[2]},     {C[6] * W[0] + C[7] * W[1], C[6] * W[1] + C[7] * W[2]},
     {C[10] * W[0] + C[11] * W[1], C[10] * W[1] + C[11] * W[2]},
   };
 
@@ -42,24 +40,16 @@ Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track) {
   T[3] -= K[3][0] * zeta[0] + K[3][1] * zeta[1];
   T[4] -= K[4][0] * zeta[0] + K[4][1] * zeta[1];
 
-  Double_t KHC[15] = {C[0] * K[0][0] + C[1] * K[0][1],
-                      C[0] * K[1][0] + C[1] * K[1][1],
-                      C[1] * K[1][0] + C[2] * K[1][1],
+  Double_t KHC[15] = {
+    C[0] * K[0][0] + C[1] * K[0][1], C[0] * K[1][0] + C[1] * K[1][1],  C[1] * K[1][0] + C[2] * K[1][1],
 
-                      C[0] * K[2][0] + C[1] * K[2][1],
-                      C[1] * K[2][0] + C[2] * K[2][1],
-                      C[3] * K[2][0] + C[4] * K[2][1],
+    C[0] * K[2][0] + C[1] * K[2][1], C[1] * K[2][0] + C[2] * K[2][1],  C[3] * K[2][0] + C[4] * K[2][1],
 
-                      C[0] * K[3][0] + C[1] * K[3][1],
-                      C[1] * K[3][0] + C[2] * K[3][1],
-                      C[3] * K[3][0] + C[4] * K[3][1],
-                      C[6] * K[3][0] + C[7] * K[3][1],
+    C[0] * K[3][0] + C[1] * K[3][1], C[1] * K[3][0] + C[2] * K[3][1],  C[3] * K[3][0] + C[4] * K[3][1],
+    C[6] * K[3][0] + C[7] * K[3][1],
 
-                      C[0] * K[4][0] + C[1] * K[4][1],
-                      C[1] * K[4][0] + C[2] * K[4][1],
-                      C[3] * K[4][0] + C[4] * K[4][1],
-                      C[6] * K[4][0] + C[7] * K[4][1],
-                      C[10] * K[4][0] + C[11] * K[4][1]};
+    C[0] * K[4][0] + C[1] * K[4][1], C[1] * K[4][0] + C[2] * K[4][1],  C[3] * K[4][0] + C[4] * K[4][1],
+    C[6] * K[4][0] + C[7] * K[4][1], C[10] * K[4][0] + C[11] * K[4][1]};
 
   C[0] -= KHC[0];
   C[1] -= KHC[1];
@@ -93,15 +83,12 @@ Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track) {
 
 //#define _DEBUG_PDAF_
 
-void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
-                                       vector<CbmKFPixelMeasurement*>& vm,
-                                       double gateX,
-                                       double gateY,
-                                       vector<double>& vProb) {
+void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track, vector<CbmKFPixelMeasurement*>& vm, double gateX,
+                                       double gateY, vector<double>& vProb)
+{
   const double Pdetect = 0.90;  // hit efficiency
-  const double gateEff =
-    0.99;  // probability of the correct hit falling into the search window
-           // 10 sigma x 10 sigma size
+  const double gateEff = 0.99;  // probability of the correct hit falling into the search window
+                                // 10 sigma x 10 sigma size
 
   Double_t* T = track.GetTrack();
   Double_t* C = track.GetCovMatrix();
@@ -117,8 +104,7 @@ void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
 #ifdef _DEBUG_PDAF_
 
   cout << "PDAF: " << vm->size() << " hits validated" << endl;
-  cout << "Initial params: x=" << T[0] << " y=" << T[1] << " tx=" << T[2]
-       << " ty=" << T[3] << " Q=" << T[4] << endl;
+  cout << "Initial params: x=" << T[0] << " y=" << T[1] << " tx=" << T[2] << " ty=" << T[3] << " Q=" << T[4] << endl;
   cout << "GateX=" << gateX << " GateY=" << gateY << endl;
 
 #endif
@@ -139,8 +125,7 @@ void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
 
   double Lambda = 1. / 1.;
 
-  Ck = 2.0 * 3.1415926 * sqrt(Sk) * (1.0 - Pdetect * gateEff)
-       / (gateArea * Pdetect * gateEff) * Lambda;
+  Ck = 2.0 * 3.1415926 * sqrt(Sk) * (1.0 - Pdetect * gateEff) / (gateArea * Pdetect * gateEff) * Lambda;
 
   double w = Sk;
   if (w < 1.E-20) return;
@@ -150,21 +135,17 @@ void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
 
   double W[3]    = {w * (C[2] + V[2]), -w * (C[1] + V[1]), w * (C[0] + V[0])};
   double K[5][2] = {
-    {C[0] * W[0] + C[1] * W[1], C[0] * W[1] + C[1] * W[2]},
-    {C[1] * W[0] + C[2] * W[1], C[1] * W[1] + C[2] * W[2]},
-    {C[3] * W[0] + C[4] * W[1], C[3] * W[1] + C[4] * W[2]},
-    {C[6] * W[0] + C[7] * W[1], C[6] * W[1] + C[7] * W[2]},
+    {C[0] * W[0] + C[1] * W[1], C[0] * W[1] + C[1] * W[2]},     {C[1] * W[0] + C[2] * W[1], C[1] * W[1] + C[2] * W[2]},
+    {C[3] * W[0] + C[4] * W[1], C[3] * W[1] + C[4] * W[2]},     {C[6] * W[0] + C[7] * W[1], C[6] * W[1] + C[7] * W[2]},
     {C[10] * W[0] + C[11] * W[1], C[10] * W[1] + C[11] * W[2]},
   };
 
   // 3. Exponential weights
 
-  for (vector<CbmKFPixelMeasurement*>::iterator pmIt = vm.begin();
-       pmIt != vm.end();
-       ++pmIt) {
+  for (vector<CbmKFPixelMeasurement*>::iterator pmIt = vm.begin(); pmIt != vm.end(); ++pmIt) {
     double resX = (*pmIt)->x - T[0];
     double resY = (*pmIt)->y - T[1];
-    chi2 = resX * resX * W[0] + 2 * resY * resX * W[1] + resY * resY * W[2];
+    chi2        = resX * resX * W[0] + 2 * resY * resX * W[1] + resY * resY * W[2];
 #ifdef _DEBUG_PDAF_
     cout << "resX=" << resX << " resY=" << resY << " chi2dist=" << chi2 << endl;
 #endif
@@ -252,24 +233,15 @@ void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
   T[3] += K[3][0] * zeta[0] + K[3][1] * zeta[1];
   T[4] += K[4][0] * zeta[0] + K[4][1] * zeta[1];
 
-  double KHC[15] = {C[0] * K[0][0] + C[1] * K[0][1],
-                    C[0] * K[1][0] + C[1] * K[1][1],
-                    C[1] * K[1][0] + C[2] * K[1][1],
+  double KHC[15] = {C[0] * K[0][0] + C[1] * K[0][1], C[0] * K[1][0] + C[1] * K[1][1],  C[1] * K[1][0] + C[2] * K[1][1],
 
-                    C[0] * K[2][0] + C[1] * K[2][1],
-                    C[1] * K[2][0] + C[2] * K[2][1],
-                    C[3] * K[2][0] + C[4] * K[2][1],
+                    C[0] * K[2][0] + C[1] * K[2][1], C[1] * K[2][0] + C[2] * K[2][1],  C[3] * K[2][0] + C[4] * K[2][1],
 
-                    C[0] * K[3][0] + C[1] * K[3][1],
-                    C[1] * K[3][0] + C[2] * K[3][1],
-                    C[3] * K[3][0] + C[4] * K[3][1],
+                    C[0] * K[3][0] + C[1] * K[3][1], C[1] * K[3][0] + C[2] * K[3][1],  C[3] * K[3][0] + C[4] * K[3][1],
                     C[6] * K[3][0] + C[7] * K[3][1],
 
-                    C[0] * K[4][0] + C[1] * K[4][1],
-                    C[1] * K[4][0] + C[2] * K[4][1],
-                    C[3] * K[4][0] + C[4] * K[4][1],
-                    C[6] * K[4][0] + C[7] * K[4][1],
-                    C[10] * K[4][0] + C[11] * K[4][1]};
+                    C[0] * K[4][0] + C[1] * K[4][1], C[1] * K[4][0] + C[2] * K[4][1],  C[3] * K[4][0] + C[4] * K[4][1],
+                    C[6] * K[4][0] + C[7] * K[4][1], C[10] * K[4][0] + C[11] * K[4][1]};
 
   double Gs[15];
   for (i = 0; i < 15; i++)
@@ -303,8 +275,7 @@ void CbmKFPixelMeasurement::FilterPDAF(CbmKFTrackInterface& track,
       idx++;
     }
 #ifdef _DEBUG_PDAF_
-  cout << "Updated params: x=" << T[0] << " y=" << T[1] << " tx=" << T[2]
-       << " ty=" << T[3] << " Q=" << T[4] << endl;
+  cout << "Updated params: x=" << T[0] << " y=" << T[1] << " tx=" << T[2] << " ty=" << T[3] << " Q=" << T[4] << endl;
   cout << "chi2 contrib.=" << chi2 << endl;
 #endif
 

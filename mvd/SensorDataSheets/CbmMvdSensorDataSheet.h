@@ -91,24 +91,12 @@ public:
   virtual Double_t GetNoise() { return fNoise; };
 
   /** Description of the sensor for the digitizer **/
-  virtual Double_t GetLandauMPV() {
-    return fLandauMPV;
-  };  // Landau for digitizer
-  virtual Double_t GetLandauSigma() {
-    return fLandauSigma;
-  };  // Landau for digitizer
-  virtual Double_t GetLandauGain() {
-    return fLandauGain;
-  };  // Landau for digitizer
-  virtual Double_t GetLorentzPar0() {
-    return fLorentzPar0;
-  };  // Lorentz for digitizer
-  virtual Double_t GetLorentzPar1() {
-    return fLorentzPar1;
-  };  // Lorentz for digitizer
-  virtual Double_t GetLorentzPar2() {
-    return fLorentzPar2;
-  };  // Lorentz for digitizer
+  virtual Double_t GetLandauMPV() { return fLandauMPV; };      // Landau for digitizer
+  virtual Double_t GetLandauSigma() { return fLandauSigma; };  // Landau for digitizer
+  virtual Double_t GetLandauGain() { return fLandauGain; };    // Landau for digitizer
+  virtual Double_t GetLorentzPar0() { return fLorentzPar0; };  // Lorentz for digitizer
+  virtual Double_t GetLorentzPar1() { return fLorentzPar1; };  // Lorentz for digitizer
+  virtual Double_t GetLorentzPar2() { return fLorentzPar2; };  // Lorentz for digitizer
 
 
   virtual Double_t GetChargeThreshold() { return fChargeThreshold; };

@@ -25,22 +25,15 @@ CbmMvdPoint::CbmMvdPoint()
   , fPdgCode(0)
   , fPointId(-1)
   , fFrame(0)
-  , fStartTime(0.) {}
+  , fStartTime(0.)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdPoint::CbmMvdPoint(Int_t trackID,
-                         Int_t pdgCode,
-                         Int_t stationNr,
-                         TVector3 posIn,
-                         TVector3 posOut,
-                         TVector3 momIn,
-                         TVector3 momOut,
-                         Double_t tof,
-                         Double_t length,
-                         Double_t eLoss,
-                         Int_t frame)
+CbmMvdPoint::CbmMvdPoint(Int_t trackID, Int_t pdgCode, Int_t stationNr, TVector3 posIn, TVector3 posOut, TVector3 momIn,
+                         TVector3 momOut, Double_t tof, Double_t length, Double_t eLoss, Int_t frame)
   : FairMCPoint(trackID, stationNr, posIn, momIn, tof, length, eLoss)
   , CbmMvdDetectorId()
   , fX_out(posOut.X())
@@ -52,7 +45,8 @@ CbmMvdPoint::CbmMvdPoint(Int_t trackID,
   , fPdgCode(pdgCode)
   , fPointId(-1)
   , fFrame(frame)
-  , fStartTime(0) {
+  , fStartTime(0)
+{
   FairRunSim* run           = FairRunSim::Instance();
   FairPrimaryGenerator* gen = run->GetPrimaryGenerator();
   FairMCEventHeader* event  = gen->GetEvent();
@@ -70,18 +64,18 @@ CbmMvdPoint::~CbmMvdPoint() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmMvdPoint::Print(const Option_t* /*opt*/) const {
-  LOG(info) << "MVD Point for track " << fTrackID << " in station "
-            << GetStationNr();
+void CbmMvdPoint::Print(const Option_t* /*opt*/) const
+{
+  LOG(info) << "MVD Point for track " << fTrackID << " in station " << GetStationNr();
   LOG(info) << "    Position (" << fX << ", " << fY << ", " << fZ << ") cm";
   LOG(info) << "    Momentum (" << fPx << ", " << fPy << ", " << fPz << ") GeV";
-  LOG(info) << "    Time " << fTime << " ns,  Length " << fLength
-            << " cm,  Energy loss " << fELoss * 1.0e06 << " keV";
+  LOG(info) << "    Time " << fTime << " ns,  Length " << fLength << " cm,  Energy loss " << fELoss * 1.0e06 << " keV";
 }
 // -------------------------------------------------------------------------
 
 // -----   Public method GetAbsTime   --------------------------------------
-Int_t CbmMvdPoint::GetAbsTime() {
+Int_t CbmMvdPoint::GetAbsTime()
+{
 
 
   Int_t absTime = fTime + fStartTime;

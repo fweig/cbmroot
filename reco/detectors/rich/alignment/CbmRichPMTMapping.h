@@ -9,8 +9,11 @@
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseTau.h"
 #include "CbmRichRingLight.h"
+
 #include "FairTask.h"
+
 #include "TString.h"
+
 #include <map>
 #include <vector>
 
@@ -69,8 +72,7 @@ public:
   /*
      *
      */
-  void
-  FillPMTMapEllipse(const Char_t* mirr_path, Float_t CenterX, Float_t CenterY);
+  void FillPMTMapEllipse(const Char_t* mirr_path, Float_t CenterX, Float_t CenterY);
 
   /*
      * From incoming track on the mirrors, do reflection of its trajectory and extrapolation of its intersection on the PMT plane.
@@ -83,29 +85,18 @@ public:
      * Giving as inputs empty sphere center coordinates, empty radius and mirror ID, returns sphere center coordinates and inner radius calculated from
      * translation matrices of volumes containing the mirror.
      */
-  void CalculateSphereParameters(const Char_t* mirrID,
-                                 Double_t& sphereX,
-                                 Double_t& sphereY,
-                                 Double_t& sphereZ,
+  void CalculateSphereParameters(const Char_t* mirrID, Double_t& sphereX, Double_t& sphereY, Double_t& sphereZ,
                                  Double_t& sphereR);
 
-  void CalculateSphereParameters2(const Char_t* mirrID,
-                                  Double_t& sphereX,
-                                  Double_t& sphereY,
-                                  Double_t& sphereZ,
+  void CalculateSphereParameters2(const Char_t* mirrID, Double_t& sphereX, Double_t& sphereY, Double_t& sphereZ,
                                   Double_t& sphereR);
 
   /*
      * Get pmt normal from 3 different points on the plane.
      */
-  void GetPmtNormal(Int_t NofPMTPoints,
-                    Double_t& normalX,
-                    Double_t& normalY,
-                    Double_t& normalZ,
-                    Double_t& normalCste);
+  void GetPmtNormal(Int_t NofPMTPoints, Double_t& normalX, Double_t& normalY, Double_t& normalZ, Double_t& normalCste);
 
-  void RotateAndCopyHitsToRingLight(const CbmRichRing* ring1,
-                                    CbmRichRingLight* ring2);
+  void RotateAndCopyHitsToRingLight(const CbmRichRing* ring1, CbmRichRingLight* ring2);
 
   /*
      * Draw histograms.

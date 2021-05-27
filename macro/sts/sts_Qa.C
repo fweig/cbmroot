@@ -8,7 +8,8 @@
 // --------------------------------------------------------------------------
 
 #include <math.h>
-void sts_Qa(Int_t nEvents = 1) {
+void sts_Qa(Int_t nEvents = 1)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements

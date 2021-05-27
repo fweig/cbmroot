@@ -1,14 +1,14 @@
 //forward declaration
 void loop_over_nodes(TObjArray*, TString&, CbmMediaList&);
 
-void create_medialist(TString inFileName = "") {
+void create_medialist(TString inFileName = "")
+{
 
   if (inFileName.Length() > 0) {
     cout << "Open file " << inFileName << endl;
     TFile* f = new TFile(inFileName);
     if (!f->IsOpen()) {
-      std::cout << "create_tgeonode_list: geometry file " << inFileName
-                << " is not accessible!" << std::endl;
+      std::cout << "create_tgeonode_list: geometry file " << inFileName << " is not accessible!" << std::endl;
       return;
     }
     gGeoManager = (TGeoManager*) f->Get("FAIRGeom");
@@ -31,8 +31,7 @@ void create_medialist(TString inFileName = "") {
   TopNodeName.Replace(TopNodeName.Length() - 1, 1, "0");
   Path = Path + TopNodeName + "/";
 
-  std::cout << "{\"" << Path << "\", \"" << node->GetMedium()->GetName()
-            << "\"}," << std::endl;
+  std::cout << "{\"" << Path << "\", \"" << node->GetMedium()->GetName() << "\"}," << std::endl;
   matlist.AddEntry(Path, node->GetMedium()->GetName());
   TObjArray* detectornodes = node->GetNodes();
   loop_over_nodes(detectornodes, Path, matlist);
@@ -54,7 +53,8 @@ void create_medialist(TString inFileName = "") {
   RemoveGeoManager();
 }
 
-void loop_over_nodes(TObjArray* nodes, TString& path, CbmMediaList& matlist) {
+void loop_over_nodes(TObjArray* nodes, TString& path, CbmMediaList& matlist)
+{
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node   = static_cast<TGeoNode*>(nodes->At(iNode));
     TString Fullpath = path + node->GetName() + "/";

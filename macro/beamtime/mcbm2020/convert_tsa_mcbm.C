@@ -7,7 +7,8 @@
  */
 // --- Specify number of TS to be converted.
 // --- -1 means run until the end of the input file.
-void convert_tsa_mcbm(TString inFile = "", Int_t nrEvents = 0) {
+void convert_tsa_mcbm(TString inFile = "", Int_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -46,10 +47,8 @@ void convert_tsa_mcbm(TString inFile = "", Int_t nrEvents = 0) {
   std::cout << std::endl;
   std::cout << ">>> convert_tsa_mcbm: Initialising..." << std::endl;
 
-  CbmMcbm2018RawConverterSdpb* raw_conv_sdpb =
-    new CbmMcbm2018RawConverterSdpb();
-  CbmMcbm2018RawConverterGdpb* raw_conv_gdpb =
-    new CbmMcbm2018RawConverterGdpb();
+  CbmMcbm2018RawConverterSdpb* raw_conv_sdpb = new CbmMcbm2018RawConverterSdpb();
+  CbmMcbm2018RawConverterGdpb* raw_conv_gdpb = new CbmMcbm2018RawConverterGdpb();
 
   raw_conv_sdpb->SetIgnoreOverlapMs();
   raw_conv_gdpb->SetIgnoreOverlapMs();
@@ -57,13 +56,10 @@ void convert_tsa_mcbm(TString inFile = "", Int_t nrEvents = 0) {
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
   source->SetFileName(inFile);
-  source->AddUnpacker(
-    raw_conv_sdpb, 0x10, ECbmModuleId::kSts);  //STS xyter from STS
-  source->AddUnpacker(
-    raw_conv_sdpb, 0x50, ECbmModuleId::kMuch);  //STS xyter from MUCH
-  source->AddUnpacker(
-    raw_conv_gdpb, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
-  source->AddUnpacker(raw_conv_gdpb, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
+  source->AddUnpacker(raw_conv_sdpb, 0x10, ECbmModuleId::kSts);   //STS xyter from STS
+  source->AddUnpacker(raw_conv_sdpb, 0x50, ECbmModuleId::kMuch);  //STS xyter from MUCH
+  source->AddUnpacker(raw_conv_gdpb, 0x60, ECbmModuleId::kTof);   //gDPB A & B & C
+  source->AddUnpacker(raw_conv_gdpb, 0x90, ECbmModuleId::kTof);   //gDPB T0 A & B
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -93,24 +89,22 @@ void convert_tsa_mcbm(TString inFile = "", Int_t nrEvents = 0) {
   std::cout << ">>> convert_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> convert_tsa_mcbm: Macro finished successfully."
-            << std::endl;
+  std::cout << ">>> convert_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> convert_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> convert_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> convert_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

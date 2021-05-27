@@ -8,10 +8,13 @@
 #if !defined(__CLING__)
 #include "CbmFieldConst.h"
 #include "CbmTransport.h"
+
 #include "FairIonGenerator.h"
 #include "FairSystemInfo.h"
+
 #include "TStopwatch.h"
 #include "TString.h"
+
 #include <iostream>
 #endif
 
@@ -35,15 +38,10 @@
  **
  ** The beam profile width must be changed in the macro body, if necessary.
  **/
-void mcbm_transport_beam(UInt_t nEvents     = 1,
-                         TString output     = "mcbm_beam",
-                         TString setup      = "mcbm_beam_2019_03",
-                         Double_t beamAngle = 25.,
-                         TString beamType   = "Silver",
-                         Double_t eKin      = 1.65,
-                         TString targetType = "Gold",
-                         Double_t targetDz  = 0.025,
-                         Double_t targetR   = 1.5) {
+void mcbm_transport_beam(UInt_t nEvents = 1, TString output = "mcbm_beam", TString setup = "mcbm_beam_2019_03",
+                         Double_t beamAngle = 25., TString beamType = "Silver", Double_t eKin = 1.65,
+                         TString targetType = "Gold", Double_t targetDz = 0.025, Double_t targetR = 1.5)
+{
 
   // -----   Define file names   ---------------------------------------------
   TString outFileName = output + ".tra.root";
@@ -56,14 +54,13 @@ void mcbm_transport_beam(UInt_t nEvents     = 1,
   Int_t beamZ = 0;  ///< Atomic number
   Int_t beamA = 0;  ///< Atomic mass number
   Int_t beamQ = 0;  ///< Beam charge per nucleon
-  if (beamType.EqualTo("Silver", TString::kIgnoreCase)
-      || beamType.EqualTo("Ag", TString::kIgnoreCase)) {
+  if (beamType.EqualTo("Silver", TString::kIgnoreCase) || beamType.EqualTo("Ag", TString::kIgnoreCase)) {
     beamZ = 47;
     beamA = 107;
     beamQ = 47;
-  } else {
-    std::cout << "Beam species " << beamType
-              << " not supported; please define in macro body." << std::endl;
+  }
+  else {
+    std::cout << "Beam species " << beamType << " not supported; please define in macro body." << std::endl;
     return;
   }
   Double_t beamWidthX = 0.1;
@@ -74,22 +71,21 @@ void mcbm_transport_beam(UInt_t nEvents     = 1,
 
   // -----   Define beam generator    ----------------------------------------
   beamAngle          = beamAngle * TMath::DegToRad();
-  Double_t beamStart = 1.;            // Distance of beam start from origin [cm]
-  Double_t mProt     = 0.937272;      // Proton mass
-  Double_t eBeam     = eKin + mProt;  // Beam energy per nucleon
-  Double_t pBeam = TMath::Sqrt(eBeam * eBeam - mProt * mProt);  // Beam momentum
-  Int_t mult     = 1;  // Multiplicity per event
+  Double_t beamStart = 1.;                                          // Distance of beam start from origin [cm]
+  Double_t mProt     = 0.937272;                                    // Proton mass
+  Double_t eBeam     = eKin + mProt;                                // Beam energy per nucleon
+  Double_t pBeam     = TMath::Sqrt(eBeam * eBeam - mProt * mProt);  // Beam momentum
+  Int_t mult         = 1;                                           // Multiplicity per event
   // -------------------------------------------------------------------------
 
 
   // -----   Define target   -------------------------------------------------
   TString targetElement = "";
-  if (targetType.EqualTo("Gold", TString::kIgnoreCase)
-      || targetType.EqualTo("Au", TString::kIgnoreCase)) {
+  if (targetType.EqualTo("Gold", TString::kIgnoreCase) || targetType.EqualTo("Au", TString::kIgnoreCase)) {
     targetElement = "Gold";
-  } else {
-    std::cout << "Beam species " << beamType
-              << " not supported; please define in macro body." << std::endl;
+  }
+  else {
+    std::cout << "Beam species " << beamType << " not supported; please define in macro body." << std::endl;
     return;
   }
   Double_t targetX    = 0.;
@@ -110,15 +106,10 @@ void mcbm_transport_beam(UInt_t nEvents     = 1,
   run.SetGeoFileName(geoFileName);
   run.LoadSetup(setup);
   run.SetField(new CbmFieldConst());
-  run.SetTarget(
-    targetElement, targetDz, targetR, targetX, targetY, targetZ, targetRotY);
+  run.SetTarget(targetElement, targetDz, targetR, targetX, targetY, targetZ, targetRotY);
   run.SetVertexSmearZ(kFALSE);
 
-  run.SetBeamPosition(beamStartZ * sin(beamAngle),
-                      0.,
-                      beamWidthX,
-                      beamWidthY,
-                      beamStartZ * cos(beamAngle));
+  run.SetBeamPosition(beamStartZ * sin(beamAngle), 0., beamWidthX, beamWidthY, beamStartZ * cos(beamAngle));
   run.SetBeamAngle(beamAngle, 0., 0., 0.);
   run.ForceVertexInTarget(kFALSE);
 
@@ -139,9 +130,7 @@ void mcbm_transport_beam(UInt_t nEvents     = 1,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFileName << std::endl;
   std::cout << "Parameter file is " << parFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

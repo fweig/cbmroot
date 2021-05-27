@@ -12,9 +12,8 @@
  */
 
 
-void monitor_server_get4(Int_t nEvents     = -1,
-                         Int_t iUnpackMode = 1,
-                         TString hostname  = "localhost") {
+void monitor_server_get4(Int_t nEvents = -1, Int_t iUnpackMode = 1, TString hostname = "localhost")
+{
   CbmRunOnline* run = new CbmRunOnline();
 
   // Create pattern for histo output file name
@@ -69,27 +68,12 @@ void monitor_server_get4(Int_t nEvents     = -1,
   get4_monitor->SetBinSizeEvoHistos(1.0);
   //  get4_monitor->SetBinSizeEvoHistos(   0.1 );
   get4_monitor->SetLengthEvoHistos(1200.0);
-  get4_monitor->SetMicroSliceLength(16384 * 8
-                                    * (1e-9));  // s, From to 01/03 15:00
+  get4_monitor->SetMicroSliceLength(16384 * 8 * (1e-9));  // s, From to 01/03 15:00
 
   //  get4_monitor->SetPulserMode( kFALSE ); // kTRUE = ON, kFALSE = OFF (default is ON)
   get4_monitor->SetPulserMode();  // kTRUE = ON, kFALSE = OFF (default is ON)
   get4_monitor->SetPulserFee(2);  // 1 value (default is 0)
-  get4_monitor->SetPulserChans(64,
-                               68,
-                               72,
-                               76,
-                               80,
-                               84,
-                               88,
-                               92,
-                               288,
-                               292,
-                               296,
-                               300,
-                               304,
-                               308,
-                               312,
+  get4_monitor->SetPulserChans(64, 68, 72, 76, 80, 84, 88, 92, 288, 292, 296, 300, 304, 308, 312,
                                316);  // 1-16 values (default is 0-15)
   get4_monitor->SetOldReadoutSupp();
   get4_monitor->SetMaxCoincDist(200000.0);  // ps
@@ -121,8 +105,7 @@ void monitor_server_get4(Int_t nEvents     = -1,
   //  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
   run->Run(nEvents, 0);  // run until end of input file
 
-  get4_monitor
-    ->Finish();  // Should be called first as histo owned by analysis file :-(
+  get4_monitor->Finish();  // Should be called first as histo owned by analysis file :-(
   run->Finish();
   timer.Stop();
 
@@ -132,8 +115,7 @@ void monitor_server_get4(Int_t nEvents     = -1,
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

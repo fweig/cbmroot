@@ -27,21 +27,25 @@ public:
   TimerInfo() : fName(""), fReal(0), fCpu(0) {};
   TimerInfo(const string& name) : fName(name), fReal(0), fCpu(0) {};
 
-  TimerInfo& operator=(TStopwatch& sw) {
+  TimerInfo& operator=(TStopwatch& sw)
+  {
     fReal = sw.RealTime();
     fCpu  = sw.CpuTime();
     return (*this);
   };
-  TimerInfo& operator+=(TStopwatch& sw) {
+  TimerInfo& operator+=(TStopwatch& sw)
+  {
     fReal += sw.RealTime();
     fCpu += sw.CpuTime();
     return (*this);
   };
-  void operator+=(const TimerInfo& t) {
+  void operator+=(const TimerInfo& t)
+  {
     fReal += t.fReal;
     fCpu += t.fCpu;
   }
-  TimerInfo operator/(const float f) const {
+  TimerInfo operator/(const float f) const
+  {
     TimerInfo r;
     r.fName = fName;
     r.fReal = fReal / f;
@@ -62,17 +66,20 @@ private:
 class L1CATFIterTimerInfo {
 public:
   L1CATFIterTimerInfo() : fNameToI(), fTIs() {};
-  void Add(string name) {
+  void Add(string name)
+  {
     fNameToI[name] = fTIs.size();
     fTIs.push_back(TimerInfo(name));
   };
   TimerInfo& operator[](string name) { return fTIs[fNameToI[name]]; };
   TimerInfo& operator[](int i) { return fTIs[i]; };
-  void operator+=(L1CATFIterTimerInfo& t) {
+  void operator+=(L1CATFIterTimerInfo& t)
+  {
     for (unsigned int i = 0; i < fTIs.size(); ++i)
       fTIs[i] += t[i];
   }
-  L1CATFIterTimerInfo operator/(float f) {
+  L1CATFIterTimerInfo operator/(float f)
+  {
     L1CATFIterTimerInfo r;
     r.fNameToI = fNameToI;
     r.fTIs.resize(fTIs.size());
@@ -82,7 +89,8 @@ public:
     return r;
   }
 
-  void PrintReal(int f = 0) {
+  void PrintReal(int f = 0)
+  {
     if (f) {
       PrintNames();
       cout << endl;
@@ -94,7 +102,8 @@ public:
     }
     if (f) cout << endl;
   };
-  void PrintNames() {
+  void PrintNames()
+  {
     cout << fTIs[0].Name();
     for (unsigned int i = 1; i < fTIs.size(); ++i) {
       cout << " | " << fTIs[i].Name();
@@ -111,19 +120,22 @@ public:
   L1CATFTimerInfo() : fTIIs(), fTIAll() {};
   void SetNIter(int n) { fTIIs.resize(n); };
 
-  void Add(string name) {
+  void Add(string name)
+  {
     for (unsigned int i = 0; i < fTIIs.size(); ++i)
       fTIIs[i].Add(name);
     fTIAll.Add(name);
   };  // use after setniter
   L1CATFIterTimerInfo& GetTimerAll() { return fTIAll; };
   L1CATFIterTimerInfo& operator[](int i) { return fTIIs[i]; };
-  void operator+=(L1CATFTimerInfo& t) {
+  void operator+=(L1CATFTimerInfo& t)
+  {
     for (unsigned int i = 0; i < fTIIs.size(); ++i)
       fTIIs[i] += t[i];
     fTIAll += t.GetAllInfo();
   }
-  L1CATFTimerInfo operator/(float f) {
+  L1CATFTimerInfo operator/(float f)
+  {
     L1CATFTimerInfo r;
     r.fTIAll = fTIAll / f;
     r.SetNIter(fTIIs.size());
@@ -133,14 +145,16 @@ public:
     return r;
   }
 
-  void Calc() {
+  void Calc()
+  {
     fTIAll = fTIIs[0];
     for (unsigned int i = 1; i < fTIIs.size(); ++i)
       fTIAll += fTIIs[i];
   }
 
   L1CATFIterTimerInfo& GetAllInfo() { return fTIAll; };
-  void PrintReal() {
+  void PrintReal()
+  {
     cout.precision(1);
     cout.setf(ios::fixed);
     cout << " stage "

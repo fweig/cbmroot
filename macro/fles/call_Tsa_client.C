@@ -1,4 +1,5 @@
-void call_Tsa_client(Int_t nMin = 1) {
+void call_Tsa_client(Int_t nMin = 1)
+{
   Int_t nEvents      = nMin * 60 * 10;  //minutes * seconds * 10Hz TimeSlices
   FairRunOnline* run = new FairRunOnline();
   gROOT->ProcessLine(".x readTsa_server.C");

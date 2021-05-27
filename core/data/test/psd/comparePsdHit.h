@@ -1,7 +1,8 @@
 #ifndef COMPAREPSDHIT_H
 #define COMPAREPSDHIT_H 1
 
-void comparePsdHitDataMembers(CbmPsdHit& test, Int_t moduleid, Double_t edep) {
+void comparePsdHitDataMembers(CbmPsdHit& test, Int_t moduleid, Double_t edep)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
 

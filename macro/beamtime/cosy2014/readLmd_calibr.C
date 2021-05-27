@@ -10,7 +10,8 @@
  ** Uses CbmSourceLmd as source task and CbmStsCosyBL for calibration
  */
 
-void readLmd_calibr(Int_t runID, Int_t fileID) {
+void readLmd_calibr(Int_t runID, Int_t fileID)
+{
   Int_t Version = 2014;  // Cosy
 
   TString runN    = TString::Itoa(runID, 10);    // run ID
@@ -20,12 +21,10 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
   // --- Specify input file name (this is just an example)
 
   TString inDir = "/hera/cbm/prod/beamtime/2014/12/cosy/";
-  if (Version == 2013)
-    inDir = "/hera/cbm/prod/beamtime/2013/12/cosy/run" + runN + "/";
+  if (Version == 2013) inDir = "/hera/cbm/prod/beamtime/2013/12/cosy/run" + runN + "/";
 
   TString setup = "";
-  if (runID > 0 && runID < 12)
-    setup = "_hodo_only";
+  if (runID > 0 && runID < 12) setup = "_hodo_only";
   else if (runID > 11 && runID < 15)
     setup = "_hodo_sts";
   else if (runID == 15)
@@ -36,8 +35,7 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
     setup = "_nobeam";
   else if (runID == 21)
     setup = "_nobeam_baselines_first";
-  else if (runID > 21 && runID < 32 || runID == 54 || runID == 78 || runID == 79
-           || runID == 81)
+  else if (runID > 21 && runID < 32 || runID == 54 || runID == 78 || runID == 79 || runID == 81)
     setup = "";
   else if (runID == 32 || runID == 45)
     setup = "_0mm_0deg";
@@ -182,8 +180,7 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
   else if (runID == 128)
     setup = "_lowvth_selftrigg_150V";
 
-  if (runID < 10)
-    inFile = inDir + "run00" + runN + setup + "_00" + fileN + "?.lmd";
+  if (runID < 10) inFile = inDir + "run00" + runN + setup + "_00" + fileN + "?.lmd";
   else if (runID > 9 && runID < 100)
     inFile = inDir + "run0" + runN + setup + "_00" + fileN + "?.lmd";
   else if (runID > 99)
@@ -222,10 +219,9 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
 
   //if(setup->Contains("selftrigg"))trigger = kFALSE; else trigger = kTRUE;
 
-  Int_t triggered_station =
-    1;  // Cosy 2014: first (0) - STS1, second (1) - STS2/3, third (2) - STS0
-  Int_t RocNr1 = 6;
-  Int_t RocNr2 = 7;
+  Int_t triggered_station = 1;  // Cosy 2014: first (0) - STS1, second (1) - STS2/3, third (2) - STS0
+  Int_t RocNr1            = 6;
+  Int_t RocNr2            = 7;
 
   if (Version == 2013) {
     triggered_station = 1;
@@ -234,9 +230,8 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
   }  // Cosy 2013: first (0) - STS0, second (1) - STS2, third (2) - STS1
 
   // Create the correct mapping for the beamtime
-  if (Version == 2014) {
-    CbmDaqMapCosy2014* daqMap = new CbmDaqMapCosy2014(runID);
-  } else if (Version == 2013)
+  if (Version == 2014) { CbmDaqMapCosy2014* daqMap = new CbmDaqMapCosy2014(runID); }
+  else if (Version == 2013)
     CbmDaqMapCosy2013* daqMap = new CbmDaqMapCosy2013();
 
   // --- Source task
@@ -277,8 +272,7 @@ void readLmd_calibr(Int_t runID, Int_t fileID) {
   std::cout << std::endl << std::endl;
   std::cout << ">>> readLmd: Macro finished successfully." << std::endl;
   std::cout << ">>> readLmd: Output file is " << outFile << std::endl;
-  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readLmd: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

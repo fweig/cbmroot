@@ -10,17 +10,19 @@ const int NStations = 0;
 #endif  // BUILD_HISTO_FOR_EACH_STANTION
 
 
+#include "CbmL1.h"
+#include "CbmL1Def.h"
+
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TStyle.h"
 
-#include "CbmL1.h"
-#include "CbmL1Def.h"
+#include <iostream>
+#include <vector>
+
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1StsHit.h"
 #include "L1Algo/L1TrackPar.h"
-#include <iostream>
-#include <vector>
 
 using std::cout;
 using std::endl;
@@ -32,12 +34,11 @@ struct TL1TrackParameters {
   static const int NParameters = 5;
 
   TL1TrackParameters() {};
-  TL1TrackParameters(L1TrackPar& T, int i)
-    : x(T.x[i]), y(T.y[i]), tx(T.tx[i]), ty(T.ty[i]), qp(T.qp[i]) {};
-  TL1TrackParameters(CbmL1MCPoint& T)
-    : x(T.x), y(T.y), tx(T.px / T.pz), ty(T.py / T.pz), qp(T.q / T.p) {};
+  TL1TrackParameters(L1TrackPar& T, int i) : x(T.x[i]), y(T.y[i]), tx(T.tx[i]), ty(T.ty[i]), qp(T.qp[i]) {};
+  TL1TrackParameters(CbmL1MCPoint& T) : x(T.x), y(T.y), tx(T.px / T.pz), ty(T.py / T.pz), qp(T.q / T.p) {};
 
-  double operator[](int i) {
+  double operator[](int i)
+  {
     switch (i) {
       case 0: return x;
       case 1: return y;
@@ -47,7 +48,8 @@ struct TL1TrackParameters {
     };
   }
 
-  TL1TrackParameters operator-(TL1TrackParameters& b) {
+  TL1TrackParameters operator-(TL1TrackParameters& b)
+  {
     TL1TrackParameters c;
     c.x  = x - b.x;
     c.y  = y - b.y;
@@ -57,7 +59,8 @@ struct TL1TrackParameters {
     return c;
   }
 
-  TL1TrackParameters operator/(TL1TrackParameters& b) {
+  TL1TrackParameters operator/(TL1TrackParameters& b)
+  {
     TL1TrackParameters c;
     c.x  = x / b.x;
     c.y  = y / b.y;
@@ -67,20 +70,15 @@ struct TL1TrackParameters {
     return c;
   }
 
-  void Print() {
-    cout << x << " " << y << " " << tx << " " << ty << " " << qp << endl;
-  }
+  void Print() { cout << x << " " << y << " " << tx << " " << ty << " " << qp << endl; }
 };
 
-const TString L1TrackParametersNames[TL1TrackParameters::NParameters] = {"x",
-                                                                         "y",
-                                                                         "tx",
-                                                                         "ty",
-                                                                         "qp"};
+const TString L1TrackParametersNames[TL1TrackParameters::NParameters] = {"x", "y", "tx", "ty", "qp"};
 
 class L1AlgoPulls {
 public:
-  L1AlgoPulls() : fNAllPulls(0) {
+  L1AlgoPulls() : fNAllPulls(0)
+  {
     fGPulls.clear();
     for (int i = 0; i < NStations; i++)
       fStaPulls[i].clear();
@@ -112,7 +110,8 @@ private:
 
 // ===================================================================================
 
-void L1AlgoPulls::Init() {
+void L1AlgoPulls::Init()
+{
   fL1 = CbmL1::Instance();
 
 
@@ -132,9 +131,7 @@ void L1AlgoPulls::Init() {
 
 #ifdef BUILD_HISTO_FOR_EACH_STANTION
     // add station pulls
-    for (int i = TL1TrackParameters::NParameters;
-         i < (NStations + 1) * TL1TrackParameters::NParameters;
-         i++) {
+    for (int i = TL1TrackParameters::NParameters; i < (NStations + 1) * TL1TrackParameters::NParameters; i++) {
       int ista     = i / TL1TrackParameters::NParameters - 1;
       TString name = "pull_sta";
       name += ista;
@@ -212,7 +209,8 @@ void L1AlgoPulls::Init() {
 //     AddOne(T_,i,ih);
 // }
 
-inline void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, THitI ih) {
+inline void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, THitI ih)
+{
   fNAllPulls++;
   TL1TrackParameters T(T_, i);
 
@@ -251,7 +249,8 @@ inline void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, THitI ih) {
 #endif  // BUILD_HISTO_FOR_EACH_STANTION
 };
 
-inline void L1AlgoPulls::Print() {  // TODO: renew
+inline void L1AlgoPulls::Print()
+{  // TODO: renew
   cout << "All pulls:     " << fNAllPulls << endl;
   cout << "Correct pulls: " << fGPulls.size() << endl;
   cout << "x     y    tx    ty    qp" << endl;
@@ -261,7 +260,8 @@ inline void L1AlgoPulls::Print() {  // TODO: renew
   }
 };
 
-inline void L1AlgoPulls::Build(bool draw) {
+inline void L1AlgoPulls::Build(bool draw)
+{
   // --- fill histograms ---
   // global pulls
   for (int i = 0; i < fGPulls.size(); i++) {
@@ -277,9 +277,7 @@ inline void L1AlgoPulls::Build(bool draw) {
     for (int i = 0; i < Pulls.size(); i++) {
       TL1TrackParameters& pull = Pulls[i];
       for (int ih = 0; ih < TL1TrackParameters::NParameters; ih++) {
-        if (TailCut > fabs(pull[ih]))
-          histoPull[(iSta + 1) * TL1TrackParameters::NParameters + ih]->Fill(
-            pull[ih]);
+        if (TailCut > fabs(pull[ih])) histoPull[(iSta + 1) * TL1TrackParameters::NParameters + ih]->Fill(pull[ih]);
       }
     }
   }
@@ -294,8 +292,7 @@ inline void L1AlgoPulls::Build(bool draw) {
   }
 
   // --- draw histograms --- and save info
-  float pulls[(NStations + 1) * TL1TrackParameters::NParameters]
-             [2],  // 0 - sigma, 1 - RMS
+  float pulls[(NStations + 1) * TL1TrackParameters::NParameters][2],  // 0 - sigma, 1 - RMS
     residuals[(NStations + 1) * TL1TrackParameters::NParameters][2];
 
   system("mkdir L1_Pulls -p");
@@ -303,8 +300,7 @@ inline void L1AlgoPulls::Build(bool draw) {
   TCanvas* c2 = new TCanvas("c2", "c2", 0, 0, 600, 400);
   c2->cd();
   histoStyle->cd();
-  for (int ih = 0; ih < (NStations + 1) * TL1TrackParameters::NParameters;
-       ih++) {
+  for (int ih = 0; ih < (NStations + 1) * TL1TrackParameters::NParameters; ih++) {
     makeUpHisto(histoPull[ih], histoPull[ih]->GetName(), pulls[ih][0]);
     pulls[ih][1] = histoPull[ih]->GetRMS();
     if (draw) {
@@ -330,29 +326,26 @@ inline void L1AlgoPulls::Build(bool draw) {
   cout << "All entries:     " << fNAllPulls << endl;
   cout << "Correct entries: " << fGPulls.size() << endl;
   cout << "Pulls sigma & RMS: " << endl;
-  for (int ih = 0; ih < (NStations + 1) * TL1TrackParameters::NParameters;
-       ih++) {
+  for (int ih = 0; ih < (NStations + 1) * TL1TrackParameters::NParameters; ih++) {
     int ipar = ih % TL1TrackParameters::NParameters;
     int ista = ih / TL1TrackParameters::NParameters;
     if ((ista > 0) && (ipar == 0)) cout << "Station " << ista - 1 << endl;
-    cout << L1TrackParametersNames[ipar] << "\t" << pulls[ih][0] << "\t"
-         << pulls[ih][1] << endl;
+    cout << L1TrackParametersNames[ipar] << "\t" << pulls[ih][0] << "\t" << pulls[ih][1] << endl;
   }
   cout << "Residuals sigma & RMS: " << endl;
   for (int ih = 0; ih < (0 + 1) * TL1TrackParameters::NParameters; ih++) {
     int ipar = ih % TL1TrackParameters::NParameters;
-    cout << L1TrackParametersNames[ipar] << "\t" << residuals[ih][0] << "\t"
-         << residuals[ih][1] << endl;
+    cout << L1TrackParametersNames[ipar] << "\t" << residuals[ih][0] << "\t" << residuals[ih][1] << endl;
   }
 };
 
-inline void L1AlgoPulls::makeUpHisto(TH1* hist, TString title, float& sigma) {
+inline void L1AlgoPulls::makeUpHisto(TH1* hist, TString title, float& sigma)
+{
   if (hist && (hist->GetEntries() != 0)) {
     TF1* fit = new TF1("fit", "gaus");
     fit->SetLineColor(2);
     fit->SetLineWidth(3);
-    hist->Fit(
-      "fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+    hist->Fit("fit", "", "", hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
     sigma = fit->GetParameter(2);
 
     hist->GetXaxis()->SetLabelFont(textFont);
@@ -363,9 +356,9 @@ inline void L1AlgoPulls::makeUpHisto(TH1* hist, TString title, float& sigma) {
     hist->GetXaxis()->SetTitle(title);
     hist->GetXaxis()->SetTitleOffset(1);
     hist->GetYaxis()->SetTitle("Entries");
-    hist->GetYaxis()->SetTitleOffset(
-      1.05);  // good then entries per bit <= 9999
-  } else {
+    hist->GetYaxis()->SetTitleOffset(1.05);  // good then entries per bit <= 9999
+  }
+  else {
     std::cout << " E: Read hists error! " << std::endl;
   }
 }

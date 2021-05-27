@@ -41,14 +41,11 @@
 
   // -------  Get magnetic field  -----------------------------------------
   CbmFieldMap* field = NULL;
-  if (fieldName == "FieldActive" || fieldName == "FieldIron"
-      || fieldName == "FieldMuonMagnet")
+  if (fieldName == "FieldActive" || fieldName == "FieldIron" || fieldName == "FieldMuonMagnet")
     field = new CbmFieldMapSym3(fieldName.Data());
-  else if (
-    fieldName == "FieldSC_16x13" || fieldName == "FieldSCmuon_16x13"
-    || fieldName == "FieldSC"
-    //	   || fieldName == "FieldAlligator" ||  fieldName == "FieldDipole" || fieldName == "FieldHera" ||
-    //	   fieldName == "FieldHeraP" || fieldName == "FieldHeraS" || fieldName == "FieldHermes"
+  else if (fieldName == "FieldSC_16x13" || fieldName == "FieldSCmuon_16x13" || fieldName == "FieldSC"
+           //	   || fieldName == "FieldAlligator" ||  fieldName == "FieldDipole" || fieldName == "FieldHera" ||
+           //	   fieldName == "FieldHeraP" || fieldName == "FieldHeraS" || fieldName == "FieldHermes"
   )
     field = new CbmFieldMapSym2(fieldName.Data());
   else {
@@ -366,8 +363,7 @@
 
 
   TString fieldType = "";
-  if (type == 0)
-    fieldType = "Constant field";
+  if (type == 0) fieldType = "Constant field";
   else if (type == 1)
     fieldType = "Field map";
   else if (type == 2)

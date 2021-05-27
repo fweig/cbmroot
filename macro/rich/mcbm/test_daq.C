@@ -1,7 +1,6 @@
-void test_daq(Int_t startEvent = 0,
-              Int_t nEvents    = 10000,
-              TString inFile   = "/home/evovch/TSA_files/delay_2_2_0000.tsa",
-              TString outFile  = "~/TSA_files/result/delay_2_2_0000_3.root") {
+void test_daq(Int_t startEvent = 0, Int_t nEvents = 10000, TString inFile = "/home/evovch/TSA_files/delay_2_2_0000.tsa",
+              TString outFile = "~/TSA_files/result/delay_2_2_0000_3.root")
+{
   //Int_t startEvent = 0;
 
   // --- Specify number of events to be produced.
@@ -53,8 +52,7 @@ void test_daq(Int_t startEvent = 0,
   std::cout << ">>> test_daq: Macro finished successfully." << std::endl;
   std::cout << ">>> test_daq: Input file is " << inFile << std::endl;
   std::cout << ">>> test_daq: Output file is " << outFile << std::endl;
-  std::cout << ">>> test_daq: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> test_daq: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

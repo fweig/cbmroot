@@ -9,12 +9,12 @@
 #ifndef CBMRICHHIT_H_
 #define CBMRICHHIT_H_
 
+#include "CbmPixelHit.h"  // for CbmPixelHit
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 
 #include <string>  // for string
-
-#include "CbmPixelHit.h"  // for CbmPixelHit
 
 class CbmRichHit : public CbmPixelHit {
 

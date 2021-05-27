@@ -9,8 +9,10 @@
 #define CBMTRD_H_
 
 #include "FairDetector.h"
+
 #include "TLorentzVector.h"
 #include "TVector3.h"
+
 #include <string>
 
 class CbmTrdPoint;
@@ -94,9 +96,7 @@ public:
 
   Bool_t CheckIfSensitive(std::string name);
 
-  void UseGlobalPhysicsProcesses(Bool_t use) {
-    fUseGlobalPhysicsProcesses = use;
-  }
+  void UseGlobalPhysicsProcesses(Bool_t use) { fUseGlobalPhysicsProcesses = use; }
 
   void SetTransformationMatrix(TGeoMatrix* mat) { fCombiTrans = mat; }
 
@@ -115,8 +115,7 @@ private:
   TClonesArray* fTrdPoints;       //! MC point collection
   CbmTrdGeoHandler* fGeoHandler;  //! Interface to gMC and gGeoManager
 
-  Bool_t
-    fUseGlobalPhysicsProcesses;  //! weather to follow the global switch for physics cuts for the TRDgas
+  Bool_t fUseGlobalPhysicsProcesses;  //! weather to follow the global switch for physics cuts for the TRDgas
 
   TGeoMatrix* fCombiTrans;  //! Transformation matrix for geometry positioning
 
@@ -134,7 +133,8 @@ private:
 };
 
 
-inline void CbmTrd::ResetParameters() {
+inline void CbmTrd::ResetParameters()
+{
   fPosIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fMomIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fPosOut.SetXYZM(0.0, 0.0, 0.0, 0.0);

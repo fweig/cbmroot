@@ -7,7 +7,8 @@
  ** Convert data into cbmroot format.
  ** Uses CbmMcbm2018Source as source task.
  */
-void unpack_tsa_sts(TString inFile = "") {
+void unpack_tsa_sts(TString inFile = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -87,8 +88,7 @@ void unpack_tsa_sts(TString inFile = "") {
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -96,8 +96,7 @@ void unpack_tsa_sts(TString inFile = "") {
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_sts: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_sts: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_sts: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_sts: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

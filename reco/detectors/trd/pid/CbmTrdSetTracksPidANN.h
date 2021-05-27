@@ -79,9 +79,7 @@ public:
 
   //should be "mb" or "st"
   //set the geometry, you use "mb" for Munster-Buharest; "st" for standard
-  void SetTRDGeometryType(TString trdGeometryType) {
-    fTRDGeometryType = trdGeometryType;
-  }
+  void SetTRDGeometryType(TString trdGeometryType) { fTRDGeometryType = trdGeometryType; }
 
 
 private:

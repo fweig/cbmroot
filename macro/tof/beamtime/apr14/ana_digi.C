@@ -1,9 +1,6 @@
-void ana_digi(Int_t nEvents   = 1000000,
-              Int_t calMode   = 0,
-              Int_t calTrg    = -1,
-              Int_t calSmType = 2,
-              Int_t RefTrg    = 5,
-              char* cFileId   = "MbsTrbSun2325") {
+void ana_digi(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calTrg = -1, Int_t calSmType = 2, Int_t RefTrg = 5,
+              char* cFileId = "MbsTrbSun2325")
+{
   Int_t iVerbose = 3;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "FATAL";
@@ -26,17 +23,16 @@ void ana_digi(Int_t nEvents   = 1000000,
   TObjString mapParFile = paramDir + "/parMapApr2014MbsTrbBeam.txt";
   parFileList->Add(&mapParFile);
 
-  TString TofGeo = "v14a";
-  TObjString tofDigiFile =
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
+  TString TofGeo         = "v14a";
+  TObjString tofDigiFile = workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = paramDir + "/tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
+  TString geoDir      = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile     = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+  TFile* fgeo         = new TFile(geoFile);
   TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
   if (NULL == geoMan) {
     cout << "<E> FAIRGeom not found in geoFile" << endl;
@@ -69,8 +65,7 @@ void ana_digi(Int_t nEvents   = 1000000,
   tofTestBeamClust->SetCalTrg(calTrg);
   tofTestBeamClust->SetCaldXdYMax(1.5);  // geometrical matching window
   tofTestBeamClust->SetdTRefMax(5000.);
-  tofTestBeamClust->SetCalSmType(
-    calSmType);  // select detectors for walk correction
+  tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
   //tofTestBeamClust->SetTRefDetId(20486);        //0x00005006; big Diamond
   //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
   // tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
@@ -187,14 +182,10 @@ void ana_digi(Int_t nEvents   = 1000000,
       tofTestBeamClust->SetTRefDifMax(1000.);  // in ps
       tofTestBeamClust->PosYMaxScal(1.);       //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
   run->AddTask(tofTestBeamClust);
-  CbmTofAnaTestbeam* tofAnaTestbeam =
-    new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
+  CbmTofAnaTestbeam* tofAnaTestbeam = new CbmTofAnaTestbeam("TOF TestBeam Analysis", iVerbose);
   switch (cFileId) {
     case "MbsTrbSun2325":
       tofAnaTestbeam->SetDXMean(0.09);

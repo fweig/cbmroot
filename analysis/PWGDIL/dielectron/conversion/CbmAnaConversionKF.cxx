@@ -17,10 +17,13 @@
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
+
+#include "TDatabasePDG.h"
+
 #include "KFParticleTopoReconstructor.h"
 #include "KFTopoPerformance.h"
-#include "TDatabasePDG.h"
 
 
 #define M2E 2.6112004954086e-7
@@ -68,36 +71,29 @@ CbmAnaConversionKF::CbmAnaConversionKF()
   , fKF_photon_pairs()
   , fhKF_invmass_fullReco(NULL)
   , timer()
-  , fTime(0.) {}
+  , fTime(0.)
+{
+}
 
 CbmAnaConversionKF::~CbmAnaConversionKF() {}
 
 
-void CbmAnaConversionKF::Init() {
+void CbmAnaConversionKF::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmAnaConversionKF::Init", "RootManager not instantised!");
-  }
+  if (NULL == ioman) { Fatal("CbmAnaConversionKF::Init", "RootManager not instantised!"); }
 
   fKFMcParticles = (TClonesArray*) ioman->GetObject("KFMCParticles");
-  if (NULL == fKFMcParticles) {
-    Fatal("CbmAnaConversionKF::Init", "No KFMCParticles array!");
-  }
+  if (NULL == fKFMcParticles) { Fatal("CbmAnaConversionKF::Init", "No KFMCParticles array!"); }
 
   fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmAnaConversionKF::Init", "No MCTrack array!");
-  }
+  if (NULL == fMcTracks) { Fatal("CbmAnaConversionKF::Init", "No MCTrack array!"); }
 
   fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmAnaConversionKF::Init", "No StsTrack array!");
-  }
+  if (NULL == fStsTracks) { Fatal("CbmAnaConversionKF::Init", "No StsTrack array!"); }
 
   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fStsTrackMatches) {
-    Fatal("CbmAnaConversionKF::Init", "No StsTrackMatch array!");
-  }
+  if (NULL == fStsTrackMatches) { Fatal("CbmAnaConversionKF::Init", "No StsTrackMatch array!"); }
 
 
   fKFtopo     = fKFparticle->GetTopoReconstructor();
@@ -108,41 +104,33 @@ void CbmAnaConversionKF::Init() {
 }
 
 
-void CbmAnaConversionKF::InitHistos() {
+void CbmAnaConversionKF::InitHistos()
+{
   fHistoList_kfparticle.clear();
 
   // #############################################
   // Histograms related to KFParticle results
-  fhPi0_NDaughters = new TH1D(
-    "fhPi0_NDaughters", "fhPi0_NDaughters;number of daughers;#", 4, 0.5, 4.5);
-  fhPi0Ratio = new TH1D("fhPi0Ratio", "fhPi0Ratio; ratio;#", 1000, 0., 0.02);
-  fhPi0_mass = new TH1D("fhPi0_mass", "fhPi0_mass;mass;#", 500, 0., 0.5);
+  fhPi0_NDaughters = new TH1D("fhPi0_NDaughters", "fhPi0_NDaughters;number of daughers;#", 4, 0.5, 4.5);
+  fhPi0Ratio       = new TH1D("fhPi0Ratio", "fhPi0Ratio; ratio;#", 1000, 0., 0.02);
+  fhPi0_mass       = new TH1D("fhPi0_mass", "fhPi0_mass;mass;#", 500, 0., 0.5);
   fHistoList_kfparticle.push_back(fhPi0_NDaughters);
   fHistoList_kfparticle.push_back(fhPi0Ratio);
   fHistoList_kfparticle.push_back(fhPi0_mass);
 
-  fhInvMassPi0WithFullReco = new TH1D("fhInvMassPi0WithFullReco",
-                                      "fhInvMassPi0WithFullReco;invmass;#",
-                                      400,
-                                      0.,
-                                      2.);
+  fhInvMassPi0WithFullReco = new TH1D("fhInvMassPi0WithFullReco", "fhInvMassPi0WithFullReco;invmass;#", 400, 0., 2.);
   fHistoList_kfparticle.push_back(fhInvMassPi0WithFullReco);
 
-  fhInvMass2Gammas =
-    new TH1D("fhInvMass2Gammas", "fhInvMass2Gammas;invmass;#", 400, 0., 2.);
+  fhInvMass2Gammas = new TH1D("fhInvMass2Gammas", "fhInvMass2Gammas;invmass;#", 400, 0., 2.);
   fHistoList_kfparticle.push_back(fhInvMass2Gammas);
-  fhInvMass2Gammas_cut = new TH1D(
-    "fhInvMass2Gammas_cut", "fhInvMass2Gammas_cut;invmass;#", 400, 0., 2.);
+  fhInvMass2Gammas_cut = new TH1D("fhInvMass2Gammas_cut", "fhInvMass2Gammas_cut;invmass;#", 400, 0., 2.);
   fHistoList_kfparticle.push_back(fhInvMass2Gammas_cut);
 
-  fhKF_particlevector =
-    new TH1D("fhKF_particlevector", "fhKF_particlevector;;#", 10, 0., 10.);
+  fhKF_particlevector = new TH1D("fhKF_particlevector", "fhKF_particlevector;;#", 10, 0., 10.);
   fHistoList_kfparticle.push_back(fhKF_particlevector);
   fhKF_particlevector->GetXaxis()->SetBinLabel(1, "electrons");
   fhKF_particlevector->GetXaxis()->SetBinLabel(2, "gamma");
   fhKF_particlevector->GetXaxis()->SetBinLabel(3, "pi0");
-  fhKF_trackvector =
-    new TH1D("fhKF_trackvector", "fhKF_trackvector;;#", 10, 0., 10.);
+  fhKF_trackvector = new TH1D("fhKF_trackvector", "fhKF_trackvector;;#", 10, 0., 10.);
   fHistoList_kfparticle.push_back(fhKF_trackvector);
   fhKF_trackvector->GetXaxis()->SetBinLabel(1, "electrons");
   fhKF_trackvector->GetXaxis()->SetBinLabel(2, "gamma");
@@ -150,21 +138,19 @@ void CbmAnaConversionKF::InitHistos() {
 
   fhKF_NofPi0 = new TH1D("fhKF_NofPi0", "fhKF_NofPi0;nof;#", 10, -0.5, 9.5);
   fHistoList_kfparticle.push_back(fhKF_NofPi0);
-  fhKF_NofPi0_signal =
-    new TH1D("fhKF_NofPi0_signal", "fhKF_NofPi0_signal;nof;#", 10, -0.5, 9.5);
+  fhKF_NofPi0_signal = new TH1D("fhKF_NofPi0_signal", "fhKF_NofPi0_signal;nof;#", 10, -0.5, 9.5);
   fHistoList_kfparticle.push_back(fhKF_NofPi0_signal);
-  fhKF_NofPi0_trackvector = new TH1D(
-    "fhKF_NofPi0_trackvector", "fhKF_NofPi0_trackvector;nof;#", 10, -0.5, 9.5);
+  fhKF_NofPi0_trackvector = new TH1D("fhKF_NofPi0_trackvector", "fhKF_NofPi0_trackvector;nof;#", 10, -0.5, 9.5);
   fHistoList_kfparticle.push_back(fhKF_NofPi0_trackvector);
 
 
-  fhKF_invmass_fullReco = new TH1D(
-    "fhKF_invmass_fullReco", "fhKF_invmass_fullReco;invmass;#", 400, 0., 2.);
+  fhKF_invmass_fullReco = new TH1D("fhKF_invmass_fullReco", "fhKF_invmass_fullReco;invmass;#", 400, 0., 2.);
   fHistoList_kfparticle.push_back(fhKF_invmass_fullReco);
 }
 
 
-void CbmAnaConversionKF::Finish() {
+void CbmAnaConversionKF::Finish()
+{
   //gDirectory->cd("analysis-conversion");
   gDirectory->mkdir("KF");
   gDirectory->cd("KF");
@@ -177,7 +163,8 @@ void CbmAnaConversionKF::Finish() {
 }
 
 
-void CbmAnaConversionKF::Exec() {
+void CbmAnaConversionKF::Exec()
+{
   timer.Start();
 
   electronIDs.clear();
@@ -198,24 +185,25 @@ void CbmAnaConversionKF::Exec() {
 }
 
 
-void CbmAnaConversionKF::SetKF(CbmKFParticleFinder* kfparticle,
-                               CbmKFParticleFinderQA* kfparticleQA) {
+void CbmAnaConversionKF::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+{
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;
-  if (fKFparticle) {
-    cout << "CbmAnaConversionKF: kf works" << endl;
-  } else {
+  if (fKFparticle) { cout << "CbmAnaConversionKF: kf works" << endl; }
+  else {
     cout << "CbmAnaConversionKF: kf works not" << endl;
   }
 }
 
 
-void CbmAnaConversionKF::SetSignalIds(std::vector<int>* signalids) {
+void CbmAnaConversionKF::SetSignalIds(std::vector<int>* signalids)
+{
   fSignalIds.clear();
   fSignalIds = *signalids;
 }
 
-void CbmAnaConversionKF::SetGhostIds(std::vector<int>* ghostids) {
+void CbmAnaConversionKF::SetGhostIds(std::vector<int>* ghostids)
+{
   fGhostIds.clear();
   fGhostIds = *ghostids;
 }
@@ -380,7 +368,8 @@ void CbmAnaConversionKF::KFParticle_Analysis()
 */
 
 
-void CbmAnaConversionKF::test() {
+void CbmAnaConversionKF::test()
+{
   int nofparticles = fKFMcParticles->GetEntriesFast();
   cout << "CbmAnaConversionKF: test nof " << nofparticles << endl;
   for (int i = 0; i < nofparticles; i++) {
@@ -391,8 +380,7 @@ void CbmAnaConversionKF::test() {
 
 
   vector<vector<int>> ids;
-  const vector<KFParticle>& particles =
-    fKFparticle->GetTopoReconstructor()->GetParticles();
+  const vector<KFParticle>& particles = fKFparticle->GetTopoReconstructor()->GetParticles();
   for (unsigned int iPart = 0; iPart < fSignalIds.size(); iPart++) {
     if (particles[fSignalIds[iPart]].GetPDG() != 111) continue;
     //some cuts on pi0 if needed
@@ -429,39 +417,31 @@ void CbmAnaConversionKF::test() {
       for (int j = 0; j < 4; j++) {
         CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(ids[i][j]);
         if (stsTrack == NULL) return;
-        CbmTrackMatchNew* stsMatch =
-          (CbmTrackMatchNew*) fStsTrackMatches->At(ids[i][j]);
+        CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(ids[i][j]);
         if (stsMatch == NULL) return;
         int stsMcTrackId = stsMatch->GetMatchedLink().GetIndex();
         if (stsMcTrackId < 0) return;
         mcTracks[j] = (CbmMCTrack*) fMcTracks->At(stsMcTrackId);
         if (mcTracks[j] == NULL) return;
 
-        CbmMCTrack* mother =
-          (CbmMCTrack*) fMcTracks->At(mcTracks[j]->GetMotherId());
-        CbmMCTrack* grandmother =
-          (CbmMCTrack*) fMcTracks->At(mother->GetMotherId());
+        CbmMCTrack* mother      = (CbmMCTrack*) fMcTracks->At(mcTracks[j]->GetMotherId());
+        CbmMCTrack* grandmother = (CbmMCTrack*) fMcTracks->At(mother->GetMotherId());
 
 
-        cout << " " << stsMcTrackId << "/" << mcTracks[j]->GetPdgCode()
-             << "(motherid" << mcTracks[j]->GetMotherId() << ",motherpdg"
-             << mother->GetPdgCode() << ",grandmotherpdg"
-             << grandmother->GetPdgCode() << ",grandmotherid"
-             << mother->GetMotherId() << ")";
+        cout << " " << stsMcTrackId << "/" << mcTracks[j]->GetPdgCode() << "(motherid" << mcTracks[j]->GetMotherId()
+             << ",motherpdg" << mother->GetPdgCode() << ",grandmotherpdg" << grandmother->GetPdgCode()
+             << ",grandmotherid" << mother->GetMotherId() << ")";
       }
     }
     cout << endl;
-    Double_t mass =
-      Invmass_4particles(mcTracks[0], mcTracks[1], mcTracks[2], mcTracks[3]);
+    Double_t mass = Invmass_4particles(mcTracks[0], mcTracks[1], mcTracks[2], mcTracks[3]);
     cout << "mass: " << mass << endl;
   }
 }
 
 
-Double_t CbmAnaConversionKF::Invmass_4particles(const CbmMCTrack* mctrack1,
-                                                const CbmMCTrack* mctrack2,
-                                                const CbmMCTrack* mctrack3,
-                                                const CbmMCTrack* mctrack4)
+Double_t CbmAnaConversionKF::Invmass_4particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2,
+                                                const CbmMCTrack* mctrack3, const CbmMCTrack* mctrack4)
 // calculation of invariant mass from four electrons/positrons
 {
   TLorentzVector lorVec1;
@@ -479,14 +459,15 @@ Double_t CbmAnaConversionKF::Invmass_4particles(const CbmMCTrack* mctrack1,
 
   TLorentzVector sum;
   sum = lorVec1 + lorVec2 + lorVec3 + lorVec4;
-  cout << "mc: \t" << sum.Px() << " / " << sum.Py() << " / " << sum.Pz()
-       << " / " << sum.E() << "\t => mag = " << sum.Mag() << endl;
+  cout << "mc: \t" << sum.Px() << " / " << sum.Py() << " / " << sum.Pz() << " / " << sum.E()
+       << "\t => mag = " << sum.Mag() << endl;
 
   return sum.Mag();
 }
 
 
-void CbmAnaConversionKF::test2() {
+void CbmAnaConversionKF::test2()
+{
   Int_t pi0counter_trackvector = 0;
   const KFPTrackVector* kftrackvector;
   kftrackvector   = fKFtopo->GetTracks();
@@ -522,8 +503,7 @@ void CbmAnaConversionKF::test2() {
   particleMatch = fKFtopoPerf->ParticlesMatch();
   Int_t pv_size = particlevector.size();
   cout << "CbmAnaConversionKF: size of particlevector: " << pv_size << endl;
-  cout << "CbmAnaConversionKF: size of particleMatch: " << particleMatch.size()
-       << endl;
+  cout << "CbmAnaConversionKF: size of particleMatch: " << particleMatch.size() << endl;
 
   Int_t electroncounter   = 0;
   Int_t pi0counter        = 0;
@@ -553,16 +533,14 @@ void CbmAnaConversionKF::test2() {
   fhKF_NofPi0->Fill(pi0counter);
   fhKF_NofPi0_signal->Fill(pi0counter_signal);
 
-  cout << "CbmAnaConversionKF: nof electrons in particlevector: "
-       << electroncounter << endl;
-  cout << "CbmAnaConversionKF: nof pi0 in particlevector: " << pi0counter
-       << endl;
-  cout << "CbmAnaConversionKF: nof gamma in particlevector: " << gammacounter
-       << endl;
+  cout << "CbmAnaConversionKF: nof electrons in particlevector: " << electroncounter << endl;
+  cout << "CbmAnaConversionKF: nof pi0 in particlevector: " << pi0counter << endl;
+  cout << "CbmAnaConversionKF: nof gamma in particlevector: " << gammacounter << endl;
 }
 
 
-void CbmAnaConversionKF::CombineElectrons() {
+void CbmAnaConversionKF::CombineElectrons()
+{
   Int_t nof = electronIDs.size();
   if (nof >= 2) {
     for (int a = 0; a < nof - 1; a++) {
@@ -572,15 +550,9 @@ void CbmAnaConversionKF::CombineElectrons() {
         Double_t openingAngle = electron1.GetAngle(electron2);
 
         TLorentzVector lorentzE1;
-        lorentzE1.SetPxPyPzE(electron1.GetPx(),
-                             electron1.GetPy(),
-                             electron1.GetPz(),
-                             electron1.GetE());
+        lorentzE1.SetPxPyPzE(electron1.GetPx(), electron1.GetPy(), electron1.GetPz(), electron1.GetE());
         TLorentzVector lorentzE2;
-        lorentzE2.SetPxPyPzE(electron2.GetPx(),
-                             electron2.GetPy(),
-                             electron2.GetPz(),
-                             electron2.GetE());
+        lorentzE2.SetPxPyPzE(electron2.GetPx(), electron2.GetPy(), electron2.GetPz(), electron2.GetE());
         TLorentzVector sum = lorentzE1 + lorentzE2;
         Double_t invmass   = sum.Mag();
 
@@ -596,7 +568,8 @@ void CbmAnaConversionKF::CombineElectrons() {
 }
 
 
-void CbmAnaConversionKF::CombinePhotons() {
+void CbmAnaConversionKF::CombinePhotons()
+{
   Int_t nof = fKF_photon_pairs.size();
   if (nof >= 2) {
     for (int a = 0; a < nof - 1; a++) {
@@ -606,10 +579,8 @@ void CbmAnaConversionKF::CombinePhotons() {
         Int_t electron21 = fKF_photon_pairs[b][0];
         Int_t electron22 = fKF_photon_pairs[b][1];
 
-        Double_t invmass = Invmass_4particlesRECO(particlevector[electron11],
-                                                  particlevector[electron12],
-                                                  particlevector[electron21],
-                                                  particlevector[electron22]);
+        Double_t invmass = Invmass_4particlesRECO(particlevector[electron11], particlevector[electron12],
+                                                  particlevector[electron21], particlevector[electron22]);
         fhKF_invmass_fullReco->Fill(invmass);
       }
     }
@@ -617,7 +588,8 @@ void CbmAnaConversionKF::CombinePhotons() {
 }
 
 
-void CbmAnaConversionKF::Reconstruct() {
+void CbmAnaConversionKF::Reconstruct()
+{
   Int_t nof = electronIDs.size();
   if (nof >= 4) {
     for (int a = 0; a < nof - 3; a++) {
@@ -629,44 +601,33 @@ void CbmAnaConversionKF::Reconstruct() {
             Int_t check3   = (particlevector[electronIDs[c]].GetPDG() > 0);
             Int_t check4   = (particlevector[electronIDs[d]].GetPDG() > 0);
             Int_t test1234 = check1 + check2 + check3 + check4;
-            if (test1234 != 2)
-              continue;  // need two electrons and two positrons
+            if (test1234 != 2) continue;  // need two electrons and two positrons
 
 
             KFParticle particle1 = particlevector[electronIDs[a]];
             KFParticle particle2 = particlevector[electronIDs[b]];
             KFParticle particle3 = particlevector[electronIDs[c]];
             KFParticle particle4 = particlevector[electronIDs[d]];
-            Double_t invmass     = Invmass_4particlesRECO(
-              particle1, particle2, particle3, particle4);
+            Double_t invmass     = Invmass_4particlesRECO(particle1, particle2, particle3, particle4);
 
 
             Bool_t fill          = false;
             Double_t invmass_cut = 0.02;
 
-            if (particle1.GetZ() == particle2.GetZ()
-                && particle3.GetZ() == particle4.GetZ()) {
+            if (particle1.GetZ() == particle2.GetZ() && particle3.GetZ() == particle4.GetZ()) {
               Double_t invmass_12 = Invmass_2electrons(particle1, particle2);
               Double_t invmass_34 = Invmass_2electrons(particle3, particle4);
-              if (invmass_12 < invmass_cut && invmass_34 < invmass_cut) {
-                fill = true;
-              }
+              if (invmass_12 < invmass_cut && invmass_34 < invmass_cut) { fill = true; }
             }
-            if (particle1.GetZ() == particle3.GetZ()
-                && particle2.GetZ() == particle4.GetZ()) {
+            if (particle1.GetZ() == particle3.GetZ() && particle2.GetZ() == particle4.GetZ()) {
               Double_t invmass_13 = Invmass_2electrons(particle1, particle3);
               Double_t invmass_24 = Invmass_2electrons(particle2, particle4);
-              if (invmass_13 < invmass_cut && invmass_24 < invmass_cut) {
-                fill = true;
-              }
+              if (invmass_13 < invmass_cut && invmass_24 < invmass_cut) { fill = true; }
             }
-            if (particle1.GetZ() == particle4.GetZ()
-                && particle2.GetZ() == particle3.GetZ()) {
+            if (particle1.GetZ() == particle4.GetZ() && particle2.GetZ() == particle3.GetZ()) {
               Double_t invmass_14 = Invmass_2electrons(particle1, particle4);
               Double_t invmass_23 = Invmass_2electrons(particle2, particle3);
-              if (invmass_14 < invmass_cut && invmass_23 < invmass_cut) {
-                fill = true;
-              }
+              if (invmass_14 < invmass_cut && invmass_23 < invmass_cut) { fill = true; }
             }
 
 
@@ -714,21 +675,20 @@ void CbmAnaConversionKF::Reconstruct() {
 }
 
 
-void CbmAnaConversionKF::ReconstructGammas() {
+void CbmAnaConversionKF::ReconstructGammas()
+{
   Int_t nof = gammaIDs.size();
   if (nof >= 2) {
     for (int a = 0; a < nof - 1; a++) {
       for (int b = a + 1; b < nof; b++) {
-        KFParticle particle1 = particlevector[gammaIDs[a]];
-        KFParticle particle2 = particlevector[gammaIDs[b]];
-        Double_t invmass     = Invmass_2gamma(particle1, particle2);
-        Double_t openingAngle =
-          OpeningAngleBetweenPhotons(particle1, particle2);
+        KFParticle particle1  = particlevector[gammaIDs[a]];
+        KFParticle particle2  = particlevector[gammaIDs[b]];
+        Double_t invmass      = Invmass_2gamma(particle1, particle2);
+        Double_t openingAngle = OpeningAngleBetweenPhotons(particle1, particle2);
 
         fhInvMass2Gammas->Fill(invmass);
 
-        if ((TMath::Abs(particle1.GetZ() - particle2.GetZ()) < 0.005)
-            && (openingAngle < 5)) {
+        if ((TMath::Abs(particle1.GetZ() - particle2.GetZ()) < 0.005) && (openingAngle < 5)) {
           fhInvMass2Gammas_cut->Fill(invmass);
         }
       }
@@ -737,9 +697,7 @@ void CbmAnaConversionKF::ReconstructGammas() {
 }
 
 
-Double_t CbmAnaConversionKF::Invmass_4particlesRECO(KFParticle part1,
-                                                    KFParticle part2,
-                                                    KFParticle part3,
+Double_t CbmAnaConversionKF::Invmass_4particlesRECO(KFParticle part1, KFParticle part2, KFParticle part3,
                                                     KFParticle part4)
 // calculation of invariant mass from four electrons/positrons
 {
@@ -767,8 +725,8 @@ Double_t CbmAnaConversionKF::Invmass_4particlesRECO(KFParticle part1,
 }
 
 
-Double_t CbmAnaConversionKF::Invmass_2gamma(KFParticle part1,
-                                            KFParticle part2) {
+Double_t CbmAnaConversionKF::Invmass_2gamma(KFParticle part1, KFParticle part2)
+{
   TVector3 momentum1(part1.GetPx(), part1.GetPy(), part1.GetPz());
   Double_t energy1 = TMath::Sqrt(momentum1.Mag2());
   TLorentzVector lorVec1(momentum1, energy1);
@@ -785,8 +743,8 @@ Double_t CbmAnaConversionKF::Invmass_2gamma(KFParticle part1,
 }
 
 
-Double_t CbmAnaConversionKF::Invmass_2electrons(KFParticle part1,
-                                                KFParticle part2) {
+Double_t CbmAnaConversionKF::Invmass_2electrons(KFParticle part1, KFParticle part2)
+{
   TVector3 momentum1(part1.GetPx(), part1.GetPy(), part1.GetPz());
   Double_t energy1 = TMath::Sqrt(momentum1.Mag2() + M2E);
   TLorentzVector lorVec1(momentum1, energy1);
@@ -803,8 +761,8 @@ Double_t CbmAnaConversionKF::Invmass_2electrons(KFParticle part1,
 }
 
 
-Double_t CbmAnaConversionKF::OpeningAngleBetweenPhotons(KFParticle part1,
-                                                        KFParticle part2) {
+Double_t CbmAnaConversionKF::OpeningAngleBetweenPhotons(KFParticle part1, KFParticle part2)
+{
   TVector3 momentum1(part1.GetPx(), part1.GetPy(), part1.GetPz());
   Double_t energy1 = TMath::Sqrt(momentum1.Mag2());
   TLorentzVector lorVec1(momentum1, energy1);

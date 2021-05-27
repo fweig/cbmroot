@@ -1,6 +1,7 @@
 #include <string>
 
-void draw_lit_reco_qa_matching(bool lit, bool reco) {
+void draw_lit_reco_qa_matching(bool lit, bool reco)
+{
   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   loadlibs();
 
@@ -25,11 +26,8 @@ void draw_lit_reco_qa_matching(bool lit, bool reco) {
   }
 }
 
-void PrepareInputs(int Flag,
-                   string dir,
-                   string& fileName,
-                   string& outputDirTracking,
-                   string& outputDirRecoQa) {
+void PrepareInputs(int Flag, string dir, string& fileName, string& outputDirTracking, string& outputDirRecoQa)
+{
   string folder = "";
   if (Flag == 0) {
     folder   = "Reference/";
@@ -74,7 +72,5 @@ void PrepareInputs(int Flag,
   outputDirRecoQa   = dir + folder + "results_RecoQa/";
 
   std::cout << "fileName, outputDirTracking, outputDirRecoQa:" << std::endl;
-  std::cout << fileName << std::endl
-            << outputDirTracking << std::endl
-            << outputDirRecoQa << std::endl;
+  std::cout << fileName << std::endl << outputDirTracking << std::endl << outputDirRecoQa << std::endl;
 }

@@ -24,10 +24,10 @@
 
 
 #include "TGeoManager.h"
+#include "TGeoPcon.h"
+
 #include <iomanip>
 #include <iostream>
-
-#include "TGeoPcon.h"
 
 using namespace std;
 
@@ -48,27 +48,18 @@ TString rootFileName = "pipe_v18e_mcbm.geo.root";
 TString pipeName = "pipe_v18e";
 // ----------------------------------------------------------------------------
 
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                      fstream* infoFile);
 
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
                        fstream* infoFile);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_bpipe_geometry_v18e() {
+void create_bpipe_geometry_v18e()
+{
   // -----   Define beam pipe sections   --------------------------------------
   /** For v18e:   **/
   TString pipe1name       = "pipe1 - straight miniCBM beampipe";
@@ -98,8 +89,7 @@ void create_bpipe_geometry_v18e() {
   fstream infoFile;
   fstream infoFileEmpty;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "SIS-100. Beam pipe geometry created with " + macroname << endl
-           << endl;
+  infoFile << "SIS-100. Beam pipe geometry created with " + macroname << endl << endl;
   infoFile << "  pipe v18e - is a pipe for the STS up to the interface to RICH "
               "at z = 1700 mm"
            << endl
@@ -196,16 +186,14 @@ void create_bpipe_geometry_v18e() {
 
   // -----   Create sections  -------------------------------------------------
   infoFile << endl << "Beam pipe section: " << pipe1name << endl;
-  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm"
-           << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-  TGeoVolume* pipe1 =
-    MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
+  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10)
+           << "h,mm" << endl;
+  TGeoVolume* pipe1 = MakePipe(1, nSects1, z1, rin1, rout1, pipeMedium, &infoFile);
   pipe1->SetLineColor(kYellow);
   //  pipe1->SetLineColor(kGray);
   pipe->AddNode(pipe1, 0);
 
-  TGeoVolume* pipevac1 =
-    MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
+  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum, &infoFile);
   pipevac1->SetLineColor(kCyan);
   pipe->AddNode(pipevac1, 0);
 
@@ -230,15 +218,13 @@ void create_bpipe_geometry_v18e() {
   TGeoRotation* pipe_rotation = new TGeoRotation();
   pipe_rotation->RotateY(pipe_angle);
   //  TGeoCombiTrans* pipe_placement = new TGeoCombiTrans( sin( pipe_angle/180.*acos(-1) ) * z1[1]/2., 0., 0., pipe_rotation);
-  TGeoCombiTrans* pipe_placement =
-    new TGeoCombiTrans("pipe_rot", 0., 0., 0, pipe_rotation);
+  TGeoCombiTrans* pipe_placement = new TGeoCombiTrans("pipe_rot", 0., 0., 0, pipe_rotation);
   pipe_placement->Write();
 
   rootFile->Close();
 
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << rootFileName
-       << endl;
+  cout << "Geometry " << top->GetName() << " written to " << rootFileName << endl;
 
   infoFile.close();
 
@@ -274,23 +260,17 @@ void create_bpipe_geometry_v18e() {
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoVolume* MakePipe(Int_t iPart,
-                     Int_t nSects,
-                     Double_t* z,
-                     Double_t* rin,
-                     Double_t* rout,
-                     TGeoMedium* medium,
-                     fstream* infoFile) {
+TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                     fstream* infoFile)
+{
 
   // ---> Shape
   TString volName = Form("pipe%i", iPart);
   TGeoPcon* shape = new TGeoPcon(volName.Data(), 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
-    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
-              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2) << z[iSect] << setw(10) << fixed
+              << setprecision(2) << rin[iSect] << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
               << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
@@ -303,20 +283,15 @@ TGeoVolume* MakePipe(Int_t iPart,
 
 
 // =====   Make the volume for the vacuum inside the beam pipe   ==============
-TGeoVolume* MakeVacuum(Int_t iPart,
-                       Int_t nSects,
-                       Double_t* z,
-                       Double_t* rin,
-                       Double_t* rout,
-                       TGeoMedium* medium,
-                       fstream* infoFile) {
+TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, Double_t* rout, TGeoMedium* medium,
+                       fstream* infoFile)
+{
 
   // ---> Shape
   TString volName = Form("pipevac%i", iPart);
   TGeoPcon* shape = new TGeoPcon(volName.Data(), 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(
-      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    shape->DefineSection(iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
   }
 
   // ---> Volume

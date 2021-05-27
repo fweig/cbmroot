@@ -6,10 +6,9 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void setup_unpack(Int_t calMode    = 1,
-                  TString sFileDir = "/data.local1/cdash/data",
-                  TString sFileId  = "CbmTofSps_01Dec0128",
-                  Int_t iSet       = 0) {
+void setup_unpack(Int_t calMode = 1, TString sFileDir = "/data.local1/cdash/data",
+                  TString sFileId = "CbmTofSps_01Dec0128", Int_t iSet = 0)
+{
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug, 4=raw debug)
   Int_t iVerbose = 2;
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -137,8 +136,7 @@ void setup_unpack(Int_t calMode    = 1,
   // =========================================================================
   // ===                     Unpacker monitoring                           ===
   // =========================================================================
-  TMbsUnpTofMonitor* tofUnpMonitor =
-    new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", iVerbose);
   run->AddTask(tofUnpMonitor);
   // ===                 End of Unpacker monitoring                        ===
   // =========================================================================
@@ -165,8 +163,8 @@ void setup_unpack(Int_t calMode    = 1,
   // ===                      End of Mapping                               ===
   // =========================================================================
   if (0) {
-    CbmTofTestBeamClusterizer* tofTestBeamClust = new CbmTofTestBeamClusterizer(
-      "TOF TestBeam Clusterizer", iVerbose, kFALSE);
+    CbmTofTestBeamClusterizer* tofTestBeamClust =
+      new CbmTofTestBeamClusterizer("TOF TestBeam Clusterizer", iVerbose, kFALSE);
     //tofTestBeamClust->SetCalParFileName("MbsTrbBeamtofTestBeamClust.hst.root");
     Int_t calTrg    = -1;
     Int_t calSmType = 0;
@@ -176,8 +174,7 @@ void setup_unpack(Int_t calMode    = 1,
     tofTestBeamClust->SetCalSel(calTrg);
     tofTestBeamClust->SetCaldXdYMax(150.);  // geometrical matching window
     tofTestBeamClust->SetdTRefMax(500000.);
-    tofTestBeamClust->SetCalSmType(
-      calSmType);  // select detectors for walk correction
+    tofTestBeamClust->SetCalSmType(calSmType);  // select detectors for walk correction
     //tofTestBeamClust->SetTRefDetId(20486);        //0x00005006; big Diamond
     //tofTestBeamClust->SetTRefDetId(8214);       //0x00002016; Plastic 1
     //tofTestBeamClust->SetTRefDetId(8198);       //0x00002006;  Plastic 0
@@ -203,16 +200,14 @@ void setup_unpack(Int_t calMode    = 1,
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 2:  // time difference calibration
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbBeam02tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbBeam02tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(300000.);  // in ps
         tofTestBeamClust->PosYMaxScal(1000.);      //in % of length
         break;
       case 3:
         //	 tofTestBeamClust->SetCalParFileName("MbsTrbBeam00tofTestBeamClust.hst.root");
         // tofTestBeamClust->SetCalParFileName("MbsTrbThu0138_01tofTestBeamClust.hst.root");
-        tofTestBeamClust->SetCalParFileName(
-          "MbsTrbThu224_03tofTestBeamClust.hst.root");
+        tofTestBeamClust->SetCalParFileName("MbsTrbThu224_03tofTestBeamClust.hst.root");
         tofTestBeamClust->SetTRefDifMax(200000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);         //in % of length
         break;
@@ -220,10 +215,7 @@ void setup_unpack(Int_t calMode    = 1,
         tofTestBeamClust->SetTRefDifMax(50000.);  // in ps
         tofTestBeamClust->PosYMaxScal(2.);        //in % of length
         break;
-      default:
-        cout << "<E> Calib mode not implemented! stop execution of script"
-             << endl;
-        return;
+      default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
     }
     run->AddTask(tofTestBeamClust);
   }

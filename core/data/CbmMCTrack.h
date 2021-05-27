@@ -18,6 +18,8 @@
 #ifndef CBMMCTRACK_H
 #define CBMMCTRACK_H 1
 
+#include "CbmDefs.h"  // for ECbmModuleId, ECbmModuleId::kMvd, ECbmModuleId::kPsd, ECbmModuleId::kSts
+
 #include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>      // for Double_t, Int_t, Double32_t, UInt_t
 #include <TLorentzVector.h>  // for TLorentzVector
@@ -26,8 +28,6 @@
 #include <TVector3.h>        // for TVector3
 
 #include <string>  // for string
-
-#include "CbmDefs.h"  // for ECbmModuleId, ECbmModuleId::kMvd, ECbmModuleId::kPsd, ECbmModuleId::kSts
 
 class TParticle;
 
@@ -39,16 +39,8 @@ public:
 
 
   /**  Standard constructor  **/
-  CbmMCTrack(Int_t pdgCode,
-             Int_t motherID,
-             Double_t px,
-             Double_t py,
-             Double_t pz,
-             Double_t x,
-             Double_t y,
-             Double_t z,
-             Double_t t,
-             Int_t nPoints);
+  CbmMCTrack(Int_t pdgCode, Int_t motherID, Double_t px, Double_t py, Double_t pz, Double_t x, Double_t y, Double_t z,
+             Double_t t, Int_t nPoints);
 
   /**  Copy constructor  **/
   CbmMCTrack(const CbmMCTrack& track);
@@ -97,9 +89,7 @@ public:
 
   Double_t GetEnergy() const;
   Double_t GetPt() const { return TMath::Sqrt(fPx * fPx + fPy * fPy); }
-  Double_t GetP() const {
-    return TMath::Sqrt(fPx * fPx + fPy * fPy + fPz * fPz);
-  }
+  Double_t GetP() const { return TMath::Sqrt(fPx * fPx + fPy * fPy + fPz * fPz); }
   Double_t GetRapidity() const;
   void GetMomentum(TVector3& momentum) const;
   void Get4Momentum(TLorentzVector& momentum) const;
@@ -162,26 +152,21 @@ private:
 
 // ==========   Inline functions   ========================================
 
-inline Double_t CbmMCTrack::GetEnergy() const {
+inline Double_t CbmMCTrack::GetEnergy() const
+{
   if (fE > 0.) return fE;
   Double_t mass = GetMass();
   return TMath::Sqrt(mass * mass + fPx * fPx + fPy * fPy + fPz * fPz);
 }
 
 
-inline void CbmMCTrack::GetMomentum(TVector3& momentum) const {
-  momentum.SetXYZ(fPx, fPy, fPz);
-}
+inline void CbmMCTrack::GetMomentum(TVector3& momentum) const { momentum.SetXYZ(fPx, fPy, fPz); }
 
 
-inline void CbmMCTrack::Get4Momentum(TLorentzVector& momentum) const {
-  momentum.SetXYZT(fPx, fPy, fPz, GetEnergy());
-}
+inline void CbmMCTrack::Get4Momentum(TLorentzVector& momentum) const { momentum.SetXYZT(fPx, fPy, fPz, GetEnergy()); }
 
 
-inline void CbmMCTrack::GetStartVertex(TVector3& vertex) const {
-  vertex.SetXYZ(fStartX, fStartY, fStartZ);
-}
+inline void CbmMCTrack::GetStartVertex(TVector3& vertex) const { vertex.SetXYZ(fStartX, fStartY, fStartZ); }
 
 
 #endif

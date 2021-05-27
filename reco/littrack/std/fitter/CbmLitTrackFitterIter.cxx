@@ -10,17 +10,19 @@
 
 #include <iostream>
 
-CbmLitTrackFitterIter::CbmLitTrackFitterIter(TrackFitterPtr fitter,
-                                             TrackFitterPtr smoother)
+CbmLitTrackFitterIter::CbmLitTrackFitterIter(TrackFitterPtr fitter, TrackFitterPtr smoother)
   : fFitter(fitter)
   , fSmoother(smoother)
   , fNofIterations(2)
   , fChiSqCut(15.)
-  , fMinNofHits(3) {}
+  , fMinNofHits(3)
+{
+}
 
 CbmLitTrackFitterIter::~CbmLitTrackFitterIter() {}
 
-LitStatus CbmLitTrackFitterIter::Fit(CbmLitTrack* track, bool downstream) {
+LitStatus CbmLitTrackFitterIter::Fit(CbmLitTrack* track, bool downstream)
+{
   for (int iter = 0; iter < fNofIterations; iter++) {
     bool isRefit = false;
 

@@ -9,6 +9,7 @@
 #define CBMCLUSTERINGWARD_H_
 
 #include "CbmClusteringGeometry.h"
+
 #include "FairTask.h"
 
 //class CbmMuchGeoScheme;
@@ -32,13 +33,8 @@ public:
 
   Float_t WardDistance(Int_t iPad1, Int_t iPad2);
   void WardCreate(CbmClusteringGeometry* moduleGeo);
-  void AddClusterInBlock(CbmClusteringGeometry* moduleGeo,
-                         Int_t newCluster,
-                         Int_t addedCluster);
-  Bool_t WardBlockCreateStep(CbmClusteringGeometry* moduleGeo,
-                             Int_t wardStep,
-                             Bool_t wardStepRec,
-                             Int_t addedPad);
+  void AddClusterInBlock(CbmClusteringGeometry* moduleGeo, Int_t newCluster, Int_t addedCluster);
+  Bool_t WardBlockCreateStep(CbmClusteringGeometry* moduleGeo, Int_t wardStep, Bool_t wardStepRec, Int_t addedPad);
   void WardBlockCreate(CbmClusteringGeometry* moduleGeo);
   void DeleteCluaster(Int_t clusterNumber);
   void WardDistanceRecalculation(Int_t clusterNumber);

@@ -1,7 +1,7 @@
 
-Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
-  if (-1 == dScalerArea && 3 == iScalerIndex)
-    dScalerArea = 40;  //cm^2, just a guess for HD PMT
+Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1)
+{
+  if (-1 == dScalerArea && 3 == iScalerIndex) dScalerArea = 40;  //cm^2, just a guess for HD PMT
 
   if (-1 == dScalerArea) {
     cout << " Undefined scaler area for scaler " << iScalerIndex << endl;
@@ -14,8 +14,7 @@ Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
   TString sInputFilenameScal = "../unpack_MbsTrbMon0153.out.root";
   TFile* fInputFileScal      = TFile::Open(sInputFilenameScal, "READ");
   if (!fInputFileScal || kFALSE == fInputFileScal->IsOpen()) {
-    cout << Form("Input file %s cannot be opened.", sInputFilenameScal.Data())
-         << endl;
+    cout << Form("Input file %s cannot be opened.", sInputFilenameScal.Data()) << endl;
     return kFALSE;
   }
 
@@ -61,33 +60,26 @@ Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
   TTofTriglogBoard* fTriglogBoard;
   TTofCalibScaler* fCalTrloBoard;
   // Find first MBS event with TRIGLOG
-  for (iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal;
-       iFirstGoodMbsEvent++) {
+  for (iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal; iFirstGoodMbsEvent++) {
     tInputTreeScal->GetEntry(iFirstGoodMbsEvent);
-    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-      0);  // Always only 1 TRIGLOG board!
+    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
     if (0 < fTriglogBoard->GetMbsTimeSec()) break;
   }  // for( iFirstGoodMbsEvent = 0; iFirstGoodMbsEvent < uNTreeEntriesScal; iFirstGoodMbsEvent ++)
   tInputTreeScal->GetEntry(iFirstGoodMbsEvent);
-  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-    0);  // Always only 1 TRIGLOG board!
-  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-    0);  // TRIGLOG board always first!
+  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
   // Use TTimeStamp as an example, this give access to date and time in nice format
   // Direct use of the time is also possible!
   TTimeStamp tTimeFirstMbsEvent;
   tTimeFirstMbsEvent.SetSec(fTriglogBoard->GetMbsTimeSec());
   tTimeFirstMbsEvent.SetNanoSec(fTriglogBoard->GetMbsTimeMilliSec() * 1000000);
-  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec())
-                           + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
+  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec()) + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
 
   // Get time for MBS ending point
   tInputTreeScal->GetEntry(uNTreeEntriesScal - 1);
-  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-    0);  // Always only 1 TRIGLOG board!
-  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-    0);  // TRIGLOG board always first!
+  fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+  fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
   TTimeStamp tTimeLastMbsEvent;
   tTimeLastMbsEvent.SetSec(fTriglogBoard->GetMbsTimeSec());
@@ -98,60 +90,46 @@ Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
   cout << "Time last MBS event:  " << tTimeLastMbsEvent.AsString() << endl;
 
   // Prepare histograms
-  Int_t iTimeIntervalsec =
-    tTimeLastMbsEvent.GetSec() - tTimeFirstMbsEvent.GetSec() + 1;
+  Int_t iTimeIntervalsec = tTimeLastMbsEvent.GetSec() - tTimeFirstMbsEvent.GetSec() + 1;
   cout << "Time interval with data: " << iTimeIntervalsec << " s (MBS)" << endl;
-  cout << "Time interval with data: " << iTimeIntervalSecClk << " s (clock)"
-       << endl;
+  cout << "Time interval with data: " << iTimeIntervalSecClk << " s (clock)" << endl;
 
-  TProfile* hRateEvoScalMbs =
-    new TProfile("hRateEvoScalMbs",
-                 Form("Scaler rate evolution for the input scaler #%d in "
-                      "TRIGLOG; MBS Time [s]; Rate [kHz/cm2]",
-                      iScalerIndex),
-                 10 * iTimeIntervalsec,
-                 0,
-                 iTimeIntervalsec);
+  TProfile* hRateEvoScalMbs = new TProfile("hRateEvoScalMbs",
+                                           Form("Scaler rate evolution for the input scaler #%d in "
+                                                "TRIGLOG; MBS Time [s]; Rate [kHz/cm2]",
+                                                iScalerIndex),
+                                           10 * iTimeIntervalsec, 0, iTimeIntervalsec);
   hRateEvoScalMbs->SetLineColor(kBlue);
 
-  TProfile* hRateEvoScalClk =
-    new TProfile("hRateEvoScalClk",
-                 Form("Scaler rate evolution for the input scaler #%d in "
-                      "TRIGLOG; Clock Time [s]; Rate [kHz/cm2]",
-                      iScalerIndex),
-                 10 * iTimeIntervalSecClk,
-                 0,
-                 iTimeIntervalSecClk);
+  TProfile* hRateEvoScalClk = new TProfile("hRateEvoScalClk",
+                                           Form("Scaler rate evolution for the input scaler #%d in "
+                                                "TRIGLOG; Clock Time [s]; Rate [kHz/cm2]",
+                                                iScalerIndex),
+                                           10 * iTimeIntervalSecClk, 0, iTimeIntervalSecClk);
   hRateEvoScalClk->SetLineColor(kRed);
 
   // To have a meaningfull plot using MBS time, we need the time in the first MBS event
   tInputTreeScal->GetEntry(0);
-  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec())
-                           + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
+  Double_t dFirstMbsTime = (Double_t)(tTimeFirstMbsEvent.GetSec()) + (Double_t)(tTimeFirstMbsEvent.GetNanoSec()) / 1e9;
 
 
   // Loop over MBS events
   UInt_t uMbsEvtIndex = 0;
   Double_t dRateKhzCm = 0;
-  for (uMbsEvtIndex = iFirstGoodMbsEvent; uMbsEvtIndex < uNTreeEntriesScal;
-       uMbsEvtIndex++) {
+  for (uMbsEvtIndex = iFirstGoodMbsEvent; uMbsEvtIndex < uNTreeEntriesScal; uMbsEvtIndex++) {
     // Get the event data
     tInputTreeScal->GetEntry(uMbsEvtIndex);
 
     // Get the TRIGLOG and SCALER object we want from the arrays
-    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(
-      0);  // Always only 1 TRIGLOG board!
-    fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(
-      0);  // TRIGLOG board always first!
+    fTriglogBoard = (TTofTriglogBoard*) tArrayTriglog->ConstructedAt(0);  // Always only 1 TRIGLOG board!
+    fCalTrloBoard = (TTofCalibScaler*) tArrayScal->ConstructedAt(0);      // TRIGLOG board always first!
 
     // Calculate current MBS time (use directly the time, knowing the date is not so important here)
     Double_t dCurrMbsTime =
-      (Double_t)(fTriglogBoard->GetMbsTimeSec())
-      + (Double_t)(fTriglogBoard->GetMbsTimeMilliSec()) / 1e3;
+      (Double_t)(fTriglogBoard->GetMbsTimeSec()) + (Double_t)(fTriglogBoard->GetMbsTimeMilliSec()) / 1e3;
 
     // Calculate rate per cm2
-    dRateKhzCm =
-      fCalTrloBoard->GetScalerValue(iScalerIndex) / 1000.0 / dScalerArea;
+    dRateKhzCm = fCalTrloBoard->GetScalerValue(iScalerIndex) / 1000.0 / dScalerArea;
 
     if (0 < fCalTrloBoard->GetTimeToLast()) {
       // Scale rate with time since last event for averaging
@@ -165,8 +143,7 @@ Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
 
 
   // Now need to be displayed
-  TCanvas* tCanvasA =
-    new TCanvas("tCanvasA", "Rate evolution: two case", 0, 0, 2000, 1000);
+  TCanvas* tCanvasA = new TCanvas("tCanvasA", "Rate evolution: two case", 0, 0, 2000, 1000);
   tCanvasA->SetFillColor(0);
   tCanvasA->SetGridx(0);
   tCanvasA->SetGridy(0);
@@ -190,8 +167,7 @@ Bool_t ratePlotExample(Int_t iScalerIndex = 3, Double_t dScalerArea = -1) {
   gPad->SetLeftMargin(0.15);
   hRateEvoScalClk->Draw("");
 
-  TCanvas* tCanvasB =
-    new TCanvas("tCanvasB", "Rate evolution: comparison", 0, 0, 2000, 1000);
+  TCanvas* tCanvasB = new TCanvas("tCanvasB", "Rate evolution: comparison", 0, 0, 2000, 1000);
   tCanvasB->SetFillColor(0);
   tCanvasB->SetGridx(0);
   tCanvasB->SetGridy(0);

@@ -39,18 +39,22 @@ CbmBuildEventsFromTracksIdeal::CbmBuildEventsFromTracksIdeal()
   , fMcPoints(nullptr)
   , fEvents(nullptr)
   , fStsTrackMatchArray(nullptr)
-  , fEventList(nullptr) {}
+  , fEventList(nullptr)
+{
+}
 // ===========================================================================
 
 
 // =====   Destructor   ======================================================
-CbmBuildEventsFromTracksIdeal::~CbmBuildEventsFromTracksIdeal() {
+CbmBuildEventsFromTracksIdeal::~CbmBuildEventsFromTracksIdeal()
+{
   //   fEvents->Delete();
 }
 // ===========================================================================
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsFromTracksIdeal::Init() {
+InitStatus CbmBuildEventsFromTracksIdeal::Init()
+{
 
 
   // --- Get FairRootManager instance
@@ -61,8 +65,7 @@ InitStatus CbmBuildEventsFromTracksIdeal::Init() {
   //   fStsDigis = (TClonesArray*) ioman->GetObject("StsDigi");
   //   assert ( fStsDigis );
 
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
   if (mcManager == nullptr) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
 
   fMCTracks = (CbmMCDataArray*) mcManager->InitBranch("MCTrack");
@@ -93,15 +96,15 @@ InitStatus CbmBuildEventsFromTracksIdeal::Init() {
 
   // Register output array (CbmStsDigi)
   fEvents = new TClonesArray("CbmEvent", 100);
-  ioman->Register(
-    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
+  ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   return kSUCCESS;
 }
 // ===========================================================================
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsFromTracksIdeal::Exec(Option_t*) {
+void CbmBuildEventsFromTracksIdeal::Exec(Option_t*)
+{
 
   TStopwatch timer;
   timer.Start();
@@ -124,8 +127,7 @@ void CbmBuildEventsFromTracksIdeal::Exec(Option_t*) {
 
     //    CbmStsTrack* track = (CbmStsTrack*) fStsTracks->At(iTrack);
 
-    CbmTrackMatchNew* stsTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(iTrack);
     if (stsTrackMatch->GetNofLinks() == 0) continue;
     Float_t bestWeight  = 0.f;
     Float_t totalWeight = 0.f;
@@ -168,12 +170,7 @@ void CbmBuildEventsFromTracksIdeal::Exec(Option_t*) {
 
 
 struct CbmBuildEventMCTrack {
-  CbmBuildEventMCTrack()
-    : fMCFileId(-1)
-    , fMCEventId(-1)
-    , fMCTrackId(-1)
-    , fRecoTrackId()
-    , fRecoEventId() {}
+  CbmBuildEventMCTrack() : fMCFileId(-1), fMCEventId(-1), fMCTrackId(-1), fRecoTrackId(), fRecoEventId() {}
 
   int fMCFileId;
   int fMCEventId;

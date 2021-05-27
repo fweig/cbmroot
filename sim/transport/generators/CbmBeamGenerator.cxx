@@ -7,22 +7,25 @@
 #include "CbmBeamGenerator.h"
 
 #include "CbmEventGenerator.h"
-#include <TDatabasePDG.h>
-#include <TParticlePDG.h>
 
 #include "FairLogger.h"
 #include "FairMCEventHeader.h"
 #include "FairPrimaryGenerator.h"
 #include "FairRunSim.h"
+
 #include "TFile.h"
 #include "TRandom.h"
 #include "TTree.h"
 #include "TVector3.h"
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
+
+#include <cassert>
+#include <sstream>
+
 #include "UEvent.h"
 #include "UParticle.h"
 #include "URun.h"
-#include <cassert>
-#include <sstream>
 
 
 // -----   Default constructor   --------------------------------------------
@@ -30,20 +33,19 @@ CbmBeamGenerator::CbmBeamGenerator()
   : FairGenerator("BeamGenerator", "CBM generator")
   , fP(0.)
   , fStartZ(0.)
-  , fIon(nullptr) {}
+  , fIon(nullptr)
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Standard constructor   --------------------------------------------
-CbmBeamGenerator::CbmBeamGenerator(UInt_t beamZ,
-                                   UInt_t beamA,
-                                   UInt_t beamQ,
-                                   Double_t momentum,
-                                   Double_t startZ)
+CbmBeamGenerator::CbmBeamGenerator(UInt_t beamZ, UInt_t beamA, UInt_t beamQ, Double_t momentum, Double_t startZ)
   : FairGenerator("BeamGenerator", "CBM generator")
   , fP(momentum * Double_t(beamA))
   , fStartZ(startZ)
-  , fIon(nullptr) {
+  , fIon(nullptr)
+{
 
   // --- Create the ion species and add it to the particle list
   char name[20];
@@ -74,7 +76,8 @@ void CbmBeamGenerator::Print(Option_t*) const { LOG(info) << ToString(); }
 
 
 // -----   Generate input event   -------------------------------------------
-Bool_t CbmBeamGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
+Bool_t CbmBeamGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
 
   TParticlePDG* ion = TDatabasePDG::Instance()->GetParticle(fIon->GetName());
   assert(ion);
@@ -91,13 +94,12 @@ Bool_t CbmBeamGenerator::ReadEvent(FairPrimaryGenerator* primGen) {
 
 
 // -----   Info   -----------------------------------------------------------
-std::string CbmBeamGenerator::ToString() const {
+std::string CbmBeamGenerator::ToString() const
+{
 
   std::stringstream ss;
-  ss << GetName() << " ion: " << fIon->GetName() << " Z " << fIon->GetZ()
-     << " A " << fIon->GetA() << " Q " << fIon->GetQ() << " mass "
-     << fIon->GetMass() << ", momentum " << fP
-     << " GeV/u, start Z = " << fStartZ;
+  ss << GetName() << " ion: " << fIon->GetName() << " Z " << fIon->GetZ() << " A " << fIon->GetA() << " Q "
+     << fIon->GetQ() << " mass " << fIon->GetMass() << ", momentum " << fP << " GeV/u, start Z = " << fStartZ;
 
   return ss.str();
 }

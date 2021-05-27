@@ -1,7 +1,8 @@
 // from the following website
 // https://root.cern.ch/doc/master/classTGeoCtub.html
 
-void targetbox1() {
+void targetbox1()
+{
   TCanvas* c = new TCanvas("c", "c", 0, 0, 600, 600);
   new TGeoManager("ctub", "poza3");
   TGeoMaterial* mat = new TGeoMaterial("Al", 26.98, 13, 2.7);
@@ -23,15 +24,13 @@ void targetbox1() {
   nlow[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nlow[2] = TMath::Cos(theta);
 
-  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "1 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
   nlow[0] = 0;
   nlow[1] = 0;
   nlow[2] = -1;
 
-  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2]
-       << endl;
+  cout << "2 - lx: " << nlow[0] << " ly: " << nlow[1] << " lz: " << nlow[2] << endl;
 
 
   //   theta = 20.*TMath::Pi()/180.;
@@ -44,8 +43,7 @@ void targetbox1() {
   nhi[1] = TMath::Sin(theta) * TMath::Sin(phi);
   nhi[2] = TMath::Cos(theta);
 
-  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2]
-       << endl;
+  cout << "3 - hx: " << nhi[0] << " hy: " << nhi[1] << " hz: " << nhi[2] << endl;
 
   // TGeoVolume *ctub = gGeoManager->MakeCtub("CTUB", med, 25, 27, 30, 200, 160, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
 
@@ -76,22 +74,10 @@ void targetbox1() {
   Double_t length = 45.1;
   Double_t offset = 29.9;
 
-  TGeoVolume* ctub = gGeoManager->MakeCtub("CTUB",
-                                           med,
-                                           rmin,
-                                           rmax,
-                                           length / 2.,
-                                           angle1,
-                                           angle2,
-                                           nlow[0],
-                                           nlow[1],
-                                           nlow[2],
-                                           nhi[0],
-                                           nhi[1],
-                                           nhi[2]);
+  TGeoVolume* ctub = gGeoManager->MakeCtub("CTUB", med, rmin, rmax, length / 2., angle1, angle2, nlow[0], nlow[1],
+                                           nlow[2], nhi[0], nhi[1], nhi[2]);
   ctub->SetLineWidth(2);
-  TGeoTranslation* tctub =
-    new TGeoTranslation("tctub", 0, 0, -offset + length / 2.);
+  TGeoTranslation* tctub = new TGeoTranslation("tctub", 0, 0, -offset + length / 2.);
   top->AddNode(ctub, 1, tctub);
 
 
@@ -101,11 +87,9 @@ void targetbox1() {
   Double_t thick1 = 0.4;
 
   // upstream cover
-  TGeoVolume* cups = gGeoManager->MakeCtub(
-    "CUPS", med, rmin1, rmax, thick1 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
+  TGeoVolume* cups = gGeoManager->MakeCtub("CUPS", med, rmin1, rmax, thick1 / 2., angle1, angle2, 0, 0, -1, 0, 0, 1);
   cups->SetLineWidth(2);
-  TGeoTranslation* tups =
-    new TGeoTranslation("tups", 0, 0, -offset - thick1 / 2.);
+  TGeoTranslation* tups = new TGeoTranslation("tups", 0, 0, -offset - thick1 / 2.);
   top->AddNode(cups, 1, tups);
 
 
@@ -127,22 +111,10 @@ void targetbox1() {
 
 
   // downstream cover 2
-  TGeoVolume* cdown = gGeoManager->MakeCtub("CDOWN",
-                                            med,
-                                            rmin2,
-                                            rmax,
-                                            thick2 / 2.,
-                                            angle1,
-                                            angle2,
-                                            -nhi[0],
-                                            -nhi[1],
-                                            -nhi[2],
-                                            nhi[0],
-                                            nhi[1],
-                                            nhi[2]);
+  TGeoVolume* cdown = gGeoManager->MakeCtub("CDOWN", med, rmin2, rmax, thick2 / 2., angle1, angle2, -nhi[0], -nhi[1],
+                                            -nhi[2], nhi[0], nhi[1], nhi[2]);
   cdown->SetLineWidth(2);
-  TGeoTranslation* tdown =
-    new TGeoTranslation("tdown", 0, 0, -offset + length + thick2 / 2.);
+  TGeoTranslation* tdown = new TGeoTranslation("tdown", 0, 0, -offset + length + thick2 / 2.);
   top->AddNode(cdown, 1, tdown);
 
 
@@ -159,22 +131,10 @@ void targetbox1() {
 
 
   // downstream pipe
-  TGeoVolume* cpip = gGeoManager->MakeCtub("CPIP",
-                                           med,
-                                           rmin2,
-                                           rmax3,
-                                           length3 / 2.,
-                                           angle1,
-                                           angle2,
-                                           -nhi[0],
-                                           -nhi[1],
-                                           -nhi[2],
-                                           -nlow[0],
-                                           -nlow[1],
-                                           -nlow[2]);
+  TGeoVolume* cpip = gGeoManager->MakeCtub("CPIP", med, rmin2, rmax3, length3 / 2., angle1, angle2, -nhi[0], -nhi[1],
+                                           -nhi[2], -nlow[0], -nlow[1], -nlow[2]);
   cpip->SetLineWidth(2);
-  TGeoTranslation* tpip =
-    new TGeoTranslation("tpip", 0, 0, -offset + length + thick2 + length3 / 2.);
+  TGeoTranslation* tpip = new TGeoTranslation("tpip", 0, 0, -offset + length + thick2 + length3 / 2.);
   top->AddNode(cpip, 1, tpip);
 
 

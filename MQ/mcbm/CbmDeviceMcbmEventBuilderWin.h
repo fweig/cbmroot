@@ -80,24 +80,20 @@ private:
   //      Bool_t InitParameters( TList* fParCList );
 
   /// Statistics & first TS rejection
-  uint64_t fulNumMessages = 0;
-  uint64_t fulTsCounter   = 0;
-  std::chrono::system_clock::time_point fLastPublishTime =
-    std::chrono::system_clock::now();
+  uint64_t fulNumMessages                                = 0;
+  uint64_t fulTsCounter                                  = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
 
   /// Processing algos
   CbmMcbm2019TimeWinEventBuilderAlgo* fpAlgo = nullptr;
 
   /// TS MetaData stable values storage
-  size_t fuNbCoreMsPerTs = 0;        //!
-  size_t fuNbOverMsPerTs = 0;        //!
-  Double_t fdMsSizeInNs  = 1280000;  //! Size of a single MS, [nanoseconds]
-  Double_t fdTsCoreSizeInNs =
-    -1.0;  //! Total size of the core MS in a TS, [nanoseconds]
-  Double_t fdTsOverSizeInNs =
-    -1.0;  //! Total size of the overlap MS in a TS, [nanoseconds]
-  Double_t fdTsFullSizeInNs =
-    -1.0;  //! Total size of all MS in a TS, [nanoseconds]
+  size_t fuNbCoreMsPerTs    = 0;        //!
+  size_t fuNbOverMsPerTs    = 0;        //!
+  Double_t fdMsSizeInNs     = 1280000;  //! Size of a single MS, [nanoseconds]
+  Double_t fdTsCoreSizeInNs = -1.0;     //! Total size of the core MS in a TS, [nanoseconds]
+  Double_t fdTsOverSizeInNs = -1.0;     //! Total size of the overlap MS in a TS, [nanoseconds]
+  Double_t fdTsFullSizeInNs = -1.0;     //! Total size of all MS in a TS, [nanoseconds]
 
   /// Data reception
   /// TS MetaData storage
@@ -137,9 +133,7 @@ private:
 // special class to expose protected TMessage constructor
 class CbmMQTMessage : public TMessage {
 public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
-    ResetBit(kIsOwner);
-  }
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 

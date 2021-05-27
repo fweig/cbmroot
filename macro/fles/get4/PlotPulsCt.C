@@ -1,6 +1,5 @@
 {
-  TCanvas* cCtChipsA =
-    new TCanvas("cCtChipsA", "CT distributions for chips 0-3 in FEE A");
+  TCanvas* cCtChipsA = new TCanvas("cCtChipsA", "CT distributions for chips 0-3 in FEE A");
   cCtChipsA->Divide(2, 2);
 
   cCtChipsA->cd(1);
@@ -15,8 +14,7 @@
   cCtChipsA->cd(4);
   fhPulserFeeDistCT_chip003->Draw("colz");
 
-  TCanvas* cCtChipsB =
-    new TCanvas("cCtChipsB", "CT distributions for chips 4-7 in FEE A");
+  TCanvas* cCtChipsB = new TCanvas("cCtChipsB", "CT distributions for chips 4-7 in FEE A");
   cCtChipsB->Divide(2, 2);
 
   cCtChipsB->cd(1);
@@ -31,8 +29,7 @@
   cCtChipsB->cd(4);
   fhPulserFeeDistCT_chip007->Draw("colz");
 
-  TCanvas* cCtTotChipsA = new TCanvas(
-    "cCtTotChipsA", "CT distributions for Tot for chips 0-3 in FEE A");
+  TCanvas* cCtTotChipsA = new TCanvas("cCtTotChipsA", "CT distributions for Tot for chips 0-3 in FEE A");
   cCtTotChipsA->Divide(2, 2);
 
   cCtTotChipsA->cd(1);
@@ -47,8 +44,7 @@
   cCtTotChipsA->cd(4);
   fhPulserFeeTotDistCT_chip003->Draw("colz");
 
-  TCanvas* cCtTotChipsB = new TCanvas(
-    "cCtTotChipsB", "CT distributions for Tot for chips 4-7 in FEE A");
+  TCanvas* cCtTotChipsB = new TCanvas("cCtTotChipsB", "CT distributions for Tot for chips 4-7 in FEE A");
   cCtTotChipsB->Divide(2, 2);
 
   cCtTotChipsB->cd(1);

@@ -59,20 +59,20 @@ ClassImp(LxTBTrdFinder)
 {
 }
 
-static void
-FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results) {
+static void FindGeoChild(TGeoNode* node, const char* name, list<TGeoNode*>& results)
+{
   Int_t nofChildren = node->GetNdaughters();
 
   for (Int_t i = 0; i < nofChildren; ++i) {
     TGeoNode* child = node->GetDaughter(i);
     TString childName(child->GetName());
 
-    if (childName.Contains(name, TString::kIgnoreCase))
-      results.push_back(child);
+    if (childName.Contains(name, TString::kIgnoreCase)) results.push_back(child);
   }
 }
 
-void LxTBTrdFinder::HandleGeometry() {
+void LxTBTrdFinder::HandleGeometry()
+{
   Double_t localCoords[3] = {0., 0., 0.};
   Double_t globalCoords[3];
   TGeoNavigator* pNavigator = gGeoManager->GetCurrentNavigator();
@@ -80,8 +80,7 @@ void LxTBTrdFinder::HandleGeometry() {
   list<TGeoNode*> detectors;
   FindGeoChild(gGeoManager->GetCurrentNode(), "trd", detectors);
 
-  for (list<TGeoNode*>::iterator i = detectors.begin(); i != detectors.end();
-       ++i) {
+  for (list<TGeoNode*>::iterator i = detectors.begin(); i != detectors.end(); ++i) {
     TGeoNode* detector = *i;
     pNavigator->CdDown(detector);
     list<TGeoNode*> layers;
@@ -94,43 +93,31 @@ void LxTBTrdFinder::HandleGeometry() {
       list<TGeoNode*> modules;
       FindGeoChild(layer, "module", modules);
 
-      for (list<TGeoNode*>::iterator k = modules.begin(); k != modules.end();
-           ++k) {
+      for (list<TGeoNode*>::iterator k = modules.begin(); k != modules.end(); ++k) {
         TGeoNode* module = *k;
         pNavigator->CdDown(module);
         list<TGeoNode*> padCoppers;
         FindGeoChild(module, "padcopper", padCoppers);
 
-        for (list<TGeoNode*>::iterator l = padCoppers.begin();
-             l != padCoppers.end();
-             ++l) {
+        for (list<TGeoNode*>::iterator l = padCoppers.begin(); l != padCoppers.end(); ++l) {
           TGeoNode* padCopper = *l;
           pNavigator->CdDown(padCopper);
-          TGeoBBox* pBox =
-            static_cast<TGeoBBox*>(padCopper->GetVolume()->GetShape());
+          TGeoBBox* pBox = static_cast<TGeoBBox*>(padCopper->GetVolume()->GetShape());
           pBox->ComputeBBox();
           gGeoManager->LocalToMaster(localCoords, globalCoords);
           fFinder->stations[layerNumber].z = globalCoords[2];
 
-          if (fFinder->stations[layerNumber].minY
-              > globalCoords[1] - pBox->GetDY())
-            fFinder->stations[layerNumber].minY =
-              globalCoords[1] - pBox->GetDY();
+          if (fFinder->stations[layerNumber].minY > globalCoords[1] - pBox->GetDY())
+            fFinder->stations[layerNumber].minY = globalCoords[1] - pBox->GetDY();
 
-          if (fFinder->stations[layerNumber].maxY
-              < globalCoords[1] + pBox->GetDY())
-            fFinder->stations[layerNumber].maxY =
-              globalCoords[1] + pBox->GetDY();
+          if (fFinder->stations[layerNumber].maxY < globalCoords[1] + pBox->GetDY())
+            fFinder->stations[layerNumber].maxY = globalCoords[1] + pBox->GetDY();
 
-          if (fFinder->stations[layerNumber].minX
-              > globalCoords[0] - pBox->GetDX())
-            fFinder->stations[layerNumber].minX =
-              globalCoords[0] - pBox->GetDX();
+          if (fFinder->stations[layerNumber].minX > globalCoords[0] - pBox->GetDX())
+            fFinder->stations[layerNumber].minX = globalCoords[0] - pBox->GetDX();
 
-          if (fFinder->stations[layerNumber].maxX
-              < globalCoords[0] + pBox->GetDX())
-            fFinder->stations[layerNumber].maxX =
-              globalCoords[0] + pBox->GetDX();
+          if (fFinder->stations[layerNumber].maxX < globalCoords[0] + pBox->GetDX())
+            fFinder->stations[layerNumber].maxX = globalCoords[0] + pBox->GetDX();
 
           pNavigator->CdUp();
         }
@@ -146,7 +133,8 @@ void LxTBTrdFinder::HandleGeometry() {
   }
 }
 
-static bool GetHistoRMS(const char* name, Double_t& retVal) {
+static bool GetHistoRMS(const char* name, Double_t& retVal)
+{
   char fileName[64];
   sprintf(fileName, "%s.root", name);
   bool result    = false;
@@ -156,7 +144,7 @@ static bool GetHistoRMS(const char* name, Double_t& retVal) {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(fileName);
+  TFile* f = new TFile(fileName);
 
   if (!f->IsZombie()) {
     TH1F* h = static_cast<TH1F*>(f->Get(name));
@@ -176,30 +164,21 @@ static bool GetHistoRMS(const char* name, Double_t& retVal) {
 
 static TH1F* signalDistanceHisto = 0;
 
-InitStatus LxTBTrdFinder::Init() {
-  signalDistanceHisto =
-    new TH1F("signalDistanceHisto", "signalDistanceHisto", 200, 0., 800.);
-  speedOfLight =
-    100 * TMath::C();  // Multiply by 100 to express in centimeters.
-  nof_timebins                  = 5;  // Corresponds to event by event mode.
+InitStatus LxTBTrdFinder::Init()
+{
+  signalDistanceHisto           = new TH1F("signalDistanceHisto", "signalDistanceHisto", 200, 0., 800.);
+  speedOfLight                  = 100 * TMath::C();  // Multiply by 100 to express in centimeters.
+  nof_timebins                  = 5;                 // Corresponds to event by event mode.
   pair<int, int> stSpatLimits[] = {{20, 20}, {20, 20}, {20, 20}, {20, 20}};
-  fFinder                       = new LxTbBinnedFinder(0,
-                                 CUR_NOF_STATIONS,
-                                 nof_timebins,
-                                 stSpatLimits,
-                                 20,
-                                 20,
-                                 CUR_TIMEBIN_LENGTH);
-  fFinder->fHasTrd              = false;
+  fFinder          = new LxTbBinnedFinder(0, CUR_NOF_STATIONS, nof_timebins, stSpatLimits, 20, 20, CUR_TIMEBIN_LENGTH);
+  fFinder->fHasTrd = false;
   HandleGeometry();
 
   for (int i = 0; i < 4; ++i) {
     fFinder->stations[i].binSizeX =
-      (fFinder->stations[i].maxX - fFinder->stations[i].minX)
-      / fFinder->stations[i].nofXBins;
+      (fFinder->stations[i].maxX - fFinder->stations[i].minX) / fFinder->stations[i].nofXBins;
     fFinder->stations[i].binSizeY =
-      (fFinder->stations[i].maxY - fFinder->stations[i].minY)
-      / fFinder->stations[i].nofYBins;
+      (fFinder->stations[i].maxY - fFinder->stations[i].minY) / fFinder->stations[i].nofYBins;
   }
 
   for (int i = 1; i < 4; ++i) {
@@ -216,9 +195,9 @@ InitStatus LxTBTrdFinder::Init() {
     if (!GetHistoRMS(name, deltaThetaY)) return kFATAL;
 
     fFinder->stations[i].deltaThetaY = deltaThetaY;
-    scaltype deltaZ = fFinder->stations[i].z - fFinder->stations[i - 1].z;
-    fFinder->stations[i].dispX = deltaThetaX * deltaZ;
-    fFinder->stations[i].dispY = deltaThetaY * deltaZ;
+    scaltype deltaZ                  = fFinder->stations[i].z - fFinder->stations[i - 1].z;
+    fFinder->stations[i].dispX       = deltaThetaX * deltaZ;
+    fFinder->stations[i].dispY       = deltaThetaY * deltaZ;
   }
 
   FairRootManager* ioman = FairRootManager::Instance();
@@ -232,27 +211,20 @@ InitStatus LxTBTrdFinder::Init() {
   fTrdHits = static_cast<TClonesArray*>(ioman->GetObject("TrdHit"));
 
   fTrdTracks = new TClonesArray("CbmTrdTrack", 100);
-  LOG(info) << "IsOutputBranchPersistent(TrdTrack) is: "
-            << (IsOutputBranchPersistent("TrdTrack") ? "true" : "false");
-  ioman->Register(
-    "TrdTrack", "Trd", fTrdTracks, IsOutputBranchPersistent("TrdTrack"));
+  LOG(info) << "IsOutputBranchPersistent(TrdTrack) is: " << (IsOutputBranchPersistent("TrdTrack") ? "true" : "false");
+  ioman->Register("TrdTrack", "Trd", fTrdTracks, IsOutputBranchPersistent("TrdTrack"));
 
   fGlobalTracks = new TClonesArray("CbmGlobalTrack", 100);
   LOG(info) << "IsOutputBranchPersistent(GlobalTrack) is: "
             << (IsOutputBranchPersistent("GlobalTrack") ? "true" : "false");
-  ioman->Register("GlobalTrack",
-                  "Global",
-                  fGlobalTracks,
-                  IsOutputBranchPersistent("GlobalTrack"));
+  ioman->Register("GlobalTrack", "Global", fGlobalTracks, IsOutputBranchPersistent("GlobalTrack"));
 
 #ifdef LXTB_QA
-  CbmMCDataManager* mcManager =
-    static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
-  fTrdMCPoints = mcManager->InitBranch("TrdPoint");
-  fTrdClusters = static_cast<TClonesArray*>(ioman->GetObject("TrdCluster"));
-  fTrdDigiMatches =
-    static_cast<TClonesArray*>(ioman->GetObject("TrdDigiMatch"));
-  CbmMCDataArray* mcTracks = mcManager->InitBranch("MCTrack");
+  CbmMCDataManager* mcManager = static_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  fTrdMCPoints                = mcManager->InitBranch("TrdPoint");
+  fTrdClusters                = static_cast<TClonesArray*>(ioman->GetObject("TrdCluster"));
+  fTrdDigiMatches             = static_cast<TClonesArray*>(ioman->GetObject("TrdDigiMatch"));
+  CbmMCDataArray* mcTracks    = mcManager->InitBranch("MCTrack");
 
   for (int i = 0; i < fNEvents; ++i) {
     Int_t evSize = mcTracks->Size(0, i);
@@ -264,18 +236,15 @@ InitStatus LxTBTrdFinder::Init() {
 
     for (int j = 0; j < evSize; ++j) {
       evTracks.push_back(TrackDataHolder());
-      const CbmMCTrack* mcTrack =
-        static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, j));
-      evTracks.back().pdg = mcTrack->GetPdgCode();
-      evTracks.back().z   = mcTrack->GetStartZ();
+      const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, j));
+      evTracks.back().pdg       = mcTrack->GetPdgCode();
+      evTracks.back().z         = mcTrack->GetStartZ();
 
       if (mcTrack->GetPdgCode() == 11 || mcTrack->GetPdgCode() == -11) {
         //Double_t m = mcTrack->GetMass(); (VF) Unused
         Int_t motherId = mcTrack->GetMotherId();
 
-        if (static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, motherId))
-              ->GetPdgCode()
-            == 443)
+        if (static_cast<const CbmMCTrack*>(mcTracks->Get(0, i, motherId))->GetPdgCode() == 443)
           evTracks.back().isSignal = true;
       }
     }  // for (int j = 0; j < evSize; ++j)
@@ -290,8 +259,7 @@ InitStatus LxTBTrdFinder::Init() {
     vector<PointDataHolder>& evPoints = fTrdPoints.back();
 
     for (int j = 0; j < evSize; ++j) {
-      const CbmTrdPoint* pTrdPt =
-        static_cast<const CbmTrdPoint*>(fTrdMCPoints->Get(0, i, j));
+      const CbmTrdPoint* pTrdPt = static_cast<const CbmTrdPoint*>(fTrdMCPoints->Get(0, i, j));
       //Int_t trackId = pTrdPt->GetTrackID(); (VF) Unused
       Int_t layerNumber = CbmTrdAddress::GetLayerId(pTrdPt->GetModuleAddress());
       PointDataHolder trdPt;
@@ -304,23 +272,18 @@ InitStatus LxTBTrdFinder::Init() {
       trdPt.pointId     = j;
       trdPt.layerNumber = layerNumber;
       evPoints.push_back(trdPt);
-      fMCTracks[trdPt.eventId][trdPt.trackId].pointInds[trdPt.layerNumber] =
-        trdPt.pointId;
+      fMCTracks[trdPt.eventId][trdPt.trackId].pointInds[trdPt.layerNumber] = trdPt.pointId;
     }
   }
 
   int eventId = 0;
 
-  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin();
-       i != fMCTracks.end();
-       ++i) {
+  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin(); i != fMCTracks.end(); ++i) {
     vector<TrackDataHolder>& evTracks = *i;
     list<TrackDataHolder*> eles;
     list<TrackDataHolder*> poss;
 
-    for (vector<TrackDataHolder>::iterator j = evTracks.begin();
-         j != evTracks.end();
-         ++j) {
+    for (vector<TrackDataHolder>::iterator j = evTracks.begin(); j != evTracks.end(); ++j) {
       TrackDataHolder& track = *j;
 
       if (11 == track.pdg && 15 > track.z) {
@@ -334,7 +297,8 @@ InitStatus LxTBTrdFinder::Init() {
         }
 
         if (use) eles.push_back(&track);
-      } else if (-11 == track.pdg && 15 > track.z) {
+      }
+      else if (-11 == track.pdg && 15 > track.z) {
         bool use = true;
 
         for (int k = 0; k < CUR_NOF_STATIONS; ++k) {
@@ -377,22 +341,15 @@ InitStatus LxTBTrdFinder::Init() {
          signalDistanceHisto->Fill(sqrt((posPt.x - negPt.x) * (posPt.x - negPt.x) + (posPt.y - negPt.y) * (posPt.y - negPt.y)));
       }*/
 
-    for (list<TrackDataHolder*>::const_iterator k = eles.begin();
-         k != eles.end();
-         ++k) {
+    for (list<TrackDataHolder*>::const_iterator k = eles.begin(); k != eles.end(); ++k) {
       const TrackDataHolder* negTrack = *k;
 
-      for (list<TrackDataHolder*>::const_iterator l = poss.begin();
-           l != poss.end();
-           ++l) {
+      for (list<TrackDataHolder*>::const_iterator l = poss.begin(); l != poss.end(); ++l) {
         const TrackDataHolder* posTrack = *l;
-        const PointDataHolder& posPt =
-          fTrdPoints[eventId][posTrack->pointInds[0]];
-        const PointDataHolder& negPt =
-          fTrdPoints[eventId][negTrack->pointInds[0]];
+        const PointDataHolder& posPt    = fTrdPoints[eventId][posTrack->pointInds[0]];
+        const PointDataHolder& negPt    = fTrdPoints[eventId][negTrack->pointInds[0]];
         signalDistanceHisto->Fill(
-          sqrt((posPt.x - negPt.x) * (posPt.x - negPt.x)
-               + (posPt.y - negPt.y) * (posPt.y - negPt.y)));
+          sqrt((posPt.x - negPt.x) * (posPt.x - negPt.x) + (posPt.y - negPt.y) * (posPt.y - negPt.y)));
       }
     }
 
@@ -406,8 +363,8 @@ InitStatus LxTBTrdFinder::Init() {
 static Int_t currentEventN            = 0;
 static unsigned long long tsStartTime = 0;
 
-static void SpliceTriggerings(list<pair<timetype, timetype>>& out,
-                              LxTbBinnedFinder::TriggerTimeArray& in) {
+static void SpliceTriggerings(list<pair<timetype, timetype>>& out, LxTbBinnedFinder::TriggerTimeArray& in)
+{
   for (int i = 0; i < in.nofTimebins; ++i)
     out.splice(out.end(), in.triggerTimeBins[i]);
 }
@@ -425,7 +382,8 @@ static scaltype gMaxDx = 0;
 static scaltype gMaxDy = 0;
 #endif  //LXTB_QA
 
-void LxTBTrdFinder::Exec(Option_t*) {
+void LxTBTrdFinder::Exec(Option_t*)
+{
   fFinder->Clear();
   fFinder->SetTSBegin(tsStartTime);
 
@@ -444,27 +402,23 @@ void LxTBTrdFinder::Exec(Option_t*) {
     if (gMaxDy < dy) gMaxDy = dy;
 
     timetype dt = 4;  //hit->GetTimeError();
-    LxTbBinnedPoint point(
-      x, dx, y, dy, t, dt, i, CUR_LAST_STATION == stationNumber);
+    LxTbBinnedPoint point(x, dx, y, dy, t, dt, i, CUR_LAST_STATION == stationNumber);
 #ifdef LXTB_QA
-    point.isTrd         = true;
-    point.stationNumber = stationNumber;
-    Int_t clusterId     = hit->GetRefId();
-    const CbmCluster* cluster =
-      static_cast<const CbmCluster*>(fTrdClusters->At(clusterId));
-    Int_t nDigis = cluster->GetNofDigis();
+    point.isTrd               = true;
+    point.stationNumber       = stationNumber;
+    Int_t clusterId           = hit->GetRefId();
+    const CbmCluster* cluster = static_cast<const CbmCluster*>(fTrdClusters->At(clusterId));
+    Int_t nDigis              = cluster->GetNofDigis();
 
     for (Int_t j = 0; j < nDigis; ++j) {
-      const CbmMatch* digiMatch =
-        static_cast<const CbmMatch*>(fTrdDigiMatches->At(cluster->GetDigi(j)));
-      Int_t nMCs = digiMatch->GetNofLinks();
+      const CbmMatch* digiMatch = static_cast<const CbmMatch*>(fTrdDigiMatches->At(cluster->GetDigi(j)));
+      Int_t nMCs                = digiMatch->GetNofLinks();
 
       for (Int_t k = 0; k < nMCs; ++k) {
-        const CbmLink& lnk       = digiMatch->GetLink(k);
-        Int_t eventId            = currentEventN;  // : lnk.GetEntry();
-        Int_t pointId            = lnk.GetIndex();
-        const FairMCPoint* pMCPt = static_cast<const FairMCPoint*>(
-          fTrdMCPoints->Get(0, eventId, pointId));
+        const CbmLink& lnk                = digiMatch->GetLink(k);
+        Int_t eventId                     = currentEventN;  // : lnk.GetEntry();
+        Int_t pointId                     = lnk.GetIndex();
+        const FairMCPoint* pMCPt          = static_cast<const FairMCPoint*>(fTrdMCPoints->Get(0, eventId, pointId));
         Int_t trackId                     = pMCPt->GetTrackID();
         LxTbBinnedPoint::PointDesc ptDesc = {eventId, pointId, trackId};
         point.mcRefs.push_back(ptDesc);
@@ -480,24 +434,21 @@ void LxTBTrdFinder::Exec(Option_t*) {
 
     int tInd = (t - fFinder->minT) / CUR_TIMEBIN_LENGTH;
 
-    if (tInd < 0)
-      tInd = 0;
+    if (tInd < 0) tInd = 0;
     else if (tInd > int(last_timebin))
       tInd = last_timebin;
 
     LxTbTYXBin& tyxBin = fFinder->stations[stationNumber].tyxBins[tInd];
     int yInd           = (y - minY) / binSizeY;
 
-    if (yInd < 0)
-      yInd = 0;
+    if (yInd < 0) yInd = 0;
     else if (yInd > lastYBin)
       yInd = lastYBin;
 
     LxTbYXBin& yxBin = tyxBin.yxBins[yInd];
     int xInd         = (x - minX) / binSizeX;
 
-    if (xInd < 0)
-      xInd = 0;
+    if (xInd < 0) xInd = 0;
     else if (xInd > lastXBin)
       xInd = lastXBin;
 
@@ -522,10 +473,7 @@ void LxTBTrdFinder::Exec(Option_t*) {
   for (int i = 0; i < fFinder->nofTrackBins; ++i) {
     list<LxTbBinnedFinder::Chain*>& recoTracksBin = fFinder->recoTracks[i];
 
-    for (list<LxTbBinnedFinder::Chain*>::const_iterator j =
-           recoTracksBin.begin();
-         j != recoTracksBin.end();
-         ++j) {
+    for (list<LxTbBinnedFinder::Chain*>::const_iterator j = recoTracksBin.begin(); j != recoTracksBin.end(); ++j) {
       LxTbBinnedFinder::Chain* chain = *j;
       recoTracks.push_back(chain);
 
@@ -537,8 +485,7 @@ void LxTBTrdFinder::Exec(Option_t*) {
       track->SetChiSq(chain->chi2);
       track->SetNDF(2 * chain->nofPoints - 5);
 
-      CbmGlobalTrack* globalTrack =
-        new ((*fGlobalTracks)[trdTrackNo]) CbmGlobalTrack();
+      CbmGlobalTrack* globalTrack = new ((*fGlobalTracks)[trdTrackNo]) CbmGlobalTrack();
       globalTrack->SetTrdTrackIndex(trdTrackNo);
       ++trdTrackNo;
     }
@@ -546,22 +493,14 @@ void LxTBTrdFinder::Exec(Option_t*) {
 
   //cout << "In the event #: " << currentEventN << " " << recoTracks.size() << " reconstructed" << endl;
 
-  SpliceTriggerings(triggerTimes_trd0_sign0_dist0,
-                    fFinder->triggerTimes_trd0_sign0_dist0);
-  SpliceTriggerings(triggerTimes_trd0_sign0_dist1,
-                    fFinder->triggerTimes_trd0_sign0_dist1);
-  SpliceTriggerings(triggerTimes_trd0_sign1_dist0,
-                    fFinder->triggerTimes_trd0_sign1_dist0);
-  SpliceTriggerings(triggerTimes_trd0_sign1_dist1,
-                    fFinder->triggerTimes_trd0_sign1_dist1);
-  SpliceTriggerings(triggerTimes_trd1_sign0_dist0,
-                    fFinder->triggerTimes_trd1_sign0_dist0);
-  SpliceTriggerings(triggerTimes_trd1_sign0_dist1,
-                    fFinder->triggerTimes_trd1_sign0_dist1);
-  SpliceTriggerings(triggerTimes_trd1_sign1_dist0,
-                    fFinder->triggerTimes_trd1_sign1_dist0);
-  SpliceTriggerings(triggerTimes_trd1_sign1_dist1,
-                    fFinder->triggerTimes_trd1_sign1_dist1);
+  SpliceTriggerings(triggerTimes_trd0_sign0_dist0, fFinder->triggerTimes_trd0_sign0_dist0);
+  SpliceTriggerings(triggerTimes_trd0_sign0_dist1, fFinder->triggerTimes_trd0_sign0_dist1);
+  SpliceTriggerings(triggerTimes_trd0_sign1_dist0, fFinder->triggerTimes_trd0_sign1_dist0);
+  SpliceTriggerings(triggerTimes_trd0_sign1_dist1, fFinder->triggerTimes_trd0_sign1_dist1);
+  SpliceTriggerings(triggerTimes_trd1_sign0_dist0, fFinder->triggerTimes_trd1_sign0_dist0);
+  SpliceTriggerings(triggerTimes_trd1_sign0_dist1, fFinder->triggerTimes_trd1_sign0_dist1);
+  SpliceTriggerings(triggerTimes_trd1_sign1_dist0, fFinder->triggerTimes_trd1_sign1_dist0);
+  SpliceTriggerings(triggerTimes_trd1_sign1_dist1, fFinder->triggerTimes_trd1_sign1_dist1);
 
   ++currentEventN;
   tsStartTime += CUR_TIMEBIN_LENGTH;
@@ -575,14 +514,16 @@ struct RecoTrackData {
 };
 
 struct RTDLess {
-  bool operator()(const RecoTrackData& x, const RecoTrackData& y) const {
+  bool operator()(const RecoTrackData& x, const RecoTrackData& y) const
+  {
     if (x.eventId < y.eventId) return true;
 
     return x.trackId < y.trackId;
   }
 };
 
-static void SaveHisto(TH1* histo) {
+static void SaveHisto(TH1* histo)
+{
   TFile* curFile    = TFile::CurrentFile();
   TString histoName = histo->GetName();
   histoName += ".root";
@@ -593,23 +534,19 @@ static void SaveHisto(TH1* histo) {
   TFile::CurrentFile() = curFile;
 }
 
-void LxTBTrdFinder::Finish() {
+void LxTBTrdFinder::Finish()
+{
   int nofRecoTracks = recoTracks.size();
-  cout << "LxTbBinnedFinder::Reconstruct() the number of found tracks: "
-       << nofRecoTracks << endl;
+  cout << "LxTbBinnedFinder::Reconstruct() the number of found tracks: " << nofRecoTracks << endl;
 #ifdef LXTB_QA
   static int nofSignalTracks     = 0;
   static int nofRecoSignalTracks = 0;
   int eventN                     = 0;
 
-  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin();
-       i != fMCTracks.end();
-       ++i) {
+  for (vector<vector<TrackDataHolder>>::iterator i = fMCTracks.begin(); i != fMCTracks.end(); ++i) {
     vector<TrackDataHolder>& evTracks = *i;
 
-    for (vector<TrackDataHolder>::iterator j = evTracks.begin();
-         j != evTracks.end();
-         ++j) {
+    for (vector<TrackDataHolder>::iterator j = evTracks.begin(); j != evTracks.end(); ++j) {
       TrackDataHolder& track = *j;
 
       if (!track.isSignal) continue;
@@ -618,19 +555,14 @@ void LxTBTrdFinder::Finish() {
 
       int nofMatchPoints = 0;
 
-      for (list<LxTbBinnedFinder::Chain*>::const_iterator k =
-             recoTracks.begin();
-           k != recoTracks.end();
-           ++k) {
+      for (list<LxTbBinnedFinder::Chain*>::const_iterator k = recoTracks.begin(); k != recoTracks.end(); ++k) {
         const LxTbBinnedFinder::Chain* chain = *k;
 
         for (int l = 0; l < CUR_NOF_STATIONS; ++l) {
           bool pointsMatched = false;
 
-          for (list<LxTbBinnedPoint::PointDesc>::const_iterator m =
-                 chain->points[l]->mcRefs.begin();
-               m != chain->points[l]->mcRefs.end();
-               ++m) {
+          for (list<LxTbBinnedPoint::PointDesc>::const_iterator m = chain->points[l]->mcRefs.begin();
+               m != chain->points[l]->mcRefs.end(); ++m) {
             if (m->eventId == eventN && m->pointId == track.pointInds[l]) {
               pointsMatched = true;
               break;
@@ -650,34 +582,26 @@ void LxTBTrdFinder::Finish() {
     ++eventN;
   }
 
-  double eff =
-    0 == nofSignalTracks ? 100 : 100.0 * nofRecoSignalTracks / nofSignalTracks;
-  cout << "Reconstruction efficiency is: " << eff << "% [ "
-       << nofRecoSignalTracks << " / " << nofSignalTracks << " ]" << endl;
+  double eff = 0 == nofSignalTracks ? 100 : 100.0 * nofRecoSignalTracks / nofSignalTracks;
+  cout << "Reconstruction efficiency is: " << eff << "% [ " << nofRecoSignalTracks << " / " << nofSignalTracks << " ]"
+       << endl;
 
   int nofRightRecoTracks = 0;
-  map<Int_t, pair<list<LxTbBinnedPoint*>, list<LxTbBinnedPoint*>>>
-    elecPositrons;
+  map<Int_t, pair<list<LxTbBinnedPoint*>, list<LxTbBinnedPoint*>>> elecPositrons;
 
-  for (list<LxTbBinnedFinder::Chain*>::const_iterator i = recoTracks.begin();
-       i != recoTracks.end();
-       ++i) {
+  for (list<LxTbBinnedFinder::Chain*>::const_iterator i = recoTracks.begin(); i != recoTracks.end(); ++i) {
     const LxTbBinnedFinder::Chain* chain = *i;
     map<RecoTrackData, int, RTDLess> nofTracks;
 
     for (int j = 0; j < CUR_NOF_STATIONS; ++j) {
       int stMask = 1 << j;
 
-      for (list<LxTbBinnedPoint::PointDesc>::const_iterator k =
-             chain->points[j]->mcRefs.begin();
-           k != chain->points[j]->mcRefs.end();
-           ++k) {
+      for (list<LxTbBinnedPoint::PointDesc>::const_iterator k = chain->points[j]->mcRefs.begin();
+           k != chain->points[j]->mcRefs.end(); ++k) {
         RecoTrackData st(k->eventId, k->trackId);
-        map<RecoTrackData, int, RTDLess>::iterator nofTIter =
-          nofTracks.find(st);
+        map<RecoTrackData, int, RTDLess>::iterator nofTIter = nofTracks.find(st);
 
-        if (nofTIter != nofTracks.end())
-          nofTIter->second |= stMask;
+        if (nofTIter != nofTracks.end()) nofTIter->second |= stMask;
         else
           nofTracks[st] = stMask;
       }
@@ -686,9 +610,7 @@ void LxTBTrdFinder::Finish() {
     int nofPoints                    = 0;
     const RecoTrackData* bestMCTrack = 0;
 
-    for (map<RecoTrackData, int, RTDLess>::const_iterator j = nofTracks.begin();
-         j != nofTracks.end();
-         ++j) {
+    for (map<RecoTrackData, int, RTDLess>::const_iterator j = nofTracks.begin(); j != nofTracks.end(); ++j) {
       int nofp = 0;
 
       for (int k = 0; k < CUR_NOF_STATIONS; ++k) {
@@ -708,47 +630,34 @@ void LxTBTrdFinder::Finish() {
       {
         if (11 == fMCTracks[bestMCTrack->eventId][bestMCTrack->trackId].pdg)
           elecPositrons[bestMCTrack->eventId].first.push_back(chain->points[0]);
-        else if (-11
-                 == fMCTracks[bestMCTrack->eventId][bestMCTrack->trackId].pdg)
-          elecPositrons[bestMCTrack->eventId].second.push_back(
-            chain->points[0]);
+        else if (-11 == fMCTracks[bestMCTrack->eventId][bestMCTrack->trackId].pdg)
+          elecPositrons[bestMCTrack->eventId].second.push_back(chain->points[0]);
       }
     }
   }
 
-  eff =
-    0 == recoTracks.size() ? 100 : 100.0 * nofRightRecoTracks / nofRecoTracks;
-  cout << "Non ghosts are: " << eff << "% [ " << nofRightRecoTracks << " / "
-       << nofRecoTracks << " ]" << endl;
+  eff = 0 == recoTracks.size() ? 100 : 100.0 * nofRightRecoTracks / nofRecoTracks;
+  cout << "Non ghosts are: " << eff << "% [ " << nofRightRecoTracks << " / " << nofRecoTracks << " ]" << endl;
 
   int nofTriggPairs = 0;
 
-  for (map<Int_t,
-           pair<list<LxTbBinnedPoint*>, list<LxTbBinnedPoint*>>>::iterator i =
-         elecPositrons.begin();
-       i != elecPositrons.end();
-       ++i) {
+  for (map<Int_t, pair<list<LxTbBinnedPoint*>, list<LxTbBinnedPoint*>>>::iterator i = elecPositrons.begin();
+       i != elecPositrons.end(); ++i) {
     list<LxTbBinnedPoint*>& evEls = i->second.first;
     list<LxTbBinnedPoint*>& evPos = i->second.second;
     bool trigPair                 = false;
 
-    for (list<LxTbBinnedPoint*>::const_iterator j = evEls.begin();
-         j != evEls.end();
-         ++j) {
+    for (list<LxTbBinnedPoint*>::const_iterator j = evEls.begin(); j != evEls.end(); ++j) {
       const LxTbBinnedPoint* elp = *j;
       scaltype negX              = elp->x;
       scaltype negY              = elp->y;
 
-      for (list<LxTbBinnedPoint*>::const_iterator k = evPos.begin();
-           k != evPos.end();
-           ++k) {
+      for (list<LxTbBinnedPoint*>::const_iterator k = evPos.begin(); k != evPos.end(); ++k) {
         const LxTbBinnedPoint* pop = *k;
         scaltype posX              = pop->x;
         scaltype posY              = pop->y;
 
-        if (sqrt((posX - negX) * (posX - negX) + (posY - negY) * (posY - negY))
-            > fTrigDistance)
-          trigPair = true;
+        if (sqrt((posX - negX) * (posX - negX) + (posY - negY) * (posY - negY)) > fTrigDistance) trigPair = true;
       }
     }
 

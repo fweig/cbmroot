@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
 #include <stdio.h>
 #include <string.h>
 
@@ -26,11 +27,10 @@
     Form( "%016llx", static_cast<uint64_t>(val) );
     Form( "%016lx", static_cast<uint64_t>(val) );
  **/
-namespace gdpbv100 {
-  std::string FormatHexPrintout(uint64_t ulVal,
-                                char cFill      = 0,
-                                uint uWidth     = 0,
-                                bool bUppercase = false) {
+namespace gdpbv100
+{
+  std::string FormatHexPrintout(uint64_t ulVal, char cFill = 0, uint uWidth = 0, bool bUppercase = false)
+  {
     std::stringstream ss;
 
     /// Set hex printout mode
@@ -53,7 +53,8 @@ namespace gdpbv100 {
 
 //----------------------------------------------------------------------------
 //! strict weak ordering operator, assumes same epoch for both messages
-bool gdpbv100::Message::operator<(const gdpbv100::Message& other) const {
+bool gdpbv100::Message::operator<(const gdpbv100::Message& other) const
+{
   uint64_t uThisTs  = 0;
   uint64_t uOtherTs = 0;
 
@@ -68,16 +69,12 @@ bool gdpbv100::Message::operator<(const gdpbv100::Message& other) const {
   }  // both GET4 hit (32b or 24b)
 
   // First find the timestamp of the current message
-  if (MSG_HIT == uThisType) {
-    uThisTs = (this->getGdpbHitFullTs());
-  }  // if Hit GET4 message (24 or 32b)
+  if (MSG_HIT == uThisType) { uThisTs = (this->getGdpbHitFullTs()); }  // if Hit GET4 message (24 or 32b)
   else
     uThisTs = 0;
 
   // Then find the timestamp of the current message
-  if (MSG_HIT == uOtherType) {
-    uOtherTs = (this->getGdpbHitFullTs());
-  }  // if Hit GET4 message (24 or 32b)
+  if (MSG_HIT == uOtherType) { uOtherTs = (this->getGdpbHitFullTs()); }  // if Hit GET4 message (24 or 32b)
   else
     uOtherTs = 0;
 
@@ -85,44 +82,34 @@ bool gdpbv100::Message::operator<(const gdpbv100::Message& other) const {
 }
 //----------------------------------------------------------------------------
 //! equality operator, assumes same epoch for both messages
-bool gdpbv100::Message::operator==(const gdpbv100::Message& other) const {
-  return this->data == other.data;
-}
+bool gdpbv100::Message::operator==(const gdpbv100::Message& other) const { return this->data == other.data; }
 //----------------------------------------------------------------------------
 //! inequality operator, assumes same epoch for both messages
-bool gdpbv100::Message::operator!=(const gdpbv100::Message& other) const {
-  return this->data != other.data;
-}
+bool gdpbv100::Message::operator!=(const gdpbv100::Message& other) const { return this->data != other.data; }
 //----------------------------------------------------------------------------
 //! Returns expanded and adjusted time of message (in ns)
-uint64_t gdpbv100::Message::getMsgFullTime(uint64_t epoch) const {
-  return std::round(getMsgFullTimeD(epoch));
-}
+uint64_t gdpbv100::Message::getMsgFullTime(uint64_t epoch) const { return std::round(getMsgFullTimeD(epoch)); }
 //----------------------------------------------------------------------------
 //! Returns expanded and adjusted time of message in double (in ns)
-double gdpbv100::Message::getMsgFullTimeD(uint64_t epoch) const {
+double gdpbv100::Message::getMsgFullTimeD(uint64_t epoch) const
+{
   switch (getMessageType()) {
     case MSG_HIT: {
       if (getGdpbHitIs24b())
-        return (static_cast<double_t>(
-                  FullTimeStamp(epoch, (getGdpbHitCoarse() << 7)))
-                + (static_cast<double_t>(getGdpbHitFineTs() - 8.)
-                   * gdpbv100::kdFtSize / gdpbv100::kdFtBinsNb))
+        return (static_cast<double_t>(FullTimeStamp(epoch, (getGdpbHitCoarse() << 7)))
+                + (static_cast<double_t>(getGdpbHitFineTs() - 8.) * gdpbv100::kdFtSize / gdpbv100::kdFtBinsNb))
                * (gdpbv100::kdClockCycleSizeNs / gdpbv100::kdFtSize);
       else
         return (gdpbv100::kdEpochInNs * static_cast<double_t>(epoch)
-                + static_cast<double_t>(getGdpbHitFullTs())
-                    * gdpbv100::kdClockCycleSizeNs / gdpbv100::kdFtBinsNb);
+                + static_cast<double_t>(getGdpbHitFullTs()) * gdpbv100::kdClockCycleSizeNs / gdpbv100::kdFtBinsNb);
     }  // case MSG_HIT:
-    case MSG_EPOCH:
-      return gdpbv100::kdEpochInNs * static_cast<double_t>(getGdpbEpEpochNb());
+    case MSG_EPOCH: return gdpbv100::kdEpochInNs * static_cast<double_t>(getGdpbEpEpochNb());
     case MSG_SLOWC:
     case MSG_SYST:
     case MSG_STAR_TRI_A:
     case MSG_STAR_TRI_B:
     case MSG_STAR_TRI_C:
-    case MSG_STAR_TRI_D:
-      return gdpbv100::kdEpochInNs * static_cast<double_t>(epoch);
+    case MSG_STAR_TRI_D: return gdpbv100::kdEpochInNs * static_cast<double_t>(epoch);
     default: return 0.0;
   }  // switch( getMessageType() )
 
@@ -133,7 +120,8 @@ double gdpbv100::Message::getMsgFullTimeD(uint64_t epoch) const {
 //----------------------------------------------------------------------------
 //! Returns the time difference between two expanded time stamps
 
-uint64_t gdpbv100::Message::CalcDistance(uint64_t start, uint64_t stop) {
+uint64_t gdpbv100::Message::CalcDistance(uint64_t start, uint64_t stop)
+{
   if (start > stop) {
     stop += 0x3FFFFFFFFFFFLLU;
     if (start > stop) {
@@ -149,7 +137,8 @@ uint64_t gdpbv100::Message::CalcDistance(uint64_t start, uint64_t stop) {
 //----------------------------------------------------------------------------
 //! Returns the time difference between two expanded time stamps
 
-double gdpbv100::Message::CalcDistanceD(double start, double stop) {
+double gdpbv100::Message::CalcDistanceD(double start, double stop)
+{
   if (start > stop) {
     stop += 0x3FFFFFFFFFFFLLU;
     if (start > stop) {
@@ -169,9 +158,7 @@ double gdpbv100::Message::CalcDistanceD(double start, double stop) {
  * documentation.
  */
 
-void gdpbv100::Message::printDataCout(unsigned kind, uint32_t epoch) const {
-  printData(msg_print_Cout, kind, epoch);
-}
+void gdpbv100::Message::printDataCout(unsigned kind, uint32_t epoch) const { printData(msg_print_Cout, kind, epoch); }
 
 //----------------------------------------------------------------------------
 //! Print message in human readable format to the Fairroot logger.
@@ -182,9 +169,7 @@ void gdpbv100::Message::printDataCout(unsigned kind, uint32_t epoch) const {
  * documentation.
  */
 
-void gdpbv100::Message::printDataLog(unsigned kind, uint32_t epoch) const {
-  printData(msg_print_FairLog, kind, epoch);
-}
+void gdpbv100::Message::printDataLog(unsigned kind, uint32_t epoch) const { printData(msg_print_FairLog, kind, epoch); }
 
 //----------------------------------------------------------------------------
 //! Print message in binary or human readable format to a stream.
@@ -213,36 +198,18 @@ void gdpbv100::Message::printDataLog(unsigned kind, uint32_t epoch) const {
  */
 
 //void gdpbv100::Message::printData(std::ostream& os, unsigned kind, uint32_t epoch) const
-void gdpbv100::Message::printData(unsigned outType,
-                                  unsigned kind,
-                                  uint32_t epoch,
-                                  std::ostream& os) const {
+void gdpbv100::Message::printData(unsigned outType, unsigned kind, uint32_t epoch, std::ostream& os) const
+{
   char buf[256];
   if (kind & msg_print_Hex) {
     const uint8_t* arr = reinterpret_cast<const uint8_t*>(&data);
-    snprintf(buf,
-             sizeof(buf),
+    snprintf(buf, sizeof(buf),
              "BE= %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X LE= "
              "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X ",
-             arr[0],
-             arr[1],
-             arr[2],
-             arr[3],
-             arr[4],
-             arr[5],
-             arr[6],
-             arr[7],
-             arr[7],
-             arr[6],
-             arr[5],
-             arr[4],
-             arr[3],
-             arr[2],
-             arr[1],
-             arr[0]);
+             arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[7], arr[6], arr[5], arr[4], arr[3],
+             arr[2], arr[1], arr[0]);
 
-    if (msg_print_Cout == outType)
-      std::cout << buf;
+    if (msg_print_Cout == outType) std::cout << buf;
     else if (msg_print_File == outType)
       os << buf;
 
@@ -257,60 +224,37 @@ void gdpbv100::Message::printData(unsigned outType,
       case MSG_EPOCH:
         snprintf(buf, sizeof(buf), "Msg:%u ", getMessageType());
 
-        if (msg_print_Cout == outType)
-          std::cout << buf;
+        if (msg_print_Cout == outType) std::cout << buf;
         else if (msg_print_File == outType)
           os << buf;
 
-        snprintf(buf,
-                 sizeof(buf),
+        snprintf(buf, sizeof(buf),
                  "EPOCH @%17.11f Get4:%2d Epoche2:%10u 0x%08x Sync:%x "
                  "Dataloss:%x Epochloss:%x Epochmissmatch:%x",
-                 timeInSec,
-                 getGdpbGenChipId(),
-                 getGdpbEpEpochNb(),
-                 getGdpbEpEpochNb(),
-                 getGdpbEpSync(),
-                 getGdpbEpDataLoss(),
-                 getGdpbEpEpochLoss(),
-                 getGdpbEpMissmatch());
+                 timeInSec, getGdpbGenChipId(), getGdpbEpEpochNb(), getGdpbEpEpochNb(), getGdpbEpSync(),
+                 getGdpbEpDataLoss(), getGdpbEpEpochLoss(), getGdpbEpMissmatch());
 
-        if (msg_print_Cout == outType)
-          std::cout << buf << std::endl;
+        if (msg_print_Cout == outType) std::cout << buf << std::endl;
         else if (msg_print_File == outType)
           os << buf << std::endl;
         break;
       case MSG_HIT:
         snprintf(buf, sizeof(buf), "Msg:%u ", getMessageType());
 
-        if (msg_print_Cout == outType)
-          std::cout << buf;
+        if (msg_print_Cout == outType) std::cout << buf;
         else if (msg_print_File == outType)
           os << buf;
 
         if (getGdpbHitIs24b()) {
-          snprintf(buf,
-                   sizeof(buf),
-                   "Get4 24b @%17.11f Get4:%2d Chn:%3d Edge:%1d Ts:%7d",
-                   timeInSec,
-                   getGdpbGenChipId(),
-                   getGdpbHitChanId(),
-                   getGdpbHit24Edge(),
-                   getGdpbHitFullTs());
+          snprintf(buf, sizeof(buf), "Get4 24b @%17.11f Get4:%2d Chn:%3d Edge:%1d Ts:%7d", timeInSec,
+                   getGdpbGenChipId(), getGdpbHitChanId(), getGdpbHit24Edge(), getGdpbHitFullTs());
         }  // if( getGdpbHitIs24b() )
         else {
-          snprintf(buf,
-                   sizeof(buf),
-                   "Get4 24b @%17.11f Get4:%2d Chn:%3d Dll:%1d Ts:%7d",
-                   timeInSec,
-                   getGdpbGenChipId(),
-                   getGdpbHitChanId(),
-                   getGdpbHit32DllLck(),
-                   getGdpbHitFullTs());
+          snprintf(buf, sizeof(buf), "Get4 24b @%17.11f Get4:%2d Chn:%3d Dll:%1d Ts:%7d", timeInSec, getGdpbGenChipId(),
+                   getGdpbHitChanId(), getGdpbHit32DllLck(), getGdpbHitFullTs());
         }  // else of if( getGdpbHitIs24b() )
 
-        if (msg_print_Cout == outType)
-          std::cout << buf << std::endl;
+        if (msg_print_Cout == outType) std::cout << buf << std::endl;
         else if (msg_print_File == outType)
           os << buf << std::endl;
         break;
@@ -326,8 +270,7 @@ void gdpbv100::Message::printData(unsigned outType,
   if (kind & msg_print_Prefix) {
     snprintf(buf, sizeof(buf), "Msg:%2u ", getMessageType());
 
-    if (msg_print_Cout == outType)
-      std::cout << buf;
+    if (msg_print_Cout == outType) std::cout << buf;
     else if (msg_print_File == outType)
       os << buf;
   }
@@ -337,53 +280,32 @@ void gdpbv100::Message::printData(unsigned outType,
     switch (getMessageType()) {
       case MSG_HIT: {
         if (getGdpbHitIs24b()) {
-          snprintf(buf,
-                   sizeof(buf),
-                   "Get4 24 bits, Get4:0x%04x Chn:%1x Edge:%1x Ts:0x%03x",
-                   getGdpbGenChipId(),
-                   getGdpbHitChanId(),
-                   getGdpbHit24Edge(),
-                   getGdpbHitFullTs());
+          snprintf(buf, sizeof(buf), "Get4 24 bits, Get4:0x%04x Chn:%1x Edge:%1x Ts:0x%03x", getGdpbGenChipId(),
+                   getGdpbHitChanId(), getGdpbHit24Edge(), getGdpbHitFullTs());
         }  // if( getGdpbHitIs24b() )
         else {
-          snprintf(buf,
-                   sizeof(buf),
+          snprintf(buf, sizeof(buf),
                    "Get4 32 bits, Get4:0x%04x Channel %1d Ts:0x%03x Ft:0x%02x "
                    "Tot:0x%02x  Dll %1d",
-                   getGdpbGenChipId(),
-                   getGdpbHitChanId(),
-                   getGdpbHitCoarse(),
-                   getGdpbHitFineTs(),
-                   getGdpbHit32Tot(),
+                   getGdpbGenChipId(), getGdpbHitChanId(), getGdpbHitCoarse(), getGdpbHitFineTs(), getGdpbHit32Tot(),
                    getGdpbHit32DllLck());
         }  // else of if( getGdpbHitIs24b() )
         break;
       }  // case MSG_HIT:
       case MSG_EPOCH: {
-        snprintf(buf,
-                 sizeof(buf),
+        snprintf(buf, sizeof(buf),
                  "Get4:0x%04x Link: %1u Epoch:0x%08x Sync:%x Dataloss:%x "
                  "Epochloss:%x Epochmissmatch:%x",
-                 getGdpbGenChipId(),
-                 getGdpbEpLinkId(),
-                 getGdpbEpEpochNb(),
-                 getGdpbEpSync(),
-                 getGdpbEpDataLoss(),
-                 getGdpbEpEpochLoss(),
-                 getGdpbEpMissmatch());
+                 getGdpbGenChipId(), getGdpbEpLinkId(), getGdpbEpEpochNb(), getGdpbEpSync(), getGdpbEpDataLoss(),
+                 getGdpbEpEpochLoss(), getGdpbEpMissmatch());
         break;
       }  // case MSG_EPOCH:
       case MSG_SLOWC: {
         // GET4 slow control message, new "true" ROC support
-        snprintf(buf,
-                 sizeof(buf),
+        snprintf(buf, sizeof(buf),
                  "Get4 Slow control, Get4:0x%04x => Chan:%01d Edge:%01d "
                  "Type:%01x Data:0x%06x",
-                 getGdpbGenChipId(),
-                 0x0,
-                 0x0,
-                 0x0,
-                 getGdpbSlcData());
+                 getGdpbGenChipId(), 0x0, 0x0, 0x0, getGdpbSlcData());
         break;
       }  // case MSG_SLOWC:
       case MSG_SYST: {
@@ -392,46 +314,27 @@ void gdpbv100::Message::printData(unsigned outType,
 
         switch (getGdpbSysSubType()) {
           case SYS_GET4_ERROR: {
-            snprintf(sysbuf,
-                     sizeof(sysbuf),
+            snprintf(sysbuf, sizeof(sysbuf),
                      "Get4:0x%04x Ch:0x%01x Edge:%01x Unused:%06x "
                      "ErrCode:0x%02x - GET4 V1 Error Event",
-                     getGdpbGenChipId(),
-                     getGdpbSysErrChanId(),
-                     getGdpbSysErrEdge(),
-                     getGdpbSysErrUnused(),
+                     getGdpbGenChipId(), getGdpbSysErrChanId(), getGdpbSysErrEdge(), getGdpbSysErrUnused(),
                      getGdpbSysErrData());
             break;
           }  //
           case SYS_GDPB_UNKWN:
-            snprintf(sysbuf,
-                     sizeof(sysbuf),
-                     "Unknown GET4 message, data: 0x%08x",
-                     getGdpbSysUnkwData());
+            snprintf(sysbuf, sizeof(sysbuf), "Unknown GET4 message, data: 0x%08x", getGdpbSysUnkwData());
             break;
           case SYS_GET4_SYNC_MISS:
             if (getGdpbSysFwErrResync())
-              snprintf(sysbuf,
-                       sizeof(sysbuf),
-                       "GET4 Resynchronization: Get4:0x%04x",
-                       getGdpbGenChipId());
+              snprintf(sysbuf, sizeof(sysbuf), "GET4 Resynchronization: Get4:0x%04x", getGdpbGenChipId());
             else
-              snprintf(
-                sysbuf, sizeof(sysbuf), "GET4 SYNC synchronization error");
+              snprintf(sysbuf, sizeof(sysbuf), "GET4 SYNC synchronization error");
             break;
           case SYS_PATTERN:
-            snprintf(sysbuf,
-                     sizeof(sysbuf),
-                     "Pattern message => Type %d, Index %2d, Pattern 0x%08X",
-                     getGdpbSysPattType(),
-                     getGdpbSysPattIndex(),
-                     getGdpbSysPattPattern());
+            snprintf(sysbuf, sizeof(sysbuf), "Pattern message => Type %d, Index %2d, Pattern 0x%08X",
+                     getGdpbSysPattType(), getGdpbSysPattIndex(), getGdpbSysPattPattern());
             break;
-          default:
-            snprintf(sysbuf,
-                     sizeof(sysbuf),
-                     "unknown system message type %u",
-                     getGdpbSysSubType());
+          default: snprintf(sysbuf, sizeof(sysbuf), "unknown system message type %u", getGdpbSysSubType());
         }  // switch( getGdpbSysSubType() )
         snprintf(buf, sizeof(buf), "%s", sysbuf);
 
@@ -444,19 +347,16 @@ void gdpbv100::Message::printData(unsigned outType,
         // STAR trigger token, spread over 4 messages
         switch (getStarTrigMsgIndex()) {
           case 0: {
-            snprintf(
-              buf,
-              sizeof(buf),
-              //                    "STAR token A, gDPB TS MSB bits: 0x%010llx000000",
-              //                    getGdpbTsMsbStarA() );
-              "STAR token A, gDPB TS MSB bits: 0x%s000000",
-              FormatHexPrintout(getGdpbTsMsbStarA(), 10, '0').c_str());
+            snprintf(buf, sizeof(buf),
+                     //                    "STAR token A, gDPB TS MSB bits: 0x%010llx000000",
+                     //                    getGdpbTsMsbStarA() );
+                     "STAR token A, gDPB TS MSB bits: 0x%s000000",
+                     FormatHexPrintout(getGdpbTsMsbStarA(), 10, '0').c_str());
             break;
           }  // case 1st message:
           case 1: {
             snprintf(
-              buf,
-              sizeof(buf),
+              buf, sizeof(buf),
               //                    "STAR token B, gDPB TS LSB bits: 0x0000000000%06llx, STAR TS MSB bits: 0x%04llx000000000000",
               //                    getGdpbTsLsbStarB(), getStarTsMsbStarB() );
               "STAR token B, gDPB TS LSB bits: 0x0000000000%s, STAR TS MSB "
@@ -467,8 +367,7 @@ void gdpbv100::Message::printData(unsigned outType,
           }  // case 2nd message:
           case 2: {
             snprintf(
-              buf,
-              sizeof(buf),
+              buf, sizeof(buf),
               //                    "STAR token C,                                     , STAR TS Mid bits: 0x0000%010llx00",
               //                    getStarTsMidStarC() );
               "STAR token C,                                     , STAR TS Mid "
@@ -478,16 +377,13 @@ void gdpbv100::Message::printData(unsigned outType,
           }  // case 3rd message:
           case 3: {
             snprintf(
-              buf,
-              sizeof(buf),
+              buf, sizeof(buf),
               //                    "STAR token D,                                     , STAR TS LSB bits: 0x00000000000000%02llx"
               "STAR token D,                                     , STAR TS LSB "
               "bits: 0x00000000000000%s"
               ", Token: %03x, DAQ: %1x; TRG:%1x",
               //                    getStarTsLsbStarD(),
-              FormatHexPrintout(getStarTsLsbStarD(), 2, '0').c_str(),
-              getStarTokenStarD(),
-              getStarDaqCmdStarD(),
+              FormatHexPrintout(getStarTsLsbStarD(), 2, '0').c_str(), getStarTokenStarD(), getStarDaqCmdStarD(),
               getStarTrigCmdStarD());
             break;
           }  // case 4th message:
@@ -496,23 +392,19 @@ void gdpbv100::Message::printData(unsigned outType,
         break;
       }  // case MSG_STAR_TRI_A || MSG_STAR_TRI_B || MSG_STAR_TRI_C || MSG_STAR_TRI_D:
       default:
-        snprintf(buf,
-                 sizeof(buf),
-                 "Error - unexpected MessageType: %1x, full data %08X::%08X",
-                 getMessageType(),
-                 getField(32, 32),
-                 getField(0, 32));
+        snprintf(buf, sizeof(buf), "Error - unexpected MessageType: %1x, full data %08X::%08X", getMessageType(),
+                 getField(32, 32), getField(0, 32));
     }
   }
 
-  if (msg_print_Cout == outType)
-    std::cout << buf << std::endl;
+  if (msg_print_Cout == outType) std::cout << buf << std::endl;
   else if (msg_print_File == outType)
     os << buf << std::endl;
 }
 //----------------------------------------------------------------------------
 //! strict weak ordering operator, including epoch for both messages
-bool gdpbv100::FullMessage::operator<(const FullMessage& other) const {
+bool gdpbv100::FullMessage::operator<(const FullMessage& other) const
+{
   if (other.fulExtendedEpoch == this->fulExtendedEpoch)
     // Same epoch => use Message (base) class ordering operator
     return this->Message::operator<(other);
@@ -520,8 +412,8 @@ bool gdpbv100::FullMessage::operator<(const FullMessage& other) const {
     return this->fulExtendedEpoch < other.fulExtendedEpoch;
 }
 //----------------------------------------------------------------------------
-void gdpbv100::FullMessage::PrintMessage(unsigned outType,
-                                         unsigned kind) const {
+void gdpbv100::FullMessage::PrintMessage(unsigned outType, unsigned kind) const
+{
   std::cout << "Full epoch = " << std::setw(9) << fulExtendedEpoch << " ";
   printDataCout(outType, kind);
 }

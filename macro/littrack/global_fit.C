@@ -9,19 +9,18 @@
 using std::cout;
 using std::endl;
 
-void global_fit(Int_t nEvents = 100) {
+void global_fit(Int_t nEvents = 100)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
 
   // Input and output data
-  TString dir     = "events/much_v12b/";      // Output directory
-  TString mcFile  = dir + "mc.0000.root";     // MC transport file
-  TString parFile = dir + "param.0000.root";  // Parameters file
-  TString globalRecoFile =
-    dir + "global.reco.0000.root";  // Reconstructed tracks and hits
-  TString globalFitFile = dir + "global.fit.0000.root";  // Output file
+  TString dir            = "events/much_v12b/";            // Output directory
+  TString mcFile         = dir + "mc.0000.root";           // MC transport file
+  TString parFile        = dir + "param.0000.root";        // Parameters file
+  TString globalRecoFile = dir + "global.reco.0000.root";  // Reconstructed tracks and hits
+  TString globalFitFile  = dir + "global.fit.0000.root";   // Output file
 
   // Digi files
   //   TList* parFileList = new TList();
@@ -107,8 +106,7 @@ void global_fit(Int_t nEvents = 100) {
   cout << " All ok " << endl;
   cout << "Output file is " << globalFitFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << " s" << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 }

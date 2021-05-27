@@ -68,7 +68,8 @@ public:
 		 ** This method cannot be used if the event is set to contain matches.
 		 **/
   template<class Digi>
-  void AddDigi(const Digi* digi) {
+  void AddDigi(const Digi* digi)
+  {
     if (fHasMatches) {
       LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
       return;
@@ -93,7 +94,8 @@ public:
      ** This method cannot be used if the event is not set to contain matches.
      **/
   template<class Digi>
-  void AddDigi(const Digi* digi, const CbmMatch* match) {
+  void AddDigi(const Digi* digi, const CbmMatch* match)
+  {
     if (!fHasMatches) {
       LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
       return;
@@ -117,7 +119,8 @@ public:
 		 ** present or the index is out of range.
 		 **/
   template<class Digi>
-  const Digi* GetDigi(UInt_t index) const {
+  const Digi* GetDigi(UInt_t index) const
+  {
     ECbmModuleId system = Digi::GetSystem();
     assert(system < ECbmModuleId::kNofSystems);
     auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));

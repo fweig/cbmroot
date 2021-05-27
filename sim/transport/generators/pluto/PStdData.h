@@ -10,6 +10,7 @@
 #include "TArrayD.h"
 #include "TArrayI.h"
 #include "TROOT.h"
+
 #include <iostream>
 
 //#include "PStaticData.h"
@@ -36,18 +37,17 @@ public:
 private:
   int disable;
 
-  void resetPosition() {
+  void resetPosition()
+  {
     // Resets the array PPosition
 
     int i, nm, position = 0;
     for (i = 0; i < maxnumpar; ++i) {
-      nm = PNModes[i];  // number of decay modes of particle pid=i
-      if (!nm)
-        PPosition[i] = -1;  // signifies stable particle
+      nm = PNModes[i];             // number of decay modes of particle pid=i
+      if (!nm) PPosition[i] = -1;  // signifies stable particle
       else {
-        PPosition[i] =
-          position;      // index of 1st decay mode for current particle
-        position += nm;  // reposition for the next particle
+        PPosition[i] = position;  // index of 1st decay mode for current particle
+        position += nm;           // reposition for the next particle
       }
     }
   }
@@ -55,15 +55,15 @@ private:
   int* PPosition;
 
 
-  static int maxnumpar, maxnummodes, *Pkf, *PMeson, *PBaryon, *PLepton,
-    *PCharge, *PJ, *PParity, *PI, *PNModes, *intcache, cachesize, save, nfiles;
+  static int maxnumpar, maxnummodes, *Pkf, *PMeson, *PBaryon, *PLepton, *PCharge, *PJ, *PParity, *PI, *PNModes,
+    *intcache, cachesize, save, nfiles;
   static double *PMass, *PWidth, *PBR, *dblcache, scale;
   static char **PName, **PMDescription, **PMode;
 
 
   // local storage area
-  static int *pmes_tmp, *pbar_tmp, *plep_tmp, *pchar_tmp, *pspin_tmp,
-    *pparity_tmp, *pispin_tmp, *pnmod_tmp, *id_tmp, *pkf_tmp;
+  static int *pmes_tmp, *pbar_tmp, *plep_tmp, *pchar_tmp, *pspin_tmp, *pparity_tmp, *pispin_tmp, *pnmod_tmp, *id_tmp,
+    *pkf_tmp;
   static double *pmass_tmp, *pwidth_tmp, *pbr_tmp;
   static char **pnam_tmp, **pmdescr_tmp, **pmod_tmp;
 

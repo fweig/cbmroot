@@ -1,11 +1,8 @@
 #ifndef COMPARETRDDIGI_H
 #define COMPARETRDDIGI_H 1
 
-void compareTrdDigiDataMembers(CbmTrdDigi& test,
-                               Int_t padChNr,
-                               ECbmModuleId systemid,
-                               ULong64_t time,
-                               Double_t charge) {
+void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId systemid, ULong64_t time, Double_t charge)
+{
   Int_t retValInt {-222};
   Double_t retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};

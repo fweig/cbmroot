@@ -12,13 +12,12 @@
 #include <algorithm>
 #include <set>
 
-CbmLitTrackSelectionSharedHits::CbmLitTrackSelectionSharedHits()
-  : fNofSharedHits(0) {}
+CbmLitTrackSelectionSharedHits::CbmLitTrackSelectionSharedHits() : fNofSharedHits(0) {}
 
 CbmLitTrackSelectionSharedHits::~CbmLitTrackSelectionSharedHits() {}
 
-LitStatus CbmLitTrackSelectionSharedHits::DoSelect(TrackPtrIterator itBegin,
-                                                   TrackPtrIterator itEnd) {
+LitStatus CbmLitTrackSelectionSharedHits::DoSelect(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   if (itBegin == itEnd) { return kLITSUCCESS; }
 
   CbmLitQualitySort::DoSortNofHits(itBegin, itEnd);
@@ -27,12 +26,13 @@ LitStatus CbmLitTrackSelectionSharedHits::DoSelect(TrackPtrIterator itBegin,
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitTrackSelectionSharedHits::DoSelect(TrackPtrVector& tracks) {
+LitStatus CbmLitTrackSelectionSharedHits::DoSelect(TrackPtrVector& tracks)
+{
   return DoSelect(tracks.begin(), tracks.end());
 }
 
-void CbmLitTrackSelectionSharedHits::CheckSharedHits(TrackPtrIterator itBegin,
-                                                     TrackPtrIterator itEnd) {
+void CbmLitTrackSelectionSharedHits::CheckSharedHits(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   std::set<int> hitsId;
   const int STRIPSTART = 100000;
   const int TRDSTART   = 1000000;

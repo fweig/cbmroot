@@ -5,7 +5,9 @@
 #include "CbmHistManager.h"
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterEllipseTau.h"
+
 #include "FairTask.h"
+
 #include <vector>
 
 using namespace std;

@@ -10,8 +10,8 @@
  */
 
 
-void readTsa_file_get4(Int_t nEvents  = -1,
-                       TString inFile = "data/get4Test.tsa") {
+void readTsa_file_get4(Int_t nEvents = -1, TString inFile = "data/get4Test.tsa")
+{
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -61,24 +61,9 @@ void readTsa_file_get4(Int_t nEvents  = -1,
   // Disable unread USTC RPC chips
   for (UInt_t uChipIndex = 80; uChipIndex < 88; uChipIndex++)
     get4_unpacker->SetActiveGet4(uChipIndex, kFALSE);
-  get4_unpacker->SetPulserMode(
-    kFALSE);                      // kTRUE = ON, kFALSE = OFF (default is ON)
-  get4_unpacker->SetPulserFee();  // 1 value (default is 0)
-  get4_unpacker->SetPulserChans(0,
-                                4,
-                                8,
-                                12,
-                                16,
-                                20,
-                                24,
-                                28,
-                                32,
-                                36,
-                                40,
-                                44,
-                                48,
-                                52,
-                                56,
+  get4_unpacker->SetPulserMode(kFALSE);  // kTRUE = ON, kFALSE = OFF (default is ON)
+  get4_unpacker->SetPulserFee();         // 1 value (default is 0)
+  get4_unpacker->SetPulserChans(0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56,
                                 60);  // 1-16 values (default is 0-15)
   get4_unpacker->SetOldReadoutSupp();
   get4_unpacker->SetMaxCoincDist(500.0);
@@ -131,8 +116,7 @@ void readTsa_file_get4(Int_t nEvents  = -1,
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

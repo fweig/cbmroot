@@ -1,10 +1,9 @@
 #!/ bin / bash
 
-cd ~ / cbmroot_may2015_devel / build / make Rich make_return_code =
-  $ ? cd -
+cd ~ / cbmroot_may2015_devel / build / make Rich make_return_code = $ ? cd -
 
 #Break execution if CbmRoot build was not succesfull
-        if [[$make_return_code != 0]];
+                                                                          if [[$make_return_code != 0]];
 then exit;
 fi
 

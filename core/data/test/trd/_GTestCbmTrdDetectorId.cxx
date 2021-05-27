@@ -2,10 +2,10 @@
 
 #include <TString.h>
 
+#include <iostream>
+
 #include <gtest/gtest-spi.h>
 #include <gtest/gtest.h>
-
-#include <iostream>
 using std::cout;
 using std::endl;
 
@@ -36,9 +36,11 @@ protected:
 };
 
 // This is the derived class for the non-parameterized test cases.
-class CbmTrdAddressTest : public _TestCbmTrdAddressBase<testing::Test> {};
+class CbmTrdAddressTest : public _TestCbmTrdAddressBase<testing::Test> {
+};
 
-TEST_F(CbmTrdAddressTest, CheckDefaultSettings) {
+TEST_F(CbmTrdAddressTest, CheckDefaultSettings)
+{
   Int_t layerid          = 0;
   Int_t moduleid         = 0;
   Int_t sectorid         = 0;
@@ -46,20 +48,19 @@ TEST_F(CbmTrdAddressTest, CheckDefaultSettings) {
   Int_t columnid         = 0;
   Int_t detInfo_array[5] = {layerid, moduleid, sectorid, rowid, columnid};
 
-  Int_t retVal =
-    fTrdId.GetAddress(layerid, moduleid, sectorid, rowid, columnid);
+  Int_t retVal = fTrdId.GetAddress(layerid, moduleid, sectorid, rowid, columnid);
   EXPECT_EQ(0, retVal);
 }
 
 // This is the derived class for the parameterized test cases.
-class CbmTrdAddressParamTest :
-  public _TestCbmTrdAddressBase<testing::TestWithParam<InOutStructure>> {
+class CbmTrdAddressParamTest : public _TestCbmTrdAddressBase<testing::TestWithParam<InOutStructure>> {
 protected:
   Int_t detInfo_array[5];
   Int_t modInfo_array[5];
   Int_t result;
 
-  virtual void SetUp() {
+  virtual void SetUp()
+  {
     InOutStructure const& p = GetParam();
 
     detInfo_array[0] = p.layer;
@@ -79,12 +80,10 @@ protected:
 };
 
 
-TEST_P(CbmTrdAddressParamTest, checkUniqueIdCreation) {
-  Int_t uniqueId = fTrdId.GetAddress(detInfo_array[0],
-                                     detInfo_array[1],
-                                     detInfo_array[2],
-                                     detInfo_array[3],
-                                     detInfo_array[4]);
+TEST_P(CbmTrdAddressParamTest, checkUniqueIdCreation)
+{
+  Int_t uniqueId =
+    fTrdId.GetAddress(detInfo_array[0], detInfo_array[1], detInfo_array[2], detInfo_array[3], detInfo_array[4]);
   EXPECT_EQ(result, uniqueId);
 
   Int_t systemId = fTrdId.GetSystemId(uniqueId);

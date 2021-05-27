@@ -7,11 +7,15 @@
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorTrackingBuffer::CbmMvdSensorTrackingBuffer()
-  : CbmMvdSensorBuffer(), ftimeStart(-1), ftimeStop(-1), ftimestep(-1) {};
+  : CbmMvdSensorBuffer()
+  , ftimeStart(-1)
+  , ftimeStop(-1)
+  , ftimestep(-1) {};
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdSensorTrackingBuffer::~CbmMvdSensorTrackingBuffer() {
+CbmMvdSensorTrackingBuffer::~CbmMvdSensorTrackingBuffer()
+{
 
   fBuffer->Delete();
   delete fBuffer;
@@ -19,7 +23,8 @@ CbmMvdSensorTrackingBuffer::~CbmMvdSensorTrackingBuffer() {
 // -------------------------------------------------------------------------
 
 // -----   Init         ----------------------------------------------------
-void CbmMvdSensorTrackingBuffer::InitBuffer(CbmMvdSensor* mySensor) {
+void CbmMvdSensorTrackingBuffer::InitBuffer(CbmMvdSensor* mySensor)
+{
 
   fBuffer       = new TClonesArray("CbmMvdHit", 1000);
   fCurrentEvent = new TClonesArray("CbmMvdHit", 1000);
@@ -32,11 +37,10 @@ void CbmMvdSensorTrackingBuffer::InitBuffer(CbmMvdSensor* mySensor) {
 // -------------------------------------------------------------------------
 
 // -----   Exec         ----------------------------------------------------
-void CbmMvdSensorTrackingBuffer::ExecChain() {
+void CbmMvdSensorTrackingBuffer::ExecChain()
+{
 
-  SetInputArray(
-    fPreviousPlugin
-      ->GetOutputArray());  // auto datatransport from Plugin to Plugin
+  SetInputArray(fPreviousPlugin->GetOutputArray());  // auto datatransport from Plugin to Plugin
   SetPluginReady(
     false);  // Flag Plugin as working. as long as now timeslice is available Plugin is still on working state
   Int_t lastEntrie = fBuffer->GetLast();
@@ -56,9 +60,7 @@ void CbmMvdSensorTrackingBuffer::ExecChain() {
       if (fCurrentEvent->GetEntriesFast() > 0) {
         SetPluginReady(true);
 
-        cout << endl
-             << "OutputBuffer is ready for readout on sensor "
-             << fSensor->GetName() << endl;
+        cout << endl << "OutputBuffer is ready for readout on sensor " << fSensor->GetName() << endl;
         //fCurrentEvent->Print();
       }
     }
@@ -67,8 +69,8 @@ void CbmMvdSensorTrackingBuffer::ExecChain() {
 // -------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-void CbmMvdSensorTrackingBuffer::BuildTimeSlice(Double_t tStart,
-                                                Double_t tStop) {
+void CbmMvdSensorTrackingBuffer::BuildTimeSlice(Double_t tStart, Double_t tStop)
+{
   Int_t nEntries = fBuffer->GetEntriesFast();
   CbmMvdHit* myHit;
   Int_t time;
@@ -77,10 +79,7 @@ void CbmMvdSensorTrackingBuffer::BuildTimeSlice(Double_t tStart,
   for (Int_t i = 0; i < nEntries; i++) {
     myHit = (CbmMvdHit*) fBuffer->At(i);
     time  = myHit->GetTimeStamp();
-    if (tStart <= time
-        && time
-             <= (tStop
-                 + fSensor->GetIntegrationtime()))  // building full timeslice
+    if (tStart <= time && time <= (tStop + fSensor->GetIntegrationtime()))  // building full timeslice
     {
       nHits = fCurrentEvent->GetEntriesFast();
       new ((*fCurrentEvent)[nHits]) CbmMvdHit(*myHit);
@@ -92,8 +91,8 @@ void CbmMvdSensorTrackingBuffer::BuildTimeSlice(Double_t tStart,
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-void CbmMvdSensorTrackingBuffer::ClearTimeSlice(Double_t tStart,
-                                                Double_t tStop) {
+void CbmMvdSensorTrackingBuffer::ClearTimeSlice(Double_t tStart, Double_t tStop)
+{
 
   Int_t nEntries = fBuffer->GetEntriesFast();
   CbmMvdHit* myHit;
@@ -111,7 +110,8 @@ void CbmMvdSensorTrackingBuffer::ClearTimeSlice(Double_t tStart,
 
 
 //--------------------------------------------------------------------------
-void CbmMvdSensorTrackingBuffer::SetInputArray(TClonesArray* inputStream) {
+void CbmMvdSensorTrackingBuffer::SetInputArray(TClonesArray* inputStream)
+{
 
   fBuffer->AbsorbObjects(inputStream);
   fBuffer->Compress();

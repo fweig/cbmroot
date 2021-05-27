@@ -27,18 +27,19 @@ CbmMuchMatchTracks::CbmMuchMatchTracks()
   , fNofTrueHits(0)
   , fNofWrongHits(0)
   , fNofFakeHits(0)
-  , fNEvents(0) {}
+  , fNEvents(0)
+{
+}
 
 CbmMuchMatchTracks::~CbmMuchMatchTracks() {}
 
-InitStatus CbmMuchMatchTracks::Init() {
+InitStatus CbmMuchMatchTracks::Init()
+{
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL)
-    Fatal("CbmMuchMatchTracks::Init", "RootManager not instantised!");
+  if (ioman == NULL) Fatal("CbmMuchMatchTracks::Init", "RootManager not instantised!");
 
   fPixelHits = (TClonesArray*) ioman->GetObject("MuchPixelHit");
-  if (fPixelHits == NULL)
-    Fatal("CbmMuchMatchTracks::Init", "No MuchPixelHit array!");
+  if (fPixelHits == NULL) Fatal("CbmMuchMatchTracks::Init", "No MuchPixelHit array!");
 
   fTracks = (TClonesArray*) ioman->GetObject("MuchTrack");
   if (fTracks == NULL) Fatal("CbmMuchMatchTracks::Init", "No MuchTrack array!");
@@ -47,24 +48,20 @@ InitStatus CbmMuchMatchTracks::Init() {
   if (fPoints == NULL) Fatal("CbmMuchMatchTracks::Init", "No MuchPoint array!");
 
   fPixelDigiMatches = (TClonesArray*) ioman->GetObject("MuchDigiMatch");
-  if (fPixelDigiMatches == NULL)
-    Fatal("CbmMuchMatchTracks::Init", "No MuchDigiMatch array!");
+  if (fPixelDigiMatches == NULL) Fatal("CbmMuchMatchTracks::Init", "No MuchDigiMatch array!");
 
   fClusters = (TClonesArray*) ioman->GetObject("MuchCluster");
   if (fClusters == NULL)
-    Info("CbmMuchMatchTracks::Init",
-         "No cluster array -- simple hit to digi matching will be used");
+    Info("CbmMuchMatchTracks::Init", "No cluster array -- simple hit to digi matching will be used");
 
   fMatches = new TClonesArray("CbmTrackMatch", 100);
-  ioman->Register("MuchTrackMatch",
-                  "MUCH",
-                  fMatches,
-                  IsOutputBranchPersistent("MuchTrackMatch"));
+  ioman->Register("MuchTrackMatch", "MUCH", fMatches, IsOutputBranchPersistent("MuchTrackMatch"));
 
   return kSUCCESS;
 }
 
-void CbmMuchMatchTracks::Exec(Option_t*) {
+void CbmMuchMatchTracks::Exec(Option_t*)
+{
 
   fMatches->Clear();
 
@@ -79,9 +76,8 @@ void CbmMuchMatchTracks::Exec(Option_t*) {
     Int_t nofHits = pTrack->GetNofHits();
     for (Int_t iHit = 0; iHit < nofHits; iHit++) {  // Loop over hits
       HitType hitType = pTrack->GetHitType(iHit);
-      if (hitType == kMUCHPIXELHIT) {
-        ExecPixel(matchMap, pTrack->GetHitIndex(iHit));
-      } else {
+      if (hitType == kMUCHPIXELHIT) { ExecPixel(matchMap, pTrack->GetHitIndex(iHit)); }
+      else {
         TObject::Fatal("CbmMuchMatchTracks::Exec", "Hit type not supported!");
       }
     }  // Loop over hits
@@ -89,9 +85,7 @@ void CbmMuchMatchTracks::Exec(Option_t*) {
     Int_t nofTrue       = 0;
     Int_t bestMcTrackId = -1;
     Int_t nPoints       = 0;
-    for (std::map<Int_t, Int_t>::iterator it = matchMap.begin();
-         it != matchMap.end();
-         it++) {
+    for (std::map<Int_t, Int_t>::iterator it = matchMap.begin(); it != matchMap.end(); it++) {
       if (it->first != -1 && it->second >= nofTrue) {
         bestMcTrackId = it->first;
         nofTrue       = it->second;
@@ -103,8 +97,7 @@ void CbmMuchMatchTracks::Exec(Option_t*) {
     Int_t nofWrong    = nofHits - nofTrue - nofFake;
     Int_t nofMcTracks = matchMap.size() - 1;
 
-    new ((*fMatches)[iTrack])
-      CbmTrackMatch(bestMcTrackId, nofTrue, nofWrong, nofFake, nofMcTracks);
+    new ((*fMatches)[iTrack]) CbmTrackMatch(bestMcTrackId, nofTrue, nofWrong, nofFake, nofMcTracks);
 
     fNofHits += nofHits;
     fNofTrueHits += nofTrue;
@@ -112,16 +105,16 @@ void CbmMuchMatchTracks::Exec(Option_t*) {
     fNofFakeHits += nofFake;
 
     if (fVerbose > 1)
-      std::cout << "iTrack=" << iTrack << " mcTrack=" << bestMcTrackId
-                << " nPoints=" << nPoints << " nofTrue=" << nofTrue
-                << " nofWrong=" << nofWrong << " nofFake=" << nofFake
+      std::cout << "iTrack=" << iTrack << " mcTrack=" << bestMcTrackId << " nPoints=" << nPoints
+                << " nofTrue=" << nofTrue << " nofWrong=" << nofWrong << " nofFake=" << nofFake
                 << " nofMcTracks=" << nofMcTracks << std::endl;
   }  // Loop over tracks
 
   fNEvents++;
 }
 
-void CbmMuchMatchTracks::Finish() {
+void CbmMuchMatchTracks::Finish()
+{
   Double_t trueHits  = 100. * Double_t(fNofTrueHits) / Double_t(fNofHits);
   Double_t wrongHits = 100. * Double_t(fNofWrongHits) / Double_t(fNofHits);
   Double_t fakeHits  = 100. * Double_t(fNofFakeHits) / Double_t(fNofHits);
@@ -133,22 +126,20 @@ void CbmMuchMatchTracks::Finish() {
   std::cout << "=================================================" << std::endl;
 }
 
-void CbmMuchMatchTracks::ExecPixel(std::map<Int_t, Int_t>& matchMap,
-                                   Int_t index) {
+void CbmMuchMatchTracks::ExecPixel(std::map<Int_t, Int_t>& matchMap, Int_t index)
+{
   // std::set stores MC track indices contributed to a certain hit
   std::set<Int_t> mcIdHit;
   CbmMuchPixelHit* hit = static_cast<CbmMuchPixelHit*>(fPixelHits->At(index));
   if (hit == NULL) return;
 
-  Int_t clusterId = hit->GetRefId();
-  CbmMuchCluster* cluster =
-    static_cast<CbmMuchCluster*>(fClusters->At(clusterId));
+  Int_t clusterId         = hit->GetRefId();
+  CbmMuchCluster* cluster = static_cast<CbmMuchCluster*>(fClusters->At(clusterId));
   if (cluster == NULL) return;
 
   for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
-    Int_t digiId = cluster->GetDigi(iDigi);
-    CbmMuchDigiMatch* digiMatch =
-      static_cast<CbmMuchDigiMatch*>(fPixelDigiMatches->At(digiId));
+    Int_t digiId                = cluster->GetDigi(iDigi);
+    CbmMuchDigiMatch* digiMatch = static_cast<CbmMuchDigiMatch*>(fPixelDigiMatches->At(digiId));
     if (digiMatch == NULL) continue;
     for (Int_t iPoint = 0; iPoint < digiMatch->GetNofLinks(); iPoint++) {
       Int_t pointIndex = digiMatch->GetLink(iPoint).GetIndex();
@@ -162,8 +153,7 @@ void CbmMuchMatchTracks::ExecPixel(std::map<Int_t, Int_t>& matchMap,
     }
   }  // loop over digis
 
-  for (std::set<Int_t>::iterator it = mcIdHit.begin(); it != mcIdHit.end();
-       it++) {
+  for (std::set<Int_t>::iterator it = mcIdHit.begin(); it != mcIdHit.end(); it++) {
     matchMap[*it]++;
   }
 }

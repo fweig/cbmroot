@@ -2,6 +2,7 @@
 #define CBMPIPE_H 1
 
 #include "FairModule.h"
+
 #include <string>
 
 class TGeoCombiTrans;
@@ -17,8 +18,7 @@ public:
   virtual void ConstructGeometry();
 
 private:
-  TGeoCombiTrans*
-    fCombiTrans;  //! Transformation matrix for geometry positioning
+  TGeoCombiTrans* fCombiTrans;  //! Transformation matrix for geometry positioning
   std::string fVolumeName;
 
   ClassDef(CbmPipe, 1)  //CBMPIPE

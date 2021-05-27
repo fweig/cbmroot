@@ -2,7 +2,8 @@
 // ----- This task calculate the collision centrality for each event, based on STS and PSD information
 
 
-void centrality_evtbyevt_calculation_STS_PSD() {
+void centrality_evtbyevt_calculation_STS_PSD()
+{
   TFile* f1 = new TFile("/hera/cbm/users/sseddiki/auau_TDR/shield/au2au/"
                         "sts_13d_PSDhole6cm_44mods_beampipe/v15/8m/ana/"
                         "ana_10Kevt_RECOtracks_STScutY_0.8.root",
@@ -89,12 +90,9 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   TH1F* hPSD_tmp;
   TH1F* hPSD_b;
 
-  TH2F* hPSD1vsSTS = new TH2F(
-    "hPSD1vsSTS", "for fit function (sub1)", 1000, 0., 1., 1000, 0., 1.);
-  TH2F* hPSD2vsSTS = new TH2F(
-    "hPSD2vsSTS", "for fit function (sub2)", 1000, 0., 1., 1000, 0., 1.);
-  TH2F* hPSD3vsSTS = new TH2F(
-    "hPSD3vsSTS", "for fit function (sub3)", 1000, 0., 1., 1000, 0., 1.);
+  TH2F* hPSD1vsSTS = new TH2F("hPSD1vsSTS", "for fit function (sub1)", 1000, 0., 1., 1000, 0., 1.);
+  TH2F* hPSD2vsSTS = new TH2F("hPSD2vsSTS", "for fit function (sub2)", 1000, 0., 1., 1000, 0., 1.);
+  TH2F* hPSD3vsSTS = new TH2F("hPSD3vsSTS", "for fit function (sub3)", 1000, 0., 1., 1000, 0., 1.);
 
   TH2F* hPSD1vsSTS_updown;
   TH2F* hPSD2vsSTS_updown;
@@ -103,15 +101,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   TH1F* hPSDvsSTS_tmp;
   TH1F* hPSDvsSTS_b;
 
-  TH1F* hb_rej_PSD =
-    new TH1F("hb_rej_PSD", "rej - b", 170, 0., 17.);  //,100,0.,1.);
-  TH2F* hb_rej_PSD1_corrSTS =
-    new TH2F("hb_rej_PSD1_corrSTS", "rej - corr STS", 100, 0., 1., 100, 0., 1.);
-  TH2F* hb_rej_PSD2_corrSTS =
-    new TH2F("hb_rej_PSD2_corrSTS", "rej - corr STS", 100, 0., 1., 100, 0., 1.);
+  TH1F* hb_rej_PSD          = new TH1F("hb_rej_PSD", "rej - b", 170, 0., 17.);  //,100,0.,1.);
+  TH2F* hb_rej_PSD1_corrSTS = new TH2F("hb_rej_PSD1_corrSTS", "rej - corr STS", 100, 0., 1., 100, 0., 1.);
+  TH2F* hb_rej_PSD2_corrSTS = new TH2F("hb_rej_PSD2_corrSTS", "rej - corr STS", 100, 0., 1., 100, 0., 1.);
 
-  TH1F* hb_rej_PSDvsSTS =
-    new TH1F("rej - b (PSD vs STS)", "rej - b", 170, 0., 17.);
+  TH1F* hb_rej_PSDvsSTS = new TH1F("rej - b (PSD vs STS)", "rej - b", 170, 0., 17.);
 
 
   // TTree
@@ -272,8 +266,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
   Double_t maxMult = 0.;
   for (int ibin = 0; ibin < 1000; ibin++) {
-    if (hSTS_base->GetBinContent(ibin) != 0.
-        && maxMult < hSTS_base->GetBinCenter(ibin))
+    if (hSTS_base->GetBinContent(ibin) != 0. && maxMult < hSTS_base->GetBinCenter(ibin))
       maxMult = hSTS_base->GetBinCenter(ibin);
   }
   cout << "max STS mult = " << maxMult << endl;
@@ -285,14 +278,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   upRange = "250.";
   detinfo = "PsdEvent.fedep_" + sPSDsub1;
 
-  t1->Draw(detinfo + ">>hPSD_" + sPSDsub1 + "(2500, 0., " + upRange + ")",
-           sPreSel,
-           "goff");
+  t1->Draw(detinfo + ">>hPSD_" + sPSDsub1 + "(2500, 0., " + upRange + ")", sPreSel, "goff");
   hPSD_base = (TH1F*) t1->GetHistogram();
 
   for (int ibin = 0; ibin < 2500; ibin++) {
-    if (hPSD_base->GetBinContent(ibin) != 0.
-        && maxE_1 < hPSD_base->GetBinCenter(ibin))
+    if (hPSD_base->GetBinContent(ibin) != 0. && maxE_1 < hPSD_base->GetBinCenter(ibin))
       maxE_1 = hPSD_base->GetBinCenter(ibin);
   }
   cout << "max PSD Edep (sub1) = " << maxE_1 << endl;
@@ -302,14 +292,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   upRange = "100.";
   detinfo = "PsdEvent.fedep_" + sPSDsub2;
 
-  t1->Draw(detinfo + ">>hPSD_" + sPSDsub2 + "(1000, 0., " + upRange + ")",
-           sPreSel,
-           "goff");
+  t1->Draw(detinfo + ">>hPSD_" + sPSDsub2 + "(1000, 0., " + upRange + ")", sPreSel, "goff");
   hPSD_base = (TH1F*) t1->GetHistogram();
 
   for (int ibin = 0; ibin < 1000; ibin++) {
-    if (hPSD_base->GetBinContent(ibin) != 0.
-        && maxE_2 < hPSD_base->GetBinCenter(ibin))
+    if (hPSD_base->GetBinContent(ibin) != 0. && maxE_2 < hPSD_base->GetBinCenter(ibin))
       maxE_2 = hPSD_base->GetBinCenter(ibin);
   }
   cout << "max PSD Edep (sub2) = " << maxE_2 << endl;
@@ -319,14 +306,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   upRange = "100.";
   detinfo = "PsdEvent.fedep_" + sPSDsub3;
 
-  t1->Draw(detinfo + ">>hPSD_" + sPSDsub3 + "(1000, 0., " + upRange + ")",
-           sPreSel,
-           "goff");
+  t1->Draw(detinfo + ">>hPSD_" + sPSDsub3 + "(1000, 0., " + upRange + ")", sPreSel, "goff");
   hPSD_base = (TH1F*) t1->GetHistogram();
 
   for (int ibin = 0; ibin < 1000; ibin++) {
-    if (hPSD_base->GetBinContent(ibin) != 0.
-        && maxE_3 < hPSD_base->GetBinCenter(ibin))
+    if (hPSD_base->GetBinContent(ibin) != 0. && maxE_3 < hPSD_base->GetBinCenter(ibin))
       maxE_3 = hPSD_base->GetBinCenter(ibin);
   }
   cout << "max PSD Edep (sub3) = " << maxE_3 << endl;
@@ -340,8 +324,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   hPSD_base = (TH1F*) t1->GetHistogram();
 
   for (int ibin = 0; ibin < 1000; ibin++) {
-    if (hPSD_base->GetBinContent(ibin) != 0.
-        && maxE_12 < hPSD_base->GetBinCenter(ibin))
+    if (hPSD_base->GetBinContent(ibin) != 0. && maxE_12 < hPSD_base->GetBinCenter(ibin))
       maxE_12 = hPSD_base->GetBinCenter(ibin);
   }
   cout << "max PSD Edep (sub1+sub2) = " << maxE_12 << endl;
@@ -355,8 +338,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   hPSD_base = (TH1F*) t1->GetHistogram();
 
   for (int ibin = 0; ibin < 1000; ibin++) {
-    if (hPSD_base->GetBinContent(ibin) != 0.
-        && maxE_23 < hPSD_base->GetBinCenter(ibin))
+    if (hPSD_base->GetBinContent(ibin) != 0. && maxE_23 < hPSD_base->GetBinCenter(ibin))
       maxE_23 = hPSD_base->GetBinCenter(ibin);
   }
   cout << "max PSD Edep (sub2+sub3) = " << maxE_23 << endl;
@@ -390,8 +372,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   for (int i = 0; i < nentries_nosel; i++) {
     t1->GetEntry(i);
 
-    if (M_STS == 0 && E_sub1 + E_sub2 + E_sub3 == 0)
-      continue;  // baseline ~ sPreSel
+    if (M_STS == 0 && E_sub1 + E_sub2 + E_sub3 == 0) continue;  // baseline ~ sPreSel
 
     M_STS_bis  = (double) M_STS;  // data format conversion
     E_sub1_bis = (double) E_sub1;
@@ -414,8 +395,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
     t1_norm->Fill();
   }
-  cout << "entries (selection baseline) = " << t1_norm->GetEntriesFast()
-       << endl;
+  cout << "entries (selection baseline) = " << t1_norm->GetEntriesFast() << endl;
 
   // ============ Clean sample from "junk" events (!! caution to be taken to avoid bias in centrality estimation)
 
@@ -431,16 +411,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   TTree* t1_norm_cleaned = new TTree("t1_norm_cleaned", "t1_norm_cleaned");
   t1_norm_cleaned->SetDirectory(0);
   t1_norm_cleaned->Branch("StsEvent.fmult", &M_STS_bis, "M_STS_bis/D");
-  t1_norm_cleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, "E_sub1_bis/D");
-  t1_norm_cleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, "E_sub2_bis/D");
-  t1_norm_cleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, "E_sub3_bis/D");
-  t1_norm_cleaned->Branch(
-    "PsdEvent.fedep_sub12", &E_sub12_bis, "E_sub12_bis/D");
-  t1_norm_cleaned->Branch(
-    "PsdEvent.fedep_sub23", &E_sub23_bis, "E_sub23_bis/D");
+  t1_norm_cleaned->Branch("PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, "E_sub1_bis/D");
+  t1_norm_cleaned->Branch("PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, "E_sub2_bis/D");
+  t1_norm_cleaned->Branch("PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, "E_sub3_bis/D");
+  t1_norm_cleaned->Branch("PsdEvent.fedep_sub12", &E_sub12_bis, "E_sub12_bis/D");
+  t1_norm_cleaned->Branch("PsdEvent.fedep_sub23", &E_sub23_bis, "E_sub23_bis/D");
   t1_norm_cleaned->Branch("McEvent.fB", &mcB, "mcB/D");
   t1_norm_cleaned->Branch("kSTS", &kSTS, "kSTS/O");
   t1_norm_cleaned->Branch("kPSD", &kPSD, "kPSD/O");
@@ -467,10 +442,8 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
     t1_norm_cleaned->Fill();
   }
-  entry =
-    t1_norm_cleaned->Draw("McEvent.fB", "kPSD == 1 || kPSD1vsSTS == 1", "goff");
-  cout << "entries (selection - t1_norm_cleaned - sub1 cleaned) = " << entry
-       << endl;
+  entry = t1_norm_cleaned->Draw("McEvent.fB", "kPSD == 1 || kPSD1vsSTS == 1", "goff");
+  cout << "entries (selection - t1_norm_cleaned - sub1 cleaned) = " << entry << endl;
 
   // ============================================== Fit function for domain definition (& additional up/down cuts)
 
@@ -486,15 +459,12 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
     // == PSD
     if (imeth == 0) {
-      TCanvas* cupdownCut_PSD = new TCanvas(
-        "c_updownCut_PSD", " up down cuts (PSD)", 200, 10, 500, 500);
+      TCanvas* cupdownCut_PSD = new TCanvas("c_updownCut_PSD", " up down cuts (PSD)", 200, 10, 500, 500);
 
       detinfo = "PsdEvent.fedep_" + sPSDsub2 + ":PsdEvent.fedep_" + sPSDsub1;
       // exception: 35AGeV
       //detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":PsdEvent.fedep_" + sPSDsub2;
-      t1_norm_cleaned->Draw(detinfo + ">>hPSD_updown(100, 0., 1., 100, 0., 1.)",
-                            "kPSD == 1",
-                            "goff");
+      t1_norm_cleaned->Draw(detinfo + ">>hPSD_updown(100, 0., 1., 100, 0., 1.)", "kPSD == 1", "goff");
       hPSD_updown = (TH2F*) t1_norm_cleaned->GetHistogram();
     }
 
@@ -502,54 +472,30 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     if (imeth == 1)  // sub1
     {
       TCanvas* cupdownCut_PSD1vsSTS =
-        new TCanvas("c_updownCut_PSD1vsSTS",
-                    " up down cuts (PSD sub1 vs STS)",
-                    200,
-                    10,
-                    500,
-                    500);
+        new TCanvas("c_updownCut_PSD1vsSTS", " up down cuts (PSD sub1 vs STS)", 200, 10, 500, 500);
 
       detinfo = "PsdEvent.fedep_" + sPSDsub1 + ":StsEvent.fmult";
-      t1_norm_cleaned->Draw(detinfo
-                              + ">>hPSD1vsSTS_updown(100, 0., 1., 100, 0., 1.)",
-                            "kPSD1vsSTS == 1",
-                            "goff");
+      t1_norm_cleaned->Draw(detinfo + ">>hPSD1vsSTS_updown(100, 0., 1., 100, 0., 1.)", "kPSD1vsSTS == 1", "goff");
       hPSD1vsSTS_updown = (TH2F*) t1_norm_cleaned->GetHistogram();
     }
 
     if (imeth == 2)  // sub2
     {
       TCanvas* cupdownCut_PSD2vsSTS =
-        new TCanvas("c_updownCut_PSD2vsSTS",
-                    " up down cuts (PSD sub2 vs STS)",
-                    200,
-                    10,
-                    500,
-                    500);
+        new TCanvas("c_updownCut_PSD2vsSTS", " up down cuts (PSD sub2 vs STS)", 200, 10, 500, 500);
 
       detinfo = "PsdEvent.fedep_" + sPSDsub2 + ":StsEvent.fmult";
-      t1_norm_cleaned->Draw(detinfo
-                              + ">>hPSD2vsSTS_updown(100, 0., 1., 100, 0., 1.)",
-                            "kPSD2vsSTS == 1",
-                            "goff");
+      t1_norm_cleaned->Draw(detinfo + ">>hPSD2vsSTS_updown(100, 0., 1., 100, 0., 1.)", "kPSD2vsSTS == 1", "goff");
       hPSD2vsSTS_updown = (TH2F*) t1_norm_cleaned->GetHistogram();
     }
 
     if (imeth == 3)  // sub3
     {
       TCanvas* cupdownCut_PSD3vsSTS =
-        new TCanvas("c_updownCut_PSD3vsSTS",
-                    " up down cuts (PSD sub3 vs STS)",
-                    200,
-                    10,
-                    500,
-                    500);
+        new TCanvas("c_updownCut_PSD3vsSTS", " up down cuts (PSD sub3 vs STS)", 200, 10, 500, 500);
 
       detinfo = "PsdEvent.fedep_" + sPSDsub3 + ":StsEvent.fmult";
-      t1_norm_cleaned->Draw(detinfo
-                              + ">>hPSD3vsSTS_updown(100, 0., 1., 100, 0., 1.)",
-                            "kPSD3vsSTS == 1",
-                            "goff");
+      t1_norm_cleaned->Draw(detinfo + ">>hPSD3vsSTS_updown(100, 0., 1., 100, 0., 1.)", "kPSD3vsSTS == 1", "goff");
       hPSD3vsSTS_updown = (TH2F*) t1_norm_cleaned->GetHistogram();
     }
 
@@ -585,8 +531,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     hIn->Draw("colz");
 
     // !!!!!!!! HERE
-    if (imeth != 0)
-      meanH->Draw("hist, same");
+    if (imeth != 0) meanH->Draw("hist, same");
     else {
       ftmp = new TF1("ftmp" + smethod, "pol9", 0., 1.);
       meanH->Fit("ftmp" + smethod, "0, Q", "", 0., 1.);
@@ -608,7 +553,8 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       cut_up->SetLineColor(2);
       cut_down->Draw("hist,same");
       cut_down->SetLineColor(2);
-    } else {
+    }
+    else {
       ftmptmp = new TF1("ftmptmp" + smethod, "pol9", 0., 1.);
       cut_down->Fit("ftmptmp" + smethod, "0, Q", "", 0., 1.);
       ftmptmp->SetRange(0., 0.3);
@@ -634,8 +580,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       cut_down2->SetLineStyle(2);
     }
 
-    if (imeth == 1)
-      pol_order = "pol6";
+    if (imeth == 1) pol_order = "pol6";
     else
       pol_order = "pol9";
 
@@ -682,20 +627,14 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
   // == fine Cleaning & histos for fit functions
 
-  TTree* t1_norm_finecleaned =
-    new TTree("t1_norm_finecleaned", "t1_norm_finecleaned");
+  TTree* t1_norm_finecleaned = new TTree("t1_norm_finecleaned", "t1_norm_finecleaned");
   t1_norm_finecleaned->SetDirectory(0);
   t1_norm_finecleaned->Branch("StsEvent.fmult", &M_STS_bis, "M_STS_bis/D");
-  t1_norm_finecleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, "E_sub1_bis/D");
-  t1_norm_finecleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, "E_sub2_bis/D");
-  t1_norm_finecleaned->Branch(
-    "PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, "E_sub3_bis/D");
-  t1_norm_finecleaned->Branch(
-    "PsdEvent.fedep_sub12", &E_sub12_bis, "E_sub12_bis/D");
-  t1_norm_finecleaned->Branch(
-    "PsdEvent.fedep_sub23", &E_sub23_bis, "E_sub23_bis/D");
+  t1_norm_finecleaned->Branch("PsdEvent.fedep_" + sPSDsub1, &E_sub1_bis, "E_sub1_bis/D");
+  t1_norm_finecleaned->Branch("PsdEvent.fedep_" + sPSDsub2, &E_sub2_bis, "E_sub2_bis/D");
+  t1_norm_finecleaned->Branch("PsdEvent.fedep_" + sPSDsub3, &E_sub3_bis, "E_sub3_bis/D");
+  t1_norm_finecleaned->Branch("PsdEvent.fedep_sub12", &E_sub12_bis, "E_sub12_bis/D");
+  t1_norm_finecleaned->Branch("PsdEvent.fedep_sub23", &E_sub23_bis, "E_sub23_bis/D");
   t1_norm_finecleaned->Branch("McEvent.fB", &mcB, "mcB/D");
   t1_norm_finecleaned->Branch("kSTS", &kSTS, "kSTS/O");
   t1_norm_finecleaned->Branch("kPSD", &kPSD, "kPSD/O");
@@ -806,27 +745,22 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     // ++++++++++++++++++++++++++++++++++++++++
     // Histos for Fit functions - stronger cuts
 
-    if (E_sub2_bis > pol_down_PSD_2->Eval(E_sub1_bis)
-        && E_sub2_bis < pol_up_PSD_2->Eval(E_sub1_bis))
+    if (E_sub2_bis > pol_down_PSD_2->Eval(E_sub1_bis) && E_sub2_bis < pol_up_PSD_2->Eval(E_sub1_bis))
       hPSD->Fill(E_sub1_bis, E_sub2_bis);
     //exception: at 35
     //if ( E_sub1_bis > pol_down_PSD_2->Eval(E_sub2_bis) && E_sub1_bis < pol_up_PSD_2->Eval(E_sub2_bis) ) hPSD->Fill(E_sub2_bis, E_sub1_bis);
 
-    if (E_sub1_bis > pol_down_PSD1vsSTS_2->Eval(M_STS_bis)
-        && E_sub1_bis < pol_up_PSD1vsSTS_2->Eval(M_STS_bis))
+    if (E_sub1_bis > pol_down_PSD1vsSTS_2->Eval(M_STS_bis) && E_sub1_bis < pol_up_PSD1vsSTS_2->Eval(M_STS_bis))
       hPSD1vsSTS->Fill(M_STS_bis, E_sub1_bis);
-    if (E_sub2_bis > pol_down_PSD2vsSTS_2->Eval(M_STS_bis)
-        && E_sub2_bis < pol_up_PSD2vsSTS_2->Eval(M_STS_bis))
+    if (E_sub2_bis > pol_down_PSD2vsSTS_2->Eval(M_STS_bis) && E_sub2_bis < pol_up_PSD2vsSTS_2->Eval(M_STS_bis))
       hPSD2vsSTS->Fill(M_STS_bis, E_sub2_bis);
-    if (E_sub3_bis > pol_down_PSD3vsSTS_2->Eval(M_STS_bis)
-        && E_sub3_bis < pol_up_PSD3vsSTS_2->Eval(M_STS_bis))
+    if (E_sub3_bis > pol_down_PSD3vsSTS_2->Eval(M_STS_bis) && E_sub3_bis < pol_up_PSD3vsSTS_2->Eval(M_STS_bis))
       hPSD3vsSTS->Fill(M_STS_bis, E_sub3_bis);
 
     t1_norm_finecleaned->Fill();
   }
   entry = t1_norm_finecleaned->Draw("McEvent.fB", "kPSD == 1", "goff");
-  cout << "entries (selection - t1_norm_cleaned - fine cleaned) = " << entry
-       << endl;
+  cout << "entries (selection - t1_norm_cleaned - fine cleaned) = " << entry << endl;
   //t1_norm_finecleaned->Write();
 
 
@@ -842,8 +776,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   cut_middle_PSD = pol_PSD->GetMaximumX(0., 0.7);  // exception
   scut_middle[1] += cut_middle_PSD;
 
-  cut_r_PSD =
-    " || (PsdEvent.fedep_" + sPSDsub1 + " < " + scut_middle[1] + ")";  // ||
+  cut_r_PSD = " || (PsdEvent.fedep_" + sPSDsub1 + " < " + scut_middle[1] + ")";  // ||
   cut_l_PSD = " && (PsdEvent.fedep_" + sPSDsub1 + " < " + scut_middle[1] + ")";
   // exception: 35 agev
   //cut_r_PSD = " && (PsdEvent.fedep_" + sPSDsub2 + " > " + scut_middle[1] + ")";      // ||
@@ -852,8 +785,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   cout << "PSD max = " << scut_middle[1] << endl;
 
   // PSD sub1 vs STS
-  TCanvas* c_PSD1vsSTS_fit = new TCanvas(
-    "fit (PSD sub1 vs STS)", "fit (PSD sub1 vs STS)", 200, 10, 500, 500);
+  TCanvas* c_PSD1vsSTS_fit = new TCanvas("fit (PSD sub1 vs STS)", "fit (PSD sub1 vs STS)", 200, 10, 500, 500);
   hPSD1vsSTS->Draw("profile");
 
   pol_PSD1vsSTS = new TF1("polfit_PSD1vsSTS", "pol9", 0., 1.);
@@ -867,8 +799,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   cout << "PSD sub1 vs STS max = " << scut_middle[2] << endl;
 
   // PSD sub2 vs STS
-  TCanvas* c_PSD2vsSTS_fit = new TCanvas(
-    "fit (PSD sub2 vs STS)", "fit (PSD sub2 vs STS)", 200, 10, 500, 500);
+  TCanvas* c_PSD2vsSTS_fit = new TCanvas("fit (PSD sub2 vs STS)", "fit (PSD sub2 vs STS)", 200, 10, 500, 500);
   hPSD2vsSTS->Draw("profile");
 
   pol_PSD2vsSTS = new TF1("polfit_PSD2vsSTS", "pol9", 0., 1.);
@@ -882,8 +813,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   cout << "PSD sub2 vs STS max = " << scut_middle[3] << endl;
 
   // PSD sub3 vs STS
-  TCanvas* c_PSD3vsSTS_fit = new TCanvas(
-    "fit (PSD sub3 vs STS)", "fit (PSD sub3 vs STS)", 200, 10, 500, 500);
+  TCanvas* c_PSD3vsSTS_fit = new TCanvas("fit (PSD sub3 vs STS)", "fit (PSD sub3 vs STS)", 200, 10, 500, 500);
   hPSD3vsSTS->Draw("profile");
 
   pol_PSD3vsSTS = new TF1("polfit_PSD3vsSTS", "pol9", 0., 1.);
@@ -1062,8 +992,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   TH1F* htest = new TH1F("htest", "htest", 1000, 0., 1.);
 
   // STS
-  t1_norm_finecleaned->Draw(
-    "StsEvent.fmult>>hSTS_norm(1000, 0., 1.)", "kSTS==1", "goff");
+  t1_norm_finecleaned->Draw("StsEvent.fmult>>hSTS_norm(1000, 0., 1.)", "kSTS==1", "goff");
   TH1F* hSTS_norm  = (TH1F*) t1_norm_finecleaned->GetHistogram();
   TAxis* Xaxis_STS = hSTS_norm->GetXaxis();
 
@@ -1102,11 +1031,9 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   TTree* t_cut_PSD2vsSTS = t1_norm_finecleaned->CopyTree("kPSD2vsSTS == 1");
   TTree* t_cut_PSD3vsSTS = t1_norm_finecleaned->CopyTree("kPSD3vsSTS == 1");
 
-  cout << "stat for methods: STS, PSD, PSD 1/2/3 vs STS: "
-       << t_cut_STS->GetEntriesFast() << ", " << t_cut_PSD->GetEntriesFast()
-       << ", " << t_cut_PSD1vsSTS->GetEntriesFast() << ", "
-       << t_cut_PSD2vsSTS->GetEntriesFast() << ", "
-       << t_cut_PSD3vsSTS->GetEntriesFast() << endl;
+  cout << "stat for methods: STS, PSD, PSD 1/2/3 vs STS: " << t_cut_STS->GetEntriesFast() << ", "
+       << t_cut_PSD->GetEntriesFast() << ", " << t_cut_PSD1vsSTS->GetEntriesFast() << ", "
+       << t_cut_PSD2vsSTS->GetEntriesFast() << ", " << t_cut_PSD3vsSTS->GetEntriesFast() << endl;
 
   nentries_nosel = (Int_t) t1_norm_finecleaned->GetEntriesFast();
   for (int i = 0; i < nentries_nosel; i++) {
@@ -1135,13 +1062,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     bin[0] = Xaxis_STS->FindBin(M_STS_bis);
     bin[1] = Xaxis_STS->GetLast();
 
-    if (kSTS == 0)
-      c_STS = 0.;
+    if (kSTS == 0) c_STS = 0.;
     else {
-      c_STS = 100 * hSTS_norm->Integral(bin[0], bin[1]) / Nentries;
-      c_STS_err =
-        (100 * hSTS_norm->Integral(bin[0], bin[1]) / Nentries)
-        * TMath::Sqrt(1. / hSTS_norm->Integral(bin[0], bin[1]) + 1. / Nentries);
+      c_STS     = 100 * hSTS_norm->Integral(bin[0], bin[1]) / Nentries;
+      c_STS_err = (100 * hSTS_norm->Integral(bin[0], bin[1]) / Nentries)
+                  * TMath::Sqrt(1. / hSTS_norm->Integral(bin[0], bin[1]) + 1. / Nentries);
     }
 
     // PSD
@@ -1149,8 +1074,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     //if (i%10 == 0) cout << "M_STS_bis = " << M_STS_bis << ", E_sub1_bis = " << E_sub1_bis << ", E_sub2_bis = " << E_sub2_bis << ", E_sub3_bis = " << E_sub3_bis << endl;
 
     // exception 35 AGeV 1<->2
-    if (kPSD == 0)
-      c_PSD = 0.;
+    if (kPSD == 0) c_PSD = 0.;
     else {
       X0 = E_sub1_bis;
       Y0 = E_sub2_bis;
@@ -1167,17 +1091,16 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
       cut = "";
       if (tmp1_tmp < 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub2 + " <= (" + alpha_tmp
-              + " * PsdEvent.fedep_" + sPSDsub1 + " + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub2 + " <= (" + alpha_tmp + " * PsdEvent.fedep_" + sPSDsub1 + " + " + cte_tmp
+              + "))";
       if (tmp1_tmp > 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub2 + " > (" + alpha_tmp
-              + " * PsdEvent.fedep_" + sPSDsub1 + " + " + cte_tmp + "))";
+        cut =
+          "(PsdEvent.fedep_" + sPSDsub2 + " > (" + alpha_tmp + " * PsdEvent.fedep_" + sPSDsub1 + " + " + cte_tmp + "))";
       //exception: at 35 agev
       //if (tmp1_tmp>0.) cut = "(PsdEvent.fedep_" + sPSDsub1 + " <= (" + alpha_tmp + " * PsdEvent.fedep_" + sPSDsub2 + " + " + cte_tmp + "))";
       //if (tmp1_tmp<0.) cut = "(PsdEvent.fedep_" + sPSDsub1 + " > (" + alpha_tmp + " * PsdEvent.fedep_" + sPSDsub2 + " + " + cte_tmp + "))";
 
-      if (X0 < cut_middle_PSD)
-        cut_rl = cut_l_PSD;
+      if (X0 < cut_middle_PSD) cut_rl = cut_l_PSD;
       else
         cut_rl = cut_r_PSD;
       cut += cut_rl;
@@ -1194,14 +1117,12 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       //t1_norm_finecleaned->Draw(detinfo +">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD == 1 &&"+cut, "goff");  //
       //hPSD_tmp = (TH1F*) t1_norm_finecleaned->GetHistogram();
 
-      t_cut_PSD->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)",
-                      cut,
+      t_cut_PSD->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", cut,
                       "goff");  //
       hPSD_tmp = (TH1F*) t_cut_PSD->GetHistogram();
 
       c_PSD     = 100 * hPSD_tmp->Integral() / Nentries;
-      c_PSD_err = (100 * hPSD_tmp->Integral() / Nentries)
-                  * TMath::Sqrt(1. / hPSD_tmp->Integral() + 1. / Nentries);
+      c_PSD_err = (100 * hPSD_tmp->Integral() / Nentries) * TMath::Sqrt(1. / hPSD_tmp->Integral() + 1. / Nentries);
     }
     //E_sub1_bis = X0;
 
@@ -1211,8 +1132,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     t1_norm_finecleaned->GetEntry(i);
     //if (i%10 == 0) cout << "M_STS_bis = " << M_STS_bis << ", E_sub1_bis = " << E_sub1_bis << ", E_sub2_bis = " << E_sub2_bis << ", E_sub3_bis = " << E_sub3_bis << endl;
 
-    if (kPSD1vsSTS == 0)
-      c_PSD1vsSTS = 0.;
+    if (kPSD1vsSTS == 0) c_PSD1vsSTS = 0.;
     else {
       X0 = M_STS_bis;
       //cout << "X0 = " << X0 << endl;
@@ -1229,14 +1149,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
       cut = "";
       if (tmp1_tmp > 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub1 + " <= (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub1 + " <= (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
       if (tmp1_tmp < 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub1 + " > (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub1 + " > (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
 
-      if (X0 < cut_middle_PSD1vsSTS)
-        cut_rl = cut_l_PSD1vsSTS;
+      if (X0 < cut_middle_PSD1vsSTS) cut_rl = cut_l_PSD1vsSTS;
       else
         cut_rl = cut_r_PSD1vsSTS;
       cut += cut_rl;
@@ -1251,16 +1168,13 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       //t1_norm_finecleaned->Draw(detinfo +">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD1vsSTS == 1 &&"+cut, "goff");  //
       //hPSDvsSTS_tmp = (TH1F*) t1_norm_finecleaned->GetHistogram();
 
-      t_cut_PSD1vsSTS->Draw(detinfo + ">>" + hname
-                              + "(1000, 0., 1., 1000, 0., 1.)",
-                            cut,
+      t_cut_PSD1vsSTS->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", cut,
                             "goff");  //
       hPSDvsSTS_tmp = (TH1F*) t_cut_PSD1vsSTS->GetHistogram();
 
       c_PSD1vsSTS = 100 * hPSDvsSTS_tmp->Integral() / Nentries;
       c_PSD1vsSTS_err =
-        (100 * hPSDvsSTS_tmp->Integral() / Nentries)
-        * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
+        (100 * hPSDvsSTS_tmp->Integral() / Nentries) * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
     }
     //M_STS_bis = X0;
 
@@ -1268,8 +1182,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     t1_norm_finecleaned->GetEntry(i);
     //if (i%10 == 0) cout << "M_STS_bis = " << M_STS_bis << ", E_sub1_bis = " << E_sub1_bis << ", E_sub2_bis = " << E_sub2_bis << ", E_sub3_bis = " << E_sub3_bis << endl;
 
-    if (kPSD2vsSTS == 0)
-      c_PSD2vsSTS = 0.;
+    if (kPSD2vsSTS == 0) c_PSD2vsSTS = 0.;
     else {
       X0 = M_STS_bis;
       //cout << "X0 = " << X0 << endl;
@@ -1286,14 +1199,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
       cut = "";
       if (tmp1_tmp > 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub2 + " <= (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub2 + " <= (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
       if (tmp1_tmp < 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub2 + " > (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub2 + " > (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
 
-      if (X0 < cut_middle_PSD2vsSTS)
-        cut_rl = cut_l_PSD2vsSTS;
+      if (X0 < cut_middle_PSD2vsSTS) cut_rl = cut_l_PSD2vsSTS;
       else
         cut_rl = cut_r_PSD2vsSTS;
       cut += cut_rl;
@@ -1308,16 +1218,13 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       //t1_norm_finecleaned->Draw(detinfo +">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD2vsSTS == 1 &&"+cut, "goff");  //
       //hPSDvsSTS_tmp = (TH1F*) t1_norm_finecleaned->GetHistogram();
 
-      t_cut_PSD2vsSTS->Draw(detinfo + ">>" + hname
-                              + "(1000, 0., 1., 1000, 0., 1.)",
-                            cut,
+      t_cut_PSD2vsSTS->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", cut,
                             "goff");  //
       hPSDvsSTS_tmp = (TH1F*) t_cut_PSD2vsSTS->GetHistogram();
 
       c_PSD2vsSTS = 100 * hPSDvsSTS_tmp->Integral() / Nentries;
       c_PSD2vsSTS_err =
-        (100 * hPSDvsSTS_tmp->Integral() / Nentries)
-        * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
+        (100 * hPSDvsSTS_tmp->Integral() / Nentries) * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
     }
     //M_STS_bis = X0;
     //E_sub2_bis = Y0;
@@ -1326,8 +1233,7 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     t1_norm_finecleaned->GetEntry(i);
     //if (i%10 == 0) cout << "M_STS_bis = " << M_STS_bis << ", E_sub1_bis = " << E_sub1_bis << ", E_sub2_bis = " << E_sub2_bis << ", E_sub3_bis = " << E_sub3_bis << endl;
 
-    if (kPSD3vsSTS == 0)
-      c_PSD3vsSTS = 0.;
+    if (kPSD3vsSTS == 0) c_PSD3vsSTS = 0.;
     else {
       X0 = M_STS_bis;
       //cout << "X0 = " << X0 << endl;
@@ -1344,14 +1250,11 @@ void centrality_evtbyevt_calculation_STS_PSD() {
 
       cut = "";
       if (tmp1_tmp > 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub3 + " <= (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub3 + " <= (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
       if (tmp1_tmp < 0.)
-        cut = "(PsdEvent.fedep_" + sPSDsub3 + " > (" + alpha_tmp
-              + " * StsEvent.fmult + " + cte_tmp + "))";
+        cut = "(PsdEvent.fedep_" + sPSDsub3 + " > (" + alpha_tmp + " * StsEvent.fmult + " + cte_tmp + "))";
 
-      if (X0 < cut_middle_PSD3vsSTS)
-        cut_rl = cut_l_PSD3vsSTS;
+      if (X0 < cut_middle_PSD3vsSTS) cut_rl = cut_l_PSD3vsSTS;
       else
         cut_rl = cut_r_PSD3vsSTS;
       cut += cut_rl;
@@ -1366,16 +1269,13 @@ void centrality_evtbyevt_calculation_STS_PSD() {
       //t1_norm_finecleaned->Draw(detinfo +">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", "kPSD3vsSTS == 1 &&"+cut, "goff");  //
       //hPSDvsSTS_tmp = (TH1F*) t1_norm_finecleaned->GetHistogram();
 
-      t_cut_PSD3vsSTS->Draw(detinfo + ">>" + hname
-                              + "(1000, 0., 1., 1000, 0., 1.)",
-                            cut,
+      t_cut_PSD3vsSTS->Draw(detinfo + ">>" + hname + "(1000, 0., 1., 1000, 0., 1.)", cut,
                             "goff");  //
       hPSDvsSTS_tmp = (TH1F*) t_cut_PSD3vsSTS->GetHistogram();
 
       c_PSD3vsSTS = 100 * hPSDvsSTS_tmp->Integral() / Nentries;
       c_PSD3vsSTS_err =
-        (100 * hPSDvsSTS_tmp->Integral() / Nentries)
-        * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
+        (100 * hPSDvsSTS_tmp->Integral() / Nentries) * TMath::Sqrt(1. / hPSDvsSTS_tmp->Integral() + 1. / Nentries);
     }
     //M_STS_bis = X0;
     //E_sub3_bis = Y0;
@@ -1384,12 +1284,9 @@ void centrality_evtbyevt_calculation_STS_PSD() {
     t1_norm_finecleaned->GetEntry(i);
     //if (i%10 == 0) cout << "M_STS_bis = " << M_STS_bis << ", E_sub1_bis = " << E_sub1_bis << ", E_sub2_bis = " << E_sub2_bis << ", E_sub3_bis = " << E_sub3_bis << endl;
     if (i % 100 == 0)
-      cout << "c_STS = " << c_STS << " +/- " << c_STS_err
-           << ", c_PSD = " << c_PSD << " +/- " << c_PSD_err
-           << ", c_PSD1vsSTS = " << c_PSD1vsSTS << " +/- " << c_PSD1vsSTS_err
-           << ", c_PSD2vsSTS = " << c_PSD2vsSTS << " +/- " << c_PSD2vsSTS_err
-           << ", c_PSD3vsSTS = " << c_PSD3vsSTS << " +/- " << c_PSD3vsSTS_err
-           << endl;
+      cout << "c_STS = " << c_STS << " +/- " << c_STS_err << ", c_PSD = " << c_PSD << " +/- " << c_PSD_err
+           << ", c_PSD1vsSTS = " << c_PSD1vsSTS << " +/- " << c_PSD1vsSTS_err << ", c_PSD2vsSTS = " << c_PSD2vsSTS
+           << " +/- " << c_PSD2vsSTS_err << ", c_PSD3vsSTS = " << c_PSD3vsSTS << " +/- " << c_PSD3vsSTS_err << endl;
     //if (i%10 == 0)
     //cout << "===========" << endl;
     //cout << "===========" << endl;
@@ -1400,12 +1297,8 @@ void centrality_evtbyevt_calculation_STS_PSD() {
   //t1_centr->Write();
 }
 
-void cutCalc(int iloop,
-             double X0in,
-             double Y0in,
-             TF1* polin,
-             double& tmp1_tmp,
-             double& tmp2_tmp) {
+void cutCalc(int iloop, double X0in, double Y0in, TF1* polin, double& tmp1_tmp, double& tmp2_tmp)
+{
   bool verbose = 0;
 
   double X0 = X0in;
@@ -1449,9 +1342,8 @@ void cutCalc(int iloop,
   hdistance->Delete();
   hname = "hdistance_zoom";
   hname += iloop;
-  hdistance = new TH1F(
-    hname, "distance", 1000, subrange1, subrange2);  // play on Nbin>10000 ??
-  Xaxis = hdistance->GetXaxis();
+  hdistance = new TH1F(hname, "distance", 1000, subrange1, subrange2);  // play on Nbin>10000 ??
+  Xaxis     = hdistance->GetXaxis();
 
   for (int j = Xaxis->GetFirst(); j <= Xaxis->GetLast(); j++) {
     dist = TMath::Sqrt(TMath::Power(polin->Eval(Xaxis->GetBinCenter(j)) - Y0, 2)
@@ -1471,8 +1363,7 @@ void cutCalc(int iloop,
   if (verbose == 1) {
     h2D->Fill(X0, Y0);
     h2D->SetMarkerStyle(20);
-    if (iloop == 0)
-      h2D->Draw();
+    if (iloop == 0) h2D->Draw();
     else
       h2D->Draw("same");
     if (iloop == 0) polin->Draw("same");

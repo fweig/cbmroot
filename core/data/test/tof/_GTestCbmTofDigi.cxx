@@ -1,11 +1,11 @@
 #include "CbmTofDigi.h"
 
+#include "compareTofDigi.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "compareTofDigi.h"
-
-TEST(_GTestCbmTofDigi, CheckDefaultConstructor) {
+TEST(_GTestCbmTofDigi, CheckDefaultConstructor)
+{
   // Create object
   CbmTofDigi test;
 
@@ -16,7 +16,8 @@ TEST(_GTestCbmTofDigi, CheckDefaultConstructor) {
   compareTofDigiDataMembers(*test1, 0, ECbmModuleId::kTof, 0., -1.);
 }
 
-TEST(_GTestCbmTofDigi, CheckStandardConstructor) {
+TEST(_GTestCbmTofDigi, CheckStandardConstructor)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -27,7 +28,8 @@ TEST(_GTestCbmTofDigi, CheckStandardConstructor) {
   compareTofDigiDataMembers(*test1, 111, ECbmModuleId::kTof, 987654321., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckCopyConstructor) {
+TEST(_GTestCbmTofDigi, CheckCopyConstructor)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -44,7 +46,8 @@ TEST(_GTestCbmTofDigi, CheckCopyConstructor) {
   compareTofDigiDataMembers(test, 111, ECbmModuleId::kTof, 987654321., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckAssignmentOperator) {
+TEST(_GTestCbmTofDigi, CheckAssignmentOperator)
+{
 
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
@@ -63,7 +66,8 @@ TEST(_GTestCbmTofDigi, CheckAssignmentOperator) {
   compareTofDigiDataMembers(test, 111, ECbmModuleId::kTof, 987654321., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckMoveConstructor) {
+TEST(_GTestCbmTofDigi, CheckMoveConstructor)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -79,7 +83,8 @@ TEST(_GTestCbmTofDigi, CheckMoveConstructor) {
   compareTofDigiDataMembers(test, 111, ECbmModuleId::kTof, 987654321., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckAssignmentMoveConstructor) {
+TEST(_GTestCbmTofDigi, CheckAssignmentMoveConstructor)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -97,19 +102,18 @@ TEST(_GTestCbmTofDigi, CheckAssignmentMoveConstructor) {
 }
 
 
-TEST(_GTestCbmTofDigi, CheckToString) {
+TEST(_GTestCbmTofDigi, CheckToString)
+{
   // Create object
   CbmTofDigi test(12341234, 987654321., 23.);
 
-  compareTofDigiDataMembers(
-    test, 12341234, ECbmModuleId::kTof, 987654321., 23.);
+  compareTofDigiDataMembers(test, 12341234, ECbmModuleId::kTof, 987654321., 23.);
 
-  EXPECT_STREQ(
-    "CbmTofDigi: address = 0x00BC4FF2 time = 987654321.000000 tot = 23.000000",
-    test.ToString().c_str());
+  EXPECT_STREQ("CbmTofDigi: address = 0x00BC4FF2 time = 987654321.000000 tot = 23.000000", test.ToString().c_str());
 }
 
-TEST(_GTestCbmTofDigi, CheckGetClassName) {
+TEST(_GTestCbmTofDigi, CheckGetClassName)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -118,7 +122,8 @@ TEST(_GTestCbmTofDigi, CheckGetClassName) {
   EXPECT_STREQ("CbmTofDigi", test.GetClassName());
 }
 
-TEST(_GTestCbmTofDigi, CheckSetTime) {
+TEST(_GTestCbmTofDigi, CheckSetTime)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -129,7 +134,8 @@ TEST(_GTestCbmTofDigi, CheckSetTime) {
   compareTofDigiDataMembers(test, 111, ECbmModuleId::kTof, 12345678., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckSetAddress) {
+TEST(_GTestCbmTofDigi, CheckSetAddress)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 
@@ -137,11 +143,11 @@ TEST(_GTestCbmTofDigi, CheckSetAddress) {
 
   test.SetAddress(12341234);
 
-  compareTofDigiDataMembers(
-    test, 12341234, ECbmModuleId::kTof, 987654321., 23.);
+  compareTofDigiDataMembers(test, 12341234, ECbmModuleId::kTof, 987654321., 23.);
 }
 
-TEST(_GTestCbmTofDigi, CheckSetTot) {
+TEST(_GTestCbmTofDigi, CheckSetTot)
+{
   // Create object
   CbmTofDigi test(111, 987654321., 23.);
 

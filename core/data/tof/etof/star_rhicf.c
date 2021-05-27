@@ -49,13 +49,13 @@ struct bankHeader {
 
 static int receiver = LOCALHOST;
 
-static int b_write(int desc, char* dta, int bytes) {
+static int b_write(int desc, char* dta, int bytes)
+{
   errno = 0;
   do {
     int ret = write(desc, dta, bytes);
 
-    if (ret == 0)
-      break;  //EOF
+    if (ret == 0) break;  //EOF
     else if (ret < 0)
       return -1;
 
@@ -74,7 +74,8 @@ static int b_write(int desc, char* dta, int bytes) {
 
 	bytes seems to be ~2664
 */
-int star_rhicf_write(unsigned int trg_word, void* dta, int bytes) {
+int star_rhicf_write(unsigned int trg_word, void* dta, int bytes)
+{
   static int desc;
   static int evt;
   struct bankHeader bh;
@@ -97,9 +98,7 @@ int star_rhicf_write(unsigned int trg_word, void* dta, int bytes) {
     errno = 0;
     ret   = connect(desc, (struct sockaddr*) &s_addr, sizeof(s_addr));
     if (ret < 0) {
-      fprintf(stderr,
-              "star_rhicf_write: connect to server failed [%s]\n",
-              strerror(errno));
+      fprintf(stderr, "star_rhicf_write: connect to server failed [%s]\n", strerror(errno));
       close(desc);
       desc = -1;
       return -1;
@@ -110,8 +109,7 @@ int star_rhicf_write(unsigned int trg_word, void* dta, int bytes) {
 
     optval = 64 * 1024 * 1024;
     for (;;) {
-      ret = setsockopt(
-        desc, SOL_SOCKET, SO_SNDBUF, (char*) &optval, sizeof(optval));
+      ret = setsockopt(desc, SOL_SOCKET, SO_SNDBUF, (char*) &optval, sizeof(optval));
       if (ret >= 0) break;
       optval /= 2;
     }
@@ -122,10 +120,7 @@ int star_rhicf_write(unsigned int trg_word, void* dta, int bytes) {
     int size = sizeof(optval);
     ret      = getsockopt(desc, SOL_SOCKET, SO_SNDBUF, (char*) &optval, &size);
 
-    fprintf(stderr,
-            "star_rhicf_write: connected to 0x%08X (SNDBUF is %d)\n",
-            receiver,
-            optval);
+    fprintf(stderr, "star_rhicf_write: connected to 0x%08X (SNDBUF is %d)\n", receiver, optval);
 
     evt = 0;  //restart evt counter
   }
@@ -169,7 +164,8 @@ err_ret:;
 }
 
 #ifdef MAIN
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
   char dta[5 * 1024];
   int evts = 10;
   int i;

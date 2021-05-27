@@ -6,22 +6,12 @@
 
 #include "compareHit.h"
 
-void compareStripHitDataMembers(CbmStripHit& test,
-                                HitType type,
-                                Double_t z,
-                                Double_t dz,
-                                Int_t refid,
-                                Int_t address,
-                                CbmMatch* match,
-                                Double_t time,
-                                Double_t errortime,
-                                Double_t u,
-                                Double_t du,
-                                Double_t phi,
-                                Double_t dphi) {
+void compareStripHitDataMembers(CbmStripHit& test, HitType type, Double_t z, Double_t dz, Int_t refid, Int_t address,
+                                CbmMatch* match, Double_t time, Double_t errortime, Double_t u, Double_t du,
+                                Double_t phi, Double_t dphi)
+{
 
-  compareHitDataMembers(
-    test, type, z, dz, refid, address, match, time, errortime);
+  compareHitDataMembers(test, type, z, dz, refid, address, match, time, errortime);
 
   Float_t retValFloat {-111.};
 

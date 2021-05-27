@@ -8,18 +8,18 @@
 #ifndef CBMDAQ_H
 #define CBMDAQ_H 1
 
+#include "CbmDefs.h"         // for ECbmModuleId
+#include "CbmMCEventList.h"  // for CbmMCEventList
+
+#include <FairTask.h>  // for FairTask, InitStatus
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, kFALSE, ULong64_t
 #include <TStopwatch.h>  // for TStopwatch
 
-#include <FairTask.h>  // for FairTask, InitStatus
-
 #include <map>      // for map
 #include <string>   // for string
 #include <utility>  // for pair
-
-#include "CbmDefs.h"         // for ECbmModuleId
-#include "CbmMCEventList.h"  // for CbmMCEventList
 class CbmDigi;
 class CbmDigitizeBase;
 class CbmTimeSlice;
@@ -126,13 +126,12 @@ private:
   Double_t fTimeSliceFirst;   ///< Start time of first time slice
   Double_t fTimeSliceLast;    ///< Stop time of last time slice
 
-  TStopwatch fTimer;                             //! Stop watch
-  std::map<ECbmModuleId, TClonesArray*> fDigis;  //! Output arrays (digis)
-  std::map<ECbmModuleId, CbmDigitizeBase*>
-    fDigitizers;                   //!  Array of registered digitizers
-  CbmTimeSlice* fTimeSlice;        //! Current time slice
-  CbmMCEventList fEventList;       //!  MC event list (all)
-  CbmMCEventList* fEventsCurrent;  //! MC events for current time slice
+  TStopwatch fTimer;                                     //! Stop watch
+  std::map<ECbmModuleId, TClonesArray*> fDigis;          //! Output arrays (digis)
+  std::map<ECbmModuleId, CbmDigitizeBase*> fDigitizers;  //!  Array of registered digitizers
+  CbmTimeSlice* fTimeSlice;                              //! Current time slice
+  CbmMCEventList fEventList;                             //!  MC event list (all)
+  CbmMCEventList* fEventsCurrent;                        //! MC events for current time slice
 
 
   /** First and last event in current time slice for each input **/

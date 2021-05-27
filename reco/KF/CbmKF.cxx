@@ -1,21 +1,19 @@
 #include "CbmKF.h"
 
+#include "CbmDefs.h"
+#include "CbmDigiManager.h"
 #include "CbmKFFieldMath.h"
 #include "CbmKFHit.h"
 #include "CbmKFMath.h"
-
-#include "CbmDefs.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
+#include "CbmStsSetup.h"
+#include "CbmStsStation.h"
+
 #include "FairBaseParSet.h"
 #include "FairField.h"
 #include "FairGeoNode.h"
 #include "FairRunAna.h"
-
-#include "CbmStsSetup.h"
-#include "CbmStsStation.h"
-
-#include "CbmDigiManager.h"
 #include "FairRuntimeDb.h"
 
 #include "TGeoManager.h"
@@ -28,11 +26,12 @@
 #include "TObjArray.h"
 #include "TString.h"
 
-#include <cmath>
 #include <iostream>
 #include <list>
 #include <map>
 #include <vector>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -75,13 +74,15 @@ CbmKF::CbmKF(const char* name, Int_t iVerbose)
 
   fMagneticField(0)
   , fMethod(1)
-  , fMaterialID2IndexMap() {
+  , fMaterialID2IndexMap()
+{
   if (!fInstance) fInstance = this;
 }
 
 CbmKF::~CbmKF() { fInstance = 0; }
 
-void CbmKF::SetParContainers() {
+void CbmKF::SetParContainers()
+{
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
   rtdb->getContainer("FairBaseParSet");
@@ -90,10 +91,9 @@ void CbmKF::SetParContainers() {
 
 InitStatus CbmKF::ReInit() { return Init(); }
 
-InitStatus CbmKF::Init() {
-  if (
-    !CbmStsSetup::Instance()
-       ->IsInit())  //TODO remove initialisation when the problem will be resolved globaly
+InitStatus CbmKF::Init()
+{
+  if (!CbmStsSetup::Instance()->IsInit())  //TODO remove initialisation when the problem will be resolved globaly
     CbmStsSetup::Instance()->Init();
 
   fMagneticField = 0;
@@ -153,13 +153,11 @@ InitStatus CbmKF::Init() {
 
         tube.ID = 1101 + ist;
         //   tube.F = 1.;
-        tube.z         = mvdStationPar->GetZPosition(ist);
-        tube.dz        = mvdStationPar->GetThickness(ist);
-        tube.RadLength = 100 * tube.dz / mvdStationPar->GetRadLength(ist);
-        tube.r         = std::min(mvdStationPar->GetBeamHeight(ist),
-                          mvdStationPar->GetBeamWidth(ist));
-        tube.R =
-          std::max(mvdStationPar->GetHeight(ist), mvdStationPar->GetWidth(ist));
+        tube.z          = mvdStationPar->GetZPosition(ist);
+        tube.dz         = mvdStationPar->GetThickness(ist);
+        tube.RadLength  = 100 * tube.dz / mvdStationPar->GetRadLength(ist);
+        tube.r          = std::min(mvdStationPar->GetBeamHeight(ist), mvdStationPar->GetBeamWidth(ist));
+        tube.R          = std::max(mvdStationPar->GetHeight(ist), mvdStationPar->GetWidth(ist));
         tube.rr         = tube.r * tube.r;
         tube.RR         = tube.R * tube.R;
         tube.ZThickness = tube.dz;
@@ -169,10 +167,9 @@ InitStatus CbmKF::Init() {
         MvdStationIDMap.insert(pair<Int_t, Int_t>(tube.ID, ist));
 
         if (fVerbose)
-          cout << " Mvd material ( id, z, dz, r, R, RadL, dz/RadL )= ( "
-               << tube.ID << ", " << tube.z << ", " << tube.dz << ", " << tube.r
-               << ", " << tube.R << ", " << tube.RadLength << ", "
-               << tube.dz / tube.RadLength << " )" << endl;
+          cout << " Mvd material ( id, z, dz, r, R, RadL, dz/RadL )= ( " << tube.ID << ", " << tube.z << ", " << tube.dz
+               << ", " << tube.r << ", " << tube.R << ", " << tube.RadLength << ", " << tube.dz / tube.RadLength << " )"
+               << endl;
       }
     }
   }
@@ -191,14 +188,13 @@ InitStatus CbmKF::Init() {
 
     CbmKFTube tube;
 
-    tube.ID        = 1000 + ist;
-    tube.F         = 1.;
-    tube.z         = station->GetZ();
-    tube.dz        = station->GetSensorD();
-    tube.RadLength = station->GetRadLength();
-    tube.r         = 0;
-    tube.R = station->GetYmax() < station->GetXmax() ? station->GetXmax()
-                                                     : station->GetYmax();
+    tube.ID         = 1000 + ist;
+    tube.F          = 1.;
+    tube.z          = station->GetZ();
+    tube.dz         = station->GetSensorD();
+    tube.RadLength  = station->GetRadLength();
+    tube.r          = 0;
+    tube.R          = station->GetYmax() < station->GetXmax() ? station->GetXmax() : station->GetYmax();
     tube.rr         = tube.r * tube.r;
     tube.RR         = tube.R * tube.R;
     tube.ZThickness = tube.dz;
@@ -208,10 +204,9 @@ InitStatus CbmKF::Init() {
     StsStationIDMap.insert(pair<Int_t, Int_t>(tube.ID, ist));
 
     if (fVerbose)
-      cout << " Sts material ( id, z, dz, r, R, RadL, dz/RadL )= ( " << tube.ID
-           << ", " << tube.z << ", " << tube.dz << ", " << tube.r << ", "
-           << tube.R << ", " << tube.RadLength << ", "
-           << tube.dz / tube.RadLength << " )" << endl;
+      cout << " Sts material ( id, z, dz, r, R, RadL, dz/RadL )= ( " << tube.ID << ", " << tube.z << ", " << tube.dz
+           << ", " << tube.r << ", " << tube.R << ", " << tube.RadLength << ", " << tube.dz / tube.RadLength << " )"
+           << endl;
   }
 
   // FU 05.03.2020
@@ -237,20 +232,15 @@ InitStatus CbmKF::Init() {
 
 
   {
-    for (vector<CbmKFTube>::iterator i = vTargets.begin(); i != vTargets.end();
-         ++i) {
+    for (vector<CbmKFTube>::iterator i = vTargets.begin(); i != vTargets.end(); ++i) {
       vMaterial.push_back(&*i);
     }
 
-    for (vector<CbmKFTube>::iterator i = vMvdMaterial.begin();
-         i != vMvdMaterial.end();
-         ++i) {
+    for (vector<CbmKFTube>::iterator i = vMvdMaterial.begin(); i != vMvdMaterial.end(); ++i) {
       vMaterial.push_back(&*i);
     }
 
-    for (vector<CbmKFTube>::iterator i = vStsMaterial.begin();
-         i != vStsMaterial.end();
-         ++i) {
+    for (vector<CbmKFTube>::iterator i = vStsMaterial.begin(); i != vStsMaterial.end(); ++i) {
       vMaterial.push_back(&*i);
     }
     sort(vMaterial.begin(), vMaterial.end(), CbmKFMaterial::comparePDown);
@@ -261,7 +251,8 @@ InitStatus CbmKF::Init() {
   return kSUCCESS;
 }
 
-void CbmKF::GetTargetInfo() {
+void CbmKF::GetTargetInfo()
+{
   // Loop over all nodes till a node with name "target" is found
   // Extract the required infrmation from the node and store it in the
   // proper structure
@@ -291,7 +282,8 @@ void CbmKF::GetTargetInfo() {
       target.r  = static_cast<TGeoTube*>(shape)->GetRmin();
       target.R  = static_cast<TGeoTube*>(shape)->GetRmax();
       target.dz = 2. * static_cast<TGeoTube*>(shape)->GetDz();
-    } else {
+    }
+    else {
       LOG(fatal) << "Only a target of a tube shape is supported";
     }
 
@@ -307,12 +299,14 @@ void CbmKF::GetTargetInfo() {
 
     vTargets.push_back(target);
     LOG(info) << "Target info: " << target.KFInfo();
-  } else {
+  }
+  else {
     LOG(fatal) << "Could not find the target.";
   }
 }
 
-void CbmKF::loop_over_nodes(TObjArray* nodes) {
+void CbmKF::loop_over_nodes(TObjArray* nodes)
+{
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node   = static_cast<TGeoNode*>(nodes->At(iNode));
     TString nodeName = node->GetName();
@@ -325,14 +319,16 @@ void CbmKF::loop_over_nodes(TObjArray* nodes) {
   }
 }
 
-Int_t CbmKF::GetMaterialIndex(Int_t uid) {
+Int_t CbmKF::GetMaterialIndex(Int_t uid)
+{
   map<Int_t, Int_t>::iterator i = fMaterialID2IndexMap.find(uid);
   if (i != fMaterialID2IndexMap.end()) { return i->second; }
   return -1;
 }
 
 
-Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
+Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node)
+{
 
   if (!node) return 1;
 
@@ -351,11 +347,11 @@ Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
 
   tube.Fe       = 0.02145;
   TString Mname = material->GetName();
-  if (Mname == "MUCHWolfram") {
-    tube.Fe = 0.009029;
-  } else if (Mname == "MUCHiron") {
+  if (Mname == "MUCHWolfram") { tube.Fe = 0.009029; }
+  else if (Mname == "MUCHiron") {
     tube.Fe = 0.02219;
-  } else if (Mname == "carbon") {
+  }
+  else if (Mname == "carbon") {
     tube.Fe = 0.08043;
   }
 
@@ -374,16 +370,19 @@ Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
     tube.r  = P->At(0);
     tube.R  = P->At(1);
     tube.dz = 2. * P->At(2);
-  } else if (Sname == "TRAP") {
+  }
+  else if (Sname == "TRAP") {
     tube.r  = 0;
     tube.R  = 1000;
     tube.dz = 2. * P->At(0);
-  } else if (Sname == "SPHE") {
+  }
+  else if (Sname == "SPHE") {
     tube.r = 0;
     tube.R = 1000;
     tube.z += 0.5 * (P->At(0) + P->At(1));  // inner & outer radius
     tube.dz = (P->At(1) - P->At(0));
-  } else if (Sname == "PCON") {
+  }
+  else if (Sname == "PCON") {
     Int_t Nz = (NP - 3) / 3;
     double Z = -100000, R = -100000, z = 100000, r = 100000;
     for (Int_t i = 0; i < Nz; i++) {
@@ -400,7 +399,8 @@ Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
     tube.R = R;
     tube.z += (z + Z) / 2.;
     tube.dz = (Z - z);
-  } else if (Sname == "PGON") {
+  }
+  else if (Sname == "PGON") {
     Int_t Nz = (NP - 4) / 3;
     double Z = -100000, R = -100000, z = 100000, r = 100000;
     for (Int_t i = 0; i < Nz; i++) {
@@ -416,14 +416,16 @@ Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
     tube.R = R;
     tube.z += (z + Z) / 2.;
     tube.dz = (Z - z);
-  } else if (Sname == "BOX ") {
+  }
+  else if (Sname == "BOX ") {
     double dx = 2 * P->At(0);
     double dy = 2 * P->At(1);
     double dz = 2 * P->At(2);
     tube.r    = 0;
     tube.R    = TMath::Sqrt(dx * dx + dy * dy);
     tube.dz   = dz;
-  } else {
+  }
+  else {
     cout << " -E- unknown shape : " << Sname << endl;
     cout << " -E- It does not make sense to go on" << endl;
     cout << " -E- Stop execution here" << endl;
@@ -437,7 +439,8 @@ Int_t CbmKF::ReadTube(CbmKFTube& tube, FairGeoNode* node) {
 }
 
 
-CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
+CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node)
+{
 
   if (!node) return 0;
 
@@ -473,22 +476,16 @@ CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
   CbmKFMaterial* ret = 0;
 
   if (Sname == "TUBS" || Sname == "TUBE") {
-    CbmKFTube tube(
-      ID, x0, y0, z0, 2. * P->At(2), P->At(0), P->At(1), RadLength);
+    CbmKFTube tube(ID, x0, y0, z0, 2. * P->At(2), P->At(0), P->At(1), RadLength);
     vPassiveTube.push_back(tube);
     ret = &(vPassiveTube.back());
-  } else if (Sname == "SPHE") {
-    CbmKFTube tube(ID,
-                   x0,
-                   y0,
-                   z0 + 0.5 * (P->At(0) + P->At(1)),
-                   (P->At(1) - P->At(0)),
-                   0,
-                   1000,
-                   RadLength);
+  }
+  else if (Sname == "SPHE") {
+    CbmKFTube tube(ID, x0, y0, z0 + 0.5 * (P->At(0) + P->At(1)), (P->At(1) - P->At(0)), 0, 1000, RadLength);
     vPassiveTube.push_back(tube);
     ret = &(vPassiveTube.back());
-  } else if (Sname == "PCON") {
+  }
+  else if (Sname == "PCON") {
     Int_t Nz = (NP - 3) / 3;
     double Z = -100000, R = -100000, z = 100000, r = 100000;
     for (Int_t i = 0; i < Nz; i++) {
@@ -503,7 +500,8 @@ CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
     CbmKFTube tube(ID, x0, y0, z0 + 0.5 * (z + Z), (Z - z), r, R, RadLength);
     vPassiveTube.push_back(tube);
     ret = &(vPassiveTube.back());
-  } else if (Sname == "PGON") {
+  }
+  else if (Sname == "PGON") {
     Int_t Nz = (NP - 4) / 3;
     double Z = -100000, R = -100000, z = 100000, r = 100000;
     for (Int_t i = 0; i < Nz; i++) {
@@ -518,12 +516,13 @@ CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
     CbmKFTube tube(ID, x0, y0, z0 + 0.5 * (z + Z), (Z - z), r, R, RadLength);
     vPassiveTube.push_back(tube);
     ret = &(vPassiveTube.back());
-  } else if (Sname == "BOX ") {
-    CbmKFBox box(
-      ID, x0, y0, z0, 2 * P->At(0), 2 * P->At(1), 2 * P->At(2), RadLength);
+  }
+  else if (Sname == "BOX ") {
+    CbmKFBox box(ID, x0, y0, z0, 2 * P->At(0), 2 * P->At(1), 2 * P->At(2), RadLength);
     vPassiveBox.push_back(box);
     ret = &(vPassiveBox.back());
-  } else if (Sname == "TRAP") {
+  }
+  else if (Sname == "TRAP") {
     int np             = node->getNumPoints();
     FairGeoVector vMin = *node->getPoint(0), vMax = vMin;
     for (int i = 0; i < np; i++) {
@@ -537,11 +536,11 @@ CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
     v0 *= .5 / 10.;
     FairGeoVector dv = vMax - vMin;
     dv /= 10.;
-    CbmKFBox box(
-      ID, x0 + v0(0), y0 + v0(1), z0 + v0(2), dv(0), dv(1), dv(2), RadLength);
+    CbmKFBox box(ID, x0 + v0(0), y0 + v0(1), z0 + v0(2), dv(0), dv(1), dv(2), RadLength);
     vPassiveBox.push_back(box);
     ret = &(vPassiveBox.back());
-  } else {
+  }
+  else {
     cout << " -E- unknown shape : " << Sname << endl;
     cout << " -E- It does not make sense to go on" << endl;
     cout << " -E- Stop execution here" << endl;
@@ -551,7 +550,8 @@ CbmKFMaterial* CbmKF::ReadPassive(FairGeoNode* node) {
 }
 
 
-Int_t CbmKF::Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0) {
+Int_t CbmKF::Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0)
+{
   Bool_t err = 0;
   if (fabs(T[5] - z_out) < 1.e-5) return 0;
 
@@ -560,16 +560,14 @@ Int_t CbmKF::Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0) {
     return 0;
   }
   Double_t zz = z_out;
-  if (z_out < 300. && 300 <= T[5])
-    CbmKFFieldMath::ExtrapolateLine(T, C, T, C, 300.);
+  if (z_out < 300. && 300 <= T[5]) CbmKFFieldMath::ExtrapolateLine(T, C, T, C, 300.);
 
   if (T[5] < 300. && 300. < z_out) { zz = 300.; }
   Bool_t repeat = 1;
   while (!err && repeat) {
     const Double_t max_step = 5.;
     Double_t zzz;
-    if (fabs(T[5] - zz) > max_step)
-      zzz = T[5] + ((zz > T[5]) ? max_step : -max_step);
+    if (fabs(T[5] - zz) > max_step) zzz = T[5] + ((zz > T[5]) ? max_step : -max_step);
     else {
       zzz    = zz;
       repeat = 0;
@@ -580,15 +578,11 @@ Int_t CbmKF::Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0) {
         break;
       }
       case 1: {
-        err = err
-              || CbmKFFieldMath::ExtrapolateALight(
-                T, C, T, C, zzz, QP0, fMagneticField);
+        err = err || CbmKFFieldMath::ExtrapolateALight(T, C, T, C, zzz, QP0, fMagneticField);
         break;
       }
       case 2: {
-        err = err
-              || CbmKFFieldMath::ExtrapolateRK4(
-                T, C, T, C, zzz, QP0, fMagneticField);
+        err = err || CbmKFFieldMath::ExtrapolateRK4(T, C, T, C, zzz, QP0, fMagneticField);
         break;
       }
         /*
@@ -619,10 +613,8 @@ Int_t CbmKF::Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0) {
   return err;
 }
 
-Int_t CbmKF::PassMaterial(CbmKFTrackInterface& track,
-                          Double_t& QP0,
-                          Int_t ifst,
-                          Int_t ilst) {
+Int_t CbmKF::PassMaterial(CbmKFTrackInterface& track, Double_t& QP0, Int_t ifst, Int_t ilst)
+{
   Bool_t downstream = (ilst > ifst);
   Bool_t err        = 0;
   Int_t iend        = downstream ? ilst + 1 : ilst - 1;
@@ -632,10 +624,8 @@ Int_t CbmKF::PassMaterial(CbmKFTrackInterface& track,
   return err;
 }
 
-Int_t CbmKF::PassMaterialBetween(CbmKFTrackInterface& track,
-                                 Double_t& QP0,
-                                 Int_t ifst,
-                                 Int_t ilst) {
+Int_t CbmKF::PassMaterialBetween(CbmKFTrackInterface& track, Double_t& QP0, Int_t ifst, Int_t ilst)
+{
   Bool_t downstream = (ilst > ifst);
   Bool_t err        = 0;
   Int_t istart      = downstream ? ifst + 1 : ifst - 1;
@@ -645,10 +635,7 @@ Int_t CbmKF::PassMaterialBetween(CbmKFTrackInterface& track,
   return err;
 }
 
-Int_t CbmKF::PassMaterialBetween(CbmKFTrackInterface& track,
-                                 Double_t& QP0,
-                                 CbmKFHit* fst,
-                                 CbmKFHit* lst) {
-  return PassMaterialBetween(
-    track, QP0, fst->MaterialIndex, lst->MaterialIndex);
+Int_t CbmKF::PassMaterialBetween(CbmKFTrackInterface& track, Double_t& QP0, CbmKFHit* fst, CbmKFHit* lst)
+{
+  return PassMaterialBetween(track, QP0, fst->MaterialIndex, lst->MaterialIndex);
 }

@@ -10,12 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorDataRates(TString inFile           = "",
-                      TString sHostname        = "localhost",
-                      Int_t iServerHttpPort    = 8080,
-                      Int_t iServerRefreshRate = 100,
-                      UInt_t uRunId            = 0,
-                      UInt_t nrEvents          = 0) {
+void MonitorDataRates(TString inFile = "", TString sHostname = "localhost", Int_t iServerHttpPort = 8080,
+                      Int_t iServerRefreshRate = 100, UInt_t uRunId = 0, UInt_t nrEvents = 0)
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -50,8 +47,7 @@ void MonitorDataRates(TString inFile           = "",
 
   monitor->SetIgnoreOverlapMs();
   monitor->SetHistoryHistoSize(1800);
-  if (0 < uRunId)
-    monitor->SetHistoFilename(Form("data/HistosDataRates_%03u.root", uRunId));
+  if (0 < uRunId) monitor->SetHistoFilename(Form("data/HistosDataRates_%03u.root", uRunId));
 
   monitor->AddEqIdChannelNumber(0x193d, 18 * 128);  // STS 0
   monitor->AddEqIdChannelNumber(0x5c0b, 14 * 128);  // STS 1
@@ -68,9 +64,7 @@ void MonitorDataRates(TString inFile           = "",
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -107,25 +101,23 @@ void MonitorDataRates(TString inFile           = "",
   std::cout << ">>> MonitorDataRates: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> MonitorDataRates: Macro finished successfully."
-            << std::endl;
+  std::cout << ">>> MonitorDataRates: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorDataRates: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorDataRates: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorDataRates: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

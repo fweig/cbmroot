@@ -16,6 +16,8 @@
 #include <CbmTofAddress.h>  // for accessors
 #include <CbmTofHit.h>      // for accessors
 
+#include <FairParGenericSet.h>  // for FairParGenericSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TArrayD.h>     // for TArrayD
@@ -25,17 +27,14 @@
 #include <map>     // for map
 #include <vector>  // for vector
 
-#include <FairParGenericSet.h>  // for FairParGenericSet
-
 class FairParamList;
 class TH1;
 
 class CbmTofDigiBdfPar : public FairParGenericSet {
 public:
-  CbmTofDigiBdfPar(
-    const char* name    = "CbmTofDigiBdfPar",
-    const char* title   = "BDF Digitization parameters for the TOF detector",
-    const char* context = "TestDefaultContext");
+  CbmTofDigiBdfPar(const char* name    = "CbmTofDigiBdfPar",
+                   const char* title   = "BDF Digitization parameters for the TOF detector",
+                   const char* context = "TestDefaultContext");
   ~CbmTofDigiBdfPar(void);
   void clear(void);
   void putParams(FairParamList*);
@@ -70,9 +69,9 @@ public:
   Int_t GetDetUId(Int_t iDet);
   Int_t GetDetInd(Int_t iAddr);
   Int_t GetTrackingStation(Int_t iSmType, Int_t iSm, Int_t iRpc) const;
-  Int_t GetTrackingStation(CbmTofHit* pHit) const {
-    return GetTrackingStation(CbmTofAddress::GetSmType(pHit->GetAddress()),
-                              CbmTofAddress::GetSmId(pHit->GetAddress()),
+  Int_t GetTrackingStation(CbmTofHit* pHit) const
+  {
+    return GetTrackingStation(CbmTofAddress::GetSmType(pHit->GetAddress()), CbmTofAddress::GetSmId(pHit->GetAddress()),
                               CbmTofAddress::GetRpcId(pHit->GetAddress()));
   };
   Int_t GetNbTrackingStations() const { return fiNbTrackingStations; };
@@ -135,19 +134,17 @@ private:
   Double_t fdDeadtime;      //
 
   // Geometry variables, text to be generated in the CreateGeometry macros
-  Double_t fdSignalPropSpeed;      //  -> in parameter?
-  Int_t fiNbSmTypes;               //
-  Int_t fiNbTrackingStations;      //
-  TArrayI fiNbSm;                  // [fiNbSmTypes]
-  TArrayI fiNbRpc;                 // [fiNbSmTypes]
-  std::vector<TArrayI> fiNbGaps;   // [fiNbSmTypes][fiNbRpc]
-  std::vector<TArrayD> fdGapSize;  // [fiNbSmTypes][fiNbRpc]
-  std::vector<TArrayD>
-    fdSigVel;  // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
-  std::vector<TArrayI>
-    fiTrkStation;  // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
-  std::vector<TArrayI> fiNbCh;    // [fiNbSmTypes][fiNbRpc]
-  std::vector<TArrayI> fiChType;  // [fiNbSmTypes][fiNbRpc]
+  Double_t fdSignalPropSpeed;         //  -> in parameter?
+  Int_t fiNbSmTypes;                  //
+  Int_t fiNbTrackingStations;         //
+  TArrayI fiNbSm;                     // [fiNbSmTypes]
+  TArrayI fiNbRpc;                    // [fiNbSmTypes]
+  std::vector<TArrayI> fiNbGaps;      // [fiNbSmTypes][fiNbRpc]
+  std::vector<TArrayD> fdGapSize;     // [fiNbSmTypes][fiNbRpc]
+  std::vector<TArrayD> fdSigVel;      // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
+  std::vector<TArrayI> fiTrkStation;  // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
+  std::vector<TArrayI> fiNbCh;        // [fiNbSmTypes][fiNbRpc]
+  std::vector<TArrayI> fiChType;      // [fiNbSmTypes][fiNbRpc]
   std::vector<TArrayI>
     fiChOrientation;  // [fiNbSmTypes][fiNbRpc] -> in parameter? Possibility to Readout from geometry angles?
   TArrayI fiDetUId;   // [NbDet]

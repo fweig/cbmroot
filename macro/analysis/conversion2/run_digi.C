@@ -28,14 +28,13 @@
  **/
 
 
-void run_digi(Int_t nEvents            = 2,
-              const char* setupName    = "sis100_electron",
-              const char* index        = "00001",
+void run_digi(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* index = "00001",
               TString dataSet          = "data/test",
               Bool_t eventMode         = kTRUE,  // Event-by-event mode
               Double_t eventRate       = 1.e7,   // Interaction rate [1/s]
               Double_t timeSliceLength = 1.e4    // Length of time-slice [ns]
-) {
+)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -92,9 +91,7 @@ void run_digi(Int_t nEvents            = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

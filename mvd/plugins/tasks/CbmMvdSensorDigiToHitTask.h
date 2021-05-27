@@ -13,17 +13,16 @@
 
 #include "TArrayS.h"
 #include "TCanvas.h"
-#include "TObjArray.h"
-#include "TRefArray.h"
-
-
 #include "TH1.h"
 #include "TH1F.h"
 #include "TH2.h"
 #include "TMath.h"
+#include "TObjArray.h"
 #include "TRandom3.h"
+#include "TRefArray.h"
 #include "TStopwatch.h"
 #include "TString.h"
+
 #include <list>
 #include <map>
 #include <numeric>
@@ -61,22 +60,21 @@ public:
   /** Intialisation **/
   void InitTask(CbmMvdSensor* mySensor);
 
-  virtual void SetInputDigi(CbmMvdDigi* digi) {
-    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()])
-      CbmMvdDigi(*((CbmMvdDigi*) digi));
+  virtual void SetInputDigi(CbmMvdDigi* digi)
+  {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdDigi(*((CbmMvdDigi*) digi));
     inputSet = kTRUE;
   }
 
 
   /** Modifiers **/
-  void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise) {
+  void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise)
+  {
     fSigmaNoise = sigmaNoise;
     fAddNoise   = addNoise;
   }
   void SetSeedThreshold(Double_t seedCharge) { fSeedThreshold = seedCharge; }
-  void SetNeighbourThreshold(Double_t neighCharge) {
-    fNeighThreshold = neighCharge;
-  }
+  void SetNeighbourThreshold(Double_t neighCharge) { fNeighThreshold = neighCharge; }
 
 
   void SetAdcDynamic(Int_t adcDynamic) { fAdcDynamic = adcDynamic; };
@@ -123,8 +121,7 @@ private:
   Double_t fHitPosErrZ;
 
 
-  static const Short_t fChargeArraySize =
-    5;  //must be an odd number >3, recommended numbers= 5 or 7
+  static const Short_t fChargeArraySize = 5;  //must be an odd number >3, recommended numbers= 5 or 7
 
   Bool_t fAddNoise;
 

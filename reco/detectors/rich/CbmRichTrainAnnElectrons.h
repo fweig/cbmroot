@@ -11,8 +11,10 @@
 #define CbmRichTrainAnnElectrons_H
 
 #include "FairTask.h"
+
 #include "TCanvas.h"
 #include "TH2D.h"
+
 #include <string>
 #include <vector>
 
@@ -119,17 +121,14 @@ private:
   vector<TH1D*> fhBaxis;  //minor half axis
   // vector<TH1D*> fhAaxisCor; // major half axis after correction
   // vector<TH1D*> fhBaxisCor; //minor half axis after correction
-  vector<TH1D*>
-    fhDistTrueMatch;  // distance between ring center and track projection for true matches
-  vector<TH1D*>
-    fhDistMisMatch;  // distance between ring center and track projection  for wrong matches
-  vector<TH1D*> fhNofHits;  // number of hits in ring
-  vector<TH1D*> fhChi2;     // chi2 of the fit
-  vector<TH1D*>
-    fhRadPos;  // radial position of a ring onto the photodetector plane
-  vector<TH2D*> fhAaxisVsMom;   // major half axis vs. momentum
-  vector<TH2D*> fhBaxisVsMom;   // minor half axis vs. momentum
-  vector<TH2D*> fhPhiVsRadAng;  // ellipse rotation angle vs. radial angle
+  vector<TH1D*> fhDistTrueMatch;  // distance between ring center and track projection for true matches
+  vector<TH1D*> fhDistMisMatch;   // distance between ring center and track projection  for wrong matches
+  vector<TH1D*> fhNofHits;        // number of hits in ring
+  vector<TH1D*> fhChi2;           // chi2 of the fit
+  vector<TH1D*> fhRadPos;         // radial position of a ring onto the photodetector plane
+  vector<TH2D*> fhAaxisVsMom;     // major half axis vs. momentum
+  vector<TH2D*> fhBaxisVsMom;     // minor half axis vs. momentum
+  vector<TH2D*> fhPhiVsRadAng;    // ellipse rotation angle vs. radial angle
 
   vector<TH1*> fHists;  // Store pointer for all histograms
 
@@ -148,8 +147,7 @@ private:
      */
   void Draw(Option_t* = "");
 
-  TCanvas*
-  CreateCanvas(const string& name, const string& title, int width, int height);
+  TCanvas* CreateCanvas(const string& name, const string& title, int width, int height);
 
   void SaveCanvasToImage();
 

@@ -30,34 +30,11 @@ private:
 
 public:
   UParticle();
-  UParticle(Int_t index,
-            Int_t pdg,
-            Int_t status,
-            Int_t parent,
-            Int_t parentDecay,
-            Int_t mate,
-            Int_t decay,
-            Int_t child[2],
-            Double_t px,
-            Double_t py,
-            Double_t pz,
-            Double_t e,
-            Double_t x,
-            Double_t y,
-            Double_t z,
-            Double_t t,
-            Double_t weight);
-  UParticle(Int_t index,
-            Int_t pdg,
-            Int_t status,
-            Int_t parent,
-            Int_t parentDecay,
-            Int_t mate,
-            Int_t decay,
-            Int_t child[2],
-            TLorentzVector mom,
-            TLorentzVector pos,
-            Double_t weight);
+  UParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+            Int_t child[2], Double_t px, Double_t py, Double_t pz, Double_t e, Double_t x, Double_t y, Double_t z,
+            Double_t t, Double_t weight);
+  UParticle(Int_t index, Int_t pdg, Int_t status, Int_t parent, Int_t parentDecay, Int_t mate, Int_t decay,
+            Int_t child[2], TLorentzVector mom, TLorentzVector pos, Double_t weight);
   UParticle(const UParticle& right);
   UParticle(const TParticle& right);
   virtual ~UParticle();
@@ -78,22 +55,14 @@ public:
   inline Double_t Py() const { return fPy; }
   inline Double_t Pz() const { return fPz; }
   inline Double_t E() const { return fE; }
-  inline TLorentzVector GetMomentum() const {
-    return TLorentzVector(fPx, fPy, fPz, fE);
-  }
-  inline void Momentum(TLorentzVector& mom) const {
-    mom.SetPxPyPzE(fPx, fPy, fPz, fE);
-  }
+  inline TLorentzVector GetMomentum() const { return TLorentzVector(fPx, fPy, fPz, fE); }
+  inline void Momentum(TLorentzVector& mom) const { mom.SetPxPyPzE(fPx, fPy, fPz, fE); }
   inline Double_t X() const { return fX; }
   inline Double_t Y() const { return fY; }
   inline Double_t Z() const { return fZ; }
   inline Double_t T() const { return fT; }
-  inline TLorentzVector GetPosition() const {
-    return TLorentzVector(fX, fY, fZ, fT);
-  }
-  inline void Position(TLorentzVector& pos) const {
-    pos.SetXYZT(fX, fY, fZ, fT);
-  }
+  inline TLorentzVector GetPosition() const { return TLorentzVector(fX, fY, fZ, fT); }
+  inline void Position(TLorentzVector& pos) const { pos.SetXYZT(fX, fY, fZ, fT); }
   inline Double_t GetWeight() const { return fWeight; }
   inline void SetIndex(Int_t index) { fIndex = index; }
   inline void SetPdg(Int_t pdg) { fPdg = pdg; }
@@ -102,7 +71,8 @@ public:
   inline void SetParentDecay(Int_t parentDecay) { fParentDecay = parentDecay; }
   inline void SetMate(Int_t mate) { fMate = mate; }
   inline void SetDecay(Int_t decay) { fDecay = decay; }
-  inline void SetChild(Int_t child[2]) {
+  inline void SetChild(Int_t child[2])
+  {
     fChild[0] = child[0];
     fChild[1] = child[1];
   }
@@ -112,13 +82,15 @@ public:
   inline void SetPy(Double_t py) { fPy = py; }
   inline void SetPz(Double_t pz) { fPz = pz; }
   inline void SetE(Double_t e) { fE = e; }
-  inline void SetMomentum(Double_t px, Double_t py, Double_t pz, Double_t e) {
+  inline void SetMomentum(Double_t px, Double_t py, Double_t pz, Double_t e)
+  {
     fPx = px;
     fPy = py;
     fPz = pz;
     fE  = e;
   }
-  inline void SetMomentum(TLorentzVector mom) {
+  inline void SetMomentum(TLorentzVector mom)
+  {
     fPx = mom.Px();
     fPy = mom.Py();
     fPz = mom.Pz();
@@ -128,13 +100,15 @@ public:
   inline void SetY(Double_t y) { fY = y; }
   inline void SetZ(Double_t z) { fZ = z; }
   inline void SetT(Double_t t) { fT = t; }
-  inline void SetPosition(Double_t x, Double_t y, Double_t z, Double_t t) {
+  inline void SetPosition(Double_t x, Double_t y, Double_t z, Double_t t)
+  {
     fX = x;
     fY = y;
     fZ = z;
     fT = t;
   }
-  inline void SetPosition(TLorentzVector pos) {
+  inline void SetPosition(TLorentzVector pos)
+  {
     fX = pos.X();
     fY = pos.Y();
     fZ = pos.Z();

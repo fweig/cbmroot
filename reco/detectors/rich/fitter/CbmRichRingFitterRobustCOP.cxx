@@ -8,8 +8,9 @@
 **/
 #include "CbmRichRingFitterRobustCOP.h"
 
-#include <cmath>
 #include <iostream>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -20,7 +21,8 @@ CbmRichRingFitterRobustCOP::CbmRichRingFitterRobustCOP() {}
 
 CbmRichRingFitterRobustCOP::~CbmRichRingFitterRobustCOP() {}
 
-void CbmRichRingFitterRobustCOP::DoFit(CbmRichRingLight* ring) {
+void CbmRichRingFitterRobustCOP::DoFit(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
 
   double radius  = 0.;
@@ -76,9 +78,8 @@ void CbmRichRingFitterRobustCOP::DoFit(CbmRichRingLight* ring) {
         SumS1 += w[i] * d[i] * d[i];
         SumS2 += w[i];
       }
-      if (SumS2 == 0.) {
-        sigma = sigma_min;
-      } else {
+      if (SumS2 == 0.) { sigma = sigma_min; }
+      else {
         sigma = sqrt(SumS1 / SumS2);
       }
       if (sigma < sigma_min) sigma = sigma_min;
@@ -87,9 +88,9 @@ void CbmRichRingFitterRobustCOP::DoFit(CbmRichRingLight* ring) {
       SumS2   = 0.;
       for (int i = 0; i < nofHits; i++) {
         if (d[i] <= ctsigma) {
-          w[i] = (1 - (d[i] / (ctsigma)) * (d[i] / (ctsigma)))
-                 * (1 - (d[i] / (ctsigma)) * (d[i] / (ctsigma)));
-        } else {
+          w[i] = (1 - (d[i] / (ctsigma)) * (d[i] / (ctsigma))) * (1 - (d[i] / (ctsigma)) * (d[i] / (ctsigma)));
+        }
+        else {
           w[i] = 0.;
         }
       }
@@ -143,8 +144,7 @@ void CbmRichRingFitterRobustCOP::DoFit(CbmRichRingLight* ring) {
 
     A2 = 4. * Cov_xy - 3. * Mz * Mz - Mzz;
     A1 = Mzz * Mz + 4. * Cov_xy * Mz - Mxz2 - Myz2 - Mz * Mz * Mz;
-    A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy
-         + Mz * Mz * Cov_xy;
+    A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy + Mz * Mz * Cov_xy;
 
     A22  = A2 + A2;
     iter = 0;

@@ -12,17 +12,13 @@
  * @param nEvents        Number of events to process
  */
 
-void run_much_sim(TString inputSignal = "",
-                  TString inputBgr    = "",
-                  TString outFile     = "",
-                  Int_t nEvents       = 1) {
+void run_much_sim(TString inputSignal = "", TString inputBgr = "", TString outFile = "", Int_t nEvents = 1)
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 
   TString inputdir = gSystem->Getenv("VMCWORKDIR");
-  if (inputSignal == "") {
-    inputSignal = inputdir + "/macro/much/data/jpsi.root";
-  }
+  if (inputSignal == "") { inputSignal = inputdir + "/macro/much/data/jpsi.root"; }
   if (inputBgr == "") { inputBgr = inputdir + "/input/urqmd.ftn14"; }
   if (outFile == "") { outFile = "data/mc.root"; }
   TString parFile = "data/params.root";
@@ -150,8 +146,7 @@ void run_much_sim(TString inputSignal = "",
 
   // -----   Create magnetic field   ----------------------------------------
   cout << endl << "=== much_sim.C : Create magnetic field ..." << endl;
-  if (fieldMap == "field_electron_standard")
-    CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
+  if (fieldMap == "field_electron_standard") CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "field_muon_standard")
     CbmFieldMap* magField = new CbmFieldMapSym2(fieldMap);
   else if (fieldMap == "field_v10e")

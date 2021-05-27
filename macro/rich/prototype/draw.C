@@ -1,17 +1,17 @@
 #include "/misc/kresan/tools/drawStyle.C"
 
 
-void draw_points(Int_t nev = 1) {
+void draw_points(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.eve.mc.root";
-  TFile* inFile = new TFile(inFileName);
-  TTree* cbmsim = (TTree*) inFile->Get("cbmsim");
+  TString inFileName = "/d/cbm02/kresan/rich_prot/may11/epi.standard.eve.mc.root";
+  TFile* inFile      = new TFile(inFileName);
+  TTree* cbmsim      = (TTree*) inFile->Get("cbmsim");
 
 
   gStyle->SetPaperSize(16, 16);
@@ -29,7 +29,8 @@ void draw_points(Int_t nev = 1) {
 }
 
 
-void draw_theta_beam(Int_t nev = 1) {
+void draw_theta_beam(Int_t nev = 1)
+{
   TPstyle();
 
 
@@ -88,17 +89,17 @@ void draw_theta_beam(Int_t nev = 1) {
 }
 
 
-void draw_hits(Int_t nev = 1) {
+void draw_hits(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
-  TFile* inFile = new TFile(inFileName);
-  TTree* cbmsim = (TTree*) inFile->Get("cbmsim");
+  TString inFileName = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TFile* inFile      = new TFile(inFileName);
+  TTree* cbmsim      = (TTree*) inFile->Get("cbmsim");
 
 
   gStyle->SetPaperSize(16, 16);
@@ -116,16 +117,16 @@ void draw_hits(Int_t nev = 1) {
 }
 
 
-void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100) {
+void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -177,21 +178,17 @@ void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100) {
     cbmsim->Draw("RichHit.fY:RichHit.fX>>h1", "", "", 1, i);
     h1->Draw();
     nr = rings->GetEntriesFast();
-    if (nr > 1) {
-      cout << "Event: " << i << "  :  " << nr << " rings!" << endl;
-    }
+    if (nr > 1) { cout << "Event: " << i << "  :  " << nr << " rings!" << endl; }
     for (Int_t r = 0; r < nr; r++) {
       ring = (CbmRichRing*) rings->At(r);
       if (NULL == ring) { continue; }
       a = ring->GetAaxis();
       b = ring->GetBaxis();
-      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b
-           << endl;
+      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b << endl;
       /*	    if((a/b) <= 0.9 || (b/a) <= 0.9) {
 		cout << "Event: " << i << ",  ring: " << r << "  :  " << a << " / " << b << endl;
 	    }*/
-      TEllipse* el1 =
-        new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, b);
+      TEllipse* el1 = new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, b);
       el1->SetFillStyle(0);
       el1->Draw();
       el1->SetLineColor(r + 2);
@@ -208,9 +205,7 @@ void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100) {
       }
     }
     proj          = (FairTrackParam*) projs->At(0);
-    TEllipse* el3 = new TEllipse(proj->GetX(),
-                                 proj->GetY(),
-                                 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
+    TEllipse* el3 = new TEllipse(proj->GetX(), proj->GetY(), 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
                                  30 * TMath::Sqrt(proj->GetCovariance(1, 1)));
     el3->SetLineColor(42);
     el3->SetFillColor(42);
@@ -222,13 +217,11 @@ void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100) {
     c1->Modified();
     c1->Update();
     char strLabel[100];
-    if (11 == pdg) {
-      sprintf(strLabel, "e");
-    } else if (-211 == pdg) {
+    if (11 == pdg) { sprintf(strLabel, "e"); }
+    else if (-211 == pdg) {
       sprintf(strLabel, "#pi");
     }
-    TPaveLabel* l1 =
-      new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
+    TPaveLabel* l1 = new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
     Style(l1);
     l1->Draw();
     ps1->Close();
@@ -237,16 +230,16 @@ void draw_hits_rings(Int_t i1 = 0, Int_t i2 = 100) {
 }
 
 
-void draw_hits_rings_electrons() {
+void draw_hits_rings_electrons()
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -299,21 +292,17 @@ void draw_hits_rings_electrons() {
     sprintf(strPsFileName, "plots/events/rich.prot.electrons.ring.%d.eps", i);
     ps1 = new TPostScript(strPsFileName, -113);
     ps1->Range(16, 16);
-    if (nr > 1) {
-      cout << "Event: " << i << "  :  " << nr << " rings!" << endl;
-    }
+    if (nr > 1) { cout << "Event: " << i << "  :  " << nr << " rings!" << endl; }
     for (Int_t r = 0; r < nr; r++) {
       ring = (CbmRichRing*) rings->At(r);
       if (NULL == ring) { continue; }
       a = ring->GetRadius();
       //b = ring->GetBaxis();
-      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b
-           << endl;
+      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b << endl;
       /*	    if((a/b) <= 0.9 || (b/a) <= 0.9) {
 		cout << "Event: " << i << ",  ring: " << r << "  :  " << a << " / " << b << endl;
 	    }*/
-      TEllipse* el1 =
-        new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, a);
+      TEllipse* el1 = new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, a);
       el1->SetFillStyle(0);
       el1->Draw();
       el1->SetLineColor(r + 2);
@@ -330,9 +319,7 @@ void draw_hits_rings_electrons() {
       }
     }
     proj          = (FairTrackParam*) projs->At(0);
-    TEllipse* el3 = new TEllipse(proj->GetX(),
-                                 proj->GetY(),
-                                 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
+    TEllipse* el3 = new TEllipse(proj->GetX(), proj->GetY(), 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
                                  30 * TMath::Sqrt(proj->GetCovariance(1, 1)));
     el3->SetLineColor(42);
     el3->SetFillColor(42);
@@ -344,13 +331,11 @@ void draw_hits_rings_electrons() {
     c1->Modified();
     c1->Update();
     char strLabel[100];
-    if (11 == pdg) {
-      sprintf(strLabel, "e");
-    } else if (-211 == pdg) {
+    if (11 == pdg) { sprintf(strLabel, "e"); }
+    else if (-211 == pdg) {
       sprintf(strLabel, "#pi");
     }
-    TPaveLabel* l1 =
-      new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
+    TPaveLabel* l1 = new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
     Style(l1);
     l1->Draw();
     ps1->Close();
@@ -359,16 +344,16 @@ void draw_hits_rings_electrons() {
 }
 
 
-void draw_hits_rings_pions() {
+void draw_hits_rings_pions()
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -421,21 +406,17 @@ void draw_hits_rings_pions() {
     sprintf(strPsFileName, "plots/events/rich.prot.pions.ring.%d.eps", i);
     ps1 = new TPostScript(strPsFileName, -113);
     ps1->Range(16, 16);
-    if (nr > 1) {
-      cout << "Event: " << i << "  :  " << nr << " rings!" << endl;
-    }
+    if (nr > 1) { cout << "Event: " << i << "  :  " << nr << " rings!" << endl; }
     for (Int_t r = 0; r < nr; r++) {
       ring = (CbmRichRing*) rings->At(r);
       if (NULL == ring) { continue; }
       a = ring->GetRadius();
       //b = ring->GetBaxis();
-      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b
-           << endl;
+      cout << pdg << "   " << p << " GeV/c   " << r << "   " << a << "   " << b << endl;
       /*	    if((a/b) <= 0.9 || (b/a) <= 0.9) {
 		cout << "Event: " << i << ",  ring: " << r << "  :  " << a << " / " << b << endl;
 	    }*/
-      TEllipse* el1 =
-        new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, a);
+      TEllipse* el1 = new TEllipse(ring->GetCenterX(), ring->GetCenterY(), a, a);
       el1->SetFillStyle(0);
       el1->Draw();
       el1->SetLineColor(r + 2);
@@ -452,9 +433,7 @@ void draw_hits_rings_pions() {
       }
     }
     proj          = (FairTrackParam*) projs->At(0);
-    TEllipse* el3 = new TEllipse(proj->GetX(),
-                                 proj->GetY(),
-                                 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
+    TEllipse* el3 = new TEllipse(proj->GetX(), proj->GetY(), 30 * TMath::Sqrt(proj->GetCovariance(0, 0)),
                                  30 * TMath::Sqrt(proj->GetCovariance(1, 1)));
     el3->SetLineColor(42);
     el3->SetFillColor(42);
@@ -466,13 +445,11 @@ void draw_hits_rings_pions() {
     c1->Modified();
     c1->Update();
     char strLabel[100];
-    if (11 == pdg) {
-      sprintf(strLabel, "e");
-    } else if (-211 == pdg) {
+    if (11 == pdg) { sprintf(strLabel, "e"); }
+    else if (-211 == pdg) {
       sprintf(strLabel, "#pi");
     }
-    TPaveLabel* l1 =
-      new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
+    TPaveLabel* l1 = new TPaveLabel(0.785, 0.803, 0.989, 0.989, strLabel, "NDC");
     Style(l1);
     l1->Draw();
     ps1->Close();
@@ -481,15 +458,15 @@ void draw_hits_rings_pions() {
 }
 
 
-void draw_proj(Int_t nev = 1) {
+void draw_proj(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile       = new TFile(inFileName);
   TTree* cbmsim       = (TTree*) inFile->Get("cbmsim");
   TClonesArray* projs = new TClonesArray("FairTrackParam");
@@ -528,17 +505,17 @@ void draw_proj(Int_t nev = 1) {
 }
 
 
-void draw_nhits(Int_t nev = 1) {
+void draw_nhits(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
-  TFile* inFile = new TFile(inFileName);
-  TTree* cbmsim = (TTree*) inFile->Get("cbmsim");
+  TString inFileName = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TFile* inFile      = new TFile(inFileName);
+  TTree* cbmsim      = (TTree*) inFile->Get("cbmsim");
 
 
   gStyle->SetPaperSize(32, 16);
@@ -574,16 +551,16 @@ void draw_nhits(Int_t nev = 1) {
 }
 
 
-void draw_nhits_epi() {
+void draw_nhits_epi()
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -636,7 +613,8 @@ void draw_nhits_epi() {
       if (11 == pdg) {
         h1_el->Fill(nTrueHits);
         h2_el->Fill(nFakeHits);
-      } else if (-211 == pdg) {
+      }
+      else if (-211 == pdg) {
         h1_pi->Fill(nTrueHits);
         h2_pi->Fill(nFakeHits);
       }
@@ -676,17 +654,17 @@ void draw_nhits_epi() {
 }
 
 
-void draw_chi2(Int_t nev = 1) {
+void draw_chi2(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
-  TFile* inFile = new TFile(inFileName);
-  TTree* cbmsim = (TTree*) inFile->Get("cbmsim");
+  TString inFileName = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TFile* inFile      = new TFile(inFileName);
+  TTree* cbmsim      = (TTree*) inFile->Get("cbmsim");
 
 
   gStyle->SetPaperSize(16, 16);
@@ -704,17 +682,17 @@ void draw_chi2(Int_t nev = 1) {
 }
 
 
-void draw_a_b(Int_t nev = 1) {
+void draw_a_b(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
-  TFile* inFile = new TFile(inFileName);
-  TTree* cbmsim = (TTree*) inFile->Get("cbmsim");
+  TString inFileName = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TFile* inFile      = new TFile(inFileName);
+  TTree* cbmsim      = (TTree*) inFile->Get("cbmsim");
 
 
   gStyle->SetPaperSize(32, 16);
@@ -758,16 +736,16 @@ void draw_a_b(Int_t nev = 1) {
 }
 
 
-void draw_a_epi() {
+void draw_a_epi()
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -840,7 +818,8 @@ void draw_a_epi() {
       if (11 == pdg) {
         h1_el->Fill(a);
         h2_el->Fill(p, a);
-      } else if (-211 == pdg) {
+      }
+      else if (-211 == pdg) {
         h1_pi->Fill(a);
         h2_pi->Fill(p, a);
       }
@@ -903,16 +882,16 @@ void draw_a_epi() {
 }
 
 
-void draw_b_epi() {
+void draw_b_epi()
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName1 = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
-  TString inFileName2 =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName1  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.mc.root";
+  TString inFileName2  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile1       = new TFile(inFileName1);
   TFile* inFile2       = new TFile(inFileName2);
   TTree* cbmsim1       = (TTree*) inFile1->Get("cbmsim");
@@ -960,7 +939,8 @@ void draw_b_epi() {
       if (11 == pdg) {
         h1_el->Fill(b);
         h2_el->Fill(p, b);
-      } else if (-211 == pdg) {
+      }
+      else if (-211 == pdg) {
         h1_pi->Fill(b);
         h2_pi->Fill(p, b);
       }
@@ -990,15 +970,15 @@ void draw_b_epi() {
 }
 
 
-void draw_nhits_vs_ba(Int_t nev = 1) {
+void draw_nhits_vs_ba(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile       = new TFile(inFileName);
   TTree* cbmsim       = (TTree*) inFile->Get("cbmsim");
   TClonesArray* rings = new TClonesArray("CbmRichRing");
@@ -1039,15 +1019,15 @@ void draw_nhits_vs_ba(Int_t nev = 1) {
 }
 
 
-void draw_distance_vs_ba(Int_t nev = 1) {
+void draw_distance_vs_ba(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName  = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile       = new TFile(inFileName);
   TTree* cbmsim       = (TTree*) inFile->Get("cbmsim");
   TClonesArray* rings = new TClonesArray("CbmRichRing");
@@ -1072,17 +1052,16 @@ void draw_distance_vs_ba(Int_t nev = 1) {
       a     = ring->GetAaxis();
       b     = ring->GetBaxis();
       nhits = ring->GetNofHits();
-      h1->Fill(
-        TMath::Sqrt(TMath::Power(ring->GetCenterX() - proj->GetX(), 2)
-                    + TMath::Power(ring->GetCenterY() - proj->GetY(), 2)),
-        (b / a));
+      h1->Fill(TMath::Sqrt(TMath::Power(ring->GetCenterX() - proj->GetX(), 2)
+                           + TMath::Power(ring->GetCenterY() - proj->GetY(), 2)),
+               (b / a));
     }
   }
 
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "", 10, 10, 510, 510);
-  ps1 = new TPostScript("plots/rich.prot.quality_vs_distance.eps", -113);
+  ps1         = new TPostScript("plots/rich.prot.quality_vs_distance.eps", -113);
   ps1->Range(16, 16);
   gPad->SetLeftMargin(0.15);
   gPad->SetRightMargin(0.12);
@@ -1094,15 +1073,15 @@ void draw_distance_vs_ba(Int_t nev = 1) {
 }
 
 
-void draw_ntruehits_vs_ba(Int_t nev = 1) {
+void draw_ntruehits_vs_ba(Int_t nev = 1)
+{
   TPstyle();
 
 
   LoadLibs();
 
 
-  TString inFileName =
-    "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
+  TString inFileName        = "/d/cbm02/kresan/rich_prot/may11/epi.standard.reco.circ.root";
   TFile* inFile             = new TFile(inFileName);
   TTree* cbmsim             = (TTree*) inFile->Get("cbmsim");
   TClonesArray* rings       = new TClonesArray("CbmRichRing");
@@ -1133,7 +1112,7 @@ void draw_ntruehits_vs_ba(Int_t nev = 1) {
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "", 10, 10, 510, 510);
-  ps1 = new TPostScript("plots/rich.prot.quality_vs_ntruehits.eps", -113);
+  ps1         = new TPostScript("plots/rich.prot.quality_vs_ntruehits.eps", -113);
   ps1->Range(16, 16);
   gPad->SetLeftMargin(0.15);
   gPad->SetRightMargin(0.12);
@@ -1145,7 +1124,8 @@ void draw_ntruehits_vs_ba(Int_t nev = 1) {
 }
 
 
-void draw_gas_box() {
+void draw_gas_box()
+{
   TPstyle();
 
   gStyle->SetPaperSize(16, 12);
@@ -1160,74 +1140,50 @@ void draw_gas_box() {
   const Double_t scale_y = 1. / (1200. + 2 * g);
   const Double_t scale_z = 1. / (d + 2 * g);
 
-  TLine* l1 =
-    new TLine(g * scale_z, g * scale_y, (g + 2100.) * scale_z, g * scale_y);
+  TLine* l1 = new TLine(g * scale_z, g * scale_y, (g + 2100.) * scale_z, g * scale_y);
   l1->SetLineWidth(2);
   l1->Draw();
 
-  TLine* l2 =
-    new TLine(g * scale_z, g * scale_y, g * scale_z, (g + 700) * scale_y);
+  TLine* l2 = new TLine(g * scale_z, g * scale_y, g * scale_z, (g + 700) * scale_y);
   l2->SetLineWidth(2);
   l2->Draw();
 
-  TLine* l3 = new TLine(
-    g * scale_z, (g + 700) * scale_y, (g + 140) * scale_z, (g + 700) * scale_y);
+  TLine* l3 = new TLine(g * scale_z, (g + 700) * scale_y, (g + 140) * scale_z, (g + 700) * scale_y);
   l3->SetLineWidth(2);
   l3->Draw();
 
-  TLine* l4 = new TLine((g + 140) * scale_z,
-                        (g + 700) * scale_y,
-                        (g + 258) * scale_z,
-                        (g + 1200) * scale_y);
+  TLine* l4 = new TLine((g + 140) * scale_z, (g + 700) * scale_y, (g + 258) * scale_z, (g + 1200) * scale_y);
   l4->SetLineWidth(2);
   l4->Draw();
 
-  TLine* l5 = new TLine((g + 258) * scale_z,
-                        (g + 1200) * scale_y,
-                        (g + 2100) * scale_z,
-                        (g + 1200) * scale_y);
+  TLine* l5 = new TLine((g + 258) * scale_z, (g + 1200) * scale_y, (g + 2100) * scale_z, (g + 1200) * scale_y);
   l5->SetLineWidth(2);
   l5->Draw();
 
-  TLine* l6 = new TLine((g + 2100) * scale_z,
-                        (g + 1200) * scale_y,
-                        (g + 2100) * scale_z,
-                        g * scale_y);
+  TLine* l6 = new TLine((g + 2100) * scale_z, (g + 1200) * scale_y, (g + 2100) * scale_z, g * scale_y);
   l6->SetLineWidth(2);
   l6->Draw();
 
-  TLine* l7 = new TLine((g + 140) * scale_z,
-                        (g + 600) * scale_y,
-                        (g + 140) * scale_z,
-                        (g + 700) * scale_y);
+  TLine* l7 = new TLine((g + 140) * scale_z, (g + 600) * scale_y, (g + 140) * scale_z, (g + 700) * scale_y);
   l7->SetLineStyle(2);
   l7->Draw();
 
-  TLine* l8 = new TLine((g + 258) * scale_z,
-                        (g + 500 - 50) * scale_y,
-                        (g + 258) * scale_z,
-                        (g + 1200) * scale_y);
+  TLine* l8 = new TLine((g + 258) * scale_z, (g + 500 - 50) * scale_y, (g + 258) * scale_z, (g + 1200) * scale_y);
   l8->SetLineStyle(2);
   l8->Draw();
 
-  TLine* ay = new TLine(
-    g * scale_z, (g + 600) * scale_y, g * scale_z, (g + 1250.) * scale_y);
+  TLine* ay = new TLine(g * scale_z, (g + 600) * scale_y, g * scale_z, (g + 1250.) * scale_y);
   ay->Draw();
 
-  TLine* az = new TLine(
-    g * scale_z, (g + 600) * scale_y, (g + d) * scale_z, (g + 600) * scale_y);
+  TLine* az = new TLine(g * scale_z, (g + 600) * scale_y, (g + d) * scale_z, (g + 600) * scale_y);
   az->Draw();
 
-  TLine* bw = new TLine(
-    g * scale_z, (g + 500) * scale_y, g * scale_z, (g + 700) * scale_y);
+  TLine* bw = new TLine(g * scale_z, (g + 500) * scale_y, g * scale_z, (g + 700) * scale_y);
   bw->SetLineColor(2);
   bw->SetLineWidth(3);
   bw->Draw();
 
-  TLine* pd = new TLine((g + 178) * scale_z,
-                        (g + 600 + 253) * scale_y,
-                        (g + 226) * scale_z,
-                        (g + 600 + 455) * scale_y);
+  TLine* pd = new TLine((g + 178) * scale_z, (g + 600 + 253) * scale_y, (g + 226) * scale_z, (g + 600 + 455) * scale_y);
   pd->SetLineColor(3);
   pd->SetLineWidth(3);
   pd->Draw();
@@ -1268,14 +1224,14 @@ void draw_gas_box() {
 }
 
 
-void draw_efficiency_e() {
+void draw_efficiency_e()
+{
   TPstyle();
 
 
   const Int_t n     = 12;
   Float_t s_theta[] = {0., 1., 2., 3., 4., 5., 10., 20., 30., 40., 50., 100.};
-  Float_t eff[]     = {
-    99.2, 99.2, 99.2, 99.3, 99.1, 98.4, 89.6, 64.2, 47.2, 37.0, 30.4, 15.1};
+  Float_t eff[]     = {99.2, 99.2, 99.2, 99.3, 99.1, 98.4, 89.6, 64.2, 47.2, 37.0, 30.4, 15.1};
 
 
   TGraph* gr = new TGraph(n, s_theta, eff);
@@ -1301,7 +1257,8 @@ void draw_efficiency_e() {
 }
 
 
-void draw_spectra() {
+void draw_spectra()
+{
   TPstyle();
 
   TFile* file  = new TFile("photons.root");
@@ -1326,8 +1283,7 @@ void draw_spectra() {
     lambda = 1. * ((Double_t) i + 0.5);
     if (lambda < fLambdaMin || lambda > fLambdaMax) continue;
     index = (Int_t)((lambda - fLambdaMin) / 20.);
-    h_expd->SetBinContent(
-      i + 1, h_acc->GetBinContent(i + 1) * fEfficiency[index] * (1. - 0.09615));
+    h_expd->SetBinContent(i + 1, h_acc->GetBinContent(i + 1) * fEfficiency[index] * (1. - 0.09615));
   }
 
   gStyle->SetPaperSize(16, 16);
@@ -1354,22 +1310,18 @@ void draw_spectra() {
   leg1->Draw();
   ps1->Close();
   Double_t integral = f1->Integral(150., 650.);
-  cout << "  Precision : "
-       << 100. * (integral - h_all->Integral(151, 651)) / integral << " %"
-       << endl;
+  cout << "  Precision : " << 100. * (integral - h_all->Integral(151, 651)) / integral << " %" << endl;
   cout << "   Accepted : " << h_acc->Integral() << endl;
   cout << "   Expected : " << h_expd->Integral() << endl;
   cout << "   Observed : " << h_phot->Integral() << endl;
   cout << "       Hits : " << h_hits->Integral() << endl;
-  cout << "Efficiency1 : " << 100. * h_hits->Integral() / h_acc->Integral()
-       << " %" << endl;
-  cout << "Efficiency2 : "
-       << 100. * h_hits->Integral(201, 500) / h_acc->Integral(201, 500) << " %"
-       << endl;
+  cout << "Efficiency1 : " << 100. * h_hits->Integral() / h_acc->Integral() << " %" << endl;
+  cout << "Efficiency2 : " << 100. * h_hits->Integral(201, 500) / h_acc->Integral(201, 500) << " %" << endl;
 }
 
 
-Double_t spectrum(Double_t* x, Double_t* par) {
+Double_t spectrum(Double_t* x, Double_t* par)
+{
   Double_t lambda = x[0] * 1e-9;  // m
   if (lambda <= 0.) return 0.;
   Double_t energy = c / n * h / e / lambda;  // eV
@@ -1383,8 +1335,8 @@ Double_t spectrum(Double_t* x, Double_t* par) {
   }
   Double_t beta  = 10. / TMath::Sqrt(10. * 10. + mass_el * mass_el);
   Double_t theta = TMath::ACos(1. / beta / n1);
-  Double_t dn    = 1. / lambda / lambda * (2.1 - 0.5e-3 - 1e-2) * TMath::TwoPi()
-                / 137.036 * TMath::Power(TMath::Sin(theta), 2) * 1e-9;
+  Double_t dn =
+    1. / lambda / lambda * (2.1 - 0.5e-3 - 1e-2) * TMath::TwoPi() / 137.036 * TMath::Power(TMath::Sin(theta), 2) * 1e-9;
   return dn;
 }
 
@@ -1565,7 +1517,8 @@ const Double_t mass_el = 0.000510998902;
 const Double_t mass_pi = 0.13957018;
 
 
-Double_t f_radius(Double_t* x, Double_t* par) {
+Double_t f_radius(Double_t* x, Double_t* par)
+{
   if (x[0] <= 0.) { return 0.; }
   Double_t e    = TMath::Sqrt(x[0] * x[0] + par[0] * par[0]);
   Double_t beta = x[0] / e;
@@ -1577,7 +1530,8 @@ Double_t f_radius(Double_t* x, Double_t* par) {
 }
 
 
-void LoadLibs() {
+void LoadLibs()
+{
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gSystem->Load("libGeoBase");

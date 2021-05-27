@@ -1,4 +1,5 @@
-void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
+void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -23,7 +24,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     h2->ProfileX()->Draw("same");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -35,7 +37,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -48,7 +51,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -60,7 +64,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -72,7 +77,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -85,7 +91,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -97,7 +104,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -109,7 +117,8 @@ void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0) {
     h2->Draw("colz");
     gPad->SetLogz();
     h2->ProfileX()->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 }

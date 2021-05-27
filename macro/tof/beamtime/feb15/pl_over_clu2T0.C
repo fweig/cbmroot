@@ -26,10 +26,9 @@
     Int_t NBin     = h2_pfx->GetNbinsX();
     Double_t YMean = h2_pfx->GetBinContent(1);
     Double_t YErr  = h2_pfx->GetBinError(1);
-    cout << " Number of bins " << NBin << ", Mean Y " << YMean << ", Error "
-         << YErr << endl;
-
-  } else {
+    cout << " Number of bins " << NBin << ", Mean Y " << YMean << ", Error " << YErr << endl;
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -37,9 +36,8 @@
   gROOT->cd();
   TString hname = "cl_SmT2_sm001_rpc000_Trg00_Pos";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -47,9 +45,8 @@
   gROOT->cd();
   TString hname = "cl_SmT2_sm000_rpc000_Trg00_TOff";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -57,9 +54,8 @@
   gROOT->cd();
   TString hname = "cl_SmT2_sm001_rpc000_Trg00_TOff";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -68,9 +64,8 @@
   gROOT->cd();
   TString hname = "cl_SmT2_sm000_rpc000_Trg00_Tot";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -78,9 +73,8 @@
   gROOT->cd();
   TString hname = "cl_SmT2_sm001_rpc000_Trg00_Tot";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("colz");
-  } else {
+  if (h2 != NULL) { h2->Draw("colz"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -92,15 +86,15 @@
     h2->Draw("colz");
     h2prof = h2->ProfileX();
     h2prof->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   TString hname = "cl_SmT2_sm000_rpc000_Ch000_Trg00_Walk_px";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("same");
-  } else {
+  if (h2 != NULL) { h2->Draw("same"); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -112,15 +106,15 @@
     h2->Draw("colz");
     h2prof = h2->ProfileX();
     h2prof->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
   TString hname = "cl_SmT2_sm001_rpc000_Ch000_Trg00_Walk_px";
   h2            = (TH2*) gROOT->FindObjectAny(hname);
-  if (h2 != NULL) {
-    h2->Draw("same");
-  } else {
+  if (h2 != NULL) { h2->Draw("same"); }
+  else {
     cout << hname << " not found" << endl;
   }
 }

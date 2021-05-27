@@ -1,4 +1,5 @@
-void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3) {
+void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3)
+{
   TTree::SetMaxTreeSize(90000000000);
   TString script = TString(gSystem->Getenv("SCRIPT"));
 
@@ -10,23 +11,23 @@ void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3) {
     outDir = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/"
              "4mrad_X_2mrad_Y_5_3/standard/";
     setupName = "setup_4mrad_X_2mrad_Y_5_3";
-  } else if (geom == 1) {
+  }
+  else if (geom == 1) {
     string s1 = "Y";
     string s2 = "0pt1";
-    outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/" + s1 + "_5_3/"
-             + s2 + "mrad_" + s1 + "_5_3/";
+    outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/" + s1 + "_5_3/" + s2 + "mrad_" + s1 + "_5_3/";
     setupName = "setup_" + s2 + "mrad_" + s1 + "_5_3";
-  } else if (geom == 2) {
+  }
+  else if (geom == 2) {
     outDir    = "/home/jordan/Desktop/Thesis/HERA-B_Ana/12mrad_5_3/";
     setupName = "setup_12mrad_5_3";
-  } else if (geom == 3) {
+  }
+  else if (geom == 3) {
     outDir    = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/4mrad_5_3/";
     setupName = "setup_4mrad_5_3";
   }
   TString outDir2 = outDir;
-  cout << endl
-       << "outDir & outDir2: " << outDir << " ; " << outDir2 << endl
-       << endl;
+  cout << endl << "outDir & outDir2: " << outDir << " ; " << outDir2 << endl << endl;
 
   TString parFile   = outDir + setupName + "_param.root";
   TString mcFile    = outDir + setupName + "_mc.root";
@@ -53,16 +54,14 @@ void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3) {
   const char* setupName2 = setupName;
   TString setupFunct     = "";
   setupFunct             = setupFunct + setupName2 + "()";
-  std::cout << "-I- setupFile: " << geoSetupFile << std::endl
-            << "-I- setupFunct: " << setupFunct << std::endl;
+  std::cout << "-I- setupFile: " << geoSetupFile << std::endl << "-I- setupFunct: " << setupFunct << std::endl;
   gROOT->LoadMacro(geoSetupFile);
   gROOT->ProcessLine(setupFunct);
   //gInterpreter->ProcessLine(setupFunct);
   // ------------------------------------------------------------------------
 
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   //    TString geoTag;
   //
@@ -118,16 +117,12 @@ void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3) {
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct_align()");
   if (!recoSuccess) {
-    std::cerr << "-E-" << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E-" << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I-" << myName << ": " << macroName << " excuted successfully" << std::endl;
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -157,8 +152,7 @@ void run_reco_3(Int_t nEvents = 2500, Int_t geom = 3) {
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

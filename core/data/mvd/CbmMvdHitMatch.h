@@ -9,10 +9,10 @@
 #ifndef CBMMVDHITMATCH_H
 #define CBMMVDHITMATCH_H 1
 
+#include "CbmMatch.h"  // for CbmMatch
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Float_t, Option_t
-
-#include "CbmMatch.h"  // for CbmMatch
 
 class CbmMvdHitMatch : public CbmMatch {
 
@@ -22,17 +22,15 @@ public:
 
 
   /** Constructor with all parameters **/
-  CbmMvdHitMatch(Double_t weight,
-                 Int_t index,
-                 Int_t entry = -1,
-                 Int_t file  = -1);
+  CbmMvdHitMatch(Double_t weight, Int_t index, Int_t entry = -1, Int_t file = -1);
 
-  CbmMvdHitMatch(Int_t /*par1*/,
-                 Int_t /*par2*/,
-                 Int_t /*par3*/,
-                 Int_t /*par4*/,
-                 Int_t /*par5*/)
-    : CbmMatch(), fFileNumber(-1), fIndex(-1), fWeight(-1.), fEntry(-1) {
+  CbmMvdHitMatch(Int_t /*par1*/, Int_t /*par2*/, Int_t /*par3*/, Int_t /*par4*/, Int_t /*par5*/)
+    : CbmMatch()
+    , fFileNumber(-1)
+    , fIndex(-1)
+    , fWeight(-1.)
+    , fEntry(-1)
+  {
     ;
   }  //quick solution for error in CbmMvdHitProducer
 

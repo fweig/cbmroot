@@ -1,7 +1,5 @@
-void fit_yPos(Int_t SmT      = 0,
-              Int_t iSm      = 0,
-              Int_t iRpc     = 0,
-              Double_t dLini = 0.) {
+void fit_yPos(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0, Double_t dLini = 0.)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 1200, 1000);
@@ -26,8 +24,7 @@ void fit_yPos(Int_t SmT      = 0,
   can->cd(1);
   gROOT->cd();
   gROOT->LoadMacro("fit_ybox.h");
-  ROOT::Math::Minimizer* minimum =
-    ROOT::Math::Factory::CreateMinimizer("Minuit", "Migrad");
+  ROOT::Math::Minimizer* minimum = ROOT::Math::Factory::CreateMinimizer("Minuit", "Migrad");
   minimum->SetMaxFunctionCalls(100000);
   minimum->SetTolerance(0.1);
   minimum->SetPrintLevel(3);
@@ -66,8 +63,7 @@ void fit_yPos(Int_t SmT      = 0,
 
     for (Int_t i = 0; i < NStrips; i++) {
       h2y = h2->ProjectionY(Form("%s_py%d", h2->GetName(), i), i + 1, i + 1);
-      if (i == 0)
-        h2y->Draw();
+      if (i == 0) h2y->Draw();
       else
         h2y->Draw("same");
       cout << " Fit with ybox " << h2y->GetName() << endl;
@@ -82,7 +78,8 @@ void fit_yPos(Int_t SmT      = 0,
         aYLengthE[i] = 2. * ff->GetParError(1);
         aYResE[i]    = ff->GetParError(2);
         aYMeanE[i]   = ff->GetParError(3);
-      } else {
+      }
+      else {
         aYLength[i]  = 0.;
         aYRes[i]     = 0.;
         aYMean[i]    = 0.;
@@ -96,8 +93,7 @@ void fit_yPos(Int_t SmT      = 0,
     Double_t dLMargin   = 0.25;
     Double_t dTitOffset = 1.8;
     gPad->SetLeftMargin(dLMargin);
-    TGraphErrors* grl =
-      new TGraphErrors(NStrips, aStr, aYLength, aStrE, aYLengthE);
+    TGraphErrors* grl = new TGraphErrors(NStrips, aStr, aYLength, aStrE, aYLengthE);
     grl->SetTitle("YLength");
     grl->GetXaxis()->SetTitle("Strip number");
     grl->GetYaxis()->SetTitleOffset(dTitOffset);
@@ -124,8 +120,8 @@ void fit_yPos(Int_t SmT      = 0,
     grm->GetXaxis()->SetLimits(-0.5, NStrips - 0.5);
     grm->SetMarkerStyle(24);
     grm->Draw("APLE");
-
-  } else {
+  }
+  else {
     cout << hname2 << " not found" << endl;
   }
 

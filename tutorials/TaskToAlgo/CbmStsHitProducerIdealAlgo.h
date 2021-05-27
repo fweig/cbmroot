@@ -23,8 +23,7 @@ public:
   CbmStsHitProducerIdealAlgo();
   ~CbmStsHitProducerIdealAlgo();
   CbmStsHitProducerIdealAlgo(const CbmStsHitProducerIdealAlgo&) = delete;
-  CbmStsHitProducerIdealAlgo&
-  operator=(const CbmStsHitProducerIdealAlgo&) = delete;
+  CbmStsHitProducerIdealAlgo& operator=(const CbmStsHitProducerIdealAlgo&) = delete;
 
   virtual Bool_t Init();
   virtual void Reset();
@@ -36,8 +35,7 @@ public:
 
   Bool_t InitParameters();
 
-  virtual std::vector<CbmStsHit>
-  ProcessInputData(const std::vector<CbmStsPoint>&);
+  virtual std::vector<CbmStsHit> ProcessInputData(const std::vector<CbmStsPoint>&);
 
 private:
   /// Settings from parameter file

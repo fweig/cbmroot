@@ -8,8 +8,10 @@
 #ifndef CBMLITRADLENGTHQA_H_
 #define CBMLITRADLENGTHQA_H_
 
-#include "FairTask.h"
 #include "base/CbmLitDetectorSetup.h"
+
+#include "FairTask.h"
+
 #include <map>
 #include <string>
 using std::map;
@@ -71,13 +73,10 @@ private:
      * \param[in] detName Name of the detector (Mvd, Sts, Much, Trd).
      * \param[in] getStationId Pointer to the function which return station ID by full path to the node.
      */
-  void ExecDetector(const string& detName,
-                    Int_t (*getStationId)(const TString&));
+  void ExecDetector(const string& detName, Int_t (*getStationId)(const TString&));
 
-  void FillHistosDetector(
-    const map<Int_t, map<Int_t, Double_t>>& parMap,
-    const string& histName,
-    map<Int_t, map<Int_t, pair<Double_t, Double_t>>>& xyOnTrack);
+  void FillHistosDetector(const map<Int_t, map<Int_t, Double_t>>& parMap, const string& histName,
+                          map<Int_t, map<Int_t, pair<Double_t, Double_t>>>& xyOnTrack);
 
   /**
      * \brief Return MVD station ID by path to the node or -1 in case node does not exists.

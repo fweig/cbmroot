@@ -8,7 +8,8 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_sim100p(Int_t nEvents = 10) {
+void tof_sim100p(Int_t nEvents = 10)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -138,8 +139,7 @@ void tof_sim100p(Int_t nEvents = 10) {
 
   // Ion Generator
   //  FairIonGenerator *fIongen= new FairIonGenerator(79, 197,79,1, 0.,0., 25, 0.,0.,-1.);
-  FairParticleGenerator* fPartGen =
-    new FairParticleGenerator(2212, 1, 0., 0.6, 2., 0., 0., 0.);
+  FairParticleGenerator* fPartGen = new FairParticleGenerator(2212, 1, 0., 0.6, 2., 0., 0., 0.);
   primGen->AddGenerator(fPartGen);
   fRun->SetGenerator(primGen);
 
@@ -201,8 +201,7 @@ void tof_sim100p(Int_t nEvents = 10) {
   cout << "Macro finished succesfully." << endl;
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
-       << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;

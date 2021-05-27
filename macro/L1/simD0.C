@@ -19,10 +19,9 @@
   gSystem->Load("libEcal");
   gSystem->Load("libGen");
 
-  char* outFile = "/d/cbm02/ikisel/data/default/D0/sim_1000_0.root";
-  char* parFile = "/d/cbm02/ikisel/data/default/D0/sim_1000_0.params.root";
-  char* urqmdFile =
-    "/d/cbm01/cbmsim/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.0000.ftn14";
+  char* outFile   = "/d/cbm02/ikisel/data/default/D0/sim_1000_0.root";
+  char* parFile   = "/d/cbm02/ikisel/data/default/D0/sim_1000_0.params.root";
+  char* urqmdFile = "/d/cbm01/cbmsim/urqmd/auau/25gev/centr/urqmd.auau.25gev.centr.0000.ftn14";
   char* asciiFile = "/d/cbm02/vassiliev/d0_1000_0.dat";
 
   //char *urqmdFile  =("/d/cbm01/cbmsim/urqmd/auau/25gev/mbias/urqmd.auau.25gev.mbias.0000.ftn14");

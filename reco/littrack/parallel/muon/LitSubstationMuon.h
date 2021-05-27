@@ -10,8 +10,10 @@
 
 #include "../LitMaterialInfo.h"
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitSubstationMuon
@@ -54,25 +56,23 @@ namespace lit {
     * \brief Set material of substation.
     * \param[in] materiel Material value.
     */
-      void SetMaterial(const LitMaterialInfo<T>& material) {
-        fMaterial = material;
-      }
+      void SetMaterial(const LitMaterialInfo<T>& material) { fMaterial = material; }
 
       /**
     * \brief Return string representation for the class.
     * \return String representation of class.
     */
-      std::string ToString() const {
-        return "LitSubstationMuon: Z=" + lit::parallel::ToString<T>(GetZ())
-               + ", material=" + GetMaterial().ToString();
+      std::string ToString() const
+      {
+        return "LitSubstationMuon: Z=" + lit::parallel::ToString<T>(GetZ()) + ", material=" + GetMaterial().ToString();
       }
 
       /**
     * \brief Operator << for convenient output to std::ostream.
     * \return std::ostream for continuous output.
     */
-      friend std::ostream& operator<<(std::ostream& strm,
-                                      const LitSubstationMuon& substation) {
+      friend std::ostream& operator<<(std::ostream& strm, const LitSubstationMuon& substation)
+      {
         strm << substation.ToString();
         return strm;
       }

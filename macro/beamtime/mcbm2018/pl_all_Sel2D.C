@@ -1,7 +1,5 @@
-void pl_all_Sel2D(Int_t iOpt  = 0,
-                  Int_t iSel  = 0,
-                  Int_t iOpt2 = 0,
-                  Int_t iNSt  = 6) {
+void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 6)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -54,12 +52,7 @@ void pl_all_Sel2D(Int_t iOpt  = 0,
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_%s",
-                             iType[iSt],
-                             iSm,
-                             iRp,
-                             iSel,
-                             cOpt.Data());
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_%s", iType[iSt], iSm, iRp, iSel, cOpt.Data());
         h             = (TH2*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           h->Draw("colz");
@@ -80,12 +73,11 @@ void pl_all_Sel2D(Int_t iOpt  = 0,
                 Double_t dFMean = hp->GetMean();
                 Double_t dFLim  = 2.5 * hp->GetRMS();
                 if (hp->Integral() > 10) {
-                  TFitResultPtr fRes = hp->Fit(
-                    "gaus", "S", "HEsame", dFMean - dFLim, dFMean + dFLim);
-                  FitHName[NFit]    = hp->GetName();
-                  FitIntegral[NFit] = hp->Integral();
-                  FitMean[NFit]     = fRes->Parameter(1);
-                  FitWidth[NFit]    = fRes->Parameter(2);
+                  TFitResultPtr fRes = hp->Fit("gaus", "S", "HEsame", dFMean - dFLim, dFMean + dFLim);
+                  FitHName[NFit]     = hp->GetName();
+                  FitIntegral[NFit]  = hp->Integral();
+                  FitMean[NFit]      = fRes->Parameter(1);
+                  FitWidth[NFit]     = fRes->Parameter(2);
                   NFit++;
                   ;
                 }
@@ -93,8 +85,8 @@ void pl_all_Sel2D(Int_t iOpt  = 0,
 
               default:;
             }
-
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
         if (iRp == 10) break;
@@ -103,9 +95,8 @@ void pl_all_Sel2D(Int_t iOpt  = 0,
   }
   if (iOpt2 > 0) {
     for (Int_t iFit = 0; iFit < NFit; iFit++) {
-      cout << "FitRes " << FitHName[iFit] << ", Stat: " << FitIntegral[iFit]
-           << ", Mean " << FitMean[iFit] << ", Width " << FitWidth[iFit]
-           << endl;
+      cout << "FitRes " << FitHName[iFit] << ", Stat: " << FitIntegral[iFit] << ", Mean " << FitMean[iFit] << ", Width "
+           << FitWidth[iFit] << endl;
     }
   }
 

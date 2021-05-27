@@ -11,8 +11,9 @@
 #include <TString.h>  // for TString, operator+
 #include <TSystem.h>  // for TSystem, gSystem
 
-#include <cmath>     // for fabs
 #include <iostream>  // for operator<<, basic_ostream, basic_istream, endl
+
+#include <cmath>  // for fabs
 
 using std::cerr;
 using std::cout;
@@ -20,9 +21,9 @@ using std::endl;
 using std::fabs;
 using std::ifstream;
 
-Int_t checked_index_max(Int_t suggested_index, Int_t array_size) {
-  if (suggested_index < array_size)
-    return suggested_index;
+Int_t checked_index_max(Int_t suggested_index, Int_t array_size)
+{
+  if (suggested_index < array_size) return suggested_index;
   else
     return (suggested_index - 5);
 }
@@ -48,7 +49,8 @@ CbmBsField::CbmBsField(const char* pBsName, Int_t /*symType*/)
   , F0(nullptr)
   , G0(nullptr)
   , U0(nullptr)
-  , fBsName(pBsName) {
+  , fBsName(pBsName)
+{
   fType = 6;  // corresponds symType=3
   this->SetName(pBsName);
   this->SetTitle(pBsName);
@@ -75,7 +77,8 @@ CbmBsField::CbmBsField()
   , F0(nullptr)
   , G0(nullptr)
   , U0(nullptr)
-  , fBsName("") {
+  , fBsName("")
+{
   fType = 0;
 }
 
@@ -101,11 +104,13 @@ CbmBsField::CbmBsField(CbmFieldPar* fieldPar)
   , F0(nullptr)
   , G0(nullptr)
   , U0(nullptr)
-  , fBsName("") {
+  , fBsName("")
+{
   fType = 6;
 }
 
-CbmBsField::~CbmBsField() {
+CbmBsField::~CbmBsField()
+{
   delete fX;
   delete fY;
   delete fY;
@@ -115,7 +120,8 @@ CbmBsField::~CbmBsField() {
   delete (FairField*) this;
 }
 
-void CbmBsField::Init() {
+void CbmBsField::Init()
+{
   TString tmp_FileName;
   TString dir  = gSystem->Getenv("VMCWORKDIR");  // getenv("VMCWORKDIR");
   tmp_FileName = dir + "/input/" + fBsName + ".root";
@@ -123,14 +129,14 @@ void CbmBsField::Init() {
 }
 
 
-void CbmBsField::CalculateMapFromBs(Int_t pNx, Int_t pNy, Int_t pNz) {
+void CbmBsField::CalculateMapFromBs(Int_t pNx, Int_t pNy, Int_t pNz)
+{
   Double_t po[3], B[3], sm = 100;
   fNx = (pNx <= 0) ? fX->GetSize() - 3 : pNx;
   fNy = (pNy <= 0) ? fY->GetSize() - 3 : pNy;
   fNz = (pNz <= 0) ? fZ->GetSize() - 3 : pNz;
   if ((fNx < 2) || (fNy < 2) || (fNz < 2)) {
-    cout << "CalculateMapFromBs ERROR [Ns]: " << fNx << " " << fNy << " " << fNz
-         << endl;
+    cout << "CalculateMapFromBs ERROR [Ns]: " << fNx << " " << fNy << " " << fNz << endl;
     return;
   }
   fXmin  = (fX->GetArray())[3] * sm;
@@ -150,16 +156,11 @@ void CbmBsField::CalculateMapFromBs(Int_t pNx, Int_t pNy, Int_t pNz) {
   fBz = new TArrayF(fNx * fNy * fNz);
 
 
-  cout << "CalculateMapFromBs [Ns]: " << fNx << " " << fNy << " " << fNz
-       << endl;
-  cout << "CalculateMapFromBs [MINs]: " << fXmin << " " << fYmin << " " << fZmin
-       << endl;
-  cout << "CalculateMapFromBs [MAXs]: " << fXmax << " " << fYmax << " " << fZmax
-       << endl;
-  cout << "CalculateMapFromBs [STEPs]: " << fXstep << " " << fYstep << " "
-       << fZstep << endl;
-  cout << "CalculateMapFromBs [POSs]: " << fPosX << " " << fPosY << " " << fPosZ
-       << endl;
+  cout << "CalculateMapFromBs [Ns]: " << fNx << " " << fNy << " " << fNz << endl;
+  cout << "CalculateMapFromBs [MINs]: " << fXmin << " " << fYmin << " " << fZmin << endl;
+  cout << "CalculateMapFromBs [MAXs]: " << fXmax << " " << fYmax << " " << fZmax << endl;
+  cout << "CalculateMapFromBs [STEPs]: " << fXstep << " " << fYstep << " " << fZstep << endl;
+  cout << "CalculateMapFromBs [POSs]: " << fPosX << " " << fPosY << " " << fPosZ << endl;
 
   // GetFieldValue (without conversion from kG to T)
   Int_t index = 0;
@@ -186,7 +187,7 @@ void CbmBsField::writeBsRootfile(const char* name)  // Write Field Splined
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(name, "RECREATE");
+  TFile* f = new TFile(name, "RECREATE");
   this->Write();
   f->Close();
 
@@ -201,7 +202,7 @@ void CbmBsField::readBsRootfile(const char* name)  // Read  Field Splined
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f       = new TFile(name, "READ");
+  TFile* f = new TFile(name, "READ");
   if (f->IsZombie()) {
     cout << "-E- CbmBsField::readBsRootfile:  can not read from file: " << endl;
     Fatal("CbmBsField::readBsRootfile:", "Can not read from input file");
@@ -209,8 +210,7 @@ void CbmBsField::readBsRootfile(const char* name)  // Read  Field Splined
   const char* bsname = fBsName.Data();
   CbmBsField* fnew   = new CbmBsField(bsname);
 
-  cout << "-I- CbmBsField Reading splined field : " << bsname
-       << " from root file : " << name << endl;
+  cout << "-I- CbmBsField Reading splined field : " << bsname << " from root file : " << name << endl;
   f->GetObject(bsname, fnew);
 
   if (fBsBx) delete fBsBx;
@@ -249,7 +249,8 @@ void CbmBsField::readBsRootfile(const char* name)  // Read  Field Splined
   II3  = LL3 - 1;
 }
 
-void CbmBsField::GetFieldValue(const Double_t Point[3], Double_t* Bfield) {
+void CbmBsField::GetFieldValue(const Double_t Point[3], Double_t* Bfield)
+{
   Double_t XX, YY, ZZ, X, Y, Z, FX, FY, FZ, pfScale;
   Float_t fHemiX = 1., fHemiY = 1., fHemiZ = 1;
 
@@ -263,11 +264,7 @@ void CbmBsField::GetFieldValue(const Double_t Point[3], Double_t* Bfield) {
   FY = 0.0;
   FZ = 0.0;
 
-  PALC0(XX * 0.01,
-        YY * 0.01,
-        ZZ * 0.01,
-        &FX,
-        &FY,
+  PALC0(XX * 0.01, YY * 0.01, ZZ * 0.01, &FX, &FY,
         &FZ);  // position for PALC0 should be in meters
 
   pfScale = fScale * 10;  // usually fScale=1;
@@ -294,7 +291,8 @@ void CbmBsField::GetFieldValue(const Double_t Point[3], Double_t* Bfield) {
   return;
 }
 
-Double_t CbmBsField::GetBx(Double_t x, Double_t y, Double_t z) {
+Double_t CbmBsField::GetBx(Double_t x, Double_t y, Double_t z)
+{
   Double_t Point[3];
   Double_t Bfield[3];
   Point[0] = x;
@@ -304,7 +302,8 @@ Double_t CbmBsField::GetBx(Double_t x, Double_t y, Double_t z) {
   return (Bfield[0]);
 }
 
-Double_t CbmBsField::GetBy(Double_t x, Double_t y, Double_t z) {
+Double_t CbmBsField::GetBy(Double_t x, Double_t y, Double_t z)
+{
   Double_t Point[3];
   Double_t Bfield[3];
   Point[0] = x;
@@ -314,7 +313,8 @@ Double_t CbmBsField::GetBy(Double_t x, Double_t y, Double_t z) {
   return (Bfield[1]);
 }
 
-Double_t CbmBsField::GetBz(Double_t x, Double_t y, Double_t z) {
+Double_t CbmBsField::GetBz(Double_t x, Double_t y, Double_t z)
+{
   Double_t Point[3];
   Double_t Bfield[3];
   Point[0] = x;
@@ -325,17 +325,16 @@ Double_t CbmBsField::GetBz(Double_t x, Double_t y, Double_t z) {
 }
 
 
-void CbmBsField::readFortranAsciifiles(const char* BsFortranAsciiFileName1,
-                                       const char* BsFortranAsciiFileName2,
-                                       const char* BsFortranAsciiFileName3) {
+void CbmBsField::readFortranAsciifiles(const char* BsFortranAsciiFileName1, const char* BsFortranAsciiFileName2,
+                                       const char* BsFortranAsciiFileName3)
+{
   Float_t val;
   Int_t i;
 
   TString fileNam1 = BsFortranAsciiFileName1;
   ifstream fBsFortranAscii1(fileNam1);
-  if (!fBsFortranAscii1.is_open()) {
-    cerr << "ERROR: File " << BsFortranAsciiFileName1 << " not opened!" << endl;
-  } else {
+  if (!fBsFortranAscii1.is_open()) { cerr << "ERROR: File " << BsFortranAsciiFileName1 << " not opened!" << endl; }
+  else {
     fBsFortranAscii1 >> NDIM >> LL1 >> LL2 >> LL3 >> II1 >> II2 >> II3;
 
     fX  = new TArrayF(LL1);
@@ -357,9 +356,8 @@ void CbmBsField::readFortranAsciifiles(const char* BsFortranAsciiFileName1,
 
   TString fileNam2 = BsFortranAsciiFileName2;
   ifstream fBsFortranAscii2(fileNam2);
-  if (!fBsFortranAscii2.is_open()) {
-    cerr << "ERROR: File " << BsFortranAsciiFileName2 << " not opened!" << endl;
-  } else {
+  if (!fBsFortranAscii2.is_open()) { cerr << "ERROR: File " << BsFortranAsciiFileName2 << " not opened!" << endl; }
+  else {
     fBsFortranAscii2 >> NDIM >> LL1 >> LL2 >> LL3 >> II1 >> II2 >> II3;
     fY  = new TArrayF(LL2);
     UX2 = fY->GetArray();
@@ -378,9 +376,8 @@ void CbmBsField::readFortranAsciifiles(const char* BsFortranAsciiFileName1,
 
   TString fileNam3 = BsFortranAsciiFileName3;
   ifstream fBsFortranAscii3(fileNam3);
-  if (!fBsFortranAscii3.is_open()) {
-    cerr << "ERROR: File " << BsFortranAsciiFileName3 << " not opened!" << endl;
-  } else {
+  if (!fBsFortranAscii3.is_open()) { cerr << "ERROR: File " << BsFortranAsciiFileName3 << " not opened!" << endl; }
+  else {
     fBsFortranAscii3 >> NDIM >> LL1 >> LL2 >> LL3 >> II1 >> II2 >> II3;
     fZ  = new TArrayF(LL3);
     UX3 = fZ->GetArray();
@@ -398,18 +395,12 @@ void CbmBsField::readFortranAsciifiles(const char* BsFortranAsciiFileName1,
   }
 }
 
-void CbmBsField::PALC0(Double_t X,
-                       Double_t Y,
-                       Double_t Z,
-                       Double_t* BX,
-                       Double_t* BY,
-                       Double_t* BZ) {
-  Double_t UX[4], UY[4], UZ[4], X0, X1, X2, X3, X4, X5, X6, X7, Y0, Y1, Y2, Y3,
-    Y4, Y5, Y6, Y7, VX0, VX1, VX2, VX3, VX4, VX5, VX6, VX7;
-  Long64_t INT1[4], INT2[4], INT3[4], KK, K1, K2, K3, KK1, KK2, KK3, NN0, I1,
-    JJ0, I2, JJ1, I3, JJ2;
-  Double_t EPS = 1.0e-7, XRZYX, YRZYX, ZRZYX, XRZY, YRZY, ZRZY, XRZ, YRZ, ZRZ,
-           SS3, SS2, SS1;
+void CbmBsField::PALC0(Double_t X, Double_t Y, Double_t Z, Double_t* BX, Double_t* BY, Double_t* BZ)
+{
+  Double_t UX[4], UY[4], UZ[4], X0, X1, X2, X3, X4, X5, X6, X7, Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7, VX0, VX1, VX2, VX3, VX4,
+    VX5, VX6, VX7;
+  Long64_t INT1[4], INT2[4], INT3[4], KK, K1, K2, K3, KK1, KK2, KK3, NN0, I1, JJ0, I2, JJ1, I3, JJ2;
+  Double_t EPS = 1.0e-7, XRZYX, YRZYX, ZRZYX, XRZY, YRZY, ZRZY, XRZ, YRZ, ZRZ, SS3, SS2, SS1;
   Int_t izero4 = 3, izero5 = 4;
   if (X < (UX1[izero4] - EPS)) goto m100;
   for (KK = izero5; KK < LL1; KK++) {
@@ -539,12 +530,8 @@ m100:
   return;
 }
 
-Float_t CbmBsField::SPL0(Double_t T,
-                         Double_t X0,
-                         Double_t X1,
-                         Double_t X2,
-                         Double_t X3,
-                         Double_t X4) {
+Float_t CbmBsField::SPL0(Double_t T, Double_t X0, Double_t X1, Double_t X2, Double_t X3, Double_t X4)
+{
   Double_t W0, C0, TT, RR, TPL, W1, W2, W3, value_SPL0;
   if (T < X0) goto n100;
   if (T < X1) goto n200;

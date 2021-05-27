@@ -4,6 +4,7 @@
  * \date 2011
  **/
 #include "CbmLitMCTrackCreator.h"
+
 #include "CbmDigiManager.h"
 #include "CbmHit.h"
 #include "CbmMCDataArray.h"
@@ -22,6 +23,7 @@
 #include "CbmStsSetup.h"
 #include "CbmTrdAddress.h"
 #include "CbmTrdPoint.h"
+
 #include "FairGeoNode.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
@@ -52,7 +54,8 @@ CbmLitMCTrackCreator::CbmLitMCTrackCreator()
   , fStsStationsMap()
   , fTrdStationsMap()
   , fMuchStationsMap()
-  , fTauFit(NULL) {
+  , fTauFit(NULL)
+{
   ReadDataBranches();
 
   fTauFit = new CbmRichRingFitterEllipseTau();
@@ -60,12 +63,14 @@ CbmLitMCTrackCreator::CbmLitMCTrackCreator()
 
 CbmLitMCTrackCreator::~CbmLitMCTrackCreator() {}
 
-CbmLitMCTrackCreator* CbmLitMCTrackCreator::Instance() {
+CbmLitMCTrackCreator* CbmLitMCTrackCreator::Instance()
+{
   static CbmLitMCTrackCreator instance;
   return &instance;
 }
 
-void CbmLitMCTrackCreator::Create(Int_t eventNum) {
+void CbmLitMCTrackCreator::Create(Int_t eventNum)
+{
   FillStationMaps(eventNum);
 
 
@@ -100,15 +105,13 @@ void CbmLitMCTrackCreator::Create(Int_t eventNum) {
 }
 
 
-void CbmLitMCTrackCreator::ReadDataBranches() {
+void CbmLitMCTrackCreator::ReadDataBranches()
+{
   FairRootManager* ioman = FairRootManager::Instance();
 
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
 
-  if (0 == mcManager)
-    LOG(fatal)
-      << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL MCDataManager.";
+  if (0 == mcManager) LOG(fatal) << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL MCDataManager.";
 
   fMCTracks   = mcManager->InitBranch("MCTrack");
   fMvdPoints  = mcManager->InitBranch("MvdPoint");
@@ -122,57 +125,55 @@ void CbmLitMCTrackCreator::ReadDataBranches() {
   fDigiMan->Init();
 }
 
-void CbmLitMCTrackCreator::AddPoints(ECbmModuleId detId,
-                                     CbmMCDataArray* array,
-                                     Int_t iEvent) {
+void CbmLitMCTrackCreator::AddPoints(ECbmModuleId detId, CbmMCDataArray* array, Int_t iEvent)
+{
   if (array == NULL) return;
 
   Int_t nofPoints = array->Size(0, iEvent);
 
   for (Int_t iPoint = 0; iPoint < nofPoints; ++iPoint) {
-    FairMCPoint* fairPoint =
-      static_cast<FairMCPoint*>(array->Get(0, iEvent, iPoint));
+    FairMCPoint* fairPoint = static_cast<FairMCPoint*>(array->Get(0, iEvent, iPoint));
     if (NULL == fairPoint) continue;
     CbmLitMCPoint litPoint;
     Int_t stationId = -1;
     if (detId == ECbmModuleId::kMvd) {
       stationId = fMvdStationsMap[make_pair(iEvent, iPoint)];
-      MvdPointCoordinatesAndMomentumToLitMCPoint(
-        static_cast<CbmMvdPoint*>(fairPoint), &litPoint);
-    } else if (detId == ECbmModuleId::kSts) {
+      MvdPointCoordinatesAndMomentumToLitMCPoint(static_cast<CbmMvdPoint*>(fairPoint), &litPoint);
+    }
+    else if (detId == ECbmModuleId::kSts) {
       stationId = fStsStationsMap[make_pair(iEvent, iPoint)];
-      StsPointCoordinatesAndMomentumToLitMCPoint(
-        static_cast<CbmStsPoint*>(fairPoint), &litPoint);
-    } else if (detId == ECbmModuleId::kTrd) {
+      StsPointCoordinatesAndMomentumToLitMCPoint(static_cast<CbmStsPoint*>(fairPoint), &litPoint);
+    }
+    else if (detId == ECbmModuleId::kTrd) {
       stationId = fTrdStationsMap[make_pair(iEvent, iPoint)];
-      TrdPointCoordinatesAndMomentumToLitMCPoint(
-        static_cast<CbmTrdPoint*>(fairPoint), &litPoint);
-    } else if (detId == ECbmModuleId::kMuch) {
+      TrdPointCoordinatesAndMomentumToLitMCPoint(static_cast<CbmTrdPoint*>(fairPoint), &litPoint);
+    }
+    else if (detId == ECbmModuleId::kMuch) {
       stationId = fMuchStationsMap[make_pair(iEvent, iPoint)];
-      MuchPointCoordinatesAndMomentumToLitMCPoint(
-        static_cast<CbmMuchPoint*>(fairPoint), &litPoint);
-    } else if (detId == ECbmModuleId::kTof) {
+      MuchPointCoordinatesAndMomentumToLitMCPoint(static_cast<CbmMuchPoint*>(fairPoint), &litPoint);
+    }
+    else if (detId == ECbmModuleId::kTof) {
       stationId = 0;
       FairMCPointCoordinatesAndMomentumToLitMCPoint(fairPoint, &litPoint);
-    } else if (detId == ECbmModuleId::kRich) {
+    }
+    else if (detId == ECbmModuleId::kRich) {
       stationId = 0;
       FairMCPointCoordinatesAndMomentumToLitMCPoint(fairPoint, &litPoint);
     }
     if (stationId < 0) continue;
     FairMCPointToLitMCPoint(fairPoint, &litPoint, iEvent, iPoint, stationId);
     if (detId != ECbmModuleId::kRich) {
-      fLitMCTracks[make_pair(iEvent, fairPoint->GetTrackID())].AddPoint(
-        detId, litPoint);
-    } else {
-      const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(
-        fMCTracks->Get(0, iEvent, fairPoint->GetTrackID()));
-      fLitMCTracks[make_pair(iEvent, mcTrack->GetMotherId())].AddPoint(
-        detId, litPoint);
+      fLitMCTracks[make_pair(iEvent, fairPoint->GetTrackID())].AddPoint(detId, litPoint);
+    }
+    else {
+      const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->Get(0, iEvent, fairPoint->GetTrackID()));
+      fLitMCTracks[make_pair(iEvent, mcTrack->GetMotherId())].AddPoint(detId, litPoint);
     }
   }
 }
 
-void CbmLitMCTrackCreator::AddRichHits(Int_t iEvent) {
+void CbmLitMCTrackCreator::AddRichHits(Int_t iEvent)
+{
   if (NULL == fRichHits) return;
   map<pair<Int_t, Int_t>, Int_t> nofHitsInRing;
   Int_t nofRichHits = fRichHits->GetEntriesFast();
@@ -180,8 +181,7 @@ void CbmLitMCTrackCreator::AddRichHits(Int_t iEvent) {
     const CbmRichHit* hit = static_cast<const CbmRichHit*>(fRichHits->At(iHit));
     if (NULL == hit) continue;
     vector<pair<Int_t, Int_t>> motherIds =
-      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(
-        fDigiMan, hit, fRichPoints, fMCTracks, iEvent);
+      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, hit, fRichPoints, fMCTracks, iEvent);
     for (Int_t i = 0; i < motherIds.size(); i++) {
       nofHitsInRing[motherIds[i]]++;
     }
@@ -193,15 +193,15 @@ void CbmLitMCTrackCreator::AddRichHits(Int_t iEvent) {
   }
 }
 
-void CbmLitMCTrackCreator::AddRingParameters(Int_t iEvent) {
+void CbmLitMCTrackCreator::AddRingParameters(Int_t iEvent)
+{
   if (NULL == fRichPoints || NULL == fMCTracks) return;
   map<pair<Int_t, Int_t>, CbmRichRingLight> mapRings;
 
   int nofRichPoints = fRichPoints->Size(0, iEvent);
 
   for (int iPoint = 0; iPoint < nofRichPoints; iPoint++) {
-    CbmRichPoint* richPoint =
-      (CbmRichPoint*) fRichPoints->Get(0, iEvent, iPoint);
+    CbmRichPoint* richPoint = (CbmRichPoint*) fRichPoints->Get(0, iEvent, iPoint);
     if (NULL == richPoint) continue;
     Int_t trackId = richPoint->GetTrackID();
     if (trackId < 0) continue;
@@ -223,8 +223,7 @@ void CbmLitMCTrackCreator::AddRingParameters(Int_t iEvent) {
   int i = 0;
   for (it = mapRings.begin(); it != mapRings.end(); it++) {
     CbmRichRingLight ring(it->second);
-    fTauFit->DoFit(
-      &ring);  //fLitMCTracks[it->first].SetNofRichHits(it->second);
+    fTauFit->DoFit(&ring);  //fLitMCTracks[it->first].SetNofRichHits(it->second);
     fLitMCTracks[it->first].SetRingAaxis(ring.GetAaxis());
     fLitMCTracks[it->first].SetRingBaxis(ring.GetBaxis());
     fLitMCTracks[it->first].SetRingCenterX(ring.GetCenterX());
@@ -233,27 +232,23 @@ void CbmLitMCTrackCreator::AddRingParameters(Int_t iEvent) {
   }
 }
 
-void CbmLitMCTrackCreator::FairMCPointToLitMCPoint(const FairMCPoint* fairPoint,
-                                                   CbmLitMCPoint* litPoint,
-                                                   Int_t eventId,
-                                                   Int_t refId,
-                                                   Int_t stationId) {
+void CbmLitMCTrackCreator::FairMCPointToLitMCPoint(const FairMCPoint* fairPoint, CbmLitMCPoint* litPoint, Int_t eventId,
+                                                   Int_t refId, Int_t stationId)
+{
   if (fairPoint == NULL || litPoint == NULL) return;
   litPoint->SetRefId(refId);
   litPoint->SetStationId(stationId);
-  const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(
-    fMCTracks->Get(0, eventId, fairPoint->GetTrackID()));
+  const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->Get(0, eventId, fairPoint->GetTrackID()));
   if (mcTrack == NULL) return;
-  TParticlePDG* pdgParticle =
-    TDatabasePDG::Instance()->GetParticle(mcTrack->GetPdgCode());
-  double charge = (pdgParticle != NULL) ? pdgParticle->Charge() : 0.;
-  Double_t q    = (charge > 0) ? 1. : -1.;
+  TParticlePDG* pdgParticle = TDatabasePDG::Instance()->GetParticle(mcTrack->GetPdgCode());
+  double charge             = (pdgParticle != NULL) ? pdgParticle->Charge() : 0.;
+  Double_t q                = (charge > 0) ? 1. : -1.;
   litPoint->SetQ(q);
 }
 
-void CbmLitMCTrackCreator::FairMCPointCoordinatesAndMomentumToLitMCPoint(
-  const FairMCPoint* fairPoint,
-  CbmLitMCPoint* litPoint) {
+void CbmLitMCTrackCreator::FairMCPointCoordinatesAndMomentumToLitMCPoint(const FairMCPoint* fairPoint,
+                                                                         CbmLitMCPoint* litPoint)
+{
   if (fairPoint == NULL || litPoint == NULL) return;
   litPoint->SetXIn(fairPoint->GetX());
   litPoint->SetYIn(fairPoint->GetY());
@@ -269,9 +264,9 @@ void CbmLitMCTrackCreator::FairMCPointCoordinatesAndMomentumToLitMCPoint(
   litPoint->SetPzOut(fairPoint->GetPz());
 }
 
-void CbmLitMCTrackCreator::MvdPointCoordinatesAndMomentumToLitMCPoint(
-  const CbmMvdPoint* mvdPoint,
-  CbmLitMCPoint* litPoint) {
+void CbmLitMCTrackCreator::MvdPointCoordinatesAndMomentumToLitMCPoint(const CbmMvdPoint* mvdPoint,
+                                                                      CbmLitMCPoint* litPoint)
+{
   if (mvdPoint == NULL || litPoint == NULL) return;
   litPoint->SetXIn(mvdPoint->GetX());
   litPoint->SetYIn(mvdPoint->GetY());
@@ -287,9 +282,9 @@ void CbmLitMCTrackCreator::MvdPointCoordinatesAndMomentumToLitMCPoint(
   litPoint->SetPzOut(mvdPoint->GetPzOut());
 }
 
-void CbmLitMCTrackCreator::StsPointCoordinatesAndMomentumToLitMCPoint(
-  const CbmStsPoint* stsPoint,
-  CbmLitMCPoint* litPoint) {
+void CbmLitMCTrackCreator::StsPointCoordinatesAndMomentumToLitMCPoint(const CbmStsPoint* stsPoint,
+                                                                      CbmLitMCPoint* litPoint)
+{
   if (stsPoint == NULL || litPoint == NULL) return;
   litPoint->SetXIn(stsPoint->GetXIn());
   litPoint->SetYIn(stsPoint->GetYIn());
@@ -305,9 +300,9 @@ void CbmLitMCTrackCreator::StsPointCoordinatesAndMomentumToLitMCPoint(
   litPoint->SetPzOut(stsPoint->GetPzOut());
 }
 
-void CbmLitMCTrackCreator::TrdPointCoordinatesAndMomentumToLitMCPoint(
-  const CbmTrdPoint* trdPoint,
-  CbmLitMCPoint* litPoint) {
+void CbmLitMCTrackCreator::TrdPointCoordinatesAndMomentumToLitMCPoint(const CbmTrdPoint* trdPoint,
+                                                                      CbmLitMCPoint* litPoint)
+{
   if (trdPoint == NULL || litPoint == NULL) return;
   litPoint->SetXIn(trdPoint->GetXIn());
   litPoint->SetYIn(trdPoint->GetYIn());
@@ -323,9 +318,9 @@ void CbmLitMCTrackCreator::TrdPointCoordinatesAndMomentumToLitMCPoint(
   litPoint->SetPzOut(trdPoint->GetPzOut());
 }
 
-void CbmLitMCTrackCreator::MuchPointCoordinatesAndMomentumToLitMCPoint(
-  const CbmMuchPoint* muchPoint,
-  CbmLitMCPoint* litPoint) {
+void CbmLitMCTrackCreator::MuchPointCoordinatesAndMomentumToLitMCPoint(const CbmMuchPoint* muchPoint,
+                                                                       CbmLitMCPoint* litPoint)
+{
   if (muchPoint == NULL || litPoint == NULL) return;
   litPoint->SetXIn(muchPoint->GetXIn());
   litPoint->SetYIn(muchPoint->GetYIn());
@@ -341,7 +336,8 @@ void CbmLitMCTrackCreator::MuchPointCoordinatesAndMomentumToLitMCPoint(
   litPoint->SetPzOut(muchPoint->GetPzOut());
 }
 
-void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent) {
+void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent)
+{
   fMvdStationsMap.clear();
   fStsStationsMap.clear();
   fTrdStationsMap.clear();
@@ -352,8 +348,7 @@ void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent) {
   if (NULL != fMvdPoints) {
     Int_t nofMvdPoints = fMvdPoints->Size(0, iEvent);
     for (Int_t iPoint = 0; iPoint < nofMvdPoints; iPoint++) {
-      CbmMvdPoint* point =
-        static_cast<CbmMvdPoint*>(fMvdPoints->Get(0, iEvent, iPoint));
+      CbmMvdPoint* point = static_cast<CbmMvdPoint*>(fMvdPoints->Get(0, iEvent, iPoint));
       if (NULL == point) continue;
       fMvdStationsMap[make_pair(iEvent, iPoint)] = point->GetStationNr() - 1;
     }
@@ -364,11 +359,10 @@ void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent) {
   if (NULL != fStsPoints) {
     Int_t nofStsPoints = fStsPoints->Size(0, iEvent);
     for (Int_t iPoint = 0; iPoint < nofStsPoints; iPoint++) {
-      const CbmStsPoint* point =
-        static_cast<const CbmStsPoint*>(fStsPoints->Get(0, iEvent, iPoint));
+      const CbmStsPoint* point = static_cast<const CbmStsPoint*>(fStsPoints->Get(0, iEvent, iPoint));
       if (NULL == point) continue;
-      UInt_t address  = point->GetDetectorID();
-      Int_t stationId = CbmStsSetup::Instance()->GetStationNumber(address);
+      UInt_t address                             = point->GetDetectorID();
+      Int_t stationId                            = CbmStsSetup::Instance()->GetStationNumber(address);
       fStsStationsMap[make_pair(iEvent, iPoint)] = stationId;
     }
   }
@@ -378,13 +372,11 @@ void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent) {
   if (NULL != fMuchPoints) {
     Int_t nofMuchPoints = fMuchPoints->Size(0, iEvent);
     for (Int_t iPoint = 0; iPoint < nofMuchPoints; iPoint++) {
-      const FairMCPoint* point =
-        static_cast<const FairMCPoint*>(fMuchPoints->Get(0, iEvent, iPoint));
+      const FairMCPoint* point = static_cast<const FairMCPoint*>(fMuchPoints->Get(0, iEvent, iPoint));
       if (NULL == point) continue;
-      Int_t stationId =
-        100 * CbmMuchGeoScheme::GetStationIndex(point->GetDetectorID())
-        + 10 * CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorID())
-        + CbmMuchGeoScheme::GetLayerSideIndex(point->GetDetectorID());
+      Int_t stationId = 100 * CbmMuchGeoScheme::GetStationIndex(point->GetDetectorID())
+                        + 10 * CbmMuchGeoScheme::GetLayerIndex(point->GetDetectorID())
+                        + CbmMuchGeoScheme::GetLayerSideIndex(point->GetDetectorID());
       //         Int_t stationId = CbmMuchGeoScheme::Instance()->GetLayerSideNr(point->GetDetectorID());
       fMuchStationsMap[make_pair(iEvent, iPoint)] = stationId;
     }
@@ -395,11 +387,10 @@ void CbmLitMCTrackCreator::FillStationMaps(Int_t iEvent) {
   if (NULL != fTrdPoints) {
     Int_t nofTrdPoints = fTrdPoints->Size(0, iEvent);
     for (Int_t iPoint = 0; iPoint < nofTrdPoints; iPoint++) {
-      const FairMCPoint* point =
-        static_cast<const FairMCPoint*>(fTrdPoints->Get(0, iEvent, iPoint));
+      const FairMCPoint* point = static_cast<const FairMCPoint*>(fTrdPoints->Get(0, iEvent, iPoint));
       if (NULL == point) continue;
       //Int_t stationId = 10 * CbmTrdAddress::GetStationNr(point->GetDetectorID()) + CbmTrdAddress::GetLayerNr(point->GetDetectorID());
-      Int_t stationId = CbmTrdAddress::GetLayerId(point->GetDetectorID());
+      Int_t stationId                            = CbmTrdAddress::GetLayerId(point->GetDetectorID());
       fTrdStationsMap[make_pair(iEvent, iPoint)] = stationId;
     }
   }

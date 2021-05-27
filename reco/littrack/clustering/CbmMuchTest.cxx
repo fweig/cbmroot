@@ -6,6 +6,7 @@
  */
 
 #include "CbmMuchTest.h"
+
 #include "CbmClusteringGeometry.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchDigi.h"
@@ -41,7 +42,8 @@ CbmMuchTest::CbmMuchTest()
   , fMeanErrorOnX()
   , fClusters()
   , fErrorsOnX()
-  , fErrorsOnY() {
+  , fErrorsOnY()
+{
   fNofPoints = 0;
   //fNofHits = 0;
   fSubStep       = 0;
@@ -61,7 +63,8 @@ CbmMuchTest::CbmMuchTest(Int_t nofPoints, Float_t subStep)
   , fErrorsOnY()
   , fEfficiencyForSubCenters()
   , fEfficiency()
-  , fClusters() {
+  , fClusters()
+{
   fNofPoints     = nofPoints;
   fSubStep       = subStep;
   fNofSubCenters = 0;
@@ -71,36 +74,31 @@ CbmMuchTest::CbmMuchTest(Int_t nofPoints, Float_t subStep)
 
 CbmMuchTest::~CbmMuchTest() {}
 
-void CbmMuchTest::RebuildPoints() {
+void CbmMuchTest::RebuildPoints()
+{
   Float_t pLenght = 0;
   for (Int_t iPoint = 0; iPoint < fNofPoints; iPoint++) {
-    pLenght = sqrt((fRealPoints[iPoint].x1 - fRealPoints[iPoint].x2)
-                     * (fRealPoints[iPoint].x1 - fRealPoints[iPoint].x2)
-                   + (fRealPoints[iPoint].y1 - fRealPoints[iPoint].y2)
-                       * (fRealPoints[iPoint].y1 - fRealPoints[iPoint].y2));
+    pLenght =
+      sqrt((fRealPoints[iPoint].x1 - fRealPoints[iPoint].x2) * (fRealPoints[iPoint].x1 - fRealPoints[iPoint].x2)
+           + (fRealPoints[iPoint].y1 - fRealPoints[iPoint].y2) * (fRealPoints[iPoint].y1 - fRealPoints[iPoint].y2));
     fRealPoints[iPoint].pLenght = pLenght;
     //std::cout<<"pLenght: "<<pLenght<<"; Step: "<<fSubStep<<"\n";
     if (pLenght < (fSubStep * 2)) {
-      fRealPoints[iPoint].xc =
-        (fRealPoints[iPoint].x1 + fRealPoints[iPoint].x2) / 2;
-      fRealPoints[iPoint].yc =
-        (fRealPoints[iPoint].y1 + fRealPoints[iPoint].y2) / 2;
+      fRealPoints[iPoint].xc            = (fRealPoints[iPoint].x1 + fRealPoints[iPoint].x2) / 2;
+      fRealPoints[iPoint].yc            = (fRealPoints[iPoint].y1 + fRealPoints[iPoint].y2) / 2;
       fRealPoints[iPoint].nofSubCenters = 1;
       fRealPoints[iPoint].xSC[0]        = fRealPoints[iPoint].xc;
       fRealPoints[iPoint].ySC[0]        = fRealPoints[iPoint].yc;
       fNofSubCenters++;
-    } else {
+    }
+    else {
       Int_t Dstep = pLenght / fSubStep;
       //std::cout<<"---Dstep: "<<Dstep<<"\n";
       for (Int_t iStep = 0; iStep < Dstep; iStep++) {
         fRealPoints[iPoint].xSC[iStep] =
-          fRealPoints[iPoint].x1
-          + (((fRealPoints[iPoint].x2 - fRealPoints[iPoint].x1) / Dstep)
-             * (iStep + 1));
+          fRealPoints[iPoint].x1 + (((fRealPoints[iPoint].x2 - fRealPoints[iPoint].x1) / Dstep) * (iStep + 1));
         fRealPoints[iPoint].ySC[iStep] =
-          fRealPoints[iPoint].y1
-          + (((fRealPoints[iPoint].y2 - fRealPoints[iPoint].y1) / Dstep)
-             * (iStep + 1));
+          fRealPoints[iPoint].y1 + (((fRealPoints[iPoint].y2 - fRealPoints[iPoint].y1) / Dstep) * (iStep + 1));
         fNofSubCenters++;
         //std::cout<<"------iStep: "<<iStep<<"; xSC: "<<fRealPoints[iPoint].xSC[iStep]<<"; ySC: "<<fRealPoints[iPoint].ySC[iStep]<<"\n";
       }
@@ -109,7 +107,8 @@ void CbmMuchTest::RebuildPoints() {
   //std::cout<<"fNofSubCenters: "<<fNofSubCenters<<"\n";
 }
 
-void CbmMuchTest::SetNPoints(Int_t nofPoints) {
+void CbmMuchTest::SetNPoints(Int_t nofPoints)
+{
   fNofPoints  = nofPoints;
   fRealPoints = new M_Point[fNofPoints];
 }
@@ -118,46 +117,55 @@ void CbmMuchTest::SetNPoints(Int_t nofPoints) {
 	fNofHits = nofHits;
 }*/
 
-void CbmMuchTest::SetXIn(Float_t xIn, Int_t iPoint) {
+void CbmMuchTest::SetXIn(Float_t xIn, Int_t iPoint)
+{
   if (iPoint >= fNofPoints)  //Bad condition!!!
   {
     std::cout << "Error! fRealPoint is not declared!\n";
-  } else {
+  }
+  else {
     fRealPoints[iPoint].x1 = xIn;
     //std::cout<<"-> XIn: "<<fRealPoints[iPoint].x1<<" <- "<<iPoint<<"\n";
   }
 }
 
-void CbmMuchTest::SetYIn(Float_t yIn, Int_t iPoint) {
+void CbmMuchTest::SetYIn(Float_t yIn, Int_t iPoint)
+{
   if (iPoint >= fNofPoints)  //Bad condition!!!
   {
     std::cout << "Error! fRealPoint is not declared!\n";
-  } else {
+  }
+  else {
     fRealPoints[iPoint].y1 = yIn;
   }
 }
 
-void CbmMuchTest::SetXOut(Float_t xOut, Int_t iPoint) {
+void CbmMuchTest::SetXOut(Float_t xOut, Int_t iPoint)
+{
   if (iPoint >= fNofPoints)  //Bad condition!!!
   {
     std::cout << "Error! fRealPoint is not declared!\n";
-  } else {
+  }
+  else {
     fRealPoints[iPoint].x2 = xOut;
   }
 }
 
-void CbmMuchTest::SetYOut(Float_t yOut, Int_t iPoint) {
+void CbmMuchTest::SetYOut(Float_t yOut, Int_t iPoint)
+{
   if (iPoint >= fNofPoints)  //Bad condition!!!
   {
     std::cout << "Error! fRealPoint is not declared!\n";
-  } else {
+  }
+  else {
     fRealPoints[iPoint].y2 = yOut;
   }
 }
 
 void CbmMuchTest::SetSubStep(Int_t iStep) { fSubStep = iStep; }
 
-void CbmMuchTest::SetNClusters(Int_t NCl) {
+void CbmMuchTest::SetNClusters(Int_t NCl)
+{
   fNofClusters             = NCl;
   fClusters                = new Cluster[fNofClusters];
   fErrorsOnX               = new Float_t[fNofClusters];
@@ -167,57 +175,52 @@ void CbmMuchTest::SetNClusters(Int_t NCl) {
   fEfficiency              = 0;
   fEfficiencyForSubCenters = 0;
 }
-void CbmMuchTest::SetNCl(Int_t nCl, Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetNCl(Int_t nCl, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].nofCluster = nCl;
   }
 }
-void CbmMuchTest::SetXCl(Float_t xCl, Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetXCl(Float_t xCl, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].xc = xCl;
   }
 }
-void CbmMuchTest::SetYCl(Float_t yCl, Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetYCl(Float_t yCl, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].yc = yCl;
   }
 }
-void CbmMuchTest::SetCharge(UInt_t chCl, Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetCharge(UInt_t chCl, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].sumClCharge = chCl;
   }
 }
-void CbmMuchTest::SetNPads(Int_t nofPads, Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetNPads(Int_t nofPads, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].nofPads = nofPads;
   }
 }
-void CbmMuchTest::SetPadInCl(Int_t nPad, Int_t iCl, Int_t iPad) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetPadInCl(Int_t nPad, Int_t iCl, Int_t iPad)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].padsInCluster[iPad] = nPad;
   }
 }
-void CbmMuchTest::SetCluster(Int_t nCl,
-                             Float_t xCl,
-                             Float_t yCl,
-                             UInt_t chCl,
-                             Int_t nofPads,
-                             Int_t iCl) {
-  if (fNofClusters == 0) {
-    std::cout << "Error! fClusters is not declared!\n";
-  } else {
+void CbmMuchTest::SetCluster(Int_t nCl, Float_t xCl, Float_t yCl, UInt_t chCl, Int_t nofPads, Int_t iCl)
+{
+  if (fNofClusters == 0) { std::cout << "Error! fClusters is not declared!\n"; }
+  else {
     fClusters[iCl].nofCluster  = nCl;
     fClusters[iCl].xc          = xCl;
     fClusters[iCl].yc          = yCl;
@@ -226,15 +229,16 @@ void CbmMuchTest::SetCluster(Int_t nCl,
   }
 }
 
-void CbmMuchTest::CalculateEfficiency() {
+void CbmMuchTest::CalculateEfficiency()
+{
   /*std::cout<<"Start\n";
 	std::cout<<"fNofClusters: "<<fNofClusters<<"\n";
 	std::cout<<"fNofPoints: "<<fNofPoints<<"\n";*/
-  fEfficiency = 100.0 * (Float_t) fNofClusters / (Float_t) fNofPoints;
-  fEfficiencyForSubCenters =
-    100.0 * (Float_t) fNofClusters / (Float_t) fNofSubCenters;
+  fEfficiency              = 100.0 * (Float_t) fNofClusters / (Float_t) fNofPoints;
+  fEfficiencyForSubCenters = 100.0 * (Float_t) fNofClusters / (Float_t) fNofSubCenters;
 }
-void CbmMuchTest::CalculateAccuracy() {
+void CbmMuchTest::CalculateAccuracy()
+{
   fMeanErrorOnX = 0;
   fMeanErrorOnY = 0;
   for (Int_t iCl = 0; iCl < fNofClusters; iCl++) {
@@ -245,10 +249,8 @@ void CbmMuchTest::CalculateAccuracy() {
     //std::cout<<"-1----- "<<fMeanErrorOnX<<"   ---   "<<fMeanErrorOnY<<"\n";
     Float_t r1 = 100000;
     for (Int_t jCl = 0; jCl < fNofPoints; jCl++) {
-      Float_t r2 = sqrt((fClusters[iCl].xc - fRealPoints[jCl].xc)
-                          * (fClusters[iCl].xc - fRealPoints[jCl].xc)
-                        + (fClusters[iCl].yc - fRealPoints[jCl].yc)
-                            * (fClusters[iCl].yc - fRealPoints[jCl].yc));
+      Float_t r2 = sqrt((fClusters[iCl].xc - fRealPoints[jCl].xc) * (fClusters[iCl].xc - fRealPoints[jCl].xc)
+                        + (fClusters[iCl].yc - fRealPoints[jCl].yc) * (fClusters[iCl].yc - fRealPoints[jCl].yc));
       if (r2 < r1) {
         r1              = r2;
         fErrorsOnX[iCl] = fabs(fClusters[iCl].xc - fRealPoints[jCl].xc);
@@ -291,7 +293,8 @@ void CbmMuchTest::CalculateAccuracy() {
   fMeanErrorOnXforSubCenters = fMeanErrorOnXforSubCenters / fNofClusters;
   fMeanErrorOnYforSubCenters = fMeanErrorOnYforSubCenters / fNofClusters;
 }
-void CbmMuchTest::MainTesting() {
+void CbmMuchTest::MainTesting()
+{
   CalculateEfficiency();
   CalculateAccuracy();
 }

@@ -9,6 +9,7 @@
 #define CBMLITCLUSTERINGQASTUDYREPORT_H_
 
 #include "CbmStudyReport.h"
+
 #include <string>
 using std::string;
 

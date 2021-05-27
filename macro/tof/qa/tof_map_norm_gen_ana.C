@@ -12,13 +12,10 @@
 // --------------------------------------------------------------------------
 
 
-void tof_map_norm_gen_ana(TString geoVersion,
-                          Int_t iCoordType = 0,
-                          Int_t iPartType  = 0,
-                          Int_t nEvents    = 10000000) {
+void tof_map_norm_gen_ana(TString geoVersion, Int_t iCoordType = 0, Int_t iPartType = 0, Int_t nEvents = 10000000)
+{
   TString sCoordType = "";
-  if (0 == iCoordType)
-    sCoordType = "xyz";
+  if (0 == iCoordType) sCoordType = "xyz";
   else if (1 == iCoordType)
     sCoordType = "ang";
   else if (2 == iCoordType)
@@ -27,8 +24,7 @@ void tof_map_norm_gen_ana(TString geoVersion,
     return;  // No reason to enter other values!
 
   TString sPartType = "";
-  if (0 == iPartType)
-    sPartType = "geantino";
+  if (0 == iPartType) sPartType = "geantino";
   else if (1 == iPartType)
     sPartType = "proton";
   else
@@ -54,21 +50,15 @@ void tof_map_norm_gen_ana(TString geoVersion,
   TString outDir = "data/";
 
   // Input file (MC events)
-  TString inFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                   + sPartType + ".mc.root";
+  TString inFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + ".mc.root";
   // Parameter file
-  TString parFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                    + sPartType + ".params.root";
+  TString parFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + ".params.root";
 
   // Output file
-  TString outFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                    + sPartType + "_qa.eds.root";
-  TString digiOutFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                        + sPartType + "_DigiBdf.hst.root";
-  TString clustOutFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                         + sPartType + "_SimpClust.hst.root";
-  TString qaOutFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_"
-                      + sPartType + "_qa.hst.root";
+  TString outFile      = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + "_qa.eds.root";
+  TString digiOutFile  = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + "_DigiBdf.hst.root";
+  TString clustOutFile = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + "_SimpClust.hst.root";
+  TString qaOutFile    = outDir + "/norm." + geoVersion + "_" + sCoordType + "_" + sPartType + "_qa.hst.root";
 
   // -----  Geometries  -----------------------------------------------------
   TString caveGeom   = "cave.geo";
@@ -97,8 +87,7 @@ void tof_map_norm_gen_ana(TString geoVersion,
   parFileList->Add(&tofDigiFile);
 
   TObjString tofDigiBdfFile = "./tof.digibdf_norm.par";
-  if ("v14-0a" == geoVersion || "v14-0b" == geoVersion)
-    tofDigiBdfFile = "./tof.digibdf_norm_v14_0.par";
+  if ("v14-0a" == geoVersion || "v14-0b" == geoVersion) tofDigiBdfFile = "./tof.digibdf_norm_v14_0.par";
   parFileList->Add(&tofDigiBdfFile);
 
 
@@ -129,13 +118,11 @@ void tof_map_norm_gen_ana(TString geoVersion,
   // =========================================================================
 
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf =
-    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   tofDigitizerBdf->SetInputFileName(
-    paramDir
-    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+    paramDir + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
   tofDigitizerBdf->SetHistoFileName(digiOutFile);
   run->AddTask(tofDigitizerBdf);
 
@@ -144,8 +131,7 @@ void tof_map_norm_gen_ana(TString geoVersion,
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust =
-    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
   tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
   tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
   tofSimpClust->SetHistoFileName(clustOutFile);
@@ -164,8 +150,7 @@ void tof_map_norm_gen_ana(TString geoVersion,
   tofQa->SetHistoFileName(qaOutFile);
   tofQa->SetNormHistGenerationMode();
   // TODO: add the position for the other versions
-  if ("v13-5a" == geoVersion || "v14-0a" == geoVersion)
-    tofQa->SetWallPosZ(550);
+  if ("v13-5a" == geoVersion || "v14-0a" == geoVersion) tofQa->SetWallPosZ(550);
   else if ("v13-5d" == geoVersion || "v14-0b" == geoVersion)
     tofQa->SetWallPosZ(900);
   else

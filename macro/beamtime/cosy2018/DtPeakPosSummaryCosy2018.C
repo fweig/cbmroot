@@ -1,126 +1,72 @@
-Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
-                                Double_t dFitRange = 200) {
+Bool_t DtPeakPosSummaryCosy2018(TString sPath = "./data", Double_t dFitRange = 200)
+{
   static const UInt_t uNbRuns = 89;
 
-  TH1* pSummaryDtMeanX1Y1 = new TH1D(
-    "SummaryDtMeanX1Y1",
-    "Position of Dt peak X1Y1 per run at COSY 2018; Run []; X1Y1 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtMeanX2Y2 = new TH1D(
-    "SummaryDtMeanX2Y2",
-    "Position of Dt peak X2Y2 per run at COSY 2018; Run []; X2Y2 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtMeanN1P1 = new TH1D(
-    "SummaryDtMeanN1P1",
-    "Position of Dt peak N1P1 per run at COSY 2018; Run []; N1P1 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtMeanN2P2 = new TH1D(
-    "SummaryDtMeanN2P2",
-    "Position of Dt peak N2P2 per run at COSY 2018; Run []; N2P2 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtMeanX1Y1X2Y2 =
-    new TH1D("SummaryDtMeanX1Y1X2Y2",
-             "Position of Dt peak X1Y1X2Y2 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtMeanX1Y1 =
+    new TH1D("SummaryDtMeanX1Y1", "Position of Dt peak X1Y1 per run at COSY 2018; Run []; X1Y1 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtMeanN1P1N2P2 =
-    new TH1D("SummaryDtMeanN1P1N2P2",
-             "Position of Dt peak N1P1N2P2 per run at COSY 2018; Run []; "
-             "N1P1N2P2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtMeanX2Y2 =
+    new TH1D("SummaryDtMeanX2Y2", "Position of Dt peak X2Y2 per run at COSY 2018; Run []; X2Y2 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtMeanX1Y1X2Y2N1P1 =
-    new TH1D("SummaryDtMeanX1Y1X2Y2N1P1",
-             "Position of Dt peak X1Y1X2Y2N1P1 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2N1P1 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtMeanN1P1 =
+    new TH1D("SummaryDtMeanN1P1", "Position of Dt peak N1P1 per run at COSY 2018; Run []; N1P1 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtMeanX1Y1X2Y2N2P2 =
-    new TH1D("SummaryDtMeanX1Y1X2Y2N2P2",
-             "Position of Dt peak X1Y1X2Y2N2P2 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2N2P2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtMeanN2P2 =
+    new TH1D("SummaryDtMeanN2P2", "Position of Dt peak N2P2 per run at COSY 2018; Run []; N2P2 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtMeanH1H2S1S2 =
-    new TH1D("SummaryDtMeanH1H2S1S2",
-             "Position of Dt peak H1H2S1S2 per run at COSY 2018; Run []; "
-             "H1H2S1S2 peak [ns]",
-             uNbRuns,
-             1,
-             uNbRuns + 1);
+  TH1* pSummaryDtMeanX1Y1X2Y2     = new TH1D("SummaryDtMeanX1Y1X2Y2",
+                                         "Position of Dt peak X1Y1X2Y2 per run at COSY 2018; Run []; "
+                                         "X1Y1X2Y2 peak [ns]",
+                                         uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtMeanN1P1N2P2     = new TH1D("SummaryDtMeanN1P1N2P2",
+                                         "Position of Dt peak N1P1N2P2 per run at COSY 2018; Run []; "
+                                         "N1P1N2P2 peak [ns]",
+                                         uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtMeanX1Y1X2Y2N1P1 = new TH1D("SummaryDtMeanX1Y1X2Y2N1P1",
+                                             "Position of Dt peak X1Y1X2Y2N1P1 per run at COSY 2018; Run []; "
+                                             "X1Y1X2Y2N1P1 peak [ns]",
+                                             uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtMeanX1Y1X2Y2N2P2 = new TH1D("SummaryDtMeanX1Y1X2Y2N2P2",
+                                             "Position of Dt peak X1Y1X2Y2N2P2 per run at COSY 2018; Run []; "
+                                             "X1Y1X2Y2N2P2 peak [ns]",
+                                             uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtMeanH1H2S1S2     = new TH1D("SummaryDtMeanH1H2S1S2",
+                                         "Position of Dt peak H1H2S1S2 per run at COSY 2018; Run []; "
+                                         "H1H2S1S2 peak [ns]",
+                                         uNbRuns, 1, uNbRuns + 1);
 
-  TH1* pSummaryDtSigmaX1Y1 = new TH1D(
-    "SummaryDtSigmaX1Y1",
-    "Position of Dt peak X1Y1 per run at COSY 2018; Run []; X1Y1 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtSigmaX2Y2 = new TH1D(
-    "SummaryDtSigmaX2Y2",
-    "Position of Dt peak X2Y2 per run at COSY 2018; Run []; X2Y2 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtSigmaN1P1 = new TH1D(
-    "SummaryDtSigmaN1P1",
-    "Position of Dt peak N1P1 per run at COSY 2018; Run []; N1P1 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtSigmaN2P2 = new TH1D(
-    "SummaryDtSigmaN2P2",
-    "Position of Dt peak N2P2 per run at COSY 2018; Run []; N2P2 peak [ns]",
-    uNbRuns,
-    1,
-    uNbRuns + 1);
-  TH1* pSummaryDtSigmaX1Y1X2Y2 =
-    new TH1D("SummaryDtSigmaX1Y1X2Y2",
-             "Position of Dt peak X1Y1X2Y2 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtSigmaX1Y1 =
+    new TH1D("SummaryDtSigmaX1Y1", "Position of Dt peak X1Y1 per run at COSY 2018; Run []; X1Y1 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtSigmaN1P1N2P2 =
-    new TH1D("SummaryDtSigmaN1P1N2P2",
-             "Position of Dt peak N1P1N2P2 per run at COSY 2018; Run []; "
-             "N1P1N2P2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtSigmaX2Y2 =
+    new TH1D("SummaryDtSigmaX2Y2", "Position of Dt peak X2Y2 per run at COSY 2018; Run []; X2Y2 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtSigmaX1Y1X2Y2N1P1 =
-    new TH1D("SummaryDtSigmaX1Y1X2Y2N1P1",
-             "Position of Dt peak X1Y1X2Y2N1P1 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2N1P1 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtSigmaN1P1 =
+    new TH1D("SummaryDtSigmaN1P1", "Position of Dt peak N1P1 per run at COSY 2018; Run []; N1P1 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtSigmaX1Y1X2Y2N2P2 =
-    new TH1D("SummaryDtSigmaX1Y1X2Y2N2P2",
-             "Position of Dt peak X1Y1X2Y2N2P2 per run at COSY 2018; Run []; "
-             "X1Y1X2Y2N2P2 peak [ns]",
-             uNbRuns,
-             1,
+  TH1* pSummaryDtSigmaN2P2 =
+    new TH1D("SummaryDtSigmaN2P2", "Position of Dt peak N2P2 per run at COSY 2018; Run []; N2P2 peak [ns]", uNbRuns, 1,
              uNbRuns + 1);
-  TH1* pSummaryDtSigmaH1H2S1S2 =
-    new TH1D("SummaryDtSigmaH1H2S1S2",
-             "Position of Dt peak H1H2S1S2 per run at COSY 2018; Run []; "
-             "H1H2S1S2 peak [ns]",
-             uNbRuns,
-             1,
-             uNbRuns + 1);
+  TH1* pSummaryDtSigmaX1Y1X2Y2     = new TH1D("SummaryDtSigmaX1Y1X2Y2",
+                                          "Position of Dt peak X1Y1X2Y2 per run at COSY 2018; Run []; "
+                                          "X1Y1X2Y2 peak [ns]",
+                                          uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtSigmaN1P1N2P2     = new TH1D("SummaryDtSigmaN1P1N2P2",
+                                          "Position of Dt peak N1P1N2P2 per run at COSY 2018; Run []; "
+                                          "N1P1N2P2 peak [ns]",
+                                          uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtSigmaX1Y1X2Y2N1P1 = new TH1D("SummaryDtSigmaX1Y1X2Y2N1P1",
+                                              "Position of Dt peak X1Y1X2Y2N1P1 per run at COSY 2018; Run []; "
+                                              "X1Y1X2Y2N1P1 peak [ns]",
+                                              uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtSigmaX1Y1X2Y2N2P2 = new TH1D("SummaryDtSigmaX1Y1X2Y2N2P2",
+                                              "Position of Dt peak X1Y1X2Y2N2P2 per run at COSY 2018; Run []; "
+                                              "X1Y1X2Y2N2P2 peak [ns]",
+                                              uNbRuns, 1, uNbRuns + 1);
+  TH1* pSummaryDtSigmaH1H2S1S2     = new TH1D("SummaryDtSigmaH1H2S1S2",
+                                          "Position of Dt peak H1H2S1S2 per run at COSY 2018; Run []; "
+                                          "H1H2S1S2 peak [ns]",
+                                          uNbRuns, 1, uNbRuns + 1);
 
   TFile* pFile = NULL;
 
@@ -161,35 +107,26 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
       canvDt[ uRun ] = new TCanvas( Form("canvDt%02u", uRun), Form("Dt plots %02u", uRun) );
       canvDt[ uRun ]->Divide( 3, 3 );
 */
-    pFile = new TFile(
-      Form("%s/EfficiencyHistos_dryrun_r%04u.root", sPath.Data(), uRun + 1),
-      "READ");
+    pFile = new TFile(Form("%s/EfficiencyHistos_dryrun_r%04u.root", sPath.Data(), uRun + 1), "READ");
 
     if (NULL != pFile) {
       gDirectory->cd("Sts_Raw");
 
-      TH1* phDtPlot =
-        dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1"));
+      TH1* phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fX1Y1_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fX1Y1_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->SetParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fX1Y1_%04u", uRun + 1), "QRM0");
@@ -211,28 +148,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot =
-        dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX2Y2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX2Y2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fX2Y2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fX2Y2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->SetParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fX2Y2_%04u", uRun + 1), "QRM0");
@@ -254,28 +184,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot =
-        dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtN1P1"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtN1P1"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fN1P1_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fN1P1_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->SetParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fN1P1_%04u", uRun + 1), "QRM0");
@@ -297,28 +220,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot =
-        dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtN2P2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtN2P2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fN2P2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fN2P2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->SetParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fN2P2_%04u", uRun + 1), "QRM0");
@@ -340,28 +256,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot = dynamic_cast<TH1*>(
-        gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fX1Y1X2Y2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fX1Y1X2Y2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->FixParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fX1Y1X2Y2_%04u", uRun + 1), "QRM0");
@@ -383,28 +292,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot = dynamic_cast<TH1*>(
-        gDirectory->FindObjectAny("fhSetupSortedDtN1P1N2P2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtN1P1N2P2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fN1P1N2P2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fN1P1N2P2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->FixParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fN1P1N2P2_%04u", uRun + 1), "QRM0");
@@ -426,37 +328,29 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot = dynamic_cast<TH1*>(
-        gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N1P1"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N1P1"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fX1Y1X2Y2N1P1_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc =
+              new TF1(Form("fX1Y1X2Y2N1P1_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->FixParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fX1Y1X2Y2N1P1_%04u", uRun + 1), "QRM0");
 
             if (pFunc->GetParameter(2) < dFitRange) {
-              pSummaryDtMeanX1Y1X2Y2N1P1->Fill(uRun + 1,
-                                               pFunc->GetParameter(1));
-              pSummaryDtSigmaX1Y1X2Y2N1P1->Fill(uRun + 1,
-                                                pFunc->GetParameter(2));
+              pSummaryDtMeanX1Y1X2Y2N1P1->Fill(uRun + 1, pFunc->GetParameter(1));
+              pSummaryDtSigmaX1Y1X2Y2N1P1->Fill(uRun + 1, pFunc->GetParameter(2));
 
               dMeanH1H2S1[uRun]  = pFunc->GetParameter(1);
               dSigmaH1H2S1[uRun] = pFunc->GetParameter(2);
@@ -471,37 +365,29 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot = dynamic_cast<TH1*>(
-        gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N2P2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtX1Y1X2Y2N2P2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fX1Y1X2Y2N2P2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc =
+              new TF1(Form("fX1Y1X2Y2N2P2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->FixParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fX1Y1X2Y2N2P2_%04u", uRun + 1), "QRM0");
 
             if (pFunc->GetParameter(2) < dFitRange) {
-              pSummaryDtMeanX1Y1X2Y2N2P2->Fill(uRun + 1,
-                                               pFunc->GetParameter(1));
-              pSummaryDtSigmaX1Y1X2Y2N2P2->Fill(uRun + 1,
-                                                pFunc->GetParameter(2));
+              pSummaryDtMeanX1Y1X2Y2N2P2->Fill(uRun + 1, pFunc->GetParameter(1));
+              pSummaryDtSigmaX1Y1X2Y2N2P2->Fill(uRun + 1, pFunc->GetParameter(2));
 
               dMeanH1H2S2[uRun]  = pFunc->GetParameter(1);
               dSigmaH1H2S2[uRun] = pFunc->GetParameter(2);
@@ -516,28 +402,21 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
         }    // if( 1000 < phDtPlot->GetEntries() )
       }      // if( NULL != phDtPlot )
 
-      phDtPlot = dynamic_cast<TH1*>(
-        gDirectory->FindObjectAny("fhSetupSortedDtH1H2S1S2"));
+      phDtPlot = dynamic_cast<TH1*>(gDirectory->FindObjectAny("fhSetupSortedDtH1H2S1S2"));
       if (NULL != phDtPlot) {
         if (1000 < phDtPlot->GetEntries()) {
           Double_t dPeakPos = phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin());
 
-          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange,
-                                             dPeakPos + dFitRange);
+          phDtPlot->GetXaxis()->SetRangeUser(dPeakPos - dFitRange, dPeakPos + dFitRange);
 
           // Read integral and check how much we have close to the peak
           Double_t dZoomCounts = phDtPlot->Integral();
 
           if (1000 < dZoomCounts && TMath::Abs(dPeakPos) < 1000) {
-            TF1* pFunc = new TF1(Form("fH1H2S1S2_%04u", uRun + 1),
-                                 "gaus",
-                                 dPeakPos - dFitRange,
-                                 dPeakPos + dFitRange);
-            pFunc->SetParameter(
-              0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
+            TF1* pFunc = new TF1(Form("fH1H2S1S2_%04u", uRun + 1), "gaus", dPeakPos - dFitRange, dPeakPos + dFitRange);
+            pFunc->SetParameter(0, phDtPlot->GetBinCenter(phDtPlot->GetMaximumBin()));
             pFunc->FixParameter(1, dPeakPos);
-            pFunc->SetParameter(
-              2, 3.0);  // Hardcode start with ~BinWidth, do better later
+            pFunc->SetParameter(2, 3.0);  // Hardcode start with ~BinWidth, do better later
 
             // Using integral instead of bin center seems to lead to unrealistic values => no "I"
             phDtPlot->Fit(Form("fH1H2S1S2_%04u", uRun + 1), "QRM0");
@@ -593,8 +472,7 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
   canvasMean->cd(9);
   pSummaryDtMeanH1H2S1S2->Draw("hist");
 
-  TCanvas* canvasSigma =
-    new TCanvas("canvSigma", "Sigma of gauss fit on dt peak");
+  TCanvas* canvasSigma = new TCanvas("canvSigma", "Sigma of gauss fit on dt peak");
   canvasSigma->Divide(3, 3);
   canvasSigma->cd(1);
   pSummaryDtSigmaX1Y1->Draw("hist");
@@ -669,9 +547,7 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
   TString sWidthH1H2S1S2 = "   Double_t dWidthH1H2S1S2[ kiNbRuns ] = {\n      ";
 
   for (UInt_t uRun = 0; uRun < uNbRuns; uRun++) {
-    TString sEnd = (uNbRuns - 1 == uRun
-                      ? " };\n"
-                      : (19 == uRun % 20 && 0 < uRun ? ",\n      " : ", "));
+    TString sEnd = (uNbRuns - 1 == uRun ? " };\n" : (19 == uRun % 20 && 0 < uRun ? ",\n      " : ", "));
     sMeanH1 += Form("%6.3f%s", dMeanH1[uRun], sEnd.Data());
     sMeanH2 += Form("%6.3f%s", dMeanH2[uRun], sEnd.Data());
     sMeanS1 += Form("%6.3f%s", dMeanS1[uRun], sEnd.Data());
@@ -797,17 +673,14 @@ Bool_t DtPeakPosSummaryCosy2018(TString sPath      = "./data",
   std::cout << sWidthH1H2S2 << std::endl;
   std::cout << sWidthH1H2S1S2 << std::endl;
 
-  std::cout << dMeanH1[83] << " " << dMeanH2[83] << " " << dMeanS1[83] << " "
-            << dMeanS2[83] << " " << dMeanH1H2[83] << " " << dMeanS1S2[83]
-            << " " << dMeanH1H2S1[83] << " " << dMeanH1H2S2[83] << " "
-            << dMeanH1H2S1S2[83] << std::endl;
-  std::cout << dSigmaH1[83] << " " << dSigmaH2[83] << " " << dSigmaS1[83] << " "
-            << dSigmaS2[83] << " " << dSigmaH1H2[83] << " " << dSigmaS1S2[83]
-            << " " << dSigmaH1H2S1[83] << " " << dSigmaH1H2S2[83] << " "
+  std::cout << dMeanH1[83] << " " << dMeanH2[83] << " " << dMeanS1[83] << " " << dMeanS2[83] << " " << dMeanH1H2[83]
+            << " " << dMeanS1S2[83] << " " << dMeanH1H2S1[83] << " " << dMeanH1H2S2[83] << " " << dMeanH1H2S1S2[83]
+            << std::endl;
+  std::cout << dSigmaH1[83] << " " << dSigmaH2[83] << " " << dSigmaS1[83] << " " << dSigmaS2[83] << " "
+            << dSigmaH1H2[83] << " " << dSigmaS1S2[83] << " " << dSigmaH1H2S1[83] << " " << dSigmaH1H2S2[83] << " "
             << dSigmaH1H2S1S2[83] << std::endl;
-  std::cout << dWidthH1[83] << " " << dWidthH2[83] << " " << dWidthS1[83] << " "
-            << dWidthS2[83] << " " << dWidthH1H2[83] << " " << dWidthS1S2[83]
-            << " " << dWidthH1H2S1[83] << " " << dWidthH1H2S2[83] << " "
+  std::cout << dWidthH1[83] << " " << dWidthH2[83] << " " << dWidthS1[83] << " " << dWidthS2[83] << " "
+            << dWidthH1H2[83] << " " << dWidthS1S2[83] << " " << dWidthH1H2S1[83] << " " << dWidthH1H2S2[83] << " "
             << dWidthH1H2S1S2[83] << std::endl;
 
   return kTRUE;

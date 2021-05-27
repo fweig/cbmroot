@@ -8,14 +8,15 @@
 #ifndef LITHITDATA_H_
 #define LITHITDATA_H_
 
-#include "LitScalPixelHit.h"
-#include "LitScalStripHit.h"
-
 #include <cassert>
-#include <cmath>
 #include <set>
 #include <sstream>
 #include <vector>
+
+#include <cmath>
+
+#include "LitScalPixelHit.h"
+#include "LitScalStripHit.h"
 using std::endl;
 using std::max;
 using std::ostream;
@@ -24,8 +25,10 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace lit {
-  namespace parallel {
+namespace lit
+{
+  namespace parallel
+  {
 
     /**
  * \class LitHitData
@@ -38,13 +41,7 @@ namespace lit {
       /**
     * \brief Constructor.
     */
-      LitHitData()
-        : fHits()
-        , fMaxErrX()
-        , fMaxErrY()
-        , fNofStations(0)
-        , fZPosSet()
-        , fZPosBins() {}
+      LitHitData() : fHits(), fMaxErrX(), fMaxErrY(), fNofStations(0), fZPosSet(), fZPosBins() {}
 
       /**
     * \brief Destructor.
@@ -55,7 +52,8 @@ namespace lit {
     * \brief Set number of stations.
     * \param[in] layout Detector layout.
     */
-      void SetNofStations(unsigned char nofStations) {
+      void SetNofStations(unsigned char nofStations)
+      {
         fNofStations = nofStations;
         fHits.resize(nofStations);
         fMaxErrX.resize(nofStations);
@@ -72,7 +70,8 @@ namespace lit {
     * \param[in] station Station index.
     * \param[in] hit Pointer to hit to be added.
     */
-      void AddHit(LitScalPixelHit* hit) {
+      void AddHit(LitScalPixelHit* hit)
+      {
         unsigned char station = hit->stationId;
         assert(station < fNofStations);
         fHits[station].push_back(hit);
@@ -87,67 +86,52 @@ namespace lit {
     * \param[in] hitId Hit index in array of hits for specified station.
     * \return Hit pointer.
     */
-      const LitScalPixelHit* GetHit(unsigned char station,
-                                    unsigned int hitId) const {
-        return fHits[station][hitId];
-      }
+      const LitScalPixelHit* GetHit(unsigned char station, unsigned int hitId) const { return fHits[station][hitId]; }
 
       /**
     * \brief Return vector of hits.
     * \param[in] station Station index.
     * \return Vector of hits.
     */
-      const vector<LitScalPixelHit*>& GetHits(unsigned char station) {
-        return fHits[station];
-      }
+      const vector<LitScalPixelHit*>& GetHits(unsigned char station) { return fHits[station]; }
 
       /**
     * \brief Return number of hits for specified station.
     * \param[in] station Station index.
     * \return Number of hits in station.
     */
-      unsigned int GetNofHits(unsigned char station) const {
-        return fHits[station].size();
-      }
+      unsigned int GetNofHits(unsigned char station) const { return fHits[station].size(); }
 
       /**
     * \brief Return maximum X error in [cm] for specified station.
     * \param[in] station Station index in station group.
     * \return Hit error.
     */
-      fscal GetMaxErrX(unsigned char station) const {
-        return fMaxErrX[station];
-      }
+      fscal GetMaxErrX(unsigned char station) const { return fMaxErrX[station]; }
 
       /**
     * \brief Return maximum Y error in [cm] for specified station.
     * \param[in] station Station index in station group.
     * \return Hit error.
     */
-      fscal GetMaxErrY(unsigned char station) const {
-        return fMaxErrY[station];
-      }
+      fscal GetMaxErrY(unsigned char station) const { return fMaxErrY[station]; }
 
-      const vector<int>& GetZPosBins(unsigned char station) const {
-        return fZPosBins[station];
-      }
+      const vector<int>& GetZPosBins(unsigned char station) const { return fZPosBins[station]; }
 
-      fscal GetZPosByBin(unsigned char station, int bin) const {
-        return GetMinZPos(station) + bin * EPSILON;
-      }
+      fscal GetZPosByBin(unsigned char station, int bin) const { return GetMinZPos(station) + bin * EPSILON; }
 
-      int GetBinByZPos(unsigned char station, fscal zPos) const {
-        return (zPos - GetMinZPos(station)) / EPSILON;
-      }
+      int GetBinByZPos(unsigned char station, fscal zPos) const { return (zPos - GetMinZPos(station)) / EPSILON; }
 
-      fscal GetMinZPos(unsigned char station) const {
+      fscal GetMinZPos(unsigned char station) const
+      {
         return (fZPosSet[station].empty()) ? 0. : *fZPosSet[station].begin();
       }
 
       /**
     * \brief Clear hit arrays.
     */
-      void Clear() {
+      void Clear()
+      {
         for (unsigned int i = 0; i < fNofStations; i++) {
           fHits[i].clear();
           fHits[i].reserve(1500);
@@ -161,15 +145,15 @@ namespace lit {
       /**
     * \brief Must be called after all hits are added.
     */
-      void Arrange() {
+      void Arrange()
+      {
         for (int iStation = 0; iStation < fNofStations; iStation++) {
           if (fZPosSet[iStation].empty()) continue;
           fscal minZ = *fZPosSet[iStation].begin();
           //         fscal maxZ = *fZPosSet[iStation].rbegin();
           set<int> binSet;
           set<fscal>::const_iterator it;
-          for (it = fZPosSet[iStation].begin(); it != fZPosSet[iStation].end();
-               it++) {
+          for (it = fZPosSet[iStation].begin(); it != fZPosSet[iStation].end(); it++) {
             fscal z = *it;
             int bin = (z - minZ) / EPSILON;
             binSet.insert(bin);
@@ -189,24 +173,20 @@ namespace lit {
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-      string ToString() const {
+      string ToString() const
+      {
         stringstream ss;
         ss << "LitHitData:" << endl;
         for (unsigned int i = 0; i < fHits.size(); i++) {
           ss << " station " << i << ": " << GetNofHits(i) << " hits, "
-             << "maxerrx=" << GetMaxErrX(i) << ", maxerry=" << GetMaxErrY(i)
-             << ", ";
+             << "maxerrx=" << GetMaxErrX(i) << ", maxerry=" << GetMaxErrY(i) << ", ";
           ss << "zposset=(";
-          for (set<fscal>::const_iterator it = fZPosSet[i].begin();
-               it != fZPosSet[i].end();
-               it++) {
+          for (set<fscal>::const_iterator it = fZPosSet[i].begin(); it != fZPosSet[i].end(); it++) {
             ss << *it << ", ";
           }
           ss << ")" << endl;
           ss << "zposbins=(";
-          for (vector<int>::const_iterator it = fZPosBins[i].begin();
-               it != fZPosBins[i].end();
-               it++) {
+          for (vector<int>::const_iterator it = fZPosBins[i].begin(); it != fZPosBins[i].end(); it++) {
             ss << "|" << *it << "," << GetZPosByBin(i, *it) << "| ";
           }
           ss << ")" << endl;
@@ -218,7 +198,8 @@ namespace lit {
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-      friend ostream& operator<<(ostream& strm, const LitHitData& hitData) {
+      friend ostream& operator<<(ostream& strm, const LitHitData& hitData)
+      {
         strm << hitData.ToString();
         return strm;
       }
@@ -226,14 +207,12 @@ namespace lit {
     private:
       static const fscal EPSILON;
       vector<vector<LitScalPixelHit*>> fHits;  // Array of hits
-      vector<fscal> fMaxErrX;      // Array of maximum X error for each station
-      vector<fscal> fMaxErrY;      // Array of maximum Y error for each station
-      unsigned char fNofStations;  // Number of stations
-      vector<set<fscal>>
-        fZPosSet;  // Set of Z positions of hits in each station
-                   // Temporarily used for Z different Z positions calculation
-      vector<vector<int>>
-        fZPosBins;  // Array of Z positions bin number of hits in each station
+      vector<fscal> fMaxErrX;                  // Array of maximum X error for each station
+      vector<fscal> fMaxErrY;                  // Array of maximum Y error for each station
+      unsigned char fNofStations;              // Number of stations
+      vector<set<fscal>> fZPosSet;             // Set of Z positions of hits in each station
+                                               // Temporarily used for Z different Z positions calculation
+      vector<vector<int>> fZPosBins;           // Array of Z positions bin number of hits in each station
     } _fvecalignment;
 
   }  // namespace parallel

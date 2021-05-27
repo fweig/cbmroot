@@ -38,19 +38,13 @@ public:
    *@param richMerger   concrete instance of CbmRichMerger class
    *@param tofMerger    concrete instance of CbmTofMerger class
    **/
-  CbmFindGlobalTracks(CbmTrackMerger* trackMerger,
-                      CbmRichMerger* richMerger,
-                      CbmTofMerger* tofMerger,
+  CbmFindGlobalTracks(CbmTrackMerger* trackMerger, CbmRichMerger* richMerger, CbmTofMerger* tofMerger,
                       Int_t iVerbose = 1);
 
 
   /** Constructor with name and title **/
-  CbmFindGlobalTracks(const char* name,
-                      const char* title = "Global",
-                      CbmTrackMerger*   = NULL,
-                      CbmRichMerger*    = NULL,
-                      CbmTofMerger*     = NULL,
-                      Int_t iVerbose    = 1);
+  CbmFindGlobalTracks(const char* name, const char* title = "Global", CbmTrackMerger* = NULL, CbmRichMerger* = NULL,
+                      CbmTofMerger* = NULL, Int_t iVerbose = 1);
 
 
   /** Destructor **/

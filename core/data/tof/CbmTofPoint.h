@@ -9,12 +9,12 @@
 #ifndef CBMTOFPOINT_H
 #define CBMTOFPOINT_H 1
 
+#include <FairMCPoint.h>  // for FairMCPoint
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, UShort_t
 
 #include <string>  // for string
-
-#include <FairMCPoint.h>  // for FairMCPoint
 
 class TVector3;
 
@@ -53,13 +53,7 @@ public:
    ** @param length   Track length since creation [cm]
    ** @param eLoss    Energy deposit [GeV]
    **/
-  CbmTofPoint(Int_t trackID,
-              Int_t detID,
-              TVector3 pos,
-              TVector3 mom,
-              Double_t tof,
-              Double_t length,
-              Double_t eLoss);
+  CbmTofPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length, Double_t eLoss);
 
 
   /** @brief Destructor **/

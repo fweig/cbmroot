@@ -8,8 +8,7 @@
 /** \brief Definition of generic parameters for one TRD module **/
 class CbmTrdParMod : public TNamed {
 public:
-  CbmTrdParMod(const char* name  = "CbmTrdParMod",
-               const char* title = "TRD generic module definition");
+  CbmTrdParMod(const char* name = "CbmTrdParMod", const char* title = "TRD generic module definition");
   virtual ~CbmTrdParMod();
 
   virtual Int_t GetModuleId() const { return fModuleId; }

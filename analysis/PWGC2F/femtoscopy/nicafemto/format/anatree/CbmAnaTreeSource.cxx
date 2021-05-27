@@ -108,7 +108,8 @@ Int_t CbmAnaTreeSource::ReadEvent(UInt_t unsignedInt)
 
 void CbmAnaTreeSource::Close() {}
 
-void CbmAnaTreeSource::LoadConf(TString name) {
+void CbmAnaTreeSource::LoadConf(TString name)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;

@@ -2,6 +2,7 @@
 #define CBMTRDTRIANGLEPRF_H 1
 
 #include <TObject.h>
+
 #include <iostream>
 
 class TF1;
@@ -25,11 +26,10 @@ class TF1;
  **/
 class CbmTrdTrianglePRF : public TObject {
 public:
-  enum CbmTrdTrianglePRFDef {
-    NC =
-      2,  ///< no. of neighbor columns (except the hit) to be considered in cluster definition
-    NR =
-      1  ///< no. of neighbor rows (except the hit) to be considered in cluster definition
+  enum CbmTrdTrianglePRFDef
+  {
+    NC = 2,  ///< no. of neighbor columns (except the hit) to be considered in cluster definition
+    NR = 1   ///< no. of neighbor rows (except the hit) to be considered in cluster definition
   };
   /**
     * \brief Build map
@@ -59,7 +59,8 @@ public:
     * \param bx on return contains x index of the current bin
     * \param by on return contains y index of the current bin
     **/
-  void GetCurrentBin(Int_t& bx, Int_t& by) const {
+  void GetCurrentBin(Int_t& bx, Int_t& by) const
+  {
     bx = fBinx;
     by = fBiny;
   }
@@ -123,23 +124,20 @@ private:
   /// Current bin in the map - x direction
   Int_t fBinx;  //! Index of current bin in the map - x direction
   /// Offset bin in the map - x direction
-  Int_t
-    fBinx0;  //! Index of bin in the map corresponding to cluster center - x direction
+  Int_t fBinx0;  //! Index of bin in the map corresponding to cluster center - x direction
   /// Current bin in the map - y direction
   Int_t fBiny;  //! Index of current bin in the map - y direction
   /// Offset bin in the map - y direction
-  Int_t
-    fBiny0;  //! Index of bin in the map corresponding to cluster center - y direction
-  Double_t fX0;     ///< x coordinate of cluster
-  Double_t fY0;     ///< y coordinate of cluster
-  Double_t fW;      ///< pad width
-  Double_t fH;      ///< pad height
-  Double_t fdW;     ///< bin half width
-  Double_t fdH;     ///< bin half height
-  Double_t fSlope;  ///< slope of triangle H/W
-  Double_t fNorm;   ///< normalization factor for the 2D Gauss distribution
-  std::vector<Char_t>
-    fUp;  ///< 1 for the upper pad, -1 for the bottom pad and 0 on the boundary
+  Int_t fBiny0;              //! Index of bin in the map corresponding to cluster center - y direction
+  Double_t fX0;              ///< x coordinate of cluster
+  Double_t fY0;              ///< y coordinate of cluster
+  Double_t fW;               ///< pad width
+  Double_t fH;               ///< pad height
+  Double_t fdW;              ///< bin half width
+  Double_t fdH;              ///< bin half height
+  Double_t fSlope;           ///< slope of triangle H/W
+  Double_t fNorm;            ///< normalization factor for the 2D Gauss distribution
+  std::vector<Char_t> fUp;   ///< 1 for the upper pad, -1 for the bottom pad and 0 on the boundary
   std::vector<Double_t> fX;  ///< position of bin center along wires
   std::vector<Double_t> fY;  ///< position of bin center across wires
   TF1* fPRFx;                ///< PRF model along wires

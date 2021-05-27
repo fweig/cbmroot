@@ -1,4 +1,5 @@
-void drawM() {
+void drawM()
+{
   gStyle->SetOptStat(0);
   gStyle->SetOptLogy(1);
   gStyle->SetPadRightMargin(0.03);
@@ -77,7 +78,8 @@ void drawM() {
   c1->cd();
 }
 
-void Fit(TH1D* hAll, TH1D* hSignal) {
+void Fit(TH1D* hAll, TH1D* hSignal)
+{
   Double_t par[3];
   hSignal->Fit("gaus", "Q", "");
   hSignal->GetFunction("gaus")->GetParameters(par);
@@ -93,7 +95,8 @@ void Fit(TH1D* hAll, TH1D* hSignal) {
   hSignal->GetFunction("gaus")->SetLineColor(kBlue);
   hAll->GetFunction("fitSB")->SetLineColor(kBlue);
 }
-void SetStyle(TH1* h1) {
+void SetStyle(TH1* h1)
+{
   h1->GetXaxis()->CenterTitle();
   h1->GetYaxis()->CenterTitle();
   h1->SetTitleSize(0.045, "X");

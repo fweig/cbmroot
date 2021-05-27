@@ -5,7 +5,8 @@
  * \date 2008
  */
 
-void cbmrootlibs() {
+void cbmrootlibs()
+{
   //   gSystem->Load("libboost_filesystem");
   gSystem->Load("libboost_regex");
 

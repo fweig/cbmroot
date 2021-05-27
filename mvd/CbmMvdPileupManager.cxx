@@ -21,18 +21,18 @@ CbmMvdPileupManager::CbmMvdPileupManager() : TObject(), fBuffer(NULL) {}
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdPileupManager::CbmMvdPileupManager(TString fileName,
-                                         TString branchName,
-                                         Int_t nEvents)
-  : TObject(), fBuffer(new TObjArray(nEvents)) {
-  if (!FillBuffer(fileName, branchName, nEvents))
-    Fatal("CbmMvdPileupManager", "Error in filling buffer");
+CbmMvdPileupManager::CbmMvdPileupManager(TString fileName, TString branchName, Int_t nEvents)
+  : TObject()
+  , fBuffer(new TObjArray(nEvents))
+{
+  if (!FillBuffer(fileName, branchName, nEvents)) Fatal("CbmMvdPileupManager", "Error in filling buffer");
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdPileupManager::~CbmMvdPileupManager() {
+CbmMvdPileupManager::~CbmMvdPileupManager()
+{
   fBuffer->Delete();
   delete fBuffer;
 }
@@ -40,15 +40,14 @@ CbmMvdPileupManager::~CbmMvdPileupManager() {
 
 
 // -----   Public method GetEvent   ----------------------------------------
-TClonesArray* CbmMvdPileupManager::GetEvent(Int_t iEvent) {
+TClonesArray* CbmMvdPileupManager::GetEvent(Int_t iEvent)
+{
 
   if (!fBuffer) Fatal("CbmMvdPileupManager::GetEvent", "No event buffer!");
 
   if (iEvent > fBuffer->GetEntriesFast()) {
-    cout << "-W- CbmMvdPileupManager::GetEvent: Event " << iEvent
-         << " not present in buffer! " << endl;
-    cout << "                                   Returning NULL pointer! "
-         << endl;
+    cout << "-W- CbmMvdPileupManager::GetEvent: Event " << iEvent << " not present in buffer! " << endl;
+    cout << "                                   Returning NULL pointer! " << endl;
     return NULL;
   }
 
@@ -65,9 +64,8 @@ TClonesArray* CbmMvdPileupManager::GetEvent(Int_t iEvent) {
 
 
 // -----   Private method FillBuffer   -------------------------------------
-Int_t CbmMvdPileupManager::FillBuffer(TString fileName,
-                                      TString branchName,
-                                      Int_t nEvents) {
+Int_t CbmMvdPileupManager::FillBuffer(TString fileName, TString branchName, Int_t nEvents)
+{
 
   if (!fBuffer) Fatal("Fill Buffer", "No event buffer!");
 
@@ -81,8 +79,7 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName,
 
   TFile* bgfile = new TFile(fileName);
   if (!bgfile) {
-    cout << "-W- CbmMvdPileupManager::FillBuffer:  Background file " << fileName
-         << " could noy be opened! " << endl;
+    cout << "-W- CbmMvdPileupManager::FillBuffer:  Background file " << fileName << " could noy be opened! " << endl;
     return 0;
   }
   cout << "-I- CbmMvdPileupManager::FillBuffer: Opening file " << endl;
@@ -96,11 +93,9 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName,
   }
 
   Int_t nEventsInFile = bgtree->GetEntries();
-  cout << "-I- CbmMvdPileupManager::FillBuffer: " << nEventsInFile
-       << " events in file" << endl;
+  cout << "-I- CbmMvdPileupManager::FillBuffer: " << nEventsInFile << " events in file" << endl;
   Int_t nBuffer = TMath::Min(nEvents, nEventsInFile);
-  cout << "-I- CbmMvdPileupManager::FillBuffer: Buffering " << nBuffer
-       << " events" << endl;
+  cout << "-I- CbmMvdPileupManager::FillBuffer: Buffering " << nBuffer << " events" << endl;
   if (nBuffer < 100)
     cout << "-W- CbmMvdPileupManager::FillBuffer: "
          << "Number of events may not be sufficient for appropriate "

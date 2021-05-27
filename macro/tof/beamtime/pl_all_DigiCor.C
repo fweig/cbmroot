@@ -1,4 +1,5 @@
-void pl_all_DigiCor(Int_t iNDet = 9) {
+void pl_all_DigiCor(Int_t iNDet = 9)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -29,13 +30,13 @@ void pl_all_DigiCor(Int_t iNDet = 9) {
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname =
-          Form("cl_SmT%01d_sm%03d_rpc%03d_DigiCor", iType[iCh], iSm, iRpc);
-        h2 = (TH2*) gROOT->FindObjectAny(hname);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_DigiCor", iType[iCh], iSm, iRpc);
+        h2            = (TH2*) gROOT->FindObjectAny(hname);
         if (h2 != NULL) {
           h2->Draw("colz");
           //     gPad->SetLogy();
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

@@ -1,26 +1,24 @@
 #ifndef CBMTOFDIGIPAR_H
 #define CBMTOFDIGIPAR_H
 
+#include <FairParGenericSet.h>  // for FairParGenericSet
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t
 #include <TArrayD.h>     // for TArrayD
 #include <TArrayI.h>     // for TArrayI
-
-#include <map>  // for map
-
-#include <FairParGenericSet.h>  // for FairParGenericSet
 #include <TGeoManager.h>
 #include <TNode.h>
+
+#include <map>  // for map
 
 class CbmTofCell;
 class FairParamList;
 
 class CbmTofDigiPar : public FairParGenericSet {
 public:
-  CbmTofDigiPar(
-    const char* name    = "CbmTofDigiPar",
-    const char* title   = "Digitization parameters for the TOF detector",
-    const char* context = "TestDefaultContext");
+  CbmTofDigiPar(const char* name = "CbmTofDigiPar", const char* title = "Digitization parameters for the TOF detector",
+                const char* context = "TestDefaultContext");
 
   CbmTofDigiPar(const CbmTofDigiPar&) = delete;
   CbmTofDigiPar& operator=(const CbmTofDigiPar&) = delete;
@@ -48,9 +46,7 @@ public:
   CbmTofCell* GetCell(Int_t i) { return fCellMap[i]; }
 
   TGeoNode* GetNode(Int_t iCell) { return fCellNode[iCell]; }
-  void SetNode(Int_t iCell, TGeoNode* tGeoNode) {
-    fCellNode.insert(std::pair<Int_t, TGeoNode*>(iCell, tGeoNode));
-  }
+  void SetNode(Int_t iCell, TGeoNode* tGeoNode) { fCellNode.insert(std::pair<Int_t, TGeoNode*>(iCell, tGeoNode)); }
   void SetNodeMap(std::map<Int_t, TGeoNode*> map) { fCellNode = map; }
 
 private:

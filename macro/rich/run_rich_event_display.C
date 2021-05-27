@@ -4,7 +4,8 @@
  * @version 1.0
  **/
 
-void run_rich_event_display() {
+void run_rich_event_display()
+{
 
   TString outDir   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/";
   TString parFile  = outDir + "param.00000.root";

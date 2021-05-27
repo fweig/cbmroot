@@ -1,6 +1,5 @@
-void add_histo(Int_t NofFiles = 5000,
-               TString type   = "sub_histo",
-               TString dir    = "sis100_muon_lmvm/8gev/centr_010") {
+void add_histo(Int_t NofFiles = 5000, TString type = "sub_histo", TString dir = "sis100_muon_lmvm/8gev/centr_010")
+{
   TString name;
   name.Form("%s/1/%s.root", dir.Data(), type.Data());
   TFile* f = new TFile(name);
@@ -35,8 +34,7 @@ void add_histo(Int_t NofFiles = 5000,
       if (k % 100 == 0) cout << k << " - " << name << endl;
 
       TFile* f1 = new TFile(name);
-      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1
-          || f1->TestBit(TFile::kRecovered)) {
+      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1 || f1->TestBit(TFile::kRecovered)) {
         f1->Close();
         continue;
       }
@@ -66,8 +64,8 @@ void add_histo(Int_t NofFiles = 5000,
     h5a->Write();
 
     FFF->Close();
-
-  } else if (type == "YPt_histo") {
+  }
+  else if (type == "YPt_histo") {
 
     TH2D* h0 = (TH2D*) f->Get("YPt_pluto");
 
@@ -89,8 +87,7 @@ void add_histo(Int_t NofFiles = 5000,
       if (k % 100 == 0) cout << k << " - " << name << endl;
 
       TFile* f1 = new TFile(name);
-      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1
-          || f1->TestBit(TFile::kRecovered)) {
+      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1 || f1->TestBit(TFile::kRecovered)) {
         f1->Close();
         continue;
       }
@@ -138,8 +135,8 @@ void add_histo(Int_t NofFiles = 5000,
     h4a->Write();
 
     FFF->Close();
-
-  } else if (type == "YPtM") {
+  }
+  else if (type == "YPtM") {
 
     TH3D* h1   = (TH3D*) f->Get("YPtM");
     Double_t N = 1;
@@ -149,8 +146,7 @@ void add_histo(Int_t NofFiles = 5000,
       if (k % 100 == 0) cout << k << " - " << name << endl;
 
       TFile* f1 = new TFile(name);
-      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1
-          || f1->TestBit(TFile::kRecovered)) {
+      if (!f1 || f1->IsZombie() || f1->GetNkeys() < 1 || f1->TestBit(TFile::kRecovered)) {
         f1->Close();
         continue;
       }

@@ -1,4 +1,5 @@
-pl_TIS(Double_t dFracMax = 0.1) {
+pl_TIS(Double_t dFracMax = 0.1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 700, 700);
@@ -21,9 +22,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
   gROOT->cd();
   TString hname = "tof_trb_time_in_spill";
   h1            = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw("");
-  } else {
+  if (h1 != NULL) { h1->Draw(""); }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -33,7 +33,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
     h1->Draw("same");
     h1->SetLineColor(3);
     h1->GetXaxis()->SetTitle("time [10ns]");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_all = (TH1*) h1->Clone();
@@ -45,7 +46,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
   if (h1 != NULL) {
     h1->Draw();
     h1->GetXaxis()->SetTitle("time [10ns]");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel = (TH1*) h1->Clone();
@@ -55,7 +57,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel1 = (TH1*) h1->Clone();
@@ -65,7 +68,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
   if (h1 != NULL) {
     h1->Draw("same");
     h1->SetLineColor(7);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   TH1* hTIS_sel2 = (TH1*) h1->Clone();
@@ -104,7 +108,8 @@ pl_TIS(Double_t dFracMax = 0.1) {
   if (h2 != NULL) {
     h2->Draw("colz");
     TProfile* h2pfx = h2->ProfileX("hTISDT04D4best_pfs", 1, -1, "s");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

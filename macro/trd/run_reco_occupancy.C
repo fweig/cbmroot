@@ -57,9 +57,8 @@ TString defaultInputFile = "";
 #include "../include/rootalias.C"
 
 
-void run_reco_occupancy(Int_t nEvents       = 1000,
-                        const char* setup   = "sis100_electron",
-                        const char* rawfile = "") {
+void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electron", const char* rawfile = "")
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -68,10 +67,8 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
   whichTrdGeo.open("whichTrdGeo", std::ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  std::cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << std::endl;
+  std::cout << "selected geometry : >> " << digipar
+            << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << std::endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -89,10 +86,8 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
   TRegexp Nr("[.][0-9][0-9][0-9][0-9][0-9][.]");
   TString inFile  = outDir + setup + TString(rawfile)(Nr) + "_test.raw.root";
   TString parFile = outDir + setup + TString(rawfile)(Nr) + "_params.root";
-  TString outFile =
-    outDir + setup + TString(rawfile)(Nr) + "_test.eds.root";  // Output file
-  TString geoFile =
-    outDir + setup + TString(rawfile)(Nr) + "_geofile_full.root";
+  TString outFile = outDir + setup + TString(rawfile)(Nr) + "_test.eds.root";  // Output file
+  TString geoFile = outDir + setup + TString(rawfile)(Nr) + "_geofile_full.root";
 
 
   // Function needed for CTest runtime dependency
@@ -307,7 +302,7 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  Bool_t simpleTR          = kTRUE;  // use fast and simple version for TR production
   CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
@@ -335,8 +330,7 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
   trdHit->SetTriangularPads(triangularPads);
   run->AddTask(trdHit);
 
-  CbmTrdOccupancyQa* trdOccupancy =
-    new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
+  CbmTrdOccupancyQa* trdOccupancy = new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
   run->AddTask(trdOccupancy);
 
 
@@ -370,18 +364,14 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
     std::cout << "MuchDigiFile: " << muchDigiFile << std::endl;
 
     // ----- MUCH hits----------   --------4--------------------------------------
-    CbmMuchDigitizeGem* muchDigitize =
-      new CbmMuchDigitizeGem(muchDigiFile.Data());
+    CbmMuchDigitizeGem* muchDigitize = new CbmMuchDigitizeGem(muchDigiFile.Data());
     run->AddTask(muchDigitize);
-    CbmMuchDigitizeStraws* strawDigitize =
-      new CbmMuchDigitizeStraws(muchDigiFile.Data());
+    CbmMuchDigitizeStraws* strawDigitize = new CbmMuchDigitizeStraws(muchDigiFile.Data());
     run->AddTask(strawDigitize);
 
-    CbmMuchFindHitsGem* muchFindHits =
-      new CbmMuchFindHitsGem(muchDigiFile.Data());
+    CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data());
     run->AddTask(muchFindHits);
-    CbmMuchFindHitsStraws* strawFindHits =
-      new CbmMuchFindHitsStraws(muchDigiFile.Data());
+    CbmMuchFindHitsStraws* strawFindHits = new CbmMuchFindHitsStraws(muchDigiFile.Data());
     run->AddTask(strawFindHits);
     // --------------------------------------------------------------------------
   }
@@ -510,8 +500,7 @@ void run_reco_occupancy(Int_t nEvents       = 1000,
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 

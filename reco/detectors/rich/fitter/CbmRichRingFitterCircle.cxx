@@ -6,13 +6,15 @@
 **/
 
 #include "CbmRichRingFitterCircle.h"
+
 #include "CbmRichRingLight.h"
 
 CbmRichRingFitterCircle::CbmRichRingFitterCircle() {}
 
 CbmRichRingFitterCircle::~CbmRichRingFitterCircle() {}
 
-void CbmRichRingFitterCircle::DoFit(CbmRichRingLight* ring) {
+void CbmRichRingFitterCircle::DoFit(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
   if (nofHits < 3) return;
 
@@ -98,8 +100,7 @@ void CbmRichRingFitterCircle::DoFit(CbmRichRingLight* ring) {
   //   Float_t x12 = (c[1]*a[1][2] - c[2]*a[1][1])/det2;
   //   Float_t x22 = (a[0][1]*c[2] - a[0][2]*c[1])/det2;
 
-  float radius =
-    sqrt((b3 + b32 * (x11 * x11 + x21 * x21) - a31 * x11 - a32 * x21) / a33);
+  float radius  = sqrt((b3 + b32 * (x11 * x11 + x21 * x21) - a31 * x11 - a32 * x21) / a33);
   float centerX = x11;
   float centerY = x21;
 

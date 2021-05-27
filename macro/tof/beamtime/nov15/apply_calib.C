@@ -5,8 +5,8 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void apply_calib(Long64_t nEvents = 100000000,
-                 TString cFileId  = "CbmTofSps_01Dec0427") {
+void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CbmTofSps_01Dec0427")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -50,8 +50,7 @@ void apply_calib(Long64_t nEvents = 100000000,
   TString outFile = "./unpack_" + cOutfileId + ".out.root";
 
   CbmHldSource* source = new CbmHldSource();
-  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/11/cern/data/production/",
-                  Form("%s*.hld", cFileId.Data()));
+  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/11/cern/data/production/", Form("%s*.hld", cFileId.Data()));
 
   TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10, 1, 31, 0, 0);
   tofTrbDataUnpacker->SetInspection(kFALSE);
@@ -107,9 +106,7 @@ void apply_calib(Long64_t nEvents = 100000000,
   cout << "Starting run" << endl;
   run->Run(0, nEvents);
 
-  if (tofTrbDataUnpacker->IsGoodEventInBuffer()) {
-    FairRootManager::Instance()->SetLastFill(kTRUE);
-  }
+  if (tofTrbDataUnpacker->IsGoodEventInBuffer()) { FairRootManager::Instance()->SetLastFill(kTRUE); }
 
   cout << "Finishing run" << endl;
   run->Finish();

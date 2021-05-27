@@ -52,14 +52,10 @@ private:
   CbmVertex* fPrimVertex;
   CbmKFVertex fKFVertex;
 
-  std::vector<TH1*>
-    fHistoList_photons;  // list of all histograms related to rich rings
-  std::vector<TH1*>
-    fHistoList_photons_withRICH;  // list of all histograms related to rich rings
-  std::vector<TH1*>
-    fHistoList_photons_withRICH_withChi;  // list of all histograms related to rich rings
-  std::vector<TH1*>
-    fHistoList_photons_withRICH_fromTarget;  // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_photons;                      // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_photons_withRICH;             // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_photons_withRICH_withChi;     // list of all histograms related to rich rings
+  std::vector<TH1*> fHistoList_photons_withRICH_fromTarget;  // list of all histograms related to rich rings
 
   std::vector<Int_t> fRecoTracklist_gtIndex;
   std::vector<Int_t> fRecoTracklist_mcIndex;

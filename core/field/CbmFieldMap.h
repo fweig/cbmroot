@@ -20,11 +20,11 @@
 #define CBMFIELDMAP_H 1
 
 
+#include <FairField.h>  // for FairField
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TString.h>     // for TString
-
-#include <FairField.h>  // for FairField
 
 class CbmFieldMapCreator;
 class CbmFieldMapData;
@@ -73,18 +73,8 @@ public:
    ** @param by    Pointer to array with By values [T]
    ** @param bz    Pointer to array with Bz values [T]
    **/
-  virtual void Init(Int_t nX,
-                    Double_t xMin,
-                    Double_t xMax,
-                    Int_t nY,
-                    Double_t yMin,
-                    Double_t yMax,
-                    Int_t nZ,
-                    Double_t zMin,
-                    Double_t zMax,
-                    TArrayF* bx,
-                    TArrayF* by,
-                    TArrayF* bz);
+  virtual void Init(Int_t nX, Double_t xMin, Double_t xMax, Int_t nY, Double_t yMin, Double_t yMax, Int_t nZ,
+                    Double_t zMin, Double_t zMax, TArrayF* bx, TArrayF* by, TArrayF* bz);
 
 
   /** Get the field components at a certain point 
@@ -102,15 +92,8 @@ public:
    ** @param dx,dy,dz (return)  Distance from grid point [cm] if inside
    ** @value kTRUE if inside map, else kFALSE
    **/
-  virtual Bool_t IsInside(Double_t x,
-                          Double_t y,
-                          Double_t z,
-                          Int_t& ix,
-                          Int_t& iy,
-                          Int_t& iz,
-                          Double_t& dx,
-                          Double_t& dy,
-                          Double_t& dz);
+  virtual Bool_t IsInside(Double_t x, Double_t y, Double_t z, Int_t& ix, Int_t& iy, Int_t& iz, Double_t& dx,
+                          Double_t& dy, Double_t& dz);
 
 
   /** Write the field map to an ASCII file **/

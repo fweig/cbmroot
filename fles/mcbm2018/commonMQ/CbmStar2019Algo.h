@@ -12,12 +12,14 @@
 
 /// CbmRoot (+externals) headers
 #include "CbmErrorMessage.h"
+
 #include "Timeslice.hpp"
 
 /// FairRoot headers
 
 /// Fairsoft (Root, Boost, ...) headers
 #include "Rtypes.h"
+
 #include <boost/any.hpp>
 
 /// C/C++ headers
@@ -31,9 +33,9 @@ class TNamed;
 class TCanvas;
 
 template<typename T>
-bool is_this_type(const boost::any& varValue) {
-  if (auto q = boost::any_cast<T>(&varValue))
-    return true;
+bool is_this_type(const boost::any& varValue)
+{
+  if (auto q = boost::any_cast<T>(&varValue)) return true;
   else
     return false;
 }
@@ -63,34 +65,27 @@ public:
   virtual void Reset()  = 0;
   virtual void Finish() = 0;
 
-  virtual Bool_t ProcessTs(const fles::Timeslice& ts)                   = 0;
-  virtual Bool_t ProcessTs(const fles::Timeslice& ts, size_t component) = 0;
-  virtual Bool_t
-  ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx) = 0;
+  virtual Bool_t ProcessTs(const fles::Timeslice& ts)                                   = 0;
+  virtual Bool_t ProcessTs(const fles::Timeslice& ts, size_t component)                 = 0;
+  virtual Bool_t ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx) = 0;
 
   virtual Bool_t InitContainers()   = 0;
   virtual Bool_t ReInitContainers() = 0;
   virtual TList* GetParList()       = 0;
   virtual void SetParameter(std::string /*param*/) { ; }
-  virtual std::string GetParameter(std::string /*param*/) {
-    return std::string {""};
-  }
+  virtual std::string GetParameter(std::string /*param*/) { return std::string {""}; }
 
   /// For monitor algos
-  void AddHistoToVector(TNamed* pointer, std::string sFolder = "") {
-    fvpAllHistoPointers.push_back(
-      std::pair<TNamed*, std::string>(pointer, sFolder));
+  void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
+  {
+    fvpAllHistoPointers.push_back(std::pair<TNamed*, std::string>(pointer, sFolder));
   }
-  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() {
-    return fvpAllHistoPointers;
+  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() { return fvpAllHistoPointers; }
+  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "")
+  {
+    fvpAllCanvasPointers.push_back(std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
-  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "") {
-    fvpAllCanvasPointers.push_back(
-      std::pair<TCanvas*, std::string>(pointer, sFolder));
-  }
-  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() {
-    return fvpAllCanvasPointers;
-  }
+  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   /// For unpacker algos
   void ClearVector() { fDigiVect.clear(); }
@@ -99,9 +94,7 @@ public:
   std::vector<CbmErrorMessage>& GetErrorVector() { return fErrVect; }
 
   /// Control flags
-  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE) {
-    fbIgnoreOverlapMs = bFlagIn;
-  }
+  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE) { fbIgnoreOverlapMs = bFlagIn; }
 
 protected:
   /// Parameter management
@@ -112,13 +105,10 @@ protected:
   size_t fuNbCoreMsPerTs;                  //!
   size_t fuNbOverMsPerTs;                  //!
   size_t fuNbMsLoop;                       //!
-  Bool_t
-    fbIgnoreOverlapMs;  //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
-  Double_t fdMsSizeInNs;  //! Size of a single MS, [nanoseconds]
-  Double_t
-    fdTsCoreSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
-  Double_t
-    fdTsFullSizeInNs;  //! Total size of the core MS in a TS, [nanoseconds]
+  Bool_t fbIgnoreOverlapMs;                //! /** Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
+  Double_t fdMsSizeInNs;                   //! Size of a single MS, [nanoseconds]
+  Double_t fdTsCoreSizeInNs;               //! Total size of the core MS in a TS, [nanoseconds]
+  Double_t fdTsFullSizeInNs;               //! Total size of the core MS in a TS, [nanoseconds]
 
   /// For monitor algos
   /// => Pointers should be filled with TH1*, TH2*, TProfile*, ...
@@ -141,13 +131,9 @@ protected:
   std::vector<CbmErrorMessage> fErrVect = {};
 
   /// For any algo
-  std::map<std::string, std::string>
-    fParameterMap;  //! Map of parameter name and type
+  std::map<std::string, std::string> fParameterMap;  //! Map of parameter name and type
 
-  Bool_t CheckParameterValidity(std::string /*parameterName*/,
-                                std::string /*parameterType*/) {
-    return kTRUE;
-  }
+  Bool_t CheckParameterValidity(std::string /*parameterName*/, std::string /*parameterType*/) { return kTRUE; }
 
 private:
 };

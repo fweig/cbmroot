@@ -57,8 +57,7 @@ public:
    *@param z      z position
    *@param param  (return value) StsTrackParam at z
    **/
-  virtual void
-  Extrapolate(CbmStsTrack* track, Double_t z, FairTrackParam* param) = 0;
+  virtual void Extrapolate(CbmStsTrack* track, Double_t z, FairTrackParam* param) = 0;
 
 private:
   CbmStsTrackFitter(const CbmStsTrackFitter&);

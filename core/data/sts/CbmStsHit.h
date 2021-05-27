@@ -11,13 +11,13 @@
 #ifndef CBMSTSSHIT_H
 #define CBMSTSSHIT_H 1
 
+#include "CbmPixelHit.h"  // for CbmPixelHit
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 #include <TVector3.h>    // for TVector3
 
 #include <string>  // for string
-
-#include "CbmPixelHit.h"  // for CbmPixelHit
 
 
 /** @class CbmStsHit
@@ -47,16 +47,8 @@ public:
      ** @param du       Coordinate error across front-side strips [cm]
      ** @param dv       Coordinate error across back-side strips [cm]
      **/
-  CbmStsHit(Int_t address,
-            const TVector3& pos,
-            const TVector3& dpos,
-            Double_t dxy,
-            Int_t frontClusterId,
-            Int_t backClusterId,
-            Double_t time      = 0.,
-            Double_t timeError = 0.,
-            Double_t du        = 0.,
-            Double_t dv        = 0.);
+  CbmStsHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t frontClusterId,
+            Int_t backClusterId, Double_t time = 0., Double_t timeError = 0., Double_t du = 0., Double_t dv = 0.);
 
 
   /** Destructor **/

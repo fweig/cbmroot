@@ -7,6 +7,7 @@
 // Includes needed for IDE
 #if !defined(__CLING__)
 #include "CbmDigitization.h"
+
 #include "FairSystemInfo.h"
 #endif
 
@@ -22,15 +23,15 @@
  ** For options to modify the run settings, consult
  ** the documentation of the CbmDigitization class.
  **/
-void mcbm_digi_mixed() {
+void mcbm_digi_mixed()
+{
 
   // ===> User settings
 
   // --- Specify collision input (e.g., UrQMD)
-  TString collInput = "collision.tra.root";  // MC file name
-  Double_t collRate = 1.e7;                  // Collision rate [1/s]
-  ECbmTreeAccess collMode =
-    ECbmTreeAccess::kRegular;  // Take events one after one
+  TString collInput       = "collision.tra.root";      // MC file name
+  Double_t collRate       = 1.e7;                      // Collision rate [1/s]
+  ECbmTreeAccess collMode = ECbmTreeAccess::kRegular;  // Take events one after one
 
   // --- Specify beam input
   TString beamInput       = "beam.tra.root";          // MC file name
@@ -87,9 +88,7 @@ void mcbm_digi_mixed() {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << paramFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

@@ -52,8 +52,7 @@ public:
    *@param rTrackParamArray  Array of FairTrackParam
    *@value Number of tracks extrapolated
    **/
-  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray,
-                              TClonesArray* fTrackParamArray);
+  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray, TClonesArray* fTrackParamArray);
 
 private:
   /** Arrays **/

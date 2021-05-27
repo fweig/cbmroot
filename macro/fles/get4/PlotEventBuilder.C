@@ -13,8 +13,7 @@
   hEventSizeDist->Draw("");
 
 
-  TCanvas* canvasDeb =
-    new TCanvas("canvasDeb", "Multiplicity trigger", 1200, 600);
+  TCanvas* canvasDeb = new TCanvas("canvasDeb", "Multiplicity trigger", 1200, 600);
   canvasDeb->Divide(2, 2);
 
   canvasDeb->cd(1);
@@ -34,12 +33,10 @@
   hEvtSizeEvo->Draw("colz");
 
   // Canvas with ProfileY for each of the 4, all plotted in same
-  TCanvas* canvasDebProfY =
-    new TCanvas("canvasDebProfY", "Multiplicity trigger", 1200, 600);
+  TCanvas* canvasDebProfY = new TCanvas("canvasDebProfY", "Multiplicity trigger", 1200, 600);
 
   TH1D* projMaxEvtSizeEpoch = hMaxEvtSizeEpoch->ProjectionY();
-  projMaxEvtSizeEpoch->Scale(1.0
-                             / 1000.0);  // Weight factor to get the mean value
+  projMaxEvtSizeEpoch->Scale(1.0 / 1000.0);  // Weight factor to get the mean value
   projMaxEvtSizeEpoch->SetLineColor(kBlue);
   projMaxEvtSizeEpoch->Draw("");
 

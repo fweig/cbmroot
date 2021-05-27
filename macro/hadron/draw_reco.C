@@ -1,14 +1,14 @@
 #include "drawStyle.C"
 
 
-void plot_sts() {
+void plot_sts()
+{
   TPstyle();
 
   char* ver = getenv("CBMVER");
 
   char strFileName[1000];
-  sprintf(strFileName,
-          "/lustre_alpha/cbm/user/kresan/reco/%s/urqmd/auau/25gev/centr/\
+  sprintf(strFileName, "/lustre_alpha/cbm/user/kresan/reco/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.0000.recoSts.root",
           ver);
   TFile* file      = new TFile(strFileName);
@@ -36,14 +36,8 @@ urqmd.auau.25gev.centr.0000.recoSts.root",
   TString strPer = "%";
   char strEffAll[50];
   char strEffPrim[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * f2->GetParameter(0),
-          strPer.Data());
-  sprintf(strEffPrim,
-          "prim. tracks: %3.1f %s",
-          100 * f3->GetParameter(0),
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * f2->GetParameter(0), strPer.Data());
+  sprintf(strEffPrim, "prim. tracks: %3.1f %s", 100 * f3->GetParameter(0), strPer.Data());
 
   gStyle->SetPaperSize(32, 16);
   TCanvas* c1 = new TCanvas("c1", "STS", 10, 10, 1020, 510);
@@ -79,7 +73,8 @@ urqmd.auau.25gev.centr.0000.recoSts.root",
 }
 
 
-void plot_sts_L1() {
+void plot_sts_L1()
+{
   TPstyle();
 
   TFile* file          = new TFile("histo.root");
@@ -100,14 +95,8 @@ void plot_sts_L1() {
   TString strPer = "%";
   char strEffAll[50];
   char strEffPrim[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100 * h_eff_all->Integral() / 40. / 100.,
-          strPer.Data());
-  sprintf(strEffPrim,
-          "prim. tracks: %3.1f %s",
-          100 * h_eff_prim->Integral() / 40. / 100.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100 * h_eff_all->Integral() / 40. / 100., strPer.Data());
+  sprintf(strEffPrim, "prim. tracks: %3.1f %s", 100 * h_eff_prim->Integral() / 40. / 100., strPer.Data());
 
   gStyle->SetPaperSize(32, 16);
   TCanvas* c1      = new TCanvas("c1", "STS", 10, 10, 1020, 510);
@@ -141,7 +130,8 @@ void plot_sts_L1() {
 }
 
 
-void plot_sts_big() {
+void plot_sts_big()
+{
   TPstyle();
 
   TH1F* H_mom_acc_all  = new TH1F("h_mom_acc_all", "", 40, 0., 10.);
@@ -153,11 +143,9 @@ void plot_sts_big() {
   char strFileName[1000];
 
   for (Int_t i = 0; i < 100; i++) {
-    sprintf(strFileName,
-            "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/\
+    sprintf(strFileName, "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.%4d.recoSts.root",
-            ver,
-            i);
+            ver, i);
     for (Int_t ii = 0; ii < 1000; ii++)
       if (' ' == strFileName[ii]) strFileName[ii] = '0';
     TFile* file          = new TFile(strFileName);
@@ -194,14 +182,8 @@ urqmd.auau.25gev.centr.%4d.recoSts.root",
   TString strPer = "%";
   char strEffAll[50];
   char strEffPrim[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * h_eff_all->Integral() / 40.,
-          strPer.Data());
-  sprintf(strEffPrim,
-          "prim. tracks: %3.1f %s",
-          100 * h_eff_prim->Integral() / 40.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * h_eff_all->Integral() / 40., strPer.Data());
+  sprintf(strEffPrim, "prim. tracks: %3.1f %s", 100 * h_eff_prim->Integral() / 40., strPer.Data());
 
   gStyle->SetPaperSize(32, 16);
   TCanvas* c1 = new TCanvas("c1", "STS", 10, 10, 1020, 510);
@@ -237,13 +219,13 @@ urqmd.auau.25gev.centr.%4d.recoSts.root",
 }
 
 
-void plot_trd() {
+void plot_trd()
+{
   TPstyle();
 
   char* ver = getenv("CBMVER");
   char strFileName[1000];
-  sprintf(strFileName,
-          "/d/cbm06/user/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
+  sprintf(strFileName, "/d/cbm06/user/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
 urqmd.auau.25gev.centr.0000.80ps.reco.root",
           ver);
   TFile* file      = new TFile(strFileName);
@@ -270,14 +252,8 @@ urqmd.auau.25gev.centr.0000.80ps.reco.root",
   TString strPer = "%";
   char strEffAll[50];
   char strEffPrim[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * f2->GetParameter(0),
-          strPer.Data());
-  sprintf(strEffPrim,
-          "prim. tracks: %3.1f %s",
-          100. * f3->GetParameter(0),
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * f2->GetParameter(0), strPer.Data());
+  sprintf(strEffPrim, "prim. tracks: %3.1f %s", 100. * f3->GetParameter(0), strPer.Data());
 
   gStyle->SetPaperSize(32, 16);
   TCanvas* c1 = new TCanvas("c1", "TRD", 10, 10, 1020, 510);
@@ -313,7 +289,8 @@ urqmd.auau.25gev.centr.0000.80ps.reco.root",
 }
 
 
-void plot_trd_big() {
+void plot_trd_big()
+{
   TPstyle();
 
   TH1F* H_mom_acc_all  = new TH1F("h_mom_acc_all", "", 40, 0., 10.);
@@ -325,11 +302,9 @@ void plot_trd_big() {
   char strFileName[1000];
 
   for (Int_t i = 0; i < 10; i++) {
-    sprintf(strFileName,
-            "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
+    sprintf(strFileName, "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
 urqmd.auau.25gev.centr.%4d.80ps.reco.root",
-            ver,
-            i);
+            ver, i);
     for (Int_t ii = 0; ii < 1000; ii++)
       if (' ' == strFileName[ii]) strFileName[ii] = '0';
     TFile* file          = new TFile(strFileName);
@@ -366,14 +341,8 @@ urqmd.auau.25gev.centr.%4d.80ps.reco.root",
   TString strPer = "%";
   char strEffAll[50];
   char strEffPrim[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * h_eff_all->Integral() / 40.,
-          strPer.Data());
-  sprintf(strEffPrim,
-          "prim. tracks: %3.1f %s",
-          100 * h_eff_prim->Integral() / 40.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * h_eff_all->Integral() / 40., strPer.Data());
+  sprintf(strEffPrim, "prim. tracks: %3.1f %s", 100 * h_eff_prim->Integral() / 40., strPer.Data());
 
   gStyle->SetPaperSize(32, 16);
   TCanvas* c1 = new TCanvas("c1", "TRD", 10, 10, 1020, 510);
@@ -409,13 +378,13 @@ urqmd.auau.25gev.centr.%4d.80ps.reco.root",
 }
 
 
-void plot_tof() {
+void plot_tof()
+{
   TPstyle();
 
   char* ver = getenv("CBMVER");
   char strFileName[1000];
-  sprintf(strFileName,
-          "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
+  sprintf(strFileName, "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
 urqmd.auau.25gev.centr.0000.80ps.reco.root",
           ver);
   TFile* file     = new TFile(strFileName);
@@ -431,10 +400,7 @@ urqmd.auau.25gev.centr.0000.80ps.reco.root",
 
   TString strPer = "%";
   char strEffAll[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * h_eff_all->Integral() / 40.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * h_eff_all->Integral() / 40., strPer.Data());
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "TOF", 10, 10, 510, 510);
@@ -456,7 +422,8 @@ urqmd.auau.25gev.centr.0000.80ps.reco.root",
 }
 
 
-void plot_tof_big() {
+void plot_tof_big()
+{
   TPstyle();
 
   TH1F* H_mom_acc_all = new TH1F("h_mom_acc_all", "", 40, 0., 10.);
@@ -466,11 +433,9 @@ void plot_tof_big() {
   char strFileName[1000];
 
   for (Int_t i = 0; i < 10; i++) {
-    sprintf(strFileName,
-            "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
+    sprintf(strFileName, "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
 urqmd.auau.25gev.centr.%4d.80ps.reco.root",
-            ver,
-            i);
+            ver, i);
     for (Int_t ii = 0; ii < 1000; ii++)
       if (' ' == strFileName[ii]) strFileName[ii] = '0';
     TFile* file         = new TFile(strFileName);
@@ -495,10 +460,7 @@ urqmd.auau.25gev.centr.%4d.80ps.reco.root",
 
   TString strPer = "%";
   char strEffAll[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * h_eff_all->Integral() / 40.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * h_eff_all->Integral() / 40., strPer.Data());
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "TOF", 10, 10, 510, 510);
@@ -520,13 +482,13 @@ urqmd.auau.25gev.centr.%4d.80ps.reco.root",
 }
 
 
-void plot_glb() {
+void plot_glb()
+{
   TPstyle();
 
   char* ver = getenv("CBMVER");
   char strFileName[1000];
-  sprintf(strFileName,
-          "/lustre_alpha/cbm/user/kresan/reco/%s/urqmd/auau/4gev/centr/\
+  sprintf(strFileName, "/lustre_alpha/cbm/user/kresan/reco/%s/urqmd/auau/4gev/centr/\
 urqmd.auau.4gev.centr.0000.reco.root",
           ver);
   TFile* file     = new TFile(strFileName);
@@ -546,10 +508,7 @@ urqmd.auau.4gev.centr.0000.reco.root",
 
   TString strPer = "%";
   char strEffAll[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * f2->GetParameter(0),
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * f2->GetParameter(0), strPer.Data());
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "Global", 10, 10, 510, 510);
@@ -568,15 +527,15 @@ urqmd.auau.4gev.centr.0000.reco.root",
   Style(l1);
   l1->SetTextColor(2);
   l1->Draw();
-  TPaveLabel* l2 = new TPaveLabel(
-    0.154, 0.178, 0.945, 0.288, "central Au+Au @ 4 AGeV (SIS100)", "NDC");
+  TPaveLabel* l2 = new TPaveLabel(0.154, 0.178, 0.945, 0.288, "central Au+Au @ 4 AGeV (SIS100)", "NDC");
   Style(l2);
   l2->Draw();
   ps1->Close();
 }
 
 
-void plot_glb_big() {
+void plot_glb_big()
+{
   TPstyle();
 
   TH1F* H_mom_acc_all = new TH1F("h_mom_acc_all", "", 40, 0., 10.);
@@ -586,11 +545,9 @@ void plot_glb_big() {
   char strFileName[1000];
 
   for (Int_t i = 0; i < 10; i++) {
-    sprintf(strFileName,
-            "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
+    sprintf(strFileName, "/d/cbm02/kresan/reco/%s/urqmd/auau/25gev/centr/80ps/\
 urqmd.auau.25gev.centr.%4d.80ps.reco.root",
-            ver,
-            i);
+            ver, i);
     for (Int_t ii = 0; ii < 1000; ii++)
       if (' ' == strFileName[ii]) strFileName[ii] = '0';
     TFile* file         = new TFile(strFileName);
@@ -615,10 +572,7 @@ urqmd.auau.25gev.centr.%4d.80ps.reco.root",
 
   TString strPer = "%";
   char strEffAll[50];
-  sprintf(strEffAll,
-          "all tracks: %3.1f %s",
-          100. * h_eff_all->Integral() / 40.,
-          strPer.Data());
+  sprintf(strEffAll, "all tracks: %3.1f %s", 100. * h_eff_all->Integral() / 40., strPer.Data());
 
   gStyle->SetPaperSize(16, 16);
   TCanvas* c1 = new TCanvas("c1", "Global", 10, 10, 510, 510);

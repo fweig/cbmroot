@@ -7,7 +7,9 @@
 #if !defined(__CLING__)
 #include "CbmBeamGenerator.h";
 #include "CbmTransport.h"
+
 #include "FairSystemInfo.h"
+
 #include "TStopwatch.h"
 #endif
 
@@ -51,13 +53,9 @@
  ** CbmTransport. For the options, consult the documentation of that class:
  ** http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmTransport.html
  **/
-void run_tra_beam(Int_t nEvents       = 1,
-                  const char* species = "Au",
-                  Double_t beamP      = 12.,
-                  Double_t beamStartZ = -1.,
-                  const char* output  = "beam",
-                  const char* setup   = "sis100_electron",
-                  ECbmEngine engine   = kGeant3) {
+void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP = 12., Double_t beamStartZ = -1.,
+                  const char* output = "beam", const char* setup = "sis100_electron", ECbmEngine engine = kGeant3)
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -66,7 +64,7 @@ void run_tra_beam(Int_t nEvents       = 1,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_tra_beam";  // this macro's name for screen output
+  TString myName = "run_tra_beam";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -89,30 +87,34 @@ void run_tra_beam(Int_t nEvents       = 1,
     beamZ = 1;  // atomic number
     beamA = 1;  // mass number
     beamQ = 1;  // charge (fully stripped)
-  } else if (TString(species).EqualTo("C", TString::kIgnoreCase)) {
+  }
+  else if (TString(species).EqualTo("C", TString::kIgnoreCase)) {
     beamZ = 6;   // atomic number
     beamA = 12;  // mass number
     beamQ = 6;   // charge (fully stripped)
-  } else if (TString(species).EqualTo("Ca", TString::kIgnoreCase)) {
+  }
+  else if (TString(species).EqualTo("Ca", TString::kIgnoreCase)) {
     beamZ = 20;  // atomic number
     beamA = 40;  // mass number
     beamQ = 20;  // charge (fully stripped)
-  } else if (TString(species).EqualTo("Ni", TString::kIgnoreCase)) {
+  }
+  else if (TString(species).EqualTo("Ni", TString::kIgnoreCase)) {
     beamZ = 28;  // atomic number
     beamA = 60;  // mass number
     beamQ = 28;  // charge (fully stripped)
-  } else if (TString(species).EqualTo("Ag", TString::kIgnoreCase)) {
+  }
+  else if (TString(species).EqualTo("Ag", TString::kIgnoreCase)) {
     beamZ = 47;   // atomic number
     beamA = 108;  // mass number
     beamQ = 47;   // charge (fully stripped)
-  } else if (TString(species).EqualTo("Au", TString::kIgnoreCase)) {
+  }
+  else if (TString(species).EqualTo("Au", TString::kIgnoreCase)) {
     beamZ = 79;   // atomic number
     beamA = 197;  // mass number
     beamQ = 79;   // charge (fully stripped)
   }
   if (beamZ == 0) {
-    std::cout << "-E- " << myName << ": unknown beam species " << species
-              << std::endl;
+    std::cout << "-E- " << myName << ": unknown beam species " << species << std::endl;
     return;
   }
   // ------------------------------------------------------------------------
@@ -157,9 +159,7 @@ void run_tra_beam(Int_t nEvents       = 1,
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";

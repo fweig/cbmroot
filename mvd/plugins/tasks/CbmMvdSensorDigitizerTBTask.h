@@ -15,16 +15,18 @@
 
 
 #include "CbmMvdSensor.h"
+
 #include "FairTask.h"
 //#include "omp.h"
 #include "CbmMatch.h"
 #include "CbmMvdDigi.h"
 #include "CbmMvdPileupManager.h"
+#include "CbmMvdPixelCharge.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensorTask.h"
+
 #include "FairTask.h"
 
-#include "CbmMvdPixelCharge.h"
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TH1F.h"
@@ -36,6 +38,7 @@
 #include "TRefArray.h"
 #include "TStopwatch.h"
 #include "TString.h"
+
 #include <list>
 #include <map>
 #include <utility>
@@ -73,24 +76,12 @@ public:
   void ProducePixelCharge(CbmMvdPoint* point);
 
   /** Modifiers **/
-  void SetSegmentLength(Double_t segmentLength) {
-    fSegmentLength = segmentLength;
-  }
-  void SetDiffusionCoef(Double_t diffCoeff) {
-    fDiffusionCoefficient = diffCoeff;
-  }
-  void SetElectronsPerKeV(Double_t electronsPerKeV) {
-    fElectronsPerKeV = electronsPerKeV;
-  }
-  void SetWidthOfCluster(Double_t widthOfCluster) {
-    fWidthOfCluster = widthOfCluster;
-  }
-  void SetCutOnDeltaRays(Double_t cutOnDeltaRays) {
-    fCutOnDeltaRays = cutOnDeltaRays;
-  }
-  void SetChargeThreshold(Float_t chargeThreshold) {
-    fChargeThreshold = chargeThreshold;
-  }
+  void SetSegmentLength(Double_t segmentLength) { fSegmentLength = segmentLength; }
+  void SetDiffusionCoef(Double_t diffCoeff) { fDiffusionCoefficient = diffCoeff; }
+  void SetElectronsPerKeV(Double_t electronsPerKeV) { fElectronsPerKeV = electronsPerKeV; }
+  void SetWidthOfCluster(Double_t widthOfCluster) { fWidthOfCluster = widthOfCluster; }
+  void SetCutOnDeltaRays(Double_t cutOnDeltaRays) { fCutOnDeltaRays = cutOnDeltaRays; }
+  void SetChargeThreshold(Float_t chargeThreshold) { fChargeThreshold = chargeThreshold; }
 
   void GetEventInfo(Int_t& inputNr, Int_t& eventNr, Double_t& eventTime);
 
@@ -154,10 +145,8 @@ private:
   std::vector<CbmMvdPixelCharge*> fPixelChargeShort;
 
   TObjArray* fPixelScanAccelerator;
-  std::map<std::pair<std::pair<Int_t, Int_t>, Double_t>, CbmMvdPixelCharge*>
-    fChargeMap;
-  std::map<std::pair<std::pair<Int_t, Int_t>, Double_t>,
-           CbmMvdPixelCharge*>::iterator fChargeMapIt;
+  std::map<std::pair<std::pair<Int_t, Int_t>, Double_t>, CbmMvdPixelCharge*> fChargeMap;
+  std::map<std::pair<std::pair<Int_t, Int_t>, Double_t>, CbmMvdPixelCharge*>::iterator fChargeMapIt;
 
 
   CbmMvdSensorDataSheet* fsensorDataSheet;

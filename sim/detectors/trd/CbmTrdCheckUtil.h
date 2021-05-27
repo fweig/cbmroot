@@ -2,11 +2,9 @@
 #define CBMTRDCHECKUTIL_H
 
 #include "CbmTrdDigi.h"
-#include <map>
-#include <string>
-#include <vector>
 
 #include <FairRootManager.h>
+
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
@@ -14,6 +12,10 @@
 #include <TProfile.h>
 #include <TProfile2D.h>
 #include <TProfile3D.h>
+
+#include <map>
+#include <string>
+#include <vector>
 
 
 class CbmTrdCheckUtil : public TObject {
@@ -38,11 +40,7 @@ public:
   virtual ~CbmTrdCheckUtil() { ; }
 
   //  CbmTrdDigi* MakeDigi(CbmSpadicRawMessage22* raw);
-  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples,
-                       Int_t channel,
-                       Int_t module,
-                       Int_t layer,
-                       ULong64_t time);
+  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples, Int_t channel, Int_t module, Int_t layer, ULong64_t time);
 
   Bool_t fSet = false;  // Boolean for module initialisation in simulation
   std::map<TString, TH1D*> f1D;
@@ -53,7 +51,8 @@ public:
   std::map<TString, TProfile3D*> fProfile3D;
 
   void SetSetter(Bool_t set) { fSet = set; }
-  void DumpPlots() {
+  void DumpPlots()
+  {
     TDirectory* oldir = gDirectory;
     TFile* outFile    = FairRootManager::Instance()->GetOutFile();
     if (outFile != NULL) {
@@ -80,53 +79,23 @@ public:
     gDirectory->cd(oldir->GetPath());
   }
 
-  void CreateHist(std::string name,
-                  Int_t xbins,
-                  Double_t xlow,
-                  Double_t xhigh,
-                  Int_t ybins    = 0,
-                  Double_t ylow  = 1.,
+  void CreateHist(std::string name, Int_t xbins, Double_t xlow, Double_t xhigh, Int_t ybins = 0, Double_t ylow = 1.,
                   Double_t yhigh = 1.);
-  void CreateHist3D(std::string name,
-                    Int_t xbins,
-                    Double_t xlow,
-                    Double_t xhigh,
-                    Int_t ybins,
-                    Double_t ylow,
-                    Double_t yhigh,
-                    Int_t zbins,
-                    Double_t zlow,
-                    Double_t zhigh);
-  void CreateProfile(std::string name,
-                     Int_t xbins,
-                     Double_t xlow,
-                     Double_t xhigh,
-                     Int_t ybins    = 0,
-                     Double_t ylow  = 1.,
+  void CreateHist3D(std::string name, Int_t xbins, Double_t xlow, Double_t xhigh, Int_t ybins, Double_t ylow,
+                    Double_t yhigh, Int_t zbins, Double_t zlow, Double_t zhigh);
+  void CreateProfile(std::string name, Int_t xbins, Double_t xlow, Double_t xhigh, Int_t ybins = 0, Double_t ylow = 1.,
                      Double_t yhigh = 1.);
-  void CreateProfile3D(std::string name,
-                       Int_t xbins,
-                       Double_t xlow,
-                       Double_t xhigh,
-                       Int_t ybins,
-                       Double_t ylow,
-                       Double_t yhigh,
-                       Int_t zbins,
-                       Double_t zlow,
-                       Double_t zhigh);
+  void CreateProfile3D(std::string name, Int_t xbins, Double_t xlow, Double_t xhigh, Int_t ybins, Double_t ylow,
+                       Double_t yhigh, Int_t zbins, Double_t zlow, Double_t zhigh);
   void Fill(std::string name, Double_t x, Double_t y = 9999.);
   //  void FillProfile(std::string name,Double_t x,Double_t y=9999.);
-  void
-  FillProfile(std::string name, Double_t x, Double_t y, Double_t z = 9999.);
-  void FillProfile3D(std::string name,
-                     Double_t x,
-                     Double_t y,
-                     Double_t z,
-                     Double_t w = 1.);
+  void FillProfile(std::string name, Double_t x, Double_t y, Double_t z = 9999.);
+  void FillProfile3D(std::string name, Double_t x, Double_t y, Double_t z, Double_t w = 1.);
   void Fill(std::string name, Double_t x, Double_t y, Double_t z);
   void Fill3D(std::string name, Double_t x, Double_t y, Double_t z);
   void FillW(std::string name, Double_t x, Double_t w);
-  Double_t GetCont2D(std::string name, Double_t x, Double_t y) {
+  Double_t GetCont2D(std::string name, Double_t x, Double_t y)
+  {
     if (!f2D[name]) return 0.;
     return f2D[name]->GetBinContent(x, y);
   }

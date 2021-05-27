@@ -6,7 +6,8 @@
 // macro to reconstruct particles from signal events by KFParticleFinder
 //_________________________________________________________________________________
 
-void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "") {
+void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "")
+{
   TStopwatch timer;
   timer.Start();
 
@@ -23,8 +24,7 @@ void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "") {
   TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters";
 
-  TString setupFile =
-    workDir + "/geometry/setup/setup_" + setupName.Data() + ".C";
+  TString setupFile  = workDir + "/geometry/setup/setup_" + setupName.Data() + ".C";
   TString setupFunct = TString("setup_") + setupName;
   setupFunct += "()";
   gROOT->LoadMacro(setupFile);
@@ -53,14 +53,12 @@ void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "") {
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);
   if (setup->IsActive(kMvd)) {
     setup->GetGeoTag(kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(kSts)) {
     setup->GetGeoTag(kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -83,10 +81,7 @@ void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "") {
 
   // ----- KF Particle Finder QA --------------------------------------------
   CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA",
-                              0,
-                              kfParticleFinder->GetTopoReconstructor(),
-                              histoFile.Data());
+    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(nEvents);
   //  kfParticleFinderQA->SetSuperEventAnalysis(); // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());
@@ -112,20 +107,12 @@ void run_phys(TString setupName, Int_t nEvents = 10, TString inputDir = "") {
   rtdb->print();
 
   KFPartEfficiencies eff;
-  for (int jParticle = eff.fFirstStableParticleIndex + 10;
-       jParticle <= eff.fLastStableParticleIndex;
-       jParticle++) {
+  for (int jParticle = eff.fFirstStableParticleIndex + 10; jParticle <= eff.fLastStableParticleIndex; jParticle++) {
     TDatabasePDG* pdgDB = TDatabasePDG::Instance();
 
     if (!pdgDB->GetParticle(eff.partPDG[jParticle])) {
-      pdgDB->AddParticle(eff.partTitle[jParticle].data(),
-                         eff.partTitle[jParticle].data(),
-                         eff.partMass[jParticle],
-                         kTRUE,
-                         0,
-                         eff.partCharge[jParticle] * 3,
-                         "Ion",
-                         eff.partPDG[jParticle]);
+      pdgDB->AddParticle(eff.partTitle[jParticle].data(), eff.partTitle[jParticle].data(), eff.partMass[jParticle],
+                         kTRUE, 0, eff.partCharge[jParticle] * 3, "Ion", eff.partPDG[jParticle]);
     }
   }
   cout << "Starting run" << endl;

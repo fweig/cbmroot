@@ -6,6 +6,7 @@
  */
 
 #include "CbmRichRecGeoPar.h"
+
 #include "TVector3.h"
 
 #ifndef RICH_CBMRICHGEOMANAGER_H_
@@ -26,7 +27,8 @@ public:
   /**
      * Return Instance of CbmRichGeoManager.
      */
-  static CbmRichGeoManager& GetInstance() {
+  static CbmRichGeoManager& GetInstance()
+  {
     static CbmRichGeoManager fInstance;
     return fInstance;
   }
@@ -47,21 +49,11 @@ public:
   void RotatePoint(TVector3* inPos, TVector3* outPos, Bool_t noTilting = false);
 
 
-  void RotatePointCyl(TVector3* inPos,
-                      TVector3* outPos,
-                      Bool_t noTilting = false,
-                      Bool_t noShift   = false);
+  void RotatePointCyl(TVector3* inPos, TVector3* outPos, Bool_t noTilting = false, Bool_t noShift = false);
 
-  void RotatePointTwoWings(TVector3* inPos,
-                           TVector3* outPos,
-                           Bool_t noTilting = false);
+  void RotatePointTwoWings(TVector3* inPos, TVector3* outPos, Bool_t noTilting = false);
 
-  void RotatePointImpl(TVector3* inPos,
-                       TVector3* outPos,
-                       Double_t phi,
-                       Double_t theta,
-                       Double_t pmtX,
-                       Double_t pmtY,
+  void RotatePointImpl(TVector3* inPos, TVector3* outPos, Double_t phi, Double_t theta, Double_t pmtX, Double_t pmtY,
                        Double_t pmtZ);
 
   /**

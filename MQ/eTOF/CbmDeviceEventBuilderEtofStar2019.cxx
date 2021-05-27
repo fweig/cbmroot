@@ -3,8 +3,8 @@
  */
 
 #include "CbmDeviceEventBuilderEtofStar2019.h"
-#include "CbmMQDefs.h"
 
+#include "CbmMQDefs.h"
 #include "CbmStar2019EventBuilderEtofAlgo.h"
 #include "CbmStar2019TofPar.h"
 
@@ -30,9 +30,8 @@
 
 #include <array>
 #include <iomanip>
-#include <string>
-
 #include <stdexcept>
+#include <string>
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -56,15 +55,15 @@ CbmDeviceEventBuilderEtofStar2019::CbmDeviceEventBuilderEtofStar2019()
   , fEventBuilderAlgo(nullptr)
   , fTimer()
   , fUnpackPar(nullptr)
-  , fpBinDumpFile(nullptr) {
+  , fpBinDumpFile(nullptr)
+{
   fEventBuilderAlgo = new CbmStar2019EventBuilderEtofAlgo();
 }
 
-CbmDeviceEventBuilderEtofStar2019::~CbmDeviceEventBuilderEtofStar2019() {
-  delete fEventBuilderAlgo;
-}
+CbmDeviceEventBuilderEtofStar2019::~CbmDeviceEventBuilderEtofStar2019() { delete fEventBuilderAlgo; }
 
-void CbmDeviceEventBuilderEtofStar2019::InitTask() try {
+void CbmDeviceEventBuilderEtofStar2019::InitTask()
+try {
   // Get the information about created channels from the device
   // Check if the defined channels from the topology (by name)
   // are in the list of channels which are possible/allowed
@@ -79,29 +78,28 @@ void CbmDeviceEventBuilderEtofStar2019::InitTask() try {
   LOG(info) << "Number of defined channels: " << noChannel;
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
-    if (!IsChannelNameAllowed(entry.first))
-      throw InitTaskError("Channel name does not match.");
+    if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
     if (entry.first == "syscmd") {
       OnData(entry.first, &CbmDeviceEventBuilderEtofStar2019::HandleMessage);
       continue;
     }
     //if(entry.first != "etofevts") OnData(entry.first, &CbmDeviceEventBuilderEtofStar2019::HandleData);
-    if (entry.first != "etofevts")
-      OnData(entry.first, &CbmDeviceEventBuilderEtofStar2019::HandleParts);
+    if (entry.first != "etofevts") OnData(entry.first, &CbmDeviceEventBuilderEtofStar2019::HandleParts);
     else {
       fChannelsToSend[0].push_back(entry.first);
       LOG(info) << "Init to send data to channel " << fChannelsToSend[0][0];
     }
   }
   InitContainers();
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceEventBuilderEtofStar2019::IsChannelNameAllowed(
-  std::string channelName) {
+bool CbmDeviceEventBuilderEtofStar2019::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fAllowedChannels) {
     LOG(info) << "Inspect " << entry;
     std::size_t pos1 = channelName.find(entry);
@@ -110,29 +108,24 @@ bool CbmDeviceEventBuilderEtofStar2019::IsChannelNameAllowed(
         std::find(fAllowedChannels.begin(), fAllowedChannels.end(), entry);
       const vector<std::string>::size_type idx = pos - fAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       return true;
     }
   }
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
 }
 
-Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers() {
-  LOG(info)
-    << "Init parameter containers for CbmDeviceEventBuilderEtofStar2019.";
+Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers()
+{
+  LOG(info) << "Init parameter containers for CbmDeviceEventBuilderEtofStar2019.";
   //  FairRuntimeDb* fRtdb = FairRuntimeDb::instance();
 
   // NewSimpleMessage creates a copy of the data and takes care of its destruction (after the transfer takes place).
   // Should only be used for small data because of the cost of an additional copy
   std::string message {"CbmStar2019TofPar,111"};
-  LOG(info)
-    << "Requesting parameter container CbmStar2019TofPar, sending message: "
-    << message;
+  LOG(info) << "Requesting parameter container CbmStar2019TofPar, sending message: " << message;
 
   FairMQMessagePtr req(NewSimpleMessage("CbmStar2019TofPar,111"));
   FairMQMessagePtr rep(NewMessage());
@@ -141,12 +134,11 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers() {
     if (Receive(rep, "parameters") >= 0) {
       if (rep->GetSize() != 0) {
         CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
-        fUnpackPar =
-          dynamic_cast<CbmStar2019TofPar*>(tmsg.ReadObject(tmsg.GetClass()));
-        LOG(info) << "Received unpack parameter from parmq server: "
-                  << fUnpackPar;
+        fUnpackPar = dynamic_cast<CbmStar2019TofPar*>(tmsg.ReadObject(tmsg.GetClass()));
+        LOG(info) << "Received unpack parameter from parmq server: " << fUnpackPar;
         fUnpackPar->Print();
-      } else {
+      }
+      else {
         LOG(error) << "Received empty reply. Parameter not available";
       }
     }
@@ -164,8 +156,7 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers() {
     initOK &= fEventBuilderAlgo->CreateHistograms();
 
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fEventBuilderAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fEventBuilderAlgo->GetHistoVector();
     /* FIXME
       /// Register the histos in the HTTP server
       THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
@@ -182,13 +173,13 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers() {
   return initOK;
 }
 
-void CbmDeviceEventBuilderEtofStar2019::SetParContainers() {
+void CbmDeviceEventBuilderEtofStar2019::SetParContainers()
+{
   FairRuntimeDb* fRtdb = FairRuntimeDb::instance();
 
   fParCList = fEventBuilderAlgo->GetParList();
 
-  LOG(info) << "Setting parameter containers for " << fParCList->GetEntries()
-            << " entries ";
+  LOG(info) << "Setting parameter containers for " << fParCList->GetEntries() << " entries ";
 
   for (Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC) {
     FairParGenericSet* tempObj = (FairParGenericSet*) (fParCList->At(iparC));
@@ -196,13 +187,11 @@ void CbmDeviceEventBuilderEtofStar2019::SetParContainers() {
 
     std::string sParamName {tempObj->GetName()};
 
-    FairParGenericSet* newObj =
-      dynamic_cast<FairParGenericSet*>(fRtdb->getContainer(sParamName.data()));
+    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(fRtdb->getContainer(sParamName.data()));
     LOG(info) << " - Get " << sParamName.data() << " at " << newObj;
     if (nullptr == newObj) {
 
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
     if (iparC == 0) {
@@ -214,14 +203,13 @@ void CbmDeviceEventBuilderEtofStar2019::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-void CbmDeviceEventBuilderEtofStar2019::AddMsComponentToList(
-  size_t component,
-  UShort_t usDetectorId) {
+void CbmDeviceEventBuilderEtofStar2019::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fEventBuilderAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmDeviceEventBuilderEtofStar2019::DoUnpack(const fles::Timeslice& ts,
-                                                   size_t /*component*/) {
+Bool_t CbmDeviceEventBuilderEtofStar2019::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   if (0 == fulTsCounter) {
     LOG(info) << "FIXME ===> Jumping 1st TS as corrupted with current FW + "
                  "FLESNET combination";
@@ -229,13 +217,11 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::DoUnpack(const fles::Timeslice& ts,
     return kTRUE;
   }  // if( 0 == fulTsCounter )
   if (kFALSE == fEventBuilderAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in event builder algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in event builder algorithm class";
     return kTRUE;
   }  // if( kFALSE == fEventBuilderAlgo->ProcessTs( ts ) )
 
-  std::vector<CbmTofStarSubevent2019>& eventBuffer =
-    fEventBuilderAlgo->GetEventBuffer();
+  std::vector<CbmTofStarSubevent2019>& eventBuffer = fEventBuilderAlgo->GetEventBuffer();
 
   for (UInt_t uEvent = 0; uEvent < eventBuffer.size(); ++uEvent) {
     /// Send the sub-event to the STAR systems
@@ -256,16 +242,12 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::DoUnpack(const fles::Timeslice& ts,
                               pDataBuff, iBuffSzByte );
 	   */
 
-        SendSubevent(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(),
-                     (char*) pDataBuff,
-                     iBuffSzByte,
-                     0);
+        SendSubevent(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(), (char*) pDataBuff, iBuffSzByte, 0);
 
       }  // if( kFALSE == fbSandboxMode )
 
       LOG(debug) << "Sent STAR event with size " << iBuffSzByte << " Bytes"
-                 << " and token "
-                 << eventBuffer[uEvent].GetTrigger().GetStarToken();
+                 << " and token " << eventBuffer[uEvent].GetTrigger().GetStarToken();
     }  // if( NULL != pDataBuff )
     else
       LOG(error) << "Invalid STAR SubEvent Output, can only happen if trigger "
@@ -276,22 +258,21 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::DoUnpack(const fles::Timeslice& ts,
 }
 
 
-Bool_t CbmDeviceEventBuilderEtofStar2019::ReInitContainers() {
-  LOG(info)
-    << "ReInit parameter containers for CbmDeviceEventBuilderEtofStar2019";
+Bool_t CbmDeviceEventBuilderEtofStar2019::ReInitContainers()
+{
+  LOG(info) << "ReInit parameter containers for CbmDeviceEventBuilderEtofStar2019";
   Bool_t initOK = fEventBuilderAlgo->ReInitContainers();
   return initOK;
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceEventBuilderEtofStar2019::HandleData(FairMQMessagePtr& msg,
-                                                   int /*index*/) {
+bool CbmDeviceEventBuilderEtofStar2019::HandleData(FairMQMessagePtr& msg, int /*index*/)
+{
   // Don't do anything with the data
   // Maybe add an message counter which counts the incomming messages and add
   // an output
   fNumMessages++;
-  LOG(debug) << "Received message number " << fNumMessages << " with size "
-             << msg->GetSize();
+  LOG(debug) << "Received message number " << fNumMessages << " with size " << msg->GetSize();
 
   std::string msgStr(static_cast<char*>(msg->GetData()), msg->GetSize());
   std::istringstream iss(msgStr);
@@ -311,21 +292,19 @@ bool CbmDeviceEventBuilderEtofStar2019::HandleData(FairMQMessagePtr& msg,
 
 static Double_t dctime = 0.;
 
-bool CbmDeviceEventBuilderEtofStar2019::HandleParts(FairMQParts& parts,
-                                                    int /*index*/) {
+bool CbmDeviceEventBuilderEtofStar2019::HandleParts(FairMQParts& parts, int /*index*/)
+{
   // Don't do anything with the data
   // Maybe add an message counter which counts the incomming messages and add
   // an output
   fNumMessages++;
-  LOG(debug) << "Received message number " << fNumMessages << " with "
-             << parts.Size() << " parts";
+  LOG(debug) << "Received message number " << fNumMessages << " with " << parts.Size() << " parts";
 
   fles::StorableTimeslice ts {0};  // rename ??? FIXME
 
   switch (fiSelectComponents) {
     case 0: {
-      std::string msgStr(static_cast<char*>(parts.At(0)->GetData()),
-                         (parts.At(0))->GetSize());
+      std::string msgStr(static_cast<char*>(parts.At(0)->GetData()), (parts.At(0))->GetSize());
       std::istringstream iss(msgStr);
       boost::archive::binary_iarchive inputArchive(iss);
       inputArchive >> ts;
@@ -344,8 +323,7 @@ bool CbmDeviceEventBuilderEtofStar2019::HandleParts(FairMQParts& parts,
 
       uint ncomp = parts.Size();
       for (uint i = 0; i < ncomp; i++) {
-        std::string msgStr(static_cast<char*>(parts.At(i)->GetData()),
-                           (parts.At(i))->GetSize());
+        std::string msgStr(static_cast<char*>(parts.At(i)->GetData()), (parts.At(i))->GetSize());
         std::istringstream iss(msgStr);
         boost::archive::binary_iarchive inputArchive(iss);
         //fles::StorableTimeslice component{i};
@@ -353,23 +331,19 @@ bool CbmDeviceEventBuilderEtofStar2019::HandleParts(FairMQParts& parts,
 
         CheckTimeslice(component);
         fEventBuilderAlgo->AddMsComponentToList(i, 0x60);  // TOF data
-        LOG(debug) << "HandleParts message " << fNumMessages << " with indx "
-                   << component.index();
+        LOG(debug) << "HandleParts message " << fNumMessages << " with indx " << component.index();
       }
     } break;
     default:;
   }
 
   if (kFALSE == fEventBuilderAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in event builder algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in event builder algorithm class";
     return kTRUE;
   }  // if( kFALSE == fEventBuilderAlgo->ProcessTs( ts ) )
 
-  std::vector<CbmTofStarSubevent2019>& eventBuffer =
-    fEventBuilderAlgo->GetEventBuffer();
-  LOG(debug) << "Process time slice " << fNumMessages << " with "
-             << eventBuffer.size() << " events";
+  std::vector<CbmTofStarSubevent2019>& eventBuffer = fEventBuilderAlgo->GetEventBuffer();
+  LOG(debug) << "Process time slice " << fNumMessages << " with " << eventBuffer.size() << " events";
 
   //if(fNumMessages%10000 == 0) LOG(info)<<"Processed "<<fNumMessages<<" time slices";
 
@@ -392,31 +366,24 @@ bool CbmDeviceEventBuilderEtofStar2019::HandleParts(FairMQParts& parts,
                               pDataBuff, iBuffSzByte );
 	   */
       }  // if( kFALSE == fbSandboxMode )
-      SendSubevent(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(),
-                   (char*) pDataBuff,
-                   iBuffSzByte,
-                   0);
+      SendSubevent(eventBuffer[uEvent].GetTrigger().GetStarTrigerWord(), (char*) pDataBuff, iBuffSzByte, 0);
 
-      LOG(debug) << "Sent STAR event " << uEvent << " with size " << iBuffSzByte
-                 << " Bytes"
-                 << ", token "
-                 << eventBuffer[uEvent].GetTrigger().GetStarToken()
-                 << ", TrigWord "
+      LOG(debug) << "Sent STAR event " << uEvent << " with size " << iBuffSzByte << " Bytes"
+                 << ", token " << eventBuffer[uEvent].GetTrigger().GetStarToken() << ", TrigWord "
                  << eventBuffer[uEvent].GetTrigger().GetStarTrigerWord();
     }
   }
 
   if (0 == fulTsCounter % 10000) {
-    LOG(info) << "Processed " << fulTsCounter
-              << " TS,  CPUtime: " << dctime / 10. << " ms/TS";
+    LOG(info) << "Processed " << fulTsCounter << " TS,  CPUtime: " << dctime / 10. << " ms/TS";
     dctime = 0.;
   }
   fulTsCounter++;
   return true;
 }
 
-bool CbmDeviceEventBuilderEtofStar2019::HandleMessage(FairMQMessagePtr& msg,
-                                                      int /*index*/) {
+bool CbmDeviceEventBuilderEtofStar2019::HandleMessage(FairMQMessagePtr& msg, int /*index*/)
+{
   const char* cmd    = (char*) (msg->GetData());
   const char cmda[4] = {*cmd};
   LOG(info) << "Handle message " << cmd << ", " << cmd[0];
@@ -439,16 +406,15 @@ bool CbmDeviceEventBuilderEtofStar2019::HandleMessage(FairMQMessagePtr& msg,
 }
 
 
-bool CbmDeviceEventBuilderEtofStar2019::CheckTimeslice(
-  const fles::Timeslice& ts) {
+bool CbmDeviceEventBuilderEtofStar2019::CheckTimeslice(const fles::Timeslice& ts)
+{
   if (0 == ts.num_components()) {
     LOG(error) << "No Component in TS " << ts.index();
     return 1;
   }
   auto tsIndex = ts.index();
 
-  LOG(debug) << "Found " << ts.num_components()
-             << " different components in timeslice " << tsIndex;
+  LOG(debug) << "Found " << ts.num_components() << " different components in timeslice " << tsIndex;
 
   /*
   for (size_t c = 0; c < ts.num_components(); ++c) {
@@ -467,10 +433,9 @@ bool CbmDeviceEventBuilderEtofStar2019::CheckTimeslice(
   return true;
 }
 
-bool CbmDeviceEventBuilderEtofStar2019::SendEvent(std::vector<Int_t> vdigi,
-                                                  int idx) {
-  LOG(debug) << "Send Data for event " << fNumEvt << " with size "
-             << vdigi.size() << Form(" at %p ", &vdigi);
+bool CbmDeviceEventBuilderEtofStar2019::SendEvent(std::vector<Int_t> vdigi, int idx)
+{
+  LOG(debug) << "Send Data for event " << fNumEvt << " with size " << vdigi.size() << Form(" at %p ", &vdigi);
   //  LOG(debug) << "EventHeader: "<< fEventHeader[0] << " " << fEventHeader[1] << " " << fEventHeader[2] << " " << fEventHeader[3];
 
   std::stringstream oss;
@@ -485,8 +450,7 @@ bool CbmDeviceEventBuilderEtofStar2019::SendEvent(std::vector<Int_t> vdigi,
     [](void*, void* object) { delete static_cast<std::string*>(object); },
     strMsg));  // object that manages the data
 
-  LOG(debug) << "Send data to channel " << idx << " "
-             << fChannelsToSend[idx][0];
+  LOG(debug) << "Send data to channel " << idx << " " << fChannelsToSend[idx][0];
 
 
   //  if (Send(msg, fChannelsToSend[idx][0]) < 0) {
@@ -499,13 +463,10 @@ bool CbmDeviceEventBuilderEtofStar2019::SendEvent(std::vector<Int_t> vdigi,
   return true;
 }
 
-bool CbmDeviceEventBuilderEtofStar2019::SendSubevent(uint trig,
-                                                     char* pData,
-                                                     int nData,
-                                                     int idx) {
+bool CbmDeviceEventBuilderEtofStar2019::SendSubevent(uint trig, char* pData, int nData, int idx)
+{
 
-  LOG(debug) << "SendSubevent " << fNumEvt << ", TrigWord " << trig
-             << " with size " << nData << Form(" at %p ", pData);
+  LOG(debug) << "SendSubevent " << fNumEvt << ", TrigWord " << trig << " with size " << nData << Form(" at %p ", pData);
 
   std::stringstream ossE;
   boost::archive::binary_oarchive oaE(ossE);
@@ -534,8 +495,7 @@ bool CbmDeviceEventBuilderEtofStar2019::SendSubevent(uint trig,
     [](void*, void* object) { delete static_cast<std::string*>(object); },
     strMsg));  // object that manages the data
 
-  LOG(debug) << "Send data to channel " << idx << " "
-             << fChannelsToSend[idx][0];
+  LOG(debug) << "Send data to channel " << idx << " " << fChannelsToSend[idx][0];
 
 
   //  if (Send(msg, fChannelsToSend[idx][0]) < 0) {
@@ -550,7 +510,8 @@ bool CbmDeviceEventBuilderEtofStar2019::SendSubevent(uint trig,
 
 void CbmDeviceEventBuilderEtofStar2019::Reset() {}
 
-void CbmDeviceEventBuilderEtofStar2019::Finish() {
+void CbmDeviceEventBuilderEtofStar2019::Finish()
+{
   if (NULL != fpBinDumpFile) {
     LOG(info) << "Closing binary file used for event dump.";
     fpBinDumpFile->close();
@@ -559,8 +520,7 @@ void CbmDeviceEventBuilderEtofStar2019::Finish() {
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
   if (kTRUE == fbMonitorMode) {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos =
-      fEventBuilderAlgo->GetHistoVector();
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fEventBuilderAlgo->GetHistoVector();
 
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;

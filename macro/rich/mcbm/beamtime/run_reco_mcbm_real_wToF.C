@@ -1,17 +1,15 @@
 void run_reco_mcbm_real_wToF(
   //     const string& parFile = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_params_159.root",
   //const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_159.root",
-  const string& parFile =
-    "/lustre/nyx/cbm/users/adrian/data/159_corr/10kTS/unp_mcbm_params_159.root",
+  const string& parFile = "/lustre/nyx/cbm/users/adrian/data/159_corr/10kTS/unp_mcbm_params_159.root",
   //const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159_corr/10kTS/unp_mcbm_159.root",  //this was always used
-  const string& digiFile =
-    "/lustre/nyx/cbm/users/adrian/data/159_corr/all/unp_mcbm_159.root",
+  const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159_corr/all/unp_mcbm_159.root",
   //     const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159_corr_final/1kTS/unp_mcbm_159.root",     //Test 30.7.2019
   //const string& digiFile = "/lustre/nyx/cbm/users/ploizeau/mcbm2018/mcbm_all/data/unpacked/unp_mcbm_159_10kTs_withoffsets.root",
   //const string& parFile  = "/lustre/nyx/cbm/users/adrian/data/159_test/unp_mcbm_params_159.root",
   //const string& digiFile = "/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/data/159.200.10.1.0.root",
-  const string& recoFile = "reco_mcbm.root",
-  int nEvents            = 0) {
+  const string& recoFile = "reco_mcbm.root", int nEvents = 0)
+{
 
   //ToF Settings
   Int_t calMode        = 93;
@@ -36,17 +34,14 @@ void run_reco_mcbm_real_wToF(
 
   remove(recoFile.c_str());
 
-  TString TofFileFolder = Form(
-    "/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/%s",
-    cFileId.Data());
+  TString TofFileFolder = Form("/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/%s", cFileId.Data());
 
   //    TString setupFile = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
   //    TString setupFunct = "setup_" + geoSetup + "()";
   //    gROOT->LoadMacro(setupFile);
   //    gROOT->ProcessLine(setupFunct);
 
-  std::cout << std::endl
-            << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -57,18 +52,14 @@ void run_reco_mcbm_real_wToF(
   TString FId    = cFileId;
   TString TofGeo = "v19a_mcbm";  //v18m_mCbm
 
-  TObjString* tofDigiFile = new TObjString(
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
+  TObjString* tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
   std::cout << std::endl
-            << "-I- digi.par file : " << workDir << "/parameters/tof/tof_"
-            << TofGeo << ".digi.par" << std::endl;
+            << "-I- digi.par file : " << workDir << "/parameters/tof/tof_" << TofGeo << ".digi.par" << std::endl;
   parFileList->Add(tofDigiFile);
 
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+  TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   std::cout << std::endl
-            << "-I- digibdf.par file : " << workDir << "/parameters/tof/"
-            << TofGeo << ".digibdf.par" << std::endl;
+            << "-I- digibdf.par file : " << workDir << "/parameters/tof/" << TofGeo << ".digibdf.par" << std::endl;
   parFileList->Add(tofDigiBdfFile);
 
   TString geoDir = workDir;  // gSystem->Getenv("VMCWORKDIR");
@@ -121,25 +112,20 @@ void run_reco_mcbm_real_wToF(
 
   // Starting with ToF
 
-  CbmTofEventClusterizer* tofClust =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", 1, 0);
+  CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer", 1, 0);
   tofClust->SetCalMode(calMode);
   tofClust->SetCalSel(calSel);
-  tofClust->SetCaldXdYMax(10.);  // geometrical matching window in cm
-  tofClust->SetCalCluMulMax(
-    3.);  // Max Counter Cluster Multiplicity for filling calib histos
-  tofClust->SetCalRpc(calSm);   // select detector for calibration update
-  tofClust->SetTRefId(RefSel);  // reference trigger for offset calculation
-  tofClust->SetTotMax(20.);     // Tot upper limit for walk corection
-  tofClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
-  tofClust->SetTotPreRange(
-    5.);  // effective lower Tot limit  in ns from peak position
-  tofClust->SetTotMean(5.);       // Tot calibration target value in ns
-  tofClust->SetMaxTimeDist(1.0);  // default cluster range in ns
-  tofClust->SetDelTofMax(
-    10.);  // acceptance range for cluster distance in ns (!)
-  tofClust->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+  tofClust->SetCaldXdYMax(10.);             // geometrical matching window in cm
+  tofClust->SetCalCluMulMax(3.);            // Max Counter Cluster Multiplicity for filling calib histos
+  tofClust->SetCalRpc(calSm);               // select detector for calibration update
+  tofClust->SetTRefId(RefSel);              // reference trigger for offset calculation
+  tofClust->SetTotMax(20.);                 // Tot upper limit for walk corection
+  tofClust->SetTotMin(0.01);                //(12000.);  // Tot lower limit for walk correction
+  tofClust->SetTotPreRange(5.);             // effective lower Tot limit  in ns from peak position
+  tofClust->SetTotMean(5.);                 // Tot calibration target value in ns
+  tofClust->SetMaxTimeDist(1.0);            // default cluster range in ns
+  tofClust->SetDelTofMax(10.);              // acceptance range for cluster distance in ns (!)
+  tofClust->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kFALSE);
   //tofClust->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -150,14 +136,9 @@ void run_reco_mcbm_real_wToF(
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
-  TString cCalibFname = Form("/%s_set%09d_%02d_%01dtofClust.hst.root",
-                             cFileId.Data(),
-                             iCalSet,
-                             calMode,
-                             calSelRead);
+  TString cCalibFname = Form("/%s_set%09d_%02d_%01dtofClust.hst.root", cFileId.Data(), iCalSet, calMode, calSelRead);
   tofClust->SetCalParFileName(TofFileFolder + cCalibFname);
-  TString cOutFname =
-    Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
+  TString cOutFname = Form("tofClust_%s_set%09d.hst.root", cFileId.Data(), iCalSet);
   tofClust->SetOutHstFileName(cOutFname);
 
   switch (calMode) {
@@ -299,10 +280,7 @@ void run_reco_mcbm_real_wToF(
       tofClust->SetTRefDifMax(1.5);  // in ns
       tofClust->PosYMaxScal(0.7);    //in % of length
       break;
-    default:
-      cout << "<E> Calib mode not implemented! stop execution of script"
-           << endl;
-      return;
+    default: cout << "<E> Calib mode not implemented! stop execution of script" << endl; return;
   }
 
   run->AddTask(tofClust);
@@ -316,7 +294,8 @@ void run_reco_mcbm_real_wToF(
   iRSel          = iBRef;  // use diamond
   if (iSel2 == 0) {
     // iSel2=iBRef;
-  } else {
+  }
+  else {
     if (iSel2 < 0) iSel2 = -iSel2;
   }
 
@@ -363,18 +342,17 @@ void run_reco_mcbm_real_wToF(
   tofClust->SetSelSm(iRefSm);
   tofClust->SetSelRpc(iRefRpc);
 
-  cout << "Run mTof Clusterizer with iRSel = " << iRSel
-       << ", iSel2 = " << iSel2in << endl;
+  cout << "Run mTof Clusterizer with iRSel = " << iRSel << ", iSel2 = " << iSel2in << endl;
 
   //######################################################################
 
   // mTof Tracker Initialization
-  TString cTrkFile = Form("/%s_tofFindTracks.hst.root", cFileId.Data());
+  TString cTrkFile                  = Form("/%s_tofFindTracks.hst.root", cFileId.Data());
   CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
   tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
   tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-  tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-  tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+  tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+  tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
 
   CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
   TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
@@ -384,24 +362,20 @@ void run_reco_mcbm_real_wToF(
   tofFindTracks->UseFitter(tofTrackFitter);
   Int_t iGenCor = 1;
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-  tofFindTracks->SetTtTarg(
-    0.057);  // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetTtTarg(0.057);     // target value for inverse velocity, > 0.033 ns/cm!
   //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
-  tofFindTracks->SetCalParFileName(
-    TofFileFolder + cTrkFile);             // Tracker parameter value file name
-  tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-  tofFindTracks->SetStationMaxHMul(
-    30);  // Max Hit Multiplicity in any used station
+  tofFindTracks->SetCalParFileName(TofFileFolder + cTrkFile);  // Tracker parameter value file name
+  tofFindTracks->SetBeamCounter(5, 0, 0);                      // default beam counter
+  tofFindTracks->SetStationMaxHMul(30);                        // Max Hit Multiplicity in any used station
 
-  tofFindTracks->SetT0MAX(1.);            // in ns
-  tofFindTracks->SetSIGT(0.08);           // default in ns
-  tofFindTracks->SetSIGX(0.3);            // default in cm
-  tofFindTracks->SetSIGY(0.6);            // default in cm
-  tofFindTracks->SetSIGZ(0.05);           // default in cm
-  tofFindTracks->SetUseSigCalib(kFALSE);  // ignore resolutions in CalPar file
-  Double_t dChi2Lim2 = 3.5;               //100;//3.5;
-  tofTrackFinder->SetSIGLIM(dChi2Lim2
-                            * 2.);  // matching window in multiples of chi2
+  tofFindTracks->SetT0MAX(1.);                 // in ns
+  tofFindTracks->SetSIGT(0.08);                // default in ns
+  tofFindTracks->SetSIGX(0.3);                 // default in cm
+  tofFindTracks->SetSIGY(0.6);                 // default in cm
+  tofFindTracks->SetSIGZ(0.05);                // default in cm
+  tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+  Double_t dChi2Lim2 = 3.5;                    //100;//3.5;
+  tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
 
@@ -497,9 +471,7 @@ void run_reco_mcbm_real_wToF(
   run->AddTask(qaTask);
 
 
-  std::cout << std::endl
-            << std::endl
-            << "-I- " << myName << ": Set runtime DB" << std::endl;
+  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
 
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   Bool_t kParameterMerged    = kTRUE;
@@ -536,17 +508,16 @@ void run_reco_mcbm_real_wToF(
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }
 
-void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE) {
+void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE)
+{
   cout << "save all histograms to file " << cstr.Data() << endl;
   TList* tList(NULL);
-  if (bROOT) {
-    tList = gROOT->GetList();
-  } else {
+  if (bROOT) { tList = gROOT->GetList(); }
+  else {
     tList = gDirectory->GetList();
   }
   TIter next(tList);
@@ -555,10 +526,7 @@ void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE) {
   {
     TObject* obj;
     while ((obj = (TObject*) next())) {
-      if (obj->InheritsFrom(TH1::Class())
-          || obj->InheritsFrom(TEfficiency::Class())) {
-        obj->Write();
-      }
+      if (obj->InheritsFrom(TH1::Class()) || obj->InheritsFrom(TEfficiency::Class())) { obj->Write(); }
     }
   }
   // fHist->ls();

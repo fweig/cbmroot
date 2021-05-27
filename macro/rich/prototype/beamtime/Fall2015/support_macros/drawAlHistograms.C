@@ -1,5 +1,5 @@
-void drawAlHistograms(TString filename       = "../output/sum_WLS_off.root",
-                      TString picturesFolder = "pictures") {
+void drawAlHistograms(TString filename = "../output/sum_WLS_off.root", TString picturesFolder = "pictures")
+{
   TFile f(filename);
 
   TIter iter(f.GetListOfKeys());

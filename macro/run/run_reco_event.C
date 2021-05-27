@@ -20,6 +20,7 @@
 #include "CbmDefs.h"
 #include "CbmMCDataManager.h"
 #include "CbmSetup.h"
+
 #include "FairSystemInfo.h"
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -27,15 +28,14 @@
 #include <FairParRootFileIo.h>
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
+
 #include <TStopwatch.h>
 #endif
 
 
-void run_reco_event(Int_t nEvents   = 2,
-                    TString dataset = "test",
-                    TString setup   = "sis100_electron",
-                    Bool_t useMC    = kFALSE,
-                    Bool_t findPV   = kTRUE) {
+void run_reco_event(Int_t nEvents = 2, TString dataset = "test", TString setup = "sis100_electron",
+                    Bool_t useMC = kFALSE, Bool_t findPV = kTRUE)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -47,7 +47,7 @@ void run_reco_event(Int_t nEvents   = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_event";  // this macro's name for screen output
+  TString myName = "run_reco_event";               // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -82,21 +82,17 @@ void run_reco_event(Int_t nEvents   = 2,
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -155,12 +151,10 @@ void run_reco_event(Int_t nEvents   = 2,
   std::cout << "Calling " << command << std::endl;
   Bool_t recoSuccess = gROOT->ProcessLine(command.Data());
   if (!recoSuccess) {
-    std::cerr << "-E- " << myName << ": error in executing " << macroName
-              << std::endl;
+    std::cerr << "-E- " << myName << ": error in executing " << macroName << std::endl;
     return;
   }
-  std::cout << "-I- " << myName << ": " << macroName << " excuted successfully"
-            << std::endl;
+  std::cout << "-I- " << myName << ": " << macroName << " excuted successfully" << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -215,8 +209,7 @@ void run_reco_event(Int_t nEvents   = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

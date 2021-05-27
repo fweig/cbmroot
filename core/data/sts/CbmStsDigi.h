@@ -8,15 +8,15 @@
 #ifndef CBMSTSDIGI_H
 #define CBMSTSDIGI_H 1
 
+#include "CbmDefs.h"  // for ECbmModuleId::kSts
+
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, UShort_t, Long64_t, ULong64_t
 
-#include <string>  // for string
-
-#include "CbmDefs.h"  // for ECbmModuleId::kSts
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+
+#include <string>  // for string
 
 /** @class CbmStsDigi
  ** @brief Data class for a single-channel message in the STS
@@ -40,7 +40,12 @@ public:
    ** @param  charge   Charge [ADC units]
    **/
   CbmStsDigi(Int_t address, Int_t channel, ULong64_t time, UShort_t charge)
-    : fTime(time), fAddress(address), fChannel(channel), fCharge(charge) {}
+    : fTime(time)
+    , fAddress(address)
+    , fChannel(channel)
+    , fCharge(charge)
+  {
+  }
 
 
   /** Destructor **/
@@ -84,7 +89,8 @@ public:
 
 
   template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/) {
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
     ar& fTime;
     ar& fAddress;
     ar& fChannel;

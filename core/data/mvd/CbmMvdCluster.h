@@ -14,11 +14,11 @@
 #ifndef CBMMVDCLUSTER_H
 #define CBMMVDCLUSTER_H 1
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Float_t, Short_t
-
 #include "CbmCluster.h"        // for CbmCluster
 #include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
+
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Float_t, Short_t
 
 #include <map>      // for map
 #include <utility>  // for pair
@@ -38,9 +38,7 @@ public:
 
   /** Setters **/
   void SetPixelMap(std::map<std::pair<Int_t, Int_t>, Int_t> PixelMap);
-  void SetRefId(Int_t RefId) {
-    fRefId = RefId;
-  };  //* stores the index to the global TClonesArray
+  void SetRefId(Int_t RefId) { fRefId = RefId; };  //* stores the index to the global TClonesArray
 
   /** Accessors **/
   Short_t GetTotalDigisInCluster() { return fPixelMap.size(); };
@@ -48,9 +46,7 @@ public:
   Int_t GetStationNr() { return (Int_t) GetAddress() / 1000; };
   Int_t GetRefId() { return fRefId; };
   Int_t GetDetectorId() { return DetectorId(GetStationNr()); };
-  Int_t GetSensorNr() {
-    return GetAddress() - (((Int_t) GetAddress() / 1000) * 1000);
-  };
+  Int_t GetSensorNr() { return GetAddress() - (((Int_t) GetAddress() / 1000) * 1000); };
 
   Float_t GetClusterCharge() { return fClusterCharge; };
 

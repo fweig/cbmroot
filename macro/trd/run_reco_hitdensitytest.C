@@ -58,9 +58,8 @@ TString defaultInputFile = "";
 #include "../include/rootalias.C"
 
 
-void run_reco_hitdensitytest(Int_t nEvents         = 2,
-                             const char* setupName = "sis100_electron",
-                             const char* rawfile   = "") {
+void run_reco_hitdensitytest(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* rawfile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -75,12 +74,10 @@ void run_reco_hitdensitytest(Int_t nEvents         = 2,
   TString outDir = "/gluster2/cbm/sim/data/";
   //TString outDir  = "/opt/CBM/Daten/";
   TRegexp Nr("[.][0-9][0-9][0-9][0-9][0-9][.]");
-  TString inFile = outDir + setupName + TString(rawfile)(Nr) + "_test.raw.root";
+  TString inFile  = outDir + setupName + TString(rawfile)(Nr) + "_test.raw.root";
   TString parFile = outDir + setupName + TString(rawfile)(Nr) + "_params.root";
-  TString outFile = outDir + setupName + TString(rawfile)(Nr)
-                    + "_test.esd.root";  // Output file
-  TString geoFile =
-    outDir + setupName + TString(rawfile)(Nr) + "_geofile_full.root";
+  TString outFile = outDir + setupName + TString(rawfile)(Nr) + "_test.esd.root";  // Output file
+  TString geoFile = outDir + setupName + TString(rawfile)(Nr) + "_geofile_full.root";
 
   // Function needed for CTest runtime dependency
   TString depFile = Remove_CTest_Dependency_File(outDir, "run_reco", setupName);
@@ -120,26 +117,20 @@ void run_reco_hitdensitytest(Int_t nEvents         = 2,
   setupFunct = setupFunct + setupName + "()";
   // - TRD digitisation parameters
   if (setup->GetGeoTag(kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
 
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -230,8 +221,7 @@ void run_reco_hitdensitytest(Int_t nEvents         = 2,
 */
 
   printf("CbmTrdHitDensityQa\n");
-  CbmTrdHitDensityQa* trdDensityTest =
-    new CbmTrdHitDensityQa(/*"HitDensityTest","Hit Density Test",radiator*/);
+  CbmTrdHitDensityQa* trdDensityTest = new CbmTrdHitDensityQa(/*"HitDensityTest","Hit Density Test",radiator*/);
   run->AddTask(trdDensityTest);
 
   // -------------------------------------------------------------------------
@@ -289,8 +279,7 @@ void run_reco_hitdensitytest(Int_t nEvents         = 2,
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 

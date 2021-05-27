@@ -8,8 +8,6 @@
 #ifndef ANALYSIS_JPSIANA_CBMANAJPSISUPEREVENT_H_
 #define ANALYSIS_JPSIANA_CBMANAJPSISUPEREVENT_H_
 
-#include "TObject.h"
-
 #include "CbmAnaJpsiCandidate.h"
 #include "CbmAnaJpsiCuts.h"
 #include "CbmAnaJpsiHist.h"
@@ -18,6 +16,7 @@
 #include "CbmSimulationReport.h"
 
 #include "TH1D.h"
+#include "TObject.h"
 #include "TSystem.h"
 
 #include <string>

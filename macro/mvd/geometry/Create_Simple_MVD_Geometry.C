@@ -74,7 +74,8 @@ TGeoManager* gGeoMan = NULL;  // Pointer to TGeoManager instance
 // Forward declarations
 void create_materials_from_media_file();
 
-void Create_Simple_MVD_Geometry() {
+void Create_Simple_MVD_Geometry()
+{
   // Load the necessary FairRoot libraries
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -101,13 +102,9 @@ void Create_Simple_MVD_Geometry() {
   for (Int_t iStation = 0; iStation < nrOfStations; ++iStation) {
     TString name;
     name.Form("mvdstation%02d", iStation + 1);
-    TGeoVolume* mvd1 = gGeoMan->MakeTube(name,
-                                         gGeoMan->GetMedium("silicon"),
-                                         rMin[iStation],
-                                         rMax[iStation],
-                                         thick[iStation] / 2);
-    TGeoTranslation* mvd1_trans =
-      new TGeoTranslation(0., 0., zPosStation[iStation]);
+    TGeoVolume* mvd1 =
+      gGeoMan->MakeTube(name, gGeoMan->GetMedium("silicon"), rMin[iStation], rMax[iStation], thick[iStation] / 2);
+    TGeoTranslation* mvd1_trans = new TGeoTranslation(0., 0., zPosStation[iStation]);
     mvd->AddNode(mvd1, 0, mvd1_trans);
   }
 
@@ -171,7 +168,8 @@ void dump_info_file()
 }
 */
 
-void create_materials_from_media_file() {
+void create_materials_from_media_file()
+{
   // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();

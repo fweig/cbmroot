@@ -6,13 +6,13 @@
 #ifndef CBMMUCHMODULEGEMRECTANGULAR_H
 #define CBMMUCHMODULEGEMRECTANGULAR_H 1
 
+#include "CbmMuchModuleGem.h"  // for CbmMuchModuleGem
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TVector3.h>    // for TVector3
 
 #include <vector>  // for vector
-
-#include "CbmMuchModuleGem.h"  // for CbmMuchModuleGem
 
 class CbmMuchPadRectangular;
 class CbmMuchSectorRectangular;
@@ -20,13 +20,8 @@ class CbmMuchSectorRectangular;
 class CbmMuchModuleGemRectangular : public CbmMuchModuleGem {
 public:
   CbmMuchModuleGemRectangular();
-  CbmMuchModuleGemRectangular(Int_t iStation,
-                              Int_t iLayer,
-                              Bool_t iSide,
-                              Int_t iModule,
-                              TVector3 position,
-                              TVector3 size,
-                              Double_t cutRadius);
+  CbmMuchModuleGemRectangular(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position,
+                              TVector3 size, Double_t cutRadius);
   virtual ~CbmMuchModuleGemRectangular() {}
   virtual Bool_t InitModule();
   CbmMuchSectorRectangular* GetSector(Double_t x, Double_t y);
@@ -40,12 +35,11 @@ public:
 
 protected:
   Bool_t fUseModuleDesign;
-  Int_t fGridNx;     // Number of grid values in X direction
-  Int_t fGridNy;     // Number of grid values in Y direction
-  Double_t fGridDx;  // X-width of the grid cell
-  Double_t fGridDy;  // Y-width of the grid cell
-  std::vector<std::vector<Int_t>>
-    fGrid;  // 2D-vector of sector indices on the grid
+  Int_t fGridNx;                          // Number of grid values in X direction
+  Int_t fGridNy;                          // Number of grid values in Y direction
+  Double_t fGridDx;                       // X-width of the grid cell
+  Double_t fGridDy;                       // Y-width of the grid cell
+  std::vector<std::vector<Int_t>> fGrid;  // 2D-vector of sector indices on the grid
 
   // Grid related private functions
   void InitNeighbourSectors();

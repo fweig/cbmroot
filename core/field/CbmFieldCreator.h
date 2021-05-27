@@ -7,9 +7,9 @@
 #ifndef CBMFIELDCREATOR_H
 #define CBMFIELDCREATOR_H
 
-#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
-
 #include <FairFieldFactory.h>  // for FairFieldFactory
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 class CbmFieldPar;
 class FairField;

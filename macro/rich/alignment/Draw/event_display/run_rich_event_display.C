@@ -4,7 +4,8 @@
  * @version 1.0
  **/
 
-void run_rich_event_display() {
+void run_rich_event_display()
+{
   //  TString outDir = "/data/Sim_Outputs/Event_Display/plusY/";
   TString outDir = "/data/Sim_Outputs/Position/plusY/";
   TString name   = "setup_v17a_1e_3mrad_plusY_";

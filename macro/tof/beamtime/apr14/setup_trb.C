@@ -10,7 +10,8 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void setup_trb() {
+void setup_trb()
+{
   //  Parameter files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.

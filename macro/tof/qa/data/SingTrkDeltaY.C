@@ -15,17 +15,14 @@
 
   THStack* TofTests_SingleTrackHitDeltaY = new THStack();
   TofTests_SingleTrackHitDeltaY->SetName("TofTests_SingleTrackHitDeltaY");
-  TofTests_SingleTrackHitDeltaY->SetTitle(
-    "Quality of the Tof Hits position on Y axis, for hit coming from a single "
-    "MC Track");
+  TofTests_SingleTrackHitDeltaY->SetTitle("Quality of the Tof Hits position on Y axis, for hit coming from a single "
+                                          "MC Track");
 
   TH1F* TofTests_SingleTrackHitDeltaY_stack_6 =
     new TH1F("TofTests_SingleTrackHitDeltaY_stack_6",
              "Quality of the Tof Hits position on Y axis, for hit coming from "
              "a single MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_SingleTrackHitDeltaY_stack_6->SetMinimum(0.1859108);
   TofTests_SingleTrackHitDeltaY_stack_6->SetMaximum(1.0978e+08);
   TofTests_SingleTrackHitDeltaY_stack_6->SetDirectory(0);
@@ -35,8 +32,7 @@
   TColor* color;  // for color definition with alpha
   ci = TColor::GetColor("#000099");
   TofTests_SingleTrackHitDeltaY_stack_6->SetLineColor(ci);
-  TofTests_SingleTrackHitDeltaY_stack_6->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingleTrackHitDeltaY_stack_6->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingleTrackHitDeltaY_stack_6->GetXaxis()->SetRange(1, 600);
   TofTests_SingleTrackHitDeltaY_stack_6->GetXaxis()->SetLabelFont(42);
   TofTests_SingleTrackHitDeltaY_stack_6->GetXaxis()->SetLabelSize(0.035);
@@ -53,17 +49,13 @@
   TofTests_SingleTrackHitDeltaY_stack_6->GetZaxis()->SetLabelSize(0.035);
   TofTests_SingleTrackHitDeltaY_stack_6->GetZaxis()->SetTitleSize(0.035);
   TofTests_SingleTrackHitDeltaY_stack_6->GetZaxis()->SetTitleFont(42);
-  TofTests_SingleTrackHitDeltaY->SetHistogram(
-    TofTests_SingleTrackHitDeltaY_stack_6);
+  TofTests_SingleTrackHitDeltaY->SetHistogram(TofTests_SingleTrackHitDeltaY_stack_6);
 
 
-  TH1D* TofTests_SingleTrackHitDeltaY__21 =
-    new TH1D("TofTests_SingleTrackHitDeltaY__21",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track",
-             600,
-             -30,
-             30);
+  TH1D* TofTests_SingleTrackHitDeltaY__21 = new TH1D("TofTests_SingleTrackHitDeltaY__21",
+                                                     "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                                     "a single MC Track",
+                                                     600, -30, 30);
   TofTests_SingleTrackHitDeltaY__21->SetBinContent(93, 1);
   TofTests_SingleTrackHitDeltaY__21->SetBinContent(101, 1);
   TofTests_SingleTrackHitDeltaY__21->SetBinContent(121, 1);
@@ -328,8 +320,7 @@
   TofTests_SingleTrackHitDeltaY__21->SetBinContent(550, 1);
   TofTests_SingleTrackHitDeltaY__21->SetEntries(4.830426e+08);
   TofTests_SingleTrackHitDeltaY__21->SetDirectory(0);
-  TofTests_SingleTrackHitDeltaY__21->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingleTrackHitDeltaY__21->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingleTrackHitDeltaY__21->GetXaxis()->SetRange(1, 600);
   TofTests_SingleTrackHitDeltaY__21->GetXaxis()->SetLabelFont(42);
   TofTests_SingleTrackHitDeltaY__21->GetXaxis()->SetLabelSize(0.035);
@@ -347,13 +338,10 @@
   TofTests_SingleTrackHitDeltaY__21->GetZaxis()->SetTitleFont(42);
   TofTests_SingleTrackHitDeltaY->Add(TofTests_SingleTrackHitDeltaY, "");
 
-  TH1D* TofTests_SingleTrackHitDeltaY__22 =
-    new TH1D("TofTests_SingleTrackHitDeltaY__22",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track",
-             600,
-             -30,
-             30);
+  TH1D* TofTests_SingleTrackHitDeltaY__22 = new TH1D("TofTests_SingleTrackHitDeltaY__22",
+                                                     "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                                     "a single MC Track",
+                                                     600, -30, 30);
   TofTests_SingleTrackHitDeltaY__22->SetBinContent(97, 1);
   TofTests_SingleTrackHitDeltaY__22->SetBinContent(101, 1);
   TofTests_SingleTrackHitDeltaY__22->SetBinContent(109, 1);
@@ -620,8 +608,7 @@
   TofTests_SingleTrackHitDeltaY__22->SetEntries(4.51578e+08);
   TofTests_SingleTrackHitDeltaY__22->SetDirectory(0);
   TofTests_SingleTrackHitDeltaY__22->SetLineColor(2);
-  TofTests_SingleTrackHitDeltaY__22->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingleTrackHitDeltaY__22->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingleTrackHitDeltaY__22->GetXaxis()->SetRange(1, 600);
   TofTests_SingleTrackHitDeltaY__22->GetXaxis()->SetLabelFont(42);
   TofTests_SingleTrackHitDeltaY__22->GetXaxis()->SetLabelSize(0.035);
@@ -639,13 +626,10 @@
   TofTests_SingleTrackHitDeltaY__22->GetZaxis()->SetTitleFont(42);
   TofTests_SingleTrackHitDeltaY->Add(TofTests_SingleTrackHitDeltaY, "");
 
-  TH1D* TofTests_SingleTrackHitDeltaY__23 =
-    new TH1D("TofTests_SingleTrackHitDeltaY__23",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track",
-             600,
-             -30,
-             30);
+  TH1D* TofTests_SingleTrackHitDeltaY__23 = new TH1D("TofTests_SingleTrackHitDeltaY__23",
+                                                     "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                                     "a single MC Track",
+                                                     600, -30, 30);
   TofTests_SingleTrackHitDeltaY__23->SetBinContent(79, 1);
   TofTests_SingleTrackHitDeltaY__23->SetBinContent(97, 2);
   TofTests_SingleTrackHitDeltaY__23->SetBinContent(110, 1);
@@ -894,8 +878,7 @@
   TofTests_SingleTrackHitDeltaY__23->SetEntries(3.401431e+08);
   TofTests_SingleTrackHitDeltaY__23->SetDirectory(0);
   TofTests_SingleTrackHitDeltaY__23->SetLineColor(3);
-  TofTests_SingleTrackHitDeltaY__23->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingleTrackHitDeltaY__23->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingleTrackHitDeltaY__23->GetXaxis()->SetRange(1, 600);
   TofTests_SingleTrackHitDeltaY__23->GetXaxis()->SetLabelFont(42);
   TofTests_SingleTrackHitDeltaY__23->GetXaxis()->SetLabelSize(0.035);
@@ -913,13 +896,10 @@
   TofTests_SingleTrackHitDeltaY__23->GetZaxis()->SetTitleFont(42);
   TofTests_SingleTrackHitDeltaY->Add(TofTests_SingleTrackHitDeltaY, "");
 
-  TH1D* TofTests_SingleTrackHitDeltaY__24 =
-    new TH1D("TofTests_SingleTrackHitDeltaY__24",
-             "Quality of the Tof Hits position on Y axis, for hit coming from "
-             "a single MC Track",
-             600,
-             -30,
-             30);
+  TH1D* TofTests_SingleTrackHitDeltaY__24 = new TH1D("TofTests_SingleTrackHitDeltaY__24",
+                                                     "Quality of the Tof Hits position on Y axis, for hit coming from "
+                                                     "a single MC Track",
+                                                     600, -30, 30);
   TofTests_SingleTrackHitDeltaY__24->SetBinContent(41, 1);
   TofTests_SingleTrackHitDeltaY__24->SetBinContent(100, 1);
   TofTests_SingleTrackHitDeltaY__24->SetBinContent(101, 1);
@@ -1159,8 +1139,7 @@
   TofTests_SingleTrackHitDeltaY__24->SetEntries(2.787312e+08);
   TofTests_SingleTrackHitDeltaY__24->SetDirectory(0);
   TofTests_SingleTrackHitDeltaY__24->SetLineColor(4);
-  TofTests_SingleTrackHitDeltaY__24->GetXaxis()->SetTitle(
-    " Y(Hit) - X(Track) [cm]");
+  TofTests_SingleTrackHitDeltaY__24->GetXaxis()->SetTitle(" Y(Hit) - X(Track) [cm]");
   TofTests_SingleTrackHitDeltaY__24->GetXaxis()->SetRange(1, 600);
   TofTests_SingleTrackHitDeltaY__24->GetXaxis()->SetLabelFont(42);
   TofTests_SingleTrackHitDeltaY__24->GetXaxis()->SetLabelSize(0.035);
@@ -1189,16 +1168,14 @@
                             "hit coming from a single MC Track");
   pt->Draw();
 
-  TLegend* leg =
-    new TLegend(0.6019169, 0.7821429, 0.9514377, 0.922619, NULL, "brNDC");
+  TLegend* leg = new TLegend(0.6019169, 0.7821429, 0.9514377, 0.922619, NULL, "brNDC");
   leg->SetBorderSize(2);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
   leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
-  TLegendEntry* entry = leg->AddEntry(
-    "TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
+  TLegendEntry* entry = leg->AddEntry("TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
   entry->SetLineColor(1);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1206,8 +1183,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry(
-    "TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
+  entry = leg->AddEntry("TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
   entry->SetLineColor(2);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1215,8 +1191,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry(
-    "TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
+  entry = leg->AddEntry("TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
   entry->SetLineColor(3);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -1224,8 +1199,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry(
-    "TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
+  entry = leg->AddEntry("TofTests_SingleTrackHitDeltaY", "TofTests_SingleTrackHitDeltaY", "l");
   entry->SetLineColor(4);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);

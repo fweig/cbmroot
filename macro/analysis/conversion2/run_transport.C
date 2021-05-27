@@ -29,11 +29,9 @@
  ** @param inputFile  Name of input file
  ** @param iDecay     Decay mode from KFPartEfficiencies
  **/
-void run_transport(Int_t nEvents         = 2,
-                   const char* setupName = "sis100_electron",
-                   const char* index     = "00001",
-                   TString dataset       = "data/test",
-                   const char* inputFile = "") {
+void run_transport(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* index = "00001",
+                   TString dataset = "data/test", const char* inputFile = "")
+{
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -42,7 +40,7 @@ void run_transport(Int_t nEvents         = 2,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_transport";  // this macro's name for screen output
+  TString myName = "run_transport";                // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -54,8 +52,7 @@ void run_transport(Int_t nEvents         = 2,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if (strcmp(inputFile, "") == 0)
-    inFile = defaultInputFile;
+  if (strcmp(inputFile, "") == 0) inFile = defaultInputFile;
   else
     inFile = inputFile;
   // std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
@@ -94,9 +91,7 @@ void run_transport(Int_t nEvents         = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 

@@ -30,16 +30,11 @@ public:
   /**
     * \brief Inherited from CbmLitHitToTrackMerger */
   virtual LitStatus DoMerge(HitPtrVector& hits,  //TODO: add const here
-                            TrackPtrVector& tracks,
-                            TofTrackPtrVector& tofTracks);
+                            TrackPtrVector& tracks, TofTrackPtrVector& tofTracks);
 
   /** Setters **/
-  void SetFieldPropagator(TrackPropagatorPtr propagator) {
-    fFieldPropagator = propagator;
-  }
-  void SetLinePropagator(TrackPropagatorPtr propagator) {
-    fLinePropagator = propagator;
-  }
+  void SetFieldPropagator(TrackPropagatorPtr propagator) { fFieldPropagator = propagator; }
+  void SetLinePropagator(TrackPropagatorPtr propagator) { fLinePropagator = propagator; }
   void SetFilter(TrackUpdatePtr filter) { fFilter = filter; }
   void SetPDG(Int_t pdg) { fPDG = pdg; }
   void SetChiSqCut(litfloat chiSqCut) { fChiSqCut = chiSqCut; }
@@ -49,7 +44,7 @@ private:
   TrackPropagatorPtr fLinePropagator;   // Line track propagation tool
   TrackUpdatePtr fFilter;               // Track update tool
   Int_t fPDG;                           // PDG hypothesis
-  litfloat fChiSqCut;  // Chi square cut for hit to be attached to track.
+  litfloat fChiSqCut;                   // Chi square cut for hit to be attached to track.
 };
 
 #endif /* CBMLITALLHITSTOFMERGER_H_ */

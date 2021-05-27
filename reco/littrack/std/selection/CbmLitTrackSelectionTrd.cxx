@@ -12,19 +12,18 @@
 #include <functional>
 #include <set>
 
-CbmLitTrackSelectionTrd::CbmLitTrackSelectionTrd() : fNofSharedHits(0) {
-  fSharedHitsSelection =
-    TrackSelectionPtr(new CbmLitTrackSelectionSharedHits());
+CbmLitTrackSelectionTrd::CbmLitTrackSelectionTrd() : fNofSharedHits(0)
+{
+  fSharedHitsSelection = TrackSelectionPtr(new CbmLitTrackSelectionSharedHits());
 }
 
 CbmLitTrackSelectionTrd::~CbmLitTrackSelectionTrd() {}
 
-LitStatus CbmLitTrackSelectionTrd::DoSelect(TrackPtrIterator itBegin,
-                                            TrackPtrIterator itEnd) {
+LitStatus CbmLitTrackSelectionTrd::DoSelect(TrackPtrIterator itBegin, TrackPtrIterator itEnd)
+{
   if (itBegin == itEnd) { return kLITSUCCESS; }
 
-  ((CbmLitTrackSelectionSharedHits*) fSharedHitsSelection.get())
-    ->SetNofSharedHits(fNofSharedHits);
+  ((CbmLitTrackSelectionSharedHits*) fSharedHitsSelection.get())->SetNofSharedHits(fNofSharedHits);
 
   for (TrackPtrIterator iTrack = itBegin; iTrack != itEnd; iTrack++) {
     (*iTrack)->SetQuality(kLITGOOD);
@@ -35,6 +34,4 @@ LitStatus CbmLitTrackSelectionTrd::DoSelect(TrackPtrIterator itBegin,
   return kLITSUCCESS;
 }
 
-LitStatus CbmLitTrackSelectionTrd::DoSelect(TrackPtrVector& tracks) {
-  return DoSelect(tracks.begin(), tracks.end());
-}
+LitStatus CbmLitTrackSelectionTrd::DoSelect(TrackPtrVector& tracks) { return DoSelect(tracks.begin(), tracks.end()); }

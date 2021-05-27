@@ -1,7 +1,9 @@
 #include "CbmRichRingSelectAnn.h"
+
 #include "CbmRichGeoManager.h"
 #include "CbmRichRingLight.h"
 #include "CbmRichRingSelectImpl.h"
+
 #include "TMultiLayerPerceptron.h"
 #include "TSystem.h"
 #include "TTree.h"
@@ -11,25 +13,23 @@
 using std::cout;
 using std::endl;
 
-CbmRichRingSelectAnn::CbmRichRingSelectAnn()
-  : fAnnWeights(""), fNN(NULL), fSelectImpl(NULL) {
-  if (CbmRichGeoManager::GetInstance().fGP->fGeometryType
-      == CbmRichGeometryTypeCylindrical) {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v17a_select_ann_weights.txt";
-  } else if (CbmRichGeoManager::GetInstance().fGP->fGeometryType
-             == CbmRichGeometryTypeTwoWings) {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v16a_select_ann_weights.txt";
-  } else {
-    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR"))
-                  + "/parameters/rich/rich_v17a_select_ann_weights.txt";
+CbmRichRingSelectAnn::CbmRichRingSelectAnn() : fAnnWeights(""), fNN(NULL), fSelectImpl(NULL)
+{
+  if (CbmRichGeoManager::GetInstance().fGP->fGeometryType == CbmRichGeometryTypeCylindrical) {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v17a_select_ann_weights.txt";
+  }
+  else if (CbmRichGeoManager::GetInstance().fGP->fGeometryType == CbmRichGeometryTypeTwoWings) {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v16a_select_ann_weights.txt";
+  }
+  else {
+    fAnnWeights = string(gSystem->Getenv("VMCWORKDIR")) + "/parameters/rich/rich_v17a_select_ann_weights.txt";
   }
 }
 
 CbmRichRingSelectAnn::~CbmRichRingSelectAnn() {}
 
-void CbmRichRingSelectAnn::Init() {
+void CbmRichRingSelectAnn::Init()
+{
   fSelectImpl = new CbmRichRingSelectImpl();
 
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
@@ -45,15 +45,14 @@ void CbmRichRingSelectAnn::Init() {
   simu->Branch("xOut", &xOut, "xOut/D");
 
   fNN = new TMultiLayerPerceptron("x0,x1,x2,x3,x4,x5:10:xOut", simu);
-  cout << "-I- CbmRichRingSelectAnn: get ANN weight parameters from: "
-       << fAnnWeights << endl;
+  cout << "-I- CbmRichRingSelectAnn: get ANN weight parameters from: " << fAnnWeights << endl;
   fNN->LoadWeights(fAnnWeights.c_str());
 }
 
-void CbmRichRingSelectAnn::DoSelect(CbmRichRingLight* ring) {
-  if (ring->GetRadius() >= 10.f || ring->GetRadius() <= 0.f
-      || ring->GetNofHits() <= 5.f || ring->GetRadialPosition() <= 0.f
-      || ring->GetRadialPosition() >= 999.f) {
+void CbmRichRingSelectAnn::DoSelect(CbmRichRingLight* ring)
+{
+  if (ring->GetRadius() >= 10.f || ring->GetRadius() <= 0.f || ring->GetNofHits() <= 5.f
+      || ring->GetRadialPosition() <= 0.f || ring->GetRadialPosition() >= 999.f) {
 
     ring->SetSelectionNN(-1.f);
     return;

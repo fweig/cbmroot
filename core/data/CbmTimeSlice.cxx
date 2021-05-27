@@ -37,7 +37,9 @@ CbmTimeSlice::CbmTimeSlice(EType type)
   , fNofData()
   , fTimeDataFirst(0.)
   , fTimeDataLast(0.)
-  , fMatch() {}
+  , fMatch()
+{
+}
 // ---------------------------------------------------------------------------
 
 
@@ -51,7 +53,9 @@ CbmTimeSlice::CbmTimeSlice(Double_t start, Double_t duration)
   , fNofData()
   , fTimeDataFirst(0.)
   , fTimeDataLast(0.)
-  , fMatch() {}
+  , fMatch()
+{
+}
 // ---------------------------------------------------------------------------
 
 
@@ -61,14 +65,14 @@ CbmTimeSlice::~CbmTimeSlice() {}
 
 
 // -----   Add data with time stamp   ----------------------------------------
-Bool_t CbmTimeSlice::AddData(ECbmModuleId detector, Double_t time) {
+Bool_t CbmTimeSlice::AddData(ECbmModuleId detector, Double_t time)
+{
 
   // Check for out of bounds
   if (fType == kRegular) {
     if (time < fStartTime || time > GetEndTime()) {
       LOG(error) << "Trying to add data at t = " << time << " ns to "
-                 << "time slice [ " << fStartTime << ", " << GetEndTime()
-                 << " ] ns !";
+                 << "time slice [ " << fStartTime << ", " << GetEndTime() << " ] ns !";
       return kFALSE;
     }  //? out of bounds
   }    //? fixed-length
@@ -92,7 +96,8 @@ Bool_t CbmTimeSlice::AddData(ECbmModuleId detector, Double_t time) {
 
 
 // -----   End time of time slice   ------------------------------------------
-Double_t CbmTimeSlice::GetEndTime() const {
+Double_t CbmTimeSlice::GetEndTime() const
+{
   Double_t value = -1.;
   switch (fType) {
     case kRegular: value = fStartTime + fLength; break;
@@ -106,7 +111,8 @@ Double_t CbmTimeSlice::GetEndTime() const {
 
 
 // -----   Get data array size   ---------------------------------------------
-Int_t CbmTimeSlice::GetNofData(ECbmModuleId detector) const {
+Int_t CbmTimeSlice::GetNofData(ECbmModuleId detector) const
+{
   auto it = fNofData.find(detector);
   if (it == fNofData.end()) return 0;
   return it->second;
@@ -115,14 +121,14 @@ Int_t CbmTimeSlice::GetNofData(ECbmModuleId detector) const {
 
 
 // -----   Register data   ---------------------------------------------------
-Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system, Double_t time) {
+Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system, Double_t time)
+{
 
   // Check for out of bounds
   if (fType == kRegular) {
     if (time < fStartTime || time > GetEndTime()) {
       LOG(error) << "Trying to add data at t = " << time << " ns to "
-                 << "time slice [ " << fStartTime << ", " << GetEndTime()
-                 << " ] ns !";
+                 << "time slice [ " << fStartTime << ", " << GetEndTime() << " ] ns !";
       return kFALSE;
     }  //? out of bounds
   }    //? fixed-length
@@ -145,9 +151,8 @@ Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system, Double_t time) {
 
 
 // -----   Register data   ---------------------------------------------------
-Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system,
-                                  Double_t time,
-                                  const CbmMatch& match) {
+Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system, Double_t time, const CbmMatch& match)
+{
 
   // Update match object
   CbmLink link;
@@ -164,7 +169,8 @@ Bool_t CbmTimeSlice::RegisterData(ECbmModuleId system,
 
 
 // ----- Reset time slice   --------------------------------------------------
-void CbmTimeSlice::Reset() {
+void CbmTimeSlice::Reset()
+{
   assert(fType != kRegular);
   ResetCounters();
   fMatch.ClearLinks();
@@ -173,7 +179,8 @@ void CbmTimeSlice::Reset() {
 
 
 // ----- Reset time slice   --------------------------------------------------
-void CbmTimeSlice::Reset(Double_t start, Double_t length) {
+void CbmTimeSlice::Reset(Double_t start, Double_t length)
+{
   fStartTime = start;
   fLength    = length;
   ResetCounters();
@@ -183,7 +190,8 @@ void CbmTimeSlice::Reset(Double_t start, Double_t length) {
 
 
 // ----- Reset time slice bookkeeping   --------------------------------------
-void CbmTimeSlice::ResetCounters() {
+void CbmTimeSlice::ResetCounters()
+{
   fNofData.clear();
   fIsEmpty       = kTRUE;
   fTimeDataFirst = 0.;
@@ -194,27 +202,21 @@ void CbmTimeSlice::ResetCounters() {
 
 
 // -----   Status info   -----------------------------------------------------
-string CbmTimeSlice::ToString() const {
+string CbmTimeSlice::ToString() const
+{
   stringstream ss;
   ss << "Time slice [";
   switch (fType) {
-    case kRegular:
-      ss << fixed << setprecision(0) << fStartTime << ", " << GetEndTime()
-         << "] ns, data: ";
-      break;
+    case kRegular: ss << fixed << setprecision(0) << fStartTime << ", " << GetEndTime() << "] ns, data: "; break;
     case kFlexible: ss << "flexible], data: "; break;
     case kEvent: ss << "event], data: "; break;
     default: ss << "], data: "; break;
   }
-  if (IsEmpty())
-    ss << "empty";
+  if (IsEmpty()) ss << "empty";
   else {
-    ss << "[" << fixed << setprecision(3) << fTimeDataFirst << ", "
-       << fTimeDataLast << "] ns, ";
+    ss << "[" << fixed << setprecision(3) << fTimeDataFirst << ", " << fTimeDataLast << "] ns, ";
     for (auto it = fNofData.begin(); it != fNofData.end(); it++) {
-      if (it->second)
-        ss << CbmModuleList::GetModuleNameCaps(it->first) << " " << it->second
-           << " ";
+      if (it->second) ss << CbmModuleList::GetModuleNameCaps(it->first) << " " << it->second << " ";
     }  //# detectors
     ss << ", MC events " << fMatch.GetNofLinks();
   }  //? time-slice not empty

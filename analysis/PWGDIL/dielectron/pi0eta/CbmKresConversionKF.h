@@ -1,20 +1,18 @@
 #ifndef CBM_KRES_CONVERSION_KF
 #define CBM_KRES_CONVERSION_KF
 
-#include "CbmKresConversionBG.h"
-
 #include "CbmKFParticleFinder.h"
 #include "CbmKFParticleFinderQA.h"
-#include <TClonesArray.h>
-
-#include "KFParticle.h"
-#include "KFTopoPerformance.h"
-
+#include "CbmKresConversionBG.h"
 #include "CbmMCTrack.h"
 #include "CbmRichRing.h"
 
+#include <TClonesArray.h>
 #include <TH1.h>
 #include <TH2D.h>
+
+#include "KFParticle.h"
+#include "KFTopoPerformance.h"
 
 class CbmRichRingFitterEllipseTau;
 
@@ -33,38 +31,20 @@ public:
   void InitHistograms();
   void Finish();
 
-  void SetKF(CbmKFParticleFinder* kfparticle,
-             CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
 
-  void Exec(int fEventNumKF,
-            double OpeningAngleCut,
-            double GammaInvMassCut,
-            int RealPID);
+  void Exec(int fEventNumKF, double OpeningAngleCut, double GammaInvMassCut, int RealPID);
 
-  void FindGammas(vector<KFParticle> allgammas,
-                  vector<KFParticle> particlevector,
-                  int Event,
-                  double AngleCut,
-                  double InvMassCut,
-                  int RealPID);
+  void FindGammas(vector<KFParticle> allgammas, vector<KFParticle> particlevector, int Event, double AngleCut,
+                  double InvMassCut, int RealPID);
 
   int CheckIfElectron(CbmRichRing* ring, double momentum);
 
-  void FindPi0(TString mod,
-               vector<vector<TVector3>> Gammas,
-               vector<vector<int>> StsIndex,
-               vector<vector<CbmMCTrack*>> GammasMC,
-               vector<Double_t> GammasZ,
-               TH1D* Pi0InvMassRecoKF,
-               TH2D* Pi0_pt_vs_rap,
-               TH2D* Pi0_pt_vs_rap_est,
-               TH1D* Pi0InvMassRecoKF_target,
-               TH1D* Pi0InvMassRecoKF_mvd,
-               TH1D* Pi0InvMassRecoKF_sts,
-               TH1D* Pi0InvMassRecoKF_outside,
-               TH2D* MultiplicityGamma,
-               TH2D* MultiplicityChargedParticles,
-               vector<TH1*> BGCases);
+  void FindPi0(TString mod, vector<vector<TVector3>> Gammas, vector<vector<int>> StsIndex,
+               vector<vector<CbmMCTrack*>> GammasMC, vector<Double_t> GammasZ, TH1D* Pi0InvMassRecoKF,
+               TH2D* Pi0_pt_vs_rap, TH2D* Pi0_pt_vs_rap_est, TH1D* Pi0InvMassRecoKF_target, TH1D* Pi0InvMassRecoKF_mvd,
+               TH1D* Pi0InvMassRecoKF_sts, TH1D* Pi0InvMassRecoKF_outside, TH2D* MultiplicityGamma,
+               TH2D* MultiplicityChargedParticles, vector<TH1*> BGCases);
 
   void MixedEvent();
   void MixedEventMulti();

@@ -1,4 +1,5 @@
-void draw_litqa() {
+void draw_litqa()
+{
   //gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
   //loadlibs();
 

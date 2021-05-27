@@ -10,6 +10,7 @@
 #include "CbmStsDigi.h"
 #include "CbmStsParModule.h"
 #include "CbmStsPhysics.h"
+
 #include <TMath.h>
 
 using std::unique_ptr;
@@ -20,13 +21,16 @@ ClassImp(CbmStsAlgoAnaCluster)
 
   // -----   Constructor   ----------------------------------------------------
   CbmStsAlgoAnaCluster::CbmStsAlgoAnaCluster()
-  : fDigiMan(CbmDigiManager::Instance()), fPhysics(CbmStsPhysics::Instance()) {}
+  : fDigiMan(CbmDigiManager::Instance())
+  , fPhysics(CbmStsPhysics::Instance())
+{
+}
 // --------------------------------------------------------------------------
 
 
 // -----   Algorithm for one-digi clusters   --------------------------------
-void CbmStsAlgoAnaCluster::AnaSize1(CbmStsCluster& cluster,
-                                    const CbmStsParModule* module) {
+void CbmStsAlgoAnaCluster::AnaSize1(CbmStsCluster& cluster, const CbmStsParModule* module)
+{
 
   assert(module);
   Int_t index            = cluster.GetDigi(0);
@@ -46,8 +50,8 @@ void CbmStsAlgoAnaCluster::AnaSize1(CbmStsCluster& cluster,
 
 
 // -----   Algorithm for two-digi clusters   --------------------------------
-void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster,
-                                    const CbmStsParModule* modPar) {
+void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster, const CbmStsParModule* modPar)
+{
 
   Int_t index1            = cluster.GetDigi(0);
   Int_t index2            = cluster.GetDigi(1);
@@ -60,19 +64,14 @@ void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster,
   auto& asic2 = modPar->GetParAsic(digi2->GetChannel());
 
   // --- Uncertainties of the charge measurements
-  Double_t eNoiseSq = 0.5
-                      * (asic1.GetNoise() * asic1.GetNoise()
-                         + asic2.GetNoise() * asic2.GetNoise());
+  Double_t eNoiseSq = 0.5 * (asic1.GetNoise() * asic1.GetNoise() + asic2.GetNoise() * asic2.GetNoise());
   Double_t chargePerAdc =
-    0.5
-    * (asic1.GetDynRange() / Double_t(asic1.GetNofAdc())
-       + asic2.GetDynRange() / Double_t(asic2.GetNofAdc()));
+    0.5 * (asic1.GetDynRange() / Double_t(asic1.GetNofAdc()) + asic2.GetDynRange() / Double_t(asic2.GetNofAdc()));
   Double_t eDigitSq = chargePerAdc * chargePerAdc / 12.;
 
   UInt_t chan1 = digi1->GetChannel();
   UInt_t chan2 = digi2->GetChannel();
-  assert(chan2 == chan1 + 1
-         || chan2 == chan1 - modPar->GetNofChannels() / 2 + 1);
+  assert(chan2 == chan1 + 1 || chan2 == chan1 - modPar->GetNofChannels() / 2 + 1);
 
   // Channel positions and charge
   Double_t x1 = Double_t(chan1);
@@ -90,8 +89,7 @@ void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster,
 
   // Cluster time
   Double_t time      = 0.5 * (digi1->GetTime() + digi2->GetTime());
-  Double_t timeError = 0.5 * (asic1.GetTimeResol() + asic2.GetTimeResol())
-                       * 0.70710678;  // 1/sqrt(2)
+  Double_t timeError = 0.5 * (asic1.GetTimeResol() + asic2.GetTimeResol()) * 0.70710678;  // 1/sqrt(2)
 
   // Cluster position
   // See corresponding software note.
@@ -108,7 +106,8 @@ void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster,
     ex0sq = (q2 - q1) * (q2 - q1) / q2 / q2 / 72.;
     ex1sq = eq1sq / q2 / q2 / 9.;
     ex2sq = eq2sq * q1 * q1 / q2 / q2 / q2 / q2 / 9.;
-  } else {
+  }
+  else {
     ex0sq = (q2 - q1) * (q2 - q1) / q1 / q1 / 72.;
     ex1sq = eq1sq * q2 * q2 / q1 / q1 / q1 / q1 / 9.;
     ex2sq = eq2sq / q1 / q1 / 9.;
@@ -125,8 +124,8 @@ void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster,
 
 
 // -----   Algorithm for clusters with more than two digis   ----------------
-void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster,
-                                    const CbmStsParModule* modPar) {
+void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster, const CbmStsParModule* modPar)
+{
 
   Double_t tSum        = 0.;       // sum of digi times
   Int_t chanF          = 9999999;  // first channel in cluster
@@ -160,20 +159,20 @@ void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster,
     Double_t eChargeSq = lWidth * lWidth + eNoiseSq + eDigitSq;
 
     // Check ascending order of channel number
-    if (iDigi > 0)
-      assert(channel == prevChannel + 1
-             || channel == prevChannel - modPar->GetNofChannels() / 2 + 1);
+    if (iDigi > 0) assert(channel == prevChannel + 1 || channel == prevChannel - modPar->GetNofChannels() / 2 + 1);
     prevChannel = channel;
 
     if (iDigi == 0) {  // first channel
       chanF = channel;
       qF    = charge;
       eqFsq = eChargeSq;
-    } else if (iDigi == cluster.GetNofDigis() - 1) {  // last channel
+    }
+    else if (iDigi == cluster.GetNofDigis() - 1) {  // last channel
       chanL = channel;
       qL    = charge;
       eqLsq = eChargeSq;
-    } else {  // one of the middle channels
+    }
+    else {  // one of the middle channels
       qM += charge;
       eqMsq += eChargeSq;
     }
@@ -185,9 +184,8 @@ void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster,
 
   // Cluster time and total charge
   tSum            = tSum / Double_t(cluster.GetNofDigis());
-  Double_t tError = (tResolSum / Double_t(cluster.GetNofDigis()))
-                    / TMath::Sqrt(Double_t(cluster.GetNofDigis()));
-  Double_t qSum = qF + qM + qL;
+  Double_t tError = (tResolSum / Double_t(cluster.GetNofDigis())) / TMath::Sqrt(Double_t(cluster.GetNofDigis()));
+  Double_t qSum   = qF + qM + qL;
 
   // Average charge in middle strips
   qM /= Double_t(cluster.GetNofDigis() - 2);
@@ -217,8 +215,8 @@ void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster,
 
 
 // -----   Algorithm execution   --------------------------------------------
-void CbmStsAlgoAnaCluster::Exec(CbmStsCluster& cluster,
-                                const CbmStsParModule* modPar) {
+void CbmStsAlgoAnaCluster::Exec(CbmStsCluster& cluster, const CbmStsParModule* modPar)
+{
 
   Int_t nDigis = cluster.GetNofDigis();
   assert(nDigis >= 0);
@@ -236,8 +234,8 @@ void CbmStsAlgoAnaCluster::Exec(CbmStsCluster& cluster,
 
 
 // -----   Weighted mean calculation   --------------------------------------
-Double_t CbmStsAlgoAnaCluster::WeightedMean(CbmStsCluster& cluster,
-                                            const CbmStsParModule* modPar) {
+Double_t CbmStsAlgoAnaCluster::WeightedMean(CbmStsCluster& cluster, const CbmStsParModule* modPar)
+{
 
   Double_t qSum = 0.;
   Double_t xSum = 0.;

@@ -11,33 +11,28 @@
 
 #include "node.hpp"
 
-namespace KDTree {
+namespace KDTree
+{
   template<typename _Val, typename _Ref, typename _Ptr>
   class _Iterator;
 
   template<typename _Val, typename _Ref, typename _Ptr>
-  inline bool operator==(_Iterator<_Val, _Ref, _Ptr> const&,
-                         _Iterator<_Val, _Ref, _Ptr> const&);
+  inline bool operator==(_Iterator<_Val, _Ref, _Ptr> const&, _Iterator<_Val, _Ref, _Ptr> const&);
 
   template<typename _Val>
-  inline bool operator==(_Iterator<_Val, const _Val&, const _Val*> const&,
-                         _Iterator<_Val, _Val&, _Val*> const&);
+  inline bool operator==(_Iterator<_Val, const _Val&, const _Val*> const&, _Iterator<_Val, _Val&, _Val*> const&);
 
   template<typename _Val>
-  inline bool operator==(_Iterator<_Val, _Val&, _Val*> const&,
-                         _Iterator<_Val, const _Val&, const _Val*> const&);
+  inline bool operator==(_Iterator<_Val, _Val&, _Val*> const&, _Iterator<_Val, const _Val&, const _Val*> const&);
 
   template<typename _Val, typename _Ref, typename _Ptr>
-  inline bool operator!=(_Iterator<_Val, _Ref, _Ptr> const&,
-                         _Iterator<_Val, _Ref, _Ptr> const&);
+  inline bool operator!=(_Iterator<_Val, _Ref, _Ptr> const&, _Iterator<_Val, _Ref, _Ptr> const&);
 
   template<typename _Val>
-  inline bool operator!=(_Iterator<_Val, const _Val&, const _Val*> const&,
-                         _Iterator<_Val, _Val&, _Val*> const&);
+  inline bool operator!=(_Iterator<_Val, const _Val&, const _Val*> const&, _Iterator<_Val, _Val&, _Val*> const&);
 
   template<typename _Val>
-  inline bool operator!=(_Iterator<_Val, _Val&, _Val*> const&,
-                         _Iterator<_Val, const _Val&, const _Val*> const&);
+  inline bool operator!=(_Iterator<_Val, _Val&, _Val*> const&, _Iterator<_Val, const _Val&, const _Val*> const&);
 
   class _Base_iterator {
   protected:
@@ -45,15 +40,16 @@ namespace KDTree {
     _Base_const_ptr _M_node;
 
     inline _Base_iterator(_Base_const_ptr const __N = NULL) : _M_node(__N) {}
-    inline _Base_iterator(_Base_iterator const& __THAT)
-      : _M_node(__THAT._M_node) {}
+    inline _Base_iterator(_Base_iterator const& __THAT) : _M_node(__THAT._M_node) {}
 
-    inline void _M_increment() {
+    inline void _M_increment()
+    {
       if (_M_node->_M_right) {
         _M_node = _M_node->_M_right;
         while (_M_node->_M_left)
           _M_node = _M_node->_M_left;
-      } else {
+      }
+      else {
         _Base_const_ptr __p = _M_node->_M_parent;
         while (__p && _M_node == __p->_M_right) {
           _M_node = __p;
@@ -65,16 +61,19 @@ namespace KDTree {
       }
     }
 
-    inline void _M_decrement() {
+    inline void _M_decrement()
+    {
       if (!_M_node->_M_parent)  // clearly identify the header node
       {
         _M_node = _M_node->_M_right;
-      } else if (_M_node->_M_left) {
+      }
+      else if (_M_node->_M_left) {
         _Base_const_ptr x = _M_node->_M_left;
         while (x->_M_right)
           x = x->_M_right;
         _M_node = x;
-      } else {
+      }
+      else {
         _Base_const_ptr __p = _M_node->_M_parent;
         while (__p && _M_node == __p->_M_left)  // see below
         {
@@ -87,12 +86,7 @@ namespace KDTree {
       }
     }
 
-    template<size_t const __K,
-             typename _Val,
-             typename _Acc,
-             typename _Dist,
-             typename _Cmp,
-             typename _Alloc>
+    template<size_t const __K, typename _Val, typename _Acc, typename _Dist, typename _Cmp, typename _Alloc>
     friend class KDTree;
   };
 
@@ -119,80 +113,78 @@ namespace KDTree {
 
     pointer operator->() const { return &(operator*()); }
 
-    _Self operator++() {
+    _Self operator++()
+    {
       _M_increment();
       return *this;
     }
 
-    _Self operator++(int) {
+    _Self operator++(int)
+    {
       _Self ret = *this;
       _M_increment();
       return ret;
     }
 
-    _Self& operator--() {
+    _Self& operator--()
+    {
       _M_decrement();
       return *this;
     }
 
-    _Self operator--(int) {
+    _Self operator--(int)
+    {
       _Self ret = *this;
       _M_decrement();
       return ret;
     }
 
-    friend bool operator==<>(_Iterator<_Val, _Ref, _Ptr> const&,
-                             _Iterator<_Val, _Ref, _Ptr> const&);
+    friend bool operator==<>(_Iterator<_Val, _Ref, _Ptr> const&, _Iterator<_Val, _Ref, _Ptr> const&);
 
-    friend bool operator==<>(_Iterator<_Val, const _Val&, const _Val*> const&,
-                             _Iterator<_Val, _Val&, _Val*> const&);
+    friend bool operator==<>(_Iterator<_Val, const _Val&, const _Val*> const&, _Iterator<_Val, _Val&, _Val*> const&);
 
-    friend bool operator==<>(_Iterator<_Val, _Val&, _Val*> const&,
-                             _Iterator<_Val, const _Val&, const _Val*> const&);
+    friend bool operator==<>(_Iterator<_Val, _Val&, _Val*> const&, _Iterator<_Val, const _Val&, const _Val*> const&);
 
-    friend bool operator!=<>(_Iterator<_Val, _Ref, _Ptr> const&,
-                             _Iterator<_Val, _Ref, _Ptr> const&);
+    friend bool operator!=<>(_Iterator<_Val, _Ref, _Ptr> const&, _Iterator<_Val, _Ref, _Ptr> const&);
 
-    friend bool operator!=<>(_Iterator<_Val, const _Val&, const _Val*> const&,
-                             _Iterator<_Val, _Val&, _Val*> const&);
+    friend bool operator!=<>(_Iterator<_Val, const _Val&, const _Val*> const&, _Iterator<_Val, _Val&, _Val*> const&);
 
-    friend bool operator!=<>(_Iterator<_Val, _Val&, _Val*> const&,
-                             _Iterator<_Val, const _Val&, const _Val*> const&);
+    friend bool operator!=<>(_Iterator<_Val, _Val&, _Val*> const&, _Iterator<_Val, const _Val&, const _Val*> const&);
   };
 
   template<typename _Val, typename _Ref, typename _Ptr>
-  inline bool operator==(_Iterator<_Val, _Ref, _Ptr> const& __X,
-                         _Iterator<_Val, _Ref, _Ptr> const& __Y) {
+  inline bool operator==(_Iterator<_Val, _Ref, _Ptr> const& __X, _Iterator<_Val, _Ref, _Ptr> const& __Y)
+  {
     return __X._M_node == __Y._M_node;
   }
 
   template<typename _Val>
-  inline bool operator==(_Iterator<_Val, const _Val&, const _Val*> const& __X,
-                         _Iterator<_Val, _Val&, _Val*> const& __Y) {
+  inline bool operator==(_Iterator<_Val, const _Val&, const _Val*> const& __X, _Iterator<_Val, _Val&, _Val*> const& __Y)
+  {
     return __X._M_node == __Y._M_node;
   }
 
   template<typename _Val>
-  inline bool operator==(_Iterator<_Val, _Val&, _Val*> const& __X,
-                         _Iterator<_Val, const _Val&, const _Val*> const& __Y) {
+  inline bool operator==(_Iterator<_Val, _Val&, _Val*> const& __X, _Iterator<_Val, const _Val&, const _Val*> const& __Y)
+  {
     return __X._M_node == __Y._M_node;
   }
 
   template<typename _Val, typename _Ref, typename _Ptr>
-  inline bool operator!=(_Iterator<_Val, _Ref, _Ptr> const& __X,
-                         _Iterator<_Val, _Ref, _Ptr> const& __Y) {
+  inline bool operator!=(_Iterator<_Val, _Ref, _Ptr> const& __X, _Iterator<_Val, _Ref, _Ptr> const& __Y)
+  {
     return __X._M_node != __Y._M_node;
   }
 
   template<typename _Val>
-  inline bool operator!=(_Iterator<_Val, const _Val&, const _Val*> const& __X,
-                         _Iterator<_Val, _Val&, _Val*> const& __Y) {
+  inline bool operator!=(_Iterator<_Val, const _Val&, const _Val*> const& __X, _Iterator<_Val, _Val&, _Val*> const& __Y)
+  {
     return __X._M_node != __Y._M_node;
   }
 
   template<typename _Val>
-  inline bool operator!=(_Iterator<_Val, _Val&, _Val*> const& __X,
-                         _Iterator<_Val, const _Val&, const _Val*> const& __Y) {
+  inline bool operator!=(_Iterator<_Val, _Val&, _Val*> const& __X, _Iterator<_Val, const _Val&, const _Val*> const& __Y)
+  {
     return __X._M_node != __Y._M_node;
   }
 

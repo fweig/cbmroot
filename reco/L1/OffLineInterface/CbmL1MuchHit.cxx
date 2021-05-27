@@ -1,12 +1,14 @@
 
 #include "CbmL1MuchHit.h"
+
 #include "CbmKF.h"
 #include "CbmKFTrackInterface.h"
 #include "CbmMuchHit.h"
 
 ClassImp(CbmL1MuchHit);
 
-void CbmL1MuchHit::Create(CbmMuchHit* h, int ind) {
+void CbmL1MuchHit::Create(CbmMuchHit* h, int ind)
+{
   FitPoint.x    = h->GetX();
   FitPoint.y    = h->GetY();
   FitPoint.z    = h->GetZ();
@@ -22,9 +24,8 @@ void CbmL1MuchHit::Create(CbmMuchHit* h, int ind) {
   index         = ind;
 }
 
-Int_t CbmL1MuchHit::Filter(CbmKFTrackInterface& track,
-                           Bool_t downstream,
-                           Double_t& QP0) {
+Int_t CbmL1MuchHit::Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0)
+{
   Bool_t err = 0;
   err        = err || track.Propagate(FitPoint.z, QP0);
   err        = err || FitPoint.Filter(track);

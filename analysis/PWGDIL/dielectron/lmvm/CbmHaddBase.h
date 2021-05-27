@@ -29,23 +29,16 @@ public:
 	 *\param addString analysis or litqa
 	 *\param nofFiles number Of files to add
 	 */
-  static void AddFilesInDir(const std::string& dir,
-                            const std::string& fileTemplate,
-                            const std::string& addString,
-                            Int_t nofFiles,
-                            Int_t fileSizeLimit = 50000,
-                            Int_t nofEvents     = 1000);
+  static void AddFilesInDir(const std::string& dir, const std::string& fileTemplate, const std::string& addString,
+                            Int_t nofFiles, Int_t fileSizeLimit = 50000, Int_t nofEvents = 1000);
 
 
   static vector<string> GetFilesByPattern(const string& pattern);
 
-  static vector<string>
-  GetGoodFiles(const string& pattern, Int_t fileSizeLimit, Int_t nofEvents);
+  static vector<string> GetGoodFiles(const string& pattern, Int_t fileSizeLimit, Int_t nofEvents);
 
 private:
-  static TFile* CreateAndMergeTempTargetFile(const std::string& dir,
-                                             const std::string& addString,
-                                             Int_t targetFileNum,
+  static TFile* CreateAndMergeTempTargetFile(const std::string& dir, const std::string& addString, Int_t targetFileNum,
                                              TList* fileList);
 
   /*
@@ -61,8 +54,7 @@ private:
   /*
 	 * \brief Check that file is not NULL, file size is more than a limit, number of events is equal to nofEvents
 	 */
-  static Bool_t
-  CheckFile(TFile* file, Int_t fileSizeLimit = 50000, Int_t nofEvents = 1000);
+  static Bool_t CheckFile(TFile* file, Int_t fileSizeLimit = 50000, Int_t nofEvents = 1000);
 
   /*
 	 * \brief Merge root file into one. This function was taken from hadd.C macro.

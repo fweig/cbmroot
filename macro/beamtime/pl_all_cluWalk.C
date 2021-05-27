@@ -1,8 +1,5 @@
-void pl_all_cluWalk(Int_t iNch = 1,
-                    Int_t i1   = 0,
-                    Int_t SmT  = 0,
-                    Int_t iSm  = 0,
-                    Int_t iRpc = 0) {
+void pl_all_cluWalk(Int_t iNch = 1, Int_t i1 = 0, Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -56,15 +53,14 @@ void pl_all_cluWalk(Int_t iNch = 1,
       gPad->SetLogz();
       TProfile* h2_pfx = h2->ProfileX();
       h2_pfx->Draw("same");
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
-    hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
-    h1 = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw("same");
-    } else {
+    hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
+    h1    = (TH1*) gROOT->FindObjectAny(hname);
+    if (h1 != NULL) { h1->Draw("same"); }
+    else {
       cout << "Histogram " << hname << " not found. " << endl;
     }
 
@@ -80,12 +76,10 @@ void pl_all_cluWalk(Int_t iNch = 1,
       TProfile* h2_pfx = h2->ProfileX();
       h2_pfx->Draw("same");
     }
-    hname =
-      Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
-    h1 = (TH1*) gROOT->FindObjectAny(hname);
-    if (h1 != NULL) {
-      h1->Draw("same");
-    } else {
+    hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
+    h1    = (TH1*) gROOT->FindObjectAny(hname);
+    if (h1 != NULL) { h1->Draw("same"); }
+    else {
       cout << "Histogram " << hname << " not found. " << endl;
     }
   }

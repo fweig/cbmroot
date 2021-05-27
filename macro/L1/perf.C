@@ -1,4 +1,5 @@
-void perf() {
+void perf()
+{
 
   TStopwatch timer;
   timer.Start();
@@ -75,8 +76,7 @@ void perf() {
 
   //***************** performance fitter ********
 
-  CbmStsFitPerformanceTask* fitperf =
-    new CbmStsFitPerformanceTask("FitPerformance");
+  CbmStsFitPerformanceTask* fitperf = new CbmStsFitPerformanceTask("FitPerformance");
   fitperf->DoTrackAnalysis();
   fitperf->DoVertexAnalysis();
   fitperf->DoD0Analysis();

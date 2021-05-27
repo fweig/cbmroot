@@ -8,6 +8,7 @@
 
 #include "TF1.h"
 #include "TROOT.h"
+
 #include <iostream>
 
 #include "PDataBase.h"
@@ -37,7 +38,8 @@ public:
   //Freeze out -> Important to check this
   void SetFreezeOut(void) { freeze = kTRUE; };
 
-  void clearFreezeOut(void) {
+  void clearFreezeOut(void)
+  {
     //re-loop PStdModels
     freeze = kFALSE;
   };
@@ -50,24 +52,18 @@ public:
   int GetAliasParent(const char* alias_name);
   int GetAliasParent(int key);
 
-  int MakeDirectoryEntry(
-    const char* name,
-    const char* n,
-    const char* l,
-    const char* ename);  //adds a directory, ret value is key
+  int MakeDirectoryEntry(const char* name, const char* n, const char* l,
+                         const char* ename);  //adds a directory, ret value is key
   Double_t* GetBatchValue(const char* name, Int_t make_val = 1);
-  int GetSecondaryKey(
-    int key,
-    int defkey);  //Loops over the alias entries and look for matching defkey
+  int GetSecondaryKey(int key,
+                      int defkey);  //Loops over the alias entries and look for matching defkey
 
   //Particle get methods
   int GetParticleID(const char* id, int warn = 1);  // pid by name
   int GetParticleIDByKey(int key);                  // pid by key
   const char* GetParticleName(const int& id);       // name by pid
   int GetParticleKey(const int& id);                // data base key by pid
-  int GetParticleKey(const char* id) {
-    return GetParticleKey(GetParticleID(id));
-  };
+  int GetParticleKey(const char* id) { return GetParticleKey(GetParticleID(id)); };
   int IsParticle(const int& id,
                  const char* name);    // does pid correspond to given name?
   int IsParticleValid(const int& id);  // check id range by id
@@ -78,9 +74,8 @@ public:
   void PrintParticleByKey(int pid);
   void PrintParticle(const char* id) { PrintParticle(GetParticleID(id)); };
 
-  int GetParticleKF(const int Id);  // return Pythia6 kf code
-  int GetParticleIDbyKF(
-    const int kf);  // return Id corresponding to Pythia6 kf code
+  int GetParticleKF(const int Id);      // return Pythia6 kf code
+  int GetParticleIDbyKF(const int kf);  // return Id corresponding to Pythia6 kf code
 
   int IsParticleMeson(const int& id);                    // is meson?, by pid
   void SetParticleMeson(const char* id, Int_t num = 1);  // set meson number
@@ -122,43 +117,30 @@ public:
   void SetParticleTotalWidth(Int_t id, Float_t wid);
   void SetParticleTotalWidth(const char* id, Float_t wid);
   double GetParticleTotalWidth(const int& id);  // -->PWidth[id]
-  double GetParticleTotalWidth(const char* id) {
-    return GetParticleTotalWidth(GetParticleID(id));
-  };
+  double GetParticleTotalWidth(const char* id) { return GetParticleTotalWidth(GetParticleID(id)); };
   double GetParticleTotalWidthByKey(const int& id);
 
-  double GetParticleEmin(
-    const int& id);  // Returns the energy threshold for the particle
+  double GetParticleEmin(const int& id);  // Returns the energy threshold for the particle
   void SetParticleEmin(const int& id, const double v);
 
   //Change particle range:
-  double GetParticleLMass(
-    const int& id);  // Returns lower mass (used in all samplings)
-  double GetParticleLMass(const char* id) {
-    return GetParticleLMass(GetParticleID(id));
-  };
-  double GetParticleUMass(
-    const int& id);  // Returns upper mass (used in all samplings)
-  double GetParticleUMass(const char* id) {
-    return GetParticleUMass(GetParticleID(id));
-  };
-  void
-  SetParticleLMass(const int& id,
-                   const double v) {  // Set lower mass (used in all samplings)
+  double GetParticleLMass(const int& id);  // Returns lower mass (used in all samplings)
+  double GetParticleLMass(const char* id) { return GetParticleLMass(GetParticleID(id)); };
+  double GetParticleUMass(const int& id);  // Returns upper mass (used in all samplings)
+  double GetParticleUMass(const char* id) { return GetParticleUMass(GetParticleID(id)); };
+  void SetParticleLMass(const int& id, const double v)
+  {  // Set lower mass (used in all samplings)
     SetParticleLMass(GetParticleName(id), v);
   };
-  void
-  SetParticleLMass(const char* id,
-                   const double v);  // Set lower mass (used in all samplings)
+  void SetParticleLMass(const char* id,
+                        const double v);  // Set lower mass (used in all samplings)
 
-  void
-  SetParticleUMass(const int& id,
-                   const double v) {  // Set upper mass (used in all samplings)
+  void SetParticleUMass(const int& id, const double v)
+  {  // Set upper mass (used in all samplings)
     SetParticleUMass(GetParticleName(id), v);
   };
-  void
-  SetParticleUMass(const char* id,
-                   const double v);  // Set upper mass (used in all samplings)
+  void SetParticleUMass(const char* id,
+                        const double v);  // Set upper mass (used in all samplings)
 
 
   bool NormParticleBR(Int_t id);  // normalize branching ratios for particle id
@@ -169,8 +151,7 @@ public:
   void FreezeDecayBR(Int_t id,
                      Int_t brn);  // Set BR  (BUGBUG->brn nomally unknown)
   bool SetDecayBR(int didx, double br, int mode);
-  bool
-  SetDecayBR(const char* parent, const char* daughters, double br, int mode);
+  bool SetDecayBR(const char* parent, const char* daughters, double br, int mode);
   bool SetDecayBRByKey(int key, double br, int mode);
 
   Double_t GetDecayBR(Int_t id);
@@ -195,8 +176,7 @@ public:
     */
   void PrintDecayByKey(int key);
 
-  int GetDecayNProducts(
-    const int&);  // retrieve number of products by mode index
+  int GetDecayNProducts(const int&);   // retrieve number of products by mode index
   int GetDecayNProducts(const char*);  // number of products by name
   int GetDecayNProductsByKey(const int& key);
 
@@ -206,9 +186,8 @@ public:
                     int* n);  // retrieve product number, pids, by mode index
   void GetDecayModeByKey(const int, int* n);
 
-  int GetDecayIdx(
-    int* pid,
-    int n);  // decay-mode index from parent and product ids; ->getChannel
+  int GetDecayIdx(int* pid,
+                  int n);  // decay-mode index from parent and product ids; ->getChannel
   int GetDecayKey(int* pid, int n);
   int GetDecayKey(const int& id);
   int GetDecayIdxByKey(int key);
@@ -217,9 +196,7 @@ public:
   void SetDecayBRFlag(int didx, int flag);
 
 
-  double GetDecayEmin(
-    const int&
-      idx);  // Returns the energy threshold for the decay mode with index=idx
+  double GetDecayEmin(const int& idx);  // Returns the energy threshold for the decay mode with index=idx
   void SetDecayEmin(const int& idx, const double v);
 
   //for dynamic stuff
@@ -242,12 +219,12 @@ public:
   void SetTF1(const int&, TF1* mesh);
   TF1* GetTF1(const int&);
 
-  static Bool_t
-  Tokenize(const char* options, const char* delimiter, char** array, int* size);
+  static Bool_t Tokenize(const char* options, const char* delimiter, char** array, int* size);
   static void remove_spaces(char** partc);
 
   static void dsort(Double_t*, int);
-  static void isort(int* i, int n) {
+  static void isort(int* i, int n)
+  {
     // Sort in ascending order the first (int) entries of the array (int *).
 
     //BUGBUG: Quickersort is unstable
@@ -272,17 +249,13 @@ public:
   friend void listParticle(int id);
   // list particles in data base and their properties, by particle pid
 
-  friend void listParticle(const char* id) {
-    listParticle(makeStaticData()->GetParticleID(id));
-  };
+  friend void listParticle(const char* id) { listParticle(makeStaticData()->GetParticleID(id)); };
   // list particles in data base and their properties, by particle code name
 
   friend void listModes(int id);
   // list decay modes in data base, by particle pid
 
-  friend void listModes(const char* id) {
-    listModes(makeStaticData()->GetParticleID(id));
-  };
+  friend void listModes(const char* id) { listModes(makeStaticData()->GetParticleID(id)); };
   // list decay modes in data base, by particle name
 
 
@@ -297,8 +270,7 @@ private:
   Int_t charge_param, spin_param, ispin_param;
   Int_t parity_param, mass_param, width_param;
   Int_t pkf_param, didx_param;
-  Int_t widx_param, mesh_param, tf1_param, ethreshold_param, lmass_param,
-    umass_param;
+  Int_t widx_param, mesh_param, tf1_param, ethreshold_param, lmass_param, umass_param;
   Int_t tdepth_param, hdepth_param, br_param, brorig_param, count_param;
   Int_t d1_param, d2_param, d3_param, pnmodes_param, ppid_param;
   Int_t d4_param, d5_param, d6_param, d7_param;

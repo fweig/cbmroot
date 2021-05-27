@@ -8,12 +8,15 @@
 #ifndef CBMLITTRACKPARAM_H_
 #define CBMLITTRACKPARAM_H_
 
-#include "TVector3.h"
 #include "base/CbmLitFloat.h"
-#include <cmath>
+
+#include "TVector3.h"
+
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <cmath>
 
 using std::endl;
 using std::string;
@@ -34,15 +37,7 @@ public:
   /**
     * \brief Constructor.
     */
-  CbmLitTrackParam()
-    : fX(0.)
-    , fY(0.)
-    , fZ(0.)
-    , fTx(0.)
-    , fTy(0.)
-    , fQp(0.)
-    , fTime(0.)
-    , fCovMatrix(21, 0.) {}
+  CbmLitTrackParam() : fX(0.), fY(0.), fZ(0.), fTx(0.), fTy(0.), fQp(0.), fTime(0.), fCovMatrix(21, 0.) {}
 
   /**
     * \brief Destructor.
@@ -68,9 +63,7 @@ public:
   void SetTy(litfloat ty) { fTy = ty; }
   void SetQp(litfloat qp) { fQp = qp; }
   void SetTime(litfloat t) { fTime = t; }
-  void SetCovMatrix(const vector<litfloat>& C) {
-    fCovMatrix.assign(C.begin(), C.end());
-  }
+  void SetCovMatrix(const vector<litfloat>& C) { fCovMatrix.assign(C.begin(), C.end()); }
   void SetCovariance(int index, litfloat cov) { fCovMatrix[index] = cov; }
 
   /**
@@ -79,7 +72,8 @@ public:
     * \param[out] ny Output direction cosine for OY axis.
     * \param[out] nz Output direction cosine for OZ axis.
     */
-  void GetDirCos(litfloat& nx, litfloat& ny, litfloat& nz) const {
+  void GetDirCos(litfloat& nx, litfloat& ny, litfloat& nz) const
+  {
     litfloat p    = (std::abs(fQp) != 0.) ? 1. / std::abs(fQp) : 1.e20;
     litfloat pz   = std::sqrt(p * p / (fTx * fTx + fTy * fTy + 1));
     litfloat px   = fTx * pz;
@@ -94,7 +88,8 @@ public:
     * \brief Return state vector as vector.
     * \return State vector as vector.
     */
-  vector<litfloat> GetStateVector() const {
+  vector<litfloat> GetStateVector() const
+  {
     vector<litfloat> state(6, 0.);
     state[0] = GetX();
     state[1] = GetY();
@@ -109,7 +104,8 @@ public:
     * \brief Set parameters from vector.
     * \param[in] x State vector.
     */
-  void SetStateVector(const vector<litfloat>& x) {
+  void SetStateVector(const vector<litfloat>& x)
+  {
     SetX(x[0]);
     SetY(x[1]);
     SetTx(x[2]);
@@ -122,17 +118,16 @@ public:
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-  string ToString() const {
+  string ToString() const
+  {
     stringstream ss;
-    ss << "TrackParam: pos=(" << fX << "," << fY << "," << fZ << ") tx=" << fTx
-       << " ty=" << fTy << " qp=" << fQp
+    ss << "TrackParam: pos=(" << fX << "," << fY << "," << fZ << ") tx=" << fTx << " ty=" << fTy << " qp=" << fQp
        << ", fTime=" << fTime;  // << std::endl;
                                 // ss << "cov: ";
     // for (Int_t i = 0; i < 15; i++) ss << fCovMatrix[i] << " ";
     // ss << endl;
     ss.precision(3);
-    ss << " cov: x=" << fCovMatrix[0] << " y=" << fCovMatrix[6]
-       << " tx=" << fCovMatrix[11] << " ty=" << fCovMatrix[15]
+    ss << " cov: x=" << fCovMatrix[0] << " y=" << fCovMatrix[6] << " tx=" << fCovMatrix[11] << " ty=" << fCovMatrix[15]
        << " q/p=" << fCovMatrix[18] << ", time=" << fCovMatrix[20] << endl;
     return ss.str();
   }

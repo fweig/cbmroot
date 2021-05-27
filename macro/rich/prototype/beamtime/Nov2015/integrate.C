@@ -1,7 +1,5 @@
-void integrate(TString filename1,
-               TString filename2,
-               TString histoName1,
-               TString histoName2) {
+void integrate(TString filename1, TString filename2, TString histoName1, TString histoName2)
+{
 
   TFile* f1 = new TFile(filename1);
   TFile* f2 = new TFile(filename2);

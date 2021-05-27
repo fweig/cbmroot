@@ -23,9 +23,7 @@ private:
 
 public:
   CbmFitGlobalTracks();
-  CbmFitGlobalTracks(const char* name,
-                     Int_t verbose                           = 1,
-                     CbmGlobalTrackFitter* globalTrackFitter = NULL);
+  CbmFitGlobalTracks(const char* name, Int_t verbose = 1, CbmGlobalTrackFitter* globalTrackFitter = NULL);
   virtual ~CbmFitGlobalTracks();
 
   virtual InitStatus Init();

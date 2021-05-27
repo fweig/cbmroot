@@ -8,7 +8,8 @@
 
 #include <iostream>
 
-void field_qa(Int_t nEvents = 1) {
+void field_qa(Int_t nEvents = 1)
+{
   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
 
   TString dir         = "./commit_tests/events_electron/";  // Output directory
@@ -74,7 +75,6 @@ void field_qa(Int_t nEvents = 1) {
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << fieldQaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   // ------------------------------------------------------------------------
 }

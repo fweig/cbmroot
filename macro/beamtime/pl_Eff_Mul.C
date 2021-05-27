@@ -1,7 +1,5 @@
-void pl_Eff_Mul(Int_t iDut       = 910,
-                Double_t dEffMin = 0.5,
-                Double_t dEffMax = 1.,
-                TString sysinfo  = "") {
+void pl_Eff_Mul(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., TString sysinfo = "")
+{
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -38,7 +36,8 @@ void pl_Eff_Mul(Int_t iDut       = 910,
     gPad->SetLogy();
     h1f    = (TH1*) h1->Clone();
     Nfound = h1f->GetEntries();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -49,7 +48,8 @@ void pl_Eff_Mul(Int_t iDut       = 910,
     Nmissed = h1m->GetEntries();
     h1m->Draw("same");
     h1m->SetLineColor(2);
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 

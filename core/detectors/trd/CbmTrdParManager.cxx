@@ -34,9 +34,10 @@
 #include <TObject.h>      // for TObject
 #include <TRandom.h>      // for TRandom, gRandom
 
+#include <vector>  // for vector
+
 #include <stdio.h>   // for printf
 #include <stdlib.h>  // for getenv
-#include <vector>    // for vector
 
 CbmTrdParManager::CbmTrdParManager(Bool_t fasp)
   : FairTask("TrdParManager")
@@ -49,22 +50,25 @@ CbmTrdParManager::CbmTrdParManager(Bool_t fasp)
   , fGainPar(nullptr)
   , fGeoHandler(new CbmTrdGeoHandler())
   , fGeometryTag("")
-  , fHardwareSetup() {
+  , fHardwareSetup()
+{
   // Get the maximum number of sectors. All arrays will have this number of entries.
   fMaxSectors = fst1_sect_count;
 }
 
 CbmTrdParManager::~CbmTrdParManager() {}
 
-void CbmTrdParManager::SetParContainers() {
+void CbmTrdParManager::SetParContainers()
+{
   FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
-  fAsicPar = (CbmTrdParSetAsic*) (rtdb->getContainer("CbmTrdParSetAsic"));
-  fDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
-  fGasPar  = (CbmTrdParSetGas*) (rtdb->getContainer("CbmTrdParSetGas"));
-  fGainPar = (CbmTrdParSetGain*) (rtdb->getContainer("CbmTrdParSetGain"));
+  fAsicPar            = (CbmTrdParSetAsic*) (rtdb->getContainer("CbmTrdParSetAsic"));
+  fDigiPar            = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
+  fGasPar             = (CbmTrdParSetGas*) (rtdb->getContainer("CbmTrdParSetGas"));
+  fGainPar            = (CbmTrdParSetGain*) (rtdb->getContainer("CbmTrdParSetGain"));
 }
 
-InitStatus CbmTrdParManager::Init() {
+InitStatus CbmTrdParManager::Init()
+{
   // The geometry structure is treelike with cave as
   // the top node. For the TRD there are keeping volume
   // trd_vXXy_1 which is only container for the different layers.
@@ -84,16 +88,14 @@ InitStatus CbmTrdParManager::Init() {
   TObjArray* nodes  = topNode->GetNodes();
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node = static_cast<TGeoNode*>(nodes->At(iNode));
-    if (!TString(node->GetName()).Contains("trd"))
-      continue;  // trd_vXXy top node, e.g. trd_v13a, trd_v14b
+    if (!TString(node->GetName()).Contains("trd")) continue;  // trd_vXXy top node, e.g. trd_v13a, trd_v14b
     TGeoNode* station = node;
     fGeometryTag      = station->GetName();
     fHardwareSetup.SelectComponentIdMap(fGeometryTag);
     TObjArray* layers = station->GetNodes();
     for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
       TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
-      if (!TString(layer->GetName()).Contains("layer"))
-        continue;  // only layers
+      if (!TString(layer->GetName()).Contains("layer")) continue;  // only layers
 
       TObjArray* modules = layer->GetNodes();
       for (Int_t iModule = 0; iModule < modules->GetEntriesFast(); iModule++) {
@@ -101,15 +103,13 @@ InitStatus CbmTrdParManager::Init() {
         TObjArray* parts = module->GetNodes();
         for (Int_t iPart = 0; iPart < parts->GetEntriesFast(); iPart++) {
           TGeoNode* part = static_cast<TGeoNode*>(parts->At(iPart));
-          if (!TString(part->GetName()).BeginsWith("gas_"))
-            continue;  // only active gas volume
+          if (!TString(part->GetName()).BeginsWith("gas_")) continue;  // only active gas volume
 
           // Put together the full path to the interesting volume, which
           // is needed to navigate with the geomanager to this volume.
           // Extract the geometry information (size, global position)
           // from this volume.
-          TString path = TString("/") + topNode->GetName() + "/"
-                         + station->GetName() + "/" + layer->GetName() + "/"
+          TString path = TString("/") + topNode->GetName() + "/" + station->GetName() + "/" + layer->GetName() + "/"
                          + module->GetName() + "/" + part->GetName();
 
           CreateModuleParameters(path);
@@ -121,7 +121,8 @@ InitStatus CbmTrdParManager::Init() {
   return kSUCCESS;
 }
 
-void CbmTrdParManager::Finish() {
+void CbmTrdParManager::Finish()
+{
   FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
   //   fDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
   //   fDigiPar->print();
@@ -132,7 +133,8 @@ void CbmTrdParManager::Finish() {
 void CbmTrdParManager::Exec(Option_t*) {}
 
 
-void CbmTrdParManager::CreateModuleParameters(const TString& path) {
+void CbmTrdParManager::CreateModuleParameters(const TString& path)
+{
   /**   
    * Create TRD module parameters. Add triangular support (Alex Bercuci/21.11.2017)
   */
@@ -153,19 +155,13 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
   TArrayD padSizeY(fMaxSectors);
   Int_t moduleType = fGeoHandler->GetModuleType(path);
 
-  printf("\nCbmTrdParManager::CreateModuleParameters(%s) type[%d]\n",
-         path.Data(),
-         moduleType);
+  printf("\nCbmTrdParManager::CreateModuleParameters(%s) type[%d]\n", path.Data(), moduleType);
   for (Int_t i = 0; i < fst1_sect_count; i++) {
     sectorSizeX.AddAt(fst1_pad_type[moduleType - 1][i][0], i);
     sectorSizeY.AddAt(fst1_pad_type[moduleType - 1][i][1], i);
     padSizeX.AddAt(fst1_pad_type[moduleType - 1][i][2], i);
     padSizeY.AddAt(fst1_pad_type[moduleType - 1][i][3], i);
-    printf("  sec[%d] dx[%5.2f] dy[%5.2f] px[%5.2f] py[%5.2f]\n",
-           i,
-           sectorSizeX[i],
-           sectorSizeY[i],
-           padSizeX[i],
+    printf("  sec[%d] dx[%5.2f] dy[%5.2f] px[%5.2f] py[%5.2f]\n", i, sectorSizeX[i], sectorSizeY[i], padSizeX[i],
            padSizeY[i]);
   }
 
@@ -186,20 +182,9 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
   //   }
 
   // Create new digi par for this module.
-  CbmTrdParModDigi* digi = new CbmTrdParModDigi(x,
-                                                y,
-                                                z,
-                                                sizeX,
-                                                sizeY,
-                                                sizeZ,
-                                                fMaxSectors,
-                                                orientation,
-                                                sectorSizeX,
-                                                sectorSizeY,
-                                                padSizeX,
-                                                padSizeY);
-  if (moduleType
-      >= 9) {  // for the Bucharest inner detector special anode wire geometry
+  CbmTrdParModDigi* digi = new CbmTrdParModDigi(x, y, z, sizeX, sizeY, sizeZ, fMaxSectors, orientation, sectorSizeX,
+                                                sectorSizeY, padSizeX, padSizeY);
+  if (moduleType >= 9) {  // for the Bucharest inner detector special anode wire geometry
     digi->SetAnodeWireToPadPlaneDistance(0.4);
     digi->SetAnodeWireOffset(0.);
     digi->SetAnodeWireSpacing(0.3);
@@ -212,9 +197,7 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
   CbmTrdParSetAsic* asics(nullptr);
   // if(moduleType>=9 && fFASP){ // I do not think this check is required, actually I think it creates a bug in parameter creation
   if (moduleType >= 9) {
-    asics = new CbmTrdParSetAsic(
-      "TrdParModFasp",
-      Form("Fasp set for Module %d", moduleAddress) /*, GetContext()*/);
+    asics = new CbmTrdParSetAsic("TrdParModFasp", Form("Fasp set for Module %d", moduleAddress) /*, GetContext()*/);
     asics->SetAsicType(moduleType);
     Double_t par[6];
     par[1] = 14;
@@ -242,9 +225,9 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
       }
     }
     if (asic) asics->SetAsicPar(asicAddress, asic);
-  } else {  // Here only rectangular modules should enter. Hence, we have spadics in use.
-    asics = new CbmTrdParSetAsic(
-      "TrdParModSpadic", Form("Spadic set for Module %d", moduleAddress));
+  }
+  else {  // Here only rectangular modules should enter. Hence, we have spadics in use.
+    asics = new CbmTrdParSetAsic("TrdParModSpadic", Form("Spadic set for Module %d", moduleAddress));
     asics->SetAsicType(moduleType);
     CbmTrdParSpadic* asic(nullptr);
 
@@ -256,9 +239,7 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
     Int_t nAsicsAlongColumns(-1);
 
     std::vector<Int_t> chAddressesVec;
-    for (Int_t iAsic = 0;
-         iAsic < CbmTrdParSpadic::GetNasicsOnModule(moduleType);
-         iAsic++) {
+    for (Int_t iAsic = 0; iAsic < CbmTrdParSpadic::GetNasicsOnModule(moduleType); iAsic++) {
       asic = new CbmTrdParSpadic(
         1000 * moduleAddress
         + iAsic);  // nTh-asic + module address define asicAddress counting for asic starts at bottom left and goes left to right row by row
@@ -266,9 +247,7 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
       Int_t nAsicChannels(asic->GetNchannels());
 
       // Figure out the number of asics per column, this is required since one spadic is connected to two rows
-      nAsicsAlongColumns = nModuleColumns < nModuleRows
-                             ? nModuleRows / 2
-                             : nModuleColumns / (nAsicChannels / 2);
+      nAsicsAlongColumns = nModuleColumns < nModuleRows ? nModuleRows / 2 : nModuleColumns / (nAsicChannels / 2);
 
       // Get the asic-row (= rows/2) for the given asic
       Int_t nThAsicRow(iAsic / nAsicsAlongColumns);
@@ -278,12 +257,10 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
       chAddressesVec.clear();
       chAddressesVec.resize(nAsicChannels);
 
-      Int_t iAsicChannel =
-        0;  // This is the nth asic channel as it is written to the raw messages
+      Int_t iAsicChannel = 0;  // This is the nth asic channel as it is written to the raw messages
       for (auto channelAddress : chAddressesVec) {
         // Now apply the asic specific mapping
-        channelAddress = asic->GetAsicChAddress(
-          iAsicChannel);  // returns the channeladdress in the scope of one asic
+        channelAddress = asic->GetAsicChAddress(iAsicChannel);  // returns the channeladdress in the scope of one asic
 
         // Get the channel addressed to the top or bottom row of the single asic
         if ((channelAddress / (nAsicChannels / 2)) > 0) {
@@ -293,11 +270,9 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
           channelAddress += nModuleColumns;
         }
         // move channel address to the correct column according to the asic column position
-        channelAddress +=
-          nThAsicColumn * nAsicChannels / 2;  // one asic is split over two rows
+        channelAddress += nThAsicColumn * nAsicChannels / 2;  // one asic is split over two rows
         // move channel address to the correct row according to the asic row position
-        channelAddress +=
-          nThAsicRow * nModuleColumns * 2;  // one asic is split over two rows
+        channelAddress += nThAsicRow * nModuleColumns * 2;  // one asic is split over two rows
 
         // if the module is rotated 180 or 270 degrees, the channel number counting has to be rotated as well, since the X-Y placing in CbmTrdParModDigi expect it in this way.
         if (orientation == 2) {
@@ -322,20 +297,18 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
   // Create new gas par for this module
   CbmTrdParModGas* gas(nullptr);
   if (moduleType >= 9) {
-    gas = new CbmTrdParModGas(
-      Form("Module/%d/Ua/%d/Ud/%d/Gas/Xe", moduleAddress, 1900, 500));
+    gas = new CbmTrdParModGas(Form("Module/%d/Ua/%d/Ud/%d/Gas/Xe", moduleAddress, 1900, 500));
     gas->SetDetType(1);
     gas->SetPidType(1);
-  } else
-    gas = new CbmTrdParModGas(
-      Form("Module/%d/Ua/%d/Ud/%d/Gas/Xe", moduleAddress, 1600, 500));
+  }
+  else
+    gas = new CbmTrdParModGas(Form("Module/%d/Ua/%d/Ud/%d/Gas/Xe", moduleAddress, 1600, 500));
   gas->Print();
   fGasPar->addParam(gas);
 
   // Create new gain par for this module
   CbmTrdParModGain* gain(nullptr);
-  if (moduleType == 9)
-    gain = new CbmTrdParModGain();
+  if (moduleType == 9) gain = new CbmTrdParModGain();
   else
     gain = new CbmTrdParModGain();
   gain->SetModuleId(moduleAddress);
@@ -344,8 +317,8 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
 }
 
 // ---- CreateParFilesFromGeometry ------------------------------------------------
-bool CbmTrdParManager::CreateParFilesFromGeometry(bool createRootFileOutput,
-                                                  TString outDir) {
+bool CbmTrdParManager::CreateParFilesFromGeometry(bool createRootFileOutput, TString outDir)
+{
   // This function creates the trd parameter files based on a given geometry file, which has to be passed in a macro to the FairRunAna instance. Such a geometry file is produced by FairRunSim bases on the trd geometry input.
 
   if (!createRootFileOutput) return CreateParFilesFromGeometry(outDir);
@@ -362,23 +335,19 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(bool createRootFileOutput,
   geoName.ReplaceAll("geofile_", "");
   geoName.ReplaceAll(".root", "");
 
-  if (outDir.IsNull()) {
-    outDir = Form("%s/../src/parameters/trd", getenv("CBM_ROOT"));
-  }
+  if (outDir.IsNull()) { outDir = Form("%s/../src/parameters/trd", getenv("CBM_ROOT")); }
 
   TList* containerList = rtdb->getListOfContainers();
 
   TString currentPar             = "";
   CbmTrdParSet* currentContainer = nullptr;
   FairParRootFileIo parOut;
-  parOut.open(Form("%s/%s.par.root", outDir.Data(), geoName.Data()),
-              "RECREATE");
+  parOut.open(Form("%s/%s.par.root", outDir.Data(), geoName.Data()), "RECREATE");
   rtdb->setOutput(&parOut);
 
   for (auto iContainerIt : *containerList) {
     currentPar = iContainerIt->GetName();
-    if (!currentPar.Contains("CbmTrd"))
-      continue;  // make sure that we only edit Trd container
+    if (!currentPar.Contains("CbmTrd")) continue;  // make sure that we only edit Trd container
     currentContainer = (CbmTrdParSet*) iContainerIt;
     currentContainer->setChanged();
     currentContainer->setInputVersion(0, 1);
@@ -390,7 +359,8 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(bool createRootFileOutput,
 }
 
 // ---- private - CreateParFilesFromGeometry --------------------------------------
-bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir) {
+bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir)
+{
   // This function creates the trd parameter files based on a given geometry file, which has to be passed in a macro to the FairRunAna instance. Such a geometry file is produced by FairRunSim bases on the trd geometry input.
 
   FairRunAna* run     = FairRunAna::Instance();
@@ -405,9 +375,7 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir) {
   geoName.ReplaceAll("geofile_", "");
   geoName.ReplaceAll(".root", "");
 
-  if (outDir.IsNull()) {
-    outDir = Form("%s/../src/parameters/trd", getenv("CBM_ROOT"));
-  }
+  if (outDir.IsNull()) { outDir = Form("%s/../src/parameters/trd", getenv("CBM_ROOT")); }
 
   TList* containerList = rtdb->getListOfContainers();
 
@@ -417,13 +385,11 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir) {
 
   for (auto iContainerIt : *containerList) {
     currentPar = iContainerIt->GetName();
-    if (!currentPar.Contains("CbmTrd"))
-      continue;  // make sure that we only edit Trd container
+    if (!currentPar.Contains("CbmTrd")) continue;  // make sure that we only edit Trd container
     currentContainer = (CbmTrdParSet*) iContainerIt;
     currentPar.ReplaceAll("CbmTrdParSet", "");
     currentPar.ToLower();
-    currentFile.Form(
-      "%s/%s.%s.par", outDir.Data(), geoName.Data(), currentPar.Data());
+    currentFile.Form("%s/%s.%s.par", outDir.Data(), geoName.Data(), currentPar.Data());
     FairParAsciiFileIo parOut;
     parOut.open(currentFile, "out");
     rtdb->setOutput(&parOut);
@@ -436,48 +402,30 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir) {
 }
 
 // ---- GetParSetList ----
-void CbmTrdParManager::GetParSetList(std::vector<CbmTrdParSet*>* parSetList) {
+void CbmTrdParManager::GetParSetList(std::vector<CbmTrdParSet*>* parSetList)
+{
   // std::vector<CbmTrdParSet*> parSetList;
   CbmTrdParSet* parSet = nullptr;
-  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin;
-       iParSetType <= (Int_t) ECbmTrdParSets::kEnd;
-       iParSetType++) {
+  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin; iParSetType <= (Int_t) ECbmTrdParSets::kEnd; iParSetType++) {
     switch (iParSetType) {
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic:
-        parSet = new CbmTrdParSetAsic();
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi:
-        parSet = new CbmTrdParSetDigi();
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain:
-        parSet = new CbmTrdParSetGain();
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas:
-        parSet = new CbmTrdParSetGas();
-        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic: parSet = new CbmTrdParSetAsic(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: parSet = new CbmTrdParSetDigi(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: parSet = new CbmTrdParSetGain(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: parSet = new CbmTrdParSetGas(); break;
     }
     parSetList->emplace_back(parSet);
   }
 }
 
 // ---- GetParFileExtensions ----
-void CbmTrdParManager::GetParFileExtensions(std::vector<std::string>* vec) {
-  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin;
-       iParSetType <= (Int_t) ECbmTrdParSets::kEnd;
-       iParSetType++) {
+void CbmTrdParManager::GetParFileExtensions(std::vector<std::string>* vec)
+{
+  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin; iParSetType <= (Int_t) ECbmTrdParSets::kEnd; iParSetType++) {
     switch (iParSetType) {
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic:
-        vec->emplace_back("asic");
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi:
-        vec->emplace_back("digi");
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain:
-        vec->emplace_back("gas");
-        break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas:
-        vec->emplace_back("gain");
-        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic: vec->emplace_back("asic"); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: vec->emplace_back("digi"); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: vec->emplace_back("gas"); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: vec->emplace_back("gain"); break;
     }
   }
 }

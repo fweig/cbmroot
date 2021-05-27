@@ -14,19 +14,15 @@
   Panel1->SetFrameBorderMode(0);
 
   THStack* TofTests_MultiTrkHitMeanDeltaY_px = new THStack();
-  TofTests_MultiTrkHitMeanDeltaY_px->SetName(
-    "TofTests_MultiTrkHitMeanDeltaY_px");
-  TofTests_MultiTrkHitMeanDeltaY_px->SetTitle(
-    "Quality of the Tof Hits position on Y axis relative to mean Track "
-    "position, for hit coming from multiple MC Track");
+  TofTests_MultiTrkHitMeanDeltaY_px->SetName("TofTests_MultiTrkHitMeanDeltaY_px");
+  TofTests_MultiTrkHitMeanDeltaY_px->SetTitle("Quality of the Tof Hits position on Y axis relative to mean Track "
+                                              "position, for hit coming from multiple MC Track");
 
   TH1F* TofTests_MultiTrkHitMeanDeltaY_px_stack_4 =
     new TH1F("TofTests_MultiTrkHitMeanDeltaY_px_stack_4",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Track position, for hit coming from multiple MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->SetMinimum(0.2050683);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->SetMaximum(1.270262e+07);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->SetDirectory(0);
@@ -36,8 +32,7 @@
   TColor* color;  // for color definition with alpha
   ci = TColor::GetColor("#000099");
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->SetLineColor(ci);
-  TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Track) [cm]");
+  TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetXaxis()->SetTitle(" Y(Hit) - Y(Track) [cm]");
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetXaxis()->SetRange(1, 600);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetXaxis()->SetLabelFont(42);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetXaxis()->SetLabelSize(0.035);
@@ -53,17 +48,13 @@
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_stack_4->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiTrkHitMeanDeltaY_px->SetHistogram(
-    TofTests_MultiTrkHitMeanDeltaY_px_stack_4);
+  TofTests_MultiTrkHitMeanDeltaY_px->SetHistogram(TofTests_MultiTrkHitMeanDeltaY_px_stack_4);
 
 
-  TH1D* TofTests_MultiTrkHitMeanDeltaY_px__13 =
-    new TH1D("TofTests_MultiTrkHitMeanDeltaY_px__13",
-             "Quality of the Tof Hits position on Y axis relative to mean "
-             "Track position, for hit coming from multiple MC Track",
-             600,
-             -30,
-             30);
+  TH1D* TofTests_MultiTrkHitMeanDeltaY_px__13 = new TH1D("TofTests_MultiTrkHitMeanDeltaY_px__13",
+                                                         "Quality of the Tof Hits position on Y axis relative to mean "
+                                                         "Track position, for hit coming from multiple MC Track",
+                                                         600, -30, 30);
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetBinContent(0, 4);
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetBinContent(4, 1);
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetBinContent(5, 1);
@@ -601,8 +592,7 @@
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetBinContent(601, 3);
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetEntries(6.978501e+07);
   TofTests_MultiTrkHitMeanDeltaY_px__13->SetDirectory(0);
-  TofTests_MultiTrkHitMeanDeltaY_px__13->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Track) [cm]");
+  TofTests_MultiTrkHitMeanDeltaY_px__13->GetXaxis()->SetTitle(" Y(Hit) - Y(Track) [cm]");
   TofTests_MultiTrkHitMeanDeltaY_px__13->GetXaxis()->SetRange(1, 600);
   TofTests_MultiTrkHitMeanDeltaY_px__13->GetXaxis()->SetLabelFont(42);
   TofTests_MultiTrkHitMeanDeltaY_px__13->GetXaxis()->SetLabelSize(0.035);
@@ -623,9 +613,7 @@
     new TH1D("TofTests_MultiTrkHitMeanDeltaY_px_v1__14",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Track position, for hit coming from multiple MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetBinContent(0, 1);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetBinContent(4, 1);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetBinContent(23, 1);
@@ -1148,8 +1136,7 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetEntries(7.652662e+07);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetDirectory(0);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->SetLineColor(2);
-  TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Track) [cm]");
+  TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetXaxis()->SetTitle(" Y(Hit) - Y(Track) [cm]");
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetXaxis()->SetRange(1, 600);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetXaxis()->SetLabelFont(42);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetXaxis()->SetLabelSize(0.035);
@@ -1164,16 +1151,13 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v1__14->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v1,
-                                         "");
+  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v1, "");
 
   TH1D* TofTests_MultiTrkHitMeanDeltaY_px_v2__15 =
     new TH1D("TofTests_MultiTrkHitMeanDeltaY_px_v2__15",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Track position, for hit coming from multiple MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetBinContent(0, 2);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetBinContent(2, 1);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetBinContent(7, 1);
@@ -1703,8 +1687,7 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetEntries(4.871926e+07);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetDirectory(0);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->SetLineColor(3);
-  TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Track) [cm]");
+  TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetXaxis()->SetTitle(" Y(Hit) - Y(Track) [cm]");
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetXaxis()->SetRange(1, 600);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetXaxis()->SetLabelFont(42);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetXaxis()->SetLabelSize(0.035);
@@ -1719,16 +1702,13 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v2__15->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v2,
-                                         "");
+  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v2, "");
 
   TH1D* TofTests_MultiTrkHitMeanDeltaY_px_v3__16 =
     new TH1D("TofTests_MultiTrkHitMeanDeltaY_px_v3__16",
              "Quality of the Tof Hits position on Y axis relative to mean "
              "Track position, for hit coming from multiple MC Track",
-             600,
-             -30,
-             30);
+             600, -30, 30);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetBinContent(0, 2);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetBinContent(1, 1);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetBinContent(9, 1);
@@ -2255,8 +2235,7 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetEntries(3.607024e+07);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetDirectory(0);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->SetLineColor(4);
-  TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetXaxis()->SetTitle(
-    " Y(Hit) - Y(Track) [cm]");
+  TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetXaxis()->SetTitle(" Y(Hit) - Y(Track) [cm]");
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetXaxis()->SetRange(1, 600);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetXaxis()->SetLabelFont(42);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetXaxis()->SetLabelSize(0.035);
@@ -2271,8 +2250,7 @@
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetZaxis()->SetLabelSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetZaxis()->SetTitleSize(0.035);
   TofTests_MultiTrkHitMeanDeltaY_px_v3__16->GetZaxis()->SetTitleFont(42);
-  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v3,
-                                         "");
+  TofTests_MultiTrkHitMeanDeltaY_px->Add(TofTests_MultiTrkHitMeanDeltaY_px_v3, "");
   TofTests_MultiTrkHitMeanDeltaY_px->Draw("nostack, hist");
 
   TPaveText* pt = new TPaveText(0.15, 0.932931, 0.85, 0.995, "blNDC");
@@ -2281,22 +2259,18 @@
   pt->SetFillColor(0);
   pt->SetFillStyle(0);
   pt->SetTextFont(42);
-  TText* text =
-    pt->AddText("Quality of the Tof Hits position on Y axis relative to mean "
-                "Track position, for hit coming from multiple MC Track");
+  TText* text = pt->AddText("Quality of the Tof Hits position on Y axis relative to mean "
+                            "Track position, for hit coming from multiple MC Track");
   pt->Draw();
 
-  TLegend* leg =
-    new TLegend(0.5693291, 0.775, 0.9188498, 0.9154762, NULL, "brNDC");
+  TLegend* leg = new TLegend(0.5693291, 0.775, 0.9188498, 0.9154762, NULL, "brNDC");
   leg->SetBorderSize(2);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
   leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
-  TLegendEntry* entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px",
-                                      "TofTests_MultiTrkHitMeanDeltaY_px",
-                                      "l");
+  TLegendEntry* entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px", "TofTests_MultiTrkHitMeanDeltaY_px", "l");
   entry->SetLineColor(1);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2304,9 +2278,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v1",
-                        "TofTests_MultiTrkHitMeanDeltaY_px_v1",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v1", "TofTests_MultiTrkHitMeanDeltaY_px_v1", "l");
   entry->SetLineColor(2);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2314,9 +2286,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v2",
-                        "TofTests_MultiTrkHitMeanDeltaY_px_v2",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v2", "TofTests_MultiTrkHitMeanDeltaY_px_v2", "l");
   entry->SetLineColor(3);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);
@@ -2324,9 +2294,7 @@
   entry->SetMarkerStyle(21);
   entry->SetMarkerSize(1);
   entry->SetTextFont(42);
-  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v3",
-                        "TofTests_MultiTrkHitMeanDeltaY_px_v3",
-                        "l");
+  entry = leg->AddEntry("TofTests_MultiTrkHitMeanDeltaY_px_v3", "TofTests_MultiTrkHitMeanDeltaY_px_v3", "l");
   entry->SetLineColor(4);
   entry->SetLineStyle(1);
   entry->SetLineWidth(1);

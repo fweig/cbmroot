@@ -75,26 +75,26 @@ CbmMcbm2018MonitorDataRates::CbmMcbm2018MonitorDataRates()
   , fvhMsMessPerLink(fuNbFlimLinks, nullptr)
   , fvhMsMessTimePerLink(fuNbFlimLinks, nullptr)
   , fvhMsMeanChDataPerLink(fuNbFlimLinks, nullptr)
-  , fvhMsMeanChDataTimePerLink(fuNbFlimLinks, nullptr) {}
+  , fvhMsMeanChDataTimePerLink(fuNbFlimLinks, nullptr)
+{
+}
 
 CbmMcbm2018MonitorDataRates::~CbmMcbm2018MonitorDataRates() {}
 
-Bool_t CbmMcbm2018MonitorDataRates::Init() {
+Bool_t CbmMcbm2018MonitorDataRates::Init()
+{
   LOG(info) << "Initializing Get4 monitor";
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (ioman == NULL) {
-    LOG(fatal) << "No FairRootManager instance";
-  }  // if( ioman == NULL )
+  if (ioman == NULL) { LOG(fatal) << "No FairRootManager instance"; }  // if( ioman == NULL )
 
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorDataRates::SetParContainers() {
-  LOG(info) << "Setting parameter containers for " << GetName();
-}
+void CbmMcbm2018MonitorDataRates::SetParContainers() { LOG(info) << "Setting parameter containers for " << GetName(); }
 
-Bool_t CbmMcbm2018MonitorDataRates::InitContainers() {
+Bool_t CbmMcbm2018MonitorDataRates::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
   Bool_t initOK = ReInitContainers();
 
@@ -103,15 +103,15 @@ Bool_t CbmMcbm2018MonitorDataRates::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018MonitorDataRates::ReInitContainers() {
+Bool_t CbmMcbm2018MonitorDataRates::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   return kTRUE;
 }
 
 
-void CbmMcbm2018MonitorDataRates::AddMsComponentToList(
-  size_t component,
-  UShort_t /*usDetectorId*/) {
+void CbmMcbm2018MonitorDataRates::AddMsComponentToList(size_t component, UShort_t /*usDetectorId*/)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -135,84 +135,55 @@ void CbmMcbm2018MonitorDataRates::AddMsComponentToList(
     /// Logarithmic bining
     uint32_t iNbBinsLog = 0;
     /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
-    std::vector<double> dBinsLogVector =
-      GenerateLogBinArray(9, 9, 10, iNbBinsLog);
-    double* dBinsLog = dBinsLogVector.data();
+    std::vector<double> dBinsLogVector = GenerateLogBinArray(9, 9, 10, iNbBinsLog);
+    double* dBinsLog                   = dBinsLogVector.data();
     //      double * dBinsLog = GenerateLogBinArray( 9, 9, 10, iNbBinsLog );
 
     /// Create Data Rate monitoring histo
-    fvhDataRateTimePerLink[uComp] = new TH1D(
-      Form("DataRateTime_link_%02u", uComp),
-      Form(
-        "Data Rate vs time for DPB of link %02u; Time[s] ; DataRate [bytes/s]",
-        uComp),
-      fuHistoryHistoSize,
-      0.,
-      fuHistoryHistoSize);
+    fvhDataRateTimePerLink[uComp] =
+      new TH1D(Form("DataRateTime_link_%02u", uComp),
+               Form("Data Rate vs time for DPB of link %02u; Time[s] ; DataRate [bytes/s]", uComp), fuHistoryHistoSize,
+               0., fuHistoryHistoSize);
 
     /// Create TS size monitoring histos
-    fvhTsSzPerLink[uComp] =
-      new TH1F(Form("TsSz_link_%02u", uComp),
-               Form("Size of TS from link %02u; Ts Size [bytes]", uComp),
-               iNbBinsLog,
-               dBinsLog);
+    fvhTsSzPerLink[uComp] = new TH1F(Form("TsSz_link_%02u", uComp),
+                                     Form("Size of TS from link %02u; Ts Size [bytes]", uComp), iNbBinsLog, dBinsLog);
 
-    fvhTsSzTimePerLink[uComp] = new TProfile(
-      Form("TsSzTime_link_%02u", uComp),
-      Form("Size of TS vs time for DPB of link %02u; Time[s] ; Ts Size [bytes]",
-           uComp),
-      100 * fuHistoryHistoSize,
-      0.,
-      fuHistoryHistoSize);
+    fvhTsSzTimePerLink[uComp] =
+      new TProfile(Form("TsSzTime_link_%02u", uComp),
+                   Form("Size of TS vs time for DPB of link %02u; Time[s] ; Ts Size [bytes]", uComp),
+                   100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
-    TString sMsSzName = Form("MsSz_link_%02u", uComp);
-    TString sMsSzTitle =
-      Form("Size of MS from link %02u; Ms Size [bytes]", uComp);
-    fvhMsSzPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
+    TString sMsSzName     = Form("MsSz_link_%02u", uComp);
+    TString sMsSzTitle    = Form("Size of MS from link %02u; Ms Size [bytes]", uComp);
+    fvhMsSzPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 160000, 0., 20000.);
 
-    sMsSzName = Form("MsSzTime_link_%02u", uComp);
-    sMsSzTitle =
-      Form("Size of MS vs time for DPB of link %02u; Time[s] ; Ms Size [bytes]",
-           uComp);
-    fvhMsSzTimePerLink[uComp] = new TProfile(sMsSzName.Data(),
-                                             sMsSzTitle.Data(),
-                                             100 * fuHistoryHistoSize,
-                                             0.,
-                                             fuHistoryHistoSize);
+    sMsSzName  = Form("MsSzTime_link_%02u", uComp);
+    sMsSzTitle = Form("Size of MS vs time for DPB of link %02u; Time[s] ; Ms Size [bytes]", uComp);
+    fvhMsSzTimePerLink[uComp] =
+      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
-    sMsSzName = Form("MsMess_link_%02u", uComp);
-    sMsSzTitle =
-      Form("Messages Number of MS from link %02u; Mess Nb []", uComp);
-    fvhMsMessPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
+    sMsSzName               = Form("MsMess_link_%02u", uComp);
+    sMsSzTitle              = Form("Messages Number of MS from link %02u; Mess Nb []", uComp);
+    fvhMsMessPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
 
     sMsSzName  = Form("MsMessTime_link_%02u", uComp);
     sMsSzTitle = Form("Messages Number of MS vs time for DPB of link %02u; "
                       "Time[s] ; Mess Nb []",
                       uComp);
-    fvhMsMessTimePerLink[uComp] = new TProfile(sMsSzName.Data(),
-                                               sMsSzTitle.Data(),
-                                               100 * fuHistoryHistoSize,
-                                               0.,
-                                               fuHistoryHistoSize);
+    fvhMsMessTimePerLink[uComp] =
+      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
     sMsSzName  = Form("MsMeanChData_link_%02u", uComp);
-    sMsSzTitle = Form(
-      "Mean data size per channels of MS from link %02u; Mean Ch Data [bytes]",
-      uComp);
-    fvhMsMeanChDataPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
+    sMsSzTitle = Form("Mean data size per channels of MS from link %02u; Mean Ch Data [bytes]", uComp);
+    fvhMsMeanChDataPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
 
     sMsSzName  = Form("MsMeanChDataTime_link_%02u", uComp);
     sMsSzTitle = Form("Mean data size per channel of MS vs time for DPB of "
                       "link %02u; Time[s] ; Mean Ch Data[bytes]",
                       uComp);
-    fvhMsMeanChDataTimePerLink[uComp] = new TH1D(sMsSzName.Data(),
-                                                 sMsSzTitle.Data(),
-                                                 fuHistoryHistoSize,
-                                                 0.,
-                                                 fuHistoryHistoSize);
+    fvhMsMeanChDataTimePerLink[uComp] =
+      new TH1D(sMsSzName.Data(), sMsSzTitle.Data(), fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
     /// Cleanup array of log bins
     //      delete dBinsLog;
@@ -221,15 +192,16 @@ void CbmMcbm2018MonitorDataRates::AddMsComponentToList(
 
   LOG(info) << "Added MS size histo for component (link): " << component;
 }
-void CbmMcbm2018MonitorDataRates::SetNbMsInTs(size_t uCoreMsNb,
-                                              size_t uOverlapMsNb) {
+void CbmMcbm2018MonitorDataRates::SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb)
+{
   fuNbCoreMsPerTs = uCoreMsNb;
   fuNbOverMsPerTs = uOverlapMsNb;
 
   //   UInt_t uNbMsTotal = fuNbCoreMsPerTs + fuNbOverMsPerTs;
 }
 
-void CbmMcbm2018MonitorDataRates::CreateHistograms() {
+void CbmMcbm2018MonitorDataRates::CreateHistograms()
+{
   LOG(info) << "create Histos ";
 
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
@@ -237,92 +209,60 @@ void CbmMcbm2018MonitorDataRates::CreateHistograms() {
   /// Logarithmic bining
   uint32_t iNbBinsLog = 0;
   /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
-  std::vector<double> dBinsLogVector =
-    GenerateLogBinArray(9, 9, 10, iNbBinsLog);
-  double* dBinsLog = dBinsLogVector.data();
+  std::vector<double> dBinsLogVector = GenerateLogBinArray(9, 9, 10, iNbBinsLog);
+  double* dBinsLog                   = dBinsLogVector.data();
   //   double * dBinsLog = GenerateLogBinArray( 9, 9, 10, iNbBinsLog );
 
-  fhDataRateTimeAllLinks =
-    new TH1D("DataRateTime_all",
-             "Data Rate vs time for all DPBs; Time[s] ; DataRate [MB/s]",
-             fuHistoryHistoSize,
-             0.,
-             fuHistoryHistoSize);
+  fhDataRateTimeAllLinks = new TH1D("DataRateTime_all", "Data Rate vs time for all DPBs; Time[s] ; DataRate [MB/s]",
+                                    fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
   for (UInt_t uComp = 0; uComp < fuNbFlimLinks; ++uComp) {
     /// Create Data Rate monitoring histo
-    fvhDataRateTimePerLink[uComp] = new TH1D(
-      Form("DataRateTime_link_%02u", uComp),
-      Form("Data Rate vs time for DPB of link %02u; Time[s] ; DataRate [MB/s]",
-           uComp),
-      fuHistoryHistoSize,
-      0.,
-      fuHistoryHistoSize);
+    fvhDataRateTimePerLink[uComp] =
+      new TH1D(Form("DataRateTime_link_%02u", uComp),
+               Form("Data Rate vs time for DPB of link %02u; Time[s] ; DataRate [MB/s]", uComp), fuHistoryHistoSize, 0.,
+               fuHistoryHistoSize);
 
     /// Create TS size monitoring histos
-    fvhTsSzPerLink[uComp] =
-      new TH1F(Form("TsSz_link_%02u", uComp),
-               Form("Size of TS from link %02u; Ts Size [bytes]", uComp),
-               iNbBinsLog,
-               dBinsLog);
+    fvhTsSzPerLink[uComp] = new TH1F(Form("TsSz_link_%02u", uComp),
+                                     Form("Size of TS from link %02u; Ts Size [bytes]", uComp), iNbBinsLog, dBinsLog);
 
-    fvhTsSzTimePerLink[uComp] = new TProfile(
-      Form("TsSzTime_link_%02u", uComp),
-      Form("Size of TS vs time for DPB of link %02u; Time[s] ; Ts Size [bytes]",
-           uComp),
-      100 * fuHistoryHistoSize,
-      0.,
-      fuHistoryHistoSize);
+    fvhTsSzTimePerLink[uComp] =
+      new TProfile(Form("TsSzTime_link_%02u", uComp),
+                   Form("Size of TS vs time for DPB of link %02u; Time[s] ; Ts Size [bytes]", uComp),
+                   100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
     /// Create MS size monitoring histos
-    TString sMsSzName = Form("MsSz_link_%02u", uComp);
-    TString sMsSzTitle =
-      Form("Size of MS from link %02u; Ms Size [bytes]", uComp);
-    fvhMsSzPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), iNbBinsLog, dBinsLog);
+    TString sMsSzName     = Form("MsSz_link_%02u", uComp);
+    TString sMsSzTitle    = Form("Size of MS from link %02u; Ms Size [bytes]", uComp);
+    fvhMsSzPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), iNbBinsLog, dBinsLog);
 
-    sMsSzName = Form("MsSzTime_link_%02u", uComp);
-    sMsSzTitle =
-      Form("Size of MS vs time for DPB of link %02u; Time[s] ; Ms Size [bytes]",
-           uComp);
-    fvhMsSzTimePerLink[uComp] = new TProfile(sMsSzName.Data(),
-                                             sMsSzTitle.Data(),
-                                             100 * fuHistoryHistoSize,
-                                             0.,
-                                             fuHistoryHistoSize);
+    sMsSzName  = Form("MsSzTime_link_%02u", uComp);
+    sMsSzTitle = Form("Size of MS vs time for DPB of link %02u; Time[s] ; Ms Size [bytes]", uComp);
+    fvhMsSzTimePerLink[uComp] =
+      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
-    sMsSzName = Form("MsMess_link_%02u", uComp);
-    sMsSzTitle =
-      Form("Messages Number of MS from link %02u; Mess Nb []", uComp);
-    fvhMsMessPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
+    sMsSzName               = Form("MsMess_link_%02u", uComp);
+    sMsSzTitle              = Form("Messages Number of MS from link %02u; Mess Nb []", uComp);
+    fvhMsMessPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
 
     sMsSzName  = Form("MsMessTime_link_%02u", uComp);
     sMsSzTitle = Form("Messages Number of MS vs time for DPB of link %02u; "
                       "Time[s] ; Mess Nb []",
                       uComp);
-    fvhMsMessTimePerLink[uComp] = new TProfile(sMsSzName.Data(),
-                                               sMsSzTitle.Data(),
-                                               100 * fuHistoryHistoSize,
-                                               0.,
-                                               fuHistoryHistoSize);
+    fvhMsMessTimePerLink[uComp] =
+      new TProfile(sMsSzName.Data(), sMsSzTitle.Data(), 100 * fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
     sMsSzName  = Form("MsMeanChData_link_%02u", uComp);
-    sMsSzTitle = Form(
-      "Mean data size per channels of MS from link %02u; Mean Ch Data [bytes]",
-      uComp);
-    fvhMsMeanChDataPerLink[uComp] =
-      new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
+    sMsSzTitle = Form("Mean data size per channels of MS from link %02u; Mean Ch Data [bytes]", uComp);
+    fvhMsMeanChDataPerLink[uComp] = new TH1F(sMsSzName.Data(), sMsSzTitle.Data(), 5000, 0., 5000.);
 
     sMsSzName  = Form("MsMeanChDataTime_link_%02u", uComp);
     sMsSzTitle = Form("Mean data size per channel of MS vs time for DPB of "
                       "link %02u; Time[s] ; Mean Ch Data[bytes]",
                       uComp);
-    fvhMsMeanChDataTimePerLink[uComp] = new TH1D(sMsSzName.Data(),
-                                                 sMsSzTitle.Data(),
-                                                 fuHistoryHistoSize,
-                                                 0.,
-                                                 fuHistoryHistoSize);
+    fvhMsMeanChDataTimePerLink[uComp] =
+      new TH1D(sMsSzName.Data(), sMsSzTitle.Data(), fuHistoryHistoSize, 0., fuHistoryHistoSize);
 
     /// Cleanup array of log bins
     //      delete dBinsLog;
@@ -332,33 +272,27 @@ void CbmMcbm2018MonitorDataRates::CreateHistograms() {
   Double_t w = 10;
   Double_t h = 10;
 
-  fcDataRateTimeAll =
-    new TCanvas("cDataRateTimeAll", "Data Rate per link", w, h);
+  fcDataRateTimeAll = new TCanvas("cDataRateTimeAll", "Data Rate per link", w, h);
   fcDataRateTimeAll->Divide(4, 4);
 
   fcTsSizeAll = new TCanvas("cTsSizeAll", "TS size per link", w, h);
   fcTsSizeAll->Divide(4, 4);
-  fcTsSizeTimeAll =
-    new TCanvas("cTsSizeTimeAll", "Evolution of TS size per link", w, h);
+  fcTsSizeTimeAll = new TCanvas("cTsSizeTimeAll", "Evolution of TS size per link", w, h);
   fcTsSizeTimeAll->Divide(4, 4);
 
   fcMsSizeAll = new TCanvas("cMsSizeAll", "MS size per link", w, h);
   fcMsSizeAll->Divide(4, 4);
-  fcMsSizeTimeAll =
-    new TCanvas("cMsSizeTimeAll", "Evolution of MS size per link", w, h);
+  fcMsSizeTimeAll = new TCanvas("cMsSizeTimeAll", "Evolution of MS size per link", w, h);
   fcMsSizeTimeAll->Divide(4, 4);
 
   fcMsMessAll = new TCanvas("cMsMessAll", "MS message number per link", w, h);
   fcMsMessAll->Divide(4, 4);
-  fcMsMessTimeAll = new TCanvas(
-    "cMsMessTimeAll", "Evolution of MS message number per link", w, h);
+  fcMsMessTimeAll = new TCanvas("cMsMessTimeAll", "Evolution of MS message number per link", w, h);
   fcMsMessTimeAll->Divide(4, 4);
 
-  fcMsDataChAll = new TCanvas(
-    "fcMsDataChAll", "Mean data per channel in each MS, per link", w, h);
+  fcMsDataChAll = new TCanvas("fcMsDataChAll", "Mean data per channel in each MS, per link", w, h);
   fcMsDataChAll->Divide(4, 4);
-  fcMsDataChTimeAll = new TCanvas(
-    "fcMsDataChTimeAll", "Evolution of Mean data per channel per link", w, h);
+  fcMsDataChTimeAll = new TCanvas("fcMsDataChTimeAll", "Evolution of Mean data per channel per link", w, h);
   fcMsDataChTimeAll->Divide(4, 4);
 
   for (UInt_t uComp = 0; uComp < fuNbFlimLinks; ++uComp)
@@ -444,10 +378,8 @@ void CbmMcbm2018MonitorDataRates::CreateHistograms() {
     server->Register("/canvases", fcMsDataChAll);
     server->Register("/canvases", fcMsDataChTimeAll);
 
-    server->RegisterCommand("/Reset_All_Hist",
-                            "bMcbmMoniDataRateResetHistos=kTRUE");
-    server->RegisterCommand("/Save_All_Hist",
-                            "bMcbmMoniDataRateSaveHistos=kTRUE");
+    server->RegisterCommand("/Reset_All_Hist", "bMcbmMoniDataRateResetHistos=kTRUE");
+    server->RegisterCommand("/Save_All_Hist", "bMcbmMoniDataRateSaveHistos=kTRUE");
 
     server->Restrict("/Reset_All_Hist", "allow=admin");
     server->Restrict("/Save_All_Hist", "allow=admin");
@@ -456,8 +388,8 @@ void CbmMcbm2018MonitorDataRates::CreateHistograms() {
   LOG(info) << "Leaving CreateHistograms";
 }
 
-Bool_t CbmMcbm2018MonitorDataRates::DoUnpack(const fles::Timeslice& ts,
-                                             size_t /*component*/) {
+Bool_t CbmMcbm2018MonitorDataRates::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   if (bMcbmMoniDataRateResetHistos) {
     LOG(info) << "Reset eTOF STAR histos ";
     ResetAllHistos();
@@ -490,8 +422,7 @@ Bool_t CbmMcbm2018MonitorDataRates::DoUnpack(const fles::Timeslice& ts,
     fuCurrentMs = uMsIdx;
 
     if (0 == fulCurrentTsIndex && 0 == uMsIdx) {
-      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-           ++uMsCompIdx) {
+      for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
         UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
         auto msDescriptor = ts.descriptor(uMsComp, uMsIdx);
         /*
@@ -508,8 +439,7 @@ Bool_t CbmMcbm2018MonitorDataRates::DoUnpack(const fles::Timeslice& ts,
     }    // if( 0 == fulCurrentTsIndex && 0 == uMsIdx )
 
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       //         constexpr uint32_t kuBytesPerMessage = 8;
 
       UInt_t uMsComp    = fvMsComponentsList[uMsCompIdx];
@@ -538,57 +468,37 @@ Bool_t CbmMcbm2018MonitorDataRates::DoUnpack(const fles::Timeslice& ts,
         fdStartTimeMsSz = fdMsIndex;
       }  // if( fuHistoryHistoSize < fdMsIndex - fdStartTimeMsSz )
       fhDataRateTimeAllLinks->Fill(fdMsIndex - fdStartTimeMsSz, dSizeMb);
-      fvhDataRateTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz,
-                                            dSizeMb);
+      fvhDataRateTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz, dSizeMb);
       fvhMsSzTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz, size);
 
       // Compute the number of complete messages in the input microslice buffer, depending on sysid
       uint32_t uNbMessages = 0;
       switch (uSysId) {
-        case kuSysIdSts:
-          uNbMessages =
-            (size - (size % kuBytesPerMessageSts)) / kuBytesPerMessageSts;
-          break;
-        case kuSysIdRich:
-          uNbMessages =
-            (size - (size % kuBytesPerMessageRich)) / kuBytesPerMessageRich;
-          break;
-        case kuSysIdMuch:
-          uNbMessages =
-            (size - (size % kuBytesPerMessageMuch)) / kuBytesPerMessageMuch;
-          break;
-        case kuSysIdTof:
-          uNbMessages =
-            (size - (size % kuBytesPerMessageTof)) / kuBytesPerMessageTof;
-          break;
-        case kuSysIdT0:
-          uNbMessages =
-            (size - (size % kuBytesPerMessageT0)) / kuBytesPerMessageT0;
-          break;
+        case kuSysIdSts: uNbMessages = (size - (size % kuBytesPerMessageSts)) / kuBytesPerMessageSts; break;
+        case kuSysIdRich: uNbMessages = (size - (size % kuBytesPerMessageRich)) / kuBytesPerMessageRich; break;
+        case kuSysIdMuch: uNbMessages = (size - (size % kuBytesPerMessageMuch)) / kuBytesPerMessageMuch; break;
+        case kuSysIdTof: uNbMessages = (size - (size % kuBytesPerMessageTof)) / kuBytesPerMessageTof; break;
+        case kuSysIdT0: uNbMessages = (size - (size % kuBytesPerMessageT0)) / kuBytesPerMessageT0; break;
         default: uNbMessages = (size - (size % 4)) / 4;
       }  // switch( uSysId )
       fvhMsMessPerLink[uMsComp]->Fill(uNbMessages);
-      fvhMsMessTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz,
-                                          uNbMessages);
+      fvhMsMessTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz, uNbMessages);
 
       /// Normalize data size with number of channels
       if (fmChannelsPerEqId.end() != fmChannelsPerEqId.find(fiEquipmentId)) {
         Double_t dMeanDataPerChan = size;
         dMeanDataPerChan /= fmChannelsPerEqId[fiEquipmentId];
         fvhMsMeanChDataPerLink[uMsComp]->Fill(dMeanDataPerChan);
-        fvhMsMeanChDataTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz,
-                                                  dMeanDataPerChan);
+        fvhMsMeanChDataTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz, dMeanDataPerChan);
       }  // if( fDpbIdIndexMap.end() != fmChannelsPerEqId.find( fiEquipmentId ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-  }    // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+  }      // for( UInt_t uMsIdx = 0; uMsIdx < uNbMsLoop; uMsIdx ++ )
 
   /// Fill TS plots
-  for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-       ++uMsCompIdx) {
+  for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
     UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
     fvhTsSzPerLink[uMsComp]->Fill(fvuTsSzLink[uMsComp]);
-    fvhTsSzTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz,
-                                      fvuTsSzLink[uMsComp]);
+    fvhTsSzTimePerLink[uMsComp]->Fill(fdMsIndex - fdStartTimeMsSz, fvuTsSzLink[uMsComp]);
   }  // for( UInt_t uComp = 0; uComp < fuNbFlimLinks; ++uComp )
 
   fulCurrentTsIndex++;
@@ -600,12 +510,13 @@ void CbmMcbm2018MonitorDataRates::Reset() {}
 
 void CbmMcbm2018MonitorDataRates::Finish() { SaveAllHistos(fsHistoFilename); }
 
-void CbmMcbm2018MonitorDataRates::SaveAllHistos(TString sFileName) {
+void CbmMcbm2018MonitorDataRates::SaveAllHistos(TString sFileName)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* histoFile   = NULL;
+  TFile* histoFile = NULL;
   if ("" != sFileName) {
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
@@ -637,8 +548,7 @@ void CbmMcbm2018MonitorDataRates::SaveAllHistos(TString sFileName) {
   TH1* pMissedTsH1 = dynamic_cast<TH1*>(gROOT->FindObjectAny("Missed_TS"));
   if (NULL != pMissedTsH1) pMissedTsH1->Write();
 
-  TProfile* pMissedTsEvoP =
-    dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
+  TProfile* pMissedTsEvoP = dynamic_cast<TProfile*>(gROOT->FindObjectAny("Missed_TS_Evo"));
   if (NULL != pMissedTsEvoP) pMissedTsEvoP->Write();
 
   gDirectory->cd("..");
@@ -654,7 +564,8 @@ void CbmMcbm2018MonitorDataRates::SaveAllHistos(TString sFileName) {
   gDirectory = oldDir;
 }
 
-void CbmMcbm2018MonitorDataRates::ResetAllHistos() {
+void CbmMcbm2018MonitorDataRates::ResetAllHistos()
+{
   LOG(info) << "Reseting all histograms.";
 
   fhDataRateTimeAllLinks->Reset();

@@ -1,8 +1,5 @@
-void pl_over_Walk2(Int_t iSel    = 0,
-                   Int_t iSmT    = 9,
-                   Int_t iSm     = 0,
-                   Int_t iRpc    = 0,
-                   Double_t Tmax = 0.2) {
+void pl_over_Walk2(Int_t iSel = 0, Int_t iSmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t Tmax = 0.2)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 25, 700, 800);
@@ -30,13 +27,13 @@ void pl_over_Walk2(Int_t iSel    = 0,
   can->cd(1);
   {
     gROOT->cd();
-    TString hname =
-      Form("cl_SmT%d_sm%03d_rpc%03d_Sel%02d_Walk2", iSmT, iSm, iRpc, iSel);
-    h3 = (TH3*) gROOT->FindObjectAny(hname);
+    TString hname = Form("cl_SmT%d_sm%03d_rpc%03d_Sel%02d_Walk2", iSmT, iSm, iRpc, iSel);
+    h3            = (TH3*) gROOT->FindObjectAny(hname);
     if (h3 != NULL) {
       h3->Project3D("yx")->Draw("colz");
       gPad->SetLogz();
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -52,6 +49,5 @@ void pl_over_Walk2(Int_t iSel    = 0,
   }
 
 
-  can->SaveAs(
-    Form("pl_over_Walk2_%01d_%01d_%01d_%01d.pdf", iSel, iSmT, iSm, iRpc));
+  can->SaveAs(Form("pl_over_Walk2_%01d_%01d_%01d_%01d.pdf", iSel, iSmT, iSm, iRpc));
 }

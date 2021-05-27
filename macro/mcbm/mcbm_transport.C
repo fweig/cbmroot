@@ -43,12 +43,10 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
   //  Double_t targetDiameter  = 0.5;    // diameter in cm
   //  Double_t targetRotY      = 25.;    // target rotation angle around the y axis [deg]
 
-  Double_t targetThickness =
-    0.025;  // mCBM thin gold target 0.25 mm = 0.025 cm thickness
-  Double_t targetDiameter = 1.5;  // mCBM target width 15 mm = 1.5 cm
+  Double_t targetThickness = 0.025;  // mCBM thin gold target 0.25 mm = 0.025 cm thickness
+  Double_t targetDiameter  = 1.5;    // mCBM target width 15 mm = 1.5 cm
   //  Double_t targetDiameter  = 0.1;      // set small target for window acceptance plots
-  Double_t targetRotY =
-    beamRotY;  // target rotation angle around the y axis [deg]
+  Double_t targetRotY = beamRotY;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
   // --- Logger settings ----------------------------------------------------
@@ -58,7 +56,7 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_transport";  // this macro's name for screen output
+  TString myName = "mcbm_transport";               // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -69,18 +67,14 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
   TString parFile = dataset + ".par.root";
   TString geoFile = dataset + ".geo.root";
   std::cout << std::endl;
-  TString defaultInputFile =
-    srcDir + "/input/urqmd.agag.1.65gev.centr.00001.root";
+  TString defaultInputFile = srcDir + "/input/urqmd.agag.1.65gev.centr.00001.root";
   TString inFile;
-  if (dataset.Contains("lam")) {
-    std::cout << "-I- " << myName << ": Generate Lambda " << std::endl;
-  } else {
-    if (strcmp(inputFile, "") == 0)
-      inFile = defaultInputFile;
+  if (dataset.Contains("lam")) { std::cout << "-I- " << myName << ": Generate Lambda " << std::endl; }
+  else {
+    if (strcmp(inputFile, "") == 0) inFile = defaultInputFile;
     else
       inFile = inputFile;
-    std::cout << "-I- " << myName << ": Using input file " << inFile
-              << std::endl;
+    std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -158,12 +152,7 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setupName);
   run.SetField(new CbmFieldConst());
-  run.SetTarget(targetElement,
-                targetThickness,
-                targetDiameter,
-                targetPosX,
-                targetPosY,
-                targetPosZ,
+  run.SetTarget(targetElement, targetThickness, targetDiameter, targetPosX, targetPosY, targetPosZ,
                 targetRotY * TMath::DegToRad());
   run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
@@ -180,9 +169,7 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -205,17 +192,12 @@ void mcbm_transport(Int_t nEvents = 10, const char* setupName = "mcbm_beam_2020_
 }
 
 
-void SetTrack(CbmTransport* run,
-              Double_t beamRotY,
-              Int_t pdgid,
-              Double_t x,
-              Double_t y,
-              Double_t z) {
+void SetTrack(CbmTransport* run, Double_t beamRotY, Int_t pdgid, Double_t x, Double_t y, Double_t z)
+{
   TVector3 v;
   v.SetXYZ(x, y, z);
   v.RotateY(-beamRotY * acos(-1.) / 180.);
   cout << "X " << v.X() << " Y " << v.Y() << " Z " << v.Z() << endl;
 
-  run->AddInput(new FairParticleGenerator(
-    pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
+  run->AddInput(new FairParticleGenerator(pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
 }

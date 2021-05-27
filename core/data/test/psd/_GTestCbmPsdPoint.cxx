@@ -1,33 +1,24 @@
 #include "CbmPsdPoint.h"
 
+#include "comparePsdPoint.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-#include "comparePsdPoint.h"
 
-
-TEST(_GTestCbmPsdPoint, CheckDefaultConstructor) {
+TEST(_GTestCbmPsdPoint, CheckDefaultConstructor)
+{
   // Create object
   CbmPsdPoint test;
 
-  comparePsdPointDataMembers(
-    test, -1, -1, TVector3(0., 0., 0.), TVector3(0., 0., 0.), 0., 0., 0., 0, 0);
+  comparePsdPointDataMembers(test, -1, -1, TVector3(0., 0., 0.), TVector3(0., 0., 0.), 0., 0., 0., 0, 0);
 
   CbmPsdPoint* test1 = new CbmPsdPoint();
 
-  comparePsdPointDataMembers(*test1,
-                             -1,
-                             -1,
-                             TVector3(0., 0., 0.),
-                             TVector3(0., 0., 0.),
-                             0.,
-                             0.,
-                             0.,
-                             0,
-                             0);
+  comparePsdPointDataMembers(*test1, -1, -1, TVector3(0., 0., 0.), TVector3(0., 0., 0.), 0., 0., 0., 0, 0);
 }
 
-TEST(_GTestCbmPsdPoint, CheckStandardConstructor) {
+TEST(_GTestCbmPsdPoint, CheckStandardConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -40,17 +31,15 @@ TEST(_GTestCbmPsdPoint, CheckStandardConstructor) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
-  CbmPsdPoint* test1 =
-    new CbmPsdPoint(trackid, detid, pos, mom, tof, length, eloss);
+  CbmPsdPoint* test1 = new CbmPsdPoint(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    *test1, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(*test1, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckCopyConstructor) {
+TEST(_GTestCbmPsdPoint, CheckCopyConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -63,23 +52,21 @@ TEST(_GTestCbmPsdPoint, CheckCopyConstructor) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
   // test should not be changed
   CbmPsdPoint test2 {test};
 
-  comparePsdPointDataMembers(
-    test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Test if the original object wasn't changed
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator) {
+TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -92,8 +79,7 @@ TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
@@ -101,15 +87,14 @@ TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator) {
   CbmPsdPoint test2 {};
   test2 = test;
 
-  comparePsdPointDataMembers(
-    test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Test if the original object wasn't changed
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckMoveConstructor) {
+TEST(_GTestCbmPsdPoint, CheckMoveConstructor)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -122,24 +107,22 @@ TEST(_GTestCbmPsdPoint, CheckMoveConstructor) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
   // test should not be changed
   CbmPsdPoint test2 {std::move(test)};
 
-  comparePsdPointDataMembers(
-    test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // For objects with simple types move fall back to copy so
   // the original object is kept unchanged
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckAssignmentOperator) {
+TEST(_GTestCbmPsdPoint, CheckAssignmentOperator)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -152,8 +135,7 @@ TEST(_GTestCbmPsdPoint, CheckAssignmentOperator) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // Create object by copy constructing
   // test should be equal to test2 and
@@ -161,16 +143,15 @@ TEST(_GTestCbmPsdPoint, CheckAssignmentOperator) {
   CbmPsdPoint test2 {};
   test2 = std::move(test);
 
-  comparePsdPointDataMembers(
-    test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test2, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   // For objects with simple types move fall back to copy so
   // the original object is kept unchanged
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckSetModuleID) {
+TEST(_GTestCbmPsdPoint, CheckSetModuleID)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -183,17 +164,16 @@ TEST(_GTestCbmPsdPoint, CheckSetModuleID) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
 
   test.SetModuleID(111);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, 111, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, 111, eventid);
 }
 
-TEST(_GTestCbmPsdPoint, CheckToString) {
+TEST(_GTestCbmPsdPoint, CheckToString)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -206,8 +186,7 @@ TEST(_GTestCbmPsdPoint, CheckToString) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   EXPECT_STREQ("PSD point for track 34 in detector 45\n    Position (-2.1, "
                "6.1, 23) cm\n    Momentum (2.5, 4.5, 78) GeV\n    Time 34.56 "
@@ -215,7 +194,8 @@ TEST(_GTestCbmPsdPoint, CheckToString) {
                test.ToString().c_str());
 }
 
-TEST(_GTestCbmPsdPoint, CheckPrint) {
+TEST(_GTestCbmPsdPoint, CheckPrint)
+{
   Int_t trackid {34};
   Int_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
@@ -228,8 +208,7 @@ TEST(_GTestCbmPsdPoint, CheckPrint) {
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
-  comparePsdPointDataMembers(
-    test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
+  comparePsdPointDataMembers(test, trackid, detid, pos, mom, tof, length, eloss, moduleid, eventid);
 
   testing::internal::CaptureStdout();
   test.Print("");

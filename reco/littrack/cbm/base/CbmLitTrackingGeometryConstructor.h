@@ -8,12 +8,14 @@
 #ifndef CBMLITTRACKINGGEOMETRYCONSTRUCTOR_H_
 #define CBMLITTRACKINGGEOMETRYCONSTRUCTOR_H_
 
-#include "TObject.h"
 #include "cbm/base/CbmLitDetectorSetup.h"
-#include "parallel/LitDetectorLayout.h"
-#include "parallel/LitMaterialGrid.h"
+
+#include "TObject.h"
 
 #include <string>
+
+#include "parallel/LitDetectorLayout.h"
+#include "parallel/LitMaterialGrid.h"
 
 class TGeoManager;
 class CbmTrdGeoHandler;
@@ -67,8 +69,7 @@ public:
 
   void GetRichMaterial(lit::parallel::LitMaterialGrid* material);
 
-  void ConvertTProfile2DToLitMaterialGrid(const TProfile2D* profile,
-                                          lit::parallel::LitMaterialGrid* grid,
+  void ConvertTProfile2DToLitMaterialGrid(const TProfile2D* profile, lit::parallel::LitMaterialGrid* grid,
                                           Double_t maximumValue = 0);
 
   /**
@@ -140,8 +141,7 @@ private:
   /**
     * \brief Assignment operator.
     */
-  const CbmLitTrackingGeometryConstructor&
-  operator=(const CbmLitTrackingGeometryConstructor&);
+  const CbmLitTrackingGeometryConstructor& operator=(const CbmLitTrackingGeometryConstructor&);
 
   TGeoManager* fGeo;         // Pointer to full geometry
   Int_t fNofTrdStations;     // Number of TRD stations

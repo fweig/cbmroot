@@ -23,60 +23,22 @@ public:
   void InitColorVector(Bool_t logScale, Double_t min, Double_t max);
   Int_t GetColorCode(Double_t value);
   void Statusbar(Int_t i, Int_t n);
-  Int_t GetModuleType(Int_t moduleAddress,
-                      CbmTrdParModDigi* fModuleInfo,
-                      CbmTrdParSetDigi* fDigiPar);
+  Int_t GetModuleType(Int_t moduleAddress, CbmTrdParModDigi* fModuleInfo, CbmTrdParSetDigi* fDigiPar);
   void NiceLegend(TLegend* l);
-  void NiceTProfile(TProfile* h,
-                    Int_t color,
-                    Int_t mStyle,
-                    Int_t mSize,
-                    TString xTitle,
-                    TString yTitle);
-  void NiceTH3(TH3* h,
-               Int_t color,
-               Int_t mStyle,
-               Int_t mSize,
-               TString xTitle,
-               TString yTitle,
-               TString zTitle);
-  void NiceTH2(TH2* h,
-               Int_t color,
-               Int_t mStyle,
-               Int_t mSize,
-               TString xTitle,
-               TString yTitle,
-               TString zTitle);
-  void NiceTH1(TH1* h,
-               Int_t color,
-               Int_t mStyle,
-               Int_t mSize,
-               TString xTitle,
-               TString yTitle);
-  void CreateLayerView(std::map<Int_t /*moduleAddress*/, TH1*>& Map,
-                       CbmTrdParModDigi* fModuleInfo,
-                       CbmTrdParSetDigi* fDigiPar,
-                       const TString folder,
-                       const TString pics,
-                       const TString zAxisTitle,
-                       const Double_t fmax,
-                       const Double_t fmin,
-                       const Bool_t logScale);
-  TPolyLine* CreateTriangularPad(Int_t column,
-                                 Int_t row,
-                                 Double_t value,
-                                 Double_t min_range,
-                                 Double_t max_range,
+  void NiceTProfile(TProfile* h, Int_t color, Int_t mStyle, Int_t mSize, TString xTitle, TString yTitle);
+  void NiceTH3(TH3* h, Int_t color, Int_t mStyle, Int_t mSize, TString xTitle, TString yTitle, TString zTitle);
+  void NiceTH2(TH2* h, Int_t color, Int_t mStyle, Int_t mSize, TString xTitle, TString yTitle, TString zTitle);
+  void NiceTH1(TH1* h, Int_t color, Int_t mStyle, Int_t mSize, TString xTitle, TString yTitle);
+  void CreateLayerView(std::map<Int_t /*moduleAddress*/, TH1*>& Map, CbmTrdParModDigi* fModuleInfo,
+                       CbmTrdParSetDigi* fDigiPar, const TString folder, const TString pics, const TString zAxisTitle,
+                       const Double_t fmax, const Double_t fmin, const Bool_t logScale);
+  TPolyLine* CreateTriangularPad(Int_t column, Int_t row, Double_t value, Double_t min_range, Double_t max_range,
                                  Bool_t logScale);
-  TPolyLine* CreateRectangularPad(Int_t column,
-                                  Int_t row,
-                                  Double_t value,
-                                  Double_t min_range,
-                                  Double_t max_range,
+  TPolyLine* CreateRectangularPad(Int_t column, Int_t row, Double_t value, Double_t min_range, Double_t max_range,
                                   Bool_t logScale);
-  static TString GetGeantName(Int_t GeantId) {
-    if (GeantId == 1)
-      return (TString) "#gamma";
+  static TString GetGeantName(Int_t GeantId)
+  {
+    if (GeantId == 1) return (TString) "#gamma";
     else if (GeantId == 2)
       return (TString) "e^{+}";
     else if (GeantId == 3)

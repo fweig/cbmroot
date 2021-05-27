@@ -18,7 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0) {
+void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
+{
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
@@ -27,10 +28,8 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0) {
   whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout
-    << "selected geometry : >> " << digipar
-    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
-    << endl;
+  cout << "selected geometry : >> " << digipar
+       << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -72,8 +71,7 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0) {
   TString statistic;
   statistic.Form(".%03ievents", nEvents);
   TString outFile;  // = "data/test.pa." + digipar + statistic + ".root";
-  outFile.Form(
-    "data/test.pa.%s.%04i.%03ievents.root", digipar.Data(), urqmd, nEvents);
+  outFile.Form("data/test.pa.%s.%04i.%03ievents.root", digipar.Data(), urqmd, nEvents);
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -467,8 +465,7 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0) {
   
   */
 
-  CbmTrdPhotonAnalysis* trdphot =
-    new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
+  CbmTrdPhotonAnalysis* trdphot = new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
   run->AddTask(trdphot);
 
 

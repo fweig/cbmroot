@@ -6,9 +6,10 @@
 **/
 #include "CbmRichRingFitterTAU.h"
 
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -21,7 +22,8 @@ CbmRichRingFitterTAU::CbmRichRingFitterTAU() : fRobust(0) {}
 
 CbmRichRingFitterTAU::~CbmRichRingFitterTAU() {}
 
-void CbmRichRingFitterTAU::DoFit(CbmRichRingLight* ring) {
+void CbmRichRingFitterTAU::DoFit(CbmRichRingLight* ring)
+{
   int nofHits = ring->GetNofHits();
 
   double radius  = -1.;
@@ -126,8 +128,7 @@ void CbmRichRingFitterTAU::DoFit(CbmRichRingLight* ring) {
     A3 = 4. * Mz;
     A2 = -3. * Mz * Mz - Mzz;
     A1 = Mzz * Mz + 4. * Cov_xy * Mz - Mxz2 - Myz2 - Mz * Mz * Mz;
-    A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy
-         + Mz * Mz * Cov_xy;
+    A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2. * Mxz * Myz * Mxy + Mz * Mz * Cov_xy;
 
     A22  = A2 + A2;
     A33  = A3 + A3 + A3;
@@ -170,8 +171,7 @@ void CbmRichRingFitterTAU::DoFit(CbmRichRingLight* ring) {
 
     if (riter < riterMax - 1) {
       for (int i = 0; i < nofHits; i++) {
-        dist =
-          sqrt(pow((centerX - x[i]), 2) + pow((centerY - y[i]), 2)) - radius;
+        dist = sqrt(pow((centerX - x[i]), 2) + pow((centerY - y[i]), 2)) - radius;
         dist = fabs(dist);
         d.push_back(dist);
       }
@@ -192,7 +192,8 @@ void CbmRichRingFitterTAU::DoFit(CbmRichRingLight* ring) {
           if (d[i] <= ctsigma) {
             weight = pow((1 - pow((d[i] / ctsigma), 2)), 2);
             if (weight < zero) weight = zero;
-          } else {
+          }
+          else {
             weight = zero;
           }
           w.push_back(weight);

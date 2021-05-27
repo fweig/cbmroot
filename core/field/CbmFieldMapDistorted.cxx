@@ -18,6 +18,7 @@
 #include <TSystem.h>   // for TSystem, gSystem, kFileExists
 
 #include <iostream>  // for operator<<, endl, ostream, basic_ostream
+
 #include <string.h>  // for strlen
 
 using std::cerr;
@@ -35,18 +36,16 @@ CbmFieldMapDistorted::CbmFieldMapDistorted()
   , fByDistortionFormulaMult(nullptr)
   , fByDistortionFormulaAdd(nullptr)
   , fBzDistortionFormulaMult(nullptr)
-  , fBzDistortionFormulaAdd(nullptr) {
+  , fBzDistortionFormulaAdd(nullptr)
+{
   fType = kTypeDistorted;
 }
 // ------------------------------------------------------------------------
 
 
 // -------------   Standard constructor (with FieldMap Parent Field )  ---------------------------------
-CbmFieldMapDistorted::CbmFieldMapDistorted(const char* mapName,
-                                           const char* pfDistortionFilename,
-                                           const char* parentName,
-                                           const char* fileTypeParent,
-                                           Int_t pfTypeOfParent)
+CbmFieldMapDistorted::CbmFieldMapDistorted(const char* mapName, const char* pfDistortionFilename,
+                                           const char* parentName, const char* fileTypeParent, Int_t pfTypeOfParent)
   : CbmFieldMap()
   , fParentField(nullptr)
   , fTypeOfParent(pfTypeOfParent)
@@ -56,49 +55,26 @@ CbmFieldMapDistorted::CbmFieldMapDistorted(const char* mapName,
   , fByDistortionFormulaMult(nullptr)
   , fByDistortionFormulaAdd(nullptr)
   , fBzDistortionFormulaMult(nullptr)
-  , fBzDistortionFormulaAdd(nullptr) {
+  , fBzDistortionFormulaAdd(nullptr)
+{
   fName = mapName;
   fType = kTypeDistorted;
 
   switch (pfTypeOfParent) {
-    case 3:
-      fParentField = new CbmFieldMapSym3(parentName, fileTypeParent);
-      break;
-    case 2:
-      fParentField = new CbmFieldMapSym2(parentName, fileTypeParent);
-      break;
-    case 5:
-      fParentField = new CbmFieldMapSym1(parentName, fileTypeParent);
-      break;
+    case 3: fParentField = new CbmFieldMapSym3(parentName, fileTypeParent); break;
+    case 2: fParentField = new CbmFieldMapSym2(parentName, fileTypeParent); break;
+    case 5: fParentField = new CbmFieldMapSym1(parentName, fileTypeParent); break;
     default: fParentField = new CbmFieldMap(parentName, fileTypeParent); break;
   }
 }
 // ------------------------------------------------------------------------
 
 // -------------   Constructor (with Constant Parent Field )   -------------------------
-CbmFieldMapDistorted::CbmFieldMapDistorted(Double_t xMin,
-                                           Double_t xMax,
-                                           Double_t yMin,
-                                           Double_t yMax,
-                                           Double_t zMin,
-                                           Double_t zMax,
-                                           Double_t bX,
-                                           Double_t bY,
-                                           Double_t bZ,
-                                           const char* mapName,
-                                           const char* pfDistortionFilename,
-                                           const char* parentname)
+CbmFieldMapDistorted::CbmFieldMapDistorted(Double_t xMin, Double_t xMax, Double_t yMin, Double_t yMax, Double_t zMin,
+                                           Double_t zMax, Double_t bX, Double_t bY, Double_t bZ, const char* mapName,
+                                           const char* pfDistortionFilename, const char* parentname)
   : CbmFieldMap()
-  , fParentField(new CbmFieldConst(parentname,
-                                   xMin,
-                                   xMax,
-                                   yMin,
-                                   yMax,
-                                   zMin,
-                                   zMax,
-                                   bX,
-                                   bY,
-                                   bZ))
+  , fParentField(new CbmFieldConst(parentname, xMin, xMax, yMin, yMax, zMin, zMax, bX, bY, bZ))
   , fTypeOfParent(0)
   , fDistortionFilename(pfDistortionFilename)
   , fBxDistortionFormulaMult(nullptr)
@@ -106,7 +82,8 @@ CbmFieldMapDistorted::CbmFieldMapDistorted(Double_t xMin,
   , fByDistortionFormulaMult(nullptr)
   , fByDistortionFormulaAdd(nullptr)
   , fBzDistortionFormulaMult(nullptr)
-  , fBzDistortionFormulaAdd(nullptr) {
+  , fBzDistortionFormulaAdd(nullptr)
+{
   fName = mapName;
   fType = kTypeDistorted;
 }
@@ -123,14 +100,13 @@ CbmFieldMapDistorted::CbmFieldMapDistorted(CbmFieldPar* fieldPar)
   , fByDistortionFormulaMult(nullptr)
   , fByDistortionFormulaAdd(nullptr)
   , fBzDistortionFormulaMult(nullptr)
-  , fBzDistortionFormulaAdd(nullptr) {
+  , fBzDistortionFormulaAdd(nullptr)
+{
   if (fieldPar) {
     fieldPar->MapName(fName);
     fType = fieldPar->GetType();
 
-    if (
-      fType
-      == kTypeDistorted) {  // normal case of distorted field map parameters as input
+    if (fType == kTypeDistorted) {  // normal case of distorted field map parameters as input
 
       fTypeOfParent = fieldPar->GetTypeOfParent();
 
@@ -138,40 +114,26 @@ CbmFieldMapDistorted::CbmFieldMapDistorted(CbmFieldPar* fieldPar)
       fieldPar->GetParentName(parentName);
 
       switch (fTypeOfParent) {
-        case 3:
-          fParentField = new CbmFieldMapSym3(parentName.Data(), "R");
-          break;
-        case 2:
-          fParentField = new CbmFieldMapSym2(parentName.Data(), "R");
-          break;
-        case 5:
-          fParentField = new CbmFieldMapSym1(parentName.Data(), "R");
-          break;
+        case 3: fParentField = new CbmFieldMapSym3(parentName.Data(), "R"); break;
+        case 2: fParentField = new CbmFieldMapSym2(parentName.Data(), "R"); break;
+        case 5: fParentField = new CbmFieldMapSym1(parentName.Data(), "R"); break;
         case 0:
-          fParentField = new CbmFieldConst(parentName.Data(),
-                                           fieldPar->GetXmin(),
-                                           fieldPar->GetXmax(),
-                                           fieldPar->GetYmin(),
-                                           fieldPar->GetYmax(),
-                                           fieldPar->GetZmin(),
-                                           fieldPar->GetZmax(),
-                                           fieldPar->GetBx(),
-                                           fieldPar->GetBy(),
-                                           fieldPar->GetBz());
+          fParentField = new CbmFieldConst(
+            parentName.Data(), fieldPar->GetXmin(), fieldPar->GetXmax(), fieldPar->GetYmin(), fieldPar->GetYmax(),
+            fieldPar->GetZmin(), fieldPar->GetZmax(), fieldPar->GetBx(), fieldPar->GetBy(), fieldPar->GetBz());
           break;
         default: fParentField = new CbmFieldMap(parentName.Data(), "R"); break;
       }
 
       if ((fParentField) && (fTypeOfParent)) {  //   for field map parent
         ((CbmFieldMap*) fParentField)
-          ->SetPosition(fieldPar->GetPositionX(),
-                        fieldPar->GetPositionY(),
-                        fieldPar->GetPositionZ());
+          ->SetPosition(fieldPar->GetPositionX(), fieldPar->GetPositionY(), fieldPar->GetPositionZ());
         ((CbmFieldMap*) fParentField)->SetScale(fieldPar->GetScale());
       }
 
       fieldPar->GetDistortionFilename(fDistortionFilename);
-    } else {  // try to create a distorted field map from the parameters of constant field or normal field map as input
+    }
+    else {  // try to create a distorted field map from the parameters of constant field or normal field map as input
       switch (fType) {
         case 3: fParentField = new CbmFieldMapSym3(fieldPar); break;
         case 2: fParentField = new CbmFieldMapSym2(fieldPar); break;
@@ -193,7 +155,8 @@ CbmFieldMapDistorted::~CbmFieldMapDistorted() {}
 
 
 // -----------   Intialisation   ------------------------------------------
-void CbmFieldMapDistorted::Init() {
+void CbmFieldMapDistorted::Init()
+{
   fParentField->Init();
   fParentField->Print("");
   SetFromParent(fParentField);
@@ -214,7 +177,8 @@ void CbmFieldMapDistorted::Init() {
 
 
 // -------------   Set from parent CbmField   -------------------------
-void CbmFieldMapDistorted::SetFromParent(FairField* field) {
+void CbmFieldMapDistorted::SetFromParent(FairField* field)
+{
   fTypeOfParent = 0;
   fParentField  = field;
 
@@ -264,7 +228,8 @@ void CbmFieldMapDistorted::SetFromParent(FairField* field) {
 // ------------------------------------------------------------------------
 
 // -----------   Read Distortion Formulas from Distortion File   ------------------------------------------
-void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename) {
+void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -275,28 +240,23 @@ void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename) {
   if (fDistortionFilename.Data()) {
     if (strlen(fDistortionFilename.Data())) {
       if (gSystem->AccessPathName(fDistortionFilename + ".root", kFileExists)) {
-        cerr << "CbmFieldMapDistorted::ReadDistortionInformation Warning: file "
-             << (fDistortionFilename.Data()) << " not exists yet !!!" << endl;
-      } else {
+        cerr << "CbmFieldMapDistorted::ReadDistortionInformation Warning: file " << (fDistortionFilename.Data())
+             << " not exists yet !!!" << endl;
+      }
+      else {
         TFile* f = new TFile(fDistortionFilename + ".root");
         if (f) {
-          fBxDistortionFormulaMult =
-            (TFormula*) f->Get("BxDistortionFormulaMult");
-          fBxDistortionFormulaAdd =
-            (TFormula*) f->Get("BxDistortionFormulaAdd");
-          fByDistortionFormulaMult =
-            (TFormula*) f->Get("ByDistortionFormulaMult");
-          fByDistortionFormulaAdd =
-            (TFormula*) f->Get("ByDistortionFormulaAdd");
-          fBzDistortionFormulaMult =
-            (TFormula*) f->Get("BzDistortionFormulaMult");
-          fBzDistortionFormulaAdd =
-            (TFormula*) f->Get("BzDistortionFormulaAdd");
+          fBxDistortionFormulaMult = (TFormula*) f->Get("BxDistortionFormulaMult");
+          fBxDistortionFormulaAdd  = (TFormula*) f->Get("BxDistortionFormulaAdd");
+          fByDistortionFormulaMult = (TFormula*) f->Get("ByDistortionFormulaMult");
+          fByDistortionFormulaAdd  = (TFormula*) f->Get("ByDistortionFormulaAdd");
+          fBzDistortionFormulaMult = (TFormula*) f->Get("BzDistortionFormulaMult");
+          fBzDistortionFormulaAdd  = (TFormula*) f->Get("BzDistortionFormulaAdd");
           f->Close();
-        } else {
-          cerr << "CbmFieldMapDistorted::ReadDistortionInformation ERROR: file "
-               << (fDistortionFilename.Data()) << " can not be read !!!"
-               << endl;
+        }
+        else {
+          cerr << "CbmFieldMapDistorted::ReadDistortionInformation ERROR: file " << (fDistortionFilename.Data())
+               << " can not be read !!!" << endl;
         }
       }
     }
@@ -307,7 +267,8 @@ void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename) {
 }
 
 // -----------   Write Distortion Formulas to Distortion File   ------------------------------------------
-void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename) {
+void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename)
+{
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
@@ -321,20 +282,14 @@ void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename) {
       TFile* f = new TFile(fDistortionFilename + ".root", "RECREATE");
       if (f) {
 
-        if (fBxDistortionFormulaMult)
-          fBxDistortionFormulaMult->Write("BxDistortionFormulaMult");
-        if (fBxDistortionFormulaAdd)
-          fBxDistortionFormulaAdd->Write("BxDistortionFormulaAdd");
+        if (fBxDistortionFormulaMult) fBxDistortionFormulaMult->Write("BxDistortionFormulaMult");
+        if (fBxDistortionFormulaAdd) fBxDistortionFormulaAdd->Write("BxDistortionFormulaAdd");
 
-        if (fByDistortionFormulaMult)
-          fByDistortionFormulaMult->Write("ByDistortionFormulaMult");
-        if (fByDistortionFormulaAdd)
-          fByDistortionFormulaAdd->Write("ByDistortionFormulaAdd");
+        if (fByDistortionFormulaMult) fByDistortionFormulaMult->Write("ByDistortionFormulaMult");
+        if (fByDistortionFormulaAdd) fByDistortionFormulaAdd->Write("ByDistortionFormulaAdd");
 
-        if (fBzDistortionFormulaMult)
-          fBzDistortionFormulaMult->Write("BzDistortionFormulaMult");
-        if (fBzDistortionFormulaAdd)
-          fBzDistortionFormulaAdd->Write("BzDistortionFormulaAdd");
+        if (fBzDistortionFormulaMult) fBzDistortionFormulaMult->Write("BzDistortionFormulaMult");
+        if (fBzDistortionFormulaAdd) fBzDistortionFormulaAdd->Write("BzDistortionFormulaAdd");
 
         f->Write();
         f->Close();
@@ -347,9 +302,8 @@ void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename) {
 }
 
 // ---------------Getter and Setter for Distortion Formulas------------------------------
-TFormula*
-CbmFieldMapDistorted::GetDistortionFormula(const char* component_option,
-                                           const char* action_option) {
+TFormula* CbmFieldMapDistorted::GetDistortionFormula(const char* component_option, const char* action_option)
+{
   // component_option: "x","y","z"; action_option: "m","a"
 
   TString co = component_option;
@@ -367,10 +321,9 @@ CbmFieldMapDistorted::GetDistortionFormula(const char* component_option,
   return 0;
 }
 
-Bool_t
-CbmFieldMapDistorted::SetDistortionFormula(TFormula* parDistortionFormula,
-                                           const char* component_option,
-                                           const char* action_option) {
+Bool_t CbmFieldMapDistorted::SetDistortionFormula(TFormula* parDistortionFormula, const char* component_option,
+                                                  const char* action_option)
+{
   TString co    = component_option;
   TString ao    = action_option;
   Int_t counter = 0;
@@ -404,44 +357,37 @@ CbmFieldMapDistorted::SetDistortionFormula(TFormula* parDistortionFormula,
   return (counter > 0);
 }
 
-Bool_t
-CbmFieldMapDistorted::SetDistortionFormula(const char* parDistortionFormulaText,
-                                           const char* component_option,
-                                           const char* action_option) {
+Bool_t CbmFieldMapDistorted::SetDistortionFormula(const char* parDistortionFormulaText, const char* component_option,
+                                                  const char* action_option)
+{
   TString co    = component_option;
   TString ao    = action_option;
   Int_t counter = 0;
 
   if (co.Contains("y") && ao.Contains("m")) {
-    fByDistortionFormulaMult =
-      new TFormula("ByDistortionFormulaMult", parDistortionFormulaText);
+    fByDistortionFormulaMult = new TFormula("ByDistortionFormulaMult", parDistortionFormulaText);
     counter++;
   }
   if (co.Contains("y") && ao.Contains("a")) {
-    fByDistortionFormulaAdd =
-      new TFormula("ByDistortionFormulaAdd", parDistortionFormulaText);
+    fByDistortionFormulaAdd = new TFormula("ByDistortionFormulaAdd", parDistortionFormulaText);
     counter++;
   }
 
   if (co.Contains("x") && ao.Contains("m")) {
-    fBxDistortionFormulaMult =
-      new TFormula("BxDistortionFormulaMult", parDistortionFormulaText);
+    fBxDistortionFormulaMult = new TFormula("BxDistortionFormulaMult", parDistortionFormulaText);
     counter++;
   }
   if (co.Contains("x") && ao.Contains("a")) {
-    fBxDistortionFormulaAdd =
-      new TFormula("BxDistortionFormulaAdd", parDistortionFormulaText);
+    fBxDistortionFormulaAdd = new TFormula("BxDistortionFormulaAdd", parDistortionFormulaText);
     counter++;
   }
 
   if (co.Contains("z") && ao.Contains("m")) {
-    fBzDistortionFormulaMult =
-      new TFormula("BzDistortionFormulaMult", parDistortionFormulaText);
+    fBzDistortionFormulaMult = new TFormula("BzDistortionFormulaMult", parDistortionFormulaText);
     counter++;
   }
   if (co.Contains("z") && ao.Contains("a")) {
-    fBzDistortionFormulaAdd =
-      new TFormula("BzDistortionFormulaAdd", parDistortionFormulaText);
+    fBzDistortionFormulaAdd = new TFormula("BzDistortionFormulaAdd", parDistortionFormulaText);
     counter++;
   }
   return (counter > 0);
@@ -449,12 +395,11 @@ CbmFieldMapDistorted::SetDistortionFormula(const char* parDistortionFormulaText,
 // ------------------------------------------------------------------------
 
 // -----------   Get x component of the field   ---------------------------
-Double_t CbmFieldMapDistorted::GetBx(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapDistorted::GetBx(Double_t x, Double_t y, Double_t z)
+{
   Double_t bx = fParentField->GetBx(x, y, z);
 
-  if (fBxDistortionFormulaMult) {
-    bx *= fBxDistortionFormulaMult->Eval(x, y, z);
-  }
+  if (fBxDistortionFormulaMult) { bx *= fBxDistortionFormulaMult->Eval(x, y, z); }
 
   if (fBxDistortionFormulaAdd) { bx += fBxDistortionFormulaAdd->Eval(x, y, z); }
 
@@ -462,32 +407,30 @@ Double_t CbmFieldMapDistorted::GetBx(Double_t x, Double_t y, Double_t z) {
 }
 
 // -----------   Get y component of the field   ---------------------------
-Double_t CbmFieldMapDistorted::GetBy(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapDistorted::GetBy(Double_t x, Double_t y, Double_t z)
+{
   Double_t by = fParentField->GetBy(x, y, z);
 
-  if (fByDistortionFormulaMult) {
-    by *= fByDistortionFormulaMult->Eval(x, y, z);
-  }
+  if (fByDistortionFormulaMult) { by *= fByDistortionFormulaMult->Eval(x, y, z); }
   if (fByDistortionFormulaAdd) { by += fByDistortionFormulaAdd->Eval(x, y, z); }
 
   return by;
 }
 
 // -----------   Get z component of the field   ---------------------------
-Double_t CbmFieldMapDistorted::GetBz(Double_t x, Double_t y, Double_t z) {
+Double_t CbmFieldMapDistorted::GetBz(Double_t x, Double_t y, Double_t z)
+{
   Double_t bz = fParentField->GetBz(x, y, z);
 
-  if (fBzDistortionFormulaMult) {
-    bz *= fBzDistortionFormulaMult->Eval(x, y, z);
-  }
+  if (fBzDistortionFormulaMult) { bz *= fBzDistortionFormulaMult->Eval(x, y, z); }
   if (fBzDistortionFormulaAdd) { bz += fBzDistortionFormulaAdd->Eval(x, y, z); }
 
   return bz;
 }
 
-void CbmFieldMapDistorted::Print(Option_t*) const {
-  cout << "============================================================="
-       << endl;
+void CbmFieldMapDistorted::Print(Option_t*) const
+{
+  cout << "=============================================================" << endl;
   cout << "----  " << fTitle << " : " << fName << endl;
 
   cout << "==   Parent Field:          ==" << endl;
@@ -499,41 +442,35 @@ void CbmFieldMapDistorted::Print(Option_t*) const {
   cout << "==============================" << endl;
 
   cout << "==  Bx Distortion Formula Mult :  ==" << endl;
-  if (fBxDistortionFormulaMult)
-    cout << fBxDistortionFormulaMult->GetExpFormula("p") << endl;
+  if (fBxDistortionFormulaMult) cout << fBxDistortionFormulaMult->GetExpFormula("p") << endl;
   cout << "==  Bx Distortion Formula Add :   ==" << endl;
-  if (fBxDistortionFormulaAdd)
-    cout << fBxDistortionFormulaAdd->GetExpFormula("p") << endl;
+  if (fBxDistortionFormulaAdd) cout << fBxDistortionFormulaAdd->GetExpFormula("p") << endl;
   cout << "==============================" << endl;
 
   cout << "==  By Distortion Formula Mult :  ==" << endl;
-  if (fByDistortionFormulaMult)
-    cout << fByDistortionFormulaMult->GetExpFormula("p") << endl;
+  if (fByDistortionFormulaMult) cout << fByDistortionFormulaMult->GetExpFormula("p") << endl;
   cout << "==  By Distortion Formula Add :   ==" << endl;
-  if (fByDistortionFormulaAdd)
-    cout << fByDistortionFormulaAdd->GetExpFormula("p") << endl;
+  if (fByDistortionFormulaAdd) cout << fByDistortionFormulaAdd->GetExpFormula("p") << endl;
   cout << "==============================" << endl;
 
   cout << "==  Bz Distortion Formula Mult :  ==" << endl;
-  if (fBzDistortionFormulaMult)
-    cout << fBzDistortionFormulaMult->GetExpFormula("p") << endl;
+  if (fBzDistortionFormulaMult) cout << fBzDistortionFormulaMult->GetExpFormula("p") << endl;
   cout << "==  Bz Distortion Formula Add :   ==" << endl;
-  if (fBzDistortionFormulaAdd)
-    cout << fBzDistortionFormulaAdd->GetExpFormula("p") << endl;
+  if (fBzDistortionFormulaAdd) cout << fBzDistortionFormulaAdd->GetExpFormula("p") << endl;
   cout << "==============================" << endl;
 
 
-  cout << "----  Distorted field at origin is ( " << fBxOrigin << ", "
-       << fByOrigin << ", " << fBzOrigin << ") kG" << endl;
-
-  cout << "============================================================="
+  cout << "----  Distorted field at origin is ( " << fBxOrigin << ", " << fByOrigin << ", " << fBzOrigin << ") kG"
        << endl;
+
+  cout << "=============================================================" << endl;
 }
 // ------------------------------------------------------------------------
 
 
 // -----  Set the position of the field centre in global coordinates  -----
-void CbmFieldMapDistorted::SetPosition(Double_t x, Double_t y, Double_t z) {
+void CbmFieldMapDistorted::SetPosition(Double_t x, Double_t y, Double_t z)
+{
   fPosX = x;
   fPosY = y;
   fPosZ = z;
@@ -542,14 +479,16 @@ void CbmFieldMapDistorted::SetPosition(Double_t x, Double_t y, Double_t z) {
 // ------------------------------------------------------------------------
 
 // ---------------------Set a global field scaling factor------------------
-void CbmFieldMapDistorted::SetScale(Double_t factor) {
+void CbmFieldMapDistorted::SetScale(Double_t factor)
+{
   fScale = factor;
   if (fTypeOfParent) ((CbmFieldMap*) fParentField)->SetScale(factor);
 }
 // ------------------------------------------------------------------------
 
 // ---------------------Plot distorted and parend field (By component)-----
-void CbmFieldMapDistorted::PlotBy(Int_t n, Double_t zmin, Double_t zmax) {
+void CbmFieldMapDistorted::PlotBy(Int_t n, Double_t zmin, Double_t zmax)
+{
   TH1D *h, *hp;
   Int_t n0 = n;
   if (!n) n0 = 1;

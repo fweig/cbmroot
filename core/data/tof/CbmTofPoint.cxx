@@ -28,16 +28,13 @@ CbmTofPoint::CbmTofPoint() : FairMCPoint(), fNofCells(0), fGapMask(0) {}
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTofPoint::CbmTofPoint(Int_t trackID,
-                         Int_t detID,
-                         TVector3 pos,
-                         TVector3 mom,
-                         Double_t tof,
-                         Double_t length,
+CbmTofPoint::CbmTofPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length,
                          Double_t eLoss)
   : FairMCPoint(trackID, detID, pos, mom, tof, length, eLoss)
   , fNofCells(0)
-  , fGapMask(0) {}
+  , fGapMask(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -47,11 +44,11 @@ CbmTofPoint::~CbmTofPoint() {}
 
 
 // -----   Get the number of gaps   ----------------------------------------
-Int_t CbmTofPoint::GetNGaps() const {
+Int_t CbmTofPoint::GetNGaps() const
+{
   Int_t iNGaps(0);
 
-  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits;
-       iGapBit++) {
+  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits; iGapBit++) {
     if (fGapMask & (0x1 << iGapBit)) { iNGaps++; }
   }
 
@@ -61,9 +58,9 @@ Int_t CbmTofPoint::GetNGaps() const {
 
 
 // -----   Get the index of the first gap   --------------------------------
-Int_t CbmTofPoint::GetFirstGap() const {
-  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits;
-       iGapBit++) {
+Int_t CbmTofPoint::GetFirstGap() const
+{
+  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits; iGapBit++) {
     if (fGapMask & (0x1 << iGapBit)) { return iGapBit; }
   }
 
@@ -73,11 +70,11 @@ Int_t CbmTofPoint::GetFirstGap() const {
 
 
 // -----   Get the index of the last gap   ---------------------------------
-Int_t CbmTofPoint::GetLastGap() const {
+Int_t CbmTofPoint::GetLastGap() const
+{
   Int_t iLastGap(-1);
 
-  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits;
-       iGapBit++) {
+  for (Int_t iGapBit = 0; iGapBit < std::numeric_limits<UShort_t>::digits; iGapBit++) {
     if (fGapMask & (0x1 << iGapBit)) { iLastGap = iGapBit; }
   }
 
@@ -87,7 +84,8 @@ Int_t CbmTofPoint::GetLastGap() const {
 
 
 // -----   Add one gap to the gap mask   -----------------------------------
-void CbmTofPoint::SetGap(Int_t iGap) {
+void CbmTofPoint::SetGap(Int_t iGap)
+{
   assert(0 <= iGap && std::numeric_limits<UShort_t>::digits > iGap);
   fGapMask |= 0x1 << iGap;
 }
@@ -95,14 +93,13 @@ void CbmTofPoint::SetGap(Int_t iGap) {
 
 
 // -----   String output   -------------------------------------------------
-string CbmTofPoint::ToString() const {
+string CbmTofPoint::ToString() const
+{
   stringstream ss;
-  ss << "STofPoint: track ID " << fTrackID << ", detector ID " << fDetectorID
-     << "\n";
+  ss << "STofPoint: track ID " << fTrackID << ", detector ID " << fDetectorID << "\n";
   ss << "    Position (" << fX << ", " << fY << ", " << fZ << ") cm \n";
   ss << "    Momentum (" << fPx << ", " << fPy << ", " << fPz << ") GeV \n";
-  ss << "    Time " << fTime << " ns,  Length " << fLength
-     << " cm,  Energy loss " << fELoss * 1.0e06 << " keV \n";
+  ss << "    Time " << fTime << " ns,  Length " << fLength << " cm,  Energy loss " << fELoss * 1.0e06 << " keV \n";
   ss << "    Number of cells " << fNofCells << ", gap mask "
      << std::bitset<std::numeric_limits<UShort_t>::digits>(fGapMask) << endl;
   return ss.str();
