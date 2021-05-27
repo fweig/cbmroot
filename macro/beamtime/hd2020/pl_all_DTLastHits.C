@@ -1,3 +1,8 @@
+/** @file pl_all_DTLastHits.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_DTLastHits(Int_t iNSt = 6, Double_t Tstart = 1., Double_t Tend = 1000.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

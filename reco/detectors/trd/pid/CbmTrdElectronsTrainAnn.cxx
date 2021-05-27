@@ -1,3 +1,7 @@
+/** @file CbmTrdElectronsTrainAnn.cxx
+  * @copyright Copyright (C) 2009-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
 
 #include "CbmTrdElectronsTrainAnn.h"
 

@@ -1,3 +1,8 @@
+/** @file hadd.C
+  * @copyright Copyright (C) 2011 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"

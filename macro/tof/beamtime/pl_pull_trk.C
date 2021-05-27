@@ -1,3 +1,8 @@
+/** @file pl_pull_trk.C
+  * @copyright Copyright (C) 2015-2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_pull_trk(Int_t NSt = 8, char* var = "X", Int_t iFit = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

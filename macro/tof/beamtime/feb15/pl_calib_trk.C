@@ -1,3 +1,8 @@
+/** @file pl_calib_trk.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Pierre-Alain Loizeau **/
+
 void pl_calib_trk()
 {
   //  TCanvas *can = new TCanvas("can22","can22");

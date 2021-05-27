@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v16a.C
+  * @copyright Copyright (C) 2015-2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 ///
 /// \file Create_TOF_Geometry_v13_4x.C
 /// \brief Generates TOF geometry in Root format.

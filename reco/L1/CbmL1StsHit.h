@@ -1,3 +1,8 @@
+/** @file CbmL1StsHit.h
+  * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator], Valentina Akishina, Maxim Zyzak **/
+
 #ifndef _CbmL1StsHit_h_
 #define _CbmL1StsHit_h_
 

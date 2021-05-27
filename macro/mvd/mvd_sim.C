@@ -1,3 +1,8 @@
+/** @file mvd_sim.C
+  * @copyright Copyright (C) 2007-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann, Volker Friese [orginator] **/
+
 // -------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

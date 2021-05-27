@@ -1,3 +1,8 @@
+/** @file DupliHitsSummaryCosy2018.C
+  * @copyright Copyright (C) 2018 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 Bool_t DupliHitsSummaryCosy2018()
 {
   UInt_t uNbRuns = 89;

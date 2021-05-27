@@ -1,3 +1,8 @@
+/** @file ATKFParticleFinder.cxx
+  * @copyright Copyright (C) 2020-2021 GSI, IKF-UFra
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Oleksii Lubynets [orginator] **/
+
 #include "ATKFParticleFinder.h"
 
 void ATKFParticleFinder::InitInput(const std::string& file_name, const std::string& tree_name)

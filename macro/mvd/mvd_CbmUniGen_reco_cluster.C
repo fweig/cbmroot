@@ -1,3 +1,8 @@
+/** @file mvd_CbmUniGen_reco_cluster.C
+  * @copyright Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for local MVD reconstruction from MC data

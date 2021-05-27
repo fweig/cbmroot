@@ -1,3 +1,8 @@
+/** @file CbmStsKFTrackFitter.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov, Denis Bertini [orginator] **/
+
 #include "CbmStsKFTrackFitter.h"
 
 #include "CbmKFMath.h"

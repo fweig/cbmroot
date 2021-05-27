@@ -1,3 +1,8 @@
+/** @file rates_unpacking.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
 // ----- intended use: unpacking of rate data acquired with MBS            -----

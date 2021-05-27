@@ -1,3 +1,8 @@
+/** @file CbmTrdHitProducerClusterQa.h
+  * @copyright Copyright (C) 2013 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #ifndef CBMTRDHITPRODUCERCLUSTERQA_H
 #define CBMTRDHITPRODUCERCLUSTERQA_H 1
 

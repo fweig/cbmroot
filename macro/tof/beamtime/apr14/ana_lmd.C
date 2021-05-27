@@ -1,3 +1,8 @@
+/** @file ana_lmd.C
+  * @copyright Copyright (C) 2015-2016 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for analyzing test setup data

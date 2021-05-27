@@ -1,3 +1,8 @@
+/** @file tof_sim_Testbeam.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

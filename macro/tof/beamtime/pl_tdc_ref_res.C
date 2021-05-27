@@ -1,3 +1,7 @@
+/** @file pl_tdc_ref_res.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
 
 void pl_tdc_ref_res(Int_t fNumberOfTDC = 34)
 {

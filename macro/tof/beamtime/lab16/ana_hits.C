@@ -1,3 +1,8 @@
+/** @file ana_hits.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_hits(Int_t nEvents = 10000000, Int_t iSel = 1, Int_t iGenCor = 1, char* cFileId = "CbmTofPiHd_29Aug1401",
               char* cSet = "901900921_-921", Int_t iSel2 = 0, Int_t iTrackingSetup = 0, Double_t dScalFac = 1.,
               Double_t dChi2Lim2 = 10.)

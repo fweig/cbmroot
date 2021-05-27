@@ -1,3 +1,8 @@
+/** @file trd_digi1.C
+  * @copyright Copyright (C) 2013-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator], Florian Uhlig **/
+
 #// --------------------------------------------------------------------------
 //
 // Macro for testing the trd digitizer and hit producer

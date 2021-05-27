@@ -1,3 +1,8 @@
+/** @file CbmTrdMCQa.h
+  * @copyright Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #ifndef CBMTRDMCQA_H_
 #define CBMTRDMCQA_H_
 

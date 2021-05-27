@@ -1,3 +1,8 @@
+/** @file create_rich_v18c_mcbm.C
+  * @copyright Copyright (C) 2017-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 #include <iostream>
 using namespace std;
 

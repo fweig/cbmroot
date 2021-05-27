@@ -1,3 +1,8 @@
+/** @file pl_EvCluMul.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_EvCluMul(Double_t dTmin = 0., Double_t dTmax = 1800.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

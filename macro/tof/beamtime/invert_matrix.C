@@ -1,3 +1,8 @@
+/** @file invert_matrix.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void invert_matrix(Int_t NSt = 3, char* var = "X", Int_t iFit = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

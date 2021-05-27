@@ -1,3 +1,8 @@
+/** @file ana_digi_cos.C
+  * @copyright Copyright (C) 2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_digi_cos(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0, Int_t calSm = 900, Int_t RefSel = 1,
                   TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0, Int_t iSel2 = 0,
                   Double_t dDeadtime = 50, TString cCalId = "XXX", Int_t iBugCor = 0)

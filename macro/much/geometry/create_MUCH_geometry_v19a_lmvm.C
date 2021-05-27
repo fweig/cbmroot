@@ -1,3 +1,8 @@
+/** @file create_MUCH_geometry_v19a_lmvm.C
+  * @copyright Copyright (C) 2019-2020 Department of Physics, Aligarh Muslim University, Aligarh
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Omveer Singh [orginator] **/
+
 //
 /// \file create_MUCH_geometry_v19a.C
 /// \brief Generates MUCH geometry in Root format.

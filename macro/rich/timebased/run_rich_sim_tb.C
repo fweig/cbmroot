@@ -1,3 +1,8 @@
+/** @file run_rich_sim_tb.C
+  * @copyright Copyright (C) 2017-2018 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #include <stdio.h>
 
 void run_rich_sim_tb(Int_t nEvents = 1000)

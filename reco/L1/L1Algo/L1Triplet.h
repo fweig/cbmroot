@@ -1,3 +1,8 @@
+/** @file L1Triplet.h
+  * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator], Valentina Akishina **/
+
 #ifndef L1Triplet_H
 #define L1Triplet_H
 #include "../CbmL1Def.h"

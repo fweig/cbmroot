@@ -1,3 +1,8 @@
+/** @file CbmFastSim.h
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [orginator] **/
+
 #ifndef CBMFASTSIM_H
 #define CBMFASTSIM_H 1
 

@@ -1,3 +1,8 @@
+/** @file pl_Dut_Res.C
+  * @copyright Copyright (C) 2018 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_Dut_Res(Int_t iDut = 911, TString sysinfo = "")
 {
   gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());

@@ -1,3 +1,7 @@
+/** @file tof_hitMeanMc_eff.C
+  * @copyright Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
 
 Bool_t tof_hitMeanMc_eff(TString sFilename   = "data/tofqa.cbm100_pbar_auau.25gev.centr._qa.hst.all.root",
                          TString sOutFileTag = "_cbm100_pbar_25gev")

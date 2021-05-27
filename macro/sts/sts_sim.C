@@ -1,3 +1,8 @@
+/** @file sts_sim.C
+  * @copyright Copyright (C) 2006-2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Volker Friese **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

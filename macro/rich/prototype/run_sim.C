@@ -1,3 +1,8 @@
+/** @file run_sim.C
+  * @copyright Copyright (C) 2011-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Dmytro Kresan [orginator] **/
+
 void run_sim(Int_t nEvents = 100000)
 {
   TString script = TString(gSystem->Getenv("SCRIPT"));

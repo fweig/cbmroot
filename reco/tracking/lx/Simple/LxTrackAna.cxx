@@ -1,3 +1,8 @@
+/** @file LxTrackAna.cxx
+  * @copyright Copyright (C) 2014-2021 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [orginator] **/
+
 #include "LxTrackAna.h"
 
 #include "CbmKFParticle.h"

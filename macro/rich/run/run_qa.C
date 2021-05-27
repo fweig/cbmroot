@@ -1,3 +1,8 @@
+/** @file run_qa.C
+  * @copyright Copyright (C) 2019-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
             const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
             const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",

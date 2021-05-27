@@ -1,3 +1,8 @@
+/** @file pl_all_Svel.C
+  * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_Svel(Int_t iNSt = 6)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

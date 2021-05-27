@@ -1,3 +1,8 @@
+/** @file drawSpectra.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 #define NUMOFLINES 46
 
 void drawSpectra(const char* filename)

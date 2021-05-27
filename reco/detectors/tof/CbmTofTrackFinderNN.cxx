@@ -1,3 +1,8 @@
+/** @file CbmTofTrackFinderNN.cxx
+  * @copyright Copyright (C) 2015-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Pierre-Alain Loizeau **/
+
 // ROOT Classes and includes
 #include "TClonesArray.h"
 #include "TDirectory.h"

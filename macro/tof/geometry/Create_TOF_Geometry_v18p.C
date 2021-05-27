@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v18p.C
+  * @copyright Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 // Macro creating a ToF geometry for test beam: v18a - Heidelberg Cosmic December 2017, 1 real STAR module
 // Ingo Deppner
 // Usage:

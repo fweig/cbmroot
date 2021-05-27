@@ -1,3 +1,8 @@
+/** @file hitrateDisplay.C
+  * @copyright Copyright (C) 2012 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TFile.h"

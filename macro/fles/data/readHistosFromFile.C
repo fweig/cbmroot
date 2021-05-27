@@ -1,3 +1,7 @@
+/** @file readHistosFromFile.C
+  * @copyright Copyright (C) 2015 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
 
 #include "TCanvas.h"
 #include "TFile.h"

@@ -1,3 +1,8 @@
+/** @file trd_elid_sim.C
+  * @copyright Copyright (C) 2009-2015 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+
 void trd_elid_sim(Int_t nEvents = 200)
 {
   Double_t minMomentum = 1.5;  //minimum momentum

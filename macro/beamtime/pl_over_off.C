@@ -1,3 +1,8 @@
+/** @file pl_over_off.C
+  * @copyright Copyright (C) 2017 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_over_off(Int_t SmT = 6, Int_t iSm = 0, Int_t iRpc = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

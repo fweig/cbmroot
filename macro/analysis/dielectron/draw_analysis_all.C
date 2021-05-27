@@ -1,3 +1,8 @@
+/** @file draw_analysis_all.C
+  * @copyright Copyright (C) 2011-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva [orginator], Semen Lebedev **/
+
 void draw_analysis_all(
   const string& fileInmed  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/analysis.all.root",
   const string& fileQgp    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/qgp/analysis.all.root",

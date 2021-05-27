@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void eventDisplay(const char* setup = "sis100_electron")
 {
 

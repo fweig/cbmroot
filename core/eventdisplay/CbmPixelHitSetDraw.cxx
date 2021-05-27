@@ -1,3 +1,8 @@
+/** @file CbmPixelHitSetDraw.cxx
+  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmPixelHitSetDraw.h"
 
 #include "CbmPixelHit.h"  // for CbmPixelHit

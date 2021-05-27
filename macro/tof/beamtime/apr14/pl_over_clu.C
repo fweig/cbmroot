@@ -1,3 +1,8 @@
+/** @file pl_over_clu.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_over_clu(Int_t SmT = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

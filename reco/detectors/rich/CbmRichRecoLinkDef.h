@@ -1,3 +1,8 @@
+/** @file CbmRichRecoLinkDef.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Denis Bertini [orginator], Semen Lebedev **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

@@ -1,3 +1,8 @@
+/** @file pl_all_cluWalkSel.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_all_cluWalkSel(Int_t iNch = 1, Int_t i1 = 0, Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

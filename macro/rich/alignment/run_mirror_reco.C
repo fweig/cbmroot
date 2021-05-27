@@ -1,3 +1,8 @@
+/** @file run_mirror_reco.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void run_mirror_reco(Int_t nEvents = 50)
 {
   TTree::SetMaxTreeSize(90000000000);

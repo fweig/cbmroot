@@ -1,3 +1,8 @@
+/** @file mcbm_display_event.C
+  * @copyright Copyright (C) 2019-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of simulated mCBM events with standard settings

@@ -1,3 +1,8 @@
+/** @file CbmLmvmHist.cxx
+  * @copyright Copyright (C) 2012-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva, Semen Lebedev [orginator] **/
+
 /**
  * \brief Helper class for histogram names.
  * \date 2012

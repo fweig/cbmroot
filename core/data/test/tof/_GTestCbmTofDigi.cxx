@@ -1,3 +1,8 @@
+/** @file _GTestCbmTofDigi.cxx
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmTofDigi.h"
 
 #include "compareTofDigi.h"

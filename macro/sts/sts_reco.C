@@ -1,3 +1,8 @@
+/** @file sts_reco.C
+  * @copyright Copyright (C) 2006-2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator], Anna Kotynia, Radoslaw Karabowicz **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction in STS from digi data

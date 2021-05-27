@@ -1,3 +1,8 @@
+/** @file run_sim.C
+  * @copyright Copyright (C) 2011-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Elena Lebedeva [orginator] **/
+
 void run_sim(const string& urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/8gev/centr/"
                                        "urqmd.auau.8gev.centr.00001.root",  // if "", no urqmd
              const string& plutoFile =

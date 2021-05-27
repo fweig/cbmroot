@@ -1,3 +1,8 @@
+/** @file LxTrackAnaSegments.h
+  * @copyright Copyright (C) 2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [orginator] **/
+
 #ifndef LXTRACKANASEGMENTS_INCLUDED
 #define LXTRACKANASEGMENTS_INCLUDED
 

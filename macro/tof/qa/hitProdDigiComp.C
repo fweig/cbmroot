@@ -1,3 +1,8 @@
+/** @file hitProdDigiComp.C
+  * @copyright Copyright (C) 2015-2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 const UInt_t kuNbHistos               = 5;
 const UInt_t kuNbDim                  = 5;
 const TString ksDimName[kuNbDim]      = {"X", "Y", "Z", "R", "T"};

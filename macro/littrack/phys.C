@@ -1,3 +1,7 @@
+/** @file phys.C
+  * @copyright Copyright (C) 2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
 
 void phys(Int_t nEvents = 100)
 {

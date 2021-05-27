@@ -1,3 +1,8 @@
+/** @file pl_tot_per_channel.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_tot_per_channel(UInt_t uTdcNumber)
 {
   Int_t const kTdcChNb = 16;

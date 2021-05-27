@@ -1,3 +1,8 @@
+/** @file pl_rate_trkl.C
+  * @copyright Copyright (C) 2017 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_rate_trkl()
 {
   //  TCanvas *can = new TCanvas("can22","can22");

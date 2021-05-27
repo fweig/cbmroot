@@ -1,3 +1,8 @@
+/** @file Create_TRD_Geometry_v18b_1e.C
+  * @copyright Copyright (C) 2015-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 ///
 /// \file Create_TRD_Geometry_v18a.C
 /// \brief Generates TRD geometry in Root format.

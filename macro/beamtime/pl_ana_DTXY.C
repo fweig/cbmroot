@@ -1,3 +1,8 @@
+/** @file pl_ana_DTXY.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_ana_DTXY(Int_t iDut = 901, Int_t NewNbinsX = 3, Int_t NewNbinsY = 3, Int_t iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

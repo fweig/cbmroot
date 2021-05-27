@@ -1,3 +1,8 @@
+/** @file pl_all_CluTimeEvol.C
+  * @copyright Copyright (C) 2019 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_CluTimeEvol(Int_t iNSt = 2, Int_t iTmax = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

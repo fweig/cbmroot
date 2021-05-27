@@ -1,3 +1,8 @@
+/** @file check_timing.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void check_timing(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir = "data/")
 {
 

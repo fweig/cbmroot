@@ -1,3 +1,7 @@
+/** @file fillm2.C
+  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dmytro Kresan [orginator] **/
 
 void fillm2(Float_t beamMomentum, Float_t timeResolution, Int_t level)
 {

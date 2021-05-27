@@ -1,3 +1,8 @@
+/** @file ana_trks.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_trks(Int_t nEvents = 10000, Int_t iSel = 910920, Int_t iGenCor = 1,
               TString cFileId = "HD_cosmic_2020-02-08_18:50:47.50.3.0.0", TString cSet = "900920910", Int_t iSel2 = 911,
               Int_t iTrackingSetup = 1, Double_t dScalFac = 1., Double_t dChi2Lim2 = 50., Double_t dDeadtime = 50,

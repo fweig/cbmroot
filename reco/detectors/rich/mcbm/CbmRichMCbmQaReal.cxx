@@ -1,3 +1,8 @@
+/** @file CbmRichMCbmQaReal.cxx
+  * @copyright Copyright (C) 2019-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Adrian Amatus Weber, Semen Lebedev [orginator] **/
+
 #include "CbmRichMCbmQaReal.h"
 
 #include "CbmDigiManager.h"

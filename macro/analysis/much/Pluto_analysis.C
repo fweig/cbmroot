@@ -1,3 +1,8 @@
+/** @file Pluto_analysis.C
+  * @copyright Copyright (C) 2019-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Anna Senger [orginator] **/
+
 //---------------------------------------------------
 //
 // PLUTO parameters of low-mass vector mesons and thermal muons @ 8 A GeV/c

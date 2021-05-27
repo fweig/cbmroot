@@ -1,3 +1,8 @@
+/** @file compareVertex.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "gtest/gtest.h"
 
 void compareVertexDataMembers(CbmVertex& test, Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf,

@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v12a.C
+  * @copyright Copyright (C) 2012-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 // in root all sizes are given in cm
 
 #include "TFile.h"

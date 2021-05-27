@@ -1,3 +1,7 @@
+/** @file cbm_cuts.h
+  * @copyright Copyright (C) 2021 Physikalisches Institut, Eberhard Karls Universität Tübingen, Tübingen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Viktor Klochkov [orginator] **/
 
 AnalysisTree::Cuts* GetCbmEventCuts(const std::string& branch, std::string name = "CbmGoodEvent")
 {

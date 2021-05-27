@@ -1,3 +1,8 @@
+/** @file CbmTransportConfig.cxx
+  * @copyright Copyright (C) 2021 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Oleg Golosov [orginator] **/
+
 #include "CbmTransportConfig.h"
 
 #include "CbmBeamGenerator.h"

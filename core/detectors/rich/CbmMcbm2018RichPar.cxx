@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018RichPar.cxx
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 /**
 
 	TODO: If the TBR addess is not provided in the par file but found in the data file,

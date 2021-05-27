@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2008-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, David Emschermann, Volker Friese, Mohammad Al-Turany [orginator], Florian Uhlig **/
+
 void eventDisplay(TString dataset = "test")
 {
   TString inFile  = dataset + ".tra.root";

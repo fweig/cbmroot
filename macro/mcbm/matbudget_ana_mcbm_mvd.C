@@ -1,3 +1,8 @@
+/** @file matbudget_ana_mcbm_mvd.C
+  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "FairRadLenPoint.h"
 

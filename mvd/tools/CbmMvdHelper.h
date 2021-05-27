@@ -1,3 +1,7 @@
+/** @file CbmMvdHelper.h
+  * @copyright Copyright (C) 2017-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [orginator], Florian Uhlig **/
 
 #ifndef CBMMVDHELPER_H_
 #define CBMMVDHELPER_H_ 1

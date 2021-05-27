@@ -1,3 +1,7 @@
+/** @file run_reco_mcbm_real.C
+  * @copyright Copyright (C) 2019 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Adrian Amatus Weber **/
 
 void run_reco_mcbm_real(const string& parFile  = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_params_159.root",
                         const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/159/10kTS/unp_mcbm_159.root",

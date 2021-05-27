@@ -1,3 +1,8 @@
+/** @file pl_all_time_resolution.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau, Christian Simon [orginator] **/
+
 void pl_all_time_resolution(
   UInt_t uTdcNumber1, UInt_t uTdcNumber2,
   const TString& sTreeFile = "unpack_CbmTofQa_05Jun1043_mrpc1_000_mrpc2_200_mrpc3_200_nb.out.root",

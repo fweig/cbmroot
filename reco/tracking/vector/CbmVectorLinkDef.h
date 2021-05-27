@@ -1,3 +1,8 @@
+/** @file CbmVectorLinkDef.h
+  * @copyright Copyright (C) 2018 Veksler and Baldin Laboratory of High Energy Physics, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Zinchenko [orginator] **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

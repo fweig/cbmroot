@@ -1,3 +1,8 @@
+/** @file L1Station.h
+  * @copyright Copyright (C) 2007-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov [orginator], Igor Kulakov **/
+
 #ifndef L1Station_h
 #define L1Station_h 1
 

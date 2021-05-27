@@ -1,3 +1,8 @@
+/** @file pl_over_trb_ct.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_over_trb_ct(Int_t iBoard = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

@@ -1,3 +1,8 @@
+/** @file vec_arithmetic.h
+  * @copyright Copyright (C) 2010-2014 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator] **/
+
 #ifndef _vec_arithmetic_H
 #define _vec_arithmetic_H
 

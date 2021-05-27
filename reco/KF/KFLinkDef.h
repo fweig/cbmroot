@@ -1,3 +1,8 @@
+/** @file KFLinkDef.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Maxim Zyzak, Volodymyr Vovchenko, Florian Uhlig **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

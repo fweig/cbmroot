@@ -1,3 +1,8 @@
+/** @file DrawParticlesFitQA.C
+  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Maxim Zyzak [orginator] **/
+
 void DrawParticlesFitQA(int iParticle = 0)
 {
 

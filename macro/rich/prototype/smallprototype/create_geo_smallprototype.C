@@ -1,3 +1,8 @@
+/** @file create_geo_smallprototype.C
+  * @copyright Copyright (C) 2016-2017 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Gregor Pitsch [orginator], Andrey Lebedev **/
+
 #include <iostream>
 using namespace std;
 

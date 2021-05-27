@@ -1,3 +1,8 @@
+/** @file rootlogon.C
+  * @copyright Copyright (C) 2015-2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Christian Simon **/
+
 {
   cout << " Executing rootlogon.C (nh)" << endl;
   gStyle->SetOptStat(111);

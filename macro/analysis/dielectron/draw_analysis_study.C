@@ -1,3 +1,8 @@
+/** @file draw_analysis_study.C
+  * @copyright Copyright (C) 2012-2013 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva [orginator] **/
+
 using namespace std;
 void draw_analysis_study()
 {

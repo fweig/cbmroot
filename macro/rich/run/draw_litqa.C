@@ -1,3 +1,8 @@
+/** @file draw_litqa.C
+  * @copyright Copyright (C) 2014-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void draw_litqa()
 {
   //gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");

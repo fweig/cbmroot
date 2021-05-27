@@ -1,3 +1,8 @@
+/** @file CharmSetup.C
+  * @copyright Copyright (C) 2015-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [orginator] **/
+
 void CharmSetup()
 {
   // Input Parameter

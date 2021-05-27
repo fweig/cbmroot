@@ -1,3 +1,8 @@
+/** @file create_rich_v18d_gp_mcbm.C
+  * @copyright Copyright (C) 2017-2018 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Gregor Pitsch [orginator] **/
+
 #include <iostream>
 using namespace std;
 

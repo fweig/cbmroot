@@ -1,3 +1,8 @@
+/** @file run_sim_position2.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 static TString caveGeom;
 static TString pipeGeom;
 static TString magnetGeom;

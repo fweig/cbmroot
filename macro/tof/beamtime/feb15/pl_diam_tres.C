@@ -1,3 +1,8 @@
+/** @file pl_diam_tres.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_diam_tres(UInt_t uTdcNumber1 = 32, UInt_t uTdcNumber2 = 33)
 {
   const Int_t kiNbCh = 16;

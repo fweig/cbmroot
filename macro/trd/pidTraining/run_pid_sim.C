@@ -1,3 +1,8 @@
+/** @file run_pid_sim.C
+  * @copyright Copyright (C) 2013 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

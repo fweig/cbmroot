@@ -1,3 +1,8 @@
+/** @file pl_all_CluMul.C
+  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_all_CluMul(Int_t iNSt = 6, Double_t MulMax = 100)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

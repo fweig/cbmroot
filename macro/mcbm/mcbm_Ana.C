@@ -1,3 +1,8 @@
+/** @file mcbm_Ana.C
+  * @copyright Copyright (C) 2017-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Florian Uhlig **/
+
 void mcbm_Ana(Int_t nEvents = 1000, TString cSys = "lam", TString cEbeam = "2.5gev", TString cCentr = "-",
               Int_t iRun = 0, Int_t parSet = 0, const char* setupName = "sis18_mcbm_20deg_long")
 {

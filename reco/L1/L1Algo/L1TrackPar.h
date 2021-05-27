@@ -1,3 +1,8 @@
+/** @file L1TrackPar.h
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov, Maxim Zyzak **/
+
 #ifndef L1TrackPar_h
 #define L1TrackPar_h 1
 

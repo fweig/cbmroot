@@ -1,3 +1,8 @@
+/** @file LKFMinuit.h
+  * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Florian Uhlig, Pierre-Alain Loizeau **/
+
 #ifndef LKFMinuit_h
 #define LKFMinuit_h
 

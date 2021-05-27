@@ -1,3 +1,8 @@
+/** @file run_ascii_generator.C
+  * @copyright Copyright (C) 2013 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 #include <string>
 
 using namespace std;

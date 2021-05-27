@@ -1,3 +1,7 @@
+/** @file run_sim_mcbm.C
+  * @copyright Copyright (C) 2018-2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Gregor Pitsch [orginator] **/
 
 void run_sim_mcbm(Int_t nEvents = 10)
 {

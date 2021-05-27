@@ -1,3 +1,8 @@
+/** @file pl_ext_trk.C
+  * @copyright Copyright (C) 2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_ext_trk(Int_t iLev = 1)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

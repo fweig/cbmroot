@@ -1,3 +1,8 @@
+/** @file test_add.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void test_add()
 {
   TH2D* h1 = new TH2D("h1", "h1", 100, 0., 20., 100, 0., 20.);

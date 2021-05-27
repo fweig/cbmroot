@@ -1,3 +1,8 @@
+/** @file doScan.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 #!/ bin / bash
 
 cd ~ / cbmroot_may2015_devel / build / make Rich make_return_code = $ ? cd -

@@ -1,3 +1,8 @@
+/** @file CbmMCDataManager.cxx
+  * @copyright Copyright (C) 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator], Florian Uhlig **/
+
 #include "CbmMCDataManager.h"
 
 #include "CbmMCDataArray.h"   // for CbmMCDataArray

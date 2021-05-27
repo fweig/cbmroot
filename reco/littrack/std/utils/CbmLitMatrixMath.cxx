@@ -1,3 +1,8 @@
+/** @file CbmLitMatrixMath.cxx
+  * @copyright Copyright (C) 2009-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #include "utils/CbmLitMatrixMath.h"
 
 #include <iostream>

@@ -1,3 +1,8 @@
+/** @file runTsaMultiSampler.cxx
+  * @copyright Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator], Pierre-Alain Loizeau **/
+
 #include "CbmMQTsaMultiSampler.h"
 
 #include "runFairMQDevice.h"

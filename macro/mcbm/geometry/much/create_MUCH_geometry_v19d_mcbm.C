@@ -1,3 +1,8 @@
+/** @file create_MUCH_geometry_v19d_mcbm.C
+  * @copyright Copyright (C) 2020 Department of Physics, Banaras Hindu University, Varanasi
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Ajay Kumar [orginator] **/
+
 //
 /// \file create_MUCH_geometry_v19d.C
 /// \brief Generates MUCH geometry in Root format.

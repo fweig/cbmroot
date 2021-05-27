@@ -1,3 +1,8 @@
+/** @file global_phys.C
+  * @copyright Copyright (C) 2013 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void global_phys(Int_t nEvents = 10, Int_t seed = 555)
 {
   gRandom->SetSeed(seed);

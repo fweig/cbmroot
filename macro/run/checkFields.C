@@ -1,3 +1,8 @@
+/** @file checkFields.C
+  * @copyright Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Florian Uhlig **/
+
 // -------------------------------------------------------------------------------
 //
 // Macro to plot selected parts of magnetic field (map or B-splined) and auto save to pdf

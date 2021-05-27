@@ -1,3 +1,8 @@
+/** @file run_common_analysis.C
+  * @copyright Copyright (C) 2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Etienne Bechtel [orginator] **/
+
 R__ADD_INCLUDE_PATH($PWD)
 
 #include "Config_dilepton_testing.C"

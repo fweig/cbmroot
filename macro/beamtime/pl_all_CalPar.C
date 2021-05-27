@@ -1,3 +1,8 @@
+/** @file pl_all_CalPar.C
+  * @copyright Copyright (C) 2017 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_CalPar(Int_t iNSt = 6, Int_t item = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

@@ -1,3 +1,8 @@
+/** @file draw_litqa.C
+  * @copyright Copyright (C) 2014-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva [orginator], Andrey Lebedev **/
+
 void draw_litqa(const string& histRootFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.all.root",
                 const string& resultDir    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/inmed/")
 

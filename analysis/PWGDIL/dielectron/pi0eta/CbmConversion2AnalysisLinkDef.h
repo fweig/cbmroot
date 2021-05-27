@@ -1,3 +1,8 @@
+/** @file CbmConversion2AnalysisLinkDef.h
+  * @copyright Copyright (C) 2016-2020 Fakultät für Mathematik und Naturwissenschaften, Bergische Universität Wuppertal, Wuppertal
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Ievgenii Kres [orginator] **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

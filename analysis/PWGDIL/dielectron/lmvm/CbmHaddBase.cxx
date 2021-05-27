@@ -1,3 +1,7 @@
+/** @file CbmHaddBase.cxx
+  * @copyright Copyright (C) 2015-2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Elena Lebedeva [orginator] **/
 
 
 #include "CbmHaddBase.h"

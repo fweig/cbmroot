@@ -1,3 +1,8 @@
+/** @file run_reco_5_alignment.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void run_reco_5_alignment(Int_t nEvents)
 {
   TTree::SetMaxTreeSize(90000000000);

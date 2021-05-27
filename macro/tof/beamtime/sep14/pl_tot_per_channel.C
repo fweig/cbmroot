@@ -1,3 +1,8 @@
+/** @file pl_tot_per_channel.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_tot_per_channel(UInt_t uTdcNumber)
 {
   Int_t const kTdcChNb = 16;

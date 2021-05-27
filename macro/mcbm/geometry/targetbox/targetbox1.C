@@ -1,3 +1,8 @@
+/** @file targetbox1.C
+  * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 // from the following website
 // https://root.cern.ch/doc/master/classTGeoCtub.html
 

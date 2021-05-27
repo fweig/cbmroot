@@ -1,3 +1,8 @@
+/** @file mcbm_match_check.C
+  * @copyright Copyright (C) 2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void mcbm_match_check(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03", const char* output = "data/test")
 {
   TString dataset(output);

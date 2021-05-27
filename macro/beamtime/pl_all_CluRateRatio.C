@@ -1,3 +1,8 @@
+/** @file pl_all_CluRateRatio.C
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0,
                          Int_t iOpt = 0, Double_t THR = 1.E5)
 {

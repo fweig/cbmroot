@@ -1,3 +1,8 @@
+/** @file checkFields.C
+  * @copyright Copyright (C) 2007-2009 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebdeva [orginator] **/
+
 int checkFields(const char* field_basename, double field_Z_origin = 0, double fixed_coord = 170, int flag_yx_zx_z = 0,
                 double xyz_shift = 0)
 {

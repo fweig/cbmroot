@@ -1,3 +1,8 @@
+/** @file CbmTrdHitsProd.C
+  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Florian Uhlig **/
+
 //  Macro for producing hits in the TRD + computing the Transition
 //  Radiation (see CbmTrdRadiator.cxx & .h)
 {

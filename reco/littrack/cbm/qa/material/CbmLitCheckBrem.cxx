@@ -1,3 +1,8 @@
+/** @file CbmLitCheckBrem.cxx
+  * @copyright Copyright (C) 2009-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #include "qa/material/CbmLitCheckBrem.h"
 
 #include "data/CbmLitTrackParam.h"

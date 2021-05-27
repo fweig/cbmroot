@@ -1,3 +1,8 @@
+/** @file run_d0.C
+  * @copyright Copyright (C) 2015-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Florian Uhlig **/
+
 #include <string>
 using namespace std;
 

@@ -1,3 +1,8 @@
+/** @file tof_ana_Testbeam.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void tof_ana_Testbeam(Int_t nEvents = 1000, Int_t iSel = 1, Int_t iGenCor = 1, Int_t iTrackingSetup = 2, Int_t iout = 1,
                       char* cFileId = "MC", Int_t iSel2 = 3)
 {

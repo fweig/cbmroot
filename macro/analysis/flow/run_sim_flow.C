@@ -1,3 +1,8 @@
+/** @file run_sim_flow.C
+  * @copyright Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for transport simulation for the sake of collective flow studies, using UrQMD or SHIELD input and GEANT4

@@ -1,3 +1,8 @@
+/** @file MultiTrkDeltaYMean.C
+  * @copyright Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 {
   //=========Macro generated from canvas: Panel1/
   //=========  (Tue Sep 29 13:58:32 2015) by ROOT version5.34/32

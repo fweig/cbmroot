@@ -1,3 +1,7 @@
+/** @file readTsaFexOffline.C
+  * @copyright Copyright (C) 2017 Institute for Computer Science, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors  **/
 
 
 void readTsaFexOffline(TString inFile =

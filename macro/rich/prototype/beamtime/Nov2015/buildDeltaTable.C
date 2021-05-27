@@ -1,3 +1,8 @@
+/** @file buildDeltaTable.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 #define MATRIXSIZE 128  // or 256 if you consider 4*4 PMTs
 
 // Transform pair tdcId/ch into some unique ID [from 0 to 255]

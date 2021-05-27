@@ -1,3 +1,8 @@
+/** @file ana_digi_nodia.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_digi_nodia(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSmType = 2, Int_t RefSel = 0,
                     char* cFileId = "Trb24Feb2028", Int_t iSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0)
 {

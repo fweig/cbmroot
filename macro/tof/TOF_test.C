@@ -1,3 +1,8 @@
+/** @file TOF_test.C
+  * @copyright Copyright (C) 2012 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 //Generator for CbmTof Geometry
 //Update 01/10/2012 nh
 // 08/10/2012 add sensitive gas gaps

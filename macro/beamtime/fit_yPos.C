@@ -1,3 +1,8 @@
+/** @file fit_yPos.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void fit_yPos(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0, Double_t dLini = 0.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

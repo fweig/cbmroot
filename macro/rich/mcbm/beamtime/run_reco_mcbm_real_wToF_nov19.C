@@ -1,3 +1,8 @@
+/** @file run_reco_mcbm_real_wToF_nov19.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Adrian Amatus Weber [orginator] **/
+
 void run_reco_mcbm_real_wToF_nov19(
   const string& parFile  = "/lustre/nyx/cbm/users/adrian/data/nov19/unp_mcbm_params_370.root",
   const string& digiFile = "/lustre/nyx/cbm/users/adrian/data/nov19/unp_mcbm_370.root",

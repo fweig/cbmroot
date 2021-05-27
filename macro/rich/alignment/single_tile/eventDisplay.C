@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void eventDisplay()
 {
   TString dataDir = "/data/Sim_Outputs/Event_Display/plusY/";

@@ -1,3 +1,8 @@
+/** @file CbmSimEventHeaderConverter.cxx
+  * @copyright Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universität Tübingen, Tübingen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Viktor Klochkov [orginator], Viktor Klochkov [orginator] **/
+
 #include "CbmSimEventHeaderConverter.h"
 
 #include "FairMCEventHeader.h"

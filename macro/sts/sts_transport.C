@@ -1,3 +1,8 @@
+/** @file sts_transport.C
+  * @copyright Copyright (C) 2010-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Anna Kotynia [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for STS-only transport simulation using UrQMD input and GEANT3

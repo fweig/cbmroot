@@ -1,3 +1,8 @@
+/** @file pl_pla_resolution.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_pla_resolution(UInt_t uTdcNumber1, UInt_t uChNumber1, UInt_t uTdcNumber2, UInt_t uChNumber2, UInt_t uTdcNumber3,
                        UInt_t uChNumber3, UInt_t uTdcNumber4, UInt_t uChNumber4)
 {

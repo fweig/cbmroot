@@ -1,3 +1,8 @@
+/** @file pl_ext_dXdY.C
+  * @copyright Copyright (C) 2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_ext_dXdY(Int_t iLev = 0, Int_t NSt = 12)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

@@ -1,3 +1,8 @@
+/** @file pl_all_CluMul.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void pl_all_CluMul(Int_t iNSt = 2)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

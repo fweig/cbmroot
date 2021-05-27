@@ -1,3 +1,8 @@
+/** @file integrate.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 void integrate(TString filename1, TString filename2, TString histoName1, TString histoName2)
 {
 

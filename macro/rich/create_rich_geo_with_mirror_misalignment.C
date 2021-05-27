@@ -1,3 +1,8 @@
+/** @file create_rich_geo_with_mirror_misalignment.C
+  * @copyright Copyright (C) 2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 using namespace std;
 void create_rich_geo_with_mirror_misalignment()
 {

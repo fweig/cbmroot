@@ -1,3 +1,8 @@
+/** @file CbmTrdLinkDef.h
+  * @copyright Copyright (C) 2006-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Denis Bertini [orginator], Cyrano Bergmann **/
+
 // $Id: TrdLinkDef.h,v 1.10 2006/06/20 09:39:59 kresan Exp $
 
 #ifdef __CINT__

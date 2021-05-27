@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v20a.C
+  * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Eoin Clerkin [orginator], Norbert Herrmann **/
+
 ///
 /// \file Create_TOF_Geometry_v13_4x.C
 /// \brief Generates TOF geometry in Root format.

@@ -1,3 +1,8 @@
+/** @file CbmL1TrdTracklet.cxx
+  * @copyright Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov, Denis Bertini [orginator], Sergey Gorbunov **/
+
 #include "CbmL1TrdTracklet.h"
 
 ClassImp(CbmL1TrdTracklet);

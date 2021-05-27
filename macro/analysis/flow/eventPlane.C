@@ -1,3 +1,8 @@
+/** @file eventPlane.C
+  * @copyright Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Selim Seddiki [orginator] **/
+
 // -------------------------------------------------------------------------
 // ----- This task calculates the event plane for each collision event from STS and PSD information (input: reco. files)
 // ----- It also provides comparision with real reaction plane (input: MC -transport output- files)

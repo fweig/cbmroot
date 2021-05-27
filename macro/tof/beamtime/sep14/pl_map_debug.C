@@ -1,3 +1,7 @@
+/** @file pl_map_debug.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
 
 void pl_map_debug(Int_t iFirstTdc = 30, Int_t iSecondTdc = 30)
 {

@@ -1,3 +1,8 @@
+/** @file CbmTrdGas.cxx
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator], Andrey Lebedev **/
+
 /**
  * \file CbmTrdGas.cxx
  * \brief Container for gas properties of TRD.

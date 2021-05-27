@@ -1,3 +1,8 @@
+/** @file ana_trks.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_trks(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, char* cFileId = "Cern", char* cSet = "345",
               Int_t iSel2 = 0, Int_t iTrackingSetup = 0, Double_t dScalFac = 10.)
 {

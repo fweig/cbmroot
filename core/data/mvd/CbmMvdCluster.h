@@ -1,3 +1,8 @@
+/** @file CbmMvdCluster.h
+  * @copyright Copyright (C) 2008-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christina Dritsa [orginator], Florian Uhlig, Philipp Sitzmann **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmMvdCluster header file            -----
 // -----

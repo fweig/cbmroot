@@ -1,3 +1,8 @@
+/** @file pl_Eff_TIR.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_Eff_TIR(Int_t iDut = 900, Double_t dEffMin = 0., Double_t dEffMax = 1., Int_t iBl = 0, Int_t iBh = 8,
                 Double_t TIRmin = 0., Double_t TIRmax = 30., TString sysinfo = "")
 {

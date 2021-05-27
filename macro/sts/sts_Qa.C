@@ -1,3 +1,8 @@
+/** @file sts_Qa.C
+  * @copyright Copyright (C) 2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Kotynia [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for quality check in STS

@@ -1,3 +1,8 @@
+/** @file pl_all_DigiDTLD.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_DigiDTLD(Int_t iNDet = 6, Double_t dDTthr = 2., Int_t iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

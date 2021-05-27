@@ -1,3 +1,8 @@
+/** @file pl_over_2hit.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_over_2hit(Int_t iLog = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

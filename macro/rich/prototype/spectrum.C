@@ -1,5 +1,7 @@
-
-
+/** @file spectrum.C
+  * @copyright Copyright (C) 2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dmytro Kresan [orginator] **/
 
 {
   const Float_t c = 2.998e8;

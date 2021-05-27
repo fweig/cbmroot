@@ -1,3 +1,8 @@
+/** @file ana_digi.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 300, Int_t RefSel = 1,
               char* cFileId = "MbsTrbThu1715", Int_t iCalSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0)
 {

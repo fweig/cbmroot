@@ -1,3 +1,7 @@
+/** @file CbmAnaJpsiReport.h
+  * @copyright Copyright (C) 2015-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Adrian Amatus Weber, Florian Uhlig **/
 
 #ifndef CBMANAJPSIREPORT_H
 #define CBMANAJPSIREPORT_H

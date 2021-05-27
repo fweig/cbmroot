@@ -1,3 +1,8 @@
+/** @file pl_over_trb_ct.C
+  * @copyright Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void pl_over_trb_ct(Int_t iBoard = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 ///// macro for visualization of simulated events. One can use it directly after simulation stage (reonctruction and digi are nor needed)
 ///// here one can see Monte Carlo hits in each detector.
 ///// If the option "store all hits" (in /gconfig/g3Config.C -> st->SetMinPoints(0);) is activated during the simulation, one will see also tracks (including light in RICH)

@@ -1,3 +1,8 @@
+/** @file run_reco_4.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void run_reco_4(Int_t nEvents = 10000)
 {
   TTree::SetMaxTreeSize(90000000000);

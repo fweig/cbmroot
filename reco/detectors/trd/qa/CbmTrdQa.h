@@ -1,3 +1,8 @@
+/** @file CbmTrdQa.h
+  * @copyright Copyright (C) 2012-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #ifndef CBMTRDQA_H
 #define CBMTRDQA_H
 

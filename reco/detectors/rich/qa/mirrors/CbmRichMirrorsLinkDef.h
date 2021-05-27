@@ -1,3 +1,8 @@
+/** @file CbmRichMirrorsLinkDef.h
+  * @copyright Copyright (C) 2019 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

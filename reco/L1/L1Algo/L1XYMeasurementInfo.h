@@ -1,3 +1,8 @@
+/** @file L1XYMeasurementInfo.h
+  * @copyright Copyright (C) 2007-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov [orginator] **/
+
 #ifndef L1XYMeasurementInfo_h
 #define L1XYMeasurementInfo_h 1
 

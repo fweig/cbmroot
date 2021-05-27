@@ -1,3 +1,8 @@
+/** @file trd_elid_reco.C
+  * @copyright Copyright (C) 2009-2015 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+
 void trd_elid_reco(Int_t nEvents = 200)
 {
   Int_t trdNFoils      = 70;

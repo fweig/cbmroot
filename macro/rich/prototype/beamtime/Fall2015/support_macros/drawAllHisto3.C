@@ -1,3 +1,8 @@
+/** @file drawAllHisto3.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 // calib = 0 - see results before calibration
 // calib = 1 - see results after calibration
 // ind = [0;15] - index of the canvas to plot

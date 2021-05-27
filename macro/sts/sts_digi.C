@@ -1,3 +1,8 @@
+/** @file sts_digi.C
+  * @copyright Copyright (C) 2006-2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Kotynia, Denis Bertini [orginator], Volker Friese **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for digitization in STS from MC data

@@ -1,3 +1,8 @@
+/** @file create_MUCH_geometry_v17b_lmvm.C
+  * @copyright Copyright (C) 2017-2018 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Partha Pratim Bhaduri [orginator] **/
+
 //
 /// \file create_MUCH_geometry_v17b.C
 /// \brief Generates MUCH geometry in Root format.

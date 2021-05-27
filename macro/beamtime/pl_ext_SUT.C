@@ -1,3 +1,8 @@
+/** @file pl_ext_SUT.C
+  * @copyright Copyright (C) 2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_ext_SUT(Double_t dThr = 0., Double_t MinEff = 0.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

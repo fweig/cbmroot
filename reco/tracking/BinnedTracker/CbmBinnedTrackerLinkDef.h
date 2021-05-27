@@ -1,3 +1,8 @@
+/** @file CbmBinnedTrackerLinkDef.h
+  * @copyright Copyright (C) 2017-2018 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [orginator] **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

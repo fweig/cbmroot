@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void eventDisplay()
 {
   TString dataDir   = "/home/jordan/Desktop/Thesis_Results/HERA-B_Ana/4mrad_X_2mrad_Y_5_3/New/";

@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v18_2x.C
+  * @copyright Copyright (C) 2015-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 ///
 /// \file Create_TOF_Geometry_v13_4x.C
 /// \brief Generates TOF geometry in Root format.

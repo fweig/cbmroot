@@ -1,3 +1,8 @@
+/** @file AnalyseTimeCoincidenceBugAllCasesMoreCond.C
+  * @copyright Copyright (C) 2018 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void save_canvas_to_file(TFile* outf, TCanvas* canv, TString runCase)
 {
   outf->cd();

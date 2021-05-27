@@ -1,3 +1,8 @@
+/** @file hadd.C
+  * @copyright Copyright (C) 2012-2018 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Elena Lebedeva **/
+
 using namespace std;
 
 void hadd(string pattern, string outputFile, int fileSizeLimit = 50000, int nofEvents = 1000)

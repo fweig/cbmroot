@@ -1,3 +1,8 @@
+/** @file CbmTofDigiPar.cxx
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmTofDigiPar.h"
 
 #include "CbmTofCell.h"  // for CbmTofCell

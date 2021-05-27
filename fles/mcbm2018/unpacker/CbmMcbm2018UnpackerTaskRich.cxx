@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018UnpackerTaskRich.cxx
+  * @copyright Copyright (C) 2019-2021 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator], Pierre-Alain Loizeau **/
+
 /**
  * CbmMcbm2018UnpackerTaskRich
  * E. Ovcharenko, Mar 2019

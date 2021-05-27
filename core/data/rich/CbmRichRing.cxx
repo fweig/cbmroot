@@ -1,3 +1,8 @@
+/** @file CbmRichRing.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Semen Lebedev, Denis Bertini [orginator] **/
+
 /* $Id: CbmRichRing.cxx,v 1.8 2006/09/13 14:51:28 hoehne Exp $*/
 
 /* History of CVS commits:

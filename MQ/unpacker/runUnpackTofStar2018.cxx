@@ -1,3 +1,8 @@
+/** @file runUnpackTofStar2018.cxx
+  * @copyright Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmDeviceUnpackTofStar2018.h"
 
 #include "runFairMQDevice.h"

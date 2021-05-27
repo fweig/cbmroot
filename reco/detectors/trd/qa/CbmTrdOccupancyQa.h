@@ -1,3 +1,8 @@
+/** @file CbmTrdOccupancyQa.h
+  * @copyright Copyright (C) 2012-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #ifndef CBMTRDOCCUPANCYQA_H_
 #define CBMTRDOCCUPANCYQA_H_
 

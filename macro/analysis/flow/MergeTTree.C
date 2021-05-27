@@ -1,3 +1,8 @@
+/** @file MergeTTree.C
+  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Selim Seddiki [orginator] **/
+
 // -------------------------------------------------------------------------
 // ----- This macro merges several files containing TTrees into one; from different input files:
 // ----- mode=0: files with reconstructed event planes (non-corrected if fQcorr = fBarcorr = 0, corrected otherwise) - produced by eventPlane.C

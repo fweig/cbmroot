@@ -1,3 +1,8 @@
+/** @file CbmLitRadLengthGenerator.cxx
+  * @copyright Copyright (C) 2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #include "CbmLitRadLengthGenerator.h"
 
 #include "FairPrimaryGenerator.h"

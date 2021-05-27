@@ -1,3 +1,8 @@
+/** @file CbmTrdParModGas.cxx
+  * @copyright Copyright (C) 2018-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexandru Bercuci, Florian Uhlig [orginator] **/
+
 #include "CbmTrdParModGas.h"
 
 #include <Logger.h>  // for Logger, LOG

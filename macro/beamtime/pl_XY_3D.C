@@ -1,3 +1,7 @@
+/** @file pl_XY_3D.C
+  * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
 
 void pl_XY_3D(Int_t iNSt = 4, Int_t iOpt = 0, Int_t i2D = 0, Int_t i1D = 0, Double_t dYmax = 0.)
 {

@@ -1,3 +1,8 @@
+/** @file mcbm_check_overlaps.C
+  * @copyright Copyright (C) 2017-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, David Emschermann [orginator] **/
+
 void mcbm_check_overlaps(const char* dataset = "test")
 {
   // 2020-07-10 - DE - simplify overlap name checking

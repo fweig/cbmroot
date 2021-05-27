@@ -1,3 +1,8 @@
+/** @file ana_digi_cal_self.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void ana_digi_cal_self(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
                        char* cFileId = "CbmTofSps_27Nov1728", Int_t iSet = 0, Int_t iBRef = 500, Bool_t bOut = 0)
 {

@@ -1,3 +1,8 @@
+/** @file registerGeantDecays.C
+  * @copyright Copyright (C) 2018-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator] **/
+
 void registerGeantDecays(int iDecay)
 {
   KFPartEfficiencies eff;

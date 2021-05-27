@@ -1,3 +1,8 @@
+/** @file CbmSimTracksConverter.h
+  * @copyright Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universität Tübingen, Tübingen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek, Viktor Klochkov [orginator] **/
+
 #ifndef ANALYSIS_TREE_SIMTRACKSCONVERTER_H_
 #define ANALYSIS_TREE_SIMTRACKSCONVERTER_H_
 

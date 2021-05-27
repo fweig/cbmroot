@@ -1,3 +1,7 @@
+/** @file CbmRichRecoQa.h
+  * @copyright Copyright (C) 2016-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator], Semen Lebedev **/
 
 #ifndef CBM_RICH_RECO_QA
 #define CBM_RICH_RECO_QA

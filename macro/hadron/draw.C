@@ -1,3 +1,8 @@
+/** @file draw.C
+  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dmytro Kresan [orginator] **/
+
 #define MPION 0.1395700
 #define MKAON 0.493677
 #define MPROT 0.938272

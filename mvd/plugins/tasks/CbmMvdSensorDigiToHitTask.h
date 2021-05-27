@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorDigiToHitTask.h
+  * @copyright Copyright (C) 2019 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors  **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmMvdSensorClusterfinderTask header file   -----
 // -----                   27.11.18 Edited by K. Hunold                -----

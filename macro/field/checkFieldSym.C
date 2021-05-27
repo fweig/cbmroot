@@ -1,3 +1,8 @@
+/** @file checkFieldSym.C
+  * @copyright Copyright (C) 2007-2009 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebdeva [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for check of the symmetries of a magnetic field map

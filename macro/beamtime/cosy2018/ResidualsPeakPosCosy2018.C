@@ -1,3 +1,8 @@
+/** @file ResidualsPeakPosCosy2018.C
+  * @copyright Copyright (C) 2018 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 Bool_t ResidualsPeakPosCosy2018(TString sPath = "./data", Double_t dFitRange = 3)
 {
   UInt_t uNbRuns = 89;

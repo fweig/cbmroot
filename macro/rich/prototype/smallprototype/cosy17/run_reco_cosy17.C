@@ -1,3 +1,8 @@
+/** @file run_reco_cosy17.C
+  * @copyright Copyright (C) 2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void run_reco_cosy17(Int_t nEvents = 500)
 {
   TTree::SetMaxTreeSize(90000000000);

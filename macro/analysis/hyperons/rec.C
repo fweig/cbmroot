@@ -1,3 +1,8 @@
+/** @file rec.C
+  * @copyright Copyright (C) 2010 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Evgeny Kryshen [orginator] **/
+
 void rec(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0)
 {
   Char_t filenr[4];

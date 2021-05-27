@@ -1,3 +1,8 @@
+/** @file pl_all_DigiStatus.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_DigiStatus(Int_t iNDet = 2)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

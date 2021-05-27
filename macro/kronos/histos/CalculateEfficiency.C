@@ -1,3 +1,8 @@
+/** @file CalculateEfficiency.C
+  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Maxim Zyzak [orginator] **/
+
 void CalculateEfficiency(TString inputDir)
 {
 

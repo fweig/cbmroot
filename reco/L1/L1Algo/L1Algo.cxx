@@ -1,3 +1,8 @@
+/** @file L1Algo.cxx
+  * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator], Maxim Zyzak, Valentina Akishina **/
+
 #include "L1Algo.h"
 
 #include "L1Grid.h"

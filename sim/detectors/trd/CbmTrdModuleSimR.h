@@ -1,3 +1,8 @@
+/** @file CbmTrdModuleSimR.h
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Etienne Bechtel, Florian Uhlig [orginator] **/
+
 #ifndef CBMTRDMODULESIMR_H
 #define CBMTRDMODULESIMR_H
 

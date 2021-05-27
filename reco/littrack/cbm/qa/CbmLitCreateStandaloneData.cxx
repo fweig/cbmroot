@@ -1,3 +1,8 @@
+/** @file CbmLitCreateStandaloneData.cxx
+  * @copyright Copyright (C) 2010-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #include "qa/CbmLitCreateStandaloneData.h"
 
 #include "CbmMuchPixelHit.h"

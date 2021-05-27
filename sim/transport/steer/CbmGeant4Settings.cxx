@@ -1,3 +1,8 @@
+/** @file CbmGeant4Settings.cxx
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmGeant4Settings.h"
 
 #include <FairRunSim.h>

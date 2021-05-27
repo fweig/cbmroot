@@ -1,3 +1,8 @@
+/** @file pl_TIS.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 pl_TIS(Double_t dFracMax = 0.1)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

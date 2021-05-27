@@ -1,3 +1,8 @@
+/** @file LittrackLinkDef.h
+  * @copyright Copyright (C) 2006-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Mohammad Al-Turany [orginator] **/
+
 #ifdef __CINT__
 
 #pragma link off all globals;

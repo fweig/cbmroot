@@ -1,3 +1,7 @@
+/** @file CbmFormatTsPrintout.cxx
+  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
 
 #include "CbmFormatMsBufferPrintout.h"
 #include "CbmFormatMsHeaderPrintout.h"

@@ -1,3 +1,8 @@
+/** @file run_reco.C
+  * @copyright Copyright (C) 2016-2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Gregor Pitsch, Semen Lebedev [orginator] **/
+
 using namespace std;
 
 void run_reco(Int_t nEvents = 100000)

@@ -1,3 +1,8 @@
+/** @file dumpHLD.cpp
+  * @copyright Copyright (C) - 
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors  **/
+
 #include <iostream>
 
 #include <arpa/inet.h>

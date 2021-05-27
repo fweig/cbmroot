@@ -1,3 +1,8 @@
+/** @file run_reco.C
+  * @copyright Copyright (C) 2009-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Semen Lebedev [orginator], Andrey Lebedev **/
+
 void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
               const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",
               const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/raw.00000.root",

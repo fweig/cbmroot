@@ -1,3 +1,8 @@
+/** @file run_sim_fast.C
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

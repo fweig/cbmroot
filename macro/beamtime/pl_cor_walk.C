@@ -1,3 +1,7 @@
+/** @file pl_cor_walk.C
+  * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
 
 void set_plot_style()
 {

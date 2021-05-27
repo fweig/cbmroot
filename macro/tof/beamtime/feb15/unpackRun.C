@@ -1,3 +1,8 @@
+/** @file unpackRun.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void unpackRun(char* cFileId = "CernSps05Mar0041")
 {
   FairRunOnline* run = new FairRunOnline();

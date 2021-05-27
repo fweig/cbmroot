@@ -1,3 +1,8 @@
+/** @file create_rich_v18e_mcbm.C
+  * @copyright Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 #include "TDatime.h"
 #include "TFile.h"
 #include "TGeoArb8.h"

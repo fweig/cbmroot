@@ -1,3 +1,8 @@
+/** @file mvd_qa3_digitize.C
+  * @copyright Copyright (C) 2010-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator], Florian Uhlig **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for local MVD reconstruction from MC data

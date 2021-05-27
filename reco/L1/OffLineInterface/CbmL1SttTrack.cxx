@@ -1,3 +1,7 @@
+/** @file CbmL1SttTrack.cxx
+  * @copyright Copyright (C) 2008 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov [orginator] **/
 
 #include "CbmL1SttTrack.h"
 

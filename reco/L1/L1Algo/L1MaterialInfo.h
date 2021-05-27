@@ -1,3 +1,8 @@
+/** @file L1MaterialInfo.h
+  * @copyright Copyright (C) 2007-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov, Sergey Gorbunov [orginator], Andrey Lebedev **/
+
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h
 

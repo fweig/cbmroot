@@ -1,3 +1,8 @@
+/** @file pl_all_CluRate.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void pl_all_CluRate(Int_t iNSt = 2, Double_t Tstart = 0., Double_t Tend = 3600.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

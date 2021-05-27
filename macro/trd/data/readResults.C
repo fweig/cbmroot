@@ -1,3 +1,8 @@
+/** @file readResults.C
+  * @copyright Copyright (C) 2014-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #include "TLine.h"
 #include "TMath.h"
 #include "TString.h"

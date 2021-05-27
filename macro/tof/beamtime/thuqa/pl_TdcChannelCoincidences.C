@@ -1,3 +1,7 @@
+/** @file pl_TdcChannelCoincidences.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Weidenkaff [orginator] **/
 
 
 void pl_TdcChannelCoincidences(

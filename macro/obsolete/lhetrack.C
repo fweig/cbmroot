@@ -1,3 +1,8 @@
+/** @file lhetrack.C
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator] **/
+
 //
 //  script to run tracking routine with LHEtrack's classes
 //  Modified 21/06/2005

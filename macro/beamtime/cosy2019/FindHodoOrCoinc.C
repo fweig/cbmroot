@@ -1,3 +1,7 @@
+/** @file FindHodoOrCoinc.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
 
 Bool_t FindHodoOrCoinc(Long64_t liNbEntryToRead = -1, UInt_t uRunId = 25, Double_t dWinStart = -100.,
                        Double_t dWinStop = 100., TString sInputFileName = "data/unp_cosy")

@@ -1,3 +1,8 @@
+/** @file P4_F32vec4.h
+  * @copyright Copyright (C) 2010-2014 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator], Maxim Zyzak **/
+
 #ifndef L1Algo_F32vec4P4_H
 #define L1Algo_F32vec4P4_H
 

@@ -1,3 +1,8 @@
+/** @file pl_all_LHTime.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_all_LHTime(Int_t iNDet = 22, Double_t Tstart = 1., Double_t Tend = 1000.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

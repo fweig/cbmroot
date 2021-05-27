@@ -1,3 +1,8 @@
+/** @file vec_arithmetic.h
+  * @copyright Copyright (C) 2010-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #ifndef LIT_VEC_ARITHMETIC_H
 #define LIT_VEC_ARITHMETIC_H
 

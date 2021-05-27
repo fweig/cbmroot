@@ -1,3 +1,8 @@
+/** @file mcbm_reco_gp.C
+  * @copyright Copyright (C) 2017 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Gregor Pitsch [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of simulated events with standard settings

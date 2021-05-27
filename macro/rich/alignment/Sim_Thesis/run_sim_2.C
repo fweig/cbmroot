@@ -1,3 +1,8 @@
+/** @file run_sim_2.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 static TString fieldMap;
 static Double_t fieldZ;
 static Double_t fieldScale;

@@ -1,3 +1,8 @@
+/** @file check_events.C
+  * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void check_events(Int_t nEvents = 10, UInt_t uRunId = 0, TString inDir = "data/", TString friendFile = "",
                   TString inFile = "")
 {

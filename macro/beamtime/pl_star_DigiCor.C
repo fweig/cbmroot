@@ -1,3 +1,8 @@
+/** @file pl_star_DigiCor.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_star_DigiCor(Int_t iNDet = 2)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

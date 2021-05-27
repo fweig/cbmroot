@@ -1,3 +1,8 @@
+/** @file ana_digi_cal.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = -1, Int_t calSm = 000, Int_t RefSel = 1,
                   TString cFileId = "r0001_20170121_2310_DT50_0x00000000", Int_t iCalSet = 001000001, Bool_t bOut = 0,
                   Int_t iSel2 = 0, Double_t dDeadtime = 50.)

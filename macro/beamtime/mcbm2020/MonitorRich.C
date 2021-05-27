@@ -1,3 +1,8 @@
+/** @file MonitorRich.C
+  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 /** @file MCBM RICH DATA monitoring
  ** Based on MonitorT0 by P.-A. Loizeau
  ** ROOT macro to read tsa files which have been produced with the new data transport

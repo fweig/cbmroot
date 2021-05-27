@@ -1,3 +1,8 @@
+/** @file FileListDef.h
+  * @copyright Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 // Definitions for the HV monitoring in Feb. 2015 beamtime at CERN SPS
 // 22/04/2015, P.-A. Loizeau
 

@@ -1,3 +1,8 @@
+/** @file mcbm_build_and_reco_kronos.C
+  * @copyright Copyright (C) 2020-2021 GSI, IKF-UFra
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau, Alberica Toia [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of mcbm data (2020)

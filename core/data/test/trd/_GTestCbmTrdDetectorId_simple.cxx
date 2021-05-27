@@ -1,3 +1,8 @@
+/** @file _GTestCbmTrdDetectorId_simple.cxx
+  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "CbmDetectorList.h"
 #include "CbmTrdDetectorId.h"
 

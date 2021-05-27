@@ -1,3 +1,8 @@
+/** @file pl_cmp_Eff.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_cmp_Eff(Int_t iDut = 900, Int_t iMode = 4, Double_t dEffMin = 0., Double_t dEffMax = 1.05,
                 TString AnaOpt = "DT50_Req0_910911500_921_911921_600_0.5_5.0_trk111_Calr0111_"
                                  "20161210_0646_DT50_Req1"

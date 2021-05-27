@@ -1,3 +1,8 @@
+/** @file L1TrackParFit.cxx
+  * @copyright Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Maxim Zyzak [orginator], Valentina Akishina **/
+
 #include "L1TrackParFit.h"
 
 #include "L1Fit.h"

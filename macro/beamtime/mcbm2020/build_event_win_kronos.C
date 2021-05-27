@@ -1,3 +1,8 @@
+/** @file build_event_win_kronos.C
+  * @copyright Copyright (C) 2020-2021 GSI, IKF-UFra
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau **/
+
 #include "build_event_win.C"
 
 /// FIXME: Disable clang formatting to keep easy parameters overview

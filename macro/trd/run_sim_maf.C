@@ -1,3 +1,8 @@
+/** @file run_sim_maf.C
+  * @copyright Copyright (C) 2014-2017 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Munkes, Cyrano Bergmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard simulation (transport + digitisation)

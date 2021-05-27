@@ -1,3 +1,8 @@
+/** @file CbmLitCreateStandaloneData.h
+  * @copyright Copyright (C) 2010-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #ifndef CBMLITCREATESTANDALONEDATA_H_
 #define CBMLITCREATESTANDALONEDATA_H_
 

@@ -1,3 +1,8 @@
+/** @file CbmTrdModuleRecT.h
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexandru Bercuci, Florian Uhlig [orginator] **/
+
 #ifndef CBMTRDMODULERECT_H
 #define CBMTRDMODULERECT_H
 

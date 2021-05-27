@@ -1,3 +1,8 @@
+/** @file eventDisplay.C
+  * @copyright Copyright (C) 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 //void eventDisplay(const char* setup = "sis18_mcbm_25deg_long")
 void eventDisplay(const char* setup = "mcbm_beam_2019_03")
 // void eventDisplay(const char* setup = "mcbm_beam_2018_11")

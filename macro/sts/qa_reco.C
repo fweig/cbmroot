@@ -1,3 +1,8 @@
+/** @file qa_reco.C
+  * @copyright Copyright (C) 2007-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Radoslaw Karabowicz [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for STS Reconstruction QA

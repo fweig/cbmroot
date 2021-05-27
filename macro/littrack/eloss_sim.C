@@ -1,3 +1,8 @@
+/** @file eloss_sim.C
+  * @copyright Copyright (C) 2008-2010 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 void eloss_sim(Int_t nEvents = 20000)
 {
   TString dir     = "/home/d/andrey/eloss/";

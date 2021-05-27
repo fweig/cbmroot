@@ -1,3 +1,8 @@
+/** @file run_analysis_jpsi.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva [orginator], Semen Lebedev **/
+
 void run_analysis_jpsi(Int_t nEvents = 1000)
 {
   TTree::SetMaxTreeSize(90000000000);

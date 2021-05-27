@@ -1,3 +1,8 @@
+/** @file sim.C
+  * @copyright Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator] **/
+
 // Macro for running Cbm  with Geant3  or Geant4 (M. Al-Turany , D. Bertini)
 // Modified 22/06/2005 D.Bertini
 {

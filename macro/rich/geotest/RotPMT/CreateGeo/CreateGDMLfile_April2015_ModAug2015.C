@@ -1,3 +1,8 @@
+/** @file CreateGDMLfile_April2015_ModAug2015.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Tariq Mahmoud [orginator] **/
+
 #include <fstream>
 #include <iostream>
 void CreateGDMLfile_April2015_ModAug2015(float pmt_pos_y_addend = 0, float pmt_pos_z_addend = 0, int RotMir = -10,

@@ -1,3 +1,8 @@
+/** @file pl_Dut_Vel.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_Dut_Vel(const char* cDut = "900", Double_t dEffMin = 0.7, Double_t Tstart = 0., Double_t Tend = 50.,
                 TString sysinfo = "")
 {

@@ -1,3 +1,8 @@
+/** @file AnalysisTaskMultiPairAnalysis.h
+  * @copyright Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [orginator] **/
+
 #ifndef ANALYSISTASKMULTIPAIRANALYSIS_H
 #define ANALYSISTASKMULTIPAIRANALYSIS_H
 

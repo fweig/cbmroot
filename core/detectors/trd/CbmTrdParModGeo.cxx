@@ -1,3 +1,8 @@
+/** @file CbmTrdParModGeo.cxx
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexandru Bercuci, Florian Uhlig [orginator] **/
+
 #include "CbmTrdParModGeo.h"
 
 #include <TGeoBBox.h>          // for TGeoBBox

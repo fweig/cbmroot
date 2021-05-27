@@ -1,3 +1,7 @@
+/** @file run_reco_geo_opt.C
+  * @copyright Copyright (C) 2014-2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
 
 void run_reco_geo_opt(Int_t nEvents = 30000)
 {

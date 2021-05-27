@@ -1,3 +1,8 @@
+/** @file checkSimField.C
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for check of the magnetic field used in simulation

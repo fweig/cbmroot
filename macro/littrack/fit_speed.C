@@ -1,3 +1,8 @@
+/** @file fit_speed.C
+  * @copyright Copyright (C) 2009-2010 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 void fit_speed(Int_t nEvents = 10000)
 {
   TString dir              = "/d/cbm02/andrey/std13_10mu/";

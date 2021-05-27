@@ -1,3 +1,8 @@
+/** @file basic_unpacking.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 // -----------------------------------------------------------------------------
 // ----- $Id::                                                           $ -----
 // -----                                                                   -----

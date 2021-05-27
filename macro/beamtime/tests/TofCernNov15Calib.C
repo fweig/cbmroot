@@ -1,3 +1,8 @@
+/** @file TofCernNov15Calib.C
+  * @copyright Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 #include "tof_nov15_setup_unpack.C"
 
 void TofCernNov15Calib(Int_t nEvents = 10000)

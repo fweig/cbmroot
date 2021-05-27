@@ -1,3 +1,8 @@
+/** @file runMonitorT0.cxx
+  * @copyright Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau, Florian Uhlig [orginator] **/
+
 #include "CbmDeviceMonitorT0.h"
 
 #include <iomanip>

@@ -1,3 +1,8 @@
+/** @file mvd_digitize_for_debugging.C
+  * @copyright Copyright (C) 2011 CBM Collaboration, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors  **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for local MVD reconstruction from MC data

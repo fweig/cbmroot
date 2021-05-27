@@ -1,3 +1,8 @@
+/** @file pl_Eff_XY_1.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_Eff_XY_1(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., Double_t dThr = 0.01,
                  TString sysinfo = "")
 {

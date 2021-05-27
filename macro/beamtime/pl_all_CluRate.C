@@ -1,3 +1,8 @@
+/** @file pl_all_CluRate.C
+  * @copyright Copyright (C) 2016-2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_CluRate(Int_t iNSt = 6, Double_t Tstart = 0., Double_t Tend = 800.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

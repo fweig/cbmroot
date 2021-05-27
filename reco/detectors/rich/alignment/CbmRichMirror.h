@@ -1,3 +1,8 @@
+/** @file CbmRichMirror.h
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 #ifndef CBMRICHMIRROR_H
 #define CBMRICHMIRROR_H
 

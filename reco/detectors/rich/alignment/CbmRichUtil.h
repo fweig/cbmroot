@@ -1,3 +1,7 @@
+/** @file CbmRichUtil.h
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
 
 #ifndef RICH_CbmRichUtil
 #define RICH_CbmRichUtil

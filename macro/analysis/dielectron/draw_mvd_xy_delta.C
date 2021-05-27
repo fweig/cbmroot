@@ -1,3 +1,8 @@
+/** @file draw_mvd_xy_delta.C
+  * @copyright Copyright (C) 2012 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void draw_mvd_xy_delta()
 {
   TString fileName = "/lustre/cbm/user/ebelolap/aug11/25gev/70field/deltasource/mc.delta.root";

@@ -1,3 +1,7 @@
+/** @file CbmRichRecoTbQa.h
+  * @copyright Copyright (C) 2018-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
 
 #ifndef CBM_RICH_RECO_TB_QA
 #define CBM_RICH_RECO_TB_QA

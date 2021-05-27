@@ -1,3 +1,8 @@
+/** @file inspect_shift_histo.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann, Pierre-Alain Loizeau [orginator] **/
+
 void inspect_shift_histo(TString hFile = "data/HistosMonitorTofSync.root")
 {
   using namespace std;

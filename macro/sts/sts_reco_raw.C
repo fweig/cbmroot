@@ -1,3 +1,8 @@
+/** @file sts_reco_raw.C
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Volker Friese **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for local reconstruction in STS from RAW data

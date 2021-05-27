@@ -1,3 +1,8 @@
+/** @file centrality_drawReso_STS_PSD.C
+  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Selim Seddiki [orginator] **/
+
 // -------------------------------------------------------------------------
 // ----- This task draws the centrality resolution versus collision centrality
 

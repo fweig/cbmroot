@@ -1,3 +1,8 @@
+/** @file pl_XY_fit.C
+  * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_XY_fit(Int_t iNSt = 4, Int_t NewNbinsX = 32, Int_t NewNbinsY = 32, Int_t iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

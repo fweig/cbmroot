@@ -1,3 +1,8 @@
+/** @file pl_over_clu0.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);

@@ -1,3 +1,8 @@
+/** @file CbmTofTrackFinderNN.h
+  * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator], Pierre-Alain Loizeau **/
+
 /**
 nh, adapt from 
  * \file CbmTrdTrackFinderIdeal.h

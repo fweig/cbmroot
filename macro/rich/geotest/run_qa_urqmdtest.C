@@ -1,3 +1,8 @@
+/** @file run_qa_urqmdtest.C
+  * @copyright Copyright (C) 2019-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void run_qa_urqmdtest(
   const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
   const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",

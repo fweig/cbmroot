@@ -1,3 +1,8 @@
+/** @file check_coinc_Hodo.C
+  * @copyright Copyright (C) 2021 GSI, IKF-UFra
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alberica Toia [orginator] **/
+
 void check_coinc_Hodo(Int_t nEvents = 10, UInt_t run = 25, UInt_t prefix = 0)
 {
   TString runId    = TString::Format("%04u", run);

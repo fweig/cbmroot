@@ -1,3 +1,8 @@
+/** @file pl_all_dTSel.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void pl_all_dTSel(Int_t iNSel = 4)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

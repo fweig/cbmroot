@@ -1,3 +1,8 @@
+/** @file GenTofBdfRootInput_v17a.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 /*
  * GenTofBdfRootInput_v17a.C
  * p.-a Loizeau, GSI, 09/05/2017

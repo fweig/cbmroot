@@ -1,3 +1,8 @@
+/** @file run_reco_TOF_QA.C
+  * @copyright Copyright (C) 2007-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of simulated events

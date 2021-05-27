@@ -1,3 +1,8 @@
+/** @file run_sim.C
+  * @copyright Copyright (C) 2016-2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Gregor Pitsch, Semen Lebedev [orginator] **/
+
 static TString fieldMap;
 static Double_t fieldZ;
 static Double_t fieldScale;

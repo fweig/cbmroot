@@ -1,3 +1,8 @@
+/** @file CbmTofContFact.h
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #ifndef CBMTOFCONTFACT_H
 #define CBMTOFCONTFACT_H
 

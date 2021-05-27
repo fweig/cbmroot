@@ -1,3 +1,8 @@
+/** @file CbmRichCorrection.h
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 #ifndef CBMRICHCORRECTION_H
 #define CBMRICHCORRECTION_H
 

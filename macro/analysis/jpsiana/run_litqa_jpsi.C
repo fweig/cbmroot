@@ -1,3 +1,8 @@
+/** @file run_litqa_jpsi.C
+  * @copyright Copyright (C) 2015 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void run_litqa_jpsi(Int_t nEvents = 1000)
 {
   TTree::SetMaxTreeSize(90000000000);

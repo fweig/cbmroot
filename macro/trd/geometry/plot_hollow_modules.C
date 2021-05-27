@@ -1,3 +1,8 @@
+/** @file plot_hollow_modules.C
+  * @copyright Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [orginator] **/
+
 //
 //  plot pad size of layers in cm2 in png files
 //  Nov 2012

@@ -1,3 +1,8 @@
+/** @file run_sim_position.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void run_sim_position(Int_t nEvents = 100, Int_t Flag = 0)
 {
   //TEST//

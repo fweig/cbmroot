@@ -1,3 +1,8 @@
+/** @file dis_trks.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator], Norbert Herrmann **/
+
 void dis_trks(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, TString cFileId = "831.50.3.0",
               TString cSet = "012022500_500", Int_t iSel2 = 500, Int_t iTrackingSetup = 1, Double_t dScalFac = 1.,
               Double_t dChi2Lim2 = 5., Double_t dDeadtime = 50, TString cCalId = "", Int_t iAnaCor = 1,

@@ -1,3 +1,8 @@
+/** @file test_much_vis.C
+  * @copyright Copyright (C) 2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for visualization of MC points and reconstructed hits

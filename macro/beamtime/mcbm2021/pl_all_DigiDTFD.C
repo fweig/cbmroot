@@ -1,3 +1,8 @@
+/** @file pl_all_DigiDTFD.C
+  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2)
 {
   Int_t iOpt1 = iOpt % 10;

@@ -1,3 +1,8 @@
+/** @file mvd_qa2_transDelta.C
+  * @copyright Copyright (C) 2010-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator], Philipp Sitzmann, Florian Uhlig **/
+
 // --------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

@@ -1,3 +1,8 @@
+/** @file mcbm_reco_event_tb_nh.C
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of simulated mCBM events with standard settings

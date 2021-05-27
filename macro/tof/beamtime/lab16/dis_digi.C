@@ -1,3 +1,8 @@
+/** @file dis_digi.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void dis_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 300, Int_t RefSel = 1,
               char* cFileId = "MbsTrbThu1715", Int_t iSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0, Int_t iGenCor = 1,
               Int_t iTrackingSetup = 0)

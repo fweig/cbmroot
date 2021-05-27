@@ -1,3 +1,8 @@
+/** @file anaFlow.C
+  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Selim Seddiki [orginator] **/
+
 // -------------------------------------------------------------------------
 // ----- This task reconstructs the particle flow (vn, n = 1 & 2) out of measured particle azimuthal distributions (input: reco. files or KFParticle Finder output)
 // ----- Particle azimuthal distributions can be taken w.r.t. the true reaction plane (input: MC -transport output- file)

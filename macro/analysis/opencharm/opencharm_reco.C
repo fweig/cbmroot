@@ -1,3 +1,8 @@
+/** @file opencharm_reco.C
+  * @copyright Copyright (C) 2015-2016 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for local MVD reconstruction from MC data

@@ -1,3 +1,8 @@
+/** @file mcbm_build_and_reco.C
+  * @copyright Copyright (C) 2020-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of mcbm data (2020)

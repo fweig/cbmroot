@@ -1,3 +1,8 @@
+/** @file pl_all_trbtdc_refs.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_trbtdc_refs(Int_t iNTdc = 24)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

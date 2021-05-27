@@ -1,3 +1,8 @@
+/** @file generator_input_file.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 ///// generating electron/positron track over full acceptance. Filling them step by step in acceptance.
 void generator_input_file()
 {

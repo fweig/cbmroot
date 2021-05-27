@@ -1,3 +1,8 @@
+/** @file Correction.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Senger [orginator] **/
+
 //---------------------------------------------------
 //
 // Example of efficiency correction procedure for omega meson

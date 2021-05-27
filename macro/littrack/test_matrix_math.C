@@ -1,3 +1,8 @@
+/** @file test_matrix_math.C
+  * @copyright Copyright (C) 2011 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 void test_matrix_math()
 {
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");

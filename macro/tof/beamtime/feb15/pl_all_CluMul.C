@@ -1,3 +1,8 @@
+/** @file pl_all_CluMul.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_CluMul(Int_t iNDet = 8)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

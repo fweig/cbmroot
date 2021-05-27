@@ -1,3 +1,8 @@
+/** @file ana_digi_Sun2325.C
+  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [orginator] **/
+
 void ana_digi_Sun2325(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calTrg = -1, Int_t calSmType = 2,
                       Int_t RefTrg = 1, char* cFileId = "MbsTrbSun2325")
 {

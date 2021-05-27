@@ -1,3 +1,8 @@
+/** @file kf_kfparticle.C
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of short-lived particles with KF Particle Finder

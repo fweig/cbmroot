@@ -1,3 +1,8 @@
+/** @file UParticle.cxx
+  * @copyright Copyright (C) 2008-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #include "UParticle.h"
 
 #include "TParticle.h"

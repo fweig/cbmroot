@@ -1,3 +1,8 @@
+/** @file run_analysis_rings2.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 enum enu_calibMode
 {
   etn_IMPORT,  // import calibration tables from the file and use them

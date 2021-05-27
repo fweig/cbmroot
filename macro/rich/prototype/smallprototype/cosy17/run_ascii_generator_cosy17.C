@@ -1,3 +1,8 @@
+/** @file run_ascii_generator_cosy17.C
+  * @copyright Copyright (C) 2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 #include <iostream>
 #include <string>
 

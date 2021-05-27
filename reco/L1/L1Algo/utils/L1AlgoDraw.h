@@ -1,3 +1,8 @@
+/** @file L1AlgoDraw.h
+  * @copyright Copyright (C) 2010-2012 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator] **/
+
 #ifndef L1AlgoDraw_h
 #define L1AlgoDraw_h 1
 

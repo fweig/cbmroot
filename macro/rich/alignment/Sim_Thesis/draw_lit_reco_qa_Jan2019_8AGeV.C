@@ -1,3 +1,8 @@
+/** @file draw_lit_reco_qa_Jan2019_8AGeV.C
+  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 #include <string>
 
 void draw_lit_reco_qa_Jan2019_8AGeV(bool lit, bool reco)

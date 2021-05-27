@@ -1,3 +1,8 @@
+/** @file L1StsHit.h
+  * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Valentina Akishina, Igor Kulakov, Sergey Gorbunov [orginator], Maxim Zyzak **/
+
 #ifndef _L1StsHit_h_
 #define _L1StsHit_h_
 

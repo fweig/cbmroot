@@ -1,3 +1,8 @@
+/** @file CbmTrdRecoLinkDef.h
+  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig [orginator] **/
+
 // $Id: TrdRecoLinkDef.h $
 
 #ifdef __CINT__

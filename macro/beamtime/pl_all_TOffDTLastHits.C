@@ -1,3 +1,8 @@
+/** @file pl_all_TOffDTLastHits.C
+  * @copyright Copyright (C) 2017 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_TOffDTLastHits(Int_t iNSt = 6, Int_t iSel = 0, Double_t Tstart = 1., Double_t Tend = 100.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

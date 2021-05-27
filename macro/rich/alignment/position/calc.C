@@ -1,3 +1,8 @@
+/** @file calc.C
+  * @copyright Copyright (C) 2019-2021 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Jordan Bendarouach [orginator] **/
+
 void calc(Double_t x, Double_t y, Double_t z)
 {
   Double_t rho = 0., theta = 0., phi = 0.;

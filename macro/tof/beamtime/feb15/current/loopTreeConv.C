@@ -1,3 +1,8 @@
+/** @file loopTreeConv.C
+  * @copyright Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 #include "FileListDef.h"
 
 Bool_t loopTreeConv(Int_t iSecOffset = 0, Int_t iMilliSecOffset = 0)

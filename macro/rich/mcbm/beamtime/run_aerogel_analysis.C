@@ -1,3 +1,8 @@
+/** @file run_aerogel_analysis.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 void run_aerogel_analysis(const string& parFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"
                                                   "beamtime/mcbm2020/data/unp_mcbm_params_598.root",
                           const string& digiFile = "/lustre/cbm/users/adrian/cbmgitnew/cbmsource/macro/"

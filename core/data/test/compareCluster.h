@@ -1,3 +1,8 @@
+/** @file compareCluster.h
+  * @copyright Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [orginator] **/
+
 #ifndef COMPARECLUSTER_H
 #define COMPARECLUSTER_H 1
 

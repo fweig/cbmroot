@@ -1,3 +1,8 @@
+/** @file run_sim_geotest.C
+  * @copyright Copyright (C) 2009-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+
 void run_sim_geotest(const string& plutoFile = "",  // if "", BoxGenerator is used
                      const string& mcFile    = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
                      const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",

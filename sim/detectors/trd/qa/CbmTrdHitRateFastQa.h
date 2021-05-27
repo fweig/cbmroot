@@ -1,3 +1,8 @@
+/** @file CbmTrdHitRateFastQa.h
+  * @copyright Copyright (C) 2013-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #ifndef CBMTRDHITRATEFASTQA_H_
 #define CBMTRDHITRATEFASTQA_H_
 

@@ -1,3 +1,8 @@
+/** @file dis_digi.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [orginator] **/
+
 void dis_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 300, Int_t RefSel = 1,
               TString cFileId = "MbsTrbThu1715", Int_t iCalSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0,
               Double_t dDeadtime = 50., Int_t iGenCor = 1, Int_t iTrackingSetup = 0, Double_t dScalFac = 5.,

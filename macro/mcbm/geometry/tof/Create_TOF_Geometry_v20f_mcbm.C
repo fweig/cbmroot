@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v20f_mcbm.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 ///
 /// \file Create_TOF_Geometry_v20f_mcbm.C
 /// \brief Generates TOF geometry in Root format.

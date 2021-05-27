@@ -1,3 +1,8 @@
+/** @file test_daq.C
+  * @copyright Copyright (C) 2018-2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Egor Ovcharenko [orginator] **/
+
 void test_daq(Int_t startEvent = 0, Int_t nEvents = 10000, TString inFile = "/home/evovch/TSA_files/delay_2_2_0000.tsa",
               TString outFile = "~/TSA_files/result/delay_2_2_0000_3.root")
 {

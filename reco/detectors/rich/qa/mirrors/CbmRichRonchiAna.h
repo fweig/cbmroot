@@ -1,3 +1,8 @@
+/** @file CbmRichRonchiAna.h
+  * @copyright Copyright (C) 2018-2019 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Andrey Lebedev [orginator] **/
+
 #ifndef RICH_MIRRORS_CBMRICHRONCHIANA_H_
 #define RICH_MIRRORS_CBMRICHRONCHIANA_H_
 

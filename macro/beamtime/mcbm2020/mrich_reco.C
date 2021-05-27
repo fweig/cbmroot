@@ -1,3 +1,8 @@
+/** @file mrich_reco.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau, Florian Uhlig [orginator] **/
+
 void mrich_reco(const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
                                          "macro/beamtime/mcbm2020/data",
                 const unsigned int runId = 759,  // used for the output folder

@@ -1,3 +1,8 @@
+/** @file pl_all_time_resolution.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2)
 {
   Int_t const kTdcChNb = 16;

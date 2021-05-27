@@ -1,3 +1,8 @@
+/** @file createFieldMap.C
+  * @copyright Copyright (C) 2008 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // This macro allows to create a field map out of an arbitrary number

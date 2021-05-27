@@ -1,3 +1,8 @@
+/** @file tof_Ana104.C
+  * @copyright Copyright (C) 2013 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 tof_Ana104(Int_t nEvents = 1000, Int_t iout = 1)
 {
 

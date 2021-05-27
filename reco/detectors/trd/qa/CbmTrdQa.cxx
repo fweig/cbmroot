@@ -1,3 +1,8 @@
+/** @file CbmTrdQa.cxx
+  * @copyright Copyright (C) 2012-2021 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 #include "CbmTrdQa.h"
 
 #include "CbmDigiManager.h"

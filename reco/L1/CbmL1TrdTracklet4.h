@@ -1,3 +1,8 @@
+/** @file CbmL1TrdTracklet4.h
+  * @copyright Copyright (C) 2006-2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Sergey Gorbunov **/
+
 #ifndef CBML1TRDTRACKLET4_H
 #define CBML1TRDTRACKLET4_H 1
 

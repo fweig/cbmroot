@@ -1,3 +1,8 @@
+/** @file pl_ana_DTXY.C
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [orginator] **/
+
 void pl_ana_DTXY(Int_t iDut = 9, Int_t NewNbinsX = 3, Int_t NewNbinsY = 3, Int_t iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

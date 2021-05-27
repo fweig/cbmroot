@@ -1,3 +1,8 @@
+/** @file call_Tsa_client.C
+  * @copyright Copyright (C) 2014 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 void call_Tsa_client(Int_t nMin = 1)
 {
   Int_t nEvents      = nMin * 60 * 10;  //minutes * seconds * 10Hz TimeSlices

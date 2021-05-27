@@ -1,3 +1,8 @@
+/** @file CbmMuchSector.cxx
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Evgeny Kryshen, Florian Uhlig, Volker Friese [orginator] **/
+
 #include "CbmMuchSector.h"
 
 #include <Logger.h>  // for Logger, LOG

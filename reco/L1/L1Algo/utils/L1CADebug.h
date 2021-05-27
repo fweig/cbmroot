@@ -1,3 +1,8 @@
+/** @file L1CADebug.h
+  * @copyright Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator] **/
+
 #ifndef L1CADebug_h
 #define L1CADebug_h 1
 

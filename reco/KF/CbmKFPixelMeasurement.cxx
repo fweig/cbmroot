@@ -1,3 +1,8 @@
+/** @file CbmKFPixelMeasurement.cxx
+  * @copyright Copyright (C) 2006-2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator] **/
+
 #include "CbmKFPixelMeasurement.h"
 
 #include <cmath>

@@ -1,3 +1,8 @@
+/** @file run_reco_smearing.C
+  * @copyright Copyright (C) 2012 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [orginator] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for testing the trd digitizer and hit producer

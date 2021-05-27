@@ -1,3 +1,8 @@
+/** @file CbmLitConverter.h
+  * @copyright Copyright (C) 2008-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator], Timur Ablyazimov **/
+
 #ifndef CBMLITCONVERTER_H_
 #define CBMLITCONVERTER_H_
 

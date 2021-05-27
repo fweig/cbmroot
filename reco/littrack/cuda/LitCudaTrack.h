@@ -1,3 +1,8 @@
+/** @file LitCudaTrack.h
+  * @copyright Copyright (C) 2010-2011 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [orginator] **/
+
 #ifndef LITCUDATRACK_H_
 #define LITCUDATRACK_H_
 

@@ -1,3 +1,8 @@
+/** @file draw_qa_sim.C
+  * @copyright Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Radoslaw Karabowicz [orginator] **/
+
 void draw_qa_sim(TString inFileName = "sim.qa.root")
 {
   gStyle->SetPalette(1);

@@ -1,3 +1,8 @@
+/** @file CbmRichHitsProd.C
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [orginator], Claudia Höhne **/
+
 /* $Id: CbmRichHitsProd.C,v 1.8 2006/09/15 12:50:52 turany Exp $ */
 
 

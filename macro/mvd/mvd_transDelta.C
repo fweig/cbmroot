@@ -1,3 +1,8 @@
+/** @file mvd_transDelta.C
+  * @copyright Copyright (C) 2015-2016 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [orginator] **/
+
 // --------------------------------------------------------------
 //
 // Macro for standard transport delta simulation using GEANT3

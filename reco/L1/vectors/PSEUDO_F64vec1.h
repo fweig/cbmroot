@@ -1,3 +1,8 @@
+/** @file PSEUDO_F64vec1.h
+  * @copyright Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [orginator] **/
+
 #ifndef L1Algo_PSEUDO_F64vec1_H
 #define L1Algo_PSEUDO_F64vec1_H
 

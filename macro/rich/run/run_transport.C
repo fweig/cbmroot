@@ -1,3 +1,8 @@
+/** @file run_transport.C
+  * @copyright Copyright (C) 2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [orginator] **/
+
 void run_transport(const string& urqmdFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/8gev/centr/"
                                              "urqmd.auau.8gev.centr.00001.root",  // if "", no urqmd
                    const string& traFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",

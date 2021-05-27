@@ -1,3 +1,8 @@
+/** @file CbmTrdCheckUtil.h
+  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Etienne Bechtel [orginator] **/
+
 #ifndef CBMTRDCHECKUTIL_H
 #define CBMTRDCHECKUTIL_H
 
