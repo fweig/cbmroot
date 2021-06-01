@@ -414,7 +414,7 @@ add_custom_target(cleantest
                  )
 
 find_package2(PRIVATE ClangFormat)
-if(ClangFormat_FOUND)
+if(ClangFormat_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
   if (FAIRROOT_FORMAT_BASE)
     set(BASE_COMMIT ${FAIRROOT_FORMAT_BASE})
   else()
