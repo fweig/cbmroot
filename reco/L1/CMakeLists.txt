@@ -1,12 +1,12 @@
-# Create a library called "libL1" which includes the source files given in
-# the array .
-# The extension is already found.  Any number of sources could be listed here.
+#Create a library called "libL1" which includes the source files given in
+#the array.
+#The extension is already found.Any number of sources could be listed here.
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-ignored-qualifiers -Wno-overloaded-virtual")
-# Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-padded -Wno-global-constructors")
-# Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+#Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-padded -Wno-global-constructors")
+#Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
 
 Set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/base
@@ -53,8 +53,8 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${KFParticle_INCLUDE_DIR}
 )
 
-# For the time being don't use OpenMP on APPLE
-# There are runtime problems with L1 (Redmine #2028)
+#For the time being don't use OpenMP on APPLE
+#There are runtime problems with L1(Redmine #2028)
 if(NOT APPLE)
   if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -88,13 +88,13 @@ link_directories( ${LINK_DIRECTORIES})
 
 
 set(SRCS
-#L1Algo/L1CATrackFinder.cxx 
-#CbmL1Performance.cxx 
-#CbmL1ReadEvent.cxx 
+#L1Algo / L1CATrackFinder.cxx
+#CbmL1Performance.cxx
+#CbmL1ReadEvent.cxx
 #CbmL1CATrdTrackFinderSA.cxx 
 CbmL1TrdTracklet.cxx 
 CbmL1TrdTracklet4.cxx 
-CbmL1.cxx 
+CbmL1.cxx
 #CbmL1TrdTrackFinderSts.cxx 
 CbmL1TrackMerger.cxx 
 CbmL1TofMerger.cxx
@@ -102,14 +102,16 @@ L1AlgoInputData.cxx
 OffLineInterface/CbmL1RichENNRingFinder.cxx
 OffLineInterface/CbmL1RichENNRingFinderParallel.cxx 
 OffLineInterface/CbmL1StsTrackFinder.cxx 
-#OffLineInterface/CbmL1MuchFinder.cxx 
-#OffLineInterface/CbmL1MuchHit.cxx 
-#OffLineInterface/CbmL1MuchTrack.cxx 
-#OffLineInterface/CbmL1MuchFinderQa.cxx
-OffLineInterface/CbmL1RichRingQa.cxx 
-#OffLineInterface/CbmL1SttHit.cxx 
-#OffLineInterface/CbmL1SttTrackFinder.cxx 
-#OffLineInterface/CbmL1SttTrack.cxx 
+OffLineInterface/CbmL1GlobalTrackFinder.cxx 
+OffLineInterface/CbmL1GlobalFindTracksEvents.cxx
+#OffLineInterface / CbmL1MuchFinder.cxx
+#OffLineInterface / CbmL1MuchHit.cxx
+#OffLineInterface / CbmL1MuchTrack.cxx
+#OffLineInterface / CbmL1MuchFinderQa.cxx
+OffLineInterface/CbmL1RichRingQa.cxx
+#OffLineInterface / CbmL1SttHit.cxx
+#OffLineInterface / CbmL1SttTrackFinder.cxx
+#OffLineInterface / CbmL1SttTrack.cxx 
 
 L1Algo/L1Algo.cxx
 L1Algo/L1CATrackFinder.cxx
@@ -146,25 +148,27 @@ CbmL1TrdHit.h
 CbmL1TrdTracklet4.h
 CbmL1TrdTracklet.h
 CbmL1Vtx.h
-#OffLineInterface/CbmL1MuchFinder.h
-#OffLineInterface/CbmL1MuchFinderQa.h
-#OffLineInterface/CbmL1MuchHit.h
-#OffLineInterface/CbmL1MuchTrack.h
+#OffLineInterface / CbmL1MuchFinder.h
+#OffLineInterface / CbmL1MuchFinderQa.h
+#OffLineInterface / CbmL1MuchHit.h
+#OffLineInterface / CbmL1MuchTrack.h
 OffLineInterface/CbmL1RichENNRingFinder.h
 OffLineInterface/CbmL1RichRingQa.h
 OffLineInterface/CbmL1StsTrackFinder.h
-#OffLineInterface/CbmL1SttHit.h
-#OffLineInterface/CbmL1SttTrackFinder.h
-#OffLineInterface/CbmL1SttTrack.h
-# L1Algo/L1Algo.h
+OffLineInterface/CbmL1GlobalTrackFinder.h
+OffLineInterface/CbmL1GlobalFindTracksEvents.h
+#OffLineInterface / CbmL1SttHit.h
+#OffLineInterface / CbmL1SttTrackFinder.h
+#OffLineInterface / CbmL1SttTrack.h
+#L1Algo / L1Algo.h
 )
 
 
 
 
 If(APPLE)
-  ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) #   -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast : wait for other parts of cbmroot\root. 
-  #---Check for compiler flags
+  ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) #   -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast : wait for other parts of cbmroot\root.
+#-- - Check for compiler flags
   CHECK_CXX_COMPILER_FLAG("-Wno-pmf-conversions" HAS_PMF)
   If(HAS_PMF)
     ADD_DEFINITIONS(-Wno-pmf-conversions)
@@ -201,8 +205,9 @@ set(LINKDEF L1LinkDef.h)
 Set(LIBRARY_NAME L1)
 if (OPENMP_FOUND AND APPLE)
   Set(DEPENDENCIES
-    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${OpenMP_CXX_LIBRARIES}
-#   KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex omp
+    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${
+  OpenMP_CXX_LIBRARIES}
+#KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex omp
   )
 else()
   Set(DEPENDENCIES
@@ -217,11 +222,11 @@ Install(FILES CbmL1Counters.h
         DESTINATION include
        )
 
-# Test to check if OpenMP is working on APPLE
+#Test to check if OpenMP is working on APPLE
 #set(EXE_NAME test_openmp)
 #set(SRCS test.cxx)
 #set(DEPENDENCIES
-#  ${DEPENDENCIES}
-#  omp
+#${DEPENDENCIES }
+#omp
 #)
 #GENERATE_EXECUTABLE()

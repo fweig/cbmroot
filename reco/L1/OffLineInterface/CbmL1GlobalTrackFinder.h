@@ -5,11 +5,11 @@
 /*
  *====================================================================
  *
- *  CBM Level 1 Global Reconstruction 
+ *  CBM Level 1 Reconstruction 
  *  
- *  Authors: V.Akishina
+ *  Authors: V. Akishina
  *
- *  e-mail : v.akishina@gsi.de
+ *  e-mail : v.akishina@gsi.de 
  *
  *====================================================================
  *
@@ -23,25 +23,19 @@
 
 
 #include "CbmL1.h"
-
-//#include "CbmStsTrackFinder.h"
-#include "CbmGlobalTrack.h"
 #include "CbmMuchTrack.h"
-#include "CbmStsTrack.h"
+#include "CbmStsTrackFinder.h"
 #include "CbmTofTrack.h"
+#include "CbmTrack.h"
 #include "CbmTrdTrack.h"
-
-#include "FairTask.h"
-
-#include "TStopwatch.h"
 
 class TClonesArray;
 class CbmEvent;
+class CbmTrack;
+class CbmGlobalTrack;
 
 
-class CbmL1GlobalTrackFinder :
-  public FairTask  //, CbmStsTrackFinder
-{
+class CbmL1GlobalTrackFinder : public CbmStsTrackFinder {
 
 public:
   /** Default constructor **/
@@ -53,11 +47,7 @@ public:
 
 
   /** Initialisation **/
-  //virtual InitStatus Init();
-  virtual InitStatus Init();
-  virtual void Exec(Option_t* opt);
-  virtual void Finish();
-  void ProcessEvent(CbmEvent* event);
+  virtual void Init();
 
 
   /** Track finding algorithm
@@ -70,35 +60,40 @@ public:
    **/
   virtual Int_t FindTracks(CbmEvent* event);
 
+  /// set a default particle mass for the track fit
+  /// it is used during reconstruction
+  /// for the multiple scattering and energy loss estimation
+  void SetDefaultParticlePDG(int pdg = 13);  // muon
+  void SetGlobalTracksArray(TClonesArray* tracks) { fGlobalTracks = tracks; }
+  void SetStsTracksArray(TClonesArray* tracks) { fStsTracks = tracks; }
+  void SetMuchTracksArray(TClonesArray* tracks) { fMuchTracks = tracks; }
+  void SetTrdTracksArray(TClonesArray* tracks) { fTrdTracks = tracks; }
+  void SetTofTracksArray(TClonesArray* tracks) { fTofTracks = tracks; }
+
+protected:
+  TClonesArray* fGlobalTracks;  // GlobalTrack array
+  TClonesArray* fStsTracks;     // StsTrack array
+  TClonesArray* fMuchTracks;    // MuchTrack array
+  TClonesArray* fTrdTracks;     // TrdTrack array
+  TClonesArray* fTofTracks;     // TofTrack array
 
 private:
-  TClonesArray* fMuchTracks;    // output CbmMuchTrack array
-  TClonesArray* fTrdTracks;     // output CbmTrdTrack array
-  TClonesArray* fTofTracks;     // output CbmTofTrack array
-  TClonesArray* fGlobalTracks;  //output CbmGlobalTrack array
-
-  TClonesArray* fMvdHits;  // MvdHit array
-  TClonesArray* fStsHits;  // StsHit array
-  TClonesArray* fTracks;   // StsTrack array
-
-  TClonesArray* fEvents;  //! Array of CbmEvent objects
-
-  TStopwatch fTimer;    //! Timer
-  Int_t fNofEvents;     ///< Number of events with success
-  Double_t fNofHits;    ///< Number of hits
-  Double_t fNofTracks;  ///< Number of tracks created
-  Double_t fTime;       ///< Total real time used for good events
-  Int_t fEventNo;       // event counter
-
   /** Copy the tracks from the L1-internal format and array
    ** to the output TClonesArray.
    ** @value  Number of created tracks
    **/
   Int_t CopyL1Tracks(CbmEvent* event = NULL);
 
-  Int_t CreateGlobalTrackArray(CbmEvent* event, TClonesArray* globalTracks, TClonesArray* stsTracks,
-                               TClonesArray* trdTracks, TClonesArray* muchTracks, TClonesArray* tofTracks);
+  /** Convert detector specific track info to a detector track
+   **/
+  void CbmL1TrackToCbmTrack(CbmL1Track T, CbmTrack* track, int systemIdT);
+  void CbmL1TrackToCbmStsTrack(CbmL1Track T, CbmStsTrack* track, int systemIdT);
+  void CbmL1TrackToCbmMuchTrack(CbmL1Track T, CbmMuchTrack* track, int systemIdT);
+  void CbmL1TrackToCbmTrdTrack(CbmL1Track T, CbmTrdTrack* track, int systemIdT);
+  void CbmL1TrackToCbmTofTrack(CbmL1Track T, CbmTofTrack* track, int systemIdT);
 
+  CbmL1GlobalTrackFinder(const CbmL1GlobalTrackFinder&);
+  CbmL1GlobalTrackFinder& operator=(const CbmL1GlobalTrackFinder&);
 
   ClassDef(CbmL1GlobalTrackFinder, 1);
 };

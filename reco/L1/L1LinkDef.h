@@ -23,6 +23,8 @@
 #pragma link C++ class CbmL1RichRingQa + ;
 #pragma link C++ class CbmL1TrdTracklet + ;
 #pragma link C++ class CbmL1TrdTracklet4 + ;
+#pragma link C++ class CbmL1GlobalTrackFinder + ;
+#pragma link C++ class CbmL1GlobalFindTracksEvents + ;
 //#pragma link C++ class  CbmL1CATrdTrackFinderSA+;
 //#pragma link C++ class  CbmL1SttHit+;
 //#pragma link C++ class  CbmL1SttTrackFinder+;

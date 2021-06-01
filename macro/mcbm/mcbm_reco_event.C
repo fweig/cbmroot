@@ -359,7 +359,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   // ------------------------------------------------------------------------
   // --------   L1 CA Track Finder    ---------------------------------------
 
-  if (setupName == "mcbm_beam_2020_03") {
+  if (strcmp(setupName, "mcbm_beam_2020_03") == 0) {
 
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
@@ -399,7 +399,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
       l1->SetMuchPar(parFile);
 
       TString parFile2 = gSystem->Getenv("VMCWORKDIR");
-      parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + "_mcbm.root ";
+      parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
       std::cout << "Using material budget file " << parFile2 << std::endl;
       l1->SetMuchMaterialBudgetFileName(parFile2.Data());
     }
@@ -407,7 +407,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     TString trdGeoTag;
     if (setup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile         = parFile + "/parameters/trd/trd_matbudget_" + trdGeoTag + "_mcbm.root";
+      parFile         = parFile + "/parameters/trd/trd_matbudget_" + trdGeoTag + ".root ";
       std::cout << "Using material budget file " << parFile << std::endl;
       l1->SetTrdMaterialBudgetFileName(parFile.Data());
     }
@@ -415,16 +415,16 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     TString tofGeoTag;
     if (setup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + "_mcbm.root";
+      parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
       std::cout << "Using material budget file " << parFile << std::endl;
       l1->SetTofMaterialBudgetFileName(parFile.Data());
     }
 
     run->AddTask(l1);
 
-    //   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-    //   FairTask* stsFindTracks           = new CbmStsFindTracksEvents(stsTrackFinder);
-    //   run->AddTask(stsFindTracks);
+    CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();
+    FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
+    run->AddTask(globalFindTracks);
   }
 
 
