@@ -2966,74 +2966,75 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
 
       Int_t NStsHits = StsTrack->GetNofStsHits();
       //if(NStsHits<8) continue; // nh-debugging
-      for (Int_t ih = 0; ih < NStsHits; ih++) {
-        Int_t iHind = StsTrack->GetHitIndex(ih);
-        LOG(debug1) << " inspect STS track " << s << ", hit " << ih << ", hitindex " << iHind;
-        if (NULL == fStsHits) LOG(fatal) << " No STS Hits available ";
-        //CbmStsHit* hit = (CbmStsHit*) fStsHits->At(iHind); // still valid ? - ok?
-        CbmStsHit* hit = dynamic_cast<CbmStsHit*>(fStsHits->At(iHind));
-        if (NULL == hit) continue;
-        LOG(debug1) << " valid hit " << ih << ", hitindex " << iHind
-                    << " cluster index f:  " << hit->GetFrontClusterId() << ", b:  " << hit->GetBackClusterId();
+      if (fStsDigiMatchColl)
+        for (Int_t ih = 0; ih < NStsHits; ih++) {
+          Int_t iHind = StsTrack->GetHitIndex(ih);
+          LOG(debug1) << " inspect STS track " << s << ", hit " << ih << ", hitindex " << iHind;
+          if (NULL == fStsHits) LOG(fatal) << " No STS Hits available ";
+          //CbmStsHit* hit = (CbmStsHit*) fStsHits->At(iHind); // still valid ? - ok?
+          CbmStsHit* hit = dynamic_cast<CbmStsHit*>(fStsHits->At(iHind));
+          if (NULL == hit) continue;
+          LOG(debug1) << " valid hit " << ih << ", hitindex " << iHind
+                      << " cluster index f:  " << hit->GetFrontClusterId() << ", b:  " << hit->GetBackClusterId();
 
-        CbmStsCluster* fclu = (CbmStsCluster*) fStsClusters->At(hit->GetFrontClusterId());
-        CbmStsCluster* bclu = (CbmStsCluster*) fStsClusters->At(hit->GetBackClusterId());
-        LOG(debug1) << " Mul f: " << fclu->GetNofDigis() << " (";
-        for (Int_t iDigi = 0; iDigi < fclu->GetNofDigis(); iDigi++) {
-          LOG(debug1) << fclu->GetDigi(iDigi) << " ";
-          //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( fclu->GetDigi(iDigi) );
-          CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(fclu->GetDigi(iDigi));
-          LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
-          for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
-            const CbmLink& link = stsdigiMatch->GetLink(iL);
-            CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
-            if (NULL == poi) continue;
-            Int_t MCInd = poi->GetTrackID();
-            LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
-            Int_t iMCt = 0;
-            for (; iMCt < NStsMCt; iMCt++) {
-              if (MCInd == StsMCt[iMCt]) {
-                NStsMCc[iMCt]++;
-                break;
+          CbmStsCluster* fclu = (CbmStsCluster*) fStsClusters->At(hit->GetFrontClusterId());
+          CbmStsCluster* bclu = (CbmStsCluster*) fStsClusters->At(hit->GetBackClusterId());
+          LOG(debug1) << " Mul f: " << fclu->GetNofDigis() << " (";
+          for (Int_t iDigi = 0; iDigi < fclu->GetNofDigis(); iDigi++) {
+            LOG(debug1) << fclu->GetDigi(iDigi) << " ";
+            //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( fclu->GetDigi(iDigi) );
+            CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(fclu->GetDigi(iDigi));
+            LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
+            for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
+              const CbmLink& link = stsdigiMatch->GetLink(iL);
+              CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
+              if (NULL == poi) continue;
+              Int_t MCInd = poi->GetTrackID();
+              LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
+              Int_t iMCt = 0;
+              for (; iMCt < NStsMCt; iMCt++) {
+                if (MCInd == StsMCt[iMCt]) {
+                  NStsMCc[iMCt]++;
+                  break;
+                }
+              }
+              if (iMCt == NStsMCt) {
+                LOG(debug) << "contribution by new MC track: " << MCInd;
+                StsMCt[iMCt]  = MCInd;
+                NStsMCc[iMCt] = 1;
+                NStsMCt++;
               }
             }
-            if (iMCt == NStsMCt) {
-              LOG(debug) << "contribution by new MC track: " << MCInd;
-              StsMCt[iMCt]  = MCInd;
-              NStsMCc[iMCt] = 1;
-              NStsMCt++;
-            }
           }
-        }
 
-        for (Int_t iDigi = 0; iDigi < bclu->GetNofDigis(); iDigi++) {
-          LOG(debug1) << bclu->GetDigi(iDigi) << " ";
-          //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( bclu->GetDigi(iDigi) );
-          CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(bclu->GetDigi(iDigi));
-          LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
-          for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
-            const CbmLink& link = stsdigiMatch->GetLink(iL);
-            CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
-            Int_t MCInd         = poi->GetTrackID();
-            LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
-            Int_t iMCt = 0;
-            for (; iMCt < NStsMCt; iMCt++) {
-              if (MCInd == StsMCt[iMCt]) {
-                NStsMCc[iMCt]++;
-                break;
+          for (Int_t iDigi = 0; iDigi < bclu->GetNofDigis(); iDigi++) {
+            LOG(debug1) << bclu->GetDigi(iDigi) << " ";
+            //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( bclu->GetDigi(iDigi) );
+            CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(bclu->GetDigi(iDigi));
+            LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
+            for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
+              const CbmLink& link = stsdigiMatch->GetLink(iL);
+              CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
+              Int_t MCInd         = poi->GetTrackID();
+              LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
+              Int_t iMCt = 0;
+              for (; iMCt < NStsMCt; iMCt++) {
+                if (MCInd == StsMCt[iMCt]) {
+                  NStsMCc[iMCt]++;
+                  break;
+                }
+              }
+              if (iMCt == NStsMCt) {
+                LOG(debug) << "contribution by new back MC track: " << MCInd;
+                StsMCt[iMCt]  = MCInd;
+                NStsMCc[iMCt] = 1;
+                NStsMCt++;
               }
             }
-            if (iMCt == NStsMCt) {
-              LOG(debug) << "contribution by new back MC track: " << MCInd;
-              StsMCt[iMCt]  = MCInd;
-              NStsMCc[iMCt] = 1;
-              NStsMCt++;
-            }
           }
-        }
 
-        LOG(debug1) << "), mul b: " << bclu->GetNofDigis();
-      }  // loop over STS hits finished
+          LOG(debug1) << "), mul b: " << bclu->GetNofDigis();
+        }  // loop over STS hits finished
 
       std::stringstream ss;
       ss << "STS summary: NStsMCt =" << NStsMCt;
