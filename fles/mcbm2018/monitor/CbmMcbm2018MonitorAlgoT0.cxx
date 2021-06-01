@@ -1232,6 +1232,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(Bool_t bResetTime)
 
   fhDpbMap->Reset();
   fhChannelMap->Reset();
+  fhChanHitMapEvo->Reset();
   fhHitMapEvo->Reset();
   for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
     fvhDpbMapSpill[uSpill]->Reset();

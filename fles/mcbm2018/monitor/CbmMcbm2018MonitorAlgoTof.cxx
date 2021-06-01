@@ -802,10 +802,12 @@ void CbmMcbm2018MonitorAlgoTof::ProcessSysMess(gdpbv100::FullMessage mess)
       break;
     }  // case gdpbv100::SYS_GDPB_UNKWN:
     case gdpbv100::SYS_GET4_SYNC_MISS: {
-      if (mess.getGdpbSysFwErrResync())
-        LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ", mess.getGdpbGenChipId()) << fuCurrDpbIdx;
-      else
-        LOG(info) << "GET4 synchronization pulse missing in gDPB " << fuCurrDpbIdx;
+      if (kFALSE == fbIgnoreCriticalErrors) {
+        if (mess.getGdpbSysFwErrResync())
+          LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ", mess.getGdpbGenChipId()) << fuCurrDpbIdx;
+        else
+          LOG(info) << "GET4 synchronization pulse missing in gDPB " << fuCurrDpbIdx;
+      }  // if (kFALSE == fbIgnoreCriticalErrors)
       break;
     }  // case gdpbv100::SYS_GET4_SYNC_MISS:
     case gdpbv100::SYS_PATTERN: {
@@ -1156,13 +1158,14 @@ void CbmMcbm2018MonitorAlgoTof::ProcessSlowCtrl(gdpbv100::Message mess)
 
       /// Printout if SPI message!
       fhGdpbAsicSpiCounts->Fill(fuGet4Id, fuCurrDpbIdx);
-      LOG(info) << "GET4 Slow Control SPI message, time " << Form("%3.3f", dMessTime) << " s "
-                << " for board ID " << std::hex << std::setw(4) << fuCurrDpbIdx << std::dec << "\n"
-                << " +++++++ > Chip = " << std::setw(3) << fuGet4Id << ", Chan = " << std::setw(1) << uChan
-                << ", Edge = " << std::setw(1) << uEdge << ", Type = " << std::setw(1) << mess.getGdpbSlcType() << ", "
-                << Form("channel  %1u,", (uData >> 10) & 0xF) << Form("value 0x%03x ", uData & 0x3FF)
-                << Form("level %4.1f ", fUnpackPar->GetPadiThresholdVal(uData & 0x3FF))
-                << Form("(Data = 0x%06x) ", uData);
+      if (kFALSE == fbIgnoreCriticalErrors)
+        LOG(info) << "GET4 Slow Control SPI message, time " << Form("%3.3f", dMessTime) << " s "
+                  << " for board ID " << std::hex << std::setw(4) << fuCurrDpbIdx << std::dec << "\n"
+                  << " +++++++ > Chip = " << std::setw(3) << fuGet4Id << ", Chan = " << std::setw(1) << uChan
+                  << ", Edge = " << std::setw(1) << uEdge << ", Type = " << std::setw(1) << mess.getGdpbSlcType()
+                  << ", " << Form("channel  %1u,", (uData >> 10) & 0xF) << Form("value 0x%03x ", uData & 0x3FF)
+                  << Form("level %4.1f ", fUnpackPar->GetPadiThresholdVal(uData & 0x3FF))
+                  << Form("(Data = 0x%06x) ", uData);
       break;
     }  // if( gdpbv100::GET4_32B_SLC_SPIREAD == uType )
     case gdpbv100::GET4_32B_SLC_START_SEU: {
