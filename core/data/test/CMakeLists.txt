@@ -18,6 +18,8 @@ Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _depend
   EndIf()
 EndMacro(CreateGTestExeAndAddTest)
 
+FIND_PACKAGE(Threads REQUIRED)
+
 add_subdirectory(psd)
 add_subdirectory(trd)
 
@@ -52,6 +54,7 @@ Set(DEPENDENCIES
   ParBase
   GeoBase
   MbsAPI
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 set(SPECIAL_DEPENDENCIES
