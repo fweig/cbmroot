@@ -15,7 +15,8 @@ Set(LINK_DIRECTORIES
 
 
 Set(DEPENDENCIES
-  ${ROOT_LIBRARIES}
+  Core
+  Physics
   ${GTEST_BOTH_LIBRARIES}
   FairTools
   CbmData
