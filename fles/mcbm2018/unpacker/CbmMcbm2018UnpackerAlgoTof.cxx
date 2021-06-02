@@ -733,6 +733,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts, size_t u
 
   // Prepare variables for the loop on contents
   Int_t messageType              = -111;
+  fbEpochFoundInThisMs           = kFALSE;
   const uint64_t* pInBuff        = reinterpret_cast<const uint64_t*>(msContent);  // for epoch cycle
   const gdpbv100::Message* pMess = reinterpret_cast<const gdpbv100::Message*>(pInBuff);
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
@@ -794,6 +795,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts, size_t u
       }  // case gdpbv100::MSG_HIT:
       case gdpbv100::MSG_EPOCH: {
         if (gdpbv100::kuChipIdMergedEpoch == fuGet4Id) {
+          fbEpochFoundInThisMs = kTRUE;
           ProcessEpoch(pMess[uIdx], uIdx);
         }  // if this epoch message is a merged one valid for all chips
         else {
@@ -838,7 +840,13 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts, size_t u
   /// ===> Until it is decided either to get rid of the epoch suppr. buffer or
   ///      to implement the "closing epoch" in the FW, do the following:
   /// For now this method is used to fake a "closing" epoch at the end of the MS
-  ProcessEndOfMsEpoch();
+  if (kTRUE == fbEpochFoundInThisMs) {
+    /// Found in 2021: sometimes multiple MS without any Epoch, then buffer should be ignored
+    ProcessEndOfMsEpoch();
+  }
+  else {
+    fvvmEpSupprBuffer[fuCurrDpbIdx].clear();
+  }
 
   return kTRUE;
 }

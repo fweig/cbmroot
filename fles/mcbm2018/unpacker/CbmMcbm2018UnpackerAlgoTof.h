@@ -133,6 +133,7 @@ private:
   /// Buffers
   std::vector<std::vector<gdpbv100::Message>>
     fvvmEpSupprBuffer;  //! [DPB], FIXME: dimension to be removed as not needed with real MS
+  Bool_t fbEpochFoundInThisMs = kFALSE;
 
   /// STAR TRIGGER detection
   std::vector<ULong64_t> fvulGdpbTsMsb;
