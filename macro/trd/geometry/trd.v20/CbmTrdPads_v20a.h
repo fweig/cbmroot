@@ -1,3 +1,8 @@
+/** @file CbmTrdPads_v20a.h
+  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig [committer] **/
+
 //
 //   TRD pad layout for geometry v20a
 //

@@ -1,7 +1,7 @@
 /** @file CbmLitTestMatrixMath.cxx
   * @copyright Copyright (C) 2011-2012 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 #include "qa/CbmLitTestMatrixMath.h"
 

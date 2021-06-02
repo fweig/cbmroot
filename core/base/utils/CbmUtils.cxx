@@ -1,7 +1,7 @@
 /** @file CbmUtils.cxx
   * @copyright Copyright (C) 2010-2020 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator], Florian Uhlig **/
+  * @authors Andrey Lebedev [committer], Florian Uhlig **/
 
 #include "CbmUtils.h"
 

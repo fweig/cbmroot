@@ -1,7 +1,7 @@
 /** @file draw_lit_reco_qa_position_3.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 #include <string>
 

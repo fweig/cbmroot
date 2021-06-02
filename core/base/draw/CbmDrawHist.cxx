@@ -1,3 +1,8 @@
+/** @file CbmDrawHist.cxx
+  * @copyright Copyright (C) 2008-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmDrawHist.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

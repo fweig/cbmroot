@@ -1,3 +1,8 @@
+/** @file CbmTrdPads_v15a.h
+  * @copyright Copyright (C) 2015-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [committer] **/
+
 //
 //   TRD pad layout for geometry v15a
 //

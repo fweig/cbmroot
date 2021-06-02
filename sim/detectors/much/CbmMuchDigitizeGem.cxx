@@ -1,3 +1,8 @@
+/** @file CbmMuchDigitizeGem.cxx
+  * @copyright Copyright (C) 2009-2021 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Vikas Singhal, Ekata Nandy, Volker Friese, Evgeny Kryshen **/
+
 /** CbmMuchDigitizeGem.cxx
  *@author Vikas Singhal <vikas@vecc.gov.in>
  *@since 15.01.2020

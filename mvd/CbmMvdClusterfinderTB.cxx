@@ -1,7 +1,7 @@
 /** @file CbmMvdClusterfinderTB.cxx
-  * @copyright Copyright (C) 2017-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2017-2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [orginator] **/
+  * @authors Philipp Sitzmann [committer] **/
 
 // -------------------------------------------------------------------------
 // -----                    CbmMvdClusterfinderTB source file                -----

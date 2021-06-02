@@ -1,7 +1,7 @@
 /** @file CbmAnaJpsiSuperEventReport.cxx
   * @copyright Copyright (C) 2015-2021 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber, Semen Lebedev [orginator] **/
+  * @authors Adrian Amatus Weber, Semen Lebedev [committer] **/
 
 #include "CbmAnaJpsiSuperEventReport.h"
 

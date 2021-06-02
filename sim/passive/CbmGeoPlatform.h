@@ -1,7 +1,7 @@
 /** @file CbmGeoPlatform.h
   * @copyright Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 #ifndef CBMGEOPLATFORM_H
 #define CBMGEOPLATFORM_H

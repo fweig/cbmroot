@@ -1,7 +1,7 @@
 /** @file CbmAnaDielectronStudyReportAll.h
   * @copyright Copyright (C) 2012-2015 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Elena Lebedeva **/
+  * @authors Semen Lebedev [committer], Elena Lebedeva **/
 
 #ifndef CBM_ANA_DIELECTRON_STUDY_REPORT_ALL
 #define CBM_ANA_DIELECTRON_STUDY_REPORT_ALL

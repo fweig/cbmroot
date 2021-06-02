@@ -1,3 +1,8 @@
+/** @file CbmTrdTrackFitterIdeal.cxx
+  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D. Kresan, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                CbmTrdTrackFitterIdeal source file             -----
 // -----                  Created 12/05/06  by D. Kresan               -----

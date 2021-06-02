@@ -1,7 +1,7 @@
 /** @file mcbm_check_materials.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 // The macro compares the media for defined TGeoNodes in the mcbm setup with
 // the media assigned to the nodes during creation of the feometries of the

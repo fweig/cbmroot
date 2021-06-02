@@ -1,7 +1,7 @@
 /** @file LitCudaTest.h
   * @copyright Copyright (C) 2010-2011 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 #ifndef LITCUDATEST_H_
 #define LITCUDATEST_H_

@@ -1,3 +1,8 @@
+/** @file CbmLitTrackingQaReport.h
+  * @copyright Copyright (C) 2011-2013 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackingQaReport.h
  * \brief Create report for tracking QA.

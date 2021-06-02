@@ -1,7 +1,7 @@
 /** @file pl_TIR.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_TIR(Double_t Tstart = 0., Double_t Tend = 1000., Double_t dFracMin = 0.0, Double_t dFracMax = 1.05,
             TString sysinfo = "")

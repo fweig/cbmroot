@@ -1,3 +1,8 @@
+/** @file CbmTrdSetTracksPidANN.cxx
+  * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Simeon Lebedev, Andrey Lebedev, Florian Uhlig [committer], Semen Lebedev **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidANN source file          -----
 // -----                  Created 06/03/07 by Simeon Lebedev           -----

@@ -1,3 +1,8 @@
+/** @file CbmLitFieldQa.h
+  * @copyright Copyright (C) 2009-2018 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFieldQa.h
  * \brief Field map QA.

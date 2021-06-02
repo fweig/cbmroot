@@ -1,3 +1,8 @@
+/** @file CbmMatchRecoToMC.h
+  * @copyright Copyright (C) 2013-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Volker Friese **/
+
 /**
  * \file CbmMatchRecoToMC.h
  * \brief FairTask for matching RECO data to MC.

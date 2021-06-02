@@ -1,3 +1,8 @@
+/** @file CbmStsTrackFitter.cxx
+  * @copyright Copyright (C) 2005-2006 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmStsTrackFitter source file               -----
 // -----                  Created 18/02/05  by V. Friese               -----

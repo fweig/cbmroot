@@ -1,7 +1,7 @@
 /** @file Pdefines.h
   * @copyright Copyright (C) 2018-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 #define PRINT_CTOR "CONSTRUCTOR"
 #define PRINT_AUTO_ALLOC "ALLOCATION"

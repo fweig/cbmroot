@@ -1,3 +1,8 @@
+/** @file CbmTofTrackFinder.h
+  * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D.Kresan, Norbert Herrmann [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmTofTrackFinder header file               -----
 // -----                  Created 25/04/15  by N. Herrmann             -----

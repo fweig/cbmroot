@@ -1,3 +1,8 @@
+/** @file CbmMQTsaMultiSamplerTof.h
+  * @copyright Copyright (C) 2018-2019 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [committer] **/
+
 /**
  * CbmMQTsaMultiSamplerTof.h
  *

@@ -1,3 +1,8 @@
+/** @file CbmTofExtendTracks.cxx
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmTofExtendTracks source file                -----
 // -----                  Created 22/12/20  by N. Herrmann             -----

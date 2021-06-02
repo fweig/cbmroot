@@ -1,3 +1,8 @@
+/** @file NicaGeneratorReadUnigen.h
+  * @copyright Copyright (C) 2015-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek [committer] **/
+
 /*
  * NicaGeneratorReadUnigen.h
  *

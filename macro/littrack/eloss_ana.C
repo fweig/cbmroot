@@ -1,7 +1,7 @@
 /** @file eloss_ana.C
   * @copyright Copyright (C) 2008-2009 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 void eloss_ana(Int_t nEvents = 20000)
 {

@@ -1,7 +1,7 @@
 /** @file pl_CosmicHst.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_CosmicHst(Int_t iNSt = 10, Int_t iOpt = 0, Int_t iSel = 0, Int_t i1D = 0, Double_t dYmax = 0.)
 {

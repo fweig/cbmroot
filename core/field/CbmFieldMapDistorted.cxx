@@ -1,3 +1,8 @@
+/** @file CbmFieldMapDistorted.cxx
+  * @copyright Copyright (C) 2008-2021 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E.Litvinenko, Elena Lebdeva [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----               CbmFieldMapDistorted source file         -----
 // -----                  Created 18/01/08  by E.Litvinenko            -----

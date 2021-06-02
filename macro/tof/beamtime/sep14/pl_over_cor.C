@@ -1,7 +1,7 @@
 /** @file pl_over_cor.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 void pl_over_cor(Int_t SmT = 3, Int_t iSm = 0, Int_t iRpc = 0)
 {

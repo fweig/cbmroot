@@ -1,3 +1,8 @@
+/** @file prop_qa.C
+  * @copyright Copyright (C) 2007-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file prop_qa.C
  * \brief Macro runs propagation analysis task.

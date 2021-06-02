@@ -1,7 +1,7 @@
 /** @file CbmEcalTrackExtrapolationKF.cxx
   * @copyright Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [orginator] **/
+  * @authors Sergey Gorbunov [committer] **/
 
 #include "CbmEcalTrackExtrapolationKF.h"
 

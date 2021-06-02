@@ -1,7 +1,7 @@
 /** @file run_sim_geo_opt.C
   * @copyright Copyright (C) 2014 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 void run_sim_geo_opt(Int_t nEvents = 200)
 {

@@ -1,3 +1,8 @@
+/** @file run_rich_event_display.C
+  * @copyright Copyright (C) 2012-2018 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /** run_rich_event_display.C
  * @author Semen Lebedev <s.lebedev@gsi.de>
  * @since 2012

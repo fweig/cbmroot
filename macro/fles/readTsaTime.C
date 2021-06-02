@@ -1,3 +1,8 @@
+/** @file readTsaTime.C
+  * @copyright Copyright (C) 2014-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Philipp Kähler [committer] **/
+
 /** @file readTsa.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @since August 2014

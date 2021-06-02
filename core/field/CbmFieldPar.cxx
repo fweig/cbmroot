@@ -1,3 +1,8 @@
+/** @file CbmFieldPar.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Denis Bertini [committer], Florian Uhlig, Elena Lebdeva **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmFieldPar source file                  -----
 // -----                   Created 20/02/06  by V. Friese              -----

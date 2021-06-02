@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   LxTBBinned2.h
- * Author: tablyaz
- *
- * Created on October 14, 2016, 11:30 AM
- */
+/** @file LxTBBinned2.h
+  * @copyright Copyright (C) 2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [committer] **/
 
 #ifndef LXTBBINNED2_H
 #define LXTBBINNED2_H

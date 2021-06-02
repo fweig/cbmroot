@@ -1,4 +1,9 @@
 /** @file CbmPsdMC.cxx
+  * @copyright Copyright (C) 2005-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alla Maevskaya, Florian Uhlig [committer] **/
+
+/** @file CbmPsdMC.cxx
  ** @since 04.02.2005
  ** @author Alla Maevskaya <a.maevskaya@gsi.de>
  ** @author Volker Friese <v.friese@gsi.de>

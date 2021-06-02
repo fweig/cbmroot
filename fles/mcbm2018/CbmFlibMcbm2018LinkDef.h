@@ -1,7 +1,7 @@
 /** @file CbmFlibMcbm2018LinkDef.h
   * @copyright Copyright (C) 2018-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 #ifdef __CINT__
 

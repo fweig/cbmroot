@@ -1,7 +1,7 @@
 /** @file eventDisplay.C
   * @copyright Copyright (C) 2009-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann, Florian Uhlig [orginator] **/
+  * @authors David Emschermann, Florian Uhlig [committer] **/
 
 // 20130605 - checked by DE
 

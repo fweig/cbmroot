@@ -1,3 +1,8 @@
+/** @file CbmMediaList.h
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 /** @brief CbmMediaList
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @since 12.03.2020

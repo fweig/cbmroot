@@ -1,10 +1,10 @@
-/// \file   CbmMuchDigitizerQa.h
-/// \brief  Definition of the CbmMuchDigitizerQa class
-/// \author Sergey Gorbunov <se.gorbunov@gsi.de>
-/// \author Eugeny Kryshen
-/// \author Vikas Singhal
-/// \author Ekata Nandy
-/// \date   25.09.2020
+/** @file CbmMuchDigitizerQa.h
+  * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Eugeny Kryshen, Dominik Smith [committer], Sergey Gorbunov, Vikas Singhal, Ekata Nandy **/
+
+/*** \brief  Definition of the CbmMuchDigitizerQa class
+  * \date   25.09.2020 **/
 
 #ifndef CbmMuchDigitizerQa_H
 #define CbmMuchDigitizerQa_H

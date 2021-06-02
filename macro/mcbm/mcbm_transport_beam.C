@@ -1,3 +1,8 @@
+/** @file mcbm_transport_beam.C
+  * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** @file mcbm_transport_beam
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 13 September 2019

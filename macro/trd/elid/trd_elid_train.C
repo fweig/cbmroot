@@ -1,7 +1,9 @@
-/*  Description: This macro train and test different electron/pion identification methods in the TRD detector.
+/** @file trd_elid_train.C
+  * @copyright Copyright (C) 2008-2013 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer], Andrey Lebedev **/
 
- Author : Semen Lebedev
- E-mail : S.Lebedev@gsi.de
+/*  Description: This macro train and test different electron/pion identification methods in the TRD detector.
  */
 #include <vector>
 using namespace std;

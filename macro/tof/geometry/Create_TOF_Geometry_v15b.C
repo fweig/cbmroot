@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_v15b.C
   * @copyright Copyright (C) 2015-2017 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 // Macro creating a ToF geometry for test beam: v14c - Cern Feb 15, compact version
 //

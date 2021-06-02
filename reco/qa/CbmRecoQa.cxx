@@ -1,4 +1,9 @@
 /** @file CbmRecoQa.cxx
+  * @copyright Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Tim Fauerbach, Florian Uhlig [committer] **/
+
+/** @file CbmRecoQa.cxx
  ** @author Tim Fauerbach
  ** @since Jun 2019
  **/

@@ -1,3 +1,8 @@
+/** @file create_data.C
+  * @copyright Copyright (C) 2010-2011 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file create_data.C
  * \brief Macro creates text files with data produced by CBMROOT.

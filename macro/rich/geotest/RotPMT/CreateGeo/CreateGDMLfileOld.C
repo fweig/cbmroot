@@ -1,7 +1,7 @@
 /** @file CreateGDMLfileOld.C
   * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tariq Mahmoud [orginator] **/
+  * @authors Tariq Mahmoud [committer] **/
 
 #include <fstream>
 #include <iostream>

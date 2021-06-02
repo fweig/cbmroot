@@ -1,4 +1,9 @@
 /** @file mcbm_analyze_delta_electrons.C
+  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dominik Smith [committer] **/
+
+/** @file mcbm_analyze_delta_electrons.C
  ** @author Dominik Smith <d.smith@gsi.de>
  ** @since 22 July 2020
  **/

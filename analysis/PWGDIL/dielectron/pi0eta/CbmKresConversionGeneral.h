@@ -1,7 +1,7 @@
 /** @file CbmKresConversionGeneral.h
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 #ifndef CBM_KRES_CONVERSION_GENERAL
 #define CBM_KRES_CONVERSION_GENERAL

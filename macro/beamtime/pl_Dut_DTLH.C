@@ -1,7 +1,7 @@
 /** @file pl_Dut_DTLH.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_Dut_DTLH(Int_t iDut = 910, TString sysinfo = "")
 {

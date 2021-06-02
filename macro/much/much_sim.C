@@ -1,3 +1,8 @@
+/** @file much_sim.C
+  * @copyright Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Ryzhinskiy m.ryzhinskiy@gsi.de, Vikas Singhal [committer] **/
+
 /**
  * Performs standard transport simulation with GEANT3
  * in the CBM MuCh setup: STS + MUCH.

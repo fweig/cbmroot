@@ -1,7 +1,7 @@
 /** @file L1HitsSortHelper.cxx
   * @copyright Copyright (C) 2012-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator], Valentina Akishina **/
+  * @authors Igor Kulakov [committer], Valentina Akishina **/
 
 #include "L1HitsSortHelper.h"
 

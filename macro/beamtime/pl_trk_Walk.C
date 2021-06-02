@@ -1,7 +1,7 @@
 /** @file pl_trk_Walk.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_trk_Walk(Int_t iId = 900, Int_t iOpt = 1, Double_t dMax = 0.)
 {

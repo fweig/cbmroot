@@ -1,6 +1,8 @@
-// Author: I. Froehlich
-// Written: 9.7.2007
-// Revised:
+/** @file PValues.h
+  * @copyright Copyright (C) 2007-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors I. Froehlich, Florian Uhlig [committer] **/
+
 // PValues Class Header
 
 #ifndef _PVALUES_H_

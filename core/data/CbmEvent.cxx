@@ -1,3 +1,8 @@
+/** @file CbmEvent.cxx
+  * @copyright Copyright (C) 2016-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** CbmEvent.cxx
  ** @author V.Friese <v.friese@gsi.de>
  ** @since 17.09.2016

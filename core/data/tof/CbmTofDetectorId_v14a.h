@@ -1,3 +1,8 @@
+/** @file CbmTofDetectorId_v14a.h
+  * @copyright Copyright (C) 2014-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors F. Uhlig, Norbert Herrmann [committer], Pierre-Alain Loizeau **/
+
 // -------------------------------------------------------------------------
 // -----               CbmTofDetectorId_v12b header file               -----
 // -----                 Created 20/11/12  by F. Uhlig                 -----

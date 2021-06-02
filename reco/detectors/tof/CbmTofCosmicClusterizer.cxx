@@ -1,4 +1,9 @@
 /** @file CbmTofCosmicClusterizer.cxx
+  * @copyright Copyright (C) 2013-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer] **/
+
+/** @file CbmTofCosmicClusterizer.cxx
  ** author nh
  ** adopted from
  ** @file CbmTofSimpClusterizer.cxx

@@ -1,8 +1,9 @@
-/* CbmLitTrackSelectionSharedHits.h
- * @author Andrey Lebedev <andrey.lebedev@gsi.de>
- * @since 2008
- * @version 1.0
- *
+/** @file CbmLitTrackSelectionSharedHits.h
+  * @copyright Copyright (C) 2008-2011 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
+/* 
  * Track selection removes clones and ghosts
  * sorting by quality and checking shared hits.
  */

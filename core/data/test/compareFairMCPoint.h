@@ -1,7 +1,7 @@
 /** @file compareFairMCPoint.h
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 #ifndef COMPAREFAIRMCPOINT_H
 #define COMPAREFAIRMCPOINT_H 1

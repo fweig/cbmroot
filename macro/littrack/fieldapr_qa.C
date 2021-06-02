@@ -1,3 +1,8 @@
+/** @file fieldapr_qa.C
+  * @copyright Copyright (C) 2009-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file fieldapr_qa.C
  * \brief Macro runs CbmLitFieldApproximationQa task which checks field map and its approximation.

@@ -1,4 +1,9 @@
 /** @file CbmTofGeometryQa.cxx
+  * @copyright Copyright (C) 2015-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer] **/
+
+/** @file CbmTofGeometryQa.cxx
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 27/08/2015
  **/

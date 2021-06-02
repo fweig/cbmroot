@@ -1,7 +1,7 @@
 /** @file pl_all_XY.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_all_XY(Int_t iNDet = 24)
 {

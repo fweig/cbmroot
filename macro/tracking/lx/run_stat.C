@@ -1,7 +1,7 @@
 /** @file run_stat.C
   * @copyright Copyright (C) 2016-2021 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov [orginator], Florian Uhlig **/
+  * @authors Timur Ablyazimov [committer], Florian Uhlig **/
 
 void run_stat(int index = -1)
 {

@@ -1,3 +1,8 @@
+/** @file CbmDileptRecUrqmdOmegaEe.C
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, T. Galatyuk, Denis Bertini [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of simulated events

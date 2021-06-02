@@ -1,3 +1,8 @@
+/** @file CbmL1SttTrackFinder.cxx
+  * @copyright Copyright (C) 2008-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmL1SttTrackFinder source file              -----
 // -----                 Created 8/03/08  by A. Zinchenko              -----

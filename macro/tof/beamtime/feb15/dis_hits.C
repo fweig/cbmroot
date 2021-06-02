@@ -1,7 +1,7 @@
 /** @file dis_hits.C
   * @copyright Copyright (C) 2015-2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void dis_hits(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, char* cFileId = "Cern", Int_t iSet = 0,
               Int_t iSel2 = 0, Int_t iTrackingSetup = 6)

@@ -1,4 +1,9 @@
 /** @file CbmStsModule.h
+  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsModule.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 14.05.2013
  **/

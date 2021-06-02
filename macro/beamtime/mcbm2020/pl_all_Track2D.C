@@ -1,7 +1,7 @@
 /** @file pl_all_Track2D.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 4)
 {

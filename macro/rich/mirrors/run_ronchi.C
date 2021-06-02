@@ -1,7 +1,7 @@
 /** @file run_ronchi.C
   * @copyright Copyright (C) 2018-2020 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator], Semen Lebedev, Egor Ovcharenko **/
+  * @authors Andrey Lebedev [committer], Semen Lebedev, Egor Ovcharenko **/
 
 void run_ronchi()
 {

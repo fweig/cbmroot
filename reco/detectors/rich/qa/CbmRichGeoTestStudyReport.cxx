@@ -1,3 +1,8 @@
+/** @file CbmRichGeoTestStudyReport.cxx
+  * @copyright Copyright (C) 2012-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /**
  * \file CbmRichGeoTestStudyReport.cxx
  * \author Semen Lebedev <s.lebedev@gsi.de>

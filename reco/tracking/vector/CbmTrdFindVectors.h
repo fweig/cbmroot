@@ -1,3 +1,8 @@
+/** @file CbmTrdFindVectors.h
+  * @copyright Copyright (C) 2017-2018 Veksler and Baldin Laboratory of High Energy Physics, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Zinchenko [committer] **/
+
 /** CbmTrdFindVectors.h
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2017

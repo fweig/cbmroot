@@ -1,4 +1,9 @@
 /** @file run_reco.C
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Dominik Smith **/
+
+/** @file run_reco.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 14 November 2020
  **/

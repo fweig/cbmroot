@@ -1,7 +1,7 @@
 /** @file run_transport_qa.C
   * @copyright Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 // Test macro which compares the mean number of MC points for the various
 // detectors with benchmark values which were calculated using 100 central

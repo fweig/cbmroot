@@ -1,3 +1,8 @@
+/** @file CbmMvdDigi.h
+  * @copyright Copyright (C) 2008-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christina Dritsa [committer], Philipp Sitzmann, Florian Uhlig, Volker Friese **/
+
 // -------------------------------------------------------------------------
 // -----                     CbmMvdDigi header file                    -----
 // -----                    Created 02/04/08  by C.Dritsa              -----

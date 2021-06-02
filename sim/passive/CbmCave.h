@@ -1,7 +1,7 @@
 /** @file CbmCave.h
   * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator] **/
+  * @authors Denis Bertini [committer] **/
 
 #ifndef Cave_H
 #define Cave_H

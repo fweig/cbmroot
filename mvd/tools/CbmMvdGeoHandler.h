@@ -1,3 +1,8 @@
+/** @file CbmMvdGeoHandler.h
+  * @copyright Copyright (C) 2014-2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 /**
  * \file CbmMvdGeoHandler.h
  * \brief Helper class to extract information from the GeoManager. Addapted from TrdGeoHandler byFlorian Uhlig <f.uhlig@gsi.de>

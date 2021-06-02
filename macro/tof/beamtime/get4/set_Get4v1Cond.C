@@ -1,7 +1,7 @@
 /** @file set_Get4v1Cond.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 // this is example how the ROC conditions can be initialized
 void set_Get4v1Cond()

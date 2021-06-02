@@ -1,7 +1,7 @@
 /** @file tof_Ana100p.C
   * @copyright Copyright (C) 2013 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 tof_Ana100p(Int_t nEvents = 1000, Int_t iout = 1)
 {

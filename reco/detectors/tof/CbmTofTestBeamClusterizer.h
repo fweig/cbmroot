@@ -1,4 +1,9 @@
 /** @file CbmTofTestBeamClusterizer.h
+  * @copyright Copyright (C) 2013-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh adopted from, Norbert Herrmann [committer], Pierre-Alain Loizeau **/
+
+/** @file CbmTofTestBeamClusterizer.h
  ** @author nh adopted from
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 23.08.2013

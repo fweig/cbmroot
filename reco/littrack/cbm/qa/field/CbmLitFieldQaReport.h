@@ -1,3 +1,8 @@
+/** @file CbmLitFieldQaReport.h
+  * @copyright Copyright (C) 2011-2018 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFieldQaReport.h
  * \brief Creates field QA report.

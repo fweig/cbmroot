@@ -1,3 +1,8 @@
+/** @file CbmGlobalTrackFitterKF.cxx
+  * @copyright Copyright (C) 2006-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dmytro Kresan, Denis Bertini [committer], Florian Uhlig **/
+
 // ------------------------------------------------------------------
 // -----                  CbmGlobalTrackFitterKF                -----
 // -----              Created 07/03/2006 by D.Kresan            -----

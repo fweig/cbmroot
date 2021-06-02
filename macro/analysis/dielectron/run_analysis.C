@@ -1,7 +1,7 @@
 /** @file run_analysis.C
   * @copyright Copyright (C) 2010-2020 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev, Semen Lebedev [orginator] **/
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
 
 void run_analysis(const string& mcFile        = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.1.root",
                   const string& parFile       = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.1.root",

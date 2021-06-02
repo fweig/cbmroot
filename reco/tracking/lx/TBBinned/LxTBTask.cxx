@@ -1,7 +1,7 @@
 /** @file LxTBTask.cxx
   * @copyright Copyright (C) 2017-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 /*
  * To change this license header, choose License Headers in Project Properties.

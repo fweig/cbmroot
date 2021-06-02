@@ -1,3 +1,8 @@
+/** @file eDpbBeamMonitor.C
+  * @copyright Copyright (C) 2017 Institute for Computer Science, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig,  **/
+
 /** @file FHodoLabSetup
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016

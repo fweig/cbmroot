@@ -1,8 +1,10 @@
+/** @file run_train_ann.C
+  * @copyright Copyright (C) 2011-2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Andrey Lebedev **/
+
 /*  Description: This macro train the ANN for fake
  rejection algorithm.
- 
- Author : Semen Lebedev
- E-mail : S.Lebedev@gsi.de
  */
 void run_train_ann(Int_t nEvents = 1000)
 {

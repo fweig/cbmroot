@@ -1,3 +1,8 @@
+/** @file CbmVertex.cxx
+  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Florian Uhlig, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                       CbmVertex source file                   -----
 // -----                  Created 28/11/05  by V. Friese               -----

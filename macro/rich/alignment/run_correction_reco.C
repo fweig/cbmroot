@@ -1,7 +1,7 @@
 /** @file run_correction_reco.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 void run_correction_reco(Int_t nEvents = 5000, TString Rot = "5")
 {

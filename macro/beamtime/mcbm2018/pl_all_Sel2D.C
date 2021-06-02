@@ -1,7 +1,7 @@
 /** @file pl_all_Sel2D.C
   * @copyright Copyright (C) 2019 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 6)
 {

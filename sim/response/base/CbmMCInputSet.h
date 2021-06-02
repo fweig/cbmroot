@@ -1,4 +1,9 @@
 /** @file CbmMCInputSet.h
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmMCInputSet.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 23.11.2018
  **/

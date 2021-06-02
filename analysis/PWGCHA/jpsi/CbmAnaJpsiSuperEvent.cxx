@@ -1,3 +1,8 @@
+/** @file CbmAnaJpsiSuperEvent.cxx
+  * @copyright Copyright (C) 2015-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors slebedev, Adrian Amatus Weber, Semen Lebedev [committer] **/
+
 /*
  * CbmAnaJpsiSuperEvent.cxx
  *

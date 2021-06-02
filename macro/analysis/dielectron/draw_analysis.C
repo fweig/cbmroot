@@ -1,7 +1,7 @@
 /** @file draw_analysis.C
   * @copyright Copyright (C) 2010-2020 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebedeva [orginator], Semen Lebedev, Andrey Lebedev **/
+  * @authors Elena Lebedeva [committer], Semen Lebedev, Andrey Lebedev **/
 
 //#include <experimental/filesystem>
 

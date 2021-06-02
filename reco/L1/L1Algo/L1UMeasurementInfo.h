@@ -1,7 +1,7 @@
 /** @file L1UMeasurementInfo.h
   * @copyright Copyright (C) 2007-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [orginator], Igor Kulakov **/
+  * @authors Sergey Gorbunov [committer], Igor Kulakov **/
 
 #ifndef L1UMeasurementInfo_h
 #define L1UMeasurementInfo_h 1

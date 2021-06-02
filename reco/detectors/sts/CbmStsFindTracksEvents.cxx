@@ -1,3 +1,8 @@
+/** @file CbmStsFindTracksEvents.cxx
+  * @copyright Copyright (C) 2014-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** @file CbmFindTracksEvent.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 16.06.2014

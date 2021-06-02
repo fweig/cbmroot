@@ -1,4 +1,9 @@
 /** @file CbmFindPrimaryVertexEvents.h
+  * @copyright Copyright (C) 2014-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmFindPrimaryVertexEvents.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 16.06.2014
  ** @date 02.11.2016

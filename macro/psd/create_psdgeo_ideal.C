@@ -1,3 +1,8 @@
+/** @file create_psdgeo_ideal.C
+  * @copyright Copyright (C) 2017-2018 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Evgeny Kashirin [committer] **/
+
 /** @file create_psdgeo_with_hole.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 16 September 2017

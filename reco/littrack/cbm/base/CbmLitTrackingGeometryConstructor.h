@@ -1,3 +1,8 @@
+/** @file CbmLitTrackingGeometryConstructor.h
+  * @copyright Copyright (C) 2008-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackingGeometryConstructor.h
  * \brief Tracking geometry constructor.

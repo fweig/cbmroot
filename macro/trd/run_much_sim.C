@@ -1,3 +1,8 @@
+/** @file run_much_sim.C
+  * @copyright Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Ryzhinskiy m.ryzhinskiy@gsi.de, David Emschermann [committer] **/
+
 // 20130605 - checked by DE
 /**
  * DE 2013/01 - added TRD for a combined MUCH+TRD setup display

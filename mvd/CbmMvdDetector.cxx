@@ -1,3 +1,8 @@
+/** @file CbmMvdDetector.cxx
+  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                     CbmMvdDetector source file                  -----
 // -----                  Created 31/01/11  by M. Deveaux              -----

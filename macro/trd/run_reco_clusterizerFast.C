@@ -1,7 +1,7 @@
 /** @file run_reco_clusterizerFast.C
   * @copyright Copyright (C) 2012-2013 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [orginator] **/
+  * @authors Cyrano Bergmann [committer] **/
 
 // --------------------------------------------------------------------------
 //

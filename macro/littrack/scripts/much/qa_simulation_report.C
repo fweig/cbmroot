@@ -1,3 +1,8 @@
+/** @file qa_simulation_report.C
+  * @copyright Copyright (C) 2012-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file qa_simulation_report.C
  * \brief Macro for generation of reports from file with histograms.

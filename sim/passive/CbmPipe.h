@@ -1,7 +1,7 @@
 /** @file CbmPipe.h
   * @copyright Copyright (C) 2006-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann, Denis Bertini [orginator], Florian Uhlig **/
+  * @authors David Emschermann, Denis Bertini [committer], Florian Uhlig **/
 
 #ifndef CBMPIPE_H
 #define CBMPIPE_H 1

@@ -1,7 +1,7 @@
 /** @file load_hst.C
   * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon, Norbert Herrmann [orginator] **/
+  * @authors Christian Simon, Norbert Herrmann [committer] **/
 
 void load_hst(TString cstr = "hst/default.hst.root")
 {

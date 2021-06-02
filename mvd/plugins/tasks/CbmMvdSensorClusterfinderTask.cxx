@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorClusterfinderTask.cxx
+  * @copyright Copyright (C) 2014-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdSensorClusterfinderTask source file    -----
 // -----                  Created 03.12.2014 by P. Sitzmann            -----

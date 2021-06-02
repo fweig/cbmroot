@@ -1,3 +1,8 @@
+/** @file LitDetectorLayout.h
+  * @copyright Copyright (C) 2009-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitDetectorLayout.h
  * \brief Detector layout class.

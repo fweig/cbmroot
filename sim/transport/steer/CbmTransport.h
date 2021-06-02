@@ -1,4 +1,9 @@
 /** @file CbmTransport.h
+  * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Florian Uhlig [committer] **/
+
+/** @file CbmTransport.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 31.01.2019
  **/

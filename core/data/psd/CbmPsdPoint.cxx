@@ -1,3 +1,8 @@
+/** @file CbmPsdPoint.cxx
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmPsdPoint source file                 -----
 // -----                   Created 28/07/04  by V. Friese              -----

@@ -1,7 +1,7 @@
 /** @file CbmTrdClusterFinder.cxx
   * @copyright Copyright (C) 2010-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator], Pascal Raisig, Alexandru Bercuci **/
+  * @authors Florian Uhlig [committer], Pascal Raisig, Alexandru Bercuci **/
 
 #include "CbmTrdClusterFinder.h"
 

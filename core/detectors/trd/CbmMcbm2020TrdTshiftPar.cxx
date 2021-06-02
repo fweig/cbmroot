@@ -1,16 +1,7 @@
-/*
- * File: /CbmMcbm2020TrdTshiftPar.cxx
- * Created Date: Thursday December 17th 2020
- * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
- * -----
- * Last Modified: Monday January 18th 2021 16:01:05
- * Modified By: Pascal Raisig
- * -----
- * Purpose: This container is only to be used for Trd mCbm2020 data. It contains the
- * corrections for the observed timeshifts within the 2020 data.
- * -----
- */
-
+/** @file CbmMcbm2020TrdTshiftPar.cxx
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig, Florian Uhlig [committer] **/
 
 #include "CbmMcbm2020TrdTshiftPar.h"
 

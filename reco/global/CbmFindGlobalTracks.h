@@ -1,3 +1,8 @@
+/** @file CbmFindGlobalTracks.h
+  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V.Friese, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmFindGlobalTracks header file              -----
 // -----                  Created 01/12/05  by V. Friese               -----

@@ -1,14 +1,12 @@
+/** @file CbmBinnedTrackerTask.h
+  * @copyright Copyright (C) 2017-2020 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [committer] **/
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */
-
-/* 
- * File:   CbmBinnedTrackerTask.h
- * Author: tablyaz
- *
- * Created on August 3, 2017, 4:33 PM
  */
 
 #ifndef CBMBINNEDTRACKERTASK_H

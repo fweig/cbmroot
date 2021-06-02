@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018MonitorMuchLite.cxx
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors David Emschermann [committer], Pierre-Alain Loizeau **/
+
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
 // -----                   CbmMcbm2018MonitorMuchLite                        -----

@@ -1,3 +1,8 @@
+/** @file CbmRichRingFinderHoughSimd.h
+  * @copyright Copyright (C) 2009-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /**
 * \file CbmRichRingFinderHoughSimd.h
 *

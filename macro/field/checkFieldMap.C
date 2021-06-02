@@ -1,7 +1,7 @@
 /** @file checkFieldMap.C
   * @copyright Copyright (C) 2007-2013 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebdeva [orginator], Volker Friese **/
+  * @authors Elena Lebdeva [committer], Volker Friese **/
 
 // --------------------------------------------------------------------------
 //

@@ -1,8 +1,7 @@
-///////////////////////////////////////////////////////////////////////////
-//
-//
-// Authors:
-//   Julian Book   <Julian.Book@cern.ch>
+/** @file PairAnalysisPairLV.cxx
+  * @copyright Copyright (C) 2015-2019 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
 /*
 
   PairAnalysisPair class that internally makes use of TLorentzVector.

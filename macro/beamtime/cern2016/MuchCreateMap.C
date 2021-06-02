@@ -1,7 +1,7 @@
 /** @file MuchCreateMap.C
   * @copyright Copyright (C) 2016 Variable Energy Cyclotron Centre, Kolkata
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal [orginator] **/
+  * @authors Vikas Singhal [committer] **/
 
 #include "/home/pmd/daqsoft/cbmroot_trunk/beamtime/MuchRealSize.h"
 void MuchCreateMap()

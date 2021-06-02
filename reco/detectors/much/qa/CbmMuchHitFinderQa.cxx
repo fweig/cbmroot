@@ -1,3 +1,8 @@
+/** @file CbmMuchHitFinderQa.cxx
+  * @copyright Copyright (C) 2007-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Dominik Smith [committer], Sergey Gorbunov **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmMuchHitProducerQa source file             -----
 // -----                   Modified since 21/06/2019 by Ekata Nandy (ekata@vecc.gov.in) -Inclusion of RPC detector type

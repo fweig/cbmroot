@@ -1,5 +1,8 @@
-// $Id: g3Config.C,v 1.1.1.1 2005/06/23 07:14:09 dbertini Exp $
-//
+/** @file g3Config.C
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D. Bertini, Julian Book [committer] **/
+
 // Configuration macro for Geant3 VirtualMC
 
 void Config()

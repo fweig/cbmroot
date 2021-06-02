@@ -1,7 +1,7 @@
 /** @file mcbm_reco_event_tb.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber [orginator] **/
+  * @authors Adrian Amatus Weber [committer] **/
 
 // --------------------------------------------------------------------------
 //

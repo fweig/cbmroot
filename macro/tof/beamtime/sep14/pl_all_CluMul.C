@@ -1,7 +1,7 @@
 /** @file pl_all_CluMul.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 void pl_all_CluMul(Int_t iNDet = 6)
 {

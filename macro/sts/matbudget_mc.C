@@ -1,7 +1,7 @@
 /** @file matbudget_mc.C
   * @copyright Copyright (C) 2015-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [orginator], David Emschermann **/
+  * @authors Volker Friese [committer], David Emschermann **/
 
 // --------------------------------------------------------------------------
 //

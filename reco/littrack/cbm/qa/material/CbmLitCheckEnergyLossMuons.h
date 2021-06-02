@@ -1,7 +1,7 @@
 /** @file CbmLitCheckEnergyLossMuons.h
   * @copyright Copyright (C) 2009-2013 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 #ifndef CBMLITCHECKENERGYLOSSMUONS_H_
 #define CBMLITCHECKENERGYLOSSMUONS_H_

@@ -1,7 +1,7 @@
 /** @file pl_info_2D.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_info_2D(char* cHist = "hDTD4DT04D4best", Int_t iDBin = 1, Int_t iMode = 0)
 {

@@ -1,6 +1,10 @@
+/** @file Config_user_Minimum.C
+  * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
+
 /// \file Config_user_Minimum.C
 /// \brief A minimum task configuration macro
-/// \author Julian Book <jbook@ikf.uni-frankfurt.de>, Goethe-University Frankfurt
 /// \date Apr 25, 2016
 
 AnalysisTaskMultiPairAnalysis* Config_user_Minimum(const char* taskname)

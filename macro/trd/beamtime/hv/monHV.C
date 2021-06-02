@@ -1,7 +1,7 @@
 /** @file monHV.C
   * @copyright Copyright (C) 2015-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Kähler [orginator] **/
+  * @authors Philipp Kähler [committer] **/
 
 #include "TCanvas.h"
 #include "TDatime.h"

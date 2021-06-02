@@ -1,3 +1,8 @@
+/** @file create_pipegeo_v14.C
+  * @copyright Copyright (C) 2013-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, David Emschermann [committer] **/
+
 /******************************************************************************
  ** Creation of beam pipe geometry in ROOT format (TGeo).
  **

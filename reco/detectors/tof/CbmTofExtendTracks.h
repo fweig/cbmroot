@@ -1,3 +1,8 @@
+/** @file CbmTofExtendTracks.h
+  * @copyright Copyright (C) 2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmTofExtendTracks header file                -----
 // -----                  Created 21/12/20  by N. Herrmann              -----

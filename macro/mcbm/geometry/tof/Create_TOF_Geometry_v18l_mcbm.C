@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_v18l_mcbm.C
   * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [orginator] **/
+  * @authors David Emschermann [committer] **/
 
 ///
 /// \file Create_TOF_Geometry_v18l_mcbm.C

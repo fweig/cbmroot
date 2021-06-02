@@ -1,7 +1,7 @@
 /** @file PlotStsPosWithHodoCoinc.C
   * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 Bool_t PlotStsPosWithHodoCoinc(Long64_t liNbEntryToRead = -1, UInt_t uRunId = 12, Double_t dHodoWinStart = -600,
                                Double_t dHodoWinStop = 600, Double_t dStsWinStart = -1000, Double_t dStsWinStop = 1000)

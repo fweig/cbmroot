@@ -1,5 +1,7 @@
-//*-- AUTHOR : Ilse Koenig
-//*-- Created : 10/11/2003
+/** @file CbmGeoCave.cxx
+  * @copyright Copyright (C) 2003-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Ilse Koenig, Denis Bertini [committer], Mohammad Al-Turany, Florian Uhlig **/
 
 /////////////////////////////////////////////////////////////
 // CbmGeoCave

@@ -1,7 +1,7 @@
 /** @file mvd_CbmUniGen_sim_cluster.C
-  * @copyright Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2014-2015 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [orginator] **/
+  * @authors Philipp Sitzmann [committer] **/
 
 // -------------------------------------------------------------------------
 //

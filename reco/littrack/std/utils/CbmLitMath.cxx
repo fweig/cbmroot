@@ -1,7 +1,7 @@
 /** @file CbmLitMath.cxx
   * @copyright Copyright (C) 2008-2017 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator], Timur Ablyazimov **/
+  * @authors Andrey Lebedev [committer], Timur Ablyazimov **/
 
 #include "utils/CbmLitMath.h"
 

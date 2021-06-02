@@ -1,7 +1,7 @@
 /** @file AnalysisTreeKfpfInterfaceLinkDef.h
   * @copyright Copyright (C) 2020 GSI, IKF-UFra
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Oleksii Lubynets [orginator] **/
+  * @authors Oleksii Lubynets [committer] **/
 
 #ifdef __CINT__
 

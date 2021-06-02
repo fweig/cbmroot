@@ -1,3 +1,8 @@
+/** @file CbmMvdDigitizerTB.h
+  * @copyright Copyright (C) 2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // ----------------------------------------------------------------------------
 // -----                    CbmMvdDigitizerTB header file                   -----
 // -----                   Created by P.Sitzmann (p.sitzmann(att)gsi.de    -----

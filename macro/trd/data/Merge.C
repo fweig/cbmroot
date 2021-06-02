@@ -1,3 +1,8 @@
+/** @file Merge.C
+  * @copyright Copyright (C) 2001-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Cyrano Bergmann [committer] **/
+
 //macro to add histogram files
 //NOTE: This macro is kept for back compatibility only.
 //Use instead the executable $ROOTSYS/bin/hadd

@@ -1,3 +1,8 @@
+/** @file CbmMuchContFact.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Ryzhinskiy, Denis Bertini [committer], Florian Uhlig, Mohammad Al-Turany **/
+
 /** CbmMuchContFact.h
  *
  * @author  M. Ryzhinskiy <m.ryzhinskiy@gsi.de>

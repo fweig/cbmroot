@@ -1,7 +1,7 @@
 /** @file create_RICH_geo_file.C
   * @copyright Copyright (C) 2006-2008 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator], Claudia Höhne **/
+  * @authors Denis Bertini [committer], Claudia Höhne **/
 
 void create_RICH_geo_file(char* geometry = "rich-2900-N2-0")
 {

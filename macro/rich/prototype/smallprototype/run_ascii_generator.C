@@ -1,7 +1,7 @@
 /** @file run_ascii_generator.C
   * @copyright Copyright (C) 2016-2017 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Gregor Pitsch [orginator] **/
+  * @authors Gregor Pitsch [committer] **/
 
 #include <iostream>
 #include <string>

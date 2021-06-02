@@ -1,3 +1,8 @@
+/** @file run_digi.C
+  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Florian Uhlig [committer] **/
+
 /** Macro for detector response simulation (digitisation)
  **
  ** The detector response produces a raw data file from the transport

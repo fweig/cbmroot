@@ -1,9 +1,8 @@
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-// Authors:
-//   Julian Book   <Julian.Book@cern.ch>
+/** @file PairAnalysisEvent.cxx
+  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer], Florian Uhlig **/
 /*
-
   Event that holds all information needed for the of analysis (including fast simulations). 
   Init() the PairAnalysisTrack array fTracks and provides easy access to:
 
@@ -16,8 +15,7 @@
   for each sub-detector.
 
 */
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
+
 #include "PairAnalysisEvent.h"
 
 #include "CbmGlobalTrack.h"

@@ -1,3 +1,8 @@
+/** @file CbmRichTrackExtrapolationLittrack.h
+  * @copyright Copyright (C) 2016-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Andrey Lebedev [committer] **/
+
 /**
  * \file CbmRichTrackExtrapolationLittrack.h
  *

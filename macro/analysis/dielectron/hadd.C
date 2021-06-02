@@ -1,7 +1,7 @@
 /** @file hadd.C
   * @copyright Copyright (C) 2012-2018 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Elena Lebedeva **/
+  * @authors Semen Lebedev [committer], Elena Lebedeva **/
 
 using namespace std;
 

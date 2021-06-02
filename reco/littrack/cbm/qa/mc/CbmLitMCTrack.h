@@ -1,3 +1,8 @@
+/** @file CbmLitMCTrack.h
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Semen Lebedev, Florian Uhlig **/
+
 /**
  * \file CbmLitMCTrack.h
  * \brief Monte-Carlo track.

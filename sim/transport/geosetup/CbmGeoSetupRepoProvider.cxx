@@ -1,4 +1,9 @@
 /** @file CbmGeoSetupRepoProvider.cxx
+  * @copyright Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Evgeny Lavrik, Florian Uhlig [committer] **/
+
+/** @file CbmGeoSetupRepoProvider.cxx
  ** @author Evgeny Lavrik <e.lavrik@gsi.de>
  ** @since 01.10.2019
  **/

@@ -1,3 +1,8 @@
+/** @file CbmMuchTransportQa.cxx
+  * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov, Dominik Smith [committer] **/
+
 /// \file   CbmMuchTransportQa.cxx
 /// \brief  Implementation of the CbmMuchTransportQa class
 /// \author Sergey Gorbunov <se.gorbunov@gsi.de>

@@ -1,7 +1,7 @@
 /** @file draw_analysis.C
   * @copyright Copyright (C) 2014-2016 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+  * @authors Semen Lebedev [committer], Andrey Lebedev **/
 
 void draw_analysis()
 {

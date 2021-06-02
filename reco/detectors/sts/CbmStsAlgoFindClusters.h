@@ -1,4 +1,9 @@
 /** @file CbmStsAlgoFindClusters.h
+  * @copyright Copyright (C) 2017-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsAlgoFindClusters.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 05.04.20174
  **/

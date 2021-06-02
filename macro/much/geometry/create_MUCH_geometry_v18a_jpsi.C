@@ -1,7 +1,7 @@
 /** @file create_MUCH_geometry_v18a_jpsi.C
   * @copyright Copyright (C) 2018 Variable Energy Cyclotron Centre, Kolkata
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal [orginator], Omveer Singh **/
+  * @authors Vikas Singhal [committer], Omveer Singh **/
 
 //
 /// \file create_MUCH_geometry_v18a.C

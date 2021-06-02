@@ -1,3 +1,8 @@
+/** @file CbmMvdMimosa34.h
+  * @copyright Copyright (C) 2014 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmMvdMimosa34 header file               -----
 // -----                  Created 10/12/14  by B. Linnik               -----

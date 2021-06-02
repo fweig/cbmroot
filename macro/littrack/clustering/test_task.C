@@ -1,3 +1,8 @@
+/** @file test_task.C
+  * @copyright Copyright (C) 2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Grigory Kozlov, Andrey Lebedev [committer] **/
+
 /**
  * \file test_task.C
  * \brief Macro test task.

@@ -1,3 +1,8 @@
+/** @file event_display.C
+  * @copyright Copyright (C) 2009-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file event_display.C
  * \brief Macro runs event display.

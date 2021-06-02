@@ -1,8 +1,9 @@
+/** @file CbmLitTrackSelectionCuts.h
+  * @copyright Copyright (C) 2011-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /* CbmLitTrackSelectionCuts.h
- * @author Andrey Lebedev <andrey.lebedev@gsi.de>
- * @since 2011
- * @version 1.0
- *
  * Removes tracks based on the cuts.
  */
 #ifndef CBMLITTRACKSELECTIONCUTS_H_

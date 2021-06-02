@@ -1,3 +1,8 @@
+/** @file create_psdgeo_46modules.C
+  * @copyright Copyright (C) 2017-2018 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Oleg Golosov [committer] **/
+
 /** @file create_psdgeo.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 16 September 2017

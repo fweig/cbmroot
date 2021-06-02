@@ -1,7 +1,7 @@
 /** @file pl_all_2D.C
   * @copyright Copyright (C) 2019 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_all_2D(Int_t iOpt = 0, Int_t iNSt = 6)
 {

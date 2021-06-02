@@ -1,3 +1,8 @@
+/** @file CbmMuchDigitizeGem.h
+  * @copyright Copyright (C) 2009-2020 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Mikhail Ryzhinskiy [committer], Vikas Singhal, Evgeny Kryshen **/
+
 /** CbmMuchDigitizeGem.h
  *@author Vikas Singhal <vikas@vecc.gov.in>
  *@since 15.01.2020

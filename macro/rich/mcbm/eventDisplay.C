@@ -1,7 +1,7 @@
 /** @file eventDisplay.C
   * @copyright Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Gregor Pitsch [orginator] **/
+  * @authors Semen Lebedev, Gregor Pitsch [committer] **/
 
 //void eventDisplay(const char* setup = "sis18_mcbm_25deg")
 //void eventDisplay(const char* setup = "sis18_mcbm_20deg_short")

@@ -1,4 +1,9 @@
 /** @file CbmDaq.cxx
+  * @copyright Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmDaq.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 20 July 2012
  **/

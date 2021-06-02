@@ -1,7 +1,7 @@
 /** @file run_reco.C
   * @copyright Copyright (C) 2011-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Dmytro Kresan [orginator] **/
+  * @authors Semen Lebedev, Dmytro Kresan [committer] **/
 
 #include <string>
 

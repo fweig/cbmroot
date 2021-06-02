@@ -1,4 +1,9 @@
 /** @file CbmStsDigi.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Denis Bertini [committer], Florian Uhlig **/
+
+/** @file CbmStsDigi.h
  ** @author V.Friese <v.friese@gsi.de>
  ** @since 28.08.2006
  ** @version 6

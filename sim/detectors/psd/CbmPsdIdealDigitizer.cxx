@@ -1,3 +1,8 @@
+/** @file CbmPsdIdealDigitizer.cxx
+  * @copyright Copyright (C) 2012-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alla & SELIM & FLORIAN, Volker Friese [committer], Evgeny Kashirin **/
+
 // -------------------------------------------------------------------------
 // -----                CbmPsdIdealDigitizer source file             -----
 // -----                  Created 15/05/12  by     Alla & SELIM & FLORIAN               -----

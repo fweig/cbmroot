@@ -1,7 +1,7 @@
 /** @file run100.C
   * @copyright Copyright (C) 2012 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 // Macro for running Cbm  with Geant3  or Geant4 (M. Al-Turany , D. Bertini)
 // Modified 22/06/2005 D.Bertini

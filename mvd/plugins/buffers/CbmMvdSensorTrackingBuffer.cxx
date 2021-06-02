@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorTrackingBuffer.cxx
+  * @copyright Copyright (C) 2012-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdSensorTrackingBuffer source file       -----
 // -----                  Created 14/02/12 by P.Sitzmann               -----

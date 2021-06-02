@@ -1,7 +1,7 @@
 /** @file P4_F32vec4.h
   * @copyright Copyright (C) 2010-2014 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 #ifndef LIT_F32VEC4P4_H
 #define LIT_F32VEC4P4_H

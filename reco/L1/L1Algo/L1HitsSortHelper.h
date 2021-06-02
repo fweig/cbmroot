@@ -1,7 +1,7 @@
 /** @file L1HitsSortHelper.h
   * @copyright Copyright (C) 2012-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator], Maxim Zyzak **/
+  * @authors Igor Kulakov [committer], Maxim Zyzak **/
 
 #ifndef _L1HitsL1HitsSortHelper_h_
 #define _L1HitsL1HitsSortHelper_h_

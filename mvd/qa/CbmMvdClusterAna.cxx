@@ -1,3 +1,8 @@
+/** @file CbmMvdClusterAna.cxx
+  * @copyright Copyright (C) 2015-2019 IKF-UFrac
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Samir Amar-Youcef [committer] **/
+
 // -------------------------------------------------------------------------
 // -----              CbmMvdClusterAna  source file                   -----
 // -----              Created 27/04/15  by S. Amar-Youcef             -----

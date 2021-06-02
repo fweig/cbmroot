@@ -1,7 +1,7 @@
 /** @file CbmMvdCluster.cxx
   * @copyright Copyright (C) 2008-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann, Christina Dritsa [orginator], Florian Uhlig **/
+  * @authors Philipp Sitzmann, Christina Dritsa [committer], Florian Uhlig **/
 
 // -------------------------------------------------------------------------
 // -----                CbmMvdCluster source file                  -----

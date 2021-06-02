@@ -1,3 +1,8 @@
+/** @file CbmMvdStationPar.h
+  * @copyright Copyright (C) 2014-2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmMvdStationPar header file             -----
 // -----                  Created 28/10/14 by P.Sitzmann               -----

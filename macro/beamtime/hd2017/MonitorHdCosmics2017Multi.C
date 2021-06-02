@@ -1,3 +1,8 @@
+/** @file MonitorHdCosmics2017Multi.C
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer] **/
+
 /** @file MonitorStar2017
  ** @author Pierre-Alain Loizeau <p.-a.loizeau@gsi.de>
  ** @date 22.01.2017

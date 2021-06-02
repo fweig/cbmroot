@@ -1,4 +1,9 @@
 /** @file CbmDefs.h
+  * @copyright Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Volker Friese [committer], Semen Lebedev **/
+
+/** @file CbmDefs.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 30.05.2017
  **

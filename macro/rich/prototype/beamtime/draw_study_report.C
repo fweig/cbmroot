@@ -1,7 +1,7 @@
 /** @file draw_study_report.C
   * @copyright Copyright (C) 2014-2015 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 void draw_study_report()
 {

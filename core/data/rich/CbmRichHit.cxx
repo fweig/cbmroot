@@ -1,3 +1,8 @@
+/** @file CbmRichHit.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors B. Polichtchouk, Florian Uhlig, Andrey Lebedev, Denis Bertini [committer] **/
+
 /**
  * \file CbmRichHit.cxx
  * \author B. Polichtchouk

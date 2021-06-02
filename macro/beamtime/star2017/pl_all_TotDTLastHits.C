@@ -1,7 +1,7 @@
 /** @file pl_all_TotDTLastHits.C
   * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 void pl_all_TotDTLastHits(Int_t iNSt = 2, Int_t iSel = 0, Double_t Tstart = 1., Double_t Tend = 100.)
 {

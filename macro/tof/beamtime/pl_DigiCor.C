@@ -1,7 +1,7 @@
 /** @file pl_DigiCor.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_DigiCor(Int_t SmT = 1, Int_t iSm = 0, Int_t iRpc = 0)
 {

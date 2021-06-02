@@ -1,3 +1,8 @@
+/** @file CbmRichParallelQa.cxx
+  * @copyright Copyright (C) 2010-2011 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /** CbmRichParallelQa.cxx
  * @author Semen Lebedev <s.lebedev@gsi.de>
  * @since 2010

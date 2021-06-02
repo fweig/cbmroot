@@ -1,7 +1,7 @@
 /** @file Run_Reco_GeoOpt_Batch.C
   * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tariq Mahmoud [orginator] **/
+  * @authors Tariq Mahmoud [committer] **/
 
 void Run_Reco_GeoOpt_Batch(Int_t nEvents = 10, int PMTtransY = 0, int PMTtransZ = 0, float PMTrotX = 2,
                            float PMTrotY = 2, int RotMir = -10)

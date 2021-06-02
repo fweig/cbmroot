@@ -1,3 +1,8 @@
+/** @file CbmMuchStation.h
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Mikhail Ryzhinskiy, Evgeny Kryshen **/
+
 /** CbmMuchStation.h
  *@author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>
  *@version 1.0

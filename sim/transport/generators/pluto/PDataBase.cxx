@@ -1,14 +1,9 @@
-////////////////////////////////////////////////////////
-//  Particle ID, properties and decay data base
-//
-//
-//
-//                    Author: I. Froehlich
-//                    Written: 11.04.2007
-//                    Revised:
-//
-////////////////////////////////////////////////////////
+/** @file PDataBase.cxx
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
 
+//  Particle ID, properties and decay data base
 
 #include "PDataBase.h"
 

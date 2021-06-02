@@ -1,3 +1,8 @@
+/** @file CbmStsTrack.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Denis Bertini [committer], Evgeny Lavrik **/
+
 /**
  ** \file CbmStsTrack.h
  ** \author V.Friese <v.friese@gsi.de>

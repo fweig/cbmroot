@@ -1,7 +1,7 @@
 /** @file CbmMuchAddress.h
   * @copyright Copyright (C) 2013-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Evgeny Kryshen [orginator] **/
+  * @authors Evgeny Kryshen [committer] **/
 
 #ifndef CBMMUCHADDRESS_H
 #define CBMMUCHADDRESS_H 1

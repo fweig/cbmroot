@@ -1,7 +1,7 @@
 /** @file CbmRichUtil.h
   * @copyright Copyright (C) 2017-2019 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator], Semen Lebedev **/
+  * @authors Andrey Lebedev [committer], Semen Lebedev **/
 
 #ifndef RICH_CbmRichUtil
 #define RICH_CbmRichUtil

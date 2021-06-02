@@ -1,7 +1,7 @@
 /** @file CbmL1MuchFinderQa.cxx
   * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [orginator] **/
+  * @authors Sergey Gorbunov [committer] **/
 
 #include "CbmL1MuchFinderQa.h"
 

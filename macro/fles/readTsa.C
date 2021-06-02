@@ -1,4 +1,9 @@
 /** @file readTsa.C
+  * @copyright Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
+/** @file readTsa.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @since August 2014
  ** @date 08.08.2014

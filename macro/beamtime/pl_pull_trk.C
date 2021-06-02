@@ -1,7 +1,7 @@
 /** @file pl_pull_trk.C
   * @copyright Copyright (C) 2017-2021 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0, Int_t iDrop = -1)
 {

@@ -1,12 +1,9 @@
+/** @file CbmKFTrErrMCPoints.cxx
+  * @copyright Copyright (C) 2011-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Maxim Zyzak [committer] **/
+
 /*
- *====================================================================
- *
- *  CBM KF Track Quality
- *  
- *  Authors: M.Zyzak
- *
- *  e-mail : 
- *
  *====================================================================
  *
  *  KF Fit performance 

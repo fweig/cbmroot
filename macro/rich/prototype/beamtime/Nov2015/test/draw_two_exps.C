@@ -1,7 +1,7 @@
 /** @file draw_two_exps.C
   * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+  * @authors Egor Ovcharenko [committer] **/
 
 void draw_two_exps(TString filename1 = "sum_WLS_off_G1.root", TString filename2 = "sum_WLS_on_G1.root",
                    TString histoName1 = "ExponentaBudetTut", TString histoName2 = "ExponentaBudetTut")

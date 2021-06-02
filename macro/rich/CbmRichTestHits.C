@@ -1,7 +1,7 @@
 /** @file CbmRichTestHits.C
   * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator] **/
+  * @authors Denis Bertini [committer] **/
 
 /***************************************************************
 * $Id: CbmRichTestHits.C,v 1.3 2006/06/22 07:18:07 hoehne Exp $

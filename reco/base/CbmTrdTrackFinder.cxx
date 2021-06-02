@@ -1,3 +1,8 @@
+/** @file CbmTrdTrackFinder.cxx
+  * @copyright Copyright (C) 2005-2006 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D. Kresan, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmTrdTrackFinder source file               -----
 // -----                  Created 25/11/05  by D. Kresan               -----

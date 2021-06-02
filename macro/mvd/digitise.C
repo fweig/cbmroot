@@ -1,7 +1,7 @@
 /** @file digitise.C
   * @copyright Copyright (C) 2008-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christina Dritsa [orginator] **/
+  * @authors Christina Dritsa [committer] **/
 
 // --------------------------------------------------------------------------
 //

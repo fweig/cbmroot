@@ -1,3 +1,8 @@
+/** @file CbmMuchTrackFinder.h
+  * @copyright Copyright (C) 2007-2009 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors A.Lebedev, Mikhail Ryzhinskiy [committer], Florian Uhlig **/
+
 /** CbmMuchTrackFinder.h
  *@author A.Lebedev <Andrey.Lebedev@gsi.de>
  *@since 2007

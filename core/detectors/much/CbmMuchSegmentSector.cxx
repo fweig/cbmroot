@@ -1,3 +1,8 @@
+/** @file CbmMuchSegmentSector.cxx
+  * @copyright Copyright (C) 2012-2021 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Evgeny Kryshen [committer], Florian Uhlig **/
+
 /** CbmMuchSegmentSector.cxx
  *@author Evgeny Kryshen <e.kryshen@gsi.de>
  *@since 05.02.12

@@ -1,7 +1,7 @@
 /** @file CbmPsdBaseLinkDef.h
   * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator], Florian Uhlig **/
+  * @authors Pierre-Alain Loizeau [committer], Florian Uhlig **/
 
 // $Id: TofLinkDef.h,v 1.3 2006/03/07 11:51:55 friese Exp $
 

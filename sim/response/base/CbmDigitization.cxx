@@ -1,4 +1,9 @@
 /** @file CbmDigitization.cxx
+  * @copyright Copyright (C) 2018-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
+/** @file CbmDigitization.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 18.05.2018
  **/

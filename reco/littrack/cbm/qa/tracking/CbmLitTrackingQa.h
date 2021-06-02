@@ -1,3 +1,8 @@
+/** @file CbmLitTrackingQa.h
+  * @copyright Copyright (C) 2007-2018 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackingQa.h
  * \brief FairTask for tracking performance calculation.

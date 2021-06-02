@@ -1,3 +1,8 @@
+/** @file CbmLitTrackFinderBranch.cxx
+  * @copyright Copyright (C) 2007-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Volker Friese **/
+
 /**
  * \file CbmLitTrackFinderBranch.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

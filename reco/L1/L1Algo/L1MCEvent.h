@@ -1,7 +1,7 @@
 /** @file L1MCEvent.h
   * @copyright Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak [orginator] **/
+  * @authors Maxim Zyzak [committer] **/
 
 #ifndef L1MCEvent_H
 #define L1MCEvent_H

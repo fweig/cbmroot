@@ -1,7 +1,7 @@
 /** @file CbmMvdMimosis.h
-  * @copyright Copyright (C) 2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2017 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [orginator] **/
+  * @authors Philipp Sitzmann [committer] **/
 
 // -------------------------------------------------------------------------
 // -----                      CbmMvdMimosis header file                -----

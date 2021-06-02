@@ -1,7 +1,7 @@
 /** @file run_digi_urqmdtest.C
   * @copyright Copyright (C) 2018-2020 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+  * @authors Semen Lebedev [committer], Andrey Lebedev **/
 
 void run_digi_urqmdtest(
   const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",

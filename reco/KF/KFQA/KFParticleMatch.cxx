@@ -1,12 +1,9 @@
+/** @file KFParticleMatch.cxx
+  * @copyright Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Zyzak, Maxim Zyzak [committer], Florian Uhlig **/
+
 /*
- *====================================================================
- *
- *  KFParticleMatch
- *  
- *  Authors: M.Zyzak
- *
- *  e-mail : m.zyzak@gsi.de
- *
  *====================================================================
  *
  *  KF Particles Finder performance 

@@ -1,7 +1,7 @@
 /** @file L1AlgoTBB.h
   * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator] **/
+  * @authors Igor Kulakov [committer] **/
 
 #ifndef L1AlgoTBB_h
 #define L1AlgoTBB_h

@@ -1,3 +1,8 @@
+/** @file Draw_FieldApprox.C
+  * @copyright Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Zyzak, Igor Kulakov [committer] **/
+
 /*
  *====================================================================
  *

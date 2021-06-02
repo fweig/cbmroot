@@ -1,3 +1,8 @@
+/** @file CbmClusteringWard.h
+  * @copyright Copyright (C) 2012-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors kozlov, Andrey Lebedev [committer] **/
+
 /*
  * CbmClusteringWard.h
  *

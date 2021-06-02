@@ -1,7 +1,7 @@
 /** @file Comp_Hist.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 #include "TH1.h"
 #include "TH2D.h"

@@ -1,3 +1,8 @@
+/** @file CbmTrdAddress.h
+  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig [committer] **/
+
 /**
  * \file CbmTrdAddress.h
  * \author F. Uhlig <f.uhlig@gsi.de>

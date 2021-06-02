@@ -1,3 +1,8 @@
+/** @file CbmStsFitPerformanceTask.cxx
+  * @copyright Copyright (C) 2005-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                 CbmStsFitPerformanceTask source file             -----
 // -----                  Created 02/02/05  by E. Kryshen              -----

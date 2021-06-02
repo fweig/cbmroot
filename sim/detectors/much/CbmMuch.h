@@ -1,3 +1,8 @@
+/** @file CbmMuch.h
+  * @copyright Copyright (C) 2008-2020 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Mikhail Ryzhinskiy [committer] **/
+
 /** CbmMuch.h
  *
  * @author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>

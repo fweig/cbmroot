@@ -1,7 +1,7 @@
 /** @file opencharm_sim.C
-  * @copyright Copyright (C) 2015-2016 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2015-2016 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [orginator] **/
+  * @authors Philipp Sitzmann [committer] **/
 
 // -------------------------------------------------------------------------
 //

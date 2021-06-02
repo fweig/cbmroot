@@ -1,3 +1,8 @@
+/** @file CbmTofPtrTypes.h
+  * @copyright Copyright (C) 2008-2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Norbert Herrmann [committer] **/
+
 /**
  * \file CbmLitPtrTypes.h
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

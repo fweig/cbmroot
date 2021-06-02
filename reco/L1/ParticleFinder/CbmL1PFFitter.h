@@ -1,3 +1,8 @@
+/** @file CbmL1PFFitter.h
+  * @copyright Copyright (C) 2011-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Zyzak, Maxim Zyzak [committer] **/
+
 /*
  *=====================================================
  *

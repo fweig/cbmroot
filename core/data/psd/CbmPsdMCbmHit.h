@@ -1,3 +1,8 @@
+/** @file CbmPsdMCbmHit.h
+  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Nikolay Karpushkin, Pierre-Alain Loizeau [committer] **/
+
 /** \file CbmPsdMCbmHit.h
  ** \author Nikolay Karpushkin <karpushkin@inr.ru>
  ** \date 11.03.2020

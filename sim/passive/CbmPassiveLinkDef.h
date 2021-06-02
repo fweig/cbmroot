@@ -1,7 +1,7 @@
 /** @file CbmPassiveLinkDef.h
   * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator], Florian Uhlig **/
+  * @authors Denis Bertini [committer], Florian Uhlig **/
 
 // $Id: PassiveLinkDef.h,v 1.1.1.1 2005/06/23 07:14:26 dbertini Exp $
 

@@ -1,3 +1,8 @@
+/** @file CbmRunAna.cxx
+  * @copyright Copyright (C) 2009-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese v.friese@gsi.de, Volker Friese [committer], Florian Uhlig **/
+
 /** CbmRunAna.cxx
  *@author Volker Friese v.friese@gsi.de
  *@since 10.12.2009

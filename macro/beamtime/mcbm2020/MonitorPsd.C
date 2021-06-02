@@ -1,3 +1,8 @@
+/** @file MonitorPsd.C
+  * @copyright Copyright (C) 2019-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Nikolay Karpushkin, Pierre-Alain Loizeau [committer] **/
+
 /** @file MCBM PSD DATA monitoring
  ** @author Nikolay Karpushkin <karpushkin@inr.ru>
  ** @date 09.10.2019

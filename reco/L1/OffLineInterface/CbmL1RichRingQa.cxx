@@ -1,7 +1,7 @@
 /** @file CbmL1RichRingQa.cxx
   * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov, Denis Bertini [orginator] **/
+  * @authors Igor Kulakov, Denis Bertini [committer] **/
 
 #include "CbmL1RichRingQa.h"
 

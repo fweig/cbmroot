@@ -1,3 +1,8 @@
+/** @file CbmLitFitNode.h
+  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFitNode.h
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

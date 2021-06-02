@@ -1,3 +1,8 @@
+/** @file CbmMCTrack.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Volker Friese, Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmMCTrack header file                   -----
 // -----                  Created 03/08/04  by V. Friese               -----

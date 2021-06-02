@@ -1,3 +1,8 @@
+/** @file CbmMuchSignal.h
+  * @copyright Copyright (C) 2017-2018 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Vikas Singhal [committer] **/
+
 /**CbmMuchSignal.h
  * @author Vikas Singhal <vikas@vecc.gov.in>
  **@since 10/04/18

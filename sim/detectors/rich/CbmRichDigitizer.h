@@ -1,3 +1,8 @@
+/** @file CbmRichDigitizer.h
+  * @copyright Copyright (C) 2015-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Lebedev, Andrey Lebedev [committer] **/
+
 /**
 * \file CbmRichDigitizer.h
 *

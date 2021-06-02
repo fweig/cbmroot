@@ -1,3 +1,8 @@
+/** @file CbmLitTrackFitterImp.cxx
+  * @copyright Copyright (C) 2007-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackFitterImp.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

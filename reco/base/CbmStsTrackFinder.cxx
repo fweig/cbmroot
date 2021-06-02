@@ -1,3 +1,8 @@
+/** @file CbmStsTrackFinder.cxx
+  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Evgeny Lavrik, Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmStsTrackFinder source file               -----
 // -----                  Created 02/02/05  by V. Friese               -----

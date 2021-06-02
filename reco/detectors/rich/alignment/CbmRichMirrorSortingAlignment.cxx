@@ -1,7 +1,7 @@
 /** @file CbmRichMirrorSortingAlignment.cxx
   * @copyright Copyright (C) 2016-2021 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 #include "CbmRichMirrorSortingAlignment.h"
 

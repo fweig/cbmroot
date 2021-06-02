@@ -1,3 +1,8 @@
+/** @file CbmLitGlobalElectronId.h
+  * @copyright Copyright (C) 2011-2017 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /**
  * \file CbmLitReconstructionQa.h
  * \author Semen Lebedev <s.lebedev@gsi.de>

@@ -1,3 +1,8 @@
+/** @file CbmMCEvent.h
+  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 #/** CbmMCEvent.h
  *@author V.Friese <v.friese@gsi.de>
  ** Data class (level MC) containing information about the input event.

@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_Star_1.C
   * @copyright Copyright (C) 2016-2017 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 // Macro creating a ToF geometry for STAR wheel
 //

@@ -1,17 +1,11 @@
+/** @file KFParticleMatch.h
+  * @copyright Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Maxim Zyzak [committer] **/
+
 /*
- *====================================================================
- *
  *  CBM KF Track Quality
- *  
- *  Authors: M.Zyzak
- *
- *  e-mail : 
- *
- *====================================================================
- *
  *  KF Particles Finder performance 
- *
- *====================================================================
  */
 
 #ifndef _KFParticleMatch_h_

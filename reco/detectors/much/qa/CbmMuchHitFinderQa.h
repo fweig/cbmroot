@@ -1,3 +1,8 @@
+/** @file CbmMuchHitFinderQa.h
+  * @copyright Copyright (C) 2007-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Dominik Smith [committer], Sergey Gorbunov **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMuchHitFinderQa header file               -----
 // -----                  Modified 01/18  by Vikas Singhal             -----

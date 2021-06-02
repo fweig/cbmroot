@@ -1,3 +1,8 @@
+/** @file CbmLitTrackingQaStudyReport.h
+  * @copyright Copyright (C) 2011-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackingQaStudyReport.h
  * \brief Creates study report for tracking QA.

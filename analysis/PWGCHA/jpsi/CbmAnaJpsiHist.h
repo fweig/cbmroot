@@ -1,7 +1,7 @@
 /** @file CbmAnaJpsiHist.h
   * @copyright Copyright (C) 2015-2016 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Adrian Amatus Weber, Florian Uhlig **/
+  * @authors Semen Lebedev [committer], Adrian Amatus Weber, Florian Uhlig **/
 
 #ifndef CBM_ANA_JPSI_HIST_H
 #define CBM_ANA_JPSI_HIST_H

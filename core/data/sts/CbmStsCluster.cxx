@@ -1,3 +1,8 @@
+/** @file CbmStsCluster.cxx
+  * @copyright Copyright (C) 2008-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Anna Kotynia [committer], Andrey Lebedev **/
+
 /**
  ** \file CbmStsCluster.cxx
  ** \author V.Friese <v.friese@gsi.de>

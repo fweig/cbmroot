@@ -1,7 +1,7 @@
 /** @file pl_ana_DYXY.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_ana_DYXY(Int_t iDut = 901, Int_t NewNbinsX = 4, Int_t NewNbinsY = 4, Int_t iOpt = 0)
 {

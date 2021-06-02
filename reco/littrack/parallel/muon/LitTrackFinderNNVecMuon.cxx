@@ -1,3 +1,8 @@
+/** @file LitTrackFinderNNVecMuon.cxx
+  * @copyright Copyright (C) 2009-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitTrackFinderNNVecMuon.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

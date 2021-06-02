@@ -1,3 +1,8 @@
+/** @file CbmTofGeoHandler.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                 CbmTofGeoHandler header file                  -----
 // -----                 Created 20/11/12  by F. Uhlig                 -----

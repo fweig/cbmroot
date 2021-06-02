@@ -1,4 +1,9 @@
 /** @file CbmTofSimpClusterizer.h
+  * @copyright Copyright (C) 2013-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer], Norbert Herrmann **/
+
+/** @file CbmTofSimpClusterizer.h
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 23.08.2013
  **/

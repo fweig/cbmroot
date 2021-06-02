@@ -1,3 +1,8 @@
+/** @file CbmLitFindMvdTracks.cxx
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Timur Ablyazimov **/
+
 /**
  * \file CbmLitFindMvdTracks.cxx
  * \brief MVD tracking based on littrack package.

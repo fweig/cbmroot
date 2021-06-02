@@ -1,3 +1,8 @@
+/** @file CbmMuchPointInfo.h
+  * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Sergey Gorbunov [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmMuchPointInfo header file                -----
 // -----                  Created 21/11/07  by E. Kryshen              -----

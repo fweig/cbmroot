@@ -1,3 +1,8 @@
+/** @file mvd_reco.C
+  * @copyright Copyright (C) 2011-2016 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig **/
+
 /**
  * \file mvd_reco.C
  * \brief Macro runs littrack MVD tracking.

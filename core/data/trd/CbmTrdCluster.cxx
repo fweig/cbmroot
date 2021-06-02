@@ -1,3 +1,8 @@
+/** @file CbmTrdCluster.cxx
+  * @copyright Copyright (C) 2010-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 /**
  * \file CbmTrdCluster.cxx
  * \author Florian Uhlig <f.uhlig@gsi.de>

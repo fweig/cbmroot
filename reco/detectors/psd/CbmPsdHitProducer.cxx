@@ -1,3 +1,8 @@
+/** @file CbmPsdHitProducer.cxx
+  * @copyright Copyright (C) 2012-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alla & SELIM, Volker Friese [committer], Evgeny Kashirin **/
+
 // -------------------------------------------------------------------------
 // -----                CbmPsdHitProducer source file             -----
 // -----                  Created 15/05/12  by     Alla & SELIM               -----

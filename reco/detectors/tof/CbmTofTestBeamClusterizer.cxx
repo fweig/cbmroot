@@ -1,4 +1,9 @@
 /** @file CbmTofTestBeamClusterizer.cxx
+  * @copyright Copyright (C) 2013-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer], Pierre-Alain Loizeau **/
+
+/** @file CbmTofTestBeamClusterizer.cxx
  ** author nh
  ** adopted from
  ** @file CbmTofSimpClusterizer.cxx

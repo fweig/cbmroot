@@ -1,3 +1,8 @@
+/** @file CbmLitClusteringQaStudyReport.cxx
+  * @copyright Copyright (C) 2011-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitClusteringQaStudyReport.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

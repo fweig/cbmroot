@@ -1,7 +1,7 @@
 /** @file CbmMcbm2018UnpackerAlgoRich.h
   * @copyright Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+  * @authors Egor Ovcharenko [committer] **/
 
 /**
  * CbmMcbm2018UnpackerAlgoRich

@@ -1,3 +1,8 @@
+/** @file CbmReport.h
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file CbmLitReport.h
  * \brief Base class for reports.

@@ -1,3 +1,8 @@
+/** @file create_field.C
+  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig [committer] **/
+
 /**
  * \file create_field.C
  * \brief Macro converts ASCII file with magnetic field to ROOT file.

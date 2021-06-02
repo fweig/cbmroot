@@ -1,7 +1,7 @@
 /** @file eventDisplay_1p.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 eventDisplay_1p(Int_t iTrackingSetup = 1, Int_t iSys = 0, Int_t iSel = 1, Int_t iSel2 = -3)
 {

@@ -1,7 +1,7 @@
 /** @file run_digi.C
   * @copyright Copyright (C) 2018-2020 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Andrey Lebedev, Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer], Andrey Lebedev, Semen Lebedev [committer] **/
 
 void run_digi(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
               const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",

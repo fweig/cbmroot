@@ -1,3 +1,8 @@
+/** @file NicaUnigenEvent.cxx
+  * @copyright Copyright (C) 2014-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek [committer], Daniel Wielanek [committer] **/
+
 /*
  * NicaUnigen.cxx
  *

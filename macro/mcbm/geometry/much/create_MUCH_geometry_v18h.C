@@ -1,7 +1,7 @@
 /** @file create_MUCH_geometry_v18h.C
   * @copyright Copyright (C) 2018 Department of Physics, Aligarh Muslim University, Aligarh
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Omveer Singh [orginator] **/
+  * @authors Omveer Singh [committer] **/
 
 //
 /// \file create_MUCH_geometry_v18h.C

@@ -1,3 +1,8 @@
+/** @file CbmTrdGeoHandler.cxx
+  * @copyright Copyright (C) 2010-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer], David Emschermann, Andrey Lebedev **/
+
 /**
  * \file CbmTrdGeoHandler.cxx
  * \author Florian Uhlig <f.uhlig@gsi.de>

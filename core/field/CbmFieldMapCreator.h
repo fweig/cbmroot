@@ -1,3 +1,8 @@
+/** @file CbmFieldMapCreator.h
+  * @copyright Copyright (C) 2008-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmFieldMapCreator header file              -----
 // -----                Created 15/01/08       by V. Friese            -----

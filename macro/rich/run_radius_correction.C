@@ -1,9 +1,11 @@
+/** @file run_radius_correction.C
+  * @copyright Copyright (C) 2007-2021 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Simeon Lebedev, Semen Lebedev, Claudia Höhne [committer] **/
+
 /*  Description: This macro calculate MAP for radius correction
     To use this macro, first run CbmRichRingQa task.
     It sets recFlag to the rings.
-
-    Author : Simeon Lebedev
-    E-mail : S.Lebedev@gsi.de
 */
 #include "../../littrack/utils/CbmLitDrawHist.cxx"
 #include "../../littrack/utils/CbmLitUtils.cxx"

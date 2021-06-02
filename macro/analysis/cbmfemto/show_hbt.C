@@ -1,3 +1,8 @@
+/** @file show_hbt.C
+  * @copyright Copyright (C) 2020 Faculty of Physics, Warsaw University of Technology, Warsaw
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek [committer] **/
+
 /*
  * show_hbt.C
  *

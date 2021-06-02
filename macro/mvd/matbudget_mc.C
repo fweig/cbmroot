@@ -1,3 +1,8 @@
+/** @file matbudget_mc.C
+  * @copyright Copyright (C) 2015-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors T. Balog, Philipp Klaus [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for transport simulation with the MVD

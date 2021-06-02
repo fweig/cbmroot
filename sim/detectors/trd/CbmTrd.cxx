@@ -1,3 +1,8 @@
+/** @file CbmTrd.cxx
+  * @copyright Copyright (C) 2004-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V.Friese, Florian Uhlig [committer], Andrey Lebedev, Adrian Meyer-Ahrens, David Emschermann **/
+
 /**
  * \file CbmTrd.cxx
  * \author V.Friese <v.friese@gsi.de>

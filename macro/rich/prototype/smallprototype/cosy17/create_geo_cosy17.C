@@ -1,7 +1,7 @@
 /** @file create_geo_cosy17.C
   * @copyright Copyright (C) 2017 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 #include <iostream>
 using namespace std;

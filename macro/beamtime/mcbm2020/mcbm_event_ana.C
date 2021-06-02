@@ -1,7 +1,7 @@
 /** @file mcbm_event_ana.C
   * @copyright Copyright (C) 2021 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator], Pierre-Alain Loizeau **/
+  * @authors Norbert Herrmann [committer], Pierre-Alain Loizeau **/
 
 // --------------------------------------------------------------------------
 //

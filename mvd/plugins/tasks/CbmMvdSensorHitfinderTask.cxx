@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorHitfinderTask.cxx
+  * @copyright Copyright (C) 2013-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer], Samir Amar-Youcef, Florian Uhlig **/
+
 // ---------------------------------------------------------------------------------------------
 // -----                    CbmMvdSensorHitfinderTask source file                            -----
 // -----                      Created 11/09/13  by P.Sitzmann                              -----

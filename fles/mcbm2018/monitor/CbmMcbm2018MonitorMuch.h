@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018MonitorMuch.h
+  * @copyright Copyright (C) 2019 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Vikas Singhal [committer] **/
+
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
 // -----                   CbmMcbm2018MonitorMuch                        -----

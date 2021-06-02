@@ -1,3 +1,8 @@
+/** @file CbmL1ReadEvent.cxx
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors I.Kisel,  S.Gorbunov, I. Rostovtseva (2016), Valentina Akishina, Maxim Zyzak **/
+
 /*
  *====================================================================
  *

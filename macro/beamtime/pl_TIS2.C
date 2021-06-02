@@ -1,7 +1,7 @@
 /** @file pl_TIS2.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_TIS2(Double_t dTmin = 0., Double_t dTmax = 1., TString sysinfo = "")
 {

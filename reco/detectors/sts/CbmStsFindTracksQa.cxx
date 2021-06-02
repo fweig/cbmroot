@@ -1,3 +1,8 @@
+/** @file CbmStsFindTracksQa.cxx
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov, Denis Bertini [committer], Volker Friese, Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmStsFindTracksQa source file               -----
 // -----                  Created 11/01/06  by V. Friese               -----

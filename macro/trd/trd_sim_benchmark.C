@@ -1,7 +1,7 @@
 /** @file trd_sim_benchmark.C
   * @copyright Copyright (C) 2013-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [orginator] **/
+  * @authors David Emschermann [committer] **/
 
 // --------------------------------------------------------------------------
 //

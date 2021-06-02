@@ -1,3 +1,8 @@
+/** @file CbmPlutoGenerator.h
+  * @copyright Copyright (C) 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V.Friese, Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                 CbmPlutoGenerator header file                 -----
 // -----          Created 13/07/04  by V. Friese / D.Bertini           -----

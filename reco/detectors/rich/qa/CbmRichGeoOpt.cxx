@@ -1,3 +1,8 @@
+/** @file CbmRichGeoOpt.cxx
+  * @copyright Copyright (C) 2014-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Tariq Mahmoud **/
+
 /**
  * \file CbmRichGeoOpt.cxx
  *

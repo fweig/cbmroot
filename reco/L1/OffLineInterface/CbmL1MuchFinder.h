@@ -1,7 +1,7 @@
 /** @file CbmL1MuchFinder.h
   * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator], Sergey Gorbunov **/
+  * @authors Denis Bertini [committer], Sergey Gorbunov **/
 
 #ifndef CBM_L1_MuchFinder_h
 #define CBM_L1_MuchFinder_h

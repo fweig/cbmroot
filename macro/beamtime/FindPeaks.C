@@ -1,3 +1,8 @@
+/** @file FindPeaks.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // Illustrates how to find peaks in histograms.
 // This script generates a random number of gaussian peaks
 // on top of a linear background.

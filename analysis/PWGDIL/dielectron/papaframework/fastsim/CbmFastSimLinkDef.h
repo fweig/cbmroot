@@ -1,7 +1,7 @@
 /** @file CbmFastSimLinkDef.h
   * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [orginator] **/
+  * @authors Julian Book [committer] **/
 
 #ifdef __CINT__
 

@@ -1,3 +1,8 @@
+/** @file CbmLitDetectorSetup.cxx
+  * @copyright Copyright (C) 2012-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file CbmLitDetectorSetup.xx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

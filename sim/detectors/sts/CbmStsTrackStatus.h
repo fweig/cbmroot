@@ -1,4 +1,9 @@
 /** @file CbmStsTrackStatus.h
+  * @copyright Copyright (C) 2013-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsTrackStatus.h
  **
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 4.12.2013

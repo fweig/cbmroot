@@ -1,3 +1,8 @@
+/** @file create_digipar.C
+  * @copyright Copyright (C) 2013-2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro to create digi parameters for the TOF

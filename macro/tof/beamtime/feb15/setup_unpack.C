@@ -1,3 +1,8 @@
+/** @file setup_unpack.C
+  * @copyright Copyright (C) 2014-2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [committer] **/
+
 // -----------------------------------------------------------------------------
 // ----- setup_analysis FairRoot macro                                     -----
 // -----                                                                   -----

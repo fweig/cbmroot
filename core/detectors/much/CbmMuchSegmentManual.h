@@ -1,3 +1,8 @@
+/** @file CbmMuchSegmentManual.h
+  * @copyright Copyright (C) 2009-2020 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Mikhail Ryzhinskiy [committer], Florian Uhlig **/
+
 /** CbmMuchSegmentManual.h
  *@author Mikhail Ryzhinskiy <m.ryzhinskiy@gsi.de>
  *@since 02.04.09

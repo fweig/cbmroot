@@ -1,3 +1,8 @@
+/** @file registerSetup.C
+  * @copyright Copyright (C) 2016-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, David Emschermann [committer] **/
+
 /** Macro registerSetup
  **
  ** Creates the CBM modules defined in the CbmSetup singleton

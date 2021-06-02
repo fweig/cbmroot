@@ -1,3 +1,8 @@
+/** @file CbmFieldMap.h
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Al/Turany, Denis Bertini [committer], Volker Friese **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmFieldMap header file                  -----
 // -----          Created 12/01/04  by M. Al/Turany (CbmField.h)       -----

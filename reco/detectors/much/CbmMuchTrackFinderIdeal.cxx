@@ -1,3 +1,8 @@
+/** @file CbmMuchTrackFinderIdeal.cxx
+  * @copyright Copyright (C) 2007-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Mikhail Ryzhinskiy **/
+
 /** CbmMuchTrackFinderIdeal.cxx
  * @author A.Lebedev <Andrey.Lebedev@gsi.de>
  * @since 2007

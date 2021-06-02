@@ -1,3 +1,8 @@
+/** @file create_stsgeo_v16c.C
+  * @copyright Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, David Emschermann [committer] **/
+
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).
  **

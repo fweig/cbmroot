@@ -1,7 +1,9 @@
+/** @file CbmLitQualitySort.h
+  * @copyright Copyright (C) 2011-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /*
- * \file CbmLitQualitySort.h
- * \author Andrey Lebedev <andrey.lebedev@gsi.de>
- * \date 2011
  * \brief Sort array of tracks by the quality criterion.
  */
 

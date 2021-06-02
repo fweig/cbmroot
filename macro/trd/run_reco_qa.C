@@ -1,7 +1,7 @@
 /** @file run_reco_qa.C
   * @copyright Copyright (C) 2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [orginator] **/
+  * @authors Cyrano Bergmann [committer] **/
 
 // --------------------------------------------------------------------------
 //

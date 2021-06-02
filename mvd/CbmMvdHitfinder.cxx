@@ -1,7 +1,7 @@
 /** @file CbmMvdHitfinder.cxx
-  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [orginator], Florian Uhlig **/
+  * @authors Philipp Sitzmann [committer], Florian Uhlig **/
 
 // -------------------------------------------------------------------------
 // -----                    CbmMvdHitfinder source file                -----

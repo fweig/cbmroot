@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorDigitizerTBTask.cxx
+  * @copyright Copyright (C) 2017-2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdSensorDigitizerTBTask source file              -----
 // -----                  Created 02.02.2012 by M. Deveaux            -----

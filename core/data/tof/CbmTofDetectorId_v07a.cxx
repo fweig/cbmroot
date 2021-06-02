@@ -1,3 +1,8 @@
+/** @file CbmTofDetectorId_v07a.cxx
+  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmTofDetectorId source file                -----
 // -----                  Created 20/11/12  by F. Uhlig                -----

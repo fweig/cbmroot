@@ -1,3 +1,8 @@
+/** @file CbmMvdSensor.cxx
+  * @copyright Copyright (C) 2011-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Deveaux, Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                     CbmMvdSensor source file                  -----
 // -----                  Created 31/01/11  by M. Deveaux              -----

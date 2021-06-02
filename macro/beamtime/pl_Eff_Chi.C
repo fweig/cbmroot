@@ -1,7 +1,7 @@
 /** @file pl_Eff_Chi.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_Eff_Chi(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., TString sysinfo = "")
 {

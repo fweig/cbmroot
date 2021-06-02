@@ -1,3 +1,8 @@
+/** @file CbmLitRadLengthQa.cxx
+  * @copyright Copyright (C) 2013-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitRadLengthQa.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

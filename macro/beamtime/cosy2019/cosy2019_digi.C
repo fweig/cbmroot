@@ -1,3 +1,8 @@
+/** @file cosy2019_digi.C
+  * @copyright Copyright (C) 2018-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Pierre-Alain Loizeau [committer] **/
+
 /** Macro for detector response simulation (digitisation)
  **
  ** The detector response produces a raw data file from the transport

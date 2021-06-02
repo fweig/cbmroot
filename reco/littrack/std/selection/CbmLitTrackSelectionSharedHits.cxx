@@ -1,8 +1,7 @@
-/* CbmLitTrackSelectionSharedHits.h
- * @author Andrey Lebedev <andrey.lebedev@gsi.de>
- * @since 2008
- * @version 1.0
- */
+/** @file CbmLitTrackSelectionSharedHits.cxx
+  * @copyright Copyright (C) 2008-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
 
 #include "selection/CbmLitTrackSelectionSharedHits.h"
 

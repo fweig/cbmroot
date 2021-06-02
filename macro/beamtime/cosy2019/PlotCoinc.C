@@ -1,7 +1,7 @@
 /** @file PlotCoinc.C
   * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 void PlotCoinc(TString sFilename, Int_t iNbTs = -1, Double_t dOffsetX = 0.0, Double_t dOffsetY = 0.0)
 {

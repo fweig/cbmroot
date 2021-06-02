@@ -1,7 +1,7 @@
 /** @file inspect_latency_histo.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void inspect_latency_histo(Double_t dLat = 0, TString hFile = "data/HistosMonitorTofSync.root")
 {

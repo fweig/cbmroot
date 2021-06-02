@@ -1,3 +1,8 @@
+/** @file CbmRichRingFitterBase.h
+  * @copyright Copyright (C) 2012 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /**
 * \file CbmRichRingFitterBase.h
 *

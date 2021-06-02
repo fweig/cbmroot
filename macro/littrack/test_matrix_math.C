@@ -1,7 +1,7 @@
 /** @file test_matrix_math.C
   * @copyright Copyright (C) 2011 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 void test_matrix_math()
 {

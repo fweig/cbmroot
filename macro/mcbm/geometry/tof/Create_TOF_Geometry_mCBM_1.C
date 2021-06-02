@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_mCBM_1.C
   * @copyright Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [orginator] **/
+  * @authors David Emschermann [committer] **/
 
 // Macro creating a ToF geometry for miniCBM
 // derived from Macro creating a ToF geometry for STAR wheel (AKA Create_TOF_Geometry_Star_1.C)

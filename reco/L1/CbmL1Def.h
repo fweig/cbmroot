@@ -1,7 +1,7 @@
 /** @file CbmL1Def.h
   * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak, Igor Kulakov [orginator], Sergey Gorbunov **/
+  * @authors Maxim Zyzak, Igor Kulakov [committer], Sergey Gorbunov **/
 
 #ifndef CbmL1Def_h
 #define CbmL1Def_h 1

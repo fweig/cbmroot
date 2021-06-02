@@ -1,7 +1,7 @@
 /** @file mvd_qa1_transUrqmd.C
   * @copyright Copyright (C) 2010-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [orginator], Philipp Sitzmann, Florian Uhlig **/
+  * @authors Volker Friese [committer], Philipp Sitzmann, Florian Uhlig **/
 
 // --------------------------------------------------------------------------
 //

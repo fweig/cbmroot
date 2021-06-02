@@ -1,3 +1,8 @@
+/** @file LitVirtualStation.h
+  * @copyright Copyright (C) 2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \class LitVirtualStation
  * \brief Virtual detector station which stores information needed for track propagation.

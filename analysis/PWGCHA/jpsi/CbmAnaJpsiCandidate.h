@@ -1,7 +1,7 @@
 /** @file CbmAnaJpsiCandidate.h
   * @copyright Copyright (C) 2015 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Adrian Amatus Weber **/
+  * @authors Semen Lebedev [committer], Adrian Amatus Weber **/
 
 #ifndef CBM_ANA_JPSI_CANDIDATE_H
 #define CBM_ANA_JPSI_CANDIDATE_H

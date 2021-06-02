@@ -1,3 +1,8 @@
+/** @file CbmMvdHitfinder.h
+  * @copyright Copyright (C) 2014-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // ----------------------------------------------------------------------------
 // -----                    CbmMvdHitfinder header file                    -----
 // -----                   Created by C. Dritsa (2009)                    -----

@@ -1,3 +1,8 @@
+/** @file CbmRichMCbmDigiMapManager.cxx
+  * @copyright Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors aweber, Adrian Amatus Weber [committer], Florian Uhlig **/
+
 /*
  * CbmRichMCbmDigiMapManager.cxx
  *

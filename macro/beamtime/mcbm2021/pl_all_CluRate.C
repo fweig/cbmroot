@@ -1,7 +1,7 @@
 /** @file pl_all_CluRate.C
   * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_all_CluRate(Int_t iNSt = 4, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0)
 {

@@ -1,7 +1,7 @@
 /** @file cbmlibs.C
   * @copyright Copyright (C) 2009-2013 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 void cbmlibs()
 {

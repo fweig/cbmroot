@@ -1,3 +1,8 @@
+/** @file CbmTrackMatch.h
+  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** CbmStsTrackMatch.h
  *@author V.Friese <v.friese@gsi.de>
  *@since 07.05.2009

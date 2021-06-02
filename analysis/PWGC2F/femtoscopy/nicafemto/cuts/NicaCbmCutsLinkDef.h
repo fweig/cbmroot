@@ -1,7 +1,7 @@
 /** @file NicaCbmCutsLinkDef.h
   * @copyright Copyright (C) 2020-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Daniel Wielanek [orginator] **/
+  * @authors Daniel Wielanek [committer] **/
 
 #pragma link off all globals;
 #pragma link off all classes;

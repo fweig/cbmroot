@@ -1,7 +1,7 @@
 /** @file doDraw.C
   * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+  * @authors Egor Ovcharenko [committer] **/
 
 void doDraw(int tdc, int ch)
 {

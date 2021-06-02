@@ -1,7 +1,7 @@
 /** @file ana_hits.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator], Norbert Herrmann **/
+  * @authors Christian Simon [committer], Norbert Herrmann **/
 
 void ana_hits(Int_t nEvents = 10000000, Int_t iSel = 1, Int_t iGenCor = 1, char* cFileId = "MbsTrbSat1805",
               Int_t iSet = 0)

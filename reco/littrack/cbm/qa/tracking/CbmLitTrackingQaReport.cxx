@@ -1,3 +1,8 @@
+/** @file CbmLitTrackingQaReport.cxx
+  * @copyright Copyright (C) 2011-2018 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackingQaReport.cxx
  * \author Semen Lebedev <s.lebedev@gsi.de>

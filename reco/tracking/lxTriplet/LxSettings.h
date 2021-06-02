@@ -1,7 +1,7 @@
 /** @file LxSettings.h
   * @copyright Copyright (C) 2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov [orginator] **/
+  * @authors Timur Ablyazimov [committer] **/
 
 #ifndef LXSETTINGS_INCLUDED
 #define LXSETTINGS_INCLUDED

@@ -1,7 +1,7 @@
 /** @file run_testing.C
-  * @copyright Copyright (C) 2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Etienne Bechtel [orginator] **/
+  * @authors Etienne Bechtel [committer] **/
 
 R__ADD_INCLUDE_PATH($PWD)
 

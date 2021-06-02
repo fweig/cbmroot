@@ -1,4 +1,9 @@
 /** @file CbmStsAddress.h
+  * @copyright Copyright (C) 2013-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Andrey Lebedev [committer] **/
+
+/** @file CbmStsAddress.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 17.05.2013
  **/

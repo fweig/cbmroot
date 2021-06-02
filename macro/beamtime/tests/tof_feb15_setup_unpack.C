@@ -1,3 +1,8 @@
+/** @file tof_feb15_setup_unpack.C
+  * @copyright Copyright (C) 2014-2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors N. Herrmann, Pierre-Alain Loizeau [committer] **/
+
 // -----------------------------------------------------------------------------
 // ----- setup_analysis FairRoot macro                                     -----
 // -----                                                                   -----

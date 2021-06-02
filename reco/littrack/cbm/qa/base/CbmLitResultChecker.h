@@ -1,3 +1,8 @@
+/** @file CbmLitResultChecker.h
+  * @copyright Copyright (C) 2011-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitResultChecker.h
  * \brief Automatic checker of QA results.

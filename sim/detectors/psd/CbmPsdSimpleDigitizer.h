@@ -1,3 +1,8 @@
+/** @file CbmPsdSimpleDigitizer.h
+  * @copyright Copyright (C) 2018-2020 Institute for Nuclear Research, Moscow
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Morozov [committer], Volker Friese **/
+
 /** CbmPsdSimpleDigitize.h
  *@author Sergey Morozov <morozovs@inr.ru>
  **

@@ -1,3 +1,8 @@
+/** @file create_bpipe_geometry_v16a_1e.C
+  * @copyright Copyright (C) 2016-2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Chernogorov, Pierre-Alain Loizeau [committer] **/
+
 /******************************************************************************
  ** Creation of beam pipe geometry in ROOT format (TGeo).
  **

@@ -1,3 +1,8 @@
+/** @file global_reco.C
+  * @copyright Copyright (C) 2010-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file global_reco.C
  * \brief Event reconstruction macro.

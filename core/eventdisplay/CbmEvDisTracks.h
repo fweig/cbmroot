@@ -1,3 +1,8 @@
+/** @file CbmEvDisTracks.h
+  * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Al-Turany, Norbert Herrmann [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                      FairMCTracks header file                 -----
 // -----                Created 10/12/07  by M. Al-Turany              -----

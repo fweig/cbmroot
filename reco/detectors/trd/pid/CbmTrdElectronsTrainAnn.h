@@ -1,3 +1,7 @@
+/** @file CbmTrdElectronsTrainAnn.h
+  * @copyright Copyright (C) 2009-2018 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev (S.Lebedev@gsi.de), Semen Lebedev [committer], Florian Uhlig **/
 
 /** CbmTrdElectronsTrainAnn
  * Author: Semen Lebedev (S.Lebedev@gsi.de)

@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorFindHitTask.cxx
+  * @copyright Copyright (C) 2013-2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer], Florian Uhlig **/
+
 // ---------------------------------------------------------------------------------------------
 // -----                    CbmMvdSensorFindHitTask source file                            -----
 // -----                      Created 11/09/13  by P.Sitzmann                              -----

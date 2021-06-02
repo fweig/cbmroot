@@ -1,7 +1,7 @@
 /** @file CbmTrdSPADIC.cxx
   * @copyright Copyright (C) 2014-2021 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [orginator], Florian Uhlig **/
+  * @authors Cyrano Bergmann [committer], Florian Uhlig **/
 
 #include "CbmTrdSPADIC.h"
 

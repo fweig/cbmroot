@@ -1,23 +1,18 @@
-/// \file ConfigTemplate_user_task.C
-/// \brief A template task configuration macro with example and explanations
-///
-/// This macro should represent a starting point for the usage of the
-///
-///         PairAnalysis PAckage (PAPA) -- written by Julian Book
-///
-///
-/// It configures a dummy multi-task with 4 configurations.
-///
-/// UPDATES, NOTES:
-/// - this is a beta version of PAPA, therefore backward compatiblity is not yet granted (27.05.15)
-/// - change in histogram class delimiters (only mc has '_', otherwise use '.') (12.06.15)
-/// - mv event cuts from config to task, protection for sorted MC signals (17.06.15)
-///
-///
-///
-/// \author Julian Book <jbook@ikf.uni-frankfurt.de>, Goethe-University Frankfurt
-/// \date May 27, 2015
-///
+/** @file ConfigTemplate_user_task.C
+  * @copyright Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
+
+// \brief A template task configuration macro with example and explanations
+// This macro should represent a starting point for the usage of the
+//
+//         PairAnalysis PAckage (PAPA) -- written by Julian Book
+//
+// It configures a dummy multi-task with 4 configurations.
+// - this is a beta version of PAPA, therefore backward compatiblity is not yet granted (27.05.15)
+// - change in histogram class delimiters (only mc has '_', otherwise use '.') (12.06.15)
+// - mv event cuts from config to task, protection for sorted MC signals (17.06.15)
+// \date May 27, 2015
 
 PairAnalysis* Config_PairAnalysis(Int_t cutDefinition);
 

@@ -1,3 +1,8 @@
+/** @file CbmMuchPoint.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Ryzhinskiy, Volker Friese, Florian Uhlig, Denis Bertini [committer] **/
+
 /** CbmMuchPoint.cxx
  *
  * @author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>

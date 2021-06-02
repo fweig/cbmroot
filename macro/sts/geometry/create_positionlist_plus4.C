@@ -1,7 +1,7 @@
 /** @file create_positionlist_plus4.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 //forward declaration
 void loop_over_nodes(TObjArray*, TString&, std::map<TString, TVector3>&);

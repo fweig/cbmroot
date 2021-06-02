@@ -1,3 +1,8 @@
+/** @file CbmLitTGeoTrackPropagator.cxx
+  * @copyright Copyright (C) 2007-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /** CbmLitTGeoTrackPropagator.cxx
  * @author Andrey Lebedev <andrey.lebedev@gsi.de>
  * @since 2007

@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorReadoutTask.h
+  * @copyright Copyright (C) 2017-2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // ------------------------------------------------------------------------
 // -----                  CbmMvdSensorTask header file              -----
 // -----                   Created 02/02/12  by M. Deveaux            -----

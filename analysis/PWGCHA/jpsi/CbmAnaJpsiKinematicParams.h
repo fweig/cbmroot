@@ -1,7 +1,7 @@
 /** @file CbmAnaJpsiKinematicParams.h
   * @copyright Copyright (C) 2015 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 #ifndef CBM_ANAJPSI_KINEMATIC_PARAMS_H
 #define CBM_ANAJPSI_KINEMATIC_PARAMS_H

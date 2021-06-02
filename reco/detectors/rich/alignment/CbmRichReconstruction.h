@@ -1,3 +1,8 @@
+/** @file CbmRichReconstruction.h
+  * @copyright Copyright (C) 2012-2017 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Jordan Bendarouach [committer] **/
+
 /**
 * \file CbmRichReconstruction.h
 *

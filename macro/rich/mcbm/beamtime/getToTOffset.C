@@ -1,3 +1,8 @@
+/** @file getToTOffset.C
+  * @copyright Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Adrian Amatus Weber [committer] **/
+
 /** @file MCBM DATA unpacking and ToT Shift calculation
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016

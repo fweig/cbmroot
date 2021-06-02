@@ -1,3 +1,8 @@
+/** @file StsCosyDec14.C
+  * @copyright Copyright (C) 2013-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Pierre-Alain Loizeau [committer] **/
+
 /** @file readLmd_calibr.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since December 2013

@@ -1,3 +1,8 @@
+/** @file CbmMvdClusterfinder.h
+  * @copyright Copyright (C) 2014-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // ----------------------------------------------------------------------------
 // -----               CbmMvdClusterfinder header file                    -----
 // -----                   Created by P.Sitzmann 03.12.2014               -----

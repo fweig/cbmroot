@@ -1,7 +1,7 @@
 /** @file CbmGlobalLinkDef.h
   * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [orginator], Volker Friese **/
+  * @authors Denis Bertini [committer], Volker Friese **/
 
 #ifdef __CINT__
 

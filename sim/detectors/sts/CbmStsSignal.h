@@ -1,4 +1,9 @@
 /** @file CbmStsSignal.h
+  * @copyright Copyright (C) 2014-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsSignal.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 28.06.2014
  **/

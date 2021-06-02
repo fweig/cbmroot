@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018StsPar.h
+  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----            CbmMcbm2018StsPar header file                      -----
 // -----            Created 25/09/18  by P.-A. Loizeau                 -----

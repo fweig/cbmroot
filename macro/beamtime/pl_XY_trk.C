@@ -1,7 +1,7 @@
 /** @file pl_XY_trk.C
   * @copyright Copyright (C) 2017-2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1)
 {

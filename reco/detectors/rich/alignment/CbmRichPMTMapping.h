@@ -1,7 +1,7 @@
 /** @file CbmRichPMTMapping.h
   * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 #ifndef CBMRICHPMTMAPPING_H
 #define CBMRICHPMTMAPPING_H

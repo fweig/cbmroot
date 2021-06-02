@@ -1,3 +1,8 @@
+/** @file CbmTrdPoint.cxx
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Florian Uhlig, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmTrdPoint source file                  -----
 // -----                   Created 27/07/04  by V. Friese              -----

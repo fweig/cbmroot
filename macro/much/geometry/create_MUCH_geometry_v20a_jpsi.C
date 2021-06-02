@@ -1,3 +1,8 @@
+/** @file create_MUCH_geometry_v20a_jpsi.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 //
 // \file create_MUCH_geometry_v20a
 // @Author: Omveer Singh , Partha Pratim Bhaduri & Ekata Nandy

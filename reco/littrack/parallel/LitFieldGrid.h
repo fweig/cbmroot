@@ -1,3 +1,8 @@
+/** @file LitFieldGrid.h
+  * @copyright Copyright (C) 2009-2019 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitFieldGrid.h
  * \brief Class stores a grid of magnetic field values in XY slice at Z position.

@@ -1,3 +1,8 @@
+/** @file CbmPVFinderIdeal.h
+  * @copyright Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Volker Friese **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmPVFinderIdeal header file                -----
 // -----                  Created 28/11/05  by V. Friese               -----

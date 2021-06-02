@@ -1,3 +1,8 @@
+/** @file CbmLitTypes.h
+  * @copyright Copyright (C) 2008-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitTypes.h
  * \author A.Lebedev <andrey.lebedev@gsi.de>

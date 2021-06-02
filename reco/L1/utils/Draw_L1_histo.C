@@ -1,7 +1,7 @@
 /** @file Draw_L1_histo.C
   * @copyright Copyright (C) 2010-2013 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator] **/
+  * @authors Igor Kulakov [committer] **/
 
 #include <unistd.h>  // for dir navigation
 

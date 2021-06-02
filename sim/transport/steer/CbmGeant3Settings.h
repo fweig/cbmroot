@@ -1,4 +1,9 @@
 /** @file CbmGeant3Settings.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
+/** @file CbmGeant3Settings.h
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @since 21.01.2020
  **/

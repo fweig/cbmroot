@@ -1,3 +1,8 @@
+/** @file CbmLitFieldFitter.h
+  * @copyright Copyright (C) 2009-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFieldFitter.h
  * \brief Implementation of the polynomial field approximation.

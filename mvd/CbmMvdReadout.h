@@ -1,3 +1,8 @@
+/** @file CbmMvdReadout.h
+  * @copyright Copyright (C) 2017-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // ----------------------------------------------------------------------------
 // -----               CbmMvdReadout header file                          -----
 // -----               Created by P.Sitzmann 12.06.2017                   -----

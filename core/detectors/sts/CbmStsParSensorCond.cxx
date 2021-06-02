@@ -1,4 +1,9 @@
 /** @file CbmStsParSensorCond.cxx
+  * @copyright Copyright (C) 2014-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsParSensorCond.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 28.06.2014
  **/

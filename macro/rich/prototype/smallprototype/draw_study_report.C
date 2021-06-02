@@ -1,7 +1,7 @@
 /** @file draw_study_report.C
   * @copyright Copyright (C) 2016-2017 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator], Andrey Lebedev **/
+  * @authors Semen Lebedev [committer], Andrey Lebedev **/
 
 using namespace std;
 void draw_study_report()

@@ -1,3 +1,8 @@
+/** @file LitFieldSlice.h
+  * @copyright Copyright (C) 2009-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitFieldSlice.h
  * \brief Approximated magnetic field slice in XY plane perpendicular to Z.

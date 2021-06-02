@@ -1,3 +1,8 @@
+/** @file CbmKFTofHit.cxx
+  * @copyright Copyright (C) 2005-2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D.Kresan, Norbert Herrmann [committer] **/
+
 //  ----------------------------------------------------------------------
 //  -----                         CbmKFTofHit                        -----
 //  -----               Created 12/12/2005  by D.Kresan              -----

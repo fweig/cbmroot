@@ -1,3 +1,8 @@
+/** @file CbmTrdPads_v18a.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 //
 //   TRD pad layout for geometry v18a
 //

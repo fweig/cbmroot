@@ -1,3 +1,8 @@
+/** @file CbmTrdSetTracksPidModWkn.h
+  * @copyright Copyright (C) 2014-2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Olga Derenovskaya [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidModWkn header file          -----
 // -----                  Created 13/02/2007  by F. Uhlig              -----

@@ -1,3 +1,8 @@
+/** @file run_phys.C
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Zyzak, Anna Senger, Volker Friese [committer] **/
+
 //---------------------------------------------------------------------------------
 // @author  M. Zyzak
 // @version 1.0

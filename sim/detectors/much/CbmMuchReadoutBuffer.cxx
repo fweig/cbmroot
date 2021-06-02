@@ -1,3 +1,8 @@
+/** @file CbmMuchReadoutBuffer.cxx
+  * @copyright Copyright (C) 2016-2019 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors vikas@vecc.gov.in, Vikas Singhal [committer], Volker Friese **/
+
 /*
  * CbmMuchReadoutBuffer.cxx
  *

@@ -1,3 +1,8 @@
+/** @file CbmMuchMatchTracks.h
+  * @copyright Copyright (C) 2007-2012 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Mikhail Ryzhinskiy [committer] **/
+
 /** CbmMuchMatchTracks.h
  *@author A.Lebedev <Andrey.Lebedev@gsi.de>
  *

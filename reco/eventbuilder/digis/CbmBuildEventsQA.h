@@ -1,3 +1,8 @@
+/** @file CbmBuildEventsQA.h
+  * @copyright Copyright (C) 2016-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Dominik Smith **/
+
 /** @file CbmBuildEventsQa.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 20.09.2016

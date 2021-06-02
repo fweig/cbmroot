@@ -1,3 +1,8 @@
+/** @file test_init.C
+  * @copyright Copyright (C) 2016 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors C. Simon, Norbert Herrmann [committer] **/
+
 // -----------------------------------------------------------------------------
 // ----- test_init.C                                                       -----
 // -----                                                                   -----

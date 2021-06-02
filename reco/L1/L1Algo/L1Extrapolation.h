@@ -1,7 +1,7 @@
 /** @file L1Extrapolation.h
   * @copyright Copyright (C) 2007-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak, Sergey Gorbunov [orginator], Igor Kulakov **/
+  * @authors Maxim Zyzak, Sergey Gorbunov [committer], Igor Kulakov **/
 
 #ifndef L1Extrapolation_h
 #define L1Extrapolation_h

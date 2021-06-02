@@ -1,3 +1,8 @@
+/** @file CbmLitFitQaStudyReport.h
+  * @copyright Copyright (C) 2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFitQaStudyReport.h
  * \brief Creates study report for fit QA.

@@ -1,3 +1,8 @@
+/** @file CbmL1CATrdTrackFinderSA.cxx
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov, Denis Bertini [committer], Florian Uhlig **/
+
 // -----------------------------------------------------------------------
 // -----                    CbmL1CATrdTrackFinderSA                  -----
 // -----            Created 2/12/2006  by A. Bubak & M. Krauze       -----

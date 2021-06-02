@@ -1,7 +1,7 @@
 /** @file CbmAnaJpsiCuts.h
   * @copyright Copyright (C) 2015-2017 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber [orginator] **/
+  * @authors Adrian Amatus Weber [committer] **/
 
 #ifndef CBM_ANA_JPSI_CUTS_H
 #define CBM_ANA_JPSI_CUTS_H

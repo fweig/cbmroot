@@ -1,3 +1,8 @@
+/** @file PParticle.cxx
+  * @copyright Copyright (C) 1998-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.A. Kagarlis, Florian Uhlig [committer] **/
+
 ////////////////////////////////////////////////////////
 //  Particle Class implementation file
 //

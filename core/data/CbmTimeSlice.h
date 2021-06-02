@@ -1,4 +1,9 @@
 /** @file CbmTimeSlice.h
+  * @copyright Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
+/** @file CbmTimeSlice.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 17 July 2012
  **/

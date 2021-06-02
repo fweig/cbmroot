@@ -1,7 +1,7 @@
 /** @file geometry.C
   * @copyright Copyright (C) 2011-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Dmytro Kresan [orginator] **/
+  * @authors Dmytro Kresan [committer] **/
 
 
 void geometry()

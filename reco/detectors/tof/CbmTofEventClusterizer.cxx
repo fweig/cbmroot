@@ -1,4 +1,9 @@
 /** @file CbmTofEventClusterizer.cxx
+  * @copyright Copyright (C) 2018-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer] **/
+
+/** @file CbmTofEventClusterizer.cxx
  ** @author nh
  ** @date 13.07.2018
  ** adopted from

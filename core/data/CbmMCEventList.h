@@ -1,4 +1,9 @@
 /** @file CbmMCEventList.h
+  * @copyright Copyright (C) 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmMCEventList.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 24.11.2015
  **/

@@ -1,20 +1,9 @@
-/// \file Config_trd_PidLI.C
-/// \brief configuration for TRD Likelihood input
-///
-///         PairAnalysis PAckage (PAPA) -- written by Julian Book
-///
-///
-///
-/// UPDATES, NOTES:
-/// -
-///
-///
-/// \author Julian Book <jbook@ikf.uni-frankfurt.de>, Goethe-University Frankfurt
-///         Etienne Bechtel<ebechtel@ikf.uni-frankfurt.de>, Goethe-University Frankfurt
-///
-/// \date Sep 12, 2016
-///
+/** @file Config_trd_PidLI.C
+  * @copyright Copyright (C) 2016 Goethe-University Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Etienne Bechtel, Julian Book [committer] **/
 
+/** @brief configuration for TRD Likelihood input **/
 PairAnalysis* Config_Analysis(Int_t cutDefinition);
 
 /// names of the tasks

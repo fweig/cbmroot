@@ -1,7 +1,7 @@
 /** @file Create_TRD_Geometry_v18a.C
   * @copyright Copyright (C) 2019 Horia Hulubei National Institute of Physics and Nuclear Engineering, Bucharest
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alexandru Bercuci [orginator] **/
+  * @authors Alexandru Bercuci [committer] **/
 
 ///
 /// \file Create_TRD_Geometry_v18a.C

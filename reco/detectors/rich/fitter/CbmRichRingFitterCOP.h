@@ -1,3 +1,8 @@
+/** @file CbmRichRingFitterCOP.h
+  * @copyright Copyright (C) 2005-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Ayriyan, Gennadi Ososkov, Semen Lebedev, Semen Lebedev, Denis Bertini [committer] **/
+
 /**
 * \file CbmRichRingFitterCOP.h
 *

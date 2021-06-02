@@ -1,3 +1,8 @@
+/** @file CbmHistManager.cxx
+  * @copyright Copyright (C) 2011-2021 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Jordan Bendarouach [committer] **/
+
 /**
  * \file CbmHistManager.cxx
  * \brief Histogram manager.

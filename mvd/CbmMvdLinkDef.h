@@ -1,7 +1,7 @@
 /** @file CbmMvdLinkDef.h
   * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann, Volker Friese [orginator] **/
+  * @authors Philipp Sitzmann, Volker Friese [committer] **/
 
 #ifdef __CINT__
 

@@ -1,3 +1,8 @@
+/** @file CbmLitCleverTrackExtrapolator.cxx
+  * @copyright Copyright (C) 2009-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /** CbmLitCleverTrackExtrapolator.cxx
  *@author A.Lebedev <alebedev@jinr.ru>
  *@since 2009

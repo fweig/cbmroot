@@ -1,3 +1,8 @@
+/** @file CbmL1TrdTrackFinderSts.h
+  * @copyright Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Florian Uhlig **/
+
 // -----------------------------------------------------------------------
 // -----                    CbmL1TrdTrackFinderSts                   -----
 // -----                 Created 6/12/05  by D. Kresan               -----

@@ -1,3 +1,8 @@
+/** @file CbmStsKFSecondaryVertexFinder.cxx
+  * @copyright Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Gorbunov, I.Kisel, Denis Bertini [committer] **/
+
 /** Implementation of the CbmKFSecondaryVertexFinder class
  *
  * @author  S.Gorbunov, I.Kisel

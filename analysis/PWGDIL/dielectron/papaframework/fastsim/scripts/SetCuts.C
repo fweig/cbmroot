@@ -1,7 +1,7 @@
 /** @file SetCuts.C
   * @copyright Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [orginator] **/
+  * @authors Julian Book [committer] **/
 
 /** Configuration macro for setting common cuts and processes for both G3 and G4 (M. Al-Turany 14.11.2007)
    specific cuts and processes to g3 or g4 should be set in the g3Config.C or g4Config.C

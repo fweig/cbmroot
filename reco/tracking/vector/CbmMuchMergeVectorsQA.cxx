@@ -1,3 +1,8 @@
+/** @file CbmMuchMergeVectorsQA.cxx
+  * @copyright Copyright (C) 2014-2018 Veksler and Baldin Laboratory of High Energy Physics, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Zinchenko [committer] **/
+
 /** CbmMuchMergeVectorsQA.cxx
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2014

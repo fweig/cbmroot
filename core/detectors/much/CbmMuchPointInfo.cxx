@@ -1,3 +1,8 @@
+/** @file CbmMuchPointInfo.cxx
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmMuchPointInfo source file               -----
 // -----                   Created 21/11/07 by E. Kryshen              -----

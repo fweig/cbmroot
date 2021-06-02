@@ -1,3 +1,8 @@
+/** @file cosy2019_transport.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation in COSY 2019 using ion generator and GEANT3

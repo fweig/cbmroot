@@ -1,4 +1,9 @@
 /** @file CbmTofTrack.h
+  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Andrey Lebedev, Florian Uhlig **/
+
+/** @file CbmTofTrack.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 17.10.2013
  **/

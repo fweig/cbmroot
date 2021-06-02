@@ -1,3 +1,8 @@
+/** @file CbmRichGeoTestOpt.cxx
+  * @copyright Copyright (C) 2019-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /**
  * \file CbmRichGeoTestOpt.cxx
  * \author Semen Lebedev <s.lebedev@gsi.de>

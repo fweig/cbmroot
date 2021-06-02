@@ -1,3 +1,8 @@
+/** @file CbmTrdSetTracksPidLike.cxx
+  * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer], Etienne Bechtel **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidLike source file         -----
 // -----                  Created 25/02/07 by F.Uhlig                  -----

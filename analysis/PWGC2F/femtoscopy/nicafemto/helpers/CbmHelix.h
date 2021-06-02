@@ -1,3 +1,8 @@
+/** @file CbmHelix.h
+  * @copyright Copyright (C) 2019-2020 Faculty of Physics, Warsaw University of Technology, Warsaw
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek [committer] **/
+
 /*
  * CbmHelix.h
  *

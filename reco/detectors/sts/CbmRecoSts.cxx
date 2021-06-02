@@ -1,4 +1,9 @@
 /** @file CbmRecoSts.cxx
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmRecoSts.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 22.03.2020
  **/

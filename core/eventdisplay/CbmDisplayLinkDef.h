@@ -1,7 +1,7 @@
 /** @file CbmDisplayLinkDef.h
   * @copyright Copyright (C) 2009-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 // $Id: TrdLinkDef.h,v 1.10 2006/06/20 09:39:59 kresan Exp $
 

@@ -1,7 +1,7 @@
 /** @file pl_all_CluRate.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_all_CluRate(Int_t iNSt = 2, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0)
 {

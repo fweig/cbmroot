@@ -1,3 +1,8 @@
+/** @file CbmTrackMergerIdeal.cxx
+  * @copyright Copyright (C) 2005-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmTrackMergerIdeal source file              -----
 // -----                  Created 01/12/05  by V. Friese               -----

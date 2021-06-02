@@ -1,10 +1,9 @@
+/** @file CbmTrdHardwareSetupR.cxx
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig, Florian Uhlig [committer] **/
+
 /*
- * File: /CbmTrdHardwareSetupR.cxx
- * Created Date: Thursday March 5th 2020
- * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
- * -----
- * Last Modified: Friday June 5th 2020 16:34:54
- * Modified By: Pascal Raisig
  * -----
  * Purpose: This class contains the hardware mapping for asics at a given beamtime and provides the functionalities to
  * write them into the CbmTrdParAsic containers for the corresponding geometry

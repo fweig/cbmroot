@@ -1,3 +1,8 @@
+/** @file CbmLitFitQa.h
+  * @copyright Copyright (C) 2011-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFitQa.h
  * \brief Track fit QA for track reconstruction.

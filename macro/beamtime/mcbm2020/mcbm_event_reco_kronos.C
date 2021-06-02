@@ -1,7 +1,7 @@
 /** @file mcbm_event_reco_kronos.C
   * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 // --------------------------------------------------------------------------
 //

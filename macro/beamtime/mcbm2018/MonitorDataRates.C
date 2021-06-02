@@ -1,3 +1,8 @@
+/** @file MonitorDataRates.C
+  * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer] **/
+
 /** @file MCBM DATA unpacking
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016

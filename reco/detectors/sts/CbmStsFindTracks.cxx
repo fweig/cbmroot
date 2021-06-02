@@ -1,3 +1,8 @@
+/** @file CbmStsFindTracks.cxx
+  * @copyright Copyright (C) 2005-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmStsFindTracks source file                -----
 // -----                  Created 02/02/05  by V. Friese               -----

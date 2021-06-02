@@ -1,3 +1,8 @@
+/** @file Create_TOF_Geometry_v20b.C
+  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 ///
 /// \file Create_TOF_Geometry_v20b.C
 /// \brief Generates TOF geometry in Root format.

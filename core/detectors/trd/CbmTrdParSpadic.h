@@ -1,7 +1,7 @@
 /** @file CbmTrdParSpadic.h
   * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator], Pascal Raisig **/
+  * @authors Florian Uhlig [committer], Pascal Raisig **/
 
 #ifndef CBMTRDPARSPADIC_H
 #define CBMTRDPARSPADIC_H

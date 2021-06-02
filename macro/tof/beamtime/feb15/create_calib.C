@@ -1,3 +1,8 @@
+/** @file create_calib.C
+  * @copyright Copyright (C) 2016-2019 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon [committer] **/
+
 // -----------------------------------------------------------------------------
 // ----- create_calib.C                                                    -----
 // -----                                                                   -----

@@ -1,10 +1,9 @@
+/** @file MonitorTrd.C
+  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig, Pierre-Alain Loizeau [committer] **/
+
 /*
- * File: /MonitorTrd.C
- * Created Date: Wednesday March 25th 2020
- * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
- * -----
- * Last Modified: Friday September 18th 2020 10:26:30
- * Modified By: Pascal Raisig
  * -----
  * Purpose: macro to test and run mCbm2020 trd unpacking
  * -----

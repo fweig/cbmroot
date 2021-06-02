@@ -1,7 +1,7 @@
 /** @file pl_Dut_Res.C
   * @copyright Copyright (C) 2018 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 void pl_Dut_Res(Int_t iDut = 911, TString sysinfo = "")
 {

@@ -1,3 +1,8 @@
+/** @file CbmHadronAnalysis.cxx
+  * @copyright Copyright (C) 2012-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer], Florian Uhlig **/
+
 // ------------------------------------------------------------------
 // -----                     CbmHadronAnalysis                  -----
 // -----              Created 14/12/2012 by nh                  -----

@@ -1,3 +1,8 @@
+/** @file CbmLitTrackSelectionTrd.cxx
+  * @copyright Copyright (C) 2008-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitTrackSelectionTrd.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

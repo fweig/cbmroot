@@ -1,7 +1,7 @@
 /** @file mcbm_mc_gp.C
   * @copyright Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Gregor Pitsch [orginator] **/
+  * @authors Gregor Pitsch [committer] **/
 
 // --------------------------------------------------------------------------
 //

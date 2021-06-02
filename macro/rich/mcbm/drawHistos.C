@@ -1,7 +1,7 @@
 /** @file drawHistos.C
   * @copyright Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+  * @authors Egor Ovcharenko [committer] **/
 
 void drawHistos(TString inFilename = "~/TSA_files/result/test60001.root")
 {

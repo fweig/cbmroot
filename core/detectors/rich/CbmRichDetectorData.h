@@ -1,3 +1,8 @@
+/** @file CbmRichDetectorData.h
+  * @copyright Copyright (C) 2015-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors slebedev, Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig **/
+
 /*detector
  * CbmRichData.h
  *

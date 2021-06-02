@@ -1,3 +1,8 @@
+/** @file readTsa_server_get4.C
+  * @copyright Copyright (C) 2014-2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer] **/
+
 /** @file readTsa.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @since August 2014

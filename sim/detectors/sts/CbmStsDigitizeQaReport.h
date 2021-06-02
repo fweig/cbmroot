@@ -1,7 +1,7 @@
 /** @file CbmStsDigitizeQaReport.h
   * @copyright Copyright (C) 2016-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Hanna Malygina [orginator], Volker Friese **/
+  * @authors Hanna Malygina [committer], Volker Friese **/
 
 #ifndef CBMSTSDIGITIZEQAREPORT_H_
 #define CBMSTSDIGITIZEQAREPORT_H_

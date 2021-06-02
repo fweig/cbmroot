@@ -1,7 +1,7 @@
 /** @file MergeTTree.C
-  * @copyright Copyright (C) 2014-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Selim Seddiki [orginator] **/
+  * @authors Selim Seddiki [committer] **/
 
 // -------------------------------------------------------------------------
 // ----- This macro merges several files containing TTrees into one; from different input files:

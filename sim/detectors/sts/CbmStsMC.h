@@ -1,4 +1,9 @@
 /** @file CbmStsMC.h
+  * @copyright Copyright (C) 2006-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Denis Bertini [committer] **/
+
+/** @file CbmStsMC.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 17.02.2014 Major revision: Rename from CbmSts.
  ** Use CbmStsSetup and address scheme, remove GeoPars completely.

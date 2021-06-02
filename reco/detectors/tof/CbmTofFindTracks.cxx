@@ -1,3 +1,8 @@
+/** @file CbmTofFindTracks.cxx
+  * @copyright Copyright (C) 2015-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [committer], Pierre-Alain Loizeau **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmTofFindTracks source file                -----
 // -----                  Created 25/04/15  by N. Herrmann             -----

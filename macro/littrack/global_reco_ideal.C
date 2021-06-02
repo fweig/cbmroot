@@ -1,3 +1,8 @@
+/** @file global_reco_ideal.C
+  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file global_reco_ideal.C
  * \brief Macro runs ideal event reconstruction.

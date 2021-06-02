@@ -1,3 +1,8 @@
+/** @file CbmMvdSensorFrameBuffer.cxx
+  * @copyright Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdSensorFrameBuffer source file              -----
 // -----                  Created 02.02.2012 by M. Deveaux            -----

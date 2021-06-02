@@ -1,4 +1,9 @@
 /** @file CbmDigiVector.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmDigiVector.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 11 March 2020
  **/

@@ -1,7 +1,7 @@
 /** @file call_Tsa_client_Cruz.C
   * @copyright Copyright (C) 2014 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [orginator] **/
+  * @authors Cyrano Bergmann [committer] **/
 
 void call_Tsa_client_Cruz(Int_t nMin = 1)
 {

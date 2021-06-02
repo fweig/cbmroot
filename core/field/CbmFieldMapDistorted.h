@@ -1,3 +1,8 @@
+/** @file CbmFieldMapDistorted.h
+  * @copyright Copyright (C) 2008-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebdeva [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----               CbmFieldMapSym3Distorted header              -----
 // -----                  Created 18/01/08  by E.Litvinenko            -----

@@ -1,7 +1,7 @@
 /** @file pl_over_cor.C
   * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange = 3.)
 {

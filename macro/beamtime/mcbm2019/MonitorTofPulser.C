@@ -1,4 +1,9 @@
 /** @file MonitorTofPulser.C
+  * @copyright Copyright (C) 2019-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer] **/
+
+/** @file MonitorTofPulser.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016
  ** Modified by P.-A. Loizeau

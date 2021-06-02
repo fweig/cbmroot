@@ -1,3 +1,8 @@
+/** @file kf_thermal_signal_generator.C
+  * @copyright Copyright (C) 2018-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Volker Friese [committer] **/
+
 //---------------------------------------------------------------------------------
 // @author  M. Zyzak
 // @version 1.0

@@ -1,4 +1,9 @@
 /** @file alignment.C
+  * @copyright Copyright (C) 2015-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Senger, Pierre-Alain Loizeau [committer] **/
+
+/** @file alignment.C
  ** @author Anna Senger <a.senger@gsi.de>
  ** @date 26.01.2015 
  ** Alignment

@@ -1,3 +1,8 @@
+/** @file CbmRichReconstruction.h
+  * @copyright Copyright (C) 2012-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer], Semen Lebedev [committer] **/
+
 /**
 * \file CbmRichReconstruction.h
 *

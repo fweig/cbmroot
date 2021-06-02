@@ -1,3 +1,8 @@
+/** @file global_fit.C
+  * @copyright Copyright (C) 2013-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file global_fit.C
  * \brief Track fit.

@@ -1,3 +1,8 @@
+/** @file loadlibs.C
+  * @copyright Copyright (C) 2012-2015 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file loadlib.C
  * \brief Macro for loading basic and cbmroot libraries.

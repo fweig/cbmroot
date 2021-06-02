@@ -1,3 +1,8 @@
+/** @file CbmLmvmUtils.h
+  * @copyright Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Elena Lebedeva [committer] **/
+
 /**
  * @author Elena Lebedeva <e.lebedeva@gsi.de>
  * @since 2015

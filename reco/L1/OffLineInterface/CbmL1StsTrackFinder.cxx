@@ -1,3 +1,8 @@
+/** @file CbmL1StsTrackFinder.cxx
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors I.Kisel, S.Gorbunov, Volker Friese, Denis Bertini [committer], Sergey Gorbunov **/
+
 /*
  *====================================================================
  *

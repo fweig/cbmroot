@@ -1,11 +1,9 @@
+/** @file CbmTrdDefs.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig, Florian Uhlig [committer] **/
+
 /*
- * File: /CbmTrdDefs.h
- * Created Date: Tuesday March 3rd 2020
- * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
- * -----
- * Last Modified: Wednesday March 25th 2020 12:57:01
- * Modified By: Pascal Raisig
- * -----
  * Purpose: Reference class for global definitions used within the CbmTrd project
  * -----
  */

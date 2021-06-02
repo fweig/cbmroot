@@ -1,7 +1,7 @@
 /** @file draw_study_report_cosy17.C
   * @copyright Copyright (C) 2017 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 using namespace std;
 void draw_study_report()

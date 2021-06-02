@@ -1,3 +1,8 @@
+/** @file CbmMvdDigiToHitTB.h
+  * @copyright Copyright (C) 2019 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors  **/
+
 // ----------------------------------------------------------------------------
 // -----               CbmMvdDigiToHitTB header file                    -----
 // -----                   Created by P.Sitzmann 03.12.2014               -----

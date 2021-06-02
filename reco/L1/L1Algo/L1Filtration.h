@@ -1,7 +1,7 @@
 /** @file L1Filtration.h
   * @copyright Copyright (C) 2007-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [orginator], Maxim Zyzak, Igor Kulakov, Valentina Akishina **/
+  * @authors Sergey Gorbunov [committer], Maxim Zyzak, Igor Kulakov, Valentina Akishina **/
 
 #ifndef L1Filtration_h
 #define L1Filtration_h

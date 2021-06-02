@@ -1,7 +1,7 @@
 /** @file LxTBTieTracks.cxx
   * @copyright Copyright (C) 2016-2019 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov [orginator] **/
+  * @authors Timur Ablyazimov [committer] **/
 
 /*
  * To change this license header, choose License Headers in Project Properties.

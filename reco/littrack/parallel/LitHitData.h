@@ -1,3 +1,8 @@
+/** @file LitHitData.h
+  * @copyright Copyright (C) 2010-2016 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitHitData.h
  * \brief Class for accessing hits in track reconstruction.

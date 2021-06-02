@@ -1,7 +1,7 @@
 /** @file pl_over_trb_ct.C
   * @copyright Copyright (C) 2015 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_over_trb_ct(Int_t iBoard = 0)
 {

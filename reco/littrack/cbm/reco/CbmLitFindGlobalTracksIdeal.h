@@ -1,3 +1,8 @@
+/** @file CbmLitFindGlobalTracksIdeal.h
+  * @copyright Copyright (C) 2009-2016 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFindGlobalTracksIdeal.h
  * \brief FairTask for ideal global track reconstruction.

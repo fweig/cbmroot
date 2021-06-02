@@ -1,3 +1,8 @@
+/** @file CbmHit.cxx
+  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig [committer], Volker Friese **/
+
 /**
  * \file CbmHit.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

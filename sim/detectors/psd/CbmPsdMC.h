@@ -1,4 +1,9 @@
 /** @file CbmPsdMC.h
+  * @copyright Copyright (C) 2017-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Yuri Kharlov, Volker Friese [committer] **/
+
+/** @file CbmPsdMC.h
  ** @author Yuri Kharlov <yuri.kharlov@ihep.ru>
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 18.09.2017 Major revision: Use geometry file instead of hard-coded geometry.

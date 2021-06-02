@@ -1,7 +1,7 @@
 /** @file CbmTrdRecoLinkDef.h
-  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pascal Raisig [orginator] **/
+  * @authors Pascal Raisig [committer] **/
 
 // $Id: TrdRecoLinkDef.h $
 

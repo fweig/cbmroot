@@ -1,3 +1,8 @@
+/** @file mcbm_digi.C
+  * @copyright Copyright (C) 2018-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** Macro for detector response simulation (digitisation)
  **
  ** The detector response produces a raw data file from the transport

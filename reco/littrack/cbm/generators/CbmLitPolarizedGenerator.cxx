@@ -1,3 +1,8 @@
+/** @file CbmLitPolarizedGenerator.cxx
+  * @copyright Copyright (C) 2009-2011 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Kryshen, Andrey Lebedev [committer] **/
+
 // -------------------------------------------------------------------------
 // -----         CbmLitPolarizedGenerator source file                     -----
 // -----          Created 11/09/09  by E. Kryshen                      -----

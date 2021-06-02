@@ -1,3 +1,8 @@
+/** @file CbmPhsdGenerator.cxx
+  * @copyright Copyright (C) 2014-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Vovchenko, Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                FairUrqmdGenerator source file                  -----
 // -----                Created 24/01/14  by V. Vovchenko -----

@@ -1,3 +1,8 @@
+/** @file CbmTof.cxx
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Christian Simon, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                       CbmTof source file                      -----
 // -----                  Created 28/07/04  by V. Friese               -----

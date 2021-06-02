@@ -1,7 +1,7 @@
 /** @file LitCudaTypes.h
   * @copyright Copyright (C) 2010 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator] **/
+  * @authors Andrey Lebedev [committer] **/
 
 #ifndef LITCUDATYPES_H_
 #define LITCUDATYPES_H_

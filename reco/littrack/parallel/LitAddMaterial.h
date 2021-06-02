@@ -1,3 +1,8 @@
+/** @file LitAddMaterial.h
+  * @copyright Copyright (C) 2009-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitAddMaterial.h
  * \brief Functions for calculation of the material effects.

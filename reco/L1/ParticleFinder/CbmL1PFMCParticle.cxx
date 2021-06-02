@@ -1,3 +1,8 @@
+/** @file CbmL1PFMCParticle.cxx
+  * @copyright Copyright (C) 2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Zyzak, Maxim Zyzak [committer] **/
+
 /*
  *=====================================================
  *

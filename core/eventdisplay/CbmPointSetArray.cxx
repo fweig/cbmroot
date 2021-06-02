@@ -1,3 +1,8 @@
+/** @file CbmPointSetArray.cxx
+  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors J. Brandt, Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----               CbmPointSetArray source file                    -----
 // -----                Created 18/07/05  by J. Brandt                 -----

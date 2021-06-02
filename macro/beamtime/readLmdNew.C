@@ -1,3 +1,8 @@
+/** @file readLmdNew.C
+  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer], Volker Friese **/
+
 /** @file readLmd.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since December 2013

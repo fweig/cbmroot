@@ -1,3 +1,8 @@
+/** @file CbmGeoMuchPar.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E.Kryshen, Denis Bertini [committer], Florian Uhlig, Mohammad Al-Turany, Mikhail Ryzhinskiy **/
+
 /** CbmGeoMuchPar class
  * @author  E.Kryshen
  * @version 1.0

@@ -1,3 +1,8 @@
+/** @file readTsamk.C
+  * @copyright Copyright (C) 2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors martin.kohn@cern.ch, Martin Kohn [committer] **/
+
 /**file intended only for use with Spadic Data from Bucharest Chamber
  ** @author martin.kohn@cern.ch
  ** @file readTsamk.C

@@ -1,4 +1,8 @@
-/// \file DrawHist.C
+/** @file DrawHist.C
+  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
+
 /// \brief A template macro with examples and explanations
 ///
 /// This macro should represent a starting point for the post processing of the

@@ -1,7 +1,7 @@
-/*
- * CbmRichRingFinderData.h
- *
- */
+/** @file CbmRichRingFinderData.h
+  * @copyright Copyright (C) 2013-2021 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
 
 #ifndef CBM_RICH_RING_FINDER_DATA_H_
 #define CBM_RICH_RING_FINDER_DATA_H_

@@ -1,3 +1,8 @@
+/** @file CbmShieldGenerator.cxx
+  * @copyright Copyright (C) 2006-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                CbmShieldGenerator source file                 -----
 // -----                Created 15/09/06  by V. Friese                 -----

@@ -1,3 +1,8 @@
+/** @file CbmTextReportElement.h
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file CbmTextReportElement.h
  * \brief Implementation of CbmLitReportElement for text output.

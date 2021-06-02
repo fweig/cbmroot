@@ -1,3 +1,8 @@
+/** @file CbmDileptRunUrqmdOmegaEe.C
+  * @copyright Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, T. Galatyuk, Denis Bertini [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation using UrQMD input and GEANT3

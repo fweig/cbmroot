@@ -1,3 +1,8 @@
+/** @file CbmMvdPixelCharge.h
+  * @copyright Copyright (C) 2008-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christina Dritsa [committer], Philipp Sitzmann **/
+
 // -------------------------------------------------------------------------
 // -----                     CbmMvdDigi header file                    -----
 // -----                    Created 02/04/08  by C.Dritsa              -----

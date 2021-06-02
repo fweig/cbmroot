@@ -1,3 +1,8 @@
+/** @file CbmMvdHit.cxx
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann, Volker Friese [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                       CbmMvdHit source file                   -----
 // -----                  Created 07/11/06  by V. Friese               -----

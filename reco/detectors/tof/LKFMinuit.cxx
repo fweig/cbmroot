@@ -1,7 +1,7 @@
 /** @file LKFMinuit.cxx
   * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 #include "LKFMinuit.h"
 

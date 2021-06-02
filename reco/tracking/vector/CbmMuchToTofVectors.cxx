@@ -1,3 +1,8 @@
+/** @file CbmMuchToTofVectors.cxx
+  * @copyright Copyright (C) 2017-2019 Veksler and Baldin Laboratory of High Energy Physics, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Zinchenko [committer] **/
+
 /** CbmMuchToTofVectors.cxx
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2017

@@ -1,3 +1,8 @@
+/** @file CbmLitFitQa.cxx
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Timur Ablyazimov **/
+
 /**
  * \file CbmLitFitQa.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

@@ -1,7 +1,7 @@
 /** @file dis_trks.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void dis_trks(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, TString cFileId = "48.50.7.1",
               TString cSet = "000010020", Int_t iSel2 = 20, Int_t iTrackingSetup = 2, Double_t dScalFac = 1.,

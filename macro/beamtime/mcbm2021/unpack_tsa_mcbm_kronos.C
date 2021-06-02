@@ -1,3 +1,8 @@
+/** @file unpack_tsa_mcbm_kronos.C
+  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 /** @file MCBM DATA unpacking
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016

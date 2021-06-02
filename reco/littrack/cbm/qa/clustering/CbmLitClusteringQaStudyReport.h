@@ -1,3 +1,8 @@
+/** @file CbmLitClusteringQaStudyReport.h
+  * @copyright Copyright (C) 2011-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitClusteringQaStudyReport.h
  * \brief Study summary report for clustering QA.

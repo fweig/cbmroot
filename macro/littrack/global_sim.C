@@ -1,3 +1,8 @@
+/** @file global_sim.C
+  * @copyright Copyright (C) 2010-2017 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig **/
+
 /**
  * \file global_sim.C
  * \brief Macro runs simulation for "electron" or "muon" setups of CBM.

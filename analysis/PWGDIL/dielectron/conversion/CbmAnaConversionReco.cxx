@@ -1,3 +1,8 @@
+/** @file CbmAnaConversionReco.cxx
+  * @copyright Copyright (C) 2014-2020 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sascha Reinecke, Florian Uhlig, Andrey Lebedev **/
+
 /**
  * \file CbmAnaConversionReco.cxx
  *

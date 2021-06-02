@@ -1,7 +1,7 @@
 /** @file sts_sim_auau.C
   * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Kotynia [orginator] **/
+  * @authors Anna Kotynia [committer] **/
 
 // --------------------------------------------------------------------------
 //

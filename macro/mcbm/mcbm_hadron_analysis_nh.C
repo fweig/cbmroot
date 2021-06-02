@@ -1,7 +1,7 @@
 /** @file mcbm_hadron_analysis_nh.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void mcbm_hadron_analysis_nh(Int_t nEvents = 10, TString RunId = "test", TString InDir = "./data/",
                              TString OutDir = "./data/", TString setup = "mcbm_beam_2021_03", bool timebased = kTRUE,

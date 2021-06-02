@@ -1,11 +1,11 @@
-/// \file   CbmMuchTransportQa.h
-/// \brief  Definition of the CbmMuchTransportQa class
-/// \author Sergey Gorbunov <se.gorbunov@gsi.de>
-/// \author Eugeny Kryshen
-/// \author Vikas Singhal
-/// \author Ekata Nandy
-/// \author Dominik Smith
-/// \date   21.10.2020
+/** @file CbmMuchTransportQa.h
+  * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Sergey Gorbunov, Eugeny Kryshen, Vikas Singhal, Ekata Nandy, Dominik Smith [committer] **/
+
+/** @file   CbmMuchTransportQa.h
+  * @brief  Definition of the CbmMuchTransportQa class
+  * @date   21.10.2020 **/
 
 #ifndef CbmMuchTransportQa_H
 #define CbmMuchTransportQa_H

@@ -1,3 +1,8 @@
+/** @file create_digipar.C
+  * @copyright Copyright (C) 2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Norbert Herrmann [committer] **/
+
 // --------------------------------------------------------------------------
 //
 // Macro to create digi parameters for the TOF

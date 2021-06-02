@@ -1,7 +1,7 @@
 /** @file CbmTrdFASP.h
   * @copyright Copyright (C) 2018-2020 Horia Hulubei National Institute of Physics and Nuclear Engineering, Bucharest
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alexandru Bercuci [orginator] **/
+  * @authors Alexandru Bercuci [committer] **/
 
 #ifndef CBMTRDFASP_H
 #define CBMTRDFASP_H

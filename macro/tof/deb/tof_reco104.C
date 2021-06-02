@@ -1,7 +1,7 @@
 /** @file tof_reco104.C
   * @copyright Copyright (C) 2013 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 // --------------------------------------------------------------------------
 //

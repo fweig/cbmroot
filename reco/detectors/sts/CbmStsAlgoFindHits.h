@@ -1,4 +1,9 @@
 /** @file CbmStsAlgoFindHits.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsAlgoFindHits.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 23.03.2020
  **/

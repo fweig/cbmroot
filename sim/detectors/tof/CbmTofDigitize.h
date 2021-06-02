@@ -1,4 +1,9 @@
 /** @file CbmTofDigitize.h
+  * @copyright Copyright (C) 2013-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer], Volker Friese **/
+
+/** @file CbmTofDigitize.h
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 19.07.2013
  **/

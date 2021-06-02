@@ -1,3 +1,8 @@
+/** @file CbmMvdPileupManager.h
+  * @copyright Copyright (C) 2007-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdPileupManager header file              -----
 // -----                   Created 08/11/06  by V. Friese              -----

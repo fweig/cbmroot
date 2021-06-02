@@ -1,7 +1,7 @@
 /** @file T0CoincPlotSingleRun.C
   * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 Bool_t T0CoincPlotSingleRun(UInt_t uRunId)
 {

@@ -1,3 +1,8 @@
+/** @file CbmKFFieldMath.h
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Gorbunov, Denis Bertini [committer] **/
+
 /** Collection of mathematical routines for track extrapolation in magnetic field
  *
  * @author  S.Gorbunov

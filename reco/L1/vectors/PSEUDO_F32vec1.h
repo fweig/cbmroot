@@ -1,7 +1,7 @@
 /** @file PSEUDO_F32vec1.h
   * @copyright Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator] **/
+  * @authors Igor Kulakov [committer] **/
 
 #ifndef CBM_KF_F32vec1_H
 #define CBM_KF_F32vec1_H

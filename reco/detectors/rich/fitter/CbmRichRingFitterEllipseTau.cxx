@@ -1,3 +1,8 @@
+/** @file CbmRichRingFitterEllipseTau.cxx
+  * @copyright Copyright (C) 2009-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Alexander Ayriyan and Semen Lebedev, Semen Lebedev [committer] **/
+
 /**
 * \file CbmRichRingFitterEllipseTau.cxx
 *

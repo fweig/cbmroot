@@ -1,7 +1,7 @@
 /** @file CbmSimGeneratorsLinkDef.h
   * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Florian Uhlig [orginator] **/
+  * @authors Volker Friese, Florian Uhlig [committer] **/
 
 #ifdef __CINT__
 

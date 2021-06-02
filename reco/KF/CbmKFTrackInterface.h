@@ -1,3 +1,7 @@
+/** @file CbmKFTrackInterface.h
+  * @copyright Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Gorbunov, Denis Bertini [committer] **/
 
 /** Abstract base class for track is being used by the CbmKF Kalman Filter 
  *

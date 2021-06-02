@@ -1,7 +1,7 @@
 /** @file graph_RPreso_vsCentrality.C
-  * @copyright Copyright (C) 2014 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @copyright Copyright (C) 2014 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Selim Seddiki [orginator] **/
+  * @authors Selim Seddiki [committer] **/
 
 // -------------------------------------------------------------------------
 // ----- Macro to draw the reaction plane resolution versus % most centrality (based on STS multiplicity)

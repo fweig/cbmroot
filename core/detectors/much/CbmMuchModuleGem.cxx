@@ -1,3 +1,8 @@
+/** @file CbmMuchModuleGem.cxx
+  * @copyright Copyright (C) 2008-2020 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Mikhail Ryzhinskiy [committer], Evgeny Kryshen, Florian Uhlig **/
+
 /** CbmMuchModuleGem.cxx
  *@author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>
  *@version 1.0

@@ -1,7 +1,7 @@
 /** @file create_MUCH_geometry_v19b_mcbm.C
   * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [orginator] **/
+  * @authors David Emschermann [committer] **/
 
 //
 /// \file create_MUCH_geometry_v19b.C

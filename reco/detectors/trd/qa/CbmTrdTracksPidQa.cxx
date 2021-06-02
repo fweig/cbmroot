@@ -1,3 +1,8 @@
+/** @file CbmTrdTracksPidQa.cxx
+  * @copyright Copyright (C) 2007-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // -----------------------------------------------------------------------
 // -----                     CbmTrdTracksPidQa                        -----
 // -----               Created 24.02.07  by F. Uhlig                 -----

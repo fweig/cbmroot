@@ -1,3 +1,8 @@
+/** @file CbmStsTrackFinderIdeal.cxx
+  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Volker Friese, Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                CbmStsTrackFinderIdeal source file             -----
 // -----                  Created 01/02/05  by V. Friese               -----

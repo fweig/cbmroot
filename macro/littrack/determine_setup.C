@@ -1,3 +1,8 @@
+/** @file determine_setup.C
+  * @copyright Copyright (C) 2008-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev, Florian Uhlig [committer] **/
+
 /**
  * \file determine setup.C
  * \brief Macro determines detector presence in CBM setup.

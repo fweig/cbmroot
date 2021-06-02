@@ -1,7 +1,7 @@
 /** @file pl_over_Mat04D4best.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator], Pierre-Alain Loizeau **/
+  * @authors Christian Simon [committer], Pierre-Alain Loizeau **/
 
 void pl_over_Mat04D4best(Int_t iLog = 0)
 {

@@ -1,3 +1,8 @@
+/** @file create_stsgeo_v19j.C
+  * @copyright Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Florian Uhlig **/
+
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).
  **

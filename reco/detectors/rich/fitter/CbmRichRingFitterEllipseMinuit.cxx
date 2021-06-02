@@ -1,3 +1,8 @@
+/** @file CbmRichRingFitterEllipseMinuit.cxx
+  * @copyright Copyright (C) 2011-2020 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer], Florian Uhlig **/
+
 /**
 * \file CbmRichRingFitterEllipseMinuit.cxx
 *

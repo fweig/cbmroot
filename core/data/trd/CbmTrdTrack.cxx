@@ -1,3 +1,8 @@
+/** @file CbmTrdTrack.cxx
+  * @copyright Copyright (C) 2005-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Kalisky, Florian Uhlig, Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmStsTrack source file                  -----
 // -----                  Created 11/07/05  by M. Kalisky              -----

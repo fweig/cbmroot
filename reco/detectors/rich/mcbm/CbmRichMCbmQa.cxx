@@ -1,7 +1,7 @@
 /** @file CbmRichMCbmQa.cxx
   * @copyright Copyright (C) 2017-2021 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Gregor Pitsch [orginator], Semen Lebedev **/
+  * @authors Gregor Pitsch [committer], Semen Lebedev **/
 
 #include "CbmRichMCbmQa.h"
 

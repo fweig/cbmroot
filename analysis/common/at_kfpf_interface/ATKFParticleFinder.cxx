@@ -1,7 +1,7 @@
 /** @file ATKFParticleFinder.cxx
   * @copyright Copyright (C) 2020-2021 GSI, IKF-UFra
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Oleksii Lubynets [orginator] **/
+  * @authors Oleksii Lubynets [committer] **/
 
 #include "ATKFParticleFinder.h"
 

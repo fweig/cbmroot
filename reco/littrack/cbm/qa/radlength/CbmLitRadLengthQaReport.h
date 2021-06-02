@@ -1,3 +1,8 @@
+/** @file CbmLitRadLengthQaReport.h
+  * @copyright Copyright (C) 2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitRadLengthQaReport.h
  * \brief Create report for radiation length QA.

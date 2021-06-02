@@ -1,3 +1,8 @@
+/** @file CbmAnaDielectronReports.cxx
+  * @copyright Copyright (C) 2012-2015 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /**
  * \file CbmAnaDielectronReports.cxx
  * \author Semen Lebedev <s.lebedev@gsi.de>

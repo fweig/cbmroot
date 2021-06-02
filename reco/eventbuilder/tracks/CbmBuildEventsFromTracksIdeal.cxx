@@ -1,4 +1,9 @@
 /** @file CbmBuildEventsFromTracksIdeal.cxx
+  * @copyright Copyright (C) 2017-2020 IKF-UFra, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Valentina Akishina [committer] **/
+
+/** @file CbmBuildEventsFromTracksIdeal.cxx
  ** @author Valentina Akishina <v.akishina@gsi.de>
  ** @date 14.03.2017
  **/

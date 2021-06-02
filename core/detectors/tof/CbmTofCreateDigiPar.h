@@ -1,3 +1,8 @@
+/** @file CbmTofCreateDigiPar.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // --------------------------------------------------------------------------
 // -----          Header for the CbmTrdCreateDigiPar               ------
 // -----              Created 06.06.08 by F.Uhlig                      ------

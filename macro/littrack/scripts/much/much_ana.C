@@ -1,7 +1,7 @@
 /** @file much_ana.C
   * @copyright Copyright (C) 2013-2021 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Andrey Lebedev [orginator] **/
+  * @authors Florian Uhlig, Andrey Lebedev [committer] **/
 
 void much_ana(Int_t nEvents = 1000)
 {

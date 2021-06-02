@@ -1,7 +1,7 @@
 /** @file Tof_QA.C
   * @copyright Copyright (C) 2007-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [orginator] **/
+  * @authors Volker Friese [committer] **/
 
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"

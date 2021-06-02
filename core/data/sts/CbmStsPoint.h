@@ -1,3 +1,8 @@
+/** @file CbmStsPoint.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Volker Friese **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmStsPoint header file                  -----
 // -----                  Created 26/07/04  by V. Friese               -----

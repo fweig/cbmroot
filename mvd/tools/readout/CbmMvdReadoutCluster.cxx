@@ -1,3 +1,8 @@
+/** @file CbmMvdReadoutCluster.cxx
+  * @copyright Copyright (C) 2016-2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                  CbmMvdReadoutCluster source file             -----
 // -----                  Created 17/10/16 by P. Sitzmann              -----

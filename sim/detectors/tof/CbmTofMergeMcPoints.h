@@ -1,3 +1,8 @@
+/** @file CbmTofMergeMcPoints.h
+  * @copyright Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer] **/
+
 /**
  * \file CbmTofMergeMcPoints.h
  * \brief FairTask for merging TOF MC Points into more realistic TOF MC points.

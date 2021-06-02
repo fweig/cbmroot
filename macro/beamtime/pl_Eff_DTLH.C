@@ -1,7 +1,7 @@
 /** @file pl_Eff_DTLH.C
   * @copyright Copyright (C) 2018 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 void pl_Eff_DTLH(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1., TString sysinfo = "")
 {

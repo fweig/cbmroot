@@ -1,7 +1,7 @@
 /** @file CbmL1Constants.h
   * @copyright Copyright (C) 2012 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator] **/
+  * @authors Igor Kulakov [committer] **/
 
 #ifndef CBML1CONSTANTS_H_
 #define CBML1CONSTANTS_H_

@@ -1,7 +1,7 @@
 /** @file add_histo.C
   * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Senger [orginator] **/
+  * @authors Anna Senger [committer] **/
 
 void add_histo(Int_t NofFiles = 5000, TString type = "sub_histo", TString dir = "sis100_muon_lmvm/8gev/centr_010")
 {

@@ -1,4 +1,9 @@
 /** @file CbmTofPoint.h
+  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Denis Bertini [committer] **/
+
+/** @file CbmTofPoint.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @author Christian Simon <c.simon@physi.uni-heidelberg.de>
  ** @since 16.06.2014

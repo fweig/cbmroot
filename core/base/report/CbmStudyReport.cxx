@@ -1,3 +1,8 @@
+/** @file CbmStudyReport.cxx
+  * @copyright Copyright (C) 2011-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file CbmStudyReport.cxx
  * \author Semen Lebedev <s.lebedev@gsi.de>

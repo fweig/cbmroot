@@ -1,7 +1,7 @@
 /** @file mvd_qa4_reco.C
   * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [orginator] **/
+  * @authors Volker Friese [committer] **/
 
 // --------------------------------------------------------------------------
 //

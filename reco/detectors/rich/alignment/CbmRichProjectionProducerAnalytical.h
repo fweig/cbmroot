@@ -1,3 +1,8 @@
+/** @file CbmRichProjectionProducerAnalytical.h
+  * @copyright Copyright (C) 2016-2017 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Lebedev (initial version by P.Stolpovsky in 2005), Jordan Bendarouach [committer] **/
+
 /**
  * \file CbmRichProjectionProducerAnalytical.h
  *

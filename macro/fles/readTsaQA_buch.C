@@ -1,3 +1,8 @@
+/** @file readTsaQA_buch.C
+  * @copyright Copyright (C) 2017 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Martin Kohn [committer] **/
+
 /** @file readTsa.C
  ** @author Martin Kohn <martin.kohn@cern.ch>
  ** @since June 2017

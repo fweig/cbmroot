@@ -1,3 +1,8 @@
+/** @file geo.C
+  * @copyright Copyright (C) 2016-2017 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese, Gregor Pitsch [committer] **/
+
 /** ROOT macro to define the CBM setup sis_100_electron
  **
  ** @author Volker Friese <v.friese@gsi.de>

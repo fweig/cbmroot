@@ -1,12 +1,8 @@
-///////////////////////////////////////////////////////////////////////////
-//
-// Generic Histogram container with support for groups and filling of groups
-// by passing a vector of data
-//
-// Authors:
-//   Julian Book   <Julian.Book@cern.ch>
+/** @file PairAnalysisHistos.cxx
+  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
 /*
-
   TOADD: reserved words, MC signals, hist classes, MC weighting, plotting!
 
   Histograms such as THxF,D, TProfile,2D,3D and n-dimensonal objects such as
@@ -54,8 +50,6 @@
   ...
 
 */
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
 
 #include "PairAnalysisHistos.h"
 

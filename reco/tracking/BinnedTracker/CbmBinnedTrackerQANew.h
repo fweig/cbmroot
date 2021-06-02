@@ -1,14 +1,12 @@
+/** @file CbmBinnedTrackerQANew.h
+  * @copyright Copyright (C) 2018-2019 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [committer] **/
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */
-
-/* 
- * File:   CbmBinnedTrackerQANew.h
- * Author: Timur
- *
- * Created on May 14, 2018, 4:03 PM
  */
 
 #ifndef CBMBINNEDTRACKERQANEW_H

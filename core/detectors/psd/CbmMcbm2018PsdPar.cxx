@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018PsdPar.cxx
+  * @copyright Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors N.Karpushkin, Florian Uhlig [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                 CbmMcbm2018PsdPar header file                 -----
 // -----              Created 26.09.2019 by N.Karpushkin               -----

@@ -1,3 +1,8 @@
+/** @file CbmRichProjectionProducerAnalytical.cxx
+  * @copyright Copyright (C) 2016-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors S.Lebedev (initial version by P.Stolpovsky (2005)), Andrey Lebedev [committer], Semen Lebedev, Semen Lebedev **/
+
 /**
  * \file CbmRichProjectionProducerAnalytical.cxx
  *

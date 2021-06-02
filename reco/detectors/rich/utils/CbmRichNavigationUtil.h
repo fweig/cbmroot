@@ -1,7 +1,7 @@
 /** @file CbmRichNavigationUtil.h
   * @copyright Copyright (C) 2016-2021 GSI/JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [orginator], Semen Lebedev **/
+  * @authors Andrey Lebedev [committer], Semen Lebedev **/
 
 #ifndef RICH_CbmRichNavigationUtil
 #define RICH_CbmRichNavigationUtil

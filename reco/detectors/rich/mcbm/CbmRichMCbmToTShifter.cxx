@@ -1,7 +1,7 @@
 /** @file CbmRichMCbmToTShifter.cxx
   * @copyright Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber [orginator] **/
+  * @authors Adrian Amatus Weber [committer] **/
 
 #include "CbmRichMCbmToTShifter.h"
 

@@ -1,19 +1,17 @@
+/** @file Config_jbook_QA.C
+  * @copyright Copyright (C) 2015-2016 Goethe-University Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Julian Book [committer] **/
+
 /// \file Config_jbook_Mee.C
 /// \brief A template task configuration macro with example and explanations
 ///
 ///         PairAnalysis PAckage (PAPA) -- written by Julian Book
 ///
-///
 /// It configures a multi-task with 5 configurations for the study of the TRD performance
 /// in the low and intermediate masss regions.
 ///
-/// UPDATES, NOTES:
-/// -
-///
-///
-/// \author Julian Book <jbook@ikf.uni-frankfurt.de>, Goethe-University Frankfurt
 /// \date Aug 13, 2015
-///
 
 PairAnalysis* Config_Analysis(Int_t cutDefinition);
 

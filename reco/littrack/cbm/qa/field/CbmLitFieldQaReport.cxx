@@ -1,3 +1,8 @@
+/** @file CbmLitFieldQaReport.cxx
+  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitFieldQaReport.cxx
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

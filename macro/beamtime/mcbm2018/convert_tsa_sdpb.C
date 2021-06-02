@@ -1,3 +1,8 @@
+/** @file convert_tsa_sdpb.C
+  * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pierre-Alain Loizeau [committer] **/
+
 /** @file MCBM DATA raw message conversion to ROOT for sDPB
  ** @author P.-A. Loizeau
  ** @date 28.06.2019

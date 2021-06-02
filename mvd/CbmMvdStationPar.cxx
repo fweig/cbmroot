@@ -1,3 +1,8 @@
+/** @file CbmMvdStationPar.cxx
+  * @copyright Copyright (C) 2014-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                     CbmMvdStationPar source file              -----
 // -----                  Created 28/10/14  by P.Sitzmann              -----

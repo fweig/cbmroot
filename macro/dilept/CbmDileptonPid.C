@@ -1,3 +1,8 @@
+/** @file CbmDileptonPid.C
+  * @copyright Copyright (C) 2007-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
+
 // --------------------------------------------------------------------------
 // $Id $
 // Macro for elctron identification from already reconstructed events

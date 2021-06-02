@@ -1,7 +1,7 @@
 /** @file L1HitArea.h
   * @copyright Copyright (C) 2012-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak, Igor Kulakov [orginator] **/
+  * @authors Maxim Zyzak, Igor Kulakov [committer] **/
 
 #ifndef L1HitArea_H
 #define L1HitArea_H

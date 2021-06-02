@@ -1,3 +1,8 @@
+/** @file CbmRichPoint.cxx
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors B. Polichtchouk, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                      CbmRichPoint source file                 -----
 // -----               Created 28/04/04  by B. Polichtchouk            -----

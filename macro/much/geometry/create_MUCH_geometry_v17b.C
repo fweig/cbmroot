@@ -1,7 +1,7 @@
 /** @file create_MUCH_geometry_v17b.C
   * @copyright Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [orginator], Partha Pratim Bhaduri **/
+  * @authors David Emschermann [committer], Partha Pratim Bhaduri **/
 
 //
 /// \file create_MUCH_geometry_v17b.C

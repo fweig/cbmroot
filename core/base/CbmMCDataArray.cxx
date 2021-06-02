@@ -1,3 +1,8 @@
+/** @file CbmMCDataArray.cxx
+  * @copyright Copyright (C) 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors //Dr.Sys, Volker Friese [committer], Florian Uhlig **/
+
 /** @file  CbmMCDataArray.cxx
  ** @author //Dr.Sys <mikhail.prokudin@cern.ch>
  **/

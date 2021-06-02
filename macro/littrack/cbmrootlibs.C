@@ -1,3 +1,8 @@
+/** @file cbmrootlibs.C
+  * @copyright Copyright (C) 2008-2021 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer], Florian Uhlig **/
+
 /**
  * \file cbmrootlibs.C
  * \brief Macro loads CBMROOT libraries.

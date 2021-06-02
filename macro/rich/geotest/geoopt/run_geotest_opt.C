@@ -1,7 +1,7 @@
 /** @file run_geotest_opt.C
   * @copyright Copyright (C) 2020 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 void run_geotest_opt()
 {

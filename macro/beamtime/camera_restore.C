@@ -1,7 +1,7 @@
 /** @file camera_restore.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 /*
 void camera_restore(const char* fname, int mode = 0)

@@ -1,7 +1,7 @@
 /** @file run_reco_position.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 void run_reco_position(Int_t nEvents = 500000, Int_t Flag = 0)
 {

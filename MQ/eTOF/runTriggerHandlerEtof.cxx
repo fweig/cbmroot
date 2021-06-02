@@ -1,7 +1,7 @@
 /** @file runTriggerHandlerEtof.cxx
   * @copyright Copyright (C) 2019 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 #include "CbmDeviceTriggerHandlerEtof.h"
 

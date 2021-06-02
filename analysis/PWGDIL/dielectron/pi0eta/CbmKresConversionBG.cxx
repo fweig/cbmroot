@@ -1,3 +1,8 @@
+/** @file CbmKresConversionBG.cxx
+  * @copyright Copyright (C) 2017-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Ievgenii Kres, Florian Uhlig [committer] **/
+
 /**
  *    file CbmKresConversionBG.cxx
  *

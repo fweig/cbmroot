@@ -1,7 +1,7 @@
 /** @file draw_mvd_xy_delta.C
   * @copyright Copyright (C) 2012 UGiessen, JINR-LIT
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [orginator] **/
+  * @authors Semen Lebedev [committer] **/
 
 void draw_mvd_xy_delta()
 {

@@ -1,3 +1,8 @@
+/** @file MuchRawData.C
+  * @copyright Copyright (C) 2016 Variable Energy Cyclotron Centre, Kolkata
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Vikas Singhal [committer] **/
+
 /** @file FHodoLabSetup
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016

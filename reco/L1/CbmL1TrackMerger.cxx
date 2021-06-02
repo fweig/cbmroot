@@ -1,3 +1,8 @@
+/** @file CbmL1TrackMerger.cxx
+  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer] **/
+
 // ------------------------------------------------------------------
 // -----                    CbmL1TrackMerger                    -----
 // -----             Created 2006-01-24 by D.Kresan             -----

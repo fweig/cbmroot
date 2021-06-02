@@ -1,4 +1,9 @@
 /** @file CbmTofHitMaker.cxx
+  * @copyright Copyright (C) 2018-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer] **/
+
+/** @file CbmTofHitMaker.cxx
  ** @author nh
  ** @date01.12.2018
  ** adopted from

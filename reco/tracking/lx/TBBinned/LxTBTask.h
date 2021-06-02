@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   LxTBTask.h
- * Author: Timur Ablyazimov
- *
- * Created on 14 Mar 2016
- */
+/** @file LxTBTask.h
+  * @copyright Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov, Florian Uhlig [committer] **/
 
 #ifndef LXTBTASK_H
 #define LXTBTASK_H

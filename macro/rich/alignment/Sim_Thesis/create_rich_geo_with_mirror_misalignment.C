@@ -1,7 +1,7 @@
 /** @file create_rich_geo_with_mirror_misalignment.C
   * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [orginator] **/
+  * @authors Jordan Bendarouach [committer] **/
 
 using namespace std;
 void create_rich_geo_with_mirror_misalignment()

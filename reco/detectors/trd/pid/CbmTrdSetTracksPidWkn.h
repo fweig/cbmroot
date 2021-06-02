@@ -1,3 +1,8 @@
+/** @file CbmTrdSetTracksPidWkn.h
+  * @copyright Copyright (C) 2007-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer], Philipp Kähler **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidWkn header file          -----
 // -----                  Created 13/02/2007  by F. Uhlig              -----

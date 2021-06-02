@@ -1,8 +1,8 @@
-/* CbmLitTrackSelectionCuts.cxx
- * @author Andrey Lebedev <andrey.lebedev@gsi.de>
- * @since 2011
- * @version 1.0
- */
+/** @file CbmLitTrackSelectionCuts.cxx
+  * @copyright Copyright (C) 2011-2013 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 #include "selection/CbmLitTrackSelectionCuts.h"
 
 #include "data/CbmLitTrack.h"

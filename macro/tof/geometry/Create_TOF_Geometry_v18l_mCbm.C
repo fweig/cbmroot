@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_v18l_mCbm.C
   * @copyright Copyright (C) 2019 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 ///
 /// \file Create_TOF_Geometry_v18k_mCbm.C

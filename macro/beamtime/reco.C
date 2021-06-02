@@ -1,4 +1,9 @@
 /** @file reco.C
+  * @copyright Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Senger, Florian Uhlig [committer] **/
+
+/** @file reco.C
  ** @author Anna Senger <a.senger@gsi.de>
  ** @date 09.12.2014 
  ** Clusters and hits

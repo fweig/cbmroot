@@ -1,7 +1,7 @@
 /** @file pl_all_time_resolution.C
   * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [orginator] **/
+  * @authors Christian Simon [committer] **/
 
 void pl_all_time_resolution(UInt_t uTdcNumber1, UInt_t uTdcNumber2)
 {

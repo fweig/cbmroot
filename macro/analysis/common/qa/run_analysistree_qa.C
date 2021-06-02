@@ -1,7 +1,7 @@
 /** @file run_analysistree_qa.C
-  * @copyright Copyright (C) 2021 Physikalisches Institut, Eberhard Karls Universität Tübingen, Tübingen
+  * @copyright Copyright (C) 2021 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tuebingen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Viktor Klochkov [orginator], Viktor Klochkov [orginator] **/
+  * @authors Viktor Klochkov [committer], Viktor Klochkov [committer] **/
 
 //#include <AnalysisTree/TaskManager.hpp>
 //#include "AnalysisTree/Cuts.hpp"

@@ -1,7 +1,7 @@
 /** @file mtof_reco.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau, Norbert Herrmann [orginator] **/
+  * @authors Pierre-Alain Loizeau, Norbert Herrmann [committer] **/
 
 //
 // N.Herrmann   02.05.2020

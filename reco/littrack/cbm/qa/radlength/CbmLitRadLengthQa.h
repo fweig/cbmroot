@@ -1,3 +1,8 @@
+/** @file CbmLitRadLengthQa.h
+  * @copyright Copyright (C) 2013-2014 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitRadLengthQa.h
  * \brief FairTask for estimation of radiation length in the detector.

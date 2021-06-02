@@ -1,7 +1,7 @@
 /** @file L1Portion.h
   * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [orginator] **/
+  * @authors Igor Kulakov [committer] **/
 
 #ifndef L1Portion_H
 #define L1Portion_H

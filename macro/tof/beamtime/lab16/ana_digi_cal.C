@@ -1,7 +1,7 @@
 /** @file ana_digi_cal.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void ana_digi_cal(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
                   char* cFileId = "CbmTofPiHd_22Aug1616", Int_t iCalSet = 0, Int_t iBRef = 500)

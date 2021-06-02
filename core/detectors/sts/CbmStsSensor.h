@@ -1,4 +1,9 @@
 /** @file CbmStsSensor.h
+  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmStsSensor.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 03.05.2013
  **

@@ -1,3 +1,8 @@
+/** @file CbmMvdGeoHandler.cxx
+  * @copyright Copyright (C) 2014-2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer], Florian Uhlig **/
+
 /**
  * \file CbmMvdGeoHandler.cxx
  * \author Philipp Sitzmann <p.sitzmann@gsi.de>

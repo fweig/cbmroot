@@ -1,7 +1,7 @@
 /** @file pl_vert_trk.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator], Norbert Herrmann **/
+  * @authors Florian Uhlig [committer], Norbert Herrmann **/
 
 void pl_vert_trk(Double_t dFitWidth = 0.)
 {

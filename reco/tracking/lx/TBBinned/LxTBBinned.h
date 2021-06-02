@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/** @file LxTBBinned.h
+  * @copyright Copyright (C) 2016-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig [committer] **/
 
-/* 
- * File:   LxTBBinned.h
- * Author: Timur Ablyazimov
- *
- * Created on 31 Mar 2016
- */
+/* To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.*/
 
 #ifndef LXTBBINNED_H
 #define LXTBBINNED_H

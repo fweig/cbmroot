@@ -1,3 +1,8 @@
+/** @file CbmFieldMapSym3.cxx
+  * @copyright Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M. Al/Turany (CbmField.cxx), Denis Bertini [committer] **/
+
 // -------------------------------------------------------------------------
 // -----                    CbmFieldMapSym3 source file                -----
 // -----         Created 12/01/04  by M. Al/Turany (CbmField.cxx)      -----

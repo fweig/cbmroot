@@ -1,7 +1,7 @@
 /** @file run_reco_mcbm_real_wToF_dec19.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void run_reco_mcbm_real_wToF_dec19(
   //        const string& parFile  = "/lustre/nyx/cbm/users/adrian/data19Dec12/testNew2/unp_mcbm_params_384.root",

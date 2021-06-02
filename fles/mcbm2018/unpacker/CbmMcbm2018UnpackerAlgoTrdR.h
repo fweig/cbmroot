@@ -1,3 +1,8 @@
+/** @file CbmMcbm2018UnpackerAlgoTrdR.h
+  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Dennis Spicker, Florian Uhlig [committer], Pascal Raisig **/
+
 /**
   * @file CbmMcbm2018UnpackerAlgoTrdR.h
   * @author Dennis Spicker <dspicker@ikf.uni-frankfurt.de>

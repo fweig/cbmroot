@@ -1,7 +1,7 @@
 /** @file create_RICH_geo_file.C
   * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tariq Mahmoud [orginator] **/
+  * @authors Tariq Mahmoud [committer] **/
 
 void create_RICH_geo_file(float PMTrotX = 5., float PMTrotY = 5.)
 {  //char *geometry="rich-2900-N2-0"){

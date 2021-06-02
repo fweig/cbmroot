@@ -1,7 +1,8 @@
-// Author: I. Froehlich
-// Written: 7.05.2007
-// Revised:
-// PMesh
+/** @file PMesh.h
+  * @copyright Copyright (C) 2007-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors I. Froehlich, Florian Uhlig [committer] **/
+
 // Linear Mesh
 
 #ifndef _PMESH_H_

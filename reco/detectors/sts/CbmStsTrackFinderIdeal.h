@@ -1,3 +1,8 @@
+/** @file CbmStsTrackFinderIdeal.h
+  * @copyright Copyright (C) 2005-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Denis Bertini [committer], Volker Friese **/
+
 /** @file CbmTrackFinderIdeal.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 2.2.2005

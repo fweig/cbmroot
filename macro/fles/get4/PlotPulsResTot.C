@@ -1,7 +1,7 @@
 /** @file PlotPulsResTot.C
   * @copyright Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+  * @authors Pierre-Alain Loizeau [committer] **/
 
 {
   const UInt_t kuNbChanMax  = 32 * 4 + 32 * 4 + 32 * 4;  // 4 FEE/ROC in hardware + 4 FEE/ROC only in software, 2 ROCS

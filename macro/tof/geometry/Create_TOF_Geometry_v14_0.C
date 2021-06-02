@@ -1,7 +1,7 @@
 /** @file Create_TOF_Geometry_v14_0.C
   * @copyright Copyright (C) 2014-2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 ///
 /// \file Create_TOF_Geometry_v13_4x.C

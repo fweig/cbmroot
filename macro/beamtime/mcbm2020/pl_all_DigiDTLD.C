@@ -1,7 +1,7 @@
 /** @file pl_all_DigiDTLD.C
   * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 void pl_all_DigiDTLD(Int_t iNDet = 6, Double_t dDTthr = 2., Int_t iOpt = 0)
 {

@@ -1,3 +1,8 @@
+/** @file qa_study_lmvm.C
+  * @copyright Copyright (C) 2012-2016 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer] **/
+
 /**
  * \file qa_study_lmvm.C
  * \brief Macro for generation of summary reports for LMVM analysis.

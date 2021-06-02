@@ -1,3 +1,8 @@
+/** @file reconstruct.C
+  * @copyright Copyright (C) 2016-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
 /** Macro module for registration of reconstruction tasks to a run
  **
  ** This macro creates the task chain for event-by-event reconstruction.

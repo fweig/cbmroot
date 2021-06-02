@@ -1,3 +1,8 @@
+/** @file CbmTofM2PolyCut.cxx
+  * @copyright Copyright (C) 2020-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Daniel Wielanek [committer] **/
+
 /*
  * CbmTofM2PolyCut.cxx
  *

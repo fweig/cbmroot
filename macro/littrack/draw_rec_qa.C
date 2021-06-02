@@ -1,3 +1,8 @@
+/** @file draw_rec_qa.C
+  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file draw_rec_qa.C
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

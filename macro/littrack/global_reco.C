@@ -1,3 +1,8 @@
+/** @file global_reco.C
+  * @copyright Copyright (C) 2009-2018 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Andrey Lebedev [committer] **/
+
 /**
  * \file global_reco.C
  * \brief Event reconstruction macro.

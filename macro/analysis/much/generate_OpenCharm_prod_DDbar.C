@@ -1,3 +1,8 @@
+/** @file generate_OpenCharm_prod_DDbar.C
+  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Partha Pratim Bhaduri, Volker Friese [committer] **/
+
 /*
 Macro for generation of di-lepton continuum distribution from open charm
 

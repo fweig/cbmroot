@@ -1,4 +1,9 @@
 /** @file CbmTofTracklet.h
+  * @copyright Copyright (C) 2015-2020 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors nh, Norbert Herrmann [committer], Florian Uhlig **/
+
+/** @file CbmTofTracklet.h
  ** @author nh <N.Herrmann@gsi.de>
  ** @date 25.07.2015
  **/

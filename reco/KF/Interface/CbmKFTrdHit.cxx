@@ -1,3 +1,8 @@
+/** @file CbmKFTrdHit.cxx
+  * @copyright Copyright (C) 2005-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D.Kresan, Denis Bertini [committer], Florian Uhlig **/
+
 //  ----------------------------------------------------------------------
 //  -----                         CbmKFTrdHit                        -----
 //  -----               Created 12/12/2005  by D.Kresan              -----

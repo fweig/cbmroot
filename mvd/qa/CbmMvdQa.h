@@ -1,3 +1,8 @@
+/** @file CbmMvdQa.h
+  * @copyright Copyright (C) 2015-2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Philipp Sitzmann [committer] **/
+
 // -------------------------------------------------------------------------
 // -----              CbmMvdQa  header file                            -----
 // -----              Created 12/01/15  by P. Sitzmann                 -----

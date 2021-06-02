@@ -1,7 +1,7 @@
 /** @file pl_all_CluTimeEvol.C
   * @copyright Copyright (C) 2020 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_all_CluTimeEvol(Int_t iNSt = 3, Int_t iTmax = 0)
 {

@@ -1,3 +1,8 @@
+/** @file trd_elid_draw_study.C
+  * @copyright Copyright (C) 2013 UGiessen, JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Semen Lebedev [committer], Andrey Lebedev **/
+
 /*  Description: This macro train and test different electron/pion identification methods in the TRD detector.
 
  Author : Semen Lebedev

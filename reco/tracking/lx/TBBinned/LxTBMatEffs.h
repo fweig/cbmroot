@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   LxTBMatEffs.h
- * Author: Timur Ablyazimov
- *
- * Created on 15 Mar 2016
- */
+/** @file LxTBMatEffs.h
+  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov, Florian Uhlig [committer] **/
 
 #ifndef LXTBMATEFFS_H
 #define LXTBMATEFFS_H

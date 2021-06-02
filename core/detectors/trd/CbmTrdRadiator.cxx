@@ -1,3 +1,8 @@
+/** @file CbmTrdRadiator.cxx
+  * @copyright Copyright (C) 2004-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors M.Kalisky, Cyrano Bergmann, Adrian Meyer-Ahrens, David Emschermann, Florian Uhlig **/
+
 // ------------------------------------------------------------------------
 // -----                       CbmTrdRadiator source file             -----
 // -----                  Created 10/11/04  by M.Kalisky              -----

@@ -1,3 +1,8 @@
+/** @file LitStationMuon.h
+  * @copyright Copyright (C) 2009-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file LitStationMuon
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>

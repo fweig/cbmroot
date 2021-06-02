@@ -1,3 +1,8 @@
+/** @file CbmGeoMuch.cxx
+  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors A.Kiseleva, Denis Bertini [committer], Volker Friese **/
+
 /** CbmGeoMuch class
  *
  * @author  A.Kiseleva

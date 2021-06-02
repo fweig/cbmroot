@@ -1,3 +1,8 @@
+/** @file CbmTrdTrackFinderIdeal.cxx
+  * @copyright Copyright (C) 2005-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V. Friese, Semen Lebedev, Denis Bertini [committer], Florian Uhlig **/
+
 // -------------------------------------------------------------------------
 // -----                CbmTrdTrackFinderIdeal source file             -----
 // -----                  Created 28/11/05  by V. Friese               -----

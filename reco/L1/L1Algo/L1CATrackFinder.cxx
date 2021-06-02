@@ -1,3 +1,8 @@
+/** @file L1CATrackFinder.cxx
+  * @copyright Copyright (C) 2009-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors V.Akishina, I.Kisel, S.Gorbunov, I.Kulakov, M.Zyzak, Maxim Zyzak, Valentina Akishina, Igor Kulakov **/
+
 /*
  *=====================================================
  *

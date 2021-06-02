@@ -1,3 +1,8 @@
+/** @file CbmStack.cxx
+  * @copyright Copyright (C) 2004-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors D. Bertini / V. Friese, Denis Bertini [committer], Florian Uhlig, Volker Friese **/
+
 // -------------------------------------------------------------------------
 // -----                       CbmStack source file                    -----
 // -----             Created 10/08/04  by D. Bertini / V. Friese       -----

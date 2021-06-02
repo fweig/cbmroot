@@ -1,3 +1,8 @@
+/** @file CbmBuildEventsIdealNew.h
+  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
 /** @file CbmBuildEventsIdeal.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 13.03.2020

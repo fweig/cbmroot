@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   CbmTofHitFinderTBQA.h
- * Author: tablyaz
- *
- * Created on January 16, 2017, 3:32 PM
- */
+/** @file CbmTofHitFinderTBQA.h
+  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov, Pierre-Alain Loizeau [committer] **/
 
 #ifndef CBMTOFHITFINDERTBQA_H
 #define CBMTOFHITFINDERTBQA_H

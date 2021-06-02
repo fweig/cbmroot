@@ -1,7 +1,7 @@
 /** @file CbmTrdHitRateQa.h
   * @copyright Copyright (C) 2010-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [orginator], David Emschermann **/
+  * @authors Cyrano Bergmann [committer], David Emschermann **/
 
 #ifndef CBMTRDHITRATEQA_H_
 #define CBMTRDHITRATEQA_H_

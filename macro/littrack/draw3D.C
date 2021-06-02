@@ -1,3 +1,8 @@
+/** @file draw3D.C
+  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file draw3D.C
  * \brief Macro draws 3D view of CBM detector using TGeo functionality.

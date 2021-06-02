@@ -1,4 +1,9 @@
 /** @file CbmRadDamage.cxx
+  * @copyright Copyright (C) 2011-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer], Florian Uhlig **/
+
+/** @file CbmRadDamage.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 6 December 2011
  **/

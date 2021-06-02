@@ -1,14 +1,7 @@
-/*
- * File: /Create_TRD_Geometry_v20b.C
- * Created Date: Friday October 23rd 2020
- * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
- * -----
- * Last Modified: Friday October 23rd 2020 19:54:04
- * Modified By: Pascal Raisig
- * -----
- * Purpose: 
- * -----
- */
+/** @file Create_TRD_Geometry_v20b.C
+  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Pascal Raisig [committer] **/
 
 ///
 /// \file Create_TRD_Geometry_v20b.C

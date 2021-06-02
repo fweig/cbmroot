@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   LxTBTieTracks.h
- * Author: tablyaz
- *
- * Created on September 1, 2016, 11:33 AM
- */
+/** @file LxTBTieTracks.h
+  * @copyright Copyright (C) 2016-2017 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Timur Ablyazimov [committer] **/
 
 #ifndef LXTBTIETRACKS_H
 #define LXTBTIETRACKS_H

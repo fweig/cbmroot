@@ -1,3 +1,8 @@
+/** @file CbmTofAnaTestbeam.cxx
+  * @copyright Copyright (C) 2014-2021 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Christian Simon, Norbert Herrmann [committer], Pierre-Alain Loizeau **/
+
 // ------------------------------------------------------------------
 // -----                     CbmTofAnaTestbeam                        -----
 // -----              Created 12/04/2014 by nh                 -----

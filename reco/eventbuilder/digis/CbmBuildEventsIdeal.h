@@ -1,4 +1,9 @@
 /** @file CbmBuildEventsIdeal.h
+  * @copyright Copyright (C) 2016-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Volker Friese [committer] **/
+
+/** @file CbmBuildEventsIdeal.h
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 17.09.2016
  ** @date 15.^^.1010

@@ -1,3 +1,8 @@
+/** @file CbmTofHit.h
+  * @copyright Copyright (C) 2018 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors E. Cordier, Norbert Herrmann [committer] **/
+
 /**
  * \file CbmTofHit.h
  * \author E. Cordier

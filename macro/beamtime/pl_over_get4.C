@@ -1,7 +1,7 @@
 /** @file pl_over_get4.C
   * @copyright Copyright (C) 2016 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+  * @authors Norbert Herrmann [committer] **/
 
 void pl_over_get4(Int_t nRoc = 6)
 {

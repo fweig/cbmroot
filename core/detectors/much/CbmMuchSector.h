@@ -1,3 +1,8 @@
+/** @file CbmMuchSector.h
+  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Evgeny Kryshen, Volker Friese [committer], Florian Uhlig **/
+
 /** CbmMuchSector.h
  *@author  E.Kryshen <e.kryshen@gsi.de>
  *@since   02.08.12

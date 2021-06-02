@@ -1,7 +1,7 @@
 /** @file run_trd_reco.C
   * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [orginator] **/
+  * @authors Florian Uhlig [committer] **/
 
 // --------------------------------------------------------------------------
 //

@@ -1,3 +1,8 @@
+/** @file CbmTofTrackFitterKF.h
+  * @copyright Copyright (C) 2015 PI-UHd, GSI
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Norbert Herrmann [committer] **/
+
 // -----------------------------------------------------------------------
 // -----                  CbmTofTrackFitterKF                        -----
 // -----             Created 29/11/05  by D. Kresan                  -----

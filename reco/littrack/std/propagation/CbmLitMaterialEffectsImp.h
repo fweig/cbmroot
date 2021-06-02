@@ -1,3 +1,8 @@
+/** @file CbmLitMaterialEffectsImp.h
+  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Andrey Lebedev [committer] **/
+
 /**
  * \file CbmLitMaterialEffectsImp.h
  * \brief Calculation of multiple scattering and energy loss.

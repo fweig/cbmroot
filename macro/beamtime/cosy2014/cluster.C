@@ -1,4 +1,9 @@
 /** @file cluster.C
+  * @copyright Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Anna Senger, Pierre-Alain Loizeau [committer] **/
+
+/** @file cluster.C
  ** @author Anna Senger <a.senger@gsi.de>
  ** @date 2015 
  ** Clusters

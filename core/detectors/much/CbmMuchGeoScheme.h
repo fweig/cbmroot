@@ -1,3 +1,8 @@
+/** @file CbmMuchGeoScheme.h
+  * @copyright Copyright (C) 2008-2021 St. Petersburg Polytechnic University, St. Petersburg
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Florian Uhlig, Evgeny Kryshen, Mikhail Ryzhinskiy [committer], David Emschermann, Vikas Singhal **/
+
 // -------------------------------------------------------------------------
 // -----                   CbmMuchGeoScheme header file                -----
 // -----                  Created 18/02/08  by E. Kryshen

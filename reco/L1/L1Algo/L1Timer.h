@@ -1,12 +1,10 @@
+/** @file L1Timer.h
+  * @copyright Copyright (C) 2012-2019 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+  * @license SPDX-License-Identifier: GPL-3.0-only
+  * @authors Igor Kulakov [committer], Maxim Zyzak **/
+
 #ifndef _L1Timer_H
 #define _L1Timer_H
-
-/*
- *=====================================================
- *
- *  Authors: I.Kulakov
- *
- */
 
 #include "../CbmL1Def.h"
 

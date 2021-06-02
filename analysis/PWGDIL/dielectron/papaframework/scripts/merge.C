@@ -1,7 +1,7 @@
 /** @file merge.C
   * @copyright Copyright (C) 2016-2021 Justus-Liebig-Universitaet Giessen, Giessen
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [orginator], Etienne Bechtel **/
+  * @authors Julian Book [committer], Etienne Bechtel **/
 
 int merge(char* input_list = "list.txt", char* output_file = "merged.root")
 {

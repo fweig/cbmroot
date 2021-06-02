@@ -1,7 +1,7 @@
 /** @file eventDisplay100.C
   * @copyright Copyright (C) 2012-2013 PI-UHd, GSI
   * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator], Florian Uhlig **/
+  * @authors Norbert Herrmann [committer], Florian Uhlig **/
 
 eventDisplay100()
 {
